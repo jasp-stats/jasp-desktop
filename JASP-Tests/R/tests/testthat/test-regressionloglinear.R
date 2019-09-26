@@ -1,8 +1,5 @@
 context("Log-Linear Regression")
 
-# does not test
-# - error handling
-
 test_that("Main table results match", {
   options <- jasptools::analysisOptions("RegressionLogLinear")
   options$counts <- "facFifty"
@@ -13,13 +10,13 @@ test_that("Main table results match", {
     list(components=c("contBinom", "facGender"))
   )
   results <- jasptools::run("RegressionLogLinear", "test.csv", options)
-  table <- results[["results"]][["logregressionanova"]][["data"]]
+  table <- results[["results"]][["AnovaTable"]][["data"]]
   expect_equal_tables(table,
-    list("NULL", "", " ", 99, 936.356249443911, " ", " ", "contBinom",
-         "", 9.73545292814663, 98, 926.620796515764, 0.00180747470901472,
-         1, "facGender", "", 7.02546792150429, 97, 919.59532859426, 0.00803584702758609,
-         1, "contBinom<unicode><unicode><unicode>facGender", "", 0.769509416901883,
-         96, 918.825819177358, 0.380368860922424, 1)
+    list(" ", " ", "NULL", " ", 936.356249443911, 99, 9.73545292814663,
+         1, "contBinom", 0.00180747470901472, 926.620796515764, 98, 7.02546792150429,
+         1, "facGender", 0.00803584702758609, 919.59532859426, 97, 0.769509416901883,
+         1, "contBinom<unicode><unicode><unicode>facGender",
+         0.380368860922424, 918.825819177358, 96)
   )
 })
 
@@ -36,7 +33,7 @@ test_that("Coefficients table matches", {
   options$regressionCoefficientsConfidenceIntervals <- TRUE
   options$regressionCoefficientsConfidenceIntervalsInterval <- 0.95
   results <- jasptools::run("RegressionLogLinear", "test.csv", options)
-  table <- results[["results"]][["logregression"]][["data"]]
+  table <- results[["results"]][["CoefficientsTable"]][["data"]]
   expect_equal_tables(table,
     list("(Intercept)", 3.36441813015886, 0.0536828127084252, 3.25920175066154,
          3.46963450965618, 62.6721656414034, 0, "contBinom = 1", -0.63167531645938,
@@ -58,4 +55,42 @@ test_that("Coefficients table matches", {
          0.703134280441524, 0.142750071638859, 0.423349281238848, 0.982919279644201,
          4.92563171681182, 8.40882439228307e-07)
   )
+})
+
+test_that("Analysis handles errors - infinity", {
+  options <- jasptools::analysisOptions("RegressionLogLinear")
+  options$factors <- "facGender"
+  options$counts <- "debInf"
+  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
+})
+
+test_that("Analysis handles errors - missing values (factors)", {
+  options <- jasptools::analysisOptions("RegressionLogLinear")
+  options$factors <- "debBinMiss20"
+  options$modelTerms <- list(
+    list(components="debBinMiss20")
+  )
+  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
+})
+
+test_that("Analysis handles errors - missing values (counts)", {
+  options <- jasptools::analysisOptions("RegressionLogLinear")
+  options$factors <- "contBinom"
+  options$counts <- "debMiss30"
+  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
+})
+
+test_that("Analysis handles errors - negatives", {
+  options <- jasptools::analysisOptions("RegressionLogLinear")
+  options$factors <- "facGender"
+  options$counts <- "contNormal"
+  results <- jasptools::run("RegressionLogLinear", "test.csv", options)
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })

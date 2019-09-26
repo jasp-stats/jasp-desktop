@@ -21,8 +21,6 @@ import JASP.Controls 1.0
 
 Form
 {
-	usesJaspResults: false
-	
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
@@ -49,12 +47,15 @@ Form
 		Group
 		{
 			title: qsTr("Regression Coefficient")
-			CheckBox { name: "regressionCoefficientsEstimates";		label: qsTr("Estimates") }
-			CheckBox
-			{
-				name: "regressionCoefficientsConfidenceIntervals";	label: qsTr("Confidence intervals")
-				CIField { name: "regressionCoefficientsConfidenceIntervalsInterval"; label: qsTr("Interval") }
-			}
+            CheckBox
+            {
+                name: "regressionCoefficientsEstimates";		label: qsTr("Estimates")
+                CheckBox
+                {
+                    name: "regressionCoefficientsConfidenceIntervals";	label: qsTr("Confidence intervals")
+                    CIField { name: "regressionCoefficientsConfidenceIntervalsInterval"; label: qsTr("Interval") }
+                }
+            }
 		}
 		CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }
 	}
