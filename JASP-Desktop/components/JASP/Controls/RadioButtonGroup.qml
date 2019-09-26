@@ -43,6 +43,7 @@ JASPControl
 	implicitWidth:	radioButtonsOnSameRow
 						? contentArea.x + contentArea.implicitWidth
 						: Math.max(label.implicitWidth, contentArea.x + contentArea.implicitWidth)
+
 	implicitHeight:	radioButtonsOnSameRow
 						? Math.max(label.implicitHeight, contentArea.implicitHeight)
 						: contentArea.y + contentArea.implicitHeight	
@@ -97,5 +98,19 @@ JASPControl
         buttonGroup.clicked.connect(clicked);
         linkRadioButtons(contentArea);		
     }
+
+	background: backgroundBox
+
+	Rectangle
+	{
+		// This rectangle is only here to show the dependency outline for "Show Dependencies"
+		id:					backgroundBox
+		color:				"transparent"
+		border.width:		0
+		anchors.fill:		parent
+		anchors.margins:	-1 * border.width
+		z:					-1
+		visible:			preferencesModel.developerMode
+	}
 
 }
