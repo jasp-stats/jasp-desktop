@@ -11,7 +11,7 @@ jaspPlot::~jaspPlot()
 	finalizedHandler();
 }
 
-std::string jaspPlot::dataToString(std::string prefix)
+std::string jaspPlot::dataToString(std::string prefix) const
 {
 	std::stringstream out;
 

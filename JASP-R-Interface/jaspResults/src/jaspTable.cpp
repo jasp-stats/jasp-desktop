@@ -333,7 +333,7 @@ Json::Value jaspTable::getCell(size_t col, size_t row, size_t maxCol, size_t max
 	return	amIExpected ? Json::Value(".") : Json::nullValue;
 }
 
-std::string	jaspTable::getCellFormatted(size_t col, size_t row, size_t maxCol, size_t maxRow)
+std::string	jaspTable::getCellFormatted(size_t col, size_t row, size_t maxCol, size_t maxRow) const
 {
 	Json::Value val(getCell(col, row, maxCol, maxRow));
 
@@ -445,7 +445,7 @@ void jaspTable::calculateMaxColRow(size_t & maxCol, size_t & maxRow) const
 	maxCol = std::max(maxCol, _expectedColumnCount);
 }
 
-std::vector<std::vector<std::string>> jaspTable::dataToRectangularVector(bool normalizeColLengths, bool normalizeRowLengths)
+std::vector<std::vector<std::string>> jaspTable::dataToRectangularVector(bool normalizeColLengths, bool normalizeRowLengths) const
 {
 	size_t	maxRow, maxCol;
 	calculateMaxColRow(maxCol, maxRow);
@@ -499,7 +499,7 @@ std::vector<std::vector<std::string>> jaspTable::dataToRectangularVector(bool no
 	return uit;
 }
 
-std::vector<std::string> jaspTable::getDisplayableColTitles(bool normalizeLengths, bool onlySpecifiedColumns)
+std::vector<std::string> jaspTable::getDisplayableColTitles(bool normalizeLengths, bool onlySpecifiedColumns) const
 {
 	std::vector<std::string> names;
 	size_t maxLength = 0;
@@ -531,7 +531,7 @@ std::vector<std::string> jaspTable::getDisplayableColTitles(bool normalizeLength
 	return names;
 }
 
-std::vector<std::string> jaspTable::getDisplayableRowTitles(bool normalizeLengths)
+std::vector<std::string> jaspTable::getDisplayableRowTitles(bool normalizeLengths) const
 {
 	std::vector<std::string> names;
 	size_t	maxLength	= 0,
@@ -583,7 +583,7 @@ std::vector<std::vector<std::string>> jaspTable::transposeRectangularVector(cons
 	return uit;
 }
 
-std::map<std::string, std::map<size_t, size_t>> jaspTable::getOvertitleRanges(std::vector<std::string> names, std::map<std::string,std::string> overtitles)
+std::map<std::string, std::map<size_t, size_t>> jaspTable::getOvertitleRanges(std::vector<std::string> names, std::map<std::string,std::string> overtitles) const
 {
 	std::map<std::string, std::map<size_t, size_t>> overtitleSpread;
 
@@ -615,7 +615,7 @@ std::map<std::string, std::map<size_t, size_t>> jaspTable::getOvertitleRanges(st
 	return overtitleSpread;
 }
 
-void jaspTable::rectangularDataWithNamesToString(std::stringstream & out, std::string prefix, std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles)
+void jaspTable::rectangularDataWithNamesToString(std::stringstream & out, std::string prefix, std::vector<std::vector<std::string>> vierkant, std::vector<std::string> sideNames, std::vector<std::string> topNames, std::map<std::string,std::string> sideOvertitles, std::map<std::string,std::string> topOvertitles) const
 {
 	if(vierkant.size() == 0)
 		return;
@@ -753,7 +753,7 @@ void jaspTable::rectangularDataWithNamesToString(std::stringstream & out, std::s
 	out << colSep.str();
 }
 
-std::map<std::string, std::string> jaspTable::getOvertitlesMap()
+std::map<std::string, std::string> jaspTable::getOvertitlesMap() const
 {
 	std::map<std::string, std::string> map;
 
@@ -767,7 +767,7 @@ std::map<std::string, std::string> jaspTable::getOvertitlesMap()
 	return map;
 }
 
-std::string jaspTable::dataToString(std::string prefix)
+std::string jaspTable::dataToString(std::string prefix) const
 {
 	std::stringstream out;
 

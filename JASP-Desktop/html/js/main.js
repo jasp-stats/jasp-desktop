@@ -2,17 +2,16 @@
 
 var jasp = null;
 $(document).ready(function () {
-	var d = new Date();
-	var month = d.getMonth();
-	var day = d.getDate();
+	var d		= new Date();
+	var month	= d.getMonth();
+	var day		= d.getDate();
+
 	if ((month == 11 && day >= 19) || (month == 0 && day <= 5))
 		$("#note").css("background-image", "url('img/snow.gif')");
 
 	if (typeof qt !== "undefined")
-		var ch = new QWebChannel(qt.webChannelTransport, function (channel) {
-				// now you retrieve your object
-				jasp = channel.objects.jasp;
-			});
+		var ch = new QWebChannel(qt.webChannelTransport, function (channel) { jasp = channel.objects.jasp; });
+
 	var ua = navigator.userAgent.toLowerCase();
 
 	if (ua.indexOf("windows") !== -1)
@@ -20,42 +19,28 @@ $(document).ready(function () {
 
 	// Global settings for analysis output. Add here if making new setting.
 	window.globSet = {
-		"pExact" : false,
-		"decimals": "",
-		"tempFolder": ""
+		"pExact" :		false,
+		"decimals":		"",
+		"tempFolder":	""
 	}
 
-	var selectedAnalysisId = -1;
-	var selectedAnalysis = null
+	var selectedAnalysisId	= -1;
+	var selectedAnalysis	= null
+	var $instructions		= $("#instructions")
+	var showInstructions	= false;
+	var wasLastClickNote	= false;
+	var analyses			= new JASPWidgets.Analyses({ className: "jasp-report" });
 
-	var $instructions = $("#instructions")
-	var showInstructions = false;
-
-	var wasLastClickNote = false;
-
-	var analyses = new JASPWidgets.Analyses({ className: "jasp-report" });
-
-	window.setZoom = function (zoom) {
-		var zoomProcent = "" + Math.floor(zoom * 100) + "%"
-		document.body.style.zoom = zoomProcent
-	}
-
-	window.reRenderAnalyses = function () {
-		analyses.reRender();
-	}
-
-	window.moveAnalyses = function (fromId, toId) {
-		analyses.move(fromId, toId);
-	}
+	window.setZoom			= function (zoom)			{ document.body.style.zoom = "" + Math.floor(zoom * 100) + "%";	}
+	window.reRenderAnalyses = function ()				{ analyses.reRender();											}
+	window.moveAnalyses		= function (fromId, toId)	{ analyses.move(fromId, toId);									}
 
 	window.refreshEditedImage = function(id, results) {
 		var analysis = analyses.getAnalysis(id);
-		if (analysis !== undefined) {
-			if (results.error && results.resized)
-				analysis.undoImageResize();
-			else
-				analysis.insertNewImage();
-		}
+		if (analysis === undefined) return;
+
+		if (results.error && results.resized)	analysis.undoImageResize();
+		else									analysis.insertNewImage();
 	}
 	
 	window.cancelImageEdit = function(id) {
@@ -72,52 +57,34 @@ $(document).ready(function () {
 		selectedAnalysisId = id;
 
 		var jaspWidget = analyses.getAnalysis(id);
-		if (jaspWidget !== undefined) {
-			selectedAnalysis = jaspWidget;
-			selectedAnalysis.select();
-			$("body").addClass("selected")
+		if (jaspWidget === undefined) return;
 
-			window.scrollToTopView(selectedAnalysis.$el);
-		}
+		selectedAnalysis = jaspWidget;
+		selectedAnalysis.select();
+		$("body").addClass("selected")
+
+		window.scrollToTopView(selectedAnalysis.$el);
 	}
 
 	window.changeTitle = function(id, title) {
 		var analysis = analyses.getAnalysis(id);
-		if (analysis !== undefined) {
-			analysis.toolbar.setTitle(title);
-			analysis.toolbar.render();
-		}
+		if (analysis === undefined) return;
+
+		analysis.toolbar.setTitle(title);
+		analysis.toolbar.render();
 	}
 
-	window.setAppVersion = function (version) {
-		$(".app-version").text("Version " + version);
-	}
-
-	window.noInstructions = function () {
-		$('#instructions').text("");
-	}
-
-	window.noPatchinfo = function () {
-		$('#patchinfo').text("");
-	}
-
-
-	window.setTextHeight = function (height) {
-		$('body').css('font-size', height + 'px')
-	}
-
-	window.showInstructions = function () {
-
-		showInstructions = true
-	}
+	window.setAppVersion	= function(version) { $(".app-version").text("Version " + version);	}
+	window.noInstructions	= function()		{ $('#instructions').text("");					}
+	window.noPatchinfo		= function()		{ $('#patchinfo').text("");						}
+	window.setTextHeight	= function(height)	{ $('body').css('font-size', height + 'px');	}
+	window.showInstructions = function()		{ showInstructions = true;						}
 
 	window.hideInstructions = function () {
 
 		showInstructions = false
 
-		$instructions.animate({ opacity: 0 }, 400, "easeOutCubic", function () {
-			$instructions.slideUp()
-		})
+		$instructions.animate({ opacity: 0 }, 400, "easeOutCubic", function () { $instructions.slideUp() })
 	}
 
 	window.setSelection = function(value) {
@@ -126,84 +93,41 @@ $(document).ready(function () {
 	}
 
 	window.copyMenuClicked = function () {
-		if (window.menuObject.copyMenuClicked | window.menuObject.copyMenuClicked())
+		if (window.menuObject.copyMenuClicked && window.menuObject.copyMenuClicked())
 			window.menuObject.toolbar.displayMessage("Copied to clipboard");
 
 		setSelection(false);
 		window.menuObject = null;
 	}
 
-	window.saveImageClicked = function () {
-		if (window.menuObject.saveImageClicked | window.menuObject.saveImageClicked())
-			window.menuObject.saveImageClicked();
+	window.menuObjectFunctionCaller = function(func, msg) {
+		if(func && func() && msg !== undefined)
+			window.menuObject.toolbar.displayMessage(msg);
 
 		setSelection(false);
 		window.menuObject = null;
 	}
 
-	window.editImageClicked = function () {
-		if (window.menuObject.editImageClicked | window.menuObject.editImageClicked())
-			window.menuObject.editImageClicked();
-
-		setSelection(false);
-		window.menuObject = null;
-	}
-
-	window.collapseMenuClicked = function () {
-		if (window.menuObject.collapseMenuClicked)
-			window.menuObject.collapseMenuClicked();
-
-		setSelection(false);
-		window.menuObject = null;
-	}
-
-	window.editTitleMenuClicked = function () {
-		if (window.menuObject.editTitleClicked)
-			window.menuObject.editTitleClicked()
-
-		setSelection(false);
-		window.menuObject = null;
-	}
-
-	window.citeMenuClicked = function () {
-		if (window.menuObject.citeMenuClicked | window.menuObject.citeMenuClicked())
-			window.menuObject.toolbar.displayMessage("Citations copied to clipboard");
-
-		setSelection(false);
-		window.menuObject = null;
-	}
-
-	window.latexCodeMenuClicked = function () {
-		if (window.menuObject.latexCodeMenuClicked | window.menuObject.latexCodeMenuClicked())
-			window.menuObject.toolbar.displayMessage("LaTeX code copied to clipboard");
-
-		setSelection(false);
-		window.menuObject = null;
-	}
+	//Ok we .bind() the menuObject to the function because otherwise javascript decides that "this" is window and not a plot/analysis/table/whatever...
+	window.saveImageClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.saveImageClicked			.bind(window.menuObject) ); }
+	window.editImageClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.editImageClicked			.bind(window.menuObject) ); }
+	window.editTitleMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.editTitleClicked			.bind(window.menuObject) ); }
+	window.collapseMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.collapseMenuClicked		.bind(window.menuObject) ); }
+	window.showDependenciesClicked	= function () { window.menuObjectFunctionCaller( window.menuObject.showDependenciesClicked	.bind(window.menuObject) ); }
+	window.duplicateMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.duplicateMenuClicked		.bind(window.menuObject) ); }
+	window.removeMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.removeMenuClicked		.bind(window.menuObject) ); }
+	window.citeMenuClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.citeMenuClicked			.bind(window.menuObject),	"Citations copied to clipboard"	); }
+	window.latexCodeMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.latexCodeMenuClicked		.bind(window.menuObject),	"LaTeX code copied to clipboard"); }
 
 	window.notesMenuClicked = function (noteType, visibility) {
-		if (window.menuObject.notesMenuClicked | window.menuObject.notesMenuClicked(noteType, visibility))
+		if (window.menuObject.notesMenuClicked && window.menuObject.notesMenuClicked(noteType, visibility))
 			window.menuObject.toolbar.displayMessage();
 
 		setSelection(false);
 		window.menuObject = null;
 	}
 
-	window.removeMenuClicked = function () {
-		if (window.menuObject.removeMenuClicked)
-			window.menuObject.removeMenuClicked();
 
-		setSelection(false);
-		window.menuObject = null;
-	}
-
-	window.duplicateMenuClicked = function () {
-		if (window.menuObject.duplicateMenuClicked)
-			window.menuObject.duplicateMenuClicked();
-
-		setSelection(false);
-		window.menuObject = null;
-	}
 
 	window.analysisMenuHidden = function () {
 		if (window.menuObject !== undefined && window.menuObject !== null) {
@@ -219,71 +143,40 @@ $(document).ready(function () {
 		exportParams.htmlImageFormat	= JASPWidgets.ExportProperties.htmlImageFormat.embedded;
 		exportParams.includeNotes		= true;
 
-		if (filename === "%PREVIEW%") {
-			exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.resource;
-		}
+		if (filename === "%PREVIEW%") { exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.resource; }
 
 		analyses.exportBegin(exportParams, function (exportParams, exportContent) {
-			if (exportParams.error) {
-
-			}
-
 			if (exportParams.process === JASPWidgets.ExportProperties.process.save)
 				jasp.saveTextToFile(filename, wrapHTML(exportContent.html, exportParams));
 		})
 	}
 
-	window.getAllUserData = function () {
-		console.log("window.getAllUserData was called!")
-		var userData = analyses.getAllUserData();
-
-		jasp.setAllUserDataFromJavascript(JSON.stringify(userData))
-	}
-
-	window.getResultsMeta = function () {
-
-		var meta = analyses.getResultsMeta();
-
-		jasp.setResultsMetaFromJavascript(JSON.stringify(meta))
-	}
-
-	window.setResultsMeta = function (resultsMeta) {
-
-		analyses.setResultsMeta(resultsMeta);
-	}
+	window.getAllUserData = function ()				{ jasp.setAllUserDataFromJavascript(JSON.stringify(analyses.getAllUserData()))	}
+	window.getResultsMeta = function ()				{ jasp.setResultsMetaFromJavascript(JSON.stringify(analyses.getResultsMeta()))	}
+	window.setResultsMeta = function (resultsMeta)	{ analyses.setResultsMeta(resultsMeta);											}
 
 	window.scrollIntoView = function (item, complete) {
 
-		var itemTop = item.offset().top
-		var itemBottom = itemTop + item.height() + parseInt(item.css('marginBottom')) + parseInt(item.css('marginTop'))
-		var windowTop = document.body.scrollTop
-		var windowBottom = windowTop + window.innerHeight
+		var itemTop			= item.offset().top
+		var itemBottom		= itemTop + item.height() + parseInt(item.css('marginBottom')) + parseInt(item.css('marginTop'))
+		var windowTop		= document.body.scrollTop
+		var windowBottom	= windowTop + window.innerHeight
 
-		if (item.height() < window.innerHeight) {
-
-			if (itemTop < windowTop)
-				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing', complete: complete });
-			else if (itemBottom > windowBottom)
-				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing', complete: complete });
-			else if (complete !== undefined)
-				complete.call(item);
+		if (item.height() < window.innerHeight)
+		{
+			if (itemTop < windowTop)				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing', complete: complete });
+			else if (itemBottom > windowBottom)		$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing', complete: complete });
+			else if (complete !== undefined)		complete.call(item);
 		}
-		else {
-			if (itemTop > windowTop)
-				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing', complete: complete });
-			else if (itemBottom < windowBottom)
-				$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing', complete: complete });
-			else if (complete !== undefined)
-				complete.call(item);
+		else
+		{
+			if (itemTop > windowTop)				$("html, body").animate({ scrollTop: item.offset().top }, { duration: 'slow', easing: 'swing', complete: complete });
+			else if (itemBottom < windowBottom)		$("html, body").animate({ scrollTop: itemBottom - window.innerHeight + 10 }, { duration: 'slow', easing: 'swing', complete: complete });
+			else if (complete !== undefined)		complete.call(item);
 		}
-
 	}
 
-	window.scrollToTopView = function (item) {
-
-		var itemTop = item.offset().top
-		$("html, body").animate({ scrollTop: itemTop  }, { duration: 'slow', easing: 'swing' });
-	}
+	window.scrollToTopView = function (item) {		$("html, body").animate({ scrollTop: item.offset().top  }, { duration: 'slow', easing: 'swing' }); }
 
 	window.slideAlpha = function (item, time, cssProperties, targetAlphas, divisions, clearStyleOnZero, completeCallback) {
 
@@ -456,7 +349,8 @@ $(document).ready(function () {
 		var id = $(event.currentTarget).attr("id")
 		var idAsInt = parseInt(id.substring(3))
 
-		if (selectedAnalysisId !== idAsInt) {
+		if (selectedAnalysisId !== idAsInt)
+		{
 			if (wasLastClickNote !== true) {
 				window.select(idAsInt)
 				jasp.analysisSelected(idAsInt)
@@ -525,42 +419,19 @@ $(document).ready(function () {
 
 			analyses.addAnalysis(jaspWidget);
 
-			jaspWidget.on("optionschanged", function (id, options) {
-
-				jasp.analysisChangedDownstream(id, JSON.stringify(options))
-
-			});
-
-			jaspWidget.on("saveimage", function (id, options) {
-
-				jasp.analysisSaveImage(id, JSON.stringify(options))
-
-			});
-
-			jaspWidget.on("editimage", function (id, options) {
-
-				jasp.analysisEditImage(id, JSON.stringify(options))
-
-			});
+			jaspWidget.on("optionschanged",				function (id, options)	{ jasp.analysisChangedDownstream(id, JSON.stringify(options))	});
+			jaspWidget.on("saveimage",					function (id, options)	{ jasp.analysisSaveImage(id, JSON.stringify(options))			});
+			jaspWidget.on("editimage",					function (id, options)	{ jasp.analysisEditImage(id, JSON.stringify(options))			});
+			jaspWidget.on("showDependencies",			function (id, optName)	{ jasp.showDependenciesInAnalysis(id, optName);					});
+			jaspWidget.on("analysis:remove",			function (id)			{ jasp.removeAnalysisRequest(id);								});
+			jaspWidget.on("analysis:duplicate",			function (id)			{ jasp.duplicateAnalysis(id);									});
+			jaspWidget.on("analysis:userDataChanged",	function ()				{ jasp.updateUserData();										});
 
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
 				console.log(options);
 				window.menuObject = obj;
-			});
-
-			jaspWidget.on("analysis:remove", function (id) {
-				jasp.removeAnalysisRequest(id);
-			});
-
-			jaspWidget.on("analysis:duplicate", function (id) {
-				jasp.duplicateAnalysis(id);
-			});
-
-			jaspWidget.on("analysis:userDataChanged", function () {
-
-				jasp.updateUserData();
 			});
 		}
 		else

@@ -78,7 +78,7 @@ JASPControl
 	
 	signal itemDoubleClicked(int index);
 	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
-	signal hasSelectedItemsChanged();
+	signal haveSelectedItemsChanged();
 	signal draggingChanged(var context, bool dragging);
 
 	function setSelectedItems()
@@ -98,7 +98,7 @@ JASPControl
 				item.selected = false;
 		}
 
-		hasSelectedItemsChanged();
+		haveSelectedItemsChanged();
 	}
 
 	function setEnabledState(source, dragging)
@@ -137,6 +137,10 @@ JASPControl
 		itemsDropped(selectedItems, target, -1, assignOption);
 	}	
 	
+/*	onDependencyMustContainChanged:
+		if(variablesList.model !== undefined)
+			variablesList.model.refresh()*/
+
 	Text
 	{
 		id:				variablesListTitle
@@ -356,6 +360,8 @@ JASPControl
 			scrollYPosition: backgroundForms.contentY
 		}
 
+
+
 		GridView
 		{
 			id:						listView
@@ -370,13 +376,13 @@ JASPControl
 			delegate:				itemComponent
 			boundsBehavior:			Flickable.StopAtBounds
 			
-			property int startShiftSelected: 0;
-			property int endShiftSelected: -1;
-			property var selectedItems: [];
-			property bool mousePressed: false;
-			property bool shiftPressed: false;
-			property var itemContainingDrag
-			property var draggingItems: []
+			property int	startShiftSelected:	0
+			property int	endShiftSelected:	-1
+			property var	selectedItems:		[]
+			property bool	mousePressed:		false
+			property bool	shiftPressed:		false
+			property var	draggingItems:		[]
+			property var	itemContainingDrag
 			
 			onCurrentItemChanged:
 			{
@@ -534,6 +540,7 @@ JASPControl
 				
 				property bool clearOtherSelectedItemsWhenClicked: false
 				property bool selected:				listView.selectedItems.includes(rank)
+				property bool isDependency:			variablesList.dependencyMustContain.indexOf(colName.text) >= 0
 				property bool dragging:				false
 				property int offsetX:				0
 				property int offsetY:				0
@@ -556,11 +563,13 @@ JASPControl
 				
 				color:
 				{
+					if(itemRectangle.isDependency)											return itemRectangle.selected ? Theme.dependencySelectedColor : Theme.dependencyBorderColor;
 					if (!itemRectangle.draggable)											return Theme.controlBackgroundColor;
-					else if (itemRectangle.selected)											return variablesList.activeFocus ? Theme.itemSelectedColor: Theme.itemSelectedNoFocusColor;
-					else if (itemRectangle.containsDragItem && variablesList.dropModeReplace)	return Theme.itemSelectedColor;
-					else if (mouseArea.containsMouse)											return Theme.itemHoverColor;
-					else																		return Theme.controlBackgroundColor;
+					if (itemRectangle.selected)												return variablesList.activeFocus ? Theme.itemSelectedColor: Theme.itemSelectedNoFocusColor;
+					if (itemRectangle.containsDragItem && variablesList.dropModeReplace)	return Theme.itemSelectedColor;
+					if (mouseArea.containsMouse)											return Theme.itemHoverColor;
+
+					return Theme.controlBackgroundColor;
 				}
 
 				Drag.keys:		[variablesList.name]

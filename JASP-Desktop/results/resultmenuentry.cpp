@@ -18,23 +18,25 @@
 
 #include "resultmenuentry.h"
 
+//the window.blabla() functions are defined main.js and the hasBlabla are defined jaspwidgets.js
 std::map<QString, ResultMenuEntry> ResultMenuEntry::AllResultEntries = {
-    {	"hasCollapse",				ResultMenuEntry("",					"hasCollapse",				"",									"window.collapseMenuClicked();")	},
-	{	"hasEditTitle",				ResultMenuEntry("Edit Title",		"hasEditTitle",				"qrc:/icons/edit-pencil.png",		"window.editTitleMenuClicked();")	},
-	{	"hasCopy",					ResultMenuEntry("Copy",				"hasCopy",					"qrc:/icons/copy.png",				"window.copyMenuClicked();")		},
-	{	"hasLaTeXCode",				ResultMenuEntry("Copy LaTeX",		"hasLaTeXCode",				"qrc:/icons/code-icon.png",			"window.latexCodeMenuClicked();")	},
-	{	"hasCite",					ResultMenuEntry("Copy Citations",	"hasCite",					"qrc:/icons/cite.png",				"window.citeMenuClicked();")		},
-	{	"hasSaveImg",				ResultMenuEntry("Save Image As",	"hasSaveImg",				"qrc:/icons/document-save-as.png",	"window.saveImageClicked();")		},
-	{	"hasEditImg",				ResultMenuEntry("Edit Image",		"hasEditImage",				"qrc:/icons/editImage.png",			"window.editImageClicked();")		},
-	{	"hasNotes",					ResultMenuEntry("Add Note",			"hasNotes",					"",									"")									},
-	{	"hasDuplicate",				ResultMenuEntry("Duplicate",		"hasDuplicate",				"qrc:/icons/duplicate.png",			"window.duplicateMenuClicked();")	},
-	{	"hasRemove",				ResultMenuEntry("Remove",			"hasRemove",				"qrc:/images/close-button.png",		"window.removeMenuClicked();")		},
-	{	"hasRemoveAllAnalyses",		ResultMenuEntry("Remove All",		"hasRemoveAllAnalyses",		"qrc:/images/close-button.png",		"")									},
-	{	"hasRefreshAllAnalyses",	ResultMenuEntry("Refresh All",		"hasRefreshAllAnalyses",	"",									"")									},
+	{	"hasCollapse",				ResultMenuEntry("",						"hasCollapse",				"",									"window.collapseMenuClicked();")	},
+	{	"hasEditTitle",				ResultMenuEntry("Edit Title",			"hasEditTitle",				"qrc:/icons/edit-pencil.png",		"window.editTitleMenuClicked();")	},
+	{	"hasCopy",					ResultMenuEntry("Copy",					"hasCopy",					"qrc:/icons/copy.png",				"window.copyMenuClicked();")		},
+	{	"hasLaTeXCode",				ResultMenuEntry("Copy LaTeX",			"hasLaTeXCode",				"qrc:/icons/code-icon.png",			"window.latexCodeMenuClicked();")	},
+	{	"hasCite",					ResultMenuEntry("Copy Citations",		"hasCite",					"qrc:/icons/cite.png",				"window.citeMenuClicked();")		},
+	{	"hasSaveImg",				ResultMenuEntry("Save Image As",		"hasSaveImg",				"qrc:/icons/document-save-as.png",	"window.saveImageClicked();")		},
+	{	"hasEditImg",				ResultMenuEntry("Edit Image",			"hasEditImage",				"qrc:/icons/editImage.png",			"window.editImageClicked();")		},
+	{	"hasNotes",					ResultMenuEntry("Add Note",				"hasNotes",					"",									"")									},
+	{	"hasDuplicate",				ResultMenuEntry("Duplicate",			"hasDuplicate",				"qrc:/icons/duplicate.png",			"window.duplicateMenuClicked();")	},
+	{	"hasRemove",				ResultMenuEntry("Remove",				"hasRemove",				"qrc:/images/close-button.png",		"window.removeMenuClicked();")		},
+	{	"hasRemoveAllAnalyses",		ResultMenuEntry("Remove All",			"hasRemoveAllAnalyses",		"qrc:/images/close-button.png",		"")									},
+	{	"hasRefreshAllAnalyses",	ResultMenuEntry("Refresh All",			"hasRefreshAllAnalyses",	"",									"")									},
+	{	"hasShowDeps",				ResultMenuEntry("Show Dependencies",	"hasShowDeps",				"",									"window.showDependenciesClicked()")	}
 };
 
 QStringList ResultMenuEntry::EntriesOrder = {"hasCollapse", "hasEditTitle", "hasCopy", "hasLaTeXCode", "hasCite", "hasSaveImg",
-											 "hasEditImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses"};
+											 "hasEditImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses", "hasShowDeps"};
 
 ResultMenuEntry::ResultMenuEntry(QString displayText, QString name, QString menuImageSource, QString jsFunction)
 	: _displayText(displayText)

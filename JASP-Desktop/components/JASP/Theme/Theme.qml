@@ -42,6 +42,7 @@ QtObject {
 	readonly property color yellowLight:					"#FFFFCA"
 	readonly property color rose:							"#FFC0CB"
 	readonly property color roseLight:						"#FEF1EC"
+	readonly property color cyan:							"#39CEF9"
 	readonly property color shadow:							"#33000000"
 
 	readonly property color textEnabled:					black
@@ -90,19 +91,19 @@ QtObject {
 	readonly property int splitHandleWidth:					20  * uiScale
 	readonly property int numericFieldWidth:				40  * uiScale
 	readonly property int subMenuIconHeight:				13	* uiScale
-	readonly property int defaultVariablesFormHeight:		350 * uiScale
 	readonly property int titleBottomMargin:				5   * uiScale
 	readonly property int jaspControlPadding:				3   * uiScale
 	readonly property int ribbonButtonHeight:				72  * uiScale
 	readonly property int variablesListTitle:				20  * uiScale
-	readonly property int smallDefaultVariablesFormHeight:	200 * uiScale
 	readonly property int ribbonButtonPadding:				10  * uiScale
 	readonly property int groupContentPadding:				10  * uiScale
 	readonly property int sliderHandleDiameter:				16  * uiScale
 	readonly property int defaultTextAreaHeight:			250 * uiScale
 	readonly property int jaspControlHighlightWidth:		Math.max(2, 3 * uiScale)
+	readonly property int defaultVariablesFormHeight:		350 * uiScale
 	readonly property int defaultSingleItemListHeight:		49  * uiScale
 	readonly property int defaultRectangularButtonHeight:	32 * uiScale
+	readonly property int smallDefaultVariablesFormHeight:	200 * uiScale
 
 	readonly property int scrollbarBoxWidth:				12  * uiScale
 	readonly property int scrollbarBoxWidthBig:				16  * uiScale
@@ -126,11 +127,17 @@ QtObject {
 	font.pixelSize:		12 * uiScale
 	font.family:		"SansSerif"
 
+	property font fontLabel
+	fontLabel.bold:			true
+	fontLabel.underline:	false
+	fontLabel.pixelSize:	18 * uiScale
+	fontLabel.family:		"SansSerif"
+
 	property font fontRibbon
 	fontRibbon.bold:		false
 	fontRibbon.underline:	false
 	fontRibbon.pixelSize:	14 * uiScale
-	fontRibbon.family:	"SansSerif"
+	fontRibbon.family:		"SansSerif"
 
 	property font fontGroupTitle
 	fontGroupTitle.bold:		true
@@ -144,14 +151,10 @@ QtObject {
 	fontPrefOptionsGroupTitle.pixelSize:	13 * uiScale
 	fontPrefOptionsGroupTitle.family:		"SansSerif"
 
-	property font fontLabel
-	fontLabel.bold:			true
-	fontLabel.underline:	false
-	fontLabel.pixelSize:	18 * uiScale
-	fontLabel.family:		"SansSerif"
-
 	readonly property color borderColor:					gray
 	readonly property color focusBorderColor:				blueLighter
+	readonly property color dependencyBorderColor:			green
+	readonly property color dependencySelectedColor:		cyan
 	readonly property color containsDragBorderColor:		green
 	readonly property color itemHoverColor:					blueMuchLighter
 	readonly property color itemSelectedColor:				blueDarker

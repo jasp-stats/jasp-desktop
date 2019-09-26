@@ -90,28 +90,19 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		if (this.userdata === undefined || this.userdata === null)
 			this.userdata = {};
 
-		var firstNoteDetails = new JASPWidgets.DataDetails('firstNote');
-		var firstNoteBox = this.getNoteBox(firstNoteDetails);
-
-		var lastNoteDetails = new JASPWidgets.DataDetails('lastNote');
-		var lastNoteBox = this.getNoteBox(lastNoteDetails);
+		var firstNoteDetails	= new JASPWidgets.DataDetails('firstNote');
+		var firstNoteBox		= this.getNoteBox(firstNoteDetails);
+		var lastNoteDetails		= new JASPWidgets.DataDetails('lastNote');
+		var lastNoteBox			= this.getNoteBox(lastNoteDetails);
 
 		this.toolbar.setParent(this);
 
-		this.model.on("CustomOptions:changed", function (options) {
-			this.trigger("optionschanged", this.model.get("id"), options)
-		}, this);
+		this.model.on("CustomOptions:changed",		function (options) { this.trigger("optionschanged",		this.model.get("id"), options)	}, this);
+		this.model.on("SaveImage:clicked",			function (options) { this.trigger("saveimage",			this.model.get("id"), options)	}, this);
+		this.model.on("EditImage:clicked",			function (options) { this.trigger("editimage",			this.model.get("id"), options)	}, this);
+		this.model.on("ShowDependencies:clicked",	function (optName) { this.trigger("showDependencies",	this.model.get("id"), optName)	}, this);
 
-		this.model.on("SaveImage:clicked", function (options) {
-			this.trigger("saveimage", this.model.get("id"), options)
-		}, this);
-
-        this.model.on("EditImage:clicked", function (options) {
-
-            this.trigger("editimage", this.model.get("id"), options)
-        }, this);
-
-		this.$el.on("changed:userData", this, this.onUserDataChanged);
+		this.$el.on("changed:userData",	this, this.onUserDataChanged);
 	},
 
 	onUserDataChanged: function (event, details, dataValues) {

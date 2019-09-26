@@ -141,7 +141,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	std::cout << "R_HOME: " << _R_HOME << std::endl;
 }
 
-const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground)
+const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground, bool developerMode)
 {
 	SEXP results;
 
@@ -155,14 +155,14 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 
 	rInside["name"]				= name;
 	rInside["title"]			= title;
-	rInside["requiresInit"]		= requiresInit;
 	rInside["dataKey"]			= dataKey;
 	rInside["options"]			= jsonOptions;
+	rInside["requiresInit"]		= requiresInit;
+	rInside[".imageBackground"]	= imageBackground;
 	rInside["resultsMeta"]		= jsonResultsMeta;
 	rInside["stateKey"]			= stateKey;
 	rInside["perform"]			= perform;
 	rInside[".ppi"]				= ppi;
-	rInside[".imageBackground"]	= imageBackground;
 
 	if (rfile && *rfile)
 	{
@@ -175,6 +175,7 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 	{
 		///Some stuff for jaspResults etc
 		jaspResults::setResponseData(analysisID, analysisRevision);
+		jaspResults::setDeveloperMode(developerMode);
 
 		std::string root, relativePath;
 		jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath);
@@ -200,7 +201,7 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 	return str.c_str();
 }
 
-const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, const char* imageBackground)
+const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode)
 {
 	RInside &rInside				= rinside->instance();
 	Rcpp::String jsonOptions		= options;
@@ -220,6 +221,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	rInside[".imageBackground"]	= imageBackground;
 
 	jaspResults::setResponseData(analysisID, analysisRevision);
+	jaspResults::setDeveloperMode(developerMode);
 
 	std::string root, relativePath;
 	jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath);

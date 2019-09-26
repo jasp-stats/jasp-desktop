@@ -80,12 +80,12 @@ Rcpp::RObject jaspContainer::at(std::string field)
 	}
 }
 
-std::string jaspContainer::dataToString(std::string prefix)
+std::string jaspContainer::dataToString(std::string prefix) const
 {
 	std::stringstream out;
 
 	for(auto key : getSortedDataFields())
-		out << prefix << "\"" << key << "\":\n" << _data[key]->toString(prefix + "\t") << "\n";
+		out << prefix << "\"" << key << "\":\n" << _data.at(key)->toString(prefix + "\t") << "\n";
 
 	return out.str();
 }
@@ -266,6 +266,33 @@ void jaspContainer::childFinalizedHandler(jaspObject *child)
 
 }
 
+void jaspContainer::letChildrenRun()
+{
+	for(auto keyval : _data)
+	{
+		jaspObject * obj = keyval.second;
+
+		switch(obj->getType())
+		{
+		case jaspObjectType::container:
+			static_cast<jaspContainer*>(obj)->letChildrenRun();
+			break;
+
+		case jaspObjectType::table:
+			static_cast<jaspTable*>(obj)->letRun();
+			break;
+
+		case jaspObjectType::plot:
+			static_cast<jaspPlot*>(obj)->letRun();
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+
 void jaspContainer::completeChildren()
 {
 	for(auto keyval : _data)
@@ -280,6 +307,10 @@ void jaspContainer::completeChildren()
 
 		case jaspObjectType::table:
 			static_cast<jaspTable*>(obj)->complete();
+			break;
+
+		case jaspObjectType::plot:
+			static_cast<jaspPlot*>(obj)->complete();
 			break;
 
 		default:

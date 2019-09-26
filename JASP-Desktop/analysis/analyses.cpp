@@ -669,3 +669,10 @@ void Analyses::duplicateAnalysis(size_t id)
 	if(analysis->status() != Analysis::Status::Complete)
 		analysis->refresh();
 }
+
+void Analyses::showDependenciesInAnalysis(size_t analysis_id, QString optionName)
+{
+	if(!get(analysis_id)) return;
+
+	get(analysis_id)->showDependenciesOnQMLForObject(optionName);
+}
