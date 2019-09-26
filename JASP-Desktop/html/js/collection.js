@@ -1,8 +1,9 @@
 JASPWidgets.collection = Backbone.Model.extend({
 	defaults: {
-		title: '',
-		titleFormat: 'h3',
-		collection: [],
+		title:			'',
+		titleFormat:	'h3',
+		collection:		[],
+		name:			""
 	}
 });
 
@@ -82,76 +83,49 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 		return true;
 	},
 
-	noteOptions: function () {
-		var options = { key: this.noteBoxKey, menuText: 'Add Note', visible: this.noteBox.visible };
+	showDependenciesClicked:	function()  { this.model.trigger("ShowDependencies:clicked", this.model.get("name")); },
+	collapseMenuClicked:		function()  { this.setCollapsedState(!this.model.get('collapsed'));	},
+	noteOptions:				function()  { return [ { key: this.noteBoxKey, menuText: 'Add Note', visible: this.noteBox.visible } ];			},
+	hasNotes:					function()  { return this.model.get('name') !== null;															},
+	isCollapsed:				function()  { return this.model.get('collapsed'); },
+	_hoveringStart:				function(e) { this.toolbar.setVisibility(true);},
+	_hoveringEnd:				function(e) { this.toolbar.setVisibility(false);},
 
-		return [options];
-	},
+	eventEcho:					function (eventName, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { this.trigger(eventName, arg1, arg2, arg3, arg4, arg5, arg6, arg7); },
 
-	hasNotes: function () {
-		return this.model.get('name') !== null;
-	},
-
-
-	collapseOptions: function () {
+	collapseOptions: function()
+	{
 		var collapsed = this.model.get('collapsed');
-
-		var text = collapsed ? 'Expand' : 'Collapse';
-
-		return { menuText: text, collapsed: collapsed };
+		return { menuText: (collapsed ? 'Expand' : 'Collapse'), collapsed: collapsed };
 	},
 
-	setCollapsedState: function (collapsed) {
-		var self = this;
-		if (collapsed) {
-			window.slideAlpha(this.$el, 300, ['border-color', 'background-color'], [1, 0.5], 10, true, function () {
-				self.$el.addClass('jasp-collapsed');
-			});
-			this.$body.slideUp(300);
-		}
-		else {
-			window.slideAlpha(self.$el, 600, ['border-color', 'background-color'], [0, 0], 20, true, function () {
-				self.$el.removeClass('jasp-collapsed');
-			});
-			this.$body.slideDown(300);
-		}
-		this.model.set('collapsed', collapsed);
-	},
 
-	isCollapsed: function () {
-		var collapsed = this.model.get('collapsed')
-		if (collapsed)
-			return true;
-
-		return false;
-	},
-
-	collapseMenuClicked: function () {
-		var collapsed = this.model.get('collapsed');
-		this.setCollapsedState(!collapsed);
-	},
-
-	onCollapsedChange: function () {
+	onCollapsedChange: function()
+	{
 		if (!this.settingUserData)
 			this.$el.trigger("changed:userData", [this.userDataDetails, [{ key: 'collapsed', value: this.isCollapsed() }]]);
 	},
 
+	setCollapsedState: function (collapsed) {
+		var self = this;
+		if (collapsed)
+		{
+			window.slideAlpha(this.$el, 300, ['border-color', 'background-color'], [1, 0.5], 10, true, function () { self.$el.addClass('jasp-collapsed'); });
+			this.$body.slideUp(300);
+		}
+		else
+		{
+			window.slideAlpha(self.$el, 600, ['border-color', 'background-color'], [0, 0], 20, true, function () {	self.$el.removeClass('jasp-collapsed'); });
+			this.$body.slideDown(300);
+		}
+
+		this.model.set('collapsed', collapsed);
+	},
+
+
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
-	},
-
-	_hoveringStart: function (e) {
-		this.toolbar.setVisibility(true);
-	},
-
-	_hoveringEnd: function (e) {
-		this.toolbar.setVisibility(false);
-	},
-
-
-	eventEcho: function (eventName, arg1, arg2, arg3, arg4, arg5, arg6, arg7) {
-		this.trigger(eventName, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 	},
 
 

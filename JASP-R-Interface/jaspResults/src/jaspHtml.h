@@ -8,11 +8,11 @@ public:
 
 	~jaspHtml() {}
 
-	std::string dataToString(std::string prefix="") override;
-	std::string toHtml()							override;
+	std::string dataToString(std::string prefix="")			const	override;
+	std::string toHtml()											override;
 
-	Json::Value	metaEntry()								const override { return constructMetaEntry("htmlNode"); }
-	Json::Value	dataEntry(std::string & errorMessage)	const override;
+	Json::Value	metaEntry()									const	override { return constructMetaEntry("htmlNode"); }
+	Json::Value	dataEntry(std::string & errorMessage)		const	override;
 
     std::string _rawText, _elementType, _class;
 

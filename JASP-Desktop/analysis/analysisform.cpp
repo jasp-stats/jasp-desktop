@@ -43,7 +43,6 @@
 #include "widgets/qmllistviewtermsavailable.h"
 #include "widgets/listmodeltermsavailable.h"
 
-#include "utilities/qutils.h"
 #include "utils.h"
 #include "dirs.h"
 #include "utilities/settings.h"
@@ -581,4 +580,42 @@ void AnalysisForm::dataSetChangedHandler()
 		_setAllAvailableVariablesModel(true);
 		emit dataSetChanged();
 	}
+}
+
+void AnalysisForm::setControlIsDependency(QString controlName, bool isDependency)
+{
+	if(_controls.count(controlName) > 0)
+		_controls[controlName]->setItemProperty("isDependency", isDependency);
+}
+
+void AnalysisForm::setControlMustContain(QString controlName, QStringList containThis)
+{
+	if(_controls.count(controlName) > 0)
+		_controls[controlName]->setItemProperty("dependencyMustContain", containThis);
+}
+
+void AnalysisForm::setMustBe(std::set<std::string> mustBe)
+{
+	for(const std::string & mustveBeen : _mustBe)
+		if(mustBe.count(mustveBeen) == 0)
+			setControlIsDependency(mustveBeen, false);
+
+	_mustBe = mustBe;
+
+	for(const std::string & mustBecome : _mustBe)
+		setControlIsDependency(mustBecome, true); //Its ok if it does it twice, others will only be notified on change
+}
+
+void AnalysisForm::setMustContain(std::map<std::string,std::set<std::string>> mustContain)
+{
+	//For now ignore specific thing that must be contained
+	for(const auto & nameContainsPair : _mustContain)
+		if(mustContain.count(nameContainsPair.first) == 0)
+			setControlMustContain(nameContainsPair.first, {});
+
+	_mustContain = mustContain;
+
+	for(const auto & nameContainsPair : _mustContain)
+		setControlMustContain(nameContainsPair.first, nameContainsPair.second); //Its ok if it does it twice, others will only be notified on change
+
 }

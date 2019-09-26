@@ -38,6 +38,7 @@
 #include "analysisqmldefines.h"
 #include "widgets/listmodeltermsavailable.h"
 #include "gui/messageforwarder.h"
+#include "utilities/qutils.h"
 
 
 
@@ -59,6 +60,8 @@ public:
 				void			itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) override;
 
 				DataSetPackage *getDataSetPackage() const { return _package; }
+				void			setMustBe(		std::set<std::string>						mustBe);
+				void			setMustContain(	std::map<std::string,std::set<std::string>> mustContain);
 					
 public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
@@ -101,6 +104,10 @@ private:
 	void		_setUpItems();
 	void		_setErrorMessages();
 	void		_cleanUpForm();
+	void		setControlIsDependency(QString controlName, bool isDependency);
+	void		setControlMustContain(QString controlName, QStringList containThis);
+	void		setControlIsDependency(std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
+	void		setControlMustContain(std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
 
 private slots:
 	void		formCompletedHandler();
@@ -114,7 +121,9 @@ protected:
 	QVector<QMLItem*>							_orderedControls;
 	std::map<QMLListView*, ListModel* >			_relatedModelMap;
 	std::map<QString, ListModel* >				_modelMap;
-	bool										_removed			= false;
+	bool										_removed = false;
+	std::set<std::string>						_mustBe;
+	std::map<std::string,std::set<std::string>>	_mustContain;
 	
 private:
 	QQuickItem								*	_errorMessagesItem	= nullptr;

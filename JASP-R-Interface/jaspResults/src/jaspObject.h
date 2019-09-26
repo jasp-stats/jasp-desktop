@@ -34,9 +34,9 @@ public:
 						jaspObject(const jaspObject& that) = delete;
 	virtual				~jaspObject();
 
-			std::string objectTitleString(std::string prefix)	{ return prefix + jaspObjectTypeToString(_type) + " " + _title; }
-	virtual	std::string dataToString(std::string)				{ return ""; }
-			std::string toString(std::string prefix = "");
+			std::string objectTitleString(std::string prefix)	const { return prefix + jaspObjectTypeToString(_type) + " " + _title; }
+	virtual	std::string dataToString(std::string)				const { return ""; }
+			std::string toString(std::string prefix = "")		const;
 
 	virtual std::string toHtml() { return ""; }
 			std::string htmlTitle() { return "<h2>" + _title + "</h2>"; }
@@ -68,7 +68,7 @@ public:
 			jaspObjectType	getType()						{ return _type; }
 			bool			shouldBePartOfResultsJson()		{ return _type != jaspObjectType::state && _type != jaspObjectType::json; }
 
-			Json::Value	constructMetaEntry(std::string type, std::string meta = "") const;
+			Json::Value		constructMetaEntry(std::string type, std::string meta = "") const;
 
 	//These functions convert the object to a json that can be understood by the resultsviewer
 	virtual	Json::Value		metaEntry()															const { return Json::Value(Json::nullValue); }
@@ -123,6 +123,7 @@ public:
 	void			notifyParentOfChanges(); ///let ancestors know about updates
 
 	static int getCurrentTimeMs();
+	static void setDeveloperMode(bool developerMode);
 
 protected:
 	jaspObjectType				_type;
@@ -133,8 +134,11 @@ protected:
 	std::set<std::string>		_citations;
 	std::string					_name;
 
-	std::map<std::string, Json::Value> _optionMustBe;
-	std::map<std::string, Json::Value> _optionMustContain;
+	std::set<std::string>							nestedMustBes()			const;
+	std::map<std::string, std::set<std::string>>	nestedMustContains()	const;
+	std::map<std::string, Json::Value>				_optionMustContain;
+	std::map<std::string, Json::Value>				_optionMustBe;
+
 
 //Should add dependencies somehow here?
 
@@ -145,17 +149,15 @@ protected:
 			void			removeChild(jaspObject * child);
 
 
-
 	jaspObject				*parent = NULL;
 	std::set<jaspObject*>	children;
 
-	static std::set<jaspObject*> * allocatedObjects;
+	static std::set<jaspObject*> *	allocatedObjects;
+	static bool						_developerMode;
 
 private:
 	bool					_finalizedAlready = false;
 };
-
-
 
 #define JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(JASP_TYPE, PROP_TYPE, PROP_NAME, PROP_CAPITALIZED_NAME) \
 	void set ## PROP_CAPITALIZED_NAME (PROP_TYPE new ## PROP_CAPITALIZED_NAME) { ((JASP_TYPE *)myJaspObject)->PROP_NAME = new ## PROP_CAPITALIZED_NAME; myJaspObject->notifyParentOfChanges(); } \

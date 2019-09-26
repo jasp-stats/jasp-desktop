@@ -150,6 +150,8 @@ void Analysis::setResults(const Json::Value & results, const Json::Value & progr
 	if (_analysisForm)
 		_analysisForm->clearErrors();
 	emit resultsChangedSignal(this);
+
+	processResultsForDependenciesToBeShown();
 }
 
 void Analysis::imageSaved(const Json::Value & results)
@@ -286,9 +288,10 @@ Json::Value Analysis::asJSON() const
 	default:						status = "fatalError";		break;
 	}
 
-	analysisAsJson["status"]	= status;
-	analysisAsJson["options"]	= options()->asJSON();
-	analysisAsJson["userdata"]	= userData();
+	analysisAsJson["status"]		= status;
+	analysisAsJson["options"]		= options()->asJSON();
+	analysisAsJson["userdata"]		= userData();
+
 
 	if(_moduleData != nullptr)
 		analysisAsJson["dynamicModule"] = _moduleData->asJsonForJaspFile();
@@ -395,7 +398,7 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
 	json["jaspResults"]			= usesJaspResults();
 	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();
-
+	json["developerMode"]		= _analyses->developerMode();
 
 	if (!isAborted())
 	{
@@ -472,7 +475,63 @@ void Analysis::duplicateMe()
 	_analyses->duplicateAnalysis(_id);
 }
 
+
 DataSetPackage * Analysis::getDataSetPackage() const
 {
 	return _analyses->getDataSetPackage();
+}
+
+void Analysis::showDependenciesOnQMLForObject(QString uniqueName)
+{
+	_showDepsName = uniqueName.toStdString();
+	processResultsForDependenciesToBeShown();
+}
+
+bool Analysis::processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array)
+{
+	if(!array.isArray())
+	{
+		Log::log() << "metaTraverser in void Analysis::processResultsForDependenciesToBeShown() expects an array, but instead received: '" << array.toStyledString() << "'" << std::endl;
+		return false;
+	}
+
+	for(const Json::Value & entry : array)
+	{
+		if(entry["name"].asString() == _showDepsName)
+		{
+			std::set<std::string> mustBe;
+			for(const Json::Value & mustBeEntry : entry["mustBe"])
+				mustBe.insert(mustBeEntry.asString());
+
+			std::map<std::string, std::set<std::string>> mustContain;
+			for(const std::string & mustContainName : entry["mustContain"].getMemberNames())
+				for(const Json::Value & mustContainThis : entry["mustContain"][mustContainName])
+					mustContain[mustContainName].insert(mustContainThis.asString());
+
+			_analysisForm->setMustBe(mustBe);
+			_analysisForm->setMustContain(mustContain);
+
+			return true;
+		}
+
+		if(entry.isMember("meta") && processResultsForDependenciesToBeShownMetaTraverser(entry["meta"]))
+			return true;
+	}
+
+	return false;
+}
+
+void Analysis::processResultsForDependenciesToBeShown()
+{
+	if(!_results.isMember(".meta") || !_analysisForm)
+		return;
+
+	if(_showDepsName == "")
+	{
+		_analysisForm->setMustBe({});
+		_analysisForm->setMustContain({});
+		return;
+	}
+
+	processResultsForDependenciesToBeShownMetaTraverser(_results[".meta"]);
 }

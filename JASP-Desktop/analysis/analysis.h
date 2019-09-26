@@ -168,6 +168,8 @@ public slots:
 	void					setTitle(std::string title) { setTitleQ(QString::fromStdString(title)); }
 	void					refreshAvailableVariablesModels();
 	void					emitDuplicationSignals();
+	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
+
 protected:
 	int						callback(Json::Value results);
 	void					bindOptionHandlers();
@@ -177,6 +179,8 @@ private:
 	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)		{ return requestComputedColumnCreation(QString::fromStdString(columnName), this); }
 	void					requestColumnCreationHandler(std::string columnName, int colType)	{ return requestColumnCreation(QString::fromStdString(columnName), this, colType); }
 	void					requestComputedColumnDestructionHandler(std::string columnName)		{ requestComputedColumnDestruction(QString::fromStdString(columnName)); }
+	void					processResultsForDependenciesToBeShown();
+	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
 
 protected:
 	Status					_status			= Initializing;
@@ -199,7 +203,8 @@ private:
 							_name,
 							_titleDefault,
 							_title,
-							_rfile;
+							_rfile,
+							_showDepsName	= "";
 	bool					_useJaspResults = false,
 							_isDuplicate	= false;
 	Version					_version;

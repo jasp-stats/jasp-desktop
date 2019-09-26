@@ -4,7 +4,7 @@
 	<id>org.jaspstats.JASP</id>
 	<launchable type="desktop-id">org.jaspstats.JASP.desktop</launchable>
 	<name>JASP</name>
-	<summary>Offers standard analysis procedures in both their classical and Bayesian form</summary>
+	<summary>Standard statistical analyses, both classical and Bayesian</summary>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>AGPL-3.0+</project_license>
 	<content_rating type="oars-1.1" />
