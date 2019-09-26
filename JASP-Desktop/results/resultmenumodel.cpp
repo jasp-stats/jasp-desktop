@@ -18,7 +18,7 @@
 
 #include "results/resultmenumodel.h"
 #include "utilities/qutils.h"
-
+#include "utilities/settings.h"
 
 
 QVariant ResultMenuModel::data(const QModelIndex &index, int role) const
@@ -106,9 +106,12 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 		}
 		else if (key == "hasShowDeps")
 		{
-			//It's developerMode time!
-			entries.push_back(separator);
-			entries.push_back(entry);
+			if(Settings::value(Settings::DEVELOPER_MODE).toBool())
+			{
+				//It's developerMode time!
+				entries.push_back(separator);
+				entries.push_back(entry);
+			}
 		}
 		else
 			entries.push_back(entry);

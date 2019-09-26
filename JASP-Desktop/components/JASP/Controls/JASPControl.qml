@@ -81,12 +81,12 @@ FocusScope
 		{
 			getJASPControls(childControls, childControlsArea, false)
 			if (controlType != "Expander")
-				childControlHasFocus = Qt.binding(function() {
-					var result = false;
+				childControlHasFocus = Qt.binding(function()
+				{
 					for (var i = 0; i < childControls.length; i++)
 						if (childControls[i].activeFocus)
-							result = true;
-					return result;
+							return true;
+					return false;
 				});
 		}
 		
