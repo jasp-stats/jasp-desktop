@@ -525,6 +525,9 @@ bool Analysis::processResultsForDependenciesToBeShownMetaTraverser(const Json::V
 
 void Analysis::processResultsForDependenciesToBeShown()
 {
+	if(!_useJaspResults && _showDepsName != "")
+		MessageForwarder::showWarning("Old-school analysis doesn't use dependencies", "You have tried to show the dependencies of an analysis that has not been rewritten to jaspResults, and seeing as how these older analyses do use dependencies there is nothing to show you...");
+
 	if(!_results.isMember(".meta") || !_analysisForm)
 		return;
 
