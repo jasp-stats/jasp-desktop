@@ -63,7 +63,7 @@ public:
 		return T();
 	}
 
-	std::string dataToString(std::string prefix) override
+	std::string dataToString(std::string prefix) const override
 	{
 		std::stringstream out;
 		out << "{ ";

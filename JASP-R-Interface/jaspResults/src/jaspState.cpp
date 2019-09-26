@@ -26,7 +26,7 @@ Rcpp::RObject jaspState::getObject()
 	return jaspResults::getObjectFromEnv(_envName);
 }
 
-std::string jaspState::dataToString(std::string prefix)
+std::string jaspState::dataToString(std::string prefix) const
 {
 	std::stringstream out;
 

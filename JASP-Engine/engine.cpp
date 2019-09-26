@@ -405,7 +405,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_analysisRequiresInit	= jsonRequest.get("requiresInit",		Json::nullValue).isNull() ? true : jsonRequest.get("requiresInit", true).asBool();
 		_ppi					= jsonRequest.get("ppi",				96).asInt();
 		_imageBackground		= jsonRequest.get("imageBackground",	"white").asString();
-
+		_analysisDeveloperMode	= jsonRequest.get("developerMode",		false).asBool();
 		_analysisJaspResults	= _dynamicModuleCall != "" || jsonRequest.get("jaspResults",	false).asBool();
 		_engineState			= engineState::analysis;
 	}
@@ -439,8 +439,8 @@ void Engine::runAnalysis()
 	Log::log() << "Analysis will be run now." << std::endl;
 
 	_analysisResultsString = _dynamicModuleCall != "" ?
-			rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, perform, _ppi, _analysisId, _analysisRevision, _imageBackground)
-		:	rbridge_run(_analysisName, _analysisTitle, _analysisRFile, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, _imageBackground, callback, _analysisJaspResults);
+			rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, perform, _ppi, _analysisId, _analysisRevision, _imageBackground, _analysisDeveloperMode)
+		:	rbridge_run(_analysisName, _analysisTitle, _analysisRFile, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, _imageBackground, callback, _analysisJaspResults, _analysisDeveloperMode);
 
 	if (!_analysisJaspResults && (_analysisStatus == Status::initing || _analysisStatus == Status::running))  // if status hasn't changed
 		receiveMessages();

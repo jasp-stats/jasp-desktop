@@ -114,7 +114,8 @@ private: // Data:
 
 	bool		_analysisRequiresInit,
 				_analysisJaspResults,
-				_currentAnalysisKnowsAboutChange;
+				_currentAnalysisKnowsAboutChange,
+				_analysisDeveloperMode;
 
 	std::string _analysisName,
 				_analysisTitle,

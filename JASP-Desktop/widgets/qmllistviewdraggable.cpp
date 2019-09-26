@@ -41,8 +41,8 @@ void QMLListViewDraggable::setUp()
 	if (dropMode.isEmpty()) dropMode = "None";
 	_draggableModel->setDropMode(qmlDropModeFromQString(dropMode));
 	
-	QQuickItem::connect(_item, SIGNAL(itemDoubleClicked(int)), this, SLOT(itemDoubleClickedHandler(int)));	
-	QQuickItem::connect(_item, SIGNAL(itemsDropped(QVariant, QVariant, int, QString)), this, SLOT(itemsDroppedHandler(QVariant, QVariant, int, QString)));	
+	QQuickItem::connect(_item, SIGNAL(itemDoubleClicked(int)),							this, SLOT(itemDoubleClickedHandler(int)));
+	QQuickItem::connect(_item, SIGNAL(itemsDropped(QVariant, QVariant, int, QString)),	this, SLOT(itemsDroppedHandler(QVariant, QVariant, int, QString)));
 }
 
 void QMLListViewDraggable::itemDoubleClickedHandler(int index)

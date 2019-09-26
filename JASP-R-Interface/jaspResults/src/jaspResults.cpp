@@ -187,6 +187,7 @@ void jaspResults::storeOldResults()
 {
 	_oldResults = new jaspContainer();
 	_oldResults->convertFromJSON_SetFields(jaspContainer::convertToJSON());
+	_oldResults->letChildrenRun();
 }
 
 void jaspResults::pruneInvalidatedData()

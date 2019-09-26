@@ -22,8 +22,8 @@ public:
 
 	jaspContainer(const jaspContainer& that) = delete;
 
-	std::string dataToString(std::string prefix = "")							override;
-	std::string toHtml()														override;
+	std::string dataToString(std::string prefix = "")						const	override;
+	std::string toHtml()															override;
 
 	void			insert(std::string field, Rcpp::RObject value);
 	Rcpp::RObject	at(std::string field);
@@ -35,20 +35,21 @@ public:
 
 	int	length() { return _data.size(); }
 
-	void childFinalizedHandler(jaspObject *child)								override;
+	void childFinalizedHandler(jaspObject *child)									override;
 
 	static jaspContainer * jaspContainerFromRcppList(Rcpp::List convertThis);
 
-	Json::Value convertToJSON()											const	override;
-	void		convertFromJSON_SetFields(Json::Value in)						override;
-	void		checkDependenciesChildren(Json::Value currentOptions)			override;
+	Json::Value convertToJSON()												const	override;
+	void		convertFromJSON_SetFields(Json::Value in)							override;
+	void		checkDependenciesChildren(Json::Value currentOptions)				override;
 
 	void		completeChildren();
-	void		setError()														override;
-	void		setError(std::string message)									override;
+	void		letChildrenRun();
+	void		setError()															override;
+	void		setError(std::string message)										override;
 
 	bool		containsNonContainer();
-	bool		canShowErrorMessage()									const	override;
+	bool		canShowErrorMessage()										const	override;
 
 	static std::vector<std::string>				convertSortedDataFieldsToStringVector(std::vector<std::pair<double, std::string>> sortvec, bool removeDuplicates = false);
 	std::vector<std::pair<double, std::string>> getSortedDataFieldsSortVector()														const;

@@ -1,17 +1,18 @@
 JASPWidgets.table = Backbone.Model.extend({
 
 	defaults: {
-		title: "",
-		subtitle: null,
-		variables: [],
-		data: [],
-		casesAcrossColumns: false,
-		overTitle: false,
-		formats: null,
-		footnotes: [],
-		citation: null,
-		error: null,
-		latexCode: ""
+		title:				"",
+		subtitle:			null,
+		variables:			[],
+		data:				[],
+		casesAcrossColumns:	false,
+		overTitle:			false,
+		formats:			null,
+		footnotes:			[],
+		citation:			null,
+		error:				null,
+		latexCode:			"",
+		name:				""
 	}
 });
 
@@ -31,15 +32,17 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 	},
 
 	copyMenuClicked: function () {
-		var exportParams = new JASPWidgets.Exporter.params();
-		exportParams.format = JASPWidgets.ExportProperties.format.html;
-		exportParams.process = JASPWidgets.ExportProperties.process.copy;
-		exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.temporary;
-		exportParams.includeNotes = false;
+		var exportParams				= new JASPWidgets.Exporter.params();
+		exportParams.format				= JASPWidgets.ExportProperties.format.html;
+		exportParams.process			= JASPWidgets.ExportProperties.process.copy;
+		exportParams.htmlImageFormat	= JASPWidgets.ExportProperties.htmlImageFormat.temporary;
+		exportParams.includeNotes		= false;
 
 		this.exportBegin(exportParams);
 		return true;
 	},
+
+	showDependenciesClicked: function() { this.model.trigger("ShowDependencies:clicked", this.model.get("name")); },
 
 	hasLaTeXCode: function () {
 	  var optLaTeXCode = this.model.get("latexCode");
@@ -440,7 +443,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 		let columnHeaders	= columnsDict['columnHeaders'];
 		let columns			= columnsDict['columns'];
 
-		var cells = Array(columnCount);
+		var cells			= Array(columnCount);
 
 		for (var colNo = 0; colNo < columnCount; colNo++) {
 
@@ -483,7 +486,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 			var foldedColumnNames	= _.uniq(columnNames)
 			var foldedCells			= Array(foldedColumnNames.length)
-			var foldedColumnHeaders = Array(foldedColumnNames.length)
+			var foldedColumnHeaders	= Array(foldedColumnNames.length)
 
 			// fold the headers
 			for (var colNo = 0; colNo < foldedColumnNames.length; colNo++)
@@ -497,7 +500,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 			for (var colNo = 0; colNo < columnNames.length; colNo++) {
 
-				var columnCells = cells[colNo]
+				var columnCells	= cells[colNo]
 				var columnName	= columnNames[colNo]
 				var targetIndex = foldedColumnNames.indexOf(columnName)
 				var column		= foldedCells[targetIndex]

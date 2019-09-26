@@ -1,7 +1,7 @@
 #include "jaspHtml.h"
 
 
-std::string jaspHtml::dataToString(std::string prefix)
+std::string jaspHtml::dataToString(std::string prefix) const
 {
     return convertTextToHtml(_rawText);
 }

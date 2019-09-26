@@ -49,10 +49,10 @@ private slots:
 	void itemsDroppedHandler(QVariant indexes, QVariant vdropList, int dropItemIndex, QString assignOption);	
 	
 private:
-	QList<int> _tempIndexes;
-	ListModelDraggable* _tempDropModel;
-	int _tempDropItemIndex;
-	QString _tempAssignOption;
+	ListModelDraggable	*	_tempDropModel = nullptr;
+	QList<int>				_tempIndexes;
+	int						_tempDropItemIndex;
+	QString					_tempAssignOption;
 	
 };
 

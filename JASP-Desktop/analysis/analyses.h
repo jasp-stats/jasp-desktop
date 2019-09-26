@@ -125,6 +125,7 @@ public slots:
 	void setCurrentFormPrevH(double currentFormPrevH);
 	void move(int fromIndex, int toIndex);
 	void duplicateAnalysis(size_t id);
+	void showDependenciesInAnalysis(size_t analysis_id, QString optionName);
 
 signals:
 	void analysesUnselected();
@@ -153,6 +154,7 @@ signals:
 	void dataSetColumnsChanged();
 	void somethingModified();
     void analysesExportResults();
+	bool developerMode();
 
 	ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis *source);
 	void				requestColumnCreation(QString columnName, Analysis *source, int columnType);

@@ -167,7 +167,7 @@ void jaspObject::childrenUpdatedCallback()
 		parent->childrenUpdatedCallback();
 }
 
-std::string jaspObject::toString(std::string prefix)
+std::string jaspObject::toString(std::string prefix) const
 {
 	std::string dataString = dataToString(prefix + "\t");
 	return objectTitleString(prefix) + (dataString == "" ? "\n" : ":\n" + dataString);
@@ -210,6 +210,22 @@ Json::Value	jaspObject::constructMetaEntry(std::string type, std::string meta) c
 
 	if(meta != "")
 		obj["meta"] = meta;
+
+	if(_developerMode)
+	{
+		obj["mustBe"]		= Json::arrayValue;
+		for(const std::string & mustBe : nestedMustBes())
+			obj["mustBe"].append(mustBe);
+
+		obj["mustContain"]	= Json::objectValue;
+		for(const auto & keyval : nestedMustContains())
+		{
+			obj["mustContain"][keyval.first] = Json::arrayValue;
+
+			for(const std::string & containThis : keyval.second)
+				obj["mustContain"][keyval.first].append(containThis);
+		}
+	}
 
 	return obj;
 }
@@ -387,3 +403,35 @@ int jaspObject::getCurrentTimeMs()
 	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
+bool jaspObject::_developerMode	= false;
+
+void jaspObject::setDeveloperMode(bool developerMode)
+{
+	_developerMode = developerMode;
+}
+
+std::set<std::string> jaspObject::nestedMustBes() const
+{
+	std::set<std::string> out = parent ? parent->nestedMustBes() : std::set<std::string>({});
+
+	for(const auto & keyval : _optionMustBe)
+		out.insert(keyval.first);
+
+	return out;
+}
+
+std::map<std::string, std::set<std::string>> jaspObject::nestedMustContains() const
+{
+	std::map<std::string, std::set<std::string>> out = parent ? parent->nestedMustContains() : std::map<std::string, std::set<std::string>>({});
+
+	for(const auto & keyval : _optionMustContain)
+		if(keyval.second.isArray())
+			for(const Json::Value & entry : keyval.second)
+				out[keyval.first].insert(entry.asString());
+		else if(keyval.second.isString())
+			out[keyval.first].insert(keyval.second.asString());
+		else
+			jaspPrint("Trying to get nestedMustContains for jaspObject '" + toString() + "' but it isn't an array of strings or a string...");
+
+	return out;
+}

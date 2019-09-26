@@ -1,12 +1,13 @@
 JASPWidgets.image = JASPWidgets.Resizeable.extend({
 
 	defaults: {
-		title: "",
-		width: 480,
+		title:	"",
+		width:	480,
 		height: 320,
-		data: null,
+		data:	null,
 		custom: null,
-		error: null
+		error:	null,
+		name:	""
 	}
 });
 
@@ -33,31 +34,14 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		return true; 
 	},
 
-	saveImageClicked: function(){
-	    var args = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")};
-	    this.model.trigger("SaveImage:clicked", args);
-	},
 
-	isConvertible: function() {
-		return this.model.get("convertible") == true;
-	},
-
-	editImageClicked: function(){
-		var args = {name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), type: "interactive"};
-		this.model.trigger("EditImage:clicked", args);
-	},
-
-	isEditable: function() {
-		return this.model.get("editable") == true;
-	},
-
-	hasNotes: function () {
-		return this.$el.hasClass('jasp-collection-item') === false;
-	},
-
-	hasCollapse: function () {
-		return this.$el.hasClass('jasp-collection-item') === false;
-	},
+	hasNotes:					function() { return this.$el.hasClass('jasp-collection-item')	=== false;	},
+	isEditable:					function() { return this.model.get("editable")					==  true;	},
+	hasCollapse:				function() { return this.$el.hasClass('jasp-collection-item')	=== false;	},
+	isConvertible:				function() { return this.model.get("convertible")				==  true;	},
+	saveImageClicked:			function() { this.model.trigger("SaveImage:clicked",		{ name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")							});	},
+	editImageClicked:			function() { this.model.trigger("EditImage:clicked",		{ name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), type: "interactive"		});	},
+	showDependenciesClicked:	function() { this.model.trigger("ShowDependencies:clicked", this.model.get("name")); },
 
 	menuName: "Plot",
 
@@ -85,26 +69,19 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 
 		this.resizer = new JASPWidgets.ResizeableView({ model: this.model, className: "jasp-resize" });
 
-		this.listenTo(this.resizer, "ResizeableView:resized", this.onResized)
-		this.listenTo(this.resizer, "ResizeableView:resizeStart", this.onResizeStart)
-		this.listenTo(this.resizer, "ResizeableView:resizeStop", this.onResizeStop)
+		this.listenTo(this.resizer, "ResizeableView:resized",		this.onResized)
+		this.listenTo(this.resizer, "ResizeableView:resizeStart",	this.onResizeStart)
+		this.listenTo(this.resizer, "ResizeableView:resizeStop",	this.onResizeStop)
 		var self = this;
-		this.resizer.resizeTargetElement = function () {
-			var t = self.$el;
-			return self.$el;
-		};
-		this.resizer.resizeDisabled = function () {
-			var custom = self.model.get("custom");
-			return custom === null;
-		};
-		
+
+		this.resizer.resizeTargetElement	= function () { return self.$el; };
+		this.resizer.resizeDisabled			= function () { return self.model.get("custom") === null; };
 	},
 
 	onResized: function (w, h) {
 		if (this.resizer.isResizing() && !this.resizeEventTriggered) {
 			this.resizeEventTriggered = true;
-			var args = { name: this.model.get("data"), width: w, height: h, type: "resize" };
-			this.model.trigger("EditImage:clicked", args);
+			this.model.trigger("EditImage:clicked", { name: this.model.get("data"), width: w, height: h, type: "resize" });
 		}
 	},
 

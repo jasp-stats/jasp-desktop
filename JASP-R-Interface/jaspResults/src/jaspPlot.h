@@ -19,7 +19,7 @@ public:
 	void setPlotObject(Rcpp::RObject plotSerialized);
 	Rcpp::RObject getPlotObject();
 
-	std::string dataToString(std::string prefix)					override;
+	std::string dataToString(std::string prefix)			const	override;
 
 	Json::Value	metaEntry()									const	override { return constructMetaEntry("image"); }
 	Json::Value	dataEntry(std::string & errorMessage)		const	override;
@@ -29,6 +29,9 @@ public:
 	void		convertFromJSON_SetFields(Json::Value in)			override;
 
 	bool		canShowErrorMessage()						const	override { return true; }
+
+	void		complete()	{ if(_status == "running") _status = "complete"; }
+	void		letRun()	{ _status = "running"; }
 
 private:
 	void initEnvName();

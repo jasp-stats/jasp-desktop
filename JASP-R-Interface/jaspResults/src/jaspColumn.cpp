@@ -48,7 +48,7 @@ void jaspColumn::convertFromJSON_SetFields(Json::Value in)
 	_dataChanged	= false;
 }
 
-std::string jaspColumn::dataToString(std::string prefix)
+std::string jaspColumn::dataToString(std::string prefix) const
 {
 	std::stringstream out;
 

@@ -50,10 +50,10 @@ public:
 	template<int RTYPE> static inline Json::Value RVectorEntry_to_JsonValue(Rcpp::Vector<RTYPE> obj, int row)				{ return ""; }
 	template<int RTYPE> static inline Json::Value RMatrixColumnEntry_to_JsonValue(Rcpp::MatrixColumn<RTYPE> obj, int row)	{ return ""; }
 
-	std::string dataToString(std::string prefix) override { return jsonToPrefixedStrings(prefix + "\t"); }
+	std::string dataToString(std::string prefix) const override { return jsonToPrefixedStrings(prefix + "\t"); }
 
-	std::string jsonToPrefixedStrings(std::string prefix = "") { return jsonToPrefixedStrings(_json, prefix); }
-	static std::string jsonToPrefixedStrings(Json::Value val, std::string prefix);
+			std::string jsonToPrefixedStrings(std::string prefix = "") const { return jsonToPrefixedStrings(_json, prefix); }
+	static	std::string jsonToPrefixedStrings(Json::Value val, std::string prefix);
 
 	static Json::Value RcppVector_to_ArrayJson(Rcpp::RObject obj, bool throwError=true) { return VectorJson_to_ArrayJson(RcppVector_to_VectorJson(obj, throwError)); }
 	static Json::Value VectorJson_to_ArrayJson(std::vector<Json::Value> vec);

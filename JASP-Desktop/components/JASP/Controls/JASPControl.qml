@@ -36,7 +36,10 @@ FocusScope
 	property var	childControlsArea:		null
 	property var	childControls:			[]
 	property bool	childControlHasFocus:	false
-	
+	property bool	isDependency:			false
+	property var	dependencyMustContain:	[] //Will be filled with QStringList when necessary
+	property bool	shouldShowFocus:		activeFocus && activeFocusOnTab && !childControlHasFocus
+
 	activeFocusOnTab: true
 
 	function showControlError(message)
@@ -95,11 +98,23 @@ FocusScope
 		State
 		{
 			name: "hasFocus"
-			when: focusIndicator && jaspControl.activeFocus && jaspControl.activeFocusOnTab && !jaspControl.childControlHasFocus
+			when: focusIndicator && jaspControl.shouldShowFocus
 			PropertyChanges
 			{
 				target:			focusIndicator
 				border.color:	Theme.focusBorderColor
+				border.width:	Theme.jaspControlHighlightWidth
+			}
+		},
+
+		State
+		{
+			name: "isDependency"
+			when: focusIndicator && jaspControl.isDependency && !jaspControl.shouldShowFocus
+			PropertyChanges
+			{
+				target:			focusIndicator
+				border.color:	Theme.dependencyBorderColor
 				border.width:	Theme.jaspControlHighlightWidth
 			}
 		}

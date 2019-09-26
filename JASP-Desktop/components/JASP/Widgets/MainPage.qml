@@ -201,7 +201,7 @@ Item
 					function setAllUserDataFromJavascript(json)			{ resultsJsInterface.setAllUserDataFromJavascript(json)			}
 					function setResultsMetaFromJavascript(json)			{ resultsJsInterface.setResultsMetaFromJavascript(json)			}
 					function duplicateAnalysis(id)						{ resultsJsInterface.duplicateAnalysis(id)						}
-
+					function showDependenciesInAnalysis(id, optName)	{ resultsJsInterface.showDependenciesInAnalysis(id, optName)	}
 
 					function showAnalysesMenu(options)
 					{
@@ -217,33 +217,22 @@ Item
 							
 							customMenu.hide()
 
-							if (name === 'hasRefreshAllAnalyses') {
-								resultsJsInterface.refreshAllAnalyses();
-								return;
-							}
-
-							if (name === 'hasRemoveAllAnalyses') {
-								resultsJsInterface.removeAllAnalyses();
-								return;
-							}
-
-							if (name === 'hasCopy' || name === 'hasCite') {
-								resultsJsInterface.purgeClipboard();
-							}
+							if (name === 'hasRefreshAllAnalyses')			{ resultsJsInterface.refreshAllAnalyses();		return;	}
+							if (name === 'hasRemoveAllAnalyses')			{ resultsJsInterface.removeAllAnalyses();		return; }
+							if (name === 'hasCopy' || name === 'hasCite')	  resultsJsInterface.purgeClipboard();
 
 							resultsJsInterface.runJavaScript(jsfunction);
 
-							if (name === 'hasEditTitle' || name === 'hasNotes') {
+							if (name === 'hasEditTitle' || name === 'hasNotes')
 								resultsJsInterface.packageModified();
-							}
+
 						}
 
 						var selectedOptions = []
-						for (var key in optionsJSON) {
-							if (optionsJSON.hasOwnProperty(key))
-								if (optionsJSON[key] === true)
-									selectedOptions.push(key)
-						}
+						for (var key in optionsJSON)
+							if (optionsJSON.hasOwnProperty(key) && optionsJSON[key] === true)
+								selectedOptions.push(key)
+
 						resultMenuModel.setOptions(options, selectedOptions);
 
 						var props = {

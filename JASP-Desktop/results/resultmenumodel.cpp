@@ -17,7 +17,7 @@
 //
 
 #include "results/resultmenumodel.h"
-
+#include "utilities/qutils.h"
 
 
 
@@ -28,18 +28,15 @@ QVariant ResultMenuModel::data(const QModelIndex &index, int role) const
 
 	ResultMenuEntry entry = _resultMenuEntries.at(size_t(index.row()));
 
-	if		(role == DisplayRole)
-		return entry.displayText();
-	else if	(role == NameRole)
-		return entry.name();
-	else if	(role == MenuImageSourceRole)
-		return entry.menuImageSource();
-	else if	(role == JSFunctionRole)
-		return entry.jsFunction();
-	else if (role == IsSeparatorRole)
-		return entry.isSeparator();
-	else if (role == IsEnabledRole)
-		return entry.isEnabled();
+	switch(role)
+	{
+	case DisplayRole:			return entry.displayText();
+	case NameRole:				return entry.name();
+	case MenuImageSourceRole:	return entry.menuImageSource();
+	case JSFunctionRole:		return entry.jsFunction();
+	case IsSeparatorRole:		return entry.isSeparator();
+	case IsEnabledRole:			return entry.isEnabled();
+	}
 
 	return QVariant();
 }
@@ -72,7 +69,8 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 	ResultMenuEntry separator;
 	int numEntries = ResultMenuEntry::EntriesOrder.size();
 
-	for (int i = 0; i < numEntries; ++i) {
+	for (int i = 0; i < numEntries; ++i)
+	{
 		QString key = ResultMenuEntry::EntriesOrder.at(i);
 
 		if (!selected.contains(key))
@@ -80,7 +78,8 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 
 		ResultMenuEntry entry = ResultMenuEntry::AllResultEntries.find(key)->second;
 
-		if (key == "hasCollapse") {
+		if (key == "hasCollapse")
+		{
 			Json::Value collapseOptions = menuOptions["collapseOptions"];
 
 			QString iconPath = collapseOptions["collapsed"].asBool() ? "expand" : "collapse";
@@ -88,27 +87,31 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 
 			QString displayText = QString::fromStdString(collapseOptions["menuText"].asString());
 			entry.setDisplayText(displayText);
-
-		} else if (key == "hasNotes") {
-
+		}
+		else if (key == "hasNotes")
+		{
 			entries.push_back(separator);
 			Json::Value noteOptions = menuOptions["noteOptions"];
 
-			for (Json::ValueIterator iter = noteOptions.begin(); iter != noteOptions.end(); iter++) {
-
-				Json::Value noteOption = *iter;
+			for (const Json::Value & noteOption : noteOptions)
+			{
 				entry.setDisplayText(QString::fromStdString(noteOption["menuText"].asString()));
 
-				QString jsFunction = QString("window.notesMenuClicked('%1', %2);").arg(QString::fromStdString(noteOption["key"].asString())).arg(noteOption["visible"].asBool() ? "false" : "true");
+				QString jsFunction = QString("window.notesMenuClicked('%1', %2);").arg(tq(noteOption["key"].asString())).arg(noteOption["visible"].asBool() ? "false" : "true");
 				entry.setJSFunction(jsFunction);
 				entry.setEnabled(!noteOption["visible"].asBool());
 
 				entries.push_back(entry);
 			}
-			continue;
 		}
-
-		entries.push_back(entry);
+		else if (key == "hasShowDeps")
+		{
+			//It's developerMode time!
+			entries.push_back(separator);
+			entries.push_back(entry);
+		}
+		else
+			entries.push_back(entry);
 	}
 
 	_resultMenuEntries = entries;

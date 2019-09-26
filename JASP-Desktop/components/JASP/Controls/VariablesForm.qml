@@ -68,14 +68,14 @@ Item
 			
 			sourceComponent: interactionAssign ? assignInteractionButtonComponent : assignButtonComponent
 			x:		(allAssignedVariablesList[index].x + availableVariablesList.width - 40 * preferencesModel.uiScale) / 2
-			y:      allAssignedVariablesList[index].y + allAssignedVariablesList[index].rectangleY
+			y:      allAssignedVariablesList[index].y  + allAssignedVariablesList[index].rectangleY
 		
 			onLoaded:
 			{
-				allAssignedVariablesList[index].activeFocusChanged.connect(item.setIconToLeft);
-				availableVariablesList.activeFocusChanged.connect(item.setIconToRight);
-				allAssignedVariablesList[index].hasSelectedItemsChanged.connect(item.setState);
-				availableVariablesList.hasSelectedItemsChanged.connect(item.setState);
+				allAssignedVariablesList[index]	.activeFocusChanged.connect(		item.setIconToLeft);
+				availableVariablesList			.activeFocusChanged.connect(		item.setIconToRight);
+				allAssignedVariablesList[index]	.haveSelectedItemsChanged.connect(	item.setState);
+				availableVariablesList			.haveSelectedItemsChanged.connect(	item.setState);
 				
 				if (interactionAssign)
 				{
@@ -106,15 +106,15 @@ Item
 			property alias assignButton: assignButton
 			property alias interactionControl: interactionControl
 			
-			function setIconToLeft() { assignButton.setIconToLeft() }
-			function setIconToRight() { assignButton.setIconToRight() }
-			function setState() { assignButton.setState() }
+			function setIconToLeft()	{ assignButton.setIconToLeft() }
+			function setIconToRight()	{ assignButton.setIconToRight() }
+			function setState()			{ assignButton.setState() }
 			
 			AssignButton
 			{
-				id: assignButton
-				leftSource: myLeftSource
-				rightSource: myRightSource
+				id:					assignButton
+				leftSource:			myLeftSource
+				rightSource:		myRightSource
 				interactionControl: interactionControl
 			}
 			
