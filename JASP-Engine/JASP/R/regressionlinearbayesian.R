@@ -27,43 +27,43 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   basregModel     <- .basregGetModel(basregContainer, dataset, options, ready)
 
   if (is.null(basregContainer[["modelComparisonTable"]]))
-    basregContainer[["modelComparisonTable"]]       <- .basregTableModelComparison(basregModel, options, position = 11)
+    .basregTableModelComparison(basregContainer, basregModel, options, position = 11)
   
   if (options$postSummaryTable || options$postSummaryPlot)
-    postSumContainer  <- .basregGetPosteriorSummaryContainer(basregContainer, position = 12)
+    postSumContainer <- .basregGetPosteriorSummaryContainer(basregContainer, position = 12)
     
   if (options$postSummaryTable || options$postSummaryPlot || options$plotCoefficientsPosterior)
-    postSumModel      <- .basregGetPosteriorSummary(basregContainer, basregModel, dataset, options, ready)
+    postSumModel <- .basregGetPosteriorSummary(basregContainer, basregModel, dataset, options, ready)
   
   if (options$postSummaryTable && is.null(basregContainer[["postSumContainer"]][["postSumTable"]]))
-    postSumContainer[["postSumTable"]]              <- .basregTablePosteriorSummary(postSumModel, basregModel, options, position = 121)
+    .basregTablePosteriorSummary(postSumContainer, postSumModel, basregModel, options, position = 121)
   
   if (options$postSummaryPlot && is.null(basregContainer[["postSumContainer"]][["postSumPlot"]]))
-    postSumContainer[["postSumPlot"]]               <- .basregPlotPosteriorSummary(postSumModel, options, position = 122)
+    .basregPlotPosteriorSummary(postSumContainer, postSumModel, options, position = 122)
   
   if (options$plotLogPosteriorOdds && is.null(basregContainer[["logPosteriorOddsPlot"]]))
-    basregContainer[["logPosteriorOddsPlot"]]       <- .basregPlotPosteriorLogOdds(basregModel, options, position = 13)
+    .basregPlotPosteriorLogOdds(basregContainer, basregModel, options, position = 13)
     
   if (options$plotResidualsVsFitted && is.null(basregContainer[["ResidualsVsFittedPlot"]]))
-    basregContainer[["ResidualsVsFittedPlot"]]      <- .basregPlotResidualsVsFitted(basregModel, position = 14)
+    .basregPlotResidualsVsFitted(basregContainer, basregModel, position = 14)
   
   if (options$plotModelProbabilities && is.null(basregContainer[["modelProbabilitiesPlot"]]))
-    basregContainer[["modelProbabilitiesPlot"]]     <- .basregPlotModelProbabilities(basregModel, position = 15)
+    .basregPlotModelProbabilities(basregContainer, basregModel, position = 15)
   
   if (options$plotModelComplexity && is.null(basregContainer[["modelComplexityPlot"]]))
-    basregContainer[["modelComplexityPlot"]]        <- .basregPlotModelComplexity(basregModel, position = 16)
+    .basregPlotModelComplexity(basregContainer, basregModel, position = 16)
     
   if (options$plotInclusionProbabilities && is.null(basregContainer[["inclusionProbabilitiesPlot"]]))
-    basregContainer[["inclusionProbabilitiesPlot"]] <- .basregPlotInclusionProbabilities(basregModel, position = 17)
+    .basregPlotInclusionProbabilities(basregContainer, basregModel, position = 17)
   
   if (options$plotQQplot && is.null(basregContainer[["qqPlot"]]))
-    basregContainer[["qqPlot"]]                     <- .basregPlotQQ(basregModel, position = 18)
+    .basregPlotQQ(basregContainer, basregModel, position = 18)
   
   if (options$plotCoefficientsPosterior && is.null(basregContainer[["postDistContainer"]]))
-    basregContainer[["postDistContainer"]]          <- .basregPlotsPosteriorDistribution(postSumModel, basregModel, options, position = 19)
+    .basregPlotsPosteriorDistribution(basregContainer, postSumModel, basregModel, options, position = 19)
   
   if (options$descriptives && is.null(jaspResults[["descriptivesTable"]]))
-    jaspResults[["descriptivesTable"]]              <- .basregTableDescriptives(dataset, options, ready, position = 2)
+    .basregTableDescriptives(jaspResults, dataset, options, ready, position = 2)
 }
 
 .basregReadData <- function(dataset, options) {
@@ -134,7 +134,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   return(basregContainer[["postSumContainer"]])
 }
 
-.basregTableModelComparison <- function(basregModel, options, position) {
+.basregTableModelComparison <- function(basregContainer, basregModel, options, position) {
   modelComparisonTable <- createJaspTable(title = "Model Comparison")
   modelComparisonTable$position <- position
   modelComparisonTable$dependOn(c(
@@ -176,7 +176,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     .basregFillTableModelComparison(modelComparisonTable, basregModel, options)
   }
   
-  return(modelComparisonTable)
+  basregContainer[["modelComparisonTable"]] <- modelComparisonTable
 }
 
 .basregFillTableModelComparison <- function(modelComparisonTable, basregModel, options) {
@@ -219,7 +219,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   ))
 }
 
-.basregTablePosteriorSummary <- function(postSumModel, basregModel, options, position) {
+.basregTablePosteriorSummary <- function(postSumContainer, postSumModel, basregModel, options, position) {
   postSumTable <- createJaspTable(title = "Posterior Summaries of Coefficients")
   postSumTable$position <- position
   postSumTable$dependOn(c("postSummaryTable", "effectsType"))
@@ -242,7 +242,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     .basregFillTablePosteriorSummary(postSumTable, postSumModel, basregModel, options)
   }
   
-  return(postSumTable)
+  postSumContainer[["postSumTable"]] <- postSumTable
 }
 
 .basregFillTablePosteriorSummary <- function(postSumTable, postSumModel, basregModel, options) {
@@ -312,17 +312,17 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   }
 }
 
-.basregPlotPosteriorSummary <- function(postSumModel, options, position) {
+.basregPlotPosteriorSummary <- function(postSumContainer, postSumModel, options, position) {
   title <- sprintf("Posterior Coefficients with %s%% Credible Interval", 
                    format(100 * options$posteriorSummaryPlotCredibleIntervalValue, digits = 3))
   postSumPlot <- createJaspPlot(title = title, width = 530, height = 400)
   postSumPlot$position <- position
   postSumPlot$dependOn(c("postSummaryPlot", "omitIntercept"))
+
+  postSumContainer[["postSumPlot"]] <- postSumPlot
   
   if (!is.null(postSumModel))
     .basregFillPlotPosteriorSummary(postSumPlot, postSumModel, options)
-  
-  return(postSumPlot)
 }
 
 .basregFillPlotPosteriorSummary <- function(postSumPlot, postSumModel, options) {
@@ -364,11 +364,13 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   }
 }
 
-.basregPlotPosteriorLogOdds <- function(basregModel, options, position) {
+.basregPlotPosteriorLogOdds <- function(basregContainer, basregModel, options, position) {
   postLogOddsPlot <- createJaspPlot(title = "Posterior Log Odds", width = 530, height = 400)
   postLogOddsPlot$position <- position
   postLogOddsPlot$dependOn("plotLogPosteriorOdds")
-    
+  
+  basregContainer[["logPosteriorOddsPlot"]] <- postLogOddsPlot
+
   if (options$samplingMethod == "MCMC") {
     postLogOddsPlot$errorMessage <- "Cannot display Posterior Log Odds when sampling method is MCMC."
     return(postLogOddsPlot)
@@ -376,8 +378,6 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   
   if (!is.null(basregModel))
     .basregFillPlotPosteriorLogOdds(postLogOddsPlot, basregModel)
-  
-  return(postLogOddsPlot)
 }
 
 .basregFillPlotPosteriorLogOdds <- function(postLogOddsPlot, basregModel) {
@@ -481,15 +481,16 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 #   return(g)
 # }
 
-.basregPlotResidualsVsFitted <- function(basregModel, position) {
+.basregPlotResidualsVsFitted <- function(basregContainer, basregModel, position) {
   residualsVsFittedPlot <- createJaspPlot(title = "Residuals vs Fitted", width = 530, height = 400)
   residualsVsFittedPlot$position <- position
   residualsVsFittedPlot$dependOn("plotResidualsVsFitted")
   
+  basregContainer[["ResidualsVsFittedPlot"]] <- residualsVsFittedPlot
+  
   if (!is.null(basregModel))
     .basregFillPlotResidualsVsFitted(residualsVsFittedPlot, basregModel)
   
-  return(residualsVsFittedPlot)
 }
 
 .basregFillPlotResidualsVsFitted <- function(residualsVsFittedPlot, basregModel) {
@@ -519,15 +520,15 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   }
 }
 
-.basregPlotModelProbabilities <- function(basregModel, position) {
+.basregPlotModelProbabilities <- function(basregContainer, basregModel, position) {
   modelProbabilitiesPlot <- createJaspPlot(title = "Model Probabilities", width = 530, height = 400)
   modelProbabilitiesPlot$position <- position
   modelProbabilitiesPlot$dependOn("plotModelProbabilities")
+
+  basregContainer[["modelProbabilitiesPlot"]] <- modelProbabilitiesPlot
   
   if (!is.null(basregModel))
     .basregFillPlotModelProbabilities(modelProbabilitiesPlot, basregModel)
-  
-  return(modelProbabilitiesPlot)
 }
 
 .basregFillPlotModelProbabilities <- function(modelProbabilitiesPlot, basregModel) {
@@ -556,15 +557,15 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   }
 }
 
-.basregPlotModelComplexity <- function(basregModel, position) {
+.basregPlotModelComplexity <- function(basregContainer, basregModel, position) {
   modelComplexityPlot <- createJaspPlot(title = "Log(P(data|M)) vs. Model Size", width = 530, height = 400)
   modelComplexityPlot$position <- position
   modelComplexityPlot$dependOn("plotModelComplexity")
+
+  basregContainer[["modelComplexityPlot"]] <- modelComplexityPlot
   
   if (!is.null(basregModel))
     .basregFillPlotModelComplexity(modelComplexityPlot, basregModel)
-  
-  return(modelComplexityPlot)
 }
 
 .basregFillPlotModelComplexity <- function(modelComplexityPlot, basregModel) {
@@ -594,15 +595,15 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   }
 }
 
-.basregPlotInclusionProbabilities <- function(basregModel, position) {
+.basregPlotInclusionProbabilities <- function(basregContainer, basregModel, position) {
   inclusionProbabilitiesPlot <- createJaspPlot(title = "Inclusion Probabilities", width = 700, height = 400)
   inclusionProbabilitiesPlot$position <- position
   inclusionProbabilitiesPlot$dependOn("plotInclusionProbabilities")
+
+  basregContainer[["inclusionProbabilitiesPlot"]] <- inclusionProbabilitiesPlot
   
   if (!is.null(basregModel))
     .basregFillPlotInclusionProbabilities(inclusionProbabilitiesPlot, basregModel)
-  
-  return(inclusionProbabilitiesPlot)
 }
 
 .basregFillPlotInclusionProbabilities <- function(inclusionProbabilitiesPlot, basregModel) {
@@ -654,15 +655,15 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   }
 }
 
-.basregPlotQQ <- function(basregModel, position) {
+.basregPlotQQ <- function(basregContainer, basregModel, position) {
   qqPlot <- createJaspPlot(title = "Q-Q Plot", width = 700, height = 400)
   qqPlot$position <- position
   qqPlot$dependOn("plotQQplot")
 
+  basregContainer[["qqPlot"]] <- qqPlot
+
   if (!is.null(basregModel))
     .basregFillPlotQQ(qqPlot, basregModel)
-  
-  return(qqPlot)
 }
 
 .basregFillPlotQQ <- function(qqPlot, basregModel) {
@@ -680,7 +681,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   }
 }
 
-.basregPlotsPosteriorDistribution <- function(postSumModel, basregModel, options, position) {
+.basregPlotsPosteriorDistribution <- function(basregContainer, postSumModel, basregModel, options, position) {
   postDistContainer <- createJaspContainer("Marginal Posterior Distributions") #TODO: check if this name is ok
   postDistContainer$position <- position
   postDistContainer$dependOn(c(
@@ -690,11 +691,11 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   
   plotNames <- c("Intercept", unlist(options$covariates))
   .basregInsertPosteriorDistributionPlots(postDistContainer, plotNames, options, type = "placeholders")
+
+  basregContainer[["postDistContainer"]] <- postDistContainer
     
   if (!is.null(basregModel) && !is.null(postSumModel))
       .basregInsertPosteriorDistributionPlots(postDistContainer, basregModel$namesx, options, postSumModel, type = "fill")
-  
-  return(postDistContainer)
 }
 
 .basregInsertPosteriorDistributionPlots <- function(postDistContainer, plotNames, options, postSumModel = NULL, type = "") {
@@ -855,7 +856,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   }
 }
 
-.basregTableDescriptives <- function(dataset, options, ready, position) {
+.basregTableDescriptives <- function(jaspResults, dataset, options, ready, position) {
   descriptivesTable <- createJaspTable(title = "Descriptives")
   descriptivesTable$position <- position
   descriptivesTable$dependOn(c("descriptives", "dependent", "covariates"))
@@ -868,7 +869,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   if (ready)
     .basregFillTableDescriptives(descriptivesTable, dataset, options)
   
-  return(descriptivesTable)
+  jaspResults[["descriptivesTable"]] <- descriptivesTable
 }
 
 .basregFillTableDescriptives <- function(descriptivesTable, dataset, options) {
