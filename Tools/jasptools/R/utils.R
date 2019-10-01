@@ -94,6 +94,51 @@
   }
 }
 
+.convertResultsListToJson <- function(lst) {
+  json <- try(jsonlite::toJSON(lst, null="null", auto_unbox=TRUE, digits=NA))
+  if (inherits(json, "try-error"))
+    json <- paste0("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"Unable to jsonify\" } }")
+  
+  json <- .parseUnicode(json)
+  json <- gsub("<div class=stack-trace>", "<div>", json, fixed=TRUE) # this makes sure the stacktrace is not hidden
+  json <- gsub("\\\"", "\\\\\"", json, fixed=TRUE) # double escape all escaped quotes (otherwise the printed json is invalid)
+  
+  return(json)
+}
+
+.insertJsonInHtml <- function(json, htmlFile) {
+  html <- readChar(file.path(.getPkgOption("html.dir"), "index.html"), 1000000)
+  insertedJS <- paste0(
+    "<script>
+      $(document).ready(function() {
+        window.analysisChanged(", json, ")
+      })
+    </script></body>")
+  html <- gsub("</body>", insertedJS, html)
+  html <- .changeJsIncludeForAdblockers(html)
+  
+  writeChar(html, htmlFile)
+}
+
+.initializeOutputFolder <- function(folder) {
+  if (!dir.exists(folder))
+    dir.create(folder, recursive=TRUE)
+    
+  if (! "js" %in% list.dirs(folder, full.names=FALSE))
+    file.copy(list.files(.getPkgOption("html.dir"), full.names = TRUE), folder, recursive = TRUE)
+
+  .renameJsFileForAdblockers(folder)
+}
+
+.changeJsIncludeForAdblockers <- function(html) {
+  gsub("analysis.js", "jaspanalysis.js", html, fixed = TRUE)
+}
+
+.renameJsFileForAdblockers <- function(folder) {
+  if (file.exists(file.path(folder, "js", "analysis.js")))
+    file.rename(file.path(folder, "js", "analysis.js"), file.path(folder, "js", "jaspanalysis.js"))
+}
+
 .usesJaspResults <- function(analysis) {
   qmlFile <- .getQMLFile(analysis)
   if (!is.null(qmlFile))

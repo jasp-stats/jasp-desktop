@@ -98,68 +98,28 @@
 #'
 #' @export view
 view <- function(results) {
-
-  content <- NULL
   if (is.character(results) && jsonlite::validate(results) == TRUE) { # assuming a json string
-
-    unjsonified <- jsonlite::fromJSON(results, simplifyVector=FALSE)
-    if ("results" %in% names(unjsonified)) {
-      results <- unjsonified[["results"]]
-      id <- ifelse(is.null(unjsonified[["id"]]), 0, unjsonified[["id"]])
-      name <- ifelse(is.null(unjsonified[["name"]]), "analysis", unjsonified[["name"]])
-      status <- ifelse(is.null(unjsonified[["status"]]), "complete", unjsonified[["status"]])
-    } else {
+    results <- jsonlite::fromJSON(results, simplifyVector=FALSE)
+    if (!"results" %in% names(results))
       stop("Incorrect json provided. Could not locate required field 'results'")
-    }
-
-  } else if (is.list(results) && "results" %in% names(results)) {
-
-    id <- ifelse(is.null(results[["id"]]), 0, results[["id"]])
-    name <- ifelse(is.null(results[["name"]]), "analysis", results[["name"]])
-    status <- ifelse(is.null(results[["status"]]), "complete", results[["status"]])
-    results <- results[["results"]]
-
-  } else {
-
+  } else if (!is.list(results) || !"results" %in% names(results)) {
     stop("Incorrect object provided in results,
     please enter a valid json string or a named results list.")
-
   }
 
   content <- list(
-    id = id,
-    name = name,
-    status = status,
-    results = results
+    id = ifelse(is.null(results[["id"]]), 0, results[["id"]]),
+    name = ifelse(is.null(results[["name"]]), "analysis", results[["name"]]),
+    status = ifelse(is.null(results[["status"]]), "complete", results[["status"]]),
+    results = results[["results"]]
   )
-  content <- try(jsonlite::toJSON(content, null="null", auto_unbox=TRUE, digits=NA))
-  if (class(content) == "try-error") {
-    content <- paste0("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"Unable to jsonify\" } }")
-  }
-  content <- .parseUnicode(content)
-  content <- gsub("<div class=stack-trace>", "<div>", content, fixed=TRUE) # this makes sure the stacktrace is not hidden
-
+  json <- .convertResultsListToJson(content)
   
-  content <- gsub("\\\"", "\\\\\"", content, fixed=TRUE) # double escape all escaped quotes (otherwise the printed json is invalid)
+  .initializeOutputFolder(file.path(tempdir(), "jasptools", "html"))
   
-  html <- readChar(file.path(.getPkgOption("html.dir"), "index.html"), 1000000)
-  insertedJS <- paste0(
-    "<script>
-      $(document).ready(function() {
-        window.analysisChanged(", content, ")
-      })
-    </script></body>")
-  html <- gsub("</body>", insertedJS, html)
-
-  outputFolder <- file.path(tempdir(), "jasptools", "html")
-  if (! "js" %in% list.files(outputFolder)) {
-    file.copy(.getPkgOption("html.dir"), file.path(tempdir(), "jasptools"), recursive = TRUE)
-  }
-
-  file <- file.path(tempdir(), "jasptools", "html", "tmp-index.html")
-  writeChar(html, file)
-  utils::browseURL(file)
-
+  htmlFile <- file.path(tempdir(), "jasptools", "html", "tmp-index.html")
+  .insertJsonInHtml(json, htmlFile)
+  utils::browseURL(htmlFile)
 }
 
 
@@ -235,7 +195,6 @@ view <- function(results) {
 #'
 #' @export run
 run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FALSE, makeTests = FALSE, sideEffects = FALSE) {
-
   if (missing(name)) {
     name <- attr(options, "analysisName")
     if (is.null(name))
