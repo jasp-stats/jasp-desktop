@@ -1,6 +1,10 @@
 #include "jaspModuleRegistration.h"
 #include <fstream>
 #include <cmath>
+#include "boost/nowide/fstream.hpp"
+
+typedef boost::nowide::ofstream bofstream; //Use this to work around problems on Windows with utf8 conversion
+typedef boost::nowide::ifstream bifstream;
 
 sendFuncDef			jaspResults::_ipccSendFunc		= nullptr;
 pollMessagesFuncDef jaspResults::_ipccPollFunc		= nullptr;
@@ -115,7 +119,7 @@ void jaspResults::saveResults()
 
 	//std::cout << "Going to try to save jaspResults.json to '" << _saveResultsRoot << _saveResultsHere << "'" << std::endl;
 
-	std::ofstream saveHere(_saveResultsRoot + _saveResultsHere, std::ios_base::trunc);
+	bofstream saveHere((_saveResultsRoot + _saveResultsHere).c_str(), std::ios_base::trunc);
 
 	if(!saveHere.good())
 	{
@@ -141,7 +145,7 @@ void jaspResults::loadResults()
 
 	if(_saveResultsHere == "") return;
 
-	std::ifstream loadThis(_saveResultsRoot + _saveResultsHere);
+	bifstream loadThis((_saveResultsRoot + _saveResultsHere).c_str());
 
 	if(!loadThis.is_open()) return;
 

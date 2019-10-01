@@ -45,6 +45,9 @@ SOURCES += \
     jaspResults/src/jaspColumn.cpp
 
 HEADERS += \
+    boost/nowide/convert.hpp \
+    boost/nowide/fstream.hpp \
+    boost/nowide/args/hpp \
     jasprcpp_interface.h \
     jasprcpp.h \
     RInside/Callbacks.h \
@@ -65,6 +68,9 @@ HEADERS += \
     jaspResults/src/jaspModuleRegistration.h \
     jaspResults/src/jaspState.h \
     jaspResults/src/jaspColumn.h
+
+macx: INCLUDEPATH += ../../boost_1_64_0
+windows: INCLUDEPATH += ../../boost_1_64_0
 
 
 windows{
