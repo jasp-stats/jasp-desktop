@@ -417,16 +417,15 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   # Compute/get model
   rma.fit    <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready, method)
   img.height <- 400
-  if(ready)
+  if(!is.null(rma.fit))
     img.height <- max(520, nobs(rma.fit) * 20)
   forestPlot   <- createJaspPlot(title = "Forest plot", width = 520, height = img.height)
   forestPlot$dependOn(c("forestPlot"))
   container[["forest"]] <- forestPlot
-  
+  browser()
   if(ready){
     p <- try(.metaAnalysisForestPlotFill(jaspResults, dataset, options, ready, rma.fit, img.height))
     #p <- .writeImage(width = 520, height = img.height, plot = forest.rma(rma.fit))
-    
     if(isTryError(p))
       forestPlot$setError(.extractErrorMessage(p))
     else
