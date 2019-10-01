@@ -19,6 +19,7 @@
 #include "timers.h"
 #include "log.h"
 #include <fstream>
+#include <boost/nowide/args.hpp>
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -43,6 +44,7 @@ void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
 
 int main(int argc, char *argv[])
 {
+	boost::nowide::args a(argc,argv);
 	if(argc > 4)
 	{
 		unsigned long	slaveNo			= strtoul(argv[1], NULL, 10),
