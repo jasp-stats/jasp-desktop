@@ -41,18 +41,6 @@ Form
         AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables"); suggestedColumns: ["ordinal", "scale"]; id: networkVariables}
 		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Split"); singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
 	}
-//    CheckBox {
-//        id: readyCheck
-//        name: "ready"
-//        checked: networkVariables.length > 3
-//        visible: false
-//        Component.onCompleted: checked = networkVariables.length > 3
-//        Connections
-//        {
-//            target: networkVariables
-//            onStatusChanged: readyCheck.checked = networkVariables.length > 3
-//        }
-//    }
 	
 	DropDown
 	{
