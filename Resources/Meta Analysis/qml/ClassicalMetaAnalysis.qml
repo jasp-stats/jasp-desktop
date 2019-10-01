@@ -23,7 +23,7 @@ import JASP				1.0
 
 Form
 {
-	usesJaspResults: false
+	usesJaspResults: true
 
 	VariablesForm
 	{

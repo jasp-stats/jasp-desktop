@@ -1,774 +1,773 @@
-#
-# Copyright (C) 2013-2018 University of Amsterdam
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
+  
+  ready <- options$dependent != "" && options$wlsWeights != ""
+  if(ready) {
+    dataset <- .metaAnalysisReadData(dataset, options)
+    .metaAnalysisCheckErrors(dataset, options)
+  }
+  # Output tables
+  .metaAnalysisFixRandTable(jaspResults, dataset, options, ready)
+  .metaAnalysisCoeffTable(jaspResults, dataset, options, ready)
+  .metaAnalysisFitMeasuresTable(jaspResults, dataset, options, ready)
+  .metaAnalysisResidualTable(jaspResults, dataset, options, ready)
+  .metaAnalysisCovMatTable(jaspResults, dataset, options, ready)
+  .metaAnalysisRankTestTable(jaspResults, dataset, options, ready)
+  .metaAnalysisRegTestTable(jaspResults, dataset, options, ready)
+  .metaAnalysisCasewiseTable(jaspResults, dataset, options, ready)
+  .metaAnalysisFailSafeTable(jaspResults, dataset, options, ready)
+  
+  # Output plots
+  .metaAnalysisForestPlot(jaspResults, dataset, options, ready)
+  .metaAnalysisFunnelPlot(jaspResults, dataset, options, ready)
+  .metaAnalysisTrimFillPlot(jaspResults, dataset, options, ready)
+  .metaAnalysisProfilePlot(jaspResults, dataset, options, ready)
+  .metaAnalysisDiagnosticPlot(jaspResults, dataset, options, ready)
+  
+  return()
+}
 
-ClassicalMetaAnalysis <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state=NULL, ..., DEBUG=0) {
+.metaAnalysisReadData <- function(dataset, options) {
+  if (!is.null(dataset)) 
+    return(dataset)
+  else {
+    studyLabelName  <- options$studyLabels
+    effsizeName <- unlist(options$dependent)
+    stderrName  <- unlist(options$wlsWeights)
+    
+    covarNames <- if (length(options$covariates) > 0) unlist(options$covariates)
+    factNames  <- if (length(options$factors) > 0) unlist(options$factors)
+    
+    list.variables    <- Filter(function(s) s != "", c(effsizeName, covarNames))
+    numeric.variables <- Filter(function(s) s != "", c(effsizeName, covarNames, stderrName))
+    factor.variables  <- Filter(function(s) s != "", c(factNames, studyLabelName))
+    return(.readDataSetToEnd(columns.as.factor  = factor.variables,
+                      columns.as.numeric = numeric.variables,
+                      exclude.na.listwise = numeric.variables))
+  }
+}
 
-  # Restore previous computation state and detect option changes
-  run <- perform == "run"
+.metaAnalysisGetMethod <- function(options){
+  switch(options$method, 
+         `Fixed Effects`      = "FE", 
+         `Maximum Likelihood` = "ML",
+         `Restricted ML`      = "REML", 
+         `DerSimonian-Laird`  = "DL", 
+         `Hedges`             = "HE",
+         `Hunter-Schmidt`     = "HS", 
+         `Sidik-Jonkman`      = "SJ", 
+         `Empirical Bayes`    = "EB",
+         `Paule-Mandel`       = "PM", 
+         "REML")
+}
 
-  fitOpts <- c("dependent", "wlsWeights", "method", "studyLabels", "covariates", "test",
-               "factors", "modelTerms", "includeConstant", "regressionCoefficientsConfidenceIntervalsInterval")
-  stateKey <- list(
-    rma.fit = fitOpts,
-    dataset= fitOpts,
-    coefficients = c(fitOpts, "regressionCoefficientsEstimates"),
-    fitStats = c(fitOpts, "modelFit"),
-    residPars = c(fitOpts, "residualsParameters"),
-    coeffVcov = c(fitOpts, "regressionCoefficientsCovarianceMatrix"),
-    ranktst = c(fitOpts, "rSquaredChange"),
-    egger = c(fitOpts, "funnelPlotAsymmetryTest"),
-    influ = c(fitOpts, "residualsCasewiseDiagnostics"),
-    fsn.fit = c(fitOpts, "plotResidualsCovariates"),
-    forestPlot = c(fitOpts, "forestPlot"),
-    funnelPlot = c(fitOpts, "funnelPlot"),
-    diagnosticsPlot = c(fitOpts, "plotResidualsDependent", "plotResidualsQQ"),
-    profilePlot = c(fitOpts, "plotResidualsPredicted"),
-    trimfillPlot = c(fitOpts, "trimfillPlot")
-  )
-
-  rma.fit <- state$rma.fit
-  dataset <- state$dataset
-  coefficients <- state$coefficients
-  fitStats <- state$fitStats
-  residPars <- state$residPars
-  coeffVcov <- state$coeffVcov
-  ranktst <- state$ranktst
-  egger <- state$egger
-  influ <- state$influ
-  fsn.fit <- state$fsn.fit
-  forestPlot <- state$forestPlot
-  funnelPlot <- state$funnelPlot
-  diagnosticsPlot <- state$diagnosticsPlot
-  profilePlot <- state$profilePlot
-  trimfillPlot <- state$trimfillPlot
-
-  ### This file interfaces the metafor::rma function and associated diagnostic functions
-  ### (but it restricts its multipurposeness to one central purpose: fitting a
-  ### meta-regression to effect sizes and their standard errors and providing diagnostics.)
-
-  ### options contains:
-  ## essentials:
-  #   effectsize:  string (maps to 'yi'), name of the variable that contains the effect sizes (ES)
-  #   stderr:      string (maps to 'sei'), name of the variable containing the ES standard errors
-  #   intercept:   logical (maps to 'intercept'), intercept in the model?
-  #
-  ## optional:
-  #   covariates:  string array (maps to 'mods'), names of continuous predictor variables
-  #   factors:     string array (maps to 'mods'), names of nominal/ordinal predictor variables
-  ## plotting:
-  #   studylabels:    string (maps to 'slab'), name of variable that contains label for a forrest plot
-  #   forrestPlot:    logical, make this plot?
-  #   funnelPlot:     logical,
-  ## advanced analysis:
-  #   method:         string, one of [`Fixed Effects`, `Maximum Likelihood`, `Restricted ML`, `DerSimonian-Laird`, `Hedges`, `Hunter-Schmidt`, `Sidik-Jonkman`, `Empirical Bayes`, `Paule-Mandel`] (see ?rma)
-  #  -
-  #   test:           string, one of ["z", "knha"]
-  #   btt:            numeric, vector of indices specifying which coefficients to include in the omnibus test of moderators
-  #  -
-  #   ...:            numeric, -3 ≤ value ≤ 3, distribution used is dt((tStatistic - Tlocation) / Tscale, TDf)
-
-  #********
-  # debuging:
-  #  options = list(effectsize = "yi", stderr = "sei", intercept=TRUE,
-  #                 covariates = NULL, factors = NULL, studylabels = NULL,
-  #                 forrestPlot = TRUE, funnelPlot = FALSE, method="FE")
-  #  readJaspMsg <- function(connection=pipe('pbpaste')) jsonlite::fromJSON(paste(readLines(connection),collapse = "\n"))
-  #  readOptions <- function(connection=pipe('pbpaste')) if (is.list) connection$options else readJaspMsg(connection)$options
-  #  dd = function(options, ...){x=list(...); options[names(x)] = x; options}
-
-  # eval(parse(text = gsub("\\s+\\#","",readLines(pipe('pbpaste')))))
-  # dataset = metafor::escalc(measure="RR", ai=tpos, bi=tneg, ci=cpos, di=cneg, data=metafor::dat.bcg)
-  # dataset = transform(dataset, sei = vi^0.5)
-  #********
-
-  #### Compute results of the analysis
-
-  ## Get data. ####
-
-  studyLabelName  <- options$studyLabels
-
+.metaAnalysisCheckErrors <- function(dataset, options){
+  custom <- function() {
+    if(any(dataset[[b64(options$wlsWeights)]] <= 0))
+      return(paste0("Non-positive standard errors encountered in variable '", 
+             options$wlsWeights,
+             "'. Standard errors should be positive. Please check your input."))
+  }
   effsizeName <- unlist(options$dependent)
   stderrName  <- unlist(options$wlsWeights)
-
-  covarNames <- if (length(options$covariates) > 0) unlist(options$covariates)
-  factNames  <- if (length(options$factors) > 0) unlist(options$factors)
-
-  list.variables    <- Filter(function(s) s != "", c(effsizeName, covarNames))
+  covarNames  <- if (length(options$covariates) > 0) unlist(options$covariates)
   numeric.variables <- Filter(function(s) s != "", c(effsizeName, covarNames, stderrName))
-  factor.variables  <- Filter(function(s) s != "", c(factNames, studyLabelName))
+  .hasErrors(dataset              = dataset, 
+             type                 = c("infinity", "observations"),
+             custom               = custom,
+             all.target           = numeric.variables, 
+             observations.amount  = "< 2",
+             exitAnalysisIfErrors = TRUE)
+}
 
-
-  if (is.null(dataset)) {
-    .readDS <- switch(perform, run = .readDataSetToEnd, .readDataSetHeader)
-    dataset <- .readDS(
-      columns.as.factor  = factor.variables,
-      columns.as.numeric = numeric.variables,
-      exclude.na.listwise = numeric.variables
-    )
-
-    .hasErrors(dataset, perform, type=c("infinity", "observations"),
-               custom = error_if(any(dataset[[b64(stderrName)]] <= 0), "Non-positive standard errors encountered in variable '", stderrName,
-                                 "'. Standard errors should be positive. Please check your input."),
-               all.target=numeric.variables, observations.amount="< 2",
-               exitAnalysisIfErrors=TRUE)
-  }
-
-  method <- switch(options$method, `Fixed Effects` = "FE", `Maximum Likelihood` = "ML",
-                  `Restricted ML` = "REML", `DerSimonian-Laird` = "DL", `Hedges` = "HE",
-                  `Hunter-Schmidt` = "HS", `Sidik-Jonkman` = "SJ", `Empirical Bayes` = "EB",
-                  `Paule-Mandel` = "PM", "REML")
-
-  can.run <- all(c(effsizeName, stderrName) != "")
-
-  ## Run the analysis. ####
-  if (is.null(rma.fit)) {
-    rma.fit <- structure(list('b' = numeric(),'se' = numeric(),'ci.lb' = numeric(), 'ci.ub' = numeric(),
-                    'zval' = numeric(),'pval' = numeric()), class = c("dummy", "rma"))
-
-    if (run && can.run) {
-
+.metaAnalysisComputeModel <- function(jaspResults, dataset, options, ready, method) {
+  if (!is.null(jaspResults[["Model"]])) 
+    return(jaspResults[["Model"]]$object)
+  
+  rma.fit <- structure(list('b'     = numeric(),
+                            'se'    = numeric(),
+                            'ci.lb' = numeric(), 
+                            'ci.ub' = numeric(),
+                            'zval'  = numeric(),
+                            'pval'  = numeric()), 
+                       class = c("dummy", "rma"))
+  if (ready) {
+    
+    if(length(options$modelTerms) > 0) {
       # infer model formula
       .vmodelTerms <- b64(options$modelTerms)
-
+      
       formula.rhs <- as.formula(as.modelTerms(.vmodelTerms))
-      if (is.null(formula.rhs))
-        formula.rhs <- ~1
-
-      if (!options$includeConstant)
-        formula.rhs <- update(formula.rhs, ~ . + 0)
-
-      if (identical(formula.rhs, ~ 1 - 1))
-        .quitAnalysis("The model should contain at least one predictor or an intercept.")
-
-      # analysis
-      rma.fit <- tryCatch( # rma generates informative error messages; use them!
-        metafor::rma(
-          yi = get(b64(effsizeName)), sei = get(b64(stderrName)), data = dataset,
-          method=method, mods = formula.rhs, test = options$test,
-          slab = if(options$studyLabel != "") paste0(get(b64(options$studyLabels))),
-          level = options$regressionCoefficientsConfidenceIntervalsInterval + 1e-9, # add tiny amount because 1 is treated by rma() as 100% whereas values > 1 as percentages
-          control = list(maxiter = 500)
-        ), error = function(e) .quitAnalysis(e$message))
-
-      rma.fit <- d64(rma.fit, values = all.vars(formula.rhs))
-
-    }
+    } else
+      formula.rhs <- NULL
+    
+    if (is.null(formula.rhs))
+      formula.rhs <- ~1
+    if (!options$includeConstant)
+      formula.rhs <- update(formula.rhs, ~ . + 0)
+    
+    if (identical(formula.rhs, ~ 1 - 1))
+      .quitAnalysis("The model should contain at least one predictor or an intercept.")
+    
+    # analysis
+    rma.fit <- tryCatch( # rma generates informative error messages; use them!
+      metafor::rma(
+        yi      = get(b64(options$dependent)), 
+        sei     = get(b64(options$wlsWeights)), 
+        data    = dataset,
+        method  = method, 
+        mods    = formula.rhs, 
+        test    = options$test,
+        slab    = if(options$studyLabels != "") paste0(get(b64(options$studyLabels))),
+        # add tiny amount because 1 is treated by rma() as 100% whereas values > 1 as percentages
+        level   = options$regressionCoefficientsConfidenceIntervalsInterval + 1e-9, 
+        control = list(maxiter = 500)), 
+      error = function(e) .quitAnalysis(e$message))
+    
+    rma.fit <- d64(rma.fit, values = all.vars(formula.rhs))
   }
+  
+  # Save results to state
+  jaspResults[["Model"]] <- createJaspState(rma.fit)
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "test", "studyLabels",
+                  "regressionCoefficientsConfidenceIntervalsInterval")
+  jaspResults[["Model"]]$dependOn(dependList)
+  return(rma.fit)
+}
 
-  if (DEBUG == 1) return(rma.fit)
+#Tables
+.metaAnalysisFixRandTable <- function(jaspResults, dataset, options, ready) {
+  if (!is.null(jaspResults[["fixRandTable"]])) return()
+  
+  fixRandTable <- createJaspTable("Fixed and Random Effects")
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels")
+  fixRandTable$dependOn(dependList)
+  fixRandTable$position <- 1
+  msg <- ("Hedges, L. V., & Olkin, I. (1985). Statistical methods for meta-analysis. 
+          San Diego, CA: Academic Press.")
+  fixRandTable$addCitation(msg)
 
-  #### Output: Initialize meta and results objects ####
+  fixRandTable$addColumnInfo(name = "name",  type = "string",  title = " ")
+  fixRandTable$addColumnInfo(name = "qstat", type = "number",  title = "Q")
+  fixRandTable$addColumnInfo(name = "df",    type = "integer", title = "df")
+  fixRandTable$addColumnInfo(name = "pval",  type = "pvalue",  title = "p")
+  
+  message <- "<em>p</em>-values are approximate."
+  fixRandTable$addFootnote(message)
+  
+  jaspResults[["fixRandTable"]] <- fixRandTable
+  
+  res <- try(.metaAnalysisFixRandFill(jaspResults, dataset, options, ready))
+  
+  .metaAnalysisSetError(res, fixRandTable)
+}
 
-  meta <- list()
+.metaAnalysisCoeffTable <- function(jaspResults, dataset, options, ready) {
+  if (!options$regressionCoefficientsEstimates || !is.null(jaspResults[["coeffTable"]])) 
+    return()
+  
+  coeffTable <- createJaspTable("Coefficients")
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
+                  "regressionCoefficientsConfidenceIntervals", "regressionCoefficientsEstimates")
+  coeffTable$dependOn(dependList)
+  coeffTable$position <- 2
+  coeffTable$showSpecifiedColumnsOnly <- TRUE
+  msg <- "Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package. 
+         Journal of Statistical Software, 36(3), 1-48. URL: http://www.jstatsoft.org/v36/i03/"
+  coeffTable$addCitation(msg)
+  
+  coeffTable$addColumnInfo(name = "name",  type = "string", title = " ")
+  coeffTable$addColumnInfo(name = "est",   type = "number", title = "Estimate")
+  coeffTable$addColumnInfo(name = "se",    type = "number", title = "Standard Error")
+  coeffTable$addColumnInfo(name = "zval",  type = "number", title = "z")
+  coeffTable$addColumnInfo(name = "pval",  type = "pvalue", title = "p")
+  .metaAnalysisConfidenceInterval(options, coeffTable)
+  
+  message <- switch(options$test, z = "Wald test.", "Wald tests.")
+  coeffTable$addFootnote(message)
+  
+  jaspResults[["coeffTable"]] <- coeffTable
+  if(!ready)
+    return()
+  
+  method <- .metaAnalysisGetMethod(options)
+  # Compute/get model
+  rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready, method)
+  
+  res <- try(.metaAnalysisCoeffFill(jaspResults, dataset, options, ready, rma.fit))
+  
+  .metaAnalysisSetError(res, coeffTable)
+}
+
+.metaAnalysisFitMeasuresTable <- function(jaspResults, dataset, options, ready) {
+  
+  if (!options$modelFit || !is.null(jaspResults[["fitMeasuresTable"]])) 
+    return()
+  
+  fitMeasuresTable <- createJaspTable("Fit measures")
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
+                  "modelFit")
+  fitMeasuresTable$dependOn(dependList)
+  fitMeasuresTable$position <- 3
+  
+  method <- options$method
+  if(ready)
+    method <- .metaAnalysisGetMethod(options)
+  
+  fitMeasuresTable$addColumnInfo(name = "name",   type = "string", title = " ")
+  fitMeasuresTable$addColumnInfo(name = "method", type = "number", title = method)
+  
+  jaspResults[["fitMeasuresTable"]] <- fitMeasuresTable
+  
+  res <- try(.metaAnalysisFitMeasuresFill(jaspResults, dataset, options, ready))
+  
+  .metaAnalysisSetError(res, fitMeasuresTable)
+}
+
+.metaAnalysisResidualTable <- function(jaspResults, dataset, options, ready) {
+  method <- .metaAnalysisGetMethod(options)
+  
+  if (!options$residualsParameters || method == "FE"|| 
+      !is.null(jaspResults[["residualTable"]])) 
+    return()
+  
+  residualTable <- createJaspTable("Residual Heterogeneity Estimates")
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
+                  "regressionCoefficientsConfidenceIntervals", "residualsParameters")
+  residualTable$dependOn(dependList)
+  residualTable$position <- 4
+  residualTable$showSpecifiedColumnsOnly <- TRUE
+  
+  
+  residualTable$addColumnInfo(name = "name",  type = "string",  title = " ")
+  residualTable$addColumnInfo(name = "est",   type = "number",  title = "Estimate")
+  .metaAnalysisConfidenceInterval(options, residualTable)
+  
+  jaspResults[["residualTable"]] <- residualTable
+
+  res <- try(.metaAnalysisResidualFill(jaspResults, dataset, options, ready))
+  
+  .metaAnalysisSetError(res, residualTable)
+}
+
+.metaAnalysisCovMatTable <- function(jaspResults, dataset, options, ready) {
+  if (!options$regressionCoefficientsCovarianceMatrix || 
+      !is.null(jaspResults[["covMatTable"]])) 
+    return()
+  
+  covMatTable <- createJaspTable("Parameter Covariances")
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
+                  "regressionCoefficientsCovarianceMatrix")
+  covMatTable$dependOn(dependList)
+  covMatTable$position <- 5
+  covMatTable$showSpecifiedColumnsOnly <- TRUE
+  
+  
+  covariates <- unlist(options$modelTerms)
+  covariates <- c("intrcpt", covariates)
+  
+  covMatTable$addColumnInfo(name = "name",  type = "string",  title = " ")
+  if(!ready)
+    covMatTable$addColumnInfo(name = "intrcpt", type = "number", title = "...")
+  else
+    for(i in 1:length(covariates))
+      covMatTable$addColumnInfo(name = covariates[[i]], type = "number")
+  
+  jaspResults[["covMatTable"]] <- covMatTable
+
+  res <- try(.metaAnalysisCovMatFill(jaspResults, dataset, options, ready))
+  
+  .metaAnalysisSetError(res, covMatTable)
+}
+
+.metaAnalysisRankTestTable <- function(jaspResults, dataset, options, ready) {
+  if (!options$rSquaredChange || !is.null(jaspResults[["rankTestTable"]])) 
+    return()
+  
+  rankTestTable <- createJaspTable("Rank correlation test for Funnel plot asymmetry")
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
+                  "rSquaredChange")
+  rankTestTable$dependOn(dependList)
+  rankTestTable$position <- 6
+  rankTestTable$showSpecifiedColumnsOnly <- TRUE
+  
+  
+  rankTestTable$addColumnInfo(name = "name",    type = "string", title = " ")
+  rankTestTable$addColumnInfo(name = "kendall", type = "number", title = "Kendall's \u3C4")
+  rankTestTable$addColumnInfo(name = "pval",    type = "pvalue", title = "p")
+  
+  jaspResults[["rankTestTable"]] <- rankTestTable
+  
+  res <- try(.metaAnalysisRankTestFill(jaspResults, dataset, options, ready))
+  
+  .metaAnalysisSetError(res, rankTestTable)
+}
+
+.metaAnalysisRegTestTable <- function(jaspResults, dataset, options, ready) {
+  if (!options$funnelPlotAsymmetryTest || !is.null(jaspResults[["regTestTable"]])) 
+    return()
+  title <- "Regression test for Funnel plot asymmetry (\"Egger's test\")"
+  regTestTable <- createJaspTable(title)
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
+                  "funnelPlotAsymmetryTest")
+  regTestTable$dependOn(dependList)
+  regTestTable$position <- 6
+  regTestTable$showSpecifiedColumnsOnly <- TRUE
+  
+  regTestTable$addColumnInfo(name = "name",    type = "string", title = " ")
+  if (options$test == "knha")
+    regTestTable$addColumnInfo(name = "t", type = "number")
+  else
+    regTestTable$addColumnInfo(name = "z", type = "number")
+  regTestTable$addColumnInfo(name = "pval",    type = "pvalue", title = "p")
+  ##Should I add confidence intervals, and intercept values?
+  
+  jaspResults[["regTestTable"]] <- regTestTable
+  
+  if(!ready)
+    return()
+  
+  res <- try(.metaAnalysisRegTestFill(jaspResults, dataset, options))
+  
+  .metaAnalysisSetError(res, regTestTable)
+}
+
+.metaAnalysisCasewiseTable <- function(jaspResults, dataset, options, ready) {
+  if (!options$residualsCasewiseDiagnostics || !is.null(jaspResults[["casewiseTable"]])) 
+    return()
+  
+  casewiseTable <- createJaspTable("Influence Measures")
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
+                  "residualsCasewiseDiagnostics")
+  casewiseTable$dependOn(dependList)
+  casewiseTable$position <- 6
+  casewiseTable$showSpecifiedColumnsOnly <- TRUE
+  tau2title <- "\u3C4\u00B2<sub>(-i)</sub>" #"\u3C4\u00B2\u208D\u208B\u1D62\u208E"
+  QEtitle   <- "Q<sub>E(-i)]</sub>"         #"Q[E]\u208D\u208B\u1D62\u208E"
+  
+  casewiseTable$addColumnInfo(name = "name",   type = "string",  title = " ")
+  casewiseTable$addColumnInfo(name = "sdRes",  type = "number",  title = "Std. Residual")
+  casewiseTable$addColumnInfo(name = "dfFits", type = "number",  title = "DFFITS")
+  casewiseTable$addColumnInfo(name = "cook",   type = "number",  title = "Cook's Distance")
+  casewiseTable$addColumnInfo(name = "cov",    type = "number",  title = "Cov. Ratio")
+  casewiseTable$addColumnInfo(name = "tau2",   type = "number",  title = tau2title)
+  casewiseTable$addColumnInfo(name = "QE",     type = "number",  title = QEtitle)
+  casewiseTable$addColumnInfo(name = "hat",    type = "number",  title = "Hat")
+  casewiseTable$addColumnInfo(name = "weight", type = "number",  title = "Weight")
+  
+  jaspResults[["casewiseTable"]] <- casewiseTable
+  
+  if(!ready)
+    return()
+  
+  method <- .metaAnalysisGetMethod(options)
+  # Compute/get model
+  rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready, method)
+  
+  res <- try(.metaAnalysisCasewiseFill(jaspResults, dataset, options, rma.fit))
+  
+  .metaAnalysisSetError(res, casewiseTable)
+  
+  message <- "Cases marked with \u002A are influential."
+  casewiseTable$addFootnote(message)
+}
+
+.metaAnalysisFailSafeTable <- function(jaspResults, dataset, options, ready) {
+  if (!options$plotResidualsCovariates || !is.null(jaspResults[["failSafeTable"]]) || !ready) 
+    return()
+  
+  failSafeTable <- createJaspTable("File Drawer Analysis")
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
+                  "plotResidualsCovariates")
+  failSafeTable$dependOn(dependList)
+  failSafeTable$position <- 6
+  failSafeTable$showSpecifiedColumnsOnly <- TRUE
+  
+  failSafeTable$addColumnInfo(name = "name",  type = "string", title = " ")
+  failSafeTable$addColumnInfo(name = "fsnum", type = "number", title = "Fail-safe N")
+  failSafeTable$addColumnInfo(name = "alpha", type = "number", title = "Target Significance")
+  failSafeTable$addColumnInfo(name = "pval",  type = "pvalue", title = "Observed Significance")
+  
+  jaspResults[["failSafeTable"]] <- failSafeTable
+  
+  res <- try(.metaAnalysisFailSafeFill(jaspResults, dataset, options))
+  
+  .metaAnalysisSetError(res, failSafeTable)
+}
+
+# Plots
+.metaAnalysisPlotsContainer <- function(jaspResults, options, ready)  {
+  if(!ready) return()
+  #if(!options$forestplot && !options$funnelPlot && !options$plotResidualsDependent &&
+  #   !options$plotResidualsPredicted && !options$trimfillPlot) 
+  #  return()
+  if (is.null(jaspResults[["plots"]])) {
+    container <- createJaspContainer("Plot")
+    container$dependOn(c("dependent", "wlsWeights", "method", 
+                         "studyLabels", "covariates", "modelTerms"))
+    jaspResults[["plots"]] <- container
+  }
+}
+
+.metaAnalysisForestPlot <- function(jaspResults, dataset, options, ready) {
+  if(!options$forestPlot)
+    return()
+  .metaAnalysisPlotsContainer(jaspResults, options, ready)
+  container <- jaspResults[["plots"]]
+  method    <- .metaAnalysisGetMethod(options)
+  # Compute/get model
+  rma.fit    <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready, method)
+  img.height <- 400
+  if(ready)
+    img.height <- max(520, nobs(rma.fit) * 20)
+  forestPlot   <- createJaspPlot(title = "Forest plot", width = 520, height = img.height)
+  forestPlot$dependOn(c("forestPlot"))
+  container[["forest"]] <- forestPlot
+  
+  if(ready){
+    p <- try(.metaAnalysisForestPlotFill(jaspResults, dataset, options, ready, rma.fit, img.height))
+    #p <- .writeImage(width = 520, height = img.height, plot = forest.rma(rma.fit))
+    
+    if(isTryError(p))
+      forestPlot$setError(.extractErrorMessage(p))
+    else
+      forestPlot$plotObject <- p
+  }
+  return()
+}
+
+#Plot filling
+.metaAnalysisForestPlotFill <- function(jaspResults, dataset, options, ready, rma.fit, img.height){
+  #p <- cmaForest(rma.fit, cex.lab = 1.2, las = 1, efac = 15 / nobs(rma.fit))
+  ggplot2::theme_set(ggplot2::theme_bw(base_size=10))
+  ci.lb    <- rma.fit$yi - qnorm(rma.fit$level/2, lower.tail = FALSE) * sqrt(rma.fit$vi)
+  ci.lb    <- round(ci.lb, digits=2)
+  ci.ub    <- rma.fit$yi + qnorm(rma.fit$level/2, lower.tail = FALSE) * sqrt(rma.fit$vi)
+  ci.ub    <- round(ci.ub, digits=2)
+  ci.int   <- paste0(round(rma.fit$yi, 2), "[", ci.lb, " ", ci.ub, "]")
+  b.pred   <- predict(rma.fit)
+  b.ci.lb  <- round(b.pred$ci.lb, 2)
+  b.ci.ub  <- round(b.pred$ci.ub, 2)
+  b.ci.int <- paste0(round(b.pred$pred, 2), "[", b.ci.lb, " ", b.ci.ub, "]")
+  
+  rma.data <-  data.frame(StudyNo = rma.fit$ids, 
+                          ES      = rma.fit$yi,
+                          SE      = sqrt(rma.fit$vi),
+                          Type    = "Study", 
+                          SecNms  = ci.int,
+                          ci.lb   = ci.lb,
+                          ci.ub   = ci.ub)
+  #browser()
+  
+  StudyNames <- paste0("Study ", rma.data$StudyNo)
+  
+  REName <- ifelse((rma.fit$method == "FE"), "FE Model", "RE Model")
+  #rma.data$Study2<-factor(rma.data$Study, levels=rev(levels(rma.data$Study)) )
+  yticks <- pretty(c(min(ci.lb), max(ci.ub)))
+  ymin   <- min(yticks)
+  ymax   <- max(yticks)
+  yLabs  <- JASPgraphs::axesLabeller(yticks)
+  xticks <- rma.data$StudyNames
+  xLabs  <- JASPgraphs::axesLabeller(xticks)
+  
+  REdata <- data.frame(StudyNo = -1, 
+             ES      = b.pred$pred,
+             SE      = rma.fit$se,
+             Type    = "RE Model", 
+             SecNms  = b.ci.int,
+             ci.lb   = b.ci.lb,
+             ci.ub   = b.ci.ub)
+  #levels(rma.data$Study2)
+  #p <- JASPgraphs::drawAxis(xName = "Study", yName = "Observed Outcome", 
+  #                          xBreaks = xticks, yBreaks = yticks, 
+  #                          yLabels = yLabs, xLabels = xLabs)
+  p <- ggplot2::ggplot(data = rma.data, ggplot2::aes(x      = StudyNo, 
+                                                     y      = ES,
+                                                     colour = factor(Type)
+                                                     )
+                       )
+  p <- p +  ggplot2::geom_point(data  = rma.data,
+                                size  = rma.data$SE*8/max(rma.data$SE), 
+                                shape = 15, colour = "black")
+  p <- p +  ggplot2::geom_errorbar(data = rma.data, 
+                           ggplot2::aes(x = StudyNo, ymax = ci.ub, ymin = ci.lb), 
+                           width = 0.5, colour = "black")
+  p <- p +  ggplot2::geom_point(data  = REdata,
+                                size  = REdata$SE*8/max(REdata$SE), 
+                                shape = 18, colour = "black")
+  p <- p +  ggplot2::geom_errorbar(data = REdata, 
+                                   ggplot2::aes(x = StudyNo, ymax = ci.ub, ymin = ci.lb), 
+                                   width = 0.5, colour = "black")
+  p <- p + ggplot2::coord_flip() +
+    ggplot2::geom_hline(ggplot2::aes(yintercept = 0), lty=2, size=0.5, colour = "black") +
+    ggplot2::geom_vline(ggplot2::aes(xintercept = 0), lty=1, size=0.5, colour = "black") +
+    ggplot2::scale_size_manual(values=c(0.5,1))
+  #browser()
+  p <- p + ggplot2::xlab("") +
+    ggplot2::ylab("Observed Outcome") + 
+    ggplot2::ylim(ymin,ymax) + 
+    ggplot2::scale_x_discrete(limits =  StudyNames) +ggplot2::geom_label(REName)
+  p <- p + ggplot2::theme(axis.text.x.bottom = ggplot2::element_text(hjust = 0),
+                          axis.text.x.top    = ggplot2::element_text(hjust = 1),
+                          axis.text.y        = ggplot2::element_text(hjust = 0),
+                          axis.line.x.top    = ggplot2::element_line(),
+                          axis.line.x.bottom = ggplot2::element_line(size = 0.5),
+                          axis.ticks.x       = ggplot2::element_line(size=0.8))
+  p <- JASPgraphs::themeJasp(p, 
+                             axisTickWidth  = 0,
+                             xAxis = FALSE,
+                             legend.position = "none")
+  return(p)
+}
+
+.metaAnalysisFunnelPlot <- function(jaspResults, dataset, options, ready) {
+  
+}
+
+.metaAnalysisTrimFillPlot <- function(jaspResults, dataset, options, ready) {
+  
+}
+
+.metaAnalysisProfilePlot <- function(jaspResults, dataset, options, ready) {
+  
+}
+
+.metaAnalysisDiagnosticPlot <- function(jaspResults, dataset, options, ready) {
+  
+}
+
+#Table filling
+.metaAnalysisFixRandFill <- function(jaspResults, dataset, options, ready) {
+  method <- .metaAnalysisGetMethod(options)
+  # Compute/get model
+  rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready, method)
+  
+  row <- list(name = "Omnibus test of Model Coefficients", 
+              qstat = ".", df = ".", pval = ".")
+  if(ready) {
+    row$qstat <- rma.fit$QM
+    row$df    <- rma.fit$m
+    row$pval  <- rma.fit$QMp
+  }
+  jaspResults[["fixRandTable"]]$addRows(row)
+  row <- list(name = "Test of Residual Heterogeneity",     
+              qstat = ".", df = ".", pval = ".")
+  if(ready) {
+    row$qstat <- rma.fit$QE
+    row$df    <- rma.fit$k - rma.fit$p
+    row$pval  <- rma.fit$QEp
+  }
+  jaspResults[["fixRandTable"]]$addRows(row)
+}
+
+.metaAnalysisCoeffFill <- function(jaspResults, dataset, options, ready, rma.fit) {
+  
   results <- list()
-  results[["title"]] <- analysisTitle(rma.fit)
-
-  ### Prepare Q-tests table output ####
-  meta[[length(meta)+1]] <- list(name = "qtests", type = "table")
-  qtesttable <- qTestsTable(rma.fit)
-
-  # footnotes
-  qfootnotes <- .newFootnotes()
-  .addFootnote(qfootnotes, symbol = "<em>Note.</em>", text = "<em>p</em>-values are approximate.")
-  qtesttable[["footnotes"]] <- as.list(qfootnotes)
-
-  # citation
-  qtesttable[["citation"]] <- list(
-    "Hedges, L. V., & Olkin, I. (1985). Statistical methods for meta-analysis. San Diego, CA: Academic Press."
-  )
-  results[["qtests"]] <- qtesttable
-
-  ### Prepare Coefficients Table Output ####
-  if (options$regressionCoefficientsEstimates) {
-
-    meta[[length(meta) + 1]] <- list(name = "table", type = "table")
-    cols <- c("Estimate", "Standard Error", "z", "p", "Lower Bound", "Upper Bound")
-
-    if (is.null(coefficients) && run && can.run)
-      coefficients <- .clean(coef(summary(rma.fit)))
-
-    table <- list(title = "Coefficients")
-    if (!is.null(coefficients)) {
-      table$x <- coefficients
-      colnames(table$x) <- cols
-      if (! options$regressionCoefficientsConfidenceIntervals) {
-        table$x <- table$x[1:4] # remove confidence interval bounds
-        colnames(table$x) <- cols[1:4]
-      }
-    } else {
-      table$x <- cols
-      if (! options$regressionCoefficientsConfidenceIntervals)
-        table$x <- cols[1:4]
-    }
-
-    coeftable <- do.call(as.jaspTable, table) # FIXME: we want an overtitle above upper/lower
-
-    if (DEBUG == 2) return(table)
-
-    # Add footnotes to the analysis result
-    footnotes <- .newFootnotes()
-    footnote.text <- switch(options$test, z = "Wald test.", "Wald tests.")
-    .addFootnote(footnotes, symbol = "<em>Note.</em>", text = footnote.text)
-    coeftable[["footnotes"]] <- as.list(footnotes)
-
-    # Add citation reference list
-    coeftable[["citation"]] <- list(
-      "Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package. Journal of
-      Statistical Software, 36(3), 1-48. URL: http://www.jstatsoft.org/v36/i03/"
+  
+  coeff <- coef(summary(rma.fit))
+  cov <- unlist(options$modelTerms)
+  cov <- c("intrcpt", cov)
+  len.cov <- length(cov)
+  for(i in 1:len.cov) {
+    results <- list(
+      name = cov[[i]],
+      est  = coeff[i,1],
+      se   = coeff[i,2],
+      zval = coeff[i,3],
+      pval = coeff[i,4] 
     )
-
-    results[["table"]] <- coeftable
-  }
-
-  ### Prepare Model fit table output ####
-
-  if (options$modelFit) {
-
-    meta[[length(meta)+1]] <- list(name = "modelFit", type = "table")
-    title <- "Fit measures"
-    cols <- options$method
-    rows <- c("Log-likelihood", "Deviance", "AIC", "BIC", "AICc")
-
-    if (is.null(fitStats) && run && can.run)
-      fitStats <- try(metafor:::fitstats(rma.fit))
-
-    table <- list(title = title)
-    if (! is.null(fitStats)) {
-      table$x <- fitStats
-      rownames(table$x) <- rows
-    } else {
-      table$x <- cols
-      table$y <- rows
+    if(options$regressionCoefficientsConfidenceIntervals) {
+      results$lower <- coeff[i,5]
+      results$upper <- coeff[i,6]
     }
-
-    #if (inherits(df, "try-error"))  df = structure(list(rep(".",3)), .Names = options$method, row.names = c("logLik","AIC","BIC"), class="data.frame")
-    fittable <- do.call(as.jaspTable, table)
-    results[["modelFit"]] <- fittable
-
+    jaspResults[["coeffTable"]]$addRows(results)
   }
-
-
-  ### Prepare Residuals Parameters ####
-
-  if (options$residualsParameters && method != "FE") {
-
-    meta[[length(meta) + 1]] <- list(name = "residPars", type = "table")
-    options(jasp_number_format = "sf:5;dp:4")
-    title <- "Residual Heterogeneity Estimates"
-    cols <- c("Estimate", "Lower Bound", "Upper Bound")
-    rows <- c("<em>&tau;&sup2;</em>", "<em>&tau;</em>", "<em>I&sup2;</em> (%)", "<em>H&sup2;</em>")
-
-    if (is.null(residPars) && run && can.run)
-      residPars <- confint(rma.fit, digits = 12, level = options$regressionCoefficientsConfidenceIntervalsInterval)$random
-
-    table <- list(title = title)
-    if (! is.null(residPars)) {
-      table$x <- residPars
-      colnames(table$x) <- cols
-      rownames(table$x) <- rows
-      if (! options$regressionCoefficientsConfidenceIntervals) {
-        table$x <- table$x[, 1, drop=FALSE] # remove confidence interval bounds
-        colnames(table$x) <- cols[1]
-      }
-    } else {
-      table$x <- cols
-      table$y <- rows
-      if (! options$regressionCoefficientsConfidenceIntervals) {
-        table$x <- cols[1]
-      }
-    }
-
-    residParsTable <- do.call(as.jaspTable, table) # FIXME: we want an overtitle above upper/lower bounds
-    results[["residPars"]] <- residParsTable
-
-  }
-
-
-  ### Prepare Coefficient Covariance Matrix ####
-
-  if (options$regressionCoefficientsCovarianceMatrix) {
-
-    meta[[length(meta) + 1]] <- list(name = "vcov", type = "table")
-
-    if (is.null(coeffVcov) && run && can.run)
-      coeffVcov <- vcov(rma.fit)
-
-    options(jasp_number_format = "sf:5;dp:4")
-    table <- list(title = "Parameter Covariances", x = "...", y = "...")
-    if (!is.null(coeffVcov)) table$x = coeffVcov
-
-    vcovTable <- do.call(as.jaspTable, table)
-    results[["vcov"]] <- vcovTable
-
-  }
-
-
-  ### Prepare Rank test for Funnel plot asymmetry ####
-
-  if (options$rSquaredChange) {
-
-    meta[[length(meta) + 1]] <- list(name = "ranktest", type = "table")
-    options(jasp_number_format = "sf:5;dp:4")
-    title <- "Rank correlation test for Funnel plot asymmetry"
-    cols <- c("Kendall's &tau;", "p")
-    rows <- "Rank test"
-
-    if (is.null(ranktst) && run && can.run)
-      ranktst <- unlist(metafor::ranktest(rma.fit))
-
-    table <- list(title = title)
-    if (! is.null(ranktst)) {
-      table$x <- as.data.frame(t(ranktst[1:2]))
-      rownames(table$x) <- rows
-      colnames(table$x) <- cols
-    } else {
-      table$x <- cols
-      table$y <- rows
-    }
-
-    rankTestTable <- do.call(as.jaspTable, table)
-    results[["ranktest"]] <- rankTestTable
-
-  }
-
-
-  ### Prepare Egger's test for Funnel plot asymmetry ('test for publication bias') ####
-
-  if (options$funnelPlotAsymmetryTest) {
-
-    meta[[length(meta) + 1]] <- list(name = "egger", type = "table")
-    options(jasp_number_format = "sf:5;dp:4")
-    title <- "Regression test for Funnel plot asymmetry (\"Egger's test\")"
-    cols <- if (options$test == "knha") c("t", "p") else c("z", "p")
-
-    if (is.null(egger) && run && can.run)
-      egger <- metafor::regtest(rma.fit)
-
-    table <- list(title = title)
-    if (! is.null(egger)) {
-      table$x <- metafor::coef.summary.rma(summary(egger$fit))[egger$predictor, c(paste0(cols[1], "val"), "pval")]
-      colnames(table$x) <- cols
-    } else {
-      table$x <- cols
-    }
-
-    eggerTable <- do.call(as.jaspTable, table)
-    eggerTable[["citation"]] <- list("Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package. <em>Journal of Statistical Software</em>, <b>36</b>(3), 1–48.")
-    results[["egger"]] <- eggerTable
-
-  }
-
-
-  ### Prepare Casewise diagnostics table ####
-
-  if (options$residualsCasewiseDiagnostics) {
-
-    meta[[length(meta) + 1]] <- list(name = "influence", type = "table")
-    options(jasp_number_format = "sf:5;dp:4")
-
-    if (is.null(influ) && run && can.run)
-      influ <- influence(rma.fit)
-
-    table <- list(title = "Influence Measures")
-    cols <- c("Std. Residual", "DFFITS", "Cook's Distance", "Cov. Ratio",
-              "&tau;&sup2;<sub>(-i)</sub>", "Q<sub>E(-i)</sub>", "Hat", "Weight")
-    if (!is.null(influ)) {
-      table$x <- influ$inf
-      colnames(table$x) <- cols
-      influential <- rownames(influ$inf)[which(influ$is.infl)]
-      postfix <- ifelse(!is.na(influ$is.infl) & influ$is.infl, "*","")
-      rownames(table$x) <- paste0(rownames(table$x), postfix)
-    } else {
-      table$x <- cols
-      influential <- c()
-    }
-
-    influTable <- do.call(as.jaspTable, table)
-
-    # Markup influential cases in a footnote
-    ninfl <- length(influential)
-
-    if (ninfl > 0) {
-      infl.footn <- .newFootnotes()
-      .addFootnote(infl.footn, symbol = "<em>Note.</em>",
-                   text = "Cases marked with * are influential.")
-      influTable[["footnotes"]] <- as.list(infl.footn)
-    }
-
-    results[["influence"]] <- influTable
-  }
-
-
-  ### Prepare Fail-safe N diagnostics table ####
-
-  if (options$plotResidualsCovariates & run & can.run) {
-
-    meta[[length(meta) + 1]] <- list(name = "failsafen", type = "table")
-
-    fsn.fit <-
-      metafor::fsn(yi = get(b64(effsizeName)), sei = get(b64(stderrName)), data = dataset)
-    fsn.fit <- d64(fsn.fit)
-
-    failsnTable <- do.call(data.frame, fsn.fit[c('fsnum','alpha','pval')])
-    colnames(failsnTable) = c('Fail-safe N', 'Target Significance', 'Observed Significance')
-    rownames(failsnTable) = fsn.fit[['type']]
-
-    options(jasp_number_format = "sf:5;dp:4")
-    failsnTable <- as.jaspTable(.clean(failsnTable), title = "File Drawer Analysis")
-    results[["failsafen"]] <- failsnTable
-
-  }
-
-  ### Prepare Plot Output ####
-
-  meta[[length(meta) + 1]] <-
-    list(name = "plots", type = "object",
-         meta = list(
-            list(name = "forrestPlot", type = "image"),
-            list(name = "funnelPlot", type = "image"),
-            list(name = "diagnosticPlot", type = "image"),
-            list(name = "profilePlot", type = "image"),
-            list(name = "trimfillPlot", type = "image")
-        )
-    )
-  plots <- list(title = "Plot")
-
-  # plot forest plot
-  if (options$forestPlot && (! is.null(forestPlot) || run && can.run)) {
-
-    if (is.null(forestPlot)) {
-      img.height <- max(520, nobs(rma.fit) * 20) # very heuristic! needs improvement...
-      forest.img <- .writeImage(width = 520, height = img.height, function() cmaForest(rma.fit, cex.lab=1.2, las=1, efac=15 / nobs(rma.fit)))
-      forestPlot <- list(title="Forest plot", width = 500, height = img.height, convertible = TRUE,
-                         obj = forest.img[["obj"]], data = forest.img[["png"]],
-                         status = "complete")
-    }
-    plots[["forrestPlot"]]  <- forestPlot
-
-  }
-
-  # plot funnel plot
-  if (options$funnelPlot && (! is.null(funnelPlot) || run && can.run)) {
-
-    if (is.null(funnelPlot)) {
-      funnel.img <- .writeImage(width = 520, height = 520, function() metafor::funnel(rma.fit, las=1))
-      funnelPlot <- list(title="Funnel plot", width = 500, height = 500, convertible = TRUE,
-                         obj = funnel.img[["obj"]], data = funnel.img[["png"]],
-                         status = "complete")
-    }
-    plots[["funnelPlot"]]  <- funnelPlot
-
-  }
-
-  # plot 1: residuals and dependent diagnostic plot
-  if (options$plotResidualsDependent && (! is.null(diagnosticsPlot) || run && can.run)) {
-
-    if (is.null(diagnosticsPlot)) {
-      diagnostics.img <- .writeImage(width = 820, height = 820, function() plot(rma.fit, qqplot = options$plotResidualsQQ, las=1))
-      diagnosticsPlot <- list(title = "Diagnostic plots", width = 820, height = 820, convertible = TRUE,
-                              obj = diagnostics.img[["obj"]], data = diagnostics.img[["png"]],
-                              status = "complete")
-    }
-    plots[["diagnosticPlot"]]  <- diagnosticsPlot
-
-  }
-
-  # profile plot: diagnostic plot for tau parameter
-  if (options$plotResidualsPredicted && (! is.null(profilePlot) || run && can.run)) {
-
-    if (is.null(profilePlot)) {
-      profile.img <- .writeImage(width = 520, height = 520, function() profile(rma.fit, cex.lab=1.2, las=1))
-      profilePlot <- list(title = "Log-likelihood profile for &tau;&sup2;", width = 520, height = 520, convertible = TRUE,
-                          obj = profile.img[["obj"]], data = profile.img[["png"]],
-                          status = "complete")
-    }
-    plots[["profilePlot"]]  <- profilePlot
-
-  }
-
-
-  # profile plot: diagnostic plot for tau parameter
-  if (options$trimfillPlot && (! is.null(trimfillPlot) || run && can.run)) {
-
-    if (is.null(trimfillPlot)) {
-      trimfill.fit <- metafor::trimfill(update(rma.fit, mods = ~1))
-      trimfill.img <- .writeImage(width = 820, height = 820, function() plot(trimfill.fit, qqplot=T, cex.lab=1.2, las=1))
-      trimfillPlot <- list(title = "Trim-fill Analysis", width = 820, height = 820, convertible = TRUE,
-                           obj = trimfill.img[["obj"]], data = trimfill.img[["png"]],
-                           status = "complete")
-    }
-    plots[["trimfillPlot"]]  <- trimfillPlot
-
-  }
-
-  ### Create results object to be returned ####
-  results[[".meta"]] <- meta
-  results[["plots"]] <- plots
-
-  ### Finish off: collect objects to keep; update status and state ####
-
-  keep <- NULL
-  for (plot in plots) {
-    if (! is.null(names(plot)) && "data" %in% names(plot)) {
-      keep <- c(keep, plot$data)
-    }
-  }
-
-  if (run) {
-    status <- "complete"
-    state <- list(
-      options = options,
-      rma.fit = rma.fit,
-      dataset = dataset,
-      coefficients = coefficients,
-      fitStats = fitStats,
-      residPars = residPars,
-      coeffVcov = coeffVcov,
-      ranktst = ranktst,
-      egger = egger,
-      influ = influ,
-      fsn.fit = fsn.fit,
-      forestPlot = forestPlot,
-      funnelPlot = funnelPlot,
-      diagnosticsPlot = diagnosticsPlot,
-      profilePlot = profilePlot,
-      trimfillPlot = trimfillPlot
-    )
-    attr(state, "key") <- stateKey
-  } else {
-    status <- "inited"
-  }
-
-  return(list(results = results, status = status,
-              state = state, keep = keep)
-  )
 }
 
-
-
-analysisTitle <- function(object) {
-  title <- capture.output(print(object, showfit = F, signif.legend = F))[2]
-  title <- gsub("numeric\\(0\\)", "", title)
-  title <- gsub("tau\\^2", '&tau;<sup style=font-size:small>2</sup>', title)
-  if (is.na(title)) "Meta-analysis" else title
-}
-
-qTestsTable <- function(object) {
-  # Return the ANOVA table with Q-tests for model significance and residual heterogeneity
-  #print.output <- capture.output(print(object))
-  table <- list()
-
-  # Define table schema
-  fields <- list(
-    list(name = "name", type = "string", title = " "),
-    list(name = "qstat", type = "number", format = "sf:4;dp:3", title = "Q"),
-    list(name = "df", type = "integer", title = "df"),
-    list(name = "pval", type = "number", format = "dp:3;p:.001", title = "p")
+.metaAnalysisFitMeasuresFill <- function(jaspResults, dataset, options, ready) {
+  stats <- list(
+    logLik   = ".",
+    deviance = ".",
+    AIC      = ".",
+    BIC      = ".",
+    AICc     = "."
   )
-
-  # Empty table.
-  table[["schema"]] <- list(fields = fields)
-  table[["title"]] <- "Fixed and Random Effects"
-  table[["data"]] <- list(
-    list(name="Omnibus test of Model Coefficients", qstat=".", df=".", pval = "."),
-    list(name="Test of Residual Heterogeneity", qstat=".", df=".", pval = ".")
-  )
-
-  # Return empty table if no fit has been done
-  if (is.null(object$QE)) return(table)
-
+  if(ready) {
+    # Compute/get model
+    rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready, method)
+    fitStats <- try(metafor:::fitstats(rma.fit))
+    stats$logLik   <- fitStats[[1]]
+    stats$deviance <- fitStats[[2]]
+    stats$AIC      <- fitStats[[3]]
+    stats$BIC      <- fitStats[[4]]
+    stats$AICc     <- fitStats[[5]]
+  }
+  
   # Fill table
-  qstat  <- unlist(object[c('QE','QM')])
-  df <- c(object$k - object$p, object$m)
-  pval <- unlist(object[c('QEp','QMp')])
-  name <- c("Test of Residual Heterogeneity","Omnibus test of Model Coefficients")
-  qtable <- data.frame(name, qstat, df, pval)
-  table[["data"]] <- lapply(2:1, function(i) as.list(qtable[i,]))
-  table
+  jaspResults[["fitMeasuresTable"]]$addRows(list(name = "Log-likelihood", method = stats$logLik))
+  jaspResults[["fitMeasuresTable"]]$addRows(list(name = "Deviance",       method = stats$deviance))
+  jaspResults[["fitMeasuresTable"]]$addRows(list(name = "AIC",            method = stats$AIC))
+  jaspResults[["fitMeasuresTable"]]$addRows(list(name = "BIC",            method = stats$BIC))
+  jaspResults[["fitMeasuresTable"]]$addRows(list(name = "AICc",           method = stats$AICc))
 }
 
-rmaDiagnosticPlot <- function(object, width = 500, height = 500) {
-  plot(object)
-}
-
-rmaForestPlot <- function(object, width = 500, height = 500) {
-  cmaForest(object)
-}
-cmaForest <- function(x, ...) UseMethod("cmaForest")
-cmaForest.dummy <- function(x, ...) {} # do nothing
-cmaForest.rma <- function(x, ...) metafor::forest(x, ...)
-
-print.dummy <- function(...) {
-}
-
-plot.dummy <- function(object, ...) {
-  plot(1:10, col="transparent", axes=FALSE, xlab="", ylab="")
-}
-
-forest.dummy <- function(object, ...) {
-  # do nothing
-}
-
-b64.rma <- function(object, ...) {
-  ## Translate names in object x to base64
-
-  # which elements in object have a names or dimnames attribute?
-  idx <- which(sapply(object, function(x) !is.null(names(x)) || !is.null(dimnames(x))))
-  if (is.null(list(...)$values)) {
-
-    # infer the values to be translated from the object call
-    formula <- eval(object$call$mods)
-    if (!inherits(formula, "formula"))
-      stop("Currently cannot infer 'values' when 'mods' is not a formula. Please provide 'values'.")
-    values <- all.vars(formula)
-
-    # translate object
-    object$call$mods <- formula
-    object[idx] <- b64(object[idx], values = values, ...)
-
-  }
-  else {
-
-    # translate object
-    object[idx] <- b64(object[idx], ...)
-  }
-  object
-}
-d64.rma <- function(object, ...) {
-  ## Untranslate names in object x from base64
-
-  # which elements in object have a names or dimnames attribute?
-  idx <- which(sapply(object, function(x) !is.null(names(x)) || !is.null(dimnames(x))))
-
-  if (is.null(list(...)$values)) {
-
-    # infer the values to be untranslated from the object call
-    formula <- try(eval(object$call$mods))
-    if (!inherits(formula, "formula"))
-      stop("Currently cannot infer 'values' when 'mods' is not a formula. Please provide 'values'.")
-    values <- all.vars(formula)
-
-    # untranslate object
-    object$call$mods <- formula
-    object[idx] <- d64(object[idx], values = values, ...)
-  }
-  else {
-
-    # untranslate object
-    object[idx] <- d64(object[idx], ...)
-  }
-  object
-}
-d64.fsn <- function(object, ...) {
-  object # nothing to untranslate
-}
-
-
-### to JASP table conversion
-## default formatting options
-options(jasp_number_format = "sf:4;dp:3")
-as.jaspTable <- function(x, ...) UseMethod("as_jaspTable")
-as_jaspTable.data.frame <- function(x, title = "", ...) {
-  jaspTable <- list(data = NULL, schema = NULL, title = title)
-
-  # Extract table schema
-  fields <- lapply(c("name", names(x)), function(name) {
-    if (is.null(x[[name]]))
-      return(list(name = "name", type = "string", format = "", title = ""))
-    y <- na.omit(x[[name]])
-
-    type <- ""
-    tryCatch(if (all(is.numeric(y))) {
-      if (any(abs(y - floor(y)) > 0L))
-        type <- "number"
-      else
-        type <- "integer"
-    } else {
-      type <- "string"
-    }, error = function(e) .quitAnalysis(paste(capture.output({print(x); print(name); print(y)}), collapse = "\n")))
-
-    format <- ""
-    if (type == "number") {
-      if (! is.null(options(paste0("jasp_",type,"_format"))[[1]])) {
-      format <- options(paste0("jasp_",type,"_format"))[[1]]
-      } else {
-        format <- "sf:4;dp:3"
-      }
-      if (name == "p" | name == "pval")
-        format <- "dp:3;p:.001"
-    }
-
-    list(name = name, type = type, format = format, title = name)
-  })
-  jaspTable[["schema"]] <- list(fields = fields)
-
-  # Populate the table
-  jaspTable[["data"]] <- list(
-    lapply(names(x), function(...) ".")
+.metaAnalysisResidualFill <- function(jaspResults, dataset, options, ready) {
+  est <- ci.lower <- ci.upper <- list(
+    tau2 = ".",
+    tau  = ".",
+    I2   = ".",
+    H2   = "."
   )
-  if (nrow(x) > 0) {
-    Table <- .clean(x)
-    Table <- cbind(name = rownames(Table), Table);
-
-    jasp.table <- lapply(1:nrow(Table), function(i) as.list(Table[i,])) # apply converts all to string
-    jaspTable[["data"]]  <- structure(jasp.table, .Names=NULL)
+  
+  if(ready) {
+    # Compute/get model
+    rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready, method)
+    confInt <- options$regressionCoefficientsConfidenceIntervalsInterval
+    residPars <- try(confint(rma.fit, digits = 12, level = confInt)$random)
+    
+    est$tau2 <- residPars[1,1]
+    est$tau  <- residPars[2,1]
+    est$I2   <- residPars[3,1]
+    est$H2   <- residPars[4,1]
+    
+    ci.lower$tau2 <- residPars[1,2]
+    ci.lower$tau  <- residPars[2,2]
+    ci.lower$I2   <- residPars[3,2]
+    ci.lower$H2   <- residPars[4,2]
+    
+    ci.upper$tau2 <- residPars[1,3]
+    ci.upper$tau  <- residPars[2,3]
+    ci.upper$I2   <- residPars[3,3]
+    ci.upper$H2   <- residPars[4,3]
   }
-  jaspTable
+  
+  # Fill table
+  jaspResults[["residualTable"]]$addRows(list(
+    list(name = "\u3C4\u00B2", est = est$tau2, 
+         lower = ci.lower$tau2, upper = ci.upper$tau2),
+    list(name = "\u3C4", est = est$tau,
+         lower = ci.lower$tau, upper = ci.upper$tau),
+    list(name = "I\u00B2 (%)", est = est$I2,
+         lower = ci.lower$I2, upper = ci.upper$I2),
+    list(name = "H\u00B2", est = est$H2,
+         lower = ci.lower$H2, upper = ci.upper$H2)
+    ))
 }
 
-as_jaspTable.character <- function(x, y = NULL, ...) {
-  table <- as.data.frame(matrix(".", ncol = length(x), nrow = length(y)))
-
-  colnames(table) <- x
-  if (! is.null(y))
-    rownames(table) <- y
-
-  as.jaspTable(table, ...)
+.metaAnalysisCovMatFill <- function(jaspResults, dataset, options, ready) {
+  results <- list()
+  cov <- unlist(options$modelTerms)
+  cov <- c("intrcpt", cov)
+  len.cov <- length(cov)
+  if(ready) {
+    # Compute/get model
+    rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready, method)
+    confInt <- options$regressionCoefficientsConfidenceIntervalsInterval
+    coeffVcov <- try(vcov(rma.fit))
+    for(i in 1:length(cov)) {
+      row <- list(name = cov[[i]])
+      for(j in 1:length(cov))
+        row[[paste(cov[[j]])]]  <- coeffVcov[i,j]
+      jaspResults[["covMatTable"]]$addRows(row)
+    }
+  } else 
+    jaspResults[["covMatTable"]]$addRows(list(name = "...", intrcpt = ".")) 
 }
 
-as_jaspTable.matrix <- function(x, ...) {
-  # use data.frame method
-  jaspTable <- as.jaspTable(as.data.frame(x), ...)
-
-  # recompute the "data" entry (necessary to work properly with repeated row names)
-  if (nrow(x) > 0) {
-    Table <- .clean(as.data.frame(x))
-    Table <- cbind(name = rownames(x), Table);
-
-    jasp.table <- lapply(1:nrow(Table), function(i) as.list(Table[i,])) # apply() converts all to string, so use lapply()
-    jaspTable[["data"]]  <- structure(jasp.table, .Names=NULL)
+.metaAnalysisRankTestFill <- function(jaspResults, dataset, options, ready) {
+  results <- list(name = "Rank test", kendall = ".", pval = ".")
+  
+  if(ready) {
+    # Compute/get model
+    rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready, method)
+    ranktst <- unlist(metafor::ranktest(rma.fit))
+    results$kendall <- ranktst[[1]]
+    results$pval    <- ranktst[[2]]
   }
-  jaspTable
+  
+  jaspResults[["rankTestTable"]]$addRows(results)
 }
 
-vcov.dummy <- function(x, ...) {
-  matrix(0,0,0)
+.metaAnalysisRegTestFill <- function(jaspResults, dataset, options) {
+  # Compute/get model
+  rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready, method)
+  egger   <- metafor::regtest(rma.fit)
+  coef    <- metafor::coef.summary.rma(summary(egger$fit))
+  #if(options$includeConstant) {
+  #  results <- list()
+  #  results$name <- rownames(coef)[[1]]
+  #  if (options$test == "knha")
+  #    results$t <- coef[1,3]
+  #  else
+  #    results$z <- coef[1,3]
+  #  results$pval <- coef[1,4]
+  #  #results$lower <- coef[1,5]
+  #  #results$upper <- coef[1,6]
+  #  jaspResults[["regTestTable"]]$addRows(results)
+  #}
+  results <- list()
+  results$name <- rownames(coef)[[2]]
+  if (options$test == "knha")
+    results$t <- coef[2,3]
+  else
+    results$z <- coef[2,3]
+  results$pval <- coef[2,4]
+  #results$lower <- coef[2,5]
+  #results$upper <- coef[2,6]
+  
+  jaspResults[["regTestTable"]]$addRows(results)
 }
 
-error_if <- function(conditions, ...) {
-  function() {
-    paste(ifelse(conditions, do.call(paste0, list(...)), ""), collapse = "\n\n")
+.metaAnalysisCasewiseFill <- function(jaspResults, dataset, options, rma.fit) {
+  influ <- influence(rma.fit)
+  influ.inf <- influ$inf
+  influ.is.infl <- influ$is.infl
+  for(i in 1:length(influ.inf$rstudent)) {
+    if(influ.is.infl[i])
+      name <- paste0(i, "\u002A")
+    else
+      name <- paste0(i)
+    
+    jaspResults[["casewiseTable"]]$addRows(list(
+      name   = name,
+      sdRes  = influ.inf$rstudent[i],
+      dfFits = influ.inf$dffits[i],
+      cook   = influ.inf$cook.d[i],
+      cov    = influ.inf$cov.r[i],
+      tau2   = influ.inf$tau2.del[i],
+      QE     = influ.inf$QE.del[i],
+      hat    = influ.inf$hat[i],
+      weight = influ.inf$weight[i]
+    ))
   }
 }
 
-# if(interactive()) {
-#   # For debug purposes these are reset because the ones defined in 'common.R' only work properly
-#   # from within JASP. Make sure to source('common.R') first!
-#   #.beginSaveImage <- function(...) {}
-#   #.endSaveImage <- function(...){}
-#   .requestTempFileNameNative <- function(ext) tempfile(fileext = ext)
-# }
+.metaAnalysisFailSafeFill <- function(jaspResults, dataset, options) {
+  # Compute/get model
+  rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready, method)
+  fsn.fit <- metafor::fsn(yi   = get(b64(options$dependent)), 
+                          sei  = get(b64(options$wlsWeights)), 
+                          data = dataset)
+  fsn.fit <- d64(fsn.fit)
+  
+  results <- list()
+  results$name  <- fsn.fit$type
+  results$fsnum <- fsn.fit$fsnum
+  results$alpha <- fsn.fit$alpha
+  results$pval  <- fsn.fit$pval
+  
+  jaspResults[["failSafeTable"]]$addRows(results)
+}
+
+# Extra functions
+.metaAnalysisConfidenceInterval <- function(options, table) {
+  if(options$regressionCoefficientsConfidenceIntervals) {
+    ci <- paste0(100*options$regressionCoefficientsConfidenceIntervalsInterval, "% Confidence Interval")
+    table$addColumnInfo(name = "lower", type = "number", title = "Lower", overtitle = ci)
+    table$addColumnInfo(name = "upper", type = "number", title = "Upper", overtitle = ci)
+  }
+}
+
+.metaAnalysisSetError <- function(res, table) {
+  if(isTryError(res))
+    table$setError(.extractErrorMessage(res))
+}
