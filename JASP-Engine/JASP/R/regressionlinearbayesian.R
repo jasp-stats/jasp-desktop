@@ -180,17 +180,15 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregFillTableModelComparison <- function(modelComparisonTable, basregModel, options) {
-  nRows <- NULL
-  if (options$shownModels == "limited")
-    nRows <- options$numShownModels
+  nModels <- length(basregModel$which)
+  if (options$shownModels == "limited" && options$numShownModels < nModels)
+    nModels <- options$numShownModels
   
-  if (is.null(nRows) || nRows > length(basregModel$which))
-    nRows <- length(basregModel$which)
-    
-  modelsInOrder <- basregModel[["modelOrder"]][[options$bayesFactorOrder]]
-  modelIndices <- modelsInOrder[1:nRows]
+  allModelIndices <- .basregGetModelOrder(basregModel, options$bayesFactorOrder)
+  modelIndices <- allModelIndices[1:nModels]
+  
   models <- basregModel$which[modelIndices]
-  modelNames <- basregModel[["modelNames"]][modelIndices]
+  modelNames <- .basregGetModelNames(basregModel)[modelIndices]
   
   # get the Bayes factors for the models
   logMarg <- basregModel$logmarg[modelIndices]
@@ -219,20 +217,68 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   ))
 }
 
+.basregGetModelOrder <- function(basregModel, order) {  
+  # ordered indices based on posterior probabilities of the models
+  sortedModels <- order(basregModel$postprobs, decreasing = TRUE)
+  
+  if (order == "nullModelTop") {
+    indexNullModel <- which(sortedModels == 1)
+    sortedModels <- c(1, sortedModels[-indexNullModel])
+  }
+  
+  return(sortedModels)
+}
+
+.basregGetModelNames <- function(basregModel) {
+  # null model name
+  nuisanceTerms <- basregModel$nuisanceTerms
+  nullModel <- "Null model"
+  if (sum(nuisanceTerms) > 0) {
+    nullModel <- paste0("Null model (incl. ", paste(names(which(nuisanceTerms)), collapse = ", "), ")")
+  }
+  
+  models <- basregModel$which
+  allModelsVisited <- any(lengths(models) == 0) # analysis will crash if TRUE
+  modelNames <- character(length(models))
+  
+  # generate all model names
+  for (i in 1:length(models)) {
+    model <- models[[i]]
+    if (length(model) == 1) { # only has intercept
+      modelNames[i] <- nullModel
+      next
+    }
+    model <- model[-1]  # pop the intercept term (not in the nuisance vector)
+    nuisanceInModel <- sum(nuisanceTerms[model])
+    if (nuisanceInModel == length(model)) { # found the null model
+      modelNames[i] <- nullModel
+    } else {
+      nonNuisance <- which(!nuisanceTerms[model])
+      modelNames[i] <- paste(names(nonNuisance), collapse = " + ")
+    }
+  }
+  
+  return(modelNames)
+}
+
 .basregTablePosteriorSummary <- function(postSumContainer, postSumModel, basregModel, options, position) {
   postSumTable <- createJaspTable(title = "Posterior Summaries of Coefficients")
   postSumTable$position <- position
-  postSumTable$dependOn(c("postSummaryTable", "effectsType"))
+  postSumTable$dependOn(c("postSummaryTable", "effectsType", "bayesFactorType"))
+  
+  bfTitle <- "BF<sub>inclusion</sub>"
+  if (options$bayesFactorType == "LogBF10")
+    bfTitle <- "Log(BF<sub>inclusion</sub>)"
   
   overtitle <- sprintf("%s%% Credible Interval", format(100*options[["posteriorSummaryPlotCredibleIntervalValue"]], digits = 3))
-  postSumTable$addColumnInfo(name = "coefficient", title = "Coefficient",            type = "string")
-  postSumTable$addColumnInfo(name = "mean",        title = "Mean",                   type = "number")
-  postSumTable$addColumnInfo(name = "sd",          title = "SD",                     type = "number")
-  postSumTable$addColumnInfo(name = "pInclprior",  title = "P(incl)",                type = "number")
-  postSumTable$addColumnInfo(name = "pIncl",       title = "P(incl|data)",           type = "number")
-  postSumTable$addColumnInfo(name = "BFincl",      title = "BF<sub>inclusion</sub>", type = "number")
-  postSumTable$addColumnInfo(name = "lowerCri",    title = "Lower",                  type = "number", overtitle = overtitle)
-  postSumTable$addColumnInfo(name = "upperCri",    title = "Upper",                  type = "number", overtitle = overtitle)
+  postSumTable$addColumnInfo(name = "coefficient", title = "Coefficient",   type = "string")
+  postSumTable$addColumnInfo(name = "mean",        title = "Mean",          type = "number")
+  postSumTable$addColumnInfo(name = "sd",          title = "SD",            type = "number")
+  postSumTable$addColumnInfo(name = "pInclprior",  title = "P(incl)",       type = "number")
+  postSumTable$addColumnInfo(name = "pIncl",       title = "P(incl|data)",  type = "number")
+  postSumTable$addColumnInfo(name = "BFincl",      title = bfTitle,         type = "number")
+  postSumTable$addColumnInfo(name = "lowerCri",    title = "Lower",         type = "number", overtitle = overtitle)
+  postSumTable$addColumnInfo(name = "upperCri",    title = "Upper",         type = "number", overtitle = overtitle)
   
   if (!is.null(basregModel) && !is.null(postSumModel)) {
     footnote <- postSumModel[["footnotes"]]
@@ -273,11 +319,15 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     probne0     <- c(1 ,tmp[["postInclProb"]])
     priorProbs  <- c(1, tmp[["priorInclProb"]])
     BFinclusion <- c(1, tmp[["bfIncl"]])
-    # show BFinclusion for nuisance predictors as 1, rather than NaN
-    priorInclIs1 <- is.nan(BFinclusion) & abs(1 - priorProbs) <= sqrt(.Machine$double.eps)
-    BFinclusion[priorInclIs1] <- 1
 
   }
+  
+  # show BFinclusion for nuisance predictors as 1, rather than NaN
+  priorInclIs1 <- is.nan(BFinclusion) | abs(1 - priorProbs) <= sqrt(.Machine$double.eps)
+  BFinclusion[priorInclIs1] <- 1
+  
+  if (options$bayesFactorType == "LogBF10")
+    BFinclusion <- log(BFinclusion)
   
   nModels <- basregModel[["n.models"]]
   coef <- postSumModel[["coef"]]
@@ -330,6 +380,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   confInt <- postSumModel[["conf95"]]
   loopIdx <- postSumModel[["loopIdx"]]
   coefficients <- postSumModel[["coefficients"]]
+  coefficients <- .basregReplaceInteractionUnicodeSymbol(coefficients)
   
   # exlude intercept if it's not the only predictor?
   if (options[["omitIntercept"]] && length(loopIdx) > 1)
@@ -381,6 +432,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregFillPlotPosteriorLogOdds <- function(postLogOddsPlot, basregModel) {
+  basregModel$namesx <- .basregReplaceInteractionUnicodeSymbol(basregModel$namesx)
   postLogOddsPlot$plotObject <- function() { 
     BAS:::image.bas(basregModel, rotate = FALSE) 
   }
@@ -607,8 +659,9 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregFillPlotInclusionProbabilities <- function(inclusionProbabilitiesPlot, basregModel) {
-  probne0 = basregModel$probne0[-1]
-  variables = basregModel$namesx[-1] # 1:basregModel$n.vars
+  probne0 <- basregModel$probne0[-1]
+  variables <- basregModel$namesx[-1] # 1:basregModel$n.vars
+  variables <- .basregReplaceInteractionUnicodeSymbol(variables)
   priorProb <- basregModel$priorprobsPredictor[1:basregModel$n.vars][-1]
   
   # reorder from low to high
@@ -688,27 +741,35 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     "plotCoefficientsPosterior", "summaryType", 
     "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI"
   )) #TODO: check if dependencies are correct for this item: was probably wrong in release
-  
-  plotNames <- c("Intercept", unlist(options$covariates))
-  .basregInsertPosteriorDistributionPlots(postDistContainer, plotNames, options, type = "placeholders")
 
-  basregContainer[["postDistContainer"]] <- postDistContainer
+  .basregInsertPosteriorDistributionPlots("placeholders", postDistContainer, plotNames, options, basregModel)
     
   if (!is.null(basregModel) && !is.null(postSumModel))
-      .basregInsertPosteriorDistributionPlots(postDistContainer, basregModel$namesx, options, postSumModel, type = "fill")
+      .basregInsertPosteriorDistributionPlots("fill", postDistContainer, plotNames, options, basregModel, postSumModel)
+  
+  basregContainer[["postDistContainer"]] <- postDistContainer
 }
 
-.basregInsertPosteriorDistributionPlots <- function(postDistContainer, plotNames, options, postSumModel = NULL, type = "") {
-  isNuisance <- .basregCreateNuisanceLookupVector(options$modelTerms)
+.basregInsertPosteriorDistributionPlots <- function(type, postDistContainer, plotNames, options, basregModel = NULL, postSumModel = NULL) {
+  if (is.null(basregModel)) {
+    plotNames <- "Intercept"
+    isNuisance <- setNames(FALSE, "Intercept")
+  } else {
+    plotNames <- .basregReplaceInteractionUnicodeSymbol(basregModel$namesx)
+    isNuisance <- basregModel[["nuisanceTerms"]]
+    names(isNuisance) <- .basregReplaceInteractionUnicodeSymbol(names(isNuisance))
+  }
+  
   for (plotName in plotNames) {
     if (plotName != "Intercept" && isNuisance[which(names(isNuisance) == plotName)])
       next
       
     if (type == "placeholders")
       postDistContainer[[plotName]] <- createJaspPlot(title = plotName, width = 530, height = 400)
-    else if (type == "fill")
+    else
       .basregFillPlotPosteriorDistribution(postDistContainer[[plotName]], which(plotNames == plotName), postSumModel)
-  }     
+      
+  }
 }
 
 .basregFillPlotPosteriorDistribution <- function(posteriorDistributionPlot, index, postSumModel) {
@@ -729,7 +790,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   means = x$conditionalmeans[sel, i, drop = TRUE]
   sds = x$conditionalsd[sel, i, drop = TRUE]
   name = x$namesx[i]
-  name = gsub("\u2009\u273b\u2009", " x ", name, fixed = TRUE) # ggplot can't show the interaction symbol
+  name = .basregReplaceInteractionUnicodeSymbol(name)
   df.sel = df[sel]
   
   df <- df.sel # modified from original
@@ -959,15 +1020,13 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   if (bas_lm$n.models > 1 && nPreds > 1) # can crash without this check
     bas_lm <- BAS::force.heredity.bas(bas_lm)
   
-  bas_lm[["nuisanceTerms"]] <- isNuisance
   # fix for prior probs all returning 1 with uniform and bernoulli 0.5 priors
   bas_lm[["priorprobs"]] <- bas_lm[["priorprobs"]] / sum(bas_lm[["priorprobs"]])
   bas_lm[["priorprobsPredictor"]] <- .basregComputePriorMarginalInclusionProbs(bas_lm)
   bas_lm[["weights"]] <- wlsWeights
   bas_lm[["BFinclusion"]] <- .basregComputeInclusionBF(bas_lm)
   bas_lm[["namesx"]][-1] <- .unvf(bas_lm[["namesx"]][-1])
-  bas_lm[["modelOrder"]] <- .basregCreateModelOrderings(bas_lm)
-  bas_lm[["modelNames"]] <- .basregCreateModelNames(bas_lm)
+  bas_lm[["nuisanceTerms"]] <- setNames(isNuisance, .unvf(names(isNuisance)))
 
   basregContainer[["basregModel"]] <- createJaspState(bas_lm)
   
@@ -990,55 +1049,11 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   for (i in 1:length(modelTerms)) {
     term <- modelTerms[[i]]
     termName <- paste(term$component, collapse = ":")
-    names(isNuisance)[i] <- termName
-    if (term$isNuisance) {
+    names(isNuisance)[i] <- .vf(termName)
+    if (term$isNuisance)
       isNuisance[i] <- TRUE
-    }
   }
   return(isNuisance)
-}
-
-
-.basregCreateModelOrderings <- function(basregModel) {  
-  # ordered indices based on posterior probabilities of the models
-  sortedModels <- order(basregModel$postprobs, decreasing = TRUE)
-  
-  indexNullModel <- which(sortedModels == 1)
-  sortedModelsNullTop <- c(1, sortedModels[-indexNullModel])
-  
-  return(list(bestModelTop = sortedModels, nullModelTop = sortedModelsNullTop))
-}
-
-.basregCreateModelNames <- function(basregModel) {
-  # null model name
-  nuisanceTerms <- basregModel$nuisanceTerms
-  nullModel <- "Null model"
-  if (sum(nuisanceTerms) > 0) {
-    nullModel <- paste0("Null model (incl. ", paste(names(which(nuisanceTerms)), collapse = ", "), ")")
-  }
-  
-  models <- basregModel$which
-  allModelsVisited <- any(lengths(models) == 0) # analysis will crash if TRUE
-  modelNames <- character(length(models))
-  
-  # generate all model names
-  for (i in 1:length(models)) {
-    model <- models[[i]]
-    if (length(model) == 1) { # only has intercept
-      modelNames[i] <- nullModel
-      next
-    }
-    model <- model[-1]  # pop the intercept term (not in the nuisance vector)
-    nuisanceInModel <- sum(nuisanceTerms[model])
-    if (nuisanceInModel == length(model)) { # found the null model
-      modelNames[i] <- nullModel
-    } else {
-      nonNuisance <- which(!nuisanceTerms[model])
-      modelNames[i] <- paste(names(nonNuisance), collapse = " + ")
-    }
-  }
-  
-  return(modelNames)
 }
 
 .basregGetPosteriorSummary <- function(basregContainer, basregModel, dataset, options, ready) {
@@ -1243,4 +1258,9 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   BFinclusion[1] <- 1 # intercept
   
   return(BFinclusion)
+}
+
+.basregReplaceInteractionUnicodeSymbol <- function(name) {
+  # ggplot can't show the interaction symbol
+  gsub("\u2009\u273b\u2009", " x ", name, fixed = TRUE)
 }
