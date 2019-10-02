@@ -62,7 +62,7 @@ Form
 				}
 			}
 			CheckBox {				name: "descriptivesQQPlot";		label: qsTr("Q-Q plots")						}
-            CheckBox {				name: "descriptivesPiechart";	label: qsTr("Pie charts")						}
+			CheckBox {				name: "descriptivesPiechart";	label: qsTr("Pie charts")						}
 		}
 	}
 
