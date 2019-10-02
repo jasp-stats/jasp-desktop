@@ -1281,7 +1281,7 @@ Descriptives <- function(jaspResults, dataset, options) {
     split <- names(dataset)
 
     plotResult <- createJaspContainer(title=variable)
-    plotResult$dependOn(options="splitby", optionContainsValue=list(variables=variable))
+    plotResult$dependOn(optionContainsValue=list(variables=variable))
 
     for (l in split) {
       plotResult[[l]] <- .descriptivesPieChart_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = l)
