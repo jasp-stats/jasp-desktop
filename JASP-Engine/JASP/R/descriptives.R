@@ -1298,7 +1298,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   }
 }
 
-.descriptivesPieChart_SubFunc <- function(column, variable, width, height, displayDensity, title) {
+.descriptivesPieChart_SubFunc <- function(column, variable, width, height, title) {
   plotObj <- createJaspPlot(title=title, width=width, height=height)
 
   if (any(is.infinite(column))) {
