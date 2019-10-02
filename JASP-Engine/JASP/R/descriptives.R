@@ -171,6 +171,9 @@ Descriptives <- function(jaspResults, dataset, options) {
     piePlots <- jaspResults[["pieCharts"]]
 
     for (var in variables) {
+      # skip non-categorical variables
+      if(is.double(dataset.factors[[.v(var)]]))next
+      
       if(is.null(piePlots[[var]])) {
         if (makeSplit) {
           piePlots[[var]] <- .descriptivesPieChart(dataset = splitDat.factors, options = options, variable = var)
@@ -1284,14 +1287,14 @@ Descriptives <- function(jaspResults, dataset, options) {
     plotResult$dependOn(optionContainsValue=list(variables=variable))
 
     for (l in split) {
-      plotResult[[l]] <- .descriptivesPieChart_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = l)
+      plotResult[[l]] <- .descriptivesPieChart_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, title = l)
       plotResult[[l]]$dependOn(optionsFromObject=plotResult)
     }
 
     return(plotResult)
   } else {
     column <- dataset[[.v(variable)]]
-    aPlot <- .descriptivesPieChart_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = variable)
+    aPlot <- .descriptivesPieChart_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, title = variable)
     aPlot$dependOn(options="splitby", optionContainsValue=list(variables=variable))
 
     return(aPlot)
@@ -1306,7 +1309,6 @@ Descriptives <- function(jaspResults, dataset, options) {
   }
   else if (length(column) < 3) {
     plotObj$setError("Plotting is not possible: Too few rows (left)")
-    plotObj$plotObject    <- JASPgraphs::themeJasp(JASPgraphs::drawAxis(xName = variable, xBreaks = 1:5, yBreaks = 1:5))
   }
   else if (length(column) > 0) {
     tb  <- as.data.frame(table(column))
