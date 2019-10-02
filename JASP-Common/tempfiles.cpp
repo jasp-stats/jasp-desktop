@@ -19,7 +19,7 @@
 
 #include <sstream>
 #include <boost/filesystem.hpp>
-
+#include <boost/nowide/convert.hpp>
 #include "boost/nowide/fstream.hpp"
 
 #include "base64.h"
@@ -324,7 +324,12 @@ vector<string> TempFiles::retrieveList(int id)
 	for (; itr != filesystem::directory_iterator(); itr++)
 		if (filesystem::is_regular_file(itr->status()))
 		{
-			string absPath = itr->path().generic_string();
+			filesystem::path pad = itr->path();
+			string absPath = pad.generic_string();
+#ifdef _WIN32
+			wstring wtest = pad.generic_wstring();
+			absPath = nowide::narrow(wtest);
+#endif
 			string relPath = absPath.substr(_sessionDirName.size()+1);
 
 			files.push_back(relPath);
