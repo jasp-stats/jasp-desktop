@@ -30,7 +30,7 @@ Form
 	}
 	
 	columns: 3
-	BayesFactorType {}
+    BayesFactorType { }
 
 	Group
 	{
