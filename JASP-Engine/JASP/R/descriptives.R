@@ -1303,7 +1303,6 @@ Descriptives <- function(jaspResults, dataset, options) {
 
   if (any(is.infinite(column))) {
     plotObj$setError("Plotting is not possible: Variable contains infinity")
-    plotObj$plotObject    <- JASPgraphs::themeJasp(JASPgraphs::drawAxis(xName = variable, xBreaks = 1:5, yBreaks = 1:5))
   }
   else if (length(column) < 3) {
     plotObj$setError("Plotting is not possible: Too few rows (left)")
