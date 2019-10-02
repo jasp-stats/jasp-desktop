@@ -125,5 +125,6 @@
         <file>resources/fonts/FreeSans.ttf</file>
         <file>components/JASP/Theme/DarkTheme.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsUI.qml</file>
+        <file>components/JASP/Controls/NetworkFactorsList.qml</file>
     </qresource>
 </RCC>

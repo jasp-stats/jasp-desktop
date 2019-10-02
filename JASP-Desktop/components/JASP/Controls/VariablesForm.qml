@@ -207,7 +207,7 @@ Item
 		for (i = 0; i < allJASPControls.length; i++)
 		{
 			control = allJASPControls[i];
-			if ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList))
+			if ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList) || (control instanceof NetworkFactorsList))
 			{
 				if (control.width === variablesForm.width)
 					control.setWidthInForm = true
@@ -253,7 +253,7 @@ Item
 		for (var i = 0; i < allJASPControls.length; ++i)
 		{
 			var control				= allJASPControls[i]
-			var isControlList		= ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList))
+			var isControlList		= ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList) || (control instanceof NetworkFactorsList))
 			var isControlComboBox	= (control instanceof ComboBox)
 
 			if (isControlList && control.setWidthInForm)

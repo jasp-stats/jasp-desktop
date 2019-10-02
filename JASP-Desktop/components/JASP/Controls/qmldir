@@ -23,7 +23,8 @@ PercentField              1.0 PercentField.qml
 CIField                    1.0 CIField.qml
 RadioButton                 1.0 RadioButton.qml
 RadioButtonGroup             1.0 RadioButtonGroup.qml
-RepeatedMeasuresFactorsList  1.0 RepeatedMeasuresFactorsList.qml
+RepeatedMeasuresFactorsList   1.0 RepeatedMeasuresFactorsList.qml
+NetworkFactorsList            1.0 NetworkFactorsList.qml
 Slider                       1.0 Slider.qml
 Switch                      1.0 Switch.qml
 TableView                  1.0 TableView.qml

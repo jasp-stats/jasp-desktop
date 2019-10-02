@@ -277,6 +277,7 @@ HEADERS += \
     utilities/languagemodel.h \
     utilities/simplecryptkey.h \
     data/labelfiltergenerator.h \
+    widgets/boundqmlnetworkfactors.h \
     widgets/filemenu/filemenuobject.h \
     widgets/filemenu/datalibrary.h \
     widgets/filemenu/filesystem.h \
@@ -294,6 +295,7 @@ HEADERS += \
     widgets/boundqmlcombobox.h \
     widgets/listmodelanovacustomcontrasts.h \
     widgets/listmodeljagsdatainput.h \
+    widgets/listmodelnetworkfactors.h \
     widgets/listmodelpairsassigned.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
@@ -452,6 +454,7 @@ SOURCES += \
     utilities/simplecrypt.cpp \
     utilities/languagemodel.cpp \
     data/labelfiltergenerator.cpp \
+    widgets/boundqmlnetworkfactors.cpp \
     widgets/filemenu/filemenuobject.cpp \
     widgets/filemenu/datalibrary.cpp \
     widgets/filemenu/filesystem.cpp \
@@ -468,6 +471,7 @@ SOURCES += \
     widgets/boundqmlcombobox.cpp \
     widgets/listmodelanovacustomcontrasts.cpp \
     widgets/listmodeljagsdatainput.cpp \
+    widgets/listmodelnetworkfactors.cpp \
     widgets/listmodelpairsassigned.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \
