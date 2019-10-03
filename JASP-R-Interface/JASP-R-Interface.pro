@@ -13,14 +13,18 @@ QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.a'
 #comment this out if you do not want helpertraces for development of jaspResults and such
 #CONFIG(debug, debug|release) {  DEFINES+=JASP_RESULTS_DEBUG_TRACES }
 
-windows:QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.lib' $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.dll'
+windows{
+QT -= core
+QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.lib' $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.dll'
+message(using extra include $(QTDIR)\include) #Needed to use qglobal.h
+INCLUDEPATH += ../JASP-Common $(QTDIR)/include
+LIBS += -L$$_R_HOME/bin/$$ARCH -lR
+}
 
 macx: QMAKE_CLEAN +=$$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.dylib'
 
 include(../R_HOME.pri)
 INCLUDEPATH += ../JASP-Common
-
-win32: LIBS += -L$$_R_HOME/bin/$$ARCH -lR
 
 DEFINES += JASP_R_INTERFACE_LIBRARY
 
