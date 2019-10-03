@@ -48,20 +48,25 @@ Principcal Component Analysis is used to represent the data in smaller component
 ### Output 
 --- 
 #### Principal Component Analysis 
-Component Loadings:  
-- Variables: The first column shows all the variables included in the analysis. 
-- PC (1, 2, 3, ...): This column shows the variable loadings on the components. 
-- Uniqueness: The percentage of the variance of each variable that is not explained by the component. 
-
-Component Correlations: 
-- The correlation between the principal components. 
-
 Chi-squared Test: 
 The fit of the model is tested. When the test is significant, the model is rejected. Bear in mind that a chi-squared approximation is unreliable for small sample sizes. REFERENCE (also for EFA)
 - Model: The model obtained from the principal component analysis. 
 - Value: The chi-squared test statistic.  
 - df: Degrees of freedom. 
 - p: P-value. 
+
+Component Loadings:  
+- Variables: The first column shows all the variables included in the analysis. 
+- PC (1, 2, 3, ...): This column shows the variable loadings on the components. 
+- Uniqueness: The percentage of the variance of each variable that is not explained by the component. 
+
+Component Characteristics:
+- Eigenvalues: The eigenvalue for each selected component
+- Proportion var.: The proportion of variance in the dataset explained by each component
+- Cumulative: The proportion of variance in the dataset explained by the components up to and including the current component.
+
+Component Correlations: 
+- The correlation between the principal components. 
 
 #### Path Diagram 
 - PC: The principal components are represented by the circles. 

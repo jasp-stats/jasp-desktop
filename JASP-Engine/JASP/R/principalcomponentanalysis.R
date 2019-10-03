@@ -20,13 +20,15 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   
   # Read dataset
   dataset <- .pcaReadData(dataset, options)
-  ready   <- .pcaCheckErrors(dataset, options)
+  ready   <- length(options$variables) > 0
+  .pcaCheckErrors(dataset, options)
   
   modelContainer <- .pcaModelContainer(jaspResults)
   
   # output functions
   .pcaGoFTable(     modelContainer, dataset, options, ready)
   .pcaLoadingsTable(modelContainer, dataset, options, ready)
+  .pcaEigenTable(   modelContainer, dataset, options, ready)
   .pcaCorrTable(    modelContainer, dataset, options, ready)
   .pcaScreePlot(    modelContainer, dataset, options, ready)
   .pcaPathDiagram(  modelContainer, dataset, options, ready)
@@ -86,7 +88,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   )
   error <- .hasErrors(dataset = dataset, type = c("infinity", "variance"), custom = customChecksPCAEFA, 
                       exitAnalysisIfErrors = TRUE)
-  return(length(options$variables) > 0)
+  return()
 }
 
 .pcaModelContainer <- function(jaspResults, options) {
@@ -142,6 +144,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   }
 }
 
+
 # Output functions ----
 .pcaGoFTable <- function(modelContainer, dataset, options, ready) {
   if (!is.null(modelContainer[["goftab"]])) return()
@@ -166,17 +169,18 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   goftab[["p"]]     <- pcaResults$PVAL
   
   if (pcaResults$dof < 0)
-    goftab$addFootnote(message = "Degrees of freedom below 0, model is unidentified.", symbol = "<em>Note.</em>")
+    goftab$addFootnote(message = "Degrees of freedom below 0, model is unidentified.", symbol = "<em>Warning:</em>")
 }
 
 .pcaLoadingsTable <- function(modelContainer, dataset, options, ready) {
-  if (!is.null(modelContainer[["loatab"]]) || !ready) return()
+  if (!is.null(modelContainer[["loatab"]])) return()
   loatab <- createJaspTable("Component Loadings")
   loatab$dependOn("highlightText")
   loatab$position <- 2
+  loatab$addColumnInfo(name = "var", title = "", type = "string")
   modelContainer[["loatab"]] <- loatab
   
-  if (modelContainer$getError()) return()
+  if (!ready || modelContainer$getError()) return()
   
   pcaResults <- modelContainer[["model"]][["object"]]
   
@@ -195,7 +199,6 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   }
   
   loads <- loadings(pcaResults)
-  loatab$addColumnInfo(name = "var", title = "", type = "string")
   loatab[["var"]] <- .unv(rownames(loads))
   
   for (i in 1:ncol(loads)) {
@@ -213,11 +216,36 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   loatab[["uni"]] <- pcaResults$uniquenesses
 }
 
+.pcaEigenTable <- function(modelContainer, dataset, options, ready) {
+  if (!is.null(modelContainer[["eigtab"]])) return()
+  coltitle <- ifelse(options$rotationMethod == "orthogonal", "PC", "RC")
+  
+  eigtab <- createJaspTable("Component Characteristics")
+  eigtab$addColumnInfo(name = "comp", title = "",                type = "string")
+  eigtab$addColumnInfo(name = "eigv", title = "Eigenvalue",      type = "number", format = "sf:4;dp:3")
+  eigtab$addColumnInfo(name = "prop", title = "Proportion var.", type = "number", format = "sf:4;dp:3")
+  eigtab$addColumnInfo(name = "cump", title = "Cumulative",      type = "number", format = "sf:4;dp:3")
+  
+  eigtab$position <- 3
+  
+  modelContainer[["eigtab"]] <- eigtab
+  
+  if (!ready || modelContainer$getError()) return()
+  
+  pcaResults <- modelContainer[["model"]][["object"]]
+  
+  eigv <- pcaResults$values
+  eigtab[["comp"]] <- paste0(coltitle, 1:pcaResults$factors)
+  eigtab[["eigv"]] <- eigv[1:pcaResults$factors]
+  eigtab[["prop"]] <- eigv[1:pcaResults$factors] / sum(eigv)
+  eigtab[["cump"]] <- cumsum(eigv)[1:pcaResults$factors] / sum(eigv)
+}
+
 .pcaCorrTable <- function(modelContainer, dataset, options, ready) {
   if (!options[["incl_correlations"]] || !is.null(modelContainer[["cortab"]]) || !ready) return()
   cortab <- createJaspTable("Component Correlations")
   cortab$dependOn("incl_correlations")
-  cortab$position <- 3
+  cortab$position <- 4
   modelContainer[["cortab"]] <- cortab
   
   if (modelContainer$getError()) return()

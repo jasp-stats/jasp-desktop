@@ -34,6 +34,14 @@ test_that("Component Loadings table results match", {
                       ))
 })
 
+test_that("Component Characteristics table results match", {
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_eigtab"]][["data"]]
+  expect_equal_tables(table,
+                      list("PC1", 0.269220893232411, 1.34610446616205, 0.269220893232411,
+                           "PC2", 0.490210889783784, 1.10494998275686, 0.220989996551372
+                      ))
+})
+
 test_that("Path Diagram plot matches", {
   plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_path"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
