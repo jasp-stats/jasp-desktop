@@ -267,22 +267,6 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   modelContainer[["parest"]] <- pecont <- createJaspContainer("Parameter estimates")
   pecont$dependOn(options = c("ciWidth", "bootCItype"))
   pecont$position <- 0
-
-  se_type <- switch(options$se,
-    "bootstrap" = "Delta method",
-    "standard"  = "Delta method",
-    "robust"    = "Robust"
-  )
-  ci_type <- switch(options$se,
-    "bootstrap" = switch(options$bootCItype, 
-      "perc"       = "percentile bootstrap", 
-      "norm"       = "normal theory bootstrap", 
-      "bca.simple" = "bias-corrected percentile bootstrap"
-    ),
-    "standard"  = "normal theory",
-    "robust"    = "robust"
-  )
-  se_message <- paste(se_type, "standard errors,", ci_type, "confidence intervals")
   
   ## direct effects
   dirtab <- createJaspTable(title = "Direct effects")
@@ -298,7 +282,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
   dirtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  dirtab$addFootnote(se_message)
+  
   
   pecont[["dir"]] <- dirtab
   
@@ -318,7 +302,6 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
   indtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  indtab$addFootnote(se_message)
   
   pecont[["ind"]] <- indtab
   
@@ -336,7 +319,6 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
   tottab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  tottab$addFootnote(se_message)
   
   pecont[["tot"]] <- tottab
   
@@ -347,6 +329,8 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   .medComputeResults(modelContainer, dataset, options, ready)
   
   if (modelContainer$getError()) return()
+  
+  foot_message <- .medFootMessage(modelContainer, options)
   
   pe <- lavaan::parameterEstimates(modelContainer[["model"]][["object"]], boot.ci.type = options$bootCItype, 
                                    level = options$ciWidth)
@@ -361,7 +345,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   dirtab[["pvalue"]]   <- pe_dir$pvalue
   dirtab[["ci.lower"]] <- pe_dir$ci.lower
   dirtab[["ci.upper"]] <- pe_dir$ci.upper
-
+  dirtab$addFootnote(foot_message)
   pe_ind <- pe[pe$op == ":=" & vapply(gregexpr("_", pe$lhs), length, 1) == 3, ]
   
   indtab[["x"]]        <- rep(options$predictor, each = length(options$mediators) * length(options$dependent))
@@ -375,6 +359,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   indtab[["pvalue"]]   <- pe_ind$pvalue
   indtab[["ci.lower"]] <- pe_ind$ci.lower
   indtab[["ci.upper"]] <- pe_ind$ci.upper
+  indtab$addFootnote(foot_message)
   
   pe_tot <- pe[pe$op == ":=" & substr(pe$lhs, 1, 3) == "tot",]
   
@@ -387,27 +372,12 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   tottab[["pvalue"]]   <- pe_tot$pvalue
   tottab[["ci.lower"]] <- pe_tot$ci.lower
   tottab[["ci.upper"]] <- pe_tot$ci.upper
+  tottab$addFootnote(foot_message)
 }
 
 .medTotIndTable <- function(modelContainer, options, ready) {
   if (!options[["showtotind"]] || !length(options$mediators) > 1) return()
   
-  se_type <- switch(options$se,
-    "bootstrap" = "Delta method",
-    "standard"  = "Delta method",
-    "robust"    = "Robust"
-  )
-  ci_type <- switch(options$se,
-    "bootstrap" = switch(options$bootCItype, 
-                         "perc"       = "percentile bootstrap", 
-                         "norm"       = "normal theory bootstrap", 
-                         "bca.simple" = "bias-corrected percentile bootstrap"
-    ),
-    "standard"  = "normal theory",
-    "robust"    = "robust"
-  )
-  se_message <- paste(se_type, "standard errors,", ci_type, "confidence intervals")
-    
   ttitab <- createJaspTable(title = "Total indirect effects")
   ttitab$dependOn("showtotind")
   
@@ -422,11 +392,12 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
   ttitab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  ttitab$addFootnote(se_message)
-  
+
   modelContainer[["parest"]][["tti"]] <- ttitab
   
   if (!ready || modelContainer$getError()) return()
+  
+  foot_message <- .medFootMessage(modelContainer, options)
   
   pe <- lavaan::parameterEstimates(modelContainer[["model"]][["object"]], boot.ci.type = options$bootCItype, 
                                    level = options$ciWidth)
@@ -441,26 +412,11 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   ttitab[["pvalue"]]   <- pe_tti$pvalue
   ttitab[["ci.lower"]] <- pe_tti$ci.lower
   ttitab[["ci.upper"]] <- pe_tti$ci.upper
+  ttitab$addFootnote(foot_message)
 }
 
 .medResTable <- function(modelContainer, options, ready) {
   if (!options[["showres"]] || !length(c(options$mediators, options$dependent)) > 2) return()
-  
-  se_type <- switch(options$se,
-    "bootstrap" = "Delta method",
-    "standard"  = "Delta method",
-    "robust"    = "Robust"
-  )
-  ci_type <- switch(options$se,
-    "bootstrap" = switch(options$bootCItype, 
-                         "perc"       = "percentile bootstrap", 
-                         "norm"       = "normal theory bootstrap", 
-                         "bca.simple" = "bias-corrected percentile bootstrap"
-    ),
-    "standard"  = "normal theory",
-    "robust"    = "robust"
-  )
-  se_message <- paste(se_type, "standard errors,", ci_type, "confidence intervals")
   
   restab <- createJaspTable(title = "Residual covariances")
   restab$dependOn("showres")
@@ -476,11 +432,12 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
   restab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  restab$addFootnote(se_message)
   
   modelContainer[["parest"]][["res"]] <- restab 
   
   if (!ready || modelContainer$getError()) return()
+  
+  foot_message <- .medFootMessage(modelContainer, options)
   
   pe <- lavaan::parameterEstimates(modelContainer[["model"]][["object"]], boot.ci.type = options$bootCItype, 
                                    level = options$ciWidth)
@@ -499,6 +456,37 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   restab[["pvalue"]]   <- pe_res$pvalue
   restab[["ci.lower"]] <- pe_res$ci.lower
   restab[["ci.upper"]] <- pe_res$ci.upper
+  restab$addFootnote(foot_message)
+}
+
+.medFootMessage <- function(modelContainer, options) {
+  # Create the footnote message
+  se_type <- switch(options$se,
+    "bootstrap" = "Delta method",
+    "standard"  = "Delta method",
+    "robust"    = "Robust"
+  )
+  ci_type <- switch(options$se,
+    "bootstrap" = switch(options$bootCItype, 
+      "perc"       = "percentile bootstrap", 
+      "norm"       = "normal theory bootstrap", 
+      "bca.simple" = "bias-corrected percentile bootstrap"
+    ),
+    "standard"  = "normal theory",
+    "robust"    = "robust"
+  )
+  
+  if (is.null(modelContainer[["model"]][["object"]])) {
+    return(paste0(
+      se_type, " standard errors, ", ci_type, " confidence intervals."
+    ))
+  } else {
+    return(paste0(
+      se_type, " standard errors, ", ci_type, " confidence intervals, ", 
+      modelContainer[["model"]][["object"]]@Options$estimator, " estimator."
+    ))
+  }
+  
 }
 
 .medRsquared <- function(modelContainer, options, ready) {
