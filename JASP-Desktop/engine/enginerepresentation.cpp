@@ -57,6 +57,7 @@ void EngineRepresentation::clearAnalysisInProgress()
 
 void EngineRepresentation::setAnalysisInProgress(Analysis* analysis)
 {
+	analysis->incrementRevision(); // Increment revision only when the analysis request is about to be sent
 	if(_engineState == engineState::analysis)
 	{
 		if(_analysisInProgress == analysis)	return; //we are already busy with this analysis so everything is fine
@@ -116,6 +117,7 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 	Json::Value json = Json::Value(Json::objectValue);
 
 	_engineState			= engineState::filter;
+
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["generatedFilter"] = filterStore->generatedfilter.toStdString();
 	json["requestId"]		= filterStore->requestId;
@@ -272,10 +274,16 @@ void EngineRepresentation::analysisRemoved(Analysis * analysis)
 void EngineRepresentation::processAnalysisReply(Json::Value & json)
 {
 	if(_engineState == engineState::paused || _engineState == engineState::resuming || _engineState == engineState::idle)
+	{
+		Log::log() << "Do not process analysis reply because engineState is paused, resuming or idle" << std::endl;
 		return;
+	}
 
 	if(_engineState != engineState::analysis)
+	{
+		Log::log() << "The engineState is not analysis!!!" << std::endl;
 		return;
+	}
 
 #ifdef PRINT_ENGINE_MESSAGES
 	Log::log() << "Analysis reply: " << json.toStyledString() << std::endl;
@@ -317,7 +325,10 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		throw std::runtime_error("Received results for wrong analysis!");
 
 	if(analysis->revision() > revision) //I guess we changed some option or something?
+	{
+		Log::log() << "This is not the same revision. Options may have already changed" << std::endl;
 		return;
+	}
 
 	analysis->setStatus(analysisResultStatusToAnalysStatus(status, analysis));
 
