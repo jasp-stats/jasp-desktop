@@ -120,6 +120,7 @@ public:
 			bool				usesJaspResults()	const	{ return _useJaspResults;					}
 			Status				status()			const	{ return _status;							}
 			int					revision()			const	{ return _revision;							}
+			void				incrementRevision()			{ _revision++;								}
 			bool				isRefreshBlocked()	const	{ return _refreshBlocked;					}
 			QString				helpFile()			const	{ return _helpFile;							}
 	const	Json::Value		&	getSaveImgOptions()	const	{ return _saveImgOptions;					}
