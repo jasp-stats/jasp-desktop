@@ -158,6 +158,31 @@ Descriptives <- function(jaspResults, dataset, options) {
       }
     }
   }
+
+  # Pie charts
+  if (options$descriptivesPiechart) {
+
+    if(is.null(jaspResults[["pieCharts"]])) {
+      jaspResults[["pieCharts"]] <- createJaspContainer("Pie charts")
+      jaspResults[["pieCharts"]]$dependOn(c("splitby", "descriptivesPiechart"))
+      jaspResults[["pieCharts"]]$position <- 9
+    }
+
+    piePlots <- jaspResults[["pieCharts"]]
+
+    for (var in variables) {
+      # skip non-categorical variables
+      if(is.double(dataset.factors[[.v(var)]]))next
+      
+      if(is.null(piePlots[[var]])) {
+        if (makeSplit) {
+          piePlots[[var]] <- .descriptivesPieChart(dataset = splitDat.factors, options = options, variable = var)
+        } else {
+          piePlots[[var]] <- .descriptivesPieChart(dataset = dataset.factors, options = options, variable = var)
+        }
+      }
+    }
+  }
   return()
 }
 
@@ -1253,4 +1278,43 @@ Descriptives <- function(jaspResults, dataset, options) {
   return(descriptivesQQPlot)
 }
 
+.descriptivesPieChart <- function(dataset, options, variable) {
+  if (options$splitby != "" ) {
+    # return a collection
+    split <- names(dataset)
+
+    plotResult <- createJaspContainer(title=variable)
+    plotResult$dependOn(optionContainsValue=list(variables=variable))
+
+    for (l in split) {
+      plotResult[[l]] <- .descriptivesPieChart_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, title = l)
+      plotResult[[l]]$dependOn(optionsFromObject=plotResult)
+    }
+
+    return(plotResult)
+  } else {
+    column <- dataset[[.v(variable)]]
+    aPlot <- .descriptivesPieChart_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, title = variable)
+    aPlot$dependOn(options="splitby", optionContainsValue=list(variables=variable))
+
+    return(aPlot)
+  }
+}
+
+.descriptivesPieChart_SubFunc <- function(column, variable, width, height, title) {
+  plotObj <- createJaspPlot(title=title, width=width, height=height)
+
+  if (any(is.infinite(column))) {
+    plotObj$setError("Plotting is not possible: Variable contains infinity")
+  }
+  else if (length(column) < 3) {
+    plotObj$setError("Plotting is not possible: Too few rows (left)")
+  }
+  else if (length(column) > 0) {
+    tb  <- as.data.frame(table(column))
+    plotObj$plotObject <- JASPgraphs::plotPieChart(tb[,2],tb[,1], legendName = variable)
+  }
+
+  return(plotObj)
+}
 # </editor-fold> HELPER FUNCTIONS BLOCK
