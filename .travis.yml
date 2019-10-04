@@ -1,6 +1,6 @@
 os: osx
 language: r
-r: 3.5.2
+r: 3.6.1
 #cache: packages
 before_install: 
   - "git clone --branch=MacOS https://github.com/jasp-stats/jasp-required-files.git ~/pkgs"
