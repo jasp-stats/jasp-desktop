@@ -98,6 +98,9 @@ Terms* ListModelDraggable::addTerms(Terms *terms, int dropItemIndex, const QStri
 
 bool ListModelDraggable::canAddTerms(Terms *terms) const
 {
+	if (!terms)
+		return false;
+
 	for (const Term &term : *terms)
 	{
 		if ( ! isAllowed(term))
