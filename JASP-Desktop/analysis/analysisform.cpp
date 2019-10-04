@@ -504,7 +504,7 @@ void AnalysisForm::bindTo()
 				// As their assigned models are not yet bound, resetTermsFromSourceModels (with updateAssigned argument set to true) must be called afterwards.
 				if (availableModel)
 				{
-					if (optionsFromJASPFile != Json::nullValue)
+					if (optionsFromJASPFile != Json::nullValue || _analysis->isDuplicate())
 						availableModel->resetTermsFromSourceModels(false);
 					else
 						availableModelsToBeReset.push_back(availableModel);
