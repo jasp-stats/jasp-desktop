@@ -28,7 +28,7 @@ class Utils
 public:
 	friend class PreferencesModel;
 
-	enum FileType { jasp = 0, html, csv, txt, sav, ods, pdf, sas7bdat, sas7bcat, por, xpt, empty, unknown  };
+	enum FileType { jasp = 0, html, csv, txt, tsv, sav, ods, pdf, sas7bdat, sas7bcat, por, xpt, empty, unknown  };
 	typedef std::vector<Utils::FileType> FileTypeVector;
 
 	static const char* getFileTypeString(const Utils::FileType &fileType);

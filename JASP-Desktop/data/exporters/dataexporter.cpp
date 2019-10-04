@@ -29,6 +29,7 @@ DataExporter::DataExporter(bool includeComputeColumns) : _includeComputeColumns(
 	_defaultFileType = Utils::csv;
     _allowedFileTypes.push_back(Utils::csv);
     _allowedFileTypes.push_back(Utils::txt);
+    _allowedFileTypes.push_back(Utils::tsv);
 }
 
 void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)

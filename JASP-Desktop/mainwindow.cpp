@@ -1198,7 +1198,7 @@ void MainWindow::startDataEditorHandler()
 		case MessageForwarder::DialogResponse::No:
 		{
 			QString caption = "Find Data File";
-			QString filter = "Data File (*.csv *.txt *.sav *.ods)";
+			QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods)";
 
 			path = MessageForwarder::browseOpenFile(caption, "", filter);
 			if (path == "")
