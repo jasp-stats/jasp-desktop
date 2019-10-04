@@ -42,6 +42,7 @@ const char* Utils::getFileTypeString(const Utils::FileType &fileType)
 	{
 	case Utils::csv:		return "csv";
 	case Utils::txt:		return "txt";
+	case Utils::tsv:		return "tsv";
 	case Utils::sav:		return "sav";
 	case Utils::ods:		return "ods";
 	case Utils::jasp:		return "jasp";
