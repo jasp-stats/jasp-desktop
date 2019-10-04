@@ -103,6 +103,8 @@ public:
 	void setUserData(Json::Value userData)				{ _userData = userData;							}
 	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;						}
 	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;			}
+	void incrementRevision()							{ _revision++;									}
+
 
 	bool checkAnalysisEntry();
 	
@@ -120,7 +122,6 @@ public:
 			bool				usesJaspResults()	const	{ return _useJaspResults;					}
 			Status				status()			const	{ return _status;							}
 			int					revision()			const	{ return _revision;							}
-			void				incrementRevision()			{ _revision++;								}
 			bool				isRefreshBlocked()	const	{ return _refreshBlocked;					}
 			QString				helpFile()			const	{ return _helpFile;							}
 	const	Json::Value		&	getSaveImgOptions()	const	{ return _saveImgOptions;					}
@@ -128,6 +129,7 @@ public:
 			DataSetPackage	*	getDataSetPackage()	const;
 	Modules::DynamicModule	*	dynamicModule()		const	{ return _dynamicModule;					}
 			AnalysisForm	*	form()				const	{ return _analysisForm;						}
+			bool				isDuplicate()		const	{ return _isDuplicate;						}
 
 			void		refresh();
 			void		reload();
