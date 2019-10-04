@@ -123,6 +123,13 @@ void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* ta
 			if (!sourceModel->copyTermsWhenDropped() && targetModel->removeTermsWhenDragged())
 			{
 				Terms* terms = sourceModel->termsFromIndexes(indexes);
+				if (terms == nullptr || terms->size() == 0)
+				{
+					Log::log() << "No terms found when trying to moving them" << std::endl;
+					if (terms)
+						delete terms;
+					return;
+				}
 				success = targetModel->canAddTerms(terms);
 				if (success)
 					removedTermsWhenDropping = targetModel->addTerms(terms, dropItemIndex, assignOption);

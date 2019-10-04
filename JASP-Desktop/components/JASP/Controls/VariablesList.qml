@@ -135,7 +135,8 @@ JASPControl
 
 		var assignOption = (target && target.interactionControl) ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
 		itemsDropped(selectedItems, target, -1, assignOption);
-	}	
+		listView.clearSelectedItems(true);
+	}
 	
 /*	onDependencyMustContainChanged:
 		if(variablesList.model !== undefined)
