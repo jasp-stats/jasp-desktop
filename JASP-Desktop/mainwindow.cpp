@@ -72,7 +72,7 @@ QMap<QString, QVariant> MainWindow::_iconFiles {
 };
 
 QMap<QString, QVariant> MainWindow::_iconInactiveFiles {
-	{ "nominalText"	, _iconPath + "variable-nominal-inactive.svg" },
+	{ "nominalText"	, _iconPath + "variable-nominal-text-inactive.svg" },
 	{ "nominal"		, _iconPath + "variable-nominal-inactive.svg"},
 	{ "ordinal"		, _iconPath + "variable-ordinal-inactive.svg"},
 	{ "scale"		, _iconPath + "variable-scale-inactive.svg"}
