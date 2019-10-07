@@ -31,7 +31,7 @@ Form {
             name: "target"    
             title: qsTr("Target")         
             singleVariable: true
-			allowedColumns: ["nominal", "ordinal"]
+			allowedColumns: ["nominal", "nominalText", "ordinal"]
             id: target 
         }
         AssignedVariablesList  { 
