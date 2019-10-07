@@ -47,7 +47,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   groupingVariable <- options[["groupingVariable"]]
   vars2read <- c(variables, groupingVariable)
   vars2read <- vars2read[vars2read != ""]
-  dataset <- .readDataSetToEnd(columns = vars2read)
+  dataset <- .readDataSetToEnd(columns.as.numeric = vars2read)
   
   if (options[["groupingVariable"]] == "") { # one network
     dataset <- list(dataset) # for compatability with the split behaviour
@@ -65,7 +65,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
   variables <- unlist(options[["variables"]])
   nvar <- length(variables)
-  # new way that turned out to be not so usefull
+  # new way that turned out to be not so useful
   # if (options[["layoutX"]] != "" && options[["layoutY"]] != "") {
   # 
   #   options[["layoutXData"]] <- .readDataSetToEnd(columns.as.numeric = options[["layoutX"]], exclude.na.listwise = options[["layoutX"]])[[1]]
@@ -486,11 +486,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (!is.null(plotContainer[["centralityPlot"]]) || !options[["plotCentrality"]])
     return()
   
-  plot <- createJaspPlot(title = "Centrality Plot", position = 42,
-                         width = options[["plotWidthCentrality"]],
-                         height = options[["plotHeightCentrality"]], 
-                         dependencies = "plotCentrality"
-  )
+  plot <- createJaspPlot(title = "Centrality Plot", position = 42, dependencies = "plotCentrality")
   plotContainer[["centralityPlot"]] <- plot
   if (is.null(network[["centrality"]]) || plotContainer$getError())
     return()
@@ -541,11 +537,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (!is.null(plotContainer[["clusteringPlot"]]) || !options[["plotClustering"]])
     return()
   
-  plot <- createJaspPlot(title = "Clustering Plot", position = 43,
-                         width = options[["plotWidthClustering"]],
-                         height = options[["plotHeightClustering"]],
-                         dependencies = "plotClustering"
-  )
+  plot <- createJaspPlot(title = "Clustering Plot", position = 43, dependencies = "plotClustering")
   plotContainer[["clusteringPlot"]] <- plot
   if (is.null(network[["clustering"]]) || plotContainer$getError())
     return()
@@ -658,7 +650,6 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   title <- if (nGraphs == 1L) "" else "Network Plots"
   
   networkPlotContainer <- createJaspContainer(title = title, position = 41, dependencies = c(
-    "plotWidthNetwork", "plotHeightNetwork",
     "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
     "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors",
     "showLegend", "legendNumber", "showMgmVariableType", "showVariableNames",
@@ -756,8 +747,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   names(allLegends) <- names(allNetworks) # allows indexing by name
   
   for (v in names(allNetworks))
-    networkPlotContainer[[v]] <- createJaspPlot(title = v, width = options[["plotWidthNetwork"]],
-                                                height = options[["plotHeightNetwork"]], aspectRatio = aspectRatio)
+    networkPlotContainer[[v]] <- createJaspPlot(title = v, aspectRatio = aspectRatio)
   
   .suppressGrDevice({
     
@@ -802,7 +792,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   plotContainer <- createJaspContainer(title = title, position = position)
   
   for (v in names(bootstrapResults))
-    plotContainer[[v]] <- createJaspPlot(title = v, width = options[["plotWidthBootstrapPlot"]], height = options[["plotHeightBootstrapPlot"]])
+    plotContainer[[v]] <- createJaspPlot(title = v)
   
   bootstrapContainer[[name]] <- plotContainer
   
@@ -833,16 +823,19 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
   if (!options[["ready"]])
     return(networkList)
-  
+
   if (is.null(networkList[["network"]]))
     tryCatch(
-      networkList[["network"]] <- .networkAnalysisComputeNetworks(options, dataset), 
+      networkList[["network"]] <- .networkAnalysisComputeNetworks(options, dataset),
+      mgmError = function(e) {
+        mainContainer[["generalTable"]]$addFootnote(e[["message"]])
+      },
       error = function(e) {
         mainContainer$setError(paste0("bootnet crashed with the following error message:\n", .extractErrorMessage(e)))
       }
     )
 
-  if (!mainContainer$getError()) {
+  if (!mainContainer$getError() && !is.null(networkList[["network"]])) {
     if (is.null(networkList[["centrality"]]))
       networkList[["centrality"]] <- .networkAnalysisComputeCentrality(networkList[["network"]], options[["normalizeCentrality"]], options[["weightedNetwork"]], options[["signedNetwork"]])
     
@@ -872,6 +865,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
 .networkAnalysisMakeBootnetArgs <- function(dataset, options) {
   
+  errorMessage <- NULL
   variables <- unlist(options[["variables"]])
   options[["rule"]] <- toupper(options[["rule"]])
   if (options[["correlationMethod"]] == "auto")
@@ -891,24 +885,49 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     
     nvar <- length(variables)
     level <- rep(1, nvar)
-    if (is.null(options[["mgmVariableTypeData"]])) {
-      type <- rep("g", nvar)
-    } else {
-      type <- options[["mgmVariableTypeData"]]
-      invalidType <- is.na(type) | !(type %in% c("g", "c", "p"))
-      type[invalidType] <- "g" # set missing to gaussian. TODO: add to table message.
-      
-      if (any(invalidType))
-        networkList[["message"]] <- c(networkList[["message"]],
-                                      sprintf("The variable types supplied in %s contain missing values or values that do not start with 'g', 'c', or 'p'. These have been reset to gaussian ('g'). They were indices %s.",
-                                              options[["mgmVariableType"]], paste(which(invalidType), sep = ", ")))
-      
-      # find out the levels of each categorical variable
-      for (i in which(type == "c"))
-        level[i] <- max(1, nlevels(dataset[[1]][[i]]), length(unique(dataset[[1]][[i]])))
-      
+    type <- character(nvar)
+    
+    tempMat <- matrix(ncol = 2, byrow = TRUE, c(
+      "mgmVariableTypeContinuous",  "g",
+      "mgmVariableTypeCategorical", "c",
+      "mgmVariableTypeCount",       "p"
+    ))
+    for (i in seq_len(nrow(tempMat))) {
+      lookup <- options[[tempMat[i, 1L]]]
+      if (length(lookup) > 0L) {
+        idx <- match(lookup, variables)
+        type[idx] <- tempMat[i, 2L]
+      }
     }
     
+    if (any(type == "")) {
+      message <- "Please drag all variables to a particular type under \"Estimator options\"."
+      e <- structure(class = c("mgmError", "error", "condition"), list(message = message, call = sys.call(-1)))
+      stop(e)
+    }
+    
+    # find out the levels of each categorical variable
+    for (i in which(type == "c"))
+      level[i] <- max(1L, nlevels(dataset[[1L]][[i]]), length(unique(dataset[[1L]][[i]])))
+    
+    
+    # if (is.null(options[["mgmVariableTypeData"]])) {
+    #   type <- rep("g", nvar)
+    # } else {
+    #   type <- options[["mgmVariableTypeData"]]
+    #   invalidType <- is.na(type) | !(type %in% c("g", "c", "p"))
+    #   type[invalidType] <- "g" # set missing to gaussian. TODO: add to table message.
+    #   
+    #   if (any(invalidType))
+    #     networkList[["message"]] <- c(networkList[["message"]],
+    #                                   sprintf("The variable types supplied in %s contain missing values or values that do not start with 'g', 'c', or 'p'. These have been reset to gaussian ('g'). They were indices %s.",
+    #                                           options[["mgmVariableType"]], paste(which(invalidType), sep = ", ")))
+    #   
+    #   # find out the levels of each categorical variable
+    #   for (i in which(type == "c"))
+    #     level[i] <- max(1, nlevels(dataset[[1]][[i]]), length(unique(dataset[[1]][[i]])))
+    #   
+    # }
   }
   
   if (options[["thresholdBox"]] == "value") {
@@ -972,7 +991,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
   if (!isNamespaceLoaded("bootnet"))
     try(loadNamespace("bootnet"), silent = TRUE)
-  
+
   # setup all bootnet arguments, then loop over datasets to estimate networks
   .dots <- .networkAnalysisMakeBootnetArgs(dataset, options)
   
@@ -990,7 +1009,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
         , type = "message"
       )
     )
-    
+
     network[["corMessage"]] <- msg
     networks[[nw]] <- network
   }
