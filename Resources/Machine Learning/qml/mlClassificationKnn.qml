@@ -32,14 +32,14 @@ Form {
             name: "target"
             title: qsTr("Target")
             singleVariable: true
-			allowedColumns: ["ordinal", "nominal"]
+			allowedColumns: ["ordinal", "nominal", "nominalText"]
         }
         AssignedVariablesList {
             id: predictors
             name: "predictors"
             title: qsTr("Predictors")
             singleVariable: false
-			allowedColumns: ["scale", "ordinal", "nominal"]
+			allowedColumns: ["scale", "ordinal", "nominal", "nominalText"]
         }
     }
     
