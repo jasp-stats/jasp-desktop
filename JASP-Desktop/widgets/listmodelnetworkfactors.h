@@ -28,69 +28,29 @@ public:
 	
 	ListModelNetworkFactors(QMLListView* listView);
 	
-	int			rowCount(const QModelIndex &parent = QModelIndex())						const override;
-	QVariant	data(const QModelIndex &index, int role = Qt::DisplayRole)			const override;
-	
-	void		initGroups(const std::vector<std::string> &groups);
-	std::vector<std::string>	ListModelNetworkFactors::getGroups();
+	int							rowCount(const QModelIndex &parent = QModelIndex())				const	override;
+	QVariant					data(const QModelIndex &index, int role = Qt::DisplayRole)		const	override;
+	void						initGroups(const std::vector<std::string> &groups);
+	std::vector<std::string>	getGroups();
 
-//	void initFactors(const std::vector<std::pair<std::string, std::vector<std::string> > > &factors);
-//	std::vector<std::pair<std::string, std::vector<std::string> > > getFactors() const;
-//	const Terms& getLevels() const;
 
-	
 public slots:
 	void itemChanged(int row, QVariant value);
 	void itemRemoved(int row);
 		
 protected:
-	QStringList		_groups;
-	QString			_removeGroup(int row);
-/*	struct Factor
+
+	struct Group
 	{
 		QString		value;
 		bool		isVirtual;
-		bool		isLevel;
-		Factor*		headFactor;
-		Factor(const QString& _value, bool _isVirtual, bool _isLevel, Factor* _factor = nullptr) :
-			value(_value), isVirtual(_isVirtual), isLevel(_isLevel)
-		{
-			if (_factor)
-				headFactor = _factor;
-			else
-				headFactor = this;
-		}
 
-		Factor(const Factor& factor) : value(factor.value), isVirtual(factor.isVirtual), isLevel(factor.isLevel)
-		{
-			if (&factor == factor.headFactor)
-				headFactor = this;
-			else
-				headFactor = factor.headFactor;
-		}
-
-		bool operator==(const Factor& factor)
-		{
-			return factor.headFactor == headFactor
-					&& factor.isLevel == isLevel
-					&& factor.isVirtual == isVirtual
-					&& factor.value == value;
-		}
+		Group(const QString&		_value,	bool _isVirtual) : value(_value),							isVirtual(_isVirtual) {}
+		Group(const std::string&	_value,	bool _isVirtual) : value(QString::fromStdString(_value)),	isVirtual(_isVirtual) {}
 	};
-	QList<Factor>	_factors;
-	
-	Terms			_allLevelsCombinations;
+	QList<Group>	_groups;
+	QString			_removeGroup(int row);
 
-	QStringList		_getOtherLevelsStringList(const Factor& factor);
-	QStringList		_getAllFactorsStringList();
-	QString			_giveUniqueName(const QStringList& names, const QString startName);
-	int				_getIndex(const Factor& factor) const;
-	
-	void			_updateVirtualLevelIndex(Factor* headFactor);
-	void			_updateVirtualFactorIndex();
-	void			_setAllLevelsCombinations();
-	QString			_removeFactor(int row);
-*/
 };
 
 #endif // LISTMODELNETWORKFACTORS_H

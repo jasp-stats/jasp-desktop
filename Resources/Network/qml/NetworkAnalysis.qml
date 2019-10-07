@@ -24,16 +24,6 @@ import JASP.Controls 1.0
 Form
 {
 
-	CheckBox	 { name: "parallelBootstrap";		checked: false;		visible: false }
-	IntegerField { name: "plotHeightBootstrapPlot";	defaultValue: 320;	visible: false }
-	IntegerField { name: "plotHeightCentrality";	defaultValue: 320;	visible: false }
-	IntegerField { name: "plotHeightClustering";	defaultValue: 320;	visible: false }
-	IntegerField { name: "plotHeightNetwork";		defaultValue: 320;	visible: false }
-	IntegerField { name: "plotWidthBootstrapPlot";	defaultValue: 480;	visible: false }
-	IntegerField { name: "plotWidthCentrality";		defaultValue: 480;	visible: false }
-	IntegerField { name: "plotWidthClustering";		defaultValue: 480;	visible: false }
-	IntegerField { name: "plotWidthNetwork";		defaultValue: 480;	visible: false }
-
 	VariablesForm 
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
@@ -48,14 +38,14 @@ Form
 		label: qsTr("Estimator")
 		Layout.columnSpan: 2
 		values: [
-			{ value: "EBICglasso",      label: "EBICglasso"         },
-			{ value: "cor",             label: "Correlation"        },
-			{ value: "pcor",            label: "Partial Correlation"},
-			{ value: "IsingFit",        label: "IsingFit"           },
-			{ value: "IsingSampler",    label: "IsingSampler"       },
-			{ value: "huge",            label: "huge"               },
-			{ value: "adalasso",        label: "type1"              },
-			{ value: "mgm",             label: "type1"              }
+			{ value: "EBICglasso",		label: "EBICglasso"			},
+			{ value: "cor",				label: "Correlation"		},
+			{ value: "pcor",			label: "Partial Correlation"},
+			{ value: "IsingFit",		label: "IsingFit"			},
+			{ value: "IsingSampler",	label: "IsingSampler"		},
+			{ value: "huge",			label: "huge"				},
+			{ value: "adalasso",		label: "adalasso"			},
+			{ value: "mgm",				label: "mgm"				}
 		]
 	}
 
@@ -192,7 +182,7 @@ Form
 				{
 					name: "thresholdMethod"
 					values: [
-						{ label: "Significant", value: "sig"		},
+						{ label: "Significant",	value: "sig"		},
 						{ label: "Bonferroni",	value: "bonferroni"	},
 						{ label: "Locfdr",		value: "locfdr"		},
 						{ label: "Holm",		value: "holm"		},
@@ -223,9 +213,9 @@ Form
 				source: ["variables"]
 			}
 
-			AssignedVariablesList { name: "mgmVariableTypeContinuous";  title: qsTr("Continuous Variables")     }
-			AssignedVariablesList { name: "mgmVariableTypeCategorical"; title: qsTr("Categorical Variables")    }
-			AssignedVariablesList { name: "mgmVariableTypeCount";       title: qsTr("Count Variables")          }
+			AssignedVariablesList { name: "mgmVariableTypeContinuous";	title: qsTr("Continuous Variables");	suggestedColumns: ["scale"]}
+			AssignedVariablesList { name: "mgmVariableTypeCategorical";	title: qsTr("Categorical Variables");	suggestedColumns: ["ordinal"]}
+			AssignedVariablesList { name: "mgmVariableTypeCount";		title: qsTr("Count Variables");			suggestedColumns: ["nominal"]}
 		}
 	}
 
@@ -238,6 +228,8 @@ Form
 			title: qsTr("Settings")
 			CheckBox	 { name: "bootstrapOnOff";		label: qsTr("Bootstrap network")	}
 			IntegerField { name: "numberOfBootstraps";	label: qsTr("Number of bootstraps"); defaultValue: 0; max: 100000 }
+
+			CheckBox	 { name: "parallelBootstrap";	label: qsTr("Parallel Bootstrap");	checked: false;	visible: false }
 		}
 
 		RadioButtonGroup
@@ -261,27 +253,17 @@ Form
 		}
 	}
 	
-	Section 
+	Section
 	{
 		title: qsTr("Graphical Options")
 
-		VariablesForm
-		{
-//			height: 200
-			AvailableVariablesList 
-			{ 
-				title: qsTr("Variables in network")
-				name: "variablesForColor"
-				source: ["variables"] 
-			}
-
+//		VariablesForm
+//		{
 			NetworkFactorsList
-//			RepeatedMeasuresFactorsList
-			
 			{
+				id: networkFactors
 				name: "groupNames"
 				title: qsTr("Group name")
-//				height: 180
 				ExtraControlColumn
 				{
 					type: "DropDown"
@@ -296,39 +278,90 @@ Form
 						{value: "purple",	label: "purple"	},
 						{value: "orange",	label: "orange"	}
 					]
+				}
+			}
+
+//			VariablesList
+//			{
+//				title: qsTr("Variables in network")
+//				name: "variablesForColor"
+//				source: ["variables"]
+
+////				listViewType:	"AssignedVariables"
+//				listViewType:	"AvailableVariables"
+//				showSortMenu:	true
+//				ExtraControlColumn
+//				{
+//					type: "DropDown"
+//					name: "groupColors"
+//					title: qsTr("Group color")
+//					useExternalBorder: true
+//					values: [
+//						{value: "red",		label: "red"	},
+//						{value: "blue",		label: "blue"	},
+//						{value: "yellow",	label: "yellow"	},
+//						{value: "green",	label: "green"	},
+//						{value: "purple",	label: "purple"	},
+//						{value: "orange",	label: "orange"	}
+//					]
+////					enabled: paletteSelector.value === "manual"
+////					visible: paletteSelector.value === "manual"
+//				}
+//			}
+
+//			AvailableVariablesList
+//			{
+//				name: "ignoreMe"
+//				visible: false
+//			}
+
+			AssignedVariablesList
+			{
+				title: qsTr("Variables in network")
+				name: "variablesForColor"
+				source: ["variables"]
+				addAvailableVariablesToAssigned: true
+				ExtraControlColumn
+				{
+					type: "DropDown"
+					name: "groupAssigned"
+					title: qsTr("Group")
+					useExternalBorder: true
+					source: ["groupNames"]
+//					values: [
+//						{value: "red",		label: "red"	},
+//						{value: "blue",		label: "blue"	},
+//						{value: "yellow",	label: "yellow"	},
+//						{value: "green",	label: "green"	},
+//						{value: "purple",	label: "purple"	},
+//						{value: "orange",	label: "orange"	}
+//					]
 //					enabled: paletteSelector.value === "manual"
 //					visible: paletteSelector.value === "manual"
 				}
 			}
-			AssignedVariablesList
-			{
-				name: "colorNodesBy"
-				title: qsTr("Color Nodes By")
-				source: "variables"
-				ExtraControlColumn
-				{
-					type : "DropDown"
-					name: "colorNodesByGroup"
-					title: qsTr("Group")
-					useExternalBorder: true
-//					source: ["repeatedMeasuresFactors"] // this doens't work!
-				}
-			}
+//		}
+		DropDown
+		{
+			source: ["groupNames"]
+			name: "blabla"
 		}
-		
+
 		Group
 		{
 			Layout.columnSpan: 2
-			DoubleField { name: "nodeSize"; label: qsTr("Node size"); defaultValue: 1; max: 10 }
+			DoubleField	{ name: "nodeSize";		label: qsTr("Node size");		defaultValue: 1; max: 10	}
+			CheckBox	{ name: "manualColors";	label: qsTr("Manual colors");	id: manualColors			}
 			DropDown
 			{
+				enabled: !manualColors.checked
 				id: paletteSelector
 				name: "nodeColors"
 				label: qsTr("Node palette")
 				indexDefaultValue: 1
 				values: [
 					{ label: qsTr("Rainbow"),		value: "rainbow"	},
-					{ label: qsTr("Colorblind"),	value: "colorblind" },
+					{ label: qsTr("Colorblind"),	value: "colorblind"	},
 					{ label: qsTr("Pastel"),		value: "pastel"		},
 					{ label: qsTr("Gray"),			value: "gray"		},
 					{ label: qsTr("R"),				value: "R"			},
@@ -353,14 +386,14 @@ Form
 				indexDefaultValue: 1
 				values:
 				[
-					{ label: qsTr("Classic"),		value: "classic"	},
-					{ label: qsTr("Colorblind"),	value: "colorblind" },
-					{ label: qsTr("Gray"),			value: "gray"		},
-					{ label: qsTr("Hollywood"),		value: "Hollywood"	},
-					{ label: qsTr("Borkulo"),		value: "Borkulo"	},
-					{ label: qsTr("TeamFortress"),	value: "TeamFortress" },
-					{ label: qsTr("Reddit"),		value: "Reddit"		},
-					{ label: qsTr("Fried"),			value: "Fried"		}
+					{ label: qsTr("Classic"),		value: "classic"		},
+					{ label: qsTr("Colorblind"),	value: "colorblind"		},
+					{ label: qsTr("Gray"),			value: "gray"			},
+					{ label: qsTr("Hollywood"),		value: "Hollywood"		},
+					{ label: qsTr("Borkulo"),		value: "Borkulo"		},
+					{ label: qsTr("TeamFortress"),	value: "TeamFortress"	},
+					{ label: qsTr("Reddit"),		value: "Reddit"			},
+					{ label: qsTr("Fried"),			value: "Fried"			}
 				]
 			}
 		}

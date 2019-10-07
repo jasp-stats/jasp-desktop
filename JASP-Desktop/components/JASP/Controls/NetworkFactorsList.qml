@@ -114,22 +114,18 @@ JASPControl
 				border.width:	0
 				border.color:	Theme.grayLighter
 
-//				property bool isDeletable:	model.type.includes("deletable")
-//				property bool isVirtual:	model.type.includes("virtual")
-//				property bool isLevel:		model.type.includes("level")
+				property bool isDeletable:	model.type.includes("deletable")
+				property bool isVirtual:	model.type.includes("virtual")
 
 				TextField
 				{
 					id:								colName
-//					value:							itemRectangle.isVirtual ? "" : model.name
-//					placeholderText:				itemRectangle.isVirtual ? model.name : ""
-					value:							model.name
-//					placeholderText:				itemRectangle.isVirtual ? model.name : ""
+					value:							itemRectangle.isVirtual ? "" : model.name
+					placeholderText:				itemRectangle.isVirtual ? model.name : ""
 					anchors.verticalCenter:			parent.verticalCenter
 					fieldWidth:						parent.width
 					useExternalBorder:				false
 					selectValueOnFocus:				true
-//					control.horizontalAlignment:	itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter
 					control.horizontalAlignment:	TextInput.AlignLeft
 					onEditingFinished:				itemChanged(index, value)
 				}
