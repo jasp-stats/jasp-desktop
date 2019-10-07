@@ -33,8 +33,11 @@
   return(dataset)
 }
 
-.readAndAddCompleteRowIndices <- function(dataset, variables.to.read){
-    dataset             <- .readDataSetToEnd(columns = variables.to.read)
+.readAndAddCompleteRowIndices <- function(dataset, variables.to.read, allAsNumeric = FALSE){
+    if (allAsNumeric)
+      dataset             <- .readDataSetToEnd(columns.as.numeric = variables.to.read)
+    else
+      dataset             <- .readDataSetToEnd(columns = variables.to.read)
     complete.index      <- which(complete.cases(dataset))
     dataset             <- na.omit(dataset)
     rownames(dataset)   <- as.character(complete.index)
