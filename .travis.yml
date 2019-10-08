@@ -3,7 +3,7 @@ language: r
 r: 3.6.1
 #cache: packages
 before_install: 
-  - "git clone --branch=MacOS https://github.com/jasp-stats/jasp-required-files.git ~/pkgs"
+  - "git clone --branch=MacOS_R-3.6.1 https://github.com/jasp-stats/jasp-required-files.git ~/pkgs"
   - cd JASP-Tests/R/tests/
 install:
   - R < install.R --no-save
