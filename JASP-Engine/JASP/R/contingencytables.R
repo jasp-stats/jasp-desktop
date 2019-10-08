@@ -578,20 +578,6 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	ordinal.footnotes <- .newFootnotes()
 	kendalls.footnotes <- .newFootnotes()
 
-	# Fisher test table footnote
-	if(length(group.matrices) >= 1 & options$oddsRatio & perform == "run" & options$oddsRatioHypothesis != "two.sided"){
-	  gp1 <- dimnames(group.matrices[[1]])[[1]][1]
-	  gp2 <- dimnames(group.matrices[[1]])[[1]][2]
-
-	  if(options$oddsRatioHypothesis == "less"){
-	    message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is less than group <em>", gp2, ".</em>", sep="")
-	    .addFootnote(odds.ratio.footnotes, symbol="<em>Note.</em>", text=message)
-	  }else if(options$oddsRatioHypothesis == "greater"){
-	    message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is greater than group <em>", gp2, ".</em>", sep="")
-	    .addFootnote(odds.ratio.footnotes, symbol="<em>Note.</em>", text=message)
-	  }
-	}
-	
 	for (i in 1:length(group.matrices)) {
 
 		group.matrix <- group.matrices[[i]]
@@ -642,6 +628,23 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	}
 
 	if (options$oddsRatio) {
+	  
+	  # Fisher test table footnote
+	  if(length(odds.ratio.footnotes$footnotes) == 0){
+	    if(length(group.matrices) >= 1  & perform == "run" & options$oddsRatioHypothesis != "two.sided"){
+	      gp1 <- dimnames(group.matrices[[1]])[[1]][1]
+	      gp2 <- dimnames(group.matrices[[1]])[[1]][2]
+	      
+	      if(options$oddsRatioHypothesis == "less"){
+	        message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is less than group <em>", gp2, ".</em>", sep="")
+	        .addFootnote(odds.ratio.footnotes, symbol="<em>Note.</em>", text=message)
+	      }else if(options$oddsRatioHypothesis == "greater"){
+	        message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is greater than group <em>", gp2, ".</em>", sep="")
+	        .addFootnote(odds.ratio.footnotes, symbol="<em>Note.</em>", text=message)
+	      }
+	    }
+	  }
+	  
 		odds.ratio.table[["data"]] <- odds.ratio.rows
 		odds.ratio.table[["footnotes"]] <- as.list(odds.ratio.footnotes)
 
