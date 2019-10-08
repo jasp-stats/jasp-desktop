@@ -178,7 +178,6 @@ void Analysis::exportResults()
 void Analysis::refresh()
 {
 	setStatus(Empty);
-	_revision++;
 	TempFiles::deleteAll(_id);
 	emit toRefreshSignal(this);
 
@@ -330,7 +329,6 @@ void Analysis::optionsChangedHandler(Option *option)
 		return;
 
 	_status = Empty;
-	_revision++;
 	optionsChanged(this);
 }
 

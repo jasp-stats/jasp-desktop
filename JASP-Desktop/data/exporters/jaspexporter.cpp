@@ -31,6 +31,7 @@
 #include "version.h"
 #include "tempfiles.h"
 #include "appinfo.h"
+#include "log.h"
 
 
 const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
@@ -341,6 +342,8 @@ void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::f
 					if (errorCode < 0)
 						throw std::runtime_error("Required resource files could not be accessed.");
 				}
+				else
+					Log::log() << "JASP Export: cannot find file " << (TempFiles::sessionDirName() + "/" + paths[j]);
 				fileInfo.close();
 			}
 		}
