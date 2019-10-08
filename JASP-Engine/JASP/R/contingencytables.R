@@ -449,12 +449,13 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[oddsRatio]", title="Log Odds Ratio", type="number", format="sf:4;dp:3")
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[oddsRatio]", title="Lower",overTitle=ci.label, type="number", format="dp:3")
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[oddsRatio]",  title="Upper",overTitle=ci.label, type="number", format="dp:3")
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="p[oddsRatio]",   title="p", type="number", format="dp:3;p:.001")
 
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="type[FisherTest]", title="", type="string")
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="value[FisherTest]", title="Log Odds Ratio", type="number", format="sf:4;dp:3")
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="low[FisherTest]", title="Lower", overTitle=ci.label, type="number", format="dp:3")
 		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="up[FisherTest]",  title="Upper", overTitle=ci.label, type="number", format="dp:3")
-
+		odds.ratio.fields[[length(odds.ratio.fields)+1]] <- list(name="p[FisherTest]",   title="p", type="number", format="dp:3;p:.001")
 		schema <- list(fields=odds.ratio.fields)
 
 		odds.ratio.table[["schema"]] <- schema
@@ -577,6 +578,20 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 	ordinal.footnotes <- .newFootnotes()
 	kendalls.footnotes <- .newFootnotes()
 
+	# Fisher test table footnote
+	if(length(group.matrices) >= 1 & options$oddsRatio & perform == "run" & options$oddsRatioHypothesis != "two.sided"){
+	  gp1 <- dimnames(group.matrices[[1]])[[1]][1]
+	  gp2 <- dimnames(group.matrices[[1]])[[1]][2]
+
+	  if(options$oddsRatioHypothesis == "less"){
+	    message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is less than group <em>", gp2, ".</em>", sep="")
+	    .addFootnote(odds.ratio.footnotes, symbol="<em>Note.</em>", text=message)
+	  }else if(options$oddsRatioHypothesis == "greater"){
+	    message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is greater than group <em>", gp2, ".</em>", sep="")
+	    .addFootnote(odds.ratio.footnotes, symbol="<em>Note.</em>", text=message)
+	  }
+	}
+	
 	for (i in 1:length(group.matrices)) {
 
 		group.matrix <- group.matrices[[i]]
@@ -1225,6 +1240,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 				row[["value[oddsRatio]"]] <- .clean(NaN)
 				row[["low[oddsRatio]"]] <- ""
 				row[["up[oddsRatio]"]] <-  ""
+				row[["p[oddsRatio]"]] <-  ""
 
 				sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
 				row.footnotes[["value[oddsRatio]"]]=list(sup)
@@ -1264,11 +1280,13 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 					row[["value[oddsRatio]"]] <-LogOR
 					row[["low[oddsRatio]"]] <- log.CI.low
 					row[["up[oddsRatio]"]] <- log.CI.high
+					row[["p[oddsRatio]"]] <- ""
 				}
 
 				row[["value[oddsRatio]"]] <- .clean(LogOR)
 				row[["low[oddsRatio]"]] <- .clean(log.CI.low)
 				row[["up[oddsRatio]"]] <-  .clean(log.CI.high)
+				row[["p[oddsRatio]"]] <-  .clean("")
 			}
 		}
 
@@ -1289,6 +1307,7 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 				row[["value[FisherTest]"]] <- .clean(NaN)
 				row[["low[FisherTest]"]] <- ""
 				row[["up[FisherTest]"]] <-  ""
+				row[["p[FisherTest]"]] <-  ""
 
 				sup <- .addFootnote(footnotes, "Odds ratio restricted to 2 x 2 tables")
 				row.footnotes[["value[FisherTest]"]]=list(sup)
@@ -1297,12 +1316,13 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 
 				chi.result <- try({
 
-					chi.result <- stats::fisher.test(counts.matrix, conf.level = options$oddsRatioConfidenceIntervalInterval)
+					chi.result <- stats::fisher.test(counts.matrix, conf.level = options$oddsRatioConfidenceIntervalInterval,
+					                                 alternative = options$oddsRatioHypothesis)
 					OR <- unname(chi.result$estimate)
 					logOR <- log(OR)
 					log.CI.low <- log(chi.result$conf.int[1])
 					log.CI.high <- log(chi.result$conf.int[2])
-
+					p <- chi.result$p.value
 				})
 
 				if (class(chi.result) == "try-error") {
@@ -1329,14 +1349,18 @@ ContingencyTables <- function(dataset=NULL, options, perform="run", callback=fun
 					row[["value[FisherTest]"]] <- logOR
 					row[["low[FisherTest]"]] <- log.CI.low
 					row[["up[FisherTest]"]] <-  log.CI.high
+					row[["p[FisherTest]"]] <-  p
+					
 				}
 
 				row[["value[FisherTest]"]] <- .clean(logOR)
 				row[["low[FisherTest]"]] <- .clean(log.CI.low)
 				row[["up[FisherTest]"]] <-  .clean(log.CI.high)
+				row[["p[FisherTest]"]] <-  .clean(p)
+				
 			}
-		}
 
+		}
 	} else {
 
 		row[["value[FisherTest]"]] <- "."

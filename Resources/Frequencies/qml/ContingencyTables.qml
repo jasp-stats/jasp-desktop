@@ -41,6 +41,7 @@ Form
 			CheckBox { name: "chiSquared";						label: qsTr("χ²"); checked: true			}
 			CheckBox { name: "chiSquaredContinuityCorrection";	label: qsTr("χ² continuity correction")	}
 			CheckBox { name: "likelihoodRatio";					label: qsTr("Likelihood ratio")			}
+            CheckBox { name: "VovkSellkeMPR";                   label: qsTr("Vovk-Sellke maximum p-ratio") }
 		}
 
 		Group
@@ -49,9 +50,18 @@ Form
 			{
 				name: "oddsRatio"; label: qsTr("Log odds ratio (2x2 only)")
 				CIField { name: "oddsRatioConfidenceIntervalInterval"; label: qsTr("Confidence interval") }
-			}
-			CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio") }
-		}
+
+                RadioButtonGroup
+                {
+                    title: qsTr("Alt. Hypothesis")
+                    name: "oddsRatioHypothesis"
+                    RadioButton { value: "two.sided";   label: qsTr("Group one ≠ Group two"); checked: true    }
+                    RadioButton { value: "greater";     label: qsTr("Group one > Group two")                   }
+                    RadioButton { value: "less";        label: qsTr("Group one < Group two")                   }
+                }
+            }
+
+        }
 
 		Group
 		{
