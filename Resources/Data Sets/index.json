@@ -660,8 +660,24 @@
       "debug": false
     },
     {
-      "name": "12. Miscellaneous",
-      "path": "12. Miscellaneous",
+      "name": "12. Bain",
+      "path": "12. Bain",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+            "name": "Simulated Sesame Street",
+          "path": "sesame.csv",
+          "description": "This is a simulated counterpart of part of the Sesame Street data presented by Stevens (1996, Appendix A) concerning the effect of the first year of the Sesame street series on the knowledge of 240 children in the age range 34 to 69 months. <br><br> <i>Data set included in the bain R package.<\/i>",
+          "kind": "file",
+          "associated_datafile": ""
+        }
+      ],
+      "debug": false
+    },
+    {
+      "name": "13. Miscellaneous",
+      "path": "13. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
