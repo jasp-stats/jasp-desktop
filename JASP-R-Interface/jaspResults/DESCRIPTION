@@ -1,7 +1,7 @@
 Package: jaspResults
 Type: Package
 Title: Easy results for your JASP analysis
-Version: 1.8
+Version: 1.9
 Date: 2018-12-07
 Author: Joris Goosen
 Maintainer: Joris Goosen <j.c.goosen@uva.nl>
@@ -12,6 +12,6 @@ Description: This package helps you build your analysis for JASP (http://jasp-st
 License: GPL (>= 2)
 Depends: Rcpp (>= 0.12.14)
 Imports: methods, R6
-LinkingTo: Rcpp
+LinkingTo: Rcpp, BH
 RcppModules: jaspResults
 NeedsCompilation: yes
