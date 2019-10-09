@@ -22,7 +22,7 @@ import JASP.Theme 1.0
 
 Form
 {
-	usesJaspResults: false
+	usesJaspResults: true
 
 	CheckBox { name: "incl_GoF"; checked: true; visible: false }
 	CheckBox { name: "incl_loadings"; checked: true; visible: false }
@@ -38,38 +38,87 @@ Form
 		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); suggestedColumns: ["scale"] }
 	}
 
-	RadioButtonGroup
+	Group 
 	{
-		name: "factorMethod"
-		title: qsTr("Number of Factors")
-		RadioButton { value: "parallelAnalysis";	label: qsTr("Parallel analysis");  checked: true	}
-		RadioButton
+		RadioButtonGroup
 		{
-			value: "eigenValues";					label: qsTr("Eigenvalues")
-			DoubleField { name: "eigenValuesBox"; label: qsTr("Eigenvalues above"); defaultValue: 0; decimals: 1 }
+			name: "factorMethod"
+			title: qsTr("Number of Factors")
+			RadioButton { value: "parallelAnalysis";	label: qsTr("Parallel analysis");  checked: true	}
+			RadioButton
+			{
+				value: "eigenValues";					label: qsTr("Eigenvalues")
+				DoubleField { name: "eigenValuesBox"; label: qsTr("Eigenvalues above"); defaultValue: 0; decimals: 1 }
+			}
+			RadioButton
+			{
+				value: "manual";						label: qsTr("Manual")
+				IntegerField { name: "numberOfFactors"; label: qsTr("Number of factors"); defaultValue: 1; min: 1 }
+			}
 		}
-		RadioButton
-		{
-			value: "manual";						label: qsTr("Manual")
-			IntegerField { name: "numberOfFactors"; label: qsTr("Number of factors"); defaultValue: 1; min: 1 }
-		}
-	}
 
-	RadioButtonGroup
-	{
-		name: "rotationMethod"
-		title: qsTr("Rotation")
-		RadioButton
+		Group
 		{
-			value: "orthogonal";	label: qsTr("Orthogonal")
-			DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax","bentlerT","equamax","varimin"] }
+			title: qsTr("Estimation method")
+			DropDown
+			{
+				name: "fitmethod"
+				indexDefaultValue: 0
+				values: 
+				[
+					{ value: "minres",  label: qsTr("Minimum residual")				},
+					{ value: "ml",      label: qsTr("Maximum likelihood")			},
+					{ value: "ols",     label: qsTr("Ordinary least squares")		},
+					{ value: "wls",     label: qsTr("Weighted least squares") 		},
+					{ value: "gls",     label: qsTr("Generalized least squares")	},
+					{ value: "minchi",  label: qsTr("Minimum chi-square") 			},
+					{ value: "minrank", label: qsTr("Minimum rank")					}
+				]
+			}
 		}
-		RadioButton
-		{
-			value: "oblique";		label: qsTr("Oblique"); checked: true
-			DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "biquartimin", "cluster" ] }
-		}
+		
 	}
+	
+	
+
+	Group
+    {
+        RadioButtonGroup
+        {
+            name: "rotationMethod"
+            title: qsTr("Rotation")
+            RadioButton
+            {
+                value	: "orthogonal"
+                label	: qsTr("Orthogonal")
+                DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax", "bentlerT", "equamax", "varimin", "geominT"] }
+            }
+            RadioButton
+            {
+                value	: "oblique"
+                label	: qsTr("Oblique")
+                checked	: true
+                DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "biquartimin", "cluster", "geominQ" ] }
+            }
+        }
+
+        RadioButtonGroup
+        {
+            name: "basedOn"
+            title: qsTr("Base analysis on")
+            RadioButton
+            {
+                value: "correlation"
+                label: qsTr("Correlation matrix")
+                checked: true
+            }
+            RadioButton
+            {
+                value: "covariance"
+                label: qsTr("Covariance matrix")
+            }
+        }
+    }
 
 	Section
 	{
@@ -83,7 +132,8 @@ Form
 
 		Group
 		{
-			title: qsTr("Includes Tables")
+			title: qsTr("Include Tables")
+			CheckBox { name: "incl_structure";		label: qsTr("Structure matrix")			}
 			CheckBox { name: "incl_correlations";	label: qsTr("Factor correlations")		}
 			CheckBox { name: "incl_fitIndices";		label: qsTr("Additional fit indices")	}
 			CheckBox { name: "incl_pathDiagram";	label: qsTr("Path diagram")				}
