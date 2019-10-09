@@ -86,11 +86,11 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # TODO (vankesteren) content error checks, e.g., posdef covmat
 
   # Number of variables in the factors
-  
+
   nVarsPerFactor <- unlist(lapply(options$factors, function(x) setNames(length(x$indicators), x$title)))
   if (all(nVarsPerFactor == 0)) return("No variables")
   if (any(nVarsPerFactor == 1)) .quitAnalysis("The model could not be estimated. Ensure that factors have at least 2 observed variables.")
-  
+
   # TODO (tj), call error handling before all the options get screwed around so we can simply do `for (factor in options[["secondOrder"]])`
   if (length(options[["secondOrder"]]) > 0)
     for (factor in options[["secondOrder"]][[1]][["indicators"]])
@@ -203,7 +203,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # Bootstrapping with interruptible progress bar
   if (cfaResult[["spec"]]$bootstrap) {
     startProgressbar(options$bootstrapNumber)
-    
+
     boot_1      <- lavaan::bootstrapLavaan(cfaResult[["lav"]], R = 1)
     bootres     <- matrix(0, options$bootstrapNumber, length(boot_1))
     bootres[1,] <- boot_1
@@ -211,7 +211,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
       bootres[i,] <- lavaan::bootstrapLavaan(cfaResult[["lav"]], 1)
       progressbarTick()
     }
-    
+
     cfaResult[["lav"]]@boot       <- list(coef = bootres)
     cfaResult[["lav"]]@Options$se <- "bootstrap"
   }
@@ -268,8 +268,8 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     len <- length(vars[[i]]$indicators)
     labelledvars <- labels[[i]] <- character(len)
     for (j in 1:len) {
-      labels[[i]][j]  <- paste0("lambda", i, j)
-      labelledvars[j] <- paste0("lambda", i, j, "*", .v(vars[[i]]$indicators[j]))
+      labels[[i]][j]  <- paste0("lambda_", i, "_", j)
+      labelledvars[j] <- paste0("lambda_", i, "_", j, "*", .v(vars[[i]]$indicators[j]))
     }
     fo <- paste0(fo, pre, paste0(labelledvars, collapse = " + "))
   }
@@ -284,10 +284,10 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     len <- length(facs)
     labelledfacs <- labels[[lenvars + 1]] <- character(len)
     for (j in 1:len) {
-      labels[[lenvars + 1]][j] <- paste0("gamma1", j)
-      labelledfacs[j] <- paste0("gamma1", j, "*", facs[j])
+      labels[[lenvars + 1]][j] <- paste0("gamma_1_", j)
+      labelledfacs[j] <- paste0("gamma_1_", j, "*", facs[j])
     }
-    
+
     so <- paste0(so, pre, paste0(labelledfacs, collapse = " + "))
   } else {
     so <- NULL
@@ -379,17 +379,17 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
 .cfaTableRsquared <- function(jaspResults, options, cfaResult) {
   if (!options$rsquared || !is.null(jaspResults[["maincontainer"]][["rsquared"]])) return()
-  
+
   jaspResults[["maincontainer"]][["rsquared"]] <- tabr2 <- createJaspTable("R-Squared")
   tabr2$addColumnInfo(name = "__var__", title = "", type = "string")
   tabr2$setExpectedSize(rows = 1, cols = 1)
   tabr2$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors",
                    "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "rsquared"))
   if (is.null(cfaResult)) return()
-  
+
   r2res <- lavaan::inspect(cfaResult[["lav"]], "r2")
   facNames <- cfaResult[["spec"]]$latents
-  
+
   if (options$groupvar != "") {
     # add columns with Rsq overtitle
     varnames <- names(r2res[[1]])
@@ -418,30 +418,30 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   jaspResults[["maincontainer"]][["fits"]] <- fitms <- createJaspContainer("Additional fit measures")
   fitms$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors",
                    "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "additionalfits"))
-  
+
   # Fit indices
   fitms[["indices"]] <- fitin <- createJaspTable("Fit indices")
   fitin$addColumnInfo(name = "index", title = "Index", type = "string")
   fitin$addColumnInfo(name = "value", title = "Value", type = "number", format = "sf:4;dp:3")
   fitin$setExpectedSize(rows = 1, cols = 2)
-  
+
   # information criteria
   fitms[["incrits"]] <- fitic <- createJaspTable("Information criteria")
   fitic$addColumnInfo(name = "index", title = "",      type = "string")
   fitic$addColumnInfo(name = "value", title = "Value", type = "number", format = "sf:4;dp:3")
   fitic$setExpectedSize(rows = 1, cols = 2)
-  
+
   # other fit measures
   fitms[["others"]] <- fitot <- createJaspTable("Other fit measures")
   fitot$addColumnInfo(name = "index", title = "Metric", type = "string")
   fitot$addColumnInfo(name = "value", title = "Value",  type = "number", format = "sf:4;dp:3")
   fitot$setExpectedSize(rows = 1, cols = 2)
-  
-  if (is.null(cfaResult)) return() 
-  
+
+  if (is.null(cfaResult)) return()
+
   # actually compute the fit measures
   fm <- lavaan::fitmeasures(cfaResult[["lav"]])
-  
+
   # Fit indices
   fitin[["index"]] <- c(
     "Comparative Fit Index (CFI)",
@@ -454,33 +454,33 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     "Relative Noncentrality Index (RNI)"
   )
   fitin[["value"]] <- fm[c("cfi", "tli", "nnfi", "nfi", "pnfi", "rfi", "ifi", "rni")]
-  
+
   # information criteria
   fitic[["index"]] <- c(
     "Log-likelihood",
-    "Number of free parameters", 
+    "Number of free parameters",
     "Akaike (AIC)",
-    "Bayesian (BIC)", 
+    "Bayesian (BIC)",
     "Sample-size adjusted Bayesian (SSABIC)"
   )
   fitic[["value"]] <- fm[c("logl", "npar", "aic", "bic", "bic2")]
-  
+
   # other fitmeasures
   fitot[["index"]] <- c(
-    "Root mean square error of approximation (RMSEA)", 
+    "Root mean square error of approximation (RMSEA)",
     "RMSEA 90% CI lower bound",
     "RMSEA 90% CI upper bound",
-    "RMSEA p-value", 
-    "Standardized root mean square residual (SRMR)", 
+    "RMSEA p-value",
+    "Standardized root mean square residual (SRMR)",
     "Hoelter's critical N (\u03B1 = .05)",
     "Hoelter's critical N (\u03B1 = .01)",
-    "Goodness of fit index (GFI)", 
+    "Goodness of fit index (GFI)",
     "McDonald fit index (MFI)",
     "Expected cross validation index (ECVI)"
   )
-  fitot[["value"]] <- fm[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue", 
+  fitot[["value"]] <- fm[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue",
                            "srmr", "cn_05", "cn_01", "gfi", "mfi", "ecvi")]
-  
+
   return()
 }
 
@@ -540,7 +540,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # add data
   fl1dat <- pei[pei$op == "=~" & !pei$rhs %in% facNames, colSel]
-  fl1dat$label <- gsub("lambda", "\u03bb", fl1dat$label)
+  fl1dat$label <- gsub("_", "", gsub("lambda", "\u03bb", fl1dat$label))
   fl1dat$lhs <- .translateFactorNames(fl1dat$lhs, options)
   fl1dat$rhs <- .unv(fl1dat$rhs)
   fl1$setData(fl1dat)
@@ -571,7 +571,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
     # add data
     fl2dat <- pei[pei$op == "=~" & pei$rhs %in% facNames, colSel]
-    fl2dat$label <- gsub("gamma", "\u03b3", fl2dat$label)
+    fl2dat$label <- gsub("_", "", gsub("gamma", "\u03b3", fl2dat$label))
     fl2dat$rhs   <- .translateFactorNames(fl2dat$rhs, options)
     fl2$setData(fl2dat)
     fl2$dependOn(optionsFromObject = jrobject)
@@ -660,7 +660,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
                      format = "sf:4;dp:3")
 
   # add data
-  rvdat <- pei[pei$op == "~~" & !pei$lhs %in% facNames & !pei$lhs == "SecondOrder" & 
+  rvdat <- pei[pei$op == "~~" & !pei$lhs %in% facNames & !pei$lhs == "SecondOrder" &
                  pei$lhs == pei$rhs, colSel[-c(2, 3)]]
   rvdat$lhs <- .unv(rvdat$lhs)
   rv$setData(rvdat)
