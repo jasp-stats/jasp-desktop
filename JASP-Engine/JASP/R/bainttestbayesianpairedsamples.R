@@ -42,7 +42,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     if (!is.null(jaspResults[["bainTable"]])) return()
 
     bainTable <- createJaspTable("Bain Paired Samples T-Test")
-    bainTable$dependOn(options =c("pairs", "hypothesis", "bayesFactorType"))
+    bainTable$dependOn(options =c("pairs", "hypothesis", "bayesFactorType", "seed"))
     bainTable$position <- 1
 
     bf.type <- options$bayesFactorType
@@ -90,6 +90,8 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
 
     if (!ready)
       return()
+
+    set.seed(options[["seed"]])
 
     startProgressbar(length(options[["pairs"]]))
     bainResult <- list()

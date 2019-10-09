@@ -60,7 +60,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   bainTable                      <- createJaspTable("Bain One Sample T-test")
   jaspResults[["bainTable"]]     <- bainTable
   bainTable$position <- 1
-  bainTable$dependOn(options =c("testValue", "variables", "hypothesis", "bayesFactorType"))
+  bainTable$dependOn(options =c("testValue", "variables", "hypothesis", "bayesFactorType", "seed"))
 
   bf.type <- options[["bayesFactorType"]]
   BFH1H0 <- FALSE
@@ -111,6 +111,8 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
   if (!ready)
     return()
+
+  set.seed(options[["seed"]])
 
   startProgressbar(length(options[["variables"]]))
   bainResult <- list()
@@ -299,7 +301,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
   if (is.null(jaspResults[["BFplots"]])) {
     BFplots <- createJaspContainer("Bayes Factor Comparison")
-    BFplots$dependOn(options=c("testValue", "hypothesis", "bayesFactorPlot", "groupingVariable"))
+    BFplots$dependOn(options=c("testValue", "hypothesis", "bayesFactorPlot", "groupingVariable", "seed"))
     BFplots$position <- 3
     jaspResults[["BFplots"]] <- BFplots
   } else {
@@ -307,7 +309,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   }
 
   if (!ready) {
-    BFplots[["placeHolder"]] <- createJaspPlot(plot = NULL, title = "", height = 400, width = 600, dependencies=c("pairs", "variables"))
+    BFplots[["placeHolder"]] <- createJaspPlot(plot = NULL, title = "", height = 400, width = 600, dependencies=c("pairs", "variables", "seed"))
     return()
   }
   

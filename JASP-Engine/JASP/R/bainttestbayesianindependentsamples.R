@@ -43,7 +43,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
   if (!is.null(jaspResults[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
   bainTable <- createJaspTable("Bain Independent Samples Welch's T-Test")
-  bainTable$dependOn(options =c("variables", "hypothesis", "bayesFactorType", "groupingVariable"))
+  bainTable$dependOn(options =c("variables", "hypothesis", "bayesFactorType", "groupingVariable", "seed"))
 	bainTable$position <- 1
 
   bf.type <- options$bayesFactorType
@@ -91,6 +91,8 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 
 	if (!ready)
 		return()
+	
+	set.seed(options[["seed"]])
 
   startProgressbar(length(options[["variables"]]))
   bainResult <- list()
@@ -329,7 +331,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	} else if (options[["descriptivesPlots"]]) {
 		emptyPlot <- createJaspPlot(plot = NULL, title = "Descriptives Plots")
 		jaspResults[["descriptivesPlots"]] <- emptyPlot
-		jaspResults[["descriptivesPlots"]]$dependOn(options =c("variables", "descriptivesPlots","groupingVariable"))
+		jaspResults[["descriptivesPlots"]]$dependOn(options =c("variables", "descriptivesPlots", "groupingVariable", "seed"))
 		jaspResults[["descriptivesPlots"]]$position <- 4
 	}	
 }

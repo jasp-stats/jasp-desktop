@@ -63,6 +63,20 @@ Form
 			RadioButton { text: qsTr("BF\u2080\u2081: Equal vs. other")         ; name: "BF01" ; checked: true}
 			RadioButton { text: qsTr("BF\u2081\u2080: Other vs. equal")         ; name: "BF10" }
 		}
+
+		Group
+		{
+			title: qsTr("Additional Options")
+
+			DoubleField  { 
+				name: "seed"
+				text: qsTr("Seed:")
+				defaultValue: 100
+				min: -999999
+				max: 999999
+				fieldWidth: 60 
+			}
+		}
 	}
 
 	ColumnLayout

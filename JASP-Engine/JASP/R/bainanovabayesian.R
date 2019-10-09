@@ -70,6 +70,8 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!ready)
 		return()
 
+	set.seed(options[["seed"]])
+
 	if (any(variables %in% missingValuesIndicator)) {
 		i <- which(variables %in% missingValuesIndicator)
 		if (length(i) > 1) {
@@ -183,7 +185,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["bayesFactorPlot"]]) || !options[["bayesFactorPlot"]]) return()
 
 	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Bayes Factor Comparison", height = 400, width = 600)
-	bayesFactorPlot$dependOn(options="bayesFactorPlot")
+	bayesFactorPlot$dependOn(options=c("bayesFactorPlot", "seed"))
 	bayesFactorPlot$position <- 4
 	
 	bainContainer[["bayesFactorPlot"]] <- bayesFactorPlot

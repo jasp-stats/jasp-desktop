@@ -59,7 +59,17 @@ Form
 	{
 		title: qsTr("Additional Options")
 		CheckBox { name: "standardized"; text: qsTr("Standardize")	}
+
+		DoubleField  { 
+			name: "seed"
+			text: qsTr("Seed:")
+			defaultValue: 100
+			min: -999999
+			max: 999999
+			fieldWidth: 60 
+		}
 	}
+
 
 	Section
 	{

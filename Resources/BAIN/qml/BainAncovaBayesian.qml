@@ -62,6 +62,20 @@ Form
 		CheckBox { name: "descriptivesPlot";	text: qsTr("Descriptives plot")			}
 	}
 
+	Group
+	{
+		title: qsTr("Additional Options")
+
+		DoubleField  { 
+			name: "seed"
+			text: qsTr("Seed:")
+			defaultValue: 100
+			min: -999999
+			max: 999999
+			fieldWidth: 60 
+		}
+	}
+
 	Section
 	{
 		text: qsTr("Model Constraints")

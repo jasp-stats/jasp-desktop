@@ -25,7 +25,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	dataset <- readList[["dataset"]]
 	missingValuesIndicator <- readList[["missingValuesIndicator"]]
 	
-	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "fixedFactors", "covariates", "model"))
+	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "fixedFactors", "covariates", "model", "seed"))
 	
 	### LEGEND ###
 	.bainLegendAncova(dataset, options, jaspResults)
@@ -69,6 +69,8 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 
 	if (!ready)
 		return()
+
+	set.seed(options[["seed"]])
 
 	if (any(variables %in% missingValuesIndicator)) {
 		i <- which(variables %in% missingValuesIndicator)
@@ -143,11 +145,11 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	bayesFactorMatrix$position <- 3
 
 	if (type == "regression")
-		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "covariates", "standardized"))
+		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "covariates", "standardized", "seed"))
 	if (type == "ancova")
-		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "fixedFactors", "covariates"))
+		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "fixedFactors", "covariates", "seed"))
 	if (type == "anova")
-		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "fixedFactors"))
+		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "fixedFactors", "seed"))
 		
 	bayesFactorMatrix$addColumnInfo(name = "hypothesis", title = "", type = "string")
 	bayesFactorMatrix$addColumnInfo(name = "H1", type = "number")
@@ -189,7 +191,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
 	
 	coefficientsTable <- createJaspTable("Coefficients for Groups plus Covariates")
-	coefficientsTable$dependOn(options="coefficients")
+	coefficientsTable$dependOn(options=c("coefficients", "seed"))
 	coefficientsTable$position <- 2
 
 	coefficientsTable$addColumnInfo(name="v",				title="Covariate",		type="string")

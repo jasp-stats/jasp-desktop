@@ -25,7 +25,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	dataset <- readList[["dataset"]]
 	missingValuesIndicator <- readList[["missingValuesIndicator"]]
 	
-	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "covariates", "model", "standardized"))
+	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "covariates", "model", "standardized", "seed"))
 
 	### LEGEND ###
 	.bainLegendRegression(dataset, options, jaspResults)
@@ -67,6 +67,8 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 
 	if (!ready)
 		return()
+
+	set.seed(options[["seed"]])
 
 	if (any(variables %in% missingValuesIndicator)) {
 		i <- which(variables %in% missingValuesIndicator)
@@ -130,7 +132,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["bayesFactorPlot"]]) || !options[["bayesFactorPlot"]]) return()
 
 	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Bayes Factor Comparison", height = 400, width = 600)
-	bayesFactorPlot$dependOn(options = "bayesFactorPlot")
+	bayesFactorPlot$dependOn(options = c("bayesFactorPlot", "seed"))
 	bayesFactorPlot$position <- 4
 
 	bainContainer[["bayesFactorPlot"]] <- bayesFactorPlot
@@ -146,7 +148,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
 
 	coefficientsTable <- createJaspTable("Coefficients")
-	coefficientsTable$dependOn(options = "coefficients")
+	coefficientsTable$dependOn(options = c("coefficients", "seed"))
 	coefficientsTable$position <- 2
 
 	overTitle <- "95% Credible Interval"
