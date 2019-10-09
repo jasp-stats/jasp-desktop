@@ -68,6 +68,7 @@ Form
 				[
 					{ value: "minres",  label: qsTr("Minimum residual")				},
 					{ value: "ml",      label: qsTr("Maximum likelihood")			},
+					{ value: "pa",      label: qsTr("Principal axis factoring")		},
 					{ value: "ols",     label: qsTr("Ordinary least squares")		},
 					{ value: "wls",     label: qsTr("Weighted least squares") 		},
 					{ value: "gls",     label: qsTr("Generalized least squares")	},
