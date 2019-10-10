@@ -1,4 +1,4 @@
-.libPaths("~/pkgs/Frameworks/R.framework/Versions/3.5/Resources/library")
+.libPaths("~/pkgs/Frameworks/R.framework/Versions/3.6/Resources/library")
 
 repos <- getOption("repos")
 repos["CRAN"] <- "https://cloud.r-project.org"

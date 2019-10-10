@@ -1,10 +1,10 @@
-.libPaths("~/pkgs/Frameworks/R.framework/Versions/3.5/Resources/library")
+.libPaths("~/pkgs/Frameworks/R.framework/Versions/3.6/Resources/library")
 
 library(jaspResults)
 library(jasptools)
 library(testthat)
 develop(path = file.path("..", "..", ".."))
-setPkgOption("pkgs.dir", "~/pkgs/Frameworks/R.framework/Versions/3.5/Resources/library")
+setPkgOption("pkgs.dir", "~/pkgs/Frameworks/R.framework/Versions/3.6/Resources/library")
 
 result <- test_dir("testthat")
 result <- as.data.frame(result)
