@@ -81,13 +81,13 @@ test_that("Inferential plots with additional info match", {
   results <- jasptools::run("TTestBayesianPairedSamples", "test.csv", options)
 
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
-  expect_equal_plots(testPlot, "prior-posterior-additional", dir="TTestBayesianIndependentSamples")
+  expect_equal_plots(testPlot, "prior-posterior-additional", dir="TTestBayesianPairedSamples")
   
   testPlot <- results[["state"]][["figures"]][[2]][["obj"]]
-  expect_equal_plots(testPlot, "robustness-check-additional", dir="TTestBayesianIndependentSamples")
+  expect_equal_plots(testPlot, "robustness-check-additional", dir="TTestBayesianPairedSamples")
 
   testPlot <- results[["state"]][["figures"]][[3]][["obj"]]
-  expect_equal_plots(testPlot, "sequential-analysis-additional", dir="TTestBayesianIndependentSamples")
+  expect_equal_plots(testPlot, "sequential-analysis-additional", dir="TTestBayesianPairedSamples")
   
 })
 
