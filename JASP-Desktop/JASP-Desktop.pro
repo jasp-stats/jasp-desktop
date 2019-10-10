@@ -29,9 +29,6 @@ else                { target.path += /usr/bin }
 
 INSTALLS += target
 
-   macx:INCLUDEPATH += ../../boost_1_64_0
-windows:INCLUDEPATH += ../../boost_1_64_0
-
 LIBS += -L.. -lJASP-Common
 
 windows:CONFIG(ReleaseBuild) {

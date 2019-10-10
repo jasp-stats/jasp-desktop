@@ -52,17 +52,6 @@ $$JASPTIMER_USED {
 linux: LIBS += -L$$_R_HOME/lib -lR -lrt # because linux JASP-R-Interface is staticlib
 macx:  LIBS += -L$$_R_HOME/lib -lR
 
-
-
-
-macx {
-        INCLUDEPATH += ../../boost_1_64_0
-}
-
-windows {
-        INCLUDEPATH += ../../boost_1_64_0
-}
-
 INCLUDEPATH += $$PWD/../JASP-Common/
 
 macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
