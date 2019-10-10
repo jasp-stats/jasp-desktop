@@ -7,7 +7,7 @@
 //
 #ifndef BOOST_NOWIDE_DETAILS_WIDESTR_H_INCLUDED
 #define BOOST_NOWIDE_DETAILS_WIDESTR_H_INCLUDED
-#include "convert.hpp"
+#include <boost/nowide/convert.hpp>
 #include <string.h>
 #include <algorithm>
 

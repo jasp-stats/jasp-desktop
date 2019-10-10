@@ -34,7 +34,7 @@ windows:CONFIG(DebugBuild) {
         LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll
 }
 
-macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
+macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
 
 linux {
     LIBS += -larchive
@@ -46,7 +46,7 @@ $$JASPTIMER_USED {
     windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer-vc141-mt-1_64 -llibboost_chrono-vc141-mt-1_64
     windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc141-mt-gd-1_64 -llibboost_chrono-vc141-mt-gd-1_64
     linux:                          LIBS += -lboost_timer -lboost_chrono
-    macx:                           LIBS += -lboost_timer-clang-mt-1_64 -lboost_chrono-clang-mt-1_64
+    macx:                           LIBS += -lboost_timer-mt -lboost_chrono-mt
 }
 
 linux: LIBS += -L$$_R_HOME/lib -lR -lrt # because linux JASP-R-Interface is staticlib
