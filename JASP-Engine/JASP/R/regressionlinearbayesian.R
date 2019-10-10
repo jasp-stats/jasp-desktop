@@ -423,7 +423,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   basregContainer[["logPosteriorOddsPlot"]] <- postLogOddsPlot
 
   if (options$samplingMethod == "MCMC") {
-    postLogOddsPlot$errorMessage <- "Cannot display Posterior Log Odds when sampling method is MCMC."
+    postLogOddsPlot$setError("Cannot display Posterior Log Odds when sampling method is MCMC.")
     return(postLogOddsPlot)
   }
   
