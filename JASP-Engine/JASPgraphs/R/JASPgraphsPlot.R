@@ -11,7 +11,7 @@ JASPgraphsPlot <- R6::R6Class(
         stop("plotFunction should be a function!")
       plotArgs <- list(...)
       if (!length(names(plotArgs)) == length(plotArgs))
-        stop("... should be a named list")
+        stop("all arguments in ... should be named.")
       if (is.null(plotArgs[["names"]]) && identical(plotFunction, reDrawJASPgraphsPlot))
         plotArgs[["names"]] <- paste0("plot", seq_along(subplots))
 

@@ -11,10 +11,8 @@ expect_equal_plots <- function(test, name, dir) {
   if (inherits(test, "JASPgraphsPlot")) {
     subplots <- test$subplots
 
-    for (i in seq_along(subplots)) {
-      skip_if_grob(subplots[[i]]) # This means if one out of 20 plots is a grob, we skip the test!
+    for (i in seq_along(subplots))
       vdiffr::expect_doppelganger(paste(dir, name, "subplot", i, sep="-"), subplots[[i]], path=dir)
-    }
 
   } else {
     vdiffr::expect_doppelganger(paste(dir, name, sep="-"), test, path=dir)
