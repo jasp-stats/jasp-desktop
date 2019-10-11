@@ -172,7 +172,7 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
 }
 
 makeBFlabels <- function(bfSubscripts, BFvalues, subs = NULL, bfTxt = NULL) {
-  
+
   if (!is.null(bfTxt)) {
     lab <- paste0(bfTxt, " == ", format(BFvalues, digits = getGraphOption("digits")[["BF"]]))
   } else {
@@ -225,10 +225,10 @@ pizzaTxtFromBF <- function(x) {
 
 #' @export
 getBFSubscripts <- function(bfType = c("BF01", "BF10", "LogBF10"), hypothesis = c("equal", "smaller", "greater")) {
-  
+
   bfType <- match.arg(bfType)
   hypothesis <- match.arg(hypothesis)
-  
+
   if (bfType == "BF01") {
     subscripts <- switch (hypothesis,
       "equal"   = c("BF[1][0]",   "BF[0][1]"),
@@ -257,7 +257,7 @@ getBFSubscripts <- function(bfType = c("BF01", "BF10", "LogBF10"), hypothesis = 
 }
 
 makeBFwheelAndText <- function(BF, bfSubscripts, pizzaTxt, drawPizzaTxt = is.null(pizzaTxt), bfType) {
-  
+
   # drawBFpizza uses BF01
   bfSubscripts <- rev(bfSubscripts)
   if (bfType == "BF10") {
@@ -270,7 +270,7 @@ makeBFwheelAndText <- function(BF, bfSubscripts, pizzaTxt, drawPizzaTxt = is.nul
     BF01 <- exp(-BF)
     BFvalues <- c(-BF, BF)
   }
-  
+
   labels <- makeBFlabels(bfTxt = bfSubscripts, BFvalues = BFvalues)
   return(list(
       gTextBF = draw2Lines(labels, x = 0.7),
@@ -311,11 +311,11 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
                                   bfType = c("BF01", "BF10", "LogBF10"),
                                   hypothesis = c("equal", "smaller", "greater"),
                                   bfSubscripts = NULL,
-                                  pizzaTxt = hypothesis2BFtxt(hypothesis)$pizzaTxt, 
+                                  pizzaTxt = hypothesis2BFtxt(hypothesis)$pizzaTxt,
                                   bty = list(type = "n", ldwX = .5, lwdY = .5),
                                   CRItxt = "95% CI: ", medianTxt = "Median:",
                                   ...) {
-  
+
 	errCheckPlots(dfLines, dfPoints, CRI, median, BF)
   bfType <- match.arg(bfType)
   hypothesis <- match.arg(hypothesis)
@@ -379,8 +379,9 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
     legend.position = c(0.80, 0.875)
   }
 
-  g <- themeJasp(graph = g, legend.title = "none", legend.position = legend.position, bty = bty) +
+  g <- themeJasp(graph = g, legend.position = legend.position, bty = bty) +
     theme(
+      legend.title = element_blank(),
       legend.text = element_text(margin = ggplot2::margin(0, 0, 2, 0)),
       legend.key.height = unit(1, "cm"),
       legend.key.width = unit(1.5, "cm")
@@ -389,7 +390,7 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
   if (!is.null(BF)) {
     if (is.null(bfSubscripts))
       bfSubscripts <- getBFSubscripts(bfType, hypothesis)
-    
+
     tmp <- makeBFwheelAndText(BF, bfSubscripts, pizzaTxt, drawPizzaTxt, bfType)
     gTextBF <- tmp$gTextBF
     gWheel <- tmp$gWheel
@@ -399,30 +400,27 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
     gTextBF <- emptyPlot
   }
 
-  topPlotList <- list(gTextBF, gWheel, gTextCI)
+  topPlotList <- list(BFtext = gTextBF, BFpizza = gWheel, CItext = gTextCI)
   if (all(lengths(topPlotList) == 0)) {
     plot <- g
+    class(plot) <- c("JASPgraphs", class(plot))
   } else {
 
     idx <- lengths(topPlotList) == 0L
     layout <- matrix(1:3, 1, 3)
     layout[idx] <- NA_integer_
     layout <- rbind(layout, 4)
-    plots2arrange <- c(topPlotList[!idx], list(g))
-    
-    f <- tempfile()
-    png(f)
-    plot <- arrangeGrob(
-      grobs         = plots2arrange,
-      heights       = c(.2, .8),
-      layout_matrix = layout,
-      widths        = c(.4, .2, .4)
-    )
-    dev.off()
-    if (file.exists(f)) file.remove(f)
+    plots2arrange <- c(topPlotList[!idx], mainGraph = list(g))
 
+    heights <- c(.2, .8)
+    widths  <- c(.4, .2, .4)
+
+    plot <- JASPgraphsPlot$new(
+      subplots     = plots2arrange,
+      layout       = layout,
+      heights      = heights,
+      widths       = widths
+    )
   }
-  class(plot) <- c("JASPgraphs", class(plot))
   return(plot)
 }
-

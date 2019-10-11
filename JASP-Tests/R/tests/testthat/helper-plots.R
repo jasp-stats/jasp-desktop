@@ -6,8 +6,20 @@ expect_equal_plots <- function(test, name, dir) {
   if (length(test) == 0)
       stop("The new plot has no data. Please check your unit test; is the index path to the plot specified correctly?", call.=FALSE)
 
+  skip_if_grob(test)
+
+  if (inherits(test, "JASPgraphsPlot")) {
+    subplots <- test$subplots
+
+    for (i in seq_along(subplots))
+      vdiffr::expect_doppelganger(paste(dir, name, "subplot", i, sep="-"), subplots[[i]], path=dir)
+
+  } else {
+    vdiffr::expect_doppelganger(paste(dir, name, sep="-"), test, path=dir)
+  }
+}
+
+skip_if_grob <- function(test) {
   if (inherits(test, "grob"))
     skip("Cannot reliably test matrix plots (they fail Windows <-> OSX)")
-
-  vdiffr::expect_doppelganger(paste(dir, name, sep="-"), test, path=dir)
 }

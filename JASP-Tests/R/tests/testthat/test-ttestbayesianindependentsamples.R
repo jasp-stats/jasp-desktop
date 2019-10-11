@@ -92,7 +92,7 @@ test_that("Inferential plots with additional info match", {
   
   options$plotSequentialAnalysis <- TRUE
   options$plotSequentialAnalysisRobustness <- TRUE
-  
+
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
 
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]

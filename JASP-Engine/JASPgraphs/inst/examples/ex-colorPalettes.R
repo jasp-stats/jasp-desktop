@@ -1,5 +1,6 @@
-library(ggplot2)
 
+library(ggplot2)
+library(JASPgraphs)
 # use colors directly
 colors <- JASPcolors(10, "colorblind")
 plot(rnorm(10), col = colors, pch = 16, cex = 2)

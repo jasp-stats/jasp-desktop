@@ -34,7 +34,7 @@ JASPcolors(n, palette = getGraphOption("palette")[["palette"]],
 
 \item{asFunction}{Should a function be returned or the raw colors? If a function is returned, it either takes a single integer or a vector in 0, 1 as input.}
 
-\item{...}{Further arguments for \code{\link{ggplot2::scale_color_manual}} or \code{\link{ggplot2::scale_fill_manual}}.}
+\item{...}{Further arguments for \code{\link[ggplot2]{scale_colour_continuous}}.}
 }
 \value{
 Either a character vector of colors or a function.
@@ -46,8 +46,9 @@ JASP color palettes
 For ggplot2s, the convenience functions \code{scale_JASPcolor_\*} and \code{scale_JASPfill_\*} exist.
 }
 \examples{
-library(ggplot2)
 
+library(ggplot2)
+library(JASPgraphs)
 # use colors directly
 colors <- JASPcolors(10, "colorblind")
 plot(rnorm(10), col = colors, pch = 16, cex = 2)

@@ -11,7 +11,7 @@ JASPgraphs_data[["colorblind"]][["value"]] <- c("#000000", "#E69F00", "#56B4E9",
 #'@param n Number of colors desired.
 #'@param palette Palette to choose from.
 #'@param asFunction Should a function be returned or the raw colors? If a function is returned, it either takes a single integer or a vector in 0, 1 as input.
-#'@param ... Further arguments for \code{\link{ggplot2::scale_color_manual}} or \code{\link{ggplot2::scale_fill_manual}}.
+#'@param ... Further arguments for \code{\link[ggplot2]{scale_colour_continuous}}.
 #'
 #'@details For ggplot2s, the convenience functions \code{scale_JASPcolor_\*} and \code{scale_JASPfill_\*} exist.
 #'

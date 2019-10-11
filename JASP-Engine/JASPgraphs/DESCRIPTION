@@ -1,7 +1,7 @@
 Package: JASPgraphs
 Type: Package
 Title: Custom graphs for JASP
-Version: 0.3.7
+Version: 0.4.0
 Author: Don van den Bergh
 Maintainer: JASP-team <info@jasp-stats.nl>
 Description: ...
@@ -10,4 +10,9 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
 Suggests: testthat
-Imports: ggplot2 (>= 3.0.0), scales, cowplot, gridExtra, stringr
+Imports: 
+    ggplot2 (>= 3.0.0),
+    scales,
+    gridExtra,
+    stringr,
+    R6
