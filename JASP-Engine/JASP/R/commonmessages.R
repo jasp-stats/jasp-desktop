@@ -49,6 +49,8 @@
   "Negative numbers found in {{variables}}"
   m$error$missingValues <-
   "Missing values encountered in {{variables}}"
+  m$error$duplicateColumns <-
+  "Duplicate variables encountered in {{variables}}"
   
   ### Footnotes
   m$footnote$leveneSign <- 
