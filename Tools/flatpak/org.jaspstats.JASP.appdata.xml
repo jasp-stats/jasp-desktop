@@ -35,6 +35,12 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+		<release version="0.11.1" date="2019-10-11">
+			<description>
+				This version fixes a bug with certain systems having trouble running certain analyses when the path contains non-latin characters.
+				It also removes the inherit-gl-extension which causes some trouble for certain flatpak users.
+			</description>
+		</release>
 		<release version="0.11.0" date="2019-09-24">
 			<description>
 				This version adds the Machine Learning Module, which adds a variety of classification, regression and clustering analyses.
