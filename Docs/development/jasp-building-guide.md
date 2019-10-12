@@ -19,7 +19,7 @@ JASP requires several dependencies which are documented below.
 
 JASP depends on:
 
- - [Qt (5.11 + QtWebEngine)](http://qt-project.org)
+ - [Qt (5.13.1 + QtWebEngine)](http://qt-project.org)
  - [R](http://cran.r-project.org)
  - [boost](http://boost.org)
  - [libarchive](http://libarchive.org/)
@@ -38,7 +38,7 @@ Windows
 
 Building JASP under windows is most temperamental but should pose no large problems. Besides the above described GitHub repositories, you will need to install the following preliminaries to build JASP on Windows, later on described in more detail: 
 
-- [Qt 5.12](https://www.qt.io/download) Download the Open Source version from (https://www.qt.io/download).
+- [Qt 5.13.1](https://www.qt.io/download) Download the Open Source version from (https://www.qt.io/download).
 - [Visual Studio 2017](https://www.visualstudio.com/downloads/) Download the community version from (https://www.visualstudio.com/downloads/)
 - [R Tools 3.5](https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe) Download from (https://cran.r-project.org/bin/windows/Rtools/Rtools35.exe)
 
@@ -117,7 +117,7 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
 	\<JASP\>\build-release-64\*.lib and *.dll  
         \<JASP\>\boost_1_71_0
 
-6.	**Install Qt 5.12**  
+6.	**Install Qt 5.13.1**  
 	Go to https://www.qt.io/download  
 	Choose Open Source and Download.  
 	Start qt-unified-windows-x86-3.0.6-online.exe from your download folder.  
@@ -197,12 +197,15 @@ To build JASP you need to clone **jasp-desktop** and **jasp-required-files** rep
  - Tell XCode which "Command Line Tools" to use 
  - Close
 
- 2. [Qt](https://www.qt.io/): **Install Qt 5.12**
+ 2. [Qt](https://www.qt.io/): **Install Qt 5.13.1**
 ![Image of Qt Installer](https://static.jasp-stats.org/images/jasp2.InstallQt.png)
-
- 2.a. **Configure Qt5.12**: Once installed:
+Select: 
+ - macOS
+ - Qt WebEngine
+ 
+ 2.a. **Configure Qt5.13.1**: Once installed:
  - Go to "Qt Creator" - "Preference" - "Kits" 
- - Auto-detect should give "Desktop Qt 5.12.0 clang 64bit". Click on this. 
+ - Auto-detect should give "Desktop Qt 5.13.1 clang 64bit". Click on this. 
  - Choose the compiler **Clang (x86 64bit in /usr/bin)** for both C and C++.
 
 ![Image of Qt Configuration](https://static.jasp-stats.org/images/jasp2a.ConfigureQt.png)
