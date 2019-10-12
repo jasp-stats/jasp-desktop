@@ -3,6 +3,7 @@ y <- rgamma(100, 1, 1)
 
 JASPScatterPlot(x, y, xName = "Normal", yName = expression(gamma))
 JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", addSmooth = FALSE)
+JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", addSmoothCI = FALSE)
 
 JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", plotAbove = "histogram")
 JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", plotAbove = "histogram", plotRight = "histogram")
@@ -12,7 +13,6 @@ JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", plotAbove = "none",    
 
 # we can do the same with a grouping variable
 data("mtcars")
-debugonce(JASPScatterPlot)
 JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl)
 JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotAbove = "histogram", plotRight = "histogram")
 

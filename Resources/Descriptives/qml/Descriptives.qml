@@ -86,6 +86,11 @@ Form
 					RadioButton { value: "histogram";	label: qsTr("Histogram")					}
 					RadioButton { value: "none";		label: qsTr("None")							}
 				}
+				CheckBox
+				{
+								name: "addSmooth";		label: qsTr("Add smoothed regression line");	checked: true
+					CheckBox {	name: "addSmoothCI";	label: qsTr("Show confidence interval");		checked: true}
+				}
 			}
 		}
 	}

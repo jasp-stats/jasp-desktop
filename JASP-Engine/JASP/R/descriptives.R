@@ -183,6 +183,16 @@ Descriptives <- function(jaspResults, dataset, options) {
       }
     }
   }
+
+  # Scatter plots
+  if (options[["scatterPlot"]]) {
+    if(is.null(jaspResults[["scatterPlots"]])) {
+      jaspResults[["scatterPlots"]] <- createJaspContainer("Scatter Plots")
+      jaspResults[["scatterPlots"]]$dependOn(c("splitby", "scatterPlot", "graphTypeAbove", "graphTypeRight"))
+      jaspResults[["scatterPlots"]]$position <- 10
+    }
+    .descriptivesScatterPlots(jaspResults[["scatterPlots"]], dataset.factors, variables, splitName, options)
+  }
   return()
 }
 
@@ -1316,5 +1326,58 @@ Descriptives <- function(jaspResults, dataset, options) {
   }
 
   return(plotObj)
+}
+
+.descriptivesScatterPlots <- function(jaspContainer, dataset, variables, split, options) {
+
+  if (!is.null(split) && split != "")
+    group <- dataset[, .v(split)]
+  else
+    group <- NULL
+
+  variablesB64 <- .v(variables)
+  # remove non-numeric variables
+  numerics <- sapply(dataset[variablesB64], is.double)
+  variables    <- variables[numerics]
+  variablesB64 <- variablesB64[numerics]
+
+  nvar <- length(variables)
+  if (nvar < 2L) {
+    msg <- if (length(numerics) > 1L) { # basically all user variables have the wrong type...
+      "These plots can only be shown for scale variables."
+    } else {
+      "Please enter two variables."
+    }
+    jaspContainer[["scatterplotMsg"]] <- createJaspHtml(text = msg, dependencies = "variables")
+    return()
+  }
+
+  for (i in 1:(nvar - 1L)) for (j in (i + 1L):nvar) {
+    v1 <- variables[i]
+    v2 <- variables[j]
+    name <- paste(v1, "-", v2)
+    if (is.null(jaspContainer[[name]])) {
+      scatterPlot <- createJaspPlot(title = name)
+      scatterPlot$dependOn(optionContainsValue = list(variables = c(v1, v2)))
+      p <- try(JASPgraphs::JASPScatterPlot(
+        x           = dataset[, variablesB64[i]],
+        y           = dataset[, variablesB64[j]],
+        group       = group,
+        xName       = v1,
+        yName       = v2,
+        addSmooth   = options[["addSmooth"]],
+        addSmoothCI = options[["addSmoothCI"]],
+        plotAbove   = options[["graphTypeAbove"]],
+        plotRight   = options[["graphTypeRight"]]
+      ))
+      if (isTryError(p)) {
+        errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+        scatterPlot$setError(errorMessage)
+      } else {
+        scatterPlot$plotObject <- p
+      }
+      jaspContainer[[name]] <- scatterPlot
+    }
+  }
 }
 # </editor-fold> HELPER FUNCTIONS BLOCK

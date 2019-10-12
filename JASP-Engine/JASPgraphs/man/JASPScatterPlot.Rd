@@ -5,8 +5,9 @@
 \title{Create a scatter plot with density}
 \usage{
 JASPScatterPlot(x, y, group = NULL, xName = NULL, yName = NULL,
-  addSmooth = TRUE, plotAbove = c("density", "histogram", "none"),
-  plotRight = c("density", "histogram", "none"),
+  addSmooth = TRUE, addSmoothCI = TRUE, plotAbove = c("density",
+  "histogram", "none"), plotRight = c("density", "histogram", "none"),
+  colorAreaUnderDensity = TRUE, alphaAreaUnderDensity = 0.5,
   emulateGgMarginal = FALSE, ...)
 }
 \arguments{
@@ -22,13 +23,19 @@ JASPScatterPlot(x, y, group = NULL, xName = NULL, yName = NULL,
 
 \item{addSmooth}{should a smoothed regression line be drawn?}
 
+\item{addSmoothCI}{should a confidence interval be added to the smoothed regression line?}
+
 \item{plotAbove}{type of plot above the scatter plot.}
 
 \item{plotRight}{type of plot right of the scatter plot.}
 
-\item{emulateGgMarginal}{Should the result be as similar as possible to \code{\link[ggExtra]{ggMarginal}}?}
+\item{colorAreaUnderDensity}{Logical, should the area under the density be colored?}
 
-\item{...}{}
+\item{alphaAreaUnderDensity}{Real in [0, 1], transparancy for area under density.}
+
+\item{emulateGgMarginal}{Should the result be as similar as possible to \code{\link[ggExtra]{ggMarginal}}? Overwrites other parmeters.}
+
+\item{...}{ignored.}
 }
 \description{
 Create a scatter plot with density
@@ -43,6 +50,7 @@ y <- rgamma(100, 1, 1)
 
 JASPScatterPlot(x, y, xName = "Normal", yName = expression(gamma))
 JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", addSmooth = FALSE)
+JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", addSmoothCI = FALSE)
 
 JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", plotAbove = "histogram")
 JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", plotAbove = "histogram", plotRight = "histogram")
@@ -52,7 +60,6 @@ JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", plotAbove = "none",    
 
 # we can do the same with a grouping variable
 data("mtcars")
-debugonce(JASPScatterPlot)
 JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl)
 JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotAbove = "histogram", plotRight = "histogram")
 
