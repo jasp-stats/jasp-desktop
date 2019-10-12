@@ -40,3 +40,20 @@ reDrawJASPgraphsPlot <- function(subplots, args, grob = FALSE, ...) {
   else
     return(gridExtra::grid.arrange(g, ...))
 }
+
+reDrawAlignedPlot <- function(subplots, args, grob = FALSE, ...) {
+  # redraws plots from JASPScatterPlot
+  g <- makeGrobAlignedPlots(
+    mainplot  = subplots[["mainPlot"]],
+    abovePlot = subplots[["topPlot"]],
+    rightPlot = subplots[["rightPlot"]],
+    size      = args[["size"]]
+  )
+
+  if (grob) {
+    return(g)
+  } else {
+    grid::grid.newpage()
+    return(grid::grid.draw(g, ...))
+  }
+}

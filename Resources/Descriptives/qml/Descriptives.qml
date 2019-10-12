@@ -64,6 +64,30 @@ Form
 			CheckBox {				name: "descriptivesQQPlot";		label: qsTr("Q-Q plots")						}
 			CheckBox {				name: "descriptivesPiechart";	label: qsTr("Pie charts")						}
 		}
+
+		Group
+		{
+			CheckBox
+			{
+				name: "scatterPlot";	label: qsTr("Scatter Plots")
+				RadioButtonGroup
+				{
+					name:	"graphTypeAbove";
+					title:	qsTr("Graph above scatter plot")
+					RadioButton { value: "density";		label: qsTr("Density");		checked: true	}
+					RadioButton { value: "histogram";	label: qsTr("Histogram")					}
+					RadioButton { value: "none";		label: qsTr("None")							}
+				}
+				RadioButtonGroup
+				{
+					name:	"graphTypeRight";
+					title:	qsTr("Graph right of scatter plot")
+					RadioButton { value: "density";		label: qsTr("Density");		checked: true	}
+					RadioButton { value: "histogram";	label: qsTr("Histogram")					}
+					RadioButton { value: "none";		label: qsTr("None")							}
+				}
+			}
+		}
 	}
 
 	Section
