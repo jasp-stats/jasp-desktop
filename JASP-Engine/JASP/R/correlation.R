@@ -14,453 +14,787 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+Correlation <- function(jaspResults, dataset, options){
+  
+  # Read dataset ----
+  dataset <- .corrReadData(dataset, options)
+  # Error checks ----
+  ready <- length(options$variables) >= 2
+  errors <- .corrCheckErrors(dataset, options)
+  
+  # Init main table ----
+  mainTable <- .corrInitMainTable(jaspResults, options, errors)
+   # return()
+  # Compute results ----
+  corrResults <- .corrComputeResults(jaspResults, dataset, options, ready)
+  
+  # Fill tables and plots ----
+  .corrFillTableMain(mainTable, corrResults, options, ready)
 
-Correlation <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state=NULL, ...) {
-  #
-  stateKey <- list(
-    correlationPlot = c("plotCorrelationMatrix", "plotDensities", "plotStatistics",
-                        "variables", "pearson", "kendallsTauB", "spearman",
-                        "confidenceIntervals", "confidenceIntervalsInterval", "hypothesis", "missingValues"),
-    tableData = c("hypothesis", "missingValues", "confidenceIntervalsInterval")
-  )
+  return()
+}
 
-  if (is.null(dataset)) {
-    if (perform == "run") {
-      if (options$missingValues == "excludeListwise") {
-        dataset <- .readDataSetToEnd(columns.as.numeric=options$variables, exclude.na.listwise=options$variables)
-      } else {
-        dataset <- .readDataSetToEnd(columns.as.numeric=options$variables)
-      }
-    } else {
-      dataset <- .readDataSetHeader(columns.as.numeric=options$variables)
-    }
-  }
-
-  correlation.plot <- state$correlationPlot
-  stateTableData <- state$tableData
-
-  if (options$plotCorrelationMatrix && is.null(correlation.plot)) {
-    correlation.plot <- .plotCorrelations(dataset, perform, options)
-  }
-
-  tableData <- .calculateCorrelations(dataset, perform, options, stateTableData,
-                                      variables=options$variables, pearson=options$pearson,
-                                      kendallsTauB=options$kendallsTauB, spearman=options$spearman,
-                                      hypothesis=options$hypothesis, CI=options$confidenceIntervalsInterval)
-
-  correlation.table <- .fillCorrelationTable(tableData, displayPairwise=options$displayPairwise,
-                                             reportSignificance=options$reportSignificance,
-                                             reportCI=options$confidenceIntervals,
-                                             flagSignificant=options$flagSignificant, reportVovkSellkeMPR=options$VovkSellkeMPR)
-
-  results <- list()
-
-  meta <- list(
-    list(name="title", type="title"),
-    list(name="correlations", type="table"),
-    list(name="plot", type="image")
-  )
-
-  results[[".meta"]] <- meta
-
-  results[["title"]] <- "Correlation Matrix"
-  results[["plot"]] <- correlation.plot
-  results[["correlations"]] <- correlation.table
-
-  keep <- NULL
-
-  if (length(correlation.plot) > 0) {
-    keep <- correlation.plot$data
-  }
-
-  if (perform == "init") {
-    if (length(options$variables) < 2) {
-      return(list(results=results, status="complete", keep=keep))
-    } else {
-      return(list(results=results, status="inited", state=state, keep=keep))
-    }
-  } else { # run
-    state <- list(options=options, correlationPlot=correlation.plot, tableData=tableData)
-    attr(state, "key") <- stateKey
-
-    return(list(results=results, status="complete", state=state, keep=keep))
+# Preprocessing functions ----
+.corrReadData <- function(dataset, options){
+  if(!is.null(dataset)){
+    return(dataset)
+  } else if(options$missingValues == "excludePairwise"){
+    return(.readDataSetToEnd(columns.as.numeric = options$variables))
+  } else if(options$missingValues == "excludeListwise"){
+    return(.readDataSetToEnd(columns.as.numeric = options$variables, exclude.na.listwise = options$variables))
   }
 }
 
-.calculateCorrelations <- function(dataset, perform, options, stateTableData, variables=c(), pearson=TRUE, kendallsTauB=FALSE,
-  spearman=FALSE, hypothesis="correlated", CI=0.95) {
-  #
-  ready <- FALSE
-  variables <- unlist(variables)
+.corrCheckErrors <- function(dataset, options){
+  if(length(options$variables) == 0) return("No variables")
+  if(length(options$variables) == 1) return("One variable")
+  
+  # Check for variance, infinity and observations
+  # does not check pairwise observations yet
+  errors <-.hasErrors(dataset, message = 'default', 
+                      type = c('variance', 'infinity', 'observations'),
+                      all.target = options$variables, observations.amount = "< 3",
+                      exitAnalysisIfErrors = FALSE)
+  
+  return(errors)
+}
 
-  if (length(variables) == 0) {
-    variables <- c(variables, "...", "... ") # we need this trailing space so 1 != 2
-  } else if (length(variables) == 1) {
-    variables <- c(variables, "...")
+# Init tables ----
+.corrInitMainTable <- function(jaspResults, options, errors){
+  if(!is.null(jaspResults[['mainTable']])) return(jaspResults[['mainTable']])
+  
+  if(errors == "No variables"){
+    variables <- c("...", "... ") # we need this trailing space so that 1 != 2
+  } else if(errors == "One variable"){
+    variables <- c(options[['variables']], "...")
   } else {
-    ready <- TRUE
+    variables <- options[['variables']]
   }
-
-  tests <- c()
-  if (pearson)
-    tests <- c(tests, "pearson")
-  if (spearman)
-    tests <- c(tests, "spearman")
-  if (kendallsTauB)
-    tests <- c(tests, "kendall")
-
-  results <- list(tests=tests, variables=variables, hypothesis=hypothesis, CI=CI)
-
-  if (length(tests) == 0) {
-    return(results)
+  
+  title <- "Correlation table"
+  
+  mainTable <- createJaspTable(title = title)
+  mainTable$dependOn(c("variables", "pearson", "spearman", "kendallsTauB", "displayPairwise", "reportSignificance",
+                       "flagSignificant", "confidenceIntervals", "confidenceIntervalsInterval",
+                       "VovkSellkeMPR", "hypothesis", "missingValues"))
+  mainTable$position <- 1
+  
+  mainTable$showSpecifiedColumnsOnly <- TRUE
+  
+  if(options[['displayPairwise']]){
+    mainTable <- .corrInitPairwiseTable(mainTable, options, variables)
+  } else{
+    mainTable <- .corrInitCorrelationTable(mainTable, options, variables)
   }
+  
+  #if(!is.null(errors$variance) || !is.null(errors$infinity) || !is.null(errors$observations))
+  #  mainTable$addFootnote(message = errors$message)
+  
+  
+  # show
+  jaspResults[['mainTable']] <- mainTable
+  
+  return(mainTable)
+}
 
-  pairs <- combn(variables, 2, simplify=FALSE)
+.corrInitPairwiseTable <- function(mainTable, options, variables){
+  
+  #pairNames <- t(combn(variables, 2, simplify = TRUE))
+  #pairs <- sapply(combn(.v(options$variables), 2, simplify = FALSE), paste, collapse = "_")
+  
+  pairs <- combn(.v(variables), 2, simplify = FALSE)
+  pairTitles <- combn(variables, 2, simplify = FALSE)
+  
+  mainTable$addColumnInfo(name = "variable1", title = "", type = "string")
+  mainTable$addColumnInfo(name = "separator", title = "", type = "string")
+  mainTable$addColumnInfo(name = "variable2", title = "", type = "string")
 
-  for (i in seq_along(pairs)) {
-    #
-    var1 <- pairs[[i]][1]
-    var2 <- pairs[[i]][2]
-    pairName <- paste(sort(c(var1, var2)), collapse="-")
+  mainTable[['variable1']] <- sapply(pairTitles, function(x) x[[1]])
+  mainTable[['separator']] <- rep("-", length(pairTitles))
+  mainTable[['variable2']] <- sapply(pairTitles, function(x) x[[2]])
 
-    for (test in tests) {
-      errorMessage <- NULL
-      estimate <- p.value <- MPR <- upperCI <- lowerCI <- "."
-
-      if (! is.null(stateTableData) && ! is.null(stateTableData[["result"]][[pairName]][[test]])) {
-        # If state exists, then fill up table
-        #
-        resultsPair <- stateTableData[["result"]][[pairName]][[test]]
-        estimate <- resultsPair$estimate
-        p.value <- resultsPair$p.value
-        MPR <- resultsPair$MPR
-        upperCI <- resultsPair$upperCI
-        lowerCI <- resultsPair$lowerCI
-        errorMessage <- resultsPair$errorMessage
-      } else if (perform == "run" && ready) {
-        # here do calculations
-        #
-        errors <- .hasErrors(dataset, perform = perform, message = 'short', 
-                             type = c('variance', 'infinity', 'observations', 'observationsPairwise'),
-                             all.target = c(var1, var2), observations.amount = "< 3", 
-                             observationsPairwise.amount = 2)
-
-        if (! identical(errors, FALSE)) {
-          estimate <- p.value <- MPR <- upperCI <- lowerCI <- "NaN"
-          errorMessage <- errors$message
-
-        } else {
-          obs1 <- dataset[[ .v(var1) ]]
-          obs2 <- dataset[[ .v(var2) ]]
-
-          if (hypothesis == "correlated") {
-            result <- cor.test(obs1, obs2, method = test, alternative = "two.sided", conf.level = CI)
-          } else if (hypothesis == "correlatedPositively") {
-            result <- cor.test(obs1, obs2, method = test, alternative = "greater", conf.level = CI)
-          } else {
-            result <- cor.test(obs1, obs2, method = test, alternative = "less", conf.level = CI)
-          }
-
-          estimate <- as.numeric(result$estimate)
-          p.value  <- as.numeric(result$p.value)
-          MPR <- .VovkSellkeMPR(p.value)
-          
-          if (test == "pearson") {
-            upperCI <- as.numeric(result$conf.int[2])
-            lowerCI <- as.numeric(result$conf.int[1])
-          } else if (test == "spearman") {
-            spearCI <- .createNonparametricConfidenceIntervals(obs1, obs2, obsCor = estimate, method = "spearman", hypothesis = hypothesis, confLevel = CI)
-
-            upperCI <- as.numeric(spearCI[2])
-            lowerCI <- as.numeric(spearCI[1])
-          } else if (test == "kendall") {
-            kendallCI <- .createNonparametricConfidenceIntervals(obs1, obs2, obsCor = estimate, method = "kendall", hypothesis = hypothesis, confLevel = CI)
-
-            upperCI <- as.numeric(kendallCI[2])
-            lowerCI <- as.numeric(kendallCI[1])
-          }
-          if (length(c(lowerCI, upperCI)) == 0) {
-            upperCI <- lowerCI <- "NaN"
-          }
-        }
+  
+  mainTable$setExpectedSize(rows = length(pairs))
+  for(row in 1:length(pairs)){
+    rowName <- paste(pairs[[row]], collapse = "_")
+    #rowTitle <- paste(pairTitles[[row]], collapse = " - ")
+    
+    mainTable$setRowName(row, rowName)
+    #mainTable$setRowTitle(rowName, rowTitle)
+  }
+  
+  options[["kendall"]] <- options[["kendallsTauB"]]
+  
+  tests <- c("pearson", "spearman", "kendall")
+  nTests <- sum(unlist(options[tests]))
+  testNames <- c(pearson="Pearson", spearman="Spearman", kendall="Kendall")
+  
+  
+  for(test in tests){
+    if(options[[test]]){
+      if(nTests != 1){
+        overtitle <- testNames[test]
+      } else{
+        overtitle <- NULL
       }
-
-      results[["result"]][[pairName]][[test]] <- list(
-          estimate = .clean(estimate),
-          p.value = .clean(p.value),
-          MPR = .clean(MPR),
-          upperCI = .clean(upperCI),
-          lowerCI = .clean(lowerCI),
-          errorMessage = errorMessage
-      )
+      
+      mainTable$addColumnInfo(name = paste0(test, "_estimate"), title = "corr", #.corrTitlerer(test, nTests),
+                              type = "number", overtitle = overtitle)
+      
+      if(options$reportSignificance)
+        mainTable$addColumnInfo(name = paste0(test, "_p.value"), title = "p", type = "pvalue", overtitle = overtitle)
+      
+      if(options$confidenceIntervals){
+        mainTable$addColumnInfo(name = paste0(test, "_lower.ci"), 
+                                title = sprintf("Lower %s%% CI", 100*options$confidenceIntervalsInterval), type = "number",
+                                overtitle = overtitle)
+        mainTable$addColumnInfo(name = paste0(test, "_upper.ci"), 
+                                title = sprintf("Upper %s%% CI", 100*options$confidenceIntervalsInterval), type = "number",
+                                overtitle = overtitle)
+      }
+      
+      if(options$VovkSellkeMPR){
+        mainTable$addColumnInfo(name = paste0(test, "_vsmpr"), title = "VS-MPR", type = "number", overtitle = overtitle)
+        mainTable$addFootnote(message = .corrTexts$footnotes$VSMPR, symbol = "\u002A", colNames = paste0(test, "_vsmpr"))
+        mainTable$addCitation(.corrTexts$references$Sellke_etal_2001)
+      }
     }
   }
+  
+  return(mainTable) 
+}
+
+.corrInitCorrelationTable <- function(mainTable, options, variables){
+  mainTable$transpose <- TRUE
+  mainTable$transposeWithOvertitle <- FALSE
+  
+  mainTable$addColumnInfo(name = "var1", title = "", type = "string", combine = FALSE, overtitle = "Variable")
+  mainTable$addColumns(list(var1 = variables))
+  
+  whichtests <- c(options$pearson, options$spearman, options$kendallsTauB)
+  
+  
+  testsTitles <- c("Pearson's r", "Spearman's rho", "Kendall's Tau B")[whichtests]
+  tests <- c("pearson", "spearman", "kendall")[whichtests]
+  
+  for(vi in seq_along(variables)){
+    for(ti in seq_along(tests)){
+      .corrInitCorrelationTableRowAsColumn(mainTable, options, variables[vi], testsTitles[ti], tests[ti])
+    }
+  }
+
+  return(mainTable)
+}
+
+.corrInitCorrelationTableRowAsColumn <- function(mainTable, options, var, coeff, test){
+  vvar <- .v(var)
+  name <- paste(vvar, test, "%s", sep = "_")
+  
+  mainTable$addColumnInfo(name = sprintf(name, "estimate"), title = coeff, type = "number", overtitle = var)
+  
+  if(options$reportSignificance)
+    mainTable$addColumnInfo(name = sprintf(name, "p.value"), title = "p-value", type = "pvalue", overtitle = var)
+  
+  if(options$VovkSellkeMPR){
+    mainTable$addColumnInfo(name = sprintf(name, "vsmpr"), title = "VS-MPR", type = "number", overtitle = var)
+    mainTable$addFootnote(colNames = sprintf(name, "vsmpr"), symbol = "\u002A",
+                          message = .corrTexts$footnotes$VSMPR)
+    mainTable$addCitation(.corrTexts$references$Sellke_etal_2001)
+  }
+  
+  if(options$confidenceIntervals){
+    mainTable$addColumnInfo(name = sprintf(name, "upper.ci"), 
+                            title = sprintf("Upper %s%% CI", 100*options$confidenceIntervalsInterval),
+                            type = "number", overtitle = var)
+    mainTable$addColumnInfo(name = sprintf(name, "lower.ci"), 
+                            title = sprintf("Lower %s%% CI", 100*options$confidenceIntervalsInterval),
+                            type = "number", overtitle = var)
+  }
+}
+
+### Compute results ----
+.corrComputeResults <- function(jaspResults, dataset, options, ready){
+  if(!ready) return()
+  
+  reusable <- !is.null(jaspResults[['results']])
+  vvars <- .v(options[['variables']])
+  vcomb <- combn(vvars, 2, simplify = FALSE)
+  vpair <- sapply(vcomb, paste, collapse = "_")
+  
+  if(reusable){
+    results <- jaspResults[['results']]$object
+  } else{
+    results <- list()
+  }
+  
+  alt <- c(correlated = "two.sided",
+           correlatedNegatively = "less",
+           correlatedPositively = "greater")[options$hypothesis]
+  
+  for(i in seq_along(vpair)){
+    # some variable pairs might be reusable, so we don't need to compute them again
+    if(is.null(results[[vpair[i]]])){
+      data <- dataset[vcomb[[i]]]
+      data <- data[complete.cases(data),]
+      
+      errors <-.hasErrors(data, message = 'default', 
+                          type = c('variance', 'infinity', 'observations'),
+                          all.target = vcomb[i], observations.amount = "< 3",
+                          exitAnalysisIfErrors = FALSE)
+      
+      stats <- c("estimate", "p.value", "conf.int", "vsmpr")
+      statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
+      
+      pearson  <- cor.test(data[,1], data[,2], method = "pearson", 
+                           alternative = alt, conf.level = options$confidenceIntervalsInterval)
+      pearson$vsmpr <- .VovkSellkeMPR(pearson$p.value) # why it returns string '∞' instead of Inf? 
+      pearson$vsmpr <- ifelse(pearson$vsmpr == "∞", Inf, pearson$vsmpr)
+      pearson <- unlist(pearson[stats], use.names = FALSE)
+      names(pearson) <- paste("pearson", statsNames, sep = "_")
+      
+      spearman <- cor.test(data[,1], data[,2], method = "spearman", 
+                           alternative = alt, conf.level = options$confidenceIntervalsInterval)
+      spearman$conf.int <- .createNonparametricConfidenceIntervals(x = data[,1], y = data[,2], 
+                                                                   obsCor = spearman$estimate,
+                                                                   hypothesis = options$hypothesis, 
+                                                                   confLevel = options$confidenceIntervalsInterval, 
+                                                                   method = "spearman")
+      spearman$vsmpr <- .VovkSellkeMPR(spearman$p.value)
+      spearman$vsmpr <- ifelse(spearman$vsmpr == "∞", Inf, spearman$vsmpr)
+      spearman <- unlist(spearman[stats], use.names = FALSE)
+      names(spearman) <- paste("spearman", statsNames, sep = "_")
+      
+      kendall  <- cor.test(data[,1], data[,2], method = "kendall", 
+                           alternative = alt, conf.level = options$confidenceIntervalsInterval)
+      kendall$conf.int <- .createNonparametricConfidenceIntervals(x = data[,1], y = data[,2], 
+                                                                   obsCor = kendall$estimate,
+                                                                   hypothesis = options$hypothesis, 
+                                                                   confLevel = options$confidenceIntervalsInterval, 
+                                                                   method = "kendall")
+      kendall$vsmpr <- .VovkSellkeMPR(kendall$p.value)
+      kendall$vsmpr <- ifelse(kendall$vsmpr == "∞", Inf, kendall$vsmpr)
+      kendall <- unlist(kendall[stats], use.names = FALSE)
+      names(kendall) <- paste("kendall", statsNames, sep = "_")
+      
+      results[[vpair[i]]] <- list(vars = .unv(vcomb[[i]]), vvars = vcomb[[i]], 
+                                  res = c(pearson, spearman, kendall, sampleSize = nrow(data)),
+                                  errors = errors)
+    } 
+    
+    # the table can be filled row by row if it's a pairwise table
+    # if(options$displayPairwise)
+    #   .fillRowPairwiseTable(row = results[[vpair[i]]], table = mainTable$mainTable)
+    
+  }
+  
+  jaspResults[['results']] <- createJaspState(object = results,
+                                              dependencies = c("hypothesis", "confidenceIntervalsInterval"))
+  
+  
   return(results)
 }
 
-.fillCorrelationTable <- function(tableData, displayPairwise=FALSE, reportSignificance=FALSE,
-  reportCI=FALSE, reportVovkSellkeMPR=FALSE, flagSignificant=FALSE) {
-
-  correlation.table <- list()
-
-  tests <- tableData$tests
-  if (length(tests) != 1) {
-    correlation.table[["title"]] <- "Correlation Table"
-  } else if (tests == "pearson") {
-    correlation.table[["title"]] <- "Pearson Correlations"
-  } else if (tests == "spearman") {
-    correlation.table[["title"]] <- "Spearman Correlations"
-  } else if (tests == "kendall") {
-    correlation.table[["title"]] <- "Kendall's Tau Correlations"
-  } else {
-    correlation.table[["title"]] <- "Correlation Table"
+### Fill Tables ----
+.corrFillTableMain <- function(mainTable, corrResults, options, ready){
+  if(!ready) return()
+  
+  if(options$displayPairwise){
+    .corrFillPairwiseTable(mainTable, corrResults, options)
+  } else{
+    .corrFillCorrelationTable(mainTable, corrResults, options)
   }
-
-  hypothesis <- tableData$hypothesis
-  footnotes <- .newFootnotes()
-  if (flagSignificant || reportSignificance) {
-    if (hypothesis == "correlatedPositively") {
-      .addFootnote(footnotes, "all tests one-tailed, for positive correlation", symbol="<i>Note</i>.")
-    } else if (hypothesis == "correlatedNegatively") {
-      .addFootnote(footnotes, "all tests one-tailed, for negative correlation", symbol="<i>Note</i>.")
-    }
-  }
-
-  if (flagSignificant) {
-    if (hypothesis == "correlated") {
-      .addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001", symbol="*")
-    } else {
-      .addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001, one-tailed", symbol="*")
-    }
-  }
-
-  if (reportVovkSellkeMPR) {
-    if (flagSignificant) {
-      .addFootnote(footnotes, symbol = "\u207A", text = "Vovk-Sellke Maximum
-      <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
-      possible odds in favor of H\u2081 over H\u2080 equals
-      1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
-      (Sellke, Bayarri, & Berger, 2001).")
-    } else {
-      .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-      <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
-      possible odds in favor of H\u2081 over H\u2080 equals
-      1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
-      (Sellke, Bayarri, & Berger, 2001).")
-    }
-  }
-
-  variables <- tableData$variables
-  CI <- tableData$CI
-  fields <- list()
-  test.names <- list(pearson="Pearson's r", spearman="Spearman's rho", kendall="Kendall's tau B")
-  overTitles <- list(pearson="Pearson", spearman="Spearman", kendall="Kendall")
-
-  if (displayPairwise) {
-    fields[[1]] <- list(name=".variable1", title="", type="string")
-    fields[[2]] <- list(name=".separator", title="", type="separator")
-    fields[[3]] <- list(name=".variable2", title="", type="string")
-
-    for (test in tests) {
-      overTitle <- NULL
-
-      if (length(tests) > 1) {
-        test.names <- list(pearson="r", spearman="rho", kendall="tau B")
-        overTitle <- overTitles[[test]]
-      }
-
-      fields[[length(fields)+1]] <- list(name=test, title=test.names[[test]], overTitle=overTitle, type="number", format="sf:4;dp:3")
-
-      if (reportSignificance) {
-        fields[[length(fields)+1]] <- list(name=paste0(test, "-p"), title="p", overTitle=overTitle, type="number", format="dp:3;p:.001")
-      }
-
-      if (reportVovkSellkeMPR) {
-        if (flagSignificant){
-          title <- "VS-MPR\u207A"
-        } else {
-          title <- "VS-MPR\u002A"
-        }
-        fields[[length(fields)+1]] <- list(name=paste0(test, "-MPR"), title=title, overTitle=overTitle, type="number", format="sf:4;dp:3")
-      }
-
-      if (reportCI) {
-        fields[[length(fields)+1]] <- list(name=paste0(test, "-lowerCI"), title=paste0("Lower ", 100 * CI, "% CI"), overTitle=overTitle, type="number", format="sf:4;dp:3")
-        fields[[length(fields)+1]] <- list(name=paste0(test, "-upperCI"), title=paste0("Upper ", 100 * CI, "% CI"), overTitle=overTitle, type="number", format="sf:4;dp:3")
-      }
-
-    }
-  } else {
-    fields[[1]] <- list(name=".variable", title="", type="string")
-
-    for (test in tests) {
-      if (length(tests) > 1 || (length(tests) == 1 && (reportSignificance || reportCI || reportVovkSellkeMPR))) {
-        fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "]"), title="", type="string")
-      }
-
-      for (variable.name in variables) {
-        fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "]"), title=variable.name, type="number", format="dp:3")
-      }
-
-      if (reportSignificance) {
-        fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "-p]"), title="", type="string")
-
-        for (variable.name in variables) {
-          fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "-p]"), title=variable.name, type="number", format="dp:3;p:.001")
-        }
-      }
-
-      if (reportVovkSellkeMPR){
-        fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "-MPR]"), title="", type="string")
-
-        for (variable.name in variables) {
-          fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "-MPR]"), title=variable.name, type="number", format="sf:4;dp:3")
-        }
-      }
-
-      if (reportCI) {
-        fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "-upperCI]"), title="", type="string")
-        fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "-lowerCI]"), title="", type="string")
-
-        for (variable.name in variables) {
-          fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "-upperCI]"), title=variable.name, type="number", format="dp:3")
-          fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "-lowerCI]"), title=variable.name, type="number", format="dp:3")
-        }
-      }
-    }
-  }
-
-  correlation.table[["schema"]] <- list(fields=fields)
-
-  template <- list()
-
-  if (displayPairwise) {
-    pairs <- combn(variables, 2, simplify=FALSE)
-    template <- lapply(pairs, list)
-  } else {
-    for (i in seq_along(variables)) {
-      row.var <- variables[i]
-      template[[row.var]] <- list()
-      for (j in seq_along(variables)) {
-        col.var <- variables[j]
-        if (i < j) { # above diagonal
-          template[[row.var]][[col.var]] <- ""
-        } else if (i == j) { # on diagonal
-          template[[row.var]][[col.var]] <- "-"
-        } else { # below diagonal
-          template[[row.var]][[col.var]] <- c(row.var, col.var)
-        }
-      }
-    }
-  }
-
-  rows <- list()
-
-  for (i in seq_along(template)) { # loop over row variables
-    row <- list()
-    row.footnotes <- list()
-    row.pairs <- template[[i]]
-
-    for (j in seq_along(row.pairs)) { # loop over pairs containing that row var
-      pair <- row.pairs[[j]]
-
-      for (test in tests) {
-        col.est <- test
-        col.p <- paste0(test, "-p")
-        col.mpr <- paste0(test, "-MPR")
-        col.upperCI <- paste0(test, "-upperCI")
-        col.lowerCI <- paste0(test, "-lowerCI")
-
-        if ( ! displayPairwise) {
-          col.var <- variables[j]
-          col.est <- paste0(col.var, "[", col.est, "]") # contNormal[pearson]
-          col.p <- paste0(col.var, "[", col.p, "]") # contNormal[pearson-p]
-          col.mpr <- paste0(col.var, "[", col.mpr, "]") # contNormal[pearson-MPR]
-          col.upperCI <- paste0(col.var, "[", col.upperCI, "]") # contNormal[pearson-upperCI]
-          col.lowerCI <- paste0(col.var, "[", col.lowerCI, "]") # contNormal[pearson-lowerCI]
-
-          if (length(tests) > 1 || (length(tests) == 1 && (reportSignificance || reportCI || reportVovkSellkeMPR))) {
-            row[[paste0(".test[", test, "]")]] <- test.names[[test]]
-          }
-
-          if (reportSignificance)
-            row[[paste0(".test", "[", test, "-p]")]] <- "p-value"
-
-          if (reportVovkSellkeMPR){
-            if (flagSignificant){
-              row[[paste0(".test", "[", test, "-MPR]")]] <- "VS-MPR\u207A"
-            } else {
-              row[[paste0(".test", "[", test, "-MPR]")]] <- "VS-MPR\u002A"
-            }
-          }
-
-          if (reportCI) {
-            row[[paste0(".test", "[", test, "-upperCI]")]] <- paste("Upper ", 100 * CI, "% CI", sep="")
-            row[[paste0(".test", "[", test, "-lowerCI]")]] <- paste("Lower ", 100 * CI, "% CI", sep="")
-          }
-
-          if (identical(pair, "-")) { # auto correlation
-            row[[col.est]] <- row[[col.p]] <- row[[col.mpr]] <- row[[col.upperCI]] <- row[[col.lowerCI]] <- "\u2014" # em-dash
-            next
-          } else if (identical(pair, "")) { # above the diagonal
-            row[[col.est]] <- row[[col.p]] <- row[[col.mpr]] <- row[[col.upperCI]] <- row[[col.lowerCI]] <- ""
-            next
-          }
-
-        }
-
-        pairName <- paste(sort(pair), collapse="-")
-        result <- tableData$result[[pairName]][[test]]
-
-        if (flagSignificant && is.numeric(result$p.value)) {
-          if (result$p.value < .001) {
-            row.footnotes[[col.est]] <- list("***")
-          } else if (result$p.value < .01) {
-            row.footnotes[[col.est]] <- list("**")
-          } else if (result$p.value < .05) {
-            row.footnotes[[col.est]] <- list("*")
-          }
-        }
-
-        row[[col.est]] <- result$estimate
-
-        if (reportSignificance)
-          row[[col.p]] <- result$p.value
-
-        if (reportVovkSellkeMPR)
-          row[[col.mpr]] <- result$MPR
-
-        if (reportCI) {
-          row[[col.upperCI]] <- result$upperCI
-          row[[col.lowerCI]] <- result$lowerCI
-        }
-
-        if (! is.null(result$errorMessage)) {
-          index <- .addFootnote(footnotes, result$errorMessage)
-          row.footnotes[[col.est]] <- c(row.footnotes[[col.est]], list(index))
-        }
-
-      } # end loop over columns
-    } # end loop over tests
-
-    if (displayPairwise) {
-      row[[".variable1"]] <- pair[1]
-      row[[".separator"]] <- "-"
-      row[[".variable2"]] <- pair[2]
-    } else {
-      row[[".variable"]] <- variables[i]
-    }
-
-    if (length(row.footnotes) > 0)
-      row[[".footnotes"]] <- row.footnotes
-
-    rows[[i]] <- row
-  } # end loop over rows
-
-  correlation.table[["data"]] <- rows
-  correlation.table[["footnotes"]] <- as.list(footnotes)
-  return(correlation.table)
 }
+
+.corrFillPairwiseTable <- function(mainTable, corrResults, options){
+  transposedResults <- purrr::transpose(corrResults)
+  
+  # the stored results can be out of order -> we need to identify the order from the order of the
+  # variables in the options list
+  combos <- combn(.v(options$variables), 2, simplify = FALSE)
+  pairs <- sapply(combos, paste, collapse = "_")
+  results <- transposedResults$res[pairs]
+  mainTable$setData(do.call(rbind, results))
+  
+  # the row names (i.e., variable pairs) are overriden by $setData, so we fill again :(
+  mainTable[['variable1']] <- sapply(combos, function(v) .unv(v[[1]]))
+  mainTable[['separator']] <- rep("-", length(pairs))
+  mainTable[['variable2']] <- sapply(combos, function(v) .unv(v[[2]]))
+}
+.corrFillCorrelationTable <- function(mainTable, corrResults, options){
+  vvars <- .v(options$variables)
+  statsNames <- names(corrResults[[paste(vvars[1], vvars[2], sep = "_")]]$res)
+  
+  for(row in seq_along(options$variables)){
+    res <- matrix(NA, nrow = 0, ncol = length(statsNames)) 
+    
+    for(col in seq_along(options$variables)){
+      if(row == col){
+        r <- rep("-", length(statsNames))
+        res <- rbind(res, r)
+      } else if(row < col){
+        r <- rep(NA, length(statsNames))
+        res <- rbind(res, r)
+      } else {
+        r <- corrResults[[paste(vvars[col], vvars[row], sep = "_")]]$res
+        res <- rbind(res, r)
+        }
+    }
+    colnames(res) <- statsNames
+    
+    for(s in statsNames){
+      mainTable[[sprintf("%s_%s", vvars[row], s)]] <- res[, s, drop=TRUE]
+    }
+  }
+  
+}
+
+### Old stuff ----
+# Correlation <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state=NULL, ...) {
+#   #
+#   stateKey <- list(
+#     correlationPlot = c("plotCorrelationMatrix", "plotDensities", "plotStatistics",
+#                         "variables", "pearson", "kendallsTauB", "spearman",
+#                         "confidenceIntervals", "confidenceIntervalsInterval", "hypothesis", "missingValues"),
+#     tableData = c("hypothesis", "missingValues", "confidenceIntervalsInterval")
+#   )
+# 
+#   if (is.null(dataset)) {
+#     if (perform == "run") {
+#       if (options$missingValues == "excludeListwise") {
+#         dataset <- .readDataSetToEnd(columns.as.numeric=options$variables, exclude.na.listwise=options$variables)
+#       } else {
+#         dataset <- .readDataSetToEnd(columns.as.numeric=options$variables)
+#       }
+#     } else {
+#       dataset <- .readDataSetHeader(columns.as.numeric=options$variables)
+#     }
+#   }
+# 
+#   correlation.plot <- state$correlationPlot
+#   stateTableData <- state$tableData
+# 
+#   if (options$plotCorrelationMatrix && is.null(correlation.plot)) {
+#     correlation.plot <- .plotCorrelations(dataset, perform, options)
+#   }
+# 
+#   tableData <- .calculateCorrelations(dataset, perform, options, stateTableData,
+#                                       variables=options$variables, pearson=options$pearson,
+#                                       kendallsTauB=options$kendallsTauB, spearman=options$spearman,
+#                                       hypothesis=options$hypothesis, CI=options$confidenceIntervalsInterval)
+# 
+#   correlation.table <- .fillCorrelationTable(tableData, displayPairwise=options$displayPairwise,
+#                                              reportSignificance=options$reportSignificance,
+#                                              reportCI=options$confidenceIntervals,
+#                                              flagSignificant=options$flagSignificant, reportVovkSellkeMPR=options$VovkSellkeMPR)
+# 
+#   results <- list()
+# 
+#   meta <- list(
+#     list(name="title", type="title"),
+#     list(name="correlations", type="table"),
+#     list(name="plot", type="image")
+#   )
+# 
+#   results[[".meta"]] <- meta
+# 
+#   results[["title"]] <- "Correlation Matrix"
+#   results[["plot"]] <- correlation.plot
+#   results[["correlations"]] <- correlation.table
+# 
+#   keep <- NULL
+# 
+#   if (length(correlation.plot) > 0) {
+#     keep <- correlation.plot$data
+#   }
+# 
+#   if (perform == "init") {
+#     if (length(options$variables) < 2) {
+#       return(list(results=results, status="complete", keep=keep))
+#     } else {
+#       return(list(results=results, status="inited", state=state, keep=keep))
+#     }
+#   } else { # run
+#     state <- list(options=options, correlationPlot=correlation.plot, tableData=tableData)
+#     attr(state, "key") <- stateKey
+# 
+#     return(list(results=results, status="complete", state=state, keep=keep))
+#   }
+# }
+
+# .calculateCorrelations <- function(dataset, perform, options, stateTableData, variables=c(), pearson=TRUE, kendallsTauB=FALSE,
+#   spearman=FALSE, hypothesis="correlated", CI=0.95) {
+#   #
+#   ready <- FALSE
+#   variables <- unlist(variables)
+# 
+#   if (length(variables) == 0) {
+#     variables <- c(variables, "...", "... ") # we need this trailing space so 1 != 2
+#   } else if (length(variables) == 1) {
+#     variables <- c(variables, "...")
+#   } else {
+#     ready <- TRUE
+#   }
+# 
+#   tests <- c()
+#   if (pearson)
+#     tests <- c(tests, "pearson")
+#   if (spearman)
+#     tests <- c(tests, "spearman")
+#   if (kendallsTauB)
+#     tests <- c(tests, "kendall")
+# 
+#   results <- list(tests=tests, variables=variables, hypothesis=hypothesis, CI=CI)
+# 
+#   if (length(tests) == 0) {
+#     return(results)
+#   }
+# 
+#   pairs <- combn(variables, 2, simplify=FALSE)
+# 
+#   for (i in seq_along(pairs)) {
+#     #
+#     var1 <- pairs[[i]][1]
+#     var2 <- pairs[[i]][2]
+#     pairName <- paste(sort(c(var1, var2)), collapse="-")
+# 
+#     for (test in tests) {
+#       errorMessage <- NULL
+#       estimate <- p.value <- MPR <- upperCI <- lowerCI <- "."
+# 
+#       if (! is.null(stateTableData) && ! is.null(stateTableData[["result"]][[pairName]][[test]])) {
+#         # If state exists, then fill up table
+#         #
+#         resultsPair <- stateTableData[["result"]][[pairName]][[test]]
+#         estimate <- resultsPair$estimate
+#         p.value <- resultsPair$p.value
+#         MPR <- resultsPair$MPR
+#         upperCI <- resultsPair$upperCI
+#         lowerCI <- resultsPair$lowerCI
+#         errorMessage <- resultsPair$errorMessage
+#       } else if (perform == "run" && ready) {
+#         # here do calculations
+#         #
+#         errors <- .hasErrors(dataset, perform = perform, message = 'short', 
+#                              type = c('variance', 'infinity', 'observations', 'observationsPairwise'),
+#                              all.target = c(var1, var2), observations.amount = "< 3", 
+#                              observationsPairwise.amount = 2)
+# 
+#         if (! identical(errors, FALSE)) {
+#           estimate <- p.value <- MPR <- upperCI <- lowerCI <- "NaN"
+#           errorMessage <- errors$message
+# 
+#         } else {
+#           obs1 <- dataset[[ .v(var1) ]]
+#           obs2 <- dataset[[ .v(var2) ]]
+# 
+#           if (hypothesis == "correlated") {
+#             result <- cor.test(obs1, obs2, method = test, alternative = "two.sided", conf.level = CI)
+#           } else if (hypothesis == "correlatedPositively") {
+#             result <- cor.test(obs1, obs2, method = test, alternative = "greater", conf.level = CI)
+#           } else {
+#             result <- cor.test(obs1, obs2, method = test, alternative = "less", conf.level = CI)
+#           }
+# 
+#           estimate <- as.numeric(result$estimate)
+#           p.value  <- as.numeric(result$p.value)
+#           MPR <- .VovkSellkeMPR(p.value)
+#           
+#           if (test == "pearson") {
+#             upperCI <- as.numeric(result$conf.int[2])
+#             lowerCI <- as.numeric(result$conf.int[1])
+#           } else if (test == "spearman") {
+#             spearCI <- .createNonparametricConfidenceIntervals(obs1, obs2, obsCor = estimate, method = "spearman", hypothesis = hypothesis, confLevel = CI)
+# 
+#             upperCI <- as.numeric(spearCI[2])
+#             lowerCI <- as.numeric(spearCI[1])
+#           } else if (test == "kendall") {
+#             kendallCI <- .createNonparametricConfidenceIntervals(obs1, obs2, obsCor = estimate, method = "kendall", hypothesis = hypothesis, confLevel = CI)
+# 
+#             upperCI <- as.numeric(kendallCI[2])
+#             lowerCI <- as.numeric(kendallCI[1])
+#           }
+#           if (length(c(lowerCI, upperCI)) == 0) {
+#             upperCI <- lowerCI <- "NaN"
+#           }
+#         }
+#       }
+# 
+#       results[["result"]][[pairName]][[test]] <- list(
+#           estimate = .clean(estimate),
+#           p.value = .clean(p.value),
+#           MPR = .clean(MPR),
+#           upperCI = .clean(upperCI),
+#           lowerCI = .clean(lowerCI),
+#           errorMessage = errorMessage
+#       )
+#     }
+#   }
+#   return(results)
+# }
+
+# .fillCorrelationTable <- function(tableData, displayPairwise=FALSE, reportSignificance=FALSE,
+#   reportCI=FALSE, reportVovkSellkeMPR=FALSE, flagSignificant=FALSE) {
+# 
+#   correlation.table <- list()
+# 
+#   tests <- tableData$tests
+#   if (length(tests) != 1) {
+#     correlation.table[["title"]] <- "Correlation Table"
+#   } else if (tests == "pearson") {
+#     correlation.table[["title"]] <- "Pearson Correlations"
+#   } else if (tests == "spearman") {
+#     correlation.table[["title"]] <- "Spearman Correlations"
+#   } else if (tests == "kendall") {
+#     correlation.table[["title"]] <- "Kendall's Tau Correlations"
+#   } else {
+#     correlation.table[["title"]] <- "Correlation Table"
+#   }
+# 
+#   hypothesis <- tableData$hypothesis
+#   footnotes <- .newFootnotes()
+#   if (flagSignificant || reportSignificance) {
+#     if (hypothesis == "correlatedPositively") {
+#       .addFootnote(footnotes, "all tests one-tailed, for positive correlation", symbol="<i>Note</i>.")
+#     } else if (hypothesis == "correlatedNegatively") {
+#       .addFootnote(footnotes, "all tests one-tailed, for negative correlation", symbol="<i>Note</i>.")
+#     }
+#   }
+# 
+#   if (flagSignificant) {
+#     if (hypothesis == "correlated") {
+#       .addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001", symbol="*")
+#     } else {
+#       .addFootnote(footnotes, "p < .05, ** p < .01, *** p < .001, one-tailed", symbol="*")
+#     }
+#   }
+# 
+#   if (reportVovkSellkeMPR) {
+#     if (flagSignificant) {
+#       .addFootnote(footnotes, symbol = "\u207A", text = "Vovk-Sellke Maximum
+#       <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
+#       possible odds in favor of H\u2081 over H\u2080 equals
+#       1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
+#       (Sellke, Bayarri, & Berger, 2001).")
+#     } else {
+#       .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
+#       <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
+#       possible odds in favor of H\u2081 over H\u2080 equals
+#       1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
+#       (Sellke, Bayarri, & Berger, 2001).")
+#     }
+#   }
+# 
+#   variables <- tableData$variables
+#   CI <- tableData$CI
+#   fields <- list()
+#   test.names <- list(pearson="Pearson's r", spearman="Spearman's rho", kendall="Kendall's tau B")
+#   overTitles <- list(pearson="Pearson", spearman="Spearman", kendall="Kendall")
+# 
+#   if (displayPairwise) {
+#     fields[[1]] <- list(name=".variable1", title="", type="string")
+#     fields[[2]] <- list(name=".separator", title="", type="separator")
+#     fields[[3]] <- list(name=".variable2", title="", type="string")
+# 
+#     for (test in tests) {
+#       overTitle <- NULL
+# 
+#       if (length(tests) > 1) {
+#         test.names <- list(pearson="r", spearman="rho", kendall="tau B")
+#         overTitle <- overTitles[[test]]
+#       }
+# 
+#       fields[[length(fields)+1]] <- list(name=test, title=test.names[[test]], overTitle=overTitle, type="number", format="sf:4;dp:3")
+# 
+#       if (reportSignificance) {
+#         fields[[length(fields)+1]] <- list(name=paste0(test, "-p"), title="p", overTitle=overTitle, type="number", format="dp:3;p:.001")
+#       }
+# 
+#       if (reportVovkSellkeMPR) {
+#         if (flagSignificant){
+#           title <- "VS-MPR\u207A"
+#         } else {
+#           title <- "VS-MPR\u002A"
+#         }
+#         fields[[length(fields)+1]] <- list(name=paste0(test, "-MPR"), title=title, overTitle=overTitle, type="number", format="sf:4;dp:3")
+#       }
+# 
+#       if (reportCI) {
+#         fields[[length(fields)+1]] <- list(name=paste0(test, "-lowerCI"), title=paste0("Lower ", 100 * CI, "% CI"), overTitle=overTitle, type="number", format="sf:4;dp:3")
+#         fields[[length(fields)+1]] <- list(name=paste0(test, "-upperCI"), title=paste0("Upper ", 100 * CI, "% CI"), overTitle=overTitle, type="number", format="sf:4;dp:3")
+#       }
+# 
+#     }
+#   } else {
+#     fields[[1]] <- list(name=".variable", title="", type="string")
+# 
+#     for (test in tests) {
+#       if (length(tests) > 1 || (length(tests) == 1 && (reportSignificance || reportCI || reportVovkSellkeMPR))) {
+#         fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "]"), title="", type="string")
+#       }
+# 
+#       for (variable.name in variables) {
+#         fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "]"), title=variable.name, type="number", format="dp:3")
+#       }
+# 
+#       if (reportSignificance) {
+#         fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "-p]"), title="", type="string")
+# 
+#         for (variable.name in variables) {
+#           fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "-p]"), title=variable.name, type="number", format="dp:3;p:.001")
+#         }
+#       }
+# 
+#       if (reportVovkSellkeMPR){
+#         fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "-MPR]"), title="", type="string")
+# 
+#         for (variable.name in variables) {
+#           fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "-MPR]"), title=variable.name, type="number", format="sf:4;dp:3")
+#         }
+#       }
+# 
+#       if (reportCI) {
+#         fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "-upperCI]"), title="", type="string")
+#         fields[[length(fields)+1]] <- list(name=paste0(".test[", test, "-lowerCI]"), title="", type="string")
+# 
+#         for (variable.name in variables) {
+#           fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "-upperCI]"), title=variable.name, type="number", format="dp:3")
+#           fields[[length(fields)+1]] <- list(name=paste0(variable.name, "[", test, "-lowerCI]"), title=variable.name, type="number", format="dp:3")
+#         }
+#       }
+#     }
+#   }
+# 
+#   correlation.table[["schema"]] <- list(fields=fields)
+# 
+#   template <- list()
+# 
+#   if (displayPairwise) {
+#     pairs <- combn(variables, 2, simplify=FALSE)
+#     template <- lapply(pairs, list)
+#   } else {
+#     for (i in seq_along(variables)) {
+#       row.var <- variables[i]
+#       template[[row.var]] <- list()
+#       for (j in seq_along(variables)) {
+#         col.var <- variables[j]
+#         if (i < j) { # above diagonal
+#           template[[row.var]][[col.var]] <- ""
+#         } else if (i == j) { # on diagonal
+#           template[[row.var]][[col.var]] <- "-"
+#         } else { # below diagonal
+#           template[[row.var]][[col.var]] <- c(row.var, col.var)
+#         }
+#       }
+#     }
+#   }
+# 
+#   rows <- list()
+# 
+#   for (i in seq_along(template)) { # loop over row variables
+#     row <- list()
+#     row.footnotes <- list()
+#     row.pairs <- template[[i]]
+# 
+#     for (j in seq_along(row.pairs)) { # loop over pairs containing that row var
+#       pair <- row.pairs[[j]]
+# 
+#       for (test in tests) {
+#         col.est <- test
+#         col.p <- paste0(test, "-p")
+#         col.mpr <- paste0(test, "-MPR")
+#         col.upperCI <- paste0(test, "-upperCI")
+#         col.lowerCI <- paste0(test, "-lowerCI")
+# 
+#         if ( ! displayPairwise) {
+#           col.var <- variables[j]
+#           col.est <- paste0(col.var, "[", col.est, "]") # contNormal[pearson]
+#           col.p <- paste0(col.var, "[", col.p, "]") # contNormal[pearson-p]
+#           col.mpr <- paste0(col.var, "[", col.mpr, "]") # contNormal[pearson-MPR]
+#           col.upperCI <- paste0(col.var, "[", col.upperCI, "]") # contNormal[pearson-upperCI]
+#           col.lowerCI <- paste0(col.var, "[", col.lowerCI, "]") # contNormal[pearson-lowerCI]
+# 
+#           if (length(tests) > 1 || (length(tests) == 1 && (reportSignificance || reportCI || reportVovkSellkeMPR))) {
+#             row[[paste0(".test[", test, "]")]] <- test.names[[test]]
+#           }
+# 
+#           if (reportSignificance)
+#             row[[paste0(".test", "[", test, "-p]")]] <- "p-value"
+# 
+#           if (reportVovkSellkeMPR){
+#             if (flagSignificant){
+#               row[[paste0(".test", "[", test, "-MPR]")]] <- "VS-MPR\u207A"
+#             } else {
+#               row[[paste0(".test", "[", test, "-MPR]")]] <- "VS-MPR\u002A"
+#             }
+#           }
+# 
+#           if (reportCI) {
+#             row[[paste0(".test", "[", test, "-upperCI]")]] <- paste("Upper ", 100 * CI, "% CI", sep="")
+#             row[[paste0(".test", "[", test, "-lowerCI]")]] <- paste("Lower ", 100 * CI, "% CI", sep="")
+#           }
+# 
+#           if (identical(pair, "-")) { # auto correlation
+#             row[[col.est]] <- row[[col.p]] <- row[[col.mpr]] <- row[[col.upperCI]] <- row[[col.lowerCI]] <- "\u2014" # em-dash
+#             next
+#           } else if (identical(pair, "")) { # above the diagonal
+#             row[[col.est]] <- row[[col.p]] <- row[[col.mpr]] <- row[[col.upperCI]] <- row[[col.lowerCI]] <- ""
+#             next
+#           }
+# 
+#         }
+# 
+#         pairName <- paste(sort(pair), collapse="-")
+#         result <- tableData$result[[pairName]][[test]]
+# 
+#         if (flagSignificant && is.numeric(result$p.value)) {
+#           if (result$p.value < .001) {
+#             row.footnotes[[col.est]] <- list("***")
+#           } else if (result$p.value < .01) {
+#             row.footnotes[[col.est]] <- list("**")
+#           } else if (result$p.value < .05) {
+#             row.footnotes[[col.est]] <- list("*")
+#           }
+#         }
+# 
+#         row[[col.est]] <- result$estimate
+# 
+#         if (reportSignificance)
+#           row[[col.p]] <- result$p.value
+# 
+#         if (reportVovkSellkeMPR)
+#           row[[col.mpr]] <- result$MPR
+# 
+#         if (reportCI) {
+#           row[[col.upperCI]] <- result$upperCI
+#           row[[col.lowerCI]] <- result$lowerCI
+#         }
+# 
+#         if (! is.null(result$errorMessage)) {
+#           index <- .addFootnote(footnotes, result$errorMessage)
+#           row.footnotes[[col.est]] <- c(row.footnotes[[col.est]], list(index))
+#         }
+# 
+#       } # end loop over columns
+#     } # end loop over tests
+# 
+#     if (displayPairwise) {
+#       row[[".variable1"]] <- pair[1]
+#       row[[".separator"]] <- "-"
+#       row[[".variable2"]] <- pair[2]
+#     } else {
+#       row[[".variable"]] <- variables[i]
+#     }
+# 
+#     if (length(row.footnotes) > 0)
+#       row[[".footnotes"]] <- row.footnotes
+# 
+#     rows[[i]] <- row
+#   } # end loop over rows
+# 
+#   correlation.table[["data"]] <- rows
+#   correlation.table[["footnotes"]] <- as.list(footnotes)
+#   return(correlation.table)
+# }
 
 .plotCorrelations <- function(dataset, perform, options) {
   variables <- unlist(options$variables)
@@ -1020,3 +1354,12 @@ Correlation <- function(dataset=NULL, options, perform="run", callback=function(
 
     return(paste0(type, ' ~ "=" ~ ', '"', formattedValue, '"'))
 }
+
+.corrTexts <- list(
+  footnotes = list(
+    VSMPR = "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001)."
+  ),
+  references = list(
+    Sellke_etal_2001 = "Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p Values for Testing Precise Null Hypotheses. <i>The American Statistician,</i> 55(<i>1</i>), p. 62-71."
+  )
+)
