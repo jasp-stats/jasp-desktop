@@ -148,6 +148,17 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     "Liang, F., Paulo, R., Molina, G., Clyde, M. A., & Berger, J. O. (2008). Mixtures of g Priors for Bayesian Variable Selection. Journal of the American Statistical Association, 103, 410-423."
   ))
   
+  if (options$modelPrior == "Wilson") {
+    modelComparisonTable$addCitation(
+      "Wilson, M. A., Iversen, E. S., Clyde, M. A., Schmidler, S. C., & Schildkraut, J. M. (2010). Bayesian model search and multilevel inference for SNP association studies. The annals of applied statistics, 4(3), 1342."
+    )
+    modelComparisonTable$addFootnote(paste(
+      "The Wilson prior corresponds to a beta binomial prior with \u03B1 = 1 and \u03B2 = p * \u03BB and",
+      "corresponds to an approximate penalization equal to log(\u03BB + 1) in log-odds scale for each additional",
+      "covariate added to the model (Consonni et al., 2018; Wilson et al., 2010)."
+    ))
+  }
+
   if (options$bayesFactorType == "BF10")
     bfTitle <- "BF<sub>10</sub>"
   else if (options$bayesFactorType == "BF01")
@@ -975,6 +986,8 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     modelPrior <- BAS::uniform()
   else if (options$modelPrior == "Bernoulli")
     modelPrior <- BAS::Bernoulli(options$bernoulliParam)
+  else if (options$modelPrior == "Wilson")
+    modelPrior <- BAS::beta.binomial(1.0, as.numeric(nPreds * options$wilsonParamLambda))
   
   # number of models
   n.models <- NULL
