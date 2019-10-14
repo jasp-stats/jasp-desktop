@@ -231,6 +231,14 @@ Form {
 				}
 				RadioButton
 				{
+					value: "Castillo"
+					label: qsTr("Castillo")
+					childrenOnSameRow: true
+					childrenArea.columnSpacing: 1
+					DoubleField { name: "castilloParamU"; label: qsTr("u"); defaultValue: 1; inclusive: "maxOnly"; min: 1}
+				}
+				RadioButton
+				{
 					value: "beta.binomial"; label: qsTr("Beta binomial")
 					childrenOnSameRow: true
 					childrenArea.columnSpacing: 1

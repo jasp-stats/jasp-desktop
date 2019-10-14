@@ -61,6 +61,7 @@ Compares each model against the model selected.
 - Model prior: Prior distribution on the models.
   - Uniform
   - Wilson: Default lambda = 1. Equivalent to a Beta binomial with a = 1 and b = lambda * p, where p is the number of predictors in the model.
+  - Castillo: Default u = 1. Equivalent to a Beta binomial with a = 1 and b = p^u, where p is the number of predictors in the model.
   - Beta binomial: Default Beta(a = 1, b = 1).
   - Beronoulli: Default p = 0.5.
 - Sampling method: Indicates the sampling method to be used. It is recommended to use *BAS* when the model space can be enumerated.
@@ -87,11 +88,12 @@ Posterior summaries of Coefficients.
 
 ### References
 ---
+- Castillo, I., Schmidt-Hieber, J., & Van der Vaart, A. (2015). Bayesian linear regression with sparse priors. *The Annals of Statistics, 43*(5), 1986-2018.
 - Clyde, M. A. (2018). BAS: Bayesian Adaptive Sampling for Bayesian Model Averaging. (Version 1.5.3)[Computer software].
 - Clyde, M. A., Ghosh, J., & Littman, M. L. (2011). Bayesian adaptive sampling for variable selection and model averaging. *Journal of Computational and Graphical Statistics, 20*, 80-101.
 - Consonni, G., Fouskakis, D., Liseo, B., & Ntzoufras, I. (2018). Prior Distributions for Objective Bayesian Analysis. *Bayesian Analysis, 13*, 627-679.
 - Liang, F., Paulo, R., Molina, G., Clyde, M. A., & Berger, J. O. (2008). Mixtures of *g* Priors for Bayesian Variable Selection. *Journal of the American Statistical Association, 103*, 410-423.
-- Wilson, M. A., Iversen, E. S., Clyde, M. A., Schmidler, S. C., & Schildkraut, J. M. (2010). Bayesian model search and multilevel inference for SNP association studies. *The annals of applied statistics, 4*(3), 1342.
+- Wilson, M. A., Iversen, E. S., Clyde, M. A., Schmidler, S. C., & Schildkraut, J. M. (2010). Bayesian model search and multilevel inference for SNP association studies. *The Annals of Applied Statistics, 4*(3), 1342.
 
 ### R Packages
 ---

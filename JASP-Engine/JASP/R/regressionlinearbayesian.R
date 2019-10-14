@@ -115,6 +115,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
       "dependent", "covariates", "wlsWeights", "modelTerms",
       "priorRegressionCoefficients", "alpha", "rScale",
       "modelPrior", "betaBinomialParamA", "betaBinomialParamB", "bernoulliParam",
+      "wilsonParamLambda", "castilloParamU",
       "samplingMethod", "iterationsMCMC", "numberOfModels"
     ))
     jaspResults[["basreg"]] <- basregContainer
@@ -153,9 +154,17 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
       "Wilson, M. A., Iversen, E. S., Clyde, M. A., Schmidler, S. C., & Schildkraut, J. M. (2010). Bayesian model search and multilevel inference for SNP association studies. The annals of applied statistics, 4(3), 1342."
     )
     modelComparisonTable$addFootnote(paste(
-      "The Wilson prior corresponds to a beta binomial prior with \u03B1 = 1 and \u03B2 = p * \u03BB and",
+      "The Wilson model prior corresponds to a beta binomial prior with \u03B1 = 1 and \u03B2 = p * \u03BB and",
       "corresponds to an approximate penalization equal to log(\u03BB + 1) in log-odds scale for each additional",
       "covariate added to the model (Consonni et al., 2018; Wilson et al., 2010)."
+    ))
+  } else if (options$modelPrior == "Castillo") {
+    modelComparisonTable$addCitation(
+      "Castillo, I., Schmidt-Hieber, J., & Van der Vaart, A. (2015). Bayesian linear regression with sparse priors. The Annals of Statistics, 43(5), 1986-2018."
+    )
+    modelComparisonTable$addFootnote(paste(
+      "The Castillo model prior corresponds to a beta binomial prior with \u03B1 = 1 and \u03B2 = p^u and is suitable ",
+      "for sparse regression when there are more covariates than observations (Castillo et al., 2015)."
     ))
   }
 
@@ -988,6 +997,8 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     modelPrior <- BAS::Bernoulli(options$bernoulliParam)
   else if (options$modelPrior == "Wilson")
     modelPrior <- BAS::beta.binomial(1.0, as.numeric(nPreds * options$wilsonParamLambda))
+  else if (options$modelPrior == "Castillo")
+    modelPrior <- BAS::beta.binomial(1.0, as.numeric(nPreds ^ options$castilloParamU))
   
   # number of models
   n.models <- NULL
