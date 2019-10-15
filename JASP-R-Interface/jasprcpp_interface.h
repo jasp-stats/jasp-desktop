@@ -18,14 +18,12 @@
 #ifndef JASPRCPP_INTERFACE_H
 #define JASPRCPP_INTERFACE_H
 
-#include <QtCore/qglobal.h>
-
 //unix uses same compiler for both R-Interface and Engine so no need for dll-hoops to jump through
 #ifdef _WIN32
 #if defined(JASP_R_INTERFACE_LIBRARY)
-#  define RBRIDGE_TO_JASP_INTERFACE Q_DECL_EXPORT
+#  define RBRIDGE_TO_JASP_INTERFACE __declspec(dllexport)
 #else
-#  define RBRIDGE_TO_JASP_INTERFACE Q_DECL_IMPORT
+#  define RBRIDGE_TO_JASP_INTERFACE __declspec(dllimport)
 #endif
 #else
 #define RBRIDGE_TO_JASP_INTERFACE
