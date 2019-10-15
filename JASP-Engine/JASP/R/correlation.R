@@ -422,8 +422,9 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 .corrValuePlot <- function(results, cexText= 2.5, cexCI= 1.7, options = options) {
+  if(isFALSE(options$plotStatistics)) return(.displayError(errorMessage = ""))
   if(!isFALSE(results$errors)){
-    return(.displayError(results$errors$message))
+    return(.displayError(errorMessage = results$errors$message))
   }
   
   res <- results$res
