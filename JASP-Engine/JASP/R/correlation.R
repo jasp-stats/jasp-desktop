@@ -183,24 +183,25 @@ Correlation <- function(jaspResults, dataset, options){
   
   for(vi in seq_along(variables)){
     for(ti in seq_along(tests)){
-      .corrInitCorrelationTableRowAsColumn(mainTable, options, variables[vi], testsTitles[ti], tests[ti])
+      .corrInitCorrelationTableRowAsColumn(mainTable, options, variables[vi], testsTitles[ti], tests[ti], vi)
     }
   }
 
   return(mainTable)
 }
 
-.corrInitCorrelationTableRowAsColumn <- function(mainTable, options, var, coeff, test){
+.corrInitCorrelationTableRowAsColumn <- function(mainTable, options, var, coeff, test, vi){
   vvar <- .v(var)
   name <- paste(vvar, test, "%s", sep = "_")
+  overtitle <- paste(vi, var, sep = ". ")
   
-  mainTable$addColumnInfo(name = sprintf(name, "estimate"), title = coeff, type = "number", overtitle = var)
+  mainTable$addColumnInfo(name = sprintf(name, "estimate"), title = coeff, type = "number", overtitle = overtitle)
   
   if(options$reportSignificance)
-    mainTable$addColumnInfo(name = sprintf(name, "p.value"), title = "p-value", type = "pvalue", overtitle = var)
+    mainTable$addColumnInfo(name = sprintf(name, "p.value"), title = "p-value", type = "pvalue", overtitle = overtitle)
   
   if(options$VovkSellkeMPR){
-    mainTable$addColumnInfo(name = sprintf(name, "vsmpr"), title = "VS-MPR", type = "number", overtitle = var)
+    mainTable$addColumnInfo(name = sprintf(name, "vsmpr"), title = "VS-MPR", type = "number", overtitle = overtitle)
     mainTable$addFootnote(colNames = sprintf(name, "vsmpr"), symbol = "\u002A",
                           message = .corrTexts$footnotes$VSMPR)
     mainTable$addCitation(.corrTexts$references$Sellke_etal_2001)
@@ -209,10 +210,10 @@ Correlation <- function(jaspResults, dataset, options){
   if(options$confidenceIntervals){
     mainTable$addColumnInfo(name = sprintf(name, "upper.ci"), 
                             title = sprintf("Upper %s%% CI", 100*options$confidenceIntervalsInterval),
-                            type = "number", overtitle = var)
+                            type = "number", overtitle = overtitle)
     mainTable$addColumnInfo(name = sprintf(name, "lower.ci"), 
                             title = sprintf("Lower %s%% CI", 100*options$confidenceIntervalsInterval),
-                            type = "number", overtitle = var)
+                            type = "number", overtitle = overtitle)
   }
 }
 
@@ -312,7 +313,7 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 .corrFillPairwiseTable <- function(mainTable, corrResults, options){
-  # we need to extract the list of results
+  # extract the list of results
   results <- lapply(corrResults, function(x) x[['res']])
   
   # the stored results can be out of order -> we need to identify the order from the order of the
@@ -321,6 +322,7 @@ Correlation <- function(jaspResults, dataset, options){
   pairs <- sapply(combos, paste, collapse = "_")
   
   results <- results[pairs]
+  
   # now rbind the list so that we can access the columns
   results <- do.call(rbind, results)
   
@@ -329,6 +331,7 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 .corrFillCorrelationTable <- function(mainTable, corrResults, options){
+  #browser()
   vvars <- .v(options$variables)
   statsNames <- names(corrResults[[paste(vvars[1], vvars[2], sep = "_")]]$res)
   
@@ -337,7 +340,7 @@ Correlation <- function(jaspResults, dataset, options){
     
     for(col in seq_along(options$variables)){
       if(row == col){
-        r <- rep("-", length(statsNames))
+        r <- rep(NA, length(statsNames))
         res <- rbind(res, r)
       } else if(row < col){
         r <- rep(NA, length(statsNames))
