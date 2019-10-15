@@ -312,16 +312,19 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 .corrFillPairwiseTable <- function(mainTable, corrResults, options){
-  transposedResults <- purrr::transpose(corrResults, "res")[["res"]]
+  # we need to extract the list of results
+  results <- lapply(corrResults, function(x) x[['res']])
   
   # the stored results can be out of order -> we need to identify the order from the order of the
   # variables in the options list
   combos <- combn(.v(options$variables), 2, simplify = FALSE)
   pairs <- sapply(combos, paste, collapse = "_")
   
-  results <- transposedResults[pairs]
+  results <- results[pairs]
+  # now rbind the list so that we can access the columns
   results <- do.call(rbind, results)
   
+  # fill all columns
   for(col in colnames(results)) mainTable[[col]] <- results[,col]
 }
 
