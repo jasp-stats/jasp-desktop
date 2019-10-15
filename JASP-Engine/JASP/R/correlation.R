@@ -24,13 +24,14 @@ Correlation <- function(jaspResults, dataset, options){
   
   # Init main table ----
   mainTable <- .corrInitMainTable(jaspResults, options, errors)
-   # return()
+  
   # Compute results ----
   corrResults <- .corrComputeResults(jaspResults, dataset, options, ready)
   
   # Fill tables and plots ----
   .corrFillTableMain(mainTable, corrResults, options, ready)
-
+  .corrPlot(jaspResults, dataset, options, ready, corrResults)
+  
   return()
 }
 
@@ -358,7 +359,63 @@ Correlation <- function(jaspResults, dataset, options){
   }
   
 }
+### Plot stuff ----
+.corrPlot <- function(jaspResults, dataset, options, ready, corrResults){
+  if(!ready) return()
+  if(isFALSE(options$plotCorrelationMatrix)) return()
+  
+  if(isTRUE(options[["displayPairwise"]])){
+    .corrMatrixPlot(jaspResults, dataset, options, ready, corrResults)
+  } else{
+    .corrMatrixPlot(jaspResults, dataset, options, ready, corrResults)
+  }
+}
 
+.corrMatrixPlot <- function(jaspResults, dataset, options, ready, corrResults){
+  if(!is.null(jaspResults[['corrMatrixPlot']])) return()
+  vars <- options$variables
+  vvars <- .v(vars)
+  len <- length(vars)
+  
+  
+  plot <- createJaspPlot()  
+  plot$dependOn(options = c("variables", "pearson", "spearman", "kendallsTauB", "displayPairwise",
+                            "confidenceIntervals", "confidenceIntervalsInterval", "hypothesis",
+                            "plotCorrelationMatrix", "plotDensities", "plotStatistics", "missingValues"))
+  
+  if (len <= 2 && (options$plotDensities || options$plotStatistics)) {
+    plot$width <- 580
+    plot$height <- 580
+  } else if (len <= 2) {
+    plot$width <- 400
+    plot$height <- 400
+  } else {
+    plot$width <- 250 * len + 20
+    plot$height <- 250 * len + 20
+  }
+  
+  
+  jaspResults[['corrMatrixPlot']] <- plot
+  
+  
+  plotMat <- matrix(list(), len, len)
+  for(row in seq_len(len)){
+    for(col in seq_len(len)){
+      if(row == col) {
+        plotMat[[row, col]] <- .plotMarginalCor(variable = dataset[[vvars[col]]])
+      } else if(row > col){
+        plotMat[[row, col]] <- .corrValuePlot(corrResults[[paste(vvars[c(col, row)], collapse = "_")]], options = options)
+      } else {
+        plotMat[[row, col]] <- .plotScatter(xVar = dataset[[vvars[col]]], yVar = dataset[[vvars[row]]])
+      }
+    }
+  }
+  
+  p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = vars, topLabels = vars,
+                                scaleXYlabels = NULL)
+  plot$plotObject <- p
+  
+}
 ### Old stuff ----
 # Correlation <- function(dataset=NULL, options, perform="run", callback=function(...) 0, state=NULL, ...) {
 #   #
@@ -1148,6 +1205,98 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 #### display correlation value ####
+.corrValuePlot <- function(results, cexText= 2.5, cexCI= 1.7, options = options) {
+  #browser()
+  if(!isFALSE(results$errors)){
+    return(.displayError(results$errors$message))
+  }
+  
+  res <- results$res
+  
+  
+  tests <- c()
+  
+  if (options$pearson)
+    tests <- c(tests, "pearson")
+  
+  if (options$spearman)
+    tests <- c(tests, "spearman")
+  
+  if (options$kendallsTauB)
+    tests <- c(tests, "kendall")
+  
+  CIPossible <- rep(TRUE, length(tests))
+  
+  
+  p <- ggplot2::ggplot(data = data.frame(), ggplot2::aes(x = seq_along(data.frame()),y = summary(data.frame()))) +
+    ggplot2::theme_void() +
+    ggplot2::theme(
+      plot.margin = grid::unit(c(1,1,1,1), "cm")
+    ) + ggplot2::xlim(0,2) + ggplot2::ylim(0,2)
+  
+  if(length(tests) == 0) return(p)
+  
+  if (length(tests) == 1) {
+    ypos <- 1.5
+  }
+  
+  if (length(tests) == 2) {
+    ypos <- c(1.7, 1.1)
+  }
+  
+  if (length(tests) == 3) {
+    ypos <- c(1.8, 1.2, .6)
+  }
+  
+  
+  lab <- rep(NA, length(tests))
+  cilab <- rep(NA, length(tests))
+  
+  for(i in seq_along(tests)){
+    estimate <- res[[paste(tests[i], "estimate", sep = "_")]]
+    if(round(estimate, 8) == 1) {
+      CIPossible[i] <- FALSE
+      
+      lab[i] <- switch(tests[i],
+                       pearson =  paste(  "italic(r) == '1.000'"),
+                       spearman = paste("italic(rho) == '1.000'"),
+                       kendall =  paste("italic(tau) == '1.000'"))
+    } else if(round(estimate, 8) == -1){
+      CIPossible[i] <- FALSE
+      
+      lab[i] <- switch(tests[i],
+                       pearson =  paste(  "italic(r) == '-1.000'"),
+                       spearman = paste("italic(rho) == '-1.000'"),
+                       kendall =  paste("italic(tau) == '-1.000'"))
+    } else{
+      lab[i] <- .corValueString(corValue = estimate, testType = tests[i], decimals = 3)
+    }
+    
+    if(CIPossible){
+      lower.ci <- res[[paste(tests[i], "lower.ci", sep = "_")]]
+      lower.ci <- formatC(lower.ci, format = "f", digits = 3)
+      
+      upper.ci <- res[[paste(tests[i], "upper.ci", sep = "_")]]
+      upper.ci <- formatC(upper.ci, format = "f", digits = 3)
+      
+      cilab[i] <- sprintf("%s%% CI: [%s, %s]", 100*options$confidenceIntervalsInterval, lower.ci, upper.ci)
+    } else{
+      cilab[i] <- ""
+    }
+  }
+  
+  p <- p + ggplot2::geom_text(data = data.frame(x = rep(1, length(ypos)), y = ypos),
+                              mapping = ggplot2::aes(x = x, y = y, label =lab),
+                              size = 7, parse = TRUE)
+  
+  if(options$confidenceIntervals){
+    p <- p + ggplot2::geom_text(data = data.frame(x = rep(1, length(ypos)), y = ypos - 0.25),
+                                mapping = ggplot2::aes(x = x, y = y, label = cilab),
+                                size = 5)
+  }
+  
+  return(p)
+}
 .plotCorValue <- function(xVar, yVar, cexText= 2.5, cexCI= 1.7, hypothesis = "correlated", pearson=options$pearson,
                           kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=0.95) {
 
