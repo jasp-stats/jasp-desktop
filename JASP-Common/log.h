@@ -12,7 +12,7 @@ DECLARE_ENUM(logError, noProblem, fileNotOpen, filePathNotSet);
 class Log
 {
 public:
-	static std::ostream & log();
+	static std::ostream & log(bool addTimestamp = true);
 
 	static std::string	logFileNameBase;
 
@@ -33,6 +33,7 @@ public:
 private:
 				Log() { }
 	static void redirectStdOut();
+	static std::string getTimestamp();
 
 	static logType		_default;
 	static logType		_where;
