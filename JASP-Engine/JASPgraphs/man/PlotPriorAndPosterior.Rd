@@ -10,8 +10,8 @@ PlotPriorAndPosterior(dfLines, dfPoints = NULL, BF = NULL,
   bfType = c("BF01", "BF10", "LogBF10"), hypothesis = c("equal",
   "smaller", "greater"), bfSubscripts = NULL,
   pizzaTxt = hypothesis2BFtxt(hypothesis)$pizzaTxt, bty = list(type =
-  "n", ldwX = 0.5, lwdY = 0.5), CRItxt = "95\% CI: ",
-  medianTxt = "Median:", ...)
+  "n", ldwX = 0.5, lwdY = 0.5), lineColors = NULL,
+  CRItxt = "95\% CI: ", medianTxt = "Median:", ...)
 }
 \arguments{
 \item{dfLines}{A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.}
@@ -41,6 +41,8 @@ PlotPriorAndPosterior(dfLines, dfPoints = NULL, BF = NULL,
 \item{pizzaTxt}{String vector of length 2, text to be drawn above and below pizza plot.}
 
 \item{bty}{List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.}
+
+\item{lineColors}{NULL to omit line colors, a character vector with colors, or any other value to add \code{color = g} to the aestethics of the main plot.}
 
 \item{CRItxt}{String, display the credible interval as \code{paste0(CRItxt, "[", lower, ", ", upper, "]")}.}
 

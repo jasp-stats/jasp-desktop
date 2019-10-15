@@ -25,7 +25,7 @@ themeJaspRaw(legend.position = "none", xMargin = c(20, 0, 0, 0),
 \arguments{
 \item{graph}{a ggplot2 object}
 
-\item{sides}{see \link{geom_rangeframe}}
+\item{sides}{see \link{\code{geom_rangeframe}}}
 
 \item{axis.title.cex}{scalar magnification for the title of the axes.}
 

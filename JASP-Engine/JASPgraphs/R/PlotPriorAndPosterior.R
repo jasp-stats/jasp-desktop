@@ -297,6 +297,7 @@ makeBFwheelAndText <- function(BF, bfSubscripts, pizzaTxt, drawPizzaTxt = is.nul
 #' @param bfSubscripts String, manually specify the BF labels.
 #' @param pizzaTxt String vector of length 2, text to be drawn above and below pizza plot.
 #' @param bty List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.
+#' @param lineColors NULL to omit line colors, a character vector with colors, or any other value to add \code{color = g} to the aestethics of the main plot.
 #' @param CRItxt String, display the credible interval as \code{paste0(CRItxt, "[", lower, ", ", upper, "]")}.
 #' @param medianTxt String, display the median as \code{paste(medianTxt, formatC(median, 3, format = "f"))}.
 #' @param ... Unused.
@@ -313,6 +314,7 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
                                   bfSubscripts = NULL,
                                   pizzaTxt = hypothesis2BFtxt(hypothesis)$pizzaTxt,
                                   bty = list(type = "n", ldwX = .5, lwdY = .5),
+                                  lineColors = NULL,
                                   CRItxt = "95% CI: ", medianTxt = "Median:",
                                   ...) {
 
@@ -327,11 +329,19 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
   obsYmax <- max(dfLines$y)
   newymax <- max(1.1 * obsYmax, breaksYmax)
 
-  mapping <- if (ncol(dfLines) == 2L) aes(x = x, y = y) else aes(x = x, y = y, group = g, linetype = g)
+  mapping <- if (ncol(dfLines) == 2L)
+    aes(x = x, y = y)
+  else if (!is.null(lineColors))
+    aes(x = x, y = y, group = g, linetype = g, color = g)
+  else
+    aes(x = x, y = y, group = g, linetype = g)
   g <- ggplot2::ggplot(data = dfLines, mapping) +
       geom_line() +
       scale_x_continuous(xName) +
       scale_y_continuous(yName, breaks = yBreaks, limits = c(0, newymax))
+
+  if (!is.null(lineColors) && is.character(lineColors))
+    g <- g + ggplot2::scale_color_manual(values = lineColors)
 
   if (!is.null(dfPoints)) {
     g <- g + ggplot2::geom_point(data = dfPoints, ggplot2::aes(x = x, y = y), inherit.aes = FALSE,
