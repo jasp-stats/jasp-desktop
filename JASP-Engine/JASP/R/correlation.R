@@ -324,10 +324,10 @@ Correlation <- function(jaspResults, dataset, options){
   results <- results[pairs]
   
   # now rbind the list so that we can access the columns
-  results <- do.call(rbind, results)
+  results <- as.data.frame(do.call(rbind, results))
   
   # fill all columns
-  for(col in colnames(results)) mainTable[[col]] <- results[,col]
+  for(col in colnames(results)) mainTable[[col]] <- results[[col]]
 }
 
 .corrFillCorrelationTable <- function(mainTable, corrResults, options){
@@ -336,24 +336,24 @@ Correlation <- function(jaspResults, dataset, options){
   statsNames <- names(corrResults[[paste(vvars[1], vvars[2], sep = "_")]]$res)
   
   for(row in seq_along(options$variables)){
-    res <- matrix(NA, nrow = 0, ncol = length(statsNames)) 
+    res <- matrix(NA, nrow = length(options$variables), ncol = length(statsNames)) 
+    res <- as.data.frame(res)
     
     for(col in seq_along(options$variables)){
       if(row == col){
         r <- rep(NA, length(statsNames))
-        res <- rbind(res, r)
       } else if(row < col){
         r <- rep(NA, length(statsNames))
-        res <- rbind(res, r)
       } else {
         r <- corrResults[[paste(vvars[col], vvars[row], sep = "_")]]$res
-        res <- rbind(res, r)
-        }
+      }
+      
+      res[col, ] <- r
     }
     colnames(res) <- statsNames
     
     for(s in statsNames){
-      mainTable[[sprintf("%s_%s", vvars[row], s)]] <- res[, s, drop=TRUE]
+      mainTable[[paste(vvars[row], s, sep = "_")]] <- res[, s, drop=TRUE]
     }
   }
   
