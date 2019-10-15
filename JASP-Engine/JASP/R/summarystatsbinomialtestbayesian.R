@@ -18,13 +18,14 @@
 SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   
   # Reading in a datafile is not necessary
-  # Error checking is not necessary
+  # Check for possible errors
+  .checkErrors.summarystats.binomial(options)
   
   # Compute the results and create main results table
   summaryStatsBinomialResults <- .summaryStatsBinomialMainFunction(jaspResults, options)
   
   # Output plots
-  .summaryStatsBinomialPlot(     jaspResults, options, summaryStatsBinomialResults)
+  .summaryStatsBinomialPlot(jaspResults, options, summaryStatsBinomialResults)
   
   return()
 }
@@ -81,21 +82,6 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   # 1. check user input
   ready <- !(n == 0)
   
-  # 2. check for possible errors
-  errorMessageTable <- NULL
-  
-  if (theta0 == 1 && hypothesis == "greater") {
-    
-    errorMessageTable <- "Cannot test the hypothesis that the test value is greater than 1."
-    
-  } else if (theta0 == 0 && hypothesis == "less") {
-    
-    errorMessageTable <- "Cannot test the hypothesis that the test value is less than 0."
-  }
-  
-  if (!is.null(errorMessageTable)) {
-    return(list(ready = ready, errorMessageTable = errorMessageTable))
-  }
   if (!ready)
     return(list(ready = ready))
   
@@ -251,4 +237,22 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
                           bfTitle      = bfTitle)
   
   return(hypothesisList)
+}
+.checkErrors.summarystats.binomial <- function(options) {
+  
+  # perform a check on the hypothesis
+  custom <- function() {
+    if (options$testValue == 1 && options$hypothesis == "greaterThanTestValue")
+      return("Cannot test the hypothesis that the test value is greater than 1.")
+    else if (options$testValue == 0 && options$hypothesis == "lessThanTestValue")
+      return("Cannot test the hypothesis that the test value is less than 0.")
+  }
+  
+  # Error Check 1: Number of levels of the variables and the hypothesis
+  .hasErrors(
+    dataset              = matrix(options$successes), # mock dataset so the error check runs
+    custom               = custom,
+    exitAnalysisIfErrors = TRUE
+  )
+
 }
