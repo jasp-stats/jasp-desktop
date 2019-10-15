@@ -284,7 +284,7 @@ Correlation <- function(jaspResults, dataset, options){
       
       # store state for pair
       state <- createJaspState(object = results[[vpair[i]]])
-      state$dependOn(options = c("hypothesis", "confidenceIntervalsInterval"), 
+      state$dependOn(options = c("hypothesis", "confidenceIntervalsInterval", "missingValues"), 
                      optionContainsValue = list(variables = .unv(vcomb[[i]])))
       
       jaspResults[[vpair[i]]] <- state
@@ -294,7 +294,7 @@ Correlation <- function(jaspResults, dataset, options){
   
   
   jaspResults[['results']] <- createJaspState(object = results)
-  jaspResults[['results']]$dependOn(optionsFromObject = jaspResults[['mainTable']])
+  jaspResults[['results']]$dependOn(options = c("variables", "hypothesis", "confidenceIntervalsInterval", "missingValues"))
   
   
   return(results)
