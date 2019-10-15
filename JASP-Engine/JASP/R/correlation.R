@@ -98,10 +98,6 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 .corrInitPairwiseTable <- function(mainTable, options, variables){
-  
-  #pairNames <- t(combn(variables, 2, simplify = TRUE))
-  #pairs <- sapply(combn(.v(options$variables), 2, simplify = FALSE), paste, collapse = "_")
-  
   pairs <- combn(.v(variables), 2, simplify = FALSE)
   pairTitles <- combn(variables, 2, simplify = FALSE)
   
@@ -117,10 +113,8 @@ Correlation <- function(jaspResults, dataset, options){
   mainTable$setExpectedSize(rows = length(pairs))
   for(row in 1:length(pairs)){
     rowName <- paste(pairs[[row]], collapse = "_")
-    #rowTitle <- paste(pairTitles[[row]], collapse = " - ")
     
     mainTable$setRowName(row, rowName)
-    #mainTable$setRowTitle(rowName, rowTitle)
   }
   
   options[["kendall"]] <- options[["kendallsTauB"]]
@@ -138,7 +132,7 @@ Correlation <- function(jaspResults, dataset, options){
         overtitle <- NULL
       }
       
-      mainTable$addColumnInfo(name = paste0(test, "_estimate"), title = "corr", #.corrTitlerer(test, nTests),
+      mainTable$addColumnInfo(name = paste0(test, "_estimate"), title = .corrTitlerer(test, nTests),
                               type = "number", overtitle = overtitle)
       
       if(options$reportSignificance)
@@ -162,6 +156,16 @@ Correlation <- function(jaspResults, dataset, options){
   }
   
   return(mainTable) 
+}
+
+.corrTitlerer <- function(test, nTests){
+  if(nTests > 1){
+    coeffs <- c(pearson = "r", spearman = "rho", kendall = "tau B")
+  } else{
+    coeffs <- c(pearson = "Pearson's r", spearman = "Spearman's rho", kendall = "Kendall's tau B")
+  }
+  
+  return(coeffs[test])
 }
 
 .corrInitCorrelationTable <- function(mainTable, options, variables){
@@ -215,27 +219,25 @@ Correlation <- function(jaspResults, dataset, options){
 ### Compute results ----
 .corrComputeResults <- function(jaspResults, dataset, options, ready){
   if(!ready) return()
-  
-  reusable <- !is.null(jaspResults[['results']])
+  if(!is.null(jaspResults[['results']])) return(jaspResults[['results']]$object)
+
   vvars <- .v(options[['variables']])
   vcomb <- combn(vvars, 2, simplify = FALSE)
   vpair <- sapply(vcomb, paste, collapse = "_")
-  
-  if(reusable){
-    results <- jaspResults[['results']]$object
-  } else{
-    results <- list()
-  }
+
   
   alt <- c(correlated = "two.sided",
            correlatedNegatively = "less",
            correlatedPositively = "greater")[options$hypothesis]
   
+  results <- list()
   for(i in seq_along(vpair)){
     # some variable pairs might be reusable, so we don't need to compute them again
-    if(is.null(results[[vpair[i]]])){
+    if(!is.null(jaspResults[[vpair[i]]])) {
+      results[[vpair[i]]] <- jaspResults[[vpair[i]]]$object
+    } else {
       data <- dataset[vcomb[[i]]]
-      data <- data[complete.cases(data),]
+      data <- data[complete.cases(data),,drop=FALSE]
       
       errors <-.hasErrors(data, message = 'default', 
                           type = c('variance', 'infinity', 'observations'),
@@ -277,18 +279,22 @@ Correlation <- function(jaspResults, dataset, options){
       names(kendall) <- paste("kendall", statsNames, sep = "_")
       
       results[[vpair[i]]] <- list(vars = .unv(vcomb[[i]]), vvars = vcomb[[i]], 
-                                  res = c(pearson, spearman, kendall, sampleSize = nrow(data)),
+                                  res = c(pearson, spearman, kendall, sample.size = nrow(data)),
                                   errors = errors)
+      
+      # store state for pair
+      state <- createJaspState(object = results[[vpair[i]]])
+      state$dependOn(options = c("hypothesis", "confidenceIntervalsInterval"), 
+                     optionContainsValue = list(variables = .unv(vcomb[[i]])))
+      
+      jaspResults[[vpair[i]]] <- state
+      
     } 
-    
-    # the table can be filled row by row if it's a pairwise table
-    # if(options$displayPairwise)
-    #   .fillRowPairwiseTable(row = results[[vpair[i]]], table = mainTable$mainTable)
-    
   }
   
-  jaspResults[['results']] <- createJaspState(object = results,
-                                              dependencies = c("hypothesis", "confidenceIntervalsInterval"))
+  
+  jaspResults[['results']] <- createJaspState(object = results)
+  jaspResults[['results']]$dependOn(optionsFromObject = jaspResults[['mainTable']])
   
   
   return(results)
@@ -306,20 +312,19 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 .corrFillPairwiseTable <- function(mainTable, corrResults, options){
-  transposedResults <- purrr::transpose(corrResults)
+  transposedResults <- purrr::transpose(corrResults, "res")[["res"]]
   
   # the stored results can be out of order -> we need to identify the order from the order of the
   # variables in the options list
   combos <- combn(.v(options$variables), 2, simplify = FALSE)
   pairs <- sapply(combos, paste, collapse = "_")
-  results <- transposedResults$res[pairs]
-  mainTable$setData(do.call(rbind, results))
   
-  # the row names (i.e., variable pairs) are overriden by $setData, so we fill again :(
-  mainTable[['variable1']] <- sapply(combos, function(v) .unv(v[[1]]))
-  mainTable[['separator']] <- rep("-", length(pairs))
-  mainTable[['variable2']] <- sapply(combos, function(v) .unv(v[[2]]))
+  results <- transposedResults[pairs]
+  results <- do.call(rbind, results)
+  
+  for(col in colnames(results)) mainTable[[col]] <- results[,col]
 }
+
 .corrFillCorrelationTable <- function(mainTable, corrResults, options){
   vvars <- .v(options$variables)
   statsNames <- names(corrResults[[paste(vvars[1], vvars[2], sep = "_")]]$res)
