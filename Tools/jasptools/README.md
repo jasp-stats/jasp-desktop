@@ -2,30 +2,31 @@
 R package which aids developers with writing JASP analyses.
 
 ## Installation
-It is necessary to install some packages:
+It is necessary to install some packages: 
 
-- Rcpp, BH, R6, devtools
+- Rcpp
 - jaspResults
 
 This can be done as follows:
 
-`install.packages(c("Rcpp", "BH", "R6", "devtools"))`
+`install.packages("Rcpp")`
 
-and
+and 
 
 `install.packages("/%path%/jasp-desktop/JASP-R-Interface/jaspResults/", repos = NULL, type = "source")`
 
-To install jasptools itself use:
+To install jasptools itself use: 
 
-`devtools::install("/%path%/jasp-desktop/Tools/jasptools/")`
+`install.packages("/%path%/jasp-desktop/Tools/jasptools/", repos = NULL, type = "source")`
 
 or
 
-`install.packages("/%path%/jasp-desktop/Tools/jasptools/", repos = NULL, type = "source")`.
+`devtools::install("/%path%/jasp-desktop/Tools/jasptools/")`.
 
-`devtools::install` can be useful because it will automatically install the dependencies of jasptools, whereas `install.packages` cannot do this. Note: On some macs, it seems to be hard to build the dependency "data.table" from source. One hack to get around this is to select no when asked to install the package from source. This will install an older version of data.table, which suffices for jasptools. 
+`devtools::install` can be useful because it will automatically install the dependencies of jasptools, whereas 
+`install.packages` cannot do this.
 
-After loading jasptools with `library(jasptools)`, you need to call `develop(%path_to_jasp-desktop%)`. This is
+After loading jasptools with `library(jasptools)`, you need to call `develop(%path_to_jasp-desktop%)`. This is 
 required once after every reinstall of jasptools.
 
 ## Functionality
@@ -82,7 +83,7 @@ options <- jasptools::analysisOptions('{
 jasptools::run("BinomialTest", dataset="debug.csv", options=options)
 ```
 
-It is not necessary to use a JASP dataset (such as the debug.csv file we showed in the examples), you may provide any
+It is not necessary to use a JASP dataset (such as the debug.csv file we showed in the examples), you may provide any 
 data.frame to the dataset argument of the run function.
 
 ### 2. Testing JASP analyses
@@ -100,15 +101,15 @@ To this purpose jasptools offers convenience functions for testing.
 
 - `lintAnalysis`: test if an R file complies with the JASP syntax standards. For example, check if `<-` is used rather
 than `=`. In addition, this function performs some check for code correctness. For example, it will give a warning if
-an object is created but never used. Some of these correctness checks may give false positives that can be safely
-ignored.
+an object is created but never used. Some of these correctness checks may give false positives that can be safely 
+ignored. 
 - `styleAnalysis`: apply a bunch of JASP syntax standards to an analysis. A safety copy is made before modifying a file.
 This function will change tabs into spaces, change `=` into `<-` where appropriate, etc.
 
-All changes that `styleAnalysis` can automatically apply to code are mandatory for R analyses.
+All changes that `styleAnalysis` can automatically apply to code are mandatory for R analyses. 
 
 ### 4. Modifying jasptools' setup
-- `viewPkgOptions`: views settings in the package
+- `viewPkgOptions`: views settings in the package 
 - `setPkgOption`: change a setting in the package (e.g., paths and ppi)
 
 On startup jasptools will attempt to find all the resources it requires.
