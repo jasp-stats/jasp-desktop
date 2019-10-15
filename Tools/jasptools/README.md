@@ -13,7 +13,7 @@ This can be done as follows:
 
 and
 
-`install.packages("/%path%/jasp-desktop/JASP-R-Interface/jaspResults/", repos = NULL, type = "source", dependencies = TRUE)`
+`install.packages("/%path%/jasp-desktop/JASP-R-Interface/jaspResults/", repos = NULL, type = "source")`
 
 To install jasptools itself use:
 
@@ -23,7 +23,7 @@ or
 
 `install.packages("/%path%/jasp-desktop/Tools/jasptools/", repos = NULL, type = "source")`.
 
-`devtools::install` can be useful because it will automatically install the dependencies of jasptools, whereas `install.packages` cannot do this. Note: On some macs, it seems to be hard to build the dependency "data.table" from source resulting in the error message "clang: error: unsupported option '-fopenmp'". One hack to get around this is to select no when asked to install the package from source. This will install an older version of data.table without openmp support, which suffices for jasptools. Alternatively, you might want to upgrade [clang](https://cran.r-project.org/bin/macosx/tools/). 
+`devtools::install` can be useful because it will automatically install the dependencies of jasptools, whereas `install.packages` cannot do this. Note: On some macs, it seems to be hard to build the dependency "data.table" from source. One hack to get around this is to select no when asked to install the package from source. This will install an older version of data.table, which suffices for jasptools. 
 
 After loading jasptools with `library(jasptools)`, you need to call `develop(%path_to_jasp-desktop%)`. This is
 required once after every reinstall of jasptools.
