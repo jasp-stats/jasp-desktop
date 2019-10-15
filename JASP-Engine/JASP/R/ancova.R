@@ -739,7 +739,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   
   if (options$postHocTestsTypeDunn) 
     dunnPostHoc <- .anovaDunnTable(postHocContainer, dataset, options,  anovaContainer[["model"]]$object)
-
+  
   return()
 }
 
