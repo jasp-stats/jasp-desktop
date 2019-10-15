@@ -183,6 +183,7 @@ Form
 			CheckBox { name: "postHocTestsTypeGames";		label: qsTr("Games-Howell")				}
 			CheckBox { name: "postHocTestsTypeDunnett";		label: qsTr("Dunnett")					}
 			CheckBox { name: "postHocTestsTypeDunn";		label: qsTr("Dunn")						}
+
 		}
 		
 
