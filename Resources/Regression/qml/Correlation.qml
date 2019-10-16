@@ -76,6 +76,29 @@ Form
 
 	}
 
+    Section
+    {
+        title: qsTr("Assumption Checks")
+
+        Group
+        {
+            title: qsTr("Multivariate Normality")
+            CheckBox { name: "multivariateShapiro"; label: qsTr("Shapiro")               }
+            CheckBox { name: "multivariateRoyston"; label: qsTr("Royston"); debug: true  }
+            CheckBox { name: "multivariateMardia" ; label: qsTr("Mardia");  debug: true  }
+            CheckBox { name: "multivariateEnergy" ; label: qsTr("Energy");  debug: true  }
+        }
+
+        Group
+        {
+            title: qsTr("Pairwise Normality")
+            CheckBox { name: "pairwiseShapiro"; label: qsTr("Shapiro")               }
+            CheckBox { name: "pairwiseRoyston"; label: qsTr("Royston"); debug: true  }
+            CheckBox { name: "pairwiseMardia" ; label: qsTr("Mardia");  debug: true  }
+            CheckBox { name: "pairwiseEnergy" ; label: qsTr("Energy");  debug: true  }
+        }
+    }
+
 	Section
 	{
 		title: qsTr("Options")

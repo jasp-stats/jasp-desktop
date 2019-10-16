@@ -30,6 +30,7 @@ Correlation <- function(jaspResults, dataset, options){
   
   # Fill tables and plots ----
   .corrFillTableMain(mainTable, corrResults, options, ready)
+  .corrAssumptions(jaspResults, dataset, options, ready, corrResults)
   .corrPlot(jaspResults, dataset, options, ready, corrResults, errors)
   
   return()
@@ -90,7 +91,7 @@ Correlation <- function(jaspResults, dataset, options){
   }
   
   if(options[['flagSignificant']])
-    mainTable$addFootnote(message = "p < .05, ** p < .05, *** p < .001", symbol = "*")
+    mainTable$addFootnote(message = "p < .05, ** p < .01, *** p < .001", symbol = "*")
   
   # show
   jaspResults[['mainTable']] <- mainTable
@@ -257,40 +258,48 @@ Correlation <- function(jaspResults, dataset, options){
       stats <- c("estimate", "p.value", "conf.int", "vsmpr")
       statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
       
-      pearson  <- cor.test(data[,1], data[,2], method = "pearson", 
-                           alternative = alt, conf.level = options$confidenceIntervalsInterval)
-      pearson$vsmpr <- .VovkSellkeMPR(pearson$p.value) # why it returns string '∞' instead of Inf? 
-      pearson$vsmpr <- ifelse(pearson$vsmpr == "∞", Inf, pearson$vsmpr)
-      pearson <- unlist(pearson[stats], use.names = FALSE)
-      names(pearson) <- paste("pearson", statsNames, sep = "_")
+      if(isFALSE(errors)){
+        pearson  <- cor.test(data[,1], data[,2], method = "pearson", 
+                             alternative = alt, conf.level = options$confidenceIntervalsInterval)
+        pearson$vsmpr <- .VovkSellkeMPR(pearson$p.value) # why it returns string '∞' instead of Inf? 
+        pearson$vsmpr <- ifelse(pearson$vsmpr == "∞", Inf, pearson$vsmpr)
+        pearson <- unlist(pearson[stats], use.names = FALSE)
+        names(pearson) <- paste("pearson", statsNames, sep = "_")
+        
+        spearman <- cor.test(data[,1], data[,2], method = "spearman", 
+                             alternative = alt, conf.level = options$confidenceIntervalsInterval)
+        spearman$conf.int <- .createNonparametricConfidenceIntervals(x = data[,1], y = data[,2], 
+                                                                     obsCor = spearman$estimate,
+                                                                     hypothesis = options$hypothesis, 
+                                                                     confLevel = options$confidenceIntervalsInterval, 
+                                                                     method = "spearman")
+        spearman$vsmpr <- .VovkSellkeMPR(spearman$p.value)
+        spearman$vsmpr <- ifelse(spearman$vsmpr == "∞", Inf, spearman$vsmpr)
+        spearman <- unlist(spearman[stats], use.names = FALSE)
+        names(spearman) <- paste("spearman", statsNames, sep = "_")
+        
+        kendall  <- cor.test(data[,1], data[,2], method = "kendall", 
+                             alternative = alt, conf.level = options$confidenceIntervalsInterval)
+        kendall$conf.int <- .createNonparametricConfidenceIntervals(x = data[,1], y = data[,2], 
+                                                                     obsCor = kendall$estimate,
+                                                                     hypothesis = options$hypothesis, 
+                                                                     confLevel = options$confidenceIntervalsInterval, 
+                                                                     method = "kendall")
+        kendall$vsmpr <- .VovkSellkeMPR(kendall$p.value)
+        kendall$vsmpr <- ifelse(kendall$vsmpr == "∞", Inf, kendall$vsmpr)
+        kendall <- unlist(kendall[stats], use.names = FALSE)
+        names(kendall) <- paste("kendall", statsNames, sep = "_")
+      } else {
+        pearson <- spearman <- kendall <- rep(NaN, length(statsNames))
+        names(pearson) <- names(spearman) <- names(kendall) <- statsNames
+      }
       
-      spearman <- cor.test(data[,1], data[,2], method = "spearman", 
-                           alternative = alt, conf.level = options$confidenceIntervalsInterval)
-      spearman$conf.int <- .createNonparametricConfidenceIntervals(x = data[,1], y = data[,2], 
-                                                                   obsCor = spearman$estimate,
-                                                                   hypothesis = options$hypothesis, 
-                                                                   confLevel = options$confidenceIntervalsInterval, 
-                                                                   method = "spearman")
-      spearman$vsmpr <- .VovkSellkeMPR(spearman$p.value)
-      spearman$vsmpr <- ifelse(spearman$vsmpr == "∞", Inf, spearman$vsmpr)
-      spearman <- unlist(spearman[stats], use.names = FALSE)
-      names(spearman) <- paste("spearman", statsNames, sep = "_")
-      
-      kendall  <- cor.test(data[,1], data[,2], method = "kendall", 
-                           alternative = alt, conf.level = options$confidenceIntervalsInterval)
-      kendall$conf.int <- .createNonparametricConfidenceIntervals(x = data[,1], y = data[,2], 
-                                                                   obsCor = kendall$estimate,
-                                                                   hypothesis = options$hypothesis, 
-                                                                   confLevel = options$confidenceIntervalsInterval, 
-                                                                   method = "kendall")
-      kendall$vsmpr <- .VovkSellkeMPR(kendall$p.value)
-      kendall$vsmpr <- ifelse(kendall$vsmpr == "∞", Inf, kendall$vsmpr)
-      kendall <- unlist(kendall[stats], use.names = FALSE)
-      names(kendall) <- paste("kendall", statsNames, sep = "_")
+      # stolen from manova
+      shapiro <- .multivariateShapiroComputation(data, list(dependent = .unv(vcomb[[i]])))
       
       results[[vpair[i]]] <- list(vars = .unv(vcomb[[i]]), vvars = vcomb[[i]], 
                                   res = c(pearson, spearman, kendall, sample.size = nrow(data)),
-                                  errors = errors)
+                                  errors = errors, shapiro = shapiro)
       
       # store state for pair
       state <- createJaspState(object = results[[vpair[i]]])
@@ -310,6 +319,71 @@ Correlation <- function(jaspResults, dataset, options){
   return(results)
 }
 
+.corrAssumptions <- function(jaspResults, dataset, options, ready, corrResults){
+  if(isFALSE(options$multivariateShapiro) && isFALSE(options$pairwiseShapiro)) return()
+  if(!is.null(jaspResults[['assumptionsContainer']])) return()
+  
+  assumptionsContainer <- createJaspContainer(title = "Assumption checks")
+  assumptionsContainer$dependOn(c("multivariateShapiro", "pairwiseShapiro", "variables", "missingValues"))
+  assumptionsContainer$position <- 2
+  
+  jaspResults[['assumptionsContainer']] <- assumptionsContainer
+  if(isTRUE(options$multivariateShapiro)){
+    shapiroTable <- createJaspTable(title = "Shapiro-Wilk Test for Multivariate Normality")
+    
+    shapiroTable$showSpecifiedColumnsOnly <- TRUE
+    
+    shapiroTable$addColumnInfo(name = "W", title = "Shapiro-Wilk", type = "number")
+    shapiroTable$addColumnInfo(name = "p", title = "p", type = "pvalue")
+    
+    assumptionsContainer[['multivariateShapiro']] <- shapiroTable
+    
+    if (ready) {
+      dataset <- dataset[complete.cases(dataset),,drop=FALSE]
+      shapiroResult <- .multivariateShapiroComputation(dataset, list(dependent = options$variables))
+      shapiroErrors <- shapiroResult$errors
+      shapiroResult <- shapiroResult$result
+      shapiroTable$addRows(list(W = shapiroResult$statistic, p = shapiroResult$p.value))
+      
+      if (!is.null(shapiroErrors)) 
+        shapiroTable$setError(shapiroErrors)
+    }
+  }
+  
+  if(isTRUE(options$pairwiseShapiro)){
+    shapiroTable <- createJaspTable(title = "Shapiro-Wilk Test for Bivariate Normality")
+    
+    shapiroTable$showSpecifiedColumnsOnly <- TRUE
+    
+    shapiroTable$addColumnInfo(name = "var1", title = "", type = "string")
+    shapiroTable$addColumnInfo(name = "separator", title = "", type = "string")
+    shapiroTable$addColumnInfo(name = "var2", title = "", type = "string")
+    shapiroTable$addColumnInfo(name = "W", title = "Shapiro-Wilk", type = "number")
+    shapiroTable$addColumnInfo(name = "p", title = "p", type = "pvalue")
+    
+    shapiroTable$setExpectedSize(rows = max(1, choose(length(options$variables), 2)))
+    
+    assumptionsContainer[['pairwiseShapiro']] <- shapiroTable
+    if(ready){
+      for(i in seq_along(corrResults)){
+        res <- corrResults[[i]]
+        
+        shapiroTable$addRows(list(
+          var1 = res$vars[1], separator = "-", var2 = res$vars[2],
+          W = res$shapiro$result$statistic, p = res$shapiro$result$p.value
+        ))
+        
+        
+        name <- paste(res$vvars, collapse = "_")
+        shapiroTable$setRowName(rowIndex = i, newName = name)
+        if(!is.null(res$shapiro$errors)){
+          shapiroTable$addFootnote(message = res$shapiro$errors, rowNames = name)
+        }
+      }
+    }
+  }
+  
+}
 ### Fill Tables ----
 .corrFillTableMain <- function(mainTable, corrResults, options, ready){
   if(!ready) return()
