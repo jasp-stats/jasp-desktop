@@ -39,8 +39,8 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	isEditable:					function() { return this.model.get("editable")					==  true;	},
 	hasCollapse:				function() { return this.$el.hasClass('jasp-collection-item')	=== false;	},
 	isConvertible:				function() { return this.model.get("convertible")				==  true;	},
-	saveImageClicked:			function() { this.model.trigger("SaveImage:clicked",		{ name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")							});	},
-	editImageClicked:			function() { this.model.trigger("EditImage:clicked",		{ name: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), type: "interactive"		});	},
+	saveImageClicked:			function() { this.model.trigger("SaveImage:clicked",		{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")							});	},
+	editImageClicked:			function() { this.model.trigger("EditImage:clicked",		{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), title: this.model.get("title"), editOptions: this.model.get("editOptions"), type: "interactive"		});	},
 	showDependenciesClicked:	function() { this.model.trigger("ShowDependencies:clicked", this.model.get("name")); },
 
 	menuName: "Plot",
@@ -81,7 +81,8 @@ JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
 	onResized: function (w, h) {
 		if (this.resizer.isResizing() && !this.resizeEventTriggered) {
 			this.resizeEventTriggered = true;
-			this.model.trigger("EditImage:clicked", { name: this.model.get("data"), width: w, height: h, type: "resize" });
+			this.model.trigger("EditImage:clicked", { data: this.model.get("data"), width: w, height: h, type: "resize" });
+			
 		}
 	},
 

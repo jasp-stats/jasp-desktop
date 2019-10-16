@@ -124,7 +124,7 @@ void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
 
 void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
 {
-	Json::Value imgJson = analysis->getImgResults();
+	Json::Value imgJson = analysis->imgResults();
 	QString	results = tq(imgJson.toStyledString());
 	results = escapeJavascriptString(results);
 	results = "window.refreshEditedImage(" + QString::number(analysis->id()) + ", JSON.parse('" + results + "'));";
@@ -361,4 +361,17 @@ void ResultsJsInterface::setResultsPageUrl(QString resultsPageUrl)
 
 	_resultsPageUrl = resultsPageUrl;
 	emit resultsPageUrlChanged(_resultsPageUrl);
+}
+
+void ResultsJsInterface::analysisEditImage(int id, QString options)
+{
+	std::string opts = fq(options);
+	Json::Value converted = Json::objectValue;
+
+	Json::Reader().parse(opts, converted);
+
+	std::string type = converted.get("type", "").asString();
+
+	if		(type == "resize"		) emit analysisResizeImage(id, options);
+	else if	(type == "interactive"	) emit showPlotEditor(id, options);
 }

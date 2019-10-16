@@ -140,7 +140,7 @@ DISTFILES += \
     JASP/R/commonAnovaBayesian.R \
     JASP/R/commonAudit.R \
     JASP/R/commonAuditSampling.R \
-	JASP/R/commonbayesianttest.R \
+    JASP/R/commonbayesianttest.R \
     JASP/R/commonBayesianAuditMethods.R \
     JASP/R/commonClassicalAuditMethods.R \
     JASP/R/commonerrorcheck.R \
@@ -216,36 +216,42 @@ DISTFILES += \
     JASP/R/ttestplotfunctions.R \
     JASPgraphs/DESCRIPTION \
     JASPgraphs/NAMESPACE \
-    JASPgraphs/R/colorPalettes.R \
-    JASPgraphs/R/compatability.R \
-    JASPgraphs/R/convenience.R \
-    JASPgraphs/R/customGeoms.R \
-    JASPgraphs/R/descriptivesPlots.R \
-    JASPgraphs/R/functions.R \
-    JASPgraphs/R/getPrettyAxisBreaks.R \
-    JASPgraphs/R/ggMatrixPlot.R \
-    JASPgraphs/R/graphOptions.R \
-    JASPgraphs/R/highLevelPlots.R \
-    JASPgraphs/R/jaspLabelAxes.R \
+    JASPgraphs/R/plotEditing.R \
     JASPgraphs/R/jaspScales.R \
-    JASPgraphs/R/legendToPlotRatio.R \
-    JASPgraphs/R/parseThis.R \
-    JASPgraphs/R/PlotPieChart.R \
-    JASPgraphs/R/PlotPizza.R \
-    JASPgraphs/R/PlotPriorAndPosterior.R \
-    JASPgraphs/R/plotQQnorm.R \
-    JASPgraphs/R/PlotRobustnessSequential.R \
-    JASPgraphs/R/printJASPgraphs.R \
     JASPgraphs/R/themeJasp.R \
+    JASPgraphs/R/jaspLabelAxes.R \
+    JASPgraphs/R/functions.R \
+    JASPgraphs/R/PlotRobustnessSequential.R \
+    JASPgraphs/R/PlotPriorAndPosterior.R \
     JASPgraphs/R/todo.R \
-    JASPgraphs/man/colors.Rd \
-    JASPgraphs/man/drawBFpizza.Rd \
-    JASPgraphs/man/makeGridLines.Rd \
-    JASPgraphs/man/parseThis.Rd \
-    JASPgraphs/man/plotPieChart.Rd \
+    JASPgraphs/R/printJASPgraphs.R \
+    JASPgraphs/R/plotQQnorm.R \
+    JASPgraphs/R/parseThis.R \
+    JASPgraphs/R/legendToPlotRatio.R \
+    JASPgraphs/R/highLevelPlots.R \
+    JASPgraphs/R/graphOptions.R \
+    JASPgraphs/R/ggMatrixPlot.R \
+    JASPgraphs/R/getPrettyAxisBreaks.R \
+    JASPgraphs/R/descriptivesPlots.R \
+    JASPgraphs/R/customGeoms.R \
+    JASPgraphs/R/convenience.R \
+    JASPgraphs/R/compatability.R \
+    JASPgraphs/R/colorPalettes.R \
+    JASPgraphs/R/PlotPizza.R \
+    JASPgraphs/R/PlotPieChart.R \
+    JASPgraphs/tests/testthat.R \
+    JASPgraphs/tests/testthat/test-plotEditing.R \
+    JASPgraphs/man/PlotRobustnessSequential.Rd \
     JASPgraphs/man/PlotPriorAndPosterior.Rd \
     JASPgraphs/man/plotQQnorm.Rd \
-    JASPgraphs/man/PlotRobustnessSequential.Rd \
+    JASPgraphs/man/plotPieChart.Rd \
+    JASPgraphs/man/parseThis.Rd \
+    JASPgraphs/man/makeGridLines.Rd \
+    JASPgraphs/man/drawBFpizza.Rd \
+    JASPgraphs/man/colors.Rd \
     JASPgraphs/inst/examples/ex-colorPalettes.R \
-    JASPgraphs/inst/examples/ex-PlotPieChart.R
+    JASPgraphs/inst/examples/ex-PlotPieChart.R \
+    JASPgraphs/inst/examples/ex-PlotPriorAndPosterior.R \
+    JASPgraphs/inst/examples/ex-PlotRobustnessSequential.R
+
 

@@ -21,35 +21,32 @@ getImageLocation <- function(type="png") {
 
 writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathpng=NULL, ppi=300, backgroundColor="white", location=getImageLocation("png"))
 {
-  # Initialise output object
-  image <- list()
-
   # Set values from JASP'S Rcpp when available
   if (exists(".fromRCPP")) {
-    location <- .fromRCPP(".requestTempFileNameNative", "png")
+    location        <- .fromRCPP(".requestTempFileNameNative", "png")
     backgroundColor <- .fromRCPP(".imageBackground")
-    ppi <- .fromRCPP(".ppi")
+    ppi             <- .fromRCPP(".ppi")
   }
 
   # TRUE if called from analysis, FALSE if called from editImage
   if (is.null(relativePathpng))
     relativePathpng <- location$relativePath
 
-  fullPathpng <- paste(location$root, relativePathpng, sep="/")
-
+  image                           <- list()
+  fullPathpng                     <- paste(location$root, relativePathpng, sep="/")
+  plotEditingOptions              <- NULL
+  root                            <- location$root
   base::Encoding(relativePathpng) <- "UTF-8"
-
-  root <- location$root
-  base::Encoding(root) <- "UTF-8"
-  oldwd <- getwd()
+  base::Encoding(root)            <- "UTF-8"
+  oldwd                           <- getwd()
   setwd(root)
   on.exit(setwd(oldwd))
 
-  # Operating System information
-  type <- "cairo"
-  if (Sys.info()["sysname"]=="Darwin"){
+  type <- "cairo" # Operating System information (where to draw to)
+  if(Sys.info()["sysname"]=="Darwin")
     type <- "quartz"
-  }
+
+
   if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
 
     pngMultip <- ppi / 96
@@ -60,11 +57,16 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
     	width     = width  * pngMultip,
     	height    = height * pngMultip,
     	dpi       = ppi,
-		bg        = backgroundColor,
+      bg        = backgroundColor,
     	res       = 72 * pngMultip,
     	type      = type,
     	limitsize = FALSE # because we supply png as a function, we specify pixels rather than inches
     )
+
+    #If we have JASPgraphs available we can get the plotEditingOptions for this plot
+    if(requireNamespace("JASPgraphs", quietly = TRUE))
+      plotEditingOptions <- JASPgraphs::plotEditingOptions(graph=plot, asJSON=TRUE)
+
   } else {
     
   	# Calculate pixel multiplier
@@ -77,23 +79,35 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
                    res=72 * pngMultip, type=type)
 
     if (is.function(plot) && !isRecordedPlot) {
+
       if (obj) dev.control('enable') # enable plot recording
       eval(plot())
       if (obj) plot <- recordPlot() # save plot to R object
+
     } else if (isRecordedPlot) { # function was called from editImage to resize the plot
-      redrawPlotJaspResults(plot) #(see below)
+
+      .redrawPlot(plot) #(see below)
     } else if (inherits(plot, "qgraph")) {
+
       qgraph:::plot.qgraph(plot)
+
     } else {
       plot(plot)
     }
+
     dev.off()
   }
 
 
   # Save path & plot object to output
   image[["png"]] <- relativePathpng
-  if (obj) image[["obj"]] <- plot
+
+  if (obj) {
+    image[["obj"]]         <- plot
+    image[["editOptions"]] <- plotEditingOptions
+  }
+
+
 
   # Return relative paths in list
   image

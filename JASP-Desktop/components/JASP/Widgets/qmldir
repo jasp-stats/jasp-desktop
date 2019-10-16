@@ -39,3 +39,4 @@ WelcomePage                 1.0 WelcomePage.qml
 UIScaleNotifier             1.0 UIScaleNotifier.qml
 ModulesMenu                 1.0 ModulesMenu.qml
 SaveDiscardCancelDialog     1.0 SaveDiscardCancelDialog.qml
+PlotEditor                  1.0 PlotEditor.qml

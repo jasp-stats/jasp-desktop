@@ -352,7 +352,9 @@ HEADERS += \
     data/importers/readstat/readstat_custom_io.h \
     data/importers/readstat/readstat_windows_helper.h \
     data/datasettablemodel.h \
-    data/labelmodel.h
+    data/labelmodel.h \
+    results/ploteditormodel.h \
+    results/ploteditoraxismodel.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -518,7 +520,9 @@ SOURCES += \
     widgets/listmodelfiltereddataentry.cpp \
     data/importers/readstat/readstat_custom_io.cpp \
     data/datasettablemodel.cpp \
-    data/labelmodel.cpp
+    data/labelmodel.cpp \
+    results/ploteditormodel.cpp \
+    results/ploteditoraxismodel.cpp
 
 
 RESOURCES += \

@@ -116,5 +116,6 @@
         <file>components/JASP/Widgets/SortMenuButton.qml</file>
         <file>components/JASP/Widgets/SaveDiscardCancelDialog.qml</file>
         <file>components/JASP/Widgets/JagsTableView.qml</file>
+        <file>components/JASP/Widgets/PlotEditor.qml</file>
     </qresource>
 </RCC>

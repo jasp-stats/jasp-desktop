@@ -120,6 +120,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
+	_plotEditorModel		= new PlotEditorModel(_analyses);
 
 	new MessageForwarder(this); //We do not need to store this
 
@@ -229,7 +230,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisChangedDownstream,		this,					&MainWindow::analysisChangedDownstreamHandler				);
 	connect(_resultsJsInterface,	&ResultsJsInterface::saveTextToFile,				this,					&MainWindow::saveTextToFileHandler							);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSaveImage,				this,					&MainWindow::analysisSaveImageHandler						);
-	connect(_resultsJsInterface,	&ResultsJsInterface::analysisEditImage,				this,					&MainWindow::analysisEditImageHandler						);
+	connect(_resultsJsInterface,	&ResultsJsInterface::analysisResizeImage,			this,					&MainWindow::analysisEditImageHandler						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedSignal,		this,					&MainWindow::resultsPageLoaded								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
@@ -240,7 +241,7 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisTitleChangedInResults,	_analyses,				&Analyses::analysisTitleChangedInResults					);
 	connect(_resultsJsInterface,	&ResultsJsInterface::duplicateAnalysis,				_analyses,				&Analyses::duplicateAnalysis								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::showDependenciesInAnalysis,	_analyses,				&Analyses::showDependenciesInAnalysis						);
-
+	connect(_resultsJsInterface,	&ResultsJsInterface::showPlotEditor,				_plotEditorModel,		&PlotEditorModel::showPlotEditor							);
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
@@ -302,6 +303,7 @@ void MainWindow::loadQML()
 
 	_qml = new QQmlApplicationEngine(this);
 
+
 	_qml->rootContext()->setContextProperty("mainWindow",				this					);
 	_qml->rootContext()->setContextProperty("labelModel",				_labelModel				);
 	_qml->rootContext()->setContextProperty("aboutModel",				_aboutModel				);
@@ -309,6 +311,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnsModel",				_columnsModel			);
 	_qml->rootContext()->setContextProperty("analysesModel",			_analyses				);
 	_qml->rootContext()->setContextProperty("dynamicModules",			_dynamicModules			);
+	_qml->rootContext()->setContextProperty("plotEditorModel",			_plotEditorModel		);
 	_qml->rootContext()->setContextProperty("preferencesModel",			_preferences			);
 	_qml->rootContext()->setContextProperty("resultsJsInterface",		_resultsJsInterface		);
 	_qml->rootContext()->setContextProperty("computedColumnsInterface",	_computedColumnsModel	);
@@ -319,6 +322,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel			);
 	_qml->rootContext()->setContextProperty("engineSync",				_engineSync				);
 	_qml->rootContext()->setContextProperty("helpModel",				_helpModel				);
+
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
@@ -661,7 +665,7 @@ void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 
 void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 {
-	Json::Value results = analysis->getImgResults();
+	Json::Value results = analysis->imgResults();
 	if (results.isNull())
 		return;
 
