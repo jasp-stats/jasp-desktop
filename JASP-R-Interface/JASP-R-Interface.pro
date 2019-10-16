@@ -1,6 +1,5 @@
 QT -= gui
 
-ROOT_DIR = $$OUT_PWD/..
 include(../JASP.pri)
 
 CONFIG += c++11
