@@ -189,7 +189,7 @@ Descriptives <- function(jaspResults, dataset, options) {
     if(is.null(jaspResults[["scatterPlots"]])) {
       jaspResults[["scatterPlots"]] <- createJaspContainer("Scatter Plots")
       jaspResults[["scatterPlots"]]$dependOn(c("splitby", "scatterPlot", "graphTypeAbove", "graphTypeRight", "addSmooth",
-                                               "addSmoothCI", "addSmoothCIValue", "forceLinearSmooth", ""))
+                                               "addSmoothCI", "addSmoothCIValue", "regressionType", "showLegend"))
       jaspResults[["scatterPlots"]]$position <- 10
     }
     .descriptivesScatterPlots(jaspResults[["scatterPlots"]], dataset.factors, variables, splitName, options)
@@ -1331,10 +1331,13 @@ Descriptives <- function(jaspResults, dataset, options) {
 
 .descriptivesScatterPlots <- function(jaspContainer, dataset, variables, split, options) {
 
-  if (!is.null(split) && split != "")
+  if (!is.null(split) && split != "") {
     group <- dataset[, .v(split)]
-  else
+    legendTitle <- split
+  } else {
     group <- NULL
+    legendTitle <- NULL
+  }
 
   variablesB64 <- .v(variables)
   # remove non-numeric variables
@@ -1353,19 +1356,6 @@ Descriptives <- function(jaspResults, dataset, options) {
     return()
   }
 
-  if (options[["showLegend"]]) {
-    xVal <- c(0.15, 0.50, 0.9)
-    yVal <- c(0.20, 0.60, 1.0)
-
-    xIdx <- endsWith(options[["legendPosition"]],   c("left", "center", "right"))
-    yIdx <- startsWith(options[["legendPosition"]], c("bottom", "center", "top"))
-
-    legendPosition <- c(xVal[xIdx], yVal[yIdx])
-
-  } else {
-    legendPosition <- "none"
-  }
-
   for (i in 1:(nvar - 1L)) for (j in (i + 1L):nvar) {
     v1 <- variables[i]
     v2 <- variables[j]
@@ -1379,13 +1369,14 @@ Descriptives <- function(jaspResults, dataset, options) {
         group             = group,
         xName             = v1,
         yName             = v2,
+        showLegend        = options[["showLegend"]],
         addSmooth         = options[["addSmooth"]],
         addSmoothCI       = options[["addSmoothCI"]],
         smoothCIValue     = options[["addSmoothCIValue"]],
-        forceLinearSmooth = options[["forceLinearSmooth"]],
+        forceLinearSmooth = options[["regressionType"]] == "linear",
         plotAbove         = options[["graphTypeAbove"]],
         plotRight         = options[["graphTypeRight"]],
-        legend.position   = legendPosition
+        legendTitle       = legendTitle
       ))
       if (isTryError(p)) {
         errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))

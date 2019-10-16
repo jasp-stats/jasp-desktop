@@ -16,6 +16,10 @@ JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", plotAbove = "none",    
 # we can do the same with a grouping variable
 data("mtcars")
 JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl)
+JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotAbove = "none")
+JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotRight = "none")
+JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotRight = "none", plotAbove = "none")
+
 JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotAbove = "histogram", plotRight = "histogram")
 
 ## NOT RUN

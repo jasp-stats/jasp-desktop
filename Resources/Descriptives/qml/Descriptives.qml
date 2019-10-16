@@ -89,8 +89,15 @@ Form
 				CheckBox
 				{
 					name: "addSmooth"
-					label: qsTr("Add smoothed regression line")
+					label: qsTr("Add regression line")
 					checked: true
+					RadioButtonGroup
+					{
+						name:	"regressionType";
+						RadioButton { value: "smooth";	label: qsTr("Smooth");	checked: true	}
+						RadioButton { value: "linear";	label: qsTr("Linear")					}
+					}
+
 					CheckBox
 					{
 						name: "addSmoothCI"
@@ -99,7 +106,6 @@ Form
 						childrenOnSameRow: true
 						CIField {	name: "addSmoothCIValue" }
 					}
-					CheckBox {	name: "forceLinearSmooth";	label: qsTr("Force regression line to be linear")}
 				}
 				CheckBox
 				{
@@ -107,23 +113,6 @@ Form
 					name: "showLegend"
 					label: qsTr("Show legend")
 					checked: true
-					childrenOnSameRow: true
-					DropDown
-					{
-						name: "legendPosition"
-						indexDefaultValue: 0
-						values:
-						[
-							{ label: qsTr("in the top left"),		value: "topleft"		},
-							{ label: qsTr("in the top center"),		value: "topcenter"		},
-							{ label: qsTr("in the top right"),		value: "topright"		},
-							{ label: qsTr("in the bottom left"),	value: "bottomleft"		},
-							{ label: qsTr("in the bottom center"),	value: "bottomcenter"	},
-							{ label: qsTr("in the bottom right"),	value: "bottomright"	},
-							{ label: qsTr("in the center left"),	value: "centerleft"		},
-							{ label: qsTr("in the center right"),	value: "centerright"	}
-						]
-					}
 				}
 			}
 		}

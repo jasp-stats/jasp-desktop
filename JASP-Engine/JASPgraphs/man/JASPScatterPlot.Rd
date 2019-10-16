@@ -9,6 +9,7 @@ JASPScatterPlot(x, y, group = NULL, xName = NULL, yName = NULL,
   forceLinearSmooth = FALSE, plotAbove = c("density", "histogram",
   "none"), plotRight = c("density", "histogram", "none"),
   colorAreaUnderDensity = TRUE, alphaAreaUnderDensity = 0.5,
+  showLegend = !is.null(group), legendTitle = NULL,
   emulateGgMarginal = FALSE, ...)
 }
 \arguments{
@@ -38,9 +39,13 @@ JASPScatterPlot(x, y, group = NULL, xName = NULL, yName = NULL,
 
 \item{alphaAreaUnderDensity}{Real in [0, 1], transparancy for area under density.}
 
+\item{showLegend}{Should the legend be shown?}
+
+\item{legendTitle}{A string for the title of the legend. \code{NULL} implies the legend is not shown.}
+
 \item{emulateGgMarginal}{Should the result be as similar as possible to \code{\link[ggExtra]{ggMarginal}}? Overwrites other parmeters.}
 
-\item{passed}{to \code{\link{themeJaspRaw}}.}
+\item{...}{passed to \code{\link{themeJaspRaw}}.}
 }
 \description{
 Create a scatter plot with density
@@ -68,7 +73,13 @@ JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", plotAbove = "none",    
 # we can do the same with a grouping variable
 data("mtcars")
 JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl)
+JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotAbove = "none")
+JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotRight = "none")
+JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotRight = "none", plotAbove = "none")
+
 JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotAbove = "histogram", plotRight = "histogram")
+debugonce(JASPgraphs:::reDrawAlignedPlot)
+
 
 ## NOT RUN
 # spot the differences (if you find any report them to the package maintainer!)

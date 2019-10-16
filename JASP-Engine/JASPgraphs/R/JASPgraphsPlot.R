@@ -26,6 +26,14 @@ JASPgraphsPlot <- R6::R6Class(
   )
 )
 
+`[[.JASPgraphsPlot` <- function(x, field) x$subplots[[field]]
+
+`[[<-.JASPgraphsPlot` <- function(x, field, value) {
+  x$subplots[[field]] <- value
+  return(x)
+}
+
+
 reDrawJASPgraphsPlot <- function(subplots, args, grob = FALSE, ...) {
   # redraws plots from PlotPriorAndPosterior, PlotRobustnessSequential, and ggMatrixplot
   g <- gridExtra::arrangeGrob(
@@ -44,10 +52,11 @@ reDrawJASPgraphsPlot <- function(subplots, args, grob = FALSE, ...) {
 reDrawAlignedPlot <- function(subplots, args, grob = FALSE, ...) {
   # redraws plots from JASPScatterPlot
   g <- makeGrobAlignedPlots(
-    mainplot  = subplots[["mainPlot"]],
-    abovePlot = subplots[["topPlot"]],
-    rightPlot = subplots[["rightPlot"]],
-    size      = args[["size"]]
+    mainplot   = subplots[["mainPlot"]],
+    abovePlot  = subplots[["topPlot"]],
+    rightPlot  = subplots[["rightPlot"]],
+    showLegend = args[["showLegend"]],
+    size       = args[["size"]]
   )
 
   if (grob) {

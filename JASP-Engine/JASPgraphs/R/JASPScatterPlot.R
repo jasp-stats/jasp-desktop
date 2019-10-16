@@ -15,8 +15,10 @@
 #' @param plotRight type of plot right of the scatter plot.
 #' @param colorAreaUnderDensity Logical, should the area under the density be colored?
 #' @param alphaAreaUnderDensity Real in [0, 1], transparancy for area under density.
+#' @param showLegend Should the legend be shown?
+#' @param legendTitle A string for the title of the legend. \code{NULL} implies the legend is not shown.
 #' @param emulateGgMarginal Should the result be as similar as possible to \code{\link[ggExtra]{ggMarginal}}? Overwrites other parmeters.
-#' @param passed to \code{\link{themeJaspRaw}}.
+#' @param ... passed to \code{\link{themeJaspRaw}}.
 #'
 #' @details The only change added when \code{emulateGgMarginal = TRUE} is that \code{ggplot2::theme(plot.margin = unit(c(0, 0, 0.25, 0.25), "cm"))}
 #' is added to the main plot
@@ -31,6 +33,8 @@ JASPScatterPlot <- function(x, y, group = NULL, xName = NULL, yName = NULL,
                             plotRight = c("density", "histogram", "none"),
                             colorAreaUnderDensity = TRUE,
                             alphaAreaUnderDensity = .5,
+                            showLegend = !is.null(group),
+                            legendTitle = NULL,
                             emulateGgMarginal = FALSE,
                             ...) {
   
@@ -43,10 +47,14 @@ JASPScatterPlot <- function(x, y, group = NULL, xName = NULL, yName = NULL,
     is.null(yName) || is.character(yName) || is.expression(yName),
     is.logical(addSmooth),
     is.logical(emulateGgMarginal),
+    is.logical(showLegend),
     length(x) == length(y) && (is.null(group) || length(x) == length(group))
   )
   plotAbove <- match.arg(plotAbove)
   plotRight <- match.arg(plotRight)
+
+  # can't make a legend without group
+  showLegend <- showLegend && !is.null(group)
   
   if (emulateGgMarginal)
     colorAreaUnderDensity <- FALSE
@@ -65,12 +73,17 @@ JASPScatterPlot <- function(x, y, group = NULL, xName = NULL, yName = NULL,
                 method = if (forceLinearSmooth) "lm" else "loess")
   else NULL
 
+  dots <- list(...)
+  if (showLegend)
+    dots <- setDefaults(dots, legend.position = "right")
+
   mainPlot <- ggplot(df, mapping) + 
     geom_point() + 
     geomSmooth + 
-    ggplot2::labs(x = xName, y = yName) +
+    ggplot2::labs(x = xName, y = yName, color = legendTitle, fill = legendTitle) +
     geom_rangeframe() +
-    themeJaspRaw(...)
+    do.call(themeJaspRaw, dots)
+
   
   if (emulateGgMarginal)
     mainPlot <- mainPlot + ggplot2::theme(plot.margin = unit(c(0, 0, 0.25, 0.25), "cm"))
@@ -84,11 +97,13 @@ JASPScatterPlot <- function(x, y, group = NULL, xName = NULL, yName = NULL,
   rightPlot <- JASPScatterSubPlot(y, group, plotRight, y.range, colorAreaUnderDensity, alphaAreaUnderDensity, flip = TRUE)
   
   plotList <- list(mainPlot = mainPlot, topPlot = topPlot, rightPlot = rightPlot)
+  plotList <- plotList[lengths(plotList) > 0L]
   
   plot <- JASPgraphsPlot$new(
-    subplots     = plotList[lengths(plotList) > 0L],
+    subplots     = plotList,
     plotFunction = reDrawAlignedPlot,
-    size         = 5
+    size         = 5,
+    showLegend   = showLegend
   )
   return(plot)
 }
