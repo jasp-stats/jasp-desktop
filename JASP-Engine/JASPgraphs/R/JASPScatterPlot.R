@@ -78,21 +78,23 @@ JASPScatterPlot <- function(x, y, group = NULL, xName = NULL, yName = NULL,
     dots <- setDefaults(dots, legend.position = "right")
 
   mainPlot <- ggplot(df, mapping) + 
-    geom_point() + 
+    geom_point() +
     geomSmooth + 
     ggplot2::labs(x = xName, y = yName, color = legendTitle, fill = legendTitle) +
     geom_rangeframe() +
     do.call(themeJaspRaw, dots)
 
-  
+  if (!is.null(group))
+    mainPlot <- mainPlot + scale_JASPcolor_discrete() + scale_JASPfill_discrete()
+
   if (emulateGgMarginal)
     mainPlot <- mainPlot + ggplot2::theme(plot.margin = unit(c(0, 0, 0.25, 0.25), "cm"))
-  
+
   gb <- ggplot2::ggplot_build(mainPlot)
   scales <- gb$layout$get_scales(1L)
   x.range <- scales$x$get_limits()
   y.range <- scales$y$get_limits()
-  
+
   topPlot   <- JASPScatterSubPlot(x, group, plotAbove, x.range, colorAreaUnderDensity, alphaAreaUnderDensity)
   rightPlot <- JASPScatterSubPlot(y, group, plotRight, y.range, colorAreaUnderDensity, alphaAreaUnderDensity, flip = TRUE)
   
@@ -142,7 +144,10 @@ JASPScatterSubPlot <- function(x, group = NULL, type = c("density", "histogram",
     mapping$y <- ggplot2::quo(..density..)
   }
 
-  plot <- ggplot(df, mapping) + geom + geom2 + scale_x_continuous(limits = range, oob = scales::squish) + theme_void()
+  plot <- ggplot(df, mapping) +
+    geom + geom2 +
+    scale_JASPcolor_discrete() + scale_JASPfill_discrete() +
+    scale_x_continuous(limits = range, oob = scales::squish) + theme_void()
   if (flip)
     plot <- plot + coord_flip()
   return(plot)

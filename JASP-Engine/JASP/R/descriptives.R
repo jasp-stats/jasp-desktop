@@ -189,7 +189,8 @@ Descriptives <- function(jaspResults, dataset, options) {
     if(is.null(jaspResults[["scatterPlots"]])) {
       jaspResults[["scatterPlots"]] <- createJaspContainer("Scatter Plots")
       jaspResults[["scatterPlots"]]$dependOn(c("splitby", "scatterPlot", "graphTypeAbove", "graphTypeRight", "addSmooth",
-                                               "addSmoothCI", "addSmoothCIValue", "regressionType", "showLegend"))
+                                               "addSmoothCI", "addSmoothCIValue", "regressionType", "showLegend",
+                                               "colorPalette"))
       jaspResults[["scatterPlots"]]$position <- 10
     }
     .descriptivesScatterPlots(jaspResults[["scatterPlots"]], dataset.factors, variables, splitName, options)
@@ -1334,6 +1335,11 @@ Descriptives <- function(jaspResults, dataset, options) {
   if (!is.null(split) && split != "") {
     group <- dataset[, .v(split)]
     legendTitle <- split
+    if (options[["showLegend"]]) {
+      oldPalette <- JASPgraphs::getGraphOption("palette")
+      on.exit(JASPgraphs::setGraphOption("palette", oldPalette))
+      JASPgraphs::setGraphOption("palette", options[["colorPalette"]])
+    }
   } else {
     group <- NULL
     legendTitle <- NULL

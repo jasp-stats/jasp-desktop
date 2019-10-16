@@ -9,8 +9,17 @@
 #
 #
 
+# TODO: copied from common, do this more elegantly!
 fromJSON  <- function(x) jsonlite::fromJSON(x, TRUE, FALSE, FALSE)
 toJSON    <- function(x) jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, null = "null")
+.extractErrorMessage <- function(error) {
+  
+  split <- base::strsplit(as.character(error), ":")[[1]]
+  last <- split[[length(split)]]
+  stringr::str_trim(last)
+}
+
+
 
 #' @importFrom ggplot2 layer_scales is.ggplot ggplot_build
 
@@ -173,24 +182,32 @@ plotEditingOptions.ggplot <- function(graph, asJSON = FALSE) {
 plotEditingOptions.ggplot_built <- function(ggbuild, asJSON = FALSE) {
 
   # only relevant for continuous scales?
-  opts <- ggbuild[["layout"]][["coord"]][["labels"]](ggbuild[["layout"]][["panel_params"]])[[1L]]
-  axisTypes <- getAxisType(ggbuild)
-  currentAxis <- ggbuild[["layout"]][["get_scales"]](1L)
-
-  xSettings <- getAxisInfo(currentAxis[["x"]], opts, ggbuild)
-  ySettings <- getAxisInfo(currentAxis[["y"]], opts, ggbuild)
-
-  out <- list(xAxis = list(
+  e <- try({
+    opts <- ggbuild[["layout"]][["coord"]][["labels"]](ggbuild[["layout"]][["panel_params"]])[[1L]]
+    axisTypes <- getAxisType(ggbuild)
+    currentAxis <- ggbuild[["layout"]][["get_scales"]](1L)
+    
+    xSettings <- getAxisInfo(currentAxis[["x"]], opts, ggbuild)
+    ySettings <- getAxisInfo(currentAxis[["y"]], opts, ggbuild)
+    
+    out <- list(xAxis = list(
       type     = axisTypes[["x"]],
       settings = xSettings
     ), yAxis = list(
       type     = axisTypes[["y"]],
       settings = ySettings
     )
-  )
+    )
+  })
+  
+  if (inherits(e, "try-error"))
+    return(toJSON(list(error = paste("computing plotEditingOptions gave an error:", .extractErrorMessage(out)))))
 
-  if (asJSON)
-    out <- toJSON(out)
+  if (asJSON) {
+    out <- try(toJSON(out))
+    if (inherits(out, "try-error"))
+      out <- toJSON(list(error = paste("converting plotEditingOptions to JSON gave an error:", .extractErrorMessage(out))))
+  }
 
   return(out)
 }

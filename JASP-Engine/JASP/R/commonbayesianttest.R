@@ -2000,7 +2000,7 @@
 
   BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
   if (!addInformation) {
-    BF01 <- NULL
+    BF <- NULL
     median <- NULL
     CRI <- NULL
   }

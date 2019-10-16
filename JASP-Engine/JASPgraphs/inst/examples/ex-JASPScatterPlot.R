@@ -22,9 +22,20 @@ JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotRight =
 
 JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl, plotAbove = "histogram", plotRight = "histogram")
 
+# the color scheme can be changed with the global options:
+oldColor <- graphOptions("palette")
+graphOptions(palette = "ggplot2")
+JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl)
+graphOptions(palette = "viridis")
+JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl)
+graphOptions(palette = "colorblind3")
+JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl)
+graphOptions(palette = "gray")
+JASPScatterPlot(x = mtcars$mpg, y = mtcars$disp, group = mtcars$cyl)
+graphOptions(palette = oldColor)
+
 ## NOT RUN
 # spot the differences (if you find any report them to the package maintainer!)
 plot <- JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", addSmooth = FALSE, emulateGgMarginal = TRUE)
 plot
 ggExtra::ggMarginal(plot$subplots[[1]])
-
