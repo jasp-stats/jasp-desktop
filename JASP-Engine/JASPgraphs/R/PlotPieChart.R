@@ -31,7 +31,9 @@ plotPieChart <- function(value, group,
 
   # change the default arguments for themeJasp
   dots <- list(...)
-  dots <- setDefaults(dots, legend.position = "right")
+  dots <- setDefaults(dots,
+                      legend.position = "right",
+                      bty = "o")
 
   if (asPercentages)
     value <- value / sum(value) * 100

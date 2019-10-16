@@ -30,7 +30,7 @@ ggname <- function(prefix, grob) {
 #' @param panelInfo A list that specifies what information is drawn from what component of panel_scales. 
 #' Usually, \code{x.major} corresponds to the bottom axis. However, if a scale is used to move e.g., 
 #' the x-axis to be above the plot then this needs to be adjusted to \code{x.sec.major_source}. By default,
-#' this argument assumes that axis lines above and right of a plot use \code{\link[ggplot2]{sec.axis}} and are
+#' this argument assumes that axis lines above and right of a plot use \code{\link[ggplot2]{sec_axis}} and are
 #' therefore draw information from \code{*.sec.major_source}. You can partially set this list; if e.g., 
 #' \code{"t"} is missing it will be filled with its default value.
 #' 

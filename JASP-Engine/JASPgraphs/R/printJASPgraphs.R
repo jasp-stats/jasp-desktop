@@ -3,7 +3,8 @@
 print.JASPgraphs <- function(x, ...) {
 
   if (ggplot2::is.ggplot(x)) {
-    ggplot2:::print.ggplot(x, ...)
+    # do not call ggplot2:::print.ggplot() to please R CMD check
+    NextMethod()
   } else if (inherits(x, c("gtable", "gTree", "grob", "gDesc"))) {
     gridExtra::grid.arrange(x, ...)
   } else if (length(class(x)) > 1L) {
