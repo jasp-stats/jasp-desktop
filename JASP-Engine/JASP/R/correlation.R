@@ -88,9 +88,8 @@ Correlation <- function(jaspResults, dataset, options){
     mainTable <- .corrInitCorrelationTable(mainTable, options, variables)
   }
   
-  #if(!is.null(errors$variance) || !is.null(errors$infinity) || !is.null(errors$observations))
-  #  mainTable$addFootnote(message = errors$message)
-  
+  if(options[['flagSignificant']])
+    mainTable$addFootnote(message = "p < .05, ** p < .05, *** p < .001", symbol = "*")
   
   # show
   jaspResults[['mainTable']] <- mainTable
@@ -186,8 +185,9 @@ Correlation <- function(jaspResults, dataset, options){
     for(ti in seq_along(tests)){
       .corrInitCorrelationTableRowAsColumn(mainTable, options, variables[vi], testsTitles[ti], tests[ti], vi)
     }
+    mainTable$setRowName(vi, .v(variables[vi]))
   }
-
+  
   return(mainTable)
 }
 
@@ -329,10 +329,34 @@ Correlation <- function(jaspResults, dataset, options){
   
   # fill all columns
   for(col in colnames(results)) mainTable[[col]] <- results[[col]]
+  
+  if(options$flagSignificant){
+     .corrFlagSignificant(mainTable, results[["pearson_p.value"]],   "pearson_estimate",  pairs)
+     .corrFlagSignificant(mainTable, results[["spearman_p.value"]],  "spearman_estimate", pairs)
+     .corrFlagSignificant(mainTable, results[["kendall_p.value"]],   "kendall_estimate",  pairs)
+  }
 }
 
+.corrFlagSignificant <- function(table, p.values, colName, rowNames){
+  p.values <- as.numeric(p.values)
+  
+  s <- rowNames[!is.na(p.values) & !is.nan(p.values) & p.values < 0.05 & p.values >= 0.01]
+  if(length(s) > 0){
+    table$addFootnote(colNames = colName, rowNames = s, symbol = "*")
+  }
+  
+  ss <- rowNames[!is.na(p.values) & !is.nan(p.values) & p.values < 0.01 & p.values >= 0.001]
+  if(length(ss) > 0){
+    table$addFootnote(colNames = colName, rowNames = ss, symbol = "**")
+  }
+  
+  sss <- rowNames[!is.na(p.values) & !is.nan(p.values) & p.values < 0.001]
+  if(length(sss) > 0){
+    table$addFootnote(colNames = colName, rowNames = sss, symbol = "***")
+  }
+}
+  
 .corrFillCorrelationTable <- function(mainTable, corrResults, options){
-  #browser()
   vvars <- .v(options$variables)
   statsNames <- names(corrResults[[paste(vvars[1], vvars[2], sep = "_")]]$res)
   
@@ -355,6 +379,13 @@ Correlation <- function(jaspResults, dataset, options){
     
     for(s in statsNames){
       mainTable[[paste(vvars[row], s, sep = "_")]] <- res[, s, drop=TRUE]
+    }
+    
+    #browser()
+    if(options$flagSignificant){
+      .corrFlagSignificant(mainTable, res[["pearson_p.value"]],  sprintf("%s_pearson_estimate",  vvars[row]), vvars)
+      .corrFlagSignificant(mainTable, res[["spearman_p.value"]], sprintf("%s_spearman_estimate", vvars[row]), vvars)
+      .corrFlagSignificant(mainTable, res[["kendall_p.value"]],  sprintf("%s_kendall_estimate",  vvars[row]), vvars)
     }
   }
   
@@ -396,19 +427,20 @@ Correlation <- function(jaspResults, dataset, options){
       plotMat <- matrix(list(), 2, 2)
       
       data <- dataset[vcomb[[i]]]
+      data <- data[complete.cases(data),]
       
       # get consistent breaks
       var1Breaks <- JASPgraphs::getPrettyAxisBreaks(c(data[,1], hist(data[,1], plot=FALSE)$breaks), min.n = 3)
       var2Breaks <- JASPgraphs::getPrettyAxisBreaks(c(data[,2], hist(data[,2], plot=FALSE)$breaks), min.n = 3)
       
-      plotMat[[1, 1]] <- .corrMarginalDistribution(variable = dataset[[vcomb[[i]][1]]],
+      plotMat[[1, 1]] <- .corrMarginalDistribution(variable = data[,1,drop=TRUE],
                                                    options = options, errors = errors, yName = NULL)
       plotMat[[1, 2]] <- .corrValuePlot(corrResults[[vpairs[i]]], options = options)
       plotMat[[2, 1]] <- .corrScatter(corrResults[[vpairs[i]]], options = options,
                                       xVar = data[,1,drop=TRUE], yVar = data[,2,drop=TRUE], 
                                       xBreaks = var1Breaks, yBreaks = var2Breaks,
                                       drawAxes = FALSE)
-      plotMat[[2, 2]] <- .corrMarginalDistribution(variable = dataset[[vcomb[[i]][2]]],
+      plotMat[[2, 2]] <- .corrMarginalDistribution(variable = data[,2,drop=TRUE],
                                                    options = options, errors = errors, yName = NULL, coord_flip = TRUE)
         
       
@@ -421,9 +453,12 @@ Correlation <- function(jaspResults, dataset, options){
       plot <- createJaspPlot(title = pairs[i], width = 600, height = 300)
       plotContainer[[vpairs[i]]] <- plot
       
+      data <- dataset[vcomb[[i]]]
+      data <- data[complete.cases(data),]
+      
       plotMat <- matrix(list(), 1, 2)
       plotMat[[1, 1]] <- .corrScatter(corrResults[[vpairs[i]]], options = options,
-                                      xVar = dataset[[vcomb[[i]][1]]], yVar = dataset[[vcomb[[i]][2]]], 
+                                      xVar = data[,1,drop=TRUE], yVar = data[,1,drop=TRUE], 
                                       xName = comb[[i]][1], yName = comb[[i]][2],
                                       drawAxes = TRUE)
       plotMat[[1, 2]] <- .corrValuePlot(corrResults[[vpairs[i]]], options = options)
