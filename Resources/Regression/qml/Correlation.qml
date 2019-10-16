@@ -30,6 +30,7 @@ Form
 		height: Theme.smallDefaultVariablesFormHeight
 		AvailableVariablesList { name: "allVariablesList" }
 		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); suggestedColumns: ["ordinal", "scale"] }
+        AssignedVariablesList { name: "conditioningVariables"; title: qsTr("Condition on"); suggestedColumns: ["ordinal", "scale"]; debug: true }
 	}
 
 	Group

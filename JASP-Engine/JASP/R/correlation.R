@@ -38,12 +38,22 @@ Correlation <- function(jaspResults, dataset, options){
 
 # Preprocessing functions ----
 .corrReadData <- function(dataset, options){
+  if(length(options$conditioningVariables) == 0){
+    cond <- FALSE
+    vars <- options$variables
+  } else{
+    cond <- TRUE
+    vars <- c(options$variables, options$conditioningVariables)
+  }
+  
   if(!is.null(dataset)){
     return(dataset)
   } else if(options$missingValues == "excludePairwise"){
-    return(.readDataSetToEnd(columns.as.numeric = options$variables))
+    data <- .readDataSetToEnd(columns.as.numeric = vars)
+    if(cond) data <- data[complete.cases(data[,.v(options$conditioningVariables)]),,drop=FALSE]
+    return(data)
   } else if(options$missingValues == "excludeListwise"){
-    return(.readDataSetToEnd(columns.as.numeric = options$variables, exclude.na.listwise = options$variables))
+    return(.readDataSetToEnd(columns.as.numeric = vars, exclude.na.listwise = vars))
   }
 }
 
@@ -55,7 +65,8 @@ Correlation <- function(jaspResults, dataset, options){
   # does not check pairwise observations yet
   errors <-.hasErrors(dataset, message = 'default', 
                       type = c('variance', 'infinity', 'observations'),
-                      all.target = options$variables, observations.amount = "< 3",
+                      all.target = c(options$variables, options$conditioningVariables),
+                      observations.amount = "< 3",
                       exitAnalysisIfErrors = FALSE)
   
   return(errors)
@@ -73,10 +84,15 @@ Correlation <- function(jaspResults, dataset, options){
     variables <- options[['variables']]
   }
   
-  title <- "Correlation table"
+  if(length(options$conditioningVariables) == 0){
+    title <- "Correlation table"
+  } else{
+    title <- "Partial correlation table"
+  }
   
   mainTable <- createJaspTable(title = title)
-  mainTable$dependOn(c("variables", "pearson", "spearman", "kendallsTauB", "displayPairwise", "reportSignificance",
+  mainTable$dependOn(c("variables", "conditioningVariables",
+                       "pearson", "spearman", "kendallsTauB", "displayPairwise", "reportSignificance",
                        "flagSignificant", "sampleSize",
                        "confidenceIntervals", "confidenceIntervalsInterval",
                        "VovkSellkeMPR", "hypothesis", "missingValues"))
@@ -93,6 +109,10 @@ Correlation <- function(jaspResults, dataset, options){
   if(options[['flagSignificant']])
     mainTable$addFootnote(message = "p < .05, ** p < .01, *** p < .001", symbol = "*")
   
+  if(length(options$conditioningVariables) >= 0){
+    message <- sprintf("Conditioned on variables: %s", paste(options$conditioningVariables, collapse = ", "))
+    mainTable$addFootnote(message = message)
+  }
   # show
   jaspResults[['mainTable']] <- mainTable
   
@@ -241,6 +261,12 @@ Correlation <- function(jaspResults, dataset, options){
            correlatedNegatively = "less",
            correlatedPositively = "greater")[options$hypothesis]
   
+  if(length(options$conditioningVariables) == 0){
+    pcor <- FALSE
+  } else{
+    pcor <- TRUE
+  }
+  
   results <- list()
   for(i in seq_along(vpair)){
     # some variable pairs might be reusable, so we don't need to compute them again
@@ -248,7 +274,15 @@ Correlation <- function(jaspResults, dataset, options){
       results[[vpair[i]]] <- jaspResults[[vpair[i]]]$object
     } else {
       data <- dataset[vcomb[[i]]]
-      data <- data[complete.cases(data),,drop=FALSE]
+      whichComplete <- complete.cases(data)
+      data <- data[whichComplete,,drop=FALSE]
+      
+      if(pcor) {
+        condData <- dataset[,.v(options$conditioningVariables), drop=FALSE]
+        condData <- condData[whichComplete,,drop=FALSE]
+      } else{
+        condData <- NULL
+      }
       
       errors <-.hasErrors(data, message = 'default', 
                           type = c('variance', 'infinity', 'observations'),
@@ -259,36 +293,15 @@ Correlation <- function(jaspResults, dataset, options){
       statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
       
       if(isFALSE(errors)){
-        pearson  <- cor.test(data[,1], data[,2], method = "pearson", 
-                             alternative = alt, conf.level = options$confidenceIntervalsInterval)
-        pearson$vsmpr <- .VovkSellkeMPR(pearson$p.value) # why it returns string '∞' instead of Inf? 
-        pearson$vsmpr <- ifelse(pearson$vsmpr == "∞", Inf, pearson$vsmpr)
-        pearson <- unlist(pearson[stats], use.names = FALSE)
-        names(pearson) <- paste("pearson", statsNames, sep = "_")
-        
-        spearman <- cor.test(data[,1], data[,2], method = "spearman", 
-                             alternative = alt, conf.level = options$confidenceIntervalsInterval)
-        spearman$conf.int <- .createNonparametricConfidenceIntervals(x = data[,1], y = data[,2], 
-                                                                     obsCor = spearman$estimate,
-                                                                     hypothesis = options$hypothesis, 
-                                                                     confLevel = options$confidenceIntervalsInterval, 
-                                                                     method = "spearman")
-        spearman$vsmpr <- .VovkSellkeMPR(spearman$p.value)
-        spearman$vsmpr <- ifelse(spearman$vsmpr == "∞", Inf, spearman$vsmpr)
-        spearman <- unlist(spearman[stats], use.names = FALSE)
-        names(spearman) <- paste("spearman", statsNames, sep = "_")
-        
-        kendall  <- cor.test(data[,1], data[,2], method = "kendall", 
-                             alternative = alt, conf.level = options$confidenceIntervalsInterval)
-        kendall$conf.int <- .createNonparametricConfidenceIntervals(x = data[,1], y = data[,2], 
-                                                                     obsCor = kendall$estimate,
-                                                                     hypothesis = options$hypothesis, 
-                                                                     confLevel = options$confidenceIntervalsInterval, 
-                                                                     method = "kendall")
-        kendall$vsmpr <- .VovkSellkeMPR(kendall$p.value)
-        kendall$vsmpr <- ifelse(kendall$vsmpr == "∞", Inf, kendall$vsmpr)
-        kendall <- unlist(kendall[stats], use.names = FALSE)
-        names(kendall) <- paste("kendall", statsNames, sep = "_")
+        pearson <- .corr.test(x = data[,1], y = data[,2], z = condData, 
+                              method = "pearson", alternative = alt, 
+                              conf.level = options$confidenceIntervalsInterval)$result
+        spearman <- .corr.test(x = data[,1], y = data[,2], z = condData, 
+                               method = "spearman", alternative = alt, 
+                               conf.level = options$confidenceIntervalsInterval)$result
+        kendall <- .corr.test(x = data[,1], y = data[,2], z = condData, 
+                              method = "kendall", alternative = alt, 
+                              conf.level = options$confidenceIntervalsInterval)$result
       } else {
         pearson <- spearman <- kendall <- rep(NaN, length(statsNames))
         names(pearson) <- names(spearman) <- names(kendall) <- statsNames
@@ -313,7 +326,8 @@ Correlation <- function(jaspResults, dataset, options){
   
   
   jaspResults[['results']] <- createJaspState(object = results)
-  jaspResults[['results']]$dependOn(options = c("variables", "hypothesis", "confidenceIntervalsInterval", "missingValues"))
+  jaspResults[['results']]$dependOn(options = c("variables", "conditioningVariables",  "hypothesis",
+                                                "confidenceIntervalsInterval", "missingValues"))
   
   
   return(results)
@@ -1300,3 +1314,64 @@ Correlation <- function(jaspResults, dataset, options){
     Sellke_etal_2001 = "Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p Values for Testing Precise Null Hypotheses. <i>The American Statistician,</i> 55(<i>1</i>), p. 62-71."
   )
 )
+
+# helper fn
+.corr.test <- function(x, y, z = NULL, alternative, method, exact = NULL, conf.level = 0.95, continuity = FALSE, ...){
+  stats <- c("estimate", "p.value", "conf.int", "vsmpr")
+  statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
+  
+  if(is.null(z)){
+    result <- try(expr = {
+      cor.test(x = x, y = y, alternative = alternative, method = method, exact = exact, 
+                       conf.level = conf.level, continuity = continuity, ... = ...)}, silent = TRUE)
+    
+    if(isTryError(result)) {
+      errors <- .extractErrorMessage(result)
+      result <- rep(NaN, length(statsNames))
+      names(result) <- paste(method, statsNames, sep = "_")
+    } else{
+      errors <- FALSE
+      
+      if(method != "pearson"){
+        result$conf.int <- .createNonparametricConfidenceIntervals(x = x, y = y, obsCor = result$estimate,
+                                                                   hypothesis = alternative, confLevel = conf.level,
+                                                                   method = method)
+      }
+      result$vsmpr <- .VovkSellkeMPR(result$p.value)
+      result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
+      result <- unlist(result[stats], use.names = FALSE)
+      names(result) <- paste(method, statsNames, sep = "_")
+    }
+  } else{
+    result <- try(expr = {ppcor::pcor.test(x = x, y = y, z = z, method = method)}, silent = TRUE)
+    if(FALSE) {
+      errors <- .extractErrorMessage(result)
+      result <- rep(NaN, length(statsNames))
+      names(result) <- paste(method, statsNames, sep = "_")
+    } else{
+      errors <- FALSE
+      result <- as.list(result)
+      if(alternative == "less"){
+        if(result$estimate <= 0){
+          result$p.value <- result$p.value/2
+        } else{
+          result$p.value <- 1 - result$p.value/2
+        }
+      } else if(alternative == "greater"){
+        if(result$estimate >= 0){
+          result$p.value <- result$p.value/2
+        } else{
+          result$p.value <- 1 - result$p.value/2
+        }
+      }
+      result$vsmpr <- .VovkSellkeMPR(result$p.value)
+      result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
+      result$lower.ci <- NA
+      result$upper.ci <- NA
+      result <- unlist(result[statsNames], use.names = FALSE)
+      names(result) <- paste(method, statsNames, sep = "_")
+    }
+  }
+  
+  return(list(result = result, errors = errors))
+}
