@@ -66,20 +66,53 @@ void ListModel::initTerms(const Terms &terms)
 Terms ListModel::getSourceTerms()
 {
 	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
-	
-	Terms result;
+
+	Terms termsAvailable;
+	if (sourceItems.size() == 0)
+		return termsAvailable;
+
 	for (QMLListView::SourceType* sourceItem : sourceItems)
 	{
 		ListModel* sourceModel = sourceItem->model;
 		if (sourceModel)
 		{
-			const Terms& terms = sourceModel->terms();
-			result.add(terms);
+			Terms terms = sourceModel->terms(sourceItem->modelUse);
+
+			for (const QMLListView::SourceType& discardModel : sourceItem->discardModels)
+				terms.discardWhatDoesContainTheseComponents(discardModel.model->terms(discardModel.modelUse));
+
+			termsAvailable.add(terms);
 		}
 	}
 	
+	return termsAvailable;
+}
+
+QMap<ListModel*, Terms> ListModel::getSourceTermsPerModel()
+{
+	QMap<ListModel*, Terms> result;
+	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
+
+	if (sourceItems.size() == 0)
+		return result;
+
+	for (QMLListView::SourceType* sourceItem : sourceItems)
+	{
+		ListModel* sourceModel = sourceItem->model;
+		if (sourceModel)
+		{
+			Terms terms = sourceModel->terms(sourceItem->modelUse);
+
+			for (const QMLListView::SourceType& discardModel : sourceItem->discardModels)
+				terms.discardWhatDoesContainTheseComponents(discardModel.model->terms(discardModel.modelUse));
+
+			result[sourceModel] = terms;
+		}
+	}
+
 	return result;
 }
+
 
 void ListModel::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 {
@@ -90,7 +123,7 @@ void ListModel::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 
 int ListModel::rowCount(const QModelIndex &) const
 {
-	return _terms.size();
+	return int(_terms.size());
 }
 
 QVariant ListModel::data(const QModelIndex &index, int role) const

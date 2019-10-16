@@ -38,25 +38,26 @@ void ListModelInteractionAvailable::resetTermsFromSourceModels(bool updateAssign
 	Terms fixedFactors;
 	Terms randomFactors;
 	Terms covariates;
-	for (QMLListView::SourceType* sourceItem : sourceItems)
+
+	QMap<ListModel*, Terms> sourceTerms = getSourceTermsPerModel();
+	QMapIterator<ListModel*, Terms> it(sourceTerms);
+	while (it.hasNext())
 	{
-		ListModel* sourceModel = sourceItem->model;
-		if (sourceModel)
+		it.next();
+		ListModel* sourceModel = it.key();
+		const Terms& terms = it.value();
+		for (const Term& term : terms)
 		{
-			const Terms& terms = sourceModel->terms();
-			for (const Term& term : terms)
-			{
-				QString itemType = sourceModel->getItemType(term);
-				if (itemType.isEmpty() || itemType == "variables")
-					itemType = sourceModel->name();
-								
-				if (itemType == "fixedFactors")
-					fixedFactors.add(term);
-				else if (itemType == "randomFactors")
-					randomFactors.add(term);
-				else if (itemType == "covariates")
-					covariates.add(term);
-			}
+			QString itemType = sourceModel->getItemType(term);
+			if (itemType.isEmpty() || itemType == "variables")
+				itemType = sourceModel->name();
+
+			if (itemType == "fixedFactors")
+				fixedFactors.add(term);
+			else if (itemType == "randomFactors")
+				randomFactors.add(term);
+			else if (itemType == "covariates")
+				covariates.add(term);
 		}
 	}
 		

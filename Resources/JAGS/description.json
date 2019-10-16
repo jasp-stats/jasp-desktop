@@ -1,0 +1,23 @@
+{
+	"moduleDescription" :
+	{
+		"title" : 			"JAGS",
+		"description":		"JAGS interface for JASP",
+		"version":			"0.1",
+		"author":			"Don van den Bergh",
+		"maintainer":		"Don van den Bergh <d.vandenBergh@jasp-stats.com>",
+		"website":			"https://github.com/vandenman/BayesianReliability",
+		"license":			"GPL (>= 2)",
+		"icon":     		"testIcon.svg",
+		"requiresData": 	 false
+	},
+
+	"menu":
+	[
+		{
+			"title"   : "JAGS",
+			"qml"     : "JAGS.qml",
+			"function": "JAGS"
+		}
+	]
+}

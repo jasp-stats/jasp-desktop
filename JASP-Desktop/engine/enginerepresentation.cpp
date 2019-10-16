@@ -51,6 +51,8 @@ void EngineRepresentation::jaspEngineProcessFinished(int exitCode, QProcess::Exi
 
 void EngineRepresentation::clearAnalysisInProgress()
 {
+	Log::log() << "Engine " << _channel->channelNumber() << " clears current analysis in progress (" << (_analysisInProgress ? _analysisInProgress->name() : "???" ) << ")" << std::endl;
+
 	_analysisInProgress = nullptr;
 	_engineState		= engineState::idle;
 }
@@ -326,11 +328,20 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 	if(analysis->revision() > revision) //I guess we changed some option or something?
 	{
-		Log::log() << "This is not the same revision. Options may have already changed" << std::endl;
+		Log::log() << "Analysis reply was for an older revision (" << revision << ") than the one currently requested (" << analysis->revision() << "), so it can be ignored." << std::endl;
+
+		if(_pauseRequested)
+		{
+			Log::log() << "A pause was requested though so the analysis will be aborted." << std::endl;
+			clearAnalysisInProgress();
+		}
+
 		return;
 	}
 
 	analysis->setStatus(analysisResultStatusToAnalysStatus(status, analysis));
+
+	Log::log() << "Resultstatus of analysis was " << analysisResultStatusToString(status) << " and it will now be processed." << std::endl;
 
 	switch(status)
 	{
@@ -379,16 +390,16 @@ void EngineRepresentation::checkForComputedColumns(const Json::Value & results)
 	{
 		for(const Json::Value & row : results)
 			checkForComputedColumns(row);
-		return;
 	}
-
-	if(results.isObject())
+	else if(results.isObject())
 	{
 		auto members = results.getMemberNames();
 		std::set<std::string> memberset(members.begin(), members.end());
 
 		if(memberset.count("columnName") > 0 && memberset.count("columnType") > 0 && memberset.count("dataChanged") > 0)
 		{
+			Log::log() << "The analysis reply contained information on changed computed columns: " << results.toStyledString() << std::endl;
+
 			//jaspColumnType	columnType	= jaspColumnTypeFromString(results["columnType"].asString()); This would work if jaspColumn wasn't defined in jaspColumn.h and Windows would not need to have that separately in a DLL... But it isn't really needed here anyway.
 			std::string		columnName	= results["columnName"].asString();
 			bool			dataChanged	= results["dataChanged"].asBool();
@@ -455,6 +466,8 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 void EngineRepresentation::pauseEngine()
 {
 	_pauseRequested = true;
+	if(_analysisInProgress)
+		_analysisInProgress->abort();
 }
 
 void EngineRepresentation::sendPauseEngine()

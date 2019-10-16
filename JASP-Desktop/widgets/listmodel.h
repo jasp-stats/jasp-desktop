@@ -59,6 +59,8 @@ public:
 	virtual void					initTerms(const Terms &terms);
 	virtual Terms					getSourceTerms();
 	virtual void					endResetModel()									{ return QAbstractTableModel::endResetModel(); } // Make endResetModel virtual
+	QMap<ListModel*, Terms> 		getSourceTermsPerModel();
+	
 
 
 signals:
@@ -73,6 +75,7 @@ protected:
 	Terms			_terms;
 	bool			_areTermsVariables;
 	bool			_areTermsInteractions = false;
+
 };
 
 #endif // LISTMODEL_H

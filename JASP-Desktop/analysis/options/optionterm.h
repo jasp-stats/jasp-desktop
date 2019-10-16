@@ -23,7 +23,8 @@
 class OptionTerm : public OptionTerms
 {
 public:
-	OptionTerm() : OptionTerms(false, true) {}
+	OptionTerm()										: OptionTerms(false, true) {}
+	OptionTerm(const std::vector<std::string> &value)	: OptionTerms(false, true) { setValue(value); }
 
 	Json::Value		asJSON()										const	override;
 	void			set(const Json::Value& value)							override;

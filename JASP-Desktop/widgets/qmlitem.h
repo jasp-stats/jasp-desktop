@@ -43,6 +43,7 @@ public:
 	const QVector<QMLItem*>	&	depends()	const { return _depends; }
 	void						addError(const QString& error);
 	bool						addDependency(QMLItem* item);
+	void						removeDependency(QMLItem* item);
 	QVariant					getItemProperty(const QString& name);
 	void						setItemProperty(const QString& name, const QVariant& value);
 	

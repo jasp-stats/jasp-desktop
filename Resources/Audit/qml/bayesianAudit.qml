@@ -839,6 +839,7 @@ Form
 				modelType:			"FilteredDataEntryModel"
         		source:     		["recordNumberVariable", "monetaryVariable", "additionalVariables"]
                 colName:    		"Filter"
+				itemType:			"double"
 			}
 		}
 

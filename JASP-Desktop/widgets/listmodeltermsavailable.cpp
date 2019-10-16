@@ -55,55 +55,37 @@ void ListModelTermsAvailable::sortItems(SortType sortType)
 
 void ListModelTermsAvailable::resetTermsFromSourceModels(bool updateAssigned)
 {
-	const QList<QMLListView::SourceType*>& sourceItems = listView()->sourceModels();
-
-	if (sourceItems.size() == 0)
-		return;
 	
 	beginResetModel();
 
-	Terms termsAvailable;
-	QVector<Terms> termsPerModel;
-	_termSourceModelMap.empty();
+	Terms termsAvailable = getSourceTerms();
 
-	for (QMLListView::SourceType* sourceItem : sourceItems)
+	if (_mixedModelTerms)
 	{
-		ListModel* sourceModel = sourceItem->model;
-		if (sourceModel)
+		QMap<ListModel*, Terms> termsPerSource = getSourceTermsPerModel();
+		QList<Terms> termsPerModel = termsPerSource.values();
+
+		if (termsPerModel.length() > 1)
 		{
-			Terms terms = sourceModel->terms(sourceItem->modelUse);
-
-			if (sourceItem->discardModel)
-				terms.discardWhatDoesContainTheseComponents(sourceItem->discardModel->terms());
-
-			for (const Term& term : terms)
-				_termSourceModelMap[term.asQString()] = sourceModel;
-
-			termsAvailable.add(terms);
-			termsPerModel.push_back(terms);
-		}
-	}
-
-	if (_mixedModelTerms && termsPerModel.length() > 1)
-	{
-		Terms mixedTerms = termsPerModel[0];
-		mixedTerms.removeParent();
-		for (int i = 1; i < termsPerModel.length(); i++)
-		{
-			const Terms& termsToBeCombined = termsPerModel[i];
-			Terms extraTerms;
-			for (const Term& mixedTerm : mixedTerms)
+			Terms mixedTerms = termsPerModel[0];
+			mixedTerms.removeParent();
+			for (int i = 1; i < termsPerModel.length(); i++)
 			{
-				for (const Term& termToBeCombined : termsToBeCombined)
+				const Terms& termsToBeCombined = termsPerModel[i];
+				Terms extraTerms;
+				for (const Term& mixedTerm : mixedTerms)
 				{
-					QStringList components = mixedTerm.components();
-					components.append(termToBeCombined.components());
-					extraTerms.add(Term(components));
+					for (const Term& termToBeCombined : termsToBeCombined)
+					{
+						QStringList components = mixedTerm.components();
+						components.append(termToBeCombined.components());
+						extraTerms.add(Term(components));
+					}
 				}
+				mixedTerms.add(extraTerms);
 			}
-			mixedTerms.add(extraTerms);
+			termsAvailable.add(mixedTerms);
 		}
-		termsAvailable.add(mixedTerms);
 	}
 	
 	setChangedTerms(termsAvailable);
@@ -117,5 +99,14 @@ void ListModelTermsAvailable::resetTermsFromSourceModels(bool updateAssigned)
 
 ListModel *ListModelTermsAvailable::getSourceModelOfTerm(const Term &term)
 {
-	return _termSourceModelMap[term.asQString()];
+	ListModel* result = nullptr;
+	QMap<ListModel*, Terms> map =  getSourceTermsPerModel();
+	QMapIterator<ListModel*, Terms> it(map);
+	while (it.hasNext())
+	{
+		it.next();
+		if (it.value().contains(term))
+			result = it.key();
+	}
+	return result;
 }

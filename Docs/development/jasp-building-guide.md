@@ -81,10 +81,10 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
 	\> cd \<JASP\>\jasp-required-files  
 	\> git checkout Windows  
 	\> git branch  
-
-	Should confirm that you are on the Windoows branch now.
-
-
+	
+	Should confirm that you are on the Windows branch now.
+	
+	
 4.	Create a build folder(s). From the \<JASP\> root folder for a 64-bit version e.g.:
 
 	\> mkdir build-release-64  
@@ -105,7 +105,7 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
         From \<JASP\>\jasp-required-files\boost_1_71_0 -> \<JASP\>\boost_1_71_0
 
 	P.S. Instead of copying the files it is preferred to generate a symbolic link to the R and boost folder.  
-	From the build folder or Jasp root folder in a terminal, type:  
+	From the build folder or Jasp root folder in a cmd-prompt, type:  
 	\> cd \<JASP\>\build-release-64  
 	\> mklink /D R ..\jasp-required-files\R  
 	\> cd \<JASP\>    
@@ -184,6 +184,16 @@ For the JASP-R-Interface the Build directory should be build-release-64\JASP-R-I
 
 12. Now set JASP as Active project and build JASP.  
 
+13. Whenever changes are made to JASP-R-Interface it will need to be built anew, while on Mac and Linux this happens automatically on Windows this must, in principle, be done manually. There is however a way to automate this and can be done as follows:
+	- Open both the JASP and JASP-R-Interface project in Qt Creator.
+	- Make sure JASP is your active project
+	- Select "Projects" with the button on the leftside of Qt Creator.
+	- Select "Dependencies" under "Project Settings"
+	- Now you should see JASP-R-Interface with a checkbox
+	- Tick the box, now Qt Creator will build it for you when necessary.
+	- Qt will however not automatically remember this setting, to make it do so: `select File > Sessions > Manage > Restore last session on startup.`
+
+![Screenshot of Projects and dependencies](./img/WindowsJaspRInterfaceDependency.png)
 
 
 Mac OS X

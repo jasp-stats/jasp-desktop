@@ -24,15 +24,21 @@
 #include "analysis/options/optionstring.h"
 #include "lavaansyntaxhighlighter.h"
 #include "listmodeltermsavailable.h"
+#include "qmllistview.h"
 
 #include <QObject>
 
+#include <QString>
+#include <QRegularExpression>
+#include <QList>
+#include <QDebug>
+#include <QQuickItem>
 
-class BoundQMLTextArea : public QObject, public BoundQMLItem
+class BoundQMLTextArea : public QMLListView, public BoundQMLItem
 {
 	Q_OBJECT
 	
-	enum TextType {Default, Lavaan, Model, Rcode};
+	enum TextType {Default, Lavaan, Model, Rcode, JAGSmodel};
 	
 public:
 	BoundQMLTextArea(QQuickItem* item, AnalysisForm* form);
@@ -42,12 +48,15 @@ public:
 	bool	isOptionValid(Option* option)				override;
 	bool	isJsonValid(const Json::Value& optionValue) override;
 	Option* boundTo()									override { return _boundTo; }
+	ListModel*	model()									override { return _model; }
+
 	void	resetQMLItem(QQuickItem *item)				override;
 	void	rScriptDoneHandler(const QString &result)	override;
-	
-	ListModelTermsAvailable* allVariablesModel() { return _allVariablesModel; }
+	void	setJagsParameters();
 
-private slots:
+	bool	modelHasAllVariables()								{ return _modelHasAllVariables; }
+
+public slots:
 	void checkSyntax();
 	void dataSetChangedHandler();
     
@@ -58,7 +67,9 @@ protected:
 	QString						_applyScriptInfo;
 	
 	LavaanSyntaxHighlighter*	_lavaanHighlighter = nullptr;
-	ListModelTermsAvailable*	_allVariablesModel = nullptr;
+	ListModelTermsAvailable*	_model = nullptr;
+	bool						_modelHasAllVariables = false;
+	
 };
 
 

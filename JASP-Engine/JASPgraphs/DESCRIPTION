@@ -15,4 +15,6 @@ Imports:
     scales,
     gridExtra,
     stringr,
-    R6
+    R6,
+    RColorBrewer,
+    viridisLite
