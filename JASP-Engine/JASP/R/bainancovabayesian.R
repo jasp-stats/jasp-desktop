@@ -163,13 +163,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	}
 
 	bainResult <- bainContainer[["bainResult"]]$object
-
-	BFmatrix <- diag(1, length(bainResult$BF))
-	for (h1 in 1:length(bainResult$BF)) {
-		for (h2 in 1:length(bainResult$BF)) {
-			BFmatrix[h1, h2] <- bainResult$fit[h1]/bainResult$fit[h2]/(bainResult$complexity[h1]/bainResult$complexity[h2])
-		}
-	}
+	BFmatrix <- bainResult$BFmatrix
 
 	if (nrow(BFmatrix) > 1) {
 		for (i in 2:nrow(BFmatrix))
@@ -309,9 +303,9 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 
 .plot.BainA <- function(x, y, ...)
 {
-    PMPa <- x$PMPa
-    PMPb <- c(x$PMPb, 1 - sum(x$PMPb))
-    numH <- length(x$BF)
+    PMPa <- x$fit$PMPa
+    PMPb <- c(x$fit$PMPb, 1 - sum(x$fit$PMPb))
+    numH <- length(x$fit$BF)
     P_lables <- paste("H", 1:numH, sep = "")
     ggdata1 <- data.frame(lab = P_lables, PMP = PMPa)
     ggdata2 <- data.frame(lab = c(P_lables, "Hu"), PMP = PMPb)

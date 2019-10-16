@@ -79,7 +79,7 @@ Form
 		text: qsTr("Model Constraints")
 		columns: 1
 
-		Text { text: "Place each hypothesis on a new line. For example:\n\nfactor.low = factor.med = factor.high\nfactor.low < factor.med < factor.high\n\nwhere factor is the factor name and low/med/high are the factor level names.\nRead the help file for further instructions." }
+		Text { text: "Place each hypothesis on a new line. For example:\n\nfactorlow = factormed = factorhigh\nfactorlow < factormed < factorhigh\n\nwhere factor is the factor name and low/med/high are the factor level names.\nRead the help file for further instructions." }
 		TextArea
 		{
 				name: "model"

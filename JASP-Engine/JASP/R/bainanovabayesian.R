@@ -52,11 +52,9 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 
 	variables <- c(options$dependent, options$fixedFactors)
 	bainTable <- createJaspTable("Bain ANOVA")
-	bainTable$position <- 1
+	bainTable$position <- 2
 
-	bainContainer[["bainTable"]] <- bainTable
-
-	bainTable$addColumnInfo(name="hypotheses", 		type="string", title="")
+	bainTable$addColumnInfo(name="hypotheses", 				type="string", title="")
 	bainTable$addColumnInfo(name="BF", 						type="number", title="BF.c")
 	bainTable$addColumnInfo(name="PMP1", 					type="number", title="PMP a")
 	bainTable$addColumnInfo(name="PMP2", 					type="number", title="PMP b")
@@ -67,10 +65,12 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 
 	bainTable$addCitation(.bainGetCitations())
 
+	bainTable$dependOn(options = c("dependent", "fixedFactors", "model", "seed"))
+
+	bainContainer[["bainTable"]] <- bainTable
+
 	if (!ready)
 		return()
-
-	set.seed(options[["seed"]])
 
 	if (any(variables %in% missingValuesIndicator)) {
 		i <- which(variables %in% missingValuesIndicator)
@@ -90,53 +90,29 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	}
 
 	if (options$model == "") {
-
-		# We have to make a default matrix depending on the levels of the grouping variable...meh
-		# The default hypothesis is that all groups are equal (e.g., 3 groups, "p1=p2=p3")
-		len <- length(varLevels)
-
-		null.mat <- matrix(0, nrow = (len-1), ncol = (len+1))
-		indexes <- row(null.mat) - col(null.mat)
-		null.mat[indexes == 0] <- 1
-		null.mat[indexes == -1] <- -1
-
-		ERr <- null.mat
-	  IRr <- NULL
-
-		p <- try(silent= FALSE, expr= {
-			bainResult <- Bain::Bain_anova(X = dataset, dep_var = .v(options[["dependent"]]), group = .v(options[["fixedFactors"]]), ERr, IRr)
-			bainContainer[["bainResult"]] <- createJaspState(bainResult)
-		})
-
+		rest.string <- NULL
 	} else {
-
-			rest.string <- .bainCleanModelInput(options$model)
-
-			inpt <- list()
-			names(dataset) <- .unv(names(dataset))
-			inpt[[1]] <- dataset
-			inpt[[2]] <- options[["dependent"]]
-			inpt[[3]] <- options[["fixedFactors"]]
-			inpt[[4]] <- rest.string
-
-			p <- try(silent= FALSE, expr= {
-				bainResult <- Bain::Bain_anova_cm(X = inpt[[1]], dep_var = inpt[[2]], group = inpt[[3]], hyp = inpt[[4]])
-				bainContainer[["bainResult"]] <- createJaspState(bainResult)
-			})
+		rest.string <- .bainCleanModelInput(options$model)
 	}
+			
+	names(dataset) <- .unv(names(dataset))
+
+	p <- try(silent= FALSE, expr= {
+		bainResult <- .bain_anova_cran(X = dataset, dep = options[["dependent"]], group = options[["fixedFactors"]], hyp = rest.string, seed = options[["seed"]])
+		bainContainer[["bainResult"]] <- createJaspState(bainResult)
+	})
 
 	if (isTryError(p)) {
 		bainContainer$setError(paste0("An error occurred in the analysis:<br>", .extractErrorMessage(p), "<br><br>Please double check your variables and model constraints."))
 		return()
 	}
 
-	BF <- bainResult$BF
-	for (i in 1:length(BF)) {
-		row <- list(hypotheses = paste0("H",i), BF = BF[i], PMP1 = bainResult$PMPa[i], PMP2 = bainResult$PMPb[i])
+	for (i in 1:(length(bainResult$fit$BF)-1)) {
+		row <- list(hypotheses = paste0("H",i), BF = bainResult$fit$BF[i], PMP1 = bainResult$fit$PMPa[i], PMP2 = bainResult$fit$PMPb[i])
 		bainTable$addRows(row)
 	}
-	row <- list(hypotheses = "Hu", BF = "", PMP1 = "", PMP2 = 1-sum(bainResult$PMPb))
-	bainTable$addRows(row)
+	row <- list(hypotheses = "Hu", BF = "", PMP1 = "", PMP2 = bainResult$fit$PMPb[length(bainResult$fit$BF)])
+	bainTable$addRows(row) 
 }
 
 .bainAnovaDescriptivesTable <- function(dataset, options, jaspResults, ready) {
@@ -145,7 +121,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 
 	descriptivesTable <- createJaspTable("Descriptive Statistics")
 	descriptivesTable$dependOn(options =c("dependent", "fixedFactors", "descriptives", "CredibleInterval"))
-	descriptivesTable$position <- 2
+	descriptivesTable$position <- 4
 
 	descriptivesTable$addColumnInfo(name="v",    		title="Level",	type="string")
 	descriptivesTable$addColumnInfo(name="N",    		title="N",			type="integer")
@@ -186,7 +162,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 
 	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Bayes Factor Comparison", height = 400, width = 600)
 	bayesFactorPlot$dependOn(options=c("bayesFactorPlot", "seed"))
-	bayesFactorPlot$position <- 4
+	bayesFactorPlot$position <- 6
 	
 	bainContainer[["bayesFactorPlot"]] <- bayesFactorPlot
 
@@ -202,7 +178,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	
 	descriptivesPlot <- createJaspPlot(plot = NULL, title = "Descriptives Plot")
 	descriptivesPlot$dependOn(options=c("descriptivesPlot", "fixedFactors", "dependent", "model"))
-	descriptivesPlot$position <- 4
+	descriptivesPlot$position <- 5
 
 	bainContainer[["descriptivesPlot"]] <- descriptivesPlot
 
@@ -224,7 +200,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	groupVarsV <- .v(groupVars)
 	dependentV <- .v(options$dependent)
 
-	sum_model <- bainResult$estimate_res
+	sum_model <- bainResult$model
 	summaryStat <- summary(sum_model)$coefficients
 
 	if (type == "ancova") {
@@ -310,4 +286,28 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 		jaspResults[["bainContainer"]]$dependOn(options=deps)
 	}
 	invisible(jaspResults[["bainContainer"]])
+}
+
+.bain_anova_cran<-function(X, dep, group, hyp, seed){
+
+	set.seed(seed)
+
+	# Make group a factor
+	c1 <- paste0("X$",group,"<- as.factor(X$",group,")")
+	eval(parse(text = c1))
+	# roep lm aan
+	c2 <- paste0("lmres <- lm(",dep,"~",group,"-1, data = X)")
+	eval(parse(text = c2))  
+
+	# Make hyp if argument is NULL
+	if (is.null(hyp)){
+		hyp <- names(coef(lmres))
+		hyp <- paste0(hyp, collapse = "=")
+	}
+
+	# Call bain with lmres and hyp as input
+	c3 <- paste0("bain::bain(lmres,","\"",hyp,"\"",")")
+	result <- eval(parse(text = c3))
+
+	return(invisible(result))
 }
