@@ -2,6 +2,8 @@ x <- rnorm(100)
 y <- rgamma(100, 1, 1)
 
 JASPScatterPlot(x, y, xName = "Normal", yName = expression(gamma))
+JASPScatterPlot(x, y, xName = "Normal", yName = expression(gamma), forceLinearSmooth = TRUE)
+JASPScatterPlot(x, y, xName = "Normal", yName = expression(gamma), forceLinearSmooth = TRUE, smoothCIValue = .99)
 JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", addSmooth = FALSE)
 JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", addSmoothCI = FALSE)
 

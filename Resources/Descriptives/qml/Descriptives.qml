@@ -28,7 +28,7 @@ Form
 	{
 		AvailableVariablesList	{ name: "allVariablesList"								}
 		AssignedVariablesList	{ name: "variables";		title: qsTr("Variables")	}
-		AssignedVariablesList	{ name: "splitby";			title: qsTr("Split");		singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList	{ name: "splitby";			title: qsTr("Split");		singleVariable: true; suggestedColumns: ["ordinal", "nominal"];	id:splitBy}
 	}
 
 	CheckBox { name: "frequencyTables"; label: qsTr("Frequency tables (nominal and ordinal variables)") }
@@ -88,8 +88,42 @@ Form
 				}
 				CheckBox
 				{
-								name: "addSmooth";		label: qsTr("Add smoothed regression line");	checked: true
-					CheckBox {	name: "addSmoothCI";	label: qsTr("Show confidence interval");		checked: true}
+					name: "addSmooth"
+					label: qsTr("Add smoothed regression line")
+					checked: true
+					CheckBox
+					{
+						name: "addSmoothCI"
+						label: qsTr("Show confidence interval")
+						checked: true
+						childrenOnSameRow: true
+						CIField {	name: "addSmoothCIValue" }
+					}
+					CheckBox {	name: "forceLinearSmooth";	label: qsTr("Force regression line to be linear")}
+				}
+				CheckBox
+				{
+					enabled: splitBy.count > 0
+					name: "showLegend"
+					label: qsTr("Show legend")
+					checked: true
+					childrenOnSameRow: true
+					DropDown
+					{
+						name: "legendPosition"
+						indexDefaultValue: 0
+						values:
+						[
+							{ label: qsTr("in the top left"),		value: "topleft"		},
+							{ label: qsTr("in the top center"),		value: "topcenter"		},
+							{ label: qsTr("in the top right"),		value: "topright"		},
+							{ label: qsTr("in the bottom left"),	value: "bottomleft"		},
+							{ label: qsTr("in the bottom center"),	value: "bottomcenter"	},
+							{ label: qsTr("in the bottom right"),	value: "bottomright"	},
+							{ label: qsTr("in the center left"),	value: "centerleft"		},
+							{ label: qsTr("in the center right"),	value: "centerright"	}
+						]
+					}
 				}
 			}
 		}

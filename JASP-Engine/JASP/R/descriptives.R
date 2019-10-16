@@ -188,7 +188,8 @@ Descriptives <- function(jaspResults, dataset, options) {
   if (options[["scatterPlot"]]) {
     if(is.null(jaspResults[["scatterPlots"]])) {
       jaspResults[["scatterPlots"]] <- createJaspContainer("Scatter Plots")
-      jaspResults[["scatterPlots"]]$dependOn(c("splitby", "scatterPlot", "graphTypeAbove", "graphTypeRight"))
+      jaspResults[["scatterPlots"]]$dependOn(c("splitby", "scatterPlot", "graphTypeAbove", "graphTypeRight", "addSmooth",
+                                               "addSmoothCI", "addSmoothCIValue", "forceLinearSmooth", ""))
       jaspResults[["scatterPlots"]]$position <- 10
     }
     .descriptivesScatterPlots(jaspResults[["scatterPlots"]], dataset.factors, variables, splitName, options)
@@ -1352,6 +1353,19 @@ Descriptives <- function(jaspResults, dataset, options) {
     return()
   }
 
+  if (options[["showLegend"]]) {
+    xVal <- c(0.15, 0.50, 0.9)
+    yVal <- c(0.20, 0.60, 1.0)
+
+    xIdx <- endsWith(options[["legendPosition"]],   c("left", "center", "right"))
+    yIdx <- startsWith(options[["legendPosition"]], c("bottom", "center", "top"))
+
+    legendPosition <- c(xVal[xIdx], yVal[yIdx])
+
+  } else {
+    legendPosition <- "none"
+  }
+
   for (i in 1:(nvar - 1L)) for (j in (i + 1L):nvar) {
     v1 <- variables[i]
     v2 <- variables[j]
@@ -1360,15 +1374,18 @@ Descriptives <- function(jaspResults, dataset, options) {
       scatterPlot <- createJaspPlot(title = name)
       scatterPlot$dependOn(optionContainsValue = list(variables = c(v1, v2)))
       p <- try(JASPgraphs::JASPScatterPlot(
-        x           = dataset[, variablesB64[i]],
-        y           = dataset[, variablesB64[j]],
-        group       = group,
-        xName       = v1,
-        yName       = v2,
-        addSmooth   = options[["addSmooth"]],
-        addSmoothCI = options[["addSmoothCI"]],
-        plotAbove   = options[["graphTypeAbove"]],
-        plotRight   = options[["graphTypeRight"]]
+        x                 = dataset[, variablesB64[i]],
+        y                 = dataset[, variablesB64[j]],
+        group             = group,
+        xName             = v1,
+        yName             = v2,
+        addSmooth         = options[["addSmooth"]],
+        addSmoothCI       = options[["addSmoothCI"]],
+        smoothCIValue     = options[["addSmoothCIValue"]],
+        forceLinearSmooth = options[["forceLinearSmooth"]],
+        plotAbove         = options[["graphTypeAbove"]],
+        plotRight         = options[["graphTypeRight"]],
+        legend.position   = legendPosition
       ))
       if (isTryError(p)) {
         errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))

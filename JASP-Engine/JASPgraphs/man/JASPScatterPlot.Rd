@@ -5,8 +5,9 @@
 \title{Create a scatter plot with density}
 \usage{
 JASPScatterPlot(x, y, group = NULL, xName = NULL, yName = NULL,
-  addSmooth = TRUE, addSmoothCI = TRUE, plotAbove = c("density",
-  "histogram", "none"), plotRight = c("density", "histogram", "none"),
+  addSmooth = TRUE, addSmoothCI = TRUE, smoothCIValue = 0.95,
+  forceLinearSmooth = FALSE, plotAbove = c("density", "histogram",
+  "none"), plotRight = c("density", "histogram", "none"),
   colorAreaUnderDensity = TRUE, alphaAreaUnderDensity = 0.5,
   emulateGgMarginal = FALSE, ...)
 }
@@ -25,6 +26,10 @@ JASPScatterPlot(x, y, group = NULL, xName = NULL, yName = NULL,
 
 \item{addSmoothCI}{should a confidence interval be added to the smoothed regression line?}
 
+\item{smoothCIValue}{a numeric in (0, 1) indicating the confidence interval.}
+
+\item{forceLinearSmooth}{should the regression line be linear?}
+
 \item{plotAbove}{type of plot above the scatter plot.}
 
 \item{plotRight}{type of plot right of the scatter plot.}
@@ -35,7 +40,7 @@ JASPScatterPlot(x, y, group = NULL, xName = NULL, yName = NULL,
 
 \item{emulateGgMarginal}{Should the result be as similar as possible to \code{\link[ggExtra]{ggMarginal}}? Overwrites other parmeters.}
 
-\item{...}{ignored.}
+\item{passed}{to \code{\link{themeJaspRaw}}.}
 }
 \description{
 Create a scatter plot with density
@@ -49,6 +54,8 @@ x <- rnorm(100)
 y <- rgamma(100, 1, 1)
 
 JASPScatterPlot(x, y, xName = "Normal", yName = expression(gamma))
+JASPScatterPlot(x, y, xName = "Normal", yName = expression(gamma), forceLinearSmooth = TRUE)
+JASPScatterPlot(x, y, xName = "Normal", yName = expression(gamma), forceLinearSmooth = TRUE, smoothCIValue = .99)
 JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", addSmooth = FALSE)
 JASPScatterPlot(x, y, xName = "Normal", yName = "Gamma", addSmoothCI = FALSE)
 

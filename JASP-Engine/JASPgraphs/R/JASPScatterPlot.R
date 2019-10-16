@@ -9,12 +9,14 @@
 #' @param yName name on y-axis.
 #' @param addSmooth should a smoothed regression line be drawn?
 #' @param addSmoothCI should a confidence interval be added to the smoothed regression line?
+#' @param smoothCIValue a numeric in (0, 1) indicating the confidence interval.
+#' @param forceLinearSmooth should the regression line be linear?
 #' @param plotAbove type of plot above the scatter plot.
 #' @param plotRight type of plot right of the scatter plot.
 #' @param colorAreaUnderDensity Logical, should the area under the density be colored?
 #' @param alphaAreaUnderDensity Real in [0, 1], transparancy for area under density.
 #' @param emulateGgMarginal Should the result be as similar as possible to \code{\link[ggExtra]{ggMarginal}}? Overwrites other parmeters.
-#' @param ... ignored.
+#' @param passed to \code{\link{themeJaspRaw}}.
 #'
 #' @details The only change added when \code{emulateGgMarginal = TRUE} is that \code{ggplot2::theme(plot.margin = unit(c(0, 0, 0.25, 0.25), "cm"))}
 #' is added to the main plot
@@ -24,6 +26,7 @@
 #' @export
 JASPScatterPlot <- function(x, y, group = NULL, xName = NULL, yName = NULL,
                             addSmooth = TRUE, addSmoothCI = TRUE,
+                            smoothCIValue = 0.95, forceLinearSmooth = FALSE,
                             plotAbove = c("density", "histogram", "none"), 
                             plotRight = c("density", "histogram", "none"),
                             colorAreaUnderDensity = TRUE,
@@ -57,14 +60,17 @@ JASPScatterPlot <- function(x, y, group = NULL, xName = NULL, yName = NULL,
     mapping <- aes(x = x, y = y, group = g, color = g, fill = g)
   }
 
-  geomSmooth <- if (addSmooth) geom_smooth(formula = y ~ x, method = "loess", se = addSmoothCI) else NULL
+  geomSmooth <- if (addSmooth)
+    geom_smooth(formula = y ~ x, se = addSmoothCI, level = smoothCIValue,
+                method = if (forceLinearSmooth) "lm" else "loess")
+  else NULL
 
   mainPlot <- ggplot(df, mapping) + 
     geom_point() + 
     geomSmooth + 
     ggplot2::labs(x = xName, y = yName) +
     geom_rangeframe() +
-    themeJaspRaw()
+    themeJaspRaw(...)
   
   if (emulateGgMarginal)
     mainPlot <- mainPlot + ggplot2::theme(plot.margin = unit(c(0, 0, 0.25, 0.25), "cm"))
