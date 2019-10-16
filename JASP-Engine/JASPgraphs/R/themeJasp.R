@@ -7,7 +7,7 @@
 #' @rdname themeJasp
 #'
 #' @param graph a ggplot2 object
-#' @param sides see \link{\code{geom_rangeframe}}
+#' @param sides see \code{\link{geom_rangeframe}}
 #' @param axis.title.cex scalar magnification for the title of the axes.
 #' @param bty remake R's bty  = 'n'?
 #' @param fontsize global font size.

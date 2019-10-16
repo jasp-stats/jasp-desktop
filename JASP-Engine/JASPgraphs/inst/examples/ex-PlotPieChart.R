@@ -1,3 +1,4 @@
+library(ggplot2)
 value <- c(25, 25, 50)
 gg <- letters[1:3]
 ga <- letters[4:6]

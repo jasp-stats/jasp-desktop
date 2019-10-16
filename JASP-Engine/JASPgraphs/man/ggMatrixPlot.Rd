@@ -69,6 +69,7 @@ This function is intended to be calles with a matrix as first argument, although
 }
 \examples{
 ## Not run:
+library(ggplot2)
 data("diamonds", package = "ggplot2")
 vars  <- colnames(diamonds)[c(1, 5)]
 nvars <- length(vars)
@@ -92,7 +93,8 @@ for (i in seq_along(vars)) for (j in seq_along(vars)) {
 
 ggMatrixPlot(plotMatrix)
 
-# gives an idea about how ggMatrixPlot works, you can add labels on all sides of the center (where the plots should be).
+# gives an idea about how ggMatrixPlot works, you can add labels on all sides
+# of the center (where the plots should be).
 ggMatrixPlot(debug = TRUE)
-##
+## End(Not run)
 }
