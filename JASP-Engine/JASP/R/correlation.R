@@ -76,7 +76,8 @@ Correlation <- function(jaspResults, dataset, options){
   
   mainTable <- createJaspTable(title = title)
   mainTable$dependOn(c("variables", "pearson", "spearman", "kendallsTauB", "displayPairwise", "reportSignificance",
-                       "flagSignificant", "confidenceIntervals", "confidenceIntervalsInterval",
+                       "flagSignificant", "sampleSize",
+                       "confidenceIntervals", "confidenceIntervalsInterval",
                        "VovkSellkeMPR", "hypothesis", "missingValues"))
   mainTable$position <- 1
   
@@ -123,6 +124,7 @@ Correlation <- function(jaspResults, dataset, options){
   nTests <- sum(unlist(options[tests]))
   testNames <- c(pearson="Pearson", spearman="Spearman", kendall="Kendall")
   
+  if(options$sampleSize) mainTable$addColumnInfo(name = "sample.size", title = "n", type = "integer")
   
   for(test in tests){
     if(options[[test]]){
@@ -182,8 +184,15 @@ Correlation <- function(jaspResults, dataset, options){
   tests <- c("pearson", "spearman", "kendall")[whichtests]
   
   for(vi in seq_along(variables)){
+    overtitle <- paste(vi, variables[vi], sep = ". ")
+    
+    if(options$sampleSize) {
+      mainTable$addColumnInfo(name = paste(.v(variables[vi]), "sample.size", sep = "_"), title = "n",
+                              type = "integer", overtitle = overtitle)
+    }
+    
     for(ti in seq_along(tests)){
-      .corrInitCorrelationTableRowAsColumn(mainTable, options, variables[vi], testsTitles[ti], tests[ti], vi)
+      .corrInitCorrelationTableRowAsColumn(mainTable, options, variables[vi], testsTitles[ti], tests[ti], overtitle)
     }
     mainTable$setRowName(vi, .v(variables[vi]))
   }
@@ -191,10 +200,9 @@ Correlation <- function(jaspResults, dataset, options){
   return(mainTable)
 }
 
-.corrInitCorrelationTableRowAsColumn <- function(mainTable, options, var, coeff, test, vi){
+.corrInitCorrelationTableRowAsColumn <- function(mainTable, options, var, coeff, test, overtitle){
   vvar <- .v(var)
   name <- paste(vvar, test, "%s", sep = "_")
-  overtitle <- paste(vi, var, sep = ". ")
   
   mainTable$addColumnInfo(name = sprintf(name, "estimate"), title = coeff, type = "number", overtitle = overtitle)
   
@@ -359,7 +367,6 @@ Correlation <- function(jaspResults, dataset, options){
 .corrFillCorrelationTable <- function(mainTable, corrResults, options){
   vvars <- .v(options$variables)
   statsNames <- names(corrResults[[paste(vvars[1], vvars[2], sep = "_")]]$res)
-  
   for(row in seq_along(options$variables)){
     res <- matrix(NA, nrow = length(options$variables), ncol = length(statsNames)) 
     res <- as.data.frame(res)
@@ -381,7 +388,6 @@ Correlation <- function(jaspResults, dataset, options){
       mainTable[[paste(vvars[row], s, sep = "_")]] <- res[, s, drop=TRUE]
     }
     
-    #browser()
     if(options$flagSignificant){
       .corrFlagSignificant(mainTable, res[["pearson_p.value"]],  sprintf("%s_pearson_estimate",  vvars[row]), vvars)
       .corrFlagSignificant(mainTable, res[["spearman_p.value"]], sprintf("%s_spearman_estimate", vvars[row]), vvars)

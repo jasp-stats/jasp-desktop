@@ -52,6 +52,7 @@ Form
 			CIField { name: "confidenceIntervalsInterval"; label: qsTr("Interval") }
 		}
 		CheckBox { name: "VovkSellkeMPR";		label: qsTr("Vovk-Sellke maximum p-ratio")			}
+        CheckBox { name: "sampleSize";          label: qsTr("Sample size") }
 	}
 
 	RadioButtonGroup
