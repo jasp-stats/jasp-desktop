@@ -49,7 +49,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   
   if (!is.null(jaspResults[["binomialContainer"]][["stateSummaryStatsBinomialResults"]])) {
     results <- jaspResults[["binomialContainer"]][["stateSummaryStatsBinomialResults"]]$object
-    # only change possinle: BF type
+    # only change possible: BF type
     results[["binomTable"]][["BF"]] <- results[["BFlist"]][[options$bayesFactorType]]
   } else {
     results <- .summaryStatsBinomialComputeResults(hypothesisList, options)
@@ -87,6 +87,8 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   
   # Conduct frequentist and Bayesian binomial test
   pValue <- stats::binom.test(x = successes, n = n, p = theta0, alternative = hypothesis)$p.value
+  # if p-value cannot be computed, return NA
+  if(!is.numeric(pValue)) pValue <- NaN
   BF10   <- .bayesBinomialTest(counts = successes, n = n, theta0 = theta0, hypothesis = hypothesis, a = a, b = b)
   
   BFlist <- list(BF10    = BF10,
@@ -154,7 +156,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
 # Prior and Posterior plot ----
 .summaryStatsBinomialPlot <- function(jaspResults, options, summaryStatsBinomialResults) {
   
-  if (!options$plotPriorAndPosterior)
+  if (!options[["plotPriorAndPosterior"]])
     return()
   
   plot <- createJaspPlot(
@@ -164,7 +166,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
     aspectRatio = 0.7
   )
   plot$position <- 2
-  plot$dependOn(options = c("plotPriorAndPosterior, plotPriorAndPosteriorAdditionalInfo"))
+  plot$dependOn(options = c("plotPriorAndPosterior", "plotPriorAndPosteriorAdditionalInfo"))
   jaspResults[["binomialContainer"]][["priorPosteriorPlot"]] <- plot
   
   if (!summaryStatsBinomialResults[["ready"]] || jaspResults[["binomialContainer"]]$getError())
@@ -173,8 +175,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   plotResults    <- summaryStatsBinomialResults[["binomPlot"]]
   hypothesisList <- summaryStatsBinomialResults[["hypothesisList"]]
   hypothesis     <- hypothesisList$hypothesis
-  bfSubscripts   <- hypothesisList$bfSubscripts
-
+  
   # extract parameters needed for prior and posterior plot
   a         <- plotResults$a
   b         <- plotResults$b
@@ -182,6 +183,12 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   n         <- plotResults$n
   theta0    <- plotResults$theta0
   BF10      <- plotResults$BF[["BF10"]]
+  
+  # error check: infinite Bayes factors?
+  if(is.infinite(BF10)){
+    plot$setError("Plotting not possible: Bayes factor is infinite")
+    return()
+  }
   
   # Prior and posterior plot
     quantiles       <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, a, b, successes, n, hyp = hypothesis, theta0 = theta0)
@@ -194,15 +201,21 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
     xName           <- expression(paste("Population proportion ", theta))
     
     if(options$plotPriorAndPosteriorAdditionalInfo){
-      p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF01 = 1/BF10,
-                                             CRI = ppCri, median = medianPosterior, drawCRItxt = TRUE, bfSubscripts = bfSubscripts)
+      p <- try(JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF = 1/BF10,
+                                             bfType = options$bfType,
+                                             CRI = ppCri, median = medianPosterior, drawCRItxt = TRUE))
     } 
     else {
-      p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, bfSubscripts = bfSubscripts)
+      p <- try(JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName))
     }
     
     # create JASP object
-    plot$plotObject <- p
+    if (isTryError(p)) {
+      errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+      plot$setError(errorMessage)
+    } else {
+      plot$plotObject <- p
+    }
     return()
 }
 
