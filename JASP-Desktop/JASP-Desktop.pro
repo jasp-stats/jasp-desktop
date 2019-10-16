@@ -283,6 +283,7 @@ HEADERS += \
     widgets/boundqmlradiobuttons.h \
     widgets/boundqmltextinput.h \
     widgets/boundqmlcombobox.h \
+    widgets/listmodeljagsdatainput.h \
     widgets/listmodelpairsassigned.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
@@ -449,6 +450,7 @@ SOURCES += \
     widgets/boundqmlradiobuttons.cpp \
     widgets/boundqmltextinput.cpp \
     widgets/boundqmlcombobox.cpp \
+    widgets/listmodeljagsdatainput.cpp \
     widgets/listmodelpairsassigned.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \

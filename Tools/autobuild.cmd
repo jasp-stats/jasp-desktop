@@ -296,6 +296,9 @@ XCOPY  %JASP_DESKTOP%\Resources\Help /E /I Help
 echo running copyR.cmd script as "%JASP_DESKTOP%\Tools\copyR.cmd %JASP_REQUIRED_FILES_DIR%\R %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%\R %COPY_R_ARCH%"
 call %JASP_DESKTOP%\Tools\copyR.cmd %JASP_REQUIRED_FILES_DIR%\R %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%\R %COPY_R_ARCH%
 
+echo copy JAGS to installer preparation folder
+XCOPY %JASP_REQUIRED_FILES_DIR%\%ARCH%\JAGS /E /I %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%\JAGS
+
 :skipbuilding
 
 echo Melting and Coalescing MSI

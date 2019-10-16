@@ -1,39 +1,37 @@
-QT -= gui
+QT -= gui core
 
 include(../JASP.pri)
 
-CONFIG += c++11
-TARGET = $$JASP_R_INTERFACE_NAME
-DESTDIR = ..
-TEMPLATE = lib
-unix:CONFIG += staticlib
-
-QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.a'
+CONFIG    += c++11
+TARGET     = $$JASP_R_INTERFACE_NAME
+DESTDIR    = ..
+TEMPLATE   = lib
 
 #comment this out if you do not want helpertraces for development of jaspResults and such
 #CONFIG(debug, debug|release) {  DEFINES+=JASP_RESULTS_DEBUG_TRACES }
 
 include(../R_HOME.pri)
+
+unix{
+  CONFIG      += staticlib
+  QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.a'
+}
+
 windows{
-QT -= core
-QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.lib' $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.dll'
-message(using extra include $(QTDIR)\include) #Needed to use qglobal.h
-INCLUDEPATH += ../JASP-Common $(QTDIR)/include
-LIBS += -L$$_R_HOME/bin/$$ARCH -lR
+  QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.lib' $$OUT_PWD/$$DESTDIR/$$JASP_R_INTERFACE_TARGET'*.dll'
+  LIBS        += -L$$_R_HOME/bin/$$ARCH -lR
 }
 
 macx: QMAKE_CLEAN +=$$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.dylib'
 
-
 INCLUDEPATH += ../JASP-Common
+DEFINES     += JASP_R_INTERFACE_LIBRARY QT_DEPRECATED_WARNINGS
 
-DEFINES += JASP_R_INTERFACE_LIBRARY
-
+# QT_DEPRECATED_WARNINGS is there for:
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
-DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     jasprcpp.cpp \

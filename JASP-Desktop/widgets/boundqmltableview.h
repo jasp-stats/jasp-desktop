@@ -51,6 +51,8 @@ protected:
 private slots:
 	void addColumnSlot();
 	void removeColumnSlot(int col);
+	void addRowSlot();
+	void removeRowSlot(int row);
 	void resetSlot();
 	void itemChangedSlot(int col, int row, QString value);
 };

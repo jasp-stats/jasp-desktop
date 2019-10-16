@@ -196,10 +196,16 @@ void AnalysisForm::_parseQML()
 		case qmlControlType::TextArea:
 		{
 			BoundQMLTextArea* boundQMLTextArea = dynamic_cast<BoundQMLTextArea*>(control);
-			ListModelTermsAvailable* allVariablesModel = boundQMLTextArea->allVariablesModel();
 
-			if (allVariablesModel)
-				_allAvailableVariablesModels.push_back(allVariablesModel);
+			control = boundQMLTextArea;
+			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLTextArea->model());
+
+			if (availableModel)
+			{
+				if (boundQMLTextArea->modelHasAllVariables())
+					_allAvailableVariablesModels.push_back(availableModel);
+				_modelMap[controlName] = availableModel;
+			}
 
 			break;
 		}
@@ -209,8 +215,9 @@ void AnalysisForm::_parseQML()
 			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLComboBox->model());
 			if (availableModel)
 			{
-				if (boundQMLComboBox->hasAllVariablesModel)
+				if (boundQMLComboBox->modelHasAllVariables())
 					_allAvailableVariablesModels.push_back(availableModel);
+				_modelMap[controlName] = availableModel;
 			}
 			break;
 		}
@@ -224,6 +231,13 @@ void AnalysisForm::_parseQML()
 		{
 			BoundQMLFactorsForm* factorForm = dynamic_cast<BoundQMLFactorsForm*>(control);
 			_modelMap[controlName] = factorForm->model();
+			break;
+		}
+		case qmlControlType::TableView:
+		{
+			BoundQMLTableView* tableView = new BoundQMLTableView(quickItem, this);
+			control = tableView;
+			_modelMap[controlName] = tableView->model();
 			break;
 		}
 		case qmlControlType::VariablesListView:
@@ -493,7 +507,7 @@ void AnalysisForm::bindTo()
 		else
 		{
 			QMLListViewTermsAvailable* availableListControl = dynamic_cast<QMLListViewTermsAvailable *>(control);
-			if (availableListControl)
+			if (availableListControl && availableListControl->hasSource())
 			{
 				ListModelAvailableInterface* availableModel = availableListControl->availableModel();
 				// The availableList control are not bound with options, but they have to be updated from their sources when the form is initialized.

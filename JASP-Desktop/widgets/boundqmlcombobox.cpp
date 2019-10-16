@@ -47,7 +47,7 @@ void BoundQMLComboBox::initComboBox()
 	if (model.isNull())
 	{
 		if (sourceModels().isEmpty())
-			hasAllVariablesModel = true;
+			_modelHasAllVariables = true;
 	}
 	else
 	{

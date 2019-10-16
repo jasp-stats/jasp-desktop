@@ -139,6 +139,10 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	_R_HOME = Rcpp::as<std::string>(rInside.parseEval("R.home('')"));
 
 	std::cout << "R_HOME: " << _R_HOME << std::endl;
+
+#ifdef __APPLE__
+	jaspRCPP_parseEvalQNT("options(jags.moddir=paste0(Sys.getenv('JAGS_HOME'),'/modules-4'))");
+#endif
 }
 
 const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground, bool developerMode)

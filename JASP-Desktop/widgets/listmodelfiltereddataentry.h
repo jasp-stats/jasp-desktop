@@ -41,7 +41,7 @@ public:
 	OptionsTable *	createOption()															override;
 	void			initValues(OptionsTable * bindHere)										override;
 	int				getMaximumColumnWidthInCharacters(size_t columnIndex)			const	override;
-	void			itemChanged(int column, int row, double value)							override;
+	void			itemChanged(int column, int row, QVariant value)						override;
 
 	void			refreshModel()															override;
 

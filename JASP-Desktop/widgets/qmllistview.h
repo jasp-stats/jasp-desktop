@@ -33,13 +33,16 @@ public:
 	struct SourceType
 	{
 		QString			name,
-						discard,
 						modelUse;
-		ListModel	*	model,
-					*	discardModel;
+		ListModel	*	model;
+		QVector<SourceType> discardModels;
 
-		SourceType(QString _name, QString _discard = "", QString _modelUse = "")
-			: name(_name), discard(_discard), modelUse(_modelUse), model(nullptr), discardModel(nullptr) {}
+		SourceType(QString _name = "", QString _modelUse = "", const QVector<QPair<QString, QString> >& _discardModels = QVector<QPair<QString, QString> >())
+			: name(_name), modelUse(_modelUse), model(nullptr)
+		{
+			for (const QPair<QString, QString>& discardModel : _discardModels)
+				discardModels.push_back(SourceType(discardModel.first, discardModel.second));
+		}
 	};
 	
 	QMLListView(QQuickItem* item, AnalysisForm* form);
@@ -54,10 +57,14 @@ public:
 			int				variableTypesAllowed()		const	{ return _variableTypesAllowed; }
 			int				variableTypesSuggested()	const	{ return _variableTypesSuggested; }
 
-	const	QList<SourceType*>	& sourceModels()		const	{ return _sourceModels; }
+	const QList<SourceType*>& sourceModels()			const	{ return _sourceModels; }
+			bool			hasSource()					const	{ return _sourceModels.length() > 0; }
 
 protected slots:
 	virtual void modelChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
+			void sourceChangedHandler();
+			
+	virtual void setSources();
 
 protected:
 	QList<SourceType*>	_sourceModels;
@@ -68,6 +75,8 @@ protected:
 private:
 	int		_getAllowedColumnsTypes();
 	void	_setAllowedVariables();
+
+	QList<QVariant> _getListVariant(QVariant var);
 };
 
 #endif // QMLLISTVIEW_H

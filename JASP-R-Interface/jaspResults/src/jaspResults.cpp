@@ -214,6 +214,7 @@ void jaspResults::checkForAnalysisChanged()
 
 	if((*_ipccPollFunc)())
 	{
+		jaspPrint("Polling for analysis changes found a change, analysis should restart!");
 		setStatus("changed");
 		static Rcpp::Function stop("stop");
 		stop(_analysisChangedErrorMessage);

@@ -114,8 +114,29 @@ themeJaspRaw = function(legend.position = "none",
         panel.background = element_rect(color = "transparent", fill = "transparent"),
 
         # plot
-        plot.background = element_rect(fill = "transparent", color = "transparent"),
-        plot.margin = margin(),
-        plot.title = element_text(size = fontsize, hjust = 0.5) # center title
+        plot.background = ggplot2::element_rect(fill = "transparent", color = "transparent"),
+        plot.margin = ggplot2::margin(),
+        plot.title = ggplot2::element_text(family = family, size = fontsize, hjust = 0.5), # center title
+		
+		# facet_wrap / facet_grid
+		strip.background = element_rect(fill = "transparent", color = "transparent")
+
+    )
+}
+
+
+
+# see http://stackoverflow.com/questions/43050399/ggplot-with-bty-n-or-how-to-add-grid-coordinates-to-plot-coordinates?noredirect=1&lq=1
+x_custom <- function(...) {
+    structure(
+        list(...), # this ... information is not used, btw
+        class = c("element_custom_x","element_blank", "element") # inheritance test workaround
+    )
+
+}
+y_custom <- function(...) {
+    structure(
+        list(...), # this ... information is not used, btw
+        class = c("element_custom_y","element_blank", "element") # inheritance test workaround
     )
 }

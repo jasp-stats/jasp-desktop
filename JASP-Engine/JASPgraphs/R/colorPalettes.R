@@ -1,17 +1,23 @@
 
 #'@importFrom ggplot2 continuous_scale discrete_scale
 
-# from ggthemes::ggthemes_data
-JASPgraphs_data <- new.env()
-JASPgraphs_data[["colorblind"]][["value"]] <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
-  "#D55E00", "#CC79A7"
-)
+JASPgraphs_data <- list2env(list(
+  # discrete color scales
+  colorblind  = list(colors = RColorBrewer::brewer.pal(8L, "Dark2")),
+  colorblind2 = list(colors = RColorBrewer::brewer.pal(8L, "Set2")),
+  colorblind3 = list(colors = c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")), # from ggthemes
+  viridis     = list(colors = viridisLite::viridis(256L)), # viridis::scale_color_viridis
+  blue        = list(colors = c("#d1e1ec", "#b3cde0", "#6497b1", "#005b96", "#03396c", "#011f4b")), # bayesplot::color_scheme_get("blue") 
+  gray        = list(colors = c("#DFDFDF", "#bfbfbf", "#999999", "#737373", "#505050", "#383838"))  # bayesplot::color_scheme_get("gray") 
+))
 
 #'@title JASP color palettes
 #'@param n Number of colors desired.
 #'@param palette Palette to choose from.
 #'@param asFunction Should a function be returned or the raw colors? If a function is returned, it either takes a single integer or a vector in 0, 1 as input.
 #'@param ... Further arguments for \code{\link[ggplot2]{scale_colour_continuous}}.
+#'@param discete Should the function returned be suited for a discrete scale or a continuous one? Only used when \code{asFunction = TRUE}.
+#'@param ... Further arguments for \code{\link[ggplot2]{scale_color_manual}}.
 #'
 #'@details For ggplot2s, the convenience functions \code{scale_JASPcolor_\*} and \code{scale_JASPfill_\*} exist.
 #'
@@ -19,54 +25,45 @@ JASPgraphs_data[["colorblind"]][["value"]] <- c("#000000", "#E69F00", "#56B4E9",
 #'@export
 #'@example inst/examples/ex-colorPalettes.R
 #'@rdname colors
-JASPcolors <- function(n, palette = getGraphOption("palette")[["palette"]], asFunction = FALSE) {
+JASPcolors <- function(palette = getGraphOption("palette"), asFunction = FALSE) {
 
-  if (!palette %in% names(JASPgraphs_data)) {
-    stop(sprintf("palette was %s but must be one of %s", as.character(palette), names(JASPgraphs_data)))
+  if (!is.character(palette)) {
+    stop("palette must be character!")
+  } else if (!palette %in% names(JASPgraphs_data)) {
+    stop(sprintf("palette was %s but must be one of %s", as.character(palette), paste(names(JASPgraphs_data), collapse = ", ")))
   }
-  colors <- JASPgraphs_data[[palette]][["value"]]
-
+  colors <- JASPgraphs_data[[palette]][["colors"]]
   if (asFunction) {
-
-    return(
-      function(n) {
-        if (length(n) == 1L) { # passed to discrete scale
-          scales::gradient_n_pal(colors, values = NULL)(seq(0, 1, length.out = n))
-        } else {# passed to continuous scale
-          scales::gradient_n_pal(colors, values = NULL)(n)
-        }
-      }
-    )
+    return(function(n) {
+      scales::gradient_n_pal(colors, values = NULL)(seq(0, 1, length.out = n))
+    })
   } else {
-    if (n <= length(colors)) {
-      return(colors[seq_len(n)])
-    } else {
-      return(scales::gradient_n_pal(colors, values = NULL)(seq(0, 1, length.out = n)))
-    }
+    return(colors)
   }
 }
 
+# functions below mimic setup from viridis::scale_color_viridis
 #'@rdname colors
 #'@export
-scale_JASPcolor_continuous <- function(palette = getGraphOption("palette")[["Function"]], ...) {
-  continuous_scale("color", "JASPcolor", palette, ...)
+scale_JASPcolor_continuous <- function(palette = getGraphOption("palette"), ...) {
+  ggplot2::scale_color_gradientn(colours = JASPcolors(palette = palette), ...)
 }
 
 #'@rdname colors
 #'@export
-scale_JASPfill_continuous <- function(palette = getGraphOption("palette")[["Function"]], ...) {
-  continuous_scale("fill", "JASPcolor", palette, ...)
+scale_JASPfill_continuous <- function(palette = getGraphOption("palette"), ...) {
+  ggplot2::scale_fill_gradientn(colours = JASPcolors(palette = palette), ...)
 }
 
 #'@rdname colors
 #'@export
-scale_JASPcolor_discrete <- function(palette = getGraphOption("palette")[["Function"]], ...) {
-  discrete_scale("color", "JASPcolor", palette, ...)
+scale_JASPcolor_discrete <- function(palette = getGraphOption("palette"), ...) {
+  discrete_scale("color", "JASPcolor", JASPcolors(palette = palette, asFunction = TRUE), ...)
 }
 
 #'@rdname colors
 #'@export
-scale_JASPfill_discrete <- function(palette = getGraphOption("palette")[["Function"]], ...) {
-  discrete_scale("fill", "JASPcolor", palette, ...)
+scale_JASPfill_discrete <- function(palette = getGraphOption("palette"), ...) {
+  discrete_scale("fill", "JASPcolor", JASPcolors(palette = palette, asFunction = TRUE), ...)
 }
 

@@ -16,30 +16,33 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELMULTINOMIALCHI2TEST_H
-#define LISTMODELMULTINOMIALCHI2TEST_H
+#ifndef ListModelJAGSDataInput_H
+#define ListModelJAGSDataInput_H
 
 #include "listmodeltableviewbase.h"
 
 
-class ListModelMultinomialChi2Test : public ListModelTableViewBase
+class ListModelJAGSDataInput : public ListModelTableViewBase
 {
 	Q_OBJECT
 
 public:
-	explicit ListModelMultinomialChi2Test(BoundQMLTableView * parent, QString tableType) : ListModelTableViewBase(parent, tableType)
+	explicit ListModelJAGSDataInput(BoundQMLTableView * parent, QString tableType) : ListModelTableViewBase(parent, tableType)
 	{
-		_initialColCnt = 1;
+		_defaultCellVal = "...";
 	}
+	Qt::ItemFlags		flags(		const QModelIndex &index) const	override;
+
+	int getMaximumColumnWidthInCharacters(size_t columnIndex) const	override;
 
 	QString			getColName(size_t index)						override;
 	OptionsTable *	createOption()									override;
 	void			initValues(OptionsTable * bindHere)				override;
 
 public slots:
-	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;
+	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)	override;
 	void modelChangedSlot()											override;
 };
 
-#endif // LISTMODELMULTINOMIALCHI2TEST_H
+#endif // ListModelJAGSDataInput_H
 

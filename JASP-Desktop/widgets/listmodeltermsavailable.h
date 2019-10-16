@@ -33,8 +33,6 @@ public:
 	
 	ListModel*	getSourceModelOfTerm(const Term& term);
 	
-private:	
-	std::map<QString, ListModel*>	_termSourceModelMap;	
 };
 
 #endif // LISTMODELTERMSAVAILABLE_H

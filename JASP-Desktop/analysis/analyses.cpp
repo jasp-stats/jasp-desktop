@@ -50,10 +50,8 @@ void Analyses::_makeBackwardCompatible(RibbonModel* ribbonModel, Version &versio
 			QString	name = QString::fromStdString(analysisData["name"].asString());
 			module = ribbonModel->getModuleNameFromAnalysisName(name).toStdString();
 		}
-		else if (module == "MetaAnalysis")
-			module = "Meta Analysis";
-		else if (module == "SummaryStats")
-			module = "Summary Statistics";
+		else if (module == "MetaAnalysis")		module = "Meta Analysis";
+		else if (module == "SummaryStats")		module = "Summary Statistics";
 
 		analysisData["module"] = module;
 	}
@@ -171,8 +169,8 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis, &Analysis::imageEditedSignal,					this, &Analyses::analysisImageEdited				);
 	connect(analysis, &Analysis::requestColumnCreation,				this, &Analyses::requestColumnCreation				);
 	connect(analysis, &Analysis::resultsChangedSignal,				this, &Analyses::analysisResultsChanged				);
-	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation		);
-	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction	);
+	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation,		Qt::DirectConnection);
+	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction,	Qt::DirectConnection);
 	connect(analysis, &Analysis::titleChanged,						this, &Analyses::somethingModified					);
 
 	

@@ -80,6 +80,9 @@ cp -R $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
 rm app/JASP.app/Contents/Resources/TestFiles.zip
 cp -R R app/JASP.app/Contents/MacOS
 
+echo "Copying JAGS to executable folder"
+cp -R ../jasp-required-files/JAGS app/JASP.app/Contents/MacOS
+
 cd $APP_R_FRAMEWORK/Versions
 ln -s $CURRENT_R_VERSION Current
 cd Current

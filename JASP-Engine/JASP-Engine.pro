@@ -166,6 +166,7 @@ DISTFILES += \
     JASP/R/exposeUs.R \
     JASP/R/friendlyConstructorFunctions.R \
     JASP/R/informedbayesianttestfunctions.R \
+  JASP/R/jagsModule.R \
     JASP/R/linearmixedmodels.R \
     JASP/R/manova.R \
     JASP/R/massStepAIC.R \
