@@ -222,11 +222,29 @@ Form {
 				title: qsTr("Model Prior")
 				RadioButton
 				{
-					value: "beta.binomial"; label: qsTr("Beta binomial"); checked: true
+					checked: true
+					value: "beta.binomial"; label: qsTr("Beta binomial")
 					childrenOnSameRow: true
 					childrenArea.columnSpacing: 1
 					DoubleField { name: "betaBinomialParamA"; label: qsTr("a"); defaultValue: 1; inclusive: "maxOnly"}
 					DoubleField { name: "betaBinomialParamB"; label: qsTr("b"); defaultValue: 1; inclusive: "maxOnly"}
+				}
+				RadioButton { value: "uniform"; label: qsTr("Uniform")}
+				RadioButton
+				{
+					value: "Wilson"
+					label: qsTr("Wilson")
+					childrenOnSameRow: true
+					childrenArea.columnSpacing: 1
+					DoubleField { name: "wilsonParamLambda"; label: qsTr("λ"); defaultValue: 1; inclusive: "no"; min: 0}
+				}
+				RadioButton
+				{
+					value: "Castillo"
+					label: qsTr("Castillo")
+					childrenOnSameRow: true
+					childrenArea.columnSpacing: 1
+					DoubleField { name: "castilloParamU"; label: qsTr("u"); defaultValue: 1; inclusive: "yes"; min: 1}
 				}
 				RadioButton
 				{
@@ -234,7 +252,6 @@ Form {
 					childrenOnSameRow: true
 					DoubleField { name: "bernoulliParam"; label: qsTr("p"); defaultValue: 0.5; max: 1; inclusive: "no"; decimals: 3 }
 				}
-				RadioButton { value: "uniform"; label: qsTr("Uniform") }
 			}
 
 			RadioButtonGroup

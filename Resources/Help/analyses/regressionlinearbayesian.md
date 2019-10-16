@@ -59,9 +59,11 @@ Compares each model against the model selected.
   - Hyper-g-n: A mixture of g-priors that where u = g/n and u  Beta(1, alpha/2) to provide consistency when the null model is true.
   - JZS: " Jeffreys-Zellner-Siow prior which uses the Jeffreys prior on sigma and the Zellner-Siow Cauchy prior on the coefficients. The optional parameter can be used to control the squared scale of the prior (default r-scale: 0.354).
 - Model prior: Prior distribution on the models.
+  - Uniform
+  - Wilson: Default lambda = 1. Equivalent to a Beta binomial with a = 1 and b = lambda * p, where p is the number of predictors in the model.
+  - Castillo: Default u = 1. Equivalent to a Beta binomial with a = 1 and b = p^u, where p is the number of predictors in the model.
   - Beta binomial: Default Beta(a = 1, b = 1).
   - Beronoulli: Default p = 0.5.
-  - Uniform
 - Sampling method: Indicates the sampling method to be used. It is recommended to use *BAS* when the model space can be enumerated.
   - BAS: Uses Bayesian Adaptive Sampling (without replacement). These can be updated based on estimates of the marginal inclusion. *No. models* indicates the number of models to sample without replacement. Setting the value to 0 implies the analysis will attempt to enumerate all models.
   - MCMC: Samples with replacement via a MCMC algorithm that combines the birth/death random walk with a random swap move to interchange a variable in the model. *No. samples* indicates the number of MCMC samples to draw. Setting the value to 0 implies the number of MCMC iterations is equal to 10 times the number of models. Sampling stops when min(number of models, MCMC iterations) is reached.
@@ -86,10 +88,12 @@ Posterior summaries of Coefficients.
 
 ### References
 ---
+- Castillo, I., Schmidt-Hieber, J., & Van der Vaart, A. (2015). Bayesian linear regression with sparse priors. *The Annals of Statistics, 43*(5), 1986-2018.
 - Clyde, M. A. (2018). BAS: Bayesian Adaptive Sampling for Bayesian Model Averaging. (Version 1.5.3)[Computer software].
 - Clyde, M. A., Ghosh, J., & Littman, M. L. (2011). Bayesian adaptive sampling for variable selection and model averaging. *Journal of Computational and Graphical Statistics, 20*, 80-101.
 - Consonni, G., Fouskakis, D., Liseo, B., & Ntzoufras, I. (2018). Prior Distributions for Objective Bayesian Analysis. *Bayesian Analysis, 13*, 627-679.
 - Liang, F., Paulo, R., Molina, G., Clyde, M. A., & Berger, J. O. (2008). Mixtures of *g* Priors for Bayesian Variable Selection. *Journal of the American Statistical Association, 103*, 410-423.
+- Wilson, M. A., Iversen, E. S., Clyde, M. A., Schmidler, S. C., & Schildkraut, J. M. (2010). Bayesian model search and multilevel inference for SNP association studies. *The Annals of Applied Statistics, 4*(3), 1342.
 
 ### R Packages
 ---
