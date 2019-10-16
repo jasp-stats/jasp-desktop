@@ -111,7 +111,7 @@ Correlation <- function(jaspResults, dataset, options){
   
   if(length(options$conditioningVariables) >= 0){
     message <- sprintf("Conditioned on variables: %s", paste(options$conditioningVariables, collapse = ", "))
-    mainTable$addFootnote(message = message)
+    mainTable$addFootnote(message = message, symbol = " ")
   }
   # show
   jaspResults[['mainTable']] <- mainTable
@@ -1344,7 +1344,7 @@ Correlation <- function(jaspResults, dataset, options){
     }
   } else{
     result <- try(expr = {ppcor::pcor.test(x = x, y = y, z = z, method = method)}, silent = TRUE)
-    if(FALSE) {
+    if(isTryError(result)) {
       errors <- .extractErrorMessage(result)
       result <- rep(NaN, length(statsNames))
       names(result) <- paste(method, statsNames, sep = "_")
