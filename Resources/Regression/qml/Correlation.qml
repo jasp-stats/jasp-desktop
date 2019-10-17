@@ -74,6 +74,7 @@ Form
 			CheckBox { name: "plotDensities";		label: qsTr("Densities for variables")	}
 			CheckBox { name: "plotStatistics";		label: qsTr("Statistics")				}
 		}
+        CheckBox{ name: "plotHeatmap"; label: qsTr("Heatmap") }
 
 	}
 

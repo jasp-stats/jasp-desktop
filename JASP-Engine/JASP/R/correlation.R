@@ -26,6 +26,7 @@ Correlation <- function(jaspResults, dataset, options){
   
   .corrAssumptions(jaspResults, dataset, options, ready, corrResults)
   .corrPlot(jaspResults, dataset, options, ready, corrResults, errors)
+  .corrHeatmap(jaspResults, options, corrResults, ready)
   
   return()
 }
@@ -550,6 +551,7 @@ Correlation <- function(jaspResults, dataset, options){
   plotContainer$dependOn(options = c("variables", "conditioningVariables", "pearson", "spearman", "kendallsTauB",
                                      "displayPairwise", "confidenceIntervals", "confidenceIntervalsInterval", "hypothesis",
                                      "plotCorrelationMatrix", "plotDensities", "plotStatistics", "missingValues"))
+  plotContainer$position <- 3
   jaspResults[['corrPlot']] <- plotContainer
   
   vars <- options$variables
@@ -628,6 +630,7 @@ Correlation <- function(jaspResults, dataset, options){
   plot$dependOn(options = c("variables", "conditioningVariables", "pearson", "spearman", "kendallsTauB", 
                             "displayPairwise", "confidenceIntervals", "confidenceIntervalsInterval", "hypothesis",
                             "plotCorrelationMatrix", "plotDensities", "plotStatistics", "missingValues"))
+  plot$position <- 3
   
   if (len <= 2 && (options$plotDensities || options$plotStatistics)) {
     plot$width <- 580
@@ -786,7 +789,77 @@ Correlation <- function(jaspResults, dataset, options){
                drawAxes = drawAxes)
 }
 
-## Old plotting ----
+.corrHeatmap <- function(jaspResults, options, corrResults, ready){
+  if(isFALSE(options$plotHeatmap)) return()
+  
+  hw <- 30 + 80*length(options$variables)
+  
+  tests <- c(`Pearson's r` = "pearson",
+             `Spearman's rho` = "spearman",
+             `Kendall's tau B` = "kendall")[c(options$pearson, options$spearman, options$kendallsTauB)]
+  
+  if(length(tests) == 0){
+    return()
+  } else if(length(tests) == 1){
+    plot <- createJaspPlot(title = sprintf("%s heatmap", names(tests)), width = hw, height = hw)
+    plot$dependOn(c("variables", "conditioningVariables", "missingValues", "pearson", "spearman", "kendallsTauB", 
+                    "flagSignificant"))
+    plot$position <- 4
+    jaspResults[['heatmaps']] <- plot
+    
+    if(ready) plot$plotObject <- .corrPlotHeatmap(tests, options, corrResults)
+  } else{
+    heatmaps <- createJaspContainer(title = "Heatmaps")
+    heatmaps$dependOn(c("variables", "conditioningVariables", "missingValues", "pearson", "spearman", "kendallsTauB",
+                        "flagSignificant"))
+    heatmaps$position <- 4
+    jaspResults[['heatmaps']] <- heatmaps
+    
+    for(i in seq_along(tests)){
+      plot <- createJaspPlot(title = names(tests[i]), width = hw, height = hw)
+      heatmaps[[tests[[i]]]] <- plot
+      
+      if(ready) plot$plotObject <- .corrPlotHeatmap(tests[[i]], options, corrResults)
+    }
+  }
+}
+
+.corrPlotHeatmap <- function(method, options, corrResults){
+  #browser()
+  data <- lapply(corrResults, function(x){
+    c(var1 = x$vars[1], var2 = x$vars[2], 
+      cor = x$res[[paste(method, "estimate", sep = "_")]], 
+      p = x$res[[paste(method, "p.value", sep = "_")]])
+  })
+  
+  data <- do.call(rbind, data)
+  data <- rbind(data, data[, c(2, 1, 3, 4)])
+  data <- data.frame(data, stringsAsFactors = FALSE)
+  data <- rbind(data, data.frame(var1 = options$variables, var2 = options$variables, cor = NA, p = 1))
+  
+  data$var1 <- factor(data$var1, levels = options$variables)
+  data$var2 <- factor(data$var2, levels = rev(options$variables))
+  data$cor <- as.numeric(data$cor)
+  data$p <- as.numeric(data$p)
+  
+  data$label <- round(data$cor, 3)
+  if(options$flagSignificant){
+    data$label <- ifelse(data$p < 0.05 & !is.na(data$cor), paste0(data$label, "*"), data$label)
+    data$label <- ifelse(data$p < 0.01 & !is.na(data$cor), paste0(data$label, "*"), data$label)
+    data$label <- ifelse(data$p < 0.001 & !is.na(data$cor), paste0(data$label, "*"), data$label)
+  }
+  p <- ggplot2::ggplot(data, ggplot2::aes(x = var1, y = var2, fill = cor)) + 
+    ggplot2::geom_tile() +
+    ggplot2::geom_text(ggplot2::aes(x = var1, y = var2, label = label), size = 5) +
+    ggplot2::scale_fill_gradient2(limits = c(-1, 1), na.value = "white") +
+    ggplot2::coord_equal() + 
+    ggplot2::xlab(NULL) + ggplot2::ylab(NULL) +
+    #ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 270, hjust = 0, vjust = 0.5))
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, vjust = 1))
+  
+  JASPgraphs::themeJasp(p)
+}
+## Old plotting (still in use)----
 
 .plotCorrelations <- function(dataset, perform, options) {
   variables <- unlist(options$variables)
@@ -1413,6 +1486,7 @@ Correlation <- function(jaspResults, dataset, options){
       }
       result$vsmpr <- .VovkSellkeMPR(result$p.value)
       result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
+      # TODO: CIs for partial correlations
       result$lower.ci <- NA
       result$upper.ci <- NA
       result <- unlist(result[statsNames], use.names = FALSE)
