@@ -682,21 +682,24 @@ Correlation <- function(jaspResults, dataset, options){
       data <- dataset[vcomb[[i]]]
       data <- data[complete.cases(data),]
       
-      # get consistent breaks
-      var1Breaks <- JASPgraphs::getPrettyAxisBreaks(c(data[,1], hist(data[,1], plot=FALSE)$breaks), min.n = 3)
-      var2Breaks <- JASPgraphs::getPrettyAxisBreaks(c(data[,2], hist(data[,2], plot=FALSE)$breaks), min.n = 3)
-      
       plotMat[[1, 1]] <- .corrMarginalDistribution(variable = data[,1,drop=TRUE], varName = comb[[i]][1],
-                                                   options = options, errors = corrResults[[vpairs[[i]]]]$errors,
-                                                   yName = NULL)
-      plotMat[[1, 2]] <- .corrValuePlot(corrResults[[vpairs[i]]], options = options)
-      plotMat[[2, 1]] <- .corrScatter(corrResults[[vpairs[i]]], options = options,
-                                      xVar = data[,1,drop=TRUE], yVar = data[,2,drop=TRUE], 
-                                      xBreaks = var1Breaks, yBreaks = var2Breaks,
-                                      drawAxes = FALSE)
+                                                   options = options, yName = NULL)
       plotMat[[2, 2]] <- .corrMarginalDistribution(variable = data[,2,drop=TRUE], varName = comb[[i]][2],
-                                                   options = options, errors = corrResults[[vpairs[[i]]]]$errors,
-                                                   yName = NULL, coord_flip = TRUE)
+                                                   options = options, yName = NULL, coord_flip = TRUE)
+      plotMat[[1, 2]] <- .corrValuePlot(corrResults[[vpairs[i]]], options = options)
+      
+      # get consistent breaks for scatterplot with the densities
+      var1Breaks <- try(expr = {ggplot2::ggplot_build(plotMat[[1, 1]])$layout$panel_params[[1]]$x.major_source},
+                        silent=TRUE)
+      if(isTryError(var1Breaks)) var1Breaks <- NULL
+      var2Breaks <- try(expr = {ggplot2::ggplot_build(plotMat[[2, 2]])$layout$panel_params[[1]]$y.major_source},
+                        silent=TRUE)
+      if(isTryError(var2Breaks)) var2Breaks <- NULL
+      plotMat[[2, 1]] <- .corrScatter(xVar = data[,1,drop=TRUE], yVar = data[,2,drop=TRUE], 
+                                      options = options,
+                                      xBreaks = var1Breaks,
+                                      yBreaks = var2Breaks,
+                                      drawAxes = FALSE)
         
       
       plot$plotObject <- JASPgraphs::ggMatrixPlot(plotMat, 
@@ -712,8 +715,8 @@ Correlation <- function(jaspResults, dataset, options){
       data <- data[complete.cases(data),]
       
       plotMat <- matrix(list(), 1, 2)
-      plotMat[[1, 1]] <- .corrScatter(corrResults[[vpairs[i]]], options = options,
-                                      xVar = data[,1,drop=TRUE], yVar = data[,2,drop=TRUE], 
+      plotMat[[1, 1]] <- .corrScatter(xVar = data[,1,drop=TRUE], yVar = data[,2,drop=TRUE], 
+                                      options = options,
                                       xName = comb[[i]][1], yName = comb[[i]][2],
                                       drawAxes = TRUE)
       plotMat[[1, 2]] <- .corrValuePlot(corrResults[[vpairs[i]]], options = options)
@@ -725,9 +728,13 @@ Correlation <- function(jaspResults, dataset, options){
       plot <- createJaspPlot(title = pairs[i], width = 400, height = 400)
       plotContainer[[vpairs[i]]] <- plot
       
-      plot$plotObject <- .corrScatter(corrResults[[vpairs[i]]], options = options,
-                                      xVar = dataset[[vcomb[[i]][1]]], yVar = dataset[[vcomb[[i]][2]]], 
-                                      xName = comb[[i]][1], yName = comb[[i]][2])
+      data <- dataset[vcomb[[i]]]
+      data <- data[complete.cases(data),]
+      
+      plot$plotObject <- .corrScatter(xVar = data[,1,drop=TRUE], yVar = data[,2,drop=TRUE], 
+                                      options = options,
+                                      xName = comb[[i]][1], yName = comb[[i]][2], 
+                                      drawAxes = TRUE)
     }
   }
 }
@@ -762,17 +769,19 @@ Correlation <- function(jaspResults, dataset, options){
   plotMat <- matrix(list(), len, len)
   for(row in seq_len(len)){
     for(col in seq_len(len)){
+      data <- dataset[,vvars[c(col,row)],drop=FALSE]
+      data <- data[complete.cases(data),,drop=FALSE]
+      
       if(row == col) {
-        plotMat[[row, col]] <- .corrMarginalDistribution(variable = dataset[[vvars[col]]], 
+        plotMat[[row, col]] <- .corrMarginalDistribution(variable = data[,1,drop=TRUE], 
                                                          varName = vars[col],
                                                          options = options, errors = errors)
       } else if(row > col){
         plotMat[[row, col]] <- .corrValuePlot(corrResults[[paste(vvars[c(col, row)], collapse = "_")]],
                                               options = options)
       } else {
-        plotMat[[row, col]] <- .corrScatter(corrResults[[paste(vvars[c(row, col)], collapse = "_")]],
-                                            options = options,
-                                            xVar = dataset[[vvars[col]]], yVar = dataset[[vvars[row]]])
+        plotMat[[row, col]] <- .corrScatter(xVar = data[,1,drop=TRUE], yVar = data[,2,drop=TRUE],
+                                            options = options)
       }
     }
   }
@@ -823,7 +832,7 @@ Correlation <- function(jaspResults, dataset, options){
   cilab <- rep(NA, length(tests))
   
   for(i in seq_along(tests)){
-    estimate <- res[[paste(tests[i], "estimate", sep = "_")]]
+    estimate <- res[[tests[i]]][['estimate']]
     if(round(estimate, 8) == 1) {
       CIPossible[i] <- FALSE
       
@@ -843,10 +852,10 @@ Correlation <- function(jaspResults, dataset, options){
     }
     
     if(CIPossible[i]){
-      lower.ci <- res[[paste(tests[i], "lower.ci", sep = "_")]]
+      lower.ci <- res[[tests[i]]][['lower.ci']]
       lower.ci <- formatC(lower.ci, format = "f", digits = 3)
       
-      upper.ci <- res[[paste(tests[i], "upper.ci", sep = "_")]]
+      upper.ci <- res[[tests[i]]][['upper.ci']]
       upper.ci <- formatC(upper.ci, format = "f", digits = 3)
       
       cilab[i] <- sprintf("%s%% CI: [%s, %s]", 100*options$confidenceIntervalsInterval, lower.ci, upper.ci)
@@ -870,10 +879,9 @@ Correlation <- function(jaspResults, dataset, options){
 
 .corrMarginalDistribution <- function(variable, varName, options, xName = NULL, yName = "Density", errors, coord_flip = FALSE){
   if(isFALSE(options$plotDensities)) return(.displayError(errorMessage = "")) # return empty plot
-  if(!isFALSE(errors)){
-    errorsInVariable <- sapply(errors, function(x) varName %in% x)
-    if(any(errorsInVariable)) return(.displayError(errorMessage = sprintf("Plotting not possible: %s", errors$message)))
-  }
+  if(length(variable) < 3) return(.displayError(errorMessage = "Plotting not possible:\n Number of observations is < 3"))
+  if(any(is.infinite(variable))) return(.displayError(errorMessage = "Plotting not possible: Infinite value(s)"))
+
   
   if(isTRUE(options$plotRanks)) variable <- rank(variable)
   
@@ -888,12 +896,14 @@ Correlation <- function(jaspResults, dataset, options){
   p
 }
 
-.corrScatter <- function(results, options, xVar, yVar, xBreaks = NULL, yBreaks = NULL, xName = NULL, yName = NULL, 
+.corrScatter <- function(xVar, yVar, options, xBreaks = NULL, yBreaks = NULL, xName = NULL, yName = NULL, 
                          drawAxes = TRUE) {
-  #browser()
-  if(!isFALSE(results$errors)){
-    return(.displayError(errorMessage = sprintf("Plotting not possible: %s", results$errors$message)))
-  }
+  if(length(xVar) <= 1 || length(yVar) <= 1) return(.displayError(errorMessage = "Plotting not possible:\n Number of observations is < 2"))
+  errors <- .hasErrors(data.frame(xVar = xVar, yVar = yVar), message = 'short', 
+                       type = c('infinity'),
+                       all.target = c("xVar", "yVar"), 
+                       exitAnalysisIfErrors = FALSE)
+  if(is.list(errors)) return(.displayError(errorMessage = sprintf("Plotting not possible: %s", errors$message)))
   
   if(isTRUE(options$plotRanks)) {
     xVar <- rank(xVar)
@@ -941,9 +951,9 @@ Correlation <- function(jaspResults, dataset, options){
 .corrPlotHeatmap <- function(method, options, corrResults){
   #browser()
   data <- lapply(corrResults, function(x){
-    c(var1 = x$vars[1], var2 = x$vars[2], 
-      cor = x$res[[paste(method, "estimate", sep = "_")]], 
-      p = x$res[[paste(method, "p.value", sep = "_")]])
+    c(var1 = x[['vars']][1], var2 = x[['vars']][2], 
+      cor = x[['res']][[method]][['estimate']], 
+      p = x[['res']][[method]][['estimate']])
   })
   
   data <- do.call(rbind, data)
