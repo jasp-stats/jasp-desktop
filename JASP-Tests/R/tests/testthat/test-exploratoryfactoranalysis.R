@@ -38,6 +38,12 @@ test_that("Factor Characteristics table results match", {
                       ))
 })
 
+test_that("Additional fit indices table results match", {
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_fittab"]][["data"]]
+  expect_equal_tables(table,
+                      list(-32.7898349546892, 0, "0 - 0.065", 1.20127892716016))
+})
+
 test_that("Chi-squared Test table results match", {
   table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_goftab"]][["data"]]
   expect_equal_tables(table,

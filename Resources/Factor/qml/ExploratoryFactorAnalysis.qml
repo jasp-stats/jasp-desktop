@@ -92,7 +92,7 @@ Form
             {
                 value	: "orthogonal"
                 label	: qsTr("Orthogonal")
-                DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax", "bentlerT", "equamax", "varimin", "geominT"] }
+                DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax", "bentlerT", "equamax", "geominT"] }
             }
             RadioButton
             {
@@ -131,15 +131,22 @@ Form
 			value: 0.4
 		}
 
-		Group
-		{
-			title: qsTr("Include Tables")
-			CheckBox { name: "incl_structure";		label: qsTr("Structure matrix")			}
-			CheckBox { name: "incl_correlations";	label: qsTr("Factor correlations")		}
-			CheckBox { name: "incl_fitIndices";		label: qsTr("Additional fit indices")	}
-			CheckBox { name: "incl_pathDiagram";	label: qsTr("Path diagram")				}
-			CheckBox { name: "incl_screePlot";		label: qsTr("Scree plot")				}
-		}
+        Group
+        {
+            Group
+            {
+                title: qsTr("Include Tables")
+                CheckBox { name: "incl_structure";		label: qsTr("Structure matrix")			}
+                CheckBox { name: "incl_correlations";	label: qsTr("Factor correlations")		}
+                CheckBox { name: "incl_fitIndices";		label: qsTr("Additional fit indices")	}
+            }
+            Group
+            {
+                title: qsTr("Plots")
+                CheckBox { name: "incl_pathDiagram";	label: qsTr("Path diagram")				}
+                CheckBox { name: "incl_screePlot";		label: qsTr("Scree plot")				}
+            }
+        }
 
 		RadioButtonGroup
 		{
@@ -148,5 +155,7 @@ Form
 			RadioButton { value: "pairwise";	label: qsTr("Exclude cases pairwise"); checked: true	}
 			RadioButton { value: "listwise";	label: qsTr("Exclude cases listwise")					}
 		}
+
+
 	}
 }

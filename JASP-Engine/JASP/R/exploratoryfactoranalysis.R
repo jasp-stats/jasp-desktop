@@ -31,13 +31,14 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   modelContainer <- .efaModelContainer(jaspResults)
 
   # output functions
-  .efaGoFTable(      modelContainer, dataset, options, ready)
-  .efaLoadingsTable( modelContainer, dataset, options, ready)
-  .efaStructureTable(modelContainer, dataset, options, ready)
-  .efaEigenTable(    modelContainer, dataset, options, ready)
-  .efaCorrTable(     modelContainer, dataset, options, ready)
-  .efaScreePlot(     modelContainer, dataset, options, ready)
-  .efaPathDiagram(   modelContainer, dataset, options, ready)
+  .efaGoFTable(          modelContainer, dataset, options, ready)
+  .efaLoadingsTable(     modelContainer, dataset, options, ready)
+  .efaStructureTable(    modelContainer, dataset, options, ready)
+  .efaEigenTable(        modelContainer, dataset, options, ready)
+  .efaCorrTable(         modelContainer, dataset, options, ready)
+  .efaAdditionalFitTable(modelContainer, dataset, options, ready)
+  .efaScreePlot(         modelContainer, dataset, options, ready)
+  .efaPathDiagram(       modelContainer, dataset, options, ready)
 
   # data saving
   # .efaAddComponentsToData(jaspResults, modelContainer, options, ready)
@@ -225,7 +226,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 .efaStructureTable <- function(modelContainer, dataset, options, ready) {
   if (!options[["incl_structure"]] || !is.null(modelContainer[["strtab"]])) return()
   strtab <- createJaspTable("Factor Loadings (Structure Matrix)")
-  strtab$dependOn("highlightText")
+  strtab$dependOn(c("highlightText", "incl_structure"))
   strtab$position <- 2.5
   strtab$addColumnInfo(name = "var", title = "", type = "string")
   modelContainer[["strtab"]] <- strtab
@@ -279,7 +280,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   efaResults <- modelContainer[["model"]][["object"]]
 
-  eigv <- efaResults$e.values
+  eigv <- efaResults$values
   eigtab[["comp"]] <- paste("Factor", 1:efaResults$factors)
   eigtab[["eigv"]] <- eigv[1:efaResults$factors]
   eigtab[["prop"]] <- eigv[1:efaResults$factors] / sum(eigv)
