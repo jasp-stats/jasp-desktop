@@ -18,7 +18,7 @@
 plotPieChart <- function(value, group,
                          legendName = deparse(substitute(group)),
                          legendLabels = if (is.factor(group)) levels(group) else unique(group),
-                         legendColors = JASPcolors(length(unique(group))),
+                         legendColors = getGraphOption("palette"),
                          showAxisText = TRUE, showAxisTicks = showAxisText, asPercentages = TRUE,
                          ...) {
 
@@ -39,16 +39,17 @@ plotPieChart <- function(value, group,
     value <- value / sum(value) * 100
 
   nUnique <- length(unique(group))
-  if (length(legendColors) < nUnique) {
+  if (length(legendColors) == 1L && legendColors %in% names(JASPgraphs_data)) {
+    legendColors <- JASPgraphs_data[[legendColors]][["colors"]]
     legendColors <- scales::gradient_n_pal(legendColors)(seq(0, 1, length.out = nUnique))
   }
-
+  
   df <- data.frame(
     y = value,
     g = factor(group)
   )
 
-  graph <- ggplot(df, aes(x = "", y=value, fill=group))+
+  graph <- ggplot(df, aes(x = "", y=value, fill=group)) +
     geom_bar(width = 1, stat = "identity") +
     coord_polar("y", start = 0) +
     scale_fill_manual(values = legendColors, name = legendName, breaks = legendLabels) +

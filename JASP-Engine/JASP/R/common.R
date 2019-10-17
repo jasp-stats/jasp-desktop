@@ -94,6 +94,9 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
 
   }
 
+  oldGraphOptions <- JASPgraphs::graphOptions()
+  on.exit(JASPgraphs::graphOptions(oldGraphOptions), add = TRUE)
+
   results <- tryCatch(expr={
 
         withCallingHandlers(expr={
@@ -205,6 +208,9 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     cols    <- .getDataSetCols(dataKey, options)
     dataset <- do.call(.readDataSetToEnd, cols)
   }
+
+  oldGraphOptions <- JASPgraphs::graphOptions()
+  on.exit(JASPgraphs::graphOptions(oldGraphOptions), add = TRUE)
 
   analysisResult <-
     tryCatch(

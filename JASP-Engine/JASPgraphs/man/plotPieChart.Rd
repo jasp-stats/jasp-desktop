@@ -6,9 +6,8 @@
 \usage{
 plotPieChart(value, group, legendName = deparse(substitute(group)),
   legendLabels = if (is.factor(group)) levels(group) else unique(group),
-  legendColors = JASPcolors(length(unique(group))),
-  showAxisText = TRUE, showAxisTicks = showAxisText,
-  asPercentages = TRUE, ...)
+  legendColors = getGraphOption("palette"), showAxisText = TRUE,
+  showAxisTicks = showAxisText, asPercentages = TRUE, ...)
 }
 \arguments{
 \item{value}{The value for each group.}

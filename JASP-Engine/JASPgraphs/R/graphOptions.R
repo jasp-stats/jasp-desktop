@@ -39,6 +39,8 @@ setGraphOption <- function(name, value) {
 graphOptions <- function(...) {
 
     args <- list(...)
+    if (length(args) == 1L && is.list(args[[1L]]))
+        args <- args[[1L]]
 
     if (!(length(args) && is.null(names(args)))) {
 

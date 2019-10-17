@@ -164,12 +164,12 @@ Descriptives <- function(jaspResults, dataset, options) {
 
     if(is.null(jaspResults[["pieCharts"]])) {
       jaspResults[["pieCharts"]] <- createJaspContainer("Pie charts")
-      jaspResults[["pieCharts"]]$dependOn(c("splitby", "descriptivesPiechart"))
+      jaspResults[["pieCharts"]]$dependOn(c("splitby", "descriptivesPiechart", "colorPalette"))
       jaspResults[["pieCharts"]]$position <- 9
     }
 
     piePlots <- jaspResults[["pieCharts"]]
-
+    JASPgraphs::setGraphOption("palette", options[["colorPalette"]])
     for (var in variables) {
       # skip non-categorical variables
       if(is.double(dataset.factors[[.v(var)]]))next
@@ -1332,14 +1332,11 @@ Descriptives <- function(jaspResults, dataset, options) {
 
 .descriptivesScatterPlots <- function(jaspContainer, dataset, variables, split, options) {
 
+  JASPgraphs::setGraphOption("palette", options[["colorPalette"]])
   if (!is.null(split) && split != "") {
     group <- dataset[, .v(split)]
     legendTitle <- split
-    if (options[["showLegend"]]) {
-      oldPalette <- JASPgraphs::getGraphOption("palette")
-      on.exit(JASPgraphs::setGraphOption("palette", oldPalette))
-      JASPgraphs::setGraphOption("palette", options[["colorPalette"]])
-    }
+
   } else {
     group <- NULL
     legendTitle <- NULL
@@ -1352,13 +1349,14 @@ Descriptives <- function(jaspResults, dataset, options) {
   variablesB64 <- variablesB64[numerics]
 
   nvar <- length(variables)
+  # Set's a message with instruction for user using jaspHtml
   if (nvar < 2L) {
-    msg <- if (length(numerics) > 1L) { # basically all user variables have the wrong type...
-      "These plots can only be shown for scale variables."
-    } else {
-      "Please enter two variables."
-    }
-    jaspContainer[["scatterplotMsg"]] <- createJaspHtml(text = msg, dependencies = "variables")
+  #   msg <- if (length(numerics) > 1L) { # basically all user variables have the wrong type...
+  #     "These plots can only be shown for scale variables."
+  #   } else {
+  #     "Please enter two variables."
+  #   }
+  #   jaspContainer[["scatterplotMsg"]] <- createJaspHtml(text = msg, dependencies = "variables")
     return()
   }
 

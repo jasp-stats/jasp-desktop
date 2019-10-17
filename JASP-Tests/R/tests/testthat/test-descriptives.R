@@ -123,3 +123,17 @@ test_that("Q-QPlot plot matches", {
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "qqplot", dir="Descriptives")
 })
+
+test_that("Pie chart and scatter plots matchs", {
+  options <- jasptools::analysisOptions("Descriptives")
+  options$variables <- c("facFive", "contcor1", "contcor2")
+  options$descriptivesPiechart <- TRUE
+  options$scatterPlot <- TRUE
+  results <- jasptools::run("Descriptives", "test.csv", options)
+
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "pieChart", dir="Descriptives")
+
+  testPlot <- results[["state"]][["figures"]][[2]][["obj"]]
+  expect_equal_plots(testPlot, "scatterplot", dir="Descriptives")
+})

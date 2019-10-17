@@ -201,7 +201,7 @@ plotEditingOptions.ggplot_built <- function(ggbuild, asJSON = FALSE) {
   })
   
   if (inherits(e, "try-error"))
-    return(toJSON(list(error = paste("computing plotEditingOptions gave an error:", .extractErrorMessage(out)))))
+    return(toJSON(list(error = paste("computing plotEditingOptions gave an error:", .extractErrorMessage(e)))))
 
   if (asJSON) {
     out <- try(toJSON(out))
