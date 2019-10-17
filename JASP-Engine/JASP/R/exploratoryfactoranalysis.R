@@ -339,6 +339,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   scree <- createJaspPlot(title = "Scree plot", width = 300, height = 300)
   scree$dependOn("incl_screePlot")
+  scree$position <- 8
   modelContainer[["scree"]] <- scree
 
   if (!ready || modelContainer$getError()) return()
@@ -391,6 +392,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   n_var <- length(options$variables)
   path <- createJaspPlot(title = "Path Diagram", width = 480, height = ifelse(n_var < 2, 300, 1 + 299 * (n_var / 5)))
   path$dependOn("incl_pathDiagram")
+  path$position <- 7
   modelContainer[["path"]] <- path
   if (!ready || modelContainer$getError()) return()
 
