@@ -31,17 +31,9 @@ INSTALLS += target
 
 LIBS += -L.. -lJASP-Common
 
-windows:CONFIG(ReleaseBuild) {
-    LIBS += -llibboost_filesystem-vc142-mt-x64-1_71 -llibboost_system-vc142-mt-x64-1_71 -larchive.dll -llibreadstat
-}
+windows:	LIBS += -llibboost_filesystem$$BOOST_POSTFIX -llibboost_system$$BOOST_POSTFIX -larchive.dll -llibreadstat -lole32 -loleaut32
+macx:		LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz -lreadstat -liconv
 
-windows:CONFIG(DebugBuild) {
-    LIBS += -llibboost_filesystem-vc142-mt-gd-x64-1_71 -llibboost_system-vc142-mt-gd-x64-1_71 -larchive.dll -llibreadstat
-    #CONFIG += console
-}
-
-   macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz -lreadstat -liconv
-windows:LIBS += -lole32 -loleaut32
 
 linux {
     LIBS += -larchive
@@ -50,19 +42,13 @@ linux {
 }
 
 $$JASPTIMER_USED {
-    windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer-vc142-mt-x64-1_71 -llibboost_chrono-vc142-mt-x64-1_71
-    windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc142-mt-gd-x64-1_71 -llibboost_chrono-vc142-mt-gd-x64-1_71
+	windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer$$BOOST_POSTFIX -llibboost_chrono$$BOOST_POSTFIX
+	windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc141-mt-gd-1_71 -llibboost_chrono-vc141-mt-gd-1_71
     linux:                          LIBS += -lboost_timer -lboost_chrono
     macx:                           LIBS += -lboost_timer-mt -lboost_chrono-mt
 }
 
-macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
-macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
-macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
-macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
-macx:QMAKE_CXXFLAGS += -stdlib=libc++
 
-windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 
 INCLUDEPATH += $$PWD/../JASP-Common/
 

@@ -65,9 +65,16 @@ windows {
 	message(QT_ARCH $$QT_ARCH)
 	contains(QT_ARCH, i386) {
 		ARCH = i386
+		BOOST_ARCH = x32
 	} else {
 		ARCH = x64
+		BOOST_ARCH = x64
 	}
+
+	CONFIG(ReleaseBuild)    { BOOST_POSTFIX = -vc141-mt-$${BOOST_ARCH}-1_71 }
+	CONFIG(DebugBuild)      { BOOST_POSTFIX = -vc141-mt-gd-$${BOOST_ARCH}-1_71 }
+
+	QMAKE_CXXFLAGS	+= -DBOOST_USE_WINDOWS_H -DNOMINMAX -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
 }
 
 unix: QMAKE_CXXFLAGS += -Werror=return-type
@@ -86,4 +93,8 @@ exists(/app/lib/*)	{
 }
 
 DEFINES += QT_NO_FOREACH #Come on Qt we can just use the nice new ranged for from c++11 and higher, we dont need your help!
-macx: QMAKE_CXXFLAGS += -Wunused-parameter
+
+macx {
+	QMAKE_CXXFLAGS_WARN_ON	+= -Wno-unused-parameter -Wno-unused-local-typedef
+	QMAKE_CXXFLAGS			+= -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi -stdlib=libc++
+}

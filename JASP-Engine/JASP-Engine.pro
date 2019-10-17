@@ -26,15 +26,8 @@ LIBS += -L.. -l$$JASP_R_INTERFACE_NAME -lJASP-Common
 
 include(../R_HOME.pri) #needed to build r-packages
 
-windows:CONFIG(ReleaseBuild) {
-        LIBS += -llibboost_filesystem-vc142-mt-x64-1_71 -llibboost_system-vc142-mt-x64-1_71 -larchive.dll
-}
-
-windows:CONFIG(DebugBuild) {
-        LIBS += -llibboost_filesystem-vc142-mt-gd-x64-1_71 -llibboost_system-vc142-mt-gd-x64-1_71 -larchive.dll
-}
-
-macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
+windows: LIBS += -llibboost_filesystem$$BOOST_POSTFIX -llibboost_system$$BOOST_POSTFIX -larchive.dll
+macx:   LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
 
 linux {
     LIBS += -larchive
@@ -43,8 +36,8 @@ linux {
 }
 
 $$JASPTIMER_USED {
-    windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer-vc142-mt-x64-1_71 -llibboost_chrono-vc142-mt-x64-1_71
-    windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc142-mt-gd-x64-1_71 -llibboost_chrono-vc142-mt-gd-x64-1_71
+    windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer$$BOOST_POSTFIX -llibboost_chrono$$BOOST_POSTFIX
+    windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc141-mt-gd-1_71 -llibboost_chrono-vc141-mt-gd-1_71
     linux:                          LIBS += -lboost_timer -lboost_chrono
     macx:                           LIBS += -lboost_timer-mt -lboost_chrono-mt
 }
