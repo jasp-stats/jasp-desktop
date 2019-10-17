@@ -5,6 +5,7 @@ Divider                     1.0 Divider.qml
 SubjectivePriors            1.0 SubjectivePriors.qml
 ContrastsList               1.0 ContrastsList.qml
 Chi2TestTableView           1.0 Chi2TestTableView.qml
+JagsTableView               1.0 JagsTableView.qml
 BasicTableViewJasp          1.0 BasicTableViewJasp.qml
 ComputeColumnWindow         1.0 ComputeColumnWindow.qml
 CreateComputeColumnDialog   1.0 CreateComputeColumnDialog.qml
@@ -38,3 +39,4 @@ WelcomePage                 1.0 WelcomePage.qml
 UIScaleNotifier             1.0 UIScaleNotifier.qml
 ModulesMenu                 1.0 ModulesMenu.qml
 SaveDiscardCancelDialog     1.0 SaveDiscardCancelDialog.qml
+PlotEditor                  1.0 PlotEditor.qml

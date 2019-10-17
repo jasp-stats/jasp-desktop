@@ -345,41 +345,40 @@ PlotRobustnessSequential <- function(
   g <- themeJasp(g, bty = bty) + rightAxisLine + thm
 
   if (pointLegend && !is.null(dfPoints)) {
-    f <- tempfile()
-    grDevices::png(f)
-    plot <- gridExtra::arrangeGrob(grobs = list(legendPlot, g), nrow = 2L, ncol = 1L, heights = c(.2, .8))
-    grDevices::dev.off()
-    if (file.exists(f))
-      file.remove(f)
+    
+    plot <- JASPgraphsPlot$new(
+      subplots     = list(legendPlot, g),
+      layout       = matrix(1:2, 2),
+      heights      = c(.2, .8),
+      widths       = 1
+    )
 
   } else if (!is.null(BF)) {
 
     if (!is.null(linesLegendPlot)) {
-      topPlotList <- list(gTextBF, gWheel, linesLegendPlot, g)
+      topPlotList <- list(BFtext = gTextBF, BFpizza = gWheel, legend = linesLegendPlot, mainGraph = g)
     } else {
-      topPlotList <- list(gTextBF, gWheel, gTextEvidence, g)
+      topPlotList <- list(BFtext = gTextBF, BFpizza = gWheel, evidenceText = gTextEvidence, mainGraph = g)
     }
     idx <- lengths(topPlotList[1:3]) == 0L
     layout <- matrix(1:3, 1, 3)
     layout[idx] <- NA_integer_
     layout <- rbind(layout, 4)
+    
+    heights <- c(.2, .8)
+    widths  <- c(.4, .2, .4)
 
-    f <- tempfile()
-    png(f)
-    plot <- arrangeGrob(
-      grobs         = topPlotList,
-      heights       = c(.2, .8),
-      layout_matrix = layout,
-      widths        = c(.4, .2, .4)
+    plot <- JASPgraphsPlot$new(
+      subplots     = topPlotList,
+      layout       = layout,
+      heights      = heights,
+      widths       = widths
     )
-    dev.off()
-    if (file.exists(f)) file.remove(f)
 
   } else {
     plot <- g
+    class(plot) <- c("JASPgraphs", class(plot))
   }
-
-  class(plot) <- c("JASPgraphs", class(plot))
   return(plot)
 }
 

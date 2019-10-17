@@ -12,9 +12,11 @@ ListModelFilteredDataEntry::ListModelFilteredDataEntry(BoundQMLTableView * paren
 {
 	setAcceptedRowsTrue();
 
-	setFilter(_tableView->getItemProperty("filter").toString());
-	setColName(_tableView->getItemProperty("colName").toString());
+	setFilter(	_tableView->getItemProperty("filter").toString());
+	setColName(	_tableView->getItemProperty("colName").toString());
 	setExtraCol(_tableView->getItemProperty("extraCol").toString());
+
+	_tableView->setItemProperty("itemType", "double"); //Force itemtype to be double
 
 	connect(this,				&ListModelFilteredDataEntry::filterChanged,		this, &ListModelFilteredDataEntry::runFilter										);
 	connect(_tableView->item(), SIGNAL(filterSignal(QString)),					this, SLOT(setFilter(QString))														);
@@ -111,7 +113,7 @@ void ListModelFilteredDataEntry::setAcceptedRows(std::vector<bool> newRows)
 	}
 }
 
-void ListModelFilteredDataEntry::itemChanged(int column, int row, double value)
+void ListModelFilteredDataEntry::itemChanged(int column, int row, QVariant value)
 {
 	if(column != _editableColumn)
 		return;
@@ -123,9 +125,9 @@ void ListModelFilteredDataEntry::itemChanged(int column, int row, double value)
 	{
 		if (_values[0][row] != value)
 		{
-			bool gotLarger							= QVariant(_values[0][row]).toString().size() != QVariant(value).toString().size();
-			_values[0][row]							= value;
-			_enteredValues[_filteredRowToData[row]] = value;
+			bool gotLarger							= _values[0][row].toString().size() != value.toString().size();
+			_values[0][row]							= value.toDouble();
+			_enteredValues[_filteredRowToData[row]] = value.toDouble();
 
 			emit dataChanged(index(row, column), index(row, column), { Qt::DisplayRole });
 			emit modelChanged();
@@ -169,8 +171,6 @@ void ListModelFilteredDataEntry::sourceTermsChanged(Terms *, Terms *)
 
 OptionsTable * ListModelFilteredDataEntry::createOption()
 {
-	//std::cout << "" << std::endl;
-
 	Options* optsTemplate =			new Options();
 	optsTemplate->add("colName",	new OptionString());
 	optsTemplate->add("filter",		new OptionString());
@@ -231,14 +231,17 @@ void ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)
 	_colName		= tq(optionColName->value());
 
 	_colNames.push_back(_colName);
-	  _values.push_back(tq(optionValues->value()));
+	QVector<QVariant> tempvalues;
+	for (QVariant val : optionValues->value())
+		tempvalues.push_back(val);
+	_values.push_back(tempvalues);
 
 	int valIndex = 0;
 	for(int rowIndex : optionRowIndices->value())
 	{
 		size_t row = static_cast<size_t>(rowIndex) - 1;
 
-		_enteredValues[row] = _values[0][valIndex++];
+		_enteredValues[row] = _values[0][valIndex++].toDouble();
 		_acceptedRows[row]	= true;
 	}
 
@@ -297,7 +300,11 @@ void ListModelFilteredDataEntry::modelChangedSlot()
 		options->add("colName",		new OptionString(_colName.toStdString()));
 		options->add("filter",		new OptionString(_filter.toStdString()));
 		options->add("rowIndices",	new OptionIntegerArray(stdRowIndices));
-		options->add("values",		new OptionDoubleArray(_values[0].toStdVector()));
+		
+		std::vector<double> tempvalues;
+		for (QVariant val : _values[0])
+			tempvalues.push_back(val.toDouble());
+		options->add("values",		new OptionDoubleArray(tempvalues));
 		options->add("dataCols",	new OptionVariables(_dataColumns));
 		options->add("extraCol",	new OptionVariables({fq(_extraCol)}));
 

@@ -18,6 +18,7 @@ testAnalysis <- function(analysis) {
   Sys.setenv("NOT_CRAN" = "true") # this is to prevent vdiffr from skipping plots
   on.exit(Sys.setenv("NOT_CRAN" = envirValue))
 
+  .fixRNGForTesting()
   results <- testthat::test_file(file)
 
   if (.hasNewPlots(results))
@@ -48,6 +49,11 @@ testAnalysis <- function(analysis) {
 }
 
 
+ .fixRNGForTesting <- function() {
+   RNGkind(sample.kind = "Rounding")
+ }
+
+
 #' Test all JASP analyses.
 #'
 #' Tests all R analyses found under JASP-Tests. Useful to perform before making
@@ -55,12 +61,13 @@ testAnalysis <- function(analysis) {
 #'
 #'
 #' @export testAll
-testAll <- function() {
+testAll <- function() {  
   testDir <- .getPkgOption("tests.dir")
   envirValue <- Sys.getenv("NOT_CRAN")
   Sys.setenv("NOT_CRAN" = "true")
   on.exit(Sys.setenv("NOT_CRAN" = envirValue))
 
+  .fixRNGForTesting()
   results <- testthat::test_dir(testDir)
 
   if (.hasNewPlots(results))
@@ -112,6 +119,7 @@ manageTestPlots <- function(analysis = NULL) {
   on.exit(.undoPlotTestingChanges(originalFn), add=TRUE)
   .adjustTestthatForPlotTesting()
   
+  .fixRNGForTesting()
   testDir <- .getPkgOption("tests.dir")
   vdiffr::manage_cases(testDir, analysis)
 }

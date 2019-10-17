@@ -11,16 +11,18 @@ JASPControl
 	implicitWidth:		parent.width
 	focusIndicator:		flickableRectangle
 	
-	property alias	control:			control
-	property alias	text:				control.text
+	property alias  control:			control
+	property alias  text:				control.text
     property string textType
 	property string applyScriptInfo:	""
-	property alias	infoText:			infoText.text
-	property bool	hasScriptError:		false
-	property alias	font:				control.font
-	property alias	textDocument:		control.textDocument
-	property alias	title:				textAreaTitle.text
-	property bool	trim:				false
+	property alias  infoText:			infoText.text
+	property bool   hasScriptError:		false
+	property alias  font:				control.font
+	property alias  textDocument:		control.textDocument
+	property alias  title:				textAreaTitle.text
+	property bool   trim:				false
+    property var    modelParameterView: null
+    
     
     signal applyRequest()
     
@@ -58,11 +60,14 @@ JASPControl
 
 			TextArea.flickable: TextArea
 			{
-				id:				control
-				selectByMouse:	true
-				font:			Theme.font
-				color:			textArea.enabled ? Theme.textEnabled : Theme.textDisabled
-				wrapMode:		TextArea.Wrap
+				id:					control
+				selectByMouse:		true
+				selectedTextColor:	Theme.white
+				selectionColor:		Theme.itemSelectedColor
+
+				font:				Theme.font
+				color:				textArea.enabled ? Theme.textEnabled : Theme.textDisabled
+				wrapMode:			TextArea.Wrap
 
 				Keys.onPressed:
 				{

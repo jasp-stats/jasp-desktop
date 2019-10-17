@@ -1,3 +1,4 @@
+set.seed(1)
 n <- 100
 dfLines <- data.frame(
   x = seq_len(n),

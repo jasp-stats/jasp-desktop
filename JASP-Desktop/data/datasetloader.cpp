@@ -48,7 +48,8 @@ string DataSetLoader::getExtension(const string &locator, const string &extensio
 
 Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string & locator, const string &ext)
 {
-	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt"))	return new CSVImporter(packageData);
+	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt") ||
+		boost::iequals(ext,".tsv"))									return new CSVImporter(packageData);
 	else if(boost::iequals(ext,".ods"))								return new ODSImporter(packageData);
 	else if(ReadStatImporter::extSupported(ext))					return new ReadStatImporter(packageData, ext);
 

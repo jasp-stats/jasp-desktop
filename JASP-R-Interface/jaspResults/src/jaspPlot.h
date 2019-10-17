@@ -14,6 +14,7 @@ public:
 	std::string	_filePathPng,
 				_status = "waiting",
 				_envName;
+	Json::Value _editOptions = Json::nullValue;
 
 	///For safekeeping (aka state replacement?)
 	void setPlotObject(Rcpp::RObject plotSerialized);

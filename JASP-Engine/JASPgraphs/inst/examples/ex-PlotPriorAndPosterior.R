@@ -36,4 +36,3 @@ PlotPriorAndPosterior(dfLines, dfPoints, median = median)
 
 # or combine them all
 PlotPriorAndPosterior(dfLines, dfPoints, BF10, CRI = CRI, median = median)
-

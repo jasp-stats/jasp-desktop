@@ -11,15 +11,12 @@
                               top = .75,
                               mid = .5,
                               bottom = .25),
-    bty = list(type = "n", ldwX = .3, lwdY = .3),
+    bty = list(type = "n", lwdX = .3, lwdY = .3),
     axisTickLength = grid::unit(x = .3, units = "cm"),
     axisTickWidth = .3,
     digits = list(axes = 3L, BF = 3L),
     ggVersion = packageVersion("ggplot2"),
-    palette = list(
-        palette = "colorblind",
-        Function = JASPcolors(palette = "colorblind", asFunction = TRUE)
-    ),
+    palette = "colorblind",
     debug = TRUE
 ))
 

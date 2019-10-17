@@ -33,7 +33,7 @@ namespace nowide {
 ///
 /// \brief Same as freopen but file_name and mode are UTF-8 strings
 ///
-/// In invalid UTF-8 given, NULL is returned and errno is set to EINVAL
+/// If invalid UTF-8 given, NULL is returned and errno is set to EINVAL
 ///
 inline FILE *freopen(char const *file_name,char const *mode,FILE *stream)
 {
@@ -48,22 +48,22 @@ inline FILE *freopen(char const *file_name,char const *mode,FILE *stream)
 ///
 /// \brief Same as fopen but file_name and mode are UTF-8 strings
 ///
-/// In invalid UTF-8 given, NULL is returned and errno is set to EINVAL
+/// If invalid UTF-8 given, NULL is returned and errno is set to EINVAL
 ///
 inline FILE *fopen(char const *file_name,char const *mode)
 {
-	wstackstring wname;
-	wshort_stackstring wmode;
-	if(!wname.convert(file_name) || !wmode.convert(mode)) {
-		errno = EINVAL;
-		return 0;
-	}
-	return _wfopen(wname.c_str(),wmode.c_str());
+    wstackstring wname;
+    wshort_stackstring wmode;
+    if(!wname.convert(file_name) || !wmode.convert(mode)) {
+        errno = EINVAL;
+        return 0;
+    }
+    return _wfopen(wname.c_str(),wmode.c_str());
 }
 ///
 /// \brief Same as rename but old_name and new_name are UTF-8 strings
 ///
-/// In invalid UTF-8 given, -1 is returned and errno is set to EINVAL
+/// If invalid UTF-8 given, -1 is returned and errno is set to EINVAL
 ///
 inline int rename(char const *old_name,char const *new_name)
 {
@@ -77,7 +77,7 @@ inline int rename(char const *old_name,char const *new_name)
 ///
 /// \brief Same as rename but name is UTF-8 string
 ///
-/// In invalid UTF-8 given, -1 is returned and errno is set to EINVAL
+/// If invalid UTF-8 given, -1 is returned and errno is set to EINVAL
 ///
 inline int remove(char const *name)
 {

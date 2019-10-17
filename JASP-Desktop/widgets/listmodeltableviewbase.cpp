@@ -69,8 +69,8 @@ QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const
 int ListModelTableViewBase::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 {
 	int maxL = 3;
-	for(double val : _values[columnIndex])
-		maxL = std::max(QVariant(val).toString().size(), maxL);
+	for(QVariant val : _values[columnIndex])
+		maxL = std::max(val.toString().size(), maxL);
 
 	return maxL + 3;
 }
@@ -82,7 +82,7 @@ void ListModelTableViewBase::addColumn()
 	if (columnCount() < _maxColumn)
 	{
 		_colNames.push_back(getColName(columnCount()));
-		_values.push_back(QVector<double>(_rowNames.length(), 1));
+		_values.push_back(QVector<QVariant>(_rowNames.length(), _defaultCellVal));
 		_columnCount++;
 	}
 
@@ -109,38 +109,78 @@ void ListModelTableViewBase::removeColumn(size_t col)
 	emit modelChanged();
 }
 
+void ListModelTableViewBase::addRow()
+{
+	beginResetModel();
+
+	if (rowCount() < _maxRow)
+	{
+		_rowNames.push_back(getRowName(rowCount()));
+		_rowCount++;
+
+		for (QVector<QVariant> & value : _values)
+			while(value.size() < _rowCount) //Lets make sure the data is rectangular!
+				value.push_back(_defaultCellVal);
+	}
+
+	endResetModel();
+
+	emit rowCountChanged();
+	emit modelChanged();
+}
+
+void ListModelTableViewBase::removeRow(size_t row)
+{
+	beginResetModel();
+
+	if (row < rowCount())
+	{
+		for (QVector<QVariant> & value : _values)
+			value.removeAt(int(row));
+		_rowNames.pop_back(); //Should we remove the exact right rowName? Or I guess there just generated row for row in the base..
+		_rowCount--;
+	}
+
+	endResetModel();
+
+	emit rowCountChanged();
+	emit modelChanged();
+}
+
 void ListModelTableViewBase::reset()
 {
 	beginResetModel();
 
 	_colNames.clear();
+	_rowNames.clear();
 	_values.clear();
+	_columnCount	= 0;
+	_rowCount		= 0;
 
-	if (_rowNames.length() > 0)
-	{
-		QVector<double> newValues(_rowNames.length(), 1);
-		_values.push_back(newValues);
-		_colNames.push_back(getColName(0));
-		_columnCount = 1;
-	}
-	else
-		_columnCount = 0;
+	for(size_t col; col < _initialColCnt; col++)
+		addColumn();
+
+	size_t rows = std::max(size_t(_rowNames.length()), _initialRowCnt);
+
+	for(size_t row=0; row < rows; row++)
+		addRow();
 
 	endResetModel();
 
 	emit columnCountChanged();
+	emit rowCountChanged();
 	emit modelChanged();
 }
 
-void ListModelTableViewBase::itemChanged(int column, int row, double value)
+void ListModelTableViewBase::itemChanged(int column, int row, QVariant value)
 {
 	//If you change this function, also take a look at ListModelFilteredDataEntry::itemChanged
 	if (column > -1 && column < columnCount() && row > -1 && row < _rowNames.length())
 	{
 		if (_values[column][row] != value)
 		{
-			bool gotLarger = QVariant(_values[column][row]).toString().size() != QVariant(value).toString().size();
-			_values[column][row] = value;
+			bool gotLarger = _values[column][row].toString().size() != value.toString().size();
+			_values[column][row] = _itemType == "integer" ? value.toInt() : _itemType == "double" ? value.toDouble() : value;
 
 			emit dataChanged(index(row, column), index(row, column), { Qt::DisplayRole });
 			emit modelChanged();
@@ -149,6 +189,53 @@ void ListModelTableViewBase::itemChanged(int column, int row, double value)
 				emit headerDataChanged(Qt::Orientation::Horizontal, column, column);
 		}
 	}
+}
+
+const Terms &ListModelTableViewBase::terms(const QString &what)
+{
+	_tempTerms.clear();
+	int colNb = -1;
+	if (what.isEmpty() && _values.length() == 1)
+		colNb = 0;
+	else if (!what.isEmpty())
+	{
+		colNb = _colNames.indexOf(what);
+		if (colNb == -1 && what.startsWith("column"))
+		{
+			QString tempWhat = what;
+			QString colNbStr = tempWhat.remove("column");
+			bool ok = false;
+			colNb = colNbStr.toInt(&ok);
+			if (!ok) colNb = -1;
+			if (colNb > 0) colNb--;
+		}
+	}
+
+	if (colNb >= 0)
+	{
+		if (_values.length() > colNb)
+		{
+			const QVector<QVariant> firstCol = _values[colNb];
+			for (const QVariant& val : firstCol)
+			{
+				QString value = val.toString();
+				if (!value.isEmpty() && value != "...")
+					_tempTerms.add(val.toString());
+			}
+		}
+		else
+			addError(tr("Column number in source use is bigger than the number of columns of %1").arg(name()));
+	}
+	else
+	{
+		if (what.isEmpty())
+			addError(tr("No column specified in the source of %1").arg(name()));
+		else
+			addError(tr("The source use does not specified a valid column in %1").arg(name()));
+	}
+
+
+	return _tempTerms;
 }
 
 QVariant ListModelTableViewBase::headerData( int section, Qt::Orientation orientation, int role) const
@@ -199,4 +286,14 @@ Qt::ItemFlags ListModelTableViewBase::flags(const QModelIndex &) const
 void ListModelTableViewBase::runRScript(const QString & script)
 {
 	_tableView->runRScript(script);
+}
+
+bool ListModelTableViewBase::valueOk(QVariant value)
+{
+	bool	ok	= true;
+
+	if		(_itemType == "double")		value.toDouble(&ok);
+	else if	(_itemType == "integer")	value.toInt(&ok);
+
+	return ok;
 }

@@ -40,7 +40,7 @@ SET STARTDIR=%CD%
 rem --- default values ---
 SET JASP_BASE_DIR_DEFAULT=%STARTDIR%\..\..
 SET QTDIR_DEFAULT=C:\Qt
-SET QTVER_DEFAULT=5.12.1
+SET QTVER_DEFAULT=5.13.1
 SET RTOOLSDIR_DEFAULT=C:\Rtools
 SET WIX_DEFAULT=C:\Program Files (x86)\WiX Toolset v3.11
 SET MSVCDIR_DEFAULT=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community
@@ -295,6 +295,9 @@ XCOPY  %JASP_DESKTOP%\Resources\Help /E /I Help
 :copyR
 echo running copyR.cmd script as "%JASP_DESKTOP%\Tools\copyR.cmd %JASP_REQUIRED_FILES_DIR%\R %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%\R %COPY_R_ARCH%"
 call %JASP_DESKTOP%\Tools\copyR.cmd %JASP_REQUIRED_FILES_DIR%\R %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%\R %COPY_R_ARCH%
+
+echo copy JAGS to installer preparation folder
+XCOPY %JASP_REQUIRED_FILES_DIR%\%ARCH%\JAGS /E /I %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%\JAGS
 
 :skipbuilding
 

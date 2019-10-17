@@ -29,21 +29,18 @@ else                { target.path += /usr/bin }
 
 INSTALLS += target
 
-   macx:INCLUDEPATH += ../../boost_1_64_0
-windows:INCLUDEPATH += ../../boost_1_64_0
-
 LIBS += -L.. -lJASP-Common
 
 windows:CONFIG(ReleaseBuild) {
-    LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll -llibreadstat
+    LIBS += -llibboost_filesystem-vc142-mt-x64-1_71 -llibboost_system-vc142-mt-x64-1_71 -larchive.dll -llibreadstat
 }
 
 windows:CONFIG(DebugBuild) {
-    LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll -llibreadstat
+    LIBS += -llibboost_filesystem-vc142-mt-gd-x64-1_71 -llibboost_system-vc142-mt-gd-x64-1_71 -larchive.dll -llibreadstat
     #CONFIG += console
 }
 
-   macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz -lreadstat -liconv
+   macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz -lreadstat -liconv
 windows:LIBS += -lole32 -loleaut32
 
 linux {
@@ -53,10 +50,10 @@ linux {
 }
 
 $$JASPTIMER_USED {
-    windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer-vc141-mt-1_64 -llibboost_chrono-vc141-mt-1_64
-    windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc141-mt-gd-1_64 -llibboost_chrono-vc141-mt-gd-1_64
+    windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer-vc142-mt-x64-1_71 -llibboost_chrono-vc142-mt-x64-1_71
+    windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc142-mt-gd-x64-1_71 -llibboost_chrono-vc142-mt-gd-x64-1_71
     linux:                          LIBS += -lboost_timer -lboost_chrono
-    macx:                           LIBS += -lboost_timer-clang-mt-1_64 -lboost_chrono-clang-mt-1_64
+    macx:                           LIBS += -lboost_timer-mt -lboost_chrono-mt
 }
 
 macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
@@ -286,6 +283,7 @@ HEADERS += \
     widgets/boundqmlradiobuttons.h \
     widgets/boundqmltextinput.h \
     widgets/boundqmlcombobox.h \
+    widgets/listmodeljagsdatainput.h \
     widgets/listmodelpairsassigned.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
@@ -354,7 +352,9 @@ HEADERS += \
     data/importers/readstat/readstat_custom_io.h \
     data/importers/readstat/readstat_windows_helper.h \
     data/datasettablemodel.h \
-    data/labelmodel.h
+    data/labelmodel.h \
+    results/ploteditormodel.h \
+    results/ploteditoraxismodel.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -452,6 +452,7 @@ SOURCES += \
     widgets/boundqmlradiobuttons.cpp \
     widgets/boundqmltextinput.cpp \
     widgets/boundqmlcombobox.cpp \
+    widgets/listmodeljagsdatainput.cpp \
     widgets/listmodelpairsassigned.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \
@@ -519,7 +520,9 @@ SOURCES += \
     widgets/listmodelfiltereddataentry.cpp \
     data/importers/readstat/readstat_custom_io.cpp \
     data/datasettablemodel.cpp \
-    data/labelmodel.cpp
+    data/labelmodel.cpp \
+    results/ploteditormodel.cpp \
+    results/ploteditoraxismodel.cpp
 
 
 RESOURCES += \

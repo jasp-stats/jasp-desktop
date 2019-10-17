@@ -134,6 +134,9 @@ FocusScope
 				anchors.fill		: parent
 				anchors.leftMargin	: 10 * preferencesModel.uiScale
 				selectByMouse		: true
+				selectedTextColor	: Theme.white
+				selectionColor		: Theme.itemSelectedColor
+
 
 				verticalAlignment	: Text.AlignVCenter
 				font				: Theme.fontRibbon
@@ -173,11 +176,14 @@ FocusScope
 
 				text:fileMenuModel.osf.password
 
-				anchors.fill      : parent
-				anchors.leftMargin: 10 * preferencesModel.uiScale
-				verticalAlignment : Text.AlignVCenter
-				echoMode          : TextInput.Password
-				selectByMouse     : true
+				anchors.fill		: parent
+				anchors.leftMargin	: 10 * preferencesModel.uiScale
+				verticalAlignment	: Text.AlignVCenter
+				echoMode			: TextInput.Password
+				selectByMouse		: true
+				selectedTextColor	: Theme.white
+				selectionColor		: Theme.itemSelectedColor
+
 				font.pixelSize    : 14 * preferencesModel.uiScale
 
 

@@ -25,21 +25,17 @@ import JASP.Widgets				1.0
 
 Popup
 {
-	id:			moduleInstallerPopup
+	id:				moduleInstallerPopup
 
-	width:		900
-	height:		500
+	y:				(parent.height / 2) - (height / 2)
+	x:				(parent.width / 2) - (width / 2)
+	width:			900
+	height:			500
 
-	modal: true; focus: true;
+	modal:			true
 
-	background: Rectangle { color: Theme.uiBackground }
-
-
-
-	y: (parent.height / 2) - (height / 2)
-	x: (parent.width / 2) - (width / 2)
-
-	closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
+	background:		Rectangle { color: Theme.uiBackground }
+	closePolicy:	Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
 	Loader
 	{
@@ -55,7 +51,6 @@ Popup
 		Item
 		{
 			id:			moduleInstallerRect
-
 
 			property var currentJSON: null
 

@@ -484,9 +484,9 @@ void Engine::saveImage()
 {
 	int			height	= _imageOptions.get("height",	Json::nullValue).asInt(),
 				width	= _imageOptions.get("width",	Json::nullValue).asInt();
-	std::string name	= _imageOptions.get("name",		Json::nullValue).asString(),
+	std::string data	= _imageOptions.get("data",		Json::nullValue).asString(),
 				type	= _imageOptions.get("type",		Json::nullValue).asString(),
-				result	= jaspRCPP_saveImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
+				result	= jaspRCPP_saveImage(data.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
 
 	Json::Reader().parse(result, _analysisResults, false);
 
@@ -502,11 +502,8 @@ void Engine::saveImage()
 
 void Engine::editImage()
 {
-	int			height	= _imageOptions.get("height",	Json::nullValue).asInt(),
-				width	= _imageOptions.get("width",	Json::nullValue).asInt();
-	std::string name	= _imageOptions.get("name",		Json::nullValue).asString(),
-				type	= _imageOptions.get("type",		Json::nullValue).asString(),
-				result	= jaspRCPP_editImage(name.c_str(), type.c_str(), height, width, _ppi, _imageBackground.c_str());
+	std::string optionsJson	= _imageOptions.toStyledString(),
+				result		= jaspRCPP_editImage(optionsJson.c_str(), _ppi, _imageBackground.c_str());
 
 	Json::Reader().parse(result, _analysisResults, false);
 

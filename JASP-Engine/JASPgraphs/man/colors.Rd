@@ -8,33 +8,27 @@
 \alias{scale_JASPfill_discrete}
 \title{JASP color palettes}
 \usage{
-JASPcolors(n, palette = getGraphOption("palette")[["palette"]],
+JASPcolors(palette = getGraphOption("palette")[["palette"]],
   asFunction = FALSE)
 
+scale_JASPcolor_continuous(palette = getGraphOption("palette"), ...)
 
-  scale_JASPcolor_continuous(palette = getGraphOption("palette")[["Function"]],
-  ...)
+scale_JASPfill_continuous(palette = getGraphOption("palette"), ...)
 
+scale_JASPcolor_discrete(palette = getGraphOption("palette"), ...)
 
-  scale_JASPfill_continuous(palette = getGraphOption("palette")[["Function"]],
-  ...)
-
-
-  scale_JASPcolor_discrete(palette = getGraphOption("palette")[["Function"]],
-  ...)
-
-
-  scale_JASPfill_discrete(palette = getGraphOption("palette")[["Function"]],
-  ...)
+scale_JASPfill_discrete(palette = getGraphOption("palette"), ...)
 }
 \arguments{
-\item{n}{Number of colors desired.}
-
 \item{palette}{Palette to choose from.}
 
 \item{asFunction}{Should a function be returned or the raw colors? If a function is returned, it either takes a single integer or a vector in 0, 1 as input.}
 
 \item{...}{Further arguments for \code{\link{ggplot2::scale_color_manual}} or \code{\link{ggplot2::scale_fill_manual}}.}
+
+\item{n}{Number of colors desired.}
+
+\item{discete}{Should the function returned be suited for a discrete scale or a continuous one? Only used when \code{asFunction = TRUE}.}
 }
 \value{
 Either a character vector of colors or a function.
@@ -46,16 +40,21 @@ JASP color palettes
 For ggplot2s, the convenience functions \code{scale_JASPcolor_\*} and \code{scale_JASPfill_\*} exist.
 }
 \examples{
-library(ggplot2)
 
+library(ggplot2)
+library(JASPgraphs)
 # use colors directly
-colors <- JASPcolors(10, "colorblind")
+colors <- JASPcolors("colorblind")
+plot(rnorm(6), col = colors, pch = 16, cex = 2)
+
+colors <- JASPcolors("colorblind")
 plot(rnorm(10), col = colors, pch = 16, cex = 2)
 
+# use a function if you want an arbitrary number of colros
 colFun <- JASPcolors(palette = "colorblind", asFunction = TRUE)
 plot(rnorm(10), col = colFun(10), pch = 16, cex = 2)
 
-# use colorscales
+# use colorscales in ggplot2
 e0 <- 1:10
 df <- data.frame(x = e0, y = e0, z = e0, g = factor(e0))
 ggplot(df, aes(x = x, y = y, color = z, fill = z)) +

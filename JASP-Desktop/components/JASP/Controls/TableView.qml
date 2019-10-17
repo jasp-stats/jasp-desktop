@@ -43,18 +43,25 @@ JASPControl
 	property string	itemType:		"string"
 	property string filter:			"rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
 	property string colName:		"data"					//Used by ListModelFilteredDataEntry
-	property string	extraCol:		""
+	property string	extraCol:		""						//Used by ListModelFilteredDataEntry
 	property string	tableType
 	property alias	model:			theView.model
 	property var	validator:		(itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
 	property int	colSelected:	-1
-	property int	columnCount:	0
-	property int	rowCount:		0
+	property int	rowSelected:	-1
+	property int	columnCount:	0	//Readonly
+	property int	rowCount:		0	//Readonly
+
+	property int	initialColumnCount:		0	//Only read on init
+	property int	initialRowCount:		0	//Only read on init
+
 
 	signal reset()
+	signal addRow()
 	signal addColumn()
-	signal itemChanged(int col, int row, string value)
+	signal removeRow(int row)
 	signal removeColumn(int col)
+	signal itemChanged(int col, int row, string value)
 
 	//These signals are added because I had some trouble connecting the filterChanged from C++ (in constructor of ListModelFilteredDataEntry)
 	signal filterSignal(string filter)
@@ -69,6 +76,12 @@ JASPControl
 	{
 		if (colSelected >= 0)
 			removeColumn(colSelected);
+	}
+
+	function removeARow()
+	{
+		if (rowSelected >= 0)	removeRow(rowSelected);
+		else					removeRow(rowCount - 1);
 	}
 
 	Rectangle
@@ -166,7 +179,8 @@ JASPControl
 					z:					2
 					onClicked:
 					{
-						textInput.visible			= true;
+						textInput.visible	= true;
+						textInput.text		= itemText === "..." ? "" : itemText
 						textInput.forceActiveFocus();
 					}
 					cursorShape:		Qt.IBeamCursor
@@ -177,12 +191,15 @@ JASPControl
 					id:					textInput
 					anchors.fill:		parent
 					visible:			false
-					text:				itemText
+					text:				""
 					font:				Theme.font
 					leftPadding:		Theme.labelSpacing
 					padding:			Theme.jaspControlPadding
 					verticalAlignment:	Text.AlignVCenter
-					validator:			doubleValidator
+					selectByMouse:		true
+					selectedTextColor:	Theme.white
+					selectionColor:		Theme.itemSelectedColor
+					validator:			tableView.validator
 					onPressed:			tableView.colSelected = columnIndex
 					onEditingFinished:
 					{

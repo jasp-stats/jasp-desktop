@@ -39,7 +39,7 @@ void ListModelMultinomialChi2Test::sourceTermsChanged(Terms *termsAdded, Terms *
 
 		_rowNames = labels.toVector();
 
-		QVector<double> newValues(_rowNames.length(), 1);
+		QVector<QVariant> newValues(_rowNames.length(), 1.0);
 		_values.push_back(newValues);
 		_colNames.push_back(getColName(0));
 		_columnCount = 1;
@@ -96,7 +96,9 @@ void ListModelMultinomialChi2Test::initValues(OptionsTable * bindHere)
 
 		_colNames.push_back(QString::fromStdString(optionName->value()));
 		//levels = optionLevels->variables(); //The old code (in boundqmltableview.cpp) seemed to specify to simply use the *last* OptionVariables called "levels" in the binding option. So I'll just repeat that despite not getting it.
-		_values.push_back(QVector<double>::fromStdVector(optionValues->value()));
+		_values.push_back({});
+		for (double val : optionValues->value())
+			_values[_values.size()-1].push_back(_itemType == "integer" ? round(val) : val);
 	}
 
 	if(optionLevels)
@@ -145,7 +147,11 @@ void ListModelMultinomialChi2Test::modelChangedSlot() // Should move this to lis
 			Options* options =		new Options();
 			options->add("name",	new OptionString(_colNames[colIndex].toStdString()));
 			options->add("levels",	new OptionVariables(stdlevels));
-			options->add("values",	new OptionDoubleArray(_values[colIndex].toStdVector()));
+
+			std::vector<double> tempValues;
+			for (QVariant val : _values[colIndex].toStdVector())
+				tempValues.push_back(val.toDouble());
+			options->add("values",	new OptionDoubleArray(tempValues));
 
 			allOptions.push_back(options);
 		}

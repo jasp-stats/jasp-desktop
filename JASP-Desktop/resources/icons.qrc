@@ -138,5 +138,6 @@
         <file>icons/duplicate_disabled.png</file>
         <file>icons/eyeClosed.png</file>
         <file>icons/eyeOpen.png</file>
+        <file>icons/variable-nominal-text-inactive.svg</file>
     </qresource>
 </RCC>

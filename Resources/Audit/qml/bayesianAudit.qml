@@ -802,21 +802,9 @@ Form
 					onClicked: 		
 					{
 						pasteVariables.checked 		= true
-						tableViewDelay.start()
-					}
-
-					Timer
-					{
-						id:			tableViewDelay
-						repeat:		false
-						running:	false
-						interval:	1000
-						onTriggered:
-						{
-                            performAuditTable.colName   = variableName.value
-							performAuditTable.filter 	= sampleFilter.value + " > 0"
-							performAuditTable.extraCol	= sampleFilter.value
-						}
+						performAuditTable.colName   = variableName.value
+						performAuditTable.filter 	= sampleFilter.value + " > 0"
+						performAuditTable.extraCol	= sampleFilter.value
 					}
 
 				}
@@ -851,6 +839,7 @@ Form
 				modelType:			"FilteredDataEntryModel"
         		source:     		["recordNumberVariable", "monetaryVariable", "additionalVariables"]
                 colName:    		"Filter"
+				itemType:			"double"
 			}
 		}
 

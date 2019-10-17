@@ -230,7 +230,25 @@ scaleAxesLabels <- function(scaleXYlabels, plotList) {
   return(plotList)
 }
 
-
+#' @title ggMatrixPlot
+#' @param plotList
+#'
+#' @param nr number of rows
+#' @param nc number of columns
+#' @param ... ignored.
+#' @param leftLabels labels left of the plots in plotList.
+#' @param topLabels labels above the plots in plotList.
+#' @param rightLabels labels right of the plots in plotList.
+#' @param bottomLabels labels below the plots in plotList.
+#' @param removeXYlabels Whether to remove the x and y axes titles.
+#' @param labelSize two scalars for the magnification of the the x and y labels respectively.
+#' @param labelPos relative position for the labels around the plots. The first column contains x-coordinates and the second y-coordinates. The first row is top, second right, third bottom, and fourth left (TRouBLe).
+#' @param scaleXYlabels two scalars for the magnification of the the x and y labels respectively. 
+#' @param debug create an debug plot (see examples).
+#'
+#' @details This function is intended to be calles with a matrix as first argument, althought other input is also supported.
+#'
+#' @example inst/examples/ex-ggMatrixPlot.R
 #' @export
 ggMatrixPlot <- function(plotList = NULL, nr = NULL, nc = NULL,
                          ...,
@@ -246,6 +264,7 @@ ggMatrixPlot <- function(plotList = NULL, nr = NULL, nc = NULL,
   UseMethod("ggMatrixPlot", plotList)
 }
 
+#' @rdname ggMatrixPlot
 #' @export
 ggMatrixPlot.matrix <- function(plotList = NULL, nr = NULL, nc = NULL,
                                 layout = NULL,
@@ -293,6 +312,7 @@ ggMatrixPlot.matrix <- function(plotList = NULL, nr = NULL, nc = NULL,
 
 }
 
+#' @rdname ggMatrixPlot
 #' @export
 ggMatrixPlot.list <- function(plotList = NULL, nr = NULL, nc = NULL,
                               layout = NULL,
@@ -343,6 +363,8 @@ ggMatrixPlot.list <- function(plotList = NULL, nr = NULL, nc = NULL,
   ))
 
 }
+
+#' @rdname ggMatrixPlot
 #' @export
 ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
                                  layout = NULL,
@@ -389,20 +411,17 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
     rightLabels <- list(rightLabels)
   }
   if (nc == 1) {
-
     topLabels <- list(topLabels)
     bottomLabels <- list(bottomLabels)
   }
-
-  dots <- list(...)
-  defArgs <- list(xOffset = 0, yOffset = 0) # fill this thing with more default arguments
-  nmsDots <- names(dots)
-  defArgs[names(defArgs) %in% nmsDots] <- dots[nmsDots[nmsDots %in% names(defArgs)]]
 
   w <- .25
   h <- .25
   width <- rep(1, nc)
   height <- rep(1, nr)
+  
+  # names for the gtable to ease further work
+  gtNames <- matrix(paste0("graph-", rep(seq_len(nr), nc), "-", rep(seq_len(nc), each = nr)), nr, nc)
 
   # labels left of plots
   if (hasLeftLab) {
@@ -411,6 +430,7 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
       leftLabels,
       plotList
     )
+    gtNames <- cbind(paste0("ylab-l-", seq_len(nr)), gtNames)
   }
   # labels right of plots
   if (hasRightLab) {
@@ -419,6 +439,7 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
       plotList,
       rightLabels
     )
+    gtNames <- cbind(gtNames, paste0("ylab-r-", seq_len(nr)))
   }
 
   if (hasTopLab || hasBottomLab) {
@@ -428,22 +449,34 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
 
     # labels below of plots
     if (hasTopLab) {
+      nms2add <- paste0("xlab-t-", seq_len(nc))
       height <- c(h, height)
-      if (hasLeftLab)
+      if (hasLeftLab) {
         topLabels <- c(empty, topLabels)
-      if (hasRightLab)
+        nms2add <- c("empty", nms2add)
+      }
+      if (hasRightLab) {
         topLabels <- c(topLabels, empty)
+        nms2add <- c(nms2add, "empty")
+      }
       plotList <- rbind(topLabels, plotList)
+      gtNames <- rbind(nms2add, gtNames)
     }
 
     # labels above of plots
     if (hasBottomLab) {
+      nms2add <- paste0("xlab-b-", seq_len(nc))
       height <- c(height, h)
-      if (hasLeftLab)
-        bottomLabels <- list(empty, bottomLabels)
-      if (hasRightLab)
-        bottomLabels <- list(bottomLabels, empty)
+      if (hasLeftLab) {
+        bottomLabels <- c(empty, bottomLabels)
+        nms2add <- c("empty", nms2add)
+      }
+      if (hasRightLab) {
+        bottomLabels <- c(bottomLabels, empty)
+        nms2add <- c(nms2add, "empty")
+      }
       plotList <- rbind(plotList, bottomLabels)
+      gtNames <- rbind(gtNames, nms2add)
     }
   }
 
@@ -453,21 +486,15 @@ ggMatrixPlot.default <- function(plotList = NULL, nr = NULL, nc = NULL,
   idx <- which(lengths(plotList) > 0)
   layout[idx] <- seq_along(idx)
   layout[is.na(layout)] <- length(idx) + 1
-
-  f <- tempfile()
-  grDevices::png(f)
-  totalGraph <- gridExtra::arrangeGrob(grobs = c(plotList[lengths(plotList) > 0]), layout_matrix = layout,
-                                       widths = width, heights = height)
-  # gridExtra::grid.arrange(totalGraph)
-  # totalGraph <- gridExtra::arrangeGrob(grobs = t(plotList),
-  # 																		 nrow = d[1L], ncol = d[2L],
-  # 																		 widths = width, heights = height)
-  dev.off()
-  if (file.exists(f))
-    try(file.remove(f))
-  class(totalGraph) <- c("JASPgraphs", class(totalGraph), "ggMatrixplot")
+  
+  totalGraph <- JASPgraphsPlot$new(
+      subplots     = c(plotList[lengths(plotList) > 0]),
+      names        = c(gtNames[lengths(plotList) > 0]),
+      layout       = layout,
+      heights      = height,
+      widths       = width
+    )
 
   return(totalGraph)
 
 }
-

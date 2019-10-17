@@ -27,7 +27,10 @@ class ListModelMultinomialChi2Test : public ListModelTableViewBase
 	Q_OBJECT
 
 public:
-	explicit ListModelMultinomialChi2Test(BoundQMLTableView * parent, QString tableType) : ListModelTableViewBase(parent, tableType) {}
+	explicit ListModelMultinomialChi2Test(BoundQMLTableView * parent, QString tableType) : ListModelTableViewBase(parent, tableType)
+	{
+		_initialColCnt = 1;
+	}
 
 	QString			getColName(size_t index)						override;
 	OptionsTable *	createOption()									override;

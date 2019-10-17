@@ -22,6 +22,7 @@
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optionstring.h"
 #include "listmodelmultinomialchi2test.h"
+#include "listmodeljagsdatainput.h"
 #include "listmodelfiltereddataentry.h"
 #include <QQmlProperty>
 #include <QQuickItem>
@@ -34,22 +35,36 @@ BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
 	, QMLListView(item, form)
 	, BoundQMLItem()
 {
-	QString modelType = _item->property("modelType").toString(),
-			tableType = _item->property("tableType").toString();
+	QString modelType	= _item->property("modelType").toString(),
+			tableType	= _item->property("tableType").toString(),
+			itemType	= _item->property("itemType").toString();
 
 	if (modelType == "MultinomialChi2Model")	_tableModel	= new ListModelMultinomialChi2Test(	this, tableType);
+	if (modelType == "JAGSDataInputModel")		_tableModel	= new ListModelJAGSDataInput(		this, tableType);
 	if (modelType == "FilteredDataEntryModel")	_tableModel = new ListModelFilteredDataEntry(	this, tableType);
 
 	if(!_tableModel) addError("No model specified for TableView!");
+	else				_tableModel->setItemType(itemType);
 
 	QQuickItem::connect(item, SIGNAL(addColumn()),						this, SLOT(addColumnSlot()));
 	QQuickItem::connect(item, SIGNAL(removeColumn(int)),				this, SLOT(removeColumnSlot(int)));
+	QQuickItem::connect(item, SIGNAL(addRow()),							this, SLOT(addRowSlot()));
+	QQuickItem::connect(item, SIGNAL(removeRow(int)),					this, SLOT(removeRowSlot(int)));
 	QQuickItem::connect(item, SIGNAL(reset()),							this, SLOT(resetSlot()));
 	QQuickItem::connect(item, SIGNAL(itemChanged(int, int, QString)),	this, SLOT(itemChangedSlot(int, int, QString)));
 
 	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	[&](){ _item->setProperty("columnCount",	_tableModel->colNames().size()); }); //Possibly the best way to connect the signals of the listmodel to the slots of the qml item?
 	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		[&](){ _item->setProperty("rowCount",		_tableModel->rowNames().size()); });
 	connect(form,		&AnalysisForm::refreshTableViewModels,			this, &BoundQMLTableView::refreshMe	);
+
+	int		initialColumnCount	= _item->property("initialColumnCount").toInt(),
+			initialRowCount		= _item->property("initialRowCount").toInt();
+
+	if(initialColumnCount > 0 && _tableModel)
+		_tableModel->setInitialColumnCount(initialColumnCount);
+
+	if(initialRowCount > 0 && _tableModel)
+		_tableModel->setInitialRowCount(initialRowCount);
 }
 
 void BoundQMLTableView::bindTo(Option *option)
@@ -93,6 +108,18 @@ void BoundQMLTableView::removeColumnSlot(int col)
 		_tableModel->removeColumn(col);
 }
 
+void BoundQMLTableView::addRowSlot()
+{
+	if (_tableModel)
+		_tableModel->addRow();
+}
+
+void BoundQMLTableView::removeRowSlot(int row)
+{
+	if (_tableModel)
+		_tableModel->removeRow(row);
+}
+
 void BoundQMLTableView::resetSlot()
 {
 	if (_tableModel)
@@ -103,11 +130,8 @@ void BoundQMLTableView::itemChangedSlot(int col, int row, QString value)
 {
 	if (_tableModel)
 	{
-		bool	ok	= false;
-		double	val = value.toDouble(&ok);
-
-		if (ok)	_tableModel->itemChanged(col, row, val);
-		else	QTimer::singleShot(0, _tableModel, &ListModelTableViewBase::refreshModel);
+		if (_tableModel->valueOk(value))	_tableModel->itemChanged(col, row, value);
+		else								QTimer::singleShot(0, _tableModel, &ListModelTableViewBase::refreshModel);
 	}
 }
 

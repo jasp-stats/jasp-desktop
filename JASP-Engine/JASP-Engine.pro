@@ -27,14 +27,14 @@ LIBS += -L.. -l$$JASP_R_INTERFACE_NAME -lJASP-Common
 include(../R_HOME.pri) #needed to build r-packages
 
 windows:CONFIG(ReleaseBuild) {
-        LIBS += -llibboost_filesystem-vc141-mt-1_64 -llibboost_system-vc141-mt-1_64 -larchive.dll
+        LIBS += -llibboost_filesystem-vc142-mt-x64-1_71 -llibboost_system-vc142-mt-x64-1_71 -larchive.dll
 }
 
 windows:CONFIG(DebugBuild) {
-        LIBS += -llibboost_filesystem-vc141-mt-gd-1_64 -llibboost_system-vc141-mt-gd-1_64 -larchive.dll
+        LIBS += -llibboost_filesystem-vc142-mt-gd-x64-1_71 -llibboost_system-vc142-mt-gd-x64-1_71 -larchive.dll
 }
 
-macx:LIBS += -lboost_filesystem-clang-mt-1_64 -lboost_system-clang-mt-1_64 -larchive -lz
+macx:LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz
 
 linux {
     LIBS += -larchive
@@ -43,25 +43,14 @@ linux {
 }
 
 $$JASPTIMER_USED {
-    windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer-vc141-mt-1_64 -llibboost_chrono-vc141-mt-1_64
-    windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc141-mt-gd-1_64 -llibboost_chrono-vc141-mt-gd-1_64
+    windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer-vc142-mt-x64-1_71 -llibboost_chrono-vc142-mt-x64-1_71
+    windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc142-mt-gd-x64-1_71 -llibboost_chrono-vc142-mt-gd-x64-1_71
     linux:                          LIBS += -lboost_timer -lboost_chrono
-    macx:                           LIBS += -lboost_timer-clang-mt-1_64 -lboost_chrono-clang-mt-1_64
+    macx:                           LIBS += -lboost_timer-mt -lboost_chrono-mt
 }
 
 linux: LIBS += -L$$_R_HOME/lib -lR -lrt # because linux JASP-R-Interface is staticlib
 macx:  LIBS += -L$$_R_HOME/lib -lR
-
-
-
-
-macx {
-        INCLUDEPATH += ../../boost_1_64_0
-}
-
-windows {
-        INCLUDEPATH += ../../boost_1_64_0
-}
 
 INCLUDEPATH += $$PWD/../JASP-Common/
 
@@ -151,7 +140,7 @@ DISTFILES += \
     JASP/R/commonAnovaBayesian.R \
     JASP/R/commonAudit.R \
     JASP/R/commonAuditSampling.R \
-	JASP/R/commonbayesianttest.R \
+    JASP/R/commonbayesianttest.R \
     JASP/R/commonBayesianAuditMethods.R \
     JASP/R/commonClassicalAuditMethods.R \
     JASP/R/commonerrorcheck.R \
@@ -177,6 +166,7 @@ DISTFILES += \
     JASP/R/exposeUs.R \
     JASP/R/friendlyConstructorFunctions.R \
     JASP/R/informedbayesianttestfunctions.R \
+  JASP/R/jagsModule.R \
     JASP/R/linearmixedmodels.R \
     JASP/R/manova.R \
     JASP/R/massStepAIC.R \
@@ -226,36 +216,42 @@ DISTFILES += \
     JASP/R/ttestplotfunctions.R \
     JASPgraphs/DESCRIPTION \
     JASPgraphs/NAMESPACE \
-    JASPgraphs/R/colorPalettes.R \
-    JASPgraphs/R/compatability.R \
-    JASPgraphs/R/convenience.R \
-    JASPgraphs/R/customGeoms.R \
-    JASPgraphs/R/descriptivesPlots.R \
-    JASPgraphs/R/functions.R \
-    JASPgraphs/R/getPrettyAxisBreaks.R \
-    JASPgraphs/R/ggMatrixPlot.R \
-    JASPgraphs/R/graphOptions.R \
-    JASPgraphs/R/highLevelPlots.R \
-    JASPgraphs/R/jaspLabelAxes.R \
+    JASPgraphs/R/plotEditing.R \
     JASPgraphs/R/jaspScales.R \
-    JASPgraphs/R/legendToPlotRatio.R \
-    JASPgraphs/R/parseThis.R \
-    JASPgraphs/R/PlotPieChart.R \
-    JASPgraphs/R/PlotPizza.R \
-    JASPgraphs/R/PlotPriorAndPosterior.R \
-    JASPgraphs/R/plotQQnorm.R \
-    JASPgraphs/R/PlotRobustnessSequential.R \
-    JASPgraphs/R/printJASPgraphs.R \
     JASPgraphs/R/themeJasp.R \
+    JASPgraphs/R/jaspLabelAxes.R \
+    JASPgraphs/R/functions.R \
+    JASPgraphs/R/PlotRobustnessSequential.R \
+    JASPgraphs/R/PlotPriorAndPosterior.R \
     JASPgraphs/R/todo.R \
-    JASPgraphs/man/colors.Rd \
-    JASPgraphs/man/drawBFpizza.Rd \
-    JASPgraphs/man/makeGridLines.Rd \
-    JASPgraphs/man/parseThis.Rd \
-    JASPgraphs/man/plotPieChart.Rd \
+    JASPgraphs/R/printJASPgraphs.R \
+    JASPgraphs/R/plotQQnorm.R \
+    JASPgraphs/R/parseThis.R \
+    JASPgraphs/R/legendToPlotRatio.R \
+    JASPgraphs/R/highLevelPlots.R \
+    JASPgraphs/R/graphOptions.R \
+    JASPgraphs/R/ggMatrixPlot.R \
+    JASPgraphs/R/getPrettyAxisBreaks.R \
+    JASPgraphs/R/descriptivesPlots.R \
+    JASPgraphs/R/customGeoms.R \
+    JASPgraphs/R/convenience.R \
+    JASPgraphs/R/compatability.R \
+    JASPgraphs/R/colorPalettes.R \
+    JASPgraphs/R/PlotPizza.R \
+    JASPgraphs/R/PlotPieChart.R \
+    JASPgraphs/tests/testthat.R \
+    JASPgraphs/tests/testthat/test-plotEditing.R \
+    JASPgraphs/man/PlotRobustnessSequential.Rd \
     JASPgraphs/man/PlotPriorAndPosterior.Rd \
     JASPgraphs/man/plotQQnorm.Rd \
-    JASPgraphs/man/PlotRobustnessSequential.Rd \
+    JASPgraphs/man/plotPieChart.Rd \
+    JASPgraphs/man/parseThis.Rd \
+    JASPgraphs/man/makeGridLines.Rd \
+    JASPgraphs/man/drawBFpizza.Rd \
+    JASPgraphs/man/colors.Rd \
     JASPgraphs/inst/examples/ex-colorPalettes.R \
-    JASPgraphs/inst/examples/ex-PlotPieChart.R
+    JASPgraphs/inst/examples/ex-PlotPieChart.R \
+    JASPgraphs/inst/examples/ex-PlotPriorAndPosterior.R \
+    JASPgraphs/inst/examples/ex-PlotRobustnessSequential.R
+
 

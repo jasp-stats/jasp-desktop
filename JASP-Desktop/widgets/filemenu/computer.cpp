@@ -39,9 +39,9 @@ FileEvent *Computer::browseOpen(const QString &path)
 	else
 		browsePath = path;
 
-	QString filter = "Data Sets (*.jasp *.csv *.txt *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt)";
+	QString filter = "Data Sets (*.jasp *.csv *.txt *.tsv *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt)";
 	if (_mode == FileEvent::FileSyncData)
-		filter = "Data Sets (*.csv *.txt *.sav *.ods)";
+		filter = "Data Sets (*.csv *.txt *.tsv *.sav *.ods)";
 
 	Log::log() << "Now calling MessageForwarder::browseOpenFile(\"Open\", \"" << browsePath.toStdString() << "\", \"" << filter.toStdString() << "\")" << std::endl;
 	QString finalPath = MessageForwarder::browseOpenFile("Open", browsePath, filter);
@@ -90,12 +90,12 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 	case FileEvent::FileGenerateData:
 	case FileEvent::FileExportData:
 		caption	= "Export Data as CSV";
-		filter	= "CSV Files (*.csv *.txt)";
+		filter	= "CSV Files (*.csv *.txt *.tsv)";
 		break;
 
 	case FileEvent::FileSyncData:
 		caption = "Sync Data";
-		filter  = "Data Files (*.csv *.txt *.sav *.ods)";
+		filter  = "Data Files (*.csv *.txt *.tsv *.sav *.ods)";
 		break;
 
 	case FileEvent::FileSave:
@@ -118,7 +118,8 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 		else if	(mode == FileEvent::FileExportResults	&&	(!finalPath.endsWith(".html", Qt::CaseInsensitive) &&
 															 !finalPath.endsWith(".pdf",  Qt::CaseInsensitive))	)	finalPath.append(QString(".html"));
 		else if	(mode == FileEvent::FileExportData		&&	(!finalPath.endsWith(".csv",  Qt::CaseInsensitive) &&
-															 !finalPath.endsWith(".txt",  Qt::CaseInsensitive))	)	finalPath.append(QString(".csv"));
+															 !finalPath.endsWith(".txt",  Qt::CaseInsensitive) &&
+															 !finalPath.endsWith(".tsv",  Qt::CaseInsensitive))	)	finalPath.append(QString(".csv"));
 		event->setPath(finalPath);
 		emit dataSetIORequest(event);
 	}

@@ -21,8 +21,6 @@ import JASP.Controls 1.0
 
 Form
 {
-	usesJaspResults: false
-	
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		

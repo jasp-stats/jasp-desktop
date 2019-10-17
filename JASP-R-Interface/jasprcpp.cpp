@@ -139,6 +139,10 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	_R_HOME = Rcpp::as<std::string>(rInside.parseEval("R.home('')"));
 
 	std::cout << "R_HOME: " << _R_HOME << std::endl;
+
+#ifdef __APPLE__
+	jaspRCPP_parseEvalQNT("options(jags.moddir=paste0(Sys.getenv('JAGS_HOME'),'/modules-4'))");
+#endif
 }
 
 const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground, bool developerMode)
@@ -324,12 +328,12 @@ void STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer)
     free(*arrayPointer);
 }
 
-const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const int height, const int width, const int ppi, const char* imageBackground)
+const char* STDCALL jaspRCPP_saveImage(const char * data, const char *type, const int height, const int width, const int ppi, const char* imageBackground)
 {
 	RInside &rInside = rinside->instance();
 
 	rInside[".imageBackground"] = imageBackground;
-	rInside["plotName"]			= name;
+	rInside["plotName"]			= data;
 	rInside["format"]			= type;
 	rInside["height"]			= height;
 	rInside["width"]			= width;
@@ -341,19 +345,16 @@ const char* STDCALL jaspRCPP_saveImage(const char *name, const char *type, const
 	return staticResult.c_str();
 }
 
-const char* STDCALL jaspRCPP_editImage(const char *name, const char *type, const int height, const int width, const int ppi, const char* imageBackground)
+const char* STDCALL jaspRCPP_editImage(const char * optionsJson, const int ppi, const char* imageBackground)
 {
 
 	RInside &rInside = rinside->instance();
 
 	rInside[".imageBackground"] = imageBackground;
-	rInside["plotName"]			= name;
-	rInside["height"]			= height;
-	rInside["width"]			= width;
-	rInside["type"]				= type;
+	rInside["editImgOptions"]	= optionsJson;
 	rInside[".ppi"]				= ppi;
 
-	SEXP result = jaspRCPP_parseEval("editImage(plotName,type,height,width)");
+	SEXP result = jaspRCPP_parseEval("editImage(editImgOptions)");
 	static std::string staticResult;
 	staticResult = Rf_isString(result) ? Rcpp::as<std::string>(result) : NullString;
 

@@ -52,6 +52,11 @@ bool QMLItem::addDependency(QMLItem *item)
 	return true;
 }
 
+void QMLItem::removeDependency(QMLItem *item)
+{
+	_depends.removeAll(item);
+}
+
 void QMLItem::setItemProperty(const QString& name, const QVariant& value)
 {
 	if (_item)

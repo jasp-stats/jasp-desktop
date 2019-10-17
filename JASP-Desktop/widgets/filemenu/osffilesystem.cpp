@@ -336,7 +336,8 @@ void OSFFileSystem::gotFilesAndFolders()
 					entryType = FileSystemEntry::Folder;
 				else if (nodeData.name.endsWith(".jasp", Qt::CaseInsensitive))
 					entryType = FileSystemEntry::JASP;
-				else if (nodeData.name.endsWith(".csv", Qt::CaseInsensitive) || nodeData.name.endsWith(".txt", Qt::CaseInsensitive))
+				else if (nodeData.name.endsWith(".csv", Qt::CaseInsensitive) || nodeData.name.endsWith(".txt", Qt::CaseInsensitive) ||
+				         nodeData.name.endsWith(".tsv", Qt::CaseInsensitive))
 					entryType = FileSystemEntry::CSV;
 				else if (nodeData.name.endsWith(".html", Qt::CaseInsensitive) || nodeData.name.endsWith(".pdf", Qt::CaseInsensitive))
 					entryType = FileSystemEntry::Other;

@@ -134,6 +134,8 @@ Window
 			}
 		}
 
+
+
 		MouseArea
 		{
 			//visible:					enabled
@@ -193,6 +195,7 @@ Window
 
 		CreateComputeColumnDialog	{ id: createComputeDialog	}
 		ModuleInstaller				{ id: moduleInstallerDialog	}
+		PlotEditor					{ id: plotEditingDialog		}
 
 		/*MessageBox
 		{

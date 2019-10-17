@@ -4,7 +4,6 @@
 	"runtime-version": "5.12",
 	"sdk": "org.kde.Sdk",
 	"command": "org.jaspstats.JASP",
-	"inherit-extensions" : [ "org.freedesktop.Platform.GL" ],
 	"finish-args":[
 		"--socket=x11",
 		"--socket=wayland",
@@ -86,7 +85,7 @@
 			"sources":[
 				{
 					"type":		"git",
-					"tag":		"v0.11.0.0_1",
+					"tag":		"v0.11.1_flatpak",
 					"url": 		"https://github.com/jasp-stats/jasp-desktop"
 				},
 				{

@@ -24,11 +24,18 @@
 #include <QQuickItem>
 #include <QQuickTextDocument>
 #include <QFontDatabase>
+
+#include <QString>
+#include <QRegularExpression>
+#include <QList>
+#include <QSet>
+
 #include "log.h"
 
-
-BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form) 
-	: QMLItem(item, form), QObject(form), BoundQMLItem()
+BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
+	: QMLItem(item, form)
+	, QMLListView(item, form)
+	, BoundQMLItem()
 {
 
 	QString textType = _item->property("textType").toString();
@@ -38,8 +45,8 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 		connect(_form, &AnalysisForm::dataSetChanged,	this, &BoundQMLTextArea::dataSetChangedHandler,	Qt::QueuedConnection	);
 
 		_textType = TextType::Lavaan;
-		QMLListViewTermsAvailable* listView = new QMLListViewTermsAvailable(item, form); // Hack to get allVariablesModel
-		_allVariablesModel = dynamic_cast<ListModelTermsAvailable*>(listView->model());
+		_model = new ListModelTermsAvailable(this);
+		_modelHasAllVariables = true;
 #ifdef __APPLE__
 		_applyScriptInfo = "\u2318 + Enter to apply";
 #else
@@ -109,6 +116,27 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 		_item->setProperty("font", font);
 				
 	}
+	else if (textType == "JAGSmodel")
+	{
+		_textType = TextType::JAGSmodel;
+
+#ifdef __APPLE__
+		_applyScriptInfo = "\u2318 + Enter to apply";
+#else
+		_applyScriptInfo = "Ctrl + Enter to apply";
+#endif
+		_item->setProperty("applyScriptInfo", _applyScriptInfo);
+
+		int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
+		QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+
+		QFont font(family);
+		font.setStyleHint(QFont::Monospace);
+		font.setPointSize(10);
+		_item->setProperty("font", font);
+		_model = new ListModelTermsAvailable(this);
+		_model->setTermsAreVariables(false);
+	}
 	else
 		_textType = TextType::Default;
 
@@ -163,9 +191,9 @@ void BoundQMLTextArea::checkSyntax()
 		// TODO: Proper handling of end-of-string characters and funny colnames
 		QString colNames = "c(";
 		bool firstCol = true;
-		if (_allVariablesModel)
+		if (_model)
 		{
-			QList<QString> vars = _allVariablesModel->allTerms().asQList();
+			QList<QString> vars = _model->allTerms().asQList();
 			for (QString &var : vars)
 			{
 				if (!firstCol)
@@ -203,13 +231,23 @@ void BoundQMLTextArea::checkSyntax()
 			R_FunctionWhiteList::scriptIsSafe(_text.toStdString()); 
 			_item->setProperty("hasScriptError", false);
 			_item->setProperty("infoText", "valid R code");
+			if (_boundTo != nullptr)
+				_boundTo->setValue(_text.toStdString());			
 		}
 		catch(filterException & e)
 		{
 			_item->setProperty("hasScriptError", true);
-			std::string errorMessage = std::string("R code is not safe because of: ") + e.what();
+			std::string errorMessage(e.what());
 			_item->setProperty("infoText", errorMessage.c_str());
 		}		
+		
+	}
+	else if (_textType == TextType::JAGSmodel) 
+	{
+		if (_boundTo != nullptr)
+			_boundTo->setValue(_text.toStdString());			
+		
+		setJagsParameters();
 		
 	}
 	else
@@ -239,4 +277,27 @@ void BoundQMLTextArea::rScriptDoneHandler(const QString & result)
 	}
 }
 
+void BoundQMLTextArea::setJagsParameters()
+{
+	// get the column names of the data set
+	std::vector<std::string> colnms = form()->getDataSetPackage()->getColumnNames();
+	std::set<std::string> columnNames(std::make_move_iterator(colnms.begin()), std::make_move_iterator(colnms.end()));
 
+	// regex to match all words after whitespace or { and ~ or = or <-.
+	QRegularExpression getParametersFromModel("(?<={|\\s)\\b(\\w*)(.*)(?=~|=|<-)");
+	QRegularExpressionMatchIterator i = getParametersFromModel.globalMatch(_text);
+
+	QSet<QString> parameters;
+	while (i.hasNext())
+	{
+		QRegularExpressionMatch match = i.next();
+		QString parameter = match.captured(1);
+		if (parameter != "" && columnNames.find(parameter.toUtf8().constData()) == columnNames.end())
+			parameters << parameter;
+	}
+	if (_model)
+	{
+		_model->initTerms(parameters.toList());
+		emit _model->modelChanged();
+	}
+}

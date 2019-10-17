@@ -4,19 +4,18 @@ import JASP.Theme 1.0
 
 Popup
 {
-	id:				popupCreateComputedColumn;
-	modal:			true
-	focus:			true
-	x:				(parent.width / 2) - (width / 2)
-	y:				(parent.height / 2) - (height / 2)
-	closePolicy:	Popup.CloseOnPressOutside | Popup.CloseOnEscape
-	background:		Item{}
-	padding:		0
-	width:			popupLoader.width
-	height:			popupLoader.height+1
+	id:			popupCreateComputedColumn;
+	modal:		true;
 
+	y:			(parent.height / 2) - (height / 2)
+	x:			(parent.width / 2) - (width / 2)
+	width:		popupLoader.width
+	height:		popupLoader.height+1
 
 	property bool computeTypeIsJson: true
+
+	background: Item{}
+	padding:	0
 
 	Loader
 	{

@@ -78,7 +78,7 @@ Analysis::Analysis(Analyses* analyses, size_t id, Analysis * duplicateMe)
 	, _results(			duplicateMe->_results		)
 	, _imgResults(		duplicateMe->_imgResults	)
 	, _userData(		duplicateMe->_userData		)
-	, _saveImgOptions(	duplicateMe->_saveImgOptions)
+	, _imgOptions(		duplicateMe->_imgOptions	)
 	, _progress(		duplicateMe->_progress		)
 	, _id(				id							)
 	, _module(			duplicateMe->_module		)
@@ -180,7 +180,6 @@ void Analysis::exportResults()
 void Analysis::refresh()
 {
 	setStatus(Empty);
-	_revision++;
 	TempFiles::deleteAll(_id);
 	emit toRefreshSignal(this);
 
@@ -191,14 +190,14 @@ void Analysis::refresh()
 void Analysis::saveImage(const Json::Value &options)
 {
 	setStatus(Analysis::SaveImg);
-	_saveImgOptions = options;
+	_imgOptions = options;
 	emit saveImageSignal(this);
 }
 
 void Analysis::editImage(const Json::Value &options)
 {
 	setStatus(Analysis::EditImg);
-	_saveImgOptions = options;
+	_imgOptions = options;
 	emit editImageSignal(this);
 }
 
@@ -328,7 +327,6 @@ void Analysis::optionsChangedHandler(Option *option)
 		return;
 
 	_status = Empty;
-	_revision++;
 	optionsChanged(this);
 }
 
@@ -410,7 +408,7 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 		json["imageBackground"] = imageBackground; //comes from engine representation!
 
 		if (perform == performType::saveImg || perform == performType::editImg)
-			json["image"] = getSaveImgOptions();
+			json["image"] = imgOptions();
 		else
 		{
 			json["options"]		= options()->size() == 0 ? optionsFromJASPFile() : options()->asJSON();
