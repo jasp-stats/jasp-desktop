@@ -300,6 +300,14 @@ Correlation <- function(jaspResults, dataset, options){
                           observations.amount = sprintf("< %s", 3+length(options$conditioningVariables)),
                           exitAnalysisIfErrors = FALSE)
       
+      # for some reason .hasErrors does not flag this case
+      if(nrow(data) == 0) errors <- list(observations = "All missing")
+      
+      # shorten the message for observations.amount (do not list variables which is apparent in the output)
+      if(is.list(errors) && !is.null(errors$observations)){
+        errors$message <- sprintf("Number of observations is < %s", 3+length(options$conditioningVariables))
+      }
+      
       stats <- c("estimate", "p.value", "conf.int", "vsmpr")
       statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
       
@@ -323,7 +331,7 @@ Correlation <- function(jaspResults, dataset, options){
         kendallErrors <- kendall$errors
         kendall <- kendall$result
       } else {
-        pearson <- spearman <- kendall <- rep(NA, length(statsNames))
+        pearson <- spearman <- kendall <- rep(NaN, length(statsNames))
         names(pearson) <- names(spearman) <- names(kendall) <- statsNames
         pearsonErrors <- spearmanErrors <- kendallErrors <- TRUE
       }
@@ -332,7 +340,7 @@ Correlation <- function(jaspResults, dataset, options){
       shapiro <- .multivariateShapiroComputation(data, list(dependent = .unv(vcomb[[i]])))
       
       results[[vpair[i]]] <- list(vars = .unv(vcomb[[i]]), vvars = vcomb[[i]], 
-                                  res = c(pearson, spearman, kendall, sample.size = nrow(data)),
+                                  res = list(pearson=pearson, spearman=spearman, kendall=kendall, sample.size = nrow(data)),
                                   errors = errors, 
                                   testErrors = list(pearson = pearsonErrors, 
                                                     spearman = spearmanErrors, 
@@ -358,7 +366,7 @@ Correlation <- function(jaspResults, dataset, options){
   return(results)
 }
 
-# helper fn
+# helper that unifies output of cor.test and ppcor::pcor.test
 .corr.test <- function(x, y, z = NULL, alternative, method, exact = NULL, conf.level = 0.95, continuity = FALSE, ...){
   stats <- c("estimate", "p.value", "conf.int", "vsmpr")
   statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
@@ -371,7 +379,7 @@ Correlation <- function(jaspResults, dataset, options){
     if(isTryError(result)) {
       errors <- .extractErrorMessage(result)
       result <- rep(NaN, length(statsNames))
-      names(result) <- paste(method, statsNames, sep = "_")
+      names(result) <- statsNames
     } else{
       errors <- FALSE
       
@@ -383,14 +391,14 @@ Correlation <- function(jaspResults, dataset, options){
       result$vsmpr <- .VovkSellkeMPR(result$p.value)
       result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
       result <- unlist(result[stats], use.names = FALSE)
-      names(result) <- paste(method, statsNames, sep = "_")
+      names(result) <- statsNames
     }
   } else{
     result <- try(expr = {ppcor::pcor.test(x = x, y = y, z = z, method = method)}, silent = TRUE)
     if(isTryError(result)) {
       errors <- .extractErrorMessage(result)
       result <- rep(NaN, length(statsNames))
-      names(result) <- paste(method, statsNames, sep = "_")
+      names(result) <- statsNames
     } else{
       errors <- FALSE
       result <- as.list(result)
@@ -413,7 +421,7 @@ Correlation <- function(jaspResults, dataset, options){
       result$lower.ci <- NA
       result$upper.ci <- NA
       result <- unlist(result[statsNames], use.names = FALSE)
-      names(result) <- paste(method, statsNames, sep = "_")
+      names(result) <- statsNames
     }
   }
   
@@ -531,35 +539,35 @@ Correlation <- function(jaspResults, dataset, options){
   if(options$displayPairwise){
     .corrFillPairwiseTable(mainTable, corrResults, options)
   } else{
-    .corrFillCorrelationTable(mainTable, corrResults, options)
+    .corrFillCorrelationMatrix(mainTable, corrResults, options)
   }
 }
 
 .corrFillPairwiseTable <- function(mainTable, corrResults, options){
   # extract the list of results
+  pairs <- names(corrResults)
   results <- lapply(corrResults, function(x) x[['res']])
+  errors <- lapply(corrResults,function(x) x[['errors']])
   
-  # the stored results can be out of order -> we need to identify the order from the order of the
-  # variables in the options list
-  combos <- combn(.v(options$variables), 2, simplify = FALSE)
-  pairs <- sapply(combos, paste, collapse = "_")
+  mainTable[['sample.size']] <- sapply(results, function(x) x[['sample.size']])
   
-  results <- results[pairs]
-  
-  # now rbind the list so that we can access the columns
-  results <- as.data.frame(do.call(rbind, results))
-  
-  # fill all columns
-  for(col in colnames(results)) mainTable[[col]] <- results[[col]]
-  
-  if(options$flagSignificant){
-     .corrFlagSignificant(mainTable, results[["pearson_p.value"]],   "pearson_estimate",  pairs)
-     .corrFlagSignificant(mainTable, results[["spearman_p.value"]],  "spearman_estimate", pairs)
-     .corrFlagSignificant(mainTable, results[["kendall_p.value"]],   "kendall_estimate",  pairs)
+  # would be nice to be able to fill table cell-wise, i.e., mainTable[[row, col]] <- value
+  colNames <- character() # this is for error footnotes
+  for(test in c("pearson", "spearman", "kendall")){
+    res <- data.frame(do.call(rbind, lapply(results, function(x) {x[[test]]})), stringsAsFactors = FALSE)
+    
+    for(col in colnames(res)) mainTable[[paste(test, col, sep = "_")]] <- res[[col]]
+    
+    if(options[['flagSignificant']]) .corrFlagSignificant(mainTable, res[['p.value']],
+                                                          paste(test, "estimate", sep="_"), pairs)
+    
+    colNames <- c(colNames, paste(test, colnames(res), sep="_"))
   }
-  
   # add footnotes for errors
-  
+  for(i in seq_along(errors)){
+    if(!isFALSE(errors[[i]])) mainTable$addFootnote(message = errors[[i]]$message, rowNames = pairs[i],
+                                                    colNames = colNames)
+  }
 }
 
 .corrFlagSignificant <- function(table, p.values, colName, rowNames){
@@ -581,34 +589,55 @@ Correlation <- function(jaspResults, dataset, options){
   }
 }
   
-.corrFillCorrelationTable <- function(mainTable, corrResults, options){
-  vvars <- .v(options$variables)
-  statsNames <- names(corrResults[[paste(vvars[1], vvars[2], sep = "_")]]$res)
-  for(row in seq_along(options$variables)){
-    res <- matrix(NA, nrow = length(options$variables), ncol = length(statsNames)) 
-    res <- as.data.frame(res)
-    
-    for(col in seq_along(options$variables)){
-      if(row == col){
-        r <- rep(NA, length(statsNames))
-      } else if(row < col){
-        r <- rep(NA, length(statsNames))
-      } else {
-        r <- corrResults[[paste(vvars[col], vvars[row], sep = "_")]]$res
+.corrFillCorrelationMatrix <- function(mainTable, corrResults, options){
+  vars <- options$variables
+  vvars <- .v(vars)
+  
+  results <- lapply(corrResults, function(x) {
+    res <- unlist(x[['res']]) # flatten the structure but preserve names (hierarchy separated by ".")
+    # replace the first dot with _ to separate test from statistic
+    names(res) <- sub("(pearson\\.)",  "pearson_", names(res))
+    names(res) <- sub("(spearman\\.)", "spearman_", names(res))
+    names(res) <- sub("(kendall\\.)",  "kendall_", names(res))
+    res
+    })
+  
+  errors <- lapply(corrResults, function(x) x[['errors']])
+  statsNames <- names(results[[1]])
+  nStats <- length(statsNames)
+  # would be really (!) nice to be able to fill table cell-wise, i.e., mainTable[[row, col]] <- value
+  # in the meantime we have to collect and fill the entire columns (i.e., rows of the output table)
+  for(colVar in seq_along(vars)){
+    for(colName in statsNames){
+      currentColumnName <- paste(vvars[[colVar]], colName, sep = "_")
+      resList <- list()
+      for(rowVar in seq_along(vars)){
+        currentResultName <- paste(vvars[rowVar], vvars[colVar], sep = "_")
+        if(rowVar == colVar){
+          r <- "\u2014" # long dash
+        } else if(rowVar > colVar){
+          r <- NA
+        } else {
+          r <- results[[currentResultName]][[colName]]
+          
+          if(is.list(errors[[currentResultName]]) && colName != "sample.size"){
+            #browser()
+            mainTable$addFootnote(message = errors[[currentResultName]]$message, 
+                                  colNames = currentColumnName, rowNames = vvars[[rowVar]])
+          }
+        }
+        resList[[vvars[rowVar]]] <- r
+        
+        # if(is.list(errors[[currentResultName]]) && colName != "sample.size" && rowVar < colVar){
+        #   # browser()
+        #   # print(colName)
+        #   # print(.unv(vvars[c(rowVar, colVar)]))
+        #   mainTable$addFootnote(message = errors[[currentResultName]]$message, 
+        #                         colNames = currentColumnName, rowNames = vvars[[rowVar]])
+        # }
       }
       
-      res[col, ] <- r
-    }
-    colnames(res) <- statsNames
-    
-    for(s in statsNames){
-      mainTable[[paste(vvars[row], s, sep = "_")]] <- res[, s, drop=TRUE]
-    }
-    
-    if(options$flagSignificant){
-      .corrFlagSignificant(mainTable, res[["pearson_p.value"]],  sprintf("%s_pearson_estimate",  vvars[row]), vvars)
-      .corrFlagSignificant(mainTable, res[["spearman_p.value"]], sprintf("%s_spearman_estimate", vvars[row]), vvars)
-      .corrFlagSignificant(mainTable, res[["kendall_p.value"]],  sprintf("%s_kendall_estimate",  vvars[row]), vvars)
+      mainTable[[currentColumnName]] <- resList
     }
   }
   
@@ -1458,7 +1487,12 @@ Correlation <- function(jaspResults, dataset, options){
   x <- x[!missingIndices] # remove those values
   y <- y[!missingIndices]
   n <- length(x)
-
+  
+  hypothesis <- switch(hypothesis, 
+                       "two.sided" = "correlated",
+                       "greater" = "correlatedPositively",
+                       "less" = "correlatedNegatively",
+                       hypothesis)
  if (method == "kendall") {
    concordanceSumsVector <- numeric(n)
     for (i in 1:n) {
