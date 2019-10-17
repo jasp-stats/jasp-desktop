@@ -28,7 +28,7 @@ results <- jasptools::run("ExploratoryFactorAnalysis", "debug.csv", options)
 test_that("Factor Correlations table results match", {
   table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_cortab"]][["data"]]
   expect_equal_tables(table,
-                      list(1, -0.0406671, "Factor 1", -0.0406671, 1, "Factor 2"))
+                      list(1, -0.0849326, "Factor 1", -0.0849326, 1, "Factor 2"))
 })
 
 test_that("Factor Characteristics table results match", {
