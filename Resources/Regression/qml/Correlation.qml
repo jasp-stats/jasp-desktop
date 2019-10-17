@@ -44,7 +44,7 @@ Form
 	Group
 	{
 		title: qsTr("Additional Options")
-		CheckBox { name: "displayPairwise";		label: qsTr("Display pairwise table")				}
+        CheckBox { name: "displayPairwise";		label: qsTr("Display pairwise")				}
 		CheckBox { name: "reportSignificance";	label: qsTr("Report significance"); checked: true	}
 		CheckBox { name: "flagSignificant";		label: qsTr("Flag significant correlations")			}
 		CheckBox
@@ -70,7 +70,7 @@ Form
 		title: qsTr("Plots")
 		CheckBox
 		{
-			name: "plotCorrelationMatrix"; label: qsTr("Correlation Matrix")
+            name: "plotCorrelationMatrix"; label: qsTr("Scatter plots")
 			CheckBox { name: "plotDensities";		label: qsTr("Densities for variables")	}
 			CheckBox { name: "plotStatistics";		label: qsTr("Statistics")				}
 		}
@@ -102,12 +102,12 @@ Form
 
 	Section
 	{
-		title: qsTr("Options")
-		debug: true
+        title: qsTr("Options")
 
 		Group
 		{
 			title: qsTr("Statistics")
+            debug: true
 			CheckBox { name: "meansAndStdDev";	label: qsTr("Means and standard deviations")				}
 			CheckBox { name: "crossProducts";	label: qsTr("Cross-product deviations and covariances")		}
 		}

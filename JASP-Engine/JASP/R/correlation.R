@@ -22,14 +22,8 @@ Correlation <- function(jaspResults, dataset, options){
   ready <- length(options$variables) >= 2
   errors <- .corrCheckErrors(dataset, options)
   
-  # Init main table ----
-  mainTable <- .corrInitMainTable(jaspResults, options, errors)
+  corrResults <- .corrMainResults(jaspResults, dataset, options, errors, ready)
   
-  # Compute results ----
-  corrResults <- .corrComputeResults(jaspResults, dataset, options, ready)
-  
-  # Fill tables and plots ----
-  .corrFillTableMain(mainTable, corrResults, options, ready)
   .corrAssumptions(jaspResults, dataset, options, ready, corrResults)
   .corrPlot(jaspResults, dataset, options, ready, corrResults, errors)
   
@@ -72,6 +66,20 @@ Correlation <- function(jaspResults, dataset, options){
   return(errors)
 }
 
+.corrMainResults <- function(jaspResults, dataset, options, errors, ready){
+  if(!is.null(jaspResults[['mainTable']]) && !is.null(jaspResults[['results']])) return(jaspResults[['results']]$object)
+  
+  # Init main table
+  mainTable <- .corrInitMainTable(jaspResults, options, errors)
+  
+  # Compute results
+  corrResults <- .corrComputeResults(jaspResults, dataset, options, ready)
+  
+  # Fill table
+  .corrFillTableMain(mainTable, corrResults, options, ready)
+  
+  return(corrResults)
+}
 # Init tables ----
 .corrInitMainTable <- function(jaspResults, options, errors){
   if(!is.null(jaspResults[['mainTable']])) return(jaspResults[['mainTable']])
@@ -109,7 +117,7 @@ Correlation <- function(jaspResults, dataset, options){
   if(options[['flagSignificant']])
     mainTable$addFootnote(message = "p < .05, ** p < .01, *** p < .001", symbol = "*")
   
-  if(length(options$conditioningVariables) >= 0){
+  if(length(options$conditioningVariables) > 0){
     message <- sprintf("Conditioned on variables: %s", paste(options$conditioningVariables, collapse = ", "))
     mainTable$addFootnote(message = message, symbol = " ")
   }
@@ -338,29 +346,68 @@ Correlation <- function(jaspResults, dataset, options){
   if(!is.null(jaspResults[['assumptionsContainer']])) return()
   
   assumptionsContainer <- createJaspContainer(title = "Assumption checks")
-  assumptionsContainer$dependOn(c("multivariateShapiro", "pairwiseShapiro", "variables", "missingValues"))
+  assumptionsContainer$dependOn(c("multivariateShapiro", "pairwiseShapiro",
+                                  "variables", "missingValues", "conditioningVariables"))
   assumptionsContainer$position <- 2
   
   jaspResults[['assumptionsContainer']] <- assumptionsContainer
   if(isTRUE(options$multivariateShapiro)){
     shapiroTable <- createJaspTable(title = "Shapiro-Wilk Test for Multivariate Normality")
-    
     shapiroTable$showSpecifiedColumnsOnly <- TRUE
     
-    shapiroTable$addColumnInfo(name = "W", title = "Shapiro-Wilk", type = "number")
-    shapiroTable$addColumnInfo(name = "p", title = "p", type = "pvalue")
-    
-    assumptionsContainer[['multivariateShapiro']] <- shapiroTable
-    
-    if (ready) {
-      dataset <- dataset[complete.cases(dataset),,drop=FALSE]
-      shapiroResult <- .multivariateShapiroComputation(dataset, list(dependent = options$variables))
-      shapiroErrors <- shapiroResult$errors
-      shapiroResult <- shapiroResult$result
-      shapiroTable$addRows(list(W = shapiroResult$statistic, p = shapiroResult$p.value))
+    if(length(options$conditioningVariables) == 0){
       
-      if (!is.null(shapiroErrors)) 
-        shapiroTable$setError(shapiroErrors)
+      shapiroTable$addColumnInfo(name = "W", title = "Shapiro-Wilk", type = "number")
+      shapiroTable$addColumnInfo(name = "p", title = "p", type = "pvalue")
+      
+      assumptionsContainer[['multivariateShapiro']] <- shapiroTable
+      
+      if (ready) {
+        dataset <- dataset[complete.cases(dataset),,drop=FALSE]
+        shapiroResult <- .multivariateShapiroComputation(dataset, list(dependent = options$variables))
+        shapiroErrors <- shapiroResult$errors
+        shapiroResult <- shapiroResult$result
+        shapiroTable$addRows(list(W = shapiroResult$statistic, p = shapiroResult$p.value))
+        
+        if (!is.null(shapiroErrors)) 
+          shapiroTable$setError(shapiroErrors)
+      }
+    } else{
+      shapiroTable$addColumnInfo(name = "vars", title = "Variables",    type = "string")
+      shapiroTable$addColumnInfo(name = "W",    title = "Shapiro-Wilk", type = "number")
+      shapiroTable$addColumnInfo(name = "p",    title = "p",            type = "pvalue")
+      
+      assumptionsContainer[['multivariateShapiro']] <- shapiroTable
+      
+      if(ready){
+        dataset <- dataset[complete.cases(dataset),,drop=FALSE]
+        shapiroResult <- list()
+        shapiroResult[['All']]          <- .multivariateShapiroComputation(dataset, list(dependent = c(options$variables,
+                                                                                                     options$conditioningVariables)))
+        shapiroResult[['Conditioned']]  <- .multivariateShapiroComputation(dataset, list(dependent = options$variables))
+        shapiroResult[['Conditioning']] <- .multivariateShapiroComputation(dataset, list(dependent = options$conditioningVariables))
+        
+        form <- sprintf("cbind(%s) ~ %s",
+                        paste(.v(options$variables), collapse = ", "),
+                        paste(.v(options$conditioningVariables), collapse = " + "))
+        resids <- try(expr = {residuals(lm(formula = form, data = dataset))}, silent = TRUE)
+        
+        if(isTryError(resids)){
+          shapiroResult[['Residuals']] <- list(errors = .extractErrorMessage(resids))
+        } else{
+          shapiroResult[['Residuals']] <- .multivariateShapiroComputation(resids, list(dependent = options$variables))
+        }
+        
+        for(i in seq_along(shapiroResult)){
+          if(!is.null(shapiroResult[[i]]$errors)){
+            shapiroTable$setError(shapiroResult[[i]]$errors)
+            break
+          }
+          shapiroTable$addRows(list(vars = names(shapiroResult)[i],
+                                    W    = shapiroResult[[i]]$result$statistic,
+                                    p    = shapiroResult[[i]]$result$p.value))
+        }
+      }
     }
   }
   
@@ -500,8 +547,8 @@ Correlation <- function(jaspResults, dataset, options){
   if(!is.null(jaspResults[['corrPlot']])) return()
   
   plotContainer <- createJaspContainer(title = "Scatter plots")
-  plotContainer$dependOn(options = c("variables", "pearson", "spearman", "kendallsTauB", "displayPairwise",
-                                     "confidenceIntervals", "confidenceIntervalsInterval", "hypothesis",
+  plotContainer$dependOn(options = c("variables", "conditioningVariables", "pearson", "spearman", "kendallsTauB",
+                                     "displayPairwise", "confidenceIntervals", "confidenceIntervalsInterval", "hypothesis",
                                      "plotCorrelationMatrix", "plotDensities", "plotStatistics", "missingValues"))
   jaspResults[['corrPlot']] <- plotContainer
   
@@ -578,8 +625,8 @@ Correlation <- function(jaspResults, dataset, options){
   
   
   plot <- createJaspPlot(title = "Correlation plot")
-  plot$dependOn(options = c("variables", "pearson", "spearman", "kendallsTauB", "displayPairwise",
-                            "confidenceIntervals", "confidenceIntervalsInterval", "hypothesis",
+  plot$dependOn(options = c("variables", "conditioningVariables", "pearson", "spearman", "kendallsTauB", 
+                            "displayPairwise", "confidenceIntervals", "confidenceIntervalsInterval", "hypothesis",
                             "plotCorrelationMatrix", "plotDensities", "plotStatistics", "missingValues"))
   
   if (len <= 2 && (options$plotDensities || options$plotStatistics)) {
