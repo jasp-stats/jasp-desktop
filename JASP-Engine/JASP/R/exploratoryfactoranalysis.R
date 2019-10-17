@@ -299,7 +299,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   efaResult <- modelContainer[["model"]][["object"]]
   if (efaResult$factors == 1) return()
-  cors <- zapsmall(as.matrix(efaResult$score.cor))
+  cors <- zapsmall(as.matrix(efaResult$r.scores))
   dims <- ncol(cors)
 
   cortab[["col"]] <- paste("Factor", 1:dims)
@@ -398,7 +398,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   efaResult <- modelContainer[["model"]][["object"]]
   LY <- as.matrix(loadings(efaResult))
   TE <- diag(efaResult$uniqueness)
-  PS <- efaResult$score.cor
+  PS <- efaResult$r.scores
   
 
   # Variable names
