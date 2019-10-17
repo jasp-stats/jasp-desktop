@@ -67,6 +67,7 @@ Correlation <- function(jaspResults, dataset, options){
   return(errors)
 }
 
+### Main function ----
 .corrMainResults <- function(jaspResults, dataset, options, errors, ready){
   if(!is.null(jaspResults[['mainTable']]) && !is.null(jaspResults[['results']])) return(jaspResults[['results']]$object)
   
@@ -340,6 +341,68 @@ Correlation <- function(jaspResults, dataset, options){
   
   
   return(results)
+}
+
+# helper fn
+.corr.test <- function(x, y, z = NULL, alternative, method, exact = NULL, conf.level = 0.95, continuity = FALSE, ...){
+  stats <- c("estimate", "p.value", "conf.int", "vsmpr")
+  statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
+  
+  if(is.null(z)){
+    result <- try(expr = {
+      cor.test(x = x, y = y, alternative = alternative, method = method, exact = exact, 
+               conf.level = conf.level, continuity = continuity, ... = ...)}, silent = TRUE)
+    
+    if(isTryError(result)) {
+      errors <- .extractErrorMessage(result)
+      result <- rep(NaN, length(statsNames))
+      names(result) <- paste(method, statsNames, sep = "_")
+    } else{
+      errors <- FALSE
+      
+      if(method != "pearson"){
+        result$conf.int <- .createNonparametricConfidenceIntervals(x = x, y = y, obsCor = result$estimate,
+                                                                   hypothesis = alternative, confLevel = conf.level,
+                                                                   method = method)
+      }
+      result$vsmpr <- .VovkSellkeMPR(result$p.value)
+      result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
+      result <- unlist(result[stats], use.names = FALSE)
+      names(result) <- paste(method, statsNames, sep = "_")
+    }
+  } else{
+    result <- try(expr = {ppcor::pcor.test(x = x, y = y, z = z, method = method)}, silent = TRUE)
+    if(isTryError(result)) {
+      errors <- .extractErrorMessage(result)
+      result <- rep(NaN, length(statsNames))
+      names(result) <- paste(method, statsNames, sep = "_")
+    } else{
+      errors <- FALSE
+      result <- as.list(result)
+      if(alternative == "less"){
+        if(result$estimate <= 0){
+          result$p.value <- result$p.value/2
+        } else{
+          result$p.value <- 1 - result$p.value/2
+        }
+      } else if(alternative == "greater"){
+        if(result$estimate >= 0){
+          result$p.value <- result$p.value/2
+        } else{
+          result$p.value <- 1 - result$p.value/2
+        }
+      }
+      result$vsmpr <- .VovkSellkeMPR(result$p.value)
+      result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
+      # TODO: CIs for partial correlations
+      result$lower.ci <- NA
+      result$upper.ci <- NA
+      result <- unlist(result[statsNames], use.names = FALSE)
+      names(result) <- paste(method, statsNames, sep = "_")
+    }
+  }
+  
+  return(list(result = result, errors = errors))
 }
 
 .corrAssumptions <- function(jaspResults, dataset, options, ready, corrResults){
@@ -1434,65 +1497,3 @@ Correlation <- function(jaspResults, dataset, options){
     Sellke_etal_2001 = "Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p Values for Testing Precise Null Hypotheses. <i>The American Statistician,</i> 55(<i>1</i>), p. 62-71."
   )
 )
-
-# helper fn
-.corr.test <- function(x, y, z = NULL, alternative, method, exact = NULL, conf.level = 0.95, continuity = FALSE, ...){
-  stats <- c("estimate", "p.value", "conf.int", "vsmpr")
-  statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
-  
-  if(is.null(z)){
-    result <- try(expr = {
-      cor.test(x = x, y = y, alternative = alternative, method = method, exact = exact, 
-                       conf.level = conf.level, continuity = continuity, ... = ...)}, silent = TRUE)
-    
-    if(isTryError(result)) {
-      errors <- .extractErrorMessage(result)
-      result <- rep(NaN, length(statsNames))
-      names(result) <- paste(method, statsNames, sep = "_")
-    } else{
-      errors <- FALSE
-      
-      if(method != "pearson"){
-        result$conf.int <- .createNonparametricConfidenceIntervals(x = x, y = y, obsCor = result$estimate,
-                                                                   hypothesis = alternative, confLevel = conf.level,
-                                                                   method = method)
-      }
-      result$vsmpr <- .VovkSellkeMPR(result$p.value)
-      result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
-      result <- unlist(result[stats], use.names = FALSE)
-      names(result) <- paste(method, statsNames, sep = "_")
-    }
-  } else{
-    result <- try(expr = {ppcor::pcor.test(x = x, y = y, z = z, method = method)}, silent = TRUE)
-    if(isTryError(result)) {
-      errors <- .extractErrorMessage(result)
-      result <- rep(NaN, length(statsNames))
-      names(result) <- paste(method, statsNames, sep = "_")
-    } else{
-      errors <- FALSE
-      result <- as.list(result)
-      if(alternative == "less"){
-        if(result$estimate <= 0){
-          result$p.value <- result$p.value/2
-        } else{
-          result$p.value <- 1 - result$p.value/2
-        }
-      } else if(alternative == "greater"){
-        if(result$estimate >= 0){
-          result$p.value <- result$p.value/2
-        } else{
-          result$p.value <- 1 - result$p.value/2
-        }
-      }
-      result$vsmpr <- .VovkSellkeMPR(result$p.value)
-      result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
-      # TODO: CIs for partial correlations
-      result$lower.ci <- NA
-      result$upper.ci <- NA
-      result <- unlist(result[statsNames], use.names = FALSE)
-      names(result) <- paste(method, statsNames, sep = "_")
-    }
-  }
-  
-  return(list(result = result, errors = errors))
-}
