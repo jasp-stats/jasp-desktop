@@ -135,7 +135,9 @@ Form
         {
             Group
             {
-                title: qsTr("Include Tables")
+                title: qsTr("Tables")
+                CheckBox { name: "kmotest";     		label: qsTr("KMO test")                 }
+                CheckBox { name: "bartest";     		label: qsTr("Bartlett's test")          }
                 CheckBox { name: "incl_structure";		label: qsTr("Structure matrix")			}
                 CheckBox { name: "incl_correlations";	label: qsTr("Factor correlations")		}
                 CheckBox { name: "incl_fitIndices";		label: qsTr("Additional fit indices")	}

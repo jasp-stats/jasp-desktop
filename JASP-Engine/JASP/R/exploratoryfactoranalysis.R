@@ -31,6 +31,8 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   modelContainer <- .efaModelContainer(jaspResults)
 
   # output functions
+  .efaKMOtest(           modelContainer, dataset, options, ready)
+  .efaBartlett(          modelContainer, dataset, options, ready)
   .efaGoFTable(          modelContainer, dataset, options, ready)
   .efaLoadingsTable(     modelContainer, dataset, options, ready)
   .efaStructureTable(    modelContainer, dataset, options, ready)
@@ -154,6 +156,42 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
 
 # Output functions ----
+.efaKMOtest <- function(modelContainer, dataset, options, ready) {
+  if (!options[["kmotest"]]) return()
+  
+  kmotab <- createJaspTable("Kaiser-Meyer-Olkin test")
+  kmotab$dependOn("kmotest")
+  kmotab$addColumnInfo(name = "col", title = "", type = "string")
+  kmotab$addColumnInfo(name = "val", title = "MSA", type = "number", format = "dp:3")
+  kmotab$position <- -1
+  modelContainer[["kmotab"]] <- kmotab
+  
+  if (!ready) return()
+  kmo <- psych::KMO(dataset)
+  
+  kmotab[["col"]] <- c("Overall MSA\n", .unv(names(kmo$MSAi)))
+  kmotab[["val"]] <- c(kmo$MSA, kmo$MSAi)
+}
+
+.efaBartlett <- function(modelContainer, dataset, options, ready) {
+  if (!options[["bartest"]]) return()
+  
+  bartab <- createJaspTable("Bartlett's test")
+  bartab$dependOn("bartest")
+  bartab$addColumnInfo(name = "chisq", title = "\u03a7\u00b2", type = "number", format = "dp:3")
+  bartab$addColumnInfo(name = "df", title = "df", type = "number", format = "dp:3")
+  bartab$addColumnInfo(name = "pval", title = "p-value", type = "number", format = "dp:3;p:.001")
+  bartab$position <- 0
+  modelContainer[["bartab"]] <- bartab
+  
+  if (!ready) return()
+  bar <- psych::cortest.bartlett(dataset)
+  
+  bartab[["chisq"]] <- bar[["chisq"]]
+  bartab[["df"]]    <- bar[["df"]]
+  bartab[["pval"]]  <- bar[["p.value"]]
+}
+
 .efaGoFTable <- function(modelContainer, dataset, options, ready) {
   if (!is.null(modelContainer[["goftab"]])) return()
 
