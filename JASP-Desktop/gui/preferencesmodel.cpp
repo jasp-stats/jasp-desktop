@@ -13,6 +13,10 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this, &PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged		);
 	connect(this, &PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::onDefaultPPIChanged		);
 	connect(this, &PreferencesModel::customPPIChanged,			this, &PreferencesModel::onCustomPPIChanged			);
+
+	connect(this, &PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::plotPPIPropChanged			);
+	connect(this, &PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::plotPPIPropChanged			);
+	connect(this, &PreferencesModel::customPPIChanged,			this, &PreferencesModel::plotPPIPropChanged			);
 }
 
 PreferencesModel::~PreferencesModel()

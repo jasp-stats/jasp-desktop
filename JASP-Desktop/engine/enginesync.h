@@ -82,6 +82,7 @@ signals:
 	void	moduleUninstallingFinished(		const QString & moduleName);
 
 	void	refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
+	void plotEditorRefresh();
 
 private:
 	bool		allEnginesStopped();

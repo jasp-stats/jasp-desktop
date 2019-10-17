@@ -80,8 +80,20 @@ void PlotEditorModel::setName(QString name)
 	somethingChanged();
 }
 
-QUrl	PlotEditorModel::imgFile() const
+void PlotEditorModel::refresh()
 {
+	//Lets make sure the plot gets reloaded by QML
+	_goBlank = true;
+	emit dataChanged();
+	_goBlank = false;
+	emit dataChanged();
+
+}
+
+QUrl PlotEditorModel::imgFile() const
+{
+	if(_goBlank) return QUrl("");
+
 	QString pad(tq(TempFiles::sessionDirName()) + "/" + _data);
 	
 	std::cout << "Pad='" << pad.toStdString() << "'" << std::endl;

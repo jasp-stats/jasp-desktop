@@ -56,6 +56,7 @@ public slots:
 	void setHeight(			int			height			);
 
 	void somethingChanged() const;
+	void refresh();
 
 
 private:
@@ -69,7 +70,8 @@ private:
 	QString					_name,
 							_data,
 							_title;
-	bool					_visible		= false;
+	bool					_visible		= false,
+							_goBlank		= false;
 	int						_width,
 							_height,
 							_analysisId;

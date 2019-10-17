@@ -275,6 +275,10 @@ void EngineRepresentation::analysisRemoved(Analysis * analysis)
 
 void EngineRepresentation::processAnalysisReply(Json::Value & json)
 {
+#ifdef PRINT_ENGINE_MESSAGES
+	Log::log() << "Analysis reply: " << json.toStyledString() << std::endl;
+#endif
+
 	if(_engineState == engineState::paused || _engineState == engineState::resuming || _engineState == engineState::idle)
 	{
 		Log::log() << "Do not process analysis reply because engineState is paused, resuming or idle" << std::endl;
@@ -286,10 +290,6 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		Log::log() << "The engineState is not analysis!!!" << std::endl;
 		return;
 	}
-
-#ifdef PRINT_ENGINE_MESSAGES
-	Log::log() << "Analysis reply: " << json.toStyledString() << std::endl;
-#endif
 
 	int id						= json.get("id",		-1).asInt();
 	int revision				= json.get("revision",	-1).asInt();
@@ -356,8 +356,11 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 	case analysisResultStatus::imageEdited:
 		if (results.get("error", false).asBool())
-			MessageForwarder::showWarning("Error resizing plot", "Unfortunately the plot could not be resized.\n\nError message:\n" + results.get("errorMessage", "").asString() + "\n\nIf the problem persists, please report the message above at: https://jasp-stats.org/bug-reports");
+			MessageForwarder::showWarning("Error resizing plot", "Unfortunately the plot could not be resized or edited.\n\nError message:\n" + results.get("errorMessage", "").asString() + "\n\nIf the problem persists, please report the message above at: https://jasp-stats.org/bug-reports");
+
 		analysis->imageEdited(results); // if an error occurs js needs to resize the plot back to the old size
+		emit plotEditorRefresh();
+
 		clearAnalysisInProgress();
 		break;
 

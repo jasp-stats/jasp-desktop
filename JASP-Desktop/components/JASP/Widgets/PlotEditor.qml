@@ -159,13 +159,15 @@ Popup
 						Image
 						{
 							id:					plotImg
+							cache:				false
 							source:				plotEditorModel.imgFile
 							sourceSize.width:	plotEditorModel.width
 							sourceSize.height:	plotEditorModel.height
-							width:				parent.width - ( 2 * plotImgRect.border.width)
-							height:				width * (plotEditorModel.height / plotEditorModel.width) + ( 2 * plotImgRect.border.width)
+							width:				Math.max((parent.width - ( 2 * plotImgRect.border.width)), plotEditorModel.width)
+							height:				(width * (plotEditorModel.height / plotEditorModel.width) + ( 2 * plotImgRect.border.width))
 							x:					plotImgRect.border.width
 							y:					plotImgRect.border.width
+							mipmap:				true
 						}
 					}
 

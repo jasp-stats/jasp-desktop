@@ -107,6 +107,7 @@ void EngineSync::start(int ppi)
 			connect(_engines[i],	&EngineRepresentation::moduleUnloadingFinished,			this,			&EngineSync::moduleUnloadingFinishedHandler								);
 			connect(_engines[i],	&EngineRepresentation::moduleUninstallingFinished,		this,			&EngineSync::moduleUninstallingFinished									);
 			connect(_engines[i],	&EngineRepresentation::logCfgReplyReceived,				this,			&EngineSync::logCfgReplyReceived										);
+			connect(_engines[i],	&EngineRepresentation::plotEditorRefresh,				this,			&EngineSync::plotEditorRefresh											);
 			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged										);
 			connect(this,			&EngineSync::imageBackgroundChanged,					_engines[i],	&EngineRepresentation::imageBackgroundChanged							);
 			connect(_analyses,		&Analyses::analysisRemoved,								_engines[i],	&EngineRepresentation::analysisRemoved									);

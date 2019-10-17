@@ -95,6 +95,7 @@ signals:
 	void moduleUninstallingFinished(	const QString & moduleName);
 
 	void logCfgReplyReceived(int channelNr);
+	void plotEditorRefresh();
 
 private:
 	void sendPauseEngine();
