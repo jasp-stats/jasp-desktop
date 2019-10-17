@@ -25,7 +25,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Read dataset
   dataset <- .efaReadData(dataset, options)
-  ready   <- length(options$variables) > 0
+  ready   <- length(options$variables) > 1
   .efaCheckErrors(dataset, options)
 
   modelContainer <- .efaModelContainer(jaspResults)
@@ -296,7 +296,9 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   if (!ready || modelContainer$getError()) return()
 
-  cors <- zapsmall(modelContainer[["model"]][["object"]][["score.cor"]])
+  efaResult <- modelContainer[["model"]][["object"]]
+  if (efaResult$factors == 1) return()
+  cors <- zapsmall(as.matrix(efaResult$score.cor))
   dims <- ncol(cors)
 
   cortab[["col"]] <- paste("Factor", 1:dims)
@@ -396,6 +398,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   LY <- as.matrix(loadings(efaResult))
   TE <- diag(efaResult$uniqueness)
   PS <- efaResult$score.cor
+  
 
   # Variable names
   xName   <- ifelse(options$rotationMethod == "orthogonal" && options$orthogonalSelector == "none", "PC", "RC")
@@ -433,14 +436,18 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   )
 
   # Factor correlations:
-  E_cor <- data.frame(
-    from   = c(factors[col(PS)]),
-    to     = c(factors[row(PS)]),
-    weight = c(PS),
-    stringsAsFactors = FALSE
-  )
-  E_cor <- E_cor[E_cor$from != E_cor$to, ]
-
+  if (efaResult$factors == 1) {
+    E_cor <- data.frame(from = NULL, to = NULL, weight = NULL)
+  } else {
+    E_cor <- data.frame(
+      from   = c(factors[col(PS)]),
+      to     = c(factors[row(PS)]),
+      weight = c(PS),
+      stringsAsFactors = FALSE
+    )
+    E_cor <- E_cor[E_cor$from != E_cor$to, ]
+  }
+  
   # Combine everything:
   edge_df <- rbind(E_loadings, E_resid, E_cor)
 
