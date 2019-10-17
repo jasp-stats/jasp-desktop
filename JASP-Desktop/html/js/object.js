@@ -60,11 +60,11 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	var itemModel = new JASPWidgets[type](results);
 	var itemView = new JASPWidgets[type + "View"]({ className: "jasp-display-item " + includeNamespace + "jasp-" + type + " jasp-view" + otherClasses, model: itemModel });
 
-	itemModel.on("CustomOptions:changed",		function (options)	{ this.trigger("CustomOptions:changed",		options)	}, this.model);
-	itemModel.on("SaveImage:clicked",			function (options)	{ this.trigger("SaveImage:clicked",			options)	}, this.model);
-	itemModel.on("EditImage:clicked",			function (options)	{ this.trigger("EditImage:clicked",			options)	}, this.model);
-	itemModel.on("ShowDependencies:clicked",	function (options)	{ this.trigger("ShowDependencies:clicked",	options)	}, this.model);
-	itemModel.on("analysis:resizeStarted",		function (image)	{ this.trigger("analysis:resizeStarted",	image)		}, this.model);
+	itemModel.on("CustomOptions:changed",		function (options)			{ this.trigger("CustomOptions:changed",		options)		}, this.model);
+	itemModel.on("SaveImage:clicked",			function (options)			{ this.trigger("SaveImage:clicked",			options)		}, this.model);
+	itemModel.on("EditImage:clicked",			function (image, options)	{ this.trigger("EditImage:clicked",			image, options)	}, this.model);
+	itemModel.on("ShowDependencies:clicked",	function (options)			{ this.trigger("ShowDependencies:clicked",	options)		}, this.model);
+	itemModel.on("analysis:resizeStarted",		function (image)			{ this.trigger("analysis:resizeStarted",	image)			}, this.model);
 	
 	if (!ignoreEvents) { this.listenTo(itemView, "toolbar:showMenu", function (obj, options) { this.trigger("toolbar:showMenu", obj, options); }); }
 

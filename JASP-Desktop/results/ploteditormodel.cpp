@@ -29,36 +29,60 @@ void PlotEditorModel::showPlotEditor(int id, QString options)
 	if(!_analysis || !_imgOptions.isMember("type") || _imgOptions["type"].type() != Json::stringValue || _imgOptions["type"] != "interactive")
 		return;
 
+	processImgOptions();
+
+	setVisible(true);
+}
+
+void PlotEditorModel::processImgOptions()
+{
 	setName(	tq(			_imgOptions.get(	"name",			"").asString()));
 	setData(	tq(			_imgOptions.get(	"data",			"").asString()));
 	setTitle(	tq(			_imgOptions.get(	"title",		"").asString()));
 	setWidth(				_imgOptions.get(	"width",		100).asInt());
 	setHeight(				_imgOptions.get(	"height",		100).asInt());
 
-	_editOptions		=	_imgOptions.get(	"editOptions",	Json::objectValue);
+	//_editOptions		=	_imgOptions.get(	"editOptions",	Json::objectValue);
+	_editOptions		=	_name == "" || !_analysis ? Json::objectValue : _analysis->editOptionsOfPlot(_name.toStdString());
 	Json::Value	xAxis	=	_editOptions.get(	"xAxis",		Json::objectValue),
 				yAxis	=	_editOptions.get(	"yAxis",		Json::objectValue);
 
 	_xAxis->setAxisData(xAxis);
 	_yAxis->setAxisData(yAxis);
 
-	setVisible(true);
+}
+
+Json::Value PlotEditorModel::generateImgOptions() const
+{
+	Json::Value		imgOptions	= _imgOptions;
+
+	imgOptions["editOptions"]	= generateEditOptions();
+
+	imgOptions["name"]			= name().toStdString();
+	imgOptions["data"]			= data().toStdString();
+	imgOptions["title"]			= title().toStdString();
+	imgOptions["width"]			= width();
+	imgOptions["height"]		= height();
+
+	return imgOptions;
+}
+
+Json::Value PlotEditorModel::generateEditOptions() const
+{
+	Json::Value		editOptions = _editOptions;
+
+	editOptions["xAxis"]		= _xAxis->getAxisData();
+	editOptions["yAxis"]		= _yAxis->getAxisData();
+
+	return editOptions;
 }
 
 void PlotEditorModel::somethingChanged() const
 {
 	if(!_visible) return; // We're still loading!
 
-	Json::Value newImgOptions  = _imgOptions,
-				newEditOptions = _editOptions;
+	_analysis->editImage(generateImgOptions());
 
-	newImgOptions["data"]			= _data.toStdString();
-	newImgOptions["title"]			= _title.toStdString();
-	newEditOptions["xAxis"]			= _xAxis->getAxisData();
-	newEditOptions["yAxis"]			= _yAxis->getAxisData();
-	newImgOptions["editOptions"]	= newEditOptions;
-
-	_analysis->editImage(newImgOptions);
 }
 
 void PlotEditorModel::setVisible(bool visible)
@@ -88,6 +112,7 @@ void PlotEditorModel::refresh()
 	_goBlank = false;
 	emit dataChanged();
 
+	_analysis->setEditOptionsOfPlot(_name.toStdString(), generateEditOptions());
 }
 
 QUrl PlotEditorModel::imgFile() const
