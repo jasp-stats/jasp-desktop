@@ -58,7 +58,7 @@ Correlation <- function(jaspResults, dataset, options){
   
   # Check for variance, infinity and observations
   # does not check pairwise observations yet
-  errors <-.hasErrors(dataset, message = 'default', 
+  errors <-.hasErrors(dataset, message = 'short', 
                       type = c('variance', 'infinity', 'observations'),
                       all.target = c(options$variables, options$conditioningVariables),
                       observations.amount = "< 3",
@@ -294,9 +294,10 @@ Correlation <- function(jaspResults, dataset, options){
         condData <- NULL
       }
       
-      errors <-.hasErrors(data, message = 'default', 
+      errors <-.hasErrors(data, message = 'short', 
                           type = c('variance', 'infinity', 'observations'),
-                          all.target = vcomb[i], observations.amount = "< 3",
+                          all.target = .unv(vcomb[[i]]), 
+                          observations.amount = sprintf("< %s", 3+length(options$conditioningVariables)),
                           exitAnalysisIfErrors = FALSE)
       
       stats <- c("estimate", "p.value", "conf.int", "vsmpr")
@@ -305,16 +306,26 @@ Correlation <- function(jaspResults, dataset, options){
       if(isFALSE(errors)){
         pearson <- .corr.test(x = data[,1], y = data[,2], z = condData, 
                               method = "pearson", alternative = alt, 
-                              conf.level = options$confidenceIntervalsInterval)$result
+                              conf.level = options$confidenceIntervalsInterval)
+        pearsonErrors <- pearson$errors
+        pearson <- pearson$result
+        
         spearman <- .corr.test(x = data[,1], y = data[,2], z = condData, 
                                method = "spearman", alternative = alt, 
-                               conf.level = options$confidenceIntervalsInterval)$result
+                               conf.level = options$confidenceIntervalsInterval)
+        
+        spearmanErrors <- spearman$errors
+        spearman <- spearman$result
+        
         kendall <- .corr.test(x = data[,1], y = data[,2], z = condData, 
                               method = "kendall", alternative = alt, 
-                              conf.level = options$confidenceIntervalsInterval)$result
+                              conf.level = options$confidenceIntervalsInterval)
+        kendallErrors <- kendall$errors
+        kendall <- kendall$result
       } else {
-        pearson <- spearman <- kendall <- rep(NaN, length(statsNames))
+        pearson <- spearman <- kendall <- rep(NA, length(statsNames))
         names(pearson) <- names(spearman) <- names(kendall) <- statsNames
+        pearsonErrors <- spearmanErrors <- kendallErrors <- TRUE
       }
       
       # stolen from manova
@@ -322,7 +333,11 @@ Correlation <- function(jaspResults, dataset, options){
       
       results[[vpair[i]]] <- list(vars = .unv(vcomb[[i]]), vvars = vcomb[[i]], 
                                   res = c(pearson, spearman, kendall, sample.size = nrow(data)),
-                                  errors = errors, shapiro = shapiro)
+                                  errors = errors, 
+                                  testErrors = list(pearson = pearsonErrors, 
+                                                    spearman = spearmanErrors, 
+                                                    kendall = kendallErrors),
+                                  shapiro = shapiro)
       
       # store state for pair
       state <- createJaspState(object = results[[vpair[i]]])
@@ -542,6 +557,9 @@ Correlation <- function(jaspResults, dataset, options){
      .corrFlagSignificant(mainTable, results[["spearman_p.value"]],  "spearman_estimate", pairs)
      .corrFlagSignificant(mainTable, results[["kendall_p.value"]],   "kendall_estimate",  pairs)
   }
+  
+  # add footnotes for errors
+  
 }
 
 .corrFlagSignificant <- function(table, p.values, colName, rowNames){
@@ -639,15 +657,17 @@ Correlation <- function(jaspResults, dataset, options){
       var1Breaks <- JASPgraphs::getPrettyAxisBreaks(c(data[,1], hist(data[,1], plot=FALSE)$breaks), min.n = 3)
       var2Breaks <- JASPgraphs::getPrettyAxisBreaks(c(data[,2], hist(data[,2], plot=FALSE)$breaks), min.n = 3)
       
-      plotMat[[1, 1]] <- .corrMarginalDistribution(variable = data[,1,drop=TRUE],
-                                                   options = options, errors = errors, yName = NULL)
+      plotMat[[1, 1]] <- .corrMarginalDistribution(variable = data[,1,drop=TRUE], varName = comb[[i]][1],
+                                                   options = options, errors = corrResults[[vpairs[[i]]]]$errors,
+                                                   yName = NULL)
       plotMat[[1, 2]] <- .corrValuePlot(corrResults[[vpairs[i]]], options = options)
       plotMat[[2, 1]] <- .corrScatter(corrResults[[vpairs[i]]], options = options,
                                       xVar = data[,1,drop=TRUE], yVar = data[,2,drop=TRUE], 
                                       xBreaks = var1Breaks, yBreaks = var2Breaks,
                                       drawAxes = FALSE)
-      plotMat[[2, 2]] <- .corrMarginalDistribution(variable = data[,2,drop=TRUE],
-                                                   options = options, errors = errors, yName = NULL, coord_flip = TRUE)
+      plotMat[[2, 2]] <- .corrMarginalDistribution(variable = data[,2,drop=TRUE], varName = comb[[i]][2],
+                                                   options = options, errors = corrResults[[vpairs[[i]]]]$errors,
+                                                   yName = NULL, coord_flip = TRUE)
         
       
       plot$plotObject <- JASPgraphs::ggMatrixPlot(plotMat, 
@@ -714,7 +734,8 @@ Correlation <- function(jaspResults, dataset, options){
   for(row in seq_len(len)){
     for(col in seq_len(len)){
       if(row == col) {
-        plotMat[[row, col]] <- .corrMarginalDistribution(variable = dataset[[vvars[col]]],
+        plotMat[[row, col]] <- .corrMarginalDistribution(variable = dataset[[vvars[col]]], 
+                                                         varName = vars[col],
                                                          options = options, errors = errors)
       } else if(row > col){
         plotMat[[row, col]] <- .corrValuePlot(corrResults[[paste(vvars[c(col, row)], collapse = "_")]],
@@ -736,7 +757,7 @@ Correlation <- function(jaspResults, dataset, options){
 .corrValuePlot <- function(results, cexText= 2.5, cexCI= 1.7, options = options) {
   if(isFALSE(options$plotStatistics)) return(.displayError(errorMessage = ""))
   if(!isFALSE(results$errors)){
-    return(.displayError(errorMessage = results$errors$message))
+    return(.displayError(errorMessage = paste0("Correlation undefined: ", results$errors$message)))
   }
   
   res <- results$res
@@ -821,7 +842,7 @@ Correlation <- function(jaspResults, dataset, options){
 .corrMarginalDistribution <- function(variable, varName, options, xName = NULL, yName = "Density", errors, coord_flip = FALSE){
   if(isFALSE(options$plotDensities)) return(.displayError(errorMessage = "")) # return empty plot
   if(!isFALSE(errors)){
-    errorsInVariable <- sapply(errors[-"message"], function(x) varName %in% x)
+    errorsInVariable <- sapply(errors, function(x) varName %in% x)
     if(any(errorsInVariable)) return(.displayError(errorMessage = sprintf("Plotting not possible: %s", errors$message)))
   }
   
@@ -840,8 +861,9 @@ Correlation <- function(jaspResults, dataset, options){
 
 .corrScatter <- function(results, options, xVar, yVar, xBreaks = NULL, yBreaks = NULL, xName = NULL, yName = NULL, 
                          drawAxes = TRUE) {
+  #browser()
   if(!isFALSE(results$errors)){
-    return(.displayError(errorMessage = sprintf("Plotting not possible: %s", errors$message)))
+    return(.displayError(errorMessage = sprintf("Plotting not possible: %s", results$errors$message)))
   }
   
   if(isTRUE(options$plotRanks)) {
@@ -1388,7 +1410,9 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 ### empty Plot with error message ###
-.displayError <- function(errorMessage=NULL, cexText=1.6, lwdAxis= 1.2) {
+.displayError <- function(errorMessage=NULL, cexText=1.6, lwdAxis= 1.2, wrap = 20) {
+  if(!is.null(wrap)) errorMessage <- paste(strwrap(errorMessage, wrap), collapse="\n")
+  
     p <- ggplot2::ggplot(data = data.frame(), ggplot2::aes(x = seq_along(data.frame()),y = summary(data.frame()))) +
         ggplot2::theme(
             panel.border = ggplot2::element_blank(),
