@@ -684,7 +684,7 @@ Correlation <- function(jaspResults, dataset, options){
       
       plotMat <- matrix(list(), 1, 2)
       plotMat[[1, 1]] <- .corrScatter(corrResults[[vpairs[i]]], options = options,
-                                      xVar = data[,1,drop=TRUE], yVar = data[,1,drop=TRUE], 
+                                      xVar = data[,1,drop=TRUE], yVar = data[,2,drop=TRUE], 
                                       xName = comb[[i]][1], yName = comb[[i]][2],
                                       drawAxes = TRUE)
       plotMat[[1, 2]] <- .corrValuePlot(corrResults[[vpairs[i]]], options = options)
