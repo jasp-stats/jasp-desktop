@@ -235,7 +235,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 
     # Create table
     crossTabLogOdds <- createJaspTable(title = "Log Odds Ratio")
-    crossTabLogOdds$dependOn(c("oddsRatio", "oddsRatioConfidenceIntervalInterval"))
+    crossTabLogOdds$dependOn(c("oddsRatio", "oddsRatioConfidenceIntervalInterval", "oddsRatioHypothesis"))
     crossTabLogOdds$showSpecifiedColumnsOnly <- TRUE
     crossTabLogOdds$position <- 3
     
@@ -251,6 +251,9 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     analysis <- as.list(analysis)
     # Compute/get Group List
     groupList <- .crossTabComputeGroups(dataset, options, analysisContainer, analysis, ready)
+    
+    # Add note for one-sided tests
+    .crossTabLogOddsNote(crossTabLogOdds, groupList, options, ready)
     
     res <- try(.crossTabOddsRatioRows(analysisContainer, analysis$rows, groupList, options, ready))
     .crossTabSetErrorOrFill(res, crossTabLogOdds)
@@ -487,6 +490,9 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
                                 overtitle = ci.label, type = "number", format = "dp:3")
   table$addColumnInfo(name = paste0("up[", fold, "]"),    title = "Upper", 
                                 overtitle = ci.label, type = "number", format = "dp:3")
+  table$addColumnInfo(name = paste0("p[", fold, "]"),     title = "p", 
+                                type = "number", format = "dp:3;p:.001")
+
 }
 
 .crossTabNominalAddColInfo <- function(table, fold){
@@ -635,6 +641,23 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       return(TRUE)
   }
   return(FALSE)
+}
+
+.crossTabLogOddsNote <- function(crossTabLogOdds, groupList, options, ready){
+  if(ready){
+    if(length(groupList$group.matrices) >= 1  & options$oddsRatioHypothesis != "two.sided"){
+
+      gp1 <- dimnames(groupList$group.matrices[[1]])[[1]][1]
+      gp2 <- dimnames(groupList$group.matrices[[1]])[[1]][2]
+
+      if(options$oddsRatioHypothesis == "less"){
+        message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is less than group <em>", gp2, ".</em>", sep="")
+      }else if(options$oddsRatioHypothesis == "greater"){
+        message <- paste("For all tests, the alternative hypothesis specifies that group <em>", gp1, "</em> is greater than group <em>", gp2, ".</em>", sep="")
+      }
+      crossTabLogOdds$addFootnote(symbol="<em>Note.</em>", message=message)
+    }
+  }
 }
 
 .crossTabRowName <- function(row.rownames, groupNum, countsMatNum = "", fold) {
@@ -1103,6 +1126,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
         row[["value[oddsRatio]"]] <- NaN
         row[["low[oddsRatio]"]]   <- ""
         row[["up[oddsRatio]"]]    <- ""
+        row[["p[oddsRatio]"]]     <- ""
         stop("Odds ratio restricted to 2 x 2 tables")
       } else {
         chi.result <- try({
@@ -1122,10 +1146,12 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           row[["value[oddsRatio]"]] <- LogOR
           row[["low[oddsRatio]"]]   <- log.CI.low
           row[["up[oddsRatio]"]]    <- log.CI.high
+          row[["p[oddsRatio]"]]     <- ""
         }
         row[["value[oddsRatio]"]] <- LogOR
         row[["low[oddsRatio]"]]   <- log.CI.low
         row[["up[oddsRatio]"]]    <- log.CI.high
+        row[["p[oddsRatio]"]]     <- ""
       }
     }
 
@@ -1137,14 +1163,17 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
         row[["value[FisherTest]"]] <- NaN
         row[["low[FisherTest]"]]   <- ""
         row[["up[FisherTest]"]]    <- ""
+        row[["p[FisherTest]"]]     <- ""
       } else {
         chi.result <- try({
           conf.level  <- options$oddsRatioConfidenceIntervalInterval
-          chi.result  <- stats::fisher.test(counts.matrix, conf.level = conf.level)
+          chi.result  <- stats::fisher.test(counts.matrix, conf.level = conf.level,
+                                            alternative = options$oddsRatioHypothesis)
           OR          <- unname(chi.result$estimate)
           logOR       <- log(OR)
           log.CI.low  <- log(chi.result$conf.int[1])
           log.CI.high <- log(chi.result$conf.int[2])
+          p           <- chi.result$p.value
         })
         
         if (isTryError(chi.result)) 
@@ -1155,10 +1184,12 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           row[["value[FisherTest]"]] <- logOR
           row[["low[FisherTest]"]]   <- log.CI.low
           row[["up[FisherTest]"]]    <- log.CI.high
+          row[["p[FisherTest]"]]     <- p
         }
         row[["value[FisherTest]"]] <- logOR
         row[["low[FisherTest]"]]   <- log.CI.low
         row[["up[FisherTest]"]]    <- log.CI.high
+        row[["p[FisherTest]"]]     <- p
       }
     }
     
