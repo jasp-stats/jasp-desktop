@@ -8,7 +8,9 @@ JASPgraphs_data <- list2env(list(
   colorblind3 = list(colors = c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")), # from ggthemes
   viridis     = list(colors = viridisLite::viridis(256L)), # viridis::scale_color_viridis
   blue        = list(colors = c("#d1e1ec", "#b3cde0", "#6497b1", "#005b96", "#03396c", "#011f4b")), # bayesplot::color_scheme_get("blue") 
-  gray        = list(colors = c("#DFDFDF", "#bfbfbf", "#999999", "#737373", "#505050", "#383838"))  # bayesplot::color_scheme_get("gray") 
+  gray        = list(colors = c("#DFDFDF", "#bfbfbf", "#999999", "#737373", "#505050", "#383838")), # bayesplot::color_scheme_get("gray")
+  ggplot2     = list(colors = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", "#00BFC4", "#00A9FF", "#C77CFF", "#FF61CC"),
+                     fun    = scales::hue_pal())
 ))
 
 #'@title JASP color palettes
@@ -34,6 +36,10 @@ JASPcolors <- function(palette = getGraphOption("palette"), asFunction = FALSE) 
   }
   colors <- JASPgraphs_data[[palette]][["colors"]]
   if (asFunction) {
+    fun <- JASPgraphs_data[[palette]][["fun"]]
+    if (!is.null(fun))
+      return(fun)
+
     return(function(n) {
       scales::gradient_n_pal(colors, values = NULL)(seq(0, 1, length.out = n))
     })

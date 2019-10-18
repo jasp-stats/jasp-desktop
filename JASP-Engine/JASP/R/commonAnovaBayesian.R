@@ -69,7 +69,7 @@
     .hasErrors(
       dataset = dataset,
       perform = "run",
-      type    = c("infinity", "observations", "variance", "factorLevels"),
+      type    = c("infinity", "observations", "variance", "factorLevels", "duplicateColumns"),
       infinity.target     = target,
       variance.target     = target,
       observations.target = target,

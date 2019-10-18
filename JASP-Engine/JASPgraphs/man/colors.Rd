@@ -8,8 +8,7 @@
 \alias{scale_JASPfill_discrete}
 \title{JASP color palettes}
 \usage{
-JASPcolors(palette = getGraphOption("palette")[["palette"]],
-  asFunction = FALSE)
+JASPcolors(palette = getGraphOption("palette"), asFunction = FALSE)
 
 scale_JASPcolor_continuous(palette = getGraphOption("palette"), ...)
 
@@ -24,11 +23,13 @@ scale_JASPfill_discrete(palette = getGraphOption("palette"), ...)
 
 \item{asFunction}{Should a function be returned or the raw colors? If a function is returned, it either takes a single integer or a vector in 0, 1 as input.}
 
-\item{...}{Further arguments for \code{\link{ggplot2::scale_color_manual}} or \code{\link{ggplot2::scale_fill_manual}}.}
+\item{...}{Further arguments for \code{\link[ggplot2]{scale_colour_continuous}}.}
 
 \item{n}{Number of colors desired.}
 
 \item{discete}{Should the function returned be suited for a discrete scale or a continuous one? Only used when \code{asFunction = TRUE}.}
+
+\item{...}{Further arguments for \code{\link[ggplot2]{scale_color_manual}}.}
 }
 \value{
 Either a character vector of colors or a function.
@@ -40,9 +41,10 @@ JASP color palettes
 For ggplot2s, the convenience functions \code{scale_JASPcolor_\*} and \code{scale_JASPfill_\*} exist.
 }
 \examples{
-
 library(ggplot2)
 library(JASPgraphs)
+setGraphOption("palette", "colorblind")
+
 # use colors directly
 colors <- JASPcolors("colorblind")
 plot(rnorm(6), col = colors, pch = 16, cex = 2)
@@ -57,13 +59,19 @@ plot(rnorm(10), col = colFun(10), pch = 16, cex = 2)
 # use colorscales in ggplot2
 e0 <- 1:10
 df <- data.frame(x = e0, y = e0, z = e0, g = factor(e0))
-ggplot(df, aes(x = x, y = y, color = z, fill = z)) +
-  geom_point() +
-  scale_JASPcolor_continuous() +
-  scale_JASPfill_continuous()
+g0 <- ggplot(df, aes(x = x, y = y, color = z, fill = z)) + geom_point(size = 5)
+g1 <- ggplot(df, aes(x = x, y = y, color = g, fill = g)) + geom_point(size = 5)
+g0
 
-ggplot(df, aes(x = x, y = y, color = g, fill = g)) +
-  geom_point() +
-  scale_JASPcolor_discrete() +
-  scale_JASPfill_discrete()
+g1 + scale_JASPcolor_discrete() + scale_JASPfill_discrete()
+
+# colorblind is not really suited for a continuous color scale
+g0 + scale_JASPcolor_continuous() + scale_JASPfill_continuous()
+
+# viridis already looks a lot better!
+setGraphOption("palette", "viridis")
+g0 + scale_JASPcolor_continuous() + scale_JASPfill_continuous()
+
+# reset the palette to it's default if you changed it globally!
+setGraphOption("palette", "colorblind")
 }

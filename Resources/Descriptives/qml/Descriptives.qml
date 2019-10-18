@@ -28,7 +28,7 @@ Form
 	{
 		AvailableVariablesList	{ name: "allVariablesList"								}
 		AssignedVariablesList	{ name: "variables";		title: qsTr("Variables")	}
-		AssignedVariablesList	{ name: "splitby";			title: qsTr("Split");		singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList	{ name: "splitby";			title: qsTr("Split");		singleVariable: true; suggestedColumns: ["ordinal", "nominal"];	id:splitBy}
 	}
 
 	CheckBox { name: "frequencyTables"; label: qsTr("Frequency tables (nominal and ordinal variables)") }
@@ -63,6 +63,72 @@ Form
 			}
 			CheckBox {				name: "descriptivesQQPlot";		label: qsTr("Q-Q plots")						}
 			CheckBox {				name: "descriptivesPiechart";	label: qsTr("Pie charts")						}
+		}
+
+		Group
+		{
+			CheckBox
+			{
+				name: "scatterPlot";	label: qsTr("Scatter Plots")
+				RadioButtonGroup
+				{
+					name:	"graphTypeAbove";
+					title:	qsTr("Graph above scatter plot")
+					RadioButton { value: "density";		label: qsTr("Density");		checked: true	}
+					RadioButton { value: "histogram";	label: qsTr("Histogram")					}
+					RadioButton { value: "none";		label: qsTr("None")							}
+				}
+				RadioButtonGroup
+				{
+					name:	"graphTypeRight";
+					title:	qsTr("Graph right of scatter plot")
+					RadioButton { value: "density";		label: qsTr("Density");		checked: true	}
+					RadioButton { value: "histogram";	label: qsTr("Histogram")					}
+					RadioButton { value: "none";		label: qsTr("None")							}
+				}
+				CheckBox
+				{
+					name: "addSmooth"
+					label: qsTr("Add regression line")
+					checked: true
+					RadioButtonGroup
+					{
+						name:	"regressionType";
+						RadioButton { value: "smooth";	label: qsTr("Smooth");	checked: true	}
+						RadioButton { value: "linear";	label: qsTr("Linear")					}
+					}
+
+					CheckBox
+					{
+						name: "addSmoothCI"
+						label: qsTr("Show confidence interval")
+						checked: true
+						childrenOnSameRow: true
+						CIField {	name: "addSmoothCIValue" }
+					}
+				}
+				CheckBox
+				{
+					enabled: splitBy.count > 0
+					name: "showLegend"
+					label: qsTr("Show legend")
+					checked: true
+				}
+			}
+			DropDown
+			{
+				name: "colorPalette"
+				label: qsTr("Color palette")
+				indexDefaultValue: 3
+				values:
+				[
+					{ label: qsTr("Colorblind"),		value: "colorblind"		},
+					{ label: qsTr("Colorblind Alt."),	value: "colorblind3"	},
+					{ label: qsTr("Viridis"),			value: "viridis"		},
+					{ label: qsTr("ggplot2"),			value: "ggplot2"		},
+					{ label: qsTr("Gray"),				value: "gray"			}
+				]
+			}
 		}
 	}
 

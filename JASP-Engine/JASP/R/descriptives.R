@@ -164,12 +164,12 @@ Descriptives <- function(jaspResults, dataset, options) {
 
     if(is.null(jaspResults[["pieCharts"]])) {
       jaspResults[["pieCharts"]] <- createJaspContainer("Pie charts")
-      jaspResults[["pieCharts"]]$dependOn(c("splitby", "descriptivesPiechart"))
+      jaspResults[["pieCharts"]]$dependOn(c("splitby", "descriptivesPiechart", "colorPalette"))
       jaspResults[["pieCharts"]]$position <- 9
     }
 
     piePlots <- jaspResults[["pieCharts"]]
-
+    JASPgraphs::setGraphOption("palette", options[["colorPalette"]])
     for (var in variables) {
       # skip non-categorical variables
       if(is.double(dataset.factors[[.v(var)]]))next
@@ -182,6 +182,18 @@ Descriptives <- function(jaspResults, dataset, options) {
         }
       }
     }
+  }
+
+  # Scatter plots
+  if (options[["scatterPlot"]]) {
+    if(is.null(jaspResults[["scatterPlots"]])) {
+      jaspResults[["scatterPlots"]] <- createJaspContainer("Scatter Plots")
+      jaspResults[["scatterPlots"]]$dependOn(c("splitby", "scatterPlot", "graphTypeAbove", "graphTypeRight", "addSmooth",
+                                               "addSmoothCI", "addSmoothCIValue", "regressionType", "showLegend",
+                                               "colorPalette"))
+      jaspResults[["scatterPlots"]]$position <- 10
+    }
+    .descriptivesScatterPlots(jaspResults[["scatterPlots"]], dataset.factors, variables, splitName, options)
   }
   return()
 }
@@ -1316,5 +1328,68 @@ Descriptives <- function(jaspResults, dataset, options) {
   }
 
   return(plotObj)
+}
+
+.descriptivesScatterPlots <- function(jaspContainer, dataset, variables, split, options) {
+
+  JASPgraphs::setGraphOption("palette", options[["colorPalette"]])
+  if (!is.null(split) && split != "") {
+    group <- dataset[, .v(split)]
+    legendTitle <- split
+
+  } else {
+    group <- NULL
+    legendTitle <- NULL
+  }
+
+  variablesB64 <- .v(variables)
+  # remove non-numeric variables
+  numerics <- sapply(dataset[variablesB64], is.double)
+  variables    <- variables[numerics]
+  variablesB64 <- variablesB64[numerics]
+
+  nvar <- length(variables)
+  # Set's a message with instruction for user using jaspHtml
+  if (nvar < 2L) {
+  #   msg <- if (length(numerics) > 1L) { # basically all user variables have the wrong type...
+  #     "These plots can only be shown for scale variables."
+  #   } else {
+  #     "Please enter two variables."
+  #   }
+  #   jaspContainer[["scatterplotMsg"]] <- createJaspHtml(text = msg, dependencies = "variables")
+    return()
+  }
+
+  for (i in 1:(nvar - 1L)) for (j in (i + 1L):nvar) {
+    v1 <- variables[i]
+    v2 <- variables[j]
+    name <- paste(v1, "-", v2)
+    if (is.null(jaspContainer[[name]])) {
+      scatterPlot <- createJaspPlot(title = name)
+      scatterPlot$dependOn(optionContainsValue = list(variables = c(v1, v2)))
+      p <- try(JASPgraphs::JASPScatterPlot(
+        x                 = dataset[, variablesB64[i]],
+        y                 = dataset[, variablesB64[j]],
+        group             = group,
+        xName             = v1,
+        yName             = v2,
+        showLegend        = options[["showLegend"]],
+        addSmooth         = options[["addSmooth"]],
+        addSmoothCI       = options[["addSmoothCI"]],
+        smoothCIValue     = options[["addSmoothCIValue"]],
+        forceLinearSmooth = options[["regressionType"]] == "linear",
+        plotAbove         = options[["graphTypeAbove"]],
+        plotRight         = options[["graphTypeRight"]],
+        legendTitle       = legendTitle
+      ))
+      if (isTryError(p)) {
+        errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+        scatterPlot$setError(errorMessage)
+      } else {
+        scatterPlot$plotObject <- p
+      }
+      jaspContainer[[name]] <- scatterPlot
+    }
+  }
 }
 # </editor-fold> HELPER FUNCTIONS BLOCK

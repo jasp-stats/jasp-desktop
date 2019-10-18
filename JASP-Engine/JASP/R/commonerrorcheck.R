@@ -150,6 +150,7 @@
   checks[["modelInteractions"]] <- list(callback=.checkModelInteractions, addGrouping=FALSE)
   checks[["negativeValues"]] <- list(callback=.checkNegativeValues, addGroupingMsg=TRUE)
   checks[["missingValues"]] <- list(callback=.checkMissingValues, addGroupingMsg=TRUE)
+  checks[["duplicateColumns"]] <- list(callback=.checkDuplicateColumns, addGroupingMsg=TRUE)
   
   args <- c(list(dataset=dataset), list(...))
   errors <- list(message=NULL)
@@ -720,5 +721,60 @@
     
   }
   
+  return(result)
+}
+
+.checkDuplicateColumns <- function(dataset, target = NULL, grouping = NULL) {
+  # Check for duplicate columns in the dataset.
+  # Args:
+  #   dataset: JASP dataset.
+  #   target: String vector indicating the target variables. Duplicates not in this vector do not trigger an error. NULL implies all variables in the dataset are checked for duplicates.
+  #   grouping: String vector indicating the grouping variables.
+
+  result <- list(error=FALSE, errorVars=NULL)
+
+  findDuplicates <- function(data) {
+
+    nms <- names(data)
+    duplicatedVars <- character()
+    nc <- length(nms)
+    for (i in 1:(nc - 1L))
+      for (j in (i + 1L):nc)
+        if (identical(data[[nms[i]]], data[[nms[j]]]))
+          duplicatedVars <- c(duplicatedVars, nms[i], nms[j])
+
+    if (identical(duplicatedVars, character())) {
+      return(duplicatedVars)
+    } else {
+      return(.unv(unique(duplicatedVars)))
+    }
+  }
+
+  if (is.null(target)) {
+    targetB64 <- colnames(dataset)
+  } else {
+    targetB64 <- .v(target)
+  }
+
+  if (length(target) > 1L) {
+
+    if (is.null(grouping)) {
+      dataset <- list(dataset[, targetB64])
+    } else {
+      groupingData <- dataset[, .v(grouping)]
+      dataset <- dataset[, targetB64]
+      dataset <- split(dataset, groupingData)
+    }
+
+    duplicatedVars <- character()
+    for (d in seq_along(dataset))
+      duplicatedVars <- c(duplicatedVars, findDuplicates(dataset[[d]]))
+
+    if (length(duplicatedVars) > 0L) {
+      result$error <- TRUE
+      result$errorVars <- unique(duplicatedVars)
+    }
+  }
+
   return(result)
 }
