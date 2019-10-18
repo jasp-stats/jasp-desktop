@@ -4,73 +4,53 @@ context("Principal Component Analysis")
 # - error handling
 # - oblique rotation
 # - Parallel analysis / manual
-# - contents of screeplot (set.seed does not work)
 # - slider
 
-test_that("Main tables' results match", {
-  options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
-  options$variables <- list("contNormal", "contGamma", "debCollin1", "contcor1", "facFifty")
-  options$factorMethod <- "eigenValues"
-  options$eigenValuesBox <- 0.95
-  options$rotationMethod <- "orthogonal"
-  options$orthogonalSelector <- "varimax"
-  results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
+options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
+options$variables <- list("contNormal", "contGamma", "debCollin1", "contcor1", "facFifty")
+options$eigenValuesBox <- 0.95
+options$orthogonalSelector <- "varimax"
+options$incl_pathDiagram <- TRUE
+options$incl_screePlot <- TRUE
+options$factorMethod <- "eigenValues"
+set.seed(1)
+results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
 
-  table <- results[["results"]][["factorLoadings"]][["data"]]
+
+test_that("Chi-squared Test table results match", {
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_goftab"]][["data"]]
   expect_equal_tables(table,
-    list("contNormal", 0.709068975944499, -0.055882219913321, 0.494098364850579,
-         "contGamma", -0.198414056307147, -0.730807163622534, 0.426552751857732,
-         "debCollin1", -0.154267640888904, 0.766942636295035, 0.388000487607395,
-         "contcor1", 0.613519408318389, 0.258607271436745, 0.556716214776696,
-         "facFifty", -0.560112933829558, 0.0519207989938901, 0.683577731988681),
-    label="Factor loadings table"
-  )
-
-  table <- results[["results"]][["goodnessOfFit"]][["data"]]
-  expect_equal_tables(table, list("Model", 56.1723464768203, 1, 6.63887442169672e-14),
-    label="Chi squared table"
-  )
+                      list(56.1723464768203, 1, "Model", 6.63887442169672e-14))
 })
 
-test_that("Path diagram matches", {
-  skip("base plots are not supported in regression testing")
-  options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
-  options$variables <- list("contNormal", "contGamma")
-  options$incl_pathDiagram <- TRUE
-  results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
-  expect_equal_plots(testPlot, "path-diagram", dir="PrincipalComponentAnalysis")
+test_that("Component Loadings table results match", {
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_loatab"]][["data"]]
+  expect_equal_tables(table,
+                      list(0.709068975944499, -0.055882219913321, 0.494098364850579, "contNormal",
+                           -0.198414056307147, -0.730807163622534, 0.426552751857732, "contGamma",
+                           -0.154267640888903, 0.766942636295035, 0.388000487607395, "debCollin1",
+                           0.613519408318389, 0.258607271436745, 0.556716214776696, "contcor1",
+                           -0.560112933829558, 0.0519207989938901, 0.683577731988681, "facFifty"
+                      ))
 })
 
-test_that("Scree plot option creates .png", {
-  options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
-  options$variables <- list("contNormal", "contGamma")
-  options$incl_screePlot <- TRUE
-  results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
-  expect_match(results[["results"]][["screePlot"]][["data"]], ".*\\.png")
+test_that("Component Characteristics table results match", {
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_eigtab"]][["data"]]
+  expect_equal_tables(table,
+                      list("PC1", 0.269220893232411, 1.34610446616205, 0.269220893232411,
+                           "PC2", 0.490210889783784, 1.10494998275686, 0.220989996551372
+                      ))
 })
 
-# This test is not deterministic; it might have something to do with some option in options(), but it randomly fails atm
-# test_that("Factor correlation table matches", {
-#   options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
-#   options$variables <- list("contNormal", "contGamma", "contcor1", "debCollin1")
-#   options$incl_correlations <- TRUE
-#   results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
-#   table <- results[["results"]][["factorCorrelations"]][["data"]]
-#   expect_equal_tables(table, list("PC 1", 1))
-# })
+test_that("Path Diagram plot matches", {
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_path"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "path-diagram", dir = "PrincipalComponentAnalysis")
+})
 
-test_that("Missing values works", {
-	options <- jasptools::analysisOptions("PrincipalComponentAnalysis")
-	options$variables <- list("contNormal", "contGamma", "contcor1", "debMiss30")
-
-	options$missingValues <- "pairwise"
-	results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
-	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]
-	expect_equal_tables(table, list("Model", 20.7622398603288, 2, 3.10125086457269e-05), label = "pairwise")
-
-	options$missingValues <- "listwise"
-	results <- jasptools::run("PrincipalComponentAnalysis", "test.csv", options)
-	table <- results[["results"]][["goodnessOfFit"]][["data"]][[1]]
-	expect_equal_tables(table, list("Model", 13.8130059031587, 2, 0.00100125311189221), label = "listwise")
+test_that("Scree plot matches", {
+  skip("Scree plot check does not work because some data is simulated (non-deterministic).")
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_scree"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "scree-plot", dir = "PrincipalComponentAnalysis")
 })
