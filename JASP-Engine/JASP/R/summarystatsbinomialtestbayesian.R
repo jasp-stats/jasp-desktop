@@ -171,7 +171,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   
   if (!summaryStatsBinomialResults[["ready"]] || jaspResults[["binomialContainer"]]$getError())
     return()
-
+  
   plotResults    <- summaryStatsBinomialResults[["binomPlot"]]
   hypothesisList <- summaryStatsBinomialResults[["hypothesisList"]]
   hypothesis     <- hypothesisList$hypothesis
@@ -184,39 +184,53 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   theta0    <- plotResults$theta0
   BF10      <- plotResults$BF[["BF10"]]
   
-  # error check: infinite Bayes factors?
-  if(is.infinite(BF10)){
-    plot$setError("Plotting not possible: Bayes factor is infinite")
+  # Prior and posterior plot
+  quantiles       <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, a, b, successes, n, hyp = hypothesis, theta0 = theta0)
+  medianPosterior <- quantiles$ci.median
+  CIlower         <- quantiles$ci.lower
+  CIupper         <- quantiles$ci.upper
+  
+  # error check: Posterior too peaked?
+  if(abs(CIlower - CIupper) <= .Machine$double.eps){
+    plot$setError("Plotting not possible: Posterior too peaked!")
     return()
   }
   
-  # Prior and posterior plot
-    quantiles       <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, a, b, successes, n, hyp = hypothesis, theta0 = theta0)
-    medianPosterior <- quantiles$ci.median
-    CIlower         <- quantiles$ci.lower
-    CIupper         <- quantiles$ci.upper
-    ppCri           <- c(CIlower, CIupper)
-    dfLinesPP       <- .dfLinesPP(dataset = NULL, a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
-    dfPointsPP      <- .dfPointsPP(dataset = NULL, a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
-    xName           <- expression(paste("Population proportion ", theta))
-    
-    if(options$plotPriorAndPosteriorAdditionalInfo){
-      p <- try(JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF = 1/BF10,
-                                             bfType = options$bfType,
-                                             CRI = ppCri, median = medianPosterior, drawCRItxt = TRUE))
-    } 
-    else {
-      p <- try(JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName))
-    }
-    
-    # create JASP object
-    if (isTryError(p)) {
-      errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
-      plot$setError(errorMessage)
-    } else {
-      plot$plotObject <- p
-    }
+  ppCri           <- c(CIlower, CIupper)
+  dfLinesPP       <- .dfLinesPP(dataset = NULL, a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
+  dfPointsPP      <- .dfPointsPP(dataset = NULL, a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
+  xName           <- expression(paste("Population proportion ", theta))
+  
+  # error check: Cannot evaluate prior or posterior density?
+  if(any(is.na(c(dfPointsPP$y, dfLinesPP$y))) || any(is.infinite(c(dfPointsPP$y, dfLinesPP$y)))){
+    plot$setError("Plotting not possible: Cannot evaluate prior or posterior density!")
     return()
+  }
+  
+  if(options$plotPriorAndPosteriorAdditionalInfo){
+    
+    # error check: infinite Bayes factors?
+    if(!is.numeric(BF10) || is.infinite(BF10)){
+      plot$setError("Plotting not possible: Bayes factor should be numeric!")
+      return()
+    }
+    
+    p <- try(JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF = 1/BF10,
+                                               bfType = options$bfType,
+                                               CRI = ppCri, median = medianPosterior, drawCRItxt = TRUE))
+  } 
+  else {
+    p <- try(JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName))
+  }
+  
+  # create JASP object
+  if (isTryError(p)) {
+    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    plot$setError(errorMessage)
+  } else {
+    plot$plotObject <- p
+  }
+  return()
 }
 
 # helper functions
