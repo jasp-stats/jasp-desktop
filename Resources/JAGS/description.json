@@ -8,7 +8,7 @@
 		"maintainer":		"Don van den Bergh <d.vandenBergh@jasp-stats.com>",
 		"website":			"https://github.com/vandenman/BayesianReliability",
 		"license":			"GPL (>= 2)",
-		"icon":     		"testIcon.svg",
+                "icon":     		"analysis-JAGS.svg",
 		"requiresData": 	 false
 	},
 

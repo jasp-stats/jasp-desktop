@@ -139,5 +139,6 @@
         <file>icons/eyeClosed.png</file>
         <file>icons/eyeOpen.png</file>
         <file>icons/variable-nominal-text-inactive.svg</file>
+        <file>icons/analysis-JAGS.svg</file>
     </qresource>
 </RCC>
