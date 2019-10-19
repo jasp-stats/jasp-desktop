@@ -28,31 +28,31 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "fixedFactors", "model"))
 	
 	### LEGEND ###
-	.bainLegendAncova(dataset, options, jaspResults)
+	.bainLegendAncova(dataset, options, bainContainer, position = 0)
 	
 	### RESULTS ###
-	.bainAnovaResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready)
+	.bainAnovaResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
 	
 	### BAYES FACTOR MATRIX ###
-	.bainBayesFactorMatrix(dataset, options, bainContainer, ready, type = "anova")
+	.bainBayesFactorMatrix(dataset, options, bainContainer, ready, type = "anova", position = 2)
 	
 	### DESCRIPTIVES ###
-	.bainAnovaDescriptivesTable(dataset, options, jaspResults, ready)
+	.bainAnovaDescriptivesTable(dataset, options, bainContainer, ready, position = 3)
 	
 	### BAYES FACTOR PLOT ###
-	.bainAnovaBayesFactorPlots(dataset, options, bainContainer, ready)
+	.bainAnovaBayesFactorPlots(dataset, options, bainContainer, ready, position = 4)
 	
 	### DESCRIPTIVES PLOT ###
-	.bainAnovaDescriptivesPlot(dataset, options, bainContainer, ready)
+	.bainAnovaDescriptivesPlot(dataset, options, bainContainer, ready, position = 5)
 }
 
-.bainAnovaResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready) {
+.bainAnovaResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready, position) {
 
-	if (!is.null(bainContainer[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+	if (!is.null(bainContainer[["bainTable"]])) return()
 
-	variables <- c(options$dependent, options$fixedFactors)
+	variables <- c(options[["dependent"]], options[["fixedFactors"]])
 	bainTable <- createJaspTable("Bain ANOVA")
-	bainTable$position <- 2
+	bainTable$position <- position
 
 	bainTable$addColumnInfo(name="hypotheses", 				type="string", title="")
 	bainTable$addColumnInfo(name="BF", 						type="number", title="BF.c")
@@ -89,10 +89,10 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 		return()
 	}
 
-	if (options$model == "") {
+	if (options[["model"]] == "") {
 		rest.string <- NULL
 	} else {
-		rest.string <- .bainCleanModelInput(options$model)
+		rest.string <- .bainCleanModelInput(options[["model"]])
 	}
 			
 	names(dataset) <- .unv(names(dataset))
@@ -115,13 +115,13 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	bainTable$addRows(row) 
 }
 
-.bainAnovaDescriptivesTable <- function(dataset, options, jaspResults, ready) {
+.bainAnovaDescriptivesTable <- function(dataset, options, bainContainer, ready, position) {
 
-	if (!is.null(jaspResults[["descriptivesTable"]]) || !options[["descriptives"]]) return()
+	if (!is.null(bainContainer[["descriptivesTable"]]) || !options[["descriptives"]]) return()
 
 	descriptivesTable <- createJaspTable("Descriptive Statistics")
 	descriptivesTable$dependOn(options =c("dependent", "fixedFactors", "descriptives", "CredibleInterval"))
-	descriptivesTable$position <- 4
+	descriptivesTable$position <- position
 
 	descriptivesTable$addColumnInfo(name="v",    		title="Level",	type="string")
 	descriptivesTable$addColumnInfo(name="N",    		title="N",			type="integer")
@@ -129,12 +129,12 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	descriptivesTable$addColumnInfo(name="sd",   		title="SD", 		type="number")
 	descriptivesTable$addColumnInfo(name="se",   		title="SE", 		type="number")
 
-	interval <- options$CredibleInterval * 100
+	interval <- options[["CredibleInterval"]] * 100
 	overTitle <- paste0(interval, "% Credible Interval")
 	descriptivesTable$addColumnInfo(name="lowerCI",      title = "Lower", type="number", overtitle = overTitle)
 	descriptivesTable$addColumnInfo(name="upperCI",      title = "Upper", type="number", overtitle = overTitle)
 	
-	jaspResults[["descriptivesTable"]] <- descriptivesTable
+	bainContainer[["descriptivesTable"]] <- descriptivesTable
 
 	if (!ready)
 		return()
@@ -144,10 +144,10 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 
 	for (variable in varLevels) {
 
-			column <- dataset[ , .v(options$dependent)]
+			column <- dataset[ , .v(options[["dependent"]])]
 			column <- column[which(groupCol == variable)]
 
-			posteriorSummary <- .posteriorSummaryGroupMean(variable=column, descriptivesPlotsCredibleInterval=options$CredibleInterval/100)
+			posteriorSummary <- .posteriorSummaryGroupMean(variable=column, descriptivesPlotsCredibleInterval=options[["CredibleInterval"]]/100)
 								ciLower <- posteriorSummary$ciLower
 								ciUpper <- posteriorSummary$ciUpper
 
@@ -157,12 +157,12 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	}
 }
 
-.bainAnovaBayesFactorPlots <- function(dataset, options, bainContainer, ready) {
+.bainAnovaBayesFactorPlots <- function(dataset, options, bainContainer, ready, position) {
 	if (!is.null(bainContainer[["bayesFactorPlot"]]) || !options[["bayesFactorPlot"]]) return()
 
 	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Bayes Factor Comparison", height = 400, width = 600)
 	bayesFactorPlot$dependOn(options=c("bayesFactorPlot", "seed"))
-	bayesFactorPlot$position <- 6
+	bayesFactorPlot$position <- position
 	
 	bainContainer[["bayesFactorPlot"]] <- bayesFactorPlot
 
@@ -173,12 +173,12 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	bayesFactorPlot$plotObject <- .suppressGrDevice(.plot.BainA(bainResult))
 }
 
-.bainAnovaDescriptivesPlot <- function(dataset, options, bainContainer, ready, type = "anova") {
+.bainAnovaDescriptivesPlot <- function(dataset, options, bainContainer, ready, type = "anova", position) {
 	if (!is.null(bainContainer[["descriptivesPlot"]]) || !options[["descriptivesPlot"]]) return()
 	
 	descriptivesPlot <- createJaspPlot(plot = NULL, title = "Descriptives Plot")
 	descriptivesPlot$dependOn(options=c("descriptivesPlot", "fixedFactors", "dependent", "model"))
-	descriptivesPlot$position <- 5
+	descriptivesPlot$position <- position
 
 	bainContainer[["descriptivesPlot"]] <- descriptivesPlot
 
@@ -194,17 +194,16 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
 					ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
 	}
-	groupVars <- options$fixedFactors
-	groupVars <- unlist(groupVars)
+	groupVars <- unlist(options[["fixedFactors"]])
 
 	groupVarsV <- .v(groupVars)
-	dependentV <- .v(options$dependent)
+	dependentV <- .v(options[["dependent"]])
 
 	sum_model <- bainResult$model
 	summaryStat <- summary(sum_model)$coefficients
 
 	if (type == "ancova") {
-		summaryStat <- summaryStat[-(nrow(summaryStat) - 0:(length(options[["covariates"]])-1)), ] # Remove covars rows
+		summaryStat <- summaryStat[-(nrow(summaryStat) - 0:(length(unlist(options[["covariates"]]))-1)), ] # Remove covars rows
 	}
 
 	summaryStat <- cbind(summaryStat, 1:nrow(summaryStat))
@@ -234,9 +233,10 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 		ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
 		ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) +
 		ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
-		ggplot2::ylab(options$dependent) +
+		ggplot2::ylab(options[["dependent"]]) +
 		ggplot2::xlab(groupVars) +
-		base_breaks_y(summaryStat, TRUE)
+		base_breaks_y(summaryStat, TRUE) +
+		ggplot2::scale_x_continuous(breaks = 1:length(varLevels), labels = as.character(varLevels))
 
 	p <- JASPgraphs::themeJasp(p)
 
@@ -244,9 +244,9 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .readDataBainAnova <- function(options, dataset) {
-	numeric.variables	<- c(unlist(options$dependent))
+	numeric.variables	<- c(unlist(options[["dependent"]]))
 	numeric.variables	<- numeric.variables[numeric.variables != ""]
-	factor.variables	<- unlist(options$fixedFactors)
+	factor.variables	<- unlist(options[["fixedFactors"]])
 	factor.variables	<- factor.variables[factor.variables != ""]
 	all.variables			<- c(numeric.variables, factor.variables)
 
@@ -284,6 +284,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	if (is.null(jaspResults[["bainContainer"]])) {
 		jaspResults[["bainContainer"]] <- createJaspContainer()
 		jaspResults[["bainContainer"]]$dependOn(options=deps)
+		jaspResults[["bainContainer"]]$position = 1
 	}
 	invisible(jaspResults[["bainContainer"]])
 }

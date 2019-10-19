@@ -28,23 +28,22 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "covariates", "model", "standardized", "seed"))
 
 	### LEGEND ###
-	.bainLegendRegression(dataset, options, jaspResults)
+	.bainLegendRegression(dataset, options, bainContainer, position = 0)
 	
 	### RESULTS ###
-	.bainLinearRegressionResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready)
+	.bainLinearRegressionResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
+
+	### BAYES FACTOR MATRIX ###
+	.bainBayesFactorMatrix(dataset, options, bainContainer, ready, type = "regression", position = 2)
 	
 	### COEFFICIENTS ###
-	.bainLinearRegressionCoefficientsTable(dataset, options, bainContainer, ready)
-	
-	### BAYES FACTOR MATRIX ###
-	.bainBayesFactorMatrix(dataset, options, bainContainer, ready, type = "regression")
+	.bainLinearRegressionCoefficientsTable(dataset, options, bainContainer, ready, position = 3)
 	
 	### BAYES FACTOR PLOT ###
-	.bainLinearRegressionBayesFactorPlots(dataset, options, bainContainer, ready)
-
+	.bainLinearRegressionBayesFactorPlots(dataset, options, bainContainer, ready, position = 4)
 }
 
-.bainLinearRegressionResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready) {
+.bainLinearRegressionResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready, position) {
 
 	if (!is.null(bainContainer[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
@@ -52,7 +51,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 
 	bainTable <- createJaspTable("Bain Linear Regression")
 	bainContainer[["bainTable"]] <- bainTable
-	bainTable$position <- 1
+	bainTable$position <- position
 
 	bainTable$addColumnInfo(name="hypotheses", type="string", title="")
 	bainTable$addColumnInfo(name="BF", type="number", title= "BF.c")
@@ -68,8 +67,6 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!ready)
 		return()
 
-	set.seed(options[["seed"]])
-
 	if (any(variables %in% missingValuesIndicator)) {
 		i <- which(variables %in% missingValuesIndicator)
 		if (length(i) > 1) {
@@ -80,60 +77,37 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	}
 
 	if (options$model == "") {
-		formula <- paste(options[["dependent"]], "~", paste(options[["covariates"]], collapse=' + '))
-		rest.string <- paste0(paste0(options[["covariates"]], " = 0"), collapse = " & ")
-		rest.string <- .bainCleanModelInput(rest.string)
-
-		inpt <- list()
-		inpt[[1]] <- formula
-		names(dataset) <- .unv(names(dataset))
-		inpt[[2]] <- dataset
-		inpt[[3]] <- rest.string
-		inpt[[4]] <- options$standardized
-
-		p <- try({
-			bainResult <- Bain::Bain_regression_cm(formula = inpt[[1]], data = inpt[[2]], hyp = inpt[[3]], standardize = inpt[[4]])
-			bainContainer[["bainResult"]] <- createJaspState(bainResult)
-		})
-
+		rest.string <- NULL
 	} else {
-
-		formula <- paste(options[["dependent"]], "~", paste(options[["covariates"]], collapse=' + '))
 		rest.string <- .bainCleanModelInput(options$model)
-
-		inpt <- list()
-		inpt[[1]] <- formula
-		names(dataset) <- .unv(names(dataset))
-		inpt[[2]] <- dataset
-		inpt[[3]] <- rest.string
-		inpt[[4]] <- options$standardized
-
-		p <- try({
-			bainResult <- Bain::Bain_regression_cm(formula = inpt[[1]], data = inpt[[2]], hyp = inpt[[3]], standardize = inpt[[4]])
-			bainContainer[["bainResult"]] <- createJaspState(bainResult)
-		})
 	}
+
+	names(dataset) <- .unv(names(dataset))
+
+	p <- try({
+		bainResult <- .bain_regression_cran(X = dataset, dep = options[["dependent"]], pred = paste(options[["covariates"]], collapse = " "), hyp = rest.string, std = options[["standardized"]], seed = options[["seed"]])
+		bainContainer[["bainResult"]] <- createJaspState(bainResult)
+	})
 
 	if (isTryError(p)) {
 		bainContainer$setError(paste0("An error occurred in the analysis:<br>", .extractErrorMessage(p), "<br><br>Please double check your variables and model constraints."))
 		return()
 	}
 
-	BF <- bainResult$BF
-	for (i in 1:length(BF)) {
-		row <- data.frame(hypotheses = paste0("H",i), BF = BF[i], PMP1 = bainResult$PMPa[i], PMP2 = bainResult$PMPb[i])
+	for (i in 1:(length(bainResult$fit$BF)-1)) {
+		row <- list(hypotheses = paste0("H",i), BF = bainResult$fit$BF[i], PMP1 = bainResult$fit$PMPa[i], PMP2 = bainResult$fit$PMPb[i])
 		bainTable$addRows(row)
 	}
-	row <- data.frame(hypotheses = "Hu", BF = "", PMP1 = "", PMP2 = 1-sum(bainResult$PMPb))
-	bainTable$addRows(row)
+	row <- list(hypotheses = "Hu", BF = "", PMP1 = "", PMP2 = bainResult$fit$PMPb[length(bainResult$fit$BF)])
+	bainTable$addRows(row) 
 }
 
-.bainLinearRegressionBayesFactorPlots <- function(dataset, options, bainContainer, ready) {
+.bainLinearRegressionBayesFactorPlots <- function(dataset, options, bainContainer, ready, position) {
 	if (!is.null(bainContainer[["bayesFactorPlot"]]) || !options[["bayesFactorPlot"]]) return()
 
 	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Bayes Factor Comparison", height = 400, width = 600)
-	bayesFactorPlot$dependOn(options = c("bayesFactorPlot", "seed"))
-	bayesFactorPlot$position <- 4
+	bayesFactorPlot$dependOn(options = c("bayesFactorPlot"))
+	bayesFactorPlot$position <- position
 
 	bainContainer[["bayesFactorPlot"]] <- bayesFactorPlot
 
@@ -144,20 +118,18 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	bayesFactorPlot$plotObject <- .suppressGrDevice(.plot.BainR(bainResult))
 }
 
-.bainLinearRegressionCoefficientsTable <- function(dataset, options, bainContainer, ready) {
+.bainLinearRegressionCoefficientsTable <- function(dataset, options, bainContainer, ready, position) {
 	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
 
 	coefficientsTable <- createJaspTable("Coefficients")
-	coefficientsTable$dependOn(options = c("coefficients", "seed"))
-	coefficientsTable$position <- 2
-
-	overTitle <- "95% Credible Interval"
+	coefficientsTable$dependOn(options = c("coefficients"))
+	coefficientsTable$position <- position
 
 	coefficientsTable$addColumnInfo(name="v",       title="Covariate",   type="string")
 	coefficientsTable$addColumnInfo(name="mean",    title="Coefficient", type="number")
 	coefficientsTable$addColumnInfo(name="SE",      title="SE",          type="number")
-	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     type="number", overtitle=overTitle)
-	coefficientsTable$addColumnInfo(name="CiUpper", title="Upper",     type="number", overtitle=overTitle)
+	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     	type="number", overtitle = "95% Credible Interval")
+	coefficientsTable$addColumnInfo(name="CiUpper", title="Upper",     	type="number", overtitle = "95% Credible Interval")
 
 	bainContainer[["coefficientsTable"]] <- coefficientsTable
 
@@ -165,32 +137,20 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 		return()
 
 	bainResult <- bainContainer[["bainResult"]]$object
-	sum_model <- bainResult[["estimate_res"]]
+	sum_model <- bainResult[["model"]]
 
-	if (!options[["standardized"]]) {
-		covcoef <- data.frame(sum_model[["coefficients"]])
-		groups <- rownames(covcoef)
-		estim <- summary(sum_model)$coefficients[, 1]
-		SE <- summary(sum_model)$coefficients[, 2]
-		CiLower <- estim - (1.96 * SE)
-		CiUpper <- estim + (1.96 * SE)
-	} else {
-		covcoef <- data.frame(sum_model$CIs)
-		groups <- .v(options$covariates)
-		estim <- covcoef[, 2]
-		SE <- sum_model$SEs
-		CiLower <- covcoef[, 1]
-		CiUpper <- covcoef[, 3]
-	}
-	for (i in 1:length(estim)) {
-		if (i == 1 && !options$standardized) {
-			row <- data.frame(v = groups[i], mean = estim[i], SE = SE[i], CiLower = CiLower[i], CiUpper = CiUpper[i])
-			coefficientsTable$addRows(row)
-		} else {
-			row <- data.frame(v = .unv(groups[i]), mean = estim[i], SE = SE[i], CiLower = CiLower[i], CiUpper = CiUpper[i])
-			coefficientsTable$addRows(row)
-		}
-	}
+	covcoef <- data.frame(sum_model[["coefficients"]])
+	groups <- rownames(covcoef)
+	estim <- summary(sum_model)$coefficients[, 1]
+	SE <- summary(sum_model)$coefficients[, 2]
+	CiLower <- estim - (1.96 * SE)
+	CiUpper <- estim + (1.96 * SE)
+
+	d <- data.frame(v = groups, mean = estim, SE = SE, CiLower = CiLower, CiUpper = CiUpper)
+	if(options[["standardized"]])
+		d <- d[-1, ]
+
+	coefficientsTable$addRows(d)
 }
 
 .readDataBainLinearRegression <- function(options, dataset) {
@@ -212,16 +172,16 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
   return(readList)
 }
 
-.bainLegendRegression <- function(dataset, options, jaspResults) {
-	if (!is.null(jaspResults[["legendTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+.bainLegendRegression <- function(dataset, options, bainContainer, position) {
+	if (!is.null(bainContainer[["legendTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
 	legendTable <- createJaspTable("Hypothesis Legend")
 	legendTable$dependOn(options =c("model", "covariates"))
-	legendTable$position <- 0
-	legendTable$addColumnInfo(name="number", type="string", title="Abbreviation")
+	legendTable$position <- position
+	legendTable$addColumnInfo(name="number", type="string", title="")
 	legendTable$addColumnInfo(name="hypothesis", type="string", title="Hypothesis")
 
-	jaspResults[["legendTable"]] <- legendTable
+	bainContainer[["legendTable"]] <- legendTable
 
 	if (options$model != "") {
 		rest.string <- .bainCleanModelInput(options$model)
@@ -251,9 +211,9 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 
 .plot.BainR <- function(x, y, ...)
 {
-    PMPa <- x$PMPa
-    PMPb <- c(x$PMPb, 1 - sum(x$PMPb))
-    numH <- length(x$BF)
+    PMPa <- x$fit$PMPa
+    PMPb <- c(x$fit$PMPb, 1 - sum(x$fit$PMPb))
+    numH <- length(x$fit$BF)
     P_lables <- paste("H", 1:numH, sep = "")
     ggdata1 <- data.frame(lab = P_lables, PMP = PMPa)
     ggdata2 <- data.frame(lab = c(P_lables, "Hu"), PMP = PMPb)
@@ -308,4 +268,28 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
         pp <- gridExtra::grid.arrange(gridExtra::arrangeGrob(p1, p2, ncol = 2))
         return(pp)
     }
+}
+
+.bain_regression_cran<-function(X, dep, pred, hyp, std, seed){
+
+  	set.seed(seed)
+
+	pred <- as.character(stringr::str_split(pred," ")[[1]])
+	predforhyp <- pred
+	npred <- length(pred)
+	pred <- paste0(pred,collapse = "+")
+
+	c2 <- paste0("lmres <-lm(",dep,"~",pred,",data = X)")
+	eval(parse(text = c2)) 
+
+	if (is.null(hyp)){
+		hyp <- predforhyp
+		hyp <- sapply(hyp,function(x) paste0(x,"=0"))
+		hyp <- paste0(hyp, collapse = " & ")
+	}
+
+	c3 <- paste0("bain::bain(lmres,","\"",hyp,"\",","standardize =",std,")")
+	result <- eval(parse(text = c3))
+
+	return(invisible(result))
 }
