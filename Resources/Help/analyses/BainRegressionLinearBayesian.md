@@ -1,4 +1,10 @@
-Bain Linear Regression
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+bain Linear Regression
 ==========================
 
 bain (Bayesian informative hypotheses evaluation)  linear regression allows you to evaluate (informative) hypotheses using the Bayes factor. A simple example would be the Bayesian evaluation of H0: b1 = b2 = b3 versus H1: b1 > b2 > b3 versus Hu: no restrictions on the three regression coefficients.
@@ -8,6 +14,7 @@ bain (Bayesian informative hypotheses evaluation)  linear regression allows you 
 
 - Choose the dependent variable from the variable list and move it to the Dependent Variable box. Note that, the name of the dependent variable has to start with a letter and may further consist of letters, numbers and _
 - Choose the predictors from the variable list and move them to the Covariates box. Note that, the name of the predictors has to start with a letter and may further consist of letters, numbers and _
+- Set the seed equal to an integer number to create a repeatable random number sequence. It is recommended to run analyses with two different seeds to ensure stability of the results.
 - When you execute bain Linear Regression for the first time tick both additional statistics and the plot. When you return to bain Linear Regression you will know what each of these four options renders and you can tick only the options you need.
 - If you hypotheses involve the comparison of regression coefficients, for example, b1 = b2 = b3, then the regression coefficients have to be on the same scale. You can achieve this by ticking the Standardize box under additional options, which implies that your hypotheses and the results are in terms of standardized regression coefficients.
 - When you tick model constraints a box opens in which you can specify the hypotheses you want to evaluate. You need to adhere to the following specification rules:
@@ -52,5 +59,5 @@ Hypotheses have to be compatible, non-redundant and possible. What these terms m
 ### References
 
 - Gu, X., Mulder, J., and Hoijtink, H. (2018). Approximate adjusted fractional Bayes factors: A general method for testing informative hypotheses. British Journal of Mathematical and Statistical Psychology, 71, 229-261. DOI: 10.1111/bmsp.12110
-- Hoijtink, H., Mulder, J., van Lissa, C., and Gu, X. (2018). A tutorial on testing hypotheses using the Bayes factor. Psychological Methods. DOI: 10.1037/met0000201 
-- Hoijtink, H., Gu, X., and Mulder, J. (2018). Bayesian evaluation of informative hypotheses for multiple populations. British Journal of Mathematical and Statistical Psychology. DOI: 10.1111/bmsp.12145
+- Hoijtink, H., Mulder, J., van Lissa, C., and Gu, X. (2019). A tutorial on testing hypotheses using the Bayes factor. Psychological Methods, 24, 539-556. DOI: 10.1037/met0000201 
+- Hoijtink, H., Gu, X., and Mulder, J. (2019). Bayesian evaluation of informative hypotheses for multiple populations. British Journal of Mathematical and Statistical Psychology, 72, 219-243. DOI: 10.1111/bmsp.12145

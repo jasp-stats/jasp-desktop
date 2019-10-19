@@ -1,4 +1,10 @@
-Bain Paired Samples t-test
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+bain Paired Samples t-test
 ==============================
 
 The bain (Bayesian informative hypotheses evaluation) Paired Samples t-test allows you test the nulthypothesis that means of two repeated measures are equal versus one-sided and two-sided alternative hypotheses.
@@ -6,6 +12,7 @@ The bain (Bayesian informative hypotheses evaluation) Paired Samples t-test allo
 ### Specification of the bain Paired Samples t-test
 
 - Choose pairs of variables from the variable list and move them to the box on the right.
+- Set the seed equal to an integer number to create a repeatable random number sequence. It is recommended to run analyses with two different seeds to ensure stability of the results.
 - When you execute the bain Paired Samples t-test for the first time tick the additional statistics and both plots. When you return to the bain Paired Samples t-test you will know what each of these three options renders and you can tick only the options you need.
 - By default 95% credible intervals will be presented in the results. If desired the degree of belief (by default 95%) can be changed.
 - You can choose from five testing situations:
@@ -32,5 +39,5 @@ The bain (Bayesian informative hypotheses evaluation) Paired Samples t-test allo
 ### References
 
 - Gu, X., Mulder, J., and Hoijtink, H. (2018). Approximate adjusted fractional Bayes factors: A general method for testing informative hypotheses. British Journal of Mathematical and Statistical Psychology, 71, 229-261. DOI: 10.1111/bmsp.12110
-- Hoijtink, H., Mulder, J., van Lissa, C., and Gu, X. (2018). A tutorial on testing hypotheses using the Bayes factor. Psychological Methods. DOI: 10.1037/met0000201 
-- Hoijtink, H., Gu, X., and Mulder, J. (2018). Bayesian evaluation of informative hypotheses for multiple populations. British Journal of Mathematical and Statistical Psychology. DOI: 10.1111/bmsp.12145
+- Hoijtink, H., Mulder, J., van Lissa, C., and Gu, X. (2019). A tutorial on testing hypotheses using the Bayes factor. Psychological Methods, 24, 539-556. DOI: 10.1037/met0000201 
+- Hoijtink, H., Gu, X., and Mulder, J. (2019). Bayesian evaluation of informative hypotheses for multiple populations. British Journal of Mathematical and Statistical Psychology, 72, 219-243. DOI: 10.1111/bmsp.12145
