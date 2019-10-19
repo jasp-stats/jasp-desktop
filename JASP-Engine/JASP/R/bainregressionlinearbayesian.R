@@ -105,7 +105,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 .bainLinearRegressionBayesFactorPlots <- function(dataset, options, bainContainer, ready, position) {
 	if (!is.null(bainContainer[["bayesFactorPlot"]]) || !options[["bayesFactorPlot"]]) return()
 
-	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Bayes Factor Comparison", height = 400, width = 600)
+	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = 400, width = 600)
 	bayesFactorPlot$dependOn(options = c("bayesFactorPlot"))
 	bayesFactorPlot$position <- position
 
@@ -140,15 +140,19 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	sum_model <- bainResult[["model"]]
 
 	covcoef <- data.frame(sum_model[["coefficients"]])
-	groups <- rownames(covcoef)
-	estim <- summary(sum_model)$coefficients[, 1]
-	SE <- summary(sum_model)$coefficients[, 2]
+	if(options[["standardized"]]){
+		groups <- rownames(covcoef)[-1]
+		estim <- bainResult[["estimates"]]
+		SE <- summary(sum_model)$coefficients[-1, 2]
+	} else {
+		groups <- rownames(covcoef)
+		estim <- summary(sum_model)$coefficients[, 1]
+		SE <- summary(sum_model)$coefficients[, 2]
+	}
 	CiLower <- estim - (1.96 * SE)
 	CiUpper <- estim + (1.96 * SE)
 
 	d <- data.frame(v = groups, mean = estim, SE = SE, CiLower = CiLower, CiUpper = CiUpper)
-	if(options[["standardized"]])
-		d <- d[-1, ]
 
 	coefficientsTable$addRows(d)
 }

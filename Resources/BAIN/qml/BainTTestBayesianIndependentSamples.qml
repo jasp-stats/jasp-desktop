@@ -90,7 +90,7 @@ Form
 		Group
 		{
 			title: qsTr("Plots")
-			CheckBox { name: "bayesFactorPlot"; text: qsTr("Bayes factor comparison") }
+			CheckBox { name: "bayesFactorPlot"; text: qsTr("Posterior probabilities") }
 			CheckBox
 			{
 				name: "descriptivesPlots"

@@ -299,7 +299,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   if (!options[["bayesFactorPlot"]]) return()
 
   if (is.null(jaspResults[["BFplots"]])) {
-    BFplots <- createJaspContainer("Bayes Factor Comparison")
+    BFplots <- createJaspContainer("Posterior Probabilities")
     BFplots$dependOn(options=c("testValue", "hypothesis", "bayesFactorPlot", "groupingVariable", "seed"))
     BFplots$position <- position
     jaspResults[["BFplots"]] <- BFplots
@@ -393,7 +393,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
           ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
           ggplot2::geom_col() +
           ggplot2::coord_polar(theta = "y", direction = -1) +
-          ggplot2::labs(x = "", y = "", title = "PMP") +
+          ggplot2::labs(x = "", y = "") +
           ggplot2::theme(panel.grid = ggplot2::element_blank(), legend.position = "none") +
           ggplot2::scale_y_continuous(breaks = cumsum(rev(values)) - rev(values)/2, labels = rev(labs)) +
           ggplot2::theme(panel.background = ggplot2::element_blank(),
