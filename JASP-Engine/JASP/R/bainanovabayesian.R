@@ -170,7 +170,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 		return()
 		
 	bainResult <- bainContainer[["bainResult"]]$object
-	bayesFactorPlot$plotObject <- .suppressGrDevice(.plot.BainA(bainResult))
+	bayesFactorPlot$plotObject <- .suppressGrDevice(.plot_bain_ancova_cran(bainResult))
 }
 
 .bainAnovaDescriptivesPlot <- function(dataset, options, bainContainer, ready, type = "anova", position) {

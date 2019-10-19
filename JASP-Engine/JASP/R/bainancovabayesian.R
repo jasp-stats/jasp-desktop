@@ -266,7 +266,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 		}
 }
 
-.plot.BainA <- function(x, y, ...)
+.plot_bain_ancova_cran <- function(x, y, ...)
 {
     PMPa <- x$fit$PMPa
     PMPb <- c(x$fit$PMPb, 1 - sum(x$fit$PMPb))
@@ -335,7 +335,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
     }
 }
 
-.bain_ancova_cran<-function(X, dep, cov, group, hyp, seed){
+.bain_ancova_cran <- function(X, dep, cov, group, hyp, seed){
 
 	set.seed(seed)
 

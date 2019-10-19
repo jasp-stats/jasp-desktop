@@ -26,16 +26,16 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   missingValuesIndicator	<- readList[["missingValuesIndicator"]]
   
   ### RESULTS ###
-  .bainOneSampleResultsTable(dataset, options, jaspResults, missingValuesIndicator, ready)
+  .bainOneSampleResultsTable(dataset, options, jaspResults, missingValuesIndicator, ready, position = 1)
   
   ### DESCRIPTIVES ###
-  .bainOneSampleDescriptivesTable(dataset, options, jaspResults, ready)
+  .bainOneSampleDescriptivesTable(dataset, options, jaspResults, ready, position = 2)
+
+  ### DESCRIPTIVES PLOTS ###
+  .bainOneSampleDescriptivesPlot(dataset, options, jaspResults, ready, position = 3)
   
   ### BAYES FACTOR PLOTS ###
-  .bainTTestFactorPlots(dataset, options, jaspResults, ready, "oneSample")
-  
-  ### DESCRIPTIVES PLOTS ###
-  .bainOneSampleDescriptivesPlot(dataset, options, jaspResults, ready)
+  .bainTTestFactorPlots(dataset, options, jaspResults, ready, type = "oneSample", position = 4)
 }
 
 .readDataBainOneSample <- function(options, dataset) {
@@ -53,13 +53,12 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     return(readList)
 }
 
-.bainOneSampleResultsTable <- function(dataset, options, jaspResults, missingValuesIndicator, ready) {
+.bainOneSampleResultsTable <- function(dataset, options, jaspResults, missingValuesIndicator, ready, position) {
 
   if (!is.null(jaspResults[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
   bainTable                      <- createJaspTable("Bain One Sample T-test")
-  jaspResults[["bainTable"]]     <- bainTable
-  bainTable$position <- 1
+  bainTable$position <- position
   bainTable$dependOn(options =c("testValue", "variables", "hypothesis", "bayesFactorType", "seed"))
 
   bf.type <- options[["bayesFactorType"]]
@@ -109,10 +108,10 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
   bainTable$addCitation(.bainGetCitations())
 
+  jaspResults[["bainTable"]]     <- bainTable
+
   if (!ready)
     return()
-
-  set.seed(options[["seed"]])
 
   startProgressbar(length(options[["variables"]]))
   bainResult <- list()
@@ -123,7 +122,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     variableData <- variableData[ ! is.na(variableData) ]
 
     p <- try({
-      bainAnalysis <- Bain::Bain_ttestData(variableData, nu = options$testValue, type = type)
+      bainAnalysis <- .bain_ttest_cran(x = variableData, nu = options[["testValue"]], type = type, seed = options[["seed"]])
       bainResult[[variable]] <- bainAnalysis
     })
 
@@ -139,46 +138,46 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 		}
 
     if (type == 1) {
-        BF_0u <- bainAnalysis$BF_0u
-        PMP_u <- bainAnalysis$PMP_u
-        PMP_0 <- bainAnalysis$PMP_0
-        if (options$bayesFactorType == "BF10")
-          BF_0u <- 1/BF_0u
+      BF_0u <- bainAnalysis$fit$BF[1]
+      PMP_u <- bainAnalysis$fit$PMPb[2]
+      PMP_0 <- bainAnalysis$fit$PMPb[1]
+      if (options$bayesFactorType == "BF10")
+        BF_0u <- 1/BF_0u
     }
     if (type == 2) {
-        BF_01 <- bainAnalysis$BF_01
-        PMP_1 <- bainAnalysis$PMP_1
-        PMP_0 <- bainAnalysis$PMP_0
-        if (options$bayesFactorType == "BF10")
-            BF_01 <- 1/BF_01
+      BF_01 <- bainAnalysis$BFmatrix[1,2]
+      PMP_1 <- bainAnalysis$fit$PMPa[2]
+      PMP_0 <- bainAnalysis$fit$PMPa[1]
+      if (options$bayesFactorType == "BF10")
+        BF_01 <- 1/BF_01
     }
     if (type == 3) {
-        BF_01 <- bainAnalysis$BF_01
-        PMP_0 <- bainAnalysis$PMP_0
-        PMP_1 <- bainAnalysis$PMP_1
-        if (options$bayesFactorType == "BF10")
-            BF_01 <- 1/BF_01
+      BF_01 <- bainAnalysis$BFmatrix[1,2]
+      PMP_0 <- bainAnalysis$fit$PMPa[1]
+      PMP_1 <- bainAnalysis$fit$PMPa[2]
+      if (options$bayesFactorType == "BF10")
+        BF_01 <- 1/BF_01
     }
-     if (type == 4) {
-        BF_01 <- bainAnalysis$BF_12
-        PMP_0 <- bainAnalysis$PMP_1
-        PMP_1 <- bainAnalysis$PMP_2
-        if (options$bayesFactorType == "BF10")
-            BF_01 <- 1/BF_01
+    if (type == 4) {
+      BF_01 <- bainAnalysis$BFmatrix[1,2]
+      PMP_0 <- bainAnalysis$fit$PMPa[1]
+      PMP_1 <- bainAnalysis$fit$PMPa[2]
+      if (options$bayesFactorType == "BF10")
+        BF_01 <- 1/BF_01
     }
-     if (type == 5) {
-        BF_01 <- bainAnalysis$BF_01
-        BF_02 <- bainAnalysis$BF_02
-        BF_12 <- bainAnalysis$BF_12
-        PMP_0 <- bainAnalysis$PMP_0
-        PMP_1 <- bainAnalysis$PMP_1
-        PMP_2 <- bainAnalysis$PMP_2
-        if (options$bayesFactorType == "BF10")
-        {
-            BF_01 <- 1/BF_01
-            BF_02 <- 1/BF_02
-            BF_12 <- 1/BF_12
-        }
+    if (type == 5) {
+      BF_01 <- bainAnalysis$BFmatrix[1,2]
+      BF_02 <- bainAnalysis$BFmatrix[1,3]
+      BF_12 <- bainAnalysis$BFmatrix[2,3]
+      PMP_0 <- bainAnalysis$fit$PMPa[1]
+      PMP_1 <- bainAnalysis$fit$PMPa[2]
+      PMP_2 <- bainAnalysis$fit$PMPa[3]
+      if (options$bayesFactorType == "BF10")
+      {
+        BF_01 <- 1/BF_01
+        BF_02 <- 1/BF_02
+        BF_12 <- 1/BF_12
+      }
     }
 
     if (options$bayesFactorType == "BF01") {
@@ -218,21 +217,21 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
                                             "type[less]" = "H2: Smaller", "BF[less]" = BF_02, "pmp[less]" = PMP_2)
         }
     }
-    bainTable$addRows(row, rowNames=variable)
+    bainTable$addRows(row, rowNames = variable)
     progressbarTick()
   }
   jaspResults[["bainResult"]] <- createJaspState(bainResult)
-  jaspResults[["bainResult"]]$dependOn(optionsFromObject =bainTable)
+  jaspResults[["bainResult"]]$dependOn(optionsFromObject = bainTable)
 }
 
-.bainOneSampleDescriptivesTable <- function(dataset, options, jaspResults, ready) {
+.bainOneSampleDescriptivesTable <- function(dataset, options, jaspResults, ready, position) {
 
   if (!is.null(jaspResults[["descriptivesTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
     if (options[["descriptives"]]) {
       
       descriptivesTable <- createJaspTable("Descriptive Statistics")
       descriptivesTable$dependOn(options =c("variables", "descriptives", "descriptivesPlotsCredibleInterval"))
-      descriptivesTable$position <- 2
+      descriptivesTable$position <- position
 
       descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
       descriptivesTable$addColumnInfo(name="N",                    title = "N", type="integer")
@@ -253,7 +252,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
       for (variable in options[["variables"]]) {
           data <- na.omit(dataset[[ .v(variable) ]])
           if (class(data) != "factor") { # TODO: Fix this...
-            posteriorSummary <- .posteriorSummaryGroupMean(variable=data, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+            posteriorSummary <- .posteriorSummaryGroupMean(variable=data, descriptivesPlotsCredibleInterval=options[["descriptivesPlotsCredibleInterval"]])
             ciLower <- round(posteriorSummary$ciLower,3)
             ciUpper <- round(posteriorSummary$ciUpper,3)
             n    <- length(data)
@@ -270,12 +269,12 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     }
 }
 
-.bainOneSampleDescriptivesPlot <- function(dataset, options, jaspResults, ready) {
+.bainOneSampleDescriptivesPlot <- function(dataset, options, jaspResults, ready, position) {
   if (options[["descriptivesPlots"]] && ready) {
       if (is.null(jaspResults[["descriptivesPlots"]])) {
       jaspResults[["descriptivesPlots"]] <- createJaspContainer("Descriptive Plots")
-      jaspResults[["descriptivesPlots"]]$dependOn(options =c("descriptivesPlots", "descriptivesPlotsCredibleInterval"))
-      jaspResults[["descriptivesPlots"]]$position <- 4
+      jaspResults[["descriptivesPlots"]]$dependOn(options =c("descriptivesPlots", "descriptivesPlotsCredibleInterval", "testValue"))
+      jaspResults[["descriptivesPlots"]]$position <- position
       }
       for (variable in unlist(options[["variables"]])) {
           if (is.null(jaspResults[["descriptivesPlots"]][[variable]]))
@@ -283,7 +282,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
             variableData <- dataset[[ .v(variable) ]]
             variableData <- variableData[ ! is.na(variableData) ]
             ggplotObj    <- .plotGroupMeanBayesOneSampleTtest(variable=variableData, variableName=variable, testValueOpt=options[["testValue"]],
-                            descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
+                            descriptivesPlotsCredibleInterval=options[["descriptivesPlotsCredibleInterval"]])
             jaspResults[["descriptivesPlots"]][[variable]]        <- createJaspPlot(plot=ggplotObj, title = variable)
             jaspResults[["descriptivesPlots"]][[variable]]        $dependOn(optionContainsValue=list("variables" = variable))
           }
@@ -296,13 +295,13 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   }
 }
 
-.bainTTestFactorPlots <- function(dataset, options, jaspResults, ready, type) {
+.bainTTestFactorPlots <- function(dataset, options, jaspResults, ready, type, position) {
   if (!options[["bayesFactorPlot"]]) return()
 
   if (is.null(jaspResults[["BFplots"]])) {
     BFplots <- createJaspContainer("Bayes Factor Comparison")
     BFplots$dependOn(options=c("testValue", "hypothesis", "bayesFactorPlot", "groupingVariable", "seed"))
-    BFplots$position <- 3
+    BFplots$position <- position
     jaspResults[["BFplots"]] <- BFplots
   } else {
     BFplots <- jaspResults[["BFplots"]]
@@ -321,7 +320,29 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     variables <- unlist(lapply(options$pairs, paste, collapse=" - "))
   } else {
     option <- "variables"
-    variables <- dependencies <- options$variables
+    variables <- dependencies <- options[["variables"]]
+  }
+  if(type == "oneSample"){
+    analysisType <- base::switch(options[["hypothesis"]],
+                "notEqualToTestValue"   = 1,
+                "greaterThanTestValue"  = 2,
+                "lessThanTestValue"     = 3,
+                "_4type"                = 4,
+                "allTypes"              = 5)
+  } else if(type == "independentSamples"){
+    	analysisType <- base::switch(options[["hypothesis"]],
+                                  "groupsNotEqual"		= 1,
+                                  "groupTwoGreater"		= 2,
+                                  "groupOneGreater"		= 3,
+                                  "_4type"						= 4,
+                                  "allTypes"					= 5)
+  } else if(type == "pairedSamples"){
+      analysisType <- base::switch(options[["hypothesis"]],
+                          "groupsNotEqual"    = 1,
+                          "groupOneGreater"   = 2,
+                          "groupTwoGreater"   = 3,
+                          "_4type"            = 4,
+                          "allTypes"          = 5)
   }
   
   for (i in seq_along(variables)) {
@@ -335,100 +356,130 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     dependency[[option]] <- dependencies[[i]]
     plot$dependOn(optionContainsValue=dependency)
 
-    if (!is.null(bainResult[[variable]]))
-      plot$plotObject <- .plot.BainT(bainResult[[variable]])
-    else
+    if (!is.null(bainResult[[variable]])){
+      p <- try({
+        plot$plotObject <- .plot_bain_ttest_cran(bainResult[[variable]], type = analysisType)
+      })
+      if(isTryError(p)){
+        plot$setError("Plotting not possible: the results for this variable were not computed.")
+      }
+    } else {
       plot$setError("Plotting not possible: the results for this variable were not computed.")
+    }
       
     BFplots[[variable]] <- plot
   }
 }
 
-.plot.BainT <- function(x, y, ...) {
-    if (length(x) == 4 && names(x)[1] == "BF_0u") {
-        PMP <- x$PMP_0
-        lab = c("H0", "H1")
-        PMPb = c(PMP, 1 - PMP)
-        ggdata <- data.frame(lab = lab, PMPb = PMPb)
-        p <- ggplot2::ggplot(data = ggdata, mapping = ggplot2::aes(x = "", y = PMPb,
-                            fill = lab)) +
-            ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
-            ggplot2::geom_col()
-        pp <- p + ggplot2::coord_polar(theta = "y", direction = -1) +
-                  ggplot2::labs(x = "", y = "", title = "PMP") +
-                  ggplot2::theme(panel.grid = ggplot2::element_blank(),
-                                legend.position = "none") +
-                  ggplot2::scale_y_continuous(
-                    breaks = cumsum(rev(PMPb)) - rev(PMPb)/2,
-                    labels = rev(lab))
-        pp <- pp + ggplot2::theme(panel.background = ggplot2::element_blank(),
-                                  axis.text=ggplot2::element_text(size=17, color = "black"),
-                                  plot.title = ggplot2::element_text(size=18, hjust = .5),
-                                  axis.ticks.y = ggplot2::element_blank())
-        pp <- pp + ggplot2::scale_fill_brewer(palette="Set1")
+.plot_bain_ttest_cran <- function(x, y, type){
+
+    if(type == 1 || type == 2 || type == 3){
+      labs <- c("H0", "H1")
     }
-    if (length(x) == 4 && names(x)[1] == "BF_01") {
-        PMP <- x$PMP_0
-        lab = c("H0", "H1")
-        PMPb = c(PMP, 1 - PMP)
-        ggdata <- data.frame(lab = lab, PMPb = PMPb)
-        p <- ggplot2::ggplot(data = ggdata, mapping = ggplot2::aes(x = "", y = PMPb,
-                              fill = lab)) +
-            ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
-            ggplot2::geom_col()
-        pp <- p + ggplot2::coord_polar(theta = "y", direction = -1) +
-            ggplot2::labs(x = "", y = "", title = "PMP") +
-            ggplot2::theme(panel.grid = ggplot2::element_blank(),
-                            legend.position = "none") +
-            ggplot2::scale_y_continuous(
-              breaks = cumsum(rev(PMPb)) - rev(PMPb)/2,
-              labels = rev(lab))
-        pp <- pp + ggplot2::theme(panel.background = ggplot2::element_blank(),
-                                  axis.text=ggplot2::element_text(size=17, color = "black"),
-                                  plot.title = ggplot2::element_text(size=18, hjust = .5),
-                                  axis.ticks.y = ggplot2::element_blank())
-        pp <- pp + ggplot2::scale_fill_brewer(palette="Set1")
+    if(type == 4){
+      labs <- c("H1", "H2")
     }
-    if (length(x) == 4 && names(x)[1] == "BF_12") {
-        PMP <- x$PMP_1
-        lab = c("H1", "H2")
-        PMPb = c(PMP, 1 - PMP)
-        ggdata <- data.frame(lab = lab, PMPb = PMPb)
-        p <- ggplot2::ggplot(data = ggdata, mapping = ggplot2::aes(x = "", y = PMPb,
-                              fill = lab)) +
-            ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
-            ggplot2::geom_col()
-        pp <- p + ggplot2::coord_polar(theta = "y", direction = -1) +
-            ggplot2::labs(x = "", y = "", title = "PMP") +
-            ggplot2::theme(panel.grid = ggplot2::element_blank(),
-                            legend.position = "none") +
-            ggplot2::scale_y_continuous(
-              breaks = cumsum(rev(PMPb)) - rev(PMPb)/2,
-              labels = rev(lab))
-        pp <- pp + ggplot2::theme(panel.background = ggplot2::element_blank(),
-                                  axis.text=ggplot2::element_text(size=17, color = "black"),
-                                  plot.title = ggplot2::element_text(size=18, hjust = .5),
-                                  axis.ticks.y = ggplot2::element_blank())
-        pp <- pp + ggplot2::scale_fill_brewer(palette="Set1")
+    if(type == 5){
+      labs <- c("H0", "H1", "H2")
     }
-    if (length(x) == 7) {
-        PMP <- c(x$PMP_0, x$PMP_1, x$PMP_2)
-        lab = c("H0", "H1", "H2")
-        ggdata <- data.frame(lab = lab, PMP = PMP)
-        p <- ggplot2::ggplot(data = ggdata, mapping = ggplot2::aes(x = "", y = PMP,
-                              fill = lab)) +
-            ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
-            ggplot2::geom_col()
-        pp <- p + ggplot2::coord_polar(theta = "y", direction = -1) +
-            ggplot2::labs(x = "", y = "", title = "PMP") +
-            ggplot2::theme(panel.grid = ggplot2::element_blank(),
-                            legend.position = "none") +
-            ggplot2::scale_y_continuous(breaks = cumsum(rev(PMP)) - rev(PMP)/2, labels = rev(lab))
-        pp <- pp + ggplot2::theme(panel.background = ggplot2::element_blank(),
-                                  axis.text=ggplot2::element_text(size=17, color = "black"),
-                                  plot.title = ggplot2::element_text(size=18, hjust = .5),
-                                  axis.ticks.y = ggplot2::element_blank())
-        pp <- pp + ggplot2::scale_fill_brewer(palette="Set1")
+    if(type == 1){
+      values <- x$fit$PMPb
+    } else {
+      values <- na.omit(x$fit$PMPa)
     }
-    return(pp)
+    ggdata <- data.frame(lab = labs, PMP = values)
+
+    p <- ggplot2::ggplot(data = ggdata, mapping = ggplot2::aes(x = "", y = PMP, fill = lab)) +
+          ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
+          ggplot2::geom_col() +
+          ggplot2::coord_polar(theta = "y", direction = -1) +
+          ggplot2::labs(x = "", y = "", title = "PMP") +
+          ggplot2::theme(panel.grid = ggplot2::element_blank(), legend.position = "none") +
+          ggplot2::scale_y_continuous(breaks = cumsum(rev(values)) - rev(values)/2, labels = rev(labs)) +
+          ggplot2::theme(panel.background = ggplot2::element_blank(),
+                              axis.text=ggplot2::element_text(size=17, color = "black"),
+                              plot.title = ggplot2::element_text(size=18, hjust = .5),
+                              axis.ticks.y = ggplot2::element_blank()) +
+          ggplot2::scale_fill_brewer(palette="Set1")
+
+    return(p)
+}
+
+.bain_ttest_cran <- function(x, y = NULL, nu = 0, type = 1, paired = FALSE, seed){
+
+  set.seed(seed)
+
+  # ONE GROUP
+  if(is.null(y) && !paired){
+    
+    tres <- bain::t_test(x)  
+    
+    if(type == 1){
+      c3 <- paste0("result <- bain::bain(tres,\"x=",nu,"\")")  
+      result <- eval(parse(text = c3))
+    }
+    if(type == 2){
+      c3 <- paste0("result <- bain::bain(tres,\"x=",nu,"; x>",nu,"\")")  
+      result <- eval(parse(text = c3))
+    }
+    if(type == 3){
+      c3 <- paste0("result <- bain::bain(tres,\"x=",nu,"; x<",nu,"\")")  
+      result <- eval(parse(text = c3))
+    }
+    if(type == 4){
+      c3 <- paste0("result <- bain::bain(tres,\"x>",nu,"; x<",nu,"\")")  
+      result <- eval(parse(text = c3))
+    }
+    if(type == 5){
+      c3 <- paste0("result <- bain::bain(tres,\"x=",nu,"; x>",nu,"; x<",nu,"\")")  
+      result <- eval(parse(text = c3))
+    }
+
+  }
+
+  # INDEPENDENT SAMPLES
+  if(!is.null(y) && !paired){
+    
+    tres <- bain::t_test(x, y, paired = FALSE, var.equal = FALSE)
+    
+    if(type == 1){
+      result <- bain::bain(tres,"x=y")
+    } 
+    if(type == 2){
+      result <- bain::bain(tres,"x=y; x>y")
+    }
+    if(type == 3){
+      result <- bain::bain(tres,"x=y; x<y")
+    }
+    if(type == 4){
+      result <- bain::bain(tres,"x>y; x<y")
+    }
+    if(type == 5){
+      result <- bain::bain(tres,"x=y; x>y; x<y")
+      }
+  }
+
+  # PAIRED SAMPLE
+  if(!is.null(y) && paired){
+    
+    tres <- bain::t_test(x, y, paired = TRUE)
+
+    if(type == 1){
+      result <- bain::bain(tres,"difference=0")
+    }
+    if(type == 2){
+      result <- bain::bain(tres,"difference=0;difference>0")
+    }
+    if(type == 3){
+      result <- bain::bain(tres,"difference=0;difference<0")
+    }
+    if(type == 4){
+      result <- bain::bain(tres,"difference>0;difference<0")
+    }
+    if(type == 5){
+      result <- bain::bain(tres,"difference=0;difference>0;difference<0")
+    }
+  }
+
+  return(invisible(result))
 }

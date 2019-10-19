@@ -115,7 +115,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 		return()
 
 	bainResult <- bainContainer[["bainResult"]]$object
-	bayesFactorPlot$plotObject <- .suppressGrDevice(.plot.BainR(bainResult))
+	bayesFactorPlot$plotObject <- .suppressGrDevice(.plot_bain_regression_cran(bainResult))
 }
 
 .bainLinearRegressionCoefficientsTable <- function(dataset, options, bainContainer, ready, position) {
@@ -209,7 +209,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	}
 }
 
-.plot.BainR <- function(x, y, ...)
+.plot_bain_regression_cran <- function(x, y, ...)
 {
     PMPa <- x$fit$PMPa
     PMPb <- c(x$fit$PMPb, 1 - sum(x$fit$PMPb))

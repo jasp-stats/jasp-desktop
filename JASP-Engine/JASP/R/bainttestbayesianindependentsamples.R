@@ -17,34 +17,34 @@
 
 BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, ...) {
 
-		### READY ###
-		ready <- length(options[["variables"]][options[["variables"]] != ""] > 0) && options[["groupingVariable"]] != ""
-		
-		### READ DATA ###
-		readList								<- .readDataBainTwoSample(options, dataset)
-		dataset									<- readList[["dataset"]]
-		missingValuesIndicator	<- readList[["missingValuesIndicator"]]
+	### READY ###
+	ready <- length(options[["variables"]][options[["variables"]] != ""] > 0) && options[["groupingVariable"]] != ""
+	
+	### READ DATA ###
+	readList <- .readDataBainTwoSample(options, dataset)
+	dataset	<- readList[["dataset"]]
+	missingValuesIndicator	<- readList[["missingValuesIndicator"]]
     
-		### RESULTS ###
-    .bainIndependentSamplesResultsTable(dataset, options, jaspResults, missingValuesIndicator, ready)
+	### RESULTS ###
+    .bainIndependentSamplesResultsTable(dataset, options, jaspResults, missingValuesIndicator, ready, position = 1)
     
-		### DESCRIPTIVES ###
-		.bainIndependentSamplesDescriptivesTable(dataset, options, jaspResults, ready)
-		
-		### BAYES FACTOR PLOTS ###
-		.bainTTestFactorPlots(dataset, options, jaspResults, ready, "independentSamples")
-		
-		### DESCRIPTIVES PLOTS ###
-		.bainIndependentSamplesDescriptivesPlots(dataset, options, jaspResults, ready)
+	### DESCRIPTIVES ###
+	.bainIndependentSamplesDescriptivesTable(dataset, options, jaspResults, ready, position = 2)
+
+	### DESCRIPTIVES PLOTS ###
+	.bainIndependentSamplesDescriptivesPlots(dataset, options, jaspResults, ready, position = 3)
+	
+	### BAYES FACTOR PLOTS ###
+	.bainTTestFactorPlots(dataset, options, jaspResults, ready, type = "independentSamples", position = 4)
 }
 
-.bainIndependentSamplesResultsTable <- function(dataset, options, jaspResults, missingValuesIndicator, ready) {
+.bainIndependentSamplesResultsTable <- function(dataset, options, jaspResults, missingValuesIndicator, ready, position) {
 
   if (!is.null(jaspResults[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
   bainTable <- createJaspTable("Bain Independent Samples Welch's T-Test")
   bainTable$dependOn(options =c("variables", "hypothesis", "bayesFactorType", "groupingVariable", "seed"))
-	bainTable$position <- 1
+  bainTable$position <- position
 
   bf.type <- options$bayesFactorType
   BFH1H0 <- FALSE
@@ -91,8 +91,6 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 
 	if (!ready)
 		return()
-	
-	set.seed(options[["seed"]])
 
   startProgressbar(length(options[["variables"]]))
   bainResult <- list()
@@ -107,71 +105,69 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 
   for (variable in options[["variables"]]) {
 
-	  subDataSet <- dataset[, c(.v(variable), .v(options[["groupingVariable"]]))]
-	  subDataSet <- na.omit(subDataSet)
-	  group2 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g1,.v(variable)]
-	  group1 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g2,.v(variable)]
+	subDataSet <- dataset[, c(.v(variable), .v(options[["groupingVariable"]]))]
+	subDataSet <- na.omit(subDataSet)
+	group2 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g1,.v(variable)]
+	group1 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g2,.v(variable)]
 
-	  p <- try({
-
-      	bainAnalysis <- Bain::Bain_ttestData(group1, group2, type = type)
+	p <- try({
+		bainAnalysis <- .bain_ttest_cran(x = group1, y = group2, type = type, seed = options[["seed"]])
       	bainResult[[variable]] <- bainAnalysis
+	})
 
-		})
+	if (isTryError(p)) {
+		bainTable$addRows(list(Variable=variable), rowNames=variable)
+		bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=variable)
+		progressbarTick()
+		next
+	}
+	
+	if (variable %in% missingValuesIndicator) {
+		bainTable$addFootnote(message= paste0("Variable contains missing values, the rows containing these values are removed in the analysis."), colNames="Variable", rowNames=variable)
+	}
 
-		if (isTryError(p)) {
-			bainTable$addRows(list(Variable=variable), rowNames=variable)
-			bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=variable)
-      progressbarTick()
-			next
+	if (type == 1) {
+		BF_0u <- bainAnalysis$fit$BF[1]
+		PMP_u <- bainAnalysis$fit$PMPb[2]
+		PMP_0 <- bainAnalysis$fit$PMPb[1]
+		if (options$bayesFactorType == "BF10")
+			BF_0u <- 1/BF_0u
+	}
+	if (type == 2) {
+		BF_01 <- bainAnalysis$BFmatrix[1,2]
+		PMP_1 <- bainAnalysis$fit$PMPa[2]
+		PMP_0 <- bainAnalysis$fit$PMPa[1]
+		if (options$bayesFactorType == "BF10")
+			BF_01 <- 1/BF_01
+	}
+	if (type == 3) {
+		BF_01 <- bainAnalysis$BFmatrix[1,2]
+		PMP_0 <- bainAnalysis$fit$PMPa[1]
+		PMP_1 <- bainAnalysis$fit$PMPa[2]
+		if (options$bayesFactorType == "BF10")
+			BF_01 <- 1/BF_01
+	}
+	if (type == 4) {
+		BF_01 <- bainAnalysis$BFmatrix[1,2]
+		PMP_0 <- bainAnalysis$fit$PMPa[1]
+		PMP_1 <- bainAnalysis$fit$PMPa[2]
+		if (options$bayesFactorType == "BF10")
+			BF_01 <- 1/BF_01
+	}
+	if (type == 5) {
+		BF_01 <- bainAnalysis$BFmatrix[1,2]
+		BF_02 <- bainAnalysis$BFmatrix[1,3]
+		BF_12 <- bainAnalysis$BFmatrix[2,3]
+		PMP_0 <- bainAnalysis$fit$PMPa[1]
+		PMP_1 <- bainAnalysis$fit$PMPa[2]
+		PMP_2 <- bainAnalysis$fit$PMPa[3]
+		if (options$bayesFactorType == "BF10")
+		{
+			BF_01 <- 1/BF_01
+			BF_02 <- 1/BF_02
+			BF_12 <- 1/BF_12
 		}
-		
-		if (variable %in% missingValuesIndicator) {
-			bainTable$addFootnote(message= paste0("Variable contains missing values, the rows containing these values are removed in the analysis."), colNames="Variable", rowNames=variable)
-		}
-
-    if (type == 1) {
-        BF_0u <- bainAnalysis$BF_0u
-        PMP_u <- bainAnalysis$PMP_u
-        PMP_0 <- bainAnalysis$PMP_0
-        if (options$bayesFactorType == "BF10")
-          BF_0u <- 1/BF_0u
-    }
-    if (type == 2) {
-        BF_01 <- bainAnalysis$BF_01
-        PMP_1 <- bainAnalysis$PMP_1
-        PMP_0 <- bainAnalysis$PMP_0
-        if (options$bayesFactorType == "BF10")
-            BF_01 <- 1/BF_01
-    }
-    if (type == 3) {
-        BF_01 <- bainAnalysis$BF_01
-        PMP_0 <- bainAnalysis$PMP_0
-        PMP_1 <- bainAnalysis$PMP_1
-        if (options$bayesFactorType == "BF10")
-            BF_01 <- 1/BF_01
-    }
-     if (type == 4) {
-        BF_01 <- bainAnalysis$BF_12
-        PMP_0 <- bainAnalysis$PMP_1
-        PMP_1 <- bainAnalysis$PMP_2
-        if (options$bayesFactorType == "BF01")
-            BF_01 <- 1/BF_01
-    }
-     if (type == 5) {
-        BF_01 <- bainAnalysis$BF_01
-        BF_02 <- bainAnalysis$BF_02
-        BF_12 <- bainAnalysis$BF_12
-        PMP_0 <- bainAnalysis$PMP_0
-        PMP_1 <- bainAnalysis$PMP_1
-        PMP_2 <- bainAnalysis$PMP_2
-        if (options$bayesFactorType == "BF10")
-        {
-            BF_01 <- 1/BF_01
-            BF_02 <- 1/BF_02
-            BF_12 <- 1/BF_12
-        }
-    }
+	}
 
     if (options$bayesFactorType == "BF01") {
         if (options$hypothesis == "groupsNotEqual") {
@@ -231,14 +227,14 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
   jaspResults[["bainResult"]]$dependOn(optionsFromObject =bainTable)
 }
 
-.bainIndependentSamplesDescriptivesTable <- function(dataset, options, jaspResults, ready) {
+.bainIndependentSamplesDescriptivesTable <- function(dataset, options, jaspResults, ready, position) {
 
   if (!is.null(jaspResults[["descriptivesTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 		if (options[["descriptives"]]) {
 
 	  descriptivesTable <- createJaspTable("Descriptive Statistics")
 	  descriptivesTable$dependOn(options =c("variables", "descriptives", "descriptivesPlotsCredibleInterval", "groupingVariable"))
-		descriptivesTable$position <- 2
+		descriptivesTable$position <- position
 
 	  descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
 		descriptivesTable$addColumnInfo(name="group",                title = "Group", type="string")
@@ -298,12 +294,12 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	}
 }
 
-.bainIndependentSamplesDescriptivesPlots <- function(dataset, options, jaspResults, ready) {
+.bainIndependentSamplesDescriptivesPlots <- function(dataset, options, jaspResults, ready, position) {
 	if (options[["descriptivesPlots"]] && ready) {
 			if (is.null(jaspResults[["descriptivesPlots"]])) {
 				jaspResults[["descriptivesPlots"]] <- createJaspContainer("Descriptive Plots")
 				jaspResults[["descriptivesPlots"]]$dependOn(options =c("descriptivesPlots", "descriptivesPlotsCredibleInterval", "groupingVariable"))
-				jaspResults[["descriptivesPlots"]]$position <- 4
+				jaspResults[["descriptivesPlots"]]$position <- position
 			}
 			for (variable in unlist(options[["variables"]])) {
 					if (is.null(jaspResults[["descriptivesPlots"]][[variable]]))
@@ -332,7 +328,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 		emptyPlot <- createJaspPlot(plot = NULL, title = "Descriptives Plots")
 		jaspResults[["descriptivesPlots"]] <- emptyPlot
 		jaspResults[["descriptivesPlots"]]$dependOn(options =c("variables", "descriptivesPlots", "groupingVariable", "seed"))
-		jaspResults[["descriptivesPlots"]]$position <- 4
+		jaspResults[["descriptivesPlots"]]$position <- position
 	}	
 }
 
