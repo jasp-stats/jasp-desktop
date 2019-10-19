@@ -97,7 +97,7 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
 	 \<JASP\>\build-release-64  
 	 \<JASP\>\build-debug-64  
 
-	The destinction between debug version and release only differs in the option you choose in QtCreator. Only the description for the release version is given here.
+	The distinction between debug version and release only differs in the option you choose in QtCreator. Only the description for the release version is given here.
 
 5.	**Copy files** to their expected locations in the build folders:    
 	From \<JASP\>\jasp-required-files\64\\* -> \<JASP\>\build-release-64  
