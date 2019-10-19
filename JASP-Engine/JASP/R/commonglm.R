@@ -1,23 +1,20 @@
-# Backend for GLM models. Poor man's object-oriented approach
-.jaspGlm <- function(dataset, options, perform, type) {
-  glmRes <- NULL
-  if (perform == "run" && options[["dependent"]] != "") {
-    if (!is.null(type) && type == "binomial") {
-      # Logistic regression
-      ff <- .createGlmFormula(options)
-      nf <- .createNullFormula(options)
-      
-      # calculate null and full models
-      nullMod <- glm(nf, family = "binomial", data = dataset)
-      fullMod <- glm(ff, family = "binomial", data = dataset)
-      
-      glmRes <- .glmStep(nullMod, fullMod, dataset,
-                         method = options[["method"]])
-      
-    } else {
-      .quitAnalysis("GLM type not supported")
-    }
-  }
+# Compute Model
+.reglogisticComputeModel <- function(jaspResults, dataset, options) {
+  if(!is.null(jaspResults[["glmRes"]]))
+    return(jaspResults[["glmRes"]]$object)
+  type <- "binomial"
+  if (type == "binomial") {
+    # Logistic regression
+    ff <- .createGlmFormula(options)
+    nf <- .createNullFormula(options)
+    # calculate null and full models
+    nullMod <- glm(nf, family = "binomial", data = dataset)
+    fullMod <- glm(ff, family = "binomial", data = dataset)
+    glmRes  <- .glmStep(nullMod, fullMod, dataset, method = options$method)
+  } else
+    .quitAnalysis("GLM type not supported")
+  jaspResults[["glmRes"]] <- createJaspState(glmRes)
+  jaspResults[["glmRes"]]$dependOn(optionsFromObject = jaspResults[["modelSummary"]])
   return(glmRes)
 }
 
@@ -25,71 +22,59 @@
   # this function outputs a formula name with base64 values as varnames
   f <- NULL
   
-  dependent <- options[["dependent"]]
-  if (dependent == "") {
+  dependent <- options$dependent
+  if (dependent == "")
     f <- 0~1 # mock formula, always works
-  }
   
-  modelTerms <- options[["modelTerms"]]
-  includeIntercept <- options[["includeIntercept"]]
+  modelTerms <- options$modelTerms
+  includeIntercept <- options$includeIntercept
   if (length(modelTerms) == 0) {
-    if (includeIntercept) {
+    if (includeIntercept)
       f <- formula(paste(.v(dependent), "~ 1"))
-    } else {
+    else
       f <- formula(paste(.v(dependent), "~ 0"))
-    }
   } else {
-    if (includeIntercept) {
+    if (includeIntercept)
       t <- character(0)
-    } else {
+    else
       t <- "0"
-    }
     for (i in seq_along(modelTerms)) {
       term <- modelTerms[[i]][["components"]]
-      if (length(term) == 1) {
+      if (length(term) == 1)
         t <- c(t, .v(term))
-      } else {
+      else
         t <- c(t, paste(.v(unlist(term)), collapse = ":"))
-      }
     }
     f <- formula(paste(.v(dependent), "~", paste(t, collapse = "+")))
   }
-  f
+  return(f)
 }
 
 .createNullFormula <- function(options) {
   # this function outputs a formula name with base64 values as varnames
   f <- NULL
-  nuisanceTerms <- NULL
-  
-  dependent <- options[["dependent"]]
-  if (dependent == "") {
+  dependent <- options$dependent
+  if (dependent == "")
     return(NULL)
-  }
   
-  modelTerms <- options[["modelTerms"]]
-  includeIntercept <- options[["includeIntercept"]]
+  modelTerms <- options$modelTerms
+  includeIntercept <- options$includeIntercept
   
   t <- character(0)
   for (i in seq_along(modelTerms)) {
     nui <- modelTerms[[i]][["isNuisance"]]
     if (!is.null(nui) && nui) {
       term <- modelTerms[[i]][["components"]]
-      if (length(term) == 1) {
+      if (length(term) == 1)
         t <- c(t, .v(term))
-      } else {
+      else
         t <- c(t, paste(.v(unlist(term)), collapse = ":"))
-      }
     }
   }
-  
-  nuisanceTerms <- t
-  
-  if (!includeIntercept) {
+  if (!includeIntercept)
     t <- c(t, "0")
-  } else {
+  else
     t <- c(t, "1")
-  }
   
   return(formula(paste(.v(dependent), "~", paste(t, collapse = "+"))))
 }
@@ -898,16 +883,15 @@
   chisq <- max(0, subModel[["deviance"]] - superModel[["deviance"]])
   df <- subModel[["df.residual"]] - superModel[["df.residual"]]
   
-  if (chisq == 0 || df == 0) {
+  if (chisq == 0 || df == 0)
     p <- NULL
-  } else {
+  else
     p <- 1-pchisq(chisq, df)
-  }
   return(list(stat = chisq, df = df, pval = p))
 }
 
 .hasNuisance <- function(options) {
-  return(any(sapply(options[["modelTerms"]], function(x) x[["isNuisance"]])))
+  return(any(sapply(options$modelTerms, function(x) x[["isNuisance"]])))
 }
 
 .mcFadden <- function(glmModel, nullModel) {
@@ -916,9 +900,8 @@
   if (length(rightSide == 1) && rightSide %in% c("1", "0")) {
     # intercept-only model needs fix because of computer precision limits
     return(0)
-  } else {
+  } else
     return(max(c(0,1-(glmModel[["deviance"]]/nullModel[["deviance"]]))))
-  }
 }
 
 .nagelkerke <- function(glmModel, nullModel) {
@@ -930,7 +913,7 @@
   } else {
     l0 <- -0.5*nullModel[["deviance"]]
     lm <- as.numeric(logLik(glmModel))
-    n <- length(glmModel[["y"]])
+    n  <- length(glmModel[["y"]])
     coxSnell <- 1 - exp(l0 - lm)^(2 / n)
     denom <- 1 - exp(l0)^(2 / n)
     return(max(c(0,coxSnell / denom)))
@@ -952,12 +935,11 @@
   } else {
     l0 <- -0.5*nullModel[["deviance"]]
     lm <- as.numeric(logLik(glmModel))
-    n <- length(glmModel[["y"]])
+    n  <- length(glmModel[["y"]])
     coxSnell <- 1 - exp(l0 - lm)^(2 / n)
     return(max(c(0,coxSnell)))
   }
 }
-
 
 .bic <- function(glmModel) {
   return(log(length(glmModel[["y"]]))*length(coef(glmModel))+glmModel[["deviance"]])
@@ -969,24 +951,22 @@
   # type = "Y" : outcome scaled
   # type = "XY" : covariates and outcomes scaled
   # NB: factors (dummy-coded) will never be scaled.
-  if (attr(glmModel[["terms"]], "intercept")) {
+  if (attr(glmModel[["terms"]], "intercept"))
     b <- summary(glmModel)[["coefficients"]][-1,1]
-  } else {
+  else
     b <- summary(glmModel)[["coefficients"]][,1]
-  }
   
   factors <- names(glmModel[["xlevels"]])
   xmod <- glmModel[["model"]][!names(glmModel[["model"]]) %in% factors][,-1]
   xfac <- glmModel[["model"]][names(glmModel[["model"]]) %in% factors]
   ymod <- glmModel[["model"]][1]
   
-  if (type == "X") {
+  if (type == "X")
     stdDat <- cbind(ymod, scale(xmod), xfac)
-  } else if (type == "Y") {
+  else if (type == "Y")
     stdDat <- cbind(scale(ymod), xmod, xfac)
-  } else if (type == "XY") {
+  else if (type == "XY")
     stdDat <- cbind(scale(ymod), scale(xmod), xfac)
-  }
   
   names(stdDat) <- names(glmModel[["model"]])
   
@@ -999,28 +979,27 @@
 .confusionMatrix <- function(glmModel, cutoff=0.5) {
   cMat <- list()
   pred <- predict(glmModel,type = "response")
-  obs <- glmModel$y
-  h <- hmeasure::HMeasure(obs, pred, threshold = cutoff)
-  m <- matrix(c(h[["metrics"]][["TN"]], h[["metrics"]][["FN"]],
-                h[["metrics"]][["FP"]], h[["metrics"]][["TP"]]), 2)
+  obs  <- glmModel$y
+  h    <- hmeasure::HMeasure(obs, pred, threshold = cutoff)
+  m    <- matrix(c(h[["metrics"]][["TN"]], h[["metrics"]][["FN"]],
+                   h[["metrics"]][["FP"]], h[["metrics"]][["TP"]]), 2)
   dimnames(m) <- list("Observed" = c(0, 1), "Predicted" = c(0, 1))
   h[["metrics"]][["Brier"]] <- .brierScore(obs, pred)
-  cMat[["matrix"]] <- m
+  cMat[["matrix"]]  <- m
   cMat[["metrics"]] <- h[["metrics"]]
-  cMat
+  return(cMat)
 }
 
 .brierScore <- function(obs, pred) {
-  sum((pred - obs)^2) / length(pred)
+  return(sum((pred - obs)^2) / length(pred))
 }
 
 .formatTerm <- function(term, glmModel) {
   # input: string of model term & glmObj
   vars <- names(glmModel[["model"]][-1])
   
-  if (attr(glmModel[["terms"]], "intercept")) {
+  if (attr(glmModel[["terms"]], "intercept"))
     vars <- c(vars, .v("(Intercept)"))
-  }
   
   # escape special regex characters
   vars <- gsub("(\\W)", "\\\\\\1", vars, perl=TRUE)
@@ -1030,7 +1009,7 @@
   pat2 <- paste0("(?<=(",paste(vars, collapse = ")|("),"))")
   
   # split up string into components
-  spl <- strsplit(term, pat1, perl = TRUE)[[1]]
+  spl  <- strsplit(term, pat1, perl = TRUE)[[1]]
   spl2 <- lapply(spl, function(t) strsplit(t, pat2, perl = TRUE))
   
   # format and add back together
@@ -1039,9 +1018,8 @@
       varname <- .unv(unlist(s)[1])
       levname <- unlist(s)[2]
       return(paste0(varname, " (", levname, ")"))
-    } else {
+    } else
       return(.unv(unlist(s)))
-    }
   })
   col2 <- paste(unlist(col), collapse = " * ")
   
@@ -1053,145 +1031,18 @@
   return(levels(glmModel[["data"]][[predVar]])[2])
 }
 
-.plotLogCurve <- function(glmModel, var, points = TRUE) {
-  # If user wants raw data points, get them from data
-  
-  if (points) {
-    mf <- model.frame(glmModel)
-    factors <- names(glmModel[["xlevels"]])
-    if (.v(var) %in% factors) {
-      vd <- as.factor(glmModel[["data"]][[.v(var)]])
-    } else {
-      vd <- mf[,.v(var)]
-    }
-    ggdat <- data.frame(x = vd, y = glmModel$y)
-  }
-  # Calculate ribbon & main line
-  ribdat <- .glmLogRegRibbon(glmModel, .v(var))
-  
-  # Find predicted level
-  predVar <- as.character(glmModel[["terms"]])[2]
-  predLevel <- levels(glmModel[["data"]][[predVar]])[2]
-  
-  # this will become the y-axis title
-  ytitle <- substitute(expr = "P("*italic(x)~italic("=")~italic(y)*")",
-                       env = list(x = .unv(predVar), y = predLevel))
-  
-  if (attr(ribdat, "factor")) {
-    # the variable is a factor, plot points with errorbars
-    p <- ggplot2::ggplot(ribdat, ggplot2::aes(x = x, y = y))
-    
-    if (points) {
-      p <- p + ggplot2::geom_point(
-        data = ggdat,
-        size = 2,
-        position = ggplot2::position_jitter(height = 0.01, width = 0.04),
-        color = "dark grey",
-        alpha = 0.3
-      )
-    }
-    
-    p <- p +
-      ggplot2::geom_point(
-        data = ribdat,
-        mapping = ggplot2::aes(x = x, y = y),
-        size = 4
-      ) +
-      ggplot2::geom_errorbar(
-        mapping = ggplot2::aes(x = x, ymin = lo, ymax = hi),
-        data = ribdat, width = 0.2
-      )
-    
-  } else {
-    # the variable is continuous, plot curve with error ribbon
-    p <- ggplot2::ggplot(ribdat, ggplot2::aes(x = x, y = y)) +
-      ggplot2::geom_ribbon(
-        data = ribdat,
-        mapping = ggplot2::aes(x = x, ymax = hi, ymin = lo),
-        fill = "light grey",
-        alpha = 0.5
-      ) +
-      ggplot2::geom_line(
-        data = ribdat,
-        mapping = ggplot2::aes(x = x, y = y),
-        size = .75,
-        color = "black"
-      )
-    
-    if (points) {
-      p <- p + ggplot2::geom_point(
-        data = ggdat,
-        size = 2,
-        position = ggplot2::position_jitter(height = 0.03, width = 0),
-        color = "dark grey",
-        alpha = 0.3
-      )
-    }
-  }
-  
-  
-  # We've got our plot, time for some theming!
-  # First, define custom y and x-axes to draw
-  custom_y_axis <- function() {
-    d <- data.frame(x = -Inf, xend = -Inf, y = 0, yend = 1)
-    list(
-      ggplot2::geom_segment(
-        data = d,
-        ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
-        inherit.aes = FALSE,
-        size = 1
-      ),
-      ggplot2::scale_y_continuous(
-        breaks = c(0, 0.25, 0.5, 0.75, 1)
-      )
-    )
-  }
-  
-  custom_x_axis <- function(ribdat) {
-    l <- NULL
-    xdat <- ribdat[["x"]]
-    if (attr(ribdat, "factor")) {
-      l <- list(ggplot2::scale_x_discrete(labels = levels(xdat)))
-    } else {
-      b <- pretty(xdat)
-      d <- data.frame(y = -Inf, yend = -Inf, x = min(b), xend = max(b))
-      l <- list(
-        ggplot2::geom_segment(
-          data = d,
-          ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
-          inherit.aes = FALSE,
-          size = 1
-        ),
-        ggplot2::scale_x_continuous(
-          breaks = b
-        )
-      )
-    }
-  }
-  
-  # then perform the theme and return the ggplot object
-  p <- JASPgraphs::themeJasp(p, legend.position = "none")
-  
-  p + ggplot2::xlab(var) +
-    ggplot2::ylab(ytitle) +
-    custom_x_axis(ribdat) +
-    custom_y_axis() 
-  
-}
-
 .glmLogRegRibbon <- function(logRes, var, ciInt = 0.95) {
   # This function calculates the estimation & CI datapoints for logreg plot
-  fac <- FALSE
+  fac     <- FALSE
   factors <- names(logRes$xlevels)
-  mf <- model.frame(logRes)
+  mf      <- model.frame(logRes)
   outcome <- logRes$terms[[2]]
-  cDat <- mf[,!(colnames(mf) %in% c(factors, outcome))]
+  cDat    <- mf[,!(colnames(mf) %in% c(factors, outcome))]
   if (length(cDat) == nrow(mf)) {
-    cm <- mean(cDat)
+    cm        <- mean(cDat)
     names(cm) <- colnames(mf)[!(colnames(mf) %in% c(factors, outcome))]
-  } else {
+  } else
     cm <- colMeans(cDat)
-  }
   
   
   if (length(factors) == 0 || !(var %in% factors)) {
@@ -1237,7 +1088,7 @@
   }
   
   pred <- predict(logRes, newdata = newDat, type = "link", se.fit = TRUE)
-  ys <- .invLogit(pred$fit)
+  ys   <- .invLogit(pred$fit)
   critValue <- qnorm(1 - (1 - ciInt) / 2)
   lo <- .invLogit(pred$fit - critValue * pred$se.fit)
   hi <- .invLogit(pred$fit + critValue * pred$se.fit)
@@ -1245,24 +1096,24 @@
   
   attr(outFrame, "factor") <- fac
   
-  outFrame
+  return(outFrame)
 }
 
 .invLogit <- function(x) {
-  1/(1 + exp(-x))
+  return(1/(1 + exp(-x)))
 }
 
 .glmRobustSE <- function(glmModel) {
   # Robust SE courtesy of Dan Gillen (UC Irvine)
-  if (is.matrix(glmModel[["x"]])) {
+  if (is.matrix(glmModel[["x"]]))
     xmat <- glmModel[["x"]]
-  } else {
-    mf <- model.frame(glmModel)
+  else {
+    mf   <- model.frame(glmModel)
     xmat <- model.matrix(terms(glmModel), mf)
   }
   
-  umat <- residuals(glmModel, "working") * glmModel[["weights"]] * xmat
-  modelv <- summary(glmModel)[["cov.unscaled"]]
+  umat      <- residuals(glmModel, "working") * glmModel[["weights"]] * xmat
+  modelv    <- summary(glmModel)[["cov.unscaled"]]
   robustCov <- modelv%*%(t(umat)%*%umat)%*%modelv
   dimnames(robustCov) <- dimnames(vcov(glmModel))
   
@@ -1272,115 +1123,77 @@
   return(robustSE)
 }
 
-.plotGlmResiduals <- function(glmModel, var = NULL, type = "deviance") {
-  # plots residuals against predicted (var = NULL) or predictor (var = "name")
-  if (!is.null(var)) {
-    ggdat <- data.frame(resid = residuals(glmModel, type = type),
-                        x = glmModel[["data"]][[.v(var)]])
-  } else {
-    ggdat <- data.frame(resid = residuals(glmModel, type = type),
-                        x = predict(glmModel, type = "response"))
-    var <- "Predicted Probability"
+.casewiseDiagnosticsLogisticRegression <- function(dataset, model, options) {
+  last <- length(model)
+  
+  # Values for all cases
+  dependentAll        <- dataset[[.v(options$dependent)]]
+  dependentAllNumeric <- rep(0, nrow(dataset))
+  dependentAllNumeric[dependentAll == levels(dataset[[.v(options$dependent)]])[2]] <- 1
+  predictedAll      <- predict(model[[last]], dataset, type = "response")
+  predictedGroupAll <- rep(levels(dataset[[.v(options$dependent)]])[1], nrow(dataset))
+  predictedGroupAll[predictedAll >= 0.5] <- levels(dataset[[.v(options$dependent)]])[2]
+  residualAll  <- resid(model[[last]], type = "response")
+  residualZAll <- resid(model[[last]], type = "pearson")
+  cooksDAll    <- cooks.distance(model[[last]])
+  
+  # These will be the variables for the return object
+  dependent      <- NA
+  predicted      <- NA
+  predictedGroup <- NA
+  residual       <- NA
+  residualZ      <- NA
+  cooksD         <- NA
+  
+  if (options$casewiseDiagnosticsType == "residualZ")
+    index <- which(abs(residualZAll) > options$casewiseDiagnosticsResidualZ)
+  else if (options$casewiseDiagnosticsType == "cooksDistance")
+    index <- which(abs(cooksDAll) > options$casewiseDiagnosticsCooksDistance)
+  else 
+    index <- seq_along(cooksDAll)
+  
+  if (length(index) == 0)
+    index <- NA
+  else {
+    dependent      <- dependentAll[index]
+    predicted      <- predictedAll[index]
+    predictedGroup <- predictedGroupAll[index]
+    residual       <- residualAll[index]
+    residualZ      <- residualZAll[index]
+    cooksD         <- cooksDAll[index]
   }
-  
-  if (class(ggdat[["x"]]) == "factor") {
-    pos <- ggplot2::position_jitter(width = 0.1)
-  } else {
-    pos <- ggplot2::position_jitter(width = 0)
-  }
-  
-  custom_y_axis <- function(val) {
-    d <- data.frame(x = -Inf, xend = -Inf,
-                    y = min(pretty(val)), yend = max(pretty(val)))
-    list(
-      ggplot2::geom_segment(
-        data = d,
-        ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
-        inherit.aes = FALSE,
-        size = 1
-      ),
-      ggplot2::scale_y_continuous(
-        breaks = pretty(val)
-      )
-    )
-  }
-  
-  custom_x_axis <- function(val) {
-    if (class(val) == "factor") {
-      l <- list(ggplot2::scale_x_discrete(labels = levels(val)))
-    } else {
-      d <- data.frame(y = -Inf, yend = -Inf,
-                      x = min(pretty(val)), xend = max(pretty(val)))
-      l <- list(
-        ggplot2::geom_segment(
-          data = d,
-          ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
-          inherit.aes = FALSE,
-          size = 1
-        ),
-        ggplot2::scale_x_continuous(
-          breaks = pretty(val)
-        )
-      )
-    }
-    return(l)
-  }
-  
-  
-  p <- ggplot2::ggplot(data = ggdat,
-                       mapping = ggplot2::aes(x = x, y = resid)) +
-    ggplot2::geom_point(position = pos, size = 3, colour="black", fill = "grey",
-                        pch=21)
-  
-  p <- p +
-    ggplot2::xlab(var) +
-    ggplot2::ylab("Residuals") +
-    ggplot2::theme_bw() +
-    custom_y_axis(ggdat[["resid"]]) +
-    custom_x_axis(ggdat[["x"]]) 
-  
-  p <- JASPgraphs::themeJasp(p, legend.position = "none")
-  
-  p
+  casewiseDiag <- list(index          = unname(index),
+                       dependent      = as.character(dependent),
+                       predicted      = unname(predicted),
+                       predictedGroup = as.character(predictedGroup),
+                       residual       = unname(residual),
+                       residualZ      = unname(residualZ),
+                       cooksD         = unname(cooksD))
+  return(casewiseDiag)
 }
 
-.plotSquaredPearsonResiduals <- function(glmModel) {
-  # Squared Pearson residuals plot courtesy of Dan Gillen (UC Irvine)
-  plotDat <- data.frame("pres" = residuals(glmModel, type = "pearson")^2,
-                        "prob" = predict(glmModel, type = "response"))
-  
-  custom_y_axis <- function(ydat) {
-    b <- pretty(c(ydat,0))
-    d <- data.frame(y = 0, yend = max(b), x = -Inf, xend = -Inf)
-    l <- list(ggplot2::geom_segment(data = d,
-                                    ggplot2::aes(x = x, y = y, xend = xend,
-                                                 yend = yend),
-                                    inherit.aes = FALSE, size = 1),
-              ggplot2::scale_y_continuous(breaks = b))
+.optionsDiffCheckBootstrapLogisticRegression <- function(response, options) {
+  if(response$status == "changed"){
+    change <- .diff(options, response$options)
+    if(change$dependent || change$covariates || change$factors || change$wlsWeights ||
+       change$modelTerms || change$coeffEstimates || change$includeIntercept ||
+       change$coeffEstimatesBootstrapping || change$coeffEstimatesBootstrappingReplicates)
+      return(response)
+    response$status <- "ok"
   }
-  
-  custom_x_axis <- function() {
-    d <- data.frame(y = -Inf, yend = -Inf, x = 0, xend = 1)
-    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
-                                                      yend = yend),
-                               inherit.aes = FALSE, size = 1),
-         ggplot2::scale_x_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1)))
-  }
-  
-  
-  
-  
-  p <- ggplot2::ggplot(mapping = ggplot2::aes(x = prob, y = pres), data = plotDat) +
-    ggplot2::geom_segment(ggplot2::aes(x = 0, y = 1, xend = 1, yend = 1),
-                          linetype = 3, size = 1, colour = "grey") +
-    ggplot2::geom_smooth(se=FALSE, method = "loess", size = 1.2,
-                         colour = "darkred") +
-    ggplot2::geom_point(size = 3, colour="black", fill = "grey", pch=21) +
-    custom_y_axis(plotDat[["pres"]]) +
-    custom_x_axis() +
-    ggplot2::labs(x = "Predicted Probability", y = "Squared Pearson Residual") 
-  
-  p <- JASPgraphs::themeJasp(p, legend.position = "none")
-  
-  return(p)
+  return(response)
+}
+
+.reglogisticVovkSellke <- function(table, options) {
+  table$addColumnInfo(name = "vsmpr",   title = "VS-MPR\u002A", type = "number")
+  message <- "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, 
+  the maximum possible odds in favor of H\u2081 over H\u2080 equals
+  1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 
+  (Sellke, Bayarri, & Berger, 2001)."
+  table$addFootnote(message, symbol = "\u002A")
+}
+
+.reglogisticSetError <- function(res, table) {
+  if(isTryError(res))
+    table$setError(.extractErrorMessage(res))
 }
