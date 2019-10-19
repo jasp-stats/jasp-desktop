@@ -86,7 +86,7 @@ Json::Value PlotEditorAxisModel::getAxisData() const
 	for(QString label : _labels)
 		settings["labels"].append(label.toStdString());
 
-	return settings;
+	return axis;
 }
 
 void PlotEditorAxisModel::setTitle(QString title)

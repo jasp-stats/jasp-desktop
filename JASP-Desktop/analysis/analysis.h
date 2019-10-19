@@ -65,30 +65,6 @@ public:
 	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
 	Q_INVOKABLE void	duplicateMe();
 
-signals:
-	void				nameChanged();
-	void				sendRScript(			Analysis * analysis, QString script, QString controlName, bool whiteListedVersion);
-	void				optionsChanged(			Analysis * analysis);
-	void				saveImageSignal(		Analysis * analysis);
-	void				editImageSignal(		Analysis * analysis);
-	void				toRefreshSignal(		Analysis * analysis);
-	void				imageSavedSignal(		Analysis * analysis);
-	void				imageEditedSignal(		Analysis * analysis);
-	void				rewriteImagesSignal(	Analysis * analysis);
-	void				resultsChangedSignal(	Analysis * analysis);
-
-	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
-	void				requestColumnCreation(				QString columnName, Analysis *source, int columnType);
-	void				requestComputedColumnDestruction(	QString columnName);
-
-	void				helpFileChanged(QString helpFile);
-	void				titleChanged();
-
-	Q_INVOKABLE void	expandAnalysis();
-
-
-
-public:
 	bool isWaitingForModule()	{ return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
 	bool isDynamicModule()		{ return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
 	void setResults(	const Json::Value & results, const Json::Value & progress = Json::nullValue);
@@ -105,9 +81,10 @@ public:
 	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;			}
 	void incrementRevision()							{ _revision++;									}
 
+	Json::Value editOptionsOfPlot(const std::string & uniqueName);
+	void		setEditOptionsOfPlot(const std::string & uniqueName, const Json::Value & editOptions);
+	bool		checkAnalysisEntry();
 
-	bool checkAnalysisEntry();
-	
 	//getters
 	const	Json::Value		&	results()			const	{ return _results;							}
 	const	Json::Value		&	userData()			const	{ return _userData;							}
@@ -133,7 +110,7 @@ public:
 
 			void		refresh();
 			void		reload();
-            void        exportResults();
+			void        exportResults();
 	virtual void		abort();
 
 			Json::Value asJSON()		const;
@@ -159,8 +136,30 @@ public:
 	std::set<std::string>	usedVariables()													{ return _options->usedVariables();					}
 	std::set<std::string>	columnsCreated()												{ return _options->columnsCreated();				}
 	void					removeUsedVariable(std::string var)								{ _options->removeUsedVariable(var);				}
-	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}	
-	void					runScriptRequestDone(const QString& result, const QString& controlName);	
+	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}
+	void					runScriptRequestDone(const QString& result, const QString& controlName);
+
+
+signals:
+	void				nameChanged();
+	void				sendRScript(			Analysis * analysis, QString script, QString controlName, bool whiteListedVersion);
+	void				optionsChanged(			Analysis * analysis);
+	void				saveImageSignal(		Analysis * analysis);
+	void				editImageSignal(		Analysis * analysis);
+	void				toRefreshSignal(		Analysis * analysis);
+	void				imageSavedSignal(		Analysis * analysis);
+	void				imageEditedSignal(		Analysis * analysis);
+	void				rewriteImagesSignal(	Analysis * analysis);
+	void				resultsChangedSignal(	Analysis * analysis);
+
+	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
+	void				requestColumnCreation(				QString columnName, Analysis *source, int columnType);
+	void				requestComputedColumnDestruction(	QString columnName);
+
+	void				helpFileChanged(QString helpFile);
+	void				titleChanged();
+
+	Q_INVOKABLE void	expandAnalysis();
 
 public slots:
 	void					setName(std::string name);
@@ -183,6 +182,8 @@ private:
 	void					requestComputedColumnDestructionHandler(std::string columnName)		{ requestComputedColumnDestruction(QString::fromStdString(columnName)); }
 	void					processResultsForDependenciesToBeShown();
 	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
+	bool					_editOptionsOfPlot(const Json::Value & results, const std::string & uniqueName, Json::Value & editOptions);
+	bool					_setEditOptionsOfPlot(Json::Value & results, const std::string & uniqueName, const Json::Value & editOptions);
 
 protected:
 	Status					_status			= Initializing;

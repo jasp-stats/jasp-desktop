@@ -82,9 +82,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.progressbar = new JASPWidgets.ProgressbarView({ model: progressbarModel });
 
 		this.imageBeingEdited = null;
-		this.model.on("analysis:resizeStarted", function (image) {
-			this.imageBeingEdited = image
-		}, this);
+
 
 		this.userdata = this.model.get('userdata');
 		if (this.userdata === undefined || this.userdata === null)
@@ -97,10 +95,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		this.toolbar.setParent(this);
 
-		this.model.on("CustomOptions:changed",		function (options) { this.trigger("optionschanged",		this.model.get("id"), options)	}, this);
-		this.model.on("SaveImage:clicked",			function (options) { this.trigger("saveimage",			this.model.get("id"), options)	}, this);
-		this.model.on("EditImage:clicked",			function (options) { this.trigger("editimage",			this.model.get("id"), options)	}, this);
-		this.model.on("ShowDependencies:clicked",	function (optName) { this.trigger("showDependencies",	this.model.get("id"), optName)	}, this);
+		this.model.on("analysis:resizeStarted",		function (image)			{ this.imageBeingEdited = image	},																					this);
+		this.model.on("CustomOptions:changed",		function (options)			{											this.trigger("optionschanged",		this.model.get("id"), options)	},	this);
+		this.model.on("SaveImage:clicked",			function (options)			{											this.trigger("saveimage",			this.model.get("id"), options)	},	this);
+		this.model.on("EditImage:clicked",			function (image, options)	{ this.imageBeingEdited = image;			this.trigger("editimage",			this.model.get("id"), options)	},	this);
+		this.model.on("ShowDependencies:clicked",	function (optName)			{											this.trigger("showDependencies",	this.model.get("id"), optName)	},	this);
 
 		this.$el.on("changed:userData",	this, this.onUserDataChanged);
 	},
@@ -141,6 +140,11 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	insertNewImage: function() {
 		if (this.imageBeingEdited !== null)
 			this.imageBeingEdited.reRender();
+	},
+
+	updateImageModel: function(newWidth, newHeight, newTitle, newEditOptions) {
+		if (this.imageBeingEdited !== null)
+			this.imageBeingEdited.updateImageModel(newWidth, newHeight, newTitle, newEditOptions);
 	},
 
 	detachNotes: function() {

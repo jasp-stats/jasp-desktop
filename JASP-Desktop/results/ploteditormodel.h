@@ -42,8 +42,9 @@ signals:
 	void dataChanged(										);
 	void titleChanged(			QString		title			);
 	void widthChanged(			int			width			);
-	void heightChanged(		int			height			);
+	void heightChanged(			int			height			);
 	void dummyAxisChanged();
+	void updateImageModel(int analysisID, int newWidth, int newHeight, QString newTitle, QString newEditOptionsJson);
 
 public slots:
 	void showPlotEditor(int id, QString options);
@@ -58,6 +59,10 @@ public slots:
 	void somethingChanged() const;
 	void refresh();
 
+private:
+	void		processImgOptions();
+	Json::Value generateImgOptions()	const;
+	Json::Value generateEditOptions()	const;
 
 private:
 	Analyses			*	_analyses		= nullptr;

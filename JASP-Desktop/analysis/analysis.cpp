@@ -538,3 +538,69 @@ void Analysis::processResultsForDependenciesToBeShown()
 
 	processResultsForDependenciesToBeShownMetaTraverser(_results[".meta"]);
 }
+
+Json::Value Analysis::editOptionsOfPlot(const std::string & uniqueName)
+{
+	Json::Value editOptions = Json::nullValue;
+
+	if(!_editOptionsOfPlot(_results, uniqueName, editOptions))
+		MessageForwarder::showWarning("Could not find edit options of plot " + uniqueName + " so plot editing will not work...");
+
+	return editOptions;
+}
+
+bool Analysis::_editOptionsOfPlot(const Json::Value & results, const std::string & uniqueName, Json::Value & editOptions)
+{
+	if(results.isArray())
+		for(const Json::Value & entry : results)
+			if(_editOptionsOfPlot(entry, uniqueName, editOptions))
+				return true;
+
+	if(results.isObject())
+	{
+		if(results.isMember("name") && results["name"].asString() == uniqueName && results.isMember("editOptions"))
+		{
+			editOptions = results["editOptions"];
+
+			Log::log() << "Found editOptions of " << uniqueName << " and they are:\n" << editOptions.toStyledString() << std::endl;
+
+			return true;
+		}
+
+		for(const std::string & member : results.getMemberNames())
+			if(_editOptionsOfPlot(results[member], uniqueName, editOptions))
+				return true;
+	}
+
+	return false;
+}
+
+void Analysis::setEditOptionsOfPlot(const std::string & uniqueName, const Json::Value & editOptions)
+{
+	if(!_setEditOptionsOfPlot(_results, uniqueName, editOptions))
+		MessageForwarder::showWarning("Could not find set edit options of plot " + uniqueName + " so plot editing will not remember anything (if it evens works)...");
+}
+
+bool Analysis::_setEditOptionsOfPlot(Json::Value & results, const std::string & uniqueName, const Json::Value & editOptions)
+{
+	if(results.isArray())
+		for(Json::Value & entry : results)
+			if(_setEditOptionsOfPlot(entry, uniqueName, editOptions))
+				return true;
+
+	if(results.isObject())
+	{
+		if(results.isMember("name") && results["name"].asString() == uniqueName && results.isMember("editOptions"))
+		{
+			Log::log() << "Replacing editOptions of " << uniqueName << ", old:\n" << results["editOptions"].toStyledString() << "\nnew:\n" << editOptions.toStyledString() << std::endl;
+			results["editOptions"] = editOptions;
+			return true;
+		}
+
+		for(const std::string & member : results.getMemberNames())
+			if(_setEditOptionsOfPlot(results[member], uniqueName, editOptions))
+				return true;
+	}
+
+	return false;
+}

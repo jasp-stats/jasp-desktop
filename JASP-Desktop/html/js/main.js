@@ -42,6 +42,13 @@ $(document).ready(function () {
 		if (results.error && results.resized)	analysis.undoImageResize();
 		else									analysis.insertNewImage();
 	}
+
+	window.updateImageModel = function(id, newWidth, newHeight, newTitle, newEditOptions) {
+		var analysis = analyses.getAnalysis(id);
+		if (analysis === undefined) return;
+
+		analysis.updateImageModel(newWidth, newHeight, newTitle, newEditOptions);
+	}
 	
 	window.cancelImageEdit = function(id) {
 		var analysis = analyses.getAnalysis(id);

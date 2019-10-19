@@ -2756,32 +2756,26 @@ editImage <- function(optionsJson) {
   oldPlot       <- state[["figures"]][[plotName]][["obj"]]
   isGgplot      <- ggplot2::is.ggplot(oldPlot) # FALSE implies oldPlot is a  recordedPlot
   requireResize <- type == "resize"
+
   save(optionsJson, optionsList, oldPlot, file = "~/plotEditing.Rdata")
-print(optionsList)
+  print(optionsList)
+
   if (!is.null(oldPlot)) {
   # this try is required because resizing and editing may fail for various reasons.
   # An example is the "figure margins too large" error when the plot area is too small.
   # if something fails, the default behaviour is to use the old plot and do nothing.
     results <- try({
+
       # copy plot and check if we edit it
       plot <- if (isGgplot) ggplot2:::plot_clone(oldPlot) else oldPlot
-      #if (type == "interactive" && isGgplot) {
+
       if (type == "interactive" && isGgplot) {
 
-	    newOpts <- optionsList[["editOptions"]]
-        oldOpts <- JASPgraphs::plotEditingOptions(plot)
-        newOpts$xAxis <- list(
-          type     = oldOpts$xAxis$type,
-          settings = newOpts$xAxis[names(newOpts$xAxis) != "type"]
-        )
-        newOpts$yAxis <- list(
-          type     = oldOpts$yAxis$type,
-          settings = newOpts$yAxis[names(newOpts$yAxis) != "type"]
-        )
-        plot <- JASPgraphs::plotEditing(plot, newOpts)
-
-       # editedPlot <- ggedit::ggedit(oldPlot, viewer = shiny::browserViewer())
-       # plot <- editedPlot[["UpdatedPlots"]][[1]]
+        newOpts       <- optionsList[["editOptions"]]
+        oldOpts       <- JASPgraphs::plotEditingOptions(plot)
+        newOpts$xAxis <- list(type = oldOpts$xAxis$type, settings = newOpts$xAxis[names(newOpts$xAxis) != "type"]$settings )
+        newOpts$yAxis <- list(type = oldOpts$yAxis$type, settings = newOpts$yAxis[names(newOpts$yAxis) != "type"]$settings )
+        plot          <- JASPgraphs::plotEditing(plot, newOpts)
       }
       
       # nothing was modified in ggedit, or editing was cancelled
@@ -2831,9 +2825,10 @@ print(optionsList)
     state[["figures"]][[plotName]][["height"]] <- height
     
     replacement <- list(width=width, height=height)
+
     if (type == "interactive") {
       state[["figures"]][[plotName]][["obj"]] <- content[["obj"]]
-      replacement[["obj"]] <- content[["obj"]]
+      replacement[["obj"]]                    <- content[["obj"]]
     }
 		
     key                 <- attr(x = state, which = "key")
@@ -2843,7 +2838,6 @@ print(optionsList)
     attr(state, "key")  <- key
 		
     .saveState(state)
-		
   }
 
   toJSON(response)
