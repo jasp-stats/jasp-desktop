@@ -249,7 +249,7 @@ You can do this by setting the JASP_R_HOME build environment.
 For this open the projects tab in Qt and select the Build Environment.
 Here you add the environment setting to specify where the Resources from
 the jasp-required-files is located:  
-e.g. JASP_R_HOME=\<my-jasp-required-files-location\>/Frameworks/R.framework/Versions/3.5/Resources
+e.g. JASP_R_HOME=\<my-jasp-required-files-location\>/Frameworks/R.framework/Versions/3.6/Resources
 
  ![Image of folder structure](https://static.jasp-stats.org/images/jasp-r-home.png)
 
