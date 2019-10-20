@@ -31,11 +31,11 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   ### DESCRIPTIVES ###
   .bainOneSampleDescriptivesTable(dataset, options, jaspResults, ready, position = 2)
 
-  ### DESCRIPTIVES PLOTS ###
-  .bainOneSampleDescriptivesPlot(dataset, options, jaspResults, ready, position = 3)
-  
   ### BAYES FACTOR PLOTS ###
-  .bainTTestFactorPlots(dataset, options, jaspResults, ready, type = "oneSample", position = 4)
+  .bainTTestFactorPlots(dataset, options, jaspResults, ready, type = "oneSample", position = 3)
+
+  ### DESCRIPTIVES PLOTS ###
+  .bainOneSampleDescriptivesPlot(dataset, options, jaspResults, ready, position = 4)
 }
 
 .readDataBainOneSample <- function(options, dataset) {
@@ -55,7 +55,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
 .bainOneSampleResultsTable <- function(dataset, options, jaspResults, missingValuesIndicator, ready, position) {
 
-  if (!is.null(jaspResults[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+  if (!is.null(jaspResults[["bainTable"]])) return()
 
   bainTable                      <- createJaspTable("Bain One Sample T-test")
   bainTable$position <- position
@@ -226,7 +226,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
 .bainOneSampleDescriptivesTable <- function(dataset, options, jaspResults, ready, position) {
 
-  if (!is.null(jaspResults[["descriptivesTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+  if (!is.null(jaspResults[["descriptivesTable"]])) return()
     if (options[["descriptives"]]) {
       
       descriptivesTable <- createJaspTable("Descriptive Statistics")
@@ -236,8 +236,8 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
       descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
       descriptivesTable$addColumnInfo(name="N",                    title = "N", type="integer")
       descriptivesTable$addColumnInfo(name="mean",                 title = "Mean", type="number")
-      descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
-      descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
+      descriptivesTable$addColumnInfo(name="sd",                   title = "Std. Deviation", type="number")
+      descriptivesTable$addColumnInfo(name="se",                   title = "Std. Error", type="number")
 
       interval <- 100 * options[["descriptivesPlotsCredibleInterval"]]
       overTitle <- paste0(interval, "% Credible Interval")
@@ -371,7 +371,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   }
 }
 
-.plot_bain_ttest_cran <- function(x, y, type){
+.plot_bain_ttest_cran <- function(x, type){
 
     if(type == 1 || type == 2 || type == 3){
       labs <- c("H0", "H1")

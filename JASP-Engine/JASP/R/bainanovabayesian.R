@@ -28,7 +28,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "fixedFactors", "model"))
 	
 	### LEGEND ###
-	.bainLegendAncova(dataset, options, bainContainer, position = 0)
+	.bainLegendAncova(dataset, options, jaspResults, position = 0)
 	
 	### RESULTS ###
 	.bainAnovaResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
@@ -65,7 +65,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 
 	bainTable$addCitation(.bainGetCitations())
 
-	bainTable$dependOn(options = c("dependent", "fixedFactors", "model", "seed"))
+	bainTable$dependOn(options = c("seed"))
 
 	bainContainer[["bainTable"]] <- bainTable
 
@@ -120,14 +120,14 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["descriptivesTable"]]) || !options[["descriptives"]]) return()
 
 	descriptivesTable <- createJaspTable("Descriptive Statistics")
-	descriptivesTable$dependOn(options =c("dependent", "fixedFactors", "descriptives", "CredibleInterval"))
+	descriptivesTable$dependOn(options =c("descriptives", "CredibleInterval"))
 	descriptivesTable$position <- position
 
 	descriptivesTable$addColumnInfo(name="v",    		title="Level",	type="string")
 	descriptivesTable$addColumnInfo(name="N",    		title="N",			type="integer")
 	descriptivesTable$addColumnInfo(name="mean", 		title="Mean",		type="number")
-	descriptivesTable$addColumnInfo(name="sd",   		title="SD", 		type="number")
-	descriptivesTable$addColumnInfo(name="se",   		title="SE", 		type="number")
+	descriptivesTable$addColumnInfo(name="sd",   		title="Std. Deviation",type="number")
+	descriptivesTable$addColumnInfo(name="se",   		title="Std. Error", 		type="number")
 
 	interval <- options[["CredibleInterval"]] * 100
 	overTitle <- paste0(interval, "% Credible Interval")

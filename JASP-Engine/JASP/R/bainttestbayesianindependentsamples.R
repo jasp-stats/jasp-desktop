@@ -31,11 +31,11 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	### DESCRIPTIVES ###
 	.bainIndependentSamplesDescriptivesTable(dataset, options, jaspResults, ready, position = 2)
 
-	### DESCRIPTIVES PLOTS ###
-	.bainIndependentSamplesDescriptivesPlots(dataset, options, jaspResults, ready, position = 3)
-	
 	### BAYES FACTOR PLOTS ###
-	.bainTTestFactorPlots(dataset, options, jaspResults, ready, type = "independentSamples", position = 4)
+	.bainTTestFactorPlots(dataset, options, jaspResults, ready, type = "independentSamples", position = 3)
+
+	### DESCRIPTIVES PLOTS ###
+	.bainIndependentSamplesDescriptivesPlots(dataset, options, jaspResults, ready, position = 4)
 }
 
 .bainIndependentSamplesResultsTable <- function(dataset, options, jaspResults, missingValuesIndicator, ready, position) {
@@ -240,8 +240,8 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 		descriptivesTable$addColumnInfo(name="group",                title = "Group", type="string")
 	  descriptivesTable$addColumnInfo(name="N",                    title = "N", type="integer")
 	  descriptivesTable$addColumnInfo(name="mean",                 title = "Mean", type="number")
-	  descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
-	  descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
+	  descriptivesTable$addColumnInfo(name="sd",                   title = "Std. Deviation", type="number")
+	  descriptivesTable$addColumnInfo(name="se",                   title = "Std. Error", type="number")
 
 		interval <- 100 * options[["descriptivesPlotsCredibleInterval"]]
 		overTitle <- paste0(interval, "% Credible Interval")

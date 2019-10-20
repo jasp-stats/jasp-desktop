@@ -30,12 +30,12 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
   
   ### DESCRIPTIVES ###
   .bainPairedSamplesDescriptivesTable(dataset, options, jaspResults, ready, position = 2)
-  
-  ### DESCRIPTIVES PLOTS ###
-  .bainPairedSamplesDescriptivesPlots(dataset, options, jaspResults, ready, position = 3)
 
   ### BAYES FACTOR PLOTS ###
-  .bainTTestFactorPlots(dataset, options, jaspResults, ready, type = "pairedSamples", position = 4)
+  .bainTTestFactorPlots(dataset, options, jaspResults, ready, type = "pairedSamples", position = 3)
+  
+  ### DESCRIPTIVES PLOTS ###
+  .bainPairedSamplesDescriptivesPlots(dataset, options, jaspResults, ready, position = 4)
 }
 
 .bainPairedSamplesResultsTable <- function(dataset, options, jaspResults, missingValuesIndicator, ready, position) {
@@ -266,8 +266,8 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
     descriptivesTable$addColumnInfo(name="N",                    title = "N", type="integer")
     descriptivesTable$addColumnInfo(name="mean",                 title = "Mean", type="number")
-    descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
-    descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
+    descriptivesTable$addColumnInfo(name="sd",                   title = "Std. Deviation", type="number")
+    descriptivesTable$addColumnInfo(name="se",                   title = "Std. Error", type="number")
 
     interval <- 100 * options[["descriptivesPlotsCredibleInterval"]]
     overTitle <- paste0(interval, "% Credible Interval")

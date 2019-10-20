@@ -28,7 +28,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "fixedFactors", "covariates", "model"))
 	
 	### LEGEND ###
-	.bainLegendAncova(dataset, options, bainContainer, position = 0)
+	.bainLegendAncova(dataset, options, jaspResults, position = 0)
 	
 	### RESULTS ###
 	.bainAncovaResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
@@ -39,11 +39,11 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	### COEFFICIENTS ###
 	.bainAncovaCoefficientsTable(dataset, options, bainContainer, ready, position = 3)
 
-	### DESCRIPTIVES PLOT ###
-	.bainAnovaDescriptivesPlot(dataset, options, bainContainer, ready, type = "ancova", position = 4)
-	
 	### BAYES FACTOR PLOT ###
-	.bainAnovaBayesFactorPlots(dataset, options, bainContainer, ready, position = 5)
+	.bainAnovaBayesFactorPlots(dataset, options, bainContainer, ready, position = 4)
+
+	### DESCRIPTIVES PLOT ###
+	.bainAnovaDescriptivesPlot(dataset, options, bainContainer, ready, type = "ancova", position = 5)
 }
 
 .bainAncovaResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready, position) {
@@ -167,7 +167,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	coefficientsTable$addColumnInfo(name="v",				title="Covariate",		type="string")
 	coefficientsTable$addColumnInfo(name="N",				title="N",				type="integer")
 	coefficientsTable$addColumnInfo(name="mean",			title="Coefficient",	type="number")
-	coefficientsTable$addColumnInfo(name="SE",				title="SE",				type="number")
+	coefficientsTable$addColumnInfo(name="SE",				title="Std. Error",		type="number")
 	coefficientsTable$addColumnInfo(name="CiLower",			title="Lower",			type="number", overtitle="95% Credible Interval")
 	coefficientsTable$addColumnInfo(name="CiUpper",			title="Upper",			type="number", overtitle="95% Credible Interval")
 
@@ -178,8 +178,8 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 
 	bainResult <- bainContainer[["bainResult"]]$object
 
-	sum_model <- bainResult$model
-	covcoef <- data.frame(sum_model$coefficients)
+	sum_model <- bainResult[["model"]]
+	covcoef <- data.frame(sum_model[["coefficients"]])
 	covcoef <- cbind(covcoef, summary(sum_model)$coefficients[, 2])
 
 	groups <- rownames(covcoef)
@@ -190,17 +190,15 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 
 	groupCol <- dataset[ , .v(options[["fixedFactors"]])]
 	varLevels <- levels(groupCol)
-	varLevels <- levels(groupCol)
+	covVars <- unlist(options[["covariates"]])
 
-	N <- NULL
+	N <- numeric()
 
 	for (variable in varLevels) {
 		column <- dataset[ , .v(options[["dependent"]])]
 		column <- column[which(groupCol == variable)]
 		N <- c(N, length(column))
 	}
-
-	covVars <- unlist(options[["covariates"]])
 
 	for (var in covVars) {
 		col <- dataset[ , .v(var)]
@@ -236,9 +234,9 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
   return(readList)
 }
 
-.bainLegendAncova <- function(dataset, options, bainContainer, position) {
+.bainLegendAncova <- function(dataset, options, jaspResults, position) {
 
-	if (!is.null(bainContainer[["legendTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+	if (!is.null(jaspResults[["legendTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
 		legendTable <- createJaspTable("Hypothesis Legend")
 		legendTable$dependOn(options =c("model", "fixedFactors"))
@@ -247,7 +245,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 		legendTable$addColumnInfo(name="number", type="string", title="")
 		legendTable$addColumnInfo(name="hypothesis", type="string", title="Hypothesis")
 		
-		bainContainer[["legendTable"]] <- legendTable
+		jaspResults[["legendTable"]] <- legendTable
 
 		if (options[["model"]] != "") {
 			rest.string <- .bainCleanModelInput(options[["model"]])
