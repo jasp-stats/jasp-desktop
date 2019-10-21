@@ -19,21 +19,19 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
   ready <- length(options$rows > 0) && length(options$columns > 0)
   
   if(ready) {
-    dataset <- .contTabBasReadData(dataset, options)
-    .contTabBasCheckErrors(dataset, options)
+    dataset <- .crossTabReadData(dataset, options)
+    .crossTabCheckErrors(dataset, options)
   }
   
   # Compute the combinations of rows, columns, layers
-  analyses <- .contTabBasComputeAnalyses(dataset, options, ready)
-  
+  analyses <- .crossTabComputeAnalyses(dataset, options, ready)
   # Tables container - groups per analysis
-  .contTabBasContainer(jaspResults, options, analyses, ready)
-  
+  .crossTabContainer(jaspResults, options, analyses, ready)
   # Output tables (each calls its own results function)
-  .contTabBasMain(       jaspResults, dataset, options, analyses, ready)
-  .contTabBasBF(         jaspResults, options, analyses, ready)
-  .contTabBasLogOdds(    jaspResults, options, analyses, ready)
-  .contTabBasCramersV(   jaspResults, options, analyses, ready)
+  .crossTabMain(      jaspResults, dataset, options, analyses, ready)
+  .contTabBasBF(      jaspResults, options, analyses, ready)
+  .contTabBasLogOdds( jaspResults, options, analyses, ready)
+  .contTabBasCramersV(jaspResults, options, analyses, ready)
   
   # Plots
   .contTabBasLogOddsPlot(jaspResults, options, analyses, ready)
@@ -41,112 +39,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
   return()
 }
 
-# Preprocessing functions
-.contTabBasReadData <- function(dataset, options) {
-  if (!is.null(dataset))
-    return(dataset)
-  else {
-    layer.variables <- c()
-    for (layer in options$layers)
-      layer.variables <- c(layer.variables, unlist(layer$variables))
-    
-    counts.var <- options$counts
-    if (counts.var == "")
-      counts.var <- NULL
-    
-    factors <- c(unlist(options$rows), unlist(options$columns), layer.variables)
-    
-    return(.readDataSetToEnd(columns.as.factor  = factors, 
-                             columns.as.numeric = counts.var))
-  }
-}
-
-.contTabBasCheckErrors <- function(dataset, options) {
-  .hasErrors(dataset, 
-             type = c('negativeValues', 'infinity'), 
-             all.target = c(options$counts), 
-             exitAnalysisIfErrors = TRUE)
-}
-
-# Combinations of rows, columns, layers
-.contTabBasComputeAnalyses <- function(dataset, options, ready) {
-  rows    <- as.vector(options$rows,    "character")
-  columns <- as.vector(options$columns, "character")
-  
-  if (length(rows) == 0)
-    rows <- ""
-  if (length(columns) == 0)
-    columns <- ""
-  
-  analyses <- list()
-  analyses <- data.frame("columns" = columns, stringsAsFactors = FALSE)
-  analyses <- cbind(analyses, "rows" = rep(rows, each = dim(analyses)[1]), 
-                    stringsAsFactors = FALSE)
-  
-  for (layer in options$layers) {
-    layer.vars <- as.vector(layer$variables, "character")
-    analyses   <- cbind(analyses, rep(layer.vars, each = dim(analyses)[1]), 
-                        stringsAsFactors = FALSE)
-    names(analyses)[dim(analyses)[2]] <- layer$name
-  }
-  return(analyses)
-}
-
-# Container
-.contTabBasContainer <- function(jaspResults, options, analyses, ready) {
-  for (i in 1:nrow(analyses)){
-    analysis <- analyses[i,]
-    if (is.null(jaspResults[[paste0("container", i)]])) {
-      container <- createJaspContainer()
-      container$dependOn(options              = c("layers", "counts"),
-                         optionContainsValue  = list(rows     = analysis$rows, 
-                                                     columns  = analysis$columns))
-      jaspResults[[paste0("container", i)]] <- container
-    }
-  }
-}
-
 # Output Tables
-.contTabBasMain <- function(jaspResults, dataset, options, analyses, ready) {
-  for (i in 1:nrow(analyses)){
-    analysis <- analyses[i,]
-    analysisContainer <- jaspResults[[paste0("container", i)]]
-    if (!is.null(analysisContainer[["contTabBasMain"]])) 
-      next
-    # Create table
-    contTabBasMain <- createJaspTable(title = "Bayesian Contingency Tables")
-    dependList <- c("countsExpected", "percentagesRow", "percentagesColumn", 
-                    "percentagesTotal", "rowOrder", "columnOrder")
-    contTabBasMain$dependOn(dependList)
-    .contTablesBayesianCitations(contTabBasMain)
-    contTabBasMain$showSpecifiedColumnsOnly <- TRUE
-    contTabBasMain$position <- 1
-    .contTabBasLayersColumns(contTabBasMain, analysis)
-    if(analysis$rows == "")
-      contTabBasMain$addColumnInfo(name = analysis$rows, title = " ", 
-                                   type = "string", combine = TRUE)
-    else 
-      contTabBasMain$addColumnInfo(name = analysis$rows, type = "string", 
-                                   combine = TRUE)
-    counts.fp <- .contTabBasCountsFloatingPoint(dataset, options)
-    .contTabBasMainOvertitle(dataset, options, contTabBasMain, analysis, counts.fp)
-    if (counts.fp)
-      contTabBasMain$addColumnInfo(name = "total[counts]",   title = "Total", 
-                                   type = "number", format = "sf:4;dp:2")
-    else
-      contTabBasMain$addColumnInfo(name = "total[counts]", title = "Total", 
-                                   type = "integer")
-    
-    analysisContainer[["contTabBasMain"]] <- contTabBasMain
-    analysis <- as.list(analysis)
-    # Compute/get groupList
-    groupList <- .contTabBasComputeGroups(analysisContainer, dataset, options, analysis, ready)
-    res <- try(.contTabBasCountsRows(analysisContainer, analysis$rows, groupList, options, ready, counts.fp))
-    
-    .contTabBasSetErrorOrFill(res, contTabBasMain)
-  }
-}
-
 .contTabBasBF <- function(jaspResults, options, analyses, ready) {
   for (i in 1:nrow(analyses)){
     analysis <- analyses[i,]
@@ -162,7 +55,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
     contTabBasBF$position <- 2
     
     # Add columns to table
-    .contTabBasLayersColumns(contTabBasBF, analysis)
+    .crossTabLayersColumns(contTabBasBF, analysis)
     contTabBasBF$addColumnInfo(name = "type[BF]",  title = "",      type = "string")
     contTabBasBF$addColumnInfo(name = "value[BF]", title = "Value", type = "number")
     contTabBasBF$addColumnInfo(name = "type[N]",   title = "",      type = "string")
@@ -171,7 +64,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
     analysisContainer[["contTabBasBF"]] <- contTabBasBF
     analysis <- as.list(analysis)
     # Compute/get groupList
-    groupList <- .contTabBasComputeGroups(analysisContainer, dataset, options, analysis, ready)
+    groupList <- .crossTabComputeGroups(dataset, options, analysisContainer, analysis, ready)
     # Compute/get bfList
     bfList <- .contTabBasComputeBfList(analysisContainer, options, groupList, ready)
     
@@ -201,7 +94,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
                       "% Credible Interval", sep = "")
     
     # Add columns to table
-    .contTabBasLayersColumns(contTabBasLogOdds, analysis)
+    .crossTabLayersColumns(contTabBasLogOdds, analysis)
     #contTabBasLogOdds$addColumnInfo(name = "type[oddsRatio]",  title = "", type = "string")
     contTabBasLogOdds$addColumnInfo(name = "value[oddsRatio]", title = "Log Odds Ratio", 
                                type = "number")
@@ -213,7 +106,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
     analysisContainer[["contTabBasLogOdds"]] <- contTabBasLogOdds
     analysis <- as.list(analysis)
     # Compute/get groupList
-    groupList <- .contTabBasComputeGroups(analysisContainer, dataset, options, analysis, ready)
+    groupList <- .crossTabComputeGroups(dataset, options, analysisContainer, analysis, ready)
     # Compute/get bfList
     bfList <- .contTabBasComputeBfList(analysisContainer, options, groupList, ready)
     
@@ -242,7 +135,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
     ci <- paste(100 * options$effectSizeCredibleIntervalInterval, "% Credible Interval", sep="")
     
     # Add columns to table
-    .contTabBasLayersColumns(contTabBasCramersV, analysis)
+    .crossTabLayersColumns(contTabBasCramersV, analysis)
     contTabBasCramersV$addColumnInfo(name = "value[CramerV]", title = "Cramer's V", 
                                      type = "number")
     contTabBasCramersV$addColumnInfo(name = "low[CramerV]", title = "Lower", 
@@ -250,11 +143,10 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
     contTabBasCramersV$addColumnInfo(name = "up[CramerV]",  title = "Upper", 
                                      overtitle = ci, type = "number", format="dp:3")
     
-    
     analysisContainer[["contTabBasCramersV"]] <- contTabBasCramersV
     analysis <- as.list(analysis)
     # Compute/get groupList
-    groupList <- .contTabBasComputeGroups(analysisContainer, dataset, options, analysis, ready)
+    groupList <- .crossTabComputeGroups(dataset, options, analysisContainer, analysis, ready)
     # Compute/get bfList
     bfList <- .contTabBasComputeBfList(analysisContainer, options, groupList, ready)
     
@@ -388,167 +280,12 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
 }
 
 # Table functions 
-.contTabBasLayersColumns <- function(table, analysis) {
-  if ((length(analysis)) >= 3)
-    for (j in (length(analysis)):3)
-      table$addColumnInfo(name = analysis[[j]], type = "string", combine = TRUE)
-}
-
-.contTabBasMainOvertitle <- function(dataset, options, table, analysis, counts.fp) {
-  
-  lvls <- c()
-  overTitle <- unlist(analysis$columns)
-  
-  if(analysis$columns == "") {
-    lvls <- c("a", "b")
-    for (column.name in lvls) {
-      private.name <- paste0(column.name,"[counts]")
-      
-      if (counts.fp) 
-        table$addColumnInfo(name = private.name, title = ".", 
-                            overtitle = ".", type = "number", format = "sf:4;dp:2")
-      else 
-        table$addColumnInfo(name = private.name, title = ".", 
-                            overtitle = ".", type = "integer")
-    }
-  } else {
-    if (is.factor(dataset[[ .v(analysis$columns) ]] )) {
-      lvls <- levels(dataset[[ .v(analysis$columns) ]])
-      if (options$columnOrder == "descending")
-        lvls <- rev(lvls)
-    } else {
-      lvls <- unique(dataset[[ .v(analysis$columns) ]])
-      if (options$columnOrder == "descending")
-        lvls <- rev(lvls, decreasing = TRUE)
-    }
-    
-    for (column.name in lvls) {
-      private.name <- paste0(column.name,"[counts]")
-      
-      if (counts.fp) 
-        table$addColumnInfo(name = private.name, title = column.name, 
-                            overtitle = overTitle, type = "number", 
-                            format = "sf:4;dp:2")
-      else 
-        table$addColumnInfo(name = private.name, title = column.name, 
-                            overtitle = overTitle, type = "integer")
-    }
-  }
-}
-
 .contTabBasSetErrorOrFill <- function(res, table) {
   if(isTryError(res))
     table$setError(.extractErrorMessage(res))
   else
     for (level in 1:length(res)) 
       table$addRows(res[[level]])
-}
-
-.crossTabLayerNames <- function(row, group) {
-  for (layer in names(group)) {
-    level <- group[[layer]]
-    if (level == "")
-      row[[layer]] <- "Total"
-    else 
-      row[[layer]] <- level
-  }
-  return(row)
-}
-
-.crossTabCountsMatrixToRow <- function(matrix, counts.matrix, type) {
-  if (is.character(matrix[1,1]))
-    rowname <- matrix[1,]
-  else {
-    if(type %in% c("expected", "col.proportions", "proportions"))
-      row <- colSums(matrix)
-    else if(type == "row.proportions"){
-      m <- margin.table(counts.matrix, 2)
-      rowprop <- prop.table(m)
-      row <- rowprop
-    }
-  }
-  
-  row <- as.list(row)
-  names(row) <- paste0(names(row),"[", type, "]")
-  
-  if (is.character(matrix[1,1]))
-    row[[paste0("total[", type, "]")]] <- ""
-  else {
-    if(type == "col.proportions") {
-      row.sum  <- margin.table(matrix, 1)
-      row.prop <- prop.table(row.sum)
-      col.prop <- sum(row.prop)
-      row[[paste0("total[", type, "]")]] <- col.prop
-    } else if(type == "row.proportions")
-      row[[paste0("total[", type, "]")]] <- sum(rowprop)
-    else
-      row[[paste0("total[", type, "]")]] <- sum(matrix)
-  }
-  return(row)
-}
-
-.contTabBasComputeGroups <- function(analysisContainer, dataset, options, analysis, ready) {
-  if(!is.null(analysisContainer[["groupList"]]))
-    return(analysisContainer[["groupList"]]$object)
-  groupsList <- list() #list of groups, group.matrices
-  
-  counts.var <- options$counts
-  if (counts.var == "")
-    counts.var <- NULL
-  if(ready) {
-    all.vars   <- c(unlist(analysis), counts.var)
-    subdataset <- subset(dataset, select = .v(all.vars))
-  }
-  else
-    subdataset <- dataset
-  # the following creates a 'groups' list
-  # a 'group' represents a combinations of the levels from the layers
-  # if no layers are specified, groups is null
-  if (length(analysis) >= 3) {  # if layers are specified
-    
-    lvls <- levels(subdataset[[ .v(analysis[[3]]) ]])
-    
-    if (length(lvls) < 2)
-      lvls <- ""
-    else 
-      lvls <- c(lvls, "")  # blank means total
-    
-    # here we create all combinations of the levels from the layers
-    # it is easiest to do this with a data frame
-    # at the end we convert this to a list of rows
-    
-    groups <- data.frame(lvls, stringsAsFactors=FALSE)
-    names(groups) <- analysis[[3]]
-    
-    if (length(analysis) >= 4) {
-      
-      for (j in 4:(length(analysis))) {
-        lvls <- levels(subdataset[[ .v(analysis[[j]]) ]])
-        lvls <- c(lvls, "")  # blank means total
-        
-        groups <- cbind(rep(lvls, each=dim(groups)[1]), groups, 
-                        stringsAsFactors=FALSE)
-        names(groups)[1] <- analysis[[j]]
-      }
-    }
-    
-    # convert all the combinations to a list of rows
-    groups <- .dataFrameToRowList(groups)
-    
-  } else  # if layers are not specified
-    groups <- NULL
-  groupsList$groups <- groups
-  if (!is.null(counts.var))
-    counts <- stats::na.omit(subdataset[[ .v(counts.var) ]])
-  grp.mat <- .contTabBasGroupMatrices(subdataset, analysis$rows, 
-                                      analysis$columns, groups, 
-                                      counts.var, 
-                                      options$rowOrder=="descending", 
-                                      options$columnOrder=="descending", 
-                                      ready)
-  groupsList$group.matrices <- grp.mat
-  analysisContainer[["groupList"]] <- createJaspState(groupsList)
-  return(groupsList)
 }
 
 .contTabBasComputeBfList <- function(analysisContainer, options, groupList, ready) {
@@ -743,329 +480,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
   return(samplesList)
 }
 
-.contTabBasCountsFloatingPoint <- function(dataset, options) {
-  # whether the counts are float point or not; changes formatting (decimal places)
-  if (options$counts != "") {
-    counts <- dataset[[ .v(options$counts) ]]
-    if(!(counts == as.integer(counts)))          
-      return(TRUE)
-  }
-  return(FALSE)
-}
-
-# Group matrix 
-.contTabBasGroupMatrices <- function(dataset, rows, columns, groups, counts = NULL, 
-                                     rowOrderDescending = FALSE, 
-                                     columnOrderDescending = FALSE, ready) {
-  
-  # this creates count matrices for each of the groups
-  matrices <- list()
-  
-  if (is.null(groups)) {
-    
-    if (!ready) {
-      
-      row.levels <- c(" .", " . ")
-      col.levels <- c(" .", " . ")
-      
-      if (rows != "")
-        row.levels <- levels(dataset[[ .v(rows) ]])
-      if (columns != "")
-        col.levels <- levels(dataset[[ .v(columns) ]])
-      
-      ss.matrix <- matrix(0, 
-                                nrow  = length(row.levels), 
-                                ncol     = length(col.levels), 
-                                dimnames = list(row.levels, col.levels))
-      
-    } else if (is.null(counts)) {
-      ss.dataset <- subset(dataset, select = .v(c(rows, columns)))
-      ss.table   <- table(ss.dataset)
-      ss.matrix  <- matrix(ss.table, nrow = dim(ss.table)[1], 
-                                 ncol = dim(ss.table)[2], 
-                                 dimnames = dimnames(ss.table))
-      
-    } else {
-      ss.dataset <- subset(dataset, select = .v(c(rows, columns, counts)))
-      ss.matrix  <- tapply(ss.dataset[[ .v(counts) ]], 
-                                 list(ss.dataset[[ .v(rows) ]], 
-                                      ss.dataset[[ .v(columns) ]]), 
-                                 sum)
-      ss.matrix[is.na(ss.matrix)] <- 0
-    }
-    
-    if (rowOrderDescending)
-      ss.matrix <- apply(ss.matrix, 2, rev)
-    if (columnOrderDescending)
-      ss.matrix <- ss.matrix[ , ncol(ss.matrix):1]
-    
-    ss.matrix[is.na(ss.matrix)] <- 0
-    
-    matrices[[1]] <- ss.matrix
-  } else {
-    
-    for (group in groups) {
-      
-      group <- group[group != ""]
-      
-      if (!ready) { # do nothing
-      } else if (length(group) == 0) {
-        ss.dataset <- subset(dataset, select = .v(c(rows, columns, counts)))
-      } else {
-        ss.filter.string <- paste(.v(names(group)), "==\"", group, "\"", 
-                                        sep = "", collapse = "&")
-        ss.expression    <- parse(text = ss.filter.string)
-        ss.dataset	     <- subset(dataset, 
-                                        select = .v(c(rows, columns, counts)), 
-                                        subset = eval(ss.expression))
-      }
-      
-      if (!ready) {
-        ss.matrix <- matrix(c(0,0,0,0), nrow = 2, ncol = 2)
-      } else if (is.null(counts)) {
-        ss.table  <- table(ss.dataset)
-        ss.matrix <- matrix(ss.table, 
-                                  nrow = dim(ss.table)[1], 
-                                  ncol = dim(ss.table)[2], 
-                                  dimnames = dimnames(ss.table))
-      } else {
-        ss.matrix <- tapply(ss.dataset[[ .v(counts) ]], 
-                                  list(ss.dataset[[ .v(rows) ]], 
-                                       ss.dataset[[ .v(columns) ]]), 
-                                  sum)
-      }
-      
-      ss.matrix[is.na(ss.matrix)] <- 0
-      
-      if (rowOrderDescending)
-        ss.matrix <- apply(ss.matrix, 2, rev)
-      if (columnOrderDescending)
-        ss.matrix <- ss.matrix[ , ncol(ss.matrix):1]
-      matrices[[length(matrices) + 1]] <- ss.matrix
-    }
-  }
-  return(matrices)
-}
-
 # Table Results 
-
-.contTabBasCountsRows <- function(analysisContainer, var.name, groupList, options, ready, counts.fp) {
-  counts.rows     <- list()
-  group.matrices <- groupList$group.matrices
-  groups         <- groupList$groups
-  for (g in seq_along(group.matrices)) {
-    counts.matrix <- group.matrices[[g]]
-    if (!is.null(groups))
-      group <- groups[[g]]
-    else
-      group <- NULL
-    
-    rows                  <- list()
-    row.count             <- list()
-    row.expected          <- list()
-    row.row.proportions   <- list()
-    row.col.proportions   <- list()
-    row.total.proportions <- list()
-    row.proportions       <- list()
-    row.count[["type[counts]"]] <- "Count"
-    
-    if (ready) {
-      expected.matrix <- try({
-        stats::chisq.test(counts.matrix, correct = FALSE)$expected
-      })
-      if (isTryError(expected.matrix)) {
-        expected.matrix    <- counts.matrix
-        expected.matrix[,] <- "&nbsp;"
-      }
-      
-      row.proportions.matrix <- try({
-        prop.table(counts.matrix, 1)
-      })
-      if (isTryError(row.proportions.matrix)) {
-        row.proportions.matrix    <- counts.matrix
-        row.proportions.matrix[,] <- "&nbsp;"
-      }
-      
-      col.proportions.matrix <- try({
-        prop.table(counts.matrix, 2)
-      })
-      if (isTryError(col.proportions.matrix)) {
-        col.proportions.matrix    <- counts.matrix
-        col.proportions.matrix[,] <- "&nbsp;"
-      }
-      
-      proportions.matrix <- try({
-        prop.table(counts.matrix, margin = NULL)
-      })
-      if (isTryError(proportions.matrix)) {
-        proportions.matrix    <- counts.matrix
-        proportions.matrix[,] <- "&nbsp;"
-      }
-      
-    } else {
-      expected.matrix <- counts.matrix
-      row.proportions.matrix <- counts.matrix
-      col.proportions.matrix <- counts.matrix
-      proportions.matrix <- counts.matrix
-    }
-    
-    for (j in 1:dim(counts.matrix)[[1]]) {
-      
-      if (ready) {
-        
-        row <- as.list(counts.matrix[j,])
-        names(row) <- paste0(names(row),"[counts]")
-        sum <- sum(counts.matrix[j,])
-        if(counts.fp || options$countsExpected || options$percentagesRow || 
-           options$percentagesColumn || options$percentagesTotal)
-          row[["total[counts]"]] <- sum
-        else
-          row[["total[counts]"]] <- as.integer(sum)
-        row <- c(row.count, row)
-        
-        if (options$countsExpected) {
-          
-          row.expected[["type[expected]"]] <- "Expected count"
-          
-          expected <- as.list(expected.matrix[j,])
-          names(expected) <- paste(names(expected),"[expected]",  sep = "")
-          
-          if (is.character(expected.matrix[1,1]))
-            expected[["total[expected]"]] <- ""
-          else 
-            expected[["total[expected]"]] <- sum(expected.matrix[j,])
-          
-          expected <- c(row.expected, expected)
-          row <- c(row, expected)
-        }
-        
-        if (options$percentagesRow) {
-          row.proportions <- list()
-          row.row.proportions[["type[row.proportions]"]] <- " % within row"
-          
-          row.proportions <- as.list(row.proportions.matrix[j,])
-          names(row.proportions) <- paste(names(row.proportions),
-                                          "[row.proportions]",  sep = "")
-          
-          if (is.character(row.proportions.matrix[1,1]))
-            row.prop <- ""
-          else
-            row.prop <- sum(row.proportions.matrix[j,])
-          row.proportions[["total[row.proportions]"]] <- row.prop
-          
-          row.proportions <- c(row.row.proportions, row.proportions)
-          row <- c(row, row.proportions)
-        }
-        
-        if (options$percentagesColumn) {
-          
-          row.col.proportions[["type[col.proportions]"]] <- " % within column"
-          
-          col.proportions <- as.list(col.proportions.matrix[j,])
-          names(col.proportions) <- paste(names(col.proportions),
-                                          "[col.proportions]",  sep = "")
-          
-          if (is.character(col.proportions.matrix[1,1]))
-            col.proportions[["total[col.proportions]"]] <- ""
-          else {
-            row.sum  <- margin.table(counts.matrix, 1)
-            row.prop <- as.list(prop.table(row.sum))
-            col.proportions[["total[col.proportions]"]] <- row.prop[[j]]
-          }
-          
-          col.proportions <- c(row.col.proportions, col.proportions)
-          row <- c(row, col.proportions)
-        }
-        
-        if (options$percentagesTotal) {
-          total.proportions <- list()
-          row.total.proportions[["type[proportions]"]] <- " % of total"
-          
-          total.proportions <- as.list(proportions.matrix[j,])
-          names(total.proportions) <- paste(names(total.proportions),
-                                            "[proportions]",  sep = "")
-          
-          if (is.character(proportions.matrix[1,1]))
-            tot.prop <- ""
-          else 
-            tot.prop <- sum(proportions.matrix[j,])
-          total.proportions[["total[proportions]"]] <- tot.prop
-          
-          total.proportions <- c(row.total.proportions, total.proportions)
-          row <- c(row, total.proportions)
-        }
-        
-      } else 
-        row <- list()
-      row[[var.name]] <- dimnames(counts.matrix)[[1]][j]
-      row <- .crossTabLayerNames(row, group)
-      
-      if (j == 1 && !options$countsExpected && !options$percentagesRow && 
-          !options$percentagesCol &&  !options$percentagesTotal)
-        row[[".isNewGroup"]] <- TRUE
-      rows[[length(rows) + 1]] <- row
-    }
-    
-    if (ready) {
-      
-      row <- colSums(counts.matrix)
-      row <- as.list(row)
-      names(row) <- paste0(names(row),"[counts]")
-      sum <- sum(counts.matrix)
-      if(counts.fp || options$countsExpected || options$percentagesRow || 
-         options$percentagesColumn || options$percentagesTotal)
-        row[["total[counts]"]] <- sum
-      else
-        row[["total[counts]"]] <- as.integer(sum)
-      row <- c(row.count, row)
-      
-      if (options$countsExpected) {
-        expected <- .crossTabCountsMatrixToRow(expected.matrix, counts.matrix, type = "expected")
-        
-        expected <- c(row.expected, expected)
-        
-        row <- c(row,  expected)
-      }
-      
-      if (options$percentagesRow) {
-        row.proportions <- .crossTabCountsMatrixToRow(row.proportions.matrix, counts.matrix, type = "row.proportions")
-        
-        row.proportions<-c(row.row.proportions, row.proportions)
-        
-        row <- c(row,  row.proportions)
-      }
-      
-      if (options$percentagesColumn) {
-        col.proportions <- .crossTabCountsMatrixToRow(col.proportions.matrix, counts.matrix, type = "col.proportions")
-        
-        col.proportions<-c(row.col.proportions, col.proportions)
-        
-        row <- c(row,  col.proportions)
-      }
-      
-      if (options$percentagesTotal) {
-        total.proportions <- .crossTabCountsMatrixToRow(proportions.matrix, counts.matrix, type = "proportions")
-        
-        total.proportions <- c(row.total.proportions, total.proportions)
-        
-        row <- c(row,  total.proportions)
-      }
-      
-    } else 
-      row <- list()
-    if(var.name != "")
-      row[[var.name]] <- "Total"
-    if (!options$countsExpected && !options$percentagesRow && 
-        !options$percentagesCol && !options$percentagesTotal)
-      row[[".isNewGroup"]] <- TRUE
-    
-    row <- .crossTabLayerNames(row, group)
-    rows[[length(rows) + 1]] <- row
-    counts.rows <- c(counts.rows, rows)
-  }
-  return(counts.rows)
-}
-
 .contTabBasBFRows <- function(analysisContainer, var.name, groupList, bf.results, options, ready) {
   bf.rows <- list()
   group.matrices <- groupList$group.matrices
@@ -1239,8 +654,8 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
 }
 
 #CRI and Median 
-.credibleIntervalPlusMedian <- function(credibleIntervalInterval = .95, 
-                                        mean, sd, hypothesis = "groupsNotEqual") {
+.credibleIntervalPlusMedian <- function(credibleIntervalInterval = .95, mean, sd, 
+                                        hypothesis = "groupsNotEqual") {
   
   lower <- (1 - credibleIntervalInterval) / 2
   upper <- 1 - lower

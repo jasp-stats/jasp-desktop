@@ -17,15 +17,15 @@ test_that("Main table results match", {
     variables = "facGender")
   )
   results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
-  table <- results[["results"]][["container1"]][["collection"]][["container1_contTabBasMain"]][["data"]]
+  table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabMain"]][["data"]]
   expect_equal_tables(table,
-    list(320, 495, "Count", 815, "control", "f", "TRUE", 334, 202, "Count",
-         536, "experimental", "f", 654, 697, "Count", 1351, "Total",
-         "TRUE", "f", 253, 182, "Count", 435, "control", "m", "TRUE",
-         494, 270, "Count", 764, "experimental", "m", 747, 452, "Count",
-         1199, "Total", "TRUE", "m", 573, 677, "Count", 1250, "control",
-         "Total", "TRUE", 828, 472, "Count", 1300, "experimental", "Total",
-         1401, 1149, "Count", 2550, "Total", "TRUE", "Total")
+    list("TRUE", 320, 495, "control", "f", 815, "Count", 334, 202, "experimental",
+         "f", 536, "Count", "TRUE", 654, 697, "Total", "f", 1351, "Count",
+         "TRUE", 253, 182, "control", "m", 435, "Count", 494, 270, "experimental",
+         "m", 764, "Count", "TRUE", 747, 452, "Total", "m", 1199, "Count",
+         "TRUE", 573, 677, "control", "Total", 1250, "Count", 828, 472,
+         "experimental", "Total", 1300, "Count", "TRUE", 1401, 1149,
+         "Total", "Total", 2550, "Count")
   )
 })
 
@@ -43,8 +43,8 @@ test_that("Multiple row and column variables give multiple main tables", {
   )
 
   for (i in 1:4) {
-    rows <- results[["results"]][[paste0("container", i)]][["collection"]][[paste0("container", i, "_contTabBasMain")]][["schema"]][["fields"]][[1]][["name"]]
-    cols <- results[["results"]][[paste0("container", i)]][["collection"]][[paste0("container", i, "_contTabBasMain")]][["schema"]][["fields"]][[2]][["overTitle"]]
+    rows <- results[["results"]][[paste0("container", i)]][["collection"]][[paste0("container", i, "_crossTabMain")]][["schema"]][["fields"]][[1]][["name"]]
+    cols <- results[["results"]][[paste0("container", i)]][["collection"]][[paste0("container", i, "_crossTabMain")]][["schema"]][["fields"]][[2]][["overTitle"]]
     expect_identical(c(rows, cols), pairs[[i]], label=paste("Table", i))
   }
 })
