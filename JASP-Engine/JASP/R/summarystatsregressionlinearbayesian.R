@@ -17,32 +17,36 @@
 
 SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   
-  # Reading in a datafile is not necessary
-  
+  # NOTE: the qml settings are set up such that this analysis is always "ready". If a user enters incorrect settings,
+  # an error is thrown.
+
   # Error checking 
   .summarystatsRegressionCheckErrors(options)
   
+  # get the main container with all dependencies
+  mainContainer <- .summaryStatsRegressionMainContainer(jaspResults)
   # Compute the results
-  summaryStatsRegressionResults <- .summaryStatsRegressionComputeResults(jaspResults, options)
+  summaryStatsRegressionResults <- .summaryStatsRegressionComputeResults(mainContainer, options)
   
   # # Output tables and plots
-  .summaryStatsRegressionTableMain(         jaspResults, options, summaryStatsRegressionResults)
-  # .summaryStatsRegressionRobustnessPlot(    jaspResults, options, summaryStatsRegressionResults)
+  .summaryStatsRegressionTableMain(     mainContainer, options, summaryStatsRegressionResults)
+  .summaryStatsRegressionRobustnessPlot(mainContainer, options, summaryStatsRegressionResults)
   
   return()
 }
 
 # Results functions ----
-.summaryStatsRegressionComputeResults <- function(jaspResults, options) {
+.summaryStatsRegressionComputeResults <- function(mainContainer, options) {
+
   
   # Take results from state if possible
-  if (!is.null(jaspResults[["stateSummaryStatsRegressionResults"]])) 
-    return(jaspResults[["stateSummaryStatsRegressionResults"]]$object)
+  if (!is.null(mainContainer[["stateSummaryStatsRegressionResults"]])) 
+    return(mainContainer[["stateSummaryStatsRegressionResults"]]$object)
   
   # This will be the object that we fill with results
-  results        <- list(tableInfo                = list(),
-                         regressionTable          = list(),
-                         regressionRobustnessPlot = list())
+  results <- list(tableInfo                = list(),
+                  regressionTable          = list(),
+                  regressionRobustnessPlot = list())
   
   # Run linear regression
   N             <- options$sampleSize
@@ -90,32 +94,36 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
       BF                = c(BFlist_H0[[options$bayesFactorType]], BFlist_H1[[options$bayesFactorType]]),
       error             = c(regressionResultsH0[["properror"]]  , regressionResultsH1[["properror"]])
     )
-    
+    results[["BFlist"]] <- BFlist_H0
+  } else {
+    results[["BFlist"]] <- BFlist_H1
   }
-  
-  # results[["regressionRobustnessPlot"]] <- list(
-  #   a         = a,
-  #   b         = b,
-  #   successes = successes,
-  #   n         = n,
-  #   theta0    = theta0,
-  #   BF        = BFlist
-  # )
-  
+
   # Save results to state
-  defaultOptions <- c("priorWidth", "bayesFactorType", "sampleSize",
-                      "unadjustedRSquaredNull"       , "numberOfCovariatesNull", 
-                      "unadjustedRSquaredAlternative", "numberOfCovariatesAlternative")
-  jaspResults[["stateSummaryStatsRegressionResults"]] <- createJaspState(results)
-  jaspResults[["stateSummaryStatsRegressionResults"]]$dependOn(defaultOptions)
+  mainContainer[["stateSummaryStatsRegressionResults"]] <- createJaspState(results)
   
   # Return results object
   return(results)
 }
 
+# Main container----
+.summaryStatsRegressionMainContainer <- function(jaspResults) {
+  
+  mainContainer <- jaspResults[["mainContainer"]]
+  if (is.null(mainContainer)) {
+    mainContainer <- createJaspContainer(dependencies = c(
+      "priorWidth", "bayesFactorType", "sampleSize",
+      "unadjustedRSquaredNull"       , "numberOfCovariatesNull", 
+      "unadjustedRSquaredAlternative", "numberOfCovariatesAlternative"
+    ))
+    jaspResults[["mainContainer"]] <- mainContainer
+  }
+  return(mainContainer)
+}
+
 # Main table ----
-.summaryStatsRegressionTableMain <- function(jaspResults, options, summaryStatsRegressionResults){
-  if (!is.null(jaspResults[["regressionTable"]])) return()
+.summaryStatsRegressionTableMain <- function(mainContainer, options, summaryStatsRegressionResults){
+  if (!is.null(mainContainer[["regressionTable"]])) return()
   
   tableResults    <- summaryStatsRegressionResults[["regressionTable"]]
   
@@ -125,7 +133,6 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   
   # create table and state dependencies
   regressionTable <- createJaspTable(mainResultsTitle)
-  regressionTable$dependOn(optionsFromObject = jaspResults[["stateSummaryStatsRegressionResults"]])
   regressionTable$position <- 1
   
   # set title for different Bayes factor types
@@ -137,78 +144,139 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   regressionTable$addCitation(.summaryStatsCitations[c("LiangEtAl2008", "RounderMoreyInPress")])
   
   
-  message <- tableInfo$message
+  message <- tableInfo[["message"]]
   if (!is.null(message)) regressionTable$addFootnote(message)
   
   regressionTable$addColumnInfo(name = "sampleSize" , title = sampleSizeTitle       , type = sampleSizeCellType)
   regressionTable$addColumnInfo(name = "nCovariates", title = "Number of covariates", type = "integer")
   regressionTable$addColumnInfo(name = "R2"         , title = "R\u00B2"             , type = "number", format = "dp:3")
-  regressionTable$addColumnInfo(name = "BF"         , title = bfTitle               , type = "number", format = "sf:4;dp:3")
-  regressionTable$addColumnInfo(name = "error"      , title = "error %"             , type = "number", format = "sf:4;dp:3")
+  regressionTable$addColumnInfo(name = "BF"         , title = bfTitle               , type = "number")
+  regressionTable$addColumnInfo(name = "error"      , title = "error %"             , type = "number")
   
-  jaspResults[["regressionTable"]] <- regressionTable
+  mainContainer[["regressionTable"]] <- regressionTable
   
   # extract rows from tableResults
   regressionTable$addRows(tableResults)
 }
 
 # # Robustness plot ----
-# .summaryStatsBinomialPlot <- function(jaspResults, options, summaryStatsBinomialResults) {
-#   
-#   plotResults <- summaryStatsBinomialResults[["binomPlot"]]
-#   hypothesis  <- summaryStatsBinomialResults[["hypothesis"]]
-#   
-#   if (hypothesis == "two.sided") {
-#     bfSubscripts <- "BF[1][0]"
-#   }
-#   else if (hypothesis == "greater"){
-#     bfSubscripts <- "BF['+'][0]"
-#   }
-#   else if (hypothesis == "less"){
-#     bfSubscripts <- "BF['-'][0]"
-#   }
-#   
-#   # extract parameters needed for prior and posterior plot
-#   a         <- plotResults$a
-#   b         <- plotResults$b
-#   successes <- plotResults$successes
-#   n         <- plotResults$n
-#   theta0    <- plotResults$theta0
-#   BF10      <- plotResults$BF[["BF10"]]
-#   
-#   # Prior and posterior plot
-#   if(options$plotPriorAndPosterior) {
-#     quantiles       <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, a, b, successes, n, hyp = hypothesis, theta0 = theta0)
-#     medianPosterior <- quantiles$ci.median
-#     CIlower         <- quantiles$ci.lower
-#     CIupper         <- quantiles$ci.upper
-#     ppCri           <- c(CIlower, CIupper)
-#     dfLinesPP       <- .dfLinesPP( a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
-#     dfPointsPP      <- .dfPointsPP(a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
-#     xName           <- expression(paste("Population proportion ", theta))
-#     
-#     if(options$plotPriorAndPosteriorAdditionalInfo){
-#       p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF01 = 1/BF10,
-#                                              CRI = ppCri, median = medianPosterior, drawCRItxt = TRUE, bfSubscripts = bfSubscripts)
-#     } 
-#     else {
-#       p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, bfSubscripts = bfSubscripts)
-#     }
-#     
-#     # create JASP object
-#     plot <- createJaspPlot(
-#       title       = "Prior and Posterior",
-#       width       = 530,
-#       height      = 400,
-#       plot        = p,
-#       aspectRatio = 0.7
-#     )
-#     plot$position <- 2
-#     plot$dependOn(optionsFromObject = jaspResults[["stateSummaryStatsBinomialResults"]], 
-#                   options           = c("plotPriorAndPosterior, plotPriorAndPosteriorAdditionalInfo"))
-#     jaspResults[["priorPosteriorPlot"]] <- plot
-#   }
-# }
+.summaryStatsRegressionRobustnessPlot <- function(mainContainer, options, summaryStatsRegressionResults) {
+  
+  # createJaspPlot...
+  if (!options[["plotBayesFactorRobustness"]] || !is.null(mainContainer[["plotBayesFactorRobustness"]]))
+    return()
+
+  plot <- createJaspPlot(title = "Robustness Plot", width = 530, height = 400)
+  plot$dependOn(c("plotBayesFactorRobustness", "plotBayesFactorRobustnessAdditionalInfo"))
+  mainContainer[["plotBayesFactorRobustness"]] <- plot
+  if (mainContainer$getError())
+    return()
+
+  p <- try(.summaryStatsRegressionCreateRobustnessPlot(options, summaryStatsRegressionResults))
+  if (isTryError(p)) {
+    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    plot$setError(errorMessage)
+  } else {
+    plot$plotObject <- p
+  }
+}
+
+.summaryStatsRegressionCreateRobustnessPlot <- function(options, summaryStatsRegressionResults) {
+
+  rscale         <- options[["priorWidth"]]
+  additionalInfo <- options[["plotBayesFactorRobustnessAdditionalInfo"]]
+  BFH1H0         <- options[["bayesFactorType"]] == "BF10"
+
+  tableInfo <- summaryStatsRegressionResults[["tableInfo"]]
+  nullModelSpecified    <- tableInfo[["nullModelSpecified"]]
+  
+  #### get BFs ###
+  if(rscale > 1.5) {
+    rValues <- seq(0.0005, 2, length.out = 535)
+  } else {
+    rValues <- seq(0.0005, 1.5, length.out = 400)
+  }
+
+  if(nullModelSpecified) {
+    computeBF <- function(options, rscale) {
+      sampleSize                    <- options[["sampleSize"]]
+      numberOfCovariatesNull        <- options[["numberOfCovariatesNull"]]
+      numberOfCovariatesAlternative <- options[["numberOfCovariatesAlternative"]]
+      unadjustedRSquaredNull        <- options[["unadjustedRSquaredNull"]]
+      unadjustedRSquaredAlternative <- options[["unadjustedRSquaredAlternative"]]
+      BFNull <- BayesFactor::linearReg.R2stat(N = sampleSize, p = numberOfCovariatesNull, R2 = unadjustedRSquaredNull, rscale = rscale)
+      BFAlternative <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariatesAlternative, R2=unadjustedRSquaredAlternative, rscale = rscale)
+
+      return(.clean(exp(BFAlternative[["bf"]] - BFNull[["bf"]])))
+    }
+  } else {
+    computeBF <- function(options, rscale) {
+      sampleSize                    <- options[["sampleSize"]]
+      numberOfCovariatesAlternative <- options[["numberOfCovariatesAlternative"]]
+      unadjustedRSquaredAlternative <- options[["unadjustedRSquaredAlternative"]]
+      
+      BF <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariatesAlternative, R2=unadjustedRSquaredAlternative, rscale = rscale)
+      return(.clean(exp(BF[["bf"]])))
+    }
+  }
+
+  BF10 <- numeric(length(rValues))
+  for (i in seq_along(rValues))
+    BF10[i] <- computeBF(options, rValues[i])
+  
+  # get BF for "medium", "wide", and "ultrawide" prior
+  BF10m     <- computeBF(options, sqrt(2) / 2)
+  BF10w     <- computeBF(options, 1)
+  BF10ultra <- computeBF(options, sqrt(2))
+  
+  BF10post  <- summaryStatsRegressionResults[["BFlist"]][["BF10"]]
+  maxBF10 <- max(BF10)
+  maxBFrVal <- rValues[which.max(BF10)]
+  
+  dfLines <- data.frame(
+    x = rValues,
+    y = log(BF10)
+  )
+  
+  BF10user <- BF10post
+  if (BFH1H0) {
+    bfType <- "BF10"
+  } else {
+    bfType <- "BF01"
+    dfLines$y <- -dfLines$y
+    BF10user  <- 1 / BF10user
+    maxBF10   <- 1 / maxBF10
+    BF10w     <- 1 / BF10w
+    BF10ultra <- 1 / BF10ultra
+  }
+
+  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, c(-Inf, Inf))
+  
+  dfPoints <- data.frame(
+    x = c(maxBFrVal, rscale, 1, sqrt(2)),
+    y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
+    g = JASPgraphs::parseThis(c(
+      sprintf("paste(max, ~%s, ':',   phantom(phollll), %s, ~at, ~'r'==%s)", BFsubscript, format(maxBF10,   digits = 4), format(maxBFrVal, digits = 4)),
+      sprintf("paste(user~prior, ':', phantom(phll[0]), ~%s==%s)",           BFsubscript, format(BF10user,  digits = 4)),
+      sprintf("paste(wide~prior, ':', phantom(ph[0][0]), ~%s==%s)",          BFsubscript, format(BF10w,     digits = 4)),
+      sprintf("paste(ultrawide~prior, ':', ~%s==%s)",                        BFsubscript, format(BF10ultra, digits = 4))
+    )),
+    stringsAsFactors = FALSE
+  )
+
+  plot <- JASPgraphs::PlotRobustnessSequential(
+    dfLines      = dfLines,
+    dfPoints     = dfPoints,
+    pointLegend  = additionalInfo,
+    xName        = "Cauchy prior width",
+    hypothesis   = "equal",
+    bfType       = bfType
+  )
+
+  return(plot)
+
+}
+
 
 # helper functions
 .tableInfo.summarystats.regression <- function(options) {
