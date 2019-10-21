@@ -111,9 +111,9 @@ Correlation <- function(jaspResults, dataset, options){
   mainTable$showSpecifiedColumnsOnly <- TRUE
   
   if(options[['displayPairwise']]){
-    mainTable <- .corrInitPairwiseTable(mainTable, options, variables)
+    .corrInitPairwiseTable(mainTable, options, variables)
   } else{
-    mainTable <- .corrInitCorrelationTable(mainTable, options, variables)
+    .corrInitCorrelationTable(mainTable, options, variables)
   }
   
   if(options[['flagSignificant']])
@@ -187,8 +187,6 @@ Correlation <- function(jaspResults, dataset, options){
       }
     }
   }
-  
-  return(mainTable) 
 }
 
 .corrTitlerer <- function(test, nTests){
@@ -227,8 +225,6 @@ Correlation <- function(jaspResults, dataset, options){
     }
     mainTable$setRowName(vi, .v(variables[vi]))
   }
-  
-  return(mainTable)
 }
 
 .corrInitCorrelationTableRowAsColumn <- function(mainTable, options, var, coeff, test, overtitle){
@@ -608,39 +604,30 @@ Correlation <- function(jaspResults, dataset, options){
   # would be really (!) nice to be able to fill table cell-wise, i.e., mainTable[[row, col]] <- value
   # in the meantime we have to collect and fill the entire columns (i.e., rows of the output table)
   for(colVar in seq_along(vars)){
-    for(colName in statsNames){
-      currentColumnName <- paste(vvars[[colVar]], colName, sep = "_")
+    for(statName in statsNames){
+      currentColumnName <- paste(vvars[[colVar]], statName, sep = "_")
       resList <- list()
       for(rowVar in seq_along(vars)){
-        currentResultName <- paste(vvars[rowVar], vvars[colVar], sep = "_")
+        currentPairName <- paste(vvars[rowVar], vvars[colVar], sep = "_")
         if(rowVar == colVar){
           r <- "\u2014" # long dash
         } else if(rowVar > colVar){
-          r <- NA
+          r <- NA # upper triangle is empty
         } else {
-          r <- results[[currentResultName]][[colName]]
+          r <- results[[currentPairName]][[statName]]
           
-          if(is.list(errors[[currentResultName]]) && colName != "sample.size"){
-            #browser()
-            mainTable$addFootnote(message = errors[[currentResultName]]$message, 
+          # display errors as footnotes
+          if(is.list(errors[[currentPairName]]) && !is.null(errors[[currentPairName]]$message) && statName != "sample.size"){
+            mainTable$addFootnote(message = errors[[currentPairName]]$message, 
                                   colNames = currentColumnName, rowNames = vvars[[rowVar]])
           }
         }
         resList[[vvars[rowVar]]] <- r
-        
-        # if(is.list(errors[[currentResultName]]) && colName != "sample.size" && rowVar < colVar){
-        #   # browser()
-        #   # print(colName)
-        #   # print(.unv(vvars[c(rowVar, colVar)]))
-        #   mainTable$addFootnote(message = errors[[currentResultName]]$message, 
-        #                         colNames = currentColumnName, rowNames = vvars[[rowVar]])
-        # }
       }
       
       mainTable[[currentColumnName]] <- resList
     }
   }
-  
 }
 ### Plot stuff ----
 .corrPlot <- function(jaspResults, dataset, options, ready, corrResults, errors){
@@ -953,7 +940,7 @@ Correlation <- function(jaspResults, dataset, options){
   data <- lapply(corrResults, function(x){
     c(var1 = x[['vars']][1], var2 = x[['vars']][2], 
       cor = x[['res']][[method]][['estimate']], 
-      p = x[['res']][[method]][['estimate']])
+      p = x[['res']][[method]][['p.value']])
   })
   
   data <- do.call(rbind, data)
