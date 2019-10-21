@@ -204,7 +204,7 @@
   plot$position <- 2
   plot$dependOn(options = c("plotPriorAndPosterior", "plotPriorAndPosteriorAdditionalInfo"))
   jaspResults[["ttestContainer"]][["priorPosteriorPlot"]] <- plot
-  browser()
+  
   if (!summaryStatsTTestResults[["ready"]] || jaspResults[["ttestContainer"]]$getError())
     return()
   
