@@ -237,7 +237,14 @@ In both case, I've added the flag "-j4" to make use of all my four cores on my m
 
 where the blue files are the binaries that are added manually. The process will be smoothened out in the near future.
 
- 4. Install packages in your local R for JASP to build JASPGraph:
+4. Make a symbolic link to Frameworks
+If you've paid an exceptional amount of attention to the above folder-structure you will notice that there is a folder **Frameworks** next to **jasp-required-files** and the others. With even more attention it will be noticed that **jasp-required-files** also contains a folder called **Frameworks**. These are in fact one and the same!
+
+This means that whenever **jasp-required-files** gets updated the same happens for the contents of the **Frameworks** folder next to it, and this is required to compile JASP.
+
+To get this same structure  you will need to make a so-called symbolic link by issuing the following command: `"ln -s jasp-required-files/Frameworks Frameworks"`
+
+ 5. Install packages in your local R for JASP to build JASPGraph:
 
 ```
  install.packages(c("ggplot2", "scales", "cowplot", "gridExtra", "stringr","gbm", "kknn"))
@@ -255,7 +262,7 @@ e.g. JASP_R_HOME=\<my-jasp-required-files-location\>/Frameworks/R.framework/Vers
 
 The process will be smoothened out in the near future.
 
- 5. Build JASP in Qt.
+ 6. Build JASP in Qt.
 
 Linux
 -----
