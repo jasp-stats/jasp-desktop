@@ -34,10 +34,10 @@ The independent samples t-test allows the user to estimate the effect size and t
 - Location parameter: For the Student's t-test and Welch's t-test, the location parameter is given by mean difference; for the Mann-Whitney test, the location parameter is given by the Hodges-Lehmann estimate.
   - Confidence interval: Confidence interval for the location parameter. By default, the confidence interval is set to 95%. This can be changed into the desired percentage.
 - Effect Size: For the Student t-test and Welch t-test, the effect size can be selected below; for the Mann-Whitney test, the effect size is given by the rank biserial correlation. 
-  - Cohen's d: Uses the pooled standard deviation to standardize the mean difference.
+  - Cohen's d: For the Student's t-test, uses the pooled standard deviation to standardize the mean difference. For the Welch's t-test, uses the square-root of the average variance to standardize the mean difference.
   - Glass' delta: Uses the standard deviation of group 2 to standardize the mean difference. In order to change which group is used as group 2, you can change the order of the levels by clicking on the name of the grouping variable in the data window, click on one of the levels and then click the arrow buttons to switch the order.
   - Hedges' g: Applies a correction factor to Cohen's d to make it unbiased.
-  - Confidence interval: Confidence interval for the effect size. 
+  - Confidence interval: Confidence interval for the effect size based on the non-central t-distribution for Cohen's d, Glass' delta and Hedges' g, and normal approximation of the Fisher transformed rank biserial correlation. 
 - Descriptives: Sample size, sample mean, sample standard deviation, standard error of the mean for each group. 
 - Descriptive plots: Displays the sample means and the confidence intervals for each group. 
   - Confidence interval: Coverage of the confidence intervals in percentages. By default, the confidence interval is set to 95%. This can be changeed into the desired percentage.
