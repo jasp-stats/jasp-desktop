@@ -248,7 +248,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
           ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
           ggplot2::geom_col() +
           ggplot2::coord_polar(theta = "y", direction = -1) +
-          ggplot2::labs(x = "", y = "", title = "PMP excluding Hu") +
+          ggplot2::labs(x = "", y = "", title = "Excluding Hu") +
           ggplot2::theme(panel.grid = ggplot2::element_blank(),legend.position = "none") +
           ggplot2::scale_y_continuous(breaks = cumsum(rev(PMPa)) - rev(PMPa)/2, labels = rev(P_lables)) +            
           ggplot2::theme(panel.background = ggplot2::element_blank(),
@@ -261,7 +261,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
           ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
           ggplot2::geom_col() + 
           ggplot2::coord_polar(theta = "y", direction = -1) +
-          ggplot2::labs(x = "", y = "", title = "PMP including Hu") +
+          ggplot2::labs(x = "", y = "", title = "Including Hu") +
           ggplot2::theme(panel.grid = ggplot2::element_blank(), legend.position = "none") +
           ggplot2::scale_y_continuous(breaks = cumsum(rev(PMPb)) - rev(PMPb)/2, labels = rev(c(P_lables, "Hu"))) +
           ggplot2::theme(panel.background = ggplot2::element_blank(),
@@ -270,9 +270,10 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
                           axis.ticks.y = ggplot2::element_blank()) +
           ggplot2::scale_fill_brewer(palette="Set1")
     
-    pp <- gridExtra::grid.arrange(gridExtra::arrangeGrob(p1, p2, ncol = 2))
+    plotMat <- list(p1 = p1, p2 = p2)
+	pp <- JASPgraphs::ggMatrixPlot(plotList = plotMat, layout = matrix(c(1, 2), ncol = 2))
+	
     return(pp)
-    
   }
 }
 
