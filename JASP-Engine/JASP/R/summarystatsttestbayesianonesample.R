@@ -18,15 +18,15 @@
 SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, options, ...) {
   
   # Reading in a datafile is not necessary
-  # Error checking is not necessary
+  # Check for possible errors
+  .checkErrors.summarystats.onesample(options)
   
-  # Compute the results
+  # Compute the results and create main results table
   summaryStatsOneSampleResults <- .summaryStatsOneSampleMainFunction(jaspResults, options)
   
-  # Output plots
-  .summaryStatsTTestBayesianInferentialPlots(jaspResults, options, summaryStatsOneSampleResults)
-  # .summaryStatsOneSamplePriorPosteriorPlot(jaspResults, options, summaryStatsOneSampleResults)
-  # .summaryStatsOneSampleRobustnessPlot(    jaspResults, options, summaryStatsOneSampleResults)
+  # Output plots 
+  .ttestBayesianPriorPosteriorPlot.summarystats(jaspResults, summaryStatsOneSampleResults, options)
+  .ttestBayesianPlotRobustness.summarystats(jaspResults, summaryStatsOneSampleResults, options)
   
   return()
 }
@@ -34,18 +34,16 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
 # Execute Bayesian one sample t-test ----
 .summaryStatsOneSampleMainFunction <- function(jaspResults, options) {
   
-  # Save results to state
-  defaultOptions <- c("tStatistic", "n1Size", "hypothesis", "bayesFactorType",           # standard entries
-                      "priorWidth", "effectSizeStandardized",                            # default prior
-                      "informativeCauchyLocation", "informativeCauchyScale",             # informed cauchy priors
-                      "informativeNormalMean", "informativeNormalStd",                   # informed normal priors
-                      "informativeTLocation", "informativeTScale", "informativeTDf"      # informed t-distribution
-  )
-  
   # This function is the main workhorse, and also makes the table
   if (is.null(jaspResults[["ttestContainer"]])) {
     jaspResults[["ttestContainer"]] <- createJaspContainer()
-    jaspResults[["ttestContainer"]]$dependOn(defaultOptions)
+    # add dependencies for main table (i.e., when does it have to recompute values for the main table)
+    jaspResults[["ttestContainer"]]$dependOn(c("tStatistic"               , "n1Size"                , "hypothesis",     # standard entries
+                                               "priorWidth"               , "effectSizeStandardized",                   # default prior
+                                               "informativeCauchyLocation", "informativeCauchyScale",                   # informed cauchy priors
+                                               "informativeNormalMean"    , "informativeNormalStd"  ,                   # informed normal priors
+                                               "informativeTLocation"     , "informativeTScale"     , "informativeTDf"  # informed t-distribution
+    ))
   }
   
   # If table already exists in the state, return it
@@ -85,23 +83,10 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
   
   # Checks before executing the analysis
   # 1. check user input
-  ready <- !(n1 == 0) && !(t ==0)
+  ready <- !(n1 == 0)
   
   if (!ready)
     return(list(ready = ready))
-  
-  # 2. check for possible errors
-  errorMessageTable <- NULL
-  
-  if (n1 == 1) {
-    
-    errorMessageTable <- "Not enough observations."
-    
-  }
-  
-  if (!is.null(errorMessageTable)) {
-    return(list(ready = ready, errorMessageTable = errorMessageTable))
-  }
   
   # Conduct frequentist and Bayesian independent samples t-test
   ttestResults <- .generalSummaryTtestBF(options = options, paired = FALSE)
@@ -152,7 +137,7 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
     ttestRobustnessPlot     = ttestRobustnessPlot,
     ttestTable              = ttestTable
   )
-  results[["ready"]] <- ready
+  results[["ready"]]  <- ready
   results[["BFlist"]] <- BFlist
   
   # Return results object
@@ -194,6 +179,9 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
 
 }
 
+# Prior and Posterior plot & Robustness Plot ----
+  # Code for plots is stored in: commonsummarystatsttestbayesian.R
+
 # helper functions
 .hypothesisType.summarystats.ttest.onesample <- function(hypothesis_option, bayesFactorType) {
   if (hypothesis_option == "notEqualToTestValue") {
@@ -219,14 +207,28 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
     
   }
   
-  bfSubscripts <- .setBFsubscripts.summarystats(hypothesis)
   bfTitle      <- .getBayesfactorTitle.summarystats(bayesFactorType, hypothesis)
   
   return(list(hypothesis    = hypothesis,
               oneSided      = oneSided,
               message       = message,
               nullInterval  = nullInterval,
-              bfSubscripts  = bfSubscripts,
               bfTitle       = bfTitle)
   )
+}
+.checkErrors.summarystats.onesample <- function(options) {
+  
+  # perform a check on the hypothesis
+  custom <- function() {
+    if (options$n1Size == 1)
+      return("Not enough observations.")
+  }
+  
+  # Error Check 1: Number of levels of the variables and the hypothesis
+  .hasErrors(
+    dataset              = matrix(options$n1Size), # mock dataset so the error check runs
+    custom               = custom,
+    exitAnalysisIfErrors = TRUE
+  )
+  
 }
