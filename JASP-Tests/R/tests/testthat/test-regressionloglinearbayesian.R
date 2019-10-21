@@ -98,8 +98,8 @@ test_that("Analysis handles errors - Infinity", {
   options$factors <- "contBinom"
   options$counts <- "debInf"
   results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
-  errorMsg <- results[["results"]][["errorMessage"]]
-  expect_is(errorMsg, "character")
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })
 
 test_that("Analysis handles errors - Missing values (factor)", {
@@ -110,6 +110,6 @@ test_that("Analysis handles errors - Missing values (factor)", {
     list(components="debBinMiss20")
   )
   results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
-  errorMsg <- results[["results"]][["errorMessage"]]
-  expect_is(errorMsg, "character")
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })

@@ -17,16 +17,13 @@
 
 RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   ready <- length(options$factors) != 0
-  
   if(ready){
     dataset <- .basRegLogLinReadData(dataset, options)
-    .basRegLogLinCheckErrors(dataset, options, ready)
+    .basRegLogLinCheckErrors(dataset, options)
   }
-  
   # Container
   .basRegLogLinContainer(jaspResults, dataset, options)
   container <- jaspResults[["Container"]]
-
   # Output tables (each calls its own results function)
   .basRegLogLinMainTable(      container, dataset, options, ready)
   .basRegLogLinSummaryTable(   container, dataset, options, ready)
@@ -50,11 +47,8 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
   }
 }  
 
-.basRegLogLinCheckErrors <- function(dataset, options, ready) {
+.basRegLogLinCheckErrors <- function(dataset, options) {
   # Error Check 1
-  if (!ready) 
-    return()
-  
   args <- list(
     dataset = dataset,
     type    = c("missingValues", "modelInteractions"),
@@ -112,13 +106,11 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
     dependentVariable <- unlist(options$counts)
   
   dependentBase64 <- .v(dependentVariable)
-  
   if (length(options$modelTerms) > 0) {
     variablesInModel <- variablesInModelBase64 <- NULL
     
     for (i in seq_along(options$modelTerms)) {
       components <- options$modelTerms[[i]]$components
-      
       if (length(components) == 1) {
         term <- components[[1]]
         termBase64 <- .v(components[[1]])
@@ -154,14 +146,12 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
   
   # Save in object
   bfObject$variables <- variablesInModel
-  
   # START analysis Bayesian Log Linear regression
   if (!is.null(modelDefinition)) {
     modelFormula <- as.formula(modelDefinition)
     
     if (options$counts == "")
       names(dataset)[names(dataset) == "freq"] <- dependentBase64
-    
     # Calculate here
     #gives an object computed using Bayesian Analysis of Complete Contingency Tables
     bcctObj <- try(conting::bcct(formula = modelFormula, data = dataset, 
@@ -177,10 +167,11 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
                      silent = TRUE)
       bfObject$nBurnIn <- (2000 + options$fixedSamplesNumber) * 0.2
     }
-    
     # bcct object checking
     if(inherits(bcctObj, "bcct"))
       bfObject$bcctObj <- bcctObj
+    else if(isTryError(bcctObj))
+      stop(paste0("R Package error: ", .extractErrorMessage(bcctObj)))
   }
   
   # Post processing
@@ -214,8 +205,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
     }
   } 
   container[["bfObject"]] <- createJaspState(bfObject)
-  container[["bfObject"]]$dependOn(c("fixedSamplesNumber", "sampleMode", 
-                                                      "priorShape", "priorScale"))
+  container[["bfObject"]]$dependOn(c("fixedSamplesNumber", "sampleMode"))
   return(bfObject)
 }
 
@@ -452,8 +442,8 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
 .basRegLogLinContainer <- function(jaspResults, dataset, options) {
   if(is.null(jaspResults[["Container"]])) {
     jaspResults[["Container"]] <- createJaspContainer()
-    jaspResults[["Container"]]$dependOn(c("counts", "modelTerms", 
-                                          "priorShape", "priorScale"))
+    jaspResults[["Container"]]$dependOn(c("counts", "modelTerms", "priorShape", 
+                                          "priorScale", "sampleMode", "fixedSamplesNumber"))
   }
 }
 
@@ -597,3 +587,4 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
   }
   return(table)
 }
+
