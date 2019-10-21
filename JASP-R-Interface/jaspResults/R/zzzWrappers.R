@@ -87,7 +87,7 @@ createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRat
 createJaspContainer <- function(title="", dependencies=NULL, position=NULL)
 	return(jaspContainerR$new(title = title, dependencies = dependencies, position = position))
 
-createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL)
+ createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL)
 	return(jaspTableR$new(title = title, data = data, colNames = colNames, colTitles = colTitles, overtitles = overtitles, colFormats = colFormats, rowNames = rowNames, rowTitles = rowTitles, dependencies = dependencies, position = position))
 
 createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL, title="hide me", position=NULL)
@@ -450,6 +450,7 @@ jaspTableR <- R6Class(
 	classname = "jaspTableR",
 	inherit   = jaspOutputObjR,
 	cloneable = FALSE,
+
 	public    = list(
 		initialize = function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL, jaspObject=NULL) {
 			if (!is.null(jaspObject)) {
@@ -492,15 +493,17 @@ jaspTableR <- R6Class(
 			private$jaspObject <- jaspObj
 			return()
 		},
+
 		addColumns  = function(cols) private$jaspObject$addColumns(cols),
-		setData     = function(data) private$jaspObject$setData(data),
+    setData     = function(data) private$jaspObject$setData(data),
+
 		addFootnote = function(message = "", symbol = NULL, colNames = NULL, rowNames = NULL) {
-			if (is.null(colNames) && is.null(rowNames) && is.null(symbol)
-					&& !grepl("^<.*?>note\\.?</.*?>", message, ignore.case=TRUE))
+      if (is.null(symbol)	&& is.null(colNames)&& is.null(rowNames)&& !grepl("^<.*?>note\\.?</.*?>", message, ignore.case=TRUE)) #If the symbol, colNames and rowNames aren't filled we do this for some reason?
 				symbol <- "<em>Note.</em>"
 			private$jaspObject$addFootnoteHelper(message, symbol, colNames, rowNames)
 		},
-		addColumnInfo = function(name = NULL, title = NULL, overtitle = NULL, type = NULL, format = NULL, combine = NULL) {
+
+    addColumnInfo = function(name = NULL, title = NULL, overtitle = NULL, type = NULL, format = NULL, combine = NULL) {
 			if (!is.null(type)) {
 				permittedTypes <- c("integer", "number", "pvalue", "string")
 				if (!type %in% permittedTypes)
@@ -512,6 +515,7 @@ jaspTableR <- R6Class(
 			}
 			private$jaspObject$addColumnInfoHelper(name, title, type, format, combine, overtitle)
     },
+
     addRows = function(rows, rowNames = NULL) {
 
       maxElementLength <- 0 # Lets check if the users means a single row...
@@ -528,7 +532,8 @@ jaspTableR <- R6Class(
         if (is.null(rowNames))    private$jaspObject$addRows(rows)
         else                      private$jaspObject$addRows(rows, rowNames)
       }
-  },
+    },
+
 		setExpectedSize = function(rows=NULL, cols=NULL) {
 			inputTypes <- c(mode(rows), mode(cols))
 
@@ -539,6 +544,7 @@ jaspTableR <- R6Class(
       else if(!is.null(cols))         				private$jaspObject$setExpectedColumns(cols)
       else                                    stop("Enter cols, rows or both in setExpectedSize!")
     },
+
     getColumnName       = function(columnIndex)               { return( private$jaspObject$colNames           [[columnIndex]]);               },
     setColumnName       = function(columnIndex, newName)      {         private$jaspObject$colNames$insert(     columnIndex,  newName);       },
     getColumnTitle      = function(columnName)                { return( private$jaspObject$colTitles          [[columnName]]);                },

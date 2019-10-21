@@ -2,6 +2,7 @@
 #include "jaspObject.h"
 #include "jaspList.h"
 #include "jaspJson.h"
+#include <functional>
 
 struct jaspColRowCombination
 {
@@ -20,25 +21,60 @@ struct jaspColRowCombination
 
 };
 
+namespace footnotesNamespace
+{
+
+struct tableFields
+{
+
+	tableFields(std::set<Json::Value> rows, std::set<Json::Value> cols) : _rows(rows), _cols(cols) {}
+
+	Json::Value rowsToJSON()		const;
+	Json::Value colsToJSON()		const;
+
+	struct hasher //Special hash func obj to differentiate between different sets of tableFields
+	{
+		std::size_t operator()(tableFields const & tf) const noexcept
+		{
+			return std::hash<std::string>{}(tf.getCompareString());
+		}
+	};
+
+	struct comparer
+	{
+		bool operator()(const tableFields & lhs, const tableFields & rhs) const
+		{
+			return lhs.getCompareString() < rhs.getCompareString(); //Don't really care about the results logic
+		}
+
+	};
+
+	std::string getCompareString()	const { return rowsToJSON().toStyledString() + "<$>" + colsToJSON().toStyledString(); }
+
+private:
+	std::set<Json::Value>	_rows,
+							_cols;
+};
+
+inline bool operator==(const tableFields & lhs, const tableFields & rhs)
+{
+	return lhs.getCompareString() == rhs.getCompareString();
+}
+
 struct footnotes
 {
-	struct tableFields
-	{
-		std::set<Json::Value>	rows, cols;
-		std::string				symbol;
-		
-		Json::Value rowsToJSON() const; 
-		Json::Value colsToJSON() const;
-	};
-	
 	void		insert(std::string text, std::string symbol, std::vector<Json::Value> colNames, std::vector<Json::Value> rowNames);
 	void		convertFromJSON_SetFields(Json::Value footnotes);
 	Json::Value	convertToJSON() const;
 	Json::Value	convertToJSONOrdered(std::map<std::string, size_t> rowNames, std::map<std::string, size_t> colNames) const;
 
 	private:
-		std::map<std::string, tableFields> _data;
+		std::map<std::string, std::map<std::string, std::set<tableFields, tableFields::comparer> >> _data; //text -> symbol -> rows+cols
 };
+
+}
+
+using footnotesNamespace::footnotes;
 
 class jaspTable : public jaspObject
 {
