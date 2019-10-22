@@ -99,9 +99,9 @@
   #     pValue:     p-value associated with tValue and n1
   
   # help vars
-  n1 <- size
-  n2 <- if (!is.null(options$n2Size)) options$n2Size else 0 # single sample case
-  oneSided = !(options$hypothesis %in% c("notEqualToTestValue","groupsNotEqual"))
+  n1       <- size
+  n2       <- if (!is.null(options$n2Size)) options$n2Size else 0 # single sample case
+  oneSided <- !(options$hypothesis %in% c("notEqualToTestValue","groupsNotEqual"))
   
   ### Default case: a non-informative zero-centered Cauchy prior
   if(options$effectSizeStandardized == "default") {
@@ -129,7 +129,6 @@
     
     # Note: .bf10_ functions gives weired value if paired = FALSE in single sample case
     if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
-      browser()
       bfObject <- .bf10_t(t = tValue, n1 = n1, n2 = n2, oneSided = side,
                           independentSamples = !paired,
                           prior.location = options[["informativeCauchyLocation"]],
@@ -203,6 +202,7 @@
     aspectRatio = 0.7
   )
   plot$position <- 2
+  # when do we need to draw the plot again
   plot$dependOn(options = c("plotPriorAndPosterior", "plotPriorAndPosteriorAdditionalInfo"))
   jaspResults[["ttestContainer"]][["priorPosteriorPlot"]] <- plot
   

@@ -37,11 +37,12 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
   if (is.null(jaspResults[["ttestContainer"]])) {
     jaspResults[["ttestContainer"]] <- createJaspContainer()
     # add dependencies for main table (i.e., when does it have to recompute values for the main table)
-    jaspResults[["ttestContainer"]]$dependOn(c("tStatistic"               , "n1Size"                , "hypothesis",     # standard entries
-                                               "priorWidth"               , "effectSizeStandardized",                   # default prior
-                                               "informativeCauchyLocation", "informativeCauchyScale",                   # informed cauchy priors
-                                               "informativeNormalMean"    , "informativeNormalStd"  ,                   # informed normal priors
-                                               "informativeTLocation"     , "informativeTScale"     , "informativeTDf"  # informed t-distribution
+    jaspResults[["ttestContainer"]]$dependOn(c("tStatistic"                   , "n1Size"                , "hypothesis",     # standard entries
+                                               "defaultStandardizedEffectSize", "informativeStandardizedEffectSize"   ,     # informative or default
+                                               "priorWidth"                   , "effectSizeStandardized",                   # default prior
+                                               "informativeCauchyLocation"    , "informativeCauchyScale",                   # informed cauchy priors
+                                               "informativeNormalMean"        , "informativeNormalStd"  ,                   # informed normal priors
+                                               "informativeTLocation"         , "informativeTScale"     , "informativeTDf"  # informed t-distribution
     ))
   }
   
@@ -90,13 +91,13 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
     return(list(ready = ready))
   
   # Conduct frequentist and Bayesian independent samples t-test
-  ttestResults <- .generalSummaryTtestBF(options = options, paired = FALSE)
+  ttestResults <- .generalSummaryTtestBF(options = options)
   BF10         <- ttestResults$bf
   
   BFlist       <- list(BF10    = BF10,
                        BF01    = 1/BF10,
                        LogBF10 = log(BF10))
-  
+  browser()
   # Add rows to the main table
   ttestTable <- list(
     t        = t,
@@ -119,7 +120,7 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
     t        = t,
     n1       = n1,
     n2       = NULL,
-    paired   = FALSE,
+    paired   = TRUE,
     oneSided = hypothesisList$oneSided,
     BF       = BFlist[[options$bayesFactorType]],
     BFH1H0   = BFlist[["BF10"]]
