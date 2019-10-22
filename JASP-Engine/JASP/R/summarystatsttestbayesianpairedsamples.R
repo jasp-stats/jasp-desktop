@@ -25,75 +25,56 @@ SummaryStatsTTestBayesianPairedSamples <- function(jaspResults, dataset = NULL, 
   
   # # Output tables and plots
   .summaryStatsPairedSamplesTableMain(         jaspResults, options, summaryStatsPairedSamplesResults)
-  # .summaryStatsPairedSamplesPriorPosteriorPlot(jaspResults, options, summaryStatsPairedSamplesResults)
-  # .summaryStatsPairedSamplesRobustnessPlot(    jaspResults, options, summaryStatsPairedSamplesResults)
+  # Output plots 
+  .ttestBayesianPriorPosteriorPlot.summarystats(jaspResults, summaryStatsOneSampleResults, options)
+  .ttestBayesianPlotRobustness.summarystats(jaspResults, summaryStatsOneSampleResults, options)
   
   return()
 }
 
-# Results functions ----
-.summaryStatsPairedSamplesComputeResults <- function(jaspResults, options) {
+# Execute Bayesian paired sample t-test ----
+.summaryStatsPairedSamplesMainFunction <- function(jaspResults, options) {
   
-  # Take results from state if possible
-  if (!is.null(jaspResults[["stateSummaryStatsPairedSamplesResults"]])) 
-    return(jaspResults[["stateSummaryStatsPairedSamplesResults"]]$object)
+  # This function is the main workhorse, and also makes the table
+  if (is.null(jaspResults[["ttestContainer"]])) {
+    jaspResults[["ttestContainer"]] <- createJaspContainer()
+    # add dependencies for main table (i.e., when does it have to recompute values for the main table)
+    jaspResults[["ttestContainer"]]$dependOn(c("tStatistic"                   , "n1Size"                , "hypothesis",     # standard entries
+                                               "defaultStandardizedEffectSize", "informativeStandardizedEffectSize"   ,     # informative or default
+                                               "priorWidth"                   , "effectSizeStandardized",                   # default prior
+                                               "informativeCauchyLocation"    , "informativeCauchyScale",                   # informed cauchy priors
+                                               "informativeNormalMean"        , "informativeNormalStd"  ,                   # informed normal priors
+                                               "informativeTLocation"         , "informativeTScale"     , "informativeTDf"  # informed t-distribution
+    ))
+  }
   
-  # This will be the object that we fill with results
-  results        <- list(hypothesisList          = list(),
-                         ttestTable              = list(),
-                         ttestPriorPosteriorPlot = list(),
-                         ttestRobustnessPlot     = list())
+  # If table already exists in the state, return it
+  if (!is.null(jaspResults[["ttestContainer"]][["pairedSamplesTTestTable"]]))
+    return(jaspResults[["ttestContainer"]][["stateSummaryStatsPairedSamplesResults"]]$object)
   
-  # Extract hypothesis
+  # Otherwise: create the empty table before executing the analysis
   hypothesisList <- .hypothesisType.summarystats.ttest.pairedsamples(hypothesis = options$hypothesis, bayesFactorType = options$bayesFactorType)
-  hypothesis     <- hypothesisList$hypothesis
+  jaspResults[["ttestContainer"]][["pairedSamplesTTestTable"]] <- .summaryStatsPairedSamplesTableMain(options, hypothesisList)
+
+  if (!is.null(jaspResults[["ttestContainer"]][["stateSummaryStatsPairedSamplesResults"]])) {
+    results <- jaspResults[["ttestContainer"]][["stateSummaryStatsPairedSamplesResults"]]$object
+    # only change possible: BF type
+    results[["pairedSamplesTTestTable"]][["BF"]] <- results[["BFlist"]][[options$bayesFactorType]]
+  } else {
+    results <- .summaryStatsOneSampleComputeResults(hypothesisList, options)
+    # Save results to state
+    jaspResults[["ttestContainer"]][["stateSummaryStatsPairedSamplesResults"]] <- createJaspState(results)
+    
+    if (!is.null(results[["errorMessageTable"]]))
+      jaspResults[["ttestContainer"]][["pairedSamplesTTestTable"]]$setError(results[["errorMessageTable"]])
+  }
   
-  # Conduct frequentist and Bayesian independent samples t-test
-  ttestResults <- .generalSummaryTtestBF(options = options, paired = TRUE)
-  BF10         <- ttestResults$bf
+  #  fill table if ready
+  if (results[["ready"]])
+    jaspResults[["ttestContainer"]][["pairedSamplesTTestTable"]]$setData(results[["ttestTable"]])
+  # if necessary, set footnote message for % error estimate
+  if (!is.null(results[["ttestTableMessage"]])) jaspResults[["ttestContainer"]][["pairedSamplesTTestTable"]]$addFootnote(results[["ttestTableMessage"]])
   
-  BFlist       <- list(BF10    = BF10,
-                       BF01    = 1/BF10,
-                       LogBF10 = log(BF10))
-  
-  # Add results to results object
-  results[["hypothesisList"]] <- hypothesisList
-  results[["ttestTable"]] <- list(
-    t        = options$tStatistic,
-    n1       = options$n1Size,
-    BF       = BFlist[[options$bayesFactorType]],
-    error    = ttestResults$properror,
-    pValue   = ttestResults$pValue[[hypothesis]]
-  )
-  # results[["ttestPriorPosteriorPlot"]] <- list(
-  # t        = options$tStatistic,
-  # n1       = options$n1Size,
-  # oneSided = hypothesisList[["oneSided"]],
-  # BF       = BFlist[[options$bayesFactorType]],
-  # BFH1H0   = BFlist[["BF10"]]
-  # rscale   = ,
-  # delta    =
-  # )
-  # results[["ttestRobustnessPlot"]] <- list(
-  #   a         = a,
-  #   b         = b,
-  #   successes = successes,
-  #   n         = n,
-  #   theta0    = theta0,
-  #   BF        = BFlist
-  # )
-  
-  # Save results to state
-  defaultOptions <- c("tStatistic", "n1Size", "hypothesis", "bayesFactorType",           # standard entries
-                      "priorWidth", "effectSizeStandardized",                            # default prior
-                      "informativeCauchyLocation", "informativeCauchyScale",             # informed cauchy priors
-                      "informativeNormalMean", "informativeNormalStd",                   # informed normal priors
-                      "informativeTLocation", "informativeTScale", "informativeTDf"      # informed t-distribution
-  )
-  jaspResults[["stateSummaryStatsPairedSamplesResults"]] <- createJaspState(results)
-  jaspResults[["stateSummaryStatsPairedSamplesResults"]]$dependOn(defaultOptions)
-  
-  # Return results object
   return(results)
 }
 
@@ -141,105 +122,81 @@ SummaryStatsTTestBayesianPairedSamples <- function(jaspResults, dataset = NULL, 
   pairedSamplesTTestTable$addRows(tableResults)
 }
 
-# # Prior and Posterior plot ----
-# .summaryStatsPairedSamplesPriorPosteriorPlot <- function(jaspResults, options, summaryStatsBinomialResults) {
-#   
-#   plotResults     <- summaryStatsPairedSamplesResults[["ttestPriorPosteriorPlot"]]
-#   hypothesisList  <- summaryStatsPairedSamplesResults[["hypothesisList"]]
-#   
-#   # extract parameters needed for prior and posterior plot
-#   
-#   # Prior and posterior plot
-#   if(options$plotPriorAndPosterior) {
-#     
-#       p <- .plotPriorPosterior(
-#         t                      = plotResults$t,
-#         n1                     = plotResults$n1,
-#         n2                     = plotResults$n2,
-#         paired                 = paired,
-#         oneSided               = plotResults$oneSided,
-#         BF                     = plotResults$BF,
-#         BFH1H0                 = plotResults$BFH1H0,
-#         rscale                 = rscale,
-#         delta                  = delta,
-#         addInformation         = options$plotPriorAndPosteriorAdditionalInfo,
-#         wilcoxTest             = wilcoxTest,
-#         options                = options,
-#         ...
-#       )
-#     } 
-#     
-#     # create JASP object
-#     plot <- createJaspPlot(
-#       title       = "Prior and Posterior",
-#       width       = 530,
-#       height      = 400,
-#       plot        = p,
-#       aspectRatio = 0.7
-#     )
-#     plot$position <- 2
-#     plot$dependOn(optionsFromObject = jaspResults[["stateSummaryStatsBinomialResults"]], 
-#                   options           = c("plotPriorAndPosterior, plotPriorAndPosteriorAdditionalInfo"))
-#     jaspResults[["priorPosteriorPlot"]] <- plot
-# }
-
-# # Robustness plot ----
-# .summaryStatsBinomialPlot <- function(jaspResults, options, summaryStatsBinomialResults) {
-#   
-#   plotResults <- summaryStatsBinomialResults[["binomPlot"]]
-#   hypothesis  <- summaryStatsBinomialResults[["hypothesis"]]
-#   
-#   if (hypothesis == "two.sided") {
-#     bfSubscripts <- "BF[1][0]"
-#   }
-#   else if (hypothesis == "greater"){
-#     bfSubscripts <- "BF['+'][0]"
-#   }
-#   else if (hypothesis == "less"){
-#     bfSubscripts <- "BF['-'][0]"
-#   }
-#   
-#   # extract parameters needed for prior and posterior plot
-#   a         <- plotResults$a
-#   b         <- plotResults$b
-#   successes <- plotResults$successes
-#   n         <- plotResults$n
-#   theta0    <- plotResults$theta0
-#   BF10      <- plotResults$BF[["BF10"]]
-#   
-#   # Prior and posterior plot
-#   if(options$plotPriorAndPosterior) {
-#     quantiles       <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, a, b, successes, n, hyp = hypothesis, theta0 = theta0)
-#     medianPosterior <- quantiles$ci.median
-#     CIlower         <- quantiles$ci.lower
-#     CIupper         <- quantiles$ci.upper
-#     ppCri           <- c(CIlower, CIupper)
-#     dfLinesPP       <- .dfLinesPP( a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
-#     dfPointsPP      <- .dfPointsPP(a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
-#     xName           <- expression(paste("Population proportion ", theta))
-#     
-#     if(options$plotPriorAndPosteriorAdditionalInfo){
-#       p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, BF01 = 1/BF10,
-#                                              CRI = ppCri, median = medianPosterior, drawCRItxt = TRUE, bfSubscripts = bfSubscripts)
-#     } 
-#     else {
-#       p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLinesPP, dfPoints = dfPointsPP, xName = xName, bfSubscripts = bfSubscripts)
-#     }
-#     
-#     # create JASP object
-#     plot <- createJaspPlot(
-#       title       = "Prior and Posterior",
-#       width       = 530,
-#       height      = 400,
-#       plot        = p,
-#       aspectRatio = 0.7
-#     )
-#     plot$position <- 2
-#     plot$dependOn(optionsFromObject = jaspResults[["stateSummaryStatsBinomialResults"]], 
-#                   options           = c("plotPriorAndPosterior, plotPriorAndPosteriorAdditionalInfo"))
-#     jaspResults[["priorPosteriorPlot"]] <- plot
-#   }
-# }
+.summaryStatsOneSampleComputeResults <- function(hypothesisList, options) {
+  
+  # Extract important information from options list
+  hypothesis <- hypothesisList$hypothesis
+  t          <- options$tStatistic
+  n1         <- options$n1Size
+  
+  # Checks before executing the analysis
+  # 1. check user input
+  ready <- !(n1 == 0)
+  
+  if (!ready)
+    return(list(ready = ready))
+  
+  # Conduct frequentist and Bayesian independent samples t-test
+  ttestResults <- .generalSummaryTtestBF(options = options)
+  BF10         <- ttestResults$bf
+  
+  BFlist       <- list(BF10    = BF10,
+                       BF01    = 1/BF10,
+                       LogBF10 = log(BF10))
+  
+  # Add rows to the main table
+  ttestTable <- list(
+    t        = t,
+    n1       = n1,
+    BF       = BFlist[[options$bayesFactorType]],
+    error    = ttestResults$properror,
+    pValue   = ttestResults$pValue[[hypothesis]]
+  )
+  # check whether %error could be computed
+  if(is.na(ttestTable$error) || is.null(ttestTable$error)){
+    ttestTable$error   <- NaN
+    ttestTableMessage  <- "Proportional error estimate could not be computed."
+  } else {
+    ttestTableMessage  <- NULL
+  }
+  
+  # Add information for plots
+  
+  ttestPriorPosteriorPlot <- list(
+    t        = t,
+    n1       = n1,
+    n2       = NULL,
+    paired   = TRUE,
+    oneSided = hypothesisList$oneSided,
+    BF       = BFlist[[options$bayesFactorType]],
+    BFH1H0   = BFlist[["BF10"]]
+  )
+  
+  ttestRobustnessPlot <- list(
+    t                     = t,
+    n1                    = n1,
+    n2                    = 0 ,
+    paired                = FALSE,
+    BF10user              = BFlist[["BF10"]],
+    nullInterval          = hypothesisList$nullInterval,
+    rscale                = options$priorWidth,
+    oneSided              = hypothesisList$oneSided
+  )
+  
+  # This will be the object that we fill with results
+  results        <- list(
+    hypothesisList          = hypothesisList,
+    ttestPriorPosteriorPlot = ttestPriorPosteriorPlot,
+    ttestRobustnessPlot     = ttestRobustnessPlot,
+    ttestTable              = ttestTable,
+    ttestTableMessage       = ttestTableMessage,
+    ready                   = ready,
+    BFlist                  = BFlist
+  )
+  
+  # Return results object
+  return(results)
+}
 
 # helper functions
 .hypothesisType.summarystats.ttest.pairedsamples <- function(hypothesis_option, bayesFactorType) {
