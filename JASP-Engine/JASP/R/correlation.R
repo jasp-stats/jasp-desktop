@@ -15,10 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 Correlation <- function(jaspResults, dataset, options){
-  
   # Read dataset ----
   dataset <- .corrReadData(dataset, options)
-  # Error checks ----
   ready <- length(options$variables) >= 2
   
   corrResults <- .corrMainResults(jaspResults, dataset, options, ready)
