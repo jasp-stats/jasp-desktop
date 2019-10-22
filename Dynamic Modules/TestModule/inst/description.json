@@ -9,7 +9,7 @@
 		"maintainer":								"Joris Goosen <Joris@JorisGoosen.nl>",
 		"website":									"",
 		"license":									"Whatever",
-		"requiresDataset": 		false
+		"requiresData": 		false
 	},
 
 	"requiredPackages":	[],
@@ -17,9 +17,15 @@
 	"menu":
 	[
 		{
-			"title":							"Test",
+			"title":							"Test Transposed jaspTable",
 			"qml":								"test.qml",
-			"function":							"testFunc"
+			"function":							"testTransposedTableFunc"
+		},
+
+		{
+			"title":							"Test Footnotes jaspTable",
+			"qml":								"test.qml",
+			"function":							"testFootnotesTableFunc"
 		}
 	]
 }

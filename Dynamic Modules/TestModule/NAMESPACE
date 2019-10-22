@@ -1,1 +1,2 @@
-export(testFunc)
+export(testTransposedTableFunc)
+export(testFootnotesTableFunc)

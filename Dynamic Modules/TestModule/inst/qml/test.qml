@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2019 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -15,40 +15,16 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import QtQuick 			2.8
+import QtQuick.Layouts 	1.3
+import JASP.Controls 	1.0
+import JASP.Widgets 	1.0
 
-Form {
+Form 
+{
     id: form
 
-    VariablesForm { id: variablesFormPlanning; implicitHeight: 110
-            AvailableVariablesList { name: "variablesAva" }
-            AssignedVariablesList { name: "variables"; title: qsTr("something numbers"); id: recordNumberVariable }
-           
-        }
 
- /*   TableView
-    {
-        id:         table
-        name:       "filteredData"
-        modelType:  "FilteredDataEntryModel"
-        filter:     filterID.value
-        source:     "recordNumberVariable"
-        colName:    "auditResult"
-    }
-
-    TextField
-    {
-        id:     filterID
-        name:   "hahahaFilter"
-        value:  table.filter
-        
-    }*/
-
-
-	ComputedColumnField { name: "hallo"; text: "fill me!"; }
     CheckBox
     {
         name: "checkbox_0"

@@ -908,31 +908,34 @@ void jaspTable::rectangularDataWithNamesToHtml(std::stringstream & out, std::vec
 	out << "\t</table>\n";
 }
 
-Json::Value footnotes::tableFields::rowsToJSON() const
-{ 
-	return rows.size() == 0 ? Json::nullValue : jaspJson::SetJson_to_ArrayJson(rows); 
+Json::Value footnotesNamespace::tableFields::rowsToJSON() const
+{
+	return _rows.size() == 0 ? Json::nullValue : jaspJson::SetJson_to_ArrayJson(_rows);
 }
 
-Json::Value footnotes::tableFields::colsToJSON() const
+Json::Value footnotesNamespace::tableFields::colsToJSON() const
 {
-	return cols.size() == 0 ? Json::nullValue : jaspJson::SetJson_to_ArrayJson(cols); 
+	return _cols.size() == 0 ? Json::nullValue : jaspJson::SetJson_to_ArrayJson(_cols);
 }
 
 Json::Value footnotes::convertToJSON() const
 {
 	Json::Value notes(Json::arrayValue);
-	for (auto & keyval : _data)
-	{
-		Json::Value note(Json::objectValue); 
-		tableFields const & fields = keyval.second;
-		
-		note["text"]	= keyval.first;
-		note["symbol"]	= fields.symbol;
-		note["rows"]	= fields.rowsToJSON();
-		note["cols"]	= fields.colsToJSON();
-		
-		notes.append(note);
-	}
+
+	for (const auto & textRest : _data)
+		for(const auto & symbolRest : textRest.second)
+			for(const tableFields & fields : symbolRest.second)
+			{
+				Json::Value note(Json::objectValue);
+
+				note["text"]	= textRest.first;
+				note["symbol"]	= symbolRest.first;
+				note["rows"]	= fields.rowsToJSON();
+				note["cols"]	= fields.colsToJSON();
+
+				notes.append(note);
+			}
+
 	return notes;
 }
 
@@ -940,64 +943,64 @@ Json::Value	footnotes::convertToJSONOrdered(std::map<std::string, size_t> rowNam
 {
 	std::vector<Json::Value> notesToOrder;
 
-	for (const auto & keyval : _data)
-	{
-		Json::Value note(Json::objectValue);
-
-		tableFields const & fields = keyval.second;
-
-		note["text"]	= keyval.first;
-		note["symbol"]	= fields.symbol;
-		note["rows"]	= fields.rowsToJSON();
-		note["cols"]	= fields.colsToJSON();
-
-		int myOrder = 0;
-
-		if(!(note["rows"].isNull() && note["cols"].isNull()))
-		{
-
-			const int maxColOrder = colNames.size() * 2;
-			const int maxRowOrder = rowNames.size() * 2;
-
-			auto calculateOrder = [](std::string fieldName, Json::Value & note, const int maxVal, std::map<std::string, size_t> nameToIndex)
+	for (const auto & textRest : _data)
+		for(const auto & symbolRest : textRest.second)
+			for(const tableFields & fields : symbolRest.second)
 			{
-				int myOrdering = maxVal;
+				Json::Value note(Json::objectValue);
 
-				if(!note[fieldName].isNull())
+				note["text"]	= textRest.first;
+				note["symbol"]	= symbolRest.first;
+				note["rows"]	= fields.rowsToJSON();
+				note["cols"]	= fields.colsToJSON();
+
+				int myOrder = 0;
+
+				if(!(note["rows"].isNull() && note["cols"].isNull()))
 				{
-					for(const Json::Value & val : note[fieldName])
-						if(nameToIndex.count(val.asString()) > 0)
-							myOrdering = std::min(static_cast<int>(nameToIndex[val.asString()]), myOrdering);
+
+					const int maxColOrder = colNames.size() * 2;
+					const int maxRowOrder = rowNames.size() * 2;
+
+					auto calculateOrder = [](std::string fieldName, Json::Value & note, const int maxVal, std::map<std::string, size_t> nameToIndex)
+					{
+						int myOrdering = maxVal;
+
+						if(!note[fieldName].isNull())
+						{
+							for(const Json::Value & val : note[fieldName])
+								if(nameToIndex.count(val.asString()) > 0)
+									myOrdering = std::min(static_cast<int>(nameToIndex[val.asString()]), myOrdering);
+						}
+
+						if(myOrdering == maxVal)
+							myOrdering = -1;
+
+						return myOrdering;
+					};
+
+					int		myColOrdering = calculateOrder("cols", note, maxColOrder, colNames),
+							myRowOrdering = calculateOrder("rows", note, maxRowOrder, rowNames);
+
+					if(myRowOrdering == -1)
+					{
+						if(myColOrdering != -1)
+							myOrder = myColOrdering + maxColOrder;
+					}
+					else
+					{
+						myOrder = myRowOrdering * maxColOrder;
+
+						if(myColOrdering != -1)
+							myOrder += myColOrdering;
+
+						myOrder += maxColOrder;
+					}
 				}
 
-				if(myOrdering == maxVal)
-					myOrdering = -1;
-
-				return myOrdering;
-			};
-
-			int		myColOrdering = calculateOrder("cols", note, maxColOrder, colNames),
-					myRowOrdering = calculateOrder("rows", note, maxRowOrder, rowNames);
-
-			if(myRowOrdering == -1)
-			{
-				if(myColOrdering != -1)
-					myOrder = myColOrdering + maxColOrder;
+				note["myOrder"] = myOrder;
+				notesToOrder.push_back(note);
 			}
-			else
-			{
-				myOrder = myRowOrdering * maxColOrder;
-
-				if(myColOrdering != -1)
-					myOrder += myColOrdering;
-
-				myOrder += maxColOrder;
-			}
-		}
-
-		note["myOrder"] = myOrder;
-		notesToOrder.push_back(note);
-	}
 
 	std::sort(notesToOrder.begin(), notesToOrder.end(), [](Json::Value a, Json::Value b) { return a["myOrder"].asInt() < b["myOrder"].asInt(); });
 
@@ -1007,27 +1010,27 @@ Json::Value	footnotes::convertToJSONOrdered(std::map<std::string, size_t> rowNam
 void footnotes::convertFromJSON_SetFields(Json::Value footnotes)
 {
 	if (footnotes.isArray())
-	{
 		for (Json::Value & footnote : footnotes)
 		{
-			const std::string text = footnote["text"].asString();
-			
-			_data[text].symbol	= footnote["symbol"].asString();
-			_data[text].rows	= jaspJson::ArrayJson_to_SetJson(footnote["rows"]);
-			_data[text].cols	= jaspJson::ArrayJson_to_SetJson(footnote["cols"]);
+			const std::string		text	= footnote["text"].asString(),
+									symbol	= footnote["symbol"].asString();
+			std::set<Json::Value>	rows	= jaspJson::ArrayJson_to_SetJson(footnote["rows"]),
+									cols	= jaspJson::ArrayJson_to_SetJson(footnote["cols"]);
+
+			_data[text][symbol].insert(tableFields(rows, cols));
 		}
-	}
 }
+
 
 void footnotes::insert(std::string text, std::string symbol, std::vector<Json::Value> colNames, std::vector<Json::Value> rowNames)
 {
-	if (_data[text].symbol.empty())
-		_data[text].symbol = symbol;
-	
-	_data[text].cols.insert(colNames.begin(), colNames.end());
-	_data[text].rows.insert(rowNames.begin(), rowNames.end());		
+	_data[text][symbol].insert(
+				tableFields(
+					std::set<Json::Value>(rowNames.begin(), rowNames.end()),
+					std::set<Json::Value>(colNames.begin(), colNames.end())
+				)
+	);
 }
-
 
 void jaspTable::addFootnote(Rcpp::RObject message, Rcpp::RObject symbol, Rcpp::RObject col_names, Rcpp::RObject row_names)
 {		
