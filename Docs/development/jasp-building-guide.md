@@ -102,21 +102,17 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
 5.	**Copy files** to their expected locations in the build folders:    
 	From \<JASP\>\jasp-required-files\64\\* -> \<JASP\>\build-release-64  
 	From \<JASP\>\jasp-required-files\R -> \<JASP\>\build-release-64\R  
-        From \<JASP\>\jasp-required-files\boost_1_71_0 -> \<JASP\>\boost_1_71_0
-
+  
 	P.S. Instead of copying the files it is preferred to generate a symbolic link to the R and boost folder.  
 	From the build folder or Jasp root folder in a cmd-prompt, type:  
 	\> cd \<JASP\>\build-release-64  
 	\> mklink /D R ..\jasp-required-files\R  
-	\> cd \<JASP\>    
-        \> mklink /D boost_1_71_0 .\jasp-required-files\boost_1_71_0
-
+	
 	You should now have :  
 
 	\<JASP\>\build-release-64\R  
 	\<JASP\>\build-release-64\*.lib and *.dll  
-        \<JASP\>\boost_1_71_0
-
+   
 6.	**Install Qt 5.13.1**  
 	Go to https://www.qt.io/download  
 	Choose Open Source and Download.  
