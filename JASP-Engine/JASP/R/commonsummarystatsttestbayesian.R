@@ -129,6 +129,7 @@
     
     # Note: .bf10_ functions gives weired value if paired = FALSE in single sample case
     if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
+      browser()
       bfObject <- .bf10_t(t = tValue, n1 = n1, n2 = n2, oneSided = side,
                           independentSamples = !paired,
                           prior.location = options[["informativeCauchyLocation"]],
@@ -192,7 +193,7 @@
 # Prior & Posterior plot 
 .ttestBayesianPriorPosteriorPlot.summarystats <- function(jaspResults, summaryStatsTTestResults, options){
   
-  if (!options[["plotPriorAndPosterior"]])
+  if (!options[["plotPriorAndPosterior"]] || !is.null(jaspResults[["ttestContainer"]][["priorPosteriorPlot"]]))
     return()
   
   plot <- createJaspPlot(
@@ -235,7 +236,7 @@
 # Bayes FactorRobustness Check plot
 .ttestBayesianPlotRobustness.summarystats <- function(jaspResults, summaryStatsTTestResults, options){
   
-  if (!options[["plotBayesFactorRobustness"]])
+  if (!options[["plotBayesFactorRobustness"]] || !is.null(jaspResults[["ttestContainer"]][["BayesFactorRobustnessPlot"]]))
     return()
   
   plot <- createJaspPlot(
@@ -255,7 +256,7 @@
   hypothesisList <- summaryStatsTTestResults[["hypothesisList"]]
   
   # error check: Informative prior?
-  if (robustnessInfo$isInformative) {
+  if ((options$effectSizeStandardized == "informative")) {
     plot$setError("Plotting not possible: Bayes factor robustness check plot currently not supported for informed prior.")
     return()
   } 
@@ -272,7 +273,7 @@
     rscale                = robustnessInfo$rscale,
     oneSided              = hypothesisList$oneSided,
     isInformative         = robustnessInfo$isInformative,
-    additionalInformation = robustnessInfo$additionalInformation
+    additionalInformation = options$plotBayesFactorRobustnessAdditionalInfo
   ))
   
   if (isTryError(p)) {

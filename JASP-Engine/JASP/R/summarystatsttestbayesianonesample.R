@@ -23,7 +23,6 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
   
   # Compute the results and create main results table
   summaryStatsOneSampleResults <- .summaryStatsOneSampleMainFunction(jaspResults, options)
-  
   # Output plots 
   .ttestBayesianPriorPosteriorPlot.summarystats(jaspResults, summaryStatsOneSampleResults, options)
   .ttestBayesianPlotRobustness.summarystats(jaspResults, summaryStatsOneSampleResults, options)
@@ -61,7 +60,7 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
   } else {
     results <- .summaryStatsOneSampleComputeResults(hypothesisList, options)
     # Save results to state
-    jaspResults[["ttestContainer"]][["stateSummaryStatsBinomialResults"]] <- createJaspState(results)
+    jaspResults[["ttestContainer"]][["stateSummaryStatsOneSampleResults"]] <- createJaspState(results)
     
     if (!is.null(results[["errorMessageTable"]]))
       jaspResults[["ttestContainer"]][["oneSampleTTestTable"]]$setError(results[["errorMessageTable"]])
@@ -70,6 +69,8 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
   #  fill table if ready
   if (results[["ready"]])
     jaspResults[["ttestContainer"]][["oneSampleTTestTable"]]$setData(results[["ttestTable"]])
+  # if necessary, set footnote message for % error estimate
+  if (!is.null(results[["ttestTableMessage"]])) jaspResults[["ttestContainer"]][["oneSampleTTestTable"]]$addFootnote(results[["ttestTableMessage"]])
   
   return(results)
 }
@@ -104,6 +105,13 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
     error    = ttestResults$properror,
     pValue   = ttestResults$pValue[[hypothesis]]
   )
+  # check whether %error could be computed
+  if(is.na(ttestTable$error) || is.null(ttestTable$error)){
+    ttestTable$error   <- NaN
+    ttestTableMessage  <- "Proportional error estimate could not be computed."
+  } else {
+    ttestTableMessage  <- NULL
+  }
   
   # Add information for plots
   
@@ -125,9 +133,7 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
     BF10user              = BFlist[["BF10"]],
     nullInterval          = hypothesisList$nullInterval,
     rscale                = options$priorWidth,
-    oneSided              = hypothesisList$oneSided,
-    isInformative         = (options$effectSizeStandardized == "informative"),
-    additionalInformation = options$plotBayesFactorRobustnessAdditionalInfo
+    oneSided              = hypothesisList$oneSided
   )
   
   # This will be the object that we fill with results
@@ -135,10 +141,11 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
     hypothesisList          = hypothesisList,
     ttestPriorPosteriorPlot = ttestPriorPosteriorPlot,
     ttestRobustnessPlot     = ttestRobustnessPlot,
-    ttestTable              = ttestTable
+    ttestTable              = ttestTable,
+    ttestTableMessage       = ttestTableMessage,
+    ready                   = ready,
+    BFlist                  = BFlist
   )
-  results[["ready"]]  <- ready
-  results[["BFlist"]] <- BFlist
   
   # Return results object
   return(results)
