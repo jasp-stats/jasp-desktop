@@ -20,12 +20,11 @@ Correlation <- function(jaspResults, dataset, options){
   dataset <- .corrReadData(dataset, options)
   # Error checks ----
   ready <- length(options$variables) >= 2
-  errors <- .corrCheckErrors(dataset, options)
   
-  corrResults <- .corrMainResults(jaspResults, dataset, options, errors, ready)
+  corrResults <- .corrMainResults(jaspResults, dataset, options, ready)
   
   .corrAssumptions(jaspResults, dataset, options, ready, corrResults)
-  .corrPlot(jaspResults, dataset, options, ready, corrResults, errors)
+  .corrPlot(jaspResults, dataset, options, ready, corrResults)
   .corrHeatmap(jaspResults, options, corrResults, ready)
   
   return()
@@ -52,27 +51,12 @@ Correlation <- function(jaspResults, dataset, options){
   }
 }
 
-.corrCheckErrors <- function(dataset, options){
-  if(length(options$variables) == 0) return("No variables")
-  if(length(options$variables) == 1) return("One variable")
-  
-  # Check for variance, infinity and observations
-  # does not check pairwise observations yet
-  errors <-.hasErrors(dataset, message = 'short', 
-                      type = c('variance', 'infinity', 'observations'),
-                      all.target = c(options$variables, options$conditioningVariables),
-                      observations.amount = "< 3",
-                      exitAnalysisIfErrors = FALSE)
-  
-  return(errors)
-}
-
 ### Main function ----
-.corrMainResults <- function(jaspResults, dataset, options, errors, ready){
+.corrMainResults <- function(jaspResults, dataset, options, ready){
   if(!is.null(jaspResults[['mainTable']]) && !is.null(jaspResults[['results']])) return(jaspResults[['results']]$object)
   
   # Init main table
-  mainTable <- .corrInitMainTable(jaspResults, options, errors)
+  mainTable <- .corrInitMainTable(jaspResults, options)
   
   # Compute results
   corrResults <- .corrComputeResults(jaspResults, dataset, options, ready)
@@ -83,21 +67,31 @@ Correlation <- function(jaspResults, dataset, options){
   return(corrResults)
 }
 # Init tables ----
-.corrInitMainTable <- function(jaspResults, options, errors){
+.corrInitMainTable <- function(jaspResults, options){
   if(!is.null(jaspResults[['mainTable']])) return(jaspResults[['mainTable']])
   
-  if(errors == "No variables"){
+  if(length(options[['variables']]) == 0){
     variables <- c("...", "... ") # we need this trailing space so that 1 != 2
-  } else if(errors == "One variable"){
+  } else if(length(options[['variables']]) == 1){
     variables <- c(options[['variables']], "...")
   } else {
     variables <- options[['variables']]
   }
   
-  if(length(options$conditioningVariables) == 0){
-    title <- "Correlation table"
+  tests <- c("Pearson's", "Spearman's", "Kendall's Tau")[c(options$pearson, options$spearman, options$kendallsTauB)]
+  
+  if(length(tests) != 1){
+    if(length(options$conditioningVariables) == 0){
+      title <- "Correlation Table"
+    } else{
+      title <- "Partial Correlation Table"
+    }
   } else{
-    title <- "Partial correlation table"
+    if(length(options$conditioningVariables) == 0){
+      title <- sprintf("%s Correlations", tests)
+    } else{
+      title <- sprintf("%s Partial Correlations", tests)
+    }
   }
   
   mainTable <- createJaspTable(title = title)
@@ -182,8 +176,8 @@ Correlation <- function(jaspResults, dataset, options){
       
       if(options$VovkSellkeMPR){
         mainTable$addColumnInfo(name = paste0(test, "_vsmpr"), title = "VS-MPR", type = "number", overtitle = overtitle)
-        mainTable$addFootnote(message = .corrTexts$footnotes$VSMPR, symbol = "\u002A", colNames = paste0(test, "_vsmpr"))
-        mainTable$addCitation(.corrTexts$references$Sellke_etal_2001)
+        mainTable$addFootnote(message = .corrGetTexts()$footnotes$VSMPR, symbol = "\u002A", colNames = paste0(test, "_vsmpr"))
+        mainTable$addCitation(.corrGetTexts()$references$Sellke_etal_2001)
       }
     }
   }
@@ -239,8 +233,8 @@ Correlation <- function(jaspResults, dataset, options){
   if(options$VovkSellkeMPR){
     mainTable$addColumnInfo(name = sprintf(name, "vsmpr"), title = "VS-MPR", type = "number", overtitle = overtitle)
     mainTable$addFootnote(colNames = sprintf(name, "vsmpr"), symbol = "\u002A",
-                          message = .corrTexts$footnotes$VSMPR)
-    mainTable$addCitation(.corrTexts$references$Sellke_etal_2001)
+                          message = .corrGetTexts()$footnotes$VSMPR)
+    mainTable$addCitation(.corrGetTexts()$references$Sellke_etal_2001)
   }
   
   if(options$confidenceIntervals){
@@ -630,18 +624,18 @@ Correlation <- function(jaspResults, dataset, options){
   }
 }
 ### Plot stuff ----
-.corrPlot <- function(jaspResults, dataset, options, ready, corrResults, errors){
+.corrPlot <- function(jaspResults, dataset, options, ready, corrResults){
   if(!ready) return()
   if(isFALSE(options$plotCorrelationMatrix)) return()
   
   if(isTRUE(options[["displayPairwise"]])){
-    .corrPairwisePlot(jaspResults, dataset, options, ready, corrResults, errors)
+    .corrPairwisePlot(jaspResults, dataset, options, ready, corrResults)
   } else{
-    .corrMatrixPlot(jaspResults, dataset, options, ready, corrResults, errors)
+    .corrMatrixPlot(jaspResults, dataset, options, ready, corrResults)
   }
 }
 
-.corrPairwisePlot <- function(jaspResults, dataset, options, ready, corrResults, errors){
+.corrPairwisePlot <- function(jaspResults, dataset, options, ready, corrResults, errors=NULL){
   if(!is.null(jaspResults[['corrPlot']])) return()
   
   plotContainer <- createJaspContainer(title = "Scatter plots")
@@ -725,7 +719,7 @@ Correlation <- function(jaspResults, dataset, options){
     }
   }
 }
-.corrMatrixPlot <- function(jaspResults, dataset, options, ready, corrResults, errors){
+.corrMatrixPlot <- function(jaspResults, dataset, options, ready, corrResults, errors=NULL){
   if(!is.null(jaspResults[['corrPlot']])) return()
   vars <- options$variables
   vvars <- .v(vars)
@@ -1544,11 +1538,13 @@ Correlation <- function(jaspResults, dataset, options){
     return(paste0(type, ' ~ "=" ~ ', '"', formattedValue, '"'))
 }
 
-.corrTexts <- list(
+.corrGetTexts <- function() {
+  list(
   footnotes = list(
     VSMPR = "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001)."
   ),
   references = list(
     Sellke_etal_2001 = "Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p Values for Testing Precise Null Hypotheses. <i>The American Statistician,</i> 55(<i>1</i>), p. 62-71."
   )
-)
+  )
+}
