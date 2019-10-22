@@ -97,7 +97,7 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
   BFlist       <- list(BF10    = BF10,
                        BF01    = 1/BF10,
                        LogBF10 = log(BF10))
-  browser()
+  
   # Add rows to the main table
   ttestTable <- list(
     t        = t,
