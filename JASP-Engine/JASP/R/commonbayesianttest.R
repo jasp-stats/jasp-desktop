@@ -1212,6 +1212,8 @@
     BF10m     <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = "medium")
     BF10w     <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = "wide")
     BF10ultra <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = "ultrawide")
+
+    BF10post  <-  1 / BF10post
   }
 
   # BF10 user prior
