@@ -133,18 +133,6 @@ void ResultsJsInterface::analysisImageEditedHandler(Analysis *analysis)
 	return;
 }
 
-void ResultsJsInterface::analysisImageModelUpdatedHandler(int analysisID, int newWidth, int newHeight, QString newTitle, QString newEditOptionsJson)
-{
-	newTitle			= escapeJavascriptString(newTitle);
-	newEditOptionsJson	= escapeJavascriptString(newEditOptionsJson);
-
-	emit runJavaScript("window.updateImageModel(" + QString::number(analysisID) + ", " + QString::number(newWidth) + ", " + QString::number(newHeight) + ", '" + newTitle + "', JSON.parse('" + newEditOptionsJson + "'));");
-
-	return;
-}
-
-
-
 void ResultsJsInterface::cancelImageEdit(int id)
 {
 	emit runJavaScript("window.cancelImageEdit(" + QString::number(id) + ");");

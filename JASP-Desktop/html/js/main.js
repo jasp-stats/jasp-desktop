@@ -43,13 +43,6 @@ $(document).ready(function () {
 		else									analysis.insertNewImage();
 	}
 
-	window.updateImageModel = function(id, newWidth, newHeight, newTitle, newEditOptions) {
-		var analysis = analyses.getAnalysis(id);
-		if (analysis === undefined) return;
-
-		analysis.updateImageModel(newWidth, newHeight, newTitle, newEditOptions);
-	}
-	
 	window.cancelImageEdit = function(id) {
 		var analysis = analyses.getAnalysis(id);
 		if (analysis !== undefined)

@@ -142,11 +142,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.imageBeingEdited.reRender();
 	},
 
-	updateImageModel: function(newWidth, newHeight, newTitle, newEditOptions) {
-		if (this.imageBeingEdited !== null)
-			this.imageBeingEdited.updateImageModel(newWidth, newHeight, newTitle, newEditOptions);
-	},
-
 	detachNotes: function() {
 		for (var i = 0; i < this.viewNotes.list.length; i++)
 			this.viewNotes.list[i].widget.detach();

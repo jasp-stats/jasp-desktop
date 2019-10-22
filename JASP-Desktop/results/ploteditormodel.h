@@ -35,6 +35,7 @@ public:
 	int						height()	const { return _height;		}
 	PlotEditorAxisModel *	xAxis()		const { return _xAxis;		}
 	PlotEditorAxisModel *	yAxis()		const { return _yAxis;		}
+	void					reset();
 
 signals:
 	void visibleChanged(		bool		visible			);
@@ -44,7 +45,6 @@ signals:
 	void widthChanged(			int			width			);
 	void heightChanged(			int			height			);
 	void dummyAxisChanged();
-	void updateImageModel(int analysisID, int newWidth, int newHeight, QString newTitle, QString newEditOptionsJson);
 
 public slots:
 	void showPlotEditor(int id, QString options);

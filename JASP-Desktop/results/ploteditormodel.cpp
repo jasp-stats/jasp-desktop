@@ -17,8 +17,6 @@ PlotEditorModel::PlotEditorModel(Analyses * analyses)
 
 void PlotEditorModel::showPlotEditor(int id, QString options)
 {
-	setVisible(false);
-
 	_analysisId	= id;
 	_analysis	= _analyses->get(id);
 	_imgOptions	= Json::objectValue;
@@ -32,6 +30,19 @@ void PlotEditorModel::showPlotEditor(int id, QString options)
 	processImgOptions();
 
 	setVisible(true);
+}
+
+void PlotEditorModel::reset()
+{
+	_analysisId		=	-1;
+	_analysis		=	nullptr;
+	_imgOptions		=	Json::nullValue;
+	_editOptions	=	Json::nullValue;
+	setName(			"");
+	setData(			"");
+	setTitle(			"");
+	setWidth(			100);
+	setHeight(			100);
 }
 
 void PlotEditorModel::processImgOptions()
@@ -92,6 +103,9 @@ void PlotEditorModel::setVisible(bool visible)
 
 	_visible = visible;
 	emit visibleChanged(_visible);
+
+	if(!_visible)
+		reset();
 }
 
 void PlotEditorModel::setName(QString name)
@@ -106,6 +120,9 @@ void PlotEditorModel::setName(QString name)
 
 void PlotEditorModel::refresh()
 {
+	if(!_analysis)
+		return;
+
 	//Lets make sure the plot gets reloaded by QML
 	_goBlank = true;
 	emit dataChanged();
@@ -117,12 +134,11 @@ void PlotEditorModel::refresh()
 
 QUrl PlotEditorModel::imgFile() const
 {
-	if(_goBlank) return QUrl("");
+	if(!_analysis || _goBlank)
+		return QUrl("");
 
 	QString pad(tq(TempFiles::sessionDirName()) + "/" + _data);
-	
-	std::cout << "Pad='" << pad.toStdString() << "'" << std::endl;
-	
+		
 	return QUrl::fromLocalFile(pad);
 }
 

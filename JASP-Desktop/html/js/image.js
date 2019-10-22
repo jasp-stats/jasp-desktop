@@ -41,19 +41,13 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	hasCollapse:				function() {	return this.$el.hasClass('jasp-collection-item')	=== false;	},
 	isConvertible:				function() {	return this.model.get("convertible")				==  true;	},
 	saveImageClicked:			function() {	this.model.trigger("SaveImage:clicked",			{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")							});	},
-	editImageClicked:			function() {	this.model.trigger("EditImage:clicked",			this,	{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), title: this.model.get("title"), name: this.model.get("name"), type: "interactive"		});	},
+	editImageClicked:			function() {	this.model.trigger("EditImage:clicked",			this.myView,	{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), title: this.model.get("title"), name: this.model.get("name"), type: "interactive"		});	},
 	showDependenciesClicked:	function() {	this.model.trigger("ShowDependencies:clicked",	this.model.get("name")); },
 
-	updateImageModel:			function(newWidth, newHeight, newTitle, newEditOptions)
-	{
-		this.model.set({ title: newTitle, editOptions: newEditOptions, width: newWidth, height: newHeight });
-	},
-
-	menuName: "Plot",
-
-	indentChildren: false,
-
-	notePositionBottom: true,
+	menuName:			"Plot",
+	myView:				undefined,
+	indentChildren:		false,
+	notePositionBottom:	true,
 
 	constructChildren: function (constructor, data) {
 
@@ -66,10 +60,12 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		this.resizer = imagePrimitive.resizer;
 		this.localViews.push(imagePrimitive);
 		this.views.push(imagePrimitive);
+
+		self.myView = imagePrimitive
 	},
 });
 
-JASPWidgets.imagePrimitive= JASPWidgets.View.extend({
+JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 
 	initialize: function () {
 
