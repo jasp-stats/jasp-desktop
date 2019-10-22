@@ -155,3 +155,39 @@ test_that("Analysis handles integer overflow", {
   else
      expect_equal_tables(table, list(0.00511047754408505, 0.311958523148014, "dependent_var"))
 })
+
+# One sided hypothesis tests
+options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
+options$bayesFactorType <- "BF01"
+options$groupingVariable <- "Rotation"
+options$hypothesis <- "groupTwoGreater"
+options$plotBayesFactorRobustness <- TRUE
+options$plotPriorAndPosterior <- TRUE
+options$plotSequentialAnalysis <- TRUE
+options$variables <- list("mean_NEO")
+set.seed(1)
+results <- jasptools::run("TTestBayesianIndependentSamples", "Kitchen Rolls", options)
+
+
+test_that("Prior and Posterior plot matches", {
+  plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_inferentialPlots"]][["collection"]][["ttestContainer_inferentialPlots_mean_NEO"]][["collection"]][["ttestContainer_inferentialPlots_mean_NEO_plotPriorAndPosterior"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "onesided-prior-and-posterior", dir="TTestBayesianIndependentSamples")
+})
+
+test_that("Bayes Factor Robustness Check plot matches", {
+  plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_inferentialPlots"]][["collection"]][["ttestContainer_inferentialPlots_mean_NEO"]][["collection"]][["ttestContainer_inferentialPlots_mean_NEO_plotRobustness"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "onesided-bayes-factor-robustness-check", dir="TTestBayesianIndependentSamples")
+})
+
+test_that("Sequential Analysis plot matches", {
+  plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_inferentialPlots"]][["collection"]][["ttestContainer_inferentialPlots_mean_NEO"]][["collection"]][["ttestContainer_inferentialPlots_mean_NEO_plotSequential"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "onesided-sequential-analysis", dir="TTestBayesianIndependentSamples")
+})
+
+test_that("Bayesian Independent Samples T-Test table results match", {
+  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_ttestTable"]][["data"]]
+  expect_equal_tables(table, list(2.43880235313651, 0.0140038714457594, "mean_NEO"))
+})
