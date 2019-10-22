@@ -334,7 +334,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	c4 <- paste0("ngroup <- nlevels(X$",group,")") 
 	eval(parse(text = c4))
 
-	cov <- as.character(stringr::str_split(cov," ")[[1]])
+	cov <- as.character(strsplit(cov," ")[[1]])
 	ncov <- length(cov)
 	cov <- paste0(cov,collapse = "+")
 

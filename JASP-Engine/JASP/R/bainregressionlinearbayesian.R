@@ -274,7 +274,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 
   	set.seed(seed)
 
-	pred <- as.character(stringr::str_split(pred," ")[[1]])
+	pred <- as.character(strsplit(pred," ")[[1]])
 	predforhyp <- pred
 	npred <- length(pred)
 	pred <- paste0(pred,collapse = "+")
