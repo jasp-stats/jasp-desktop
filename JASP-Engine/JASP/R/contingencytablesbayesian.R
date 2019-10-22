@@ -464,7 +464,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
   samples   <- log(odds.ratio.samples)
   sig       <- options$oddsRatioCredibleIntervalInterval
   alpha     <- (1 - sig) / 2
-  quantiles <- .credibleIntervalPlusMedian(credibleIntervalInterval = sig,
+  quantiles <- .crossTabCIPlusMedian(credibleIntervalInterval = sig,
                                            mean = mean(samples), sd = sd(samples),
                                            hypothesis = options$hypothesis)
   #median <- quantiles$ci.median
@@ -654,7 +654,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
 }
 
 #CRI and Median 
-.credibleIntervalPlusMedian <- function(credibleIntervalInterval = .95, mean, sd, 
+.crossTabCIPlusMedian <- function(credibleIntervalInterval = .95, mean, sd, 
                                         hypothesis = "groupsNotEqual") {
   
   lower <- (1 - credibleIntervalInterval) / 2

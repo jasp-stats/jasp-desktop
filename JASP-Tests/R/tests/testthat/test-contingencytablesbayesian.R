@@ -19,13 +19,13 @@ test_that("Main table results match", {
   results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
   table <- results[["results"]][["container1"]][["collection"]][["container1_crossTabMain"]][["data"]]
   expect_equal_tables(table,
-    list("TRUE", 320, 495, "control", "f", 815, "Count", 334, 202, "experimental",
-         "f", 536, "Count", "TRUE", 654, 697, "Total", "f", 1351, "Count",
-         "TRUE", 253, 182, "control", "m", 435, "Count", 494, 270, "experimental",
-         "m", 764, "Count", "TRUE", 747, 452, "Total", "m", 1199, "Count",
-         "TRUE", 573, 677, "control", "Total", 1250, "Count", 828, 472,
-         "experimental", "Total", 1300, "Count", "TRUE", 1401, 1149,
-         "Total", "Total", 2550, "Count")
+    list("TRUE", 320, 495, "control", "f", 815, 334, 202, "experimental",
+         "f", 536, "TRUE", 654, 697, "Total", "f", 1351, 
+         "TRUE", 253, 182, "control", "m", 435, 494, 270, "experimental",
+         "m", 764, "TRUE", 747, 452, "Total", "m", 1199, 
+         "TRUE", 573, 677, "control", "Total", 1250, 828, 472,
+         "experimental", "Total", 1300, "TRUE", 1401, 1149,
+         "Total", "Total", 2550)
   )
 })
 
@@ -125,7 +125,7 @@ test_that("Log Odds Ratio table results match", {
   results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
   table <- results[["results"]][["container1"]][["collection"]][["container1_contTabBasLogOdds"]][["data"]]
   expect_equal_tables(table,
-    list("Odds ratio", -0.325226942981456, -0.981898524010587, 0.337174584207703)
+    list(-0.325226942981456, -0.981898524010587, 0.337174584207703)
   )
 })
 
@@ -139,7 +139,7 @@ test_that("Cramer's V table results match", {
   results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
   table <- results[["results"]][["container1"]][["collection"]][["container1_contTabBasCramersV"]][["data"]]
   expect_equal_tables(table,
-                      list("Cramer's V", 0.0698837782777569, 1.02065076979155e-16, 0.216657039422164)
+                      list(0.0698837782777569, 1.02065076979155e-16, 0.216657039422164)
   )
 })
 
