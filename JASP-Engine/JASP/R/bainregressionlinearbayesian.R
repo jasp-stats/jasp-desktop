@@ -140,20 +140,13 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 		return()
 
 	bainResult <- bainContainer[["bainResult"]]$object
-	sum_model <- bainResult[["model"]]
+	sum_model <- summary(bainResult)
 
-	covcoef <- data.frame(sum_model[["coefficients"]])
-	if(options[["standardized"]]){
-		groups <- rownames(covcoef)[-1]
-		estim <- bainResult[["estimates"]]
-		SE <- summary(sum_model)$coefficients[-1, 2]
-	} else {
-		groups <- rownames(covcoef)
-		estim <- summary(sum_model)$coefficients[, 1]
-		SE <- summary(sum_model)$coefficients[, 2]
-	}
-	CiLower <- estim - (1.96 * SE)
-	CiUpper <- estim + (1.96 * SE)
+	groups <- as.character(sum_model[["Parameter"]])
+	estim <- sum_model[["Estimate"]]
+	CiLower <- sum_model[["lb"]]
+	CiUpper <- sum_model[["ub"]]
+	SE <- (CiUpper - CiLower)/(2 * qnorm(0.975))
 
 	d <- data.frame(v = groups, mean = estim, SE = SE, CiLower = CiLower, CiUpper = CiUpper)
 
