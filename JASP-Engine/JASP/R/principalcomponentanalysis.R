@@ -51,7 +51,8 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
 .pcaCheckErrors <- function(dataset, options) {
   customChecksPCAEFA <- list(
     function() {
-      if (length(options$variables) > 0 && options$numberOfFactors > length(options$variables)) {
+      if (length(options$variables) > 0 && options$factorMethod == "manual" &&
+          options$numberOfFactors > length(options$variables)) {
         return(paste0("Too many factors requested (", options$numberOfFactors,
                       ") for the amount of included variables"))
       }
