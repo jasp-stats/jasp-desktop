@@ -35,6 +35,11 @@ Json::Value OptionVariables::asJSON() const
 	return v;
 }
 
+Json::Value OptionVariables::asMetaJSON() const
+{
+	return defaultMetaEntryContainingColumn();
+}
+
 void OptionVariables::set(const Json::Value &value)
 {
 	vector<string> terms;

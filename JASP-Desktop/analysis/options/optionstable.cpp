@@ -43,6 +43,17 @@ Json::Value OptionsTable::asJSON() const
 	return v;
 }
 
+Json::Value OptionsTable::asMetaJSON() const
+{
+	Json::Value v(Json::arrayValue);
+
+	for(Options *item : _value)
+		v.append(item->asMetaJSON());
+
+	return v;
+}
+
+
 void OptionsTable::deleteOldValues()
 {
 	for(Options *row : _value)

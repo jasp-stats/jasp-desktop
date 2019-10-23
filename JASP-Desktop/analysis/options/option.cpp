@@ -53,5 +53,12 @@ void Option::notifyChanged()
 		changed(this);
 }
 
+Json::Value Option::defaultMetaEntryContainingColumn() const
+{
+	Json::Value meta		= Json::objectValue;
+	meta["containsColumn"]	= true;
+
+	return meta;
+}
 
 

@@ -16,7 +16,7 @@
 //
 
 #include "optionlist.h"
-
+#include "columnencoder.h"
 
 
 
@@ -47,9 +47,7 @@ void OptionList::set(const Json::Value &value)
 void OptionList::set(size_t index)
 {
 	if (index < _options.size())
-	{
 		setValue(_options[index]);
-	}
 }
 
 const std::vector<std::string> OptionList::options() const
@@ -60,4 +58,18 @@ const std::vector<std::string> OptionList::options() const
 Option *OptionList::clone() const
 {
 	return new OptionList(_options, _value);
+}
+
+Json::Value OptionList::asMetaJSON() const
+{
+	if(!ColumnEncoder::isColumnName(value()))
+		return Json::nullValue;
+
+	for(const std::string & opt : _options)
+		if(!ColumnEncoder::isColumnName(opt))
+			return Json::nullValue;
+
+	//If everything is a columnName then you know, its probably a bunch of columnNames
+
+	return defaultMetaEntryContainingColumn();
 }

@@ -38,6 +38,11 @@ Json::Value OptionVariablesGroups::asJSON() const
 	return v;
 }
 
+Json::Value OptionVariablesGroups::asMetaJSON() const
+{
+	return defaultMetaEntryContainingColumn();
+}
+
 void OptionVariablesGroups::set(const Json::Value &value)
 {
 	vector<vector<string> > groups;

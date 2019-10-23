@@ -231,6 +231,7 @@ signals:
 				void				filteredOutChanged(int column);
 				bool				checkDoSync();
 				void				modelInit();
+				void				columnNamesChanged();
 
 public slots:
 				void				refresh() { beginResetModel(); endResetModel(); }
@@ -239,6 +240,9 @@ public slots:
 				void				notifyColumnFilterStatusChanged(int columnIndex);
 				void				setColumnsUsedInEasyFilter(std::set<std::string> usedColumns);
 				void				emptyValuesChangedHandler();
+
+private slots:
+				void				rescanColumnNamesForEncoder();
 
 private:
 				///This function allows you to run some code that changes something in the _dataSet and will try to enlarge it if it fails with an allocation error. Otherwise it might keep going for ever?

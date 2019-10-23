@@ -407,12 +407,9 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 		json["ppi"]				= ppi;
 		json["imageBackground"] = imageBackground; //comes from engine representation!
 
-		if (perform == performType::saveImg || perform == performType::editImg)
-			json["image"] = imgOptions();
-		else
-		{
-			json["options"]		= options()->size() == 0 ? optionsFromJASPFile() : options()->asJSON();
-		}
+		bool imgP = perform == performType::saveImg || perform == performType::editImg;
+		if (imgP)	json["image"]		= imgOptions();
+		else		json["options"]		= options()->size() == 0 ? optionsFromJASPFile() : options()->asJSONWithMeta();
 	}
 
 	return json;

@@ -21,8 +21,8 @@ DECLARE_ENUM(jaspColumnType, unknown, scale, ordinal, nominal, nominalText); //c
 jaspObjectType jaspObjectTypeStringToObjectType(std::string type);
 
 std::string					stringExtend(std::string & str, size_t len, char kar = ' ');
-std::string					stringRemove(std::string str, char kar = ' ');
-std::vector<std::string>	stringSplit(std::string str, char kar = ';');
+std::string					stringRemove(std::string str,				char kar = ' ');
+std::vector<std::string>	stringSplit(std::string str,				char kar = ';');
 
 //Simple base-class for all JASP-objects, containing things like a title or a warning and stuff like that
 class jaspObject
@@ -73,6 +73,7 @@ public:
 	//These functions convert the object to a json that can be understood by the resultsviewer
 	virtual	Json::Value		metaEntry()															const { return Json::Value(Json::nullValue); }
 	virtual	Json::Value		dataEntry(std::string & errorMessage)								const ;
+
 	//These two are meant for jaspContainer and take old results into account and a possible errorMessage
 	virtual	Json::Value		metaEntry(jaspObject * oldResult)									const { return metaEntry(); }
 	virtual	Json::Value		dataEntry(jaspObject * oldResult, std::string & errorMessage)		const { return dataEntry(errorMessage); }

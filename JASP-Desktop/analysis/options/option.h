@@ -53,9 +53,11 @@ public:
 	virtual				~Option() {}
 	virtual void		init(const Json::Value &)		{ }
 	virtual void		set(const Json::Value& value)	= 0;
-	virtual Json::Value asJSON() const					= 0;
-	virtual Option		*clone() const					= 0;
+	virtual Json::Value asJSON()		const			= 0;
+	virtual Json::Value	asMetaJSON()	const			{ return Json::nullValue; }
+	virtual Option		*clone()		const			= 0;
 	virtual void		clear() {}
+
 
 	virtual std::set<std::string> usedVariables()		const							{ return std::set<std::string>(); }
 	virtual void		removeUsedVariable(std::string)									{}
@@ -75,6 +77,8 @@ public:
 	ComputedColumn *	notifyRequestComputedColumnCreation(std::string columnName)			{ return requestComputedColumnCreation(columnName); }
 	void				notifyRequestComputedColumnDestruction(std::string columnName)		{ requestComputedColumnDestruction(columnName); }
 	
+	Json::Value			defaultMetaEntryContainingColumn() const;
+
 protected:
 	void				notifyChanged();
 

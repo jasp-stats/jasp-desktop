@@ -36,6 +36,7 @@ public:
 	void					init(const Json::Value &data)							override;
 	void					set(const Json::Value &value)							override;
 	Json::Value				asJSON()										const	override;
+	Json::Value				asMetaJSON()									const	override;
 	Option*					clone()											const	override;
 	void					setValue(const std::vector<Options *> &value)			override;
 	std::set<std::string>	usedVariables()									const	override;

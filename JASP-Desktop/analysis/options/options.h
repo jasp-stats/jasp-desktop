@@ -38,7 +38,9 @@ public:
 	Option*		clone()									const	override;
 	void		set(const Json::Value &json)					override;
 	Json::Value asJSON()								const	override;
+	Json::Value asMetaJSON()							const	override;
 	Json::Value asJSON(bool includeTransient)			const;
+	Json::Value asJSONWithMeta()						const;
 
 	void		add(std::string name, Option *option);
 	void		remove(std::string name);

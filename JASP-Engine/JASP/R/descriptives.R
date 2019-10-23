@@ -70,7 +70,7 @@ Descriptives <- function(jaspResults, dataset, options) {
 
         for (i in 1:length(splitLevels))
           corrPlot[[splitLevels[i]]] <- .descriptivesMatrixPlot(splitDat.factors[[i]], options, splitLevels[i])
-        
+
       } else {
         jaspResults[["matrixPlot"]] <- .descriptivesMatrixPlot(dataset.factors, options, "Correlation plot") # Create one plot
       }
@@ -93,7 +93,7 @@ Descriptives <- function(jaspResults, dataset, options) {
       if(is.null(distPlots[[var]])) {
         if (makeSplit) {
           distPlots[[var]] <- .descriptivesFrequencyPlots(dataset = splitDat.factors, options = options, variable = var)
-        } else { 
+        } else {
           distPlots[[var]] <- .descriptivesFrequencyPlots(dataset = dataset.factors, options = options, variable = var)
         }
       }
@@ -137,7 +137,7 @@ Descriptives <- function(jaspResults, dataset, options) {
       qqSplitLevels     <- levels(qqSplitFactor)
       # remove missing values from the grouping variable
       dataset           <- dataset[!is.na(qqSplitFactor), ]
-      for(var in variables){ 
+      for(var in variables){
         if(!is.null(QQPlots[[var]]))
           next
         deeperQQPlots <- createJaspContainer(paste0(var))
