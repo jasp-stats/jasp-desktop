@@ -18,8 +18,8 @@
 SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, options, ...) {
   
   # Reading in a datafile is not necessary
-  # Check for possible errors
-  .checkErrors.summarystats.onesample(options)
+  # Check user input for possible errors
+  .checkErrors.summarystats.onesample.pairedsamples(options)
   
   # Compute the results and create main results table
   summaryStatsOneSampleResults <- .summaryStatsOneSampleMainFunction(jaspResults, options)
@@ -52,14 +52,14 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
   
   # Otherwise: create the empty table before executing the analysis
   hypothesisList <- .hypothesisType.summarystats.ttest.onesample(hypothesis = options$hypothesis, bayesFactorType = options$bayesFactorType)
-  jaspResults[["ttestContainer"]][["oneSampleTTestTable"]] <- .summaryStatsOneSampleTableMain(options, hypothesisList)
+  jaspResults[["ttestContainer"]][["oneSampleTTestTable"]] <- .summaryStatsOneSamplePairedSamplesTableMain(options, hypothesisList, title = "Bayesian One Sample T-Test")
   
   if (!is.null(jaspResults[["ttestContainer"]][["stateSummaryStatsOneSampleResults"]])) {
     results <- jaspResults[["ttestContainer"]][["stateSummaryStatsOneSampleResults"]]$object
     # only change possible: BF type
     results[["oneSampleTTestTable"]][["BF"]] <- results[["BFlist"]][[options$bayesFactorType]]
   } else {
-    results <- .summaryStatsOneSampleComputeResults(hypothesisList, options)
+    results <- .summaryStatsOneSamplePairedSamplesComputeResults(hypothesisList, options)
     # Save results to state
     jaspResults[["ttestContainer"]][["stateSummaryStatsOneSampleResults"]] <- createJaspState(results)
     
@@ -75,120 +75,6 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
   
   return(results)
 }
-
-.summaryStatsOneSampleComputeResults <- function(hypothesisList, options) {
-  
-  # Extract important information from options list
-  hypothesis <- hypothesisList$hypothesis
-  t          <- options$tStatistic
-  n1         <- options$n1Size
-  
-  # Checks before executing the analysis
-  # 1. check user input
-  ready <- !(n1 == 0)
-  
-  if (!ready)
-    return(list(ready = ready))
-  
-  # Conduct frequentist and Bayesian independent samples t-test
-  ttestResults <- .generalSummaryTtestBF(options = options)
-  BF10         <- ttestResults$bf
-  
-  BFlist       <- list(BF10    = BF10,
-                       BF01    = 1/BF10,
-                       LogBF10 = log(BF10))
-  
-  # Add rows to the main table
-  ttestTable <- list(
-    t        = t,
-    n1       = n1,
-    BF       = BFlist[[options$bayesFactorType]],
-    error    = ttestResults$properror,
-    pValue   = ttestResults$pValue[[hypothesis]]
-  )
-  # check whether %error could be computed
-  if(is.na(ttestTable$error) || is.null(ttestTable$error)){
-    ttestTable$error   <- NaN
-    ttestTableMessage  <- "Proportional error estimate could not be computed."
-  } else {
-    ttestTableMessage  <- NULL
-  }
-  
-  # Add information for plots
-  
-  ttestPriorPosteriorPlot <- list(
-    t        = t,
-    n1       = n1,
-    n2       = NULL,
-    paired   = TRUE,
-    oneSided = hypothesisList$oneSided,
-    BF       = BFlist[[options$bayesFactorType]],
-    BFH1H0   = BFlist[["BF10"]]
-  )
-  
-  ttestRobustnessPlot <- list(
-    t                     = t,
-    n1                    = n1,
-    n2                    = 0 ,
-    paired                = FALSE,
-    BF10user              = BFlist[["BF10"]],
-    nullInterval          = hypothesisList$nullInterval,
-    rscale                = options$priorWidth,
-    oneSided              = hypothesisList$oneSided
-  )
-  
-  # This will be the object that we fill with results
-  results        <- list(
-    hypothesisList          = hypothesisList,
-    ttestPriorPosteriorPlot = ttestPriorPosteriorPlot,
-    ttestRobustnessPlot     = ttestRobustnessPlot,
-    ttestTable              = ttestTable,
-    ttestTableMessage       = ttestTableMessage,
-    ready                   = ready,
-    BFlist                  = BFlist
-  )
-  
-  # Return results object
-  return(results)
-}
-
-# Main table ----
-.summaryStatsOneSampleTableMain <- function(options, hypothesisList){
-  
-  # create table and state dependencies
-  oneSampleTTestTable <- createJaspTable("Bayesian One Sample T-Test")
-  oneSampleTTestTable$dependOn("bayesFactorType")
-  oneSampleTTestTable$position <- 1
-  
-  # set title for different Bayes factor types
-  bfTitle        <- hypothesisList$bfTitle
-  
-  # set table citations and footnote message for different hypothesis types
-  if (options$effectSizeStandardized == "default") {
-    
-    oneSampleTTestTable$addCitation(.summaryStatsCitations[c("MoreyRounder2015", "RounderEtAl2009")])
-    
-  } else if (options$effectSizeStandardized == "informative") {
-    
-    oneSampleTTestTable$addCitation(.summaryStatsCitations[c("GronauEtAl2017")])
-    
-  }
-  
-  message <- hypothesisList$message
-  if (!is.null(message)) oneSampleTTestTable$addFootnote(message)
-  
-  oneSampleTTestTable$addColumnInfo(name = "t"      , title = "t"       , type = "number", format = "sf:4;dp:3")
-  oneSampleTTestTable$addColumnInfo(name = "n1"     , title = "n"       , type = "integer")
-  oneSampleTTestTable$addColumnInfo(name = "BF"     , title = bfTitle   , type = "number", format = "sf:4;dp:3")
-  oneSampleTTestTable$addColumnInfo(name = "error"  , title = "error %" , type = "number", format = "sf:4;dp:3")
-  oneSampleTTestTable$addColumnInfo(name = "pValue" , title = "p"       , type = "number", format = "sf:4;dp:3")
-  
-  return(oneSampleTTestTable)
-
-}
-
-# Prior and Posterior plot & Robustness Plot ----
-  # Code for plots is stored in: commonsummarystatsttestbayesian.R
 
 # helper functions
 .hypothesisType.summarystats.ttest.onesample <- function(hypothesis_option, bayesFactorType) {
@@ -224,19 +110,10 @@ SummaryStatsTTestBayesianOneSample <- function(jaspResults, dataset = NULL, opti
               bfTitle       = bfTitle)
   )
 }
-.checkErrors.summarystats.onesample <- function(options) {
-  
-  # perform a check on the hypothesis
-  custom <- function() {
-    if (options$n1Size == 1)
-      return("Not enough observations.")
-  }
-  
-  # Error Check 1: Number of levels of the variables and the hypothesis
-  .hasErrors(
-    dataset              = matrix(options$n1Size), # mock dataset so the error check runs
-    custom               = custom,
-    exitAnalysisIfErrors = TRUE
-  )
-  
-}
+
+# Check commonsummarystatsttestbayesian.R for code that
+  # (1) creates main table
+  # (2) computes results for one sample t-test
+  # (3) creates prior and posterior plot 
+  # (4) creates robustness plot
+  # (5) checks user input for errors

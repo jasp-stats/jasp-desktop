@@ -359,3 +359,135 @@
   return(p)
   
 }
+
+# Functions Relevant for One Sample and Paired Samples T-Test ----
+
+# Compute Results 
+.summaryStatsOneSamplePairedSamplesComputeResults <- function(hypothesisList, options) {
+  
+  # Extract important information from options list
+  hypothesis <- hypothesisList$hypothesis
+  t          <- options$tStatistic
+  n1         <- options$n1Size
+  
+  # Checks before executing the analysis
+  # 1. check user input
+  ready <- !(n1 == 0)
+  
+  if (!ready)
+    return(list(ready = ready))
+  
+  # Conduct frequentist and Bayesian independent samples t-test
+  ttestResults <- .generalSummaryTtestBF(options = options)
+  BF10         <- ttestResults$bf
+  
+  BFlist       <- list(BF10    = BF10,
+                       BF01    = 1/BF10,
+                       LogBF10 = log(BF10))
+  
+  # Add rows to the main table
+  ttestTable <- list(
+    t        = t,
+    n1       = n1,
+    BF       = BFlist[[options$bayesFactorType]],
+    error    = ttestResults$properror,
+    pValue   = ttestResults$pValue[[hypothesis]]
+  )
+  # check whether %error could be computed
+  if(is.na(ttestTable$error) || is.null(ttestTable$error)){
+    ttestTable$error   <- NaN
+    ttestTableMessage  <- "Proportional error estimate could not be computed."
+  } else {
+    ttestTableMessage  <- NULL
+  }
+  
+  # Add information for plots
+  
+  ttestPriorPosteriorPlot <- list(
+    t        = t,
+    n1       = n1,
+    n2       = NULL,
+    paired   = TRUE,
+    oneSided = hypothesisList$oneSided,
+    BF       = BFlist[[options$bayesFactorType]],
+    BFH1H0   = BFlist[["BF10"]]
+  )
+  
+  ttestRobustnessPlot <- list(
+    t                     = t,
+    n1                    = n1,
+    n2                    = 0 ,
+    paired                = FALSE,
+    BF10user              = BFlist[["BF10"]],
+    nullInterval          = hypothesisList$nullInterval,
+    rscale                = options$priorWidth,
+    oneSided              = hypothesisList$oneSided
+  )
+  
+  # This will be the object that we fill with results
+  results        <- list(
+    hypothesisList          = hypothesisList,
+    ttestPriorPosteriorPlot = ttestPriorPosteriorPlot,
+    ttestRobustnessPlot     = ttestRobustnessPlot,
+    ttestTable              = ttestTable,
+    ttestTableMessage       = ttestTableMessage,
+    ready                   = ready,
+    BFlist                  = BFlist
+  )
+  
+  # Return results object
+  return(results)
+}
+
+# Create main table
+.summaryStatsOneSamplePairedSamplesTableMain <- function(options, hypothesisList, title){
+  
+  # create table and state dependencies
+  tTestTable <- createJaspTable(title)
+  tTestTable$dependOn("bayesFactorType")
+  tTestTable$position <- 1
+  
+  # set title for different Bayes factor types
+  bfTitle        <- hypothesisList$bfTitle
+  
+  # set table citations and footnote message for different hypothesis types
+  if (options$effectSizeStandardized == "default") {
+    
+    tTestTable$addCitation(.summaryStatsCitations[c("MoreyRounder2015", "RounderEtAl2009")])
+    
+  } else if (options$effectSizeStandardized == "informative") {
+    
+    tTestTable$addCitation(.summaryStatsCitations[c("GronauEtAl2017")])
+    
+  }
+  
+  message <- hypothesisList$message
+  if (!is.null(message)) tTestTable$addFootnote(message)
+  
+  tTestTable$addColumnInfo(name = "t"      , title = "t"       , type = "number", format = "sf:4;dp:3")
+  tTestTable$addColumnInfo(name = "n1"     , title = "n"       , type = "integer")
+  tTestTable$addColumnInfo(name = "BF"     , title = bfTitle   , type = "number", format = "sf:4;dp:3")
+  tTestTable$addColumnInfo(name = "error"  , title = "error %" , type = "number", format = "sf:4;dp:3")
+  tTestTable$addColumnInfo(name = "pValue" , title = "p"       , type = "number", format = "sf:4;dp:3")
+  
+  return(tTestTable)
+  
+}
+
+# helper functions for One Sample and Paired Samples T-Test
+.checkErrors.summarystats.onesample.pairedsamples <- function(options) {
+  
+  # perform a check on the hypothesis
+  custom <- function() {
+    if (options$n1Size == 1)
+      return("Not enough observations.")
+  }
+  
+  # Error Check 1: Number of levels of the variables and the hypothesis
+  .hasErrors(
+    dataset              = matrix(options$n1Size), # mock dataset so the error check runs
+    custom               = custom,
+    exitAnalysisIfErrors = TRUE
+  )
+  
+}
