@@ -326,12 +326,17 @@ int jaspTable::equalizeColumnsLengths()
 
 Json::Value jaspTable::getCell(size_t col, size_t row, size_t maxCol, size_t maxRow) const
 {
+
+	bool    amIWithinBounds = col < maxCol                                  && row < maxRow,
+			amIExpected		= col < _expectedColumnCount    && row < _expectedRowCount;
+
 	if(col < _data.size() && row < _data[col].size())
 		return _data[col][row];
 
-	bool	amIExpected	= col < maxCol && row < maxRow;
-	return	amIExpected ? Json::Value(".") : Json::nullValue;
+
+	return !amIWithinBounds || !amIExpected ? Json::nullValue : Json::Value(".");
 }
+
 
 std::string	jaspTable::getCellFormatted(size_t col, size_t row, size_t maxCol, size_t maxRow) const
 {
