@@ -99,7 +99,7 @@ Form
                 value	: "oblique"
                 label	: qsTr("Oblique")
                 checked	: true
-                DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "biquartimin", "cluster", "geominQ" ] }
+                DropDown { name: "obliqueSelector"; values: [ "promax", "oblimin", "simplimax", "bentlerQ", "cluster", "geominQ" ] }
             }
         }
 
@@ -136,8 +136,6 @@ Form
             Group
             {
                 title: qsTr("Tables")
-                CheckBox { name: "kmotest";     		label: qsTr("KMO test")                 }
-                CheckBox { name: "bartest";     		label: qsTr("Bartlett's test")          }
                 CheckBox { name: "incl_structure";		label: qsTr("Structure matrix")			}
                 CheckBox { name: "incl_correlations";	label: qsTr("Factor correlations")		}
                 CheckBox { name: "incl_fitIndices";		label: qsTr("Additional fit indices")	}
@@ -150,14 +148,21 @@ Form
             }
         }
 
-		RadioButtonGroup
-		{
-			name: "missingValues"
-			title: qsTr("Missing Values")
-			RadioButton { value: "pairwise";	label: qsTr("Exclude cases pairwise"); checked: true	}
-			RadioButton { value: "listwise";	label: qsTr("Exclude cases listwise")					}
-		}
-
-
+        Group
+        {
+            Group
+            {
+                title: qsTr("Assumption checks")
+                CheckBox { name: "kmotest";     		label: qsTr("KMO test")                 }
+                CheckBox { name: "bartest";     		label: qsTr("Bartlett's test")          }
+            }
+            RadioButtonGroup
+            {
+                name: "missingValues"
+                title: qsTr("Missing Values")
+                RadioButton { value: "pairwise";	label: qsTr("Exclude cases pairwise"); checked: true	}
+                RadioButton { value: "listwise";	label: qsTr("Exclude cases listwise")					}
+            }
+        }
 	}
 }
