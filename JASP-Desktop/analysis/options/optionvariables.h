@@ -28,6 +28,7 @@ public:
 	OptionVariables(std::vector<std::string> vars)	: OptionTerms(true, false) { setValue(vars); }
 
 	Json::Value					asJSON()												const	override;
+	Json::Value					asMetaJSON()											const	override;
 	void						set(const Json::Value& value)									override;
 	Option*						clone()													const	override;
 

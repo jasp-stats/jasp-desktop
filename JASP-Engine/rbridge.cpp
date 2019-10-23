@@ -16,7 +16,7 @@
 //
 
 #include "rbridge.h"
-#include "base64.h"
+#include "columnencoder.h"
 #include "jsonredirect.h"
 #include "sharedmemory.h"
 #include "appinfo.h"
@@ -26,7 +26,7 @@
 
 DataSet						*	rbridge_dataSet		= NULL;
 RCallback						rbridge_callback	= NULL;
-std::unordered_set<std::string> filterColumnsUsed;
+std::set<std::string>			filterColumnsUsed;
 std::vector<std::string>		columnNamesInDataSet;
 
 boost::function<DataSet *()>				rbridge_dataSetSource		= NULL;
@@ -75,7 +75,11 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 		rbridge_setColumnAsOrdinal,
 		rbridge_setColumnAsNominal,
 		rbridge_setColumnAsNominalText,
-		rbridge_dataSetRowCount
+		rbridge_dataSetRowCount,
+		rbridge_encodeColumnName,
+		rbridge_decodeColumnName,
+		rbridge_encodeAllColumnNames,
+		rbridge_decodeAllColumnNames
 	};
 
 	jaspRCPP_init(
@@ -110,7 +114,33 @@ void rbridge_setColumnFunctionSources(			boost::function<int (const std::string 
 
 void rbridge_setGetDataSetRowCountSource(boost::function<int()> source)	{	rbridge_getDataSetRowCount = source;	}
 
+extern "C" const char * rbridge_encodeColumnName(const char * in)
+{
+	static std::string out;
+	out = ColumnEncoder::encode(in);
+	return out.c_str();
+}
 
+extern "C" const char * rbridge_decodeColumnName(const char * in)
+{
+	static std::string out;
+	out = ColumnEncoder::decode(in);
+	return out.c_str();
+}
+
+extern "C" const char * rbridge_encodeAllColumnNames(const char * in)
+{
+	static std::string out;
+	out = ColumnEncoder::encodeAll(in);
+	return out.c_str();
+}
+
+extern "C" const char * rbridge_decodeAllColumnNames(const char * in)
+{
+	static std::string out;
+	out = ColumnEncoder::decodeAll(in);
+	return out.c_str();
+}
 
 extern "C" bool STDCALL rbridge_requestJaspResultsFileSource(const char** root, const char **relativePath)
 {
@@ -214,7 +244,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
 
 	for(int i=0; i<(*colMax); i++)
 	{
-		colHeaders[i].name = strdup(columns[i].name().c_str());
+		colHeaders[i].name = strdup(ColumnEncoder::encode(columns[i].name()).c_str());
 		colHeaders[i].type = (int)columns[i].getColumnType();
 	}
 
@@ -244,7 +274,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMa
 	for(size_t iIn=0, iOut=0; iIn < columns.columnCount() && iOut < filterColumnsUsed.size(); iIn++)
 		if(filterColumnsUsed.count(columns[iIn].name()) > 0)
 		{
-			colHeaders[iOut].name = strdup(columns[iIn].name().c_str());
+			colHeaders[iOut].name = strdup(ColumnEncoder::encode(columns[iIn].name()).c_str());
 			colHeaders[iOut].type = (int)columns[iIn].getColumnType();
 
 			iOut++;
@@ -299,8 +329,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	{
 		RBridgeColumnType	&	columnInfo		= colHeaders[colNo];
 		RBridgeColumn		&	resultCol		= datasetStatic[colNo];
-		std::string				columnName		= columnInfo.name;
-								resultCol.name	= strdup(Base64::encode("X", columnName, Base64::RVarEncoding).c_str());
+		std::string				columnName		= ColumnEncoder::decode(columnInfo.name);
+								resultCol.name	= strdup(columnInfo.name);
 		Column				&	column			= columns.get(columnName);
 		columnType				colType			= column.getColumnType(),
 								requestedType	= columnType(columnInfo.type);
@@ -458,7 +488,7 @@ extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 
 	int colNo = 0;
 	for (const Column &column: columns)
-		staticResult[colNo++] = strdup(column.name().c_str());
+		staticResult[colNo++] = strdup(ColumnEncoder::encode(column.name()).c_str());
 
 	*colMax = staticColMax;
 	return staticResult;
@@ -484,8 +514,8 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 	{
 		RBridgeColumnType			&	columnInfo		= columnsType[colNo];
 		RBridgeColumnDescription	&	resultCol		= resultCols[colNo];
-		std::string						columnName		= columnInfo.name;
-										resultCol.name	= strdup(Base64::encode("X", columnName, Base64::RVarEncoding).c_str());
+		std::string						columnName		= ColumnEncoder::decode(columnInfo.name);
+										resultCol.name	= strdup(columnInfo.name);
 		Column						&	column			= columns.get(columnName);
 		columnType						colType			= column.getColumnType(),
 										requestedType	= columnType(columnInfo.type);
@@ -550,14 +580,14 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 
 extern "C" int STDCALL rbridge_getColumnType(const char * columnName)
 {
-	std::string colName(rbridge_decodeColumnNamesFromBase64(columnName));
+	std::string colName(ColumnEncoder::decode(columnName));
 
 	return rbridge_getColumnTypeEngine(colName);
 }
 
 extern "C" bool STDCALL rbridge_setColumnAsScale(const char* columnName, double * scalarData, size_t length)
 {
-	std::string colName(rbridge_decodeColumnNamesFromBase64(columnName));
+	std::string colName(ColumnEncoder::decode(columnName));
 	std::vector<double> scalars(scalarData, scalarData + length);
 
 	return rbridge_setColumnDataAsScaleEngine(colName, scalars);
@@ -565,7 +595,7 @@ extern "C" bool STDCALL rbridge_setColumnAsScale(const char* columnName, double 
 
 extern "C" bool STDCALL rbridge_setColumnAsOrdinal(const char* columnName, int * ordinalData, size_t length, const char ** levels, size_t numLevels)
 {
-	std::string colName(rbridge_decodeColumnNamesFromBase64(columnName));
+	std::string colName(ColumnEncoder::decode(columnName));
 	std::vector<int> ordinals(ordinalData, ordinalData + length);
 
 	std::map<int, std::string> labels;
@@ -577,7 +607,7 @@ extern "C" bool STDCALL rbridge_setColumnAsOrdinal(const char* columnName, int *
 
 extern "C" bool STDCALL rbridge_setColumnAsNominal(const char* columnName, int * nominalData, size_t length, const char ** levels, size_t numLevels)
 {
-	std::string colName(rbridge_decodeColumnNamesFromBase64(columnName));
+	std::string colName(ColumnEncoder::decode(columnName));
 	std::vector<int> nominals(nominalData, nominalData + length);
 
 	std::map<int, std::string> labels;
@@ -589,7 +619,7 @@ extern "C" bool STDCALL rbridge_setColumnAsNominal(const char* columnName, int *
 
 extern "C" bool STDCALL rbridge_setColumnAsNominalText(const char* columnName, const char ** nominalData, size_t length)
 {
-	std::string colName(rbridge_decodeColumnNamesFromBase64(columnName));
+	std::string colName(ColumnEncoder::decode(columnName));
 	std::vector<std::string> nominals(nominalData, nominalData + length);
 
 	return rbridge_setColumnDataAsNominalTextEngine(colName, nominals);
@@ -689,108 +719,9 @@ std::string rbridge_check()
 	return jaspRCPP_check();
 }
 
-
-
-bool rbridge_columnUsedInFilter(const char * columnName)
+std::string	rbridge_encodeColumnNamesInScript(const std::string & filterCode)
 {
-	return filterColumnsUsed.count(std::string(columnName)) > 0;
-}
-
-
-std::string	rbridge_encodeColumnNamesToBase64(const std::string & filterCode)
-{
-	//Log::log() << " rbridge_encodeColumnNamesToBase64 starts with: "<<filterCode << std::endl;
-
-	std::string filterBase64 = filterCode;
-
-	rbridge_findColumnsUsedInDataSet();
-	filterColumnsUsed.clear();
-
-	static std::regex nonNameChar("[^\\.A-Za-z0-9]");
-
-	//for now we simply replace any found columnname by its Base64 variant if found
-	for(std::string col : columnNamesInDataSet)
-	{
-		std::string columnName64 = Base64::encode("X", col, Base64::RVarEncoding);
-		std::vector<int> foundColPositions = rbridge_getPositionsColumnNameMatches(filterBase64, col);
-		std::reverse(foundColPositions.begin(), foundColPositions.end());
-		for (int foundPos : foundColPositions) {
-			size_t foundPosEnd = foundPos + col.length();
-			//First check if it is a "free columnname" aka is there some space or a kind in front of it. We would not want to replace a part of another term (Imagine what happens when you use a columname such as "E" and a filter that includes the term TRUE, it does not end well..)
-			bool startIsFree	= foundPos == 0							|| std::regex_match(filterBase64.substr(foundPos - 1, 1),	nonNameChar);
-			bool endIsFree		= foundPosEnd == filterBase64.length()	|| (std::regex_match(filterBase64.substr(foundPosEnd, 1),	nonNameChar) && filterBase64[foundPosEnd] != '('); //Check for "(" as well because maybe someone has a columnname such as rep or if or something weird like that
-
-			if(startIsFree && endIsFree)
-			{
-				filterBase64.replace(foundPos, col.length(), columnName64);
-
-				if(filterColumnsUsed.count(col) == 0)
-					filterColumnsUsed.insert(col);
-			}
-		}
-	}
-
-	//Log::log() << " rbridge_encodeColumnNamesToBase64 results in: "<<filterBase64 << std::endl;
-
-	return filterBase64;
-}
-std::vector<int> rbridge_getPositionsColumnNameMatches(const std::string & filterBase64, const std::string & columnName)
-{
-	std::vector<int> positions;
-	bool inString = false;
-	char delim;
-
-	for (std::string::size_type pos = 0; pos < filterBase64.length(); ++pos)
-		if (!inString && filterBase64.substr(pos, columnName.length()) == columnName)
-			positions.push_back(int(pos));
-		else if (filterBase64[pos] == '"' || filterBase64[pos] == '\'')
-		{
-			if (inString && filterBase64[pos] == delim)
-			{
-				inString = false;
-			}
-			else if (!inString)
-			{
-				delim = filterBase64[pos];
-				inString = true;
-			}
-		}
-	
-	return positions;
-}
-
-
-std::string	rbridge_decodeColumnNamesFromBase64(const std::string & messageBase64)
-{
-	std::string messageNormal = messageBase64;
-
-	rbridge_findColumnsUsedInDataSet();
-
-	//for now we simply replace any found columnname in its Base64 variant by its normal version
-	size_t foundPos = 0;
-	for(std::string columnName : columnNamesInDataSet)
-	{
-		std::string col64 = Base64::encode("X", columnName, Base64::RVarEncoding);
-
-		while((foundPos = messageNormal.find(col64, 0)) != std::string::npos)
-			messageNormal.replace(foundPos, col64.length(), columnName);
-
-	}
-
-	return messageNormal;
-}
-
-void rbridge_findColumnsUsedInDataSet()
-{
-	rbridge_dataSet		= rbridge_dataSetSource();
-	Columns &columns	= rbridge_dataSet->columns();
-
-	columnNamesInDataSet.clear();
-
-	for(Column & col : columns)
-		columnNamesInDataSet.push_back(col.name());
-
-	std::sort(columnNamesInDataSet.begin(), columnNamesInDataSet.end(), [](std::string & a, std::string & b) { return a.size() > b.size(); }); //from longer to shorter length columnNames to avoid problems with columnanems such as "Height Ratio" and "Height"
+	return ColumnEncoder::encodeRScript(filterCode, &filterColumnsUsed);
 }
 
 std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std::string & generatedFilterCode)
@@ -808,7 +739,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 	static std::string errorMsg;
 
 	std::string	concatenated = generatedFilterCode + "\n" + filterCode,
-				filter64	 = "local({" + rbridge_encodeColumnNamesToBase64(concatenated) + "})";
+				filter64	 = "local({" + rbridge_encodeColumnNamesInScript(concatenated) + "})";
 
 	R_FunctionWhiteList::scriptIsSafe(filter64); //can throw filterExceptions
 
@@ -825,7 +756,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	if(arrayLength < 0)
 	{
-		errorMsg = rbridge_decodeColumnNamesFromBase64(jaspRCPP_getLastErrorMsg());
+		errorMsg = ColumnEncoder::decodeAll(jaspRCPP_getLastErrorMsg());
 		throw filterException(errorMsg.c_str());
 	}
 
@@ -863,7 +794,7 @@ std::string rbridge_evalRCodeWhiteListed(const std::string & rCode)
 
 	jaspRCPP_resetErrorMsg();
 
-	std::string rCode64("local({" +rbridge_encodeColumnNamesToBase64(rCode) + "})");
+	std::string rCode64("local({" +rbridge_encodeColumnNamesInScript(rCode) + "})");
 
 	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
 	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}
@@ -877,7 +808,7 @@ std::string rbridge_evalRCodeWhiteListed(const std::string & rCode)
 	std::string result = jaspRCPP_evalRCode(rCode64.c_str());
 	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
-	jaspRCPP_setErrorMsg(rbridge_decodeColumnNamesFromBase64(jaspRCPP_getLastErrorMsg()).c_str());
+	jaspRCPP_setErrorMsg(ColumnEncoder::decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
 
 	return result;
 }

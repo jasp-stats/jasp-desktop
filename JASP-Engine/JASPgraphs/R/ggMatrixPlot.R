@@ -261,6 +261,7 @@ ggMatrixPlot <- function(plotList = NULL, nr = NULL, nc = NULL,
                          labelPos       = matrix(.5, 4, 2),
                          scaleXYlabels  = c(.9,.9),
                          debug          = FALSE) {
+
   UseMethod("ggMatrixPlot", plotList)
 }
 

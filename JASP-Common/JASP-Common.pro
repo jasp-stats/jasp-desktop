@@ -26,10 +26,8 @@ INCLUDEPATH += $$PWD/
 
 SOURCES += \
 	appinfo.cpp \
-	base64.cpp \
-	base64/cdecode.cpp \
-	base64/cencode.cpp \
 	column.cpp \
+  columnencoder.cpp \
 	columns.cpp \
 	datablock.cpp \
 	dataset.cpp \
@@ -51,9 +49,6 @@ SOURCES += \
 
 HEADERS += \
 	appinfo.h \
-	base64.h \
-	base64/cdecode.h \
-	base64/cencode.h \
 	boost/nowide/args.hpp \
 	boost/nowide/cenv.hpp \
 	boost/nowide/config.hpp \
@@ -67,6 +62,7 @@ HEADERS += \
 	boost/nowide/system.hpp \
 	boost/nowide/windows.hpp \
 	column.h \
+  columnencoder.h \
 	columns.h \
 	common.h \
 	datablock.h \

@@ -129,6 +129,7 @@ DISTFILES += \
     JASP/R/classicalAudit.R \
     JASP/R/classicalmetaanalysis.R \
     JASP/R/classicalPlanning.R \
+  JASP/R/columnEncoding.R \
     JASP/R/common.R \
     JASP/R/commonAnovaBayesian.R \
     JASP/R/commonAudit.R \

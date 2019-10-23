@@ -27,7 +27,6 @@
 
 #include <string>
 #include <map>
-#include <unordered_set>
 #include <set>
 #include <regex>
 #include <boost/function.hpp>
@@ -60,6 +59,10 @@ extern "C" {
 	bool						STDCALL rbridge_setColumnAsNominal		(const char* columnName, int *			nominalData,	size_t length,	const char ** levels, size_t numLevels);
 	bool						STDCALL rbridge_setColumnAsNominalText	(const char* columnName, const char **	nominalData,	size_t length);
 	int							STDCALL rbridge_dataSetRowCount();
+	const char *				STDCALL rbridge_encodeColumnName(		const char * in);
+	const char *				STDCALL rbridge_decodeColumnName(		const char * in);
+	const char *				STDCALL rbridge_encodeAllColumnNames(	const char * in);
+	const char *				STDCALL rbridge_decodeAllColumnNames(	const char * in);
 }
 
 	typedef boost::function<std::string (const std::string &, int progress)> RCallback;
@@ -88,11 +91,7 @@ extern "C" {
 	void freeLabels(char** labels, size_t nbLabels);
 
 	std::vector<bool>	rbridge_applyFilter(					const std::string & filterCode, const std::string & generatedFilterCode);
-	std::string			rbridge_encodeColumnNamesToBase64(		const std::string & filterCode);
-	std::string			rbridge_decodeColumnNamesFromBase64(	const std::string & messageBase64);
-	std::vector<int>	rbridge_getPositionsColumnNameMatches(	const std::string & filterBase64, const std::string & columnName);
+	std::string			rbridge_encodeColumnNamesInScript(		const std::string & filterCode);
 	std::string			rbridge_evalRCodeWhiteListed(			const std::string & rCode);
-	bool				rbridge_columnUsedInFilter(				const char * columnName);
-	void				rbridge_findColumnsUsedInDataSet();
 
 #endif // RBRIDGE_H
