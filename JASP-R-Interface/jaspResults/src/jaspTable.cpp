@@ -1004,7 +1004,21 @@ Json::Value	footnotes::convertToJSONOrdered(std::map<std::string, size_t> rowNam
 				}
 
 				note["myOrder"] = myOrder;
-				notesToOrder.push_back(note);
+
+				bool alreadyThere = false;
+
+				for(Json::Value & previousNotes : notesToOrder)
+					if(	previousNotes["text"].asString()	== note["text"].asString()	&&
+						previousNotes["symbol"].asString()	== note["symbol"].asString() )
+					{
+						alreadyThere = true;
+
+						if(previousNotes["myOrder"].asInt() > myOrder)
+							previousNotes["myOrder"] = myOrder;
+					}
+
+				if(!alreadyThere)
+					notesToOrder.push_back(note);
 			}
 
 	std::sort(notesToOrder.begin(), notesToOrder.end(), [](Json::Value a, Json::Value b) { return a["myOrder"].asInt() < b["myOrder"].asInt(); });
@@ -1113,6 +1127,7 @@ Json::Value jaspTable::dataEntry(std::string & errorMessage) const
 	//We do this so that any unset symbols will be filled in by the javascriptside of things (symbolCounter stuff)
 	Json::Value footnotesSymbols	= _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
 	int symbolCounter				= 0;
+
 
 	for(int i=0; i<footnotesSymbols.size(); i++)
 		if(footnotesSymbols[i]["symbol"].asString() == "")

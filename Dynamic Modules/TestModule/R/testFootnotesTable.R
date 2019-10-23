@@ -18,8 +18,9 @@ createFootnotesTable <- function(numFootnotes=3, rowNames=c("b", "c", "c"), colN
   {
     msgNum <- msgNum + 1
 
-    if(options$checkbox_0 == notUnique)  tableFootnotes$addFootnote(message = paste0("msg", as.character(msgNum)), rowNames = rowNames[[msgNum]], colNames = colNames[[msgNum]])
-    else                                 tableFootnotes$addFootnote(message = "Identical Twins!",                  rowNames = rowNames[[msgNum]], colNames = colNames[[msgNum]])
+    if(options$checkbox_0 == notUnique)       tableFootnotes$addFootnote(message = paste0("msg", as.character(msgNum)), rowNames = rowNames[[msgNum]], colNames = colNames[[msgNum]])
+    else if(options$checkbox_1 != notUnique)  tableFootnotes$addFootnote(message = "Identical Twins!",                  rowNames = rowNames[[msgNum]], colNames = colNames[[msgNum]])
+    else                                      tableFootnotes$addFootnote(message = "Identical Symbols!",                  rowNames = rowNames[[msgNum]], colNames = colNames[[msgNum]], symbol="?")
   }
 
   return(tableFootnotes);
