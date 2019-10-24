@@ -200,8 +200,13 @@ plotEditingOptions.ggplot_built <- function(ggbuild, asJSON = FALSE) {
     )
   })
   
-  if (inherits(e, "try-error"))
-    return(toJSON(list(error = paste("computing plotEditingOptions gave an error:", .extractErrorMessage(e)))))
+  if (inherits(e, "try-error")) {
+    out <- list(error = paste("computing plotEditingOptions gave an error:", .extractErrorMessage(e)))
+    if (asJSON)
+      return(toJSON(out))
+    else
+      return(out)
+  }
 
   if (asJSON) {
     out <- try(toJSON(out))
@@ -210,6 +215,15 @@ plotEditingOptions.ggplot_built <- function(ggbuild, asJSON = FALSE) {
   }
 
   return(out)
+}
+
+#' @export
+plotEditingOptions.default <- function(graph, asJSON = FALSE) {
+  out <- list(error = paste("cannot create plotEditingOptions for object of class:", paste(class(graph), collapse = ",")))
+  if (asJSON)
+    return(toJSON(out))
+  else
+    return(out)
 }
 
 optionsDiff <- function(lst1, lst2) {

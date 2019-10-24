@@ -1,53 +1,47 @@
 #Some functions that act as a bridge between R and JASP. If JASP isn't running then all columnNames are expected to not be encoded
 
-encodeColumnName <- function(columnNames)
-{
-  if(is.null(columnNames) | !exists('.encodeColumnName'))
-    return(columnNames);
+# four convenience functions to encode/ decode jasp column names. The key difference is that
+# the first two look for exact matches whereas the bottom two do pattern matching.
+encodeColumnName     <- function(x, fun = get0(".encodeColumnName"), ...)     return(.applyEnDeCoder(x, fun, ...))
+decodeColumnName     <- function(x, fun = get0(".decodeColumnName"), ...)     return(.applyEnDeCoder(x, fun, ...))
+encodeAllColumnNames <- function(x, fun = get0(".encodeAllColumnNames"), ...) return(.applyEnDeCoder(x, fun, ...))
+decodeAllColumnNames <- function(x, fun = get0(".decodeAllColumnNames"), ...) return(.applyEnDeCoder(x, fun, ...))
 
-  encoded <- c()
-  for(columnName in columnNames)
-    if(is.character(columnName))  encoded[length(encoded)+1] <- .encodeColumnName(columnName)
-    else                          encoded[length(encoded)+1] <- columnName
-
-  return(encoded)
+# internal function that applies a decoding or encoding function (or actually any function) to R objects
+# as long as they are character
+.applyEnDeCoder <- function(x, fun, ...) {
+  # get0 returns NULL if not found
+  if (is.null(fun) || !is.function(fun))
+    return(x)
+  UseMethod(".applyEnDeCoder", x)
 }
 
-decodeColumnName <- function(columnName)
-{
-  if(is.null(columnNames) | !exists('.decodeColumnName'))
-    return(columnNames);
+# default does nothing
+.applyEnDeCoder.default <- function(x, fun) return(x)
 
-  decoded <- c()
-  for(columnName in columnNames)
-    if(is.character(columnName))  decoded[length(decoded)+1] <- .decodeColumnName(columnName)
-    else                          decoded[length(decoded)+1] <- columnName
-
-  return(decoded)
+.applyEnDeCoder.character <- function(x, fun) {
+  for (i in seq_along(x))
+    x[i] <- fun(x[i])
+  return(x)
 }
 
-encodeAllColummnNames <- function(texts)
-{
-  if(is.null(texts) | !exists('.encodeAllColummnNames'))
-    return(texts);
+.applyEnDeCoder.list <- function(x, fun, recursive = FALSE) {
+  # this function calls the .character method directly to avoid dispatching to .list and starting recursion.
+  if (recursive) {
+    return(rapply(x, f = .applyEnDeCoder.character, classes = "character", how = "replace"))
+  } else {
+    for (i in seq_along(x))
+      if (is.character(x[[i]]))
+        x[[i]] <- fun(x[[i]])
 
-  encoded <- c()
-  for(text in texts)
-    if(is.character(text))  encoded[length(encoded)+1] <- .encodeAllColummnNames(text)
-    else                    encoded[length(encoded)+1] <- text
-
-  return(encoded)
+    return(x)
+  }
 }
 
-decodeAllColummnNames <- function(texts)
-{
-  if(is.null(texts) | !exists('.decodeAllColummnNames'))
-    return(texts);
-
-  decoded <- c()
-  for(text in texts)
-  if(is.character(text))  decoded[length(decoded)+1] <- .decodeAllColummnNames(text)
-  else                    decoded[length(decoded)+1] <- text
-
-  return(decoded)
+.applyEnDeCoder.data.frame <- function(x, fun) {
+  dnames <- dimnames(x)
+  for (i in seq_along(dimnames(x)))
+    .applyEnDeCoder.character(dnames[[i]])
+  dimnames(x) <- dnames
+  return(x)
 }
