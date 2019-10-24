@@ -262,24 +262,22 @@
   message <- hypothesisList$message
   if (!is.null(message)) ttestTable$addFootnote(message)
   
+  ttestTable$addColumnInfo(name = "t"      , title = "t"       , type = "number")
+  
   if(title == "Bayesian Independent Samples T-Test"){
     
-    ttestTable$addColumnInfo(name = "t"      , title = "t"       , type = "number")
     ttestTable$addColumnInfo(name = "n1"     , title = "n\u2081" , type = "integer")
     ttestTable$addColumnInfo(name = "n2"     , title = "n\u2082" , type = "integer")
-    ttestTable$addColumnInfo(name = "BF"     , title = bfTitle   , type = "number")
-    ttestTable$addColumnInfo(name = "error"  , title = "error %" , type = "number")
-    ttestTable$addColumnInfo(name = "pValue" , title = "p"       , type = "number")
     
   } else {
     
-    ttestTable$addColumnInfo(name = "t"      , title = "t"       , type = "number")
     ttestTable$addColumnInfo(name = "n1"     , title = "n"       , type = "integer")
-    ttestTable$addColumnInfo(name = "BF"     , title = bfTitle   , type = "number")
-    ttestTable$addColumnInfo(name = "error"  , title = "error %" , type = "number")
-    ttestTable$addColumnInfo(name = "pValue" , title = "p"       , type = "number")
     
   }
+  
+  ttestTable$addColumnInfo(name = "BF"     , title = bfTitle   , type = "number")
+  ttestTable$addColumnInfo(name = "error"  , title = "error %" , type = "number")
+  ttestTable$addColumnInfo(name = "pValue" , title = "p"       , type = "number")
   
   
   return(ttestTable)
@@ -344,8 +342,6 @@
     BF       = BFlist[[options$bayesFactorType]],
     BFH1H0   = BFlist[["BF10"]]
   )
-  if(analysis == "independentSamples")
-    ttestPriorPosteriorPlot$n2 <- n2
   
   ttestRobustnessPlot <- list(
     t                     = t,
@@ -357,8 +353,13 @@
     rscale                = options$priorWidth,
     oneSided              = hypothesisList$oneSided
   )
-  if(analysis == "independentSamples")
-    ttestRobustnessPlot$n2 <- n2
+  
+  if(analysis == "independentSamples"){
+    
+    ttestPriorPosteriorPlot$n2 <- n2
+    ttestRobustnessPlot$n2     <- n2
+    
+  }
   
   # This will be the object that we fill with results
   results        <- list(
@@ -568,18 +569,11 @@
     oneSided     <- "right"
     nullInterval <- c(0, Inf)
     
-    if(analysis == "independentSamples"){
-      
-      message      <- "For all tests, the alternative hypothesis specifies that group 1 is greater than group 2."
-      
-    } else if(analysis == "oneSample") {
-      
-      message      <- "For all tests, the alternative hypothesis specifies that the mean is greater than 0."
-      
-    } else if(analysis == "pairedSamples") {
-      
-      message      <- "For all tests, the alternative hypothesis specifies that measure 1 is greater than measure 2."
-    }
+    message <- switch (analysis,
+                       "independentSamples" = "For all tests, the alternative hypothesis specifies that group 1 is greater than group 2.",
+                       "oneSample"          = "For all tests, the alternative hypothesis specifies that the mean is greater than 0.",
+                       "pairedSamples"      = "For all tests, the alternative hypothesis specifies that measure 1 is greater than measure 2."
+    )
     
   } else if (hypothesis_option == "groupTwoGreater" || hypothesis_option == "lessThanTestValue") {
     
@@ -587,35 +581,20 @@
     oneSided     <- "left"
     nullInterval <- c(-Inf, 0)
     
-    if(analysis == "independentSamples"){
-      
-      message      <- "For all tests, the alternative hypothesis specifies that group 1 is lesser than group 2."
-      
-    } else if(analysis == "oneSample") {
-      
-      message      <- "For all tests, the alternative hypothesis specifies that the mean is lesser than 0."
-      
-    } else if(analysis == "pairedSamples") {
-      
-      message      <- "For all tests, the alternative hypothesis specifies that measure 1 is lesser than measure 2."
-    }
+    message <- switch (analysis,
+                          "independentSamples" = "For all tests, the alternative hypothesis specifies that group 1 is less than group 2.",
+                          "oneSample"          = "For all tests, the alternative hypothesis specifies that the mean is less than 0.",
+                          "pairedSamples"      = "For all tests, the alternative hypothesis specifies that measure 1 is less than measure 2."
+    )
     
   }
   
   # Set Table Title
-  if(analysis == "independentSamples"){
-    
-    tableTitle   <- "Bayesian Independent Samples T-Test"
-    
-  } else if(analysis == "oneSample") {
-    
-    tableTitle   <- "Bayesian One Sample T-Test"
-    
-  } else if(analysis == "pairedSamples") {
-    
-    tableTitle   <- "Bayesian Paired Samples T-Test"
-    
-  }
+  tableTitle <- switch (analysis,
+    "independentSamples" = "Bayesian Independent Samples T-Test",
+    "oneSample"          = "Bayesian One Sample T-Test",
+    "pairedSamples"      = "Bayesian Paired Samples T-Test"
+  )
   
   bfTitle      <- .getBayesfactorTitle.summarystats(bayesFactorType, hypothesis)
   
