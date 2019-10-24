@@ -795,7 +795,9 @@ std::string jaspTable::dataToString(std::string prefix) const
 		else				rectangularDataWithNamesToString(out, prefix, transposeRectangularVector(vierkant),	rowNames, colNames,	{},						getOvertitlesMap());
 	}
 
-	Json::Value footnotes = _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
+	Json::Value footnotes, footnotesMerged;
+	_footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices(), footnotes, footnotesMerged);
+
 	if(footnotes.size() > 0)
 	{
 		out << "\n" << prefix << "footnotes:   \n";
@@ -832,7 +834,9 @@ std::string jaspTable::toHtml()
 		else				rectangularDataWithNamesToHtml(out, transposeRectangularVector(vierkant),	rowNames, colNames,	{},						getOvertitlesMap());
 	}
 
-	Json::Value footnotes = _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
+	Json::Value footnotes, footnotesMerged;
+	_footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices(), footnotes, footnotesMerged);
+
 	if(footnotes.size() > 0)
 	{
 		out << "<h4>footnotes</h4>" "\n" "<ul>";
@@ -944,8 +948,11 @@ Json::Value footnotes::convertToJSON() const
 	return notes;
 }
 
-Json::Value	footnotes::convertToJSONOrdered(std::map<std::string, size_t> rowNames, std::map<std::string, size_t> colNames) const
+void footnotes::convertToJSONOrdered(std::map<std::string, size_t> rowNames, std::map<std::string, size_t> colNames, Json::Value & fullList, Json::Value & mergedList) const
 {
+	fullList	= Json::nullValue;
+	mergedList	= Json::nullValue;
+
 	std::vector<Json::Value> notesToOrder;
 
 	for (const auto & textRest : _data)
@@ -1005,25 +1012,64 @@ Json::Value	footnotes::convertToJSONOrdered(std::map<std::string, size_t> rowNam
 
 				note["myOrder"] = myOrder;
 
-				bool alreadyThere = false;
-
-				for(Json::Value & previousNotes : notesToOrder)
-					if(	previousNotes["text"].asString()	== note["text"].asString()	&&
-						previousNotes["symbol"].asString()	== note["symbol"].asString() )
-					{
-						alreadyThere = true;
-
-						if(previousNotes["myOrder"].asInt() > myOrder)
-							previousNotes["myOrder"] = myOrder;
-					}
-
-				if(!alreadyThere)
-					notesToOrder.push_back(note);
+				notesToOrder.push_back(note);
 			}
 
 	std::sort(notesToOrder.begin(), notesToOrder.end(), [](Json::Value a, Json::Value b) { return a["myOrder"].asInt() < b["myOrder"].asInt(); });
 
-	return jaspJson::VectorJson_to_ArrayJson(notesToOrder);
+	std::map<std::string, std::vector<size_t>>	duplicates;
+	std::map<std::string, int>					assignedSymbolCounters; //We do this so that any unset symbols will be filled in by the javascriptside of things (symbolCounter stuff)
+
+	int symbolCounter = 0;
+
+	for(size_t i=0; i<notesToOrder.size(); i++)
+	{
+		std::string symbolText = notesToOrder[i]["text"].asString() + " >(*^-)<" + notesToOrder[i]["symbol"].asString();
+
+		notesToOrder[i]["symbolText"] = symbolText;
+
+		duplicates[symbolText].push_back(i);
+
+		if(notesToOrder[i]["symbol"].asString() == "" && assignedSymbolCounters.count(symbolText) == 0)
+			assignedSymbolCounters[symbolText] = symbolCounter++;
+	}
+
+	for(auto & symTxtSymCount : assignedSymbolCounters)
+		for(size_t index : duplicates[symTxtSymCount.first])
+			notesToOrder[index]["symbol"] = symTxtSymCount.second;
+
+	std::vector<Json::Value> notesToOrderMerged(notesToOrder);
+
+	std::vector<size_t> removeThese;
+
+	for(auto & symTxtIndices : duplicates)
+	{
+		bool first = true;
+
+		for(size_t i : symTxtIndices.second)
+		{
+			if(!first)
+				removeThese.push_back(i);
+			first = false;
+		}
+	}
+
+	std::reverse(removeThese.begin(), removeThese.end());
+	for(size_t & i : removeThese)
+		notesToOrderMerged.erase(notesToOrderMerged.begin() + i);
+
+	for(size_t mergedIndex=0; mergedIndex<notesToOrderMerged.size(); mergedIndex++)
+		for(size_t duplicateIndex : duplicates[notesToOrderMerged[mergedIndex]["symbolText"].asString()])
+			notesToOrder[duplicateIndex]["footnoteIndex"] = int(mergedIndex);
+
+	for(Json::Value & note : notesToOrder)
+		note.removeMember("symbolText");
+
+	for(Json::Value & note : notesToOrderMerged)
+		note.removeMember("symbolText");
+
+	fullList	= jaspJson::VectorJson_to_ArrayJson(notesToOrder);
+	mergedList	= jaspJson::VectorJson_to_ArrayJson(notesToOrderMerged);
 }
 
 void footnotes::convertFromJSON_SetFields(Json::Value footnotes)
@@ -1111,59 +1157,48 @@ void jaspTable::combineCells(Rcpp::map_named_args & named_args)
 */
 Json::Value jaspTable::dataEntry(std::string & errorMessage) const
 {
+	Json::Value	tmpFootnotesFull,		//This should contain the full list of footnotes, aka per table/col/row/cell and in order of occurence left to right, top to bottom. This should also contain an index of the footnote in _tmpFootnotesMerged
+				tmpFootnotesMerged;	//This should contain the same list, but now without duplication, just for being shown underneath the table.
+
+	_footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices(), tmpFootnotesFull, tmpFootnotesMerged); // convert footnotes into something usable...
+
 	Json::Value dataJson(jaspObject::dataEntry(errorMessage));
 
 	dataJson["title"]				= _title;
 
 	dataJson["name"]				= getUniqueNestedName();
-	dataJson["schema"]				= schemaJson();
+	dataJson["schema"]				= schemaJson(tmpFootnotesFull);
 
-	dataJson["data"]				= rowsJson();
+	dataJson["data"]				= rowsJson(tmpFootnotesFull);
 	dataJson["casesAcrossColumns"]	= _transposeTable;
 	dataJson["overTitle"]			= _transposeWithOvertitle;
 
 	dataJson["status"]				= _error ? "error" : _status;
-
-	//We do this so that any unset symbols will be filled in by the javascriptside of things (symbolCounter stuff)
-	Json::Value footnotesSymbols	= _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
-	int symbolCounter				= 0;
-
-
-	for(int i=0; i<footnotesSymbols.size(); i++)
-		if(footnotesSymbols[i]["symbol"].asString() == "")
-			footnotesSymbols[i]["symbol"] = symbolCounter++;
-
-	dataJson["footnotes"]			= footnotesSymbols;
+	dataJson["footnotes"]			= tmpFootnotesMerged;
 
 	return dataJson;
 }
 
-Json::Value	jaspTable::schemaJson() const
+Json::Value	jaspTable::schemaJson(Json::Value footnotes) const
 {
     Json::Value schema(Json::objectValue);
 	Json::Value fields(Json::arrayValue);
 
 	std::map<std::string, std::vector<int>> footnotesPerCol;
-	Json::Value footnotes = _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
-	for(Json::Value::UInt i=0; i<footnotes.size(); i++)
-	{
-		const Json::Value & note = footnotes[i];
 
+	for(const Json::Value & note : footnotes)
 		if(!note["cols"].isNull())
-		{
 			if(note["rows"].isNull())
 				for(const Json::Value & colName : note["cols"])
-					footnotesPerCol[colName.asString()].push_back(int(i));
-		}
-	}
+					footnotesPerCol[colName.asString()].push_back(note["footnoteIndex"].asInt());
 
 	for(int col=0; col< std::max(_colNames.rowCount(), _expectedColumnCount); col++)
 	{
 		Json::Value field(Json::objectValue);
 
-		std::string colName		= getColName(col);
-		std::string colTitle	= _colTitles.containsField(colName)  ? _colTitles[colName]  : (_colTitles[col]  != "" ? _colTitles[col]  : colName);
-		std::string colFormat	= _colFormats.containsField(colName) ? _colFormats[colName] : (_colFormats[col] != "" ? _colFormats[col] : "");
+		std::string colName		= getColName(col),
+					colTitle	= _colTitles.containsField(colName)  ? _colTitles[colName]  : (_colTitles[col]  != "" ? _colTitles[col]  : colName),
+					colFormat	= _colFormats.containsField(colName) ? _colFormats[colName] : (_colFormats[col] != "" ? _colFormats[col] : "");
 
 		field["name"]	= colName;
 		field["title"]	= colTitle;
@@ -1203,29 +1238,23 @@ bool jaspTable::isSpecialColumn(size_t col) const
 }
 
 
-Json::Value	jaspTable::rowsJson() const
+Json::Value	jaspTable::rowsJson(Json::Value footnotes) const
 {
 	Json::Value rows(Json::arrayValue);
 
 	std::map<std::string, std::map<std::string, std::vector<int>>> footnotesPerRowCol;
-	Json::Value footnotes = _footnotes.convertToJSONOrdered(mapRowNamesToIndices(), mapColNamesToIndices());
 
-	for(Json::Value::UInt i=0; i<footnotes.size(); i++)
-	{
-		const Json::Value & note = footnotes[i];
+	for(const Json::Value & note : footnotes)
 		if (!note["rows"].isNull())
-		{
 			for (const Json::Value & rowName : note["rows"])
 			{
 				if (!note["cols"].isNull())
 					for (const Json::Value & colName : note["cols"])
-						footnotesPerRowCol[rowName.asString()][colName.asString()].push_back(int(i));
+						footnotesPerRowCol[rowName.asString()][colName.asString()].push_back(note["footnoteIndex"].asInt());
 				else
 					for (size_t col=0; col<_data.size(); col++)
-						footnotesPerRowCol[rowName.asString()][getColName(col)].push_back(int(i));
+						footnotesPerRowCol[rowName.asString()][getColName(col)].push_back(note["footnoteIndex"].asInt());
 			}
-		}
-	}
 
 	size_t	maxRow, maxCol;
 	calculateMaxColRow(maxCol, maxRow);

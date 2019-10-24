@@ -66,7 +66,7 @@ struct footnotes
 	void		insert(std::string text, std::string symbol, std::vector<Json::Value> colNames, std::vector<Json::Value> rowNames);
 	void		convertFromJSON_SetFields(Json::Value footnotes);
 	Json::Value	convertToJSON() const;
-	Json::Value	convertToJSONOrdered(std::map<std::string, size_t> rowNames, std::map<std::string, size_t> colNames) const;
+	void		convertToJSONOrdered(std::map<std::string, size_t> rowNames, std::map<std::string, size_t> colNames, Json::Value & fullList, Json::Value & mergedList) const;
 
 	private:
 		std::map<std::string, std::map<std::string, std::set<tableFields, tableFields::comparer> >> _data; //text -> symbol -> rows+cols
@@ -171,8 +171,8 @@ private:
 	int getDesiredColumnIndexFromNameForColumnAdding(std::string colName);
 	int getDesiredColumnIndexFromNameForRowAdding(std::string colName, int previouslyAddedUnnamed);
 
-	Json::Value	schemaJson()								const;
-	Json::Value	rowsJson()									const;
+	Json::Value	schemaJson(Json::Value tmpFootnotesFull)	const;
+	Json::Value	rowsJson(Json::Value tmpFootnotesFull)		const;
 	std::string deriveColumnType(int col)					const;
 
 	std::map<std::string, size_t> mapColNamesToIndices()	const;
