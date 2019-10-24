@@ -189,6 +189,192 @@
   return(result)
 }
 
+# Execute Bayesian T-Test
+.summaryStatsTTestMainFunction <- function(jaspResults, options, analysis) {
+  
+  # This function is the main workhorse, and also makes the table
+  if (is.null(jaspResults[["ttestContainer"]])) {
+    jaspResults[["ttestContainer"]] <- createJaspContainer()
+    # add dependencies for main table (i.e., when does it have to recompute values for the main table)
+    jaspResults[["ttestContainer"]]$dependOn(c("tStatistic"                   , "n1Size", "n2Size"      , "hypothesis",     # standard entries
+                                               "defaultStandardizedEffectSize", "informativeStandardizedEffectSize"   ,     # informative or default
+                                               "priorWidth"                   , "effectSizeStandardized",                   # default prior
+                                               "informativeCauchyLocation"    , "informativeCauchyScale",                   # informed cauchy priors
+                                               "informativeNormalMean"        , "informativeNormalStd"  ,                   # informed normal priors
+                                               "informativeTLocation"         , "informativeTScale"     , "informativeTDf"  # informed t-distribution
+    ))
+  }
+  
+  # If table already exists in the state, return it
+  if (!is.null(jaspResults[["ttestContainer"]][["ttestTable"]]))
+    return(jaspResults[["ttestContainer"]][["stateSummaryStatsTTestResults"]]$object)
+  
+  # Otherwise: create the empty table before executing the analysis
+  hypothesisList <- .hypothesisType.summarystats.ttest(options$hypothesis, options$bayesFactorType, analysis)
+  
+  jaspResults[["ttestContainer"]][["ttestTable"]] <- .summaryStatsTTestTableMain(options, hypothesisList)
+  
+  if (!is.null(jaspResults[["ttestContainer"]][["stateSummaryStatsTTestResults"]])) {
+    results <- jaspResults[["ttestContainer"]][["stateSummaryStatsTTestResults"]]$object
+    # only change possible: BF type
+    results[["ttestTableData"]][["BF"]] <- results[["BFlist"]][[options$bayesFactorType]]
+  } else {
+    results <- .summaryStatsTTestComputeResults(hypothesisList, options, analysis)
+    # Save results to state
+    jaspResults[["ttestContainer"]][["stateSummaryStatsTTestResults"]] <- createJaspState(results)
+    
+    if (!is.null(results[["errorMessageTable"]]))
+      jaspResults[["ttestContainer"]][["ttestTable"]]$setError(results[["errorMessageTable"]])
+  }
+  
+  #  fill table if ready
+  if (results[["ready"]])
+    jaspResults[["ttestContainer"]][["ttestTable"]]$setData(results[["ttestTableData"]])
+  # if necessary, set footnote message for % error estimate
+  if (!is.null(results[["ttestTableMessage"]])) jaspResults[["ttestContainer"]][["ttestTable"]]$addFootnote(results[["ttestTableMessage"]])
+  
+  return(results)
+}
+
+# Create main table
+.summaryStatsTTestTableMain <- function(options, hypothesisList){
+  
+  # create table and state dependencies
+  title      <- hypothesisList$tableTitle
+  ttestTable <- createJaspTable(title)
+  ttestTable$dependOn("bayesFactorType")
+  ttestTable$position <- 1
+  
+  # set title for different Bayes factor types
+  bfTitle        <- hypothesisList$bfTitle
+  
+  # set table citations and footnote message for different hypothesis types
+  if (options$effectSizeStandardized == "default") {
+    
+    ttestTable$addCitation(.summaryStatsCitations[c("MoreyRounder2015", "RounderEtAl2009")])
+    
+  } else if (options$effectSizeStandardized == "informative") {
+    
+    ttestTable$addCitation(.summaryStatsCitations[c("GronauEtAl2017")])
+    
+  }
+  
+  message <- hypothesisList$message
+  if (!is.null(message)) ttestTable$addFootnote(message)
+  
+  if(title == "Bayesian Independent Samples T-Test"){
+    
+    ttestTable$addColumnInfo(name = "t"      , title = "t"       , type = "number")
+    ttestTable$addColumnInfo(name = "n1"     , title = "n\u2081" , type = "integer")
+    ttestTable$addColumnInfo(name = "n2"     , title = "n\u2082" , type = "integer")
+    ttestTable$addColumnInfo(name = "BF"     , title = bfTitle   , type = "number")
+    ttestTable$addColumnInfo(name = "error"  , title = "error %" , type = "number")
+    ttestTable$addColumnInfo(name = "pValue" , title = "p"       , type = "number")
+    
+  } else {
+    
+    ttestTable$addColumnInfo(name = "t"      , title = "t"       , type = "number")
+    ttestTable$addColumnInfo(name = "n1"     , title = "n"       , type = "integer")
+    ttestTable$addColumnInfo(name = "BF"     , title = bfTitle   , type = "number")
+    ttestTable$addColumnInfo(name = "error"  , title = "error %" , type = "number")
+    ttestTable$addColumnInfo(name = "pValue" , title = "p"       , type = "number")
+    
+  }
+  
+  
+  return(ttestTable)
+  
+}
+
+# Compute Results 
+.summaryStatsTTestComputeResults <- function(hypothesisList, options, analysis) {
+  
+  # Extract important information from options list
+  hypothesis <- hypothesisList$hypothesis
+  t          <- options$tStatistic
+  n1         <- options$n1Size
+  
+  # Checks before executing the analysis
+  # 1. check user input
+  if(analysis == "oneSample" || analysis == "pairedSamples"){
+    
+    ready <- !(n1 == 0)
+    
+  } else if(analysis == "independentSamples"){
+    
+    n2    <- options$n2Size
+    ready <- !(n1 == 0 || n2 == 0)
+    
+  }
+  
+  if (!ready)
+    return(list(ready = ready))
+  
+  # Conduct frequentist and Bayesian independent samples t-test
+  ttestResults <- .generalSummaryTtestBF(options = options)
+  BF10         <- ttestResults$bf
+  
+  BFlist       <- list(BF10    = BF10,
+                       BF01    = 1/BF10,
+                       LogBF10 = log(BF10))
+  
+  # Add rows to the main table
+  ttestTableData <- list(t = t, n1 = n1)
+  if(analysis == "independentSamples")
+    ttestTableData$n2 <- n2
+  ttestTableData$BF     <- BFlist[[options$bayesFactorType]]
+  ttestTableData$error  <- ttestResults$properror
+  ttestTableData$pValue <- ttestResults$pValue[[hypothesis]]
+  
+  # check whether % error could be computed
+  if(is.na(ttestTableData$error) || is.null(ttestTableData$error)){
+    ttestTableData$error <- NaN
+    ttestTableMessage    <- "Proportional error estimate could not be computed."
+  } else {
+    ttestTableMessage  <- NULL
+  }
+  
+  # Add information for plots
+  ttestPriorPosteriorPlot <- list(
+    t        = t,
+    n1       = n1,
+    n2       = NULL,
+    paired   = TRUE,
+    oneSided = hypothesisList$oneSided,
+    BF       = BFlist[[options$bayesFactorType]],
+    BFH1H0   = BFlist[["BF10"]]
+  )
+  if(analysis == "independentSamples")
+    ttestPriorPosteriorPlot$n2 <- n2
+  
+  ttestRobustnessPlot <- list(
+    t                     = t,
+    n1                    = n1,
+    n2                    = 0 ,
+    paired                = FALSE,
+    BF10user              = BFlist[["BF10"]],
+    nullInterval          = hypothesisList$nullInterval,
+    rscale                = options$priorWidth,
+    oneSided              = hypothesisList$oneSided
+  )
+  if(analysis == "independentSamples")
+    ttestRobustnessPlot$n2 <- n2
+  
+  # This will be the object that we fill with results
+  results        <- list(
+    hypothesisList          = hypothesisList,
+    ttestPriorPosteriorPlot = ttestPriorPosteriorPlot,
+    ttestRobustnessPlot     = ttestRobustnessPlot,
+    ttestTableData          = ttestTableData,
+    ttestTableMessage       = ttestTableMessage,
+    ready                   = ready,
+    BFlist                  = BFlist
+  )
+  
+  # Return results object
+  return(results)
+}
+
 # Prior & Posterior plot 
 .ttestBayesianPriorPosteriorPlot.summarystats <- function(jaspResults, summaryStatsTTestResults, options){
   
@@ -299,6 +485,10 @@
     BF10[i] <- BayesFactor::ttest.tstat(t = t, n1 = n1, n2 = n2, nullInterval = nullInterval, rscale = rValues[i])$bf
   }
   
+  if (sum(is.na(BF10)) > 100){
+    stop("Bayes factors could not be computed for 100 values of the prior.")
+  }
+  
   # maximum BF value
   idx       <- which.max(BF10)
   maxBF10   <- exp(BF10[idx])
@@ -317,6 +507,8 @@
     x = rValues,
     y = BF10
   )
+  
+  dfLines <- na.omit(dfLines)
   
   BFH1H0 <- !(bfType == "BF01")
   if (!BFH1H0) {
@@ -360,127 +552,98 @@
   
 }
 
-# Functions Relevant for One Sample and Paired Samples T-Test ----
-
-# Compute Results 
-.summaryStatsOneSamplePairedSamplesComputeResults <- function(hypothesisList, options) {
-  
-  # Extract important information from options list
-  hypothesis <- hypothesisList$hypothesis
-  t          <- options$tStatistic
-  n1         <- options$n1Size
-  
-  # Checks before executing the analysis
-  # 1. check user input
-  ready <- !(n1 == 0)
-  
-  if (!ready)
-    return(list(ready = ready))
-  
-  # Conduct frequentist and Bayesian independent samples t-test
-  ttestResults <- .generalSummaryTtestBF(options = options)
-  BF10         <- ttestResults$bf
-  
-  BFlist       <- list(BF10    = BF10,
-                       BF01    = 1/BF10,
-                       LogBF10 = log(BF10))
-  
-  # Add rows to the main table
-  ttestTable <- list(
-    t        = t,
-    n1       = n1,
-    BF       = BFlist[[options$bayesFactorType]],
-    error    = ttestResults$properror,
-    pValue   = ttestResults$pValue[[hypothesis]]
-  )
-  # check whether %error could be computed
-  if(is.na(ttestTable$error) || is.null(ttestTable$error)){
-    ttestTable$error   <- NaN
-    ttestTableMessage  <- "Proportional error estimate could not be computed."
-  } else {
-    ttestTableMessage  <- NULL
-  }
-  
-  # Add information for plots
-  
-  ttestPriorPosteriorPlot <- list(
-    t        = t,
-    n1       = n1,
-    n2       = NULL,
-    paired   = TRUE,
-    oneSided = hypothesisList$oneSided,
-    BF       = BFlist[[options$bayesFactorType]],
-    BFH1H0   = BFlist[["BF10"]]
-  )
-  
-  ttestRobustnessPlot <- list(
-    t                     = t,
-    n1                    = n1,
-    n2                    = 0 ,
-    paired                = FALSE,
-    BF10user              = BFlist[["BF10"]],
-    nullInterval          = hypothesisList$nullInterval,
-    rscale                = options$priorWidth,
-    oneSided              = hypothesisList$oneSided
-  )
-  
-  # This will be the object that we fill with results
-  results        <- list(
-    hypothesisList          = hypothesisList,
-    ttestPriorPosteriorPlot = ttestPriorPosteriorPlot,
-    ttestRobustnessPlot     = ttestRobustnessPlot,
-    ttestTable              = ttestTable,
-    ttestTableMessage       = ttestTableMessage,
-    ready                   = ready,
-    BFlist                  = BFlist
-  )
-  
-  # Return results object
-  return(results)
-}
-
-# Create main table
-.summaryStatsOneSamplePairedSamplesTableMain <- function(options, hypothesisList, title){
-  
-  # create table and state dependencies
-  tTestTable <- createJaspTable(title)
-  tTestTable$dependOn("bayesFactorType")
-  tTestTable$position <- 1
-  
-  # set title for different Bayes factor types
-  bfTitle        <- hypothesisList$bfTitle
-  
-  # set table citations and footnote message for different hypothesis types
-  if (options$effectSizeStandardized == "default") {
-    
-    tTestTable$addCitation(.summaryStatsCitations[c("MoreyRounder2015", "RounderEtAl2009")])
-    
-  } else if (options$effectSizeStandardized == "informative") {
-    
-    tTestTable$addCitation(.summaryStatsCitations[c("GronauEtAl2017")])
-    
-  }
-  
-  message <- hypothesisList$message
-  if (!is.null(message)) tTestTable$addFootnote(message)
-  
-  tTestTable$addColumnInfo(name = "t"      , title = "t"       , type = "number", format = "sf:4;dp:3")
-  tTestTable$addColumnInfo(name = "n1"     , title = "n"       , type = "integer")
-  tTestTable$addColumnInfo(name = "BF"     , title = bfTitle   , type = "number", format = "sf:4;dp:3")
-  tTestTable$addColumnInfo(name = "error"  , title = "error %" , type = "number", format = "sf:4;dp:3")
-  tTestTable$addColumnInfo(name = "pValue" , title = "p"       , type = "number", format = "sf:4;dp:3")
-  
-  return(tTestTable)
-  
-}
-
 # helper functions for One Sample and Paired Samples T-Test
-.checkErrors.summarystats.onesample.pairedsamples <- function(options) {
+.hypothesisType.summarystats.ttest <- function(hypothesis_option, bayesFactorType, analysis) {
+  
+  if (hypothesis_option == "groupsNotEqual" || hypothesis_option == "notEqualToTestValue") {
+    
+    hypothesis   <- "twoSided"
+    oneSided     <- FALSE
+    nullInterval <- c(-Inf, Inf)
+    message      <- NULL
+    
+  } else if (hypothesis_option == "groupOneGreater" || hypothesis_option == "greaterThanTestValue") {
+    
+    hypothesis   <- "plusSided"
+    oneSided     <- "right"
+    nullInterval <- c(0, Inf)
+    
+    if(analysis == "independentSamples"){
+      
+      message      <- "For all tests, the alternative hypothesis specifies that group 1 is greater than group 2."
+      
+    } else if(analysis == "oneSample") {
+      
+      message      <- "For all tests, the alternative hypothesis specifies that the mean is greater than 0."
+      
+    } else if(analysis == "pairedSamples") {
+      
+      message      <- "For all tests, the alternative hypothesis specifies that measure 1 is greater than measure 2."
+    }
+    
+  } else if (hypothesis_option == "groupTwoGreater" || hypothesis_option == "lessThanTestValue") {
+    
+    hypothesis   <- "minSided"
+    oneSided     <- "left"
+    nullInterval <- c(-Inf, 0)
+    
+    if(analysis == "independentSamples"){
+      
+      message      <- "For all tests, the alternative hypothesis specifies that group 1 is lesser than group 2."
+      
+    } else if(analysis == "oneSample") {
+      
+      message      <- "For all tests, the alternative hypothesis specifies that the mean is lesser than 0."
+      
+    } else if(analysis == "pairedSamples") {
+      
+      message      <- "For all tests, the alternative hypothesis specifies that measure 1 is lesser than measure 2."
+    }
+    
+  }
+  
+  # Set Table Title
+  if(analysis == "independentSamples"){
+    
+    tableTitle   <- "Bayesian Independent Samples T-Test"
+    
+  } else if(analysis == "oneSample") {
+    
+    tableTitle   <- "Bayesian One Sample T-Test"
+    
+  } else if(analysis == "pairedSamples") {
+    
+    tableTitle   <- "Bayesian Paired Samples T-Test"
+    
+  }
+  
+  bfTitle      <- .getBayesfactorTitle.summarystats(bayesFactorType, hypothesis)
+  
+  return(list(hypothesis    = hypothesis,
+              oneSided      = oneSided,
+              message       = message,
+              nullInterval  = nullInterval,
+              bfTitle       = bfTitle,
+              tableTitle    = tableTitle)
+  )
+}
+.checkErrors.summarystats.ttest <- function(options, analysis) {
   
   # perform a check on the hypothesis
-  custom <- function() {
-    if (options$n1Size == 1)
-      return("Not enough observations.")
+  if(analysis == "oneSample" || analysis == "pairedSamples"){
+    
+    custom <- function() {
+      if (options$n1Size == 1)
+        return("Not enough observations.")
+    }
+    
+  } else {
+    
+    custom <- function() {
+      if (options$n1Size == 1 || options$n2Size == 1)
+        return("Not enough observations.")
+    }
+    
   }
   
   # Error Check 1: Number of levels of the variables and the hypothesis

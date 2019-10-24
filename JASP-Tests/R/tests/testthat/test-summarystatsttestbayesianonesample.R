@@ -9,7 +9,7 @@ test_that("Main table results match", {
   options$hypothesis      <- "greaterThanTestValue"
   results <- jasptools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
   
-  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_oneSampleTTestTable"]][["data"]]
+  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_ttestTable"]][["data"]]
   expect_equal_tables(table, list(1.32450670641619, 3.95778537281638e-05, 23,  0.015654342509863, 2.3))
 })
 
@@ -24,7 +24,7 @@ test_that("BF for Informed and Default Prior Matches", {
   options$informativeStandardizedEffectSize <- "cauchy"
   results <- jasptools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
   
-  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_oneSampleTTestTable"]][["data"]]
+  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_ttestTable"]][["data"]]
   BF    <- table[[1]]$BF
   expect_equal(BF, 1.32450670641619)
 })
@@ -46,7 +46,7 @@ test_that("Bayes Factor Robustness Check plot matches", {
 })
 
 test_that("Bayesian One Sample T-Test table results match", {
-  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_oneSampleTTestTable"]][["data"]]
+  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_ttestTable"]][["data"]]
   expect_equal_tables(table,
                       list(2428.05675490473, 1.99678979420922e-06, 20, 8.97923547249084e-06,
                            6))

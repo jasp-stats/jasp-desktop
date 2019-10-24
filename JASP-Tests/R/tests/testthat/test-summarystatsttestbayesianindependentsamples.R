@@ -1,33 +1,52 @@
 context("Summary Statistics Bayesian Independent Samples T-Test")
 
-test_that("Main table results match", {
-  set.seed(0)
-  options <- analysisOptions("SummaryStatsTTestBayesianIndependentSamples")
-  options$tStatistic      <- 2.3
-  options$n1Size          <- 10
-  options$n2Size          <- 13
-  options$bayesFactorType <- "LogBF10"
-  results <- jasptools::run("SummaryStatsTTestBayesianIndependentSamples", "debug.csv", options)
-  
-  table <- results[["results"]][["indSamplesTTestTable"]][["data"]]
-  expect_equal_tables(table, list(0.816974431461627, 2.3, 10, 0.000287271873137224, 0.0318022759865702,
-                                  13))
+options <- jasptools::analysisOptions("SummaryStatsTTestBayesianIndependentSamples")
+options$tStatistic <- 2.3
+options$n1Size <- 20
+options$n2Size <- 20
+options$plotPriorAndPosterior <- TRUE
+options$plotBayesFactorRobustnessAdditionalInfo <- FALSE
+options$hypothesis <- "groupTwoGreater"
+options$informativeCauchyLocation <- 1
+options$effectSizeStandardized <- "informative"
+set.seed(1)
+results <- jasptools::run("SummaryStatsTTestBayesianIndependentSamples", "debug.csv", options)
+
+
+test_that("Prior and Posterior plot matches", {
+  plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_priorPosteriorPlot"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "prior-and-posterior", dir="SummaryStatsTTestBayesianIndependentSamples")
 })
 
-# test_that("Prior posterior plot matches and BF robustness check plot matches", {
-#   # with additional info
-#   set.seed(0)
-#   options <- analysisOptions("SummaryStatsTTestBayesianIndependentSamples")
-#   options$tStatistic            <- 2.3
-#   options$n1Size                <- 10
-#   options$n2Size                <- 13
-#   options$bayesFactorType           <- "LogBF10"
-#   options$plotPriorAndPosterior     <- TRUE
-#   options$plotBayesFactorRobustness <- TRUE
-#   results <- jasptools::run("SummaryStatsTTestBayesianIndependentSamples", "debug.csv", options)
-#   testPlot <- results[["results"]][["inferentialPlots"]][["BFrobustnessPlot"]][["data"]]
-#   expect_equal_plots(testPlot, "prior-posterior", dir="TTestBayesianIndependentSamples")
-#   
-#   # without additional info
-# })
+test_that("Bayesian Independent Samples T-Test table results match", {
+  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_ttestTable"]][["data"]]
+  expect_equal_tables(table,
+                      list(0.0644349416204716, 0.000247553379975798, 20, 20, 0.986483662535044,
+                           2.3))
+})
+
+options <- jasptools::analysisOptions("SummaryStatsTTestBayesianIndependentSamples")
+options$hypothesis <- "groupTwoGreater"
+options$tStatistic <- 2.3
+options$n1Size <- 20
+options$n2Size <- 20
+options$plotPriorAndPosterior <- TRUE
+options$plotBayesFactorRobustnessAdditionalInfo <- TRUE
+options$plotBayesFactorRobustness <- TRUE
+options$plotBayesFactorRobustnessAdditionalInfo <- TRUE
+set.seed(1)
+results <- jasptools::run("SummaryStatsTTestBayesianIndependentSamples", "debug.csv", options)
+
+test_that("Bayes Factor Robustness Check plot matches", {
+  plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_BayesFactorRobustnessPlot"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "bayes-factor-robustness-check", dir="SummaryStatsTTestBayesianIndependentSamples")
+})
+
+test_that("Prior and Posterior plot matches", {
+  plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_priorPosteriorPlot"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "prior-and-posterior-2", dir="SummaryStatsTTestBayesianIndependentSamples")
+})
 

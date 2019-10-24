@@ -18,7 +18,7 @@ test_that("Bayes Factor Robustness Check plot matches", {
 })
 
 test_that("Bayesian Paired Samples T-Test table results match", {
-  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_pairedSamplesTTestTable"]][["data"]]
+  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_ttestTable"]][["data"]]
   expect_equal_tables(table,
                       list(0.0821009262649839, 5.19539218807268e-05, 20, 0.983523708768303,
                            2.3))
@@ -43,7 +43,7 @@ results <- jasptools::run("SummaryStatsTTestBayesianPairedSamples", "debug.csv",
 
 
 test_that("Bayesian Paired Samples T-Test table results match", {
-  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_pairedSamplesTTestTable"]][["data"]]
+  table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_ttestTable"]][["data"]]
   expect_equal_tables(table,
                       list(0.0644349416204716, 0.000247553379975798, 20, 0.983523708768303,
                            2.3))
