@@ -47,6 +47,9 @@ JASPControl
 			property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
 
 	signal clicked();
+	function click() { control.toggle(); }
+	function toggle() { control.toggle(); }
+
 
 	CheckBox
 	{

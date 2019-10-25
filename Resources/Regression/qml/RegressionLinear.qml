@@ -22,7 +22,6 @@ import JASP.Theme 1.0
 
 Form
 {
-	usesJaspResults: false
 	
 	VariablesForm
 	{
@@ -48,6 +47,8 @@ Form
 	Section
 	{
 		title: qsTr("Model")
+		
+		CheckBox { name: "includeConstant"; label: qsTr("Include intercept"); checked: true }
 		
 		VariablesForm
 		{
@@ -90,10 +91,15 @@ Form
 			{
 				CheckBox
 				{
-					name: "regressionCoefficientsEstimates"; label: qsTr("Estimates"); checked: true
+					name: "regressionCoefficientsEstimates"
+					label: qsTr("Estimates")
+					checked: true
+					onClicked: { if (!checked && bootstrapping.checked) bootstrapping.click() }
 					CheckBox
 					{
-						name: "regressionCoefficientsBootstrapping"; label: qsTr("From")
+						id: bootstrapping
+						name: "regressionCoefficientsBootstrapping"
+						label: qsTr("From")
 						childrenOnSameRow: true
 						IntegerField
 						{
@@ -113,6 +119,7 @@ Form
 					CIField { name: "regressionCoefficientsConfidenceIntervalsInterval" }
 				}
 				CheckBox { name: "regressionCoefficientsCovarianceMatrix"; label: qsTr("Covariance matrix") }
+				CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }
 			}
 
 			Group
@@ -157,7 +164,7 @@ Form
 	
 	Section
 	{
-		title: qsTr("Options")
+		title: qsTr("Method Specification")
 		columns: 1
 		
 		RadioButtonGroup
@@ -180,13 +187,6 @@ Form
 			}
 		}
 		
-		Group
-		{
-			CheckBox { name: "includeConstant";	label: qsTr("Include constant in equation"); checked: true }
-			CheckBox { name: "VovkSellkeMPR"; label: qsTr("Vovk-Sellke maximum p-ratio") }
-		}
-
-
 		RadioButtonGroup
 		{
 			name: "missingValues"
