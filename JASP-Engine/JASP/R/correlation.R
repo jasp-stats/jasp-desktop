@@ -625,7 +625,7 @@ Correlation <- function(jaspResults, dataset, options){
     }
   }
 }
-### Plot stuff ----
+### Plots ----
 .corrPlot <- function(jaspResults, dataset, options, ready, corrResults){
   if(!ready) return()
   if(isFALSE(options$plotCorrelationMatrix)) return()
@@ -966,198 +966,8 @@ Correlation <- function(jaspResults, dataset, options){
   
   JASPgraphs::themeJasp(p)
 }
-## Old plotting (still in use)----
 
-.plotCorrelations <- function(dataset, perform, options) {
-  variables <- unlist(options$variables)
-  correlation.plot <- NULL
-
-   if (perform == "init" && length(variables) > 1) {
-    l <- length(variables)
-
-    if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
-      width <- 580
-      height <- 580
-    } else if (l <= 2) {
-      width <- 400
-      height <- 400
-    } else {
-      width <- 250 * l + 20
-      height <- 250 * l + 20
-    }
-
-    plot <- list()
-
-    plot[["title"]] <- "Correlation Plot"
-    plot[["width"]]  <- width
-    plot[["height"]] <- height
-
-    correlation.plot <- plot
-  } else if (perform == "run" && length(variables) > 1) {
-    variable.statuses <- vector("list", length(variables))
-
-    for (i in seq_along(variables)) {
-      variable.statuses[[i]]$unplotable <- FALSE
-      variable.statuses[[i]]$plottingError <- NULL
-      errors <- .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
-                           all.target=variables[i], message="short", observations.amount="< 3")
-      
-      if (! identical(errors, FALSE)) {
-        variable.statuses[[i]]$unplotable <- TRUE
-        variable.statuses[[i]]$plottingError <- paste(strwrap(errors$message, 25), collapse="\n") # break msgs so they fit in the matrix
-      }
-    }
-
-    variables <- .v(variables)
-    l <- length(variables)
-
-    if (l <= 2 && (options$plotDensities || options$plotStatistics)) {
-      width <- 580
-      height <- 580
-    } else if (l <= 2) {
-      width <- 400
-      height <- 400
-    } else {
-      width <- 250 * l
-      height <- 250 * l
-    }
-
-    plot <- list()
-
-    plot[["title"]] <- "Correlation Plot"
-    plot[["width"]]  <- width
-    plot[["height"]] <- height
-
-    correlation.plot <- plot
-    cexText <- 1.6
-
-    .plotFunc <- function() {
-
-        plotMat <- matrix(list(), l, l)
-
-        # minor adjustments to plot margin to avoid cutting off the x-axis labels
-	       adjMargin <- ggplot2::theme(plot.margin = ggplot2::unit(c(.25, .40, .25, .25), "cm"))
-
-         oldFontSize <- JASPgraphs::getGraphOption("fontsize")
-         JASPgraphs::setGraphOption("fontsize", .85 * oldFontSize)
-
-            for (row in seq_len(l)) {
-                for (col in seq_len(l)) {
-                    if (row == col) {
-                        if (options$plotDensities) {
-                            if ( ! variable.statuses[[row]]$unplotable) {
-                                plotMat[[row, col]] <- .plotMarginalCor(dataset[[variables[row]]]) + adjMargin # plot marginal (histogram with density estimator)
-                            } else {
-                                errorMessagePlot <- paste0("Undefined density:", "\n", variable.statuses[[row]]$plottingError)
-                                plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
-                            }
-                        } else {
-
-                            p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE) + adjMargin
-                            p <- p + ggplot2::xlab("")
-                            p <- p + ggplot2::ylab("")
-                            p <- JASPgraphs::themeJasp(p)
-
-                            plotMat[[row, col]] <- p
-                        }
-                    }
-
-                    if (col > row) {
-                        if (options$plotCorrelationMatrix) {
-                            if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-                                plotMat[[row, col]] <- .plotScatter(dataset[[variables[col]]], dataset[[variables[row]]]) + adjMargin # plot scatterplot
-                            } else {
-                                errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                                errorMessagePlot <- paste0("Undefined correlation:", "\n", errorMessages[1])
-                                plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
-                            }
-                        } else {
-
-                            p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE) + adjMargin
-                            p <- p + ggplot2::xlab("")
-                            p <- p + ggplot2::ylab("")
-                            p <- JASPgraphs::themeJasp(p)
-
-                            plotMat[[row, col]] <- p
-                        }
-                    }
-
-                    if (col < row) {
-                        if (l < 7) {
-                            if (options$plotStatistics) {
-                                if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-                                    plotMat[[row, col]] <- .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], hypothesis= options$hypothesis,
-                                                  pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) + adjMargin # plot r= ...
-                                } else {
-                                    errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                                    errorMessagePlot <- paste0("Undefined correlation:", "\n", errorMessages[1])
-                                    plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
-                                }
-                            } else {
-
-                                p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE) + adjMargin
-                                p <- p + ggplot2::xlab("")
-                                p <- p + ggplot2::ylab("")
-                                p <- JASPgraphs::themeJasp(p)
-
-                                plotMat[[row, col]] <- p
-                            }
-                        }
-
-                        if (l >= 7) {
-                            if (options$plotStatistics) {
-                                if ( ! variable.statuses[[col]]$unplotable && ! variable.statuses[[row]]$unplotable) {
-                                    plotMat[[row, col]] <- .plotCorValue(dataset[[variables[col]]], dataset[[variables[row]]], cexCI= 1.2, hypothesis= options$hypothesis,
-                                                  pearson=options$pearson, kendallsTauB=options$kendallsTauB, spearman=options$spearman, confidenceInterval=options$confidenceIntervalsInterval) + adjMargin
-                                                  # if(col == 1){
-                                                  #     plotList[[length(plotList)]] <- plotList[[length(plotList)]] + ggplot2::annotate("text", x = 0, y = 1.5, label = .unv(variables)[row], angle = 90, size = 6, fontface = 2)
-                                                  # }
-                                } else {
-                                    errorMessages <- c(variable.statuses[[row]]$plottingError, variable.statuses[[col]]$plottingError)
-                                    errorMessagePlot <- paste0("Undefined correlation:", "\n", errorMessages[1])
-                                    plotMat[[row, col]] <- .displayError(errorMessagePlot, cexText=cexText) + adjMargin
-                                }
-                            } else {
-                                p <- JASPgraphs::drawAxis(xName = "", yName = "", force = TRUE) + adjMargin
-                                p <- p + ggplot2::xlab("")
-                                p <- p + ggplot2::ylab("")
-                                p <- JASPgraphs::themeJasp(p)
-
-                                plotMat[[row, col]] <- p
-                            }
-                        }
-                    }
-                }
-            }
-
-        JASPgraphs::setGraphOption("fontsize", oldFontSize)
-
-        # slightly adjust the positions of the labels left and above the plots.
-        labelPos <- matrix(.5, 4, 2)
-        labelPos[1, 1] <- .55
-        labelPos[4, 2] <- .65
-
-        p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = .unv(variables), topLabels = .unv(variables),
-  															scaleXYlabels = NULL, labelPos = labelPos)
-
-        return(p)
-    }
-
-    obj <- .plotFunc()
-
-    content <- .writeImage(width = width, height = height, plot = obj, obj = TRUE)
-
-    plot <- correlation.plot
-    plot[["convertible"]] <- TRUE
-    plot[["obj"]] <- content[["obj"]]
-    plot[["data"]] <- content[["png"]]
-
-    correlation.plot <- plot
-  }
-
-  return(correlation.plot)
-}
-
+## Old plotting----
 #### histogram with density estimator ####
 .plotMarginalCor <- function(variable, xName = NULL, yName = "Density") {
 
@@ -1454,6 +1264,7 @@ Correlation <- function(jaspResults, dataset, options){
     return(p)
 }
 
+### helpers ----
 ### Utility functions for nonparametric confidence intervals ###
 .concordanceFunction <- function(i, j) {
   concordanceIndicator <- 0
@@ -1540,7 +1351,6 @@ Correlation <- function(jaspResults, dataset, options){
     return(paste0(type, ' ~ "=" ~ ', '"', formattedValue, '"'))
 }
 
-### helpers ----
 .corrGetTexts <- function() {
   list(
   footnotes = list(
