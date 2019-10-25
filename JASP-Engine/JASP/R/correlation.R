@@ -591,6 +591,7 @@ Correlation <- function(jaspResults, dataset, options){
   errors <- lapply(corrResults, function(x) x[['errors']])
   statsNames <- names(results[[1]])
   nStats <- length(statsNames)
+  
   # would be really (!) nice to be able to fill table cell-wise, i.e., mainTable[[row, col]] <- value
   # in the meantime we have to collect and fill the entire columns (i.e., rows of the output table)
   for(colVar in seq_along(vars)){
@@ -607,14 +608,14 @@ Correlation <- function(jaspResults, dataset, options){
           r <- results[[currentPairName]][[statName]]
           
           # flag significant correlations
-          if(options[['flagSignificant']] && grepl("p.value", statName) && r < 0.05){
+          if(options[['flagSignificant']] && grepl("p.value", statName) && isTRUE(r < 0.05)){
             .corrFlagSignificant(table = mainTable, p.values = r, 
                                  colName = gsub("p.value", "estimate", currentColumnName),
                                  rowNames = vvars[[rowVar]])
           }
           # display errors as footnotes
           if(is.list(errors[[currentPairName]]) && !is.null(errors[[currentPairName]]$message) && statName != "sample.size"){
-            mainTable$addFootnote(message = errors[[currentPairName]]$message, 
+            mainTable$addFootnote(message = errors[[currentPairName]]$message,
                                   colNames = currentColumnName, rowNames = vvars[[rowVar]])
           }
         }
@@ -967,7 +968,7 @@ Correlation <- function(jaspResults, dataset, options){
   JASPgraphs::themeJasp(p)
 }
 
-## Old plotting----
+## Old plotting (still in use)----
 #### histogram with density estimator ####
 .plotMarginalCor <- function(variable, xName = NULL, yName = "Density") {
 
