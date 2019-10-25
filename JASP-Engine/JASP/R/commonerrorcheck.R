@@ -115,7 +115,7 @@
 }
 
 
-.hasErrors <- function(dataset, perform="run", type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, ...) {
+.hasErrors <- function(dataset, perform="run", type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, allowEmptyDataset = TRUE, ...) {
   # Generic error checking function.
   # Args:
   #   dataset: Normal JASP dataset.
@@ -129,7 +129,7 @@
   # Returns:
   #   FALSE if no errors were found or a named list specifying for each check which variables violated it as well as a general error message.
   
-  if (! isTRUE(nrow(dataset) > 0) || perform != 'run' || (length(type) == 0 && length(custom) == 0)) {
+  if ((allowEmptyDataset && isTRUE(nrow(dataset) == 0)) || perform != 'run' || (length(type) == 0 && length(custom) == 0)) {
     return(FALSE)
   }
   

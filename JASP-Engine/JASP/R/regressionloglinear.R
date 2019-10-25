@@ -59,20 +59,6 @@ RegressionLogLinear <- function(jaspResults, dataset = NULL , options, ...) {
     args$missingValues.target <- c(options$counts, options$factors)
   }
   do.call(.hasErrors, args)
-  
-  # Error check 2: 0 observations for a level of a variable
-  for (factor in options$factors) {
-    column <- dataset[[.v(factor)]]
-    data   <- column[!is.na(column)]
-    levels <- levels(data)
-    for (level in levels)
-      .hasErrors(
-        dataset              = data[data == level],
-        perform              = "run",
-        type                 = "observations",
-        observations.amount  = "< 1",
-        exitAnalysisIfErrors = TRUE)
-  }
 } 
 
 # Compute results ----

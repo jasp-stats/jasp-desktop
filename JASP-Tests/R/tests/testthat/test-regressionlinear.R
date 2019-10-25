@@ -18,11 +18,13 @@ test_that("Main table results match", {
   options$rSquaredChange <- TRUE
   options$residualsDurbinWatson <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  table <- results[["results"]][["model summary"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_summaryTable"]][["data"]]
   expect_equal_tables(table,
-    list(1, 0.00124876050417603, 1.55940279678998e-06, -0.0102025063175828,
-         5.01896242334011, 1.55940279678998e-06, 0.000152821712396024,
-         1, 98, 0.990161847660694, 2.22918408630401, -0.124437281020818)
+                      list(2.22949319138764, -0.124606080290573, "", 0, 0, 0, 4.99355368556631,
+                           0, 0, 99, "H<unicode>", "", 2.22918408630401, -0.124437281020818,
+                           0.000152821712396024, 0.00124876050417603, 1.55940279678998e-06,
+                           1.55940279678998e-06, 5.01896242334011, -0.0102025063175828,
+                           1, 98, "H<unicode>", 0.990161847660694)
   )
 })
 
@@ -39,13 +41,16 @@ test_that("Coefficients table results match", {
   options$collinearityDiagnostics <- TRUE
   options$VovkSellkeMPR <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  table <- results[["results"]][["regression"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_coeffTable"]][["data"]]
   expect_equal_tables(table,
-    list(1, "(Intercept)", -0.105623204281424, 0.176988347288719, "", -0.596780555892316,
-         0.552030096201664, 1, -0.399521419778159, 0.188275011215311,
-         "", "", "TRUE", "", "contGamma", -0.0408888274744623, 0.0696473684093105,
-         -0.0592003859505643, -0.587083595666713, 0.558497687623533,
-         1, -0.156541849851968, 0.0747641949030438, 1, 1)
+                      list("FALSE", 0.105841360919316, -0.364486647151235, "H<unicode>",
+                           "(Intercept)", 0.0775993871437191, -1.78331595418435, -0.18874858754,
+                           -0.013010527928765, 1.85461222592575, "TRUE", 0.176988347288719,
+                           -0.399521419778159, "H<unicode>", "(Intercept)", 0.552030096201664,
+                           -0.596780555892316, -0.105623204281424, 0.188275011215311, 1,
+                           "FALSE", 0.0696473684093105, 1, -0.156541849851968, "H<unicode>",
+                           "contGamma", 0.558497687623533, -0.0592003859505643, -0.587083595666713,
+                           1, -0.0408888274744623, 0.0747641949030438, 1)
   )
 })
 
@@ -59,13 +64,12 @@ test_that("ANOVA table results match", {
   options$modelFit <- TRUE
   options$VovkSellkeMPR <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  table <- results[["results"]][["anova"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_anovaTable"]][["data"]]
   expect_equal_tables(table,
-    list(1, "Regression", 0.01937103, 1, 0.01937103, 2.931691,
-         0.09001915, 1.697314, "TRUE", "", "Residual", 0.6475311,
-         98, 0.006607461, "", "", "", "", "Total", 0.6669022,
-         99, "", "", "", "")
-  )
+                      list("TRUE", 2.93169085062604, 0.0193710317063457, 0.0193710317063457,
+                           "Regression", 1, "H<unicode>", 0.0900191505810211, 1.69731445510183,
+                           "FALSE", 0.00660746057252562, 0.647531136107511, "Residual",
+                           98, "H<unicode>", "FALSE", 0.666902167813857, "Total", 99, "H<unicode>"))
 })
 
 test_that("Coefficients Covariance table results match", {
@@ -78,10 +82,12 @@ test_that("Coefficients Covariance table results match", {
   )
   options$regressionCoefficientsCovarianceMatrix <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  table <- results[["results"]][["coefficient covariances"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_coeffCovMatrixTable"]][["data"]]
   expect_equal_tables(table,
-    list(1, "contGamma", "TRUE", 0.00490486111017858, 0.00116294327838645,
-         "", "contcor1", "", 0.0112500585702943)
+    list("TRUE", 0.00490486111017858, 0.00116294327838645, "H<unicode>",
+         "contGamma", "FALSE", "", 0.0112500585702943, "H<unicode>",
+         "contcor1")
+    
   )
 })
 
@@ -94,7 +100,7 @@ test_that("Descriptive table results match", {
   )
   options$descriptives <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  table <- results[["results"]][["descriptives"]][["data"]]
+  table <- results[["results"]][["descriptivesTable"]][["data"]]
   expect_equal_tables(table,
     list("contNormal", 100, -0.18874858754, 1.05841360919316, 0.105841360919316,
          "contGamma", 100, 2.03296079621, 1.53241112621044, 0.153241112621044)
@@ -111,10 +117,10 @@ test_that("Part and Partial Correlations table results match", {
   )
   options$partAndPartialCorrelations <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  table <- results[["results"]][["correlations"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_partialCorTable"]][["data"]]
   expect_equal_tables(table,
-    list(1, "debCollin2", -0.0198687, -0.01983386, "TRUE",
-         "", "contGamma", -0.06171731, -0.06171455)
+    list("TRUE", "H<unicode>", "debCollin2", -0.0198338559459939, -0.0198687032851428,
+         "FALSE", "H<unicode>", "contGamma", -0.0617145529439823, -0.0617173111983368)
   )
 })
 
@@ -127,11 +133,11 @@ test_that("Collinearity Diagonistic table results match", {
   )
   options$collinearityDiagnostics <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  table <- results[["results"]][["collinearity diagnostics"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_collinearityTable"]][["data"]]
   expect_equal_tables(table,
-    list(1, 1, "TRUE", 1.05212452477783, 1, 0.473937737611082, 0.473937737611089,
-         "", 2, 0.947875475222171, 1.0535567372186, 0.526062262388918,
-         0.526062262388911)
+    list(0.473937737611082, "TRUE", 0.473937737611089, 1, 1, 1.05212452477783,
+         "H<unicode>", 0.526062262388918, "FALSE", 0.526062262388911,
+         1.0535567372186, 2, 0.947875475222171, "H<unicode>")
   )
 })
 
@@ -144,7 +150,7 @@ test_that("Residuals Statistics table results match", {
   )
   options$residualsStatistics <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  table <- results[["results"]][["residuals statistics"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_residualsTable"]][["data"]]
   expect_equal_tables(table,
     list("Predicted Value", -0.559288923489434, 0.200246244240391, -0.18874858754,
          0.170438384014894, 100, "Residual", -2.87689451816188, 3.15584820375961,
@@ -166,7 +172,7 @@ test_that("Casewise Diagnostics table results match", {
   options$residualsCasewiseDiagnosticsType <- "outliersOutside"
   options$residualsCasewiseDiagnosticsOutliersOutside <- 3
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  table <- results[["results"]][["casewise diagnostics"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_casewiseTable"]][["data"]]
   expect_equal_tables(table,
                       list(55, 3.34810934796608, 3.356094448, -0.187237305306683, 3.54333175330668,
                            0.0577123260439598, 83, 3.22377600371253, 2.958797116, -0.143545494526366,
@@ -317,6 +323,7 @@ test_that("Analysis handles errors", {
 # Below are the unit tests for Andy Field's book
 
 # Chapter 1
+context("ANOVA")
 test_that("Fields Book - Chapter 1 results match", {
   options <- jasptools::analysisOptions("RegressionLinear")
   options$dependent <- "sales"
@@ -325,20 +332,26 @@ test_that("Fields Book - Chapter 1 results match", {
     list(components="adverts", isNuisance=FALSE)
   )
   results <- jasptools::run("RegressionLinear", dataset = "Album Sales.csv", options)
-  output1 <- results[["results"]][["model summary"]][["data"]]
+  output1 <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_summaryTable"]][["data"]]
   expect_equal_tables(output1,
-                      list(1, 0.5784877, 0.3346481, 0.3312877, 65.99144)
+                      list(0, 0, 80.698956672563, 0, "H<unicode>", 0.578487741981689, 0.334648067623073,
+                           65.9914352978124, 0.331287704328241, "H<unicode>")
   )
-  output2 <- results[["results"]][["anova"]][["data"]]
+  output2 <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_anovaTable"]][["data"]]
   expect_equal_tables(output2,
-                      list(1, "Regression", 433687.8, 1, 433687.8, 99.58687, 2.94198e-19, "TRUE", 
-                           "", "Residual", 862264.2, 198, 4354.87, "", "",
-                           "", "Total", 1295952, 199, "", "", "")
+                      list("TRUE", 99.5868714961988, 433687.832532257, 433687.832532257,
+                           "Regression", 1, "H<unicode>", 2.94197985216586e-19, "FALSE",
+                           4354.86953266536, 862264.167467742, "Residual", 198, "H<unicode>",
+                           "FALSE", 1295952, "Total", 199, "H<unicode>")
+                      
   )
-  output3 <- results[["results"]][["regression"]][["data"]]
+  output3 <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_coeffTable"]][["data"]]
   expect_equal_tables(output3,
-                      list(1, "(Intercept)", 134.1399, 7.536575, "", 17.79853, 5.967817e-43, "TRUE",
-                           "", "adverts", 0.09612449, 0.009632366, 0.5784877, 9.979322, 2.94198e-19)
+                      list("FALSE", 5.70627794978487, "H<unicode>", "(Intercept)", 1.59908972195556e-84,
+                           33.8574464300821, 193.2, "TRUE", 7.53657467947199, "H<unicode>",
+                           "(Intercept)", 5.9678171979745e-43, 17.7985283125294, 134.139937812074,
+                           "FALSE", 0.00963236621523019, "H<unicode>", "adverts", 2.94197985216575e-19,
+                           0.578487741981689, 9.97932219623151, 0.0961244859738772)
   )
   
   options$covariates <- c("adverts", "airplay", "attract")
@@ -348,28 +361,35 @@ test_that("Fields Book - Chapter 1 results match", {
     list(components="attract", isNuisance=FALSE)
   )
   results <- jasptools::run("RegressionLinear", dataset = "Album Sales.csv", options)
-  output4 <- results[["results"]][["model summary"]][["data"]]
+  output4 <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_summaryTable"]][["data"]]
   expect_equal_tables(output4,
-                      list(0, 0.5784877, 0.3346481, 0.3312877, 65.99144,
-                           1, 0.8152715, 0.6646677, 0.659535, 47.08734)
+                      list("H<unicode>", 0.5784877, 0.3346481, 0.3312877, 65.99144,
+                           "H<unicode>", 0.8152715, 0.6646677, 0.659535, 47.08734)
   )
-  output5 <- results[["results"]][["anova"]][["data"]]
+  output5 <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_anovaTable"]][["data"]]
   expect_equal_tables(output5,
-                      list(0, "Regression", 433687.8, 1, 433687.8, 99.58687, 2.94198e-19, "TRUE", 
-                           "", "Residual", 862264.2, 198, 4354.87, "", "",
-                           "", "Total", 1295952, 199, "", "", "",
-                           1, "Regression", 861377.4, 3, 287125.8, 129.4983, 2.875535e-46, "TRUE", 
-                           "", "Residual", 434574.6, 196, 2217.217, "", "",
-                           "", "Total", 1295952, 199, "", "", "")
+                      list("FALSE", 99.5868714961988, 433687.832532257, 433687.832532257,
+                           "Regression", 1, "H<unicode>", 2.94197985216586e-19, "FALSE",
+                           4354.86953266536, 862264.167467742, "Residual", 198, "H<unicode>",
+                           "FALSE", 1295952, "Total", 199, "H<unicode>", "TRUE", 129.498273390974,
+                           287125.806089999, 861377.418269998, "Regression", 3, "H<unicode>",
+                           2.87553505648734e-46, "FALSE", 2217.2172537245, 434574.581730001,
+                           "Residual", 196, "H<unicode>", "FALSE", 1295952, "Total", 199,
+                           "H<unicode>")
   )
-  output6 <- results[["results"]][["regression"]][["data"]]
+  output6 <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_coeffTable"]][["data"]]
   expect_equal_tables(output6,
-                      list(0, "(Intercept)", 134.1399, 7.536575, "", 17.79853, 5.967817e-43, "TRUE",
-                           "", "adverts", 0.09612449, 0.009632366, 0.5784877, 9.979322, 2.94198e-19,
-                           1, "(Intercept)", -26.61296, 17.35, "", -1.533888, 0.1266698, "TRUE",
-                           "", "adverts", 0.08488483, 0.006923017, 0.5108462, 12.26125, 5.054937e-26,
-                           "", "airplay", 3.367425, 0.2777708, 0.5119881, 12.12303, 1.326307e-25,
-                           "", "attract", 11.08634, 2.437849, 0.1916834, 4.547588, 9.492121e-06)
+                      list("FALSE", 7.53657467947199, "H<unicode>", "(Intercept)", 5.9678171979745e-43,
+                           17.7985283125294, 134.139937812074, "FALSE", 0.00963236621523019,
+                           "H<unicode>", "adverts", 2.94197985216575e-19, 0.578487741981689,
+                           9.97932219623151, 0.0961244859738772, "TRUE", 17.3500005649351,
+                           "H<unicode>", "(Intercept)", 0.126669773576493, -1.53388804006521,
+                           -26.6129583616786, "FALSE", 0.00692301687199933, "H<unicode>",
+                           "adverts", 5.05493680123644e-26, 0.510846225434074, 12.2612477656671,
+                           0.0848848251534775, "FALSE", 0.277770831682515, "H<unicode>",
+                           "airplay", 1.32630717054857e-25, 0.511988143597586, 12.1230337617277,
+                           3.36742517051031, "FALSE", 2.43784926487601, "H<unicode>", "attract",
+                           9.49212095293172e-06, 0.191683427305029, 4.54758846836075, 11.0863352045519)
   )
 })
 
@@ -386,10 +406,10 @@ test_that("Fields Book - Chapter 2 results match", {
   options$rSquaredChange <- TRUE
   options$regressionCoefficientsConfidenceIntervals <- TRUE
   results <- jasptools::run("RegressionLinear", dataset = "Album Sales.csv", options)
-  output4 <- results[["results"]][["model summary"]][["data"]]
+  output4 <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_summaryTable"]][["data"]]
   expect_equal_tables(output4,
-                      list(0, 0.5784877, 0.3346481, 0.3312877, 65.99144, 0.3346481, 99.58687, 1, 198, 2.94198e-19,
-                           1, 0.8152715, 0.6646677, 0.659535, 47.08734, 0.3300196, 96.44738, 2, 196, 6.879395e-30)
+                      list("H<unicode>", 0.5784877, 0.3346481, 0.3312877, 65.99144, 0.3346481, 99.58687, 1, 198, 2.94198e-19,
+                           "H<unicode>", 0.8152715, 0.6646677, 0.659535, 47.08734, 0.3300196, 96.44738, 2, 196, 6.879395e-30)
   )
   # needs investigating
   # output6 <- results[["results"]][["regression"]][["data"]]
@@ -435,7 +455,7 @@ test_that("Fields Book - Chapter 3 results match", {
   #expect_equal_plots(figure5a, "?", dir="RegressionLinear") # This command needs to be updated
   figure5b <- results[["state"]][["figures"]][[3]][["obj"]] # Q-Q-Plot
   #expect_equal_plots(figure5b, "?", dir="RegressionLinear") # This command needs to be updated
-  output1 <- results[["results"]][["casewise diagnostics"]][["data"]]
+  output1 <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_casewiseTable"]][["data"]]
   expect_equal_tables(output1,
                       list(1, 2.177404, 330, 229.9203, 100.0797, 0.05870388, 
                            2, -2.323083, 120, 228.949, -108.949, 0.01088943,
@@ -466,7 +486,7 @@ test_that("Fields Book - Chapter 3 results match", {
   set.seed(1) # For Bootstrapping Unit Tests
   options$regressionCoefficientsConfidenceIntervals <- TRUE
   results <- jasptools::run("RegressionLinear", dataset = "Album Sales.csv", options)
-  figure10 <- results[["results"]][["casewise diagnostics"]][["data"]]
+  figure10 <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_casewiseTable"]][["data"]]
   figure10 <- list(figure10[[1]]$cooksD, figure10[[2]]$cooksD, figure10[[3]]$cooksD, figure10[[4]]$cooksD,
                    figure10[[5]]$cooksD, figure10[[6]]$cooksD, figure10[[7]]$cooksD, figure10[[8]]$cooksD,
                    figure10[[9]]$cooksD, figure10[[10]]$cooksD, figure10[[11]]$cooksD, figure10[[12]]$cooksD,
@@ -524,11 +544,12 @@ test_that("Fields Book - Chapter 4 results match", {
   )
   options$regressionCoefficientsConfidenceIntervals <- TRUE
   results <- jasptools::run("RegressionLinear", dataset = "Puppies Dummy.csv", options)
-  output1a <- results[["results"]][["anova"]][["data"]]
+  output1a <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_anovaTable"]][["data"]]
   expect_equal_tables(output1a,
-                      list(1, "Regression", 20.13333, 2, 10.06667, 5.118644, 0.02469429, "TRUE",
-                           "", "Residual", 23.6, 12, 1.966667, "", "",
-                           "", "Total", 43.73333, 14, "", "", "")
+                      list("TRUE", 5.11864406779661, 10.0666666666667, 20.1333333333333,
+                           "Regression", 2, "H<unicode>", 0.0246942895382226, "FALSE",
+                           1.96666666666667, 23.6, "Residual", 12, "H<unicode>", "FALSE",
+                           43.7333333333333, "Total", 14, "H<unicode>")
   )
   # needs investigating
   # output1b <- results[["results"]][["regression"]][["data"]]
@@ -551,11 +572,12 @@ test_that("Fields Book - Chapter 5 results match", {
   )
   options$regressionCoefficientsConfidenceIntervals <- TRUE
   results <- jasptools::run("RegressionLinear", dataset = "Puppies Contrast.csv", options)
-  output1a <- results[["results"]][["anova"]][["data"]]
+  output1a <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_anovaTable"]][["data"]]
   expect_equal_tables(output1a,
-                      list(1, "Regression", 20.13333, 2, 10.06667, 5.118644, 0.02469429, "TRUE",
-                           "", "Residual", 23.6, 12, 1.966667, "", "",
-                           "", "Total", 43.73333, 14, "", "", "")
+                      list("TRUE", 5.11864406779661, 10.0666666666667, 20.1333333333333,
+                           "Regression", 2, "H<unicode>", 0.0246942895382226, "FALSE",
+                           1.96666666666667, 23.6, "Residual", 12, "H<unicode>", "FALSE",
+                           43.7333333333333, "Total", 14, "H<unicode>")
   )
   # needs investigating
   # output1b <- results[["results"]][["regression"]][["data"]]

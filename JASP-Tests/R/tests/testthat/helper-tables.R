@@ -36,6 +36,7 @@ getMismatchesEqualSizeTables <- function(test, ref, nRows, nCols, cellNames) {
       else {
         if (isUnicodeMismatch(names(testVec)[cell]))
           next
+        
         mismatches <- c(mismatches, 
                         paste0("New table value `", names(testVec)[cell], 
                                 "` (col `", attr(testVec, "cellNames")[cell], "`, row ", row, ")",
@@ -46,6 +47,7 @@ getMismatchesEqualSizeTables <- function(test, ref, nRows, nCols, cellNames) {
     if (length(lookupRow) == 1) {
       if (isUnicodeMismatch(names(lookupRow)))
         next
+      
       mismatches <- c(mismatches, 
                       paste0("Old table value `", names(lookupRow),
                               "` does not exist in new table"))
@@ -54,6 +56,7 @@ getMismatchesEqualSizeTables <- function(test, ref, nRows, nCols, cellNames) {
       lookupRow <- excludeUnicodeMismatches(lookupRow)
       if (length(lookupRow) == 0)
         next
+      
       mismatches <- c(mismatches, 
                       paste0("Old table values `", paste0(names(lookupRow), collapse="`, `"),
                               "` do not exist in new table"))
@@ -98,7 +101,7 @@ getMissingValuesDiffSizeTables <- function(test, ref, cellNames) {
 
 tableListToAnnotatedCharacterVector <- function(tableList, cellNames=NULL) {
     fullValues <- unlist(tableList)
-    tableVec <- unlist(lapply(tableList, roundToPrecision))
+    tableVec <- as.character(unlist(lapply(tableList, roundToPrecision)))
     names(tableVec) <- fullValues
     attr(tableVec, "cellNames") <- cellNames
     
