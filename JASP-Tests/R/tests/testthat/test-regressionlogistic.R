@@ -30,8 +30,12 @@ test_that("Fields Book - Chapter 10 results match", {
   )
   output3 <- results[["results"]][["estimatesTable"]][["data"]]
   expect_equal_tables(output3,
-                      list("(Intercept)", 1.678431, 0.2058631, 1.678431, 5.357143, 8.15314, 3.54595e-16, 66.47369, 1, 2.916226e+13, 3.57851, 8.019813,
-                           "treat (1)", -1.877282, 0.2461223, -1.877282, 0.1530055, -7.627436, 2.394692e-14, 58.17778, 1, 4.89823e+11, 0.09445116, 0.2478601)
+                      list("(Intercept)", 1.678431, 0.2058631, 
+                           5.357143, 8.15314, 3.54595e-16, 66.47369, 1, 
+                           3.57851, 8.019813,
+                           "treat (1)", -1.877282, 0.2461223, 
+                           0.1530055, -7.627436, 2.394692e-14, 58.17778, 1, 
+                           0.09445116, 0.2478601)
   )
   options <- jasptools::analysisOptions("RegressionLogistic")
   options$dependent <- "delivered"
@@ -56,10 +60,10 @@ test_that("Fields Book - Chapter 10 results match", {
   )
   output5 <- results[["results"]][["estimatesTable"]][["data"]]
   expect_equal_tables(output5,
-                      list("(Intercept)", 1.829715, 0.3810035, 1.671349, 6.232108, 4.802356, 1.568094e-06, 23.06263, 1, 17552.68, 2.953413, 13.1506,
-                           "treat (1)", 0.199482, 0.520007, -0.09976397, 1.22077, 0.3836141, 0.7012645, 0.1471597, 1, 1, 0.4405581, 3.382709,
-                           "quantity", -0.08100546, 0.1678705, -1.809561, 0.9221887, -0.4825472, 0.6294173, 0.2328518, 1, 1, 0.6636332, 1.281479,
-                           "treat (1) * quantity", -1.027643, 0.2309776, -1.265616, 0.3578493, -4.449103, 8.622966e-06, 19.79452, 1, 3658.559, 0.2275578, 0.5627412)
+                      list("(Intercept)", 1.829715, 0.3810035, 6.232108, 4.802356, 1.568094e-06, 23.06263, 1, 2.953413, 13.1506,
+                           "treat (1)", 0.199482, 0.520007, 1.22077, 0.3836141, 0.7012645, 0.1471597, 1, 0.4405581, 3.382709,
+                           "quantity", -0.08100546, 0.1678705, 0.9221887, -0.4825472, 0.6294173, 0.2328518, 1, 0.6636332, 1.281479,
+                           "treat (1) * quantity", -1.027643, 0.2309776, 0.3578493, -4.449103, 8.622966e-06, 19.79452, 1, 0.2275578, 0.5627412)
   )
   
   options <- jasptools::analysisOptions("RegressionLogistic")
@@ -76,8 +80,8 @@ test_that("Fields Book - Chapter 10 results match", {
   results <- jasptools::run("RegressionLogistic", dataset = "santas_log_subset_treat0.csv", options)
   output6 <- results[["results"]][["estimatesTable"]][["data"]]
   expect_equal_tables(output6,
-                      list("(Intercept)", 1.829715, 0.3810035, 1.681811, 6.232108, 4.802356, 1.568094e-06, 23.06263, 1, 17552.68, 2.953413, 13.1506,
-                           "quantity", -0.08100546, 0.1678705, -0.09960282, 0.9221887, -0.4825472, 0.6294173, 0.2328518, 1, 1, 0.6636332, 1.281479)
+                      list("(Intercept)", 1.829715, 0.3810035, 6.232108, 4.802356, 1.568094e-06, 23.06263, 1, 2.953413, 13.1506,
+                           "quantity", -0.08100546, 0.1678705, 0.9221887, -0.4825472, 0.6294173, 0.2328518, 1, 0.6636332, 1.281479)
   )
   unnumberedFigureA <- results[["state"]][["estimatesPlots"]][["collection"]][[1]]
   #expect_equal_plots(unnumberedFigureA, "?", dir="Ancova") # This command needs to be updated
@@ -96,8 +100,8 @@ test_that("Fields Book - Chapter 10 results match", {
   results <- jasptools::run("RegressionLogistic", dataset = "santas_log_subset_treat1.csv", options)
   output7 <- results[["results"]][["estimatesTable"]][["data"]]
   expect_equal_tables(output7,
-                      list("(Intercept)", 2.029197, 0.3538977, -0.2530217, 7.607972, 5.73385, 9.817603e-09, 32.87704, 1, 2032173, 3.802162, 15.22324,
-                           "quantity", -1.108649, 0.158651, -1.359324, 0.3300046, -6.987972, 2.788889e-12, 48.83175, 1, 4957980522, 0.241811, 0.4503643)
+                      list("(Intercept)", 2.029197, 0.3538977, 7.607972, 5.73385, 9.817603e-09, 32.87704, 1, 3.802162, 15.22324,
+                           "quantity", -1.108649, 0.158651, 0.3300046, -6.987972, 2.788889e-12, 48.83175, 1, 0.241811, 0.4503643)
   )
   unnumberedFigureB <- results[["state"]][["estimatesPlots"]][["collection"]][[1]]
   #expect_equal_plots(unnumberedFigureB, "?", dir="Ancova") # This command needs to be updated
@@ -156,12 +160,12 @@ test_that("Fields Book - Chapter 10 results match", {
   )
   output10 <- results[["results"]][["estimatesTableBootstrapping"]][["data"]]
   expect_equal_tables(output10,
-                      list(2, "(Intercept)", 1.8487167467187, 0.0499135607262049, 0.408753000376651,
-                           1.10988111733651, 2.70595579832006, "TRUE", 2, "treat (1)",
+                      list("(Intercept)", 1.8487167467187, 0.0499135607262049, 0.408753000376651,
+                           1.10988111733651, 2.70595579832006, "TRUE", "treat (1)",
                            0.221423402843459, -0.00676602090084685, 0.545714072912926,
-                           -1.01560296150666, 1.16504322673089, "FALSE", 2, "quantity",
+                           -1.01560296150666, 1.16504322673089, "FALSE", "quantity",
                            -0.0951900669778652, -0.0107304860810225, 0.176386961737937,
-                           -0.421427771699523, 0.266084292054925, "FALSE", 2, "treat (1) * quantity",
+                           -0.421427771699523, 0.266084292054925, "FALSE", "treat (1) * quantity",
                            -1.0338758817337, -0.0115090562401219, 0.245734251200521, -1.50470379009639,
                            -0.524604985275458, "FALSE")
   )
@@ -179,10 +183,11 @@ test_that("Method=backward model summary table results match", {
   results <- jasptools::run("RegressionLogistic", "debug.csv", options)
 	table <- results[["results"]][["modelSummary"]][["data"]]
 	expect_equal_tables(table,
-		list(1, 135.466477068092, 139.466477068092, 144.676817440068, 98, "",
-			 "", 0, 0, 0.043287762682406, 0, 2, 136.058400038431, 138.058400038431,
-			 140.663570224419, 99, 0.59192297033843, 0.441676479938567, -0.00435050662194492,
-			 -0.00793790496945946, 0, -0.00590174557777201))
+    list(139.466477068092, 144.676817440068, 0, 135.466477068092, 98, 0,
+         1, 0, 0.043287762682406, 138.058400038431, 140.663570224419,
+         -0.00590174557777201, 0.59192297033843, 136.058400038431, 99,
+         -0.00435050662194492, 2, -0.00793790496945946, 0.441676479938567,
+         0))
 })
 
 #forward
@@ -191,8 +196,7 @@ test_that("Method=forward model summary table results match", {
   results <- jasptools::run("RegressionLogistic", "debug.csv", options)
 	table <- results[["results"]][["modelSummary"]][["data"]]
 	expect_equal_tables(table,
-		list(1, 136.058400038431, 138.058400038431, 140.663570224419, 99, "",
-			 "", 0, "", 0, ""))
+		list(1, 136.058400038431, 138.058400038431, 140.663570224419, 99, 0, 0))
 })
 
 #stepwise
@@ -201,6 +205,99 @@ test_that("Method=stepwise model summary table results match", {
   results <- jasptools::run("RegressionLogistic", "debug.csv", options)
 	table <- results[["results"]][["modelSummary"]][["data"]]
 	expect_equal_tables(table,
-		list(1, 136.058400038431, 138.058400038431, 140.663570224419, 99, "",
-			 "", 0, "", 0, ""))
+    list(138.058400038431, 140.663570224419, 136.058400038431, 99, 0, 1,0))
+})
+
+test_that("Confusion Matrix Table Matches", {
+  options <- jasptools::analysisOptions("RegressionLogistic")
+  options$covariates <- list("contNormal")
+  options$dependent  <- "contBinom"
+  options$modelTerms <- list(
+    list(components="contNormal", isNuisance=FALSE)
+  )
+  options$confusionMatrixOpt <- TRUE
+  results <- jasptools::run("RegressionLogistic", "debug.csv", options)
+  table <- results[["results"]][["perfDiag"]][["collection"]][["perfDiag_confusionMatrix"]][["data"]]
+  expect_equal_tables(table, list(0, 58, 0, 1, 41, 1))
+  
+  options$confusionMatrixProportions <- TRUE
+  results <- jasptools::run("RegressionLogistic", "debug.csv", options)
+  table <- results[["results"]][["perfDiag"]][["collection"]][["perfDiag_confusionMatrix"]][["data"]]
+  expect_equal_tables(table, list(0, 0.58, 0, 1, 0.41, 0.01))
+})
+
+test_that("Performance Metrics Table Matches", {
+  options <- jasptools::analysisOptions("RegressionLogistic")
+  options$covariates <- list("contNormal")
+  options$dependent  <- "contBinom"
+  options$modelTerms <- list(
+    list(components="contNormal", isNuisance=FALSE)
+  )
+  options$AUC  <- TRUE
+  options$Sens <- TRUE
+  options$Spec <- TRUE
+  options$Prec <- TRUE
+  options$Fmsr <- TRUE
+  options$BrierScr  <- TRUE
+  options$Hmsr <- TRUE
+  results <- jasptools::run("RegressionLogistic", "debug.csv", options)
+  table <- results[["results"]][["perfDiag"]][["collection"]][["perfDiag_performanceMetrics"]][["data"]]
+  expect_equal_tables(table, 
+                      list("AUC", 0.529556650246305, "Sensitivity", 0.0238095238095238, "Specificity",
+                           1, "Precision", 1, "F-measure", 0.0465116279069767, "Brier score",
+                           0.242217791647847, "H-measure", 0.0686265172331011)
+  )
+  
+  options <- jasptools::analysisOptions("RegressionLogistic")
+  options$covariates <- list("contNormal")
+  options$dependent  <- "contBinom"
+  options$modelTerms <- list(
+    list(components="contNormal", isNuisance=FALSE)
+  )
+  options$AUC  <- TRUE
+  options$Sens <- TRUE
+  options$Prec <- TRUE
+  options$Fmsr <- TRUE
+  options$Hmsr <- TRUE
+  results <- jasptools::run("RegressionLogistic", "debug.csv", options)
+  table <- results[["results"]][["perfDiag"]][["collection"]][["perfDiag_performanceMetrics"]][["data"]]
+  expect_equal_tables(table, 
+                      list("AUC", 0.529556650246305, "Sensitivity", 0.0238095238095238, "Precision",
+                           1, "F-measure", 0.0465116279069767, "H-measure", 0.0686265172331011
+                      )
+  )
+})
+
+test_that("Error Handling", {
+  # factor levels not equal to 2
+  options <- jasptools::analysisOptions("RegressionLogistic")
+  options$covariates <- list("contNormal")
+  options$dependent <- "facFive"
+  results <- jasptools::run("RegressionLogistic", "debug.csv", options)
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
+  
+  # infinity check
+  options <- jasptools::analysisOptions("RegressionLogistic")
+  options$covariates <- list("debInf")
+  options$dependent <- "contBinom"
+  results <- jasptools::run("RegressionLogistic", "debug.csv", options)
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
+  
+  # <2 observations 
+  options <- jasptools::analysisOptions("RegressionLogistic")
+  options$covariates <- list("debMiss99")
+  options$dependent <- "contBinom"
+  results <- jasptools::run("RegressionLogistic", "debug.csv", options)
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
+  
+  # variance check
+  options <- jasptools::analysisOptions("RegressionLogistic")
+  options$covariates <- list("debSame")
+  options$dependent <- "contBinom"
+  results <- jasptools::run("RegressionLogistic", "debug.csv", options)
+  status <- results[["status"]]
+  expect_identical(status, "validationError")
 })

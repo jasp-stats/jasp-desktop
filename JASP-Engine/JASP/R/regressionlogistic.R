@@ -75,6 +75,16 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
                exitAnalysisIfErrors = TRUE)
 }
 
+# Performance Diagnostics Container
+.reglogisticPerfDiagContainer <- function(jaspResults) {
+  if (is.null(jaspResults[["perfDiag"]])) {
+    container <- createJaspContainer("Performance Diagnostics")
+    dependList <- c()
+    container$dependOn(dependList)
+    jaspResults[["perfDiag"]] <- container
+  }
+}
+
 # Tables
 .reglogisticModelSummaryTable <- function(jaspResults, dataset, 
                                           options, ready) {
@@ -170,7 +180,8 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
                                type = "integer", overtitle = "Wald Test")
   estimatesTable$addColumnInfo(name = "pval",    title = "p", 
                                type = "pvalue", overtitle = "Wald Test")
-  .reglogisticVovkSellke(estimatesTable, options)
+  if(options$VovkSellkeMPR)
+    .reglogisticVovkSellke(estimatesTable, options)
   if(options$coeffCI) {
     estimatesTable$addColumnInfo(name = "cilo", title = "Lower bound", 
                                  type = "number", format="dp:3", 
@@ -188,8 +199,8 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   
   jaspResults[["estimatesTable"]] <- estimatesTable
   
-  res <- try(.reglogisticEstimatesFill(jaspResults, dataset, options, 
-                                       ready, multimod))
+  if(!ready) return()
+  res <- try(.reglogisticEstimatesFill(jaspResults, dataset, options, multimod))
   
   .reglogisticSetError(res, estimatesTable)
 }
@@ -237,8 +248,8 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   
   jaspResults[["estimatesTableBootstrapping"]] <- estimatesTableBootstrap
   
-  res <- try(.reglogisticEstimatesBootstrapFill(jaspResults, dataset, 
-                                                options, ready, multimod))
+  if(!ready) return()
+  res <- try(.reglogisticEstimatesBootstrapFill(jaspResults, dataset, options, multimod))
   
   .reglogisticSetError(res, estimatesTableBootstrap)
   
@@ -282,8 +293,8 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   
   jaspResults[["casewiseDiagnosticsTable"]] <- casDiag
   
-  res <- try(.reglogisticCasewiseDiagnosticsFill(jaspResults, dataset, 
-                                                 options, ready))
+  if(!ready) return()
+  res <- try(.reglogisticCasewiseDiagnosticsFill(jaspResults, dataset, options))
   
   .reglogisticSetError(res, casDiag)
 }
@@ -320,23 +331,29 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
 
 .reglogisticConfusionMatrixTable <- function(jaspResults, dataset, 
                                              options, ready) {
+  .reglogisticPerfDiagContainer(jaspResults)
+  container <- jaspResults[["perfDiag"]]
   if(!options$confusionMatrixOpt || 
-     !is.null(jaspResults[["confusionMatrix"]]))
+     !is.null(container[["confusionMatrix"]]))
     return()
-  
   confusionMatrix <- createJaspTable("Confusion matrix")
   confusionMatrix$dependOn(optionsFromObject = jaspResults[["modelSummary"]],
                            options           = c("confusionMatrixOpt"))
   confusionMatrix$position <- 6
   confusionMatrix$showSpecifiedColumnsOnly <- TRUE
   
+  # Compute/Get Model
+  glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
+  
   confusionMatrix$addColumnInfo(name = "obs", title = "Observed", 
                                 type = "string")
-  if (ready) {
-    modelTerms <- c()
-    for(i in seq_along(options$modelTerms))
-      modelTerms <- c(modelTerms, options$modelTerms[[i]]$components)
-    levs <- levels(dataset[[.v(modelTerms)]])
+  if (ready && !is.null(glmObj)) {
+    #modelTerms <- c()
+    #for(i in seq_along(options$modelTerms))
+    #  modelTerms <- c(modelTerms, options$modelTerms[[i]]$components)
+    #levs <- levels(dataset[[.v(modelTerms)]])
+    mObj <- glmObj[[length(glmObj)]]
+    levs <- levels(mObj[["model"]][,1])
   } else
     levs <- c(0,1)
   if(options$confusionMatrixProportions) {
@@ -351,20 +368,20 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
                                   type = "integer", overtitle = "Predicted")
   }
   
-  jaspResults[["confusionMatrix"]] <- confusionMatrix
+  container[["confusionMatrix"]] <- confusionMatrix
   
-  res <- try(.reglogisticconfusionMatrixFill(jaspResults, dataset, 
-                                             options, ready))
+  res <- try(.reglogisticConfusionMatrixFill(container, dataset, options, glmObj, ready))
   
   .reglogisticSetError(res, confusionMatrix)
 }
 
-.reglogisticPerformanceMetricsTable <- function(jaspResults, dataset, 
-                                                options, ready){
-  if(!is.null(jaspResults[["performanceMetrics"]]))
+.reglogisticPerformanceMetricsTable <- function(jaspResults, dataset, options, ready){
+  .reglogisticPerfDiagContainer(jaspResults)
+  container <- jaspResults[["perfDiag"]]
+  if(!is.null(container[["performanceMetrics"]]))
     return()
   performList <- c("AUC", "Sens", "Spec", "Prec", "Fmsr", "BrierScr", "Hmsr")
-  if(all(unlist(options[performList])))
+  if(!any(unlist(options[performList])))
     return()
   performanceMetrics <- createJaspTable("Performance metrics")
   performanceMetrics$dependOn(optionsFromObject = jaspResults[["modelSummary"]],
@@ -375,16 +392,15 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   performanceMetrics$addColumnInfo(name = "met", title = "", type = "string")
   performanceMetrics$addColumnInfo(name = "val", title = "Value", type = "number")
   
-  jaspResults[["performanceMetrics"]] <- performanceMetrics
+  container[["performanceMetrics"]] <- performanceMetrics
   
-  res <- try(.reglogisticPerformanceMetricsFill(jaspResults, dataset, options, ready))
+  res <- try(.reglogisticPerformanceMetricsFill(container, dataset, options, ready))
   
   .reglogisticSetError(res, performanceMetrics)
 }
 
 #Table Filling
-.reglogisticModelSummaryFill <- function(jaspResults, dataset, 
-                                         options, ready) {
+.reglogisticModelSummaryFill <- function(jaspResults, dataset, options, ready) {
   if(ready) {
     # Compute/Get Model
     glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
@@ -490,19 +506,74 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   jaspResults[["modelSummary"]]$addRows(rows)
 }
 
-.reglogisticEstimatesFill <- function(jaspResults, dataset, options, 
-                                      ready, multimod) {
-  if (ready) {
-    # Compute/Get Model
-    glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
-    rows   <- list()
-    if (!multimod) {
-      s  <- summary(glmObj[[2]])[["coefficients"]]
-      rn <- rownames(s)
+.reglogisticEstimatesFill <- function(jaspResults, dataset, options, multimod) {
+  # Compute/Get Model
+  glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
+  rows   <- list()
+  alpha <- qnorm(1 - (1 - options$coeffCIInterval) / 2)
+  if (!multimod) {
+    s  <- summary(glmObj[[2]])[["coefficients"]]
+    rn <- rownames(s)
+    rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
+    beta  <- .stdEst(glmObj[[2]], type = "X") # stand. X continuous vars
+    
+    # Confidence intervals on the odds ratio scale
+    if (options$coeffCIOR)
+      expon <- function(x) exp(x)
+    else
+      expon <- function(x) x
+    
+    if (length(rn) == 1) {
+      s <- unname(s)
+      if (options$robustSEOpt) {
+        s[2] <- unname(.glmRobustSE(glmObj[[2]])) # new se
+        s[3] <- s[1]/s[2] # new z
+        s[4] <- 2*pnorm(-abs(s[3])) # new p
+      }
+      waldtest  <- mdscore::wald.test(glmObj[[2]], term = 1)
+      rows[[1]] <- list(param   = .formatTerm(rn, glmObj[[2]]),
+                        est     = s[1],
+                        se      = s[2],
+                        std     = as.numeric(beta),
+                        or      = exp(s[1]),
+                        zval    = s[3],
+                        pval    = s[4],
+                        waldsta = as.numeric(waldtest$W),
+                        walddf  = as.numeric(1),
+                        vsmpr   = .VovkSellkeMPR(s[4]),
+                        cilo    = expon(s[1] - alpha * s[2]),
+                        ciup    = expon(s[1] + alpha * s[2]))
+    } else {
+      if (options$robustSEOpt) {
+        s[,2] <- unname(.glmRobustSE(glmObj[[2]])) # new se
+        s[,3] <- s[,1]/s[,2] # new z
+        s[,4] <- 2*pnorm(-abs(s[,3])) # new p
+      }
+      for (i in seq_along(rn)) {
+        
+        waldtest <- mdscore::wald.test(glmObj[[2]], term = i)
+        
+        rows[[i]] <- list(param   = .formatTerm(rn[i], glmObj[[2]]),
+                          est     = s[i,1],
+                          se      = s[i,2],
+                          std     = as.numeric(beta[i]),
+                          or      = exp(s[i,1]),
+                          zval    = s[i,3],
+                          pval    = s[i,4],
+                          waldsta = as.numeric(waldtest$W),
+                          walddf  = as.numeric(1),
+                          vsmpr   = .VovkSellkeMPR(s[i,4]),
+                          cilo    = expon(s[i,1] - alpha * s[i,2]),
+                          ciup    = expon(s[i,1] + alpha * s[i,2]))
+      }
+    }
+  } else {
+    for (midx in 1:length(glmObj)) {
+      mObj <- glmObj[[midx]]
+      s    <- summary(mObj)[["coefficients"]]
+      rn   <- rownames(s)
       rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
-      # `c` should be renamed to something better
-      c    <- qnorm(1 - (1 - options$coeffCIInterval)/2)
-      beta <- .stdEst(glmObj[[2]], type = "X") # stand. X continuous vars
+      beta <- .stdEst(mObj, type = "X") # stand. X continuous vars
       
       # Confidence intervals on the odds ratio scale
       if (options$coeffCIOR)
@@ -510,215 +581,145 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
       else
         expon <- function(x) x
       
+      
       if (length(rn) == 1) {
         s <- unname(s)
         if (options$robustSEOpt) {
-          s[2] <- unname(.glmRobustSE(glmObj[[2]])) # new se
+          s[2] <- unname(.glmRobustSE(mObj)) # new se
           s[3] <- s[1]/s[2] # new z
           s[4] <- 2*pnorm(-abs(s[3])) # new p
         }
-        waldtest  <- mdscore::wald.test(glmObj[[2]], term = 1)
-        rows[[1]] <- list(param   = .formatTerm(rn, glmObj[[2]]),
-                          est     = s[1],
-                          se      = s[2],
-                          std     = as.numeric(beta),
-                          or      = exp(s[1]),
-                          zval    = s[3],
-                          pval    = s[4],
-                          waldsta = as.numeric(waldtest$W),
-                          walddf  = as.numeric(1),
-                          vsmpr   = .VovkSellkeMPR(s[4]),
-                          cilo    = expon(s[1] - c * s[2]),
-                          ciup    = expon(s[1] + c * s[2]))
+        waldtest <- mdscore::wald.test(mObj, term = 1)
+        
+        rows[[length(rows)+1]] <- list(
+          model   = as.character(midx),
+          param   = .formatTerm(rn, mObj),
+          est     = s[1],
+          se      = s[2],
+          std     = as.numeric(beta),
+          or      = exp(s[1]),
+          zval    = s[3],
+          pval    = s[4],
+          waldsta = as.numeric(waldtest$W),
+          walddf  = as.numeric(1),
+          vsmpr   = .VovkSellkeMPR(s[4]),
+          cilo    = expon(s[1] - alpha * s[2]),
+          ciup    = expon(s[1] + alpha * s[2]),
+          .isNewGroup = TRUE
+        )
       } else {
         if (options$robustSEOpt) {
-          s[,2] <- unname(.glmRobustSE(glmObj[[2]])) # new se
+          s[,2] <- unname(.glmRobustSE(mObj)) # new se
           s[,3] <- s[,1]/s[,2] # new z
           s[,4] <- 2*pnorm(-abs(s[,3])) # new p
         }
         for (i in seq_along(rn)) {
           
-          waldtest <- mdscore::wald.test(glmObj[[2]], term = i)
-          
-          rows[[i]] <- list(param   = .formatTerm(rn[i], glmObj[[2]]),
-                            est     = s[i,1],
-                            se      = s[i,2],
-                            std     = as.numeric(beta[i]),
-                            or      = exp(s[i,1]),
-                            zval    = s[i,3],
-                            pval    = s[i,4],
-                            waldsta = as.numeric(waldtest$W),
-                            walddf  = as.numeric(1),
-                            vsmpr   = .VovkSellkeMPR(s[i,4]),
-                            cilo    = expon(s[i,1] - c * s[i,2]),
-                            ciup    = expon(s[i,1] + c * s[i,2]))
-        }
-      }
-    } else {
-      for (midx in 1:length(glmObj)) {
-        mObj <- glmObj[[midx]]
-        s    <- summary(mObj)[["coefficients"]]
-        rn   <- rownames(s)
-        rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
-        # `c` should be renamed to something better
-        # c <- qnorm(1 - (100 - options$coeffCIInterval) / 200)
-        beta <- .stdEst(mObj, type = "X") # stand. X continuous vars
-        
-        # Confidence intervals on the odds ratio scale
-        if (options$coeffCIOR)
-          expon <- function(x) exp(x)
-        else
-          expon <- function(x) x
-        
-        
-        if (length(rn) == 1) {
-          s <- unname(s)
-          if (options$robustSEOpt) {
-            s[2] <- unname(.glmRobustSE(mObj)) # new se
-            s[3] <- s[1]/s[2] # new z
-            s[4] <- 2*pnorm(-abs(s[3])) # new p
-          }
-          waldtest <- mdscore::wald.test(mObj, term = 1)
-          
-          rows[[length(rows)+1]] <- list(
+          waldtest <- mdscore::wald.test(mObj, term = i)
+          row <- list(
             model   = as.character(midx),
-            param   = .formatTerm(rn, mObj),
-            est     = s[1],
-            se      = s[2],
-            std     = as.numeric(beta),
-            or      = exp(s[1]),
-            zval    = s[3],
-            pval    = s[4],
+            param   = .formatTerm(rn[i], mObj),
+            est     = s[i,1],
+            se      = s[i,2],
+            std     = as.numeric(beta[i]),
+            or      = exp(s[i,1]),
+            zval    = s[i,3],
+            pval    = s[i,4],
             waldsta = as.numeric(waldtest$W),
             walddf  = as.numeric(1),
-            vsmpr   = .VovkSellkeMPR(s[4]),
-            cilo    = expon(s[1] - c * s[2]),
-            ciup    = expon(s[1] + c * s[2]),
-            .isNewGroup = TRUE
+            vsmpr   = .VovkSellkeMPR(s[i,4]),
+            cilo    = expon(s[i,1] - alpha * s[i,2]),
+            ciup    = expon(s[i,1] + alpha * s[i,2])
           )
-        } else {
-          if (options$robustSEOpt) {
-            s[,2] <- unname(.glmRobustSE(mObj)) # new se
-            s[,3] <- s[,1]/s[,2] # new z
-            s[,4] <- 2*pnorm(-abs(s[,3])) # new p
-          }
-          for (i in seq_along(rn)) {
-            
-            waldtest <- mdscore::wald.test(mObj, term = i)
-            
-            row <- list(
-              model   = as.character(midx),
-              param   = .formatTerm(rn[i], mObj),
-              est     = s[i,1],
-              se      = s[i,2],
-              std     = as.numeric(beta[i]),
-              or      = exp(s[i,1]),
-              zval    = s[i,3],
-              pval    = s[i,4],
-              waldsta = as.numeric(waldtest$W),
-              walddf  = as.numeric(1),
-              vsmpr   = .VovkSellkeMPR(s[i,4]),
-              cilo    = expon(s[i,1] - c * s[i,2]),
-              ciup    = expon(s[i,1] + c * s[i,2])
-            )
-            if (i == 1)
-              row[[".isNewGroup"]] <- TRUE
-            else
-              row[[".isNewGroup"]] <- FALSE
-            rows[[length(rows) + 1]] <- row
-          }
-        }
-      }
-    }
-    
-    predVar   <- as.character(glmObj[[1]][["terms"]])[2]
-    predLevel <- levels(glmObj[[1]][["data"]][[predVar]])[2]
-    message   <- paste0(.unv(predVar), " level '", predLevel, "' coded as class 1.")
-    jaspResults[["estimatesTable"]]$addFootnote(message)
-    
-  } else {
-    return()
-  }
-  jaspResults[["estimatesTable"]]$addRows(rows)
-}
-
-.reglogisticEstimatesBootstrapFill <- function(jaspResults, dataset, 
-                                               options, ready, multimod){
-  if (ready) {
-    # Compute/Get Model
-    glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
-    rows   <- list()
-    ci.fails   <- FALSE
-    if (!is.null(glmObj)) {
-      ticks    <- options$coeffEstimatesBootstrappingReplicates
-      progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
-      rows     <- list()
-      
-      for (i in 1:length(glmObj)) {
-        if (!multimod && i != 2)
-          next
-        rn <- rownames(summary(glmObj[[i]])[["coefficients"]])
-        rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
-        .bootstrapping    <- function(data, indices, model.formula, options) {
-          pr <- progress()
-          response <- .optionsDiffCheckBootstrapLogisticRegression(pr, options)
-          
-          if(response$status == "changed" || response$status == "aborted")
-            stop("Bootstrapping options have changed")
-          
-          d <- data[indices, , drop = FALSE] # allows boot to select sample
-          result <- glm(model.formula, family = "binomial", data = d)
-          
-          return(coef(result))
-        }
-        bootstrap.summary <- try(boot::boot(data = dataset, 
-                                            statistic = .bootstrapping,
-                                            R = options$coeffEstimatesBootstrappingReplicates,
-                                            model.formula = formula(glmObj[[i]]),
-                                            options = options),
-                                 silent = TRUE)
-        
-        if(isTryError(bootstrap.summary) &&
-           identical(attr(bootstrap.summary, "condition")$message, "Bootstrapping options have changed"))
-          return("Bootstrapping options have changed")
-        bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
-        bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
-        bootstrap.se   <- matrixStats::colSds(as.matrix(bootstrap.summary$t), na.rm = TRUE)
-        
-        for (j in seq_along(rn)) {
-          result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type = "bca", conf = 0.95, index=j))
-          if(!isTryError(result.bootstrap.ci))
-            bootstrap.ci <- result.bootstrap.ci
-          else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
-            ci.fails <- TRUE
-            bootstrap.ci <- list(bca = rep(NA, 5))
-          } else
-            bootstrap.ci <- result.bootstrap.ci
-          
-          if(ci.fails){
-            message <- "Some confidence intervals could not be computed. 
-                Possibly too few bootstrap replicates."
-            estimatesTableBootstrap$addFootnote(message, symbol = "<i>Note.</i>")
-          }
-          
-          row <- list(
-            model = as.character(i),
-            param = .formatTerm(rn[j], glmObj[[i]]),
-            est   = as.numeric(bootstrap.coef[j]),
-            bias  = as.numeric(bootstrap.bias[j]),
-            se    = as.numeric(bootstrap.se[j]),
-            cilo  = as.numeric(bootstrap.ci$bca[4]),
-            ciup  = as.numeric(bootstrap.ci$bca[5])
-          )
-          if (j == 1)
+          if (i == 1)
             row[[".isNewGroup"]] <- TRUE
           else
             row[[".isNewGroup"]] <- FALSE
           rows[[length(rows) + 1]] <- row
         }
       }
-    } else {
-      return()
+    }
+  }
+  jaspResults[["estimatesTable"]]$addRows(rows)
+  
+  predVar   <- as.character(glmObj[[1]][["terms"]])[2]
+  predLevel <- levels(glmObj[[1]][["data"]][[predVar]])[2]
+  message   <- paste0(.unv(predVar), " level '", predLevel, "' coded as class 1.")
+  jaspResults[["estimatesTable"]]$addFootnote(message)
+}
+
+.reglogisticEstimatesBootstrapFill <- function(jaspResults, dataset, options, multimod){
+  # Compute/Get Model
+  glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
+  rows   <- list()
+  ci.fails   <- FALSE
+  if (!is.null(glmObj)) {
+    ticks    <- options$coeffEstimatesBootstrappingReplicates
+    progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+    rows     <- list()
+    
+    for (i in 1:length(glmObj)) {
+      if (!multimod && i != 2)
+        next
+      rn <- rownames(summary(glmObj[[i]])[["coefficients"]])
+      rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
+      .bootstrapping    <- function(data, indices, model.formula, options) {
+        pr <- progress()
+        response <- .optionsDiffCheckBootstrapLogisticRegression(pr, options)
+        
+        if(response$status == "changed" || response$status == "aborted")
+          stop("Bootstrapping options have changed")
+        
+        d <- data[indices, , drop = FALSE] # allows boot to select sample
+        result <- glm(model.formula, family = "binomial", data = d)
+        
+        return(coef(result))
+      }
+      bootstrap.summary <- try(boot::boot(data = dataset, 
+                                          statistic = .bootstrapping,
+                                          R = options$coeffEstimatesBootstrappingReplicates,
+                                          model.formula = formula(glmObj[[i]]),
+                                          options = options),
+                               silent = TRUE)
+      
+      if(isTryError(bootstrap.summary) &&
+         identical(attr(bootstrap.summary, "condition")$message, "Bootstrapping options have changed"))
+        return("Bootstrapping options have changed")
+      bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
+      bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
+      bootstrap.se   <- matrixStats::colSds(as.matrix(bootstrap.summary$t), na.rm = TRUE)
+      
+      for (j in seq_along(rn)) {
+        result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type = "bca", conf = 0.95, index=j))
+        if(!isTryError(result.bootstrap.ci))
+          bootstrap.ci <- result.bootstrap.ci
+        else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
+          ci.fails <- TRUE
+          bootstrap.ci <- list(bca = rep(NA, 5))
+        } else
+          bootstrap.ci <- result.bootstrap.ci
+        
+        if(ci.fails){
+          message <- "Some confidence intervals could not be computed. 
+              Possibly too few bootstrap replicates."
+          estimatesTableBootstrap$addFootnote(message, symbol = "<i>Note.</i>")
+        }
+        
+        row <- list(
+          model = as.character(i),
+          param = .formatTerm(rn[j], glmObj[[i]]),
+          est   = as.numeric(bootstrap.coef[j]),
+          bias  = as.numeric(bootstrap.bias[j]),
+          se    = as.numeric(bootstrap.se[j]),
+          cilo  = as.numeric(bootstrap.ci$bca[4]),
+          ciup  = as.numeric(bootstrap.ci$bca[5])
+        )
+        if (j == 1)
+          row[[".isNewGroup"]] <- TRUE
+        else
+          row[[".isNewGroup"]] <- FALSE
+        rows[[length(rows) + 1]] <- row
+      }
     }
   } else {
     return()
@@ -726,39 +727,33 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   jaspResults[["estimatesTableBootstrapping"]]$addRows(rows)
 }
 
-.reglogisticCasewiseDiagnosticsFill <- function(jaspResults, dataset, 
-                                                options, ready){
-  if (ready) {
-    # Compute/Get Model
-    glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
-    if (is.null(glmObj))
+.reglogisticCasewiseDiagnosticsFill <- function(jaspResults, dataset, options){
+  # Compute/Get Model
+  glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
+  if (is.null(glmObj))
+    return()
+  else {
+    casewiseDiag <- .casewiseDiagnosticsLogisticRegression(dataset, glmObj, options)
+    caseNumbers  <- casewiseDiag$index
+    if (is.na(caseNumbers))
       return()
     else {
-      casewiseDiag <- .casewiseDiagnosticsLogisticRegression(dataset, glmObj, options)
-      caseNumbers  <- casewiseDiag$index
-      if (is.na(caseNumbers))
-        return()
-      else {
-        for (case in seq_along(caseNumbers))
-          jaspResults[["casewiseDiagnosticsTable"]]$addRows(
-            list(caseNumber = caseNumbers[case], 
-                 observed   = casewiseDiag$dependent[case],
-                 predicted  = casewiseDiag$predicted[case],
-                 predGroup  = casewiseDiag$predictedGroup[case],
-                 residual   = casewiseDiag$residual[case],
-                 residualZ  = casewiseDiag$residualZ[case],
-                 cooksD     = casewiseDiag$cooksD[case]
-            )
+      for (case in seq_along(caseNumbers))
+        jaspResults[["casewiseDiagnosticsTable"]]$addRows(
+          list(caseNumber = caseNumbers[case], 
+               observed   = casewiseDiag$dependent[case],
+               predicted  = casewiseDiag$predicted[case],
+               predGroup  = casewiseDiag$predictedGroup[case],
+               residual   = casewiseDiag$residual[case],
+               residualZ  = casewiseDiag$residualZ[case],
+               cooksD     = casewiseDiag$cooksD[case]
           )
-      }
+        )
     }
-    
-  } else
-    return()
+  }
 }
 
-.reglogisticFactorDescriptivesFill <- function(jaspResults, dataset, 
-                                               options){
+.reglogisticFactorDescriptivesFill <- function(jaspResults, dataset, options){
   rows <- list()
   if (length(options$factors) > 0) {
     lvls    <- list()
@@ -801,11 +796,8 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   jaspResults[["factorDescriptives"]]$addRows(rows)
 }
 
-.reglogisticconfusionMatrixFill <- function(jaspResults, dataset, 
-                                            options, ready) {
+.reglogisticConfusionMatrixFill <- function(container, dataset, options, glmObj, ready) {
   if (ready) {
-    # Compute/Get Model
-    glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
     mObj   <- glmObj[[length(glmObj)]]
     levs   <- levels(mObj[["model"]][,1])
     if (options$confusionMatrixProportions)
@@ -822,16 +814,14 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
       list(obs = "0", pred0 = ".", pred1 = "."),
       list(obs = "1", pred0 = ".", pred1 = ".")
     )
-  jaspResults[["confusionMatrix"]]$addRows(rows)
+  container[["confusionMatrix"]]$addRows(rows)
 }
 
-.reglogisticPerformanceMetricsFill <- function(jaspResults, dataset, 
-                                               options, ready){
-  if (ready) {
+.reglogisticPerformanceMetricsFill <- function(container, dataset, options, ready){
+  if(ready) {
     # Compute/Get Model
     glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
     mObj   <- glmObj[[length(glmObj)]]
-    
     m <- .confusionMatrix(mObj, cutoff = 0.5)[["metrics"]]
     rows <- list(
       list(met = "AUC",         val = m[["AUC"]]),
@@ -855,9 +845,8 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   
   # determine which scores we need
   scrNeed  <- with(options, c(AUC, Sens, Spec, Prec, Fmsr, BrierScr, Hmsr))
-  rows <- rows[scrNeed]
-  
-  jaspResults[["performanceMetrics"]]$addRows(rows)
+  rows     <- rows[scrNeed]
+  container[["performanceMetrics"]]$addRows(rows)
 }
 
 # Plots
@@ -886,21 +875,24 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
     if (length(term$components) == 1 && 
         (is.null(term$isNuisance) || !term$isNuisance))
       predictors <- c(predictors, term$components)
-  # plot only predictors selected in the final model
-  predictors <- predictors[.v(predictors) %in% attr(mObj[["terms"]], 
-                                                    "term.labels")]
-  for(pred in predictors) {
-    estimatesPlot <- createJaspPlot(title = pred, width = 480, height = 320)
-    estimatesPlot$dependOn(optionsFromObject = jaspResults[["modelSummary"]],
-                           options           = c("estimatesPlotsOpt", 
-                                                 "estimatesPlotsCI", 
-                                                 "showPoints"))
-    p <- try(.reglogisticEstimatesPlotFill(dataset, options, mObj, pred))
-    if(isTryError(p))
-      estimatesPlot$setError(.extractErrorMessage(p))
-    else
-      estimatesPlot$plotObject <- p
-    jaspResults[["estimatesPlot"]][[pred]] <- estimatesPlot
+  
+  if (length(predictors) > 0 && !is.null(glmObj)) {
+    # plot only predictors selected in the final model
+    predictors <- predictors[.v(predictors) %in% attr(mObj[["terms"]], 
+                                                      "term.labels")]
+    for(pred in predictors) {
+      estimatesPlot <- createJaspPlot(title = pred, width = 480, height = 320)
+      estimatesPlot$dependOn(optionsFromObject = jaspResults[["modelSummary"]],
+                             options           = c("estimatesPlotsOpt", 
+                                                   "estimatesPlotsCI", 
+                                                   "showPoints"))
+      p <- try(.reglogisticEstimatesPlotFill(options, mObj, pred))
+      if(isTryError(p))
+        estimatesPlot$setError(.extractErrorMessage(p))
+      else
+        estimatesPlot$plotObject <- p
+      jaspResults[["estimatesPlot"]][[pred]] <- estimatesPlot
+    }
   }
   return()
 }
@@ -919,7 +911,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   predictedPlot <- createJaspPlot(title = title, width = 480, height = 320)
   predictedPlot$dependOn("predictedPlotOpt")
   
-  p <- try(.reglogisticResidPlotFill(dataset, options, mObj))
+  p <- try(.reglogisticResidPlotFill(options, mObj))
   if(isTryError(p))
     predictedPlot$setError(.extractErrorMessage(p))
   else
@@ -952,7 +944,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
     predictorPlot <- createJaspPlot(title = pred, width = 480, height = 320)
     predictorPlot$dependOn("predictorPlotsOpt")
     
-    p <- try(.reglogisticResidPlotFill(dataset, options, mObj, pred))
+    p <- try(.reglogisticResidPlotFill(options, mObj, pred))
     if(isTryError(p))
       predictorPlot$setError(.extractErrorMessage(p))
     else
@@ -987,21 +979,20 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
 }
 
 # Plot Filling
-.reglogisticEstimatesPlotFill <- function(dataset, options, mObj, pred){
+.reglogisticEstimatesPlotFill <- function(options, mObj, pred){
   # If user wants raw data points, get them from data
   points <- options$showPoints
   if (points) {
     mf <- model.frame(mObj)
     factors <- names(mObj[["xlevels"]])
-    if (.v(var) %in% factors)
-      vd <- as.factor(mObj[["data"]][[.v(var)]])
+    if (.v(pred) %in% factors)
+      vd <- as.factor(mObj[["data"]][[.v(pred)]])
     else
-      vd <- mf[,.v(var)]
+      vd <- mf[,.v(pred)]
     ggdat <- data.frame(x = vd, y = mObj$y)
   }
   # Calculate ribbon & main line
   ribdat <- .glmLogRegRibbon(mObj, .v(pred))
-  
   # Find predicted level
   predVar   <- as.character(mObj[["terms"]])[2]
   predLevel <- levels(mObj[["data"]][[predVar]])[2]
@@ -1009,7 +1000,6 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   # this will become the y-axis title
   ytitle <- substitute(expr = "P("*italic(x)~italic("=")~italic(y)*")",
                        env = list(x = .unv(predVar), y = predLevel))
-  
   if (attr(ribdat, "factor")) {
     # the variable is a factor, plot points with errorbars
     p <- ggplot2::ggplot(ribdat, ggplot2::aes(x = x, y = y))
@@ -1019,7 +1009,6 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
         position = ggplot2::position_jitter(height = 0.01, width = 0.04),
         color = "dark grey", alpha = 0.3)
     }
-    
     p <- p +
       ggplot2::geom_point(data = ribdat,
         mapping = ggplot2::aes(x = x, y = y),
@@ -1086,8 +1075,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   return(p)
 }
 
-.reglogisticResidPlotFill <- function(dataset, options, 
-                                      glmModel, var = NULL){
+.reglogisticResidPlotFill <- function(options, glmModel, var = NULL){
   # plots residuals against predicted (var = NULL) or predictor (var = "name")
   type <- options$residualType
   if (!is.null(var))
