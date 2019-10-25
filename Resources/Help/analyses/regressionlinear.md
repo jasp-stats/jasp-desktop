@@ -26,6 +26,8 @@ Linear regression allows the user to model a linear relationship between one or 
 - WLS Weights: The weights used for weighted least square regression.
 
 ### Model
+- Include intercept:
+  - Include the intercept in the regression model.
 - Components and model terms: 
     - Components: All the independent variables that can be included in the model. 
     - Model terms: The independent variables in the model. By default, all the main effects of the specified independent variables are included in the model. To include interactions, click multiple variables (e.g., by holding the ctrl/cmd button on your keyboard while clicking) and drag those into the `Model Terms` box. 
@@ -37,6 +39,8 @@ Linear regression allows the user to model a linear relationship between one or 
     - From `...` bootstraps: By selecting this option, bootstrapped estimation is applied. By default, the number of replications is set to 1000. This can be changed into the desired number. 
   - Confidence Intervals: By selecting this option, confidence intervals for the estimated mean difference will be included. By default the confidence level is set to 95%. This can be changed into the desired percentage. 
   - Covariance matrix: Display the covariance matrix of the predictor variables, per model.
+  - Vovk-Sellke Maximum *p*-Ratio: The bound 1/(-e *p* log(*p*)) is derived from the shape of the *p*-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform(0,1), and under the alternative (H<sub>1</sub>) it is decreasing in *p*, e.g., a beta(&#945;, 1) distribution, where 0 < &#945; < 1. The Vovk-Sellke MPR is obtained by choosing the shape &#945; of the distribution under H<sub>1</sub> such that the obtained *p*-value is *maximally diagnostic*. The value is then the ratio of the densities at point *p* under H<sub>0</sub> and H<sub>1</sub>.
+For example, if the two-sided *p*-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this *p*-value is at most 2.46 times more likely to occur under H<sub>1</sub> than under H<sub>0</sub>.
   - Model fit: Separate ANOVA table for each model (i.e., each step in Backward, Forward, and Stepwise regression).
   - R squared change: Change in R squared between the different steps in Backward, Forward, and Stepwise regression,  with corresponding significance test (i.e., F change value, df1, df2, p-value).
   - Descriptives: Samples size, sample mean, sample standard deviation, and standard error of the mean.
@@ -52,7 +56,7 @@ Linear regression allows the user to model a linear relationship between one or 
     - All cases: Display diagnostics for all cases.
 
 
-### Options
+### Method Specification
 - Stepping Method Criteria:
   - Use p value: Use p-value as criterion for adding and removing predictors in Backward, Forward, and Stepwise regression.
     - Entry: Add predictor if p-value of regression coefficient < x; default is x=0.05.
@@ -60,12 +64,6 @@ Linear regression allows the user to model a linear relationship between one or 
   - Use F value: Use F-value as criterion for adding and removing predictors.
     - Entry: Add predictor if F-value (t^2) of regression coefficient is > x; default is x=3.84.
     - Removal: Remove predictor if F-value (t^2) of regression coefficient is < x; default is x=2.71.
-
-- Include constant in equation:
-  - Include the intercept in the regression model.
-
-- Vovk-Sellke Maximum *p*-Ratio: The bound 1/(-e *p* log(*p*)) is derived from the shape of the *p*-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform(0,1), and under the alternative (H<sub>1</sub>) it is decreasing in *p*, e.g., a beta(&#945;, 1) distribution, where 0 < &#945; < 1. The Vovk-Sellke MPR is obtained by choosing the shape &#945; of the distribution under H<sub>1</sub> such that the obtained *p*-value is *maximally diagnostic*. The value is then the ratio of the densities at point *p* under H<sub>0</sub> and H<sub>1</sub>.
-For example, if the two-sided *p*-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this *p*-value is at most 2.46 times more likely to occur under H<sub>1</sub> than under H<sub>0</sub>.
 
 ### Plots
 
