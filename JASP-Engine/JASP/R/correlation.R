@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 Correlation <- function(jaspResults, dataset, options){
-  # Read dataset ----
   dataset <- .corrReadData(dataset, options)
   ready <- length(options$variables) >= 2
   
@@ -108,8 +107,7 @@ Correlation <- function(jaspResults, dataset, options){
     .corrInitCorrelationTable(mainTable, options, variables)
   }
   
-  if(options[['flagSignificant']])
-    mainTable$addFootnote(message = "p < .05, ** p < .01, *** p < .001", symbol = "*")
+  if(options[['flagSignificant']]) mainTable$addFootnote(message = "p < .05, ** p < .01, *** p < .001", symbol = "*")
   
   if(length(options$conditioningVariables) > 0){
     message <- sprintf("Conditioned on variables: %s", paste(options$conditioningVariables, collapse = ", "))
@@ -309,7 +307,6 @@ Correlation <- function(jaspResults, dataset, options){
         spearman <- .corr.test(x = data[,1], y = data[,2], z = condData, 
                                method = "spearman", alternative = alt, 
                                conf.level = options$confidenceIntervalsInterval)
-        
         spearmanErrors <- spearman$errors
         spearman <- spearman$result
         
@@ -324,7 +321,7 @@ Correlation <- function(jaspResults, dataset, options){
         pearsonErrors <- spearmanErrors <- kendallErrors <- TRUE
       }
       
-      # stolen from manova
+      # stolen from manova.R
       shapiro <- .multivariateShapiroComputation(data, list(dependent = .unv(vcomb[[i]])))
       
       results[[vpair[i]]] <- list(vars = .unv(vcomb[[i]]), vvars = vcomb[[i]], 
@@ -417,6 +414,7 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 .corrAssumptions <- function(jaspResults, dataset, options, ready, corrResults){
+  # uses .multivariateShapiroComputation from manova.R
   if(isFALSE(options$multivariateShapiro) && isFALSE(options$pairwiseShapiro)) return()
   if(!is.null(jaspResults[['assumptionsContainer']])) return()
   
@@ -608,6 +606,12 @@ Correlation <- function(jaspResults, dataset, options){
         } else {
           r <- results[[currentPairName]][[statName]]
           
+          # flag significant correlations
+          if(options[['flagSignificant']] && grepl("p.value", statName) && r < 0.05){
+            .corrFlagSignificant(table = mainTable, p.values = r, 
+                                 colName = gsub("p.value", "estimate", currentColumnName),
+                                 rowNames = vvars[[rowVar]])
+          }
           # display errors as footnotes
           if(is.list(errors[[currentPairName]]) && !is.null(errors[[currentPairName]]$message) && statName != "sample.size"){
             mainTable$addFootnote(message = errors[[currentPairName]]$message, 
@@ -1536,13 +1540,14 @@ Correlation <- function(jaspResults, dataset, options){
     return(paste0(type, ' ~ "=" ~ ', '"', formattedValue, '"'))
 }
 
+### helpers ----
 .corrGetTexts <- function() {
   list(
   footnotes = list(
     VSMPR = "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001)."
   ),
   references = list(
-    Sellke_etal_2001 = "Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p Values for Testing Precise Null Hypotheses. <i>The American Statistician,</i> 55(<i>1</i>), p. 62-71."
+    Sellke_etal_2001 = "Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p Values for Testing Precise Null Hypotheses. The American Statistician, 55(1), p. 62-71."
   )
   )
 }
