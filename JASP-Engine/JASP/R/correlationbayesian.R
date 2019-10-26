@@ -18,7 +18,7 @@
 CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   ready <- (length(options[["variables"]]) >= 2 | length(options[["pairs"]]) > 1)
   
-  corBayesTable <- .markUpCorBayesTable(options, ready)
+  corBayesTable <- .markUpCorBayesTable(jaspResults, options, ready)
   
   # TODO(Alexander) Perhaps think about containers here already 
   # if we want to pair the main table to the matrix plot
@@ -27,9 +27,6 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   
   # TODO(Alexander) Also mark up for pairwise container, all of this can be done without data
   # 
-  
-  if (!ready) 
-    return()
   
   # Note(Alexander): Everytime a variable (pair) is added to options$variables (options$pair) 
   # the data are read
@@ -111,7 +108,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 #   return(allBfObjects)
 # }
 
-.markUpCorBayesTable <- function(options, ready) {
+.markUpCorBayesTable <- function(jaspResults, options, ready) {
   if (!is.null(jaspResults[["corBayesTable"]]))
     return()
   
@@ -295,9 +292,10 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   
   tests <- .getCorTests(options[["pearson"]], options[["kendall"]], options[["spearman"]])
   
+  # Not ready, don't compute
   if (length(options[["variables"]]) <= 1) {
     # Don't compute
-    return()
+    return(allBfObjects)
   }
   
   # TODO(Alexander): This seems redundant, because we've read the data at a higher level, but only if ready

@@ -51,7 +51,7 @@ Form
         CheckBox
         {
             name: "ci"; label: qsTr("Credible intervals")
-            CIField { name: "ciValue";	label: qsTr("Interval"); debug: true }
+            CIField { name: "ciValue";	label: qsTr("Interval") }
         }
     }
 
