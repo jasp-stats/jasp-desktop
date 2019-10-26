@@ -1,0 +1,101 @@
+# TODO(Alexander): Make a generic matchAlternative function
+# 
+hypTwoSided <- c("two.sided", "twoSided", "two-sided", "equal", #General R
+                 "notEqualToTestValue", "groupsNotEqual", #t-tests/binomial
+                 "correlated") 
+hypPlusSided <- c("greater", "plusSided",
+                  "greaterThanTestValue", "groupOneGreater", 
+                  "correlatedPositively", "right", "positive")
+hypMinSided <- c("less", "minSided",
+                 "lessThanTestValue", "groupTwoGreater", 
+                 "correlatedNegatively", "left", "negative")
+
+.getBfTitle <- function(bfType = c("BF10", "BF01", "LogBF10"),
+                                     alternative) {
+  bfType <- match.arg(bfType)
+  
+  if (bfType == "BF10") {
+    if (alternative %in% hypTwoSided) {
+      bfTitle <- "BF\u2081\u2080"
+    } else if (alternative %in% hypPlusSided) {
+      bfTitle <- "BF\u208A\u2080"
+    } else {
+      bfTitle <- "BF\u208B\u2080"
+    }
+  } else if (bfType == "LogBF10") {
+    if (alternative %in% hypTwoSided) {
+      bfTitle <- "Log(\u0042\u0046\u2081\u2080)"
+    } else if (alternative %in% hypPlusSided) {
+      bfTitle <- "Log(\u0042\u0046\u208A\u2080)"
+    } else {
+      bfTitle <- "Log(\u0042\u0046\u208B\u2080)"
+    }
+  } else if (bfType == "BF01") {
+    if (alternative %in% hypTwoSided) {
+      bfTitle <- "BF\u2080\u2081"
+    } else if (alternative %in% hypPlusSided) {
+      bfTitle <- "BF\u2080\u208A"
+    } else {
+      bfTitle <- "BF\u2080\u208B"
+    }
+  }
+  return(bfTitle)
+}
+
+
+.bSelectItems <- function(options) {
+  itemNames <- c("n", "stat", "bf", "upperCi", "lowerCi")
+  
+  if (!options[["reportN"]]) 
+    itemNames <- setdiff(itemNames, "n")
+  
+  if (!options[["reportBayesFactors"]]) 
+    itemNames <- setdiff(itemNames, "bf")
+  
+  if (!options[["ci"]])
+    itemNames <- setdiff(itemNames, c("lowerCi", "upperCi"))
+  
+  return(itemNames)
+}
+
+.bCorRowNames <- function(options, itemNames, test=c("pearson", "kendall", "spearman")) {
+  rowStatName <- list(pearson="Pearson's r", kendall="Kendall's tau", spearman="Spearman's rho")
+  
+  bfTitle <- .getBfTitle("bfType"=options[["bayesFactorType"]], "alternative"=options[["alternative"]])
+  
+  if (!is.null(test)) {
+    allRowNames <- list("n"="n", "stat"=rowStatName[[test[1]]], "bf"=bfTitle, 
+                        "upperCi"=paste0("Upper ", options[["ciValue"]]*100, "% CI"),
+                        "lowerCi"=paste0("Lower ", options[["ciValue"]]*100, "% CI")
+    )
+  } else {
+    allRowNames <- list("n"="n", "bf"=bfTitle, 
+                        "upperCi"=paste0("Upper ", options[["ciValue"]]*100, "% CI"),
+                        "lowerCi"=paste0("Lower ", options[["ciValue"]]*100, "% CI")
+    )
+  }
+  
+  
+  return(allRowNames[itemNames])
+}
+
+.bfFlagKey <- function(options) {
+  bfTitle <- .getBfTitle("bfType"=options[["bayesFactorType"]], "alternative"=options[["alternative"]])
+  bfKey <- list("LogBF10"=list("*"=paste0(bfTitle, " > log(10)"), 
+                               "**"=paste0(bfTitle, " > log(30)"), 
+                               "***"=paste0(bfTitle, " > log(100)")),
+                "BF01"=list("*"=paste(bfTitle, " < 0.1"), 
+                            "**"=paste(bfTitle, " < 0.03"), 
+                            "***"=paste(bfTitle, " < 0.01")),
+                "BF10"=list("*"=paste(bfTitle, " > 10"), 
+                            "**"=paste(bfTitle, " > 30"), 
+                            "***"=paste(bfTitle, " > 100"))
+  )
+  return(bfKey[[options[["bayesFactorType"]]]])
+}
+
+.bfFlagTableFootnote <- function(options) {
+  keyText <- .bfFlagKey(options)
+  flagText <- purrr::map2_chr(c("", "**", "***"), keyText, paste)
+  return(paste(flagText, collapse=", "))
+}
