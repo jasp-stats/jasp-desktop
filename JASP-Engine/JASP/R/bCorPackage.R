@@ -482,7 +482,7 @@ isSomeInfinite <- function(...) {
       if (!isSomeNA(betaA, betaB)) {
         # Compute bfPlus0 and bfMin0 based on the posterior mass using the found bf10
         #
-        tempList <- .computeBCorOneSidedSavageDickey("bf10"=bf10, "betaA"=fit[["betaA"]], "betaB"=fit[["betaB"]],
+        tempList <- .computeBCorOneSidedSavageDickey("bf10"=bf10, "betaA"=betaA, "betaB"=betaB,
                                                      "h0"=h0, "kappa"=kappa)
         bfPlus0 <- tempList[["greater"]][["bf"]]
         bfMin0 <- tempList[["less"]][["bf"]]
@@ -496,7 +496,7 @@ isSomeInfinite <- function(...) {
     if (!isSomeNA(bfPlus0, bfMin0) & isEveryFinite(bfPlus0, bfMin0) &
         bfPlus0 >= 0 & bfMin0 >= 0) {
       # Result seem good, do consistency check
-      if (!(bfPlus0 > 1 & bfMin0 > 1) & bfPlus0 >= 0 & bfMin0 > 0 || subCounter==3) {
+      if (!(bfPlus0 > 1 & bfMin0 > 1) & bfPlus0 >= 0 & bfMin0 > 0 | subCounter==3) {
         result[["bfPlus0"]] <- bfPlus0
         result[["bfMin0"]] <- bfMin0
         return(result)
