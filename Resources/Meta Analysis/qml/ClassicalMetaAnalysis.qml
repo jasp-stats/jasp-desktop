@@ -23,8 +23,6 @@ import JASP				1.0
 
 Form
 {
-	usesJaspResults: true
-
 	VariablesForm
 	{
 		preferredHeight: 400
@@ -89,7 +87,7 @@ Form
 		Group
 		{
 			title: qsTr("Plots")
-			CheckBox { name: "trimfillPlot";			text: qsTr("Trim-fill analysis")	}
+            CheckBox { name: "trimFillPlot";			text: qsTr("Trim-fill analysis")	}
 			CheckBox { name: "plotResidualsPredicted";	text: qsTr("Profile plot")			}
 			CheckBox
 			{
