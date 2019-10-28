@@ -569,7 +569,7 @@ Descriptives <- function(jaspResults, dataset, options) {
 
   for (i in seq_along(variables)) {
     variable2check  <- na.omit(dataset[[variables[i]]])
-    numericCheck[i] <- inherits("variable2check", c("numeric", "integer"))
+    numericCheck[i] <- inherits(variable2check, c("numeric", "integer"))
     sdCheck[i]      <- if (numericCheck[i]) sd(variable2check) > 0 else FALSE
     infCheck[i]     <- all(is.finite(variable2check))
   }
