@@ -1097,7 +1097,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   .arc.ticks <- function(xlims, yi, ya.xpos, asp.rat){
     atyis <- seq(min(yi), max(yi), length = 7)
     len.l <- ya.xpos
-    len.u <- ya.xpos + 0.015 * range(xlims)
+    len.u <- ya.xpos + 0.015 * (xlims[2] - xlims[1])
     xis.l <- sqrt(len.l^2/(1 + (atyis/asp.rat)^2))
     zis.l <- xis.l * atyis
     xis.u <- sqrt(len.u^2/(1 + (atyis/asp.rat)^2))
@@ -1112,24 +1112,19 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   }
   .arc.text  <- function(xlims, yi, ya.xpos, asp.rat){
     atyis <- seq(min(yi), max(yi), length = 7)
-    len.l <- ya.xpos
-    len.u <- ya.xpos + 0.015 * range(xlims)
-    xis.l <- sqrt(len.l^2/(1 + (atyis/asp.rat)^2))
-    zis.l <- xis.l * atyis
-    xis.u <- sqrt(len.u^2/(1 + (atyis/asp.rat)^2))
-    zis.u <- xis.u * atyis
-    valid <- zis.l > zlims[1] & zis.u > zlims[1] & zis.l < zlims[2] & zis.u < zlims[2]
-    dat   <- data.frame(x = xis.l[valid], xend = xis.u[valid], 
-                        y = zis.l[valid], yend = zis.u[valid],
+    len   <- ya.xpos + 0.02 * (xlims[2] - xlims[1])
+    xis   <- sqrt(len^2/(1 + (atyis/asp.rat)^2))
+    zis   <- xis * atyis
+    valid <- zis > zlims[1] & zis < zlims[2]
+    dat   <- data.frame(x = xis[valid], y = zis[valid], 
                         label = as.character(round(atyis[valid], 2)))
-    return(ggplot2::geom_text(data = dat, ggplot2::aes(x = xend, y = yend, 
-                                                       label = label), 
-                         nudge_x = 0.1 * range(xlims), hjust = 0))
+    return(ggplot2::geom_text(data = dat, ggplot2::aes(x = x, y = y, label = label), 
+                         nudge_x = 0.1 * (xlims[2] - xlims[1]), hjust = 0))
   }
   .arc.int   <- function(xlims, zlims, ci.xpos, ci.lb, beta, ci.ub, asp.rat){
     atyis <- c(ci.lb, beta, ci.ub)
-    len.l <- ci.xpos - 0.007 * range(xlims)
-    len.u <- ci.xpos + 0.007 * range(xlims)
+    len.l <- ci.xpos - 0.007 * (xlims[2] - xlims[1])
+    len.u <- ci.xpos + 0.007 * (xlims[2] - xlims[1])
     
     xis.l <- sqrt(len.l^2/(1 + (atyis/asp.rat)^2))
     zis.l <- xis.l * atyis
@@ -1154,7 +1149,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   arc.text   <- .arc.text(xlims, yi, ya.xpos, asp.rat)
   arc.int    <- .arc.int(xlims, zlims, ci.xpos, ci.lb, beta, ci.ub, asp.rat)
 
-  len   <- ya.xpos + 0.5 * (range(xlims))
+  len   <- ya.xpos + 0.5 * (xlims[2] - xlims[1])
   atyis <- seq(min(yi), max(yi), length = 7)
   x.margin.right <- max(sqrt(len^2/(1 + (atyis)/asp.rat)^2))
   
