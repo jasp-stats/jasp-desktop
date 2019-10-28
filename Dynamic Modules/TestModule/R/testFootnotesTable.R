@@ -3,7 +3,33 @@ testFootnotesTableFunc <- function(jaspResults, dataset, options)
   jaspResults[['table0']] <- createFootnotesTable(options=options)
   jaspResults[['table2']] <- createFootnotesTable(options=options, notUnique=TRUE)
   #jaspResults[['table1']] <- createFootnotesTable(options=options, rowNames=c("b", "c", "a"), colNames=c("c", "a", "c"))
+
+
+  emptyData <- data.frame(list(a=c(NA, NA), b=c('a', 'b')))
+  rownames(emptyData) <- letters[3:4]
+  
+
+  #for https://github.com/jasp-stats/INTERNAL-jasp/issues/538 (footnotes mess)
+
+  tab  <- createJaspTable(paste0("Table with Footnotes at empty cell"))
+  jaspResults[["tableEmptyCell"]] <- tab
+
+  tab$setExpectedSize(rows=3, cols=3)
+  tab$setColumnName(1, 'b')
+  tab$setRowName(1, 'b')
+
+  tab$setColumnName(2, 'a')
+  tab$setColumnName(3, 'c')
+  tab$setRowName(3, 'a')
+
+  tab$addFootnote(message="hallo", rowNames='a', colNames='c')
+
+  tab$addRows(list(a=NA, b=NA, c=NA))
+  tab$addFootnote(message="NA!", rowNames='b', colNames='b')
 }
+
+
+
 
 createFootnotesTable <- function(numFootnotes=3, rowNames=c("b", "c", "c"), colNames=c("a", "a", "b"), options, notUnique=FALSE)
 {
