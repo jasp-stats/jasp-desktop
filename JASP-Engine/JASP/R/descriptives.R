@@ -563,19 +563,17 @@ Descriptives <- function(jaspResults, dataset, options) {
     return(createJaspPlot(error="Plotting is not possible: Too few rows", dependencies=depends))
 
   # check variables
-  d         <- vector("character",  length(variables))
-  sdCheck   <- vector("logical",    length(variables))
-  infCheck  <- vector("logical",    length(variables))
+  numericCheck <- vector("logical", length(variables))
+  sdCheck      <- vector("logical", length(variables))
+  infCheck     <- vector("logical", length(variables))
 
   for (i in seq_along(variables)) {
     variable2check  <- na.omit(dataset[[variables[i]]])
-    d[i]            <- class(variable2check)
-    sdCheck[i]      <- if (d[i] != "factor") sd(variable2check) > 0 else FALSE
+    numericCheck[i] <- inherits(variable2check, c("numeric", "integer"))
+    sdCheck[i]      <- if (numericCheck[i]) sd(variable2check) > 0 else FALSE
     infCheck[i]     <- all(is.finite(variable2check))
   }
-
-
-  numericCheck      <- d == "numeric" | d == "integer"
+  
   variable.statuses <- vector("list", length(variables))
 
   for (i in seq_along(variables)) {
