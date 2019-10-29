@@ -1040,7 +1040,7 @@ void footnotes::convertToJSONOrdered(std::map<std::string, size_t> rowNames, std
 
 	std::vector<Json::Value> notesToOrderMerged(notesToOrder);
 
-	std::vector<size_t> removeThese;
+	std::set<size_t> removeThese;
 
 	for(auto & symTxtIndices : duplicates)
 	{
@@ -1049,13 +1049,15 @@ void footnotes::convertToJSONOrdered(std::map<std::string, size_t> rowNames, std
 		for(size_t i : symTxtIndices.second)
 		{
 			if(!first)
-				removeThese.push_back(i);
+				removeThese.insert(i);
 			first = false;
 		}
 	}
 
-	std::reverse(removeThese.begin(), removeThese.end());
-	for(size_t & i : removeThese)
+	std::vector<size_t> removeTheseVec(removeThese.begin(), removeThese.end());
+	std::sort(removeTheseVec.begin(), removeTheseVec.end(), [](size_t l, size_t r) { return r < l; });
+
+	for(size_t & i : removeTheseVec)
 		notesToOrderMerged.erase(notesToOrderMerged.begin() + i);
 
 	for(size_t mergedIndex=0; mergedIndex<notesToOrderMerged.size(); mergedIndex++)
