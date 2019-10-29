@@ -180,6 +180,10 @@ isSomeInfinite <- function(...) {
   isSome(..., func=is.infinite)
 }
 
+isSomeTrue <- function(...) {
+  isSome(..., func=isTRUE)
+}
+
 .stretchedBeta <- function(rho, betaA, betaB) {
   result <- 1/2*dbeta((rho+1)/2, betaA, betaB)
   return(result)
@@ -365,6 +369,7 @@ isSomeInfinite <- function(...) {
   
   return(result)
 }
+
 # These are the functions used to compute the Bayes factors
 #
 
@@ -408,16 +413,23 @@ isSomeInfinite <- function(...) {
 #'
 .bf10Exact <- function(n, r, kappa=1, h0=0) {
   # Note (Alexander): Input check is done at a higher level: .computePearsonCorBf10
+  # Maximum it can take is r=0.993, which works well up to n = 336, but r=0.992 and n=3 fails
   
-  logHyperTerm <- log(hypergeo::f15.3.3(A=(n-1)/2, B=(n-1)/2, C=(n+2/kappa)/2, z=r^2))
+  logHyperTerm <- tryOrFailWithNA(log(hypergeo::f15.3.3(A=(n-1)/2, B=(n-1)/2, C=(n+2/kappa)/2, z=r^2)))
+  
+  if (is.na(logHyperTerm))
+    return(NaN)
+  
   logResult <- log(2^(1-2/kappa)) + 0.5 * log(pi) - lbeta(1/kappa, 1/kappa) +
     lgamma((n+2/kappa-1)/2) - lgamma((n+2/kappa)/2) + logHyperTerm
-  realResult <- exp(Re(logResult))
+  realResult <- tryOrFailWithNA(exp(Re(logResult)))
+  
+  if (!is.numeric(realResult))
+    return(NaN)
   
   # Failed
-  if (realResult < 0) {
+  if (realResult < 0)
     return(NaN)
-  }
   
   return(realResult)
 }
@@ -432,21 +444,31 @@ isSomeInfinite <- function(...) {
 .bf10JeffreysIntegrate <- function(n, r, kappa=1, h0=0) {
   # Note(Alexander): Input check is done at a higher level: .computePearsonCorBf10
   
-  hyperTerm <- Re(hypergeo::f15.3.3(A=(2*n-3)/4, B=(2*n-1)/4, C=(n+2/kappa)/2, z=r^2))
+  hyperTerm <- tryOrFailWithNA(Re(hypergeo::f15.3.3(A=(2*n-3)/4, B=(2*n-1)/4, C=(n+2/kappa)/2, z=r^2)))
+  
+  if (is.na(hyperTerm))
+    return(NaN)
+  
   logTerm <- lgamma((n+2/kappa-1)/2) - lgamma((n+2/kappa)/2) - lbeta(1/kappa, 1/kappa)
-  result <- sqrt(pi) * 2^(1-2/kappa) * exp(logTerm) * hyperTerm
+  result <- tryOrFailWithNA(sqrt(pi) * 2^(1-2/kappa) * exp(logTerm) * hyperTerm)
+  
+  
+  if (!is.numeric(result))
+    return(NaN)
   
   # Failed
-  if (result < 0) {
+  if (result < 0)
     return(NaN)
-  }
+  
   return(result)
 }
 
 .computeBCorOneSided <- function(bf10, n, r, kappa, methodNumber, betaA, betaB,
                                  hyperGeoOverFlowThreshold=25) {
-  result <- list(bf10=bf10, bfPlus0=NA, bfMin0=NA)
-  
+  failSided <- list("bf"=NA, "tooPeaked"=TRUE)
+  result <- list("two.sided"=list("bf"=bf10),
+                 "greater"=failSided,
+                 "less"=failSided)
   
   if (methodNumber %in% 1:2) {
     if (log(bf10) < hyperGeoOverFlowThreshold) {
@@ -484,11 +506,9 @@ isSomeInfinite <- function(...) {
         #
         tempList <- .computeBCorOneSidedSavageDickey("bf10"=bf10, "betaA"=betaA, "betaB"=betaB,
                                                      "h0"=h0, "kappa"=kappa)
-        bfPlus0 <- tempList[["greater"]][["bf"]]
-        bfMin0 <- tempList[["less"]][["bf"]]
+        bfPlus0 <- tempList[["bfPlus0"]]
+        bfMin0 <- tempList[["bfMin0"]]
       } else {
-        result[["bfPlus0"]] <- NA
-        result[["bfMin0"]] <- NA
         return(result)
       }
     }
@@ -496,13 +516,13 @@ isSomeInfinite <- function(...) {
     if (!isSomeNA(bfPlus0, bfMin0) & isEveryFinite(bfPlus0, bfMin0) &
         bfPlus0 >= 0 & bfMin0 >= 0) {
       # Result seem good, do consistency check
-      if (!(bfPlus0 > 1 & bfMin0 > 1) & bfPlus0 >= 0 & bfMin0 > 0 | subCounter==3) {
-        result[["bfPlus0"]] <- bfPlus0
-        result[["bfMin0"]] <- bfMin0
+      if (!(bfPlus0 > 1 & bfMin0 > 1) & bfPlus0 > 0 & bfMin0 > 0 | subCounter==3) {
+        tempList <- list("greater"=list("bf"=bfPlus0, "tooPeaked"=FALSE),
+                         "less"=list("bf"=bfMin0, "tooPeaked"=FALSE))
+        result <- modifyList(result, tempList)
         return(result)
       }
     }
-    
     subCounter <- subCounter + 1
   }
   return(result)
@@ -510,48 +530,61 @@ isSomeInfinite <- function(...) {
 
 
 .computeBCorOneSidedSavageDickey <- function(bf10, betaA, betaB, h0=0, kappa=1) {
-  result <- list("two.sided"=list("bf"=bf10),
-                 "greater"=list("bf"=NA),
-                 "less"=list("bf"=NA)
-  )
-  
-  failedList <- list("greater"=list("bf"=NaN, "tooPeaked"=TRUE),
-                     "less"=list("bf"=NaN, "tooPeaked"=TRUE))
+  result <- list(bf10=bf10, bfPlus0=NA, bfMin0=NA)
   
   if (is.finite(bf10)) {
     # bf10 is finite, now calculate one-sided stuff
     #
+    rightProportion <- NA
     leftProportion <- tryOrFailWithNA(stats::pbeta(1/2, shape1=betaA, shape2=betaB))
     
     if (is.na(leftProportion)) {
-      result <- modifyList(result, failedList)
       return(result)
     }
     
     if (leftProportion > 0 & leftProportion < 1) {
-      tempList <- list("greater"=list("bf"=2*bf10*(1-leftProportion), "tooPeaked"=FALSE),
-                       "less"=list("bf"=2*bf10*leftProportion, "tooPeaked"=FALSE))
-      result <- modifyList(result, tempList)
-      return(result)
+      bfPlus0 <- 2*bf10*(1-leftProportion)
+      bfMin0 <- 2*bf10*leftProportion
+    } else if (leftProportion >= 1) {
+      bfPlus0 <- 10^(-317)
+      bfMin0 <- 2*bf10
     } else {
       rightProportion <- tryOrFailWithNA(stats::pbeta(1/2, "shape1"=betaA, "shape2"=betaB, "lower.tail"=FALSE))
       
-      if (!is.na(rightProportion) & rightProportion < 1) {
-        tempList <- list("greater"=list("bf"=2*bf10*rightProportion, "tooPeaked"=FALSE),
-                         "less"=list("bf"=2*bf10*(1-rightProportion), "tooPeaked"=FALSE))
-        result <- modifyList(result, tempList)
-      } else if (leftProportion >= 1) {
-        tempList <- list("greater"=list("bf"=0, "tooPeaked"=FALSE),       #TODO(Alexander): TRUE?
-                         "less"=list("bf"=2*bf10, "tooPeaked"=FALSE))
-        result <- modifyList(result, tempList)
+      if (is.na(rightProportion)) {
+        return(result)
+      } else if (rightProportion > 0 & rightProportion < 1) {
+        bfPlus0 <- 2*bf10*rightProportion
+        bfMin0 <- 2*bf10*(1-rightProportion)
       } else if (rightProportion >= 1) {
-        tempList <- list("greater"=list("bf"=2*bf10, "tooPeaked"=FALSE),
-                         "less"=list("bf"=0, "tooPeaked"=FALSE))      #TRUE?
-        result <- modifyList(result, tempList)
+        bfPlus0 <- 2*bf10
+        bfMin0 <- 10^(-317)
       }
     }
+    
+    # Note(Alexander): Consistency check
+    #
+    if (bfPlus0 > 1 & bfMin0 > 1) {
+      if (leftProportion > 0.5) {
+        # TODO(Alexander): The problem is machine precision here,
+        # because there aren't enough significant figures in leftProportion to have
+        # 2 * bf10 (1-leftProportion) < 1
+        #
+        #  Alternatively, we can change bf10 to the Savage-Dickey approximation
+        #
+        bfMin0 <- 2*leftProportion*bf10
+        bfPlus0 <- 2*(1-leftProportion)
+      } else {
+        bfMin0 <- 2*leftProportion
+        bfPlus0 <- 2*(1-leftProportion)*bf10
+      }
+    } else if (bfPlus0 < 0 | bfMin0 < 0) {
+      return(result)
+    }
+    
+    #
+    result <- list(bf10=bf10, bfPlus0=bfPlus0, bfMin0=bfMin0)
   }
-  
   # return default results
   return(result)
 }
@@ -821,9 +854,9 @@ isSomeInfinite <- function(...) {
     #     TODO(Alexander): Approximate for h0 \neq 0
     #
     if (methodNumber == 1) {
-      bf10 <- .bf10Exact(n=n, r=r, kappa=kappa, h0=h0)
+      bf10 <-  tryOrFailWithNA(.bf10Exact(n=n, r=r, kappa=kappa, h0=h0))
     } else if (methodNumber == 2) {
-      bf10 <- .bf10JeffreysIntegrate(n=n, r=r, kappa=kappa, h0=h0)
+      bf10 <- tryOrFailWithNA(.bf10JeffreysIntegrate(n=n, r=r, kappa=kappa, h0=h0))
     } else if (methodNumber %in% 3:4) {
       if (methodNumber==4) {
         fit <- .marsmanMHSampler(n=n, r=r, kappa=kappa)
@@ -877,47 +910,56 @@ isSomeInfinite <- function(...) {
     )
     
     if (isSomeNA(tempList)) {
-      result <- failedResult
+      # result <- failedResult
       errorMessage <- "Can't compute one-sided Bayes factors"
       result[["error"]] <- errorMessage
-      return(result)
-    }
-    bfPlus0 <- tempList[["bfPlus0"]]
-    bfMin0 <- tempList[["bfMin0"]]
-  }
-  
-  # Note(Alexander): bfPlus0, bfMin0: CHECK COHERENCE:
-  if (!isSomeNA(bfPlus0, bfMin0)) {
-    if (bfPlus0 > 1 && bfMin0 > 1 | any(c(bfPlus0, bfMin0) < 0)) {
-      if (r >= 0) {
-        # Note: Data: OK,
-        #  bf10: OK.
-        #  bfPlus0: OK
-        #  bfMin0: NOT ok
-        #
-        # bfMin0 is bigger than one due to overflow: bfMin0 = 2*bf10 - bfPlus0.
-        # Example: 2*1.2.... 10^ 24 - 2.... 10^24 = 1... 10^12 (due to round off)
-        #
-        bfMin0 <- 10^(-316)
-        bfPlus0 <- 2*bf10 - bfMin0
-      } else if (r < 0) {
-        # Note: Data: OK,
-        #  bf10: OK.
-        #  bfPlus0: NOT ok
-        #  bfMin0: OK
-        bfPlus0 <- 10^(-316)
-        bfMin0 <- 2*bf10 - bfPlus0
-      }
+      # return(result)
     }
     
-    result <- modifyList(result, list("greater"=list("bf"=bfPlus0, "tooPeaked"=FALSE),
-                                      "less"=list("bf"=bfMin0, "tooPeaked"=FALSE))
-    )
-  } else {
-    result <- modifyList(result, list("greater"=list("bf"=NA, "tooPeaked"=TRUE),
-                                      "less"=list("bf"=NA, "tooPeaked"=TRUE))
-    )
+    result <- modifyList(result, tempList)
   }
+  
+  # TODO(Alexander): Check if this is really not necessary anymore. This is now moved into
+  #     .computeBCorOneSided
+  #
+  #  that calls
+  #
+  #     .computeBCorOneSidedSavageDickey
+  #
+  # and in subCounter 3 this is already checked
+  #
+  # # Note(Alexander): bfPlus0, bfMin0: CHECK COHERENCE:
+  # if (!isSomeNA(bfPlus0, bfMin0)) {
+  #   if (bfPlus0 > 1 && bfMin0 > 1 | any(c(bfPlus0, bfMin0) < 0)) {
+  #     if (r >= 0) {
+  #       # Note: Data: OK,
+  #       #  bf10: OK.
+  #       #  bfPlus0: OK
+  #       #  bfMin0: NOT ok
+  #       #
+  #       # bfMin0 is bigger than one due to overflow: bfMin0 = 2*bf10 - bfPlus0.
+  #       # Example: 2*1.2.... 10^ 24 - 2.... 10^24 = 1... 10^12 (due to round off)
+  #       #
+  #       bfMin0 <- 10^(-316)
+  #       bfPlus0 <- 2*bf10 - bfMin0
+  #     } else if (r < 0) {
+  #       # Note: Data: OK,
+  #       #  bf10: OK.
+  #       #  bfPlus0: NOT ok
+  #       #  bfMin0: OK
+  #       bfPlus0 <- 10^(-316)
+  #       bfMin0 <- 2*bf10 - bfPlus0
+  #     }
+  #   }
+  #
+  #   result <- modifyList(result, list("greater"=list("bf"=bfPlus0, "tooPeaked"=FALSE),
+  #                                     "less"=list("bf"=bfMin0, "tooPeaked"=FALSE))
+  #   )
+  # } else {
+  #   result <- modifyList(result, list("greater"=list("bf"=NA, "tooPeaked"=TRUE),
+  #                                     "less"=list("bf"=NA, "tooPeaked"=TRUE))
+  #   )
+  # }
   
   if (!isSomeNA(fit)) {
     tempList <- .computePearsonCredibleInterval("betaA"=fit[["betaA"]], "betaB"=fit[["betaB"]],
@@ -934,7 +976,6 @@ isSomeInfinite <- function(...) {
   }
   return(result)
 }
-
 
 
 bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
@@ -1232,8 +1273,8 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
 }
 
 # 4.2
-.posteriorMean <- function(n, r, kappa=1) {
-  # Posterior mean of rho
+.posteriorMean <- function(n, r, kappa=1, old2F1=FALSE) {
+  # NEW CODE CAN OFFICIALLY DO .posteriorMean(1219, 0.83)
   #
   hyperTerm1 <- tryOrFailWithNA(
     Re(hypergeo::f15.3.3("A"=n/2, "B"=n/2, "C"=(2+(n+2)*kappa)/(2*kappa), "z"=r^2))
@@ -1241,27 +1282,66 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
   hyperTerm2 <- tryOrFailWithNA(
     Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+n*kappa)/(2*kappa), "z"=r^2))
   )
+  hypRatio <- tryOrFailWithNA(hyperTerm1/hyperTerm2)
+  
+  # Note(Alexander): that this is a bit of a hack here, as but correct due to large samples.
+  #
+  if (is.na(hypRatio)) {
+    return(r)
+  }
   
   logW <-  2*(lgamma(n/2)-lgamma((n-1)/2))
-  result <- 2*r*kappa/((n+1)*kappa+2)*exp(logW)*hyperTerm1/hyperTerm2
+  result <- (2*kappa*r)/(2+n*kappa)*exp(logW)*hypRatio
   return(result)
+  
+  # Old code can officially do .posteriorMean(1216, 0.83)
+  #
+  # hyperTerm1 <- tryOrFailWithNA(
+  #   Re(hypergeo::genhypergeo(U=c(n/2, n/2), L=c((2+(n+2)*kappa)/(2*kappa)), z=r^2))
+  # )
+  # hyperTerm2 <- tryOrFailWithNA(
+  #   Re(hypergeo::genhypergeo(U=c((n-1)/2, (n-1)/2), L=c((2+n*kappa)/(2*kappa)), z=r^2))
+  # )
 }
 
+#log.hyper.term <- log(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
+
+
 .posteriorSecondMoment <- function(n, r, kappa=1) {
+  # New code can do:.PosteriorSecondMoment(1219, 0.83) n=3 more than old code
+  #
+  #
   hyperTerm1a <- tryOrFailWithNA(
     Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+(n+2)*kappa)/(2*kappa), "z"=r^2))
   )
   hyperTerm1b <- tryOrFailWithNA(
     Re(hypergeo::f15.3.3("A"=(n+1)/2, "B"=(n+1)/2, "C"=(2+(n+2)*kappa)/(2*kappa)+1, "z"=r^2))
   )
-  
   hyperTerm2 <- tryOrFailWithNA(
     Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+n*kappa)/(2*kappa), "z"=r^2))
   )
   
+  hypRatioA <- hyperTerm1a/hyperTerm2
+  hypRatioB <- hyperTerm1b/hyperTerm2
+  
+  # TODO(Alexander): Add asymptotic approximation here
+  #
   result <- kappa/(n*kappa+2) *
-    (hyperTerm1a/hyperTerm2+ kappa*(n-1)^(2)/(2+(n+2)*kappa)*r^2*hyperTerm1b/hyperTerm2)
+    (hypRatioA+ kappa*(n-1)^(2)/(2+(n+2)*kappa)*r^2*hypRatioB)
   return(result)
+  
+  # OLD CODE CAN DO:.posteriorSecondMoment(1204, 0.83), at 1205 get inf
+  #
+  # hyperTerm1 <- tryOrFailWithNA(
+  #   Re(hypergeo::genhypergeo(U=c(3/2, (n-1)/2, (n-1)/2),
+  #                            L=c(1/2, (2+(n+2)*kappa)/(2*kappa)), z=r^2))
+  # )
+  # hyperTerm2 <- tryOrFailWithNA(
+  #   Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+n*kappa)/(2*kappa), "z"=r^2))
+  # )
+  #
+  # result <- kappa/(n*kappa+2)*hyperTerm1/hyperTerm2
+  # return(result)
 }
 
 .posteriorVariance <- function(n, r, kappa=1) {
@@ -1275,6 +1355,12 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
   #
   #
   result <- tryOrFailWithNA(.posteriorSecondMoment(n,r,kappa)-(.posteriorMean(n,r,kappa))^2)
+  
+  # Asymptotic approximation Based on Fisher
+  #
+  # if (is.na(result))
+  #   result <- tanh(1/sqrt(n-3))^2
+  
   return(result)
 }
 
@@ -1401,3 +1487,155 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
   result <- c(lowerCI, medianCI, upperCI)
   return(result)
 }
+
+.makeKappas <- function(n) {
+  someKappas <- sin(seq(1.5*pi, 2*pi, length=n))+1
+  someKappas[1] <- someKappas[2]/10
+  someKappas[n] <- 1
+  someKappas <- 2*someKappas
+  
+  return(someKappas)
+}
+
+
+.computeCorSequentialLine <- function(x, y, bfObject, test="pearson", alternative="two.sided", minX=-0.99, maxX=0.99) {
+  # sidedObject <- .getSidedObject(bfObject, alternative=alternative)
+  #
+  error <- bfObject[["error"]]
+  bf10 <- bfObject[["two.sided"]][["bf"]]
+  
+  if (!is.null(error) | is.na(bf10)) {
+    if (is.null(error))
+      error <- "Could not compute"
+    
+    sideError <- list("sequentialLine"=error)
+    result <- list("two.sided"=sideError, "greater"=sideError, "less"=sideError)
+    return(result)
+  }
+  
+  n <- bfObject[[1]][["n"]]
+  
+  compN <- 3:n
+  nDomain <- c(1:2, compN)
+  
+  .calculateSequentialCor <- function(i, x, y) {
+    return(tryOrFailWithNA(cor(x[1:i], y[1:i], use="pairwise.complete.obs", method=test)))
+  }
+  
+  rSeq <- purrr::map_dbl(compN, .calculateSequentialCor, x=x, y=y)
+  
+  if (sum(is.na(rSeq)) >= 1) {
+    sideError <- list("sequentialLine"="Could not compute")
+    result <- list("two.sided"=sideError, "greater"=sideError, "less"=sideError)
+  }
+  
+  h0 <- bfObject[["h0"]]
+  kappa <- bfObject[["kappa"]]
+  methodNumber <- bfObject[["methodNumber"]]
+  
+  # TODO(Alexander):
+  
+  if (test=="pearson") {
+    .calculateSequentialBCor <- function(n, r) {
+      bfObject <- .computePearsonCorBf10(n, r, "h0"=h0, "kappa"=kappa,
+                                         methodNumber=methodNumber)
+      list(bfObject[["two.sided"]][["bf"]],
+           bfObject[["greater"]][["bf"]],
+           bfObject[["less"]][["bf"]]
+      )
+    }
+  }
+  
+  allBfs <- purrr::map2(compN, rSeq, .calculateSequentialBCor)
+  
+  placeHolder <- vector("numeric", length=length(nDomain))
+  placeHolder[1] <- placeHolder[2] <- 1
+  sideResult <- list("sequentialLine"=placeHolder)
+  
+  result <- list("two.sided"=sideResult, "greater"=sideResult, "less"=sideResult)
+  
+  for (i in seq_along(allBfs)){
+    result[[1]][[1]][i+2] <- allBfs[[i]][[1]]
+    result[[2]][[1]][i+2] <- allBfs[[i]][[2]]
+    result[[3]][[1]][i+2] <- allBfs[[i]][[3]]
+  }
+  
+  for (j in 1:3) {
+    if (isSomeInfinite(result[[j]][[1]])) {
+      result[[j]][[1]] <- "Bayes factor hits infinity"
+    }
+    
+    if (sum(is.na(result[[j]][[1]])) >= 1) {
+      result[[j]][[1]] <- "Could not compute"
+    }
+  }
+  result[["nDomain"]] <- nDomain
+  return(result)
+}
+
+.computeCorRobustnessLine <- function(bfObject, test="pearson") {
+  error <- bfObject[["error"]]
+  bf10 <- bfObject[["two.sided"]][["bf"]]
+  
+  if (!is.null(error) | is.na(bf10)) {
+    if (is.null(error))
+      error <- "Could not compute"
+    
+    sideError <- list("robustnessLines"=error)
+    result <- list("two.sided"=sideError, "greater"=sideError, "less"=sideError)
+    return(result)
+  }
+  
+  n <- bfObject[["two.sided"]][["n"]]
+  stat <- bfObject[["two.sided"]][["stat"]]
+  h0 <- bfObject[["h0"]]
+  methodNumber <- bfObject[["methodNumber"]]
+  
+  kappas <- .makeKappas(50)
+  compKappas <- kappas[3:50]
+  
+  kappaDomain <- c(kappas[1:2], compKappas)
+  
+  # TODO(Alexander): Different iterations not necessary already covered by the wrapper
+  #
+  if (test=="pearson") {
+    .calculateOneSidedRobustness <- function(kappa) {
+      bfObject <- .computePearsonCorBf10("n"=n, "r"=stat, "h0"=h0, "kappa"=kappa, "methodNumber"=methodNumber)
+      list(bfObject[["two.sided"]][["bf"]],
+           bfObject[["greater"]][["bf"]],
+           bfObject[["less"]][["bf"]])
+    }
+  }
+  
+  allBfs <- purrr::map(compKappas, .f=.calculateOneSidedRobustness)
+  
+  placeHolder <- c(1, 1, vector("numeric", length=48))
+  sideResult <- list("robustnessLine"=placeHolder)
+  result <- list("two.sided"=sideResult, "greater"=sideResult, "less"=sideResult)
+  
+  for (i in seq_len(48)){
+    result[[1]][[1]][i+2] <- allBfs[[i]][[1]]
+    result[[2]][[1]][i+2] <- allBfs[[i]][[2]]
+    result[[3]][[1]][i+2] <- allBfs[[i]][[3]]
+  }
+  
+  for (j in 1:3) {
+    if (isSomeInfinite(result[[j]][[1]])) {
+      result[[j]][[1]] <- "Bayes factor hits infinity"
+    }
+    
+    if (sum(is.na(result[[j]][[1]])) >= 1) {
+      result[[j]][[1]] <- "Could not compute"
+    } else {
+      robustnessMaxBf <- max(result[[j]][[1]])
+      robustnessKappaOfMaxBf <- kappaDomain[which.max(result[[j]][[1]])]
+      result[[j]] <- modifyList(result[[j]],
+                                list("robustnessMaxBf"=robustnessMaxBf,
+                                     "robustnessKappaOfMaxBf"=robustnessKappaOfMaxBf))
+    }
+  }
+  result[["kappaDomain"]] <- kappaDomain
+  
+  return(result)
+}
+
