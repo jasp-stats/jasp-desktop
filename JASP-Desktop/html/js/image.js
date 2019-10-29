@@ -40,8 +40,8 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	isEditable:					function() {	return this.model.get("editable")					==  true;	},
 	hasCollapse:				function() {	return this.$el.hasClass('jasp-collection-item')	=== false;	},
 	isConvertible:				function() {	return this.model.get("convertible")				==  true;	},
-	saveImageClicked:			function() {	this.model.trigger("SaveImage:clicked",			{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height")							});	},
-	editImageClicked:			function() {	this.model.trigger("EditImage:clicked",			this.myView,	{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), title: this.model.get("title"), name: this.model.get("name"), type: "interactive"		});	},
+	saveImageClicked:			function() {	this.model.trigger("SaveImage:clicked",							{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name")							});	},
+	editImageClicked:			function() {	this.model.trigger("EditImage:clicked",			this.myView,	{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name"), title: this.model.get("title"), type: "interactive"		});	},
 	showDependenciesClicked:	function() {	this.model.trigger("ShowDependencies:clicked",	this.model.get("name")); },
 
 	menuName:			"Plot",
