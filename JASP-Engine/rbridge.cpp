@@ -45,12 +45,11 @@ boost::function<bool(const std::string &, const	std::vector<std::string>&)						
 char** rbridge_getLabels(const Labels &levels, size_t &nbLevels);
 char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels);
 
-
 size_t _logWriteFunction(const void * buf, size_t len)
 {
 	try {
 		if(len > 0)
-			Log::log().write(static_cast<const char *>(buf), len);
+			Log::log(false).write(static_cast<const char *>(buf), len);
 	} catch (...) {
 		Log::log() << "there was a problem writing to buffer from R"<< std::flush;
 	}
@@ -85,7 +84,7 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 					&callbacks,
 					sendToDesktopFunction,
 					pollMessagesFunction,
-					[](){ Log::log().flush(); return 0;},
+					[](){ Log::log(false).flush(); return 0;},
 					_logWriteFunction
 	);
 	Log::log() << "jaspRCPP_init was run and R_HOME: "<< jaspRCPP_runScriptReturnString("R.home('')") << std::endl;
