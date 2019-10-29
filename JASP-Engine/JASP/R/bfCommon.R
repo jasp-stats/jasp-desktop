@@ -99,3 +99,29 @@ hypMinSided <- c("less", "minSided",
   flagText <- purrr::map2_chr(c("", "**", "***"), keyText, paste)
   return(paste(flagText, collapse=", "))
 }
+
+.getBfTableSidedFootnote <- function(alternative, analysis) {
+  # Note(Alexander): Add footnote can't add NULL messages
+  # 
+  # message <- NULL
+  
+  if (analysis=="correlation") {
+    effectSize <- "correlation"
+    if (alternative=="greater") {
+      message <- paste("For all tests, the alternative hypothesis specifies that the", effectSize, "is positive.")
+    } else if (alternative=="less") {
+      message <- paste("For all tests, the alternative hypothesis specifies that the", effectSize, "is negative")
+    }
+  }
+  
+  return(message)
+}
+
+
+# if (options[["alternative"]]=="greater") 
+#   corBayesTable$addFootnote(message="For all tests, the alternative hypothesis specifies that the correlation is positive.",
+#                             symbol="<i>Note</i>.")
+# 
+# if (options[["alternative"]]=="less") 
+#   corBayesTable$addFootnote(message="For all tests, the alternative hypothesis specifies that the correlation is negative.", 
+#                             symbol="<i>Note</i>.")
