@@ -142,12 +142,11 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
   if(options[["distance"]] == "Correlated densities"){
     knnDist <- dbscan::kNNdist(as.dist(1-cor(t(as.data.frame(data)), method = "pearson")), k = options[['minPts']])
   } else {
-    knnDist <- dbscan::kNNdist(data , k = options[['minPts']])
+    knnDist <- dbscan::kNNdist(data, k = options[['minPts']])
   }
-  knnDims <- dim(knnDist)
 
-  knnValues <- seq(from = 1, to = knnDims[1] * (knnDims[2]-1), by = 1)
-  knnDistances <- sort(knnDist[,2:options[['minPts']]])
+  knnValues <- seq(from = 1, to = length(knnDist), by = 1)
+  knnDistances <- sort(knnDist)
 
   d <- data.frame(x = knnValues, y = knnDistances)
 
@@ -163,7 +162,7 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
   lineData <- data.frame(xstart = xBreaks[1], xend = xBreaks[length(xBreaks)], ystart = options[["eps"]], yend = options[["eps"]])
  
   p <-  ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y)) + 
-        ggplot2::scale_x_continuous(name = "Points sorted by distance", breaks = xBreaks, limits = range(xBreaks)) + 
+        ggplot2::scale_x_continuous(name = "Points sorted by distance", breaks = xBreaks, limits = c(0, max(xBreaks))) + 
         ggplot2::scale_y_continuous(name = paste0(options[['minPts']], '-nearest neighbors \ndistance'), breaks = yBreaks, limits = range(yBreaks))
   
   if (!is.null(suggestedLine)) {
