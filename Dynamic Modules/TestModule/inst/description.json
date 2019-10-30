@@ -17,6 +17,10 @@
 	"menu":
 	[
 		{
+			"title":							"jaspResults stuff"
+		},
+
+		{
 			"title":							"Test Transposed jaspTable",
 			"qml":								"test.qml",
 			"function":							"testTransposedTableFunc"
@@ -26,6 +30,16 @@
 			"title":							"Test Footnotes jaspTable",
 			"qml":								"test.qml",
 			"function":							"testFootnotesTableFunc"
+		},
+
+		{ 
+			"title":							"QML Widgets"
+		},
+
+		{
+			"title":							"Custom Contrasts Widget",
+			"qml":								"customContrasts.qml",
+			"function":							"customContrasts"
 		}
 	]
 }

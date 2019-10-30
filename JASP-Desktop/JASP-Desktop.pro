@@ -269,6 +269,7 @@ HEADERS += \
     widgets/boundqmlradiobuttons.h \
     widgets/boundqmltextinput.h \
     widgets/boundqmlcombobox.h \
+    widgets/listmodelanovacustomcontrasts.h \
     widgets/listmodeljagsdatainput.h \
     widgets/listmodelpairsassigned.h \
     widgets/listmodeltermsassigned.h \
@@ -438,6 +439,7 @@ SOURCES += \
     widgets/boundqmlradiobuttons.cpp \
     widgets/boundqmltextinput.cpp \
     widgets/boundqmlcombobox.cpp \
+    widgets/listmodelanovacustomcontrasts.cpp \
     widgets/listmodeljagsdatainput.cpp \
     widgets/listmodelpairsassigned.cpp \
     widgets/listmodeltermsassigned.cpp \

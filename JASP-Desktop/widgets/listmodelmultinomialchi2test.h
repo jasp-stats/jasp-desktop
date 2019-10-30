@@ -32,13 +32,10 @@ public:
 		_initialColCnt = 1;
 	}
 
-	QString			getColName(size_t index)						override;
-	OptionsTable *	createOption()									override;
-	void			initValues(OptionsTable * bindHere)				override;
+	QString			getColName(size_t index)						const	override;
 
 public slots:
-	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;
-	void modelChangedSlot()											override;
+	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)			override;
 };
 
 #endif // LISTMODELMULTINOMIALCHI2TEST_H

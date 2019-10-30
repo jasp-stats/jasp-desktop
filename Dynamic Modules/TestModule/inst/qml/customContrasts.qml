@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2019 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,8 +16,36 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-VariablesList
+import QtQuick 			2.8
+import QtQuick.Layouts 	1.3
+import JASP.Controls 	1.0
+import JASP.Widgets 	1.0
+import JASP.Theme 		1.0
+
+
+Form
 {
-	listViewType:	"AssignedVariables"
-	dropMode:		"Insert"
+	VariablesForm
+	{
+		AvailableVariablesList 	
+		{	
+			name: "allVariablesList" 
+		}
+
+		AssignedVariablesList 	
+		{	
+			id:				selected
+			name: 			"selected"
+			title: 			qsTr("Selected")
+			singleVariable:	true
+			allowedColumns:	["ordinal", "nominal", "nominalText"]	
+		}
+	}
+
+	CustomContrastsTableView
+	{
+		name:		"customContrasts"
+		//columnName:	"facGender"
+		source:		"selected"
+	}
 }

@@ -31,17 +31,17 @@ public:
 	{
 		_defaultCellVal = "...";
 	}
-	Qt::ItemFlags		flags(		const QModelIndex &index) const	override;
+	Qt::ItemFlags		flags(		const QModelIndex &index)	const	override;
 
-	int getMaximumColumnWidthInCharacters(size_t columnIndex) const	override;
+	int getMaximumColumnWidthInCharacters(size_t columnIndex)	const	override;
 
-	QString			getColName(size_t index)						override;
-	OptionsTable *	createOption()									override;
-	void			initValues(OptionsTable * bindHere)				override;
+	QString			getColName(size_t index)					const	override;
+	OptionsTable *	createOption()										override;
+	void			initValues(OptionsTable * bindHere)					override;
 
 public slots:
-	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)	override;
-	void modelChangedSlot()											override;
+	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)		override;
+	void modelChangedSlot()												override;
 };
 
 #endif // ListModelJAGSDataInput_H

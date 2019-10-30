@@ -66,7 +66,7 @@ void ListModelJAGSDataInput::sourceTermsChanged(Terms *, Terms *)
 }
 
 
-QString ListModelJAGSDataInput::getColName(size_t index)
+QString ListModelJAGSDataInput::getColName(size_t index) const
 {
 	if(index == 0)
 		return "Parameter";

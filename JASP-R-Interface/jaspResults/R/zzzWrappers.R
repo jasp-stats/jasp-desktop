@@ -81,24 +81,24 @@ jaspResultsCalledFromJasp <- function() {
   )
 }
 
-createJaspPlot <- function(plot=NULL, title="", width=320, height=320, aspectRatio=0, error=NULL, dependencies=NULL, position=NULL)
-	return(jaspPlotR$new(plot = plot, title = title, width = width, height = height, aspectRatio = aspectRatio, error = error, dependencies = dependencies, position = position))
+createJaspPlot <- function( plot = NULL, title = "",    width = 320,   height = 320,    aspectRatio = 0,           error = NULL,  dependencies = NULL,         position = NULL)
+  return(jaspPlotR$new(     plot = plot, title = title, width = width, height = height, aspectRatio = aspectRatio, error = error, dependencies = dependencies, position = position))
 
-createJaspContainer <- function(title="", dependencies=NULL, position=NULL)
-	return(jaspContainerR$new(title = title, dependencies = dependencies, position = position))
+createJaspContainer <- function(  title = "",     dependencies = NULL,          position = NULL)
+  return(jaspContainerR$new(      title = title,  dependencies = dependencies,  position = position))
 
- createJaspTable <- function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL)
-	return(jaspTableR$new(title = title, data = data, colNames = colNames, colTitles = colTitles, overtitles = overtitles, colFormats = colFormats, rowNames = rowNames, rowTitles = rowTitles, dependencies = dependencies, position = position))
+ createJaspTable <- function( title="",       data = NULL, colNames = NULL,     colTitles = NULL,       overtitles = NULL,       colFormats = NULL,       rowNames = NULL,     rowTitles = NULL,      dependencies = NULL,         position = NULL,     expectedRows = NULL,          expectedColumns = NULL)
+  return(jaspTableR$new(      title = title,  data = data, colNames = colNames, colTitles = colTitles,  overtitles = overtitles, colFormats = colFormats, rowNames = rowNames, rowTitles = rowTitles, dependencies = dependencies, position = position, expectedRows = expectedRows,  expectedColumns = expectedColumns))
 
-createJaspHtml <- function(text="", elementType="p", class="", dependencies=NULL, title="hide me", position=NULL)
-	# if you change "hide me" here then also change it in Common.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
-	return(jaspHtmlR$new(text = text, elementType = elementType, class = class, dependencies = dependencies, title = title, position = position))
+# if you change "hide me" here then also change it in Common.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
+createJaspHtml <- function( text = "",    elementType = "p",         class = "",    dependencies = NULL,         title = "hide me", position = NULL)
+    return(jaspHtmlR$new(   text = text,  elementType = elementType, class = class, dependencies = dependencies, title = title,     position = position))
 
-createJaspState <- function(object=NULL, dependencies=NULL)
-  return(jaspStateR$new(object = object, dependencies = dependencies))
+createJaspState <- function(object = NULL,   dependencies = NULL)
+  return(jaspStateR$new(    object = object, dependencies = dependencies))
 
-createJaspColumn <- function(columnName="", dependencies=NULL)
-  return(jaspColumnR$new(columnName = columnName, dependencies = dependencies))
+createJaspColumn <- function(columnName = "",         dependencies = NULL)
+  return(jaspColumnR$new(    columnName = columnName, dependencies = dependencies))
 
 # also imported but that doesn't work in JASP
 R6Class <- R6::R6Class
@@ -446,13 +446,29 @@ jaspPlotR <- R6Class(
 	)
 )
 
+.jaspTableSetExpectedSize <- function(table=NULL, rows=NULL, cols=NULL) {
+
+  if(is.null(table))
+    stop(".jaspTableSetExpectedSize expects a table!")
+
+  inputTypes <- c(mode(rows), mode(cols))
+
+  if (!all(inputTypes %in% c("numeric", "NULL")))	stop("Please use numeric values to set the expected size")
+
+  if (!is.null(rows) && !is.null(cols))		table$setExpectedSize(cols, rows)
+  else if (!is.null(rows))        				table$setExpectedRows(rows)
+  else if(!is.null(cols))         				table$setExpectedColumns(cols)
+  else                                    stop("Enter cols, rows or both in setExpectedSize!")
+}
+
+
 jaspTableR <- R6Class(
 	classname = "jaspTableR",
 	inherit   = jaspOutputObjR,
 	cloneable = FALSE,
 
 	public    = list(
-		initialize = function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL, jaspObject=NULL) {
+    initialize = function(title="", data=NULL, colNames=NULL, colTitles=NULL, overtitles=NULL, colFormats=NULL, rowNames=NULL, rowTitles=NULL, dependencies=NULL, position=NULL, expectedRows=NULL, expectedColumns=NULL, jaspObject=NULL) {
 			if (!is.null(jaspObject)) {
 			  private$jaspObject <- jaspObject
 			  return()
@@ -489,6 +505,10 @@ jaspTableR <- R6Class(
 			
 			if (is.numeric(position))
 				jaspObj$position <- position
+
+      if (!(is.null(expectedRows) & is.null(expectedColumns)))
+        .jaspTableSetExpectedSize(jaspObj, rows=expectedRows, cols=expectedColumns);
+
 				
 			private$jaspObject <- jaspObj
 			return()
@@ -534,16 +554,7 @@ jaspTableR <- R6Class(
       }
     },
 
-		setExpectedSize = function(rows=NULL, cols=NULL) {
-			inputTypes <- c(mode(rows), mode(cols))
-
-      if (!all(inputTypes %in% c("numeric", "NULL")))	stop("Please use numeric values to set the expected size")
-
-      if (!is.null(rows) && !is.null(cols))		private$jaspObject$setExpectedSize(cols, rows)
-      else if (!is.null(rows))        				private$jaspObject$setExpectedRows(rows)
-      else if(!is.null(cols))         				private$jaspObject$setExpectedColumns(cols)
-      else                                    stop("Enter cols, rows or both in setExpectedSize!")
-    },
+    setExpectedSize     = function(rows=NULL, cols=NULL)      { .jaspTableSetExpectedSize(private$jaspObj, rows=expectedRows, cols=expectedColumns); },
 
     getColumnName       = function(columnIndex)               { return( private$jaspObject$colNames           [[columnIndex]]);               },
     setColumnName       = function(columnIndex, newName)      {         private$jaspObject$colNames$insert(     columnIndex,  newName);       },

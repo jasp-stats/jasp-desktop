@@ -117,5 +117,6 @@
         <file>components/JASP/Widgets/SaveDiscardCancelDialog.qml</file>
         <file>components/JASP/Widgets/JagsTableView.qml</file>
         <file>components/JASP/Widgets/PlotEditor.qml</file>
+        <file>components/JASP/Widgets/CustomContrastsTableView.qml</file>
     </qresource>
 </RCC>

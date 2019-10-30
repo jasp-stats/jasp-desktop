@@ -224,25 +224,25 @@ void AnalysisForm::_parseQML()
 		case qmlControlType::RepeatedMeasuresFactorsList:
 		{
 			BoundQMLRepeatedMeasuresFactors* factorList = dynamic_cast<BoundQMLRepeatedMeasuresFactors*>(control);
-			_modelMap[controlName] = factorList->model();
+			_modelMap[controlName]						= factorList->model();
 			break;
 		}
 		case qmlControlType::FactorsForm:
 		{
 			BoundQMLFactorsForm* factorForm = dynamic_cast<BoundQMLFactorsForm*>(control);
-			_modelMap[controlName] = factorForm->model();
+			_modelMap[controlName]			= factorForm->model();
 			break;
 		}
 		case qmlControlType::TableView:
 		{
-			BoundQMLTableView* tableView = new BoundQMLTableView(quickItem, this);
-			control = tableView;
-			_modelMap[controlName] = tableView->model();
+			BoundQMLTableView* tableView	= dynamic_cast<BoundQMLTableView*>(control);
+			control							= tableView;
+			_modelMap[controlName]			= tableView->model();
 			break;
 		}
 		case qmlControlType::VariablesListView:
 		{
-			QMLListView* listView = nullptr;
+			QMLListView*	listView		= nullptr;
 			QString			listViewTypeStr = QQmlProperty(quickItem, "listViewType").read().toString();
 			qmlListViewType	listViewType;
 

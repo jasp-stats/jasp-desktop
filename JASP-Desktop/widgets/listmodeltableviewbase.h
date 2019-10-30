@@ -36,7 +36,7 @@ class ListModelTableViewBase : public ListModel
 public:
 	enum class	specialRoles		{ active = Qt::UserRole, lines, maxColString };
 
-	explicit						ListModelTableViewBase(BoundQMLTableView * tableView, QString tableType);
+	explicit						ListModelTableViewBase(BoundQMLTableView * tableView, QString tableType = "");
 
 	QHash<int, QByteArray>			roleNames() const override;
 
@@ -52,16 +52,16 @@ public:
 				void				removeColumn(size_t index);
 				void				addRow();
 				void				removeRow(size_t index);
-				void				reset();
+	virtual		void				reset();
 				void				setInitialColumnCount(	size_t initialColumnCount)	{ _initialColCnt = initialColumnCount;	}
 				void				setInitialRowCount(		size_t initialRowCount)		{ _initialRowCnt = initialRowCount;		}
 	virtual		void				itemChanged(int column, int row, QVariant value);
 	virtual		void				refreshModel()							{ return ListModel::refresh(); }
-	virtual		void				initValues(OptionsTable * bindHere)	{}
-	virtual		QString				getColName(size_t index)				{ return "Col " + QString::fromStdString(std::to_string(index)); }
-	virtual		QString				getRowName(size_t index)				{ return "Row " + QString::fromStdString(std::to_string(index)); }
-	virtual		OptionsTable *		createOption()							{ return new OptionsTable(); }
-	virtual		void				modelChangedSlot()					{}
+	virtual		void				initValues(OptionsTable * bindHere);
+	virtual		QString				getColName(size_t index)		const	{ return "Col " + QString::fromStdString(std::to_string(index)); }
+	virtual		QString				getRowName(size_t index)		const	{ return "Row " + QString::fromStdString(std::to_string(index)); }
+	virtual		OptionsTable *		createOption();
+	virtual		void				modelChangedSlot();
 
 				const QVector<QVector<QVariant>>	&	values()	const { return _values;		}
 				const QVector<QString>				&	rowNames()	const { return _rowNames;	}

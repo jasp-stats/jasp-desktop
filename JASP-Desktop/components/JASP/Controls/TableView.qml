@@ -42,7 +42,7 @@ JASPControl
 	property string	modelType
 	property string	itemType:		"string"
 	property string filter:			"rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
-	property string colName:		"data"					//Used by ListModelFilteredDataEntry
+	property string colName:		"data"					//Used by ListModelFilteredDataEntry and ListMOdelANOVACustomContrasts
 	property string	extraCol:		""						//Used by ListModelFilteredDataEntry
 	property string	tableType
 	property alias	model:			theView.model
@@ -202,10 +202,11 @@ JASPControl
 					validator:			tableView.validator
 					onPressed:			tableView.colSelected = columnIndex
 					onEditingFinished:
-					{
-						tableView.itemChanged(columnIndex, rowIndex, text)
-						focus = false;
-					}
+						if(activeFocus)
+						{
+							tableView.itemChanged(columnIndex, rowIndex, text)
+							focus = false;
+						}
 					onActiveFocusChanged: if(!activeFocus) visible = false;
 
 				}

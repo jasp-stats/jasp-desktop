@@ -2,7 +2,7 @@ Package: DevelopmentModule
 Type: Package
 Title: Test Module Module for JASP
 Version: 1.0
-Date: 2019-10-28
+Date: 2019-10-30
 Author: Joris Goosen
 Website: 
 Maintainer: Joris Goosen <Joris@JorisGoosen.nl>

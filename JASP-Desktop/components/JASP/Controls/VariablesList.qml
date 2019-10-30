@@ -37,40 +37,40 @@ JASPControl
 	
 	property var	model
 	property string title
-	property alias	label:				variablesList.title
-	property alias	count:				listView.count
-	property int	columns:			1
-	property string itemType:			"variables"
-	property alias	dropKeys:			dropArea.keys
-	property string	dropMode:			"None"
-	property bool	draggable:			true
+	property alias	label:								variablesList.title
+	property alias	count:								listView.count
 	property var	source
-	property alias	syncModels:			variablesList.source
-	property var	sortMenuModel:		null
-	property bool	showSortMenu:		true
-	property bool	singleVariable:		false
-	property string listViewType:		"AvailableVariables"
-	property var	allowedColumns:		[]
-	property bool	dropModeInsert:		dropMode === "Insert"
-	property bool	dropModeReplace:	dropMode === "Replace"
-	property alias	selectedItems:		listView.selectedItems
-	property var	selectedItemsTypes:	[]
-	property var	suggestedColumns:	[]
-	property bool	showElementBorder:	false
-	property bool	dragOnlyVariables:	false
-	property bool	showVariableTypeIcon:	true
-	property bool	setWidthInForm:		false
-	property bool	setHeightInForm:	false
-	property bool	mustContainLowerTerms: true
-	property bool	addAvailableVariablesToAssigned: listViewType === "Interaction"
+	property int	columns:							1
+	property string itemType:							"variables"
+	property alias	dropKeys:							dropArea.keys
+	property string	dropMode:							"None"
+	property bool	draggable:							true
+	property alias	syncModels:							variablesList.source
+	property bool	showSortMenu:						true
+	property string listViewType:						"AvailableVariables"
+	property var	sortMenuModel:						null
+	property alias	selectedItems:						listView.selectedItems
+	property var	allowedColumns:						[]
+	property bool	dropModeInsert:						dropMode === "Insert"
+	property bool	singleVariable:						false
+	property bool	setWidthInForm:						false
+	property bool	setHeightInForm:					false
+	property bool	dropModeReplace:					dropMode === "Replace"
+	property var	suggestedColumns:					[]
+	property bool	showElementBorder:					false
+	property bool	dragOnlyVariables:					false
+	property var	selectedItemsTypes:					[]
+	property bool	showVariableTypeIcon:				true
+	property bool	mustContainLowerTerms:				true
+	property bool	addAvailableVariablesToAssigned:	listViewType === "Interaction"
 	
 	property var	interactionControl
-	property bool	addInteractionOptions:	false
+	property bool	addInteractionOptions:				false
 	
-	property var	extraControlColumns:		[]
-	property var	extraControlComponents:		[]
-	property string extraControlOptionName:		""
-	property alias	extraControlTitles:	titles.model
+	property var	extraControlColumns:				[]
+	property var	extraControlComponents:				[]
+	property string extraControlOptionName:				""
+	property alias	extraControlTitles:					titles.model
 	
 	property int	indexInDroppedListViewOfDraggedItem:	-1
 	
@@ -137,10 +137,6 @@ JASPControl
 		itemsDropped(selectedItems, target, -1, assignOption);
 		listView.clearSelectedItems(true);
 	}
-	
-/*	onDependencyMustContainChanged:
-		if(variablesList.model !== undefined)
-			variablesList.model.refresh()*/
 
 	Text
 	{
@@ -357,8 +353,8 @@ JASPControl
 				topMargin:		5 * preferencesModel.uiScale
 			}
 
-			sortMenuModel: variablesList.sortMenuModel
-			scrollYPosition: backgroundForms.contentY
+			sortMenuModel:		variablesList.sortMenuModel
+			scrollYPosition:	backgroundForms.contentY
 		}
 
 

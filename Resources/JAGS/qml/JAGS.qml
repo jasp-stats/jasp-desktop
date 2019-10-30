@@ -16,22 +16,22 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+import QtQuick.Layouts	1.3
 import QtQuick			2.8
-import JASP.Controls	1.0
 import JASP.Theme		1.0
 import JASP.Widgets		1.0
-import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
 
 Form
 {
     columns: 1
     TextArea
 	{
-        id: jagsModel
-		title: qsTr("Enter JAGS model below")
-		name: "model"
-		textType: "JAGSmodel"
-        text: "model{\n\n}"
+		id:			jagsModel
+		title:		qsTr("Enter JAGS model below")
+		name:		"model"
+		textType:	"JAGSmodel"
+		text:		"model{\n\n}"
 	}
     
     VariablesForm

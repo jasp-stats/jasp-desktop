@@ -16,18 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "boundqmltableview.h"
-#include "../analysis/analysisform.h"
-#include "analysis/options/optiondoublearray.h"
-#include "analysis/options/optionvariables.h"
-#include "analysis/options/optionstring.h"
-#include "listmodelmultinomialchi2test.h"
-#include "listmodeljagsdatainput.h"
-#include "listmodelfiltereddataentry.h"
-#include <QQmlProperty>
-#include <QQuickItem>
-#include <QTimer>
 #include "log.h"
+#include <QTimer>
+#include <QQuickItem>
+#include <QQmlProperty>
+#include "boundqmltableview.h"
+#include "listmodeljagsdatainput.h"
+#include "../analysis/analysisform.h"
+#include "listmodelfiltereddataentry.h"
+#include "listmodelmultinomialchi2test.h"
+#include "listmodelanovacustomcontrasts.h"
+#include "analysis/options/optionstring.h"
+#include "analysis/options/optionvariables.h"
+#include "analysis/options/optiondoublearray.h"
 
 
 BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
@@ -39,9 +40,10 @@ BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
 			tableType	= _item->property("tableType").toString(),
 			itemType	= _item->property("itemType").toString();
 
-	if (modelType == "MultinomialChi2Model")	_tableModel	= new ListModelMultinomialChi2Test(	this, tableType);
-	if (modelType == "JAGSDataInputModel")		_tableModel	= new ListModelJAGSDataInput(		this, tableType);
-	if (modelType == "FilteredDataEntryModel")	_tableModel = new ListModelFilteredDataEntry(	this, tableType);
+	if (modelType == "MultinomialChi2Model")	_tableModel	= new ListModelMultinomialChi2Test(	this, tableType	);
+	if (modelType == "JAGSDataInputModel")		_tableModel	= new ListModelJAGSDataInput(		this, tableType	);
+	if (modelType == "FilteredDataEntryModel")	_tableModel = new ListModelFilteredDataEntry(	this, tableType	);
+	if (modelType == "CustomContrasts")			_tableModel = new ListModelANOVACustomContrasts(this			);
 
 	if(!_tableModel) addError("No model specified for TableView!");
 	else				_tableModel->setItemType(itemType);
@@ -65,6 +67,9 @@ BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
 
 	if(initialRowCount > 0 && _tableModel)
 		_tableModel->setInitialRowCount(initialRowCount);
+
+	if(modelType == "CustomContrasts")
+		static_cast<ListModelANOVACustomContrasts*>(_tableModel)->loadColumnInfo();
 }
 
 void BoundQMLTableView::bindTo(Option *option)
