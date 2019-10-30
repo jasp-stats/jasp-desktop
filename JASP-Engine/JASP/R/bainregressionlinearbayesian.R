@@ -25,26 +25,25 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	dataset <- readList[["dataset"]]
 	missingValuesIndicator <- readList[["missingValuesIndicator"]]
 	
-	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "covariates", "model", "standardized"))
+	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "covariates", "model", "standardized", "seed"))
 
 	### LEGEND ###
-	.bainLegendRegression(dataset, options, jaspResults)
+	.bainLegendRegression(dataset, options, jaspResults, position = 0)
 	
 	### RESULTS ###
-	.bainLinearRegressionResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready)
+	.bainLinearRegressionResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
+
+	### BAYES FACTOR MATRIX ###
+	.bainBayesFactorMatrix(dataset, options, bainContainer, ready, type = "regression", position = 2)
 	
 	### COEFFICIENTS ###
-	.bainLinearRegressionCoefficientsTable(dataset, options, bainContainer, ready)
-	
-	### BAYES FACTOR MATRIX ###
-	.bainBayesFactorMatrix(dataset, options, bainContainer, ready, type = "regression")
+	.bainLinearRegressionCoefficientsTable(dataset, options, bainContainer, ready, position = 3)
 	
 	### BAYES FACTOR PLOT ###
-	.bainLinearRegressionBayesFactorPlots(dataset, options, bainContainer, ready)
-
+	.bainLinearRegressionBayesFactorPlots(dataset, options, bainContainer, ready, position = 4)
 }
 
-.bainLinearRegressionResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready) {
+.bainLinearRegressionResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready, position) {
 
 	if (!is.null(bainContainer[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
@@ -52,7 +51,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 
 	bainTable <- createJaspTable("Bain Linear Regression")
 	bainContainer[["bainTable"]] <- bainTable
-	bainTable$position <- 1
+	bainTable$position <- position
 
 	bainTable$addColumnInfo(name="hypotheses", type="string", title="")
 	bainTable$addColumnInfo(name="BF", type="number", title= "BF.c")
@@ -78,60 +77,37 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	}
 
 	if (options$model == "") {
-		formula <- paste(options[["dependent"]], "~", paste(options[["covariates"]], collapse=' + '))
-		rest.string <- paste0(paste0(options[["covariates"]], " = 0"), collapse = " & ")
-		rest.string <- .bainCleanModelInput(rest.string)
-
-		inpt <- list()
-		inpt[[1]] <- formula
-		names(dataset) <- .unv(names(dataset))
-		inpt[[2]] <- dataset
-		inpt[[3]] <- rest.string
-		inpt[[4]] <- options$standardized
-
-		p <- try({
-			bainResult <- Bain::Bain_regression_cm(formula = inpt[[1]], data = inpt[[2]], hyp = inpt[[3]], standardize = inpt[[4]])
-			bainContainer[["bainResult"]] <- createJaspState(bainResult)
-		})
-
+		rest.string <- NULL
 	} else {
-
-		formula <- paste(options[["dependent"]], "~", paste(options[["covariates"]], collapse=' + '))
 		rest.string <- .bainCleanModelInput(options$model)
-
-		inpt <- list()
-		inpt[[1]] <- formula
-		names(dataset) <- .unv(names(dataset))
-		inpt[[2]] <- dataset
-		inpt[[3]] <- rest.string
-		inpt[[4]] <- options$standardized
-
-		p <- try({
-			bainResult <- Bain::Bain_regression_cm(formula = inpt[[1]], data = inpt[[2]], hyp = inpt[[3]], standardize = inpt[[4]])
-			bainContainer[["bainResult"]] <- createJaspState(bainResult)
-		})
 	}
+
+	names(dataset) <- .unv(names(dataset))
+
+	p <- try({
+		bainResult <- .bain_regression_cran(X = dataset, dep = options[["dependent"]], pred = paste(options[["covariates"]], collapse = " "), hyp = rest.string, std = options[["standardized"]], seed = options[["seed"]])
+		bainContainer[["bainResult"]] <- createJaspState(bainResult)
+	})
 
 	if (isTryError(p)) {
 		bainContainer$setError(paste0("An error occurred in the analysis:<br>", .extractErrorMessage(p), "<br><br>Please double check your variables and model constraints."))
 		return()
 	}
 
-	BF <- bainResult$BF
-	for (i in 1:length(BF)) {
-		row <- data.frame(hypotheses = paste0("H",i), BF = BF[i], PMP1 = bainResult$PMPa[i], PMP2 = bainResult$PMPb[i])
+	for (i in 1:(length(bainResult$fit$BF)-1)) {
+		row <- list(hypotheses = paste0("H",i), BF = bainResult$fit$BF[i], PMP1 = bainResult$fit$PMPa[i], PMP2 = bainResult$fit$PMPb[i])
 		bainTable$addRows(row)
 	}
-	row <- data.frame(hypotheses = "Hu", BF = "", PMP1 = "", PMP2 = 1-sum(bainResult$PMPb))
-	bainTable$addRows(row)
+	row <- list(hypotheses = "Hu", BF = "", PMP1 = "", PMP2 = bainResult$fit$PMPb[length(bainResult$fit$BF)])
+	bainTable$addRows(row) 
 }
 
-.bainLinearRegressionBayesFactorPlots <- function(dataset, options, bainContainer, ready) {
+.bainLinearRegressionBayesFactorPlots <- function(dataset, options, bainContainer, ready, position) {
 	if (!is.null(bainContainer[["bayesFactorPlot"]]) || !options[["bayesFactorPlot"]]) return()
 
-	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Bayes Factor Comparison", height = 400, width = 600)
-	bayesFactorPlot$dependOn(options = "bayesFactorPlot")
-	bayesFactorPlot$position <- 4
+	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = 400, width = 600)
+	bayesFactorPlot$dependOn(options = c("bayesFactorPlot"))
+	bayesFactorPlot$position <- position
 
 	bainContainer[["bayesFactorPlot"]] <- bayesFactorPlot
 
@@ -139,56 +115,42 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 		return()
 
 	bainResult <- bainContainer[["bainResult"]]$object
-	bayesFactorPlot$plotObject <- .suppressGrDevice(.plot.BainR(bainResult))
+	bayesFactorPlot$plotObject <- .suppressGrDevice(.plot_bain_regression_cran(bainResult))
 }
 
-.bainLinearRegressionCoefficientsTable <- function(dataset, options, bainContainer, ready) {
+.bainLinearRegressionCoefficientsTable <- function(dataset, options, bainContainer, ready, position) {
 	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
 
 	coefficientsTable <- createJaspTable("Coefficients")
-	coefficientsTable$dependOn(options = "coefficients")
-	coefficientsTable$position <- 2
-
-	overTitle <- "95% Credible Interval"
+	coefficientsTable$dependOn(options = c("coefficients"))
+	coefficientsTable$position <- position
 
 	coefficientsTable$addColumnInfo(name="v",       title="Covariate",   type="string")
 	coefficientsTable$addColumnInfo(name="mean",    title="Coefficient", type="number")
-	coefficientsTable$addColumnInfo(name="SE",      title="SE",          type="number")
-	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     type="number", overtitle=overTitle)
-	coefficientsTable$addColumnInfo(name="CiUpper", title="Upper",     type="number", overtitle=overTitle)
+	coefficientsTable$addColumnInfo(name="SE",      title="Std. Error",  type="number")
+	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     	type="number", overtitle = "95% Credible Interval")
+	coefficientsTable$addColumnInfo(name="CiUpper", title="Upper",     	type="number", overtitle = "95% Credible Interval")
 
+	if(options[["standardized"]])
+		coefficientsTable$addFootnote(message = "The displayed coefficients are standardized.")
+	
 	bainContainer[["coefficientsTable"]] <- coefficientsTable
 
 	if (!ready || bainContainer$getError())
 		return()
 
 	bainResult <- bainContainer[["bainResult"]]$object
-	sum_model <- bainResult[["estimate_res"]]
+	sum_model <- summary(bainResult)
 
-	if (!options[["standardized"]]) {
-		covcoef <- data.frame(sum_model[["coefficients"]])
-		groups <- rownames(covcoef)
-		estim <- summary(sum_model)$coefficients[, 1]
-		SE <- summary(sum_model)$coefficients[, 2]
-		CiLower <- estim - (1.96 * SE)
-		CiUpper <- estim + (1.96 * SE)
-	} else {
-		covcoef <- data.frame(sum_model$CIs)
-		groups <- .v(options$covariates)
-		estim <- covcoef[, 2]
-		SE <- sum_model$SEs
-		CiLower <- covcoef[, 1]
-		CiUpper <- covcoef[, 3]
-	}
-	for (i in 1:length(estim)) {
-		if (i == 1 && !options$standardized) {
-			row <- data.frame(v = groups[i], mean = estim[i], SE = SE[i], CiLower = CiLower[i], CiUpper = CiUpper[i])
-			coefficientsTable$addRows(row)
-		} else {
-			row <- data.frame(v = .unv(groups[i]), mean = estim[i], SE = SE[i], CiLower = CiLower[i], CiUpper = CiUpper[i])
-			coefficientsTable$addRows(row)
-		}
-	}
+	groups <- as.character(sum_model[["Parameter"]])
+	estim <- sum_model[["Estimate"]]
+	CiLower <- sum_model[["lb"]]
+	CiUpper <- sum_model[["ub"]]
+	SE <- (CiUpper - CiLower)/(2 * qnorm(0.975))
+
+	d <- data.frame(v = groups, mean = estim, SE = SE, CiLower = CiLower, CiUpper = CiUpper)
+
+	coefficientsTable$addRows(d)
 }
 
 .readDataBainLinearRegression <- function(options, dataset) {
@@ -210,13 +172,13 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
   return(readList)
 }
 
-.bainLegendRegression <- function(dataset, options, jaspResults) {
+.bainLegendRegression <- function(dataset, options, jaspResults, position) {
 	if (!is.null(jaspResults[["legendTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
 	legendTable <- createJaspTable("Hypothesis Legend")
 	legendTable$dependOn(options =c("model", "covariates"))
-	legendTable$position <- 0
-	legendTable$addColumnInfo(name="number", type="string", title="Abbreviation")
+	legendTable$position <- position
+	legendTable$addColumnInfo(name="number", type="string", title="")
 	legendTable$addColumnInfo(name="hypothesis", type="string", title="Hypothesis")
 
 	jaspResults[["legendTable"]] <- legendTable
@@ -247,63 +209,88 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	}
 }
 
-.plot.BainR <- function(x, y, ...)
+.plot_bain_regression_cran <- function(x)
 {
-    PMPa <- x$PMPa
-    PMPb <- c(x$PMPb, 1 - sum(x$PMPb))
-    numH <- length(x$BF)
-    P_lables <- paste("H", 1:numH, sep = "")
-    ggdata1 <- data.frame(lab = P_lables, PMP = PMPa)
-    ggdata2 <- data.frame(lab = c(P_lables, "Hu"), PMP = PMPb)
-    if (numH == 1) {
-        p <- ggplot2::ggplot(data = ggdata2, mapping = ggplot2::aes(x = "", y = PMP,
-                            fill = lab)) +
-						ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
-            ggplot2::geom_col()
-        pp <- p + ggplot2::coord_polar(theta = "y", direction = -1) +
-            ggplot2::labs(x = "", y = "", title = "PMP") +
-						ggplot2::theme(panel.grid = ggplot2::element_blank(),
-                          legend.position = "none") +
-						ggplot2::scale_y_continuous(breaks = cumsum(rev(PMPb)) - rev(PMPb)/2,
-																				labels = rev(c(P_lables, "Hu")))
-				pp <- pp + ggplot2::theme(panel.background = ggplot2::element_blank(),
-																	axis.text=ggplot2::element_text(size=17, color = "black"),
-																	plot.title = ggplot2::element_text(size=18, hjust = .5),
-																	axis.ticks.y = ggplot2::element_blank())
-				pp <- pp + ggplot2::scale_fill_brewer(palette="Set1")
-        return(pp)
-    }
-    if (numH > 1) {
-        p <- ggplot2::ggplot(data = ggdata1, mapping = ggplot2::aes(x = "", y = PMP,
-                            	fill = lab)) +
-						ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
-            ggplot2::geom_col()
-        p1 <- p + ggplot2::coord_polar(theta = "y", direction = -1) +
-            ggplot2::labs(x = "", y = "", title = "PMP excluding Hu") +
-            ggplot2::theme(panel.grid = ggplot2::element_blank(),
-													legend.position = "none") +
-            ggplot2::scale_y_continuous(breaks = cumsum(rev(PMPa)) - rev(PMPa)/2,
-                               					labels = rev(P_lables))
-				p1 <- p1 + ggplot2::theme(panel.background = ggplot2::element_blank(),
-	                                axis.text=ggplot2::element_text(size=17, color = "black"),
-	                                plot.title = ggplot2::element_text(size=18, hjust = .5),
-																	axis.ticks.y = ggplot2::element_blank())
-				p1 <- p1 + ggplot2::scale_fill_brewer(palette="Set1")
-        p <- ggplot2::ggplot(data = ggdata2, mapping = ggplot2::aes(x = "", y = PMP,
-                            	fill = lab)) +
-						ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
-            ggplot2::geom_col()
-        p2 <- p + ggplot2::coord_polar(theta = "y", direction = -1) +
-            ggplot2::labs(x = "", y = "", title = "PMP including Hu") +
-            ggplot2::theme(panel.grid = ggplot2::element_blank(), legend.position = "none") +
-            ggplot2::scale_y_continuous(breaks = cumsum(rev(PMPb)) - rev(PMPb)/2,
-                               					labels = rev(c(P_lables, "Hu")))
-				p2 <- p2 + ggplot2::theme(panel.background = ggplot2::element_blank(),
-	                                axis.text=ggplot2::element_text(size=17, color = "black"),
-	                                plot.title = ggplot2::element_text(size=18, hjust = .5),
-																	axis.ticks.y = ggplot2::element_blank())
-				p2 <- p2 + ggplot2::scale_fill_brewer(palette="Set1")
-        pp <- gridExtra::grid.arrange(gridExtra::arrangeGrob(p1, p2, ncol = 2))
-        return(pp)
-    }
+  PMPa <- na.omit(x$fit$PMPa)
+  PMPb <- x$fit$PMPb
+  numH <- length(PMPa)
+  P_lables <- paste("H", 1:numH, sep = "")
+  ggdata1 <- data.frame(lab = P_lables, PMP = PMPa)
+  ggdata2 <- data.frame(lab = c(P_lables, "Hu"), PMP = PMPb)
+  
+  if (numH == 1) {
+    
+    p <- ggplot2::ggplot(data = ggdata2, mapping = ggplot2::aes(x = "", y = PMP, fill = lab)) +
+          ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
+          ggplot2::geom_col() + 
+          ggplot2::coord_polar(theta = "y", direction = -1) +
+          ggplot2::labs(x = "", y = "", title = "") +
+          ggplot2::theme(panel.grid = ggplot2::element_blank(), legend.position = "none") +
+          ggplot2::scale_y_continuous(breaks = cumsum(rev(PMPb)) - rev(PMPb)/2, labels = rev(c(P_lables, "Hu"))) +
+          ggplot2::theme(panel.background = ggplot2::element_blank(),
+                          axis.text=ggplot2::element_text(size=17, color = "black"),
+                          plot.title = ggplot2::element_text(size=18, hjust = .5),
+                          axis.ticks.y = ggplot2::element_blank()) +
+          ggplot2::scale_fill_brewer(palette="Set1")
+    
+    return(p)
+    
+  } else if (numH > 1) {
+    
+    p1 <- ggplot2::ggplot(data = ggdata1, mapping = ggplot2::aes(x = "", y = PMP, fill = lab)) +
+          ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
+          ggplot2::geom_col() +
+          ggplot2::coord_polar(theta = "y", direction = -1) +
+          ggplot2::labs(x = "", y = "", title = "Excluding Hu") +
+          ggplot2::theme(panel.grid = ggplot2::element_blank(),legend.position = "none") +
+          ggplot2::scale_y_continuous(breaks = cumsum(rev(PMPa)) - rev(PMPa)/2, labels = rev(P_lables)) +            
+          ggplot2::theme(panel.background = ggplot2::element_blank(),
+                              axis.text=ggplot2::element_text(size=17, color = "black"),
+                              plot.title = ggplot2::element_text(size=18, hjust = .5),
+                              axis.ticks.y = ggplot2::element_blank()) +
+          ggplot2::scale_fill_brewer(palette="Set1")
+    
+    p2 <- ggplot2::ggplot(data = ggdata2, mapping = ggplot2::aes(x = "", y = PMP, fill = lab)) +
+          ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
+          ggplot2::geom_col() + 
+          ggplot2::coord_polar(theta = "y", direction = -1) +
+          ggplot2::labs(x = "", y = "", title = "Including Hu") +
+          ggplot2::theme(panel.grid = ggplot2::element_blank(), legend.position = "none") +
+          ggplot2::scale_y_continuous(breaks = cumsum(rev(PMPb)) - rev(PMPb)/2, labels = rev(c(P_lables, "Hu"))) +
+          ggplot2::theme(panel.background = ggplot2::element_blank(),
+                          axis.text=ggplot2::element_text(size=17, color = "black"),
+                          plot.title = ggplot2::element_text(size=18, hjust = .5),
+                          axis.ticks.y = ggplot2::element_blank()) +
+          ggplot2::scale_fill_brewer(palette="Set1")
+    
+    plotMat <- list(p1 = p1, p2 = p2)
+	pp <- JASPgraphs::ggMatrixPlot(plotList = plotMat, layout = matrix(c(1, 2), ncol = 2))
+	
+    return(pp)
+  }
+}
+
+# This function is not from JASP and will be migrated to the bain CRAN package in time
+.bain_regression_cran<-function(X, dep, pred, hyp, std, seed){
+
+  	set.seed(seed)
+
+	pred <- as.character(strsplit(pred," ")[[1]])
+	predforhyp <- pred
+	npred <- length(pred)
+	pred <- paste0(pred,collapse = "+")
+
+	c2 <- paste0("lmres <-lm(",dep,"~",pred,",data = X)")
+	eval(parse(text = c2)) 
+
+	if (is.null(hyp)){
+		hyp <- predforhyp
+		hyp <- sapply(hyp,function(x) paste0(x,"=0"))
+		hyp <- paste0(hyp, collapse = " & ")
+	}
+
+	c3 <- paste0("bain::bain(lmres,","\"",hyp,"\",","standardize =",std,")")
+	result <- eval(parse(text = c3))
+
+	return(invisible(result))
 }

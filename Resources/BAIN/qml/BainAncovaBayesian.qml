@@ -58,8 +58,22 @@ Form
 	{
 		title: qsTr("Plots")
 
-		CheckBox { name: "bayesFactorPlot";		text: qsTr("Bayes factor comparison")	}
+		CheckBox { name: "bayesFactorPlot";		text: qsTr("Posterior probabilities")	}
 		CheckBox { name: "descriptivesPlot";	text: qsTr("Descriptives plot")			}
+	}
+
+	Group
+	{
+		title: qsTr("Additional Options")
+
+		DoubleField  { 
+			name: "seed"
+			text: qsTr("Seed")
+			defaultValue: 100
+			min: -999999
+			max: 999999
+			fieldWidth: 60 
+		}
 	}
 
 	Section
@@ -67,7 +81,7 @@ Form
 		text: qsTr("Model Constraints")
 		columns: 1
 
-		Text { text: "Place each hypothesis on a new line. For example:\n\nfactor.low = factor.med = factor.high\nfactor.low < factor.med < factor.high\n\nwhere factor is the factor name and low/med/high are the factor level names.\nRead the help file for further instructions." }
+		Text { text: "Place each hypothesis on a new line. For example:\n\nfactorLow = factorMed = factorHigh\nfactorLow < factorMed < factorHigh\n\nwhere factor is the factor name and Low/Med/High are the factor level names.\nRead the help file for further instructions." }
 
 		TextArea
 		{

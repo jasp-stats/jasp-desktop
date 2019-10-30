@@ -52,14 +52,28 @@ Form
 	Group
 	{
 		title: qsTr("Plots")
-		CheckBox { name: "bayesFactorPlot"; text: qsTr("Bayes factor comparison") }
+		CheckBox { name: "bayesFactorPlot"; text: qsTr("Posterior probabilities") }
 	}
 
 	Group
 	{
 		title: qsTr("Additional Options")
-		CheckBox { name: "standardized"; text: qsTr("Standardize")	}
+
+		DoubleField  { 
+			name: "seed"
+			text: qsTr("Seed")
+			defaultValue: 100
+			min: -999999
+			max: 999999
+			fieldWidth: 60 
+		}
+
+		CheckBox { 
+			name: "standardized"
+			text: qsTr("Standardize")	
+		}
 	}
+
 
 	Section
 	{

@@ -1,4 +1,4 @@
-Bain One Sample t-test
+bain One Sample t-test
 ==========================
 
 The bain (Bayesian informative hypotheses evaluation) One Sample t-test allows you test the nulthypothesis that the mean of a variable is zero versus one-sided and two-sided alternative hypotheses.
@@ -6,6 +6,7 @@ The bain (Bayesian informative hypotheses evaluation) One Sample t-test allows y
 ### Specification of the bain One Sample t-test
 
 - Choose variables from the variable list and move them to the box on the right.
+- Set the seed equal to an integer number to create a repeatable random number sequence. It is recommended to run analyses with two different seeds to ensure stability of the results.
 - When you execute the bain One Sample t-test for the first time tick the additional statistics and both plots. When you return to the bain One Sample t-test you will know what each of these three options renders and you can tick only the options you need.
 - By default 95% credible intervals will be presented in the results. If desired the degree of belief (by default 95%) can be changed.
 - You can choose from five testing situations (note that the reference value "ref"" can be entered in the "Test value" box):
@@ -32,5 +33,5 @@ The bain (Bayesian informative hypotheses evaluation) One Sample t-test allows y
 ### References
 
 - Gu, X., Mulder, J., and Hoijtink, H. (2018). Approximate adjusted fractional Bayes factors: A general method for testing informative hypotheses. British Journal of Mathematical and Statistical Psychology, 71, 229-261. DOI: 10.1111/bmsp.12110
-- Hoijtink, H., Mulder, J., van Lissa, C., and Gu, X. (2018). A tutorial on testing hypotheses using the Bayes factor. Psychological Methods. DOI: 10.1037/met0000201 
-- Hoijtink, H., Gu, X., and Mulder, J. (2018). Bayesian evaluation of informative hypotheses for multiple populations. British Journal of Mathematical and Statistical Psychology. DOI: 10.1111/bmsp.12145
+- Hoijtink, H., Mulder, J., van Lissa, C., and Gu, X. (2019). A tutorial on testing hypotheses using the Bayes factor. Psychological Methods, 24, 539-556. DOI: 10.1037/met0000201 
+- Hoijtink, H., Gu, X., and Mulder, J. (2019). Bayesian evaluation of informative hypotheses for multiple populations. British Journal of Mathematical and Statistical Psychology, 72, 219-243. DOI: 10.1111/bmsp.12145
