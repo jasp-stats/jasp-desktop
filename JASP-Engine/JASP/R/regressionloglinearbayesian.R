@@ -16,7 +16,7 @@
 #
 
 RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ...) {
-  ready <- length(options$factors) != 0
+  ready <- length(options$factors) > 1
   if(ready){
     dataset <- .basRegLogLinReadData(dataset, options)
     .basRegLogLinCheckErrors(dataset, options)
@@ -74,7 +74,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
       .hasErrors(
         dataset              = data[data == level],
         type                 = "observations",
-        observations.amount  = "< 1",
+        observations.amount  = "< 2",
         exitAnalysisIfErrors = TRUE
       )
     }
@@ -341,6 +341,8 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
     return()
   # Compute/get the model
   bfObject <- .basRegLogLinComputeBFObject(container, dataset, options)
+  if(!(options$regressionCoefficientsSubmodelNo %in% 1:bfObject$nModelsVisited))
+    stop("Submodel specified is not within possible submodels")
   
   results <- list()
   lookup.table <- .regressionLogLinearBayesianBuildLookup(dataset, options$factors)
