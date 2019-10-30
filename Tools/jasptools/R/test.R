@@ -321,13 +321,6 @@ approxMatch <- function(new, old, tol = 1e-5) {
 }
 
 
-.getInstallLocationDep <- function(dep) {
-  pkgs <- installed.packages()
-  index <- min(which(row.names(pkgs) == dep))
-  return(pkgs[index, "LibPath"])
-}
-
-
 .getDepsFromFile <- function() {
   pathToDeps <- file.path(.getPkgOption("tests.figs.dir"), "jasp-deps.txt")
   
