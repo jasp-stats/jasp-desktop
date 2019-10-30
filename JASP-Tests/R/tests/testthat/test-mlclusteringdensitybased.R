@@ -50,6 +50,7 @@ test_that("K-Distance Plot matches", {
 })
 
 test_that("t-SNE Cluster Plot matches", {
+  skip("Does not reproduce on windows <-> osx")
   plotName <- results[["results"]][["plot2dCluster"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "t-sne-cluster-plot", dir="mlClusteringDensityBased")
