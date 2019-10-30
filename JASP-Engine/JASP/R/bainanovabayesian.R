@@ -289,6 +289,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	invisible(jaspResults[["bainContainer"]])
 }
 
+# This function is not from JASP and will be migrated to the bain CRAN package in time
 .bain_anova_cran<-function(X, dep, group, hyp, seed){
 
 	set.seed(seed)

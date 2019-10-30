@@ -68,7 +68,7 @@ Form
 
 		DoubleField  { 
 			name: "seed"
-			text: qsTr("Seed:")
+			text: qsTr("Seed")
 			defaultValue: 100
 			min: -999999
 			max: 999999

@@ -1,9 +1,3 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
-
 bain Paired Samples t-test
 ==============================
 

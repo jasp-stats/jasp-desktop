@@ -270,6 +270,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
   }
 }
 
+# This function is not from JASP and will be migrated to the bain CRAN package in time
 .bain_regression_cran<-function(X, dep, pred, hyp, std, seed){
 
   	set.seed(seed)

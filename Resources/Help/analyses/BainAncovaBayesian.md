@@ -1,9 +1,3 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
-
 bain ANCOVA
 ==========================
 
@@ -20,7 +14,7 @@ bain (Bayesian informative hypotheses evaluation) ANCOVA allows you to evaluate 
 - When you tick model constraints a box opens in which you can specify the hypotheses you want to evaluate. You need to adhere to the following specification rules:
 
 1. Place each hypothesis on a separate line.
-2. The levels of the ONE factor are referred to as follows: `factor.levelname`. If, for example, there is a factor age with levels y, m, o. They are reffered to using `agey`, `agem`, and `ageo`, respectively.
+2. The levels of the ONE factor are referred to as follows: `factor.levelname`. If, for example, there is a factor age with levels y, m, o. They are referred to using `agey`, `agem`, and `ageo`, respectively.
 3. Linear combinations of parameters must be specified adhering to the following rules:
 - Each parameter name is used at most once.
 - Each parameter name may or may not be pre-multiplied with a number.

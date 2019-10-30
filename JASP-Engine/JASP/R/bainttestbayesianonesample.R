@@ -361,7 +361,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
         plot$plotObject <- .plot_bain_ttest_cran(bainResult[[variable]], type = analysisType)
       })
       if(isTryError(p)){
-        plot$setError("Plotting not possible: the results for this variable were not computed.")
+        plot$setError(paste0("Plotting not possible: ", .extractErrorMessage(p)))
       }
     } else {
       plot$setError("Plotting not possible: the results for this variable were not computed.")
@@ -405,6 +405,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     return(p)
 }
 
+# This function is not from JASP and will be migrated to the bain CRAN package in time
 .bain_ttest_cran <- function(x, y = NULL, nu = 0, type = 1, paired = FALSE, seed){
 
   set.seed(seed)

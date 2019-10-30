@@ -325,6 +325,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
   }
 }
 
+# This function is not from JASP and will be migrated to the bain CRAN package in time
 .bain_ancova_cran <- function(X, dep, cov, group, hyp, seed){
 
 	set.seed(seed)
