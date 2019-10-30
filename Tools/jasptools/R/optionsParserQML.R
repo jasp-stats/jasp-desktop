@@ -1,13 +1,3 @@
-.analysisOptionsFromQMLFile <- function(analysis) {
-  file <- .getQMLFile(analysis)
-  if (is.null(file))
-    stop("Could not find the options file for analysis ", analysis, ".\n",
-         "If you're trying to obtain options for an analysis from a module you have to set the module directory with setPkgOption(\"module.dir\", dir/to/module)")
-  options <- .readQML(file)
-  return(options)
-}
-
-
 .readQML <- function(file) {
   regularFields <- c(
     "IntegerField",

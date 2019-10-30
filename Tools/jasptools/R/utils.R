@@ -21,7 +21,7 @@
 .initRunEnvironment <- function(envir, dataset, ...) {
   # source all the R analysis files
   if (.isModule())
-    .sourceModuleCode(envir)
+    .initModuleRequisites(envir)
   else
     .sourceDir(.getPkgOption("common.r.dir"), envir)
   .setInternal("envir", envir) # envir in which the analysis is executed
@@ -75,10 +75,29 @@
   }
 }
 
+.initModuleRequisites <- function(envir) {
+  if (!"JASP" %in% installed.packages()) {
+    if (dir.exists(.getPkgOption("common.r.dir")))
+      install.packages(file.path(.getPkgOption("common.r.dir"), ".."), type="source", repos=NULL)
+    else
+      warning("Cannot find jasp-desktop/JASP-Engine/JASP; it won't be possible to evaluate JASP:: calls in your code.\n
+              Is the `common.r.dir` specified correctly in `viewPkgOptions()`?")
+  }
+  .sourceModuleCode(envir)
+}
+
 .sourceModuleCode <- function(envir) {
-  .sourceDir(.getPkgOption("module.dir"), envir)
   rFiles <- c("base64", "common", "commonerrorcheck", "commonmessages", "exposeUs")
   .sourceDir(.getPkgOption("common.r.dir"), envir, fileNames=rFiles)
+  .sourceDir(file.path(.getPkgOption("module.dir"), "R"), envir)
+}
+
+.getModuleDescription <- function() {
+  instFolder <- file.path(.getPkgOption("module.dir"), "inst")
+  if (!"description.json" %in% list.files(instFolder))
+    stop("Cannot find a description.json file in the module provided in `module.dir`")
+  
+  return(jsonlite::read_json(file.path(instFolder, "description.json")))
 }
 
 
@@ -214,6 +233,12 @@
   return(str)
 }
 
+.getInstallLocationDep <- function(dep) {
+  pkgs <- installed.packages()
+  index <- min(which(row.names(pkgs) == dep))
+  return(pkgs[index, "LibPath"])
+}
+
 .restoreOptions <- function(opts) {
   options(opts) # overwrite changed options
   addedOpts <- setdiff(names(options()), names(opts))
@@ -271,7 +296,7 @@ collapseTable <- function(rows) {
   }
 
   if (.isModule())
-    analyses <- list.files(.getPkgOption("module.dir"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
+    analyses <- list.files(file.path(.getPkgOption("module.dir"), "R"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
   else
     analyses <- list.files(.getPkgOption("common.r.dir"), pattern = "\\.[RrSsQq]$", recursive=TRUE)
   analyses <- gsub("\\.[RrSsQq]$", "", analyses)
@@ -280,6 +305,16 @@ collapseTable <- function(rows) {
   }
 
   return(analysis)
+}
+
+.getCasedNameMatchWithFunction <- function(name, envir) {
+  fnNames <- names(envir)[which(tolower(names(envir)) == tolower(name))]
+  for (fnName in fnNames) {
+    fnArgs <- formals(envir[[fnName]])
+    if (all(c("dataset", "options") %in% names(fnArgs)))
+      return(fnName)
+  }
+  stop(name, " does not have the required options and dataset arguments, not sure how to call this")
 }
 
 .insideTestEnvironment <- function() {

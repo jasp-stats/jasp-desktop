@@ -5,7 +5,7 @@
     if (isJaspDesktopDir(path)) {
       packageStartupMessage(sprintf("Using jasp-desktop at %s", path))
       .jasptoolsInit(path)
-      .checkVersion(utils::packageVersion("jasptools"), path)
+      .checkJaspDependencies(path)
       return(NULL)
     } else {
       packageStartupMessage("Path of jasp-desktop is corrupted! Please use develop(path_to_jasp_desktop).")
@@ -17,11 +17,46 @@
   invisible()
 }
 
-.checkVersion <- function(installedVersion, jaspDir) {
-  devVersion <- try(silent=TRUE, { utils::packageVersion("jasptools", file.path(jaspDir, "Tools")) })
-  if (inherits(devVersion, "try-error") || installedVersion >= devVersion)
-    return()
+.checkJaspDependencies <- function(jaspDir) {
+  #.checkDuplicates() I need to fix this dependency mess across different libs first
+  .checkVersions(jaspDir)
+}
+
+.checkDuplicates <- function() {
+  libs <- c(.getPkgOption("pkgs.dir"), .libPaths())
+  deps <- c("jasptools", "JASPgraphs", "jaspResults")
+  libsPerPkg <- setNames(vector("list", length(deps)), deps)
+  
+  for (lib in libs)
+    for (dep in deps)
+      if (dep %in% list.dirs(lib, full.names = FALSE, recursive = FALSE))
+        libsPerPkg[[dep]] <- c(libsPerPkg[[dep]], lib)
+  
+  duplicates <- which(unlist(lapply(libsPerPkg, length)) > 1)
+  for (duplicate in duplicates)
+    packageStartupMessage(paste0("Warning: ", deps[[duplicate]], " exists in multiple libraries (", paste0(libsPerPkg[[duplicate]], collapse=", "), ")"))
+
+}
+
+.checkVersions <- function(jaspDir) {
+  deps <- c("jasptools", "JASPgraphs", "jaspResults")
+  dirs <- setNames(c(file.path(jaspDir, "Tools"), file.path(jaspDir, "JASP-Engine"), file.path(jaspDir, "JASP-R-Interface")), deps)
+  
+  for (dep in deps) {
+    devVersion <- try(silent=TRUE, { utils::packageVersion(dep, lib.loc=dirs[dep]) })
+    if (inherits(devVersion, "try-error") || .getInstalledVersion(dep) >= devVersion)
+      next
     
-  jasptoolsPath <- file.path(jaspDir, "Tools", "jasptools")
-  packageStartupMessage(paste0("*** There is a newer version available (", devVersion,"). To update run `devtools::install(\"", jasptoolsPath, "\")`"))
+    installPath <- file.path(dirs[dep], dep)
+    msg <- paste0("*** There is a newer version available of ", dep, " (", devVersion,"). To update run")
+    if (dep == "jaspResults")
+      packageStartupMessage(paste0(msg, " `remove.packages(\"jaspResults\"); install.packages(\"", installPath, "\", type=\"source\", repos=NULL)`"))
+    else
+      packageStartupMessage(paste0(msg, " `devtools::install(\"", installPath, "\")`"))
+  }
+}
+
+.getInstalledVersion <- function(pkg) {
+  libs <- c(.getPkgOption("pkgs.dir"), .libPaths())
+  utils::packageVersion(pkg, lib.loc = libs)
 }

@@ -50,14 +50,15 @@ analysisOptions <- function(source) {
   }
 
   options <- NULL
-  if (jsonlite::validate(source) == TRUE) { # valid json
+  source <- trimws(source)
+  if (grepl("^\\{.*\\}$", source)) {
     analysisName <- stringr::str_match(source, '\\"name\\" : \\"(.*?)\\"')[2L]
     options <- .analysisOptionsFromJSONString(source)
-  } else if (grepl("[{}\":]", source)) { # invalid json
+  } else if (grepl("[{}\":]", source)) {
       stop("Your json is invalid, please copy the entire message
            including the outer braces { } that was send to R in the Qt terminal.
            Remember to use single quotes around the message.", call.=FALSE)
-  } else { # QML
+  } else {
     analysisName <- source
     options <- .analysisOptionsFromQMLFile(source)
   }
@@ -65,18 +66,57 @@ analysisOptions <- function(source) {
   return(options)
 }
 
+.analysisOptionsFromQMLFile <- function(analysis) {
+  file <- .getQMLFile(analysis)
+  if (is.null(file))
+    stop("Could not find the options file for analysis ", analysis, ".\n",
+         "If you're trying to obtain options for an analysis from a module you have to set the module directory with setPkgOption(\"module.dir\", dir/to/module)")
+  options <- .readQML(file)
+  return(options)
+}
+
 .getQMLFile <- function(analysis) {
-  if (.isModule())
-    dir <- .getPkgOption("module.dir")
-  else
+  if (.isModule()) {
+    dir <- .getModuleQmlDir()
+    fileName <- tolower(.getModuleQmlFile(analysis))
+  } else {
     dir <- .getPkgOption("common.qml.dir")
+    fileName <- tolower(paste0(analysis, ".qml"))
+  }
+  
   pathsToFiles <- list.files(dir, pattern = ".qml$", recursive=TRUE, ignore.case=TRUE)
   fileNames <- tolower(basename(pathsToFiles))
-  fileName <- tolower(paste0(analysis, ".qml"))
   if (any(fileNames == fileName)) {
     relativePath <- pathsToFiles[which(fileNames == fileName)]
     absolutePath <- file.path(dir, relativePath)
     return(absolutePath)
   }
-  return(NULL)
+}
+
+.getModuleQmlDir <- function() {
+  qmldir <- file.path(.getPkgOption("module.dir"), "inst", "qml")
+  if (!dir.exists(qmldir))
+    stop("Could not locate a qml folder in `", .getPkgOption("module.dir"), "/inst/`")
+  
+  return(qmldir)
+}
+
+
+.getModuleQmlFile <- function(analysis) {
+  analysis <- tolower(analysis)
+  descr <- .getModuleDescription()
+  funcToQml <- list()
+  for (i in seq_along(descr$menu)) {
+    analysisMeta <- descr$menu[[i]]
+    if (all(c("function", "qml") %in% names(analysisMeta)))
+      funcToQml[[tolower(analysisMeta[["function"]])]] <- analysisMeta[["qml"]]
+  }
+  
+  if (length(funcToQml) == 0)
+    stop("Could not find any qml or r function definitions in your description.json")
+  
+  if (!analysis %in% names(funcToQml))
+    stop("Could not find the options for ", analysis, ": it is not specified in description.json")
+  
+  return(funcToQml[[analysis]])
 }

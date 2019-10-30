@@ -235,9 +235,11 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
   
   .initRunEnvironment(envir = envir, dataset = dataset, perform = perform)
 
-  if (! name %in% names(envir))
+  if (! tolower(name) %in% tolower(names(envir)))
     stop("Could not find the R analysis function ", name, ".\n",
          "If you're trying to run the R script of an analysis from a module you have to set the module directory with setPkgOption(\"module.dir\", dir/to/module)")
+  
+  name <- .getCasedNameMatchWithFunction(name, envir)
   
   possibleArgs <- list(
     name = name,
@@ -254,7 +256,7 @@ run <- function(name, dataset, options, perform = "run", view = TRUE, quiet = FA
   if (usesJaspResults) {
     runFun <- "runJaspResults"
     
-    initJaspResults()
+    jaspResults::initJaspResults()
     
     # this list is a stand in for the 'jaspResultsModule' inside runJaspResults()
     envir[["jaspResultsModule"]] <- list(

@@ -1,5 +1,5 @@
 .analysisOptionsFromJSONString <- function(x) {
-  json <- try(jsonlite::fromJSON(x, simplifyVector=FALSE))
+  json <- try(rjson::fromJSON(x)) # jsonlite can't deal with \n in strings.. rjson can.
   
   if (inherits(json, "try-error")) {
     stop("There was a problem parsing the JSON string, cannot create the options list")

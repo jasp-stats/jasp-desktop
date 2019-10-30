@@ -11,10 +11,10 @@ jaspResultsPath <- file.path("..", "..", "..", "JASP-R-Interface", "jaspResults"
 devtools::install_deps(jaspResultsPath, upgrade=FALSE)
 install.packages(jaspResultsPath, type="source", repos=NULL)
 
-jasptoolsPath <- file.path("..", "..", "..", "Tools", "jasptools")
-devtools::install_deps(jasptoolsPath, upgrade=FALSE)
-install.packages(jasptoolsPath, type="source", repos=NULL)
-
 JASPgraphsPath <- file.path("..", "..", "..", "JASP-Engine", "JASPgraphs")
 devtools::install_deps(JASPgraphsPath, upgrade=FALSE)
 install.packages(JASPgraphsPath, type="source", repos=NULL)
+
+jasptoolsPath <- file.path("..", "..", "..", "Tools", "jasptools")
+devtools::install_deps(jasptoolsPath, upgrade=FALSE)
+install.packages(jasptoolsPath, type="source", repos=NULL)
