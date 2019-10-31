@@ -50,3 +50,48 @@ decodeAllColumnNames <- function(x, fun = get0(".decodeAllColumnNames"), ...) re
   dimnames(x) <- dnames
   return(x)
 }
+
+.decodeplot <- function(x, ...) {
+  UseMethod(".decodeplot", x)
+}
+
+.decodeplot.JASPgraphsPlot <- function(x) {
+  for (i in seq_along(x$subplots))
+    x$subplots[[i]] <- .decodeplot(x$subplots[[i]], returnGrob = FALSE)
+  return(x)
+}
+
+.decodeplot.gg <- function(x, returnGrob = TRUE) {
+  # TODO: do not return a grid object!
+  # we can do this by automatically replacing the scales and geoms, although this is quite a lot of work.
+  # alternatively, those edge cases will need to be handled by the developer.
+  labels <- x[["labels"]]
+  for (i in seq_along(labels))
+    if (!is.null(labels[[i]]))
+      labels[[i]] <- decodeAllColumnNames(labels[[i]])
+
+    x[["labels"]] <- labels
+    if (returnGrob)
+      return(.decodeplot.gTree(ggplot2::ggplotGrob(x)))
+    else
+      return(x)
+}
+
+.decodeplot.recordedplot <- function(x) {
+  .decodeplot.gTree(grid::grid.grabExpr(gridGraphics::grid.echo(x)))
+}
+
+.decodeplot.gtable <- function(x) rapply(x, f = decodeAllColumnNames, classes = "character", how = "replace")
+.decodeplot.grob   <- function(x) rapply(x, f = decodeAllColumnNames, classes = "character", how = "replace")
+.decodeplot.gTree  <- function(x) rapply(x, f = decodeAllColumnNames, classes = "character", how = "replace")
+.decodeplot.gDesc  <- function(x) rapply(x, f = decodeAllColumnNames, classes = "character", how = "replace")
+
+.decodeplot.qgraph <- function(x) {
+  labels <- x[["graphAttributes"]][["Nodes"]][["labels"]]
+  names  <- x[["graphAttributes"]][["Nodes"]][["names"]]
+  labels <- decodeAllColumnNames(labels)
+  names  <- decodeAllColumnNames(names)
+  x[["graphAttributes"]][["Nodes"]][["labels"]] <- labels
+  x[["graphAttributes"]][["Nodes"]][["names"]]  <- names
+  return(x)
+}
