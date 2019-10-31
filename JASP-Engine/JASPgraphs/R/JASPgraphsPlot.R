@@ -34,7 +34,8 @@ JASPgraphsPlot <- R6::R6Class(
 }
 
 
-reDrawJASPgraphsPlot <- function(subplots, args, grob = FALSE, ...) {
+reDrawJASPgraphsPlot <- function(subplots, args, grob = FALSE, newpage = !currentDevIsSvg(),
+                                 decodeplotFun = get0(".decodeplot"), ...) {
   # redraws plots from PlotPriorAndPosterior, PlotRobustnessSequential, and ggMatrixplot
   g <- gridExtra::arrangeGrob(
     grobs         = subplots,
@@ -43,13 +44,17 @@ reDrawJASPgraphsPlot <- function(subplots, args, grob = FALSE, ...) {
     widths        = args[["widths"]],
     names         = args[["names"]]
   )
+  if (!is.null(decodeplotFun))
+    g <- decodeplotFun(g)
+  
   if (grob)
     return(g)
   else
-    return(gridExtra::grid.arrange(g, ...))
+    return(gridExtra::grid.arrange(g, ..., newpage = newpage))
 }
 
-reDrawAlignedPlot <- function(subplots, args, grob = FALSE, ...) {
+reDrawAlignedPlot <- function(subplots, args, grob = FALSE, newpage = !currentDevIsSvg(), 
+                              decodeplotFun = get0(".decodeplot"), ...) {
   # redraws plots from JASPScatterPlot
   g <- makeGrobAlignedPlots(
     mainplot   = subplots[["mainPlot"]],
@@ -58,11 +63,16 @@ reDrawAlignedPlot <- function(subplots, args, grob = FALSE, ...) {
     showLegend = args[["showLegend"]],
     size       = args[["size"]]
   )
+  if (!is.null(decodeplotFun))
+    g <- decodeplotFun(g)
 
   if (grob) {
     return(g)
   } else {
-    grid::grid.newpage()
+    if (newpage)
+      grid::grid.newpage()
     return(grid::grid.draw(g, ...))
   }
 }
+
+currentDevIsSvg <- function() isTRUE(try(attr(grDevices::dev.cur(), "names") == "devSVG"))

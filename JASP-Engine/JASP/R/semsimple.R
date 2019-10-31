@@ -306,13 +306,13 @@
   semPlotMod <- semPlot::semPlotModel(list(lavResult), list(mplusStd = "std"))[[1]]
 
   manifests <- semPlotMod@Vars$name[semPlotMod@Vars$manifest]
-  semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- .unv(manifests)
+  semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- decodeAllColumnNames(manifests)
 
   lhsAreManifest <- semPlotMod@Pars$lhs %in% manifests
-  if (any(lhsAreManifest)) semPlotMod@Pars$lhs[lhsAreManifest] <- .unv(semPlotMod@Pars$lhs[lhsAreManifest])
+  if (any(lhsAreManifest)) semPlotMod@Pars$lhs[lhsAreManifest] <- decodeAllColumnNames(semPlotMod@Pars$lhs[lhsAreManifest])
 
   rhsAreManifest <- semPlotMod@Pars$rhs %in% manifests
-  if (any(rhsAreManifest)) semPlotMod@Pars$rhs[rhsAreManifest] <- .unv(semPlotMod@Pars$rhs[rhsAreManifest])
+  if (any(rhsAreManifest)) semPlotMod@Pars$rhs[rhsAreManifest] <- decodeAllColumnNames(semPlotMod@Pars$rhs[rhsAreManifest])
 
   return(semPlotMod)
 }

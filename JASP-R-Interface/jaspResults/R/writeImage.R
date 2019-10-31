@@ -19,48 +19,48 @@ getImageLocation <- function(type="png") {
   )
 }
 
-writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathpng=NULL, ppi=300, backgroundColor="white", location=getImageLocation("png"))
+writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathsvg=NULL, ppi=300, backgroundColor="white", location=getImageLocation("png"))
 {
   # Set values from JASP'S Rcpp when available
   if (exists(".fromRCPP")) {
-    location        <- .fromRCPP(".requestTempFileNameNative", "png")
+    location        <- .fromRCPP(".requestTempFileNameNative", "svg")
     backgroundColor <- .fromRCPP(".imageBackground")
     ppi             <- .fromRCPP(".ppi")
   }
 
   # TRUE if called from analysis, FALSE if called from editImage
-  if (is.null(relativePathpng))
-    relativePathpng <- location$relativePath
+  if (is.null(relativePathsvg))
+    relativePathsvg <- location$relativePath
 
   image                           <- list()
-  fullPathpng                     <- paste(location$root, relativePathpng, sep="/")
+  fullPathpng                     <- paste(location$root, relativePathsvg, sep="/")
   plotEditingOptions              <- NULL
   root                            <- location$root
-  base::Encoding(relativePathpng) <- "UTF-8"
+  base::Encoding(relativePathsvg) <- "UTF-8"
   base::Encoding(root)            <- "UTF-8"
   oldwd                           <- getwd()
   setwd(root)
   on.exit(setwd(oldwd))
 
-  type <- "cairo" # Operating System information (where to draw to)
-  if(Sys.info()["sysname"]=="Darwin")
-    type <- "quartz"
+  # convert width & height from pixels to inches. ppi = pixels per inch. 4 is a magic number.
+  width  <- width  / ppi * 4
+  height <- height / ppi * 4
 
+  plot2draw <- .decodeplot(plot)
 
-  if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+  if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable"))) {
 
-    pngMultip <- ppi / 96
+    # TODO: ggsave adds very little when we use a function as device...
     ggplot2::ggsave(
-    	filename  = relativePathpng, 
-    	plot      = plot, 
-    	device    = grDevices::png,
-    	width     = width  * pngMultip,
-    	height    = height * pngMultip,
-    	dpi       = ppi,
+      filename  = relativePathsvg,
+      plot      = plot2draw,
+      device    = function(filename, ...) svglite::svglite(file = filename, ...),
+      dpi       = ppi,
+      width     = width,
+      height    = height,
+      units     = "in", 
       bg        = backgroundColor,
-    	res       = 72 * pngMultip,
-    	type      = type,
-    	limitsize = FALSE # because we supply png as a function, we specify pixels rather than inches
+      limitsize = FALSE # only necessary if users make the plot ginormous.
     )
 
     #If we have JASPgraphs available we can get the plotEditingOptions for this plot
@@ -69,48 +69,40 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
 
   } else {
     
-  	# Calculate pixel multiplier
-  	pngMultip <- ppi / 96
-    isRecordedPlot <- inherits(plot, "recordedplot")
+    isRecordedPlot <- inherits(plot2draw, "recordedplot")
 
     # Open graphics device and plot
-    grDevices::png(filename=relativePathpng, width=width * pngMultip,
-	               height=height * pngMultip, bg=backgroundColor,
-                   res=72 * pngMultip, type=type)
+    svglite::svglite(file = relativePathsvg, width = width, height = height, bg = backgroundColor)
 
-    if (is.function(plot) && !isRecordedPlot) {
+    if (is.function(plot2draw) && !isRecordedPlot) {
 
       if (obj) dev.control('enable') # enable plot recording
       eval(plot())
-      if (obj) plot <- recordPlot() # save plot to R object
+      if (obj) plot2draw <- recordPlot() # save plot to R object
 
     } else if (isRecordedPlot) { # function was called from editImage to resize the plot
 
-      .redrawPlot(plot) #(see below)
-    } else if (inherits(plot, "qgraph")) {
+      .redrawPlot(plot2draw) #(see below)
+    } else if (inherits(plot2draw, "qgraph")) {
 
-      qgraph:::plot.qgraph(plot)
+      qgraph:::plot.qgraph(plot2draw)
 
     } else {
-      plot(plot)
+      plot(plot2draw)
     }
 
     dev.off()
   }
-
-
+  
   # Save path & plot object to output
-  image[["png"]] <- relativePathpng
+  image[["png"]] <- relativePathsvg
 
   if (obj) {
-    image[["obj"]]         <- plot
+    image[["obj"]]         <- plot2draw
     image[["editOptions"]] <- plotEditingOptions
   }
 
-
-
-  # Return relative paths in list
-  image
+  return(image)
 }
 
 # Source: https://github.com/Rapporter/pander/blob/master/R/evals.R#L1389
