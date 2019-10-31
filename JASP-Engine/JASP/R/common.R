@@ -2236,10 +2236,8 @@ as.list.footnotes <- function(footnotes) {
   }
   
   # convert width & height from pixels to inches. ppi = pixels per inch. 4 is a magic number.
-  if (units == "pixels") {
-    width  <- width  / ppi * 4
-    height <- height / ppi * 4
-  }
+  width  <- width  / ppi * 4
+  height <- height / ppi * 4
   image <- list()
   
   # TRUE if called from analysis, FALSE if called from editImage
@@ -2255,10 +2253,7 @@ as.list.footnotes <- function(footnotes) {
   oldwd                           <- getwd()
   setwd(root)
   on.exit(setwd(oldwd))
-  
-  # convert width & height from pixels to inches. ppi = pixels per inch. 4 is a magic number.
-  width  <- width  / ppi * 4
-  height <- height / ppi * 4
+
   
   plot2draw <- .decodeplot(plot)
   

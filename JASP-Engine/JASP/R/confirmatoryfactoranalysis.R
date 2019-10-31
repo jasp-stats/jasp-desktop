@@ -1027,7 +1027,6 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 .resCorToMisFitPlot <- function(rescor) {
-
   ggmisfit <- reshape2::melt(abs(t(rescor)))
   ggmisfit$labels <- substr(round(ggmisfit$value, 2), 2, 4)
   ggmisfit$labels[ggmisfit$labels == ""] <- "0"
