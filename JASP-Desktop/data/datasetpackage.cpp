@@ -795,7 +795,7 @@ std::map<int, std::string> DataSetPackage::initColumnAsNominalText(size_t colNo,
 	return out;
 }
 
-bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, std::string newName, const std::vector<int> & values, const std::set<int> &uniqueValues, bool is_ordinal)
+bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, std::string newName, const std::vector<int> & values, bool is_ordinal)
 {
 	bool out = false;
 
@@ -803,7 +803,7 @@ bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, std::string newN
 	{
 		Column &column = _dataSet->column(colNo);
 		column.setName(newName);
-		out = column.setColumnAsNominalOrOrdinal(values, uniqueValues, is_ordinal);
+		out = column.setColumnAsNominalOrOrdinal(values, is_ordinal);
 	}, "initColumnAsNominalOrOrdinal");
 
 	return out;
@@ -845,15 +845,15 @@ std::map<int, std::string> DataSetPackage::initColumnAsNominalText(QVariant colI
 		return initColumnAsNominalText(colID.toString().toStdString(), newName, values, labels);
 }
 
-bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, std::string newName, const std::vector<int> & values, const std::set<int> &uniqueValues, bool is_ordinal)
+bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, std::string newName, const std::vector<int> & values, bool is_ordinal)
 {
 	if(colID.type() == QMetaType::Int || colID.type() == QMetaType::UInt)
 	{
 		int colNo = colID.type() == QMetaType::Int ? colID.toInt() : colID.toUInt();
-		return initColumnAsNominalOrOrdinal(colNo, newName, values, uniqueValues, is_ordinal);
+		return initColumnAsNominalOrOrdinal(colNo, newName, values, is_ordinal);
 	}
 	else
-		return initColumnAsNominalOrOrdinal(colID.toString().toStdString(), newName, values, uniqueValues, is_ordinal);
+		return initColumnAsNominalOrOrdinal(colID.toString().toStdString(), newName, values, is_ordinal);
 }
 
 bool DataSetPackage::initColumnAsNominalOrOrdinal(	QVariant colID, std::string newName, const std::vector<int> & values, const std::map<int, std::string> &uniqueValues, bool is_ordinal)

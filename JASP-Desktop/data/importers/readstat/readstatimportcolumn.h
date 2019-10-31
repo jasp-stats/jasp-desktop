@@ -32,13 +32,12 @@ public:
 	const std::vector<double>				&	doubles()		const { return _doubles;	}
 	const std::vector<std::string>			&	strings()		const { return _strings;	}
 
-	const std::set<int>							uniqueInts()	const { return std::set<int>(_ints.begin(), _ints.end()); }
 	const std::map<int,std::string>			&	intLabels()		const { return _intLabels; }
 	const std::map<std::string,std::string>	&	strLabels()		const { return _strLabels; }
 
 private:
 	std::string					_labelsID;
-	columnType			_type;
+	columnType					_type;
 	std::vector<int>			_ints;
 	std::vector<double>			_doubles;
 	std::vector<std::string>	_strings;

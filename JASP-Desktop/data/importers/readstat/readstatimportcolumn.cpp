@@ -15,8 +15,8 @@ size_t ReadStatImportColumn::size() const
 {
 	switch(_type)
 	{
-	default:							return 0;
-	case columnType::scale:		return _doubles.size();
+	default:						return 0;
+	case columnType::scale:			return _doubles.size();
 	case columnType::ordinal:		[[clang::fallthrough]];
 	case columnType::nominal:		return _ints.size();
 	case columnType::nominalText:	return _strings.size();
@@ -29,8 +29,8 @@ std::string ReadStatImportColumn::valueAsString(size_t row) const
 
 	switch(_type)
 	{
-	default:							return Utils::emptyValue;
-	case columnType::scale:		return std::to_string(_doubles[row]);
+	default:						return Utils::emptyValue;
+	case columnType::scale:			return std::to_string(_doubles[row]);
 	case columnType::ordinal:		[[clang::fallthrough]];
 	case columnType::nominal:		return std::to_string(_ints[row]);
 	case columnType::nominalText:	return _strings[row];
@@ -136,7 +136,7 @@ void ReadStatImportColumn::addValue(const int & val)
 void ReadStatImportColumn::addLabel(const int & val, const std::string & label)
 {
 	if(!(_type == columnType::ordinal || _type == columnType::nominal))
-		Log::log() << "Column type being imported through readstat is not ordinal or nominal but receives an int as value for label " << label << std::endl;
+		Log::log() << "Column '" << name() << "' being imported through readstat is not of type ordinal or nominal but receives an int (" << val << ") as value for label '" << label << "'. Ignoring it." << std::endl;
 	else
 		_intLabels[val] = label;
 }
@@ -147,7 +147,7 @@ void ReadStatImportColumn::addLabel(const std::string & val, const std::string &
 		_type = columnType::nominalText; //If we haven't added anything else and the first value is a string then the rest should also be a string from now on
 
 	if(_type != columnType::nominalText)
-		Log::log() << "Column type being imported through readstat is not nominal-text but receives a string as value for label " << label << std::endl;
+		Log::log() << "Column '" << name() << "' being imported through readstat is not of type nominal-text but receives a string '" << val << "' as value for label '" << label << "'. Ignoring it." << std::endl;
 	else
 		_strLabels[val] = label;
 }
@@ -157,7 +157,7 @@ void ReadStatImportColumn::addMissingValue()
 	switch(_type)
 	{
 	case columnType::unknown:												return;
-	case columnType::scale:		_doubles.push_back(NAN);				return;
+	case columnType::scale:			_doubles.push_back(NAN);				return;
 	case columnType::ordinal:		[[clang::fallthrough]];
 	case columnType::nominal:		_ints.push_back(INT_MIN);				return;
 	case columnType::nominalText:	_strings.push_back(Utils::emptyValue);	return;

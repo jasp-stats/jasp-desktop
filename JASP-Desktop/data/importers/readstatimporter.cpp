@@ -30,7 +30,7 @@ int handle_variable(int, readstat_variable_t *variable, const char *val_labels, 
 	case READSTAT_MEASURE_UNKNOWN:	colType = columnType::unknown;	break;
 	case READSTAT_MEASURE_NOMINAL:	colType = columnType::nominal;	break;
 	case READSTAT_MEASURE_ORDINAL:	colType = columnType::ordinal;	break;
-	case READSTAT_MEASURE_SCALE:	colType = columnType::scale;		break;
+	case READSTAT_MEASURE_SCALE:	colType = columnType::scale;	break;
 	}
 
 	data->addColumn(var_index, new ReadStatImportColumn(data, name, labelsID, colType));
@@ -120,7 +120,7 @@ void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
 	case columnType::ordinal:
 	case columnType::nominal:
 		if(col->hasLabels())	_packageData->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(), col->intLabels(),	col->getColumnType() == columnType::ordinal);
-		else					_packageData->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(), col->uniqueInts(),	col->getColumnType() == columnType::ordinal);
+		else					_packageData->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(),						col->getColumnType() == columnType::ordinal);
 		break;
 
 	case columnType::nominalText:

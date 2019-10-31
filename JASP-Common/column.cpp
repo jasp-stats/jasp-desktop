@@ -470,36 +470,30 @@ bool Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
 			setColumnAsNominalOrOrdinal(values, intLabels, newColumnType == columnType::ordinal);
 			return true;
 		}
-		else if (newColumnType == columnType::nominal)
-			// nominalText to nominal: we could not make the values as integers, but
-			// the column can still stay a NominalText, so it is not a failure.
-			return true;
 
-		return false;
+		// nominalText to nominal: we could not make the values as integers, but
+		// the column can still stay a NominalText, so it is not a failure.
+		return newColumnType == columnType::nominal;
 	}
 	else if (_columnType == columnType::scale)
 	{
-		bool				success = true;
 		std::vector<int>	values;
-		std::set<int>		uniqueIntValues;
 
 		for (double doubleValue : AsDoubles)
 		{
 			int intValue = INT_MIN;
 
-			if (!Utils::isEmptyValue(doubleValue))
-				success = Utils::getIntValue(doubleValue, intValue);
-
-			if (!success)
+			if (!Utils::isEmptyValue(doubleValue) && !Utils::getIntValue(doubleValue, intValue))
 				break;
 
 			values.push_back(intValue);
-			if (intValue != INT_MIN)
-				uniqueIntValues.insert(intValue);
 		}
 
-		if (success)
-			setColumnAsNominalOrOrdinal(values, uniqueIntValues, newColumnType == columnType::ordinal);
+		if (values.size() == rowCount())
+		{
+			setColumnAsNominalOrOrdinal(values, newColumnType == columnType::ordinal);
+			return true;
+		}
 		else if (newColumnType == columnType::nominal)
 		{
 			std::vector<string> values;
@@ -509,10 +503,8 @@ bool Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
 				else							values.push_back(std::to_string(doubleValue));
 
 			setColumnAsNominalText(values);
-			success = true;
+			return true;
 		}
-
-		return success;
 	}
 
 	return false;
@@ -677,24 +669,30 @@ bool Column::setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is
 {
 	std::set<int> uniqueValues(values.begin(), values.end());
 	uniqueValues.erase(INT_MIN);
-	return setColumnAsNominalOrOrdinal(values, uniqueValues, is_ordinal);
-}
 
-bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const map<int, string> &uniqueValues, bool is_ordinal)
-{
 	bool labelChanged	= _labels.syncInts(uniqueValues);
 	bool dataChanged	= _setColumnAsNominalOrOrdinal(values, is_ordinal);
 
 	return labelChanged || dataChanged;
 }
 
-bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, const set<int> &uniqueValues, bool is_ordinal)
+bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, string> uniqueValues, bool is_ordinal)
 {
-	bool labelChanged	= _labels.syncInts(uniqueValues);
-	bool dataChanged	= _setColumnAsNominalOrOrdinal(values, is_ordinal);
+	std::set<int> uniqueValuesData(values.begin(), values.end());
+
+	for(int uniqVal : uniqueValuesData)
+		if(uniqueValues.count(uniqVal) == 0)
+		{
+			Log::log() << "Setting column '" << name() << "' data to " << (is_ordinal ? "ordinal" : "nominal") << " but it is missing a label for value (" << uniqVal << "), adding the value as label." << std::endl;
+			uniqueValues[uniqVal] = std::to_string(uniqVal);
+		}
+
+	bool	labelChanged	= _labels.syncInts(uniqueValues),
+			dataChanged		= _setColumnAsNominalOrOrdinal(values, is_ordinal);
 
 	return labelChanged || dataChanged;
 }
+
 
 bool Column::_setColumnAsNominalOrOrdinal(const vector<int> &values, bool is_ordinal)
 {

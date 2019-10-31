@@ -19,7 +19,7 @@ void Importer::loadDataSet(const std::string &locator, boost::function<void(cons
 	ImportDataSet *importDataSet = loadFile(locator, progressCallback);
 
 	int columnCount = importDataSet->columnCount();
-	_packageData->createDataSet(); // this is required incase the loading of the data fails so that the created dataset can later be freed
+	_packageData->createDataSet(); // this is required in case the loading of the data fails so that the created dataset can later be freed
 
 	if (columnCount > 0)
 	{
@@ -61,12 +61,12 @@ void Importer::initColumnWithStrings(QVariant colId, std::string newName, const 
 
 	auto isNominalInt			= [&](){ return valuesAreIntegers && uniqueValues.size() == 2; };
 	auto isOrdinal				= [&](){ return valuesAreIntegers && uniqueValues.size() > 2 && uniqueValues.size() <= thresholdScale; };
-	auto isScalar				= [&]() { return ImportColumn::convertVecToDouble(values, doubleValues, emptyValuesMap); };
+	auto isScalar				= [&](){ return ImportColumn::convertVecToDouble(values, doubleValues, emptyValuesMap); };
 
-	if		(isOrdinal())					initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		uniqueValues, true	);
-	else if	(isNominalInt())				initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		uniqueValues, false	);
-	else if	(isScalar())					initColumnAsScale(				colId,	newName,	doubleValues						);
-	else				emptyValuesMap =	initColumnAsNominalText(		colId,	newName,	values								);
+	if		(isOrdinal())					initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		true	);
+	else if	(isNominalInt())				initColumnAsNominalOrOrdinal(	colId,	newName,	intValues,		false	);
+	else if	(isScalar())					initColumnAsScale(				colId,	newName,	doubleValues	);
+	else				emptyValuesMap =	initColumnAsNominalText(		colId,	newName,	values			);
 
 	storeInEmptyValues(newName, emptyValuesMap);
 }
