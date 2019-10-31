@@ -554,7 +554,7 @@ jaspTableR <- R6Class(
       }
     },
 
-    setExpectedSize     = function(rows=NULL, cols=NULL)      { .jaspTableSetExpectedSize(private$jaspObj, rows=expectedRows, cols=expectedColumns); },
+    setExpectedSize     = function(rows=NULL, cols=NULL)      { .jaspTableSetExpectedSize(private$jaspObject, rows=rows, cols=cols); },
 
     getColumnName       = function(columnIndex)               { return( private$jaspObject$colNames           [[columnIndex]]);               },
     setColumnName       = function(columnIndex, newName)      {         private$jaspObject$colNames$insert(     columnIndex,  newName);       },
