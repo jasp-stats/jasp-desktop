@@ -150,7 +150,7 @@ redrawPlotJaspResults <- function(rec_plot)
 }
 
 .decodeplot.gg <- function(x, returnGrob = TRUE) {
-  # TODO: don't modify the output to a grid!
+  # TODO: do not return a grid object!
   # we can do this by automatically replacing the scales and geoms, although this is quite a lot of work.
   # alternatively, those edge cases will need to be handled by the developer.
   labels <- x[["labels"]]
@@ -175,5 +175,11 @@ redrawPlotJaspResults <- function(rec_plot)
 .decodeplot.gDesc  <- function(x) rapply(x, f = decodeAllColumnNames, classes = "character", how = "replace")
 
 .decodeplot.qgraph <- function(x) {
-  stop("qgraph is not implemented yet!")
+  labels <- x[["graphAttributes"]][["Nodes"]][["labels"]]
+  names  <- x[["graphAttributes"]][["Nodes"]][["names"]]
+  labels <- decodeAllColumnNames(labels)
+  names  <- decodeAllColumnNames(names)
+  x[["graphAttributes"]][["Nodes"]][["labels"]] <- labels
+  x[["graphAttributes"]][["Nodes"]][["names"]]  <- names
+  return(x)
 }

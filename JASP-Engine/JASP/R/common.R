@@ -2374,7 +2374,7 @@ saveImage <- function(plotName, format, height, width)
 			
 			hiResMultip <- 300 / 72
 			grDevices::tiff(
-			  filename    = relativePath,
+				filename    = relativePath,
 				width       = width * hiResMultip,
 				height      = height * hiResMultip,
 				res         = 300,

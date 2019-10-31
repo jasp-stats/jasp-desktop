@@ -936,23 +936,22 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 .cfaPlotPath <- function(jaspResults, options, cfaResult) {
   if (is.null(cfaResult) || !options$pathplot || !is.null(jaspResults[["plots"]][["pathplot"]])) return()
 
-  png() # semplot opens a device even though we specify doNotPlot, so we hack.
-  pathplot <- semPlot::semPaths(
-    object         = .cfaLavToPlotObj(cfaResult[["lav"]], options),
-    DoNotPlot      = TRUE,
-    ask            = FALSE,
-    layout         = "tree",
-    intercepts     = options$plotmeans,
-    whatLabels     = ifelse(options$plotpars, "par", "name"),
-    mar            = ifelse(rep(is.null(options$secondOrder), 4), c(12, 3, 12, 3), c(6, 3, 6, 3)),
-    edge.color     = "black",
-    color          = list(lat = "#EAEAEA", man = "#EAEAEA", int = "#FFFFFF"),
-    border.width   = 1.5,
-    edge.label.cex = 0.9,
-    lty            = 2,
-    title          = FALSE
-  )
-  dev.off()
+  .suppressGrDevice(
+    pathplot <- semPlot::semPaths(
+      object         = .cfaLavToPlotObj(cfaResult[["lav"]], options),
+      DoNotPlot      = TRUE,
+      ask            = FALSE,
+      layout         = "tree",
+      intercepts     = options$plotmeans,
+      whatLabels     = ifelse(options$plotpars, "par", "name"),
+      mar            = ifelse(rep(is.null(options$secondOrder), 4), c(12, 3, 12, 3), c(6, 3, 6, 3)),
+      edge.color     = "black",
+      color          = list(lat = "#EAEAEA", man = "#EAEAEA", int = "#FFFFFF"),
+      border.width   = 1.5,
+      edge.label.cex = 0.9,
+      lty            = 2,
+      title          = FALSE
+    ))
 
   # set height depending on whether there is a second-order factor
   plotwidth  <- 640
@@ -981,19 +980,19 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   semPlotMod <- semPlot::semPlotModel(list(lavResult), list(mplusStd = "std"))[[1]]
 
   manifests <- semPlotMod@Vars$name[semPlotMod@Vars$manifest]
-  semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- .unv(manifests)
+  semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- decodeAllColumnNames(manifests)
   latents   <- semPlotMod@Vars$name[!semPlotMod@Vars$manifest]
   semPlotMod@Vars$name[!semPlotMod@Vars$manifest] <- .translateFactorNames(latents, options)
 
   lhsAreManifest <- semPlotMod@Pars$lhs %in% manifests
-  if (any(lhsAreManifest)) semPlotMod@Pars$lhs[lhsAreManifest] <- .unv(semPlotMod@Pars$lhs[lhsAreManifest])
+  if (any(lhsAreManifest)) semPlotMod@Pars$lhs[lhsAreManifest] <- decodeAllColumnNames(semPlotMod@Pars$lhs[lhsAreManifest])
   lhsAreLatent   <- semPlotMod@Pars$lhs %in% latents
   if (any(lhsAreLatent))
     semPlotMod@Pars$lhs[lhsAreLatent] <- .translateFactorNames(semPlotMod@Pars$lhs[lhsAreLatent], options)
 
 
   rhsAreManifest <- semPlotMod@Pars$rhs %in% manifests
-  if (any(rhsAreManifest)) semPlotMod@Pars$rhs[rhsAreManifest] <- .unv(semPlotMod@Pars$rhs[rhsAreManifest])
+  if (any(rhsAreManifest)) semPlotMod@Pars$rhs[rhsAreManifest] <- decodeAllColumnNames(semPlotMod@Pars$rhs[rhsAreManifest])
   rhsAreLatent   <- semPlotMod@Pars$rhs %in% latents
   if (any(rhsAreLatent))
     semPlotMod@Pars$rhs[rhsAreLatent] <- .translateFactorNames(semPlotMod@Pars$rhs[rhsAreLatent], options)
@@ -1028,12 +1027,13 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 }
 
 .resCorToMisFitPlot <- function(rescor) {
+
   ggmisfit <- reshape2::melt(abs(t(rescor)))
   ggmisfit$labels <- substr(round(ggmisfit$value, 2), 2, 4)
   ggmisfit$labels[ggmisfit$labels == ""] <- "0"
 
-  levels(ggmisfit$Var1) <- .unv(levels(ggmisfit$Var1))
-  levels(ggmisfit$Var2) <- .unv(levels(ggmisfit$Var2))
+  levels(ggmisfit$Var1) <- decodeColumnName(levels(ggmisfit$Var1))
+  levels(ggmisfit$Var2) <- decodeColumnName(levels(ggmisfit$Var2))
 
   misfitplot <-
     ggplot2::ggplot(ggmisfit, ggplot2::aes(x = Var1, y = Var2, fill = value,

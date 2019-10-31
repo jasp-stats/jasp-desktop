@@ -25,6 +25,11 @@ decodeAllColumnNames <- function(x, fun = get0(".decodeAllColumnNames"), ...) re
   return(x)
 }
 
+.applyEnDeCoder.factor <- function(x, fun) {
+  levels(x) <- .applyEnDeCoder.character(levels(x), fun)
+  return(x)
+}
+
 .applyEnDeCoder.list <- function(x, fun, recursive = FALSE) {
   # this function calls the .character method directly to avoid dispatching to .list and starting recursion.
   if (recursive) {
@@ -32,7 +37,7 @@ decodeAllColumnNames <- function(x, fun = get0(".decodeAllColumnNames"), ...) re
   } else {
     for (i in seq_along(x))
       if (is.character(x[[i]]))
-        x[[i]] <- fun(x[[i]])
+        x[[i]] <- .applyEnDeCoder.character(x[[i]], fun)
 
     return(x)
   }
@@ -41,7 +46,7 @@ decodeAllColumnNames <- function(x, fun = get0(".decodeAllColumnNames"), ...) re
 .applyEnDeCoder.data.frame <- function(x, fun) {
   dnames <- dimnames(x)
   for (i in seq_along(dimnames(x)))
-    .applyEnDeCoder.character(dnames[[i]])
+    .applyEnDeCoder.character(dnames[[i]], fun)
   dimnames(x) <- dnames
   return(x)
 }
