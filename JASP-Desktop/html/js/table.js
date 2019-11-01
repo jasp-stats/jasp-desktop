@@ -12,24 +12,12 @@ JASPWidgets.table = Backbone.Model.extend({
 		citation:			null,
 		error:				null,
 		latexCode:			"",
-		name:				""
+		name:				"",
+		showsStatus:		true
 	}
 });
 
 JASPWidgets.tableView = JASPWidgets.objectView.extend({
-
-	attachToolbar: function ($toolbar) {
-		this.$el.addClass('jasp-display-item-flat');
-
-		$toolbar.append('<div class="status"></div>');
-
-		var $container = this.$el.find("div.toolbar");
-		$container.append($toolbar);
-
-		var optStatus = this.model.get("status");
-		var $status = $toolbar.find("div.status");
-		$status.addClass(optStatus);
-	},
 
 	copyMenuClicked: function () {
 		var exportParams				= new JASPWidgets.Exporter.params();
@@ -403,6 +391,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 	},
 
 	constructChildren: function (constructor, data) {
+		this.$el.addClass('jasp-display-item-flat');
 
 		var self = this;
 		this.toolbar.selectionElement = function () {

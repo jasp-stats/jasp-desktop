@@ -661,6 +661,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.viewNotes.firstNoteNoteBox.render();
 		$innerElement.prepend(this.viewNotes.firstNoteNoteBox.$el);
 
+		this.toolbar.setStatus(this.model.get("status"));
 		this.toolbar.render();
 		$innerElement.prepend(this.toolbar.$el);
 
