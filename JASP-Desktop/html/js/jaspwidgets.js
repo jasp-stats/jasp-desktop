@@ -815,6 +815,10 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		return this.$el.find(this.titleTag);
 	},
 
+	setStatus: function(status) {
+		this.status = status;
+	},
+
 	render: function () {
 		this.$el.empty();
 
@@ -856,6 +860,10 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 				}
 			})
 		}
+
+		if (this.status !== undefined)
+			this.$el.append('<div class="status ' + this.status + '"></div')
+
 		return this;
 	},
 

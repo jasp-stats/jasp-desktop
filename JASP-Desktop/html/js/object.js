@@ -220,6 +220,8 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 		if (this.titleFormatOverride)
 			titleFormat = this.titleFormatOverride;
 
+		if (this.model.get("showsStatus"))
+			this.toolbar.setStatus(this.model.get("status"));
 		this.toolbar.titleTag = titleFormat;
 		this.toolbar.title = title;
 		this.toolbar.render();
