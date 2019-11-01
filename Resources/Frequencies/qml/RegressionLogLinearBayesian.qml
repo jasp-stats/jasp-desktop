@@ -22,8 +22,6 @@ import JASP.Widgets 1.0
 
 Form
 {
-	usesJaspResults: false
-	
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
@@ -32,7 +30,7 @@ Form
 	}
 	
 	columns: 3
-	BayesFactorType {}
+    BayesFactorType { }
 
 	Group
 	{
@@ -89,8 +87,7 @@ Form
 			{
 				indent: true;
 				enabled: regressionCoefficientsSubmodel.checked
-				CheckBox { name: "regressionCoefficientsSubmodelEstimates"; label: qsTr("Estimates") }
-				CheckBox
+                CheckBox
 				{
 					name: "regressionCoefficientsSubmodelCredibleIntervals"; label: qsTr("Credible intervals")
 					CIField { name: "regressionCoefficientsSubmodelCredibleIntervalsInterval"; label: qsTr("Interval") }
