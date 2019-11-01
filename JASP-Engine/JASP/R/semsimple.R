@@ -16,50 +16,82 @@
 #
 
 SEMSimple <- function(jaspResults, dataset = NULL, options) {
-
+  
   dheader <- .readDataSetHeader(all.columns = TRUE)
   availableVars <- colnames(dheader)
   variables <- .getUsedVars(options$model, availableVars)
-  model <- .translateModel(options$model, variables)
-  keep <- NULL
   
   ready <- length(variables) > 1 && length(dheader) > 1 && options$model != ""
   
   if (options$groupingVariable != "")
     variables <- c(variables, options$groupingVariable)
   
-  if (ready && options$Data != "varcov") {
-    dataset <- .readDataSetToEnd(columns = variables)
-  } else if (ready && options$Data == "varcov") {
-    dataset <- .readDataSetToEnd(all.columns = TRUE)
-  } else {
-    dataset <- dheader
-  }
-  
-  .getSEMContainer <- function(jaspResults) {
-    if (!is.null(jaspResults[["semContainer"]])) {
-      semContainer <- jaspResults[["semContainer"]]
+  if (is.null(dataset)) {
+    if (ready && options$Data != "varcov") {
+      dataset <- .readDataSetToEnd(columns = variables)
+    } else if (ready && options$Data == "varcov") {
+      dataset <- .readDataSetToEnd(all.columns = TRUE)
     } else {
-      semContainer <- createJaspContainer()
-      semContainer$dependOn(c("model"))
-      jaspResults[["semContainer"]] <- semContainer
+      dataset <- dheader
     }
-    return(semContainer)
   }
   
-  semContainer <- .getSEMContainer(jaspResults)
-
-  semErrorCheck <- .semCheckErrors(dataset, options, ready)
+  semContainer <- .getSemContainer(jaspResults)
+  semContainer[["model"]] <- createJaspState(object = .translateModel(options$model, variables))
   
-  browser()
+  semErrorCheck <- .semCheckErrors(dataset, options, ready, semContainer)
+  
+  if (options$Data == "varcov") 
+    options$includeMeanStructure <- FALSE
+  
+  .getSemResult(semContainer, options, dataset, ready)
+  
+  .semFitTable(semContainer, options, dataset, ready)
+  
+  .semEstimatesTable(semContainer, options, dataset, ready, variables)
+  
+  .semModIndicesTable(semContainer, options, dataset, ready)
+  
+  .semFitMeasuresTables(semContainer, options, dataset, ready)
+  
+  .semRSquaredTable(semContainer, options, dataset, ready)
+  
+  .semCovCorTable(semContainer, options, dataset, ready)
+  
+  .semMardiasCoefficientTable(semContainer, options, dataset, ready)
 
 
+  
+  .lavCreatePathDiagram(semContainer, options, ready)
+  return()  
+  if (options$groupingVariable != "")
+    meta[[13]] <- list(name="pathDiagram", type="collection", meta="image")
+  else
+    meta[[13]] <- list(name="pathDiagram", type="image")
+  
+}
+
+.getSemContainer <- function(jaspResults) {
+  if (!is.null(jaspResults[["semContainer"]])) {
+    semContainer <- jaspResults[["semContainer"]]
+  } else {
+    semContainer <- createJaspContainer(title = "Structural Equation Modeling<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>")
+    semContainer$dependOn(c("model"))
+    jaspResults[["semContainer"]] <- semContainer
+  }
+  return(semContainer)
+}
+
+.getSemResult <- function(semContainer, options, dataset, ready) {
+  if (!ready)
+    return()
+  
   groupVar <- NULL
   
   if (.v(options$groupingVariable) %in% names(dataset)) {
     groupVar <- .v(options$groupingVariable)
     # TODO (Sacha): No print I presume (Alexander)
-    print(class(dataset[[ groupVar ]]))
+    #print(class(dataset[[ groupVar ]]))
   }
   
   # group equal:
@@ -111,11 +143,11 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   
   ### RUN SEM ###
   semResults <- lavModel <- NULL
-  if (perform == "run" && inputCorrect) {
+  if (ready) {
     # Raw data:
     if (options$Data == "raw"){
       semResults <- try(
-        lavaan:::lavaan(model=model, data=dataset,
+        lavaan:::lavaan(model=semContainer[["model"]]$object, data=dataset,
                         auto.delta=options$addScalingParameters,
                         auto.th=options$addThresholds,
                         orthogonal=options$assumeFactorsUncorrelated,
@@ -138,7 +170,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     } else {
       # Var-cov matrix
       semResults <- try(
-        lavaan:::lavaan(model=model, sample.cov=as.matrix(dataset),
+        lavaan:::lavaan(model=semContainer[["model"]]$object, sample.cov=as.matrix(dataset),
                         sample.nobs=as.numeric(options$SampleSize),
                         auto.delta=options$addScalingParameters,
                         auto.th=options$addThresholds,
@@ -166,14 +198,15 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
       errorMessage <- as.character(semResults)
       # Better Error messages:
       if (errorMessage == "Error in start.idx[i]:end.idx[i] : NA/NaN argument\n") {
-        errorMessage <- "Model misspecified"
+        semContainer$setError("Model misspecified")
+      } else {
+        semContainer$setError(errorMessage)
       }
-      semResults <- NULL
+      return()
     }
   } else {
-    semResults <- NULL
     
-    lavModel <- try(lavaan:::lavaanify(model=model, auto.delta=options$addScalingParameters,
+    lavModel <- try(lavaan:::lavaanify(model=semContainer[["model"]]$object, auto.delta=options$addScalingParameters,
                                        auto.th=options$addThresholds,
                                        orthogonal=options$assumeFactorsUncorrelated,
                                        auto.cov.y=options$correlateDependentVariables,
@@ -199,626 +232,437 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
       errorMessage <- as.character(lavModel)
       # Better Error messages:
       if (errorMessage == "Error in start.idx[i]:end.idx[i] : NA/NaN argument\n") {
-        errorMessage <- "Model misspecified"
+        semContainer$setError("Model misspecified")
+      } else {
+        semContainer$setError(errorMessage)
       }
-      lavModel <- NULL
-    } else {
-      variableNames <- lavaan:::lavNames(lavModel)
-    }
-  }
-  
-  
-  # Overwrite resulting model in state:
-  if (!is.null(semResults)){
-    state$models[[options$modelName]] <- semResults
-  }
-  
-  ### Output object:
-  results <- list()
-  
-  meta <- list()
-  
-  meta[[1]]  <- list(name="fit", type="table")
-  meta[[2]]  <- list(name="parameterEstimates", type="table")
-  meta[[3]]  <- list(name="fitMeasures_modelTest", type="table")
-  meta[[4]]  <- list(name="fitMeasures_vsBaseline", type="table")
-  meta[[5]]  <- list(name="fitMeasures_likelihoodInfo", type="table")
-  meta[[6]]  <- list(name="fitMeasures_RMSEA", type="table")
-  meta[[7]]  <- list(name="fitMeasures_RMR", type="table")
-  meta[[8]]  <- list(name="fitMeasures_Other", type="table")
-  meta[[9]]  <- list(name="RSquared", type = "table")
-  meta[[10]] <- list(name="covcor", type="table")
-  meta[[11]] <- list(name="modificationIndices", type="table")
-  meta[[12]] <- list(name="mardiasCoefficient", type="table")
-  
-  if (options$groupingVariable != "")
-    meta[[13]] <- list(name="pathDiagram", type="collection", meta="image")
-  else
-    meta[[13]] <- list(name="pathDiagram", type="image")
-  
-  results[[".meta"]] <- meta
-  results[["title"]] <- "Structural Equation Modeling<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>"
-  
-  # Error:
-  error <- !inputCorrect || (errorMessage!="" & perform == "run" & options$model != "")
-  
-  ### ANOVA table ###
-  an0va <- list()
-  an0va[["title"]] <- "Chi Square Test Statistic (unscaled)"
-  # an0va[["cases"]] <- c("Saturated", "Model")
-  an0va[["schema"]] <- list(
-    fields = list(
-      list(name="Model", title = "", type="string"),
-      list(name="DF", title = "df", type="number", format="dp:0"),
-      list(name="AIC", type="number", format="dp:1"),
-      list(name="BIC", type="number", format="dp:1"),
-      list(name="Chisq", title = "&#967;&sup2;", type="number", format="dp:3"),
-      list(name="Chisq diff", title = "&#916;&#967;&sup2;", type="number", format="dp:3"),
-      list(name="Pr(>Chisq)", title = "p", type="number", format="dp:3;p:0.001")
-    )
-  )
-  an0va[["data"]] <- list()
-  ### PERFORM = RUN
-  if (is.null(semResults)) {
-    sem_anova <- structure(list(Df=c(0, NA), AIC=c(NA, NA), BIC=c(NA, NA),
-                                Chisq = c(0, NA), `Chisq diff`=c(NA, NA),
-                                `Df diff` = c(NA, NA), `Pr(>Chisq)` = c(NA, NA)),
-                           .Names = c("Df", "AIC", "BIC", "Chisq", "Chisq diff", "Df diff", "Pr(>Chisq)"),
-                           row.names = c("Saturated", options$modelName),
-                           class = c("anova", "data.frame"),
-                           heading = "Chi Square Test Statistic (unscaled)\n")
-  } else {
-    # Current to saturated:
-    sem_anova <- lavaan::lavTestLRT(semResults)
-    rownames(sem_anova)[2] <- options$modelName
-    
-    # String to compare to other models:
-    if (length(state$models) > 1) {
-      str <- paste0("lavaan::lavTestLRT(",paste("state$models[[",seq_along(state$models),"]]",collapse=", "),", model.names = names(state$models))")
-      toOthers <- eval(parse(text=str))
-      sem_anova <- rbind(sem_anova[1, , drop=FALSE], toOthers)
-      sem_anova$`Df diff`[-1] <- diff(sem_anova$Df)
-      sem_anova$`Chisq diff`[-1] <- abs(diff(sem_anova$Chisq))
-      sem_anova$`Pr(>Chisq)`[-1] <- pchisq(sem_anova$`Chisq diff`[-1], sem_anova$`Df diff`[-1], lower.tail = FALSE)
-    }
-    
-    # rownames(sem_anova) <- c("Saturated",options$modelName,names(state$models)[names(state$models) != options$modelName])
-    #
-    #   models <- list(semResults)
-    #   names(models) <- options$modelName
-    #   sem_anova <- do.call(lavaan::anova,models)
-  }
-  
-  for (i in seq_len(NROW(sem_anova))) {
-    an0va[["data"]][[i]] <- c(Model=rownames(sem_anova)[i], as.list(sem_anova[i, ]))
-    an0va[["data"]][[i]][is.na(an0va[["data"]][[i]])] <- '.'
-    names(an0va[["data"]][[i]]) <- gsub("Df", "DF", names(an0va[["data"]][[i]]))
-  }
-  
-  if (error) {
-    if (!inputCorrect) {
-      errorMessage <- errorCheck$message
-    } else {
-      errorMessage <- .decodeVarsInMessage(names(dataset), errorMessage)
-      errorMessage <- paste0("Lavaan crashed with the following error:<br>", errorMessage)
-    }
-    
-    an0va[['error']] <- list(errorType="package", errorMessage=errorMessage)
-  }
-  results[['fit']] <- an0va
-  
-  ### PARAMETER ESTIMATES ####
-  parEstimates <- list()
-  parEstimates[["title"]] <- "Parameter Estimates"
-  parEstimates[["schema"]] <- list(
-    fields = list(
-      list(name="lhs", title = "", type="character"),
-      list(name="op", title = "", type="character"),
-      list(name="rhs",  title = "", type="character"),
-      list(name="label", type="character"),
-      list(name="est", type="number", format = "dp:3"),
-      list(name="se", type="number", format = "dp:3"),
-      list(name="z", type="number", format = "dp:3"),
-      list(name="pvalue", title = "p", type="number", format = "dp:3;p:.001"),
-      list(name="ci.lower", title = "CI (lower)", type="number", format = "dp:3"),
-      list(name="ci.upper", title = "CI (upper)", type="number", format = "dp:3"),
-      list(name="std.lv", title = "std (lv)", type="number", format = "dp:3"),
-      list(name="std.all", title = "std (all)", type="number", format = "dp:3"),
-      list(name="std.nox", title = "std (nox)", type="number", format = "dp:3"),
-      list(name="group",  title = "group", type="character")
-    )
-  )
-  
-  parEstimates[["data"]] <- list()
-  if (errorMessage!="" & perform == "run" & options$model != "") {
-    parEstimates[['error']] <- list(errorType="badData")
-  }
-  
-  if (!is.null(semResults)) {
-    sem_parest <- lavaan:::parameterEstimates(semResults, standardized=TRUE)
-    # parEstimates[["cases"]] <- rep("",NROW(sem_parest))
-    for (i in seq_len(NROW(sem_parest))) {
-      estimates <- sem_parest[i, ]
-      if (estimates["lhs"] %in% .v(variables)) {
-        estimates["lhs"] <- .unv(estimates["lhs"])
-      }
-      if (estimates["rhs"] %in% .v(variables)) {
-        estimates["rhs"] <- .unv(estimates["rhs"])
-      }
-      
-      estimates[is.na(estimates)] <- '.'
-      parEstimates[["data"]][[i]] <- as.list(estimates)
-    }
-  } else {
-    parEstimates[["cases"]] <- NULL
-  }
-  results[["parameterEstimates"]] <- parEstimates
-  
-  #
-  #
-  ### MODIFICATION INDICES ###
-  ## SORT THEM
-  if (options$outputModificationIndices) {
-    modIndices <- list()
-    modIndices[["title"]] <- "Modification Indices"
-    
-    modIndices[["schema"]] <- list(
-      fields = list(
-        list(name="lhs", title = "", type="character"),
-        list(name="op",  title = "",type="character"),
-        list(name="rhs",  title = "", type="character"),
-        list(name="mi", type="number", format = "dp:3"),
-        list(name="epc", type="number", format = "dp:3"),
-        list(name="sepc.lv",  title = "sepc (lv)", type="number", format = "dp:3"),
-        list(name="sepc.all", title = "sepc (all)", type="number", format = "dp:3"),
-        list(name="sepc.nox",  title = "sepc (nox)",type="number", format = "dp:3")
-      )
-    )
-    
-    modIndices[["data"]] <- list()
-    if (!is.null(semResults)) {
-      # Extract modidffication indices:
-      sem_modind <- lavaan:::modificationIndices(semResults)
-      
-      ### Remove NA:
-      sem_modind <- sem_modind[!is.na(sem_modind$mi), , drop=FALSE]
-      
-      ## Sort:
-      sem_modind <- sem_modind[order(sem_modind$mi, decreasing=TRUE), , drop=FALSE]
-      
-      ### Remove low indices:
-      if (isTRUE(options$outputModificationIndicesHideLowIndices)) {
-        sem_modind <- sem_modind[sem_modind$mi > options$outputModificationIndicesHideLowIndicesThreshold, , drop=FALSE]
-      }
-      
-      # Converting base 64 to normal
-      varind <- as.matrix(sem_modind["lhs"]) %in% .v(variables)
-      sem_modind["lhs"][varind,1] <- .unv(sem_modind["lhs"][varind,1])
-      varind <- as.matrix(sem_modind["rhs"]) %in% .v(variables)
-      sem_modind["rhs"][varind,1] <- .unv(sem_modind["rhs"][varind,1])
-      
-      modIndices[["cases"]] <- rep("", nrow(sem_modind))
-      for (i in seq_len(nrow(sem_modind))) {
-        modIndices[["data"]][[i]] <- as.list(sem_modind[i, ])
-        modIndices[["data"]][[i]][is.na(modIndices[["data"]][[i]])] <- '.'
-      }
-    } else {
-      modIndices[["cases"]] <- NULL
-    }
-    
-    if (errorMessage!="" & perform == "run" & options$model != "") {
-      modIndices[['error']] <- list(errorType="badData")
-    }
-    
-    results[["modificationIndices"]] <- modIndices
-  }
-  
-  
-  ## FIT MEASURES ###
-  if (options$outputAdditionalFitMeasures) {
-    if (!is.null(semResults)) {
-      sem_fitm <- unlist(lavaan:::fitMeasures(semResults))
-    } else {
-      # TODO (Sacha): As a reference to error I normally set objects to NA
-      sem_fitm <- character(0)
-    }
-    
-    # Model test table:
-    fitMeasures_modelTest <- list()
-    fitMeasures_modelTest[["title"]] <- "Model test baseline model"
-    fitMeasures_modelTest[["schema"]] <- list(
-      fields=list(
-        list(name="model", title="", type="text"),
-        list(name="fmin", title="Minimum Function Test Statistic", type="number", format="dp:3"),
-        list(name="chisq", title="&#967;&sup2;", type="number", format="dp:3"),
-        list(name="df", title="Degrees of freedom", type="number", format = "dp:0"),
-        list(name="pvalue", title="p", type="number", format="dp:3;p:0.001")
-      )
-    )
-    
-    fitMeasures_modelTest[["data"]] <- list()
-    
-    # TODO (Sacha): concataneting list might lead to unexpected behaviour, try modifyList
-    fitMeasures_modelTest[["data"]][[1]] <- c(
-      list(model="Model"),
-      as.list(sem_fitm[c('fmin', 'chisq', 'df', 'pvalue')])
-    )
-    
-    fitMeasures_modelTest[["casesAcrossColumns"]] <- TRUE
-    results[["fitMeasures_modelTest"]] <- fitMeasures_modelTest
-    
-    # vs Baseline:
-    fitMeasures_vsBaseline <- list()
-    fitMeasures_vsBaseline[["title"]] <- "User model versus baseline model"
-    fitMeasures_vsBaseline[["schema"]] <- list(
-      fields=list(
-        list(name="model", title="", type="text"),
-        list(name="cfi", title="Comparative Fit Index (CFI)", type="number", format="dp:3"),
-        list(name="tli", title="Tucker-Lewis Index (TLI)", type="number", format="dp:3"),
-        list(name="nnfi", title="Bentler-Bonett Non-normed Fit Index (NNFI)", type="number", format="dp:3"),
-        list(name="nfi", title="Bentler-Bonett Normed Fit Index (NFI)", type="number", format="dp:3"),
-        list(name="pnfi", title="Parsimony Normed Fit Index (PNFI)", type="number", format="dp:3"),
-        list(name="rfi", title="Bollen's Relative Fit Index (RFI)", type="number", format="dp:3"),
-        list(name="ifi", title="Bollen's Incremental Fit Index (IFI)", type="number", format="dp:3"),
-        list(name="rni", title="Relative Noncentrality Index (RNI)", type="number", format="dp:3")
-      )
-    )
-    
-    fitMeasures_vsBaseline[["data"]] <- list()
-    
-    # TODO (Sacha): concataneting list might lead to unexpected behaviour, try modifyList
-    fitMeasures_vsBaseline[["data"]][[1]] <- c(
-      list(model="Model"),
-      as.list(sem_fitm[c('cfi', 'tli', 'nnfi', 'nfi', 'pnfi', 'rfi', 'ifi', 'rni')])
-    )
-    
-    fitMeasures_vsBaseline[["casesAcrossColumns"]] <- TRUE
-    results[["fitMeasures_vsBaseline"]] <- fitMeasures_vsBaseline
-    
-    # Loglikelihood and Information Criteria:
-    fitMeasures_likelihoodInfo <- list()
-    fitMeasures_likelihoodInfo[["title"]] <- "Loglikelihood and Information Criteria"
-    fitMeasures_likelihoodInfo[["schema"]] <- list(
-      fields=list(
-        list(name="model", title="", type="text"),
-        list(name="logl", title="Loglikelihood user model (H0)", type="number", format="dp:3"),
-        list(name="unrestricted.logl", title="Loglikelihood unrestricted model (H1)", type="number", format="dp:3"),
-        list(name="npar", title="Number of free parameters", type="number", format="dp:0"),
-        list(name="aic", title="Akaike (AIC)", type="number", format="dp:3"),
-        list(name="bic", title="Bayesian (BIC)", type="number", format="dp:3"),
-        list(name="bic2", title="Sample-size adjusted Bayesian (BIC)", type="number", format="dp:3")
-      )
-    )
-    
-    fitMeasures_likelihoodInfo[["data"]] <- list()
-    
-    # TODO (Sacha): concataneting list might lead to unexpected behaviour, try modifyList
-    fitMeasures_likelihoodInfo[["data"]][[1]] <- c(
-      list(model="Model"),
-      as.list(sem_fitm[c('logl', 'unrestricted.logl', 'npar', 'aic', 'bic', 'bic2')])
-    )
-    
-    fitMeasures_likelihoodInfo[["casesAcrossColumns"]] <- TRUE
-    results[["fitMeasures_likelihoodInfo"]] <- fitMeasures_likelihoodInfo
-    
-    # RMSEA:
-    fitMeasures_RMSEA <- list()
-    fitMeasures_RMSEA[["title"]] <- "Root Mean Square Error of Approximation"
-    fitMeasures_RMSEA[["schema"]] <- list(
-      fields=list(
-        list(name="model", title="", type="text"),
-        list(name="rmsea", title="RMSEA", type="number", format="dp:3"),
-        list(name="rmsea.ci", title="90 Percent Confidence Interval", type="text"),
-        list(name="rmsea.pvalue", title="p-value RMSEA <= 0.05 ", type="number", format="dp:3;p:0.001")
-      )
-    )
-    
-    fitMeasures_RMSEA[["data"]] <- list()
-    
-    if (is.na(sem_fitm['rmsea.ci.lower'])) {
-      CI <- '.'
-    } else {
-      CI <- paste(formatC(sem_fitm['rmsea.ci.lower'], format='f', digits=3),
-                  '-', formatC(sem_fitm['rmsea.ci.upper'], format='f', digits=3)
-      )
-    }
-    
-    # TODO (Sacha): concataneting list might lead to unexpected behaviour, try modifyList
-    fitMeasures_RMSEA[["data"]][[1]] <- c(
-      list(model="Model"),
-      as.list(sem_fitm['rmsea']),
-      list(rmsea.ci=CI),
-      as.list(sem_fitm['rmsea.pvalue'])
-    )
-    
-    fitMeasures_RMSEA[["casesAcrossColumns"]] <- TRUE
-    results[["fitMeasures_RMSEA"]] <- fitMeasures_RMSEA
-    
-    # Standardized Root Mean Square Residual:
-    fitMeasures_RMR <- list()
-    fitMeasures_RMR[["title"]] <- "Standardized Root Mean Square Residual"
-    fitMeasures_RMR[["schema"]] <- list(
-      fields=list(
-        list(name="model", title="", type="text"),
-        list(name="rmr", title="RMR", type="number", format="dp:3"),
-        list(name="rmr_nomean", title="RMR (No Mean)", type="number", format="dp:3"),
-        list(name="srmr", title="SRMR", type="number", format="dp:3")
-      )
-    )
-    
-    fitMeasures_RMR[["data"]] <- list()
-    
-    # TODO (Sacha): concataneting list might lead to unexpected behaviour, try modifyList
-    fitMeasures_RMR[["data"]][[1]] <- c(
-      list(model="Model"),
-      as.list(sem_fitm[c('rmr', 'rmr_nomean', 'srmr')])
-    )
-    
-    fitMeasures_RMR[["casesAcrossColumns"]] <- TRUE
-    results[["fitMeasures_RMR"]] <- fitMeasures_RMR
-    
-    # Other Fit Indices
-    fitMeasures_Other <- list()
-    fitMeasures_Other[["title"]] <- "Other Fit Indices"
-    fitMeasures_Other[["schema"]] <- list(
-      fields=list(
-        list(name="model", title="", type="text"),
-        list(name="cn_05", title="Hoelter Critical N (CN) alpha=0.05", type="number", format="dp:3"),
-        list(name="cn_01", title="Hoelter Critical N (CN) alpha=0.01", type="number", format="dp:3"),
-        list(name="gfi", title="Goodness of Fit Index (GFI)", type="number", format="dp:3"),
-        list(name="agfi", title="Parsimony Goodness of Fit Index (GFI)", type="number", format="dp:3"),
-        list(name="mfi", title="McDonald Fit Index (MFI)", type="number", format="dp:3"),
-        list(name="ecvi", title="Expected Cross-Validation Index (ECVI)", type="number", format="dp:3")
-      )
-    )
-    
-    fitMeasures_Other[["data"]] <- list()
-    
-    # TODO (Sacha): concataneting list might lead to unexpected behaviour, try modifyList
-    fitMeasures_Other[["data"]][[1]] <- c(
-      list(model="Model"),
-      as.list(sem_fitm[c('cn_05', 'cn_01', 'gfi', 'agfi', 'mfi', 'ecvi')])
-    )
-    
-    fitMeasures_Other[["casesAcrossColumns"]] <- TRUE
-    results[["fitMeasures_Other"]] <- fitMeasures_Other
-    
-    if (errorMessage != "" && perform == "run" && options$model != "") {
-      # TODO (Sacha): which error message should this belong to?
-      #   It used to be fitMeasures[['error']] <- list(errorType="badData")
-      #   but fitMeasures is not initialised
-      fitMeasures_Other[['error']] <- list(errorType="badData")
-    }
-  }
-  
-  ### R squared
-  if (options$outputRSquared) {
-    rsquared <- list()
-    rsquared[["title"]] <- "R-Squared"
-    rsquared[["schema"]] <- list(
-      fields = list(
-        list(name = "var", title = "Variable", type = "string"),
-        list(name = "R2",  title = "R&sup2;",  type = "number", format="dp:3")
-      )
-    )
-    if (!is.null(semResults)) {
-      rsquared[["data"]] <- list()
-      r2 <- lavaan::inspect(semResults, "r2")
-      nm <- names(r2)
-      for (i in 1:length(r2)) {
-        rsquared[["data"]][[i]] <- list(var = .unv(nm[i]), R2 = r2[i])
-      }
-      results[["RSquared"]] <- rsquared
+      return()
     } 
   }
   
-  
-  ### Mardia coefficient
-  if (options$outputMardiasCoefficients) {
-    mardiasCoefficient <- list()
-    mardiasCoefficient[["title"]] <- "Mardia's coefficients"
-    mardiasCoefficient[["schema"]] <- list(
-      fields = list(
-        list(name="Type", title="", type="string"),
-        list(name="Coefficient", type="number", format="dp:3"),
-        list(name="z", type="number", format="dp:3"),
-        list(name="Chisq", title="&#967;&sup2;", type="number", format="dp:3"),
-        list(name="DF", title="df", type="number", format="dp:0"),
-        list(name="p-value", title="p", type="number", format="dp:3;p:0.001")
-      )
-    )
-    
-    if (!is.null(semResults)) {
-      varNames <- lavaan::lavaanNames(semResults, type="ov")
-      
-      mardiaSkew <- unname(semTools:::mardiaSkew(dataset[, varNames]))
-      mardiaKurtosis <- unname(semTools:::mardiaKurtosis(dataset[, varNames]))
-      mardiasCoefficient[["data"]] <- list(
-        list(Type="Skewness", Coefficient=mardiaSkew[1], z=".", Chisq=mardiaSkew[2], DF=mardiaSkew[3], "p-value"=mardiaSkew[4]),
-        list(Type="Kurtosis", Coefficient=mardiaKurtosis[1], z=mardiaKurtosis[2], Chisq=".", DF=".", "p-value"=mardiaKurtosis[3])
-      )
-    }
-    
-    if (errorMessage !="" && perform == "run" && options$model != "") {
-      mardiasCoefficient[['error']] <- list(errorType="badData")
-    }
-    results[["mardiasCoefficient"]] <- mardiasCoefficient
-  }
-  
-  ### Covariance table:
-  # Only if observed, fitted or residual
-  if( options$outputObservedCovarianceCorrelations || options$outputFittedCovarianceCorrelations || options$outputResidualCovarianceCorrelations) {
-    if (!is.null(semResults)) {
-      results[["covcor"]] <- .covTable(
-        semResults, "Covariances (lower triangle) / correlations (upper triangle)",
-        include=c("observed", "fitted", "residual")[ c(options$outputObservedCovarianceCorrelations, options$outputFittedCovarianceCorrelations ,options$outputResidualCovarianceCorrelations)]
-      )
-    }
-  }
-  
-  results[["parameterEstimates"]][["citation"]] <-
-    results[["fit"]][["citation"]] <- list(
-      "Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/"
-    )
-  
-  # Create path diagram:
-  if (perform == "run" && options$addPathDiagram) {
-    diagramResults <- .lavCreatePathDiagram(semResults, lavModel, options)
-    results[["pathDiagram"]] <- diagramResults[["pathDiagram"]]
-    keep <- diagramResults[["keep"]]
-  }
-  
-  # Return
-  status <- list(ready=TRUE, error=error, errorMessage=errorMessage)
-  if (perform == "run" && status$ready) {
-    retList <- list(results=results, status="complete", state=state, keep=keep)
-  } else {
-    retList <- list(results=results, status="inited", state=state, keep=keep)
-  }
-  return(retList)
+  semContainer[["semResultsList"]] <- createJaspState(object = list(semResults = semResults, 
+                                                                    lavModel = lavModel))
+  return()
 }
 
-.semCheckErrors <- function(dataset, options, ready) {
+.semCheckErrors <- function(dataset, options, ready, semContainer) {
   if (!ready) return()
-  
   
   if (options$Data == "varcov") {
     # Check if dataset is variance covariance matrix:
-    errorCheck <- .hasErrors(dataset, 
-                             type = c("varCovMatrix", "infinity"),
-                             message='default', exitAnalysisIfErrors = TRUE)
+    .hasErrors(dataset, type = c("varCovMatrix", "infinity"),
+               message='default', exitAnalysisIfErrors = TRUE)
   } else if (ncol(dataset) > 0) {
-    errorCheck <- .hasErrors(dataset, type = c("infinity"),
-                             message='default', exitAnalysisIfErrors = TRUE)
-  } else {
-    errorCheck <- FALSE
-  }
+    .hasErrors(dataset, type = c("infinity"),
+               message='default', exitAnalysisIfErrors = TRUE)
+  } 
   
   # Check mean structure:
-  if (options$Data == "varcov"){
+  if (options$Data == "varcov") {
     if (isTRUE(options$includeMeanStructure)) {
-      errorCheck <- list(error = TRUE, message="Mean structure can not be included when data is variance-covariance matrix")
+      semContainer$setError("Mean structure can not be included when data is variance-covariance matrix")
+      return()
     }
+    
     options$includeMeanStructure <- FALSE
     
     if (options$SampleSize == 0) {
-      errorCheck <- list(error = TRUE, message = "Please set the sample size!")
+      semContainer$setError("Please set the sample size!")
+      return()
     }
     
     # Check for multiple groups:
-    if (options$groupingVariable!=""){
-      errorCheck <- list(error = TRUE, message = "Multiple group analysis not (yet) supported when data is variance-covariance matrix")
+    if (options$groupingVariable!="") {
+      semContainer$setError("Multiple group analysis not (yet) supported when data is variance-covariance matrix")
+      return()
     }
+    
   } else {
-    if (identical(errorCheck, FALSE)) {
-      if (perform == "run" && ncol(dataset) > 0 && !nrow(dataset) > ncol(dataset)) {
-        errorCheck <- list(error=TRUE, message="Not more cases than number of variables. Is your data a variance-covariance matrix?")
-      }
+    if (ncol(dataset) > 0 && !nrow(dataset) > ncol(dataset)) {
+      semContainer$setError("Not more cases than number of variables. Is your data a variance-covariance matrix?")
+      return()
+    }
+  }
+}
+
+.semFitMeasuresTables <- function(semContainer, options, dataset, ready) {
+  if (!ready)
+    return()
+  
+  semFitMeasures <- unlist(lavaan:::fitMeasures(semContainer[["semResultsList"]]$object$semResults))
+  
+  ## Model test
+  semModelTestTable <- createJaspTable(title = "Model test baseline model")
+  
+  semModelTestTable$addColumnInfo(name="model", title="", type="string")
+  semModelTestTable$addColumnInfo(name="fmin", title="Minimum Function Test Statistic", type="number")
+  semModelTestTable$addColumnInfo(name="chisq", title="&#967;&sup2;", type="number")
+  semModelTestTable$addColumnInfo(name="df", title="Degrees of freedom", type="number")
+  semModelTestTable$addColumnInfo(name="pvalue", title="p", type="number")
+  
+  semModelTestTable$setData(c(list(model="Model"), semFitMeasures[c('fmin', 'chisq', 'df', 'pvalue')]))
+  
+  semContainer[["fitMeasuresModelTest"]] <- semModelTestTable
+  
+  
+  ### Baseline
+  semBaselineTable <- createJaspTable(title = "User model versus baseline model")
+  
+  semBaselineTable$addColumnInfo(name="model", title="", type="string")
+  semBaselineTable$addColumnInfo(name="cfi", title="Comparative Fit Index (CFI)", type="number")
+  semBaselineTable$addColumnInfo(name="tli", title="Tucker-Lewis Index (TLI)", type="number")
+  semBaselineTable$addColumnInfo(name="nnfi", title="Bentler-Bonett Non-normed Fit Index (NNFI)", type="number")
+  semBaselineTable$addColumnInfo(name="nfi", title="Bentler-Bonett Normed Fit Index (NFI)", type="number")
+  semBaselineTable$addColumnInfo(name="pnfi", title="Parsimony Normed Fit Index (PNFI)", type="number")
+  semBaselineTable$addColumnInfo(name="rfi", title="Bollen's Relative Fit Index (RFI)", type="number")
+  semBaselineTable$addColumnInfo(name="ifi", title="Bollen's Incremental Fit Index (IFI)", type="number")
+  semBaselineTable$addColumnInfo(name="rni", title="Relative Noncentrality Index (RNI)", type="number")
+  
+  semBaselineTable$setData(c(list(model="Model"), semFitMeasures[c('cfi', 'tli', 'nnfi', 'nfi', 'pnfi', 'rfi', 'ifi', 
+                                                                   'rni')]))
+  
+  semContainer[["fitMeasuresBaseline"]] <- semBaselineTable
+  
+  ### LogLik measures
+  semLoglikTable <- createJaspTable(title = "Loglikelihood and Information Criteria")
+  
+  semLoglikTable$addColumnInfo(name="model", title="", type="string")
+  semLoglikTable$addColumnInfo(name="logl", title="Loglikelihood user model (H0)", type="number")
+  semLoglikTable$addColumnInfo(name="unrestricted.logl", title="Loglikelihood unrestricted model (H1)", type="number")
+  semLoglikTable$addColumnInfo(name="npar", title="Number of free parameters", type="number", format="dp:0")
+  semLoglikTable$addColumnInfo(name="aic", title="Akaike (AIC)", type="number")
+  semLoglikTable$addColumnInfo(name="bic", title="Bayesian (BIC)", type="number")
+  semLoglikTable$addColumnInfo(name="bic2", title="Sample-size adjusted Bayesian (BIC)", type="number")
+  
+  semLoglikTable$setData(c(list(model="Model"), semFitMeasures[c('logl', 'unrestricted.logl', 'npar', 'aic', 'bic', 
+                                                                 'bic2')]))
+  
+  semContainer[["fitMeasuresLikelihood"]] <- semLoglikTable
+  
+  
+  ### RMSEA measures
+  semRMSEATable <- createJaspTable(title = "Root Mean Square Error of Approximation")
+  
+  semRMSEATable$addColumnInfo(name="model", title="", type="string")
+  semRMSEATable$addColumnInfo(name="rmsea", title="RMSEA", type="number")
+  semRMSEATable$addColumnInfo(name="rmsea.ci", title="90 Percent Confidence Interval", type="string")
+  semRMSEATable$addColumnInfo(name="rmsea.pvalue", title="p-value RMSEA <= 0.05 ", type="number")  
+  
+  semRMSEATable$setData(c(list(model="Model"), semFitMeasures[c('logl', 'unrestricted.logl', 'npar', 'aic', 'bic', 'bic2')]))
+  
+  semContainer[["fitMeasuresRMSEA"]] <- semRMSEATable
+  
+  
+  ### RMR measures
+  semRMRTable <- createJaspTable(title = "Standardized Root Mean Square Residual")
+  
+  semRMRTable$addColumnInfo(name="model", title="", type="string")
+  semRMRTable$addColumnInfo(name="rmr", title="RMR", type="number")
+  semRMRTable$addColumnInfo(name="rmr_nomean", title="RMR (No Mean)", type="number")
+  semRMRTable$addColumnInfo(name="srmr", title="SRMR", type="number")  
+  
+  semRMRTable$setData(c(list(model="Model"), semFitMeasures[c('rmr', 'rmr_nomean', 'srmr')]))
+  
+  semContainer[["fitMeasuresRMR"]] <- semRMRTable
+  
+  ### Other fit measures
+  semOtherFitTable <- createJaspTable(title = "Other Fit Indices")
+  
+  semOtherFitTable$addColumnInfo(name="model", title="", type="string")
+  semOtherFitTable$addColumnInfo(name="cn_05", title="Hoelter Critical N (CN) alpha=0.05", type="number")
+  semOtherFitTable$addColumnInfo(name="cn_01", title="Hoelter Critical N (CN) alpha=0.01", type="number")
+  semOtherFitTable$addColumnInfo(name="gfi", title="Goodness of Fit Index (GFI)", type="number")
+  semOtherFitTable$addColumnInfo(name="agfi", title="Parsimony Goodness of Fit Index (GFI)", type="number")
+  semOtherFitTable$addColumnInfo(name="mfi", title="McDonald Fit Index (MFI)", type="number")
+  semOtherFitTable$addColumnInfo(name="ecvi", title="Expected Cross-Validation Index (ECVI)", type="number")
+  
+  semOtherFitTable$setData(c(list(model="Model"), semFitMeasures[c('cn_05', 'cn_01', 'gfi', 'agfi', 'mfi', 'ecvi')]))
+  
+  semContainer[["fitMeasuresOther"]] <- semOtherFitTable
+  
+  return()
+}
+
+.semModIndicesTable <- function(semContainer, options, dataset, ready) {
+  if (!ready)
+    return()
+  
+  semModIndicesTable <- createJaspTable(title = "Modification Indices")
+  
+  semModIndicesTable$addColumnInfo(name="lhs", title = "", type="string")
+  semModIndicesTable$addColumnInfo(name="op",  title = "",type="string")
+  semModIndicesTable$addColumnInfo(name="rhs",  title = "", type="string")
+  semModIndicesTable$addColumnInfo(name="mi", type="number")
+  semModIndicesTable$addColumnInfo(name="epc", type="number")
+  semModIndicesTable$addColumnInfo(name="sepc.lv",  title = "sepc (lv)", type="number")
+  semModIndicesTable$addColumnInfo(name="sepc.all", title = "sepc (all)", type="number")
+  semModIndicesTable$addColumnInfo(name="sepc.nox",  title = "sepc (nox)",type="number")
+  
+  semModIndicesTable$showSpecifiedColumnsOnly <- TRUE
+  
+  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
+    # Extract modidffication indices:
+    semModIndResult <- lavaan:::modificationIndices(semContainer[["semResultsList"]]$object$semResults)
+    
+    ### Remove NA:
+    semModIndResult <- semModIndResult[!is.na(semModIndResult$mi), , drop=FALSE]
+    
+    ## Sort:
+    semModIndResult <- semModIndResult[order(semModIndResult$mi, decreasing=TRUE), , drop=FALSE]
+    
+    ### Remove low indices:
+    if (isTRUE(options$outputModificationIndicesHideLowIndices)) {
+      semModIndResult <- semModIndResult[semModIndResult$mi > options$outputModificationIndicesHideLowIndicesThreshold, , drop=FALSE]
+    }
+    
+    # # Converting base 64 to normal
+    # varind <- as.matrix(semModIndResult["lhs"]) %in% .v(variables)
+    # semModIndResult["lhs"][varind,1] <- .unv(semModIndResult["lhs"][varind,1])
+    # varind <- as.matrix(semModIndResult["rhs"]) %in% .v(variables)
+    # semModIndResult["rhs"][varind,1] <- .unv(semModIndResult["rhs"][varind,1])
+    
+    # TODO multiple modles
+    # modIndices[["cases"]] <- rep("", nrow(semModIndResult))
+    # for (i in seq_len(nrow(semModIndResult))) {
+    #   modIndices[["data"]][[i]] <- as.list(semModIndResult[i, ])
+    #   modIndices[["data"]][[i]][is.na(modIndices[["data"]][[i]])] <- '.'
+    # }
+    semModIndicesTable$setData(semModIndResult)
+    semContainer[["semModIndicesTable"]] <- semModIndicesTable
+  }
+  
+  return()
+}
+
+.semEstimatesTable <- function(semContainer, options, dataset, ready, variables) {
+  if (!ready)
+    return()
+  
+  semEstimatesTable <- createJaspTable(title = "Parameter Estimates")
+  
+  semEstimatesTable$addColumnInfo(name="lhs", title = "", type="string")
+  semEstimatesTable$addColumnInfo(name="op", title = "", type="string")
+  semEstimatesTable$addColumnInfo(name="rhs",  title = "", type="string")
+  # semEstimatesTable$addColumnInfo(name="label", type="string")
+  semEstimatesTable$addColumnInfo(name="est", type="number")
+  semEstimatesTable$addColumnInfo(name="se", type="number")
+  semEstimatesTable$addColumnInfo(name="z", type="number")
+  semEstimatesTable$addColumnInfo(name="pvalue", title = "p", type="number")
+  semEstimatesTable$addColumnInfo(name="ci.lower", title = "CI (lower)", type="number")
+  semEstimatesTable$addColumnInfo(name="ci.upper", title = "CI (upper)", type="number")
+  semEstimatesTable$addColumnInfo(name="std.lv", title = "std (lv)", type="number")
+  semEstimatesTable$addColumnInfo(name="std.all", title = "std (all)", type="number")
+  semEstimatesTable$addColumnInfo(name="std.nox", title = "std (nox)", type="number")
+  # semEstimatesTable$addColumnInfo(name="group",  title = "group", type="string")
+  
+  semEstimatesTable$addCitation("Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/")
+  
+  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
+    
+    semEstimates <- lavaan:::parameterEstimates(semContainer[["semResultsList"]]$object$semResults, standardized=TRUE)
+    semEstimatesTable$setData(semEstimates)
+    semContainer[["semEstimatesTable"]] <- semEstimatesTable
+    
+  } 
+  
+  return()
+}
+
+.semFitTable <- function(semContainer, options, dataset, ready) {
+  if (!ready)
+    return()
+  
+  # semContainer[["semFitTable"]] 
+  semFitTable <- createJaspTable(title = "Chi Square Test Statistic (unscaled)")
+  
+  semFitTable$addColumnInfo(name="Model", title = "", type="string")
+  semFitTable$addColumnInfo(name="Df", title = "df", type="number")
+  semFitTable$addColumnInfo(name="DfDiff", title = "&#916;df", type="number")
+  semFitTable$addColumnInfo(name="AIC", type="number")
+  semFitTable$addColumnInfo(name="BIC", type="number")
+  semFitTable$addColumnInfo(name="Chisq", title = "&#967;&sup2;", type="number")
+  semFitTable$addColumnInfo(name="ChisqDiff", title = "&#916;&#967;&sup2;", type="number")
+  semFitTable$addColumnInfo(name="PrChisq", title = "p", type="number")
+  
+  semFitTable$showSpecifiedColumnsOnly <- TRUE
+  semFitTable$addCitation("Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/")
+  
+  if (is.null(semContainer[["semResultsList"]]$object$semResults)) {
+    fitTableResult <- as.data.frame(list(Df=c(0, NA), AIC=c(NA, NA), BIC=c(NA, NA),
+                                         Chisq = c(0, NA), ChisqDiff=c(NA, NA),
+                                         DfDiff = c(NA, NA), PrChisq = c(NA, NA)), 
+                                    row.names = c("Saturated", options$modelName))
+  } else {
+    # Current to saturated:
+    fitTableResult <- lavaan::lavTestLRT(semContainer[["semResultsList"]]$object$semResults)
+    rownames(fitTableResult)[2] <- options$modelName
+    colnames(fitTableResult) <- c("Df", "AIC", "BIC", "Chisq", "ChisqDiff", "DfDiff", "PrChisq")
+    
+    # TODO add multiple models
+    # String to compare to other models:
+    # if (length(state$models) > 1) {
+    #   str <- paste0("lavaan::lavTestLRT(",paste("state$models[[",seq_along(state$models),"]]",collapse=", "),", model.names = names(state$models))")
+    #   toOthers <- eval(parse(text=str))
+    #   fitTableResult <- rbind(fitTableResult[1, , drop=FALSE], toOthers)
+    #   fitTableResult$`DfDiff`[-1] <- diff(fitTableResult$Df)
+    #   fitTableResult$`ChisqDiff`[-1] <- abs(diff(fitTableResult$Chisq))
+    #   fitTableResult$`PrChisq`[-1] <- pchisq(fitTableResult$ChisqDiff[-1], fitTableResult$DfDiff[-1], lower.tail = FALSE)
+    # }
+  }
+  
+  # for (i in seq_len(NROW(fitTableResult))) {
+  #   an0va[["data"]][[i]] <- c(Model=rownames(fitTableResult)[i], as.list(fitTableResult[i, ]))
+  #   an0va[["data"]][[i]][is.na(an0va[["data"]][[i]])] <- '.'
+  #   names(an0va[["data"]][[i]]) <- gsub("Df", "DF", names(an0va[["data"]][[i]]))
+  # }
+  
+  fitTableResult[["Model"]] <- rownames(fitTableResult)
+  semFitTable$setData(fitTableResult)
+  semContainer[["semFitTable"]] <- semFitTable
+  
+  return()
+}
+
+.semRSquaredTable <- function(semContainer, options, dataset, ready) {
+  if (!ready)
+    return()
+  
+  semRSquaredTable <- createJaspTable(title = "R-Squared")
+  
+  semRSquaredTable$addColumnInfo(name="var", title = "Variable", type="string")
+  semRSquaredTable$addColumnInfo(name = "R2",  title = "R&sup2;",  type = "number")
+  
+  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
+    r2 <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "r2")
+    nm <- names(r2)
+    for (i in 1:length(r2)) {
+      semRSquaredTable$addRows(list(var = .unv(nm[i]), R2 = r2[i]))
     }
   }
   
-  return(errorCheck)
+  semContainer[["rSquaredTable"]] <- semRSquaredTable
+  return()
 }
 
-
-# Function to create covariance matrix:
-.covTable <- function(fit, title = "Covariance matrix", include=c("observed", "fitted", "residual")) {
-  observedCov <- lavaan::inspect(fit, "sampstat")$cov
-  fittedCov <- lavaan::fitted(fit)$cov
-  residualCov <- observedCov - fittedCov
-
-  varNames <- colnames(observedCov)
-
-  covList <- list(observed=observedCov,
-                  fitted=fittedCov,
-                  residual=residualCov
-  )
-
-  corList <- list(observed=stats::cov2cor(observedCov),
-                  fitted=stats::cov2cor(fittedCov),
-                  residual=stats::cov2cor(observedCov) - stats::cov2cor(fittedCov)
-  )
-
-  n <- ncol(covList[[1]])
-
-  matList <- mapply(cov = covList, cor = corList, type = names(covList), FUN=function(cov, cor, type){
+.semCovCorTable <- function(semContainer, options, dataset, ready) {
+  if (!ready || !(options$outputObservedCovarianceCorrelations || options$outputFittedCovarianceCorrelations || 
+                  options$outputResidualCovarianceCorrelations))
+    return()
+  
+  semCovCorTable <- createJaspTable(title = "Covariances (lower triangle) / correlations (upper triangle)")
+  
+  semCovCorTable$addColumnInfo(name="Variable", title="", type="string")
+  semCovCorTable$addColumnInfo(name="Type", title="", type="string")
+  
+  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
+    
+    include <- c("observed", "fitted", "residual")[ c(options$outputObservedCovarianceCorrelations, 
+                                                      options$outputFittedCovarianceCorrelations,
+                                                      options$outputResidualCovarianceCorrelations)]
+    
+    observedCov <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "sampstat")$cov
+    fittedCov <- lavaan::fitted(semContainer[["semResultsList"]]$object$semResults)$cov
+    residualCov <- observedCov - fittedCov
+    
+    varNames <- colnames(observedCov)
+    
+    covList <- list(observed=observedCov,
+                    fitted=fittedCov,
+                    residual=residualCov)
+    
+    corList <- list(observed=stats::cov2cor(observedCov),
+                    fitted=stats::cov2cor(fittedCov),
+                    residual=stats::cov2cor(observedCov) - stats::cov2cor(fittedCov))
+    
+    n <- ncol(covList[[1]])
+    
+    matList <- mapply(cov = covList, cor = corList, type = names(covList), FUN=function(cov, cor, type){
       cov[upper.tri(cov,diag=FALSE)] <- cor[upper.tri(cor,diag=FALSE)]
-    cbind(..sortingDummy = seq_len(NROW(cov)), ..varName = .unv(rownames(cov)), ..type = type, as.data.frame(cov), stringsAsFactors = FALSE)
-  }, SIMPLIFY = FALSE)
-
-  matDF <- do.call(rbind, matList)
-  matDF <- matDF[matDF$..type %in% include, ]
-  matDF$..type <- as.character(matDF$..type)
-  matDF <- matDF[order(matDF$..sortingDummy), ]
-  matDF <- matDF[, -1]
-
-  # Empty object:
-  covariances <- list()
-
-  # Fill:
-  covariances[["title"]] <- title
-  # covariances[["cases"]] <- matDF$..varName
-  #  covariances[["cases"]] <- rep("",length(matDF$..varName))
-
-  fields <- list(list(name="Variable", title="", type="text"), list(name="Type", title="", type="text"))
-
-  # Enter fields:
-  for (i in 1:n) {
-    fields[[i+2]] <- list(name=varNames[i], title=.unv(varNames[i]), type="number", format="dp:3")
+      cbind(..sortingDummy = seq_len(NROW(cov)), ..varName = .unv(rownames(cov)), ..type = type, as.data.frame(cov), stringsAsFactors = FALSE)
+    }, SIMPLIFY = FALSE)
+    
+    matDF <- do.call(rbind, matList)
+    matDF <- matDF[matDF$..type %in% include, ]
+    matDF$..type <- as.character(matDF$..type)
+    matDF <- matDF[order(matDF$..sortingDummy), ]
+    matDF <- matDF[, -1]
+    
+    for (i in 1:n) {
+      semCovCorTable$addColumnInfo(name=varNames[i], title=.unv(varNames[i]), type="number")
+    }
+    
+    names(matDF)[1:2] <- c("Variable", "Type")
+    semCovCorTable$setData(matDF)
   }
+  
+  semContainer[["covCorTable"]] <- semCovCorTable
+  
+  return()
+}
 
-  # Enter rows:
-  rows <- list()
-
-  for (i in seq_len(NROW(matDF))) {
-    variable.name <- varNames[i]
-    row <- matDF[i, , drop=FALSE]
-  names(row)[1:2] <- c("Variable", "Type")
-    rows[[i]] <- as.list(row)
+.semMardiasCoefficientTable <- function(semContainer, options, dataset, ready) {
+  if (!ready)
+    return()
+  
+  semMardiasTable <- createJaspTable(title = "Mardia's coefficients")
+  
+  
+  semMardiasTable$addColumnInfo(name="Type", title="", type="string")
+  semMardiasTable$addColumnInfo(name="Coefficient", type="number")
+  semMardiasTable$addColumnInfo(name="z", type="number")
+  semMardiasTable$addColumnInfo(name="Chisq", title="&#967;&sup2;", type="number")
+  semMardiasTable$addColumnInfo(name="DF", title="df", type="number")
+  semMardiasTable$addColumnInfo(name="pvalue", title="p", type="number")
+  
+  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
+    varNames <- lavaan::lavaanNames(semContainer[["semResultsList"]]$object$semResults, type="ov")
+    mardiaSkew <- unname(semTools:::mardiaSkew(dataset[, varNames]))
+    mardiaKurtosis <- unname(semTools:::mardiaKurtosis(dataset[, varNames]))
+    semMardiasTable$addRows(data.frame(Type="Skewness", Coefficient=mardiaSkew[1], z=NA, Chisq=mardiaSkew[2], 
+                                       DF=mardiaSkew[3], "pvalue"=mardiaSkew[4]))
+    semMardiasTable$addRows(data.frame(Type="Kurtosis", Coefficient=mardiaKurtosis[1], z=mardiaKurtosis[2], 
+                                       Chisq=NA, DF=NA, "pvalue"=mardiaKurtosis[3]))
   }
-
-  schema <- list(fields=fields)
-
-  covariances[["schema"]] <- schema
-  covariances[["data"]] <- rows
-  return(covariances)
+  
+  semContainer[["mardiasTable"]] <- semMardiasTable
+  return()
 }
 
 .is.raw.letter <- function(ch) {
-    (ch >= 0x61 && ch <= 0x7A) || (ch >= 0x41 && ch <= 0x5A)
+  (ch >= 0x61 && ch <= 0x7A) || (ch >= 0x41 && ch <= 0x5A)
 }
 
 .is.alpha.numeric <- function(ch) {
-    (ch >= 0x61 && ch <= 0x7A) || (ch >= 0x41 && ch <= 0x5A) || (ch >= 0x30 && ch <= 0x39)
+  (ch >= 0x61 && ch <= 0x7A) || (ch >= 0x41 && ch <= 0x5A) || (ch >= 0x30 && ch <= 0x39)
 }
 
 .extractVariables <- function(model) {
   reserved.words <- c("c", "start", "equal", "NA")
-
+  
   bytes <- c(charToRaw(model), 0)
-
+  
   variables <- c()
-
+  
   none <- 0
   in.double.quote <- 1
   in.single.quote <- 2
   in.unquoted <- 3
   in.comment <- 4
-
+  
   parse.state <- none
   token.start <- 1
-
+  
   sq <- charToRaw("'")
   dq <- charToRaw('"')
   hash <- charToRaw('#')
   nl <- charToRaw('\n')
-
+  
   i <- 1
   while (i <= length(bytes)) {
     ch <- bytes[i]
-
+    
     if (parse.state == none) {
-
+      
       if (.is.raw.letter(ch)) {
         token.start <- i
         parse.state <- in.unquoted
@@ -832,73 +676,73 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
         parse.state <- in.comment
       }
     } else if (parse.state == in.single.quote) {
-        if (ch == sq) {
-          variable <- substr(model, token.start, i)
-          variables <- c(variables, variable)
-          parse.state <- none
-        }
+      if (ch == sq) {
+        variable <- substr(model, token.start, i)
+        variables <- c(variables, variable)
+        parse.state <- none
+      }
     } else if (parse.state == in.double.quote) {
-        if (ch == dq) {
-          variable <- substr(model, token.start, i)
-          variables <- c(variables, variable)
-          parse.state <- none
-        }
+      if (ch == dq) {
+        variable <- substr(model, token.start, i)
+        variables <- c(variables, variable)
+        parse.state <- none
+      }
     } else if (parse.state == in.unquoted) {
-        if (.is.alpha.numeric(ch) == FALSE) {
-          variable <- substr(model, token.start, i - 1)
-          variables <- c(variables, variable)
-          parse.state <- none
-          i <- i - 1
-        }
+      if (.is.alpha.numeric(ch) == FALSE) {
+        variable <- substr(model, token.start, i - 1)
+        variables <- c(variables, variable)
+        parse.state <- none
+        i <- i - 1
+      }
     } else if (parse.state == in.comment) {
-        if (ch == nl) {
-            parse.state <- none
-        }
+      if (ch == nl) {
+        parse.state <- none
+      }
     }
-
+    
     i <- i + 1
   }
-
+  
   variables <- unique(variables)
-
+  
   if (length(variables) > 0) {
     for (i in 1:length(variables)) {
-    variable <- variables[i]
-    if ((regexpr("'.*'", variable) == 1) ||
-        (regexpr("\".*\"", variable) == 1)) {
+      variable <- variables[i]
+      if ((regexpr("'.*'", variable) == 1) ||
+          (regexpr("\".*\"", variable) == 1)) {
         variable <- substr(variable, 2, nchar(variable) - 1)
-    }
-    variables[i] <- variable
+      }
+      variables[i] <- variable
     }
   }
-
+  
   variables <- variables[ ! (variables %in% reserved.words)]
   return(variables)
 }
 
 .translateModel <- function(model, variables) {
   if (length(variables) == 0) {
-      return(model)
+    return(model)
   }
-
+  
   variables <- variables[order(nchar(variables), decreasing = TRUE)]
   with.s.quotes <- paste("\\b'", variables, "'\\b", sep="")
   with.d.quotes <- paste('\\b"', variables, '"\\b', sep="")
-
+  
   new.names <- .v(variables)
-
+  
   for (i in 1:length(variables)) {
-      model <- gsub(with.d.quotes[i], new.names[i], model)
+    model <- gsub(with.d.quotes[i], new.names[i], model)
   }
-
+  
   for (i in 1:length(variables)) {
-      model <- gsub(with.s.quotes[i], new.names[i], model)
+    model <- gsub(with.s.quotes[i], new.names[i], model)
   }
-
+  
   for (i in 1:length(variables)) {
-      model <- gsub(paste0("\\b",variables[i], "\\b"), new.names[i], model)
+    model <- gsub(paste0("\\b",variables[i], "\\b"), new.names[i], model)
   }
-
+  
   return(model)
 }
 
@@ -908,22 +752,29 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
                         vv,
                         "\\E(?=[\\s\\+\\^\\=\\~\\<\\*\\>\\:\\%\\|\\+]|$)")
   return(vv[vapply(findpattern,
-                     function(p) stringr::str_detect(model, p),
-                     FUN.VALUE = TRUE,
-                     USE.NAMES = FALSE)])
+                   function(p) stringr::str_detect(model, p),
+                   FUN.VALUE = TRUE,
+                   USE.NAMES = FALSE)])
 }
 
 .decodeVarsInMessage <- function(encodedVars, message) {
   if (length(encodedVars) == 0 || !is.character(encodedVars) || !is.character(message))
     return(message)
-
+  
   decodedVars <- .unv(encodedVars)
   names(decodedVars) <- encodedVars
   stringr::str_replace_all(message, decodedVars)
 }
 
-.lavCreatePathDiagram <- function(semResults=NULL, lavModel=NULL, options) {
-  result <- list(keep=NULL, pathDiagram=NULL)
+.lavCreatePathDiagram <- function(semContainer, options, ready) {
+  if (!is.null(semContainer[["pathDiagramPlotCollection"]]))
+    return()
+  
+  pathDiagramPlotCollection <- createJaspContainer(title = "Path Diagrams")
+    
+    
+  # set dependencies
+  # qqPlot$dependOn(c("qqPlot"))
   
   plotArgs <- list(
     DoNotPlot = TRUE,
@@ -937,52 +788,51 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   )
 
   p <- try({
-    if (!is.null(semResults)) {
-      semPlotModel <- .lavToPlotObj(semResults)
+    if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
+      semPlotModel <- .lavToPlotObj(semContainer[["semResultsList"]]$object$semResults)
       .suppressGrDevice(do.call(semPlot::semPaths,
-        c(plotArgs, list(object = semPlotModel, what = ifelse(options$outputpathdiagramstandardizedparameter, "std", "paths")))
+                                c(plotArgs, list(object = semPlotModel, what = ifelse(options$outputpathdiagramstandardizedparameter, "std", "paths")))
       ))
     } else {
-      semPlotModel <- .lavToPlotObj(lavModel)
+      semPlotModel <- .lavToPlotObj(semContainer[["semResultsList"]]$object$lavModel)
       .suppressGrDevice(do.call(semPlot::semPaths,
-        c(plotArgs, list(object = semPlotModel, what = "par", edge.color = "black"))
+                                c(plotArgs, list(object = semPlotModel, what = "par", edge.color = "black"))
       ))
     }
   })
-
+  
   if (isTryError(p)) {
     errorMessage <- .extractErrorMessage(p)
-    if (options$groupingVariable != "")
-      result[["pathDiagram"]] <- list(title="Path Diagram", collection=list(list(error=list(error="badData", errorMessage=errorMessage))))
-    else
-      result[["pathDiagram"]]<- list(title="Path Diagram", error=list(error="badData", errorMessage=errorMessage))
-    return(result)
+    semContainer$setError(errorMessage)
+    return()
   }
-
+  
   if (options$groupingVariable != "") {
     # semplot returns an unnamed list, but which plot belongs to which grouping level?
     # The order should match the order of the levels in the lavaan model..
     titles <- semPlotModel@Original[[1]]@Data@group.label
+    
     if (!is.character(titles) || (length(titles) != length(p)))
       titles <- seq_along(p)
-      
+    
     plotList <- list()
     keep <- NULL
     for (i in seq_along(p)) {
       diagram <- .lavWritePathDiagram(p[[i]], titles[i], options)
-      plotList[[i]] <- diagram
-      keep <- c(keep, diagram[["data"]])
+      pathDiagramPlotCollection[[i]] <- createJaspPlot(title = titles[i])
+      pathDiagramPlotCollection[[i]]$plotObject <- JASPgraphs::themeJasp(plot(diagram))
     }
-    result[["pathDiagram"]] <- list(title = "Path Diagrams", collection = plotList)
     
   } else {
-    
-    result[["pathDiagram"]] <- .lavWritePathDiagram(p, "Path Diagram", options)
-    keep <- result[["pathDiagram"]][["data"]]
-    
+    pathPlot <- createJaspPlot(title = "Path Diagram")
+    p <- .ggSemPlot(semContainer[["semResultsList"]]$object$semResults)
+    pathPlot$plotObject <- JASPgraphs::themeJasp(plot(p))
+    pathDiagramPlotCollection[["pathPlot"]] <- pathPlot
   }
-  result[["keep"]] <- keep
-  return(result)  
+
+  semContainer[["pathDiagramPlotCollection"]] <- pathDiagramPlotCollection
+  
+  return()
 }
 
 .lavWritePathDiagram <- function(plotObj, title, options) {
@@ -994,9 +844,9 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     pathDiagram$height <- 1 + 299 * (length(options$variables)/5)
   }
   pathDiagram$custom <- list(width="plotWidth", height="plotHeight")
-
+  
   content <- .writeImage(width = pathDiagram$width, 
-                        height = pathDiagram$height, plot = plotObj, obj = TRUE)
+                         height = pathDiagram$height, plot = plotObj, obj = TRUE)
   
   pathDiagram[["convertible"]] <- TRUE
   pathDiagram[["obj"]] <- content[["obj"]]
@@ -1010,17 +860,89 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   # Create semplot model and unv the names of the manifest variables
   # Sorry, this code is really ugly but all it does is replace names for plot.
   semPlotMod <- semPlot::semPlotModel(list(lavResult), list(mplusStd = "std"))[[1]]
-
+  
   manifests <- semPlotMod@Vars$name[semPlotMod@Vars$manifest]
   semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- .unv(manifests)
-
+  
   lhsAreManifest <- semPlotMod@Pars$lhs %in% manifests
   if (any(lhsAreManifest)) semPlotMod@Pars$lhs[lhsAreManifest] <- .unv(semPlotMod@Pars$lhs[lhsAreManifest])
-
+  
   rhsAreManifest <- semPlotMod@Pars$rhs %in% manifests
   if (any(rhsAreManifest)) semPlotMod@Pars$rhs[rhsAreManifest] <- .unv(semPlotMod@Pars$rhs[rhsAreManifest])
-
+  
   return(semPlotMod)
 }
 
-### SEM Function:
+
+.ggSemPlot <- function(fit, layout = "sugiyama") {
+  
+  # Extract standardized parameters
+  params <- lavaan::standardizedSolution(fit)
+  
+  # Edge properties
+  param_edges <- params %>% 
+    filter(op %in% c("=~", "~", "~~"), lhs != rhs, pvalue < .10) %>%
+    transmute(to = lhs,
+              from = rhs,
+              val = est.std,
+              type = dplyr::case_when(
+                op == "=~" ~ "loading",
+                op == "~"  ~ "regression",
+                op == "~~" ~ "correlation",
+                TRUE ~ NA_character_))
+  
+  # Identify latent variables for nodes
+  latent_nodes <- param_edges %>% 
+    filter(type == "loading") %>% 
+    distinct(to) %>% 
+    transmute(metric = to, latent = TRUE)
+  
+  # Node properties
+  param_nodes <- params %>% 
+    filter(lhs == rhs) %>% 
+    transmute(metric = lhs, e = est.std) %>% 
+    left_join(latent_nodes) %>% 
+    mutate(latent = if_else(is.na(latent), FALSE, latent))
+  
+  # Complete Graph Object
+  param_graph <- tidygraph::tbl_graph(param_nodes, param_edges)
+  
+  # Plot
+  ggraph(param_graph, layout = layout) +
+    # Latent factor Nodes
+    geom_node_point(aes(alpha = as.numeric(latent)),
+                    shape = 16, size = 5) +
+    geom_node_point(aes(alpha = as.numeric(latent)),
+                    shape = 16, size = 4, color = "white") +
+    # Observed Nodes
+    geom_node_point(aes(alpha = as.numeric(!latent)),
+                    shape = 15, size = 5) +
+    geom_node_point(aes(alpha = as.numeric(!latent)),
+                    shape = 15, size = 4, color = "white") +
+    # Regression Paths (and text)
+    geom_edge_link(aes(color = val, label = round(val, 2),
+                       alpha = as.numeric(type == "regression")),
+                   linetype = 1, angle_calc = "along", vjust = -.5,
+                   arrow = arrow(20, unit(.3, "cm"), type = "closed")) +
+    # Factor Loadings (no text)
+    geom_edge_link(aes(color = val, alpha = as.numeric(type == "loading")),
+                   linetype = 3, angle_calc = "along",
+                   arrow = arrow(20, unit(.3, "cm"), ends = "first", type = "closed")) +
+    # Correlation Paths (no text)
+    geom_edge_link(aes(color = val, alpha = as.numeric(type == "correlation")),
+                   linetype = 2, angle_calc = "along",
+                   arrow = arrow(20, unit(.3, "cm"), type = "closed", ends = "both")) +
+    # Node names
+    geom_node_text(aes(label = metric),
+                   nudge_y = .25, hjust = "inward") +
+    # Node residual error
+    geom_node_text(aes(label = sprintf("%.2f", e)),
+                   nudge_y = -.1, size = 3) +
+    # Scales and themes
+    scale_alpha(guide = FALSE, range = c(0, 1)) +
+    scale_edge_alpha(guide = FALSE, range = c(0, 1)) +
+    scale_edge_colour_gradient2(guide = FALSE, low = "red", mid = "darkgray", high = "green") +
+    scale_edge_linetype(guide = FALSE) +
+    scale_size(guide = FALSE) +
+    theme_graph()
+}
