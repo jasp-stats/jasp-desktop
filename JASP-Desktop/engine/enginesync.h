@@ -48,18 +48,18 @@ public:
 	bool allEnginesInitializing();
 
 public slots:
-	int		sendFilter(		const QString & generatedFilter,	const QString & filter);
-	void	sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion);
-	void	computeColumn(	const QString & columnName,			const QString & computeCode,	columnType columnType);
-	void	pause();
-	void	resume();
-	void	refreshAllPlots();
-	void	stopEngines();
-	void	logCfgRequest();
-	void	logToFileChanged(bool) { logCfgRequest(); }
-	void	cleanUpAfterClose();
-	void	filterDone(int requestID);
-
+	int			sendFilter(		const QString & generatedFilter,	const QString & filter);
+	void		sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion);
+	void		computeColumn(	const QString & columnName,			const QString & computeCode,	columnType columnType);
+	void		pause();
+	void		resume();
+	void		refreshAllPlots();
+	void		stopEngines();
+	void		logCfgRequest();
+	void		logToFileChanged(bool) { logCfgRequest(); }
+	void		cleanUpAfterClose();
+	void		filterDone(int requestID);
+	std::string	currentState() const;
 	
 signals:
 	void	processNewFilterResult(const std::vector<bool> & filterResult, int requestID);
@@ -106,8 +106,8 @@ private slots:
 	void	process();
 
 	void	subProcessStarted();
-	void	subProcessError(QProcess::ProcessError error);
-	void	subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+	void	subProcessError(	size_t engineNr, QProcess::ProcessError error);
+	void	subprocessFinished(	size_t engineNr, int exitCode, QProcess::ExitStatus exitStatus);
 
 	void	moduleLoadingFailedHandler(		const QString & moduleName, const QString & errorMessage, int channelID);
 	void	moduleLoadingSucceededHandler(		const QString & moduleName, int channelID);

@@ -47,9 +47,11 @@ public:
 	IPCChannel(std::string name, size_t channelNumber, bool isSlave = false);
 	~IPCChannel();
 
-	void send(std::string &data,	bool alreadyLockedMutex = false);
-	void send(std::string &&data,	bool alreadyLockedMutex = false);
-	bool receive(std::string &data, int timeout = 0);
+	std::string lastSentMsg() const;
+
+	void send(std::string		&	data,	bool alreadyLockedMutex = false);
+	void send(std::string		&&	data,	bool alreadyLockedMutex = false);
+	bool receive(std::string	&	data,	int timeout = 0);
 
 	size_t channelNumber() { return _channelNumber; }
 

@@ -26,7 +26,7 @@
 #endif
 
 #include "utilities/qutils.h"
-#include "utilities/aboutmodel.h"
+#include "gui/aboutmodel.h"
 #include "appinfo.h"
 #include "tempfiles.h"
 #include <functional>
@@ -63,7 +63,7 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 {
 	if (succes)
 	{
-		QString version = AboutModel::getJaspVersion();
+		QString version = AboutModel::version();
 
 		emit runJavaScript("window.setAppVersion('" + version + "')");
 

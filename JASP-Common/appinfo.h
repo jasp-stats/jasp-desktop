@@ -26,6 +26,8 @@ public:
 	static const Version version;
 	static const std::string name;
 	static const std::string builddate;
+	static const std::string gitBranch;
+	static const std::string gitCommit;
 
 	static std::string getShortDesc();
 	static std::string getBuildYear();

@@ -306,3 +306,8 @@ bool IPCChannel::tryWait(int timeout)
 	return messageWaiting;
 
 }
+
+std::string IPCChannel::lastSentMsg() const
+{
+	return _dataOut->data();
+}

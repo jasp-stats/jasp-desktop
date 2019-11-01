@@ -18,12 +18,13 @@ Window
 	minimumHeight:	height
 	minimumWidth:	width
 
-	property string labelcolor : "#F99800"
-	property string closebuttoncolor : "#50B0E3"
+	property string labelcolor:			"#F99800"
+	property string closebuttoncolor:	"#50B0E3"
 
 	visible:				aboutModel.visible
 	onVisibleChanged:		aboutModel.visible = visible
 	title:					"About JASP"
+
 
 	Image
 	{
@@ -55,7 +56,7 @@ Window
 			anchors.fill:		parent
 			fillMode:			Image.PreserveAspectFit
 			source:				"qrc:/core/img/jasp-logo-black.svg"
-			sourceSize.width:	width * 2
+			sourceSize.width:	width  * 2
 			sourceSize.height:	height * 2
 			mipmap:				true
 		}
@@ -85,7 +86,7 @@ Window
 			anchors.right:	parent.right
 			height:			25
 
-			text:			aboutModel.jaspCopyrightMessage
+			text:			aboutModel.copyrightMessage
 		}
 
 		Label
@@ -104,7 +105,7 @@ Window
 			{
 				id:				jaspVersionText
 
-				text:			aboutModel.jaspVersionString
+				text:			aboutModel.version
 				anchors.left:	parent.right
 				anchors.top:	parent.top
 				height:			25
@@ -119,7 +120,7 @@ Window
 			height:			25
 			width:			75
 
-			text:			qsTr("Build on:")
+			text:			qsTr("Built on:")
 			color:			labelcolor
 			font.bold:		true
 
@@ -130,7 +131,38 @@ Window
 				anchors.top:	parent.top
 				height:			25
 
-				text:			aboutModel.jaspBuildDate
+				text:			aboutModel.buildDate
+			}
+		}
+
+		Label
+		{
+			id:				commitLabel
+			anchors.left:	parent.left
+			anchors.top:	buildDateLabel.bottom
+			height:			25
+			width:			75
+
+			text:			qsTr("Source:")
+			color:			labelcolor
+			font.bold:		true
+
+			Text
+			{
+				id:				commitLink
+				anchors.left:	parent.right
+				anchors.top:	parent.top
+				height:			25
+
+				text:			"<a href=\"" + aboutModel.commitUrl +"\">Access the sources here</a>"
+
+				MouseArea
+				{
+					id:				mouseAreaSources
+					anchors.fill:	parent
+					onClicked:		Qt.openUrlExternally(aboutModel.commitUrl)
+					cursorShape:	Qt.PointingHandCursor
+				}
 			}
 		}
 
@@ -138,7 +170,7 @@ Window
 		{
 			id:				downloadLabel
 			anchors.left:	parent.left
-			anchors.top:	buildDateLabel.bottom
+			anchors.top:	commitLabel.bottom
 			height:			25
 			width:			75
 
@@ -153,14 +185,14 @@ Window
 				anchors.top:	parent.top
 				height:			25
 
-				text:			"<a href=\"" + aboutModel.jaspDownloadUrl +"\">"+ aboutModel.jaspDownloadUrl + "</a>"
+				text:			"<a href=\"" + aboutModel.downloadUrl +"\">"+ aboutModel.downloadUrl + "</a>"
 				textFormat:		Text.StyledText
 
 				MouseArea
 				{
 					id:				mouseAreaDownload
 					anchors.fill:	parent
-					onClicked:		Qt.openUrlExternally(aboutModel.jaspDownloadUrl)
+					onClicked:		Qt.openUrlExternally(aboutModel.downloadUrl)
 					cursorShape:	Qt.PointingHandCursor
 				}
 			}
@@ -190,7 +222,7 @@ Window
 
 				font.bold:		false
 				textFormat:		Text.StyledText
-				text:			aboutModel.jaspCitation
+				text:			aboutModel.citation
 
 				selectByMouse:	true
 				readOnly:		true
@@ -214,14 +246,14 @@ Window
 				anchors.top:	citationText.bottom
 				height:			15
 
-				text:			"<a href=\"" + aboutModel.jaspCitationUrl + "\">(BibTex)</a>"
+				text:			"<a href=\"" + aboutModel.citationUrl + "\">(BibTex)</a>"
 				textFormat:		Text.StyledText
 
 				MouseArea
 				{
 					id:				mouseAreaBibTex
 					anchors.fill:	parent
-					onClicked:		Qt.openUrlExternally(aboutModel.jaspCitationUrl)
+					onClicked:		Qt.openUrlExternally(aboutModel.citationUrl)
 					cursorShape:	Qt.PointingHandCursor
 				}
 			}
@@ -231,7 +263,7 @@ Window
 		{
 			id:				warrantyText
 			height:			75
-			text:			aboutModel.jaspWarranty
+			text:			aboutModel.warranty
 			textFormat:		Text.StyledText
 			opacity:		0.5
 
@@ -286,5 +318,5 @@ Window
 		height:				parent.height/4
 		source:				"qrc:/core/img/jasp-wave-up-green-120.svg"
 	}
-
 }
+

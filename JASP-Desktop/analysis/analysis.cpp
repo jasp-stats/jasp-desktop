@@ -236,7 +236,7 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 	connect(_analyses, &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
 }
 
-std::string Analysis::statusToString(Status status) const
+std::string Analysis::statusToString(Status status)
 {
 	switch (status)
 	{

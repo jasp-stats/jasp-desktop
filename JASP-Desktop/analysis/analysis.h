@@ -49,7 +49,7 @@ public:
 
 	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing };
 	void setStatus(Status status);
-	std::string statusToString(Status status) const;
+	static std::string statusToString(Status status);
 
 	Analysis(Analyses* analyses, size_t id, Analysis * duplicateMe);
 	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);

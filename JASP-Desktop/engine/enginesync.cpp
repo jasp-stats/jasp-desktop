@@ -441,9 +441,10 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	});
 #endif
 
-	connect(slave, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this,	&EngineSync::subprocessFinished);
+	EngineSync * engSync = this;
 	connect(slave, &QProcess::started,												this,	&EngineSync::subProcessStarted);
-	connect(slave, &QProcess::errorOccurred,										this,	&EngineSync::subProcessError);
+	connect(slave, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	[=](int exitCode, QProcess::ExitStatus exitStatus)	{ engSync->subprocessFinished(no, exitCode, exitStatus);	} );
+	connect(slave, &QProcess::errorOccurred,										[=](QProcess::ProcessError error)					{ engSync->subProcessError(no, error);						} );
 
 	slave->start(engineExe, args);
 
@@ -465,29 +466,32 @@ void EngineSync::subProcessStarted()
 	Log::log() << "Engine process started" << std::endl;
 }
 
-void EngineSync::subProcessError(QProcess::ProcessError error)
+void EngineSync::subProcessError(size_t engineNr, QProcess::ProcessError error)
 {
 	if(!_engineStarted)
 		return;
 
-	Log::log() << "Engine error: " << error << std::endl;
+	Log::log() << "Engine #" << engineNr << " had error: " << QProcessErrorToString(error) << std::endl;
+
 	emit engineTerminated();
 	_engineStarted = false;
 
 }
 
-void EngineSync::subprocessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void EngineSync::subprocessFinished(size_t engineNr, int exitCode, QProcess::ExitStatus exitStatus)
 {
 	if(!_engineStarted)
 		return;
 
 	if(exitCode != 0 || exitStatus == QProcess::ExitStatus::CrashExit)
 	{
-		Log::log() << "subprocess finished" << exitCode << std::endl;
+		Log::log() << "Engine # " << engineNr << " subprocess crashed with exitCode " << exitCode << std::endl;
 		emit engineTerminated();
 		_engineStarted = false;
 
 	}
+	else
+		Log::log() << "Engine # " << engineNr << " subprocess exited normally with exitCode " << exitCode << std::endl;
 }
 
 void EngineSync::stopEngines()
@@ -743,4 +747,23 @@ void EngineSync::cleanUpAfterClose()
 	resume();
 
 	//restartEngines();
+}
+
+std::string	EngineSync::currentState() const
+{
+	try
+	{
+		std::stringstream out;
+
+		for(size_t i=0; i<_engines.size(); i++)
+			try			{ out << _engines[i]->currentState() << "\n"; }
+			catch(...)	{ out << "Something is wrong with engine " << i << "...\n"; }
+
+		return out.str();
+	}
+	catch(...)
+	{
+		return "EngineSync::currentState() did not work...\n";
+	}
+
 }

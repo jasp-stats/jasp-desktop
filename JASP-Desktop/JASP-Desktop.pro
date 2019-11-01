@@ -328,7 +328,7 @@ HEADERS += \
     analysis/jaspdoublevalidator.h \
     widgets/boundqmlfactorsform.h \
     widgets/listmodelfactorsform.h \
-    utilities/aboutmodel.h \
+    gui/aboutmodel.h \
     modules/ribbonbutton.h \
     widgets/filemenu/currentdatafile.h \
     gui/jaspversionchecker.h \
@@ -498,7 +498,7 @@ SOURCES += \
     analysis/jaspdoublevalidator.cpp \
     widgets/boundqmlfactorsform.cpp \
     widgets/listmodelfactorsform.cpp \
-    utilities/aboutmodel.cpp \
+    gui/aboutmodel.cpp \
     modules/ribbonbutton.cpp \
     widgets/filemenu/currentdatafile.cpp \
     gui/jaspversionchecker.cpp \

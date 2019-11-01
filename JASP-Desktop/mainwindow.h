@@ -22,35 +22,34 @@
 
 
 #include <QSettings>
-#include <QApplication>
 #include <QQmlApplicationEngine>
-
-#include "analysis/analyses.h"
-#include "analysis/analysisform.h"
+#include <QApplication>
 
 #include "dataset.h"
-#include "data/asyncloader.h"
-#include "data/asyncloaderthread.h"
-#include "data/columnsmodel.h"
-#include "data/datasettablemodel.h"
-#include "data/computedcolumnsmodel.h"
-#include "data/fileevent.h"
+#include "gui/aboutmodel.h"
 #include "data/labelmodel.h"
-#include "data/filtermodel.h"
+#include "data/columnsmodel.h"
 #include "engine/enginesync.h"
-#include "modules/dynamicmodule.h"
 #include "modules/ribbonmodel.h"
-#include "modules/ribbonbutton.h"
-#include "modules/ribbonmodelfiltered.h"
 #include "gui/preferencesmodel.h"
-#include "results/resultmenumodel.h"
-#include "results/resultsjsinterface.h"
-#include "utilities/jsonutilities.h"
-#include "utilities/helpmodel.h"
-#include "utilities/aboutmodel.h"
-#include "data/labelfiltergenerator.h"
-#include "widgets/filemenu/filemenu.h"
+#include "analysis/analysisform.h"
+#include "data/asyncloaderthread.h"
 #include "results/ploteditormodel.h"
+#include "widgets/filemenu/filemenu.h"
+#include "data/labelfiltergenerator.h"
+#include "modules/ribbonmodelfiltered.h"
+#include "results/resultsjsinterface.h"
+#include "data/computedcolumnsmodel.h"
+#include "utilities/jsonutilities.h"
+#include "results/resultmenumodel.h"
+#include "data/datasettablemodel.h"
+#include "modules/dynamicmodule.h"
+#include "modules/ribbonbutton.h"
+#include "utilities/helpmodel.h"
+#include "analysis/analyses.h"
+#include "data/asyncloader.h"
+#include "data/filtermodel.h"
+#include "data/fileevent.h"
 
 class MainWindow : public QObject
 {
@@ -128,7 +127,7 @@ public slots:
 	void	moveAnalysesResults(Analysis* fromAnalysis, int index);
 
 	void	setCheckAutomaticSync(bool check)		{  _checkAutomaticSync = check;	}
-
+	void	openGitHubBugReport() const;
 
 private:
 	void makeConnections();

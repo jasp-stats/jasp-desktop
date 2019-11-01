@@ -148,3 +148,18 @@ QMap<QString, QString> tq(const std::map<std::string, std::string> & map)
 
 	return out;
 }
+
+
+const char * QProcessErrorToString(QProcess::ProcessError error)
+{
+	switch(error)
+	{
+	case QProcess::ProcessError::Crashed:		return "Crashed";
+	case QProcess::ProcessError::Timedout:		return "Timedout";
+	case QProcess::ProcessError::ReadError:		return "ReadError";
+	case QProcess::ProcessError::WriteError:	return "WriteError";
+	case QProcess::ProcessError::UnknownError:	return "UnknownError";
+	case QProcess::ProcessError::FailedToStart:	return "FailedToStart";
+	};
+	return "???";
+}

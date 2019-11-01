@@ -21,6 +21,7 @@
 
 #include <QStringList>
 #include <QString>
+#include <QProcess>
 #include <QMap>
 #include <map>
 #include <set>
@@ -48,6 +49,8 @@ QString getShortCutKey();
 QString encrypt(const QString &input);
 QString decrypt(const QString &input);
 QString getSortableTimestamp();
+
+const char * QProcessErrorToString(QProcess::ProcessError error);
 
 inline std::ostream& operator<<(std::ostream& os, const QString & qStr) { return (os << qStr.toStdString()); }
 

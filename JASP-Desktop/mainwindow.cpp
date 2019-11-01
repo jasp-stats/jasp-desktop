@@ -210,7 +210,7 @@ void MainWindow::makeConnections()
 
 	connect(_engineSync,			&EngineSync::computeColumnSucceeded,				_computedColumnsModel,	&ComputedColumnsModel::computeColumnSucceeded				);
 	connect(_engineSync,			&EngineSync::computeColumnFailed,					_computedColumnsModel,	&ComputedColumnsModel::computeColumnFailed					);
-	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError										);
+	connect(_engineSync,			&EngineSync::engineTerminated,						this,					&MainWindow::fatalError,									Qt::QueuedConnection); //To give the process some time to realize it has crashed or something
 	connect(_engineSync,			&EngineSync::columnDataTypeChanged,					_analyses,				&Analyses::dataSetColumnsChanged							);
 	connect(_engineSync,			&EngineSync::refreshAllPlotsExcept,					_analyses,				&Analyses::refreshAllPlots									);
 	connect(_engineSync,			&EngineSync::processNewFilterResult,				_filterModel,			&FilterModel::processFilterResult							);
@@ -1082,6 +1082,72 @@ void MainWindow::_openFile()
     _openOnLoadFilename = "";
 }
 
+void MainWindow::openGitHubBugReport() const
+{
+	bool openGitHubUserRegistration = false;
+
+	if(!Settings::value(Settings::USER_HAS_GITHUB_ACCOUNT).toBool())
+	{
+		if(MessageForwarder::showYesNo("Do you have a GitHub account?", "To be able to report the bug you need to have a GitHub account, do you have such an account?"))
+			Settings::setValue(Settings::USER_HAS_GITHUB_ACCOUNT, true);
+		else
+		{
+			openGitHubUserRegistration = true;
+			MessageForwarder::showWarning("Join GitHub",
+				"We will open two pages for you in your webbrowser.\n"
+				"The second will be the 'Join GitHub' page where you can register for an account with GitHub."
+				"\n"
+				"The first will be a login page that leads to a partly filled bug report after you sign in with your new GitHub account.\n\n"
+				"Please fill in all missing information there.");
+		}
+	}
+
+	std::stringstream fillIt;
+
+	try			{ fillIt << "* JASP version: " << AppInfo::version.asString()	<< std::endl; }
+	catch(...)	{ fillIt << "* JASP version: ???\n"; }
+
+	try			{ fillIt <<	"* OS name and version: " << QSysInfo::prettyProductName() << std::endl; }
+	catch(...)	{ fillIt << "* OS name and version: ???\n"; }
+
+	fillIt	<<	"<!--- Please fill in the following fields: -->\n"
+				"* Analysis: \n"
+				"* Bug description:\n"
+				"* Expected behaviour:\n"
+				"<!--- Steps to reproduce means, what actions should we take in JASP to reproduce the bug you encountered? --->\n"
+				"#### Steps to reproduce:\n"
+				"1. Go to '...'\n"
+				"2. Click on '....'\n"
+				"3. Scroll down to '....'\n"
+				"4. See error\n";
+
+	fillIt <<	"\n\n\n"
+				"-----------------------------------------------------------------------\n"
+				"<!--- A note from the developers:\nIf possible please attach your data and/or JASP file to the issue, this makes solving the bug a lot easier."
+				" If you would prefer to not make your data publicly available then you could also mail us.\n"
+				"Note that github requires you to zip the file to upload it here.\n-->\n\n"
+				"### Debug information:\n" << _engineSync->currentState();
+
+	try			{ fillIt << "\n[Commit used](" << AboutModel::commitUrl() << ")\n"; }
+	catch(...)	{ fillIt << "Commit couldn't be found\n"; }
+
+	QString percentEncodedIssue = QUrl::toPercentEncoding(tq(fillIt.str()));
+
+	const char * baseIssueUrl = "https://github.com/jasp-stats/jasp-issues/issues/new?labels=bug&title=JASP+crashed&body=";
+
+	QUrl issueUrl = baseIssueUrl + percentEncodedIssue;
+
+	QDesktopServices::openUrl(issueUrl);
+
+	if(openGitHubUserRegistration)
+		QTimer::singleShot(100, []()
+		{
+			QDesktopServices::openUrl(QUrl("https://github.com/join"));
+			exit(1);
+		});
+	else
+		exit(1);
+}
 
 void MainWindow::fatalError()
 {
@@ -1093,9 +1159,11 @@ void MainWindow::fatalError()
 		if(MessageForwarder::showYesNo("Error", "JASP has experienced an unexpected internal error:\n" + _fatalError.toStdString() + "\n\n"
 			"JASP cannot continue and will close.\n\nWe would be grateful if you could report this error to the JASP team.", "Report", "Exit"))
 		{
-			QDesktopServices::openUrl(QUrl("https://jasp-stats.org/bug-reports/"));
+			//QDesktopServices::openUrl(QUrl("https://jasp-stats.org/bug-reports/"));
+			openGitHubBugReport();
 		}
-		_application->exit(1);
+		else
+			_application->exit(1);
 	}
 }
 

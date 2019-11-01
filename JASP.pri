@@ -21,7 +21,11 @@ JASP_VERSION_BUILD      = 0 #Should be ignored because the code handling it is b
 DEFINES +=    "JASP_VERSION_MAJOR=$$JASP_VERSION_MAJOR"
 DEFINES +=    "JASP_VERSION_MINOR=$$JASP_VERSION_MINOR"
 DEFINES +=    "JASP_VERSION_BUILD=$$JASP_VERSION_BUILD"
-DEFINES +=    "JASP_VERSION_REVISION=$$JASP_VERSION_REVISION"
+DEFINES += "JASP_VERSION_REVISION=$$JASP_VERSION_REVISION"
+
+DEFINES += GIT_CURRENT_BRANCH="\"$(shell cd $$PWD && git rev-parse --abbrev-ref HEAD)\""
+DEFINES += GIT_CURRENT_COMMIT="\"$(shell cd $$PWD && git rev-parse --verify HEAD)\""
+
 
 
 JASP_REQUIRED_FILES = $$PWD/../jasp-required-files
