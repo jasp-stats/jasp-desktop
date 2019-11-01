@@ -341,7 +341,8 @@ HEADERS += \
     data/datasettablemodel.h \
     data/labelmodel.h \
     results/ploteditormodel.h \
-    results/ploteditoraxismodel.h
+    results/ploteditoraxismodel.h \
+    results/ploteditorcoordinates.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -510,7 +511,8 @@ SOURCES += \
     data/datasettablemodel.cpp \
     data/labelmodel.cpp \
     results/ploteditormodel.cpp \
-    results/ploteditoraxismodel.cpp
+    results/ploteditoraxismodel.cpp \
+    results/ploteditorcoordinates.cpp
 
 
 RESOURCES += \

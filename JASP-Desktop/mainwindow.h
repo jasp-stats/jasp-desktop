@@ -51,6 +51,8 @@
 #include "data/filtermodel.h"
 #include "data/fileevent.h"
 
+using PlotEditor::PlotEditorModel;
+
 class MainWindow : public QObject
 {
 	Q_OBJECT

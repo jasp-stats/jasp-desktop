@@ -5,14 +5,17 @@
 #include "tempfiles.h"
 #include <QDir>
 
+namespace PlotEditor
+{
+
 PlotEditorModel::PlotEditorModel(Analyses * analyses)
 	: QObject(analyses), _analyses(analyses)
 {
-	_xAxis = new PlotEditorAxisModel(this, true);
-	_yAxis = new PlotEditorAxisModel(this, false);
+	_xAxis = new AxisModel(this, true);
+	_yAxis = new AxisModel(this, false);
 
-	connect(_xAxis, &PlotEditorAxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
-	connect(_yAxis, &PlotEditorAxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
+	connect(_xAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
+	connect(_yAxis, &AxisModel::somethingChanged, this, &PlotEditorModel::somethingChanged);
 }
 
 void PlotEditorModel::showPlotEditor(int id, QString options)
@@ -61,6 +64,8 @@ void PlotEditorModel::processImgOptions()
 	_xAxis->setAxisData(xAxis);
 	_yAxis->setAxisData(yAxis);
 
+	_coordinates.loadCoordinates(_editOptions.get("coordinates", Json::objectValue)); // To Do Vincent Pedata: is this the right json object?
+
 }
 
 Json::Value PlotEditorModel::generateImgOptions() const
@@ -84,6 +89,8 @@ Json::Value PlotEditorModel::generateEditOptions() const
 
 	editOptions["xAxis"]		= _xAxis->getAxisData();
 	editOptions["yAxis"]		= _yAxis->getAxisData();
+
+	// To Do Vincent Pedata: Do we need to send the coordinates back? No right?
 
 	return editOptions;
 }
@@ -178,4 +185,12 @@ void PlotEditorModel::setHeight(int height)
 
 	_height = height;
 	emit heightChanged(_height);
+}
+
+QString PlotEditorModel::clickHitsElement(double x, double y) const
+{
+	std::string elementName;
+	return 	_coordinates.elementHit(x, y, elementName) ? tq(elementName) : "";
+}
+
 }

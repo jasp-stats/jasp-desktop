@@ -5,9 +5,13 @@
 #include <QObject>
 #include "jsonredirect.h"
 #include "ploteditoraxismodel.h"
+#include "ploteditorcoordinates.h"
 
 class Analyses;
 class Analysis;
+
+namespace PlotEditor
+{
 
 class PlotEditorModel : public QObject
 {
@@ -19,8 +23,8 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(QString					title			READ title			WRITE setTitle			NOTIFY titleChanged			)
 	Q_PROPERTY(int						width			READ width			WRITE setWidth			NOTIFY widthChanged			)
 	Q_PROPERTY(int						height			READ height			WRITE setHeight			NOTIFY heightChanged		)
-	Q_PROPERTY(PlotEditorAxisModel *	xAxis			READ xAxis									NOTIFY dummyAxisChanged		)
-	Q_PROPERTY(PlotEditorAxisModel *	yAxis			READ yAxis									NOTIFY dummyAxisChanged		)
+	Q_PROPERTY(AxisModel *	xAxis			READ xAxis									NOTIFY dummyAxisChanged		)
+	Q_PROPERTY(AxisModel *	yAxis			READ yAxis									NOTIFY dummyAxisChanged		)
 
 
 public:
@@ -33,8 +37,8 @@ public:
 	QString					title()		const { return _title;		}
 	int						width()		const { return _width;		}
 	int						height()	const { return _height;		}
-	PlotEditorAxisModel *	xAxis()		const { return _xAxis;		}
-	PlotEditorAxisModel *	yAxis()		const { return _yAxis;		}
+	AxisModel *	xAxis()		const { return _xAxis;		}
+	AxisModel *	yAxis()		const { return _yAxis;		}
 	void					reset();
 
 signals:
@@ -59,6 +63,8 @@ public slots:
 	void somethingChanged() const;
 	void refresh();
 
+	QString clickHitsElement(double x, double y) const;
+
 private:
 	void		processImgOptions();
 	Json::Value generateImgOptions()	const;
@@ -67,8 +73,9 @@ private:
 private:
 	Analyses			*	_analyses		= nullptr;
 	Analysis			*	_analysis		= nullptr;
-	PlotEditorAxisModel *	_xAxis			= nullptr,
+	AxisModel			*	_xAxis			= nullptr,
 						*	_yAxis			= nullptr;
+	Coordinates				_coordinates;
 
 	Json::Value				_editOptions	= Json::nullValue,
 							_imgOptions		= Json::nullValue;
@@ -81,6 +88,8 @@ private:
 							_height,
 							_analysisId;
 };
+
+}
 
 #endif // PLOTEDITORMODEL_H
 

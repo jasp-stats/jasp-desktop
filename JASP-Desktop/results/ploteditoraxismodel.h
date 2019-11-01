@@ -5,7 +5,10 @@
 #include "jsonredirect.h"
 #include <vector>
 
-class PlotEditorAxisModel : public QAbstractTableModel
+namespace PlotEditor
+{
+
+class AxisModel : public QAbstractTableModel
 {
 	Q_OBJECT
 	Q_PROPERTY(QString	title		READ title		WRITE setTitle		NOTIFY titleChanged		)
@@ -13,7 +16,7 @@ class PlotEditorAxisModel : public QAbstractTableModel
 	Q_PROPERTY(bool		transposed	READ transposed	WRITE setTransposed	NOTIFY transposedChanged)
 
 public:
-	PlotEditorAxisModel(QObject * parent, bool transposed);
+	AxisModel(QObject * parent, bool transposed);
 
 	int					rowCount(const QModelIndex &parent = QModelIndex())									const	override;
 	int					columnCount(const QModelIndex &parent = QModelIndex())								const	override;
@@ -51,7 +54,8 @@ private:
 	Json::Value				_axis		= Json::objectValue;
 
 	//add expands as well?
-
 };
+
+}
 
 #endif // PLOTEDITORAXISMODEL_H

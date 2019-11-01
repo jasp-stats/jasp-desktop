@@ -48,6 +48,8 @@ void Log::setDefaultDestination(logType newDestination)
 
 void Log::setWhere(logType where)
 {
+	log() << std::flush;
+
 	if(where == _where)
 		return;
 
@@ -127,21 +129,25 @@ void Log::parseLogCfgMsg(const Json::Value & json)
 	setWhere(logTypeFromString(json["where"].asString()));
 }
 
-std::string Log::getTimestamp()
+const char * Log::getTimestamp()
 {
 	static char buf[13];
 	static auto startTime = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
+
 	std::chrono::milliseconds duration = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now()) - startTime;
-	long durationMilli = (std::chrono::duration_cast<std::chrono::milliseconds>(duration)).count();
-	int milli = durationMilli % 1000;
-	long durationSec = durationMilli / 1000;
-	int sec = durationSec % 60;
-	long durationMin = durationSec / 60;
-	int min = durationMin % 60;
-	long durationHour = durationMin / 60;
-	int hour = durationHour % 60;
+
+	long	durationMilli	= (std::chrono::duration_cast<std::chrono::milliseconds>(duration)).count(),
+			durationSec		= durationMilli / 1000,
+			durationMin		= durationSec	/ 60,
+			durationHour	= durationMin	/ 60;
+
+	int	milli	= durationMilli % 1000,
+		sec		= durationSec	% 60,
+		min		= durationMin	% 60,
+		hour	= durationHour	% 60;
 
 	std::sprintf(buf, "%02u:%02u:%02u.%03u", hour, min, sec, milli);
+
 	return buf;
 }
 

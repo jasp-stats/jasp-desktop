@@ -1,11 +1,14 @@
 #include "ploteditoraxismodel.h"
 #include "utilities/qutils.h"
 
-PlotEditorAxisModel::PlotEditorAxisModel(QObject * parent, bool transposed)
+namespace PlotEditor
+{
+
+AxisModel::AxisModel(QObject * parent, bool transposed)
 	: QAbstractTableModel(parent), _transposed(transposed)
 { }
 
-void PlotEditorAxisModel::setAxisData(const Json::Value & axis)
+void AxisModel::setAxisData(const Json::Value & axis)
 {
 	_axis = axis;
 	beginResetModel();
@@ -58,7 +61,7 @@ void PlotEditorAxisModel::setAxisData(const Json::Value & axis)
 	endResetModel();
 }
 
-Json::Value PlotEditorAxisModel::getAxisData() const
+Json::Value AxisModel::getAxisData() const
 {
 	Json::Value		axis	= _axis;
 
@@ -89,7 +92,7 @@ Json::Value PlotEditorAxisModel::getAxisData() const
 	return axis;
 }
 
-void PlotEditorAxisModel::setTitle(QString title)
+void AxisModel::setTitle(QString title)
 {
 	if (_title == title)
 		return;
@@ -99,23 +102,23 @@ void PlotEditorAxisModel::setTitle(QString title)
 	emit somethingChanged();
 }
 
-int PlotEditorAxisModel::rowCount(const QModelIndex &) const
+int AxisModel::rowCount(const QModelIndex &) const
 {
 	return _transposed ? 2 : int(std::max(_breaks.size(), _labels.size()));
 }
 
-int PlotEditorAxisModel::columnCount(const QModelIndex &) const
+int AxisModel::columnCount(const QModelIndex &) const
 {
 	return _transposed ? int(std::max(_breaks.size(), _labels.size())) : 2;
 }
 
-void PlotEditorAxisModel::getEntryAndBreaks(size_t & entry, bool & breaks, const QModelIndex & index) const
+void AxisModel::getEntryAndBreaks(size_t & entry, bool & breaks, const QModelIndex & index) const
 {
 	entry	= size_t( _transposed ? index.column()	: index.row()	);
 	breaks	=		( _transposed ? index.row()		: index.column()) == 0;
 }
 
-QVariant PlotEditorAxisModel::data(const QModelIndex &index, int role) const
+QVariant AxisModel::data(const QModelIndex &index, int role) const
 {
 	if(role != Qt::DisplayRole || index.row() < 0 || index.row() >= rowCount() || index.column() < 0 || index.column() >= columnCount())
 		return QVariant();
@@ -129,7 +132,7 @@ QVariant PlotEditorAxisModel::data(const QModelIndex &index, int role) const
 
 }
 
-QVariant PlotEditorAxisModel::headerData ( int section, Qt::Orientation orientation, int role) const
+QVariant AxisModel::headerData ( int section, Qt::Orientation orientation, int role) const
 {
 	if(_transposed == (orientation == Qt::Horizontal) || role != Qt::DisplayRole)
 		return QVariant();
@@ -138,7 +141,7 @@ QVariant PlotEditorAxisModel::headerData ( int section, Qt::Orientation orientat
 	return "Labels";
 }
 
-bool PlotEditorAxisModel::setData(const QModelIndex &index, const QVariant &value, int)
+bool AxisModel::setData(const QModelIndex &index, const QVariant &value, int)
 {
 	if(index.row() < 0 || index.row() >= rowCount() || index.column() < 0 || index.column() >= columnCount())
 		return false;
@@ -193,12 +196,12 @@ bool PlotEditorAxisModel::setData(const QModelIndex &index, const QVariant &valu
 	}
 }
 
-Qt::ItemFlags PlotEditorAxisModel::flags(const QModelIndex &) const
+Qt::ItemFlags AxisModel::flags(const QModelIndex &) const
 {
 	return Qt::ItemIsEnabled | Qt::ItemIsEditable;
 }
 
-void PlotEditorAxisModel::setType(QString type)
+void AxisModel::setType(QString type)
 {
 	if (_type == type)
 		return;
@@ -208,11 +211,13 @@ void PlotEditorAxisModel::setType(QString type)
 	emit somethingChanged();
 }
 
-void PlotEditorAxisModel::setTransposed(bool transposed)
+void AxisModel::setTransposed(bool transposed)
 {
 	if (_transposed == transposed)
 		return;
 
 	_transposed = transposed;
 	emit transposedChanged(_transposed);
+}
+
 }

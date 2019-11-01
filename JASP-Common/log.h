@@ -31,9 +31,9 @@ public:
 
 
 private:
-				Log() { }
-	static void redirectStdOut();
-	static std::string getTimestamp();
+						Log() { }
+	static void			redirectStdOut();
+	static const char * getTimestamp();
 
 	static logType		_default;
 	static logType		_where;
