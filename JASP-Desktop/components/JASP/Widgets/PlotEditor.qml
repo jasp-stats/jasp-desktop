@@ -171,7 +171,7 @@ Popup
 
 							MouseArea
 							{
-								// To Do Vincent Pedeta: For now we will just work with a single MouseArea that handles the clicks. It will just show a pointing hand all the time
+								// To Do Vincent Pedata: For now we will just work with a single MouseArea that handles the clicks. It will just show a pointing hand all the time
 								// Later we can make it so that it only shows the pointing hand when it overlaps a clickable element (which informs the user and makes it feel a bit more interactive)
 								id:				elementPicker
 								anchors.fill:	parent
@@ -181,11 +181,11 @@ Popup
 									var x = mouse.x; //real and relative to mouseArea
 									var y = mouse.y; //real
 
-									// To Do Vincent Pedeta: Make sure that the x and y here are scaled properly for your coordinates
+									// To Do Vincent Pedata: Make sure that the x and y here are scaled properly for your coordinates
 									var pickedElement = plotEditorModel.clickHitsElement(x, y);
 
 									if(pickedElement !== "")
-										message("Element " + pickedElement + " was picked!"); // To Do Vincent Pedeta: This should obviously be something more than just a msg :p
+										message("Element " + pickedElement + " was picked!"); // To Do Vincent Pedata: This should obviously be something more than just a msg :p
 								}
 
 							}
