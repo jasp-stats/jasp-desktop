@@ -95,7 +95,7 @@ test_that("Submodel summary statistics table matches", {
 test_that("Analysis handles errors - Infinity", {
   set.seed(0)
   options <- initOpts()
-  options$factors <- "contBinom"
+  options$factors <- c("contBinom", "facFive")
   options$counts <- "debInf"
   results <- jasptools::run("RegressionLogLinearBayesian", "test.csv", options)
   status <- results[["status"]]
@@ -105,7 +105,7 @@ test_that("Analysis handles errors - Infinity", {
 test_that("Analysis handles errors - Missing values (factor)", {
   set.seed(0)
   options <- initOpts()
-  options$factors <- "debBinMiss20"
+  options$factors <- c("debBinMiss20", "contBinom")
   options$modelTerms <- list(
     list(components="debBinMiss20")
   )
