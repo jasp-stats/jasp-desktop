@@ -37,7 +37,7 @@
 #include "widgets/boundqmllistviewterms.h"
 #include "widgets/boundqmllistviewmeasurescells.h"
 #include "widgets/boundqmllistviewlayers.h"
-#include "widgets/boundqmlnetworkfactors.h"
+#include "widgets/boundqmlinputlist.h"
 #include "widgets/boundqmlrepeatedmeasuresfactors.h"
 #include "widgets/boundqmlfactorsform.h"
 #include "widgets/boundqmltableview.h"
@@ -139,7 +139,7 @@ QMLItem* AnalysisForm::buildQMLItem(QQuickItem* quickItem, qmlControlType& contr
 	case qmlControlType::TextArea:						control		= new BoundQMLTextArea(quickItem,		this);	break;
 	case qmlControlType::ComboBox:						control		= new BoundQMLComboBox(quickItem,		this);	break;
 	case qmlControlType::RepeatedMeasuresFactorsList:	control		= new BoundQMLRepeatedMeasuresFactors(quickItem, this); break;
-	case qmlControlType::NetworkFactorsList:			control		= new BoundQMLNetworkFactors(quickItem, this); break;
+	case qmlControlType::InputListView:			control		= new BoundQMLInputList(quickItem, this); break;
 	case qmlControlType::FactorsForm:					control		= new BoundQMLFactorsForm(quickItem,	this);	break;
 	case qmlControlType::TableView:						control		= new BoundQMLTableView(quickItem,		this);	break;
 	case qmlControlType::VariablesListView:				control		= nullptr;										break; // Cannot build the control here. We need more information to get the right VariableList object.
@@ -229,9 +229,9 @@ void AnalysisForm::_parseQML()
 			_modelMap[controlName]						= factorList->model();
 			break;
 		}
-		case qmlControlType::NetworkFactorsList:
+		case qmlControlType::InputListView:
 		{
-			BoundQMLNetworkFactors* factorList = dynamic_cast<BoundQMLNetworkFactors*>(control);
+			BoundQMLInputList* factorList = dynamic_cast<BoundQMLInputList*>(control);
 			_modelMap[controlName] = factorList->model();
 			break;
 		}

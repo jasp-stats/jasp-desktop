@@ -16,6 +16,7 @@ Group	             1.0 GroupBox.qml
 GroupBox            1.0 GroupBox.qml
 IntegerField         1.0 IntegerField.qml
 JASPControl           1.0 JASPControl.qml
+JASPListControl        1.0 JASPListControl.qml
 JASPDataView           1.0 JASPDataView.qml
 JASPScrollBar           1.0 JASPScrollBar.qml
 Label                    1.0 Label.qml
@@ -24,7 +25,7 @@ CIField                    1.0 CIField.qml
 RadioButton                 1.0 RadioButton.qml
 RadioButtonGroup             1.0 RadioButtonGroup.qml
 RepeatedMeasuresFactorsList   1.0 RepeatedMeasuresFactorsList.qml
-NetworkFactorsList            1.0 NetworkFactorsList.qml
+InputListView                  1.0 InputListView.qml
 Slider                       1.0 Slider.qml
 Switch                      1.0 Switch.qml
 TableView                  1.0 TableView.qml
@@ -33,6 +34,7 @@ TextArea                 1.0 TextArea.qml
 VariablesForm           1.0 VariablesForm.qml
 VariablesList          1.0 VariablesList.qml
 ExtraControlColumn    1.0 ExtraControlColumn.qml
+ExtraControls        1.0 ExtraControls.qml
 ComputedColumnField  1.0 ComputedColumnField.qml
 AddColumnField      1.0 AddColumnField.qml
 HelpButton         1.0 HelpButton.qml

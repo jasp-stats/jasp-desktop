@@ -39,13 +39,9 @@ public:
 protected:
 	ListModelAvailableInterface*		_availableModel;
 	std::string							_optionKeyName;
-	bool								_hasExtraControls	= false;
-	std::string							_optionNuisanceName;
-	bool								_hasNuisanceControl = false;
 	
 private:
 	Terms								_tempTerms;
-	QVector<QMap<QString, QVariant> >	_extraControlColumns;
 	
 };
 

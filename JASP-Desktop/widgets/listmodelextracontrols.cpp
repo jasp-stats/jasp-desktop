@@ -29,8 +29,8 @@
 
 #include <QQuickItem>
 
-ListModelExtraControls::ListModelExtraControls(ListModelAssignedInterface* parent, const QVector<QMap<QString, QVariant> >& controlColumns)
-	: QAbstractTableModel(parent), _assignedModel(parent)
+ListModelExtraControls::ListModelExtraControls(ListModel* parent, const QVector<QMap<QString, QVariant> >& controlColumns)
+	: QAbstractTableModel(parent), _parentModel(parent)
 {
 	for (QMap<QString, QVariant> controlColumn: controlColumns)
 	{
@@ -40,9 +40,9 @@ ListModelExtraControls::ListModelExtraControls(ListModelAssignedInterface* paren
 		controlColumn.remove("type");
 		
 		if (name.isEmpty())
-			_assignedModel->addError(QString::fromLatin1("An Extra column in ") + parent->name() + QString::fromLatin1(" has no name"));
+			_parentModel->addError(QString::fromLatin1("An Extra column in ") + parent->name() + QString::fromLatin1(" has no name"));
 		else if (type.isEmpty())
-			_assignedModel->addError(QString::fromLatin1("An Extra column in ") + parent->name() + QString::fromLatin1(" has no type"));
+			_parentModel->addError(QString::fromLatin1("An Extra column in ") + parent->name() + QString::fromLatin1(" has no type"));
 		else
 		{
 			_extraColumns[name] = new ExtraColumnType(name, type, controlColumn);
@@ -97,7 +97,7 @@ void ListModelExtraControls::controlLoaded(QString name, QVariant item)
 		else
 		{
 			qmlControlType controlType;
-			boundItem = dynamic_cast<BoundQMLItem*>(_assignedModel->listView()->form()->buildQMLItem(quickItem, controlType));
+			boundItem = dynamic_cast<BoundQMLItem*>(_parentModel->listView()->form()->buildQMLItem(quickItem, controlType));
 			if (boundItem)
 			{
 				boundItem->setUp();

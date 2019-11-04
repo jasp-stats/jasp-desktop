@@ -277,7 +277,6 @@ HEADERS += \
     utilities/languagemodel.h \
     utilities/simplecryptkey.h \
     data/labelfiltergenerator.h \
-    widgets/boundqmlnetworkfactors.h \
     widgets/filemenu/filemenuobject.h \
     widgets/filemenu/datalibrary.h \
     widgets/filemenu/filesystem.h \
@@ -295,7 +294,6 @@ HEADERS += \
     widgets/boundqmlcombobox.h \
     widgets/listmodelanovacustomcontrasts.h \
     widgets/listmodeljagsdatainput.h \
-    widgets/listmodelnetworkfactors.h \
     widgets/listmodelpairsassigned.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
@@ -367,7 +365,10 @@ HEADERS += \
     data/labelmodel.h \
     results/ploteditormodel.h \
     results/ploteditoraxismodel.h \
-    results/ploteditorcoordinates.h
+    results/ploteditorcoordinates.h \
+    widgets/boundqmlinputlist.h \
+    widgets/extracontrolsinfo.h \
+    widgets/listmodelinputvalue.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -454,7 +455,6 @@ SOURCES += \
     utilities/simplecrypt.cpp \
     utilities/languagemodel.cpp \
     data/labelfiltergenerator.cpp \
-    widgets/boundqmlnetworkfactors.cpp \
     widgets/filemenu/filemenuobject.cpp \
     widgets/filemenu/datalibrary.cpp \
     widgets/filemenu/filesystem.cpp \
@@ -471,7 +471,6 @@ SOURCES += \
     widgets/boundqmlcombobox.cpp \
     widgets/listmodelanovacustomcontrasts.cpp \
     widgets/listmodeljagsdatainput.cpp \
-    widgets/listmodelnetworkfactors.cpp \
     widgets/listmodelpairsassigned.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \
@@ -542,7 +541,10 @@ SOURCES += \
     data/labelmodel.cpp \
     results/ploteditormodel.cpp \
     results/ploteditoraxismodel.cpp \
-    results/ploteditorcoordinates.cpp
+    results/ploteditorcoordinates.cpp \
+    widgets/boundqmlinputlist.cpp \
+    widgets/extracontrolsinfo.cpp \
+    widgets/listmodelinputvalue.cpp
 
 
 RESOURCES += \

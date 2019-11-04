@@ -74,8 +74,8 @@ Item
 			{
 				allAssignedVariablesList[index]	.activeFocusChanged.connect(		item.setIconToLeft);
 				availableVariablesList			.activeFocusChanged.connect(		item.setIconToRight);
-				allAssignedVariablesList[index]	.haveSelectedItemsChanged.connect(	item.setState);
-				availableVariablesList			.haveSelectedItemsChanged.connect(	item.setState);
+				allAssignedVariablesList[index]	.hasSelectedItemsChanged.connect(	item.setState);
+				availableVariablesList			.hasSelectedItemsChanged.connect(	item.setState);
 				
 				if (interactionAssign)
 				{

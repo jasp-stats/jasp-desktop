@@ -22,13 +22,16 @@
 #include "interactionmodel.h"
 #include "boundqmltextarea.h"
 #include "log.h"
-#include <QQmlProperty>
+#include "extracontrolsinfo.h"
 
 QMLListView::QMLListView(QQuickItem *item, AnalysisForm *form) 
 	: QObject(form)
 	, _needsSourceModels(false)
 	  
 {
+	_extraControlsInfo.read(this);
+	_hasExtraControls = _extraControlsInfo.values().length() > 0;
+
 	_setAllowedVariables();
 }
 
@@ -160,12 +163,15 @@ void QMLListView::setUp()
 	ListModel* listModel = model();
 	if (!listModel)
 		return;
+
+	listModel->addExtraControls(_extraControlsInfo.values());
 	setSources();
 
 	if (!getItemProperty("source").isNull())
 		QQuickItem::connect(_item, SIGNAL(sourceChanged()), this, SLOT(sourceChangedHandler()));
 
 	connect(listModel, &ListModel::modelChanged, this, &QMLListView::modelChangedHandler);
+
 	setItemProperty("model", QVariant::fromValue(listModel));	
 }
 
