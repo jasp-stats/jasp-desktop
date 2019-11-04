@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
@@ -16,35 +16,41 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef BOUNDQMLNETWORKFACTORS_H
-#define BOUNDQMLNETWORKFACTORS_H
+#ifndef BOUNDQMLINPUTLIST_H
+#define BOUNDQMLINPUTLIST_H
 
 #include "analysis/boundqmlitem.h"
-#include "listmodelnetworkfactors.h"
+#include "listmodelinputvalue.h"
 #include "qmllistview.h"
 #include "analysis/options/optionstable.h"
 
-class BoundQMLNetworkFactors :  public QMLListView, public BoundQMLItem
+class BoundQMLInputList :  public QMLListView, public BoundQMLItem
 {
 	Q_OBJECT
 	
 public:
-	BoundQMLNetworkFactors(QQuickItem* item, AnalysisForm* form);	
+	BoundQMLInputList(QQuickItem* item, AnalysisForm* form);	
 
-	ListModel*	model()										override { return _groupsModel; }
+	ListModel*	model()										override { return _inputModel; }
 	Option*		boundTo()									override { return _boundTo; }
 	void		bindTo(Option *option)						override;
 	Option*		createOption()								override;
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue)	override;
+	void		bindExtraControlOptions()					override;
 
 protected slots:
 	void modelChangedHandler() override;
 	
 private:
-	ListModelNetworkFactors*	_groupsModel;
+	void		_checkOptionTemplate();
+
+private:
+	ListModelInputValue*		_inputModel;
 	OptionsTable*				_boundTo;
+	std::string					_optionKeyName;
+	std::vector<std::string>	_defaultValues;
 	
 };
 
-#endif // BOUNDQMLNETWORKFACTORS_H
+#endif // BOUNDQMLINPUTLIST_H

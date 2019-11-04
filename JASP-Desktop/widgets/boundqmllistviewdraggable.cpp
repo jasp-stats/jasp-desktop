@@ -25,72 +25,14 @@
 #include "analysis/options/optionboolean.h"
 #include "analysis/options/optionlist.h"
 #include "analysis/options/optionstring.h"
+#include "extracontrolsinfo.h"
 
 #include <QQuickItem>
-#include <QQmlProperty>
-
-#include <QTimer>
 
 BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisForm *form)
 	: QMLListViewDraggable(item, form)
 	, BoundQMLItem()
 {
-	QStringList extraControlTitles;
-	
-	QList<QVariant> extraControlColumnsVariants = QQmlProperty(_item, "extraControlColumns").read().toList();
-	for (const QVariant& extraControlColumnVariant : extraControlColumnsVariants)
-	{
-		QMap<QString, QVariant> properties;
-		
-		QObject* extraControlColumnObject = extraControlColumnVariant.value<QObject*>();
-		const QMetaObject *meta = extraControlColumnObject->metaObject();
-		int propertyCount = meta->propertyCount();
-		for (int i = 0; i < propertyCount; ++i)
-		{
-			QMetaProperty property = meta->property(i);
-			QString key = QString::fromLatin1(property.name());
-			QVariant value = property.read(extraControlColumnObject);
-			if (key == "purpose")
-			{
-				if (value.toString() == "nuisance")
-					_hasNuisanceControl = true;
-			}
-			else if (key == "title")
-			{
-				QString title = value.toString();
-				if (!title.isEmpty())
-					extraControlTitles.push_back(value.toString());
-			}
-			else if (key != "properties")
-			{
-				if (key == "type" && value.toString() == "DropDown")
-					// DropDown is an alias to ComboBox
-					value = "ComboBox";
-				properties[key] = value;
-			}
-			else
-			{
-				QMap<QString, QVariant> map = value.toMap();
-				QMapIterator<QString, QVariant> it(map);
-				while (it.hasNext())
-				{
-					it.next();
-					properties[it.key()] = it.value();
-				}
-
-			}
-		}
-
-		if (_hasNuisanceControl)
-			_optionNuisanceName = properties["name"].toString().toStdString();
-		_extraControlColumns.push_back(properties);
-	}
-	
-	if (_extraControlColumns.length() > 0)
-	{
-		_item->setProperty("extraControlTitles", extraControlTitles);
-		_hasExtraControls = true;
-	}
 }
 
 void BoundQMLListViewDraggable::setUp()
@@ -121,10 +63,7 @@ void BoundQMLListViewDraggable::setUp()
 			}
 			connect(_availableModel, &ListModelAvailableInterface::allAvailableTermsChanged, _assignedModel, &ListModelAssignedInterface::availableTermsChanged);
 		}
-	}
-	
-	_assignedModel->addExtraControls(_extraControlColumns);
-	
+	}	
 }
 
 ListModelAssignedInterface* BoundQMLListViewDraggable::assignedModel()

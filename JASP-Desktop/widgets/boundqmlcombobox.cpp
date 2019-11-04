@@ -28,16 +28,11 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form)
 	, QMLListView(item, form)
 	, BoundQMLItem()
 {
-	initComboBox();
-}
-
-void BoundQMLComboBox::initComboBox()
-{
-	_currentIndex = getItemProperty("currentIndex").toInt();
-	bool addEmptyValue = getItemProperty("addEmptyValue").toBool();
-	
+	_currentIndex = getItemProperty("currentIndex").toInt();	
 	_model = new ListModelTermsAvailable(this);
-	if (addEmptyValue)
+
+	connect(_model, &ListModelTermsAvailable::allAvailableTermsChanged, this, &BoundQMLComboBox::modelChangedHandler);
+	if (getItemProperty("addEmptyValue").toBool())
 		_model->addEmptyValue();
 
 	QVariant model = getItemProperty("model");
@@ -46,7 +41,7 @@ void BoundQMLComboBox::initComboBox()
 
 	if (model.isNull())
 	{
-		if (sourceModels().isEmpty())
+		if (getItemProperty("source").isNull())
 			_modelHasAllVariables = true;
 	}
 	else
@@ -209,6 +204,12 @@ bool BoundQMLComboBox::isJsonValid(const Json::Value &optionValue)
 void BoundQMLComboBox::setUp()
 {
 	QMLListView::setUp();
+
+	if (hasSource())
+	{
+		_model->resetTermsFromSourceModels(false);
+		_resetItemWidth();
+	}
 	
 	_setCurrentValue(_currentIndex, true, false);
 	setItemProperty("initialized", true);
@@ -235,7 +236,9 @@ void BoundQMLComboBox::modelChangedHandler()
 	if (!found)
 	{
 		index = -1;
-		if (terms.size() > 0U)
+		if (terms.size() > _currentIndex)
+			index = _currentIndex;
+		else if (terms.size() > 0U)
 			index = 0;
 	}
 	

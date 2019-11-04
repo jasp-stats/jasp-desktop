@@ -16,41 +16,36 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELNETWORKFACTORS_H
-#define LISTMODELNETWORKFACTORS_H
+#ifndef LISTMODELINPUTVALUE_H
+#define LISTMODELINPUTVALUE_H
 
 #include "listmodel.h"
 
-class ListModelNetworkFactors : public ListModel
+class ListModelInputValue : public ListModel
 {
 	Q_OBJECT
 public:
 	
-	ListModelNetworkFactors(QMLListView* listView);
+	ListModelInputValue(QMLListView* listView, int minimumItems = 0);
 	
 	int							rowCount(const QModelIndex &parent = QModelIndex())				const	override;
 	QVariant					data(const QModelIndex &index, int role = Qt::DisplayRole)		const	override;
-	void						initGroups(const std::vector<std::string> &groups);
-	std::vector<std::string>	getGroups();
-
+	void						initTerms(const Terms &terms)											override;
+	void						setAddVirtual(bool addVirtual, QString placeholder = "") { _addVirtual = addVirtual; _placeholder = placeholder; }
 
 public slots:
 	void itemChanged(int row, QVariant value);
 	void itemRemoved(int row);
 		
 protected:
+	void			_removeTerm(int row);
+	QString			_makeUnique(const QString& val, int row = -1);
+	QString			_changeLastNumber(const QString& val);
 
-	struct Group
-	{
-		QString		value;
-		bool		isVirtual;
-
-		Group(const QString&		_value,	bool _isVirtual) : value(_value),							isVirtual(_isVirtual) {}
-		Group(const std::string&	_value,	bool _isVirtual) : value(QString::fromStdString(_value)),	isVirtual(_isVirtual) {}
-	};
-	QList<Group>	_groups;
-	QString			_removeGroup(int row);
+	bool			_addVirtual = true;
+	int				_minimumItems = 0;
+	QString			_placeholder = tr("New Value");
 
 };
 
-#endif // LISTMODELNETWORKFACTORS_H
+#endif // LISTMODELINPUTVALUE_H

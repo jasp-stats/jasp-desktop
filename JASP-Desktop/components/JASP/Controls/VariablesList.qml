@@ -24,71 +24,62 @@ import QtQml.Models 2.2
 import JASP.Widgets 1.0
 import QtQuick.Layouts 1.3
 
-JASPControl
+JASPListControl
 {
 	id:						variablesList
 	controlType:			"VariablesListView"
-	background:				variablesListRectangle
-	width:					parent.width
-	implicitWidth:			width
-	height:					singleVariable ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
-	implicitHeight:			height
-	useControlMouseArea:	false
-	
-	property var	model
-	property string title
-	property alias	label:								variablesList.title
-	property alias	count:								listView.count
-	property var	source
-	property int	columns:							1
-	property string itemType:							"variables"
-	property alias	dropKeys:							dropArea.keys
-	property string	dropMode:							"None"
-	property bool	draggable:							true
-	property alias	syncModels:							variablesList.source
-	property bool	showSortMenu:						true
-	property string listViewType:						"AvailableVariables"
-	property var	sortMenuModel:						null
-	property alias	selectedItems:						listView.selectedItems
-	property var	allowedColumns:						[]
-	property bool	dropModeInsert:						dropMode === "Insert"
-	property bool	singleVariable:						false
-	property bool	setWidthInForm:						false
-	property bool	setHeightInForm:					false
-	property bool	dropModeReplace:					dropMode === "Replace"
-	property var	suggestedColumns:					[]
-	property bool	showElementBorder:					false
-	property bool	dragOnlyVariables:					false
-	property var	selectedItemsTypes:					[]
-	property bool	showVariableTypeIcon:				true
-	property bool	mustContainLowerTerms:				true
-	property bool	addAvailableVariablesToAssigned:	listViewType === "Interaction"
+	height:					singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultVariablesFormHeight
+	itemComponent:			itemVariableComponent
+
+	property string itemType:			"variables"
+	property alias	dropKeys:			dropArea.keys
+	property string	dropMode:			"None"
+	property bool	draggable:			true
+	property var	sortMenuModel:		null
+	property bool	showSortMenu:		true
+	property bool	singleVariable:		false
+	property string listViewType:		"AvailableVariables"
+	property var	allowedColumns:		[]
+	property bool	dropModeInsert:		dropMode === "Insert"
+	property bool	dropModeReplace:	dropMode === "Replace"
+	property var	selectedItemsTypes:	[]
+	property var	suggestedColumns:	[]
+	property bool	showElementBorder:	false
+	property bool	dragOnlyVariables:	false
+	property bool	showVariableTypeIcon:	true
+	property bool	setWidthInForm:		false
+	property bool	setHeightInForm:	false
+	property bool	mustContainLowerTerms: true
+	property bool	addAvailableVariablesToAssigned: listViewType === "Interaction"
 	
 	property var	interactionControl
-	property bool	addInteractionOptions:				false
-	
-	property var	extraControlColumns:				[]
-	property var	extraControlComponents:				[]
-	property string extraControlOptionName:				""
-	property alias	extraControlTitles:					titles.model
-	
+	property bool	addInteractionOptions:	false
+
 	property int	indexInDroppedListViewOfDraggedItem:	-1
 	
-	readonly property int rectangleY: variablesListRectangle.y
+	readonly property int rectangleY: listRectangle.y
+
+	property int	startShiftSelected:	0
+	property int	endShiftSelected:	-1
+	property var	selectedItems:		[]
+	property bool	mousePressed:		false
+	property bool	shiftPressed:		false
+	property var	draggingItems:		[]
+	property var	itemContainingDrag
 	
 	signal itemDoubleClicked(int index);
 	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
-	signal haveSelectedItemsChanged();
+	signal hasSelectedItemsChanged();
 	signal draggingChanged(var context, bool dragging);
 
 	function setSelectedItems()
 	{
-		var items = listView.getExistingItems()
+		var items = variablesList.getExistingItems()
 		variablesList.selectedItemsTypes = []
 		for (var i = 0; i < items.length; i++)
 		{
 			var item = items[i]
-			if (listView.selectedItems.includes(item.rank))
+			if (variablesList.selectedItems.includes(item.rank))
 			{
 				item.selected = true
 				if (!variablesList.selectedItemsTypes.includes(item.columnType))
@@ -98,7 +89,7 @@ JASPControl
 				item.selected = false;
 		}
 
-		haveSelectedItemsChanged();
+		hasSelectedItemsChanged();
 	}
 
 	function setEnabledState(source, dragging)
@@ -124,395 +115,290 @@ JASPControl
 		}
 
 		// Do not use variablesList.enabled: this may break the binding if the developer used it in his QML form.
-		variablesListRectangle.enabled = result
-		variablesListTitle.enabled = result
+		listRectangle.enabled = result
+		listTitle.enabled = result
 	}
 
 
 	function moveSelectedItems(target)
 	{
-		if (listView.selectedItems.length === 0) return;
+		if (variablesList.selectedItems.length === 0) return;
 
 		var assignOption = (target && target.interactionControl) ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
 		itemsDropped(selectedItems, target, -1, assignOption);
-		listView.clearSelectedItems(true);
+		variablesList.clearSelectedItems(true);
 	}
 
-	Text
+
+
+	function getExistingItems()
 	{
-		id:				variablesListTitle
-		anchors.top:	parent.top
-		anchors.left:	parent.left
-		text:			title
-		height:			title ? jaspTheme.variablesListTitle : 0
-		font:			jaspTheme.font
-		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-		
-	}
-	
-	Row
-	{
-		width:				parent.width
-		anchors.top:		variablesList.top;
-		spacing:			5
-		layoutDirection:	Qt.RightToLeft
-		Repeater
+		var items = [];
+		for (var i = 0; i < listGridView.contentItem.children.length; i++)
 		{
-			id: titles;
-			Label { text: modelData }
+			var item = listGridView.contentItem.children[i];
+			if (item.children.length === 0)
+				continue;
+			item = item.children[0];
+			if (item.objectName === "itemRectangle")
+				items.push(item);
+		}
+
+		return items;
+	}
+
+	function addSelectedItem(itemRank)
+	{
+		if (selectedItems.includes(itemRank))
+			return;
+
+		selectedItems.push(itemRank);
+		selectedItems.sort();
+		variablesList.setSelectedItems()
+	}
+
+	function removeSelectedItem(itemRank)
+	{
+		var index = selectedItems.indexOf(itemRank)
+		if (index >= 0)
+		{
+			selectedItems.splice(index, 1);
+			variablesList.setSelectedItems()
 		}
 	}
-	
-	Rectangle
+
+	function clearSelectedItems(emitSignal)
 	{
-		id:				variablesListRectangle
-		anchors.top:	variablesListTitle.bottom
-		anchors.left:	parent.left
-		height:			variablesList.height - variablesListTitle.height
-		width:			parent.width
-		color:			debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
-		border.width:	1
-		border.color:	jaspTheme.borderColor
-		
-		Repeater
+		selectedItems = [];
+		if (emitSignal)
+			variablesList.setSelectedItems()
+	}
+
+	function selectShiftItems(selected)
+	{
+		var startIndex = variablesList.startShiftSelected;
+		var endIndex = variablesList.endShiftSelected;
+		if (startIndex > endIndex)
 		{
-			model: suggestedColumns
+			var temp = startIndex;
+			startIndex = endIndex;
+			endIndex = temp;
+		}
 
-
-			Image
+		if (selected)
+		{
+			for (var i = startIndex; i <= endIndex; i++)
 			{
-				source: jaspTheme.iconPath + (enabled ? iconInactiveFiles[suggestedColumns[index]] : iconDisabledFiles[suggestedColumns[index]])
-				height: 16 * preferencesModel.uiScale
-				width:	16 * preferencesModel.uiScale
-				z:		2
-				anchors
-				{
-					bottom:			variablesListRectangle.bottom;
-					bottomMargin:	4  * preferencesModel.uiScale
-					right:			variablesListRectangle.right;
-					rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
-				}
+				if (!variablesList.selectedItems.includes(i))
+					variablesList.selectedItems.push(i)
+			}
+			variablesList.selectedItems.sort();
+		}
+		else
+		{
+			for (var i = startIndex; i <= endIndex; i++)
+			{
+				var index = selectedItems.indexOf(i)
+				if (index >= 0)
+					selectedItems.splice(index, 1);
 			}
 		}
+		variablesList.setSelectedItems()
+	}
 
-		DropArea
+		
+	Repeater
+	{
+		model: suggestedColumns
+
+		Image
 		{
-			id:				dropArea
-			anchors.fill:	parent
-
-			onPositionChanged:
+			source: enabled ? iconInactiveFiles[suggestedColumns[index]] : iconDisabledFiles[suggestedColumns[index]]
+			height: 16 * preferencesModel.uiScale
+			width:	16 * preferencesModel.uiScale
+			z:		2
+			anchors
 			{
-				if (variablesList.singleVariable || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
+				bottom:			listRectangle.bottom;
+				bottomMargin:	4  * preferencesModel.uiScale
+				right:			listRectangle.right;
+				rightMargin:	(index * 20 + 4)  * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
+			}
+		}
+	}
 
-				var onTop = true;
-				var item = listView.itemAt(drag.x, drag.y + listView.contentY)
-				if (item && item.children.length > 0)
-					item = item.children[0];
-				if (!item || item.objectName !== "itemRectangle")
+	DropArea
+	{
+		id:				dropArea
+		anchors.fill:	listRectangle
+
+		onPositionChanged:
+		{
+			if (variablesList.singleVariable || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
+
+			var onTop = true;
+			var item = listGridView.itemAt(drag.x, drag.y + listGridView.contentY)
+			if (item && item.children.length > 0)
+				item = item.children[0];
+			if (!item || item.objectName !== "itemRectangle")
+			{
+				if (listGridView.count > 0)
 				{
-					if (listView.count > 0)
+					var items = variablesList.getExistingItems();
+					if (items.length > 0)
 					{
-						var items = listView.getExistingItems();
-						if (items.length > 0)
+						var lastItem = items[items.length - 1];
+						if (lastItem.rank === (listGridView.count - 1) && drag.y > (lastItem.height * listGridView.count))
 						{
-							var lastItem = items[items.length - 1];
-							if (lastItem.rank === (listView.count - 1) && drag.y > (lastItem.height * listView.count))
-							{
-								item = lastItem
-								onTop = false;
-							}
+							item = lastItem
+							onTop = false;
 						}
 					}
 				}
-				if (item && item.objectName === "itemRectangle")
-				{
-					dropLine.parent = item
-					dropLine.visible = true
-					dropLine.onTop = onTop
-					listView.itemContainingDrag = item
-					variablesList.indexInDroppedListViewOfDraggedItem = onTop ? item.rank : -1
-				}
-				else
-				{
-					dropLine.visible = false
-					listView.itemContainingDrag = null
-					variablesList.indexInDroppedListViewOfDraggedItem = -1
-				}
 			}
-			onExited:
+			if (item && item.objectName === "itemRectangle")
+			{
+				dropLine.parent = item
+				dropLine.visible = true
+				dropLine.onTop = onTop
+				variablesList.itemContainingDrag = item
+				variablesList.indexInDroppedListViewOfDraggedItem = onTop ? item.rank : -1
+			}
+			else
 			{
 				dropLine.visible = false
-				listView.itemContainingDrag = null
+				variablesList.itemContainingDrag = null
 				variablesList.indexInDroppedListViewOfDraggedItem = -1
 			}
 		}
-
+		onExited:
+		{
+			dropLine.visible = false
+			variablesList.itemContainingDrag = null
+			variablesList.indexInDroppedListViewOfDraggedItem = -1
+		}
+	}
 		
-		Component.onCompleted:
+	Component.onCompleted:
+	{
+		var mySuggestedColumns = []
+		var myAllowedColumns = []
+
+		if (typeof suggestedColumns === "string")
+			mySuggestedColumns.push(suggestedColumns)
+		else
+			mySuggestedColumns = suggestedColumns.concat()
+		if (typeof allowedColumns === "string")
+			myAllowedColumns.push(allowedColumns)
+		else
+			myAllowedColumns = allowedColumns.concat()
+
+		if (mySuggestedColumns.length === 0 && myAllowedColumns.length > 0)
+			mySuggestedColumns = myAllowedColumns.concat()
+		else if (myAllowedColumns.length === 0 && mySuggestedColumns.length > 0)
 		{
-			var mySuggestedColumns = []
-			var myAllowedColumns = []
-
-			if (typeof suggestedColumns === "string")
-				mySuggestedColumns.push(suggestedColumns)
-			else
-				mySuggestedColumns = suggestedColumns.concat()
-			if (typeof allowedColumns === "string")
-				myAllowedColumns.push(allowedColumns)
-			else
-				myAllowedColumns = allowedColumns.concat()
-
-			if (mySuggestedColumns.length === 0 && myAllowedColumns.length > 0)
-				mySuggestedColumns = myAllowedColumns.concat()
-			else if (myAllowedColumns.length === 0 && mySuggestedColumns.length > 0)
+			myAllowedColumns = mySuggestedColumns.concat()
+			if (mySuggestedColumns.includes("scale"))
 			{
-				myAllowedColumns = mySuggestedColumns.concat()
-				if (mySuggestedColumns.includes("scale"))
-				{
-					if (!myAllowedColumns.includes("nominal"))
-						myAllowedColumns.push("nominal")
-					if (!myAllowedColumns.includes("ordinal"))
-						myAllowedColumns.push("ordinal")
-				}
-				if (mySuggestedColumns.includes("nominal"))
-				{
-					if (!myAllowedColumns.includes("nominalText"))
-						myAllowedColumns.push("nominalText")
-					if (!myAllowedColumns.includes("ordinal"))
-						myAllowedColumns.push("ordinal")
-				}
+				if (!myAllowedColumns.includes("nominal"))
+					myAllowedColumns.push("nominal")
+				if (!myAllowedColumns.includes("ordinal"))
+					myAllowedColumns.push("ordinal")
 			}
-			suggestedColumns = mySuggestedColumns.concat()
-			allowedColumns = myAllowedColumns.concat()
-			
-			var length = variablesList.resources.length
-			for (var i = length - 1; i >= 0; i--)
+			if (mySuggestedColumns.includes("nominal"))
 			{
-				var column = variablesList.resources[i];
-				if (column instanceof ExtraControlColumn)
-				{
-					if (!column.name)
-						form.addError(qsTr("An ExtraControlColumn in VariablesList %1 has no name defined").arg(variablesList.name))
-					if (column.type)
-					{
-						var type = column.type
-						if (type === "DropDown") type = "ComboBox"
-						var component = Qt.createComponent(type + ".qml")
-						if (component.status === Component.Error)
-							form.addError(qsTr("An ExtraControlColumn in VariablesList %1 has an unknown type: %2").arg(variablesList.name).arg(type))
-						else
-						{
-							variablesList.extraControlComponents.push(component)
-							variablesList.extraControlColumns.push(column);
-						}
-					}
-					else
-						form.addError(qsTr("An ExtraControlColumn in VariablesList %1 has no type defined").arg(variablesList.name))
-				}
+				if (!myAllowedColumns.includes("nominalText"))
+					myAllowedColumns.push("nominalText")
+				if (!myAllowedColumns.includes("ordinal"))
+					myAllowedColumns.push("ordinal")
 			}
 		}
+		suggestedColumns = mySuggestedColumns.concat()
+		allowedColumns = myAllowedColumns.concat()
+	}
+			
 
-		JASPScrollBar
+	Rectangle
+	{
+		id:				dropLine
+		height:			1
+		width:			parent ? parent.width : 0
+		anchors.top:	parent ? (onTop ? parent.top : parent.bottom) : undefined
+		anchors.left:	parent ? parent.left : undefined
+		color:			Theme.blueLighter
+		visible:		false
+
+		property bool onTop: true
+	}
+
+	SortMenuButton
+	{
+		visible: variablesList.showSortMenu && variablesList.sortMenuModel && listGridView.count > 1
+		anchors
 		{
-			id:				scrollBar
-			flickable:		listView
-			manualAnchor:	true
-			vertical:		true
-			z:				1337
-
-			anchors
-			{
-				top:		parent.top
-				right:		parent.right
-				bottom:		parent.bottom
-				margins:	2
-			}
+			top:			listRectangle.top
+			right:			listRectangle.right
+			rightMargin:	5 * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
+			topMargin:		5 * preferencesModel.uiScale
 		}
 
-		Rectangle
+		sortMenuModel: variablesList.sortMenuModel
+		scrollYPosition: backgroundForms.contentY
+	}
+			
+	listGridView.onCurrentItemChanged:
+	{
+		if (variablesList.shiftPressed)
 		{
-			id:				dropLine
-			height:			1
-			width:			parent ? parent.width : 0
-			anchors.top:	parent ? (onTop ? parent.top : parent.bottom) : undefined
-			anchors.left:	parent ? parent.left : undefined
-			color:			jaspTheme.blueLighter
-			visible:		false
-
-			property bool onTop: true
+			if (variablesList.endShiftSelected >= 0)
+				selectShiftItems(false);
+			variablesList.endShiftSelected = listGridView.currentIndex;
+			selectShiftItems(true);
 		}
-
-		SortMenuButton
+		else if (!mousePressed)
 		{
-			visible: variablesList.showSortMenu && variablesList.sortMenuModel && listView.count > 1
-			anchors
+			var itemWrapper = listGridView.currentItem;
+			if (itemWrapper)
 			{
-				top:			parent.top
-				right:			parent.right
-				rightMargin:	5 * preferencesModel.uiScale + (scrollBar.visible ? scrollBar.width : 0)
-				topMargin:		5 * preferencesModel.uiScale
-			}
-
-			sortMenuModel:		variablesList.sortMenuModel
-			scrollYPosition:	backgroundForms.contentY
-		}
-
-
-
-		GridView
-		{
-			id:						listView
-			cellHeight:				20  * preferencesModel.uiScale
-			cellWidth:				width / variablesList.columns
-			clip:					true
-			focus:					true
-			anchors.fill:			parent
-			anchors.margins:		4  * preferencesModel.uiScale
-			anchors.rightMargin:	scrollBar.width + anchors.margins
-			model:					variablesList.model
-			delegate:				itemComponent
-			boundsBehavior:			Flickable.StopAtBounds
-			
-			property int	startShiftSelected:	0
-			property int	endShiftSelected:	-1
-			property var	selectedItems:		[]
-			property bool	mousePressed:		false
-			property bool	shiftPressed:		false
-			property var	draggingItems:		[]
-			property var	itemContainingDrag
-			
-			onCurrentItemChanged:
-			{
-				if (shiftPressed)
-				{
-					if (endShiftSelected >= 0)
-						selectShiftItems(false);
-					endShiftSelected = listView.currentIndex;
-					selectShiftItems(true);
-				}
-				else if (!mousePressed)
-				{
-					var itemWrapper = listView.currentItem;
-					if (itemWrapper)
-					{
-						var itemRectangle = itemWrapper.children[0];
-						listView.clearSelectedItems(false);
-						listView.addSelectedItem(itemRectangle.rank);
-						listView.startShiftSelected = listView.currentIndex;
-						listView.endShiftSelected = -1;
-					}
-				}
-			}
-			
-			Keys.onPressed:
-			{
-				if (event.modifiers & Qt.ShiftModifier || event.key === Qt.Key_Shift)
-					shiftPressed = true;
-				else
-					shiftPressed = false;
-			}
-			
-			Keys.onReleased:
-			{
-				if (event.modifiers & Qt.ShiftModifier || event.key === Qt.Key_Shift)
-					shiftPressed = false;
-			}
-			
-			Keys.onSpacePressed:
-			{
-				moveSelectedItems()
-			}
-			Keys.onReturnPressed:
-			{
-				moveSelectedItems()
-			}
-
-			function getExistingItems()
-			{
-				var items = [];
-				for (var i = 0; i < listView.contentItem.children.length; i++)
-				{
-					var item = listView.contentItem.children[i];
-					if (item.children.length === 0)
-						continue;
-					item = item.children[0];
-					if (item.objectName === "itemRectangle")
-						items.push(item);
-				}
-
-				return items;
-			}
-			
-			function addSelectedItem(itemRank)
-			{
-				if (selectedItems.includes(itemRank))
-					return;
-				
-				selectedItems.push(itemRank);
-				selectedItems.sort();
-				variablesList.setSelectedItems()
-			}
-			
-			function removeSelectedItem(itemRank)
-			{
-				var index = selectedItems.indexOf(itemRank)
-				if (index >= 0)
-				{
-					selectedItems.splice(index, 1);
-					variablesList.setSelectedItems()
-				}
-			}
-			
-			function clearSelectedItems(emitSignal)
-			{
-				selectedItems = [];
-				if (emitSignal)
-					variablesList.setSelectedItems()
-			}
-			
-			function selectShiftItems(selected)
-			{
-				var startIndex = listView.startShiftSelected;
-				var endIndex = listView.endShiftSelected;
-				if (startIndex > endIndex)
-				{
-					var temp = startIndex;
-					startIndex = endIndex;
-					endIndex = temp;
-				}
-
-				if (selected)
-				{
-					for (var i = startIndex; i <= endIndex; i++)
-					{
-						if (!listView.selectedItems.includes(i))
-							listView.selectedItems.push(i)
-					}
-					listView.selectedItems.sort();
-				}
-				else
-				{
-					for (var i = startIndex; i <= endIndex; i++)
-					{
-						var index = selectedItems.indexOf(i)
-						if (index >= 0)
-							selectedItems.splice(index, 1);
-					}
-				}
-				variablesList.setSelectedItems()
+				var itemRectangle = itemWrapper.children[0];
+				variablesList.clearSelectedItems(false);
+				variablesList.addSelectedItem(itemRectangle.rank);
+				variablesList.startShiftSelected = listGridView.currentIndex;
+				variablesList.endShiftSelected = -1;
 			}
 		}
+	}
+			
+	Keys.onPressed:
+	{
+		if (event.key === Qt.Key_Shift)
+			variablesList.shiftPressed = true;
+	}
+
+	Keys.onReleased:
+	{
+		if (event.key === Qt.Key_Shift)
+			variablesList.shiftPressed = false;
+	}
+
+	Keys.onSpacePressed:
+	{
+		moveSelectedItems()
+	}
+	Keys.onReturnPressed:
+	{
+		moveSelectedItems()
 	}
 	
 	Component
 	{
-		id: itemComponent
+		id: itemVariableComponent
 
 		FocusScope
 		{
 			id:			itemWrapper
-			height:		listView.cellHeight
-			width:		listView.cellWidth
+			height:		listGridView.cellHeight
+			width:		listGridView.cellWidth
 			
 			Component.onDestruction:
 			{
@@ -528,21 +414,21 @@ JASPControl
 				anchors.verticalCenter:		parent.verticalCenter
 				// the height & width of itemWrapper & itemRectangle must be set independently of each other:
 				// when the rectangle is dragged, it gets another parent but it must keep the same size,
-				height:			listView.cellHeight
-				width:			listView.cellWidth
+				height:			listGridView.cellHeight
+				width:			listGridView.cellWidth
 				focus:			true
 				border.width:	containsDragItem && variablesList.dropModeReplace ? 2 : (variablesList.showElementBorder ? 1 : 0)
 				border.color:	containsDragItem && variablesList.dropModeReplace ? jaspTheme.containsDragBorderColor : jaspTheme.grayLighter
 				
 				
 				property bool clearOtherSelectedItemsWhenClicked: false
-				property bool selected:				listView.selectedItems.includes(rank)
+				property bool selected:				variablesList.selectedItems.includes(rank)
 				property bool isDependency:			variablesList.dependencyMustContain.indexOf(colName.text) >= 0
 				property bool dragging:				false
 				property int offsetX:				0
 				property int offsetY:				0
 				property int rank:					index
-				property bool containsDragItem:		listView.itemContainingDrag === itemRectangle
+				property bool containsDragItem:		variablesList.itemContainingDrag === itemRectangle
 				property bool isVirtual:			(typeof model.type !== "undefined") && model.type.includes("virtual")
 				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
 				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
@@ -601,44 +487,11 @@ JASPControl
 					font:					jaspTheme.font
 				}
 				
-				RowLayout
+				ExtraControls
 				{
-					id:						extraControls
-					anchors.verticalCenter:	parent.verticalCenter
-					anchors.right:			parent.right
-					spacing:				1
-					z:						10
-					
-					layoutDirection: Qt.RightToLeft
-					
-					Repeater
-					{
-						model: itemRectangle.extraColumnsModel
-						
-						delegate: Loader
-						{
-							sourceComponent: variablesList.extraControlComponents[index]
-							asynchronous:	false
-
-							onLoaded:
-							{
-								item.name = model.name
-								var keys = Object.keys(model.properties)
-								var values = Object.values(model.properties)
-								for (var i = 0; i < keys.length; i++) {
-									var name = keys[i]
-									if (item.hasOwnProperty(name))
-										item[name] = values[i]
-									else if (name === "rightMargin")
-										Layout.rightMargin = values[i]
-								}
-								itemRectangle.extraColumnsModel.controlLoaded(item.name, item)
-							}
-
-							onStatusChanged: if (status === Loader.Error) form.addError(qsTr("Error when trying to load control: %1").arg(sourceComponent.errorString()))
-						}
-
-					}
+					id:					extraControls
+					model:				itemRectangle.extraColumnsModel
+					controlComponents:  variablesList.extraControlComponents
 				}
 				
 				states: [
@@ -668,7 +521,7 @@ JASPControl
 				{
 					id:				mouseArea
 					anchors.fill:	parent
-					drag.target:	parent
+					drag.target:	itemRectangle.draggable ? parent : null
 					hoverEnabled:	true
 					cursorShape:	Qt.PointingHandCursor
 					
@@ -676,7 +529,7 @@ JASPControl
 					{
 						if (itemRectangle.draggable)
 						{
-							listView.clearSelectedItems(true); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
+							variablesList.clearSelectedItems(true); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
 							itemDoubleClicked(index);
 						}
 					}
@@ -685,52 +538,52 @@ JASPControl
 					{
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
 						{
-							listView.clearSelectedItems(false)
-							listView.addSelectedItem(itemRectangle.rank)
+							variablesList.clearSelectedItems(false)
+							variablesList.addSelectedItem(itemRectangle.rank)
 						}
 					}
 					
 					onPressed:
 					{
-						listView.mousePressed = true
-						listView.currentIndex = index;
+						variablesList.mousePressed = true
+						listGridView.currentIndex = index;
 						itemRectangle.clearOtherSelectedItemsWhenClicked = false
 						if (mouse.modifiers & Qt.ControlModifier)
 						{
 							if (itemRectangle.selected)
-								listView.removeSelectedItem(itemRectangle.rank)
+								variablesList.removeSelectedItem(itemRectangle.rank)
 							else
-								listView.addSelectedItem(itemRectangle.rank)
-							listView.startShiftSelected = index
-							listView.endShiftSelected = -1
+								variablesList.addSelectedItem(itemRectangle.rank)
+							variablesList.startShiftSelected = index
+							variablesList.endShiftSelected = -1
 						}
 						else if (mouse.modifiers & Qt.ShiftModifier)
 						{
-							if (listView.endShiftSelected >= 0)
-								listView.selectShiftItems(false)
-							listView.endShiftSelected = index
-							listView.selectShiftItems(true)
+							if (variablesList.endShiftSelected >= 0)
+								variablesList.selectShiftItems(false)
+							variablesList.endShiftSelected = index
+							variablesList.selectShiftItems(true)
 						}
 						else
 						{
 							itemWrapper.forceActiveFocus()
 							if (!itemRectangle.selected)
 							{
-								listView.clearSelectedItems(false);
-								listView.addSelectedItem(itemRectangle.rank);
+								variablesList.clearSelectedItems(false);
+								variablesList.addSelectedItem(itemRectangle.rank);
 							}
 							else
 							{
 								itemRectangle.clearOtherSelectedItemsWhenClicked = true;
 							}
 							
-							listView.startShiftSelected = index;
-							listView.endShiftSelected = -1;
+							variablesList.startShiftSelected = index;
+							variablesList.endShiftSelected = -1;
 						}
 					}
 					onReleased:
 					{
-						listView.mousePressed = false;
+						variablesList.mousePressed = false;
 					}
 					
 					drag.onActiveChanged:
@@ -740,20 +593,20 @@ JASPControl
 						{
 							if (itemRectangle.selected)
 							{
-								listView.draggingItems = []
-								listView.draggingItems.push(itemRectangle)
+								variablesList.draggingItems = []
+								variablesList.draggingItems.push(itemRectangle)
 								itemRectangle.dragging = true;
 
-								var items = listView.getExistingItems();
+								var items = variablesList.getExistingItems();
 								for (var i = 0; i < items.length; i++)
 								{
 									var item = items[i];
-									if (!listView.selectedItems.includes(item.rank))
+									if (!variablesList.selectedItems.includes(item.rank))
 										continue;
 
 									if (item.rank !== index)
 									{
-										listView.draggingItems.push(item)
+										variablesList.draggingItems.push(item)
 										item.dragging = true;
 										item.offsetX = item.x - itemRectangle.x;
 										item.offsetY = item.y - itemRectangle.y;
@@ -765,9 +618,9 @@ JASPControl
 						}
 						else
 						{
-							for (var i = 0; i < listView.draggingItems.length; i++)
+							for (var i = 0; i < variablesList.draggingItems.length; i++)
 							{
-								var draggingItem = listView.draggingItems[i];
+								var draggingItem = variablesList.draggingItems[i];
 								if (!draggingItem.dragging)
 									continue;
 
@@ -777,14 +630,14 @@ JASPControl
 							}
 							if (itemRectangle.Drag.target)
 							{
-								var dropTarget = itemRectangle.Drag.target.parent.parent
-								if (dropTarget.singleVariable && listView.selectedItems.length > 1)
+								var dropTarget = itemRectangle.Drag.target.parent
+								if (dropTarget.singleVariable && variablesList.selectedItems.length > 1)
 									return;
 								
 								var variablesListName = variablesList.name
 								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : ""
-								itemsDropped(listView.selectedItems, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
-								listView.clearSelectedItems(true);
+								itemsDropped(variablesList.selectedItems, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
+								variablesList.clearSelectedItems(true);
 							}
 						}
 					}

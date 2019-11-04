@@ -24,9 +24,9 @@ import JASP.Controls 1.0
 Form
 {
 
-	VariablesForm 
+	VariablesForm
 	{
-		AvailableVariablesList { name: "allVariablesList" }		
+		AvailableVariablesList { name: "allVariablesList" }
 		AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables"); suggestedColumns: ["ordinal", "scale"]; id: networkVariables}
 		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Split"); singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
 	}
@@ -65,7 +65,7 @@ Form
 		CheckBox { name: "tableWeightsMatrix";	label: qsTr("Weights matrix")	}
 	}
 
-	Section 
+	Section
 	{
 		title: qsTr("Analysis Options - ") + estimator.currentText
 
@@ -219,10 +219,10 @@ Form
 		}
 	}
 
-	Section 
+	Section
 	{
 		title: qsTr("Bootstrap Options")
-		
+
 		Group
 		{
 			title: qsTr("Settings")
@@ -252,99 +252,54 @@ Form
 			CheckBox { name: "StatisticsCentrality";	label: qsTr("Centrality");	checked: true }
 		}
 	}
-	
+
 	Section
 	{
 		title: qsTr("Graphical Options")
 
-//		VariablesForm
-//		{
-			NetworkFactorsList
-			{
-				id: networkFactors
-				name: "groupNames"
-				title: qsTr("Group name")
-				ExtraControlColumn
-				{
-					type: "DropDown"
-					name: "groupColors"
-					title: qsTr("Group color")
-					useExternalBorder: true
-					values: [
-						{value: "red",		label: "red"	},
-						{value: "blue",		label: "blue"	},
-						{value: "yellow",	label: "yellow"	},
-						{value: "green",	label: "green"	},
-						{value: "purple",	label: "purple"	},
-						{value: "orange",	label: "orange"	}
-					]
-				}
-			}
-
-//			VariablesList
-//			{
-//				title: qsTr("Variables in network")
-//				name: "variablesForColor"
-//				source: ["variables"]
-
-////				listViewType:	"AssignedVariables"
-//				listViewType:	"AvailableVariables"
-//				showSortMenu:	true
-//				ExtraControlColumn
-//				{
-//					type: "DropDown"
-//					name: "groupColors"
-//					title: qsTr("Group color")
-//					useExternalBorder: true
-//					values: [
-//						{value: "red",		label: "red"	},
-//						{value: "blue",		label: "blue"	},
-//						{value: "yellow",	label: "yellow"	},
-//						{value: "green",	label: "green"	},
-//						{value: "purple",	label: "purple"	},
-//						{value: "orange",	label: "orange"	}
-//					]
-////					enabled: paletteSelector.value === "manual"
-////					visible: paletteSelector.value === "manual"
-//				}
-//			}
-
-//			AvailableVariablesList
-//			{
-//				name: "ignoreMe"
-//				visible: false
-//			}
-
-			AssignedVariablesList
-			{
-				title: qsTr("Variables in network")
-				name: "variablesForColor"
-				source: ["variables"]
-				addAvailableVariablesToAssigned: true
-				ExtraControlColumn
-				{
-					type: "DropDown"
-					name: "groupAssigned"
-					title: qsTr("Group")
-					useExternalBorder: true
-					source: ["groupNames"]
-//					values: [
-//						{value: "red",		label: "red"	},
-//						{value: "blue",		label: "blue"	},
-//						{value: "yellow",	label: "yellow"	},
-//						{value: "green",	label: "green"	},
-//						{value: "purple",	label: "purple"	},
-//						{value: "orange",	label: "orange"	}
-//					]
-//					enabled: paletteSelector.value === "manual"
-//					visible: paletteSelector.value === "manual"
-				}
-			}
-//		}
-		DropDown
+		InputListView
 		{
-			source: ["groupNames"]
-			name: "blabla"
+			id				: networkFactors
+			name			: "groupNames"
+			title			: qsTr("Group name")
+			optionKey		: "group"
+			defaultValues	: ["Group 1", "Group 2"]
+			placeHolder		: qsTr("New Group")
+			minimumItems	: 2
+			width			: (2 * form.width) / 5
+			ExtraControlColumn
+			{
+				type: "DropDown"
+				name: "groupColors"
+				title: qsTr("Group color")
+				useExternalBorder: true
+				values: [
+					{value: "red",		label: "red"	},
+					{value: "blue",		label: "blue"	},
+					{value: "yellow",	label: "yellow"	},
+					{value: "green",	label: "green"	},
+					{value: "purple",	label: "purple"	},
+					{value: "orange",	label: "orange"	}
+				]
+			}
+		}
+
+		AssignedVariablesList
+		{
+			width: (2 * form.width) / 5
+			title: qsTr("Variables in network")
+			name: "variablesForColor"
+			source: ["variables"]
+			addAvailableVariablesToAssigned: true
+			draggable: false
+			ExtraControlColumn
+			{
+				type: "DropDown"
+				name: "groupAssigned"
+				title: qsTr("Group")
+				useExternalBorder: true
+				source: ["groupNames"]
+			}
 		}
 
 		Group
@@ -479,6 +434,7 @@ Form
 		{
 			text: qsTr("Save the layout in the data set")
 			name: "addLayoutToData"
+			Layout.columnSpan: 2
 			ComputedColumnField { name: "computedLayoutX"; text: qsTr("name for x-coordinates") }
 			ComputedColumnField { name: "computedLayoutY"; text: qsTr("name for y-coordinates") }
 			enabled: !dataRatioButton.checked
