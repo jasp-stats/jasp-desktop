@@ -491,7 +491,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   table$addColumnInfo(name = paste0("up[", fold, "]"),    title = "Upper", 
                                 overtitle = ci.label, type = "number", format = "dp:3")
   table$addColumnInfo(name = paste0("p[", fold, "]"),     title = "p", 
-                                type = "number", format = "dp:3;p:.001")
+                                type = "pvalue")
 
 }
 
