@@ -110,6 +110,7 @@ test_that("Boxplot matches", {
   options$splitPlotOutlierLabel <- TRUE
   options$splitPlotViolin <- TRUE
   options$splitPlots <- TRUE
+  options$colorPalette <- "ggplot2"
   results <- jasptools::run("Descriptives", "test.csv", options)
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "boxplot", dir="Descriptives")
