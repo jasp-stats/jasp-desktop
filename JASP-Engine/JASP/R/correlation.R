@@ -107,7 +107,17 @@ Correlation <- function(jaspResults, dataset, options){
     .corrInitCorrelationTable(mainTable, options, variables)
   }
   
-  if(options[['flagSignificant']]) mainTable$addFootnote(message = "p < .05, ** p < .01, *** p < .001", symbol = "*")
+  if(options[['hypothesis']] == "correlatedPositively"){
+    mainTable$addFootnote(message = "All tests one-tailed, for positive correlation")
+    additionToFlagSignificant <- ", one-talied"
+  } else if(options[['hypothesis']] == "correlatedNegatively"){
+    mainTable$addFootnote(message = "All tests one-tailed, for negative correlation")
+    additionToFlagSignificant <- ", one-talied"
+  } else{
+    additionToFlagSignificant <- ""
+  }
+  if(options[['flagSignificant']]) mainTable$addFootnote(message = sprintf("p < .05, ** p < .01, *** p < .001%s",
+                                                                           additionToFlagSignificant), symbol = "*")
   
   if(length(options$conditioningVariables) > 0){
     message <- sprintf("Conditioned on variables: %s", paste(options$conditioningVariables, collapse = ", "))
@@ -172,7 +182,7 @@ Correlation <- function(jaspResults, dataset, options){
       
       if(options$VovkSellkeMPR){
         mainTable$addColumnInfo(name = paste0(test, "_vsmpr"), title = "VS-MPR", type = "number", overtitle = overtitle)
-        mainTable$addFootnote(message = .corrGetTexts()$footnotes$VSMPR, symbol = "\u002A", colNames = paste0(test, "_vsmpr"))
+        mainTable$addFootnote(message = .corrGetTexts()$footnotes$VSMPR, symbol = "\u2020", colNames = paste0(test, "_vsmpr"))
         mainTable$addCitation(.corrGetTexts()$references$Sellke_etal_2001)
       }
     }
@@ -228,7 +238,7 @@ Correlation <- function(jaspResults, dataset, options){
   
   if(options$VovkSellkeMPR){
     mainTable$addColumnInfo(name = sprintf(name, "vsmpr"), title = "VS-MPR", type = "number", overtitle = overtitle)
-    mainTable$addFootnote(colNames = sprintf(name, "vsmpr"), symbol = "\u002A",
+    mainTable$addFootnote(colNames = sprintf(name, "vsmpr"), symbol = "\u2020",
                           message = .corrGetTexts()$footnotes$VSMPR)
     mainTable$addCitation(.corrGetTexts()$references$Sellke_etal_2001)
   }

@@ -23,14 +23,13 @@ import JASP.Theme 1.0
 
 Form
 {
-    usesJaspResults: true
 
 	VariablesForm
 	{
 		height: Theme.smallDefaultVariablesFormHeight
-		AvailableVariablesList { name: "allVariablesList" }
-		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); suggestedColumns: ["ordinal", "scale"] }
-        AssignedVariablesList { name: "conditioningVariables"; title: qsTr("Condition on"); suggestedColumns: ["ordinal", "scale"]; debug: true }
+		AvailableVariablesList{  name: "allVariablesList" }
+		AssignedVariablesList {  name: "variables";				title: qsTr("Variables");	 suggestedColumns: ["ordinal", "scale"] }
+		AssignedVariablesList {  name: "conditioningVariables"; title: qsTr("Condition on"); suggestedColumns: ["ordinal", "scale"]; debug: true }
 	}
 
 	Group
@@ -44,16 +43,16 @@ Form
 	Group
 	{
 		title: qsTr("Additional Options")
-        CheckBox { name: "displayPairwise";		label: qsTr("Display pairwise")				}
-		CheckBox { name: "reportSignificance";	label: qsTr("Report significance"); checked: true	}
-		CheckBox { name: "flagSignificant";		label: qsTr("Flag significant correlations")			}
+		CheckBox { name: "displayPairwise";		label: qsTr("Display pairwise")									}
+		CheckBox { name: "reportSignificance";	label: qsTr("Report significance");				checked: true	}
+		CheckBox { name: "flagSignificant";		label: qsTr("Flag significant correlations")					}
 		CheckBox
 		{
 			name: "confidenceIntervals";		label: qsTr("Confidence intervals")
 			CIField { name: "confidenceIntervalsInterval"; label: qsTr("Interval") }
 		}
 		CheckBox { name: "VovkSellkeMPR";		label: qsTr("Vovk-Sellke maximum p-ratio")			}
-        CheckBox { name: "sampleSize";          label: qsTr("Sample size") }
+		CheckBox { name: "sampleSize";			label: qsTr("Sample size") }
 	}
 
 	RadioButtonGroup
@@ -70,45 +69,45 @@ Form
 		title: qsTr("Plots")
 		CheckBox
 		{
-            name: "plotCorrelationMatrix"; label: qsTr("Scatter plots")
+			name: "plotCorrelationMatrix";			label: qsTr("Scatter plots")
 			CheckBox { name: "plotDensities";		label: qsTr("Densities for variables")	}
 			CheckBox { name: "plotStatistics";		label: qsTr("Statistics")				}
 		}
-        CheckBox{ name: "plotHeatmap"; label: qsTr("Heatmap") }
+		CheckBox{ name: "plotHeatmap"; label: qsTr("Heatmap") }
 
 	}
 
-    Section
-    {
-        title: qsTr("Assumption Checks")
+	Section
+	{
+		title: qsTr("Assumption Checks")
 
-        Group
-        {
-            title: qsTr("Multivariate Normality")
-            CheckBox { name: "multivariateShapiro"; label: qsTr("Shapiro")               }
-            CheckBox { name: "multivariateRoyston"; label: qsTr("Royston"); debug: true  }
-            CheckBox { name: "multivariateMardia" ; label: qsTr("Mardia");  debug: true  }
-            CheckBox { name: "multivariateEnergy" ; label: qsTr("Energy");  debug: true  }
-        }
+		Group
+		{
+			title: qsTr("Multivariate Normality")
+			CheckBox { name: "multivariateShapiro"; label: qsTr("Shapiro")			   }
+			CheckBox { name: "multivariateRoyston"; label: qsTr("Royston"); debug: true  }
+			CheckBox { name: "multivariateMardia" ; label: qsTr("Mardia");  debug: true  }
+			CheckBox { name: "multivariateEnergy" ; label: qsTr("Energy");  debug: true  }
+		}
 
-        Group
-        {
-            title: qsTr("Pairwise Normality")
-            CheckBox { name: "pairwiseShapiro"; label: qsTr("Shapiro")               }
-            CheckBox { name: "pairwiseRoyston"; label: qsTr("Royston"); debug: true  }
-            CheckBox { name: "pairwiseMardia" ; label: qsTr("Mardia");  debug: true  }
-            CheckBox { name: "pairwiseEnergy" ; label: qsTr("Energy");  debug: true  }
-        }
-    }
+		Group
+		{
+			title: qsTr("Pairwise Normality")
+			CheckBox { name: "pairwiseShapiro"; label: qsTr("Shapiro")			   }
+			CheckBox { name: "pairwiseRoyston"; label: qsTr("Royston"); debug: true  }
+			CheckBox { name: "pairwiseMardia" ; label: qsTr("Mardia");  debug: true  }
+			CheckBox { name: "pairwiseEnergy" ; label: qsTr("Energy");  debug: true  }
+		}
+	}
 
 	Section
 	{
-        title: qsTr("Options")
+		title: qsTr("Options")
 
 		Group
 		{
 			title: qsTr("Statistics")
-            debug: true
+			debug: true
 			CheckBox { name: "meansAndStdDev";	label: qsTr("Means and standard deviations")				}
 			CheckBox { name: "crossProducts";	label: qsTr("Cross-product deviations and covariances")		}
 		}
