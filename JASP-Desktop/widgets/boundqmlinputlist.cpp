@@ -149,8 +149,8 @@ bool BoundQMLInputList::isJsonValid(const Json::Value &optionValue)
 // TODO: duplicate code to be removed!!!!
 void BoundQMLInputList::_checkOptionTemplate()
 {
-	if (!_boundTo->hasTemporaryTemplate())
-		return;
+	//if (!_boundTo->hasTemporaryTemplate())
+	//	return;
 
 	const Terms& terms = model()->terms();
 

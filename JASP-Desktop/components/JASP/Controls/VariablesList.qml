@@ -28,7 +28,7 @@ JASPListControl
 {
 	id:						variablesList
 	controlType:			"VariablesListView"
-	height:					singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultVariablesFormHeight
+	height:					singleVariable ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
 	itemComponent:			itemVariableComponent
 
 	property string itemType:			"variables"
@@ -213,7 +213,7 @@ JASPListControl
 
 		Image
 		{
-			source: enabled ? iconInactiveFiles[suggestedColumns[index]] : iconDisabledFiles[suggestedColumns[index]]
+			source: jaspTheme.iconPath + (enabled ? iconInactiveFiles[suggestedColumns[index]] : iconDisabledFiles[suggestedColumns[index]])
 			height: 16 * preferencesModel.uiScale
 			width:	16 * preferencesModel.uiScale
 			z:		2
@@ -325,7 +325,7 @@ JASPListControl
 		width:			parent ? parent.width : 0
 		anchors.top:	parent ? (onTop ? parent.top : parent.bottom) : undefined
 		anchors.left:	parent ? parent.left : undefined
-		color:			Theme.blueLighter
+		color:			jaspTheme.blueLighter
 		visible:		false
 
 		property bool onTop: true

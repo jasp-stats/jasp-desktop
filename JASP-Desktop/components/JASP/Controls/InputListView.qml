@@ -19,7 +19,6 @@
 import QtQuick 2.11
 import QtQml.Models 2.2
 import JASP.Controls 1.0
-import JASP.Theme 1.0
 
 JASPListControl
 {
@@ -28,13 +27,13 @@ JASPListControl
 	itemComponent:				itemInputComponent
 
 				property var	control			: textField
-				property var	extraControl
+				property bool	enableExtraColumns	: true
 				property string	optionKey		: "value"
 				property var	defaultValues	: []
 				property int	minimumItems	: 0
 				property bool	addVirtual		: true
 				property string placeHolder		: qsTr("New Value")
-	readonly	property string deleteIcon		: "dialog-close.png"
+	readonly	property string deleteIcon		: "cross.png"
 
 	signal itemChanged(int index, var name);
 	signal itemRemoved(int index);
@@ -55,7 +54,7 @@ JASPListControl
 				anchors.fill:	parent
 				focus:			true
 				border.width:	0
-				border.color:	Theme.grayLighter
+				border.color:	jaspTheme.grayLighter
 
 				property bool	isDeletable:		model.type.includes("deletable")
 				property bool	isVirtual:			model.type.includes("virtual")
@@ -73,23 +72,23 @@ JASPListControl
 					onLoaded:
 					{
 						if (item.hasOwnProperty("fieldWidth"))
-							item.fieldWidth = Qt.binding( function() { return itemRectangle.width - extraControls.width - deleteIconID.implicitWidth; })
+							item.fieldWidth = Qt.binding( function() { return itemRectangle.width - extraControls.width - deleteIconID.width; })
 					}
 				}
 
 				ExtraControls
 				{
 					id:					extraControls
-					anchors.rightMargin: deleteIconID.implicitWidth
+					anchors.rightMargin: deleteIconID.width
 					model:				itemRectangle.extraColumnsModel
 					controlComponents:  inputListView.extraControlComponents
-					enabled:			!itemRectangle.isVirtual
+					//enabled:			!itemRectangle.isVirtual && inputListView.enableExtraColumns
 				}
 
 				Image
 				{
 					id:						deleteIconID
-					source:					iconPath + deleteIcon
+					source:					jaspTheme.iconPath + deleteIcon
 					anchors.right:			parent.right
 					anchors.verticalCenter:	parent.verticalCenter
 					visible:				itemRectangle.isDeletable

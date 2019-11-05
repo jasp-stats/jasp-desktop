@@ -267,6 +267,9 @@ Form
 			placeHolder		: qsTr("New Group")
 			minimumItems	: 2
 			width			: (2 * form.width) / 5
+			enableExtraColumns: manualColors.checked
+			debug			: true
+
 			ExtraControlColumn
 			{
 				type: "DropDown"
@@ -292,6 +295,7 @@ Form
 			source: ["variables"]
 			addAvailableVariablesToAssigned: true
 			draggable: false
+			debug: true
 			ExtraControlColumn
 			{
 				type: "DropDown"

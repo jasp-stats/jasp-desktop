@@ -176,12 +176,12 @@ void ListModelInputValue::itemChanged(int row, QVariant value)
 			_removeTerm(row);
 		else
 		{
+			beginResetModel();
 			val = _makeUnique(val, row);
 			QList<QString> values = _terms.asQList();
 			values[row] = val;
 			_terms.set(values);
-			QModelIndex modelIndex = index(row, 0);
-			emit dataChanged(modelIndex, modelIndex);
+			endResetModel();
 		}
 	}
 

@@ -219,33 +219,29 @@ void BoundQMLComboBox::modelChangedHandler()
 {
 	std::vector<std::string> options;
 	const Terms& terms = _model->terms();
-	bool found = false;
 	int index = 0;
+	int currentIndex = -1;
 	for (const Term& term : terms)
 	{
 		QString val = term.asQString();		
 		options.push_back(val.toStdString());		
 		if (val == _currentText)
-		{
-			found = true;
-			break;
-		}
+			currentIndex = index;
 		index++;
 	}
 	
-	if (!found)
+	if (currentIndex == -1)
 	{
-		index = -1;
-		if (terms.size() > _currentIndex)
-			index = _currentIndex;
+		if (int(terms.size()) > _currentIndex)
+			currentIndex = _currentIndex;
 		else if (terms.size() > 0U)
-			index = 0;
+			currentIndex = 0;
 	}
 	
 	if (_boundTo)
-		_boundTo->resetOptions(options, index);
+		_boundTo->resetOptions(options, currentIndex);
 	
-	_setCurrentValue(index, true, false);
+	_setCurrentValue(currentIndex, true, true);
 	
 	_resetItemWidth();
 }
