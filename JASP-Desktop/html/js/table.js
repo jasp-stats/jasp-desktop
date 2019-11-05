@@ -19,6 +19,13 @@ JASPWidgets.table = Backbone.Model.extend({
 
 JASPWidgets.tableView = JASPWidgets.objectView.extend({
 
+	attachToolbar: function ($toolbar) {
+		this.$el.addClass('jasp-display-item-flat');
+
+		var $container = this.$el.find("div.toolbar"); // the table toolbar is nested within the table to ensure that the table header gets copied too
+		$container.append($toolbar);
+	},
+
 	copyMenuClicked: function () {
 		var exportParams				= new JASPWidgets.Exporter.params();
 		exportParams.format				= JASPWidgets.ExportProperties.format.html;
@@ -391,7 +398,6 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 	},
 
 	constructChildren: function (constructor, data) {
-		this.$el.addClass('jasp-display-item-flat');
 
 		var self = this;
 		this.toolbar.selectionElement = function () {
