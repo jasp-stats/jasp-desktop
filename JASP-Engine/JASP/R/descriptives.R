@@ -1282,21 +1282,23 @@ Descriptives <- function(jaspResults, dataset, options) {
     plotResult$dependOn(optionContainsValue=list(variables=variable))
 
     for (l in split) {
-      plotResult[[l]] <- .descriptivesPieChart_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, title = l)
+      plotResult[[l]] <- .descriptivesPieChart_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, title = l,
+                                                       palette = options[["colorPalette"]])
       plotResult[[l]]$dependOn(optionsFromObject=plotResult)
     }
 
     return(plotResult)
   } else {
     column <- dataset[[.v(variable)]]
-    aPlot <- .descriptivesPieChart_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, title = variable)
+    aPlot <- .descriptivesPieChart_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, title = variable,
+                                           palette = options[["colorPalette"]])
     aPlot$dependOn(options="splitby", optionContainsValue=list(variables=variable))
 
     return(aPlot)
   }
 }
 
-.descriptivesPieChart_SubFunc <- function(column, variable, width, height, title) {
+.descriptivesPieChart_SubFunc <- function(column, variable, width, height, title, palette) {
   plotObj <- createJaspPlot(title=title, width=width, height=height)
 
   if (any(is.infinite(column))) {
@@ -1307,7 +1309,8 @@ Descriptives <- function(jaspResults, dataset, options) {
   }
   else if (length(column) > 0) {
     tb  <- as.data.frame(table(column))
-    plotObj$plotObject <- JASPgraphs::plotPieChart(tb[,2],tb[,1], legendName = variable)
+    plotObj$plotObject <- JASPgraphs::plotPieChart(tb[,2],tb[,1], legendName = variable,
+                                                   palette = palette)
   }
 
   return(plotObj)
