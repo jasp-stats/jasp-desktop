@@ -125,7 +125,7 @@ test_that("Log Odds Ratio table results match", {
   results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
   table <- results[["results"]][["container1"]][["collection"]][["container1_contTabBasLogOdds"]][["data"]]
   expect_equal_tables(table,
-    list(-0.325226942981456, -0.981898524010587, 0.337174584207703)
+    list(-0.322626350332064, -0.98462219921522, 0.339369498551093)
   )
 })
 
