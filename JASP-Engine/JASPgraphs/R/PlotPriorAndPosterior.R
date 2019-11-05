@@ -66,7 +66,7 @@ draw2Lines <- function(l, x = 0.5, parse = needsParsing(l), align = c("center", 
 	  l = l
 	)
   return(
-    ggplot2::ggplot(data = dfText, ggplot2::aes(x = x, y = y, label = l)) +
+    ggplot2::ggplot(data = dfText, ggplot2::aes(x = .data$x, y = .data$y, label = .data$l)) +
       ggplot2::geom_text(size = scaleFont * getGraphOption("fontsize"), parse = parse, hjust = hjust) +
       ggplot2::scale_y_continuous(limits = c(0, 1)) +#, expand = c(0, 0)) +
     	ggplot2::scale_x_continuous(limits = c(0, 1)) +#, expand = c(0, 0)) +
@@ -124,7 +124,7 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
       gp <- geom_point(show.legend = FALSE)
     }
 
-    legendPlot <- ggplot(data = dfLegendPlot, aes(x = x, y = y, fill = y, label = l, size = y)) +
+    legendPlot <- ggplot(data = dfLegendPlot, aes(x = .data$x, y = .data$y, fill = .data$y, label = .data$l, size = .data$y)) +
       gp +
       ggplot2::geom_text(nudge_x = 0.1, size = .35 * getGraphOption("fontsize"), hjust = 0,
                          parse = parse) +
@@ -141,8 +141,8 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
       l    = rev(l) # y = 1, 2, ... so first one at the bottom, hence reverse the labels
     )
 
-    legendPlot <- ggplot(data = dfLegendPlot,  aes(x = x, y = y, xend = xend, yend = yend, label = l)) +
-      ggplot2::geom_segment(mapping = aes(color = y, linetype = y), show.legend = FALSE,
+    legendPlot <- ggplot(data = dfLegendPlot,  aes(x = .data$x, y = .data$y, xend = .data$xend, yend = .data$yend, label = .data$l)) +
+      ggplot2::geom_segment(mapping = aes(color = .data$y, linetype = .data$y), show.legend = FALSE,
                             size = 1.15 * jaspGeomLine$default_aes$size) +
       ggplot2::geom_text(nudge_x = 0.15, size = .35 * getGraphOption("fontsize"), hjust = 0,
                          parse = parse) +
@@ -206,11 +206,11 @@ hypothesis2BFtxt <- function(hypothesis = c("equal", "smaller", "greater")) {
 pizzaTxtFromBF <- function(x) {
 
   if (grepl("+", x, fixed = TRUE)) {
-    pizzaTxt = c("data | H0", "data | H+")
+    pizzaTxt <- c("data | H0", "data | H+")
   } else if(grepl("-", x, fixed = TRUE)) {
-    pizzaTxt = c("data | H0", "data | H-")
+    pizzaTxt <- c("data | H0", "data | H-")
   } else {
-    pizzaTxt = c("data | H0", "data | H1")
+    pizzaTxt <- c("data | H0", "data | H1")
   }
   pizzaTxt
 }
@@ -322,11 +322,11 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
   newymax <- max(1.1 * obsYmax, breaksYmax)
 
   mapping <- if (ncol(dfLines) == 2L)
-    aes(x = x, y = y)
+    aes(x = .data$x, y = .data$y)
   else if (!is.null(lineColors))
-    aes(x = x, y = y, group = g, linetype = g, color = g)
+    aes(x = .data$x, y = .data$y, group = .data$g, linetype = .data$g, color = .data$g)
   else
-    aes(x = x, y = y, group = g, linetype = g)
+    aes(x = .data$x, y = .data$y, group = .data$g, linetype = .data$g)
   g <- ggplot2::ggplot(data = dfLines, mapping) +
       geom_line() +
       scale_x_continuous(xName) +
@@ -336,7 +336,7 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
     g <- g + ggplot2::scale_color_manual(values = lineColors)
 
   if (!is.null(dfPoints)) {
-    g <- g + ggplot2::geom_point(data = dfPoints, ggplot2::aes(x = x, y = y), inherit.aes = FALSE,
+    g <- g + ggplot2::geom_point(data = dfPoints, ggplot2::aes(x = .data$x, y = .data$y), inherit.aes = FALSE,
                           size = 4, shape = 21, stroke = 1.25, fill = "grey")
   }
 
@@ -350,7 +350,7 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
   	maxheight <- (newymax - dfCI$y)
 
     g <- g + ggplot2::geom_errorbarh(
-      data = dfCI, ggplot2::aes(y = y, xmin = xmin, xmax = xmax), inherit.aes = FALSE,
+      data = dfCI, ggplot2::aes(y = .data$y, xmin = .data$xmin, xmax = .data$xmax), inherit.aes = FALSE,
       size = 1.0, height = maxheight)
     #maxheight / 8
     #)
@@ -376,9 +376,9 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
   idx  <- which.max(dfLines$y)
   xmax <- dfLines$x[idx]
   if (xmax > mean(xr)) {
-    legend.position = c(0.15, 0.875)
+    legend.position <- c(0.15, 0.875)
   } else {
-    legend.position = c(0.80, 0.875)
+    legend.position <- c(0.80, 0.875)
   }
 
   g <- themeJasp(graph = g, legend.position = legend.position, bty = bty) +

@@ -109,7 +109,7 @@ drawAxis <- function(graph = NULL, xName = waiver(), yName = waiver(), breaks = 
 
     if (force && is.waive(graph[["data"]])) {
         dftmp <- data.frame(x = range(xBreaks), y = range(yBreaks))
-        graph <- graph + ggplot2::geom_line(data = dftmp, mapping = ggplot2::aes(x = x, y = y), color = "white", alpha = 0)
+        graph <- graph + ggplot2::geom_line(data = dftmp, mapping = ggplot2::aes(x = .data$x, y = .data$y), color = "white", alpha = 0)
     }
     graph <- graph + ggplot2::xlab(xName) + ggplot2::ylab(yName)
 

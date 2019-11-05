@@ -55,6 +55,7 @@ scale_y_continuous <- function(name = waiver(), breaks = axesBreaks, minor_break
 jaspLimits <- function(..., self = self) {
   # this function is basically identical to what is normally is in sc$get_limits,
   # except for everything inside if (identical(self$limits, "JASP"))
+
   if (self$is_empty())
     return(c(0, 1))
   if (identical(self$limits, "JASP")) {

@@ -5,7 +5,8 @@ makeRect <- function(col = "red", size = 2, fill = scales::alpha("black", 0)) {
   dfrect <- data.frame(xmin = 0, xmax = 1, ymin = 0, ymax = 1)
 
   return(invisible(
-    ggplot2::ggplot(data = dfrect, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax)) +
+    ggplot2::ggplot(data = dfrect, aes(xmin = .data$xmin, xmax = .data$xmax, ymin = .data$ymin, 
+                                       ymax = .data$ymax)) +
       ggplot2::geom_rect(fill = fill, size = size, color = col) +
       ggplot2::theme_void()
   ))

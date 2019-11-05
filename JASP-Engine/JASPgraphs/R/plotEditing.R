@@ -132,7 +132,11 @@ internalUpdateAxis.ScaleContinuousPosition <- function(currentAxis, newSettings)
 
   if (!is.null(newSettings[["breaks"]])) {
     currentAxis[["breaks"]] <- sort(newSettings[["breaks"]])
-    currentAxis[["limits"]] <- range(currentAxis[["limits"]], newSettings[["breaks"]])
+
+    if (is.numeric(currentAxis[["limits"]])) 
+      currentAxis[["limits"]] <- range(currentAxis[["limits"]], newSettings[["breaks"]])
+    else
+      currentAxis[["limits"]] <- range(newSettings[["breaks"]])
     # TODO: see if some plot element fall outside of the new limits!
   }
 

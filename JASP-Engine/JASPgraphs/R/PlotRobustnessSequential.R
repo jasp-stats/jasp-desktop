@@ -165,7 +165,8 @@ PlotRobustnessSequential <- function(
       yend = yBreaksR[length(yBreaksR)]
     )
     rightAxisLine <- ggplot2::geom_segment(
-      data = dfRightAxisLines, mapping = ggplot2::aes(x = x, y = y, xend = xend, yend = yend),
+      data = dfRightAxisLines, mapping = ggplot2::aes(x = .data$x, y = .data$y, xend = .data$xend,
+                                                      yend = .data$yend),
       lwd = getGraphOption("bty")[["lwdY"]],
       position = ggplot2::PositionIdentity, stat = ggplot2::StatIdentity, inherit.aes = FALSE
     )
@@ -179,19 +180,19 @@ PlotRobustnessSequential <- function(
   xBreaks <- getPrettyAxisBreaks(dfLines$x)
 
   if (is.null(dfLines$g)) {
-    mapping <- aes(x = x, y = y)
+    mapping <- aes(x = .data$x, y = .data$y)
     scaleCol <- scaleLty <- scaleShape <- scaleFill <- scaleSize <- NULL
   } else {
     if (length(unique(dfLines$g)) != length(lineColors) || length(lineColors) != length(lineTypes))
       stop("lineColors and lineTypes must have the same length as the number of groups in dfLines.")
     
     if (plotLineOrPoint == "line") {
-      mapping    <- aes(x = x, y = y, group = g, linetype = g, color = g)
+      mapping    <- aes(x = .data$x, y = .data$y, group = .data$g, linetype = .data$g, color = .data$g)
       scaleCol   <- ggplot2::scale_color_manual(values = lineColors)
       scaleLty   <- ggplot2::scale_linetype_manual(values = lineTypes)
       scaleShape <- scaleFill <- scaleSize <- NULL
     } else {
-      mapping    <- aes(x = x, y = y, group = g, color = g, shape = g, fill = g, size = g)
+      mapping    <- aes(x = .data$x, y = .data$y, group = .data$g, color = .data$g, shape = .data$g, fill = .data$g, size = .data$g)
       scaleCol   <- ggplot2::scale_color_manual(values = pointColor)
       scaleFill  <- ggplot2::scale_fill_manual(values = pointFill)
       scaleShape <- ggplot2::scale_shape_manual(values = pointShape)
@@ -238,7 +239,7 @@ PlotRobustnessSequential <- function(
 
   legendPlot <- list()
   if (!is.null(dfPoints)) {
-    mapping <- if (ncol(dfPoints) == 2L) aes(x = x, y = y) else aes(x = x, y = y, fill = g)
+    mapping <- if (ncol(dfPoints) == 2L) aes(x = .data$x, y = .data$y) else aes(x = .data$x, y = .data$y, fill = .data$g)
     g <- g + geom_point(data = dfPoints, mapping = mapping) +
       ggplot2::scale_fill_manual(values = pointColors[order(factor(dfPoints$g))])
 
@@ -322,7 +323,7 @@ PlotRobustnessSequential <- function(
       dfArrowTxt[["label"]] <- dfArrowTxt[["label"]][2:1]
 
     g <- g + ggplot2::geom_segment(
-      data    = dfArrow, aes(x = x, y = y, xend = xend, yend = yend),
+      data    = dfArrow, aes(x = .data$x, y = .data$y, xend = .data$xend, yend = .data$yend),
       lineend = "round", linejoin = "bevel",
       arrow   = grid::arrow(length = grid::unit(0.4, "cm")),
       size    = 1,
@@ -330,7 +331,7 @@ PlotRobustnessSequential <- function(
     ) +
       ggplot2::geom_text(
         data        = dfArrowTxt,
-        mapping     = aes(x = x, y = y, label = label),
+        mapping     = aes(x = .data$x, y = .data$y, label = .data$label),
         parse       = TRUE,
         size        = .40 * getGraphOption("fontsize"),
         inherit.aes = FALSE,

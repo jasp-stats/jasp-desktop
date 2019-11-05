@@ -62,7 +62,7 @@ JASPScatterPlot <- function(x, y, group = NULL, xName = NULL, yName = NULL,
 
   if (is.null(group)) {
     df <- data.frame(x = x, y = y)
-    mapping <- aes(x, y)
+    mapping <- aes(x = .data$x, y = .data$y)
   } else {
     group <- factor(group)
     df <- data.frame(x = x, y = y, g = group)
@@ -119,17 +119,17 @@ JASPScatterSubPlot <- function(x, group = NULL, type = c("density", "histogram",
 
   groupIsNull <- is.null(group) 
   if (groupIsNull) {
-    mapping <- aes(x, y)
+    mapping <- aes(x = .data$x, y = .data$y)
     group <- rep(1L, length(x))
   } else {
-    mapping <- aes(x = x, y = y, group = g, color = g, fill = g)
+    mapping <- aes(x = .data$x, y = .data$y, group = .data$g, color = .data$g, fill = .data$g)
   }
   
   if (type == "density") {
-    foo <- function(x, ...) as.data.frame(density(x, from = range[1L], to = range[2L])[c("x", "y")])
+    foo <- function(x, ...) as.data.frame(stats::density(x, from = range[1L], to = range[2L])[c("x", "y")])
     geom <- geom_line(size = 0.5, show.legend = FALSE)
     geom2 <- if (colorAreaUnderDensity) {
-      geom_ribbon(aes(ymin = 0, ymax = y), alpha = alpha)
+      geom_ribbon(aes(ymin = 0, ymax = .data$y), alpha = alpha)
     } else {
       NULL
     }
@@ -142,7 +142,7 @@ JASPScatterSubPlot <- function(x, group = NULL, type = c("density", "histogram",
     df <- data.frame(x = x, g = group)
     geom <- ggplot2::geom_histogram(alpha = alpha, position = "identity", show.legend = FALSE)
     geom2 <- NULL
-    mapping$y <- ggplot2::quo(..density..)
+    mapping$y <- ggplot2::quo(.data$..density..)
   }
 
   plot <- ggplot(df, mapping) +
