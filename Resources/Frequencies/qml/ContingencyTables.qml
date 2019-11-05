@@ -26,7 +26,7 @@ Form
 		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "rows";		title: qsTr("Rows");	suggestedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "columns";	title: qsTr("Columns");	suggestedColumns: ["ordinal", "nominal"] }
-        AssignedVariablesList { name: "counts";		title: qsTr("Counts");	suggestedColumns: ["scale", "ordinal"]; singleVariable: true }
+		AssignedVariablesList { name: "counts";		title: qsTr("Counts");	suggestedColumns: ["scale", "ordinal"]; singleVariable: true }
 		AssignedVariablesList { name: "layers";		title: qsTr("Layers");	suggestedColumns: ["ordinal", "nominal"]; listViewType: "Layers"; height: 120 }
 	}
 	
@@ -39,6 +39,7 @@ Form
 			CheckBox { name: "chiSquared";						label: qsTr("χ²"); checked: true			}
 			CheckBox { name: "chiSquaredContinuityCorrection";	label: qsTr("χ² continuity correction")	}
 			CheckBox { name: "likelihoodRatio";					label: qsTr("Likelihood ratio")			}
+			CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke maximum p-ratio") }
 		}
 
 		Group
@@ -47,8 +48,15 @@ Form
 			{
 				name: "oddsRatio"; label: qsTr("Log odds ratio (2x2 only)")
 				CIField { name: "oddsRatioConfidenceIntervalInterval"; label: qsTr("Confidence interval") }
+				RadioButtonGroup
+				{
+					title: qsTr("Alt. Hypothesis (Fisher's exact test)")
+					name: "oddsRatioHypothesis"
+					RadioButton { value: "two.sided";	label: qsTr("Group one ≠ Group two"); checked: true	}
+					RadioButton { value: "greater";		label: qsTr("Group one > Group two")				}
+					RadioButton { value: "less";		label: qsTr("Group one < Group two")				}
+				}
 			}
-			CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio") }
 		}
 
 		Group
