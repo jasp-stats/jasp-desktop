@@ -384,21 +384,22 @@ PlotRobustnessSequential <- function(
 
 
 
-#' custom Gridlines for ggplot objects
-#'
-#' @param x Left bound of gridline.
-#' @param xend Right bound of gridline.
-#' @param y height of gridline.
-#' @param ... Further arguments to \code{\link[ggplot2:geom_segment]{geom_segment}}, e.g., colour.
-#' @param linetypes solid, dashed, dotted, etc.
-#' @param size size of the line.
-#'
-#' @details This function exists only when gridlines need to exist at specific locations, for example from x1 to x2 but
-#' don't extend further than x2. Otherwise, use the build in functionality inside \code{\link[ggplot2:theme]{theme}}.
-#' This function is a wrapper around \code{\link[ggplot2:geom_segment]{geom_segment}}.
-#' @return a ggproto object.
-#'
-#' @export
+# Nobody uses this in JASP so let's not export it
+# custom Gridlines for ggplot objects
+#
+# @param x Left bound of gridline.
+# @param xend Right bound of gridline.
+# @param y height of gridline.
+# @param ... Further arguments to \code{\link[ggplot2:geom_segment]{geom_segment}}, e.g., colour.
+# @param linetypes solid, dashed, dotted, etc.
+# @param size size of the line.
+#
+# @details This function exists only when gridlines need to exist at specific locations, for example from x1 to x2 but
+# don't extend further than x2. Otherwise, use the build in functionality inside \code{\link[ggplot2:theme]{theme}}.
+# This function is a wrapper around \code{\link[ggplot2:geom_segment]{geom_segment}}.
+# @return a ggproto object.
+#
+# @export
 makeGridLines <- function(x, xend, y, size = 0.85, ...) {
 
   return(

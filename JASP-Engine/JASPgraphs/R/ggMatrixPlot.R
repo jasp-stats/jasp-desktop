@@ -231,8 +231,8 @@ scaleAxesLabels <- function(scaleXYlabels, plotList) {
 }
 
 #' @title ggMatrixPlot
-#' @param plotList
-#'
+#' @param plotList a list of ggplot2 objects
+#' @param layout a matrix that specifies the position of each plot, akin to the layout for base plots.
 #' @param nr number of rows
 #' @param nc number of columns
 #' @param ... ignored.

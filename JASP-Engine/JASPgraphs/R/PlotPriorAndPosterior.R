@@ -25,17 +25,9 @@ getEmptyTheme <- function() {
     axis.ticks.length = unit(0,"null")
   )
 
-  # t <- ggplot2::theme_void() +
-  #     theme(
-  #       panel.spacing = grid::unit(0,"null"),
-  #       plot.margin   = rep(grid::unit(0,"null"), 4)
-  #     )
-  # if (getGraphOption("debug"))
-  # t <- t + ggplot2::theme(rect = ggplot2::element_rect(colour = "red", size = 1, linetype = 1, fill = "transparent"))
   return(t)
 }
 
-#' @export
 getEmptyPlot <- function(axes = FALSE) {
 
 

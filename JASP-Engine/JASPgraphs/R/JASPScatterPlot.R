@@ -1,4 +1,5 @@
 #' @importFrom ggplot2 geom_smooth theme_void geom_ribbon
+#' @importFrom rlang .data
 
 #' @title Create a scatter plot with density
 #'
@@ -65,7 +66,7 @@ JASPScatterPlot <- function(x, y, group = NULL, xName = NULL, yName = NULL,
   } else {
     group <- factor(group)
     df <- data.frame(x = x, y = y, g = group)
-    mapping <- aes(x = x, y = y, group = g, color = g, fill = g)
+    mapping <- aes(x = x, y = y, group = .data$g, color = .data$g, fill = .data$g)
   }
 
   geomSmooth <- if (addSmooth)

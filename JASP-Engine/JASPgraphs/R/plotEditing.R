@@ -77,6 +77,17 @@ getAxisInfo <- function(x, opts, ggbuild) {
   UseMethod("getAxisInfo", x)
 }
 
+expand_default <- function(scale, discrete = c(0, 0.6, 0, 0.6), continuous = c(0.05, 0, 0.05, 0)) {
+  # copy of ggplot2:::expand_default to please R CMD check about :::
+  a <- scale$expand
+  if (!is.waive(a))
+    return(a)
+  else if (scale$is_discrete())
+    return(discrete)
+  else 
+    return(continuous)
+}
+
 getAxisInfo.ScaleContinuousPosition <- function(x, opts, ggbuild) {
 
   xory <- x[["aesthetics"]][1L]
@@ -85,7 +96,7 @@ getAxisInfo.ScaleContinuousPosition <- function(x, opts, ggbuild) {
   opts2keep <- opts[paste(xory, nms2keep, sep = ".")]
   names(opts2keep) <- nms2give
   if (is.waive(x[["expand"]])) {
-    opts2keep[["expand"]] <- ggplot2:::expand_default(x)
+    opts2keep[["expand"]] <- expand_default(x)
   } else {
     opts2keep[["expand"]] <- x[["expand"]]
   }
@@ -179,16 +190,16 @@ plotEditingOptions.ggplot <- function(graph, asJSON = FALSE) {
 }
 
 #' @export
-plotEditingOptions.ggplot_built <- function(ggbuild, asJSON = FALSE) {
+plotEditingOptions.ggplot_built <- function(graph, asJSON = FALSE) {
 
   # only relevant for continuous scales?
   e <- try({
-    opts <- ggbuild[["layout"]][["coord"]][["labels"]](ggbuild[["layout"]][["panel_params"]])[[1L]]
-    axisTypes <- getAxisType(ggbuild)
-    currentAxis <- ggbuild[["layout"]][["get_scales"]](1L)
+    opts <- graph[["layout"]][["coord"]][["labels"]](graph[["layout"]][["panel_params"]])[[1L]]
+    axisTypes <- getAxisType(graph)
+    currentAxis <- graph[["layout"]][["get_scales"]](1L)
     
-    xSettings <- getAxisInfo(currentAxis[["x"]], opts, ggbuild)
-    ySettings <- getAxisInfo(currentAxis[["y"]], opts, ggbuild)
+    xSettings <- getAxisInfo(currentAxis[["x"]], opts, graph)
+    ySettings <- getAxisInfo(currentAxis[["y"]], opts, graph)
     
     out <- list(xAxis = list(
       type     = axisTypes[["x"]],
