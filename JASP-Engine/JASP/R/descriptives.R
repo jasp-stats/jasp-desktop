@@ -904,7 +904,9 @@ Descriptives <- function(jaspResults, dataset, options) {
     plotDat$label <- ifelse(plotDat$outlier, row.names(plotDat),"")
 
     if (options$splitPlotColour) {
-      p <- ggplot2::ggplot(plotDat, ggplot2::aes(x=group, y, fill=group)) + ggplot2::scale_fill_hue(c=60, l=80) + ggplot2::scale_colour_hue(c=60, l=80)
+      thePlot$dependOn("colorPalette") # only add color as dependency if the user wants it
+      palette <- options[["colorPalette"]]
+      p <- ggplot2::ggplot(plotDat, ggplot2::aes(x=group, y, fill=group)) + JASPgraphs::scale_JASPfill_discrete(palette) + JASPgraphs::scale_JASPcolor_discrete(palette)
     } else {
       p <- ggplot2::ggplot(plotDat, ggplot2::aes(x=group, y, fill=group)) + ggplot2::scale_fill_manual(values=rep("grey", nlevels(group))) + ggplot2::scale_colour_manual(values=rep("grey", nlevels(group)))
     }
@@ -945,30 +947,13 @@ Descriptives <- function(jaspResults, dataset, options) {
       p <- p + ggrepel::geom_text_repel(ggplot2::aes(label=label), hjust=-0.3)
     
     ### Theming & Cleaning
+    yBreaks <- JASPgraphs::getPrettyAxisBreaks(y)
     p <- p +
       ggplot2::xlab(xlab) +
       ggplot2::ylab(variable) +
-      base_breaks_y(y) +
-      ggplot2::theme_bw() +
-      ggplot2::theme(
-        panel.grid.minor=   ggplot2::element_blank(),
-        plot.title=         ggplot2::element_text(size = 18),
-        panel.grid.major=   ggplot2::element_blank(),
-        axis.title.x=       ggplot2::element_text(size = 18, vjust=0.1),
-        axis.title.y=       ggplot2::element_text(size = 18, vjust=0.9),
-        axis.text.x=        ggplot2::element_text(size = 15),
-        axis.text.y=        ggplot2::element_text(size = 15),
-        panel.background=   ggplot2::element_rect(fill = "transparent", colour = NA),
-        plot.background=    ggplot2::element_rect(fill = "transparent", colour = NA),
-        legend.background=  ggplot2::element_rect(fill = "transparent", colour = NA),
-        panel.border=       ggplot2::element_blank(),
-        axis.line=          ggplot2::element_blank(),
-        legend.key=         ggplot2::element_blank(),
-        axis.ticks=         ggplot2::element_line(size = 0.5),
-        axis.ticks.length=  grid::unit(3, "mm"),
-        axis.ticks.margin=  grid::unit(1,"mm"),
-        plot.margin=        grid::unit(c(0.1, 0.1, 0.6, 0.6), "cm"),
-        legend.position=    "none")
+      ggplot2::scale_y_continuous(breaks = yBreaks) + #, limits = yLimits) +
+      JASPgraphs::geom_rangeframe(sides = "l") +
+      JASPgraphs::themeJaspRaw()
 
     thePlot$plotObject <- p
   }
@@ -1297,21 +1282,23 @@ Descriptives <- function(jaspResults, dataset, options) {
     plotResult$dependOn(optionContainsValue=list(variables=variable))
 
     for (l in split) {
-      plotResult[[l]] <- .descriptivesPieChart_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, title = l)
+      plotResult[[l]] <- .descriptivesPieChart_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, title = l,
+                                                       palette = options[["colorPalette"]])
       plotResult[[l]]$dependOn(optionsFromObject=plotResult)
     }
 
     return(plotResult)
   } else {
     column <- dataset[[.v(variable)]]
-    aPlot <- .descriptivesPieChart_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, title = variable)
+    aPlot <- .descriptivesPieChart_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, title = variable,
+                                           palette = options[["colorPalette"]])
     aPlot$dependOn(options="splitby", optionContainsValue=list(variables=variable))
 
     return(aPlot)
   }
 }
 
-.descriptivesPieChart_SubFunc <- function(column, variable, width, height, title) {
+.descriptivesPieChart_SubFunc <- function(column, variable, width, height, title, palette) {
   plotObj <- createJaspPlot(title=title, width=width, height=height)
 
   if (any(is.infinite(column))) {
@@ -1322,7 +1309,8 @@ Descriptives <- function(jaspResults, dataset, options) {
   }
   else if (length(column) > 0) {
     tb  <- as.data.frame(table(column))
-    plotObj$plotObject <- JASPgraphs::plotPieChart(tb[,2],tb[,1], legendName = variable)
+    plotObj$plotObject <- JASPgraphs::plotPieChart(tb[,2],tb[,1], legendName = variable,
+                                                   palette = palette)
   }
 
   return(plotObj)

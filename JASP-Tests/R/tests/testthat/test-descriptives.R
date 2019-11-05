@@ -110,6 +110,7 @@ test_that("Boxplot matches", {
   options$splitPlotOutlierLabel <- TRUE
   options$splitPlotViolin <- TRUE
   options$splitPlots <- TRUE
+  options$colorPalette <- "ggplot2"
   results <- jasptools::run("Descriptives", "test.csv", options)
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
   expect_equal_plots(testPlot, "boxplot", dir="Descriptives")
@@ -129,6 +130,7 @@ test_that("Pie chart and scatter plots matchs", {
   options$variables <- c("facFive", "contcor1", "contcor2")
   options$descriptivesPiechart <- TRUE
   options$scatterPlot <- TRUE
+  options$colorPalette <- "ggplot2"
   results <- jasptools::run("Descriptives", "test.csv", options)
 
   testPlot <- results[["state"]][["figures"]][[1]][["obj"]]

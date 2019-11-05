@@ -7,6 +7,7 @@
 #' @param legendColors Character vector with colors.
 #' @param showAxisText Logical, should the axis text be shown?
 #' @param asPercentages Logical, should value be transformed to percentages? Recommended to be true.
+#' @param palette Character vector with palette name. If this option is set then legendColors is ignored. If palette is NULL then legendColors are used.
 #' @param ... Arguments to be passed to \code{\link{themeJasp}}.
 #'
 #' @return a ggplot object.
@@ -18,8 +19,9 @@
 plotPieChart <- function(value, group,
                          legendName = deparse(substitute(group)),
                          legendLabels = if (is.factor(group)) levels(group) else unique(group),
-                         legendColors = getGraphOption("palette"),
+                         legendColors = NULL,
                          showAxisText = TRUE, showAxisTicks = showAxisText, asPercentages = TRUE,
+                         palette = getGraphOption("palette"),
                          ...) {
 
   if (!is.numeric(value))
@@ -49,10 +51,18 @@ plotPieChart <- function(value, group,
     g = factor(group)
   )
 
+  scale_fill <- NULL
+  if (!is.null(palette)) {
+    scale_fill <- scale_JASPfill_discrete(palette = palette, name = legendName,
+                                          breaks = legendLabels)
+  } else if (!is.null(legendColors)) {
+    scale_fill <- scale_fill_manual(values = legendColors, name = legendName, breaks = legendLabels)
+  }
+
   graph <- ggplot(df, aes(x = "", y=value, fill=group)) +
     geom_bar(width = 1, stat = "identity") +
     coord_polar("y", start = 0) +
-    scale_fill_manual(values = legendColors, name = legendName, breaks = legendLabels) +
+    scale_fill +
     labs(x = "", y = "")
 
   return(do.call(themeJasp, c(list(graph = graph), dots)) + theme(
