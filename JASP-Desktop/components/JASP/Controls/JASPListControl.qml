@@ -18,7 +18,6 @@
 
 
 import QtQuick 2.11
-import JASP.Theme 1.0
 import JASP.Widgets 1.0
 
 JASPControl
@@ -28,7 +27,7 @@ JASPControl
 	background:				listRectangle
 	width:					parent.width
 	implicitWidth:			width
-	height:					Theme.defaultVariablesFormHeight
+	height:					jaspTheme.defaultVariablesFormHeight
 	implicitHeight:			height
 	useControlMouseArea:	false
 
@@ -58,9 +57,9 @@ JASPControl
 		anchors.top:	parent.top
 		anchors.left:	parent.left
 		text:			title
-		height:			title ? Theme.listTitle : 0
-		font:			Theme.font
-		color:			enabled ? Theme.textEnabled : Theme.textDisabled
+		height:			title ? jaspTheme.listTitle : 0
+		font:			jaspTheme.font
+		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 
 	}
 
@@ -84,9 +83,9 @@ JASPControl
 		anchors.left:	parent.left
 		height:			jaspListControl.height - listTitle.height
 		width:			parent.width
-		color:			debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
+		color:			debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
 		border.width:	1
-		border.color:	Theme.borderColor
+		border.color:	jaspTheme.borderColor
 
 
 		JASPScrollBar

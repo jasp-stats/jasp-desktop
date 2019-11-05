@@ -267,6 +267,8 @@ Form
 			placeHolder		: qsTr("New Group")
 			minimumItems	: 2
 			width			: (2 * form.width) / 5
+			enableExtraColumns: manualColors.checked
+
 			ExtraControlColumn
 			{
 				type: "DropDown"

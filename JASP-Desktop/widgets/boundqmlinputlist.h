@@ -40,7 +40,7 @@ public:
 	void		bindExtraControlOptions()					override;
 
 protected slots:
-	void modelChangedHandler() override;
+	void		modelChangedHandler()						override;
 	
 private:
 	void		_checkOptionTemplate();
