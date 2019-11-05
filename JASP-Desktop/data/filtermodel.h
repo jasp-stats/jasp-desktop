@@ -40,6 +40,7 @@ public:
 
 	void updateStatusBar();
 	void reset();
+	void modelInit();
 
 public slots:
 	GENERIC_SET_FUNCTION(StatusBarText,			_statusBarText,			statusBarTextChanged,		QString)

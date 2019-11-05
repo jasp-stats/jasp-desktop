@@ -159,10 +159,8 @@ MainWindow::~MainWindow()
 		delete _resultsJsInterface;
 
 		if (_package->hasDataSet())
-		{
-			_package->freeDataSet();
 			_package->reset();
-		}
+
 		delete _engineSync;
 
 	}
@@ -894,7 +892,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		}
 		else
 		{
-			_package->freeDataSet();
 			_package->reset();
 			setWelcomePageVisible(true);
 
@@ -942,11 +939,9 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		{
 			_analyses->setVisible(false);
 			_analyses->clear();
-
-			_package->freeDataSet();
 			_package->reset();
-			setWelcomePageVisible(true);
 
+			setWelcomePageVisible(true);
 			setWindowTitle("JASP");
 
 			_engineSync->cleanUpAfterClose();

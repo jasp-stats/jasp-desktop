@@ -83,6 +83,12 @@ void DataSetPackage::reset()
 
 void DataSetPackage::setDataSet(DataSet * dataSet)
 {
+	if(_dataSet == dataSet)
+		return;
+
+	if(_dataSet && !dataSet)
+		freeDataSet();
+
 	_dataSet = dataSet;
 }
 
@@ -753,6 +759,7 @@ void DataSetPackage::endLoadingData()
 	if(_enginesLoadedAtBeginSync)
 		resumeEngines();
 
+	emit modelInit();
 	emit dataSetChanged();
 }
 
@@ -974,8 +981,8 @@ std::string DataSetPackage::getColumnTypeNameForJASPFile(columnType columnType)
 	case columnType::nominal:			return "Nominal";
 	case columnType::nominalText:		return "NominalText";
 	case columnType::ordinal:			return "Ordinal";
-	case columnType::scale:			return "Continuous";
-	default:									return "Unknown";
+	case columnType::scale:				return "Continuous";
+	default:							return "Unknown";
 	}
 }
 
@@ -988,7 +995,7 @@ columnType DataSetPackage::parseColumnTypeForJASPFile(std::string name)
 	else								return  columnType::unknown;
 }
 
-Json::Value DataSetPackage::columnToJsonForJASPFile(size_t columnIndex, Json::Value labelsData, size_t & dataSize)
+Json::Value DataSetPackage::columnToJsonForJASPFile(size_t columnIndex, Json::Value & labelsData, size_t & dataSize)
 {
 	Column &column					= _dataSet->column(columnIndex);
 	std::string name				= column.name();
@@ -996,21 +1003,22 @@ Json::Value DataSetPackage::columnToJsonForJASPFile(size_t columnIndex, Json::Va
 	columnMetaData["name"]			= Json::Value(name);
 	columnMetaData["measureType"]	= Json::Value(getColumnTypeNameForJASPFile(column.getColumnType()));
 
-	if (column.getColumnType()			!= columnType::scale)
+	if(column.getColumnType() == columnType::scale)
 	{
-		columnMetaData["type"] = Json::Value("integer");
-		dataSize += sizeof(int) * rowCount();
+		   columnMetaData["type"] = Json::Value("number");
+		   dataSize += sizeof(double) * rowCount();
 	}
 	else
 	{
-		columnMetaData["type"] = Json::Value("number");
-		dataSize += sizeof(double) * rowCount();
+		   columnMetaData["type"] = Json::Value("integer");
+		   dataSize += sizeof(int) * rowCount();
 	}
 
 
 	if (column.getColumnType() != columnType::scale)
 	{
 		Labels &labels = column.labels();
+
 		if (labels.size() > 0)
 		{
 			Json::Value &columnLabelData	= labelsData[name];

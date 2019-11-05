@@ -183,7 +183,7 @@ public:
 				std::string					getColumnTypeNameForJASPFile(columnType columnType);
 				void						writeDataSetToOStream(std::ostream & out, bool includeComputed);
 				columnType					parseColumnTypeForJASPFile(std::string name);
-				Json::Value					columnToJsonForJASPFile(size_t columnIndex, Json::Value labelsData, size_t & dataSize);
+				Json::Value					columnToJsonForJASPFile(size_t columnIndex, Json::Value & labelsData, size_t & dataSize);
 				void						columnLabelsFromJsonForJASPFile(Json::Value xData, Json::Value columnDesc, size_t columnIndex, std::map<std::string, std::map<int, int> > & mapNominalTextValues);
 
 				enum columnType				getColumnType(std::string columnName)	const;
@@ -230,6 +230,7 @@ signals:
 				void				freeDatasetSignal(DataSet * dataset);
 				void				filteredOutChanged(int column);
 				bool				checkDoSync();
+				void				modelInit();
 
 public slots:
 				void				refresh() { beginResetModel(); endResetModel(); }

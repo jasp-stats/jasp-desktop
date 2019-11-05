@@ -34,10 +34,10 @@ public:
 	DataSet(boost::interprocess::managed_shared_memory *mem) : _columns(mem), _filterVector(mem->get_segment_manager()), _mem(mem) { }
 	~DataSet() {}
 
-	size_t minRowCount()	const { return _columns.minRowCount(); }
-	size_t maxRowCount()	const { return _columns.maxRowCount(); }
+	size_t minRowCount()	const	{ return _columns.minRowCount(); }
+	size_t maxRowCount()	const	{ return _columns.maxRowCount(); }
 	size_t rowCount()		const;
-	size_t columnCount()	const { return _columns.columnCount(); }
+	size_t columnCount()	const	{ return _columns.columnCount(); }
 
 	Columns& columns()				{ return _columns; }
 

@@ -5,15 +5,16 @@ FilterModel::FilterModel(DataSetPackage * package, labelFilterGenerator * labelF
 	: QObject(package), _package(package), _labelFilterGenerator(labelFilterGenerator)
 {
 	reset();
-	connect(this,		&FilterModel::rFilterChanged,	this, &FilterModel::rescanRFilterForColumns);
-	connect(_package,	&DataSetPackage::modelReset,	this, &FilterModel::dataSetPackageResetDone);
+	connect(this,		&FilterModel::rFilterChanged,	this, &FilterModel::rescanRFilterForColumns	);
+	connect(_package,	&DataSetPackage::modelReset,	this, &FilterModel::dataSetPackageResetDone	);
+	connect(_package,	&DataSetPackage::modelInit,		this, &FilterModel::modelInit				);
 }
 
 void FilterModel::reset()
 {
-	_setGeneratedFilter(DEFAULT_FILTER_GEN);
-	setConstructedJSON(DEFAULT_FILTER_JSON);
-	_setRFilter(DEFAULT_FILTER);
+	_setGeneratedFilter(DEFAULT_FILTER_GEN	);
+	setConstructedJSON(	DEFAULT_FILTER_JSON	);
+	_setRFilter(		DEFAULT_FILTER		);
 
 	if(_package->rowCount() > 0)
 		sendGeneratedAndRFilter();
@@ -21,15 +22,19 @@ void FilterModel::reset()
 
 void FilterModel::dataSetPackageResetDone()
 {
-	_setGeneratedFilter(QString::fromStdString(_labelFilterGenerator->generateFilter()));
-	setConstructedJSON(QString::fromStdString(_package->filterConstructorJson()));
-	_setRFilter(QString::fromStdString(_package->dataFilter()));
+	_setGeneratedFilter(tq(_labelFilterGenerator->generateFilter())			);
+	setConstructedJSON(	tq(_package				->filterConstructorJson())	);
+	_setRFilter(		tq(_package				->dataFilter())				);
 
+
+}
+
+void FilterModel::modelInit()
+{
 	if(!_package->isArchive() || _package->filterShouldRunInit()) //Either this wasn't a JASP file (archive) and we need to run the filter after loading, or it *is* a JASP file but it is old (<0.11) and doesn't have filterVector stored in it yet.
 		sendGeneratedAndRFilter();
 
 	_package->setFilterShouldRunInit(true); //Make sure next time we come here (because of computed columns or something) we do actually run the filter
-
 }
 
 void FilterModel::setRFilter(QString newRFilter)
