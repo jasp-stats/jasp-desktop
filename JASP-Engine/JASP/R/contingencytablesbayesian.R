@@ -16,12 +16,11 @@
 #
 
 ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...) {
-  ready <- length(options$rows > 0) && length(options$columns > 0)
+  dataset <- .crossTabReadData(dataset, options)
+  ready <- !(length(options$rows) == 0 || length(options$columns) == 0)
   
-  if(ready) {
-    dataset <- .crossTabReadData(dataset, options)
+  if(ready)
     .crossTabCheckErrors(dataset, options)
-  }
   
   # Compute the combinations of rows, columns, layers
   analyses <- .crossTabComputeAnalyses(dataset, options, ready)
@@ -161,7 +160,8 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
     return()
   oddsRatioPlotContainer <- createJaspContainer("Log Odds Ratio Plots")
   dependList <- c("plotPosteriorOddsRatio", "hypothesis", "samplingModel",
-                  "plotPosteriorOddsRatioAdditionalInfo", "priorConcentration")
+                  "plotPosteriorOddsRatioAdditionalInfo", "priorConcentration",
+                  "counts", "layers")
   oddsRatioPlotContainer$dependOn(dependList)
   .contTablesBayesianCitations(oddsRatioPlotContainer)
   for (i in 1:nrow(analyses)){
@@ -199,6 +199,8 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
       if(length(options$rows) > 0 || length(options$columns) > 0)
         title <- paste0(analysis$rows, " - ", analysis$columns)
       logOddsPlot <- createJaspPlot(title = title, width = 530, height = 400)
+      logOddsPlot$position <- 5
+      logOddsPlot$dependOn(optionContainsValue = list(rows = analysis$rows, columns = analysis$columns))
       oddsRatioSubContainer[["plot"]] <- logOddsPlot
       oddsRatioPlotContainer[[paste0("plots", i, "sub", g)]] <- oddsRatioSubContainer
       
@@ -355,8 +357,10 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
           prop.consistent <- mean(theta[,1] < theta[,3])
       }
     }
-    bf1  <- bf1 * prop.consistent / 0.5
-    lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+    if(options$samplingModel != "hypergeometric") {
+      bf1  <- bf1 * prop.consistent / 0.5
+      lbf1 <- lbf1 + log(prop.consistent) - log(0.5)
+    }
   }
   
   if(options$hypothesis == "groupOneGreater") {
@@ -467,12 +471,12 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
   quantiles <- .crossTabCIPlusMedian(credibleIntervalInterval = sig,
                                            mean = mean(samples), sd = sd(samples),
                                            hypothesis = options$hypothesis)
-  #median <- quantiles$ci.median
-  #lower  <- quantiles$ci.lower
-  #upper  <- quantiles$ci.upper
-  median <- stats::median(samples)
-  lower  <- unname(stats::quantile(samples, p = alpha))
-  upper  <- unname(stats::quantile(samples, p = (1-alpha)))
+  median <- quantiles$ci.median
+  lower  <- quantiles$ci.lower
+  upper  <- quantiles$ci.upper
+  #median <- stats::median(samples)
+  #lower  <- unname(stats::quantile(samples, p = alpha))
+  #upper  <- unname(stats::quantile(samples, p = (1-alpha)))
   samplesList <- list(log.odds.ratio.samples = samples, BF = BF, 
                       median = median, lower.ci = lower, upper.ci = upper)
   logOddsSamples    <- createJaspState(samplesList)
