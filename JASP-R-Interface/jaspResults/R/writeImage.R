@@ -183,3 +183,21 @@ decodeplot.qgraph <- function(x) {
   x[["graphAttributes"]][["Nodes"]][["names"]]  <- names
   return(x)
 }
+
+decodeplot.function <- function(x) {
+
+  f <- tempfile()
+  on.exit({
+    if (file.exists(f))
+      file.remove(f)
+  })
+  
+  grDevices::png(f)
+  grDevices::dev.control('enable') # enable plot recording
+  
+  eval(x())
+  out <- grDevices::recordPlot()
+  grDevices::dev.off()
+  return(decodeplot.recordedplot(out))
+}
+
