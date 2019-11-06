@@ -132,11 +132,12 @@
       if (!is.null(grouping))
         dataset[[.v(grouping)]] <- as.factor(dataset[[.v(grouping)]])
 
-      # 100% required if we fully switch to columns = ... , but also allow the QMl iunterface to be not strict in terms of input,
+      # 100% required if we fully switch to columns = ... , but also allow the QML interface to be not strict in terms of input,
       # so factors can be entered in scale boxes. Joris probably has more ideas about this
-      for (var in .v(dependents))
-        dataset[[var]] <- as.numeric(dataset[[var]])
-
+      for (var in .v(dependents)) {
+        if (is.factor(dataset[[var]]))
+          dataset[[var]] <- as.numeric(levels(dataset[[var]]))[dataset[[var]]]
+      }
     }
   }
   return(dataset)
