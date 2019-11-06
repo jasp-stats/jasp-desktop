@@ -17,15 +17,15 @@
 
 RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   ready <- options$dependent != "" && (length(unlist(options$modelTerms)) > 0 || options$includeConstant)
-  
+
   if (ready) {
     dataset <- .linregReadDataset(dataset, options)
     .linregCheckErrors(dataset, options)
   }
-  
-  modelContainer <- .linregGetModelContainer(jaspResults, position = 1)
-  model <- .linregCalcModel(modelContainer, dataset, options, ready)
-  
+
+  modelContainer  <- .linregGetModelContainer(jaspResults, position = 1)
+  model           <- .linregCalcModel(modelContainer, dataset, options, ready)
+
   # these output elements show statistics of all the lm fits
   if (is.null(modelContainer[["summaryTable"]]))
     .linregCreateSummaryTable(modelContainer, model, options, position = 1)
@@ -38,7 +38,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 
   if (options$regressionCoefficientsBootstrapping && is.null(modelContainer[["bootstrapCoeffTable"]]))
     .linregCreateBootstrapCoefficientsTable(modelContainer, model, dataset, options, position = 4)
-  
+
   if (options$partAndPartialCorrelations && is.null(modelContainer[["partialCorTable"]]))
     .linregCreatePartialCorrelationsTable(modelContainer, model, dataset, options, position = 6)
 
@@ -47,19 +47,19 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 
   if (options$collinearityDiagnostics && is.null(modelContainer[["collinearityTable"]]))
     .linregCreateCollinearityDiagnosticsTable(modelContainer, model, options, position = 8)
-  
+
   # these output elements show statistics of the "final model" (lm fit with all predictors in enter method and last lm fit in stepping methods)
   finalModel <- model[[length(model)]]
-  
+
   if (options$residualsCasewiseDiagnostics && is.null(modelContainer[["casewiseTable"]]))
     .linregCreateCasewiseDiagnosticsTable(modelContainer, finalModel, options, position = 9)
-  
+
   if (options$residualsStatistics && is.null(modelContainer[["residualsTable"]]))
     .linregCreateResidualsTable(modelContainer, finalModel, options, position = 10)
-  
+
   if (options$plotResidualsDependent && is.null(modelContainer[["residualsVsDepPlot"]]))
      .linregCreateResidualsVsDependentPlot(modelContainer, finalModel, options, position = 11)
-   
+
   if (options$plotResidualsCovariates && is.null(modelContainer[["residualsVsCovContainer"]]))
     .linregCreateResidualsVsCovariatesPlots(modelContainer, finalModel, dataset, options, position = 12)
 
@@ -75,7 +75,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   # these output elements are not dependent on any model
   if (options$plotsPartialRegression && is.null(modelContainer[["partialPlotContainer"]]))
     .linregCreatePartialPlots(modelContainer, dataset, options, position = 16)
-  
+
   if (options$descriptives && is.null(jaspResults[["descriptivesTable"]]))
     .linregCreateDescriptivesTable(jaspResults, dataset, options, position = 2)
 }
@@ -83,12 +83,12 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 .linregReadDataset <- function(dataset, options) {
   if (!is.null(dataset))
     return(dataset)
-  
-  numericVariables <- c(options$dependent, unlist(options$covariates), options$wlsWeights)
-  numericVariables <- numericVariables[numericVariables != ""]
-  factors <- unlist(options$factors)
-  dataset <- .readDataSetToEnd(columns.as.factor = factors, columns.as.numeric = numericVariables, exclude.na.listwise = c(factors, numericVariables))
-  
+
+  numericVariables  <- c(options$dependent, unlist(options$covariates), options$wlsWeights)
+  numericVariables  <- numericVariables[numericVariables != ""]
+  factors           <- unlist(options$factors)
+  dataset           <- .readDataSetToEnd(columns.as.factor = factors, columns.as.numeric = numericVariables, exclude.na.listwise = c(factors, numericVariables))
+
   return(dataset)
 }
 
@@ -96,42 +96,42 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   stepwiseProcedureChecks <- NULL
   if (options$method %in% c("backward", "forward", "stepwise")) {
     stepwiseProcedureChecks <- list(
-      
+
       checkIfContainsInteractions <- function() {
         hasInteractions <- FALSE
-      
+
         for (i in seq_along(options$modelTerms))
           if (length(options$modelTerms[[i]]$components) > 1)
             hasInteractions <- TRUE
-          
+
         if (hasInteractions)
           return("Stepwise procedures are not supported for models containing interaction terms")
       },
-      
+
       checkIfPEntryIsValid <- function() {
         if (options$steppingMethodCriteriaType == "usePValue" && options$steppingMethodCriteriaPEntry > options$steppingMethodCriteriaPRemoval)
           return("Error in Stepping Method Criteria: Entry p-value needs to be smaller than removal p-value")
       },
-      
+
       checkIfFEntryIsValid <- function() {
         if (options$steppingMethodCriteriaType == "useFValue" && options$steppingMethodCriteriaFEntry < options$steppingMethodCriteriaFRemoval)
           return("Error in Stepping Method Criteria: Entry F-value needs to be larger than removal F-value")
       }
-      
+
     )
   }
 
-  .hasErrors(dataset, type = c("infinity", "variance", "observations", "modelInteractions", "varCovData"), allowEmptyDataset = FALSE, 
-             custom = stepwiseProcedureChecks, all.target = c(options$dependent, unlist(options$covariates)), 
+  .hasErrors(dataset, type = c("infinity", "variance", "observations", "modelInteractions", "varCovData"), allowEmptyDataset = FALSE,
+             custom = stepwiseProcedureChecks, all.target = c(options$dependent, unlist(options$covariates)),
              observations.amount = "< 2", modelInteractions.modelTerms = options$modelTerms, varCovData.corFun = stats::cov,
              exitAnalysisIfErrors = TRUE)
-  
+
   if (options$wlsWeights != "") {
-    .hasErrors(dataset, type = c("infinity", "limits", "observations"), 
+    .hasErrors(dataset, type = c("infinity", "limits", "observations"),
                all.target = options$wlsWeights, limits.min = 1, observations.amount = "< 2",
                exitAnalysisIfErrors = TRUE)
-    
-    covwt <- function(...) return(stats::cov.wt(..., wt=dataset[[.v(options[["wlsWeights"]])]])$cov)
+
+    covwt <- function(...) return(stats::cov.wt(..., wt = dataset[[.v(options[["wlsWeights"]])]])$cov)
     .hasErrors(dataset[, -which(colnames(dataset) %in% c(.v(options$wlsWeights)))],  type = "varCovData", varCovData.corFun = covwt,
                exitAnalysisIfErrors = TRUE)
   }
@@ -140,7 +140,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 .linregGetModelContainer <- function(jaspResults, position) {
   if (is.null(jaspResults[["modelContainer"]])) {
     modelContainer <- createJaspContainer()
-    modelContainer$dependOn(c("dependent", "method", "covariates", "factors", "wlsWeights", "modelTerms", "steppingMethodCriteriaType", 
+    modelContainer$dependOn(c("dependent", "method", "covariates", "factors", "wlsWeights", "modelTerms", "steppingMethodCriteriaType",
                               "steppingMethodCriteriaPEntry", "steppingMethodCriteriaPRemoval", "steppingMethodCriteriaFEntry", "steppingMethodCriteriaFRemoval",
                               "includeConstant", "missingValues"))
     modelContainer$position <- position
@@ -154,40 +154,40 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   summaryTable$dependOn(c("residualsDurbinWatson", "rSquaredChange"))
   summaryTable$position <- position
   summaryTable$showSpecifiedColumnsOnly <- TRUE
-  
-  summaryTable$addColumnInfo(name = "model", title = "Model", type = "string")
-  summaryTable$addColumnInfo(name = "R", title = "R", type = "number", format = "dp:3")
-  summaryTable$addColumnInfo(name = "R2", title = "R\u00B2", type = "number", format = "dp:3")
-  summaryTable$addColumnInfo(name = "adjR2", title = "Adjusted R\u00B2", type = "number", format = "dp:3")
-  summaryTable$addColumnInfo(name = "RMSE", title = "RMSE", type = "number")
-  
+
+  summaryTable$addColumnInfo(name = "model",  title = "Model",            type = "string")
+  summaryTable$addColumnInfo(name = "R",      title = "R",                type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "R2",     title = "R\u00B2",          type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "adjR2",  title = "Adjusted R\u00B2", type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "RMSE",   title = "RMSE",             type = "number")
+
   if (options$rSquaredChange) {
-    summaryTable$addColumnInfo(name = "R2c", title = "R\u00B2 Change", type = "number", format = "dp:3")
-    summaryTable$addColumnInfo(name = "Fc", title = "F Change", type = "number")
-    summaryTable$addColumnInfo(name = "df1", title = "df1", type = "integer")
-    summaryTable$addColumnInfo(name = "df2", title = "df2", type = "integer")
-    summaryTable$addColumnInfo(name = "p", title = "p", type = "pvalue")
+    summaryTable$addColumnInfo(name = "R2c",  title = "R\u00B2 Change", type = "number", format = "dp:3")
+    summaryTable$addColumnInfo(name = "Fc",   title = "F Change",       type = "number")
+    summaryTable$addColumnInfo(name = "df1",  title = "df1",            type = "integer")
+    summaryTable$addColumnInfo(name = "df2",  title = "df2",            type = "integer")
+    summaryTable$addColumnInfo(name = "p",    title = "p",              type = "pvalue")
   }
-  
+
   if (options$residualsDurbinWatson) {
-    summaryTable$addColumnInfo(name = "DW_ac", title = "Autocorrelation", type = "number", overtitle = "Durbin-Watson")
-    summaryTable$addColumnInfo(name = "DW", title = "Statistic", type = "number", overtitle = "Durbin-Watson")
-    
+    summaryTable$addColumnInfo(name = "DW_ac",  title = "Autocorrelation",  type = "number", overtitle = "Durbin-Watson")
+    summaryTable$addColumnInfo(name = "DW",     title = "Statistic",        type = "number", overtitle = "Durbin-Watson")
+
     if (options$wlsWeights == "")
       summaryTable$addColumnInfo(name = "DW_p", title = "p", type = "pvalue", overtitle = "Durbin-Watson")
     else
       summaryTable$addFootnote(message = "p-value for Durbin-Watson test is unavailable for weighted regression.")
   }
-  
+
   .linregAddPredictorsInNullFootnote(summaryTable, options$modelTerms)
-  
+
   if (!is.null(model)) {
     if (length(model) == 1 && length(model[[1]]$predictors) == 0 && !options$includeConstant)
       summaryTable$addFootnote("No covariate could be entered in the model")
     else
       .linregFillSummaryTable(summaryTable, model)
   }
-  
+
   modelContainer[["summaryTable"]] <- summaryTable
 }
 
@@ -196,21 +196,21 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     lmSummary     <- model[[i]][["summary"]]
     rSquareChange <- model[[i]][["rSquareChange"]]
     durbinWatson  <- model[[i]][["durbinWatson"]]
-    
+
     summaryTable$addRows(list(
       model = model[[i]]$title,
-      R = as.numeric(sqrt(lmSummary$r.squared)),
-      R2 = as.numeric(lmSummary$r.squared),
+      R     = as.numeric(sqrt(lmSummary$r.squared)),
+      R2    = as.numeric(lmSummary$r.squared),
       adjR2 = as.numeric(lmSummary$adj.r.squared),
-      RMSE = as.numeric(lmSummary$sigma),
-      R2c = rSquareChange$R2c,
-      Fc = rSquareChange$Fc,
-      df1 = rSquareChange$df1,
-      df2 = rSquareChange$df2,
-      p = rSquareChange$p,
+      RMSE  = as.numeric(lmSummary$sigma),
+      R2c   = rSquareChange$R2c,
+      Fc    = rSquareChange$Fc,
+      df1   = rSquareChange$df1,
+      df2   = rSquareChange$df2,
+      p     = rSquareChange$p,
       DW_ac = durbinWatson$r,
-      DW = durbinWatson$dw,
-      DW_p = durbinWatson$p
+      DW    = durbinWatson$dw,
+      DW_p  = durbinWatson$p
     ))
   }
 }
@@ -220,7 +220,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   anovaTable$dependOn(c("modelFit", "VovkSellkeMPR"))
   anovaTable$position <- position
   anovaTable$showSpecifiedColumnsOnly <- TRUE
-  
+
   anovaTable$addColumnInfo(name = "model", title = "Model",          type = "string", combine = TRUE)
   anovaTable$addColumnInfo(name = "cases", title = "",               type = "string")
   anovaTable$addColumnInfo(name = "SS",    title = "Sum of Squares", type = "number")
@@ -228,24 +228,24 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   anovaTable$addColumnInfo(name = "MS",    title = "Mean Square",    type = "number")
   anovaTable$addColumnInfo(name = "F",     title = "F",              type = "number")
   anovaTable$addColumnInfo(name = "p",     title = "p",              type = "pvalue")
-  
+
   .linregAddPredictorsInNullFootnote(anovaTable, options$modelTerms)
   .linregAddVovkSellke(anovaTable, options$VovkSellkeMPR)
-  
+
   if (!is.null(model)) {
     .linregAddInterceptNotShownFootnote(anovaTable, model, options)
     .linregFillAnovaTable(anovaTable, model, options)
   }
-  
+
   modelContainer[["anovaTable"]] <- anovaTable
 }
 
 .linregFillAnovaTable <- function(anovaTable, model, options) {
   indicesOfModelsWithPredictors <- .linregGetIndicesOfModelsWithPredictors(model, options)
   for (i in indicesOfModelsWithPredictors) {
-    isNewGroup <- i > 1
-    anovaRes <- .linregGetAnova(model[[i]]$fit, model[[i]]$predictors)
-    
+    isNewGroup  <- i > 1
+    anovaRes    <- .linregGetAnova(model[[i]]$fit, model[[i]]$predictors)
+
     for (rowType in c("Regression", "Residual", "Total")) {
       anovaTable$addRows(c(anovaRes[[rowType]], list(.isNewGroup = isNewGroup, model = model[[i]]$title, cases = rowType)))
       isNewGroup <- FALSE
@@ -259,7 +259,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
                         "collinearityDiagnostics", "VovkSellkeMPR"))
   coeffTable$position <- position
   coeffTable$showSpecifiedColumnsOnly <- TRUE
-  
+
   coeffTable$addColumnInfo(name = "model",        title = "Model",          type = "string", combine = TRUE)
   coeffTable$addColumnInfo(name = "name",         title = "",               type = "string")
   coeffTable$addColumnInfo(name = "unstandCoeff", title = "Unstandardized", type = "number")
@@ -267,33 +267,33 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   coeffTable$addColumnInfo(name = "standCoeff",   title = "Standardized",   type = "number")
   coeffTable$addColumnInfo(name = "t",            title = "t",              type = "number")
   coeffTable$addColumnInfo(name = "p",            title = "p",              type = "pvalue")
-  
+
   .linregAddVovkSellke(coeffTable, options$VovkSellkeMPR)
-  
+
   if (options$regressionCoefficientsConfidenceIntervals) {
     overtitle <- paste0(100 * options$regressionCoefficientsConfidenceIntervalsInterval, "% CI")
     coeffTable$addColumnInfo(name = "lower", title = "Lower", type = "number", overtitle = overtitle)
     coeffTable$addColumnInfo(name = "upper", title = "Upper", type = "number", overtitle = overtitle)
   }
-  
+
   if (options$collinearityDiagnostics) {
     overtitle <- "Collinearity Statistics"
-    coeffTable$addColumnInfo(name = "tolerance", title = "Tolerance", type = "number", format = "dp:3", overtitle = overtitle)
-    coeffTable$addColumnInfo(name = "VIF", title = "VIF", type = "number", overtitle = overtitle)
+    coeffTable$addColumnInfo(name = "tolerance",  title = "Tolerance",  type = "number", format = "dp:3", overtitle = overtitle)
+    coeffTable$addColumnInfo(name = "VIF",        title = "VIF",        type = "number", overtitle = overtitle)
   }
-  
+
   if (!is.null(model))
     .linregFillCoefficientsTable(coeffTable, model, dataset, options)
-  
+
   modelContainer[["coeffTable"]] <- coeffTable
 }
 
 .linregFillCoefficientsTable <- function(coeffTable, model, dataset, options) {
   for (i in seq_along(model)) {
     isNewGroup <- i > 1
-    
+
     coefficients <- .linregGetCoefficients(model[[i]]$fit, model[[i]]$predictors, dataset, options)
-    
+
     for (j in seq_along(coefficients)) {
       coeffTable$addRows(c(coefficients[[j]], list(.isNewGroup = isNewGroup, model = model[[i]]$title)))
       isNewGroup <- FALSE
@@ -307,42 +307,42 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
                                  "regressionCoefficientsBootstrapping", "regressionCoefficientsBootstrappingReplicates"))
   bootstrapCoeffTable$position <- position
   bootstrapCoeffTable$showSpecifiedColumnsOnly <- TRUE
-  
+
   bootstrapCoeffTable$addColumnInfo(name = "model",        title = "Model",          type = "string", combine = TRUE)
   bootstrapCoeffTable$addColumnInfo(name = "name",         title = "",               type = "string")
   bootstrapCoeffTable$addColumnInfo(name = "unstandCoeff", title = "Unstandardized", type = "number")
   bootstrapCoeffTable$addColumnInfo(name = "bias",         title = "Bias",           type = "number")
   bootstrapCoeffTable$addColumnInfo(name = "SE",           title = "Standard Error", type = "number")
-  
+
   if (options$regressionCoefficientsConfidenceIntervals) {
     overtitle <- paste0(100 * options$regressionCoefficientsConfidenceIntervalsInterval, "% bca\u002A CI")
     bootstrapCoeffTable$addColumnInfo(name = "lower", title = "Lower", type = "number", overtitle = overtitle)
     bootstrapCoeffTable$addColumnInfo(name = "upper", title = "Upper", type = "number", overtitle = overtitle)
   }
-  
+
   bootstrapCoeffTable$addFootnote(paste0("Bootstrapping based on ", options[['regressionCoefficientsBootstrappingReplicates']], " replicates."))
   bootstrapCoeffTable$addFootnote("Coefficient estimate is based on the median of the bootstrap distribution.")
   bootstrapCoeffTable$addFootnote("Bias corrected accelerated", symbol = "\u002A")
-  
+
   modelContainer[["bootstrapCoeffTable"]] <- bootstrapCoeffTable
-  
+
   if (!is.null(model))
     .linregFillBootstrapCoefficientsTable(bootstrapCoeffTable, modelContainer, model, dataset, options)
 }
 
 .linregFillBootstrapCoefficientsTable <- function(bootstrapCoeffTable, modelContainer, model, dataset, options) {
   metaCols <- .linregGetTitlesAndIsNewGroups(model, options$includeConstant)
-  
+
   if (is.null(modelContainer[["bootstrapCoefficients"]])) {
     startProgressbar(options$regressionCoefficientsBootstrappingReplicates * length(model))
     bootstrapCoeffTable$setData(metaCols)
-    
+
     coefficients <- NULL
     for (i in seq_along(model)) {
       coefficients <- rbind(coefficients, .linregGetBootstrapCoefficients(model[[i]]$fit, model[[i]]$predictors, dataset, options))
       bootstrapCoeffTable$setData(.linregCombineMetaWithData(metaCols, coefficients))
     }
-    
+
     modelContainer[["bootstrapCoefficients"]] <- createJaspState(coefficients)
     modelContainer[["bootstrapCoefficients"]]$dependOn(c("regressionCoefficientsBootstrappingReplicates", "regressionCoefficientsConfidenceIntervalsInterval"))
   } else {
@@ -351,31 +351,31 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 }
 
 .linregGetTitlesAndIsNewGroups <- function(model, includeConstant) {
-  isNewGroup <- logical(0)
-  titles <- character(0)
+  isNewGroup  <- logical(0)
+  titles      <- character(0)
   for (i in seq_along(model)) {
     numPredictors <- length(model[[i]]$predictors)
     if (includeConstant)
       numPredictors <- numPredictors + 1
-    
+
     isNewGroupCurrent <- i > 1
     if (numPredictors > 1)
       isNewGroupCurrent <- c(isNewGroupCurrent, logical(numPredictors - 1))
-    
-    isNewGroup <- c(isNewGroup, isNewGroupCurrent)
-    titles <- c(titles, rep(model[[i]]$title, numPredictors))
+
+    isNewGroup  <- c(isNewGroup, isNewGroupCurrent)
+    titles      <- c(titles, rep(model[[i]]$title, numPredictors))
   }
-  
+
   return(data.frame(.isNewGroup = isNewGroup, model = titles))
 }
 
 .linregCombineMetaWithData <- function(meta, data) { # this can go once we can add cells to a jaspTable
   if (!is.data.frame(meta) || !is.data.frame(data))
     stop("expecting both arguments to be data.frames")
-  
-  filler <- matrix(NA, ncol(data), nrow=nrow(meta)-nrow(data))
-  colnames(filler) <- names(data)
-  data <- rbind(data, filler)
+
+  filler            <- matrix(NA, ncol(data), nrow = nrow(meta)-nrow(data))
+  colnames(filler)  <- names(data)
+  data              <- rbind(data, filler)
 
   return(cbind(meta, data))
 }
@@ -384,7 +384,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   partPartialTable <- createJaspTable("Part And Partial Correlations")
   partPartialTable$dependOn("partAndPartialCorrelations")
   partPartialTable$position <- position
-  
+
   partPartialTable$addColumnInfo(name = "model",   title = "Model",   type = "string", combine = TRUE)
   partPartialTable$addColumnInfo(name = "name",    title = "",        type = "string")
   partPartialTable$addColumnInfo(name = "partial", title = "Partial", type = "number", format = "dp:3")
@@ -394,7 +394,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     .linregAddInterceptNotShownFootnote(partPartialTable, model, options)
     .linregFillPartialCorrelationsTable(partPartialTable, model, dataset, options)
   }
-  
+
   modelContainer[["partialCorTable"]] <- partPartialTable
 }
 
@@ -416,7 +416,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   covMatTable <- createJaspTable("Coefficients Covariance Matrix")
   covMatTable$dependOn("regressionCoefficientsCovarianceMatrix")
   covMatTable$position <- position
-  
+
   covMatTable$addColumnInfo(name = "model", title = "Model", type = "string", combine = TRUE)
   covMatTable$addColumnInfo(name = "name",  title = "",      type = "string")
 
@@ -425,7 +425,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     .linregAddInterceptNotShownFootnote(covMatTable, model, options)
     .linregFillCoefficientsCovarianceMatrixTable(covMatTable, model, options)
   }
-  
+
   modelContainer[["coeffCovMatrixTable"]] <- covMatTable
 }
 
@@ -434,7 +434,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   indicesOfModelsWithPredictors <- .linregGetIndicesOfModelsWithPredictors(model, options)
   for (i in indicesOfModelsWithPredictors) {
     isNewGroup <- i > 1
-    
+
     covData <- .linregGetCovarianceMatrix(model[[i]]$fit, model[[i]]$predictors, columns, options$includeConstant)
     if (nrow(covData) > 0) {
       covData <- cbind(covData, .isNewGroup = c(isNewGroup, rep(F, nrow(covData) - 1)), model = model[[i]]$title)
@@ -447,18 +447,18 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   collDiagTable <- createJaspTable("Collinearity Diagnostics")
   collDiagTable$dependOn("collinearityDiagnostics")
   collDiagTable$position <- position
-  
+
   collDiagTable$addColumnInfo(name = "model",      title = "Model",           type = "string", combine = TRUE)
   collDiagTable$addColumnInfo(name = "dimension",  title = "Dimension",       type = "integer")
   collDiagTable$addColumnInfo(name = "eigenvalue", title = "Eigenvalue",      type = "number")
   collDiagTable$addColumnInfo(name = "condIndex",  title = "Condition Index", type = "number")
-  
+
   if (!is.null(model)) {
     .linregAddPredictorsAsColumns(collDiagTable, model, options$modelTerms, options$includeConstant, overtitle = "Variance Proportions", format = "dp:3")
     .linregAddInterceptNotShownFootnote(collDiagTable, model, options)
     .linregFillCollinearityDiagnosticsTable(collDiagTable, model, options)
   }
-  
+
   modelContainer[["collinearityTable"]] <- collDiagTable
 }
 
@@ -467,30 +467,30 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   indicesOfModelsWithPredictors <- .linregGetIndicesOfModelsWithPredictors(model, options)
   for (i in indicesOfModelsWithPredictors) {
     isNewGroup <- i > 1
-    
+
     collDiagData <- .linregGetCollinearityDiagnostics(model[[i]]$fit, columns, options$includeConstant)
     collDiagData <- cbind(collDiagData, .isNewGroup = c(isNewGroup, rep(F, nrow(collDiagData) - 1)), model = model[[i]]$title)
-    
+
     collDiagTable$addRows(collDiagData)
   }
 }
 
 .linregCreateCasewiseDiagnosticsTable <- function(modelContainer, finalModel, options, position) {
   caseDiagTable <- createJaspTable("Casewise Diagnostics")
-  caseDiagTable$dependOn(c("residualsCasewiseDiagnostics", "residualsCasewiseDiagnosticsType", 
+  caseDiagTable$dependOn(c("residualsCasewiseDiagnostics", "residualsCasewiseDiagnosticsType",
                            "residualsCasewiseDiagnosticsOutliersOutside", "residualsCasewiseDiagnosticsCooksDistance"))
   caseDiagTable$position <- position
-  
+
   caseDiagTable$addColumnInfo(name = "caseNumber",  title = "Case Number",     type = "integer")
   caseDiagTable$addColumnInfo(name = "stdResidual", title = "Std. Residual",   type = "number", format = "dp:3")
   caseDiagTable$addColumnInfo(name = "dependent",   title = options$dependent, type = "number")
   caseDiagTable$addColumnInfo(name = "predicted",   title = "Predicted Value", type = "number")
   caseDiagTable$addColumnInfo(name = "residual",    title = "Residual",        type = "number")
   caseDiagTable$addColumnInfo(name = "cooksD",      title = "Cook's Distance", type = "number", format = "dp:3")
-  
+
   if (!is.null(finalModel))
     caseDiagTable$setData(.linregGetCasewiseDiagnostics(finalModel$fit, options)) #TODO: maybe add footnote to casewise diagnostics if there are no cases to show?
-  
+
   modelContainer[["casewiseTable"]] <- caseDiagTable
 }
 
@@ -498,17 +498,17 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   residualsTable <- createJaspTable("Residuals Statistics")
   residualsTable$dependOn("residualsStatistics")
   residualsTable$position <- position
-  
+
   residualsTable$addColumnInfo(name = "type", title = "",        type = "string")
   residualsTable$addColumnInfo(name = "min",  title = "Minimum", type = "number")
   residualsTable$addColumnInfo(name = "max",  title = "Maximum", type = "number")
   residualsTable$addColumnInfo(name = "mean", title = "Mean",    type = "number")
   residualsTable$addColumnInfo(name = "SD",   title = "SD",      type = "number")
   residualsTable$addColumnInfo(name = "N",    title = "N",       type = "integer")
-  
+
   if (!is.null(finalModel))
     residualsTable$addRows(.linregGetResidualsStatistics(finalModel$fit, finalModel$predictors))
-  
+
   modelContainer[["residualsTable"]] <- residualsTable
 }
 
@@ -516,9 +516,9 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   residVsDepPlot <- createJaspPlot(title = "Residuals vs. Dependent", width = 530, height = 400)
   residVsDepPlot$dependOn("plotResidualsDependent")
   residVsDepPlot$position <- position
-  
+
   modelContainer[["residualsVsDepPlot"]] <- residVsDepPlot
-  
+
   if (!is.null(finalModel) && !is.null(finalModel$fit)) {
     fit <- finalModel$fit
     .linregInsertPlot(residVsDepPlot, .linregPlotResiduals, xVar = fit$model[ , 1], xlab = options$dependent, res = residuals(fit), ylab = "Residuals")
@@ -530,12 +530,12 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   residualsVsCovContainer$dependOn("plotResidualsCovariates")
   residualsVsCovContainer$position <- position
   modelContainer[["residualsVsCovContainer"]] <- residualsVsCovContainer
-  
+
   if (!is.null(finalModel)) {
     predictors <- finalModel$predictors
     for (predictor in predictors)
       .linregCreatePlotPlaceholder(residualsVsCovContainer, index = .unvf(predictor), title = paste("Residuals vs.", .unvf(predictor)))
-    
+
     for (predictor in predictors)
       .linregFillResidualsVsCovariatesPlot(residualsVsCovContainer[[.unvf(predictor)]], predictor, finalModel$fit, dataset)
   }
@@ -554,9 +554,9 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   residVsPredPlot <- createJaspPlot(title = "Residuals vs. Predicted", width = 530, height = 400)
   residVsPredPlot$dependOn("plotResidualsPredicted")
   residVsPredPlot$position <- position
-  
+
   modelContainer[["residualsVsPredPlot"]] <- residVsPredPlot
-  
+
   if (!is.null(finalModel) && !is.null(finalModel$fit)) {
     fit <- finalModel$fit
     .linregInsertPlot(residVsPredPlot, .linregPlotResiduals, xVar = predict(fit), xlab = "Predicted Values", res = residuals(fit), ylab = "Residuals")
@@ -567,27 +567,27 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   title <- "Residuals Histogram"
   if (options$plotResidualsHistogramStandardized)
     title <- paste("Standardized", title)
-  
+
   residVsHistPlot <- createJaspPlot(title = title, width = 530, height = 400)
   residVsHistPlot$dependOn(c("plotResidualsHistogram", "plotResidualsHistogramStandardized"))
   residVsHistPlot$position <- position
-  
+
   modelContainer[["residualsVsHistPlot"]] <- residVsHistPlot
-  
+
   if (!is.null(finalModel))
     .linregFillResidualsVsHistogramPlot(residVsHistPlot, finalModel$fit, options)
 }
 
 .linregFillResidualsVsHistogramPlot <- function(residVsHistPlot, fit, options) {
   if (!is.null(fit)) {
-    
+
     residName <- "Residuals"
-    resid <- residuals(fit)
+    resid     <- residuals(fit)
     if (options$plotResidualsHistogramStandardized) {
       residName <- paste("Standardized", residName)
-      resid <- resid / sd(resid)
+      resid     <- resid / sd(resid)
     }
-    
+
     .linregInsertPlot(residVsHistPlot, .linregPlotResidualsHistogram, res = resid, resName = residName)
   }
 }
@@ -596,9 +596,9 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   residQQPlot <- createJaspPlot(title = "Q-Q Plot Standardized Residuals", width = 400, height = 400)
   residQQPlot$dependOn("plotResidualsQQ")
   residQQPlot$position <- position
-  
+
   modelContainer[["residualsQQPlot"]] <- residQQPlot
-  
+
   if (!is.null(finalModel) && !is.null(finalModel$fit)) {
     fit <- finalModel$fit
     .linregInsertPlot(residQQPlot, .linregPlotQQresiduals, res = residuals(fit) / sd(residuals(fit)))
@@ -606,42 +606,42 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 }
 
 .linregCreatePartialPlots <- function(modelContainer, dataset, options, position) {
-  predictors <- .linregGetPredictors(options$modelTerms, encoded=TRUE)
-  
+  predictors <- .linregGetPredictors(options$modelTerms, encoded = TRUE)
+
   title <- "Partial Regression Plot"
   if (length(predictors) > 1)
     title <- paste0(title, "s")
-  
+
   partialPlotContainer <- createJaspContainer(title)
   partialPlotContainer$dependOn("plotsPartialRegression")
   partialPlotContainer$position <- position
   modelContainer[["partialPlotContainer"]] <- partialPlotContainer
-  
-  predictors <- .linregGetPredictors(options$modelTerms, encoded=TRUE)
+
+  predictors <- .linregGetPredictors(options$modelTerms, encoded = TRUE)
   if (any(.linregIsInteraction(predictors))) {
     .linregCreatePlotPlaceholder(partialPlotContainer, index = "placeholder", title = "")
     partialPlotContainer$setError("Partial plots are not supported for models containing interaction terms")
     return()
   }
-  
+
   if (length(predictors) > 0) {
     for (predictor in predictors)
       .linregCreatePlotPlaceholder(partialPlotContainer, index = .unvf(predictor), title = paste(options$dependent, "vs.", .unvf(predictor)))
-    
+
     for (predictor in predictors) {
       .linregFillPartialPlot(partialPlotContainer[[.unvf(predictor)]], predictor, predictors, dataset, options)
     }
   }
 }
-  
+
 .linregFillPartialPlot <- function(partialPlot, predictor, predictors, dataset, options) {
-  plotData <- .linregGetPartialPlotData(predictor, predictors, dataset, options)
-  xVar <- plotData[["residualsPred"]]
-  resid <- plotData[["residualsDep"]]
-  
-  xlab <- paste0("Residuals ", .unvf(predictor))
-  ylab <- paste0("Residuals ", options$dependent)
-  
+  plotData  <- .linregGetPartialPlotData(predictor, predictors, dataset, options)
+  xVar      <- plotData[["residualsPred"]]
+  resid     <- plotData[["residualsDep"]]
+
+  xlab      <- paste0("Residuals ", .unvf(predictor))
+  ylab      <- paste0("Residuals ", options$dependent)
+
   .linregInsertPlot(partialPlot, .linregPlotResiduals, xVar = xVar, res = resid, xlab = xlab, ylab = ylab, regressionLine = TRUE, standardizedResiduals = FALSE)
 }
 
@@ -649,42 +649,42 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   descriptivesTable <- createJaspTable("Descriptives")
   descriptivesTable$dependOn(c("dependent", "covariates", "descriptives"))
   descriptivesTable$position <- position
-  
+
   descriptivesTable$addColumnInfo(name = "var",  title = "",     type = "string")
   descriptivesTable$addColumnInfo(name = "N",    title = "N",    type = "integer")
   descriptivesTable$addColumnInfo(name = "mean", title = "Mean", type = "number")
   descriptivesTable$addColumnInfo(name = "SD",   title = "SD",   type = "number")
   descriptivesTable$addColumnInfo(name = "SE",   title = "SE",   type = "number")
-  
+
   variables <- c(options$dependent, unlist(options$covariates))
   variables <- variables[variables != ""]
   if (length(variables) > 0)
     descriptivesTable$addRows(.linregGetDescriptives(variables, dataset))
-  
+
   jaspResults[["descriptivesTable"]] <- descriptivesTable
 }
 
 .linregCalcModel <- function(modelContainer, dataset, options, ready) {
   if (!ready)
     return()
-  
+
   if (!is.null(modelContainer[["model"]]))
     return(modelContainer[["model"]]$object)
-  
-  dependent <- .v(options$dependent)
-  predictorsInNull <- .linregGetPredictors(options$modelTerms, modelType="null")
-  predictors <- .linregGetPredictors(options$modelTerms, modelType="alternative") # these include the null terms
-  
+
+  dependent         <- .v(options$dependent)
+  predictorsInNull  <- .linregGetPredictors(options$modelTerms, modelType = "null")
+  predictors        <- .linregGetPredictors(options$modelTerms, modelType = "alternative") # these include the null terms
+
   if (options$wlsWeights != "")
     weights <- dataset[[.v(options$wlsWeights)]]
   else
     weights <- rep(1, length(dataset[[dependent]]))
-  
+
   if (options$method %in% c("backward", "forward", "stepwise") && length(predictors) > 0)
     model <- .linregGetModelSteppingMethod(dependent, predictors, predictorsInNull, dataset, options, weights)
   else
     model <- .linregGetModelEnterMethod(dependent, predictors, predictorsInNull, dataset, options, weights)
-  
+
   for (i in seq_along(model)) {
     singleModel <- model[[i]]
     model[[i]][["title"]]         <- .linregGetModelTitle(singleModel$predictors, predictorsInNull, options$method, i)
@@ -692,9 +692,9 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     model[[i]][["durbinWatson"]]  <- .linregGetDurBinWatsonTestResults(singleModel$fit, options$wlsWeights)
     model[[i]][["rSquareChange"]] <- .linregGetrSquaredChange(singleModel$fit, singleModel$predictors, i, model[1:i], dataset[[dependent]])
   }
-  
+
   modelContainer[["model"]] <- createJaspState(model)
-  
+
   return(model)
 }
 
@@ -705,53 +705,53 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     model <- .linregForwardRegression(dependent, predictors, predictorsInNull, dataset, options, weights)
   else # stepwise
     model <- .linregStepwiseRegression(dependent, predictors, predictorsInNull, dataset, options, weights)
-  
+
   return(model)
 }
 
 .linregGetModelEnterMethod <- function(dependent, predictors, predictorsInNull, dataset, options, weights) {
   model <- list()
-  
-  formulaNull   <- NULL
+
+  formulaNull <- NULL
   if (length(predictorsInNull) > 0)
     formulaNull <- .linregGetFormula(dependent, predictorsInNull, options$includeConstant)
   else if (options$includeConstant)
     formulaNull <- .linregGetFormula(dependent, NULL, TRUE)
-  
+
   formula <- NULL
   if (length(predictors) > 0 && !all(predictors %in% predictorsInNull))
     formula <- .linregGetFormula(dependent, predictors, options$includeConstant)
-  
+
   if (!is.null(formulaNull)) {
-    fitNull <- stats::lm(formulaNull, data = dataset, weights = weights, x=TRUE)
+    fitNull <- stats::lm(formulaNull, data = dataset, weights = weights, x = TRUE)
     model[[1]] <- list(fit = fitNull, predictors = predictorsInNull, title = "H\u2080")
   }
-  
+
   if (!is.null(formula)) {
-    fit <- stats::lm(formula, data = dataset, weights = weights, x=TRUE)
+    fit <- stats::lm(formula, data = dataset, weights = weights, x = TRUE)
     model[[length(model) + 1]] <- list(fit = fit, predictors = predictors, title = "H\u2081")
   }
-  
+
   return(model)
 }
 
 .linregBackwardRegression <- function(dependent, predictors, predictorsInNull, data, options, weights) {
   formula <- .linregGetFormula(dependent, predictors, options$includeConstant)
-  fit <- stats::lm(formula, data=data, weights = weights, x=TRUE)
-  model <- list(list(fit = fit, predictors = predictors))
-  
+  fit     <- stats::lm(formula, data = data, weights = weights, x = TRUE)
+  model   <- list(list(fit = fit, predictors = predictors))
+
   candidatePredictors <- setdiff(predictors, predictorsInNull)
   while (length(candidatePredictors) > 0) {
     prevModel <- model[[length(model)]]
     nextModel <- .linregTryToRemoveOnePredictor(prevModel, dependent, predictorsInNull, data, options, weights)
-    
+
     if (is.null(nextModel))
       break
-    
-    model[[length(model) + 1]] <- nextModel
-    candidatePredictors <- setdiff(nextModel$predictors, predictorsInNull)
+
+    model[[length(model) + 1]]  <- nextModel
+    candidatePredictors         <- setdiff(nextModel$predictors, predictorsInNull)
   }
-  
+
   return(model)
 }
 
@@ -759,30 +759,30 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   model <- list()
   if (options$includeConstant || length(predictorsInNull) > 0) {
     formula <- .linregGetFormula(dependent, predictorsInNull, options$includeConstant)
-    fit <- stats::lm(formula, data=data, weights = weights, x=TRUE)
-    model <- list(list(fit = fit, predictors = predictorsInNull))
+    fit     <- stats::lm(formula, data = data, weights = weights, x = TRUE)
+    model   <- list(list(fit = fit, predictors = predictorsInNull))
   }
-  
+
   candidatePredictors <- setdiff(predictors, predictorsInNull)
   while (length(candidatePredictors) > 0) {
     if (length(model) == 0)
       prevModel <- NULL
     else
       prevModel <- model[[length(model)]]
-    
+
     nextModel <- .linregTryToAddOnePredictor(prevModel, dependent, candidatePredictors, predictorsInNull, data, options, weights)
-    
+
     if (is.null(nextModel))
       break
-    
-    model[[length(model) + 1]] <- nextModel
-    candidatePredictors <- setdiff(candidatePredictors, nextModel$predictors)
+
+    model[[length(model) + 1]]  <- nextModel
+    candidatePredictors         <- setdiff(candidatePredictors, nextModel$predictors)
   }
-  
+
   # we don't have an intercept or nuisance variables and no predictor could be added
   if (length(model) == 0)
-    model <- list(list(fit=NULL, predictors=NULL))
-  
+    model <- list(list(fit = NULL, predictors = NULL))
+
   return(model)
 }
 
@@ -790,10 +790,10 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   model <- list()
   if (options$includeConstant || length(predictorsInNull) > 0) {
     formula <- .linregGetFormula(dependent, predictorsInNull, options$includeConstant)
-    fit <- stats::lm(formula, data=data, weights = weights, x=TRUE)
-    model <- list(list(fit = fit, predictors = predictorsInNull))
+    fit     <- stats::lm(formula, data = data, weights = weights, x = TRUE)
+    model   <- list(list(fit = fit, predictors = predictorsInNull))
   }
-  
+
   predictorsNotInNull <- setdiff(predictors, predictorsInNull)
   candidatePredictors <- predictorsNotInNull
   while (length(candidatePredictors) > 0) {
@@ -801,59 +801,59 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
       prevToAddModel <- NULL
     else
       prevToAddModel <- model[[length(model)]]
-    
+
     addStepModel <- .linregTryToAddOnePredictor(prevToAddModel, dependent, candidatePredictors, predictorsInNull, data, options, weights)
-    
+
     # stop if we cant even perform a single add step
     if (is.null(addStepModel) && all(prevToAddModel[["predictors"]] %in% predictorsInNull))
       break
-    
+
     if (!is.null(addStepModel))
       model[[length(model) + 1]] <- addStepModel
-    
+
     prevToRemoveModel <- model[[length(model)]]
-    removeStepModel <- .linregTryToRemoveOnePredictor(prevToRemoveModel, dependent, predictorsInNull, data, options, weights)
-    
+    removeStepModel   <- .linregTryToRemoveOnePredictor(prevToRemoveModel, dependent, predictorsInNull, data, options, weights)
+
     # stop if no predictor could be added or removed
     if (is.null(addStepModel) && is.null(removeStepModel))
       break
-    
+
     if (!is.null(removeStepModel))
       model[[length(model) + 1]] <- removeStepModel
-    
+
     if (identical(prevToAddModel, removeStepModel))
       break
-    
+
     candidatePredictors <- setdiff(predictorsNotInNull, model[[length(model)]]$predictors)
   }
-  
+
   # we don't have an intercept or nuisance variables and no predictor could be added
   if (length(model) == 0)
-    model <- list(list(fit=NULL, predictors=NULL))
+    model <- list(list(fit = NULL, predictors = NULL))
 
   return(model)
 }
 
-.linregTryToAddOnePredictor <- function(prevModel=NULL, dependent, candidatePredictors, predictorsInNull, data, options, weights) {
+.linregTryToAddOnePredictor <- function(prevModel = NULL, dependent, candidatePredictors, predictorsInNull, data, options, weights) {
   fValues <- numeric(length(candidatePredictors))
   pValues <- numeric(length(candidatePredictors))
-  
+
   for (i in seq_along(candidatePredictors)) {
     formula <- .linregGetFormula(dependent, c(prevModel$predictors, candidatePredictors[i]), options$includeConstant)
-    fit <- lm(formula, data=data, weights = weights, x=TRUE)
-    fValue <- summary(fit)$coefficients[, "t value"]
-    pValue <- summary(fit)$coefficients[, "Pr(>|t|)"]
-    
+    fit     <- lm(formula, data = data, weights = weights, x = TRUE)
+    fValue  <- summary(fit)$coefficients[, "t value"]
+    pValue  <- summary(fit)$coefficients[, "Pr(>|t|)"]
+
     if (length(fValue) > 1)
       fValue <- fValue[names(fValue) == candidatePredictors[i]]
-      
+
     if (length(pValue) > 1)
       pValue <- pValue[names(pValue) == candidatePredictors[i]]
 
     fValues[i] <- fValue^2
     pValues[i] <- pValue
   }
-  
+
   nextPredictors <- NULL
   if (options$steppingMethodCriteriaType == "useFValue" && max(fValues) > options$steppingMethodCriteriaFEntry) {
       highestFvaluePredictor <- candidatePredictors[which.max(fValues)]
@@ -862,43 +862,43 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
       minimumPvalueVariable <- candidatePredictors[which.min(pValues)]
       nextPredictors <- c(prevModel$predictors, minimumPvalueVariable)
   }
-  
+
   # no predictors could be added; the algorithm is done
   if (is.null(nextPredictors))
     return()
-  
+
   formula <- .linregGetFormula(dependent, nextPredictors, options$includeConstant)
-  fit <- stats::lm(formula, data=data, weights = weights, x=TRUE)
-  
-  return(list(fit=fit, predictors=nextPredictors))
+  fit     <- stats::lm(formula, data = data, weights = weights, x = TRUE)
+
+  return(list(fit = fit, predictors = nextPredictors))
 }
 
 .linregTryToRemoveOnePredictor <- function(prevModel, dependent, predictorsInNull, data, options, weights) {
   tValues <- summary(prevModel[["fit"]])$coefficients[ , "t value"]
   pValues <- summary(prevModel[["fit"]])$coefficients[ , "Pr(>|t|)"]
-  
+
   if (options$includeConstant) {
     tValues <- tValues[-1]
     pValues <- pValues[-1]
   }
-  
+
   tValues <- tValues[!(names(tValues) %in% predictorsInNull)]
   pValues <- pValues[!(names(pValues) %in% predictorsInNull)]
   fValues <- tValues^2
-  
+
   nextPredictors <- prevModel[["predictors"]]
   if (options$steppingMethodCriteriaType == "useFValue" && min(fValues) < options$steppingMethodCriteriaFRemoval) {
       lowestFvaluePredictor <- names(which.min(fValues))
-      nextPredictors <- prevModel$predictors[prevModel$predictors != lowestFvaluePredictor]
+      nextPredictors        <- prevModel$predictors[prevModel$predictors != lowestFvaluePredictor]
   } else if (options$steppingMethodCriteriaType == "usePValue" && max(pValues) > options$steppingMethodCriteriaPRemoval) {
-      highestPvaluePredictor <- names(which.max(pValues))
-      nextPredictors <- prevModel$predictors[prevModel$predictors != highestPvaluePredictor]
+      highestPvaluePredictor  <- names(which.max(pValues))
+      nextPredictors          <- prevModel$predictors[prevModel$predictors != highestPvaluePredictor]
   }
-  
+
   # no more predictors could be removed, the algorithm is done
   if (identical(nextPredictors, prevModel[["predictors"]]))
     return()
-  
+
   if (length(nextPredictors) > 0)
     formula <- .linregGetFormula(dependent, nextPredictors, options$includeConstant)
   else if (length(predictorsInNull) > 0)
@@ -908,26 +908,26 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   else
     return() # we can't compute a null model because it has no intercept/nuisance variables, the algorithm is done
 
-  fit <- stats::lm(formula, data=data, weights = weights, x=TRUE)
-  
+  fit <- stats::lm(formula, data = data, weights = weights, x = TRUE)
+
   return(list(fit = fit, predictors = nextPredictors))
 }
 
 .linregGetSummary <- function(fit) {
   summary <- list(r.squared = NaN, r.squared = NaN, adj.r.squared = NaN, sigma = NaN)
-  
+
   if (!is.null(fit))
     summary <- summary(fit)
-  
+
   return(summary)
 }
 
 .linregGetDurBinWatsonTestResults <- function(fit, weights) {
     durbinWatson <- list(r = NaN, dw = NaN, p = NaN)
-    
+
     if (!is.null(fit)) {
       durbinWatson <- car::durbinWatsonTest(fit, alternative = c("two.sided"))
-      
+
       if (weights == "") # if regression is not weighted, calculate p-value with lmtest (car method is unstable)
         durbinWatson[["p"]] <- lmtest::dwtest(fit, alternative = c("two.sided"))$p.value
     }
@@ -943,18 +943,18 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 
   numPrevModelPredictors <- prevRSquared <- 0
   if (currentIndex > 1) {
-    numPrevModelPredictors <- length(processedModels[[currentIndex - 1]]$predictors)
-    prevRSquared <- summary(processedModels[[currentIndex - 1]]$fit)$r.squared
+    numPrevModelPredictors  <- length(processedModels[[currentIndex - 1]]$predictors)
+    prevRSquared            <- summary(processedModels[[currentIndex - 1]]$fit)$r.squared
   }
 
   rSquaredChange <- fChange <- df1 <- df2 <- p <- NaN
   if (!is.null(fit)) {
-    rSquared <- summary(fit)$r.squared
-    rSquaredChange <- rSquared - prevRSquared
+    rSquared        <- summary(fit)$r.squared
+    rSquaredChange  <- rSquared - prevRSquared
 
     df1 <- abs(length(predictors) - numPrevModelPredictors)
     df2 <- length(depVals) - length(predictors) - 1
-    
+
     if (length(predictors) > 0) {
       fChange <- (df2 * rSquaredChange) / (df1 * (1 - rSquared))
       p       <- pf(q = fChange, df1 = df1, df2 = df2, lower.tail = FALSE)
@@ -962,7 +962,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
       fChange <- p <- NA
     }
   }
-  
+
   rSquareChange <- list(
     R2c = rSquaredChange,
     Fc  = fChange,
@@ -976,11 +976,11 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 
 .linregGetAnova <- function(fit, predictors) {
   Fvalue <- mssResidual <- mssModel <- dfResidual <- dfModel <- dfTotal <- ssResidual <- ssModel <- ssTotal <- p <- vovksellke <- NaN
-  
+
   if (!is.null(fit)) {
     if (length(predictors) > 0) {
       summary     <- summary(fit)
-      
+
       Fvalue			<- summary$fstatistic[1]
       mssResidual	<- summary$sigma^2
       mssModel	  <- Fvalue * mssResidual
@@ -990,7 +990,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
       ssResidual  <- mssResidual * dfResidual
       ssModel		  <- mssModel * dfModel
       ssTotal		  <- ssResidual + ssModel
-      
+
       p           <- pf(q = Fvalue, df1 = dfModel, df2 = dfResidual, lower.tail = FALSE)
       vovksellke  <- .VovkSellkeMPR(p)
     } else {
@@ -999,11 +999,11 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   }
 
   anova <- list(
-    Regression = list(F = Fvalue, SS = ssModel, df = dfModel, MS = mssModel, p = p, vovksellke = vovksellke),
-    Residual =  list(SS = ssResidual, df = dfResidual, MS = mssResidual),
-    Total = list(SS = ssTotal, df = dfTotal)
+    Regression  = list(F = Fvalue,  SS = ssModel,     df = dfModel,     MS = mssModel,  p = p, vovksellke = vovksellke),
+    Residual    = list(             SS = ssResidual,  df = dfResidual,  MS = mssResidual),
+    Total       = list(             SS = ssTotal,     df = dfTotal)
   )
-  
+
   return(anova)
 }
 
@@ -1013,31 +1013,31 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   if (!is.null(fit)) {
     if (options$includeConstant)
       predictors <- c("(Intercept)", predictors)
-    
+
     rows <- vector("list", length(predictors))
-    
+
     missingCoeffs <- NULL
     if (any(is.na(fit$coefficients)))
       missingCoeffs <- names(fit$coefficients)[which(is.na(fit$coefficients))]
-    
-    estimates <- summary(fit)$coefficients
-    confInterval <- confint(fit, level = options$regressionCoefficientsConfidenceIntervalsInterval)
-    
+
+    estimates     <- summary(fit)$coefficients
+    confInterval  <- confint(fit, level = options$regressionCoefficientsConfidenceIntervalsInterval)
+
     if (length(predictors) > 1 || predictors != "(Intercept)")
       collinearityDiagnostics <- .linregGetVIFAndTolerance(setdiff(predictors, "(Intercept)"), dataset, includeConstant = TRUE)
-    
+
     for (i in seq_along(rows)) {
       predictor <- predictors[[i]]
-      
+
       terms <- unlist(strsplit(predictor, split = ":"))
-      name <- paste0(.unv(terms), collapse="\u2009\u273b\u2009")
-        
+      name  <- paste0(.unv(terms), collapse = "\u2009\u273b\u2009")
+
       if (predictor %in% missingCoeffs) {
         rows[[i]] <- list(unstandCoeff = NaN, SE = NaN, standCoeff = NaN, t = NaN, p = NaN, lower = NaN, upper = NaN, tolerance = NaN, VIF = NaN, vovksellke = NaN)
         rows[[i]][["name"]] <- name
         next
       }
-      
+
       row <- list(
         name         = name,
         unstandCoeff = estimates[i, "Estimate"],
@@ -1047,36 +1047,36 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
         lower        = confInterval[i, 1],
         upper        = confInterval[i, 2]
       )
-      
+
       row <- c(row, list(vovksellke = .VovkSellkeMPR(row[["p"]])))
-      
+
       if (predictor != "(Intercept)") {
         row <- c(row, list(
           standCoeff = .linregGetStandardizedCoefficient(dataset, .v(options$dependent), predictor, row[["unstandCoeff"]]),
           tolerance  = collinearityDiagnostics[["tolerance"]][[predictor]],
           VIF        = collinearityDiagnostics[["VIF"]][[predictor]]))
       }
-      
+
       rows[[i]] <- row
     }
-    
+
   }
-  
+
   return(rows)
 }
 
 .linregGetBootstrapCoefficients <- function(fit, predictors, dataset, options) {
   .bootstrapping <- function(data, indices, formula, wlsWeights) {
     progressbarTick()
-    
+
     d <- data[indices, , drop = FALSE] # allows boot to select sample
     if (wlsWeights == "") {
-      fit <- lm(formula = formula, data=d)
+      fit <- lm(formula = formula, data = d)
     } else {
       weights <- d[[wlsWeights]]
-      fit <- lm(formula = formula, data=d, weights = weights)
+      fit <- lm(formula = formula, data = d, weights = weights)
     }
-    
+
     return(coef(fit))
   }
 
@@ -1085,68 +1085,68 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   if (!is.null(fit)) {
     if (options$includeConstant)
       predictors <- c("(Intercept)", predictors)
-    
+
     missingCoeffs <- NULL
     if (any(is.na(fit$coefficients)))
       missingCoeffs <- names(fit$coefficients)[which(is.na(fit$coefficients))]
-    
+
 
     summary <- boot::boot(data = dataset, statistic = .bootstrapping,
                           R = options$regressionCoefficientsBootstrappingReplicates,
                           formula = formula(fit),
                           wlsWeights = .v(options$wlsWeights))
-    
-    coefficients <- matrixStats::colMedians(summary$t, na.rm = TRUE)
-    bias <- colMeans(summary$t, na.rm = TRUE) - summary$t0
-    stdErrors <- matrixStats::colSds(summary$t, na.rm = TRUE)
-    
+
+    coefficients  <- matrixStats::colMedians(summary$t, na.rm = TRUE)
+    bias          <- colMeans(summary$t, na.rm = TRUE) - summary$t0
+    stdErrors     <- matrixStats::colSds(summary$t, na.rm = TRUE)
+
     for (i in seq_along(predictors)) {
       predictor <- predictors[[i]]
-        
+
       if (predictor %in% missingCoeffs) {
         data[i, ] <- rep(NaN, ncol(data))
         next
       }
-      
-      ci <- boot::boot.ci(summary, type="bca", conf = options$regressionCoefficientsConfidenceIntervalsInterval, index = i)
+
+      ci        <- boot::boot.ci(summary, type = "bca", conf = options$regressionCoefficientsConfidenceIntervalsInterval, index = i)
       data[i, ] <- c(coefficients[i], bias[i], stdErrors[i], ci$bca[4], ci$bca[5])
     }
-    
+
     data[["name"]] <- .unvf(predictors)
   }
-  
+
   return(data)
 }
 
 .linregGetVIFAndTolerance <- function(predictors, dataset, includeConstant) {
-  VIF <- list()
+  VIF       <- list()
   tolerance <- list()
   if (length(predictors) > 1) {
     for (predictor in predictors) {
-      
+
       if (.linregIsInteraction(predictor)) {
-        newVar <- .linregMakeCombinedVariableFromInteraction(predictor, dataset)
-        newVarName <- gsub(":", ".", predictor, fixed=TRUE)
+        newVar                <- .linregMakeCombinedVariableFromInteraction(predictor, dataset)
+        newVarName            <- gsub(":", ".", predictor, fixed = TRUE)
         dataset[[newVarName]] <- newVar
       } else {
-        newVarName <- predictor
+        newVarName            <- predictor
       }
-      
+
       cleanedPredictors <- predictors[-which(predictors == predictor)]
-      formula <- .linregGetFormula(newVarName, cleanedPredictors, includeConstant = TRUE)
-      fitVIF <- stats::lm(formula, data = dataset)
-      
-      VIF[[predictor]] <- 1 / (1 - summary(fitVIF)$"r.squared")
-      tolerance[[predictor]] <- 1 / VIF[[predictor]]
+      formula           <- .linregGetFormula(newVarName, cleanedPredictors, includeConstant = TRUE)
+      fitVIF            <- stats::lm(formula, data = dataset)
+
+      VIF[[predictor]]        <- 1 / (1 - summary(fitVIF)$"r.squared")
+      tolerance[[predictor]]  <- 1 / VIF[[predictor]]
     }
   } else {
-    VIF[[predictors]] <- 1
+    VIF[[predictors]]       <- 1
     tolerance[[predictors]] <- 1
   }
-  
+
   result <- list(VIF       = VIF,
                  tolerance = tolerance)
-  
+
   return(result)
 }
 
@@ -1156,22 +1156,21 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     sdIndependent <- sd(.linregMakeCombinedVariableFromInteraction(predictor, dataset))
   else
     sdIndependent <- sd(dataset[[predictor]])
-  
+
   return(unstandCoeff * sdIndependent / sdDependent)
 }
 
 .linregGetPartAndPartialCorrelation <- function(predictors, dataset, options) {
   cors <- vector("list", length(predictors))
-
   for (i in seq_along(predictors)) {
 
     predictor <- predictors[i]
-    if (.linregIsInteraction(predictor)) { 
-      newVar <- .linregMakeCombinedVariableFromInteraction(predictor, dataset)
-      newVarName <- gsub(":", ".", predictor, fixed=TRUE)
+    if (.linregIsInteraction(predictor)) {
+      newVar                <- .linregMakeCombinedVariableFromInteraction(predictor, dataset)
+      newVarName            <- gsub(":", ".", predictor, fixed = TRUE)
       dataset[[newVarName]] <- newVar
     } else {
-      newVarName <- predictor
+      newVarName            <- predictor
     }
 
     dataset <- na.omit(dataset)
@@ -1180,18 +1179,18 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
       formula1 <- .linregGetFormula(newVarName, predictorsToControlFor, includeConstant = TRUE)
       formula2 <- .linregGetFormula(.v(options$dependent), predictorsToControlFor, includeConstant = TRUE)
 
-      cleanedPredictor <- residuals(lm(formula1, data=dataset))
-      cleanedDependent <- residuals(lm(formula2, data=dataset))
+      cleanedPredictor <- residuals(lm(formula1, data = dataset))
+      cleanedDependent <- residuals(lm(formula2, data = dataset))
 
-      partCor <- cor(cleanedPredictor, dataset[[.v(options$dependent)]])
-      partialCor <- cor(cleanedPredictor, cleanedDependent)
+      partCor     <- cor(cleanedPredictor, dataset[[.v(options$dependent)]])
+      partialCor  <- cor(cleanedPredictor, cleanedDependent)
     } else { # if there are no variables to control for, return regular correlation
       partCor <- partialCor <- cor(dataset[[.v(options$dependent)]], dataset[[newVarName]])
     }
 
     cors[[i]] <- list(
-      name = .unvf(predictor),
-      part = partCor,
+      name    = .unvf(predictor),
+      part    = partCor,
       partial = partialCor)
 
   }
@@ -1201,23 +1200,23 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 
 .linregGetCovarianceMatrix <- function(fit, predictors, columns, includeConstant) {
   data <- data.frame()
-  
+
   if (!is.null(fit)) {
-    covmatrix <- vcov(fit)
+    covmatrix                       <- vcov(fit)
     covmatrix[lower.tri(covmatrix)] <- NA
-    
+
     if (includeConstant)
       covmatrix <- covmatrix[-1, -1, drop = FALSE] # remove intercept row and column
-    
+
     # Check whether variables in the regression model are redundant
     for (i in seq_along(names(fit$coefficients))) {
       if (is.na(fit$coefficients[i])) {
-        
+
         # If so, covmatrix does not include this variable -> Add row and column with NA as "values"
         covmatrix <- cbind(covmatrix, NA)
         covmatrix <- rbind(covmatrix, NA)
-        
-        name <- names(fit(coefficients)[i])
+
+        name                <- names(fit(coefficients)[i])
         rownames(covmatrix) <- c(rownames(covmatrix), name)
         colnames(covmatrix) <- c(colnames(covmatrix), name)
         # Add footnote for this case
@@ -1232,7 +1231,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
       data <- data.frame(.unvf(rownames(covmatrix)))
       for (i in seq_along(colnames(covmatrix)))
         data <- cbind(data, covmatrix[, i])
-      
+
       names(data) <- c("name", colnames(covmatrix))
     }
   }
@@ -1242,110 +1241,110 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 
 .linregGetCollinearityDiagnostics <- function(fit, columns, includeConstant) {
   data <- data.frame()
-  
+
   if (!is.null(fit)) {
-    eigenvalues <- .linregGetEigenValues(fit)
-    conditionIndices <- .linregGetConditionIndices(fit)
+    eigenvalues         <- .linregGetEigenValues(fit)
+    conditionIndices    <- .linregGetConditionIndices(fit)
     varianceProportions <- .linregGetVarianceProportions(fit)
- 
+
     data <- data.frame(dimension = seq_along(names(fit$coefficients)), eigenvalue = eigenvalues, condIndex = conditionIndices)
     data <- cbind(data, varianceProportions)
   }
-  
+
   return(data)
 }
 
 .linregGetEigenValues <- function(fit) {
-  X <- .linregGetScaledPredictorMatrix(fit)
+  X           <- .linregGetScaledPredictorMatrix(fit)
   eigenvalues <- svd(X)$d^2 # see Liao & Valliant (2012)
 
   return(eigenvalues)
 }
 
 .linregGetConditionIndices <- function(fit) {
-  eigenvalues <- .linregGetEigenValues(fit)
-  conditionIndices <- sqrt(max(eigenvalues) / eigenvalues)
-  
+  eigenvalues       <- .linregGetEigenValues(fit)
+  conditionIndices  <- sqrt(max(eigenvalues) / eigenvalues)
+
   return(conditionIndices)
 }
 
 .linregGetVarianceProportions <- function(fit) {
   X <- .linregGetScaledPredictorMatrix(fit)
-  
+
   ### ( see e.g., Liao & Valliant, 2012 )
-  svdX <- svd(X) # singular value decomposition
-  M <- svdX$v %*% solve(diag(svdX$d))
-  Q <- M*M # Hadamard (elementwise) product
-  tQ <- t(Q)
-  
+  svdX  <- svd(X) # singular value decomposition
+  M     <- svdX$v %*% solve(diag(svdX$d))
+  Q     <- M*M # Hadamard (elementwise) product
+  tQ    <- t(Q)
+
   for (i in seq_len(ncol(tQ)))
     tQ[ , i] <- tQ[ , i] / sum(tQ[ , i])
-  
+
   colnames(tQ) <- names(fit$coefficients)
-  
+
   return(tQ)
 }
 
 .linregGetScaledPredictorMatrix <- function(fit) {
   X <- fit$x
-  
+
   for (i in seq_len(ncol(X)))
     X[ , i] <- X[ , i] / sqrt(sum(X[ , i]^2)) # scale each column using Euclidean norm
-  
+
   return(X)
 }
 
 .linregGetCasewiseDiagnostics <- function(fit, options) {
   diagnostics <- list()
-  
+
   if (!is.null(fit)) {
-    predictedValuesAll <- predict(fit)
-    residualsAll <- residuals(fit)
+    predictedValuesAll    <- predict(fit)
+    residualsAll          <- residuals(fit)
     stdPredictedValuesAll <- (predictedValuesAll - mean(predictedValuesAll)) / sd(predictedValuesAll)
-    stdResidualsAll <- rstandard(fit)
-    cooksDAll <- cooks.distance(fit)
-    
+    stdResidualsAll       <- rstandard(fit)
+    cooksDAll             <- cooks.distance(fit)
+
     if (options$residualsCasewiseDiagnosticsType == "cooksDistance")
       index <- which(abs(cooksDAll) > options$residualsCasewiseDiagnosticsCooksDistance)
     else if (options$residualsCasewiseDiagnosticsType == "outliersOutside")
       index <- which(abs(stdResidualsAll) > options$residualsCasewiseDiagnosticsOutliersOutside)
     else # all
       index <- seq_along(predictedValuesAll)
-    
+
     if (length(index) > 0) {
-      diagnostics[["caseNumber"]] <- index
-      diagnostics[["stdResidual"]] <- stdResidualsAll[index]
-      diagnostics[["dependent"]] <- fit$model[index, 1]
-      diagnostics[["predicted"]] <- predictedValuesAll[index]
-      diagnostics[["residual"]] <- residualsAll[index]
-      diagnostics[["cooksD"]] <- cooksDAll[index]
+      diagnostics[["caseNumber"]]   <- index
+      diagnostics[["stdResidual"]]  <- stdResidualsAll[index]
+      diagnostics[["dependent"]]    <- fit$model[index, 1]
+      diagnostics[["predicted"]]    <- predictedValuesAll[index]
+      diagnostics[["residual"]]     <- residualsAll[index]
+      diagnostics[["cooksD"]]       <- cooksDAll[index]
     }
   }
-  
+
   return(diagnostics)
 }
 
 .linregGetResidualsStatistics <- function(fit, predictors) {
   residuals <- list()
-  
+
   if (!is.null(fit)) {
     types <- c("Predicted Value", "Residual", "Std. Predicted Value", "Std. Residual")
-    
+
     predicted     <- predict(fit)
     N             <- length(predicted)
-    valuesPerType <- list("Predicted Value" = predicted,
-                          "Residual" = residuals(fit),
-                          "Std. Predicted Value" = (predicted - mean(predicted)) / sd(predicted),
-                          "Std. Residual" = rstandard(fit))
-    
+    valuesPerType <- list("Predicted Value"       = predicted,
+                          "Residual"              = residuals(fit),
+                          "Std. Predicted Value"  = (predicted - mean(predicted)) / sd(predicted),
+                          "Std. Residual"         = rstandard(fit))
+
     if (length(predictors) == 0)
       valuesPerType[["Std. Predicted Value"]] <- NA # cannot compute this for an intercept model
-    
+
     residuals <- vector("list", length(types))
     for (i in seq_along(types)) {
-      residuals[[i]] <- list()
-      type <- types[i]
-      
+      residuals[[i]]  <- list()
+      type            <- types[i]
+
       residuals[[i]][["type"]] <- type
       residuals[[i]][["min"]]  <- min(valuesPerType[[type]])
       residuals[[i]][["max"]]  <- max(valuesPerType[[type]])
@@ -1354,26 +1353,26 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
       residuals[[i]][["N"]]    <- N
     }
   }
-  
+
   return(residuals)
 }
 
 .linregGetDescriptives <- function(variables, dataset) {
   descriptives <- vector("list", length(variables))
-  
+
   for (i in seq_along(variables)) {
     descriptives[[i]] <- list()
-    
-    variable <- variables[i]
-    data <- na.omit(dataset[[.v(variable)]])
-    
+
+    variable  <- variables[i]
+    data      <- na.omit(dataset[[.v(variable)]])
+
     descriptives[[i]][["var"]]  <- variable
     descriptives[[i]][["N"]]    <- length(data)
     descriptives[[i]][["mean"]] <- mean(data)
     descriptives[[i]][["SD"]]   <- sd(data)
     descriptives[[i]][["SE"]]   <- sd(data) / sqrt(length(data))
   }
-  
+
   return(descriptives)
 }
 
@@ -1381,86 +1380,85 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   predictors <- setdiff(predictors, predictor)
   if (length(predictors) == 0)
     predictors <- NULL
-  
+
   weights <- dataset[[.v(options$wlsWeights)]]
-  
+
   # Compute residuals dependent
-  formulaDep <- .linregGetFormula(.v(options$dependent), predictors = predictors, includeConstant = TRUE)
-  fitDep <- stats::lm(formula = formulaDep, data = dataset, weights = weights)
-  residualsDep <- residuals(fitDep)
-  
+  formulaDep    <- .linregGetFormula(.v(options$dependent), predictors = predictors, includeConstant = TRUE)
+  fitDep        <- stats::lm(formula = formulaDep, data = dataset, weights = weights)
+  residualsDep  <- residuals(fitDep)
+
   # Compute residuals predictor as dependent
-  formulaPred <- .linregGetFormula(predictor, predictors = predictors, includeConstant = TRUE)
-  fitPred <- stats::lm(formula = formulaPred, data = dataset, weights = weights)
+  formulaPred   <- .linregGetFormula(predictor, predictors = predictors, includeConstant = TRUE)
+  fitPred       <- stats::lm(formula = formulaPred, data = dataset, weights = weights)
   residualsPred <- residuals(fitPred)
-  
+
   return(data.frame(residualsPred = residualsPred, residualsDep = residualsDep))
 }
 
-.linregPlotResiduals <- function(xVar=NULL, res=NULL, xlab, ylab="Residuals", cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2, regressionLine=TRUE, standardizedResiduals=TRUE) {
-  d <- data.frame(xx= xVar, yy= res)
-  d <- na.omit(d)
-  xVar <- d$xx
-  res <- d$yy
-  
-  xlow <- min(pretty(xVar))
-  xhigh <- max(pretty(xVar))
-  xticks <- pretty(c(xlow, xhigh))
-  ylow <- min(pretty(res))
-  yhigh <- max(pretty(res))
-  
+.linregPlotResiduals <- function(xVar = NULL, res = NULL, xlab, ylab = "Residuals", cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2, regressionLine = TRUE, standardizedResiduals = TRUE) {
+  d     <- data.frame(xx= xVar, yy= res)
+  d     <- na.omit(d)
+  xVar  <- d$xx
+  res   <- d$yy
+
+  xlow    <- min(pretty(xVar))
+  xhigh   <- max(pretty(xVar))
+  xticks  <- pretty(c(xlow, xhigh))
+  ylow    <- min(pretty(res))
+  yhigh   <- max(pretty(res))
+
   yticks <- pretty(c(ylow, yhigh, 0))
-  
+
   # format axes labels
   xLabs <- JASPgraphs::axesLabeller(xticks, digits = 3)
   yLabs <- JASPgraphs::axesLabeller(yticks, digits = 3)
-  
+
   if (standardizedResiduals == TRUE) {
-    
-    stAxisTmp <- pretty( yticks / sd(res) )
-    stAxisOriginalScaleTmp <- stAxisTmp * sd(res)
-    stAxisOriginalScale <- stAxisOriginalScaleTmp[stAxisOriginalScaleTmp < max(yticks) & stAxisOriginalScaleTmp > min(yticks)]
-    stAxis <- stAxisOriginalScale / sd(res)
-    
+
+    stAxisTmp               <- pretty( yticks / sd(res) )
+    stAxisOriginalScaleTmp  <- stAxisTmp * sd(res)
+    stAxisOriginalScale     <- stAxisOriginalScaleTmp[stAxisOriginalScaleTmp < max(yticks) & stAxisOriginalScaleTmp > min(yticks)]
+    stAxis                  <- stAxisOriginalScale / sd(res)
+
     dfYr <- data.frame(x = Inf, xend = Inf, y = stAxisOriginalScale[1],
                        yend = stAxisOriginalScale[length(stAxisOriginalScale)])
-    
+
     p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE,
                               secondaryYaxis = ggplot2::sec_axis(~.+0, breaks = stAxisOriginalScale, name = "Standardized Residuals\n",labels = stAxis))
-    
+
     p <- p + ggplot2::geom_segment(data = dfYr,
                                    mapping = ggplot2::aes(x = x, y = y, xend = xend,yend = yend),
                                    lwd = .3, position = ggplot2::PositionIdentity,
                                    stat = ggplot2::StatIdentity, inherit.aes = FALSE, colour = "black")
-    
+
   } else {
-    
-    dfYr <- data.frame(x = Inf, xend = Inf, y = yticks[1], yend = yticks[length(yticks)])					 
-    p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
-    
+
+    dfYr  <- data.frame(x = Inf, xend = Inf, y = yticks[1], yend = yticks[length(yticks)])
+    p     <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
+
   }
-  
-  if(regressionLine){
+
+  if (regressionLine)
     p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(0, 0)), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = .5)
-  }
-  
+
   p <- JASPgraphs::drawPoints(p, dat = data.frame(x = xVar, y = res), size = 3)
-  
+
   # JASP theme
   p <- JASPgraphs::themeJasp(p)
-  
+
   return(p)
 }
 
-.linregPlotResidualsHistogram <- function(res=NULL, resName="Residuals", cexYlab= 1.3, lwd= 2, rugs= FALSE) {
+.linregPlotResidualsHistogram <- function(res = NULL, resName = "Residuals", cexYlab= 1.3, lwd= 2, rugs= FALSE) {
   density <- density(res)
-  
-  h <- hist(res, plot = FALSE)
-  dens <- density(res)
-  yhigh <- max(c(h$density, dens$y))
-  ylow <- 0
-  xticks <- base::pretty(c(res, h$breaks), min.n= 3)
-  
+
+  h       <- hist(res, plot = FALSE)
+  dens    <- density(res)
+  yhigh   <- max(c(h$density, dens$y))
+  ylow    <- 0
+  xticks  <- base::pretty(c(res, h$breaks), min.n= 3)
+
   p <- JASPgraphs::drawAxis(xName = resName, yName = "Density", xBreaks = xticks, yBreaks = c(ylow, yhigh), force = TRUE, yLabels = NULL, xLabels = xticks)
   p <- p + ggplot2::geom_histogram(data = data.frame(res), mapping = ggplot2::aes(x = res, y = ..density..),
                                    binwidth = (h$breaks[2] - h$breaks[1]),
@@ -1470,71 +1468,65 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
                                    center = ((h$breaks[2] - h$breaks[1])/2))
   p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y), mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
   p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
-  
+
   p <- JASPgraphs::themeJasp(p)
-  
+
   return(p)
 }
 
-.linregPlotQQresiduals <- function(res=NULL, xlab="Theoretical Quantiles", ylab= "Standardized Residuals", cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
-  d <- data.frame(qqnorm(res, plot.it=FALSE))
-  d <- na.omit(d)
-  xVar <- d$x
-  yVar <- d$y
-  
-  xlow <- min(pretty(xVar))
-  xhigh <- max(pretty(xVar))
-  xticks <- pretty(c(xlow, xhigh))
-  
-  ylow <- min(pretty(yVar))
-  yhigh <- max(pretty(yVar))
-  yticks <- pretty(c(ylow, yhigh))
-  
+.linregPlotQQresiduals <- function(res = NULL, xlab = "Theoretical Quantiles", ylab= "Standardized Residuals", cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
+  d     <- data.frame(qqnorm(res, plot.it = FALSE))
+  d     <- na.omit(d)
+  xVar  <- d$x
+  yVar  <- d$y
+
+  xlow    <- min(pretty(xVar))
+  xhigh   <- max(pretty(xVar))
+  xticks  <- pretty(c(xlow, xhigh))
+
+  ylow    <- min(pretty(yVar))
+  yhigh   <- max(pretty(yVar))
+  yticks  <- pretty(c(ylow, yhigh))
+
   yLabs <- vector("character", length(yticks))
-  
+
   for (i in seq_along(yticks)) {
-    
-    if (yticks[i] < 10^6) {
-      
+    if (yticks[i] < 10^6)
       yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-      
-    } else {
-      
+    else
       yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
-    }
   }
-  
+
   p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = "Standardized Residuals", xBreaks = xticks, yBreaks = xticks, force = TRUE)
   p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
   p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
-  
+
   # JASP theme
   p <- JASPgraphs::themeJasp(p)
-  
+
   return(p)
 }
 
-.linregGetPredictors <- function(modelTerms, modelType="alternative", encoded=TRUE) {
+.linregGetPredictors <- function(modelTerms, modelType = "alternative", encoded = TRUE) {
   if (!is.character(modelType) || !modelType %in% c("alternative", "null"))
     stop("Unknown value provided for modelType, possible values: `alternative`, `null`")
-  
+
   predictors <- NULL
   for (i in seq_along(modelTerms)) {
     components <- unlist(modelTerms[[i]]$components)
     if (encoded)
       components <- .v(components)
     predictor <- paste0(components, collapse = ":")
-    
+
     if (modelType == "alternative") {
       predictors <- c(predictors, predictor)
     } else if (modelType == "null") {
       isNuisance <- modelTerms[[i]]$isNuisance
       if (isNuisance)
         predictors <- c(predictors, predictor)
-    } else {
-      
     }
   }
+
   return(predictors)
 }
 
@@ -1544,20 +1536,21 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     if (isNuisance)
       return(TRUE)
   }
+
   return(FALSE)
 }
 
 .linregGetFormula <- function(dependent, predictors = NULL, includeConstant) {
   if (is.null(predictors) && includeConstant == FALSE)
     stop("We need at least one predictor, or an intercept to make a formula")
-  
+
   if (is.null(predictors))
     formula <- paste(dependent, "~", "1")
   else if (includeConstant)
     formula <- paste(dependent, "~", paste(predictors, collapse = "+"))
   else
     formula <- paste(dependent, "~", paste(predictors, collapse = "+"), "-1")
-  
+
   return(as.formula(formula, env = parent.frame(1)))
 }
 
@@ -1569,6 +1562,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     else
       modelTitle <- "H\u2081"
   }
+
   return(modelTitle)
 }
 
@@ -1577,18 +1571,18 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 }
 
 .linregMakeCombinedVariableFromInteraction <- function(interaction, dataset) {
-  terms <- unlist(strsplit(interaction, split = ":"))
-  newVar <- rep(1, nrow(dataset))
+  terms   <- unlist(strsplit(interaction, split = ":"))
+  newVar  <- rep(1, nrow(dataset))
   for (i in seq_along(terms))
     newVar <- newVar * dataset[[terms[i]]]
-  
+
   return(newVar)
 }
 
 .linregGetPredictorColumnNames <- function(model, modelTerms) {
-  usedPredictors <- unique(unlist(lapply(model, function(x) x$predictors)))
-  allpredictors <- .linregGetPredictors(modelTerms)
-  return(intersect(allpredictors, usedPredictors)) # ensures the correctness of the order of the terms for the covariance matrix table
+  usedPredictors  <- unique(unlist(lapply(model, function(x) x$predictors)))
+  allpredictors   <- .linregGetPredictors(modelTerms)
+  return(intersect(allpredictors, usedPredictors)) # ensures that the terms appear in the covariance matrix like they appear in the model terms box
 }
 
 .linregAddPredictorsAsColumns <- function(jaspTable, model, modelTerms, includeConstant = TRUE, type = "number", format = NULL, overtitle = NULL) {
@@ -1596,10 +1590,10 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   if (length(predictors) > 0) {
     titles <- .unvf(predictors)
     if (includeConstant) {
-      predictors <- c("(Intercept)", predictors)
-      titles <- c("(Intercept)", titles)
+      predictors  <- c("(Intercept)", predictors)
+      titles      <- c("(Intercept)", titles)
     }
-    
+
     for (i in seq_along(predictors))
       jaspTable$addColumnInfo(name = predictors[i], title = titles[i], type = type, format = format, overtitle = overtitle)
   }
@@ -1608,8 +1602,8 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 .linregAddPredictorsInNullFootnote <- function(jaspTable, modelTerms) {
   containsNuisance <- .reglinTermsContainNuisance(modelTerms)
   if (containsNuisance) {
-    predictorsInNull <- .linregGetPredictors(modelTerms, modelType="null", encoded=FALSE)
-    jaspTable$addFootnote(message=paste("Null model includes ", paste(predictorsInNull, collapse = ", "), sep = ""))
+    predictorsInNull <- .linregGetPredictors(modelTerms, modelType = "null", encoded = FALSE)
+    jaspTable$addFootnote(message = paste("Null model includes ", paste(predictorsInNull, collapse = ", "), sep = ""))
   }
 }
 
@@ -1632,8 +1626,8 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 }
 
 .linregGetIndicesOfModelsWithPredictors <- function(model, options) {
-  predictorsInNull <- .linregGetPredictors(options$modelTerms, modelType="null")
-  indices <- seq_along(model)
+  predictorsInNull  <- .linregGetPredictors(options$modelTerms, modelType = "null")
+  indices           <- seq_along(model)
   if (options$method == "enter") {
     if (length(model) >= 1 && options$includeConstant && is.null(predictorsInNull))
       indices <- indices[-1]
@@ -1647,18 +1641,18 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 
 .linregInsertPlot <- function(jaspPlot, func, ...) {
   p <- try(func(...))
-      
+
   if (inherits(p, "try-error")) {
    errorMessage <- .extractErrorMessage(p)
    jaspPlot$setError(paste("Plotting is not possible:", errorMessage))
   } else {
     jaspPlot$plotObject <- p
-    jaspPlot$status <- "complete"
+    jaspPlot$status     <- "complete"
   }
 }
 
 .linregCreatePlotPlaceholder <- function(container, index, title, width = 530, height = 400) {
-  jaspPlot <- createJaspPlot(title = title, width = width, height = height)
-  jaspPlot$status <- "running"
-  container[[index]] <- jaspPlot
+  jaspPlot            <- createJaspPlot(title = title, width = width, height = height)
+  jaspPlot$status     <- "running"
+  container[[index]]  <- jaspPlot
 }
