@@ -12,6 +12,9 @@ TEMPLATE   = lib
 
 include(../R_HOME.pri)
 
+message(using R Frameworks of $$JASP_REQUIRED_FILES/Frameworks)
+message(using R_HOME of $$_R_HOME)
+
 unix{
   CONFIG      += staticlib
   QMAKE_CLEAN += $$OUT_PWD/$$DESTDIR/'lib'$$JASP_R_INTERFACE_TARGET'*.a'

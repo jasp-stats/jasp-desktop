@@ -1126,22 +1126,30 @@ void MainWindow::openGitHubBugReport() const
 	try			{ fillIt << "\n[Commit used](" << AboutModel::commitUrl() << ")\n"; }
 	catch(...)	{ fillIt << "Commit couldn't be found\n"; }
 
-	QString percentEncodedIssue = QUrl::toPercentEncoding(tq(fillIt.str()));
+	try
+	{
+		QString percentEncodedIssue = QUrl::toPercentEncoding(tq(fillIt.str()));
 
-	const char * baseIssueUrl = "https://github.com/jasp-stats/jasp-issues/issues/new?labels=bug&title=JASP+crashed&body=";
+		const char * baseIssueUrl = "https://github.com/jasp-stats/jasp-issues/issues/new?labels=bug&title=JASP+crashed&body=";
 
-	QUrl issueUrl = baseIssueUrl + percentEncodedIssue;
+		QUrl issueUrl = baseIssueUrl + percentEncodedIssue;
 
-	QDesktopServices::openUrl(issueUrl);
+		QDesktopServices::openUrl(issueUrl);
 
-	if(openGitHubUserRegistration)
-		QTimer::singleShot(100, []()
-		{
-			QDesktopServices::openUrl(QUrl("https://github.com/join"));
+		if(openGitHubUserRegistration)
+			QTimer::singleShot(100, []()
+			{
+				QDesktopServices::openUrl(QUrl("https://github.com/join"));
+				exit(1);
+			});
+		else
 			exit(1);
-		});
-	else
+	}
+	catch(...)
+	{
+		MessageForwarder::showWarning("GitHub couldn't be openend for you", "Something went wrong with leading you to GitHub..\nYou can still report the bug by going to https://github.com/jasp-stats/jasp-issues/issues ");
 		exit(1);
+	}
 }
 
 void MainWindow::fatalError()

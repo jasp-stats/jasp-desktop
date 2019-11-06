@@ -10,17 +10,13 @@ CONFIG += c++11
  
 include(../JASP.pri)
 
-windows:LIBS += -lole32 -loleaut32 -larchive.dll
 
-macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
-macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
-macx:QMAKE_CXXFLAGS += -Wno-deprecated-declarations
-macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
-macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
-macx:QMAKE_CXXFLAGS += -stdlib=libc++
 macx:QMAKE_CXXFLAGS += -DBOOST_INTERPROCESS_SHARED_DIR_FUNC
 
-windows:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
+windows {
+	LIBS			+= -lole32 -loleaut32 -larchive.dll
+	QMAKE_CXXFLAGS	+= -DBOOST_USE_WINDOWS_H -DNOMINMAX -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
+}
 
 INCLUDEPATH += $$PWD/
 

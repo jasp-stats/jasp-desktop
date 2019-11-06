@@ -27,8 +27,6 @@ linux {
   DEFINES += 'R_HOME=\\\"$$_R_HOME\\\"'
 }
 
-message(using R Frameworks of $$JASP_REQUIRED_FILES/Frameworks)
-
 macx {
 		isEmpty(_R_HOME):_R_HOME = $$JASP_REQUIRED_FILES/Frameworks/R.framework/Versions/$$CURRENT_R_VERSION/Resources
         R_EXE  = $$_R_HOME/bin/R
@@ -44,5 +42,3 @@ INCLUDEPATH += \
     $$_R_HOME/library/Rcpp/include \
     $$_R_HOME/include
 
-
-message(using R_HOME of $$_R_HOME)

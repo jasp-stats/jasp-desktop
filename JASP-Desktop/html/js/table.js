@@ -751,28 +751,30 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 			chunks.push('<tfoot>')
 
-			for (var i = 0; i < optFootnotes.length; i++) {
+			for (var i = 0; i < optFootnotes.length; i++)
+				if(optFootnotes[i].text !== "")
+				{
 
-				chunks.push('<tr><td colspan="' + 2 * columnCount + '">')
+					chunks.push('<tr><td colspan="' + 2 * columnCount + '">')
 
-				var footnote = optFootnotes[i]
+					var footnote = optFootnotes[i]
 
-				if (_.isString(footnote)) {
-				  chunks.push(symbol(i) + '&nbsp;')
-				  chunks.push(footnote)
+					if (_.isString(footnote)) {
+					  chunks.push(symbol(i) + '&nbsp;')
+					  chunks.push(footnote)
+					}
+
+					if (_.has(footnote, "symbol")) {
+					  if (_.isNumber(footnote.symbol))
+						chunks.push(symbol(footnote.symbol) + '&nbsp;')
+					  else
+						chunks.push(footnote.symbol + '&nbsp;')
+
+						chunks.push(footnote.text)
+					}
+
+					chunks.push('</td></tr>')
 				}
-
-				if (_.has(footnote, "symbol")) {
-				  if (_.isNumber(footnote.symbol))
-					chunks.push(symbol(footnote.symbol) + '&nbsp;')
-				  else
-					chunks.push(footnote.symbol + '&nbsp;')
-
-					chunks.push(footnote.text)
-				}
-
-				chunks.push('</td></tr>')
-			}
 
 			chunks.push('</tfoot>');
 		}

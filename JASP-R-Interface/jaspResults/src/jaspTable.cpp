@@ -1024,7 +1024,7 @@ void footnotes::convertToJSONOrdered(std::map<std::string, size_t> rowNames, std
 
 	for(size_t i=0; i<notesToOrder.size(); i++)
 	{
-		std::string symbolText = notesToOrder[i]["text"].asString() + " >(*^-)<" + notesToOrder[i]["symbol"].asString();
+		std::string symbolText = notesToOrder[i]["text"].asString() + ">(*^-)<" + notesToOrder[i]["symbol"].asString();
 
 		notesToOrder[i]["symbolText"] = symbolText;
 
