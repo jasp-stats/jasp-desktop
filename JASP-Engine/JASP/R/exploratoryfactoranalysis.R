@@ -181,7 +181,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   bartab$dependOn("bartest")
   bartab$addColumnInfo(name = "chisq", title = "\u03a7\u00b2", type = "number", format = "dp:3")
   bartab$addColumnInfo(name = "df",    title = "df", type = "number", format = "dp:3")
-  bartab$addColumnInfo(name = "pval",  title = "p-value", type = "number", format = "dp:3;p:.001")
+  bartab$addColumnInfo(name = "pval",  title = "p", type = "number", format = "dp:3;p:.001")
   bartab$position <- 0
   modelContainer[["bartab"]] <- bartab
   
@@ -200,7 +200,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   goftab$addColumnInfo(name = "model", title = "",        type = "string")
   goftab$addColumnInfo(name = "chisq", title = "Value",   type = "number", format = "dp:3")
   goftab$addColumnInfo(name = "df",    title = "df",      type = "integer")
-  goftab$addColumnInfo(name = "p",     title = "p-value", type = "number", format = "dp:3;p:.001")
+  goftab$addColumnInfo(name = "p",     title = "p", type = "number", format = "dp:3;p:.001")
   goftab$position <- 1
 
   modelContainer[["goftab"]] <- goftab
@@ -366,10 +366,14 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   efaResults <- modelContainer[["model"]][["object"]]
 
-  fittab[["RMSEA"]]   <- efaResults$RMSEA[1]
-  fittab[["RMSEAci"]] <- paste(round(efaResults$RMSEA[2], 3), "-", round(efaResults$RMSEA[3], 3))
-  fittab[["TLI"]]     <- efaResults$TLI
-  fittab[["BIC"]]     <- efaResults$BIC
+  # store in obj
+  rmsealo <- if (is.null(efaResults$RMSEA[2])) "." else round(efaResults$RMSEA[2], 3)
+  rmseahi <- if (is.null(efaResults$RMSEA[3])) "." else round(efaResults$RMSEA[3], 3)
+  
+  fittab[["RMSEA"]]   <- if (is.null(efaResults$RMSEA[1])) NA  else efaResults$RMSEA[1] 
+  fittab[["RMSEAci"]] <- paste(rmsealo, "-", rmseahi)
+  fittab[["TLI"]]     <- if (is.null(efaResults$TLI))      NA  else efaResults$TLI
+  fittab[["BIC"]]     <- if (is.null(efaResults$BIC))      NA  else efaResults$BIC
 
 }
 
