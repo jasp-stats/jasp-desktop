@@ -23,14 +23,23 @@ DEFINES +=    "JASP_VERSION_MINOR=$$JASP_VERSION_MINOR"
 DEFINES +=    "JASP_VERSION_BUILD=$$JASP_VERSION_BUILD"
 DEFINES += "JASP_VERSION_REVISION=$$JASP_VERSION_REVISION"
 
-DEFINES += GIT_CURRENT_BRANCH="\"$(shell cd $$PWD && git rev-parse --abbrev-ref HEAD)\""
-DEFINES += GIT_CURRENT_COMMIT="\"$(shell cd $$PWD && git rev-parse --verify HEAD)\""
+GIT_EXEC=git #Unix knows where to find things
+windows { #Windows is not so sure
+	_GIT_LOCATION = $$(GIT_LOCATION)
+	isEmpty(_GIT_LOCATION): _GIT_LOCATION="C:\Program Files\Git" #default assumption, if you want to change it then set the GIT_LOCATION environment variable (For instance under Projects->Run)
 
+	GIT_EXEC = $${_GIT_LOCATION}\bin\git.exe
+}
 
+GIT_BRANCH=$$system(\"$$GIT_EXEC\" rev-parse --abbrev-ref HEAD)
+GIT_COMMIT=$$system(\"$$GIT_EXEC\" rev-parse --verify HEAD)
+
+DEFINES += GIT_CURRENT_BRANCH=\"$$GIT_BRANCH\"
+DEFINES += GIT_CURRENT_COMMIT=\"$$GIT_COMMIT\"
 
 JASP_REQUIRED_FILES = $$PWD/../jasp-required-files
 
-message(using JASP_REQUIRED_FILES of $$JASP_REQUIRED_FILES)
+#message(using JASP_REQUIRED_FILES of $$JASP_REQUIRED_FILES)
 
 INCLUDEPATH += $$JASP_REQUIRED_FILES/boost_1_71_0/
 
@@ -63,7 +72,7 @@ exists(/app/lib/*) {
 macx | windows { CONFIG(debug, debug|release) {  DEFINES += JASP_DEBUG } }
 
 windows {
-	message(QT_ARCH $$QT_ARCH)
+	#message(QT_ARCH $$QT_ARCH)
 	contains(QT_ARCH, i386) {
 		ARCH = i386
 		BOOST_ARCH = x32
@@ -97,5 +106,6 @@ DEFINES += QT_NO_FOREACH #Come on Qt we can just use the nice new ranged for fro
 
 macx {
 	QMAKE_CXXFLAGS_WARN_ON	+= -Wno-unused-parameter -Wno-unused-local-typedef
-	QMAKE_CXXFLAGS			+= -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi -stdlib=libc++
+	QMAKE_CXXFLAGS			+= -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi -stdlib=libc++ -Wno-deprecated-declarations
 }
+
