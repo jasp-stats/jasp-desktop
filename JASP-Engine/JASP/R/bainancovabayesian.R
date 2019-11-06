@@ -121,11 +121,9 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	bayesFactorMatrix$position <- position
 
 	if (type == "regression")
-		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "covariates", "standardized", "seed"))
-	if (type == "ancova")
-		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "fixedFactors", "covariates", "seed"))
-	if (type == "anova")
-		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "fixedFactors", "seed"))
+		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "standardized", "seed"))
+	if (type == "ancova" || type == "anova")
+		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "seed"))
 		
 	bayesFactorMatrix$addColumnInfo(name = "hypothesis", title = "", type = "string")
 	bayesFactorMatrix$addColumnInfo(name = "H1", type = "number")
@@ -161,7 +159,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
 	
 	coefficientsTable <- createJaspTable("Coefficients for Groups plus Covariates")
-	coefficientsTable$dependOn(options=c("coefficients", "seed", "model", "covariates", "dependent", "fixedFactors"))
+	coefficientsTable$dependOn(options=c("coefficients", "seed"))
 	coefficientsTable$position <- position
 
 	coefficientsTable$addColumnInfo(name="v",				title="Covariate",		type="string")

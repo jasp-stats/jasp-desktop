@@ -288,10 +288,8 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
         variableDataOm <- na.omit(variableData)
 
         posteriorSummary <- .posteriorSummaryGroupMean(variable=variableDataOm, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-        ciLower<- round(posteriorSummary$ciLower,3)
-        ciLower <- ciLower
-        ciUpper <- round(posteriorSummary$ciUpper,3)
-        ciUpper <- ciUpper
+        ciLower <- posteriorSummary[["ciLower"]]
+        ciUpper <- posteriorSummary[["ciUpper"]]
 
         n <- as.numeric(length(variableDataOm))
         m <- as.numeric(mean(variableDataOm))
@@ -309,31 +307,32 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
 
     for (i in .indices(options[["pairs"]])) {
 
-    pair <- options[["pairs"]][[i]]
+      pair <- options[["pairs"]][[i]]
 
-    if (!(pair[[1]] == "" || pair[[2]] == "" || pair[[1]] == pair[[2]])) {
+        if (!(pair[[1]] == "" || pair[[2]] == "" || pair[[1]] == pair[[2]])) {
 
-    subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])))
-    subDataSet <- na.omit(subDataSet)
+        subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])))
+        subDataSet <- na.omit(subDataSet)
 
-    c1 <- subDataSet[[ .v(pair[[1]]) ]]
-    c2 <- subDataSet[[ .v(pair[[2]]) ]]
+        c1 <- subDataSet[[ .v(pair[[1]]) ]]
+        c2 <- subDataSet[[ .v(pair[[2]]) ]]
 
-    currentPair <- paste(pair, collapse=" - ")
-    diff <- c1-c2
-    meandiff <- mean(diff)
-    sd <- sd(diff)
-    se <- sqrt(var(c1) + var(c2) - (2*cor(c1,c2)*sd(c1)*sd(c2)))/sqrt(length(diff))
-    N <- length(diff)
+        currentPair <- paste(pair, collapse=" - ")
+        diff <- c1-c2
+        meandiff <- mean(diff)
+        sd <- sd(diff)
+        se <- sqrt(var(c1) + var(c2) - (2*cor(c1,c2)*sd(c1)*sd(c2)))/sqrt(length(diff))
+        N <- length(diff)
 
-    ciLower <- round(meandiff - 1.96*se,3)
-    ciUpper <- round(meandiff + 1.96*se,3)
+        alpha <- 1 - (1 - options[["descriptivesPlotsCredibleInterval"]]) / 2
+        ciLower <- meandiff - qnorm(alpha) * se
+        ciUpper <- meandiff + qnorm(alpha) * se
 
-    row <- list(v=currentPair, N=N, mean=meandiff, sd=sd, se=se, lowerCI=ciLower, upperCI=ciUpper)
-    descriptivesTable$addRows(row)
+        row <- list(v=currentPair, N=N, mean=meandiff, sd=sd, se=se, lowerCI=ciLower, upperCI=ciUpper)
+        descriptivesTable$addRows(row)
+      }
     }
   }
-}
 }
 
 .bainPairedSamplesDescriptivesPlots <- function(dataset, options, jaspResults, ready, position) {

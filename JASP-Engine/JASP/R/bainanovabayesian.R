@@ -147,12 +147,15 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 			column <- dataset[ , .v(options[["dependent"]])]
 			column <- column[which(groupCol == variable)]
 
-			posteriorSummary <- .posteriorSummaryGroupMean(variable=column, descriptivesPlotsCredibleInterval=options[["CredibleInterval"]]/100)
-								ciLower <- posteriorSummary$ciLower
-								ciUpper <- posteriorSummary$ciUpper
+			N <- length(column)
+			mu <- mean(column)
+			sd <- sd(column)
+			se <- sd / sqrt(N)
+			alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
+			lowerCI <- mu - qnorm(alpha) * se
+			upperCI <- mu + qnorm(alpha) * se
 
-			row <- data.frame(v = variable, N = length(column), mean = mean(column), sd = round(sd(column),3),
-											se = sd(column)/sqrt(length(column)), lowerCI = ciLower, upperCI = ciUpper)
+			row <- data.frame(v = variable, N = N, mean = mu, sd = sd, se = se, lowerCI = lowerCI, upperCI = upperCI)
 			descriptivesTable$addRows(row)
 	}
 }
@@ -177,7 +180,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["descriptivesPlot"]]) || !options[["descriptivesPlot"]]) return()
 	
 	descriptivesPlot <- createJaspPlot(plot = NULL, title = "Descriptives Plot")
-	descriptivesPlot$dependOn(options=c("descriptivesPlot", "fixedFactors", "dependent", "model"))
+	descriptivesPlot$dependOn(options=c("descriptivesPlot", "CredibleInterval"))
 	descriptivesPlot$position <- position
 
 	bainContainer[["descriptivesPlot"]] <- descriptivesPlot
@@ -185,59 +188,49 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!ready || bainContainer$getError())
 		return()
 	
-	bainResult <- bainContainer[["bainResult"]]$object
-	
-	base_breaks_y <- function(x, plotErrorBars = TRUE) {
-			ci.pos <- c(x[,"dependent"], x[,"ciLower"], x[,"ciUpper"])
+	bainBreaks <- function(x, plotErrorBars = TRUE) {
+			ci.pos <- c(x[,"mean"], x[,"lowerCI"], x[,"upperCI"])
 			b <- pretty(ci.pos)
 			d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
 			list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1),
 					ggplot2::scale_y_continuous(breaks=c(min(b),max(b))))
 	}
-	groupVars <- unlist(options[["fixedFactors"]])
-
-	groupVarsV <- .v(groupVars)
-	dependentV <- .v(options[["dependent"]])
-
-	sum_model <- bainResult$model
-	summaryStat <- summary(sum_model)$coefficients
-
-	if (type == "ancova") {
-		summaryStat <- summaryStat[-(nrow(summaryStat) - 0:(length(unlist(options[["covariates"]]))-1)), ] # Remove covars rows
-	}
-
-	summaryStat <- cbind(summaryStat, 1:nrow(summaryStat))
-	colnames(summaryStat)[length(colnames(summaryStat))] <- "plotHorizontalAxis"
-	colnames(summaryStat)[which(colnames(summaryStat) == "Estimate")] <- "dependent"
-	summaryStatSubset <- as.data.frame(summaryStat)
 
 	groupCol <- dataset[ , .v(options[["fixedFactors"]])]
 	varLevels <- levels(groupCol)
-	ciLower <- summaryStatSubset[, 1] - 1.96*summaryStatSubset[, 2]
-	ciUpper <- summaryStatSubset[, 1] + 1.96*summaryStatSubset[, 2]
-	summaryStatSubset$ciLower <- ciLower
-	summaryStatSubset$ciUpper <- ciUpper
-	summaryStat <- summaryStatSubset
 
-	p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis,
-								y=dependent,
-								group=1))
+	d <- data.frame()
+	index <- 1
 
-	pd <- ggplot2::position_dodge(.2)
-	p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower,
-												ymax=ciUpper),
-												colour="black", width=.2, position=pd)
+	for (variable in varLevels) {
 
-	p <- p + ggplot2::geom_line(position=pd, size = .7) +
-		ggplot2::geom_point(position=pd, size=4) +
-		ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
-		ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) +
-		ggplot2::scale_color_manual(values = rep("black",200),guide=ggplot2::guide_legend(nrow=10)) +
-		ggplot2::ylab(options[["dependent"]]) +
-		ggplot2::xlab(groupVars) +
-		base_breaks_y(summaryStat, TRUE) +
-		ggplot2::scale_x_continuous(breaks = 1:length(varLevels), labels = as.character(varLevels))
+			column <- dataset[ , .v(options[["dependent"]])]
+			column <- column[which(groupCol == variable)]
 
+			N <- length(column)
+			mu <- mean(column)
+			sd <- sd(column)
+			se <- sd / sqrt(N)
+			alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
+			lowerCI <- mu - qnorm(alpha) * se
+			upperCI <- mu + qnorm(alpha) * se
+
+			row <- data.frame(v = variable, N = N, mean = mu, sd = sd, se = se, lowerCI = lowerCI, upperCI = upperCI, index = index)
+			d <- rbind(d, row)
+			index <- index + 1
+	}
+
+	p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
+			ggplot2::geom_errorbar(ggplot2::aes(ymin=lowerCI, ymax=upperCI), colour="black", width=.2, position = ggplot2::position_dodge(.2)) +
+			ggplot2::geom_line(position=ggplot2::position_dodge(.2), size = .7) +
+			ggplot2::geom_point(position=ggplot2::position_dodge(.2), size=4) +
+			ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=ggplot2::guide_legend(nrow=10)) +
+			ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=ggplot2::guide_legend(nrow=10)) +
+			ggplot2::scale_color_manual(values = rep("black",200), guide=ggplot2::guide_legend(nrow=10)) +
+			ggplot2::ylab(options[["dependent"]]) +
+			ggplot2::xlab(options[["fixedFactors"]]) +
+			bainBreaks(d, TRUE) +
+			ggplot2::scale_x_continuous(breaks = 1:length(varLevels), labels = as.character(varLevels))
 	p <- JASPgraphs::themeJasp(p)
 
 	descriptivesPlot$plotObject <- p

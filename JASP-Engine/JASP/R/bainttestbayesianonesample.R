@@ -358,7 +358,11 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
     if (!is.null(bainResult[[variable]])){
       p <- try({
-        plot$plotObject <- .plot_bain_ttest_cran(bainResult[[variable]], type = analysisType)
+        if(type == "independentSamples" && (analysisType == 4 || analysisType == 5)){
+          plot$plotObject <- .plot_bain_ttest_cran(bainResult[[variable]], type = analysisType, adjustLabels = TRUE)
+        } else {
+          plot$plotObject <- .plot_bain_ttest_cran(bainResult[[variable]], type = analysisType)
+        }
       })
       if(isTryError(p)){
         plot$setError(paste0("Plotting not possible: ", .extractErrorMessage(p)))
@@ -371,7 +375,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   }
 }
 
-.plot_bain_ttest_cran <- function(x, type){
+.plot_bain_ttest_cran <- function(x, type, adjustLabels = FALSE){
 
     if(type == 1 || type == 2 || type == 3){
       labs <- c("H0", "H1")
@@ -389,13 +393,19 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     }
     ggdata <- data.frame(lab = labs, PMP = values)
 
+    labels <- rev(labs)
+    if(adjustLabels && type == 4) 
+      labels <- labs
+    if(adjustLabels && type == 5)
+      labels <- c("H1", "H2", "H0")
+
     p <- ggplot2::ggplot(data = ggdata, mapping = ggplot2::aes(x = "", y = PMP, fill = lab)) +
           ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
           ggplot2::geom_col() +
           ggplot2::coord_polar(theta = "y", direction = -1) +
           ggplot2::labs(x = "", y = "") +
           ggplot2::theme(panel.grid = ggplot2::element_blank(), legend.position = "none") +
-          ggplot2::scale_y_continuous(breaks = cumsum(rev(values)) - rev(values)/2, labels = rev(labs)) +
+          ggplot2::scale_y_continuous(breaks = cumsum(rev(values)) - rev(values)/2, labels = labels) +
           ggplot2::theme(panel.background = ggplot2::element_blank(),
                               axis.text=ggplot2::element_text(size=17, color = "black"),
                               plot.title = ggplot2::element_text(size=18, hjust = .5),

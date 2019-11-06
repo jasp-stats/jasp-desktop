@@ -51,7 +51,8 @@ Form
 		title: qsTr("Tables")
 
 		CheckBox { name: "bayesFactorMatrix";	text: qsTr("Bayes factor matrix")	}
-		CheckBox { name: "coefficients";		text: qsTr("Coefficients")			}
+		CheckBox { name: "coefficients";		text: qsTr("Coefficients")			
+			CIField { name: "CredibleInterval"; text: qsTr("Credible interval")} }
 	}
 
 	Group

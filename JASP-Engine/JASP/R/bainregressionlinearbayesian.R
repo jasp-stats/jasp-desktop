@@ -122,14 +122,16 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
 
 	coefficientsTable <- createJaspTable("Coefficients")
-	coefficientsTable$dependOn(options = c("coefficients"))
+	coefficientsTable$dependOn(options = c("coefficients", "CredibleInterval"))
 	coefficientsTable$position <- position
+
+	overTitle <- paste0(round(options[["CredibleInterval"]] * 100), "% Credible Interval")
 
 	coefficientsTable$addColumnInfo(name="v",       title="Covariate",   type="string")
 	coefficientsTable$addColumnInfo(name="mean",    title="Coefficient", type="number")
 	coefficientsTable$addColumnInfo(name="SE",      title="Std. Error",  type="number")
-	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     	type="number", overtitle = "95% Credible Interval")
-	coefficientsTable$addColumnInfo(name="CiUpper", title="Upper",     	type="number", overtitle = "95% Credible Interval")
+	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     	type="number", overtitle = overTitle)
+	coefficientsTable$addColumnInfo(name="CiUpper", title="Upper",     	type="number", overtitle = overTitle)
 
 	if(options[["standardized"]])
 		coefficientsTable$addFootnote(message = "The displayed coefficients are standardized.")
@@ -141,16 +143,21 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 
 	bainResult <- bainContainer[["bainResult"]]$object
 	sum_model <- summary(bainResult)
-
 	groups <- as.character(sum_model[["Parameter"]])
 	estim <- sum_model[["Estimate"]]
 	CiLower <- sum_model[["lb"]]
 	CiUpper <- sum_model[["ub"]]
-	SE <- (CiUpper - CiLower)/(2 * qnorm(0.975))
 
-	d <- data.frame(v = groups, mean = estim, SE = SE, CiLower = CiLower, CiUpper = CiUpper)
+	# Deduct standard error from 95 percent confidence interval
+	SE <- (CiUpper - CiLower) / 2 / qnorm(0.975)
 
-	coefficientsTable$addRows(d)
+	# Override interval from bain (it's only 95 percent) to custom interval
+	alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
+	CiUpper <- estim + qnorm(alpha) * SE
+	CiLower <- estim - qnorm(alpha) * SE
+
+	row <- data.frame(v = groups, mean = estim, SE = SE, CiLower = CiLower, CiUpper = CiUpper)
+	coefficientsTable$addRows(row)
 }
 
 .readDataBainLinearRegression <- function(options, dataset) {
