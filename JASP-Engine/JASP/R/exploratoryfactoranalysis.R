@@ -180,8 +180,8 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   bartab <- createJaspTable("Bartlett's test")
   bartab$dependOn("bartest")
   bartab$addColumnInfo(name = "chisq", title = "\u03a7\u00b2", type = "number", format = "dp:3")
-  bartab$addColumnInfo(name = "df", title = "df", type = "number", format = "dp:3")
-  bartab$addColumnInfo(name = "pval", title = "p-value", type = "number", format = "dp:3;p:.001")
+  bartab$addColumnInfo(name = "df",    title = "df", type = "number", format = "dp:3")
+  bartab$addColumnInfo(name = "pval",  title = "p-value", type = "number", format = "dp:3;p:.001")
   bartab$position <- 0
   modelContainer[["bartab"]] <- bartab
   
@@ -197,10 +197,10 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (!is.null(modelContainer[["goftab"]])) return()
 
   goftab <- createJaspTable(title = "Chi-squared Test")
-  goftab$addColumnInfo(name = "model", title = "",      type = "string")
-  goftab$addColumnInfo(name = "chisq", title = "Value", type = "number", format = "dp:3")
-  goftab$addColumnInfo(name = "df",    title = "df",    type = "integer")
-  goftab$addColumnInfo(name = "p",     title = "p",     type = "number", format = "dp:3;p:.001")
+  goftab$addColumnInfo(name = "model", title = "",        type = "string")
+  goftab$addColumnInfo(name = "chisq", title = "Value",   type = "number", format = "dp:3")
+  goftab$addColumnInfo(name = "df",    title = "df",      type = "integer")
+  goftab$addColumnInfo(name = "p",     title = "p-value", type = "number", format = "dp:3;p:.001")
   goftab$position <- 1
 
   modelContainer[["goftab"]] <- goftab
