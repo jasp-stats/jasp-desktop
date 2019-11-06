@@ -159,15 +159,17 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
 	
 	coefficientsTable <- createJaspTable("Coefficients for Groups plus Covariates")
-	coefficientsTable$dependOn(options=c("coefficients", "seed"))
+	coefficientsTable$dependOn(options=c("coefficients", "seed", "CredibleInterval"))
 	coefficientsTable$position <- position
 
 	coefficientsTable$addColumnInfo(name="v",				title="Covariate",		type="string")
 	coefficientsTable$addColumnInfo(name="N",				title="N",				type="integer")
 	coefficientsTable$addColumnInfo(name="mean",			title="Coefficient",	type="number")
 	coefficientsTable$addColumnInfo(name="SE",				title="Std. Error",		type="number")
-	coefficientsTable$addColumnInfo(name="CiLower",			title="Lower",			type="number", overtitle="95% Credible Interval")
-	coefficientsTable$addColumnInfo(name="CiUpper",			title="Upper",			type="number", overtitle="95% Credible Interval")
+
+	overTitle <- paste0(round(options[["CredibleInterval"]] * 100), "% Credible Interval")
+	coefficientsTable$addColumnInfo(name="CiLower",			title="Lower",			type="number", overtitle = overTitle)
+	coefficientsTable$addColumnInfo(name="CiUpper",			title="Upper",			type="number", overtitle = overTitle)
 
 	bainContainer[["coefficientsTable"]] <- coefficientsTable
 	
@@ -175,39 +177,25 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 		return()
 
 	bainResult <- bainContainer[["bainResult"]]$object
+	
+	sum_model <- summary(bainResult)
+	group <- as.character(sum_model[["Parameter"]])
+	estim <- sum_model[["Estimate"]]
+	CiLower <- sum_model[["lb"]]
+	CiUpper <- sum_model[["ub"]]
+	
+	# Deduct standard error from 95 percent confidence interval
+	SEs <- (CiUpper - CiLower) / 2 / qnorm(0.975)
+	
+	# Override interval from bain (it's only 95 percent) to custom interval
+	alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
+	CiUpper <- estim + qnorm(alpha) * SEs
+	CiLower <- estim - qnorm(alpha) * SEs
+	
+	N <- sum_model[["n"]]
 
-	sum_model <- bainResult[["model"]]
-	covcoef <- data.frame(sum_model[["coefficients"]])
-	covcoef <- cbind(covcoef, summary(sum_model)$coefficients[, 2])
-
-	groups <- rownames(covcoef)
-	estim <- covcoef[, 1]
-	SEs <- covcoef[, 2]
-	CiLower <- estim - 1.96 * SEs
-	CiUpper <- estim + 1.96 * SEs
-
-	groupCol <- dataset[ , .v(options[["fixedFactors"]])]
-	varLevels <- levels(groupCol)
-	covVars <- unlist(options[["covariates"]])
-
-	N <- numeric()
-
-	for (variable in varLevels) {
-		column <- dataset[ , .v(options[["dependent"]])]
-		column <- column[which(groupCol == variable)]
-		N <- c(N, length(column))
-	}
-
-	for (var in covVars) {
-		col <- dataset[ , .v(var)]
-		col <- na.omit(col)
-		N <- c(N, length(col))
-	}
-
-	for (i in 1:length(groups)) {
-		row <- data.frame(v = groups[i], mean = estim[i], N = N[i], SE = SEs[i], CiLower = CiLower[i], CiUpper = CiUpper[i])
-		coefficientsTable$addRows(row)
-	}
+	row <- data.frame(v = group, mean = estim, N = N, SE = SEs, CiLower = CiLower, CiUpper = CiUpper)
+	coefficientsTable$addRows(row)
 }
 
 .readDataBainAncova <- function(options, dataset) {
