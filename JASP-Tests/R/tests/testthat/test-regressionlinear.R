@@ -100,7 +100,7 @@ test_that("Descriptive table results match", {
   )
   options$descriptives <- TRUE
   results <- jasptools::run("RegressionLinear", "test.csv", options)
-  table <- results[["results"]][["descriptivesTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_descriptivesTable"]][["data"]]
   expect_equal_tables(table,
     list("contNormal", 100, -0.18874858754, 1.05841360919316, 0.105841360919316,
          "contGamma", 100, 2.03296079621, 1.53241112621044, 0.153241112621044)

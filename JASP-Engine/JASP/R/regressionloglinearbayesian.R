@@ -63,22 +63,6 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
   }
   
   do.call(.hasErrors, args)
-  
-  # Error check 2: 0 observations for a level of a variable
-  for (factor in options$factors) {
-    column <- dataset[[.v(factor)]]
-    data   <- column[!is.na(column)]
-    levels <- levels(data)
-    
-    for (level in levels) {
-      .hasErrors(
-        dataset              = data[data == level],
-        type                 = "observations",
-        observations.amount  = "< 2",
-        exitAnalysisIfErrors = TRUE
-      )
-    }
-  }
 } 
 
 # Compute results 

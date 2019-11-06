@@ -72,12 +72,12 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   if (options$plotResidualsQQ && is.null(modelContainer[["residualsQQPlot"]]))
     .linregCreateResidualsQQPlot(modelContainer, finalModel, options, position = 15)
 
-  # these output elements are not dependent on any model
+  # these output elements do not use statistics of a pre-calculated lm fit
   if (options$plotsPartialRegression && is.null(modelContainer[["partialPlotContainer"]]))
     .linregCreatePartialPlots(modelContainer, dataset, options, position = 16)
 
-  if (options$descriptives && is.null(jaspResults[["descriptivesTable"]]))
-    .linregCreateDescriptivesTable(jaspResults, dataset, options, position = 2)
+  if (options$descriptives && is.null(modelContainer[["descriptivesTable"]]))
+    .linregCreateDescriptivesTable(modelContainer, dataset, options, position = 5)
 }
 
 .linregReadDataset <- function(dataset, options) {
@@ -354,6 +354,9 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   isNewGroup  <- logical(0)
   titles      <- character(0)
   for (i in seq_along(model)) {
+    if (is.null(model[[i]]$fit))
+      next
+
     numPredictors <- length(model[[i]]$predictors)
     if (includeConstant)
       numPredictors <- numPredictors + 1
@@ -624,7 +627,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     return()
   }
 
-  if (length(predictors) > 0) {
+  if (options$dependent != "" && length(predictors) > 0) {
     for (predictor in predictors)
       .linregCreatePlotPlaceholder(partialPlotContainer, index = .unvf(predictor), title = paste(options$dependent, "vs.", .unvf(predictor)))
 
@@ -645,9 +648,9 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   .linregInsertPlot(partialPlot, .linregPlotResiduals, xVar = xVar, res = resid, xlab = xlab, ylab = ylab, regressionLine = TRUE, standardizedResiduals = FALSE)
 }
 
-.linregCreateDescriptivesTable <- function(jaspResults, dataset, options, position) {
+.linregCreateDescriptivesTable <- function(modelContainer, dataset, options, position) {
   descriptivesTable <- createJaspTable("Descriptives")
-  descriptivesTable$dependOn(c("dependent", "covariates", "descriptives"))
+  descriptivesTable$dependOn("descriptives")
   descriptivesTable$position <- position
 
   descriptivesTable$addColumnInfo(name = "var",  title = "",     type = "string")
@@ -661,7 +664,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   if (length(variables) > 0)
     descriptivesTable$addRows(.linregGetDescriptives(variables, dataset))
 
-  jaspResults[["descriptivesTable"]] <- descriptivesTable
+  modelContainer[["descriptivesTable"]] <- descriptivesTable
 }
 
 .linregCalcModel <- function(modelContainer, dataset, options, ready) {
