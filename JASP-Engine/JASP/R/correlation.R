@@ -109,10 +109,10 @@ Correlation <- function(jaspResults, dataset, options){
   
   if(options[['hypothesis']] == "correlatedPositively"){
     mainTable$addFootnote(message = "All tests one-tailed, for positive correlation")
-    additionToFlagSignificant <- ", one-talied"
+    additionToFlagSignificant <- ", one-tailed"
   } else if(options[['hypothesis']] == "correlatedNegatively"){
     mainTable$addFootnote(message = "All tests one-tailed, for negative correlation")
-    additionToFlagSignificant <- ", one-talied"
+    additionToFlagSignificant <- ", one-tailed"
   } else{
     additionToFlagSignificant <- ""
   }
