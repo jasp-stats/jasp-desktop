@@ -2255,7 +2255,7 @@ as.list.footnotes <- function(footnotes) {
   on.exit(setwd(oldwd))
 
   
-  plot2draw <- .decodeplot(plot)
+  plot2draw <- decodeplot(plot)
   
   if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable"))) {
     
@@ -2318,7 +2318,7 @@ as.list.footnotes <- function(footnotes) {
 saveImage <- function(plotName, format, height, width)
 {
   state           <- .retrieveState()     # Retrieve plot object from state
-  plt             <- .decodeplot(state[["figures"]][[plotName]][["obj"]])
+  plt             <- decodeplot(state[["figures"]][[plotName]][["obj"]])
   
   location        <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
   backgroundColor <- .fromRCPP(".imageBackground")
