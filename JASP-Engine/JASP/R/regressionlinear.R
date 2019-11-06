@@ -20,14 +20,13 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   
   if (ready) {
     dataset <- .linregReadDataset(dataset, options)
-    
     .linregCheckErrors(dataset, options)
   }
   
   modelContainer <- .linregGetModelContainer(jaspResults, position = 1)
   model <- .linregCalcModel(modelContainer, dataset, options, ready)
   
-  # these output elements show statistics of all the models
+  # these output elements show statistics of all the lm fits
   if (is.null(modelContainer[["summaryTable"]]))
     .linregCreateSummaryTable(modelContainer, model, options, position = 1)
 
@@ -49,7 +48,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   if (options$collinearityDiagnostics && is.null(modelContainer[["collinearityTable"]]))
     .linregCreateCollinearityDiagnosticsTable(modelContainer, model, options, position = 8)
   
-  # these output elements show statistics of the "final model" (full model in enter method and last model in stepping methods)
+  # these output elements show statistics of the "final model" (lm fit with all predictors in enter method and last lm fit in stepping methods)
   finalModel <- model[[length(model)]]
   
   if (options$residualsCasewiseDiagnostics && is.null(modelContainer[["casewiseTable"]]))
@@ -73,7 +72,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   if (options$plotResidualsQQ && is.null(modelContainer[["residualsQQPlot"]]))
     .linregCreateResidualsQQPlot(modelContainer, finalModel, options, position = 15)
 
-  # these output elements are not dependent on the model
+  # these output elements are not dependent on any model
   if (options$plotsPartialRegression && is.null(modelContainer[["partialPlotContainer"]]))
     .linregCreatePartialPlots(modelContainer, dataset, options, position = 16)
   
@@ -325,25 +324,60 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   bootstrapCoeffTable$addFootnote("Coefficient estimate is based on the median of the bootstrap distribution.")
   bootstrapCoeffTable$addFootnote("Bias corrected accelerated", symbol = "\u002A")
   
-  if (!is.null(model))
-    .linregFillBootstrapCoefficientsTable(bootstrapCoeffTable, model, dataset, options)
-  
   modelContainer[["bootstrapCoeffTable"]] <- bootstrapCoeffTable
+  
+  if (!is.null(model))
+    .linregFillBootstrapCoefficientsTable(bootstrapCoeffTable, modelContainer, model, dataset, options)
 }
 
-.linregFillBootstrapCoefficientsTable <- function(bootstrapCoeffTable, model, dataset, options) {
-  startProgressbar(options$regressionCoefficientsBootstrappingReplicates * length(model))
-
-  for (i in seq_along(model)) {
-    isNewGroup <- i > 1
+.linregFillBootstrapCoefficientsTable <- function(bootstrapCoeffTable, modelContainer, model, dataset, options) {
+  metaCols <- .linregGetTitlesAndIsNewGroups(model, options$includeConstant)
+  
+  if (is.null(modelContainer[["bootstrapCoefficients"]])) {
+    startProgressbar(options$regressionCoefficientsBootstrappingReplicates * length(model))
+    bootstrapCoeffTable$setData(metaCols)
     
-    coefficients <- .linregGetBootstrapCoefficients(model[[i]]$fit, model[[i]]$predictors, dataset, options)
-    
-    for (j in seq_along(coefficients)) {
-      bootstrapCoeffTable$addRows(c(coefficients[[j]], list(.isNewGroup = isNewGroup, model = model[[i]]$title)))
-      isNewGroup <- FALSE
+    coefficients <- NULL
+    for (i in seq_along(model)) {
+      coefficients <- rbind(coefficients, .linregGetBootstrapCoefficients(model[[i]]$fit, model[[i]]$predictors, dataset, options))
+      bootstrapCoeffTable$setData(.linregCombineMetaWithData(metaCols, coefficients))
     }
+    
+    modelContainer[["bootstrapCoefficients"]] <- createJaspState(coefficients)
+    modelContainer[["bootstrapCoefficients"]]$dependOn(c("regressionCoefficientsBootstrappingReplicates", "regressionCoefficientsConfidenceIntervalsInterval"))
+  } else {
+    bootstrapCoeffTable$setData(.linregCombineMetaWithData(metaCols, modelContainer[["bootstrapCoefficients"]]$object))
   }
+}
+
+.linregGetTitlesAndIsNewGroups <- function(model, includeConstant) {
+  isNewGroup <- logical(0)
+  titles <- character(0)
+  for (i in seq_along(model)) {
+    numPredictors <- length(model[[i]]$predictors)
+    if (includeConstant)
+      numPredictors <- numPredictors + 1
+    
+    isNewGroupCurrent <- i > 1
+    if (numPredictors > 1)
+      isNewGroupCurrent <- c(isNewGroupCurrent, logical(numPredictors - 1))
+    
+    isNewGroup <- c(isNewGroup, isNewGroupCurrent)
+    titles <- c(titles, rep(model[[i]]$title, numPredictors))
+  }
+  
+  return(data.frame(.isNewGroup = isNewGroup, model = titles))
+}
+
+.linregCombineMetaWithData <- function(meta, data) { # this can go once we can add cells to a jaspTable
+  if (!is.data.frame(meta) || !is.data.frame(data))
+    stop("expecting both arguments to be data.frames")
+  
+  filler <- matrix(NA, ncol(data), nrow=nrow(meta)-nrow(data))
+  colnames(filler) <- names(data)
+  data <- rbind(data, filler)
+
+  return(cbind(meta, data))
 }
 
 .linregCreatePartialCorrelationsTable <- function(modelContainer, model, dataset, options, position) {
@@ -498,7 +532,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   modelContainer[["residualsVsCovContainer"]] <- residualsVsCovContainer
   
   if (!is.null(finalModel)) {
-    predictors <- .linregGetPredictors(options$modelTerms, encoded=TRUE) # TODO: figure out if this is correct (seems wrong).. the last model fit does not necessarily contain all predictors
+    predictors <- finalModel$predictors
     for (predictor in predictors)
       .linregCreatePlotPlaceholder(residualsVsCovContainer, index = .unvf(predictor), title = paste("Residuals vs.", .unvf(predictor)))
     
@@ -584,6 +618,12 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   modelContainer[["partialPlotContainer"]] <- partialPlotContainer
   
   predictors <- .linregGetPredictors(options$modelTerms, encoded=TRUE)
+  if (any(.linregIsInteraction(predictors))) {
+    .linregCreatePlotPlaceholder(partialPlotContainer, index = "placeholder", title = "")
+    partialPlotContainer$setError("Partial plots are not supported for models containing interaction terms")
+    return()
+  }
+  
   if (length(predictors) > 0) {
     for (predictor in predictors)
       .linregCreatePlotPlaceholder(partialPlotContainer, index = .unvf(predictor), title = paste(options$dependent, "vs.", .unvf(predictor)))
@@ -595,13 +635,6 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 }
   
 .linregFillPartialPlot <- function(partialPlot, predictor, predictors, dataset, options) {
-  # TODO: figure out if we can show partial plots for non-interaction-term-predictors if any of the other predictors have an interaction term
-  # in which case we can just use `if (.linregIsInteraction(predictor)) {`
-  if (any(.linregIsInteraction(predictors))) { 
-    partialPlot$setError("Partial plots are not supported for models containing interaction terms")
-    return()
-  }
-  
   plotData <- .linregGetPartialPlotData(predictor, predictors, dataset, options)
   xVar <- plotData[["residualsPred"]]
   resid <- plotData[["residualsDep"]]
@@ -788,9 +821,6 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     if (!is.null(removeStepModel))
       model[[length(model) + 1]] <- removeStepModel
     
-    # TODO: figure out what the rule is here, if the same is added and then removed, what should the algorithm do? Stop altogether, or ignore it in the next iteration
-    # ignoring in the next iteration seems wrong, because you might enter an infinite loop (Add A, Remove A | (Ignore A), Add B, Remove B | (Ignore B), Add A, remove A)
-    # stop if the same predictor was added and then removed
     if (identical(prevToAddModel, removeStepModel))
       break
     
@@ -1050,13 +1080,11 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     return(coef(fit))
   }
 
-  rows <- list()
+  data <- data.frame(unstandCoeff = numeric(0), bias = numeric(0), SE = numeric(0), lower = numeric(0), upper = numeric(0))
 
   if (!is.null(fit)) {
     if (options$includeConstant)
       predictors <- c("(Intercept)", predictors)
-    
-    rows <- vector("list", length(predictors))
     
     missingCoeffs <- NULL
     if (any(is.na(fit$coefficients)))
@@ -1064,40 +1092,30 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     
 
     summary <- boot::boot(data = dataset, statistic = .bootstrapping,
-                                        R = options$regressionCoefficientsBootstrappingReplicates,
-                                        formula = formula(fit),
-                                        wlsWeights = .v(options$wlsWeights))
+                          R = options$regressionCoefficientsBootstrappingReplicates,
+                          formula = formula(fit),
+                          wlsWeights = .v(options$wlsWeights))
     
     coefficients <- matrixStats::colMedians(summary$t, na.rm = TRUE)
     bias <- colMeans(summary$t, na.rm = TRUE) - summary$t0
     stdErrors <- matrixStats::colSds(summary$t, na.rm = TRUE)
-    ci <- boot::boot.ci(summary, type="bca", conf = options$regressionCoefficientsConfidenceIntervalsInterval)
     
-    for (i in seq_along(rows)) {
+    for (i in seq_along(predictors)) {
       predictor <- predictors[[i]]
-      name <- .unvf(predictor)
         
       if (predictor %in% missingCoeffs) {
-        rows[[i]] <- list(unstandCoeff = NaN, bias = NaN, SE = NaN, lower = NaN, upper = NaN)
-        rows[[i]][["name"]] <- name
+        data[i, ] <- rep(NaN, ncol(data))
         next
       }
       
-      row <- list(
-        name         = name,
-        unstandCoeff = coefficients[i],
-        bias         = bias[i],
-        SE           = stdErrors[i],
-        lower        = ci$bca[4],
-        upper        = ci$bca[5]
-      )
-      
-      rows[[i]] <- row
+      ci <- boot::boot.ci(summary, type="bca", conf = options$regressionCoefficientsConfidenceIntervalsInterval, index = i)
+      data[i, ] <- c(coefficients[i], bias[i], stdErrors[i], ci$bca[4], ci$bca[5])
     }
     
+    data[["name"]] <- .unvf(predictors)
   }
   
-  return(rows)
+  return(data)
 }
 
 .linregGetVIFAndTolerance <- function(predictors, dataset, includeConstant) {
