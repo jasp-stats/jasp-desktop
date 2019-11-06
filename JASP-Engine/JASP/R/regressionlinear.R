@@ -15,3996 +15,1647 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-RegressionLinear <- function(dataset=NULL, options, perform="run", callback=function(...) 0, ...) {
-
-	#######################################
-	###	   VARIABLE DECLARATION			##
-	#######################################
-
-	dependent.variable <- unlist(options$dependent)
-	wls.weight <- unlist(options$wlsWeights)
-	independent.variables <- NULL
-	to.be.read.variables.factors <- NULL
-	if (length(options$covariates) > 0){
-		independent.variables <- unlist(options$covariates)
-	}
-
-	list.variables <- c(dependent.variable, independent.variables)
-	list.variables <- list.variables[list.variables != ""]
-	to.be.read.variables.numeric <- c(dependent.variable, independent.variables, wls.weight)
-	to.be.read.variables.numeric <- to.be.read.variables.numeric [ to.be.read.variables.numeric  != ""]
-
-	if (length(options$factors) > 0)
-		to.be.read.variables.factors <- unlist(options$factors)
-
-
-	#######################################
-	###			FETCH DATA				 ##
-	#######################################
-
-	if (is.null(dataset)) {
-		if (perform == "run") {
-			dataset <- .readDataSetToEnd(	columns.as.factor = to.be.read.variables.factors, columns.as.numeric = to.be.read.variables.numeric)
-		} else {
-			dataset <- .readDataSetHeader(columns.as.factor = to.be.read.variables.factors, columns.as.numeric = to.be.read.variables.numeric)
-		}
-	}
-
-	#######################################
-	###		    DATA QUALITY CHECK  	 ##
-	#######################################
-
-	if (perform == "run") {
-			
-	  if (dependent.variable != "") {
-  		.hasErrors(dataset, type = c("infinity", "variance", "observations", "modelInteractions"), 
-  								all.target = list.variables, observations.amount = "< 2",
-  								modelInteractions.modelTerms = options$modelTerms, exitAnalysisIfErrors = TRUE)
-  								
-  		#check weights
-  		if (options$wlsWeights != "")
-  			.hasErrors(dataset, type = c("infinity", "limits", "observations"), 
-  									all.target = options$wlsWeights, limits.min = 1, observations.amount = "< 2",
-  	  							exitAnalysisIfErrors = TRUE)
-	  }
-	  
-	  #remove NA listwise
-	  dataset <- dataset[complete.cases(dataset), , drop=FALSE]
-	  
-	}
-
-	#######################################
-	###			  META			   		###
-	#######################################
-
-	results <- list()
-	list.of.errors <- list()
-
-	.meta <-  list(
-		list(name = "title", type = "title"),
-		list(name = "model summary", type = "table"),
-		list(name = "anova", type = "table"),
-		list(name = "regression", type = "table"),
-		list(name = "bootstrap.regression", type = "table"),
-		list(name = "descriptives", type = "table"),
-		list(name = "correlations", type = "table"),
-		list(name = "coefficient covariances", type = "table"),
-		list(name = "collinearity diagnostics", type = "table"),
-		list(name = "casewise diagnostics", type = "table"),
-		list(name = "residuals statistics", type = "table"),
-		list(name="plotResVsDep", type="image"),
-		list(name="plotsResVsCov", type="collection", meta="image"),
-		list(name="plotResVsPred", type="image"),
-		list(name="plotResHist", type="image"),
-		list(name="plotResQQ", type="image"),
-		list(name="plotsParReg", type="collection", meta="image")
-	)
-
-	results[[".meta"]] <- .meta
-
-	results[["title"]] <- "Linear Regression"
-
-	#######################################
-	###	 	   LINEAR REGRESSION		###
-	#######################################
-
-	state <- .retrieveState()
-
-	diff <- NULL
-
-	if (!is.null(state)) {
-
-		diff <- .diff(options, state$options)
-
-	}
-
-	# Fit Linear Model
-	lm.model <- list()
-	empty.model <- list(lm.fit = NULL, variables = NULL)
-	lm.fit.index.one.model <- 1
-	includes.nuisance <- FALSE
-
-	if (length(options$modelTerms) > 0) {
-
-		variables.in.model <- NULL
-		variables.in.model.base64 <- NULL
-    variables.in.null.model <- NULL
-    variables.in.null.model.base64 <- NULL
-
-		for (i in seq_along(options$modelTerms)) {
-
-			components <- options$modelTerms[[i]]$components
-			nuisance <- options$modelTerms[[i]]$isNuisance
-
-			if (length(components) == 1) {
-
-				variables.in.model <- c(variables.in.model, components[[1]])
-				variables.in.model.base64 <- c(variables.in.model.base64, .v(components[[1]]))
-
-			} else {
-				components.unlisted <- unlist(components)
-				term.base64 <- paste0(.v(components.unlisted), collapse=":")
-				term <- paste0(components.unlisted, collapse=":")
-				variables.in.model <- c(variables.in.model, term)
-				variables.in.model.base64 <- c(variables.in.model.base64, term.base64)
-			}
-
-			if (!is.null(nuisance) && nuisance) {
-			  if (length(components) == 1) {
-			    variables.in.null.model <- c(variables.in.null.model, components[[1]])
-			    variables.in.null.model.base64 <- c(variables.in.null.model.base64, .v(components[[1]]))
-			  } else {
-			    variables.in.null.model <- c(variables.in.null.model, term)
-			    variables.in.null.model.base64 <- c(variables.in.null.model.base64, term.base64)
-			  }
-			}
-
-		}
-
-		independent.base64 <- variables.in.model.base64
-		independent.null.base64 <- variables.in.null.model.base64
-		variables.in.model <- variables.in.model[ variables.in.model != ""]
-		variables.in.null.model <- variables.in.null.model[ variables.in.null.model != ""]
-		variables.in.model.copy <- variables.in.model
-		includes.nuisance <- (length(variables.in.null.model) > 0)
-		lm.fit.index.one.model <- 1 + as.numeric(includes.nuisance && (!identical(variables.in.model,variables.in.null.model)))
-
-	}
-
-	if (dependent.variable != "") {
-
-		dependent.base64 <- .v(dependent.variable)
-
-		if (wls.weight != "" ) {
-			weight.base64 <- .v(wls.weight)
-			weights <- dataset[[ weight.base64 ]]
-		} else {
-			weights <- rep(1,length(dataset[[ dependent.base64 ]] ))
-		}
-
-
-		if (perform == "run" && (options$method == "backward" || options$method == "forward" || options$method == "stepwise")) {
-
-			if (length(options$modelTerm) > 0) {
-
-				interactionIndicator <- logical(length(options$modelTerms))
-
-				for (i in seq_along(options$modelTerms))
-					interactionIndicator[i] <- length(options$modelTerms[[i]]$components) > 1
-
-				if (any(interactionIndicator))
-					list.of.errors[[ length(list.of.errors) + 1 ]] <- "Stepwise procedures are not supported for models containing interaction terms"
-
-			}
-
-			if (options$steppingMethodCriteriaType == "usePValue" && options$steppingMethodCriteriaPEntry > options$steppingMethodCriteriaPRemoval) {
-
-				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Error in Stepping Method Criteria: Entry p-value needs to be smaller than removal p-value"
-
-			} else if (options$steppingMethodCriteriaType == "useFValue" && options$steppingMethodCriteriaFEntry < options$steppingMethodCriteriaFRemoval) {
-
-				list.of.errors[[ length(list.of.errors) + 1 ]] <- "Error in Stepping Method Criteria: Entry F-value needs to be larger than removal F-value"
-
-			} else if (length(options$modelTerms) > 0) {
-
-				if (options$method == "backward") {
-
-					lm.model <- .backwardRegression(dependent.base64, independent.base64, independent.null.base64, dataset, options, weights)
-
-				} else if (options$method == "forward") {
-
-					lm.model <- .forwardRegression(dependent.base64, independent.base64, independent.null.base64, dataset, options, weights)
-					# if (length(lm.model) == 0) lm.model [[ 1 ]] <- empty.model
-				} else if (options$method == "stepwise") {
-
-					lm.model <- .stepwiseRegression(dependent.base64, independent.base64, independent.null.base64, dataset, options, weights)
-
-				}
-			  if (includes.nuisance) {
-			    if (options$includeConstant == TRUE) {
-			      null.model.definition <- paste(dependent.base64, "~", paste(independent.null.base64, collapse = "+"))
-			    } else {
-			      null.model.definition <- paste(dependent.base64, "~", paste(independent.null.base64, collapse = "+"), "-1")
-			    }
-			    null.model.formula <- as.formula(null.model.definition)
-			    lm.fit.null <- try( stats::lm( null.model.formula, data = dataset, weights = weights, x=TRUE ), silent = TRUE)
-			    if ( !identical((lm.model[[1]][[1]]$coefficients), lm.fit.null$coefficients)) {
-			      lm.model[(1:length(lm.model))+1] <- lm.model[1:length(lm.model)]
-			      lm.model[[1]] <- list(lm.fit = lm.fit.null, variables = variables.in.null.model)
-			    }
-			  }
-
-			} else {
-
-				lm.model [[ lm.fit.index.one.model ]] <- empty.model
-			}
-
-		} else if (length(options$modelTerms) > 0) {
-
-			if (length(variables.in.model) > 0 ) {
-
-				if (options$includeConstant == TRUE) {
-
-					model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"))
-          null.model.definition <- paste(dependent.base64, "~", paste(independent.null.base64, collapse = "+"))
-
-				} else {
-
-					model.definition <- paste(dependent.base64, "~", paste(independent.base64, collapse = "+"), "-1")
-					null.model.definition <- paste(dependent.base64, "~", paste(independent.null.base64, collapse = "+"), "-1")
-				}
-
-			} else {
-
-				if (options$includeConstant == TRUE)
-				{
-					model.definition <- paste(dependent.base64, "~ 1")
-				} else {
-					model.definition <- NULL #this model has no parameters
-				}
-			}
-
-
-			if (perform == "run" && !is.null(model.definition) && length(list.of.errors) == 0) {
-
-				model.formula <- as.formula(model.definition)
-				lm.fit <- try( stats::lm( model.formula, data = dataset, weights = weights, x=TRUE ), silent = TRUE)
-
-				if(includes.nuisance){
-				  null.model.formula <- as.formula(null.model.definition)
-				  lm.fit.null <- try( stats::lm( null.model.formula, data = dataset, weights = weights, x=TRUE ), silent = TRUE)
-				}
-
-				if ( class(lm.fit) == "lm") {
-
-					lm.model[[lm.fit.index.one.model]] <- list(lm.fit = lm.fit, variables = variables.in.model)
-					if(includes.nuisance && class(lm.fit.null) == "lm" ){
-					  lm.model[[1]] <- list(lm.fit = lm.fit.null, variables = variables.in.null.model)
-					}
-
-				} else {
-
-					list.of.errors[[ length(list.of.errors) + 1 ]]  <- "An unknown error occurred, please contact the author."
-					lm.model[[lm.fit.index.one.model]] <- list(lm.fit = NULL, variables = variables.in.model)
-					if(includes.nuisance){
-					  lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.null.model)
-					}
-				}
-
-			} else {
-
-				lm.model[[lm.fit.index.one.model]] <- list(lm.fit = NULL, variables = variables.in.model)
-				if(includes.nuisance){
-				  lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.null.model)
-				}
-			}
-
-		} else {
-
-			if (options$includeConstant == TRUE)
-			{
-				model.definition <- paste(dependent.base64, "~ 1")
-				model.formula <- as.formula(model.definition)
-
-				if (perform == "run" && !is.null(model.definition) && length(list.of.errors) == 0) {
-
-					lm.fit <- try( stats::lm(model.formula, data = dataset, weight = weights, x=TRUE))
-
-					if ( class(lm.fit) == "lm") {
-
-						lm.model[[ lm.fit.index.one.model ]] <- list(lm.fit = lm.fit, variables = NULL)
-
-					} else {
-
-						list.of.errors[[ length(list.of.errors) + 1 ]]  <- "An unknown error occurred, please contact the author."
-						lm.model[[ lm.fit.index.one.model ]] <- list(lm.fit = NULL, variables = variables.in.model)
-					}
-
-				} else {
-
-					lm.model[[ lm.fit.index.one.model ]] <- empty.model
-				}
-
-			} else {
-
-				lm.model[[ lm.fit.index.one.model ]] <- empty.model
-			}
-		}
-
-	} else {
-
-		if (length(options$modelTerms) > 0) {
-
-			lm.model[[lm.fit.index.one.model]] <- list(lm.fit = NULL, variables = variables.in.model)
-			if(includes.nuisance){
-			  lm.model[[1]] <- list(lm.fit = NULL, variables = variables.in.null.model)
-			}
-
-		} else {
-
-			lm.model [[ lm.fit.index.one.model ]] <- empty.model
-			if(includes.nuisance){
-			  lm.model[[1]] <- empty.model
-			}
-		}
-
-	}
-	# show a footnote if this is TRUE
-	interceptOnlyModelIsBest <- dependent.variable != "" && perform == "run" && options$method != "enter" &&
-	  length(options$modelTerm) > 0L && length(lm.model) == 1L && length(lm.model[[1L]][["variables"]]) == 0L
-
-	### check for errors
-	if (! is.null(independent.variables) && ! is.null(dependent.variable)) {
-	  if (! options$wlsWeights == "") {
-	    covwt <- function(...) return(stats::cov.wt(..., wt=dataset[[.v(options[["wlsWeights"]])]])$cov)
-	    errors <- .hasErrors(dataset[, -which(colnames(dataset) %in% c(.v(options$wlsWeights)))], perform = perform, message = 'short', type = c('varCovData'), exitAnalysisIfErrors = TRUE, 
-	                         varCovData.corFun = covwt)
-	  }
-	  else {
-	    covnwt <- stats::cov
-	    errors <- .hasErrors(dataset, perform = perform, message = 'short', type = c('varCovData'), exitAnalysisIfErrors = TRUE,
-	                         varCovData.corFun = covnwt)
-	  }
-	}
-	
-	################################################################################
-	#							 DESCRIPTIVES TABLE								   #
-	################################################################################
-
-	if (options$descriptives) {
-
-		descriptives <- list()
-
-		descriptives[["title"]] <- "Descriptives"
-
-		fields <- list(
-			list(name="v",    title="",   type="string"),
-			list(name="N",    title="N",  type="integer"),
-			list(name="mean", title="Mean", type="number", format="sf:4;dp:3"),
-			list(name="sd",   title="SD", type="number",   format="sf:4;dp:3"),
-			list(name="se",   title="SE", type="number",   format="sf:4;dp:3"))
-
-		descriptives[["schema"]] <- list(fields=fields)
-		descriptives.results <- list()
-
-		if (length(list.variables) == 0) {
-
-			descriptives.results[[length(descriptives.results)+1]] <- list(v=".", N=".", mean=".", sd= ".", se=".")
-
-		} else {
-
-			for (variable in list.variables) {
-
-				if (perform == "run") {
-
-					data <- na.omit(dataset[[ .v(variable) ]])
-
-					if (class(data) != "factor") {
-
-						n    <- .clean(length(data))
-						mean <- .clean(mean(data))
-						stdDeviation <- .clean(sd(data))
-						stdErrorMean <- .clean(sd(data)/sqrt(length(data)))
-
-						result <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean)
-					} else {
-
-						n <- .clean(length(data))
-						result <- list(v=variable, N=n, mean="", sd="", se="")
-					}
-
-				} else {
-
-					result <- list(v=variable, N=".", mean=".", sd= ".", se=".")
-
-				}
-
-				descriptives.results[[length(descriptives.results)+1]] <- result
-			}
-		}
-
-		descriptives[["data"]] <- descriptives.results
-
-		results[["descriptives"]] <- descriptives
-	}
-
-
-	################################################################################
-	#						   PART & PARTIAL CORRELATIONS   					   #
-	################################################################################
-
-	if (options$partAndPartialCorrelations) {
-
-		correlations <- list()
-		correlations[["title"]] <- "Part And Partial Correlations"
-
-		# Declare table elements
-		fields <- list(
-			list(name = "Model", type = "integer"),
-			list(name = "Name", title = "  ", type = "string"),
-			list(name = "Partial", title = "Partial", type = "number", format = "dp:3"),
-			list(name = "Part", title = "Part", type="number", format = "dp:3"))
-
-		correlations[["schema"]] <- list(fields = fields)
-
-		correlations.rows <- list()
-
-
-		if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
-
-			if (length(options$modelTerms) == 0) {
-
-				correlations.rows[[length(correlations.rows)+1]] <- list(Model=".", Name=".", Partial=".", Part=".")
-
-			} else {
-
-				for (m in 1:length(lm.model)) {
-
-					variables.model <- lm.model[[m]]$variables
-
-					if (length(variables.model) > 0) {
-
-						for (variable in variables.model) {
-
-							if (grepl(":", variable)) {
-
-								# if interaction term
-
-								vars <- unlist(strsplit(variable, split = ":"))
-								name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-							} else {
-
-								name <- variable
-							}
-
-							if ( which(variables.model == variable) == 1) {
-
-								partAndPartial <- .partAndPartialCorrelation(dependent.variable, variable, variables.model, dataset)
-								partial <- .clean(partAndPartial$partialCor)
-								part <- .clean(partAndPartial$partCor)
-								correlations.rows[[length(correlations.rows)+1]] <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Name=name, Partial=partial, Part=part, .isNewGroup=TRUE)
-
-							} else {
-
-								partAndPartial <- .partAndPartialCorrelation(dependent.variable, variable, variables.model, dataset)
-								partial <- .clean(partAndPartial$partialCor)
-								part <- .clean(partAndPartial$partCor)
-								correlations.rows[[length(correlations.rows)+1]] <- list(Model="", Name=name, Partial=partial, Part=part)
-							}
-						}
-					}
-				}
-			}
-
-		} else {
-
-			if (length(options$modelTerms) == 0) {
-
-				correlations.rows[[length(correlations.rows)+1]] <- list(Model=".", Name=".", Partial=".", Part=".")
-
-			} else {
-
-				for (m in 1:length(lm.model)) {
-
-					variables.model <- lm.model[[m]]$variables
-
-					if (length( variables.model) > 0) {
-
-						for (variable in variables.model) {
-
-							if (grepl(":", variable)) {
-
-								# if interaction term
-
-								vars <- unlist(strsplit(variable, split = ":"))
-								name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-							} else {
-
-								name <- variable
-							}
-
-							if ( which(variables.model == variable) == 1) {
-
-								correlations.rows[[length(correlations.rows)+1]] <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Name=name, Partial=".", Part=".", .isNewGroup=TRUE)
-
-							} else {
-
-								correlations.rows[[length(correlations.rows)+1]] <- list(Model="", Name=name, Partial=".", Part=".")
-							}
-						}
-					}
-				}
-			}
-
-			if (length(list.of.errors) > 0)
-				correlations[["error"]] <- list(errorType="badData")
-
-		}
-
-		correlations[["data"]] <- correlations.rows
-		results[["correlations"]] <- correlations
-	}
-
-
-	################################################################################
-	#							 MODEL SUMMARY TABLE							   #
-	################################################################################
-
-	model.table <- list()
-	model.table[["title"]] <- "Model Summary"
-	footnotes <- .newFootnotes()
-
-	fields <- list(
-		list(name = "Model", type = "integer"),
-		list(name = "R", type = "number", format = "dp:3"),
-		list(name = "R2", title = "R\u00B2", type = "number", format = "dp:3"),
-		list(name = "aR2", title = "Adjusted R\u00B2", type = "number", format = "dp:3"),
-		list(name = "se", title = "RMSE", type = "number", format = "sf:4;dp:3"))
-
-	if (includes.nuisance) {
-	  null.model <- paste ("Null model includes ", paste (variables.in.null.model, collapse = ", "), sep = "")
-	  .addFootnote (footnotes, symbol = "<em>Note.</em>", text = null.model)
-	}
-
-	empty.line <- list("Model" = ".", "R" = ".", "R2" = ".", "aR2" = ".", "se" = ".")
-
-
-	if (options$rSquaredChange == TRUE) {
-		fields[[ length(fields) + 1 ]] <- list(name = "R2c", title = "R\u00B2 Change", type = "number", format = "dp:3")
-		fields[[ length(fields) + 1 ]] <- list(name = "Fc", title = "F Change", type = "number", format = "sf:4;dp:3")
-		fields[[ length(fields) + 1 ]] <- list(name = "df1", type = "integer")
-		fields[[ length(fields) + 1 ]] <- list(name = "df2", type = "integer")
-		fields[[ length(fields) + 1 ]] <- list(name = "p", type = "number",format = "dp:3;p:.001")
-		empty.line <- list("Model" = ".", "R" = ".", "R2" = ".", "aR2" = ".", "se" = ".", "R2c" = ".", "Fc" = ".", "df1" = ".", "df2" = ".", "p" = ".")
-		r.squared.old = 0.0 #This is going to accumulate through models.
-	}
-
-	if (options$residualsDurbinWatson) {
-
-	  fields[[length(fields)+1]] <- list(name = "Durbin-Watson_ac", title = "Autocorrelation",
-	                                     type = "number", format = "sf:4;dp:3", 
-	                                     overTitle = "Durbin-Watson")
-		fields[[length(fields)+1]] <- list(name = "Durbin-Watson", title = "Statistic",
-		                                   type = "number", format = "sf:4;dp:3",
-		                                   overTitle = "Durbin-Watson")
-		empty.line[["Durbin-Watson_ac"]] <- empty.line[["Durbin-Watson"]] <- "."
-		
-		if(options$wlsWeights == ""){
-  		fields[[length(fields)+1]] <- list(name = "Durbin-Watson_p.value", title = "p",
-  		                                   type = "number", format = "dp:3;p:.001",
-  		                                   overTitle = "Durbin-Watson")
-  		empty.line[["Durbin-Watson_p.value"]] <- "."
-		} else{
-		  .addFootnote (footnotes, symbol = "<em>Note.</em>", text = "p-value for Durbin-Watson test is unavailable for weighted regression.")
-		}
-	}
-
-	model.table[["schema"]] <- list(fields = fields)
-	table.rows <- list()
-
-	if (perform == "run" && length(list.of.errors) == 0 ) {
-
-		for (m in 1:length(lm.model)) {
-			if ( !is.null(lm.model[[ m ]]$lm.fit) ) {
-
-				lm.summary <- summary(lm.model[[ m ]]$lm.fit)
-
-				table.rows[[ m ]] <- empty.line
-				table.rows[[ m ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-				table.rows[[ m ]]$"R" <- as.numeric(sqrt(lm.summary$r.squared))
-				table.rows[[ m ]]$"R2" <- as.numeric(lm.summary$r.squared)
-				table.rows[[ m ]]$"aR2" <- as.numeric(lm.summary$adj.r.squared)
-				table.rows[[ m ]]$"se" <- as.numeric(lm.summary$sigma)
-
-				if (options$residualsDurbinWatson) {
-				  
-				  durwatResult <- car::durbinWatsonTest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))
-				  
-				  table.rows[[ m ]]$"Durbin-Watson_ac"      <- .clean(durwatResult[['r']])
-				  table.rows[[ m ]]$"Durbin-Watson"         <- .clean(durwatResult[['dw']])
-				  
-				  if(options$wlsWeights == ""){ # if regression is not weighted, calculate p-value with lmtest (car method is unstable)
-				    durwatResult[['p.value']] <- lmtest::dwtest(lm.model[[ m ]]$lm.fit, alternative = c("two.sided"))$p.value
-				    table.rows[[ m ]]$"Durbin-Watson_p.value" <- .clean(durwatResult[['p.value']])
-				  }
-
-				}
-
-				if (options$rSquaredChange == TRUE) {
-
-					#R^2_change in Field (2013), Eqn. 8.15:
-					#F.change = (n-p_new - 1)R^2_change / p_change ( 1- R^2_new)
-					#df1 = p_change = abs( p_new - p_old )
-					#df2 = n-p_new - 1
-
-					r.squared <- lm.summary$r.squared
-					r.squared.change <- r.squared - r.squared.old
-
-					if (m == 1) {
-
-						df1 <- abs(length(lm.model[[ m ]]$variables))
-
-					} else if (m > 1){
-
-						df1 <- abs(length(lm.model[[ m ]]$variables) - length(lm.model[[ m-1 ]]$variables) )
-					}
-
-					df2 <- length( dataset[[ dependent.base64 ]]) - length(lm.model[[ m ]]$variables) - 1
-					F.change <- (df2 * r.squared.change) / (df1 * (1 - r.squared))
-
-					p <- pf(q = F.change, df1 = df1, df2 = df2, lower.tail = FALSE )
-
-					table.rows[[ m ]]$"R2c" <- .clean(r.squared.change)
-					table.rows[[ m ]]$"Fc" <- .clean(F.change)
-					table.rows[[ m ]]$"df1" <- .clean(df1)
-					table.rows[[ m ]]$"df2" <- .clean(df2)
-					table.rows[[ m ]]$"p" <- .clean(p)
-
-					r.squared.old <- r.squared
-				}
-
-			} else {
-
-				table.rows[[ m ]] <- empty.line
-				table.rows[[ m ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-			}
-		}
-
-	} else {
-
-		number.of.init.models <- max(1, length(lm.model))
-
-		for (m in 1:number.of.init.models) {
-
-			table.rows[[ m ]] <- empty.line
-			table.rows[[ m ]]$"Model" <-  as.integer(m - as.numeric(includes.nuisance))
-		}
-
-		if (length(list.of.errors) == 1){
-
-			model.table[["error"]] <- list(errorType = "badData", errorMessage = list.of.errors[[ 1 ]])
-		}
-
-		if (length(list.of.errors) > 1){
-
-			model.table[["error"]] <- list(errorType = "badData", errorMessage = paste("The following errors were encountered: <br> <br>", paste(unlist(list.of.errors),collapse="<br>"), sep=""))
-		}
-	}
-
-	model.table[["data"]] <- table.rows
-	model.table[["footnotes"]] <- as.list(footnotes)
-	results[["model summary"]] <- model.table
-
-
-	################################################################################
-	#							  MODEL ANOVA TABLE								   #
-	################################################################################
-
-	if (options$modelFit == TRUE) {
-
-		anova <- list()
-		anova[["title"]] <- "ANOVA"
-		footnotes <- .newFootnotes()
-
-		fields <- list(
-			list(name = "Model", type = "integer"),
-			list(name = "Cases", title = " ", type = "string"),
-			list(name = "Sum of Squares", type = "number", format = "sf:4;dp:3"),
-			list(name = "df", type = "integer"),
-			list(name = "Mean Square", type = "number", format = "sf:4;dp:3"),
-			list(name = "F", type = "number", format = "sf:4;dp:3"),
-			list(name = "p", type = "number", format = "dp:3;p:.001"))
-
-		if (includes.nuisance) {
-		  null.model <- paste ("Null model includes ", paste (variables.in.null.model, collapse = ", "), sep = "")
-		  .addFootnote (footnotes, symbol = "<em>Note.</em>", text = null.model)
-		}
-
-		if (options$VovkSellkeMPR) {
-			.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-	    <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
-	    possible odds in favor of H\u2081 over H\u2080 equals
-	    1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
-	    (Sellke, Bayarri, & Berger, 2001).")
-	    fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
-	                                        title = "VS-MPR\u002A",
-	                                        type = "number",
-	                                        format = "sf:4;dp:3")
-		}
-
-		anova[["schema"]] <- list(fields = fields)
-		anova.result <- list()
-
-		empty.line <- list(
-			"Model" = "",
-			"Cases" = "",
-			"Sum of Squares" = "",
-			"df" = "",
-			"Mean Square" = "",
-			"F" = "",
-			"p" = "")
-
-		if (options$VovkSellkeMPR) {
-			empty.line[["VovkSellkeMPR"]] <- ""
-		}
-		.addEmptyModel <- function(anova.result,m) {
-			dotted.line <- list(
-				"Model" = "",
-				"Cases" = ".",
-				"Sum of Squares" = ".",
-				"df" = ".",
-				"Mean Square" = ".",
-				"F" = ".",
-				"p" = ".")
-
-			if (options$VovkSellkeMPR) {
-				dotted.line[["VovkSellkeMPR"]] <- "."
-			}
-
-			len.an <- length(anova.result) + 1
-			anova.result[[ len.an ]] <- dotted.line
-			anova.result[[ len.an ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-			anova.result[[ len.an ]]$"Cases" <- as.character("Regression")
-			anova.result[[ len.an ]]$".isNewGroup" <- TRUE
-
-			len.an <- len.an + 1
-			anova.result[[ len.an ]] <- dotted.line
-			anova.result[[ len.an ]]$"Cases" <- as.character("Residual")
-
-			len.an <- len.an + 1
-			anova.result[[ len.an ]] <- dotted.line
-			anova.result[[ len.an ]]$"Cases" <- as.character("Total")
-
-			return(anova.result)
-		}
-
-
-		if (perform == "run" && length(list.of.errors) == 0) {
-
-			for (m in 1:length(lm.model)) {
-
-				if ( class(lm.model[[ m ]]$lm.fit) == "lm" && length( lm.model[[m]]$variables) > 0) {
-
-					lm.summary <- summary(lm.model[[ m ]]$lm.fit)
-
-					F			   <- lm.summary$fstatistic[1]
-					mss.residual	<- (lm.summary$sigma) ^2
-					mss.model	   <- F * mss.residual
-					df.residual	 <- lm.summary$fstatistic[3]
-					df.model		<- lm.summary$fstatistic[2]
-					df.total		<- df.residual + df.model
-					ss.residual <- mss.residual * df.residual
-					ss.model		<- mss.model * df.model
-					ss.total		<- ss.residual + ss.model
-
-					p <- pf(q = F, df1 = df.model, df2 = df.residual, lower.tail = FALSE )
-
-					len.an <- length(anova.result) + 1
-
-					anova.result[[ len.an ]] <- empty.line
-					anova.result[[ len.an ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-					anova.result[[ len.an ]]$"Cases" <- "Regression"
-					anova.result[[ len.an ]]$"Sum of Squares" <- as.numeric(ss.model)
-					anova.result[[ len.an ]]$"df" <- as.integer(df.model)
-					anova.result[[ len.an ]]$"Mean Square" <- as.numeric(mss.model)
-					anova.result[[ len.an ]]$"F" <- as.numeric(F)
-					anova.result[[ len.an ]]$"p" <- as.numeric(p)
-					if (options$VovkSellkeMPR) {
-						anova.result[[ len.an ]]$"VovkSellkeMPR" <- .VovkSellkeMPR(anova.result[[ len.an ]]$"p")
-					}
-					anova.result[[ len.an ]]$".isNewGroup" <- TRUE
-
-					len.an <- len.an + 1
-
-					anova.result[[ len.an ]] <- empty.line
-					anova.result[[ len.an ]]$"Cases" <- "Residual"
-					anova.result[[ len.an ]]$"Sum of Squares" <- as.numeric(ss.residual)
-					anova.result[[ len.an ]]$"df" <- as.integer(df.residual)
-					anova.result[[ len.an ]]$"Mean Square" <- as.numeric(mss.residual)
-
-					len.an <- len.an + 1
-
-					anova.result[[ len.an ]] <- empty.line
-					anova.result[[ len.an ]]$"Cases" <- "Total"
-					anova.result[[ len.an ]]$"Sum of Squares" <- as.numeric(ss.total)
-					anova.result[[ len.an ]]$"df" <- as.integer(df.total)
-
-				} else {
-					anova.result <- .addEmptyModel(anova.result,m)
-				}
-			}
-
-		} else {
-
-			number.of.init.models <- max(1, length(lm.model))
-
-			for (m in 1:number.of.init.models) {
-				anova.result <- .addEmptyModel(anova.result,m)
-			}
-
-			if (length(list.of.errors) > 0){
-				anova[["error"]] <- list(errorType = "badData")
-			}
-		}
-		anova[["data"]] <- anova.result
-		if (interceptOnlyModelIsBest) {
-		  text <- "The model with an intercept is selected as the best model. No meaningful information can be shown."
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = text)
-		}
-		anova[["footnotes"]] <- as.list(footnotes)
-
-		results[["anova"]] <- anova
-	}
-
-
-	################################################################################
-	#						   MODEL COEFFICIENTS TABLE   						#
-	################################################################################
-
-	collinearity.diagnostics <- list()
-
-	if (options$regressionCoefficientsEstimates == TRUE) {
-
-		regression <- list()
-		regression[["title"]] <- "Coefficients"
-
-		footnotes <- .newFootnotes()
-
-		# Declare table elements
-		fields <- list(
-			list(name = "Model", type = "integer"),
-			list(name = "Name", title = "  ", type = "string"),
-			list(name = "Coefficient", title = "Unstandardized", type = "number", format = "sf:4;dp:3"),
-			list(name = "Standard Error", type="number", format = "sf:4;dp:3"),
-			list(name = "Standardized Coefficient", title = "Standardized", type = "number", format = "sf:4;dp:3"),
-			list(name = "t", type="number", format = "sf:4;dp:3"),
-			list(name = "p", type = "number", format = "dp:3;p:.001"))
-
-		if (options$VovkSellkeMPR) {
-			.addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-			<em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
-			possible odds in favor of H\u2081 over H\u2080 equals
-			1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
-			(Sellke, Bayarri, & Berger, 2001).")
-			fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
-																					title = "VS-MPR\u002A",
-																					type = "number",
-																					format = "sf:4;dp:3")
-		}
-
-		empty.line <- list( #for empty elements in tables when given output
-			"Model" = "",
-			"Name" = "",
-			"Coefficient" = "",
-			"Standard Error" = "",
-			"Standardized Coefficient" = "",
-			"t" = "",
-			"p" = "")
-
-		if (options$VovkSellkeMPR) {
-			empty.line[["VovkSellkeMPR"]] <- ""
-		}
-
-		dotted.line <- list( #for empty tables
-			"Model" = ".",
-			"Name" = ".",
-			"Coefficient" = ".",
-			"Standard Error" = ".",
-			"Standardized Coefficient" = ".",
-			"t" = ".",
-			"p" = ".")
-
-		if (options$VovkSellkeMPR) {
-			dotted.line[["VovkSellkeMPR"]] <- "."
-		}
-
-		if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-
-			alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
-			#alpha <- alpha / 100
-			
-			fields[[ length(fields) + 1 ]] <- list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
-			fields[[ length(fields) + 1 ]] <- list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3", overTitle=paste0(100*alpha, "% CI"))
-			empty.line$"Lower Bound" = ""
-			empty.line$"Upper Bound" = ""
-			dotted.line$"Lower Bound" = "."
-			dotted.line$"Upper Bound" = "."
-		}
-
-		if (options$collinearityDiagnostics) {
-
-			fields[[ length(fields) + 1 ]] <- list(name = "Tolerance", title = "Tolerance", type = "number", format = "dp:3", overTitle="Collinearity Statistics")
-			fields[[ length(fields) + 1 ]] <- list(name = "VIF", title = "VIF", type = "number", format = "sf:4;dp:3", overTitle="Collinearity Statistics")
-			empty.line$"Tolerance" = ""
-			empty.line$"VIF" = ""
-			dotted.line$"Tolerance" = "."
-			dotted.line$"VIF" = "."
-		}
-
-		regression[["schema"]] <- list(fields = fields)
-
-		regression.result <- list()
-
-		if (perform == "run" && length(list.of.errors) == 0) {
-
-			for (m in 1:length(lm.model)) {
-
-				if ( class(lm.model[[ m ]]$lm.fit) == "lm") {
-
-					na.estimate.names <- NULL
-
-					if(any(is.na(lm.model[[m]]$lm.fit$coefficients))){
-
-						#these estimates give back NA
-						na.estimate.names <- names(lm.model[[m]]$lm.fit$coefficients)[which(is.na(lm.model[[m]]$lm.fit$coefficients))]
-						# !!!!! if(all(is.na(tmp)))
-					}
-
-					lm.summary = summary(lm.model[[ m ]]$lm.fit)
-					lm.estimates <- lm.summary$coefficients
-
-					if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-
-					  lm.confidence.interval <- confint(lm.model[[ m ]]$lm.fit, level = alpha)
-					}
-
-					len.reg <- length(regression.result) + 1
-					v <- 0
-
-					if (options$includeConstant == TRUE) {
-
-						if(is.null(na.estimate.names) || na.estimate.names[1] != "(Intercept)"){
-
-							v <- v + 1
-
-							regression.result[[ len.reg ]] <- empty.line
-							regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-							regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-							regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(lm.estimates[v,1])
-							regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v,2])
-							regression.result[[ len.reg ]]$"t" <- as.numeric(lm.estimates[v,3])
-							regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v,4])
-							if (options$VovkSellkeMPR) {
-									regression.result[[ len.reg ]]$"VovkSellkeMPR" <- .VovkSellkeMPR(regression.result[[ len.reg ]]$"p")
-							}
-							regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-
-							if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-
-							  regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v,1] )
-							  regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v,2] )
-							}
-
-							if (options$collinearityDiagnostics) {
-
-								regression.result[[ len.reg ]]$"Tolerance" <- ""
-								regression.result[[ len.reg ]]$"VIF" <- ""
-							}
-
-						} else {
-
-							regression.result[[ len.reg ]] <- empty.line
-							regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-							regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-							regression.result[[ len.reg ]]$"Coefficient" <- "NA"
-							regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-						}
-
-						len.reg <- len.reg + 1
-					}
-
-					sd.dep <- sd( dataset[[ dependent.base64 ]] )
-
-					if (length(lm.model[[ m ]]$variables) > 0) {
-
-						variables.in.model <- lm.model[[ m ]]$variables
-
-						if (options$collinearityDiagnostics)
-							collinearity.diagnostics[[length(collinearity.diagnostics)+1]] <- .collinearityDiagnostics(lm.model[[ m ]]$lm.fit, dataset, includeConstant=options$includeConstant)
-
-						for (var in 1:length(variables.in.model)) {
-
-							if(!is.null(na.estimate.names) && .v(variables.in.model[var])%in%na.estimate.names) {
-
-								v <- v - 1
-								regression.result[[ len.reg ]] <- empty.line
-
-								if (var == 1 && options$includeConstant == FALSE) {
-
-									regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-									regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-								}
-
-								if (grepl(":", variables.in.model[var])) {
-
-									# if interaction term
-
-									vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-									name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-								} else {
-
-									name <- as.character(variables.in.model[ var])
-								}
-
-								regression.result[[ len.reg ]]$"Name" <- name
-								regression.result[[ len.reg ]]$"Coefficient" <- "NA"
-
-								if (options$collinearityDiagnostics) {
-
-									regression.result[[ len.reg ]]$"Tolerance" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$tolerance[[var]])
-									regression.result[[ len.reg ]]$"VIF" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$VIF[[var]])
-								}
-
-								len.reg <- len.reg + 1
-
-							} else {
-
-								if (grepl(":", variables.in.model[var])) {
-
-									# if interaction term
-
-									vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-
-									int.var <- rep(1, nrow(dataset))
-
-									for (i in seq_along(vars))
-										int.var <- int.var * dataset[[ .v(vars[i]) ]]
-
-									sd.ind <- sd(int.var)
-
-								} else {
-
-									sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]])
-								}
-
-								regression.result[[ len.reg ]] <- empty.line
-
-								if (var == 1 && options$includeConstant == FALSE) {
-
-									regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-									regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-								}
-
-								if (grepl(":", variables.in.model[var])) {
-
-									# if interaction term
-
-									vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-									name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-								} else {
-
-									name <- as.character(variables.in.model[ var])
-								}
-
-								regression.result[[ len.reg ]]$"Name" <- name
-								regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(lm.estimates[v+var,1])
-								regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(lm.estimates[v+var,2])
-								regression.result[[ len.reg ]]$"Standardized Coefficient" <- as.numeric(lm.estimates[v+var,1] * sd.ind / sd.dep)
-
-								regression.result[[ len.reg ]]$"t" <- as.numeric(lm.estimates[v+var,3])
-								regression.result[[ len.reg ]]$"p" <- as.numeric(lm.estimates[v+var,4])
-
-								if (options$VovkSellkeMPR) {
-										regression.result[[ len.reg ]]$"VovkSellkeMPR" <- .VovkSellkeMPR(regression.result[[ len.reg ]]$"p")
-								}
-
-								if (options$regressionCoefficientsConfidenceIntervals == TRUE) {
-
-								  regression.result[[ len.reg ]]$"Lower Bound" <- as.numeric( lm.confidence.interval[v+var,1] )
-								  regression.result[[ len.reg ]]$"Upper Bound" <- as.numeric( lm.confidence.interval[v+var,2] )
-								}
-
-								if (options$collinearityDiagnostics) {
-
-									regression.result[[ len.reg ]]$"Tolerance" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$tolerance[[var]])
-									regression.result[[ len.reg ]]$"VIF" <- .clean(collinearity.diagnostics[[length(collinearity.diagnostics)]]$VIF[[var]])
-								}
-
-								len.reg <- len.reg + 1
-							}
-						}
-					}
-
-				} else {
-
-					len.reg <- length(regression.result) + 1
-					regression.result[[ len.reg ]] <- dotted.line
-					regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-
-					if (length(lm.model[[ m ]]$variables) > 0) {
-
-						variables.in.model <- lm.model[[ m ]]$variables
-
-
-						if (options$includeConstant == TRUE) {
-
-							regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-						}
-
-						len.reg <- len.reg + 1
-
-						for (var in 1:length(variables.in.model)) {
-
-							regression.result[[ len.reg ]] <- dotted.line
-
-							if (grepl(":", variables.in.model[var])) {
-
-								# if interaction term
-
-								vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-								name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-							} else {
-
-								name <- as.character(variables.in.model[ var])
-							}
-
-							regression.result[[ len.reg ]]$"Name" <- name
-							len.reg <- len.reg + 1
-						}
-					}
-				}
-			}
-
-		} else {
-
-			if (length(lm.model) > 0 ) {
-
-				for (m in 1:length(lm.model)) {
-
-					len.reg <- length(regression.result) + 1
-
-					if (options$includeConstant == TRUE) {
-
-						regression.result[[ len.reg ]] <- dotted.line
-						regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-						regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-						regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-						len.reg <- len.reg + 1
-					}
-
-					if (length(lm.model[[ m ]]$variables) > 0) {
-
-						variables.in.model <- lm.model[[ m ]]$variables
-
-						for (var in 1:length(variables.in.model)) {
-
-							regression.result[[ len.reg ]] <- dotted.line
-							regression.result[[ len.reg ]]$"Model" <- ""
-
-							if (var == 1 && options$includeConstant == FALSE) {
-								regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-								regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-							}
-
-							if (grepl(":", variables.in.model[var])) {
-
-								# if interaction term
-
-								vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-								name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-							} else {
-
-								name <- as.character(variables.in.model[ var])
-							}
-
-							regression.result[[ len.reg ]]$"Name" <- name
-							len.reg <- len.reg + 1
-						}
-					}
-				}
-
-			} else {
-
-				len.reg <- length(regression.result) + 1
-				regression.result[[ len.reg ]] <- dotted.line
-				regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-
-				if (options$includeConstant == TRUE) {
-
-					regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-					regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-				}
-			}
-
-			if(length(list.of.errors) > 0){
-
-				regression[["error"]] <- list(errorType="badData")
-			}
-		}
-
-		regression[["data"]] <- regression.result
-
-		# Check whether variables in the regression model are redundant
-		if (! length(regression$data) == 0) {
-		  for (i in 1:length(regression$data)) {
-		    if (regression$data[[i]]$Coefficient=="NA") {
-		      # Add footnote
-		      footnotes <- .newFootnotes()
-		      .addFootnote(footnotes, "The regression coefficient for one or more of the variables specified in the regression model could not be estimated (that is, the coefficient is not available (NA)). The most likely reasons for this to occur are multicollinearity or a large number of missing values.", symbol = "\u207A")
-		      # Add footnote symbol to name of the redundant variable
-		      regression$data[[i]]$Name <- paste0(regression$data[[i]]$Name, "\u207A")
-		    }
-		  }
-		}
-
-		regression[["footnotes"]] <- as.list(footnotes)
-		results[["regression"]] <- regression
-
-	}
-	
-	################################################################################
-	#						   BOOTSTRAPPING MODEL COEFFICIENTS TABLE   						#
-	################################################################################
-	
-	if (options$regressionCoefficientsEstimates == TRUE && options$regressionCoefficientsBootstrapping == TRUE) {
-
-	  if (!is.null(state) && ("bootstrap.regression" %in% names(state$results)) && !is.null(diff) && (is.list(diff) && 
-      (diff$regressionCoefficientsBootstrapping == FALSE && diff$regressionCoefficientsBootstrappingReplicates == FALSE &&
-       diff$modelTerms == FALSE && diff$dependent == FALSE && diff$includeConstant == FALSE && diff$method == FALSE &&
-       diff$regressionCoefficientsEstimates == FALSE && diff$regressionCoefficientsConfidenceIntervalsInterval == FALSE && 
-       diff$steppingMethodCriteriaFEntry == FALSE &&  
-       diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE && 
-       diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE &&
-       diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-	    
-	    # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-	    # then, if the requested plot already exists, use it
-	    
-	    results[["bootstrap.regression"]] <- state$results$bootstrap.regression
-	    
-	  } else {
-	    
-	  bootstrap.regression <- list()
-	  bootstrap.regression[["title"]] <- "Bootstrap Coefficients"
-	  
-	  footnotes <- .newFootnotes()
-	  
-	  alpha <- options$regressionCoefficientsConfidenceIntervalsInterval
-	  
-	  # Declare table elements
-	  fields <- list(
-	    list(name = "Model", type = "integer"),
-	    list(name = "Name", title = "  ", type = "string"),
-	    list(name = "Coefficient", title = "Unstandardized", type = "number", format = "sf:4;dp:3"),
-	    list(name = "Bias", type = "number", format = "sf:4;dp:3"),
-	    list(name = "Standard Error", type="number", format = "sf:4;dp:3"),
-	    list(name = "Lower Bound", title = "Lower", type = "number", format = "sf:4;dp:3",
-	         overTitle=paste0(100*alpha, "% bca\u002A CI")),
-	    list(name = "Upper Bound", title = "Upper", type = "number", format = "sf:4;dp:3",
-	         overTitle=paste0(100*alpha, "% bca\u002A CI"))
-	  )
-
-	  empty.line <- list( #for empty elements in tables when given output
-	    "Model" = "",
-	    "Name" = "",
-	    "Bias" = "",
-	    "Coefficient" = "",
-	    "Standard Error" = "",
-	    "Lower Bound" = "",
-	    "Upper Bound" = "")
-#	    "p" = "")
-	  
-	  dotted.line <- list( #for empty tables
-	    "Model" = ".",
-	    "Name" = ".",
-	    "Coefficient" = ".",
-	    "Bias" = ".",
-	    "Standard Error" = ".",
-	    "Lower Bound" = ".",
-	    "Upper Bound" = ".")
-#	    "p" = ".")
-	  
-	  bootstrap.regression[["schema"]] <- list(fields = fields)
-	  
-	  bootstrap.regression.result <- list()
-	  ci.fails <- FALSE
-	  
-	  if (perform == "run" && length(list.of.errors) == 0) {
-	    if(length(lm.model) > 0){
-	      ticks <- options[['regressionCoefficientsBootstrappingReplicates']]*length(lm.model)
-	      progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
-	    }
-	    for (m in 1:length(lm.model)) {
-	      
-	      if ( class(lm.model[[ m ]]$lm.fit) == "lm" && (! (length(lm.model[[m]]$variables) == 0 && options$includeConstant == FALSE))) {
-	        
-	        na.estimate.names <- NULL
-	        
-	        if(any(is.na(lm.model[[m]]$lm.fit$coefficients))){
-	          
-	          #these estimates give back NA
-	          na.estimate.names <- names(lm.model[[m]]$lm.fit$coefficients)[which(is.na(lm.model[[m]]$lm.fit$coefficients))]
-	          # !!!!! if(all(is.na(tmp)))
-	        }
-	        
-	        .bootstrapping <- function(data, indices, formula, wlsWeights, options) {
-	          pr <- progress()
-	          response <- .optionsDiffCheckBootstrapLinearRegression(pr, options)
-	          
-	          if(response$status == "changed" || response$status == "aborted")
-	            stop("Bootstrapping options have changed")
-	          
-	          d <- data[indices, , drop = FALSE] # allows boot to select sample
-	          if (.unv(wlsWeights) == "") {
-	            fit <- lm(formula = formula, data=d)
-	          } else {
-	            weights <- d[[wlsWeights]]
-	            fit <- lm(formula = formula, data=d, weights = weights)
-	          }
-	          return(coef(fit))
-	        }
-	        
-	        bootstrap.summary <- try(boot::boot(data = dataset, statistic = .bootstrapping,
-	                                        R = options$regressionCoefficientsBootstrappingReplicates,
-	                                        formula = formula(lm.model[[m]]$lm.fit),
-	                                        wlsWeights = .v(options$wlsWeights),
-	                                        options = options),
-	                                 silent = TRUE
-	                                 )
-	        if(inherits(bootstrap.summary, "try-error") &&
-	           identical(attr(bootstrap.summary, "condition")$message, "Bootstrapping options have changed"))
-	          return()
-	        
-	        bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
-	        bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
-	        bootstrap.se <- matrixStats::colSds(bootstrap.summary$t, na.rm = TRUE)
-
-	        len.reg <- length(bootstrap.regression.result) + 1
-	        v <- 0
-	        
-	        if (options$includeConstant == TRUE) {
-	          
-	          if(is.null(na.estimate.names) || na.estimate.names[1] != "(Intercept)"){
-	            
-	            v <- v + 1
-	            
-	            bootstrap.regression.result[[ len.reg ]] <- empty.line
-	            bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-	            bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-	            bootstrap.regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(bootstrap.coef[v])
-	            bootstrap.regression.result[[ len.reg ]]$"Bias" <- as.numeric(bootstrap.bias[v])
-	            bootstrap.regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(bootstrap.se[v])
-	            bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-	            
-	            result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v))
-	            if(!inherits(result.bootstrap.ci, "try-error")){
-	              bootstrap.ci <- result.bootstrap.ci
-	            } else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
-	              ci.fails <- TRUE
-	              bootstrap.ci <- list(bca = rep(NA, 5))
-	            } else{
-	              bootstrap.ci <- result.bootstrap.ci
-	            }
-	            bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- .clean(as.numeric( bootstrap.ci$bca[4] ))
-	            bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- .clean(as.numeric( bootstrap.ci$bca[5] ))
-	            
-	          } else {
-	            
-	            bootstrap.regression.result[[ len.reg ]] <- empty.line
-	            bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-	            bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-	            bootstrap.regression.result[[ len.reg ]]$"Coefficient" <- "NA"
-	            bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-	          }
-	          
-	          len.reg <- len.reg + 1
-	        }
-	        
-	        sd.dep <- sd( dataset[[ dependent.base64 ]] )
-	        
-	        if (length(lm.model[[ m ]]$variables) > 0) {
-	          
-	          variables.in.model <- lm.model[[ m ]]$variables
-	          
-	          for (var in 1:length(variables.in.model)) {
-	            
-	            if (!is.null(na.estimate.names) && .v(variables.in.model[var])%in%na.estimate.names) {
-	              
-	              v <- v - 1
-	              bootstrap.regression.result[[ len.reg ]] <- empty.line
-	              
-	              if (var == 1 && options$includeConstant == FALSE) {
-	                
-	                bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-	                bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-	              }
-	              
-	              if (grepl(":", variables.in.model[var])) {
-	                
-	                # if interaction term
-	                
-	                vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-	                name <- paste0(vars, collapse="\u2009\u273b\u2009")
-	                
-	              } else {
-	                
-	                name <- as.character(variables.in.model[ var])
-	              }
-	              
-	              bootstrap.regression.result[[ len.reg ]]$"Name" <- name
-	              bootstrap.regression.result[[ len.reg ]]$"Coefficient" <- "NA"
-	              
-	              len.reg <- len.reg + 1
-	              
-	            } else {
-	              
-	              if (grepl(":", variables.in.model[var])) {
-	                
-	                # if interaction term
-	                
-	                vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-	                
-	                int.var <- rep(1, nrow(dataset))
-	                
-	                for (i in seq_along(vars))
-	                  int.var <- int.var * dataset[[ .v(vars[i]) ]]
-	                
-	                sd.ind <- sd(int.var)
-	                
-	              } else {
-	                
-	                sd.ind <- sd( dataset[[ .v(variables.in.model[var]) ]])
-	              }
-	              
-	              bootstrap.regression.result[[ len.reg ]] <- empty.line
-	              
-	              if (var == 1 && options$includeConstant == FALSE) {
-	                
-	                bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-	                bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-	              }
-	              
-	              if (grepl(":", variables.in.model[var])) {
-	                
-	                # if interaction term
-	                
-	                vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-	                name <- paste0(vars, collapse="\u2009\u273b\u2009")
-	                
-	              } else {
-	                
-	                name <- as.character(variables.in.model[ var])
-	              }
-	              
-	              bootstrap.regression.result[[ len.reg ]]$"Name" <- name
-	              bootstrap.regression.result[[ len.reg ]]$"Coefficient" <- as.numeric(bootstrap.coef[v+var])
-	              bootstrap.regression.result[[ len.reg ]]$"Bias" <- as.numeric(bootstrap.bias[v+var])
-	              bootstrap.regression.result[[ len.reg ]]$"Standard Error" <- as.numeric(bootstrap.se[v+var])
-
-	              result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type="bca", conf = alpha, index=v+var))
-	              if(!inherits(result.bootstrap.ci, "try-error")){
-	                bootstrap.ci <- result.bootstrap.ci
-	              } else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
-	                ci.fails <- TRUE
-	                bootstrap.ci <- list(bca = rep(NA, 5))
-	              } else{
-	                bootstrap.ci <- result.bootstrap.ci
-	              }
-	              bootstrap.regression.result[[ len.reg ]]$"Lower Bound" <- .clean(as.numeric( bootstrap.ci$bca[4] ))
-	              bootstrap.regression.result[[ len.reg ]]$"Upper Bound" <- .clean(as.numeric( bootstrap.ci$bca[5] ))
-	              
-	              len.reg <- len.reg + 1
-	            }
-	          }
-	        }
-	        
-	      } else {
-	        
-	        len.reg <- length(bootstrap.regression.result) + 1
-	        bootstrap.regression.result[[ len.reg ]] <- dotted.line
-	        bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-	        
-	        if (length(lm.model[[ m ]]$variables) > 0) {
-	          
-	          variables.in.model <- lm.model[[ m ]]$variables
-	          
-	          
-	          if (options$includeConstant == TRUE) {
-	            
-	            bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-	          }
-	          
-	          len.reg <- len.reg + 1
-	          
-	          for (var in 1:length(variables.in.model)) {
-	            
-	            bootstrap.regression.result[[ len.reg ]] <- dotted.line
-	            
-	            if (grepl(":", variables.in.model[var])) {
-	              
-	              # if interaction term
-	              
-	              vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-	              name <- paste0(vars, collapse="\u2009\u273b\u2009")
-	              
-	            } else {
-	              
-	              name <- as.character(variables.in.model[ var])
-	            }
-	            
-	            bootstrap.regression.result[[ len.reg ]]$"Name" <- name
-	            len.reg <- len.reg + 1
-	          }
-	        }
-	      }
-	    }
-	    
-	  } else {
-	    
-	    if (length(lm.model) > 0 ) {
-	      
-	      for (m in 1:length(lm.model)) {
-	        
-	        len.reg <- length(bootstrap.regression.result) + 1
-	        
-	        if (options$includeConstant == TRUE) {
-	          
-	          bootstrap.regression.result[[ len.reg ]] <- dotted.line
-	          bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-	          bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-	          bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-	          len.reg <- len.reg + 1
-	        }
-	        
-	        if (length(lm.model[[ m ]]$variables) > 0) {
-	          
-	          variables.in.model <- lm.model[[ m ]]$variables
-	          
-	          for (var in 1:length(variables.in.model)) {
-	            
-	            bootstrap.regression.result[[ len.reg ]] <- dotted.line
-	            bootstrap.regression.result[[ len.reg ]]$"Model" <- ""
-	            
-	            if (var == 1 && options$includeConstant == FALSE) {
-	              bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-	              bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-	            }
-	            
-	            if (grepl(":", variables.in.model[var])) {
-	              
-	              # if interaction term
-	              
-	              vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-	              name <- paste0(vars, collapse="\u2009\u273b\u2009")
-	              
-	            } else {
-	              
-	              name <- as.character(variables.in.model[ var])
-	            }
-	            
-	            bootstrap.regression.result[[ len.reg ]]$"Name" <- name
-	            len.reg <- len.reg + 1
-	          }
-	        }
-	      }
-	      
-	    } else {
-	      
-	      len.reg <- length(bootstrap.regression.result) + 1
-	      bootstrap.regression.result[[ len.reg ]] <- dotted.line
-	      bootstrap.regression.result[[ len.reg ]]$"Model" <- as.integer(m - as.numeric(includes.nuisance))
-	      
-	      if (options$includeConstant == TRUE) {
-	        
-	        bootstrap.regression.result[[ len.reg ]]$"Name" <- as.character("(Intercept)")
-	        bootstrap.regression.result[[ len.reg ]][[".isNewGroup"]] <- TRUE
-	      }
-	    }
-	    
-	    if(length(list.of.errors) > 0){
-	      
-	      bootstrap.regression[["error"]] <- list(errorType="badData")
-	    }
-	  }
-	  
-	  bootstrap.regression[["data"]] <- bootstrap.regression.result
-	  
-	  footnotes <- .newFootnotes()
-	  if(ci.fails){
-	    .addFootnote(footnotes,
-	                 symbol = "<i>Note.</i>", 
-	                 text = "Some confidence intervals could not be computed. Possibly too few bootstrap replicates.")
-	  }
-	  .addFootnote(footnotes, symbol = "<em>Note.</em>",
-	               text = paste0("Bootstrapping based on ", options[['regressionCoefficientsBootstrappingReplicates']], " replicates."))
-	  .addFootnote(footnotes, symbol = "<em>Note.</em>",
-	               text = "Coefficient estimate is based on the median of the bootstrap distribution.")
-	  .addFootnote(footnotes, symbol = "\u002A", text = "Bias corrected accelerated.")
-
-	  
-	  # Check whether variables in the regression model are redundant
-	  for(i in 1:length(bootstrap.regression$data)) {
-	    if (bootstrap.regression$data[[i]]$Coefficient=="NA") {
-	      # Add footnote
-	      .addFootnote(footnotes, "The regression coefficient for one or more of the variables specified in the regression model could not be estimated (that is, the coefficient is not available (NA)). The most likely reasons for this to occur are multicollinearity or a large number of missing values.", symbol = "\u207A")
-	      # Add footnote symbol to name of the redundant variable
-	      bootstrap.regression$data[[i]]$Name <- paste0(bootstrap.regression$data[[i]]$Name, "\u207A")
-	    }
-	  }
-	  
-	  bootstrap.regression[["footnotes"]] <- as.list(footnotes)
-	  results[["bootstrap.regression"]] <- bootstrap.regression
-	  
-	  }
-	}
-
-
-	################################################################################
-	#					 MODEL COEFFICIENTS COVARIANCE TABLE   					   #
-	################################################################################
-
-
-	if (options$regressionCoefficientsCovarianceMatrix) {
-
-		covmatrix <- list()
-		covmatrix[["title"]] <- "Coefficients Covariance Matrix"
-
-		fields <- list(
-			list(name = "Model", type = "integer"),
-			list(name = "Name", title = "  ", type = "string"))
-
-		if (length(options$modelTerms) > 0) {
-
-			for (variable in variables.in.model.copy) {
-
-				if (grepl(":", variable)) {
-
-					# if interaction term
-
-					vars <- unlist(strsplit(variable, split = ":"))
-					variable.name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-				} else {
-
-					variable.name <- variable
-				}
-
-				fields[[length(fields)+1]] <- list(name = variable.name, title = variable.name, type = "number", format = "sf:4;dp:3")
-			}
-		}
-
-		covmatrix[["schema"]] <- list(fields = fields)
-
-		covmatrix.rows <- list()
-
-		if (length(options$modelTerms) == 0) {
-
-			covmatrix.rows[[length(covmatrix.rows)+1]] <- list(Model=".", Name=".")
-
-
-		} else if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
-
-			for (m in 1:length(lm.model)) {
-
-
-				variables.model <- lm.model[[m]]$variables
-
-				if (length(variables.model) > 0) {
-
-					model.fit <- lm.model[[m]]$"lm.fit"
-
-					model.covmatrix <- vcov(model.fit)
-
-					if (options$includeConstant)
-						model.covmatrix <- model.covmatrix[-1, -1] # remove intercept row and column
-
-					if (length(variables.model) == 1) {
-
-						# if only one variable in model, model.covmatrix is just a vector -> convert back to matrix and label row and column
-						model.covmatrix <- as.matrix(model.covmatrix)
-						colnames(model.covmatrix) <- variables.model
-						rownames(model.covmatrix) <- variables.model
-					}
-
-					rownames.covmatrix <- variables.model
-					colnames.covmatrix <- variables.model
-
-					# Check whether variables in the regression model are redundant
-					for(i in 1:length(lm.model[[1]]$lm.fit$coefficients)) {
-					  if (is.na(lm.model[[1]]$lm.fit$coefficients[i])) {
-					    # If so, model.covmatrix does not include this variable -> Add row and column with NA as "values"
-					    model.covmatrix<-cbind(model.covmatrix, NA)
-					    model.covmatrix<-rbind(model.covmatrix, NA)
-					    # Add footnote for this case
-					    footnotes <- .newFootnotes()
-					    .addFootnote(footnotes = footnotes, text = "One or more of the variables specified in the regression model are redundant. Therefore, they are dropped from the model covariance matrix.", symbol = "\u207A")
-					    covmatrix[["footnotes"]] <- as.list(footnotes)
-					    # Add footnote symbol to name of the redundant variable (if-statement needed as intercept is part of the coefficients but not of cov.matrix)
-					    if (options$includeConstant) {
-					      rownames.covmatrix[i-1] <- paste0(rownames.covmatrix[i-1], "\u207A")
-					    }
-					    else {
-					      rownames.covmatrix[i] <- paste0(rownames.covmatrix[i], "\u207A")
-					    }
-					  }
-					}
-
-					rownames(model.covmatrix) <- rownames.covmatrix
-					colnames(model.covmatrix) <- colnames.covmatrix
-
-
-					for (row.variable in rownames.covmatrix) {
-
-						if (grepl(":", row.variable)) {
-
-							# if interaction term
-
-							vars <- unlist(strsplit(row.variable, split = ":"))
-							row.variable.name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-						} else {
-
-							row.variable.name <- row.variable
-						}
-
-						row.index <- which(rownames.covmatrix == row.variable)
-
-						if (row.index == 1) {
-
-							covmatrix.row <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Name=row.variable.name, .isNewGroup=TRUE)
-
-						} else {
-
-							covmatrix.row <- list(Model="", Name=row.variable.name)
-						}
-
-						for (col.variable in colnames.covmatrix) {
-
-							if (grepl(":", col.variable)) {
-
-								# if interaction term
-
-								vars <- unlist(strsplit(col.variable, split = ":"))
-								col.variable.name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-							} else {
-
-								col.variable.name <- col.variable
-							}
-
-							col.index <- which(colnames.covmatrix == col.variable)
-
-							if (row.index > col.index) {
-
-								covmatrix.row[[col.variable.name]] <- ""
-
-							} else {
-
-							  # For consistent representation of NA with the coefficients table
-							  if (is.na(model.covmatrix[row.index, col.index])) {
-							    covmatrix.row[[col.variable.name]] <- 'NA'
-							  } else {
-							    covmatrix.row[[col.variable.name]] <- .clean(model.covmatrix[row.index, col.index])
-							  }
-							}
-
-						}
-
-						inModel <- logical(length(variables.in.model.copy))
-
-						for (i in seq_along(variables.in.model.copy)) {
-
-							inModel[i] <- variables.in.model.copy[i] %in% variables.model
-						}
-
-						if (! all(inModel)) {
-
-							variables.not.in.model <- variables.in.model.copy[! inModel]
-
-							for (variable in variables.not.in.model) {
-
-								if (grepl(":", variable)) {
-
-									# if interaction term
-
-									vars <- unlist(strsplit(variable, split = ":"))
-									variable.name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-								} else {
-
-									variable.name <- variable
-								}
-
-								covmatrix.row[[variable.name]] <- ""
-							}
-
-						}
-
-						covmatrix.rows[[length(covmatrix.rows)+1]] <- covmatrix.row
-					}
-
-				} else {
-
-					covmatrix.rows[[length(covmatrix.rows)+1]] <- list(Model=".", Name=".")
-				}
-			}
-
-		} else {
-
-			# init phase
-
-			for (m in 1:length(lm.model)) {
-
-				variables.model <- lm.model[[m]]$variables
-
-				if (length(variables.model) > 0) {
-
-					for (row.variable in variables.model) {
-
-						if (grepl(":", row.variable)) {
-
-							# if interaction term
-
-							vars <- unlist(strsplit(row.variable, split = ":"))
-							row.variable.name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-						} else {
-
-							row.variable.name <- row.variable
-						}
-
-						row.index <- which(variables.model == row.variable)
-
-						if (row.index == 1) {
-
-							covmatrix.row <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Name=row.variable.name, .isNewGroup=TRUE)
-
-						} else {
-
-							covmatrix.row <- list(Model="", Name=row.variable.name)
-						}
-
-						for (col.variable in variables.in.model.copy) {
-
-							if (grepl(":", col.variable)) {
-
-								# if interaction term
-
-								vars <- unlist(strsplit(col.variable, split = ":"))
-								col.variable.name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-							} else {
-
-								col.variable.name <- col.variable
-							}
-
-							covmatrix.row[[col.variable.name]] <- ""
-						}
-
-						covmatrix.rows[[length(covmatrix.rows)+1]] <- covmatrix.row
-					}
-				}
-			}
-		}
-
-		if (length(list.of.errors) > 0)
-			covmatrix[["error"]] <- list(errorType="badData")
-
-		covmatrix[["data"]] <- covmatrix.rows
-		if (interceptOnlyModelIsBest) {
-		  footnotes <- .newFootnotes()
-		  text <- "The model with an intercept is selected as the best model. No meaningful information can be shown."
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = text)
-		  covmatrix[["footnotes"]] <- c(covmatrix[["footnotes"]], as.list(footnotes))
-		}
-
-		results[["coefficient covariances"]] <- covmatrix
-	}
-
-
-	################################################################################
-	#					 COLLINEARITY DIAGNOSTICS TABLE   					       #
-	################################################################################
-
-
-	if (options$collinearityDiagnostics) {
-
-		diagnostics.table <- list()
-		diagnostics.table[["title"]] <- "Collinearity Diagnostics"
-
-		fields <- list(
-			list(name = "Model", type = "integer"),
-			list(name = "Dimension", type = "integer"),
-			list(name = "Eigenvalue", type = "number", format = "sf:4;dp:3"),
-			list(name = "Condition Index", type = "number", format = "sf:4;dp:3")
-			)
-
-
-		if (length(options$modelTerms) > 0) {
-
-		if (options$includeConstant && dependent.variable != "")
-			variables.in.model <- c("intercept", variables.in.model)
-
-			for (variable in variables.in.model) {
-
-				if (grepl(":", variable)) {
-
-					# if interaction term
-
-					vars <- unlist(strsplit(variable, split = ":"))
-					name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-				} else {
-
-					name <- variable
-				}
-
-				fields[[length(fields)+1]] <- list(name = name, title = name, type = "number", format = "dp:3", overTitle="Variance Proportions")
-			}
-		}
-
-		diagnostics.table[["schema"]] <- list(fields = fields)
-
-		diagnostics.rows <- list()
-
-		if (length(options$modelTerms) == 0) {
-
-			diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=".", Dimension=".", Eigenvalue=".", "Condition Index"=".")
-
-
-		} else if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
-
-			for (m in 1:length(lm.model)) {
-
-				if ( ! options$regressionCoefficientsEstimates)
-					collinearity.diagnostics[[length(collinearity.diagnostics)+1]] <- .collinearityDiagnostics(lm.model[[ m ]]$lm.fit, dataset, includeConstant=options$includeConstant)
-
-				variables.model <- lm.model[[m]]$variables
-
-				if (length(variables.model) > 0) {
-
-					if (options$includeConstant) {
-
-						predictors <- c("intercept", variables.model)
-
-					} else {
-
-						predictors <- variables.model
-					}
-
-					for (predictor in predictors) {
-
-						predictor.index <- which(predictors == predictor)
-
-						if (predictor.index == 1) {
-
-							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Dimension=predictor.index, .isNewGroup=TRUE)
-
-						} else {
-
-							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model="", Dimension=predictor.index)
-						}
-
-						diagnostics.rows[[length(diagnostics.rows)]]$"Eigenvalue" <- .clean(collinearity.diagnostics[[m]]$eigenvalues[predictor.index])
-						diagnostics.rows[[length(diagnostics.rows)]]$"Condition Index" <- .clean(collinearity.diagnostics[[m]]$conditionIndices[predictor.index])
-
-						for (colPredictor in predictors) {
-
-							colPredictor.index <- which(predictors == colPredictor)
-
-							if (grepl(":", colPredictor)) {
-
-								# if interaction term
-
-								vars <- unlist(strsplit(colPredictor, split = ":"))
-								name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-							} else {
-
-								name <- colPredictor
-							}
-
-							diagnostics.rows[[length(diagnostics.rows)]][[name]] <- .clean(collinearity.diagnostics[[m]]$varianceProportions[predictor.index, colPredictor.index])
-
-						}
-
-						variables.not.in.model.index <- which(! variables.in.model %in% predictors)
-
-						if (length(variables.not.in.model.index) > 0) {
-
-							variables.not.in.model <- variables.in.model[variables.not.in.model.index]
-
-							for (variable in variables.not.in.model) {
-
-								if (grepl(":", variable)) {
-
-									# if interaction term
-
-									vars <- unlist(strsplit(variable, split = ":"))
-									name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-								} else {
-
-									name <- variable
-								}
-
-								diagnostics.rows[[length(diagnostics.rows)]][[name]] <- ""
-							}
-
-						}
-
-					}
-
-				} else {
-
-					diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=".", Dimension=".", Eigenvalue=".", "Condition Index"=".")
-
-					if (options$includeConstant)
-						diagnostics.rows[[length(diagnostics.rows)]]$"intercept" <- "."
-				}
-			}
-
-		} else {
-
-			# init phase
-
-			for (m in 1:length(lm.model)) {
-
-				variables.model <- lm.model[[m]]$variables
-
-				if (length(variables.model) > 0) {
-
-					if (options$includeConstant) {
-
-						predictors <- c("intercept", variables.model)
-
-					} else {
-
-						predictors <- variables.model
-					}
-
-					for (predictor in predictors) {
-
-						predictor.index <- which(predictors == predictor)
-
-						if (predictor.index == 1) {
-
-							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model=as.integer(m - as.numeric(includes.nuisance)), Dimension=predictor.index, .isNewGroup=TRUE)
-
-						} else {
-
-							diagnostics.rows[[length(diagnostics.rows)+1]] <- list(Model="", Dimension=predictor.index)
-						}
-
-						diagnostics.rows[[length(diagnostics.rows)]]$"Eigenvalue" <- ""
-						diagnostics.rows[[length(diagnostics.rows)]]$"Condition Index" <- ""
-
-						for (colPredictor in predictors) {
-
-							colPredictor.index <- which(predictors == colPredictor)
-
-							if (grepl(":", colPredictor)) {
-
-								# if interaction term
-
-								vars <- unlist(strsplit(colPredictor, split = ":"))
-								name <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-							} else {
-
-								name <- colPredictor
-							}
-
-							diagnostics.rows[[length(diagnostics.rows)]][[name]] <- ""
-
-						}
-					}
-				}
-			}
-		}
-
-		if (length(list.of.errors) > 0)
-			diagnostics.table[["error"]] <- list(errorType="badData")
-
-		diagnostics.table[["data"]] <- diagnostics.rows
-		results[["collinearity diagnostics"]] <- diagnostics.table
-
-	}
-
-
-	################################################################################
-	#						   Casewise Diagnostics Table   					   #
-	################################################################################
-
-	if (options$residualsCasewiseDiagnostics) {
-
-		casewiseDiagnostics <- list()
-		casewiseDiagnostics[["title"]] <- "Casewise Diagnostics"
-
-		# Declare table elements
-		fields <- list(
-			list(name = "caseNumber", title = "Case Number", type="integer"),
-			list(name = "stdResidual", title = "Std. Residual", type = "number", format = "dp:3"),
-			list(name = "dependentVariable", title = dependent.variable, type="number", format = "sf:4;dp:3"),
-			list(name = "predictedValue", title = "Predicted Value", type="number", format = "sf:4;dp:3"),
-			list(name = "residual", title = "Residual", type="number", format = "sf:4;dp:3"),
-			list(name = "cooksD", title = "Cook's Distance", type = "number", format = "dp:3")
-			)
-
-		casewiseDiagnostics[["schema"]] <- list(fields = fields)
-
-		casewiseDiagnostics.rows <- list()
-
-
-		if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
-
-			lm.fit <- lm.model[[length(lm.model)]]$lm.fit
-
-			if (is.null(lm.fit) || length(options$modelTerms) == 0) {
-			  
-			 casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", stdResidual=".", dependentVariable=".", predictedValue=".", residual=".", cooksD = ".")
-			 
-			} else if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
-			  
-			  casewiseDiag <- .casewiseDiagnostics(lm.fit = lm.fit, diagnosticsType = options$residualsCasewiseDiagnosticsType, outliersOutside = options$residualsCasewiseDiagnosticsOutliersOutside, cooksDistance = options$residualsCasewiseDiagnosticsCooksDistance)
-				caseNumbers <- casewiseDiag$index
-
-				if (is.na(caseNumbers)) {
-
-				  casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", stdResidual=".", dependentVariable=".", predictedValue=".", residual=".", cooksD = ".")
-
-				} else {
-
-					for (case in seq_along(caseNumbers))
-					  casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=caseNumbers[case], stdResidual=casewiseDiag$stdResiduals[case],
-					    dependentVariable=casewiseDiag$dependent[case], predictedValue=casewiseDiag$predictedValues[case], residual=casewiseDiag$residuals[case], cooksD=casewiseDiag$cooksD[case])
-				}
-			}
-
-		} else {
-
-			# init phase
-
-		  casewiseDiagnostics.rows[[length(casewiseDiagnostics.rows)+1]] <- list(caseNumber=".", stdResidual=".", dependentVariable=".", predictedValue=".", residual=".", cooksD = ".")
-		}
-
-		if (length(list.of.errors) > 0)
-			casewiseDiagnostics[["error"]] <- list(errorType="badData")
-
-		casewiseDiagnostics[["data"]] <- casewiseDiagnostics.rows
-		results[["casewise diagnostics"]] <- casewiseDiagnostics
-	}
-
-
-	################################################################################
-	#						   Residuals Statistics Table   					   #
-	################################################################################
-
-	if (options$residualsStatistics) {
-
-		residualsStatistics <- list()
-		residualsStatistics[["title"]] <- "Residuals Statistics"
-
-		# Declare table elements
-		fields <- list(
-			list(name = "Type", title = "  ", type = "string"),
-			list(name = "Minimum", title = "Minimum", type = "number", format = "sf:4;dp:3"),
-			list(name = "Maximum", title = "Maximum", type="number", format = "sf:4;dp:3"),
-			list(name = "Mean", title = "Mean", type="number", format = "sf:4;dp:3"),
-			list(name = "SD", title = "SD", type="number", format = "sf:4;dp:3"),
-			list(name = "N", title = "N", type="integer")
-			)
-
-		residualsStatistics[["schema"]] <- list(fields = fields)
-
-		types <- c("Predicted Value", "Residual", "Std. Predicted Value", "Std. Residual")
-
-		residualsStatistics.rows <- list()
-
-		if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
-
-			lm.fit <- lm.model[[length(lm.model)]]$lm.fit
-
-			if (is.null(lm.fit) || length(options$modelTerms) == 0) {
-
-				for (type in types)
-					residualsStatistics.rows[[length(residualsStatistics.rows)+1]] <- list(Type=type, Minimum=".", Maximum=".", Mean=".", SD=".", N=".")
-
-			} else if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
-
-				resStats <- .residualsStatistics(lm.fit)
-
-				for (type in types)
-					residualsStatistics.rows[[length(residualsStatistics.rows)+1]] <- list(Type=type, Minimum=resStats[[type]]$Minimum, Maximum=resStats[[type]]$Maximum,
-																							Mean=resStats[[type]]$Mean, SD=resStats[[type]]$SD, N=resStats[[type]]$N)
-
-			}
-
-		} else {
-
-			# init phase
-
-			for (type in types)
-					residualsStatistics.rows[[length(residualsStatistics.rows)+1]] <- list(Type=type, Minimum=".", Maximum=".", Mean=".", SD=".", N=".")
-
-		}
-
-		if (length(list.of.errors) > 0)
-			residualsStatistics[["error"]] <- list(errorType="badData")
-
-		residualsStatistics[["data"]] <- residualsStatistics.rows
-		results[["residuals statistics"]] <- residualsStatistics
-	}
-
-
-	#######################################
-	###	 	   RESIDUAL PLOTS   		###
-	#######################################
-
-	plots.regression <- list()
-	plotTypes <- list()
-	plotsResVsCov <- list()
-	plotsParReg <- list()
-	
-	if (perform == "run" && length(list.of.errors) == 0 && dependent.variable != "") {
-	  lm.model <- lm.model[[length(lm.model)]]
-	}
-
-	if (options$plotResidualsDependent) {
-
-		if (!is.null(state) && paste0("plotResidualsDependent", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
-			diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
-			&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-
-			# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-			# then, if the requested plot already exists, use it
-
-			stateIndex <- which(state$plotTypes == paste0("plotResidualsDependent", dependent.variable))[1]
-
-			plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
-			results[["plotResVsDep"]] <- state$plotsRegression[[stateIndex]]
-
-		} else {
-
-			plot <- list()
-
-			plot[["title"]] <- paste0("Residuals vs. Dependent")
-			plot[["width"]]  <- 530
-			plot[["height"]] <- 400
-			plot[["status"]] <- "waiting"
-
-			# image <- .beginSaveImage(530, 400)
-
-			if (length(options$modelTerms) > 0 && dependent.variable != "") {
-				p <- .plotResiduals(xlab=dependent.variable, ylab="Residuals", dontPlotData=TRUE)
-			} else {
-				p <- .plotResiduals(xlab="", ylab="Residuals", dontPlotData=TRUE)
-			}
-
-			content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-			plot[["convertible"]] <- TRUE
-			plot[["obj"]] <- content[["obj"]]
-			plot[["data"]] <- content[["png"]]
-
-			# plot[["data"]] <- .endSaveImage(image)
-
-			plots.regression[[length(plots.regression)+1]] <- plot
-			results[["plotResVsDep"]] <- plots.regression[[length(plots.regression)]]
-
-			if ( ! .shouldContinue(callback(results)))
-			return()
-
-		}
-
-		plotTypes[[length(plotTypes)+1]] <- paste0("plotResidualsDependent", dependent.variable)
-
-	}
-
-
-
-	if (options$plotResidualsCovariates && length(options$modelTerms) > 0 && dependent.variable != "") {
-
-		results[["plotsResVsCov"]] <- list(title="Residuals vs. Covariates")
-
-		variables.in.model <- variables.in.model.copy
-
-		for (var in seq_along(variables.in.model)) {
-
-			if (grepl(":", variables.in.model[var])) {
-
-				vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-				name <- paste0(vars, collapse=" * ")
-				nameTitle <- paste0(vars, collapse="\u2009\u273b\u2009")
-
-			} else {
-
-				name <- variables.in.model[var]
-				nameTitle <- name
-			}
-
-			if (!is.null(state) && paste0("plotResidualsCovariates", variables.in.model[var]) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
-				diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
-				&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-
-				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-				# then, if the requested plot already exists, use it
-
-				stateIndex <- which(state$plotTypes == paste0("plotResidualsCovariates", variables.in.model[var]))[1]
-
-				plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
-				plotsResVsCov[[length(plotsResVsCov)+1]] <- state$plotsRegression[[stateIndex]]
-				results[["plotsResVsCov"]]$collection <- plotsResVsCov
-
-			} else {
-
-
-				plot <- list()
-
-				plot[["title"]] <- paste0("Residuals vs. ", nameTitle)
-				plot[["width"]]  <- 530
-				plot[["height"]] <- 400
-				plot[["status"]] <- "waiting"
-
-				# image <- .beginSaveImage(530, 400)
-				# .plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
-				# plot[["data"]] <- .endSaveImage(image)
-
-				p <- .plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
-
-				content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-				plot[["convertible"]] <- TRUE
-				plot[["obj"]] <- content[["obj"]]
-				plot[["data"]] <- content[["png"]]
-
-				plots.regression[[length(plots.regression)+1]] <- plot
-				plotsResVsCov[[length(plotsResVsCov)+1]] <- plot
-				results[["plotsResVsCov"]]$collection <- plotsResVsCov
-
-				if ( ! .shouldContinue(callback(results)))
-				return()
-
-			}
-
-			plotTypes[[length(plotTypes)+1]] <- paste0("plotResidualsCovariates", variables.in.model[var])
-
-		}
-	}
-
-
-	if (options$plotResidualsPredicted) {
-
-		if (!is.null(state) && paste0("plotResidualsPredicted", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
-			diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
-			&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-
-			# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-			# then, if the requested plot already exists, use it
-
-			stateIndex <- which(state$plotTypes == paste0("plotResidualsPredicted", dependent.variable))[1]
-
-			plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
-			results[["plotResVsPred"]] <- state$plotsRegression[[stateIndex]]
-
-		} else {
-
-			plot <- list()
-
-			plot[["title"]] <- paste0("Residuals vs. Predicted")
-			plot[["width"]]  <- 530
-			plot[["height"]] <- 400
-			plot[["status"]] <- "waiting"
-
-			# image <- .beginSaveImage(530, 400)
-			# .plotResiduals(xlab="Predicted Values", ylab="Residuals", dontPlotData=TRUE)
-			# plot[["data"]] <- .endSaveImage(image)
-
-			p <- .plotResiduals(xlab="Predicted Values", ylab="Residuals", dontPlotData=TRUE)
-
-			content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-			plot[["convertible"]] <- TRUE
-			plot[["obj"]] <- content[["obj"]]
-			plot[["data"]] <- content[["png"]]
-
-			plots.regression[[length(plots.regression)+1]] <- plot
-
-			results[["plotResVsPred"]] <- plots.regression[[length(plots.regression)]]
-
-			if ( ! .shouldContinue(callback(results)))
-				return()
-
-		}
-
-		plotTypes[[length(plotTypes)+1]] <- paste0("plotResidualsPredicted", dependent.variable)
-	}
-
-	if (options$plotResidualsHistogram) {
-
-		if (!is.null(state) && paste0("plotResidualsHistogram", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$plotResidualsHistogramStandardized == FALSE
-			&& diff$modelTerms == FALSE && diff$dependent == FALSE && diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE &&
-			diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE && diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE &&
-			diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-
-			# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-			# then, if the requested plot already exists, use it
-
-			stateIndex <- which(state$plotTypes == paste0("plotResidualsHistogram", dependent.variable))[1]
-
-			plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
-			results[["plotResHist"]] <- state$plotsRegression[[stateIndex]]
-
-		} else {
-
-			plot <- list()
-
-			if (options$plotResidualsHistogramStandardized) {
-
-				plot[["title"]] <- "Standardized Residuals Histogram"
-				resName <- "Standardized Residuals"
-
-			} else {
-
-				plot[["title"]] <- "Residuals Histogram"
-				resName <- "Residuals"
-			}
-
-			plot[["width"]]  <- 530
-			plot[["height"]] <- 400
-			plot[["status"]] <- "waiting"
-
-			# image <- .beginSaveImage(530, 400)
-			# .plotResidualsHistogram(resName=resName, dontPlotData=TRUE)
-			# plot[["data"]] <- .endSaveImage(image)
-
-			p <- .plotResidualsHistogram(resName=resName, dontPlotData=TRUE)
-
-			content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-			plot[["convertible"]] <- TRUE
-			plot[["obj"]] <- content[["obj"]]
-			plot[["data"]] <- content[["png"]]
-
-			plots.regression[[length(plots.regression)+1]] <- plot
-
-			results[["plotResHist"]] <- plots.regression[[length(plots.regression)]]
-
-			if ( ! .shouldContinue(callback(results)))
-				return()
-
-		}
-
-		plotTypes[[length(plotTypes)+1]] <- paste0("plotResidualsHistogram", dependent.variable)
-	}
-
-	if (options$plotResidualsQQ) {
-
-		if (!is.null(state) && paste0("plotResidualsQQ", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
-			diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
-			&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-
-			# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-			# then, if the requested plot already exists, use it
-
-			stateIndex <- which(state$plotTypes == paste0("plotResidualsQQ", dependent.variable))[1]
-
-			plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
-			results[["plotResQQ"]] <- state$plotsRegression[[stateIndex]]
-
-		} else {
-
-			plot <- list()
-
-			plot[["title"]] <- "Q-Q Plot Standardized Residuals"
-			plot[["width"]]  <- 400
-			plot[["height"]] <- 400
-			plot[["status"]] <- "waiting"
-
-			# image <- .beginSaveImage(530, 400)
-			# .plotQQresidualsRegression(dontPlotData=TRUE)
-			# plot[["data"]] <- .endSaveImage(image)
-
-			p <- .plotQQresidualsRegression(dontPlotData=TRUE)
-			content <- .writeImage(width = 400, height = 400, plot = p, obj = TRUE)
-
-			plot[["convertible"]] <- TRUE
-			plot[["obj"]] <- content[["obj"]]
-			plot[["data"]] <- content[["png"]]
-			plot[["editable"]] <- FALSE
-
-			plots.regression[[length(plots.regression)+1]] <- plot
-
-			results[["plotResQQ"]] <- plots.regression[[length(plots.regression)]]
-
-			if ( ! .shouldContinue(callback(results)))
-				return()
-
-		}
-
-		plotTypes[[length(plotTypes)+1]] <- paste0("plotResidualsQQ", dependent.variable)
-
-	}
-
-
-	if (options$plotsPartialRegression && length(options$modelTerms) > 0 && dependent.variable != "") {
-	  
-	  results[["plotsParReg"]] <- list(title="Partial Regression Plot(s)")
-	  variables.in.model <- variables.in.model.copy
-	  
-	  for (var in seq_along(variables.in.model)) {
-	    
-	    if (grepl(":", variables.in.model[var])) {
-	      
-	      list.of.errors[[ length(list.of.errors) + 1 ]] <- "Partial plots are not supported for models containing interaction terms"
-	      
-	    } else {
-	      
-	      name <- variables.in.model[var]
-	      nameTitle <- name
-	    }
-	    
-	    if (!is.null(state) && paste0("plotsPartialRegression", variables.in.model[var]) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
-	      diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
-	      && diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-	      
-	      # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-	      # then, if the requested plot already exists, use it
-	      
-	      stateIndex <- which(state$plotTypes == paste0("plotsPartialRegression", variables.in.model[var]))[1]
-	      
-	      plots.regression[[length(plots.regression)+1]] <- state$plotsRegression[[stateIndex]]
-	      plotsParReg[[length(plotsParReg)+1]] <- state$plotsRegression[[stateIndex]]
-	      results[["plotsParReg"]]$collection <- plotsParReg
-	      
-	    } else {
-	      
-	      plot <- list()
-	      
-	      plot[["title"]] <- paste0(dependent.variable," vs. ", nameTitle)
-	      plot[["width"]]  <- 530
-	      plot[["height"]] <- 400
-	      plot[["status"]] <- "waiting"
-	      
-	      # image <- .beginSaveImage(530, 400)
-	      # .plotResiduals(xlab=name, ylab="Residuals", dontPlotData=TRUE)
-	      # plot[["data"]] <- .endSaveImage(image)
-	      
-	      xlab <- paste0("Residuals ", name)
-	      ylab <- paste0("Residuals ", dependent.variable)
-	      
-	      p <- .plotResiduals(xlab = xlab, ylab = ylab, dontPlotData=TRUE, standardizedResiduals = FALSE)
-	      
-	      content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-	      plot[["convertible"]] <- TRUE
-	      plot[["obj"]] <- content[["obj"]]
-	      plot[["data"]] <- content[["png"]]
-	      
-	      plots.regression[[length(plots.regression)+1]] <- plot
-	      plotsParReg[[length(plotsParReg)+1]] <- plot
-	      results[["plotsParReg"]]$collection <- plotsParReg
-	      
-	      if ( ! .shouldContinue(callback(results)))
-	        return()
-	      
-	    }
-	    
-	    plotTypes[[length(plotTypes)+1]] <- paste0("plotsPartialRegression", variables.in.model[var])
-	    
-	  }
-	}
-	
-	if (perform == "run") {
-
-		j <- 1
-
-		if (options$plotResidualsDependent) {
-
-			if (!is.null(state) && paste0("plotResidualsDependent", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
-				diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
-				&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-
-				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-				# then, if the requested plot already exists, use it
-
-				stateIndex <- which(state$plotTypes == paste0("plotResidualsDependent", dependent.variable))[1]
-
-				plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-				results[["plotResVsDep"]] <- state$plotsRegression[[stateIndex]]
-
-			} else {
-
-				plots.regression[[j]]$status <- "running"
-
-				results[["plots"]] <- plots.regression
-
-				if ( ! .shouldContinue(callback(results)))
-					return()
-
-				plot <- plots.regression[[j]]
-
-				if (length(list.of.errors) > 0) {
-
-					plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
-
-				} else {
-
-					if (length(options$modelTerms) > 0 && dependent.variable != "") {
-
-						dependent <- lm.model$lm.fit$model[ , 1]
-						res <- residuals(lm.model$lm.fit)
-
-						p <- try(silent=FALSE, expr= {
-
-							# image <- .beginSaveImage(530, 400)
-							# .plotResiduals(xVar=dependent, res=res, xlab=dependent.variable, ylab="Residuals")
-							# plot[["data"]] <- .endSaveImage(image)
-
-							p <- .plotResiduals(xVar=dependent, res=res, xlab=dependent.variable, ylab="Residuals")
-
-							content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-							plot[["convertible"]] <- TRUE
-							plot[["obj"]] <- content[["obj"]]
-							plot[["data"]] <- content[["png"]]
-
-						})
-
-						if (class(p) == "try-error") {
-
-							errorMessage <- .extractErrorMessage(p)
-							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
-						}
-					} else {
-
-						# image <- .beginSaveImage(530, 400)
-						# .plotResiduals(dontPlotData=TRUE, xlab="", ylab="Residuals")
-						# plot[["data"]] <- .endSaveImage(image)
-
-						p <- .plotResiduals(dontPlotData=TRUE, xlab="", ylab="Residuals")
-
-						content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-						plot[["convertible"]] <- TRUE
-						plot[["obj"]] <- content[["obj"]]
-						plot[["data"]] <- content[["png"]]
-
-					}
-				}
-
-				plot[["status"]] <- "complete"
-				plots.regression[[j]] <- plot
-				results[["plotResVsDep"]] <- plots.regression[[j]]
-
-				if ( ! .shouldContinue(callback(results)))
-					return()
-			}
-
-			j <- j + 1
-
-		}
-
-		if (options$plotResidualsCovariates && length(options$modelTerms) > 0 && dependent.variable != "") {
-		  
-		  k <- 1
-
-			for (var in seq_along(variables.in.model)) {
-
-
-				if (!is.null(state) && paste0("plotResidualsCovariates", variables.in.model[var]) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE
-					&& diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE &&
-					diff$steppingMethodCriteriaPEntry == FALSE && diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE &&
-					diff$missingValues == FALSE))) {
-
-					# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-					# then, if the requested plot already exists, use it
-
-					stateIndex <- which(state$plotTypes == paste0("plotResidualsCovariates", variables.in.model[var]))[1]
-
-					plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-					plotsResVsCov[[k]] <- state$plotsRegression[[stateIndex]]
-					results[["plotsResVsCov"]]$collection <- plotsResVsCov
-
-				} else {
-
-					if (grepl(":", variables.in.model[var])) {
-
-						# if interaction term
-
-						vars <- unlist(strsplit(variables.in.model[var], split = ":"))
-						name <- paste0(vars, collapse=" * ")
-
-						int.var <- rep(1, nrow(dataset))
-
-						for (i in seq_along(vars))
-							int.var <- int.var * dataset[[ .v(vars[i]) ]]
-
-						xVar <- int.var
-
-					} else {
-
-						xVar <- dataset[[ .v(variables.in.model[var]) ]]
-						name <- variables.in.model[var]
-					}
-
-					plots.regression[[j]]$status <- "running"
-					plotsResVsCov[[k]] <- plots.regression[[j]]
-
-					results[["plotsResVsCov"]]$collection <- plotsResVsCov
-
-					if ( ! .shouldContinue(callback(results)))
-						return()
-
-					plot <- plots.regression[[j]]
-
-					if (length(list.of.errors) > 0) {
-
-						plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
-
-					} else {
-
-						res <- residuals(lm.model$lm.fit)
-
-						p <- try(silent=FALSE, expr= {
-
-							# image <- .beginSaveImage(530, 400)
-							# .plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
-							# plot[["data"]] <- .endSaveImage(image)
-
-							p <- .plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
-
-							content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-							plot[["convertible"]] <- TRUE
-							plot[["obj"]] <- content[["obj"]]
-							plot[["data"]] <- content[["png"]]
-
-						})
-
-						if (class(p) == "try-error") {
-
-							errorMessage <- .extractErrorMessage(p)
-							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
-						}
-					}
-
-					plot[["status"]] <- "complete"
-					plots.regression[[j]] <- plot
-					plotsResVsCov[[k]] <- plot
-					results[["plotsResVsCov"]]$collection <- plotsResVsCov
-
-					if ( ! .shouldContinue(callback(results)))
-						return()
-
-				}
-
-				j <- j + 1
-				k <- k + 1
-
-			}
-		}
-
-
-		if (options$plotResidualsPredicted) {
-
-			if (!is.null(state) && paste0("plotResidualsPredicted", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
-				diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
-				&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-
-				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-				# then, if the requested plot already exists, use it
-
-				stateIndex <- which(state$plotTypes == paste0("plotResidualsPredicted", dependent.variable))[1]
-
-				plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-				results[["plotResVsPred"]] <- state$plotsRegression[[stateIndex]]
-
-			} else {
-
-				plots.regression[[j]]$status <- "running"
-
-				results[["plotResVsPred"]] <- plots.regression[[j]]
-
-				if ( ! .shouldContinue(callback(results)))
-					return()
-
-				plot <- plots.regression[[j]]
-
-				if (length(list.of.errors) > 0) {
-
-					plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
-
-				} else {
-
-					if (length(options$modelTerms) > 0 && dependent.variable != "") {
-
-						pred <- predict(lm.model$lm.fit)
-						res <- residuals(lm.model$lm.fit)
-
-						p <- try(silent=FALSE, expr= {
-
-							# image <- .beginSaveImage(530, 400)
-							# .plotResiduals(xVar=pred, res=res, xlab="Predicted Values", ylab="Residuals")
-							# plot[["data"]] <- .endSaveImage(image)
-
-							p <- .plotResiduals(xVar=pred, res=res, xlab="Predicted Values", ylab="Residuals")
-
-							content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-							plot[["convertible"]] <- TRUE
-							plot[["obj"]] <- content[["obj"]]
-							plot[["data"]] <- content[["png"]]
-
-						})
-
-						if (class(p) == "try-error") {
-
-							errorMessage <- .extractErrorMessage(p)
-							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
-						}
-
-					} else {
-
-						# image <- .beginSaveImage(530, 400)
-						# .plotResiduals(dontPlotData=TRUE, xlab="Predicted Values", ylab="Residuals")
-						# plot[["data"]] <- .endSaveImage(image)
-
-						p <- .plotResiduals(dontPlotData=TRUE, xlab="Predicted Values", ylab="Residuals")
-
-						content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-						plot[["convertible"]] <- TRUE
-						plot[["obj"]] <- content[["obj"]]
-						plot[["data"]] <- content[["png"]]
-
-					}
-
-				}
-
-				plot[["status"]] <- "complete"
-				plots.regression[[j]] <- plot
-				results[["plotResVsPred"]] <- plots.regression[[j]]
-
-				if ( ! .shouldContinue(callback(results)))
-					return()
-
-			}
-
-			j <- j + 1
-
-		}
-
-		if (options$plotResidualsHistogram) {
-
-			if (!is.null(state) && paste0("plotResidualsHistogram", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$plotResidualsHistogramStandardized == FALSE &&
-				diff$modelTerms == FALSE && diff$dependent == FALSE && diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE &&
-				diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE && diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE &&
-				diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-
-				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-				# then, if the requested plot already exists, use it
-
-				stateIndex <- which(state$plotTypes == paste0("plotResidualsHistogram", dependent.variable))[1]
-
-				plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-				results[["plotResHist"]] <- state$plotsRegression[[stateIndex]]
-
-			} else {
-
-				plots.regression[[j]]$status <- "running"
-
-				results[["plotResHist"]] <- plots.regression[[j]]
-
-				if ( ! .shouldContinue(callback(results)))
-					return()
-
-				plot <- plots.regression[[j]]
-
-				if (length(list.of.errors) > 0) {
-
-					plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
-
-				} else {
-
-					if (length(options$modelTerms) > 0 && dependent.variable != "") {
-
-						res <- residuals(lm.model$lm.fit)
-						resName <- "Residuals"
-
-						if (options$plotResidualsHistogramStandardized) {
-
-							res <- res / sd(res)
-							resName <- "Standardized Residuals"
-						}
-
-						p <- try(silent=FALSE, expr= {
-
-							# image <- .beginSaveImage(530, 400)
-							# .plotResidualsHistogram(res=res, resName=resName)
-							# plot[["data"]] <- .endSaveImage(image)
-
-							p <- .plotResidualsHistogram(res=res, resName=resName)
-
-							content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-							plot[["convertible"]] <- TRUE
-							plot[["obj"]] <- content[["obj"]]
-							plot[["data"]] <- content[["png"]]
-
-						})
-
-						if (class(p) == "try-error") {
-
-							errorMessage <- .extractErrorMessage(p)
-							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
-						}
-
-					} else {
-
-						# image <- .beginSaveImage(530, 400)
-						# .plotResidualsHistogram(dontPlotData=TRUE, resName=resName)
-						# plot[["data"]] <- .endSaveImage(image)
-
-						p <- .plotResidualsHistogram(dontPlotData=TRUE, resName=resName)
-
-						content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-						plot[["convertible"]] <- TRUE
-						plot[["obj"]] <- content[["obj"]]
-						plot[["data"]] <- content[["png"]]
-
-					}
-				}
-
-				plot[["status"]] <- "complete"
-				plots.regression[[j]] <- plot
-				results[["plotResHist"]] <- plots.regression[[j]]
-
-				if ( ! .shouldContinue(callback(results)))
-					return()
-
-			}
-
-			j <- j + 1
-
-		}
-
-		if (options$plotResidualsQQ) {
-
-			if (!is.null(state) && paste0("plotResidualsQQ", dependent.variable) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE &&
-				diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE && diff$steppingMethodCriteriaPEntry == FALSE
-				&& diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE && diff$missingValues == FALSE))) {
-
-				# if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-				# then, if the requested plot already exists, use it
-
-				stateIndex <- which(state$plotTypes == paste0("plotResidualsQQ", dependent.variable))[1]
-
-				plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-				results[["plotResQQ"]] <- state$plotsRegression[[stateIndex]]
-
-			} else {
-
-				plots.regression[[j]]$status <- "running"
-
-				results[["plotResQQ"]] <- plots.regression[[j]]
-
-				if ( ! .shouldContinue(callback(results)))
-					return()
-
-				plot <- plots.regression[[j]]
-
-				if (length(list.of.errors) > 0) {
-
-					plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
-
-				} else {
-
-					if (length(options$modelTerms) > 0 && dependent.variable != "") {
-
-						res <- residuals(lm.model$lm.fit)
-						resSt <- res / sd(res)
-
-						p <- try(silent=FALSE, expr= {
-
-							# image <- .beginSaveImage(530, 400)
-							# .plotQQresidualsRegression(res=resSt)
-							# plot[["data"]] <- .endSaveImage(image)
-
-							p <- .plotQQresidualsRegression(res=resSt)
-							content <- .writeImage(width = 400, height = 400, plot = p, obj = TRUE)
-
-							plot[["convertible"]] <- TRUE
-							plot[["obj"]] <- content[["obj"]]
-							plot[["data"]] <- content[["png"]]
-
-						})
-
-						if (class(p) == "try-error") {
-
-							errorMessage <- .extractErrorMessage(p)
-							plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
-						}
-
-					} else {
-
-						# image <- .beginSaveImage(530, 400)
-						# .plotQQresidualsRegression(dontPlotData=TRUE)
-						# plot[["data"]] <- .endSaveImage(image)
-
-						p <- .plotQQresidualsRegression(dontPlotData=TRUE)
-						content <- .writeImage(width = 400, height = 400, plot = p, obj = TRUE)
-
-						plot[["convertible"]] <- TRUE
-						plot[["obj"]] <- content[["obj"]]
-						plot[["data"]] <- content[["png"]]
-
-					}
-
-				}
-
-				plot[["status"]] <- "complete"
-				plots.regression[[j]] <- plot
-				results[["plotResQQ"]] <- plots.regression[[j]]
-
-				if ( ! .shouldContinue(callback(results)))
-					return()
-
-			}
-
-			j <- j + 1
-
-		}
-
-		
-		if (options$plotsPartialRegression && length(options$modelTerms) > 0 && dependent.variable != "") {
-	  
-	    k <- 1
-	  
-	    for (var in seq_along(variables.in.model)) {
-	    
-	      if (!is.null(state) && paste0("plotsPartialRegression", variables.in.model[var]) %in% state$plotTypes && !is.null(diff) && (is.list(diff) && (diff$modelTerms == FALSE && diff$dependent == FALSE
-	                                                                                                                                                   && diff$includeConstant == FALSE && diff$method == FALSE && diff$steppingMethodCriteriaFEntry == FALSE && diff$steppingMethodCriteriaFRemoval == FALSE &&
-	                                                                                                                                                   diff$steppingMethodCriteriaPEntry == FALSE && diff$steppingMethodCriteriaPRemoval == FALSE && diff$steppingMethodCriteriaType == FALSE && diff$wlsWeights == FALSE &&
-	                                                                                                                                                   diff$missingValues == FALSE))) {
-	        
-	        # if there is state and the variable has been plotted before and there is either no difference or only the variables or requested plot types have changed
-	        # then, if the requested plot already exists, use it
-	      
-	        stateIndex <- which(state$plotTypes == paste0("plotsPartialRegression", variables.in.model[var]))[1]
-	      
-	        plots.regression[[j]] <- state$plotsRegression[[stateIndex]]
-	        plotsParReg[[k]] <- state$plotsRegression[[stateIndex]]
-	        results[["plotsParReg"]]$collection <- plotsParReg
-	      
-	      } else {
-	      
-	        xVar <- dataset[[ .v(variables.in.model[var]) ]]
-	        name <- variables.in.model[var]
-	      
-	        plots.regression[[j]]$status <- "running"
-	        plotsParReg[[k]] <- plots.regression[[j]]
-	      
-	        results[["plotsParReg"]]$collection <- plotsParReg
-	      
-	        if ( ! .shouldContinue(callback(results)))
-	          return()
-	      
- 	        plot <- plots.regression[[j]]
-	      
-	        if (length(list.of.errors) > 0) {
-	        
-	          plot[["error"]] <- list(errorType="badData", errorMessage=list.of.errors[[1]])
-	        
-	        } else {
-	          
-	          plot.data <- .getDataforPartialRegressionPlots(dataset = dataset, dependent.variable = dependent.base64, variables.in.model = variables.in.model.base64, plot.variable = variables.in.model.base64[var], weights = weights)
-	          xVar <- as.numeric(unlist(plot.data["residualsIV"]))
-	          res <- as.numeric(unlist(plot.data["residualsDV"]))
-	          xlab <- paste0("Residuals ", name)
-	          ylab <- paste0("Residuals ", dependent.variable)
-	          
-	          p <- try(silent=FALSE, expr= {
-	          
-	            # image <- .beginSaveImage(530, 400)
-	            # .plotResiduals(xVar=xVar, res=res, xlab=name, ylab="Residuals")
-	            # plot[["data"]] <- .endSaveImage(image)
-	          
-	            p <- .plotResiduals(xVar=xVar, res=res, xlab=xlab, ylab=ylab, regressionLine = TRUE, standardizedResiduals = FALSE)
-
-	            content <- .writeImage(width = 530, height = 400, plot = p, obj = TRUE)
-	            plot[["convertible"]] <- TRUE
-	            plot[["obj"]] <- content[["obj"]]
-	            plot[["data"]] <- content[["png"]]
-	          
-	          })
-	        
-	          if (class(p) == "try-error") {
-	          
-	            errorMessage <- .extractErrorMessage(p)
-	            plot[["error"]] <- list(error="badData", errorMessage= paste("Plotting is not possible:", errorMessage))
-	          }
-	        }
-	      
-	        plot[["status"]] <- "complete"
-	        plots.regression[[j]] <- plot
-	        plotsParReg[[k]] <- plot
-	        results[["plotsParReg"]]$collection <- plotsParReg
-	      
-	        if ( ! .shouldContinue(callback(results)))
-	          return()
-	      
-	      }
-	    
-	      j <- j + 1
-	      k <- k + 1
-	    
-	    }
-	  }
-	}
-
-	keep <- NULL
-
-	for (plot in plots.regression)
-		keep <- c(keep, plot$data)
-
-	if (perform == "init") {
-
-		return(list(results=results, status="inited", state=state, keep=keep))
-
-	} else {
-
-	  return(list(results=results, status="complete", state=list(options=options, results=results, plotsRegression=plots.regression, plotTypes=plotTypes), keep=keep))
-	}
-
-}
-
-.partAndPartialCorrelation <- function(dependent.variable, variable.of.interest, model.variables, dataset) {
-
-	dataset <- na.omit(dataset)
-	dependent <- dataset[[ .v(dependent.variable) ]]
-
-	# remove variable.of.interest from model.variables
-	index <- which(model.variables == variable.of.interest)
-	variables.to.control.for <- model.variables[-index]
-
-	# if there are no variables to control for, return regular correlation
-	if (length(variables.to.control.for) == 0) {
-
-		if (grepl(":", variable.of.interest)) {
-
-			# if interaction term
-
-			vars <- unlist(strsplit(variable.of.interest, split = ":"))
-			vVars <- .v(vars)
-			int.var <- rep(1, nrow(dataset))
-
-			for (i in seq_along(vVars ))
-				int.var <- int.var * dataset[[ vVars[i] ]]
-
-			correlation <- cor(dependent, int.var)
-
-		} else {
-
-			correlation <- cor(dependent, dataset[[ .v(variable.of.interest) ]])
-		}
-
-		return(list(partCor=correlation, partialCor=correlation))
-	}
-
-	# v variables
-	variables.to.control.for <- .vWithInteraction(variables.to.control.for)
-	dependent.variable <- .v(dependent.variable)
-	variable.of.interest <- .vWithInteraction(variable.of.interest)
-
-	if (grepl(":", variable.of.interest)) {
-
-			# if interaction term
-
-			vars <- unlist(strsplit(variable.of.interest, split = ":"))
-			int.var <- rep(1, nrow(dataset))
-
-			for (i in seq_along(vars))
-				int.var <- int.var * dataset[[ vars[i] ]]
-
-			variable.of.interest <- paste0(vars, collapse=".")
-			dataset[[variable.of.interest]] <- int.var
-
-	}
-
-	# create formulas
-	definition1 <- paste(variable.of.interest, "~", paste(variables.to.control.for, collapse="+"))
-	formula1 <- as.formula(definition1)
-	definition2 <- paste(dependent.variable, "~", paste(variables.to.control.for, collapse="+"))
-	formula2 <- as.formula(definition2)
-
-	# remove variables.to.control.for from variable.of.interest
-	cleaned.variable.of.interest <- residuals( lm(formula1, data=dataset) )
-
-	# remove variables.to.control.for from dependent.variable
-	cleaned.dependent.variable <- residuals( lm(formula2, data=dataset) )
-
-	# part (semi-partial) correlation
-	partCor <- cor(cleaned.variable.of.interest, dependent)
-
-	# partial correlation
-	partialCor <- cor(cleaned.variable.of.interest, cleaned.dependent.variable)
-
-	return(list(partCor=partCor, partialCor=partialCor))
-
-}
-
-.collinearityDiagnostics <- function(lm.fit, dataset, includeConstant=TRUE) {
-
-	### create predictor variable matrix
-	X <- lm.fit$x
-
-	### scale predictor matrix
-	for (i in seq_len(ncol(X))) {
-
-		X[ ,i] <- X[ ,i] / sqrt(sum(X[ ,i]^2)) # scale each column using Euclidean norm
-
-	}
-
-	### eigenvalues
-	eigenvalues <- svd(X)$d^2 # see Liao & Valliant (2012)
-
-	### condition indices
-	conditionIndices <- sqrt(max(eigenvalues) / eigenvalues)
-
-	### variance proportions ( see e.g., Liao & Valliant, 2012 )
-	svdX <- svd(X) # singular value decomposition
-	M <- svdX$v %*% solve(diag(svdX$d))
-	Q <- M*M # Hadamard (elementwise) product
-	tQ <- t(Q)
-
-	for (i in seq_len(ncol(tQ))) {
-
-		tQ[, i] <- tQ[ ,i] / sum(tQ[ ,i])
-
-	}
-
-	varianceProportions <- tQ
-
-	### VIF (variance inflation factor)
-
-	if ( ! includeConstant) {
-
-		predictors <- colnames(lm.fit$x) # predictors in model (remove dependent variable and weights)
-
-	} else {
-
-		predictors <- colnames(lm.fit$x)[-1]
-	}
-
-	VIF <- list()
-	tolerance <- list()
-
-	if (length(predictors) == 1) {
-
-		VIF[[predictors]] <- 1
-		tolerance[[predictors]] <- 1
-
-	} else if (length(predictors) > 1) {
-
-		for (predictor in predictors) {
-
-			if (grepl(":", predictor)) {
-
-				# if interaction term
-
-				vars <- unlist(strsplit(predictor, split = ":"))
-				int.var <- rep(1, nrow(dataset))
-
-				for (i in seq_along(vars))
-					int.var <- int.var * dataset[[ vars[i] ]]
-
-				predictor.d <- paste0(vars, collapse=".")
-				dataset[[predictor.d]] <- int.var
-
-			} else {
-
-				predictor.d <- predictor
-			}
-
-			# remove predictor from other predictors
-			index <- which(predictors == predictor)
-			cleanedPredictors <- predictors[-index]
-
-			# create formula
-			definition <- paste(predictor.d, "~", paste(cleanedPredictors, collapse="+"))
-			formula <- as.formula(definition)
-
-			# fit lm
-			fitVIF <- try(lm(formula, data=dataset), silent=TRUE)
-
-			# VIF (variance inflation factor)
-			VIF[[predictor]] <- 1 / (1 - summary(fitVIF)$"r.squared")
-
-			# tolerance
-			tolerance[[predictor]] <- 1 / VIF[[predictor]]
-		}
-	}
-
-	output <- list(	eigenvalues=eigenvalues,
-					conditionIndices=conditionIndices,
-					varianceProportions=varianceProportions,
-					VIF=VIF,
-					tolerance=tolerance)
-
-	return(output)
-
-}
-
-.casewiseDiagnostics <- function(lm.fit, diagnosticsType, outliersOutside=3, cooksDistance=1) {
-
-	# predicted values
-	predictedValuesAll <- predict(lm.fit)
-
-	# residuals
-	residualsAll <- residuals(lm.fit)
-
-	# standardized predicted values
-	stdPredictedValuesAll <- (predictedValuesAll - mean(predictedValuesAll)) / sd(predictedValuesAll)
-
-	# standardized residuals
-	stdResidualsAll <- rstandard(lm.fit)
-
-	# Cook's distance
-	cooksDAll <- cooks.distance(lm.fit)
-	
-	stdResiduals <- NA
-	dependent <- NA
-	predictedValues <- NA
-	residuals <- NA
-	cooksD <- NA
-
-	if (diagnosticsType == "cooksDistance") {
-
-		index <- which(abs(cooksDAll) > cooksDistance)
-
-	} else if (diagnosticsType == "outliersOutside") {
-
-		index <- which(abs(stdResidualsAll) > outliersOutside)
-		
-	} else {
-	  
-	  index <- seq_along(predictedValuesAll)
-	}
-
-	if (length(index) == 0) {
-
-		index <- NA
-
-	} else {
-
-		stdResiduals <- stdResidualsAll[index]
-		dependent <- lm.fit$model[index, 1]
-		predictedValues <- predictedValuesAll[index]
-		residuals <- residualsAll[index]
-		cooksD <- cooksDAll[index]
-
-	}
-
-	return(list(index=unname(index),
-				stdResiduals=unname(stdResiduals),
-				dependent=dependent,
-				predictedValues=unname(predictedValues),
-				residuals=unname(residuals),
-				cooksD=unname(cooksD))
-			)
-}
-
-.residualsStatistics <- function(lm.fit) {
-
-	# predicted values
-	predictedValues <- predict(lm.fit)
-	minPredictedValues <- min(predictedValues)
-	maxPredictedValues <- max(predictedValues)
-	meanPredictedValues <- mean(predictedValues)
-	sdPredictedValues <- sd(predictedValues)
-
-	# residuals
-	residuals <- residuals(lm.fit)
-	minResiduals <- min(residuals)
-	maxResiduals <- max(residuals)
-	meanResiduals <- mean(residuals)
-	sdResiduals <- sd(residuals)
-
-	# N
-	N <- length(predictedValues)
-
-	# standardized predicted values
-	stdPredictedValues <- (predictedValues - meanPredictedValues) / sdPredictedValues
-	minStdPredictedValues <- min(stdPredictedValues)
-	maxStdPredictedValues <- max(stdPredictedValues)
-	meanStdPredictedValues <- mean(stdPredictedValues)
-	sdStdPredictedValues <- sd(stdPredictedValues)
-
-	# standardized residuals
-	stdResiduals <- rstandard(lm.fit)
-	minStdResiduals <- min(stdResiduals)
-	maxStdResiduals <- max(stdResiduals)
-	meanStdResiduals <- mean(stdResiduals)
-	sdStdResiduals <- sd(stdResiduals)
-
-	# residuals statistics
-	return(list("Predicted Value" = list(
-					Minimum=minPredictedValues,
-					Maximum=maxPredictedValues,
-					Mean=meanPredictedValues,
-					SD=sdPredictedValues,
-					N=N),
-				"Residual" = list(
-					Minimum=minResiduals,
-					Maximum=maxResiduals,
-					Mean=meanResiduals,
-					SD=sdResiduals,
-					N=N),
-				"Std. Predicted Value" = list(
-					Minimum=minStdPredictedValues,
-					Maximum=maxStdPredictedValues,
-					Mean=meanStdPredictedValues,
-					SD=sdStdPredictedValues,
-					N=N),
-				"Std. Residual" = list(
-					Minimum=minStdResiduals,
-					Maximum=maxStdResiduals,
-					Mean=meanStdResiduals,
-					SD=sdStdResiduals,
-					N=N)
-				)
-			)
-}
-
-################################
-##    stepwise procedures     ##
-################################
-
-.includeVariable <- function(dependent.variable, candidate.variables, data, options, weights, variables.in.model=NULL) {
-
-  fValues <- numeric(length(candidate.variables))
-  pValues <- numeric(length(candidate.variables))
-  fits <- list()
-
-  for (i in seq_along(candidate.variables)) {
-
-    if (options$includeConstant) {
-
-      formula <- as.formula(paste(dependent.variable, "~", paste(c(variables.in.model, candidate.variables[i]), collapse = "+")))
-      fits[[candidate.variables[i]]] <- try(lm(formula, data=data, weights = weights, x=TRUE), silent=TRUE)
-      fValues[i] <- summary(fits[[i]])$coefficients[ ,"t value"][length(variables.in.model) + 2]^2
-      pValues[i] <- summary(fits[[i]])$coefficients[ ,"Pr(>|t|)"][length(variables.in.model) + 2]
-    } else {
-
-      formula <- as.formula(paste(dependent.variable, "~", paste(c(variables.in.model, candidate.variables[i]), collapse = "+"), "-1"))
-      fits[[i]] <- try(lm(formula, data=data, weights = weights, x=TRUE), silent=TRUE)
-      fValues[i] <- summary(fits[[i]])$coefficients[ ,"t value"][length(variables.in.model) + 1]^2
-      pValues[i] <- summary(fits[[i]])$coefficients[ ,"Pr(>|t|)"][length(variables.in.model) + 1]
-    }
+RegressionLinear <- function(jaspResults, dataset = NULL, options) {
+  ready <- options$dependent != "" && (length(unlist(options$modelTerms)) > 0 || options$includeConstant)
+
+  if (ready) {
+    dataset <- .linregReadDataset(dataset, options)
+    .linregCheckErrors(dataset, options)
   }
 
-  if (options$steppingMethodCriteriaType == "useFValue") {
+  modelContainer  <- .linregGetModelContainer(jaspResults, position = 1)
+  model           <- .linregCalcModel(modelContainer, dataset, options, ready)
 
-    maximumFvalue <- max(fValues)
-    
-    if (! is.na(maximumFvalue) && maximumFvalue > options$steppingMethodCriteriaFEntry) {
-      
-      maximumFvalueVariable <- candidate.variables[which.max(fValues)]
-      variables.in.model <- c(variables.in.model, maximumFvalueVariable)
-      candidate.variables <- candidate.variables[candidate.variables != maximumFvalueVariable]
-    }
+  # these output elements show statistics of all the lm fits
+  if (is.null(modelContainer[["summaryTable"]]))
+    .linregCreateSummaryTable(modelContainer, model, options, position = 1)
 
-  } else if (options$steppingMethodCriteriaType == "usePValue") {
+  if (options$modelFit && is.null(modelContainer[["anovaTable"]]))
+    .linregCreateAnovaTable(modelContainer, model, options, position = 2)
 
-    minimumPvalue <- min(pValues)
-    
-    if (! is.na(minimumPvalue) && minimumPvalue < options$steppingMethodCriteriaPEntry) {
-      
-      minimumPvalueVariable <- candidate.variables[which.min(pValues)]
-      variables.in.model <- c(variables.in.model, minimumPvalueVariable)
-      candidate.variables <- candidate.variables[candidate.variables != minimumPvalueVariable]
+  if (options$regressionCoefficientsEstimates && is.null(modelContainer[["coeffTable"]]))
+    .linregCreateCoefficientsTable(modelContainer, model, dataset, options, position = 3)
+
+  if (options$regressionCoefficientsBootstrapping && is.null(modelContainer[["bootstrapCoeffTable"]]))
+    .linregCreateBootstrapCoefficientsTable(modelContainer, model, dataset, options, position = 4)
+
+  if (options$partAndPartialCorrelations && is.null(modelContainer[["partialCorTable"]]))
+    .linregCreatePartialCorrelationsTable(modelContainer, model, dataset, options, position = 6)
+
+  if (options$regressionCoefficientsCovarianceMatrix && is.null(modelContainer[["coeffCovMatrixTable"]]))
+    .linregCreateCoefficientsCovarianceMatrixTable(modelContainer, model, options, position = 7)
+
+  if (options$collinearityDiagnostics && is.null(modelContainer[["collinearityTable"]]))
+    .linregCreateCollinearityDiagnosticsTable(modelContainer, model, options, position = 8)
+
+  # these output elements show statistics of the "final model" (lm fit with all predictors in enter method and last lm fit in stepping methods)
+  finalModel <- model[[length(model)]]
+
+  if (options$residualsCasewiseDiagnostics && is.null(modelContainer[["casewiseTable"]]))
+    .linregCreateCasewiseDiagnosticsTable(modelContainer, finalModel, options, position = 9)
+
+  if (options$residualsStatistics && is.null(modelContainer[["residualsTable"]]))
+    .linregCreateResidualsTable(modelContainer, finalModel, options, position = 10)
+
+  if (options$plotResidualsDependent && is.null(modelContainer[["residualsVsDepPlot"]]))
+     .linregCreateResidualsVsDependentPlot(modelContainer, finalModel, options, position = 11)
+
+  if (options$plotResidualsCovariates && is.null(modelContainer[["residualsVsCovContainer"]]))
+    .linregCreateResidualsVsCovariatesPlots(modelContainer, finalModel, dataset, options, position = 12)
+
+  if (options$plotResidualsPredicted && is.null(modelContainer[["residualsVsPredPlot"]]))
+    .linregCreateResidualsVsPredictedPlot(modelContainer, finalModel, options, position = 13)
+
+  if (options$plotResidualsHistogram && is.null(modelContainer[["residualsVsHistPlot"]]))
+    .linregCreateResidualsVsHistogramPlot(modelContainer, finalModel, options, position = 14)
+
+  if (options$plotResidualsQQ && is.null(modelContainer[["residualsQQPlot"]]))
+    .linregCreateResidualsQQPlot(modelContainer, finalModel, options, position = 15)
+
+  # these output elements do not use statistics of a pre-calculated lm fit
+  if (options$plotsPartialRegression && is.null(modelContainer[["partialPlotContainer"]]))
+    .linregCreatePartialPlots(modelContainer, dataset, options, position = 16)
+
+  if (options$descriptives && is.null(modelContainer[["descriptivesTable"]]))
+    .linregCreateDescriptivesTable(modelContainer, dataset, options, position = 5)
+}
+
+.linregReadDataset <- function(dataset, options) {
+  if (!is.null(dataset))
+    return(dataset)
+
+  numericVariables  <- c(options$dependent, unlist(options$covariates), options$wlsWeights)
+  numericVariables  <- numericVariables[numericVariables != ""]
+  factors           <- unlist(options$factors)
+  dataset           <- .readDataSetToEnd(columns.as.factor = factors, columns.as.numeric = numericVariables, exclude.na.listwise = c(factors, numericVariables))
+
+  return(dataset)
+}
+
+.linregCheckErrors <- function(dataset, options) {
+  stepwiseProcedureChecks <- NULL
+  if (options$method %in% c("backward", "forward", "stepwise")) {
+    stepwiseProcedureChecks <- list(
+
+      checkIfContainsInteractions <- function() {
+        hasInteractions <- FALSE
+
+        for (i in seq_along(options$modelTerms))
+          if (length(options$modelTerms[[i]]$components) > 1)
+            hasInteractions <- TRUE
+
+        if (hasInteractions)
+          return("Stepwise procedures are not supported for models containing interaction terms")
+      },
+
+      checkIfPEntryIsValid <- function() {
+        if (options$steppingMethodCriteriaType == "usePValue" && options$steppingMethodCriteriaPEntry > options$steppingMethodCriteriaPRemoval)
+          return("Error in Stepping Method Criteria: Entry p-value needs to be smaller than removal p-value")
+      },
+
+      checkIfFEntryIsValid <- function() {
+        if (options$steppingMethodCriteriaType == "useFValue" && options$steppingMethodCriteriaFEntry < options$steppingMethodCriteriaFRemoval)
+          return("Error in Stepping Method Criteria: Entry F-value needs to be larger than removal F-value")
+      }
+
+    )
+  }
+
+  .hasErrors(dataset, type = c("infinity", "variance", "observations", "modelInteractions", "varCovData"), allowEmptyDataset = FALSE,
+             custom = stepwiseProcedureChecks, all.target = c(options$dependent, unlist(options$covariates)),
+             observations.amount = "< 2", modelInteractions.modelTerms = options$modelTerms, varCovData.corFun = stats::cov,
+             exitAnalysisIfErrors = TRUE)
+
+  if (options$wlsWeights != "") {
+    .hasErrors(dataset, type = c("infinity", "limits", "observations"),
+               all.target = options$wlsWeights, limits.min = 1, observations.amount = "< 2",
+               exitAnalysisIfErrors = TRUE)
+
+    covwt <- function(...) return(stats::cov.wt(..., wt = dataset[[.v(options[["wlsWeights"]])]])$cov)
+    .hasErrors(dataset[, -which(colnames(dataset) %in% c(.v(options$wlsWeights)))],  type = "varCovData", varCovData.corFun = covwt,
+               exitAnalysisIfErrors = TRUE)
+  }
+}
+
+.linregGetModelContainer <- function(jaspResults, position) {
+  if (is.null(jaspResults[["modelContainer"]])) {
+    modelContainer <- createJaspContainer()
+    modelContainer$dependOn(c("dependent", "method", "covariates", "factors", "wlsWeights", "modelTerms", "steppingMethodCriteriaType",
+                              "steppingMethodCriteriaPEntry", "steppingMethodCriteriaPRemoval", "steppingMethodCriteriaFEntry", "steppingMethodCriteriaFRemoval",
+                              "includeConstant", "missingValues"))
+    modelContainer$position <- position
+    jaspResults[["modelContainer"]] <- modelContainer
+  }
+  return(jaspResults[["modelContainer"]])
+}
+
+.linregCreateSummaryTable <- function(modelContainer, model, options, position) {
+  summaryTable <- createJaspTable("Model Summary")
+  summaryTable$dependOn(c("residualsDurbinWatson", "rSquaredChange"))
+  summaryTable$position <- position
+  summaryTable$showSpecifiedColumnsOnly <- TRUE
+
+  summaryTable$addColumnInfo(name = "model",  title = "Model",            type = "string")
+  summaryTable$addColumnInfo(name = "R",      title = "R",                type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "R2",     title = "R\u00B2",          type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "adjR2",  title = "Adjusted R\u00B2", type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "RMSE",   title = "RMSE",             type = "number")
+
+  if (options$rSquaredChange) {
+    summaryTable$addColumnInfo(name = "R2c",  title = "R\u00B2 Change", type = "number", format = "dp:3")
+    summaryTable$addColumnInfo(name = "Fc",   title = "F Change",       type = "number")
+    summaryTable$addColumnInfo(name = "df1",  title = "df1",            type = "integer")
+    summaryTable$addColumnInfo(name = "df2",  title = "df2",            type = "integer")
+    summaryTable$addColumnInfo(name = "p",    title = "p",              type = "pvalue")
+  }
+
+  if (options$residualsDurbinWatson) {
+    summaryTable$addColumnInfo(name = "DW_ac",  title = "Autocorrelation",  type = "number", overtitle = "Durbin-Watson")
+    summaryTable$addColumnInfo(name = "DW",     title = "Statistic",        type = "number", overtitle = "Durbin-Watson")
+
+    if (options$wlsWeights == "")
+      summaryTable$addColumnInfo(name = "DW_p", title = "p", type = "pvalue", overtitle = "Durbin-Watson")
+    else
+      summaryTable$addFootnote(message = "p-value for Durbin-Watson test is unavailable for weighted regression.")
+  }
+
+  .linregAddPredictorsInNullFootnote(summaryTable, options$modelTerms)
+
+  if (!is.null(model)) {
+    if (length(model) == 1 && length(model[[1]]$predictors) == 0 && !options$includeConstant)
+      summaryTable$addFootnote("No covariate could be entered in the model")
+    else
+      .linregFillSummaryTable(summaryTable, model)
+  }
+
+  modelContainer[["summaryTable"]] <- summaryTable
+}
+
+.linregFillSummaryTable <- function(summaryTable, model) {
+  for (i in seq_along(model)) {
+    lmSummary     <- model[[i]][["summary"]]
+    rSquareChange <- model[[i]][["rSquareChange"]]
+    durbinWatson  <- model[[i]][["durbinWatson"]]
+
+    summaryTable$addRows(list(
+      model = model[[i]]$title,
+      R     = as.numeric(sqrt(lmSummary$r.squared)),
+      R2    = as.numeric(lmSummary$r.squared),
+      adjR2 = as.numeric(lmSummary$adj.r.squared),
+      RMSE  = as.numeric(lmSummary$sigma),
+      R2c   = rSquareChange$R2c,
+      Fc    = rSquareChange$Fc,
+      df1   = rSquareChange$df1,
+      df2   = rSquareChange$df2,
+      p     = rSquareChange$p,
+      DW_ac = durbinWatson$r,
+      DW    = durbinWatson$dw,
+      DW_p  = durbinWatson$p
+    ))
+  }
+}
+
+.linregCreateAnovaTable <- function(modelContainer, model, options, position) {
+  anovaTable <- createJaspTable("ANOVA")
+  anovaTable$dependOn(c("modelFit", "VovkSellkeMPR"))
+  anovaTable$position <- position
+  anovaTable$showSpecifiedColumnsOnly <- TRUE
+
+  anovaTable$addColumnInfo(name = "model", title = "Model",          type = "string", combine = TRUE)
+  anovaTable$addColumnInfo(name = "cases", title = "",               type = "string")
+  anovaTable$addColumnInfo(name = "SS",    title = "Sum of Squares", type = "number")
+  anovaTable$addColumnInfo(name = "df",    title = "df",             type = "integer")
+  anovaTable$addColumnInfo(name = "MS",    title = "Mean Square",    type = "number")
+  anovaTable$addColumnInfo(name = "F",     title = "F",              type = "number")
+  anovaTable$addColumnInfo(name = "p",     title = "p",              type = "pvalue")
+
+  .linregAddPredictorsInNullFootnote(anovaTable, options$modelTerms)
+  .linregAddVovkSellke(anovaTable, options$VovkSellkeMPR)
+
+  if (!is.null(model)) {
+    .linregAddInterceptNotShownFootnote(anovaTable, model, options)
+    .linregFillAnovaTable(anovaTable, model, options)
+  }
+
+  modelContainer[["anovaTable"]] <- anovaTable
+}
+
+.linregFillAnovaTable <- function(anovaTable, model, options) {
+  indicesOfModelsWithPredictors <- .linregGetIndicesOfModelsWithPredictors(model, options)
+  for (i in indicesOfModelsWithPredictors) {
+    isNewGroup  <- i > 1
+    anovaRes    <- .linregGetAnova(model[[i]]$fit, model[[i]]$predictors)
+
+    for (rowType in c("Regression", "Residual", "Total")) {
+      anovaTable$addRows(c(anovaRes[[rowType]], list(.isNewGroup = isNewGroup, model = model[[i]]$title, cases = rowType)))
+      isNewGroup <- FALSE
     }
   }
+}
+
+.linregCreateCoefficientsTable <- function(modelContainer, model, dataset, options, position) {
+  coeffTable <- createJaspTable("Coefficients")
+  coeffTable$dependOn(c("regressionCoefficientsEstimates", "regressionCoefficientsConfidenceIntervals", "regressionCoefficientsConfidenceIntervalsInterval",
+                        "collinearityDiagnostics", "VovkSellkeMPR"))
+  coeffTable$position <- position
+  coeffTable$showSpecifiedColumnsOnly <- TRUE
+
+  coeffTable$addColumnInfo(name = "model",        title = "Model",          type = "string", combine = TRUE)
+  coeffTable$addColumnInfo(name = "name",         title = "",               type = "string")
+  coeffTable$addColumnInfo(name = "unstandCoeff", title = "Unstandardized", type = "number")
+  coeffTable$addColumnInfo(name = "SE",           title = "Standard Error", type = "number")
+  coeffTable$addColumnInfo(name = "standCoeff",   title = "Standardized",   type = "number")
+  coeffTable$addColumnInfo(name = "t",            title = "t",              type = "number")
+  coeffTable$addColumnInfo(name = "p",            title = "p",              type = "pvalue")
+
+  .linregAddVovkSellke(coeffTable, options$VovkSellkeMPR)
+
+  if (options$regressionCoefficientsConfidenceIntervals) {
+    overtitle <- paste0(100 * options$regressionCoefficientsConfidenceIntervalsInterval, "% CI")
+    coeffTable$addColumnInfo(name = "lower", title = "Lower", type = "number", overtitle = overtitle)
+    coeffTable$addColumnInfo(name = "upper", title = "Upper", type = "number", overtitle = overtitle)
+  }
+
+  if (options$collinearityDiagnostics) {
+    overtitle <- "Collinearity Statistics"
+    coeffTable$addColumnInfo(name = "tolerance",  title = "Tolerance",  type = "number", format = "dp:3", overtitle = overtitle)
+    coeffTable$addColumnInfo(name = "VIF",        title = "VIF",        type = "number", overtitle = overtitle)
+  }
+
+  if (!is.null(model))
+    .linregFillCoefficientsTable(coeffTable, model, dataset, options)
+
+  modelContainer[["coeffTable"]] <- coeffTable
+}
+
+.linregFillCoefficientsTable <- function(coeffTable, model, dataset, options) {
+  for (i in seq_along(model)) {
+    isNewGroup <- i > 1
+
+    coefficients <- .linregGetCoefficients(model[[i]]$fit, model[[i]]$predictors, dataset, options)
+
+    for (j in seq_along(coefficients)) {
+      coeffTable$addRows(c(coefficients[[j]], list(.isNewGroup = isNewGroup, model = model[[i]]$title)))
+      isNewGroup <- FALSE
+    }
+  }
+}
+
+.linregCreateBootstrapCoefficientsTable <- function(modelContainer, model, dataset, options, position) {
+  bootstrapCoeffTable <- createJaspTable("Bootstrap Coefficients")
+  bootstrapCoeffTable$dependOn(c("regressionCoefficientsEstimates", "regressionCoefficientsConfidenceIntervals", "regressionCoefficientsConfidenceIntervalsInterval",
+                                 "regressionCoefficientsBootstrapping", "regressionCoefficientsBootstrappingReplicates"))
+  bootstrapCoeffTable$position <- position
+  bootstrapCoeffTable$showSpecifiedColumnsOnly <- TRUE
+
+  bootstrapCoeffTable$addColumnInfo(name = "model",        title = "Model",          type = "string", combine = TRUE)
+  bootstrapCoeffTable$addColumnInfo(name = "name",         title = "",               type = "string")
+  bootstrapCoeffTable$addColumnInfo(name = "unstandCoeff", title = "Unstandardized", type = "number")
+  bootstrapCoeffTable$addColumnInfo(name = "bias",         title = "Bias",           type = "number")
+  bootstrapCoeffTable$addColumnInfo(name = "SE",           title = "Standard Error", type = "number")
+
+  if (options$regressionCoefficientsConfidenceIntervals) {
+    overtitle <- paste0(100 * options$regressionCoefficientsConfidenceIntervalsInterval, "% bca\u002A CI")
+    bootstrapCoeffTable$addColumnInfo(name = "lower", title = "Lower", type = "number", overtitle = overtitle)
+    bootstrapCoeffTable$addColumnInfo(name = "upper", title = "Upper", type = "number", overtitle = overtitle)
+  }
+
+  bootstrapCoeffTable$addFootnote(paste0("Bootstrapping based on ", options[['regressionCoefficientsBootstrappingReplicates']], " replicates."))
+  bootstrapCoeffTable$addFootnote("Coefficient estimate is based on the median of the bootstrap distribution.")
+  bootstrapCoeffTable$addFootnote("Bias corrected accelerated", symbol = "\u002A")
+
+  modelContainer[["bootstrapCoeffTable"]] <- bootstrapCoeffTable
+
+  if (!is.null(model))
+    .linregFillBootstrapCoefficientsTable(bootstrapCoeffTable, modelContainer, model, dataset, options)
+}
+
+.linregFillBootstrapCoefficientsTable <- function(bootstrapCoeffTable, modelContainer, model, dataset, options) {
+  metaCols <- .linregGetTitlesAndIsNewGroups(model, options$includeConstant)
+
+  if (is.null(modelContainer[["bootstrapCoefficients"]])) {
+    startProgressbar(options$regressionCoefficientsBootstrappingReplicates * length(model))
+    bootstrapCoeffTable$setData(metaCols)
+
+    coefficients <- NULL
+    for (i in seq_along(model)) {
+      coefficients <- rbind(coefficients, .linregGetBootstrapCoefficients(model[[i]]$fit, model[[i]]$predictors, dataset, options))
+      bootstrapCoeffTable$setData(.linregCombineMetaWithData(metaCols, coefficients))
+    }
+
+    modelContainer[["bootstrapCoefficients"]] <- createJaspState(coefficients)
+    modelContainer[["bootstrapCoefficients"]]$dependOn(c("regressionCoefficientsBootstrappingReplicates", "regressionCoefficientsConfidenceIntervalsInterval"))
+  } else {
+    bootstrapCoeffTable$setData(.linregCombineMetaWithData(metaCols, modelContainer[["bootstrapCoefficients"]]$object))
+  }
+}
+
+.linregGetTitlesAndIsNewGroups <- function(model, includeConstant) {
+  isNewGroup  <- logical(0)
+  titles      <- character(0)
+  for (i in seq_along(model)) {
+    if (is.null(model[[i]]$fit))
+      next
+
+    numPredictors <- length(model[[i]]$predictors)
+    if (includeConstant)
+      numPredictors <- numPredictors + 1
+
+    isNewGroupCurrent <- i > 1
+    if (numPredictors > 1)
+      isNewGroupCurrent <- c(isNewGroupCurrent, logical(numPredictors - 1))
+
+    isNewGroup  <- c(isNewGroup, isNewGroupCurrent)
+    titles      <- c(titles, rep(model[[i]]$title, numPredictors))
+  }
+
+  return(data.frame(.isNewGroup = isNewGroup, model = titles))
+}
+
+.linregCombineMetaWithData <- function(meta, data) { # this can go once we can add cells to a jaspTable
+  if (!is.data.frame(meta) || !is.data.frame(data))
+    stop("expecting both arguments to be data.frames")
+
+  filler            <- matrix(NA, ncol(data), nrow = nrow(meta)-nrow(data))
+  colnames(filler)  <- names(data)
+  data              <- rbind(data, filler)
+
+  return(cbind(meta, data))
+}
+
+.linregCreatePartialCorrelationsTable <- function(modelContainer, model, dataset, options, position) {
+  partPartialTable <- createJaspTable("Part And Partial Correlations")
+  partPartialTable$dependOn("partAndPartialCorrelations")
+  partPartialTable$position <- position
+
+  partPartialTable$addColumnInfo(name = "model",   title = "Model",   type = "string", combine = TRUE)
+  partPartialTable$addColumnInfo(name = "name",    title = "",        type = "string")
+  partPartialTable$addColumnInfo(name = "partial", title = "Partial", type = "number", format = "dp:3")
+  partPartialTable$addColumnInfo(name = "part",    title = "Part",    type = "number", format = "dp:3")
+
+  if (!is.null(model)) {
+    .linregAddInterceptNotShownFootnote(partPartialTable, model, options)
+    .linregFillPartialCorrelationsTable(partPartialTable, model, dataset, options)
+  }
+
+  modelContainer[["partialCorTable"]] <- partPartialTable
+}
+
+.linregFillPartialCorrelationsTable <- function(partPartialTable, model, dataset, options) {
+  indicesOfModelsWithPredictors <- .linregGetIndicesOfModelsWithPredictors(model, options)
+  for (i in indicesOfModelsWithPredictors) {
+    isNewGroup <- i > 1
+
+    cors <- .linregGetPartAndPartialCorrelation(model[[i]]$predictors, dataset, options)
+
+    for (j in seq_along(cors)) {
+      partPartialTable$addRows(c(cors[[j]], list(.isNewGroup = isNewGroup, model = model[[i]]$title)))
+      isNewGroup <- FALSE
+    }
+  }
+}
+
+.linregCreateCoefficientsCovarianceMatrixTable <- function(modelContainer, model, options, position) {
+  covMatTable <- createJaspTable("Coefficients Covariance Matrix")
+  covMatTable$dependOn("regressionCoefficientsCovarianceMatrix")
+  covMatTable$position <- position
+
+  covMatTable$addColumnInfo(name = "model", title = "Model", type = "string", combine = TRUE)
+  covMatTable$addColumnInfo(name = "name",  title = "",      type = "string")
+
+  if (!is.null(model)) {
+    .linregAddPredictorsAsColumns(covMatTable, model, options$modelTerms, includeConstant = FALSE)
+    .linregAddInterceptNotShownFootnote(covMatTable, model, options)
+    .linregFillCoefficientsCovarianceMatrixTable(covMatTable, model, options)
+  }
+
+  modelContainer[["coeffCovMatrixTable"]] <- covMatTable
+}
+
+.linregFillCoefficientsCovarianceMatrixTable <- function(covMatTable, model, options) {
+  columns <- .linregGetPredictorColumnNames(model, options$modelTerms)
+  indicesOfModelsWithPredictors <- .linregGetIndicesOfModelsWithPredictors(model, options)
+  for (i in indicesOfModelsWithPredictors) {
+    isNewGroup <- i > 1
+
+    covData <- .linregGetCovarianceMatrix(model[[i]]$fit, model[[i]]$predictors, columns, options$includeConstant)
+    if (nrow(covData) > 0) {
+      covData <- cbind(covData, .isNewGroup = c(isNewGroup, rep(F, nrow(covData) - 1)), model = model[[i]]$title)
+      covMatTable$addRows(covData)
+    }
+  }
+}
+
+.linregCreateCollinearityDiagnosticsTable <- function(modelContainer, model, options, position) {
+  collDiagTable <- createJaspTable("Collinearity Diagnostics")
+  collDiagTable$dependOn("collinearityDiagnostics")
+  collDiagTable$position <- position
+
+  collDiagTable$addColumnInfo(name = "model",      title = "Model",           type = "string", combine = TRUE)
+  collDiagTable$addColumnInfo(name = "dimension",  title = "Dimension",       type = "integer")
+  collDiagTable$addColumnInfo(name = "eigenvalue", title = "Eigenvalue",      type = "number")
+  collDiagTable$addColumnInfo(name = "condIndex",  title = "Condition Index", type = "number")
+
+  if (!is.null(model)) {
+    .linregAddPredictorsAsColumns(collDiagTable, model, options$modelTerms, options$includeConstant, overtitle = "Variance Proportions", format = "dp:3")
+    .linregAddInterceptNotShownFootnote(collDiagTable, model, options)
+    .linregFillCollinearityDiagnosticsTable(collDiagTable, model, options)
+  }
+
+  modelContainer[["collinearityTable"]] <- collDiagTable
+}
+
+.linregFillCollinearityDiagnosticsTable <- function(collDiagTable, model, options) {
+  columns <- .linregGetPredictorColumnNames(model, options$modelTerms)
+  indicesOfModelsWithPredictors <- .linregGetIndicesOfModelsWithPredictors(model, options)
+  for (i in indicesOfModelsWithPredictors) {
+    isNewGroup <- i > 1
+
+    collDiagData <- .linregGetCollinearityDiagnostics(model[[i]]$fit, columns, options$includeConstant)
+    collDiagData <- cbind(collDiagData, .isNewGroup = c(isNewGroup, rep(F, nrow(collDiagData) - 1)), model = model[[i]]$title)
+
+    collDiagTable$addRows(collDiagData)
+  }
+}
+
+.linregCreateCasewiseDiagnosticsTable <- function(modelContainer, finalModel, options, position) {
+  caseDiagTable <- createJaspTable("Casewise Diagnostics")
+  caseDiagTable$dependOn(c("residualsCasewiseDiagnostics", "residualsCasewiseDiagnosticsType",
+                           "residualsCasewiseDiagnosticsOutliersOutside", "residualsCasewiseDiagnosticsCooksDistance"))
+  caseDiagTable$position <- position
+
+  caseDiagTable$addColumnInfo(name = "caseNumber",  title = "Case Number",     type = "integer")
+  caseDiagTable$addColumnInfo(name = "stdResidual", title = "Std. Residual",   type = "number", format = "dp:3")
+  caseDiagTable$addColumnInfo(name = "dependent",   title = options$dependent, type = "number")
+  caseDiagTable$addColumnInfo(name = "predicted",   title = "Predicted Value", type = "number")
+  caseDiagTable$addColumnInfo(name = "residual",    title = "Residual",        type = "number")
+  caseDiagTable$addColumnInfo(name = "cooksD",      title = "Cook's Distance", type = "number", format = "dp:3")
+
+  if (!is.null(finalModel))
+    caseDiagTable$setData(.linregGetCasewiseDiagnostics(finalModel$fit, options)) #TODO: maybe add footnote to casewise diagnostics if there are no cases to show?
+
+  modelContainer[["casewiseTable"]] <- caseDiagTable
+}
+
+.linregCreateResidualsTable <- function(modelContainer, finalModel, options, position) {
+  residualsTable <- createJaspTable("Residuals Statistics")
+  residualsTable$dependOn("residualsStatistics")
+  residualsTable$position <- position
+
+  residualsTable$addColumnInfo(name = "type", title = "",        type = "string")
+  residualsTable$addColumnInfo(name = "min",  title = "Minimum", type = "number")
+  residualsTable$addColumnInfo(name = "max",  title = "Maximum", type = "number")
+  residualsTable$addColumnInfo(name = "mean", title = "Mean",    type = "number")
+  residualsTable$addColumnInfo(name = "SD",   title = "SD",      type = "number")
+  residualsTable$addColumnInfo(name = "N",    title = "N",       type = "integer")
+
+  if (!is.null(finalModel))
+    residualsTable$addRows(.linregGetResidualsStatistics(finalModel$fit, finalModel$predictors))
+
+  modelContainer[["residualsTable"]] <- residualsTable
+}
+
+.linregCreateResidualsVsDependentPlot <- function(modelContainer, finalModel, options, position) {
+  residVsDepPlot <- createJaspPlot(title = "Residuals vs. Dependent", width = 530, height = 400)
+  residVsDepPlot$dependOn("plotResidualsDependent")
+  residVsDepPlot$position <- position
+
+  modelContainer[["residualsVsDepPlot"]] <- residVsDepPlot
+
+  if (!is.null(finalModel) && !is.null(finalModel$fit)) {
+    fit <- finalModel$fit
+    .linregInsertPlot(residVsDepPlot, .linregPlotResiduals, xVar = fit$model[ , 1], xlab = options$dependent, res = residuals(fit), ylab = "Residuals")
+  }
+}
+
+.linregCreateResidualsVsCovariatesPlots <- function(modelContainer, finalModel, dataset, options, position) {
+  residualsVsCovContainer <- createJaspContainer("Residuals vs. Covariates")
+  residualsVsCovContainer$dependOn("plotResidualsCovariates")
+  residualsVsCovContainer$position <- position
+  modelContainer[["residualsVsCovContainer"]] <- residualsVsCovContainer
+
+  if (!is.null(finalModel)) {
+    predictors <- finalModel$predictors
+    for (predictor in predictors)
+      .linregCreatePlotPlaceholder(residualsVsCovContainer, index = .unvf(predictor), title = paste("Residuals vs.", .unvf(predictor)))
+
+    for (predictor in predictors)
+      .linregFillResidualsVsCovariatesPlot(residualsVsCovContainer[[.unvf(predictor)]], predictor, finalModel$fit, dataset)
+  }
+}
+
+.linregFillResidualsVsCovariatesPlot <- function(residVsCovPlot, predictor, fit, dataset) {
+  if (.linregIsInteraction(predictor))
+    xVar <- .linregMakeCombinedVariableFromInteraction(predictor, dataset)
+  else
+    xVar <- dataset[[predictor]]
+
+  .linregInsertPlot(residVsCovPlot, .linregPlotResiduals, xVar = xVar, xlab = .unvf(predictor), res = residuals(fit), ylab = "Residuals")
+}
+
+.linregCreateResidualsVsPredictedPlot <- function(modelContainer, finalModel, options, position) {
+  residVsPredPlot <- createJaspPlot(title = "Residuals vs. Predicted", width = 530, height = 400)
+  residVsPredPlot$dependOn("plotResidualsPredicted")
+  residVsPredPlot$position <- position
+
+  modelContainer[["residualsVsPredPlot"]] <- residVsPredPlot
+
+  if (!is.null(finalModel) && !is.null(finalModel$fit)) {
+    fit <- finalModel$fit
+    .linregInsertPlot(residVsPredPlot, .linregPlotResiduals, xVar = predict(fit), xlab = "Predicted Values", res = residuals(fit), ylab = "Residuals")
+  }
+}
+
+.linregCreateResidualsVsHistogramPlot <- function(modelContainer, finalModel, options, position) {
+  title <- "Residuals Histogram"
+  if (options$plotResidualsHistogramStandardized)
+    title <- paste("Standardized", title)
+
+  residVsHistPlot <- createJaspPlot(title = title, width = 530, height = 400)
+  residVsHistPlot$dependOn(c("plotResidualsHistogram", "plotResidualsHistogramStandardized"))
+  residVsHistPlot$position <- position
+
+  modelContainer[["residualsVsHistPlot"]] <- residVsHistPlot
+
+  if (!is.null(finalModel))
+    .linregFillResidualsVsHistogramPlot(residVsHistPlot, finalModel$fit, options)
+}
+
+.linregFillResidualsVsHistogramPlot <- function(residVsHistPlot, fit, options) {
+  if (!is.null(fit)) {
+
+    residName <- "Residuals"
+    resid     <- residuals(fit)
+    if (options$plotResidualsHistogramStandardized) {
+      residName <- paste("Standardized", residName)
+      resid     <- resid / sd(resid)
+    }
+
+    .linregInsertPlot(residVsHistPlot, .linregPlotResidualsHistogram, res = resid, resName = residName)
+  }
+}
+
+.linregCreateResidualsQQPlot <- function(modelContainer, finalModel, options, position) {
+  residQQPlot <- createJaspPlot(title = "Q-Q Plot Standardized Residuals", width = 400, height = 400)
+  residQQPlot$dependOn("plotResidualsQQ")
+  residQQPlot$position <- position
+
+  modelContainer[["residualsQQPlot"]] <- residQQPlot
+
+  if (!is.null(finalModel) && !is.null(finalModel$fit)) {
+    fit <- finalModel$fit
+    .linregInsertPlot(residQQPlot, .linregPlotQQresiduals, res = residuals(fit) / sd(residuals(fit)))
+  }
+}
+
+.linregCreatePartialPlots <- function(modelContainer, dataset, options, position) {
+  predictors <- .linregGetPredictors(options$modelTerms, encoded = TRUE)
+
+  title <- "Partial Regression Plot"
+  if (length(predictors) > 1)
+    title <- paste0(title, "s")
+
+  partialPlotContainer <- createJaspContainer(title)
+  partialPlotContainer$dependOn("plotsPartialRegression")
+  partialPlotContainer$position <- position
+  modelContainer[["partialPlotContainer"]] <- partialPlotContainer
+
+  predictors <- .linregGetPredictors(options$modelTerms, encoded = TRUE)
+  if (any(.linregIsInteraction(predictors))) {
+    .linregCreatePlotPlaceholder(partialPlotContainer, index = "placeholder", title = "")
+    partialPlotContainer$setError("Partial plots are not supported for models containing interaction terms")
+    return()
+  }
+
+  if (options$dependent != "" && length(predictors) > 0) {
+    for (predictor in predictors)
+      .linregCreatePlotPlaceholder(partialPlotContainer, index = .unvf(predictor), title = paste(options$dependent, "vs.", .unvf(predictor)))
+
+    for (predictor in predictors) {
+      .linregFillPartialPlot(partialPlotContainer[[.unvf(predictor)]], predictor, predictors, dataset, options)
+    }
+  }
+}
+
+.linregFillPartialPlot <- function(partialPlot, predictor, predictors, dataset, options) {
+  plotData  <- .linregGetPartialPlotData(predictor, predictors, dataset, options)
+  xVar      <- plotData[["residualsPred"]]
+  resid     <- plotData[["residualsDep"]]
+
+  xlab      <- paste0("Residuals ", .unvf(predictor))
+  ylab      <- paste0("Residuals ", options$dependent)
+
+  .linregInsertPlot(partialPlot, .linregPlotResiduals, xVar = xVar, res = resid, xlab = xlab, ylab = ylab, regressionLine = TRUE, standardizedResiduals = FALSE)
+}
+
+.linregCreateDescriptivesTable <- function(modelContainer, dataset, options, position) {
+  descriptivesTable <- createJaspTable("Descriptives")
+  descriptivesTable$dependOn("descriptives")
+  descriptivesTable$position <- position
+
+  descriptivesTable$addColumnInfo(name = "var",  title = "",     type = "string")
+  descriptivesTable$addColumnInfo(name = "N",    title = "N",    type = "integer")
+  descriptivesTable$addColumnInfo(name = "mean", title = "Mean", type = "number")
+  descriptivesTable$addColumnInfo(name = "SD",   title = "SD",   type = "number")
+  descriptivesTable$addColumnInfo(name = "SE",   title = "SE",   type = "number")
+
+  variables <- c(options$dependent, unlist(options$covariates))
+  variables <- variables[variables != ""]
+  if (length(variables) > 0)
+    descriptivesTable$addRows(.linregGetDescriptives(variables, dataset))
+
+  modelContainer[["descriptivesTable"]] <- descriptivesTable
+}
+
+.linregCalcModel <- function(modelContainer, dataset, options, ready) {
+  if (!ready)
+    return()
+
+  if (!is.null(modelContainer[["model"]]))
+    return(modelContainer[["model"]]$object)
+
+  dependent         <- .v(options$dependent)
+  predictorsInNull  <- .linregGetPredictors(options$modelTerms, modelType = "null")
+  predictors        <- .linregGetPredictors(options$modelTerms, modelType = "alternative") # these include the null terms
+
+  if (options$wlsWeights != "")
+    weights <- dataset[[.v(options$wlsWeights)]]
+  else
+    weights <- rep(1, length(dataset[[dependent]]))
+
+  if (options$method %in% c("backward", "forward", "stepwise") && length(predictors) > 0)
+    model <- .linregGetModelSteppingMethod(dependent, predictors, predictorsInNull, dataset, options, weights)
+  else
+    model <- .linregGetModelEnterMethod(dependent, predictors, predictorsInNull, dataset, options, weights)
+
+  for (i in seq_along(model)) {
+    singleModel <- model[[i]]
+    model[[i]][["title"]]         <- .linregGetModelTitle(singleModel$predictors, predictorsInNull, options$method, i)
+    model[[i]][["summary"]]       <- .linregGetSummary(singleModel$fit)
+    model[[i]][["durbinWatson"]]  <- .linregGetDurBinWatsonTestResults(singleModel$fit, options$wlsWeights)
+    model[[i]][["rSquareChange"]] <- .linregGetrSquaredChange(singleModel$fit, singleModel$predictors, i, model[1:i], dataset[[dependent]])
+  }
+
+  modelContainer[["model"]] <- createJaspState(model)
+
+  return(model)
+}
+
+.linregGetModelSteppingMethod <- function(dependent, predictors, predictorsInNull, dataset, options, weights) {
+  if (options$method == "backward")
+    model <- .linregBackwardRegression(dependent, predictors, predictorsInNull, dataset, options, weights)
+  else if (options$method == "forward")
+    model <- .linregForwardRegression(dependent, predictors, predictorsInNull, dataset, options, weights)
+  else # stepwise
+    model <- .linregStepwiseRegression(dependent, predictors, predictorsInNull, dataset, options, weights)
+
+  return(model)
+}
+
+.linregGetModelEnterMethod <- function(dependent, predictors, predictorsInNull, dataset, options, weights) {
+  model <- list()
+
+  formulaNull <- NULL
+  if (length(predictorsInNull) > 0)
+    formulaNull <- .linregGetFormula(dependent, predictorsInNull, options$includeConstant)
+  else if (options$includeConstant)
+    formulaNull <- .linregGetFormula(dependent, NULL, TRUE)
+
+  formula <- NULL
+  if (length(predictors) > 0 && !all(predictors %in% predictorsInNull))
+    formula <- .linregGetFormula(dependent, predictors, options$includeConstant)
+
+  if (!is.null(formulaNull)) {
+    fitNull <- stats::lm(formulaNull, data = dataset, weights = weights, x = TRUE)
+    model[[1]] <- list(fit = fitNull, predictors = predictorsInNull, title = "H\u2080")
+  }
+
+  if (!is.null(formula)) {
+    fit <- stats::lm(formula, data = dataset, weights = weights, x = TRUE)
+    model[[length(model) + 1]] <- list(fit = fit, predictors = predictors, title = "H\u2081")
+  }
+
+  return(model)
+}
+
+.linregBackwardRegression <- function(dependent, predictors, predictorsInNull, data, options, weights) {
+  formula <- .linregGetFormula(dependent, predictors, options$includeConstant)
+  fit     <- stats::lm(formula, data = data, weights = weights, x = TRUE)
+  model   <- list(list(fit = fit, predictors = predictors))
+
+  candidatePredictors <- setdiff(predictors, predictorsInNull)
+  while (length(candidatePredictors) > 0) {
+    prevModel <- model[[length(model)]]
+    nextModel <- .linregTryToRemoveOnePredictor(prevModel, dependent, predictorsInNull, data, options, weights)
+
+    if (is.null(nextModel))
+      break
+
+    model[[length(model) + 1]]  <- nextModel
+    candidatePredictors         <- setdiff(nextModel$predictors, predictorsInNull)
+  }
+
+  return(model)
+}
+
+.linregForwardRegression <- function(dependent, predictors, predictorsInNull, data, options, weights) {
+  model <- list()
+  if (options$includeConstant || length(predictorsInNull) > 0) {
+    formula <- .linregGetFormula(dependent, predictorsInNull, options$includeConstant)
+    fit     <- stats::lm(formula, data = data, weights = weights, x = TRUE)
+    model   <- list(list(fit = fit, predictors = predictorsInNull))
+  }
+
+  candidatePredictors <- setdiff(predictors, predictorsInNull)
+  while (length(candidatePredictors) > 0) {
+    if (length(model) == 0)
+      prevModel <- NULL
+    else
+      prevModel <- model[[length(model)]]
+
+    nextModel <- .linregTryToAddOnePredictor(prevModel, dependent, candidatePredictors, predictorsInNull, data, options, weights)
+
+    if (is.null(nextModel))
+      break
+
+    model[[length(model) + 1]]  <- nextModel
+    candidatePredictors         <- setdiff(candidatePredictors, nextModel$predictors)
+  }
+
+  # we don't have an intercept or nuisance variables and no predictor could be added
+  if (length(model) == 0)
+    model <- list(list(fit = NULL, predictors = NULL))
+
+  return(model)
+}
+
+.linregStepwiseRegression <- function(dependent, predictors, predictorsInNull, data, options, weights) {
+  model <- list()
+  if (options$includeConstant || length(predictorsInNull) > 0) {
+    formula <- .linregGetFormula(dependent, predictorsInNull, options$includeConstant)
+    fit     <- stats::lm(formula, data = data, weights = weights, x = TRUE)
+    model   <- list(list(fit = fit, predictors = predictorsInNull))
+  }
+
+  predictorsNotInNull <- setdiff(predictors, predictorsInNull)
+  candidatePredictors <- predictorsNotInNull
+  while (length(candidatePredictors) > 0) {
+    if (length(model) == 0)
+      prevToAddModel <- NULL
+    else
+      prevToAddModel <- model[[length(model)]]
+
+    addStepModel <- .linregTryToAddOnePredictor(prevToAddModel, dependent, candidatePredictors, predictorsInNull, data, options, weights)
+
+    # stop if we cant even perform a single add step
+    if (is.null(addStepModel) && all(prevToAddModel[["predictors"]] %in% predictorsInNull))
+      break
+
+    if (!is.null(addStepModel))
+      model[[length(model) + 1]] <- addStepModel
+
+    prevToRemoveModel <- model[[length(model)]]
+    removeStepModel   <- .linregTryToRemoveOnePredictor(prevToRemoveModel, dependent, predictorsInNull, data, options, weights)
+
+    # stop if no predictor could be added or removed
+    if (is.null(addStepModel) && is.null(removeStepModel))
+      break
+
+    if (!is.null(removeStepModel))
+      model[[length(model) + 1]] <- removeStepModel
+
+    if (identical(prevToAddModel, removeStepModel))
+      break
+
+    candidatePredictors <- setdiff(predictorsNotInNull, model[[length(model)]]$predictors)
+  }
+
+  # we don't have an intercept or nuisance variables and no predictor could be added
+  if (length(model) == 0)
+    model <- list(list(fit = NULL, predictors = NULL))
+
+  return(model)
+}
+
+.linregTryToAddOnePredictor <- function(prevModel = NULL, dependent, candidatePredictors, predictorsInNull, data, options, weights) {
+  fValues <- numeric(length(candidatePredictors))
+  pValues <- numeric(length(candidatePredictors))
+
+  for (i in seq_along(candidatePredictors)) {
+    formula <- .linregGetFormula(dependent, c(prevModel$predictors, candidatePredictors[i]), options$includeConstant)
+    fit     <- lm(formula, data = data, weights = weights, x = TRUE)
+    fValue  <- summary(fit)$coefficients[, "t value"]
+    pValue  <- summary(fit)$coefficients[, "Pr(>|t|)"]
+
+    if (length(fValue) > 1)
+      fValue <- fValue[names(fValue) == candidatePredictors[i]]
+
+    if (length(pValue) > 1)
+      pValue <- pValue[names(pValue) == candidatePredictors[i]]
+
+    fValues[i] <- fValue^2
+    pValues[i] <- pValue
+  }
+
+  nextPredictors <- NULL
+  if (options$steppingMethodCriteriaType == "useFValue" && max(fValues) > options$steppingMethodCriteriaFEntry) {
+      highestFvaluePredictor <- candidatePredictors[which.max(fValues)]
+      nextPredictors <- c(prevModel$predictors, highestFvaluePredictor)
+  } else if (options$steppingMethodCriteriaType == "usePValue" && min(pValues) < options$steppingMethodCriteriaPEntry) {
+      minimumPvalueVariable <- candidatePredictors[which.min(pValues)]
+      nextPredictors <- c(prevModel$predictors, minimumPvalueVariable)
+  }
+
+  # no predictors could be added; the algorithm is done
+  if (is.null(nextPredictors))
+    return()
+
+  formula <- .linregGetFormula(dependent, nextPredictors, options$includeConstant)
+  fit     <- stats::lm(formula, data = data, weights = weights, x = TRUE)
+
+  return(list(fit = fit, predictors = nextPredictors))
+}
+
+.linregTryToRemoveOnePredictor <- function(prevModel, dependent, predictorsInNull, data, options, weights) {
+  tValues <- summary(prevModel[["fit"]])$coefficients[ , "t value"]
+  pValues <- summary(prevModel[["fit"]])$coefficients[ , "Pr(>|t|)"]
 
   if (options$includeConstant) {
+    tValues <- tValues[-1]
+    pValues <- pValues[-1]
+  }
 
-    if (is.null(variables.in.model)) {
+  tValues <- tValues[!(names(tValues) %in% predictorsInNull)]
+  pValues <- pValues[!(names(pValues) %in% predictorsInNull)]
+  fValues <- tValues^2
 
-      formula1 <- as.formula(paste(dependent.variable, "~", "1"))
+  nextPredictors <- prevModel[["predictors"]]
+  if (options$steppingMethodCriteriaType == "useFValue" && min(fValues) < options$steppingMethodCriteriaFRemoval) {
+      lowestFvaluePredictor <- names(which.min(fValues))
+      nextPredictors        <- prevModel$predictors[prevModel$predictors != lowestFvaluePredictor]
+  } else if (options$steppingMethodCriteriaType == "usePValue" && max(pValues) > options$steppingMethodCriteriaPRemoval) {
+      highestPvaluePredictor  <- names(which.max(pValues))
+      nextPredictors          <- prevModel$predictors[prevModel$predictors != highestPvaluePredictor]
+  }
 
-    } else {
+  # no more predictors could be removed, the algorithm is done
+  if (identical(nextPredictors, prevModel[["predictors"]]))
+    return()
 
-      formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+")))
+  if (length(nextPredictors) > 0)
+    formula <- .linregGetFormula(dependent, nextPredictors, options$includeConstant)
+  else if (length(predictorsInNull) > 0)
+    formula <- .linregGetFormula(dependent, predictorsInNull, options$includeConstant)
+  else if (options$includeConstant)
+    formula <- .linregGetFormula(dependent, NULL, TRUE)
+  else
+    return() # we can't compute a null model because it has no intercept/nuisance variables, the algorithm is done
+
+  fit <- stats::lm(formula, data = data, weights = weights, x = TRUE)
+
+  return(list(fit = fit, predictors = nextPredictors))
+}
+
+.linregGetSummary <- function(fit) {
+  summary <- list(r.squared = NaN, r.squared = NaN, adj.r.squared = NaN, sigma = NaN)
+
+  if (!is.null(fit))
+    summary <- summary(fit)
+
+  return(summary)
+}
+
+.linregGetDurBinWatsonTestResults <- function(fit, weights) {
+    durbinWatson <- list(r = NaN, dw = NaN, p = NaN)
+
+    if (!is.null(fit)) {
+      durbinWatson <- car::durbinWatsonTest(fit, alternative = c("two.sided"))
+
+      if (weights == "") # if regression is not weighted, calculate p-value with lmtest (car method is unstable)
+        durbinWatson[["p"]] <- lmtest::dwtest(fit, alternative = c("two.sided"))$p.value
     }
+
+  return(durbinWatson)
+}
+
+.linregGetrSquaredChange <- function(fit, predictors, currentIndex, processedModels, depVals) {
+  #R^2_change in Field (2013), Eqn. 8.15:
+  #F.change = (n-p_new - 1)R^2_change / p_change ( 1- R^2_new)
+  #df1 = p_change = abs( p_new - p_old )
+  #df2 = n-p_new - 1
+
+  numPrevModelPredictors <- prevRSquared <- 0
+  if (currentIndex > 1) {
+    numPrevModelPredictors  <- length(processedModels[[currentIndex - 1]]$predictors)
+    prevRSquared            <- summary(processedModels[[currentIndex - 1]]$fit)$r.squared
+  }
+
+  rSquaredChange <- fChange <- df1 <- df2 <- p <- NaN
+  if (!is.null(fit)) {
+    rSquared        <- summary(fit)$r.squared
+    rSquaredChange  <- rSquared - prevRSquared
+
+    df1 <- abs(length(predictors) - numPrevModelPredictors)
+    df2 <- length(depVals) - length(predictors) - 1
+
+    if (length(predictors) > 0) {
+      fChange <- (df2 * rSquaredChange) / (df1 * (1 - rSquared))
+      p       <- pf(q = fChange, df1 = df1, df2 = df2, lower.tail = FALSE)
+    } else {
+      fChange <- p <- NA
+    }
+  }
+
+  rSquareChange <- list(
+    R2c = rSquaredChange,
+    Fc  = fChange,
+    df1 = df1,
+    df2 = df2,
+    p   = p
+  )
+
+  return(rSquareChange)
+}
+
+.linregGetAnova <- function(fit, predictors) {
+  Fvalue <- mssResidual <- mssModel <- dfResidual <- dfModel <- dfTotal <- ssResidual <- ssModel <- ssTotal <- p <- vovksellke <- NaN
+
+  if (!is.null(fit)) {
+    if (length(predictors) > 0) {
+      summary     <- summary(fit)
+
+      Fvalue			<- summary$fstatistic[1]
+      mssResidual	<- summary$sigma^2
+      mssModel	  <- Fvalue * mssResidual
+      dfResidual	<- summary$fstatistic[3]
+      dfModel		  <- summary$fstatistic[2]
+      dfTotal		  <- dfResidual + dfModel
+      ssResidual  <- mssResidual * dfResidual
+      ssModel		  <- mssModel * dfModel
+      ssTotal		  <- ssResidual + ssModel
+
+      p           <- pf(q = Fvalue, df1 = dfModel, df2 = dfResidual, lower.tail = FALSE)
+      vovksellke  <- .VovkSellkeMPR(p)
+    } else {
+      Fvalue <- mssResidual <- mssModel <- dfResidual <- dfModel <- dfTotal <- ssResidual <- ssModel <- ssTotal <- p <- vovksellke <- "."
+    }
+  }
+
+  anova <- list(
+    Regression  = list(F = Fvalue,  SS = ssModel,     df = dfModel,     MS = mssModel,  p = p, vovksellke = vovksellke),
+    Residual    = list(             SS = ssResidual,  df = dfResidual,  MS = mssResidual),
+    Total       = list(             SS = ssTotal,     df = dfTotal)
+  )
+
+  return(anova)
+}
+
+.linregGetCoefficients <- function(fit, predictors, dataset, options) {
+  rows <- list()
+
+  if (!is.null(fit)) {
+    if (options$includeConstant)
+      predictors <- c("(Intercept)", predictors)
+
+    rows <- vector("list", length(predictors))
+
+    missingCoeffs <- NULL
+    if (any(is.na(fit$coefficients)))
+      missingCoeffs <- names(fit$coefficients)[which(is.na(fit$coefficients))]
+
+    estimates     <- summary(fit)$coefficients
+    confInterval  <- confint(fit, level = options$regressionCoefficientsConfidenceIntervalsInterval)
+
+    if (length(predictors) > 1 || predictors != "(Intercept)")
+      collinearityDiagnostics <- .linregGetVIFAndTolerance(setdiff(predictors, "(Intercept)"), dataset, includeConstant = TRUE)
+
+    for (i in seq_along(rows)) {
+      predictor <- predictors[[i]]
+
+      terms <- unlist(strsplit(predictor, split = ":"))
+      name  <- paste0(.unv(terms), collapse = "\u2009\u273b\u2009")
+
+      if (predictor %in% missingCoeffs) {
+        rows[[i]] <- list(unstandCoeff = NaN, SE = NaN, standCoeff = NaN, t = NaN, p = NaN, lower = NaN, upper = NaN, tolerance = NaN, VIF = NaN, vovksellke = NaN)
+        rows[[i]][["name"]] <- name
+        next
+      }
+
+      row <- list(
+        name         = name,
+        unstandCoeff = estimates[i, "Estimate"],
+        SE           = estimates[i, "Std. Error"],
+        t            = estimates[i, "t value"],
+        p            = estimates[i, "Pr(>|t|)"],
+        lower        = confInterval[i, 1],
+        upper        = confInterval[i, 2]
+      )
+
+      row <- c(row, list(vovksellke = .VovkSellkeMPR(row[["p"]])))
+
+      if (predictor != "(Intercept)") {
+        row <- c(row, list(
+          standCoeff = .linregGetStandardizedCoefficient(dataset, .v(options$dependent), predictor, row[["unstandCoeff"]]),
+          tolerance  = collinearityDiagnostics[["tolerance"]][[predictor]],
+          VIF        = collinearityDiagnostics[["VIF"]][[predictor]]))
+      }
+
+      rows[[i]] <- row
+    }
+
+  }
+
+  return(rows)
+}
+
+.linregGetBootstrapCoefficients <- function(fit, predictors, dataset, options) {
+  .bootstrapping <- function(data, indices, formula, wlsWeights) {
+    progressbarTick()
+
+    d <- data[indices, , drop = FALSE] # allows boot to select sample
+    if (wlsWeights == "") {
+      fit <- lm(formula = formula, data = d)
+    } else {
+      weights <- d[[wlsWeights]]
+      fit <- lm(formula = formula, data = d, weights = weights)
+    }
+
+    return(coef(fit))
+  }
+
+  data <- data.frame(unstandCoeff = numeric(0), bias = numeric(0), SE = numeric(0), lower = numeric(0), upper = numeric(0))
+
+  if (!is.null(fit)) {
+    if (options$includeConstant)
+      predictors <- c("(Intercept)", predictors)
+
+    missingCoeffs <- NULL
+    if (any(is.na(fit$coefficients)))
+      missingCoeffs <- names(fit$coefficients)[which(is.na(fit$coefficients))]
+
+
+    summary <- boot::boot(data = dataset, statistic = .bootstrapping,
+                          R = options$regressionCoefficientsBootstrappingReplicates,
+                          formula = formula(fit),
+                          wlsWeights = .v(options$wlsWeights))
+
+    coefficients  <- matrixStats::colMedians(summary$t, na.rm = TRUE)
+    bias          <- colMeans(summary$t, na.rm = TRUE) - summary$t0
+    stdErrors     <- matrixStats::colSds(summary$t, na.rm = TRUE)
+
+    for (i in seq_along(predictors)) {
+      predictor <- predictors[[i]]
+
+      if (predictor %in% missingCoeffs) {
+        data[i, ] <- rep(NaN, ncol(data))
+        next
+      }
+
+      ci        <- boot::boot.ci(summary, type = "bca", conf = options$regressionCoefficientsConfidenceIntervalsInterval, index = i)
+      data[i, ] <- c(coefficients[i], bias[i], stdErrors[i], ci$bca[4], ci$bca[5])
+    }
+
+    data[["name"]] <- .unvf(predictors)
+  }
+
+  return(data)
+}
+
+.linregGetVIFAndTolerance <- function(predictors, dataset, includeConstant) {
+  VIF       <- list()
+  tolerance <- list()
+  if (length(predictors) > 1) {
+    for (predictor in predictors) {
+
+      if (.linregIsInteraction(predictor)) {
+        newVar                <- .linregMakeCombinedVariableFromInteraction(predictor, dataset)
+        newVarName            <- gsub(":", ".", predictor, fixed = TRUE)
+        dataset[[newVarName]] <- newVar
+      } else {
+        newVarName            <- predictor
+      }
+
+      cleanedPredictors <- predictors[-which(predictors == predictor)]
+      formula           <- .linregGetFormula(newVarName, cleanedPredictors, includeConstant = TRUE)
+      fitVIF            <- stats::lm(formula, data = dataset)
+
+      VIF[[predictor]]        <- 1 / (1 - summary(fitVIF)$"r.squared")
+      tolerance[[predictor]]  <- 1 / VIF[[predictor]]
+    }
+  } else {
+    VIF[[predictors]]       <- 1
+    tolerance[[predictors]] <- 1
+  }
+
+  result <- list(VIF       = VIF,
+                 tolerance = tolerance)
+
+  return(result)
+}
+
+.linregGetStandardizedCoefficient <- function(dataset, dependent, predictor, unstandCoeff) {
+  sdDependent <- sd(dataset[[dependent]])
+  if (.linregIsInteraction(predictor))
+    sdIndependent <- sd(.linregMakeCombinedVariableFromInteraction(predictor, dataset))
+  else
+    sdIndependent <- sd(dataset[[predictor]])
+
+  return(unstandCoeff * sdIndependent / sdDependent)
+}
+
+.linregGetPartAndPartialCorrelation <- function(predictors, dataset, options) {
+  cors <- vector("list", length(predictors))
+  for (i in seq_along(predictors)) {
+
+    predictor <- predictors[i]
+    if (.linregIsInteraction(predictor)) {
+      newVar                <- .linregMakeCombinedVariableFromInteraction(predictor, dataset)
+      newVarName            <- gsub(":", ".", predictor, fixed = TRUE)
+      dataset[[newVarName]] <- newVar
+    } else {
+      newVarName            <- predictor
+    }
+
+    dataset <- na.omit(dataset)
+    predictorsToControlFor <- setdiff(predictors, predictor)
+    if (length(predictorsToControlFor) > 0) {
+      formula1 <- .linregGetFormula(newVarName, predictorsToControlFor, includeConstant = TRUE)
+      formula2 <- .linregGetFormula(.v(options$dependent), predictorsToControlFor, includeConstant = TRUE)
+
+      cleanedPredictor <- residuals(lm(formula1, data = dataset))
+      cleanedDependent <- residuals(lm(formula2, data = dataset))
+
+      partCor     <- cor(cleanedPredictor, dataset[[.v(options$dependent)]])
+      partialCor  <- cor(cleanedPredictor, cleanedDependent)
+    } else { # if there are no variables to control for, return regular correlation
+      partCor <- partialCor <- cor(dataset[[.v(options$dependent)]], dataset[[newVarName]])
+    }
+
+    cors[[i]] <- list(
+      name    = .unvf(predictor),
+      part    = partCor,
+      partial = partialCor)
+
+  }
+
+	return(cors)
+}
+
+.linregGetCovarianceMatrix <- function(fit, predictors, columns, includeConstant) {
+  data <- data.frame()
+
+  if (!is.null(fit)) {
+    covmatrix                       <- vcov(fit)
+    covmatrix[lower.tri(covmatrix)] <- NA
+
+    if (includeConstant)
+      covmatrix <- covmatrix[-1, -1, drop = FALSE] # remove intercept row and column
+
+    # Check whether variables in the regression model are redundant
+    for (i in seq_along(names(fit$coefficients))) {
+      if (is.na(fit$coefficients[i])) {
+
+        # If so, covmatrix does not include this variable -> Add row and column with NA as "values"
+        covmatrix <- cbind(covmatrix, NA)
+        covmatrix <- rbind(covmatrix, NA)
+
+        name                <- names(fit(coefficients)[i])
+        rownames(covmatrix) <- c(rownames(covmatrix), name)
+        colnames(covmatrix) <- c(colnames(covmatrix), name)
+        # Add footnote for this case
+        #.addFootnote(footnotes = footnotes, text = "One or more of the variables specified in the regression model are redundant. Therefore, they are dropped from the model covariance matrix.", symbol = "\u207A") # TODO add this footnote again if this ever occurs?
+
+        # Add footnote symbol to name of the redundant variable (if-statement needed as intercept is part of the coefficients but not of cov.matrix)
+        #  rownames.covmatrix[i] <- paste0(rownames.covmatrix[i], "\u207A")
+      }
+    }
+
+    if (nrow(covmatrix) > 0) {
+      data <- data.frame(.unvf(rownames(covmatrix)))
+      for (i in seq_along(colnames(covmatrix)))
+        data <- cbind(data, covmatrix[, i])
+
+      names(data) <- c("name", colnames(covmatrix))
+    }
+  }
+
+  return(data)
+}
+
+.linregGetCollinearityDiagnostics <- function(fit, columns, includeConstant) {
+  data <- data.frame()
+
+  if (!is.null(fit)) {
+    eigenvalues         <- .linregGetEigenValues(fit)
+    conditionIndices    <- .linregGetConditionIndices(fit)
+    varianceProportions <- .linregGetVarianceProportions(fit)
+
+    data <- data.frame(dimension = seq_along(names(fit$coefficients)), eigenvalue = eigenvalues, condIndex = conditionIndices)
+    data <- cbind(data, varianceProportions)
+  }
+
+  return(data)
+}
+
+.linregGetEigenValues <- function(fit) {
+  X           <- .linregGetScaledPredictorMatrix(fit)
+  eigenvalues <- svd(X)$d^2 # see Liao & Valliant (2012)
+
+  return(eigenvalues)
+}
+
+.linregGetConditionIndices <- function(fit) {
+  eigenvalues       <- .linregGetEigenValues(fit)
+  conditionIndices  <- sqrt(max(eigenvalues) / eigenvalues)
+
+  return(conditionIndices)
+}
+
+.linregGetVarianceProportions <- function(fit) {
+  X <- .linregGetScaledPredictorMatrix(fit)
+
+  ### ( see e.g., Liao & Valliant, 2012 )
+  svdX  <- svd(X) # singular value decomposition
+  M     <- svdX$v %*% solve(diag(svdX$d))
+  Q     <- M*M # Hadamard (elementwise) product
+  tQ    <- t(Q)
+
+  for (i in seq_len(ncol(tQ)))
+    tQ[ , i] <- tQ[ , i] / sum(tQ[ , i])
+
+  colnames(tQ) <- names(fit$coefficients)
+
+  return(tQ)
+}
+
+.linregGetScaledPredictorMatrix <- function(fit) {
+  X <- fit$x
+
+  for (i in seq_len(ncol(X)))
+    X[ , i] <- X[ , i] / sqrt(sum(X[ , i]^2)) # scale each column using Euclidean norm
+
+  return(X)
+}
+
+.linregGetCasewiseDiagnostics <- function(fit, options) {
+  diagnostics <- list()
+
+  if (!is.null(fit)) {
+    predictedValuesAll    <- predict(fit)
+    residualsAll          <- residuals(fit)
+    stdPredictedValuesAll <- (predictedValuesAll - mean(predictedValuesAll)) / sd(predictedValuesAll)
+    stdResidualsAll       <- rstandard(fit)
+    cooksDAll             <- cooks.distance(fit)
+
+    if (options$residualsCasewiseDiagnosticsType == "cooksDistance")
+      index <- which(abs(cooksDAll) > options$residualsCasewiseDiagnosticsCooksDistance)
+    else if (options$residualsCasewiseDiagnosticsType == "outliersOutside")
+      index <- which(abs(stdResidualsAll) > options$residualsCasewiseDiagnosticsOutliersOutside)
+    else # all
+      index <- seq_along(predictedValuesAll)
+
+    if (length(index) > 0) {
+      diagnostics[["caseNumber"]]   <- index
+      diagnostics[["stdResidual"]]  <- stdResidualsAll[index]
+      diagnostics[["dependent"]]    <- fit$model[index, 1]
+      diagnostics[["predicted"]]    <- predictedValuesAll[index]
+      diagnostics[["residual"]]     <- residualsAll[index]
+      diagnostics[["cooksD"]]       <- cooksDAll[index]
+    }
+  }
+
+  return(diagnostics)
+}
+
+.linregGetResidualsStatistics <- function(fit, predictors) {
+  residuals <- list()
+
+  if (!is.null(fit)) {
+    types <- c("Predicted Value", "Residual", "Std. Predicted Value", "Std. Residual")
+
+    predicted     <- predict(fit)
+    N             <- length(predicted)
+    valuesPerType <- list("Predicted Value"       = predicted,
+                          "Residual"              = residuals(fit),
+                          "Std. Predicted Value"  = (predicted - mean(predicted)) / sd(predicted),
+                          "Std. Residual"         = rstandard(fit))
+
+    if (length(predictors) == 0)
+      valuesPerType[["Std. Predicted Value"]] <- NA # cannot compute this for an intercept model
+
+    residuals <- vector("list", length(types))
+    for (i in seq_along(types)) {
+      residuals[[i]]  <- list()
+      type            <- types[i]
+
+      residuals[[i]][["type"]] <- type
+      residuals[[i]][["min"]]  <- min(valuesPerType[[type]])
+      residuals[[i]][["max"]]  <- max(valuesPerType[[type]])
+      residuals[[i]][["mean"]] <- mean(valuesPerType[[type]])
+      residuals[[i]][["SD"]]   <- sd(valuesPerType[[type]])
+      residuals[[i]][["N"]]    <- N
+    }
+  }
+
+  return(residuals)
+}
+
+.linregGetDescriptives <- function(variables, dataset) {
+  descriptives <- vector("list", length(variables))
+
+  for (i in seq_along(variables)) {
+    descriptives[[i]] <- list()
+
+    variable  <- variables[i]
+    data      <- na.omit(dataset[[.v(variable)]])
+
+    descriptives[[i]][["var"]]  <- variable
+    descriptives[[i]][["N"]]    <- length(data)
+    descriptives[[i]][["mean"]] <- mean(data)
+    descriptives[[i]][["SD"]]   <- sd(data)
+    descriptives[[i]][["SE"]]   <- sd(data) / sqrt(length(data))
+  }
+
+  return(descriptives)
+}
+
+.linregGetPartialPlotData = function(predictor, predictors, dataset, options) {
+  predictors <- setdiff(predictors, predictor)
+  if (length(predictors) == 0)
+    predictors <- NULL
+
+  weights <- dataset[[.v(options$wlsWeights)]]
+
+  # Compute residuals dependent
+  formulaDep    <- .linregGetFormula(.v(options$dependent), predictors = predictors, includeConstant = TRUE)
+  fitDep        <- stats::lm(formula = formulaDep, data = dataset, weights = weights)
+  residualsDep  <- residuals(fitDep)
+
+  # Compute residuals predictor as dependent
+  formulaPred   <- .linregGetFormula(predictor, predictors = predictors, includeConstant = TRUE)
+  fitPred       <- stats::lm(formula = formulaPred, data = dataset, weights = weights)
+  residualsPred <- residuals(fitPred)
+
+  return(data.frame(residualsPred = residualsPred, residualsDep = residualsDep))
+}
+
+.linregPlotResiduals <- function(xVar = NULL, res = NULL, xlab, ylab = "Residuals", cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2, regressionLine = TRUE, standardizedResiduals = TRUE) {
+  d     <- data.frame(xx= xVar, yy= res)
+  d     <- na.omit(d)
+  xVar  <- d$xx
+  res   <- d$yy
+
+  xlow    <- min(pretty(xVar))
+  xhigh   <- max(pretty(xVar))
+  xticks  <- pretty(c(xlow, xhigh))
+  ylow    <- min(pretty(res))
+  yhigh   <- max(pretty(res))
+
+  yticks <- pretty(c(ylow, yhigh, 0))
+
+  # format axes labels
+  xLabs <- JASPgraphs::axesLabeller(xticks, digits = 3)
+  yLabs <- JASPgraphs::axesLabeller(yticks, digits = 3)
+
+  if (standardizedResiduals == TRUE) {
+
+    stAxisTmp               <- pretty( yticks / sd(res) )
+    stAxisOriginalScaleTmp  <- stAxisTmp * sd(res)
+    stAxisOriginalScale     <- stAxisOriginalScaleTmp[stAxisOriginalScaleTmp < max(yticks) & stAxisOriginalScaleTmp > min(yticks)]
+    stAxis                  <- stAxisOriginalScale / sd(res)
+
+    dfYr <- data.frame(x = Inf, xend = Inf, y = stAxisOriginalScale[1],
+                       yend = stAxisOriginalScale[length(stAxisOriginalScale)])
+
+    p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE,
+                              secondaryYaxis = ggplot2::sec_axis(~.+0, breaks = stAxisOriginalScale, name = "Standardized Residuals\n",labels = stAxis))
+
+    p <- p + ggplot2::geom_segment(data = dfYr,
+                                   mapping = ggplot2::aes(x = x, y = y, xend = xend,yend = yend),
+                                   lwd = .3, position = ggplot2::PositionIdentity,
+                                   stat = ggplot2::StatIdentity, inherit.aes = FALSE, colour = "black")
 
   } else {
 
-    if (is.null(variables.in.model)) {
+    dfYr  <- data.frame(x = Inf, xend = Inf, y = yticks[1], yend = yticks[length(yticks)])
+    p     <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
 
-      formula1 <- as.formula(paste(dependent.variable, "~", "1", "-1"))
-
-    } else {
-
-      formula1 <- as.formula(paste(dependent.variable, "~", paste(variables.in.model, collapse = "+"), "-1"))
-    }
   }
 
-  lm.fit <- try(lm(formula1, data=data, weights = weights, x=TRUE), silent=TRUE)
+  if (regressionLine)
+    p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(0, 0)), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = .5)
 
-  return(list(lm.fit=lm.fit, variables=variables.in.model, candidate.variables=candidate.variables))
+  p <- JASPgraphs::drawPoints(p, dat = data.frame(x = xVar, y = res), size = 3)
 
-}
-
-.removeVariable <- function(dependent.variable, independent.variables, independent.null.variables, data, options, weights) {
-
-
-	if (options$includeConstant) {
-
-		formula <- as.formula(paste(dependent.variable, "~", paste(independent.variables, collapse = "+")))
-
-	} else {
-
-		formula <- as.formula(paste(dependent.variable, "~", paste(independent.variables, collapse = "+"), "-1"))
-	}
-
-	fit <- try(lm(formula, data=data, weights = weights, x=TRUE), silent=TRUE)
-	tValues <- summary(fit)$coefficients[ ,"t value"]
-	pValues <- summary(fit)$coefficients[ ,"Pr(>|t|)"]
-
-	if (options$includeConstant) {
-
-		tValues <- tValues[-1]
-		pValues <- pValues[-1]
-
-	}
-
-	tValues <- tValues[! (names(tValues) %in% independent.null.variables)]
-	pValues <- pValues[! (names(pValues) %in% independent.null.variables)]
-  
-	fValues <- tValues^2
-
-	if (options$steppingMethodCriteriaType == "useFValue") {
-
-		minimumFvalue <- min(fValues)
-
-		if (minimumFvalue < options$steppingMethodCriteriaFRemoval) {
-
-			minimumFvalueVariable <- names(which.min(fValues))
-			new.independent.variables <- independent.variables[independent.variables != minimumFvalueVariable]
-
-		} else {
-
-			new.independent.variables <- independent.variables
-
-		}
-
-	} else if (options$steppingMethodCriteriaType == "usePValue") {
-
-		maximumPvalue <- max(pValues)
-
-		if (maximumPvalue > options$steppingMethodCriteriaPRemoval) {
-			maximumPvalueVariable <- names(which.max(pValues))
-			new.independent.variables <- independent.variables[independent.variables != maximumPvalueVariable]
-
-		} else {
-
-			new.independent.variables <- independent.variables
-
-		}
-
-	}
-
-	if (length(new.independent.variables) > 0) {
-
-		if (options$includeConstant) {
-
-			formula.new <- as.formula(paste(dependent.variable, "~", paste(new.independent.variables, collapse = "+")))
-
-		} else {
-
-			formula.new <- as.formula(paste(dependent.variable, "~", paste(new.independent.variables, collapse = "+"), "-1"))
-
-		}
-
-	} else if (options$includeConstant) {
-
-		formula.new <- as.formula(paste(dependent.variable, "~", "1"))
-
-	} else {
-
-		formula.new <- NULL
-	}
-
-	if (!is.null(formula.new)) {
-
-		lm.fit <- try(lm(formula.new, data=data, weights = weights, x=TRUE), silent=TRUE)
-
-	} else {
-
-		lm.fit <- NULL
-	}
-
-	return(list(lm.fit=lm.fit, variables=.unvWithInteraction(new.independent.variables)))
-}
-
-.backwardRegression <- function(dependent.variable, independent.variables, independent.null.variables, data, options, weights) {
-
-	if (options$includeConstant) {
-
-		formula1 <- as.formula(paste(dependent.variable, "~", paste(independent.variables, collapse = "+")))
-
-	} else {
-
-		formula1 <- as.formula(paste(dependent.variable, "~", paste(independent.variables, collapse = "+"), "-1"))
-	}
-
-	lm.fit1 <- try(lm(formula1, data=data, weights = weights, x=TRUE), silent=TRUE)
-
-	lm.model <- list(list(lm.fit=lm.fit1, variables=.unvWithInteraction(independent.variables)))
-
-	new.independent.variables <- independent.variables[!(independent.variables %in% independent.null.variables) ]
-	old.independent.variables <- ""
-
-	while ( ! identical(old.independent.variables, new.independent.variables) && length(new.independent.variables) > 0) {
-
-    old.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables)
-		lm.model[[ length(lm.model) + 1 ]] <- .removeVariable(dependent.variable, old.independent.variables, independent.null.variables, data, options, weights)
-		new.independent.variables <- .vWithInteraction(lm.model[[ length(lm.model) ]]$variables) 
-
-	}
-
-	if (length(new.independent.variables) > 0)
-		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
-
-	return(lm.model)
-}
-
-.forwardRegression <- function(dependent.variable, independent.variables, independent.null.variables, data, options, weights) {
-
-  old.candidate.variables <- ""
-  candidate.variables <- independent.variables[!(independent.variables %in% independent.null.variables)]
-  variables.in.model <- independent.null.variables
-  lm.model <- list()
-
-	counter <- 0
-
-	while ( ! identical(old.candidate.variables, candidate.variables) && length(candidate.variables) > 0) {
-
-		old.candidate.variables <- candidate.variables
-		out <- .includeVariable(dependent.variable, old.candidate.variables, data, options, weights, variables.in.model)
-		candidate.variables <- out$candidate.variables
-		variables.in.model <- unique(c(out$variables,independent.null.variables))
-		lm.model.tmp <- list(lm.fit=out$lm.fit, variables=.unvWithInteraction(unique(c(out$variables,independent.null.variables))))
-		lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp
-
-		counter <- counter + 1
-	}
-
-  if( (counter == 0) && (length(independent.null.variables) > 0)) {
-    if (options$includeConstant) {
-      formulaNull <- as.formula(paste(dependent.variable, "~", paste(independent.null.variables, collapse = "+")))
-    } else {
-      formulaNull <- as.formula(paste(dependent.variable, "~", paste(independent.null.variables, collapse = "+"), "-1"))
-    }
-    lm.fit <- try(lm(formulaNull, data=data, weights = weights, x=TRUE), silent=TRUE)
-    lm.model.tmp <- list(lm.fit=lm.fit, variables=.unvWithInteraction(independent.null.variables))
-    lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp
-  }
-
-	if (length(candidate.variables) > 0 && counter > 1)
-		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
-
-	return(lm.model)
-
-}
-
-.stepwiseRegression <- function(dependent.variable, independent.variables, independent.null.variables, data, options, weights) {
-
-  old.candidate.variables <- ""
-	candidate.variables <-  independent.variables
-	new.variables.in.model <- NULL
-	old.variables.in.model <- "dummy"
-	lm.model <- list()
-	counter <- 0
-
-	while ( ! (identical(old.candidate.variables, candidate.variables) && identical(old.variables.in.model, new.variables.in.model)) && length(candidate.variables) > 0) {
-
-	  old.candidate.variables <- candidate.variables[!(candidate.variables %in% c(new.variables.in.model,independent.null.variables))]
-	  out <- .includeVariable(dependent.variable, old.candidate.variables, data, options, weights, unique(c(new.variables.in.model,independent.null.variables)))
-		candidate.variables <- out$candidate.variables
-		old.variables.in.model <- unique(c(out$variables,independent.null.variables))
-		lm.model.tmp <- list(lm.fit=out$lm.fit, variables=.unvWithInteraction(unique(c(out$variables,independent.null.variables))))
-		lm.model[[ length(lm.model) + 1 ]] <- lm.model.tmp
-
-		if (is.null(old.variables.in.model))
-			break
-
-		removeStep <- .removeVariable(dependent.variable, old.variables.in.model, independent.null.variables, data, options, weights)
-		new.variables.in.model <- .vWithInteraction(removeStep$variables)
-
-		if ( ! identical(new.variables.in.model, old.variables.in.model)) {
-
-			lm.model[[ length(lm.model) + 1 ]] <- list(lm.fit=removeStep$lm.fit, variables=(removeStep$variables))
-
-		}
-
-		counter <- counter + 1
-	}
-
-	if (length(candidate.variables) > 0 && counter > 1)
-		lm.model <- lm.model[-length(lm.model)] # remove last fit that did not change independent variables
-
-	return(lm.model)
-
-}
-
-.unvWithInteraction <- function(variables) {
-
-	unvVars <- character(length(variables))
-
-	for (i in seq_along(variables)) {
-
-		if (grepl(":", variables[i])) {
-
-			# if interaction term
-
-			vars <- unlist(strsplit(variables[i], split = ":"))
-			unvVarsTmp <- .unv(vars)
-			unvVars[i] <- paste0(unvVarsTmp, collapse=":")
-
-		} else {
-
-			unvVars[i] <- .unv(variables[i])
-		}
-	}
-
-	return(unvVars)
-}
-
-.vWithInteraction <- function(variables) {
-
-	vVars <- character(length(variables))
-
-	for (i in seq_along(variables)) {
-
-		if (grepl(":", variables[i])) {
-
-			# if interaction term
-
-			vars <- unlist(strsplit(variables[i], split = ":"))
-			vVarsTmp <- .v(vars)
-			vVars[i] <- paste0(vVarsTmp, collapse=":")
-
-		} else {
-
-			vVars[i] <- .v(variables[i])
-		}
-	}
-
-	return(vVars)
-}
-
-
-.plotResiduals <- function(xVar=NULL, res=NULL, xlab, ylab="Residuals", dontPlotData=FALSE, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2, regressionLine=TRUE, standardizedResiduals=TRUE) {
-
-    if (dontPlotData) {
-
-     	dfYr <- data.frame(x = Inf, xend = Inf, y = -2, yend = 2)
-		
-			if(standardizedResiduals){	
-				p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, force = TRUE, yBreaks = -2:2, xBreaks = 1:5, yLabels = -2:2, xLabels = 1:5,
-				secondaryYaxis = ggplot2::sec_axis(~.+0,breaks = -2:2, name = "Standardize Residuals"))
-				
-				p <- p + ggplot2::geom_segment(data = dfYr,
-										mapping = ggplot2::aes(x = x, y = y, xend = xend,yend = yend),
-										lwd = .3, position = ggplot2::PositionIdentity,
-										stat = ggplot2::StatIdentity, inherit.aes = FALSE, colour = "black")
-										
-			} else {
-				p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, force = TRUE, yBreaks = -2:2, xBreaks = 1:5, yLabels = -2:2, xLabels = 1:5)
-			}
-			
-			p <- JASPgraphs::themeJasp(p)
-
-	    return(p)
-    }
-
-    d <- data.frame(xx= xVar, yy= res)
-    d <- na.omit(d)
-    xVar <- d$xx
-    res <- d$yy
-
-    xlow <- min(pretty(xVar))
-    xhigh <- max(pretty(xVar))
-    xticks <- pretty(c(xlow, xhigh))
-    ylow <- min(pretty(res))
-    yhigh <- max(pretty(res))
-
-    yticks <- pretty(c(ylow, yhigh, 0))
-	
-		# format axes labels
-    xLabs <- JASPgraphs::axesLabeller(xticks, digits = 3)
-    yLabs <- JASPgraphs::axesLabeller(yticks, digits = 3)
-
-	if (standardizedResiduals == TRUE) {
-		
-	  stAxisTmp <- pretty( yticks / sd(res) )
-	  stAxisOriginalScaleTmp <- stAxisTmp * sd(res)
-	  stAxisOriginalScale <- stAxisOriginalScaleTmp[stAxisOriginalScaleTmp < max(yticks) & stAxisOriginalScaleTmp > min(yticks)]
-	  stAxis <- stAxisOriginalScale / sd(res)
-		
-		dfYr <- data.frame(x = Inf, xend = Inf, y = stAxisOriginalScale[1],
-											 yend = stAxisOriginalScale[length(stAxisOriginalScale)])
-						 
-		p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE,
-			secondaryYaxis = ggplot2::sec_axis(~.+0, breaks = stAxisOriginalScale, name = "Standardized Residuals\n",labels = stAxis))
-		
-		p <- p + ggplot2::geom_segment(data = dfYr,
-								mapping = ggplot2::aes(x = x, y = y, xend = xend,yend = yend),
-								lwd = .3, position = ggplot2::PositionIdentity,
-								stat = ggplot2::StatIdentity, inherit.aes = FALSE, colour = "black")
-	
-	} else {
-		
-		dfYr <- data.frame(x = Inf, xend = Inf, y = yticks[1], yend = yticks[length(yticks)])					 
-		p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab, xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
-	
-	}
-	
-	if(regressionLine){
-	  p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(0, 0)), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = .5)
-	}
-	
-	p <- JASPgraphs::drawPoints(p, dat = data.frame(x = xVar, y = res), size = 3)
-	
-	# JASP theme
+  # JASP theme
   p <- JASPgraphs::themeJasp(p)
-	
+
   return(p)
-
 }
 
-.plotResidualsHistogram <- function(res=NULL, resName="Residuals", dontPlotData=FALSE, cexYlab= 1.3, lwd= 2, rugs= FALSE) {
+.linregPlotResidualsHistogram <- function(res = NULL, resName = "Residuals", cexYlab= 1.3, lwd= 2, rugs= FALSE) {
+  density <- density(res)
 
-    if (dontPlotData) {
-        
-        p <- ggplot2::ggplot(data = data.frame(), mapping = ggplot2::aes()) +
-          ggplot2::xlab(resName) + ggplot2::ylab("Density")
-        p <- JASPgraphs::themeJasp(p)
-        
-        return(p)
-    }
+  h       <- hist(res, plot = FALSE)
+  dens    <- density(res)
+  yhigh   <- max(c(h$density, dens$y))
+  ylow    <- 0
+  xticks  <- base::pretty(c(res, h$breaks), min.n= 3)
 
-    density <- density(res)
+  p <- JASPgraphs::drawAxis(xName = resName, yName = "Density", xBreaks = xticks, yBreaks = c(ylow, yhigh), force = TRUE, yLabels = NULL, xLabels = xticks)
+  p <- p + ggplot2::geom_histogram(data = data.frame(res), mapping = ggplot2::aes(x = res, y = ..density..),
+                                   binwidth = (h$breaks[2] - h$breaks[1]),
+                                   fill = "grey",
+                                   col = "black",
+                                   size = .3,
+                                   center = ((h$breaks[2] - h$breaks[1])/2))
+  p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y), mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
+  p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
 
-    h <- hist(res, plot = FALSE)
-    dens <- density(res)
-		yhigh <- max(c(h$density, dens$y))
-    ylow <- 0
-    xticks <- base::pretty(c(res, h$breaks), min.n= 3)
+  p <- JASPgraphs::themeJasp(p)
 
-	p <- JASPgraphs::drawAxis(xName = resName, yName = "Density", xBreaks = xticks, yBreaks = c(ylow, yhigh), force = TRUE, yLabels = NULL, xLabels = xticks)
-    p <- p + ggplot2::geom_histogram(data = data.frame(res), mapping = ggplot2::aes(x = res, y = ..density..),
-                                binwidth = (h$breaks[2] - h$breaks[1]),
-                                fill = "grey",
-                                col = "black",
-                                size = .3,
-                                center = ((h$breaks[2] - h$breaks[1])/2))
-	p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y), mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
-	p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
-	
-    p <- JASPgraphs::themeJasp(p)
-
-    return(p)
-
+  return(p)
 }
 
+.linregPlotQQresiduals <- function(res = NULL, xlab = "Theoretical Quantiles", ylab= "Standardized Residuals", cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
+  d     <- data.frame(qqnorm(res, plot.it = FALSE))
+  d     <- na.omit(d)
+  xVar  <- d$x
+  yVar  <- d$y
 
-.plotQQresidualsRegression <- function(res=NULL, xlab="Theoretical Quantiles", ylab= "Standardized Residuals", dontPlotData=FALSE, cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2) {
-	
-    if (dontPlotData) {
-		
-		p <- JASPgraphs::drawAxis(xName = xlab, yName = ylab)
-		
-        p <- JASPgraphs::themeJasp(p)
-        
-        return(p)
-        
-    }
+  xlow    <- min(pretty(xVar))
+  xhigh   <- max(pretty(xVar))
+  xticks  <- pretty(c(xlow, xhigh))
 
-    d <- data.frame(qqnorm(res, plot.it=FALSE))
-    d <- na.omit(d)
-    xVar <- d$x
-    yVar <- d$y
+  ylow    <- min(pretty(yVar))
+  yhigh   <- max(pretty(yVar))
+  yticks  <- pretty(c(ylow, yhigh))
 
-    xlow <- min(pretty(xVar))
-    xhigh <- max(pretty(xVar))
-    xticks <- pretty(c(xlow, xhigh))
-	
-    ylow <- min(pretty(yVar))
-    yhigh <- max(pretty(yVar))
-    yticks <- pretty(c(ylow, yhigh))
+  yLabs <- vector("character", length(yticks))
 
-    yLabs <- vector("character", length(yticks))
+  for (i in seq_along(yticks)) {
+    if (yticks[i] < 10^6)
+      yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
+    else
+      yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
+  }
 
-    for (i in seq_along(yticks)) {
+  p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = "Standardized Residuals", xBreaks = xticks, yBreaks = xticks, force = TRUE)
+  p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
+  p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
 
-        if (yticks[i] < 10^6) {
+  # JASP theme
+  p <- JASPgraphs::themeJasp(p)
 
-            yLabs[i] <- format(yticks[i], digits= 3, scientific = FALSE)
-
-        } else {
-
-            yLabs[i] <- format(yticks[i], digits= 3, scientific = TRUE)
-        }
-    }
-
-	p <- JASPgraphs::drawAxis(xName = "Theoretical Quantiles", yName = "Standardized Residuals", xBreaks = xticks, yBreaks = xticks, force = TRUE)
-	p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
-	p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
-	
-	# JASP theme
-    p <- JASPgraphs::themeJasp(p)
-
-    return(p)
-
+  return(p)
 }
 
-.getDataforPartialRegressionPlots = function(dataset, dependent.variable, variables.in.model, plot.variable, weights) {
-  
-  if (all(variables.in.model == plot.variable)) {
-    independent.variables <- NULL
+.linregGetPredictors <- function(modelTerms, modelType = "alternative", encoded = TRUE) {
+  if (!is.character(modelType) || !modelType %in% c("alternative", "null"))
+    stop("Unknown value provided for modelType, possible values: `alternative`, `null`")
+
+  predictors <- NULL
+  for (i in seq_along(modelTerms)) {
+    components <- unlist(modelTerms[[i]]$components)
+    if (encoded)
+      components <- .v(components)
+    predictor <- paste0(components, collapse = ":")
+
+    if (modelType == "alternative") {
+      predictors <- c(predictors, predictor)
+    } else if (modelType == "null") {
+      isNuisance <- modelTerms[[i]]$isNuisance
+      if (isNuisance)
+        predictors <- c(predictors, predictor)
+    }
+  }
+
+  return(predictors)
+}
+
+.reglinTermsContainNuisance <- function(modelTerms) {
+  for (i in seq_along(modelTerms)) {
+    isNuisance <- modelTerms[[i]]$isNuisance
+    if (isNuisance)
+      return(TRUE)
+  }
+
+  return(FALSE)
+}
+
+.linregGetFormula <- function(dependent, predictors = NULL, includeConstant) {
+  if (is.null(predictors) && includeConstant == FALSE)
+    stop("We need at least one predictor, or an intercept to make a formula")
+
+  if (is.null(predictors))
+    formula <- paste(dependent, "~", "1")
+  else if (includeConstant)
+    formula <- paste(dependent, "~", paste(predictors, collapse = "+"))
+  else
+    formula <- paste(dependent, "~", paste(predictors, collapse = "+"), "-1")
+
+  return(as.formula(formula, env = parent.frame(1)))
+}
+
+.linregGetModelTitle <- function(predictors, predictorsInNull, method, index) {
+  modelTitle <- index
+  if (method == "enter") {
+    if (index == 1 && (length(predictors) == 0 || all(predictors %in% predictorsInNull)))
+      modelTitle <- "H\u2080"
+    else
+      modelTitle <- "H\u2081"
+  }
+
+  return(modelTitle)
+}
+
+.linregIsInteraction <- function(predictor) {
+  grepl(":", predictor)
+}
+
+.linregMakeCombinedVariableFromInteraction <- function(interaction, dataset) {
+  terms   <- unlist(strsplit(interaction, split = ":"))
+  newVar  <- rep(1, nrow(dataset))
+  for (i in seq_along(terms))
+    newVar <- newVar * dataset[[terms[i]]]
+
+  return(newVar)
+}
+
+.linregGetPredictorColumnNames <- function(model, modelTerms) {
+  usedPredictors  <- unique(unlist(lapply(model, function(x) x$predictors)))
+  allpredictors   <- .linregGetPredictors(modelTerms)
+  return(intersect(allpredictors, usedPredictors)) # ensures that the terms appear in the covariance matrix like they appear in the model terms box
+}
+
+.linregAddPredictorsAsColumns <- function(jaspTable, model, modelTerms, includeConstant = TRUE, type = "number", format = NULL, overtitle = NULL) {
+  predictors <- .linregGetPredictorColumnNames(model, modelTerms)
+  if (length(predictors) > 0) {
+    titles <- .unvf(predictors)
+    if (includeConstant) {
+      predictors  <- c("(Intercept)", predictors)
+      titles      <- c("(Intercept)", titles)
+    }
+
+    for (i in seq_along(predictors))
+      jaspTable$addColumnInfo(name = predictors[i], title = titles[i], type = type, format = format, overtitle = overtitle)
+  }
+}
+
+.linregAddPredictorsInNullFootnote <- function(jaspTable, modelTerms) {
+  containsNuisance <- .reglinTermsContainNuisance(modelTerms)
+  if (containsNuisance) {
+    predictorsInNull <- .linregGetPredictors(modelTerms, modelType = "null", encoded = FALSE)
+    jaspTable$addFootnote(message = paste("Null model includes ", paste(predictorsInNull, collapse = ", "), sep = ""))
+  }
+}
+
+.linregAddVovkSellke <- function(jaspTable, wantsVovkSellkeMPR) {
+  if (wantsVovkSellkeMPR) {
+    jaspTable$addColumnInfo(name = "vovksellke", title = "VS-MPR", type = "number")
+    jaspTable$addFootnote(symbol = "\u002A", colNames = "vovksellke", message = "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
+        possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001).")
+  }
+}
+
+.linregAddInterceptNotShownFootnote <- function(jaspTable, model, options) {
+  indicesOfModelsWithPredictors <- .linregGetIndicesOfModelsWithPredictors(model, options)
+  if (options$includeConstant && length(indicesOfModelsWithPredictors) != length(model)) {
+    if (length(indicesOfModelsWithPredictors) > 0)
+      jaspTable$addFootnote("The intercept model is omitted, as no meaningful information can be shown.")
+    else
+      jaspTable$addFootnote("There is only an intercept model, no meaningful information can be shown.")
+  }
+}
+
+.linregGetIndicesOfModelsWithPredictors <- function(model, options) {
+  predictorsInNull  <- .linregGetPredictors(options$modelTerms, modelType = "null")
+  indices           <- seq_along(model)
+  if (options$method == "enter") {
+    if (length(model) >= 1 && options$includeConstant && is.null(predictorsInNull))
+      indices <- indices[-1]
   } else {
-    independent.variables <- subset(variables.in.model, variables.in.model != plot.variable)
+    for (i in seq_along(model))
+      if (length(model[[i]]$predictors) == 0)
+        indices <- indices[-i]
   }
-  
-  # Compute Residuals DV
-  dv.formula <- paste0(dependent.variable, " ~ 1")
-  if (! is.null(independent.variables)) {
-    for (variable in independent.variables) {
-      dv.formula <- paste0(dv.formula, " + ", variable)
-    }
-  }
-  dv.formula <- as.formula(dv.formula)
-  resultsDV <- stats::lm(formula = dv.formula, data = dataset, weights = weights)
-  residualsDV <- residuals(resultsDV)
-  
-  # Compute Residuals IV
-  iv.formula <- paste0(plot.variable, " ~ 1")
-  if (! is.null(independent.variables)) {
-    for (variable in independent.variables) {
-      iv.formula <- paste0(iv.formula, " + ", variable)
-    }
-  }
-  iv.formula <- as.formula(iv.formula)
-  resultsIV <- stats::lm(formula = iv.formula, data = dataset, weights = weights)
-  residualsIV <- residuals(resultsIV)
-  
-  plot.data <- data.frame(residualsIV, residualsDV)
-  
-  return(plot.data)
-
+  return(indices)
 }
 
-.optionsDiffCheckBootstrapLinearRegression <- function(response, options) {
-  if(response$status == "changed"){
-    change <- .diff(options, response$options)
-    
-    if(change$dependent || change$covariates || change$factors || change$wlsWeights ||
-       change$modelTerms || change$regressionCoefficientsEstimates || change$includeConstant ||
-       change$regressionCoefficientsBootstrapping ||
-       change$regressionCoefficientsBootstrappingReplicates ||
-       change$regressionCoefficientsConfidenceIntervalsInterval)
-      return(response)
+.linregInsertPlot <- function(jaspPlot, func, ...) {
+  p <- try(func(...))
 
-    response$status <- "ok"
+  if (inherits(p, "try-error")) {
+   errorMessage <- .extractErrorMessage(p)
+   jaspPlot$setError(paste("Plotting is not possible:", errorMessage))
+  } else {
+    jaspPlot$plotObject <- p
+    jaspPlot$status     <- "complete"
   }
-  
-  return(response)
+}
+
+.linregCreatePlotPlaceholder <- function(container, index, title, width = 530, height = 400) {
+  jaspPlot            <- createJaspPlot(title = title, width = width, height = height)
+  jaspPlot$status     <- "running"
+  container[[index]]  <- jaspPlot
 }

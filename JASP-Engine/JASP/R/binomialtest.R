@@ -56,24 +56,6 @@ BinomialTest <- function(jaspResults, dataset = NULL, options, ...) {
     exitAnalysisIfErrors = TRUE
   )
 
-  # Error check 2: 0 observations for a level of a variable
-  for (variable in options$variables) {
-
-    column <- dataset[[.v(variable)]]
-    data   <- column[!is.na(column)]
-    levels <- levels(data)
-
-    for (level in levels) {
-      .hasErrors(
-        dataset              = data[data == level],
-        perform              = "run",
-        type                 = "observations",
-        observations.amount  = "< 1",
-        exitAnalysisIfErrors = TRUE
-      )
-    }
-  }
-
 }
 
 # Results functions ----

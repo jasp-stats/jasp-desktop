@@ -53,18 +53,6 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
              factorLevels.amount  = '< 1',
              exitAnalysisIfErrors = TRUE)
 
-  # Error check 2: 0 observations for a level of a variable
-  column <- dataset[[ .v(fact) ]]
-  data   <- column[!is.na(column)]
-  levels <- levels(as.factor(data))
-
-  for (level in levels) {
-    .hasErrors(dataset              = data[data == level],
-               perfrom              = "run",
-               type                 = "observations",
-               observations.amount  = c('< 1'),
-               exitAnalysisIfErrors = TRUE)
-  }
 }
 
 

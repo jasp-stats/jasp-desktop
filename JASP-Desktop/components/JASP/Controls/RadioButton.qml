@@ -58,6 +58,8 @@ JASPControl
 		}
 	}
 
+	function toggle() { control.toggle() }
+
 	RadioButton
 	{
 		id:					control
