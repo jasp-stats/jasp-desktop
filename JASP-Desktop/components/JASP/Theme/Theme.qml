@@ -21,7 +21,8 @@ pragma Singleton
 import QtQuick			2.11
 import QtQuick.Controls 2.4
 
-QtObject {
+QtObject
+{
 	readonly property real uiScale:							preferencesModel.uiScale
 
 	readonly property color white:							"white"
@@ -121,35 +122,42 @@ QtObject {
 	readonly property real menuSpacing:						1   * uiScale
 	readonly property real menuPadding:						10  * uiScale
 
+	property string jaspFont: "SansSerif"
+
 	property font font
 	font.bold:			false
 	font.underline:		false
 	font.pixelSize:		12 * uiScale
-	font.family:		"SansSerif"
+	font.family:		jaspFont
+	font.weight:		Font.Normal
 
 	property font fontLabel
 	fontLabel.bold:			true
 	fontLabel.underline:	false
 	fontLabel.pixelSize:	18 * uiScale
-	fontLabel.family:		"SansSerif"
+	fontLabel.family:		jaspFont
+	fontLabel.weight:		Font.Bold
 
 	property font fontRibbon
 	fontRibbon.bold:		false
 	fontRibbon.underline:	false
 	fontRibbon.pixelSize:	14 * uiScale
-	fontRibbon.family:		"SansSerif"
+	fontRibbon.family:		jaspFont
+	fontRibbon.weight:		Font.Normal
 
 	property font fontGroupTitle
 	fontGroupTitle.bold:		true
 	fontGroupTitle.underline:	false
 	fontGroupTitle.pixelSize:	14 * uiScale
-	fontGroupTitle.family:		"SansSerif"
+	fontGroupTitle.family:		jaspFont
+	fontGroupTitle.weight:		Font.Bold
 
 	property font fontPrefOptionsGroupTitle
 	fontPrefOptionsGroupTitle.bold:			true
 	fontPrefOptionsGroupTitle.underline:	false
 	fontPrefOptionsGroupTitle.pixelSize:	13 * uiScale
-	fontPrefOptionsGroupTitle.family:		"SansSerif"
+	fontPrefOptionsGroupTitle.family:		jaspFont
+	fontPrefOptionsGroupTitle.weight:		Font.Bold
 
 	readonly property color borderColor:					gray
 	readonly property color focusBorderColor:				blueLighter

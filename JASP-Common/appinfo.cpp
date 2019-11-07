@@ -26,6 +26,7 @@ const std::string AppInfo::builddate = __DATE__ " " __TIME__ " (Netherlands)" ;
 #define xstr(s) str(s)
 #define str(s)  #s
 
+//If the following do not work and you are on Windows, make sure that either Git is installed to "C:\Program Files\Git" or change the environment variable GIT_LOCATION (under projects build-env) to the path it is.
 const std::string AppInfo::gitBranch = xstr(GIT_CURRENT_BRANCH);
 const std::string AppInfo::gitCommit = xstr(GIT_CURRENT_COMMIT);
 

@@ -33,7 +33,10 @@ Window
 	minimumWidth:		800 * preferencesModel.uiScale
 	minimumHeight:		600 * preferencesModel.uiScale
 
-	onVisibleChanged:	if(!visible) helpModel.visible = false
+	onVisibleChanged:
+		if(!visible)	helpModel.visible = false;
+		else			Theme.jaspFont = latoRegularFontFamily.name
+
 	//onWidthChanged:		customMenu.hide()
 	//onHeightChanged:	customMenu.hide()
 
@@ -56,6 +59,11 @@ Window
 	{
 		mainWindowRoot.visibility = mainWindowRoot.visibility === Window.FullScreen ? Window.Windowed : Window.FullScreen;
 	}
+
+	FontLoader { id: latoLightFontFamily;	source: "qrc:/core/font/Lato-Light.ttf" }
+	FontLoader { id: latoRegularFontFamily;	source: "qrc:/core/font/Lato-Regular.ttf" }
+
+
 
 	Item
 	{

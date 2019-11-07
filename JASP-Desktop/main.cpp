@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 #ifdef _WIN32
-			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it on anything 'cept windows
+			//QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it on anything 'cept windows
 #endif
 			JASPTIMER_START("JASP");
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save, logToFile);

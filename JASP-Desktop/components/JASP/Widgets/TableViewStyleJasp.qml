@@ -115,7 +115,7 @@ ScrollViewStyle {
             elide: styleData.elideMode
             text: styleData.value !== undefined ? styleData.value : ""
             color: styleData.textColor
-            renderType: Text.NativeRendering
+			//renderType: Text.NativeRendering
         }
     }
 

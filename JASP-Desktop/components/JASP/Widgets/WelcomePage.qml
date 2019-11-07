@@ -23,9 +23,6 @@ import JASP.Widgets		1.0
 
 FocusScope
 {
-	FontLoader { id: latoLightFontFamily;	source: "qrc:/core/font/Lato-Light.ttf" }
-	FontLoader { id: latoRegularFontFamily;	source: "qrc:/core/font/Lato-Regular.ttf" }
-
 	id:		welcomeRoot
 
 	property real scaler: Math.max(0.9, Math.min(1.5, 0.8 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight)))
