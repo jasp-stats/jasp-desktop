@@ -12,7 +12,7 @@
 		"requiresData": 		false
 	},
 
-	"requiredPackages":	[],
+	"requiredPackages":	["svglite"],
 
 	"menu":
 	[

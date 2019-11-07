@@ -1087,11 +1087,11 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       
       if (options$confidenceIntervalsContrast) {
         
-        thisOverTitle <- paste(options$confidenceIntervalIntervalContrast*100, "% CI for Mean Difference", sep = "")
+        thisOvertitle <- paste(options$confidenceIntervalIntervalContrast*100, "% CI for Mean Difference", sep = "")
         contrast.table[["schema"]][["fields"]][[7]] <- list(name="lwrBound", type = "number", title = "Lower",
-                                                            format="sf:4;dp:3", overTitle=thisOverTitle)
+                                                            format="sf:4;dp:3", overTitle=thisOvertitle)
         contrast.table[["schema"]][["fields"]][[8]] <- list(name="uprBound", type = "number", title = "Upper",
-                                                            format="sf:4;dp:3", overTitle=thisOverTitle)
+                                                            format="sf:4;dp:3", overTitle=thisOvertitle)
       }
       
       footnotes <- .newFootnotes()
@@ -2757,14 +2757,14 @@ Ancova <- function(dataset=NULL, options, perform="run", callback=function(...) 
       list(name="p", title="p<sub>dunnett</sub>", type="number", format="dp:3;p:.001"))
     
     if (options$confidenceIntervalsPostHoc) {
-      thisOverTitle <- paste(options$confidenceIntervalIntervalPostHoc*100, "% CI for Mean Difference", sep = "")
+      thisOvertitle <- paste(options$confidenceIntervalIntervalPostHoc*100, "% CI for Mean Difference", sep = "")
       fields <- list(
         list(name="Comparison",title="", type="string"),
         list(name="Mean Difference", type="number", format="sf:4;dp:3"),
         list(name="lwrBound", type = "number", title = "Lower",
-             format="sf:4;dp:3", overTitle=thisOverTitle),
+             format="sf:4;dp:3", overTitle=thisOvertitle),
         list(name="uprBound", type="number", title = "Upper",
-             format="sf:4;dp:3", overTitle=thisOverTitle),
+             format="sf:4;dp:3", overTitle=thisOvertitle),
         list(name="SE", type="number", format="sf:4;dp:3"),
         list(name="t", type="number", format="sf:4;dp:3"),
         list(name="p", title="p<sub>dunnett</sub>", type="number", format="dp:3;p:.001"))

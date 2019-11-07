@@ -2,9 +2,10 @@ Package: DevelopmentModule
 Type: Package
 Title: Test Module Module for JASP
 Version: 1.0
-Date: 2019-11-06
+Date: 2019-11-07
 Author: Joris Goosen
 Website: 
 Maintainer: Joris Goosen <Joris@JorisGoosen.nl>
 Description: A module to test stuff with.
 License: Whatever
+Imports: svglite

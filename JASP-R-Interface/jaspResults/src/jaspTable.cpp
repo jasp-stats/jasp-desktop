@@ -632,7 +632,7 @@ void jaspTable::rectangularDataWithNamesToString(std::stringstream & out, std::s
 
 	if(sideOvertitleSpace > 0) sideOvertitleSpace += 1;
 
-	std::vector<std::string> sideOverTitleRow;
+	std::vector<std::string> sideOvertitleRow;
 	std::string prevSideTitle = "";
 	for(auto & sideName : sideNames)
 	{
@@ -643,14 +643,14 @@ void jaspTable::rectangularDataWithNamesToString(std::stringstream & out, std::s
 				std::string sideTitle = sideOvertitles[sideTrim];
 				if(sideTitle != prevSideTitle)
 				{
-					sideOverTitleRow.push_back(sideTitle + " ");
+					sideOvertitleRow.push_back(sideTitle + " ");
 					prevSideTitle = sideTitle;
 				}
 				else
-					sideOverTitleRow.push_back(std::string(sideOvertitleSpace, ' '));
+					sideOvertitleRow.push_back(std::string(sideOvertitleSpace, ' '));
 		}
 		else
-			sideOverTitleRow.push_back(std::string(sideOvertitleSpace, ' '));
+			sideOvertitleRow.push_back(std::string(sideOvertitleSpace, ' '));
 	}
 
 
@@ -747,7 +747,7 @@ void jaspTable::rectangularDataWithNamesToString(std::stringstream & out, std::s
 	{
 		//put the side overtitle here
 		out << colSep.str();
-		out << prefix << sideOverTitleRow[col] << sideNames[col] << "  | ";
+		out << prefix << sideOvertitleRow[col] << sideNames[col] << "  | ";
 
 		for(size_t row=0; row<vierkant[col].size(); row++)
 			out << (row>0? " | " : "") << vierkant[col][row];

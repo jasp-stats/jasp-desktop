@@ -51,7 +51,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		let optSchema = this.model.get("schema");
 		let optData = this.model.get("data");
 		let optCasesAcrossColumns = this.model.get("casesAcrossColumns");
-		let optOverTitle = this.model.get("overTitle")
+		let optOvertitle = this.model.get("overTitle")
 		let optFootnotes = this.model.get("footnotes");
 
 		let columnsDict = createColumns(optSchema.fields, optData, optFootnotes);
@@ -154,7 +154,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		}
 
 		if (cells !== undefined && cells.length > 0 && optCasesAcrossColumns) {
-			let swapped = swapRowsAndColumns(columnHeaders, cells, optOverTitle);
+			let swapped = swapRowsAndColumns(columnHeaders, cells, optOvertitle);
 			cells = swapped.columns;
 			columnHeaders = swapped.columnHeaders;
 			rowCount = swapped.rowCount;
@@ -173,7 +173,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 		let optData = this.model.get('data');
 		let optTitle = this.model.get('title');
 		let optVariables = this.model.get('variables');
-		let optOverTitle = this.model.get('overTitle')
+		let optOvertitle = this.model.get('overTitle')
 		let optFootnotes = this.model.get('footnotes');
 
 		let data = this._generateLaTeXCode();
@@ -422,7 +422,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 		var optTitle				= this.model.get("title");
 		var optSubtitle				= this.model.get("subtitle");
 		var optCasesAcrossColumns	= this.model.get("casesAcrossColumns");
-		var optOverTitle			= this.model.get("overTitle")
+		var optOvertitle			= this.model.get("overTitle")
 		var optFootnotes			= this.model.get("footnotes");
 		var optCitation				= this.model.get("citation");
 		var optStatus				= this.model.get("status");
@@ -535,7 +535,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 		if (cells !== undefined && cells.length > 0 && optCasesAcrossColumns) {
 
-			var swapped		= swapRowsAndColumns(columnHeaders, cells, optOverTitle)
+			var swapped		= swapRowsAndColumns(columnHeaders, cells, optOvertitle)
 			cells			= swapped.columns
 			columnHeaders	= swapped.columnHeaders;
 			rowCount		= swapped.rowCount

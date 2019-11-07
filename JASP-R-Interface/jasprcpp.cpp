@@ -1016,6 +1016,10 @@ SEXP jaspRCPP_RunSeparateR(SEXP code)
 	return Rcpp::wrap(out);
 }
 
+// see https://gcc.gnu.org/onlinedocs/gcc-4.8.5/cpp/Stringification.html
+#define xstr(s) str(s)
+#define str(s)  #s
+
 void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames)
 {
 #ifdef __APPLE__
@@ -1056,7 +1060,7 @@ void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames)
 			{
 				std::string baseName = line.substr(line.find_last_of('/') == std::string::npos ? 0 : line.find_last_of('/') + 1);
 
-				std::string newLine = stringUtils::replaceBy("@executable_path/../Frameworks/R.framework/Versions/" + std::to_string(CURRENT_R_VERSION) + "/Resources/lib/" + baseName, " ", "\\ "),
+				std::string newLine = stringUtils::replaceBy("@executable_path/../Frameworks/R.framework/Versions/"  xstr(CURRENT_R_VERSION) "/Resources/lib/" + baseName, " ", "\\ "),
 							cmd		= "install_name_tool -change " + line + " " + newLine + " " + libDir;
 
 				_jaspRCPP_System(cmd);

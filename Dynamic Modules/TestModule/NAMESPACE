@@ -1,3 +1,4 @@
 export(testTransposedTableFunc)
 export(testFootnotesTableFunc)
 export(customContrasts)
+  import('svglite');
