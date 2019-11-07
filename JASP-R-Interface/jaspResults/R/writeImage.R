@@ -159,10 +159,17 @@ decodeplot.gg <- function(x, returnGrob = TRUE) {
       labels[[i]] <- decodeAllColumnNames(labels[[i]])
     
     x[["labels"]] <- labels
-    if (returnGrob)
+    if (returnGrob) {
+      grDevices::png(f <- tempfile())
+      on.exit({
+        grDevices::dev.off()
+        if (file.exists(f))
+          file.remove(f)
+      })
       return(decodeplot.gTree(ggplot2::ggplotGrob(x)))
-    else
+    } else {
       return(x)
+    }
 }
 
 decodeplot.recordedplot <- function(x) {
@@ -188,6 +195,7 @@ decodeplot.function <- function(x) {
 
   f <- tempfile()
   on.exit({
+    grDevices::dev.off()
     if (file.exists(f))
       file.remove(f)
   })
@@ -197,7 +205,7 @@ decodeplot.function <- function(x) {
   
   eval(x())
   out <- grDevices::recordPlot()
-  grDevices::dev.off()
+
   return(decodeplot.recordedplot(out))
 }
 
