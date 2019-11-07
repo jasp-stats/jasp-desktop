@@ -1,7 +1,7 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.4
 import JASP.Widgets		1.0
-import JASP.Theme		1.0
+
 
 
 Rectangle
@@ -9,9 +9,9 @@ Rectangle
 	width:			valuesRectangle.width + (valuesRectangle.anchors.margins * 2)
 	height:			resetButton.y + resetButton.height + missingValuesTitle.anchors.margins
 
-	border.color:	Theme.grayLighter
+	border.color:	jaspTheme.grayLighter
 	border.width:	1
-	color:			Theme.uiBackground
+	color:			jaspTheme.uiBackground
 
 	property alias firstComponent: missingValuesList
 
@@ -19,22 +19,23 @@ Rectangle
 	{
 		id:		missingValuesTitle
 		text:	qsTr("Missing Value List")
-		font:	Theme.font
+		color:	jaspTheme.textEnabled
+		font:	jaspTheme.font
 
 		anchors
 		{
 			top:		parent.top
 			left:		parent.left
 			right:		parent.right
-			margins:	Theme.generalAnchorMargin
+			margins:	jaspTheme.generalAnchorMargin
 		}
 	}
 
 	Rectangle
 	{
 		id:				valuesRectangle
-		color:			Theme.white
-		border.color:	Theme.grayLighter
+		color:			jaspTheme.white
+		border.color:	jaspTheme.grayLighter
 		height:			200 * preferencesModel.uiScale
 		width:			200 * preferencesModel.uiScale
 		clip:			true
@@ -42,7 +43,7 @@ Rectangle
 		{
 			top:		missingValuesTitle.bottom
 			left:		parent.left
-			margins:	Theme.generalAnchorMargin
+			margins:	jaspTheme.generalAnchorMargin
 		}
 
 		ListView
@@ -51,7 +52,7 @@ Rectangle
 			focus:				true
 			boundsBehavior:		Flickable.StopAtBounds
 			anchors.fill:		parent
-			anchors.margins:	Theme.generalAnchorMargin
+			anchors.margins:	jaspTheme.generalAnchorMargin
 			model:				preferencesModel.missingValues
 			KeyNavigation.tab:	missingValueToAddText
 			KeyNavigation.down:	missingValueToAddText
@@ -70,7 +71,7 @@ Rectangle
 						width:				height
 						anchors.right:		parent.right
 						anchors.top:		parent.top
-						source:				"qrc:/icons/subtraction-sign-small.svg"
+						source:				jaspTheme.iconPath + "/subtraction-sign-small.svg"
 						sourceSize.width:	width * 2
 						sourceSize.height:	height * 2
 						visible:			parent.hovered
@@ -88,7 +89,7 @@ Rectangle
 			top:		valuesRectangle.bottom
 			left:		parent.left
 			right:		parent.right
-			margins:	Theme.generalAnchorMargin
+			margins:	jaspTheme.generalAnchorMargin
 		}
 
 		Rectangle
@@ -97,13 +98,13 @@ Rectangle
 			{
 				left:			parent.left
 				right:			addButton.left
-				rightMargin:	Theme.generalAnchorMargin
+				rightMargin:	jaspTheme.generalAnchorMargin
 				top:			parent.top
 				bottom:			parent.bottom
 			}
 
-			color:				Theme.white
-			border.color:		Theme.buttonBorderColor
+			color:				jaspTheme.white
+			border.color:		jaspTheme.buttonBorderColor
 			border.width:		1
 
 			TextInput
@@ -111,8 +112,8 @@ Rectangle
 				id:					missingValueToAddText
 				text:				""
 				clip:				true
-				font:				Theme.font
-				color:				Theme.textEnabled
+				font:				jaspTheme.font
+				color:				jaspTheme.textEnabled
 				KeyNavigation.tab:	addButton
 				KeyNavigation.down:	addButton
 				onAccepted:			addButton.clicked();
@@ -121,7 +122,7 @@ Rectangle
 					left:			parent.left
 					right:			parent.right
 					verticalCenter:	parent.verticalCenter
-					margins:		Theme.generalAnchorMargin
+					margins:		jaspTheme.generalAnchorMargin
 				}
 			}
 		}
@@ -130,7 +131,7 @@ Rectangle
 		RectangularButton
 		{
 			id:					addButton
-			iconSource:			"qrc:/icons/addition-sign-small.svg"
+			iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"
 			anchors.top:		parent.top
 			anchors.right:		parent.right
 			KeyNavigation.tab:	resetButton
@@ -156,7 +157,7 @@ Rectangle
 			top:			addValueItem.bottom
 			left:			parent.left
 			right:			parent.right
-			margins:		Theme.generalAnchorMargin
+			margins:		jaspTheme.generalAnchorMargin
 		}
 	}
 }

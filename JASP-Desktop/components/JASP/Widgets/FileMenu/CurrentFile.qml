@@ -1,6 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import JASP.Theme 1.0
+
 
 Item
 {
@@ -14,15 +14,15 @@ Item
 		width:				400 * preferencesModel.uiScale
 		height:				30 * preferencesModel.uiScale
 		text:				qsTr("Current data file for synchronization")
-		font:				Theme.fontLabel
-		color:				Theme.black
+		font:				jaspTheme.fontLabel
+		color:				jaspTheme.black
 		anchors
 		{
 			top:			parent.top
 			left:			parent.left  //Position Recent Files label
-			topMargin:		Theme.generalMenuMargin
-			leftMargin:		Theme.generalMenuMargin
-			rightMargin:	Theme.generalMenuMargin
+			topMargin:		jaspTheme.generalMenuMargin
+			leftMargin:		jaspTheme.generalMenuMargin
+			rightMargin:	jaspTheme.generalMenuMargin
 		}
 	}
 	
@@ -42,7 +42,7 @@ Item
 		anchors.leftMargin:	12 * preferencesModel.uiScale
 		height:				20 * preferencesModel.uiScale
 		text:				fileMenuModel.currentFile.getHeaderText()	//For shorcut key
-		font:				Theme.font
+		font:				jaspTheme.font
 	}
 	 
 	FileList
@@ -57,9 +57,9 @@ Item
 			left:			parent.left
 			right:			parent.right
 			leftMargin:		12  * preferencesModel.uiScale
-			topMargin:		Theme.generalAnchorMargin
-			bottomMargin:	Theme.generalAnchorMargin
-			rightMargin:	Theme.generalAnchorMargin
+			topMargin:		jaspTheme.generalAnchorMargin
+			bottomMargin:	jaspTheme.generalAnchorMargin
+			rightMargin:	jaspTheme.generalAnchorMargin
 		}
 	}
 }

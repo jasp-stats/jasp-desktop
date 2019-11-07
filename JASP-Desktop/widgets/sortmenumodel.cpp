@@ -18,6 +18,7 @@
 
 #include "sortmenumodel.h"
 #include "listmodelavailableinterface.h"
+#include "qquick/jasptheme.h"
 
 QMap<Sortable::SortType, QString> SortMenuModel::_labels =
 {
@@ -55,7 +56,7 @@ QVariant SortMenuModel::data(const QModelIndex &index, int role) const
 	switch(role)
 	{
 	case DisplayRole:				return _labels[entry->sortType];
-	case MenuImageSourceRole:		return index.row() == _currentEntry ? "qrc:/icons/check-mark.png" : "";
+	case MenuImageSourceRole:		return index.row() == _currentEntry ? JaspTheme::currentIconPath() + "check-mark.png" : "";
 	case IsEnabledRole:				return true;
 	default:						return QVariant();
 	}

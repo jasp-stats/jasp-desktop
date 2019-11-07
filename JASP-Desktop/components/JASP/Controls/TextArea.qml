@@ -1,13 +1,13 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts	1.3
-import JASP.Theme		1.0
+
 
 JASPControl
 {
 	id:					textArea
 	controlType:		"TextArea"
-	implicitHeight:		Theme.defaultTextAreaHeight
+	implicitHeight:		jaspTheme.defaultTextAreaHeight
 	implicitWidth:		parent.width
 	focusIndicator:		flickableRectangle
 	
@@ -37,19 +37,19 @@ JASPControl
 	{
 		id:			textAreaTitle
 		visible:	text !== ""
-		font:		Theme.font
+		font:		jaspTheme.font
 	}
 
 	Rectangle
 	{
 		id:				flickableRectangle
 		anchors.top:	title !== "" ? textAreaTitle.bottom : parent.top
-		anchors.topMargin: title !== "" ? Theme.titleBottomMargin : 0
+		anchors.topMargin: title !== "" ? jaspTheme.titleBottomMargin : 0
 		width:			parent.implicitWidth
-		height:			parent.implicitHeight - (title !== "" ? (textAreaTitle.height + Theme.titleBottomMargin) : 0)
-		color:			textArea.enabled ? Theme.white : Theme.whiteBroken
+		height:			parent.implicitHeight - (title !== "" ? (textAreaTitle.height + jaspTheme.titleBottomMargin) : 0)
+		color:			textArea.enabled ? jaspTheme.white : jaspTheme.whiteBroken
 		border.width:	1
-		border.color:	Theme.borderColor
+		border.color:	jaspTheme.borderColor
 
 		Flickable
 		{
@@ -62,11 +62,11 @@ JASPControl
 			{
 				id:					control
 				selectByMouse:		true
-				selectedTextColor:	Theme.white
-				selectionColor:		Theme.itemSelectedColor
+				selectedTextColor:	jaspTheme.white
+				selectionColor:		jaspTheme.itemSelectedColor
 
-				font:				Theme.font
-				color:				textArea.enabled ? Theme.textEnabled : Theme.textDisabled
+				font:				jaspTheme.font
+				color:				textArea.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 				wrapMode:			TextArea.Wrap
 
 				Keys.onPressed:
@@ -105,16 +105,16 @@ JASPControl
 		bottomPadding:			3 * preferencesModel.uiScale
 		topPadding:				bottomPadding
 		text:					textArea.applyScriptInfo
-		font:					Theme.font
+		font:					jaspTheme.font
 		horizontalAlignment:	Text.AlignHCenter
 		verticalAlignment:		Text.AlignVCenter
-		color:					!enabled ? Theme.textDisabled : textArea.hasScriptError ? Theme.textEnabled : Theme.grayDarker
+		color:					!enabled ? jaspTheme.textDisabled : textArea.hasScriptError ? jaspTheme.textEnabled : jaspTheme.grayDarker
 
 		Rectangle
 		{
 			z:				-1
 			anchors.fill:	infoText
-			color:			textArea.hasScriptError ? Theme.errorMessagesBackgroundColor : "transparent"
+			color:			textArea.hasScriptError ? jaspTheme.errorMessagesBackgroundColor : "transparent"
 		}
 	}
 }

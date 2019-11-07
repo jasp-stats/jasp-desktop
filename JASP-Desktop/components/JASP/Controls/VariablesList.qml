@@ -20,7 +20,7 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4 as QTCONTROLS
 import QtQml.Models 2.2
-import JASP.Theme 1.0
+
 import JASP.Widgets 1.0
 import QtQuick.Layouts 1.3
 
@@ -31,7 +31,7 @@ JASPControl
 	background:				variablesListRectangle
 	width:					parent.width
 	implicitWidth:			width
-	height:					singleVariable ? Theme.defaultSingleItemListHeight : Theme.defaultVariablesFormHeight
+	height:					singleVariable ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
 	implicitHeight:			height
 	useControlMouseArea:	false
 	
@@ -144,9 +144,9 @@ JASPControl
 		anchors.top:	parent.top
 		anchors.left:	parent.left
 		text:			title
-		height:			title ? Theme.variablesListTitle : 0
-		font:			Theme.font
-		color:			enabled ? Theme.textEnabled : Theme.textDisabled
+		height:			title ? jaspTheme.variablesListTitle : 0
+		font:			jaspTheme.font
+		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 		
 	}
 	
@@ -170,9 +170,9 @@ JASPControl
 		anchors.left:	parent.left
 		height:			variablesList.height - variablesListTitle.height
 		width:			parent.width
-		color:			debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
+		color:			debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
 		border.width:	1
-		border.color:	Theme.borderColor
+		border.color:	jaspTheme.borderColor
 		
 		Repeater
 		{
@@ -181,7 +181,7 @@ JASPControl
 
 			Image
 			{
-				source: enabled ? iconInactiveFiles[suggestedColumns[index]] : iconDisabledFiles[suggestedColumns[index]]
+				source: jaspTheme.iconPath + (enabled ? iconInactiveFiles[suggestedColumns[index]] : iconDisabledFiles[suggestedColumns[index]])
 				height: 16 * preferencesModel.uiScale
 				width:	16 * preferencesModel.uiScale
 				z:		2
@@ -336,7 +336,7 @@ JASPControl
 			width:			parent ? parent.width : 0
 			anchors.top:	parent ? (onTop ? parent.top : parent.bottom) : undefined
 			anchors.left:	parent ? parent.left : undefined
-			color:			Theme.blueLighter
+			color:			jaspTheme.blueLighter
 			visible:		false
 
 			property bool onTop: true
@@ -532,7 +532,7 @@ JASPControl
 				width:			listView.cellWidth
 				focus:			true
 				border.width:	containsDragItem && variablesList.dropModeReplace ? 2 : (variablesList.showElementBorder ? 1 : 0)
-				border.color:	containsDragItem && variablesList.dropModeReplace ? Theme.containsDragBorderColor : Theme.grayLighter
+				border.color:	containsDragItem && variablesList.dropModeReplace ? jaspTheme.containsDragBorderColor : jaspTheme.grayLighter
 				
 				
 				property bool clearOtherSelectedItemsWhenClicked: false
@@ -560,13 +560,13 @@ JASPControl
 				
 				color:
 				{
-					if(itemRectangle.isDependency)											return itemRectangle.selected ? Theme.dependencySelectedColor : Theme.dependencyBorderColor;
-					if (!itemRectangle.draggable)											return Theme.controlBackgroundColor;
-					if (itemRectangle.selected)												return variablesList.activeFocus ? Theme.itemSelectedColor: Theme.itemSelectedNoFocusColor;
-					if (itemRectangle.containsDragItem && variablesList.dropModeReplace)	return Theme.itemSelectedColor;
-					if (mouseArea.containsMouse)											return Theme.itemHoverColor;
+					if(itemRectangle.isDependency)											return itemRectangle.selected ? jaspTheme.dependencySelectedColor : jaspTheme.dependencyBorderColor;
+					if (!itemRectangle.draggable)											return jaspTheme.controlBackgroundColor;
+					if (itemRectangle.selected)												return variablesList.activeFocus ? jaspTheme.itemSelectedColor: jaspTheme.itemSelectedNoFocusColor;
+					if (itemRectangle.containsDragItem && variablesList.dropModeReplace)	return jaspTheme.itemSelectedColor;
+					if (mouseArea.containsMouse)											return jaspTheme.itemHoverColor;
 
-					return Theme.controlBackgroundColor;
+					return jaspTheme.controlBackgroundColor;
 				}
 
 				Drag.keys:		[variablesList.name]
@@ -585,7 +585,7 @@ JASPControl
 					height:					15 * preferencesModel.uiScale
 					width:					15 * preferencesModel.uiScale
 					anchors.verticalCenter:	parent.verticalCenter
-					source:					(!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) || !model.columnType) ? "" : enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]
+					source:					(!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) || !model.columnType) ? "" : jaspTheme.iconPath + (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType])
 					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable
 				}
 				Text
@@ -597,8 +597,8 @@ JASPControl
 					elide:					Text.ElideRight
 					anchors.verticalCenter:	parent.verticalCenter
 					horizontalAlignment:	itemRectangle.isLayer ? Text.AlignHCenter : undefined
-					color:					!enabled ? Theme.textDisabled : itemRectangle.isVirtual ? Theme.grayLighter : (itemRectangle.color === Theme.itemSelectedColor ? Theme.white : Theme.black)
-					font:					Theme.font
+					color:					!enabled ? jaspTheme.textDisabled : itemRectangle.isVirtual ? jaspTheme.grayLighter : (itemRectangle.color === jaspTheme.itemSelectedColor ? jaspTheme.white : jaspTheme.black)
+					font:					jaspTheme.font
 				}
 				
 				RowLayout

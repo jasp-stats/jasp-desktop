@@ -18,28 +18,28 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import JASP.Theme 1.0
+
 
 Rectangle
 {
 	id							: ribbonButton
 	width						: implicitWidth
 	height						: implicitHeight
-	implicitHeight				: Theme.ribbonButtonHeight * 0.6
+	implicitHeight				: jaspTheme.ribbonButtonHeight * 0.6
 	implicitWidth				: implicitHeight
 	// radius					: 5
-	color						: mice.pressed ? Theme.grayLighter : Theme.uiBackground
+	color						: mice.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
 
 	property bool	hamburger:	true
 	property bool	showArrow:	false
 	property string	toolTip:	""
 
 	ToolTip.text:				toolTip
-	ToolTip.timeout:			Theme.toolTipTimeout
-	ToolTip.delay:				Theme.toolTipDelay / 5
-	ToolTip.toolTip.font:		Theme.font
+	ToolTip.timeout:			jaspTheme.toolTipTimeout
+	ToolTip.delay:				jaspTheme.toolTipDelay / 5
+	ToolTip.toolTip.font:		jaspTheme.font
 	ToolTip.visible:			toolTip !== "" && mice.containsMouse
-	ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor }
+	ToolTip.toolTip.background: Rectangle { color:	jaspTheme.tooltipBackgroundColor }
 
 	signal clicked
 
@@ -47,18 +47,18 @@ Rectangle
 	{
 		id:					hamburgerArrow
 		anchors.centerIn:	parent
-		width:				hamburgerArrow.barWidth//parent.width	- (2 * Theme.ribbonButtonPadding)
+		width:				hamburgerArrow.barWidth//parent.width	- (2 * jaspTheme.ribbonButtonPadding)
 		height:				baseHeight - 20
-		scale:				baseScale * (mice.containsMouse && !mice.pressed ? Theme.ribbonScaleHovered : 1)
+		scale:				baseScale * (mice.containsMouse && !mice.pressed ? jaspTheme.ribbonScaleHovered : 1)
 
 
 		property real	baseScale:		0.7 * (parent.height / baseHeight)//Ok changing height doesnt work well for this component so I just scale it when necessary!
 
 		property real	baseHeight:		80
-		property real	barThickness:	8 //(Theme.ribbonButtonHeight (2 * Theme.ribbonButtonPadding)) / 7
+		property real	barThickness:	8 //(jaspTheme.ribbonButtonHeight (2 * jaspTheme.ribbonButtonPadding)) / 7
 		property real	barRadius:		barThickness
 		property real	barWidth:		baseHeight / 2
-		property color	barColor:		Theme.grayDarker
+		property color	barColor:		jaspTheme.grayDarker
 
 		Item
 		{
@@ -150,7 +150,7 @@ Rectangle
 	Timer
 	{
 		id:				itsHoverTime
-		interval:		Theme.hoverTime * 2
+		interval:		jaspTheme.hoverTime * 2
 		repeat:			false
 		running:		false
 
@@ -160,7 +160,7 @@ Rectangle
 	Timer
 	{
 		id:				blockDoubleClicksTimer
-		interval:		Theme.fileMenuSlideDuration * 4
+		interval:		jaspTheme.fileMenuSlideDuration * 4
 		repeat:			false
 		running:		false
 

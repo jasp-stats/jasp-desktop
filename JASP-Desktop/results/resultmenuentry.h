@@ -39,7 +39,7 @@ public:
 
 	QString	displayText()						const	{	return _displayText;			}
 	QString	name()								const	{	return _name;					}
-	QString	menuImageSource()					const	{	return _menuImageSource;		}
+	QString	menuImageSource()					const;
 	QString	jsFunction()						const	{	return _jsFunction;				}
 	bool	isSeparator()						const	{	return _isSeparator;			}
 	bool	isEnabled()							const	{	return _isEnabled;				}

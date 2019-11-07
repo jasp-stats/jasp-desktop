@@ -19,7 +19,7 @@ import QtQuick			2.8
 import QtQuick.Layouts	1.3
 import JASP.Controls	1.0
 import JASP.Widgets		1.0
-import JASP.Theme		1.0
+
 
 Form 
 {
@@ -121,7 +121,7 @@ Form
 				id: 						variableSelectionTitle
 				anchors.horizontalCenter: 	parent.horizontalCenter
 				text: 						qsTr("<b>Variable definition</b>")
-				font:						Theme.fontLabel
+				font:						jaspTheme.fontLabel
 			}
 		}
 

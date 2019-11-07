@@ -17,7 +17,7 @@
 //
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import JASP.Theme 1.0
+
 
 
 JASPControl
@@ -42,7 +42,7 @@ JASPControl
 	{
 		id:	control
 
-		font: Theme.font
+		font: jaspTheme.font
 		Image
 		{
 			id:					image
@@ -57,9 +57,9 @@ JASPControl
 		{
 			id:				rectangle
 			border.width:	1
-			border.color:	Theme.borderColor
-			radius:			Theme.borderRadius
-			color:			enabled ? (control.down ? Theme.gray : Theme.controlBackgroundColor) : Theme.disableControlBackgroundColor
+			border.color:	jaspTheme.borderColor
+			radius:			jaspTheme.borderRadius
+			color:			enabled ? (control.down ? jaspTheme.gray : jaspTheme.controlBackgroundColor) : jaspTheme.disableControlBackgroundColor
             
 			Behavior on color {	enabled: !preferencesModel.safeGraphics;	ColorAnimation { duration: 100 } }
         }

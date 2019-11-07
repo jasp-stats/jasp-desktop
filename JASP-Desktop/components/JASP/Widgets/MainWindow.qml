@@ -19,7 +19,6 @@
 import QtQuick			2.11
 import QtQuick.Window	2.11
 import JASP.Widgets		1.0
-import JASP.Theme		1.0
 
 Window
 {
@@ -29,16 +28,17 @@ Window
 	width:				1248
 	height:				768
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
+	color:				jaspTheme.white
 
 	minimumWidth:		800 * preferencesModel.uiScale
 	minimumHeight:		600 * preferencesModel.uiScale
 
 	onVisibleChanged:
-		if(!visible)	helpModel.visible = false;
-		else			Theme.jaspFont = latoRegularFontFamily.name
-
-	//onWidthChanged:		customMenu.hide()
-	//onHeightChanged:	customMenu.hide()
+		if(!visible)
+		{
+			helpModel.visible = false;
+			aboutModel.visible = false;
+		}
 
 	property real devicePixelRatio: Screen.devicePixelRatio
 
@@ -59,11 +59,6 @@ Window
 	{
 		mainWindowRoot.visibility = mainWindowRoot.visibility === Window.FullScreen ? Window.Windowed : Window.FullScreen;
 	}
-
-	FontLoader { id: latoLightFontFamily;	source: "qrc:/core/font/Lato-Light.ttf" }
-	FontLoader { id: latoRegularFontFamily;	source: "qrc:/core/font/Lato-Regular.ttf" }
-
-
 
 	Item
 	{
@@ -157,7 +152,7 @@ Window
 			Rectangle
 			{
 				id:				darkeningBackgroundRect;
-				color:			Theme.black;
+				color:			jaspTheme.darkeningColour
 				anchors.fill:	parent;
 				opacity:		visible ? 0.4 : 0.0
 				visible:		fileMenuModel.visible || modulesMenu.opened
@@ -169,7 +164,7 @@ Window
 					PropertyAnimation
 					{
 						id:				darkeningBackgroundRectDarkening
-						duration:		Theme.fileMenuSlideDuration
+						duration:		jaspTheme.fileMenuSlideDuration
 						easing.type:	Easing.OutCubic
 					}
 				}

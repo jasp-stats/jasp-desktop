@@ -1,7 +1,7 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.4
 import JASP.Controls	1.0
-import JASP.Theme		1.0
+
 import QtGraphicalEffects 1.12
 
 DropArea
@@ -44,7 +44,7 @@ DropArea
 		}
 		height:	1
 		width:	parent.width + 1
-		color:	Theme.buttonBorderColor
+		color:	jaspTheme.buttonBorderColor
 		visible: draggableItem.state != "dragging"
 	}
 
@@ -93,10 +93,10 @@ DropArea
 		ToolTip
 		{
 			text:			qsTr("Drag to reorder the analyses")
-			timeout:		Theme.toolTipTimeout
-			delay:			Theme.toolTipDelay
-			font:			Theme.font
-			background:		Rectangle { color:	Theme.tooltipBackgroundColor }
+			timeout:		jaspTheme.toolTipTimeout
+			delay:			jaspTheme.toolTipDelay
+			font:			jaspTheme.font
+			background:		Rectangle { color:	jaspTheme.tooltipBackgroundColor }
 			visible:		mouseArea.containsMouse && !analysesModel.moving && analysesModel.rowCount() > 1
 			y:				mouseArea.mouseY
 			x:				mouseArea.mouseX + 5
@@ -134,7 +134,7 @@ DropArea
 			width			: draggableItem.width
 			height			: draggableItem.height
 			visible			: false
-			color			: Theme.grayDarker
+			color			: jaspTheme.grayDarker
 			spread			: 0.2
 			cornerRadius	: expanderButton.radius + glowRadius
 			glowRadius		: 5
@@ -151,7 +151,7 @@ DropArea
 			}
 			height: 1
 			width: parent.width
-			color: Theme.buttonBorderColor
+			color: jaspTheme.buttonBorderColor
 		}
 
 		Rectangle
@@ -162,7 +162,7 @@ DropArea
 			anchors.left:		parent.left
 			anchors.right:		parent.right
 			z:					shadow.z + 1
-			color:				Theme.uiBackground
+			color:				jaspTheme.uiBackground
 			clip:				true
 
 			property bool		expanded:			analysesModel.currentAnalysisIndex === myIndex
@@ -190,14 +190,14 @@ DropArea
 			Item
 			{
 				id:				expanderRectangle
-				height:			Theme.formExpanderHeaderHeight  //label.contentHeight
+				height:			jaspTheme.formExpanderHeaderHeight  //label.contentHeight
 
 				anchors
 				{
 					left:		parent.left
 					right:		parent.right
 					top:		parent.top
-					topMargin:	Theme.formMargin
+					topMargin:	jaspTheme.formMargin
 				}
 
 				Image
@@ -212,7 +212,7 @@ DropArea
 					rotation:		expanderButton.expanded ? 90 : 0
 					height:			analysisTitle.height * 0.88 //expanderRectangle.height / 1.5
 					width:			height
-					source:			"qrc:/icons/large-arrow-right.png"
+					source:			jaspTheme.iconPath + "/large-arrow-right.png"
 					sourceSize
 					{
 						width:	expanderIcon.width * 2
@@ -241,7 +241,8 @@ DropArea
 					{
 						id:				analysisTitle
 						text:			loader.myAnalysis != null ? loader.myAnalysis.title : "?"
-						font:			Theme.fontLabel
+						font:			jaspTheme.fontLabel
+						color:			jaspTheme.textEnabled
 						visible:		!analysisTitleInput.visible
 						elide:			Text.ElideMiddle
 
@@ -256,10 +257,10 @@ DropArea
 					TextInput
 					{
 						id:					analysisTitleInput
-						font:				Theme.fontLabel
+						font:				jaspTheme.fontLabel
 						visible:			false
 						selectByMouse:		true
-						color:				Theme.grayDarker
+						color:				jaspTheme.grayDarker
 						clip:				true
 
 						anchors
@@ -297,7 +298,7 @@ DropArea
 				{
 					id:					editButton
 					width:				height
-					iconSource:			"qrc:/icons/edit-pencil.png" // Icon made by Chanut from https://www.flaticon.com/
+					iconSource:			jaspTheme.iconPath + "/edit-pencil.png" // Icon made by Chanut from https://www.flaticon.com/
 					enabled:			expanderButton.expanded
 					onClicked:			analysisTitleInput.startEditing();
 					toolTip:			qsTr("Edit the title of this analysis")
@@ -317,7 +318,7 @@ DropArea
 				{
 					id:					copyButton
 					width:				height
-					iconSource:			enabled ? "qrc:/icons/duplicate.png" : "qrc:/icons/duplicate_disabled.png"
+					iconSource:			enabled ? jaspTheme.iconPath + "/duplicate.png" : jaspTheme.iconPath + "/duplicate_disabled.png"
 					enabled:			expanderButton.expanded
 					onClicked:			analysisFormExpander.myAnalysis.duplicateMe()
 					toolTip:			qsTr("Duplicate this analysis")
@@ -337,7 +338,7 @@ DropArea
 				{
 					id:					helpButton
 					width:				height
-					iconSource:			enabled ? "qrc:/images/info-button.png" : "qrc:/images/info-button-black.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
+					iconSource:			enabled ? jaspTheme.iconPath + "info-button.png" : jaspTheme.iconPath + "info-button-black.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
 					opacity:			editButton.opacity
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
@@ -358,7 +359,7 @@ DropArea
 				{
 					id:					closeButton
 					width:				height
-					iconSource:			enabled ? "qrc:/images/close-button.png" : "qrc:/images/close-button-black.png" // {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
+					iconSource:			enabled ? jaspTheme.iconPath + "close-button.png" : jaspTheme.iconPath + "close-button-black.png" // {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
 					opacity:			editButton.opacity
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
@@ -388,7 +389,7 @@ DropArea
 					top:				expanderRectangle.bottom
 					left:				parent.left
 					right:				parent.right
-					margins:			Theme.formMargin
+					margins:			jaspTheme.formMargin
 				}
 
 				Rectangle
@@ -396,7 +397,7 @@ DropArea
 					id: errorRect
 					visible:		loader.status === Loader.Error
 					anchors.top:	parent.top
-					color:			Theme.errorMessagesBackgroundColor
+					color:			jaspTheme.errorMessagesBackgroundColor
 					width:			parent.width
 					height:			visible ? errorMessagesText.height : 0
 
@@ -427,7 +428,7 @@ DropArea
 					anchors
 					{
 						top:			errorRect.bottom
-						topMargin:		errorRect.visible ? Theme.formMargin : 0
+						topMargin:		errorRect.visible ? jaspTheme.formMargin : 0
 						left:			parent.left
 						right:			parent.right
 					}

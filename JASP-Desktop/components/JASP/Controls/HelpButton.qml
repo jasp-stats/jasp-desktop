@@ -27,7 +27,7 @@ MenuButton
 	property string helpPage: ""
 
 	//width: 				20 * preferencesModel.uiScale
-	iconSource: 		"qrc:/images/info-button.png"
+	iconSource: 		jaspTheme.iconPath + "info-button.png"
 	radius: 			10 * preferencesModel.uiScale
 	Layout.alignment: 	Qt.AlignRight
 	onClicked: 			helpModel.showOrTogglePage(myAnalysis.fullHelpPath(helpPage))

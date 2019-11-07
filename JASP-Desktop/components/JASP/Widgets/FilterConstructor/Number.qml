@@ -14,13 +14,14 @@ Item
 
 	TextInput
 	{
-		id: nummer
-		text: value
+		id:							nummer
+		text:						value
 
 		anchors.horizontalCenter:	parent.horizontalCenter
 		anchors.verticalCenter:		parent.verticalCenter
 
-		font.pixelSize: filterConstructor.fontPixelSize
+		font.pixelSize:				filterConstructor.fontPixelSize
+		color:						jaspTheme.textEnabled
 
 
 		onAccepted: focus = false

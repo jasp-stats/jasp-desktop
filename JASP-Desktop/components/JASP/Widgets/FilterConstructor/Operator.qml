@@ -81,18 +81,19 @@ Item
 
 	Text
 	{
-		id: haakjesLinks
-		anchors.top: parent.top
-		anchors.bottom: parent.bottom
+		id:						haakjesLinks
+		anchors.top:			parent.top
+		anchors.bottom:			parent.bottom
 		//width: contentWidth
 
-		verticalAlignment: Text.AlignVCenter
-		horizontalAlignment: Text.AlignHCenter
+		verticalAlignment:		Text.AlignVCenter
+		horizontalAlignment:	Text.AlignHCenter
 
-		text: opRoot.isNested ? "(" : ""
-		font.pixelSize: filterConstructor.fontPixelSize
+		text:					opRoot.isNested ? "(" : ""
+		font.pixelSize:			filterConstructor.fontPixelSize
+		color:					jaspTheme.textEnabled
 
-		visible: opRoot.isNested
+		visible:				opRoot.isNested
 	}
 
 	DropSpot {
@@ -130,23 +131,23 @@ Item
 
 	Text
 	{
-		id: opText
-		anchors.top: parent.top
-		anchors.bottom: parent.bottom
-		//width: max(opRoot.initialWidth / 4
-		leftPadding: 2
-		rightPadding: 2
-		x: leftDrop.x + leftDrop.width
+		id:						opText
+		anchors.top:			parent.top
+		anchors.bottom:			parent.bottom
+		//width:				max(opRoot.initialWidth / 4
+		leftPadding:			2
+		rightPadding:			2
+		x:						leftDrop.x + leftDrop.width
 
-		verticalAlignment: Text.AlignVCenter
-		horizontalAlignment: Text.AlignHCenter
+		verticalAlignment:		Text.AlignVCenter
+		horizontalAlignment:	Text.AlignHCenter
 
-		text: opRoot.operator
-		font.pixelSize: filterConstructor.fontPixelSize
+		text:					opRoot.operator
+		font.pixelSize:			filterConstructor.fontPixelSize
+		color:					jaspTheme.textEnabled
+		visible:				!opImg.visible
 
-		visible: !opImg.visible
-
-		font.bold: true
+		font.bold:				true
 	}
 
 
@@ -169,18 +170,19 @@ Item
 
 	Text
 	{
-		id: haakjesRechts
-		anchors.top: parent.top
-		anchors.bottom: parent.bottom
-		//width: opRoot.isNested ? opRoot.initialWidth / 8 : 0
-		x: rightDrop.x + rightDrop.width
+		id:						haakjesRechts
+		anchors.top:			parent.top
+		anchors.bottom:			parent.bottom
+		//width:				opRoot.isNested ? opRoot.initialWidth / 8 : 0
+		x:						rightDrop.x + rightDrop.width
 
-		verticalAlignment: Text.AlignVCenter
-		horizontalAlignment: Text.AlignHCenter
+		verticalAlignment:		Text.AlignVCenter
+		horizontalAlignment:	Text.AlignHCenter
 
 		//text: ")"
-		text: opRoot.isNested ? ")" : ""
-		font.pixelSize: filterConstructor.fontPixelSize
-		visible: opRoot.isNested
+		text:					opRoot.isNested ? ")" : ""
+		font.pixelSize:			filterConstructor.fontPixelSize
+		color:					jaspTheme.textEnabled
+		visible:				opRoot.isNested
 	}
 }

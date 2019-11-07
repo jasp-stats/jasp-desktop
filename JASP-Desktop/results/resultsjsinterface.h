@@ -90,6 +90,7 @@ public slots:
 	void removeAnalysis(Analysis *analysis);
 	void removeAnalyses();
 	void moveAnalyses(size_t fromId, size_t toId);
+	void setThemeCss(QString themeName);
 
 //end callables
 
@@ -113,7 +114,7 @@ public slots:
 	void setZoomInWebEngine();
 
 private:
-	void setGlobalJsValues();
+	void	setGlobalJsValues();
 	QString escapeJavascriptString(const QString &str);
 
 private slots:

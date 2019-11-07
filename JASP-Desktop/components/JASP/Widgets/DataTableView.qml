@@ -2,7 +2,7 @@ import QtQuick				2.9
 import QtQuick.Controls		1.4 as Old
 import QtQuick.Controls		2.2
 import QtGraphicalEffects	1.0
-import JASP.Theme			1.0
+
 
 FocusScope
 {
@@ -12,11 +12,11 @@ FocusScope
 
 	Rectangle
 	{
-		color:			Theme.white
+		color:			jaspTheme.white
 		anchors.fill:	parent
 		z:				-1
 		border.width:	1
-		border.color:	Theme.uiBorder
+		border.color:	jaspTheme.uiBorder
 
 		JASPDataView
 		{
@@ -28,10 +28,18 @@ FocusScope
 			anchors.right:		parent.right
 			anchors.bottom:		dataStatusBar.top
 
-			font:	Theme.font
+			font:	jaspTheme.font
 
 			model:				dataSetModel
 			onDoubleClicked:	__myRoot.doubleClicked()
+
+			itemDelegate:
+				Text
+				{
+					text:	itemText
+					color:	itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
+					font:	dataFont
+				}
 
 			leftTopCornerItem:
 				RectangularButton
@@ -39,7 +47,7 @@ FocusScope
 					id:				filterToggleButton
 					width:			dataTableView.rowNumberWidth
 					toolTip:		filterWindow.opened ? "Hide filter" : "Show filter"
-					iconSource:		"qrc:/images/filter.png"
+					iconSource:		jaspTheme.iconPath + "filter.png"
 					onClicked:		filterWindow.toggle()
 					border.width:	0
 				}
@@ -50,7 +58,7 @@ FocusScope
 					id:				addColumnButton
 					width:			height
 					toolTip:		"Add computed column"
-					iconSource:		"qrc:/icons/addition-sign.svg"
+					iconSource:		jaspTheme.iconPath + "/addition-sign.svg"
 					onClicked:		createComputeDialog.open()
 					border.width:	0
 				}
@@ -60,11 +68,12 @@ FocusScope
 				{
 					//gradient: Gradient{	GradientStop { position: 0.0;	color: "#EEEEEE" }	GradientStop { position: 0.75;	color: "#EEEEEE" }
 					//					GradientStop { position: 0.77;	color: "#DDDDDD" }	GradientStop { position: 1.0;	color: "#DDDDDD" }	}
-					color:	Theme.uiBackground
+					color:	jaspTheme.uiBackground
 					Text {
 						text:				rowIndex + 1
 						anchors.centerIn:	parent
 						font:				dataTableView.font
+						color:				jaspTheme.textEnabled
 					}
 
 				}
@@ -72,7 +81,7 @@ FocusScope
 			columnHeaderDelegate: Rectangle
 			{
 				id:		headerRoot
-				color:	Theme.uiBackground
+				color:	jaspTheme.uiBackground
 							property real	iconTextPadding:	10
 				readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
 
@@ -85,7 +94,7 @@ FocusScope
 
 					function myColumnType() {return dataSetModel.columnIcon(columnIndex)}
 
-					source: dataSetModel.getColumnTypesWithCorrespondingIcon()[myColumnType()]
+					source: jaspTheme.iconPath + dataSetModel.getColumnTypesWithCorrespondingIcon()[myColumnType()]
 					width:	headerRoot.__iconDim
 					height: headerRoot.__iconDim
 
@@ -101,10 +110,6 @@ FocusScope
 							labelModel.visible = false;
 					}
 
-					ColumnTypeModel
-					{
-						id: columnTypeModel
-					}
 
 					MouseArea
 					{
@@ -121,9 +126,10 @@ FocusScope
 
 								customMenu.hide()
 							}
+
 							var props = {
-								"model"			: columnTypeModel,
-								"functionCall"	: functionCall
+								"model":		columnTypesModel,
+								"functionCall": functionCall
 							};
 
 							customMenu.scrollOri.x	= dataTableView.contentX;
@@ -158,7 +164,7 @@ FocusScope
 					anchors.verticalCenter: parent.verticalCenter
 					anchors.margins:		visible ? 1 : 0
 
-					source:				"qrc:/icons/computed.png"
+					source:				jaspTheme.iconPath + "/computed.png"
 					sourceSize {	width:	headerRoot.__iconDim * 2
 									height:	headerRoot.__iconDim * 2 }
 
@@ -184,6 +190,7 @@ FocusScope
 
 					text:			headerText
 					font:			dataTableView.font
+					color:			jaspTheme.textEnabled
 
 					horizontalAlignment:		Text.AlignHCenter
 
@@ -195,7 +202,7 @@ FocusScope
 				{
 					id:			colIsInvalidated
 
-					source:		"qrc:/icons/loading.gif"
+					source:		jaspTheme.iconPath + "/loading.gif"
 					width:		visible ? headerRoot.__iconDim : 0
 					height:		headerRoot.__iconDim
 					playing:	visible
@@ -214,7 +221,7 @@ FocusScope
 					height:		headerRoot.__iconDim
 					visible:	columnError.length > 0 // && !columnIsInvalidated
 
-					source:					"qrc:/icons/error.png"
+					source:					jaspTheme.iconPath + "/error.png"
 					sourceSize {	width:	headerRoot.__iconDim * 2
 									height:	headerRoot.__iconDim * 2 }
 
@@ -245,7 +252,7 @@ FocusScope
 					width:					columnIsFiltered ? headerRoot.__iconDim : 0
 					height:					headerRoot.__iconDim
 
-					source:					"qrc:/images/filter.png"
+					source:					jaspTheme.iconPath + "filter.png"
 					sourceSize {	width:	headerRoot.__iconDim * 2
 									height:	headerRoot.__iconDim * 2 }
 
@@ -297,8 +304,8 @@ FocusScope
 			anchors.right:	parent.right
 			anchors.bottom: parent.bottom
 
-			color:			"#EEEEEE"
-			border.color:	"lightGrey"
+			color:			jaspTheme.grayMuchLighter
+			border.color:	jaspTheme.grayLighter
 			border.width:	1
 
 			height:			datafiltertatusText.text.length > 0 ? datafiltertatusText.contentHeight + (16 * preferencesModel.uiScale) : 0
@@ -308,6 +315,7 @@ FocusScope
 				id:						datafiltertatusText
 				text:					filterModel.statusBarText
 				font:					dataTableView.font
+				color:					jaspTheme.textEnabled
 				anchors.left:			parent.left
 				anchors.verticalCenter:	parent.verticalCenter
 				anchors.leftMargin:		8 * preferencesModel.uiScale

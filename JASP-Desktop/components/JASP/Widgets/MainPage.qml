@@ -22,7 +22,7 @@ import QtWebChannel		1.0
 import QtQuick.Controls 2.4
 import QtQuick.Controls 1.4 as OLD
 import QtQuick.Layouts	1.3
-import JASP.Theme		1.0
+
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
 
@@ -34,7 +34,7 @@ Item
 	{
 		if(!mainWindow.analysesAvailable)											data.width = splitViewContainer.width
 		else if(data.wasMaximized)													return; //wasMaximized binds!
-		else if(splitViewContainer.width <= data.width + Theme.splitHandleWidth)	data.maximizeData();
+		else if(splitViewContainer.width <= data.width + jaspTheme.splitHandleWidth)	data.maximizeData();
 	}
 
 	OLD.SplitView
@@ -45,7 +45,7 @@ Item
 		width:			parent.width + hackySplitHandlerHideWidth
 
 		//hackySplitHandlerHideWidth is there to create some extra space on the right side for the analysisforms I put inside the splithandle. https://github.com/jasp-stats/INTERNAL-jasp/issues/144
-		property int  hackySplitHandlerHideWidth:	( analysesModel.visible ? Theme.formWidth + 3 + Theme.scrollbarBoxWidthBig : 0) + ( mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0 )
+		property int  hackySplitHandlerHideWidth:	( analysesModel.visible ? jaspTheme.formWidth + 3 + jaspTheme.scrollbarBoxWidthBig : 0) + ( mainWindow.analysesAvailable ? jaspTheme.splitHandleWidth : 0 )
 
 		DataPanel
 		{
@@ -53,7 +53,7 @@ Item
 			visible:				mainWindow.dataAvailable || fakeEmptyDataForSumStatsEtc //|| analysesModel.count > 0
 			z:						1
 
-			property real maxWidth:						fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? Theme.splitHandleWidth : 0)
+			property real maxWidth:						fakeEmptyDataForSumStatsEtc ? 0 : splitViewContainer.width - (mainWindow.analysesAvailable ? jaspTheme.splitHandleWidth : 0)
 			property bool fakeEmptyDataForSumStatsEtc:	!mainWindow.dataAvailable && mainWindow.analysesAvailable
 			property bool wasMaximized:					false
 
@@ -120,12 +120,12 @@ Item
 		Rectangle
 		{
 			id:						giveResultsSomeSpace
-			implicitWidth:			Theme.resultWidth + panelSplit.hackySplitHandlerHideWidth
+			implicitWidth:			jaspTheme.resultWidth + panelSplit.hackySplitHandlerHideWidth
 			Layout.fillWidth:		true
 			z:						3
 			visible:				mainWindow.analysesAvailable
-			onVisibleChanged:		if(visible) width = Theme.resultWidth; else data.maximizeData()
-			color:					analysesModel.currentAnalysisIndex !== -1 ? Theme.uiBackground : Theme.white
+			onVisibleChanged:		if(visible) width = jaspTheme.resultWidth; else data.maximizeData()
+			color:					analysesModel.currentAnalysisIndex !== -1 ? jaspTheme.uiBackground : jaspTheme.white
 
 			Connections
 			{
@@ -134,12 +134,12 @@ Item
 				{
 					//make sure we get to see the results!
 
-					var inputOutputWidth	= splitViewContainer.width - (data.width + Theme.splitHandleWidth)
-					var remainingDataWidth	= Math.max(0, data.width - (Theme.splitHandleWidth + Theme.resultWidth));
+					var inputOutputWidth	= splitViewContainer.width - (data.width + jaspTheme.splitHandleWidth)
+					var remainingDataWidth	= Math.max(0, data.width - (jaspTheme.splitHandleWidth + jaspTheme.resultWidth));
 
 					if(inputOutputWidth < 100 * preferencesModel.uiScale)
 						 mainWindow.dataPanelVisible = false;
-					else if(inputOutputWidth < Theme.resultWidth)
+					else if(inputOutputWidth < jaspTheme.resultWidth)
 					{
 						if(remainingDataWidth === 0)	mainWindow.dataPanelVisible = false;
 						else							data.width = remainingDataWidth

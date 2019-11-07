@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.2
-import JASP.Theme 1.0
+
 import JASP.Widgets 1.0
 import JASP.Controls 1.0
 
@@ -13,7 +13,7 @@ ListView
 	boundsBehavior:					Flickable.StopAtBounds
 	clip:							true
 
-	implicitHeight:					Theme.defaultRectangularButtonHeight + (scrollBar.visible ? scrollBar.height + ( 4 * preferencesModel.uiScale ) : 0)
+	implicitHeight:					jaspTheme.defaultRectangularButtonHeight + (scrollBar.visible ? scrollBar.height + ( 4 * preferencesModel.uiScale ) : 0)
 	height:							implicitHeight
 	onCountChanged:					currentIndex = count - 1;
 	highlightFollowsCurrentItem:	true
@@ -55,7 +55,7 @@ ListView
 				{
 					id:					rightArrow
 					anchors.centerIn: 	parent
-					source:				"qrc:/icons/right-arrow.png"
+					source:				jaspTheme.iconPath + "/right-arrow.png"
 					sourceSize.width:	parent.width * 2
 					sourceSize.height:	parent.height * 2
 

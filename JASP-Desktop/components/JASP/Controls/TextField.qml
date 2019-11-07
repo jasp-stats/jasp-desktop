@@ -19,7 +19,7 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
-import JASP.Theme 1.0
+
 
 JASPControl
 {
@@ -37,7 +37,7 @@ JASPControl
 	property alias	value:				control.text
 	property string	defaultValue:		""
 	property string lastValidValue:		defaultValue
-	property int	fieldWidth:			Theme.textFieldWidth
+	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	true
 	property bool	showBorder:			useExternalBorder
@@ -82,20 +82,20 @@ JASPControl
 	RowLayout
 	{
 		id:			row
-		spacing:	Theme.labelSpacing
+		spacing:	jaspTheme.labelSpacing
 		
 		Rectangle
 		{
 			implicitWidth:		beforeLabel.implicitWidth
 			implicitHeight:		control.implicitHeight
-			color:				debug ? Theme.debugBackgroundColor : "transparent"
+			color:				debug ? jaspTheme.debugBackgroundColor : "transparent"
 			Label
 			{
 				id:						beforeLabel
 				visible:				beforeLabel.text && textField.visible ? true : false
-				font:					Theme.font
+				font:					jaspTheme.font
 				anchors.verticalCenter: parent.verticalCenter				
-				color:					enabled ? Theme.textEnabled : Theme.textDisabled
+				color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 			}
 		}
 		
@@ -103,38 +103,38 @@ JASPControl
 		{
 			id:						control
 			text:					textField.lastValidValue
-			implicitWidth:			textField.fieldWidth //+ (textField.useExternalBorder ? 2 * Theme.jaspControlHighlightWidth : 0)
-			font:					Theme.font
+			implicitWidth:			textField.fieldWidth //+ (textField.useExternalBorder ? 2 * jaspTheme.jaspControlHighlightWidth : 0)
+			font:					jaspTheme.font
 			focus:					true
-			color:					enabled ? Theme.textEnabled : Theme.textDisabled
-			Layout.leftMargin:		beforeLabel.text ? controlXOffset : -Theme.labelSpacing
+			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+			Layout.leftMargin:		beforeLabel.text ? controlXOffset : -jaspTheme.labelSpacing
 			
-			padding:				Theme.jaspControlPadding
-			leftPadding:			Theme.labelSpacing
+			padding:				jaspTheme.jaspControlPadding
+			leftPadding:			jaspTheme.labelSpacing
 			selectByMouse:			true
-			selectedTextColor:		Theme.white
-			selectionColor:			Theme.itemSelectedColor
+			selectedTextColor:		jaspTheme.white
+			selectionColor:			jaspTheme.itemSelectedColor
 
 			background: Rectangle
 			{
 				id:				controlBackground
-				color:			Theme.controlBackgroundColor
+				color:			jaspTheme.controlBackgroundColor
 				border.width:	textField.showBorder && !control.activeFocus	? 1					: 0
-				border.color:	textField.showBorder							? Theme.borderColor : "transparent"
+				border.color:	textField.showBorder							? jaspTheme.borderColor : "transparent"
 			}
 
 			Rectangle
 			{
 				id:					externalControlBackground
-				height:				parent.implicitHeight + Theme.jaspControlHighlightWidth
-				width:				parent.implicitWidth + Theme.jaspControlHighlightWidth
+				height:				parent.implicitHeight + jaspTheme.jaspControlHighlightWidth
+				width:				parent.implicitWidth + jaspTheme.jaspControlHighlightWidth
 				color:				"transparent"
 				border.width:		3
-				border.color:		control.acceptableInput ? "transparent" : Theme.red // Needed when the QML file has wrong default value
+				border.color:		control.acceptableInput ? "transparent" : jaspTheme.red // Needed when the QML file has wrong default value
 				anchors.centerIn:	parent
 				opacity:			debug ? .3 : 1
 				visible:			textField.useExternalBorder
-				radius:				Theme.jaspControlHighlightWidth
+				radius:				jaspTheme.jaspControlHighlightWidth
 			}
 			
 			onActiveFocusChanged:
@@ -154,7 +154,7 @@ JASPControl
 					text = textField.lastValidValue
 					msg += qsTr("Restoring last correct value: %1").arg(text);
 					showControlErrorTemporary(msg)
-					textField.background.border.color = Theme.red;
+					textField.background.border.color = jaspTheme.red;
 					redToNormal.start()
 				}
 				else
@@ -166,9 +166,9 @@ JASPControl
 				id:			redToNormal
 				target:		textField.background
 				property:	"border.color"
-				to:			Theme.focusBorderColor
+				to:			jaspTheme.focusBorderColor
 				duration:	1000
-				onStopped:	textField.background.border.color = control.activeFocus ? Theme.focusBorderColor : "transparent"
+				onStopped:	textField.background.border.color = control.activeFocus ? jaspTheme.focusBorderColor : "transparent"
 			}
 			
 			Keys.onReturnPressed:
@@ -177,7 +177,7 @@ JASPControl
 				{
 					if (control.validator && (typeof control.validator.validationMessage === "function"))
 						showControlError(control.validator.validationMessage(beforeLabel.text));
-					textField.background.border.color = Theme.red;
+					textField.background.border.color = jaspTheme.red;
 					redToNormal.start()
 				}
 				else
@@ -202,14 +202,14 @@ JASPControl
 		{
 			implicitWidth:	afterLabel.implicitWidth
 			implicitHeight:	control.implicitHeight
-			color:			debug ? Theme.debugBackgroundColor : "transparent"
+			color:			debug ? jaspTheme.debugBackgroundColor : "transparent"
 			Label
 			{
 				id:			afterLabel
 				visible:	afterLabel.text && textField.visible ? true : false
-				font:		Theme.font
+				font:		jaspTheme.font
 				anchors.verticalCenter: parent.verticalCenter				
-				color:		enabled ? Theme.textEnabled : Theme.textDisabled
+				color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 			}
 		}		
 	}

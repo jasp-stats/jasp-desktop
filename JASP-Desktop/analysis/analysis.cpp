@@ -475,7 +475,6 @@ void Analysis::duplicateMe()
 	_analyses->duplicateAnalysis(_id);
 }
 
-
 DataSetPackage * Analysis::getDataSetPackage() const
 {
 	return _analyses->getDataSetPackage();

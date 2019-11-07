@@ -1,7 +1,7 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import JASP.Theme 1.0
+
 import JASP.Widgets 1.0
 import FileOperation 1.0
 
@@ -53,7 +53,7 @@ FocusScope
 			PropertyAnimation
 			{
 				id:				fileMenuAnimation
-				duration:		Theme.fileMenuSlideDuration
+				duration:		jaspTheme.fileMenuSlideDuration
 				easing.type:	Easing.OutCubic
 			}
 		}
@@ -69,9 +69,9 @@ FocusScope
 			Rectangle
 			{
 				z:				-1
-				color:			Theme.fileMenuColorBackground
+				color:			jaspTheme.fileMenuColorBackground
 				border.width:	1
-				border.color:	Theme.uiBorder
+				border.color:	jaspTheme.uiBorder
 				anchors.fill:	parent
 			}
 
@@ -79,7 +79,7 @@ FocusScope
 			{
 				id: fileAction
 				spacing: 4
-				width: parent.width - Theme.generalAnchorMargin
+				width: parent.width - jaspTheme.generalAnchorMargin
 
 				anchors
 				{
@@ -172,16 +172,16 @@ FocusScope
 				PropertyAnimation
 				{
 					id:				resourceMenuAnimation
-					duration:		Theme.fileMenuSlideDuration
+					duration:		jaspTheme.fileMenuSlideDuration
 					easing.type:	Easing.OutCubic
 				}
 			}
 
 			Rectangle
 			{
-				color:			Theme.fileMenuColorBackground
+				color:			jaspTheme.fileMenuColorBackground
 				border.width:	1
-				border.color:	Theme.uiBorder
+				border.color:	jaspTheme.uiBorder
 				z:				-1
 				anchors.fill:	parent
 			}
@@ -197,7 +197,7 @@ FocusScope
 				anchors.top:				parent.top
 				anchors.topMargin:			5 * preferencesModel.uiScale
 				anchors.horizontalCenter:	parent.horizontalCenter
-				width:						parent.width - Theme.generalAnchorMargin
+				width:						parent.width - jaspTheme.generalAnchorMargin
 
 				spacing:					6 * preferencesModel.uiScale
 
@@ -253,7 +253,7 @@ FocusScope
 			y:			0
 			x:			resourceScreen.x + resourceScreen.width
 			height:		resourceScreen.height
-			width:		Theme.shadowRadius
+			width:		jaspTheme.shadowRadius
 
 			visible:	resourceScreen.visible
 			z:			-3
@@ -267,7 +267,7 @@ FocusScope
 				rotation: -90
 				gradient: Gradient
 				{
-					GradientStop	{ position: 0.0; color: Theme.shadow; }
+					GradientStop	{ position: 0.0; color: jaspTheme.shadow; }
 					GradientStop	{ position: 1.0; color: "transparent" }
 				}
 			}
@@ -291,8 +291,8 @@ FocusScope
 			height:			parent.height
 
 			border.width:	1
-			border.color:	Theme.grayDarker
-			color:			Theme.fileMenuColorBackground
+			border.color:	jaspTheme.grayDarker
+			color:			jaspTheme.fileMenuColorBackground
 			z:				-2
 
 			Behavior on x
@@ -302,7 +302,7 @@ FocusScope
 				PropertyAnimation
 				{
 					id:				fileMenuResourceLoaderAnimation
-					duration:		Theme.fileMenuSlideDuration
+					duration:		jaspTheme.fileMenuSlideDuration
 					easing.type:	Easing.OutCubic
 				}
 			}

@@ -1,5 +1,5 @@
 import QtQuick 2.9
-import JASP.Theme 1.0
+
 
 Item
 {
@@ -145,7 +145,7 @@ Item
 		{
 			id: opStripe
 			visible: operator === "/"
-			color: Theme.black
+			color: jaspTheme.black
 			height: 2
 
 			anchors.left:			parent.left

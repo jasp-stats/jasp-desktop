@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QTimer>
 #include "log.h"
+#include "qquick/jasptheme.h"
 
 FileMenuBasicListModel::FileMenuBasicListModel(QObject *parent, FileSystem * model) : QAbstractListModel(parent), _model(model)
 {
@@ -37,8 +38,8 @@ QVariant FileMenuBasicListModel::data(const QModelIndex &index, int role) const
 	case DescriptionRole:			return item.description;
 	case TypeRole:					return item.entryType;
 	case AssociatedDataFileRole:	return QFileInfo(item.associatedDataFile).fileName();
-	case IconSourceRole:			return FileSystemEntry::sourcesIcons()[item.entryType];
-	case DataIconSourceRole:		return FileSystemEntry::sourcesIcons()[FileSystemEntry::CSV];
+	case IconSourceRole:			return JaspTheme::currentIconPath() + FileSystemEntry::sourcesIcons()[item.entryType];
+	case DataIconSourceRole:		return JaspTheme::currentIconPath() + FileSystemEntry::sourcesIcons()[FileSystemEntry::CSV];
 	case DirRole:
 	{
 		if (QFileInfo(item.path).path().toLower().startsWith("http:") || QFileInfo(item.path).path().toLower().startsWith("https:"))

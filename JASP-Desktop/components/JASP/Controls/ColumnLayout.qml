@@ -18,9 +18,9 @@
 
 import QtQuick 2.11
 import QtQuick.Layouts 1.3
-import JASP.Theme 1.0
+
 
 ColumnLayout
 {
-	spacing: Theme.rowGridSpacing
+	spacing: jaspTheme.rowGridSpacing
 }

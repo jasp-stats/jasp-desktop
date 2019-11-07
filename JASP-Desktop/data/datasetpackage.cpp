@@ -20,6 +20,7 @@
 #include "sharedmemory.h"
 #include <QThread>
 #include "engine/enginesync.h"
+#include "qquick/jasptheme.h"
 
 #define ENUM_DECLARATION_CPP
 #include "datasetpackage.h"
@@ -608,15 +609,15 @@ QVariant DataSetPackage::getColumnTypesWithCorrespondingIcon() const
 
 	if(ColumnTypeAndIcons.size() == 0)
 	{
-		ColumnTypeAndIcons.push_back(QVariant(QString("")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("qrc:///icons/variable-nominal.svg")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("qrc:///icons/variable-nominal-text.svg")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("qrc:///icons/variable-ordinal.svg")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("")));
-		ColumnTypeAndIcons.push_back(QVariant(QString("qrc:///icons/variable-scale.svg")));
+		ColumnTypeAndIcons.push_back("");
+		ColumnTypeAndIcons.push_back("variable-nominal.png");
+		ColumnTypeAndIcons.push_back("variable-nominal-text.png");
+		ColumnTypeAndIcons.push_back("");
+		ColumnTypeAndIcons.push_back("variable-ordinal.png");
+		ColumnTypeAndIcons.push_back("");
+		ColumnTypeAndIcons.push_back("");
+		ColumnTypeAndIcons.push_back("");
+		ColumnTypeAndIcons.push_back("variable-scale.png");
 	}
 
 	return QVariant(ColumnTypeAndIcons);

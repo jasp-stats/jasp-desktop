@@ -16,7 +16,7 @@
 //
 
 import QtQuick				2.11
-import JASP.Theme			1.0
+
 import QtQuick.Controls		2.4
 
 FocusScope
@@ -63,7 +63,7 @@ FocusScope
 		if (typeof(DEBUG_MODE) === "undefined" || !DEBUG_MODE)
 			visible = false;
 		else if (background)
-			background.color = Theme.debugBackgroundColor
+			background.color = jaspTheme.debugBackgroundColor
 		
 		for (var i = 0; i < childControls.length; i++)
 			childControls[i].setDebugState();
@@ -102,8 +102,8 @@ FocusScope
 			PropertyChanges
 			{
 				target:			focusIndicator
-				border.color:	Theme.focusBorderColor
-				border.width:	Theme.jaspControlHighlightWidth
+				border.color:	jaspTheme.focusBorderColor
+				border.width:	jaspTheme.jaspControlHighlightWidth
 			}
 		},
 
@@ -114,8 +114,8 @@ FocusScope
 			PropertyChanges
 			{
 				target:			focusIndicator
-				border.color:	Theme.dependencyBorderColor
-				border.width:	Theme.jaspControlHighlightWidth
+				border.color:	jaspTheme.dependencyBorderColor
+				border.width:	jaspTheme.jaspControlHighlightWidth
 			}
 		}
 	]
@@ -146,9 +146,9 @@ FocusScope
 	property string	toolTip:				""
 
 	ToolTip.text:				toolTip
-	ToolTip.timeout:			Theme.toolTipTimeout
-	ToolTip.delay:				Theme.toolTipDelay
-	ToolTip.toolTip.font:		Theme.font
+	ToolTip.timeout:			jaspTheme.toolTipTimeout
+	ToolTip.delay:				jaspTheme.toolTipDelay
+	ToolTip.toolTip.font:		jaspTheme.font
 	ToolTip.visible:			toolTip !== "" && controlMouseArea.containsMouse
 
 	MouseArea

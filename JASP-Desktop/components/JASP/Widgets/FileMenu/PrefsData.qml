@@ -1,7 +1,7 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.4
 import JASP.Widgets		1.0
-import JASP.Theme		1.0
+
 import JASP.Controls	1.0
 
 
@@ -24,15 +24,15 @@ Item
 		anchors.left:		menuHeader.left
 		anchors.right:		menuHeader.right
 		anchors.bottom:		menuHeader.bottom
-		anchors.topMargin:	Theme.generalMenuMargin
+		anchors.topMargin:	jaspTheme.generalMenuMargin
 		focus:				true
 		Keys.onLeftPressed: resourceMenu.forceActiveFocus();
 		focusPolicy:		Qt.WheelFocus
 
 		PrefsGroupRect
 		{
-			spacing:		Theme.rowSpacing
-			implicitWidth:	scrollPrefs.width - (Theme.generalAnchorMargin * 2)
+			spacing:		jaspTheme.rowSpacing
+			implicitWidth:	scrollPrefs.width - (jaspTheme.generalAnchorMargin * 2)
 
 			CheckBox  //Synchronize automatically
 			{
@@ -47,7 +47,7 @@ Item
 			Item //Use default spreadsheet editor
 			{
 				height:	useDefaultEditor.height + (editCustomEditor.visible ? editCustomEditor.height : 0)
-				width:	parent.width - Theme.generalAnchorMargin
+				width:	parent.width - jaspTheme.generalAnchorMargin
 
 				CheckBox
 				{
@@ -74,7 +74,7 @@ Item
 						text:				qsTr("Select custom editor")
 						onClicked:			preferencesModel.browseSpreadsheetEditor()
 						anchors.left:		parent.left
-						anchors.leftMargin: Theme.subOptionOffset
+						anchors.leftMargin: jaspTheme.subOptionOffset
 						KeyNavigation.down:	customEditorText
 						KeyNavigation.tab:	customEditorText
 					}
@@ -90,8 +90,8 @@ Item
 						}
 
 						height:				browseEditorButton.height
-						color:				Theme.white
-						border.color:		Theme.buttonBorderColor
+						color:				jaspTheme.white
+						border.color:		jaspTheme.buttonBorderColor
 						border.width:		1
 
 						TextInput
@@ -99,9 +99,9 @@ Item
 							id:					customEditorText
 							text:				preferencesModel.customEditor
 							clip:				true
-							font:				Theme.font
+							font:				jaspTheme.font
 							onTextChanged:		preferencesModel.customEditor = text
-							color:				Theme.textEnabled
+							color:				jaspTheme.textEnabled
 							KeyNavigation.down:	customThreshold
 							KeyNavigation.tab:	customThreshold
 
@@ -110,7 +110,7 @@ Item
 								left:			parent.left
 								right:			parent.right
 								verticalCenter:	parent.verticalCenter
-								margins:		Theme.generalAnchorMargin
+								margins:		jaspTheme.generalAnchorMargin
 							}
 
 							Connections
@@ -156,7 +156,7 @@ Item
 					anchors
 					{
 						left:			customThreshold.right
-						leftMargin:		Theme.generalAnchorMargin
+						leftMargin:		jaspTheme.generalAnchorMargin
 						verticalCenter:	parent.verticalCenter
 					}
 				}

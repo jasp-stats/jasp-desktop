@@ -38,7 +38,6 @@
         <file>components/JASP/Widgets/ComputeColumnWindow.qml</file>
         <file>components/JASP/Widgets/CreateComputeColumnDialog.qml</file>
         <file>components/JASP/Widgets/CustomMenu.qml</file>
-        <file>components/JASP/Widgets/ColumnTypeModel.qml</file>
         <file>components/JASP/Widgets/DataPanel.qml</file>
         <file>components/JASP/Widgets/DataTableView.qml</file>
         <file>components/JASP/Widgets/RectangularButton.qml</file>
@@ -123,5 +122,7 @@
         <file>translations/images/flag_fr.png</file>
         <file>translations/images/flag_ge.png</file>
         <file>translations/images/flag_nl.png</file>
+        <file>resources/fonts/FreeSans.ttf</file>
+        <file>components/JASP/Theme/DarkTheme.qml</file>
     </qresource>
 </RCC>

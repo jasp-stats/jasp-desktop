@@ -1,13 +1,13 @@
 import QtQuick			2.11
 import QtQuick.Controls	2.4
-import JASP.Theme		1.0
+
 
 Item
 {
 
 	Rectangle
 	{
-		color:			Theme.black
+		color:			jaspTheme.darkeningColour
 		opacity:		parent.visible ? 0.5 : 0.0
 		anchors.fill:	parent
 		Behavior on opacity	{ enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: 100 } }
@@ -22,8 +22,8 @@ Item
 	Rectangle
 	{
 		id:					progressBarHolder
-		color:				Theme.uiBackground
-		border.color:		Theme.uiBorder
+		color:				jaspTheme.uiBackground
+		border.color:		jaspTheme.uiBorder
 		border.width:		1
 		height:				120 * preferencesModel.uiScale
 		radius:				height
@@ -35,7 +35,8 @@ Item
 			id:						loadingText
 			horizontalAlignment:	Text.AlignHCenter
 			text:					mainWindow.progressBarStatus
-			font:					Theme.fontLabel
+			font:					jaspTheme.fontLabel
+			color:					jaspTheme.textEnabled
 
 			anchors
 			{
@@ -68,7 +69,7 @@ Item
 					implicitWidth:	200 * preferencesModel.uiScale
 					height:			18 * preferencesModel.uiScale
 					radius:			height
-					color:			Theme.grayLighter
+					color:			jaspTheme.grayLighter
 				}
 
 
@@ -84,7 +85,7 @@ Item
 					width:	loadingBar.visualPosition * (parent.width - (x * 2))
 					height: parent.height
 					radius: height
-					color:	Theme.blue
+					color:	jaspTheme.blue
 				}
 			}
 		}

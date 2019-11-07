@@ -24,31 +24,33 @@
 #include <QApplication>
 #include <QFileSystemWatcher>
 
-#include "dataset.h"
-#include "gui/aboutmodel.h"
-#include "data/labelmodel.h"
-#include "data/columnsmodel.h"
-#include "engine/enginesync.h"
-#include "modules/ribbonmodel.h"
-#include "gui/preferencesmodel.h"
+#include "analysis/analyses.h"
 #include "analysis/analysisform.h"
+#include "dataset.h"
+#include "data/asyncloader.h"
 #include "data/asyncloaderthread.h"
-#include "results/ploteditormodel.h"
-#include "widgets/filemenu/filemenu.h"
-#include "data/labelfiltergenerator.h"
-#include "modules/ribbonmodelfiltered.h"
-#include "results/resultsjsinterface.h"
+#include "data/columnsmodel.h"
 #include "data/computedcolumnsmodel.h"
-#include "utilities/jsonutilities.h"
-#include "results/resultmenumodel.h"
 #include "data/datasettablemodel.h"
+#include "data/fileevent.h"
+#include "data/filtermodel.h"
+#include "data/labelmodel.h"
+#include "data/labelfiltergenerator.h"
+#include "engine/enginesync.h"
+#include "gui/aboutmodel.h"
+#include "gui/columntypesmodel.h"
+#include "gui/preferencesmodel.h"
 #include "modules/dynamicmodule.h"
 #include "modules/ribbonbutton.h"
+#include "modules/ribbonmodelfiltered.h"
+#include "modules/ribbonmodel.h"
+#include "qquick/jasptheme.h"
+#include "results/ploteditormodel.h"
+#include "results/resultsjsinterface.h"
+#include "results/resultmenumodel.h"
+#include "utilities/jsonutilities.h"
 #include "utilities/helpmodel.h"
-#include "analysis/analyses.h"
-#include "data/asyncloader.h"
-#include "data/filtermodel.h"
-#include "data/fileevent.h"
+#include "widgets/filemenu/filemenu.h"
 
 #include "utilities/languagemodel.h"
 #include <vector>
@@ -125,7 +127,7 @@ public slots:
 	void	showWarning(QString title, QString msg)								{ MessageForwarder::showWarning(title, msg); }
 	QString browseOpenFile(QString caption, QString browsePath, QString filter) { return MessageForwarder::browseOpenFile(caption, browsePath, filter); }
 	QString browseOpenFileDocuments(QString caption, QString filter);
-	QString versionString() { return "JASP " + QString::fromStdString(AppInfo::version.asString(true)); }
+	QString versionString()														{ return "JASP " + QString::fromStdString(AppInfo::version.asString(true)); }
 
 	void	openFolderExternally(QDir folder);
 	void	showLogFolder();
@@ -133,7 +135,7 @@ public slots:
 	void	setDownloadNewJASPUrl(QString downloadNewJASPUrl);
 	void	moveAnalysesResults(Analysis* fromAnalysis, int index);
 
-	void	setCheckAutomaticSync(bool check)		{  _checkAutomaticSync = check;	}
+	void	setCheckAutomaticSync(bool check)									{  _checkAutomaticSync = check;	}
 	void	openGitHubBugReport() const;
 
 private:
@@ -143,6 +145,8 @@ private:
 	void startOnlineDataManager();
 	void startDataEditor(QString path);
 	void loadRibbonQML();
+	void loadQML();
+	void loadDefaultFont();
 
 	void checkUsedModules();
 
@@ -236,6 +240,7 @@ private slots:
 	void logRemoveSuperfluousFiles(int maxFilesToKeep);
 
 	void plotEditingFileChanged();
+	void jaspThemeChanged(JaspTheme * newTheme);
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
@@ -265,8 +270,10 @@ private:
 	PreferencesModel			*	_preferences			= nullptr;
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
 	LanguageModel				*	_languageModel			= nullptr;
+	ColumnTypesModel			*	_columnTypesModel		= nullptr;
 	LabelModel					*	_labelModel				= nullptr;
 	PlotEditorModel				*	_plotEditorModel		= nullptr;
+	JaspTheme					*	_jaspTheme				= nullptr;
 
 	QSettings						_settings;
 
@@ -296,13 +303,13 @@ private:
 									_welcomePageVisible		= true,
 									_checkAutomaticSync		= false;
 
-	static QString					_iconPath;
 	static QMap<QString, QVariant>	_iconFiles,
 									_iconInactiveFiles,
 									_iconDisabledFiles;
 
 	QString							_plotEditingFilePath;
 	QFileSystemWatcher				_plotEditingFileWatcher;
+	QFont							_defaultFont;
 };
 
 #endif // MAINWIDGET_H

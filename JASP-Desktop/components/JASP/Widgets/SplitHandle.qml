@@ -1,6 +1,6 @@
 import QtQuick			2.11
 import JASP.Widgets		1.0
-import JASP.Theme		1.0
+
 import QtQuick.Controls	2.4
 
 //Only works vertically right now...
@@ -18,9 +18,9 @@ Rectangle
 	property string toolTipArrow:	""
 	property alias	hovered:		hoverMouse.containsMouse
 
-	width:			Theme.splitHandleWidth
-	color:			handleRoot.dragEnabled && handleRoot.hovered ? Theme.grayLighter : Theme.uiBackground
-	//border.color:	Theme.uiBorder
+	width:			jaspTheme.splitHandleWidth
+	color:			handleRoot.dragEnabled && handleRoot.hovered ? jaspTheme.grayLighter : jaspTheme.uiBackground
+	//border.color:	jaspTheme.uiBorder
 	//border.width:	1
 
 	anchors
@@ -32,10 +32,10 @@ Rectangle
 	ToolTip
 	{
 		text:			handleRoot.toolTipDrag
-		timeout:		Theme.toolTipTimeout
-		delay:			Theme.toolTipDelay
-		font:			Theme.font
-		background:		Rectangle { color:	Theme.tooltipBackgroundColor }
+		timeout:		jaspTheme.toolTipTimeout
+		delay:			jaspTheme.toolTipDelay
+		font:			jaspTheme.font
+		background:		Rectangle { color:	jaspTheme.tooltipBackgroundColor }
 		visible:		handleRoot.dragEnabled && hoverMouse.containsMouse && handleRoot.toolTipDrag !== ""
 		y:				hoverMouse.mouseY + 10
 		x:				parent.width / 2
@@ -78,7 +78,7 @@ Rectangle
 		Rectangle
 		{
 
-			color:			arrowMouse.containsMouse ? Theme.grayLighter : Theme.uiBackground
+			color:			arrowMouse.containsMouse ? jaspTheme.grayLighter : jaspTheme.uiBackground
 			visible:		handleRoot.showArrow
 			anchors.fill:	parent
 
@@ -95,10 +95,10 @@ Rectangle
 			ToolTip
 			{
 				text:			handleRoot.toolTipArrow
-				timeout:		Theme.toolTipTimeout
-				delay:			Theme.toolTipDelay
-				font:			Theme.font
-				background:		Rectangle { color:	Theme.tooltipBackgroundColor }
+				timeout:		jaspTheme.toolTipTimeout
+				delay:			jaspTheme.toolTipDelay
+				font:			jaspTheme.font
+				background:		Rectangle { color:	jaspTheme.tooltipBackgroundColor }
 				visible:		handleRoot.toolTipArrow !== "" && arrowMouse.containsMouse
 				y:				arrowMouse.mouseY + 15
 				x:				parent.width / 2
@@ -107,7 +107,7 @@ Rectangle
 			Image
 			{
 
-				readonly property string iconsFolder:		"qrc:/images/"
+				readonly property string iconsFolder:		jaspTheme.iconPath + ""
 				readonly property string leftIcon:			"arrow-left.png"
 				readonly property string rightIcon:			"arrow-right.png"
 
@@ -169,8 +169,8 @@ Rectangle
 		{
 							id:			threeDots
 							height:		width * 4
-							width:		Theme.splitHandleWidth * 0.3
-			property color	kleur:		Theme.grayDarker
+							width:		jaspTheme.splitHandleWidth * 0.3
+			property color	kleur:		jaspTheme.grayDarker
 							visible:	handleRoot.dragEnabled
 
 			Rectangle

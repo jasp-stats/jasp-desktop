@@ -20,7 +20,7 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
-import JASP.Theme 1.0
+
 
 Form {
 	plotHeight: 340
@@ -28,7 +28,7 @@ Form {
 
 	VariablesForm
 	{
-		height: Theme.smallDefaultVariablesFormHeight
+		height: jaspTheme.smallDefaultVariablesFormHeight
 		AvailableVariablesList { name: "allVariablesList" }
 		AssignedVariablesList { name: "pairs"; title: qsTr("Variable pairs"); suggestedColumns: ["scale"]; listViewType: "Pairs" }
 	}

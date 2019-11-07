@@ -18,29 +18,29 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import JASP.Theme 1.0
+
 
 Item
 {
 	id:				jaspRibbons
 	objectName:		"jaspRibbon"
 	width:			500
-	height:			Theme.ribbonButtonHeight
+	height:			jaspTheme.ribbonButtonHeight
 
 	ListView
 	{
-		z:				0
-		model:			ribbonModelFiltered
-		orientation:	ListView.Horizontal
-		currentIndex:	ribbonModelFiltered.highlightedModuleIndex
-		height:			parent.height
-		width:          Math.min(contentWidth, fadeOutRight.x - fadeOutLeft.width)
-		boundsBehavior:	Flickable.StopAtBounds
+		z:								0
+		model:							ribbonModelFiltered
+		orientation:					ListView.Horizontal
+		currentIndex:					ribbonModelFiltered.highlightedModuleIndex
+		height:							parent.height
+		width:          				Math.min(contentWidth, fadeOutRight.x - fadeOutLeft.width)
+		boundsBehavior:					Flickable.StopAtBounds
 
 		highlightFollowsCurrentItem:	true
 		highlightMoveDuration:			20
 
-		onDragStarted:		customMenu.hide()
+		onDragStarted:					customMenu.hide()
 
 		anchors
 		{
@@ -76,7 +76,7 @@ Item
 		{
 			gradient: Gradient
 			{
-				GradientStop { position: 0.0; color: Theme.uiBackground	}
+				GradientStop { position: 0.0; color: jaspTheme.uiBackground	}
 				GradientStop { position: 1.0; color: "transparent"		}
 			}
 			width:				parent.height
@@ -102,7 +102,7 @@ Item
 		{
 			gradient: Gradient
 			{
-				GradientStop { position: 0.0; color: Theme.uiBackground	}
+				GradientStop { position: 0.0; color: jaspTheme.uiBackground	}
 				GradientStop { position: 1.0; color: "transparent"		}
 			}
 			width:				parent.height

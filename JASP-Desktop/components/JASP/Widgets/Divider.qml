@@ -19,7 +19,7 @@
 
 import QtQuick 2.0
 import QtQuick.Layouts 1.3
-import JASP.Theme 1.0
+
 
 
 Item
@@ -36,7 +36,7 @@ Item
 		border.width: 1
 		height: 2
 		width: parent.implicitWidth
-		border.color: Theme.black
+		border.color: jaspTheme.black
 	}
 
 	Rectangle
@@ -45,12 +45,12 @@ Item
 		anchors.centerIn: separator
 		height: titleText.implicitWidth
 		width: titleText.implicitWidth + 6
-		color: Theme.analysisBackgroundColor
+		color: jaspTheme.analysisBackgroundColor
 		visible: label !== ''
 		Text
 		{
 			id: titleText
-			font: Theme.fontLabel
+			font: jaspTheme.fontLabel
 			anchors.centerIn: parent
 		}
 	}

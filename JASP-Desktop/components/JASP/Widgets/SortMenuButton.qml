@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import JASP.Theme 1.0
+
 
 MenuButton
 {
@@ -8,9 +8,9 @@ MenuButton
 	width:				height
 	toolTip:			qsTr("Sort the items")
 	radius:				height
-	iconSource:			"qrc:/icons/sort-az.png"
+	iconSource:			jaspTheme.iconPath + "/sort-az.png"
 	z:                  10
-	defaultColor:       Theme.buttonColor
+	defaultColor:       jaspTheme.buttonColor
 	opacity:			enabled ? 1 : 0.5
 
 	property var	sortMenuModel:	null

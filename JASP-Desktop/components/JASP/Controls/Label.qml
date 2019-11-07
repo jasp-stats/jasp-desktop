@@ -18,10 +18,10 @@
 
 import QtQuick			2.11
 import QtQuick.Controls 2.4
-import JASP.Theme		1.0
+
 
 Label
 {
-	font:	Theme.font
-	color:	enabled ? Theme.textEnabled : Theme.textDisabled
+	font:	jaspTheme.font
+	color:	enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 }

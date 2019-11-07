@@ -1,6 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import JASP.Theme 1.0
+
 
 
 DropArea {
@@ -26,10 +26,10 @@ DropArea {
 	implicitWidth: dropText.contentWidth
 	implicitHeight: filterConstructor.blockDim
 
-	readonly property color jaspBlue: "#14a1e3"
-	readonly property color jaspGreen: "#8cc63e"
+	//readonly property color jaspBlue: "#14a1e3"
+	//readonly property color jaspGreen: "#8cc63e"
 	property bool beingDragHovered: false
-	property color dragHoverColor: jaspBlue
+	property color dragHoverColor: jaspTheme.blue
 
 	Rectangle
 	{
@@ -85,7 +85,7 @@ DropArea {
 
 		beingDragHovered = true
 
-		dragHoverColor = foundOneValidDragKey ? jaspGreen : "red"
+		dragHoverColor = foundOneValidDragKey ? jaspTheme.green : jaspTheme.red
 
 		originalWidth = width
 		width = drag.source.width
@@ -164,7 +164,7 @@ DropArea {
 			id: dropTextInput
 
 			text: dropText.text
-			color: errorMarker.visible ? Theme.white : Theme.black
+			color: errorMarker.visible ? jaspTheme.white : jaspTheme.black
 			font.pixelSize: filterConstructor.fontPixelSize
 			anchors.top: parent.top
 

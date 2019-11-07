@@ -1,6 +1,6 @@
 ﻿import QtQuick			2.13
 import JASP.Widgets		1.0
-import JASP.Theme		1.0
+
 import QtQuick.Controls	2.4
 
 Popup
@@ -11,7 +11,7 @@ Popup
 	width:				parent.width  * 0.8
 	height:				parent.height * 0.8
 	modal:				true
-	background:			Rectangle { color: Theme.uiBackground }
+	background:			Rectangle { color: jaspTheme.uiBackground }
 	closePolicy:		Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
 	visible:			plotEditorModel.visible
@@ -30,14 +30,14 @@ Popup
 
 		Rectangle
 		{
-			color:			Theme.uiBackground
-			border.color:	Theme.uiBorder
+			color:			jaspTheme.uiBackground
+			border.color:	jaspTheme.uiBorder
 			border.width:	preferencesModel.uiScale
 
 			Flickable
 			{
 				anchors.fill:		parent
-				anchors.margins:	Theme.generalAnchorMargin
+				anchors.margins:	jaspTheme.generalAnchorMargin
 				clip:				true
 				contentWidth:		width
 				contentHeight:		imgOpts.height
@@ -46,30 +46,30 @@ Popup
 				{
 					id:			imgOpts
 					width:		parent.width
-					//spacing:	Theme.rowSpacing
+					//spacing:	jaspTheme.rowSpacing
 					height:		childrenRect.height
 
 					Text
 					{
 						id:							title
-						font:						Theme.fontLabel
+						font:						jaspTheme.fontLabel
 						text:						plotEditorModel.title
 						anchors.horizontalCenter:	parent.horizontalCenter
-						y:							Theme.generalAnchorMargin
+						y:							jaspTheme.generalAnchorMargin
 					}
 
 					Rectangle
 					{
 						id:				yAxisId
-						color:			Theme.white
-						border.color:	Theme.black
+						color:			jaspTheme.white
+						border.color:	jaspTheme.black
 						border.width:	preferencesModel.uiScale
 						width:			parent.width * 0.2
 
 						anchors
 						{
 							left:			parent.left
-							leftMargin:		Theme.generalAnchorMargin
+							leftMargin:		jaspTheme.generalAnchorMargin
 							top:			plotImgRect.top
 							bottom:			plotImgRect.bottom
 						}
@@ -89,10 +89,10 @@ Popup
 					{
 						id:					yAxisTitle
 						z:					-1
-						color:				Theme.white
-						border.color:		Theme.black
+						color:				jaspTheme.white
+						border.color:		jaspTheme.black
 						border.width:		1
-						height:				Theme.font.pixelSize * 2
+						height:				jaspTheme.font.pixelSize * 2
 
 						anchors
 						{
@@ -105,7 +105,7 @@ Popup
 						{
 							text:					plotEditorModel.yAxis.title
 							padding:				4 * preferencesModel.uiScale
-							font:					Theme.font
+							font:					jaspTheme.font
 							anchors.centerIn:		parent
 							horizontalAlignment:	Text.AlignHCenter
 							verticalAlignment:		Text.AlignVCenter
@@ -117,10 +117,10 @@ Popup
 					{
 						id:					xAxisTitle
 						z:					-1
-						color:				Theme.white
-						border.color:		Theme.black
+						color:				jaspTheme.white
+						border.color:		jaspTheme.black
 						border.width:		1
-						height:				Theme.font.pixelSize * 2
+						height:				jaspTheme.font.pixelSize * 2
 
 						anchors
 						{
@@ -133,7 +133,7 @@ Popup
 						{
 							text:					plotEditorModel.xAxis.title
 							padding:				4 * preferencesModel.uiScale
-							font:					Theme.font
+							font:					jaspTheme.font
 							anchors.centerIn:		parent
 							horizontalAlignment:	Text.AlignHCenter
 							verticalAlignment:		Text.AlignVCenter
@@ -147,13 +147,13 @@ Popup
 						color:					"white"
 						border.color:			"black"
 						border.width:			preferencesModel.uiScale
-						height:					plotImg.height	+ (2 * Theme.generalAnchorMargin)
+						height:					plotImg.height	+ (2 * jaspTheme.generalAnchorMargin)
 						anchors
 						{
 							top:				title.bottom
 							left:				yAxisId.right
 							right:				parent.right
-							margins:			Theme.generalAnchorMargin
+							margins:			jaspTheme.generalAnchorMargin
 						}
 
 						Image
@@ -195,15 +195,15 @@ Popup
 					Rectangle
 					{
 						id:				xAxisId
-						color:			Theme.white
-						border.color:	Theme.black
+						color:			jaspTheme.white
+						border.color:	jaspTheme.black
 						border.width:	preferencesModel.uiScale
-						height:			Theme.font.pixelSize * 4.5
+						height:			jaspTheme.font.pixelSize * 4.5
 
 						anchors
 						{
 							top:		plotImgRect.bottom
-							topMargin:	Theme.generalAnchorMargin
+							topMargin:	jaspTheme.generalAnchorMargin
 							left:		plotImgRect.left
 							right:		plotImgRect.right
 						}
@@ -226,14 +226,14 @@ Popup
 						Item
 						{
 							implicitWidth:	Math.max(textDelegate.implicitWidth, editor.implicitWidth) + ( 10 * preferencesModel.uiScale)
-							implicitHeight:	Theme.font.pixelSize * 2
+							implicitHeight:	jaspTheme.font.pixelSize * 2
 
 							Text
 							{
 								id:						textDelegate
 								text:					display
 								padding:				4 * preferencesModel.uiScale
-								font:					Theme.font
+								font:					jaspTheme.font
 								visible:				!editor.visible
 								horizontalAlignment:	Text.AlignHCenter
 								verticalAlignment:		Text.AlignVCenter
@@ -256,7 +256,7 @@ Popup
 								z:						2
 								text:					display
 								padding:				4 * preferencesModel.uiScale
-								font:					Theme.font
+								font:					jaspTheme.font
 								anchors.centerIn:		parent
 								horizontalAlignment:	Text.AlignHCenter
 								verticalAlignment:		Text.AlignVCenter
@@ -276,8 +276,8 @@ Popup
 								Rectangle
 								{
 									z:					-1
-									color:				Theme.white
-									border.color:		Theme.black
+									color:				jaspTheme.white
+									border.color:		jaspTheme.black
 									border.width:		1
 									anchors.fill:		parent
 								}

@@ -43,7 +43,7 @@ import QtQuick.Controls 1.5
 import QtQuick.Controls.Private 1.0
 import QtQuick.Controls.Styles 1.2
 import QtQuick.Window 2.2
-import JASP.Theme 1.0
+
 import JASP.Controls 1.0
 
 /*!
@@ -478,7 +478,7 @@ ScrollView {
             id: colorRect
             parent: viewport
             anchors.fill: parent
-			color: Theme.white
+			color: jaspTheme.white
             z: -2
         }
 
@@ -739,7 +739,7 @@ ScrollView {
                             height:parent.height
                             opacity: (treeViewMovable && index === repeater.targetIndex && repeater.targetIndex !== repeater.dragIndex) ? 0.5 : 0
 							Behavior on opacity { enabled: !preferencesModel.safeGraphics; NumberAnimation { duration: 160 } }
-							color: Theme.itemHighlight
+							color: jaspTheme.itemHighlight
                             visible: modelData.movable
                         }
 

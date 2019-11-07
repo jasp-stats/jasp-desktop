@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="40px"
+   height="40px"
+   viewBox="0 0 40 40"
+   enable-background="new 0 0 40 40"
+   xml:space="preserve"
+   sodipodi:docname="variable-scale-disabled.svg"
+   inkscape:export-filename="E:\Broncode\jasp-desktop\JASP-Desktop\resources\icons\lightTheme\variable-scale-disabled.png"
+   inkscape:export-xdpi="307.20001"
+   inkscape:export-ydpi="307.20001"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"><metadata
+   id="metadata29"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+   id="defs27" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1425"
+   inkscape:window-height="1048"
+   id="namedview25"
+   showgrid="false"
+   inkscape:zoom="5.9"
+   inkscape:cx="20"
+   inkscape:cy="20"
+   inkscape:window-x="0"
+   inkscape:window-y="0"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="Layer_1" />
+<rect
+   x="13.451"
+   y="-0.965"
+   transform="matrix(-0.7273 0.6863 -0.6863 -0.7273 48.5706 20.1129)"
+   fill="#d0d0d0"
+   width="13.676"
+   height="41.341"
+   id="rect2" />
+<polyline
+   fill="#cecece"
+   points="10.598,1.281 37.266,29.543 29.127,37.225 "
+   id="polyline4" />
+<g
+   id="g8">
+	
+		<rect
+   x="18.265"
+   y="0.592"
+   transform="matrix(0.7249 -0.6888 0.6888 0.7249 -9.5366 18.6446)"
+   fill="#FFFFFF"
+   width="0.622"
+   height="41.341"
+   id="rect6" />
+</g>
+<rect
+   x="0.893"
+   y="6.194"
+   transform="matrix(0.7273 -0.6863 0.6863 0.7273 -2.2903 7.0545)"
+   fill="#FFFFFF"
+   width="13.678"
+   height="0.431"
+   id="rect10" />
+<rect
+   x="5.893"
+   y="11.194"
+   transform="matrix(0.7273 -0.6863 0.6863 0.7273 -4.3585 11.8491)"
+   fill="#FFFFFF"
+   width="13.678"
+   height="0.431"
+   id="rect12" />
+<rect
+   x="10.893"
+   y="16.193"
+   transform="matrix(0.7273 -0.6863 0.6863 0.7273 -6.426 16.6441)"
+   fill="#FFFFFF"
+   width="13.678"
+   height="0.431"
+   id="rect14" />
+<rect
+   x="14.893"
+   y="21.191"
+   transform="matrix(0.7273 -0.6863 0.6863 0.7273 -8.7656 20.7532)"
+   fill="#FFFFFF"
+   width="13.678"
+   height="0.432"
+   id="rect16" />
+<rect
+   x="19.893"
+   y="26.191"
+   transform="matrix(0.7273 -0.6864 0.6864 0.7273 -10.8337 25.5496)"
+   fill="#FFFFFF"
+   width="13.678"
+   height="0.432"
+   id="rect18" />
+<rect
+   x="24.893"
+   y="31.191"
+   transform="matrix(0.7273 -0.6863 0.6863 0.7273 -12.9018 30.3429)"
+   fill="#FFFFFF"
+   width="13.678"
+   height="0.432"
+   id="rect20" />
+<polyline
+   fill="none"
+   stroke="#c1c1c1"
+   stroke-miterlimit="10"
+   points="11.076,-0.024 1.128,9.363 29.503,39.432 39.449,30.046 "
+   id="polyline22" />
+</svg>

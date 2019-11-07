@@ -2,8 +2,11 @@
 #define PREFERENCESDIALOG_H
 
 #include <QObject>
+#include <QFont>
 #include "column.h"
 #include "utilities/qutils.h"
+
+class JaspTheme;
 
 class PreferencesModel : public QObject
 {
@@ -34,6 +37,8 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			safeGraphics			READ safeGraphics				WRITE setSafeGraphics				NOTIFY safeGraphicsChanged				)
 	Q_PROPERTY(QString		cranRepoURL				READ cranRepoURL				WRITE setCranRepoURL				NOTIFY cranRepoURLChanged				)
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
+	Q_PROPERTY(QFont		defaultFont				READ defaultFont				WRITE setDefaultFont				NOTIFY defaultFontChanged				)
+	Q_PROPERTY(QString		currentThemeName		READ currentThemeName			WRITE setCurrentThemeName			NOTIFY currentThemeNameChanged			)
 
 public:
 	explicit	 PreferencesModel(QObject *parent = 0);
@@ -65,11 +70,16 @@ public:
 	QStringList	modulesRemembered()			const;
 	bool		safeGraphics()				const;
 	QString		cranRepoURL()				const;
+	QFont		defaultFont()				const	{ return _defaultFont;	}
+	QString		currentThemeName()			const;
 
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
+
+
+
 
 
 public slots:
@@ -107,11 +117,15 @@ public slots:
 	void onUseDefaultPPIChanged(		bool		useDefault);
 	void onCustomPPIChanged(			int);
 	void onDefaultPPIChanged(			int);
+	void setCurrentThemeName(			QString		currentThemeName);
+	void setCurrentThemeNameFromClass(	JaspTheme * theme);
 
-
+	void setDefaultFont(QFont defaultFont);
+	void onCurrentThemeNameChanged(QString newThemeName);
 
 
 signals:
+	void jaspThemeChanged(				JaspTheme * newTheme);
 	void fixedDecimalsChanged(			bool		fixedDecimals);
 	void fixedDecimalsChangedString(	QString		fixedDecimals);
 	void numDecimalsChanged(			int			numDecimals);
@@ -139,10 +153,13 @@ signals:
 	void modulesRememberedChanged();
 	void safeGraphicsChanged(			bool		safeGraphics);
 	void cranRepoURLChanged(			QString		cranRepoURL);
+	void defaultFontChanged(			QFont		defaultFont);
+	void currentThemeNameChanged(		QString		currentThemeName);
 	void plotPPIPropChanged();
 
 private:
-	int _defaultPPI = 192;
+	int		_defaultPPI		= 192;
+	QFont	_defaultFont	= QFont("SansSerif");
 };
 
 #endif // PREFERENCESDIALOG_H

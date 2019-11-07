@@ -18,7 +18,7 @@
 // Code based on http://stackoverflow.com/questions/17833103/how-to-create-scrollbar-in-qtquick-2-0
 
 import QtQuick 2.0;
-import JASP.Theme 1.0
+
 
 Item
 {
@@ -27,15 +27,15 @@ Item
 									height						: vertical ? undefined : breadth
 									visible						: flickable.visible && ((vertical ? flickable.visibleArea.heightRatio : flickable.visibleArea.widthRatio ) < 1.0)
 
-	readonly	property int		visibleBreadth				: bigBar ? Theme.scrollbarBoxWidthBig : Theme.scrollbarBoxWidth
+	readonly	property int		visibleBreadth				: bigBar ? jaspTheme.scrollbarBoxWidthBig : jaspTheme.scrollbarBoxWidth
 				property int		breadth						: visible ? visibleBreadth : 0
 				property int		extraMarginRightOrBottom	: 0
 				property int		extraMarginLeftOrTop		: 0
 				property Flickable	flickable					: null
 				property int		minimumLength				: 16 * preferencesModel.uiScale
-				property string		bkColor						: Theme.white
-				property string		fgColor						: Theme.gray
-				property string		pressedColor				: Theme.blueLighter
+				property string		bkColor						: jaspTheme.white
+				property string		fgColor						: jaspTheme.gray
+				property string		pressedColor				: jaspTheme.blueLighter
 				property bool		showarrows					: false
 				property bool		vertical					: true
 				property bool		manualAnchor				: false
@@ -94,7 +94,7 @@ Item
 		border
 		{
 			width:		1
-			color:		Theme.grayDarker
+			color:		jaspTheme.grayDarker
 		}
 		
 		MouseArea
@@ -154,7 +154,7 @@ Item
 		
 		Image
 		{
-			source:					scrollbar.vertical ? "qrc:/images/arrow-up.png" : "qrc:/images/arrow-left.png"
+			source:					scrollbar.vertical ? jaspTheme.iconPath + "arrow-up.png" : jaspTheme.iconPath + "arrow-left.png"
 			visible:				showarrows
 			anchors.fill:			parent
 			sourceSize.width:		width * 2
@@ -181,7 +181,7 @@ Item
 		
 		Image
 		{
-			source:					scrollbar.vertical ? "qrc:/images/arrow-down.png" : "qrc:/images/arrow-right.png"
+			source:					scrollbar.vertical ? jaspTheme.iconPath + "arrow-down.png" : jaspTheme.iconPath + "arrow-right.png"
 			visible:				showarrows
 			anchors.fill:			parent
 			sourceSize.width:		width * 2

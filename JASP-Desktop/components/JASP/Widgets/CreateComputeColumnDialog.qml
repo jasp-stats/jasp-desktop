@@ -1,6 +1,6 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
-import JASP.Theme 1.0
+
 
 Popup
 {
@@ -33,8 +33,8 @@ Popup
 			id:				rootCreateComputedColumn
 			height:			childrenRect.height + 20
 			width:			Math.max(computeColumnIconRow.width, title.width) + 20
-			color:			Theme.uiBackground
-			border.color:	Theme.uiBorder
+			color:			jaspTheme.uiBackground
+			border.color:	jaspTheme.uiBorder
 			border.width:	1
 
 			Component.onCompleted:
@@ -62,7 +62,8 @@ Popup
 			{
 				id:					title
 				text:				"Create Computed Column"
-				font:				Theme.fontGroupTitle
+				font:				jaspTheme.fontGroupTitle
+				color:				jaspTheme.textEnabled
 				verticalAlignment:	Text.AlignVCenter
 				anchors
 				{
@@ -75,7 +76,7 @@ Popup
 			Item
 			{
 				id:		nameItem
-				height:	marge * 2 + (Theme.font.pixelSize * 1.5 * preferencesModel.uiScale)
+				height:	marge * 2 + (jaspTheme.font.pixelSize * 1.5 * preferencesModel.uiScale)
 
 				property real marge: 10 * preferencesModel.uiScale
 
@@ -94,7 +95,8 @@ Popup
 				{
 					id:						nameLabel
 					text:					"Name:"
-					font:					Theme.font
+					font:					jaspTheme.font
+					color:					jaspTheme.textEnabled
 					anchors.left:			parent.left
 					anchors.verticalCenter: parent.verticalCenter
 					verticalAlignment:		Text.AlignVCenter
@@ -103,8 +105,8 @@ Popup
 				Rectangle
 				{
 					id:					nameBox
-					color:				Theme.white
-					border.color:		Theme.black
+					color:				jaspTheme.white
+					border.color:		jaspTheme.black
 					border.width:		1
 
 					anchors
@@ -126,8 +128,8 @@ Popup
 
 						id:						nameEdit
 						text:					defaultText
-						font:					Theme.font
-						color:					columnNameInUse ? Theme.red : Theme.black
+						font:					jaspTheme.font
+						color:					columnNameInUse ? jaspTheme.red : jaspTheme.black
 
 						ToolTip.delay:			0
 						ToolTip.timeout:		10000
@@ -182,7 +184,7 @@ Popup
 					anchors.bottom:			parent.bottom
 					anchors.rightMargin:	5
 
-					iconSource:				"qrc:/icons/R.png"
+					iconSource:				jaspTheme.iconPath + "/R.png"
 					onClicked:				popupCreateComputedColumn.computeTypeIsJson = false
 					selected:				!popupCreateComputedColumn.computeTypeIsJson
 
@@ -201,7 +203,7 @@ Popup
 					anchors.bottom:		parent.bottom
 					anchors.leftMargin:	5
 
-					iconSource:			"qrc:/icons/NotR.png"
+					iconSource:			jaspTheme.iconPath + "/NotR.png"
 					onClicked:			popupCreateComputedColumn.computeTypeIsJson = true
 					selected:			popupCreateComputedColumn.computeTypeIsJson
 
@@ -217,7 +219,7 @@ Popup
 			{
 				id:			computeColumnIconRow
 				height:		25 * preferencesModel.uiScale
-				spacing:	Theme.generalAnchorMargin
+				spacing:	jaspTheme.generalAnchorMargin
 
 				anchors.top:				computeTypeSelector.bottom
 				anchors.topMargin:			10
@@ -232,8 +234,8 @@ Popup
 						id:				columnTypeChangeIcon
 						width:			iconAndTextCreateComputeColumn.width + iconAndTextCreateComputeColumn.anchors.leftMargin + popupText.anchors.leftMargin + 4
 						height:			computeColumnIconRow.height
-						color:			iAmSelected ? Theme.buttonColorPressed : popupIconComputeMouseArea.useThisColor
-						border.color:	iAmSelected ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
+						color:			iAmSelected ? jaspTheme.buttonColorPressed : popupIconComputeMouseArea.useThisColor
+						border.color:	iAmSelected ? jaspTheme.buttonBorderColorHovered : jaspTheme.buttonBorderColor
 						border.width:	1
 
 						property bool iAmSelected: rootCreateComputedColumn.selectedColumnType === iconRepeater.model[index]
@@ -256,7 +258,7 @@ Popup
 
 								anchors.verticalCenter: parent.verticalCenter
 
-								source:					dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
+								source:					jaspTheme.iconPath + dataSetModel.getColumnTypesWithCorrespondingIcon()[iconRepeater.model[index]]
 								width:					height
 								height:					parent.height
 								sourceSize.width:		width
@@ -267,7 +269,8 @@ Popup
 							{
 								id:						popupText
 								text:					iconRepeater.model[index] === columnTypeScale ? "Scale" : ( iconRepeater.model[index] === columnTypeOrdinal ? "Ordinal" :  iconRepeater.model[index] === columnTypeNominal ? "Nominal" : "Text")
-								font:					Theme.font
+								font:					jaspTheme.font
+								color:					jaspTheme.textEnabled
 								anchors.left:			popupIconComputeImage.right
 								anchors.verticalCenter: parent.verticalCenter
 								anchors.leftMargin:		4
@@ -281,7 +284,7 @@ Popup
 							hoverEnabled:	true
 							cursorShape:	Qt.PointingHandCursor
 
-							property color useThisColor: containsMouse ? Theme.buttonColorHovered : Theme.buttonColor
+							property color useThisColor: containsMouse ? jaspTheme.buttonColorHovered : jaspTheme.buttonColor
 
 							onClicked:
 							{
@@ -296,7 +299,7 @@ Popup
 			RectangularButton
 			{
 				id:				helpButton
-				iconSource:		"qrc:/images/info-button.png"
+				iconSource:		jaspTheme.iconPath + "info-button.png"
 				width:			height
 				height:			createButton.height
 				onClicked:		helpModel.showOrTogglePage("other/ComputedColumns");
@@ -305,7 +308,7 @@ Popup
 				{
 					left:		parent.left
 					top:		computeColumnIconRow.bottom
-					margins:	Theme.generalAnchorMargin
+					margins:	jaspTheme.generalAnchorMargin
 				}
 			}
 
@@ -319,7 +322,7 @@ Popup
 				anchors
 				{
 					top:		computeColumnIconRow.bottom
-					margins:	Theme.generalAnchorMargin
+					margins:	jaspTheme.generalAnchorMargin
 					left:		helpButton.right
 					right:		closeButtonCross.left
 				}
@@ -328,7 +331,7 @@ Popup
 			RectangularButton
 			{
 				id:				closeButtonCross
-				iconSource:		"qrc:/images/cross.png"
+				iconSource:		jaspTheme.iconPath + "cross.png"
 				width:			height
 				height:			createButton.height
 				onClicked:		popupCreateComputedColumn.close()
@@ -337,7 +340,7 @@ Popup
 				{
 					right:		parent.right
 					top:		computeColumnIconRow.bottom
-					margins:	Theme.generalAnchorMargin
+					margins:	jaspTheme.generalAnchorMargin
 				}
 			}
 		}

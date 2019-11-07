@@ -1,7 +1,7 @@
 import JASP.Controls 1.0
 import QtQuick.Controls 2.2
 import QtQuick 2.9
-import JASP.Theme 1.0
+
 
 Item
 {
@@ -90,9 +90,9 @@ Item
 	Rectangle
 	{
 		id:				background
-		color:			Theme.white
+		color:			jaspTheme.white
 		border.width:	1
-		border.color:	Theme.uiBackground
+		border.color:	jaspTheme.uiBackground
 		anchors.fill:	parent
 		z:				-3
 
@@ -100,7 +100,7 @@ Item
 		{
 			id:							backgroundImage
 
-			source:						"qrc:/icons/filterConstructorBackground.png"
+			source:						jaspTheme.iconPath + "/filterConstructorBackground.png"
 			anchors.centerIn:			parent
 
 			property real widthScale:	parent.width  / implicitWidth
@@ -167,7 +167,7 @@ Item
 			id:				rectangularColumnContainer
 			z:				parent.z + 1
 			border.width:	1
-			border.color:	Theme.uiBorder
+			border.color:	jaspTheme.uiBorder
 			color:			"transparent"
 
 			anchors
@@ -244,32 +244,41 @@ Item
 		Text
 		{
 			property string filterText: "Welcome to the drag and drop filter!<br>"
-			id: hints
-			text: filterText + (filterModel.filterErrorMsg !== "" ? "<br><i><font color=\"red\">"+filterModel.filterErrorMsg+"</font></i>" : "")
 
-			anchors.left: parent.left
-			anchors.right: parent.right
-			anchors.bottom: parent.bottom
+			id:						hints
+			text:					filterText + (filterModel.filterErrorMsg !== "" ? "<br><i><font color=\"red\">"+filterModel.filterErrorMsg+"</font></i>" : "")
 
-			height: filterConstructor.fontPixelSize + contentHeight
+			color:					jaspTheme.textEnabled
 
-			wrapMode: TextArea.WordWrap
-			horizontalAlignment: TextArea.AlignHCenter
+			height:					filterConstructor.fontPixelSize + contentHeight
 
-			textFormat: Text.StyledText
-			font.pixelSize: filterConstructor.fontPixelSize
+			wrapMode:				TextArea.WordWrap
+			horizontalAlignment:	TextArea.AlignHCenter
+
+			textFormat:				Text.StyledText
+			font.pixelSize:			filterConstructor.fontPixelSize
+
+			anchors
+			{
+				left:				parent.left
+				right:				parent.right
+				bottom:				parent.bottom
+			}
 		}
 
 	}
 
 	Item
 	{
-		id: funcVarLists
+		id:					funcVarLists
 
-		anchors.top: operatorsRow.bottom
-		anchors.right: parent.right
-		anchors.bottom: parent.bottom
-		anchors.rightMargin: 4 * preferencesModel.uiScale
+		anchors
+		{
+			top:			operatorsRow.bottom
+			right:			parent.right
+			bottom:			parent.bottom
+			rightMargin:	4 * preferencesModel.uiScale
+		}
 
 		width: functieLijst.width + anchors.rightMargin + functionsRightScrollBar.width
 

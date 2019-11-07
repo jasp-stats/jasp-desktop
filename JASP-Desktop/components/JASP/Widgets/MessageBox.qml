@@ -1,7 +1,7 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
 //import QtQuick.Dialogs 1.2
-import JASP.Theme 1.0
+
 
 Popup
 //MessageDialog
@@ -31,15 +31,15 @@ Popup
 	property bool isQuestion:			isYesNo || isSaveDiscardCancel
 
 	property bool iconVisible:			isWarning || isYesNo || isSaveDiscardCancel
-	property real marginIcon:			iconVisible ? Theme.generalAnchorMargin : 0
+	property real marginIcon:			iconVisible ? jaspTheme.generalAnchorMargin : 0
 
 	Rectangle
 	{
 		id:				titleRect
 		height:			title.text != "" ? title.height + 2 : 0
-		width:			parent.width - Theme.generalAnchorMargin
-		color:			Theme.blueMuchLighter
-		border.color:	Theme.blue
+		width:			parent.width - jaspTheme.generalAnchorMargin
+		color:			jaspTheme.blueMuchLighter
+		border.color:	jaspTheme.blue
 		visible:		title.text != ""
 
 		Text
@@ -71,8 +71,8 @@ Popup
 		{
 			id:			icon
 
-			property string sourceQuestion:		"qrc:/icons/QuestionMark.png"
-			property string sourceWarning:		"qrc:/icons/exclamation.svg"
+			property string sourceQuestion:		jaspTheme.iconPath + "/QuestionMark.png"
+			property string sourceWarning:		jaspTheme.iconPath + "/exclamation.svg"
 
 			source:		messageRoot.isWarning ? sourceWarning : messageRoot.isQuestion ? sourceQuestion : ""
 			visible:	messageRoot.iconVisible
@@ -98,7 +98,7 @@ Popup
 			top:			titleRect.bottom
 			bottom:			buttons.top
 			right:			parent.right
-			margins:		Theme.generalAnchorMargin
+			margins:		jaspTheme.generalAnchorMargin
 		}
 
 		TextArea
@@ -118,14 +118,14 @@ Popup
 	{
 		id:			buttons
 		visible:	messageRoot.isQuestion
-		height:		!visible ? 0 : Theme.messageBoxButtonHeight + (Theme.generalAnchorMargin * 2)
+		height:		!visible ? 0 : jaspTheme.messageBoxButtonHeight + (jaspTheme.generalAnchorMargin * 2)
 
 		anchors
 		{
 			left:		parent.left
 			right:		parent.right
 			bottom:		parent.bottom
-			margins:	Theme.generalAnchorMargin
+			margins:	jaspTheme.generalAnchorMargin
 		}
 
 		Item
@@ -137,13 +137,13 @@ Popup
 			{
 				id:				yes
 				text:			"Yes"
-				height:			Theme.messageBoxButtonHeight
+				height:			jaspTheme.messageBoxButtonHeight
 				anchors
 				{
 					left:			parent.left
 					right:			parent.horizontalCenter
 					verticalCenter:	parent.verticalCenter
-					rightMargin:	Theme.generalAnchorMargin / 2
+					rightMargin:	jaspTheme.generalAnchorMargin / 2
 				}
 
 				onClicked: messageRoot.close()
@@ -153,13 +153,13 @@ Popup
 			{
 				id:				no
 				text:			"No"
-				height:			Theme.messageBoxButtonHeight
+				height:			jaspTheme.messageBoxButtonHeight
 				anchors
 				{
 					left:			parent.horizontalCenter
 					right:			parent.right
 					verticalCenter:	parent.verticalCenter
-					leftMargin:		Theme.generalAnchorMargin / 2
+					leftMargin:		jaspTheme.generalAnchorMargin / 2
 				}
 
 				onClicked: messageRoot.close()

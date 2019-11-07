@@ -20,7 +20,7 @@ import QtQuick					2.11
 import QtQuick.Controls			2.4
 import Qt.labs.folderlistmodel	2.11
 //import QtQuick.Window			2.3
-import JASP.Theme				1.0
+
 import JASP.Widgets				1.0
 
 Popup
@@ -34,7 +34,7 @@ Popup
 
 	modal:			true
 
-	background:		Rectangle { color: Theme.uiBackground }
+	background:		Rectangle { color: jaspTheme.uiBackground }
 	closePolicy:	Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
 	Loader
@@ -57,7 +57,7 @@ Popup
 			RectangularButton
 			{
 				id:					browseButton
-				iconSource:			"qrc:///icons/folder.svg"
+				iconSource:			jaspTheme.iconPath + "folder.svg"
 				showIconAndText:	true
 				width:				height
 				height:				installButton.height
@@ -67,7 +67,7 @@ Popup
 					top:		parent.top
 					left:		parent.left
 					right:		closeButtonCross.left
-					margins:	Theme.generalAnchorMargin
+					margins:	jaspTheme.generalAnchorMargin
 				}
 
 				function browse() { return mainWindow.browseOpenFileDocuments(qsTr("Select a JASP Module"), "*.tar.gz"); }
@@ -79,14 +79,14 @@ Popup
 			RectangularButton
 			{
 				id:				closeButtonCross
-				iconSource:		"qrc:/images/cross.png"
+				iconSource:		jaspTheme.iconPath + "cross.png"
 				width:			height
 				height:			installButton.height
 				anchors
 				{
 					top:		parent.top
 					right:		parent.right
-					margins:	Theme.generalAnchorMargin
+					margins:	jaspTheme.generalAnchorMargin
 				}
 				onClicked:	moduleInstallerPopup.close()
 			}
@@ -101,17 +101,17 @@ Popup
 
 				onHeightChanged:
 				{
-					if(height <= Theme.generalAnchorMargin * 2)
+					if(height <= jaspTheme.generalAnchorMargin * 2)
 						visible = false
 				}
 
 				Rectangle
 				{
 					anchors.fill:		parent
-					anchors.margins:	Theme.generalAnchorMargin
+					anchors.margins:	jaspTheme.generalAnchorMargin
 
-					color:				Theme.whiteBroken
-					border.color:		Theme.gray
+					color:				jaspTheme.whiteBroken
+					border.color:		jaspTheme.gray
 					border.width:		1
 
 
@@ -119,7 +119,7 @@ Popup
 					{
 						id:					descriptionViewer
 						anchors.fill:		parent
-						anchors.margins:	Theme.generalAnchorMargin
+						anchors.margins:	jaspTheme.generalAnchorMargin
 						text:				defaultText
 						textFormat:			Text.StyledText
 						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
@@ -187,7 +187,7 @@ Popup
 					left:		parent.left
 					right:		parent.right
 					bottom:		parent.bottom
-					margins:	Theme.generalAnchorMargin
+					margins:	jaspTheme.generalAnchorMargin
 				}
 				enabled:			moduleInstallerRect.currentJSON !== null
 

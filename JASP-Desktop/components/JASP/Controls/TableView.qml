@@ -22,7 +22,7 @@ import QtQuick.Controls	2.5
 import QtQuick.Controls	2.5 as QTC
 import QtQuick.Layouts	1.3
 import JASP.Controls	1.0
-import JASP.Theme		1.0
+
 import QtQuick.Window	2.3
 import JASP				1.0
 
@@ -91,8 +91,8 @@ JASPControl
 		width:				parent.width
 		height:				parent.height
 		border.width:		1
-		border.color:		Theme.borderColor
-		color:				Theme.white
+		border.color:		jaspTheme.borderColor
+		color:				jaspTheme.white
 	}
 
 	Flickable
@@ -123,8 +123,8 @@ JASPControl
 
 			columnHeaderDelegate: Rectangle
 			{
-				color: columnIndex === tableView.colSelected ? Theme.grayLighter : Theme.analysisBackgroundColor
-				Text { text: headerText; anchors.centerIn: parent; font: Theme.font }
+				color: columnIndex === tableView.colSelected ? jaspTheme.grayLighter : jaspTheme.analysisBackgroundColor
+				Text { text: headerText; anchors.centerIn: parent; font: jaspTheme.font }
 				MouseArea
 				{
 					anchors.fill: parent
@@ -138,7 +138,7 @@ JASPControl
 
 			rowNumberDelegate: Rectangle
 			{
-				color: Theme.analysisBackgroundColor
+				color: jaspTheme.analysisBackgroundColor
 				Text
 				{
 					text:					headerText;
@@ -149,7 +149,7 @@ JASPControl
 					elide:					Text.ElideRight;
 					width:					parent.width
 					height:					parent.width
-					font:					Theme.font
+					font:					jaspTheme.font
 				}
 			}
 
@@ -163,12 +163,12 @@ JASPControl
 				{
 					id:					textDisplay
 					anchors.fill:	 	parent
-					font:				Theme.font
-					color:				itemEditable ? Theme.textEnabled : Theme.textDisabled
+					font:				jaspTheme.font
+					color:				itemEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 					visible:			!textInput.visible
 					text:				itemText
-					padding:			Theme.jaspControlPadding
-					leftPadding:		Theme.labelSpacing
+					padding:			jaspTheme.jaspControlPadding
+					leftPadding:		jaspTheme.labelSpacing
 					verticalAlignment:	Text.AlignVCenter
 				}
 
@@ -192,13 +192,13 @@ JASPControl
 					anchors.fill:		parent
 					visible:			false
 					text:				""
-					font:				Theme.font
-					leftPadding:		Theme.labelSpacing
-					padding:			Theme.jaspControlPadding
+					font:				jaspTheme.font
+					leftPadding:		jaspTheme.labelSpacing
+					padding:			jaspTheme.jaspControlPadding
 					verticalAlignment:	Text.AlignVCenter
 					selectByMouse:		true
-					selectedTextColor:	Theme.white
-					selectionColor:		Theme.itemSelectedColor
+					selectedTextColor:	jaspTheme.white
+					selectionColor:		jaspTheme.itemSelectedColor
 					validator:			tableView.validator
 					onPressed:			tableView.colSelected = columnIndex
 					onEditingFinished:
@@ -214,7 +214,7 @@ JASPControl
 
 			leftTopCornerItem: Rectangle
 			{
-				color: Theme.analysisBackgroundColor
+				color: jaspTheme.analysisBackgroundColor
 
 				Text
 				{
@@ -225,7 +225,7 @@ JASPControl
 					elide:					Text.ElideRight;
 					width:					parent.width
 					height:					parent.height
-					font:					Theme.font
+					font:					jaspTheme.font
 					anchors.right:			parent.right
 					anchors.bottom:			parent.bottom
 				}

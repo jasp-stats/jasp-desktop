@@ -18,7 +18,7 @@
 
 import QtQuick			2.11
 import QtQuick.Controls 2.4
-import JASP.Theme		1.0
+
 import JASP.Widgets		1.0
 
 FocusScope
@@ -27,10 +27,15 @@ FocusScope
 
 	property real scaler: Math.max(0.9, Math.min(1.5, 0.8 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight)))
 
+
+	FontLoader { id: latoLightFontFamily;	source: "qrc:/core/font/Lato-Light.ttf" }
+	FontLoader { id: latoRegularFontFamily;	source: "qrc:/core/font/Lato-Regular.ttf" }
+
+
 	Rectangle
 	{
 		id:					centerPiece
-		color:				"white"
+		color:				jaspTheme.white
 		height:				400 * welcomeRoot.scaler
 		anchors
 		{
@@ -53,7 +58,7 @@ FocusScope
 			Image
 			{
 				id:				jaspLogo
-				source:			"qrc:/core/img/jasp-logo.svg"
+				source:			jaspTheme.iconPath + "jasp-logo.svg"
 				width:			(190 / 40) * height
 				height:			info.height / 14
 				mipmap:			true
@@ -74,7 +79,7 @@ FocusScope
 			{
 				id:				welcomeToJASP
 				text:			qsTr("Welcome to JASP")
-				color:			"white"
+				color:			jaspTheme.white
 				font.family:	latoRegularFontFamily.name
 				font.pixelSize: 30 * welcomeRoot.scaler
 				font.weight:	Font.Bold
@@ -91,7 +96,7 @@ FocusScope
 			{
 				id:				version
 				text:			mainWindow.versionString()
-				color:			"white"
+				color:			jaspTheme.white
 				font.family:	latoLightFontFamily.name
 				font.pixelSize: 14 * welcomeRoot.scaler
 				font.weight:	Font.Normal
@@ -107,7 +112,7 @@ FocusScope
 			Rectangle
 			{
 				id:			jaspRuler
-				color:		"white"
+				color:		jaspTheme.white
 				opacity:	0.5
 				height:		4 * welcomeRoot.scaler
 				anchors
@@ -115,7 +120,7 @@ FocusScope
 					top:		welcomeToJASP.bottom
 					left:		parent.left
 					right:		parent.right
-					topMargin:	Theme.generalAnchorMargin
+					topMargin:	jaspTheme.generalAnchorMargin
 				}
 			}
 
@@ -123,7 +128,7 @@ FocusScope
 			{
 				id:				freshAndFunky
 				text:			qsTr("A Fresh Way to Do Statistics: Free, Friendly, and Flexible")
-				color:			"white"
+				color:			jaspTheme.white
 				font.family:	latoLightFontFamily.name
 				font.pixelSize: 16 * welcomeRoot.scaler
 				font.weight:	Font.Normal
@@ -158,7 +163,7 @@ FocusScope
 					Image
 					{
 						id:					orangeDot
-						source:				"qrc:/core/img/ul-orange-dot.png"
+						source:				jaspTheme.iconPath + "ul-orange-dot.png"
 						width:				height
 						height:				8 * welcomeRoot.scaler
 						mipmap:				true
@@ -201,7 +206,7 @@ FocusScope
 						font.pixelSize:		freshAndFunky.font.pixelSize
 						font.weight:		Font.Light
 						verticalAlignment:	Text.AlignVCenter
-						color:				"black"
+						color:				jaspTheme.black
 						wrapMode:			TextEdit.Wrap
 						readOnly:			true
 						renderType:			Text.QtRendering
@@ -238,6 +243,7 @@ FocusScope
 			{
 				id:						openADataFile
 				text:					qsTr("So open a data file and take JASP for a spin!")
+				color:					jaspTheme.black
 				font.underline:			openDataFileMouse.containsMouse
 				font.family:			latoRegularFontFamily.name
 				font.pixelSize:			freshAndFunky.font.pixelSize + (2 * welcomeRoot.scaler)
@@ -263,7 +269,7 @@ FocusScope
 			Rectangle
 			{
 				id:					downloadNewJASPButton
-				color:				Theme.blue
+				color:				jaspTheme.blue
 				radius:				height / 2
 				height:				downloadNewJASP.height * 1.5
 				width:				downloadNewJASP.width  * 1.2
@@ -284,7 +290,7 @@ FocusScope
 					font.family:			latoRegularFontFamily.name
 					font.pixelSize:			openADataFile.font.pixelSize + (downloadMouseArea.containsMouse ? 4 * welcomeRoot.scaler : 0)
 					font.weight:			Font.Bold
-					color:					"white"
+					color:					jaspTheme.white
 					horizontalAlignment:	Text.AlignHCenter
 					verticalAlignment:		Text.AlignVCenter
 				}
@@ -309,7 +315,7 @@ FocusScope
 				font.family:			latoLightFontFamily.name
 				font.pixelSize:			12 * welcomeRoot.scaler
 				font.weight:			Font.Normal
-				color:					"white"
+				color:					jaspTheme.white
 				width:					parent.widthOverflowers
 				wrapMode:				TextEdit.Wrap
 				renderType:				Text.QtRendering
@@ -336,7 +342,7 @@ FocusScope
 			height:					100  * welcomeRoot.scaler
 			sourceSize.width:		1400 * welcomeRoot.scaler
 			sourceSize.height:		height
-			source:					"qrc:/core/img/jasp-wave-down-blue-120.svg"
+			source:					jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
 			anchors
 			{
 				top:				parent.top
@@ -354,7 +360,7 @@ FocusScope
 			height:					blueWave.height
 			sourceSize.width:		blueWave.sourceSize.width
 			sourceSize.height:		blueWave.sourceSize.height
-			source:					"qrc:/core/img/jasp-wave-up-green-120.svg"
+			source:					jaspTheme.iconPath + "jasp-wave-up-green-120.svg"
 			anchors
 			{
 				left:				parent.left

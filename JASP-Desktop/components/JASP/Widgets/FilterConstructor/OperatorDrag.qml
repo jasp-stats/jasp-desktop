@@ -24,7 +24,7 @@ DragGeneric {
 	property string operator: "+"
 	property bool acceptsDrops: true
 
-	property var opImages: { '==': 'qrc:/icons/equal.png', '!=': 'qrc:/icons/notEqual.png', '<': 'qrc:/icons/lessThan.png', '>': 'qrc:/icons/greaterThan.png', '<=': 'qrc:/icons/lessThanEqual.png', '>=': 'qrc:/icons/greaterThanEqual.png',  '&': 'qrc:/icons/and.png', '|': 'qrc:/icons/or.png', '%%': 'qrc:/icons/modulo.png', '%|%': 'qrc:/icons/ConditionBy.png'}
+	property var opImages: { '==': 'equal.png', '!=': 'notEqual.png', '<': 'lessThan.png', '>': 'greaterThan.png', '<=': 'lessThanEqual.png', '>=': 'greaterThanEqual.png',  '&': 'and.png', '|': 'or.png', '%%': 'modulo.png', '%|%': 'ConditionBy.png'}
 
 
 	property alias leftDrop: showMe.leftDrop
@@ -34,7 +34,7 @@ DragGeneric {
 	{
 		id:							showMe
 		operator:					parent.operator
-		operatorImageSource:		parent.opImages[operator] !== null && parent.opImages[operator] !== undefined ? parent.opImages[operator] : ""
+		operatorImageSource:		(parent.opImages[operator] !== null && parent.opImages[operator] !== undefined ? jaspTheme.iconPath + parent.opImages[operator] : "")
 
 		dropKeysLeft:				isNumberComparer ? ["number", "ordered"] : isConditionalOp ? (amInsideColumnConstructor ? ["number"] : ["boolean"]) : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
 		dropKeysRight:				isNumberComparer ? ["number", "ordered"] : isConditionalOp ? ["string", "boolean"]  : acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]

@@ -1,7 +1,7 @@
 import QtQuick			2.7
 import QtQuick.Controls 2.13
 import QtQuick.Layouts	1.3
-import JASP.Theme		1.0
+
 import "FilterConstructor"
 
 FocusScope
@@ -27,8 +27,8 @@ FocusScope
 	Rectangle
 	{
 		id:				computedColumnWindowBackground
-		color:			Theme.uiBackground
-		border.color:	Theme.uiBorder
+		color:			jaspTheme.uiBackground
+		border.color:	jaspTheme.uiBorder
 		border.width:	1
 		anchors.fill:	parent
 		z:				-1
@@ -117,10 +117,10 @@ FocusScope
 		Rectangle
 		{
 			id: computeColumnEditRectangle
-			color: Theme.white
+			color: jaspTheme.white
 
 			border.width: 1
-			border.color: Theme.grayLighter
+			border.color: jaspTheme.grayLighter
 
 			property real desiredMinimumHeight: computedColumnContainer.minimumHeightTextBoxes
 
@@ -153,7 +153,7 @@ FocusScope
 			{
 				id:							backgroundImage
 
-				source:						"qrc:/icons/columnConstructorBackground.png"
+				source:						jaspTheme.iconPath + "/columnConstructorBackground.png"
 				anchors.centerIn:			parent
 
 				property real widthScale:	parent.width  / implicitWidth
@@ -246,7 +246,7 @@ FocusScope
 		TextArea
 		{
 			id: computeColumnError
-			color: "red"
+			color: jaspTheme.red
 			readOnly: true
 			text: computedColumnsInterface.computeColumnError
 
@@ -274,7 +274,7 @@ FocusScope
 		RectangularButton
 		{
 			id:				removeColumnButton
-			iconSource:		"qrc:///icons/square_trashcan.png"
+			iconSource:		jaspTheme.iconPath + "square_trashcan.png"
 			toolTip:		"Remove computed column"
 			onClicked:		computedColumnsInterface.removeColumn()
 
@@ -293,7 +293,7 @@ FocusScope
 			width:		visible ? implicitWidth : 0
 
 			toolTip:	"Show generated R code"
-			iconSource: "qrc:/icons/R.png"
+			iconSource: jaspTheme.iconPath + "/R.png"
 
 			anchors.left:	removeColumnButton.right
 			anchors.bottom:	parent.bottom
@@ -320,7 +320,7 @@ FocusScope
 		RectangularButton
 		{
 			id:				helpButton
-			iconSource:		"qrc:/images/info-button.png"
+			iconSource:		jaspTheme.iconPath + "info-button.png"
 			anchors.right:	closeColumnEditorButton.left
 			anchors.bottom: parent.bottom
 			anchors.top:	closeColumnEditorButton.top
@@ -332,7 +332,7 @@ FocusScope
 		RectangularButton
 		{
 			id:				closeColumnEditorButton
-			iconSource:		"qrc:/images/cross.png"
+			iconSource:		jaspTheme.iconPath + "cross.png"
 			anchors.right:	parent.right
 			anchors.bottom: parent.bottom
 			onClicked:		computedColumnContainer.askIfChangedOrClose()

@@ -18,7 +18,7 @@
 
 import QtQuick 2.0
 import QtQuick.Controls 2.2
-import JASP.Theme 1.0
+
 import JASP.Widgets 1.0
 
 //import JASP.Controls    1.0
@@ -54,8 +54,8 @@ Item
 
 		anchors.right		: parent.right
 		anchors.top			: parent.top
-		anchors.rightMargin	: Theme.generalMenuMargin
-		anchors.topMargin	: Theme.generalMenuMargin
+		anchors.rightMargin	: jaspTheme.generalMenuMargin
+		anchors.topMargin	: jaspTheme.generalMenuMargin
 
 		onClicked			: fileMenuModel.osf.logoutClicked()
 		KeyNavigation.tab	: newDirectoryButton
@@ -129,7 +129,7 @@ Item
 
 		anchors.right		: menuHeader.right
 		anchors.top			: firstSeparator.bottom
-		anchors.topMargin	: Theme.generalAnchorMargin
+		anchors.topMargin	: jaspTheme.generalAnchorMargin
 		onClicked			: { newDirectoryButton.visible = false; foldernameText.focus = true; }
 		KeyNavigation.tab	: foldernameText
 	}
@@ -143,7 +143,7 @@ Item
 		anchors.left		: menuHeader.left
 		anchors.right		: menuHeader.right
 		anchors.top			: firstSeparator.bottom
-		anchors.topMargin	: Theme.generalMenuMargin
+		anchors.topMargin	: jaspTheme.generalMenuMargin
 
 		Label
 		{
@@ -152,12 +152,12 @@ Item
 
 			width	: 80 * preferencesModel.uiScale
 			height	: 30 * preferencesModel.uiScale
-			color 	: Theme.black
-			font	: Theme.font
+			color 	: jaspTheme.black
+			font	: jaspTheme.font
 
 			anchors.top			: parent.top
 			anchors.left		: parent.left
-			anchors.rightMargin	: Theme.generalAnchorMargin
+			anchors.rightMargin	: jaspTheme.generalAnchorMargin
 			verticalAlignment	: Text.AlignVCenter
 		}
 
@@ -167,32 +167,32 @@ Item
 			height	: saveFoldernameLabel.height
 			clip	: true
 
-			color			: Theme.white
+			color			: jaspTheme.white
 			border.width	: foldernameText.activeFocus ? 5 : 1
-			border.color	: foldernameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
+			border.color	: foldernameText.activeFocus ? jaspTheme.focusBorderColor : jaspTheme.grayDarker
 
 			anchors
 			{
 				left		: saveFoldernameLabel.right
-				leftMargin	: Theme.generalAnchorMargin
+				leftMargin	: jaspTheme.generalAnchorMargin
 				top			: saveFoldernameLabel.top
 				right		: saveFoldernameButton.left
-				rightMargin	: Theme.generalAnchorMargin
+				rightMargin	: jaspTheme.generalAnchorMargin
 			}
 
 			TextInput
 			{
 				id					: foldernameText
 				selectByMouse		: true
-				selectedTextColor	: Theme.white
-				selectionColor		: Theme.itemSelectedColor
+				selectedTextColor	: jaspTheme.white
+				selectionColor		: jaspTheme.itemSelectedColor
 
 				text				: fileMenuModel.osf.savefoldername
-				font				: Theme.fontRibbon
+				font				: jaspTheme.fontRibbon
 
 				anchors.fill		: parent
-				anchors.leftMargin	: Theme.itemPadding
-				anchors.rightMargin	: Theme.itemPadding
+				anchors.leftMargin	: jaspTheme.itemPadding
+				anchors.rightMargin	: jaspTheme.itemPadding
 				verticalAlignment	: Text.AlignVCenter
 
 				onAccepted			: saveFoldernameButton.clicked()
@@ -205,13 +205,13 @@ Item
 			id		: saveFoldernameButton
 			width	: 30 * preferencesModel.uiScale
 			height	: 30 * preferencesModel.uiScale
-			iconSource	: "qrc:///icons/create-folder.png"
+			iconSource	: jaspTheme.iconPath + "create-folder.png"
 
 			enabled : foldernameText.text.length > 0
 
 			anchors.top			: parent.top
 			anchors.right		: cancelCreateFolderButton.left
-			anchors.rightMargin : Theme.generalAnchorMargin
+			anchors.rightMargin : jaspTheme.generalAnchorMargin
 			KeyNavigation.tab	: cancelCreateFolderButton
 			onClicked			:
 			{
@@ -226,7 +226,7 @@ Item
 			id					: cancelCreateFolderButton
 			width				: 30 * preferencesModel.uiScale
 			height				: 30 * preferencesModel.uiScale
-			iconSource			: "qrc:/images/close-button.png"
+			iconSource			: jaspTheme.iconPath + "close-button.png"
 			anchors.top			: parent.top
 			anchors.right		: parent.right
 			KeyNavigation.tab	: filenameText
@@ -249,8 +249,8 @@ Item
 		anchors.left			: menuHeader.left
 		anchors.right			: menuHeader.right
 		anchors.top				: newDirectoryButton.visible ? newDirectoryButton.bottom : folderExportDialog.bottom
-		anchors.topMargin		: Theme.generalMenuMargin
-		anchors.bottomMargin	: Theme.generalMenuMargin
+		anchors.topMargin		: jaspTheme.generalMenuMargin
+		anchors.bottomMargin	: jaspTheme.generalMenuMargin
 
 		Label
 		{
@@ -259,8 +259,8 @@ Item
 
 			width	: 80 * preferencesModel.uiScale
 			height	: 30 * preferencesModel.uiScale
-			color 	: Theme.black
-			font	: Theme.font
+			color 	: jaspTheme.black
+			font	: jaspTheme.font
 
 			anchors.top			: parent.top
 			anchors.left		: parent.left
@@ -273,31 +273,31 @@ Item
 			height	: saveFilenameLabel.height
 			clip	: true
 
-			color			: Theme.white
+			color			: jaspTheme.white
 			border.width	: filenameText.activeFocus ? 5 : 1
-			border.color	: filenameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
+			border.color	: filenameText.activeFocus ? jaspTheme.focusBorderColor : jaspTheme.grayDarker
 
 			anchors
 			{
 				left		: saveFilenameLabel.right
-				leftMargin	: Theme.generalAnchorMargin
+				leftMargin	: jaspTheme.generalAnchorMargin
 				top			: saveFilenameLabel.top
 				right		: saveFilenameButton.left
-				rightMargin	: Theme.generalAnchorMargin
+				rightMargin	: jaspTheme.generalAnchorMargin
 			}
 
 			TextInput
 			{
 				id					: filenameText
 				selectByMouse		: true
-				selectedTextColor	: Theme.white
-				selectionColor		: Theme.itemSelectedColor
+				selectedTextColor	: jaspTheme.white
+				selectionColor		: jaspTheme.itemSelectedColor
 
 				text				: fileMenuModel.osf.savefilename
-				font				: Theme.fontRibbon
+				font				: jaspTheme.fontRibbon
 
 				anchors.fill		: parent
-				anchors.leftMargin	: Theme.itemPadding
+				anchors.leftMargin	: jaspTheme.itemPadding
 				verticalAlignment	: Text.AlignVCenter
 				KeyNavigation.tab	: saveFilenameButton
 
@@ -311,7 +311,7 @@ Item
 		RectangularButton
 		{
 			id					: saveFilenameButton
-			width				: saveFoldernameButton.width + cancelCreateFolderButton.width + Theme.generalAnchorMargin
+			width				: saveFoldernameButton.width + cancelCreateFolderButton.width + jaspTheme.generalAnchorMargin
 			height				: 30 * preferencesModel.uiScale
 			text				: qsTr("Save")
 			enabled				: filenameText.text.length > 0
@@ -339,7 +339,7 @@ Item
 		AnimatedImage
 		{
 			id		: animation
-			source	: "qrc:/icons/loading.gif"
+			source	: jaspTheme.iconPath + "/loading.gif"
 		}
 	}
 
@@ -358,8 +358,8 @@ Item
 			bottom			: parent.bottom
 			left			: menuHeader.left
 			right			: menuHeader.right
-			topMargin		: Theme.generalMenuMargin
-			bottomMargin	: Theme.generalMenuMargin
+			topMargin		: jaspTheme.generalMenuMargin
+			bottomMargin	: jaspTheme.generalMenuMargin
 		}
 	}
 

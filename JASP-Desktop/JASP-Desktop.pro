@@ -251,6 +251,7 @@ HEADERS += \
     engine/enginerepresentation.h \
     engine/enginesync.h \
     engine/rscriptstore.h \
+    gui/columntypesmodel.h \
     qquick/datasetview.h \
     modules/analysisentry.h \
     modules/dynamicmodule.h \
@@ -265,6 +266,7 @@ HEADERS += \
     osf/onlineusernode.h \
     osf/onlineusernodeosf.h \
     osf/osfnam.h \
+    qquick/jasptheme.h \
     utilities/appdirs.h \
     utilities/application.h \
     utilities/jsonutilities.h \
@@ -425,6 +427,7 @@ SOURCES += \
     data/fileevent.cpp \
     engine/enginerepresentation.cpp \
     engine/enginesync.cpp \
+    gui/columntypesmodel.cpp \
     qquick/datasetview.cpp \
     modules/analysisentry.cpp \
     modules/dynamicmodule.cpp \
@@ -439,6 +442,7 @@ SOURCES += \
     osf/onlineusernode.cpp \
     osf/onlineusernodeosf.cpp \
     osf/osfnam.cpp \
+    qquick/jasptheme.cpp \
     utilities/appdirs.cpp \
     utilities/application.cpp \
     utilities/jsonutilities.cpp \

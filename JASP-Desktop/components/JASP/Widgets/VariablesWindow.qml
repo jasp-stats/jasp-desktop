@@ -20,13 +20,13 @@ import QtQuick			2.7
 import QtQuick.Controls 2.13 as New
 import QtQuick.Controls 1.4 as OLD
 import QtQuick.Layouts	1.3
-import JASP.Theme		1.0
+
 
 FocusScope
 {
 	visible:						labelModel.visible
 
-	property real calculatedMinimumHeight:	buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 6 + (Theme.generalAnchorMargin * 2)
+	property real calculatedMinimumHeight:	buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 6 + (jaspTheme.generalAnchorMargin * 2)
 
 	Connections
 	{
@@ -46,8 +46,8 @@ FocusScope
 	
 	Rectangle
 	{
-		color:				Theme.uiBackground
-		border.color:		Theme.uiBorder
+		color:				jaspTheme.uiBackground
+		border.color:		jaspTheme.uiBorder
 		border.width:		1
 		anchors.fill:		parent
 	}
@@ -56,13 +56,13 @@ FocusScope
 	{
 		id:					levelsTableViewRectangle
 		anchors.fill:		parent
-		anchors.margins:	Theme.generalAnchorMargin
+		anchors.margins:	jaspTheme.generalAnchorMargin
 		
 		Text
 		{
 			id:				columnNameVariablesWindow
 			text:			"Column Name/Title here"
-			font:			Theme.fontGroupTitle
+			font:			jaspTheme.fontGroupTitle
 			anchors.top:	parent.top
 			anchors.left:	parent.left
 		}
@@ -186,16 +186,16 @@ FocusScope
 				{
 					//Two rectangles to show a border of exactly 1px around cells
 					id:				headerBorderRectangleVars
-					color:			Theme.grayDarker
+					color:			jaspTheme.grayDarker
 					border.width:	0
 					radius:			0
-					height:			headerTextVars.contentHeight + (Theme.itemPadding * 2)
+					height:			headerTextVars.contentHeight + (jaspTheme.itemPadding * 2)
 					//width: headerTextVars.width + 8
 					
 					Rectangle
 					{
 						id:		colHeaderVars
-						color:	Theme.uiBackground
+						color:	jaspTheme.uiBackground
 						
 						x:		headerBorderRectangleVars.x
 						y:		headerBorderRectangleVars.y
@@ -206,9 +206,9 @@ FocusScope
 						{
 							id:		headerTextVars
 							text:	styleData.value
-							color:	Theme.textEnabled
-							font:	Theme.font
-							x:		Theme.itemPadding
+							color:	jaspTheme.textEnabled
+							font:	jaspTheme.font
+							x:		jaspTheme.itemPadding
 							
 							anchors.verticalCenter: parent.verticalCenter
 						}
@@ -219,7 +219,7 @@ FocusScope
 				
 				itemDelegate: Rectangle
 				{
-					color:			levelsTableView.selection.timesUpdated, levelsTableView.selection.contains(styleData.row) ? Theme.itemHighlight : "transparent"
+					color:			levelsTableView.selection.timesUpdated, levelsTableView.selection.contains(styleData.row) ? jaspTheme.itemHighlight : "transparent"
 					
 					New.Button
 					{
@@ -249,7 +249,7 @@ FocusScope
 						
 						background: Image
 						{
-							source:				filterCheckButton.checked ? "qrc:/icons/check-mark.png" : "qrc:/images/cross.png"
+							source:				filterCheckButton.checked ? jaspTheme.iconPath + "/check-mark.png" : jaspTheme.iconPath + "cross.png"
 							sourceSize.width:	Math.max(40, width)
 							sourceSize.height:	Math.max(40, height)
 							width:				filterCheckButton.width
@@ -263,10 +263,10 @@ FocusScope
 					{
 						visible:			styleData.column === 1
 						
-						color:				Theme.textDisabled
+						color:				jaspTheme.textDisabled
 						text:				styleData.value
 						elide:				Text.ElideMiddle
-						font:				Theme.font
+						font:				jaspTheme.font
 						anchors.fill:		parent
 						verticalAlignment:	Text.AlignVCenter
 					}
@@ -275,10 +275,10 @@ FocusScope
 					{
 						visible:		styleData.column === 2
 						
-						color:			Theme.textEnabled
+						color:			jaspTheme.textEnabled
 						
 						text:			styleData.value
-						font:			Theme.font
+						font:			jaspTheme.font
 						clip:			true
 						selectByMouse:	true
 						autoScroll:		true
@@ -332,7 +332,7 @@ FocusScope
 				RectangularButton
 				{
 					//text: "UP"
-					iconSource:		"qrc:/images/arrow-up.png"
+					iconSource:		jaspTheme.iconPath + "arrow-up.png"
 					
 					onClicked:		levelsTableView.moveUp()
 					toolTip:		qsTr("Move selected labels up")
@@ -345,7 +345,7 @@ FocusScope
 				RectangularButton
 				{
 					//text: "DOWN"
-					iconSource:		"qrc:/images/arrow-down.png"
+					iconSource:		jaspTheme.iconPath + "arrow-down.png"
 					
 					onClicked:		levelsTableView.moveDown()
 					toolTip:		qsTr("Move selected labels down")
@@ -358,7 +358,7 @@ FocusScope
 				RectangularButton
 				{
 					//text: "REVERSE"
-					iconSource:		"qrc:/images/arrow-reverse.png"
+					iconSource:		jaspTheme.iconPath + "arrow-reverse.png"
 					onClicked:		levelsTableView.reverse()
 					
 					toolTip:		qsTr("Reverse order of all labels")
@@ -371,7 +371,7 @@ FocusScope
 				RectangularButton
 				{
 					id:				eraseFiltersOnThisColumn
-					iconSource:		"qrc:/images/eraser.png"
+					iconSource:		jaspTheme.iconPath + "eraser.png"
 					onClicked:		labelModel.resetFilterAllows()
 					visible:		labelModel.filteredOut > 0
 					
@@ -385,7 +385,7 @@ FocusScope
 				RectangularButton
 				{
 					id:				eraseFiltersOnAllColumns
-					iconSource:		"qrc:/images/eraser_all.png"
+					iconSource:		jaspTheme.iconPath + "eraser_all.png"
 					onClicked:		dataSetModel.resetAllFilters()
 					visible:		dataSetModel.columnsFilteredCount > (labelModel.filteredOut > 0 ? 1 : 0)
 					height:			buttonColumnVariablesWindow.buttonHeight
@@ -403,7 +403,7 @@ FocusScope
 				RectangularButton
 				{
 					id:				variablesWindowCloseButton
-					iconSource:		"qrc:/images/cross.png"
+					iconSource:		jaspTheme.iconPath + "cross.png"
 					onClicked:		labelModel.visible = false;
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight

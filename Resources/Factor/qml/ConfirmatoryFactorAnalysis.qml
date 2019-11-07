@@ -18,7 +18,7 @@
 import QtQuick          2.8
 import QtQuick.Layouts  1.3
 import JASP.Controls    1.0
-import JASP.Theme		1.0
+
 import "." as SEM
 
 Form
@@ -44,7 +44,7 @@ Form
 				name: "availableFactors"
 				source: [{ name: "factors", use: "title" }]
 				showVariableTypeIcon: false
-				height: Theme.defaultVariablesFormHeight / 3 - 10
+				height: jaspTheme.defaultVariablesFormHeight / 3 - 10
 			}
 			AssignedVariablesList
 			{
@@ -52,21 +52,21 @@ Form
 				name:  "secondOrder"
 				suggestedColumns: []
 			}
-			height: Theme.defaultVariablesFormHeight / 3
+			height: jaspTheme.defaultVariablesFormHeight / 3
 		}
 
 		//		SEM.FactorsForm
 		//		{
 		//            id: secondorder
 		//            name: "secondOrder"
-		//            implicitHeight: Theme.defaultVariablesFormHeight / 3 - 10
+		//            implicitHeight: jaspTheme.defaultVariablesFormHeight / 3 - 10
 		//            allowAll: true
 		//			availableVariablesList
 		//			{
 		//                name: "availableFactors"
 		//				source: [{ name: "factors", use: "title" }]
 		//                showVariableTypeIcon: false
-		//                height: Theme.defaultVariablesFormHeight / 3 - 10
+		//                height: jaspTheme.defaultVariablesFormHeight / 3 - 10
 		//            }
 		//            initNumberFactors: 1
 		//        }

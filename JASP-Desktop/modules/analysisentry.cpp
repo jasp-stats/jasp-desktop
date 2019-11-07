@@ -18,6 +18,7 @@
 
 
 #include "dynamicmodule.h"
+#include "qquick/jasptheme.h"
 
 namespace Modules
 {
@@ -53,9 +54,9 @@ std::string AnalysisEntry::qmlFilePath() const
 std::string AnalysisEntry::icon() const
 {
 	if(_icon == "")
-		return _isGroupTitle ? "qrc:/icons/large-arrow-right.png" : "";
+		return _isGroupTitle ? fq(JaspTheme::currentIconPath()) + "large-arrow-right.png" : "";
 
-	return _dynamicModule != nullptr ? "file:" + _dynamicModule->iconFilePath(_icon) : "qrc:/icons/" + _icon;
+	return _dynamicModule  ? "file:" + _dynamicModule->iconFilePath(_icon) : "qrc:/icons/" + _icon;
 }
 
 std::string AnalysisEntry::getFullRCall() const

@@ -1,6 +1,5 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.4
-import JASP.Theme		1.0
 import JASP.Widgets		1.0
 
 Item
@@ -11,7 +10,7 @@ Item
 	z:					100
 	visible:			uiScaleRect.opacity > 0
 
-	property bool	uiScaleIsLoadedFromSettings:	false
+	property bool		uiScaleIsLoadedFromSettings:	false
 
 	Connections
 	{
@@ -30,7 +29,7 @@ Item
 		id:					uiScaleRect
 		anchors.fill:		parent
 		radius:				20
-		color:				Theme.grayDarker
+		color:				jaspTheme.grayDarker
 		opacity:			uiScaleNotifier.uiScaleIsLoadedFromSettings && uiScaleTimer.running ? 0.8 : 0
 
 		Behavior on opacity	{ enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: 100 } }
@@ -46,9 +45,9 @@ Item
 
 	Text
 	{
-		color:				Theme.white
-		font.family: 		Theme.fontLabel.family
-		font.bold:			Theme.fontLabel.bold
+		color:				jaspTheme.white
+		font.family: 		jaspTheme.fontLabel.family
+		font.bold:			jaspTheme.fontLabel.bold
 		font.pixelSize:		26
 		anchors.centerIn:	parent
 		text:				Math.round(preferencesModel.uiScale * 100) + "%"

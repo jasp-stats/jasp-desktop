@@ -1,7 +1,7 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
 import JASP.Controls 1.0
-import JASP.Theme 1.0
+
 
 FocusScope
 {
@@ -17,7 +17,7 @@ FocusScope
 	{
 		id:				rectTitleBackground
 		border.width:	1
-		border.color:	allHovered || rectTitleAndDescripton.activeFocus ? Theme.buttonBorderColorHovered : Theme.buttonBorderColor
+		border.color:	allHovered || rectTitleAndDescripton.activeFocus ? jaspTheme.buttonBorderColorHovered : jaspTheme.buttonBorderColor
 		color:			rectTitle.color
 		z:				-1
 		anchors.fill:	parent
@@ -54,7 +54,7 @@ FocusScope
 		anchors.top:		parent.top
 		anchors.margins:	1
 
-		color:				rectTitleAndDescripton.allPressed || rectTitleAndDescripton.activeFocus ? Theme.buttonColorPressed : rectTitleAndDescripton.allHovered ? Theme.buttonColorHovered : Theme.buttonColor
+		color:				rectTitleAndDescripton.allPressed || rectTitleAndDescripton.activeFocus ? jaspTheme.buttonColorPressed : rectTitleAndDescripton.allHovered ? jaspTheme.buttonColorHovered : jaspTheme.buttonColor
 
 		Image
 		{
@@ -93,7 +93,7 @@ FocusScope
 				delay:		500
 				text:		commonToolTip.text
 				visible:	firstFileOrFolderMouseArea.containsMouse
-				font:		Theme.font
+				font:		jaspTheme.font
 			}
 		}
 
@@ -110,7 +110,7 @@ FocusScope
 			fillMode:		Image.PreserveAspectFit
 			source:			model.dataiconsource
 			visible :		model.associated_datafile !== ""
-			mipmap:		true
+			mipmap:			true
 
 
 			sourceSize
@@ -137,7 +137,7 @@ FocusScope
 				delay:		500
 				text:		toolTipText(model.action, model.type, model.associated_datafile, "datafileMouseArea")
 				visible:	datafileMouseArea.containsMouse
-				font:		Theme.font
+				font:		jaspTheme.font
 			}
 		}
 
@@ -152,7 +152,8 @@ FocusScope
 			anchors.leftMargin:	10 * preferencesModel.uiScale
 
 			text:					model.name
-			font:					Theme.font
+			color:					jaspTheme.textEnabled
+			font:					jaspTheme.font
 			horizontalAlignment:	Text.AlignLeft
 			verticalAlignment:		Text.AlignVCenter
 			elide:					Text.ElideMiddle
@@ -169,9 +170,10 @@ FocusScope
 			anchors.right:			parent.right
 			anchors.leftMargin:		10 * preferencesModel.uiScale
 			text:					model.dirpath
+			color:					jaspTheme.textEnabled
 			horizontalAlignment:	Text.AlignLeft
 			verticalAlignment:		Text.AlignVCenter
-			font:					Theme.font
+			font:					jaspTheme.font
 			elide:					Text.ElideMiddle
 		}
 
@@ -192,7 +194,7 @@ FocusScope
 			delay:		500
 			text:		toolTipText(model.action, model.type, model.associated_datafile, "commonMouseArea")
 			visible:	rectTitleAndDescripton.mainHovered
-			font:		Theme.font
+			font:		jaspTheme.font
 		}
 
 	}
@@ -207,7 +209,7 @@ FocusScope
 		anchors.top:		rectTitle.bottom
 		anchors.margins:	visible ? 1 : 0
 
-		color:				rectTitleAndDescripton.color//allHovered ? Theme.buttonColorHovered : Theme.buttonColor
+		color:				rectTitleAndDescripton.color//allHovered ? jaspTheme.buttonColorHovered : jaspTheme.buttonColor
 		visible:			model.description !== ""
 
 		Text
@@ -226,7 +228,8 @@ FocusScope
 
 			horizontalAlignment:	Text.AlignJustify
 			wrapMode:				Text.WordWrap
-			font:					Theme.font
+			font:					jaspTheme.font
+			color:					jaspTheme.textEnabled
 			textFormat:				Text.StyledText
 			text:					model.description
 		}

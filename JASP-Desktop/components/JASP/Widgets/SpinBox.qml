@@ -19,7 +19,7 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.5
 import JASP.Widgets 1.0
-import JASP.Theme 1.0
+
 import JASP 1.0
 
 FocusScope
@@ -69,8 +69,8 @@ FocusScope
 	{
 		id:						label
 		text:					""
-		font:					Theme.font
-		color:					enabled ? Theme.textEnabled : Theme.textDisabled
+		font:					jaspTheme.font
+		color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 		width:					!visible ? 0 : implicitWidth
 		visible:				text !== ""
 		anchors
@@ -83,13 +83,13 @@ FocusScope
 	RectangularButton
 	{
 		id:						minus
-		iconSource:				"qrc:/icons/subtraction-sign-small.svg" //"qrc:/icons/addition-sign-small.svg"
+		iconSource:				jaspTheme.iconPath + "/subtraction-sign-small.svg" //jaspTheme.iconPath + "/addition-sign-small.svg"
 		onClicked:				root.setValue(Number(valueField.text) - root.stepSize)
 		width:					height
 		anchors
 		{
 			left:				label.right
-			leftMargin:			label.visible ? Theme.labelSpacing : 0
+			leftMargin:			label.visible ? jaspTheme.labelSpacing : 0
 		}
 	}
 
@@ -102,19 +102,19 @@ FocusScope
 			left:					minus.right
 			verticalCenter:			parent.verticalCenter
 		}
-		width:						Theme.spinBoxWidth
+		width:						jaspTheme.spinBoxWidth
 		height:						plus.height
-		font:						Theme.font
+		font:						jaspTheme.font
 		horizontalAlignment:		Text.AlignHCenter
-		padding:					Theme.jaspControlPadding
+		padding:					jaspTheme.jaspControlPadding
 		Keys.onReturnPressed:		valueField.processInput()
 		Keys.onEnterPressed:		valueField.processInput()
 		Keys.onEscapePressed:		{ text = root.lastValidValue; focus = false; }
 		onTextChanged:				if(acceptableInput) root.lastValidValue = text
 		selectByMouse:				true
-		selectedTextColor:			Theme.white
-		selectionColor:				Theme.itemSelectedColor
-
+		selectedTextColor:			jaspTheme.white
+		selectionColor:				jaspTheme.itemSelectedColor
+		color:						jaspTheme.textEnabled
 
 		function processInput()
 		{
@@ -125,17 +125,25 @@ FocusScope
 		onActiveFocusChanged:		if(!activeFocus) focus = false;
 
 		ToolTip.text:				root.toolTip
-		ToolTip.timeout:			Theme.toolTipTimeout
-		ToolTip.delay:				Theme.toolTipDelay
-		ToolTip.toolTip.font:		Theme.font
+		ToolTip.timeout:			jaspTheme.toolTipTimeout
+		ToolTip.delay:				jaspTheme.toolTipDelay
+		ToolTip.toolTip.font:		jaspTheme.font
 		ToolTip.visible:			root.toolTip !== "" && ( hoverMe.containsMouse || minus.hovered || plus.hovered )
-		ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor }
+		ToolTip.toolTip.background: Rectangle { color:	jaspTheme.tooltipBackgroundColor }
+
+		background: Rectangle
+		{
+			id:				controlBackground
+			color:			jaspTheme.controlBackgroundColor
+			border.width:	1
+			border.color:	jaspTheme.borderColor
+		}
 	}
 
 	RectangularButton
 	{
 		id:					plus
-		iconSource:			"qrc:/icons/addition-sign-small.svg"
+		iconSource:			jaspTheme.iconPath + "/addition-sign-small.svg"
 		onClicked:			root.setValue(Number(valueField.text) + root.stepSize)
 		width:				height
 
@@ -153,8 +161,8 @@ FocusScope
 			margins:		-border.width
 		}
 		z:					-1
-		border.color:		Theme.focusBorderColor
-		border.width:		Theme.jaspControlHighlightWidth
+		border.color:		jaspTheme.focusBorderColor
+		border.width:		jaspTheme.jaspControlHighlightWidth
 		color:				"transparent"
 		visible:			root.activeFocus
 	}

@@ -1,7 +1,7 @@
 import QtQuick			2.11
 import QtQuick.Controls	2.2
 import QtQuick.Layouts	1.3
-import JASP.Theme		1.0
+
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
 
@@ -36,11 +36,11 @@ FocusScope
 		x:				modulesMenu.opened ? 0 : width
 		width:			340 * preferencesModel.uiScale
 		height:			modulesMenu.height
-		color:			Theme.fileMenuColorBackground
+		color:			jaspTheme.fileMenuColorBackground
 		border.width:	1
-		border.color:	Theme.uiBorder
+		border.color:	jaspTheme.uiBorder
 
-		Behavior on x { enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+		Behavior on x { enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
 
 		MouseArea
@@ -54,7 +54,7 @@ FocusScope
 		{
 			id:			modules
 			spacing:	4  * preferencesModel.uiScale
-			width:		parent.width - Theme.generalAnchorMargin
+			width:		parent.width - jaspTheme.generalAnchorMargin
 			anchors
 			{
 				top:				parent.top
@@ -76,7 +76,7 @@ FocusScope
 				anchors.leftMargin: modules.buttonMargin
 				anchors.left:		parent.left
 				onClicked: 			moduleInstallerDialog.open()
-				iconSource:			"qrc:/icons/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
+				iconSource:			jaspTheme.iconPath + "/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
 				showIconAndText:	true
 				iconLeft:			false
 				toolTip:			qsTr("Install a module")
@@ -127,7 +127,7 @@ FocusScope
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin
 					anchors.left:		parent.left
-					color:				!isDynamic || dynamicModule.status !== "error" ? "transparent" : Theme.red
+					color:				!isDynamic || dynamicModule.status !== "error" ? "transparent" : jaspTheme.red
 
 					CheckBox
 					{
@@ -136,7 +136,7 @@ FocusScope
 						checked:			ribbonEnabled
 						onCheckedChanged:	ribbonModel.setModuleEnabled(index, checked)
 						enabled:			!isDynamic || !(dynamicModule.loading || dynamicModule.installing)
-						font:				Theme.fontRibbon
+						font:				jaspTheme.fontRibbon
 
 						toolTip:			!isDynamic ? ""
 												: dynamicModule.installing ? qsTr("Installing:") + "\n" + dynamicModule.installLog
@@ -158,7 +158,7 @@ FocusScope
 						z:				1
 						id:				minusButton
 						visible:		isDynamic
-						iconSource:		hovered ? "qrc:/icons/delete_icon.png" : "qrc:/icons/delete_icon_gray.png"  // icon from https://icons8.com/icon/set/delete/material
+						iconSource:		hovered ? jaspTheme.iconPath + "/delete_icon.png" : jaspTheme.iconPath + "/delete_icon_gray.png"  // icon from https://icons8.com/icon/set/delete/material
 						width:			visible ? height : 0
 						onClicked:		dynamicModules.uninstallJASPModule(moduleName)
 						toolTip:		qsTr("Uninstall module ") + displayText
@@ -180,14 +180,14 @@ FocusScope
 			y:			0
 			x:			-width
 			height:		parent.height
-			width:		Theme.shadowRadius
+			width:		jaspTheme.shadowRadius
 
 			Rectangle
 			{
 				anchors.centerIn: parent
 				rotation:	90
 				gradient:	Gradient {
-					GradientStop { position: 0.0; color: Theme.shadow }
+					GradientStop { position: 0.0; color: jaspTheme.shadow }
 					GradientStop { position: 1.0; color: "transparent" } }
 				height:		dropShadow.width
 				width:		dropShadow.height

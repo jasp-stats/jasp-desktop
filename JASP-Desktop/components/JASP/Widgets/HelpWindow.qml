@@ -2,7 +2,6 @@ import QtQuick 2.11
 import QtQuick.Window 2.11
 import QtWebEngine 1.7
 import JASP.Widgets 1.0
-import JASP.Theme 1.0
 
 Window
 {

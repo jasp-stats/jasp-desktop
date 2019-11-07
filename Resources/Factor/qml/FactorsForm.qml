@@ -2,7 +2,7 @@ import QtQuick			2.11
 import QtQuick.Controls	2.4
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
-import JASP.Theme		1.0
+
 import QtQuick.Layouts  1.3
 import "." as SEM
 
@@ -11,7 +11,7 @@ JASPControl
     id:					    factorsForm
 	controlType:		    "FactorsForm"
     implicitWidth:	        parent.width
-	height:			        Theme.defaultVariablesFormHeight + Math.max((factorsFormRepeater.count - 3), 0) * (factorsForm.factorListHeight + factorsFormColumn.spacing)
+	height:			        jaspTheme.defaultVariablesFormHeight + Math.max((factorsFormRepeater.count - 3), 0) * (factorsForm.factorListHeight + factorsFormColumn.spacing)
     implicitHeight:         height
     useControlMouseArea:    false
 
@@ -21,7 +21,7 @@ JASPControl
     property bool   allowAll: false
 	property int	initNumberFactors: 1
 	property int    listWidth:			parent.width * 2 / 5
-    property int    factorListHeight: (Theme.defaultVariablesFormHeight - factorButtons.height) / 3 - factorsFormColumn.spacing 
+    property int    factorListHeight: (jaspTheme.defaultVariablesFormHeight - factorButtons.height) / 3 - factorsFormColumn.spacing 
 
 	signal titleChanged(int index, string title);
 	signal factorAdded(int index, var item);

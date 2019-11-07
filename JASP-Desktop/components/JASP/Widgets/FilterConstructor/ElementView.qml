@@ -1,12 +1,12 @@
 import QtQuick 2.0
-import JASP.Theme 1.0
+
 
 ListView
 {
 	id:						listOfStuff
 	width:					0
 	spacing:				4
-	maximumFlickVelocity:	Theme.maximumFlickVelocity
+	maximumFlickVelocity:	jaspTheme.maximumFlickVelocity
 	boundsBehavior:			Flickable.StopAtBounds
 
 
@@ -127,8 +127,8 @@ ListView
 		Component { id: functionComp;		FunctionDrag			{ toolTipText: listToolTip; functionName: listFunction;	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef } }
 		Component { id: numberComp;			NumberDrag				{ toolTipText: listToolTip; value: listNumber;									alternativeDropFunction: alternativeDropFunctionDef } }
 		Component { id: stringComp;			StringDrag				{ toolTipText: listToolTip; text: listText;										alternativeDropFunction: alternativeDropFunctionDef } }
-		Component { id: separatorComp;		Item					{ height: filterConstructor.blockDim; width: listWidth - listOfStuff.widthMargin; Rectangle { height: 1; color: Theme.black; width: parent.width ; anchors.centerIn: parent }  } }
-		Component { id: defaultComp;		Text					{ text: "Something wrong!"; color: "red" }  }
+		Component { id: separatorComp;		Item					{ height: filterConstructor.blockDim; width: listWidth - listOfStuff.widthMargin; Rectangle { height: 1; color: jaspTheme.black; width: parent.width ; anchors.centerIn: parent }  } }
+		Component { id: defaultComp;		Text					{ text: "Something wrong!"; color: jaspTheme.red }  }
 		Component {	id: columnComp;			ColumnDrag				{ toolTipText: listToolTip; columnName: listColName; columnIcon: listColIcon;		alternativeDropFunction: alternativeDropFunctionDef } }
 	}
 

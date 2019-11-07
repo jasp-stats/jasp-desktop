@@ -16,175 +16,184 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-pragma Singleton
 
-import QtQuick			2.11
-import QtQuick.Controls 2.4
+import QtQuick			2.12
+import QtQuick.Controls	2.12
+import JASP				1.0
 
-QtObject
+JaspTheme
 {
-	readonly property real uiScale:							preferencesModel.uiScale
+	themeName:	"lightTheme" // *The original* //
 
-	readonly property color white:							"white"
-	readonly property color whiteBroken:					"#F5F5F5"
-	readonly property color black:							"black"
-	readonly property color gray:							"#d1d1d1"
-	readonly property color grayDarker:						"#9A9A9A"
-	readonly property color grayLighter:					"#E0E0E0"
-	readonly property color grayMuchLighter:				"#ECECEC"
-	readonly property color grayVeryMuchLighter:			"#F4F6F7"
-	readonly property color blue:							"#419BF9"
-	readonly property color blueDarker:						"#0069D9"
-	readonly property color blueLighter:					"#97C4F2"
-	readonly property color blueMuchLighter:				"#DCF1FB"
-	readonly property color red:							"#FC625D"
-	readonly property color redDarker:						"#CD0A0A"
-	readonly property color green:							"#36CE4C"
-	readonly property color yellowLight:					"#FFFFCA"
-	readonly property color rose:							"#FFC0CB"
-	readonly property color roseLight:						"#FEF1EC"
-	readonly property color cyan:							"#39CEF9"
-	readonly property color shadow:							"#33000000"
+	//Fonts:
+	font.pixelSize:										Math.round(12 * uiScale)
+	font.family:										jaspFont		//If you change the property .family the font won't respond to the UI anymore unless you use jaspFont in it somewhere...
+	font.weight:										Font.Normal
 
-	readonly property color textEnabled:					black
-	readonly property color textDisabled:					grayDarker
-	readonly property color uiBackground:					grayMuchLighter
-	readonly property color uiBorder:						grayDarker
-	readonly property color fileMenuLightBorder:			grayMuchLighter
-	readonly property color fileMenuColorBackground:		grayVeryMuchLighter
 
-	readonly property color buttonColor:					uiBackground
-	readonly property color buttonColorHovered:				grayLighter
-	readonly property color buttonColorPressed:				gray
-	readonly property color buttonBorderColor:				gray
-	readonly property color buttonBorderColorHovered:		black
+	fontLabel.bold:										true
+	fontLabel.pixelSize:								Math.round(18 * uiScale)
+	fontLabel.family:									jaspFont + (MACOS ? " Bold" : "")
+	fontLabel.weight:									Font.Bold
 
-	readonly property color itemHighlight:					blueMuchLighter
+	fontRibbon.bold:									false
+	fontRibbon.pixelSize:								Math.round(14 * uiScale)
+	fontRibbon.family:									jaspFont + (MACOS ? " DemiBold" : "")
+	fontRibbon.weight:									Font.DemiBold
 
-	readonly property int itemPadding:						8	* uiScale
-	readonly property int minPanelWidth:					200 * uiScale
-	readonly property int resultWidth:						600	* uiScale
-	readonly property int formWidth:						625	* uiScale
-	readonly property int formMargin:						10	* uiScale
-	readonly property int formExpanderHeaderHeight:			40  * uiScale
+	fontGroupTitle.bold:								true
+	fontGroupTitle.pixelSize:							Math.round(14 * uiScale)
+	fontGroupTitle.family:								jaspFont + (MACOS ? " Medium" : "")
+	fontGroupTitle.weight:								Font.Medium
 
-	readonly property int rowGridSpacing:					15 * uiScale
-	readonly property int columnGridSpacing:				30 * uiScale
-	readonly property int rowGroupSpacing:					5  * uiScale
-	readonly property int columnGroupSpacing:				10 * uiScale
-	readonly property int indentationLength:				20 * uiScale
-	readonly property int borderRadius:						4  * uiScale
-	readonly property int generalAnchorMargin:				8  * uiScale
-	readonly property int generalMenuMargin:				12  * uiScale
-	readonly property int rowSpacing:						12 * uiScale
-	readonly property int subOptionOffset:					40 * uiScale
+	fontPrefOptionsGroupTitle.bold:						true
+	fontPrefOptionsGroupTitle.pixelSize:				Math.round(13 * uiScale)
+	fontPrefOptionsGroupTitle.family:					jaspFont + (MACOS ? " Bold" : "")
+	fontPrefOptionsGroupTitle.weight:					Font.Bold
 
-	readonly property int sliderWidth:						4   * uiScale
-	readonly property int switchHeight:						15  * uiScale
-	readonly property int shadowRadius:						10	* uiScale
-	readonly property int labelSpacing:						4   * uiScale
-	readonly property int spinBoxWidth:						50  * uiScale
-	readonly property int sliderLength:						80  * uiScale
-	readonly property int spinBoxHeight:					30  * uiScale
-	readonly property int comboBoxHeight:					20  * uiScale
-	readonly property int textFieldWidth:					200 * uiScale
-	readonly property int textFieldHeight:					20  * uiScale
-	readonly property int splitHandleWidth:					20  * uiScale
-	readonly property int numericFieldWidth:				40  * uiScale
-	readonly property int subMenuIconHeight:				13	* uiScale
-	readonly property int titleBottomMargin:				5   * uiScale
-	readonly property int jaspControlPadding:				3   * uiScale
-	readonly property int ribbonButtonHeight:				72  * uiScale
-	readonly property int variablesListTitle:				20  * uiScale
-	readonly property int ribbonButtonPadding:				10  * uiScale
-	readonly property int groupContentPadding:				10  * uiScale
-	readonly property int sliderHandleDiameter:				16  * uiScale
-	readonly property int defaultTextAreaHeight:			250 * uiScale
-	readonly property int jaspControlHighlightWidth:		Math.max(2, 3 * uiScale)
-	readonly property int defaultVariablesFormHeight:		350 * uiScale
-	readonly property int defaultSingleItemListHeight:		49  * uiScale
-	readonly property int defaultRectangularButtonHeight:	32 * uiScale
-	readonly property int smallDefaultVariablesFormHeight:	200 * uiScale
+	//Scales:
+	ribbonScaleHovered:					1.1
 
-	readonly property int scrollbarBoxWidth:				12  * uiScale
-	readonly property int scrollbarBoxWidthBig:				16  * uiScale
+	//Color definitions:
+	white:								"white"
+	whiteBroken:						"#F5F5F5"
+	black:								"black"
 
-	readonly property int messageBoxButtonHeight:			40  * uiScale
-	readonly property int maximumFlickVelocity:				preferencesModel.maxFlickVelocity
-	readonly property int hoverTime:						400
-	readonly property int fileMenuSlideDuration:			150
+	grayDarker:							"#9A9A9A"
+	gray:								"#d1d1d1"
+	grayLighter:						"#E0E0E0"
+	grayMuchLighter:					"#ECECEC"
+	grayVeryMuchLighter:				"#F4F6F7"
 
-	readonly property real ribbonScaleHovered:				1.1
+	blueDarker:							"#0069D9"
+	blue:								"#419BF9"
+	blueLighter:						"#97C4F2"
+	blueMuchLighter:					"#DCF1FB"
 
-	readonly property int menuItemHeight:					20  * uiScale
-	readonly property int menuGroupTitleHeight:				40  * uiScale
-	readonly property int menuHeaderHeight:					50  * uiScale
-	readonly property real menuSpacing:						1   * uiScale
-	readonly property real menuPadding:						10  * uiScale
+	red:								"#FC625D"
+	redDarker:							"#CD0A0A"
 
-	property string jaspFont: "SansSerif"
+	green:								"#36CE4C"
 
-	property font font
-	font.bold:			false
-	font.underline:		false
-	font.pixelSize:		12 * uiScale
-	font.family:		jaspFont
-	font.weight:		Font.Normal
+	yellowLight:						"#FFFFCA"
 
-	property font fontLabel
-	fontLabel.bold:			true
-	fontLabel.underline:	false
-	fontLabel.pixelSize:	18 * uiScale
-	fontLabel.family:		jaspFont
-	fontLabel.weight:		Font.Bold
+	rose:								"#FFC0CB"
+	roseLight:							"#FEF1EC"
 
-	property font fontRibbon
-	fontRibbon.bold:		false
-	fontRibbon.underline:	false
-	fontRibbon.pixelSize:	14 * uiScale
-	fontRibbon.family:		jaspFont
-	fontRibbon.weight:		Font.Normal
+	cyan:								"#39CEF9"
 
-	property font fontGroupTitle
-	fontGroupTitle.bold:		true
-	fontGroupTitle.underline:	false
-	fontGroupTitle.pixelSize:	14 * uiScale
-	fontGroupTitle.family:		jaspFont
-	fontGroupTitle.weight:		Font.Bold
+	shadow:								"#33000000"
 
-	property font fontPrefOptionsGroupTitle
-	fontPrefOptionsGroupTitle.bold:			true
-	fontPrefOptionsGroupTitle.underline:	false
-	fontPrefOptionsGroupTitle.pixelSize:	13 * uiScale
-	fontPrefOptionsGroupTitle.family:		jaspFont
-	fontPrefOptionsGroupTitle.weight:		Font.Bold
+	//these might be added in JaspTheme class:
+	//readonly property color jaspBlue: "#14a1e3"
+	//readonly property color jaspGreen: "#8cc63e"
 
-	readonly property color borderColor:					gray
-	readonly property color focusBorderColor:				blueLighter
-	readonly property color dependencyBorderColor:			green
-	readonly property color dependencySelectedColor:		cyan
-	readonly property color containsDragBorderColor:		green
-	readonly property color itemHoverColor:					blueMuchLighter
-	readonly property color itemSelectedColor:				blueDarker
-	readonly property color itemSelectedNoFocusColor:		grayLighter
-	readonly property color analysisBackgroundColor:		grayMuchLighter
-	readonly property color controlBackgroundColor:			white
-	readonly property color disableControlBackgroundColor:	whiteBroken
-	readonly property color rowEvenColor:					controlBackgroundColor
-	readonly property color rowOnevenColor:					whiteBroken
-	readonly property color controlErrorBackgroundColor:	roseLight
-	readonly property color controlErrorTextColor:			redDarker
+	textEnabled:						black
+	textDisabled:						grayDarker
 
-	readonly property color buttonBackgroundColor:			blue
-	readonly property color tooltipBackgroundColor:			yellowLight
-	readonly property color debugBackgroundColor:			rose
-	readonly property color errorMessagesBackgroundColor:	red
-	readonly property color sliderPartOn:					blue
-	readonly property color sliderPartOff:					grayDarker
+	uiBackground:						grayMuchLighter
+	uiBorder:							grayDarker
 
-	readonly property int toolTipDelay:		1500
-	readonly property int toolTipTimeout:	4500
+	fileMenuColorBackground:			grayVeryMuchLighter
+	fileMenuLightBorder:				grayMuchLighter
 
+	buttonColor:						uiBackground
+	buttonColorHovered:					grayLighter
+	buttonColorPressed:					gray
+	buttonBorderColor:					gray
+	buttonBorderColorHovered:			black
+
+	itemHighlight:						blueMuchLighter
+	itemHoverColor:						blueMuchLighter
+	itemSelectedColor:					blueDarker
+	itemSelectedNoFocusColor:			grayLighter
+
+	//JASPControl colors mostly:
+	borderColor:						gray
+	focusBorderColor:					blueLighter
+	dependencyBorderColor:				green
+	dependencySelectedColor:			cyan
+	containsDragBorderColor:			green
+
+	analysisBackgroundColor:			grayMuchLighter
+	controlBackgroundColor:				white
+	disableControlBackgroundColor:		whiteBroken
+	rowEvenColor:						controlBackgroundColor
+	rowOnevenColor:						whiteBroken
+	controlErrorBackgroundColor:		roseLight
+	controlErrorTextColor:				redDarker
+
+	buttonBackgroundColor:				blue
+	tooltipBackgroundColor:				yellowLight
+	debugBackgroundColor:				rose
+	errorMessagesBackgroundColor:		red
+	sliderPartOn:						blue
+	sliderPartOff:						grayDarker
+
+	darkeningColour:					"black"
+
+	//Distances:
+	borderRadius:							4
+	shadowRadius:							10
+
+	itemPadding:							8
+	jaspControlPadding:						3
+	ribbonButtonPadding:					10
+	groupContentPadding:					10
+
+	rowSpacing:								12
+	rowGridSpacing:							15
+	rowGroupSpacing:						5
+	columnGridSpacing:						30
+	columnGroupSpacing:						10
+	indentationLength:						20
+	labelSpacing:							4
+	menuSpacing:							1
+	menuPadding:							10
+
+	generalAnchorMargin:					8
+	generalMenuMargin:						12
+	titleBottomMargin:						5
+	subOptionOffset:						40
+
+	//Sizes:
+	minPanelWidth:							200
+	resultWidth:							600
+	formWidth:								625
+	formMargin:								10
+	formExpanderHeaderHeight:				40
+	sliderWidth:							4
+	sliderLength:							80
+	switchHeight:							15
+	spinBoxWidth:							50
+	spinBoxHeight:							30
+	comboBoxHeight:							20
+	textFieldWidth:							200
+	textFieldHeight:						20
+	numericFieldWidth:						40
+	splitHandleWidth:						20
+	subMenuIconHeight:						13
+	ribbonButtonHeight:						72
+	variablesListTitle:						20
+	sliderHandleDiameter:					16
+	defaultTextAreaHeight:					250
+	jaspControlHighlightWidth:				3
+	defaultVariablesFormHeight:				350
+	defaultSingleItemListHeight:			49
+	defaultRectangularButtonHeight:			32
+	smallDefaultVariablesFormHeight:		200
+	messageBoxButtonHeight:					40
+	scrollbarBoxWidthBig:					16
+	scrollbarBoxWidth:						12
+	menuItemHeight:							20
+	menuGroupTitleHeight:					40
+	menuHeaderHeight:						50
+
+
+
+
+
+	//Utility:
 	readonly property Item _toolTipOverrideItem: Item
 	{
 		//These properties override those for ALL attached ToolTips in the application

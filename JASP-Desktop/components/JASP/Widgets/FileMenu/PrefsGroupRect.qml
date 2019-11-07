@@ -2,22 +2,22 @@ import QtQuick			2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts	1.3
 import JASP.Widgets		1.0
-import JASP.Theme		1.0
+
 import JASP.Controls	1.0
 import JASP				1.0
 
 Rectangle
 {
 	color:			"transparent"
-	border.color:	Theme.fileMenuLightBorder
+	border.color:	jaspTheme.fileMenuLightBorder
 	border.width:	1
 
-	implicitHeight:	contentColumn.y + contentColumn.height + Theme.generalAnchorMargin
+	implicitHeight:	contentColumn.y + contentColumn.height + jaspTheme.generalAnchorMargin
 	height:			implicitHeight
-	implicitWidth:	parent.width - (Theme.generalAnchorMargin * 2)
+	implicitWidth:	parent.width - (jaspTheme.generalAnchorMargin * 2)
 	width:			implicitWidth
-	x:				Theme.generalAnchorMargin
-	y:				Theme.generalAnchorMargin
+	x:				jaspTheme.generalAnchorMargin
+	y:				jaspTheme.generalAnchorMargin
 
 
 			property alias title:		titleText.text
@@ -27,10 +27,11 @@ Rectangle
 	Text
 	{
 		id:					titleText
-		font:				Theme.fontPrefOptionsGroupTitle
-		anchors.margins:	text !== "" ? Theme.generalAnchorMargin : 0
+		font:				jaspTheme.fontPrefOptionsGroupTitle
+		anchors.margins:	text !== "" ? jaspTheme.generalAnchorMargin : 0
 		anchors.top:		parent.top
 		anchors.left:		parent.left
+		color:				jaspTheme.textEnabled
 		text:				""
 		height:				text !== "" ? implicitHeight : 0
 	}
@@ -38,18 +39,18 @@ Rectangle
 	Column
 	{
 		id:					contentColumn
-		spacing:			Theme.generalAnchorMargin
+		spacing:			jaspTheme.generalAnchorMargin
 
 		anchors
 		{
 			top:			titleText.bottom
-			topMargin:		Theme.generalAnchorMargin
+			topMargin:		jaspTheme.generalAnchorMargin
 
 			left:			parent.left
-			leftMargin:		(titleText.text !== "" ? Theme.subOptionOffset : 0) + Theme.generalAnchorMargin
+			leftMargin:		(titleText.text !== "" ? jaspTheme.subOptionOffset : 0) + jaspTheme.generalAnchorMargin
 
 			right:			parent.right
-			rightMargin:	Theme.generalAnchorMargin
+			rightMargin:	jaspTheme.generalAnchorMargin
 		}
 	}
 }

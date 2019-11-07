@@ -72,6 +72,8 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 		emit resultsPageLoadedSignal();
 
 		emit zoomChanged();
+
+		setThemeCss(Settings::value(Settings::THEME_NAME).toString());
 	}
 }
 
@@ -374,4 +376,9 @@ void ResultsJsInterface::analysisEditImage(int id, QString options)
 
 	if		(type == "resize"		) emit analysisResizeImage(id, options);
 	else if	(type == "interactive"	) emit showPlotEditor(id, options);
+}
+
+void ResultsJsInterface::setThemeCss(QString themeName)
+{
+	runJavaScript("window.setTheme(\"" + themeName + "\");");
 }

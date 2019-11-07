@@ -1,5 +1,5 @@
 import QtQuick 2.9
-import JASP.Theme 1.0
+
 
 Item
 {
@@ -14,7 +14,7 @@ Item
 	property var parameterNames: []
 	property var parameterDropKeys: [[]]
 
-	property variant functionNameToImageSource: { "sum": "qrc:/icons/sum.png", "prod": "qrc:/icons/product.png", "sd": "qrc:/icons/sigma.png", "var": "qrc:/icons/variance.png", "!": "qrc:/icons/negative.png", "sqrt":"qrc:/icons/rootHead.png"}
+	property variant functionNameToImageSource: { "sum": jaspTheme.iconPath + "/sum.png", "prod": jaspTheme.iconPath + "/product.png", "sd": jaspTheme.iconPath + "/sigma.png", "var": jaspTheme.iconPath + "/variance.png", "!": jaspTheme.iconPath + "/negative.png", "sqrt":jaspTheme.iconPath + "/rootHead.png"}
 	property string functionImageSource: functionNameToImageSource[functionName] !== undefined ? functionNameToImageSource[functionName] : ""
 	property bool isNested: false
 	property var booleanReturningFunctions: ["!"]
@@ -76,7 +76,7 @@ Item
 		Rectangle
 		{
 
-			color: Theme.black
+			color: jaspTheme.black
 
 			anchors.left: parent.left
 			anchors.right: parent.right
@@ -102,6 +102,7 @@ Item
 
 			anchors.top: parent.top
 			anchors.bottom: parent.bottom
+			color:					jaspTheme.textEnabled
 
 			verticalAlignment: Text.AlignVCenter
 			horizontalAlignment: Text.AlignHCenter
@@ -161,6 +162,7 @@ Item
 		width: showParentheses ? filterConstructor.blockDim / 3 : 0
 		text: ! showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : "("
 		font.pixelSize: filterConstructor.fontPixelSize
+		color:					jaspTheme.textEnabled
 
 		Rectangle
 		{
@@ -169,7 +171,7 @@ Item
 			anchors.margins: 2
 			anchors.horizontalCenter: parent.horizontalCenter
 
-			color: Theme.black
+			color: jaspTheme.black
 			width: 2
 
 			visible: funcRoot.isAbs
@@ -341,6 +343,7 @@ Item
 					text: index < funcRoot.parameterNames.length - 1 ? "," : ""
 
 					font.pixelSize: filterConstructor.fontPixelSize
+					color:					jaspTheme.textEnabled
 					anchors.top: parent.top
 					anchors.bottom: parent.bottom
 
@@ -363,6 +366,7 @@ Item
 		width: showParentheses ? filterConstructor.blockDim / 3 : 0
 		text: !showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : ")"
 		font.pixelSize: filterConstructor.fontPixelSize
+		color:					jaspTheme.textEnabled
 
 		Rectangle
 		{
@@ -371,7 +375,7 @@ Item
 			anchors.margins: 2
 			anchors.horizontalCenter: parent.horizontalCenter
 
-			color: Theme.black
+			color: jaspTheme.black
 			width: 2
 
 			visible: funcRoot.isAbs

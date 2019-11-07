@@ -19,15 +19,15 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtGraphicalEffects 1.12
-import JASP.Theme 1.0
+
 
 
 Rectangle
 {
 	id				: ribbonButton
-	width			: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * Theme.ribbonButtonPadding) // + 2*tbutton.width
-	height			: Theme.ribbonButtonHeight
-	color			: showPressed ? Theme.grayLighter : "transparent"
+	width			: (innerText.width > _imgIndWidth ? innerText.width : _imgIndWidth) + (2 * jaspTheme.ribbonButtonPadding) // + 2*tbutton.width
+	height			: jaspTheme.ribbonButtonHeight
+	color			: showPressed ? jaspTheme.grayLighter : "transparent"
 	z				: 1
     objectName      : "ribbonButton"
 	//radius			: 4
@@ -50,7 +50,7 @@ Rectangle
     {
         id      : borderLeft
         width   : showPressed ? 1 : 0
-        color   : myMenuOpen  ? Theme.grayDarker  : Theme.gray
+		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
         anchors
         {
             left	: parent.left
@@ -63,7 +63,7 @@ Rectangle
     {
         id      : borderRight
         width   : showPressed ? 1 : 0
-        color   : myMenuOpen  ? Theme.grayDarker  : Theme.gray
+		color   : myMenuOpen  ? jaspTheme.grayDarker  : jaspTheme.gray
         anchors
         {
             right	: parent.right
@@ -77,14 +77,14 @@ Rectangle
 		anchors.centerIn	: parent
 		width				: parent.width
 		height				: parent.height
-		scale				: mice.containsMouse && !ribbonButton.showPressed ? Theme.ribbonScaleHovered : 1
+		scale				: mice.containsMouse && !ribbonButton.showPressed ? jaspTheme.ribbonScaleHovered : 1
 
 		Image
 		{
 			id:			backgroundImage
 			z:			1
 			width:		(37 / 28) * height
-			height:		Theme.ribbonButtonHeight - ( (2 * Theme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
+			height:		jaspTheme.ribbonButtonHeight - ( (2 * jaspTheme.ribbonButtonPadding) + innerText.anchors.topMargin + innerText.height ) //28
 			opacity:	ribbonButton.enabled ? 1 : 0.5
 			smooth:		true
 			mipmap:		true
@@ -93,7 +93,7 @@ Rectangle
 			anchors
 			{
 				top				: parent.top
-				topMargin		: Theme.ribbonButtonPadding
+				topMargin		: jaspTheme.ribbonButtonPadding
 				horizontalCenter: parent.horizontalCenter
 			}
 
@@ -108,7 +108,7 @@ Rectangle
 			height:				0.3 * backgroundImage.height
 			width:				visible ? height : 0
 			anchors.top:		backgroundImage.top
-			source:				"qrc:/icons/toolbutton-menu-indicator.svg"
+			source:				jaspTheme.iconPath + "/toolbutton-menu-indicator.svg"
 			opacity:			ribbonButton.enabled ? 1 : 0.5
 			visible:			ribbonButton.menu ? ribbonButton.menu.rowCount() > 1 : false
 		}
@@ -120,8 +120,8 @@ Rectangle
 			anchors.horizontalCenter	: backgroundImage.horizontalCenter
 			anchors.top					: backgroundImage.bottom
 			anchors.topMargin			: 5 * preferencesModel.uiScale
-			color						: ribbonButton.enabled ? Theme.black : Theme.gray
-			font						: Theme.fontRibbon
+			color						: ribbonButton.enabled ? jaspTheme.black : jaspTheme.gray
+			font						: jaspTheme.fontRibbon
 			renderType					: Text.QtRendering //Because this might be transformed and ugly if done natively
 		}
 

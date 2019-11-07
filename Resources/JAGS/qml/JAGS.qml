@@ -18,7 +18,7 @@
 
 import QtQuick.Layouts	1.3
 import QtQuick			2.8
-import JASP.Theme		1.0
+
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
 

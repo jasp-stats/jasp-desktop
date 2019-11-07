@@ -23,6 +23,7 @@
 #include <QIcon>
 #include "term.h"
 #include "column.h"
+#include "qquick/jasptheme.h"
 
 class VariableInfo
 {
@@ -68,18 +69,18 @@ public:
 
 	QVariant requestIcon(const Term &term) const
 	{
-		static QIcon nominalTextIcon	= QIcon(":/icons/variable-nominal-text.svg");
-		static QIcon nominalIcon		= QIcon(":/icons/variable-nominal.svg");
-		static QIcon ordinalIcon		= QIcon(":/icons/variable-ordinal.svg");
-		static QIcon scaleIcon			= QIcon(":/icons/variable-scale.svg");
+		static QString	nominalTextIcon	= "variable-nominal-text.svg",
+						nominalIcon		= "variable-nominal.svg",
+						ordinalIcon		= "variable-ordinal.svg",
+						scaleIcon		= "variable-scale.svg";
 
 		switch (requestInfo(term, VariableInfo::VariableType).toInt())
 		{
-		case int(columnType::nominalText):	return nominalTextIcon;
-		case int(columnType::nominal):		return nominalIcon;
-		case int(columnType::ordinal):		return ordinalIcon;
-		case int(columnType::scale):			return scaleIcon;
-		default:										return QVariant();
+		case int(columnType::nominalText):	return JaspTheme::currentIconPath() + nominalTextIcon;
+		case int(columnType::nominal):		return JaspTheme::currentIconPath() + nominalIcon;
+		case int(columnType::ordinal):		return JaspTheme::currentIconPath() + ordinalIcon;
+		case int(columnType::scale):		return JaspTheme::currentIconPath() + scaleIcon;
+		default:							return QVariant();
 		}
 	}
 

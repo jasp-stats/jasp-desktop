@@ -1,7 +1,7 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.4
 import JASP.Widgets		1.0
-import JASP.Theme		1.0
+
 import JASP.Controls	1.0
 
 ScrollView
@@ -14,7 +14,7 @@ ScrollView
 	Column
 	{
 		width:			scrollPrefs.width
-		spacing:		Theme.rowSpacing
+		spacing:		jaspTheme.rowSpacing
 
 		MenuHeader
 		{
@@ -22,8 +22,8 @@ ScrollView
 			headertext:		qsTr("Results Preferences")
 			helpfile:		"preferences/prefsresults"
 			anchorMe:		false
-			width:			scrollPrefs.width - (2 * Theme.generalMenuMargin)
-			x:				Theme.generalMenuMargin
+			width:			scrollPrefs.width - (2 * jaspTheme.generalMenuMargin)
+			x:				jaspTheme.generalMenuMargin
 		}
 
 		PrefsGroupRect
@@ -67,7 +67,7 @@ ScrollView
 					anchors
 					{
 						left:				fixDecs.right
-						leftMargin:			Theme.generalAnchorMargin
+						leftMargin:			jaspTheme.generalAnchorMargin
 						verticalCenter:		parent.verticalCenter
 					}
 				}
@@ -105,7 +105,7 @@ ScrollView
 				text:					qsTr("Custom PPI: ")
 				enabled:				!preferencesModel.useDefaultPPI
 
-				x:						Theme.subOptionOffset
+				x:						jaspTheme.subOptionOffset
 			}
 
 			RadioButtonGroup

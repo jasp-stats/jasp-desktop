@@ -19,21 +19,21 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3 as L
-import JASP.Theme 1.0
+
 
 Rectangle {
 	id:					control
 	
-	implicitWidth:		Math.max(label.realWidth, Theme.groupContentPadding + contentArea.implicitWidth)
-	implicitHeight:		label.realHeight + Theme.titleBottomMargin + contentArea.implicitHeight	
-	color:				Theme.analysisBackgroundColor // transparent generates sometimes temporary black blocks
-	L.Layout.leftMargin:	indent ? Theme.indentationLength : 0
+	implicitWidth:		Math.max(label.realWidth, jaspTheme.groupContentPadding + contentArea.implicitWidth)
+	implicitHeight:		label.realHeight + jaspTheme.titleBottomMargin + contentArea.implicitHeight	
+	color:				jaspTheme.analysisBackgroundColor // transparent generates sometimes temporary black blocks
+	L.Layout.leftMargin:	indent ? jaspTheme.indentationLength : 0
 	visible:			!debug || DEBUG_MODE
     
 	default property alias	content:			contentArea.children
 			property alias	contentArea:		contentArea
-			property int	rowSpacing:			Theme.rowGroupSpacing
-			property int	columnSpacing:		Theme.columnGroupSpacing
+			property int	rowSpacing:			jaspTheme.rowGroupSpacing
+			property int	columnSpacing:		jaspTheme.columnGroupSpacing
 			property int	columns:			1
 			property string title:				""
 			property bool	debug:				false
@@ -52,8 +52,8 @@ Rectangle {
 		anchors.top:	control.top
 		anchors.left:	control.left
 		text:			control.title
-		color:			enabled ? Theme.textEnabled : Theme.textDisabled
-		font:			Theme.font
+		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+		font:			jaspTheme.font
 		visible:		control.title ? true : false
 		
 		property int	realHeight: visible ? implicitHeight : 0
@@ -66,9 +66,9 @@ Rectangle {
 		id:					contentArea
 		columns:			control.columns
 		anchors.top:		control.title ? label.bottom : control.top
-		anchors.topMargin:	control.title ? Theme.titleBottomMargin : 0
+		anchors.topMargin:	control.title ? jaspTheme.titleBottomMargin : 0
 		anchors.left:		control.left
-        anchors.leftMargin: control.title ? Theme.groupContentPadding : 0
+        anchors.leftMargin: control.title ? jaspTheme.groupContentPadding : 0
 		rowSpacing:			control.rowSpacing
 		columnSpacing:		control.columnSpacing
     }

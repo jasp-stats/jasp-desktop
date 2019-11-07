@@ -60,30 +60,27 @@
 #include "gui/messageforwarder.h"
 #include "log.h"
 
-
 using namespace std;
 
-QString MainWindow::_iconPath = "qrc:/icons/";
-
 QMap<QString, QVariant> MainWindow::_iconFiles {
-	{ "nominalText"	, _iconPath + "variable-nominal-text.svg" },
-	{ "nominal"		, _iconPath + "variable-nominal.svg"},
-	{ "ordinal"		, _iconPath + "variable-ordinal.svg"},
-	{ "scale"		, _iconPath + "variable-scale.svg"}
+	{ "nominalText"	, "variable-nominal-text.png" },
+	{ "nominal"		, "variable-nominal.png"},
+	{ "ordinal"		, "variable-ordinal.png"},
+	{ "scale"		, "variable-scale.png"}
 };
 
 QMap<QString, QVariant> MainWindow::_iconInactiveFiles {
-	{ "nominalText"	, _iconPath + "variable-nominal-text-inactive.svg" },
-	{ "nominal"		, _iconPath + "variable-nominal-inactive.svg"},
-	{ "ordinal"		, _iconPath + "variable-ordinal-inactive.svg"},
-	{ "scale"		, _iconPath + "variable-scale-inactive.svg"}
+	{ "nominalText"	, "variable-nominal-text-inactive.svg" },
+	{ "nominal"		, "variable-nominal-inactive.png"},
+	{ "ordinal"		, "variable-ordinal-inactive.png"},
+	{ "scale"		, "variable-scale-inactive.png"}
 };
 
 QMap<QString, QVariant> MainWindow::_iconDisabledFiles {
-	{ "nominalText"	, _iconPath + "variable-nominal-disabled.svg" },
-	{ "nominal"		, _iconPath + "variable-nominal-disabled.svg"},
-	{ "ordinal"		, _iconPath + "variable-ordinal-disabled.svg"},
-	{ "scale"		, _iconPath + "variable-scale-disabled.svg"}
+	{ "nominalText"	, "variable-nominal-disabled.png" },
+	{ "nominal"		, "variable-nominal-disabled.png"},
+	{ "ordinal"		, "variable-ordinal-disabled.png"},
+	{ "scale"		, "variable-scale-disabled.png"}
 };
 
 MainWindow::MainWindow(QApplication * application) : QObject(application), _application(application)
@@ -132,6 +129,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_aboutModel				= new AboutModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
 	_plotEditorModel		= new PlotEditorModel(_analyses);
+	_columnTypesModel		= new ColumnTypesModel(this);
+	JaspTheme::setPreferencesModel(_preferences);
 
 	new MessageForwarder(this); //We do not need to store this
 
@@ -139,7 +138,10 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
+	loadDefaultFont();
+
 	qmlRegisterType<DataSetView>			("JASP", 1, 0, "DataSetView");
+	qmlRegisterType<JaspTheme>				("JASP", 1, 0, "JaspTheme");
 	qmlRegisterType<AnalysisForm>			("JASP", 1, 0, "AnalysisForm");
 	qmlRegisterType<JASPDoubleValidator>	("JASP", 1, 0, "JASPDoubleValidator");
 	qmlRegisterType<ResultsJsInterface>		("JASP", 1, 0, "ResultsJsInterface");
@@ -176,7 +178,7 @@ MainWindow::~MainWindow()
 		if (_package->hasDataSet())
 			_package->reset();
 
-		delete _engineSync;
+		//delete _engineSync; it will be deleted by Qt!
 
 	}
 	catch(...)
@@ -290,6 +292,9 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::fixedDecimalsChangedString,		_resultsJsInterface,	&ResultsJsInterface::setFixDecimalsHandler					);
 	connect(_preferences,			&PreferencesModel::uiScaleChanged,					_resultsJsInterface,	&ResultsJsInterface::setZoom								);
 	connect(_preferences,			&PreferencesModel::developerModeChanged,			_analyses,				&Analyses::refreshAllAnalyses								);
+	connect(_preferences,			&PreferencesModel::jaspThemeChanged,				this,					&MainWindow::jaspThemeChanged								);
+	connect(_preferences,			&PreferencesModel::currentThemeNameChanged,			_resultsJsInterface,	&ResultsJsInterface::setThemeCss							);
+
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses								);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _package,				&DataSetPackage::setColumnsUsedInEasyFilter					);
@@ -316,6 +321,21 @@ void MainWindow::makeConnections()
 
 }
 
+void MainWindow::loadDefaultFont()
+{
+	int id = QFontDatabase::addApplicationFont(":/resources/fonts/FreeSans.ttf");
+
+	if(id == -1)
+		Log::log() << "Loading default font did not work!\n";
+	else
+	{
+		QString fontFam = QFontDatabase::applicationFontFamilies(id).at(0);
+		Log::log() << "Loading custom font '" << QFontDatabase::applicationFontFamilies(id).at(0) << "'\n";
+
+		_defaultFont = QFont(fontFam);
+		_preferences->setDefaultFont(_defaultFont);
+	}
+}
 
 void MainWindow::loadQML()
 {
@@ -342,12 +362,14 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("resultsJsInterface",		_resultsJsInterface		);
 	_qml->rootContext()->setContextProperty("computedColumnsInterface",	_computedColumnsModel	);
 	_qml->rootContext()->setContextProperty("ribbonModelFiltered",		_ribbonModelFiltered	);
+	_qml->rootContext()->setContextProperty("columnTypesModel",			_columnTypesModel		);
 	_qml->rootContext()->setContextProperty("resultMenuModel",			_resultMenuModel		);
 	_qml->rootContext()->setContextProperty("fileMenuModel",			_fileMenu				);
 	_qml->rootContext()->setContextProperty("filterModel",				_filterModel			);
 	_qml->rootContext()->setContextProperty("ribbonModel",				_ribbonModel			);
 	_qml->rootContext()->setContextProperty("engineSync",				_engineSync				);
 	_qml->rootContext()->setContextProperty("helpModel",				_helpModel				);
+	_qml->rootContext()->setContextProperty("jaspTheme",				nullptr					); //Will be set from jaspThemeChanged()!
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
@@ -358,13 +380,19 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(columnType::nominal)		);
 	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
 
-	bool debug = false;
+	bool	debug = false,
+			isMac = false;
+
 #ifdef JASP_DEBUG
 	debug = true;
 #endif
 
+#ifdef __APPLE__
+	isMac = true;
+#endif
+
 	_qml->rootContext()->setContextProperty("DEBUG_MODE",			debug);
-	_qml->rootContext()->setContextProperty("iconPath",				_iconPath);
+	_qml->rootContext()->setContextProperty("MACOS",				isMac);
 	_qml->rootContext()->setContextProperty("iconFiles",			_iconFiles);
 	_qml->rootContext()->setContextProperty("iconInactiveFiles",	_iconInactiveFiles);
 	_qml->rootContext()->setContextProperty("iconDisabledFiles",	_iconDisabledFiles);
@@ -375,11 +403,28 @@ void MainWindow::loadQML()
 
 	connect(_qml, &QQmlApplicationEngine::objectCreated, [&](QObject * obj, QUrl url) { if(obj == nullptr) { std::cerr << "Could not load QML: " + url.toString().toStdString() << std::endl; _application->exit(10); }});
 
+	// load chosen theme first
+	if(_preferences->currentThemeName() == "lightTheme")
+	{
+		_qml->load(QUrl("qrc:///components/JASP/Theme/Theme.qml"));
+		_qml->load(QUrl("qrc:///components/JASP/Theme/DarkTheme.qml"));
+	}
+	else
+	{
+		_qml->load(QUrl("qrc:///components/JASP/Theme/DarkTheme.qml"));
+		_qml->load(QUrl("qrc:///components/JASP/Theme/Theme.qml"));
+	}
+
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
 	connect(_preferences, &PreferencesModel::uiScaleChanged, DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
+}
+
+void MainWindow::jaspThemeChanged(JaspTheme * newTheme)
+{
+	_qml->rootContext()->setContextProperty("jaspTheme",				newTheme);
 }
 
 void MainWindow::initLog()

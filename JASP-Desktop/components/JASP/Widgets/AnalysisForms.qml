@@ -2,28 +2,29 @@ import QtQuick			2.11
 import QtQuick.Controls	2.4
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
-import JASP.Theme		1.0
+
 
 FocusScope
 {
 	id:				analysisFormsFocusScope
-	implicitWidth:	extraSpace + (analysesModel.visible ? Theme.formWidth + 1 + (2 * formsBackground.border.width) + Theme.scrollbarBoxWidth : 0)
+	implicitWidth:	extraSpace + (analysesModel.visible ? jaspTheme.formWidth + 1 + (2 * formsBackground.border.width) + jaspTheme.scrollbarBoxWidth : 0)
 	width:			implicitWidth
 
 	property int	extraSpace:	analysesModel.count > 0 ? openCloseButton.width : 0
 
-	Behavior on width { enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: Theme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+	Behavior on width { enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
 
 	Rectangle
 	{
 		id:				formsBackground
-		color:			Theme.uiBackground
-		border.color:	Theme.uiBorder
+	//	z:				0
+		color:			jaspTheme.uiBackground
+		border.color:	jaspTheme.uiBorder
 		border.width:	1
 		anchors.fill:	parent
 
-		property real singleButtonHeight: Theme.formExpanderHeaderHeight + 2 * Theme.formMargin + analysesColumn.spacing
+		property real singleButtonHeight: jaspTheme.formExpanderHeaderHeight + 2 * jaspTheme.formMargin + analysesColumn.spacing
 
 		function getOffset(formIndex) { return formIndex < 0 ? 0 : formIndex * singleButtonHeight; }
 
@@ -58,9 +59,10 @@ FocusScope
 		Rectangle
 		{
 			id:				openCloseButton
-			width:			Theme.splitHandleWidth + (2 * border.width)
+			width:			jaspTheme.splitHandleWidth + (2 * border.width)
 			height:			parent.height
-			border.color:	Theme.uiBorder
+			//color:			//mouseArea.containsMouse ? jaspTheme.grayLighter : jaspTheme.uiBackground
+			border.color:	jaspTheme.uiBorder
 			border.width:	1
 			anchors.top:	parent.top
 			anchors.right:	parent.right

@@ -1,7 +1,7 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.4
 import JASP.Widgets		1.0
-import JASP.Theme		1.0
+
 import JASP.Controls	1.0
 
 ScrollView
@@ -11,10 +11,20 @@ ScrollView
 	onActiveFocusChanged:	if(activeFocus) uiScaleSpinBox.forceActiveFocus();
 	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
+	Connections
+	{
+		target:						preferencesModel
+		onCurrentThemeNameChanged:	//We do the following because othwerwise the whole preferences panel gets messed up when we change theme
+		{
+			scrollPrefs.visible = false;
+			scrollPrefs.visible = true;
+		}
+	}
+
 	Column
 	{
 		width:			scrollPrefs.width
-		spacing:		Theme.rowSpacing
+		spacing:		jaspTheme.rowSpacing
 
 		MenuHeader
 		{
@@ -22,9 +32,8 @@ ScrollView
 			headertext:		qsTr("Advanced Preferences") + languageModel.emptyString
 			helpfile:		"preferences/prefsadvanced"
 			anchorMe:		false
-			width:			scrollPrefs.width - (2 * Theme.generalMenuMargin)
-			x:				Theme.generalMenuMargin
-
+			width:			scrollPrefs.width - (2 * jaspTheme.generalMenuMargin)
+			x:				jaspTheme.generalMenuMargin
 		}
 
 		PrefsGroupRect
@@ -84,8 +93,40 @@ ScrollView
 				checked:			preferencesModel.safeGraphics
 				onCheckedChanged:	preferencesModel.safeGraphics = checked
 				toolTip:			qsTr("Switches to a \"safer\" mode for graphics aka software rendering.\nIt will make your interface slower but if you have some problems (weird glitches, cannot see results or anything even) might fix them.\nAnalyses will still be just as fast though.")
-				KeyNavigation.tab:	developerMode
-				KeyNavigation.down:	developerMode
+				KeyNavigation.tab:	lightThemeButton
+				KeyNavigation.down:	lightThemeButton
+			}
+
+			PrefsGroupRect
+			{
+				title:		qsTr("Interface Themes")
+
+				RadioButtonGroup
+				{
+					id:			themes
+
+					RadioButton
+					{
+						id:					lightThemeButton
+						label:				qsTr("Light Theme")
+						checked:			preferencesModel.currentThemeName === "lightTheme"
+						onCheckedChanged:	preferencesModel.currentThemeName  =  "lightTheme"
+						toolTip:			qsTr("Switches to a light theme, this is the default and original flavour of JASP.")
+						KeyNavigation.tab:	darkThemeButton
+						KeyNavigation.down:	darkThemeButton
+					}
+
+					RadioButton
+					{
+						id:					darkThemeButton
+						label:				qsTr("Dark Theme")
+						checked:			preferencesModel.currentThemeName === "darkTheme"
+						onCheckedChanged:	preferencesModel.currentThemeName  =  "darkTheme"
+						toolTip:			qsTr("Switches to a dark theme, makes JASP a lot easier on the eyes for those night owls out there.")
+						KeyNavigation.tab:	developerMode
+						KeyNavigation.down:	developerMode
+					}
+				}
 			}
 		}
 
@@ -117,7 +158,7 @@ ScrollView
 					text:				qsTr("Select developer folder")
 					onClicked:			preferencesModel.browseDeveloperFolder()
 					anchors.left:		parent.left
-					anchors.leftMargin: Theme.subOptionOffset
+					anchors.leftMargin: jaspTheme.subOptionOffset
 					toolTip:			qsTr("Browse to your JASP Module folder.")
 					KeyNavigation.tab:	developerFolderText
 					KeyNavigation.down:	developerFolderText
@@ -134,8 +175,8 @@ ScrollView
 					}
 
 					height:				browseDeveloperFolderButton.height
-					color:				Theme.white
-					border.color:		Theme.buttonBorderColor
+					color:				jaspTheme.white
+					border.color:		jaspTheme.buttonBorderColor
 					border.width:		1
 
 					TextInput
@@ -143,14 +184,14 @@ ScrollView
 						id:					developerFolderText
 						text:				preferencesModel.developerFolder
 						clip:				true
-						font:				Theme.font
+						font:				jaspTheme.font
 						onTextChanged:		preferencesModel.developerFolder = text
-						color:				Theme.textEnabled
+						color:				jaspTheme.textEnabled
 						KeyNavigation.tab:	overwriteDescriptionEtc
 						KeyNavigation.down:	overwriteDescriptionEtc
 						selectByMouse:		true
-						selectedTextColor:	Theme.white
-						selectionColor:		Theme.itemSelectedColor
+						selectedTextColor:	jaspTheme.white
+						selectionColor:		jaspTheme.itemSelectedColor
 
 
 						anchors
@@ -158,7 +199,7 @@ ScrollView
 							left:			parent.left
 							right:			parent.right
 							verticalCenter:	parent.verticalCenter
-							margins:		Theme.generalAnchorMargin
+							margins:		jaspTheme.generalAnchorMargin
 						}
 
 						Connections
@@ -184,7 +225,7 @@ ScrollView
 					anchors
 					{
 						left:			parent.left
-						leftMargin:		Theme.subOptionOffset
+						leftMargin:		jaspTheme.subOptionOffset
 						top:			developerFolderTextRect.bottom
 					}
 				}
@@ -205,7 +246,7 @@ ScrollView
 					{
 						left:			parent.left
 						verticalCenter:	parent.verticalCenter
-						margins:		Theme.generalAnchorMargin
+						margins:		jaspTheme.generalAnchorMargin
 					}
 				}
 
@@ -215,8 +256,8 @@ ScrollView
 
 					height:				browseDeveloperFolderButton.height
 
-					color:				Theme.white
-					border.color:		Theme.buttonBorderColor
+					color:				jaspTheme.white
+					border.color:		jaspTheme.buttonBorderColor
 					border.width:		1
 
 					anchors
@@ -230,14 +271,14 @@ ScrollView
 						id:					cranRepoUrl
 						text:				preferencesModel.cranRepoURL
 						clip:				true
-						font:				Theme.font
+						font:				jaspTheme.font
 						onTextChanged:		preferencesModel.cranRepoURL = text
-						color:				Theme.textEnabled
+						color:				jaspTheme.textEnabled
 						KeyNavigation.tab:	logToFile
 						KeyNavigation.down:	logToFile
 						selectByMouse:		true
-						selectedTextColor:	Theme.white
-						selectionColor:		Theme.itemSelectedColor
+						selectedTextColor:	jaspTheme.white
+						selectionColor:		jaspTheme.itemSelectedColor
 
 
 						anchors
@@ -245,7 +286,7 @@ ScrollView
 							left:			parent.left
 							right:			parent.right
 							verticalCenter:	parent.verticalCenter
-							margins:		Theme.generalAnchorMargin
+							margins:		jaspTheme.generalAnchorMargin
 						}
 					}
 				}
@@ -271,7 +312,7 @@ ScrollView
 			Item
 			{
 				id:					loggingSubGroup
-				x:					Theme.subOptionOffset
+				x:					jaspTheme.subOptionOffset
 				height:				maxLogFilesSpinBox.height
 				width:				showLogs.x + showLogs.width
 				enabled:			preferencesModel.logToFile
@@ -292,7 +333,7 @@ ScrollView
 
 					anchors
 					{
-						leftMargin:	Theme.generalAnchorMargin
+						leftMargin:	jaspTheme.generalAnchorMargin
 						left:		parent.left
 						top:		showLogs.top
 						bottom:		showLogs.bottom
@@ -306,7 +347,7 @@ ScrollView
 					onClicked:	mainWindow.showLogFolder();
 					anchors
 					{
-						margins:	Theme.generalAnchorMargin
+						margins:	jaspTheme.generalAnchorMargin
 						left:		maxLogFilesSpinBox.right
 					}
 					KeyNavigation.tab:	uiScaleSpinBox

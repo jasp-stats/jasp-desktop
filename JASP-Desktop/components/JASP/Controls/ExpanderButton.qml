@@ -18,7 +18,7 @@
 
 import QtQuick 2.11
 import QtQuick.Layouts 1.3 as L
-import JASP.Theme 1.0
+
 
 FocusScope
 {
@@ -30,18 +30,18 @@ FocusScope
 	L.Layout.columnSpan: form.columns
 	objectName:			"Section"
 
-	default		property alias	content:		expanderArea.children
-				property alias	button:			expanderButton
-				property alias	childControlsArea: expanderArea
-				property alias	spacing:		expanderArea.rowSpacing
-				property alias	text:			label.text
-                property alias  title:          label.text
-				property bool	expanded:		false
-				property alias	debug:			expanderButton.debug
-	readonly	property string iconsFolder:	"qrc:/images/"
-	readonly	property string	expanderButtonIcon:	"expander-arrow-up.png"
-				property alias	columns:		expanderArea.columns
-				property alias	alignChildrenTopLeft: expanderArea.alignChildrenTopLeft
+	default		property alias	content:				expanderArea.children
+				property alias	button:					expanderButton
+				property alias	childControlsArea:		expanderArea
+				property alias	spacing:				expanderArea.rowSpacing
+				property alias	text:					label.text
+				property alias  title:					label.text
+				property bool	expanded:				false
+				property alias	debug:					expanderButton.debug
+	readonly	property string iconsFolder:			jaspTheme.iconPath
+	readonly	property string	expanderButtonIcon:		"expander-arrow-up.png"
+				property alias	columns:				expanderArea.columns
+				property alias	alignChildrenTopLeft:	expanderArea.alignChildrenTopLeft
 
 	
 	states: [
@@ -92,9 +92,9 @@ FocusScope
 			id:				expanderRectangle
 			anchors.fill:	parent
 			border.width:	1
-			border.color:	Theme.borderColor
-			radius:			Theme.borderRadius
-			color:			debug ? Theme.debugBackgroundColor : Theme.white
+			border.color:	jaspTheme.borderColor
+			radius:			jaspTheme.borderRadius
+			color:			debug ? jaspTheme.debugBackgroundColor : jaspTheme.white
 			
 			Image
 			{
@@ -107,7 +107,7 @@ FocusScope
 				}
 				height:					15 * preferencesModel.uiScale
 				width:					15 * preferencesModel.uiScale
-				source:			"qrc:/icons/large-arrow-right.png"
+				source:			jaspTheme.iconPath + "/large-arrow-right.png"
 				sourceSize
 				{
 					width:	expanderIcon.width * 2
@@ -121,8 +121,8 @@ FocusScope
 				anchors.left:			expanderIcon.right
 				anchors.leftMargin:		5 * preferencesModel.uiScale
                 anchors.verticalCenter: parent.verticalCenter
-				font:					Theme.font
-				color:					enabled ? Theme.textEnabled : Theme.textDisabled
+				font:					jaspTheme.font
+				color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
             }
         }
     }
@@ -130,8 +130,8 @@ FocusScope
 	GridLayout
 	{
 		id:						expanderArea
-		rowSpacing:				Theme.rowGridSpacing
-		columnSpacing:			Theme.columnGridSpacing
+		rowSpacing:				jaspTheme.rowGridSpacing
+		columnSpacing:			jaspTheme.columnGridSpacing
 		anchors.leftMargin:		5  * preferencesModel.uiScale
 		anchors.top:			expanderButton.bottom
 		anchors.topMargin:		15 * preferencesModel.uiScale
@@ -144,6 +144,6 @@ FocusScope
 	{
 		z:				-1
 		anchors.fill:	parent
-		color:			Theme.analysisBackgroundColor
+		color:			jaspTheme.analysisBackgroundColor
 	}    
 }

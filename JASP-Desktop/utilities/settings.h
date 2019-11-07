@@ -41,7 +41,8 @@ public:
 		SAFE_GRAPHICS_MODE,
 		CRAN_REPO_URL,
 		USER_HAS_GITHUB_ACCOUNT,
-		PREFERRED_LANGUAGE
+		PREFERRED_LANGUAGE,
+		THEME_NAME
 	};
 
 	static QVariant value(Settings::Type key);

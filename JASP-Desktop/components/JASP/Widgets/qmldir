@@ -31,7 +31,6 @@ MessageBox                  1.0 MessageBox.qml
 AnalysisForms               1.0 AnalysisForms.qml
 AnalysisFormExpander        1.0 AnalysisFormExpander.qml
 CustomMenu                  1.0 CustomMenu.qml
-ColumntypeModel             1.0 ColumnTypeModel
 SplitHandle                 1.0 SplitHandle.qml
 SpinBox                     1.0 SpinBox.qml
 SortMenuButton            	1.0 SortMenuButton.qml

@@ -19,7 +19,7 @@
 #include "results/resultmenumodel.h"
 #include "utilities/qutils.h"
 #include "utilities/settings.h"
-
+#include "qquick/jasptheme.h"
 
 QVariant ResultMenuModel::data(const QModelIndex &index, int role) const
 {
@@ -83,7 +83,7 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 			Json::Value collapseOptions = menuOptions["collapseOptions"];
 
 			QString iconPath = collapseOptions["collapsed"].asBool() ? "expand" : "collapse";
-			entry.setImageSource("qrc:/icons/" + iconPath + ".png");
+			entry.setImageSource(JaspTheme::currentIconPath() + iconPath + ".png");
 
 			QString displayText = QString::fromStdString(collapseOptions["menuText"].asString());
 			entry.setDisplayText(displayText);

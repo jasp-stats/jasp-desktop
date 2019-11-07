@@ -18,7 +18,7 @@
 
 import QtQuick 2.11
 import JASP.Controls 1.0
-import JASP.Theme 1.0
+
 import JASP 1.0
 
 TextField
@@ -35,5 +35,5 @@ TextField
 					validator:		JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0; inclusive: textField.inclusive }
 					lastValidValue:	defaultValue;
 					cursorShape:	Qt.IBeamCursor
-					fieldWidth:		Theme.numericFieldWidth
+					fieldWidth:		jaspTheme.numericFieldWidth
 }

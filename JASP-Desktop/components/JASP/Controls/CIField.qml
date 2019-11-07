@@ -18,7 +18,7 @@
 
 import QtQuick 2.11
 import JASP.Controls 1.0
-import JASP.Theme 1.0
+
 import JASP 1.0
 
 PercentField
@@ -28,7 +28,7 @@ PercentField
 	defaultValue:		95
 	decimals:			1
 	inclusive:			"no"
-	fieldWidth:			Theme.font.pixelSize * (ciField.decimals + 3)
+	fieldWidth:			jaspTheme.font.pixelSize * (ciField.decimals + 3)
 
 	lastValidValue:		defaultValue
 }

@@ -18,12 +18,12 @@
 
 import QtQuick 2.11
 import QtQuick.Layouts 1.3
-import JASP.Theme 1.0
+
 
 GridLayout {
 	id:						gridLayout
-	rowSpacing:				Theme.rowGridSpacing
-	columnSpacing:			Theme.columnGridSpacing
+	rowSpacing:				jaspTheme.rowGridSpacing
+	columnSpacing:			jaspTheme.columnGridSpacing
 	columns:				2
 	Layout.minimumWidth:	parent.width
 	

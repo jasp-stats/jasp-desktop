@@ -542,3 +542,7 @@ window.resultsDocumentChanged = function () {
 window.displayWarningMessage = function (msg) {
 	jasp.displayMessageFromResults(msg);
 }
+
+window.setTheme = function(themeName) {
+	document.getElementById("style").setAttribute("href", "css/" + themeName + "-jasp.css");
+}

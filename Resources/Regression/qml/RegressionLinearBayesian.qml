@@ -19,7 +19,7 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
-import JASP.Theme 1.0
+
 
 Form {
 
@@ -182,7 +182,7 @@ Form {
 			RadioButton { value: "g-prior";		label: qsTr("g-prior")	}
 			GridLayout
 			{
-				rowSpacing: Theme.rowGroupSpacing
+				rowSpacing: jaspTheme.rowGroupSpacing
 				columnSpacing: 0
 				Group
 				{

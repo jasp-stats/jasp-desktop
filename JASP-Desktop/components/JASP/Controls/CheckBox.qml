@@ -19,18 +19,18 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts	1.3 as L
-import JASP.Theme 1.0
+
 
 JASPControl
 {
 	id:					checkBox
 	controlType:		"CheckBox"
 	implicitWidth:		childrenOnSameRow
-							? control.implicitWidth + (childControlsArea.children.length > 0 ? Theme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
+							? control.implicitWidth + (childControlsArea.children.length > 0 ? jaspTheme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
 							: Math.max(control.implicitWidth, control.padding + checkIndicator.width + control.spacing + childControlsArea.implicitWidth)
 	implicitHeight:		childrenOnSameRow
 							? Math.max(control.implicitHeight, childControlsArea.implicitHeight)
-							: control.implicitHeight + (childControlsArea.children.length > 0 ? Theme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
+							: control.implicitHeight + (childControlsArea.children.length > 0 ? jaspTheme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
 	focusIndicator:		focusIndicator
 	childControlsArea:	childControlsArea
 
@@ -47,14 +47,14 @@ JASPControl
 			property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
 
 	signal clicked();
-	function click() { control.toggle(); }
-	function toggle() { control.toggle(); }
+	function click()	{ control.toggle(); }
+	function toggle()	{ control.toggle(); }
 
 
 	CheckBox
 	{
 		id:						control
-		padding:				Theme.jaspControlPadding
+		padding:				jaspTheme.jaspControlPadding
 		focus:					true
 		onCheckedChanged:		checkBox.clicked()
 
@@ -69,17 +69,17 @@ JASPControl
 			y:		control.padding
 			x:		control.padding
 
-			color:			control.checked ? (control.enabled ? Theme.buttonBackgroundColor : Theme.disableControlBackgroundColor) : Theme.controlBackgroundColor
-			border.color:	control.enabled ? (control.checked ? Theme.buttonBackgroundColor : Theme.borderColor)					: Theme.disableControlBackgroundColor
+			color:			control.checked ? (control.enabled ? jaspTheme.buttonBackgroundColor : jaspTheme.disableControlBackgroundColor) : jaspTheme.controlBackgroundColor
+			border.color:	control.enabled ? (control.checked ? jaspTheme.buttonBackgroundColor : jaspTheme.borderColor)					: jaspTheme.disableControlBackgroundColor
 			border.width:	1
-			radius:			Theme.borderRadius
+			radius:			jaspTheme.borderRadius
 
 			Text
 			{
 				visible:					control.checked ? true : false
-				color:						Theme.white
+				color:						jaspTheme.textEnabled
 				text:						"\u2713"
-				font:						Theme.font
+				font:						jaspTheme.font
 				anchors.horizontalCenter:	parent.horizontalCenter
 				renderType:					Text.QtRendering //Prettier
 			}
@@ -87,21 +87,22 @@ JASPControl
 
 		Rectangle
 		{
-			id: focusIndicator
-			anchors.centerIn: checkIndicator
-			width: checkIndicator.width + Theme.jaspControlHighlightWidth
-			height: checkIndicator.height + Theme.jaspControlHighlightWidth
-			color: "transparent"
-			border.width: 0
-			border.color: "transparent"
-			radius: Theme.jaspControlHighlightWidth
+			id:					focusIndicator
+			anchors.centerIn:	checkIndicator
+			width:				checkIndicator.width  + jaspTheme.jaspControlHighlightWidth
+			height:				checkIndicator.height + jaspTheme.jaspControlHighlightWidth
+			color:				"transparent"
+			border.width:		0
+			border.color:		"transparent"
+			radius:				jaspTheme.jaspControlHighlightWidth
 		}
 
 		contentItem: Label
 		{
 			id:					label
 			text:				control.text
-			font:				Theme.font
+			color:				jaspTheme.textEnabled
+			font:				jaspTheme.font
 			leftPadding:		checkIndicator.width + control.spacing
 			verticalAlignment:	Text.AlignVCenter
 		}
@@ -118,15 +119,15 @@ JASPControl
 		anchors
 		{
 			top:		childrenOnSameRow ? control.top : control.bottom
-			topMargin:	childrenOnSameRow ? 0 : Theme.rowGroupSpacing
+			topMargin:	childrenOnSameRow ? 0 : jaspTheme.rowGroupSpacing
 			left:		childrenOnSameRow ? control.right : control.left
-			leftMargin: childrenOnSameRow ? Theme.columnGroupSpacing : control.padding + checkIndicator.width + control.spacing
+			leftMargin: childrenOnSameRow ? jaspTheme.columnGroupSpacing : control.padding + checkIndicator.width + control.spacing
 		}
 		enabled:		enableChildrenOnChecked ? control.checked : true
 		visible:		children.length > 0
 		columns:		childrenOnSameRow ? children.length : 1
-		rowSpacing:		Theme.rowGroupSpacing
-		columnSpacing:	Theme.columnGridSpacing
+		rowSpacing:		jaspTheme.rowGroupSpacing
+		columnSpacing:	jaspTheme.columnGridSpacing
 	}
 
 	Component.onCompleted:

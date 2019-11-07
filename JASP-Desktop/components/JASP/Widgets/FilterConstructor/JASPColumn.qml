@@ -55,7 +55,7 @@ Item
 
 		width:			Math.min(columnNameMeasure.width + 10, jaspColumnRoot.maxSize)
 		font.pixelSize: baseFontSize * preferencesModel.uiScale
-
+		color:			jaspTheme.textEnabled
 		leftPadding:	2
 
 		text:			columnName

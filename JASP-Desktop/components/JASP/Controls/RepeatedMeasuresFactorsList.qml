@@ -19,7 +19,7 @@
 import QtQuick 2.11
 import QtQml.Models 2.2
 import JASP.Controls 1.0
-import JASP.Theme 1.0
+
 
 JASPControl
 {
@@ -27,7 +27,7 @@ JASPControl
 	controlType:				"RepeatedMeasuresFactorsList"
 	width:						parent.width
 	implicitWidth:				width
-	height:						Theme.defaultVariablesFormHeight
+	height:						jaspTheme.defaultVariablesFormHeight
 	implicitHeight:				height
 	background:					rectangle
 
@@ -35,7 +35,7 @@ JASPControl
 				property string title
 				property bool	setWidthInForm: false
 				property bool	setHeightInForm: false
-	readonly	property string deleteIcon: "dialog-close.png"
+	readonly	property string deleteIcon: "cross.png"
 
 	signal itemChanged(int index, var name);
 	signal itemRemoved(int index);
@@ -47,8 +47,8 @@ JASPControl
 		anchors.left:	parent.left
 		text:			repeatedMeasuresFactorsList.title
 		height:			repeatedMeasuresFactorsList.title ? 20 * preferencesModel.uiScale : 0
-		font:			Theme.font
-		color:			enabled ? Theme.textEnabled : Theme.textDisabled
+		font:			jaspTheme.font
+		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 	}
 
 	Rectangle
@@ -58,9 +58,9 @@ JASPControl
 		anchors.left:	parent.left
 		height:			repeatedMeasuresFactorsList.height - text.height
 		width:			parent.width
-		color:			debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
+		color:			debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
 		border.width:	1
-		border.color:	Theme.borderColor
+		border.color:	jaspTheme.borderColor
 
 		JASPScrollBar
 		{
@@ -112,7 +112,7 @@ JASPControl
 				anchors.fill:	parent
 				focus:			true
 				border.width:	0
-				border.color:	Theme.grayLighter
+				border.color:	jaspTheme.grayLighter
 
 				property bool isDeletable:	model.type.includes("deletable")
 				property bool isVirtual:	model.type.includes("virtual")
@@ -133,7 +133,7 @@ JASPControl
 
 				Image
 				{
-					source:					iconPath + deleteIcon
+					source:					jaspTheme.iconPath + deleteIcon
 					anchors.right:			parent.right
 					anchors.verticalCenter:	parent.verticalCenter
 					visible:				itemRectangle.isDeletable

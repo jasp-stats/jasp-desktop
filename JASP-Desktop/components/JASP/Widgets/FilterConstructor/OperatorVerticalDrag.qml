@@ -16,7 +16,7 @@ DragGeneric {
 	property string operator: "+"
 	property bool acceptsDrops: true
 
-	property var opImages: { '/': 'qrc:/icons/divide.png'}
+	property var opImages: { '/': 'divide.png'}
 
 	leftDropSpot:		showMe.leftDropSpot
 
@@ -27,7 +27,7 @@ DragGeneric {
 	{
 		id: showMe
 		operator: parent.operator
-		operatorImageSource: parent.opImages[operator] !== null && parent.opImages[operator] !== undefined ? parent.opImages[operator] : ""
+		operatorImageSource: parent.opImages[operator] !== null && parent.opImages[operator] !== undefined ? jaspTheme.iconPath + parent.opImages[operator] : ""
 
 		dropKeysLeft: acceptsEverything ? ["boolean", "string", "number"] : acceptsBoolean ? ["boolean"] : ["number"]
 		dropKeysRight: dropKeysLeft

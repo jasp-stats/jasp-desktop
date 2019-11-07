@@ -18,7 +18,7 @@
 
 
 import QtQuick		2.11
-import JASP.Theme	1.0
+
 
 Button
 {
@@ -34,8 +34,8 @@ Button
 
 				property var	interactionControl
 
-	readonly	property string iconToLeft:		"qrc:/images/arrow-left.png"
-	readonly	property string iconToRight:	"qrc:/images/arrow-right.png"
+	readonly	property string iconToLeft:		jaspTheme.iconPath + "arrow-left.png"
+	readonly	property string iconToRight:	jaspTheme.iconPath + "arrow-right.png"
 	
 	text:			""
 	enabled:		false

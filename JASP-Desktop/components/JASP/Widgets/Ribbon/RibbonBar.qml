@@ -18,7 +18,7 @@
 
 import QtQuick 2.11
 import JASP.Widgets 1.0
-import JASP.Theme 1.0
+
 
 FocusScope
 {
@@ -27,7 +27,7 @@ FocusScope
 
 	Rectangle
 	{
-		color			: Theme.uiBackground
+		color			: jaspTheme.uiBackground
 		anchors.fill	: parent
 		z				: -1
 	}
@@ -99,7 +99,7 @@ FocusScope
 	{
 		z		: 3
 		height	: 1
-		color	: Theme.uiBorder
+		color	: jaspTheme.uiBorder
 
 		anchors
 		{
@@ -114,7 +114,7 @@ FocusScope
 		id		: leftShadow
 		y		: ribbonMenu.height
 		z		: 1
-		height	: Theme.shadowRadius
+		height	: jaspTheme.shadowRadius
 		width   : customMenu.visible && customMenu.sourceItem.objectName === "ribbonButton" ? customMenu.x : ribbonBar.width
 
 		anchors
@@ -123,7 +123,7 @@ FocusScope
 		}
 
 		gradient	: Gradient {
-			GradientStop { position: 0.0; color: Theme.shadow }
+			GradientStop { position: 0.0; color: jaspTheme.shadow }
 			GradientStop { position: 1.0; color: "transparent" } }
 
 	}
@@ -133,7 +133,7 @@ FocusScope
 		id		: rightShadow
 		y		: ribbonMenu.height
 		z		: 1
-		height	: Theme.shadowRadius
+		height	: jaspTheme.shadowRadius
 		width	: customMenu.visible  && customMenu.sourceItem.objectName === "ribbonButton" ? (ribbonBar.width - (customMenu.x + customMenu.width)) : 0
 
 		anchors
@@ -142,7 +142,7 @@ FocusScope
 		}
 
 		gradient	: Gradient {
-			GradientStop { position: 0.0; color: Theme.shadow }
+			GradientStop { position: 0.0; color: jaspTheme.shadow }
 			GradientStop { position: 1.0; color: "transparent" } }
 
 	}

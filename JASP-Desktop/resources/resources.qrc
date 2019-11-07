@@ -1,29 +1,6 @@
 <RCC>
-    <qresource prefix="/images">
-        <file>expander-arrow-up.png</file>
-        <file>expander-arrow-up-hover.png</file>
-        <file>expander-arrow-up-disabled.png</file>
-        <file>expander-arrow-down.png</file>
-        <file>expander-arrow-down-hover.png</file>
-        <file>expander-arrow-down-disabled.png</file>
-        <file>expanded.png</file>
-        <file>arrow-right.png</file>
-        <file>arrow-left.png</file>
-        <file>arrow-up.png</file>
-        <file>arrow-down.png</file>
-        <file>arrow-up-down.png</file>
-        <file>cross.png</file>
-        <file>close-button.png</file>
-        <file>close-button-black.png</file>
-        <file>info-button.png</file>
-        <file>info-button-black.png</file>
-        <file>osf-logo.png</file>
-        <file>arrow-reverse.png</file>
-        <file>filter.png</file>
-        <file>eraser.png</file>
-        <file>eraser_all.png</file>
-    </qresource>
     <qresource prefix="/">
         <file>fonts/FiraCode-Retina.ttf</file>
+        <file>icons/darkTheme/jasp-logo-black.svg</file>
     </qresource>
 </RCC>

@@ -2,7 +2,7 @@ import QtQuick				2.11
 import QtQuick.Controls		2.4
 import JASP.Controls		1.0 as JC //He returns!
 import QtQuick.Layouts		1.3
-import JASP.Theme			1.0
+
 import JASP					1.0
 
 JASPControl
@@ -36,21 +36,21 @@ JASPControl
 	ColumnLayout
 	{
 		id:			columnLayout;
-		spacing:	controlLabel.visible ? Theme.labelSpacing : 0
+		spacing:	controlLabel.visible ? jaspTheme.labelSpacing : 0
 
 		Label
 		{
 			id:			controlLabel
 			visible:	controlLabel.text && slider.visible ? true : false
-			font:		Theme.font
-			color:		enabled ? Theme.textEnabled : Theme.textDisabled
+			font:		jaspTheme.font
+			color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 		}
 
 		Slider
 		{
 			id:					control
 			Layout.alignment:	control.orientation === Qt.Vertical ? Qt.AlignCenter : Qt.AlignLeft
-			Layout.leftMargin:	control.orientation === Qt.Vertical ? leftPadding + Theme.sliderWidth : 0
+			Layout.leftMargin:	control.orientation === Qt.Vertical ? leftPadding + jaspTheme.sliderWidth : 0
 			value:				0.5
 			stepSize:			1 / slider.power
 			orientation:		slider.verticalInt
@@ -60,19 +60,19 @@ JASPControl
 				id:				sliderBackground
 				x:				control.leftPadding
 				y:				control.topPadding
-				implicitWidth:	control.vertical ? Theme.sliderWidth : Theme.sliderLength
-				implicitHeight: control.vertical ? Theme.sliderLength : Theme.sliderWidth
+				implicitWidth:	control.vertical ? jaspTheme.sliderWidth : jaspTheme.sliderLength
+				implicitHeight: control.vertical ? jaspTheme.sliderLength : jaspTheme.sliderWidth
 				width:			control.vertical ? implicitWidth : control.availableWidth
 				height:			control.vertical ? control.availableHeight : implicitHeight
-				radius:			Theme.sliderWidth / 2
-				color:			Theme.sliderPartOn
+				radius:			jaspTheme.sliderWidth / 2
+				color:			jaspTheme.sliderPartOn
 
 				Rectangle
 				{
 					width:		control.vertical ? parent.width : control.visualPosition * parent.width
 					height:		control.vertical ? control.visualPosition * parent.height : parent.height
-					color:		Theme.sliderPartOff
-					radius:		Theme.sliderWidth / 2
+					color:		jaspTheme.sliderPartOff
+					radius:		jaspTheme.sliderWidth / 2
 				}
 			}
 
@@ -81,11 +81,11 @@ JASPControl
 				id:				sliderHandle
 				x:				control.leftPadding + (control.vertical ? sliderBackground.radius - sliderHandle.radius : control.visualPosition * (control.availableWidth - width))
 				y:				control.topPadding + (control.vertical ? control.visualPosition * (control.availableHeight - height) : sliderBackground.radius - sliderHandle.radius)
-				implicitWidth:	Theme.sliderHandleDiameter
-				implicitHeight: Theme.sliderHandleDiameter
-				radius:			Theme.sliderHandleDiameter / 2
-				color:			control.pressed ? Theme.itemSelectedColor : Theme.controlBackgroundColor
-				border.color:	Theme.borderColor
+				implicitWidth:	jaspTheme.sliderHandleDiameter
+				implicitHeight: jaspTheme.sliderHandleDiameter
+				radius:			jaspTheme.sliderHandleDiameter / 2
+				color:			control.pressed ? jaspTheme.itemSelectedColor : jaspTheme.controlBackgroundColor
+				border.color:	jaspTheme.borderColor
 			}
 
 			onMoved:

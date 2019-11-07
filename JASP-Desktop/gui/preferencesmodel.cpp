@@ -3,20 +3,23 @@
 
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
+#include "qquick/jasptheme.h"
 
 using namespace std;
 
 PreferencesModel::PreferencesModel(QObject *parent) :
 	QObject(parent)
 {
-	connect(this, &PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues	);
-	connect(this, &PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged		);
-	connect(this, &PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::onDefaultPPIChanged		);
-	connect(this, &PreferencesModel::customPPIChanged,			this, &PreferencesModel::onCustomPPIChanged			);
+	connect(this, &PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues		);
+	connect(this, &PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged			);
+	connect(this, &PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::onDefaultPPIChanged			);
+	connect(this, &PreferencesModel::customPPIChanged,			this, &PreferencesModel::onCustomPPIChanged				);
 
-	connect(this, &PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::plotPPIPropChanged			);
-	connect(this, &PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::plotPPIPropChanged			);
-	connect(this, &PreferencesModel::customPPIChanged,			this, &PreferencesModel::plotPPIPropChanged			);
+	connect(this, &PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::plotPPIPropChanged				);
+	connect(this, &PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
+	connect(this, &PreferencesModel::customPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
+	connect(this, &PreferencesModel::jaspThemeChanged,			this, &PreferencesModel::setCurrentThemeNameFromClass,	Qt::QueuedConnection);
+	connect(this, &PreferencesModel::currentThemeNameChanged,	this, &PreferencesModel::onCurrentThemeNameChanged		);
 }
 
 PreferencesModel::~PreferencesModel()
@@ -92,6 +95,7 @@ GET_PREF_FUNC_INT(	maxFlickVelocity,			Settings::QML_MAX_FLICK_VELOCITY					)
 GET_PREF_FUNC_BOOL(	modulesRemember,			Settings::MODULES_REMEMBER							)
 GET_PREF_FUNC_BOOL(	safeGraphics,				Settings::SAFE_GRAPHICS_MODE						)
 GET_PREF_FUNC_STR(	cranRepoURL,				Settings::CRAN_REPO_URL								)
+GET_PREF_FUNC_STR(	currentThemeName,			Settings::THEME_NAME								)
 
 QStringList PreferencesModel::missingValues()		const
 {
@@ -194,6 +198,7 @@ SET_PREF_FUNCTION(int,		setLogFilesMax,				logFilesMax,				logFilesMaxChanged,		
 SET_PREF_FUNCTION(int,		setMaxFlickVelocity,		maxFlickVelocity,			maxFlickVelocityChanged,		Settings::QML_MAX_FLICK_VELOCITY					)
 SET_PREF_FUNCTION(bool,		setModulesRemember,			modulesRemember,			modulesRememberChanged,			Settings::MODULES_REMEMBER							)
 SET_PREF_FUNCTION(QString,	setCranRepoURL,				cranRepoURL,				cranRepoURLChanged,				Settings::CRAN_REPO_URL								)
+SET_PREF_FUNCTION(QString,	setCurrentThemeName,		currentThemeName,			currentThemeNameChanged,		Settings::THEME_NAME								)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {
@@ -330,3 +335,23 @@ void PreferencesModel::missingValuesToStdVector(std::vector<std::string> & out)	
 		out[i] = currentValues[int(i)].toStdString();
 }
 
+void PreferencesModel::setDefaultFont(QFont defaultFont)
+{
+	if (_defaultFont == defaultFont)
+		return;
+
+	_defaultFont = defaultFont;
+	emit defaultFontChanged(_defaultFont);
+}
+
+
+void PreferencesModel::setCurrentThemeNameFromClass(JaspTheme * theme)
+{
+	if(theme)
+		setCurrentThemeName(theme->themeName());
+}
+
+void PreferencesModel::onCurrentThemeNameChanged(QString newThemeName)
+{
+	JaspTheme::setCurrentThemeFromName(currentThemeName());
+}

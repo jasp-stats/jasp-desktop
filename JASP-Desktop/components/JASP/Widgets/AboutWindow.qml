@@ -4,7 +4,7 @@ import QtQuick.Controls 2.5
 import QtQuick.Controls.Styles 1.4
 import QtWebEngine 1.7
 import JASP.Widgets 1.0
-import JASP.Theme 1.0
+
 
 Window
 {
@@ -25,6 +25,8 @@ Window
 	onVisibleChanged:		aboutModel.visible = visible
 	title:					qsTr("About JASP")
 
+	color:			jaspTheme.white
+
 
 	Image
 	{
@@ -34,10 +36,10 @@ Window
 		anchors.right:	parent.right
 		height:			parent.height/4
 
-		source:		"qrc:/core/img/jasp-wave-down-blue-120.svg"
+		source:		jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
 	}
 
-	Rectangle
+	Item
 	{
 		id:				jaspLogo
 
@@ -55,7 +57,7 @@ Window
 		{
 			anchors.fill:		parent
 			fillMode:			Image.PreserveAspectFit
-			source:				"qrc:/core/img/jasp-logo-black.svg"
+			source:				jaspTheme.iconPath + "jasp-logo-black.svg"
 			sourceSize.width:	width  * 2
 			sourceSize.height:	height * 2
 			mipmap:				true
@@ -75,8 +77,9 @@ Window
 			rightMargin:	25
 		}
 
-		border.color:	"gray"
+		border.color:	jaspTheme.gray
 		border.width:	0
+		color:			jaspTheme.white
 
 		Text
 		{
@@ -87,6 +90,7 @@ Window
 			height:			25
 
 			text:			aboutModel.copyrightMessage
+			color:			jaspTheme.textEnabled
 		}
 
 		Label
@@ -109,6 +113,7 @@ Window
 				anchors.left:	parent.right
 				anchors.top:	parent.top
 				height:			25
+				color:			jaspTheme.textEnabled
 			}
 		}
 
@@ -130,6 +135,7 @@ Window
 				anchors.left:	parent.right
 				anchors.top:	parent.top
 				height:			25
+				color:			jaspTheme.textEnabled
 
 				text:			aboutModel.buildDate
 			}
@@ -155,6 +161,7 @@ Window
 				height:			25
 
 				text:			"<a href=\"" + aboutModel.commitUrl + "\">" + qsTr("Access the sources here") + "</a>"
+				color:			jaspTheme.blue
 
 				MouseArea
 				{
@@ -187,6 +194,7 @@ Window
 
 				text:			"<a href=\"" + aboutModel.downloadUrl +"\">"+ aboutModel.downloadUrl + "</a>"
 				textFormat:		Text.StyledText
+				color:			jaspTheme.blue
 
 				MouseArea
 				{
@@ -223,6 +231,7 @@ Window
 				font.bold:		false
 				textFormat:		Text.StyledText
 				text:			aboutModel.citation
+				color:			jaspTheme.textEnabled
 
 				selectByMouse:	true
 				readOnly:		true
@@ -248,6 +257,7 @@ Window
 
 				text:			"<a href=\"" + aboutModel.citationUrl + "\">(" + qsTr("BibTex") + ")</a>"
 				textFormat:		Text.StyledText
+				color:			jaspTheme.blue
 
 				MouseArea
 				{
@@ -266,6 +276,7 @@ Window
 			text:			aboutModel.warranty
 			textFormat:		Text.StyledText
 			opacity:		0.5
+			color:			jaspTheme.textEnabled
 
 			anchors
 			{
@@ -291,7 +302,7 @@ Window
 		{
 			anchors.centerIn:		parent
 			text:					qsTr("Close")
-			color:					"white"
+			color:					jaspTheme.white
 			horizontalAlignment:	Text.AlignHCenter
 			verticalAlignment:		Text.AlignVCenter
 		}
@@ -316,7 +327,7 @@ Window
 		anchors.left:		parent.left
 		anchors.right:		parent.right
 		height:				parent.height/4
-		source:				"qrc:/core/img/jasp-wave-up-green-120.svg"
+		source:				jaspTheme.iconPath + "jasp-wave-up-green-120.svg"
 	}
 }
 

@@ -18,7 +18,7 @@
 
 import QtQuick			2.11
 import QtQuick.Controls	2.4
-import JASP.Theme		1.0
+
 
 JASPControl
 {
@@ -26,11 +26,11 @@ JASPControl
 	controlType:			"RadioButton"
 	isBound:				false
 	implicitWidth:			childrenOnSameRow
-							? control.implicitWidth + (childControlsArea.children.length > 0 ? Theme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
+							? control.implicitWidth + (childControlsArea.children.length > 0 ? jaspTheme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
 							: Math.max(control.implicitWidth, childControlsArea.childControlsPadding + childControlsArea.implicitWidth)
 	implicitHeight:			childrenOnSameRow
 							? Math.max(control.implicitHeight, childControlsArea.implicitHeight)
-							: control.implicitHeight + (childControlsArea.children.length > 0 ? Theme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
+							: control.implicitHeight + (childControlsArea.children.length > 0 ? jaspTheme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
 	focusIndicator:			focusIndicator
 	childControlsArea:		childControlsArea
 
@@ -64,7 +64,7 @@ JASPControl
 	{
 		id:					control
 		ButtonGroup.group:	buttonGroup
-		padding:			Theme.jaspControlPadding
+		padding:			jaspTheme.jaspControlPadding
 		focus:				true
 
 		indicator: Rectangle
@@ -76,8 +76,8 @@ JASPControl
 			y:				control.padding
 
 			radius:			width
-			color:			control.checked ? (control.enabled ? Theme.buttonBackgroundColor : Theme.disableControlBackgroundColor) : Theme.controlBackgroundColor
-			border.color:	control.enabled ? (control.checked ? Theme.buttonBackgroundColor : Theme.borderColor)					: Theme.disableControlBackgroundColor
+			color:			control.checked ? (control.enabled ? jaspTheme.buttonBackgroundColor : jaspTheme.disableControlBackgroundColor) : jaspTheme.controlBackgroundColor
+			border.color:	control.enabled ? (control.checked ? jaspTheme.buttonBackgroundColor : jaspTheme.borderColor)					: jaspTheme.disableControlBackgroundColor
 			border.width:	1
 
 			Rectangle
@@ -87,7 +87,7 @@ JASPControl
 				height:				width
 				radius:				width
 				visible:			control.checked
-				color:				Theme.controlBackgroundColor
+				color:				jaspTheme.controlBackgroundColor
 			}
 		}
 
@@ -95,8 +95,8 @@ JASPControl
 		{
 			id:					focusIndicator
 			anchors.centerIn:	radioIndicator
-			width:				Math.floor(Math.round(radioIndicator.width  + Theme.jaspControlHighlightWidth) / 2) * 2
-			height:				Math.floor(Math.round(radioIndicator.height + Theme.jaspControlHighlightWidth) / 2) * 2
+			width:				Math.floor(Math.round(radioIndicator.width  + jaspTheme.jaspControlHighlightWidth) / 2) * 2
+			height:				Math.floor(Math.round(radioIndicator.height + jaspTheme.jaspControlHighlightWidth) / 2) * 2
 			radius:				width
 			color:				"transparent"
 			border.width:		0
@@ -108,8 +108,8 @@ JASPControl
 			id:				label
 			text:			control.text
 			leftPadding:	radioIndicator.width + control.spacing
-			font:			Theme.font
-			color:			enabled ? Theme.textEnabled : Theme.textDisabled
+			font:			jaspTheme.font
+			color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 		}
 
 		background: Rectangle { color: "transparent" }
@@ -121,18 +121,18 @@ JASPControl
 		anchors
 		{
 			top:		childrenOnSameRow ? control.top : control.bottom
-			topMargin:	childrenOnSameRow ? 0 : Theme.rowGroupSpacing
+			topMargin:	childrenOnSameRow ? 0 : jaspTheme.rowGroupSpacing
 			left:		childrenOnSameRow ? control.right : control.left
-			leftMargin: childrenOnSameRow ? Theme.columnGroupSpacing : (indentChildren ? childControlsArea.childControlsPadding : 0)
+			leftMargin: childrenOnSameRow ? jaspTheme.columnGroupSpacing : (indentChildren ? childControlsArea.childControlsPadding : 0)
 		}
 
 		enabled:		enableChildrenOnChecked ? control.checked : true
 		visible:		children.length > 0
 		columns:		childrenOnSameRow ? children.length : 1
-		rowSpacing:		Theme.rowGroupSpacing
-		columnSpacing:	Theme.columnGridSpacing
+		rowSpacing:		jaspTheme.rowGroupSpacing
+		columnSpacing:	jaspTheme.columnGridSpacing
 
-		property int childControlsPadding: childrenOnSameRow ? control.implicitWidth + Theme.columnGroupSpacing : control.padding + radioIndicator.width + control.spacing
+		property int childControlsPadding: childrenOnSameRow ? control.implicitWidth + jaspTheme.columnGroupSpacing : control.padding + radioIndicator.width + control.spacing
 	}
 
 	Component.onCompleted:

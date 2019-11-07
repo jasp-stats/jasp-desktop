@@ -1,6 +1,6 @@
 import QtQuick			2.13
 import QtQuick.Controls 2.13
-import JASP.Theme		1.0
+
 
 Dialog
 {
@@ -20,13 +20,13 @@ Dialog
 	header: Item
 	{
 		implicitWidth:	dialogRoot.width
-		implicitHeight:	headerText.height + (2 * Theme.generalAnchorMargin)
+		implicitHeight:	headerText.height + (2 * jaspTheme.generalAnchorMargin)
 
 		Text
 		{
 			id:					headerText
 			text:				dialogRoot.title
-			font:				Theme.fontGroupTitle
+			font:				jaspTheme.fontGroupTitle
 			anchors.centerIn:	parent
 		}
 	}
@@ -34,13 +34,13 @@ Dialog
 	contentItem: Item
 	{
 		implicitWidth:	dialogRoot.width
-		implicitHeight:	contentText.height + (2 * Theme.generalAnchorMargin)
+		implicitHeight:	contentText.height + (2 * jaspTheme.generalAnchorMargin)
 
 		Text
 		{
 			id:						contentText
 			text:					qsTr("There are unapplied changes; what would you like to do?")
-			font:					Theme.font
+			font:					jaspTheme.font
 			wrapMode:				Text.WrapAtWordBoundaryOrAnywhere
 			horizontalAlignment:	Text.AlignHCenter
 			anchors.centerIn:		parent
@@ -55,8 +55,8 @@ Dialog
 		Row
 		{
 			id:					buttonRow
-			spacing:			Theme.rowSpacing
-			padding:			Theme.generalAnchorMargin
+			spacing:			jaspTheme.rowSpacing
+			padding:			jaspTheme.generalAnchorMargin
 			anchors.centerIn:	parent
 
 			RectangularButton

@@ -17,7 +17,7 @@
 //
 
 import QtQuick 2.11
-import JASP.Theme 1.0
+
 import QtQuick.Layouts	1.3
 
 
@@ -25,7 +25,7 @@ Item
 {
 	id:					variablesForm
 	implicitWidth:		form.width
-	height:				Theme.defaultVariablesFormHeight
+	height:				jaspTheme.defaultVariablesFormHeight
 	implicitHeight:		height
 	Layout.columnSpan:	parent.columns
 	visible:			!debug || DEBUG_MODE
@@ -212,7 +212,7 @@ Item
 				if (control.width === variablesForm.width)
 					control.setWidthInForm = true
 
-				if (control.height === Theme.defaultVariablesFormHeight)
+				if (control.height === jaspTheme.defaultVariablesFormHeight)
 					control.setHeightInForm = true
 			}
 		}
@@ -278,7 +278,7 @@ Item
 			{
 				changeableHeightControls.push(control);
 				if (control.title)
-					minHeightOfAssignedControls += Theme.variablesListTitle;
+					minHeightOfAssignedControls += jaspTheme.variablesListTitle;
 			}			
 		}
 		
@@ -292,7 +292,7 @@ Item
 				controlHeight = minimumHeightVariablesLists; // Set a minimum height
 
 			for (i = 0; i < changeableHeightControls.length; i++)
-                changeableHeightControls[i].height = changeableHeightControls[i].title ? (Theme.variablesListTitle + controlHeight) : controlHeight;
+                changeableHeightControls[i].height = changeableHeightControls[i].title ? (jaspTheme.variablesListTitle + controlHeight) : controlHeight;
         }
 		
 	}

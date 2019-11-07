@@ -1,7 +1,7 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import JASP.Theme 1.0
+
 import JASP.Widgets 1.0
 
 RectangularButton
@@ -11,8 +11,8 @@ RectangularButton
 	property color defaultColor:        "transparent"
 
 	id: root
-	font:			Theme.fontRibbon
-	color:			(_pressed || activeFocus) ? Theme.buttonColorPressed : (showHovered || selected) ? Theme.buttonColorHovered : defaultColor
+	font:			jaspTheme.fontRibbon
+	color:			(_pressed || activeFocus) ? jaspTheme.buttonColorPressed : (showHovered || selected) ? jaspTheme.buttonColorHovered : defaultColor
 	border.width:	0
 	centerText:		false
 
@@ -22,7 +22,7 @@ RectangularButton
 	Timer
 	{
 		id:					delayOnhoverTimer
-		interval:			Theme.hoverTime
+		interval:			jaspTheme.hoverTime
 		running:			false
 		repeat:				false
 		onTriggered:		if (hovered && root.hasSubMenu) root.hoverClicked();
@@ -39,10 +39,10 @@ RectangularButton
 	{
 		anchors.verticalCenter:	parent.verticalCenter
 		anchors.right:			parent.right
-		anchors.rightMargin:	Theme.generalAnchorMargin
-		height:					Theme.subMenuIconHeight
+		anchors.rightMargin:	jaspTheme.generalAnchorMargin
+		height:					jaspTheme.subMenuIconHeight
 		width:					height
-		source:					root.hasSubMenu ? "qrc:/icons/large-arrow-right.png" : ""
+		source:					root.hasSubMenu ? jaspTheme.iconPath + "/large-arrow-right.png" : ""
 		visible:				hasSubMenu
 		opacity:				enabled ? ((hovered || activeFocus) ? 1 : 0.5) : 0.3
 		smooth:					true

@@ -18,7 +18,7 @@
 
 import QtQuick 2.9
 import QtQuick.Controls 2.4
-import JASP.Theme 1.0
+
 
 Item
 {
@@ -35,7 +35,7 @@ Item
 	property bool	centerText:			true
 	property bool	iconLeft:			true
 
-	property real	_scaledDim:			Theme.defaultRectangularButtonHeight
+	property real	_scaledDim:			jaspTheme.defaultRectangularButtonHeight
 	property alias	_pressed:			buttonMouseArea.pressed
 	property alias  color:				rect.color
 	property alias	border:				rect.border
@@ -51,11 +51,11 @@ Item
 
 
 	ToolTip.text:				toolTip
-	ToolTip.timeout:			Theme.toolTipTimeout
-	ToolTip.delay:				Theme.toolTipDelay
-	ToolTip.toolTip.font:		Theme.font
+	ToolTip.timeout:			jaspTheme.toolTipTimeout
+	ToolTip.delay:				jaspTheme.toolTipDelay
+	ToolTip.toolTip.font:		jaspTheme.font
 	ToolTip.visible:			toolTip !== "" && buttonMouseArea.containsMouse
-	ToolTip.toolTip.background: Rectangle { color:	Theme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
+	ToolTip.toolTip.background: Rectangle { color:	jaspTheme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
 
 	Keys.onSpacePressed:	clicked();
 	Keys.onEnterPressed:	clicked();
@@ -67,8 +67,8 @@ Item
 	{
 		id: rect
 
-		color:			(_pressed || selected) ? Theme.buttonColorPressed :	filterButtonRoot.hovered ?					Theme.buttonColorHovered		: Theme.buttonColor
-		border.color:														(filterButtonRoot.hovered || selected) ?	Theme.buttonBorderColorHovered	: Theme.buttonBorderColor
+		color:			(_pressed || selected) ? jaspTheme.buttonColorPressed :	filterButtonRoot.hovered ?					jaspTheme.buttonColorHovered		: jaspTheme.buttonColor
+		border.color:														(filterButtonRoot.hovered || selected) ?	jaspTheme.buttonBorderColorHovered	: jaspTheme.buttonBorderColor
 		border.width:	1
 		width:			parent.width
 		height:			parent.height
@@ -122,11 +122,11 @@ Item
 
 			text:		filterButtonRoot.text
 			visible:	filterButtonRoot.iconSource == "" || filterButtonRoot.showIconAndText
-			color:		textColor == "default" ? (filterButtonRoot.enabled ? Theme.textEnabled : Theme.textDisabled) : textColor
+			color:		textColor == "default" ? (filterButtonRoot.enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled) : textColor
 
 
-			font:	Theme.font
-			//font.pixelSize: Theme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * preferencesModel.uiScale, filterButtonRoot.height - 2))
+			font:	jaspTheme.font
+			//font.pixelSize: jaspTheme. //Math.max(filterButtonRoot.height * 0.4, Math.min(12 * preferencesModel.uiScale, filterButtonRoot.height - 2))
 
 			height: contentHeight
 			width:	implicitWidth //Math.min(implicitWidth, parent.width - (( buttonIcon.visible ? buttonIcon.width : 0 ) + (filterButtonRoot.buttonPadding * 2)))

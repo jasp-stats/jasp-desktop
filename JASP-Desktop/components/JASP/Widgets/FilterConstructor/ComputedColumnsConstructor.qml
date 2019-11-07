@@ -1,7 +1,7 @@
 import JASP.Controls 1.0
 import QtQuick.Controls 2.2
 import QtQuick 2.9
-import JASP.Theme 1.0
+
 
 Item
 {
@@ -88,7 +88,7 @@ Item
 	Rectangle {
 		id: background
 
-		color: Theme.white
+		color: jaspTheme.white
 		border.width: 1
 		border.color: "lightGrey"
 
@@ -99,7 +99,7 @@ Item
 		{
 			id:							backgroundImage
 
-			source:						"qrc:/icons/columnConstructorBackground.png"
+			source:						jaspTheme.iconPath + "/columnConstructorBackground.png"
 			anchors.centerIn:			parent
 
 			property real widthScale:	parent.width  / implicitWidth

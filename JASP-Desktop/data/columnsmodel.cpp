@@ -1,4 +1,5 @@
 #include "columnsmodel.h"
+#include "qquick/jasptheme.h"
 
 QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 {
@@ -11,10 +12,10 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 	case IconSourceRole:
 		switch(_tableModel->getColumnType(index.row()))
 		{
-		case columnType::scale:		return "qrc:/icons/variable-scale.svg";
-		case columnType::ordinal:		return "qrc:/icons/variable-ordinal.svg";
-		case columnType::nominal:		return "qrc:/icons/variable-nominal.svg";
-		case columnType::nominalText:	return "qrc:/icons/variable-nominal-text.svg";
+		case columnType::scale:			return JaspTheme::currentIconPath() + "variable-scale.png";
+		case columnType::ordinal:		return JaspTheme::currentIconPath() + "variable-ordinal.png";
+		case columnType::nominal:		return JaspTheme::currentIconPath() + "variable-nominal.png";
+		case columnType::nominalText:	return JaspTheme::currentIconPath() + "variable-nominal-text.png";
 		default:										return "";
 		}
 	case ToolTipRole:

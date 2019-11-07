@@ -18,7 +18,7 @@
 
 import QtQuick 2.11
 import JASP.Controls 1.0
-import JASP.Theme 1.0
+
 import JASP 1.0
 
 DoubleField
@@ -31,7 +31,7 @@ DoubleField
 	min:				0
 	max:				100
 	inputType:			"percent"
-	fieldWidth:			Theme.font.pixelSize * (percentField.decimals + 3)
+	fieldWidth:			jaspTheme.font.pixelSize * (percentField.decimals + 3)
 
 	lastValidValue:		defaultValue
 	afterLabel:			showPercent ? "%" : ""

@@ -20,7 +20,7 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts	1.3 as L
-import JASP.Theme		1.0
+
 
 JASPControl
 {
@@ -35,7 +35,7 @@ JASPControl
 			property alias	columns:				contentArea.columns
 			property string title:					""
 			property alias	text:					control.title
-			property int	leftPadding:			Theme.groupContentPadding
+			property int	leftPadding:			jaspTheme.groupContentPadding
 			property alias	alignChildrenTopLeft:	contentArea.alignChildrenTopLeft
 
     signal clicked(var item)
@@ -48,7 +48,7 @@ JASPControl
 						? Math.max(label.implicitHeight, contentArea.implicitHeight)
 						: contentArea.y + contentArea.implicitHeight	
     
-	L.Layout.leftMargin:	indent ? Theme.indentationLength : 0
+	L.Layout.leftMargin:	indent ? jaspTheme.indentationLength : 0
 	
 	Label
 	{
@@ -57,8 +57,8 @@ JASPControl
 		visible:		control.title && control.visible ? true : false
 		anchors.top:	control.top
 		anchors.left:	control.left
-		font:			Theme.font
-		color:			enabled ? Theme.textEnabled : Theme.textDisabled		
+		font:			jaspTheme.font
+		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled		
     }
     
 	ButtonGroup { id: buttonGroup }
@@ -66,13 +66,13 @@ JASPControl
 	GridLayout
 	{
 		id:					contentArea
-		rowSpacing:			Theme.rowGroupSpacing
-		columnSpacing:		Theme.columnGroupSpacing
+		rowSpacing:			jaspTheme.rowGroupSpacing
+		columnSpacing:		jaspTheme.columnGroupSpacing
 		columns:			radioButtonsOnSameRow ? children.length : 1
 		anchors.top:		control.title && !radioButtonsOnSameRow ? label.bottom : control.top
-		anchors.topMargin:	control.title && !radioButtonsOnSameRow ? Theme.titleBottomMargin : 0
+		anchors.topMargin:	control.title && !radioButtonsOnSameRow ? jaspTheme.titleBottomMargin : 0
 		anchors.left:		control.title && radioButtonsOnSameRow ? label.right : control.left
-		anchors.leftMargin: control.title ? Theme.groupContentPadding : 0
+		anchors.leftMargin: control.title ? jaspTheme.groupContentPadding : 0
     }
 	
 	function linkRadioButtons(item)

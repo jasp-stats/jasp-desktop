@@ -1,7 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import JASP.Theme 1.0
+
 import JASP.Widgets 1.0
 
 Item
@@ -18,14 +18,14 @@ Item
 			helpModel.showOrTogglePage(helpfile);
 	}
 
-	height:					Theme.menuHeaderHeight
+	height:					jaspTheme.menuHeaderHeight
 	anchors
 	{
 		top:				!anchorMe ? undefined : parent.top
 		left:				!anchorMe ? undefined : parent.left
 		right:				!anchorMe ? undefined : parent.right
-		leftMargin:			!anchorMe ? undefined : Theme.generalMenuMargin
-		rightMargin:		!anchorMe ? undefined : Theme.generalMenuMargin
+		leftMargin:			!anchorMe ? undefined : jaspTheme.generalMenuMargin
+		rightMargin:		!anchorMe ? undefined : jaspTheme.generalMenuMargin
 	}
 
 	Label
@@ -38,17 +38,17 @@ Item
 			verticalCenter:	parent.verticalCenter
 			left:			parent.left
 		}
-		font:				Theme.fontGroupTitle
-		color:				Theme.black
+		font:				jaspTheme.fontGroupTitle
+		color:				jaspTheme.black
 	}
 
 	MenuButton
 	{
 		id:					idHelpButton
 		visible:			helpfile !== ""
-		height:				parent.height - (Theme.generalAnchorMargin * 2)
+		height:				parent.height - (jaspTheme.generalAnchorMargin * 2)
 		width:				height
-		iconSource:			"qrc:/images/info-button.png"  // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
+		iconSource:			jaspTheme.iconPath + "info-button.png"  // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
 		onClicked:			helpModel.showOrTogglePage(helpfile)
 		toolTip:			qsTr("Show info about these preferences")
 		radius:				height / 2
@@ -57,7 +57,7 @@ Item
 		{
 			verticalCenter:	headLabel.verticalCenter
 			right:			parent.right
-			margins:		Theme.generalAnchorMargin
+			margins:		jaspTheme.generalAnchorMargin
 		}
 	}
 

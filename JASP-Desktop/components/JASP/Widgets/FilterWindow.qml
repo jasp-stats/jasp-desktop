@@ -1,6 +1,6 @@
 import QtQuick			2.13
 import QtQuick.Controls 2.13
-import JASP.Theme		1.0
+
 import "FilterConstructor"
 
 FocusScope
@@ -60,8 +60,8 @@ FocusScope
 	Rectangle
 	{
 		anchors.fill:	parent
-		color:			Theme.uiBackground
-		border.color:	Theme.uiBorder
+		color:			jaspTheme.uiBackground
+		border.color:	jaspTheme.uiBorder
 		border.width:	1
 	}
 
@@ -133,7 +133,7 @@ FocusScope
 		RectangularButton
 		{
 			id:			rRectangularButton
-			iconSource: "qrc:/icons/R.png"
+			iconSource: jaspTheme.iconPath + "/R.png"
 			onClicked:	easyFilterConstructor.askIfChanged(function() { filterContainer.showEasyFilter = false } )
 			width:		height
 			toolTip:	qsTr("Switch to the R filter")
@@ -148,7 +148,7 @@ FocusScope
 		RectangularButton
 		{
 			id:			showInactiveFilteredButtonEasy
-			iconSource: dataSetModel.showInactive ? "qrc:/icons/eyeOpen.png" : "qrc:/icons/eyeClosed.png"
+			iconSource: dataSetModel.showInactive ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
 			onClicked:	dataSetModel.showInactive = !dataSetModel.showInactive
 			width:		height
 			toolTip:	(dataSetModel.showInactive ? qsTr("Hide rows that were filtered out.") : qsTr("Show rows that were filtered out."))
@@ -182,7 +182,7 @@ FocusScope
 		RectangularButton
 		{
 			id:				helpEasyRectangularButton
-			iconSource:		"qrc:/images/info-button.png"
+			iconSource:		jaspTheme.iconPath + "info-button.png"
 
 			onClicked:		helpModel.showOrTogglePage("other/EasyFilterConstructor");
 			toolTip:		qsTr("Open Documentation")
@@ -197,7 +197,7 @@ FocusScope
 		RectangularButton
 		{
 			id:				closeEasyRectangularButton
-			iconSource:		"qrc:/images/cross.png"
+			iconSource:		jaspTheme.iconPath + "cross.png"
 			anchors.right:	parent.right
 			anchors.bottom: parent.bottom
 
@@ -217,7 +217,7 @@ FocusScope
 		Rectangle
 		{
 							id:						filterEditRectangle
-							color:					Theme.white
+							color:					jaspTheme.white
 							border.width:			1
 							border.color:			"lightGrey"
 			property real	desiredMinimumHeight:	applyFilter.height + filterWindow.minimumHeightTextBoxes + filterGeneratedBox.contentHeight
@@ -234,7 +234,7 @@ FocusScope
 			{
 				id:							backgroundImage
 
-				source:						"qrc:/icons/filterConstructorBackground.png"
+				source:						jaspTheme.iconPath + "/filterConstructorBackground.png"
 				anchors.centerIn:			parent
 
 				property real widthScale:	parent.width  / implicitWidth
@@ -278,7 +278,7 @@ FocusScope
 						text:					filterModel.generatedFilter +"\n"
 						height:					contentHeight
 						readOnly:				true
-						color:					"gray"
+						color:					jaspTheme.gray
 						selectByMouse:			true
 						onActiveFocusChanged:	if(!activeFocus) deselect()
 
@@ -293,7 +293,7 @@ FocusScope
 						id:						resetAllGeneratedFilters
 						width:					dataSetModel.columnsFilteredCount > 0 ? height : 0
 						height:					filterGeneratedBox.height
-						iconSource:				"qrc:/images/eraser_all.png"
+						iconSource:				jaspTheme.iconPath + "eraser_all.png"
 						visible:				dataSetModel.columnsFilteredCount > 0
 						toolTip:				qsTr("Reset all checkmarks on all labels")
 						onClicked:				dataSetModel.resetAllFilters()
@@ -324,7 +324,7 @@ FocusScope
 						font.family:			"Courier"
 						font.pixelSize:			baseFontSize * preferencesModel.uiScale
 						wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
-
+						color:					jaspTheme.textEnabled
 						property bool changedSinceLastApply: text !== filterModel.rFilter
 
 
@@ -378,7 +378,7 @@ FocusScope
 			TextArea
 			{
 				id:						filterError
-				color:					"red"
+				color:					jaspTheme.red
 				readOnly:				true
 				text:					filterModel.filterErrorMsg + "\n"
 				selectByMouse:			true
@@ -418,7 +418,7 @@ FocusScope
 			RectangularButton
 			{
 				id:				easyRectangularButton
-				iconSource:		"qrc:/icons/NotR.png"
+				iconSource:		jaspTheme.iconPath + "/NotR.png"
 				onClicked:		filterEditRectangle.askIfChanged(function (){ filterContainer.showEasyFilter = true })
 				width:			visible ? height : 0
 				toolTip:		qsTr("Switch to the drag and drop filter")
@@ -433,7 +433,7 @@ FocusScope
 			RectangularButton
 			{
 				id:			showInactiveFilteredButtonR
-				iconSource: dataSetModel.showInactive ? "qrc:/icons/eyeOpen.png" : "qrc:/icons/eyeClosed.png"
+				iconSource: dataSetModel.showInactive ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
 				onClicked:	dataSetModel.showInactive = !dataSetModel.showInactive
 				width:		height
 				toolTip:	(dataSetModel.showInactive ? qsTr("Hide rows that were filtered out.") : qsTr("Show rows that were filtered out."))
@@ -448,7 +448,7 @@ FocusScope
 			RectangularButton
 			{
 				id:			clearRectangularButton
-				iconSource: "qrc:/images/eraser.png"
+				iconSource: jaspTheme.iconPath + "eraser.png"
 				onClicked:	filterWindow.resetFilter()
 				width:		visible ? implicitWidth : 0
 				height:		filterContainer.buttonsHeight
@@ -484,7 +484,7 @@ FocusScope
 			RectangularButton
 			{
 				id:				helpButton
-				iconSource:		"qrc:/images/info-button.png"
+				iconSource:		jaspTheme.iconPath + "info-button.png"
 				anchors.right:	closeRectangularButton.left
 				anchors.bottom: parent.bottom
 				anchors.top:	closeRectangularButton.top
@@ -497,7 +497,7 @@ FocusScope
 			RectangularButton
 			{
 				id:				closeRectangularButton
-				iconSource:		"qrc:/images/cross.png"
+				iconSource:		jaspTheme.iconPath + "cross.png"
 				anchors.right:	parent.right
 				anchors.bottom: parent.bottom
 

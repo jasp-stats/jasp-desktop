@@ -19,7 +19,7 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtGraphicalEffects 1.12
-import JASP.Theme 1.0
+
 
 FocusScope
 {
@@ -91,7 +91,7 @@ FocusScope
 	{
 		id		: menuRectangle
 		z		: menuShadow.z + 1
-		color	: Theme.fileMenuColorBackground
+		color	: jaspTheme.fileMenuColorBackground
 		focus	: true
 
 		MouseArea
@@ -105,9 +105,9 @@ FocusScope
 	{
 		id		: column
 		x		: menuRectangle.x
-		y		: menuRectangle.y + (Theme.menuPadding / 2)
+		y		: menuRectangle.y + (jaspTheme.menuPadding / 2)
 		z		: menuRectangle.z + 1
-		spacing	: Theme.menuSpacing
+		spacing	: jaspTheme.menuSpacing
 
 		Repeater
 		{
@@ -123,11 +123,11 @@ FocusScope
 				}
 
 				menuRectangle.width   = Math.max(item.width, menuRectangle.width);
-				menuRectangle.height += (item.height + Theme.menuSpacing)
+				menuRectangle.height += (item.height + jaspTheme.menuSpacing)
 
 				if (index === count - 1)
 				{
-					menuRectangle.height += (Theme.menuPadding - Theme.menuSpacing)
+					menuRectangle.height += (jaspTheme.menuPadding - jaspTheme.menuSpacing)
 					menu.resizeElements(menuRectangle.width);
 				}
 			}
@@ -150,22 +150,22 @@ FocusScope
 					{
 						id:		menuItem
 						width:	initWidth
-						height: Theme.menuItemHeight
+						height: jaspTheme.menuItemHeight
 						color:	!model.isEnabled
 									? "transparent"
 									: mouseArea.pressed
-										? Theme.buttonColorPressed
+										? jaspTheme.buttonColorPressed
 										: mouseArea.containsMouse
-											? Theme.buttonColorHovered
+											? jaspTheme.buttonColorHovered
 											: "transparent"
 
 						property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + (menu.hasIcons ? menu._iconPad * 5 : menu._iconPad * 4)
 
 						Image
 						{
-							id		: menuItemImage
-							height	: menuItem.height - (2 * menu._iconPad)
-							width	: menuItem.height - menu._iconPad
+							id						: menuItemImage
+							height					: menuItem.height - (2 * menu._iconPad)
+							width					: menuItem.height - menu._iconPad
 
 							source					: menuImageSource
 							smooth					: true
@@ -181,8 +181,8 @@ FocusScope
 						{
 							id					: menuItemText
 							text				: displayText
-							font				: Theme.font
-							color				: isEnabled ? Theme.black : Theme.gray
+							font				: jaspTheme.font
+							color				: isEnabled ? jaspTheme.black : jaspTheme.gray
 							anchors
 							{
 								left			: menu.hasIcons ? menuItemImage.right : parent.left
@@ -212,7 +212,7 @@ FocusScope
 					{
 						id		: menuItem
 						width	: initWidth
-						height	: Theme.menuGroupTitleHeight
+						height	: jaspTheme.menuGroupTitleHeight
 
 						property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
 
@@ -241,7 +241,8 @@ FocusScope
 						{
 							id					: menuItemText
 							text				: displayText
-							font				: Theme.fontGroupTitle
+							font				: jaspTheme.fontGroupTitle
+							color				: jaspTheme.textEnabled
 							anchors
 							{
 								left			: menuItemImage.right
@@ -266,7 +267,7 @@ FocusScope
 		id				: menuShadow
 		anchors.fill	: menuRectangle
 
-		color			: Theme.grayDarker
+		color			: jaspTheme.grayDarker
 		spread			: 0.2
 		cornerRadius	: menuRectangle.radius + glowRadius
 		glowRadius		: 5

@@ -16,12 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.12
-import QtQuick.Controls 2.2
-import QtGraphicalEffects 1.12
-import JASP.Controls 1.0
-import JASP.Theme 1.0
-import JASP.Widgets 1.0
+import QtQuick				2.12
+import QtQuick.Controls		2.2
+import QtGraphicalEffects	1.12
+import JASP.Controls		1.0
+import JASP.Widgets			1.0
 
 FocusScope
 {
@@ -29,7 +28,7 @@ FocusScope
 
 	Rectangle
 	{
-		color:			Theme.grayMuchLighter
+		color:			jaspTheme.grayMuchLighter
 		z:				-1
 		anchors.fill:	parent
 	}
@@ -45,7 +44,7 @@ FocusScope
 
 		height: 100 * preferencesModel.uiScale
 		width : 100 * preferencesModel.uiScale
-		source: "qrc:/images/osf-logo.png"
+		source: jaspTheme.iconPath + "osf-logo.png"
 		smooth: true
 
 		sourceSize.width : width  * 2
@@ -70,8 +69,8 @@ FocusScope
 		anchors.bottomMargin: 20 * preferencesModel.uiScale
 
 		text : qsTr("OSF")
-		color: Theme.black
-		font : Theme.fontLabel
+		color: jaspTheme.black
+		font : jaspTheme.fontLabel
 	}
 
 	Text
@@ -79,9 +78,9 @@ FocusScope
 		id: labelExplain
 
 		text : qsTr("Sign in with your OSF account to continue")
-		color:Theme.black
+		color:jaspTheme.black
 		font.pointSize: 11 * preferencesModel.uiScale
-		font.family:	Theme.font.family
+		font.family:	jaspTheme.font.family
 
 		verticalAlignment  : Text.AlignVCenter
 		horizontalAlignment: Text.AlignHCenter
@@ -95,13 +94,13 @@ FocusScope
 	{
 		id: osfLoginBox
 
-		// TODO: Should be in Theme? Yes! And probably scaled as well ;)
+		// TODO: Should be in jaspTheme? Yes! And probably scaled as well ;)
 		height: 240 * preferencesModel.uiScale
 		width : 250 * preferencesModel.uiScale
-		color : Theme.grayMuchLighter
+		color : jaspTheme.grayMuchLighter
 
 		border.width: 1
-		border.color: Theme.grayDarker
+		border.color: jaspTheme.grayDarker
 
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top: labelExplain.bottom
@@ -122,9 +121,9 @@ FocusScope
 			height		: 35 * preferencesModel.uiScale
 			width		: 100 * preferencesModel.uiScale
 			clip		: true
-			color		: Theme.white
+			color		: jaspTheme.white
 			border.width: usernameText.activeFocus ? 3 : 1
-			border.color: usernameText.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
+			border.color: usernameText.activeFocus ? jaspTheme.focusBorderColor : jaspTheme.grayDarker
 
 			TextInput
 			{
@@ -134,12 +133,12 @@ FocusScope
 				anchors.fill		: parent
 				anchors.leftMargin	: 10 * preferencesModel.uiScale
 				selectByMouse		: true
-				selectedTextColor	: Theme.white
-				selectionColor		: Theme.itemSelectedColor
+				selectedTextColor	: jaspTheme.white
+				selectionColor		: jaspTheme.itemSelectedColor
 
 
 				verticalAlignment	: Text.AlignVCenter
-				font				: Theme.fontRibbon
+				font				: jaspTheme.fontRibbon
 
 				onTextChanged		: fileMenuModel.osf.username = text
 				onAccepted			: passwordText.focus = true
@@ -165,10 +164,10 @@ FocusScope
 			height: 35 * preferencesModel.uiScale
 			width : 100 * preferencesModel.uiScale
 			clip  : true
-			color : Theme.white
+			color : jaspTheme.white
 
 			border.width: passwordText.activeFocus ? 3 : 1
-			border.color: passwordText.activeFocus ? Theme.focusBorderColor  : Theme.grayDarker
+			border.color: passwordText.activeFocus ? jaspTheme.focusBorderColor  : jaspTheme.grayDarker
 
 			TextInput
 			{
@@ -181,8 +180,8 @@ FocusScope
 				verticalAlignment	: Text.AlignVCenter
 				echoMode			: TextInput.Password
 				selectByMouse		: true
-				selectedTextColor	: Theme.white
-				selectionColor		: Theme.itemSelectedColor
+				selectedTextColor	: jaspTheme.white
+				selectionColor		: jaspTheme.itemSelectedColor
 
 				font.pixelSize    : 14 * preferencesModel.uiScale
 
@@ -204,11 +203,11 @@ FocusScope
 
 			height   : 35  * preferencesModel.uiScale
 			text     : qsTr("Sign in")
-			color    : "#5cb85c"  // TODO: Move this to Theme.qml
+			color    : "#5cb85c"  // TODO: Move this to jaspTheme.qml
 			border.width: loginButton.activeFocus ? 3 : 1
-			border.color: loginButton.activeFocus ? Theme.focusBorderColor : Theme.grayDarker
+			border.color: loginButton.activeFocus ? jaspTheme.focusBorderColor : jaspTheme.grayDarker
 
-			textColor: Theme.white
+			textColor: jaspTheme.white
 
 			anchors.top  : passwordInput.bottom
 			anchors.right: parent.right
@@ -266,7 +265,7 @@ FocusScope
 			text          :'<font color="#257bb2"><u>About the OSF</u></font>'
 			textFormat    : Text.StyledText
 			font.pointSize: 11 * preferencesModel.uiScale
-			font.family:	Theme.font.family
+			font.family:	jaspTheme.font.family
 
 			anchors.left      : parent.left
 			anchors.bottom    : parent.bottom
@@ -288,7 +287,7 @@ FocusScope
 			text          :'<font color="#257bb2"><u>Register</u></font>'
 			textFormat    : Text.StyledText
 			font.pointSize: 11 * preferencesModel.uiScale
-			font.family: Theme.font.family
+			font.family: jaspTheme.font.family
 
 			anchors.bottom     : parent.bottom
 			anchors.right      : parent.right

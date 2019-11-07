@@ -1,7 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import JASP.Theme 1.0
+
 
 Item
 {
@@ -31,8 +31,8 @@ Item
 			top:				menuHeader.bottom
 			left:				parent.left
 			right:				parent.right
-			leftMargin:			Theme.generalMenuMargin
-			rightMargin:		Theme.generalMenuMargin
+			leftMargin:			jaspTheme.generalMenuMargin
+			rightMargin:		jaspTheme.generalMenuMargin
 		}
 
 	}
@@ -59,8 +59,8 @@ Item
 			bottom:				parent.bottom
 			left:				menuHeader.left
 			right:				menuHeader.right
-			topMargin:			Theme.generalMenuMargin
-			bottomMargin:		Theme.generalMenuMargin
+			topMargin:			jaspTheme.generalMenuMargin
+			bottomMargin:		jaspTheme.generalMenuMargin
 		}
 	}
 }

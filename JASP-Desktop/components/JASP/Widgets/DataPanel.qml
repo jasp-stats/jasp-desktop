@@ -1,12 +1,12 @@
 import QtQuick			2.13
 import QtQuick.Controls 2.13
 import QtQuick.Layouts	1.0
-import JASP.Theme		1.0
+
 
 Rectangle
 {
 	id:				rootDataset
-	color:			Theme.uiBackground
+	color:			jaspTheme.uiBackground
 
 	SplitView
     {
@@ -15,16 +15,16 @@ Rectangle
 		orientation:	Qt.Vertical
 		handle:			Rectangle
 		{
-			implicitHeight: Theme.splitHandleWidth * 0.8;
-			color:			Theme.uiBackground;
+			implicitHeight: jaspTheme.splitHandleWidth * 0.8;
+			color:			 jaspTheme.uiBackground //SplitHandle.hovered && !SplitHandle.pressed ? jaspTheme.grayLighter : jaspTheme.uiBackground
 
 			Item
 			{
 				id:							threeDots
 				width:						height * 4
-				height:						Theme.splitHandleWidth * 0.3
+				height:						jaspTheme.splitHandleWidth * 0.3
 				anchors.centerIn:			parent
-				property color	kleur:		Theme.grayDarker
+				property color	kleur:		jaspTheme.grayDarker
 
 				Rectangle
 				{

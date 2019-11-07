@@ -37,7 +37,8 @@ const Settings::Setting Settings::Values[] = {
 	{"safeGraphicsMode",			false},
 	{"cranRepositoryURL",			"https://cloud.r-project.org"},
 	{"userHasGitHubAccount",		false},
-	{"preferredLanguage",			QLocale::English}
+	{"preferredLanguage",			QLocale::English},
+	{"themeName",					"lightTheme"}
 
 };
 

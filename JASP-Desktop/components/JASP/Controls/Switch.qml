@@ -18,7 +18,7 @@
 
 import QtQuick			2.11
 import QtQuick.Controls 2.4
-import JASP.Theme		1.0
+
 
 JASPControl
 {
@@ -42,11 +42,11 @@ JASPControl
 		indicator:	Rectangle
 		{
 			id:				switchHandle
-			width:			Theme.switchHeight * 2.2
-			height:			Theme.switchHeight
-			radius:			Theme.switchHeight / 2
-			color:			Theme.light
-			border.color:	Theme.borderColor
+			width:			jaspTheme.switchHeight * 2.2
+			height:			jaspTheme.switchHeight
+			radius:			jaspTheme.switchHeight / 2
+			color:			jaspTheme.light
+			border.color:	jaspTheme.borderColor
 			anchors
 			{
 				left:		control.left
@@ -58,11 +58,11 @@ JASPControl
 			Rectangle
 			{
 				id:				rectangle
-				width:			Theme.switchHeight
-				height:			Theme.switchHeight
-				radius:			Theme.switchHeight / 2
-				color:			Theme.light
-				border.color:	Theme.borderColor
+				width:			jaspTheme.switchHeight
+				height:			jaspTheme.switchHeight
+				radius:			jaspTheme.switchHeight / 2
+				color:			jaspTheme.light
+				border.color:	jaspTheme.borderColor
             }
         }
         
@@ -70,8 +70,8 @@ JASPControl
 		{
 			id:				controlLabel
 			text:			control.text
-			font:			Theme.font
-			color:			enabled ? Theme.textEnabled : Theme.textDisabled
+			font:			jaspTheme.font
+			color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 			anchors
 			{
 				left:		control.indicator.right

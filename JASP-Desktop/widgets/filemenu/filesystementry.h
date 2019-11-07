@@ -64,11 +64,11 @@ public:
 	static QHash<int, QString> sourcesIcons()
 	{
 		static QHash<int, QString> icons = {
-			{ FileSystemEntry::JASP,	"qrc:/icons/file-jasp.svg"		},
-			{ FileSystemEntry::CSV,		"qrc:/icons/spreadsheet.svg"	},
-			{ FileSystemEntry::SPSS,	"qrc:/icons/spreadsheet.svg"	},
-			{ FileSystemEntry::Other,	"qrc:/icons/spreadsheet.svg"	},
-			{ FileSystemEntry::Folder,	"qrc:/icons/folder.svg"			} };
+			{ FileSystemEntry::JASP,	"file-jasp.svg"		},
+			{ FileSystemEntry::CSV,		"spreadsheet.svg"	},
+			{ FileSystemEntry::SPSS,	"spreadsheet.svg"	},
+			{ FileSystemEntry::Other,	"spreadsheet.svg"	},
+			{ FileSystemEntry::Folder,	"folder.svg"			} };
 
 		return icons;
 	}
