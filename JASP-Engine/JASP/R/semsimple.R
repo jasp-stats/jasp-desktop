@@ -60,15 +60,9 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   
   .semMardiasCoefficientTable(semContainer, options, dataset, ready)
 
-
-  
   .lavCreatePathDiagram(semContainer, options, ready)
-  return()  
-  if (options$groupingVariable != "")
-    meta[[13]] <- list(name="pathDiagram", type="collection", meta="image")
-  else
-    meta[[13]] <- list(name="pathDiagram", type="image")
   
+  return()  
 }
 
 .getSemContainer <- function(jaspResults) {
@@ -345,10 +339,14 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   
   semRMSEATable$addColumnInfo(name="model", title="", type="string")
   semRMSEATable$addColumnInfo(name="rmsea", title="RMSEA", type="number")
-  semRMSEATable$addColumnInfo(name="rmsea.ci", title="90 Percent Confidence Interval", type="string")
+  thisOverTitle <- "90% CI"
+  semRMSEATable$addColumnInfo(name="rmsea.ci.lower", type = "number", title = "Lower",
+                              overtitle = thisOverTitle)
+  semRMSEATable$addColumnInfo(name="rmsea.ci.upper", type = "number", title = "Upper",
+                              overtitle = thisOverTitle)
   semRMSEATable$addColumnInfo(name="rmsea.pvalue", title="p-value RMSEA <= 0.05 ", type="number")  
   
-  semRMSEATable$setData(c(list(model="Model"), semFitMeasures[c('logl', 'unrestricted.logl', 'npar', 'aic', 'bic', 'bic2')]))
+  semRMSEATable$setData(c(list(model="Model"), semFitMeasures[c('rmsea', 'rmsea.ci.lower', 'rmsea.ci.upper', 'rmsea.pvalue')]))
   
   semContainer[["fitMeasuresRMSEA"]] <- semRMSEATable
   
@@ -374,10 +372,10 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semOtherFitTable$addColumnInfo(name="gfi", title="Goodness of Fit Index (GFI)", type="number")
   semOtherFitTable$addColumnInfo(name="agfi", title="Parsimony Goodness of Fit Index (GFI)", type="number")
   semOtherFitTable$addColumnInfo(name="mfi", title="McDonald Fit Index (MFI)", type="number")
-  semOtherFitTable$addColumnInfo(name="ecvi", title="Expected Cross-Validation Index (ECVI)", type="number")
-  
-  semOtherFitTable$setData(c(list(model="Model"), semFitMeasures[c('cn_05', 'cn_01', 'gfi', 'agfi', 'mfi', 'ecvi')]))
-  
+  # semOtherFitTable$addColumnInfo(name="ecvi", title="Expected Cross-Validation Index (ECVI)", type="number")
+
+  semOtherFitTable$setData(c(list(model="Model"), semFitMeasures[c('cn_05', 'cn_01', 'gfi', 'agfi', 'mfi')]))
+  # Todo, ecvi??
   semContainer[["fitMeasuresOther"]] <- semOtherFitTable
   
   return()
@@ -421,7 +419,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     # varind <- as.matrix(semModIndResult["rhs"]) %in% .v(variables)
     # semModIndResult["rhs"][varind,1] <- .unv(semModIndResult["rhs"][varind,1])
     
-    # TODO multiple modles
+    # TODO multiple models
     # modIndices[["cases"]] <- rep("", nrow(semModIndResult))
     # for (i in seq_len(nrow(semModIndResult))) {
     #   modIndices[["data"]][[i]] <- as.list(semModIndResult[i, ])
@@ -536,10 +534,10 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     r2 <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "r2")
     nm <- names(r2)
     for (i in 1:length(r2)) {
-      semRSquaredTable$addRows(list(var = .unv(nm[i]), R2 = r2[i]))
+      semRSquaredTable$addRows(data.frame(var = .unv(names(r2[[i]])), R2 = r2[[i]]))
     }
   }
-  
+
   semContainer[["rSquaredTable"]] <- semRSquaredTable
   return()
 }
@@ -818,24 +816,17 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     plotList <- list()
     keep <- NULL
     for (i in seq_along(p)) {
-      diagram <- .lavWritePathDiagram(p[[i]], titles[i], options)
-      pathDiagramPlotCollection[[i]] <- createJaspPlot(title = titles[i])
-      pathDiagramPlotCollection[[i]]$plotObject <- JASPgraphs::themeJasp(plot(diagram))
+      .lavWritePathDiagram(p[[i]], titles[i], options, semContainer)
     }
     
   } else {
-    pathPlot <- createJaspPlot(title = "Path Diagram")
-    p <- .ggSemPlot(semContainer[["semResultsList"]]$object$semResults)
-    pathPlot$plotObject <- JASPgraphs::themeJasp(plot(p))
-    pathDiagramPlotCollection[["pathPlot"]] <- pathPlot
+    .lavWritePathDiagram(p, "Path Diagram", options, semContainer)
   }
 
-  semContainer[["pathDiagramPlotCollection"]] <- pathDiagramPlotCollection
-  
   return()
 }
 
-.lavWritePathDiagram <- function(plotObj, title, options) {
+.lavWritePathDiagram <- function(plotObj, title, options, semContainer) {
   pathDiagram <- list()
   pathDiagram$title <- title
   pathDiagram$width <- options$plotWidth
@@ -844,16 +835,11 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     pathDiagram$height <- 1 + 299 * (length(options$variables)/5)
   }
   pathDiagram$custom <- list(width="plotWidth", height="plotHeight")
+
+  semContainer[[paste0("pathPlot", title)]] <- createJaspPlot(width = pathDiagram$width, 
+                         height = pathDiagram$height, plot = plotObj, title = title)
   
-  content <- .writeImage(width = pathDiagram$width, 
-                         height = pathDiagram$height, plot = plotObj, obj = TRUE)
-  
-  pathDiagram[["convertible"]] <- TRUE
-  pathDiagram[["obj"]] <- content[["obj"]]
-  pathDiagram[["data"]] <- content[["png"]]
-  pathDiagram[["status"]] <- "complete"
-  
-  return(pathDiagram)
+  return()
 }
 
 .lavToPlotObj <- function(lavResult) {
@@ -873,76 +859,3 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   return(semPlotMod)
 }
 
-
-.ggSemPlot <- function(fit, layout = "sugiyama") {
-  
-  # Extract standardized parameters
-  params <- lavaan::standardizedSolution(fit)
-  
-  # Edge properties
-  param_edges <- params %>% 
-    filter(op %in% c("=~", "~", "~~"), lhs != rhs, pvalue < .10) %>%
-    transmute(to = lhs,
-              from = rhs,
-              val = est.std,
-              type = dplyr::case_when(
-                op == "=~" ~ "loading",
-                op == "~"  ~ "regression",
-                op == "~~" ~ "correlation",
-                TRUE ~ NA_character_))
-  
-  # Identify latent variables for nodes
-  latent_nodes <- param_edges %>% 
-    filter(type == "loading") %>% 
-    distinct(to) %>% 
-    transmute(metric = to, latent = TRUE)
-  
-  # Node properties
-  param_nodes <- params %>% 
-    filter(lhs == rhs) %>% 
-    transmute(metric = lhs, e = est.std) %>% 
-    left_join(latent_nodes) %>% 
-    mutate(latent = if_else(is.na(latent), FALSE, latent))
-  
-  # Complete Graph Object
-  param_graph <- tidygraph::tbl_graph(param_nodes, param_edges)
-  
-  # Plot
-  ggraph(param_graph, layout = layout) +
-    # Latent factor Nodes
-    geom_node_point(aes(alpha = as.numeric(latent)),
-                    shape = 16, size = 5) +
-    geom_node_point(aes(alpha = as.numeric(latent)),
-                    shape = 16, size = 4, color = "white") +
-    # Observed Nodes
-    geom_node_point(aes(alpha = as.numeric(!latent)),
-                    shape = 15, size = 5) +
-    geom_node_point(aes(alpha = as.numeric(!latent)),
-                    shape = 15, size = 4, color = "white") +
-    # Regression Paths (and text)
-    geom_edge_link(aes(color = val, label = round(val, 2),
-                       alpha = as.numeric(type == "regression")),
-                   linetype = 1, angle_calc = "along", vjust = -.5,
-                   arrow = arrow(20, unit(.3, "cm"), type = "closed")) +
-    # Factor Loadings (no text)
-    geom_edge_link(aes(color = val, alpha = as.numeric(type == "loading")),
-                   linetype = 3, angle_calc = "along",
-                   arrow = arrow(20, unit(.3, "cm"), ends = "first", type = "closed")) +
-    # Correlation Paths (no text)
-    geom_edge_link(aes(color = val, alpha = as.numeric(type == "correlation")),
-                   linetype = 2, angle_calc = "along",
-                   arrow = arrow(20, unit(.3, "cm"), type = "closed", ends = "both")) +
-    # Node names
-    geom_node_text(aes(label = metric),
-                   nudge_y = .25, hjust = "inward") +
-    # Node residual error
-    geom_node_text(aes(label = sprintf("%.2f", e)),
-                   nudge_y = -.1, size = 3) +
-    # Scales and themes
-    scale_alpha(guide = FALSE, range = c(0, 1)) +
-    scale_edge_alpha(guide = FALSE, range = c(0, 1)) +
-    scale_edge_colour_gradient2(guide = FALSE, low = "red", mid = "darkgray", high = "green") +
-    scale_edge_linetype(guide = FALSE) +
-    scale_size(guide = FALSE) +
-    theme_graph()
-}
