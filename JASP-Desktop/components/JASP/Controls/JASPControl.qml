@@ -16,16 +16,13 @@
 //
 
 import QtQuick				2.11
-
+import JASP					1.0
 import QtQuick.Controls		2.4
 
-FocusScope
+JASPControlBase
 {
 	id: jaspControl
 
-	property string	controlType:			"JASPControl"
-	property string name:					""
-	property bool	isBound:				true
 	property bool	debug:					false
 	property var	background:				null
 	property var	focusIndicator:			background
@@ -38,9 +35,7 @@ FocusScope
 	property bool	childControlHasFocus:	false
 	property bool	isDependency:			false
 	property var	dependencyMustContain:	[] //Will be filled with QStringList when necessary
-	property bool	shouldShowFocus:		activeFocus && activeFocusOnTab && !childControlHasFocus
-
-	activeFocusOnTab: true
+	property bool	shouldShowFocus:		activeFocus && activeFocusOnTabEx && !childControlHasFocus
 
 	function showControlError(message)
 	{

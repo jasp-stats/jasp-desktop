@@ -20,12 +20,10 @@
 #include "listmodeltermsavailable.h"
 #include "listmodelinteractionavailable.h"
 #include "listmodelassignedinterface.h"
-#include <QQuickItem>
-#include <QQmlProperty>
 
-QMLListViewTermsAvailable::QMLListViewTermsAvailable(QQuickItem* item, AnalysisForm* form, bool isInteraction)
-	: QMLItem(item, form)
-	, QMLListViewDraggable(item, form)
+QMLListViewTermsAvailable::QMLListViewTermsAvailable(JASPControlBase* item, bool isInteraction)
+	: JASPControlWrapper(item)
+	, QMLListViewDraggable(item)
 
 {
 	bool mixedModelTerms = getItemProperty("mixedModelTerms").toBool();

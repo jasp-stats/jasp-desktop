@@ -18,20 +18,19 @@
 
 #include "qmllistview.h"
 #include "../analysis/analysisform.h"
+#include "../analysis/jaspcontrolbase.h"
 #include "listmodel.h"
 #include "interactionmodel.h"
 #include "boundqmltextarea.h"
 #include "log.h"
-#include "extracontrolsinfo.h"
 
-QMLListView::QMLListView(QQuickItem *item, AnalysisForm *form) 
-	: QObject(form)
+QMLListView::QMLListView(JASPControlBase *item)
+	: QObject(item->form())
 	, _needsSourceModels(false)
 	  
 {
-	_extraControlsInfo.read(this);
-	_hasExtraControls = _extraControlsInfo.values().length() > 0;
-
+	_hasRowComponents = item->rowComponentsCount() > 0;
+	_optionKeyName = getItemProperty("optionKey").toString().toStdString();
 	_setAllowedVariables();
 }
 
@@ -79,7 +78,7 @@ void QMLListView::setSources()
 			QString modelUse = map["use"].toString();
 			QVector<QPair<QString, QString> > discards;
 			if (sourceName.isEmpty())
-				addError("No name given in source attribute of VariableList " + name());
+				addError(tr("No name given in source attribute of VariableList %1").arg(name()));
 			else if (map.contains("discard"))
 			{
 
@@ -96,11 +95,11 @@ void QMLListView::setSources()
 						QMap<QString, QVariant> discardMap = discardSource.toMap();
 						discardName = discardMap["name"].toString();
 						if (discardName.isEmpty())
-							addError("No name given in discard source attribute of VariableList " + name());
+							addError(tr("No name given in discard source attribute of VariableList %1" ).arg(name()));
 						discardUse = discardMap["use"].toString();
 					}
 					else
-						addError("Wrong parameter discard in VariablesList " + name());
+						addError(tr("Wrong parameter discard in VariablesList %1").arg(name()));
 					discards.push_back(QPair<QString, QString>(discardName, discardUse));
 				}
 				_sourceModels.append(new SourceType(sourceName, modelUse, discards));
@@ -113,7 +112,7 @@ void QMLListView::setSources()
 	if (_sourceModels.isEmpty())
 	{
 		if (_needsSourceModels)
-			addError(QString::fromLatin1("Needs source model for VariablesList ") + name());
+			addError(tr("Needs source model for VariablesList %1").arg(name()));
 	}
 	else
 	{
@@ -121,7 +120,7 @@ void QMLListView::setSources()
 		bool termsAreInteractions = false;
 		for (SourceType* sourceItem : _sourceModels)
 		{
-			ListModel* sourceModel = _form->getModel(sourceItem->name);
+			ListModel* sourceModel = form()->getModel(sourceItem->name);
 			if (sourceModel)
 			{
 				if (!sourceModel->areTermsVariables())
@@ -134,7 +133,7 @@ void QMLListView::setSources()
 
 				for (SourceType& discardSource : sourceItem->discardModels)
 				{
-					ListModel* discardModel = _form->getModel(discardSource.name);
+					ListModel* discardModel = form()->getModel(discardSource.name);
 					if (discardModel)
 					{
 						discardSource.model = discardModel;
@@ -158,13 +157,13 @@ void QMLListView::setSources()
 
 void QMLListView::setUp()
 {
-	QMLItem::setUp();
+	JASPControlWrapper::setUp();
 	
 	ListModel* listModel = model();
 	if (!listModel)
 		return;
 
-	listModel->addExtraControls(_extraControlsInfo.values());
+	listModel->setRowComponents(item()->getRowComponents());
 	setSources();
 
 	if (!getItemProperty("source").isNull())
@@ -180,7 +179,7 @@ void QMLListView::cleanUp()
 	ListModel* _model = model();
 	if (_model)
 		_model->disconnect();
-	QMLItem::cleanUp();
+	JASPControlWrapper::cleanUp();
 }
 
 void QMLListView::setTermsAreNotVariables()
@@ -192,6 +191,11 @@ void QMLListView::setTermsAreNotVariables()
 void QMLListView::setTermsAreInteractions()
 {
 	model()->setTermsAreInteractions(true);
+}
+
+QString QMLListView::getSourceType(QString name)
+{
+	return model()->getItemType(name);
 }
 
 void QMLListView::sourceChangedHandler()
@@ -240,7 +244,7 @@ int QMLListView::_getAllowedColumnsTypes()
 			else if (allowedColumn == "nominalText")	allowedColumnsTypes |= int(columnType::nominalText);
 			else if (allowedColumn == "scale")			allowedColumnsTypes |= int(columnType::scale);
 			else
-				addError(QString::fromLatin1("Wrong column type: ") + allowedColumn + (_name.isEmpty() ? QString() : (QString::fromLatin1(" for ListView ") + _name)));
+				addError(tr("Wrong column type: %1 for ListView %2").arg(allowedColumn).arg(name()));
 		}
 	}
 	

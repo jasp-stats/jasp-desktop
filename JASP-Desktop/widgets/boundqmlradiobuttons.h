@@ -29,7 +29,7 @@ class BoundQMLRadioButtons : public QObject, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLRadioButtons(QQuickItem* item, AnalysisForm* form);
+	BoundQMLRadioButtons(JASPControlBase* item);
 	void	bindTo(Option *option)						override;
 	void	unbind()									override;
 	Option* boundTo()									override { return _boundTo; }	
@@ -43,11 +43,11 @@ private slots:
 	void radioButtonClickedHandler(const QVariant& button);
     
 protected:
-	OptionList*					_boundTo;
-	QMap<QString, QQuickItem *> _buttons;
-	QQuickItem*					_checkedButton;
+	OptionList*							_boundTo;
+	QMap<QString, JASPControlBase *>	_buttons;
+	JASPControlBase*					_checkedButton;
 	
-	void _getRadioButtons(QQuickItem* item, QList<QQuickItem* >& buttons);
+	void _getRadioButtons(QQuickItem* item, QList<JASPControlBase* >& buttons);
 };
 
 #endif // BOUNDQMLRADIOBUTTONS_H

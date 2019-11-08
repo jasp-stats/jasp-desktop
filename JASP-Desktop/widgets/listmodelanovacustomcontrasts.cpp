@@ -24,12 +24,13 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optiondoublearray.h"
+#include "analysis/jaspcontrolbase.h"
 
 ListModelANOVACustomContrasts::ListModelANOVACustomContrasts(BoundQMLTableView * parent) : ListModelTableViewBase(parent)
 {
 	_defaultCellVal	= 0;
 	_initialRowCnt	= 1;
-	connect(_tableView->item(), SIGNAL(colNameSignal(QString)),	this, SLOT(setColName(QString))	);
+	QQuickItem::connect(_tableView->item(), SIGNAL(colNameSignal(QString)),	this, SLOT(setColName(QString))	);
 }
 
 void ListModelANOVACustomContrasts::loadColumnInfo()

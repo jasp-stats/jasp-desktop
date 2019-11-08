@@ -19,14 +19,14 @@
 #ifndef QMLLISTVIEW_H
 #define QMLLISTVIEW_H
 
-#include "qmlitem.h"
+#include "jaspcontrolwrapper.h"
 #include "common.h"
 #include <QObject>
-#include "extracontrolsinfo.h"
 
 class ListModel;
+class BoundQMLItem;
 
-class QMLListView : public QObject, public virtual QMLItem
+class QMLListView : public QObject, public virtual JASPControlWrapper
 {
 Q_OBJECT
 
@@ -46,7 +46,7 @@ public:
 		}
 	};
 	
-	QMLListView(QQuickItem* item, AnalysisForm* form);
+	QMLListView(JASPControlBase* item);
 	
 	virtual ListModel	*	model() = 0;
 			void			setUp()			override;
@@ -61,6 +61,7 @@ public:
 	const QList<SourceType*>& sourceModels()			const	{ return _sourceModels; }
 			bool			hasSource()					const	{ return _sourceModels.length() > 0; }
 
+	Q_INVOKABLE QString		getSourceType(QString name);
 protected slots:
 	virtual void modelChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
 			void sourceChangedHandler();
@@ -72,9 +73,8 @@ protected:
 	bool				_needsSourceModels;
 	int					_variableTypesAllowed,
 						_variableTypesSuggested;
-	ExtraControlsInfo	_extraControlsInfo;
-	bool				_hasExtraControls	= false;
-
+	bool				_hasRowComponents	= false;
+	std::string			_optionKeyName;
 	
 private:
 	int		_getAllowedColumnsTypes();

@@ -24,7 +24,6 @@
         <file>components/JASP/Controls/VariablesForm.qml</file>
         <file>components/JASP/Controls/Switch.qml</file>
         <file>components/JASP/Widgets/ModuleInstaller.qml</file>
-        <file>components/JASP/Controls/ExtraControlColumn.qml</file>
         <file>components/JASP/Controls/Slider.qml</file>
         <file>components/JASP/Controls/TextArea.qml</file>
         <file>components/JASP/Controls/TableView.qml</file>
@@ -126,7 +125,8 @@
         <file>components/JASP/Theme/DarkTheme.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsUI.qml</file>
         <file>components/JASP/Controls/InputListView.qml</file>
-        <file>components/JASP/Controls/ExtraControls.qml</file>
         <file>components/JASP/Controls/JASPListControl.qml</file>
+        <file>components/JASP/Controls/RowComponents.qml</file>
+        <file>components/JASP/Controls/ModelTermsList.qml</file>
     </qresource>
 </RCC>

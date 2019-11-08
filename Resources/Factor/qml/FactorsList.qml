@@ -7,6 +7,7 @@ JC.VariablesList
 	property alias editableTitle: titleField.value
 	signal titleIsChanged()
 	title: " " //dummy
+	listViewType: "AssignedVariables"
 
     JC.TextField 
     {

@@ -71,16 +71,6 @@ QVariant ListModelInputValue::data(const QModelIndex &index, int role) const
 		return ListModel::data(index, role);
 }
 
-void ListModelInputValue::initTerms(const Terms &terms)
-{
-	beginResetModel();
-	_terms.set(terms);
-	endResetModel();
-
-	initExtraControlTerms();
-
-}
-
 void ListModelInputValue::_removeTerm(int row)
 {
 	QString value;
@@ -91,7 +81,6 @@ void ListModelInputValue::_removeTerm(int row)
 
 	beginRemoveRows(QModelIndex(), row, row);
 	_terms.remove(rowU);
-	addExtraControlModels();
 	endRemoveRows();
 }
 

@@ -110,14 +110,14 @@ QVariant RibbonModel::data(const QModelIndex &index, int role) const
 
 	switch(role)
 	{
-	case DisplayRole:		return _dislayModuleNames[row]; //return ribbonButtonModelAt(row)->titleQ(); //Displayed in + panel
+	case DisplayRole:		return ribbonButtonModelAt(row)->titleQ(); //Displayed in + panel
 	case RibbonRole:		return QVariant::fromValue(ribbonButtonModelAt(row));
 	case EnabledRole:		return ribbonButtonModelAt(row)->enabled();
 	case ActiveRole:		return ribbonButtonModelAt(row)->active();
 	case DynamicRole:		return ribbonButtonModelAt(row)->isDynamic();
 	case CommonRole:		return ribbonButtonModelAt(row)->isCommon();
 	case ModuleNameRole:	return ribbonButtonModelAt(row)->moduleNameQ();
-	case ModuleTitleRole:	return _dislayModuleNames[row]; //return ribbonButtonModelAt(row)->titleQ(); //Displayed in Ribbon Common Modules
+	case ModuleTitleRole:	return ribbonButtonModelAt(row)->titleQ(); //Displayed in Ribbon Common Modules
 	//case ModuleTitleRole:	return ribbonButtonModelAt(row)->titleQ(); //Displayed in Ribbon Common Modules
 
 	case ModuleRole:		return QVariant::fromValue(ribbonButtonModelAt(row)->myDynamicModule());

@@ -29,7 +29,7 @@ class QMLListViewTermsAvailable : public QMLListViewDraggable
 {
 Q_OBJECT
 public:
-	QMLListViewTermsAvailable(QQuickItem* item, AnalysisForm* form, bool isInteractions = false);
+	QMLListViewTermsAvailable(JASPControlBase* item, bool isInteractions = false);
 	
 	ListModel*				model() override			{ return _availableModel; }
 	ListModelAvailableInterface*	availableModel()	{ return _availableModel; }

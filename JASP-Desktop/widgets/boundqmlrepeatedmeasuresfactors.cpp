@@ -19,15 +19,13 @@
 #include "boundqmlrepeatedmeasuresfactors.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
-
-#include <QQmlProperty>
-#include <QQuickItem>
+#include "analysis/jaspcontrolbase.h"
 
 using namespace std;
 
-BoundQMLRepeatedMeasuresFactors::BoundQMLRepeatedMeasuresFactors(QQuickItem *item, AnalysisForm *form)
-	: QMLItem(item, form)
-	, QMLListView(item, form)
+BoundQMLRepeatedMeasuresFactors::BoundQMLRepeatedMeasuresFactors(JASPControlBase *item)
+	: JASPControlWrapper(item)
+	, QMLListView(item)
 	, BoundQMLItem()
 {
 	_factorsModel = new ListModelRepeatedMeasuresFactors(this);

@@ -18,15 +18,16 @@
 
 #include "boundqmlslider.h"
 #include "../analysis/analysisform.h"
+#include "../analysis/jaspcontrolbase.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 #include <QAbstractListModel>
 #include <QTimer>
 #include "log.h"
 
-BoundQMLSlider::BoundQMLSlider(QQuickItem* item, AnalysisForm* form) 
-	: QMLItem(item, form)
-	, QObject(form)
+BoundQMLSlider::BoundQMLSlider(JASPControlBase* item)
+	: JASPControlWrapper(item)
+	, QObject(item->form())
 	, BoundQMLItem()
 {
 	QQuickItem::connect(item, SIGNAL(moved()), this, SLOT(sliderMovedSlot()));
@@ -45,7 +46,7 @@ void BoundQMLSlider::bindTo(Option *option)
 }
 
 
-void BoundQMLSlider::resetQMLItem(QQuickItem *item)
+void BoundQMLSlider::resetQMLItem(JASPControlBase *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 	setItemProperty("value", _number);

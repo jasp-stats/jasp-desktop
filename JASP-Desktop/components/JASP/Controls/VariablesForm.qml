@@ -165,7 +165,7 @@ Item
 				if (control.listViewType === "AvailableVariables" || control.listViewType === "AvailableInteraction")
 				{
 					if (availableVariablesList)
-						form.addError("Only 1 Available Variables list can be set in a VariablesForm");
+						form.addError(qsTr("Only 1 Available Variables list can be set in a VariablesForm"));
 
 					availableVariablesList = control;
 					availableVariablesListIndex = i;
@@ -180,7 +180,7 @@ Item
 		
 		if (!availableVariablesList)
 		{
-			form.addError("There is no Available List in the VariablesForm");
+			form.addError(qsTr("There is no Available List in the VariablesForm"));
 			return;
 		}
 		else

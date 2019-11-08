@@ -24,6 +24,8 @@
 
 #include <QString>
 #include <QStringList>
+#include <QMap>
+class Option;
 
 class Term
 {

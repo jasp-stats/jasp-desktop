@@ -18,9 +18,9 @@
 
 #include "listmodel.h"
 #include "../analysis/analysisform.h"
-#include "listmodelextracontrols.h"
 #include "boundqmllistviewterms.h"
-#include <QTimer>
+#include "rowcontrols.h"
+#include "../analysis/jaspcontrolbase.h"
 
 ListModel::ListModel(QMLListView* listView) 
 	: QAbstractTableModel(listView)
@@ -37,10 +37,10 @@ QHash<int, QByteArray> ListModel::roleNames() const
 
 	if(setMe)
 	{
-		roles[TypeRole]			= "type";
-		roles[ColumnTypeRole]	= "columnType";
-		roles[NameRole]			= "name";
-		roles[ExtraColumnsRole] = "extraColumns";
+		roles[TypeRole]				= "type";
+		roles[ColumnTypeRole]		= "columnType";
+		roles[NameRole]				= "name";
+		roles[RowComponentsRole]	= "rowComponents";
 
 		setMe = false;
 	}
@@ -59,10 +59,11 @@ void ListModel::addError(const QString &error) const
 	_listView->addError(error);
 }
 
-void ListModel::initTerms(const Terms &terms)
+void ListModel::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)
 {
 	beginResetModel();
 	_terms.set(terms);
+	_rowControlsOptions = allOptionsMap;
 	endResetModel();
 }
 
@@ -116,6 +117,34 @@ QMap<ListModel*, Terms> ListModel::getSourceTermsPerModel()
 	return result;
 }
 
+void ListModel::setRowComponents(QVector<QQmlComponent *> &rowComponents)
+{
+	_rowComponents = rowComponents;
+}
+
+void ListModel::endResetModel()
+{
+	setUpRowControls();
+	QAbstractTableModel::endResetModel();
+}
+
+void ListModel::setUpRowControls()
+{
+	if (_rowComponents.empty())
+		return;
+
+	int row = 0;
+	for (const Term& term : _terms)
+	{
+		const QString& key = term.asQString();
+		if (!_rowControlsMap.contains(key))
+			_rowControlsMap[key] = new RowControls(this, _rowComponents, _rowControlsOptions[key]);
+
+		_rowControlsMap[key]->setContext(row, key);
+		row++;
+	}
+}
+
 
 void ListModel::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 {
@@ -132,30 +161,34 @@ int ListModel::rowCount(const QModelIndex &) const
 QVariant ListModel::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();
+	size_t row_t = size_t(row);
+	if (row_t >= _terms.size())
+		return QVariant();
 
 	if (role == Qt::DisplayRole || role == ListModel::NameRole)
 	{
-		Term term = _terms.at(row);
+		const Term& term = _terms.at(row_t);
 		return QVariant(term.asQString());
 	}
-
-	if (role == ListModel::ExtraColumnsRole && _extraControlsModels.count() > 0)
+	if (role == ListModel::RowComponentsRole)
 	{
-		int row = index.row();
-		return QVariant::fromValue(_extraControlsModels[_rowNameMap[row]]);
+		if (_rowControlsMap.size() > 0)
+			return QVariant::fromValue(_rowControlsMap[_terms.at(row_t).asQString()]->getControls());
+		else
+			return QVariant();
 	}
 	
 	if (!areTermsVariables())
-		return QVariant();
-	
-	Term term = _terms.at(row);
-	if (term.size() != 1)
 		return QVariant();
 	
 	if (role == ListModel::TypeRole)
 		return QVariant("variable");
 	else if (role == ListModel::ColumnTypeRole)
 	{
+		Term term = _terms.at(row_t);
+		if (term.size() != 1)
+			return QVariant();
+
 		QString variableTypeName = requestInfo(term, VariableInfo::VariableTypeName).toString();
 		return QVariant(variableTypeName);
 	}
@@ -163,57 +196,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
-void ListModel::endResetModel()
-{
-	addExtraControlModels();
-	QAbstractTableModel::endResetModel();
-}
-
 const QString &ListModel::name() const
 {
 	return _listView->name();
-}
-
-void ListModel::addExtraControlModels()
-{
-	if (!_extraControlsDefinitions.isEmpty())
-	{
-		_extraControlsModels.clear();
-		_rowNameMap.clear();
-		for (int i = 0; i < rowCount(); i++)
-		{
-			QString colName = data(index(i, 0), ListModel::NameRole).toString();
-			_rowNameMap[i] = colName;
-			if (_modelCache.contains(colName))
-				_extraControlsModels[colName] = _modelCache[colName];
-			else
-			{
-				ListModelExtraControls* extraControlsModel = new ListModelExtraControls(this, _extraControlsDefinitions);
-				_extraControlsModels[colName] = extraControlsModel;
-				_modelCache[colName] = extraControlsModel;
-			}
-		}
-	}
-}
-
-// This function is called by initTerms for models that may have extra columns
-void ListModel::initExtraControlTerms()
-{
-	if (!_extraControlsDefinitions.isEmpty())
-		// initTerms calls begin/endResetModel that will build the QML items in the List View.
-		// We must wait that these QML Items are completely built so that we can bind the extra controls (if they exist)
-		QTimer::singleShot(0, this, &ListModel::_initExtraControlTerms);
-}
-
-void ListModel::_initExtraControlTerms()
-{
-	BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(listView());
-	if (boundItem)
-		boundItem->bindExtraControlOptions();
-}
-
-
-void ListModel::addExtraControls(const QVector<QMap<QString, QVariant> > &extraControlColumns)
-{
-	_extraControlsDefinitions = extraControlColumns;
 }

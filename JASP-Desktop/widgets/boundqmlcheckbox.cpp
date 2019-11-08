@@ -18,13 +18,12 @@
 
 #include "boundqmlcheckbox.h"
 #include "../analysis/analysisform.h"
-#include <QQmlProperty>
-#include <QQuickItem>
+#include "../analysis/jaspcontrolbase.h"
 #include "log.h"
 
-BoundQMLCheckBox::BoundQMLCheckBox(QQuickItem* item, AnalysisForm* form) 
-	: QMLItem(item, form)
-	, QObject(form)
+BoundQMLCheckBox::BoundQMLCheckBox(JASPControlBase* item)
+	: JASPControlWrapper(item)
+	, QObject(item->form())
 	, BoundQMLItem()
 {
 	if (item)
@@ -62,7 +61,7 @@ Option *BoundQMLCheckBox::createOption()
 	return new OptionBoolean(_checked);
 }
 
-void BoundQMLCheckBox::resetQMLItem(QQuickItem *item)
+void BoundQMLCheckBox::resetQMLItem(JASPControlBase *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 	setItemProperty("checked", _checked);
@@ -78,7 +77,7 @@ void BoundQMLCheckBox::setQMLItemChecked(bool checked)
 
 void BoundQMLCheckBox::checkBoxClickedSlot()
 {
-	_checked = QQmlProperty::read(_item, "checked").toBool();
+	_checked = getItemProperty("checked").toBool();
 	if (_boundTo != nullptr)
 		_boundTo->setValue(_checked);
 }

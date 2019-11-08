@@ -19,6 +19,7 @@
 #include "mainwindow.h"
 
 #include "analysis/analysisform.h"
+#include "analysis/jaspcontrolbase.h"
 #include "analysis/jaspdoublevalidator.h"
 
 #include <QDir>
@@ -144,6 +145,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<DataSetView>			("JASP", 1, 0, "DataSetView");
 	qmlRegisterType<JaspTheme>				("JASP", 1, 0, "JaspTheme");
 	qmlRegisterType<AnalysisForm>			("JASP", 1, 0, "AnalysisForm");
+	qmlRegisterType<JASPControlBase>		("JASP", 1, 0, "JASPControlBase");
 	qmlRegisterType<JASPDoubleValidator>	("JASP", 1, 0, "JASPDoubleValidator");
 	qmlRegisterType<ResultsJsInterface>		("JASP", 1, 0, "ResultsJsInterface");
 

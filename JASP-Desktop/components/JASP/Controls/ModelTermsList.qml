@@ -1,3 +1,4 @@
+//
 // Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,16 +16,26 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.0
+import QtQuick 2.11
 
-QtObject {
-    property string type
-    property string name
-    property string title
-	property var	values
-	property string purpose
-	property bool	useExternalBorder:	false
-	property int	rightMargin: 0
-	property var	properties
-	property var	source
+VariablesList
+{
+	dropMode				: "Insert"
+	name					: "modelTerms"
+	title					: qsTr("Model Terms")
+	listViewType			: "Interaction"
+
+	rowComponentsTitles		: [qsTr("Add to null model")]
+	interactionHighOrderCheckBox : "isNuisance"
+	rowComponents			:
+	[
+		Component
+		{
+			CheckBox
+			{
+				name: "isNuisance"
+				checked: listView.getSourceType(rowValue) === "randomFactors"
+			}
+		}
+	]
 }

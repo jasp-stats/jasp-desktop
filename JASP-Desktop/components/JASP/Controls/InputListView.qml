@@ -27,8 +27,7 @@ JASPListControl
 	itemComponent:				itemInputComponent
 
 				property var	control			: textField
-				property bool	enableExtraColumns	: true
-				property string	optionKey		: "value"
+				property bool	enableRowComponents	: true
 				property var	defaultValues	: []
 				property int	minimumItems	: 0
 				property bool	addVirtual		: true
@@ -72,17 +71,16 @@ JASPListControl
 					onLoaded:
 					{
 						if (item.hasOwnProperty("fieldWidth"))
-							item.fieldWidth = Qt.binding( function() { return itemRectangle.width - extraControls.width - deleteIconID.width; })
+							item.fieldWidth = Qt.binding( function() { return itemRectangle.width - rowComponentsItem.width - deleteIconID.width; })
 					}
 				}
 
-				ExtraControls
+				RowComponents
 				{
-					id:					extraControls
+					id:					rowComponentsItem
 					anchors.rightMargin: deleteIconID.width
-					model:				itemRectangle.extraColumnsModel
-					controlComponents:  inputListView.extraControlComponents
-					enabled:			!itemRectangle.isVirtual && inputListView.enableExtraColumns
+					controls:			model.rowComponents
+					enabled:			!itemRectangle.isVirtual && inputListView.enableRowComponents
 				}
 
 				Image

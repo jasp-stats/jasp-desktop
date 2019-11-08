@@ -31,7 +31,7 @@ JASPControl
 	id:					tableView
 
 	controlType:		"TableView"
-	activeFocusOnTab:	false
+	activeFocusOnTabEx:	false
 	width:				implicitWidth
 	height:				implicitHeight
 	implicitWidth:		400

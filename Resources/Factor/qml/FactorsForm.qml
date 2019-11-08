@@ -50,8 +50,9 @@ JASPControl
 			model: factorsForm.model
 			RowLayout
             {
-				property alias factorList: factorList
-				property alias button: button
+				property alias	factorList		: factorList
+				property alias	button			: button
+				property bool	noSetup			: true
                 spacing: 0
 				AssignButton
                 {

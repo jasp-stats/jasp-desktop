@@ -92,21 +92,7 @@ Form
 				title: qsTr("Components")
 				source: ["fixedFactors", "randomFactors", "covariates"]
 			}
-			AssignedVariablesList
-			{
-				name: "modelTerms"
-				title: qsTr("Model Terms")
-				listViewType: "Interaction"
-				
-				ExtraControlColumn
-				{
-					type: "CheckBox"
-					name: "isNuisance"
-					title: "Add to null model"
-					purpose: "nuisance"					
-				}
-				
-			}
+			ModelTermsList {}
 		}
 	}
 	

@@ -16,8 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import JASP.Controls 1.0
-import QtQuick.Layouts 1.3 as L
+import QtQuick			2.0
+import JASP.Controls	1.0
+import QtQuick.Layouts	1.3 as L
 
 VariablesList {
     title: qsTr("Factors")
@@ -29,10 +30,15 @@ VariablesList {
 	
 	L.Layout.columnSpan: parent.columns	
 
-    ExtraControlColumn {
-        type: "ComboBox"
-        name: "contrast"
-        values: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
-		rightMargin: 5
-    }
+	rowComponents: [
+		Component
+		{
+			DropDown
+			{
+				name: "contrast"
+				values: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
+			}
+		}
+	]
+
 }

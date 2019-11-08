@@ -21,22 +21,20 @@
 #include "../analysis/analysisform.h"
 #include "analysis/options/optionvariablesgroups.h"
 
-#include <QQmlProperty>
-
 using namespace std;
 
-BoundQMLListViewPairs::BoundQMLListViewPairs(QQuickItem* item, AnalysisForm* form) 
-	: QMLItem(item, form)
-	, BoundQMLListViewDraggable(item, form)
+BoundQMLListViewPairs::BoundQMLListViewPairs(JASPControlBase* item)
+	: JASPControlWrapper(item)
+	, BoundQMLListViewDraggable(item)
 	, _boundTo(nullptr)
 {
 	_variableTypesSuggested = int(columnType::nominal) | int(columnType::ordinal) | int(columnType::scale);
 	_pairsModel				= new ListModelPairsAssigned(this);
 
 	setDropMode(qmlDropMode::Replace);
-	QQmlProperty::write(_item, "showElementBorder",		true);
-	QQmlProperty::write(_item, "columns",				2);
-	QQmlProperty::write(_item, "showVariableTypeIcon",	false);
+	setProperty("showElementBorder",		true);
+	setProperty("columns",				2);
+	setProperty("showVariableTypeIcon",	false);
 }
 
 void BoundQMLListViewPairs::bindTo(Option *option)

@@ -27,7 +27,7 @@ class BoundQMLListViewPairs : public BoundQMLListViewDraggable
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewPairs(QQuickItem* item, AnalysisForm* form);
+	BoundQMLListViewPairs(JASPControlBase* item);
 	
 	ListModel*	model()										override { return _pairsModel; }
 	Option*		boundTo()									override { return _boundTo; }

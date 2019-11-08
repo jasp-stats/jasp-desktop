@@ -20,13 +20,15 @@
 #define LISTMODEL_H
 
 #include <QAbstractListModel>
+#include <QQmlComponent>
 
 #include "common.h"
 #include "analysis/options/variableinfo.h"
 #include "analysis/options/terms.h"
 
 class QMLListView;
-class ListModelExtraControls;
+class RowControls;
+class Option;
 
 class ListModel : public QAbstractTableModel, public VariableInfoConsumer
 {
@@ -37,8 +39,9 @@ public:
         NameRole = Qt::UserRole + 1,
 		TypeRole,
 		ColumnTypeRole,
-		ExtraColumnsRole
+		RowComponentsRole
     };
+	typedef QMap<QString, QMap<QString, Option*> > RowControlsOptions;
 
 	ListModel(QMLListView* listView);
 	
@@ -46,6 +49,7 @@ public:
 			int						rowCount(const QModelIndex &parent = QModelIndex())			const override;
 			int						columnCount(const QModelIndex &parent = QModelIndex())		const override { return 1; }
 			QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
+
 	virtual void					endResetModel();
 
 			QMLListView*			listView() const								{ return _listView; }
@@ -59,14 +63,13 @@ public:
 			void					setItemType(QString type)						{ _itemType = type; }
 			void					addError(const QString& error) const;
 	virtual void					refresh();
-	virtual void					initTerms(const Terms &terms);
+	virtual void					initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions());
 	virtual Terms					getSourceTerms();
 	QMap<ListModel*, Terms> 		getSourceTermsPerModel();
-	
-	void							addExtraControls(const QVector<QMap<QString, QVariant> >& extraControlColumns);
-	ListModelExtraControls*			getExtraControlModel(QString colName)			{ return _extraControlsModels[colName]; }
 
-
+			void					setRowComponents(QVector<QQmlComponent*> &rowComponents);
+	virtual void					setUpRowControls();
+	const QMap<QString, RowControls*>& getRowControls() const { return _rowControlsMap; }
 
 
 signals:
@@ -76,24 +79,14 @@ public slots:
 	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved);
 
 protected:
-	void addExtraControlModels();
-	void initExtraControlTerms();
-
-private:
-	void _initExtraControlTerms();
-
-
-protected:
 	QMLListView*	_listView = nullptr;
 	QString			_itemType;
 	Terms			_terms;
 	bool			_areTermsVariables;
 	bool			_areTermsInteractions = false;
-
-	QVector<QMap<QString, QVariant> >		_extraControlsDefinitions;
-	QMap<QString, ListModelExtraControls* > _extraControlsModels;
-	QMap<int, QString>						_rowNameMap;
-	QMap<QString, ListModelExtraControls* > _modelCache;
+	QMap<QString, RowControls* >	_rowControlsMap;
+	QVector<QQmlComponent *>		_rowComponents;
+	RowControlsOptions				_rowControlsOptions;
 
 };
 

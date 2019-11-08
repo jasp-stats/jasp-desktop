@@ -25,9 +25,10 @@ import JASP				1.0
 
 AnalysisForm
 {
-	id:				form
-	width:			jaspTheme.formWidth - ( 2 * jaspTheme.formMargin )
-	height:			formContent.height + (jaspTheme.formMargin * 2)
+	id:					form
+	width:				jaspTheme.formWidth - ( 2 * jaspTheme.formMargin )
+	height:				formContent.height + (jaspTheme.formMargin * 2)
+	errorMessagesItem:	errorMessagesBox
 	
 	default property alias	content:	contentArea.children
 	property alias	form:				form
@@ -57,7 +58,7 @@ AnalysisForm
 			}
 			else if (child instanceof JASPControl)
 			{
-				if (child.activeFocusOnTab)
+				if (child.activeFocusOnTabEx)
 				{
 					controls.push(child);
 					if (child.childControlsArea && deep)

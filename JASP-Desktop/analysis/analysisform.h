@@ -44,10 +44,12 @@
 
 class ListModelTermsAssigned;
 class BoundQMLItem;
+class JASPControlBase;
 
 class AnalysisForm : public QQuickItem, public VariableInfoProvider
 {
 	Q_OBJECT
+	Q_PROPERTY( QQuickItem * errorMessagesItem	READ errorMessagesItem	WRITE setErrorMessagesItem	NOTIFY errorMessagesItemChanged	)
 
 public:
 	explicit					AnalysisForm(QQuickItem * = nullptr);
@@ -73,6 +75,8 @@ signals:
 				void			formCompleted();
 				void			dataSetChanged();
 				void			refreshTableViewModels();
+				void			errorMessagesItemChanged();
+
 
 protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
@@ -81,12 +85,12 @@ public:
 	ListModel*	getRelatedModel(QMLListView* listView)	{ return _relatedModelMap[listView]; }
 	ListModel*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
-	QMLItem*	getControl(const QString& name)			{ return _controls[name]; }
-	void		addListView(QMLListView* listView, const std::map<QString, QString>& relationMap);
+	JASPControlWrapper*	getControl(const QString& name)			{ return _controls[name]; }
+	void		addListView(QMLListView* listView, QMLListView* sourceListView);
 	void		clearErrors();
 
 	Options*	options() { return _options; }
-	QMLItem*	buildQMLItem(QQuickItem* quickItem, qmlControlType& controlType);
+	void		addControl(JASPControlBase* control);
 
 	Q_INVOKABLE void reset();
     Q_INVOKABLE void exportResults();
@@ -94,13 +98,18 @@ public:
 
 	void		refreshAvailableVariablesModels() { _setAllAvailableVariablesModel(true); }
 
+	QQuickItem*	errorMessagesItem()		{ return _errorMessagesItem;	}
+	GENERIC_SET_FUNCTION(ErrorMessagesItem, _errorMessagesItem, errorMessagesItemChanged, QQuickItem*)
+
+
 protected:
 	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
 
 
 private:
-	void		_parseQML();
-	void		_setUpRelatedModels(const std::map<QString, QString>& relationMap);
+	void		_addControlWrapper(JASPControlWrapper* controlWrapper);
+	void		_setUpControls();
+	void		_setUpRelatedModels();
 	void		_setUpItems();
 	void		_setErrorMessages();
 	void		_cleanUpForm();
@@ -117,10 +126,11 @@ protected:
 	Analysis								*	_analysis			= nullptr;
 	DataSetPackage							*	_package			= nullptr;
 	Options									*	_options			= nullptr;
-	QMap<QString, QMLItem* >					_controls;
-	QVector<QMLItem*>							_orderedControls;
-	std::map<QMLListView*, ListModel* >			_relatedModelMap;
-	std::map<QString, ListModel* >				_modelMap;
+	QMap<QString, JASPControlWrapper* >			_controls;
+
+	QVector<JASPControlWrapper*>				_orderedControls;
+	QMap<QMLListView*, ListModel* >				_relatedModelMap;
+	QMap<QString, ListModel* >					_modelMap;
 	bool										_removed = false;
 	std::set<std::string>						_mustBe;
 	std::map<std::string,std::set<std::string>>	_mustContain;
@@ -131,6 +141,7 @@ private:
 												_allAvailableVariablesModelsWithSource;
 	QList<QString>								_errorMessages;
 	long										_lastAddedErrorTimestamp = 0;
+
 };
 
 #endif // ANALYSISFORM_H

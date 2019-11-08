@@ -31,7 +31,7 @@ class QMLListViewDraggable : public QMLListView
 	Q_OBJECT
 
 public:
-	QMLListViewDraggable(QQuickItem* item, AnalysisForm* form);
+	QMLListViewDraggable(JASPControlBase* item);
 	
 	void setUp() override;
 	

@@ -30,7 +30,6 @@ public:
 	
 	int							rowCount(const QModelIndex &parent = QModelIndex())				const	override;
 	QVariant					data(const QModelIndex &index, int role = Qt::DisplayRole)		const	override;
-	void						initTerms(const Terms &terms)											override;
 	void						setAddVirtual(bool addVirtual, QString placeholder = "") { _addVirtual = addVirtual; _placeholder = placeholder; }
 
 public slots:

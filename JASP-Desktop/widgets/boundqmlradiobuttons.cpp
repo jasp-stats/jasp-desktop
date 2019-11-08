@@ -17,6 +17,7 @@
 //
 
 #include "boundqmlradiobuttons.h"
+#include "analysis/jaspcontrolbase.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 #include "log.h"
@@ -24,21 +25,21 @@
 
 using namespace std;
 
-BoundQMLRadioButtons::BoundQMLRadioButtons(QQuickItem* item, AnalysisForm* form)
-	: QMLItem(item, form)
+BoundQMLRadioButtons::BoundQMLRadioButtons(JASPControlBase* item)
+	: JASPControlWrapper(item)
 	, BoundQMLItem()
 {
 	_boundTo = nullptr;
 	_checkedButton = nullptr;
 	
-	QList<QQuickItem* > buttons;
+	QList<JASPControlBase* > buttons;
 	_getRadioButtons(item, buttons);
 	
-	for (QQuickItem* button: buttons)
+	for (JASPControlBase* button: buttons)
 	{	
 		QString controlName = QQmlProperty(button, "name").read().toString();
 		if (controlName.isEmpty())
-			addError(QString::fromLatin1("A RadioButton inside RadioButtonGroup element (name: ") + name() + QString::fromLatin1(") does not have any name"));
+			addError(tr("A RadioButton inside RadioButtonGroup element (name: %1) does not have any name").arg(name()));
 		else
 		{
 			_buttons[controlName] = button;
@@ -51,13 +52,19 @@ BoundQMLRadioButtons::BoundQMLRadioButtons(QQuickItem* item, AnalysisForm* form)
 	QQuickItem::connect(item, SIGNAL(clicked(const QVariant &)), this, SLOT(radioButtonClickedHandler(const QVariant &)));
 }
 
-void BoundQMLRadioButtons::_getRadioButtons(QQuickItem* item, QList<QQuickItem* >& buttons) {
+void BoundQMLRadioButtons::_getRadioButtons(QQuickItem* item, QList<JASPControlBase* >& buttons) {
 	for (QQuickItem* child : item->childItems())
 	{
-		QString controlType = QQmlProperty(child, "controlType").read().toString();
-		if (controlType == "RadioButton")
-			buttons.append(child);
-		else if (controlType != "RadioButtonGroup")
+		JASPControlBase* jaspControl = dynamic_cast<JASPControlBase*>(child);
+		if (jaspControl)
+		{
+			JASPControlBase::ControlType controlType = jaspControl->controlType();
+			if (controlType == JASPControlBase::ControlType::RadioButton)
+				buttons.append(jaspControl);
+			else if (controlType != JASPControlBase::ControlType::RadioButtonGroup)
+				_getRadioButtons(child, buttons);
+		}
+		else
 			_getRadioButtons(child, buttons);
 	}	
 }
@@ -78,7 +85,7 @@ void BoundQMLRadioButtons::bindTo(Option *option)
 		QQuickItem* button = _buttons[QString::fromStdString(value)];
 		if (!button)
 		{
-			addError(QString::fromLatin1("No radio button corresponding to name ") + QString::fromStdString(value));
+			addError(tr("No radio button corresponding to name %1").arg(QString::fromStdString(value)));
 			QStringList names = _buttons.keys();
 			Log::log()  << "Known button: " << names.join(',').toStdString() << std::endl;
 		}
@@ -117,11 +124,11 @@ void BoundQMLRadioButtons::radioButtonClickedHandler(const QVariant& button)
 	QObject* objButton = button.value<QObject*>();
 	if (objButton)
 		objButton = objButton->parent();
-	QQuickItem *quickButton = qobject_cast<QQuickItem*>(objButton);
+	JASPControlBase *quickButton = qobject_cast<JASPControlBase*>(objButton);
 	if (quickButton)
 	{
-		QString buttonName = QQmlProperty(quickButton, "name").read().toString();
-		QQuickItem* foundButton = _buttons[buttonName];
+		QString buttonName = quickButton->name();
+		JASPControlBase* foundButton = _buttons[buttonName];
 		if (foundButton)
 		{
 			if (_checkedButton != foundButton)
@@ -134,11 +141,11 @@ void BoundQMLRadioButtons::radioButtonClickedHandler(const QVariant& button)
 		}
 		else
 		{
-			addError(QString::fromLatin1("Radio button clicked is unknown: ") + buttonName);
+			addError(tr("Radio button clicked is unknown: %1").arg(buttonName));
 		}
 	}
 	else
 	{
-		addError(QString::fromLatin1("Object clicked is not a quick item! Name: ") + objButton->objectName());
+		Log::log() << "Object clicked is not a quick item! Name" << objButton->objectName().toStdString();
 	}
 }

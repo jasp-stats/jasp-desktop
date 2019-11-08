@@ -21,6 +21,7 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/analysisform.h"
+#include "analysis/jaspcontrolbase.h"
 #include "utilities/qutils.h"
 
 #include <QQmlProperty>
@@ -28,17 +29,17 @@
 
 using namespace std;
 
-BoundQMLFactorsForm::BoundQMLFactorsForm(QQuickItem *item, AnalysisForm *form)
-	: QMLItem(item, form)
-	, QMLListView(item, form)
+BoundQMLFactorsForm::BoundQMLFactorsForm(JASPControlBase *item)
+	: JASPControlWrapper(item)
+	, QMLListView(item)
 	, BoundQMLItem()
 {
 	_factorsModel = new ListModelFactorsForm(this);
 	setTermsAreNotVariables();
-	_availableVariablesListName = item->property("availableVariablesListName").toString();
-	QVariant availableListVariant = item->property("availableVariablesList");
-	_availableVariablesListItem = qobject_cast<QQuickItem *>(availableListVariant.value<QObject *>());
-	_initNumberFactors = item->property("initNumberFactors").toInt();
+	_availableVariablesListName = getItemProperty("availableVariablesListName").toString();
+	QVariant availableListVariant = getItemProperty("availableVariablesList");
+	_availableVariablesListItem = dynamic_cast<JASPControlBase*>(qobject_cast<QQuickItem *>(availableListVariant.value<QObject *>()));
+	_initNumberFactors = getItemProperty("initNumberFactors").toInt();
 	
 	QQuickItem::connect(item, SIGNAL(titleChanged(int, QString)), _factorsModel, SLOT(titleChangedSlot(int, QString)));
 	QQuickItem::connect(item, SIGNAL(factorAdded(int, QVariant)), _factorsModel, SLOT(factorAddedSlot(int, QVariant)));
@@ -136,10 +137,8 @@ void BoundQMLFactorsForm::addListViewSlot(BoundQMLListViewTerms* listView)
 	_availableVariablesListItem->setProperty("dropKeys", names);
 	_item->setProperty("dropKeys", _availableVariablesListName);
 	
-	map<QString, QString> relationMap;
-	relationMap[listView->name()] = _availableVariablesListName;
-	relationMap[_availableVariablesListName] = tq(get<0>(factors[0]));
-	form()->addListView(listView, relationMap);
+	QMLListView* availableListView = dynamic_cast<QMLListView*>(_availableVariablesListItem->getWrapper());
+	form()->addListView(listView, availableListView);
 	
 	connect(listView->model(), &ListModel::modelChanged, this, &BoundQMLFactorsForm::modelChangedHandler);
 }

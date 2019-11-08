@@ -21,14 +21,13 @@
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optionvariable.h"
 #include "log.h"
-#include "listmodelextracontrols.h"
+#include "analysis/jaspcontrolbase.h"
+#include "rowcontrols.h"
 
-#include <QQmlProperty>
-#include <QQuickItem>
 
-BoundQMLInputList::BoundQMLInputList(QQuickItem *item, AnalysisForm *form)
-	: QMLItem(item, form)
-	, QMLListView(item, form)
+BoundQMLInputList::BoundQMLInputList(JASPControlBase *item)
+	: JASPControlWrapper(item)
+	, QMLListView(item)
 	, BoundQMLItem()
 {
 	int minimumItems = getItemProperty("minimumItems").toInt();
@@ -38,7 +37,6 @@ BoundQMLInputList::BoundQMLInputList(QQuickItem *item, AnalysisForm *form)
 	_inputModel->setAddVirtual(addVirtual, placeHolder);
 	setTermsAreNotVariables();
 
-	_optionKeyName = getItemProperty("optionKey").toString().toStdString();
 	QList<QVariant> defaultValues = getItemProperty("defaultValues").toList();
 	for (QVariant defaultValue : defaultValues)
 		_defaultValues.push_back(defaultValue.toString().toStdString());
@@ -58,13 +56,27 @@ void BoundQMLInputList::bindTo(Option *option)
 	std::vector<Options*> allOptions = _boundTo->value();
 
 	std::vector<std::string> values;
+	QMap<QString, QMap<QString, Option*> > allOptionsMap;
 	for (const Options* options : allOptions)
 	{
-		if (_hasExtraControls)
+		if (_hasRowComponents)
 		{
 			OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(_optionKeyName));
 			if (variableOption)
-				values.push_back(variableOption->variable());
+			{
+				QMap<QString, Option*> optionsMap;
+				for (const std::string& name : options->names)
+					if (name != _optionKeyName)
+						optionsMap[QString::fromStdString(name)] = options->get(name);
+				std::string inputValue = variableOption->variable();
+				values.push_back(inputValue);
+				allOptionsMap[QString::fromStdString(inputValue)] = optionsMap;
+			}
+			else
+			{
+				Log::log() << "Options for Input list " << name().toStdString() << " is not of type Variable!" << std::endl;
+				return;
+			}
 		}
 		else
 		{
@@ -72,9 +84,7 @@ void BoundQMLInputList::bindTo(Option *option)
 			values = optionVars->variables();
 		}
 	}
-	if (_hasExtraControls)
-		_boundTo->setTemplateIsTemporary();
-	_inputModel->initTerms(values);
+	_inputModel->initTerms(values, allOptionsMap);
 
 }
 
@@ -83,36 +93,39 @@ Option* BoundQMLInputList::createOption()
 	OptionsTable* optionsTable = nullptr;
 	Options* templote = new Options();
 
-	if (_hasExtraControls)
+	if (_hasRowComponents)
 		templote->add(_optionKeyName, new OptionVariable());
 	else
 		templote->add(_optionKeyName, new OptionVariables());
 	
-	optionsTable = new OptionsTable(templote, _hasExtraControls);
-	std::vector<Options*> allOptions;
+	optionsTable = new OptionsTable(templote);
 
-	if (!_hasExtraControls)
+	if (_defaultValues.size() > 0)
 	{
-		Options* options = new Options();
-		OptionVariables* optionVars = new OptionVariables();
-		optionVars->setValue(_defaultValues);
-		options->add(_optionKeyName, optionVars);
-		allOptions.push_back(options);
-	}
-	else
-	{
-		for (std::string defaultValue : _defaultValues)
+		std::vector<Options*> allOptions;
+
+		if (!_hasRowComponents)
 		{
 			Options* options = new Options();
-			OptionVariable* optionVar = new OptionVariable();
-			optionVar->setValue(defaultValue);
-			options->add(_optionKeyName, optionVar);
+			OptionVariables* optionVars = new OptionVariables();
+			optionVars->setValue(_defaultValues);
+			options->add(_optionKeyName, optionVars);
 			allOptions.push_back(options);
 		}
+		else
+		{
+			for (std::string defaultValue : _defaultValues)
+			{
+				Options* options = new Options();
+				OptionVariable* optionVar = new OptionVariable();
+				optionVar->setValue(defaultValue);
+				options->add(_optionKeyName, optionVar);
+				allOptions.push_back(options);
+			}
+		}
+		optionsTable->connectOptions(allOptions);
 	}
 
-	optionsTable->connectOptions(allOptions);
-	
 	return optionsTable;
 }
 
@@ -145,120 +158,33 @@ bool BoundQMLInputList::isJsonValid(const Json::Value &optionValue)
 	return valid;
 }
 
-
-// TODO: duplicate code to be removed!!!!
-void BoundQMLInputList::_checkOptionTemplate()
-{
-	if (!_boundTo->hasTemporaryTemplate())
-		return;
-
-	const Terms& terms = model()->terms();
-
-	if (terms.size() > 0)
-	{
-		const Term& firstTerm = terms.at(0);
-		Options* templote = _boundTo->rowTemplate();
-		ListModelExtraControls* extraControlModel = model()->getExtraControlModel(firstTerm.asQString());
-		if (extraControlModel)
-		{
-			const QMap<QString, BoundQMLItem* >& extraControls = extraControlModel->getBoundItems();
-			QMapIterator<QString, BoundQMLItem*> it(extraControls);
-			while(it.hasNext())
-			{
-				it.next();
-				std::string name = it.key().toStdString();
-				Option* option = it.value()->createOption();
-				templote->add(name, option);
-			}
-			_boundTo->setTemplate(templote);
-		}
-	}
-}
-
-void BoundQMLInputList::bindExtraControlOptions()
-{
-	if (!_hasExtraControls)
-		return;
-
-	_checkOptionTemplate();
-	QMap<std::string, Options*> optionsMap;
-	std::vector<Options*> allOptions = _boundTo->value();
-
-	for (Options* options : allOptions)
-	{
-		OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(_optionKeyName));
-		if (variableOption)
-			optionsMap[variableOption->variable()] = options;
-		else
-			Log::log()  << "An option is not of type OptionVariable!" << std::endl;
-	}
-
-	std::vector<Options*> newOptions;
-	const Terms& terms = model()->terms();
-
-	for (const Term& term : terms)
-	{
-		Options* rowOptions = optionsMap[term.asString()];
-		if (!rowOptions)
-		{
-			rowOptions = static_cast<Options *>(_boundTo->rowTemplate()->clone());
-			Option* option = rowOptions->get(_optionKeyName);
-			OptionVariable *optionVariable = dynamic_cast<OptionVariable *>(option);
-			if (optionVariable)
-				optionVariable->setValue(term.asString());
-			else
-				Log::log() << "Option is not an OptionVariable!!!" << std::endl;
-		}
-		else
-			rowOptions = dynamic_cast<Options*>(rowOptions->clone());
-
-		ListModelExtraControls* extraControlModel = model()->getExtraControlModel(term.asQString());
-		if (extraControlModel)
-		{
-			const QMap<QString, BoundQMLItem* >& extraControls = extraControlModel->getBoundItems();
-			QMapIterator<QString, BoundQMLItem*> it(extraControls);
-			while (it.hasNext())
-			{
-				it.next();
-				std::string controlName = it.key().toStdString();
-				BoundQMLItem* extraControl = it.value();
-				Option* extraControlOption = rowOptions->get(controlName);
-				if (!extraControlOption)
-				{
-					extraControlOption = extraControl->createOption();
-					rowOptions->add(controlName, extraControlOption);
-				}
-				extraControl->bindTo(extraControlOption);
-			}
-		}
-		else
-			Log::log() << "Cannot find the Extra Control Model!!" << std::endl;
-
-		newOptions.push_back(rowOptions);
-	}
-
-	_boundTo->connectOptions(newOptions);
-}
-
 void BoundQMLInputList::modelChangedHandler()
 {
 	if (_boundTo)
 	{
-		if (_hasExtraControls)
-			bindExtraControlOptions();
-		else
+		std::vector<Options *> allOptions;
+		const std::vector<std::string> &values = _inputModel->terms().asVector();
+		const QMap<QString, RowControls*>& allControls = _inputModel->getRowControls();
+		for (const std::string &value : values)
 		{
-			const std::vector<std::string> &values = _inputModel->terms().asVector();
-			std::vector<Options *> allOptions;
-
-			for (const std::string &value : values)
+			Options* options = new Options();
+			options->add(_optionKeyName, new OptionString(value));
+			RowControls* rowControls = allControls[QString::fromStdString(value)];
+			if (rowControls)
 			{
-				Options* options = new Options();
-				options->add(_optionKeyName, new OptionString(value));
-				allOptions.push_back(options);
+				const QMap<QString, JASPControlWrapper*>& controlsMap = rowControls->getControlsMap();
+				QMapIterator<QString, JASPControlWrapper*> it(controlsMap);
+				while (it.hasNext())
+				{
+					it.next();
+					BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(it.value());
+					options->add(it.key().toStdString(), boundItem->boundTo());
+				}
 			}
-			_boundTo->setValue(allOptions);
+
+			allOptions.push_back(options);
 		}
+
+		_boundTo->connectOptions(allOptions);
 	}
-	
 }

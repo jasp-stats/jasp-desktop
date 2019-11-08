@@ -22,25 +22,24 @@
 #include "../analysis/analysisform.h"
 #include "utilities/qutils.h"
 
-#include <QQmlProperty>
 #include <QTimer>
 
 using namespace std;
 
 
-BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(QQuickItem* item, AnalysisForm* form) 
-	: QMLItem(item, form)
-	, BoundQMLListViewDraggable(item, form)
+BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(JASPControlBase* item)
+	: JASPControlWrapper(item)
+	, BoundQMLListViewDraggable(item)
 {
 	_boundTo = nullptr;
 	_needsSourceModels = true;	
 	_measuresCellsModel = new ListModelMeasuresCellsAssigned(this);
 	
 	setDropMode(qmlDropMode::Replace);
-	QQmlProperty::write(_item, "showElementBorder", true);
-	QQmlProperty::write(_item, "columns", 2);
-	QQmlProperty::write(_item, "dragOnlyVariables", true);
-	QQmlProperty::write(_item, "showVariableTypeIcon", false);		
+	setProperty("showElementBorder", true);
+	setProperty("columns", 2);
+	setProperty("dragOnlyVariables", true);
+	setProperty("showVariableTypeIcon", false);
 }
 
 void BoundQMLListViewMeasuresCells::bindTo(Option *option)
@@ -93,7 +92,7 @@ void BoundQMLListViewMeasuresCells::setUp()
 	{
 		ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(sourceItem->model);
 		if (!factorsModel)
-			addError(tq("Source model of ") + name() + tq(" must be from a Factor List"));
+			addError(tr("Source model of %1 must be from a Factor List").arg(name()));
 		addDependency(factorsModel->listView());
 		_sourceFactorsModels.push_back(factorsModel);
 	}

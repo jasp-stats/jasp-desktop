@@ -26,7 +26,7 @@ JASPControl
 {
 	id:					control
 	controlType:		"RadioButtonGroup"
-	activeFocusOnTab:	false
+	activeFocusOnTabEx:	false
 	childControlsArea:	contentArea
 
 	default property alias	content:				contentArea.children

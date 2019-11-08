@@ -24,6 +24,7 @@
 #include "boundqmllistviewterms.h"
 #include "log.h"
 #include <QQuickItem>
+#include "analysis/jaspcontrolbase.h"
 
 
 using namespace std;
@@ -132,10 +133,16 @@ void ListModelFactorsForm::removeFactor()
 	if (_factors.size() > 1)
 	{
 		beginResetModel();
-		const Terms& lastTerms = _factors[_factors.size() - 1]->listView->model()->terms();
-		_terms.remove(lastTerms);
-		_titles.remove(_titles.size() - 1);
-		_factors.removeLast();
+		BoundQMLListViewTerms* listView = _factors[_factors.size() - 1]->listView;
+		if (listView)
+		{
+			const Terms& lastTerms = listView->model()->terms();
+			_terms.remove(lastTerms);
+			_titles.remove(_titles.size() - 1);
+			_factors.removeLast();
+		}
+		else
+			Log::log() << "No list View found when removing factor" << std::endl;
 		endResetModel();
 	}
 	
@@ -173,24 +180,30 @@ void ListModelFactorsForm::factorAddedSlot(int index, QVariant item)
 		Log::log()  << "No quick Item found in factorAdded!" << std::endl;
 		return;
 	}
-	
-	Factor* factor = _factors[index];
-	
-	if (factor->listView)
-		factor->listView->resetQMLItem(quickItem);
-	else
+	JASPControlBase* control = dynamic_cast<JASPControlBase*>(quickItem);
+	if (!control)
 	{
-		factor->listView = new BoundQMLListViewTerms(quickItem, listView()->form());
-		Terms terms(factor->initTerms);
-		ListModelAssignedInterface* model = factor->listView->assignedModel();
-		model->initTerms(terms);
-		model->setCopyTermsWhenDropped(true);
-		connect(factor->listView->model(), &ListModelAssignedInterface::modelChanged, this, &ListModelFactorsForm::resetTerms);
-		emit addListView(factor->listView);
+		Log::log() << "Quick item is not a JASP Control in factorAdded!" << std::endl;
+		return;
+	}
+	BoundQMLListViewTerms* listView = dynamic_cast<BoundQMLListViewTerms*>(control->getWrapper());
+	if (!listView)
+	{
+		Log::log() << "JASP Control is not a BoundQMLListViewTerms in factorAdded" << std::endl;
+		return;
 	}
 	
-	factor->listView->setDropMode(qmlDropMode::Replace);		
-	factor->listView->setUp();
+	Factor* factor = _factors[index];
+	factor->listView = listView;
+	Terms terms(factor->initTerms);
+	ListModelAssignedInterface* model = factor->listView->assignedModel();
+	model->initTerms(terms);
+	model->setCopyTermsWhenDropped(true);
+	connect(factor->listView->model(), &ListModelAssignedInterface::modelChanged, this, &ListModelFactorsForm::resetTerms);
+	emit addListView(factor->listView);
+	
+	//factor->listView->setDropMode(qmlDropMode::Replace);
+	//factor->listView->setUp();
 }
 
 void ListModelFactorsForm::resetTerms()

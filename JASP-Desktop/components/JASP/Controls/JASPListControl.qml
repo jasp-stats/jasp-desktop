@@ -35,6 +35,7 @@ JASPControl
 	property string title
 	property alias	label:				jaspListControl.title
 	property alias	count:				listGridView.count
+	property string	optionKey:			"value"
 	property int	columns:			1
 	property var	source
 	property alias	syncModels:			jaspListControl.source
@@ -43,13 +44,9 @@ JASPControl
 	property alias	listRectangle:		listRectangle
 	property alias	scrollBar:			scrollBar
 	property alias	listTitle:			listTitle
+	property alias	rowComponentsTitles: titles.model
 
 	property var	itemComponent
-	property var	extraControlColumns:	[]
-	property var	extraControlComponents:	[]
-	property string extraControlOptionName:	""
-	property alias	extraControlTitles:	titles.model
-
 
 	Text
 	{
@@ -119,35 +116,6 @@ JASPControl
 			delegate:				jaspListControl.itemComponent
 			boundsBehavior:			Flickable.StopAtBounds
 
-		}
-	}
-
-	Component.onCompleted:
-	{
-		var length = jaspListControl.resources.length
-		for (var i = length - 1; i >= 0; i--)
-		{
-			var column = jaspListControl.resources[i];
-			if (column instanceof ExtraControlColumn)
-			{
-				if (!column.name)
-					form.addError(qsTr("An ExtraControlColumn in VariablesList %1 has no name defined").arg(jaspListControl.name))
-				if (column.type)
-				{
-					var type = column.type
-					if (type === "DropDown") type = "ComboBox"
-					var component = Qt.createComponent(type + ".qml")
-					if (component.status === Component.Error)
-						form.addError(qsTr("An ExtraControlColumn in VariablesList %1 has an unknown type: %2").arg(jaspListControl.name).arg(type))
-					else
-					{
-						jaspListControl.extraControlComponents.push(component)
-						jaspListControl.extraControlColumns.push(column);
-					}
-				}
-				else
-					form.addError(qsTr("An ExtraControlColumn in VariablesList %1 has no type defined").arg(jaspListControl.name))
-			}
 		}
 	}
 

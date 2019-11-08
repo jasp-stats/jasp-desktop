@@ -34,7 +34,7 @@ ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView
 	_mustContainLowerTerms = mustContainLowerTerms;
 }
 
-void ListModelInteractionAssigned::initTerms(const Terms &terms)
+void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowControlsOptions&)
 {
 	_addTerms(terms, false);
 	
@@ -42,7 +42,6 @@ void ListModelInteractionAssigned::initTerms(const Terms &terms)
 	_terms.set(interactionTerms());
 	endResetModel();
 
-	initExtraControlTerms();
 }
 
 void ListModelInteractionAssigned::setAvailableModel(ListModelAvailableInterface *source)
@@ -216,7 +215,7 @@ Terms* ListModelInteractionAssigned::addTerms(Terms *terms, int dropItemIndex, c
 	if (!assignOptionStr.isEmpty())
 	{
 		try						{ assignType	= qmlAssignTypeFromQString(assignOptionStr);	}
-		catch(std::exception)	{ addError(QString::fromStdString("Unknown Assign type: ") + assignOptionStr); }
+		catch(std::exception)	{ addError(tr("Unknown Assign type: %1").arg(assignOptionStr)); }
 	}
 	
 	addCombinedTerms(*terms, assignType);
