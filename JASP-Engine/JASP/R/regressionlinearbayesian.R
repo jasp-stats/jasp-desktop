@@ -707,7 +707,8 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     yLimits <- c(0, base * ceiling(max(c(priorProb, probne0)) / base))
     yBreaks <- seq(yLimits[1], yLimits[2], length.out = 5)
     
-    g <- JASPgraphs::drawBars(dat = dfBar, width = width)
+    g <- ggplot2::ggplot(data = dfBar, mapping = ggplot2::aes(x = x, y = y)) + 
+      ggplot2::geom_bar(width = width, stat="identity", fill="gray80", width = NULL, show.legend = FALSE)
     g <- JASPgraphs::drawLines(g, dat = dfLine,
                                mapping = ggplot2::aes(x = x, y = y, group = g, linetype = g0), show.legend = TRUE) +
       ggplot2::scale_y_continuous("Marginal Inclusion Probability", breaks = yBreaks, limits = yLimits) +

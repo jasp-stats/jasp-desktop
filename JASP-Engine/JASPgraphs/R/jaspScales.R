@@ -1,8 +1,25 @@
 # NOTE: the limits argument of ggplot2::scale_*_continuous is broken...
 # consider opening an issue for this.
 
+#' @title Continuous axis scales
+#' @param name see details
+#' @param breaks see details
+#' @param minor_breaks see details
+#' @param labels see details
+#' @param limits see details
+#' @param expand see details
+#' @param oob see details
+#' @param na.value see details
+#' @param trans see details
+#' @param position see details
+#' @param sec.axis see details
+#' @details These functions are virtually identical to \code{\link[ggplot2]{scale_x_continuous}} and \code{\link[ggplot2]{scale_y_continuous}}
+#' except that default values are different, these use a different function to determine the default
+#' axis breaks.
+#'
+#' @rdname scale_x_continuous
 #' @export
-scale_x_continuous <- function(name = waiver(), breaks = axesBreaks, minor_breaks = waiver(),
+scale_x_continuous <- function(name = waiver(), breaks = getPrettyAxisBreaks, minor_breaks = waiver(),
                                labels = axesLabeller, limits = "JASP", expand = waiver(), oob = censor,
                                na.value = NA_real_, trans = "identity", position = "bottom",
                                sec.axis = waiver()) {
@@ -26,8 +43,9 @@ scale_x_continuous <- function(name = waiver(), breaks = axesBreaks, minor_break
   sc
 }
 
+#' @rdname scale_x_continuous
 #' @export
-scale_y_continuous <- function(name = waiver(), breaks = axesBreaks, minor_breaks = waiver(),
+scale_y_continuous <- function(name = waiver(), breaks = getPrettyAxisBreaks, minor_breaks = waiver(),
                                labels = axesLabeller, limits = "JASP", expand = waiver(), oob = censor,
                                na.value = NA_real_, trans = "identity", position = "left",
                                sec.axis = waiver()) {
@@ -60,7 +78,7 @@ jaspLimits <- function(..., self = self) {
     return(c(0, 1))
   if (identical(self$limits, "JASP")) {
     # ensures that outer breakpoints are always included in plot
-    range(axesBreaks(self$range$range))
+    range(getPrettyAxisBreaks(self$range$range))
   } else if (!is.null(self$limits)) {
     ifelse(!is.na(self$limits), self$limits, self$range$range)
   } else {
@@ -71,7 +89,7 @@ jaspLimits <- function(..., self = self) {
 
 # The approach below is preferred but errors using ggplot2 3.2.1
 #' 
-#' scale_x_continuous <- function(name = waiver(), breaks = axesBreaks, minor_breaks = waiver(),
+#' scale_x_continuous <- function(name = waiver(), breaks = getPrettyAxisBreaks, minor_breaks = waiver(),
 #'                                labels = axesLabeller, limits = jaspLimits, expand = waiver(), oob = censor,
 #'                                na.value = NA_real_, trans = "identity", position = "bottom",
 #'                                sec.axis = waiver()) {
@@ -88,7 +106,7 @@ jaspLimits <- function(..., self = self) {
 #' }
 #' 
 #'
-#' scale_y_continuous <- function(name = waiver(), breaks = axesBreaks, minor_breaks = waiver(),
+#' scale_y_continuous <- function(name = waiver(), breaks = getPrettyAxisBreaks, minor_breaks = waiver(),
 #'                                labels = axesLabeller, limits = jaspLimits, expand = waiver(), oob = censor,
 #'                                na.value = NA_real_, trans = "identity", position = "left",
 #'                                sec.axis = waiver()) {
@@ -111,6 +129,6 @@ jaspLimits <- function(..., self = self) {
 #'   if (length(dots) != 2L)
 #'     return(c(0, 1))
 #'   else
-#'     return(range(axesBreaks(dots)))
+#'     return(range(getPrettyAxisBreaks(dots)))
 #'   
 #' }

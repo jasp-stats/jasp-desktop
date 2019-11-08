@@ -25,13 +25,11 @@ replicateOrStop <- function(x, n) {
   return(x)
 }
 
-#' @export
 makeLabels <- function(label, angle = 0, size = 1, family = graphOptions("family"),
                        vjust = "center", hjust = "center", x = .5, y = .5) {
   UseMethod("makeLabels", label)
 }
 
-#' @export
 makeLabels.default <- function(label, angle = 0, size = 1, family = graphOptions("family"),
                                vjust = "center", hjust = "center", x = .5, y = .5) {
 
@@ -72,7 +70,6 @@ makeLabels.default <- function(label, angle = 0, size = 1, family = graphOptions
   }
 }
 
-#' @export
 makeLabels.list <- function(label, angle = 0, size = 1, family = graphOptions("family"),
                             vjust = "center", hjust = "center", x = .5, y = .5) {
 

@@ -9,6 +9,9 @@
 #' @importFrom scales censor
 #' @importFrom gridExtra arrangeGrob grid.arrange
 
+#' @title Get the axis breaks of a ggplot2 object
+#' @param x a ggplot object
+#'
 #' @export
 getAxisBreaks <- function(x) {
   UseMethod("getAxisBreaks", x)

@@ -1,4 +1,3 @@
-#' @export
 grid_arrange_shared_legend <- function(..., plotList = NULL, nrow = 1, ncol = length(list(...)), position = c("bottom", "right")) {
 
     if (is.null(plotList)) {
@@ -72,6 +71,25 @@ addAxis <- function(graph, breaks = NULL, name = waiver(), labels = waiver(), li
 
 }
 
+#' @title (Deprecated) draw an empty ggplot with just axes.
+#' 
+#' @param graph ggplot object.
+#' @param xName name for x-axis.
+#' @param yName name for y-axis.
+#' @param breaks a list with $xBreaks and $yBreaks or waiver().
+#' @param xBreaks x-axis breaks.
+#' @param yBreaks y-axis breaks.
+#' @param dat data.frame.
+#' @param xLabels labels for x-axis.
+#' @param yLabels labels for y-axis.
+#' @param xLimits limits for x-axis.
+#' @param yLimits limits for y-axis.
+#' @param force force the axes to be present at the cost of drawing an invisible geom.
+#' @param secondaryXaxis secondary x-axis.
+#' @param secondaryYaxis secondary y-axis.
+#' @param xTrans transformation function for the x-axis.
+#' @param yTrans transformation function for the y-axis.
+#'
 #' @export
 drawAxis <- function(graph = NULL, xName = waiver(), yName = waiver(), breaks = waiver(), xBreaks = waiver(),
                      yBreaks = waiver(), dat = NULL, xLabels = waiver(), yLabels = waiver(), xLimits = waiver(),
@@ -79,6 +97,7 @@ drawAxis <- function(graph = NULL, xName = waiver(), yName = waiver(), breaks = 
                      secondaryXaxis = waiver(), secondaryYaxis = waiver(),
                      xTrans = "identity", yTrans = "identity") {
 
+    warning("This function will be deprecated.")
     if (!is.null(dat) && is.null(breaks))
         breaks <- getPrettyAxisBreaks(dat)
 
@@ -128,61 +147,76 @@ drawAxis <- function(graph = NULL, xName = waiver(), yName = waiver(), breaks = 
 
 }
 
-#' @export
-drawBars <- function(graph = drawAxis(), dat, mapping = NULL, stat="identity", fill="gray80", width = NULL, show.legend = FALSE, ...) {
+# # @export
+# drawBars <- function(graph = drawAxis(), dat, mapping = NULL, stat="identity", fill="gray80", width = NULL, show.legend = FALSE, ...) {
+# 
+#     if (is.null(mapping)) {
+# 
+#         nms <- colnames(dat)
+# 
+#         mapping <- switch(as.character(length(nms)),
+#                           "1" = ggplot2::aes_string(x = nms[1]),
+#                           "2" = ggplot2::aes_string(x = nms[1], y = nms[2]),
+#                           "3" = ggplot2::aes_string(x = nms[1], y = nms[2], group = nms[3], linetype = nms[3])
+#         )
+# 
+#     }
+# 
+#     args = list(data = dat, mapping = mapping, fill = fill, stat=stat, width = width, show.legend = show.legend, ...)
+#     args[names(args) %in% names(mapping)] <- NULL
+# 
+#     return(graph + do.call(ggplot2::geom_bar, args))
+# 
+# }
 
-    if (is.null(mapping)) {
-
-        nms <- colnames(dat)
-
-        mapping <- switch(as.character(length(nms)),
-                          "1" = ggplot2::aes_string(x = nms[1]),
-                          "2" = ggplot2::aes_string(x = nms[1], y = nms[2]),
-                          "3" = ggplot2::aes_string(x = nms[1], y = nms[2], group = nms[3], linetype = nms[3])
-        )
-
-    }
-
-    args = list(data = dat, mapping = mapping, fill = fill, stat=stat, width = width, show.legend = show.legend, ...)
-    args[names(args) %in% names(mapping)] <- NULL
-
-    return(graph + do.call(ggplot2::geom_bar, args))
-
-}
-
+#' @title Deprecated: use \code{ggplot2::geom_line} instead.
+#'
+#' @param graph ggplot2 object
+#' @param dat data frame
+#' @param mapping mapping from aes
+#' @param size size
+#' @param alpha transparancy
+#' @param show.legend show legend?
+#' @param ... other arguments to geom_line
+#'
 #' @export
 drawLines <- function(graph = drawAxis(), dat, mapping = NULL, size = 1.25,
                       alpha = 1, show.legend = TRUE, ...) {
 
-    if (is.null(mapping)) {
+  if (is.null(mapping)) {
 
-        nms = colnames(dat)
+      nms = colnames(dat)
 
-        mapping <- switch(as.character(length(nms)),
-                          "2" = ggplot2::aes_string(x = nms[1], y = nms[2]),
-                          "3" = ggplot2::aes_string(x = nms[1], y = nms[2], color = nms[3])
-        )
-
-    } else if (is.character(mapping)) {
-
-        mapping <- switch(mapping,
-            "PriorPosterior" = ggplot2::aes_string(x = nms[1], y = nms[2], linetype = nms[3])
-        )
-
-    }
-
+      mapping <- switch(as.character(length(nms)),
+                        "2" = ggplot2::aes_string(x = nms[1], y = nms[2]),
+                        "3" = ggplot2::aes_string(x = nms[1], y = nms[2], color = nms[3])
+      )
+      
+  } else if (is.character(mapping)) {
+      
+      mapping <- switch(mapping,
+                        "PriorPosterior" = ggplot2::aes_string(x = nms[1], y = nms[2], linetype = nms[3])
+      )
+      
+  }
+    
     args = list(data = dat, mapping = mapping, size = size, alpha = alpha, show.legend = show.legend, ...)
     args[names(args) %in% names(mapping)] <- NULL
-
+    
     return(graph + do.call(ggplot2::geom_line, args))
-
-    # return(
-    #     graph +
-    #         ggplot2::geom_line(data = dat, mapping = mapping, size = size, show.legend = show.legend, ...)
-    # )
-
 }
 
+#' @title Deprecated: use \code{ggplot2::geom_point} instead.
+#'
+#' @param graph ggplot2 object
+#' @param dat data frame
+#' @param mapping mapping from aes
+#' @param size size
+#' @param shape shape
+#' @param fill color for filling
+#' @param show.legend show legend?
+#' @param ... other arguments to geom_point
+#'
 #' @export
 drawPoints <- function(graph = drawAxis(), dat, mapping = NULL, size = 1.25,
                        shape = 21, fill = "gray", show.legend = TRUE, ...) {
@@ -205,6 +239,19 @@ drawPoints <- function(graph = drawAxis(), dat, mapping = NULL, size = 1.25,
 
 }
 
+#' @title Deprecated: use \code{ggplot2::geom_smooth} instead.
+#'
+#' @param graph ggplot2 object
+#' @param dat data frame
+#' @param mapping mapping from aes
+#' @param size size
+#' @param method statistical method to draw regression line (e.g., lm)
+#' @param color line color
+#' @param show.legend show legend?
+#' @param se show standard errors?
+#' @param alpha transparancy
+#' @param ... other arguments to geom_smooth
+#'
 #' @export
 drawSmooth <- function(graph = NULL, dat = NULL, mapping = NULL, size = 2, method = "auto",
                        color = "gray", show.legend = FALSE, se = FALSE, alpha = 1, ...) {

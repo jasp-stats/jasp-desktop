@@ -175,6 +175,10 @@ validateOptions <- function(newOptions, oldOptions) {
   return(newOptions)
 }
 
+#' @title Get the editable options for a graph 
+#' @param graph a ggplot2 object
+#' @param asJSON should the list be converted to JSON?
+#'
 #' @export
 plotEditingOptions <- function(graph, asJSON = FALSE) {
   UseMethod("plotEditingOptions", graph)
@@ -242,6 +246,10 @@ optionsDiff <- function(lst1, lst2) {
   return(lst1)
 }
 
+#' @title Edit a plot
+#' @param graph a ggplot2 object
+#' @param newOptions an options list
+#'
 #' @export
 plotEditing <- function(graph, newOptions) {
 

@@ -6,6 +6,9 @@ getBackgroundRect <- function(debug) {
   }
 }
 
+
+#' @title Return an empty theme
+#' @details a modification of \code{\link[ggplot2]{theme_void}}
 #' @export
 getEmptyTheme <- function() {
 
@@ -179,6 +182,9 @@ makeBFlabels <- function(bfSubscripts, BFvalues, subs = NULL, bfTxt = NULL) {
   return(parseThis(lab))
 }
 
+#' @title Get text for Bayes factor pie chart given hypothesis
+#' @param hypothesis hypothesis
+#'
 #' @export
 hypothesis2BFtxt <- function(hypothesis = c("equal", "smaller", "greater")) {
 
@@ -202,19 +208,10 @@ hypothesis2BFtxt <- function(hypothesis = c("equal", "smaller", "greater")) {
   )
 }
 
-#' @export
-pizzaTxtFromBF <- function(x) {
-
-  if (grepl("+", x, fixed = TRUE)) {
-    pizzaTxt <- c("data | H0", "data | H+")
-  } else if(grepl("-", x, fixed = TRUE)) {
-    pizzaTxt <- c("data | H0", "data | H-")
-  } else {
-    pizzaTxt <- c("data | H0", "data | H1")
-  }
-  pizzaTxt
-}
-
+#' @title Obtain strings of expressions for common Bayes factor types depending on the hypothesis.
+#' @param bfType Bayes factor type
+#' @param hypothesis hypothesis
+#'
 #' @export
 getBFSubscripts <- function(bfType = c("BF01", "BF10", "LogBF10"), hypothesis = c("equal", "smaller", "greater")) {
 
