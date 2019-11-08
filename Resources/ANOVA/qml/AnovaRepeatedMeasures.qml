@@ -21,9 +21,7 @@ import JASP.Controls 1.0
 import JASP.Widgets 1.0
 
 Form
-{
-	usesJaspResults: true
-	
+{	
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"     ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"   ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"      ; defaultValue: 450 }

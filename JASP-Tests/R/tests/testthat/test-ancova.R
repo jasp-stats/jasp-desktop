@@ -122,7 +122,7 @@ test_that("Contrasts table results match", {
   contrasts <- c("deviation", "simple", "difference", "Helmert", "repeated", "polynomial")
   for (contrast in contrasts) {
     options$contrasts <- list(list(contrast=contrast, variable="facFive"))
-    results <- jasptools::run("Ancova", "test.csv", options, view  = FALSE)
+    results <- jasptools::run("Ancova", "test.csv", options)
     # table <- results[["results"]][["contrasts"]][["collection"]][[1]][["data"]]
     table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$data
     expect_equal_tables(table, refTables[[contrast]], label=paste("Table with contrast", contrast))
@@ -208,7 +208,7 @@ test_that("Simple Main Effects table results match", {
   options$homogeneityTests <- TRUE
   options$sumOfSquares <- "type1"
   options$VovkSellkeMPR <- TRUE
-  results <- jasptools::run("Ancova", "debug.csv", options, view  = TRUE)
+  results <- jasptools::run("Ancova", "debug.csv", options)
   # table <- results[["results"]][["simpleEffects"]][["data"]]
   table <- results$results$anovaContainer$collection$anovaContainer_simpleEffectsContainer$collection$anovaContainer_simpleEffectsContainer_simpleEffectsTable$data
   expect_equal_tables(table, list(1, 0.350864897951646, 1, 0.350864897951646, 0.307765411627339,

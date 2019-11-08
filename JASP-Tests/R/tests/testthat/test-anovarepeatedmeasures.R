@@ -49,7 +49,7 @@ test_that("Within subjects table results match", {
   options$sphericityCorrections <- TRUE
 
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
-                            options = options, view = FALSE)
+                            options = options)
   table <- results[["results"]]$rmAnovaContainer$collection$rmAnovaContainer_withinAnovaTable$data
   
   refTable <- list(1, 1, 1, 1, 1, 1, "TRUE", 5.10598105687077, 1046.17222222222,
@@ -121,7 +121,7 @@ test_that("Post-hoc tests match (Field Chapter 8)", {
   options$postHocTestPooledError <- FALSE
   options$confidenceIntervalsPostHoc <- TRUE
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
-                            options = options, view = FALSE)
+                            options = options)
   
   refTable <- list("TRUE", 2.84948954082566, 0.703009687611414, 0.274654032208925,
        "Beer", "Wine", 3.5, 0.234336562537138, -3.98021184328794, 1.22829017262714,
@@ -249,7 +249,7 @@ test_that("Descriptives Match", {
   options$descriptives <- TRUE
   
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
-                            options = options, view = FALSE)
+                            options = options)
   
   refTable <- list(4.45, 20, 17.3037111930543, "Beer", "Negative", 10, 20, 10.295630140987,
                    "Beer", "Neutral", 21.05, 20, 13.0079934938807, "Beer", "Positive",
@@ -273,7 +273,7 @@ test_that("Field - Chapter 8 marginal means match", {
   options$marginalMeansBootstrappingReplicates <- 500
   set.seed(1)
   results <- jasptools::run("AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv", 
-                            options = options, view = TRUE)
+                            options = options)
   
   table <- results$results$rmAnovaContainer$collection$rmAnovaContainer_marginalMeansContainer$collection[[1]]$data
 
@@ -327,7 +327,7 @@ test_that("Between Subjects table match", {
   options <- initOpts()
   options$sphericityCorrections <- TRUE
   options$sphericityTests <- TRUE
-  results <- jasptools::run(name = "AnovaRepeatedMeasures", view = FALSE,
+  results <- jasptools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv", options = options)
     
   refTable <- list("gender", 0.200000000000001, 1, 0.200000000000001, 0.00473545746857648,
