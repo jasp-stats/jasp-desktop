@@ -128,6 +128,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	overTitle <- paste0(round(options[["CredibleInterval"]] * 100), "% Credible Interval")
 
 	coefficientsTable$addColumnInfo(name="v",       title="Covariate",   type="string")
+	coefficientsTable$addColumnInfo(name="N",    	title="n", 			type="integer")
 	coefficientsTable$addColumnInfo(name="mean",    title="Coefficient", type="number")
 	coefficientsTable$addColumnInfo(name="SE",      title="Std. Error",  type="number")
 	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     	type="number", overtitle = overTitle)
@@ -143,20 +144,22 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 
 	bainResult <- bainContainer[["bainResult"]]$object
 	sum_model <- summary(bainResult)
+	
 	groups <- as.character(sum_model[["Parameter"]])
-	estim <- sum_model[["Estimate"]]
+	N <- sum_model[["n"]]
+	mu <- sum_model[["Estimate"]]
 	CiLower <- sum_model[["lb"]]
 	CiUpper <- sum_model[["ub"]]
 
 	# Deduct standard error from 95 percent confidence interval
-	SE <- (CiUpper - CiLower) / 2 / qnorm(0.975)
+	se <- (CiUpper - CiLower) / 2 / qnorm(0.975)
 
 	# Override interval from bain (it's only 95 percent) to custom interval
 	alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
-	CiUpper <- estim + qnorm(alpha) * SE
-	CiLower <- estim - qnorm(alpha) * SE
+	CiUpper <- mu + qnorm(alpha) * se
+	CiLower <- mu - qnorm(alpha) * se
 
-	row <- data.frame(v = groups, mean = estim, SE = SE, CiLower = CiLower, CiUpper = CiUpper)
+	row <- data.frame(v = groups, N = N, mean = mu, SE = se, CiLower = CiLower, CiUpper = CiUpper)
 	coefficientsTable$addRows(row)
 }
 

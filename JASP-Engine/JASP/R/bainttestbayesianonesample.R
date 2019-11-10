@@ -234,9 +234,8 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
       descriptivesTable$position <- position
 
       descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
-      descriptivesTable$addColumnInfo(name="N",                    title = "N", type="integer")
+      descriptivesTable$addColumnInfo(name="N",                    title = "n", type="integer")
       descriptivesTable$addColumnInfo(name="mean",                 title = "Mean", type="number")
-      descriptivesTable$addColumnInfo(name="sd",                   title = "Std. Deviation", type="number")
       descriptivesTable$addColumnInfo(name="se",                   title = "Std. Error", type="number")
 
       interval <- 100 * options[["descriptivesPlotsCredibleInterval"]]
@@ -259,10 +258,10 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
             mean <- round(mean(data),3)
             stdDeviation <- round(sd(data),3)
             stdErrorMean <- round((sd(data)/sqrt(length(data))),3)
-            row <- list(v=variable, N=n, mean=mean, sd=stdDeviation, se=stdErrorMean, lowerCI = ciLower, upperCI = ciUpper)
+            row <- list(v=variable, N=n, mean=mean, se=stdErrorMean, lowerCI = ciLower, upperCI = ciUpper)
           } else {
             n <- length(data)
-            row <- list(v=variable, N=n, mean="", sd="", se="", lowerCI="", upperCI="")
+            row <- list(v=variable, N=n, mean="", se="", lowerCI="", upperCI="")
         }
         descriptivesTable$addRows(row)
       }

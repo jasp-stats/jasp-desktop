@@ -37,7 +37,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	.bainBayesFactorMatrix(dataset, options, bainContainer, ready, type = "ancova", position = 2)
 	
 	### COEFFICIENTS ###
-	.bainAncovaCoefficientsTable(dataset, options, bainContainer, ready, position = 3)
+	.bainAnovaDescriptivesTable(dataset, options, bainContainer, ready, type = "ancova", position = 3)
 
 	### BAYES FACTOR PLOT ###
 	.bainAnovaBayesFactorPlots(dataset, options, bainContainer, ready, position = 4)
@@ -152,50 +152,6 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 		row <- tmp
 		bayesFactorMatrix$addRows(row)
 	}
-}
-
-.bainAncovaCoefficientsTable <- function(dataset, options, bainContainer, ready, position) {
-
-	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
-	
-	coefficientsTable <- createJaspTable("Coefficients for Groups plus Covariates")
-	coefficientsTable$dependOn(options=c("coefficients", "seed", "CredibleInterval"))
-	coefficientsTable$position <- position
-
-	coefficientsTable$addColumnInfo(name="v",				title="Covariate",		type="string")
-	coefficientsTable$addColumnInfo(name="N",				title="N",				type="integer")
-	coefficientsTable$addColumnInfo(name="mean",			title="Coefficient",	type="number")
-	coefficientsTable$addColumnInfo(name="SE",				title="Std. Error",		type="number")
-
-	overTitle <- paste0(round(options[["CredibleInterval"]] * 100), "% Credible Interval")
-	coefficientsTable$addColumnInfo(name="CiLower",			title="Lower",			type="number", overtitle = overTitle)
-	coefficientsTable$addColumnInfo(name="CiUpper",			title="Upper",			type="number", overtitle = overTitle)
-
-	bainContainer[["coefficientsTable"]] <- coefficientsTable
-	
-	if (!ready || bainContainer$getError())
-		return()
-
-	bainResult <- bainContainer[["bainResult"]]$object
-	
-	sum_model <- summary(bainResult)
-	group <- as.character(sum_model[["Parameter"]])
-	estim <- sum_model[["Estimate"]]
-	CiLower <- sum_model[["lb"]]
-	CiUpper <- sum_model[["ub"]]
-	
-	# Deduct standard error from 95 percent confidence interval
-	SEs <- (CiUpper - CiLower) / 2 / qnorm(0.975)
-	
-	# Override interval from bain (it's only 95 percent) to custom interval
-	alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
-	CiUpper <- estim + qnorm(alpha) * SEs
-	CiLower <- estim - qnorm(alpha) * SEs
-	
-	N <- sum_model[["n"]]
-
-	row <- data.frame(v = group, mean = estim, N = N, SE = SEs, CiLower = CiLower, CiUpper = CiUpper)
-	coefficientsTable$addRows(row)
 }
 
 .readDataBainAncova <- function(options, dataset) {

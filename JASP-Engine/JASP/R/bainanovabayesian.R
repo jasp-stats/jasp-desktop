@@ -37,13 +37,13 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	.bainBayesFactorMatrix(dataset, options, bainContainer, ready, type = "anova", position = 2)
 	
 	### DESCRIPTIVES ###
-	.bainAnovaDescriptivesTable(dataset, options, bainContainer, ready, position = 3)
+	.bainAnovaDescriptivesTable(dataset, options, bainContainer, ready, type = "anova", position = 3)
 	
 	### BAYES FACTOR PLOT ###
 	.bainAnovaBayesFactorPlots(dataset, options, bainContainer, ready, position = 4)
 	
 	### DESCRIPTIVES PLOT ###
-	.bainAnovaDescriptivesPlot(dataset, options, bainContainer, ready, position = 5)
+	.bainAnovaDescriptivesPlot(dataset, options, bainContainer, ready, type = "anova", position = 5)
 }
 
 .bainAnovaResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready, position) {
@@ -115,18 +115,20 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	bainTable$addRows(row) 
 }
 
-.bainAnovaDescriptivesTable <- function(dataset, options, bainContainer, ready, position) {
+.bainAnovaDescriptivesTable <- function(dataset, options, bainContainer, ready, type = "anova", position) {
 
 	if (!is.null(bainContainer[["descriptivesTable"]]) || !options[["descriptives"]]) return()
 
-	descriptivesTable <- createJaspTable("Descriptive Statistics")
-	descriptivesTable$dependOn(options =c("descriptives", "CredibleInterval"))
+	title <- ifelse(type == "anova", yes = "Descriptive Statistics", no = "Coefficients for Groups plus Covariates")
+	meanTitle <- ifelse(type == "anova", yes = "Mean", no = "Coefficient")
+
+	descriptivesTable <- createJaspTable(title)
+	descriptivesTable$dependOn(options =c("descriptives", "CredibleInterval", "coefficients"))
 	descriptivesTable$position <- position
 
 	descriptivesTable$addColumnInfo(name="v",    		title="Level",	type="string")
-	descriptivesTable$addColumnInfo(name="N",    		title="N",			type="integer")
-	descriptivesTable$addColumnInfo(name="mean", 		title="Mean",		type="number")
-	descriptivesTable$addColumnInfo(name="sd",   		title="Std. Deviation",type="number")
+	descriptivesTable$addColumnInfo(name="N",    		title="n",			type="integer")
+	descriptivesTable$addColumnInfo(name="mean", 		title=meanTitle,		type="number")
 	descriptivesTable$addColumnInfo(name="se",   		title="Std. Error", 		type="number")
 
 	interval <- options[["CredibleInterval"]] * 100
@@ -142,22 +144,25 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	groupCol <- dataset[ , .v(options[["fixedFactors"]])]
 	varLevels <- levels(groupCol)
 
-	for (variable in varLevels) {
+	bainResult <- bainContainer[["bainResult"]]$object
+	bainSummary <- summary(bainResult)
+	
+	variable <- bainSummary[["Parameter"]]
+	N <- bainSummary[["n"]]
+	mu <- bainSummary[["Estimate"]]
+	CiLower <- bainSummary[["lb"]]
+	CiUpper <- bainSummary[["ub"]]
 
-			column <- dataset[ , .v(options[["dependent"]])]
-			column <- column[which(groupCol == variable)]
+	# Deduct standard error from 95 percent confidence interval
+	se <- (CiUpper - CiLower) / 2 / qnorm(0.975)
+	
+	# Override interval from bain (it's only 95 percent) to custom interval
+	alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
+	CiUpper <- mu + qnorm(alpha) * se
+	CiLower <- mu - qnorm(alpha) * se
 
-			N <- length(column)
-			mu <- mean(column)
-			sd <- sd(column)
-			se <- sd / sqrt(N)
-			alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
-			lowerCI <- mu - qnorm(alpha) * se
-			upperCI <- mu + qnorm(alpha) * se
-
-			row <- data.frame(v = variable, N = N, mean = mu, sd = sd, se = se, lowerCI = lowerCI, upperCI = upperCI)
-			descriptivesTable$addRows(row)
-	}
+	row <- data.frame(v = variable, N = N, mean = mu, se = se, lowerCI = CiLower, upperCI = CiUpper)
+	descriptivesTable$addRows(row)
 }
 
 .bainAnovaBayesFactorPlots <- function(dataset, options, bainContainer, ready, position) {
@@ -199,26 +204,28 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	groupCol <- dataset[ , .v(options[["fixedFactors"]])]
 	varLevels <- levels(groupCol)
 
-	d <- data.frame()
-	index <- 1
+	bainResult <- bainContainer[["bainResult"]]$object
+	bainSummary <- summary(bainResult)
 
-	for (variable in varLevels) {
+	# Remove covariates in ANCOVA
+	if(type == "ancova")
+		bainSummary <- bainSummary[1:length(varLevels), ]
+	
+	variable <- bainSummary[["Parameter"]]
+	N <- bainSummary[["n"]]
+	mu <- bainSummary[["Estimate"]]
+	CiLower <- bainSummary[["lb"]]
+	CiUpper <- bainSummary[["ub"]]
 
-			column <- dataset[ , .v(options[["dependent"]])]
-			column <- column[which(groupCol == variable)]
+	# Deduct standard error from 95 percent confidence interval
+	se <- (CiUpper - CiLower) / 2 / qnorm(0.975)
+	
+	# Override interval from bain (it's only 95 percent) to custom interval
+	alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
+	CiUpper <- mu + qnorm(alpha) * se
+	CiLower <- mu - qnorm(alpha) * se
 
-			N <- length(column)
-			mu <- mean(column)
-			sd <- sd(column)
-			se <- sd / sqrt(N)
-			alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
-			lowerCI <- mu - qnorm(alpha) * se
-			upperCI <- mu + qnorm(alpha) * se
-
-			row <- data.frame(v = variable, N = N, mean = mu, sd = sd, se = se, lowerCI = lowerCI, upperCI = upperCI, index = index)
-			d <- rbind(d, row)
-			index <- index + 1
-	}
+	d <- data.frame(v = variable, N = N, mean = mu, se = se, lowerCI = CiLower, upperCI = CiUpper, index = 1:length(variable))
 
 	p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
 			ggplot2::geom_errorbar(ggplot2::aes(ymin=lowerCI, ymax=upperCI), colour="black", width=.2, position = ggplot2::position_dodge(.2)) +
