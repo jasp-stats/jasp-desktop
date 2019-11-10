@@ -138,7 +138,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	
 	bainContainer[["descriptivesTable"]] <- descriptivesTable
 
-	if (!ready)
+	if (!ready || bainContainer$getError())
 		return()
 
 	groupCol <- dataset[ , .v(options[["fixedFactors"]])]
