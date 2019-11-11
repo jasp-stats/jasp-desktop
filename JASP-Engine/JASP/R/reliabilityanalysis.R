@@ -245,7 +245,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   if (options$averageInterItemCor)
     scaleTable$addColumnInfo(name = "rho", title = "Average interitem correlation",
                              type = "number")
-  if (options$confAlpha){
+  if (options$confAlpha && options[["alphaScaleStandardized"]] == "_1unstandardized"){
     overTitle <- paste0(100 * options$confAlphaLevel, "% Confidence Interval")
     scaleTable$addColumnInfo(name = "lower", title = "Lower", type = "number", 
                              overtitle = overTitle)
