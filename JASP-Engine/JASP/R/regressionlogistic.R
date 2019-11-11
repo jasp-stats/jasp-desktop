@@ -380,7 +380,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   
   container[["performanceMetrics"]] <- performanceMetrics
   
-  res <- try(.reglogisticPerformanceMetricsFill(container, dataset, options, ready))
+  res <- try(.reglogisticPerformanceMetricsFill(jaspResults, container, dataset, options, ready))
   
   .reglogisticSetError(res, performanceMetrics)
 }
@@ -390,7 +390,6 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   if(ready) {
     # Compute/Get Model
     glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
-    
     hasNuisance <- .hasNuisance(options)
     if (hasNuisance) {
       terms <- rownames(summary(glmObj[[1]])[["coefficients"]])
@@ -398,7 +397,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
                       glmModel=glmObj[[1]])
       message <- paste0("Null model contains nuisance parameters: ",
                         paste(terms, collapse = ", "))
-      jaspResults[["mainTable"]]$addFootnote(message)
+      jaspResults[["modelSummary"]]$addFootnote(message)
     }
     if (options$method == "enter") {
       # Two rows: h0 and h1
@@ -794,7 +793,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
     ))
 }
 
-.reglogisticPerformanceMetricsFill <- function(container, dataset, options, ready){
+.reglogisticPerformanceMetricsFill <- function(jaspResults, container, dataset, options, ready){
   if(ready) {
     # Compute/Get Model
     glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
