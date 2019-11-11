@@ -896,8 +896,8 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
       predictedPlot$setError(.extractErrorMessage(p))
     else
       predictedPlot$plotObject <- p
-    container[["predicted"]] <- predictedPlot 
   }
+  container[["predicted"]] <- predictedPlot 
   return()
 }
 
@@ -957,8 +957,8 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
       squaredPearsonPlot$setError(.extractErrorMessage(p))
     else
       squaredPearsonPlot$plotObject <- p
-    container[["squaredPearson"]] <- squaredPearsonPlot 
   }
+  container[["squaredPearson"]] <- squaredPearsonPlot 
   return()
 }
 
