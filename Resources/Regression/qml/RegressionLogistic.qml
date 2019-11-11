@@ -104,8 +104,10 @@ Form
 		{
 			title: qsTr("Regression Coefficients")
             CheckBox { name: "coeffEstimates";	label: qsTr("Estimates"); checked: true
+                onClicked: { if (!checked && bootstrapping.checked) bootstrapping.click() }
                 CheckBox
                 {
+                    id: bootstrapping
                     name: "coeffEstimatesBootstrapping"; label: qsTr("From")
                     childrenOnSameRow: true
                     IntegerField

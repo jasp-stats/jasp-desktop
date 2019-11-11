@@ -123,6 +123,11 @@
   return(modlist)
 }
 
+.confusionMatAddColInfo <- function(table, levs, type) {
+  table$addColumnInfo(name = "pred0", title = paste0(levs[1]), type = type, overtitle = "Predicted")
+  table$addColumnInfo(name = "pred1", title = paste0(levs[2]), type = type, overtitle = "Predicted")
+}
+
 # Helper functions for the above.
 .lrtest <- function(glmModel1, glmModel2) {
   # likelihood ratio test for model against null model
@@ -424,18 +429,6 @@
                        residualZ      = unname(residualZ),
                        cooksD         = unname(cooksD))
   return(casewiseDiag)
-}
-
-.optionsDiffCheckBootstrapLogisticRegression <- function(response, options) {
-  if(response$status == "changed"){
-    change <- .diff(options, response$options)
-    if(change$dependent || change$covariates || change$factors || change$wlsWeights ||
-       change$modelTerms || change$coeffEstimates || change$includeIntercept ||
-       change$coeffEstimatesBootstrapping || change$coeffEstimatesBootstrappingReplicates)
-      return(response)
-    response$status <- "ok"
-  }
-  return(response)
 }
 
 .reglogisticVovkSellke <- function(table, options) {

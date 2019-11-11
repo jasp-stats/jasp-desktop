@@ -54,12 +54,11 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
 }
 
 .reglogisticCheckErrors <- function(dataset, options){
-  if (options$dependent != "")
-    .hasErrors(dataset, 
-               type = "factorLevels",
-               factorLevels.target  = options$dependent,
-               factorLevels.amount  = '!= 2',
-               exitAnalysisIfErrors = TRUE)
+  .hasErrors(dataset, 
+             type = "factorLevels",
+             factorLevels.target  = options$dependent,
+             factorLevels.amount  = '!= 2',
+             exitAnalysisIfErrors = TRUE)
   if (options$wlsWeights != "")
     .hasErrors(dataset, 
                type = "limits", 
@@ -79,8 +78,6 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
 .reglogisticPerfDiagContainer <- function(jaspResults) {
   if (is.null(jaspResults[["perfDiag"]])) {
     container <- createJaspContainer("Performance Diagnostics")
-    dependList <- c()
-    container$dependOn(dependList)
     jaspResults[["perfDiag"]] <- container
   }
 }
@@ -135,7 +132,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   estimatesTable <- createJaspTable("Coefficients")
   estimatesTable$dependOn(optionsFromObject   = jaspResults[["modelSummary"]],
                           options             = c("coeffEstimates", "stdCoeff", 
-                                                  "oddsRatios", "coeffCI", 
+                                                  "oddsRatios", "coeffCI", "robustSEOpt",
                                                   "coeffCIInterval", "coeffCIOR", 
                                                   "robustSEopt", "VovkSellkeMPR"))
   estimatesTable$position <- 2
@@ -262,8 +259,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   estimatesTableBootstrap$addFootnote("Bias corrected accelerated.", symbol = "\u002A")
 }
 
-.reglogisticCasewiseDiagnosticsTable <- function(jaspResults, dataset, 
-                                                 options, ready){
+.reglogisticCasewiseDiagnosticsTable <- function(jaspResults, dataset, options, ready){
   if(!options$casewiseDiagnostics || !is.null(jaspResults[["casewiseDiagnosticsTable"]]))
     return()
   
@@ -299,8 +295,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   .reglogisticSetError(res, casDiag)
 }
 
-.reglogisticFactorDescriptivesTable <- function(jaspResults, dataset, 
-                                                options){
+.reglogisticFactorDescriptivesTable <- function(jaspResults, dataset, options){
   if(!options$factorDescriptivesOpt || 
      !is.null(jaspResults[["factorDescriptives"]]))
     return()
@@ -329,8 +324,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   .reglogisticSetError(res, factorDescriptives)
 }
 
-.reglogisticConfusionMatrixTable <- function(jaspResults, dataset, 
-                                             options, ready) {
+.reglogisticConfusionMatrixTable <- function(jaspResults, dataset, options, ready) {
   .reglogisticPerfDiagContainer(jaspResults)
   container <- jaspResults[["perfDiag"]]
   if(!options$confusionMatrixOpt || 
@@ -338,36 +332,28 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
     return()
   confusionMatrix <- createJaspTable("Confusion matrix")
   confusionMatrix$dependOn(optionsFromObject = jaspResults[["modelSummary"]],
-                           options           = c("confusionMatrixOpt"))
+                           options           = c("confusionMatrixOpt", "confusionMatrixProportions"))
   confusionMatrix$position <- 6
   confusionMatrix$showSpecifiedColumnsOnly <- TRUE
   
-  # Compute/Get Model
-  glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
-  
-  confusionMatrix$addColumnInfo(name = "obs", title = "Observed", 
-                                type = "string")
-  if (ready && !is.null(glmObj)) {
+  confusionMatrix$addColumnInfo(name = "obs", title = "Observed", type = "string")
+  if (ready) {
+    # Compute/Get Model
+    glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
     #modelTerms <- c()
     #for(i in seq_along(options$modelTerms))
     #  modelTerms <- c(modelTerms, options$modelTerms[[i]]$components)
     #levs <- levels(dataset[[.v(modelTerms)]])
     mObj <- glmObj[[length(glmObj)]]
     levs <- levels(mObj[["model"]][,1])
-  } else
-    levs <- c(0,1)
-  if(options$confusionMatrixProportions) {
-    confusionMatrix$addColumnInfo(name = "pred0", title = paste0(levs[1]), 
-                                  type = "number", overtitle = "Predicted")
-    confusionMatrix$addColumnInfo(name = "pred1", title = paste0(levs[2]), 
-                                  type = "number", overtitle = "Predicted")
   } else {
-    confusionMatrix$addColumnInfo(name = "pred0", title = paste0(levs[1]), 
-                                  type = "integer", overtitle = "Predicted")
-    confusionMatrix$addColumnInfo(name = "pred1", title = paste0(levs[2]), 
-                                  type = "integer", overtitle = "Predicted")
+    levs   <- c(0,1)
+    glmObj <- NULL
   }
-  
+  if(options$confusionMatrixProportions)
+    .confusionMatAddColInfo(confusionMatrix, levs, "number")
+  else
+    .confusionMatAddColInfo(confusionMatrix, levs, "integer")
   container[["confusionMatrix"]] <- confusionMatrix
   
   res <- try(.reglogisticConfusionMatrixFill(container, dataset, options, glmObj, ready))
@@ -654,8 +640,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   rows   <- list()
   ci.fails   <- FALSE
   if (!is.null(glmObj)) {
-    ticks    <- options$coeffEstimatesBootstrappingReplicates
-    progress <- .newProgressbar(ticks = ticks, callback = callback, response = TRUE)
+    startProgressbar(options$coeffEstimatesBootstrappingReplicates)
     rows     <- list()
     
     for (i in 1:length(glmObj)) {
@@ -664,11 +649,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
       rn <- rownames(summary(glmObj[[i]])[["coefficients"]])
       rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
       .bootstrapping    <- function(data, indices, model.formula, options) {
-        pr <- progress()
-        response <- .optionsDiffCheckBootstrapLogisticRegression(pr, options)
-        
-        if(response$status == "changed" || response$status == "aborted")
-          stop("Bootstrapping options have changed")
+        progressbarTick()
         
         d <- data[indices, , drop = FALSE] # allows boot to select sample
         result <- glm(model.formula, family = "binomial", data = d)
@@ -682,9 +663,6 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
                                           options = options),
                                silent = TRUE)
       
-      if(isTryError(bootstrap.summary) &&
-         identical(attr(bootstrap.summary, "condition")$message, "Bootstrapping options have changed"))
-        return("Bootstrapping options have changed")
       bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
       bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
       bootstrap.se   <- matrixStats::colSds(as.matrix(bootstrap.summary$t), na.rm = TRUE)
@@ -805,16 +783,15 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
     else
       n <- 1
     m <- .confusionMatrix(mObj, cutoff = 0.5)[["matrix"]]
-    rows <- list(
+    container[["confusionMatrix"]]$addRows(list(
       list(obs = levs[1], pred0 = m[1,1]/n, pred1 = m[1,2]/n),
       list(obs = levs[2], pred0 = m[2,1]/n, pred1 = m[2,2]/n)
-    )
+    ))
   } else
-    rows <- list(
+    container[["confusionMatrix"]]$addRows(list(
       list(obs = "0", pred0 = ".", pred1 = "."),
       list(obs = "1", pred0 = ".", pred1 = ".")
-    )
-  container[["confusionMatrix"]]$addRows(rows)
+    ))
 }
 
 .reglogisticPerformanceMetricsFill <- function(container, dataset, options, ready){
@@ -863,14 +840,21 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
 }
 
 .reglogisticEstimatesPlot <- function(jaspResults, dataset, options, ready){
-  if(!options$estimatesPlotsOpt || !ready)
+  if(!options$estimatesPlotsOpt)
     return()
-  container <- createJaspContainer("Estimates plots")
-  jaspResults[["estimatesPlot"]] <- container
+  jaspResults[["estimatesPlot"]] <- createJaspContainer("Estimates plots")
+  jaspResults[["estimatesPlot"]]$dependOn(optionsFromObject = jaspResults[["modelSummary"]])
+  container <- jaspResults[["estimatesPlot"]]
+  
+  if(!ready){
+    container[["placeholder"]] <- createJaspPlot(width = 320, height = 320, dependencies = "estimatesPlotsOpt")
+    return()
+  }
   # Compute/Get Model
   glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
   mObj   <- glmObj[[length(glmObj)]]
   predictors <- character(0)
+  
   for (term in options$modelTerms)
     if (length(term$components) == 1 && 
         (is.null(term$isNuisance) || !term$isNuisance))
@@ -882,52 +866,53 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
                                                       "term.labels")]
     for(pred in predictors) {
       estimatesPlot <- createJaspPlot(title = pred, width = 480, height = 320)
-      estimatesPlot$dependOn(optionsFromObject = jaspResults[["modelSummary"]],
-                             options           = c("estimatesPlotsOpt", 
-                                                   "estimatesPlotsCI", 
-                                                   "showPoints"))
+      estimatesPlot$dependOn(options = c("estimatesPlotsOpt", "estimatesPlotsCI", "showPoints"))
       p <- try(.reglogisticEstimatesPlotFill(options, mObj, pred))
       if(isTryError(p))
         estimatesPlot$setError(.extractErrorMessage(p))
       else
         estimatesPlot$plotObject <- p
-      jaspResults[["estimatesPlot"]][[pred]] <- estimatesPlot
+      container[[pred]] <- estimatesPlot
     }
   }
   return()
 }
 
-.reglogisticPredictedResidualsPlot <- function(jaspResults, dataset, 
-                                               options, ready){
-  if(!options$predictedPlotOpt || !ready)
+.reglogisticPredictedResidualsPlot <- function(jaspResults, dataset, options, ready){
+  if(!options$predictedPlotOpt)
     return()
   .reglogisticResidualPlotContainer(jaspResults, options)
   container <- jaspResults[["residualPlots"]]
-  # Compute/Get Model
-  glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
-  mObj <- glmObj[[length(glmObj)]]
   
   title <- "Predicted - residuals plot"
   predictedPlot <- createJaspPlot(title = title, width = 480, height = 320)
   predictedPlot$dependOn("predictedPlotOpt")
   
-  p <- try(.reglogisticResidPlotFill(options, mObj))
-  if(isTryError(p))
-    predictedPlot$setError(.extractErrorMessage(p))
-  else
-    predictedPlot$plotObject <- p
-  container[["predicted"]] <- predictedPlot
+  if(ready){
+    # Compute/Get Model
+    glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
+    mObj   <- glmObj[[length(glmObj)]]
+    p      <- try(.reglogisticResidPlotFill(options, mObj))
+    if(isTryError(p))
+      predictedPlot$setError(.extractErrorMessage(p))
+    else
+      predictedPlot$plotObject <- p
+    container[["predicted"]] <- predictedPlot 
+  }
   return()
 }
 
-.reglogisticPredictorResidualsPlot <- function(jaspResults, dataset, 
-                                               options, ready){
-  if(!options$predictorPlotsOpt || !ready)
+.reglogisticPredictorResidualsPlot <- function(jaspResults, dataset, options, ready){
+  if(!options$predictorPlotsOpt)
     return()
   .reglogisticResidualPlotContainer(jaspResults, options)
   container    <- jaspResults[["residualPlots"]]
-  subcontainer <- createJaspContainer("Predictor - residuals plots")
-  container[["subContainer"]] <- subcontainer
+  container[["subContainer"]] <- createJaspContainer("Predictor - residuals plots")
+   subcontainer <- container[["subContainer"]]
+  if(!ready){
+    subcontainer[["placeholder"]] <- createJaspPlot(width = 320, height = 320, dependencies = "predictorPlotsOpt")
+    return()
+  }
   # Compute/Get Model
   glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
   mObj   <- glmObj[[length(glmObj)]]
@@ -949,32 +934,32 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
       predictorPlot$setError(.extractErrorMessage(p))
     else
       predictorPlot$plotObject <- p
-    container[["subContainer"]][[pred]] <- predictorPlot
+    subcontainer[[pred]] <- predictorPlot
   }
   return()
 }
 
-.reglogisticSquaredPearsonResidualsPlot <- function(jaspResults, dataset, 
-                                                    options, ready){
-  if(!options$squaredPearsonPlotOpt || !ready)
+.reglogisticSquaredPearsonResidualsPlot <- function(jaspResults, dataset, options, ready){
+  if(!options$squaredPearsonPlotOpt)
     return()
   .reglogisticResidualPlotContainer(jaspResults, options)
   container <- jaspResults[["residualPlots"]]
-  # Compute/Get Model
-  glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
-  mObj <- glmObj[[length(glmObj)]]
   
   title <- "Squared Pearson residuals plot"
-  squaredPearsonPlot <- createJaspPlot(title = title, 
-                                       width = 480, height = 320)
+  squaredPearsonPlot <- createJaspPlot(title = title, width = 480, height = 320)
   squaredPearsonPlot$dependOn("squaredPearsonPlotOpt")
   
-  p <- try(.reglogisticSquaredPearsonResidualsFill(mObj))
-  if(isTryError(p))
-    squaredPearsonPlot$setError(.extractErrorMessage(p))
-  else
-    squaredPearsonPlot$plotObject <- p
-  container[["squaredPearson"]] <- squaredPearsonPlot
+  if(ready){
+    # Compute/Get Model
+    glmObj <- .reglogisticComputeModel(jaspResults, dataset, options)
+    mObj   <- glmObj[[length(glmObj)]]
+    p      <- try(.reglogisticSquaredPearsonResidualsFill(mObj))
+    if(isTryError(p))
+      squaredPearsonPlot$setError(.extractErrorMessage(p))
+    else
+      squaredPearsonPlot$plotObject <- p
+    container[["squaredPearson"]] <- squaredPearsonPlot 
+  }
   return()
 }
 
