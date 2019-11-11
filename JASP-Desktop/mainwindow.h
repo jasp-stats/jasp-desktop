@@ -24,6 +24,7 @@
 #include <QSettings>
 #include <QQmlApplicationEngine>
 #include <QApplication>
+#include <QFileSystemWatcher>
 
 #include "dataset.h"
 #include "gui/aboutmodel.h"
@@ -230,6 +231,8 @@ private slots:
 	void logToFileChanged(bool logToFile);
 	void logRemoveSuperfluousFiles(int maxFilesToKeep);
 
+	void plotEditingFileChanged();
+
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);
 	void makeAppleMenu();
@@ -292,6 +295,9 @@ private:
 	static QMap<QString, QVariant>	_iconFiles,
 									_iconInactiveFiles,
 									_iconDisabledFiles;
+
+	QString							_plotEditingFilePath;
+	QFileSystemWatcher				_plotEditingFileWatcher;
 };
 
 #endif // MAINWIDGET_H

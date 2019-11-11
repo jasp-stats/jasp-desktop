@@ -203,7 +203,16 @@ Window
 
 		CreateComputeColumnDialog	{ id: createComputeDialog	}
 		ModuleInstaller				{ id: moduleInstallerDialog	}
-		PlotEditor					{ id: plotEditingDialog		}
+//		PlotEditor					{ id: plotEditingDialog		}
+		Loader
+		{
+			id: plotEditingDialog
+			width: parent.width
+			height: parent.height
+			source: plotEditorFile
+
+			onSourceChanged: console.log("PlotEditor QML file changed")
+		}
 
 		/*MessageBox
 		{
