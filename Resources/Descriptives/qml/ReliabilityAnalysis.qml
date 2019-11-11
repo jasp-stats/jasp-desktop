@@ -40,8 +40,8 @@ Form
 			RadioButtonGroup
 			{
 				name: "alphaScaleStandardized"
-				RadioButton { value: "_1unstandardized";	label: qsTr("Unstandardized"); checked: true }
-				RadioButton { value: "_2standardized";		label: qsTr("Standardized")					}
+				RadioButton { value: "_1unstandardized";	label: qsTr("Unstandardized"); checked: true; id: alphaUnstandardized	}
+				RadioButton { value: "_2standardized";		label: qsTr("Standardized");											}
 			}
 		}
 		CheckBox { name: "gutmannScale";					label: qsTr("Gutmann's λ6")					}
@@ -88,7 +88,7 @@ Form
 		Group
 		{
 			title: qsTr("Confidence Interval")
-			enabled: chronbach.checked
+			enabled: chronbach.checked && alphaUnstandardized.checked
 			CheckBox {
 				name: "confAlpha"; label: qsTr("Cronbach's α analytical")
 				CIField { name: "confAlphaLevel"; label: qsTr("Confidence"); decimals: 1 }
