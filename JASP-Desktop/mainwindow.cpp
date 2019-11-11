@@ -291,6 +291,14 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::descriptionReloaded,				_analyses,				&Analyses::rescanAnalysisEntriesOfDynamicModule				);
 	connect(_dynamicModules,		&DynamicModules::reloadHelpPage,					_helpModel,				&HelpModel::reloadPage										);
 	connect(_dynamicModules,		&DynamicModules::moduleEnabledChanged,				_preferences,			&PreferencesModel::moduleEnabledChanged						);
+
+
+	// Temporary to facilitate plot editing
+	_plotEditingFilePath = QString::fromStdString(Dirs::resourcesDir()) + "PlotEditor.qml";
+	if (!_plotEditingFileWatcher.addPath(_plotEditingFilePath))
+		Log::log() << "Cannot watch plot editing file" << _plotEditingFilePath << std::endl;
+	connect(&_plotEditingFileWatcher, &QFileSystemWatcher::fileChanged,					this,					&MainWindow::plotEditingFileChanged							);
+
 }
 
 
@@ -340,6 +348,8 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("iconInactiveFiles",	_iconInactiveFiles);
 	_qml->rootContext()->setContextProperty("iconDisabledFiles",	_iconDisabledFiles);
 
+	_qml->rootContext()->setContextProperty("plotEditorFile",		QString::fromStdString("file:") + _plotEditingFilePath);
+
 	_qml->addImportPath("qrc:///components");
 
 	connect(_qml, &QQmlApplicationEngine::objectCreated, [&](QObject * obj, QUrl url) { if(obj == nullptr) { std::cerr << "Could not load QML: " + url.toString().toStdString() << std::endl; _application->exit(10); }});
@@ -382,6 +392,15 @@ void MainWindow::logRemoveSuperfluousFiles(int maxFilesToKeep)
 
 	for(int i=logs.size() - 1; i >= maxFilesToKeep; i--)
 		logFileDir.remove(logs[i].fileName());
+}
+
+void MainWindow::plotEditingFileChanged()
+{
+	Log::log() << "Plot Editing file changed" << std::endl;
+	resetQmlCache();
+
+	_qml->rootContext()->setContextProperty("plotEditorFile", "");
+	_qml->rootContext()->setContextProperty("plotEditorFile", QString::fromStdString("file:") + _plotEditingFilePath);
 }
 
 void MainWindow::openFolderExternally(QDir folder)
