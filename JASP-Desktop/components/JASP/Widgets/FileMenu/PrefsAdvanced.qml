@@ -14,18 +14,17 @@ ScrollView
 	Column
 	{
 		width:			scrollPrefs.width
-		//anchors.left:	parent.left
-		//anchors.right:	parent.right
 		spacing:		Theme.rowSpacing
 
 		MenuHeader
 		{
 			id:				menuHeader
-			headertext:		"Advanced Preferences"
+			headertext:		qsTr("Advanced Preferences") + languageModel.emptyString
 			helpfile:		"preferences/prefsadvanced"
 			anchorMe:		false
 			width:			scrollPrefs.width - (2 * Theme.generalMenuMargin)
 			x:				Theme.generalMenuMargin
+
 		}
 
 		PrefsGroupRect
@@ -177,7 +176,6 @@ ScrollView
 					label:				qsTr("Regenerate package metadata every time (DESCRIPTION & NAMESPACE)")
 					checked:			preferencesModel.devModRegenDESC
 					onCheckedChanged:	preferencesModel.devModRegenDESC = checked
-					//font:				Theme.font
 					height:				implicitHeight * preferencesModel.uiScale
 					toolTip:			qsTr("Disable this option if you are transforming your R-package to a JASP Module or simply want to keep manual changes to DESCRIPTION and NAMESPACE.")
 					KeyNavigation.tab:	cranRepoUrl
@@ -201,7 +199,7 @@ ScrollView
 				Label
 				{
 					id:		cranRepoUrlLabel
-					text:	"Change the CRAN repository: "
+					text:	qsTr("Change the CRAN repository: ")
 
 					anchors
 					{
@@ -315,6 +313,33 @@ ScrollView
 					KeyNavigation.down:	uiScaleSpinBox
 				}
 			}
+		}
+
+		PrefsGroupRect
+		{
+			id:		languageGroup
+			title:	qsTr("Preferred Language")
+
+			ComboBox
+			{
+				id:			languages
+				fieldWidth: 100
+
+				label:		qsTr("Choose Language  ") + languageModel.emptyString
+
+				useModelDefinedIcon: true
+				isDirectModel:		true
+
+				currentIndex:		languageModel.currentIndex
+
+				model: languageModel
+
+				onActivated:{
+					languageModel.currentIndex =index
+					languageModel.changeLanguage(index, scrollPrefs);
+				}
+			}
+
 		}
 
 		Item

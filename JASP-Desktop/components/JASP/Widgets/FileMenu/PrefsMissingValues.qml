@@ -18,7 +18,7 @@ Rectangle
 	Text
 	{
 		id:		missingValuesTitle
-		text:	"Missing Value List"
+		text:	qsTr("Missing Value List")
 		font:	Theme.font
 
 		anchors
@@ -61,7 +61,7 @@ Rectangle
 					width:				missingValuesList.width
 					text:				modelData
 					centerText:			false
-					toolTip:			"Remove missing value"
+					toolTip:			qsTr("Remove missing value")
 					onClicked:			preferencesModel.removeMissingValue(modelData)
 
 					Image
@@ -147,7 +147,7 @@ Rectangle
 	RectangularButton
 	{
 		id:					resetButton
-		text:				"Reset"
+		text:				qsTr("Reset")
 		onClicked:			preferencesModel.resetMissingValues()
 		KeyNavigation.tab:	synchronizeDataSave //PrefsData!
 		KeyNavigation.down:	synchronizeDataSave

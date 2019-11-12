@@ -23,7 +23,7 @@ Window
 
 	visible:				aboutModel.visible
 	onVisibleChanged:		aboutModel.visible = visible
-	title:					"About JASP"
+	title:					qsTr("About JASP")
 
 
 	Image
@@ -154,7 +154,7 @@ Window
 				anchors.top:	parent.top
 				height:			25
 
-				text:			"<a href=\"" + aboutModel.commitUrl +"\">Access the sources here</a>"
+				text:			"<a href=\"" + aboutModel.commitUrl + "\">" + qsTr("Access the sources here") + "</a>"
 
 				MouseArea
 				{
@@ -234,8 +234,8 @@ Window
 					id:		contextMenu
 					width:	120
 
-					Action { text: "Select All";		onTriggered: citationText.selectAll();	}
-					Action { text: "Copy Selection";	onTriggered: citationText.copy();		} //citationText.deselect(); is not really necessary right?
+					Action { text: qsTr("Select All");		onTriggered: citationText.selectAll();	}
+					Action { text: qsTr("Copy Selection");	onTriggered: citationText.copy();		} //citationText.deselect(); is not really necessary right?
 				}
 			}
 
@@ -246,7 +246,7 @@ Window
 				anchors.top:	citationText.bottom
 				height:			15
 
-				text:			"<a href=\"" + aboutModel.citationUrl + "\">(BibTex)</a>"
+				text:			"<a href=\"" + aboutModel.citationUrl + "\">(" + qsTr("BibTex") + ")</a>"
 				textFormat:		Text.StyledText
 
 				MouseArea

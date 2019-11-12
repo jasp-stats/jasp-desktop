@@ -70,7 +70,7 @@ ListView
 				anchors.left:	index > 0 ? rectArrow.right : rect.left
 				text:			name
 				enabled:		index < count - 1
-				toolTip:		index < count - 1 ? "Back to " + name : "You are here"
+				toolTip:		index < count - 1 ? qsTr("Back to ") + name : qsTr("You are here")
 				onClicked:		listView.crumbButtonClicked(index)
 			}
 		}

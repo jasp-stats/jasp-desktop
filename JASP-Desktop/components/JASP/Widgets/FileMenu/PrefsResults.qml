@@ -19,7 +19,7 @@ ScrollView
 		MenuHeader
 		{
 			id:				menuHeader
-			headertext:		"Results Preferences"
+			headertext:		qsTr("Results Preferences")
 			helpfile:		"preferences/prefsresults"
 			anchorMe:		false
 			width:			scrollPrefs.width - (2 * Theme.generalMenuMargin)
@@ -33,7 +33,7 @@ ScrollView
 			CheckBox
 			{
 				id:						displayExactPVals
-				label:					"Display exact p-values"
+				label:					qsTr("Display exact p-values")
 				checked:				preferencesModel.exactPValues
 				onCheckedChanged:		preferencesModel.exactPValues = checked
 				KeyNavigation.tab:		fixDecs
@@ -81,7 +81,7 @@ ScrollView
 			CheckBox
 			{
 				id:					useDefaultPPICheckbox
-				label:				"Use PPI of screen in plots: " + preferencesModel.defaultPPI
+				label:				qsTr("Use PPI of screen in plots: ") + "(" + preferencesModel.defaultPPI + ")"
 				checked:			preferencesModel.useDefaultPPI
 				onCheckedChanged:	preferencesModel.useDefaultPPI = checked
 				height:				implicitHeight * preferencesModel.uiScale

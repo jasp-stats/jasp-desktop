@@ -13,7 +13,7 @@ Item
 	MenuHeader
 	{
 		id:			menuHeader
-		headertext:	"Data Preferences"
+		headertext:	qsTr("Data Preferences")
 		helpfile:	"preferences/prefsdata"
 	}
 
@@ -52,7 +52,7 @@ Item
 				CheckBox
 				{
 					id:					useDefaultEditor
-					label:				"Use default spreadsheet editor"
+					label:				qsTr("Use default spreadsheet editor")
 					checked:			preferencesModel.useDefaultEditor
 					onCheckedChanged:	preferencesModel.useDefaultEditor = checked
 					KeyNavigation.down:	browseEditorButton
@@ -71,7 +71,7 @@ Item
 					RectangularButton
 					{
 						id:					browseEditorButton
-						text:				"Select custom editor"
+						text:				qsTr("Select custom editor")
 						onClicked:			preferencesModel.browseSpreadsheetEditor()
 						anchors.left:		parent.left
 						anchors.leftMargin: Theme.subOptionOffset

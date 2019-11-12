@@ -13,7 +13,7 @@ JASPControl
 	width:				implicitWidth
 	background:			useExternalBorder ? externalControlBackground : control.background
 
-    
+
 	property alias	control:				control
 	property alias	controlLabel:			controlLabel
 	property alias	label:					controlLabel.text
@@ -23,6 +23,7 @@ JASPControl
 	property alias	indexDefaultValue:		control.currentIndex
 	property alias	model:					control.model
 	property alias	values:					control.model
+	property alias	fieldWidth:				control.modelWidth
 	property string	textRole:				"label"
 	property string	valueRole:				"value"
 	property bool	showVariableTypeIcon:	false
@@ -38,7 +39,8 @@ JASPControl
 	property bool	setWidthInForm:			true
 	property bool	useExternalBorder:		true
 	property bool	showBorder:				true
-    
+	property bool	useModelDefinedIcon:	false
+
     signal activated(int index);
 
 	onControlMinWidthChanged: _resetWidth(textMetrics.width)
@@ -75,9 +77,9 @@ JASPControl
 			control.modelWidth += (controlMinWidth - control.width);
 		comboBox.width = comboBox.implicitWidth; // the width is not automatically updated by the implicitWidth...
     }
-    
+
 	Component.onCompleted: control.activated.connect(activated);
-    
+
 	Rectangle
 	{
 		id:			rectangleLabel
@@ -248,7 +250,7 @@ JASPControl
 					x:							1 * preferencesModel.uiScale
 					height:						15 * preferencesModel.uiScale
 					width:						15 * preferencesModel.uiScale
-					source:						(visible && comboBox.initialized) ? (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : ""
+					source:						useModelDefinedIcon ? model.iconfile : ((visible && comboBox.initialized) ? (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : "")
 					visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
 
 					anchors.verticalCenter:		parent.verticalCenter

@@ -60,6 +60,7 @@
 #include "gui/messageforwarder.h"
 #include "log.h"
 
+
 using namespace std;
 
 QString MainWindow::_iconPath = "qrc:/icons/";
@@ -106,15 +107,25 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	Log::log() << "JASP " << AppInfo::version.asString() << " is initializing." << std::endl;
 
+	_languageModel = new LanguageModel("Resources/Translations", application, this);
+
 	_resultsJsInterface		= new ResultsJsInterface();
 	_odm					= new OnlineDataManager(this);
+
 	_labelFilterGenerator	= new labelFilterGenerator(_labelModel, this);
 	_columnsModel			= new ColumnsModel(_datasetTableModel);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, _package);
 	_filterModel			= new FilterModel(_package, _labelFilterGenerator);
-	_ribbonModel			= new RibbonModel(_dynamicModules, _preferences,
-									{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
-									{ "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics", "JAGS" });
+
+	//Temporary solution to display translated module names
+	vector<string> commonModulesToLoad = { "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" };
+	vector<string> extraModulesToLoad = { "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics" };
+	vector<QString> displayModuleNames ;
+
+	setModulesToLoad(commonModulesToLoad, extraModulesToLoad, displayModuleNames);
+
+	_ribbonModel			= new RibbonModel(_dynamicModules, _preferences, commonModulesToLoad, extraModulesToLoad, displayModuleNames );
+
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this, _package);
 	_helpModel				= new HelpModel(this);
@@ -135,6 +146,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	QTimer::singleShot(0, [&](){ loadQML(); });
 
+	_languageModel->setApplicationEngine(_qml);
+
 	QString missingvaluestring = _settings.value("MissingValueList", "").toString();
 	if (missingvaluestring != "")
 		Utils::setEmptyValues(fromQstringToStdVector(missingvaluestring, "|"));
@@ -145,6 +158,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	JASPVersionChecker * jaspVersionChecker = new JASPVersionChecker(this);
 	connect(jaspVersionChecker, &JASPVersionChecker::showDownloadButton, this, &MainWindow::setDownloadNewJASPUrl);
+
+
 
 	JASPTIMER_FINISH(MainWindowConstructor);
 }
@@ -306,8 +321,14 @@ void MainWindow::loadQML()
 {
 	QtWebEngine::initialize();
 
-	_qml = new QQmlApplicationEngine(this);
+	//if (_qml != nullptr) delete _qml;
 
+	if (_qml == nullptr) _qml = new QQmlApplicationEngine(this);
+	else
+	{
+		_qml->clearComponentCache();
+		_qml->retranslate();
+	}
 
 	_qml->rootContext()->setContextProperty("mainWindow",				this					);
 	_qml->rootContext()->setContextProperty("labelModel",				_labelModel				);
@@ -328,9 +349,9 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("engineSync",				_engineSync				);
 	_qml->rootContext()->setContextProperty("helpModel",				_helpModel				);
 
-
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
+	_qml->rootContext()->setContextProperty("languageModel",			_languageModel					);
 
 	_qml->rootContext()->setContextProperty("columnTypeScale",			int(columnType::scale)			);
 	_qml->rootContext()->setContextProperty("columnTypeOrdinal",		int(columnType::ordinal)		);
@@ -727,6 +748,31 @@ void MainWindow::connectFileEventCompleted(FileEvent * event)
 	connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted, Qt::QueuedConnection);
 }
 
+void MainWindow::setModulesToLoad(vector<string> & commonModulesToLoad, vector<string> & extraModulesToLoad, vector<QString> & displayModuleNames)
+{
+	//Common Modules
+	commonModulesToLoad.push_back("Descriptives");	displayModuleNames.push_back(tr("Descriptives"));
+	commonModulesToLoad.push_back("T-Tests");		displayModuleNames.push_back(tr("T-Tests"));
+	commonModulesToLoad.push_back("ANOVA");			displayModuleNames.push_back(tr("ANOVA"));
+	commonModulesToLoad.push_back("Regression");	displayModuleNames.push_back(tr("Regression"));
+	commonModulesToLoad.push_back("Frequencies");	displayModuleNames.push_back(tr("Frequencies"));
+	commonModulesToLoad.push_back("Factor");		displayModuleNames.push_back(tr("Factor"));
+
+	//Extra Modules
+	extraModulesToLoad.push_back("Audit");				displayModuleNames.push_back(tr("Audit"));
+	extraModulesToLoad.push_back("BAIN");				displayModuleNames.push_back(tr("BAIN"));
+	extraModulesToLoad.push_back("Network");			displayModuleNames.push_back(tr("Network"));
+	extraModulesToLoad.push_back("Machine Learning");	displayModuleNames.push_back(tr("Machine Learning"));
+	extraModulesToLoad.push_back("Meta Analysis");		displayModuleNames.push_back(tr("Meta Analysis"));
+	extraModulesToLoad.push_back("SEM");				displayModuleNames.push_back(tr("SEM"));
+	extraModulesToLoad.push_back("Summary Statistics");	displayModuleNames.push_back(tr("Summary Statistics"));
+
+	//vector<string> commonModulesToLoad = { "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" };
+	//vector<string> extraModulesToLoad = { "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics" };
+	//vector<QString> displalyModuleNames ;
+
+}
+
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileOpen)
@@ -823,7 +869,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			event->setComplete();
 			dataSetIOCompleted(event);
 		}
-		
+
 		_resultsJsInterface->resetResults();
 		setDataPanelVisible(false);
 		setDataAvailable(false);

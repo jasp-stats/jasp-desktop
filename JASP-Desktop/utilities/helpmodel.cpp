@@ -40,17 +40,21 @@ void HelpModel::generateJavascript()
 
 	bool relative = pathMd.isRelative();
 
+	LanguageInfo li = LanguageModel::CurrentLanguageInfo;
+	QString localnname = li.localName;
+	QString _localname = localnname  == "en" ? "" : ("_" + localnname);
+
 	if(relative) //This is probably a file in resources then
 	{
-		fileMD.setFileName(AppDirs::help() + "/" + _pagePath + ".md");
-		fileHTML.setFileName(AppDirs::help() + "/" + _pagePath + ".html");
+		fileMD.setFileName(AppDirs::help() + "/" + _pagePath + _localname + ".md");
+		fileHTML.setFileName(AppDirs::help() + "/" + _pagePath + _localname + ".html");
 	}
 	else
 	{
 		//We got an absolute path, this probably means it comes from a (dynamic) module.
 
-		fileMD.setFileName(_pagePath + ".md");
-		fileHTML.setFileName(_pagePath + ".html");
+		fileMD.setFileName(_pagePath + _localname + ".md");
+		fileHTML.setFileName(_pagePath + _localname + ".html");
 	}
 
 	if (fileHTML.exists())
@@ -70,14 +74,12 @@ void HelpModel::generateJavascript()
 	}
 	else
 	{
-		content = "Coming Soon!\n========\n\nThere is currently no help available for this analysis"
+		content = tr("Coming Soon!\n========\n\nThere is currently no help available for this analysis");
 #ifdef JASP_DEBUG
-			 " ("+_pagePath+")"
+		content += 	 " (" + _pagePath + ")";
 #endif
-				".\n\nAdditional documentation will be available in future releases of "
-		;
-
-		content += relative ? "JASP." : "the module.";
+		content += tr(".\n\nAdditional documentation will be available in future releases of ");
+		content += relative ? "JASP." : tr("the module.");
 	}
 
 	content.replace("\"", "\\\"");

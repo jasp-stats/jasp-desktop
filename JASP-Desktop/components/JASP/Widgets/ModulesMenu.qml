@@ -70,7 +70,7 @@ FocusScope
 			MenuButton
 			{
 				id:					addModuleButton
-				text:				"Install Module"
+				text:				qsTr("Install Module")
 				width:				modules.buttonWidth
 				height:				modules.buttonHeight
 				anchors.leftMargin: modules.buttonMargin
@@ -79,7 +79,7 @@ FocusScope
 				iconSource:			"qrc:/icons/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
 				showIconAndText:	true
 				iconLeft:			false
-				toolTip:			"Install a module"
+				toolTip:			qsTr("Install a module")
 				visible:			preferencesModel.developerMode
 			}
 
@@ -94,13 +94,13 @@ FocusScope
 			MenuButton
 			{
 				id:					addDeveloperModuleButton
-				text:				folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? "Install Developer Module" : "Installing Developer Module") : "Select a Developer Module"
+				text:				folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install Developer Module") : qsTr("Installing Developer Module")) : qsTr("Select a Developer Module")
 				width:				modules.buttonWidth
 				height:				modules.buttonHeight
 				anchors.leftMargin: modules.buttonMargin
 				anchors.left:		parent.left
 				onClicked: 			folderSelected ? dynamicModules.installJASPDeveloperModule() : preferencesModel.browseDeveloperFolder()
-				toolTip:			folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? "Install selected developer module" : "Installing developer module now") : "Select a developer module under Left menu->Preference->Advanced"
+				toolTip:			folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install selected developer module") : qsTr("Installing developer module now")) : qsTr("Select a developer module under Left menu->Preference->Advanced")
 				visible:			preferencesModel.developerMode
 				enabled:			dynamicModules.developersModuleInstallButtonEnabled
 
@@ -139,16 +139,11 @@ FocusScope
 						font:				Theme.fontRibbon
 
 						toolTip:			!isDynamic ? ""
-												: dynamicModule.installing ? "Installing:\n" + dynamicModule.installLog
-													: dynamicModule.loading ? "Loading:\n" + dynamicModule.loadLog
-														: dynamicModule.status === "readyForUse" ? "Loaded and ready for use!"
-															: dynamicModule.status === "error" ? "Error occurred!"
-																: "Not ready for use?"
-
-						//textColor:			ribbonEnabled ? Theme.black : hovered ? Theme.white : Theme.gray
-						//toolTip:			(ribbonEnabled ? "Disable" : "Enable") + " module " + displayText
-						//onClicked:			ribbonModel.toggleModuleEnabled(index)
-						//onHoveredChanged:	if(hovered && enabled) ribbonModel.highlightedModuleIndex = index
+												: dynamicModule.installing ? qsTr("Installing:") + "\n" + dynamicModule.installLog
+													: dynamicModule.loading ? qsTr("Loading:") + "\n" + dynamicModule.loadLog
+														: dynamicModule.status === "readyForUse" ? qsTr("Loaded and ready for use!")
+															: dynamicModule.status === "error" ? qsTr("Error occurred!")
+																: qsTr("Not ready for use?")
 
 						anchors
 						{
@@ -166,7 +161,7 @@ FocusScope
 						iconSource:		hovered ? "qrc:/icons/delete_icon.png" : "qrc:/icons/delete_icon_gray.png"  // icon from https://icons8.com/icon/set/delete/material
 						width:			visible ? height : 0
 						onClicked:		dynamicModules.uninstallJASPModule(moduleName)
-						toolTip:		"Uninstall module " + displayText
+						toolTip:		qsTr("Uninstall module ") + displayText
 						anchors
 						{
 							right			: parent.right
@@ -178,7 +173,6 @@ FocusScope
 		}
 
 		focus: true
-		//Keys.onSpacePressed: locationMenu.visible = !locationMenu.visible
 
 		Item
 		{
@@ -187,7 +181,6 @@ FocusScope
 			x:			-width
 			height:		parent.height
 			width:		Theme.shadowRadius
-			//visible:	modulesMenu.visible
 
 			Rectangle
 			{

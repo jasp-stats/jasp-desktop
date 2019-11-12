@@ -18,18 +18,14 @@ FocusScope
 	Rectangle
 	{
 		id:				formsBackground
-	//	z:				0
 		color:			Theme.uiBackground
 		border.color:	Theme.uiBorder
 		border.width:	1
-		//visible:		analyses.count > 0
 		anchors.fill:	parent
 
 		property real singleButtonHeight: Theme.formExpanderHeaderHeight + 2 * Theme.formMargin + analysesColumn.spacing
 
 		function getOffset(formIndex) { return formIndex < 0 ? 0 : formIndex * singleButtonHeight; }
-
-
 
 		function scrollToForm(formIndex)
 		{
@@ -39,19 +35,16 @@ FocusScope
 
 			if(formIndex === 0)
 			{
-				//console.log("first item so setting contentY to zero!")
 				analysesFlickable.contentY = 0;
 				return;
 			}
 
 			if (analysesModel.currentFormHeight + offset + singleButtonHeight <= analysesFlickable.contentHeight || analysesModel.currentFormHeight + singleButtonHeight > scrollAnalyses.height)
 			{
-				//console.log("Setting contenty to offset: "+offset)
 				analysesFlickable.contentY = offset;
 				return;
 			}
 
-			//console.log("Setting contenty to Math.max(0, offset + analysesModel.currentFormHeight+ singleButtonHeight - scrollAnalyses.height): "+(Math.max(0, offset + analysesModel.currentFormHeight + singleButtonHeight - scrollAnalyses.height)));
 			analysesFlickable.contentY = Math.max(0, offset + analysesModel.currentFormHeight + singleButtonHeight - scrollAnalyses.height);
 
 		}
@@ -67,12 +60,10 @@ FocusScope
 			id:				openCloseButton
 			width:			Theme.splitHandleWidth + (2 * border.width)
 			height:			parent.height
-			//color:			//mouseArea.containsMouse ? Theme.grayLighter : Theme.uiBackground
 			border.color:	Theme.uiBorder
 			border.width:	1
 			anchors.top:	parent.top
 			anchors.right:	parent.right
-
 
 			SplitHandle
 			{
@@ -84,8 +75,6 @@ FocusScope
 					fill:			parent
 					leftMargin:		openCloseButton.border.width
 					rightMargin:	openCloseButton.border.width
-					//topMargin:		-1
-					//bottomMargin:	-1
 				}
 				toolTipDrag:			mainWindow.dataAvailable	? (mainWindow.dataPanelVisible ? qsTr("Resize data/results")  : qsTr("Drag to show data")) : ""
 				toolTipArrow:			analysesModel.visible		? qsTr("Hide input options") : qsTr("Show input options")
@@ -143,12 +132,9 @@ FocusScope
 					PropertyAnimation { duration: 200; easing.type: Easing.OutQuad;   }
 				}
 
-				//onContentYChanged: console.log("ContentY changed to: " + contentY)
-
 				Connections
 				{
 					target:							analysesModel
-					//onAnalysisSelectedIndexResults:	reposition();
 					onCurrentFormHeightChanged:		if(analysesModel.currentFormHeight > analysesModel.currentFormPrevH) reposition(); //If it got larger it probably means an expander opened and we should reposition if possible
 
 					function reposition()
@@ -164,14 +150,12 @@ FocusScope
 								||	analysesFlickable.contentY		> previousAnalysisButtonBottom + analysesModel.currentFormHeight 	// Or the analysis isn't even in view
 							)
 							{
-								//console.log("Ok, size changed and we should have this analysis be visible, so calling scrollToForm!");
 
 								if(!contentYBehaviour.animation.running)
 									formsBackground.scrollToForm(row);
 							}
 						}
 					}
-
 				}
 
 				Column
