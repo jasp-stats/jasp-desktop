@@ -22,7 +22,7 @@
 #include "utilities/application.h"
 #include <QQuickWindow>
 #include "utilities/settings.h"
-
+#include <QtWebEngine>
 
 const std::string	jaspExtension	= ".jasp",
 					unitTestArg		= "--unitTest",
@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
 {
 #ifdef _WIN32
 	// Temporary fix for #2322 by disabling opengl drawing on windows
-	// Follow status of https://bugreports.qt.io/browse/QTBUG-61430 for 
+	// Follow status of https://bugreports.qt.io/browse/QTBUG-61430 for
 	// future permanent fix.
 	// This does slow down QML quite a bit and disables gradients
 	// qputenv("QT_QUICK_BACKEND", "software");
@@ -271,9 +271,9 @@ int main(int argc, char *argv[])
 
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
-#ifdef _WIN32
-			//QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it on anything 'cept windows
-#endif
+
+			QtWebEngine::initialize();
+
 			JASPTIMER_START("JASP");
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save, logToFile);
 			try

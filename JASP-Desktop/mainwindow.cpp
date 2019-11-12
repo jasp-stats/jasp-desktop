@@ -30,6 +30,7 @@
 #include <QDesktopServices>
 #include <QQmlContext>
 #include <QQuickItem>
+#include <QQuickStyle>
 #include <QtWebEngine>
 #include <QAction>
 #include <QMenuBar>
@@ -339,11 +340,11 @@ void MainWindow::loadDefaultFont()
 
 void MainWindow::loadQML()
 {
-	QtWebEngine::initialize();
-
-	//if (_qml != nullptr) delete _qml;
-
-	if (_qml == nullptr) _qml = new QQmlApplicationEngine(this);
+	if (_qml == nullptr)
+	{
+		QQuickStyle::setStyle("Default");// Because otherwise plasma on kde might mess things up...
+		_qml = new QQmlApplicationEngine(this);
+	}
 	else
 	{
 		_qml->clearComponentCache();
