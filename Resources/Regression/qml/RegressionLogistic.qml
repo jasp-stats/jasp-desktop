@@ -21,7 +21,6 @@ import JASP.Controls 1.0
 
 Form
 {
-	usesJaspResults: false
 	plotWidth: 480
 	plotHeight: 320
 	
@@ -105,8 +104,10 @@ Form
 		{
 			title: qsTr("Regression Coefficients")
             CheckBox { name: "coeffEstimates";	label: qsTr("Estimates"); checked: true
+                onClicked: { if (!checked && bootstrapping.checked) bootstrapping.click() }
                 CheckBox
                 {
+                    id: bootstrapping
                     name: "coeffEstimatesBootstrapping"; label: qsTr("From")
                     childrenOnSameRow: true
                     IntegerField
