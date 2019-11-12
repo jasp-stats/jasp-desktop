@@ -19,7 +19,7 @@ expect_equal_plots <- function(test, name, dir) {
       qq <- test
       test <- function() plot(qq)
     }
-    vdiffr::expect_doppelganger(paste(dir, name, sep="-"), test, path=dir)
+    suppressWarnings(vdiffr::expect_doppelganger(paste(dir, name, sep="-"), test, path=dir))
   }
 }
 
