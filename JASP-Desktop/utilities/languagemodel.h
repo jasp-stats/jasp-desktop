@@ -32,8 +32,8 @@ struct LanguageInfo {
 class LanguageModel : public QAbstractListModel
 {
 	Q_OBJECT
-	Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
-	Q_PROPERTY(QString emptyString READ getEmptyString NOTIFY languageChanged)
+	Q_PROPERTY(int		currentIndex	READ currentIndex	WRITE setCurrentIndex	NOTIFY currentIndexChanged)
+	Q_PROPERTY(QString	emptyString		READ getEmptyString							NOTIFY languageChanged)
 
 public:
 
@@ -62,12 +62,12 @@ public:
 	void setApplicationEngine(QQmlApplicationEngine	 * ae);
 
 public slots:
-	void changeLanguage(int index, QQuickItem* item);
+	void changeLanguage(int index);
 	void setCurrentIndex(int currentIndex);
 
 signals:
 	void currentIndexChanged(int currentIndex);
-	void languageChanged(QString emptyString);
+	void languageChanged();
 
 private:
 

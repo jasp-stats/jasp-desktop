@@ -11,6 +11,7 @@
 #include <QQuickView>
 #include <QDir>
 #include <locale>
+#include "gui/messageforwarder.h"
 
 using namespace std;
 
@@ -19,7 +20,6 @@ LanguageInfo  LanguageModel::CurrentLanguageInfo;
 LanguageModel::LanguageModel(QString qmsourcepath, QApplication *app, QObject *parent)
 	: QAbstractListModel(parent)
 {
-
 	_mApp = app;
 	_parent = parent;
 
@@ -121,9 +121,9 @@ QHash<int, QByteArray> LanguageModel::roleNames() const
 	return roles;
 }
 
-void LanguageModel::changeLanguage(int index, QQuickItem* item)
+void LanguageModel::changeLanguage(int index)
 {	
-	// Called from PrefsAdvanced.qml
+	// Called from PrefsUI.qml
 
 	bool changed = false;
 	QLocale::Language cl = _languages[index];
@@ -139,56 +139,15 @@ void LanguageModel::changeLanguage(int index, QQuickItem* item)
 		for (QString qmfilename: li.qmFilenames)
 			_mTransLator->load(qmfilename, _qmlocation);
 		changed = _mApp->installTranslator(_mTransLator);
-		//_qml->retranslate();
-		//_mApp->flush();
-		//_qml->clearComponentCache();
-		//_qml->retranslate();
 	}
 
 	if (changed)
+	{
 		Settings::setValue(Settings::PREFERRED_LANGUAGE, cl);
-
-	emit languageChanged("");
-
-	//QQmlApplicationEngine engine;
-	//engine.retranslate();
-
-	//QQmlApplicationEngine *ae = new QQmlApplicationEngine(mApp);
-	//ae->retranslate();
-
-	//qmlEngine(item)->retranslate();  //Bochus
-
-	//setCurrentIndex(index);
-
-	//QQmlEngine *qe = new QQmlEngine();
-	//qe->retranslate();
-
-	//QQmlEngine *qe = new QQmlEngine(mApp);
-	//qe->retranslate();
-
-	//QQmlEngine *qe = new QQmlEngine(_parent);
-	//qe->retranslate();
-
-	//QQmlApplicationEngine *ae = new QQmlApplicationEngine(_parent);
-	//ae->retranslate();
-
-	//_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
-	//_qml->clearComponentCache();
-	//_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
-	//_qml->retranslate();
-	//_qml->clearComponentCache();
-
-	//QQuickView *qv = new QQuickView(QUrl("/Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml"));
-	//qv->engine()->retranslate();
-
-	//QQmlApplicationEngine engine("/Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml");
-	//engine.retranslate();
-
-	//QQmlApplicationEngine engine;
-	//engine.retranslate();
-
-	//mainWindow->loadQML();
-
+		setCurrentIndex(index);
+		emit languageChanged();
+		MessageForwarder::showWarning(tr("After changing languages you need to restart JASP for it to take effect."));
+	}
 }
 
 

@@ -124,5 +124,6 @@
         <file>translations/images/flag_nl.png</file>
         <file>resources/fonts/FreeSans.ttf</file>
         <file>components/JASP/Theme/DarkTheme.qml</file>
+        <file>components/JASP/Widgets/FileMenu/PrefsUI.qml</file>
     </qresource>
 </RCC>

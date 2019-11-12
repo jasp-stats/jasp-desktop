@@ -94,7 +94,6 @@ public:
 	bool	welcomePageVisible()	const	{ return _welcomePageVisible;	}
 	bool	checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
 	QString downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
-	void loadQML();
 
 public slots:
 	void setImageBackgroundHandler(QString value);

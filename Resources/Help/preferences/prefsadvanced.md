@@ -5,30 +5,10 @@ Advanced Preferences
 With the advanced parameters in JASP you can specify the following options:
 (All these settings will remain after restarting JASP.)
 
-## User interface options
-
-### Zoom
-
-This number specifies how the JASP interface will be scaled.
-All menus and results are scaled by this factor.
-You can also use keyboard shortcuts instead:
-
-- OSX:  &#8984; with `+`, `-` or `0`
-- Windows and Linux: Ctrl with `+`, `-` or `0`
-
-`-` decreases and `+` increases the scale while `0` resets the scaling to its default value.
-
-### Scroll speed
-This speed determines, in pixels per second, what the maximum flick / scroll speed is of certain moving elements in JASP.
-Should you find that scrolling in the options goes too fast, or too slow, you can change this.
+## Modules options
 
 ### Remember Enabled Modules
 If you've enabled this option then JASP will remember which modules are activated and make sure they remain that way even when you close JASP. So supposing `Summary Statistics` was enabled and JASP closes then after reopening JASP it will be enabled immediately.
-
-### Safe Graphics
-If this is enabled JASP will run in software rendering mode, which means your interface is slower but weird glitches or other problems might disappear. You will need to restart JASP for this option to take effect though!
-
-## Modules options
 
 ### Developer Mode (Beta version)
 

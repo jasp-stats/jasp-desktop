@@ -1,7 +1,6 @@
-import QtQuick			2.11
-import QtQuick.Controls 2.4
+import QtQuick			2.13
+import QtQuick.Controls 2.13
 import JASP.Widgets		1.0
-
 import JASP.Controls	1.0
 
 ScrollView
@@ -11,16 +10,6 @@ ScrollView
 	onActiveFocusChanged:	if(activeFocus) uiScaleSpinBox.forceActiveFocus();
 	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
-	Connections
-	{
-		target:						preferencesModel
-		onCurrentThemeNameChanged:	//We do the following because othwerwise the whole preferences panel gets messed up when we change theme
-		{
-			scrollPrefs.visible = false;
-			scrollPrefs.visible = true;
-		}
-	}
-
 	Column
 	{
 		width:			scrollPrefs.width
@@ -29,51 +18,17 @@ ScrollView
 		MenuHeader
 		{
 			id:				menuHeader
-			headertext:		qsTr("Advanced Preferences") + languageModel.emptyString
+			headertext:		qsTr("Advanced Preferences")
 			helpfile:		"preferences/prefsadvanced"
 			anchorMe:		false
 			width:			scrollPrefs.width - (2 * jaspTheme.generalMenuMargin)
 			x:				jaspTheme.generalMenuMargin
 		}
 
+
 		PrefsGroupRect
 		{
-			title:						qsTr("User interface options")
-
-			SpinBox
-			{
-				id:						uiScaleSpinBox
-				value:					Math.round(preferencesModel.uiScale * 100)
-				onEditingFinished:		preferencesModel.uiScale = value / 100
-				from:					20
-				to:						300
-				stepSize:				10
-				decimals:				0
-				text:					qsTr("Zoom (%): ")
-				toolTip:				qsTr("Increase or decrease the size of the interface elements (text, buttons, etc).")
-
-				KeyNavigation.tab:		uiMaxFlickVelocity
-				KeyNavigation.down:		uiMaxFlickVelocity
-
-				widthLabel:				Math.max(uiScaleSpinBox.implicitWidthLabel, uiMaxFlickVelocity.implicitWidthLabel)
-			}
-
-			SpinBox
-			{
-				id:						uiMaxFlickVelocity
-				value:					preferencesModel.maxFlickVelocity
-				onValueChanged:			if(value !== "") preferencesModel.maxFlickVelocity = value
-				from:					100
-				to:						3000
-				stepSize:				100
-				decimals:				0
-				text:					qsTr("Scroll speed (pix/s): ")
-				toolTip:				qsTr("Set the speed with which you can scroll in the options, dataviewer and other places.")
-				widthLabel:				uiScaleSpinBox.widthLabel
-
-				KeyNavigation.tab:		rememberModulesSelected
-				KeyNavigation.down:		rememberModulesSelected
-			}
+			title:				qsTr("Modules options")
 
 			CheckBox
 			{
@@ -82,57 +37,9 @@ ScrollView
 				checked:			preferencesModel.modulesRemember
 				onCheckedChanged:	preferencesModel.modulesRemember = checked
 				toolTip:			qsTr("Continue where you left of the next time JASP starts.\nEnabling this option makes JASP remember which Modules you've enabled.")
-				KeyNavigation.tab:	safeGraphicsMode
-				KeyNavigation.down:	safeGraphicsMode
+				KeyNavigation.tab:	developerMode
+				KeyNavigation.down:	developerMode
 			}
-
-			CheckBox
-			{
-				id:					safeGraphicsMode
-				label:				qsTr("Safe Graphics Mode")
-				checked:			preferencesModel.safeGraphics
-				onCheckedChanged:	preferencesModel.safeGraphics = checked
-				toolTip:			qsTr("Switches to a \"safer\" mode for graphics aka software rendering.\nIt will make your interface slower but if you have some problems (weird glitches, cannot see results or anything even) might fix them.\nAnalyses will still be just as fast though.")
-				KeyNavigation.tab:	lightThemeButton
-				KeyNavigation.down:	lightThemeButton
-			}
-
-			PrefsGroupRect
-			{
-				title:		qsTr("Interface Themes")
-
-				RadioButtonGroup
-				{
-					id:			themes
-
-					RadioButton
-					{
-						id:					lightThemeButton
-						label:				qsTr("Light Theme")
-						checked:			preferencesModel.currentThemeName === "lightTheme"
-						onCheckedChanged:	preferencesModel.currentThemeName  =  "lightTheme"
-						toolTip:			qsTr("Switches to a light theme, this is the default and original flavour of JASP.")
-						KeyNavigation.tab:	darkThemeButton
-						KeyNavigation.down:	darkThemeButton
-					}
-
-					RadioButton
-					{
-						id:					darkThemeButton
-						label:				qsTr("Dark Theme")
-						checked:			preferencesModel.currentThemeName === "darkTheme"
-						onCheckedChanged:	preferencesModel.currentThemeName  =  "darkTheme"
-						toolTip:			qsTr("Switches to a dark theme, makes JASP a lot easier on the eyes for those night owls out there.")
-						KeyNavigation.tab:	developerMode
-						KeyNavigation.down:	developerMode
-					}
-				}
-			}
-		}
-
-		PrefsGroupRect
-		{
-			title:				qsTr("Modules options")
 
 			CheckBox
 			{
@@ -350,44 +257,9 @@ ScrollView
 						margins:	jaspTheme.generalAnchorMargin
 						left:		maxLogFilesSpinBox.right
 					}
-					KeyNavigation.tab:	uiScaleSpinBox
-					KeyNavigation.down:	uiScaleSpinBox
 				}
 			}
 		}
 
-		PrefsGroupRect
-		{
-			id:		languageGroup
-			title:	qsTr("Preferred Language")
-
-			ComboBox
-			{
-				id:			languages
-				fieldWidth: 100
-
-				label:		qsTr("Choose Language  ") + languageModel.emptyString
-
-				useModelDefinedIcon: true
-				isDirectModel:		true
-
-				currentIndex:		languageModel.currentIndex
-
-				model: languageModel
-
-				onActivated:{
-					languageModel.currentIndex =index
-					languageModel.changeLanguage(index, scrollPrefs);
-				}
-			}
-
-		}
-
-		Item
-		{
-			id:		extraSpaceForScrolling
-			width:	1
-			height:	1
-		}
 	}
 }
