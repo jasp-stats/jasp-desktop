@@ -14,27 +14,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#TODO: the ui for defining colors should be a box with groupName | color and a 2nd box with variable | extracolumn: dropdown, source = groupNames
-NetworkAnalysis <- function(jaspResults, dataset, options) {
 
+NetworkAnalysis <- function(jaspResults, dataset, options) {
+  
   dataset <- .networkAnalysisReadData      (dataset, options)
   options <- .networkAnalysisDerivedOptions(dataset, options)
-
-  mainContainer <- .networkAnalysisSetupMainContainerAndTable(jaspResults, dataset, options)
+  
+  mainContainer <- .networkAnalysisSetupMainContainerAndTable(jaspResults, options)
   .networkAnalysisErrorCheck(mainContainer, dataset, options)
-
+  
   network <- .networkAnalysisRun(mainContainer, dataset, options)
-
+  
   .networkAnalysisMainTable(mainContainer, dataset, options, network)
-
+  
   .networkAnalysisCentralityTable  (mainContainer, network, options)
   .networkAnalysisClusteringTable  (mainContainer, network, options)
   .networkAnalysisPlotContainer    (mainContainer, network, options)
   .networkAnalysisWeightMatrixTable(mainContainer, network, options)
-
+  
   # done last so that all other results are shown already
   .networkAnalysisBootstrap(mainContainer, network, options)
-
+  
   return()
 }
 
@@ -42,12 +42,15 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
   if (!is.null(dataset))
     return(dataset)
-  
+
   variables <- unlist(options[["variables"]])
   groupingVariable <- options[["groupingVariable"]]
   vars2read <- c(variables, groupingVariable)
   vars2read <- vars2read[vars2read != ""]
-  dataset <- .readDataSetToEnd(columns.as.numeric = vars2read)
+  exclude    <- c()
+  if (options[["missingValues"]] == "listwise")
+    exclude <- vars2read
+  dataset <- .readDataSetToEnd(columns.as.numeric = vars2read, exclude.na.listwise = exclude)
   
   if (options[["groupingVariable"]] == "") { # one network
     dataset <- list(dataset) # for compatability with the split behaviour
@@ -65,45 +68,25 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
   variables <- unlist(options[["variables"]])
   nvar <- length(variables)
-  # new way that turned out to be not so useful
-  # if (options[["layoutX"]] != "" && options[["layoutY"]] != "") {
-  # 
-  #   options[["layoutXData"]] <- .readDataSetToEnd(columns.as.numeric = options[["layoutX"]], exclude.na.listwise = options[["layoutX"]])[[1]]
-  #   options[["layoutYData"]] <- .readDataSetToEnd(columns.as.numeric = options[["layoutY"]], exclude.na.listwise = options[["layoutY"]])[[1]]
-  # 
-  # }
-  # 
-  # options[["layoutInvalid"]] <- FALSE
-  # if (options[["layout"]] == "data" && any(
-  #   !is.numeric(options[["layoutXData"]]), !is.numeric(options[["layoutYData"]]), 
-  #   anyNA(options[["layoutXData"]]), anyNA(options[["layoutYData"]]),
-  #   length(options[["layoutXData"]]) != nvar,
-  #   length(options[["layoutYData"]]) != nvar
-  # )) {
-  #   # there actually is data for the layout
-  #   if (!is.null(options[["layoutXData"]]))
-  #     options[["layoutMessage"]] <- sprintf("Data for layout was not understood. The first %d entries of these columns should contain numeric values.", nvar)
-  #   options[["layoutInvalid"]] <- TRUE
-  # }
-
-  # old way of saving layout, use this if it turns out that we must save the layout in the A1 = ... style.
+  
+  # it turns out that we must save the layout in the A1 = ... style.
   variables <- unlist(options[["variables"]])
   if (options[["layoutX"]] != "" && options[["layoutY"]] != "") {
-
-    options[["layoutXData"]] <- .readDataSetToEnd(columns = options[["layoutX"]], exclude.na.listwise = options[["layoutX"]])[[1L]]
-    options[["layoutYData"]] <- .readDataSetToEnd(columns = options[["layoutY"]], exclude.na.listwise = options[["layoutY"]])[[1L]]
-    xyCoords <- .networkAnalysisSanitizeLayoutData(variables, options)
-    options[["layoutXData"]] <- xyCoords[["x"]]
-    options[["layoutYData"]] <- xyCoords[["y"]]
+    
+    layoutXData <- .readDataSetToEnd(columns = options[["layoutX"]], exclude.na.listwise = options[["layoutX"]])[[1L]]
+    layoutYData <- .readDataSetToEnd(columns = options[["layoutY"]], exclude.na.listwise = options[["layoutY"]])[[1L]]
+    xyCoords <- .networkAnalysisSanitizeLayoutData(variables, layoutXData, layoutYData, 
+                                                   options[["layoutX"]], options[["layoutY"]])
+    options[["layoutData"]] <- xyCoords[["layoutData"]]
     options[["layoutMessage"]] <- xyCoords[["message"]]
-
+    
   }
-
+  
   options[["layoutInvalid"]] <- FALSE
   # some sanity checks on the layout
   if (!is.null(options[["layoutXData"]]) && (length(options[["layoutXData"]]) < length(variables) || length(options[["layoutYData"]]) < length(variables)))
     options[["layoutInvalid"]] <- TRUE
-
+  
   options[["nGraphs"]] <- length(dataset)
   options[["ready"]] <- length(options[["variables"]]) > 2L
   options[["readyBootstrap"]] <- options[["ready"]] && options[["bootstrapOnOff"]] && options[["numberOfBootstraps"]] > 0L
@@ -116,9 +99,6 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   # and always use pairwise information even though their documentation says they can do listwise
   if (length(options[["variables"]]) < 3)
     return()
-  
-  if (options[["missingValues"]] == "listwise")
-    dataset <- dataset[complete.cases(dataset), ]
   
   # check for errors, but only if there was a change in the data (which implies state[["network"]] is NULL)
   if (is.null(mainContainer[["networkState"]])) {
@@ -152,6 +132,10 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     # default error checks
     checks <- c("infinity", "variance", "observations", "varCovData")
     
+    # hasErrors wants the dataset as a single thing instead of as a list of data.frames
+    # we could also just ignore the grouping elements and loop manually though
+    dataset <- Reduce(rbind.data.frame, dataset)
+
     groupingVariable <- NULL
     if (options[["groupingVariable"]] != "") {
       groupingVariable <- options[["groupingVariable"]]
@@ -176,9 +160,10 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     fun <- cor
     if (options[["correlationMethod"]] == "cov")
       fun <- cov
+
     .hasErrors(dataset = dataset, perform = perform,
                type = checks,
-               variance.target = variables, # otherwise the grouping variable always has variance == 0
+               variance.target = options[["variables"]], # otherwise the grouping variable always has variance == 0
                variance.grouping = groupingVariable,
                factorLevels.target = categoricalVars,
                factorLevels.amount = "> 10", # probably a misspecification of mgmVariableType when this happens.
@@ -194,7 +179,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 }
 
 # tables ----
-.networkAnalysisSetupMainContainerAndTable <- function(jaspResults, dataset, options) {
+.networkAnalysisSetupMainContainerAndTable <- function(jaspResults, options) {
   
   mainContainer <- jaspResults[["mainContainer"]]
   if (is.null(mainContainer)) {
@@ -212,12 +197,12 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     mainContainer$addCitation(.networkAnalysisBootnetGetRefs(options[["estimator"]]))
     jaspResults[["mainContainer"]] <- mainContainer
   }
-  .networkAnalysisMainTableMeta(mainContainer, dataset, options)
+  .networkAnalysisMainTableMeta(mainContainer, options)
   
   return(mainContainer)
 }
 
-.networkAnalysisMainTableMeta <- function(mainContainer, dataset, options) {
+.networkAnalysisMainTableMeta <- function(mainContainer, options) {
   
   if (is.null(mainContainer[["generalTable"]])) {
     tb <- createJaspTable("Summary of Network", position = 1, dependencies = c(
@@ -324,7 +309,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     table$addColumnInfo(name = paste0("Closeness", i),   title = "Closeness",   type = "number", overtitle = overTitles[i])
     table$addColumnInfo(name = paste0(nameCol3, i),      title = "Strength",    type = "number", overtitle = overTitles[i])
   }
-
+  
   mainContainer[["centralityTable"]] <- table
   if (is.null(network[["centrality"]]) || mainContainer$getError())
     return()
@@ -376,11 +361,12 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   mainContainer[["clusteringTable"]] <- table
   if (is.null(network[["clustering"]]) || mainContainer$getError())
     return()
-  
+
   # fill with results
   TBcolumns <- NULL
+  footnotes <- attr(network[["clustering"]], "footnotes")
   for (i in seq_len(nGraphs)) {
-    
+
     toAdd <- network[["clustering"]][[i]]
     names(toAdd) <- c("Variable", paste0(measureNms[[i]], i))
     if (i == 1L) {# if more than 1 network drop additional variable column
@@ -392,6 +378,13 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   }
   
   table$setData(TBcolumns)
+  if (!is.null(footnotes)) {
+    # ugly, but jaspResults doesn't suupport any other way
+    colNames <- NULL
+    for (j in footnotes[["column"]])
+      colNames <- c(colNames, table$getColumnName(j))
+    table$addFootnote(message = footnotes[["message"]], colNames = colNames)
+  }
   if (any(nMeasures != 4L)) {
     nms <- names(network[["network"]])[nMeasures != 4L]
     s <- if (length(nms) == 1L) "" else "s"
@@ -541,7 +534,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   plotContainer[["clusteringPlot"]] <- plot
   if (is.null(network[["clustering"]]) || plotContainer$getError())
     return()
-  
+
   wide <- network[["clustering"]]
   
   len <- lengths(wide)
@@ -576,9 +569,9 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     Long[["node"]] <- base::abbreviate(Long[["node"]], options[["abbreviateNoChars"]])
   
   # code modified from qgraph::centralityPlot(). Type and graph are switched so the legend title says graph
-  
   Long <- Long[gtools::mixedorder(Long$node), ]
   Long$node <- factor(as.character(Long$node), levels = unique(gtools::mixedsort(as.character(Long$node))))
+  # travis will complain otherwise
   if (length(unique(Long$graph)) > 1) {
     g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = graph,
                                             colour = graph)) +
@@ -599,7 +592,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
 }
 
-.networkAnalysisOneNetworkPlot <- function(network, options, minE, qgraph, layout, groups, maxE, labels, legend, shape,
+.networkAnalysisOneNetworkPlot <- function(network, options, minE, layout, groups, maxE, labels, legend, shape,
                                            nodeColor, edgeColor, nodeNames) {
   
   wMat <- network[["graph"]]
@@ -615,19 +608,19 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   return(
     qgraph::qgraph(
       input       = wMat,
-      layout      = layout, # options[["layout"]],
+      layout      = layout,
       groups      = groups,
-      repulsion   = options[["repulsion"]], # redundant
+      repulsion   = options[["repulsion"]],
       cut         = options[["cut"]],
       edge.width  = options[["edgeSize"]],
       node.width  = options[["nodeSize"]],
-      maximum     = maxE, # options[["maxEdgeStrength"]],
-      minimum     = minE, # options[["minEdgeStrength"]],
+      maximum     = maxE,
+      minimum     = minE,
       details     = options[["showDetails"]],
-      labels      = labels, # .unv(network[["labels"]]),
-      palette     = options[["nodeColors"]],
+      labels      = labels,
+      palette     = if (options[["manualColors"]]) NULL else options[["nodePalette"]],
       theme       = options[["edgeColors"]],
-      legend      = legend, # options[["showLegend"]]
+      legend      = legend,
       shape       = shape,
       color       = nodeColor,
       edge.color  = edgeColor,
@@ -651,10 +644,11 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
   networkPlotContainer <- createJaspContainer(title = title, position = 41, dependencies = c(
     "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
-    "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodeColors",
+    "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodePalette",
     "showLegend", "legendNumber", "showMgmVariableType", "showVariableNames",
     "graphSize", "scaleLabels", "labelSize", "abbreviateLabels", "abbreviateNoChars",
-    "keepLayoutTheSame", "layoutX", "layoutY"
+    "keepLayoutTheSame", "layoutX", "layoutY", "plotNetwork",
+    "groupNames", "groupColors", "variablesForColor", "groupAssigned", "manualColors"
   ))
   plotContainer[["networkPlotContainer"]] <- networkPlotContainer
   
@@ -664,7 +658,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   }
   
   aspectRatio <- if (options[["graphSize"]] == "graphSizeFree") 0 else 1
-
+  
   layout <- network[["layout"]] # calculated in .networkAnalysisRun()
   
   # ensure minimum/ maximum makes sense or ignore these parameters.
@@ -678,18 +672,30 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     maxE <- NULL
   
   groups <- NULL
+  nodeColor <- NULL
   allLegends <- rep(FALSE, nGraphs) # no legends
-  if (!is.null(options[["colorNodesByData"]])) { # define groups
-    
-    u <- unique(options[["colorNodesByData"]])
-    groups <- lapply(u, function(x, y) which(y == x), y = options[["colorNodesByData"]])
-    names(groups) <- u
-    
+
+  if (length(options[["variablesForColor"]]) > 1L) { 
+    variablesForColor <- matrix(unlist(options[["variablesForColor"]]), ncol = 2L, byrow = TRUE)
+    if (length(unique(variablesForColor[, 1L])) > 1L) {
+      # user has defined groups and there are variables in the groups
+      groupNames <- matrix(unlist(options[["groupNames"]]), ncol = 2L, byrow = TRUE)
+      nGroups <- nrow(groupNames)
+
+      idx <- match(variablesForColor[, 1L], groupNames[, 1L])
+
+      groups <- vector("list", nGroups)
+      names(groups) <- groupNames[, 1L]
+      for (i in seq_len(nGroups))
+        groups[[i]] <- which(idx == i)
+      
+      if (options[["manualColors"]])
+        nodeColor <- groupNames[idx, 2L]
+    }
   }
-  
+
   # defaults
   shape <- "circle"
-  nodeColor <- NULL
   edgeColor <- NULL
   if (options[["estimator"]] == "mgm" && options[["mgmVariableType"]] != "" ) {
     
@@ -761,13 +767,19 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
       }
       
       legend <- allLegends[[v]]
-      # TODO: what does this do?????
-      # if (legend && options[["graphSize"]] == "graphSizeFixed")
-      #   subPlot[["width"]] <- 1.4 * subPlot[["height"]]
-      
       networkPlotContainer[[v]]$plotObject <- .networkAnalysisOneNetworkPlot(
-        networkToPlot, options, minE, qgraph, layout, groups, maxE, labels, legend, shape, nodeColor, edgeColor, 
-        nodeNames
+        network    = networkToPlot,
+        options    = options,
+        minE       = minE,
+        maxE       = maxE,
+        layout     = layout,
+        groups     = groups,
+        labels     = labels,
+        legend     = legend,
+        shape      = shape,
+        nodeColor  = nodeColor,
+        edgeColor  = edgeColor,
+        nodeNames  = nodeNames
       )
     }
   })
@@ -789,7 +801,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (!options[[opt]] || !is.null(bootstrapContainer[[name]]))
     return()
   
-  plotContainer <- createJaspContainer(title = title, position = position)
+  plotContainer <- createJaspContainer(title = title, position = position, dependencies = opt)
   
   for (v in names(bootstrapResults))
     plotContainer[[v]] <- createJaspPlot(title = v)
@@ -823,7 +835,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
   if (!options[["ready"]])
     return(networkList)
-
+  
   if (is.null(networkList[["network"]]))
     tryCatch(
       networkList[["network"]] <- .networkAnalysisComputeNetworks(options, dataset),
@@ -834,7 +846,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
         mainContainer$setError(paste0("bootnet crashed with the following error message:\n", .extractErrorMessage(e)))
       }
     )
-
+  
   if (!mainContainer$getError() && !is.null(networkList[["network"]])) {
     if (is.null(networkList[["centrality"]]))
       networkList[["centrality"]] <- .networkAnalysisComputeCentrality(networkList[["network"]], options[["normalizeCentrality"]], options[["weightedNetwork"]], options[["signedNetwork"]])
@@ -858,7 +870,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     .networkAnalysisSaveLayout(mainContainer, options, networkList[["layout"]])
     
   }
-
+  
   return(networkList)
   
 }
@@ -991,7 +1003,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
   if (!isNamespaceLoaded("bootnet"))
     try(loadNamespace("bootnet"), silent = TRUE)
-
+  
   # setup all bootnet arguments, then loop over datasets to estimate networks
   .dots <- .networkAnalysisMakeBootnetArgs(dataset, options)
   
@@ -1009,9 +1021,10 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
         , type = "message"
       )
     )
-
+    
     network[["corMessage"]] <- msg
     networks[[nw]] <- network
+    
   }
   return(networks)
 }
@@ -1114,16 +1127,44 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
 .networkAnalysisComputeClustering <- function(networks) {
   clusterings <- vector("list", length(networks))
+  footnotes <- NULL
   for (nw in seq_along(networks)) {
-    
+
     network <- networks[[nw]]
-    clust <- qgraph::clusteringTable(network, labels = .unv(network[["labels"]]))
+    clust <- qgraph::clusteringTable(network, labels = .unv(network[["labels"]]), standardized = FALSE)
     clust <- reshape2::dcast(clust, graph + node + type ~ measure, value.var = "value")
     TBclust <- as.data.frame(clust[-c(1, 3)])
     TBclust <- TBclust[c(1L, order(colnames(TBclust)[-1L]) + 1L)] # alphabetical order
-    clusterings[[nw]] <- TBclust
     
+    # manually standardize the data. This allows for some extra checks on the standard deviation,
+    # which can be very very small. If that happens, the data are pretty shitty or perhaps this clustering
+    # statistic is just inappropriate for the particular data set. Either way, it makes the unit tests
+    # fail because typically the small differences are just machine precision (and so is the sd).
+    for (i in 2:ncol(TBclust)) {
+      TBclust[, i] <- TBclust[, i] - mean(TBclust[, i])
+      sdx <- sd(TBclust[, i])
+
+      # perform some checks on the standard deviationbasically, the data are pretty shitty if this happens, or perhaps this clustering
+      # statistic is just inappropriate for the particular data set.
+      if (!is.na(sdx) && sdx > sqrt(.Machine$double.eps))
+        TBclust[, i] <- TBclust[, i] / sdx
+      else if (is.null(footnotes))
+        footnotes <- list(column = i, message = "Coefficient could not be standardized because the variance is too small.")
+      else
+        footnotes$column <- c(footnotes$column, i)
+
+      # this can only be true if the variance check failed. We set this to exactly zero because otherwise 
+      # the "smart" ggplot2 axis determination will create different axes on different platforms causing unit tests to fail
+      if (all(TBclust[, i] < sqrt(.Machine$double.eps)))
+        TBclust[, i] <- 0
+      
+    }
+    clusterings[[nw]] <- TBclust
+
   }
+  if (!is.null(footnotes))
+    attr(clusterings, "footnotes") <- footnotes
+  
   return(clusterings)
 }
 
@@ -1133,19 +1174,23 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
       options[["layout"]] <- "circle"
     
     .suppressGrDevice(layout <- qgraph::averageLayout(networks, layout = options[["layout"]], repulsion = options[["repulsion"]]))
+    rownames(layout) <- .unv(colnames(networks[[1L]]))
     
   } else {
-    layout <- cbind(options[["layoutXData"]], options[["layoutYData"]])
+    layout <- options[["layoutData"]]
+    nms <- .unv(networks[[1L]][["labels"]])
+    idx <- match(nms, rownames(layout))
+    layout <- layout[idx, ]
   }
   return(layout)
 }
 
 .networkAnalysisSaveLayout <- function(mainContainer, options, layout) {
-
+  
   # TODO: bail out if layout computation failed
   if (!options[["addLayoutToData"]] || options[["layout"]] == "data" || is.null(layout) || mainContainer$getError())
     return()
-
+  
   if (options[["computedLayoutX"]] == "" || options[["computedLayoutY"]] == "") {
     mainContainer[["generalTable"]]$addFootnote("Please supply a name for both the x and y-coordinates of the layout.")
     return()
@@ -1156,7 +1201,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   mainContainer[["layoutYColumn"]] <- createJaspColumn(options[["computedLayoutY"]], c("layout", "repulsion", "layoutX", "layoutY", "computedLayoutY"))
   mainContainer[["layoutXColumn"]]$setNominalText(paste(variables, "=", layout[, 1L]))
   mainContainer[["layoutYColumn"]]$setNominalText(paste(variables, "=", layout[, 2L]))
-
+  
 }
 
 # bootstrap network functions ----
@@ -1165,7 +1210,9 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   # this container is always created so that empty placeholds can be shown for the bootstrap plots
   bootstrapContainer <- mainContainer[["bootstrapContainer"]]
   if (is.null(bootstrapContainer)) {
-    bootstrapContainer <- createJaspContainer("", position = 9, dependencies = c("numberOfBootstraps", "BootstrapType"))
+    bootstrapContainer <- createJaspContainer("", position = 9, dependencies = c(
+      "numberOfBootstraps", "BootstrapType", "bootstrapOnOff"
+    ))
     mainContainer[["bootstrapContainer"]] <- bootstrapContainer
   }
   
@@ -1424,13 +1471,12 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
 }
 
-.networkAnalysisSanitizeLayoutData <- function(variables, options) {
+.networkAnalysisSanitizeLayoutData <- function(variables, layoutXData, layoutYData,
+                                               nameX, nameY) {
   
-  
-  
-  checksX <- .networkAnalysisFindDataType(variables = variables, variableMatch = options[["layoutXData"]], char = "=",
+  checksX <- .networkAnalysisFindDataType(variables = variables, variableMatch = layoutXData, char = "=",
                                           inputCheck = Negate(is.na), asNumeric = TRUE)
-  checksY <- .networkAnalysisFindDataType(variables = variables, variableMatch = options[["layoutYData"]], char = "=",
+  checksY <- .networkAnalysisFindDataType(variables = variables, variableMatch = layoutYData, char = "=",
                                           inputCheck = Negate(is.na), asNumeric = TRUE)
   
   message <- NULL
@@ -1438,11 +1484,11 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (checksX[["errors"]][["fatal"]] || checksY[["errors"]][["fatal"]]) {
     
     if (checksX[["errors"]][["fatal"]] && checksY[["errors"]][["fatal"]]) {
-      firstLine <- sprintf("Data supplied in %s AND %s could not be used to determine node locations.", options[["layoutX"]], options[["layoutY"]])
+      firstLine <- sprintf("Data supplied in %s AND %s could not be used to determine node locations.", nameX, nameY)
     } else if (checksX[["errors"]][["fatal"]]) {
-      firstLine <- sprintf("Data supplied in %s could not be used to determine node locations.", options[["layoutX"]])
+      firstLine <- sprintf("Data supplied in %s could not be used to determine node locations.", nameX)
     } else {
-      firstLine <- sprintf("Data supplied in %s could not be used to determine node locations.", options[["layoutY"]])
+      firstLine <- sprintf("Data supplied in %s could not be used to determine node locations.", nameY)
     }
     
     message <- sprintf("%s %sData should only contain numeric:
@@ -1474,8 +1520,13 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   matchY <- checksY[["matches"]]
   orderX <- match(variables, matchX[, 1])
   orderY <- match(variables, matchY[, 1])
-  out <- list(x = checksX[["values"]][orderX], y = checksY[["values"]][orderY],
-              message = message)
+  layoutData <- cbind(x = checksX[["values"]][orderX], y = checksY[["values"]][orderY])
+  if (!is.null(layoutData)) {
+    if (is.null(nrow(layoutData)))
+      layoutData <- matrix(layoutData, nrow = 1)
+    rownames(layoutData) <- variables
+  }
+  out <- list(layoutData = layoutData, message = message)
   
   return(out)
   
@@ -1892,9 +1943,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     }
   }
   else {
-    # statTableBoots <- parallel::parLapply(cl, seq_len(nBoots), function(b) {
-    # print(class(bootResults))
-    # str(bootResults, max.level = 3)
+
     objToExport <- c("bootResults", "alpha", "computeCentrality",
                      "statistics", "directed")
     snow::clusterExport(cl = cl, list = objToExport, envir = environment())

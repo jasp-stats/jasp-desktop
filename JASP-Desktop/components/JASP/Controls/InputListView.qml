@@ -82,7 +82,7 @@ JASPListControl
 					anchors.rightMargin: deleteIconID.width
 					model:				itemRectangle.extraColumnsModel
 					controlComponents:  inputListView.extraControlComponents
-					//enabled:			!itemRectangle.isVirtual && inputListView.enableExtraColumns
+					enabled:			!itemRectangle.isVirtual && inputListView.enableExtraColumns
 				}
 
 				Image

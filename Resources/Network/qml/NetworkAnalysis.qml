@@ -307,13 +307,12 @@ Form
 		Group
 		{
 			Layout.columnSpan: 2
-			DoubleField	{ name: "nodeSize";		label: qsTr("Node size");		defaultValue: 1; max: 10	}
-			CheckBox	{ name: "manualColors";	label: qsTr("Manual colors");	id: manualColors			}
+			CheckBox	{ name: "manualColors";	label: qsTr("Manual colors");	id: manualColors	}
 			DropDown
 			{
 				enabled: !manualColors.checked
 				id: paletteSelector
-				name: "nodeColors"
+				name: "nodePalette"
 				label: qsTr("Node palette")
 				indexDefaultValue: 1
 				values: [
@@ -322,10 +321,10 @@ Form
 					{ label: qsTr("Pastel"),		value: "pastel"		},
 					{ label: qsTr("Gray"),			value: "gray"		},
 					{ label: qsTr("R"),				value: "R"			},
-					{ label: qsTr("ggplot2"),		value: "ggplot2"	},
-					{ label: qsTr("manual"),		value: "manual"		}
+					{ label: qsTr("ggplot2"),		value: "ggplot2"	}
 				]
 			}
+			DoubleField	{ name: "nodeSize";		label: qsTr("Node size");		defaultValue: 1; max: 10	}
 		}
 
 		Group
