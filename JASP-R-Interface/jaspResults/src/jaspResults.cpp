@@ -487,22 +487,8 @@ void jaspResults::progressbarTick()
 	if(curTime - _progressbarLastUpdateTime > _progressbarBetweenUpdatesTime || progressValue == 100)
 	{
 		send();
-		
-		if (progressValue == 100)	resetProgressbar();
-		else						_progressbarLastUpdateTime = curTime;
+		_progressbarLastUpdateTime = curTime;
 	}
-}
-
-void jaspResults::resetProgressbar()
-{
-	_progressbarExpectedTicks      = 100;
-	_progressbarLastUpdateTime     = -1;
-	_progressbarTicks              = 0;
-	
-	Json::Value progress;
-	progress["value"]		= -1;
-	progress["label"]		= "";
-	_response["progress"]	= progress;
 }
 
 //implementation here in jaspResults.cpp to make sure we have access to all constructors

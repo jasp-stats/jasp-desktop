@@ -63,8 +63,6 @@ public:
 	static void staticStartProgressbar(int expectedTicks, std::string label)			{ _jaspResults->startProgressbar(expectedTicks, label); }
 	static void staticProgressbarTick()													{ _jaspResults->progressbarTick(); }
 
-	void resetProgressbar();
-
 	static Rcpp::RObject	getObjectFromEnv(std::string envName);
 	static void				setObjectInEnv(std::string envName, Rcpp::RObject obj);
 	static bool				objectExistsInEnv(std::string envName);
