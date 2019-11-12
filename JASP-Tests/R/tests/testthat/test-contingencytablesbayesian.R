@@ -151,8 +151,15 @@ test_that("Log Odds Ratio Plot matches", {
   options$plotPosteriorOddsRatio <- TRUE
   options$plotPosteriorOddsRatioAdditionalInfo <- TRUE
   results <- jasptools::run("ContingencyTablesBayesian", "test.csv", options)
-  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
-  expect_equal_plots(testPlot, "log-odds-ratio", dir="ContingencyTablesBayesian")
+  BFtext  <- results[["state"]][["figures"]][[1]][["obj"]][["subplots"]][["BFtext"]]
+  BFpizza <- results[["state"]][["figures"]][[1]][["obj"]][["subplots"]][["BFpizza"]]
+  CItext  <- results[["state"]][["figures"]][[1]][["obj"]][["subplots"]][["CItext"]]
+  mainGraph <- results[["state"]][["figures"]][[1]][["obj"]][["subplots"]][["mainGraph"]]
+  #testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(BFtext, "log-odds-ratio-subplot-1", dir="ContingencyTablesBayesian")
+  expect_equal_plots(BFpizza, "log-odds-ratio-subplot-2", dir="ContingencyTablesBayesian")
+  expect_equal_plots(CItext, "log-odds-ratio-subplot-3", dir="ContingencyTablesBayesian")
+  expect_equal_plots(mainGraph, "log-odds-ratio-subplot-4", dir="ContingencyTablesBayesian")
 })
 
 test_that("Analysis handles errors", {
