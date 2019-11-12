@@ -278,6 +278,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
   else 
     p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLines, xName = xName, CRI = ppCri,  
                                            bfSubscripts = bfSubscripts, draqCRItxt = FALSE)
+  p$subplots$mainGraph <- p$subplots$mainGraph+ggplot2::theme(legend.position = "none")
   return(p)
 }
 
