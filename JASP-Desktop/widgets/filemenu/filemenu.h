@@ -119,7 +119,6 @@ public slots:
     void analysesExportResults();
 
 private slots:
-	void dataSetOpenRequestHandler(QString path) { open(path); }
 	void dataSetIORequestHandler(FileEvent *event);
 
 private:

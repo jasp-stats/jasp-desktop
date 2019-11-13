@@ -67,7 +67,6 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString	progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
 	Q_PROPERTY(bool		dataPanelVisible	READ dataPanelVisible		WRITE setDataPanelVisible		NOTIFY dataPanelVisibleChanged		)
 	Q_PROPERTY(QString	windowTitle			READ windowTitle			WRITE setWindowTitle			NOTIFY windowTitleChanged			)
-	Q_PROPERTY(bool		datasetLoaded		READ datasetLoaded											NOTIFY datasetLoadedChanged			)
 	Q_PROPERTY(int		screenPPI			READ screenPPI				WRITE setScreenPPI				NOTIFY screenPPIChanged				)
 	Q_PROPERTY(bool		dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
 	Q_PROPERTY(bool		analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
@@ -87,7 +86,6 @@ public:
 	QString	progressBarStatus()		const	{ return _progressBarStatus;	}
 	bool	dataPanelVisible()		const	{ return _dataPanelVisible;		}
 	QString	windowTitle()			const	{ return _windowTitle;			}
-	bool	datasetLoaded()			const	{ return _datasetLoaded;		}
 	int		screenPPI()				const	{ return _screenPPI;			}
 	bool	dataAvailable()			const	{ return _dataAvailable;		}
 	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
@@ -105,7 +103,7 @@ public slots:
 	void setAnalysesAvailable(bool analysesAvailable);
 	void setDataPanelVisible(bool dataPanelVisible);
 	void setDataAvailable(bool dataAvailable);
-	void setDatasetLoaded(bool datasetLoaded);
+	//void setDatasetLoaded(bool datasetLoaded);
 	void setWindowTitle(QString windowTitle);
 	void setScreenPPI(int screenPPI);
 
@@ -150,7 +148,6 @@ private:
 	void checkUsedModules();
 
 	void packageChanged();
-	void setDatasetLoaded();
 	void setPackageModified();
 	void refreshAnalysesUsingColumns(	QStringList				changedColumns,
 										QStringList				missingColumns,
@@ -199,18 +196,12 @@ signals:
 	void analysesVisibleChanged(bool analysesVisible);
 	void windowTitleChanged(QString windowTitle);
 	void screenPPIChanged(int screenPPI);
-	void datasetLoadedChanged(bool datasetLoaded);
 	void dataAvailableChanged(bool dataAvailable);
 	void analysesAvailableChanged(bool analysesAvailable);
 	void welcomePageVisibleChanged(bool welcomePageVisible);
 	void downloadNewJASPUrlChanged(QString downloadNewJASPUrl);
 
 private slots:
-	void packageDataChanged(	QStringList				changedColumns,
-								QStringList				missingColumns,
-								QMap<QString, QString>	changeNameColumns,
-								bool					rowCountChanged,
-								bool					hasNewColumns);
 	void resultsPageLoaded();
 	void showResultsPanel() { setDataPanelVisible(false); }
 
@@ -295,7 +286,6 @@ private:
 									_runButtonEnabled		= false,
 									_progressBarVisible		= false,
 									_dataPanelVisible		= false,
-									_datasetLoaded			= false,
 									_dataAvailable			= false,
 									_analysesAvailable		= false,
 									_savingForClose			= false,

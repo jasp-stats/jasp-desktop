@@ -36,10 +36,10 @@ DECLARE_ENUM_WITH_TYPE(parIdxType, unsigned char, root = 0, data, filter, label)
 
 class EngineSync;
 
-class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel because of: https://stackoverflow.com/a/38999940
+class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel because of: https://stackoverflow.com/a/38999940 (And this being a tree model)
 {
 	Q_OBJECT
-	Q_PROPERTY(int columnsFilteredCount READ columnsFilteredCount NOTIFY columnsFilteredCountChanged)
+	Q_PROPERTY(int columnsFilteredCount READ columnsFilteredCount		NOTIFY columnsFilteredCountChanged)
 
 	typedef std::map<std::string, std::map<int, std::string>> emptyValsType;
 
@@ -126,13 +126,12 @@ public:
 				void				setDataFilter(std::string filter)				{ _dataFilter					= filter;			}
 				void				setDataSet(DataSet * dataSet);
 				void				setIsArchive(bool isArchive)					{ _isArchive					= isArchive;		}
+				void				setHasAnalysesWithoutData()						{ _hasAnalysesWithoutData		= true;				}
 				void				setModified(bool value);
 				void				setAnalysesHTMLReady()							{ _analysesHTMLReady			= true;				}
 				void				setId(std::string id)							{ _id							= id;				}
 				void				setWaitingForReady()							{ _analysesHTMLReady			= false;			}
 				void				setLoaded()										{ _isLoaded						= true;				}
-				void				setHasAnalysesWithoutData()						{ _hasAnalysesWithoutData		= true;				}
-
 
 				void				informComputedColumnsOfPackage()	{ _computedColumns.setPackage(this); }
 

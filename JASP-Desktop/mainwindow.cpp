@@ -217,8 +217,9 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::ppiChanged,                        	_engineSync,			&EngineSync::ppiChanged                                     );
 	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
 	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
+	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
 
-	connect(_package,				&DataSetPackage::dataSynched,						this,					&MainWindow::packageDataChanged,							Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::dataSynched,						this,					&MainWindow::refreshAnalysesUsingColumns,					Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
 	connect(_package,				&DataSetPackage::freeDatasetSignal,					_loader,				&AsyncLoader::free											);
@@ -650,28 +651,6 @@ void MainWindow::plotPPIChangedHandler(int ppi, bool wasUserAction)
 		_analyses->refreshAllAnalyses();
 }
 
-
-void MainWindow::setDatasetLoaded()
-{
-	setDatasetLoaded(_package->rowCount() > 0 || _package->columnCount() > 0);
-}
-
-void MainWindow::packageDataChanged(	QStringList				changedColumns,
-										QStringList				missingColumns,
-										QMap<QString, QString>	changeNameColumns,
-										bool					rowCountChanged,
-										bool					hasNewColumns)
-{
-	setDatasetLoaded();
-
-	//Already done in filterModel::setDatasetPackage:
-	//_labelFilterGenerator->regenerateFilter();
-	//_filterModel->sendGeneratedAndRFilter();
-
-	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, rowCountChanged, hasNewColumns);
-}
-
-
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
 	static bool showInstructions = true;
@@ -1073,8 +1052,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 void MainWindow::populateUIfromDataSet()
 {
-	setDatasetLoaded();
-
 	bool errorFound = false;
 	stringstream errorMsg;
 
@@ -1644,16 +1621,6 @@ void MainWindow::getAnalysesUserData()
 	parser.parse(fq(userData.toString()), data);
 
 	_analyses->setAnalysesUserData(data);
-}
-
-void MainWindow::setDatasetLoaded(bool datasetLoaded)
-{
-	if (_datasetLoaded == datasetLoaded)
-		return;
-
-	_datasetLoaded = datasetLoaded;
-	emit datasetLoadedChanged(_datasetLoaded);
-	_dynamicModules->setDataLoaded(_datasetLoaded); //Should be connected to some signal from datasetpackage after centralDatasetModel branch is merged
 }
 
 void MainWindow::setScreenPPI(int screenPPI)
