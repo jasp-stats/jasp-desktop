@@ -54,7 +54,7 @@ INCLUDEPATH += $$PWD/../JASP-Common/
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH = $$PWD/imports
-
+QML_IMPORT_PATH += $$PWD/components
 
 exists(/app/lib/*) {
 	flatpak_desktop.files = ../Tools/flatpak/org.jaspstats.JASP.desktop
