@@ -180,15 +180,5 @@ Form
 			RadioButton { value: "Mplus";	label: qsTr("Mplus")				}
 			RadioButton { value: "EQS";		label: qsTr("EQS")					}
 		}
-
-		Group
-		{
-			title: qsTr("Model Name")
-			DropDown
-			{
-				name: "modelName"
-				values: ["Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7", "Model 8", "Model 8", "Model 9", "Model 10"]
-			}
-		}
 	}
 }
