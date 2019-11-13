@@ -139,7 +139,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
-	loadDefaultFont();
+	//loadDefaultFont(); //Maybe later?
 
 	qmlRegisterType<DataSetView>			("JASP", 1, 0, "DataSetView");
 	qmlRegisterType<JaspTheme>				("JASP", 1, 0, "JaspTheme");
