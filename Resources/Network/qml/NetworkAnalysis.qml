@@ -259,15 +259,16 @@ Form
 
 		InputListView
 		{
-			id				: networkFactors
-			name			: "groupNames"
-			title			: qsTr("Group name")
-			optionKey		: "group"
-			defaultValues	: ["Group 1", "Group 2"]
-			placeHolder		: qsTr("New Group")
-			minimumItems	: 2
-			width			: (2 * form.width) / 5
-			enableExtraColumns: manualColors.checked
+			id					: networkFactors
+			name				: "groupNames"
+			title				: qsTr("Group name")
+			optionKey			: "group"
+			defaultValues		: ["Group 1", "Group 2"]
+			placeHolder			: qsTr("New Group")
+			minimumItems		: 2
+			width				: (2 * form.width) / 5
+			enableExtraColumns	: manualColors.checked
+			debug				: true
 
 			ExtraControlColumn
 			{
@@ -288,12 +289,13 @@ Form
 
 		AssignedVariablesList
 		{
-			width: (2 * form.width) / 5
-			title: qsTr("Variables in network")
-			name: "variablesForColor"
-			source: ["variables"]
-			addAvailableVariablesToAssigned: true
-			draggable: false
+			width							: (2 * form.width) / 5
+			title							: qsTr("Variables in network")
+			name							: "variablesForColor"
+			source							: ["variables"]
+			addAvailableVariablesToAssigned	: true
+			draggable						: false
+			debug							: true
 			ExtraControlColumn
 			{
 				type: "DropDown"
