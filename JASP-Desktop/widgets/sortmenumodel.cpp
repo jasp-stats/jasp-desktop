@@ -20,19 +20,23 @@
 #include "listmodelavailableinterface.h"
 #include "qquick/jasptheme.h"
 
-QMap<Sortable::SortType, QString> SortMenuModel::_labels =
-{
-	{ Sortable::SortType::None, tr("None") },
-	{ Sortable::SortType::SortByName, tr("Sort by name") },
-	{ Sortable::SortType::SortByNameAZ, tr("Sort by name A-Z") },
-	{ Sortable::SortType::SortByNameZA, tr("Sort by name Z-A") },
-	{ Sortable::SortType::SortByType, tr("Sort by type") },
-	{ Sortable::SortType::SortByDate, tr("Sort by date") },
-	{ Sortable::SortType::SortBySize, tr("Sort by size") }
-};
+QMap<Sortable::SortType, QString> SortMenuModel::_labels; //Only set this constructor because otherwise it might cause a crash on Windows
 
 SortMenuModel::SortMenuModel(QObject* parent, const QVector<Sortable::SortType> &menuEntries) : QAbstractListModel(parent)
 {
+	if(_labels.size() == 0)
+		_labels =
+		{
+			{ Sortable::SortType::None,			tr("None") },
+			{ Sortable::SortType::SortByName,	tr("Sort by name") },
+			{ Sortable::SortType::SortByNameAZ, tr("Sort by name A-Z") },
+			{ Sortable::SortType::SortByNameZA, tr("Sort by name Z-A") },
+			{ Sortable::SortType::SortByType,	tr("Sort by type") },
+			{ Sortable::SortType::SortByDate,	tr("Sort by date") },
+			{ Sortable::SortType::SortBySize,	tr("Sort by size") }
+		};
+
+
 	_sortable = dynamic_cast<Sortable*>(parent);
 	if (!_sortable)
 	{
