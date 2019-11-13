@@ -3,8 +3,8 @@ options(warn=1) #print warnings as they occur
 options(nCpus=8)
 
 expEnv     <- new.env(hash = TRUE, parent = parent.frame())
-CRAN       <- "https://cran.rstudio.com/"
-#"https://cran.r-project.org/" #
+CRAN       <- #"https://cran.rstudio.com/"
+"https://cran.r-project.org/" #
   
 
 giveOrderedDependencies <- function()
