@@ -15,8 +15,6 @@ Rcpp::Environment*	jaspResults::_RStorageEnv		= nullptr;
 bool				jaspResults::_insideJASP		= false;
 jaspResults*		jaspResults::_jaspResults		= nullptr;
 
-const std::string jaspResults::_analysisChangedErrorMessage = "Analysis changed and will be restarted!";
-
 void jaspResults::setSendFunc(sendFuncDef sendFunc)
 {
 	_ipccSendFunc = sendFunc;
@@ -216,8 +214,8 @@ void jaspResults::checkForAnalysisChanged()
 	{
 		jaspPrint("Polling for analysis changes found a change, analysis should restart!");
 		setStatus("changed");
-		static Rcpp::Function stop("stop");
-		stop(_analysisChangedErrorMessage);
+		static Rcpp::Function signalAnalysisAbort = jaspResults::isInsideJASP() ? Rcpp::Function("signalAnalysisAbort") : Rcpp::Environment::namespace_env("jaspResults")["signalAnalysisAbort"];
+		signalAnalysisAbort();
 	}
 }
 
@@ -315,9 +313,6 @@ Json::Value jaspResults::dataEntry(std::string &) const
 
 void jaspResults::setErrorMessage(std::string msg, std::string errorStatus)
 {
-	if(msg.find(_analysisChangedErrorMessage) != std::string::npos)
-		return; //we do not want to report "analysis changed" as an error I think
-
 	errorMessage = msg;
 	setStatus(errorStatus);
 }
