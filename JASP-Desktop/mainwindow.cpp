@@ -117,7 +117,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	//Temporary solution to display translated module names
 	vector<string> commonModulesToLoad = { "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" };
-	vector<string> extraModulesToLoad = { "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics" };
+	vector<string> extraModulesToLoad = { "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics", "JAGS"};
 	vector<QString> displayModuleNames ;
 
 	setModulesToLoad(commonModulesToLoad, extraModulesToLoad, displayModuleNames);
@@ -791,6 +791,7 @@ void MainWindow::setModulesToLoad(vector<string> & commonModulesToLoad, vector<s
 	extraModulesToLoad.push_back("Meta Analysis");		displayModuleNames.push_back(tr("Meta Analysis"));
 	extraModulesToLoad.push_back("SEM");				displayModuleNames.push_back(tr("SEM"));
 	extraModulesToLoad.push_back("Summary Statistics");	displayModuleNames.push_back(tr("Summary Statistics"));
+	extraModulesToLoad.push_back("JAGS");				displayModuleNames.push_back(tr("JAGS"));
 
 	//vector<string> commonModulesToLoad = { "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" };
 	//vector<string> extraModulesToLoad = { "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics" };
