@@ -272,10 +272,10 @@ int main(int argc, char *argv[])
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
 
-			QtWebEngine::initialize();
 
 			JASPTIMER_START("JASP");
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save, logToFile);
+			QtWebEngine::initialize();
 			try
 			{
 				int exitCode = a.exec();
