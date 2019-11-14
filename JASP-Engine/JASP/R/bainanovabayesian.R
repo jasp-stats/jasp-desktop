@@ -129,7 +129,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	descriptivesTable$addColumnInfo(name="v",    		title="Level",	type="string")
 	descriptivesTable$addColumnInfo(name="N",    		title="N",			type="integer")
 	descriptivesTable$addColumnInfo(name="mean", 		title=meanTitle,		type="number")
-	descriptivesTable$addColumnInfo(name="se",   		title="Std. Error", 		type="number")
+	descriptivesTable$addColumnInfo(name="se",   		title="SE", 		type="number")
 
 	interval <- options[["CredibleInterval"]] * 100
 	overTitle <- paste0(interval, "% Credible Interval")

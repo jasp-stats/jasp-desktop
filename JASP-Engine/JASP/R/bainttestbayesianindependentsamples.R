@@ -240,7 +240,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 		descriptivesTable$addColumnInfo(name="group",                title = "Group", type="string")
 	  descriptivesTable$addColumnInfo(name="N",                    title = "N", type="integer")
 	  descriptivesTable$addColumnInfo(name="mean",                 title = "Mean", type="number")
-	  descriptivesTable$addColumnInfo(name="se",                   title = "Std. Error", type="number")
+	  descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
 
 		interval <- 100 * options[["descriptivesPlotsCredibleInterval"]]
 		overTitle <- paste0(interval, "% Credible Interval")
