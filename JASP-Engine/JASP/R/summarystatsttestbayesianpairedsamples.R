@@ -19,13 +19,13 @@ SummaryStatsTTestBayesianPairedSamples <- function(jaspResults, dataset = NULL, 
   
   # Reading in a datafile is not necessary
   # Check user input for possible errors
-  .checkErrors.summarystats.ttest(options, "pairedSamples")
+  .checkErrorsSummaryStatsTTest(options, "pairedSamples")
   
   # Compute the results and create main results table
   summaryStatsPairedSamplesResults <- .summaryStatsTTestMainFunction(jaspResults, options, "pairedSamples")
   # Output plots 
-  .ttestBayesianPriorPosteriorPlot.summarystats(jaspResults, summaryStatsPairedSamplesResults, options)
-  .ttestBayesianPlotRobustness.summarystats(jaspResults, summaryStatsPairedSamplesResults, options)
+  .ttestBayesianPriorPosteriorPlotSummaryStats(jaspResults, summaryStatsPairedSamplesResults, options)
+  .ttestBayesianPlotRobustnessSummaryStats(jaspResults, summaryStatsPairedSamplesResults, options)
   
   return()
 }

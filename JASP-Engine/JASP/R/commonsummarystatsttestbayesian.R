@@ -210,7 +210,7 @@
     return(jaspResults[["ttestContainer"]][["stateSummaryStatsTTestResults"]]$object)
   
   # Otherwise: create the empty table before executing the analysis
-  hypothesisList <- .hypothesisType.summarystats.ttest(options$hypothesis, options$bayesFactorType, analysis)
+  hypothesisList <- .hypothesisTypeSummaryStatsTTest(options$hypothesis, options$bayesFactorType, analysis)
   
   jaspResults[["ttestContainer"]][["ttestTable"]] <- .summaryStatsTTestTableMain(options, hypothesisList)
   
@@ -377,7 +377,7 @@
 }
 
 # Prior & Posterior plot 
-.ttestBayesianPriorPosteriorPlot.summarystats <- function(jaspResults, summaryStatsTTestResults, options){
+.ttestBayesianPriorPosteriorPlotSummaryStats <- function(jaspResults, summaryStatsTTestResults, options){
   
   if (!options[["plotPriorAndPosterior"]] || !is.null(jaspResults[["ttestContainer"]][["priorPosteriorPlot"]]))
     return()
@@ -421,7 +421,7 @@
 }
 
 # Bayes FactorRobustness Check plot
-.ttestBayesianPlotRobustness.summarystats <- function(jaspResults, summaryStatsTTestResults, options){
+.ttestBayesianPlotRobustnessSummaryStats <- function(jaspResults, summaryStatsTTestResults, options){
   
   if (!options[["plotBayesFactorRobustness"]] || !is.null(jaspResults[["ttestContainer"]][["BayesFactorRobustnessPlot"]]))
     return()
@@ -433,7 +433,7 @@
     aspectRatio = 0.7
   )
   plot$position <- 3
-  plot$dependOn(options = c("plotBayesFactorRobustness", "plotBayesFactorRobustnessAdditionalInfo"))
+  plot$dependOn(options = c("plotBayesFactorRobustness", "plotBayesFactorRobustnessAdditionalInfo", "bayesFactorType"))
   jaspResults[["ttestContainer"]][["BayesFactorRobustnessPlot"]] <- plot
   
   if (!summaryStatsTTestResults[["ready"]] || jaspResults[["ttestContainer"]]$getError())
@@ -449,7 +449,7 @@
   } 
   
   # Bayes Factor Robustness Check plot
-  p <- try(.plotBF.robustnessCheck.ttest.summarystats(
+  p <- try(.plotBFRobustnessCheckSummaryStatsTTest(
     t                     = robustnessInfo$t,
     n1                    = robustnessInfo$n1,
     n2                    = robustnessInfo$n2,
@@ -471,7 +471,7 @@
   }
   return()
 }
-.plotBF.robustnessCheck.ttest.summarystats <- function(t, n1, n2, paired = FALSE, BF10user, bfType = "BF10", nullInterval, rscale = 0.707, oneSided = FALSE,
+.plotBFRobustnessCheckSummaryStatsTTest <- function(t, n1, n2, paired = FALSE, BF10user, bfType = "BF10", nullInterval, rscale = 0.707, oneSided = FALSE,
                                                        isInformative = FALSE, additionalInformation = FALSE) {
   
   if (rscale > 1.5) {
@@ -554,7 +554,7 @@
 }
 
 # helper functions for One Sample and Paired Samples T-Test
-.hypothesisType.summarystats.ttest <- function(hypothesis_option, bayesFactorType, analysis) {
+.hypothesisTypeSummaryStatsTTest <- function(hypothesis_option, bayesFactorType, analysis) {
   
   if (hypothesis_option == "groupsNotEqual" || hypothesis_option == "notEqualToTestValue") {
     
@@ -606,7 +606,7 @@
               tableTitle    = tableTitle)
   )
 }
-.checkErrors.summarystats.ttest <- function(options, analysis) {
+.checkErrorsSummaryStatsTTest <- function(options, analysis) {
   
   # perform a check on the hypothesis
   if(analysis == "oneSample" || analysis == "pairedSamples"){
