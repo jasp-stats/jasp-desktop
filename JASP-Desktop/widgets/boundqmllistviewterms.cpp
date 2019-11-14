@@ -29,6 +29,7 @@
 #include "listmodelinteractionassigned.h"
 #include "log.h"
 #include <QQmlProperty>
+#include "extracontrolsinfo.h"
 
 using namespace std;
 
@@ -37,14 +38,13 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* for
 	_optionsTable = nullptr;
 	_optionVariables = nullptr;
 	_singleItem = QQmlProperty(_item, "singleVariable").read().toBool();
-	QString extraControlOptionName = _item->property("extraControlOptionName").toString();
 	bool addAvailableTermsToAssigned = _item->property("addAvailableVariablesToAssigned").toBool();
 	bool mustContainLowerTerms = _item->property("mustContainLowerTerms").toBool();
 	
-	if (extraControlOptionName.isEmpty())
+	if (_extraControlsInfo.extraControlOptionName().empty())
 		_optionKeyName = interaction ? "components" : "variable";
 	else
-		_optionKeyName = extraControlOptionName.toStdString();
+		_optionKeyName = _extraControlsInfo.extraControlOptionName();
 	
 	if (interaction)
 		_termsModel = new ListModelInteractionAssigned(this, addAvailableTermsToAssigned, mustContainLowerTerms);
@@ -180,12 +180,11 @@ bool BoundQMLListViewTerms::isJsonValid(const Json::Value &optionValue)
 void BoundQMLListViewTerms::setTermsAreInteractions()
 {
 	BoundQMLListViewDraggable::setTermsAreInteractions();
-	QString extraControlOptionName = QQmlProperty(_item, "extraControlOptionName").read().toString();
 	
-	if (extraControlOptionName.isEmpty())
+	if (_extraControlsInfo.extraControlOptionName().empty())
 		_optionKeyName = "components";
 	else
-		_optionKeyName = extraControlOptionName.toStdString();
+		_optionKeyName = _extraControlsInfo.extraControlOptionName();
 }
 
 void BoundQMLListViewTerms::_checkOptionTemplate()
@@ -272,13 +271,13 @@ Options* BoundQMLListViewTerms::_createRowOptions(const Term& term)
 			Log::log() << "Option is not an OptionVariable!!!" << std::endl;
 	}
 
-	if (_hasNuisanceControl)
+	if (_extraControlsInfo.hasNuisanceControl())
 	{
 		// Really special handling for nuisance extra control
 		QString itemType = _termsModel->getItemType(term);
 		if (itemType == "randomFactors")
 		{
-			OptionBoolean* option = dynamic_cast<OptionBoolean*>(row->get(_optionNuisanceName));
+			OptionBoolean* option = dynamic_cast<OptionBoolean*>(row->get(_extraControlsInfo.optionNuisanceName()));
 			if (option)
 				option->setValue(true);
 		}
@@ -368,12 +367,12 @@ void BoundQMLListViewTerms::modelChangedHandler()
 void BoundQMLListViewTerms::_extraOptionsChangedHandler(Option *option)
 {
 	Options* options = static_cast<Options*>(option);
-	if (_termsModel->areTermsInteractions() && _hasNuisanceControl)
+	if (_termsModel->areTermsInteractions() && _extraControlsInfo.hasNuisanceControl())
 	{
 		OptionTerm* termOption = dynamic_cast<OptionTerm *>(options->get(_optionKeyName));
 		if (termOption)
 		{
-			OptionBoolean* nuisance = dynamic_cast<OptionBoolean*>(options->get(_optionNuisanceName));
+			OptionBoolean* nuisance = dynamic_cast<OptionBoolean*>(options->get(_extraControlsInfo.optionNuisanceName()));
 			if (nuisance)
 				_updateNuisances(nuisance->value());
 		}
@@ -382,13 +381,13 @@ void BoundQMLListViewTerms::_extraOptionsChangedHandler(Option *option)
 
 void BoundQMLListViewTerms::_updateNuisances(bool checked)
 {
-	QString nuisanceName = QString::fromStdString(_optionNuisanceName);
+	QString nuisanceName = QString::fromStdString(_extraControlsInfo.optionNuisanceName());
 	// if a higher order interaction is specified as nuisance, then all lower order terms should be changed to nuisance as well
 	std::vector<Options*> allOptions = _optionsTable->value();
 	for (Options* options : allOptions)
 	{
 		OptionTerm *termOption = static_cast<OptionTerm*>(options->get(_optionKeyName));
-		OptionBoolean *nuisanceOption = static_cast<OptionBoolean*>(options->get(_optionNuisanceName));
+		OptionBoolean *nuisanceOption = static_cast<OptionBoolean*>(options->get(_extraControlsInfo.optionNuisanceName()));
 		Term term = Term(termOption->term());
 
 		if (nuisanceOption->value() == checked)
@@ -399,7 +398,7 @@ void BoundQMLListViewTerms::_updateNuisances(bool checked)
 					continue;
 
 				OptionTerm *tOption = static_cast<OptionTerm*>(optionsBis->get(_optionKeyName));
-				OptionBoolean *nOption = static_cast<OptionBoolean*>(optionsBis->get(_optionNuisanceName));
+				OptionBoolean *nOption = static_cast<OptionBoolean*>(optionsBis->get(_extraControlsInfo.optionNuisanceName()));
 				Term t = Term(tOption->term());
 
 				if (checked)
