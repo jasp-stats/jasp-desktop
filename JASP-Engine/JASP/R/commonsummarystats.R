@@ -16,7 +16,7 @@
 #
 
 # set BF title for main table
-.getBayesfactorTitle.summarystats <- function(bayesFactorType, hypothesis) {
+.getBayesfactorTitleSummaryStats <- function(bayesFactorType, hypothesis) {
 	# returns the Bayes factor title to be shown on the table
 	#
 	# Args:

@@ -295,7 +295,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   
   # set footnote message and Bayes factor title
   message      <- paste0("r scale used is: ", options$priorWidth, ".")
-  bfTitle      <- .getBayesfactorTitle.summarystats(options$bayesFactorType, hypothesis = 'twoSided')
+  bfTitle      <- .getBayesfactorTitleSummaryStats(options$bayesFactorType, hypothesis = 'twoSided')
   
   # determine title for main results table
   nullModelSpecified <- TRUE

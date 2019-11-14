@@ -195,43 +195,44 @@
   # This function is the main workhorse, and also makes the table
   if (is.null(jaspResults[["ttestContainer"]])) {
     jaspResults[["ttestContainer"]] <- createJaspContainer()
+    container <- jaspResults[["ttestContainer"]]
     # add dependencies for main table (i.e., when does it have to recompute values for the main table)
-    jaspResults[["ttestContainer"]]$dependOn(c("tStatistic"                   , "n1Size", "n2Size"      , "hypothesis",     # standard entries
-                                               "defaultStandardizedEffectSize", "informativeStandardizedEffectSize"   ,     # informative or default
-                                               "priorWidth"                   , "effectSizeStandardized",                   # default prior
-                                               "informativeCauchyLocation"    , "informativeCauchyScale",                   # informed cauchy priors
-                                               "informativeNormalMean"        , "informativeNormalStd"  ,                   # informed normal priors
-                                               "informativeTLocation"         , "informativeTScale"     , "informativeTDf"  # informed t-distribution
+    container$dependOn(c("tStatistic", "n1Size", "n2Size"             , "hypothesis"                       ,        # standard entries
+                                       "defaultStandardizedEffectSize", "informativeStandardizedEffectSize",        # informative or default
+                                       "priorWidth"                   , "effectSizeStandardized",                   # default prior
+                                       "informativeCauchyLocation"    , "informativeCauchyScale",                   # informed cauchy priors
+                                       "informativeNormalMean"        , "informativeNormalStd"  ,                   # informed normal priors
+                                       "informativeTLocation"         , "informativeTScale"     , "informativeTDf"  # informed t-distribution
     ))
   }
   
   # If table already exists in the state, return it
-  if (!is.null(jaspResults[["ttestContainer"]][["ttestTable"]]))
-    return(jaspResults[["ttestContainer"]][["stateSummaryStatsTTestResults"]]$object)
+  if (!is.null(container[["ttestTable"]]))
+    return(container[["stateSummaryStatsTTestResults"]]$object)
   
   # Otherwise: create the empty table before executing the analysis
   hypothesisList <- .hypothesisTypeSummaryStatsTTest(options$hypothesis, options$bayesFactorType, analysis)
   
-  jaspResults[["ttestContainer"]][["ttestTable"]] <- .summaryStatsTTestTableMain(options, hypothesisList)
+  container[["ttestTable"]] <- .summaryStatsTTestTableMain(options, hypothesisList)
   
-  if (!is.null(jaspResults[["ttestContainer"]][["stateSummaryStatsTTestResults"]])) {
-    results <- jaspResults[["ttestContainer"]][["stateSummaryStatsTTestResults"]]$object
+  if (!is.null(container[["stateSummaryStatsTTestResults"]])) {
+    results <- container[["stateSummaryStatsTTestResults"]]$object
     # only change possible: BF type
     results[["ttestTableData"]][["BF"]] <- results[["BFlist"]][[options$bayesFactorType]]
   } else {
     results <- .summaryStatsTTestComputeResults(hypothesisList, options, analysis)
     # Save results to state
-    jaspResults[["ttestContainer"]][["stateSummaryStatsTTestResults"]] <- createJaspState(results)
+    container[["stateSummaryStatsTTestResults"]] <- createJaspState(results)
     
     if (!is.null(results[["errorMessageTable"]]))
-      jaspResults[["ttestContainer"]][["ttestTable"]]$setError(results[["errorMessageTable"]])
+      container[["ttestTable"]]$setError(results[["errorMessageTable"]])
   }
   
   #  fill table if ready
   if (results[["ready"]])
-    jaspResults[["ttestContainer"]][["ttestTable"]]$setData(results[["ttestTableData"]])
+    container[["ttestTable"]]$setData(results[["ttestTableData"]])
   # if necessary, set footnote message for % error estimate
-  if (!is.null(results[["ttestTableMessage"]])) jaspResults[["ttestContainer"]][["ttestTable"]]$addFootnote(results[["ttestTableMessage"]])
+  if (!is.null(results[["ttestTableMessage"]])) container[["ttestTable"]]$addFootnote(results[["ttestTableMessage"]], colNames = "error")
   
   return(results)
 }
@@ -277,7 +278,7 @@
   
   ttestTable$addColumnInfo(name = "BF"     , title = bfTitle   , type = "number")
   ttestTable$addColumnInfo(name = "error"  , title = "error %" , type = "number")
-  ttestTable$addColumnInfo(name = "pValue" , title = "p"       , type = "number")
+  ttestTable$addColumnInfo(name = "pValue" , title = "p"       , type = "pvalue")
   
   
   return(ttestTable)
@@ -598,7 +599,7 @@
     "pairedSamples"      = "Bayesian Paired Samples T-Test"
   )
   
-  bfTitle      <- .getBayesfactorTitle.summarystats(bayesFactorType, hypothesis)
+  bfTitle      <- .getBayesfactorTitleSummaryStats(bayesFactorType, hypothesis)
   
   return(list(hypothesis    = hypothesis,
               oneSided      = oneSided,

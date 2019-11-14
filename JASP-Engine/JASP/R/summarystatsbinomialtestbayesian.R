@@ -257,7 +257,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
     
   }
   
-  bfTitle      <- .getBayesfactorTitle.summarystats(bayesFactorType, hypothesis_for_common_functions)
+  bfTitle      <- .getBayesfactorTitleSummaryStats(bayesFactorType, hypothesis_for_common_functions)
   
   hypothesisList <- list(hypothesis    = hypothesis,
                           message      = message,
