@@ -57,7 +57,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   rSquaredH1    <- options$unadjustedRSquaredAlternative
   
   # Extract relevant information
-  tableInfo          <- .tableInfo.summarystats.regression(options)
+  tableInfo          <- .tableInfoSummaryStatsRegression(options)
   nullModelSpecified <- tableInfo$nullModelSpecified
   
   # Conduct Bayesian linear regression for H1
@@ -82,9 +82,16 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
     
     regressionResultsH0 <- BayesFactor::linearReg.R2stat(N = N, p = nCovariatesH0, R2 = rSquaredH0, rscale = rScale)
     LogBF10_H0          <- regressionResultsH0$bf
-    BFlist_H0           <- list(BF10    = exp(LogBF10_H0),
-                                BF01    = 1/exp(LogBF10_H0),
-                                LogBF10 = LogBF10_H0)
+    
+    # Adjust Bayes factor lists for Allow Model Comparison
+    LogBF10             <- LogBF10_H1 - LogBF10_H0
+    LogBF01             <- LogBF10_H0 - LogBF10_H1
+    BFlist_H1           <- list(BF10    = exp(LogBF10),
+                                BF01    = 1/exp(LogBF10),
+                                LogBF10 = LogBF10)
+    BFlist_H0           <- list(BF10    = exp(LogBF01),
+                                BF01    = 1/exp(LogBF01),
+                                LogBF10 = LogBF01)
     
     # Add results to results object
     results[["regressionTable"]] <- data.frame(
@@ -140,6 +147,11 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   sampleSizeCellType <- tableInfo$sampleSizeCellType
   bfTitle            <- tableInfo$bfTitle
   
+  # display "BF" instead of "BF10" or "BF01" for Model Comparison
+  if(mainResultsTitle == "Model Comparison" && bfTitle != "Log(\u0042\u0046\u2081\u2080)"){
+      bfTitle <- "BF"
+    }
+  
   # set table citations and footnote message for different hypothesis types
   regressionTable$addCitation(.summaryStatsCitations[c("LiangEtAl2008", "RounderMoreyInPress")])
   
@@ -185,7 +197,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
 
   rscale         <- options[["priorWidth"]]
   additionalInfo <- options[["plotBayesFactorRobustnessAdditionalInfo"]]
-  BFH1H0         <- options[["bayesFactorType"]] == "BF10"
+  BFH1H0         <- options[["bayesFactorType"]] != "BF01"
 
   tableInfo <- summaryStatsRegressionResults[["tableInfo"]]
   nullModelSpecified    <- tableInfo[["nullModelSpecified"]]
@@ -196,7 +208,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   } else {
     rValues <- seq(0.0005, 1.5, length.out = 400)
   }
-
+  
   if(nullModelSpecified) {
     computeBF <- function(options, rscale) {
       sampleSize                    <- options[["sampleSize"]]
@@ -206,7 +218,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
       unadjustedRSquaredAlternative <- options[["unadjustedRSquaredAlternative"]]
       BFNull <- BayesFactor::linearReg.R2stat(N = sampleSize, p = numberOfCovariatesNull, R2 = unadjustedRSquaredNull, rscale = rscale)
       BFAlternative <- BayesFactor::linearReg.R2stat(N = sampleSize, p=numberOfCovariatesAlternative, R2=unadjustedRSquaredAlternative, rscale = rscale)
-
+      
       return(.clean(exp(BFAlternative[["bf"]] - BFNull[["bf"]])))
     }
   } else {
@@ -238,7 +250,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
     y = log(BF10)
   )
   
-  BF10user <- BF10post
+  BF10user <- 1/BF10post
   if (BFH1H0) {
     bfType <- "BF10"
   } else {
@@ -249,7 +261,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
     BF10w     <- 1 / BF10w
     BF10ultra <- 1 / BF10ultra
   }
-
+  
   BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, c(-Inf, Inf))
   
   dfPoints <- data.frame(
@@ -263,7 +275,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
     )),
     stringsAsFactors = FALSE
   )
-
+  
   plot <- JASPgraphs::PlotRobustnessSequential(
     dfLines      = dfLines,
     dfPoints     = dfPoints,
@@ -279,7 +291,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
 
 
 # helper functions
-.tableInfo.summarystats.regression <- function(options) {
+.tableInfoSummaryStatsRegression <- function(options) {
   
   # set footnote message and Bayes factor title
   message      <- paste0("r scale used is: ", options$priorWidth, ".")
@@ -322,14 +334,11 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   }
   
   # check if number of covariates is correct in H0
-  if(options$numberOfCovariatesNull==0 && options$unadjustedRSquaredNull==0) {
+  if(options$numberOfCovariatesNull!=0 && options$sampleSize!=0 && ((options$sampleSize - options$numberOfCovariatesNull) < 2)) {
     
-    if(options$numberOfCovariatesNull!=0 && options$sampleSize!=0 && ((options$sampleSize - options$numberOfCovariatesNull) < 2)) {
+    .quitAnalysis("Number of Covariates must be less than N-1 (sample size minus 1)")
     
-      .quitAnalysis("Number of Covariates must be less than N-1 (sample size minus 1)")
-      
-    }
-  } 
+  }
   
   # check if R squared input is correct
   if((options$numberOfCovariatesAlternative > options$numberOfCovariatesNull) && (options$unadjustedRSquaredAlternative < options$unadjustedRSquaredNull)) {

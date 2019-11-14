@@ -42,8 +42,8 @@ test_that("Main table results match with model comparison", {
   
   table <- getMainTable(results)
   # fill in expected values
-  expect_equal_tables(table, list(18.7379856112487, 0.62, 2.01408039564443e-06, 2, "Null model",
-                                  31.7268858756927, 0.82, 1.40664186301779e-06, 4, "Alternative model"
+  expect_equal_tables(table, list(-12.9889, 0.62, 2.01408039564443e-06, 2, "Null model",
+                                  12.9889, 0.82, 1.40664186301779e-06, 4, "Alternative model"
                                   ))
 })
 
@@ -62,8 +62,8 @@ test_that("Main table and plots match without additional info", {
 
   table <- getMainTable(results)
   expect_equal_tables(table,
-                      list(210.8744059832, 0.45, 6.09707810829571e-07, 4, "Null model", 282.434887635076,
-                           0.55, 9.79848723927088e-06, 5, "Alternative model"))
+                      list(-71.56048, 0.45, 6.09707810829571e-07, 4, "Null model", 
+                           71.56048, 0.55, 9.79848723927088e-06, 5, "Alternative model"))
 
   testPlot <- getRobustnessPlot(results)
   expect_equal_plots(testPlot, "robustness-plot", dir="SummaryStatsRegressionLinearBayesian")
