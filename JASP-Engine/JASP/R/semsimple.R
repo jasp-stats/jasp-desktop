@@ -512,11 +512,10 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
     r2 <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "r2")
     nm <- names(r2)
-    
+
     if (options$groupingVariable == "") {
-      
       semRSquaredTable$addColumnInfo(name = "R2",  title = "R&sup2;",  type = "number")
-      semRSquaredTable$addRows(data.frame(var = .unv(names(r2)[i]), R2 = r2[[i]]))
+      semRSquaredTable$addRows(data.frame(var = .unv(names(r2)), R2 = r2))
       
     } else {
       
