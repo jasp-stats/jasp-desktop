@@ -207,7 +207,7 @@ Item
 		for (i = 0; i < allJASPControls.length; i++)
 		{
 			control = allJASPControls[i];
-			if ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList) || (control instanceof NetworkFactorsList))
+			if ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList) || (control instanceof InputListView))
 			{
 				if (control.width === variablesForm.width)
 					control.setWidthInForm = true
