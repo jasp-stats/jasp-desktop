@@ -39,6 +39,7 @@ public:
 	
 			void runRScript(const QString& script, bool whiteListedVersion = true);
 	virtual void rScriptDoneHandler(const QString& result);
+	virtual void bindExtraControlOptions() {}
 };
 
 #endif // BOUNDQMLITEM_H

@@ -22,6 +22,7 @@
 #include "qmlitem.h"
 #include "common.h"
 #include <QObject>
+#include "extracontrolsinfo.h"
 
 class ListModel;
 
@@ -71,10 +72,14 @@ protected:
 	bool				_needsSourceModels;
 	int					_variableTypesAllowed,
 						_variableTypesSuggested;
+	ExtraControlsInfo	_extraControlsInfo;
+	bool				_hasExtraControls	= false;
+
 	
 private:
 	int		_getAllowedColumnsTypes();
 	void	_setAllowedVariables();
+
 
 	QList<QVariant> _getListVariant(QVariant var);
 };

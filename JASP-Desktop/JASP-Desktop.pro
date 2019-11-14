@@ -365,7 +365,10 @@ HEADERS += \
     data/labelmodel.h \
     results/ploteditormodel.h \
     results/ploteditoraxismodel.h \
-    results/ploteditorcoordinates.h
+    results/ploteditorcoordinates.h \
+    widgets/boundqmlinputlist.h \
+    widgets/extracontrolsinfo.h \
+    widgets/listmodelinputvalue.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -538,7 +541,10 @@ SOURCES += \
     data/labelmodel.cpp \
     results/ploteditormodel.cpp \
     results/ploteditoraxismodel.cpp \
-    results/ploteditorcoordinates.cpp
+    results/ploteditorcoordinates.cpp \
+    widgets/boundqmlinputlist.cpp \
+    widgets/extracontrolsinfo.cpp \
+    widgets/listmodelinputvalue.cpp
 
 
 RESOURCES += \

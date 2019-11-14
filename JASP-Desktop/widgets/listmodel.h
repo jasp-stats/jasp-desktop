@@ -19,12 +19,14 @@
 #ifndef LISTMODEL_H
 #define LISTMODEL_H
 
+#include <QAbstractListModel>
+
 #include "common.h"
 #include "analysis/options/variableinfo.h"
 #include "analysis/options/terms.h"
-#include "qmllistview.h"
 
-#include <QAbstractListModel>
+class QMLListView;
+class ListModelExtraControls;
 
 class ListModel : public QAbstractTableModel, public VariableInfoConsumer
 {
@@ -44,9 +46,10 @@ public:
 			int						rowCount(const QModelIndex &parent = QModelIndex())			const override;
 			int						columnCount(const QModelIndex &parent = QModelIndex())		const override { return 1; }
 			QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
+	virtual void					endResetModel();
 
 			QMLListView*			listView() const								{ return _listView; }
-			const QString &			name() const									{ return _listView->name(); }
+			const QString &			name() const;
 	virtual const Terms &			terms(const QString& what = QString())			{ return _terms; }
 			bool					areTermsVariables() const						{ return _areTermsVariables; }
 			bool					areTermsInteractions() const					{ return _areTermsInteractions; }
@@ -58,9 +61,12 @@ public:
 	virtual void					refresh();
 	virtual void					initTerms(const Terms &terms);
 	virtual Terms					getSourceTerms();
-	virtual void					endResetModel()									{ return QAbstractTableModel::endResetModel(); } // Make endResetModel virtual
 	QMap<ListModel*, Terms> 		getSourceTermsPerModel();
 	
+	void							addExtraControls(const QVector<QMap<QString, QVariant> >& extraControlColumns);
+	ListModelExtraControls*			getExtraControlModel(QString colName)			{ return _extraControlsModels[colName]; }
+
+
 
 
 signals:
@@ -70,11 +76,24 @@ public slots:
 	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved);
 
 protected:
+	void addExtraControlModels();
+	void initExtraControlTerms();
+
+private:
+	void _initExtraControlTerms();
+
+
+protected:
 	QMLListView*	_listView = nullptr;
 	QString			_itemType;
 	Terms			_terms;
 	bool			_areTermsVariables;
 	bool			_areTermsInteractions = false;
+
+	QVector<QMap<QString, QVariant> >		_extraControlsDefinitions;
+	QMap<QString, ListModelExtraControls* > _extraControlsModels;
+	QMap<int, QString>						_rowNameMap;
+	QMap<QString, ListModelExtraControls* > _modelCache;
 
 };
 

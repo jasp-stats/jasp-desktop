@@ -74,8 +74,8 @@ Item
 			{
 				allAssignedVariablesList[index]	.activeFocusChanged.connect(		item.setIconToLeft);
 				availableVariablesList			.activeFocusChanged.connect(		item.setIconToRight);
-				allAssignedVariablesList[index]	.haveSelectedItemsChanged.connect(	item.setState);
-				availableVariablesList			.haveSelectedItemsChanged.connect(	item.setState);
+				allAssignedVariablesList[index]	.hasSelectedItemsChanged.connect(	item.setState);
+				availableVariablesList			.hasSelectedItemsChanged.connect(	item.setState);
 				
 				if (interactionAssign)
 				{
@@ -207,7 +207,7 @@ Item
 		for (i = 0; i < allJASPControls.length; i++)
 		{
 			control = allJASPControls[i];
-			if ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList))
+			if ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList) || (control instanceof NetworkFactorsList))
 			{
 				if (control.width === variablesForm.width)
 					control.setWidthInForm = true
@@ -253,7 +253,7 @@ Item
 		for (var i = 0; i < allJASPControls.length; ++i)
 		{
 			var control				= allJASPControls[i]
-			var isControlList		= ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList))
+			var isControlList		= ((control instanceof VariablesList) || (control instanceof RepeatedMeasuresFactorsList) || (control instanceof InputListView))
 			var isControlComboBox	= (control instanceof ComboBox)
 
 			if (isControlList && control.setWidthInForm)

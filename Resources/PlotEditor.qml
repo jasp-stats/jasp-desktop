@@ -11,7 +11,7 @@ Popup
 	width:				parent.width  * 0.8
 	height:				parent.height * 0.8
 	modal:				true
-	background:			Rectangle { color: Theme.uiBackground }
+	background:			Rectangle { color: jaspTheme.uiBackground }
 	closePolicy:		Popup.CloseOnPressOutside | Popup.CloseOnEscape
 
 	visible:			plotEditorModel.visible
