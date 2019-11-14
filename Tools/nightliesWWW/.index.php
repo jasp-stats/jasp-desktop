@@ -17,6 +17,17 @@
   <img id="blauw" src="http://jasp-stats.org/wp-content/themes/jasp/images/wave-down-blue.svg"></img>   
 </div>
 
+<div id="disclaimer">
+  <p><i>These installers are generated automatically each night and contain development code; this means that they might not be stable.</i></p>
+  <p><b>Use at your own risk!</b></p>
+  <p><i>
+    If you happen to find a bug in a nightly then it can't hurt to issue a bug report at our issue-tracker, 
+    but please be sure to mention that you used a nightly and indicate its commit. 
+    The commit can be found in the about window under "Sources".
+  </i></p>
+</div>
+
+
 <div id="tafels" class="container">
 <div id="tablegrouper">
       <?php
