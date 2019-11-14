@@ -60,7 +60,7 @@ Form
 		title: qsTr("Plots")
 
 		CheckBox { name: "bayesFactorPlot";		text: qsTr("Posterior probabilities")	}
-		CheckBox { name: "descriptivesPlot";	text: qsTr("Descriptives plot")			}
+		CheckBox { name: "descriptivesPlot";	text: qsTr("Adjusted means")			}
 	}
 
 	Group

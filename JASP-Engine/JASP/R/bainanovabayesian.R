@@ -126,9 +126,11 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	descriptivesTable$dependOn(options =c("descriptives", "CredibleInterval", "coefficients"))
 	descriptivesTable$position <- position
 
-	descriptivesTable$addColumnInfo(name="v",    		title="Level",	type="string")
+	descriptivesTable$addColumnInfo(name="v",    		title="",	type="string")
 	descriptivesTable$addColumnInfo(name="N",    		title="N",			type="integer")
 	descriptivesTable$addColumnInfo(name="mean", 		title=meanTitle,		type="number")
+	if(type == "anova")
+		descriptivesTable$addColumnInfo(name="sd", 		title="SD",		type="number")
 	descriptivesTable$addColumnInfo(name="se",   		title="SE", 		type="number")
 
 	interval <- options[["CredibleInterval"]] * 100
@@ -145,23 +147,28 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	varLevels <- levels(groupCol)
 
 	bainResult <- bainContainer[["bainResult"]]$object
-	bainSummary <- summary(bainResult)
+	bainSummary <- summary(bainResult, ci = options[["CredibleInterval"]])
+	sigma <- diag(bainResult$posterior)
 	
+	# Extract all but sd and se from bain result
 	variable <- bainSummary[["Parameter"]]
 	N <- bainSummary[["n"]]
 	mu <- bainSummary[["Estimate"]]
 	CiLower <- bainSummary[["lb"]]
 	CiUpper <- bainSummary[["ub"]]
 
-	# Deduce standard error from 95 percent confidence interval
-	se <- (CiUpper - CiLower) / 2 / qnorm(0.975)
-	
-	# Override interval from bain (it's only 95 percent) to custom interval
-	alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
-	CiUpper <- mu + qnorm(alpha) * se
-	CiLower <- mu - qnorm(alpha) * se
+	if(type == "anova"){
+		# The standard errors are taken from the data
+		sd <- aggregate(dataset[, .v(options[["dependent"]])], list(dataset[, .v(options[["fixedFactors"]])]), sd)[, 2]
+		se <- sd / sqrt(N)	
+	} else {
+		# The standard errors are taken from bain, since we have adjusted means
+		se <- sqrt(sigma)
+	}
 
 	row <- data.frame(v = variable, N = N, mean = mu, se = se, lowerCI = CiLower, upperCI = CiUpper)
+	if(type == "anova")
+		row <- cbind(row, sd = sd)
 	descriptivesTable$addRows(row)
 }
 
@@ -184,7 +191,9 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 .bainAnovaDescriptivesPlot <- function(dataset, options, bainContainer, ready, type = "anova", position) {
 	if (!is.null(bainContainer[["descriptivesPlot"]]) || !options[["descriptivesPlot"]]) return()
 	
-	descriptivesPlot <- createJaspPlot(plot = NULL, title = "Descriptives Plot")
+	plotTitle <- ifelse(type == "anova", yes = "Descriptives Plot", no = "Adjusted Means")
+
+	descriptivesPlot <- createJaspPlot(plot = NULL, title = plotTitle)
 	descriptivesPlot$dependOn(options=c("descriptivesPlot", "CredibleInterval"))
 	descriptivesPlot$position <- position
 
@@ -205,27 +214,20 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	varLevels <- levels(groupCol)
 
 	bainResult <- bainContainer[["bainResult"]]$object
-	bainSummary <- summary(bainResult)
+	bainSummary <- summary(bainResult, ci = options[["CredibleInterval"]])
 
 	# Remove covariates in ANCOVA
 	if(type == "ancova")
 		bainSummary <- bainSummary[1:length(varLevels), ]
 	
+	# Extract all but sd and se from bain result
 	variable <- bainSummary[["Parameter"]]
 	N <- bainSummary[["n"]]
 	mu <- bainSummary[["Estimate"]]
 	CiLower <- bainSummary[["lb"]]
 	CiUpper <- bainSummary[["ub"]]
 
-	# Deduce standard error from 95 percent confidence interval
-	se <- (CiUpper - CiLower) / 2 / qnorm(0.975)
-	
-	# Override interval from bain (it's only 95 percent) to custom interval
-	alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
-	CiUpper <- mu + qnorm(alpha) * se
-	CiLower <- mu - qnorm(alpha) * se
-
-	d <- data.frame(v = variable, N = N, mean = mu, se = se, lowerCI = CiLower, upperCI = CiUpper, index = 1:length(variable))
+	d <- data.frame(v = variable, N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1:length(variable))
 
 	p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
 			ggplot2::geom_errorbar(ggplot2::aes(ymin=lowerCI, ymax=upperCI), colour="black", width=.2, position = ggplot2::position_dodge(.2)) +

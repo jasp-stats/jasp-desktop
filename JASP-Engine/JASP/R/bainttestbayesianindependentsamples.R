@@ -240,6 +240,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 		descriptivesTable$addColumnInfo(name="group",                title = "Group", type="string")
 	  descriptivesTable$addColumnInfo(name="N",                    title = "N", type="integer")
 	  descriptivesTable$addColumnInfo(name="mean",                 title = "Mean", type="number")
+	  descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
 	  descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
 
 		interval <- 100 * options[["descriptivesPlotsCredibleInterval"]]
@@ -275,17 +276,17 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 				ciLower <- round(posteriorSummary$ciLower,3)
 				ciUpper <- round(posteriorSummary$ciUpper,3)
 				n <- length(groupDataOm)
-		  	mean <- mean(groupDataOm)
-		  	std <- sd(groupDataOm)
-		  	sem <- sd(groupDataOm) / sqrt(length(groupDataOm))
+		  		mean <- mean(groupDataOm)
+		  		std <- sd(groupDataOm)
+		  		sem <- sd(groupDataOm) / sqrt(length(groupDataOm))
 				if (i == 1)
-					row <- data.frame(v = variable, group = level, N = n, mean = mean, se = sem, lowerCI = ciLower, upperCI = ciUpper)
+					row <- data.frame(v = variable, group = level, N = n, mean = mean, sd = std, se = sem, lowerCI = ciLower, upperCI = ciUpper)
 				if (i == 2)
-					row <- data.frame(v = "", group = level, N = n, mean = mean, se = sem, lowerCI = ciLower, upperCI = ciUpper)
+					row <- data.frame(v = "", group = level, N = n, mean = mean, sd = std, se = sem, lowerCI = ciLower, upperCI = ciUpper)
 
 				} else {
 						n <- length(groupDataOm)
-						row <- data.frame(v = variable, group = "", N = n, mean = "", se = "", lowerCI = "", upperCI = "")
+						row <- data.frame(v = variable, group = "", N = n, mean = "", sd = ".", se = "", lowerCI = "", upperCI = "")
 				}
 				descriptivesTable$addRows(row)
 			}	

@@ -266,6 +266,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
     descriptivesTable$addColumnInfo(name="N",                    title = "N", type="integer")
     descriptivesTable$addColumnInfo(name="mean",                 title = "Mean", type="number")
+    descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
     descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
 
     interval <- 100 * options[["descriptivesPlotsCredibleInterval"]]
@@ -300,7 +301,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
             se <- "NaN"
         }
 
-        row <- list(v=variable, N=n, mean=m, se=se, lowerCI=ciLower, upperCI=ciUpper)
+        row <- list(v=variable, N=n, mean=m, sd = std, se=se, lowerCI=ciLower, upperCI=ciUpper)
         descriptivesTable$addRows(row)
     }
 
@@ -327,7 +328,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
         ciLower <- meandiff - qnorm(alpha) * se
         ciUpper <- meandiff + qnorm(alpha) * se
 
-        row <- list(v=currentPair, N=N, mean=meandiff, se=se, lowerCI=ciLower, upperCI=ciUpper)
+        row <- list(v=currentPair, N=N, mean=meandiff, sd = sd, se=se, lowerCI=ciLower, upperCI=ciUpper)
         descriptivesTable$addRows(row)
       }
     }

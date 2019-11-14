@@ -143,21 +143,17 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 		return()
 
 	bainResult <- bainContainer[["bainResult"]]$object
-	sum_model <- summary(bainResult)
+	bainSummary <- summary(bainResult, ci = options[["CredibleInterval"]])
 	
-	groups <- as.character(sum_model[["Parameter"]])
-	N <- sum_model[["n"]]
-	mu <- sum_model[["Estimate"]]
-	CiLower <- sum_model[["lb"]]
-	CiUpper <- sum_model[["ub"]]
+	# Extract names, mean and n from bain result
+	groups <- bainSummary[["Parameter"]]
+	N <- bainSummary[["n"]]
+	mu <- bainSummary[["Estimate"]]
+	CiLower <- bainSummary[["lb"]]
+	CiUpper <- bainSummary[["ub"]]
 
-	# Deduce standard error from 95 percent confidence interval
-	se <- (CiUpper - CiLower) / 2 / qnorm(0.975)
-
-	# Override interval from bain (it's only 95 percent) to custom interval
-	alpha <- 1 - (1 - options[["CredibleInterval"]]) / 2
-	CiUpper <- mu + qnorm(alpha) * se
-	CiLower <- mu - qnorm(alpha) * se
+	# Standard error according to bain package
+	se <- sqrt(diag(bainResult$posterior))
 
 	row <- data.frame(v = groups, N = N, mean = mu, SE = se, CiLower = CiLower, CiUpper = CiUpper)
 	coefficientsTable$addRows(row)
