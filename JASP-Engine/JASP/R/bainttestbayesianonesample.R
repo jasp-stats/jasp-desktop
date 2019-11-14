@@ -234,7 +234,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
       descriptivesTable$position <- position
 
       descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
-      descriptivesTable$addColumnInfo(name="N",                    title = "n", type="integer")
+      descriptivesTable$addColumnInfo(name="N",                    title = "N", type="integer")
       descriptivesTable$addColumnInfo(name="mean",                 title = "Mean", type="number")
       descriptivesTable$addColumnInfo(name="se",                   title = "Std. Error", type="number")
 

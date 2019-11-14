@@ -127,7 +127,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	descriptivesTable$position <- position
 
 	descriptivesTable$addColumnInfo(name="v",    		title="Level",	type="string")
-	descriptivesTable$addColumnInfo(name="N",    		title="n",			type="integer")
+	descriptivesTable$addColumnInfo(name="N",    		title="N",			type="integer")
 	descriptivesTable$addColumnInfo(name="mean", 		title=meanTitle,		type="number")
 	descriptivesTable$addColumnInfo(name="se",   		title="Std. Error", 		type="number")
 
@@ -153,7 +153,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	CiLower <- bainSummary[["lb"]]
 	CiUpper <- bainSummary[["ub"]]
 
-	# Deduct standard error from 95 percent confidence interval
+	# Deduce standard error from 95 percent confidence interval
 	se <- (CiUpper - CiLower) / 2 / qnorm(0.975)
 	
 	# Override interval from bain (it's only 95 percent) to custom interval
@@ -217,7 +217,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	CiLower <- bainSummary[["lb"]]
 	CiUpper <- bainSummary[["ub"]]
 
-	# Deduct standard error from 95 percent confidence interval
+	# Deduce standard error from 95 percent confidence interval
 	se <- (CiUpper - CiLower) / 2 / qnorm(0.975)
 	
 	# Override interval from bain (it's only 95 percent) to custom interval

@@ -128,7 +128,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	overTitle <- paste0(round(options[["CredibleInterval"]] * 100), "% Credible Interval")
 
 	coefficientsTable$addColumnInfo(name="v",       title="Covariate",   type="string")
-	coefficientsTable$addColumnInfo(name="N",    	title="n", 			type="integer")
+	coefficientsTable$addColumnInfo(name="N",    	title="N", 			type="integer")
 	coefficientsTable$addColumnInfo(name="mean",    title="Coefficient", type="number")
 	coefficientsTable$addColumnInfo(name="SE",      title="Std. Error",  type="number")
 	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     	type="number", overtitle = overTitle)
@@ -151,7 +151,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	CiLower <- sum_model[["lb"]]
 	CiUpper <- sum_model[["ub"]]
 
-	# Deduct standard error from 95 percent confidence interval
+	# Deduce standard error from 95 percent confidence interval
 	se <- (CiUpper - CiLower) / 2 / qnorm(0.975)
 
 	# Override interval from bain (it's only 95 percent) to custom interval
