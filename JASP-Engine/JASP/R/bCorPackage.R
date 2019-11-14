@@ -280,52 +280,59 @@ isSomeTrue <- function(...) {
 #' @export
 #'
 #' @examples
-.pValueFromCor <- function(r, n, method=c("pearson","kendall", "spearman")) {
-  result <- list()
+.pValueFromCor <- function(n, stat, method=c("pearson","kendall", "spearman")) {
+  sidedList <- list("p"=NA)
+  result <- list("two.sided"=sidedList,
+                 "greater"=sidedList,
+                 "less"=sidedList)
   
   if (n <= 2){
-    result[["two.sided"]] <- NA
-    # tau < 0
-    result[["less"]] <- NA
-    # tau > 0
-    result[["greater"]] <- NA
+    # result[["two.sided"]] <- sidedList
+    # # tau < 0
+    # result[["less"]] <- sidedList
+    # # tau > 0
+    # result[["greater"]] <- sidedList
     return(result)
   }
   
-  if (method == "pearson"){
+  if (method[1] == "pearson"){
     # Use t-distribution based on bivariate normal assumption using r to t transformation
     #
     df <- n - 2
-    t <- r*sqrt(df/(1-r^2))
-    result <- .pValueFromT("t"=t, "n1"=n-1, "n2"=0, var.equal=TRUE)
-  } else if (method == "kendall"){
+    t <- stat*sqrt(df/(1-stat^2))
+    result <- .pValueFromTNew("t"=t, "n1"=n-1, "n2"=0, var.equal=TRUE)
+  } else if (method[1] == "kendall"){
     if (n > 2 && n < 50) {
       # Exact sampling distribution
       # tau neq 0
-      result[["two.sided"]] <- 1 - SuppDists::pKendall("q"=abs(r), N=n) + SuppDists::pKendall("q"=-abs(r), "N"=n)
+      result[["two.sided"]][["p"]] <- 1 - SuppDists::pKendall("q"=abs(stat), N=n) + 
+        SuppDists::pKendall("q"=-abs(stat), "N"=n)
       # tau < 0
-      result[["less"]] <- SuppDists::pKendall("q"=r, "N"=n)
+      result[["less"]][["p"]] <- SuppDists::pKendall("q"=stat, "N"=n)
       # tau > 0
-      result[["greater"]] <- SuppDists::pKendall("q"=r, "N"=n, "lower.tail" = FALSE)
+      result[["greater"]][["p"]] <- SuppDists::pKendall("q"=stat, "N"=n, "lower.tail" = FALSE)
     } else if (n >= 50){
       # normal approximation
       #
       someSd <- sqrt(2*(2*n+5)/(9*n*(n-1)))
       
       # tau neq 0
-      result[["two.sided"]] <- 2 * stats::pnorm(-abs(r), "sd"=someSd)
+      result[["two.sided"]][["p"]] <- 2 * stats::pnorm(-abs(stat), "sd"=someSd)
       # tau < 0
-      result[["less"]] <- stats::pnorm(r, "sd"=someSd)
+      result[["less"]][["p"]] <- stats::pnorm(stat, "sd"=someSd)
       # tau > 0
-      result[["greater"]] <- stats::pnorm(r, "sd"=someSd, lower.tail = FALSE)
+      result[["greater"]][["p"]] <- stats::pnorm(stat, "sd"=someSd, lower.tail = FALSE)
     }
-  } else if (method == "spearman"){
+  } else if (method[1] == "spearman"){
     # TODO: Johnny
     # Without code this will print a NULL, if we go through here
   }
   return(result)
 }
 
+
+# TODO(Alexander): Unify ".pValueFromT", and check that this is not used in Alexandra's rewrite or somehwere else
+# 
 #' Function returns the p value from correlation.
 #'
 #' @param t numeric representing observed t-statistic
@@ -337,7 +344,7 @@ isSomeTrue <- function(...) {
 #' @export
 #'
 #' @examples
-.pValueFromT <- function(t, n1, n2 = 0, var.equal = TRUE) {
+.pValueFromTNew <- function(t, n1, n2 = 0, var.equal = TRUE) {
   # Function returns the p value from t statistic
   #
   # Args:
@@ -349,8 +356,10 @@ isSomeTrue <- function(...) {
   #
   # Output:
   #   number in [0, 1] which is the p value
-  
-  result <- list()
+  sidedList <- list("p"=NA)
+  result <- list("two.sided"=sidedList,
+                 "greater"=sidedList,
+                 "less"=sidedList)
   
   if (n2 > 0) {
     # If n2 > 0, then two-sample
@@ -359,13 +368,12 @@ isSomeTrue <- function(...) {
     # If n2 <= 0, then one-sample
     someDf <- n1 - 1
   }
-  
   # mu \neq 0
-  result[["two.sided"]] <- 2 * stats::pt(-abs(t), "df" = someDf)
+  result[["two.sided"]][["p"]] <- 2 * stats::pt(-abs(t), "df" = someDf)
   # mu < 0
-  result[["less"]] <- stats::pt(t, "df" = someDf)
+  result[["less"]][["p"]] <- stats::pt(t, "df" = someDf)
   # mu > 0
-  result[["greater"]] <- stats::pt(t, "df" = someDf, "lower.tail" = FALSE)
+  result[["greater"]][["p"]] <- stats::pt(t, "df" = someDf, "lower.tail" = FALSE)
   
   return(result)
 }
@@ -978,25 +986,16 @@ isSomeTrue <- function(...) {
 }
 
 
-bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
-                      method=c("pearson", "kendall", "spearman"), ciValue=0.95,
-                      use="pairwise.complete.obs",
-                      h0=0, kappa=1, hyperGeoOverFlowThreshold=25, oneThreshold=0.001) {
+bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greater"),
+                               method=c("pearson", "kendall", "spearman"), ciValue=0.95,
+                               use="pairwise.complete.obs",
+                               h0=0, kappa=1, hyperGeoOverFlowThreshold=25, oneThreshold=0.001) {
   
-  if (is.null(method)) {
-    result <- .computePearsonCorBf10(NULL, NULL)
-    result[["error"]] <- "No method selected"
-    return(result)
-  }
-  
-  stat <- tryOrFailWithNA(cor(x, y, use=use, method=method[1]))
-  
-  if (is.na(stat)) {
+  if (is.na(stat) | is.na(n) | n <= 0) {
     result <- .computePearsonCorBf10(NaN, NaN)
     result[["error"]] <- "Can't compute the correlation"
   }
   
-  n <- length(x) - length(unique(c(which(is.na(x)), which(is.na(y)))))
   if (method[1]=="pearson") {
     result <- .computePearsonCorBf10("n"=n, "r"=stat, "h0"=h0, "kappa"=kappa, "ciValue"=ciValue,
                                      "oneThreshold" = oneThreshold)
@@ -1016,13 +1015,39 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
   }
 }
 
+bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
+                      method=c("pearson", "kendall", "spearman"), ciValue=0.95,
+                      use="pairwise.complete.obs",
+                      h0=0, kappa=1, hyperGeoOverFlowThreshold=25, oneThreshold=0.001) {
+  
+  if (is.null(method)) {
+    result <- .computePearsonCorBf10(NULL, NULL)
+    result[["error"]] <- "No method selected"
+    return(result)
+  }
+  
+  stat <- tryOrFailWithNA(cor(x, y, use=use, method=method[1]))
+  n <- tryOrFailWithNA(
+    length(x) - length(
+      unique(c(which(is.na(x)), which(is.na(y))))
+    )
+  )
+  
+  return(bcor.testSumStat("n"=n, "stat"=stat, "alternative"=alternative,
+                          "method"=method, "ciValue"=ciValue,
+                          "use"=use, "h0"=h0, "kappa"=kappa, 
+                          "hyperGeoOverFlowThreshold"=hyperGeoOverFlowThreshold, 
+                          "oneThreshold"=oneThreshold)
+  )
+}
+
 .getSidedObject <- function(bfObject, alternative="two.sided", itemNames=NULL) {
   result <- modifyList(bfObject[[alternative]], bfObject[itemNames])
 }
 
 # TODO: Main wrapper function to grab infor for posterior across test=pearson, kendall and alternative = two.sided, greater/plusSided, less/minSided etc
 #
-.computeCorPosteriorLine <- function(bfObject, test="pearson", alternative="two.sided", minX=-0.99, maxX=0.99) {
+.computeCorPosteriorLine <- function(bfObject, method="pearson", alternative="two.sided", minX=-0.985, maxX=0.985) {
   xDomain <- seq(minX, maxX, length.out = 1001)
   if (alternative %in% c("two-sided", "two.sided")) {
     alternative <- "two.sided"
@@ -1063,7 +1088,7 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
   #                   ci=NULL, test=test, xMin=-1, xMax=1, yMin=0, yMax=NULL, alternative=alternative)
   #
   
-  if (test=="pearson") {
+  if (method=="pearson") {
     if (isSomeNA(bfObject[["betaA"]], bfObject[["betaB"]])) {
       sidedObject[["posteriorLine"]] <- NA
       sidedObject[["error"]] <- "Posterior is too peaked"
@@ -1103,7 +1128,7 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
         break()
       }
     }
-  } else if (test=="kendall") {
+  } else if (method=="kendall") {
     # TODO(Alexander):
     #
     sidedObject[["priorLine"]] <- .priorTau("tauPop"=xDomain, "kappa"=bfObject[["kappa"]], alternative=alternative)
@@ -1398,7 +1423,7 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
   
   failedResult <- list("lowerCi"=NA, "upperCi"=NA, "posteriorMedian"=NA, "ciValue"=ciValue)
   result <- list("two.sided"=failedResult, "greater"=failedResult, "less"=failedResult,
-                 "betaA"=betaA, "betaB"=betaB)
+                 "ciValue"=ciValue, "betaA"=betaA, "betaB"=betaB)
   
   if (!is.null(check)) {
     result[["betaA"]] <- NA
@@ -1498,11 +1523,15 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
 }
 
 
-.computeCorSequentialLine <- function(x, y, bfObject, test="pearson", alternative="two.sided", minX=-0.99, maxX=0.99) {
+.computeCorSequentialLine <- function(x, y, bfObject, method="pearson") {
   # sidedObject <- .getSidedObject(bfObject, alternative=alternative)
   #
   error <- bfObject[["error"]]
   bf10 <- bfObject[["two.sided"]][["bf"]]
+  
+  if (bfObject[["two.sided"]][["tooPeaked"]] | bfObject[["greater"]][["tooPeaked"]] |
+      bfObject[["less"]][["tooPeaked"]])
+    error <- "Posterior is too peaked"
   
   if (!is.null(error) | is.na(bf10)) {
     if (is.null(error))
@@ -1519,7 +1548,7 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
   nDomain <- c(1:2, compN)
   
   .calculateSequentialCor <- function(i, x, y) {
-    return(tryOrFailWithNA(cor(x[1:i], y[1:i], use="pairwise.complete.obs", method=test)))
+    return(tryOrFailWithNA(cor(x[1:i], y[1:i], use="pairwise.complete.obs", method=method)))
   }
   
   rSeq <- purrr::map_dbl(compN, .calculateSequentialCor, x=x, y=y)
@@ -1535,7 +1564,7 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
   
   # TODO(Alexander):
   
-  if (test=="pearson") {
+  if (method=="pearson") {
     .calculateSequentialBCor <- function(n, r) {
       bfObject <- .computePearsonCorBf10(n, r, "h0"=h0, "kappa"=kappa,
                                          methodNumber=methodNumber)
@@ -1573,9 +1602,13 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
   return(result)
 }
 
-.computeCorRobustnessLine <- function(bfObject, test="pearson") {
+.computeCorRobustnessLine <- function(bfObject, method="pearson") {
   error <- bfObject[["error"]]
   bf10 <- bfObject[["two.sided"]][["bf"]]
+  
+  if (bfObject[["two.sided"]][["tooPeaked"]] | bfObject[["greater"]][["tooPeaked"]] |
+      bfObject[["less"]][["tooPeaked"]])
+    error <- "Posterior is too peaked"
   
   if (!is.null(error) | is.na(bf10)) {
     if (is.null(error))
@@ -1598,7 +1631,7 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
   
   # TODO(Alexander): Different iterations not necessary already covered by the wrapper
   #
-  if (test=="pearson") {
+  if (method=="pearson") {
     .calculateOneSidedRobustness <- function(kappa) {
       bfObject <- .computePearsonCorBf10("n"=n, "r"=stat, "h0"=h0, "kappa"=kappa, "methodNumber"=methodNumber)
       list(bfObject[["two.sided"]][["bf"]],

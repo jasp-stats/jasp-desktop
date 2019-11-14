@@ -58,13 +58,13 @@ hypMinSided <- c("less", "minSided",
   return(itemNames)
 }
 
-.bCorRowNames <- function(options, itemNames, test=c("pearson", "kendall", "spearman")) {
+.bCorRowNames <- function(options, itemNames, method=c("pearson", "kendall", "spearman")) {
   rowStatName <- list(pearson="Pearson's r", kendall="Kendall's tau", spearman="Spearman's rho")
   
   bfTitle <- .getBfTitle("bfType"=options[["bayesFactorType"]], "alternative"=options[["alternative"]])
   
-  if (!is.null(test)) {
-    allRowNames <- list("n"="n", "stat"=rowStatName[[test[1]]], "bf"=bfTitle, 
+  if (!is.null(method)) {
+    allRowNames <- list("n"="n", "stat"=rowStatName[[method[1]]], "bf"=bfTitle, 
                         "upperCi"=paste0("Upper ", options[["ciValue"]]*100, "% CI"),
                         "lowerCi"=paste0("Lower ", options[["ciValue"]]*100, "% CI")
     )
@@ -117,6 +117,10 @@ hypMinSided <- c("less", "minSided",
   return(message)
 }
 
+.bfPlotTitles <- list("plotScatter"="Scatterplot", 
+                      "plotPriorPosterior"="Prior and Posterior", 
+                      "plotBfRobustness"="Bayes Factor Robustness Check", 
+                      "plotBfSequential"="Sequential Analysis")
 
 # if (options[["alternative"]]=="greater") 
 #   corBayesTable$addFootnote(message="For all tests, the alternative hypothesis specifies that the correlation is positive.",

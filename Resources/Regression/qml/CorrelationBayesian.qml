@@ -95,7 +95,7 @@ Form
 
         RadioButtonGroup
         {
-            name: "pairsTest"
+            name: "pairsMethod"
             title: qsTr("Correlation coefficient to plot")
             RadioButton { value: "pearson";     label: qsTr("Pearson");         checked: true	}
             RadioButton { value: "spearman";    label: qsTr("Spearman's rho");  debug:   true   }
@@ -111,11 +111,11 @@ Form
         CheckBox
         {
             name: "plotBfSequential";                   label: qsTr("Sequential analysis")
-            CheckBox { name: "plotBfSequentialAddInfo"; label: qsTr("Robustness check"); debug: true }
+            CheckBox { name: "plotBfSequentialAddInfo"; label: qsTr("Additional info")}
         }
         CheckBox
         {
-            name: "plotPriorPosterior";			label: qsTr("Prior and posterior")
+            name: "plotPriorPosterior";			label: qsTr("Prior and posterior"); checked: true
             CheckBox { name: "plotPriorPosteriorAddEstimationInfo";	label: qsTr("Estimation info"); checked: true }
             CheckBox { name: "plotPriorPosteriorAddTestingInfo";	label: qsTr("Testing info"); checked: true }
         }
