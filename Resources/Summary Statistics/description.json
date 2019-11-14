@@ -16,22 +16,22 @@
 	"menu":
 	[
 		{
-      "title"   : "T-Tests",
+			"title"   : "T-Tests",
 			"icon"	  : "analysis-bayesian-ttest.svg"
 		},
 		{
-      "menu"    : "Bayesian Independent Samples T-Test",
-      "title"   : "S.S. Bayesian Independent Samples T-Test",
+			"menu"    : "Bayesian Independent Samples T-Test",
+			"title"   : "S.S. Bayesian Independent Samples T-Test",
 			"function": "SummaryStatsTTestBayesianIndependentSamples"
 		},
 		{
-      "menu"    : "Bayesian Paired Samples T-Test",
-      "title"   : "S.S. Bayesian Paired Samples T-Test",
+			"menu"    : "Bayesian Paired Samples T-Test",
+			"title"   : "S.S. Bayesian Paired Samples T-Test",
 			"function": "SummaryStatsTTestBayesianPairedSamples"
 		},
 		{
-      "menu"    : "Bayesian One Sample T-Test",
-      "title"   : "S.S. Bayesian One Sample T-Test",
+			"menu"    : "Bayesian One Sample T-Test",
+			"title"   : "S.S. Bayesian One Sample T-Test",
 			"function": "SummaryStatsTTestBayesianOneSample"
 		},
 		{
@@ -39,13 +39,13 @@
 			"icon"    : "analysis-bayesian-regression.svg"
 		},
 		{
-      "menu"    : "Bayesian Correlation Pairs",
-      "title"   : "S.S. Bayesian Correlation Pairs",
+			"menu"    : "Bayesian Correlation Pairs",
+			"title"   : "S.S. Bayesian Correlation Pairs",
 			"function": "SummaryStatsCorrelationBayesianPairs"
 		},
 		{
-      "menu"    : "Bayesian Linear Regression",
-      "title"   : "S.S. Bayesian Linear Regression",
+			"menu"    : "Bayesian Linear Regression",
+			"title"   : "S.S. Bayesian Linear Regression",
 			"function": "SummaryStatsRegressionLinearBayesian"
 		},
 		{
@@ -53,8 +53,8 @@
 			"icon"    : "analysis-bayesian-crosstabs.svg"
 		},
 		{
-      "menu"    : "Bayesian Binomial Test",
-      "title"   : "S.S. Bayesian Binomial Test",
+			"menu"    : "Bayesian Binomial Test",
+			"title"   : "S.S. Bayesian Binomial Test",
 			"function": "SummaryStatsBinomialTestBayesian"
 		}
 	]
