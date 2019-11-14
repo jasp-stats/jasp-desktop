@@ -27,6 +27,7 @@ AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynami
 	_title(				analysisEntry.get("title",			"???").asString()				),
 	_function(			analysisEntry.get("function",		"???").asString()				),
 	_qml(				analysisEntry.get("qml",			_function != "???" ? _function + ".qml" : "???").asString()			),
+	_menu(				analysisEntry.get("menu",			_title).asString()				),
 	_dynamicModule(		dynamicModule														),
 	_isSeparator(		true),
 	_requiresData(		analysisEntry.get("requiresData",	defaultRequiresData).asBool()	),

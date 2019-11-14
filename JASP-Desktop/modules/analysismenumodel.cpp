@@ -35,7 +35,7 @@ QVariant AnalysisMenuModel::data(const QModelIndex &index, int role) const
 
 	switch(role)
 	{
-	case DisplayRole:				return QString::fromStdString(entry->title());
+	case DisplayRole:				return QString::fromStdString(entry->menu());
 	case AnalysisFunctionRole:		return QString::fromStdString(entry->function());
 	case MenuImageSourceRole:		return QString::fromStdString(entry->icon());
 	case IsSeparatorRole:			return entry->isSeparator();
