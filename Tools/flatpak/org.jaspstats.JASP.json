@@ -1,7 +1,7 @@
 {
 	"app-id":			"org.jaspstats.JASP",
-	"runtime": 			"org.kde.Sdk",
-	"runtime-version": 	"5.13",
+	"runtime": 			"org.kde.Platform",
+	"runtime-version": 	"5.12",
 	"sdk": 				"org.kde.Sdk",
 	"command": 			"org.jaspstats.JASP",
 	"finish-args": [
