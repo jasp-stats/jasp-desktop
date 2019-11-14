@@ -117,7 +117,11 @@
 						"echo \"After that it is time for JASPgraphs!\"",
 						"R CMD INSTALL ./JASP-Engine/JASPgraphs",
 
-						"echo \"And building JASP isn't a bad idea either.\""
+						"echo \"And building JASP isn't a bad idea either.\"",
+						"echo \"First we need to remove JASP-R-Interface-Windows.pro...\"",
+
+						"rm JASP-R-Interface-Windows.pro"
+
 					]
 				}
 			]
