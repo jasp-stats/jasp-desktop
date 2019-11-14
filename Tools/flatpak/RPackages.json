@@ -59,7 +59,7 @@
 				{
 					"type": "git",
 					"url": "https://github.com/vandenman/BAS",
-					"commit": "abb73a6ac9d145ced3586434d413130b2f6263e9"
+					"commit": "cc28ab75e4276eb0b13f4ae89a9fa88216581ed0"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]

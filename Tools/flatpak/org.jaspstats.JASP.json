@@ -10,12 +10,10 @@
 		"--share=ipc",
 		"--share=network",
 		"--filesystem=home",
-		"--env=PATH=/usr/bin:/app/bin",
 		"--device=dri"
 	],
 	"build-options": {
 		"env": {
-			"PATH": 		"/usr/bin:/app/bin",
 			"CXX11":		"g++",
 			"CXX14":		"g++",
 			"CXX11FLAGS":	"-std=gnu++11",
@@ -23,7 +21,8 @@
 		},
 		"cxxflags": 				"-O2 -g -Wno-error",
 		"cflags": 					"-Wno-error",
-		"append-ld-library-path": 	"/app/lib;/app/lib64/R/lib",
+		"ldflags":					"-lgfortran",
+		"append-ld-library-path": 	"/app/lib64/R/lib",
 		"env": {
 			"GIT_DISCOVERY_ACROSS_FILESYSTEM": "true",
 			"R_HOME": "/app/lib64/R/",

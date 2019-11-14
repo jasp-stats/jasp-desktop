@@ -16,9 +16,16 @@ CONFIG -= app_bundle
 
 DESTDIR = ..
 
-windows:TARGET = JASP
-   macx:TARGET = JASP
-  linux:{ exists(/app/lib/*) {TARGET = org.jaspstats.JASP } else { TARGET = jasp }}
+linux { 
+	exists(/app/lib/*) {
+			TARGET = org.jaspstats.JASP 
+	} else { 
+			TARGET = jasp 
+	} 
+	message(TARGET => $$TARGET) #Useful for debugging flatpak
+} else {
+	TARGET = JASP
+}
 
 DEPENDPATH = ..
 INCLUDEPATH += ../JASP-Common/
