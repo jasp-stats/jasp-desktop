@@ -22,7 +22,7 @@ test_that("Prior and Posterior plot matches", {
 test_that("Bayesian Independent Samples T-Test table results match", {
   table <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_ttestTable"]][["data"]]
   expect_equal_tables(table,
-                      list(0.0644349416204716, 0.000247553379975798, 20, 20, 0.986483662535044,
+                      list(0.08420871, 0.001761993, 20, 20, 0.986483662535044,
                            2.3))
 })
 

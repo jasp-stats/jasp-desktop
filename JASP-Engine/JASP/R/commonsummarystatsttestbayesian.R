@@ -296,20 +296,22 @@
   # 1. check user input
   if(analysis == "oneSample" || analysis == "pairedSamples"){
     
-    ready <- !(n1 == 0)
+    ready               <- !(n1 == 0)
+    isPairedOrOneSample <- TRUE
     
   } else if(analysis == "independentSamples"){
     
-    n2    <- options$n2Size
-    ready <- !(n1 == 0 || n2 == 0)
+    n2                  <- options$n2Size
+    ready               <- !(n1 == 0 || n2 == 0)
+    isPairedOrOneSample <- FALSE
     
   }
   
   if (!ready)
     return(list(ready = ready))
   
-  # Conduct frequentist and Bayesian independent samples t-test
-  ttestResults <- .generalSummaryTtestBF(options = options)
+  # Conduct frequentist and Bayesian t-test
+  ttestResults <- .generalSummaryTtestBF(options = options, paired = isPairedOrOneSample)
   BF10         <- ttestResults$bf
   
   BFlist       <- list(BF10    = BF10,
