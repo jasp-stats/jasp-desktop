@@ -1,7 +1,7 @@
-.getCorTableTitle <- function(tests, bayes=TRUE) {
+.getCorTableTitle <- function(methodItems, bayes=TRUE) {
   if (bayes) {
-    if (length(tests)==1) {
-      tabTitle <- switch(tests,
+    if (length(methodItems)==1) {
+      tabTitle <- switch(methodItems,
                          "pearson"="Bayesian Pearson Correlation",
                          "kendall"="Bayesian Kendall Correlation",
                          "spearman"="Bayesian Spearman Correlation"
@@ -10,8 +10,8 @@
       tabTitle <-"Bayesian Correlation Table"
     }
   } else {
-    if (length(tests)==1) {
-      tabTitle <- switch(tests,
+    if (length(methodItems)==1) {
+      tabTitle <- switch(methodItems,
                          "pearson"="Bayesian Pearson Correlation",
                          "kendall"="Bayesian Kendall Correlation",
                          "spearman"="Bayesian Spearman Correlation"
@@ -24,34 +24,40 @@
 }
 
 # This can be made general for t-tests as well
-.getCorPlotItems <- function(options) {
+.getCorPlotItems <- function(options, sumStat=FALSE) {
   
-  plotItems <- c("plotScatter", "plotPriorPosterior", "plotBfSequential", "plotBfRobustness")
+  if (isTRUE(sumStat)) {
+    plotItems <- c("plotPriorPosterior", "plotBfRobustness")
+  } else {
+    plotItems <- c("plotScatter", "plotPriorPosterior", "plotBfSequential", "plotBfRobustness")
+    
+    if (!options[["plotScatter"]])
+      plotItems <- setdiff(plotItems, "plotScatter")
+    
+    if (!options[["plotBfSequential"]])
+      plotItems <- setdiff(plotItems, "plotBfSequential")
+  }
   
-  if (!options[["plotScatter"]])
-    plotItems <- setdiff(plotItems, "plotScatter")
   if (!options[["plotPriorPosterior"]]) 
     plotItems <- setdiff(plotItems, "plotPriorPosterior")
-  if (!options[["plotBfSequential"]])
-    plotItems <- setdiff(plotItems, "plotBfSequential")
   if (!options[["plotBfRobustness"]])
     plotItems <- setdiff(plotItems, "plotBfRobustness")
   
   return(plotItems)
 }
 
-.getCorTests <- function(options) {
+.getCorMethods <- function(options) {
   
-  tests <- c("pearson", "kendall", "spearman")
+  methodItems <- c("pearson", "kendall", "spearman")
   
   if (!options[["pearson"]]) 
-    tests <- setdiff(tests, "pearson")
+    methodItems <- setdiff(methodItems, "pearson")
   if (!options[["kendall"]])
-    tests <- setdiff(tests, "kendall")
+    methodItems <- setdiff(methodItems, "kendall")
   if (!options[["spearman"]])
-    tests <- setdiff(tests, "spearman")
+    methodItems <- setdiff(methodItems, "spearman")
   
-  return(tests)
+  return(methodItems)
 }
 
 .bCorCitationsList <- list("pearson"=c("Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2016). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Journal of Mathematical Psychology, 72, 19-32.",
@@ -61,10 +67,10 @@
                            "spearman"=c("van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (in press). Bayesian Rank-Based Hypothesis Testing for the Rank Sum Test, the Signed Rank Test, and Spearman's rho. Manuscript submitted for publication")
 )
 
-.getCorCitations <- function(tests, bayes=TRUE) {
+.getCorCitations <- function(methodItems, bayes=TRUE) {
   citations <- NULL
   if (bayes==TRUE) 
-    citations <- unlist(.bCorCitationsList[tests], use.names=FALSE)
+    citations <- unlist(.bCorCitationsList[methodItems], use.names=FALSE)
   
   if (is.null(citations)){
     citations <- ""
@@ -73,7 +79,7 @@
 }
 
 
-.corTestNamesList <- list(pearson="Pearson's r", spearman="Spearman's rho", kendall="Kendall's tau B")
+.corMethodNamesList <- list(pearson="Pearson's r", spearman="Spearman's rho", kendall="Kendall's tau B")
 .corOverTitlesList <- list(pearson="Pearson", spearman="Spearman", kendall="Kendall")
 
 
@@ -265,3 +271,16 @@
   return(JASPgraphs::themeJasp(p) + thm)
   
 }
+
+.corGLegendList <- list("pearson"=expression(rho),
+                        "kendall"=expression(tau), 
+                        "spearman"=expression(rho[s])
+)
+
+.corXNames <- list("pearson"=expression(paste("Pearson's ", rho)), 
+                   "spearman"=expression(paste("Spearman's ", rho)), 
+                   "kendall"=expression(paste("Kendall's ", tau))
+)
+
+
+

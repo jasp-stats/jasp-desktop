@@ -95,68 +95,6 @@
 	return(result)
 }
 
-.pValueFromCor <- function(corrie, n, method="pearson") {
-  # Function returns the p value from correlation, thus,
-  ##  corrie = r    when  method = "pearson"
-  #   corrie = tau  when  method = "kendall"
-  #   corrie = rho  when  method = "spearman"
-  #
-  # Args:
-  #   corrie: correlation input by user
-  #   n: sample size
-  #   oneSided: hypothesis type: left or right
-  #   method: pearson, kenall, or spearman
-  #
-  # Output:
-  #   list of three p-values
-
-  result <- list()
-
-  if (n <= 2){
-      # Given NULL or NA result
-
-      result$twoSided <- NA
-      # tau < 0
-      result$minSided <- NA
-      # tau > 0
-      result$plusSided <- NA
-      return(result)
-  }
-
-  if (method == "pearson"){
-      # Use t-distribution based on bivariate normal assumption using r to t transformation
-      #
-      df <- n - 2
-      t <- corrie*sqrt(df/(1-corrie^2))
-      result <- .pValueFromT(t=t, n1=n-1, n2=0, var.equal=TRUE)
-  } else if (method == "kendall"){
-      if (n > 2 && n < 50) {
-          # Exact sampling distribution
-          # tau neq 0
-          result$twoSided <- 1 - SuppDists::pKendall(q=abs(corrie), N=n) + SuppDists::pKendall(q=-abs(corrie), N=n)
-          # tau < 0
-          result$minSided <- SuppDists::pKendall(q=corrie, N=n)
-          # tau > 0
-          result$plusSided <- SuppDists::pKendall(q=corrie, N=n, lower.tail = FALSE)
-      } else if (n >= 50){
-          # normal approximation
-          #
-          someSd <- sqrt(2*(2*n+5)/(9*n*(n-1)))
-
-          # tau neq 0
-          result$twoSided <- 2 * stats::pnorm(-abs(corrie), sd=someSd)
-          # tau < 0
-          result$minSided <- stats::pnorm(corrie, sd=someSd)
-          # tau > 0
-          result$plusSided <- stats::pnorm(corrie, sd=someSd, lower.tail = FALSE)
-      }
-  } else if (method == "spearman"){
-      # TODO: Johnny
-      # Without code this will print a NULL, if we go through here
-  }
-  return(result)
-}
-
 .isInputValid.summarystats.ttest <- function(options, independent) {
 	# Checks if the input given is valid
 	# If input is valid, it returns 'ready' to carry out the analysis
