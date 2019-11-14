@@ -23,33 +23,30 @@ import JASP.Controls 1.0
 
 Form
 {
-	usesJaspResults: false
-	
-	CheckBox	 { name: "parallelBootstrap";		checked: false;		visible: false }
-	IntegerField { name: "plotHeightBootstrapPlot";	defaultValue: 320;	visible: false }
-	IntegerField { name: "plotHeightCentrality";	defaultValue: 320;	visible: false }
-	IntegerField { name: "plotHeightClustering";	defaultValue: 320;	visible: false }
-	IntegerField { name: "plotHeightNetwork";		defaultValue: 320;	visible: false }
-	IntegerField { name: "plotWidthBootstrapPlot";	defaultValue: 480;	visible: false }
-	IntegerField { name: "plotWidthCentrality";		defaultValue: 480;	visible: false }
-	IntegerField { name: "plotWidthClustering";		defaultValue: 480;	visible: false }
-	IntegerField { name: "plotWidthNetwork";		defaultValue: 480;	visible: false }
-	CheckBox	 { name: "tableFitMeasures";		checked: false;		visible: false }	
-	
-	VariablesForm 
+
+	VariablesForm
 	{
-		AvailableVariablesList { name: "allVariablesList" }		
-        AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables"); suggestedColumns: ["ordinal", "scale"]}
+		AvailableVariablesList { name: "allVariablesList" }
+		AssignedVariablesList { name: "variables";			title: qsTr("Dependent Variables"); suggestedColumns: ["ordinal", "scale"]; id: networkVariables}
 		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Split"); singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
 	}
-	
+
 	DropDown
 	{
 		id: estimator
 		name: "estimator"
 		label: qsTr("Estimator")
 		Layout.columnSpan: 2
-		values: ["EBICglasso", "cor", "pcor", "IsingFit", "IsingSampler", "huge", "adalasso", "mgm"]
+		values: [
+			{ value: "EBICglasso",		label: "EBICglasso"			},
+			{ value: "cor",				label: "Correlation"		},
+			{ value: "pcor",			label: "Partial Correlation"},
+			{ value: "IsingFit",		label: "IsingFit"			},
+			{ value: "IsingSampler",	label: "IsingSampler"		},
+			{ value: "huge",			label: "huge"				},
+			{ value: "adalasso",		label: "adalasso"			},
+			{ value: "mgm",				label: "mgm"				}
+		]
 	}
 
 	Group
@@ -63,17 +60,12 @@ Form
 	Group
 	{
 		title: qsTr("Tables")
-		CheckBox { name: "tableCentrality";			label: qsTr("Centrality table")					}
-		CheckBox { name: "tableClustering";			label: qsTr("Clustering table")					}
-		CheckBox { name: "tableWeightsMatrix";		label: qsTr("Weights matrix")					}
-		CheckBox
-		{
-			name: "tableLayout"; label: qsTr("Layout matrix")
-			CheckBox { name: "tableLayoutValuesOnly"; label: qsTr("Show variable names") }
-		}
+		CheckBox { name: "tableCentrality";		label: qsTr("Centrality table")	}
+		CheckBox { name: "tableClustering";		label: qsTr("Clustering table")	}
+		CheckBox { name: "tableWeightsMatrix";	label: qsTr("Weights matrix")	}
 	}
 
-	Section 
+	Section
 	{
 		title: qsTr("Analysis Options - ") + estimator.currentText
 
@@ -190,7 +182,7 @@ Form
 				{
 					name: "thresholdMethod"
 					values: [
-						{ label: "Significant", value: "sig"		},
+						{ label: "Significant",	value: "sig"		},
 						{ label: "Bonferroni",	value: "bonferroni"	},
 						{ label: "Locfdr",		value: "locfdr"		},
 						{ label: "Holm",		value: "holm"		},
@@ -214,21 +206,30 @@ Form
 		VariablesForm
 		{
 			visible: [7].includes(estimator.currentIndex)
-			height: 150
-			AvailableVariablesList { name: "variablesTypeAvailable" }
-			AssignedVariablesList { name: "mgmVariableType";	title: qsTr("Variable Type"); singleVariable: true; suggestedColumns: ["nominal"] }
+			AvailableVariablesList
+			{
+				title: qsTr("Variables in network")
+				name: "variablesTypeAvailable"
+				source: ["variables"]
+			}
+
+			AssignedVariablesList { name: "mgmVariableTypeContinuous";	title: qsTr("Continuous Variables");	suggestedColumns: ["scale"]}
+			AssignedVariablesList { name: "mgmVariableTypeCategorical";	title: qsTr("Categorical Variables");	suggestedColumns: ["ordinal"]}
+			AssignedVariablesList { name: "mgmVariableTypeCount";		title: qsTr("Count Variables");			suggestedColumns: ["nominal"]}
 		}
 	}
 
-	Section 
+	Section
 	{
 		title: qsTr("Bootstrap Options")
-		
+
 		Group
 		{
 			title: qsTr("Settings")
 			CheckBox	 { name: "bootstrapOnOff";		label: qsTr("Bootstrap network")	}
 			IntegerField { name: "numberOfBootstraps";	label: qsTr("Number of bootstraps"); defaultValue: 0; max: 100000 }
+
+			CheckBox	 { name: "parallelBootstrap";	label: qsTr("Parallel Bootstrap");	checked: false;	visible: false }
 		}
 
 		RadioButtonGroup
@@ -251,36 +252,81 @@ Form
 			CheckBox { name: "StatisticsCentrality";	label: qsTr("Centrality");	checked: true }
 		}
 	}
-	
-	Section 
+
+	Section
 	{
 		title: qsTr("Graphical Options")
-		
-		VariablesForm
+
+		InputListView
 		{
-			height: 200
-			AvailableVariablesList { name: "variablesForColor"; title: qsTr("Nodes") }
-            AssignedVariablesList  { name: "colorNodesBy";		title: qsTr("Color Nodes By"); singleVariable: true; suggestedColumns: ["nominal"]}
+			id					: networkFactors
+			name				: "groupNames"
+			title				: qsTr("Group name")
+			optionKey			: "group"
+			defaultValues		: ["Group 1", "Group 2"]
+			placeHolder			: qsTr("New Group")
+			minimumItems		: 2
+			width				: (2 * form.width) / 5
+			enableExtraColumns	: manualColors.checked
+			debug				: true
+
+			ExtraControlColumn
+			{
+				type: "DropDown"
+				name: "groupColors"
+				title: qsTr("Group color")
+				useExternalBorder: true
+				values: [
+					{value: "red",		label: "red"	},
+					{value: "blue",		label: "blue"	},
+					{value: "yellow",	label: "yellow"	},
+					{value: "green",	label: "green"	},
+					{value: "purple",	label: "purple"	},
+					{value: "orange",	label: "orange"	}
+				]
+			}
 		}
-		
+
+		AssignedVariablesList
+		{
+			width							: (2 * form.width) / 5
+			title							: qsTr("Variables in network")
+			name							: "variablesForColor"
+			source							: ["variables"]
+			addAvailableVariablesToAssigned	: true
+			draggable						: false
+			debug							: true
+			ExtraControlColumn
+			{
+				type: "DropDown"
+				name: "groupAssigned"
+				title: qsTr("Group")
+				useExternalBorder: true
+				source: ["groupNames"]
+			}
+		}
+
 		Group
 		{
 			Layout.columnSpan: 2
-			DoubleField { name: "nodeSize"; label: qsTr("Node size"); defaultValue: 1; max: 10 }
+			CheckBox	{ name: "manualColors";	label: qsTr("Manual colors");	id: manualColors	}
 			DropDown
 			{
-				name: "nodeColors"
+				enabled: !manualColors.checked
+				id: paletteSelector
+				name: "nodePalette"
 				label: qsTr("Node palette")
 				indexDefaultValue: 1
 				values: [
 					{ label: qsTr("Rainbow"),		value: "rainbow"	},
-					{ label: qsTr("Colorblind"),	value: "colorblind" },
+					{ label: qsTr("Colorblind"),	value: "colorblind"	},
 					{ label: qsTr("Pastel"),		value: "pastel"		},
 					{ label: qsTr("Gray"),			value: "gray"		},
 					{ label: qsTr("R"),				value: "R"			},
 					{ label: qsTr("ggplot2"),		value: "ggplot2"	}
 				]
 			}
+			DoubleField	{ name: "nodeSize";		label: qsTr("Node size");		defaultValue: 1; max: 10	}
 		}
 
 		Group
@@ -298,14 +344,14 @@ Form
 				indexDefaultValue: 1
 				values:
 				[
-					{ label: qsTr("Classic"),		value: "classic"	},
-					{ label: qsTr("Colorblind"),	value: "colorblind" },
-					{ label: qsTr("Gray"),			value: "gray"		},
-					{ label: qsTr("Hollywood"),		value: "Hollywood"	},
-					{ label: qsTr("Borkulo"),		value: "Borkulo"	},
-					{ label: qsTr("TeamFortress"),	value: "TeamFortress" },
-					{ label: qsTr("Reddit"),		value: "Reddit"		},
-					{ label: qsTr("Fried"),			value: "Fried"		}
+					{ label: qsTr("Classic"),		value: "classic"		},
+					{ label: qsTr("Colorblind"),	value: "colorblind"		},
+					{ label: qsTr("Gray"),			value: "gray"			},
+					{ label: qsTr("Hollywood"),		value: "Hollywood"		},
+					{ label: qsTr("Borkulo"),		value: "Borkulo"		},
+					{ label: qsTr("TeamFortress"),	value: "TeamFortress"	},
+					{ label: qsTr("Reddit"),		value: "Reddit"			},
+					{ label: qsTr("Fried"),			value: "Fried"			}
 				]
 			}
 		}
@@ -321,7 +367,6 @@ Form
 				childrenOnSameRow: true
 				IntegerField { name: "abbreviateNoChars"; defaultValue: 4; max: 100000 }
 			}
-
 		}
 
 		RadioButtonGroup
@@ -378,14 +423,25 @@ Form
 			RadioButton { value: "circle";	label: qsTr("Circle")							}
 			RadioButton { value: "data";	label: qsTr("Data");	id: dataRatioButton		}
 		}
-		
+
 		VariablesForm
 		{
 			visible: dataRatioButton.checked
 			height: 200
 			AvailableVariablesList	{ name: "allXYVariables" }
-			AssignedVariablesList	{ name: "layoutX"; title: qsTr("x"); singleVariable: true}
-			AssignedVariablesList	{ name: "layoutY"; title: qsTr("y"); singleVariable: true}
+			AssignedVariablesList	{ name: "layoutX"; title: qsTr("x"); singleVariable: true; suggestedColumns: "nominalText"}
+			AssignedVariablesList	{ name: "layoutY"; title: qsTr("y"); singleVariable: true; suggestedColumns: "nominalText"}
+		}
+
+		CheckBox
+		{
+			text: qsTr("Save the layout in the data set")
+			name: "addLayoutToData"
+			Layout.columnSpan: 2
+			ComputedColumnField { name: "computedLayoutX"; text: qsTr("name for x-coordinates") }
+			ComputedColumnField { name: "computedLayoutY"; text: qsTr("name for y-coordinates") }
+			enabled: !dataRatioButton.checked
+			visible: !dataRatioButton.checked
 		}
 	}
 }
