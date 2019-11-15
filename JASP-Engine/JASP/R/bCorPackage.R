@@ -1,3 +1,363 @@
+# 1. Main test function --------
+bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
+                      method=c("pearson", "kendall", "spearman"), ciValue=0.95,
+                      use="pairwise.complete.obs",
+                      h0=0, kappa=1, hyperGeoOverFlowThreshold=25, oneThreshold=0.001, var=1) {
+  
+  if (is.null(method)) {
+    result <- .computePearsonCorBf10(NULL, NULL)
+    result[["error"]] <- "No method selected"
+    return(result)
+  }
+  
+  stat <- tryOrFailWithNA(cor(x, y, use=use, method=method[1]))
+  n <- tryOrFailWithNA(
+    length(x) - length(
+      unique(c(which(is.na(x)), which(is.na(y))))
+    )
+  )
+  
+  result <- bcor.testSumStat("n"=n, "stat"=stat, "alternative"=alternative,
+                             "method"=method, "ciValue"=ciValue, "h0"=h0, "kappa"=kappa,
+                             "hyperGeoOverFlowThreshold"=hyperGeoOverFlowThreshold,
+                             "oneThreshold"=oneThreshold, "var"=var)
+  result[["call"]] <- match.call()
+  return(result)
+}
+
+bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greater"),
+                             method=c("pearson", "kendall", "spearman"), ciValue=0.95,
+                             h0=0, kappa=1, hyperGeoOverFlowThreshold=25, oneThreshold=0.001, var=1) {
+  method <- match.arg(method)
+  alternative <- match.arg(alternative)
+  
+  if (is.na(stat) | is.na(n) | n <= 0) {
+    if (method=="pearson") {
+      result <- .computePearsonCorBf10(NaN, NaN)
+    } else if (method=="kendall") {
+      result <- .computeKendallCorBf10(NaN, NaN)
+    }
+    
+    result[["error"]] <- "Can't compute the correlation"
+  }
+  
+  if (method=="pearson") {
+    result <- .computePearsonCorBf10("n"=n, "r"=stat, "h0"=h0, "kappa"=kappa, "ciValue"=ciValue,
+                                     "hyperGeoOverFlowThreshold"=hyperGeoOverFlowThreshold,
+                                     "oneThreshold" = oneThreshold)
+  } else if (method=="kendall") {
+    result <- .computeKendallCorBf10("n"=n, "tauObs"=stat, "h0"=h0, "kappa"=kappa, "ciValue"=ciValue,
+                                     "oneThreshold"=oneThreshold, "var"=var)
+  } else if (method[1]=="spearman") {
+    print("NOT YET THIS IS JUST PEARSON AS A PLACEHOLDER")
+    result <- .computePearsonCorBf10("n"=NA, "r"=NA, "h0"=h0, "kappa"=kappa, "ciValue"=ciValue,
+                                     "oneThreshold" = oneThreshold)
+  }
+  result[["alternative"]] <- alternative
+  return(result)
+}
+
+.getSidedObject <- function(bfObject, alternative="two.sided", itemNames=NULL) {
+  result <- modifyList(bfObject[[alternative]], bfObject[itemNames])
+}
+
+
+# 2 Compute posteriors --------
+.computeCorPosteriorLine <- function(bfObject, method="pearson", alternative="two.sided", minX=-0.985, maxX=0.985) {
+  xDomain <- seq(minX, maxX, length.out = 1001)
+  if (alternative %in% c("two-sided", "two.sided")) {
+    alternative <- "two.sided"
+  } else if (alternative %in% c("greater", "right", "positive")) {
+    alternative <- "greater"
+  } else if (alternative %in% c("less", "left", "negative")) {
+    alternative <- "less"
+  }
+  
+  sidedObject <- .getSidedObject("bfObject"=bfObject, "alternative"=alternative,
+                                 itemNames=c("error", "h0"))
+  
+  # Note(Alexander): Don't compute if it's already computed
+  #
+  if (!is.null(sidedObject[["posteriorLine"]]))
+    return(sidedObject)
+  
+  # Note(Alexander): Don't compute if there's an error
+  #
+  errorMessage <- sidedObject[["error"]]
+  
+  if (!is.null(errorMessage)) {
+    sidedObject[["posteriorLine"]] <- errorMessage
+    return(sidedObject)
+  }
+  
+  # Note(Alexander): Don't compute if it's too peaked
+  #
+  if (sidedObject[["tooPeaked"]]) {
+    sidedObject[["posteriorLine"]] <- "Posterior is too peaked"
+    return(sidedObject)
+  }
+  
+  if (method=="pearson") {
+    if (isSomeNA(bfObject[["betaA"]], bfObject[["betaB"]])) {
+      sidedObject[["posteriorLine"]] <- "Posterior is too peaked"
+      return(sidedObject)
+    }
+    
+    # TODO(Alexander): Derive this for shifted h0/Find master student
+    #
+    sidedObject[["priorAtH0"]] <- .priorRho("rho"=sidedObject[["h0"]], "kappa"=bfObject[["kappa"]], alternative=alternative)
+    sidedObject[["priorLine"]] <- .priorRho("rho"=xDomain, "kappa"=bfObject[["kappa"]], alternative=alternative)
+    
+    subCounter <- 1
+    
+    while (subCounter <= 3) {
+      if (subCounter==1) {
+        posteriorAtH0 <- .posteriorRho("bfObject"=bfObject, "rho"=sidedObject[["h0"]], "alternative"=alternative)
+        posteriorLine <- .posteriorRho("bfObject"=bfObject, "rho"=xDomain, "alternative"=alternative)
+      } else if (subCounter==2) {
+        sidedObject[["approximation"]] <- "beta"
+        posteriorAtH0 <- .posteriorRhoBetaApprox("rho"=sidedObject[["h0"]], "bfObject"=bfObject,
+                                                 alternative=alternative)
+        posteriorLine <- .posteriorRhoBetaApprox("rho"=xDomain, "bfObject"=bfObject,
+                                                 alternative=alternative)
+      } else if (subCounter==3) {
+        sidedObject[["approximation"]] <- "fisher"
+        posteriorAtH0 <- .posteriorRhoFisherApprox("bfObject"=bfObject, "rho"=sidedResult[["h0"]],
+                                                   "alternative"=alternative)
+        posteriorLine <- .posteriorRhoFisherApprox("bfObject"=bfObject, "rho"=xDomain,
+                                                   "alternative"=alternative)
+      }
+      
+      if (isSomeNA(posteriorLine) | any(posteriorLine < 0) | isSomeInfinite(posteriorLine)) {
+        subCounter <- subCounter +1
+      } else {
+        sidedObject[["posteriorAtH0"]] <- posteriorAtH0
+        sidedObject[["posteriorLine"]] <- posteriorLine
+        break()
+      }
+    }
+  } else if (method=="kendall") {
+    # TODO(Alexander):
+    #
+    sidedObject[["priorAtH0"]] <- .priorTau("tauPop"=sidedObject[["h0"]], "kappa"=bfObject[["kappa"]],
+                                            "alternative"=alternative)
+    sidedObject[["priorLine"]] <- .priorTau("tauPop"=xDomain, "kappa"=bfObject[["kappa"]], "alternative"=alternative)
+    
+    subCounter <- 1
+    
+    while (subCounter <= 1) {
+      if (subCounter==1) {
+        posteriorAtH0 <- .posteriorTau("tauPop"=sidedObject[["h0"]], "n"=sidedObject[["n"]],
+                                       "tauObs"=sidedObject[["stat"]],"kappa"=bfObject[["kappa"]],
+                                       "alternative"=alternative)
+        posteriorLine <- .posteriorTau("tauPop"=xDomain, "n"=sidedObject[["n"]], "tauObs"=sidedObject[["stat"]],
+                                       "kappa"=bfObject[["kappa"]], "alternative"=alternative)
+      } else if (subCounter==2) {
+        # TODO(Alexander): Perhaps add a Fisher approximation to this
+      }
+      
+      if (isSomeNA(posteriorLine) | any(posteriorLine < 0) | isSomeInfinite(posteriorLine)) {
+        subCounter <- subCounter +1
+      } else {
+        sidedObject[["posteriorAtH0"]] <- posteriorAtH0
+        sidedObject[["posteriorLine"]] <- posteriorLine
+        break()
+      }
+    }
+  }
+  
+  if (isSomeNA(posteriorLine) | any(posteriorLine < 0) | isSomeInfinite(posteriorLine)){
+    sidedObject[["posteriorLine"]] <- "Posterior is too peaked"
+    return(sidedObject)
+  }
+  
+  sidedObject[["yMax"]] <- max(sidedObject[["priorLine"]], sidedObject[["posteriorLine"]])
+  sidedObject[["xDomain"]] <- xDomain
+  return(sidedObject)
+}
+
+.computeCorSequentialLine <- function(x, y, bfObject, method="pearson") {
+  # sidedObject <- .getSidedObject(bfObject, alternative=alternative)
+  #
+  error <- bfObject[["error"]]
+  bf10 <- bfObject[["two.sided"]][["bf"]]
+  
+  if (bfObject[["two.sided"]][["tooPeaked"]] | bfObject[["greater"]][["tooPeaked"]] |
+      bfObject[["less"]][["tooPeaked"]]) {
+    error <- "Posterior is too peaked"
+  }
+  
+  if (!is.null(error) | is.na(bf10)) {
+    if (is.null(error)) {
+      # Note(Alexander): This means that there's no error message
+      error <- "Could not compute"
+    }
+    
+    sideError <- list("sequentialLine"=error)
+    result <- list("two.sided"=sideError, "greater"=sideError, "less"=sideError)
+    return(result)
+  }
+  
+  n <- bfObject[[1]][["n"]]
+  
+  compN <- 3:n
+  nDomain <- c(1:2, compN)
+  
+  .calculateSequentialCor <- function(i, x, y, method) {
+    return(tryOrFailWithNA(cor(x[1:i], y[1:i], use="pairwise.complete.obs", method=method)))
+  }
+  
+  statSeq <- purrr::map_dbl(compN, .calculateSequentialCor, "x"=x, "y"=y, "method"=method)
+  
+  if (sum(is.na(statSeq)) >= 1) {
+    sideError <- list("sequentialLine"="Could not compute")
+    result <- list("two.sided"=sideError, "greater"=sideError, "less"=sideError)
+  }
+  
+  h0 <- bfObject[["h0"]]
+  kappa <- bfObject[["kappa"]]
+  
+  methodNumber <- bfObject[["methodNumber"]]
+  
+  placeHolder <- vector("numeric", length=length(nDomain))
+  placeHolder[1] <- placeHolder[2] <- 1
+  sideResult <- list("sequentialLine"=placeHolder)
+  
+  result <- list("two.sided"=sideResult, "greater"=sideResult, "less"=sideResult)
+  
+  if (method=="pearson") {
+    .calculateSequentialBCorPearson <- function(n, r) {
+      bfObject <- .computePearsonCorBf10(n, r, "h0"=h0, "kappa"=kappa,
+                                         methodNumber=methodNumber)
+      list(bfObject[["two.sided"]][["bf"]],
+           bfObject[["greater"]][["bf"]],
+           bfObject[["less"]][["bf"]]
+      )
+    }
+    
+    allBfs <- purrr::map2(compN, statSeq, .calculateSequentialBCorPearson)
+    
+    for (i in seq_along(allBfs)){
+      result[[1]][[1]][i+2] <- allBfs[[i]][[1]]
+      result[[2]][[1]][i+2] <- allBfs[[i]][[2]]
+      result[[3]][[1]][i+2] <- allBfs[[i]][[3]]
+    }
+    
+  } else if (method=="kendall") {
+    .calculateSequentialBCorTau <- function(n, tauObs, alternative) {
+      bfObject <- unlist(.bfKendallTauSavageDickey("n"=n, "tauObs"=tauObs, "kappa"=kappa,"h0"=h0, alternative=alternative)[["bf"]])
+    }
+    
+    alternativeItems <- c("two.sided", "greater", "less")
+    
+    for (i in seq_along(alternativeItems)) {
+      alternative <- alternativeItems[i]
+      tempResult <- purrr::map2_dbl(compN, statSeq, .calculateSequentialBCorTau, alternative=alternative)
+      result[[alternative]][[1]] <- c(1, 1, tempResult)
+    }
+  } else if (method=="spearman") {
+    # TODO(Johnny)
+  }
+  
+  for (j in 1:3) {
+    if (isSomeInfinite(result[[j]][[1]])) {
+      result[[j]][[1]] <- "Bayes factor hits infinity"
+    }
+    
+    if (sum(is.na(result[[j]][[1]])) >= 1) {
+      result[[j]][[1]] <- "Could not compute"
+    }
+  }
+  result[["nDomain"]] <- nDomain
+  return(result)
+}
+
+.computeCorRobustnessLine <- function(bfObject, method="pearson") {
+  error <- bfObject[["error"]]
+  bf10 <- bfObject[["two.sided"]][["bf"]]
+  
+  if (bfObject[["two.sided"]][["tooPeaked"]] | bfObject[["greater"]][["tooPeaked"]] |
+      bfObject[["less"]][["tooPeaked"]]) {
+    error <- "Posterior is too peaked"
+  }
+  
+  if (!is.null(error) | is.na(bf10)) {
+    if (is.null(error)) {
+      # Note(Alexander): This means that there's no error message
+      error <- "Could not compute"
+    }
+    
+    sideError <- list("robustnessLines"=error)
+    result <- list("two.sided"=sideError, "greater"=sideError, "less"=sideError)
+    return(result)
+  }
+  
+  n <- bfObject[["two.sided"]][["n"]]
+  stat <- bfObject[["two.sided"]][["stat"]]
+  h0 <- bfObject[["h0"]]
+  methodNumber <- bfObject[["methodNumber"]]
+  
+  kappas <- .makeKappas(50)
+  compKappas <- kappas[3:50]
+  
+  kappaDomain <- c(kappas[1:2], compKappas)
+  
+  placeHolder <- c(1, 1, vector("numeric", length=48))
+  sideResult <- list("robustnessLine"=placeHolder)
+  result <- list("two.sided"=sideResult, "greater"=sideResult, "less"=sideResult)
+  
+  # TODO(Alexander): Different iterations not necessary already covered by the wrapper
+  #
+  if (method=="pearson") {
+    .calculatePearsonRobustness <- function(kappa) {
+      bfObject <- .computePearsonCorBf10("n"=n, "r"=stat, "h0"=h0, "kappa"=kappa, "methodNumber"=methodNumber)
+      list(bfObject[["two.sided"]][["bf"]],
+           bfObject[["greater"]][["bf"]],
+           bfObject[["less"]][["bf"]])
+    }
+    
+    allBfs <- purrr::map(compKappas, .f=.calculatePearsonRobustness)
+    
+    for (i in seq_len(48)){
+      result[[1]][[1]][i+2] <- allBfs[[i]][[1]]
+      result[[2]][[1]][i+2] <- allBfs[[i]][[2]]
+      result[[3]][[1]][i+2] <- allBfs[[i]][[3]]
+    }
+  } else if (method=="kendall") {
+    .calculateKendallRobustness <- function(kappa, alternative) {
+      .bfKendallTauSavageDickey("n"=n, "tauObs"=stat, "kappa" = kappa, "h0"=0, "alternative"=alternative)[["bf"]]
+    }
+    
+    alternativeItems <- c("two.sided", "greater", "less")
+    
+    for (i in seq_along(alternativeItems)) {
+      alternative <- alternativeItems[i]
+      tempResult <- purrr::map_dbl(compKappas, ".f"=.calculateKendallRobustness, "alternative"=alternative)
+      result[[alternative]][[1]] <- c(1, 1, tempResult)
+    }
+  }
+  
+  for (j in 1:3) {
+    if (isSomeInfinite(result[[j]][[1]])) {
+      result[[j]][[1]] <- "Bayes factor hits infinity"
+    }
+    
+    if (sum(is.na(result[[j]][[1]])) >= 1) {
+      result[[j]][[1]] <- "Could not compute"
+    } else {
+      robustnessMaxBf <- max(result[[j]][[1]])
+      robustnessKappaOfMaxBf <- kappaDomain[which.max(result[[j]][[1]])]
+      result[[j]] <- modifyList(result[[j]],
+                                list("robustnessMaxBf"=robustnessMaxBf,
+                                     "robustnessKappaOfMaxBf"=robustnessKappaOfMaxBf))
+    }
+  }
+  result[["kappaDomain"]] <- kappaDomain
+  
+  return(result)
+}
+
+
 #' Try to evaluate an expression, if not fail with NA (default)
 #'
 #' @param expr Expression to be evaluated
@@ -184,6 +544,8 @@ isSomeTrue <- function(...) {
   isSome(..., func=isTRUE)
 }
 
+
+# 1. Priors --------------------
 .stretchedBeta <- function(rho, betaA, betaB) {
   result <- 1/2*dbeta((rho+1)/2, betaA, betaB)
   return(result)
@@ -219,6 +581,7 @@ isSomeTrue <- function(...) {
   return(result)
 }
 
+# 2. Likelihood -------------
 # These are the functions used for the likelihood
 #
 .aFunction <- function(n, r, rho) {
@@ -305,7 +668,7 @@ isSomeTrue <- function(...) {
     if (n > 2 && n < 50) {
       # Exact sampling distribution
       # tau neq 0
-      result[["two.sided"]][["p"]] <- 1 - SuppDists::pKendall("q"=abs(stat), N=n) + 
+      result[["two.sided"]][["p"]] <- 1 - SuppDists::pKendall("q"=abs(stat), N=n) +
         SuppDists::pKendall("q"=-abs(stat), "N"=n)
       # tau < 0
       result[["less"]][["p"]] <- SuppDists::pKendall("q"=stat, "N"=n)
@@ -332,7 +695,7 @@ isSomeTrue <- function(...) {
 
 
 # TODO(Alexander): Unify ".pValueFromT", and check that this is not used in Alexandra's rewrite or somehwere else
-# 
+#
 #' Function returns the p value from correlation.
 #'
 #' @param t numeric representing observed t-statistic
@@ -378,10 +741,11 @@ isSomeTrue <- function(...) {
   return(result)
 }
 
+# 3. Bayes factor
 # These are the functions used to compute the Bayes factors
 #
 
-# 2.1 Two-sided main Bayes factor ----------------------------------------------
+# 3.1 Two-sided main Bayes factor ----------------------------------------------
 ## Suit:
 #' Title
 #'
@@ -680,7 +1044,7 @@ isSomeTrue <- function(...) {
 }
 
 
-# 3.0 One-sided preparation ----------------------------------------------------
+# 3.2 One-sided preparation ----------------------------------------------------
 
 #' Add this to the exact two-sided Bayes factor to get bfPlus0
 #'
@@ -986,172 +1350,10 @@ isSomeTrue <- function(...) {
 }
 
 
-bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greater"),
-                               method=c("pearson", "kendall", "spearman"), ciValue=0.95,
-                               use="pairwise.complete.obs",
-                               h0=0, kappa=1, hyperGeoOverFlowThreshold=25, oneThreshold=0.001) {
-  
-  if (is.na(stat) | is.na(n) | n <= 0) {
-    result <- .computePearsonCorBf10(NaN, NaN)
-    result[["error"]] <- "Can't compute the correlation"
-  }
-  
-  if (method[1]=="pearson") {
-    result <- .computePearsonCorBf10("n"=n, "r"=stat, "h0"=h0, "kappa"=kappa, "ciValue"=ciValue,
-                                     "oneThreshold" = oneThreshold)
-    result[["alternative"]] <- alternative[1]
-    return(result)
-  } else if (method[1]=="kendall") {
-    result <- .computePearsonCorBf10("n"=n, "r"=stat, "h0"=h0, "kappa"=kappa, "ciValue"=ciValue,
-                                     "oneThreshold" = oneThreshold)
-    result[["alternative"]] <- alternative[1]
-    return(result)
-  } else if (method[1]=="spearman") {
-    print("NOT YET THIS IS JUST PEARSON AS A PLACEHOLDER")
-    result <- .computePearsonCorBf10("n"=NA, "r"=NA, "h0"=h0, "kappa"=kappa, "ciValue"=ciValue,
-                                     "oneThreshold" = oneThreshold)
-    result[["alternative"]] <- alternative[1]
-    return(result)
-  }
-}
-
-bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
-                      method=c("pearson", "kendall", "spearman"), ciValue=0.95,
-                      use="pairwise.complete.obs",
-                      h0=0, kappa=1, hyperGeoOverFlowThreshold=25, oneThreshold=0.001) {
-  
-  if (is.null(method)) {
-    result <- .computePearsonCorBf10(NULL, NULL)
-    result[["error"]] <- "No method selected"
-    return(result)
-  }
-  
-  stat <- tryOrFailWithNA(cor(x, y, use=use, method=method[1]))
-  n <- tryOrFailWithNA(
-    length(x) - length(
-      unique(c(which(is.na(x)), which(is.na(y))))
-    )
-  )
-  
-  return(bcor.testSumStat("n"=n, "stat"=stat, "alternative"=alternative,
-                          "method"=method, "ciValue"=ciValue,
-                          "use"=use, "h0"=h0, "kappa"=kappa, 
-                          "hyperGeoOverFlowThreshold"=hyperGeoOverFlowThreshold, 
-                          "oneThreshold"=oneThreshold)
-  )
-}
-
-.getSidedObject <- function(bfObject, alternative="two.sided", itemNames=NULL) {
-  result <- modifyList(bfObject[[alternative]], bfObject[itemNames])
-}
-
-# TODO: Main wrapper function to grab infor for posterior across test=pearson, kendall and alternative = two.sided, greater/plusSided, less/minSided etc
+# 4. Posteriors ------------
+# TODO: Main wrapper function to grab infor for posterior across method=pearson, kendall and alternative = two.sided, greater/plusSided, less/minSided etc
 #
-.computeCorPosteriorLine <- function(bfObject, method="pearson", alternative="two.sided", minX=-0.985, maxX=0.985) {
-  xDomain <- seq(minX, maxX, length.out = 1001)
-  if (alternative %in% c("two-sided", "two.sided")) {
-    alternative <- "two.sided"
-  } else if (alternative %in% c("greater", "right", "positive")) {
-    alternative <- "greater"
-  } else if (alternative %in% c("less", "left", "negative")) {
-    alternative <- "less"
-  }
-  
-  sidedObject <- .getSidedObject(bfObject, alternative=alternative, itemNames=c("error", "h0"))
-  
-  # Note(Alexander): Don't compute if it's already computed
-  #
-  if (!is.null(sidedObject[["posteriorLine"]])) {
-    return(sidedObject)
-  }
-  
-  # Note(Alexander): Don't compute if there's an error
-  #
-  if (!is.null(sidedObject[["error"]])) {
-    sidedObject[["posteriorLine"]] <- NA
-    return(sidedObject)
-  }
-  
-  # Note(Alexander): Don't compute if it's too peaked
-  #
-  if (sidedObject[["tooPeaked"]]) {
-    sidedObject[["posteriorLine"]] <- NA
-    sidedObject[["error"]] <- "Posterior is too peaked"
-    return(sidedObject)
-  }
-  
-  # TODO(Alexander):
-  # # Take tempResult and use the subResult structure to be saved back into bfObject later on
-  # subResult <- list(n=bfObject$n, stat=bfObject$stat, bf=NULL,
-  #                   savageDickeyTestPoint=savageDTestPoint, savageDickeyPosteriorPoint=NULL, savageDickeyPriorPoint=NULL,
-  #                   xDomain=xDomain, priorLine=NULL, posteriorLine=NULL, betaApproximation=FALSE,
-  #                   ci=NULL, test=test, xMin=-1, xMax=1, yMin=0, yMax=NULL, alternative=alternative)
-  #
-  
-  if (method=="pearson") {
-    if (isSomeNA(bfObject[["betaA"]], bfObject[["betaB"]])) {
-      sidedObject[["posteriorLine"]] <- NA
-      sidedObject[["error"]] <- "Posterior is too peaked"
-      return(sidedObject)
-    }
-    
-    # TODO(Alexander): Derive this for shifted h0/Find master student
-    #
-    sidedObject[["priorAtH0"]] <- .priorRho("rho"=sidedObject[["h0"]], "kappa"=bfObject[["kappa"]], alternative=alternative)
-    sidedObject[["priorLine"]] <- .priorRho("rho"=xDomain, "kappa"=bfObject[["kappa"]], alternative=alternative)
-    
-    subCounter <- 1
-    
-    while (subCounter <= 3) {
-      if (subCounter==1) {
-        posteriorAtH0 <- .posteriorRho("bfObject"=bfObject, "rho"=sidedObject[["h0"]], "alternative"=alternative)
-        posteriorLine <- .posteriorRho("bfObject"=bfObject, "rho"=xDomain, "alternative"=alternative)
-      } else if (subCounter==2) {
-        sidedObject[["approximation"]] <- "beta"
-        posteriorAtH0 <- .posteriorRhoBetaApprox("rho"=sidedObject[["h0"]], "bfObject"=bfObject,
-                                                 alternative=alternative)
-        posteriorLine <- .posteriorRhoBetaApprox("rho"=xDomain, "bfObject"=bfObject,
-                                                 alternative=alternative)
-      } else if (subCounter==3) {
-        sidedObject[["approximation"]] <- "fisher"
-        posteriorAtH0 <- .posteriorRhoFisherApprox("bfObject"=bfObject, "rho"=sidedResult[["h0"]],
-                                                   "alternative"=alternative)
-        posteriorLine <- .posteriorRhoFisherApprox("bfObject"=bfObject, "rho"=xDomain,
-                                                   "alternative"=alternative)
-      }
-      
-      if (isSomeNA(posteriorLine) | any(posteriorLine < 0) | isSomeInfinite(posteriorLine)) {
-        subCounter <- subCounter +1
-      } else {
-        sidedObject[["posteriorAtH0"]] <- posteriorAtH0
-        sidedObject[["posteriorLine"]] <- posteriorLine
-        break()
-      }
-    }
-  } else if (method=="kendall") {
-    # TODO(Alexander):
-    #
-    sidedObject[["priorLine"]] <- .priorTau("tauPop"=xDomain, "kappa"=bfObject[["kappa"]], alternative=alternative)
-    tempPosteriorLine <- .posteriorTau("tauPop"=xDomain, "n"=sidedObject[["n"]], tauObs=sidedObject[["stat"]],
-                                       kappa=bfObject[["kappa"]], alternative=alternative)
-    
-    if (isSomeNA(tempPosteriorLine) | any(tempPosteriorLine < 0) | isSomeInfinite(tempPosteriorLine)){
-      sidedObject[["error"]] <- "Posterior is too peaked"
-      return(sidedObject)
-    }
-    
-    sidedObject[["posteriorLine"]] <- tempPosteriorLine
-    sidedObject[["posteriorAtH0"]] <- .posteriorTau("tauPop"=sidedObject[["h0"]], "n"=sidedObject[["n"]],
-                                                    "tauObs"=sidedObject[["stat"]], "kappa"=bfObject[["kappa"]],
-                                                    alternative=alternative)
-    sidedObject[["priorAtH0"]] <- .priorTau("tauPop"=sidedObject[["h0"]], kappa=bfObject[["kappa"]],
-                                            alternative=alternative)
-  }
-  
-  sidedObject[["yMax"]] <- max(sidedObject[["priorLine"]], sidedObject[["posteriorLine"]])
-  sidedObject[["xDomain"]] <- xDomain
-  return(sidedObject)
-}
+
 
 # 4.1 Two-sided
 #' ASDF
@@ -1522,153 +1724,506 @@ bcor.test <- function(x, y, alternative=c("two.sided", "less", "greater"),
   return(someKappas)
 }
 
-
-.computeCorSequentialLine <- function(x, y, bfObject, method="pearson") {
-  # sidedObject <- .getSidedObject(bfObject, alternative=alternative)
-  #
-  error <- bfObject[["error"]]
-  bf10 <- bfObject[["two.sided"]][["bf"]]
+# 5. Replication TODO(Alexander) Needs revising-------
+# These are the functions used to compute replication Bayes factors
+#
+.bfCorrieRepJosine <- function(nOri, rOri, nRep, rRep, kappa=1, hyperGeoOverFlowThreshold=25) {
+  result <- list(combined=list(bf10=NA, bfPlus0=NA, bfMin0=NA))
   
-  if (bfObject[["two.sided"]][["tooPeaked"]] | bfObject[["greater"]][["tooPeaked"]] |
-      bfObject[["less"]][["tooPeaked"]])
-    error <- "Posterior is too peaked"
-  
-  if (!is.null(error) | is.na(bf10)) {
-    if (is.null(error))
-      error <- "Could not compute"
-    
-    sideError <- list("sequentialLine"=error)
-    result <- list("two.sided"=sideError, "greater"=sideError, "less"=sideError)
-    return(result)
+  methodNumber <- 1
+  while (methodNumber <= 4 && any(is.na(c(result$combined$bf10,
+                                          result$combined$bfPlus0,
+                                          result$combined$bfMin0)),
+                                  is.infinite(result$combined$bf10))) {
+    result <- .bfCorrieRepJosineKernel(nOri=nOri, rOri=rOri, nRep=nRep, rRep=rRep, kappa=kappa, methodNumber=methodNumber, hyperGeoOverFlowThreshold=hyperGeoOverFlowThreshold)
+    methodNumber <- methodNumber+1
   }
   
-  n <- bfObject[[1]][["n"]]
-  
-  compN <- 3:n
-  nDomain <- c(1:2, compN)
-  
-  .calculateSequentialCor <- function(i, x, y) {
-    return(tryOrFailWithNA(cor(x[1:i], y[1:i], use="pairwise.complete.obs", method=method)))
-  }
-  
-  rSeq <- purrr::map_dbl(compN, .calculateSequentialCor, x=x, y=y)
-  
-  if (sum(is.na(rSeq)) >= 1) {
-    sideError <- list("sequentialLine"="Could not compute")
-    result <- list("two.sided"=sideError, "greater"=sideError, "less"=sideError)
-  }
-  
-  h0 <- bfObject[["h0"]]
-  kappa <- bfObject[["kappa"]]
-  methodNumber <- bfObject[["methodNumber"]]
-  
-  # TODO(Alexander):
-  
-  if (method=="pearson") {
-    .calculateSequentialBCor <- function(n, r) {
-      bfObject <- .computePearsonCorBf10(n, r, "h0"=h0, "kappa"=kappa,
-                                         methodNumber=methodNumber)
-      list(bfObject[["two.sided"]][["bf"]],
-           bfObject[["greater"]][["bf"]],
-           bfObject[["less"]][["bf"]]
-      )
-    }
-  }
-  
-  allBfs <- purrr::map2(compN, rSeq, .calculateSequentialBCor)
-  
-  placeHolder <- vector("numeric", length=length(nDomain))
-  placeHolder[1] <- placeHolder[2] <- 1
-  sideResult <- list("sequentialLine"=placeHolder)
-  
-  result <- list("two.sided"=sideResult, "greater"=sideResult, "less"=sideResult)
-  
-  for (i in seq_along(allBfs)){
-    result[[1]][[1]][i+2] <- allBfs[[i]][[1]]
-    result[[2]][[1]][i+2] <- allBfs[[i]][[2]]
-    result[[3]][[1]][i+2] <- allBfs[[i]][[3]]
-  }
-  
-  for (j in 1:3) {
-    if (isSomeInfinite(result[[j]][[1]])) {
-      result[[j]][[1]] <- "Bayes factor hits infinity"
-    }
-    
-    if (sum(is.na(result[[j]][[1]])) >= 1) {
-      result[[j]][[1]] <- "Could not compute"
-    }
-  }
-  result[["nDomain"]] <- nDomain
-  return(result)
-}
-
-.computeCorRobustnessLine <- function(bfObject, method="pearson") {
-  error <- bfObject[["error"]]
-  bf10 <- bfObject[["two.sided"]][["bf"]]
-  
-  if (bfObject[["two.sided"]][["tooPeaked"]] | bfObject[["greater"]][["tooPeaked"]] |
-      bfObject[["less"]][["tooPeaked"]])
-    error <- "Posterior is too peaked"
-  
-  if (!is.null(error) | is.na(bf10)) {
-    if (is.null(error))
-      error <- "Could not compute"
-    
-    sideError <- list("robustnessLines"=error)
-    result <- list("two.sided"=sideError, "greater"=sideError, "less"=sideError)
-    return(result)
-  }
-  
-  n <- bfObject[["two.sided"]][["n"]]
-  stat <- bfObject[["two.sided"]][["stat"]]
-  h0 <- bfObject[["h0"]]
-  methodNumber <- bfObject[["methodNumber"]]
-  
-  kappas <- .makeKappas(50)
-  compKappas <- kappas[3:50]
-  
-  kappaDomain <- c(kappas[1:2], compKappas)
-  
-  # TODO(Alexander): Different iterations not necessary already covered by the wrapper
-  #
-  if (method=="pearson") {
-    .calculateOneSidedRobustness <- function(kappa) {
-      bfObject <- .computePearsonCorBf10("n"=n, "r"=stat, "h0"=h0, "kappa"=kappa, "methodNumber"=methodNumber)
-      list(bfObject[["two.sided"]][["bf"]],
-           bfObject[["greater"]][["bf"]],
-           bfObject[["less"]][["bf"]])
-    }
-  }
-  
-  allBfs <- purrr::map(compKappas, .f=.calculateOneSidedRobustness)
-  
-  placeHolder <- c(1, 1, vector("numeric", length=48))
-  sideResult <- list("robustnessLine"=placeHolder)
-  result <- list("two.sided"=sideResult, "greater"=sideResult, "less"=sideResult)
-  
-  for (i in seq_len(48)){
-    result[[1]][[1]][i+2] <- allBfs[[i]][[1]]
-    result[[2]][[1]][i+2] <- allBfs[[i]][[2]]
-    result[[3]][[1]][i+2] <- allBfs[[i]][[3]]
-  }
-  
-  for (j in 1:3) {
-    if (isSomeInfinite(result[[j]][[1]])) {
-      result[[j]][[1]] <- "Bayes factor hits infinity"
-    }
-    
-    if (sum(is.na(result[[j]][[1]])) >= 1) {
-      result[[j]][[1]] <- "Could not compute"
-    } else {
-      robustnessMaxBf <- max(result[[j]][[1]])
-      robustnessKappaOfMaxBf <- kappaDomain[which.max(result[[j]][[1]])]
-      result[[j]] <- modifyList(result[[j]],
-                                list("robustnessMaxBf"=robustnessMaxBf,
-                                     "robustnessKappaOfMaxBf"=robustnessKappaOfMaxBf))
-    }
-  }
-  result[["kappaDomain"]] <- kappaDomain
+  result[["call"]] <-
+    paste0(".bfCorrieRepJosine(nOri=", nOri, ", rOri=", rOri, ", nRep=", nRep, ", rRep=", rRep, ", kappa=", kappa, ", hyperGeoOverFlowThreshold=", hyperGeoOverFlowThreshold, ")")
   
   return(result)
 }
 
+.bfCorrieRepJosineKernel <- function(nOri, rOri, nRep, rRep, kappa=1, methodNumber=1, hyperGeoOverFlowThreshold=25) {
+  #
+  #  Ly, A., Etz, A., Marsman, M., & Wagenmakers, E.--J. (2017) Replication Bayes factors. Manuscript in preparation
+  #  Ly, A., Marsman, M., & Wagenmakers, E.-J. (2017) Analytic Posteriors for Pearson’s Correlation Coefficient. Under review
+  #  Wagenmakers, E.-J., Verhagen, A. J., & Ly, A. (2016). How to quantify the evidence for the absence of a correlation. Behavior Research Methods, 48, 413-426.
+  #
+  # Replication BF for the correlation
+  #
+  # 1:2 are based on the exact reduced likelihood functions
+  # 3:4 are based on the beta approximations to the reduced likelihood functions
+  #
+  #	methodNumber=1: Use exact likelihood Ly, Marsman, Wagenmakers (2017)
+  #	methodNumber=2: Use semi-exact result, based on approximation of the likelihood JeffreysExact, see Wagenmakers et al (2015) bathing
+  #	methodNumber=3: Savage Dickey beta approximation
+  #	methodNumber=4: Marsman's IMH sampler and then Savage Dickey beta approximation
+  #
+  # Output is a list of the
+  #   - original data,
+  #   - rep data,
+  #   - combined inference
+  #   - replication BFs given the original
+  #
+  #
+  
+  # TODO: avoid when pass through object
+  oriObj <- .computePearsonCorBf10(n=nOri, r=rOri, method=methodNumber, kappa=kappa)
+  
+  # Default is "NA" list
+  result <- list(ori=oriObj, rep=list(NULL),
+                 combined=list(n=c(nOri, nRep), r=c(rOri, rRep),
+                               repMethodNumber=methodNumber,
+                               bf10=NA, bfPlus0=NA, bfMin0=NA,
+                               betaA=NA, betaB=NA) ,
+                 repGivenOri=list(n=c(nOri, nRep), r=c(rOri, rRep),
+                                  bf10=NA, bfPlus0=NA, bfMin0=NA),
+                 repMethodNumber=methodNumber)
+  
+  if (is.infinite(oriObj[["bf10"]])) {
+    # No use, too big too great, it's true
+    #
+    return(result)
+  }
+  
+  # Calculate beta fits of the combined likelihood
+  if (kappa==1) {
+    #
+    # methods 3 and 4 are highly dependent on the beta fits based on kappa = 1
+    if (methodNumber %in% 3:4 && any(is.na(c(oriObj[["betaA"]], oriObj[["betaB"]])))) {
+      # Total failure, real sad
+      return(result)
+    }
+    
+    repObj <- .computePearsonCorBf10(n=nRep, r=rRep, method=methodNumber, kappa=kappa)
+    result[["rep"]] <- repObj
+    
+    if (methodNumber %in% 3:4 && any(is.na(c(repObj[["betaA"]], repObj[["betaB"]])))) {
+      # Failed
+      return(result)
+    }
+    
+    result[["combined"]][["betaA"]] <- oriObj[["betaA"]]-1+repObj[["betaA"]]
+    result[["combined"]][["betaB"]] <- oriObj[["betaB"]]-1+repObj[["betaB"]]
+  } else {
+    # kappa \neq 1
+    
+    if (methodNumber %in% 1:3) {
+      oriLikelihoodFit <- .posteriorBetaParameters(n=nOri, r=rOri, kappa=1, expand=FALSE)
+      repLikelihoodFit <- .posteriorBetaParameters(n=nRep, r=rRep, kappa=1, expand=FALSE)
+    }
+    
+    if (methodNumber==4) {
+      oriLikelihoodFit <- .marsmanMHSampler(n=nOri, r=rOri, kappa=1)
+      
+      if (is.na(oriLikelihoodFit[["betaA"]]) || is.na(oriLikelihoodFit[["betaB"]])) {
+        # Total failure, it's sad
+        #
+        return(result)
+      }
+      
+      repLikelihoodFit <- .marsmanMHSampler(n=nRep, r=rRep, kappa=1)
+    }
+    
+    if (methodNumber %in% 3:4) {
+      if (any(is.na(c(oriLikelihoodFit[["betaA"]], oriLikelihoodFit[["betaB"]],
+                      repLikelihoodFit[["betaA"]], repLikelihoodFit[["betaB"]])))) {
+        # Failure
+        return(result)
+      }
+    }
+    # combine here
+    result[["combined"]][["betaA"]] <- oriLikelihoodFit[["betaA"]]-1+repLikelihoodFit[["betaA"]]-1+1/kappa
+    result[["combined"]][["betaB"]] <- oriLikelihoodFit[["betaB"]]-1+repLikelihoodFit[["betaB"]]-1+1/kappa
+    
+    
+    # Here kappa not 1, but still can see what the original default bfs will do for the rep data
+    repObj <- .computePearsonCorBf10(n=nRep, r=rRep, method=methodNumber, kappa=kappa)
+    result[["rep"]] <- repObj
+  }
+  
+  if (methodNumber=="exact" || methodNumber==1) {
+    twoSidedIntegrand <- function(x){.hFunctionCombinedTwoSided(nOri=nOri, rOri=rOri, nRep=nRep, rRep=rRep, x)*.priorRho(x, kappa=kappa)}
+    plusSidedIntegrand <- function(x){.hFunctionCombined(nOri=nOri, rOri=rOri, nRep=nRep, rRep=rRep, x)*.priorRhoPlus(x, kappa=kappa)}
+    minSidedIntegrand <- function(x){.hFunctionCombined(nOri=nOri, rOri=rOri, nRep=nRep, rRep=rRep, x)*.priorRhoMin(x, kappa=kappa)}
+  } else if (methodNumber=="jeffreysIntegrate" || methodNumber==2) {
+    twoSidedIntegrand <- function(x){.hJeffreysApprox(nRep, rRep, x)*.hJeffreysApprox(nOri, rOri, x)*.priorRho(x, kappa=kappa)}
+    plusSidedIntegrand <- function(x){.hJeffreysApprox(nRep, rRep, x)*.hJeffreysApprox(nOri, rOri, x)*.priorRhoPlus(x, kappa=kappa)}
+    minSidedIntegrand <- function(x){.hJeffreysApprox(nRep, rRep, x)*.hJeffreysApprox(nOri, rOri, x)*.priorRhoMin(x, kappa=kappa)}
+  }
+  
+  
+  if (methodNumber %in% 1:2) {
+    bf10Combined <- tryOrFailWithNA(integrate(twoSidedIntegrand, -1, 1)[["value"]])
+    
+    if (is.na(bf10Combined)) {
+      # So sad combined bf10 not available
+      result[["combined"]][["bf10"]] <- NA
+      return(result)
+    }
+    
+    if (is.infinite(bf10Combined)) {
+      # So big, totally infinite
+      #
+      result$combined$bf10 <- Inf
+      result$repGivenOri$bf10 <- Inf
+      
+      if (r >= 0) {
+        result$combined$bfPlus0 <- Inf
+        result$combined$bfMin0 <- 0
+        
+        result$repGivenOri$bfPlus0 <- Inf
+        result$repGivenOri$bfMin0 <- 0
+      } else if (r < 0) {
+        result$combined$bfPlus0 <- 0
+        result$combined$bfMin0 <- Inf
+        
+        result$repGivenOri$bfPlus0 <- 0
+        result$repGivenOri$bfMin0 <- Inf
+      }
+      return(result)
+    }
+    
+    if (is.finite(bf10Combined)) {
+      # Total winner, real great, it's the best
+      
+      result$combined$bf10 <- bf10Combined
+      result$repGivenOri$bf10 <- bf10Combined/oriObj$bf10
+      
+      if (log(bf10Combined) > hyperGeoOverFlowThreshold) {
+        # So big like my hands, can't handle it need to adjust
+        tempList <- .recomputeCorBf10Method3(bf10Combined, a=result$combined$betaA, b=result$combined$betaB,
+                                             kappa=kappa, methodNumber=3)
+        
+        result$combined$bfPlus0 <- tempList$bfPlus0
+        result$combined$bfMin0 <- tempList$bfMin0
+      } else {
+        # No overflow, thus, try numerically integrate
+        #
+        bfPlus0Combined <- tryOrFailWithNA(integrate(plusSidedIntegrand, 0, 1)[["value"]])
+        bfMin0Combined <- tryOrFailWithNA(integrate(minSidedIntegrand, -1, 0)[["value"]])
+        
+        if (isAnyNA(bfPlus0Combined, bfMin0Combined)) {
+          # One sided failed
+          return(result)
+        }
+        
+        if ( bfPlus0Combined < 0 || bfMin0Combined < 0) {
+          # One sided failed
+          return(result)
+        }
+        
+        if (is.infinite(bfPlus0Combined) || is.infinite(bfMin0Combined) ||
+            (bfPlus0Combined > 1 && bfMin0Combined > 1) ||
+            (bfPlus0Combined < 1 && bfMin0Combined < 1) ) {
+          tempList <- .recomputeCorBf10Method3(bf10Combined,
+                                               betaA=result[["combined"]][["betaA"]],
+                                               betaB=result[["combined"]][["betaB"]], kappa=kappa)
+          
+          result[["combined"]][["bfPlus0"]] <- tempList[["bfPlus0"]]
+          result[["combined"]][["bfMin0"]] <- tempList[["bfMin0"]]
+        } else {
+          # All good, store numerically calculated one-sided bfs
+          
+          result[["combined"]][["bfPlus0"]] <- bfPlus0Combined
+          result[["combined"]][["bfMin0"]] <- bfMin0Combined
+        }
+      }
+    }
+  }
+  
+  
+  if (methodNumber %in% 3:4) {
+    # TODO:
+    if (!is.na(result$combined$betaA) && !is.na(result$combined$betaB)) {
+      # Use beta fit and Savage-Dickey
+      tempList <- .computeCorBf10SavageDickey(betaA=result$combined$betaA, betaB=result$combined$betaB, kappa=kappa,
+                                              methodNumber=methodNumber)
+      result$combined$bf10 <- tempList$bf10
+      result$combined$bfPlus0 <- tempList$bfPlus0
+      result$combined$bfMin0 <- tempList$bfMin0
+    }
+  }
+  
+  # TODO: checks for bf10Combined, bfPlus0Combined, bfMin0Combined for zeroes and infinities
+  result$repGivenOri$bf10 <- (result$combined$bf10) / (oriObj$bf10)
+  result$repGivenOri$bfPlus0 <- (result$combined$bfPlus0) / (oriObj$bfPlus0)
+  result$repGivenOri$bfMin0 <- (result$combined$bfMin0) / (oriObj$bfMin0)
+  
+  return(result)
+}
+
+
+# 1. Priors for Kendall's Tau -------------
+#
+.stretchedBetaTau <- function(tauPop, alpha=1, beta=1) {
+  logResult <- tryOrFailWithNA((-alpha-beta)*log(2) + (alpha-1)*log(1+sin(pi/2*tauPop))
+                               + (beta-1)*log(1-sin(pi/2*tauPop)) + log(cos(pi/2*tauPop) - lbeta(alpha, beta))
+  )
+  
+  if (is.na(logResult))
+    result <- tryOrFailWithNA(
+      pi * 2^(-alpha-beta)/beta(alpha, beta) * (1+sin(pi/2*tauPop))^(alpha-1) *
+        (1-sin(pi/2*tauPop))^(beta-1) * cos(pi/2*tauPop)
+    )
+  else {
+    result <- pi * exp(logResult)
+  }
+  return(result)
+}
+
+.stretchedBetaTauSymmetric <- function(tauPop, alpha=1) {
+  result <- ((pi*2^(-2*alpha))/beta(alpha, alpha))  * cos((pi*tauPop)/2)^(2*alpha-1)
+  return(result)
+}
+
+
+.priorTau <- function(tauPop, kappa=1, alternative="two.sided") {
+  if (alternative == "two.sided") {
+    priorLine <- .stretchedBetaTauSymmetric(tauPop, alpha = 1/kappa)
+  } else if (alternative == "greater") {
+    priorLine <- .priorTauPlus("tauPop"=tauPop, "kappa"=kappa)
+  } else if (alternative == "less") {
+    priorLine <- .priorTauMin("tauPop"=tauPop, "kappa"=kappa)
+  }
+  return(priorLine)
+}
+
+.priorTauPlus <- function(tauPop, kappa=1) {
+  nonNegativeIndex <- tauPop >= 0
+  lessThanOneIndex <- tauPop <= 1
+  valueIndex <- as.logical(nonNegativeIndex*lessThanOneIndex)
+  result <- tauPop*0
+  result[valueIndex] <- 2*.priorTau(tauPop[valueIndex], kappa)
+  return(result)
+}
+
+.priorTauMin <- function(tauPop, kappa=1) {
+  negativeIndex <- tauPop <= 0
+  greaterThanMinOneIndex <- tauPop >= -1
+  valueIndex <- as.logical(negativeIndex*greaterThanMinOneIndex)
+  result <- tauPop*0
+  result[valueIndex] <- 2*.priorTau(tauPop[valueIndex], kappa)
+  return(result)
+}
+
+# 2. Bayes factors for Kendall's Tau -------------
+# These are the functions used for to compute the Bayes factors
+#
+.computeKendallCorBf10 <- function(n, tauObs, h0=0, kappa=1, ciValue=0.95, var=1,
+                                   methodNumber=1L, oneThreshold=1e-3) {
+  #
+  sidedResult <- list("n"=n, "stat"=tauObs, "bf"=NA, "tooPeaked"=NA,
+                      "lowerCi"=NA, "upperCi"=NA, "posteriorMedian"=NA)
+  
+  result <- list("two.sided"=sidedResult,
+                 "less"=sidedResult,
+                 "greater"=sidedResult,
+                 "kappa"=kappa, "ciValue"=ciValue, "h0"=h0,
+                 "methodNumber"=methodNumber, "call"=match.call()
+  )
+  
+  failedSidedResult <- list("n"=n, "stat"=NaN, "bf"=NA, "tooPeaked"=TRUE,
+                            "ciValue"=ciValue, "lowerCi"=NA, "upperCi"=NA, "posteriorMedian"=NA)
+  
+  failedResult <- list("two.sided"=failedSidedResult,
+                       "less"=failedSidedResult,
+                       "greater"=failedSidedResult,
+                       "kappa"=kappa, "ciValue"=ciValue, "acceptanceRate"=1,
+                       "methodNumber"=6, "call"=match.call()
+  )
+  
+  # When the prior is trivial (null is alternative) or when the data is predictively matched
+  #
+  predictiveMatchingList <- list("two.sided"=list("bf"=1, "tooPeaked"=FALSE),
+                                 "greater"=list("bf"=1, "tooPeaked"=FALSE),
+                                 "less"=list("bf"=1, "tooPeaked"=FALSE),
+                                 "methodNumber"=0)
+  
+  # Information consistent result
+  #
+  plusSidedInfList <- list("two.sided"=list("bf"=Inf, "tooPeaked"=TRUE, "posteriorMedian"=tauObs),
+                           "less"=list("bf"=0, "tooPeaked"=TRUE, "posteriorMedian"=tauObs),
+                           "greater"=list("bf"=Inf, "tooPeaked"=TRUE)
+  )
+  
+  minSidedInfList <- list("two.sided"=list("bf"=Inf, "tooPeaked"=TRUE, "posteriorMedian"=tauObs),
+                          "less"=list("bf"=Inf, "tooPeaked"=TRUE),
+                          "greater"=list("bf"=0, "tooPeaked"=TRUE, "posteriorMedian"=tauObs)
+  )
+  
+  checkTypeInput <- !isEveryNumeric(tauObs, kappa, n)
+  
+  if (checkTypeInput) {
+    result <- failedResult
+    errorMessage <- "Input error: the sample size n, the summary statistic stat, or kappa are not numeric"
+    result[["error"]] <- errorMessage
+    return(result)
+  }
+  
+  checkData <- failIfNot(abs(tauObs) <= 1, n >= 0, kappa > 0)
+  
+  if (!is.null(checkData)) {
+    result <- failedResult
+    result[["error"]] <- checkData
+    return(result)
+  }
+  
+  # Note: Data: OK
+  # "No" prior, alternative model is the same as the null model
+  # The bound kappa=0.002 is chosen arbitrarily I should choose this based on a trade off
+  # between r and n, but it doesn't really matter.
+  if (kappa <= 0.002 || n <= 2) {
+    result <- modifyList(result, predictiveMatchingList)
+    return(result)
+  }
+  
+  checkTauObs <- (1 - abs(tauObs) < oneThreshold) # check whether 1 - |r| < oneThreshold
+  
+  # Information consistent result:
+  if (kappa >= 1 & n > 2 & checkTauObs) {
+    if (tauObs >= 0) {
+      result <- modifyList(result, plusSidedInfList)
+      return(result)
+    } else if (tauObs < 0) {
+      result <- modifyList(result, minSidedInfList)
+      return(result)
+    }
+  }
+  
+  # TODO(Alexander): Check for information inconsistent kappas
+  #
+  if (n <= 2 || kappa==0) {
+    result <- modifyList(result, predictiveMatchingList)
+    return(result)
+  } else if (kappa >= 1 && n > 2 && checkTauObs) {
+    if (tauObs > 0) {
+      result <- modifyList(result, plusSidedInfList)
+      return(result)
+    } else if (tauObs <= 0) {
+      result <- modifyList(result, minSidedInfList)
+      return(result)
+    }
+    result <- modifyList(result, infoConsistentList)
+    return(result)
+  }
+  
+  # Note(Alexander): Add stretched beta fitted posterior
+  #
+  for (alternative in c("two.sided", "greater", "less")) {
+    result[[alternative]] <- .bfKendallTauSavageDickey("n"=n, "tauObs"=tauObs, "kappa"=kappa, "var"=var,
+                                                       "h0"=h0, "alternative"=alternative)
+  }
+  
+  # TODO(Alexander): fix output structure
+  tempList <- .computeKendallCredibleInterval("n"=n, "tauObs"=tauObs, "kappa"=kappa, "var"=var,
+                                              "ciValue"=ciValue)
+  result <- modifyList(result, tempList)
+  
+  return(result)
+}
+
+.bfKendallTauSavageDickey <- function(n, tauObs, kappa=1, var=1, h0=0, alternative="two.sided") {
+  result <- list("n"=n, "stat"=tauObs, "bf"=NA, "tooPeaked"=TRUE, "lowerCi"=NA, "upperCi"=NA, "posteriorMedian"=NA)
+  
+  bf <- tryOrFailWithNA(
+    .priorTau("tauPop"=h0, "kappa"=kappa, "alternative"=alternative) /
+      .posteriorTau("n"=n, "tauObs"=tauObs, "tauPop"=h0, "kappa"=kappa, "var"=var, "alternative"=alternative)
+  )
+  
+  if (is.finite(bf)) {
+    result[["bf"]] <- bf
+    result[["tooPeaked"]] <- FALSE
+  }
+  
+  return(result)
+}
+
+# 3. Posteriors ---------
+# These are the functions used for to the posteriors
+#
+.posteriorTauU <- function(n, Tstar, tauPop, kappa=1, var=1, alternative="two.sided") {
+  #
+  result <- stats::dnorm("x"=Tstar, "mean"=(1.5*tauPop*sqrt(n)), "sd"=sqrt(var)) *
+    .priorTau("tauPop"=tauPop, "kappa"=kappa, "alternative"=alternative )
+  return(result)
+}
+
+.posteriorTau <- function(n, tauObs, tauPop, kappa=1, var=1, alternative="two.sided") {
+  Tstar <- (tauObs * ((n*(n-1))/2))/sqrt(n*(n-1)*(2*n+5)/18)
+  lims <- switch(alternative,
+                 "two.sided"=c(-1, 1),
+                 "greater"=c(0, 1),
+                 "less"=c(-1, 0)
+  )
+  
+  logicalCensor <- (tauPop >= lims[1] & tauPop <= lims[2])
+  
+  integrand <- function(x) {
+    .posteriorTauU("n"=n, "Tstar"=Tstar, "tauPop"=x, "kappa"=kappa, "var"=var, "alternative"=alternative)
+  }
+  normalisingConstant <- try(silent=TRUE, integrate(integrand, lims[1], lims[2])[["value"]])
+  
+  if (isTryError(normalisingConstant)) {
+    result <- NA
+  } else {
+    # I could also do
+    result <- integrand(tauPop)/normalisingConstant
+    
+    # TODO(Alexander): Check this, should be fine though
+    #
+    # result <- logicalCensor*.posteriorTauU("n"=n, "Tstar"=Tstar, "tauPop"=tauPop, "kappa"=kappa, "var"=var,
+    #                                             "alternative"=alternative)/normalisingConstant
+  }
+  return(result)
+}
+
+
+.computeKendallCredibleInterval <- function(n, tauObs, kappa=1, var=1, ciValue=0.95, h0=0) {
+  # Compute Kendall's correlation credible interval based on a sampling
+  #
+  check <- failIfNot(ciValue > 0, ciValue < 1, !isSomeNull(n, tauObs))
+  
+  sidedResult <- list("lowerCi"=NA, "upperCi"=NA, "posteriorMedian"=NA, "ciValue"=NA)
+  result <- list("two.sided"=sidedResult, "greater"=sidedResult, "less"=sidedResult, "ciValue"=ciValue)
+  
+  if (!is.null(check))
+    return(result)
+  
+  for (alternative in c("two.sided", "greater", "less")) {
+    result[[alternative]] <- .credibleIntervalKendallTauSingle("n"=n, "tauObs"=tauObs, "kappa"=kappa, "var"=var,
+                                                               "alternative"=alternative, "ciValue"=ciValue)
+  }
+  
+  return(result)
+}
+
+# Compute credible intervals kendalls tau
+.credibleIntervalKendallTauSingle <- function(n, tauObs, kappa=1, var=1, alternative="two.sided", ciValue = 0.95, m=4000) {
+  # TODO(Alexander): Interesting use-case: n=800, tauObs=-0.8, m=1000
+  lowCI <- (1-ciValue)/2
+  upCI <- (1+ciValue)/2
+  tauPopDomain <- seq(-1, 1, length.out=(m-1))
+  densVals <- .posteriorTau("n"=n, "tauObs"=tauObs, "tauPop"=tauPopDomain, "kappa"=kappa, "var"=var,
+                            "alternative"=alternative)
+  cdfVals <- cumsum((densVals[1:(m-1)] + densVals[2:m]) * 0.5 * (tauPopDomain[2]-tauPopDomain[1]))
+  
+  lowerCi <- tauPopDomain[which(cdfVals>=lowCI)[1]]
+  upperCi <- tauPopDomain[which(cdfVals>=upCI)[1]]
+  posteriorMedian <- tauPopDomain[which(cdfVals>=0.5)[1]]
+  
+  result <- list("lowerCi"=lowerCi, "upperCi"=upperCi, "posteriorMedian"=posteriorMedian)
+  
+  if (purrr::some(result, is.na)) {
+    result <- list("lowerCi"=NA, "upperCi"=NA, "posteriorMedian"=NA, "tooPeaked"=TRUE,
+                   "error"="Can't compute credible intervals")
+    return(result)
+  }
+  
+  if (abs(upperCi-lowerCi) <= .Machine$double.eps)
+    result[["tooPeaked"]] <- TRUE
+  
+  return(result)
+}

@@ -272,10 +272,15 @@
   
 }
 
-.corGLegendList <- list("pearson"=expression(rho),
-                        "kendall"=expression(tau), 
-                        "spearman"=expression(rho[s])
+# .corGLegendList <- list("pearson"=expression(rho),
+#                         "kendall"=expression(tau), 
+#                         "spearman"=expression(rho[s])
+# )
+.corGLegendList <- list("pearson"="rho",
+                        "kendall"="tau", 
+                        "spearman"="rho[s]"
 )
+
 
 .corXNames <- list("pearson"=expression(paste("Pearson's ", rho)), 
                    "spearman"=expression(paste("Spearman's ", rho)), 

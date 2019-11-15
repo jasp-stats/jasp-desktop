@@ -121,6 +121,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 
 .getContainerCorBayes <- function(jaspResults, container="matrix", ready=TRUE) {
   if (container=="matrix") {
+    # This is now redundant, but then again I can use this to add the table and correlation plot into a container
     matrixContainer <- jaspResults[["matrixContainer"]]
 
     if (!is.null(matrixContainer)) {
@@ -141,8 +142,8 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 
     if (is.null(pairsPlotCollection)) {
       pairsPlotCollection <- createJaspContainer(title="Bayesian Correlation Pairwise Plots")
-      pairsPlotCollection$dependOn(c("pairs", "missingValues", "pairsMethod"))
-      pairsPlotCollection$position <- 2
+      pairsPlotCollection$dependOn(c("pairs", "missingValues"))
+      pairsPlotCollection$position <- 3
       jaspResults[["pairsPlotCollection"]] <- pairsPlotCollection
     }
     return(pairsPlotCollection)
@@ -166,7 +167,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   alternative <- options[["alternative"]]
 
   corBayesTable$dependOn(c("pearson", "kendall", "spearman", "alternative", "kappa", "variables",
-                           "displayPairwise","reportBayesFactors",
+                           "displayPairwise","reportBayesFactors", "missingValues",
                            "flagSupported", "ci", "ciValue",
                            "reportN", "posteriorMedian", "bayesFactorType"))
 
@@ -767,7 +768,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   matrixPlot <- createJaspPlot(title="Bayesian Correlation Matrix Plot")
   matrixPlot$position <- 2
   
-  matrixDependencies <- c("variables", "plotMatrix", "plotMatrixDensities", "plotMatrixPosteriors")
+  matrixDependencies <- c("variables", "plotMatrix", "plotMatrixDensities", "plotMatrixPosteriors", "missingValues")
   
   if (options[["plotMatrixPosteriors"]])
     matrixDependencies <- c(matrixDependencies, "pearson", "spearman", "kendall", "alternative", "kappa")
@@ -986,9 +987,9 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     } else {
       xName <- "Correlation Coefficient"
       gLegend <- unlist(.corGLegendList[methodItems], use.names=FALSE, recursive = FALSE)
-
+      
       dfLines <- data.frame(
-        x = sidedObject[["xDomain"]],
+        x = rep(sidedObject[["xDomain"]]), 
         y = unlist(allPosteriorLines, recursive = FALSE),
         g = rep(gLegend, each=domainLength)
       )
@@ -1024,7 +1025,6 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
                        "greater"="greater",
                        "less"="smaller"
   )
-
   plotResult <- try(JASPgraphs::PlotPriorAndPosterior(dfLines, dfPoints, BF10,
                                                       "CRI"=CRI, "CRItxt"=CRItxt, "median"=medianPoint, 
                                                       "xName"=xName, "hypothesis"=hypothesis))
@@ -1093,7 +1093,13 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       if (is.null(itemPlot)) {
         itemPlot <- createJaspPlot(title=itemTitle, width=530, height=400)
         itemPlot$dependOn(options = plotItemDependencies[[item]])
-        itemPlot$position <- i
+        
+        itemPlot$position <- switch(item, 
+                                    "plotScatter"=1,
+                                    "plotPriorPosterior"=2,
+                                    "plotBfRobustness"=3,
+                                    "plotBfSequential"=4)
+        
         pairContainer[[item]] <- itemPlot
       }
     }
