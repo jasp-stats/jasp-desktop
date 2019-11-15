@@ -10,7 +10,6 @@ options$model <- "peabody < 0 & prenumb > 0;peabody = 0 & postnumb = 0;postnumb 
 set.seed(1)
 results <- jasptools::run("BainRegressionLinearBayesian", "sesame.csv", options)
 
-
 test_that("Bain Linear Regression table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_bainTable"]][["data"]]
   expect_equal_tables(table,
@@ -37,12 +36,12 @@ test_that("Posterior Probabilities plot matches", {
 test_that("Coefficients table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_coefficientsTable"]][["data"]]
   expect_equal_tables(table,
-                      list(-0.0486909406866819, 0.0683382879873222, 0.0298549436614947, 0.00982367365032013,
-                           "peabody", 0.0633098838945105, 0.271988758484053, 0.0532353849957385,
-                           0.167649321189282, "prenumb", -0.046805449165961, 0.130880494459348,
-                           0.045328879771994, 0.0420375226466933, "postnumb", -0.0355734195087462,
-                           0.048962974589695, 0.0215658029344553, 0.00669477754047436,
-                           "funumb"))
+                      list(-0.0486909406866819, 0.0683382879873222, 240, 0.0298549436614947,
+                           0.00982367365032013, "peabody", 0.0633098838945105, 0.271988758484053,
+                           240, 0.0532353849957385, 0.167649321189282, "prenumb", -0.046805449165961,
+                           0.130880494459348, 240, 0.045328879771994, 0.0420375226466933,
+                           "postnumb", -0.0355734195087462, 0.048962974589695, 240, 0.0215658029344553,
+                           0.00669477754047436, "funumb"))
 })
 
 test_that("Hypothesis Legend table results match", {

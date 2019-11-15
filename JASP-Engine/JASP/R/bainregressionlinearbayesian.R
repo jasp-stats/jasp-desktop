@@ -122,14 +122,17 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
 
 	coefficientsTable <- createJaspTable("Coefficients")
-	coefficientsTable$dependOn(options = c("coefficients"))
+	coefficientsTable$dependOn(options = c("coefficients", "CredibleInterval"))
 	coefficientsTable$position <- position
 
+	overTitle <- paste0(round(options[["CredibleInterval"]] * 100), "% Credible Interval")
+
 	coefficientsTable$addColumnInfo(name="v",       title="Covariate",   type="string")
+	coefficientsTable$addColumnInfo(name="N",    	title="N", 			type="integer")
 	coefficientsTable$addColumnInfo(name="mean",    title="Coefficient", type="number")
-	coefficientsTable$addColumnInfo(name="SE",      title="Std. Error",  type="number")
-	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     	type="number", overtitle = "95% Credible Interval")
-	coefficientsTable$addColumnInfo(name="CiUpper", title="Upper",     	type="number", overtitle = "95% Credible Interval")
+	coefficientsTable$addColumnInfo(name="SE",      title="SE",  type="number")
+	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     	type="number", overtitle = overTitle)
+	coefficientsTable$addColumnInfo(name="CiUpper", title="Upper",     	type="number", overtitle = overTitle)
 
 	if(options[["standardized"]])
 		coefficientsTable$addFootnote(message = "The displayed coefficients are standardized.")
@@ -140,17 +143,20 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 		return()
 
 	bainResult <- bainContainer[["bainResult"]]$object
-	sum_model <- summary(bainResult)
+	bainSummary <- summary(bainResult, ci = options[["CredibleInterval"]])
+	
+	# Extract names, mean and n from bain result
+	groups <- bainSummary[["Parameter"]]
+	N <- bainSummary[["n"]]
+	mu <- bainSummary[["Estimate"]]
+	CiLower <- bainSummary[["lb"]]
+	CiUpper <- bainSummary[["ub"]]
 
-	groups <- as.character(sum_model[["Parameter"]])
-	estim <- sum_model[["Estimate"]]
-	CiLower <- sum_model[["lb"]]
-	CiUpper <- sum_model[["ub"]]
-	SE <- (CiUpper - CiLower)/(2 * qnorm(0.975))
+	# Standard error according to bain package
+	se <- sqrt(diag(bainResult$posterior))
 
-	d <- data.frame(v = groups, mean = estim, SE = SE, CiLower = CiLower, CiUpper = CiUpper)
-
-	coefficientsTable$addRows(d)
+	row <- data.frame(v = groups, N = N, mean = mu, SE = se, CiLower = CiLower, CiUpper = CiUpper)
+	coefficientsTable$addRows(row)
 }
 
 .readDataBainLinearRegression <- function(options, dataset) {

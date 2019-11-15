@@ -84,7 +84,8 @@ Form
 		Group
 		{
 			title: qsTr("Tables")
-			CheckBox { name: "descriptives"; text: qsTr("Descriptives") }
+			CheckBox { name: "descriptives"; text: qsTr("Descriptives") 
+				CIField { name: "descriptivesPlotsCredibleInterval"; text: qsTr("Credible interval")}
 		}
 
 		Group
@@ -94,8 +95,7 @@ Form
 			CheckBox
 			{
 				name: "descriptivesPlots"
-				text: qsTr("Descriptives plots")
-				CIField { name: "descriptivesPlotsCredibleInterval"; text: qsTr("Credible interval") }
+				text: qsTr("Descriptives plots") }
 			}
 		}
     }
