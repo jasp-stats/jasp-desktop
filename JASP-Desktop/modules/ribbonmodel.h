@@ -47,7 +47,7 @@ public:
 		ActiveRole
 	};
 
-	RibbonModel(DynamicModules * dynamicModules, PreferencesModel * preferences, std::vector<std::string> commonModulesToLoad = {}, std::vector<std::string> extraModulesToLoad = {}, std::vector<QString> displayModuleNames = {});
+	RibbonModel(DynamicModules * dynamicModules, PreferencesModel * preferences, std::vector<std::string> commonModulesToLoad = {}, std::vector<std::string> extraModulesToLoad = {});
 
 	int								rowCount(const QModelIndex & = QModelIndex())				const override	{	return int(_moduleNames.size());	}
 	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
@@ -93,7 +93,6 @@ private: // functions
 private: // fields
 	std::map<std::string, RibbonButton*>			_buttonModelsByName;
 	std::vector<std::string>						_moduleNames;
-	std::vector<QString>							_dislayModuleNames;
 	int												_highlightedModuleIndex = -1;
 	DynamicModules								*	_dynamicModules			= nullptr;
 	PreferencesModel							*	_preferences			= nullptr;

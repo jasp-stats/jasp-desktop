@@ -179,7 +179,6 @@ private:
 
 	void _openFile();
 	void connectFileEventCompleted(FileEvent * event);
-	void setModulesToLoad(vector<string> & commonModules, vector<string>  & extraModules, vector<QString> & moduleDisplayNames);
 
 signals:
 	void saveJaspFile();

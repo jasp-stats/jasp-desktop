@@ -21,7 +21,7 @@
 #include "dirs.h"
 #include "log.h"
 
-RibbonModel::RibbonModel(DynamicModules * dynamicModules, PreferencesModel * preferences, std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad, std::vector<QString> displayModuleNames)
+RibbonModel::RibbonModel(DynamicModules * dynamicModules, PreferencesModel * preferences, std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
 	: QAbstractListModel(dynamicModules), _dynamicModules(dynamicModules), _preferences(preferences)
 {
 
@@ -30,8 +30,6 @@ RibbonModel::RibbonModel(DynamicModules * dynamicModules, PreferencesModel * pre
 
 	for(const std::string & moduleName : extraModulesToLoad)
 		addRibbonButtonModelFromModulePath(QFileInfo(QString::fromStdString(Dirs::resourcesDir() + moduleName + "/")), false);
-
-	_dislayModuleNames = displayModuleNames;
 
 	connect(_dynamicModules, &DynamicModules::dynamicModuleAdded,		this, &RibbonModel::addDynamicRibbonButtonModel);
 	connect(_dynamicModules, &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel);
@@ -110,14 +108,14 @@ QVariant RibbonModel::data(const QModelIndex &index, int role) const
 
 	switch(role)
 	{
-	case DisplayRole:		return _dislayModuleNames[row]; //return ribbonButtonModelAt(row)->titleQ(); //Displayed in + panel
+	case DisplayRole:		return ribbonButtonModelAt(row)->titleQ(); //Displayed in + panel
 	case RibbonRole:		return QVariant::fromValue(ribbonButtonModelAt(row));
 	case EnabledRole:		return ribbonButtonModelAt(row)->enabled();
 	case ActiveRole:		return ribbonButtonModelAt(row)->active();
 	case DynamicRole:		return ribbonButtonModelAt(row)->isDynamic();
 	case CommonRole:		return ribbonButtonModelAt(row)->isCommon();
 	case ModuleNameRole:	return ribbonButtonModelAt(row)->moduleNameQ();
-	case ModuleTitleRole:	return _dislayModuleNames[row]; //return ribbonButtonModelAt(row)->titleQ(); //Displayed in Ribbon Common Modules
+	case ModuleTitleRole:	return ribbonButtonModelAt(row)->titleQ(); //Displayed in Ribbon Common Modules
 	//case ModuleTitleRole:	return ribbonButtonModelAt(row)->titleQ(); //Displayed in Ribbon Common Modules
 
 	case ModuleRole:		return QVariant::fromValue(ribbonButtonModelAt(row)->myDynamicModule());
