@@ -11,7 +11,6 @@ options$model <- "site1 = site2 = site3 = site4 = site5;site1 < site2 < site3 < 
 set.seed(1)
 results <- jasptools::run("BainAnovaBayesian", "sesame.csv", options)
 
-
 test_that("Bain ANOVA table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_bainTable"]][["data"]]
   expect_equal_tables(table,
@@ -44,13 +43,14 @@ test_that("Descriptives Plot matches", {
 test_that("Descriptive Statistics table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_descriptivesTable"]][["data"]]
   expect_equal_tables(table,
-                      list(60, 48.2744318767126, 49.8666666666667, 0.812379616418174, 51.4589014566208,
-                           "site1", 55, 49.2096922729294, 50.8727272727273, 0.848502836233586,
-                           52.5357622725252, "site2", 64, 50.489575293814, 52.03125, 0.786583181296489,
+                      list(60, 48.2744318767126, 49.8666666666667, 7.46169123980563, 0.963300196876966,
+                           51.4589014566208, "site1", 55, 49.2096922729294, 50.8727272727273,
+                           5.69942994373136, 0.768510976836514, 52.5357622725252, "site2",
+                           64, 50.489575293814, 52.03125, 5.6791703787152, 0.7098962973394,
                            53.5729247061861, "site3", 43, 49.5377791422724, 51.4186046511629,
-                           0.959622484763092, 53.2994301600533, "site4", 18, 47.7596569623255,
-                           50.6666666666667, 1.48319547056542, 53.5736763710078, "site5"
-                      ))
+                           5.77446166585718, 0.88059714848365, 53.2994301600533, "site4",
+                           18, 47.7596569623255, 50.6666666666667, 7.00420042042, 1.65090587135622,
+                           53.5736763710078, "site5"))
 })
 
 test_that("Hypothesis Legend table results match", {

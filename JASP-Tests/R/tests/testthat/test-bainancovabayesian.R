@@ -12,7 +12,6 @@ options$model <- "site1 = site2 = site3 = site4 = site5;site1 < site2 < site3 < 
 set.seed(1)
 results <- jasptools::run("BainAncovaBayesian", "sesame.csv", options)
 
-
 test_that("Bain ANCOVA table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_bainTable"]][["data"]]
   expect_equal_tables(table,
@@ -36,10 +35,10 @@ test_that("Posterior Probabilities plot matches", {
   expect_equal_plots(testPlot, "posterior-probabilities", dir="BainAncovaBayesian")
 })
 
-test_that("Descriptives Plot matches", {
+test_that("Adjusted Means plot matches", {
   plotName <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_descriptivesPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  expect_equal_plots(testPlot, "descriptives-plot", dir="BainAncovaBayesian")
+  expect_equal_plots(testPlot, "adjusted-means", dir="BainAncovaBayesian")
 })
 
 test_that("Hypothesis Legend table results match", {
