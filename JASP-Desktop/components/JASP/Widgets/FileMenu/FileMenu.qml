@@ -27,7 +27,7 @@ FocusScope
 	property int  actionButtionHeight:		35 * preferencesModel.uiScale
 	property int  resourceButtonHeight:		1.5 * actionButtionHeight
 	property int  nbColumns:				1 + (resourceRepeaterId.count > 0 ? 1 : 0 )
-	property int  colWidths:				150
+	property int  colWidths:				180
 
 
 	Connections
