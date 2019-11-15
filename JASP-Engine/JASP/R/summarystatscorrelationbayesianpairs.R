@@ -45,7 +45,6 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   }
 
   corBayesTable <- correlationContainer[["corBayesTable"]]
-  corBayesTable$addCitation(.getCorCitations(options[["method"]], bayes=TRUE))
 
   # If table already exists in the state, return it
   if (!is.null(corBayesTable))
@@ -64,7 +63,13 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
                       "pearson"=options[["rObs"]],
                       "kendall"=options[["tauObs"]],
                       "spearman"=options[["rhoObs"]])
-    corBayesTable$addRows(list("stat"=statObs))
+    
+    emptyIshRow <-list("n"=".", "stat"=statObs, "bf"=".", "p"=".")
+    
+    if (options[["ci"]])
+      emptyIshRow <- modifyList(emptyIshRow, list("upperCi"=".", "lowerCi"="."))
+      
+    corBayesTable$addRows(emptyIshRow)
     jaspResults[["correlationContainer"]][["corBayesTable"]] <- corBayesTable
     return(jaspResults[["bfState"]]$object)
   }
@@ -124,12 +129,13 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
 
 .getTableSumStatCorBayes <- function(options){
   # create table and state dependencies
+  
   corBayesTable <- createJaspTable(title=.getCorTableTitle(options[["test"]], bayes=TRUE))
   corBayesTable$showSpecifiedColumnsOnly <- TRUE
   corBayesTable$position <- 1
   corBayesTable$dependOn(c("bayesFactorType", "ci", "ciValue"))
 
-  corBayesTable$addCitation(.getCorCitations(options[["test"]], bayes=TRUE))
+  corBayesTable$addCitation(.getCorCitations(options[["method"]], bayes=TRUE))
 
   # Add sided footnote
   #

@@ -104,18 +104,13 @@ Form
 
         CheckBox
         {
-            name: "plotScatter";                    label: qsTr("Scatterplot")
+            name: "plotScatter";                    label: qsTr("Scatterplot"); checked: true
             CheckBox { name: "plotScatterAddInfo";  label: qsTr("Robustness check"); debug: true }
 
         }
         CheckBox
         {
-            name: "plotBfSequential";                   label: qsTr("Sequential analysis")
-            CheckBox { name: "plotBfSequentialAddInfo"; label: qsTr("Additional info")}
-        }
-        CheckBox
-        {
-            name: "plotPriorPosterior";			label: qsTr("Prior and posterior"); checked: true
+            name: "plotPriorPosterior";			label: qsTr("Prior and posterior")
             CheckBox { name: "plotPriorPosteriorAddEstimationInfo";	label: qsTr("Estimation info"); checked: true }
             CheckBox { name: "plotPriorPosteriorAddTestingInfo";	label: qsTr("Testing info"); checked: true }
         }
@@ -123,6 +118,11 @@ Form
         {
             name: "plotBfRobustness";		label: qsTr("Bayes factor robustness check")
             CheckBox { name: "plotBfRobustnessAddInfo"; label: qsTr("Additional info"); checked: true }
+        }
+        CheckBox
+        {
+            name: "plotBfSequential";                   label: qsTr("Sequential analysis")
+            CheckBox { name: "plotBfSequentialAddInfo"; label: qsTr("Additional info"); checked: true}
         }
     }
 
