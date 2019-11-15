@@ -1,7 +1,7 @@
 Package: JASPgraphs
 Type: Package
 Title: Custom graphs for JASP
-Version: 0.4.1
+Version: 0.4.2
 Author: Don van den Bergh
 Maintainer: JASP-team <info@jasp-stats.nl>
 Description: ...
