@@ -104,7 +104,7 @@ ScrollView
 
 		PrefsGroupRect
 		{
-			title: "Miscellaneous options"
+			title: qsTr("Miscellaneous options")
 
 			SpinBox
 			{
