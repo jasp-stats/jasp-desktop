@@ -17,7 +17,7 @@ results <- jasptools::run("NetworkAnalysis", "test.csv", options)
 test_that("generalTB table results match", {
   table <- results[["results"]][["mainContainer"]][["collection"]][["mainContainer_generalTable"]][["data"]]
   expect_equal_tables(table,
-                      list("Network", 3, "2 / 3", 0.333333333333333)
+                      list(0.333333333333333, 3, "2 / 3")
   )
 })
 

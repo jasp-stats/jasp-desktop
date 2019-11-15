@@ -200,7 +200,7 @@ Form
 		{
 			title: qsTr("Cross-validation")
 			visible: [6].includes(estimator.currentIndex)
-			IntegerField { name: "nFolds"; label: qsTr("nFolds"); min: 3; max: 100000; fieldWidth: 60 }
+			IntegerField { name: "nFolds"; label: qsTr("nFolds"); min: 3; max: 100000; fieldWidth: 60; defaultValue: 3 }
 		}
 
 		VariablesForm

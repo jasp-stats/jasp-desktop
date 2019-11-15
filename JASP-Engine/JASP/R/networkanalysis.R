@@ -59,6 +59,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     groupingVariableData <- dataset[[.v(options[["groupingVariable"]])]]
     dataset[[.v(options[["groupingVariable"]])]] <- NULL
     dataset <- split(dataset, groupingVariableData, drop = TRUE)
+    attr(dataset, "groupingVariableData") <- groupingVariableData
   }
   return(dataset)
   
@@ -134,19 +135,20 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     
     # hasErrors wants the dataset as a single thing instead of as a list of data.frames
     # we could also just ignore the grouping elements and loop manually though
+    groupingVariable <- attr(dataset, "groupingVariable")
     dataset <- Reduce(rbind.data.frame, dataset)
 
-    groupingVariable <- NULL
     if (options[["groupingVariable"]] != "") {
-      groupingVariable <- options[["groupingVariable"]]
       # these cannot be chained unfortunately
-      .hasErrors(dataset = dataset[.v(groupingVariable)], perform = perform,
+      .hasErrors(dataset = groupingVariable, perform = perform,
                  type = c("factorLevels", "observations"),
                  factorLevels.target = groupingVariable,
                  factorLevels.amount = "< 2",
                  observations.amount = "< 10",
                  observations.grouping = groupingVariable,
                  exitAnalysisIfErrors = TRUE)
+      dataset[[.v(options[["groupingVariable"]])]] <- groupingVariable
+      groupingVariable <- options[["groupingVariable"]]
     }
     
     # estimator 'mgm' requires some additional checks
@@ -168,7 +170,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
                factorLevels.target = categoricalVars,
                factorLevels.amount = "> 10", # probably a misspecification of mgmVariableType when this happens.
                factorLevels.grouping = groupingVariable,
-               observations.amount = " < 3",
+               observations.amount = " < 10",
                observations.grouping = groupingVariable,
                varCovData.grouping = groupingVariable,
                varCovData.corFun = fun,
@@ -206,8 +208,8 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
   if (is.null(mainContainer[["generalTable"]])) {
     tb <- createJaspTable("Summary of Network", position = 1, dependencies = c(
-      # These are dependencies because failures in the saving the layout are shown as footnotes on this table
-      "computedLayoutX", "computedLayoutY"
+      # These are dependencies because specifying them incorrectly is communicated as footnotes on this table
+      "computedLayoutX", "computedLayoutY", "bootstrapOnOff", "numberOfBootstraps", "minEdgeStrength"
     ))
     if (options[["nGraphs"]] > 1L)
       tb$addColumnInfo(name = "info", title = "Network", type = "string")
@@ -273,7 +275,9 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   }
   
   # fill in with info from bootnet:::print.bootnet
-  df <- data.frame(info = names(network[["network"]]))
+  df <- data.frame(nodes = integer(nGraphs), nonZero = numeric(nGraphs), Sparsity = numeric(nGraphs))
+  if (nGraphs > 1L)
+    df[["info"]] <- names(network[["network"]])
   
   nVar <- ncol(network[["network"]][[1L]][["graph"]])
   for (i in seq_len(nGraphs)) {
@@ -403,7 +407,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   nVar <- length(variables)
   nGraphs <- max(1L, length(network[["network"]]))
   
-  table <- createJaspTable("Weights matrix", dependencies = "tableWeightsMatrix", position = 5)
+  table <- createJaspTable("Weights matrix", dependencies = "tableWeightsMatrix", position = 4)
   table$addColumnInfo(name = "Variable", title = "Variable", type = "string")
   
   overTitles <- names(network[["network"]])
@@ -447,6 +451,8 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
   # a table to show before bootstrapping to give some feedback to the user.
   # this used to give an ETA but with the progress bars that isn't really necessary anymore.
+  if (!options[["readyBootstrap"]])
+    return()
   
   bootstrapType <- options[["BootstrapType"]]
   substr(bootstrapType, 1, 1) <- toupper(substr(bootstrapType, 1, 1)) # capitalize first letter
@@ -456,8 +462,8 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   table$addColumnInfo(name = "numberOfBootstraps", title = "Number of bootstraps", type = "integer")
   table[["type"]]               <- bootstrapType
   table[["numberOfBootstraps"]] <- options[["numberOfBootstraps"]]
-  return(table)
-  
+  bootstrapContainer[["table"]] <- table
+
 }
 
 # plots ----
@@ -814,7 +820,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     p <- try(.suppressGrDevice(plot(bt, statistic = statistic, order = "sample")))
     
     if (isTryError(p)) {
-      plotContainer[[v]]$setError(.extractErrorMessage(p))
+      plotContainer[[v]]$setError(paste0("bootnet crashed with the following error message:\n", .extractErrorMessage(p)))
     } else {
       plotContainer[[v]]$plotObject <- p
     }
@@ -913,7 +919,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     }
     
     if (any(type == "")) {
-      message <- "Please drag all variables to a particular type under \"Estimator options\"."
+      message <- "Please drag all variables to a particular type under \"Analysis options\"."
       e <- structure(class = c("mgmError", "error", "condition"), list(message = message, call = sys.call(-1)))
       stop(e)
     }
