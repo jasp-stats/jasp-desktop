@@ -23,11 +23,11 @@ import JASP.Widgets 1.0
 
 Form
 {
-    usesJaspResults: true
+    //usesJaspResults: true
 
     VariablesForm
     {
-        height: Theme.smallDefaultVariablesFormHeight
+        height: jaspTheme.smallDefaultVariablesFormHeight
         AvailableVariablesList { name: "allVariablesList" }
         AssignedVariablesList { name: "variables"; suggestedColumns: ["ordinal", "scale"] }
     }
@@ -59,9 +59,9 @@ Form
     {
         name: "alternative"
         title: qsTr("Alt. Hypothesis")
-        RadioButton { value: "two.sided";				label: qsTr("Correlated"); checked: true	}
-        RadioButton { value: "greater";             label: qsTr("Correlated positively")		}
-        RadioButton { value: "less";             label: qsTr("Correlated negatively")		}
+        RadioButton { value: "two.sided";		label: qsTr("Correlated"); checked: true	}
+        RadioButton { value: "greater";         label: qsTr("Correlated positively")		}
+        RadioButton { value: "less";            label: qsTr("Correlated negatively")		}
     }
 
     Group

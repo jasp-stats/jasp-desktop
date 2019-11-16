@@ -137,8 +137,6 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
       }
     }
   } else if (method=="kendall") {
-    # TODO(Alexander):
-    #
     sidedObject[["priorAtH0"]] <- .priorTau("tauPop"=sidedObject[["h0"]], "kappa"=bfObject[["kappa"]],
                                             "alternative"=alternative)
     sidedObject[["priorLine"]] <- .priorTau("tauPop"=xDomain, "kappa"=bfObject[["kappa"]], "alternative"=alternative)
@@ -306,8 +304,6 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
   sideResult <- list("robustnessLine"=placeHolder)
   result <- list("two.sided"=sideResult, "greater"=sideResult, "less"=sideResult)
   
-  # TODO(Alexander): Different iterations not necessary already covered by the wrapper
-  #
   if (method=="pearson") {
     .calculatePearsonRobustness <- function(kappa) {
       bfObject <- .computePearsonCorBf10("n"=n, "r"=stat, "h0"=h0, "kappa"=kappa, "methodNumber"=methodNumber)
@@ -356,7 +352,6 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
   
   return(result)
 }
-
 
 # 1. Priors --------------------
 .stretchedBeta <- function(rho, betaA, betaB) {
@@ -508,6 +503,7 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
 
 
 # TODO(Alexander): Unify ".pValueFromT", and check that this is not used in Alexandra's rewrite or somehwere else
+# The important difference is that it now outputs a list
 #
 #' Function returns the p value from correlation.
 #'
@@ -772,7 +768,7 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
     #
     if (bfPlus0 > 1 & bfMin0 > 1) {
       if (leftProportion > 0.5) {
-        # TODO(Alexander): The problem is machine precision here,
+        # Note(Alexander): The problem is machine precision here,
         # because there aren't enough significant figures in leftProportion to have
         # 2 * bf10 (1-leftProportion) < 1
         #
@@ -887,8 +883,11 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
   # Ly et al 2015
   # This is the contribution of one-sided test
   #
-  # TODO(Alexander): Input check is done at a higher level: .computePearsonCorBf10.
+  # Note(Alexander): Input check is done at a higher level: .computePearsonCorBf10.
   # In particular the case with n <= 2
+  #
+  # TODO(Alexander): In hindsight, I'm not so happy with this version, due to instability of 3F2.
+  # Try to simplify this expression
   #
   hyperTerm <- Re(hypergeo::genhypergeo(U=c(1, n/2, n/2), L=c(3/2, (2+kappa*(n+1))/(2*kappa)), z=r^2, maxiter=1e5))
   logTerm <- 2*(lgamma(n/2)-lgamma((n-1)/2))-lbeta(1/kappa, 1/kappa)
@@ -1109,48 +1108,6 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
     result <- modifyList(result, tempList)
   }
   
-  # TODO(Alexander): Check if this is really not necessary anymore. This is now moved into
-  #     .computeBCorOneSided
-  #
-  #  that calls
-  #
-  #     .computeBCorOneSidedSavageDickey
-  #
-  # and in subCounter 3 this is already checked
-  #
-  # # Note(Alexander): bfPlus0, bfMin0: CHECK COHERENCE:
-  # if (!isSomeNA(bfPlus0, bfMin0)) {
-  #   if (bfPlus0 > 1 && bfMin0 > 1 | any(c(bfPlus0, bfMin0) < 0)) {
-  #     if (r >= 0) {
-  #       # Note: Data: OK,
-  #       #  bf10: OK.
-  #       #  bfPlus0: OK
-  #       #  bfMin0: NOT ok
-  #       #
-  #       # bfMin0 is bigger than one due to overflow: bfMin0 = 2*bf10 - bfPlus0.
-  #       # Example: 2*1.2.... 10^ 24 - 2.... 10^24 = 1... 10^12 (due to round off)
-  #       #
-  #       bfMin0 <- 10^(-316)
-  #       bfPlus0 <- 2*bf10 - bfMin0
-  #     } else if (r < 0) {
-  #       # Note: Data: OK,
-  #       #  bf10: OK.
-  #       #  bfPlus0: NOT ok
-  #       #  bfMin0: OK
-  #       bfPlus0 <- 10^(-316)
-  #       bfMin0 <- 2*bf10 - bfPlus0
-  #     }
-  #   }
-  #
-  #   result <- modifyList(result, list("greater"=list("bf"=bfPlus0, "tooPeaked"=FALSE),
-  #                                     "less"=list("bf"=bfMin0, "tooPeaked"=FALSE))
-  #   )
-  # } else {
-  #   result <- modifyList(result, list("greater"=list("bf"=NA, "tooPeaked"=TRUE),
-  #                                     "less"=list("bf"=NA, "tooPeaked"=TRUE))
-  #   )
-  # }
-  
   if (!isSomeNA(fit)) {
     tempList <- .computePearsonCredibleInterval("betaA"=fit[["betaA"]], "betaB"=fit[["betaB"]],
                                                 "ciValue"=ciValue)
@@ -1158,10 +1115,12 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
     # Add list $two.sided$ci, $plusSided$ci, $less$ci, ciValue
     result <- modifyList(result, tempList)
   } else {
-    # TODO(Alexander): Do we need to get the error everywhere
     tempFailedCiResult <- list("tooPeaked"=TRUE)
     failedCiResult <- list("two.sided"=tempFailedCiResult, "greater"=tempFailedCiResult, "less"=tempFailedCiResult)
     result <- modifyList(result, failedCiResult)
+    
+    # TODO(Alexander): Consider the case that everything can be computed, except for the cis, then get error.
+    # Most of this is covered using Gauss' Vandermonde Identity
     result[["error"]] <- "Can't compute credible intervals"
   }
   return(result)
@@ -1169,12 +1128,10 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
 
 
 # 4. Posteriors ------------
-# TODO: Main wrapper function to grab infor for posterior across method=pearson, kendall and alternative = two.sided, greater/plusSided, less/minSided etc
 #
 
 
 # 4.1 Two-sided
-#' ASDF
 #'
 #' @inheritParams .computePearsonCorBf10
 #'
@@ -1331,7 +1288,7 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
           (lgamma(1/kappa+n/2) + lgamma(1/kappa-n/2+1) - 2*lgamma(1/kappa+1/2))
       )
     } else {
-      # TODO(Alexander): Hack due to consistency and posterior mean -> mle, because n grows or even r to 1
+      # Note(Alexander): Hack due to consistency and posterior mean -> mle, because n grows or even r to 1
       return(r)
     }
   } else {
@@ -1383,7 +1340,7 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
       hypRatioA <- tryOrFailWithNA(exp(logHypTerm1a-logHypTerm2))
       hypRatioB <- tryOrFailWithNA(exp(logHypTerm1b-logHypTerm2))
     } else {
-      # TODO(Alexander): Quite the hack here
+      # Note(Alexander): Quite the hack here. Note that this is the upper bound (Jensen)
       return(r^2)
     }
   } else {
@@ -1432,54 +1389,14 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
   # return(result)
 }
 
-
-# .posteriorSecondMomentOld <- function(n, r, kappa=1) {
-#   # New code can do:.PosteriorSecondMoment(1219, 0.83) n=3 more than old code
-#   #
-#   #
-#   hyperTerm1a <- tryOrFailWithNA(
-#     # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+(n+2)*kappa)/(2*kappa), "z"=r^2))
-#     # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=1/kappa+1+n/2, "z"=r^2))
-#     Re(hypergeo::f15.3.3("A"=1/kappa+3/2, "B"=1/kappa+3/2, "C"=1/kappa+1+n/2, "z"=r^2))
-#   )
-#   hyperTerm1b <- tryOrFailWithNA(
-#     Re(hypergeo::f15.3.3("A"=(n+1)/2, "B"=(n+1)/2, "C"=(2+(n+2)*kappa)/(2*kappa)+1, "z"=r^2))
-#   )
-#   hyperTerm2 <- tryOrFailWithNA(
-#     # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+n*kappa)/(2*kappa), "z"=r^2))
-#     # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=1/kappa+n/2, "z"=r^2))
-#     log(Re(hypergeo::f15.3.3("A"=1/kappa+1/2, "B"=1/kappa+1/2, "C"=1/kappa+n/2, "z"=r^2)))
-#   )
-#
-#   hypRatioA <- hyperTerm1a/hyperTerm2
-#   hypRatioB <- hyperTerm1b/hyperTerm2
-#
-#   # TODO(Alexander): Add asymptotic approximation here
-#   #
-#   result <- kappa/(n*kappa+2) *
-#     (hypRatioA+ kappa*(n-1)^(2)/(2+(n+2)*kappa)*r^2*hypRatioB)
-#   return(result)
-#
-#   # OLD CODE CAN DO:.posteriorSecondMoment(1204, 0.83), at 1205 get inf
-#   #
-#   # hyperTerm1 <- tryOrFailWithNA(
-#   #   Re(hypergeo::genhypergeo(U=c(3/2, (n-1)/2, (n-1)/2),
-#   #                            L=c(1/2, (2+(n+2)*kappa)/(2*kappa)), z=r^2))
-#   # )
-#   # hyperTerm2 <- tryOrFailWithNA(
-#   #   Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+n*kappa)/(2*kappa), "z"=r^2))
-#   # )
-#   #
-#   # result <- kappa/(n*kappa+2)*hyperTerm1/hyperTerm2
-#   # return(result)
-# }
-
 .posteriorVariance <- function(n, r, kappa=1, oneThreshold=1e-3) {
   # Posterior mean of the .bf10Exact
   #	That is, (rho+1)/2, thus, on 0,1 scale to estimate a, b in a beta distribution
   #
-  # TODO: add safeguard for large n as then hyperTerm1/hyperTerm2 is almost 1
-  # 	and also for logTerm almost being 1
+  # Note(Alexander): Gauss' Vandermonde identity probably catched this case
+  #
+  #     add safeguard for large n as then hyperTerm1/hyperTerm2 is almost 1
+  # 	  and also for logTerm almost being 1
   #
   # 	.posteriorVariance(199, 0.8) yields 6808.702
   #
@@ -1498,7 +1415,7 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
 
 .betaParameterEstimates <- function(someMean, someVar) {
   # someMean \in (0, 1)
-  # TODO: Perhaps safeguard against someMean = 0 or someMean = 1
+  # Note(Alexander): Gauss' Vandermonde identity covers the case that someMean = 1
   #
   someA <- tryOrFailWithNA(someMean*(someMean*(1-someMean)/someVar-1))
   someB <- tryOrFailWithNA((1-someMean)*(someMean*(1-someMean)/someVar-1))
@@ -1842,7 +1759,7 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
   
   
   if (methodNumber %in% 3:4) {
-    # TODO:
+    # TODO(AlexandeR):
     if (!is.na(result$combined$betaA) && !is.na(result$combined$betaB)) {
       # Use beta fit and Savage-Dickey
       tempList <- .computeCorBf10SavageDickey(betaA=result$combined$betaA, betaB=result$combined$betaB, kappa=kappa,
@@ -1853,14 +1770,13 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
     }
   }
   
-  # TODO: checks for bf10Combined, bfPlus0Combined, bfMin0Combined for zeroes and infinities
+  # TODO(Alexander): checks for bf10Combined, bfPlus0Combined, bfMin0Combined for zeroes and infinities
   result$repGivenOri$bf10 <- (result$combined$bf10) / (oriObj$bf10)
   result$repGivenOri$bfPlus0 <- (result$combined$bfPlus0) / (oriObj$bfPlus0)
   result$repGivenOri$bfMin0 <- (result$combined$bfMin0) / (oriObj$bfMin0)
   
   return(result)
 }
-
 
 
 
@@ -1930,7 +1846,7 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
                  "less"=sidedResult,
                  "greater"=sidedResult,
                  "kappa"=kappa, "ciValue"=ciValue, "h0"=h0,
-                 "methodNumber"=methodNumber, "call"=match.call()
+                 "methodNumber"=methodNumber, "var"=var, "call"=match.call()
   )
   
   failedSidedResult <- list("n"=n, "stat"=NaN, "bf"=NA, "tooPeaked"=TRUE,
@@ -2025,7 +1941,6 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
                                                        "h0"=h0, "alternative"=alternative)
   }
   
-  # TODO(Alexander): fix output structure
   tempList <- .computeKendallCredibleInterval("n"=n, "tauObs"=tauObs, "kappa"=kappa, "var"=var,
                                               "ciValue"=ciValue)
   result <- modifyList(result, tempList)
@@ -2079,11 +1994,6 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
   } else {
     # I could also do
     result <- integrand(tauPop)/normalisingConstant
-    
-    # TODO(Alexander): Check this, should be fine though
-    #
-    # result <- logicalCensor*.posteriorTauU("n"=n, "Tstar"=Tstar, "tauPop"=tauPop, "kappa"=kappa, "var"=var,
-    #                                             "alternative"=alternative)/normalisingConstant
   }
   return(result)
 }
@@ -2323,5 +2233,4 @@ isSomeInfinite <- function(...) {
 isSomeTrue <- function(...) {
   isSome(..., func=isTRUE)
 }
-
 
