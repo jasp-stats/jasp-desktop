@@ -1,3 +1,18 @@
+.getPairsLength <- function(options) {
+  pairs <- options[["pairs"]]
+  nPairs <- length(pairs)
+  
+  if (nPairs!=0) {
+    lastPair <- pairs[[nPairs]]
+    v2 <- lastPair[2]
+    
+    if (is.na(v2))
+      nPairs <- nPairs -1
+  }
+  
+  return(max(nPairs, 0))
+}
+
 .getCorTableTitle <- function(methodItems, bayes=TRUE) {
   if (bayes) {
     if (length(methodItems)==1) {
@@ -21,6 +36,21 @@
     }
   }
   return(tabTitle)
+}
+
+.corBayesReadData <- function(dataset, options) {
+  firstList <- unlist(options[["variables"]])
+  secondList <- unlist(options[["pairs"]])
+  allVariables <- unique(c(firstList, secondList))
+  allVariables <- allVariables[allVariables != ""]
+  
+  if (options[["missingValues"]] == "excludeListwise") {
+    dataset <- .readDataSetToEnd(columns.as.numeric=allVariables, exclude.na.listwise=allVariables)
+  } else {
+    dataset <- .readDataSetToEnd(columns.as.numeric=allVariables)
+  }
+  
+  return(dataset)
 }
 
 # This can be made general for t-tests as well

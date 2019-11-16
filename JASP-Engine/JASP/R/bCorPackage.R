@@ -287,7 +287,7 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
       error <- "Could not compute"
     }
     
-    sideError <- list("robustnessLines"=error)
+    sideError <- list("robustnessLine"=error)
     result <- list("two.sided"=sideError, "greater"=sideError, "less"=sideError)
     return(result)
   }
@@ -355,193 +355,6 @@ bcor.testSumStat <- function(n, stat, alternative=c("two.sided", "less", "greate
   result[["kappaDomain"]] <- kappaDomain
   
   return(result)
-}
-
-
-#' Try to evaluate an expression, if not fail with NA (default)
-#'
-#' @param expr Expression to be evaluated
-#' @param value Return value if there is an error, default is NA_real_
-#'
-#' @return Returns the evaluation of the expression, or value if it doesn't work out
-#' @export
-#'
-#' @examples
-#' tryOrFailWithNA(integrate(exp, -Inf, Inf)[["value"]], NA)
-#' tryOrFailWithNA(integrate(exp, 0, 3)[["value"]], NA)
-tryOrFailWithNA <- function(expr, value=NA_real_) {
-  tryCatch(
-    error=function(cnd) value,
-    expr
-  )
-}
-
-
-# TODO(Alexander): Ask Don to catch message of stopifnot
-#' Ensure the Truth of R Expressions and returns TRUE if the expressions are not met.
-#'
-#' This is basically stopifnot{base}, but instead of stopping it returns TRUE. The following descriptions is
-#' adapted from stopifnot{base}: If any of the expressions in ... are not all valid, then instead of stopping a TRUE is
-#' returned and an error message is printed indicating the first of the elements of ... which were not true.
-#'
-#' @param ... any number of (logical) R expressions, which should evaluate to TRUE
-#'
-#' @return Returns TRUE if the provided expressions are not met
-#' @export
-#'
-#' @examples
-#'
-failIfNot <- function (...) {
-  # This is equivalent to
-  #
-  # tryCatch(error=function(cnd){
-  #   return(list("failed"=TRUE, "error"=conditionMessage(cnd)))
-  # },
-  # stopifnot(...)
-  # )
-  #
-  result <- NULL
-  
-  ll <- list(...)
-  n <- length(ll)
-  
-  if (n == 0L) {
-    return(result)
-  }
-  
-  Dparse <- function(call, cutoff = 60L) {
-    ch <- deparse(call, width.cutoff = cutoff)
-    if (length(ch) > 1L) {
-      paste(ch[1L], "....")
-    } else {
-      ch
-    }
-  }
-  
-  head <- function(x, n = 6L) {
-    x[seq_len(if (n < 0L) max(length(x) + n, 0L) else min(n, length(x)))]
-  }
-  
-  abbrev <- function(ae, n = 3L) {
-    paste(c(head(ae, n), if (length(ae) > n) "...."), collapse = "\n  ")
-  }
-  
-  mc <- match.call()
-  
-  for (i in 1L:n) {
-    if (!(is.logical(r <- ll[[i]]) && !anyNA(r) && all(r))) {
-      cl.i <- mc[[i + 1L]]
-      msg <- if (is.call(cl.i) && identical(cl.i[[1]], quote(all.equal)) &&
-                 (is.null(ni <- names(cl.i)) || length(cl.i) == 3L ||
-                  length(cl.i <- cl.i[!nzchar(ni)]) == 3L)) {
-        sprintf(gettext("%s and %s are not equal:\n  %s"),
-                Dparse(cl.i[[2]]), Dparse(cl.i[[3]]), abbrev(r))
-      } else {
-        sprintf(ngettext(length(r), "%s is not TRUE", "%s are not all TRUE"),
-                Dparse(cl.i))
-      }
-      
-      result <- msg
-      return(result)
-    }
-  }
-  return(result)
-}
-
-
-
-
-#' Checks every element using the provided function
-#'
-#' @param ... objects that need testing for try error
-#'
-#' @return Returns FALSE if there's a single element that does not check out, and TRUE if all elements check out
-#' @export
-#'
-#' @examples
-isEvery <- function(..., func) {
-  # TODO: Make these to return at first find
-  obj <- list(...)
-  return(purrr::every(obj, func))
-}
-
-isSomeNA <- function(...) {
-  return(isSome(..., "func"=anyNA, recursive=TRUE))
-}
-
-
-isSome <- function(..., func) {
-  # TODO: Make these to return at first find
-  obj <- list(...)
-  return( purrr::some(obj, func) )
-}
-
-#' Checks for try errors.
-#'
-#' @param ... objects that need testing for try error
-#'
-#' @return Returns TRUE whenever there's a single try-error, FALSE otherwise
-#' @export
-#'
-#' @examples
-#' kaas <- try(integrate(exp, -Inf, Inf))
-#' isTryError(kaas)
-#'
-isTryError <- function(...) {
-  return(isSome(..., func=function(x){inherits(x, "try-error")}))
-}
-
-
-#' Check for any NULL
-#'
-#' @param ... objects that need testing for try error
-#'
-#' @return Returns TRUE if there's a single NULL, returns FALSE if no NULL
-#' @export
-#'
-#' @examples
-isSomeNull <- function(...) {
-  return(isSome(..., func=is.null))
-}
-
-
-#' Check for whether all are numeric
-#'
-#' @param ... objects that need testing for being numeric
-#'
-#' @return Returns TRUE if all objects are numeric, returns FALSE otherwise
-#' @export
-#'
-#' @examples
-isEveryNumeric <- function(...) {
-  # TODO: Make these to return at first find
-  return(isEvery(..., func=is.numeric))
-}
-
-
-#' Check for any NA
-#'
-#' @param ... objects that need testing for NA
-#'
-#' @return Returns TRUE if any is NA, or its decendants are NA, returns FALSE otherwise
-#' @export
-#'
-#' @examples
-isSomeNA <- function(...) {
-  # TODO: Make these to return at first find
-  return(isSome(..., func=is.na))
-}
-
-isEveryFinite <- function(...) {
-  isEvery(..., func=is.finite)
-}
-
-isSomeInfinite <- function(...) {
-  isSome(..., func=is.infinite)
-}
-
-isSomeTrue <- function(...) {
-  isSome(..., func=isTRUE)
 }
 
 
@@ -783,17 +596,37 @@ isSomeTrue <- function(...) {
 #' @export
 #' @return Returns Bayes factor BF10 in favour of the alternative over the null
 #'
-.bf10Exact <- function(n, r, kappa=1, h0=0) {
+.bf10Exact <- function(n, r, kappa=1, h0=0, oneThreshold=1e-3) {
   # Note (Alexander): Input check is done at a higher level: .computePearsonCorBf10
-  # Maximum it can take is r=0.993, which works well up to n = 336, but r=0.992 and n=3 fails
+  # Maximum it can take is
+  #     r=0.993, which works well up to n = 337, but r=0.992 and n=3 fails
+  #     r=0.6, which works up to n=3201
   
-  logHyperTerm <- tryOrFailWithNA(log(hypergeo::f15.3.3(A=(n-1)/2, B=(n-1)/2, C=(n+2/kappa)/2, z=r^2)))
+  checkR <- (1 - abs(r) < oneThreshold)
+  
+  if (checkR) {
+    if (kappa < 2/(n-2)) {
+      result <- tryOrFailWithNA(
+        exp(lbeta(1/kappa+(n-1)/2, 1/2) - lbeta(1/kappa, 1/2) +
+              lgamma(1/kappa) + lgamma(1/kappa -n/2 + 1) - 2*lgamma(1/kappa+1/2))
+      )
+      return(result)
+    } else {
+      return(Inf)
+    }
+  }
+  
+  logHyperTerm <- tryOrFailWithNA(
+    (1/kappa+1-n/2)*log(1-r^2) +
+      log(Re(hypergeo::f15.1.1("A"=(1/kappa+1/2), "B"=(1/kappa+1/2), "C"=(1/kappa+n/2), "z"=r^2)))
+  )
   
   if (is.na(logHyperTerm))
     return(NaN)
   
-  logResult <- log(2^(1-2/kappa)) + 0.5 * log(pi) - lbeta(1/kappa, 1/kappa) +
-    lgamma((n+2/kappa-1)/2) - lgamma((n+2/kappa)/2) + logHyperTerm
+  logBetaTerms <- lbeta(1/kappa+(n-1)/2, 1/2)-lbeta(1/kappa, 1/2)
+  
+  logResult <- logBetaTerms + logHyperTerm
   realResult <- tryOrFailWithNA(exp(Re(logResult)))
   
   if (!is.numeric(realResult))
@@ -805,6 +638,7 @@ isSomeTrue <- function(...) {
   
   return(realResult)
 }
+
 
 # 2.2 Two-sided secondairy Bayes factor
 #' BF10 for Pearson's correlation based on Jeffreys's approximation to the reduced likelihood,
@@ -1182,31 +1016,15 @@ isSomeTrue <- function(...) {
   
   checkR <- (1 - abs(r) < oneThreshold) # check whether 1 - |r| < oneThreshold
   
-  # Information consistent result:
-  if (kappa >= 1 & n > 2 & checkR) {
-    if (r >= 0) {
-      result <- modifyList(result, plusSidedInfList)
-      return(result)
-    } else if (r < 0) {
-      result <- modifyList(result, minSidedInfList)
-      return(result)
-    }
-  }
-  
-  # TODO(Alexander): Check for information inconsistent kappas
-  #
   if (n <= 2 || kappa==0) {
     result <- modifyList(result, predictiveMatchingList)
     return(result)
-  } else if (kappa >= 1 && n > 2 && checkR) {
+  } else if (checkR & kappa >= 2/(n-2)) {
     if (r > 0) {
       result <- modifyList(result, plusSidedInfList)
-      return(result)
     } else if (r <= 0) {
       result <- modifyList(result, minSidedInfList)
-      return(result)
     }
-    result <- modifyList(result, infoConsistentList)
     return(result)
   }
   
@@ -1226,7 +1044,7 @@ isSomeTrue <- function(...) {
     #     TODO(Alexander): Approximate for h0 \neq 0
     #
     if (methodNumber == 1) {
-      bf10 <-  tryOrFailWithNA(.bf10Exact(n=n, r=r, kappa=kappa, h0=h0))
+      bf10 <-  tryOrFailWithNA(.bf10Exact(n=n, r=r, kappa=kappa, h0=h0, oneThreshold=oneThreshold))
     } else if (methodNumber == 2) {
       bf10 <- tryOrFailWithNA(.bf10JeffreysIntegrate(n=n, r=r, kappa=kappa, h0=h0))
     } else if (methodNumber %in% 3:4) {
@@ -1499,17 +1317,36 @@ isSomeTrue <- function(...) {
   return(result)
 }
 
+
 # 4.2
-.posteriorMean <- function(n, r, kappa=1, old2F1=FALSE) {
+.posteriorMean <- function(n, r, kappa=1, old2F1=FALSE, oneThreshold=1e-3) {
   # NEW CODE CAN OFFICIALLY DO .posteriorMean(1219, 0.83)
   #
-  hyperTerm1 <- tryOrFailWithNA(
-    Re(hypergeo::f15.3.3("A"=n/2, "B"=n/2, "C"=(2+(n+2)*kappa)/(2*kappa), "z"=r^2))
-  )
-  hyperTerm2 <- tryOrFailWithNA(
-    Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+n*kappa)/(2*kappa), "z"=r^2))
-  )
-  hypRatio <- tryOrFailWithNA(hyperTerm1/hyperTerm2)
+  checkR <- (1 - abs(r) < oneThreshold)
+  
+  if (checkR) {
+    if (kappa < 2/(n-2)) {
+      hypRatio <- exp(
+        lgamma(1/kappa+1+n/2)+lgamma(1/kappa+1-n/2) - 2*lgamma(1/kappa+1) -
+          (lgamma(1/kappa+n/2) + lgamma(1/kappa-n/2+1) - 2*lgamma(1/kappa+1/2))
+      )
+    } else {
+      # TODO(Alexander): Hack due to consistency and posterior mean -> mle, because n grows or even r to 1
+      return(r)
+    }
+  } else {
+    logHyperTerm1 <- tryOrFailWithNA(
+      # Re(hypergeo::f15.3.3("A"=n/2, "B"=n/2, "C"=(2+(n+2)*kappa)/(2*kappa), "z"=r^2))
+      # Re(hypergeo::f15.3.3("A"=n/2, "B"=n/2, "C"=1/kappa+1+n/2, "z"=r^2))
+      log(Re(hypergeo::f15.1.1("A"=1+1/kappa, "B"=1+1/kappa, "C"=1/kappa+1+n/2, "z"=r^2)))
+    )
+    logHyperTerm2 <- tryOrFailWithNA(
+      # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+n*kappa)/(2*kappa), "z"=r^2))
+      # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=1/kappa+n/2, "z"=r^2))
+      log(Re(hypergeo::f15.1.1("A"=1/kappa+1/2, "B"=1/kappa+1/2, "C"=1/kappa+n/2, "z"=r^2)))
+    )
+    hypRatio <- tryOrFailWithNA(exp(logHyperTerm1-logHyperTerm2))
+  }
   
   # Note(Alexander): that this is a bit of a hack here, as but correct due to large samples.
   #
@@ -1531,30 +1368,54 @@ isSomeTrue <- function(...) {
   # )
 }
 
-#log.hyper.term <- log(hypergeo::hypergeo(((n-1)/2), ((n-1)/2), ((n+2/kappa)/2), r^2))
-
-
-.posteriorSecondMoment <- function(n, r, kappa=1) {
+.posteriorSecondMoment <- function(n, r, kappa=1, oneThreshold=1e-3) {
   # New code can do:.PosteriorSecondMoment(1219, 0.83) n=3 more than old code
   #
   #
-  hyperTerm1a <- tryOrFailWithNA(
-    Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+(n+2)*kappa)/(2*kappa), "z"=r^2))
-  )
-  hyperTerm1b <- tryOrFailWithNA(
-    Re(hypergeo::f15.3.3("A"=(n+1)/2, "B"=(n+1)/2, "C"=(2+(n+2)*kappa)/(2*kappa)+1, "z"=r^2))
-  )
-  hyperTerm2 <- tryOrFailWithNA(
-    Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+n*kappa)/(2*kappa), "z"=r^2))
-  )
+  checkR <- (1 - abs(r) < oneThreshold)
   
-  hypRatioA <- hyperTerm1a/hyperTerm2
-  hypRatioB <- hyperTerm1b/hyperTerm2
+  if (checkR) {
+    if (kappa < 2/(n-2)) {
+      logHypTerm1a <- lgamma(1/kappa+1+n/2) + lgamma(1/kappa - n/2 + 2) - 2*lgamma(1/kappa + 3/2)
+      logHypTerm1b <- lgamma(n/2+1/kappa+2) + lgamma(1/kappa - n/2 + 1) - 2*lgamma(1/kappa + 3/2)
+      logHypTerm2 <- lgamma(1/kappa+n/2) + lgamma(1/kappa-n/2+1) - 2*lgamma(1/kappa+1/2)
+      
+      hypRatioA <- tryOrFailWithNA(exp(logHypTerm1a-logHypTerm2))
+      hypRatioB <- tryOrFailWithNA(exp(logHypTerm1b-logHypTerm2))
+    } else {
+      # TODO(Alexander): Quite the hack here
+      return(r^2)
+    }
+  } else {
+    hyperTerm1a <- tryOrFailWithNA(
+      # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+(n+2)*kappa)/(2*kappa), "z"=r^2))
+      # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=1/kappa+1+n/2, "z"=r^2))
+      log(Re(hypergeo::f15.1.1("A"=(1/kappa+3/2), "B"=(1/kappa+3/2), "C"=(n/2+1/kappa+1), "z"=r^2)))
+    )
+    hyperTerm1b <- tryOrFailWithNA(
+      # Re(hypergeo::f15.3.3("A"=(n+1)/2, "B"=(n+1)/2, "C"=(2+(n+2)*kappa)/(2*kappa)+1, "z"=r^2))
+      # Re(hypergeo::f15.3.3("A"=(n+1)/2, "B"=(n+1)/2, "C"=(n/2+1/kappa+2), "z"=r^2))
+      Re(hypergeo::f15.1.1("A"=(1/kappa+3/2), "B"=(1/kappa+3/2), "C"=n/2+1/kappa+2, "z"=r^2))
+    )
+    hyperTerm2 <- tryOrFailWithNA(
+      # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+n*kappa)/(2*kappa), "z"=r^2))
+      # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=1/kappa+n/2, "z"=r^2))
+      log(Re(hypergeo::f15.1.1("A"=(1/kappa+1/2), "B"=(1/kappa+1/2), "C"=(1/kappa+n/2), "z"=r^2)))
+    )
+    
+    hypRatioA <- exp(log(1-r^2)+hyperTerm1a-hyperTerm2)
+    hypRatioB <- hyperTerm1b/exp(hyperTerm2)
+  }
   
   # TODO(Alexander): Add asymptotic approximation here
   #
-  result <- kappa/(n*kappa+2) *
-    (hypRatioA+ kappa*(n-1)^(2)/(2+(n+2)*kappa)*r^2*hypRatioB)
+  result <- tryOrFailWithNA(
+    kappa/(n*kappa+2) * (hypRatioA+ kappa*(n-1)^(2)/(2+(n+2)*kappa)*r^2*hypRatioB)
+  )
+  
+  if (is.na(result))
+    return(r^2)
+  
   return(result)
   
   # OLD CODE CAN DO:.posteriorSecondMoment(1204, 0.83), at 1205 get inf
@@ -1571,7 +1432,49 @@ isSomeTrue <- function(...) {
   # return(result)
 }
 
-.posteriorVariance <- function(n, r, kappa=1) {
+
+# .posteriorSecondMomentOld <- function(n, r, kappa=1) {
+#   # New code can do:.PosteriorSecondMoment(1219, 0.83) n=3 more than old code
+#   #
+#   #
+#   hyperTerm1a <- tryOrFailWithNA(
+#     # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+(n+2)*kappa)/(2*kappa), "z"=r^2))
+#     # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=1/kappa+1+n/2, "z"=r^2))
+#     Re(hypergeo::f15.3.3("A"=1/kappa+3/2, "B"=1/kappa+3/2, "C"=1/kappa+1+n/2, "z"=r^2))
+#   )
+#   hyperTerm1b <- tryOrFailWithNA(
+#     Re(hypergeo::f15.3.3("A"=(n+1)/2, "B"=(n+1)/2, "C"=(2+(n+2)*kappa)/(2*kappa)+1, "z"=r^2))
+#   )
+#   hyperTerm2 <- tryOrFailWithNA(
+#     # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+n*kappa)/(2*kappa), "z"=r^2))
+#     # Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=1/kappa+n/2, "z"=r^2))
+#     log(Re(hypergeo::f15.3.3("A"=1/kappa+1/2, "B"=1/kappa+1/2, "C"=1/kappa+n/2, "z"=r^2)))
+#   )
+#
+#   hypRatioA <- hyperTerm1a/hyperTerm2
+#   hypRatioB <- hyperTerm1b/hyperTerm2
+#
+#   # TODO(Alexander): Add asymptotic approximation here
+#   #
+#   result <- kappa/(n*kappa+2) *
+#     (hypRatioA+ kappa*(n-1)^(2)/(2+(n+2)*kappa)*r^2*hypRatioB)
+#   return(result)
+#
+#   # OLD CODE CAN DO:.posteriorSecondMoment(1204, 0.83), at 1205 get inf
+#   #
+#   # hyperTerm1 <- tryOrFailWithNA(
+#   #   Re(hypergeo::genhypergeo(U=c(3/2, (n-1)/2, (n-1)/2),
+#   #                            L=c(1/2, (2+(n+2)*kappa)/(2*kappa)), z=r^2))
+#   # )
+#   # hyperTerm2 <- tryOrFailWithNA(
+#   #   Re(hypergeo::f15.3.3("A"=(n-1)/2, "B"=(n-1)/2, "C"=(2+n*kappa)/(2*kappa), "z"=r^2))
+#   # )
+#   #
+#   # result <- kappa/(n*kappa+2)*hyperTerm1/hyperTerm2
+#   # return(result)
+# }
+
+.posteriorVariance <- function(n, r, kappa=1, oneThreshold=1e-3) {
   # Posterior mean of the .bf10Exact
   #	That is, (rho+1)/2, thus, on 0,1 scale to estimate a, b in a beta distribution
   #
@@ -1581,7 +1484,9 @@ isSomeTrue <- function(...) {
   # 	.posteriorVariance(199, 0.8) yields 6808.702
   #
   #
-  result <- tryOrFailWithNA(.posteriorSecondMoment(n,r,kappa)-(.posteriorMean(n,r,kappa))^2)
+  result <- tryOrFailWithNA(
+    .posteriorSecondMoment("n"=n, "r"=r, "kappa"=kappa, "oneThreshold"=oneThreshold) -
+      (.posteriorMean("n"=n, "r"=r, "kappa"=kappa, "oneThreshold"=oneThreshold))^2)
   
   # Asymptotic approximation Based on Fisher
   #
@@ -1602,13 +1507,14 @@ isSomeTrue <- function(...) {
   return(result)
 }
 
-.posteriorBetaParameters <- function(n, r, kappa=1) {
+.posteriorBetaParameters <- function(n, r, kappa=1, oneThreshold=1e-3) {
   # .posteriorBetaParameters
   # Let rho = 2*x - 1 where x \sim beta, thus, x = (rho+1)/2.Hence, someMu.
   # For the variance we have var(rho)/2^2
   #
-  someMu <- tryOrFailWithNA((.posteriorMean("n"=n, "r"=r, kappa)+1)/2)
-  someVar <- tryOrFailWithNA(.posteriorVariance("n"=n, "r"=r, kappa)/4)
+  someMu <- tryOrFailWithNA((.posteriorMean("n"=n, "r"=r, "kappa"=kappa, "oneThreshold"=oneThreshold)+1)/2, )
+  someVar <- tryOrFailWithNA(.posteriorVariance("n"=n, "r"=r, "kappa"=kappa, "oneThreshold"=oneThreshold)/4)
+  
   
   if (isSomeNA(someMu, someVar) | isSomeInfinite(someMu, someVar)) {
     # TODO(Alexander): Before doing this try the MH sampler
@@ -1956,6 +1862,8 @@ isSomeTrue <- function(...) {
 }
 
 
+
+
 # 1. Priors for Kendall's Tau -------------
 #
 .stretchedBetaTau <- function(tauPop, alpha=1, beta=1) {
@@ -2227,3 +2135,193 @@ isSomeTrue <- function(...) {
   
   return(result)
 }
+
+
+# 0. Helpers ------------
+#' Try to evaluate an expression, if not fail with NA (default)
+#'
+#' @param expr Expression to be evaluated
+#' @param value Return value if there is an error, default is NA_real_
+#'
+#' @return Returns the evaluation of the expression, or value if it doesn't work out
+#' @export
+#'
+#' @examples
+#' tryOrFailWithNA(integrate(exp, -Inf, Inf)[["value"]], NA)
+#' tryOrFailWithNA(integrate(exp, 0, 3)[["value"]], NA)
+tryOrFailWithNA <- function(expr, value=NA_real_) {
+  tryCatch(
+    error=function(cnd) value,
+    expr
+  )
+}
+
+
+# TODO(Alexander): Ask Don to catch message of stopifnot
+#' Ensure the Truth of R Expressions and returns TRUE if the expressions are not met.
+#'
+#' This is basically stopifnot{base}, but instead of stopping it returns TRUE. The following descriptions is
+#' adapted from stopifnot{base}: If any of the expressions in ... are not all valid, then instead of stopping a TRUE is
+#' returned and an error message is printed indicating the first of the elements of ... which were not true.
+#'
+#' @param ... any number of (logical) R expressions, which should evaluate to TRUE
+#'
+#' @return Returns TRUE if the provided expressions are not met
+#' @export
+#'
+#' @examples
+#'
+failIfNot <- function (...) {
+  # This is equivalent to
+  #
+  # tryCatch(error=function(cnd){
+  #   return(list("failed"=TRUE, "error"=conditionMessage(cnd)))
+  # },
+  # stopifnot(...)
+  # )
+  #
+  result <- NULL
+  
+  ll <- list(...)
+  n <- length(ll)
+  
+  if (n == 0L) {
+    return(result)
+  }
+  
+  Dparse <- function(call, cutoff = 60L) {
+    ch <- deparse(call, width.cutoff = cutoff)
+    if (length(ch) > 1L) {
+      paste(ch[1L], "....")
+    } else {
+      ch
+    }
+  }
+  
+  head <- function(x, n = 6L) {
+    x[seq_len(if (n < 0L) max(length(x) + n, 0L) else min(n, length(x)))]
+  }
+  
+  abbrev <- function(ae, n = 3L) {
+    paste(c(head(ae, n), if (length(ae) > n) "...."), collapse = "\n  ")
+  }
+  
+  mc <- match.call()
+  
+  for (i in 1L:n) {
+    if (!(is.logical(r <- ll[[i]]) && !anyNA(r) && all(r))) {
+      cl.i <- mc[[i + 1L]]
+      msg <- if (is.call(cl.i) && identical(cl.i[[1]], quote(all.equal)) &&
+                 (is.null(ni <- names(cl.i)) || length(cl.i) == 3L ||
+                  length(cl.i <- cl.i[!nzchar(ni)]) == 3L)) {
+        sprintf(gettext("%s and %s are not equal:\n  %s"),
+                Dparse(cl.i[[2]]), Dparse(cl.i[[3]]), abbrev(r))
+      } else {
+        sprintf(ngettext(length(r), "%s is not TRUE", "%s are not all TRUE"),
+                Dparse(cl.i))
+      }
+      
+      result <- msg
+      return(result)
+    }
+  }
+  return(result)
+}
+
+
+
+
+#' Checks every element using the provided function
+#'
+#' @param ... objects that need testing for try error
+#'
+#' @return Returns FALSE if there's a single element that does not check out, and TRUE if all elements check out
+#' @export
+#'
+#' @examples
+isEvery <- function(..., func) {
+  # TODO: Make these to return at first find
+  obj <- list(...)
+  return(purrr::every(obj, func))
+}
+
+isSomeNA <- function(...) {
+  return(isSome(..., "func"=anyNA, recursive=TRUE))
+}
+
+
+isSome <- function(..., func) {
+  # TODO: Make these to return at first find
+  obj <- list(...)
+  return( purrr::some(obj, func) )
+}
+
+#' Checks for try errors.
+#'
+#' @param ... objects that need testing for try error
+#'
+#' @return Returns TRUE whenever there's a single try-error, FALSE otherwise
+#' @export
+#'
+#' @examples
+#' kaas <- try(integrate(exp, -Inf, Inf))
+#' isTryError(kaas)
+#'
+isTryError <- function(...) {
+  return(isSome(..., func=function(x){inherits(x, "try-error")}))
+}
+
+
+#' Check for any NULL
+#'
+#' @param ... objects that need testing for try error
+#'
+#' @return Returns TRUE if there's a single NULL, returns FALSE if no NULL
+#' @export
+#'
+#' @examples
+isSomeNull <- function(...) {
+  return(isSome(..., func=is.null))
+}
+
+
+#' Check for whether all are numeric
+#'
+#' @param ... objects that need testing for being numeric
+#'
+#' @return Returns TRUE if all objects are numeric, returns FALSE otherwise
+#' @export
+#'
+#' @examples
+isEveryNumeric <- function(...) {
+  # TODO: Make these to return at first find
+  return(isEvery(..., func=is.numeric))
+}
+
+
+#' Check for any NA
+#'
+#' @param ... objects that need testing for NA
+#'
+#' @return Returns TRUE if any is NA, or its decendants are NA, returns FALSE otherwise
+#' @export
+#'
+#' @examples
+isSomeNA <- function(...) {
+  # TODO: Make these to return at first find
+  return(isSome(..., func=is.na))
+}
+
+isEveryFinite <- function(...) {
+  isEvery(..., func=is.finite)
+}
+
+isSomeInfinite <- function(...) {
+  isSome(..., func=is.infinite)
+}
+
+isSomeTrue <- function(...) {
+  isSome(..., func=isTRUE)
+}
+
+
