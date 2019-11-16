@@ -80,7 +80,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   if (nPairs <= 0)
     return(FALSE)
 
-  plotItems <- .getCorPlotItems(options)
+  plotItems <- .getCorPlotItems(options, bayes=TRUE,  sumStat=FALSE)
 
   if (length(plotItems)==0)
     return(FALSE)
@@ -382,12 +382,11 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
         storeObject <- TRUE
       }
       
-      # TODO(Alexander): add .getPlotItems so we know what to compute for the pairwise things
       if (computePlots) {
         if (purpose=="matrix") {
           plotItems <- "plotPriorPosterior"
         } else if (purpose=="pairs") {
-          plotItems <- .getCorPlotItems(options)
+          plotItems <- .getCorPlotItems(options, bayes=TRUE, sumStat=FALSE)
           plotItems <- setdiff(plotItems, "plotScatter")
         }
 
@@ -458,9 +457,8 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     
     # TODO(Alexander): I don't think that there are cases where allBfObjects is empty anymore
     # 
-    if (is.null(allBfObjects)) {
+    if (is.null(allBfObjects)) 
       return(allBfObjects)
-    }
     
     # Note(Alexander): Here there must be more than 2 variables
     # 
@@ -539,8 +537,6 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     for (i in 1:nVariablesEffective) {
       emptyCellInfo <- vector("list", length=i)
       
-      # TODO(Alexander): Hier
-      # 
       if (nVariables <= 1) {
         if (i==1) {
           if (nVariables == 0) {
@@ -1016,14 +1012,12 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   if (!ready)
     return(pairsPlotCollection)
 
-  plotItems <- .getCorPlotItems(options)
+  plotItems <- .getCorPlotItems(options, bayes=TRUE,  sumStat=FALSE)
   nPairs <- .getPairsLength(options)
 
   bfPlotDependencies <- c("pairsMethod", "kappa", "alternative", "bayesFactorType")
   bfPlotPriorPosteriorDependencies <- bfPlotDependencies
 
-  # TODO(Alexander): check for recomputes on ciValue
-  #
   if (options[["plotPriorPosterior"]] | options[["plotPriorPosteriorAddEstimationInfo"]])
     bfPlotPriorPosteriorDependencies <- c(bfPlotPriorPosteriorDependencies, "ciValue")
 
@@ -1047,7 +1041,6 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 
     # TODO(Alexander): Think about when var1==var2
     #
-
     pairName <- paste(sort(c(var1, var2)), collapse="-")
     pairContainerTitle <- paste(var1, var2, sep=" - ")
 
@@ -1085,7 +1078,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 }
 
 .fillPairsPlotCorBayes <- function(pairsPlotCollection, allBfObjects, dataset, options) {
-  plotItems <- .getCorPlotItems(options)
+  plotItems <- .getCorPlotItems(options, bayes=TRUE,  sumStat=FALSE)
   pairs <- options[["pairs"]]
   nPairs <- .getPairsLength(options)
   alternative <- options[["alternative"]]
@@ -1176,7 +1169,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 }
 
 plotRobustnessCor <- function(xLine, yLine, xPoint, yPoint, bfType, alternative, nDigits=4) {
-  # TODO(Alexander): Perhaps add a variable 
+  # TODO(Alexander): Perhaps add an argument
   #     category=c("max", "user")
   # 
   bfPlotType <- switch(bfType,
@@ -1316,14 +1309,18 @@ plotRobustnessCor <- function(xLine, yLine, xPoint, yPoint, bfType, alternative,
   if (method=="pearson") {
     tempList <- .computePearsonCredibleInterval("betaA"=bfObject[["betaA"]], "betaB"=bfObject[["betaB"]],
                                                 "ciValue"=ciValue)
-
-    bfObject <- modifyList(bfObject, tempList)
   } else if (method=="kendall") {
     # TODO(Alexander):
-
+    tempList <- .computeKendallCredibleInterval("n"=bfObject[["two.sided"]][["n"]], "tauObs"=bfObject[["two.sided"]][["stat"]], 
+                                    "kappa"=bfObject[["kappa"]], "var"=1, "ciValue"=ciValue, 
+                                    "h0"=bfObject[["h0"]])
   } else if (method=="spearman") {
     # TODO(Johnny):
-
+    print("NO THIS IS NOT IT, STILL NEED TO MAKE THIS, THIS IS JUST A PLACEHOLDER")
+    tempList <- .computePearsonCredibleInterval("betaA"=bfObject[["betaA"]], "betaB"=bfObject[["betaB"]],
+                                                "ciValue"=ciValue)
   }
+  
+  bfObject <- modifyList(bfObject, tempList)
   return(bfObject)
 }
