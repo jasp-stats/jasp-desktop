@@ -189,11 +189,11 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
                                "BF[equal]"= "",
                                "pmp[equal]" = PMP_0,
                                "type[greater]" = "H1: Bigger",
-                               "BF[greater]" = BF_02,
-                               "pmp[greater]" = PMP_2,
+                               "BF[greater]" = BF_01,
+                               "pmp[greater]" = PMP_1,
                                "type[less]" = "H2: Smaller",
-                               "BF[less]" = BF_01,
-                               "pmp[less]" = PMP_1)
+                               "BF[less]" = BF_02,
+                               "pmp[less]" = PMP_2)
         }
     } else if (options$bayesFactorType == "BF10") {
         if (options$hypothesis == "equalNotEqual") {
@@ -214,11 +214,11 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
                                "BF[equal]"= "",
                                "pmp[equal]" = PMP_0,
                                "type[greater]"= "H1: Bigger",
-                               "BF[greater]" = BF_02,
-                               "pmp[greater]" = PMP_2,
+                               "BF[greater]" = BF_01,
+                               "pmp[greater]" = PMP_1,
                                "type[less]" = "H2: Smaller",
-                               "BF[less]" = BF_01,
-                               "pmp[less]" = PMP_1)
+                               "BF[less]" = BF_02,
+                               "pmp[less]" = PMP_2)
         }
     }
     bainTable$addRows(row, rowNames=variable)

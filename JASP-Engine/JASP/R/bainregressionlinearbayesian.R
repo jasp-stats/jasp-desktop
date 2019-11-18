@@ -103,9 +103,18 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .bainLinearRegressionBayesFactorPlots <- function(dataset, options, bainContainer, ready, position) {
+	
 	if (!is.null(bainContainer[["bayesFactorPlot"]]) || !options[["bayesFactorPlot"]]) return()
 
-	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = 300, width = 400)
+	if(options[["model"]] == ""){
+		height <- 300
+		width <- 400
+	} else {
+		height <- 400
+		width <- 600
+	}
+
+	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = height, width = width)
 	bayesFactorPlot$dependOn(options = c("bayesFactorPlot"))
 	bayesFactorPlot$position <- position
 
@@ -119,6 +128,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .bainLinearRegressionCoefficientsTable <- function(dataset, options, bainContainer, ready, position) {
+	
 	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
 
 	coefficientsTable <- createJaspTable("Coefficients")
@@ -179,7 +189,8 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .bainLegendRegression <- function(dataset, options, jaspResults, position) {
-	if (!is.null(jaspResults[["legendTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+	
+	if (!is.null(jaspResults[["legendTable"]])) return()
 
 	legendTable <- createJaspTable("Hypothesis Legend")
 	legendTable$dependOn(options =c("model", "covariates"))

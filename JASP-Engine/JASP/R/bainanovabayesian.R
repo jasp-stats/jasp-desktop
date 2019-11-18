@@ -161,7 +161,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 		# Include the standard deviation from the groups
 		sd <- aggregate(dataset[, .v(options[["dependent"]])], list(dataset[, .v(options[["fixedFactors"]])]), sd)[, 2]
 	}
-	se <- sd / sqrt(N)	
+	se <- sqrt(sigma)	
 
 	row <- data.frame(v = variable, N = N, mean = mu, se = se, lowerCI = CiLower, upperCI = CiUpper)
 	if(type == "anova")
@@ -170,9 +170,19 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .bainAnovaBayesFactorPlots <- function(dataset, options, bainContainer, ready, position) {
+	
 	if (!is.null(bainContainer[["bayesFactorPlot"]]) || !options[["bayesFactorPlot"]]) return()
 
-	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = 300, width = 400)
+	if(options[["model"]] == ""){
+		height <- 300
+		width <- 400
+	} else {
+		height <- 400
+		width <- 600
+	}
+
+	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = height, width = width)
+
 	bayesFactorPlot$dependOn(options=c("bayesFactorPlot", "seed"))
 	bayesFactorPlot$position <- position
 	
@@ -186,6 +196,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .bainAnovaDescriptivesPlot <- function(dataset, options, bainContainer, ready, type = "anova", position) {
+	
 	if (!is.null(bainContainer[["descriptivesPlot"]]) || !options[["descriptivesPlot"]]) return()
 	
 	plotTitle <- ifelse(type == "anova", yes = "Descriptives Plot", no = "Adjusted Means")

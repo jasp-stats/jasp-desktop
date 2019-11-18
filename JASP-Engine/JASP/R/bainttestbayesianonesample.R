@@ -357,11 +357,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
     if (!is.null(bainResult[[variable]])){
       p <- try({
-        if(type == "independentSamples" && analysisType == 5){
-          plot$plotObject <- .plot_bain_ttest_cran(bainResult[[variable]], type = analysisType, adjustLabels = TRUE)
-        } else {
           plot$plotObject <- .plot_bain_ttest_cran(bainResult[[variable]], type = analysisType)
-        }
       })
       if(isTryError(p)){
         plot$setError(paste0("Plotting not possible: ", .extractErrorMessage(p)))
@@ -377,13 +373,13 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 .plot_bain_ttest_cran <- function(x, type, adjustLabels = FALSE){
 
     if(type == 1 || type == 2 || type == 3){
-      labs <- c("H0", "H1")
+      labels <- rev(c("H0", "H1"))
     }
     if(type == 4){
-      labs <- c("H1", "H2")
+      labels <- rev(c("H1", "H2"))
     }
     if(type == 5){
-      labs <- c("H0", "H1", "H2")
+      labels <- rev(c("H0", "H1", "H2"))
     }
     if(type == 1){
       values <- x$fit$PMPb
@@ -391,11 +387,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
       values <- na.omit(x$fit$PMPa)
     }
     ggdata <- data.frame(lab = labs, PMP = values)
-
-    labels <- rev(labs)
-    if(adjustLabels && type == 5)
-      labels <- c("H1", "H2", "H0")
-
+    
     p <- ggplot2::ggplot(data = ggdata, mapping = ggplot2::aes(x = "", y = PMP, fill = lab)) +
           ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
           ggplot2::geom_col() +
