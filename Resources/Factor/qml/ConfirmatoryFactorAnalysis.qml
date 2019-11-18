@@ -103,7 +103,7 @@ Form
 				id: rescov
 				height: 120
 				AvailableVariablesList {name: "observedvars";	syncModels: factors.name	}
-				AssignedVariablesList { name: "rescov";			listViewType: "Pairs"		}
+				AssignedPairsVariablesList { name: "rescov" }
 			}
 		}
 	}

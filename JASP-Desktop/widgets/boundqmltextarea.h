@@ -32,7 +32,6 @@
 #include <QRegularExpression>
 #include <QList>
 #include <QDebug>
-#include <QQuickItem>
 
 class BoundQMLTextArea : public QMLListView, public BoundQMLItem
 {
@@ -41,7 +40,7 @@ class BoundQMLTextArea : public QMLListView, public BoundQMLItem
 	enum TextType {Default, Lavaan, Model, Rcode, JAGSmodel};
 	
 public:
-	BoundQMLTextArea(QQuickItem* item, AnalysisForm* form);
+	BoundQMLTextArea(JASPControlBase* item);
 
 	void	bindTo(Option *option)						override;
 	Option* createOption()								override;
@@ -50,7 +49,7 @@ public:
 	Option* boundTo()									override { return _boundTo; }
 	ListModel*	model()									override { return _model; }
 
-	void	resetQMLItem(QQuickItem *item)				override;
+	void	resetQMLItem(JASPControlBase *item)			override;
 	void	rScriptDoneHandler(const QString &result)	override;
 	void	setJagsParameters();
 

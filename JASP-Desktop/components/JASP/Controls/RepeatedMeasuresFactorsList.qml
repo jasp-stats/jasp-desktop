@@ -16,15 +16,15 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import QtQml.Models 2.2
-import JASP.Controls 1.0
-
+import QtQuick			2.11
+import QtQml.Models		2.2
+import JASP.Controls	1.0
+import JASP				1.0
 
 JASPControl
 {
 	id:							repeatedMeasuresFactorsList
-	controlType:				"RepeatedMeasuresFactorsList"
+	controlType:				JASPControlBase.RepeatedMeasuresFactorsList
 	width:						parent.width
 	implicitWidth:				width
 	height:						jaspTheme.defaultVariablesFormHeight

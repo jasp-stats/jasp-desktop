@@ -18,11 +18,11 @@
 
 import QtQuick			2.11
 import QtQuick.Controls 2.4
-
+import JASP				1.0
 
 JASPControl
 {
-	controlType:				"Switch"
+	controlType:				JASPControlBase.Switch
 	implicitWidth:				control.width
 	implicitHeight:				control.height
 	

@@ -20,17 +20,19 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts	1.3 as L
+import JASP				1.0
 
 
 JASPControl
 {
 	id:					control
-	controlType:		"RadioButtonGroup"
-	activeFocusOnTab:	false
+	controlType:		JASPControlBase.RadioButtonGroup
 	childControlsArea:	contentArea
+	focusOnTab:			false
 
 	default property alias	content:				contentArea.children
 			property alias	buttons:				buttonGroup.buttons
+			property var	buttonGroup:			buttonGroup
 			property bool	radioButtonsOnSameRow:	false
 			property alias	columns:				contentArea.columns
 			property string title:					""
@@ -75,28 +77,9 @@ JASPControl
 		anchors.leftMargin: control.title ? jaspTheme.groupContentPadding : 0
     }
 	
-	function linkRadioButtons(item)
-	{
-		for (var i = 0; i < item.children.length; ++i)
-		{
-            var child = item.children[i];
-			if (child instanceof JASPControl)
-			{
-				switch(child.controlType)
-				{
-				case "RadioButton":			child.buttonGroup = buttonGroup;	break;
-				case "RadioButtonGroup":										break;
-				default:					linkRadioButtons(child);			break;
-                }
-			} else
-                linkRadioButtons(child)
-        }        
-    }
-
 	Component.onCompleted:
 	{
         buttonGroup.clicked.connect(clicked);
-        linkRadioButtons(contentArea);		
     }
 
 	background: backgroundBox

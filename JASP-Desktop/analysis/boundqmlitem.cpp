@@ -21,7 +21,7 @@
 
 void BoundQMLItem::runRScript(const QString &script, bool whiteListedVersion)
 {
-	_form->runRScript(script, name(), whiteListedVersion);
+	form()->runRScript(script, name(), whiteListedVersion);
 }
 
 void BoundQMLItem::rScriptDoneHandler(const QString & result)

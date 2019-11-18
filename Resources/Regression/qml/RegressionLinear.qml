@@ -60,20 +60,7 @@ Form
 				width: parent.width / 4
 				source: ['covariates', 'factors']
 			}
-			AssignedVariablesList
-			{
-				name: "modelTerms"
-				title: qsTr("Model Terms")
-				width: parent.width * 5 / 9
-				listViewType: "Interaction"
-				ExtraControlColumn
-				{
-					type: "CheckBox"
-					name: "isNuisance"
-					title: qsTr("Add to null model")
-					purpose: "nuisance"					
-				}
-			}
+			ModelTermsList { width: parent.width * 5 / 9 }
 		}
 		
 	}

@@ -1,3 +1,4 @@
+//
 // Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,16 +16,23 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.0
+#ifndef QMLEXPANDER_H
+#define QMLEXPANDER_H
 
-QtObject {
-    property string type
-    property string name
-    property string title
-	property var	values
-	property string purpose
-	property bool	useExternalBorder:	false
-	property int	rightMargin: 0
-	property var	properties
-	property var	source
-}
+#include "jaspcontrolwrapper.h"
+
+#include <QObject>
+
+class QMLExpander : public QObject, public virtual JASPControlWrapper
+{
+	Q_OBJECT
+public:
+	explicit QMLExpander(JASPControlBase *item);
+
+	void	setUp() override;
+
+protected:
+	JASPControlBase* _findFirstControl(QObject* obj);
+};
+
+#endif // QMLEXPANDER_H

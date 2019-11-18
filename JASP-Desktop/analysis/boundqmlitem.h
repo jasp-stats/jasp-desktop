@@ -20,12 +20,12 @@
 #define BOUNDQMLITEM_H
 
 #include "options/bound.h"
-#include "widgets/qmlitem.h"
+#include "widgets/jaspcontrolwrapper.h"
 
 class QQuickItem;
 class AnalysisForm;
 
-class BoundQMLItem : public virtual QMLItem, public Bound
+class BoundQMLItem : public virtual JASPControlWrapper, public Bound
 {
 
 public:
@@ -39,7 +39,6 @@ public:
 	
 			void runRScript(const QString& script, bool whiteListedVersion = true);
 	virtual void rScriptDoneHandler(const QString& result);
-	virtual void bindExtraControlOptions() {}
 };
 
 #endif // BOUNDQMLITEM_H

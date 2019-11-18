@@ -17,19 +17,20 @@
 //
 
 
-import QtQuick 2.11
+import QtQuick			2.11
 import QtQuick.Controls 2.4 as QTCONTROLS
-import QtQml.Models 2.2
-
-import JASP.Widgets 1.0
-import QtQuick.Layouts 1.3
+import QtQml.Models		2.2
+import JASP.Widgets		1.0
+import JASP				1.0
+import QtQuick.Layouts	1.3
 
 JASPListControl
 {
 	id:						variablesList
-	controlType:			"VariablesListView"
+	controlType:			JASPControlBase.VariablesListView
 	height:					singleVariable ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
 	itemComponent:			itemVariableComponent
+	optionKey:				listViewType === "Interaction" ? "components" : "variable"
 
 	property string itemType:			"variables"
 	property alias	dropKeys:			dropArea.keys
@@ -49,7 +50,8 @@ JASPListControl
 	property bool	showVariableTypeIcon:	true
 	property bool	setWidthInForm:		false
 	property bool	setHeightInForm:	false
-	property bool	mustContainLowerTerms: true
+	property bool	interactionContainLowerTerms: true
+	property var	interactionHighOrderCheckBox
 	property bool	addAvailableVariablesToAssigned: listViewType === "Interaction"
 	
 	property var	interactionControl
@@ -400,12 +402,6 @@ JASPListControl
 			height:		listGridView.cellHeight
 			width:		listGridView.cellWidth
 			
-			Component.onDestruction:
-			{
-				if (itemRectangle.extraColumnsModel)
-					itemRectangle.extraColumnsModel.controlsDestroyed()
-			}
-
 			Rectangle
 			{
 				id:							itemRectangle
@@ -434,7 +430,6 @@ JASPListControl
 				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
 				property bool draggable:			variablesList.draggable && (!variablesList.dragOnlyVariables || isVariable)
 				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
-				property var extraColumnsModel:		model.extraColumns
 
 				enabled: variablesList.listViewType != "AvailableVariables" || !columnType || variablesList.allowedColumns.length == 0 || (variablesList.allowedColumns.indexOf(columnType) >= 0)
 				
@@ -479,7 +474,7 @@ JASPListControl
 					id:						colName
 					x:						(variablesList.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale
 					text:					model.name
-					width:					itemRectangle.width - x - extraControls.width
+					width:					itemRectangle.width - x - rowComponents.width
 					elide:					Text.ElideRight
 					anchors.verticalCenter:	parent.verticalCenter
 					horizontalAlignment:	itemRectangle.isLayer ? Text.AlignHCenter : undefined
@@ -487,11 +482,10 @@ JASPListControl
 					font:					jaspTheme.font
 				}
 				
-				ExtraControls
+				RowComponents
 				{
-					id:					extraControls
-					model:				itemRectangle.extraColumnsModel
-					controlComponents:  variablesList.extraControlComponents
+					id:					rowComponents
+					controls:			model.rowComponents
 				}
 				
 				states: [

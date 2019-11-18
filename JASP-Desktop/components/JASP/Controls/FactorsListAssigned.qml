@@ -18,17 +18,17 @@
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
-import QtQml.Models 2.2
-import JASP.Controls 1.0
-import JASP.Theme 1.0
+import QtQml.Models		2.2
+import JASP.Controls	1.0
+import JASP				1.0
 
 JASPControl
 {
 	id:							factorsList
-	controlType:				"FactorsListAssigned"
+	controlType:				JASPControlBase.FactorsListAssigned
 	background:					rectangle
 	implicitWidth:				parent.width
-	implicitHeight:				Theme.defaultVariablesFormHeight
+	implicitHeight:				jaspTheme.defaultVariablesFormHeight
 
 	property var model
 	property string title
@@ -53,9 +53,9 @@ JASPControl
 		anchors.left: parent.left
 		height: factorsList.height - text.height
 		width: parent.width
-		color: debug ? Theme.debugBackgroundColor : Theme.controlBackgroundColor
+		color: debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
 		border.width: 1
-		border.color: Theme.borderColor
+		border.color: jaspTheme.borderColor
 
 		GridView
 		{
@@ -85,7 +85,7 @@ JASPControl
 				anchors.fill: parent
 				focus: true
 				border.width: 0
-				border.color: Theme.grayLighter
+				border.color: jaspTheme.grayLighter
 				property bool isDeletable: model.type.includes("deletable")
 				property bool isVirtual: model.type.includes("virtual")
 				property bool isLevel: model.type.includes("level")

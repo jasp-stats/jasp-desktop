@@ -37,16 +37,15 @@ class BoundQMLTextInput : public QObject, public BoundQMLItem
 public:
 	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, FormulaType};
 
-	BoundQMLTextInput(QQuickItem* item, AnalysisForm* form);
+	BoundQMLTextInput(JASPControlBase* item);
 	void initTextInput();
 
 	void		bindTo(Option *option)						override;
-
 	Option*		createOption()								override;
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
 	Option*		boundTo()									override { return _option; }
-	void		resetQMLItem(QQuickItem *item)				override;
+	void		resetQMLItem(JASPControlBase *item)			override;
 	void		rScriptDoneHandler(const QString& result)	override;
 
 private slots:

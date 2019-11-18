@@ -29,7 +29,7 @@ class BoundQMLListViewMeasuresCells : public BoundQMLListViewDraggable
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewMeasuresCells(QQuickItem* item, AnalysisForm* form);
+	BoundQMLListViewMeasuresCells(JASPControlBase* item);
 	
 	ListModel*	model()										override { return _measuresCellsModel; }
 	Option*		boundTo()									override { return _boundTo; }

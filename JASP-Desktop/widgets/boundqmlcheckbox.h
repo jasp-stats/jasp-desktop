@@ -28,14 +28,14 @@ class BoundQMLCheckBox : public QObject, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLCheckBox(QQuickItem* item, AnalysisForm* form);
+	BoundQMLCheckBox(JASPControlBase* item);
 	
 	void	bindTo(Option *option)							override;
 	Option* createOption()									override;
 	Option* boundTo()										override { return _boundTo; }
 	bool	isOptionValid(Option* option)					override;
 	bool	isJsonValid(const Json::Value& optionValue)		override;
-	void	resetQMLItem(QQuickItem *item)					override;
+	void	resetQMLItem(JASPControlBase *item)				override;
 	
 	void setQMLItemChecked(bool checked);
 

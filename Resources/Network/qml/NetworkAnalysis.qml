@@ -265,26 +265,23 @@ Form
 			optionKey			: "group"
 			defaultValues		: ["Group 1", "Group 2"]
 			placeHolder			: qsTr("New Group")
-			minimumItems		: 2
+			minRows				: 2
 			width				: (2 * form.width) / 5
-			enableExtraColumns	: manualColors.checked
-			debug				: true
+			enableRowComponents	: manualColors.checked
+			rowComponentsTitles	: [qsTr("Group color")]
 
-			ExtraControlColumn
-			{
-				type: "DropDown"
-				name: "groupColors"
-				title: qsTr("Group color")
-				useExternalBorder: true
-				values: [
-					{value: "red",		label: "red"	},
-					{value: "blue",		label: "blue"	},
-					{value: "yellow",	label: "yellow"	},
-					{value: "green",	label: "green"	},
-					{value: "purple",	label: "purple"	},
-					{value: "orange",	label: "orange"	}
-				]
-			}
+			rowComponents:
+			[
+				Component
+				{
+					DropDown
+					{
+						name: "groupColors"
+						useExternalBorder: true
+						values: ["red", "blue", "yellow", "green", "purple", "orange"]
+					}
+				}
+			]
 		}
 
 		AssignedVariablesList
@@ -295,15 +292,19 @@ Form
 			source							: ["variables"]
 			addAvailableVariablesToAssigned	: true
 			draggable						: false
-			debug							: true
-			ExtraControlColumn
-			{
-				type: "DropDown"
-				name: "groupAssigned"
-				title: qsTr("Group")
-				useExternalBorder: true
-				source: ["groupNames"]
-			}
+			rowComponentsTitles				: [qsTr("Group")]
+			rowComponents:
+			[
+				Component
+				{
+					DropDown
+					{
+						name: "groupAssigned"
+						useExternalBorder: true
+						source: ["groupNames"]
+					}
+				}
+			]
 		}
 
 		Group

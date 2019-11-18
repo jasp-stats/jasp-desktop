@@ -23,46 +23,45 @@
 #include "listmodelassignedinterface.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optionstable.h"
+#include "analysis/options/optionvariablesgroups.h"
+
+class BoundQMLCheckBox;
 
 class BoundQMLListViewTerms : public BoundQMLListViewDraggable
 {
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewTerms(QQuickItem* item, AnalysisForm* form, bool interaction = false);
+	BoundQMLListViewTerms(JASPControlBase* item, bool interaction = false);
 	
 	ListModel*	model()										override { return _termsModel; }
 	Option*		boundTo()									override
 	{
-		if (_hasExtraControls || _termsModel->areTermsInteractions())
+		if (_hasRowComponents || _termsModel->areTermsInteractions())
 			return _optionsTable;
 		else
 			return _optionVariables; 
 	}	
 	
 	void		bindTo(Option *option)						override;
-	void		unbind()									override;
 	Option*		createOption()								override;
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
-	void		setTermsAreInteractions()					override;
-	void		bindExtraControlOptions()					override;
 
 protected slots:
 	void		modelChangedHandler() override;
+
+private:
+	void		interactionHighOrderHandler(Option* option);
 	
 private:
-	OptionVariables*				_optionVariables;
-	OptionsTable*					_optionsTable;
-	ListModelAssignedInterface*		_termsModel;
-	bool							_singleItem		= false;
-	
-	QMap<std::string, Options*>		_transformTableOptionsInMap();
-	void							_checkOptionTemplate();
-	Options*						_createRowOptions(const Term& term);
-	void							_extraOptionsChangedHandler(Option *option);
-	void							_updateNuisances(bool checked);
-
+	OptionVariables*				_optionVariables		= nullptr;
+	OptionsTable*					_optionsTable			= nullptr;
+	OptionVariablesGroups*			_optionVariablesGroups	= nullptr;
+	ListModelAssignedInterface*		_termsModel				= nullptr;
+	bool							_singleItem				= false;
+	int								_columns				= 1;
+	QString							_interactionHighOrderCheckBoxName;
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H

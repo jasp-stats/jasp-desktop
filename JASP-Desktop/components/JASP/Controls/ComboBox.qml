@@ -1,13 +1,13 @@
-import QtQuick 2.11
+import QtQuick			2.11
 import QtQuick.Controls 2.4
-import QtQuick.Layouts 1.3
-
+import QtQuick.Layouts	1.3
+import JASP				1.0
 
 
 JASPControl
 {
 	id:					comboBox
-	controlType:		"ComboBox"
+	controlType:		JASPControlBase.ComboBox
 	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.height : 0)
 	implicitWidth:		control.width + ((controlLabel.visible && !setLabelAbove) ? jaspTheme.labelSpacing + controlLabel.width : 0)
 	width:				implicitWidth
@@ -111,7 +111,7 @@ JASPControl
 						height:			jaspTheme.comboBoxHeight
 						textRole:		comboBox.textRole
 		property int	modelWidth:		30 * preferencesModel.uiScale
-		property int	extraWidth:		5 * padding + canvas.width
+		property int	extraWidth:		5 * padding + dropdownIcon.width
 		property bool	isEmptyValue:	comboBox.addEmptyValue && currentIndex <= 0
 						font:			jaspTheme.font
 
@@ -154,30 +154,15 @@ JASPControl
 			}
 		}
 
-		indicator: Canvas
+		indicator: Image
 		{
-			id:				canvas
-			x:				control.width - width - 3 //control.spacing
-			y:				control.topPadding + (control.availableHeight - height) / 2
-			width:			12 * preferencesModel.uiScale
-			height:			8  * preferencesModel.uiScale
-			contextType:	"2d"
+			id:			dropdownIcon
+			x:			control.width - width - 3 //control.spacing
+			y:			control.topPadding + (control.availableHeight - height) / 2
+			width:		12 * preferencesModel.uiScale
+			height:		12 * preferencesModel.uiScale
+			source:		jaspTheme.iconPath + "/toolbutton-menu-indicator.svg"
 
-			Connections {
-				target:				control
-				onPressedChanged:	canvas.requestPaint()
-			}
-
-			onPaint: //Is this really the best way to do whatever it is that is being done here? Maybe we can make a custom QuickItem.
-			{
-				context.reset();
-				context.moveTo(0, 0);
-				context.lineTo(width, 0);
-				context.lineTo(width / 2, height);
-				context.closePath();
-				context.fillStyle = jaspTheme.grayDarker;
-				context.fill();
-			}
 		}
 
 		background: Rectangle

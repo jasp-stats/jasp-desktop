@@ -30,32 +30,32 @@ class BoundQMLComboBox : public QMLListView, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLComboBox(QQuickItem* item, AnalysisForm* form);
+	BoundQMLComboBox(JASPControlBase* item);
 
 	void		bindTo(Option *option)						override;
-	void		resetQMLItem(QQuickItem *item)				override;
+	void		resetQMLItem(JASPControlBase *item)			override;
 	Option*		createOption()								override;
 	bool		isOptionValid(Option* option)				override;	
 	bool		isJsonValid(const Json::Value& optionValue) override;
-	Option*		boundTo()									override { return _boundTo; }
+	Option*		boundTo()									override	{ return _boundTo; }
 	void		setUp()										override;
-	ListModel*	model()										override { return _model; }
+	ListModel*	model()										override	{ return _model; }
 
-	bool		modelHasAllVariables()								{ return _modelHasAllVariables; }
+	bool		modelHasAllVariables()									{ return _modelHasAllVariables; }
 	
 protected slots:
 	void modelChangedHandler() override;
 	void comboBoxChangeValueSlot(int index);
 
 protected:
-	OptionList*				_boundTo = nullptr;
-	int						_currentIndex = 0;
-	QString					_currentText;
-	QString					_currentColumnType;
-	ListModelTermsAvailable* _model = nullptr;
-	QMap<QString, QString>	_keyToValueMap;
-	QMap<QString, QString>	_valueToKeyMap;
-	bool					_modelHasAllVariables = false;
+	OptionList*					_boundTo				= nullptr;
+	int							_currentIndex			= 0;
+	QString						_currentText;
+	QString						_currentColumnType;
+	ListModelTermsAvailable*	_model					= nullptr;
+	QMap<QString, QString>		_keyToValueMap;
+	QMap<QString, QString>		_valueToKeyMap;
+	bool						_modelHasAllVariables	= false;
 
 
 	void _resetItemWidth();

@@ -18,8 +18,7 @@
 
 #include "log.h"
 #include <QTimer>
-#include <QQuickItem>
-#include <QQmlProperty>
+#include "analysis/jaspcontrolbase.h"
 #include "boundqmltableview.h"
 #include "listmodeljagsdatainput.h"
 #include "../analysis/analysisform.h"
@@ -31,22 +30,22 @@
 #include "analysis/options/optiondoublearray.h"
 
 
-BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
-	: QMLItem(item, form)
-	, QMLListView(item, form)
+BoundQMLTableView::BoundQMLTableView(JASPControlBase* item)
+	: JASPControlWrapper(item)
+	, QMLListView(item)
 	, BoundQMLItem()
 {
-	QString modelType	= _item->property("modelType").toString(),
-			tableType	= _item->property("tableType").toString(),
-			itemType	= _item->property("itemType").toString();
+	QString modelType	= getItemProperty("modelType").toString(),
+			tableType	= getItemProperty("tableType").toString(),
+			itemType	= getItemProperty("itemType").toString();
 
 	if (modelType == "MultinomialChi2Model")	_tableModel	= new ListModelMultinomialChi2Test(	this, tableType	);
 	if (modelType == "JAGSDataInputModel")		_tableModel	= new ListModelJAGSDataInput(		this, tableType	);
 	if (modelType == "FilteredDataEntryModel")	_tableModel = new ListModelFilteredDataEntry(	this, tableType	);
 	if (modelType == "CustomContrasts")			_tableModel = new ListModelANOVACustomContrasts(this			);
 
-	if(!_tableModel) addError("No model specified for TableView!");
-	else				_tableModel->setItemType(itemType);
+	if(!_tableModel) addError(tr("No model specified for TableView!"));
+	else			_tableModel->setItemType(itemType);
 
 	QQuickItem::connect(item, SIGNAL(addColumn()),						this, SLOT(addColumnSlot()));
 	QQuickItem::connect(item, SIGNAL(removeColumn(int)),				this, SLOT(removeColumnSlot(int)));
@@ -57,10 +56,10 @@ BoundQMLTableView::BoundQMLTableView(QQuickItem* item, AnalysisForm* form)
 
 	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	[&](){ _item->setProperty("columnCount",	_tableModel->colNames().size()); }); //Possibly the best way to connect the signals of the listmodel to the slots of the qml item?
 	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		[&](){ _item->setProperty("rowCount",		_tableModel->rowNames().size()); });
-	connect(form,		&AnalysisForm::refreshTableViewModels,			this, &BoundQMLTableView::refreshMe	);
+	connect(form(),		&AnalysisForm::refreshTableViewModels,			this, &BoundQMLTableView::refreshMe	);
 
-	int		initialColumnCount	= _item->property("initialColumnCount").toInt(),
-			initialRowCount		= _item->property("initialRowCount").toInt();
+	int		initialColumnCount	= getItemProperty("initialColumnCount").toInt(),
+			initialRowCount		= getItemProperty("initialRowCount").toInt();
 
 	if(initialColumnCount > 0 && _tableModel)
 		_tableModel->setInitialColumnCount(initialColumnCount);

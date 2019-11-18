@@ -16,16 +16,15 @@
 //
 
 import QtQuick				2.11
-
+import JASP					1.0
 import QtQuick.Controls		2.4
+import QtQuick.Layouts		1.3 as L
 
-FocusScope
+
+JASPControlBase
 {
 	id: jaspControl
 
-	property string	controlType:			"JASPControl"
-	property string name:					""
-	property bool	isBound:				true
 	property bool	debug:					false
 	property var	background:				null
 	property var	focusIndicator:			background
@@ -33,14 +32,12 @@ FocusScope
 	property alias	cursorShape:			controlMouseArea.cursorShape
 	property alias	hovered:				controlMouseArea.containsMouse
 	property bool	useControlMouseArea:	true
-	property var	childControlsArea:		null
-	property var	childControls:			[]
 	property bool	childControlHasFocus:	false
 	property bool	isDependency:			false
 	property var	dependencyMustContain:	[] //Will be filled with QStringList when necessary
-	property bool	shouldShowFocus:		activeFocus && activeFocusOnTab && !childControlHasFocus
+	property bool	shouldShowFocus:		activeFocus && focusOnTab && !childControlHasFocus
 
-	activeFocusOnTab: true
+	L.Layout.leftMargin: indent ? aspTheme.indentationLength : 0
 
 	function showControlError(message)
 	{
@@ -65,8 +62,14 @@ FocusScope
 		else if (background)
 			background.color = jaspTheme.debugBackgroundColor
 		
-		for (var i = 0; i < childControls.length; i++)
-			childControls[i].setDebugState();
+		if (form && childControlsArea)
+		{
+			var	childControls = []
+
+			form.getJASPControls(childControls, childControlsArea, false)
+			for (var i = 0; i < childControls.length; i++)
+				childControls[i].setDebugState();
+		}
 	}
 	
 	Component.onCompleted:
@@ -77,10 +80,14 @@ FocusScope
 				background = control.background
 		}
 		
-		if (typeof(getJASPControls) === "function" && childControlsArea && childControlsArea.children.length > 0)
+		if (debug)
+			setDebugState();
+
+		if (typeof(form) !== "undefined" && form && childControlsArea && childControlsArea.children.length > 0)
 		{
-			getJASPControls(childControls, childControlsArea, false)
-			if (controlType != "Expander")
+			var childControls = [];
+			form.getJASPControls(childControls, childControlsArea, false)
+			if (controlType !== JASPControlBase.Expander)
 				childControlHasFocus = Qt.binding(function()
 				{
 					for (var i = 0; i < childControls.length; i++)
@@ -89,9 +96,6 @@ FocusScope
 					return false;
 				});
 		}
-		
-		if (debug)
-			setDebugState();
 	}
 	
 	states: [

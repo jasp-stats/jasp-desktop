@@ -16,9 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
+import QtQuick			2.11
 import QtQuick.Controls 2.4
-import QtQuick.Layouts 1.3 as L
+import QtQuick.Layouts	1.3 as L
+import JASP				1.0
 
 
 Rectangle {
@@ -39,7 +40,6 @@ Rectangle {
 			property bool	debug:				false
 			property bool	indent:				false
 			property bool	alignTextFields:	true
-			property var	childControls:		[]
 			property alias	alignChildrenTopLeft: contentArea.alignChildrenTopLeft
 			property alias	label:				label
 
@@ -91,18 +91,12 @@ Rectangle {
     
 	Component.onCompleted:
 	{
-		var i;
-        form.getJASPControls(childControls, contentArea, false)
-		for (i = 0; i < childControls.length; i++)
-		{
-            if (control.debug)
-				childControls[i].setDebugState();
-		}
-
-		for (i = 0; i < contentArea.children.length; i++)
+		for (var i = 0; i < contentArea.children.length; i++)
 		{
 			var child = contentArea.children[i];
-			if (child.hasOwnProperty('controlType') && child.controlType === 'TextField')
+			if (control.debug && child.hasOwnProperty("debug"))
+				child.setDebugState();
+			if (child.hasOwnProperty('controlType') && child.controlType === JASPControlBase.TextField)
 				_allTextFields.push(child)
 		}
 
@@ -114,9 +108,9 @@ Rectangle {
 		if (alignTextFields && _allTextFields.length > 1)
 		{
 			var i;
-			var xMax = 0;
-			var longestControl;
-			for (i = 0; i < _allTextFields.length; i++)
+			var xMax = _allTextFields[0].control.x;
+			var longestControl = _allTextFields[0].control;
+			for (i = 1; i < _allTextFields.length; i++)
 			{
 				_allTextFields[i].controlXOffset = 0;
 				if (xMax < _allTextFields[i].control.x)

@@ -21,7 +21,7 @@
 #include "qmllistviewtermsavailable.h"
 #include "log.h"
 
-void ListModelAvailableInterface::initTerms(const Terms &terms)
+void ListModelAvailableInterface::initTerms(const Terms &terms, const RowControlsOptions&)
 {
 	beginResetModel();
 	

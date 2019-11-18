@@ -15,15 +15,15 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.11
-import QtQuick.Controls 2.4
-
+import QtQuick			2.11
+import QtQuick.Controls 2.12
+import JASP				1.0
 
 
 JASPControl
 {
 	id:					button
-	controlType:		"Button"
+	controlType:		JASPControlBase.Button
 	implicitHeight:		control.implicitHeight
 	implicitWidth:		control.implicitWidth
 	isBound:			false
@@ -33,6 +33,9 @@ JASPControl
     property alias text:	control.text
 	property alias label:	control.text
     property alias image:	image
+	property alias down:	control.down
+	property alias pressed:	control.pressed
+	property alias background: control.background
     
     signal clicked()
     
@@ -48,7 +51,7 @@ JASPControl
 			id:					image
 			fillMode:			Image.PreserveAspectFit
 			anchors.centerIn:	parent
-			sourceSize.height:	rectangle.height - (6 * preferencesModel.uiScale)
+			sourceSize.height:	background.height - (6 * preferencesModel.uiScale)
 			height:				sourceSize.height
 			visible:			source ? true : false
         }

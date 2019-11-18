@@ -27,21 +27,6 @@
 #include <QQmlProperty>
 #include <QQmlContext>
 
-#include "widgets/boundqmlcheckbox.h"
-#include "widgets/boundqmlcombobox.h"
-#include "widgets/boundqmlslider.h"
-#include "widgets/boundqmltextinput.h"
-#include "widgets/boundqmltextarea.h"
-#include "widgets/boundqmlradiobuttons.h"
-#include "widgets/boundqmllistviewpairs.h"
-#include "widgets/boundqmllistviewterms.h"
-#include "widgets/boundqmllistviewmeasurescells.h"
-#include "widgets/boundqmllistviewlayers.h"
-#include "widgets/boundqmlinputlist.h"
-#include "widgets/boundqmlrepeatedmeasuresfactors.h"
-#include "widgets/boundqmlfactorsform.h"
-#include "widgets/boundqmltableview.h"
-#include "widgets/qmllistviewtermsavailable.h"
 #include "widgets/listmodeltermsavailable.h"
 
 #include "utils.h"
@@ -50,6 +35,19 @@
 #include "gui/messageforwarder.h"
 #include "mainwindow.h"
 #include "log.h"
+#include "jaspcontrolbase.h"
+#include "widgets/boundqmlcombobox.h"
+#include "widgets/boundqmltextarea.h"
+#include "widgets/boundqmllistviewterms.h"
+#include "widgets/boundqmllistviewmeasurescells.h"
+#include "widgets/boundqmllistviewlayers.h"
+#include "widgets/boundqmlinputlist.h"
+#include "widgets/boundqmlrepeatedmeasuresfactors.h"
+#include "widgets/boundqmlfactorsform.h"
+#include "widgets/boundqmltableview.h"
+#include "widgets/qmllistviewtermsavailable.h"
+#include "widgets/qmlexpander.h"
+
 
 using namespace std;
 
@@ -101,7 +99,7 @@ void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::I
 void AnalysisForm::_cleanUpForm()
 {
 	_removed = true;
-	for (QMLItem* control : _orderedControls)
+	for (JASPControlWrapper* control : _orderedControls)
 		// controls will be automatically deleted by the deletion of AnalysisForm
 		// But they must be first disconnected: sometimes an event seems to be triggered before the item is completely destroyed
 		control->cleanUp();
@@ -120,199 +118,94 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 		Log::log() << "Unknown item " << controlName.toStdString() << std::endl;
 }
 
-QMLItem* AnalysisForm::buildQMLItem(QQuickItem* quickItem, qmlControlType& controlType)
+void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 {
-	QMLItem* control = nullptr;
-	QString controlName = QQmlProperty(quickItem, "name").read().toString();
-	QString controlTypeStr = QQmlProperty(quickItem, "controlType").read().toString();
-	controlType = qmlControlType::JASPControl;
-	try						{ controlType	= qmlControlTypeFromQString(controlTypeStr);	}
-	catch(std::exception)	{ _errorMessages.append(QString::fromLatin1("Unknown Control type: ") + controlTypeStr); }
-
-	switch(controlType)
+	switch(controlWrapper->item()->controlType())
 	{
-	case qmlControlType::CheckBox:			//fallthrough:
-	case qmlControlType::Switch:						control		= new BoundQMLCheckBox(quickItem,		this);	break;
-	case qmlControlType::TextField:						control		= new BoundQMLTextInput(quickItem,		this);	break;
-	case qmlControlType::RadioButtonGroup:				control		= new BoundQMLRadioButtons(quickItem,	this);	break;
-	case qmlControlType::Slider:						control		= new BoundQMLSlider(quickItem,			this);	break;
-	case qmlControlType::TextArea:						control		= new BoundQMLTextArea(quickItem,		this);	break;
-	case qmlControlType::ComboBox:						control		= new BoundQMLComboBox(quickItem,		this);	break;
-	case qmlControlType::RepeatedMeasuresFactorsList:	control		= new BoundQMLRepeatedMeasuresFactors(quickItem, this); break;
-	case qmlControlType::InputListView:			control		= new BoundQMLInputList(quickItem, this); break;
-	case qmlControlType::FactorsForm:					control		= new BoundQMLFactorsForm(quickItem,	this);	break;
-	case qmlControlType::TableView:						control		= new BoundQMLTableView(quickItem,		this);	break;
-	case qmlControlType::VariablesListView:				control		= nullptr;										break; // Cannot build the control here. We need more information to get the right VariableList object.
-	case qmlControlType::JASPControl:
-	default:
-		_errorMessages.append(QString::fromLatin1("Unknown type of JASPControl ") + controlName + QString::fromLatin1(" : ") + controlTypeStr);
+	case JASPControlBase::ControlType::Expander:
+	{
+		QMLExpander* expander = dynamic_cast<QMLExpander*>(controlWrapper);
+		_expanders.push_back(expander);
+		break;
 	}
+	case JASPControlBase::ControlType::TextArea:
+	{
+		BoundQMLTextArea* boundQMLTextArea = dynamic_cast<BoundQMLTextArea*>(controlWrapper);
+		ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLTextArea->model());
+		if (availableModel)
+		{
+			if (boundQMLTextArea->modelHasAllVariables())
+				_allAvailableVariablesModels.push_back(availableModel);
+			_modelMap[controlWrapper->name()] = availableModel;
+		}
 
-	return control;
+		break;
+	}
+	case JASPControlBase::ControlType::ComboBox:
+	{
+		BoundQMLComboBox* boundQMLComboBox = dynamic_cast<BoundQMLComboBox*>(controlWrapper);
+		ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLComboBox->model());
+		if (availableModel)
+		{
+			if (boundQMLComboBox->modelHasAllVariables())
+				_allAvailableVariablesModels.push_back(availableModel);
+			_modelMap[controlWrapper->name()] = availableModel;
+		}
+		break;
+	}
+	case JASPControlBase::ControlType::RepeatedMeasuresFactorsList:
+	case JASPControlBase::ControlType::InputListView:
+	case JASPControlBase::ControlType::FactorsForm:
+	case JASPControlBase::ControlType::TableView:
+	case JASPControlBase::ControlType::VariablesListView:
+	{
+		QMLListView* listView = dynamic_cast<QMLListView*>(controlWrapper);
+		_modelMap[controlWrapper->name()] = listView->model();
+
+		QMLListViewTermsAvailable* listViewTermsAvailable = dynamic_cast<QMLListViewTermsAvailable*>(listView);
+		if (listViewTermsAvailable)
+		{
+			bool noSource = listViewTermsAvailable->sourceModels().isEmpty(); // If there is no sourceModels, set all available variables.
+
+			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(listViewTermsAvailable->model());
+
+			if (availableModel)
+				(noSource ? _allAvailableVariablesModels : _allAvailableVariablesModelsWithSource).push_back(availableModel);
+		}
+		break;
+	}
+	default:
+		break;
+	}
 
 }
 
-void AnalysisForm::_parseQML()
+void AnalysisForm::addControl(JASPControlBase *control)
 {
-	QQuickItem *root = this;
-
-	_analysis->setUsesJaspResults(QQmlProperty(root, "usesJaspResults").read().toBool());
-
-	map<QString, QString>	dropKeyMap;
-	QList<QString>			controlNames;
-
-	for (QQuickItem* quickItem : root->findChildren<QQuickItem *>())
+	if (control->isBound())
 	{
-		if (quickItem->objectName() == "errorMessagesBox")
+		const QString& name = control->name();
+		if (name.isEmpty())
+			_errorMessages.append(tr("A control %1 has no name").arg(control->controlType()));
+		else if (_controls.keys().contains(name))
+			_errorMessages.append(tr("2 controls have the same name: %1").arg(name));
+		else
 		{
-			_errorMessagesItem = quickItem;
-			continue;
+			JASPControlWrapper* wrapper = control->getWrapper();
+			_controls[name] = wrapper;
+			_addControlWrapper(wrapper);
 		}
-
-		QString controlTypeStr = QQmlProperty(quickItem, "controlType").read().toString();
-		if (controlTypeStr.isEmpty())
-			continue;
-
-		if (! QQmlProperty(quickItem, "isBound").read().toBool())
-			continue;
-
-		QString controlName = QQmlProperty(quickItem, "name").read().toString();
-
-		if (controlName.isEmpty())
-		{
-			_errorMessages.append(QString::fromLatin1("A control ") + controlTypeStr + QString::fromLatin1(" has no name"));
-			continue;
-		}
-		if (controlNames.contains(controlName))
-		{
-			_errorMessages.append(QString::fromLatin1("2 controls have the same name: ") + controlName);
-			continue;
-		}
-		controlNames.append(controlName);
-
-		qmlControlType controlType;
-		QMLItem *control = buildQMLItem(quickItem, controlType);
-
-		switch(controlType)
-		{
-		case qmlControlType::TextArea:
-		{
-			BoundQMLTextArea* boundQMLTextArea = dynamic_cast<BoundQMLTextArea*>(control);
-
-			control = boundQMLTextArea;
-			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLTextArea->model());
-
-			if (availableModel)
-			{
-				if (boundQMLTextArea->modelHasAllVariables())
-					_allAvailableVariablesModels.push_back(availableModel);
-				_modelMap[controlName] = availableModel;
-			}
-
-			break;
-		}
-		case qmlControlType::ComboBox:
-		{
-			BoundQMLComboBox* boundQMLComboBox = dynamic_cast<BoundQMLComboBox*>(control);
-			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(boundQMLComboBox->model());
-			if (availableModel)
-			{
-				if (boundQMLComboBox->modelHasAllVariables())
-					_allAvailableVariablesModels.push_back(availableModel);
-				_modelMap[controlName] = availableModel;
-			}
-			break;
-		}
-		case qmlControlType::RepeatedMeasuresFactorsList:
-		{
-			BoundQMLRepeatedMeasuresFactors* factorList = dynamic_cast<BoundQMLRepeatedMeasuresFactors*>(control);
-			_modelMap[controlName]						= factorList->model();
-			break;
-		}
-		case qmlControlType::InputListView:
-		{
-			BoundQMLInputList* factorList = dynamic_cast<BoundQMLInputList*>(control);
-			_modelMap[controlName] = factorList->model();
-			break;
-		}
-		case qmlControlType::FactorsForm:
-		{
-			BoundQMLFactorsForm* factorForm = dynamic_cast<BoundQMLFactorsForm*>(control);
-			_modelMap[controlName]			= factorForm->model();
-			break;
-		}
-		case qmlControlType::TableView:
-		{
-			BoundQMLTableView* tableView	= dynamic_cast<BoundQMLTableView*>(control);
-			control							= tableView;
-			_modelMap[controlName]			= tableView->model();
-			break;
-		}
-		case qmlControlType::VariablesListView:
-		{
-			QMLListView*	listView		= nullptr;
-			QString			listViewTypeStr = QQmlProperty(quickItem, "listViewType").read().toString();
-			qmlListViewType	listViewType;
-
-			try	{ listViewType	= qmlListViewTypeFromQString(listViewTypeStr);	}
-			catch(std::exception&)
-			{
-				_errorMessages.append(QString::fromLatin1("Unknown listViewType: ") + listViewType + QString::fromLatin1(" form VariablesList ") + controlName);
-				listViewType = qmlListViewType::AssignedVariables;
-			}
-
-			switch(listViewType)
-			{
-			case qmlListViewType::AssignedVariables:	listView = new BoundQMLListViewTerms(quickItem, this, false);		break;
-			case qmlListViewType::Interaction:			listView = new BoundQMLListViewTerms(quickItem, this, true);		break;
-			case qmlListViewType::Pairs:				listView = new BoundQMLListViewPairs(quickItem,this);				break;
-			case qmlListViewType::RepeatedMeasures:		listView = new BoundQMLListViewMeasuresCells(quickItem, this);		break;
-			case qmlListViewType::Layers:				listView = new BoundQMLListViewLayers(quickItem, this);				break;
-			case qmlListViewType::AvailableVariables:
-			case qmlListViewType::AvailableInteraction:
-			{
-				QMLListViewTermsAvailable* availableVariablesListView = new QMLListViewTermsAvailable(quickItem, this, listViewType == qmlListViewType::AvailableInteraction);
-				listView = availableVariablesListView;
-
-				bool noSource = availableVariablesListView->sourceModels().isEmpty(); // If there is no sourceModels, set all available variables.
-
-				ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(availableVariablesListView->model());
-
-				if (availableModel)
-					(noSource ? _allAvailableVariablesModels : _allAvailableVariablesModelsWithSource).push_back(availableModel);
-
-				break;
-			}
-			default:
-				_errorMessages.append(QString::fromLatin1("Unused (in AnalysisForm::_parseQML) listViewType: ") + qmlListViewTypeToQString(listViewType) + QString::fromLatin1(". Cannot set a model to the VariablesList"));
-				break;
-			}
-
-			_modelMap[controlName] = listView->model();
-			control = dynamic_cast<QMLItem*>(listView);
-
-			QList<QVariant> dropKeyList = QQmlProperty(quickItem, "dropKeys").read().toList();
-			QString dropKey				= dropKeyList.isEmpty() ? QQmlProperty(quickItem, "dropKeys").read().toString() : dropKeyList[0].toString(); // The first key gives the default drop item.
-
-			if (!dropKey.isEmpty())
-				dropKeyMap[controlName] = dropKey;
-			else
-			{
-				bool draggable = QQmlProperty(quickItem, "draggabble").read().toBool();
-				if (draggable)
-					_errorMessages.append(QString::fromLatin1("No drop key found for ") + controlName);
-			}
-
-			break;
-		}
-		default: break;
-		}
-
-		if (control)
-			_controls[control->name()] = control;
 	}
+	else
+		_addControlWrapper(control->getWrapper());
+}
 
-	_setUpRelatedModels(dropKeyMap);
+void AnalysisForm::_setUpControls()
+{
+	_analysis->setUsesJaspResults(QQmlProperty(this, "usesJaspResults").read().toBool());
+
+	_orderExpanders();
+	_setUpRelatedModels();
 	_setUpItems();
 
 	if (!_errorMessagesItem)
@@ -321,39 +214,48 @@ void AnalysisForm::_parseQML()
 	_setErrorMessages();
 }
 
-void AnalysisForm::_setUpRelatedModels(const map<QString, QString>& relationMap)
+void AnalysisForm::_setUpRelatedModels()
 {
-	for (auto const& pair : relationMap)
+	for (ListModel* model : _modelMap.values())
 	{
-		ListModel* sourceModel = _modelMap[pair.first];
-		ListModel* targetModel = _modelMap[pair.second];
+		QMLListView* listView = model->listView();
+		QList<QVariant> dropKeyList = listView->getItemProperty("dropKeys").toList();
+		QString dropKey				= dropKeyList.isEmpty() ? listView->getItemProperty("dropKeys").toString() : dropKeyList[0].toString(); // The first key gives the default drop item.
 
-		if (sourceModel && targetModel)
+		if (!dropKey.isEmpty())
 		{
-			QMLListView* sourceListView = sourceModel->listView();
-			_relatedModelMap[sourceListView] = targetModel;
+			ListModel* targetModel = _modelMap[dropKey];
+			if (targetModel)
+				_relatedModelMap[listView] = targetModel;
+			else
+				_errorMessages.append(tr("Cannot find a source %1 for VariableList %2").arg(dropKey).arg(listView->name()));
 		}
 		else
-			_errorMessages.append(QString::fromLatin1("Cannot find a ListView for ") + (!sourceModel ? pair.first : pair.second));
-	}	
+		{
+			bool draggable = listView->getItemProperty("draggabble").toBool();
+			if (draggable)
+				_errorMessages.append(tr("No drop key found for %1").arg(listView->name()));
+		}
+
+	}
 }
 
 void AnalysisForm::_setUpItems()
 {
-	QList<QMLItem*> controls = _controls.values();
-	for (QMLItem* control : controls)
+	QList<JASPControlWrapper*> controls = _controls.values();
+	for (JASPControlWrapper* control : controls)
 		control->setUp();
 
 	// set the order of the BoundItems according to their dependencies (for binding purpose)
-	for (QMLItem* control : controls)
+	for (JASPControlWrapper* control : controls)
 	{
-		QVector<QMLItem*> depends = control->depends();
+		QVector<JASPControlWrapper*> depends = control->depends();
 		int index = 0;
 		while (index < depends.length())
 		{
-			QMLItem* depend = depends[index];
-			const QVector<QMLItem*>& dependdepends = depend->depends();
-			for (QMLItem* dependdepend : dependdepends)
+			JASPControlWrapper* depend = depends[index];
+			const QVector<JASPControlWrapper*>& dependdepends = depend->depends();
+			for (JASPControlWrapper* dependdepend : dependdepends)
 			{
 				if (dependdepend == control)
 					addError(tq("Circular dependency between control ") + control->name() + tq(" and ") + depend->name());
@@ -367,20 +269,48 @@ void AnalysisForm::_setUpItems()
 		}
 	}
 	std::sort(controls.begin(), controls.end(), 
-			  [](QMLItem* a, QMLItem* b) { 
+			  [](JASPControlWrapper* a, JASPControlWrapper* b) {
 					return a->depends().length() < b->depends().length(); 
 			});
 
-	for (QMLItem* control : controls)
+	for (JASPControlWrapper* control : controls)
 	{
 		_orderedControls.push_back(control);
-	}	
+	}
 }
 
-void AnalysisForm::addListView(QMLListView* listView, const map<QString, QString>& relationMap)
+void AnalysisForm::_orderExpanders()
+{
+	for (QMLExpander* expander : _expanders)
+	{
+		bool foundExpander = false;
+		for (QObject* sibling : expander->item()->parent()->parent()->children())
+		{
+			if (sibling->objectName() == "Section")
+			{
+				QObject* button = sibling->property("button").value<QObject*>();
+				JASPControlBase* control = qobject_cast<JASPControlBase*>(button);
+				if (control && control->controlType() == JASPControlBase::ControlType::Expander)
+				{
+					if (foundExpander)
+					{
+						_nextExpanderMap[expander] = dynamic_cast<QMLExpander*>(control->getWrapper());
+						break;
+					}
+					if (control->getWrapper() == expander)
+						foundExpander = true;
+				}
+			}
+		}
+		expander->setUp();
+	}
+}
+
+void AnalysisForm::addListView(QMLListView* listView, QMLListView* source)
 {
 	_modelMap[listView->name()] = listView->model();
-	_setUpRelatedModels(relationMap);
+	_relatedModelMap[listView] = source->model();
+	_relatedModelMap[source] = listView->model();
 }
 
 void AnalysisForm::reset()
@@ -465,7 +395,7 @@ void AnalysisForm::bindTo()
 	
 	_setAllAvailableVariablesModel();	
 	
-	for (QMLItem* control : _orderedControls)
+	for (JASPControlWrapper* control : _orderedControls)
 	{
 		BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
 		if (boundControl)
@@ -491,15 +421,19 @@ void AnalysisForm::bindTo()
 						{
 							std::string labelStr;
 							QVariant label = boundControl->getItemProperty("label");
+
 							if (!label.isNull())
 								labelStr = label.toString().toStdString();
+
 							if (labelStr.empty())
 							{
 								label = boundControl->getItemProperty("title");
 								labelStr = label.toString().toStdString();
 							}
+
 							if (labelStr.empty())
 								labelStr = name;
+
 							addError(tq("Control " + labelStr + " was loaded with a wrong kind of value. The file probably comes from an older version of JASP.<br>"
 										+ "That means that the results currently displayed do not correspond to the options selected.<br>Refreshing the analysis may change the results"));
 						}
@@ -546,7 +480,7 @@ void AnalysisForm::unbind()
 	if (_options == nullptr)
 		return;
 	
-	for (QMLItem* control : _orderedControls)
+	for (JASPControlWrapper* control : _orderedControls)
 	{
 		BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
 		if (boundControl)
@@ -585,7 +519,7 @@ void AnalysisForm::_formCompletedHandler()
 		_analysis	= qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
 		_package	= _analysis->getDataSetPackage();
 
-		_parseQML();
+		_setUpControls();
 
 		bool isNewAnalysis = _analysis->options()->size() == 0 && _analysis->optionsFromJASPFile().size() == 0;
 

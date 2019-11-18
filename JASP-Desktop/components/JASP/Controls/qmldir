@@ -1,7 +1,9 @@
 module JASP.Controls
-AssignButton              1.0 AssignButton.qml
-AssignedVariablesList    1.0 AssignedVariablesList.qml
-AvailableVariablesList  1.0 AvailableVariablesList.qml
+AssignButton                1.0 AssignButton.qml
+AssignedPairsVariablesList 1.0 AssignedPairsVariablesList.qml
+AssignedVariablesList     1.0 AssignedVariablesList.qml
+AvailableVariablesList   1.0 AvailableVariablesList.qml
+ModelTermsList          1.0 ModelTermsList.qml
 Button                 1.0 Button.qml
 CheckBox              1.0 CheckBox.qml
 ColumnLayout         1.0 ColumnLayout.qml
@@ -33,9 +35,8 @@ TextField                 1.0 TextField.qml
 TextArea                 1.0 TextArea.qml
 VariablesForm           1.0 VariablesForm.qml
 VariablesList          1.0 VariablesList.qml
-ExtraControlColumn    1.0 ExtraControlColumn.qml
-ExtraControls        1.0 ExtraControls.qml
-ComputedColumnField 1.0 ComputedColumnField.qml
-FormulaField       1.0 FormulaField.qml
-AddColumnField    1.0 AddColumnField.qml
-HelpButton       1.0 HelpButton.qml
+FormulaField           1.0 FormulaField.qml
+RowComponents         1.0 RowComponents.qml
+ComputedColumnField  1.0 ComputedColumnField.qml
+AddColumnField      1.0 AddColumnField.qml
+HelpButton         1.0 HelpButton.qml

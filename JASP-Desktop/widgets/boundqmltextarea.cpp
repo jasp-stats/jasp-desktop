@@ -18,10 +18,10 @@
 
 #include "boundqmltextarea.h"
 #include "../analysis/analysisform.h"
+#include "../analysis/jaspcontrolbase.h"
 #include "qmllistviewtermsavailable.h"
 #include "r_functionwhitelist.h"
 #include <QQmlProperty>
-#include <QQuickItem>
 #include <QQuickTextDocument>
 #include <QFontDatabase>
 
@@ -32,9 +32,9 @@
 
 #include "log.h"
 
-BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
-	: QMLItem(item, form)
-	, QMLListView(item, form)
+BoundQMLTextArea::BoundQMLTextArea(JASPControlBase* item)
+	: JASPControlWrapper(item)
+	, QMLListView(item)
 	, BoundQMLItem()
 {
 
@@ -42,7 +42,7 @@ BoundQMLTextArea::BoundQMLTextArea(QQuickItem* item, AnalysisForm* form)
 
 	if (textType == "lavaan")
 	{
-		connect(_form, &AnalysisForm::dataSetChanged,	this, &BoundQMLTextArea::dataSetChangedHandler,	Qt::QueuedConnection	);
+		connect(form(), &AnalysisForm::dataSetChanged,	this, &BoundQMLTextArea::dataSetChangedHandler,	Qt::QueuedConnection	);
 
 		_textType = TextType::Lavaan;
 		_model = new ListModelTermsAvailable(this);
@@ -173,7 +173,7 @@ bool BoundQMLTextArea::isJsonValid(const Json::Value &optionValue)
 	return optionValue.type() == Json::stringValue;
 }
 
-void BoundQMLTextArea::resetQMLItem(QQuickItem *item)
+void BoundQMLTextArea::resetQMLItem(JASPControlBase *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 	setItemProperty("text", _text);

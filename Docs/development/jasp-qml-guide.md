@@ -20,6 +20,9 @@ Table of Contents:
     + [AvailableVariablesList](#availablevariableslist)
     + [AssignedVariablesList](#assignedvariableslist)
     + [RepeatedMeasuresFactorsList](#repeatedmeasuresfactorslist)
+  * [Input List / Table](#input-list--table)
+    + [InputListView](#inputlistview)
+    + [TableView](#tableview)
   * [Grouping](#grouping)
     + [Group](#group)
     + [Section](#section)
@@ -371,23 +374,36 @@ Note: `height` should be defined on `VariablesForm` itself.
 Properties
 - `name`: identifier of the particular variable field (in your R code you will be able to retrieve the assigned variable(s) through this identifier)
 - `label`: [optional, default: `""`] text that will be shown above the variable field
+- `columns`: [optional, default: 1] number of columns of the list.
 - `allowedColumns`: [optional, default: empty, possible values: `["scale", "ordinal", "nominal"]` ] array specifying the allowed column types
 - `suggestedColumns`: [optional, default: empty, possible values: `["scale", "ordinal", "nominal"]` ] array specifying the suggested column types. These types will be displayed as icons at the bottom-right of the AssignedVariablesList. If `suggestedColumns` is empty and `allowedColumns` is specified, then `suggestedColumns` get automatically the value of `allowedColumns`. If `allowedColumns` is empty and `suggestedColumns` is specified, then the following rules apply:
     * `scale` allows Nominal Integer and Ordinal columns
     * `nominal` allows all Nominal columns (Integer or String), and Ordinal column
     * if no `suggestedColumns` and no `allowedColumns` is specified, then all types of columns are allowed
 - `singleVariable`: [optional, default: `false`] boolean specifying if this field will accept a maximum of one variable
-- `listViewType`: [optional] string that specifies the type of `AssignedVariablesList`, when omitted we get a normal list,  options are `"Layers"` (see Contingency Tables), `"Pairs"` (see Paired Samples T-Test), `"Interaction"` (see ANOVA) and `"RepeatedMeasures"` (see Repeated Measures ANOVA)
+- `listViewType`: [optional] string that specifies the type of `AssignedVariablesList`, when omitted we get a normal list,  options are `"Layers"` (see Contingency Tables), `"Interaction"` (see ANOVA) and `"RepeatedMeasures"` (see Repeated Measures ANOVA)
 - `width`: [optional, default: 2/5 of the VariablesForm width] in pixels how wide should the field be
 - `height`: [optional] in pixels how heigh should the field be. Per default, it is set so that all AssignedVariablesList's fit the VariablesForm. If you set the height for 1 AssignedVariablesList, it will try to set height of the other AssignedVariablesLists's so that they all fit the heigth of the VariablesForm.
+- `count`: [read-only integer] Gives the number of rows of the list.
 
-Extra Controls<br>
-It is possible to add a control (a CheckBox for example) for each assigned variable. To do this, add an `ExtraControlColumn` element with the following properties:
-- `type`: specify which control you want to add. This can be any control (CheckBox, DropDown, DoubleField, etc...) that passes in a row af a VariablesList
-- `name`: identifier of the control: in R code, if 1 or more ExtraControlColumn is used in an AssignedVariablesList, the list of the VariablesList will be a list of named array, `variable` gives the name of the variable, and each extra control can be retrieved with its own name.
-- `title`: [optional, default `""`] if set, the title will be displayed above the variable list
-- `values`: [optional, default empty] this is used to set the values for a DropDown control
-- `properties`: [optional, default empty] use properties to set all kinds of settings for the control. For example, for a DoubleField you can use it to specify decimals in defaultValue. Then specify properties with value { "decimals": 2, "defaultValue": 2 }
+- `rowComponentsLabels`: [optional, default empty array]: array of labels used for rowComponents.
+- `rowComponents`: It is possible to add one or more components (a CheckBox or a DropDown for example) for each assigned variable. To do this, add the `rowComponents` property with a list of components you want to add:<br>
+    ```qml
+    rowComponents:
+    [
+        Component { CheckBox { name: "enableNumber"; checked: true } },
+        Component { DoubleField { name: "myNumber"; defaultValue: rowIndex; enabled: fromRowComponents["enableNumber"].checked } }
+    ]
+
+![Image example](/Docs/development/img/qml-guide/RowComponents_example.png)
+
+    ```
+    You can use so-called context properties in the components:
+    - rowIndex: gives the row number in the list
+    - rowValue: gives the name of the variable in the same row
+    - colIndex: gives the column number in the corresponding row
+    - fromRowComponents["`name`"]: gives the component with corresponding name in the same row. See example above.
+
 
 <details>
 	<summary>Examples</summary>
@@ -418,12 +434,14 @@ It is possible to add a control (a CheckBox for example) for each assigned varia
       label: qsTr("Model terms")
       listViewType: "Interaction"
 
-      ExtraControlColumn
-      {
-      type: "CheckBox"
-      name: "isNuisance"
-      title: "Add to null model"
-      }
+      rowComponentsLabels: ["Add to null model"]
+      rowComponents:
+      [
+          Component
+          {
+              CheckBox { name: "isNuisance" }
+          }
+      ]
 
     }
   }
@@ -463,6 +481,82 @@ Properties
   }
   ```
   ![Image example](/Docs/development/img/qml-guide/RepeatedMeasuresFactorsList_example_1.png)
+
+</details>
+
+### Input List / Table
+InputListView and TableView are 2 components that allow to view a variable number of input
+
+#### InputListView
+This component allows the user to specify as many input values as he/she wants.
+Properties
+- `name`: identifier of this component (in your R code you will be able to retrieve the text value(s) through this identifier)
+- `label`: [optional, default: `""`] text that will be shown above this component
+- `placeHolder`: [optional, default `"New Value"`] text that is displayed as long as the user did not give a value. When a value is given a new input is then automatically added.
+- `defaultValues`: [optional, default empty array] array of strings setting the first value(s) if the input controls.
+- `minRows`: [optional, default 0] Minimum of rows the list view should display. No delete icon will be then displayed to these rows.
+- `inputComponent`: [optional, default a TextField component] Per default the input field is a TextField component, but you may change this by setting a DoubleField of an IntegerField component.
+- `rowComponents`: As for AssignedVariablesList, it is possible to add other components.
+- `rowComponentsLabels`: [optional, default empty array] array of labels used for rowComponents.
+- `optionKey`: [optional, default `"value"`] when using rowComponents, the `name` property indicates the name to use to retrieve all values of this component. These values are specified per row, and each row has different columns. The names of the rowComponents are used to specify the value of each component. The `optionKey` speficies then the name of the value of the Input field.
+
+<details>
+        <summary>Example</summary>
+
+  ```qml
+  InputListView
+  {
+      name                  : "groupNames"
+      title                 : qsTr("Group name")
+      optionKey             : "group"
+      defaultValues         : ["Group 1", "Group 2"]
+      placeHolder           : qsTr("New Group")
+      minimumItems          : 2
+      rowComponentsLabels   : [qsTr("Group color")]
+
+      rowComponents:
+      [
+              Component
+              {
+                      DropDown
+                      {
+                              name: "groupColors"
+                              useExternalBorder: true
+                              values: ["red", "blue", "yellow", "green", "purple", "orange"]
+                      }
+              }
+      ]
+  }
+  ```
+  ![Image example](/Docs/development/img/qml-guide/InputListView_Example.png)
+
+</details>
+
+
+#### TableView
+This component presents the input fields in a Table format.
+
+Properties
+- `name`: identifier of this component (in your R code you will be able to retrieve the text value(s) through this identifier)
+- `modelType`: [required, must be either `MultinomialChi2Model`, `JAGSDataInputModel`, `FilteredDataEntryModel` or `CustomContrasts`] Specify which kind of TableView is used.
+- `colName`: [optional, default `data`]: name of the generated column when `modelType` is `ListModelFilteredDataEntry` or `CustomContrasts`
+- `itemType`: [optional, default `string`, can be also `double` or `integer`]
+- `tableType`: [optional, default `ExpectedProportions`, can be also `PriorCounts`]
+- `source`: [optional, default ``] source of the values the table is based on
+
+<details>
+        <summary>Example</summary>
+
+  ```qml
+  TableView
+  {
+      modelType		: "MultinomialChi2Model"
+      itemType		: "ExpectedProportions"
+      tableType		: "double"
+      source            : "factor"
+  }
+  ```
+  ![Image example](/Docs/development/img/qml-guide/TableView_Example.png)
 
 </details>
 

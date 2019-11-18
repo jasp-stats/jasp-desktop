@@ -34,8 +34,8 @@ public:
 	ListModelAvailableInterface(QMLListView* listView, bool mixedModelTerms = false)
 		: ListModelDraggable(listView), _mixedModelTerms(mixedModelTerms) {}
 	
-	virtual const Terms& allTerms()												const { return _allSortedTerms; }
-			void initTerms(const Terms &terms)									override;
+	virtual const Terms& allTerms()																						const { return _allSortedTerms; }
+			void initTerms(const Terms &terms, const RowControlsOptions& _rowControlsOptions = RowControlsOptions())	override;
 	virtual void resetTermsFromSourceModels(bool updateAssigned = true)			= 0;
 	virtual void removeTermsInAssignedList();
 	
