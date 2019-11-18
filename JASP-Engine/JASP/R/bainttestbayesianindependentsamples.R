@@ -312,7 +312,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 			CiLower <- bainSummary[["lb"]]
 			CiUpper <- bainSummary[["ub"]]
 
-			yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(CiLower, CiUpper), min.n = 4)
+			yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(CiLower, CiUpper), n = 1)
 			d <- data.frame(v = levels, N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1:length(levels))
 
 			p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +

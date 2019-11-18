@@ -25,25 +25,27 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
   dataset <- readList[["dataset"]]
   missingValuesIndicator <- readList[["missingValuesIndicator"]]
   
+  bainContainer <- .bainGetContainer(jaspResults, deps=c("pairs", "seed"))
+
   ### RESULTS ###
-  .bainPairedSamplesResultsTable(dataset, options, jaspResults, missingValuesIndicator, ready, position = 1)
+  .bainPairedSamplesResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
   
   ### DESCRIPTIVES ###
-  .bainPairedSamplesDescriptivesTable(dataset, options, jaspResults, ready, position = 2)
+  .bainPairedSamplesDescriptivesTable(dataset, options, bainContainer, ready, position = 2)
 
   ### BAYES FACTOR PLOTS ###
-  .bainTTestFactorPlots(dataset, options, jaspResults, ready, type = "pairedSamples", position = 3)
+  .bainTTestFactorPlots(dataset, options, bainContainer, ready, type = "pairedSamples", position = 3)
   
   ### DESCRIPTIVES PLOTS ###
-  .bainPairedSamplesDescriptivesPlots(dataset, options, jaspResults, ready, position = 4)
+  .bainPairedSamplesDescriptivesPlots(dataset, options, bainContainer, ready, position = 4)
 }
 
-.bainPairedSamplesResultsTable <- function(dataset, options, jaspResults, missingValuesIndicator, ready, position) {
+.bainPairedSamplesResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready, position) {
     
-    if (!is.null(jaspResults[["bainTable"]])) return()
+    if (!is.null(bainContainer[["bainTable"]])) return()
 
     bainTable <- createJaspTable("Bain Paired Samples T-Test")
-    bainTable$dependOn(options =c("pairs", "hypothesis", "bayesFactorType", "seed"))
+    bainTable$dependOn(options =c("hypothesis", "bayesFactorType"))
     bainTable$position <- position
 
     bf.type <- options$bayesFactorType
@@ -83,11 +85,11 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
                               "groupTwoGreater"   = "The alternative hypothesis H1 specifies that the mean of variable 1 is smaller than the mean of variable 2. The posterior probabilities are based on equal prior probabilities.",
                               "_4type"            = "The hypothesis H1 specifies that the mean of variable 1 is bigger than the mean of variable 2, while the hypothesis H2 specifies that it is smaller. The posterior probabilities are based on equal prior probabilities.",
                               "allTypes"          = "The null hypothesis H0 with equal means is tested against the other hypotheses. The alternative hypothesis H1 states that the mean of variable 1 is bigger than the mean of variable 2. The alternative hypothesis H2 states that the mean of variable 1 is smaller than the mean of variable 2. The posterior probabilities are based on equal prior probabilities.")
+    
     bainTable$addFootnote(message = message)
-
     bainTable$addCitation(.bainGetCitations())
     
-    jaspResults[["bainTable"]] <- bainTable
+    bainContainer[["bainTable"]] <- bainTable
 
     if (!ready)
       return()
@@ -102,7 +104,6 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
         if (length(pair) > 0 && pair[[2]] != "" && pair[[1]] != pair[[2]]) {
 
             subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
-            subDataSet <- na.omit(subDataSet)
             c1 <- subDataSet[[ .v(pair[[1]]) ]]
             c2 <- subDataSet[[ .v(pair[[2]]) ]]
 
@@ -247,20 +248,19 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
                                "hypothesis[type2]" = ".", "BF[type2]" = ".", "pmp[type2]" = ".")
         }
     }
-    bainTable$addRows(row, rowNames=currentPair)
+    bainTable$addRows(row, rowNames = currentPair)
     progressbarTick()
   }
-  jaspResults[["bainResult"]] <- createJaspState(bainResult)
-  jaspResults[["bainResult"]]$dependOn(optionsFromObject = bainTable)
+  bainContainer[["bainResult"]] <- createJaspState(bainResult)
+  bainContainer[["bainResult"]]$dependOn(optionsFromObject = bainTable)
 }
 
-.bainPairedSamplesDescriptivesTable <- function(dataset, options, jaspResults, ready, position) {
+.bainPairedSamplesDescriptivesTable <- function(dataset, options, bainContainer, ready, position) {
 
-    if (!is.null(jaspResults[["descriptivesTable"]])) return() #The options for this table didn't change so we don't need to rebuild it  
-      if (options[["descriptives"]]) {
+    if (!is.null(bainContainer[["descriptivesTable"]]) || !options[["descriptives"]]) return() 
       
     descriptivesTable <- createJaspTable("Descriptive Statistics")
-    descriptivesTable$dependOn(options =c("pairs", "descriptives", "descriptivesPlotsCredibleInterval"))
+    descriptivesTable$dependOn(options =c("descriptives", "descriptivesPlotsCredibleInterval"))
     descriptivesTable$position <- position
 
     descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
@@ -274,109 +274,125 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     descriptivesTable$addColumnInfo(name="lowerCI",              title = "Lower", type="number", overtitle = overTitle)
     descriptivesTable$addColumnInfo(name="upperCI",              title = "Upper", type="number", overtitle = overTitle)
     
-    jaspResults[["descriptivesTable"]] <- descriptivesTable
+    bainContainer[["descriptivesTable"]] <- descriptivesTable
     
-    if (!ready)
+    if (!ready || bainContainer$getError())
       return()
 
+    bainResult <- bainContainer[["bainResult"]]$object
+
+    # Bain does not provide descriptives for individual variables
     for (variable in unique(unlist(options[["pairs"]]))) {
 
         if (variable == "")
             next
 
         variableData <- dataset[[.v(variable)]]
-        variableDataOm <- na.omit(variableData)
 
-        posteriorSummary <- .posteriorSummaryGroupMean(variable=variableDataOm, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-        ciLower <- posteriorSummary[["ciLower"]]
-        ciUpper <- posteriorSummary[["ciUpper"]]
+        N <- length(variableData)
+        mu <- mean(variableData)
+        sd <- sd(variableData)
+        se <- sd / sqrt(N)
 
-        n <- as.numeric(length(variableDataOm))
-        m <- as.numeric(mean(variableDataOm))
-        std <- as.numeric(sd(variableDataOm))
+        alpha <- 1 - (1 - options[["descriptivesPlotsCredibleInterval"]]) / 2
+        ciLower <- mu - qnorm(alpha) * se
+        ciUpper <- mu - qnorm(alpha) + se
 
-        if (is.numeric(std)) {
-            se <- round((as.numeric(std/sqrt(n))),3)
-        } else {
-            se <- "NaN"
-        }
-
-        row <- list(v=variable, N=n, mean=m, sd = std, se=se, lowerCI=ciLower, upperCI=ciUpper)
+        row <- data.frame(v = variable, N = N, mean = mu, sd = sd, se = se, lowerCI = ciLower, upperCI = ciUpper)
         descriptivesTable$addRows(row)
     }
 
-    for (i in .indices(options[["pairs"]])) {
+    for (pair in options[["pairs"]]) {
 
-      pair <- options[["pairs"]][[i]]
-
-        if (!(pair[[1]] == "" || pair[[2]] == "" || pair[[1]] == pair[[2]])) {
+      if (!(pair[[1]] == "" || pair[[2]] == "" || pair[[1]] == pair[[2]])) {
 
         subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])))
-        subDataSet <- na.omit(subDataSet)
 
         c1 <- subDataSet[[ .v(pair[[1]]) ]]
         c2 <- subDataSet[[ .v(pair[[2]]) ]]
+        difference <- c1 - c2
 
         currentPair <- paste(pair, collapse=" - ")
-        diff <- c1-c2
-        meandiff <- mean(diff)
-        sd <- sd(diff)
-        se <- sqrt(var(c1) + var(c2) - (2*cor(c1,c2)*sd(c1)*sd(c2)))/sqrt(length(diff))
-        N <- length(diff)
 
-        alpha <- 1 - (1 - options[["descriptivesPlotsCredibleInterval"]]) / 2
-        ciLower <- meandiff - qnorm(alpha) * se
-        ciUpper <- meandiff + qnorm(alpha) * se
+        bainResult_tmp <- bainResult[[currentPair]]
+        bainSummary <- summary(bainResult_tmp, ci = options[["descriptivesPlotsCredibleInterval"]])
 
-        row <- list(v=currentPair, N=N, mean=meandiff, sd = sd, se=se, lowerCI=ciLower, upperCI=ciUpper)
+        N <- bainSummary[["n"]]
+        mu <- bainSummary[["Estimate"]]
+        CiLower <- bainSummary[["lb"]]
+        CiUpper <- bainSummary[["ub"]]
+        se <- sqrt(diag(bainResult_tmp[["posterior"]]))
+        sd <- sd(difference)
+
+        row <- list(v = currentPair, N = N, mean = mu, sd = sd, se = se, lowerCI = CiLower, upperCI = CiUpper)
         descriptivesTable$addRows(row)
       }
     }
-  }
 }
 
-.bainPairedSamplesDescriptivesPlots <- function(dataset, options, jaspResults, ready, position) {
-  if (options[["descriptivesPlots"]] && ready) {
-      if (is.null(jaspResults[["descriptivesPlots"]])) {
-        jaspResults[["descriptivesPlots"]] <- createJaspContainer("Descriptive Plots")
-        jaspResults[["descriptivesPlots"]]$dependOn(options =c("descriptivesPlots", "descriptivesPlotsCredibleInterval"))
-        jaspResults[["descriptivesPlots"]]$position <- position
-      }
-      for (pair in options[["pairs"]]) {
-          if (is.null(jaspResults[["descriptivesPlots"]][[paste(pair, collapse=" - ")]]) && length(pair)==2)
-          {
-            subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
-            subDataSet <- na.omit(subDataSet)
-            c1 <- subDataSet[[ .v(pair[[1]]) ]]
-            c2 <- subDataSet[[ .v(pair[[2]]) ]]
-            difference <- c1 - c2        
-            ggplotObj <- .plotGroupMeanBayesOneSampleTtest(variable=difference, variableName=paste0(pair[[1]]," - ", pair[[2]]),
-                            testValueOpt=0, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-            jaspResults[["descriptivesPlots"]][[paste(pair, collapse=" - ")]]        <- createJaspPlot(plot=ggplotObj, title = paste(pair, collapse=" - "))
-            jaspResults[["descriptivesPlots"]][[paste(pair, collapse=" - ")]]        $dependOn(optionContainsValue=list(pairs = pair))
-          }
-      }
-  } else if (options[["descriptivesPlots"]]) {
-    emptyPlot <- createJaspPlot(plot = NULL, title = "Descriptives Plots")
-    jaspResults[["descriptivesPlots"]] <- emptyPlot
-    jaspResults[["descriptivesPlots"]]$dependOn(options =c("pairs", "descriptivesPlots"))
-    jaspResults[["descriptivesPlots"]]$position <- position
+.bainPairedSamplesDescriptivesPlots <- function(dataset, options, bainContainer, ready, position) {
+  
+  if (!is.null(bainContainer[["descriptivesPlots"]]) || !options[["descriptivesPlots"]]) return()
+
+  descriptivesPlots <- createJaspContainer("Descriptive Plots")
+  descriptivesPlots$dependOn(options =c("descriptivesPlots", "descriptivesPlotsCredibleInterval"))
+  descriptivesPlots$position <- position
+
+  bainContainer[["descriptivesPlots"]] <- descriptivesPlots
+
+  if (!ready || bainContainer$getError())
+    return()
+
+  bainResult <- bainContainer[["bainResult"]]$object
+
+  for (pair in options[["pairs"]]) {
+
+    currentPair <- paste(pair, collapse=" - ")
+
+    if (is.null(bainContainer[["descriptivesPlots"]][[currentPair]]) && length(pair) == 2){
+
+      bainSummary <- summary(bainResult[[currentPair]], ci = options[["descriptivesPlotsCredibleInterval"]])
+
+      N <- bainSummary[["n"]]
+      mu <- bainSummary[["Estimate"]]
+      CiLower <- bainSummary[["lb"]]
+      CiUpper <- bainSummary[["ub"]]
+
+      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, CiLower, CiUpper), n = 1)
+      d <- data.frame(v = "Difference", N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1)
+
+      p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
+            ggplot2::geom_segment(ggplot2::aes(x = -Inf, xend = Inf, y = 0, yend = 0), linetype = 2, color = "darkgray") +
+            ggplot2::geom_errorbar(ggplot2::aes(ymin=lowerCI, ymax=upperCI), colour="black", width=.1, position = ggplot2::position_dodge(.2)) +
+            ggplot2::geom_point(position=ggplot2::position_dodge(.2), size=4) +
+            ggplot2::ylab("") +
+            ggplot2::xlab("") +
+            ggplot2::scale_y_continuous(breaks = yBreaks, labels = yBreaks) +
+            ggplot2::scale_x_continuous(breaks = 0:2, labels = NULL)
+      p <- JASPgraphs::themeJasp(p, xAxis = FALSE) + ggplot2::theme(axis.ticks.x = ggplot2::element_blank())
+      
+      descriptivesPlots[[paste(pair, collapse=" - ")]] <- createJaspPlot(plot=p, title = currentPair)
+      descriptivesPlots[[paste(pair, collapse=" - ")]]$dependOn(optionContainsValue=list(pairs = pair))
+    }
   }
 }
 
 .readDataBainPairedSamples <- function(options, dataset) {
-    all.variables                                                       <- unique(unlist(options$pairs))
-    all.variables                                                       <- all.variables[all.variables != ""]
-    pairs                                                               <- options$pairs
-    # Read in data
+
+    all.variables <- unique(unlist(options[["pairs"]]))
+    all.variables <- all.variables[all.variables != ""]
+    pairs <- options[["pairs"]]
+
     if (is.null(dataset)) {
-            trydata                                                     <- .readDataSetToEnd(columns.as.numeric=all.variables)
-            missingValuesIndicator                                      <- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
-            dataset                                                     <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
+            trydata <- .readDataSetToEnd(columns.as.numeric=all.variables)
+            missingValuesIndicator <- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
+            dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
     }
+
     .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
                 all.target=all.variables, observations.amount="< 3",
                 exitAnalysisIfErrors = TRUE)
+
     readList <- list()
     readList[["dataset"]] <- dataset
     readList[["missingValuesIndicator"]] <- missingValuesIndicator

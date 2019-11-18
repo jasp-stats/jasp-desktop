@@ -294,7 +294,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
       CiLower <- bainSummary[["lb"]]
       CiUpper <- bainSummary[["ub"]]
 
-      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(options[["testValue"]], CiLower, CiUpper), min.n = 4)
+      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(options[["testValue"]], CiLower, CiUpper), n = 1)
       d <- data.frame(v = variable, N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1)
 
       p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +

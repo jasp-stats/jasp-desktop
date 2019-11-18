@@ -25,7 +25,12 @@ Form
 	{
 		preferredHeight: 200
 		AvailableVariablesList { name: "allVariablesList" }
-		AssignedPairsVariablesList { name: "pairs"; title: qsTr("Pairs"); suggestedColumns: ["scale"] }
+		AssignedVariablesList {
+			name: "pairs"
+			title: qsTr("Pairs")
+			allowedColumns: ["scale"]
+			listViewType: "Pairs"
+		}
 	}
 
 	ColumnLayout
@@ -55,13 +60,13 @@ Form
 		{
 			title: qsTr("Additional Options")
 
-			DoubleField  { 
+			DoubleField  {
 				name: "seed"
 				text: qsTr("Seed")
 				defaultValue: 100
 				min: -999999
 				max: 999999
-				fieldWidth: 60 
+				fieldWidth: 60
 			}
 		}
 	}
@@ -71,7 +76,7 @@ Form
 		Group
 		{
 			title: qsTr("Tables")
-			CheckBox { name: "descriptives"; text: qsTr("Descriptives") 
+			CheckBox { name: "descriptives"; text: qsTr("Descriptives")
 				CIField { name: "descriptivesPlotsCredibleInterval"; text: qsTr("Credible interval") }
 		}
 
