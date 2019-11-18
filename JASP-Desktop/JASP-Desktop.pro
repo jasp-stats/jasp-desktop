@@ -304,20 +304,17 @@ HEADERS += \
     widgets/boundqmlcombobox.h \
     widgets/listmodelanovacustomcontrasts.h \
     widgets/listmodeljagsdatainput.h \
-    widgets/listmodelpairsassigned.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
     mainwindow.h \
     utilities/extractarchive.h \
     widgets/listmodel.h \
     widgets/qmllistview.h \
-    widgets/qmlitem.h \
     widgets/listmodelassignedinterface.h \
     widgets/listmodelavailableinterface.h \
     widgets/listmodeldraggable.h \
     widgets/qmllistviewdraggable.h \
     widgets/boundqmllistviewmeasurescells.h \
-    widgets/boundqmllistviewpairs.h \
     widgets/boundqmllistviewdraggable.h \
     widgets/listmodelmeasurescellsassigned.h \
     widgets/qmllistviewtermsavailable.h \
@@ -353,7 +350,6 @@ HEADERS += \
     widgets/filemenu/resourcebuttonsvisible.h \
     widgets/boundqmlrepeatedmeasuresfactors.h \
     widgets/listmodelrepeatedmeasuresfactors.h \
-    widgets/listmodelextracontrols.h \
     widgets/interactionmodel.h \
     widgets/listmodelinteractionavailable.h \
     results/resultmenuentry.h \
@@ -377,8 +373,12 @@ HEADERS += \
     results/ploteditoraxismodel.h \
     results/ploteditorcoordinates.h \
     widgets/boundqmlinputlist.h \
-    widgets/extracontrolsinfo.h \
-    widgets/listmodelinputvalue.h
+    widgets/listmodelinputvalue.h \
+    analysis/jaspcontrolbase.h \
+    widgets/jaspcontrolwrapper.h \
+    widgets/rowcontrols.h \
+    widgets/qmlexpander.h \
+    widgets/listmodelmultitermsassigned.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -481,7 +481,6 @@ SOURCES += \
     widgets/boundqmlcombobox.cpp \
     widgets/listmodelanovacustomcontrasts.cpp \
     widgets/listmodeljagsdatainput.cpp \
-    widgets/listmodelpairsassigned.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \
     main.cpp \
@@ -489,13 +488,11 @@ SOURCES += \
     utilities/extractarchive.cpp \
     widgets/listmodel.cpp \
     widgets/qmllistview.cpp \
-    widgets/qmlitem.cpp \
     widgets/listmodelavailableinterface.cpp \
     widgets/listmodelassignedinterface.cpp \
     widgets/listmodeldraggable.cpp \
     widgets/qmllistviewdraggable.cpp \
     widgets/boundqmllistviewmeasurescells.cpp \
-    widgets/boundqmllistviewpairs.cpp \
     widgets/boundqmllistviewdraggable.cpp \
     widgets/listmodelmeasurescellsassigned.cpp \
     widgets/qmllistviewtermsavailable.cpp \
@@ -530,7 +527,6 @@ SOURCES += \
     widgets/filemenu/resourcebuttonsvisible.cpp \
     widgets/boundqmlrepeatedmeasuresfactors.cpp \
     widgets/listmodelrepeatedmeasuresfactors.cpp \
-    widgets/listmodelextracontrols.cpp \
     widgets/interactionmodel.cpp \
     widgets/listmodelinteractionavailable.cpp \
     results/resultmenumodel.cpp \
@@ -553,8 +549,12 @@ SOURCES += \
     results/ploteditoraxismodel.cpp \
     results/ploteditorcoordinates.cpp \
     widgets/boundqmlinputlist.cpp \
-    widgets/extracontrolsinfo.cpp \
-    widgets/listmodelinputvalue.cpp
+    widgets/listmodelinputvalue.cpp \
+    analysis/jaspcontrolbase.cpp \
+    widgets/jaspcontrolwrapper.cpp \
+    widgets/rowcontrols.cpp \
+    widgets/qmlexpander.cpp \
+    widgets/listmodelmultitermsassigned.cpp
 
 
 RESOURCES += \

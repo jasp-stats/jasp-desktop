@@ -28,14 +28,14 @@
 using namespace std;
 
 
-BoundQMLListViewLayers::BoundQMLListViewLayers(QQuickItem* item, AnalysisForm* form) 
-	: QMLItem(item, form)
-	, BoundQMLListViewDraggable(item, form)
+BoundQMLListViewLayers::BoundQMLListViewLayers(JASPControlBase* item)
+	: JASPControlWrapper(item)
+	, BoundQMLListViewDraggable(item)
 {
 	_boundTo = nullptr;
 	_layersModel = new ListModelLayersAssigned(this);
 	
-	QQmlProperty::write(_item, "dragOnlyVariables", true);
+	setProperty("dragOnlyVariables", true);
 }
 
 void BoundQMLListViewLayers::bindTo(Option *option)

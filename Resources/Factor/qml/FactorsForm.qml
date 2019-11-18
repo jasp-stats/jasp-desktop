@@ -2,14 +2,14 @@ import QtQuick			2.11
 import QtQuick.Controls	2.4
 import JASP.Widgets		1.0
 import JASP.Controls	1.0
-
+import JASP				1.0
 import QtQuick.Layouts  1.3
 import "." as SEM
 
 JASPControl
 {
     id:					    factorsForm
-	controlType:		    "FactorsForm"
+	controlType:		    JASPControlBase.FactorsForm
     implicitWidth:	        parent.width
 	height:			        jaspTheme.defaultVariablesFormHeight + Math.max((factorsFormRepeater.count - 3), 0) * (factorsForm.factorListHeight + factorsFormColumn.spacing)
     implicitHeight:         height
@@ -50,8 +50,11 @@ JASPControl
 			model: factorsForm.model
 			RowLayout
             {
-				property alias factorList: factorList
-				property alias button: button
+				property alias	factorList		: factorList
+				property alias	button			: button
+				property bool	hasContextForm	: true
+				property var	form			: form
+				property bool	noDirectSetup	: true
                 spacing: 0
 				AssignButton
                 {

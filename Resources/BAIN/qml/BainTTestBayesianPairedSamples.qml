@@ -25,7 +25,7 @@ Form
 	{
 		height: 200
 		AvailableVariablesList { name: "allVariablesList" }
-		AssignedVariablesList { name: "pairs"; title: qsTr("Pairs"); suggestedColumns: ["scale"]; listViewType: "Pairs" }
+		AssignedPairsVariablesList { name: "pairs"; title: qsTr("Pairs"); suggestedColumns: ["scale"] }
 	}
 
 	ColumnLayout

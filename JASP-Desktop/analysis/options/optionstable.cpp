@@ -72,16 +72,17 @@ void OptionsTable::set(const Json::Value &value)
 		{
 			Options *row = static_cast<Options *>(_template->clone());
 			row->set(value[i]);
+			row->changed.connect(boost::bind( &OptionsTable::optionsChanged,	this, _1));
 			_value.push_back(row);
 		}
 	}
-	if (!_template || _templateIsTemparory)
+	if (!_template)
 		_cachedValue = value; // keep the value until a template is given
 }
 
 Option *OptionsTable::clone() const
 {
-	OptionsTable * c = new OptionsTable(_template == nullptr ? nullptr : static_cast<Options*>(_template->clone()), _templateIsTemparory, _cachedValue);
+	OptionsTable * c = new OptionsTable(_template == nullptr ? nullptr : static_cast<Options*>(_template->clone()), _cachedValue);
 
 	std::vector<Options *> rows;
 
@@ -100,7 +101,7 @@ void OptionsTable::setValue(const std::vector<Options *> &value)
 	//Ok we do some checks to make sure that we arent setting the value to the same value. Because in that case some forms/analyses might go crazy restarting constantly (because of the way ListModelFilteredDataEntry sets the options... Very bluntly
 	bool changesFound = value.size() != _value.size();
 
-	for(Options * & older : _value)
+	/*for(Options * & older : _value)
 		if(newOnes.count(older) == 0)
 		{
 			delete older;
@@ -109,7 +110,7 @@ void OptionsTable::setValue(const std::vector<Options *> &value)
 
 	if(!changesFound)
 		changesFound = value.size() != _value.size(); //size might have changed
-
+*/
 	if(!changesFound)
 		for(size_t i=0; i<_value.size() && !changesFound; i++)
 			if(
@@ -131,19 +132,6 @@ void OptionsTable::connectOptions(const std::vector<Options *> &value)
 	
 	for (Options* options : _value)
 		options->changed.connect(boost::bind( &OptionsTable::optionsChanged,	this, _1));	
-}
-
-
-
-void OptionsTable::setTemplate(Options *templote)
-{
-	_template = templote;
-	
-	if(!_cachedValue.isNull())
-		set(_cachedValue);
-
-	_templateIsTemparory = false;
-	_cachedValue = Json::nullValue;
 }
 
 std::set<std::string> OptionsTable::usedVariables() const

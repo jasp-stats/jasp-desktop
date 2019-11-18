@@ -30,8 +30,8 @@ JASPControl
 {
 	id:					tableView
 
-	controlType:		"TableView"
-	activeFocusOnTab:	false
+	controlType:		JASPControlBase.TableView
+	focusOnTab:			false
 	width:				implicitWidth
 	height:				implicitHeight
 	implicitWidth:		400
@@ -180,35 +180,28 @@ JASPControl
 					onClicked:
 					{
 						textInput.visible	= true;
-						textInput.text		= itemText === "..." ? "" : itemText
+						textInput.value		= itemText === "..." ? "" : itemText
 						textInput.forceActiveFocus();
 					}
 					cursorShape:		Qt.IBeamCursor
 				}
 
-				QTC.TextField
+				TextField
 				{
 					id:					textInput
-					anchors.fill:		parent
+					isBound:			false
+					anchors.top:		parent.top
+					anchors.left:		parent.left
+					fieldHeight:		parent.height
+					fieldWidth:			parent.width
 					visible:			false
-					text:				""
-					font:				jaspTheme.font
-					leftPadding:		jaspTheme.labelSpacing
-					padding:			jaspTheme.jaspControlPadding
-					verticalAlignment:	Text.AlignVCenter
-					selectByMouse:		true
-					selectedTextColor:	jaspTheme.white
-					selectionColor:		jaspTheme.itemSelectedColor
+					useExternalBorder:	false
+					value:				itemText
+					selectValueOnFocus:	true
 					validator:			tableView.validator
 					onPressed:			tableView.colSelected = columnIndex
-					onEditingFinished:
-						if(activeFocus)
-						{
-							tableView.itemChanged(columnIndex, rowIndex, text)
-							focus = false;
-						}
+					onEditingFinished:	tableView.itemChanged(columnIndex, rowIndex, value)
 					onActiveFocusChanged: if(!activeFocus) visible = false;
-
 				}
 			}
 

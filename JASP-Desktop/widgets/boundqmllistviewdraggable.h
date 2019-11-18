@@ -31,14 +31,13 @@ class BoundQMLListViewDraggable : public QMLListViewDraggable, public BoundQMLIt
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewDraggable(QQuickItem* item, AnalysisForm* form);
+	BoundQMLListViewDraggable(JASPControlBase* item);
 	
 	void						setUp() override;
 	ListModelAssignedInterface* assignedModel();
 	
 protected:
 	ListModelAvailableInterface*		_availableModel;
-	std::string							_optionKeyName;
 	
 private:
 	Terms								_tempTerms;

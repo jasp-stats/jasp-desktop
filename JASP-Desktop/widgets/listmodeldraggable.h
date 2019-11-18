@@ -23,7 +23,7 @@
 #include "qmllistviewdraggable.h"
 #include "analysis/analysisqmldefines.h"
 
-class ListModelExtraControls;
+class RowControls;
 
 class ListModelDraggable : public ListModel
 {

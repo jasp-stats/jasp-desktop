@@ -18,12 +18,13 @@
 
 import QtQuick			2.11
 import QtQuick.Controls	2.4
+import JASP				1.0
 
 
 JASPControl
 {
 	id:						radioButton
-	controlType:			"RadioButton"
+	controlType:			JASPControlBase.RadioButton
 	isBound:				false
 	implicitWidth:			childrenOnSameRow
 							? control.implicitWidth + (childControlsArea.children.length > 0 ? jaspTheme.columnGroupSpacing + childControlsArea.implicitWidth : 0)

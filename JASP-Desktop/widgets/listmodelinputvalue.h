@@ -26,11 +26,10 @@ class ListModelInputValue : public ListModel
 	Q_OBJECT
 public:
 	
-	ListModelInputValue(QMLListView* listView, int minimumItems = 0);
+	ListModelInputValue(QMLListView* listView, int minRows = 0);
 	
 	int							rowCount(const QModelIndex &parent = QModelIndex())				const	override;
 	QVariant					data(const QModelIndex &index, int role = Qt::DisplayRole)		const	override;
-	void						initTerms(const Terms &terms)											override;
 	void						setAddVirtual(bool addVirtual, QString placeholder = "") { _addVirtual = addVirtual; _placeholder = placeholder; }
 
 public slots:
@@ -43,7 +42,7 @@ protected:
 	QString			_changeLastNumber(const QString& val);
 
 	bool			_addVirtual = true;
-	int				_minimumItems = 0;
+	int				_minRows = 0;
 	QString			_placeholder = tr("New Value");
 
 };

@@ -16,18 +16,18 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
+import QtQuick			2.11
 import QtQuick.Controls 2.4
-import QtQuick.Layouts 1.3
-
+import QtQuick.Layouts	1.3
+import JASP				1.0
 
 JASPControl
 {
 	id:					textField
-	controlType:		"TextField"
+	controlType:		JASPControlBase.TextField
 	
-	implicitHeight:		row.implicitHeight
-	implicitWidth:		row.implicitWidth
+	implicitHeight:		control.height
+	implicitWidth:		afterLabel.text ? (afterLabelRect.x + afterLabelRect.width) : (control.x + control.width)
 	background:			useExternalBorder ? externalControlBackground : control.background
 	cursorShape:		Qt.IBeamCursor
 	
@@ -56,14 +56,8 @@ JASPControl
 	signal pressed()
 	signal released()
 
-	function keyReturnPressed()
+	function doEditingFinished()
 	{
-		if (activeFocus)
-		{
-			if (KeyNavigation.tab)
-				KeyNavigation.tab.forceActiveFocus();
-		}
-
 		lastValidValue = control.text
 		editingFinished();
 	}
@@ -73,144 +67,143 @@ JASPControl
 		if (!beforeLabel.text && textField.text)
 			beforeLabel.text = textField.text;
 		
-		control.editingFinished.connect(keyReturnPressed);
+		control.editingFinished.connect(doEditingFinished);
 		control.textEdited.connect(textEdited);
 		control.pressed.connect(pressed);
 		control.released.connect(released);        
-	}
-	
-	RowLayout
+	}	
+		
+	Rectangle
 	{
-		id:			row
-		spacing:	jaspTheme.labelSpacing
-		
-		Rectangle
+		id:					beforeLabelRect
+		width:				beforeLabel.implicitWidth
+		height:				control.height
+		color:				debug ? jaspTheme.debugBackgroundColor : "transparent"
+		visible:			beforeLabel.text && textField.visible
+		Label
 		{
-			implicitWidth:		beforeLabel.implicitWidth
-			implicitHeight:		control.implicitHeight
-			color:				debug ? jaspTheme.debugBackgroundColor : "transparent"
-			Label
-			{
-				id:						beforeLabel
-				visible:				beforeLabel.text && textField.visible ? true : false
-				font:					jaspTheme.font
-				anchors.verticalCenter: parent.verticalCenter				
-				color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-			}
-		}
-		
-		TextField
-		{
-			id:						control
-			text:					textField.lastValidValue
-			implicitWidth:			textField.fieldWidth //+ (textField.useExternalBorder ? 2 * jaspTheme.jaspControlHighlightWidth : 0)
+			id:						beforeLabel
 			font:					jaspTheme.font
-			focus:					true
+			anchors.verticalCenter: parent.verticalCenter
 			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-			Layout.leftMargin:		beforeLabel.text ? controlXOffset : -jaspTheme.labelSpacing
-			
-			padding:				jaspTheme.jaspControlPadding
-			leftPadding:			jaspTheme.labelSpacing
-			selectByMouse:			true
-			selectedTextColor:		jaspTheme.white
-			selectionColor:			jaspTheme.itemSelectedColor
-
-			background: Rectangle
-			{
-				id:				controlBackground
-				color:			jaspTheme.controlBackgroundColor
-				border.width:	textField.showBorder && !control.activeFocus	? 1					: 0
-				border.color:	textField.showBorder							? jaspTheme.borderColor : "transparent"
-			}
-
-			Rectangle
-			{
-				id:					externalControlBackground
-				height:				parent.implicitHeight + jaspTheme.jaspControlHighlightWidth
-				width:				parent.implicitWidth + jaspTheme.jaspControlHighlightWidth
-				color:				"transparent"
-				border.width:		3
-				border.color:		control.acceptableInput ? "transparent" : jaspTheme.red // Needed when the QML file has wrong default value
-				anchors.centerIn:	parent
-				opacity:			debug ? .3 : 1
-				visible:			textField.useExternalBorder
-				radius:				jaspTheme.jaspControlHighlightWidth
-			}
-			
-			onActiveFocusChanged:
-			{
-				if (activeFocus)
-				{
-					if (textField.selectValueOnFocus)
-						control.selectAll()
-				}
-
-				if (!control.acceptableInput)
-				{
-					var msg
-					if (control.validator && (typeof control.validator.validationMessage === "function"))
-						msg = control.validator.validationMessage(beforeLabel.text) + "<br><br>";
-
-					text = textField.lastValidValue
-					msg += qsTr("Restoring last correct value: %1").arg(text);
-					showControlErrorTemporary(msg)
-					textField.background.border.color = jaspTheme.red;
-					redToNormal.start()
-				}
-				else
-					clearControlError();
-			}
-			
-			PropertyAnimation
-			{
-				id:			redToNormal
-				target:		textField.background
-				property:	"border.color"
-				to:			jaspTheme.focusBorderColor
-				duration:	1000
-				onStopped:	textField.background.border.color = control.activeFocus ? jaspTheme.focusBorderColor : "transparent"
-			}
-			
-			Keys.onReturnPressed:
-			{
-				if (!control.acceptableInput)
-				{
-					if (control.validator && (typeof control.validator.validationMessage === "function"))
-						showControlError(control.validator.validationMessage(beforeLabel.text));
-					textField.background.border.color = jaspTheme.red;
-					redToNormal.start()
-				}
-				else
-				{
-					clearControlError();
-					event.accepted = false;
-				}
-			}
 		}
-		
-		Binding
+	}
+
+	TextField
+	{
+		id:						control
+		anchors.left:			beforeLabelRect.visible ? beforeLabelRect.right : parent.left
+		anchors.leftMargin:		controlXOffset + (beforeLabelRect.visible ? jaspTheme.labelSpacing : 0)
+		text:					textField.lastValidValue
+		width:					textField.fieldWidth //+ (textField.useExternalBorder ? 2 * jaspTheme.jaspControlHighlightWidth : 0)
+		font:					jaspTheme.font
+		activeFocusOnPress:		true
+		color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+
+		padding:				jaspTheme.jaspControlPadding
+		leftPadding:			jaspTheme.labelSpacing
+		selectByMouse:			true
+		selectedTextColor:		jaspTheme.white
+		selectionColor:			jaspTheme.itemSelectedColor
+
+		background: Rectangle
 		{
-			// This is a way to set the property implicitHeight only if fieldHeight is set
-			// If not, implicitHeight should keep its implicit binding.
-			target:		control
-			property:	"implicitHeight"
-			value:		textField.fieldHeight
-			when:		textField.fieldHeight != 0
+			id:				controlBackground
+			color:			jaspTheme.controlBackgroundColor
+			border.width:	textField.showBorder && !control.activeFocus	? 1					: 0
+			border.color:	textField.showBorder							? jaspTheme.borderColor : "transparent"
 		}
-		
+
 		Rectangle
 		{
-			implicitWidth:	afterLabel.implicitWidth
-			implicitHeight:	control.implicitHeight
-			color:			debug ? jaspTheme.debugBackgroundColor : "transparent"
-			Label
+			id:					externalControlBackground
+			height:				parent.height + jaspTheme.jaspControlHighlightWidth
+			width:				parent.width + jaspTheme.jaspControlHighlightWidth
+			color:				"transparent"
+			border.width:		3
+			border.color:		control.acceptableInput ? "transparent" : jaspTheme.red // Needed when the QML file has wrong default value
+			anchors.centerIn:	parent
+			opacity:			debug ? .3 : 1
+			visible:			textField.useExternalBorder
+			radius:				jaspTheme.jaspControlHighlightWidth
+		}
+
+		onActiveFocusChanged:
+		{
+			if (activeFocus)
 			{
-				id:			afterLabel
-				visible:	afterLabel.text && textField.visible ? true : false
-				font:		jaspTheme.font
-				anchors.verticalCenter: parent.verticalCenter				
-				color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+				if (textField.selectValueOnFocus)
+					control.selectAll()
 			}
-		}		
+
+			if (!control.acceptableInput)
+			{
+				var msg
+				if (control.validator && (typeof control.validator.validationMessage === "function"))
+					msg = control.validator.validationMessage(beforeLabel.text) + "<br><br>";
+
+				text = textField.lastValidValue
+				msg += qsTr("Restoring last correct value: %1").arg(text);
+				showControlErrorTemporary(msg)
+				textField.background.border.color = jaspTheme.red;
+				redToNormal.start()
+			}
+			else
+				clearControlError();
+		}
+
+		PropertyAnimation
+		{
+			id:			redToNormal
+			target:		textField.background
+			property:	"border.color"
+			to:			jaspTheme.focusBorderColor
+			duration:	1000
+			onStopped:	textField.background.border.color = control.activeFocus ? jaspTheme.focusBorderColor : "transparent"
+		}
+
+		Keys.onReturnPressed:
+		{
+			if (!control.acceptableInput)
+			{
+				if (control.validator && (typeof control.validator.validationMessage === "function"))
+					showControlError(control.validator.validationMessage(beforeLabel.text));
+				textField.background.border.color = jaspTheme.red;
+				redToNormal.start()
+			}
+			else
+			{
+				clearControlError();
+				event.accepted = false;
+			}
+		}
+	}
+
+	Binding
+	{
+		// This is a way to set the property height only if fieldHeight is set
+		// If not, height should keep its implicit binding.
+		target:		control
+		property:	"height"
+		value:		textField.fieldHeight
+		when:		textField.fieldHeight != 0
+	}
+
+	Rectangle
+	{
+		id:				afterLabelRect
+		width:			afterLabel.implicitWidth
+		height:			control.height
+		color:			debug ? jaspTheme.debugBackgroundColor : "transparent"
+		visible:		afterLabel.text && textField.visible
+		anchors.left:	control.right
+		anchors.leftMargin: jaspTheme.labelSpacing
+		Label
+		{
+			id:			afterLabel
+			font:		jaspTheme.font
+			anchors.verticalCenter: parent.verticalCenter
+			color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+		}
 	}
 }

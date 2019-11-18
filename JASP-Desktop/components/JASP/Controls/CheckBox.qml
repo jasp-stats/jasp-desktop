@@ -19,12 +19,13 @@
 import QtQuick 2.11
 import QtQuick.Controls 2.4
 import QtQuick.Layouts	1.3 as L
+import JASP				1.0
 
 
 JASPControl
 {
 	id:					checkBox
-	controlType:		"CheckBox"
+	controlType:		JASPControlBase.CheckBox
 	implicitWidth:		childrenOnSameRow
 							? control.implicitWidth + (childControlsArea.children.length > 0 ? jaspTheme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
 							: Math.max(control.implicitWidth, control.padding + checkIndicator.width + control.spacing + childControlsArea.implicitWidth)

@@ -18,14 +18,13 @@
 
 #include "boundqmlcombobox.h"
 #include "../analysis/analysisform.h"
-#include <QQmlProperty>
-#include <QQuickItem>
+#include "../analysis/jaspcontrolbase.h"
 #include <QAbstractListModel>
 
 
-BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form) 
-	: QMLItem(item, form)
-	, QMLListView(item, form)
+BoundQMLComboBox::BoundQMLComboBox(JASPControlBase* item)
+	: JASPControlWrapper(item)
+	, QMLListView(item)
 	, BoundQMLItem()
 {
 	_currentIndex = getItemProperty("currentIndex").toInt();	
@@ -96,7 +95,7 @@ BoundQMLComboBox::BoundQMLComboBox(QQuickItem* item, AnalysisForm* form)
 			}
 			else
 			{
-				addError(QString::fromLatin1("Wrong kind of model specified in ComboBox ") + name());
+				addError(tr("Wrong kind of model specified in ComboBox %1").arg(name()));
 			}
 		}
 	}
@@ -127,7 +126,7 @@ void BoundQMLComboBox::bindTo(Option *option)
 				index = values.indexOf(selectedValue);
 				if (index == -1)
 				{
-					addError(QString::fromLatin1("Unknown option ") + selectedValue + " in ComboBox " + name());
+					addError(tr("Unknown option %1 in ComboBox %2").arg(selectedValue).arg(name()));
 					index = 0;
 				}
 			}
@@ -140,10 +139,10 @@ void BoundQMLComboBox::bindTo(Option *option)
 		_resetItemWidth();
 	}
 	else
-		addError(QString::fromLatin1("Unknown error in ComboBox ") + name());
+		addError(tr("Unknown error in ComboBox %1").arg(name()));
 }
 
-void BoundQMLComboBox::resetQMLItem(QQuickItem *item)
+void BoundQMLComboBox::resetQMLItem(JASPControlBase *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 	

@@ -16,16 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELPAIRSASSIGNED_H
-#define LISTMODELPAIRSASSIGNED_H
+#ifndef LISTMODELMULTITERMSASSIGNED_H
+#define LISTMODELMULTITERMSASSIGNED_H
 
 #include "listmodelassignedinterface.h"
 
-class ListModelPairsAssigned: public ListModelAssignedInterface 
+class ListModelMultiTermsAssigned: public ListModelAssignedInterface
 {
 	Q_OBJECT
 public:
-	ListModelPairsAssigned(QMLListView* listView);
+	ListModelMultiTermsAssigned(QMLListView* listView, int columns = 2);
 	
 	int rowCount(const QModelIndex &parent = QModelIndex())							const override;
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole)				const override;
@@ -35,6 +35,9 @@ public:
 	Terms* addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "") override;
 	void moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;	
 	void removeTerms(const QList<int> &indexes)												override;
+
+protected:
+	int	_columns = 2;
 };
 
-#endif // LISTMODELPAIRSASSIGNED_H
+#endif // LISTMODELMULTITERMSASSIGNED_H

@@ -25,12 +25,11 @@
 #include "analysis/options/optionboolean.h"
 #include "analysis/options/optionlist.h"
 #include "analysis/options/optionstring.h"
-#include "extracontrolsinfo.h"
 
 #include <QQuickItem>
 
-BoundQMLListViewDraggable::BoundQMLListViewDraggable(QQuickItem *item, AnalysisForm *form)
-	: QMLListViewDraggable(item, form)
+BoundQMLListViewDraggable::BoundQMLListViewDraggable(JASPControlBase *item)
+	: QMLListViewDraggable(item)
 	, BoundQMLItem()
 {
 }
@@ -39,19 +38,19 @@ void BoundQMLListViewDraggable::setUp()
 {	
 	QMLListViewDraggable::setUp();
 	
-	ListModel* availableModel = _form->getRelatedModel(this);
+	ListModel* availableModel = form()->getRelatedModel(this);
 	ListModelAssignedInterface* _assignedModel = assignedModel();
 	
 	if (!availableModel)
 	{
-		if (sourceModels().empty() && !_item->property("debug").toBool())
-			addError(QString::fromLatin1("Cannot find source for VariableList ") + name());
+		if (sourceModels().empty() && !getItemProperty("debug").toBool())
+			addError(tr("Cannot find source for VariableList %1").arg(name()));
 	}
 	else
 	{
 		_availableModel = dynamic_cast<ListModelAvailableInterface*>(availableModel);
 		if (!_availableModel)
-			addError(QString::fromLatin1("Wrong kind of source for VariableList ") + name());
+			addError(tr("Wrong kind of source for VariableList %1").arg(name()));
 		else
 		{
 			_assignedModel->setAvailableModel(_availableModel);

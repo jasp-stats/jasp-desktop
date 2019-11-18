@@ -29,19 +29,15 @@ ListModelTermsAssigned::ListModelTermsAssigned(QMLListView* listView, bool onlyO
 {
 }
 
-void ListModelTermsAssigned::initTerms(const Terms &terms)
+void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)
 {
-	beginResetModel();
-	_terms.set(terms);
-	endResetModel();
+	ListModelAssignedInterface::initTerms(terms, allOptionsMap);
 	
 	if (source() != nullptr)
 	{
 		if (!_copyTermsWhenDropped)
 			source()->removeTermsInAssignedList();
 	}
-
-	initExtraControlTerms();
 }
 
 void ListModelTermsAssigned::availableTermsChanged(Terms* termsAdded, Terms* termsRemoved)

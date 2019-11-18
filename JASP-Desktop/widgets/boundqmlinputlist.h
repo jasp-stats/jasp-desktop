@@ -24,12 +24,12 @@
 #include "qmllistview.h"
 #include "analysis/options/optionstable.h"
 
-class BoundQMLInputList :  public QMLListView, public BoundQMLItem
+class BoundQMLInputList : public QMLListView, public BoundQMLItem
 {
 	Q_OBJECT
 	
 public:
-	BoundQMLInputList(QQuickItem* item, AnalysisForm* form);	
+	BoundQMLInputList(JASPControlBase* item);
 
 	ListModel*	model()										override { return _inputModel; }
 	Option*		boundTo()									override { return _boundTo; }
@@ -37,18 +37,13 @@ public:
 	Option*		createOption()								override;
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue)	override;
-	void		bindExtraControlOptions()					override;
 
 protected slots:
 	void		modelChangedHandler()						override;
-	
-private:
-	void		_checkOptionTemplate();
 
 private:
 	ListModelInputValue*		_inputModel;
 	OptionsTable*				_boundTo;
-	std::string					_optionKeyName;
 	std::vector<std::string>	_defaultValues;
 	
 };

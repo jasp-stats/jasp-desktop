@@ -32,7 +32,7 @@ class BoundQMLFactorsForm :  public QMLListView, public BoundQMLItem
 	Q_OBJECT
 	
 public:
-	BoundQMLFactorsForm(QQuickItem* item, AnalysisForm* form);	
+	BoundQMLFactorsForm(JASPControlBase* item);
 
 	ListModel*	model()										override { return _factorsModel; }
 	Option*		boundTo()									override { return _boundTo; }
@@ -49,7 +49,7 @@ private:
 	ListModelFactorsForm*	_factorsModel;
 	OptionsTable*			_boundTo;
 	QString					_availableVariablesListName;
-	QQuickItem*				_availableVariablesListItem;
+	JASPControlBase*		_availableVariablesListItem;
 	int						_initNumberFactors;
 };
 

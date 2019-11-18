@@ -16,28 +16,28 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "listmodelpairsassigned.h"
+#include "listmodelmultitermsassigned.h"
 #include "log.h"
-
 
 
 using namespace std;
 
-ListModelPairsAssigned::ListModelPairsAssigned(QMLListView* listView)
+ListModelMultiTermsAssigned::ListModelMultiTermsAssigned(QMLListView* listView, int columns)
 	: ListModelAssignedInterface(listView)
+	, _columns(columns)
 {
 	_copyTermsWhenDropped = true;
 }
 
-int ListModelPairsAssigned::rowCount(const QModelIndex &parent) const
+int ListModelMultiTermsAssigned::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
 
-	int size = _terms.size();
-	return size * 2;
+	int size = int(_terms.size());
+	return size * _columns;
 }
 
-QVariant ListModelPairsAssigned::data(const QModelIndex &index, int role) const
+QVariant ListModelMultiTermsAssigned::data(const QModelIndex &index, int role) const
 {
 	if ( ! index.isValid())
 	{
@@ -48,11 +48,11 @@ QVariant ListModelPairsAssigned::data(const QModelIndex &index, int role) const
 	if (role == Qt::DisplayRole || role == ListModel::NameRole)
 	{
 		int indexRow = index.row();
-		uint realRow = indexRow / 2;
-		uint realCol = indexRow % 2;
-		if (realRow < _terms.size())
+		int realRow = indexRow / _columns;
+		int realCol = indexRow % _columns;
+		if (realRow < int(_terms.size()))
 		{
-			const Term &row = _terms.at(realRow);
+			const Term &row = _terms.at(size_t(realRow));
 			QString result = row.at(realCol);
 			return result;
 		}
@@ -65,16 +65,16 @@ QVariant ListModelPairsAssigned::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
-Terms* ListModelPairsAssigned::termsFromIndexes(const QList<int> &indexes) const
+Terms* ListModelMultiTermsAssigned::termsFromIndexes(const QList<int> &indexes) const
 {
 	Terms* terms = new Terms();
 	for (int index : indexes)
 	{
-		uint realRow = index / 2;
-		uint realCol = index % 2;
-		if (realRow < _terms.size())
+		int realRow = index / _columns;
+		int realCol = index % _columns;
+		if (realRow < int(_terms.size()))
 		{
-			const Term &row = _terms.at(realRow);
+			const Term &row = _terms.at(size_t(realRow));
 			QString result = row.at(realCol);
 			terms->add(Term(result));
 		}
@@ -83,32 +83,36 @@ Terms* ListModelPairsAssigned::termsFromIndexes(const QList<int> &indexes) const
 	return terms;
 }
 
-void ListModelPairsAssigned::removeTerms(const QList<int> &indexes)
+void ListModelMultiTermsAssigned::removeTerms(const QList<int> &indexes)
 {
 	if (indexes.length() == 0) return;
 	
 	beginResetModel();
 
 	QList<int> orderedIndexed = indexes;
-	std::sort(orderedIndexed.begin(), orderedIndexed.end(), qGreater<int>());
+	std::sort(orderedIndexed.begin(), orderedIndexed.end(), std::greater<int>());
 
 	QList<QList<QString>> values = _terms.asQListOfQLists();
 	for (const int &orderedIndexed: orderedIndexed)
 	{
-		int row = orderedIndexed / 2;
-		int col = orderedIndexed % 2;
+		int row = orderedIndexed / _columns;
+		int col = orderedIndexed % _columns;
 		
 		if (row < values.length())
 		{
-			const QList<QString>& pairTerm = values.at(row);
-			const QString& relatedTerm = pairTerm.at(1-col);
-			if (relatedTerm.isEmpty())
+			QList<QString> terms = values.at(row);
+			bool isEmpty = true;
+			for (int i = 0; i < _columns; i++)
+			{
+				if (i != col && !terms[i].isEmpty())
+					isEmpty = false;
+			}
+			if (isEmpty)
 				values.removeAt(row);
 			else
 			{
-				QList<QString> newPair {QString(), QString()};
-				newPair[1-col] = relatedTerm;
-				values.replace(row, newPair);
+				terms[col] = QString();
+				values.replace(row, terms);
 			}
 		}
 	}
@@ -120,7 +124,7 @@ void ListModelPairsAssigned::removeTerms(const QList<int> &indexes)
 	emit modelChanged();
 }
 
-bool ListModelPairsAssigned::canAddTerms(Terms *terms) const
+bool ListModelMultiTermsAssigned::canAddTerms(Terms *terms) const
 {
 	for (const Term &variable : *terms)
 	{
@@ -131,7 +135,7 @@ bool ListModelPairsAssigned::canAddTerms(Terms *terms) const
 	return true;
 }
 
-Terms* ListModelPairsAssigned::addTerms(Terms *terms, int dropItemIndex, const QString& assignOption)
+Terms* ListModelMultiTermsAssigned::addTerms(Terms *terms, int dropItemIndex, const QString&)
 {
 	beginResetModel();
 	Terms* removedTerms = new Terms();
@@ -143,17 +147,17 @@ Terms* ListModelPairsAssigned::addTerms(Terms *terms, int dropItemIndex, const Q
 	bool done = false;
 	if (terms->size() == 1 && dropItemIndex >= 0)
 	{
-		int realRow = dropItemIndex / 2;
-		int realCol = dropItemIndex % 2;
+		int realRow = dropItemIndex / _columns;
+		int realCol = dropItemIndex % _columns;
 		if (realRow < values.size())
 		{
-			QList<QString> onePair = values[realRow];
-			QString result = onePair[realCol];
+			QList<QString> row = values[realRow];
+			QString result = row[realCol];
 			if (!result.isEmpty())
 				removedTerms->add(Term(result));
 			QString term = QString::fromStdString(terms[0].asString());
-			onePair[realCol] = term;
-			values[realRow] = onePair;
+			row[realCol] = term;
+			values[realRow] = row;
 			done = true;
 		}
 	}
@@ -162,39 +166,37 @@ Terms* ListModelPairsAssigned::addTerms(Terms *terms, int dropItemIndex, const Q
 	{
 		QList<QString> newValues = terms->asQList();
 		int index = 0;
-		for (int row = 0; row < values.length(); row++)
+		for (int row = 0; row < values.length() && index < newValues.length(); row++)
 		{
 			QList<QString> rowValues = values.at(row);
-			if (rowValues[0].isEmpty())
+			bool changed = false;
+			for (int col = 0; col < _columns && index < newValues.length(); col++)
 			{
-				rowValues[0] = newValues[index];
-				values.replace(row, rowValues);
-				index++;
+				if (rowValues[col].isEmpty())
+				{
+					rowValues[col] = newValues[index];
+					changed = true;
+					index++;
+				}
 			}
-			if (index >= newValues.length())
-				break;
-			
-			rowValues = values.at(row); //re-query the row in case it was changed
-			if (rowValues[1].isEmpty())
-			{
-				rowValues[1] = newValues[index];
+			if (changed)
 				values.replace(row, rowValues);
-				index++;
-			}
-			if (index >= newValues.length())
-				break;
 		}
 		
 		while (index < newValues.length())
 		{
-			QList<QString> newPair {newValues[index], QString()};
-			index++;
-			if (index < newValues.length())
+			QList<QString> newTuple;
+			for (int i = 0; i < _columns; i++)
 			{
-				newPair[1] = newValues[index];
-				index++;
+				if (index < newValues.length())
+				{
+					newTuple.push_back(newValues[index]);
+					index++;
+				}
+				else
+					newTuple.push_back(QString());
 			}
-			values.push_back(newPair);
+			values.push_back(newTuple);
 		}
 	}
 	
@@ -206,7 +208,7 @@ Terms* ListModelPairsAssigned::addTerms(Terms *terms, int dropItemIndex, const Q
 	return removedTerms;
 }
 
-void ListModelPairsAssigned::moveTerms(const QList<int> &indexes, int dropItemIndex)
+void ListModelMultiTermsAssigned::moveTerms(const QList<int> &indexes, int dropItemIndex)
 {
 	if (indexes.length() != 1)
 		return;
@@ -216,51 +218,61 @@ void ListModelPairsAssigned::moveTerms(const QList<int> &indexes, int dropItemIn
 	if (fromIndex == dropItemIndex)
 		return;
 	
-	int fromRow = fromIndex / 2;
-	int fromCol = fromIndex % 2;
+	int fromRow = fromIndex / _columns;
+	int fromCol = fromIndex % _columns;
 	
 	beginResetModel();
 	QList<QList<QString>> values = _terms.asQListOfQLists();
 	if (fromRow < values.size())
 	{
-		QList<QString>& fromPairValue = values[fromRow];
-		QString fromValue = fromPairValue[fromCol];
+		QList<QString>& fromTuple = values[fromRow];
+		QString fromValue = fromTuple[fromCol];
 		if (!fromValue.isEmpty())
 		{
 			if (dropItemIndex >= 0)
 			{
-				int dropRow = dropItemIndex / 2;
-				int dropCol = dropItemIndex % 2;
+				int dropRow = dropItemIndex / _columns;
+				int dropCol = dropItemIndex % _columns;
 				if (dropRow < values.size())
 				{
-					QList<QString>& dropPairValue = values[dropRow];
-					QString dropValue = dropPairValue[dropCol];
-					fromPairValue[fromCol] = dropValue;
-					dropPairValue[dropCol] = fromValue;
+					QList<QString>& dropTuple = values[dropRow];
+					QString dropValue = dropTuple[dropCol];
+					fromTuple[fromCol] = dropValue;
+					dropTuple[dropCol] = fromValue;
 					isChanged = true;
 				}
 			}
 			else
 			{
-				QList<QString>& dropPairValue = values[values.size() - 1];
-				if (dropPairValue[0].isEmpty())
-					dropPairValue[0] = fromValue;
-				else if (dropPairValue[1].isEmpty())
-					dropPairValue[1] = fromValue;
-				else
+				QList<QString>& dropTuple = values[values.size() - 1];
+				for (int i = 0; i < _columns && !isChanged; i++)
 				{
-					QList<QString> newRow {fromValue, QString()};
-					values.push_back(newRow);
+					if (dropTuple[i].isEmpty())
+					{
+						dropTuple[i] = fromValue;
+						isChanged = true;
+					}
 				}
-				fromPairValue[fromCol] = QString();
-				isChanged = true;
+
+				if (!isChanged)
+				{
+					QList<QString> newRow {fromValue};
+					for (int i = 1; i < _columns; i++)
+						newRow.push_back(QString());
+					values.push_back(newRow);
+					isChanged = true;
+				}
+				fromTuple[fromCol] = QString();
 			}
 			
-			if (fromPairValue[fromCol].isEmpty())
+			bool removeFromTuple = true;
+			for (int i = 0; i < _columns; i++)
 			{
-				if (fromPairValue[1-fromCol].isEmpty())
-					values.removeAt(fromRow);
+				if (!fromTuple[i].isEmpty())
+					removeFromTuple = false;
 			}
+			if (removeFromTuple)
+				values.removeAt(fromRow);
 		}
 	}
 

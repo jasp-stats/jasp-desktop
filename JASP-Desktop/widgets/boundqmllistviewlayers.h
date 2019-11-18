@@ -28,7 +28,7 @@ class BoundQMLListViewLayers : public BoundQMLListViewDraggable
 	Q_OBJECT
 	
 public:
-	BoundQMLListViewLayers(QQuickItem* item, AnalysisForm* form);
+	BoundQMLListViewLayers(JASPControlBase* item);
 	
 	ListModel*	model()										override { return _layersModel; }
 	Option*		boundTo()									override { return _boundTo; }

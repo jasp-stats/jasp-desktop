@@ -16,9 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import QtQuick.Layouts 1.3 as L
-
+import QtQuick			2.11
+import QtQuick.Layouts	1.3 as L
+import JASP				1.0
 
 FocusScope
 {
@@ -62,7 +62,7 @@ FocusScope
 	JASPControl
 	{
 		id:						expanderButton
-		controlType:			"Expander"
+		controlType:			JASPControlBase.Expander
 		isBound:				false
 		background:				expanderRectangle
 		childControlsArea:		expanderArea
@@ -70,10 +70,12 @@ FocusScope
 		height:					22 * preferencesModel.uiScale
 		Keys.onSpacePressed:	toggleExpander()
 		Keys.onReturnPressed:   toggleExpander()
-		KeyNavigation.tab:		expanderWrapper.expanded && childControls.length > 0 ? childControls[0] : nextExpander
-        
-        property var nextExpander: null
-        
+		KeyNavigation.tab:		expanderWrapper.expanded ? firstControl : nextExpander
+
+		property var nextExpander: null
+		property var firstControl: null
+
+
 		function toggleExpander() { expanderWrapper.expanded = !expanderWrapper.expanded; }
         
 

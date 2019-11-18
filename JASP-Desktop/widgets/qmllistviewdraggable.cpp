@@ -20,13 +20,13 @@
 #include "listmodeldraggable.h"
 #include "listmodelassignedinterface.h"
 #include "../analysis/analysisform.h"
-#include <QQuickItem>
-#include <QQmlProperty>
+#include "../analysis/jaspcontrolbase.h"
 #include <QTimer>
+#include <QQmlProperty>
 #include "log.h"
 
-QMLListViewDraggable::QMLListViewDraggable(QQuickItem* item, AnalysisForm* form)
-	: QMLListView(item, form)
+QMLListViewDraggable::QMLListViewDraggable(JASPControlBase* item)
+	: QMLListView(item)
 {
 }
 
@@ -35,9 +35,9 @@ void QMLListViewDraggable::setUp()
 	QMLListView::setUp();
 	
 	_draggableModel = dynamic_cast<ListModelDraggable*>(model());
-	_draggableModel->setItemType(QQmlProperty(_item, "itemType").read().toString());
-	_draggableModel->setTermsAreVariables(QQmlProperty(_item, "showVariableTypeIcon").read().toBool());
-	QString dropMode = QQmlProperty(_item, "dropMode").read().toString();
+	_draggableModel->setItemType(getItemProperty("itemType").toString());
+	_draggableModel->setTermsAreVariables(getItemProperty("showVariableTypeIcon").toBool());
+	QString dropMode = getItemProperty("dropMode").toString();
 	if (dropMode.isEmpty()) dropMode = "None";
 	_draggableModel->setDropMode(qmlDropModeFromQString(dropMode));
 	
@@ -47,18 +47,18 @@ void QMLListViewDraggable::setUp()
 
 void QMLListViewDraggable::itemDoubleClickedHandler(int index)
 {
-	ListModel *targetModel = _form->getRelatedModel(this);
+	ListModel *targetModel = form()->getRelatedModel(this);
 	
 	if (!targetModel)
 	{
-		addError(QString::fromLatin1("No related list found for VariablesList ") + name());
+		addError(tr("No related list found for VariablesList %1").arg(name()));
 		return;
 	}
 	
 	ListModelDraggable *draggableTargetModel = dynamic_cast<ListModelDraggable*>(targetModel);
 	if (!draggableTargetModel)
 	{
-		addError(QString::fromLatin1("Wrong kind of related list (") + targetModel->name() + QString::fromLatin1(") found for VariablesList ") + name());
+		addError(tr("Wrong kind of related list (%1) found for VariablesList %2").arg(targetModel->name()).arg(name()));
 		return;
 	}
 	
@@ -73,7 +73,7 @@ void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdrop
 	ListModelDraggable* dropModel = nullptr;
 	
 	if (!dropList)
-		dropModel = dynamic_cast<ListModelDraggable*>(_form->getRelatedModel(this));
+		dropModel = dynamic_cast<ListModelDraggable*>(form()->getRelatedModel(this));
 	else
 	{
 		QVariant vdropModel = QQmlProperty(dropList, "model").read();
@@ -109,7 +109,7 @@ void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* ta
 	if (targetModel && indexes.size() > 0)
 	{
 		std::sort(indexes.begin(), indexes.end());
-		Options* options = _form->getAnalysisOptions();
+		Options* options = form()->getAnalysisOptions();
 		if (options != nullptr)
 			options->blockSignals(true);
 		

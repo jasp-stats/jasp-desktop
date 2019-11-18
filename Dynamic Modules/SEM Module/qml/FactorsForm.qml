@@ -4,12 +4,13 @@ import JASP.Widgets		1.0
 import JASP.Controls	1.0
 import JASP.Theme		1.0
 import QtQuick.Layouts  1.3
+import JASP				1.0
 import "." as SEM
 
 JASPControl
 {
     id:					    factorsForm
-	controlType:		    "FactorsForm"
+	controlType:		    JASPControlBase.FactorsForm
     implicitWidth:	        parent.width
 	height:			        Theme.defaultVariablesFormHeight
     implicitHeight:         height

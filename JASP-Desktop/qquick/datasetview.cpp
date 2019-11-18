@@ -12,6 +12,7 @@ DataSetView * DataSetView::_lastInstancedDataSetView = nullptr;
 DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent), _metricsFont(_font)
 {
 	setFlag(QQuickItem::ItemHasContents, true);
+	setFlag(ItemIsFocusScope);
 
 	material.setColor(Qt::gray);
 

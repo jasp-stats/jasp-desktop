@@ -16,45 +16,45 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef QMLITEM_H
-#define QMLITEM_H
+#ifndef JASPCONTROLWRAPPER_H
+#define JASPCONTROLWRAPPER_H
 
 #include <QString>
 #include <QVector>
 #include <QVariant>
 
-class QQuickItem;
+class JASPControlBase;
 class AnalysisForm;
 
-class QMLItem
+class JASPControlWrapper
 {
 
 public:
-			 QMLItem(QQuickItem* item, AnalysisForm* form);
-	virtual ~QMLItem() {}
+			 JASPControlWrapper(JASPControlBase* item);
+	virtual ~JASPControlWrapper() {}
 
 	virtual void				setUp() {}
 	virtual void				cleanUp();
-	virtual void				resetQMLItem(QQuickItem* item);
+	virtual void				resetQMLItem(JASPControlBase* item);
 
-	const QString			&	name()		const { return _name; }
-	AnalysisForm			*	form()		const { return _form; }
-	QQuickItem				*	item()		const { return _item; }
-	const QVector<QMLItem*>	&	depends()	const { return _depends; }
+	const QString			&	name()					const;
+	AnalysisForm			*	form()					const;
+	JASPControlBase			*	item()					const	{ return _item; }
+	const QVector<JASPControlWrapper*>	&	depends()	const	{ return _depends; }
 	void						addError(const QString& error);
-	bool						addDependency(QMLItem* item);
-	void						removeDependency(QMLItem* item);
+	bool						addDependency(JASPControlWrapper* item);
+	void						removeDependency(JASPControlWrapper* item);
 	QVariant					getItemProperty(const QString& name);
 	void						setItemProperty(const QString& name, const QVariant& value);
 	void						showControlError(QString msg);
 	void						showControlErrorTemporary(QString msg);
 
+	static JASPControlWrapper*	buildJASPControlWrapper(JASPControlBase* control);
+	
 protected:
 	
-	QQuickItem*				_item;
-	QString					_name;
-	AnalysisForm*			_form;
-	QVector<QMLItem*>		_depends;
+	JASPControlBase*				_item;
+	QVector<JASPControlWrapper*>	_depends;
 };
 
-#endif // QMLITEM_H
+#endif // JASPCONTROLWRAPPER_H

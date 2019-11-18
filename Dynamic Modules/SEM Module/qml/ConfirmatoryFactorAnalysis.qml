@@ -92,10 +92,9 @@ Form
 				name: "observedvars"
 				syncModels: factors.name
             }
-            AssignedVariablesList {
+			AssignedPairsVariablesList {
                 title: qsTr("Residual Covariances")
                 name: "rescov"
-                listViewType: "Pairs"
             }
         }
     }

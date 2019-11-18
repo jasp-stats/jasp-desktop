@@ -33,7 +33,7 @@ Form
 	{
 		height: jaspTheme.smallDefaultVariablesFormHeight
 		AvailableVariablesList { name: "allVariablesList" }
-		AssignedVariablesList { name: "pairs"; title: qsTr("Variable pairs"); suggestedColumns: ["scale"]; listViewType: "Pairs" }
+		AssignedPairsVariablesList { name: "pairs"; title: qsTr("Variable pairs"); suggestedColumns: ["scale"] }
 	}
 	
 	Group

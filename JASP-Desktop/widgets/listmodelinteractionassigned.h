@@ -33,7 +33,7 @@ class ListModelInteractionAssigned : public ListModelAssignedInterface, public I
 public:
 	ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned, bool mustContainLowerTerms);
 
-	void	initTerms(const Terms &terms)													override;
+	void	initTerms(const Terms &terms, const RowControlsOptions& = RowControlsOptions())	override;
 	void	setAvailableModel(ListModelAvailableInterface *source)							override;
 	Terms*	termsFromIndexes(const QList<int> &indexes)								const	override;
 	bool	canAddTerms(Terms *terms) const override;

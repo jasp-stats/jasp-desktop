@@ -23,8 +23,8 @@
 #include "utilities/qutils.h"
 #include "log.h"
 
-ListModelInputValue::ListModelInputValue(QMLListView* listView, int minimumItems)
-	: ListModel(listView), _minimumItems(minimumItems)
+ListModelInputValue::ListModelInputValue(QMLListView* listView, int minRows)
+	: ListModel(listView), _minRows(minRows)
 {
 }
 
@@ -62,23 +62,13 @@ QVariant ListModelInputValue::data(const QModelIndex &index, int role) const
 		if (isVirtual)
 			listValues.push_back(tq("virtual"));
 
-		if (row >= _minimumItems && !isVirtual)
+		if (row >= _minRows && !isVirtual)
 			listValues.push_back(tq("deletable"));
 		value = listValues.join(',');
 		return value;
 	}
 	else
 		return ListModel::data(index, role);
-}
-
-void ListModelInputValue::initTerms(const Terms &terms)
-{
-	beginResetModel();
-	_terms.set(terms);
-	endResetModel();
-
-	initExtraControlTerms();
-
 }
 
 void ListModelInputValue::_removeTerm(int row)
@@ -91,7 +81,6 @@ void ListModelInputValue::_removeTerm(int row)
 
 	beginRemoveRows(QModelIndex(), row, row);
 	_terms.remove(rowU);
-	addExtraControlModels();
 	endRemoveRows();
 }
 

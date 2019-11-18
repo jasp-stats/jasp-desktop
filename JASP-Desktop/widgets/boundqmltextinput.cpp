@@ -18,13 +18,16 @@
 
 #include "boundqmltextinput.h"
 #include "../analysis/analysisform.h"
+#include "../analysis/jaspcontrolbase.h"
 #include "../analysis/options/optiondoublearray.h"
 #include <QQmlProperty>
 #include <QQuickItem>
 
-BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisForm* form)
-	: QMLItem(item, form)
-	, QObject(form)
+using namespace std;
+
+BoundQMLTextInput::BoundQMLTextInput(JASPControlBase* item)
+	: JASPControlWrapper(item)
+	, QObject(item)
 	, BoundQMLItem()
 {
 	initTextInput();
@@ -267,7 +270,7 @@ bool BoundQMLTextInput::isJsonValid(const Json::Value &optionValue)
 	return valid;
 }
 
-void BoundQMLTextInput::resetQMLItem(QQuickItem *item)
+void BoundQMLTextInput::resetQMLItem(JASPControlBase *item)
 {
 	BoundQMLItem::resetQMLItem(item);
 

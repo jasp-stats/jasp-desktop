@@ -7,6 +7,7 @@
 #include "utilities/qutils.h"
 #include <QQuickItem>
 #include "log.h"
+#include "analysis/jaspcontrolbase.h"
 
 ListModelFilteredDataEntry::ListModelFilteredDataEntry(BoundQMLTableView * parent, QString tableType)
 	: ListModelTableViewBase(parent, tableType)
@@ -192,7 +193,7 @@ void ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)
 	std::vector<Options *>	options = bindHere->value();
 
 	if(options.size() > 1)
-		addError("Too many rows in OptionsTable for ListModelFilteredDataEntry");
+		addError(tr("Too many rows in OptionsTable for ListModelFilteredDataEntry"));
 
 	if(options.size() == 0)
 	{
