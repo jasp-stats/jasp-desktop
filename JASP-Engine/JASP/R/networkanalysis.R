@@ -441,7 +441,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   
   plotContainer <- mainContainer[["plotContainer"]]
   if (is.null(plotContainer)) {
-    plotContainer <- createJaspContainer(position = 4, dependencies = c("abbreviateLabels", "abbreviateNoChars"))
+    plotContainer <- createJaspContainer(position = 5, dependencies = c("abbreviateLabels", "abbreviateNoChars"))
     mainContainer[["plotContainer"]] <- plotContainer
   }
   
@@ -455,7 +455,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (!is.null(plotContainer[["centralityPlot"]]) || !options[["plotCentrality"]])
     return()
   
-  plot <- createJaspPlot(title = "Centrality Plot", position = 42, dependencies = "plotCentrality")
+  plot <- createJaspPlot(title = "Centrality Plot", position = 52, dependencies = "plotCentrality")
   plotContainer[["centralityPlot"]] <- plot
   if (is.null(network[["centrality"]]) || plotContainer$getError())
     return()
@@ -506,7 +506,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (!is.null(plotContainer[["clusteringPlot"]]) || !options[["plotClustering"]])
     return()
   
-  plot <- createJaspPlot(title = "Clustering Plot", position = 43, dependencies = "plotClustering")
+  plot <- createJaspPlot(title = "Clustering Plot", position = 53, dependencies = "plotClustering")
   plotContainer[["clusteringPlot"]] <- plot
   if (is.null(network[["clustering"]]) || plotContainer$getError())
     return()
@@ -618,7 +618,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   # enables us to use the same code for a single network plot and for a collection of network plots.
   title <- if (nGraphs == 1L) "" else "Network Plots"
   
-  networkPlotContainer <- createJaspContainer(title = title, position = 41, dependencies = c(
+  networkPlotContainer <- createJaspContainer(title = title, position = 51, dependencies = c(
     "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
     "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodePalette",
     "showLegend", "legendNumber", "showMgmVariableType", "showVariableNames",
