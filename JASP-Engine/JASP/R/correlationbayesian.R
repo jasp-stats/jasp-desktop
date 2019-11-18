@@ -1015,10 +1015,11 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   plotItems <- .getCorPlotItems(options, bayes=TRUE,  sumStat=FALSE)
   nPairs <- .getPairsLength(options)
 
-  bfPlotDependencies <- c("pairsMethod", "kappa", "alternative", "bayesFactorType")
-  bfPlotPriorPosteriorDependencies <- bfPlotDependencies
+  
+  bfPlotPriorPosteriorDependencies <- c("pairsMethod", "kappa", "alternative")
+  bfPlotDependencies <- c(bfPlotPriorPosteriorDependencies, "bayesFactorType")
 
-  if (options[["plotPriorPosterior"]] | options[["plotPriorPosteriorAddEstimationInfo"]])
+  if (options[["plotPriorPosterior"]] & options[["plotPriorPosteriorAddEstimationInfo"]])
     bfPlotPriorPosteriorDependencies <- c(bfPlotPriorPosteriorDependencies, "ciValue")
 
   plotItemDependencies <- list(
@@ -1191,7 +1192,10 @@ plotRobustnessCor <- function(xLine, yLine, xPoint, yPoint, bfType, alternative,
     y = logYLine
   )
   
-  
+  hypothesisJASPgraphsName <- switch(alternative, 
+                                     "two.sided"="equal",
+                                     "greater"="greater",
+                                     "less"="smaller")
   
   if (is.null(xPoint)) {
     dfPoints <- NULL
@@ -1202,7 +1206,7 @@ plotRobustnessCor <- function(xLine, yLine, xPoint, yPoint, bfType, alternative,
     pointColors  <- c("red", "grey", "black", "white")[1:nPoints]
     pointFill  <- c("grey", "black", "white")[1:nPoints]
     
-    bfLegendLabel <- JASPgraphs::getBFSubscripts(bfPlotType, hypothesis=alternative)[1]
+    bfLegendLabel <- JASPgraphs::getBFSubscripts(bfPlotType, hypothesis=hypothesisJASPgraphsName)[1]
     legendText <- vector("character", length(xPoint))
     
     for (i in seq_along(xPoint)) {
@@ -1229,17 +1233,13 @@ plotRobustnessCor <- function(xLine, yLine, xPoint, yPoint, bfType, alternative,
     )
   }
     
-  hypothesis <- switch(alternative, 
-                       "two.sided"="equal",
-                       "greater"="greater",
-                       "less"="smaller")
   
   plotResult <- try(JASPgraphs::PlotRobustnessSequential(
     dfLines      = dfLines,
     xName        = expression(paste("Stretched beta prior width ", kappa)),
     dfPoints     = dfPoints,
-    bfType       = bfType,
-    hypothesis   = hypothesis
+    bfType       = bfPlotType,
+    hypothesis   = hypothesisJASPgraphsName
   ))
   
   return(plotResult)
