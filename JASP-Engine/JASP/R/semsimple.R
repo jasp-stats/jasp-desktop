@@ -80,8 +80,8 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
                             "includeMeanStructure", "assumeFactorsUncorrelated", "fixExogenousCovariates", 
                             "factorStandardisation", "fixManifestInterceptsToZero", "fixLatentInterceptsToZero",
                             "omitResidualSingleIndicator", "residualVariances", "correlateExogenousLatents", 
-                            "addThresholds", "addScalingParameters", "correlateDependentVariables", "addPathDiagram",
-                            "outputpathdiagramstandardizedparameter", "Data", "errorCalculation", "estimator", 
+                            "addThresholds", "addScalingParameters", "correlateDependentVariables",
+                            "Data", "errorCalculation", "estimator", 
                             "emulation"))
     jaspResults[["semContainer"]] <- semContainer
   }
@@ -143,6 +143,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   if (!isTRUE(options$includeMeanStructure)) {
     options$includeMeanStructure <- "default"
   }
+  browser()
   
   ### RUN SEM ###
   semResults <- lavModel <- NULL
@@ -288,6 +289,87 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   }
 }
 
+.semMainTable <- function(semContainer, options, dataset, ready) {
+  if (!is.null(semContainer[["semFitTable"]]))
+    return()
+  
+  semFitTable <- createJaspTable(title = "Chi Square Test Statistic (unscaled)")
+  
+  semFitTable$addColumnInfo(name="Model", title = "", type="string")
+  semFitTable$addColumnInfo(name="Df", title = "df", type="number")
+  # semFitTable$addColumnInfo(name="DfDiff", title = "&#916;df", type="number")
+  semFitTable$addColumnInfo(name="AIC", type="number")
+  semFitTable$addColumnInfo(name="BIC", type="number")
+  semFitTable$addColumnInfo(name="Chisq", title = "&#967;&sup2;", type="number")
+  # semFitTable$addColumnInfo(name="ChisqDiff", title = "&#916;&#967;&sup2;", type="number")
+  semFitTable$addColumnInfo(name="PrChisq", title = "p", type="number")
+  
+  semFitTable$showSpecifiedColumnsOnly <- TRUE
+  semFitTable$addCitation("Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/")
+  
+  semContainer[["semFitTable"]] <- semFitTable
+  
+  if (!ready)
+    return()
+  
+  if (is.null(semContainer[["semResultsList"]]$object$semResults)) {
+    fitTableResult <- as.data.frame(list(Df=c(0, NA), AIC=c(NA, NA), BIC=c(NA, NA),
+                                         Chisq = c(0, NA), ChisqDiff=c(NA, NA),
+                                         DfDiff = c(NA, NA), PrChisq = c(NA, NA)), 
+                                    row.names = c("Saturated", options$modelName))
+  } else {
+    # Current to saturated:
+    fitTableResult <- lavaan::lavTestLRT(semContainer[["semResultsList"]]$object$semResults)[-1, ]
+    rownames(fitTableResult) <- "Model"
+    colnames(fitTableResult) <- c("Df", "AIC", "BIC", "Chisq", "ChisqDiff", "DfDiff", "PrChisq")
+    
+  }
+  
+  fitTableResult[["Model"]] <- rownames(fitTableResult)
+  semFitTable$setData(fitTableResult)
+  
+  return()
+}
+
+.semEstimatesTable <- function(semContainer, options, dataset, ready, variables) {
+  if (!is.null(semContainer[["semEstimatesTable"]]))
+    return()
+  
+  semEstimatesTable <- createJaspTable(title = "Parameter Estimates")
+  
+  semEstimatesTable$addColumnInfo(name="lhs", title = "", type="string")
+  semEstimatesTable$addColumnInfo(name="op", title = "", type="string")
+  semEstimatesTable$addColumnInfo(name="rhs",  title = "", type="string")
+  semEstimatesTable$addColumnInfo(name="label", type="string")
+  semEstimatesTable$addColumnInfo(name="est", type="number")
+  semEstimatesTable$addColumnInfo(name="se", type="number")
+  semEstimatesTable$addColumnInfo(name="z", type="number")
+  semEstimatesTable$addColumnInfo(name="pvalue", title = "p", type="pvalue")
+  semEstimatesTable$addColumnInfo(name="ci.lower", title = "CI (lower)", type="number")
+  semEstimatesTable$addColumnInfo(name="ci.upper", title = "CI (upper)", type="number")
+  semEstimatesTable$addColumnInfo(name="std.lv", title = "std (lv)", type="number")
+  semEstimatesTable$addColumnInfo(name="std.all", title = "std (all)", type="number")
+  semEstimatesTable$addColumnInfo(name="std.nox", title = "std (nox)", type="number")
+  semEstimatesTable$addColumnInfo(name="group",  title = "group", type="string")
+  
+  semEstimatesTable$addCitation("Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/")
+  semEstimatesTable$showSpecifiedColumnsOnly <- TRUE
+  
+  semContainer[["semEstimatesTable"]] <- semEstimatesTable
+  
+  if (!ready)
+    return()
+  
+  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
+    
+    semEstimates <- lavaan:::parameterEstimates(semContainer[["semResultsList"]]$object$semResults, standardized=TRUE)
+    semEstimatesTable$setData(semEstimates)
+    
+  } 
+  
+  return()
+}
+
 .semAdditionalFitMeasuresTables <- function(semContainer, options, dataset, ready) {
   if (!ready || !options[["outputAdditionalFitMeasures"]] || !is.null(semContainer[["fitMeasuresModelTest"]]))
     return()
@@ -301,7 +383,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semModelTestTable$addColumnInfo(name="fmin", title="Minimum Function Test Statistic", type="number")
   semModelTestTable$addColumnInfo(name="chisq", title="&#967;&sup2;", type="number")
   semModelTestTable$addColumnInfo(name="df", title="Degrees of freedom", type="number")
-  semModelTestTable$addColumnInfo(name="pvalue", title="p", type="number")
+  semModelTestTable$addColumnInfo(name="pvalue", title="p", type="pvalue")
   
   semModelTestTable$setData(c(list(model="Model"), semFitMeasures[c('fmin', 'chisq', 'df', 'pvalue')]))
   
@@ -320,9 +402,6 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semBaselineTable$addColumnInfo(name="ifi", title="Bollen's Incremental Fit Index (IFI)", type="number")
   semBaselineTable$addColumnInfo(name="rni", title="Relative Noncentrality Index (RNI)", type="number")
   
-  semBaselineTable$setData(c(list(model="Model"), semFitMeasures[c('cfi', 'tli', 'nnfi', 'nfi', 'pnfi', 'rfi', 'ifi', 
-                                                                   'rni')]))
-  
   semContainer[["fitMeasuresBaseline"]] <- semBaselineTable
   
   ### LogLik measures
@@ -335,9 +414,6 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semLoglikTable$addColumnInfo(name="aic", title="Akaike (AIC)", type="number")
   semLoglikTable$addColumnInfo(name="bic", title="Bayesian (BIC)", type="number")
   semLoglikTable$addColumnInfo(name="bic2", title="Sample-size adjusted Bayesian (BIC)", type="number")
-  
-  semLoglikTable$setData(c(list(model="Model"), semFitMeasures[c('logl', 'unrestricted.logl', 'npar', 'aic', 'bic', 
-                                                                 'bic2')]))
   
   semContainer[["fitMeasuresLikelihood"]] <- semLoglikTable
   
@@ -352,9 +428,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
                               overtitle = thisOverTitle)
   semRMSEATable$addColumnInfo(name="rmsea.ci.upper", type = "number", title = "Upper",
                               overtitle = thisOverTitle)
-  semRMSEATable$addColumnInfo(name="rmsea.pvalue", title="p-value RMSEA <= 0.05 ", type="number")  
-  
-  semRMSEATable$setData(c(list(model="Model"), semFitMeasures[c('rmsea', 'rmsea.ci.lower', 'rmsea.ci.upper', 'rmsea.pvalue')]))
+  semRMSEATable$addColumnInfo(name="rmsea.pvalue", title="p-value RMSEA <= 0.05 ", type="pvalue")  
   
   semContainer[["fitMeasuresRMSEA"]] <- semRMSEATable
   
@@ -366,8 +440,6 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semRMRTable$addColumnInfo(name="rmr", title="RMR", type="number")
   semRMRTable$addColumnInfo(name="rmr_nomean", title="RMR (No Mean)", type="number")
   semRMRTable$addColumnInfo(name="srmr", title="SRMR", type="number")  
-  
-  semRMRTable$setData(c(list(model="Model"), semFitMeasures[c('rmr', 'rmr_nomean', 'srmr')]))
   
   semContainer[["fitMeasuresRMR"]] <- semRMRTable
   
@@ -381,11 +453,58 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semOtherFitTable$addColumnInfo(name="agfi", title="Parsimony Goodness of Fit Index (GFI)", type="number")
   semOtherFitTable$addColumnInfo(name="mfi", title="McDonald Fit Index (MFI)", type="number")
   # semOtherFitTable$addColumnInfo(name="ecvi", title="Expected Cross-Validation Index (ECVI)", type="number")
-
-  semOtherFitTable$setData(c(list(model="Model"), semFitMeasures[c('cn_05', 'cn_01', 'gfi', 'agfi', 'mfi')]))
-  # Todo, ecvi - this disappeared from lavaan output??
   semContainer[["fitMeasuresOther"]] <- semOtherFitTable
-    
+  
+  if (!ready)
+    return()
+  
+  semBaselineTable$setData(c(list(model="Model"), semFitMeasures[c('cfi', 'tli', 'nnfi', 'nfi', 'pnfi', 'rfi', 'ifi', 
+                                                                   'rni')]))
+  semLoglikTable$setData(c(list(model="Model"), semFitMeasures[c('logl', 'unrestricted.logl', 'npar', 'aic', 'bic', 
+                                                                 'bic2')]))
+  semRMSEATable$setData(c(list(model="Model"), semFitMeasures[c('rmsea', 'rmsea.ci.lower', 'rmsea.ci.upper', 'rmsea.pvalue')]))
+  semRMRTable$setData(c(list(model="Model"), semFitMeasures[c('rmr', 'rmr_nomean', 'srmr')]))
+  semOtherFitTable$setData(c(list(model="Model"), semFitMeasures[c('cn_05', 'cn_01', 'gfi', 'agfi', 'mfi')]))
+  
+  return()
+}
+
+.semRSquaredTable <- function(semContainer, options, dataset, ready) {
+  if (!options[["outputRSquared"]] || !is.null(semContainer[["semRSquaredTable"]]))
+    return()
+  
+  semRSquaredTable <- createJaspTable(title = "R-Squared")
+  
+  semRSquaredTable$addColumnInfo(name="var", title = "Variable", type="string")
+  
+  semContainer[["rSquaredTable"]] <- semRSquaredTable
+  
+  if (!ready)
+    return()
+  
+  
+  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
+    r2 <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "r2")
+    nm <- names(r2)
+
+    if (options$groupingVariable == "") {
+      semRSquaredTable$addColumnInfo(name = "R2",  title = "R&sup2;",  type = "number")
+      semRSquaredTable$addRows(data.frame(var = .unv(names(r2)), R2 = r2))
+      
+    } else {
+      
+      semRSquaredTable$addColumns(data.frame(var = .unv(names(r2[[1]]))))
+                                  
+      for (i in 1:length(r2)) {
+        semRSquaredTable$addColumnInfo(name = paste0("R2",i), title = paste0("Group ",nm[i]), overtitle = "R&sup2;",  type = "number")
+        thisCol <- data.frame(rr = r2[[i]])
+        names(thisCol) <- paste0("R2",i)
+        semRSquaredTable$addColumns(cols = thisCol)
+      }
+    }
+
+  }
+
   return()
 }
 
@@ -428,113 +547,6 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   return()
 }
 
-.semEstimatesTable <- function(semContainer, options, dataset, ready, variables) {
-  if (!ready || !is.null(semContainer[["semEstimatesTable"]]))
-    return()
-  
-  semEstimatesTable <- createJaspTable(title = "Parameter Estimates")
-  
-  semEstimatesTable$addColumnInfo(name="lhs", title = "", type="string")
-  semEstimatesTable$addColumnInfo(name="op", title = "", type="string")
-  semEstimatesTable$addColumnInfo(name="rhs",  title = "", type="string")
-  semEstimatesTable$addColumnInfo(name="label", type="string")
-  semEstimatesTable$addColumnInfo(name="est", type="number")
-  semEstimatesTable$addColumnInfo(name="se", type="number")
-  semEstimatesTable$addColumnInfo(name="z", type="number")
-  semEstimatesTable$addColumnInfo(name="pvalue", title = "p", type="number")
-  semEstimatesTable$addColumnInfo(name="ci.lower", title = "CI (lower)", type="number")
-  semEstimatesTable$addColumnInfo(name="ci.upper", title = "CI (upper)", type="number")
-  semEstimatesTable$addColumnInfo(name="std.lv", title = "std (lv)", type="number")
-  semEstimatesTable$addColumnInfo(name="std.all", title = "std (all)", type="number")
-  semEstimatesTable$addColumnInfo(name="std.nox", title = "std (nox)", type="number")
-  semEstimatesTable$addColumnInfo(name="group",  title = "group", type="string")
-  
-  semEstimatesTable$addCitation("Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/")
-  semEstimatesTable$showSpecifiedColumnsOnly <- TRUE
-  
-  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
-    
-    semEstimates <- lavaan:::parameterEstimates(semContainer[["semResultsList"]]$object$semResults, standardized=TRUE)
-    semEstimatesTable$setData(semEstimates)
-    semContainer[["semEstimatesTable"]] <- semEstimatesTable
-    
-  } 
-  
-  return()
-}
-
-.semMainTable <- function(semContainer, options, dataset, ready) {
-  if (!ready || !is.null(semContainer[["semFitTable"]]))
-    return()
-  
-  semFitTable <- createJaspTable(title = "Chi Square Test Statistic (unscaled)")
-  
-  semFitTable$addColumnInfo(name="Model", title = "", type="string")
-  semFitTable$addColumnInfo(name="Df", title = "df", type="number")
-  # semFitTable$addColumnInfo(name="DfDiff", title = "&#916;df", type="number")
-  semFitTable$addColumnInfo(name="AIC", type="number")
-  semFitTable$addColumnInfo(name="BIC", type="number")
-  semFitTable$addColumnInfo(name="Chisq", title = "&#967;&sup2;", type="number")
-  # semFitTable$addColumnInfo(name="ChisqDiff", title = "&#916;&#967;&sup2;", type="number")
-  semFitTable$addColumnInfo(name="PrChisq", title = "p", type="number")
-  
-  semFitTable$showSpecifiedColumnsOnly <- TRUE
-  semFitTable$addCitation("Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/")
-  
-  if (is.null(semContainer[["semResultsList"]]$object$semResults)) {
-    fitTableResult <- as.data.frame(list(Df=c(0, NA), AIC=c(NA, NA), BIC=c(NA, NA),
-                                         Chisq = c(0, NA), ChisqDiff=c(NA, NA),
-                                         DfDiff = c(NA, NA), PrChisq = c(NA, NA)), 
-                                    row.names = c("Saturated", options$modelName))
-  } else {
-    # Current to saturated:
-    fitTableResult <- lavaan::lavTestLRT(semContainer[["semResultsList"]]$object$semResults)[-1, ]
-    rownames(fitTableResult) <- "Model"
-    colnames(fitTableResult) <- c("Df", "AIC", "BIC", "Chisq", "ChisqDiff", "DfDiff", "PrChisq")
-    
-  }
-  
-  fitTableResult[["Model"]] <- rownames(fitTableResult)
-  semFitTable$setData(fitTableResult)
-  semContainer[["semFitTable"]] <- semFitTable
-  
-  return()
-}
-
-.semRSquaredTable <- function(semContainer, options, dataset, ready) {
-  if (!ready || !options[["outputRSquared"]] || !is.null(semContainer[["semRSquaredTable"]]))
-    return()
-  
-  semRSquaredTable <- createJaspTable(title = "R-Squared")
-  
-  semRSquaredTable$addColumnInfo(name="var", title = "Variable", type="string")
-  
-  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
-    r2 <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "r2")
-    nm <- names(r2)
-
-    if (options$groupingVariable == "") {
-      semRSquaredTable$addColumnInfo(name = "R2",  title = "R&sup2;",  type = "number")
-      semRSquaredTable$addRows(data.frame(var = .unv(names(r2)), R2 = r2))
-      
-    } else {
-      
-      semRSquaredTable$addColumns(data.frame(var = .unv(names(r2[[1]]))))
-                                  
-      for (i in 1:length(r2)) {
-        semRSquaredTable$addColumnInfo(name = paste0("R2",i), title = paste0("Group ",nm[i]), overtitle = "R&sup2;",  type = "number")
-        thisCol <- data.frame(rr = r2[[i]])
-        names(thisCol) <- paste0("R2",i)
-        semRSquaredTable$addColumns(cols = thisCol)
-      }
-    }
-
-  }
-
-  semContainer[["rSquaredTable"]] <- semRSquaredTable
-  return()
-}
-
 .semCovCorTable <- function(semContainer, options, dataset, ready) {
   if (!ready || !(options$outputObservedCovarianceCorrelations || options$outputFittedCovarianceCorrelations || 
                   options$outputResidualCovarianceCorrelations)  || !is.null(semContainer[["semCovCorCollection"]]))
@@ -550,7 +562,8 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
                                                       options$outputResidualCovarianceCorrelations)]
 
     nm <- names(lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "sampstat"))
-
+    if (options$groupingVariable == "") nm <- 1
+    
     for (thisGroup in 1:length(nm)) {
       
       if (options$groupingVariable == "") {
@@ -596,10 +609,10 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
       semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$addColumnInfo(name="Variable", title="", type="string", 
                                                                                combine = TRUE)
       semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$addColumnInfo(name="Type", title="", type="string")
-      for (i in 1:n) {
-        semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$addColumnInfo(name=varNames[i], title=.unv(varNames[i]), type="number")
-      }
       
+      for (i in 1:n)
+        semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$addColumnInfo(name=varNames[i], title=.unv(varNames[i]), type="number")
+
       names(matDF)[1:2] <- c("Variable", "Type")
       semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$setData(matDF)
     }
@@ -608,7 +621,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
 }
 
 .semMardiasCoefficientTable <- function(semContainer, options, dataset, ready) {
-  if (!ready || !options[["outputMardiasCoefficients"]] || !is.null(semContainer[["semMardiasTable"]]))
+  if (!options[["outputMardiasCoefficients"]] || !is.null(semContainer[["semMardiasTable"]]))
     return()
   
   semMardiasTable <- createJaspTable(title = "Mardia's coefficients")
@@ -619,7 +632,12 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semMardiasTable$addColumnInfo(name="z", type="number")
   semMardiasTable$addColumnInfo(name="Chisq", title="&#967;&sup2;", type="number")
   semMardiasTable$addColumnInfo(name="DF", title="df", type="number")
-  semMardiasTable$addColumnInfo(name="pvalue", title="p", type="number")
+  semMardiasTable$addColumnInfo(name="pvalue", title="p", type="pvalue")
+  
+  semContainer[["mardiasTable"]] <- semMardiasTable
+  
+  if (!ready)
+    return()
   
   if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
     varNames <- lavaan::lavaanNames(semContainer[["semResultsList"]]$object$semResults, type="ov")
@@ -631,7 +649,6 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
                                        Chisq=NA, DF=NA, "pvalue"=mardiaKurtosis[3]))
   }
   
-  semContainer[["mardiasTable"]] <- semMardiasTable
   return()
 }
 
@@ -774,14 +791,11 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
 }
 
 .lavCreatePathDiagram <- function(semContainer, options, ready) {
-  if (!is.null(semContainer[["pathDiagramPlotCollection"]]))
+  if (!is.null(semContainer[["pathDiagramPlotCollection"]]) || !ready || options[["addPathDiagram"]] == FALSE)
     return()
   
   pathDiagramPlotCollection <- createJaspContainer(title = "Path Diagrams")
-    
-    
-  # set dependencies
-  # qqPlot$dependOn(c("qqPlot"))
+  pathDiagramPlotCollection$dependOn(c("addPathDiagram", "outputpathdiagramstandardizedparameter"))
   
   plotArgs <- list(
     DoNotPlot = TRUE,
