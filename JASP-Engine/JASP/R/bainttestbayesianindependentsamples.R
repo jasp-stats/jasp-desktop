@@ -24,29 +24,31 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	readList <- .readDataBainTwoSample(options, dataset)
 	dataset	<- readList[["dataset"]]
 	missingValuesIndicator	<- readList[["missingValuesIndicator"]]
+
+	bainContainer <- .bainGetContainer(jaspResults, deps=c("variables", "groupingVariable", "hypothesis", "seed"))
     
 	### RESULTS ###
-    .bainIndependentSamplesResultsTable(dataset, options, jaspResults, missingValuesIndicator, ready, position = 1)
+    .bainIndependentSamplesResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
     
 	### DESCRIPTIVES ###
-	.bainIndependentSamplesDescriptivesTable(dataset, options, jaspResults, ready, position = 2)
+	.bainIndependentSamplesDescriptivesTable(dataset, options, bainContainer, ready, position = 2)
 
 	### BAYES FACTOR PLOTS ###
-	.bainTTestFactorPlots(dataset, options, jaspResults, ready, type = "independentSamples", position = 3)
+	.bainTTestFactorPlots(dataset, options, bainContainer, ready, type = "independentSamples", position = 3)
 
 	### DESCRIPTIVES PLOTS ###
-	.bainIndependentSamplesDescriptivesPlots(dataset, options, jaspResults, ready, position = 4)
+	.bainIndependentSamplesDescriptivesPlots(dataset, options, bainContainer, ready, position = 4)
 }
 
-.bainIndependentSamplesResultsTable <- function(dataset, options, jaspResults, missingValuesIndicator, ready, position) {
+.bainIndependentSamplesResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready, position) {
 
-  if (!is.null(jaspResults[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+  if (!is.null(bainContainer[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
   bainTable <- createJaspTable("Bain Independent Samples Welch's T-Test")
-  bainTable$dependOn(options =c("variables", "hypothesis", "bayesFactorType", "groupingVariable", "seed"))
+  bainTable$dependOn(options =c("bayesFactorType"))
   bainTable$position <- position
 
-  bf.type <- options$bayesFactorType
+  bf.type <- options[["bayesFactorType"]]
   BFH1H0 <- FALSE
   bf.title <- "BF"
 
@@ -87,7 +89,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 
 	bainTable$addCitation(.bainGetCitations())
 	
-	jaspResults[["bainTable"]] <- bainTable
+	bainContainer[["bainTable"]] <- bainTable
 
 	if (!ready)
 		return()
@@ -106,9 +108,9 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
   for (variable in options[["variables"]]) {
 
 	subDataSet <- dataset[, c(.v(variable), .v(options[["groupingVariable"]]))]
-	subDataSet <- na.omit(subDataSet)
-	group2 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g1,.v(variable)]
-	group1 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g2,.v(variable)]
+
+	group1 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g1,.v(variable)]
+	group2 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g2,.v(variable)]
 
 	p <- try({
 		bainAnalysis <- .bain_ttest_cran(x = group1, y = group2, type = type, seed = options[["seed"]])
@@ -223,113 +225,111 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
     bainTable$addRows(row, rowNames=variable)
     progressbarTick()
   }
-  jaspResults[["bainResult"]] <- createJaspState(bainResult)
-  jaspResults[["bainResult"]]$dependOn(optionsFromObject =bainTable)
+  bainContainer[["bainResult"]] <- createJaspState(bainResult)
+  bainContainer[["bainResult"]]$dependOn(optionsFromObject = bainTable)
 }
 
-.bainIndependentSamplesDescriptivesTable <- function(dataset, options, jaspResults, ready, position) {
+.bainIndependentSamplesDescriptivesTable <- function(dataset, options, bainContainer, ready, position) {
 
-  if (!is.null(jaspResults[["descriptivesTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
-		if (options[["descriptives"]]) {
+	if (!is.null(bainContainer[["descriptivesTable"]]) || !options[["descriptives"]]) return() 
 
-	  descriptivesTable <- createJaspTable("Descriptive Statistics")
-	  descriptivesTable$dependOn(options =c("variables", "descriptives", "descriptivesPlotsCredibleInterval", "groupingVariable"))
-		descriptivesTable$position <- position
+	descriptivesTable <- createJaspTable("Descriptive Statistics")
+	descriptivesTable$dependOn(options =c("variables", "descriptives", "descriptivesPlotsCredibleInterval", "groupingVariable"))
+	descriptivesTable$position <- position
 
-	  descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
-		descriptivesTable$addColumnInfo(name="group",                title = "Group", type="string")
-	  descriptivesTable$addColumnInfo(name="N",                    title = "N", type="integer")
-	  descriptivesTable$addColumnInfo(name="mean",                 title = "Mean", type="number")
-	  descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
-	  descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
+	descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
+	descriptivesTable$addColumnInfo(name="group",                title = "Group", type="string")
+	descriptivesTable$addColumnInfo(name="N",                    title = "N", type="integer")
+	descriptivesTable$addColumnInfo(name="mean",                 title = "Mean", type="number")
+	descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
+	descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
 
-		interval <- 100 * options[["descriptivesPlotsCredibleInterval"]]
-		overTitle <- paste0(interval, "% Credible Interval")
-		descriptivesTable$addColumnInfo(name="lowerCI",              title = "Lower", type="number", overtitle = overTitle)
-	  descriptivesTable$addColumnInfo(name="upperCI",              title = "Upper", type="number", overtitle = overTitle)
-		
-		jaspResults[["descriptivesTable"]] <- descriptivesTable
+	interval <- 100 * options[["descriptivesPlotsCredibleInterval"]]
+	overTitle <- paste0(interval, "% Credible Interval")
+	descriptivesTable$addColumnInfo(name="lowerCI",              title = "Lower", type="number", overtitle = overTitle)
+	descriptivesTable$addColumnInfo(name="upperCI",              title = "Upper", type="number", overtitle = overTitle)
+	
+	bainContainer[["descriptivesTable"]] <- descriptivesTable
 
-		if (!ready)
-			return()
+	if (!ready || bainContainer$getError())
+		return()
 
-		levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
-		if (length(levels) != 2) {
-			g1 <- "1"
-			g2 <- "2"
-		} else {
-			g1 <- levels[1]
-			g2 <- levels[2]
-		}
+	bainResult <- bainContainer[["bainResult"]]$object
+
+	levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
+	if (length(levels) != 2) {
+		g1 <- "1"
+		g2 <- "2"
+	} else {
+		g1 <- levels[1]
+		g2 <- levels[2]
+	}
 
 	for (variable in options[["variables"]]) {
-		for (i in 1:2) {
+		
+		bainResult_tmp <- bainResult[[variable]]
+		bainSummary <- summary(bainResult_tmp)
 
-	  	level <- levels[i]
-	  	variableData <- dataset[[.v(variable)]]
-			groupingData <- dataset[[.v(options$groupingVariable)]]
-			groupData <- variableData[groupingData == level]
-			groupDataOm <- na.omit(groupData)
+		N <- bainSummary[["n"]]
+		mu <- bainSummary[["Estimate"]]
+		CiLower <- bainSummary[["lb"]]
+		CiUpper <- bainSummary[["ub"]]
+		sd <- aggregate(dataset[, .v(variable)], list(dataset[, .v(options[["groupingVariable"]])]), sd)[, 2]
+		se <- sqrt(diag(bainResult_tmp[["posterior"]]))
 
-			if (class(groupDataOm) != "factor") { # TODO: Fix this...
-				posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm, descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-				ciLower <- round(posteriorSummary$ciLower,3)
-				ciUpper <- round(posteriorSummary$ciUpper,3)
-				n <- length(groupDataOm)
-		  		mean <- mean(groupDataOm)
-		  		std <- sd(groupDataOm)
-		  		sem <- sd(groupDataOm) / sqrt(length(groupDataOm))
-				if (i == 1)
-					row <- data.frame(v = variable, group = level, N = n, mean = mean, sd = std, se = sem, lowerCI = ciLower, upperCI = ciUpper)
-				if (i == 2)
-					row <- data.frame(v = "", group = level, N = n, mean = mean, sd = std, se = sem, lowerCI = ciLower, upperCI = ciUpper)
+		row <- data.frame(v = variable, group = g1, N = N[1], mean = mu[1], sd = sd[1], se = se[1], lowerCI = CiLower[1], upperCI = CiUpper[1])
+		descriptivesTable$addRows(row)
+		row <- data.frame(v = "", group = g2, N = N[2], mean = mu[2], sd = sd[2], se = se[2], lowerCI = CiLower[2], upperCI = CiUpper[2])
+		descriptivesTable$addRows(row)
 
-				} else {
-						n <- length(groupDataOm)
-						row <- data.frame(v = variable, group = "", N = n, mean = "", sd = ".", se = "", lowerCI = "", upperCI = "")
-				}
-				descriptivesTable$addRows(row)
-			}	
-  	}
 	}
 }
 
-.bainIndependentSamplesDescriptivesPlots <- function(dataset, options, jaspResults, ready, position) {
-	if (options[["descriptivesPlots"]] && ready) {
-			if (is.null(jaspResults[["descriptivesPlots"]])) {
-				jaspResults[["descriptivesPlots"]] <- createJaspContainer("Descriptive Plots")
-				jaspResults[["descriptivesPlots"]]$dependOn(options =c("descriptivesPlots", "descriptivesPlotsCredibleInterval", "groupingVariable"))
-				jaspResults[["descriptivesPlots"]]$position <- position
-			}
-			for (variable in unlist(options[["variables"]])) {
-					if (is.null(jaspResults[["descriptivesPlots"]][[variable]]))
-					{
-						levels <- base::levels(dataset[[ .v(options$groupingVariable) ]])
-						if (length(levels) != 2) {
-							g1 <- "1"
-							g2 <- "2"
-						} else {
-							g1 <- levels[1]
-							g2 <- levels[2]
-						}
-						subDataSet <- dataset[, c(.v(variable), .v(options$groupingVariable))]
-						subDataSet <- na.omit(subDataSet)
-						group2 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g1,.v(variable)]
-						group1 <- subDataSet[subDataSet[[.v(options$groupingVariable)]]== g2,.v(variable)]
-					
-						ggplotObj <- .plot2GroupMeansBayesIndTtest(v1 = group2, v2 = group1, nameV1 = g1, nameV2 = g2,
-									groupingName = options$groupingVariable, dependentName = variable,
-									descriptivesPlotsCredibleInterval=options$descriptivesPlotsCredibleInterval)
-						jaspResults[["descriptivesPlots"]][[variable]]        <- createJaspPlot(plot=ggplotObj, title = variable)
-						jaspResults[["descriptivesPlots"]][[variable]]        $dependOn(optionContainsValue=list("variables" = variable))
-					}
-			}
-	} else if (options[["descriptivesPlots"]]) {
-		emptyPlot <- createJaspPlot(plot = NULL, title = "Descriptives Plots")
-		jaspResults[["descriptivesPlots"]] <- emptyPlot
-		jaspResults[["descriptivesPlots"]]$dependOn(options =c("variables", "descriptivesPlots", "groupingVariable", "seed"))
-		jaspResults[["descriptivesPlots"]]$position <- position
-	}	
+.bainIndependentSamplesDescriptivesPlots <- function(dataset, options, bainContainer, ready, position) {
+	
+	if (!is.null(bainContainer[["descriptivesPlots"]]) || !options[["descriptivesPlots"]]) return()
+
+	descriptivesPlots <- createJaspContainer("Descriptive Plots")
+	descriptivesPlots$dependOn(options =c("descriptivesPlots", "descriptivesPlotsCredibleInterval"))
+	descriptivesPlots$position <- position
+
+	bainContainer[["descriptivesPlots"]] <- descriptivesPlots
+
+	if (!ready || bainContainer$getError())
+		return()
+
+	bainResult <- bainContainer[["bainResult"]]$object
+
+	for (variable in options[["variables"]]) {
+		
+		if (is.null(bainContainer[["descriptivesPlots"]][[variable]])){
+
+			bainSummary <- summary(bainResult[[variable]], ci = options[["descriptivesPlotsCredibleInterval"]])
+
+			levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
+			N <- bainSummary[["n"]]
+			mu <- bainSummary[["Estimate"]]
+			CiLower <- bainSummary[["lb"]]
+			CiUpper <- bainSummary[["ub"]]
+
+			yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(CiLower, CiUpper), min.n = 4)
+
+			d <- data.frame(v = levels, N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1:length(levels))
+
+			p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
+					ggplot2::geom_errorbar(ggplot2::aes(ymin=lowerCI, ymax=upperCI), colour="black", width=.2, position = ggplot2::position_dodge(.2)) +
+					ggplot2::geom_line(position=ggplot2::position_dodge(.2), size = .7) +
+					ggplot2::geom_point(position=ggplot2::position_dodge(.2), size=4) +
+					ggplot2::ylab(variable) +
+					ggplot2::xlab(options[["groupingVariable"]]) +
+					ggplot2::scale_x_continuous(breaks = 1:length(levels), labels = as.character(levels)) +
+					ggplot2::scale_y_continuous(breaks = yBreaks, labels = yBreaks)
+			p <- JASPgraphs::themeJasp(p)
+			
+			descriptivesPlots[[variable]] <- createJaspPlot(plot=p, title = variable)
+			descriptivesPlots[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
+		}
+	}
 }
 
 .readDataBainTwoSample <- function(options, dataset) {

@@ -158,13 +158,10 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	CiUpper <- bainSummary[["ub"]]
 
 	if(type == "anova"){
-		# The standard errors are taken from the data
+		# Include the standard deviation from the groups
 		sd <- aggregate(dataset[, .v(options[["dependent"]])], list(dataset[, .v(options[["fixedFactors"]])]), sd)[, 2]
-		se <- sd / sqrt(N)	
-	} else {
-		# The standard errors are taken from bain, since we have adjusted means
-		se <- sqrt(sigma)
 	}
+	se <- sd / sqrt(N)	
 
 	row <- data.frame(v = variable, N = N, mean = mu, se = se, lowerCI = CiLower, upperCI = CiUpper)
 	if(type == "anova")

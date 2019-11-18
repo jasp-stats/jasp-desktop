@@ -29,14 +29,15 @@ Form
 		{
             name: "variables"
             title: qsTr("Dependent Variables")
-			suggestedColumns: ["scale"]
+            singleVariable: false
+			allowedColumns: ["scale"]
         }
 		AssignedVariablesList
 		{
             name: "groupingVariable"
             title: qsTr("Grouping Variable")
             singleVariable: true
-			suggestedColumns: ["nominal"]
+			allowedColumns: ["nominal"]
         }
     }
 
@@ -67,13 +68,13 @@ Form
 		{
 			title: qsTr("Additional Options")
 
-			DoubleField  { 
+			DoubleField  {
 				name: "seed"
 				text: qsTr("Seed")
 				defaultValue: 100
 				min: -999999
 				max: 999999
-				fieldWidth: 60 
+				fieldWidth: 60
 			}
 		}
 	}
@@ -83,7 +84,7 @@ Form
 		Group
 		{
 			title: qsTr("Tables")
-			CheckBox { name: "descriptives"; text: qsTr("Descriptives") 
+			CheckBox { name: "descriptives"; text: qsTr("Descriptives")
 				CIField { name: "descriptivesPlotsCredibleInterval"; text: qsTr("Credible interval")}
 		}
 
