@@ -30,20 +30,19 @@
 	hypothesisMap <- NULL
 
 	# map hypothesis type to a number
-	if (hypothesis == "twoSided") {
+	if (hypothesis == "twoSided" || hypothesis == "correlated") {
 
 		hypothesisMap <- 1
-	} else if (hypothesis == "plusSided") {
+	} else if (hypothesis == "plusSided" || hypothesis == "correlatedPositively") {
 
 		hypothesisMap <- 2
-	} else if (hypothesis == "minSided") {
+	} else if (hypothesis == "minSided" || hypothesis == "correlatedNegatively") {
 
 		hypothesisMap <- 3
 	}
 
 	if (bayesFactorType == "BF01") {
 
-		BFH1H0 <- FALSE
 		bf.title <- switch(
 									hypothesisMap,
 									"BF\u2080\u2081",
