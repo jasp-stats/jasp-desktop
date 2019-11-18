@@ -105,7 +105,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 .bainLinearRegressionBayesFactorPlots <- function(dataset, options, bainContainer, ready, position) {
 	if (!is.null(bainContainer[["bayesFactorPlot"]]) || !options[["bayesFactorPlot"]]) return()
 
-	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = 400, width = 600)
+	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = 300, width = 400)
 	bayesFactorPlot$dependOn(options = c("bayesFactorPlot"))
 	bayesFactorPlot$position <- position
 

@@ -28,21 +28,20 @@ Form
 			name: "dependent"
 			title: qsTr("Dependent Variable")
 			singleVariable: true
-			suggestedColumns: ["scale"]
+			allowedColumns: ["scale"]
 		}
 
 		AssignedVariablesList {
 			name: "fixedFactors"
 			title: qsTr("Fixed Factors")
 			singleVariable: true
-			suggestedColumns: ["ordinal", "nominal"]
+			allowedColumns: ["ordinal", "nominal"]
 		}
 
 		AssignedVariablesList {
 			name: "covariates"
 			title: qsTr("Covariates")
-			singleVariable: false
-			suggestedColumns: ["ordinal", "nominal", "scale"]
+			allowedColumns: ["ordinal", "nominal", "scale"]
 		}
 	}
 

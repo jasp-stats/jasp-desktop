@@ -45,14 +45,14 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     if (!is.null(bainContainer[["bainTable"]])) return()
 
     bainTable <- createJaspTable("Bain Paired Samples T-Test")
-    bainTable$dependOn(options =c("hypothesis", "bayesFactorType"))
+    bainTable$dependOn(options = c("hypothesis", "bayesFactorType"))
     bainTable$position <- position
 
     bf.type <- options$bayesFactorType
     BFH1H0 <- FALSE
     bf.title <- "BF"
 
-    if (options$hypothesis == "allTypes") {
+    if (options$hypothesis == "equalBiggerSmaller") {
             bainTable$addColumnInfo(name="Variable", type="string", title="")
             bainTable$addColumnInfo(name = "type[equal]", type = "string", title = "Hypothesis")
             bainTable$addColumnInfo(name="BF[equal]", type="number", title=bf.title)
@@ -74,17 +74,17 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     }
     
     type <- base::switch(options[["hypothesis"]],
-                            "groupsNotEqual"    = 1,
-                            "groupOneGreater"   = 2,
-                            "groupTwoGreater"   = 3,
-                            "_4type"            = 4,
-                            "allTypes"          = 5)
+                            "equalNotEqual"     = 1,
+                            "equalBigger"       = 2,
+                            "equalSmaller"      = 3,
+                            "biggerSmaller"     = 4,
+                            "equalBiggerSmaller"= 5)
     message <- base::switch(options[["hypothesis"]],
-                              "groupsNotEqual"    = "The alternative hypothesis H1 specifies that the mean of variable 1 is unequal to the mean of variable 2. The posterior probabilities are based on equal prior probabilities.",
-                              "groupOneGreater"   = "The alternative hypothesis H1 specifies that the mean of variable 1 is bigger than the mean of variable 2. The posterior probabilities are based on equal prior probabilities.",
-                              "groupTwoGreater"   = "The alternative hypothesis H1 specifies that the mean of variable 1 is smaller than the mean of variable 2. The posterior probabilities are based on equal prior probabilities.",
-                              "_4type"            = "The hypothesis H1 specifies that the mean of variable 1 is bigger than the mean of variable 2, while the hypothesis H2 specifies that it is smaller. The posterior probabilities are based on equal prior probabilities.",
-                              "allTypes"          = "The null hypothesis H0 with equal means is tested against the other hypotheses. The alternative hypothesis H1 states that the mean of variable 1 is bigger than the mean of variable 2. The alternative hypothesis H2 states that the mean of variable 1 is smaller than the mean of variable 2. The posterior probabilities are based on equal prior probabilities.")
+                              "equalNotEqual"       = "The alternative hypothesis H1 specifies that the mean of variable 1 is unequal to the mean of variable 2. The posterior probabilities are based on equal prior probabilities.",
+                              "equalBigger"         = "The alternative hypothesis H1 specifies that the mean of variable 1 is bigger than the mean of variable 2. The posterior probabilities are based on equal prior probabilities.",
+                              "equalSmaller"        = "The alternative hypothesis H1 specifies that the mean of variable 1 is smaller than the mean of variable 2. The posterior probabilities are based on equal prior probabilities.",
+                              "biggerSmaller"       = "The hypothesis H1 specifies that the mean of variable 1 is bigger than the mean of variable 2, while the hypothesis H2 specifies that it is smaller. The posterior probabilities are based on equal prior probabilities.",
+                              "equalBiggerSmaller"  = "The null hypothesis H0 with equal means is tested against the other hypotheses. The alternative hypothesis H1 states that the mean of variable 1 is bigger than the mean of variable 2. The alternative hypothesis H2 states that the mean of variable 1 is smaller than the mean of variable 2. The posterior probabilities are based on equal prior probabilities.")
     
     bainTable$addFootnote(message = message)
     bainTable$addCitation(.bainGetCitations())
@@ -180,23 +180,23 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
         }
 
         if (options$bayesFactorType == "BF01") {
-            if (options$hypothesis == "groupsNotEqual") {
+            if (options$hypothesis == "equalNotEqual") {
                 row <- list(Variable=currentPair, "hypothesis[type1]" = "H0: Equal","BF[type1]"=BF_0u, "pmp[type1]" = PMP_0,
                                     "hypothesis[type2]" = "H1: Not equal", "BF[type2]" = "", "pmp[type2]" = PMP_u)
             }
-            if (options$hypothesis == "groupTwoGreater") {
+            if (options$hypothesis == "equalSmaller") {
                 row <-list(Variable=currentPair, "hypothesis[type1]" = "H0: Equal","BF[type1]"= BF_01, "pmp[type1]" = PMP_0,
                                    "hypothesis[type2]" = "H1: Smaller", "BF[type2]" = "", "pmp[type2]" = PMP_1)
             }
-            if (options$hypothesis == "groupOneGreater") {
+            if (options$hypothesis == "equalBigger") {
                 row <-list(Variable=currentPair, "hypothesis[type1]" = "H0: Equal", "BF[type1]"= BF_01, "pmp[type1]" = PMP_0,
                                    "hypothesis[type2]" = "H1: Bigger", "BF[type2]" = "", "pmp[type2]" = PMP_1)
             }
-            if (options$hypothesis == "_4type") {
+            if (options$hypothesis == "biggerSmaller") {
                 row <-list(Variable=currentPair, "hypothesis[type1]" = "H1: Bigger", "BF[type1]"= BF_01, "pmp[type1]" = PMP_0,
                                    "hypothesis[type2]" = "H2: Smaller", "BF[type2]" = "", "pmp[type2]" = PMP_1)
             }
-            if (options$hypothesis == "allTypes") {
+            if (options$hypothesis == "equalBiggerSmaller") {
                 row <-list(Variable=currentPair,
                                    "type[equal]" = "H0: Equal",
                                    "BF[equal]"= "",
@@ -209,23 +209,23 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
                                    "pmp[less]" = PMP_2)
             }
         } else if (options$bayesFactorType == "BF10") {
-            if (options$hypothesis == "groupsNotEqual") {
+            if (options$hypothesis == "equalNotEqual") {
                 row <- list(Variable=currentPair, "hypothesis[type1]" = "H0: Equal","BF[type1]"="", "pmp[type1]" = PMP_0,
                                     "hypothesis[type2]" = "H1: Not equal", "BF[type2]" = BF_0u, "pmp[type2]" = PMP_u)
             }
-            if (options$hypothesis == "groupTwoGreater") {
+            if (options$hypothesis == "equalSmaller") {
                 row <-list(Variable=currentPair, "hypothesis[type1]" = "H0: Equal","BF[type1]"= "", "pmp[type1]" = PMP_0,
                                    "hypothesis[type2]" = "H1: Smaller", "BF[type2]" = BF_01, "pmp[type2]" = PMP_1)
             }
-            if (options$hypothesis == "groupOneGreater") {
+            if (options$hypothesis == "equalBigger") {
                 row <-list(Variable=currentPair, "hypothesis[type1]" = "H0: Equal", "BF[type1]"= "", "pmp[type1]" = PMP_0,
                                    "hypothesis[type2]" = "H1: Bigger", "BF[type2]" = BF_01, "pmp[type2]" = PMP_1)
             }
-            if (options$hypothesis == "_4type") {
+            if (options$hypothesis == "biggerSmaller") {
                 row <-list(Variable=currentPair, "hypothesis[type1]" = "H1: Bigger", "BF[type1]"= "", "pmp[type1]" = PMP_0,
                                    "hypothesis[type2]" = "H2: Smaller", "BF[type2]" = BF_01, "pmp[type2]" = PMP_1)
             }
-            if (options$hypothesis == "allTypes") {
+            if (options$hypothesis == "equalBiggerSmaller") {
                 row <-list(Variable=currentPair,
                                    "type[equal]" = "H0: Equal",
                                    "BF[equal]"= "",
@@ -239,7 +239,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
             }
         }
     } else {
-        if (options$hypothesis == "allTypes") {
+        if (options$hypothesis == "equalBiggerSmaller") {
             row <- list(Variable=currentPair, "type[equal]" = ".", "BF[equal]"= ".", "pmp[equal]" = ".",
                                "type[greater]"= ".", "BF[greater]" = ".", "pmp[greater]" = ".",
                                "type[less]" = ".", "BF[less]" = ".", "pmp[less]" = ".")
@@ -260,7 +260,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     if (!is.null(bainContainer[["descriptivesTable"]]) || !options[["descriptives"]]) return() 
       
     descriptivesTable <- createJaspTable("Descriptive Statistics")
-    descriptivesTable$dependOn(options =c("descriptives", "descriptivesPlotsCredibleInterval"))
+    descriptivesTable$dependOn(options =c("descriptives", "credibleInterval"))
     descriptivesTable$position <- position
 
     descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
@@ -269,7 +269,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
     descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
 
-    interval <- 100 * options[["descriptivesPlotsCredibleInterval"]]
+    interval <- 100 * options[["credibleInterval"]]
     overTitle <- paste0(interval, "% Credible Interval")
     descriptivesTable$addColumnInfo(name="lowerCI",              title = "Lower", type="number", overtitle = overTitle)
     descriptivesTable$addColumnInfo(name="upperCI",              title = "Upper", type="number", overtitle = overTitle)
@@ -294,7 +294,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
         sd <- sd(variableData)
         se <- sd / sqrt(N)
 
-        alpha <- 1 - (1 - options[["descriptivesPlotsCredibleInterval"]]) / 2
+        alpha <- 1 - (1 - options[["credibleInterval"]]) / 2
         ciLower <- mu - qnorm(alpha) * se
         ciUpper <- mu - qnorm(alpha) + se
 
@@ -315,7 +315,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
         currentPair <- paste(pair, collapse=" - ")
 
         bainResult_tmp <- bainResult[[currentPair]]
-        bainSummary <- summary(bainResult_tmp, ci = options[["descriptivesPlotsCredibleInterval"]])
+        bainSummary <- summary(bainResult_tmp, ci = options[["credibleInterval"]])
 
         N <- bainSummary[["n"]]
         mu <- bainSummary[["Estimate"]]
@@ -335,7 +335,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
   if (!is.null(bainContainer[["descriptivesPlots"]]) || !options[["descriptivesPlots"]]) return()
 
   descriptivesPlots <- createJaspContainer("Descriptive Plots")
-  descriptivesPlots$dependOn(options =c("descriptivesPlots", "descriptivesPlotsCredibleInterval"))
+  descriptivesPlots$dependOn(options =c("descriptivesPlots", "credibleInterval"))
   descriptivesPlots$position <- position
 
   bainContainer[["descriptivesPlots"]] <- descriptivesPlots
@@ -351,14 +351,14 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
 
     if (is.null(bainContainer[["descriptivesPlots"]][[currentPair]]) && length(pair) == 2){
 
-      bainSummary <- summary(bainResult[[currentPair]], ci = options[["descriptivesPlotsCredibleInterval"]])
+      bainSummary <- summary(bainResult[[currentPair]], ci = options[["credibleInterval"]])
 
       N <- bainSummary[["n"]]
       mu <- bainSummary[["Estimate"]]
       CiLower <- bainSummary[["lb"]]
       CiUpper <- bainSummary[["ub"]]
 
-      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, CiLower, CiUpper), n = 1)
+      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, CiLower, CiUpper), min.n = 4)
       d <- data.frame(v = "Difference", N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1)
 
       p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +

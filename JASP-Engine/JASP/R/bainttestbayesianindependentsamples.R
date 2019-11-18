@@ -42,51 +42,50 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 
 .bainIndependentSamplesResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready, position) {
 
-  if (!is.null(bainContainer[["bainTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
+	if (!is.null(bainContainer[["bainTable"]])) return()
 
-  bainTable <- createJaspTable("Bain Independent Samples Welch's T-Test")
-  bainTable$dependOn(options =c("bayesFactorType"))
-  bainTable$position <- position
+	bainTable <- createJaspTable("Bain Independent Samples Welch's T-Test")
+	bainTable$dependOn(options = c("bayesFactorType"))
+	bainTable$position <- position
 
-  bf.type <- options[["bayesFactorType"]]
-  BFH1H0 <- FALSE
-  bf.title <- "BF"
+	bf.type <- options[["bayesFactorType"]]
+	BFH1H0 <- FALSE
+	bf.title <- "BF"
 
-  if (options$hypothesis == "allTypes") {
-          bainTable$addColumnInfo(name="Variable", type="string", title="")
-          bainTable$addColumnInfo(name = "type[equal]", type = "string", title = "Hypothesis")
-          bainTable$addColumnInfo(name="BF[equal]", type="number", title=bf.title)
-          bainTable$addColumnInfo(name="pmp[equal]", type="number", format="dp:3", title="Posterior probability")
-          bainTable$addColumnInfo(name = "type[greater]", type = "string", title = "Hypothesis")
-          bainTable$addColumnInfo(name="BF[greater]", type="number", title="bf.title")
-          bainTable$addColumnInfo(name="pmp[greater]", type="number", format="dp:3", title="Posterior probability")
-          bainTable$addColumnInfo(name = "type[less]", type = "string", title = "Hypothesis")
-          bainTable$addColumnInfo(name = "BF[less]", type = "number", title = bf.title)
-          bainTable$addColumnInfo(name="pmp[less]", type="number", format="dp:3", title="Posterior probability")
-  } else {
-          bainTable$addColumnInfo(name="Variable", type="string", title="")
-          bainTable$addColumnInfo(name = "hypothesis[type1]", type = "string", title = "Hypothesis")
-          bainTable$addColumnInfo(name="BF[type1]", type="number", title=bf.title)
-          bainTable$addColumnInfo(name="pmp[type1]", type="number", format="dp:3", title="Posterior probability")
-          bainTable$addColumnInfo(name = "hypothesis[type2]", type = "string", title = "Hypothesis")
-          bainTable$addColumnInfo(name="BF[type2]", type="number", title=bf.title)
-          bainTable$addColumnInfo(name="pmp[type2]", type="number", format="dp:3", title="Posterior probability")
-  }
+	if (options[["hypothesis"]] == "equalBiggerSmaller"){
+			bainTable$addColumnInfo(name="Variable", type="string", title="")
+			bainTable$addColumnInfo(name = "type[equal]", type = "string", title = "Hypothesis")
+			bainTable$addColumnInfo(name="BF[equal]", type="number", title=bf.title)
+			bainTable$addColumnInfo(name="pmp[equal]", type="number", format="dp:3", title="Posterior probability")
+			bainTable$addColumnInfo(name = "type[greater]", type = "string", title = "Hypothesis")
+			bainTable$addColumnInfo(name="BF[greater]", type="number", title="bf.title")
+			bainTable$addColumnInfo(name="pmp[greater]", type="number", format="dp:3", title="Posterior probability")
+			bainTable$addColumnInfo(name = "type[less]", type = "string", title = "Hypothesis")
+			bainTable$addColumnInfo(name = "BF[less]", type = "number", title = bf.title)
+			bainTable$addColumnInfo(name="pmp[less]", type="number", format="dp:3", title="Posterior probability")
+	} else {
+			bainTable$addColumnInfo(name="Variable", type="string", title="")
+			bainTable$addColumnInfo(name = "hypothesis[type1]", type = "string", title = "Hypothesis")
+			bainTable$addColumnInfo(name="BF[type1]", type="number", title=bf.title)
+			bainTable$addColumnInfo(name="pmp[type1]", type="number", format="dp:3", title="Posterior probability")
+			bainTable$addColumnInfo(name = "hypothesis[type2]", type = "string", title = "Hypothesis")
+			bainTable$addColumnInfo(name="BF[type2]", type="number", title=bf.title)
+			bainTable$addColumnInfo(name="pmp[type2]", type="number", format="dp:3", title="Posterior probability")
+	}
 	
 	type <- base::switch(options[["hypothesis"]],
-													"groupsNotEqual"		= 1,
-													"groupTwoGreater"		= 2,
-													"groupOneGreater"		= 3,
-													"_4type"						= 4,
-													"allTypes"					= 5)
+													"equalNotEqual"		= 1,
+													"equalBigger"		= 2,
+													"equalSmaller"		= 3,
+													"biggerSmaller"		= 4,
+													"equalBiggerSmaller"= 5)
 	message <- base::switch(options[["hypothesis"]],
-														"groupsNotEqual"		= "The alternative hypothesis H1 specifies that the mean of group 1 is unequal to the mean of group 2. The posterior probabilities are based on equal prior probabilities.",
-														"groupTwoGreater"		= "The alternative hypothesis H1 specifies that the mean of group 1 is smaller than the mean of group 2. The posterior probabilities are based on equal prior probabilities.",
-														"groupOneGreater"		= "The alternative hypothesis H1 specifies that mean of group 1 is bigger than the mean of group 2. The posterior probabilities are based on equal prior probabilities.",
-														"_4type"						= "The hypothesis H1 specifies that the mean of group 1 is bigger than the mean of group 2. The hypothesis H2 specifies that the mean in group 1 is smaller than the mean in group 2. The posterior probabilities are based on equal prior probabilities.",
-														"allTypes"					= "The null hypothesis H0 (equal group means) is tested against H1 (first mean larger than second mean) and H2 (first mean smaller than second mean). The posterior probabilities are based on equal prior probabilities.")
-  bainTable$addFootnote(message=message)
-
+													"equalNotEqual"		= "The alternative hypothesis H1 specifies that the mean of group 1 is unequal to the mean of group 2. The posterior probabilities are based on equal prior probabilities.",
+													"equalSmaller"		= "The alternative hypothesis H1 specifies that the mean of group 1 is smaller than the mean of group 2. The posterior probabilities are based on equal prior probabilities.",
+													"equalBigger"		= "The alternative hypothesis H1 specifies that mean of group 1 is bigger than the mean of group 2. The posterior probabilities are based on equal prior probabilities.",
+													"biggerSmaller"		= "The hypothesis H1 specifies that the mean of group 1 is bigger than the mean of group 2. The hypothesis H2 specifies that the mean in group 1 is smaller than the mean in group 2. The posterior probabilities are based on equal prior probabilities.",
+													"equalBiggerSmaller"= "The null hypothesis H0 (equal group means) is tested against H1 (first mean larger than second mean) and H2 (first mean smaller than second mean). The posterior probabilities are based on equal prior probabilities.")
+  	bainTable$addFootnote(message=message)
 	bainTable$addCitation(.bainGetCitations())
 	
 	bainContainer[["bainTable"]] <- bainTable
@@ -94,16 +93,16 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	if (!ready)
 		return()
 
-  startProgressbar(length(options[["variables"]]))
-  bainResult <- list()
-  levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
-  if (length(levels) != 2) {
-	  g1 <- "1"
-	  g2 <- "2"
-  } else {
-	  g1 <- levels[1]
-	  g2 <- levels[2]
-  }
+	startProgressbar(length(options[["variables"]]))
+	bainResult <- list()
+	levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
+	if (length(levels) != 2) {
+		g1 <- "1"
+		g2 <- "2"
+	} else {
+		g1 <- levels[1]
+		g2 <- levels[2]
+	}
 
   for (variable in options[["variables"]]) {
 
@@ -172,19 +171,19 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	}
 
     if (options$bayesFactorType == "BF01") {
-        if (options$hypothesis == "groupsNotEqual") {
+        if (options$hypothesis == "equalNotEqual") {
             row <- list(Variable=variable, "hypothesis[type1]" = "H0: Equal","BF[type1]"=BF_0u, "pmp[type1]" = PMP_0,
                                 "hypothesis[type2]" = "H1: Not equal", "BF[type2]" = "", "pmp[type2]" = PMP_u)
-        } else if (options$hypothesis == "groupOneGreater") {
+        } else if (options$hypothesis == "equalBigger") {
             row <-list(Variable=variable, "hypothesis[type1]" = "H0: Equal","BF[type1]"=BF_01, "pmp[type1]" = PMP_0,
                                "hypothesis[type2]" = "H1: Bigger", "BF[type2]" = "", "pmp[type2]" = PMP_1)
-        } else if (options$hypothesis == "groupTwoGreater") {
+        } else if (options$hypothesis == "equalSmaller") {
             row <-list(Variable=variable, "hypothesis[type1]" = "H0: Equal", "BF[type1]"=BF_01, "pmp[type1]" = PMP_0,
                                "hypothesis[type2]" = "H1: Smaller", "BF[type2]" = "", "pmp[type2]" = PMP_1)
-        } else if (options$hypothesis == "_4type") {
-            row <-list(Variable=variable, "hypothesis[type1]" = "H1: Bigger", "BF[type1]"=BF_01, "pmp[type1]" = PMP_1,
-                               "hypothesis[type2]" = "H2: Smaller", "BF[type2]" = "", "pmp[type2]" = PMP_0)
-        } else if (options$hypothesis == "allTypes") {
+        } else if (options$hypothesis == "biggerSmaller") {
+            row <-list(Variable=variable, "hypothesis[type1]" = "H1: Bigger", "BF[type1]"=BF_01, "pmp[type1]" = PMP_0,
+                               "hypothesis[type2]" = "H2: Smaller", "BF[type2]" = "", "pmp[type2]" = PMP_1)
+        } else if (options$hypothesis == "equalBiggerSmaller") {
             row <-list(Variable=variable,
                                "type[equal]" = "H0: Equal",
                                "BF[equal]"= "",
@@ -197,19 +196,19 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
                                "pmp[less]" = PMP_1)
         }
     } else if (options$bayesFactorType == "BF10") {
-        if (options$hypothesis == "groupsNotEqual") {
+        if (options$hypothesis == "equalNotEqual") {
             row <- list(Variable=variable, "hypothesis[type1]" = "H0: Equal","BF[type1]"="", "pmp[type1]" = PMP_0,
                                 "hypothesis[type2]" = "H1: Not equal", "BF[type2]" = BF_0u, "pmp[type2]" = PMP_u)
-        } else if (options$hypothesis == "groupOneGreater") {
+        } else if (options$hypothesis == "equalBigger") {
             row <-list(Variable=variable, "hypothesis[type1]" = "H0: Equal","BF[type1]"="", "pmp[type1]" = PMP_0,
                                "hypothesis[type2]" = "H1: Bigger", "BF[type2]" = BF_01, "pmp[type2]" = PMP_1)
-        } else if (options$hypothesis == "groupTwoGreater") {
+        } else if (options$hypothesis == "equalSmaller") {
             row <-list(Variable=variable, "hypothesis[type1]" = "H0: Equal", "BF[type1]"="", "pmp[type1]" = PMP_0,
                                "hypothesis[type2]" = "H1: Smaller", "BF[type2]" = BF_01, "pmp[type2]" = PMP_1)
-        } else if (options$hypothesis == "_4type") {
-            row <-list(Variable=variable, "hypothesis[type1]" = "H1: Bigger", "BF[type1]"= "", "pmp[type1]" = PMP_1,
-                               "hypothesis[type2]" = "H2: Smaller", "BF[type2]" = BF_01, "pmp[type2]" = PMP_0)
-        } else if (options$hypothesis == "allTypes") {
+        } else if (options$hypothesis == "biggerSmaller") {
+            row <-list(Variable=variable, "hypothesis[type1]" = "H1: Bigger", "BF[type1]"= "", "pmp[type1]" = PMP_0,
+                               "hypothesis[type2]" = "H2: Smaller", "BF[type2]" = BF_01, "pmp[type2]" = PMP_1)
+        } else if (options$hypothesis == "equalBiggerSmaller") {
             row <-list(Variable=variable,
                                "type[equal]" = "H0: Equal",
                                "BF[equal]"= "",
@@ -234,7 +233,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	if (!is.null(bainContainer[["descriptivesTable"]]) || !options[["descriptives"]]) return() 
 
 	descriptivesTable <- createJaspTable("Descriptive Statistics")
-	descriptivesTable$dependOn(options =c("variables", "descriptives", "descriptivesPlotsCredibleInterval", "groupingVariable"))
+	descriptivesTable$dependOn(options =c("variables", "descriptives", "credibleInterval", "groupingVariable"))
 	descriptivesTable$position <- position
 
 	descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
@@ -244,7 +243,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
 	descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
 
-	interval <- 100 * options[["descriptivesPlotsCredibleInterval"]]
+	interval <- 100 * options[["credibleInterval"]]
 	overTitle <- paste0(interval, "% Credible Interval")
 	descriptivesTable$addColumnInfo(name="lowerCI",              title = "Lower", type="number", overtitle = overTitle)
 	descriptivesTable$addColumnInfo(name="upperCI",              title = "Upper", type="number", overtitle = overTitle)
@@ -268,7 +267,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	for (variable in options[["variables"]]) {
 		
 		bainResult_tmp <- bainResult[[variable]]
-		bainSummary <- summary(bainResult_tmp, ci = options[["descriptivesPlotsCredibleInterval"]])
+		bainSummary <- summary(bainResult_tmp, ci = options[["credibleInterval"]])
 
 		N <- bainSummary[["n"]]
 		mu <- bainSummary[["Estimate"]]
@@ -290,7 +289,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	if (!is.null(bainContainer[["descriptivesPlots"]]) || !options[["descriptivesPlots"]]) return()
 
 	descriptivesPlots <- createJaspContainer("Descriptive Plots")
-	descriptivesPlots$dependOn(options =c("descriptivesPlots", "descriptivesPlotsCredibleInterval"))
+	descriptivesPlots$dependOn(options = c("descriptivesPlots", "credibleInterval"))
 	descriptivesPlots$position <- position
 
 	bainContainer[["descriptivesPlots"]] <- descriptivesPlots
@@ -304,7 +303,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 		
 		if (is.null(bainContainer[["descriptivesPlots"]][[variable]])){
 
-			bainSummary <- summary(bainResult[[variable]], ci = options[["descriptivesPlotsCredibleInterval"]])
+			bainSummary <- summary(bainResult[[variable]], ci = options[["credibleInterval"]])
 
 			levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
 			N <- bainSummary[["n"]]
@@ -312,7 +311,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 			CiLower <- bainSummary[["lb"]]
 			CiUpper <- bainSummary[["ub"]]
 
-			yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(CiLower, CiUpper), n = 1)
+			yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(CiLower, CiUpper), min.n = 4)
 			d <- data.frame(v = levels, N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1:length(levels))
 
 			p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
@@ -344,14 +343,17 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 						missingValuesIndicator 	<- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
             dataset 								<- .readDataSetToEnd(columns.as.numeric=all.variables, columns.as.factor=grouping, exclude.na.listwise=read.variables)
     }
+	
 	.hasErrors(dataset, type="factorLevels",
 			   factorLevels.target=grouping, factorLevels.amount = "!= 2",
 			   exitAnalysisIfErrors = TRUE)
+	
 	.hasErrors(dataset, type=c("infinity", "variance", "observations"),
 				all.target=all.variables, observations.amount="< 3",
 				exitAnalysisIfErrors = TRUE)
+	
 	readList <- list()
-  readList[["dataset"]] <- dataset
-  readList[["missingValuesIndicator"]] <- missingValuesIndicator
+  	readList[["dataset"]] <- dataset
+  	readList[["missingValuesIndicator"]] <- missingValuesIndicator
 	return(readList)
 }

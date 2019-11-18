@@ -172,7 +172,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 .bainAnovaBayesFactorPlots <- function(dataset, options, bainContainer, ready, position) {
 	if (!is.null(bainContainer[["bayesFactorPlot"]]) || !options[["bayesFactorPlot"]]) return()
 
-	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = 400, width = 600)
+	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = 300, width = 400)
 	bayesFactorPlot$dependOn(options=c("bayesFactorPlot", "seed"))
 	bayesFactorPlot$position <- position
 	
@@ -243,27 +243,29 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .readDataBainAnova <- function(options, dataset) {
+	
 	numeric.variables	<- c(unlist(options[["dependent"]]))
 	numeric.variables	<- numeric.variables[numeric.variables != ""]
 	factor.variables	<- unlist(options[["fixedFactors"]])
 	factor.variables	<- factor.variables[factor.variables != ""]
-	all.variables			<- c(numeric.variables, factor.variables)
+	all.variables		<- c(numeric.variables, factor.variables)
 
 	if (is.null(dataset)) {
-		trydata									<- .readDataSetToEnd(columns.as.numeric=all.variables)
+		trydata	<- .readDataSetToEnd(columns.as.numeric=all.variables)
 		missingValuesIndicator	<- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
-		dataset 								<- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=all.variables)
+		dataset <- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=all.variables)
 	} else {
-		dataset 								<- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
+		dataset <- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
 	}
 
 	.hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
 				all.target=all.variables, observations.amount="< 3",
 				exitAnalysisIfErrors = TRUE)
+
 	readList <- list()
-  readList[["dataset"]] <- dataset
-  readList[["missingValuesIndicator"]] <- missingValuesIndicator
-  return(readList)
+  	readList[["dataset"]] <- dataset
+  	readList[["missingValuesIndicator"]] <- missingValuesIndicator
+  	return(readList)
 }
 
 .bainCleanModelInput <- function(input) {
