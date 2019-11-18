@@ -1,40 +1,3 @@
-# Note(Alexander): I consider this useful, as we now have a zoo of identifiers that's getting out of hand 
-# One recommendation would be to use "two.sided", "greater", "less" because that's quite standard in R, but whwatever
-# 
-#' Custom way to match hypotheses with many different identifiers. Trying to uniform them
-#'
-#' @param hypothesis 
-#'
-#' @return string equal to "equal", "greater", or "less"
-#' @export
-#'
-#' @examples
-#' .matchHypothesis("groupsNotEqual")
-.matchHypothesis <- function(hypothesis) {
-  if (is.null(hypothesis)) {
-    hypothesis <- "equal"
-  } else {
-    .hypTwoSided <- c("two.sided", "twoSided", "two-sided", "equal", #General R
-                      "notEqualToTestValue", "groupsNotEqual", #t-tests/binomial
-                      "correlated") 
-    .hypPlusSided <- c("greater", "plusSided",
-                       "greaterThanTestValue", "groupOneGreater", 
-                       "correlatedPositively", "right", "positive")
-    .hypMinSided <- c("less", "minSided",
-                      "lessThanTestValue", "groupTwoGreater", 
-                      "correlatedNegatively", "left", "negative")
-    if (hypothesis[1] %in% .hypTwoSided) {
-      hypothesis <- "equal"
-    } else if (hypothesis[1] %in% .hypPlusSided) {
-      hypothesis <- "greater"
-    } else if (hypothesis[1] %in% .hypMinSided) {
-      hypothesis <- "smaller"
-    }
-  }
-  return(hypothesis)
-}
-
-
 getBackgroundRect <- function(debug) {
   if (debug) {
     element_rect(colour = "red", fill = "transparent", size = 5, linetype = 1)
@@ -45,7 +8,7 @@ getBackgroundRect <- function(debug) {
 
 #' @export
 getEmptyTheme <- function() {
-
+  
   t <- theme(
     rect              = getBackgroundRect(getGraphOption("debug")),
     panel.spacing     = unit(0, "null"),
@@ -61,7 +24,7 @@ getEmptyTheme <- function() {
     axis.title.y      = element_blank(),
     axis.ticks.length = unit(0,"null")
   )
-
+  
   # t <- ggplot2::theme_void() +
   #     theme(
   #       panel.spacing = grid::unit(0,"null"),
@@ -74,18 +37,18 @@ getEmptyTheme <- function() {
 
 #' @export
 getEmptyPlot <- function(axes = FALSE) {
-
-
+  
+  
   if (axes) {
-  	stop("Not implemented")
+    stop("Not implemented")
   } else {
-		ggplot2::ggplot() + ggplot2::geom_blank() + getEmptyTheme()
+    ggplot2::ggplot() + ggplot2::geom_blank() + getEmptyTheme()
   }
-
+  
 }
 
 draw2Lines <- function(l, x = 0.5, parse = needsParsing(l), align = c("center", "left", "right"), scaleFont = 0.35) {
-
+  
   if (is.numeric(align)) {
     hjust <- align
   } else if (is.character(align)) {
@@ -99,22 +62,22 @@ draw2Lines <- function(l, x = 0.5, parse = needsParsing(l), align = c("center", 
   } else {
     stop("incorrect class for align. Expected character of numeric.")
   }
-
-	nLabels <- length(l)
-	y <- rep(.5, nLabels)
-	diff <- seq(0, nLabels * 0.15, length.out = nLabels)
-	diff <- diff - mean(diff)
-	y <- y + diff
-	dfText <- data.frame(
-	  x = x,
-	  y = y,
-	  l = l
-	)
+  
+  nLabels <- length(l)
+  y <- rep(.5, nLabels)
+  diff <- seq(0, nLabels * 0.15, length.out = nLabels)
+  diff <- diff - mean(diff)
+  y <- y + diff
+  dfText <- data.frame(
+    x = x,
+    y = y,
+    l = l
+  )
   return(
     ggplot2::ggplot(data = dfText, ggplot2::aes(x = x, y = y, label = l)) +
       ggplot2::geom_text(size = scaleFont * getGraphOption("fontsize"), parse = parse, hjust = hjust) +
       ggplot2::scale_y_continuous(limits = c(0, 1)) +#, expand = c(0, 0)) +
-    	ggplot2::scale_x_continuous(limits = c(0, 1)) +#, expand = c(0, 0)) +
+      ggplot2::scale_x_continuous(limits = c(0, 1)) +#, expand = c(0, 0)) +
       # ggplot2::coord_fixed(ratio = 1) +
       getEmptyTheme()
   )
@@ -123,11 +86,11 @@ draw2Lines <- function(l, x = 0.5, parse = needsParsing(l), align = c("center", 
 errCheckPlotPriorAndPosterior <- function(x, length = 1L, nullOk = TRUE) {
   if (is.null(x))
     return(!nullOk)
-	return(length(x) != length || !is.numeric(x) || anyNA(x))
+  return(length(x) != length || !is.numeric(x) || anyNA(x))
 }
 
 errCheckPlots <- function(dfLines, dfPoints = NULL, CRI = NULL, median = NULL, BF = NULL) {
-
+  
   if (!all(is.data.frame(dfLines), !is.null(dfLines$x), !is.null(dfLines$y),
            ncol(dfLines) == 2L || !is.null(dfLines$g)))
     stop("dfLines should be a data.frame with $x, $y, and $g!")
@@ -140,13 +103,13 @@ errCheckPlots <- function(dfLines, dfPoints = NULL, CRI = NULL, median = NULL, B
     stop("median should be numeric and have length 1!")
   if (errCheckPlotPriorAndPosterior(BF))
     stop("BF should be numeric and have length 1!")
-
+  
   return(invisible(TRUE))
 }
 
 makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetypes = NULL, sizes = NULL,
                            type = c("point", "line")) {
-
+  
   type <- match.arg(type)
   if (is.factor(groupingVariable)) {
     l <- as.character(levels(groupingVariable))
@@ -154,9 +117,9 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
     l <- unique(groupingVariable)
   }
   parse <- needsParsing(groupingVariable)
-
+  
   if (type == "point") {
-
+    
     dfLegendPlot <- data.frame(
       x = 0.1,
       y = factor(seq_along(l)),
@@ -168,16 +131,16 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
     } else {
       gp <- geom_point(show.legend = FALSE)
     }
-
+    
     legendPlot <- ggplot(data = dfLegendPlot, aes(x = x, y = y, fill = y, label = l, size = y)) +
       gp +
       ggplot2::geom_text(nudge_x = 0.1, size = .35 * getGraphOption("fontsize"), hjust = 0,
                          parse = parse) +
       ggplot2::xlim(c(0, 1)) +
       getEmptyTheme()
-
+    
   } else {
-
+    
     dfLegendPlot <- data.frame(
       x    = 0,
       xend = 0.1,
@@ -185,7 +148,7 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
       yend = factor(seq_along(l)),
       l    = rev(l) # y = 1, 2, ... so first one at the bottom, hence reverse the labels
     )
-
+    
     legendPlot <- ggplot(data = dfLegendPlot,  aes(x = x, y = y, xend = xend, yend = yend, label = l)) +
       ggplot2::geom_segment(mapping = aes(color = y, linetype = y), show.legend = FALSE,
                             size = 1.15 * jaspGeomLine$default_aes$size) +
@@ -193,9 +156,9 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
                          parse = parse) +
       ggplot2::xlim(c(0, 1)) +
       getEmptyTheme()
-
+    
   }
-
+  
   if (!is.null(fill))
     legendPlot <- legendPlot + ggplot2::scale_fill_manual(values = rev(fill))
   if (!is.null(colors))
@@ -204,12 +167,12 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
     legendPlot <- legendPlot + ggplot2::scale_linetype_manual(values = rev(linetypes))
   if (!is.null(sizes))
     legendPlot <- legendPlot + ggplot2::scale_size_manual(values = 1.15 * rev(sizes))
-
+  
   return(legendPlot)
 }
 
 makeBFlabels <- function(bfSubscripts, BFvalues, subs = NULL, bfTxt = NULL) {
-
+  
   if (!is.null(bfTxt)) {
     lab <- paste0(bfTxt, " == ", format(BFvalues, digits = getGraphOption("digits")[["BF"]]))
   } else {
@@ -226,32 +189,8 @@ makeBFlabels <- function(bfSubscripts, BFvalues, subs = NULL, bfTxt = NULL) {
 
 #' @export
 hypothesis2BFtxt <- function(hypothesis = c("equal", "smaller", "greater")) {
-  if (is.null(hypothesis)) {
-    hypothesis <- "equal"
-  } else {
-    hypothesis <- hypothesis[1]
-    
-    # Note(Alexander): we can make these lists more generic
-    # 
-    hypTwoSided <- c("two.sided", "twoSided", "two-sided", "equal", #General R
-                     "notEqualToTestValue", "groupsNotEqual", #t-tests/binomial
-                     "correlated") 
-    hypPlusSided <- c("greater", "plusSided",
-                      "greaterThanTestValue", "groupOneGreater", 
-                      "correlatedPositively", "right", "positive")
-    hypMinSided <- c("less", "minSided",
-                     "lessThanTestValue", "groupTwoGreater", 
-                     "correlatedNegatively", "left", "negative")
-    
-    if (hypothesis %in% hypTwoSided) {
-      hypothesis <- "equal"
-    } else if (hypothesis %in% hypPlusSided) {
-      hypothesis <- "greater"
-    } else if (hypothesis %in% hypMinSided) {
-      hypothesis <- "smaller"
-    }
-  }
   
+  hypothesis <- match.arg(hypothesis)
   return(
     switch(
       hypothesis,
@@ -273,7 +212,7 @@ hypothesis2BFtxt <- function(hypothesis = c("equal", "smaller", "greater")) {
 
 #' @export
 pizzaTxtFromBF <- function(x) {
-
+  
   if (grepl("+", x, fixed = TRUE)) {
     pizzaTxt = c("data | H0", "data | H+")
   } else if(grepl("-", x, fixed = TRUE)) {
@@ -286,15 +225,15 @@ pizzaTxtFromBF <- function(x) {
 
 #' @export
 getBFSubscripts <- function(bfType = c("BF01", "BF10", "LogBF10"), hypothesis = c("equal", "smaller", "greater")) {
-
+  
   bfType <- match.arg(bfType)
-  hypothesis <- .matchHypothesis(hypothesis)
-
+  hypothesis <- match.arg(hypothesis)
+  
   if (bfType == "BF01") {
     subscripts <- switch (hypothesis,
-      "equal"   = c("BF[1][0]",   "BF[0][1]"),
-      "smaller" = c("BF['-'][0]", "BF[0]['-']"),
-      "greater" = c("BF['+'][0]", "BF[0]['+']")
+                          "equal"   = c("BF[1][0]",   "BF[0][1]"),
+                          "smaller" = c("BF['-'][0]", "BF[0]['-']"),
+                          "greater" = c("BF['+'][0]", "BF[0]['+']")
     )
     # subscripts <- switch (hypothesis,
     #   "equal"   = c("BF[0][1]",   "BF[1][0]"),
@@ -303,22 +242,22 @@ getBFSubscripts <- function(bfType = c("BF01", "BF10", "LogBF10"), hypothesis = 
     # )
   } else if (bfType == "BF10") {
     subscripts <- switch (hypothesis,
-      "equal"   = c("BF[1][0]",   "BF[0][1]"),
-      "smaller" = c("BF['-'][0]", "BF[0]['-']"),
-      "greater" = c("BF['+'][0]", "BF[0]['+']")
+                          "equal"   = c("BF[1][0]",   "BF[0][1]"),
+                          "smaller" = c("BF['-'][0]", "BF[0]['-']"),
+                          "greater" = c("BF['+'][0]", "BF[0]['+']")
     )
   } else {
     subscripts <- switch (hypothesis,
-      "equal"   = c("log(BF[0][1])",   "log(BF[1][0])"    ),
-      "smaller" = c("log(BF[0]['-'])", "log(BF['-'][0])"),
-      "greater" = c("log(BF[0]['+'])", "log(BF['+'][0])")
+                          "equal"   = c("log(BF[0][1])",   "log(BF[1][0])"    ),
+                          "smaller" = c("log(BF[0]['-'])", "log(BF['-'][0])"),
+                          "greater" = c("log(BF[0]['+'])", "log(BF['+'][0])")
     )
   }
   return(parseThis(subscripts))
 }
 
 makeBFwheelAndText <- function(BF, bfSubscripts, pizzaTxt, drawPizzaTxt = is.null(pizzaTxt), bfType) {
-
+  
   # drawBFpizza uses BF01
   bfSubscripts <- rev(bfSubscripts)
   if (bfType == "BF10") {
@@ -331,11 +270,11 @@ makeBFwheelAndText <- function(BF, bfSubscripts, pizzaTxt, drawPizzaTxt = is.nul
     BF01 <- exp(-BF)
     BFvalues <- c(-BF, BF)
   }
-
+  
   labels <- makeBFlabels(bfTxt = bfSubscripts, BFvalues = BFvalues)
   return(list(
-      gTextBF = draw2Lines(labels, x = 0.7),
-      gWheel = drawBFpizza(
+    gTextBF = draw2Lines(labels, x = 0.7),
+    gWheel = drawBFpizza(
       dat = data.frame(y = c(1, BF01)),
       labels = if (drawPizzaTxt) pizzaTxt else NULL
     )
@@ -378,18 +317,18 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
                                   lineColors = NULL,
                                   CRItxt = "95% CI: ", medianTxt = "Median:",
                                   ...) {
-
-	errCheckPlots(dfLines, dfPoints, CRI, median, BF)
+  
+  errCheckPlots(dfLines, dfPoints, CRI, median, BF)
   bfType <- match.arg(bfType)
-  hypothesis <- .matchHypothesis(hypothesis)
-
+  hypothesis <- match.arg(hypothesis)
+  
   emptyPlot <- list()
-
+  
   yBreaks <- getPrettyAxisBreaks(c(0, dfLines$y))
   breaksYmax <- yBreaks[length(yBreaks)] # max(dfLines$y)
   obsYmax <- max(dfLines$y)
   newymax <- max(1.1 * obsYmax, breaksYmax)
-
+  
   mapping <- if (ncol(dfLines) == 2L)
     aes(x = x, y = y)
   else if (!is.null(lineColors))
@@ -397,27 +336,27 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
   else
     aes(x = x, y = y, group = g, linetype = g)
   g <- ggplot2::ggplot(data = dfLines, mapping) +
-      geom_line() +
-      scale_x_continuous(xName) +
-      scale_y_continuous(yName, breaks = yBreaks, limits = c(0, newymax))
-
+    geom_line() +
+    scale_x_continuous(xName) +
+    scale_y_continuous(yName, breaks = yBreaks, limits = c(0, newymax))
+  
   if (!is.null(lineColors) && is.character(lineColors))
     g <- g + ggplot2::scale_color_manual(values = lineColors)
-
+  
   if (!is.null(dfPoints)) {
     g <- g + ggplot2::geom_point(data = dfPoints, ggplot2::aes(x = x, y = y), inherit.aes = FALSE,
-                          size = 4, shape = 21, stroke = 1.25, fill = "grey")
+                                 size = 4, shape = 21, stroke = 1.25, fill = "grey")
   }
-
+  
   labelsCRI <- NULL
   if (!is.null(CRI)) {
-  	dfCI <- data.frame(
-  		xmin = CRI[1],
-  		xmax = CRI[2],
-  		y    = (newymax - obsYmax) / 2 + obsYmax
-  	)
-  	maxheight <- (newymax - dfCI$y)
-
+    dfCI <- data.frame(
+      xmin = CRI[1],
+      xmax = CRI[2],
+      y    = (newymax - obsYmax) / 2 + obsYmax
+    )
+    maxheight <- (newymax - dfCI$y)
+    
     g <- g + ggplot2::geom_errorbarh(
       data = dfCI, ggplot2::aes(y = y, xmin = xmin, xmax = xmax), inherit.aes = FALSE,
       size = 1.0, height = maxheight)
@@ -429,18 +368,18 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
                           bquote(.(formatC(dfCI$xmax, 3, format = "f"))), "]")
     }
   }
-
+  
   if (!is.null(median)) {
-  	labelsCRI <- c(labelsCRI, paste(medianTxt, formatC(median, 3, format = "f")))
+    labelsCRI <- c(labelsCRI, paste(medianTxt, formatC(median, 3, format = "f")))
   }
-
+  
   if (length(labelsCRI) > 0) {
-
-  	gTextCI <- draw2Lines(labelsCRI, x = 1, align = "right")
+    
+    gTextCI <- draw2Lines(labelsCRI, x = 1, align = "right")
   } else {
-  	gTextCI <- emptyPlot
+    gTextCI <- emptyPlot
   }
-
+  
   xr   <- range(dfLines$x)
   idx  <- which.max(dfLines$y)
   xmax <- dfLines$x[idx]
@@ -449,7 +388,7 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
   } else {
     legend.position = c(0.80, 0.875)
   }
-
+  
   g <- themeJasp(graph = g, legend.position = legend.position, bty = bty) +
     theme(
       legend.title = element_blank(),
@@ -457,35 +396,35 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
       legend.key.height = unit(1, "cm"),
       legend.key.width = unit(1.5, "cm")
     )
-
+  
   if (!is.null(BF)) {
     if (is.null(bfSubscripts))
       bfSubscripts <- getBFSubscripts(bfType, hypothesis)
-
+    
     tmp <- makeBFwheelAndText(BF, bfSubscripts, pizzaTxt, drawPizzaTxt, bfType)
     gTextBF <- tmp$gTextBF
     gWheel <- tmp$gWheel
-
+    
   } else {
     gWheel <- emptyPlot
     gTextBF <- emptyPlot
   }
-
+  
   topPlotList <- list(BFtext = gTextBF, BFpizza = gWheel, CItext = gTextCI)
   if (all(lengths(topPlotList) == 0)) {
     plot <- g
     class(plot) <- c("JASPgraphs", class(plot))
   } else {
-
+    
     idx <- lengths(topPlotList) == 0L
     layout <- matrix(1:3, 1, 3)
     layout[idx] <- NA_integer_
     layout <- rbind(layout, 4)
     plots2arrange <- c(topPlotList[!idx], mainGraph = list(g))
-
+    
     heights <- c(.2, .8)
     widths  <- c(.4, .2, .4)
-
+    
     plot <- JASPgraphsPlot$new(
       subplots     = plots2arrange,
       layout       = layout,
