@@ -370,24 +370,26 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   }
 }
 
-.plot_bain_ttest_cran <- function(x, type, adjustLabels = FALSE){
+.plot_bain_ttest_cran <- function(x, type){
 
     if(type == 1 || type == 2 || type == 3){
-      labels <- rev(c("H0", "H1"))
+      labs <- c("H0", "H1")
     }
     if(type == 4){
-      labels <- rev(c("H1", "H2"))
+      labs <- c("H1", "H2")
     }
     if(type == 5){
-      labels <- rev(c("H0", "H1", "H2"))
+      labs <- c("H0", "H1", "H2")
     }
+    labels <- rev(labs)
     if(type == 1){
       values <- x$fit$PMPb
     } else {
       values <- na.omit(x$fit$PMPa)
     }
+
     ggdata <- data.frame(lab = labs, PMP = values)
-    
+
     p <- ggplot2::ggplot(data = ggdata, mapping = ggplot2::aes(x = "", y = PMP, fill = lab)) +
           ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
           ggplot2::geom_col() +
