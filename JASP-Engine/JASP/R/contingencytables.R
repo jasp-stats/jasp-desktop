@@ -100,6 +100,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       container$dependOn(options              = c("layers", "counts"),
                          optionContainsValue  = list(rows     = analysis$rows, 
                                                      columns  = analysis$columns))
+      container$position <- 1
       jaspResults[[paste0("container", i)]] <- container
     }
   }

@@ -163,6 +163,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
                   "plotPosteriorOddsRatioAdditionalInfo", "priorConcentration",
                   "counts", "layers")
   oddsRatioPlotContainer$dependOn(dependList)
+  oddsRatioPlotContainer$position <- 2
   .contTablesBayesianCitations(oddsRatioPlotContainer)
   for (i in 1:nrow(analyses)){
     if (!is.null(oddsRatioPlotContainer[[paste0("plots", i)]])) 
