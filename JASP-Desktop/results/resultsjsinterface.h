@@ -38,7 +38,8 @@ class ResultsJsInterface : public QObject
 public:
 	explicit ResultsJsInterface(QObject *parent = 0);
 
-	void changeTitle(Analysis *analyses);
+	void setStatus(Analysis *analysis);
+	void changeTitle(Analysis *analysis);
 	void showAnalysis(int id);
 	void analysisChanged(Analysis *analysis);
 	void setResultsMeta(QString str);

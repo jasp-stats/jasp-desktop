@@ -65,6 +65,14 @@ $(document).ready(function () {
 
 		window.scrollToTopView(selectedAnalysis.$el);
 	}
+	
+	window.setStatus = function(id, status) {
+		var analysis = analyses.getAnalysis(id);
+		if (analysis === undefined) return;
+
+		analysis.toolbar.setStatus(status);
+		analysis.toolbar.render();
+	}
 
 	window.changeTitle = function(id, title) {
 		var analysis = analyses.getAnalysis(id);
@@ -430,7 +438,6 @@ $(document).ready(function () {
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 
 				jasp.showAnalysesMenu(JSON.stringify(options));
-				console.log(options);
 				window.menuObject = obj;
 			});
 		}

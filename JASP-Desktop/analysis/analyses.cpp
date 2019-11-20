@@ -159,6 +159,7 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 void Analyses::bindAnalysisHandler(Analysis* analysis)
 {
 	connect(analysis, &Analysis::optionsChanged,					this, &Analyses::analysisOptionsChanged				);
+	connect(analysis, &Analysis::statusChanged,						this, &Analyses::analysisStatusChanged				);
 	connect(analysis, &Analysis::sendRScript,						this, &Analyses::sendRScriptHandler					);
 	connect(analysis, &Analysis::toRefreshSignal,					this, &Analyses::analysisToRefresh					);
 	connect(analysis, &Analysis::titleChanged,						this, &Analyses::setChangedAnalysisTitle			);

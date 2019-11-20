@@ -30,6 +30,7 @@
 #include <QObject>
 #include "modules/dynamicmodules.h"
 #include "data/datasetpackage.h"
+#include "utilities/qutils.h"
 
 class ComputedColumn;
 class Analyses;
@@ -89,15 +90,16 @@ public:
 	const	Json::Value		&	results()			const	{ return _results;							}
 	const	Json::Value		&	userData()			const	{ return _userData;							}
 	const	std::string		&	name()				const	{ return _name;								}
-	const	QString				nameQ()				const	{ return QString::fromStdString(_name);		}
+	const	QString				nameQ()				const	{ return tq(_name);							}
 	const	Version			&	version()			const	{ return _version;							}
 	const	std::string		&	title()				const	{ return _title;							}
-			QString				titleQ()			const	{ return QString::fromStdString(_title);	}
+			QString				titleQ()			const	{ return tq(_title);						}
 	const	std::string		&	rfile()				const	{ return _rfile;							}
 	const	std::string		&	module()			const	{ return _module;							}
 			size_t				id()				const	{ return _id;								}
 			bool				usesJaspResults()	const	{ return _useJaspResults;					}
 			Status				status()			const	{ return _status;							}
+			QString				statusQ()			const	{ return tq(statusToString(_status));		}
 			int					revision()			const	{ return _revision;							}
 			bool				isRefreshBlocked()	const	{ return _refreshBlocked;					}
 			QString				helpFile()			const	{ return _helpFile;							}
@@ -143,6 +145,7 @@ public:
 signals:
 	void				nameChanged();
 	void				sendRScript(			Analysis * analysis, QString script, QString controlName, bool whiteListedVersion);
+	void				statusChanged(			Analysis * analysis);
 	void				optionsChanged(			Analysis * analysis);
 	void				saveImageSignal(		Analysis * analysis);
 	void				editImageSignal(		Analysis * analysis);
@@ -166,7 +169,7 @@ public slots:
 	void					setNameQ(QString name) { setName(name.toStdString()); }
 	void					setHelpFile(QString helpFile);
 	void					setTitleQ(QString title);
-	void					setTitle(std::string title) { setTitleQ(QString::fromStdString(title)); }
+	void					setTitle(std::string title) { setTitleQ(tq(title)); }
 	void					refreshAvailableVariablesModels();
 	void					emitDuplicationSignals();
 	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
@@ -177,9 +180,9 @@ protected:
 
 private:
 	void					optionsChangedHandler(Option *option = nullptr);
-	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)		{ return requestComputedColumnCreation(QString::fromStdString(columnName), this); }
-	void					requestColumnCreationHandler(std::string columnName, int colType)	{ return requestColumnCreation(QString::fromStdString(columnName), this, colType); }
-	void					requestComputedColumnDestructionHandler(std::string columnName)		{ requestComputedColumnDestruction(QString::fromStdString(columnName)); }
+	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)		{ return requestComputedColumnCreation(tq(columnName), this); }
+	void					requestColumnCreationHandler(std::string columnName, int colType)	{ return requestColumnCreation(tq(columnName), this, colType); }
+	void					requestComputedColumnDestructionHandler(std::string columnName)		{ requestComputedColumnDestruction(tq(columnName)); }
 	void					processResultsForDependenciesToBeShown();
 	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
 	bool					_editOptionsOfPlot(const Json::Value & results, const std::string & uniqueName, Json::Value & editOptions);
