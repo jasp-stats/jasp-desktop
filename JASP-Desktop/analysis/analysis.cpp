@@ -26,7 +26,6 @@
 #include "dirs.h"
 #include "analyses.h"
 #include "analysisform.h"
-#include "utilities/qutils.h"
 #include "log.h"
 
 
@@ -317,6 +316,8 @@ void Analysis::setStatus(Analysis::Status status)
 	}
 
 	_status = status;
+
+	emit statusChanged(this);
 
 	Log::log() << "Analysis " << title() << " (" << id() << ") now has status: " << statusToString(_status) << std::endl;
 }

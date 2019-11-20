@@ -211,6 +211,14 @@ void ResultsJsInterface::displayMessageFromResults(QString msg)
 	MessageForwarder::showWarning("Results Warning", msg);
 }
 
+void ResultsJsInterface::setStatus(Analysis *analysis)
+{
+	int id = analysis->id();
+	QString status = analysis->statusQ();
+
+	emit runJavaScript("window.setStatus(" + QString::number(id) + ", '" + status + "')");
+}
+
 void ResultsJsInterface::changeTitle(Analysis *analysis)
 {
     int id = analysis->id();
