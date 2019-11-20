@@ -51,7 +51,8 @@ Form
 		title: qsTr("Tables")
 
 		CheckBox { name: "bayesFactorMatrix";	text: qsTr("Bayes factor matrix")	}
-		CheckBox { name: "coefficients";		text: qsTr("Coefficients")			}
+		CheckBox { name: "descriptives";		text: qsTr("Coefficients")			
+			CIField { name: "CredibleInterval"; text: qsTr("Credible interval")} }
 	}
 
 	Group
@@ -59,7 +60,7 @@ Form
 		title: qsTr("Plots")
 
 		CheckBox { name: "bayesFactorPlot";		text: qsTr("Posterior probabilities")	}
-		CheckBox { name: "descriptivesPlot";	text: qsTr("Descriptives plot")			}
+		CheckBox { name: "descriptivesPlot";	text: qsTr("Adjusted means")			}
 	}
 
 	Group

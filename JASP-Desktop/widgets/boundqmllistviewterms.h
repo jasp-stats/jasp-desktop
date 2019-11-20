@@ -45,9 +45,9 @@ public:
 	Option*		createOption()								override;
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
-	void		setTermsAreInteractions()					override;	
-	void		bindExtraControlOptions();
-	
+	void		setTermsAreInteractions()					override;
+	void		bindExtraControlOptions()					override;
+
 protected slots:
 	void		modelChangedHandler() override;
 	

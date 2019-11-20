@@ -53,7 +53,8 @@ This is all specified under the field `menu` which should be an array of analyse
   
   | fieldname  | description |
   |------------|-------------|
-  | `title`    | Text shown in the menu that opens when the ribbonbutton is clicked. |
+  | `menu`     | Optional: Text shown in the menu that opens when the ribbonbutton is clicked. If it isn't entered `title` is used. |
+  | `title`    | Name of the analysis and, if `menu` is missing, the text shown in the ribbonbutton-menu. |
   | `icon`     | Filename of the icon to show next to `title` in the menu, can be used by analyses and headers. |
   | `qml`      | Filename of the qml file associated with an analysis, it must be located in the [qml folder](#qml). |
   | `function` | Name of the main R function of an analysis, this should be part of your R-code. |

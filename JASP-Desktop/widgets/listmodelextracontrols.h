@@ -22,7 +22,7 @@
 #include <QAbstractTableModel>
 #include "common.h"
 
-class ListModelAssignedInterface;
+class ListModel;
 class BoundQMLItem;
 
 class ListModelExtraControls : public QAbstractTableModel
@@ -36,7 +36,7 @@ public:
 		PropertiesRole
     };
 	
-	ListModelExtraControls(ListModelAssignedInterface* parent, const QVector<QMap<QString, QVariant> >& controlColumns);
+	ListModelExtraControls(ListModel* parent, const QVector<QMap<QString, QVariant> >& controlColumns);
 	
 	QHash<int, QByteArray>	roleNames()												const override;
 	int						rowCount(const QModelIndex &parent = QModelIndex())		const override;
@@ -58,7 +58,7 @@ private:
 			: name(_name), type(_type), path(_type + ".qml"), properties(_properties) {}		
 	};
 
-	ListModelAssignedInterface*		_assignedModel;
+	ListModel*						_parentModel;
 	QMap<QString, ExtraColumnType*>	_extraColumns;
 	QMap<QString, BoundQMLItem* >	_boundItems;
 	QVector<QString>				_names;

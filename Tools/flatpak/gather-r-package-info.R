@@ -3,8 +3,8 @@ options(warn=1) #print warnings as they occur
 options(nCpus=8)
 
 expEnv     <- new.env(hash = TRUE, parent = parent.frame())
-CRAN       <- "https://cran.rstudio.com/"
-#"https://cran.r-project.org/" #
+CRAN       <- #"https://cran.rstudio.com/"
+"https://cran.r-project.org/" #
   
 
 giveOrderedDependencies <- function()
@@ -135,7 +135,7 @@ giveOrderedDependencies <- function()
 }
 
 specials <- new.env(hash = TRUE, parent = parent.frame())
-specials[['BAS']]          <- list(type='github', commit='abb73a6ac9d145ced3586434d413130b2f6263e9', repo='vandenman/BAS')
+specials[['BAS']]          <- list(type='github', commit='cc28ab75e4276eb0b13f4ae89a9fa88216581ed0', repo='vandenman/BAS')
 #specials[['Bain']]         <- list(type='github', commit='1b03f71204839da29a4219e8bba99b8ec8479612', repo='jasp-stats/BAIN-for-JASP')
 specials[['KneeArrower']]  <- list(type='github', commit='cdb14e574e00914e4e7019a4cf3c5fcda7426466', repo='agentlans/KneeArrower')
 

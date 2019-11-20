@@ -26,4 +26,5 @@ QtObject {
 	property bool	useExternalBorder:	false
 	property int	rightMargin: 0
 	property var	properties
+	property var	source
 }

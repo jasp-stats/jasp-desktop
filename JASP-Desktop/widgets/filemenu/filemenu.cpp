@@ -313,7 +313,8 @@ void FileMenu::dataSetIORequestHandler(FileEvent *event)
 	connect(event, &FileEvent::completed,		this, &FileMenu::dataSetIOCompleted			);
 
 	emit dataSetIORequest(event);
-	
+
+	setVisible(false); //If we just did something we are now done with the filemenu right?
 }
 
 void FileMenu::analysisAdded(Analysis *analysis)

@@ -32,7 +32,7 @@ enum Encryption { NoEncryption, SimpleCryptEncryption };
 
 		std::string							fq(const QString							& from);
 		std::vector<std::string>			fq(const QVector<QString>					& vec);
-inline	std::vector<std::string>			fq(const QStringList						& vec) { return fq(vec.toVector()); }
+		std::vector<std::string>			fq(const QStringList						& vec);
 		std::map<std::string, std::string>	fq(const QMap<QString, QString>				& map);
 		QMap<QString, QString>				tq(const std::map<std::string, std::string> & map);
 		QString								tq(const std::string						& from);

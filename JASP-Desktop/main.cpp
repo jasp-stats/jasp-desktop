@@ -275,7 +275,9 @@ int main(int argc, char *argv[])
 
 			JASPTIMER_START("JASP");
 			Application a(argc, argv, filePathQ, unitTest, timeOut, save, logToFile);
-			QtWebEngine::initialize();
+
+			QtWebEngine::initialize(); //We can do this here and not in MainWindow::loadQML() (before QQmlApplicationEngine is instantiated) because that is called from a singleshot timer. And will only be executed once we enter a.exec() below!
+
 			try
 			{
 				int exitCode = a.exec();

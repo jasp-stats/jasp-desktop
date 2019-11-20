@@ -137,8 +137,7 @@ Form {
                 values:
                 [
                     { label: "Hartigan-Wong", value: "Hartigan-Wong"},
-                    { label: "Lloyd", value: "Lloyd"},
-                    { label: "Forgy", value: "Forgy"},
+                    { label: "Lloyd-Forgy", value: "Lloyd"},
                     { label: "MacQueen", value: "MacQueen"}
                 ]
             }  

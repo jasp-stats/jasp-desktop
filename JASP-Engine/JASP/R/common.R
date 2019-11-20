@@ -215,10 +215,14 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
   analysisResult <-
     tryCatch(
       expr=withCallingHandlers(expr=analysis(jaspResults=jaspResults, dataset=dataset, options=options), error=.addStackTrace),
-      error=function(e) e
+      error=function(e) e,
+      jaspAnalysisAbort=function(e) e
     )
 
-  if (inherits(analysisResult, "error")) {		
+  if (inherits(analysisResult, "jaspAnalysisAbort")) {
+    jaspResultsCPP$send()
+    return("null")
+  } else if (inherits(analysisResult, "error")) {		
 		
 		if (inherits(analysisResult, "validationError")) {
       errorStatus  <- "validationError"
@@ -235,9 +239,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     jaspResultsCPP$send()
 		
 		return(paste0("{ \"status\" : \"", errorStatus, "\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep=""))
-  }
-  else
-  {
+  } else {
     newState                        <- list()
     newState[["figures"]]           <- jaspResultsCPP$getPlotObjectsForState()
     newState[["other"]]             <- jaspResultsCPP$getOtherObjectsForState()

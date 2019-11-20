@@ -47,22 +47,15 @@ macx:  LIBS += -L$$_R_HOME/lib -lR
 
 INCLUDEPATH += $$PWD/../JASP-Common/
 
-macx:QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter -Wno-unused-local-typedef
-macx:QMAKE_CXXFLAGS += -Wno-c++11-extensions
-macx:QMAKE_CXXFLAGS += -Wno-c++11-long-long
-macx:QMAKE_CXXFLAGS += -Wno-c++11-extra-semi
-macx:QMAKE_CXXFLAGS += -stdlib=libc++
-
-win32:QMAKE_CXXFLAGS += -DBOOST_USE_WINDOWS_H -DNOMINMAX -DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED
-
 win32:LIBS += -lole32 -loleaut32
 
 mkpath($$OUT_PWD/../R/library)
 
 exists(/app/lib/*) {
+	#Actually org.jaspstats.JASP.json already does this...
   #for flatpak we can just use R's own library as it is contained anyway
-    InstallJASPRPackage.commands        = \"$$R_EXE\" CMD INSTALL --no-multiarch $$PWD/JASP
-    InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL --no-multiarch $$PWD/JASPgraphs
+    #InstallJASPRPackage.commands        = \"$$R_EXE\" CMD INSTALL --no-multiarch $$PWD/JASP
+   # InstallJASPgraphsRPackage.commands	= \"$$R_EXE\" CMD INSTALL --no-multiarch $$PWD/JASPgraphs
 } else {
     win32:RemoveJASPRPkgLock.commands   = IF exist \"$$OUT_PWD/../R/library/00LOCK-JASP/\" (rd /s /q \"$$OUT_PWD/../R/library/00LOCK-JASP/\" && echo Lock removed!) ELSE (echo No lock found!);
     win32:InstallJASPRPackage.commands  = \"$$R_EXE\" -e \".libPaths(\'$$OUT_PWD/../R/library\'); install.packages(\'$$PWD/JASP\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
@@ -71,26 +64,26 @@ exists(/app/lib/*) {
     win32:RemoveJASPgraphsRPkgLock.commands   = IF exist \"$$OUT_PWD/../R/library/00LOCK-JASPgraphs/\" (rd /s /q \"$$OUT_PWD/../R/library/00LOCK-JASPgraphs/\" && echo Lock removed!) ELSE (echo No lock found!);
     win32:InstallJASPgraphsRPackage.commands  = \"$$R_EXE\" -e \".libPaths(\'$$OUT_PWD/../R/library\'); install.packages(\'$$PWD/JASPgraphs\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
     unix: InstallJASPgraphsRPackage.commands  = export JASP_R_HOME=\"$$_R_HOME\" ; \"$$R_EXE\" -e \".libPaths(\'$$_R_HOME/library\'); install.packages(\'$$PWD/JASPgraphs\', lib=\'$$OUT_PWD/../R/library\', repos=NULL, type=\'source\', INSTALL_opts=\'--no-multiarch\')\"
+
+	win32 {
+	InstallJASPgraphsRPackage.depends = RemoveJASPgraphsRPkgLock
+	InstallJASPRPackage.depends = RemoveJASPRPkgLock
+
+	QMAKE_EXTRA_TARGETS += RemoveJASPgraphsRPkgLock
+	POST_TARGETDEPS     += RemoveJASPgraphsRPkgLock
+
+	QMAKE_EXTRA_TARGETS += RemoveJASPRPkgLock
+	POST_TARGETDEPS     += RemoveJASPRPkgLock
+	}
+
+	QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage
+	POST_TARGETDEPS     += InstallJASPgraphsRPackage
+
+	QMAKE_EXTRA_TARGETS += InstallJASPRPackage
+	POST_TARGETDEPS     += InstallJASPRPackage
 }
 
-win32 {
-  InstallJASPgraphsRPackage.depends = RemoveJASPgraphsRPkgLock
-  InstallJASPRPackage.depends = RemoveJASPRPkgLock
-
-  QMAKE_EXTRA_TARGETS += RemoveJASPgraphsRPkgLock
-  POST_TARGETDEPS     += RemoveJASPgraphsRPkgLock
-
-  QMAKE_EXTRA_TARGETS += RemoveJASPRPkgLock
-  POST_TARGETDEPS     += RemoveJASPRPkgLock
-}
-
-QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage
-POST_TARGETDEPS     += InstallJASPgraphsRPackage
-
-QMAKE_EXTRA_TARGETS += InstallJASPRPackage
-POST_TARGETDEPS     += InstallJASPRPackage
-
-QMAKE_CLEAN += $$OUT_PWD/../R/library/*
+QMAKE_CLEAN += $$OUT_PWD/../R/library/* #Does this not mess up Windows somehow?
 
 SOURCES += main.cpp \
   engine.cpp \

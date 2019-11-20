@@ -27,8 +27,22 @@ Item
 	width:			500
 	height:			jaspTheme.ribbonButtonHeight
 
+	MouseArea
+	{
+		id:					convertVerticalIntoHorizontalScrolling
+		z:					10
+		anchors.fill:		parent
+		acceptedButtons:	Qt.NoButton
+		onWheel:
+		{
+			var bigWheel = Math.abs(wheel.angleDelta.x) > Math.abs(wheel.angleDelta.y) ? wheel.angleDelta.x : wheel.angleDelta.y;
+			buttonList.flick(1000 * bigWheel / 120, 0)
+		}
+	}
+
 	ListView
 	{
+		id:								buttonList
 		z:								0
 		model:							ribbonModelFiltered
 		orientation:					ListView.Horizontal

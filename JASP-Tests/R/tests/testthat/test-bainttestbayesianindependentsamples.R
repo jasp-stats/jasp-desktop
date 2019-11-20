@@ -11,8 +11,7 @@ options$variables <- list("age")
 set.seed(1)
 results <- jasptools::run("BainTTestBayesianIndependentSamples", "sesame.csv", options)
 
-
-test_that("BF plot matches", {
+test_that("BF age plot matches", {
   plotName <- results[["results"]][["BFplots"]][["collection"]][["BFplots_age"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "BF age", dir="BainTTestBayesianIndependentSamples")
@@ -26,7 +25,7 @@ test_that("Bain Independent Samples Welch's T-Test table results match", {
                            "H2: Smaller"))
 })
 
-test_that("Descriptives plot matches", {
+test_that("Descriptives age plot matches", {
   plotName <- results[["results"]][["descriptivesPlots"]][["collection"]][["descriptivesPlots_age"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "descriptives age", dir="BainTTestBayesianIndependentSamples")
@@ -39,4 +38,3 @@ test_that("Descriptive Statistics table results match", {
                            52.551, "age", 125, 2, 49.486, 50.632, 6.47144596695559, 0.578823723793182,
                            51.778, ""))
 })
-

@@ -163,3 +163,8 @@ const char * QProcessErrorToString(QProcess::ProcessError error)
 	};
 	return "???";
 }
+
+std::vector<std::string> fq(const QStringList & vec)
+{
+	return fq(vec.toVector());
+}
