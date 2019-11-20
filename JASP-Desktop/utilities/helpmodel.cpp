@@ -41,8 +41,11 @@ void HelpModel::generateJavascript()
 	bool relative = pathMd.isRelative();
 
 	LanguageInfo li = LanguageModel::CurrentLanguageInfo;
-	QString localnname = li.localName;
-	QString _localname = localnname  == "en" ? "" : ("_" + localnname);
+
+	QString localname = li.localName;
+	//Leave help filenames from JASP native language - English - with localname en_US unchanged
+	QString _localname = localname  == "en_US" ? "" : ("_" + localname);
+
 
 	if(relative) //This is probably a file in resources then
 	{
