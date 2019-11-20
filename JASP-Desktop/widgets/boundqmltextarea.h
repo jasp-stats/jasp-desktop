@@ -64,6 +64,7 @@ protected:
 	QString						_text;
 	TextType					_textType;
 	QString						_applyScriptInfo;
+	QSet<QString>				_usedColumnNames;
 	
 	LavaanSyntaxHighlighter*	_lavaanHighlighter = nullptr;
 	ListModelTermsAvailable*	_model = nullptr;
