@@ -42,7 +42,8 @@ void HelpModel::generateJavascript()
 
 	LanguageInfo li = LanguageModel::CurrentLanguageInfo;
 	QString localnname = li.localName;
-	QString _localname = localnname  == "en" ? "" : ("_" + localnname);
+	//Leave help filenmames from JASP native language - Engish - with localname en_US unchanged
+	QString _localname = localnname  == "en_US" ? "" : ("_" + localnname);
 
 	if(relative) //This is probably a file in resources then
 	{
