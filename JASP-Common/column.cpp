@@ -433,7 +433,6 @@ bool Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
 
 	if (_columnType == columnType::nominalText)
 	{
-		bool						success = true;
 		std::vector<int>			values;
 		std::set<int>				uniqueIntValues;
 		std::map<int, std::string>	intLabels;
@@ -445,12 +444,9 @@ bool Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
 			if (key != INT_MIN)
 			{
 				std::string value = _labels.getValueFromKey(key);
-				if (!Utils::isEmptyValue(value))
-					success = Utils::getIntValue(value, intValue);
+				if (!Utils::isEmptyValue(value) && !Utils::getIntValue(value, intValue))
+					break;
 			}
-
-			if (!success)
-				break;
 
 			values.push_back(intValue);
 			if (intValue != INT_MIN)
@@ -464,7 +460,7 @@ bool Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
 			}
 		}
 
-		if (success)
+		if (values.size() == rowCount())
 		{
 			_labels.clear();
 			setColumnAsNominalOrOrdinal(values, intLabels, newColumnType == columnType::ordinal);
@@ -550,8 +546,7 @@ bool Column::_changeColumnToScale()
 	}
 
 	setColumnAsScale(values);
-
-	return false;
+	return true;
 }
 
 bool Column::changeColumnType(enum columnType newColumnType)

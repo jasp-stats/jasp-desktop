@@ -3,6 +3,7 @@
 
 QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 {
+	//So yes despite this being a "proxy model" it doesn't actually use any data from that model as passed through.
 	if(index.row() < 0 || index.row() >= rowCount()) return QVariant();
 
 	switch(role)
@@ -16,7 +17,7 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 		case columnType::ordinal:		return JaspTheme::currentIconPath() + "variable-ordinal.png";
 		case columnType::nominal:		return JaspTheme::currentIconPath() + "variable-nominal.png";
 		case columnType::nominalText:	return JaspTheme::currentIconPath() + "variable-nominal-text.png";
-		default:										return "";
+		default:						return "";
 		}
 	case ToolTipRole:
 	{
@@ -32,6 +33,7 @@ QVariant ColumnsModel::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> ColumnsModel::roleNames() const
 {
+	//These should be the same as used in ElementView.qml
 	static const auto roles = QHash<int, QByteArray>{
 		{ NameRole,					"columnName"},
 		{ TypeRole,					"type"},
@@ -42,13 +44,31 @@ QHash<int, QByteArray> ColumnsModel::roleNames() const
 	return roles;
 }
 
-// It is the headerdata from untransposed source
-void ColumnsModel::onHeaderDataChanged(Qt::Orientation orientation, int first, int last)
+void ColumnsModel::onHeaderDataChanged(Qt::Orientation, int, int)
 {
 	beginResetModel();
 	endResetModel();
+}
 
-	//datachanged doesnt seem to work in filterconstructor etc
-	//if(orientation == Qt::Horizontal)
-	//	emit dataChanged(index(first, 0), index(last, columnCount()), { NameRole, TypeRole, IconSourceRole, ToolTipRole });
+void ColumnsModel::onDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)
+{
+	beginResetModel();
+	endResetModel();
+}
+
+
+int ColumnsModel::rowCount(const QModelIndex &) const
+{
+	return _tableModel->columnCount();
+}
+
+int ColumnsModel::columnCount(const QModelIndex &) const
+{
+	return 1; //We just show columns
+}
+
+//What does headerData even mean here? Doesn't really matter at the moment (20-11-2019)
+QVariant ColumnsModel::headerData(int section, Qt::Orientation orientation, int role ) const
+{
+	return _tableModel->headerData(section, orientation == Qt::Orientation::Vertical ? Qt::Horizontal : Qt::Vertical, role);
 }

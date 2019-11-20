@@ -23,8 +23,8 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(QString					title			READ title			WRITE setTitle			NOTIFY titleChanged			)
 	Q_PROPERTY(int						width			READ width			WRITE setWidth			NOTIFY widthChanged			)
 	Q_PROPERTY(int						height			READ height			WRITE setHeight			NOTIFY heightChanged		)
-	Q_PROPERTY(AxisModel *	xAxis			READ xAxis									NOTIFY dummyAxisChanged		)
-	Q_PROPERTY(AxisModel *	yAxis			READ yAxis									NOTIFY dummyAxisChanged		)
+	Q_PROPERTY(AxisModel *				xAxis			READ xAxis									NOTIFY dummyAxisChanged		)
+	Q_PROPERTY(AxisModel *				yAxis			READ yAxis									NOTIFY dummyAxisChanged		)
 
 
 public:

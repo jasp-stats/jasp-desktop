@@ -3,6 +3,8 @@
 
 #include <QVariant>
 #include <QQmlListProperty>
+#include <QVector>
+#include <QMap>
 
 class QMLListView;
 

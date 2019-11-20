@@ -17,7 +17,7 @@
 //
 
 import QtQuick			2.7
-import QtQuick.Controls 2.13 as New
+import QtQuick.Controls 2.12 as New
 import QtQuick.Controls 1.4 as OLD
 import QtQuick.Layouts	1.3
 
