@@ -36,29 +36,17 @@ void JASPVersionChecker::checkForJaspUpdate()
 
 void JASPVersionChecker::downloadFinished()
 {
-	QString result(_networkReply->readAll());
-	QRegExp rx("JASPVersion:.+</div>", Qt::CaseInsensitive);
+	QString version			= _networkReply->readAll().trimmed(),
+			downloadfile	= "https://jasp-stats.org/download/";
 
-	if  ((rx.indexIn(result, 0)) != -1)
-	{
-		QString g = rx.cap(0);
-		rx.setPattern("JASPVersion:");
-		g.remove(rx);
-		rx.setPattern("</div>");
-		g.remove(rx);
-		g = g.trimmed(); 
+	Version cv		= AppInfo::version,
+			lv		= version.toStdString();
+	long	cur		= cv.major*1000000 + cv.minor*100000 + cv.revision*1000 + cv.build,
+			latest	= lv.major*1000000 + lv.minor*100000 + lv.revision*1000 + lv.build;
 
-		QString version			= g,
-				downloadfile	= "https://jasp-stats.org/download/";
+	if (latest > cur)
+		emit showDownloadButton(downloadfile);
 
-		Version cv		= AppInfo::version,
-				lv		= version.toStdString();
-		long	cur		= cv.major*1000000 + cv.minor*100000 + cv.revision*1000 + cv.build,
-				latest	= lv.major*1000000 + lv.minor*100000 + lv.revision*1000 + lv.build;
 
-		if (latest > cur)
-			emit showDownloadButton(downloadfile);
-	}
-
-	delete this; //Remove yourself!
+	deleteLater(); //Remove yourself!
 }

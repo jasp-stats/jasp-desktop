@@ -42,7 +42,7 @@ private slots:
 
 private:
 	QNetworkReply			*	_networkReply			= nullptr;
-	QString						_url					= "http://jasp-stats.org/jasp-version/"; //Do not do https here because then, on windows, openSSL dll needs to be loaded and that blocks the whole application
+	QString						_url					= "http://static.jasp-stats.org/JASP-Version.txt"; //Do not do https here because then, on windows, openSSL dll needs to be loaded and that blocks the whole application
 	QNetworkAccessManager		_networkManager;
 };
 
