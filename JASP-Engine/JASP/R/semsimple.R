@@ -71,18 +71,13 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   } else {
     semContainer <- createJaspContainer(title = "Structural Equation Modeling<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>")
     semContainer$dependOn(c("model",  "model", "SampleSize", "errorCalculationBootstrapSamples", 
-                            "outputAdditionalFitMeasures", "outputRSquared", "outputFittedCovarianceCorrelations",
-                            "outputObservedCovarianceCorrelations", "outputResidualCovarianceCorrelations", 
-                            "outputMardiasCoefficients", "outputModificationIndices", 
-                            "outputModificationIndicesHideLowIndices", "outputModificationIndicesHideLowIndicesThreshold",
                             "groupingVariable", "eq_loadings", "eq_intercepts", "eq_residuals", "eq_residualcovariances",
                             "eq_means", "eq_thresholds", "eq_regressions", "eq_variances", "eq_lvcovariances", 
                             "includeMeanStructure", "assumeFactorsUncorrelated", "fixExogenousCovariates", 
                             "factorStandardisation", "fixManifestInterceptsToZero", "fixLatentInterceptsToZero",
                             "omitResidualSingleIndicator", "residualVariances", "correlateExogenousLatents", 
                             "addThresholds", "addScalingParameters", "correlateDependentVariables",
-                            "Data", "errorCalculation", "estimator", 
-                            "emulation"))
+                            "Data", "errorCalculation", "estimator", "emulation"))
     jaspResults[["semContainer"]] <- semContainer
   }
   return(semContainer)
@@ -143,8 +138,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   if (!isTRUE(options$includeMeanStructure)) {
     options$includeMeanStructure <- "default"
   }
-  browser()
-  
+
   ### RUN SEM ###
   semResults <- lavModel <- NULL
   if (ready) {
@@ -196,12 +190,12 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
                         group.equal=groupEqual)
       )
     }
-    
+
     # Check if worked:
     if (isTryError(semResults)) {
-      errorMessage <- as.character(semResults)
+      errorMessage <- gsub(as.character(semResults), pattern = "\n", replacement = "")
       # Better Error messages:
-      if (errorMessage == "Error in start.idx[i]:end.idx[i] : NA/NaN argument\n") {
+      if (errorMessage == "Error in start.idx[i]:end.idx[i] : NA/NaN argument") {
         semContainer$setError("Model misspecified")
       } else {
         semContainer$setError(errorMessage)
@@ -308,22 +302,16 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semFitTable$addCitation("Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. Journal of Statistical Software, 48(2), 1-36. URL http://www.jstatsoft.org/v48/i02/")
   
   semContainer[["semFitTable"]] <- semFitTable
-  
-  if (!ready)
+
+  if (is.null(semContainer[["semResultsList"]]$object$semResults) || !ready || semContainer$getError()) 
     return()
-  
-  if (is.null(semContainer[["semResultsList"]]$object$semResults)) {
-    fitTableResult <- as.data.frame(list(Df=c(0, NA), AIC=c(NA, NA), BIC=c(NA, NA),
-                                         Chisq = c(0, NA), ChisqDiff=c(NA, NA),
-                                         DfDiff = c(NA, NA), PrChisq = c(NA, NA)), 
-                                    row.names = c("Saturated", options$modelName))
-  } else {
-    # Current to saturated:
-    fitTableResult <- lavaan::lavTestLRT(semContainer[["semResultsList"]]$object$semResults)[-1, ]
-    rownames(fitTableResult) <- "Model"
-    colnames(fitTableResult) <- c("Df", "AIC", "BIC", "Chisq", "ChisqDiff", "DfDiff", "PrChisq")
     
-  }
+  # Current to saturated:
+  fitTableResult <- lavaan::lavTestLRT(semContainer[["semResultsList"]]$object$semResults)[-1, ]
+  rownames(fitTableResult) <- "Model"
+  colnames(fitTableResult) <- c("Df", "AIC", "BIC", "Chisq", "ChisqDiff", "DfDiff", "PrChisq")
+  
+  
   
   fitTableResult[["Model"]] <- rownames(fitTableResult)
   semFitTable$setData(fitTableResult)
@@ -357,24 +345,18 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   
   semContainer[["semEstimatesTable"]] <- semEstimatesTable
   
-  if (!ready)
+  if (!ready || semContainer$getError())
     return()
-  
-  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
-    
-    semEstimates <- lavaan:::parameterEstimates(semContainer[["semResultsList"]]$object$semResults, standardized=TRUE)
-    semEstimatesTable$setData(semEstimates)
-    
-  } 
-  
+
+  semEstimates <- lavaan:::parameterEstimates(semContainer[["semResultsList"]]$object$semResults, standardized=TRUE)
+  semEstimatesTable$setData(semEstimates)
+      
   return()
 }
 
 .semAdditionalFitMeasuresTables <- function(semContainer, options, dataset, ready) {
   if (!ready || !options[["outputAdditionalFitMeasures"]] || !is.null(semContainer[["fitMeasuresModelTest"]]))
     return()
-  
-  semFitMeasures <- unlist(lavaan:::fitMeasures(semContainer[["semResultsList"]]$object$semResults))
   
   ## Model test
   semModelTestTable <- createJaspTable(title = "Model test baseline model")
@@ -385,8 +367,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semModelTestTable$addColumnInfo(name="df", title="Degrees of freedom", type="number")
   semModelTestTable$addColumnInfo(name="pvalue", title="p", type="pvalue")
   
-  semModelTestTable$setData(c(list(model="Model"), semFitMeasures[c('fmin', 'chisq', 'df', 'pvalue')]))
-  
+  semModelTestTable$dependOn("outputAdditionalFitMeasures")
   semContainer[["fitMeasuresModelTest"]] <- semModelTestTable
   
   ### Baseline
@@ -402,6 +383,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semBaselineTable$addColumnInfo(name="ifi", title="Bollen's Incremental Fit Index (IFI)", type="number")
   semBaselineTable$addColumnInfo(name="rni", title="Relative Noncentrality Index (RNI)", type="number")
   
+  semBaselineTable$dependOn("outputAdditionalFitMeasures")
   semContainer[["fitMeasuresBaseline"]] <- semBaselineTable
   
   ### LogLik measures
@@ -415,6 +397,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semLoglikTable$addColumnInfo(name="bic", title="Bayesian (BIC)", type="number")
   semLoglikTable$addColumnInfo(name="bic2", title="Sample-size adjusted Bayesian (BIC)", type="number")
   
+  semLoglikTable$dependOn("outputAdditionalFitMeasures")
   semContainer[["fitMeasuresLikelihood"]] <- semLoglikTable
   
   
@@ -430,6 +413,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
                               overtitle = thisOverTitle)
   semRMSEATable$addColumnInfo(name="rmsea.pvalue", title="p-value RMSEA <= 0.05 ", type="pvalue")  
   
+  semRMSEATable$dependOn("outputAdditionalFitMeasures")
   semContainer[["fitMeasuresRMSEA"]] <- semRMSEATable
   
   
@@ -441,6 +425,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semRMRTable$addColumnInfo(name="rmr_nomean", title="RMR (No Mean)", type="number")
   semRMRTable$addColumnInfo(name="srmr", title="SRMR", type="number")  
   
+  semRMRTable$dependOn("outputAdditionalFitMeasures")
   semContainer[["fitMeasuresRMR"]] <- semRMRTable
   
   ### Other fit measures
@@ -453,11 +438,16 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semOtherFitTable$addColumnInfo(name="agfi", title="Parsimony Goodness of Fit Index (GFI)", type="number")
   semOtherFitTable$addColumnInfo(name="mfi", title="McDonald Fit Index (MFI)", type="number")
   # semOtherFitTable$addColumnInfo(name="ecvi", title="Expected Cross-Validation Index (ECVI)", type="number")
+  
+  semOtherFitTable$dependOn("outputAdditionalFitMeasures")
   semContainer[["fitMeasuresOther"]] <- semOtherFitTable
   
-  if (!ready)
+  if (!ready || semContainer$getError())
     return()
   
+  semFitMeasures <- unlist(lavaan:::fitMeasures(semContainer[["semResultsList"]]$object$semResults))
+  
+  semModelTestTable$setData(c(list(model="Model"), semFitMeasures[c('fmin', 'chisq', 'df', 'pvalue')]))
   semBaselineTable$setData(c(list(model="Model"), semFitMeasures[c('cfi', 'tli', 'nnfi', 'nfi', 'pnfi', 'rfi', 'ifi', 
                                                                    'rni')]))
   semLoglikTable$setData(c(list(model="Model"), semFitMeasures[c('logl', 'unrestricted.logl', 'npar', 'aic', 'bic', 
@@ -476,40 +466,39 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semRSquaredTable <- createJaspTable(title = "R-Squared")
   
   semRSquaredTable$addColumnInfo(name="var", title = "Variable", type="string")
+  semRSquaredTable$dependOn("outputRSquared")
   
   semContainer[["rSquaredTable"]] <- semRSquaredTable
   
-  if (!ready)
+  if (!ready || semContainer$getError())
     return()
   
   
-  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
-    r2 <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "r2")
-    nm <- names(r2)
+  r2 <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "r2")
+  nm <- names(r2)
 
-    if (options$groupingVariable == "") {
-      semRSquaredTable$addColumnInfo(name = "R2",  title = "R&sup2;",  type = "number")
-      semRSquaredTable$addRows(data.frame(var = .unv(names(r2)), R2 = r2))
-      
-    } else {
-      
-      semRSquaredTable$addColumns(data.frame(var = .unv(names(r2[[1]]))))
-                                  
-      for (i in 1:length(r2)) {
-        semRSquaredTable$addColumnInfo(name = paste0("R2",i), title = paste0("Group ",nm[i]), overtitle = "R&sup2;",  type = "number")
-        thisCol <- data.frame(rr = r2[[i]])
-        names(thisCol) <- paste0("R2",i)
-        semRSquaredTable$addColumns(cols = thisCol)
-      }
+  if (options$groupingVariable == "") {
+    semRSquaredTable$addColumnInfo(name = "R2",  title = "R&sup2;",  type = "number")
+    semRSquaredTable$addRows(data.frame(var = .unv(names(r2)), R2 = r2))
+    
+  } else {
+    
+    semRSquaredTable$addColumns(data.frame(var = .unv(names(r2[[1]]))))
+                                
+    for (i in 1:length(r2)) {
+      semRSquaredTable$addColumnInfo(name = paste0("R2",i), title = paste0("Group ",nm[i]), overtitle = "R&sup2;",  type = "number")
+      thisCol <- data.frame(rr = r2[[i]])
+      names(thisCol) <- paste0("R2",i)
+      semRSquaredTable$addColumns(cols = thisCol)
     }
-
   }
+
 
   return()
 }
 
 .semModIndicesTable <- function(semContainer, options, dataset, ready) {
-  if (!ready || !options[["outputModificationIndices"]] || !is.null(semContainer[["semModIndicesTable"]]))
+  if (!options[["outputModificationIndices"]] || !is.null(semContainer[["semModIndicesTable"]]))
     return()
   
   semModIndicesTable <- createJaspTable(title = "Modification Indices")
@@ -523,100 +512,108 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semModIndicesTable$addColumnInfo(name="sepc.all", title = "sepc (all)", type="number")
   semModIndicesTable$addColumnInfo(name="sepc.nox",  title = "sepc (nox)",type="number")
   
+  semModIndicesTable$dependOn(c("outputModificationIndices", "outputModificationIndicesHideLowIndices", 
+                              "outputModificationIndicesHideLowIndicesThreshold"))
   semModIndicesTable$showSpecifiedColumnsOnly <- TRUE
   
-  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
-    # Extract modidffication indices:
-    semModIndResult <- lavaan:::modificationIndices(semContainer[["semResultsList"]]$object$semResults)
-    
-    ### Remove NA:
-    semModIndResult <- semModIndResult[!is.na(semModIndResult$mi), , drop=FALSE]
-    
-    ## Sort:
-    semModIndResult <- semModIndResult[order(semModIndResult$mi, decreasing=TRUE), , drop=FALSE]
-    
-    ### Remove low indices:
-    if (isTRUE(options$outputModificationIndicesHideLowIndices)) {
-      semModIndResult <- semModIndResult[semModIndResult$mi > options$outputModificationIndicesHideLowIndicesThreshold, , drop=FALSE]
-    }
-    
-    semModIndicesTable$setData(semModIndResult)
-    semContainer[["semModIndicesTable"]] <- semModIndicesTable
+  if (!ready || semContainer$getError())
+    return()
+  
+  # Extract modidffication indices:
+  semModIndResult <- lavaan:::modificationIndices(semContainer[["semResultsList"]]$object$semResults)
+  
+  ### Remove NA:
+  semModIndResult <- semModIndResult[!is.na(semModIndResult$mi), , drop=FALSE]
+  
+  ## Sort:
+  semModIndResult <- semModIndResult[order(semModIndResult$mi, decreasing=TRUE), , drop=FALSE]
+  
+  ### Remove low indices:
+  if (isTRUE(options$outputModificationIndicesHideLowIndices)) {
+    semModIndResult <- semModIndResult[semModIndResult$mi > options$outputModificationIndicesHideLowIndicesThreshold, , drop=FALSE]
   }
+  
+  semModIndicesTable$setData(semModIndResult)
+  semContainer[["semModIndicesTable"]] <- semModIndicesTable
+  
   
   return()
 }
 
 .semCovCorTable <- function(semContainer, options, dataset, ready) {
-  if (!ready || !(options$outputObservedCovarianceCorrelations || options$outputFittedCovarianceCorrelations || 
+  if (!(options$outputObservedCovarianceCorrelations || options$outputFittedCovarianceCorrelations || 
                   options$outputResidualCovarianceCorrelations)  || !is.null(semContainer[["semCovCorCollection"]]))
     return()
   
   semCovCorCollection <- createJaspContainer(title = "Covariances (lower triangle) / correlations (upper triangle)")
   semContainer[["semCovCorCollection"]] <- semCovCorCollection
   
-  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
+  semCovCorCollection$dependOn(c("outputFittedCovarianceCorrelations", "outputObservedCovarianceCorrelations", 
+                                 "outputResidualCovarianceCorrelations"))
+  
+  if (!ready || semContainer$getError()) 
+    return()
     
-    include <- c("observed", "fitted", "residual")[ c(options$outputObservedCovarianceCorrelations, 
-                                                      options$outputFittedCovarianceCorrelations,
-                                                      options$outputResidualCovarianceCorrelations)]
+  include <- c("observed", "fitted", "residual")[ c(options$outputObservedCovarianceCorrelations, 
+                                                    options$outputFittedCovarianceCorrelations,
+                                                    options$outputResidualCovarianceCorrelations)]
 
-    nm <- names(lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "sampstat"))
-    if (options$groupingVariable == "") nm <- 1
+  nm <- names(lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "sampstat"))
+  if (options$groupingVariable == "") nm <- 1
+  
+  for (thisGroup in 1:length(nm)) {
     
-    for (thisGroup in 1:length(nm)) {
-      
-      if (options$groupingVariable == "") {
-        observedCov <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "sampstat")$cov
-        fittedCov <- lavaan::fitted(semContainer[["semResultsList"]]$object$semResults)$cov
-      } else {
-        observedCov <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "sampstat")[[thisGroup]]$cov
-        fittedCov <- lavaan::fitted(semContainer[["semResultsList"]]$object$semResults)[[thisGroup]]$cov
-      }
-      
-      residualCov <- observedCov - fittedCov
-      
-      varNames <- colnames(observedCov)
-      
-      covList <- list(observed=observedCov,
-                      fitted=fittedCov,
-                      residual=residualCov)
-      
-      corList <- list(observed=stats::cov2cor(observedCov),
-                      fitted=stats::cov2cor(fittedCov),
-                      residual=stats::cov2cor(observedCov) - stats::cov2cor(fittedCov))
-      
-      n <- ncol(covList[[1]])
-      
-      matList <- mapply(cov = covList, cor = corList, type = names(covList), FUN=function(cov, cor, type){
-        cov[upper.tri(cov,diag=FALSE)] <- cor[upper.tri(cor,diag=FALSE)]
-        cbind(..sortingDummy = seq_len(NROW(cov)), ..varName = .unv(rownames(cov)), ..type = type, as.data.frame(cov), stringsAsFactors = FALSE)
-      }, SIMPLIFY = FALSE)
-      
-      matDF <- do.call(rbind, matList)
-      matDF <- matDF[matDF$..type %in% include, ]
-      matDF$..type <- as.character(matDF$..type)
-      matDF <- matDF[order(matDF$..sortingDummy), ]
-      matDF <- matDF[, -1]
-      
-      if (options$groupingVariable == "") {
-        thisTitle <- ""
-      } else {
-        thisTitle <- paste0("Level of ", options$groupingVariable, ": ", nm[thisGroup])
-      }
-      
-      semCovCorCollection[[paste0("semCovCorTable", thisGroup)]] <- createJaspTable(title = thisTitle)
-      semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$addColumnInfo(name="Variable", title="", type="string", 
-                                                                               combine = TRUE)
-      semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$addColumnInfo(name="Type", title="", type="string")
-      
-      for (i in 1:n)
-        semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$addColumnInfo(name=varNames[i], title=.unv(varNames[i]), type="number")
-
-      names(matDF)[1:2] <- c("Variable", "Type")
-      semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$setData(matDF)
+    if (options$groupingVariable == "") {
+      observedCov <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "sampstat")$cov
+      fittedCov <- lavaan::fitted(semContainer[["semResultsList"]]$object$semResults)$cov
+    } else {
+      observedCov <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "sampstat")[[thisGroup]]$cov
+      fittedCov <- lavaan::fitted(semContainer[["semResultsList"]]$object$semResults)[[thisGroup]]$cov
     }
+    
+    residualCov <- observedCov - fittedCov
+    
+    varNames <- colnames(observedCov)
+    
+    covList <- list(observed=observedCov,
+                    fitted=fittedCov,
+                    residual=residualCov)
+    
+    corList <- list(observed=stats::cov2cor(observedCov),
+                    fitted=stats::cov2cor(fittedCov),
+                    residual=stats::cov2cor(observedCov) - stats::cov2cor(fittedCov))
+    
+    n <- ncol(covList[[1]])
+    
+    matList <- mapply(cov = covList, cor = corList, type = names(covList), FUN=function(cov, cor, type){
+      cov[upper.tri(cov,diag=FALSE)] <- cor[upper.tri(cor,diag=FALSE)]
+      cbind(..sortingDummy = seq_len(NROW(cov)), ..varName = .unv(rownames(cov)), ..type = type, as.data.frame(cov), stringsAsFactors = FALSE)
+    }, SIMPLIFY = FALSE)
+    
+    matDF <- do.call(rbind, matList)
+    matDF <- matDF[matDF$..type %in% include, ]
+    matDF$..type <- as.character(matDF$..type)
+    matDF <- matDF[order(matDF$..sortingDummy), ]
+    matDF <- matDF[, -1]
+    
+    if (options$groupingVariable == "") {
+      thisTitle <- ""
+    } else {
+      thisTitle <- paste0("Level of ", options$groupingVariable, ": ", nm[thisGroup])
+    }
+    
+    semCovCorCollection[[paste0("semCovCorTable", thisGroup)]] <- createJaspTable(title = thisTitle)
+    semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$addColumnInfo(name="Variable", title="", type="string", 
+                                                                             combine = TRUE)
+    semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$addColumnInfo(name="Type", title="", type="string")
+    
+    for (i in 1:n)
+      semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$addColumnInfo(name=varNames[i], title=.unv(varNames[i]), type="number")
+
+    names(matDF)[1:2] <- c("Variable", "Type")
+    semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$setData(matDF)
   }
+
   return()
 }
 
@@ -634,20 +631,20 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semMardiasTable$addColumnInfo(name="DF", title="df", type="number")
   semMardiasTable$addColumnInfo(name="pvalue", title="p", type="pvalue")
   
+  semMardiasTable$dependOn("outputMardiasCoefficients")
   semContainer[["mardiasTable"]] <- semMardiasTable
   
-  if (!ready)
+  if (!ready || semContainer$getError())
     return()
   
-  if (!is.null(semContainer[["semResultsList"]]$object$semResults)) {
-    varNames <- lavaan::lavaanNames(semContainer[["semResultsList"]]$object$semResults, type="ov")
-    mardiaSkew <- unname(semTools:::mardiaSkew(dataset[, varNames]))
-    mardiaKurtosis <- unname(semTools:::mardiaKurtosis(dataset[, varNames]))
-    semMardiasTable$addRows(data.frame(Type="Skewness", Coefficient=mardiaSkew[1], z=NA, Chisq=mardiaSkew[2], 
-                                       DF=mardiaSkew[3], "pvalue"=mardiaSkew[4]))
-    semMardiasTable$addRows(data.frame(Type="Kurtosis", Coefficient=mardiaKurtosis[1], z=mardiaKurtosis[2], 
-                                       Chisq=NA, DF=NA, "pvalue"=mardiaKurtosis[3]))
-  }
+  varNames <- lavaan::lavaanNames(semContainer[["semResultsList"]]$object$semResults, type="ov")
+  mardiaSkew <- unname(semTools:::mardiaSkew(dataset[, varNames]))
+  mardiaKurtosis <- unname(semTools:::mardiaKurtosis(dataset[, varNames]))
+  semMardiasTable$addRows(data.frame(Type="Skewness", Coefficient=mardiaSkew[1], z=NA, Chisq=mardiaSkew[2], 
+                                     DF=mardiaSkew[3], "pvalue"=mardiaSkew[4]))
+  semMardiasTable$addRows(data.frame(Type="Kurtosis", Coefficient=mardiaKurtosis[1], z=mardiaKurtosis[2], 
+                                     Chisq=NA, DF=NA, "pvalue"=mardiaKurtosis[3]))
+  
   
   return()
 }
@@ -791,11 +788,19 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
 }
 
 .lavCreatePathDiagram <- function(semContainer, options, ready) {
-  if (!is.null(semContainer[["pathDiagramPlotCollection"]]) || !ready || options[["addPathDiagram"]] == FALSE)
+  if (!is.null(semContainer[["pathDiagramPlotCollection"]]) || !options[["addPathDiagram"]])
     return()
   
   pathDiagramPlotCollection <- createJaspContainer(title = "Path Diagrams")
   pathDiagramPlotCollection$dependOn(c("addPathDiagram", "outputpathdiagramstandardizedparameter"))
+  
+  semContainer[["pathDiagramPlotCollection"]] <- pathDiagramPlotCollection
+  
+  
+  if (!ready || semContainer$getError()) {
+    pathDiagramPlotCollection[["placeHolderPathDiagram"]] <- createJaspPlot(title = "Path Diagram")
+    return()
+  }
   
   plotArgs <- list(
     DoNotPlot = TRUE,
@@ -840,17 +845,17 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     plotList <- list()
     keep <- NULL
     for (i in seq_along(p)) {
-      .lavWritePathDiagram(p[[i]], titles[i], options, semContainer)
+      .lavWritePathDiagram(p[[i]], titles[i], options, pathDiagramPlotCollection)
     }
     
   } else {
-    .lavWritePathDiagram(p, "Path Diagram", options, semContainer)
+    .lavWritePathDiagram(p, "Path Diagram", options, pathDiagramPlotCollection)
   }
     
   return()
 }
 
-.lavWritePathDiagram <- function(plotObj, title, options, semContainer) {
+.lavWritePathDiagram <- function(plotObj, title, options, pathDiagramPlotCollection) {
   pathDiagram <- list()
   pathDiagram$title <- title
   pathDiagram$width <- options$plotWidth
@@ -860,10 +865,10 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   }
   pathDiagram$custom <- list(width="plotWidth", height="plotHeight")
 
-  semContainer[[paste0("pathPlot", title)]] <- createJaspPlot(width = pathDiagram$width, 
+  pathDiagramPlotCollection[[paste0("pathPlot", title)]] <- createJaspPlot(width = pathDiagram$width, 
                          height = pathDiagram$height, plot = plotObj, title = title)
   
-  semContainer[[paste0("pathPlot", title)]]$dependOn(c("plotWidth", "plotHeight"))
+  pathDiagramPlotCollection[[paste0("pathPlot", title)]]$dependOn(c("plotWidth", "plotHeight"))
   
   return()
 }
