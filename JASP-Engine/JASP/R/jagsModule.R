@@ -168,7 +168,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 	})
 
 	# if something went wrong, present useful error message
-	if (JASP:::isTryError(e)) {
+	if (isTryError(e)) {
 	  jaspResults[["mainContainer"]]$setError(.JAGSmodelError(e, pattern, model, options))
 	  return(NULL)
 	}
@@ -881,9 +881,9 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
         # return()
       }
       obj <- try(eval(parse(text = string)))
-      if (JASP:::isTryError(obj)) {
+      if (isTryError(obj)) {
         jaspResults[["mainContainer"]]$setError(sprintf("The R code for %s crashed with error:\n%s",
-                                                       type, JASP:::.extractErrorMessage(obj)))
+                                                       type, .extractErrorMessage(obj)))
         return()
       } else if (!is.numeric(obj)) {
         jaspResults[["mainContainer"]]$setError("The result of %s R code should be numeric but it was of mode %s and class %s",

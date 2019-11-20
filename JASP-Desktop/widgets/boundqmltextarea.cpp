@@ -280,25 +280,51 @@ void BoundQMLTextArea::rScriptDoneHandler(const QString & result)
 
 void BoundQMLTextArea::setJagsParameters()
 {
+	// google: jags_user_manual (4.3.0) for documentation on JAGS symbols
+
 	// get the column names of the data set
 	std::vector<std::string> colnms = form()->getDataSetPackage()->getColumnNames();
 	std::set<std::string> columnNames(std::make_move_iterator(colnms.begin()), std::make_move_iterator(colnms.end()));
 
-	// regex to match all words after whitespace or { and ~ or = or <-.
-	QRegularExpression getParametersFromModel("(?<={|\\s)\\b(\\w*)(.*)(?=~|=|<-)");
-	QRegularExpressionMatchIterator i = getParametersFromModel.globalMatch(_text);
 
-	QSet<QString> parameters;
-	while (i.hasNext())
+	QRegularExpression relationSymbol = QRegularExpression("<-|=|~");
+	QStringList textByLine = _text.split(QRegularExpression(";|\n"));
+	QSet<QString> parameterNames;
+	_usedColumnNames.clear();
+
+	for (QString & line : textByLine)
 	{
-		QRegularExpressionMatch match = i.next();
-		QString parameter = match.captured(1);
-		if (parameter != "" && columnNames.find(parameter.toUtf8().constData()) == columnNames.end())
-			parameters << parameter;
+		if (!line.startsWith("#") && line.contains(relationSymbol))
+		{
+			// extract parameter and remove whitespace
+			QString paramName = line.split(relationSymbol).first().trimmed();
+			// remove any link functions (cloglog|log|probit|logit)
+			if (paramName.contains("(") && paramName.contains(")"))
+			{
+				int idxStart, idxEnd;
+				idxStart = paramName.indexOf("(") + 1;
+				idxEnd   = paramName.indexOf(")") - idxStart;
+				paramName = paramName.midRef(idxStart, idxEnd).toString();
+			}
+
+			if (paramName.contains("["))
+				paramName = paramName.leftRef(paramName.indexOf("[")).toString();
+
+			if (paramName != "")
+			{
+				if (columnNames.find(paramName.toUtf8().constData()) == columnNames.end())
+					parameterNames << paramName;
+				else
+					_usedColumnNames << paramName;
+			}
+		}
 	}
+
+	// @boutinb here we would want to assign _usedColumnNames somehow so that it gets passed to R.
+
 	if (_model)
 	{
-		_model->initTerms(parameters.toList());
+		_model->initTerms(parameterNames.toList());
 		emit _model->modelChanged();
 	}
 }
