@@ -170,8 +170,9 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   whichTests <- list("1" = optionsList$wantsStudents, "2" = optionsList$wantsWilcox)
   
   ## add a row for each variable, even before we are conducting tests
-  for (pair in options$pairs)
-    ttest.rows[[length(ttest.rows) + 1]] <- list(v1 = pair[[1]], sep = '-', v2 = pair[[2]])
+  
+  #for (pair in options$pairs)
+  #  ttest.rows[[length(ttest.rows) + 1]] <- list(v1 = pair[[1]], sep = '-', v2 = pair[[2]])
   
   ## for each pair, run the checked tests and update the table
   for (pair in options$pairs) {
@@ -307,19 +308,21 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
       row[["sep"]] <- ifelse(isFirst, "-", "")
       row[["v2"]]  <- ifelse(isFirst, p2, "")
       
-      if (!isFirst) {
+      if (!isFirst)
         row[["test"]] <- "Wilcoxon"
-        #jaspResults[["ttest"]][["data"]][[rowNo - 1]][["test"]] <- "Student"
-        ttest.rows[[rowNo - 1]][["test"]] <- "Student"
-      }
+        ##jaspResults[["ttest"]][["data"]][[rowNo - 1]][["test"]] <- "Student"
+        #ttest.rows[[rowNo - 1]][["test"]] <- "Student"
+      #}
+      if(test == 1)
+        row[["test"]] <- "Student"
       
-      #jaspResults[["ttest"]]$addRows(row)
-      ttest.rows[[rowNo]] <- row
+      jaspResults[["ttest"]]$addRows(row)
+      #ttest.rows[[rowNo]] <- row
       rowNo <- rowNo + 1
     }
   }
   
-  jaspResults[["ttest"]]$addRows(ttest.rows)
+  #jaspResults[["ttest"]]$addRows(ttest.rows)
 }
 
 .ttestPairedNormalFill <- function(container, dataset, options, ready) {
@@ -337,7 +340,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
                          all.target = c(p1, p2), 
                          observations.amount  = c('< 2', '>5000'))
     if(!identical(errors, FALSE)) {
-      container[["ttestNormalTable"]]$addFootnote(errors$message, colnames = c("W", "p"), rowNames = paste(p1, p2, sep = "-"))
+      container[["ttestNormalTable"]]$addFootnote(errors$message, colNames = c("W", "p"), rowNames = paste(p1, p2, sep = "-"))
       container[["ttestNormalTable"]]$addRows(list(v1 = p1, sep = "-", v2 = p2, W = "NaN", p = "NaN"), rowNames = paste(p1, p2, sep = "-"))
       next
     }

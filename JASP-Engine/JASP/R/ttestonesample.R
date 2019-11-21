@@ -239,7 +239,7 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
       if (!currentTest) 
         next
       if (!identical(errors, FALSE)){
-        jaspResults[["ttest"]]$addFootnote(errors$message, colNames = c("p", "m", testStat), rowNames = variables)
+        jaspResults[["ttest"]]$addFootnote(errors$message, colNames = testStat, rowNames = variables)
         row <- list(v = variable, p = "NaN", m = "NaN", lowerCI = "", upperCI = "")
         row[[testStat]] <- NaN
         jaspResults[["ttest"]]$addRows(row, rowNames = variables)
