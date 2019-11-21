@@ -343,6 +343,7 @@ FocusScope
 			sourceSize.width:		1400 * welcomeRoot.scaler
 			sourceSize.height:		height
 			source:					jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
+			cache:					false
 			anchors
 			{
 				top:				parent.top
@@ -361,6 +362,7 @@ FocusScope
 			sourceSize.width:		blueWave.sourceSize.width
 			sourceSize.height:		blueWave.sourceSize.height
 			source:					jaspTheme.iconPath + "jasp-wave-up-green-120.svg"
+			cache:					false
 			anchors
 			{
 				left:				parent.left
@@ -396,6 +398,25 @@ FocusScope
 			left:	parent.left
 			right:	parent.right
 			bottom:	parent.bottom
+		}
+	}
+
+	AnimatedImage
+	{
+		id:					easterEgg
+
+		property var date:	new Date();
+
+		visible:			date.getMonth() === 11 //11 is december
+		playing:			visible
+		source:				visible ? "qrc:/core/img/snow.gif" : ""
+		fillMode:			Image.TileHorizontally
+		z:					8
+		anchors
+		{
+			left:			parent.left
+			right:			parent.right
+			bottom:			parent.bottom
 		}
 	}
 }
