@@ -140,6 +140,9 @@ void Engine::run()
 		if(_engineState != engineState::idle)
 			Log::log() << "current Engine state == "<< engineStateToString(_engineState) << std::endl;
 	}
+
+	if(_engineState == engineState::stopped)
+		Log::log() << "Engine leaving mainloop after having been asked to stop." << std::endl;
 }
 
 
@@ -157,7 +160,7 @@ bool Engine::receiveMessages(int timeout)
 		engineState typeRequest = engineStateFromString(jsonRequest.get("typeRequest", Json::nullValue).asString());
 
 #ifdef PRINT_ENGINE_MESSAGES
-		Log::log() << "received " << engineStateToString(typeRequest) <<" message" << std::endl;
+		Log::log() << "Engine received " << engineStateToString(typeRequest) <<" message" << std::endl;
 #endif
 		switch(typeRequest)
 		{

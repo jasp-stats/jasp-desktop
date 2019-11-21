@@ -72,16 +72,17 @@ public slots:
 	void ppiChanged(int newPPI);
 	void imageBackgroundChanged(QString value);
 	void analysisRemoved(Analysis * analysis);
-	void jaspEngineProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
+	void processError(QProcess::ProcessError error);
 
 signals:
 	void engineTerminated();
 	void filterDone(															int requestID);
-	void processFilterErrorMsg(			const QString & error,					int requestId);
+	void processFilterErrorMsg(			const QString & error,					int requestId = -1);
 	void processNewFilterResult(		const std::vector<bool> & filterResult, int requestId);
 	void computeColumnErrorTextChanged(	const QString & error);
 
-	void rCodeReturned(const QString & result, int requestId);
+	void rCodeReturned(					const QString & result, int requestId);
 
 	void computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
 	void computeColumnFailed(			const QString & columnName, const QString & error);
@@ -96,6 +97,7 @@ signals:
 
 	void logCfgReplyReceived(int channelNr);
 	void plotEditorRefresh();
+	void requestEngineRestart(int channelNr);
 
 private:
 	void sendPauseEngine();
@@ -104,6 +106,7 @@ private:
 	void setChannel(IPCChannel * channel)			{ _channel = channel; }
 	void setSlaveProcess(QProcess * slaveProcess);
 	void checkForComputedColumns(const Json::Value & results);
+	void handleEngineCrash();
 
 private:
 	Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis);
@@ -113,11 +116,13 @@ private:
 	Analysis*	_analysisInProgress = nullptr;
 	engineState	_engineState		= engineState::initializing;
 	int			_ppi				= 96,
-				_idRemovedAnalysis	= -1;
+				_idRemovedAnalysis	= -1,
+				_lastRequestId		= -1;
 	QString		_imageBackground	= "white";
 	bool		_pauseRequested		= false,
 				_stopRequested		= false,
 				_slaveCrashed		= false;
+	std::string	_lastCompColName	= "???";
 
 };
 

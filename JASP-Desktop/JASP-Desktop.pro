@@ -22,10 +22,8 @@ linux {
 			TARGET = org.jaspstats.JASP 
 	} else { 
 			TARGET = jasp 
-	} 
-	message(TARGET => $$TARGET) #Useful for debugging flatpak
-} else {
-	TARGET = JASP
+}} else { #not linux
+      TARGET = JASP
 }
 
 DEPENDPATH = ..
@@ -40,7 +38,7 @@ INSTALLS += target
 LIBS += -L.. -lJASP-Common
 
 windows:	LIBS += -llibboost_filesystem$$BOOST_POSTFIX -llibboost_system$$BOOST_POSTFIX -larchive.dll -llibreadstat -lole32 -loleaut32
-macx:		LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz -lreadstat -liconv
+macx:   	LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz -lreadstat -liconv
 
 
 linux {
@@ -50,10 +48,10 @@ linux {
 }
 
 $$JASPTIMER_USED {
-	windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer$$BOOST_POSTFIX -llibboost_chrono$$BOOST_POSTFIX
-	windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc141-mt-gd-1_71 -llibboost_chrono-vc141-mt-gd-1_71
-    linux:                          LIBS += -lboost_timer -lboost_chrono
-    macx:                           LIBS += -lboost_timer-mt -lboost_chrono-mt
+  windows:CONFIG(ReleaseBuild)  LIBS += -llibboost_timer$$BOOST_POSTFIX -llibboost_chrono$$BOOST_POSTFIX
+  windows:CONFIG(DebugBuild)    LIBS += -llibboost_timer-vc141-mt-gd-1_71 -llibboost_chrono-vc141-mt-gd-1_71
+  linux:                        LIBS += -lboost_timer -lboost_chrono
+  macx:                         LIBS += -lboost_timer-mt -lboost_chrono-mt
 }
 
 
@@ -138,10 +136,10 @@ HELP_PATH = $${PWD}/../Docs/help
 RESOURCES_PATH = $${PWD}/../Resources
 
 win32 {
-    RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
+  RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
-    RESOURCES_PATH ~= s,/,\\,g
-    RESOURCES_PATH_DEST ~= s,/,\\,g
+  RESOURCES_PATH ~= s,/,\\,g
+  RESOURCES_PATH_DEST ~= s,/,\\,g
 	QTBIN=$$QMAKE_QMAKE
 	QTBIN ~= s,qmake.exe,,g
 	QTBIN ~= s,/,\\,g
@@ -149,7 +147,7 @@ win32 {
 	WINPWD=$$PWD/..
 	WINPWD ~= s,/,\\,g
 
-    copyres.commands  += $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
+  copyres.commands  += $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
 
 	equals(GENERATE_LANGUAGE_FILES,1) {
 	maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${WINPWD}\jasp.po) &&

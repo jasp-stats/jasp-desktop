@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 		JASPTIMER_PRINTALL();
 
 		Log::log() << "jaspEngine " << slaveNo << " child of " << parentPID << " stops." << std::endl;
-		return 0;
+		exit(0);
 	}
 
 	std::cout << "Engine started in testing mode because it didn't receive 4 arguments." << std::endl;
@@ -102,5 +102,5 @@ int main(int argc, char *argv[])
 
 	std::cout << "Thank you for helping us make JASP better!" << std::endl;
 
-	return 1;
+	exit(1);
 }

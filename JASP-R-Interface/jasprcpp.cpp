@@ -49,6 +49,8 @@ static logWriteDef			_logWriteFunction		= nullptr;
 
 static std::string			_R_HOME = "";
 
+bool shouldCrashSoon = false; //Simply here to allow a developer to force a crash
+
 extern "C" {
 void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks* callbacks,
 	sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction,
@@ -79,8 +81,10 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	runCallbackCB							= callbacks->runCallbackCB;
 	readDataSetCB							= callbacks->readDataSetCB;
 
+
 	rInside[".setLog"]						= Rcpp::InternalFunction(&jaspRCPP_setLog);
 	rInside[".setRError"]					= Rcpp::InternalFunction(&jaspRCPP_setRError);
+	rInside[".crashPlease"]					= Rcpp::InternalFunction(&jaspRCPP_crashPlease);
 	rInside[".setRWarning"]					= Rcpp::InternalFunction(&jaspRCPP_setRWarning);
 	rInside[".runSeparateR"]				= Rcpp::InternalFunction(&jaspRCPP_RunSeparateR);
 	rInside[".returnString"]				= Rcpp::InternalFunction(&jaspRCPP_returnString);
@@ -202,6 +206,8 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 		jaspObject::destroyAllAllocatedObjects();
 	}
 
+	jaspRCPP_checkForCrashRequest();
+
 	return str.c_str();
 }
 
@@ -244,6 +250,8 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 
 	jaspObject::destroyAllAllocatedObjects();
 
+	jaspRCPP_checkForCrashRequest();
+
 	return str.c_str();
 }
 
@@ -260,6 +268,8 @@ void STDCALL jaspRCPP_runScript(const char * scriptCode)
 {
 	jaspRCPP_parseEvalQNT(scriptCode);
 
+	jaspRCPP_checkForCrashRequest();
+
 	return;
 }
 
@@ -267,6 +277,8 @@ const char * STDCALL jaspRCPP_runScriptReturnString(const char * scriptCode)
 {
 	static std::string returnStr;
 	returnStr = Rcpp::as<std::string>(jaspRCPP_parseEval(scriptCode));
+
+	jaspRCPP_checkForCrashRequest();
 
 	return returnStr.c_str();
 }
@@ -289,6 +301,7 @@ int STDCALL jaspRCPP_runFilter(const char * filterCode, bool ** arrayPointer)
 		returnVal");
 	SEXP result = jaspRCPP_parseEval(filterTryCatch);
 
+	jaspRCPP_checkForCrashRequest();
 
 	if(Rcpp::is<Rcpp::NumericVector>(result) || Rcpp::is<Rcpp::LogicalVector>(result))
 	{
@@ -896,6 +909,13 @@ Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, in
 
 	static Rcpp::Function droplevels("droplevels");
 	return droplevels(Rcpp::_["x"] = v);
+}
+
+void jaspRCPP_crashPlease() { shouldCrashSoon = true; }
+void jaspRCPP_checkForCrashRequest()
+{
+	if(shouldCrashSoon)
+		throw std::runtime_error("User requested a crash");
 }
 
 struct jaspRCPP_Connection

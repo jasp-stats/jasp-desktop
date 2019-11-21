@@ -108,6 +108,7 @@ void EngineSync::start(int ppi)
 			connect(_engines[i],	&EngineRepresentation::moduleUninstallingFinished,		this,			&EngineSync::moduleUninstallingFinished									);
 			connect(_engines[i],	&EngineRepresentation::logCfgReplyReceived,				this,			&EngineSync::logCfgReplyReceived										);
 			connect(_engines[i],	&EngineRepresentation::plotEditorRefresh,				this,			&EngineSync::plotEditorRefresh											);
+			connect(_engines[i],	&EngineRepresentation::requestEngineRestart,			this,			&EngineSync::restartEngineAfterCrash												);
 			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged										);
 			connect(this,			&EngineSync::imageBackgroundChanged,					_engines[i],	&EngineRepresentation::imageBackgroundChanged							);
 			connect(_analyses,		&Analyses::analysisRemoved,								_engines[i],	&EngineRepresentation::analysisRemoved									);
@@ -149,6 +150,14 @@ void EngineSync::restartEngines()
 	logCfgRequest();
 
 	_engineStarted = true;
+}
+
+void EngineSync::restartEngineAfterCrash(int nr)
+{
+	EngineRepresentation * eng = _engines[size_t(nr)];
+
+	eng->restartEngine(startSlaveProcess(nr));
+	setModuleWideCastVars(_dynamicModules->getJsonForReloadingActiveModules());
 }
 
 void EngineSync::process()
@@ -442,10 +451,6 @@ QProcess * EngineSync::startSlaveProcess(int no)
 #endif
 
 	EngineSync * engSync = this;
-	connect(slave, &QProcess::started,												this,	&EngineSync::subProcessStarted);
-	connect(slave, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	[=](int exitCode, QProcess::ExitStatus exitStatus)	{ engSync->subprocessFinished(no, exitCode, exitStatus);	} );
-	connect(slave, &QProcess::errorOccurred,										[=](QProcess::ProcessError error)					{ engSync->subProcessError(no, error);						} );
-
 	slave->start(engineExe, args);
 
 	return slave;
@@ -459,39 +464,6 @@ void EngineSync::deleteOrphanedTempFiles()
 void EngineSync::heartbeatTempFiles()
 {
 	TempFiles::heartbeat();
-}
-
-void EngineSync::subProcessStarted()
-{
-	Log::log() << "Engine process started" << std::endl;
-}
-
-void EngineSync::subProcessError(size_t engineNr, QProcess::ProcessError error)
-{
-	if(!_engineStarted)
-		return;
-
-	Log::log() << "Engine #" << engineNr << " had error: " << QProcessErrorToString(error) << std::endl;
-
-	emit engineTerminated();
-	_engineStarted = false;
-
-}
-
-void EngineSync::subprocessFinished(size_t engineNr, int exitCode, QProcess::ExitStatus exitStatus)
-{
-	if(!_engineStarted)
-		return;
-
-	if(exitCode != 0 || exitStatus == QProcess::ExitStatus::CrashExit)
-	{
-		Log::log() << "Engine # " << engineNr << " subprocess crashed with exitCode " << exitCode << std::endl;
-		emit engineTerminated();
-		_engineStarted = false;
-
-	}
-	else
-		Log::log() << "Engine # " << engineNr << " subprocess exited normally with exitCode " << exitCode << std::endl;
 }
 
 void EngineSync::stopEngines()

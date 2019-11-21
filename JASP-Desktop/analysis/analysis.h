@@ -82,6 +82,9 @@ public:
 	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;			}
 	void incrementRevision()							{ _revision++;									}
 
+	void setErrorInResults(const std::string & msg);
+
+
 	Json::Value editOptionsOfPlot(const std::string & uniqueName);
 	void		setEditOptionsOfPlot(const std::string & uniqueName, const Json::Value & editOptions);
 	bool		checkAnalysisEntry();

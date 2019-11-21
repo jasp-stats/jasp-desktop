@@ -6,6 +6,7 @@
 #include "boundqmltableview.h"
 #include "utilities/qutils.h"
 #include <QQuickItem>
+#include "log.h"
 
 ListModelFilteredDataEntry::ListModelFilteredDataEntry(BoundQMLTableView * parent, QString tableType)
 	: ListModelTableViewBase(parent, tableType)
@@ -66,7 +67,7 @@ size_t ListModelFilteredDataEntry::getDataSetRowCount()
 
 void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)
 {
-	//std::cout << "ListModelFilteredDataEntry::rScriptDoneHandler: " << result.toStdString() << std::endl;
+	Log::log() << "ListModelFilteredDataEntry::rScriptDoneHandler: " << result << std::endl;
 
 	QStringList values = result.split(' ');
 

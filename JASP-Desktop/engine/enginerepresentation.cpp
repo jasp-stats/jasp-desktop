@@ -18,7 +18,8 @@ void EngineRepresentation::setSlaveProcess(QProcess * slaveProcess)
 	_slaveProcess = slaveProcess;
 	_slaveProcess->setParent(this);
 
-	connect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this,	&EngineRepresentation::jaspEngineProcessFinished);
+	connect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this, &EngineRepresentation::processFinished);
+	connect(_slaveProcess, &QProcess::errorOccurred,										this, &EngineRepresentation::processError	);
 }
 
 EngineRepresentation::~EngineRepresentation()
@@ -27,7 +28,6 @@ EngineRepresentation::~EngineRepresentation()
 
 	if(_slaveProcess != nullptr)
 	{
-
 		_slaveProcess->terminate();
 		_slaveProcess->kill();
 	}
@@ -44,12 +44,63 @@ void EngineRepresentation::sendString(std::string str)
 	_channel->send(str);
 }
 
-void EngineRepresentation::jaspEngineProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void EngineRepresentation::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-	Log::log() << "jaspEngine for channel " << channelNumber() << " finished " << (exitStatus == QProcess::ExitStatus::NormalExit ? "normally" : "crashing") << " and with exitCode " << exitCode << "!" << std::endl;
+	Log::log() << "Engine # " << channelNumber() << " finished " << (exitStatus == QProcess::ExitStatus::NormalExit ? "normally" : "crashing") << " and with exitCode " << exitCode << "!" << std::endl;
 
-	_slaveCrashed = exitStatus == QProcess::ExitStatus::CrashExit;
+	_slaveProcess->deleteLater();
 	_slaveProcess = nullptr;
+	_slaveCrashed = exitStatus == QProcess::ExitStatus::CrashExit;
+
+	if(exitCode != 0 || _slaveCrashed)
+		handleEngineCrash();
+}
+
+void EngineRepresentation::processError(QProcess::ProcessError error)
+{
+	//This is kind of a pointless slot, because processFinished also gets called after this...
+}
+
+void EngineRepresentation::handleEngineCrash()
+{
+	Log::log() << "EngineRepresentation::handleEngineCrash():\n" << currentState() << std::endl;
+
+	switch(_engineState)
+	{
+	case engineState::analysis:
+		if(_analysisInProgress)
+		{
+			_analysisInProgress->setStatus(Analysis::Status::FatalError);
+			_analysisInProgress->setErrorInResults("The engine crashed while trying to run this analysis...");
+			clearAnalysisInProgress();
+		}
+		break;
+
+	case engineState::filter:
+		emit processFilterErrorMsg("The engine crashed while trying to run the filter...", _lastRequestId);
+		break;
+
+	case engineState::computeColumn:
+		emit computeColumnFailed(tq(_lastCompColName), "The engine crashed while trying to compute this column...");
+		break;
+
+	case engineState::rCode:
+		emit rCodeReturned("The engine crashed while trying to run rscript...", _lastRequestId);
+		break;
+
+	case engineState::logCfg:
+		//So if the engine crashes on log config change request then we can still continue becaues it will also get the proper settings on startup.
+		//And if it is still broken then we will simply see a crash screen then...
+		break;
+
+	default: //If not one of the above then let the engine crash and burn (https://www.youtube.com/watch?v=UtUpXPiSJEg)
+		emit engineTerminated();
+		return;
+	}
+
+	_engineState = engineState::initializing;
+
+	emit requestEngineRestart(channelNumber());
 }
 
 void EngineRepresentation::clearAnalysisInProgress()
@@ -126,6 +177,7 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 	json["generatedFilter"] = filterStore->generatedfilter.toStdString();
 	json["requestId"]		= filterStore->requestId;
 
+	_lastRequestId			= filterStore->requestId;
 
 	QString dataFilter = filterStore->script == "" ? "*" : filterStore->script;
 	json["filter"] = dataFilter.toStdString();
@@ -174,6 +226,8 @@ void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 	json["requestId"]		= scriptStore->requestId;
 	json["whiteListed"]		= scriptStore->whiteListedVersion;
 
+	_lastRequestId			= scriptStore->requestId;
+
 	sendString(json.toStyledString());
 }
 
@@ -203,6 +257,8 @@ void EngineRepresentation::runScriptOnProcess(RComputeColumnStore * computeColum
 	json["columnName"]		= computeColumnStore->_columnName.toStdString();
 	json["computeCode"]		= computeColumnStore->script.toStdString();
 	json["columnType"]		= columnTypeToString(computeColumnStore->_columnType);
+
+	_lastCompColName		= json["columnName"].asString();
 
 	sendString(json.toStyledString());
 }
@@ -458,7 +514,7 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 	if(_slaveProcess != nullptr && _slaveProcess != jaspEngineProcess)
 	{
 		_slaveProcess->kill();
-		delete _slaveProcess;
+		_slaveProcess->deleteLater();
 		Log::log() << "EngineRepresentation::restartEngine says: Engine already has jaspEngine process!" << std::endl;
 	}
 

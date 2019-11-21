@@ -82,7 +82,7 @@ signals:
 	void	moduleUninstallingFinished(		const QString & moduleName);
 
 	void	refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
-	void plotEditorRefresh();
+	void	plotEditorRefresh();
 
 private:
 	bool		allEnginesStopped();
@@ -105,15 +105,12 @@ private slots:
 
 	void	process();
 
-	void	subProcessStarted();
-	void	subProcessError(	size_t engineNr, QProcess::ProcessError error);
-	void	subprocessFinished(	size_t engineNr, int exitCode, QProcess::ExitStatus exitStatus);
-
 	void	moduleLoadingFailedHandler(		const QString & moduleName, const QString & errorMessage, int channelID);
 	void	moduleLoadingSucceededHandler(		const QString & moduleName, int channelID);
 	void	moduleUnloadingFinishedHandler(	const QString & moduleName, int channelID);
 
 	void	restartEngines();
+	void	restartEngineAfterCrash(int nr);
 
 	void	logCfgReplyReceived(size_t channelNr);
 

@@ -36,7 +36,7 @@ SEXP jaspRCPP_requestTempRootNameSEXP();
 SEXP jaspRCPP_requestStateFileNameSEXP();
 SEXP jaspRCPP_RunSeparateR(SEXP code);
 
-				//Custom parseEvals to make sure sink is set (to capcode.c_str()ture output)
+				//Custom parseEvals to make sure sink is set (to capture output)
 void			jaspRCPP_parseEvalQNT(const std::string & code);
 RInside::Proxy	jaspRCPP_parseEval(const std::string & code);
 void			jaspRCPP_logString(const std::string & code);
@@ -81,5 +81,8 @@ std::string _jaspRCPP_System(std::string cmd);
 void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames);
 
 columnType jaspRCPP_getColumnType(std::string columnName);
+
+void jaspRCPP_crashPlease();
+void jaspRCPP_checkForCrashRequest();
 
 #endif // JASPRCPP_H
