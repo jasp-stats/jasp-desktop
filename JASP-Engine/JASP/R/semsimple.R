@@ -69,7 +69,9 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   if (!is.null(jaspResults[["semContainer"]])) {
     semContainer <- jaspResults[["semContainer"]]
   } else {
-    semContainer <- createJaspContainer(title = "Structural Equation Modeling<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>")
+    # semContainer <- createJaspContainer(title = "Structural Equation Modeling<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>")
+    semContainer <- createJaspContainer(title = "Structural Equation Modeling")
+    
     semContainer$dependOn(c("model",  "model", "SampleSize", "errorCalculationBootstrapSamples", 
                             "groupingVariable", "eq_loadings", "eq_intercepts", "eq_residuals", "eq_residualcovariances",
                             "eq_means", "eq_thresholds", "eq_regressions", "eq_variances", "eq_lvcovariances", 
