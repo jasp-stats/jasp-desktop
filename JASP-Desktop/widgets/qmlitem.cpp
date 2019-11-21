@@ -72,3 +72,12 @@ QVariant QMLItem::getItemProperty(const QString &name)
 	}
 }
 
+void QMLItem::showControlError(QString msg)
+{
+	QMetaObject::invokeMethod(_item, "showControlError", Q_ARG(QVariant, msg));
+}
+
+void QMLItem::showControlErrorTemporary(QString msg)
+{
+	QMetaObject::invokeMethod(_item, "showControlErrorTemporary", Q_ARG(QVariant, msg));
+}

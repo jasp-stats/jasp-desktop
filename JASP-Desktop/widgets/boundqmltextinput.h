@@ -40,7 +40,7 @@ public:
 	BoundQMLTextInput(QQuickItem* item, AnalysisForm* form);
 	void initTextInput();
 
-	void bindTo(Option *option)			override;
+	void		bindTo(Option *option)						override;
 
 	Option*		createOption()								override;
 	bool		isOptionValid(Option* option)				override;
@@ -49,8 +49,6 @@ public:
 	void		resetQMLItem(QQuickItem *item)				override;
 	void		rScriptDoneHandler(const QString& result)	override;
 
-signals:
-
 private slots:
 	void textChangedSlot();
 
@@ -58,6 +56,7 @@ private:
 	void _setOptionValue(Option* option, QString& text);
 	void _setFormulaOptions(std::string formula, bool valid = false);
 	void _setFormulaValidated(bool valid);
+	bool _formulaResultInBounds(double result);
 
 	QString					  _getPercentValue();
 	QString					  _getIntegerArrayValue();

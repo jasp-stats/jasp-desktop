@@ -23,11 +23,11 @@ import JASP 1.0
 
 TextField
 {
-	id: formulaField
-	property double defaultValue:		0
+					id:					formulaField
+					defaultValue:		"0"
 	property double	min:				-Infinity
 	property double	max:				Infinity
-	property string inclusive:			"yes"
+	property string	inclusive:			"yes"
 					inputType:			"formula"
-					fieldWidth:			jaspTheme.numericFieldWidth
+					fieldWidth:			jaspTheme.textFieldWidth / 2
 }

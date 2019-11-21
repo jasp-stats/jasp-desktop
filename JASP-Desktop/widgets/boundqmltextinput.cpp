@@ -207,7 +207,7 @@ Option *BoundQMLTextInput::createOption()
 	}
 
 	_value = getItemProperty("value").toString();
-	if(_inputType == TextInputType::FormulaType)
+	if(_inputType != TextInputType::FormulaType)
 		_setOptionValue(option, _value);
 	else
 	{
@@ -260,6 +260,7 @@ bool BoundQMLTextInput::isJsonValid(const Json::Value &optionValue)
 	case TextInputType::PercentIntputType:		valid = (optionValue.type() == Json::intValue || optionValue.type() == Json::realValue) ;	break;
 	case TextInputType::IntegerArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
 	case TextInputType::DoubleArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
+	case TextInputType::FormulaType:			valid = (optionValue.type() == Json::arrayValue);			break;
 	case TextInputType::StringInputType:
 	default:									valid = (optionValue.type() == Json::stringValue);			break;
 	}
@@ -280,7 +281,10 @@ void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 	bool succes;
 	double val = result.toDouble(&succes);
 
-	//check min max etc
+	if (!succes)
+		showControlErrorTemporary("The expression did not return a number.");
+	else
+		succes = _formulaResultInBounds(val);
 
 	if (succes) {
 		_item->setProperty("hasScriptError", false);
@@ -306,6 +310,27 @@ void BoundQMLTextInput::_setFormulaValidated(bool valid)
 		oldVal[1] = valid ? "T" : "F";
 		_formula->setValue(oldVal);
 	}
+}
+
+bool BoundQMLTextInput::_formulaResultInBounds(double result)
+{
+	double min		= getItemProperty("min").toDouble();
+	double max		= getItemProperty("max").toDouble();
+	bool inclusive	= getItemProperty("inclusive").toBool();
+
+	bool tooSmall = inclusive ? result < min : result <= min;
+	bool tooLarge = inclusive ? result > max : result >= max;
+	bool inBounds = !(tooSmall || tooLarge);
+
+	if (!inBounds)
+	{
+		QString end;
+		if (tooSmall)	end = (inclusive ? "&ge; " : "&gt; ") + getItemProperty("min").toString();
+		else			end = (inclusive ? "&le; " : "&lt; ") + getItemProperty("max").toString();
+		showControlErrorTemporary("The result (" + QString::number(result) + ") must be " + end);
+	}
+
+	return inBounds;
 }
 
 QString	BoundQMLTextInput::_getFormulaValue()
@@ -389,7 +414,7 @@ void BoundQMLTextInput::textChangedSlot()
 	if (_inputType == TextInputType::FormulaType)
 	{
 		_setFormulaOptions(fq(_value));
-		runRScript(_value, true);
+		runRScript("as.character(" + _value + ")", true);
 	}
 	else if (_option)
 		_setOptionValue(_option, _value);

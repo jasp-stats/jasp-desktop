@@ -65,6 +65,6 @@ Form
 		title: qsTr("Prior")
 		DoubleField { name: "priorA"; label: qsTr("Beta prior: parameter a"); defaultValue: 1; max: 10000; inclusive: "no"; decimals: 3 }
 		DoubleField { name: "priorB"; label: qsTr("Beta prior: parameter b"); defaultValue: 1; max: 10000; inclusive: "no"; decimals: 3 }
-		FormulaField{ name: "priorC"; label: qsTr("Test");}
+		FormulaField { name: "priorC"; label: qsTr("Test"); min: 0; max: 1}
 	}
 }
