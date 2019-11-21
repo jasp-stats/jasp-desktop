@@ -23,7 +23,7 @@ import JASP 1.0
 
 TextField
 {
-	id: doubleField
+	id:									doubleField
 	property double defaultValue:		0
 	property alias	doubleValidator:	doubleValidator
 	property bool	negativeValues:		false

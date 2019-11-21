@@ -37,7 +37,7 @@ AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynami
 		if (_title[i] != '-') _isSeparator = false;
 
 	_isGroupTitle	= !_isSeparator && !(analysisEntry.isMember("qml") || analysisEntry.isMember("function"));
-	_isAnalysis		= !_isGroupTitle;
+	_isAnalysis		= !_isGroupTitle && !_isSeparator;
 }
 
 AnalysisEntry::AnalysisEntry(){}

@@ -25,13 +25,14 @@
 			"qml":								"test.qml",
 			"function":							"testTransposedTableFunc"
 		},
-
 		{
 			"title":							"Test Footnotes jaspTable",
 			"qml":								"test.qml",
 			"function":							"testFootnotesTableFunc"
 		},
-
+		{
+			"title": "-"
+		},
 		{ 
 			"title":							"QML Widgets"
 		},

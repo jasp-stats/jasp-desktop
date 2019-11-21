@@ -265,6 +265,7 @@ void BoundQMLTextArea::dataSetChangedHandler()
 
 void BoundQMLTextArea::rScriptDoneHandler(const QString & result)
 {
+	//This is for the lavaan model btw
     if (result.length() == 0) {
 		_item->setProperty("hasScriptError", false);
 		_item->setProperty("infoText", "Model applied");
