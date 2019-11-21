@@ -64,6 +64,7 @@ drawBFpizza <- function(dat, linewidth = 1, scaleText = 0.3, show.legend = FALSE
 	    l = labels
 	  )
 	  g <- g + ggplot2::geom_text(data = dfTxt, aes(x = .data$x, y = .data$y, label = .data$l),
+                                parse = needsParsing(labels),
 	                              size = scaleText * getGraphOption("fontsize"), inherit.aes = FALSE)
 	}
 
