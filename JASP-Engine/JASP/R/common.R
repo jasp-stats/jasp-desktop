@@ -2957,3 +2957,12 @@ postProcessModuleInstall <- function(moduleLibraryPath)
     .postProcessLibraryModule(allFiles)
   }
 }
+
+.parseRcodeFromQt <- function(code) {
+  
+  ans <- eval(parse(text = code))
+  if (!is.numeric(ans) || is.na(ans))
+    return("Expressions was non-numeric or NA.")
+  else
+    return(as.character(ans))
+}
