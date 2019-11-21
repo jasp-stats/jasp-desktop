@@ -35,7 +35,7 @@ ggMatrixPlot(plotList = NULL, nr = NULL, nc = NULL, ...,
   debug = FALSE)
 }
 \arguments{
-\item{plotList}{}
+\item{plotList}{a list of ggplot2 objects}
 
 \item{nr}{number of rows}
 
@@ -60,6 +60,8 @@ ggMatrixPlot(plotList = NULL, nr = NULL, nc = NULL, ...,
 \item{scaleXYlabels}{two scalars for the magnification of the the x and y labels respectively.}
 
 \item{debug}{create an debug plot (see examples).}
+
+\item{layout}{a matrix that specifies the position of each plot, akin to the layout for base plots.}
 }
 \description{
 ggMatrixPlot

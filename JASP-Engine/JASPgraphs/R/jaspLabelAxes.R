@@ -1,5 +1,14 @@
 # this can mostly be imported from scales once we upgrade that package
 
+#' @title Parse numeric to character in a visually appeasing way. 
+#' @param x numeric values to parse.
+#'
+#' @param ... passed to subfunctions.
+#' @details Useful to avoid weird labels when dealing with very
+#' large or very small numbers. Mainly a wrapper around scales::scientific_format and scales::scientific_format
+#' scales::number_format.
+#' 
+#'
 #' @export
 axesLabeller <- function(x, ...) {
 
@@ -12,7 +21,7 @@ axesLabeller <- function(x, ...) {
     return(axesLabelScientific(xnum, ...))
   } else {
     # ensure that everything is parsed without scientific notation
-  	return(formatC(x, format = "fg"))
+    return(formatC(x, format = "fg"))
     # return(axesLabelNumber(xnum, ...))
   }
 }

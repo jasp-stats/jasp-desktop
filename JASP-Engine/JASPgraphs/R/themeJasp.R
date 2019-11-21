@@ -6,6 +6,11 @@
 #' with other themes, \code{graph + themeJaspRaw()}.
 #' @rdname themeJasp
 #'
+#' @param xAxis Should there be a horizontal line for the x-axis?
+#' @param yAxis Should there be a horizontal line for the x-axis?
+#' @param legend.cex magnification of the font size for the legend.
+#' @param Xvjust adjustment of x-axis tick labels
+#' @param Yvjust adjustment of y-axis tick labels
 #' @param graph a ggplot2 object
 #' @param sides see \code{\link{geom_rangeframe}}
 #' @param axis.title.cex scalar magnification for the title of the axes.
@@ -71,8 +76,6 @@ themeJasp = function(graph,
 #' @rdname themeJasp
 #' @export
 themeJaspRaw = function(legend.position = "none",
-                        xMargin = c(20, 0, 0, 0),
-                        yMargin = c(0, 20, 0, 0),
                         legend.cex = 1,
                         axis.title.cex = 1,
                         family = NULL,

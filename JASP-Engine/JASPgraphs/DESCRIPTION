@@ -1,6 +1,6 @@
 Package: JASPgraphs
 Type: Package
-Title: Custom graphs for JASP
+Title: Custom Graphs for JASP
 Version: 0.4.2
 Author: Don van den Bergh
 Maintainer: JASP-team <info@jasp-stats.nl>
@@ -12,9 +12,12 @@ RoxygenNote: 6.1.1
 Suggests: testthat
 Imports: 
     ggplot2 (>= 3.0.0),
-    scales,
     gridExtra,
-    stringr,
+    gtable,
+    jsonlite,
     R6,
     RColorBrewer,
+    rlang,
+    scales,
+    stringr,
     viridisLite

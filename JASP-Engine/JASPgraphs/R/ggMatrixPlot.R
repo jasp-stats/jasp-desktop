@@ -5,7 +5,8 @@ makeRect <- function(col = "red", size = 2, fill = scales::alpha("black", 0)) {
   dfrect <- data.frame(xmin = 0, xmax = 1, ymin = 0, ymax = 1)
 
   return(invisible(
-    ggplot2::ggplot(data = dfrect, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax)) +
+    ggplot2::ggplot(data = dfrect, aes(xmin = .data$xmin, xmax = .data$xmax, ymin = .data$ymin, 
+                                       ymax = .data$ymax)) +
       ggplot2::geom_rect(fill = fill, size = size, color = col) +
       ggplot2::theme_void()
   ))
@@ -24,13 +25,11 @@ replicateOrStop <- function(x, n) {
   return(x)
 }
 
-#' @export
 makeLabels <- function(label, angle = 0, size = 1, family = graphOptions("family"),
                        vjust = "center", hjust = "center", x = .5, y = .5) {
   UseMethod("makeLabels", label)
 }
 
-#' @export
 makeLabels.default <- function(label, angle = 0, size = 1, family = graphOptions("family"),
                                vjust = "center", hjust = "center", x = .5, y = .5) {
 
@@ -71,7 +70,6 @@ makeLabels.default <- function(label, angle = 0, size = 1, family = graphOptions
   }
 }
 
-#' @export
 makeLabels.list <- function(label, angle = 0, size = 1, family = graphOptions("family"),
                             vjust = "center", hjust = "center", x = .5, y = .5) {
 
@@ -231,8 +229,8 @@ scaleAxesLabels <- function(scaleXYlabels, plotList) {
 }
 
 #' @title ggMatrixPlot
-#' @param plotList
-#'
+#' @param plotList a list of ggplot2 objects
+#' @param layout a matrix that specifies the position of each plot, akin to the layout for base plots.
 #' @param nr number of rows
 #' @param nc number of columns
 #' @param ... ignored.

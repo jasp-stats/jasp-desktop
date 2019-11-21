@@ -1,12 +1,13 @@
+#' @title Compute axis breaks 
+#' @param x the object to compute axis breaks for
+#'
+#' @param ... if x is numeric, this is passed to pretty
+#' @details this is just a wrapper for pretty with slightly different defaults. 
+#'
 #' @export
 getPrettyAxisBreaks <- function(x, ...) {
   force(x)
   UseMethod("getPrettyAxisBreaks", x)
-}
-
-#' @export
-axesBreaks <- function(x, ...) {
-  getPrettyAxisBreaks(x, ...)
 }
 
 #' @export

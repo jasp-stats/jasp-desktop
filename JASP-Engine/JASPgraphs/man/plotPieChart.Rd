@@ -6,8 +6,9 @@
 \usage{
 plotPieChart(value, group, legendName = deparse(substitute(group)),
   legendLabels = if (is.factor(group)) levels(group) else unique(group),
-  legendColors = getGraphOption("palette"), showAxisText = TRUE,
-  showAxisTicks = showAxisText, asPercentages = TRUE, ...)
+  legendColors = NULL, showAxisText = TRUE,
+  showAxisTicks = showAxisText, asPercentages = TRUE,
+  palette = getGraphOption("palette"), ...)
 }
 \arguments{
 \item{value}{The value for each group.}
@@ -22,7 +23,11 @@ plotPieChart(value, group, legendName = deparse(substitute(group)),
 
 \item{showAxisText}{Logical, should the axis text be shown?}
 
+\item{showAxisTicks}{Logical, should the ticks on the polar coodinates be shown?}
+
 \item{asPercentages}{Logical, should value be transformed to percentages? Recommended to be true.}
+
+\item{palette}{Character vector with palette name. If this option is set then legendColors is ignored. If palette is NULL then legendColors are used.}
 
 \item{...}{Arguments to be passed to \code{\link{themeJasp}}.}
 }

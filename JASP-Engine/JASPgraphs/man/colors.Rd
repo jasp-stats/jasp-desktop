@@ -24,12 +24,6 @@ scale_JASPfill_discrete(palette = getGraphOption("palette"), ...)
 \item{asFunction}{Should a function be returned or the raw colors? If a function is returned, it either takes a single integer or a vector in 0, 1 as input.}
 
 \item{...}{Further arguments for \code{\link[ggplot2]{scale_colour_continuous}}.}
-
-\item{n}{Number of colors desired.}
-
-\item{discete}{Should the function returned be suited for a discrete scale or a continuous one? Only used when \code{asFunction = TRUE}.}
-
-\item{...}{Further arguments for \code{\link[ggplot2]{scale_color_manual}}.}
 }
 \value{
 Either a character vector of colors or a function.

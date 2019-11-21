@@ -56,13 +56,13 @@ plotQQnorm <- function(residuals, lower = NULL, upper = NULL, abline = TRUE, abl
   # construct plot
   aes <- ggplot2::aes
   dfLine <- data.frame(x = xvals, y = yvals)
-  g <- ggplot2::ggplot(data = df, aes(x = x, y = y))
+  g <- ggplot2::ggplot(data = df, aes(x = .data$x, y = .data$y))
 
   if (abline)
-    g <- g + ggplot2::geom_line(mapping = aes(x = x, y = y), data = dfLine, inherit.aes = FALSE, color = ablineColor)
+    g <- g + ggplot2::geom_line(mapping = aes(x = .data$x, y = .data$y), data = dfLine, inherit.aes = FALSE, color = ablineColor)
 
   if (hasErrorbars)
-    g <- g + ggplot2::geom_errorbar(aes(ymin = ymin, ymax = ymax))
+    g <- g + ggplot2::geom_errorbar(aes(ymin = .data$ymin, ymax = .data$ymax))
 
   g <- g +
     geom_point() +

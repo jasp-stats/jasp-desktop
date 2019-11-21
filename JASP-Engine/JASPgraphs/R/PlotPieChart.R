@@ -7,6 +7,7 @@
 #' @param legendColors Character vector with colors.
 #' @param showAxisText Logical, should the axis text be shown?
 #' @param asPercentages Logical, should value be transformed to percentages? Recommended to be true.
+#' @param showAxisTicks Logical, should the ticks on the polar coodinates be shown?
 #' @param palette Character vector with palette name. If this option is set then legendColors is ignored. If palette is NULL then legendColors are used.
 #' @param ... Arguments to be passed to \code{\link{themeJasp}}.
 #'

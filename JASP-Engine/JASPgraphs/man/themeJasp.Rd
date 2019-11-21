@@ -14,9 +14,9 @@ themeJasp(graph, xAxis = TRUE, yAxis = TRUE, sides = "bl",
   axisTickLength = getGraphOption("axisTickLength"),
   axisTickWidth = getGraphOption("axisTickWidth"))
 
-themeJaspRaw(legend.position = "none", xMargin = c(20, 0, 0, 0),
-  yMargin = c(0, 20, 0, 0), legend.cex = 1, axis.title.cex = 1,
-  family = NULL, axisTickLength = getGraphOption("axisTickLength"),
+themeJaspRaw(legend.position = "none", legend.cex = 1,
+  axis.title.cex = 1, family = NULL,
+  axisTickLength = getGraphOption("axisTickLength"),
   axisTickWidth = getGraphOption("axisTickWidth"),
   fontsize = getGraphOption("fontsize"), legend.justification = "top",
   legend.title = element_text(family = family, size = fontsize, hjust =
@@ -24,6 +24,10 @@ themeJaspRaw(legend.position = "none", xMargin = c(20, 0, 0, 0),
 }
 \arguments{
 \item{graph}{a ggplot2 object}
+
+\item{xAxis}{Should there be a horizontal line for the x-axis?}
+
+\item{yAxis}{Should there be a horizontal line for the x-axis?}
 
 \item{sides}{see \code{\link{geom_rangeframe}}}
 
@@ -45,7 +49,13 @@ themeJaspRaw(legend.position = "none", xMargin = c(20, 0, 0, 0),
 
 \item{axisTickWidth}{width of axis ticks.}
 
+\item{legend.cex}{magnification of the font size for the legend.}
+
 \item{legend.title}{should legend have a title?}
+
+\item{Xvjust}{adjustment of x-axis tick labels}
+
+\item{Yvjust}{adjustment of y-axis tick labels}
 }
 \description{
 Set a JASP theme and additional options with \code{themeJASP(graph)}, or add the theme to a graph like

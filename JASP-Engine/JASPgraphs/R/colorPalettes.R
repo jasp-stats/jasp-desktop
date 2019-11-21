@@ -14,12 +14,9 @@ JASPgraphs_data <- list2env(list(
 ))
 
 #'@title JASP color palettes
-#'@param n Number of colors desired.
 #'@param palette Palette to choose from.
 #'@param asFunction Should a function be returned or the raw colors? If a function is returned, it either takes a single integer or a vector in 0, 1 as input.
 #'@param ... Further arguments for \code{\link[ggplot2]{scale_colour_continuous}}.
-#'@param discete Should the function returned be suited for a discrete scale or a continuous one? Only used when \code{asFunction = TRUE}.
-#'@param ... Further arguments for \code{\link[ggplot2]{scale_color_manual}}.
 #'
 #'@details For ggplot2s, the convenience functions \code{scale_JASPcolor_\*} and \code{scale_JASPfill_\*} exist.
 #'

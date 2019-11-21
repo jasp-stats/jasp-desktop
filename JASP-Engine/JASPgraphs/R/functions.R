@@ -1,4 +1,3 @@
-#' @export
 grid_arrange_shared_legend <- function(..., plotList = NULL, nrow = 1, ncol = length(list(...)), position = c("bottom", "right")) {
 
     if (is.null(plotList)) {
@@ -32,90 +31,6 @@ grid_arrange_shared_legend <- function(..., plotList = NULL, nrow = 1, ncol = le
 
 }
 
-# grid_arrange_shared_legend <- function(..., plotList = NULL, nrow = 1, ncol = length(list(...)), position) {
-#
-#     if (is.null(plotList)) {
-#         plots <- list(...)
-#     } else {
-#         plots <- plotList
-#     }
-#     position <- match.arg(position, c("bottom", "right"))# TODO implement: , "top", "left", "none"))
-    # g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
-    # legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
-#     lheight <- sum(legend$height)
-#     lwidth <- sum(legend$width)
-#     gl <- lapply(plots, function(x) x + theme(legend.position = "none"))
-#     gl <- c(gl, nrow = nrow, ncol = ncol)
-#
-#     combined <- switch(position,
-#                        "bottom" = arrangeGrob(do.call(arrangeGrob, gl),
-#                                               legend,
-#                                               ncol = 1,
-#                                               heights = unit.c(unit(1, "npc") - lheight, lheight)),
-#                        "right" = arrangeGrob(do.call(arrangeGrob, gl),
-#                                              legend,
-#                                              ncol = 2,
-#                                              widths = unit.c(unit(1, "npc") - lwidth, lwidth)))
-#     grid.newpage()
-#     grid.draw(combined)
-#
-# }
-
-# @export
-# combinePlots = function(graph1, graph2, position = "posterior_pizza") {
-#
-# 	if (position == "posterior_pizza") {
-#
-# 		# read this as: graph 1 x coordinate
-# 		g1x = 0; g1y = 0; g1w = 1; g1h = .75
-# 		g2x = .38; g2y = .7; g2w = .3; g2h = .3
-#
-# 	} else if (is.list(position)) {
-#
-#
-# 	}
-#
-# 	return(
-# 		cowplot::ggdraw() +
-# 			cowplot::draw_plot(graph1, x = g1x, y = g1y, width = g1w, height = g1h) +
-# 			cowplot::draw_plot(graph2, x = g2x, y = g2y, width = g2w, height = g2h) #+
-# 		# cowplot::draw_label(l0, x = .175, y = .875, size = fontsize) +
-# 		# cowplot::draw_label(l1, x = .525, y = .95, size = fontsize) +
-# 		# cowplot::draw_label(l2, x = .525, y = .75, size = fontsize) +
-# 		# cowplot::draw_label(l3, x = .75, y = .875, size = fontsize)
-# 	)
-#
-# }
-
-#' @export
-ggplotBtyN <- function(graph = drawAxis(), xBreaks = NULL, yBreaks = NULL, ...) {
-
-    if (any(is.null(xBreaks), is.null(yBreaks)))
-        gBuild = ggplot2::ggplot_build(graph)
-
-    xyBreaks <- getMajorSource(gBuild)
-    if (is.null(xBreaks))
-        xBreaks = xyBreaks$x
-
-    if (is.null(yBreaks))
-        yBreaks = xyBreaks$y
-
-
-    # get x-lim/ y-lim and add 5% of the total range
-    xL = c(xBreaks[1], xBreaks[length(xBreaks)]) #+ c(-1, 1) * .02*diff(range(xBreaks))
-    yL = c(yBreaks[1], yBreaks[length(yBreaks)]) #+ c(-1, 1) * .01 # *diff(range(xBreaks))
-
-    return(
-        graph +
-            ggplot2::annotate(geom = "segment", y = -Inf, yend = -Inf,
-                              x = xL[1], xend = xL[2], ...) +
-            ggplot2::annotate(geom = "segment", x = -Inf, xend = -Inf,
-                              y = yL[1], yend = yL[2], ...)
-
-    )
-
-}
-
 # low-level plots ----
 
 xAxisBreaksToAxisScale <- function(xBreaks = waiver(), xName = waiver(), xLabels = waiver(), xLimits = waiver(), position = "bottom", ...) {
@@ -144,7 +59,6 @@ yAxisBreaksToAxisScale <- function(yBreaks = waiver(), yName = waiver(), yLabels
     )
 }
 
-#' @export
 addAxis <- function(graph, breaks = NULL, name = waiver(), labels = waiver(), limits = waiver(), position = "left", ...) {
 
     if (position %in% c("left", "right")) {# vertical axis
@@ -157,6 +71,25 @@ addAxis <- function(graph, breaks = NULL, name = waiver(), labels = waiver(), li
 
 }
 
+#' @title (Deprecated) draw an empty ggplot with just axes.
+#' 
+#' @param graph ggplot object.
+#' @param xName name for x-axis.
+#' @param yName name for y-axis.
+#' @param breaks a list with $xBreaks and $yBreaks or waiver().
+#' @param xBreaks x-axis breaks.
+#' @param yBreaks y-axis breaks.
+#' @param dat data.frame.
+#' @param xLabels labels for x-axis.
+#' @param yLabels labels for y-axis.
+#' @param xLimits limits for x-axis.
+#' @param yLimits limits for y-axis.
+#' @param force force the axes to be present at the cost of drawing an invisible geom.
+#' @param secondaryXaxis secondary x-axis.
+#' @param secondaryYaxis secondary y-axis.
+#' @param xTrans transformation function for the x-axis.
+#' @param yTrans transformation function for the y-axis.
+#'
 #' @export
 drawAxis <- function(graph = NULL, xName = waiver(), yName = waiver(), breaks = waiver(), xBreaks = waiver(),
                      yBreaks = waiver(), dat = NULL, xLabels = waiver(), yLabels = waiver(), xLimits = waiver(),
@@ -164,6 +97,7 @@ drawAxis <- function(graph = NULL, xName = waiver(), yName = waiver(), breaks = 
                      secondaryXaxis = waiver(), secondaryYaxis = waiver(),
                      xTrans = "identity", yTrans = "identity") {
 
+    warning("This function will be deprecated.")
     if (!is.null(dat) && is.null(breaks))
         breaks <- getPrettyAxisBreaks(dat)
 
@@ -194,7 +128,7 @@ drawAxis <- function(graph = NULL, xName = waiver(), yName = waiver(), breaks = 
 
     if (force && is.waive(graph[["data"]])) {
         dftmp <- data.frame(x = range(xBreaks), y = range(yBreaks))
-        graph <- graph + ggplot2::geom_line(data = dftmp, mapping = ggplot2::aes(x = x, y = y), color = "white", alpha = 0)
+        graph <- graph + ggplot2::geom_line(data = dftmp, mapping = ggplot2::aes(x = .data$x, y = .data$y), color = "white", alpha = 0)
     }
     graph <- graph + ggplot2::xlab(xName) + ggplot2::ylab(yName)
 
@@ -213,169 +147,76 @@ drawAxis <- function(graph = NULL, xName = waiver(), yName = waiver(), breaks = 
 
 }
 
+# # @export
+# drawBars <- function(graph = drawAxis(), dat, mapping = NULL, stat="identity", fill="gray80", width = NULL, show.legend = FALSE, ...) {
+# 
+#     if (is.null(mapping)) {
+# 
+#         nms <- colnames(dat)
+# 
+#         mapping <- switch(as.character(length(nms)),
+#                           "1" = ggplot2::aes_string(x = nms[1]),
+#                           "2" = ggplot2::aes_string(x = nms[1], y = nms[2]),
+#                           "3" = ggplot2::aes_string(x = nms[1], y = nms[2], group = nms[3], linetype = nms[3])
+#         )
+# 
+#     }
+# 
+#     args = list(data = dat, mapping = mapping, fill = fill, stat=stat, width = width, show.legend = show.legend, ...)
+#     args[names(args) %in% names(mapping)] <- NULL
+# 
+#     return(graph + do.call(ggplot2::geom_bar, args))
+# 
+# }
 
-#' @export
-drawBars <- function(graph = drawAxis(), dat, mapping = NULL, stat="identity", fill="gray80", width = NULL, show.legend = FALSE, ...) {
-
-    if (is.null(mapping)) {
-
-        nms <- colnames(dat)
-
-        mapping <- switch(as.character(length(nms)),
-                          "1" = ggplot2::aes_string(x = nms[1]),
-                          "2" = ggplot2::aes_string(x = nms[1], y = nms[2]),
-                          "3" = ggplot2::aes_string(x = nms[1], y = nms[2], group = nms[3], linetype = nms[3])
-        )
-
-    }
-
-    args = list(data = dat, mapping = mapping, fill = fill, stat=stat, width = width, show.legend = show.legend, ...)
-    args[names(args) %in% names(mapping)] <- NULL
-
-    return(graph + do.call(ggplot2::geom_bar, args))
-
-
-    # if ("fill" %in% names(mapping)) {
-    #     return(
-    #         graph + ggplot2::geom_bar(data = dat, mapping = mapping,
-    #                                   stat = stat, show.legend = show.legend, ...)
-    #     )
-    # } else {
-    #     return(
-    #         graph + ggplot2::geom_bar(data = dat, mapping = mapping,
-    #                                   stat = stat, fill = fill, show.legend = show.legend, ...)
-    #     )
-    # }
-}
-
-#' @export
-drawHeatmap <- function(graph = drawAxis(), dat, mapping = NULL, fillColor = TRUE, interpolate = FALSE,
-                        show.legend = FALSE, rotation = c("0", "90", "180", "270"), n = 5,
-                        geom = c("raster", "tile", "rect"),
-                        ...) {
-
-    geom <- match.arg(geom)
-    rotation <- match.arg(rotation)
-
-    if (rotation != 0) {
-
-        if (is.data.frame(dat)) {
-
-            x <- unique(dat$x)
-            y <- unique(dat$y)
-            dat <- matrix(dat$z, length(x), length(y))
-
-        }
-
-        dat <- rotateMatrix(dat, rotation = rotation)
-
-    }
-
-    # convert matrix to dataframe
-    if (is.matrix(dat)) {
-
-        dat <- data.frame(
-            x = rep(seq_len(nrow(dat)), ncol(dat)),
-            y = rep(seq_len(ncol(dat)), each = nrow(dat)),
-            z = c(dat)
-        )
-
-    }
-
-    if (is.null(mapping)) {
-
-        nms <- colnames(dat)
-        stopifnot(length(nms) == 3)
-        mapping <- ggplot2::aes_string(x = nms[1], y = nms[2], fill = nms[3])
-
-    }
-
-    if (isTRUE(fillColor)) {
-
-        gradient <- ggplot2::scale_fill_gradientn(colours = c(colorBrewerJasp(n)))
-
-    } else if (is.character(fillColor)) {
-
-        gradient <- ggplot2::scale_fill_gradientn(colours = fillColor)
-
-    } else if (is.numeric(fillColor) && fillColor > 1) {
-
-        # todo
-
-    } else {
-
-        gradient <- NULL
-
-    }
-
-    args = list(data = dat, mapping = mapping, interpolate = interpolate, show.legend = show.legend, ...)
-    args[names(args) %in% names(mapping)] <- NULL
-
-    f <- utils::getFromNamespace(paste0("geom_", geom), "ggplot2")
-    if (geom != "raster")
-        args[["interpolate"]] <- NULL
-
-    return(
-        graph + do.call(f, args) + gradient
-    )
-
-    # return(
-    #     graph + ggplot2::geom_raster(data = dat, mapping = mapping, interpolate = interpolate,
-    #                                  show.legend = show.legend) + gradient
-    # )
-}
-
-rotateMatrix <- function(x, rotation = 90) {
-
-    # helper function for drawHeatmap()
-
-    if (rotation == 90) {
-
-        return(t(apply(x, 2, rev)))
-
-    } else if (rotation == 180) {
-
-        return(rotateMatrix(rotateMatrix(x)))
-
-    } else { # rotation  == 270
-
-         return(apply(t(x), 2, rev))
-    }
-}
-
+#' @title Deprecated: use \code{ggplot2::geom_line} instead.
+#'
+#' @param graph ggplot2 object
+#' @param dat data frame
+#' @param mapping mapping from aes
+#' @param size size
+#' @param alpha transparancy
+#' @param show.legend show legend?
+#' @param ... other arguments to geom_line
+#'
 #' @export
 drawLines <- function(graph = drawAxis(), dat, mapping = NULL, size = 1.25,
                       alpha = 1, show.legend = TRUE, ...) {
 
-    if (is.null(mapping)) {
+  if (is.null(mapping)) {
 
-        nms = colnames(dat)
+      nms = colnames(dat)
 
-        mapping <- switch(as.character(length(nms)),
-                          "2" = ggplot2::aes_string(x = nms[1], y = nms[2]),
-                          "3" = ggplot2::aes_string(x = nms[1], y = nms[2], color = nms[3])
-        )
-
-    } else if (is.character(mapping)) {
-
-        mapping <- switch(mapping,
-            "PriorPosterior" = ggplot2::aes_string(x = nms[1], y = nms[2], linetype = nms[3])
-        )
-
-    }
-
+      mapping <- switch(as.character(length(nms)),
+                        "2" = ggplot2::aes_string(x = nms[1], y = nms[2]),
+                        "3" = ggplot2::aes_string(x = nms[1], y = nms[2], color = nms[3])
+      )
+      
+  } else if (is.character(mapping)) {
+      
+      mapping <- switch(mapping,
+                        "PriorPosterior" = ggplot2::aes_string(x = nms[1], y = nms[2], linetype = nms[3])
+      )
+      
+  }
+    
     args = list(data = dat, mapping = mapping, size = size, alpha = alpha, show.legend = show.legend, ...)
     args[names(args) %in% names(mapping)] <- NULL
-
+    
     return(graph + do.call(ggplot2::geom_line, args))
-
-    # return(
-    #     graph +
-    #         ggplot2::geom_line(data = dat, mapping = mapping, size = size, show.legend = show.legend, ...)
-    # )
-
 }
 
+#' @title Deprecated: use \code{ggplot2::geom_point} instead.
+#'
+#' @param graph ggplot2 object
+#' @param dat data frame
+#' @param mapping mapping from aes
+#' @param size size
+#' @param shape shape
+#' @param fill color for filling
+#' @param show.legend show legend?
+#' @param ... other arguments to geom_point
+#'
 #' @export
 drawPoints <- function(graph = drawAxis(), dat, mapping = NULL, size = 1.25,
                        shape = 21, fill = "gray", show.legend = TRUE, ...) {
@@ -398,6 +239,19 @@ drawPoints <- function(graph = drawAxis(), dat, mapping = NULL, size = 1.25,
 
 }
 
+#' @title Deprecated: use \code{ggplot2::geom_smooth} instead.
+#'
+#' @param graph ggplot2 object
+#' @param dat data frame
+#' @param mapping mapping from aes
+#' @param size size
+#' @param method statistical method to draw regression line (e.g., lm)
+#' @param color line color
+#' @param show.legend show legend?
+#' @param se show standard errors?
+#' @param alpha transparancy
+#' @param ... other arguments to geom_smooth
+#'
 #' @export
 drawSmooth <- function(graph = NULL, dat = NULL, mapping = NULL, size = 2, method = "auto",
                        color = "gray", show.legend = FALSE, se = FALSE, alpha = 1, ...) {
@@ -420,247 +274,4 @@ drawSmooth <- function(graph = NULL, dat = NULL, mapping = NULL, size = 2, metho
 
     return(graph + do.call(ggplot2::geom_smooth, args))
 
-    # return(
-    #     graph +
-    #         ggplot2::geom_smooth(data = dat, mapping = mapping, alpha = 0.01,
-    #                              size = size, color = color, show.legend = show.legend, se = se, ...)
-    # )
-
-}
-
-#' @export
-drawViolin <- function(graph = drawAxis(), dat = NULL, mapping = NULL, size = 2,
-                       show.legend = FALSE, ...) {
-
-    if (is.null(mapping)) {
-
-        mapping <- switch(as.character(length(dat)),
-            "2" = ggplot2::aes_(x = dat[[1]], y = dat[[2]]),
-            "3" = ggplot2::aes_(x = dat[[1]], y = dat[[2]], color = dat[[3]])
-        )
-    }
-
-
-    return(
-        graph +
-            geom_violin(mapping = NULL, data = NULL, show.legend = show.legend, ...)
-    )
-
-}
-
-# convenience plots ----
-#' @export
-makeGraph <- function(dat, graphType, xName, yName, breaks = NULL, graphArgs = NULL, themeArgs = NULL) {
-
-    # attempt to understand "graphType"
-    graphFun <- understandGraphType(graphType = graphType)
-
-    # make an empty graph
-    graph <- drawAxis(xName = xName, yName = yName, breaks = breaks)
-
-    if (!is.null(dat)) { # if there is data
-
-        # do some checks on the length of the graphArguments
-        if (!is.null(graphArgs) && length(graphArgs) != length(graphFun)) {
-
-            if (length(graphArgs) != 1L)
-                stop(sprintf("Argument graphArgs has length %d but it must have either length 1 or length(graphType) (%d).",
-                             length(graphArgs), length(graphFun)))
-
-            graphArgs <- rep_len(graphArgs, length.out = length(graphFun))
-
-        }
-
-        # add the plots
-        for (i in seq_along(graphFun)) {
-            graph <- do.call(what = graphFun[[i]], args = c(list(graph = graph, dat = dat[[i]]), graphArgs[[i]]))
-        }
-    }
-
-    graph <- ggplotBtyN(graph = graph)
-    graph <- do.call(themeJasp, c(list(graph = graph), themeArgs))
-
-    return(graph + ggplot2::xlab(xName) + ggplot2::ylab(yName))
-
-}
-
-understandGraphType <- function(graphType) {
-
-    # lazy vectorization
-    if (length(graphType) > 1) {
-        return(lapply(graphType, understandGraphType))
-    }
-
-    # actual function
-    if (is.function(graphType)) {
-
-        graphName <- as.character(substitute(graphType))
-        if (!exists(graphName, where = asNamespace("JASPgraphs"), mode = "function"))
-            stop(sprintf("Argument 'graphType = %s' is not a function in JASPgraphs.", graphName))
-
-        graphFun <- graphType
-
-    } else if (is.character(graphType)) {
-
-        graphType <- tolower(graphType) # ignore any case
-        if (substr(graphType, 1, 4) != "draw") { # if missing 'draw' at the beginning
-            graphType <- paste0("draw", graphType)
-        }
-        # ensure camelcaps
-        substr(graphType, 5, 5) <- toupper(substr(graphType, 5, 5))
-
-        # all currently available graphs
-        allGraphs <- c(
-            "drawLines",
-            "drawPoints",
-            "drawBars",
-            "drawHeatmap",
-            # high level plots
-            "priorPosteriorCor"
-        )
-
-        # find match between available and existing graphtypes
-        choice <- pmatch(x = graphType, table = allGraphs, nomatch = NA)
-
-        if (is.na(choice)) # uh oh...
-            stop(sprintf("Argument graphType is misspecified. I understood: %s", as.character(graphType[1])))
-
-        # get the function from namespace to avoid any mixups
-        if (substr(allGraphs[choice], 1, 4) == "draw") {
-
-            graphFun <- utils::getFromNamespace(x = allGraphs[choice], ns = "JASPgraphs")
-
-        } else {
-
-            # graphFun <- switch(choice,
-            #    "priorPosteriorCor" = list(drawLines, drawPoints, drawWheel, combinePlots)
-            #
-            # )
-
-        }
-
-    } else {
-
-        warning(sprintf("Argument 'graphType' is not a function or character string but of class: %s", class(graphType)))
-        return(NULL)
-
-    }
-
-    return(graphFun)
-
-}
-
-areArgumentsUsed <- function(args, fun, verbose = TRUE) {
-
-    # probably won't work since arguments are passed via ...
-    if (is.list(names)) {
-        nmsArgs <- names(args)
-    } else {
-        nmsArgs <- args
-    }
-
-    funArgs <- names(formals(fun))
-    rmArgs <- !(nmsArgs %in% funArgs)
-    unUsedArgs <- nmsArgs[rmArgs]
-
-
-    argsTheme <- names(formals(themeJasp))
-    rmArgsGraph <-!(argsGraph %in% names(graphArgs))
-    rmArgsTheme <-!(argsTheme %in% names(themeArgs))
-    unUsedGraph <- argsGraph[rmArgsGraph]
-    unUsedTheme <- argsTheme[rmArgsTheme]
-
-    # notify a user of any unused arguments
-    if (length(unUsedGraph) > 0)
-        warning(paste0("The following arguments are unused in argsGraph: ",
-                       paste(rmArgsGraph, collapse = ", ")))
-}
-
-setLegendNames <- function(graph, names) {
-
-    if (!is.list(graph) && identical(names(graph), c("data", "layout", "plot"))) {
-
-        gBuild <- graph
-
-    } else if (!is.ggplot(graph)) {
-
-        stop("input must be a ggplot object")
-
-    } else {
-
-        gBuild = ggplot2::ggplot_build(graph)
-
-    }
-
-    gBuild$plot$labels
-
-    for (i in seq_along(gBuild$plot$layers)) {
-
-            class(gBuild$plot$layers[[i]]$show.legend)
-    }
-    gBuild$plot$layers
-
-    gBuild$plot$layers[[1]]$geom
-    gBuild$plot$layers[[2]]$geom
-    gBuild$plot$layers[[3]]$geom
-}
-
-# unused ----
-#' @export
-colorBrewerJasp = function(n) {
-
-    # n should be the number of (interpolated) colors returned
-    return(grDevices::colorRampPalette(c("#00a9e6", "#00ba63", "#fb8b00", "#c75327", "#909090"))(n))
-
-}
-
-colorGradientJasp = function(n) {
-
-    # n should be an intensity measure in the domain [0-1]
-
-    gradient = grDevices::colorRamp(c("#00a9e6", "#00ba63", "#fb8b00", "#c75327", "#909090"))(n)
-    # convert rgb to hex
-    gradient = apply(gradient, 1, function(x) grDevices::rgb(x[1], x[2], x[3], maxColorValue = 255))
-    return(gradient)
-
-}
-
-# deprecated?
-#' @export
-multiplot <- function(..., plotList = NULL, file, cols = 1, layout=NULL) {
-
-    # Make a list from the ... arguments and plotlist
-    plots <- c(list(...), plotList)
-
-    numPlots = length(plots)
-
-    # If layout is NULL, then use 'cols' to determine layout
-    if (is.null(layout)) {
-        # Make the panel
-        # ncol: Number of columns of plots
-        # nrow: Number of rows needed, calculated from # of cols
-        layout <- matrix(seq(1, cols * ceiling(numPlots / cols)),
-                         ncol = cols, nrow = ceiling(numPlots / cols))
-    }
-
-    if (numPlots == 1) {
-
-        print(plots[[1]])
-
-    } else {
-
-        # Set up the page
-        grid::grid.newpage()
-        grid::pushViewport(grid::viewport(layout = grid::grid.layout(nrow(layout), ncol(layout))))
-
-        # Make each plot, in the correct location
-        for (i in 1:numPlots) {
-            # Get the i,j matrix positions of the regions that contain this subplot
-            matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-
-            print(plots[[i]], vp = grid::viewport(layout.pos.row = matchidx$row,
-                                                  layout.pos.col = matchidx$col))
-
-        }
-    }
 }

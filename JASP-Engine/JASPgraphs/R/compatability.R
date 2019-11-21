@@ -9,6 +9,9 @@
 #' @importFrom scales censor
 #' @importFrom gridExtra arrangeGrob grid.arrange
 
+#' @title Get the axis breaks of a ggplot2 object
+#' @param x a ggplot object
+#'
 #' @export
 getAxisBreaks <- function(x) {
   UseMethod("getAxisBreaks", x)
@@ -41,68 +44,7 @@ getAxisBreaks.ggplot_built <- function(x) {
   }
 }
 
-#' @export
-getMajorSource <- function(x) {
-  UseMethod("getMajorSource", x)
-}
-
-getMajorSource.gg     <- function(x) getMajorSource.ggplot_built(ggplot2::ggplot_build(x))
-getMajorSource.ggplot <- function(x) getMajorSource.ggplot_built(ggplot2::ggplot_build(x))
-getMajorSource.list   <- function(x) getMajorSource.ggplot_built(x)
-
-#' @export
-getMajorSource.ggplot_built <- function(x) {
-
-  if (graphOptions("ggVersion") <= 2.21) {
-    return(list(
-      x = x$layout$panel_ranges[[1]]$x.major_source,
-      y = x$layout$panel_ranges[[1]]$y.major_source
-    ))
-  } else {
-    return(list(
-      x = x$layout$panel_params[[1]]$x.major_source,
-      y = x$layout$panel_params[[1]]$y.major_source
-    ))
-  }
-}
-
-#' @export
-getRanges <- function(x) {
-  UseMethod("getMajorSouce", x)
-}
-
-getRanges.gg     <- function(x) getRanges.ggplot_built(ggplot2::ggplot_build(x))
-getRanges.ggplot <- function(x) getRanges.ggplot_built(ggplot2::ggplot_build(x))
-getRanges.list   <- function(x) getRanges.ggplot_built(x)
-
-getRanges.ggplot_built <- function(x) {
-
-  if (graphOptions("ggVersion") <= 2.21) {
-    return(list(
-      x = x$layout$panel_ranges[[1]]$x.range,
-      y = x$layout$panel_ranges[[1]]$y.range
-    ))
-  } else {
-    return(list(
-      x = x$layout$panel_params[[1]]$x.range,
-      y = x$layout$panel_params[[1]]$y.range
-    ))
-  }
-}
-
-getAxesScales <- function(gb) {
-  return(
-    switch(graphOptions("ggVersion"),
-           "2.2.1" = gb$scales$scales,
-           gb$scales$scales
-    )
-  )
-}
-
 isContinuousScale <- function(x) inherits(x, c("ScaleContinuousPosition", "ScaleContinuous"))
-
-
-
-is.waive    <- function(x) inherits(x, "waiver")
-is.sec_axis <- function(x) inherits(x, "AxisSecondary")
-is.formula  <- function(x) inherits(x, "formula")
+is.waive          <- function(x) inherits(x, "waiver")
+is.sec_axis       <- function(x) inherits(x, "AxisSecondary")
+is.formula        <- function(x) inherits(x, "formula")
