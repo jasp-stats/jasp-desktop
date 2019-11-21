@@ -77,7 +77,6 @@ private:
 	static std::string					_saveResultsRoot;
 	static std::string					_baseCitation;
 	static bool							_insideJASP;
-	static const std::string			_analysisChangedErrorMessage;
 
 	std::string	errorMessage = "";
 	Json::Value	_currentOptions		= Json::nullValue,

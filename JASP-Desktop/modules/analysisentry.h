@@ -34,6 +34,7 @@ public:
 	AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData = true);
 	AnalysisEntry();
 
+	std::string		menu()					const { return _menu;				}
 	std::string		title()					const { return _title;				}
 	std::string		function()				const { return _function;			}
 	std::string		qml()					const { return _qml;				}
@@ -56,7 +57,8 @@ public:
 private:
 	std::string		_title			= "???",
 					_function		= "???",
-					_qml			= "???";
+					_qml			= "???",
+					_menu			= "???";
 	DynamicModule*	_dynamicModule	= nullptr;
 	bool			_isSeparator	= true,
 					_isGroupTitle	= false,

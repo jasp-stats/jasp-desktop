@@ -12,7 +12,6 @@ options$model <- "site1 = site2 = site3 = site4 = site5;site1 < site2 < site3 < 
 set.seed(1)
 results <- jasptools::run("BainAncovaBayesian", "sesame.csv", options)
 
-
 test_that("Bain ANCOVA table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_bainTable"]][["data"]]
   expect_equal_tables(table,
@@ -36,27 +35,10 @@ test_that("Posterior Probabilities plot matches", {
   expect_equal_plots(testPlot, "posterior-probabilities", dir="BainAncovaBayesian")
 })
 
-test_that("Coefficients for Groups plus Covariates table results match", {
-  table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_coefficientsTable"]][["data"]]
-  expect_equal_tables(table,
-                      list(-3.6449166395947, 0.523724139533094, 60, 1.06342877018566, -1.5605962500308,
-                           "site1", -5.33956324224342, -1.0096639198965, 55, 1.10456615365993,
-                           -3.17461358106996, "site2", 1.32707019271716, 5.43992118638981,
-                           64, 1.04919668205935, 3.38349568955349, "site3", -0.786388210137594,
-                           3.69109729334519, 43, 1.14221568966398, 1.4523545416038, "site4",
-                           -3.66569419106477, 1.98186863439215, 18, 1.44070480241248, -0.841912778336311,
-                           "site5", 0.00400597434885645, 0.133513110943639, 240, 0.0330375348456078,
-                           0.0687595426462478, "peabody", 0.0810741240935815, 0.289726507676895,
-                           240, 0.0532276488732942, 0.185400315885238, "prenumb", -0.000747486080512422,
-                           0.175557469804055, 240, 0.0449757540521855, 0.0874049918617711,
-                           "postnumb", -0.0396517976270246, 0.0407199007107595, 240, 0.0205029842698429,
-                           0.000534051541867467, "funumb"))
-})
-
-test_that("Descriptives Plot matches", {
+test_that("Adjusted Means plot matches", {
   plotName <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_descriptivesPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  expect_equal_plots(testPlot, "descriptives-plot", dir="BainAncovaBayesian")
+  expect_equal_plots(testPlot, "adjusted-means", dir="BainAncovaBayesian")
 })
 
 test_that("Hypothesis Legend table results match", {

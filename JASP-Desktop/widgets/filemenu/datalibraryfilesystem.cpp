@@ -29,7 +29,7 @@
 #include "utilities/qutils.h"
 #include "log.h"
 
-const QString DataLibraryFileSystem::rootelementname = "Categories";
+const QString DataLibraryFileSystem::rootelementname = tr("Categories");
 
 DataLibraryFileSystem::DataLibraryFileSystem(QObject *parent, QString root)	: FileSystem(parent)
 {

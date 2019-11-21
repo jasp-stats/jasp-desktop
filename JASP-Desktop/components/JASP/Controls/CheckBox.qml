@@ -77,7 +77,7 @@ JASPControl
 			Text
 			{
 				visible:					control.checked ? true : false
-				color:						jaspTheme.textEnabled
+				color:						jaspTheme.white
 				text:						"\u2713"
 				font:						jaspTheme.font
 				anchors.horizontalCenter:	parent.horizontalCenter

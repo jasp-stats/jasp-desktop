@@ -17,33 +17,11 @@
 //
 
 #include "listmodelassignedinterface.h"
-#include "listmodelextracontrols.h"
-#include "boundqmllistviewterms.h"
-#include <QTimer>
 
 ListModelAssignedInterface::ListModelAssignedInterface(QMLListView* listView)
 	: ListModelDraggable(listView)
   , _source(nullptr)
 {
-}
-
-
-QVariant ListModelAssignedInterface::data(const QModelIndex &index, int role) const
-{
-	if (role == ListModel::ExtraColumnsRole)
-	{
-		int row = index.row();
-		return QVariant::fromValue(_extraControlsModels[_rowNames[row]]);
-	}
-	else
-		return ListModelDraggable::data(index, role);
-	
-}
-
-void ListModelAssignedInterface::endResetModel()
-{
-	addExtraControlModels();
-	ListModelDraggable::endResetModel();
 }
 
 void ListModelAssignedInterface::refresh()
@@ -71,44 +49,7 @@ void ListModelAssignedInterface::refresh()
 		ListModelDraggable::refresh();
 }
 
-void ListModelAssignedInterface::addExtraControlModels()
-{
-	if (!_extraControlsDefinitions.isEmpty())
-	{
-		_extraControlsModels.clear();
-		_rowNames.clear();
-		for (int i = 0; i < rowCount(); i++)
-		{
-			QString colName = data(index(i, 0), ListModel::NameRole).toString();
-			_rowNames[i] = colName;
-			if (_modelCache.contains(colName))
-				_extraControlsModels[colName] = _modelCache[colName];
-			else
-			{
-				ListModelExtraControls* extraControlsModel = new ListModelExtraControls(this, _extraControlsDefinitions);
-				_extraControlsModels[colName] = extraControlsModel;
-				_modelCache[colName] = extraControlsModel;
-			}
-		}
-	}
-}
-
-// This function is called by initTerms for models that may have extra columns
-void ListModelAssignedInterface::initExtraControlTerms()
-{
-	BoundQMLListViewTerms* listViewTerms = dynamic_cast<BoundQMLListViewTerms*>(listView());
-	if (listViewTerms)
-		// initTerms calls begin/endResetModel that will build the QML items in the List View.
-		// We must wait that these QML Items are completely built so that we can bind the extra controls (if they exist)
-		QTimer::singleShot(0, listViewTerms, &BoundQMLListViewTerms::bindExtraControlOptions);
-}
-
 void ListModelAssignedInterface::setAvailableModel(ListModelAvailableInterface *source)
 {
 	_source = source;
-}
-
-void ListModelAssignedInterface::addExtraControls(const QVector<QMap<QString, QVariant> > &extraControlColumns)
-{
-	_extraControlsDefinitions = extraControlColumns;	
 }

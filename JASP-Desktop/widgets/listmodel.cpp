@@ -18,6 +18,9 @@
 
 #include "listmodel.h"
 #include "../analysis/analysisform.h"
+#include "listmodelextracontrols.h"
+#include "boundqmllistviewterms.h"
+#include <QTimer>
 
 ListModel::ListModel(QMLListView* listView) 
 	: QAbstractTableModel(listView)
@@ -135,6 +138,12 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 		Term term = _terms.at(row);
 		return QVariant(term.asQString());
 	}
+
+	if (role == ListModel::ExtraColumnsRole && _extraControlsModels.count() > 0)
+	{
+		int row = index.row();
+		return QVariant::fromValue(_extraControlsModels[_rowNameMap[row]]);
+	}
 	
 	if (!areTermsVariables())
 		return QVariant();
@@ -152,4 +161,59 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	}
 	
 	return QVariant();
+}
+
+void ListModel::endResetModel()
+{
+	addExtraControlModels();
+	QAbstractTableModel::endResetModel();
+}
+
+const QString &ListModel::name() const
+{
+	return _listView->name();
+}
+
+void ListModel::addExtraControlModels()
+{
+	if (!_extraControlsDefinitions.isEmpty())
+	{
+		_extraControlsModels.clear();
+		_rowNameMap.clear();
+		for (int i = 0; i < rowCount(); i++)
+		{
+			QString colName = data(index(i, 0), ListModel::NameRole).toString();
+			_rowNameMap[i] = colName;
+			if (_modelCache.contains(colName))
+				_extraControlsModels[colName] = _modelCache[colName];
+			else
+			{
+				ListModelExtraControls* extraControlsModel = new ListModelExtraControls(this, _extraControlsDefinitions);
+				_extraControlsModels[colName] = extraControlsModel;
+				_modelCache[colName] = extraControlsModel;
+			}
+		}
+	}
+}
+
+// This function is called by initTerms for models that may have extra columns
+void ListModel::initExtraControlTerms()
+{
+	if (!_extraControlsDefinitions.isEmpty())
+		// initTerms calls begin/endResetModel that will build the QML items in the List View.
+		// We must wait that these QML Items are completely built so that we can bind the extra controls (if they exist)
+		QTimer::singleShot(0, this, &ListModel::_initExtraControlTerms);
+}
+
+void ListModel::_initExtraControlTerms()
+{
+	BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(listView());
+	if (boundItem)
+		boundItem->bindExtraControlOptions();
+}
+
+
+void ListModel::addExtraControls(const QVector<QMap<QString, QVariant> > &extraControlColumns)
+{
+	_extraControlsDefinitions = extraControlColumns;
 }

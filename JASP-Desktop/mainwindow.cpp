@@ -114,16 +114,9 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_columnsModel			= new ColumnsModel(_datasetTableModel);
 	_computedColumnsModel	= new ComputedColumnsModel(_analyses, _package);
 	_filterModel			= new FilterModel(_package, _labelFilterGenerator);
-
-	//Temporary solution to display translated module names
-	vector<string> commonModulesToLoad = { "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" };
-	vector<string> extraModulesToLoad = { "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics" };
-	vector<QString> displayModuleNames ;
-
-	setModulesToLoad(commonModulesToLoad, extraModulesToLoad, displayModuleNames);
-
-	_ribbonModel			= new RibbonModel(_dynamicModules, _preferences, commonModulesToLoad, extraModulesToLoad, displayModuleNames );
-
+	_ribbonModel			= new RibbonModel(_dynamicModules, _preferences,
+									{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
+									{ "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics", "JAGS"});
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this, _package);
 	_helpModel				= new HelpModel(this);
@@ -139,7 +132,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeConnections();
 
-	loadDefaultFont();
+	//loadDefaultFont(); //Maybe later?
 
 	qmlRegisterType<DataSetView>			("JASP", 1, 0, "DataSetView");
 	qmlRegisterType<JaspTheme>				("JASP", 1, 0, "JaspTheme");
@@ -217,8 +210,9 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::ppiChanged,                        	_engineSync,			&EngineSync::ppiChanged                                     );
 	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
 	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
+	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
 
-	connect(_package,				&DataSetPackage::dataSynched,						this,					&MainWindow::packageDataChanged,							Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::dataSynched,						this,					&MainWindow::refreshAnalysesUsingColumns,					Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
 	connect(_package,				&DataSetPackage::freeDatasetSignal,					_loader,				&AsyncLoader::free											);
@@ -650,28 +644,6 @@ void MainWindow::plotPPIChangedHandler(int ppi, bool wasUserAction)
 		_analyses->refreshAllAnalyses();
 }
 
-
-void MainWindow::setDatasetLoaded()
-{
-	setDatasetLoaded(_package->rowCount() > 0 || _package->columnCount() > 0);
-}
-
-void MainWindow::packageDataChanged(	QStringList				changedColumns,
-										QStringList				missingColumns,
-										QMap<QString, QString>	changeNameColumns,
-										bool					rowCountChanged,
-										bool					hasNewColumns)
-{
-	setDatasetLoaded();
-
-	//Already done in filterModel::setDatasetPackage:
-	//_labelFilterGenerator->regenerateFilter();
-	//_filterModel->sendGeneratedAndRFilter();
-
-	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, rowCountChanged, hasNewColumns);
-}
-
-
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
 	static bool showInstructions = true;
@@ -792,31 +764,6 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 void MainWindow::connectFileEventCompleted(FileEvent * event)
 {
 	connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted, Qt::QueuedConnection);
-}
-
-void MainWindow::setModulesToLoad(vector<string> & commonModulesToLoad, vector<string> & extraModulesToLoad, vector<QString> & displayModuleNames)
-{
-	//Common Modules
-	commonModulesToLoad.push_back("Descriptives");	displayModuleNames.push_back(tr("Descriptives"));
-	commonModulesToLoad.push_back("T-Tests");		displayModuleNames.push_back(tr("T-Tests"));
-	commonModulesToLoad.push_back("ANOVA");			displayModuleNames.push_back(tr("ANOVA"));
-	commonModulesToLoad.push_back("Regression");	displayModuleNames.push_back(tr("Regression"));
-	commonModulesToLoad.push_back("Frequencies");	displayModuleNames.push_back(tr("Frequencies"));
-	commonModulesToLoad.push_back("Factor");		displayModuleNames.push_back(tr("Factor"));
-
-	//Extra Modules
-	extraModulesToLoad.push_back("Audit");				displayModuleNames.push_back(tr("Audit"));
-	extraModulesToLoad.push_back("BAIN");				displayModuleNames.push_back(tr("BAIN"));
-	extraModulesToLoad.push_back("Network");			displayModuleNames.push_back(tr("Network"));
-	extraModulesToLoad.push_back("Machine Learning");	displayModuleNames.push_back(tr("Machine Learning"));
-	extraModulesToLoad.push_back("Meta Analysis");		displayModuleNames.push_back(tr("Meta Analysis"));
-	extraModulesToLoad.push_back("SEM");				displayModuleNames.push_back(tr("SEM"));
-	extraModulesToLoad.push_back("Summary Statistics");	displayModuleNames.push_back(tr("Summary Statistics"));
-
-	//vector<string> commonModulesToLoad = { "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" };
-	//vector<string> extraModulesToLoad = { "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics" };
-	//vector<QString> displalyModuleNames ;
-
 }
 
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
@@ -1073,8 +1020,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 void MainWindow::populateUIfromDataSet()
 {
-	setDatasetLoaded();
-
 	bool errorFound = false;
 	stringstream errorMsg;
 
@@ -1644,16 +1589,6 @@ void MainWindow::getAnalysesUserData()
 	parser.parse(fq(userData.toString()), data);
 
 	_analyses->setAnalysesUserData(data);
-}
-
-void MainWindow::setDatasetLoaded(bool datasetLoaded)
-{
-	if (_datasetLoaded == datasetLoaded)
-		return;
-
-	_datasetLoaded = datasetLoaded;
-	emit datasetLoadedChanged(_datasetLoaded);
-	_dynamicModules->setDataLoaded(_datasetLoaded); //Should be connected to some signal from datasetpackage after centralDatasetModel branch is merged
 }
 
 void MainWindow::setScreenPPI(int screenPPI)

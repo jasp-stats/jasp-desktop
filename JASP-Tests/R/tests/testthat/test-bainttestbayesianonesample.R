@@ -11,8 +11,7 @@ options$variables <- list("age")
 set.seed(1)
 results <- jasptools::run("BainTTestBayesianOneSample", "sesame.csv", options)
 
-
-test_that("BF plot matches", {
+test_that("BF age plot matches", {
   plotName <- results[["results"]][["BFplots"]][["collection"]][["BFplots_age"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "BF age", dir="BainTTestBayesianOneSample")
@@ -26,10 +25,10 @@ test_that("Bain One Sample T-test table results match", {
                            "H2: Smaller"))
 })
 
-test_that("Descriptives plot matches", {
+test_that("Descriptives age plot matches", {
   plotName <- results[["results"]][["descriptivesPlots"]][["collection"]][["descriptivesPlots_age"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-  expect_equal_plots(testPlot, "descritptives age", dir="BainTTestBayesianOneSample")
+  expect_equal_plots(testPlot, "descriptives age", dir="BainTTestBayesianOneSample")
 })
 
 test_that("Descriptive Statistics table results match", {

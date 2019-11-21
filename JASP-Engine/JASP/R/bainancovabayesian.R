@@ -37,7 +37,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	.bainBayesFactorMatrix(dataset, options, bainContainer, ready, type = "ancova", position = 2)
 	
 	### COEFFICIENTS ###
-	.bainAncovaCoefficientsTable(dataset, options, bainContainer, ready, position = 3)
+	.bainAnovaDescriptivesTable(dataset, options, bainContainer, ready, type = "ancova", position = 3)
 
 	### BAYES FACTOR PLOT ###
 	.bainAnovaBayesFactorPlots(dataset, options, bainContainer, ready, position = 4)
@@ -121,11 +121,9 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	bayesFactorMatrix$position <- position
 
 	if (type == "regression")
-		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "covariates", "standardized", "seed"))
-	if (type == "ancova")
-		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "fixedFactors", "covariates", "seed"))
-	if (type == "anova")
-		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "fixedFactors", "seed"))
+		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "standardized", "seed"))
+	if (type == "ancova" || type == "anova")
+		bayesFactorMatrix$dependOn(options = c("bayesFactorMatrix", "seed"))
 		
 	bayesFactorMatrix$addColumnInfo(name = "hypothesis", title = "", type = "string")
 	bayesFactorMatrix$addColumnInfo(name = "H1", type = "number")
@@ -153,62 +151,6 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 		}
 		row <- tmp
 		bayesFactorMatrix$addRows(row)
-	}
-}
-
-.bainAncovaCoefficientsTable <- function(dataset, options, bainContainer, ready, position) {
-
-	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
-	
-	coefficientsTable <- createJaspTable("Coefficients for Groups plus Covariates")
-	coefficientsTable$dependOn(options=c("coefficients", "seed", "model", "covariates", "dependent", "fixedFactors"))
-	coefficientsTable$position <- position
-
-	coefficientsTable$addColumnInfo(name="v",				title="Covariate",		type="string")
-	coefficientsTable$addColumnInfo(name="N",				title="N",				type="integer")
-	coefficientsTable$addColumnInfo(name="mean",			title="Coefficient",	type="number")
-	coefficientsTable$addColumnInfo(name="SE",				title="Std. Error",		type="number")
-	coefficientsTable$addColumnInfo(name="CiLower",			title="Lower",			type="number", overtitle="95% Credible Interval")
-	coefficientsTable$addColumnInfo(name="CiUpper",			title="Upper",			type="number", overtitle="95% Credible Interval")
-
-	bainContainer[["coefficientsTable"]] <- coefficientsTable
-	
-	if (!ready || bainContainer$getError())
-		return()
-
-	bainResult <- bainContainer[["bainResult"]]$object
-
-	sum_model <- bainResult[["model"]]
-	covcoef <- data.frame(sum_model[["coefficients"]])
-	covcoef <- cbind(covcoef, summary(sum_model)$coefficients[, 2])
-
-	groups <- rownames(covcoef)
-	estim <- covcoef[, 1]
-	SEs <- covcoef[, 2]
-	CiLower <- estim - 1.96 * SEs
-	CiUpper <- estim + 1.96 * SEs
-
-	groupCol <- dataset[ , .v(options[["fixedFactors"]])]
-	varLevels <- levels(groupCol)
-	covVars <- unlist(options[["covariates"]])
-
-	N <- numeric()
-
-	for (variable in varLevels) {
-		column <- dataset[ , .v(options[["dependent"]])]
-		column <- column[which(groupCol == variable)]
-		N <- c(N, length(column))
-	}
-
-	for (var in covVars) {
-		col <- dataset[ , .v(var)]
-		col <- na.omit(col)
-		N <- c(N, length(col))
-	}
-
-	for (i in 1:length(groups)) {
-		row <- data.frame(v = groups[i], mean = estim[i], N = N[i], SE = SEs[i], CiLower = CiLower[i], CiUpper = CiUpper[i])
-		coefficientsTable$addRows(row)
 	}
 }
 

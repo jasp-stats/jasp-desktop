@@ -4,8 +4,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Language: nl_NL\n"
-"X-Source-Language: dutch\n"
+"X-Language: en_US\n"
+"X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Docs/development/jasp-qml-style-example.qml:17
@@ -503,9 +503,10 @@ msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Dynamic Modules/SEM
 #: Module/qml/LatentRegression.qml:38
+#, fuzzy
 msgctxt "LatentRegression|"
 msgid "Regression"
-msgstr ""
+msgstr "Regressie"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Dynamic Modules/SEM
 #: Module/qml/LatentRegression.qml:44
@@ -1311,7 +1312,7 @@ msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:100
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:104
 msgctxt "AboutWindow|"
 msgid "Version:"
 msgstr ""
@@ -1325,47 +1326,47 @@ msgctxt "AboutWindow|"
 msgid "About JASP"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:123
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:128
 msgctxt "AboutWindow|"
 msgid "Built on:"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:146
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:152
 msgctxt "AboutWindow|"
 msgid "Source:"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:157
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:163
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:177
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:184
 msgctxt "AboutWindow|"
 msgid "Download:"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:209
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:217
 msgctxt "AboutWindow|"
 msgid "Citation:"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:237
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:246
 msgctxt "AboutWindow|"
 msgid "Select All"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:238
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:247
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:249
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:258
 msgctxt "AboutWindow|"
 msgid "BibTex"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:293
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AboutWindow.qml:304
 #, fuzzy
 msgctxt "AboutWindow|"
 msgid "Close"
@@ -1376,42 +1377,42 @@ msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisFormExpander.qml:303
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisFormExpander.qml:304
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisFormExpander.qml:323
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisFormExpander.qml:324
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisFormExpander.qml:345
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisFormExpander.qml:346
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for analysis"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisFormExpander.qml:366
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisFormExpander.qml:367
 msgctxt "AnalysisFormExpander|"
 msgid "Remove analysis"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisForms.qml:79
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisForms.qml:81
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisForms.qml:79
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisForms.qml:81
 msgctxt "AnalysisForms|"
 msgid "Drag to show data"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisForms.qml:80
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisForms.qml:82
 msgctxt "AnalysisForms|"
 msgid "Hide input options"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisForms.qml:80
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/AnalysisForms.qml:82
 msgctxt "AnalysisForms|"
 msgid "Show input options"
 msgstr ""
@@ -1447,9 +1448,10 @@ msgid "Delete Column"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/Chi2TestTableView.qml:82
+#, fuzzy
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Herstel"
 
 #, fuzzy
 #~ msgctxt "ComputeColumnWindow|"
@@ -1482,12 +1484,12 @@ msgstr ""
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/Computer.qml:16
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr ""
+msgstr "Recente mappen"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/Computer.qml:23
 msgctxt "Computer|"
 msgid "Browse"
-msgstr ""
+msgstr "Blader"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/CurrentFile.qml:16
 msgctxt "CurrentFile|"
@@ -1500,22 +1502,22 @@ msgctxt "DataLibrary|"
 msgid "Data Library"
 msgstr "Bibliotheek"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:248
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:251
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
 msgstr "Synchoniseer met dit data bestand"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:253
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:256
 msgctxt "ListItem|"
 msgid "Navigate to folder"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:256
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:259
 msgctxt "ListItem|"
 msgid "Open JASP file"
 msgstr "Open JASP bestand"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:258
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:261
 msgctxt "ListItem|"
 msgid "Open data file"
 msgstr ""
@@ -1556,163 +1558,155 @@ msgctxt "OSF|"
 msgid "Save"
 msgstr "Bewaar"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/OSFLogin.qml:72
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/OSFLogin.qml:71
 msgctxt "OSFLogin|"
 msgid "OSF"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/OSFLogin.qml:81
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/OSFLogin.qml:80
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/OSFLogin.qml:206
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/OSFLogin.qml:205
 msgctxt "OSFLogin|"
 msgid "Sign in"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/OSFLogin.qml:234
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/OSFLogin.qml:233
 msgctxt "OSFLogin|"
 msgid "Remember me"
 msgstr "Onthoud gegevens"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:22
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:21
 msgctxt "PrefsAdvanced|"
 msgid "Advanced Preferences"
 msgstr "Geavanceerde Voorkeuren"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:32
-msgctxt "PrefsAdvanced|"
-msgid "User interface options"
-msgstr "Interface opties"
+#~ msgctxt "PrefsAdvanced|"
+#~ msgid "User interface options"
+#~ msgstr "Interface opties"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:43
-msgctxt "PrefsAdvanced|"
-msgid "Zoom (%): "
-msgstr ""
+#~ msgctxt "PrefsAdvanced|"
+#~ msgid "Zoom (%): "
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:44
-msgctxt "PrefsAdvanced|"
-msgid ""
-"Increase or decrease the size of the interface elements (text, buttons, etc)."
-msgstr ""
-"Vergroot of verklein de grootte van de interface elementen (tekst, knoppen, "
-"etc)"
+#~ msgctxt "PrefsAdvanced|"
+#~ msgid ""
+#~ "Increase or decrease the size of the interface elements (text, buttons, "
+#~ "etc)."
+#~ msgstr ""
+#~ "Vergroot of verklein de grootte van de interface elementen (tekst, "
+#~ "knoppen, etc)"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:61
-msgctxt "PrefsAdvanced|"
-msgid "Scroll speed (pix/s): "
-msgstr "Scroll snelheid (pix/s)"
+#~ msgctxt "PrefsAdvanced|"
+#~ msgid "Scroll speed (pix/s): "
+#~ msgstr "Scroll snelheid (pix/s)"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:62
-msgctxt "PrefsAdvanced|"
-msgid ""
-"Set the speed with which you can scroll in the options, dataviewer and other "
-"places."
-msgstr ""
+#~ msgctxt "PrefsAdvanced|"
+#~ msgid ""
+#~ "Set the speed with which you can scroll in the options, dataviewer and "
+#~ "other places."
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:72
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:36
 msgctxt "PrefsAdvanced|"
 msgid "Remember Enabled Modules"
 msgstr "Bewaar gekozen modules"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:75
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:39
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:83
-msgctxt "PrefsAdvanced|"
-msgid "Safe Graphics Mode"
-msgstr ""
+#~ msgctxt "PrefsAdvanced|"
+#~ msgid "Safe Graphics Mode"
+#~ msgstr "Veilige Grafische Mode"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:86
-msgctxt "PrefsAdvanced|"
-msgid ""
-"Switches to a \"safer\" mode for graphics aka software rendering.\n"
-"It will make your interface slower but if you have some problems (weird "
-"glitches, cannot see results or anything even) might fix them.\n"
-"Analyses will still be just as fast though."
-msgstr ""
+#~ msgctxt "PrefsAdvanced|"
+#~ msgid ""
+#~ "Switches to a \"safer\" mode for graphics aka software rendering.\n"
+#~ "It will make your interface slower but if you have some problems (weird "
+#~ "glitches, cannot see results or anything even) might fix them.\n"
+#~ "Analyses will still be just as fast though."
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:94
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:31
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
-msgstr ""
+msgstr "Module opties"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:99
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:47
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode (Beta version)"
-msgstr ""
+msgstr "Ontwikkelaars mode (Beta versie)"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:102
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:50
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:117
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:65
 msgctxt "PrefsAdvanced|"
 msgid "Select developer folder"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:121
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:69
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:176
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:124
 msgctxt "PrefsAdvanced|"
 msgid "Regenerate package metadata every time (DESCRIPTION & NAMESPACE)"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:180
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:128
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Disable this option if you are transforming your R-package to a JASP Module "
 "or simply want to keep manual changes to DESCRIPTION and NAMESPACE."
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:202
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:150
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
-msgstr ""
+msgstr "Verander de CRAN locatie  "
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:258
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:206
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
-msgstr ""
+msgstr "Log opties"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:263
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:211
 msgctxt "PrefsAdvanced|"
 msgid "Log to file"
-msgstr ""
+msgstr "Log naar een bestand"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:266
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:214
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr ""
+msgstr "Om debug-logbestanden op te slaan, activeer deze box"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:291
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:239
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr ""
+msgstr "Maximum aantal logbestanden"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:305
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:253
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr ""
+msgstr "Toon logfiles"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:321
-msgctxt "PrefsAdvanced|"
-msgid "Preferred Language"
-msgstr ""
+#~ msgctxt "PrefsAdvanced|"
+#~ msgid "Preferred Language"
+#~ msgstr "Voorkeurs taal"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsAdvanced.qml:328
-msgctxt "PrefsAdvanced|"
-msgid "Choose Language  "
-msgstr "Kies Taal  "
+#~ msgctxt "PrefsAdvanced|"
+#~ msgid "Choose Language  "
+#~ msgstr "Kies Taal  "
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsData.qml:16
 msgctxt "PrefsData|"
@@ -1727,17 +1721,17 @@ msgstr "Synchroniseer automatisch bij wegschrijven bestand"
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsData.qml:55
 msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
-msgstr ""
+msgstr "Gebruik standaard spreadsheet editor"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsData.qml:74
 msgctxt "PrefsData|"
 msgid "Select custom editor"
-msgstr ""
+msgstr "Kies andere editor  "
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsData.qml:136
 msgctxt "PrefsData|"
 msgid "Import threshold between Categorical or Scale"
-msgstr ""
+msgstr "Grenswaarde bij import tussen categorisch en continu"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsData.qml:141
 msgctxt "PrefsData|"
@@ -1750,17 +1744,17 @@ msgstr ""
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsMissingValues.qml:21
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr ""
+msgstr "Lijst met ontbrekende waardes"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsMissingValues.qml:64
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsMissingValues.qml:65
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsMissingValues.qml:150
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsMissingValues.qml:151
 msgctxt "PrefsMissingValues|"
 msgid "Reset"
-msgstr ""
+msgstr "Herstel"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsResults.qml:22
 msgctxt "PrefsResults|"
@@ -1800,7 +1794,7 @@ msgstr "Gebruik PPI van het scherm in plots..."
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsResults.qml:105
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
-msgstr "Aangepast PPI:"
+msgstr "Aangepaste PPI:  "
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsResults.qml:113
 msgctxt "PrefsResults|"
@@ -2106,62 +2100,66 @@ msgctxt "VariablesWindow|"
 msgid "Close this view"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:76
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:81
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP"
-msgstr ""
+msgstr "Welkom bij JASP"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:125
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:130
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
 msgstr ""
+"Een nieuwe manier om statistiek te bedrijven. Gratis, eenvoudige schermen, "
+"en flexibel"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:144
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:149
 msgctxt "WelcomePage|"
 msgid "Free:"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:144
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:149
 msgctxt "WelcomePage|"
 msgid ""
 "JASP is an open-source project with structural support from the University "
 "of Amsterdam."
 msgstr ""
+"JASP is een open-source project in voortdurende ontwikkeling en met "
+"structurele ondersteuning door de Universiteit van Amsterdam."
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:145
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:150
 msgctxt "WelcomePage|"
 msgid "Friendly:"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:145
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:150
 msgctxt "WelcomePage|"
 msgid ""
 "JASP has an intuitive interface that was designed with the user in mind."
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:146
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:151
 msgctxt "WelcomePage|"
 msgid "Flexible:"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:146
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:151
 msgctxt "WelcomePage|"
 msgid ""
 "JASP offers standard analysis procedures in both their classical and "
 "Bayesian manifestations."
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:240
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:245
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:283
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:289
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:308
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:314
 msgctxt "WelcomePage|"
 msgid ""
 "Please keep in mind that this is a preview release and a number of features "
@@ -4301,9 +4299,10 @@ msgid "Cox and Snell"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Audit/qml/bayesianAudit.qml:971
+#, fuzzy
 msgctxt "bayesianAudit|"
 msgid "Regression"
-msgstr ""
+msgstr "Regressie"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Audit/qml/bayesianAudit.qml:978
 msgctxt "bayesianAudit|"
@@ -4939,9 +4938,10 @@ msgid "Ratio"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Audit/qml/classicalAudit.qml:913
+#, fuzzy
 msgctxt "classicalAudit|"
 msgid "Regression"
-msgstr ""
+msgstr "Regressie"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Audit/qml/classicalAudit.qml:914
 msgctxt "classicalAudit|"
@@ -6264,97 +6264,186 @@ msgctxt "ExploratoryFactorAnalysis|"
 msgid "Variables"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:44
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:46
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Number of Factors"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:45
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:47
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Parallel analysis"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:48
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:50
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Eigenvalues"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:49
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:51
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Eigenvalues above"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:53
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:55
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Manual"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:54
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:56
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Number of factors"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:61
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:62
 msgctxt "ExploratoryFactorAnalysis|"
-msgid "Rotation"
-msgstr ""
-
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:64
-msgctxt "ExploratoryFactorAnalysis|"
-msgid "Orthogonal"
+msgid "Estimation method"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:69
 msgctxt "ExploratoryFactorAnalysis|"
-msgid "Oblique"
+msgid "Minimum residual"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:70
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Maximum likelihood"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:71
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Principal axis factoring"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:72
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Ordinary least squares"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:73
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Weighted least squares"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:74
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Generalized least squares"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:75
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Minimum chi-square"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:76
 msgctxt "ExploratoryFactorAnalysis|"
-msgid "Output Options"
-msgstr ""
-
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:80
-msgctxt "ExploratoryFactorAnalysis|"
-msgid "Highlight"
-msgstr ""
-
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:86
-msgctxt "ExploratoryFactorAnalysis|"
-msgid "Includes Tables"
-msgstr ""
-
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:87
-msgctxt "ExploratoryFactorAnalysis|"
-msgid "Factor correlations"
-msgstr ""
-
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:88
-msgctxt "ExploratoryFactorAnalysis|"
-msgid "Additional fit indices"
-msgstr ""
-
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:89
-msgctxt "ExploratoryFactorAnalysis|"
-msgid "Path diagram"
+msgid "Minimum rank"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:90
 msgctxt "ExploratoryFactorAnalysis|"
+msgid "Rotation"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:94
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Orthogonal"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:100
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Oblique"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:109
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Base analysis on"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:113
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Correlation matrix"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:119
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Covariance matrix"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:126
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Output Options"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:130
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Highlight"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:138
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Tables"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:139
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Structure matrix"
+msgstr ""
+
+#~ msgctxt "ExploratoryFactorAnalysis|"
+#~ msgid "Includes Tables"
+#~ msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:140
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Factor correlations"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:141
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Additional fit indices"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:145
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Plots"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:146
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Path diagram"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:147
+msgctxt "ExploratoryFactorAnalysis|"
 msgid "Scree plot"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:96
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:155
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Assumption checks"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:156
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "KMO test"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:157
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "Bartlett's test"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:162
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Missing Values"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:97
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:163
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Exclude cases pairwise"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:98
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Factor/qml/ExploratoryFactorAnalysis.qml:164
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Exclude cases listwise"
 msgstr ""
@@ -11897,278 +11986,278 @@ msgctxt "RegressionLinearBayesian|"
 msgid "No. samples for credible interval"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:31
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:30
 msgctxt "RegressionLogistic|"
 msgid "Dependent Variable"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:35
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:34
 msgctxt "RegressionLogistic|"
 msgid "Method"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:37
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:36
 msgctxt "RegressionLogistic|"
 msgid "Enter"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:38
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:37
 msgctxt "RegressionLogistic|"
 msgid "Backward"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:39
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:38
 msgctxt "RegressionLogistic|"
 msgid "Forward"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:40
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:39
 msgctxt "RegressionLogistic|"
 msgid "Stepwise"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:43
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:42
 msgctxt "RegressionLogistic|"
 msgid "Covariates"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:44
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:43
 msgctxt "RegressionLogistic|"
 msgid "Factors"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:45
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:44
 msgctxt "RegressionLogistic|"
 msgid "WLS Weights (optional)"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:50
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:49
 msgctxt "RegressionLogistic|"
 msgid "Model"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:52
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:51
 msgctxt "RegressionLogistic|"
 msgid "Include intercept"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:61
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:60
 msgctxt "RegressionLogistic|"
 msgid "Components"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:68
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:67
 msgctxt "RegressionLogistic|"
 msgid "Model Terms"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:76
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:75
 msgctxt "RegressionLogistic|"
 msgid "Add to null model"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:86
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:85
 msgctxt "RegressionLogistic|"
 msgid "Statistics"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:90
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:89
 #, fuzzy
 msgctxt "RegressionLogistic|"
 msgid "Descriptives"
 msgstr "Beschrijvingen"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:91
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:90
 msgctxt "RegressionLogistic|"
 msgid "Factor descriptives"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:96
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:95
 msgctxt "RegressionLogistic|"
 msgid "Performance Diagnostics"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:99
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:98
 msgctxt "RegressionLogistic|"
 msgid "Confusion matrix"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:100
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:99
 msgctxt "RegressionLogistic|"
 msgid "Proportions"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:106
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:105
 msgctxt "RegressionLogistic|"
 msgid "Regression Coefficients"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:107
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:106
 msgctxt "RegressionLogistic|"
 msgid "Estimates"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:110
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:111
 msgctxt "RegressionLogistic|"
 msgid "From"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:118
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:119
 msgctxt "RegressionLogistic|"
 msgid "bootstraps"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:123
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:124
 msgctxt "RegressionLogistic|"
 msgid "Standardized coefficients"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:124
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:125
 msgctxt "RegressionLogistic|"
 msgid "Odds ratios"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:127
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:128
 msgctxt "RegressionLogistic|"
 msgid "Confidence intervals"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:129
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:130
 msgctxt "RegressionLogistic|"
 msgid "Odds ratio scale"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:131
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:132
 msgctxt "RegressionLogistic|"
 msgid "Robust standard errors"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:132
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:133
 msgctxt "RegressionLogistic|"
 msgid "Vovk-Sellke maximum p-ratio"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:137
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:138
 msgctxt "RegressionLogistic|"
 msgid "Performance Metrics"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:138
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:139
 msgctxt "RegressionLogistic|"
 msgid "AUC"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:139
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:140
 msgctxt "RegressionLogistic|"
 msgid "Sensitivity / Recall"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:140
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:141
 msgctxt "RegressionLogistic|"
 msgid "Specificity"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:141
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:142
 msgctxt "RegressionLogistic|"
 msgid "Precision"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:142
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:143
 msgctxt "RegressionLogistic|"
 msgid "F-measure"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:143
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:144
 msgctxt "RegressionLogistic|"
 msgid "Brier score"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:144
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:145
 msgctxt "RegressionLogistic|"
 msgid "H-measure"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:148
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:149
 msgctxt "RegressionLogistic|"
 msgid "Residuals"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:151
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:152
 msgctxt "RegressionLogistic|"
 msgid "Casewise diagnostics"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:157
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:158
 msgctxt "RegressionLogistic|"
 msgid "Standard residual >"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:163
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:164
 msgctxt "RegressionLogistic|"
 msgid "Cook's distance >"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:167
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:168
 msgctxt "RegressionLogistic|"
 msgid "All"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:176
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:177
 msgctxt "RegressionLogistic|"
 msgid "Plots"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:180
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:181
 msgctxt "RegressionLogistic|"
 msgid "Inferential Plots"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:183
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:184
 msgctxt "RegressionLogistic|"
 msgid "Display conditional estimates plots"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:184
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:185
 msgctxt "RegressionLogistic|"
 msgid "Confidence interval"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:185
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:186
 msgctxt "RegressionLogistic|"
 msgid "Show data points"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:191
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:192
 msgctxt "RegressionLogistic|"
 msgid "Residual Plots"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:192
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:193
 msgctxt "RegressionLogistic|"
 msgid "Predicted - residual plot"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:193
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:194
 msgctxt "RegressionLogistic|"
 msgid "Predictor - residual plots"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:194
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:195
 msgctxt "RegressionLogistic|"
 msgid "Squared Pearson residuals plot"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:200
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:201
 msgctxt "RegressionLogistic|"
 msgid "Residual Type"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:201
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:202
 msgctxt "RegressionLogistic|"
 msgid "Deviance"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:202
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:203
 msgctxt "RegressionLogistic|"
 msgid "Pearson"
 msgstr ""
@@ -13534,12 +13623,12 @@ msgstr "Bewaar als"
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/filemenu/actionbuttons.cpp:11
 msgctxt "ActionButtons|"
 msgid "Export Results"
-msgstr "Exporteer resultaat"
+msgstr "Exporteer resultaat "
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/filemenu/actionbuttons.cpp:12
 msgctxt "ActionButtons|"
 msgid "Export Data"
-msgstr "Exporteer data"
+msgstr "Exporteeer data"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/filemenu/actionbuttons.cpp:13
 msgctxt "ActionButtons|"
@@ -13598,45 +13687,50 @@ msgstr "Resultaat"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/filemenu/resourcebuttons.cpp:12
 msgctxt "ResourceButtons|"
+msgid "Interface"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/filemenu/resourcebuttons.cpp:13
+msgctxt "ResourceButtons|"
 msgid "Advanced"
 msgstr "Geavanceerd"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:24
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:30
 msgctxt "SortMenuModel|"
 msgid "None"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:25
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:31
 msgctxt "SortMenuModel|"
 msgid "Sort by name"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:26
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:32
 msgctxt "SortMenuModel|"
 msgid "Sort by name A-Z"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:27
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:33
 msgctxt "SortMenuModel|"
 msgid "Sort by name Z-A"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:28
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:34
 msgctxt "SortMenuModel|"
 msgid "Sort by type"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:29
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:35
 msgctxt "SortMenuModel|"
 msgid "Sort by date"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:30
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:36
 msgctxt "SortMenuModel|"
 msgid "Sort by size"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:38
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/sortmenumodel.cpp:43
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
 msgstr ""
@@ -13702,9 +13796,10 @@ msgid "Ratio"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Audit/qml/classicalEstimation.qml:137
+#, fuzzy
 msgctxt "classicalEstimation|"
 msgid "Regression"
-msgstr ""
+msgstr "Regressie"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Audit/qml/classicalEstimation.qml:145
 #| msgid "Explanator2 Text"
@@ -13752,81 +13847,86 @@ msgctxt "classicalEstimation|"
 msgid "<b>Download Report</b>"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:189
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:192
 msgctxt "MainWindow|"
 msgid "Datafile changed"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:189
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:192
 msgctxt "MainWindow|"
 msgid ""
 "The datafile that was used by this JASP file was modified. Do you want to "
 "reload the analyses with this new data?"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:754
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:779
 msgctxt "MainWindow|"
 msgid "Descriptives"
 msgstr "Beschrijvingen"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:755
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:780
 msgctxt "MainWindow|"
 msgid "T-Tests"
 msgstr "T-Test"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:756
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:781
 msgctxt "MainWindow|"
 msgid "ANOVA"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:757
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:782
 msgctxt "MainWindow|"
 msgid "Regression"
-msgstr ""
+msgstr "Regressie"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:758
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:783
 msgctxt "MainWindow|"
 msgid "Frequencies"
 msgstr "Frequenties"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:759
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:784
 msgctxt "MainWindow|"
 msgid "Factor"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:762
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:787
 msgctxt "MainWindow|"
 msgid "Audit"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:763
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:788
 msgctxt "MainWindow|"
 msgid "BAIN"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:764
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:789
 msgctxt "MainWindow|"
 msgid "Network"
 msgstr "Netwerk"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:765
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:790
 msgctxt "MainWindow|"
 msgid "Machine Learning"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:766
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:791
 msgctxt "MainWindow|"
 msgid "Meta Analysis"
-msgstr ""
+msgstr "Meta-analyse"
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:767
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:792
 msgctxt "MainWindow|"
 msgid "SEM"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:768
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:793
 msgctxt "MainWindow|"
 msgid "Summary Statistics"
+msgstr "Samenvattende Statistieken"
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/mainwindow.cpp:794
+msgctxt "MainWindow|"
+msgid "JAGS"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Dynamic
@@ -13840,29 +13940,25 @@ msgctxt "customContrasts|"
 msgid "Selected"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Controls/VariablesList.qml:295
 #, qt-format
-msgctxt "VariablesList|"
-msgid "An ExtraControlColumn in VariablesList %1 has no name defined"
-msgstr ""
+#~ msgctxt "VariablesList|"
+#~ msgid "An ExtraControlColumn in VariablesList %1 has no name defined"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Controls/VariablesList.qml:302
 #, qt-format
-msgctxt "VariablesList|"
-msgid "An ExtraControlColumn in VariablesList %1 has an unknown type: %2"
-msgstr ""
+#~ msgctxt "VariablesList|"
+#~ msgid "An ExtraControlColumn in VariablesList %1 has an unknown type: %2"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Controls/VariablesList.qml:310
 #, qt-format
-msgctxt "VariablesList|"
-msgid "An ExtraControlColumn in VariablesList %1 has no type defined"
-msgstr ""
+#~ msgctxt "VariablesList|"
+#~ msgid "An ExtraControlColumn in VariablesList %1 has no type defined"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Controls/VariablesList.qml:638
 #, qt-format
-msgctxt "VariablesList|"
-msgid "Error when trying to load control: %1"
-msgstr ""
+#~ msgctxt "VariablesList|"
+#~ msgid "Error when trying to load control: %1"
+#~ msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/CustomContrastsTableView.qml:61
 msgctxt "CustomContrastsTableView|"
@@ -13875,9 +13971,10 @@ msgid "Delete Row"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/CustomContrastsTableView.qml:79
+#, fuzzy
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Herstel"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FilterWindow.qml:124
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FilterWindow.qml:357
@@ -13974,9 +14071,10 @@ msgid "Delete Data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/JagsTableView.qml:84
+#, fuzzy
 msgctxt "JagsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Herstel"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/SaveDiscardCancelDialog.qml:8
 msgctxt "SaveDiscardCancelDialog|"
@@ -14226,13 +14324,13 @@ msgctxt "ListModelTableViewBase|"
 msgid "The source use does not specified a valid column in %1"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:141
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:144
 #, qt-format
 msgctxt "QMLListView|"
 msgid "Unknown discard model %1 for VariableList %2"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:145
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:148
 #, qt-format
 msgctxt "QMLListView|"
 msgid "Cannot find source %1 for VariablesList %2"
@@ -14268,3 +14366,135 @@ msgstr ""
 msgctxt "HelpModel|"
 msgid "the module."
 msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:39
+msgctxt "PrefsUI|"
+msgid "User Interface options"
+msgstr "Interface opties"
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:48
+msgctxt "PrefsUI|"
+msgid "Themes"
+msgstr "Thema's"
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:57
+msgctxt "PrefsUI|"
+msgid "Light Theme"
+msgstr "Licht thema"
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:60
+msgctxt "PrefsUI|"
+msgid ""
+"Switches to a light theme, this is the default and original flavour of JASP."
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:68
+msgctxt "PrefsUI|"
+msgid "Dark Theme"
+msgstr "Donker thema"
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:71
+msgctxt "PrefsUI|"
+msgid ""
+"Switches to a dark theme, makes JASP a lot easier on the eyes for those "
+"night owls out there."
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:81
+#, fuzzy
+msgctxt "PrefsUI|"
+msgid "Preferred Language"
+msgstr "Voorkeurs taal"
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:88
+#, fuzzy
+msgctxt "PrefsUI|"
+msgid "Choose Language  "
+msgstr "Kies Taal  "
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:107
+msgctxt "PrefsUI|"
+msgid "Miscellaneous options"
+msgstr "Overige opties"
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:118
+msgctxt "PrefsUI|"
+msgid "Zoom (%): "
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:119
+#, fuzzy
+msgctxt "PrefsUI|"
+msgid ""
+"Increase or decrease the size of the interface elements (text, buttons, etc)."
+msgstr ""
+"Vergroot of verklein de grootte van de interface elementen (tekst, knoppen, "
+"etc)"
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:136
+#, fuzzy
+msgctxt "PrefsUI|"
+msgid "Scroll speed (pix/s): "
+msgstr "Scroll snelheid (pix/s)"
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:137
+msgctxt "PrefsUI|"
+msgid ""
+"Set the speed with which you can scroll in the options, dataviewer and other "
+"places."
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:148
+#, fuzzy
+msgctxt "PrefsUI|"
+msgid "Safe Graphics Mode"
+msgstr "Veilige Grafische Mode"
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/PrefsUI.qml:151
+msgctxt "PrefsUI|"
+msgid ""
+"Switches to a \"safer\" mode for graphics aka software rendering.\n"
+"It will make your interface slower but if you have some problems (weird "
+"glitches, cannot see results or anything even) might fix them.\n"
+"Analyses will still be just as fast though."
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/utilities/languagemodel.cpp:149
+msgctxt "LanguageModel|"
+msgid ""
+"After changing languages you need to restart JASP for it to take effect."
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Controls/ExtraControls.qml:43
+#, qt-format
+msgctxt "ExtraControls|"
+msgid "Error when trying to load control: %1"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Controls/InputListView.qml:35
+msgctxt "InputListView|"
+msgid "New Value"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Controls/JASPListControl.qml:134
+#, qt-format
+msgctxt "JASPListControl|"
+msgid "An ExtraControlColumn in VariablesList %1 has no name defined"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Controls/JASPListControl.qml:141
+#, qt-format
+msgctxt "JASPListControl|"
+msgid "An ExtraControlColumn in VariablesList %1 has an unknown type: %2"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Controls/JASPListControl.qml:149
+#, qt-format
+msgctxt "JASPListControl|"
+msgid "An ExtraControlColumn in VariablesList %1 has no type defined"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/filemenu/datalibraryfilesystem.cpp:32
+msgctxt "DataLibraryFileSystem|"
+msgid "Categories"
+msgstr "Categorieën"

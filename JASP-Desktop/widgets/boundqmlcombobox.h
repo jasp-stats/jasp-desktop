@@ -32,8 +32,6 @@ class BoundQMLComboBox : public QMLListView, public BoundQMLItem
 public:
 	BoundQMLComboBox(QQuickItem* item, AnalysisForm* form);
 
-	void		initComboBox();
-
 	void		bindTo(Option *option)						override;
 	void		resetQMLItem(QQuickItem *item)				override;
 	Option*		createOption()								override;

@@ -17,6 +17,17 @@
 
 initJaspResults <- function() .onAttach()
 
+signalAnalysisAbort <- function(message = "", call = NULL) {
+  abort <- structure(
+    list(
+      message = message,
+      call = call
+    ),
+    class = c("jaspAnalysisAbort", "condition")
+  )
+  signalCondition(abort)
+}
+
 startProgressbar <- function(expectedTicks, label="") {
 	if (!is.numeric(expectedTicks) || !is.character(label))
 		stop("`expectedTicks` must be numeric and `label` a character")

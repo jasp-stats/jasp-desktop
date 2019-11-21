@@ -1,5 +1,3 @@
-cache()
-
 include(JASP.pri)
 
 TEMPLATE = subdirs
@@ -8,12 +6,12 @@ DESTDIR = .
 
 SUBDIRS += \
 	JASP-Common \
-        JASP-Engine \
-        JASP-Desktop
+	JASP-Engine \
+	JASP-Desktop
 
-unix: SUBDIRS += $$JASP_R_INTERFACE_TARGET
+unix: SUBDIRS += JASP-R-Interface
 
 JASP-Desktop.depends = JASP-Common
 JASP-Engine.depends = JASP-Common
 
-unix: JASP-Engine.depends += $$JASP_R_INTERFACE_TARGET
+unix: JASP-Engine.depends += JASP-R-Interface

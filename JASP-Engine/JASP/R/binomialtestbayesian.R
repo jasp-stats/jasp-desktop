@@ -326,9 +326,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   p <- try({
     bfSubscripts <- .bayesBinomGetSubscript(options$hypothesis)
     dfLinesSR   <- .dfLinesSR(d = data, var = var, split = level, a = options$priorA, b = options$priorB, hyp = hyp, theta0 = options$testValue)
-    dfPointsSR  <- NULL
-    xName       <- "n"
-    JASPgraphs::PlotRobustnessSequential(dfLines = dfLinesSR, dfPoints = dfPointsSR, xName = xName, BF = BF10, hasRightAxis = TRUE, bfType = "BF10", hypothesis = hypForPlots)
+    JASPgraphs::PlotRobustnessSequential(dfLines = dfLinesSR, xName = "n", BF = BF10, bfType = "BF10", hypothesis = hypForPlots)
   })
   
   if (inherits(p, "try-error"))

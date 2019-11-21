@@ -34,7 +34,7 @@ h1
 
 #tafels
 {
-    margin-top: 90pt;
+    
 }
 
 table
@@ -52,7 +52,7 @@ td
 body
 {
     margin:      0px;
-    font-family: Arial, Verdana, sans-serif
+    font-family: Arial, Verdana, sans-serif;
 }
 
 #bovenkant
@@ -73,6 +73,16 @@ body
     display:    fixed;
 }
 
+
+#disclaimer
+{
+    text-align:		center;
+    width:			70%;
+    margin-left:	auto;
+    margin-right:	auto;
+    margin-top:		90pt;
+    display:		block;
+}
 
 
 #blauw
