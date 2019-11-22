@@ -214,7 +214,7 @@ Option *BoundQMLTextInput::createOption()
 		if(_formula != option)
 			_formula = dynamic_cast<OptionTerm*>(option);
 
-		_setFormulaOptions(fq(_value));
+		_setFormulaOptions(fq(_value), true);
 	}
 	return option;
 }

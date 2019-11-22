@@ -2958,5 +2958,21 @@ postProcessModuleInstall <- function(moduleLibraryPath)
   }
 }
 
-.parseRCodeInOptions <- function(code) 
-  return(eval(parse(text = code)))
+.parseRCodeInOptions <- function(option) {
+  if (.RCodeInOptionsIsOk(option))
+    return(eval(parse(text = option[[1L]])))
+  else
+    return(NA)
+}
+
+.RCodeInOptionsIsOk <- function(option) UseMethod(".RCodeInOptionsIsOk", option)
+
+.RCodeInOptionsIsOk.default <- function(option)
+  return(length(option) > 1L && identical(option[[2L]], "T"))
+
+.RCodeInOptionsIsOk.list <- function(option) {
+  for (i in seq_along(option))
+    if (!.RCodeInOptionsIsOk(option[[i]]))
+      return(FALSE)
+  return(TRUE)
+}
