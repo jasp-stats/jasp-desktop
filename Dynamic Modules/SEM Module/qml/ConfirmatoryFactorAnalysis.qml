@@ -158,7 +158,7 @@ Form
                 CheckBox { text: qsTr("Omit residual single indicator")  ; name: "omitResidualSingleIndicator" ; checked: true }
                 CheckBox { text: qsTr("Residual variances")              ; name: "residualVariances"           ; checked: true }
                 CheckBox { text: qsTr("Correlate exogenous latents")     ; name: "correlateExogenousLatents"   ; checked: true }
-                CheckBox { text: qsTr("Add thresholdds")                 ; name: "addThresholds"               ; checked: true }
+				CheckBox { text: qsTr("Add thresholds")                 ; name: "addThresholds"               ; checked: true }
                 CheckBox { text: qsTr("Add scalings parameters")         ; name: "addScalingParameters"        ; checked: true }
                 CheckBox { text: qsTr("Correlate dependent variables")   ; name: "correlateDependentVariables" ; checked: true }
             }

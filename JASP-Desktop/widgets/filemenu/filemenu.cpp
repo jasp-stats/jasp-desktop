@@ -211,10 +211,8 @@ QString FileMenu::getDefaultOutFileName()
 		DefaultOutFileName = name + "." + ext;
 	}
 
-	return DefaultOutFileName;
-	
+	return DefaultOutFileName;	
 }
-
 
 void FileMenu::dataSetIOCompleted(FileEvent *event)
 {
@@ -300,6 +298,13 @@ void FileMenu::syncDataFile(const QString& path)
 	bool autoSync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toBool();
 	if (autoSync)
 		setSyncRequest(path);
+}
+
+void FileMenu::refresh()
+{
+	_resourceButtons->refresh();
+	_actionButtons->refresh();
+	_dataLibrary->refres();
 }
 
 void FileMenu::dataFileModifiedHandler(QString path)

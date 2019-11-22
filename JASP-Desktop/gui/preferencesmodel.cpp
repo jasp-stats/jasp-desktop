@@ -4,6 +4,7 @@
 #include "utilities/settings.h"
 #include "gui/messageforwarder.h"
 #include "qquick/jasptheme.h"
+#include "utilities/languagemodel.h"
 
 using namespace std;
 
@@ -26,11 +27,8 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this, &PreferencesModel::jaspThemeChanged,			this, &PreferencesModel::setCurrentThemeNameFromClass,	Qt::QueuedConnection);
 	connect(this, &PreferencesModel::currentThemeNameChanged,	this, &PreferencesModel::onCurrentThemeNameChanged		);
 	connect(this, &PreferencesModel::plotBackgroundChanged,		this, &PreferencesModel::whiteBackgroundChanged			);
-}
 
-PreferencesModel::~PreferencesModel()
-{
-
+	connect(LanguageModel::lang(), &LanguageModel::currentIndexChanged, this, &PreferencesModel::languageCodeChanged);
 }
 
 void PreferencesModel::browseSpreadsheetEditor()
@@ -135,6 +133,11 @@ void PreferencesModel::moduleEnabledChanged(QString moduleName, bool enabled)
 	}
 
 	setModulesRemembered(list);
+}
+
+QString PreferencesModel::languageCode() const
+{
+	return LanguageModel::lang()->currentLanguageCode();
 }
 
 QString PreferencesModel::fixedDecimalsForJS() const

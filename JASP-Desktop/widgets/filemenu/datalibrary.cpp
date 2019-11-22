@@ -31,6 +31,11 @@ DataLibrary::DataLibrary(QObject *parent) : FileMenuObject(parent)
 	connect(this,								&DataLibrary::resetPath,								_dataLibraryListModel,	&DataLibraryListModel::resetPath			);
 }
 
+void DataLibrary::refres()
+{
+	_dataLibraryListModel->refresh();
+}
+
 void DataLibrary::openFile(FileEvent *event)
 {
 	emit dataSetIORequest(event);

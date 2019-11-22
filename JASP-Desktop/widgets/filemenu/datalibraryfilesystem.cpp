@@ -28,8 +28,10 @@
 #include "utilities/appdirs.h"
 #include "utilities/qutils.h"
 #include "log.h"
+#include "utilities/languagemodel.h"
 
-const QString DataLibraryFileSystem::rootelementname = tr("Categories");
+
+const QString DataLibraryFileSystem::rootelementname = "Categories";
 
 DataLibraryFileSystem::DataLibraryFileSystem(QObject *parent, QString root)	: FileSystem(parent)
 {
@@ -48,9 +50,10 @@ DataLibraryFileSystem::~DataLibraryFileSystem()
 void DataLibraryFileSystem::refresh()
 {
 
-	if (_doc == NULL)
-		_doc = getJsonDocument();
-	
+	if (_doc != NULL) delete _doc;  //When language is changed;
+
+	_doc = getJsonDocument();
+
 	emit processingEntries();
 
 	_entries.clear();
@@ -183,6 +186,13 @@ QJsonDocument *DataLibraryFileSystem::getJsonDocument()
 {
 
 	QString filename = "index";
+
+	LanguageInfo li = LanguageModel::CurrentLanguageInfo;
+
+	//Leave help filenames from JASP native language - English - with localname en_US unchanged
+	QString translation_suffix = li.language  == QLocale::English ? "" : ("_" + li.localName);
+
+	filename += translation_suffix;
 
 	QString fn = AppDirs::examples() + QDir::separator() + filename + ".json";
 	QFile index(fn);

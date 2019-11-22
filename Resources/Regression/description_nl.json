@@ -1,0 +1,45 @@
+{
+	"moduleDescription"  :
+	{
+		"title"          : "Regression",
+		"description"    : "This module offers the standard Frequentist and Bayesian Regression analyses.",
+		"icon"			 : "analysis-classical-regression.svg",
+		"version"        : 1,
+		"author"         : "JASP Team",
+		"maintainer"     : "JASP Team <jasp-stats.org>",
+		"website"        : "jasp-stats.org",
+		"license"        : "GPL (>= 2)",
+		"dynamic"        : false
+	},
+
+	"menu":
+	[
+		{
+			"title":	"Correlation Matrix",
+			"function":	"Correlation"
+		},
+		{
+			"title":	"Linear Regression",
+			"function":	"RegressionLinear"
+		},
+		{
+			"title":	"Logistic Regression",
+			"function":	"RegressionLogistic"
+		},
+		{
+			"title":	"-"
+		},
+		{
+			"title":	"Bayesian Correlation Matrix",
+			"function":	"CorrelationBayesian"
+		},
+		{
+			"title":	"Bayesian Correlation Pairs",
+			"function":	"CorrelationBayesianPairs"
+		},
+		{
+			"title":	"Bayesian Linear Regression",
+			"function":	"RegressionLinearBayesian"
+		}
+	]
+}

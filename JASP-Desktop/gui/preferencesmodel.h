@@ -44,10 +44,9 @@ class PreferencesModel : public QObject
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
-	static PreferencesModel * _singleton;
+
 
 	explicit	 PreferencesModel(QObject *parent = 0);
-				~PreferencesModel();
 
 	int			customPPI()					const;
 	int			numDecimals()				const;
@@ -78,7 +77,7 @@ public:
 	QString		cranRepoURL()				const;
 	QFont		defaultFont()				const	{ return _defaultFont;	}
 	QString		currentThemeName()			const;
-	QString		languageCode()				const	{ return "en";	} //This function should actually take the value from LanguageModel
+	QString		languageCode()				const;
 
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
@@ -161,9 +160,10 @@ signals:
 	void defaultFontChanged(			QFont		defaultFont);
 	void currentThemeNameChanged(		QString		currentThemeName);
 	void plotPPIPropChanged();
-	void languageCodeChanged(			QString languageCode); //This signal should be the destination of LanguageModel::languageCodeChanged
+	void languageCodeChanged();
 
 private:
+	static PreferencesModel * _singleton;
 	int		_defaultPPI		= 192;
 	QFont	_defaultFont	= QFont("SansSerif");
 	double	_uiScale		= -1;

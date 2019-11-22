@@ -75,6 +75,7 @@ public:
 	static std::wstring defaultDevelopmentModuleNameW() { return L"DevelopmentModule"; }
 	static QFileInfo	developmentModuleFolder();
 	static void			developmentModuleFolderCreate();
+	static QString		getJsonDesriptionFileName();
 
 	std::string			name()				const { return _name;									}
 	QString				nameQ()				const { return QString::fromStdString(_name);			}

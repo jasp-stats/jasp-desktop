@@ -108,6 +108,8 @@ signals:
 	void dynamicModuleUnloadBegin(Modules::DynamicModule * dynamicModule);
 	void dynamicModuleChanged(Modules::DynamicModule * dynamicModule);
 	void descriptionReloaded(Modules::DynamicModule * dynMod);
+	//void loadModuleTranslationFile(QString filename, QString location);
+	void loadModuleTranslationFile(Modules::DynamicModule * dynamicModule);
 
 	void stopEngines();
 	void restartEngines();

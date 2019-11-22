@@ -262,10 +262,12 @@ FocusScope
 		Text {
 			id: linkOSF
 
-			text          :'<font color="#257bb2"><u>About the OSF</u></font>'
-			textFormat    : Text.StyledText
-			font.pointSize: 11 * preferencesModel.uiScale
-			font.family:	jaspTheme.font.family
+			text			: qsTr("About the OSF")
+			textFormat		: Text.StyledText
+			font.pointSize	: 11 * preferencesModel.uiScale
+			font.family		: jaspTheme.font.family
+			font.underline	: true
+			color			: jaspTheme.blueDarker
 
 			anchors.left      : parent.left
 			anchors.bottom    : parent.bottom
@@ -284,10 +286,12 @@ FocusScope
 		{
 			id: linkRegister
 
-			text          :'<font color="#257bb2"><u>Register</u></font>'
-			textFormat    : Text.StyledText
-			font.pointSize: 11 * preferencesModel.uiScale
-			font.family: jaspTheme.font.family
+			text			: qsTr("Register")
+			textFormat		: Text.StyledText
+			font.pointSize	: 11 * preferencesModel.uiScale
+			font.family		: jaspTheme.font.family
+			font.underline	: true
+			color			: jaspTheme.blueDarker
 
 			anchors.bottom     : parent.bottom
 			anchors.right      : parent.right

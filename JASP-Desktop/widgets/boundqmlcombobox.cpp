@@ -92,7 +92,6 @@ void BoundQMLComboBox::resetQMLItem(JASPControlBase *item)
 	setItemProperty("currentIndex", _currentIndex);
 	setItemProperty("currentText", _currentText);
 	setItemProperty("currentColumnType", _currentColumnType);
-	setItemProperty("initialized", true);
 	_resetItemWidth();
 
 	if (_item)
@@ -153,7 +152,6 @@ void BoundQMLComboBox::setUp()
 	}
 	
 	_setCurrentValue(_currentIndex, true, false);
-	setItemProperty("initialized", true);
 }
 
 void BoundQMLComboBox::modelChangedHandler()

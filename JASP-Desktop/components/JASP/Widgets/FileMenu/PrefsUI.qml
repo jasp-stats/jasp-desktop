@@ -86,8 +86,9 @@ ScrollView
 				fieldWidth:				100
 
 				label:					qsTr("Choose Language  ")
+				valueRole:				"label"
 
-				useModelDefinedIcon:	true
+				useModelDefinedIcon:	false
 
 				currentIndex:			languageModel.currentIndex
 				onActivated:			languageModel.changeLanguage(index);

@@ -41,6 +41,7 @@ public:
 	Q_INVOKABLE void		selectFirstButtonIfNoneSelected();
 	Q_INVOKABLE	void		selectButtonUp();
 	Q_INVOKABLE	void		selectButtonDown();
+	void refresh();
 
 signals:
 	void currentQMLChanged(QString currentQML);
@@ -52,6 +53,7 @@ public slots:
 	void setSelectedButton(ButtonType selectedButton);
 
 private:
+	void loadButtonData(std::vector<DataRow> & data);
 	std::vector<DataRow>			_data;
 	std::map<ButtonType, size_t>	_buttonToIndex;
 	QString							_currentQML;

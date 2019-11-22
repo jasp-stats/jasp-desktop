@@ -64,7 +64,7 @@ void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool 
 		return;
 	}
 
-	QFile descriptionFile(modulePath.absoluteFilePath() + "/description.json");
+	QFile descriptionFile(modulePath.absoluteFilePath() + "/" + Modules::DynamicModule::getJsonDesriptionFileName());
 	if(!descriptionFile.exists())
 	{
 		Log::log() << "Could not find description.json file in " << modulePath.absoluteFilePath().toStdString() << std::flush;
@@ -168,6 +168,16 @@ void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 	_moduleNames.erase(_moduleNames.begin() + indexRemoved);
 
 	emit endRemoveRows();
+}
+
+void RibbonModel::refresh()
+{
+
+	beginResetModel();
+
+
+	endResetModel();
+
 }
 
 void RibbonModel::setHighlightedModuleIndex(int highlightedModuleIndex)

@@ -89,6 +89,19 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 {
 	JASPTIMER_START(MainWindowConstructor);
 
+	if (_qml == nullptr)
+	{
+		QQuickStyle::setStyle("Default");// Because otherwise plasma on kde might mess things up...
+		_qml = new QQmlApplicationEngine(this);
+	}
+	else
+	{
+		_qml->clearComponentCache();
+		_qml->retranslate();
+	}
+
+	_languageModel = new LanguageModel("Translations", application, _qml, this);
+
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
 	makeAppleMenu(); //Doesnt do anything outside of magical apple land
@@ -107,11 +120,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	Log::log() << "JASP " << AppInfo::version.asString() << " is initializing." << std::endl;
 
-	_languageModel = new LanguageModel("Resources/Translations", application, this);
-
 	_resultsJsInterface		= new ResultsJsInterface();
 	_odm					= new OnlineDataManager(this);
-
 	_labelFilterGenerator	= new labelFilterGenerator(_labelModel, this);
 	_columnsModel			= new ColumnsModel(_datasetTableModel);
 	_computedColumnsModel	= new ComputedColumnsModel();
@@ -119,7 +129,12 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_ribbonModel			= new RibbonModel(	{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
 												{ "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics", "JAGS"});
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
+
 	_fileMenu				= new FileMenu(this);
+
+	// No good to create Language model here after FileMenu..
+	//_languageModel = new LanguageModel("Resources/Translations", application, _qml, this);
+
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
@@ -141,6 +156,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<JASPDoubleValidator>	("JASP", 1, 0, "JASPDoubleValidator");
 	qmlRegisterType<ResultsJsInterface>		("JASP", 1, 0, "ResultsJsInterface");
 
+
 	QTimer::singleShot(0, [&](){ loadQML(); });
 
 	_languageModel->setApplicationEngine(_qml);
@@ -155,8 +171,6 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	JASPVersionChecker * jaspVersionChecker = new JASPVersionChecker(this);
 	connect(jaspVersionChecker, &JASPVersionChecker::showDownloadButton, this, &MainWindow::setDownloadNewJASPUrl);
-
-
 
 	JASPTIMER_FINISH(MainWindowConstructor);
 }
@@ -306,7 +320,8 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::descriptionReloaded,				_analyses,				&Analyses::rescanAnalysisEntriesOfDynamicModule				);
 	connect(_dynamicModules,		&DynamicModules::reloadHelpPage,					_helpModel,				&HelpModel::reloadPage										);
 	connect(_dynamicModules,		&DynamicModules::moduleEnabledChanged,				_preferences,			&PreferencesModel::moduleEnabledChanged						);
-
+	connect(_dynamicModules,		&DynamicModules::loadModuleTranslationFile,			_languageModel,			&LanguageModel::loadModuleTranslationFile					);
+	connect(_languageModel,			&LanguageModel::languageChanged,					this,					&MainWindow::refreshFilemenu								);
 
 	// Temporary to facilitate plot editing
 	_plotEditingFilePath = QString::fromStdString(Dirs::resourcesDir()) + "PlotEditor.qml";
@@ -334,16 +349,7 @@ void MainWindow::loadDefaultFont()
 
 void MainWindow::loadQML()
 {
-	if (_qml == nullptr)
-	{
-		QQuickStyle::setStyle("Default");// Because otherwise plasma on kde might mess things up...
-		_qml = new QQmlApplicationEngine(this);
-	}
-	else
-	{
-		_qml->clearComponentCache();
-		_qml->retranslate();
-	}
+
 
 	_qml->rootContext()->setContextProperty("mainWindow",				this					);
 	_qml->rootContext()->setContextProperty("labelModel",				_labelModel				);
@@ -420,6 +426,12 @@ void MainWindow::loadQML()
 void MainWindow::jaspThemeChanged(JaspTheme * newTheme)
 {
 	_qml->rootContext()->setContextProperty("jaspTheme",				newTheme);
+}
+
+void MainWindow::refreshFilemenu()
+{
+	_fileMenu->refresh();
+	_ribbonModel->refresh();
 }
 
 void MainWindow::initLog()
