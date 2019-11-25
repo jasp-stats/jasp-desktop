@@ -18,14 +18,14 @@
 BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
 
   ### READY ###
-  ready <- !("" %in% unlist(options[["pairs"]])) && !is.null(unlist(options[["pairs"]])) # TODO: Fix this
+  ready <- !is.null(unlist(options[["pairs"]]))
   
   ### READ DATA ###
   readList <- .readDataBainPairedSamples(options, dataset)
   dataset <- readList[["dataset"]]
   missingValuesIndicator <- readList[["missingValuesIndicator"]]
   
-  bainContainer <- .bainGetContainer(jaspResults, deps=c("pairs", "seed"))
+  bainContainer <- .bainGetContainer(jaspResults, deps=c("seed"))
 
   ### RESULTS ###
   .bainPairedSamplesResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
@@ -40,12 +40,65 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
   .bainPairedSamplesDescriptivesPlots(dataset, options, bainContainer, ready, position = 4)
 }
 
+.readDataBainPairedSamples <- function(options, dataset) {
+
+    all.variables <- unique(unlist(options[["pairs"]]))
+    all.variables <- all.variables[all.variables != ""]
+    pairs <- options[["pairs"]]
+
+    if (is.null(dataset)) {
+            trydata <- .readDataSetToEnd(columns.as.numeric=all.variables)
+            missingValuesIndicator <- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
+            dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
+    }
+
+    .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
+                all.target=all.variables, observations.amount="< 3",
+                exitAnalysisIfErrors = TRUE)
+
+    readList <- list()
+    readList[["dataset"]] <- dataset
+    readList[["missingValuesIndicator"]] <- missingValuesIndicator
+    return(readList)
+}
+
+.bainPairedSampleState <- function(pair, options, dataset, bainContainer){
+
+  currentPair <- paste(pair, collapse=" - ")
+
+  if(!is.null(bainContainer[[currentPair]]))
+    return(bainContainer[[currentPair]]$object)
+
+  type <- base::switch(options[["hypothesis"]],
+                    "equalNotEqual"       = 1,
+                    "equalBigger"         = 2,
+                    "equalSmaller"        = 3,
+                    "biggerSmaller"       = 4,
+                    "equalBiggerSmaller"  = 5)
+    
+  if (pair[[2]] != "" && pair[[1]] != pair[[2]]) {
+
+    subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
+    c1 <- subDataSet[[ .v(pair[[1]]) ]]
+    c2 <- subDataSet[[ .v(pair[[2]]) ]]
+
+    p <- try({
+      # Call bain from package
+      .bain_ttest_cran(x = c1, y = c2, type = type, paired = TRUE, seed = options[["seed"]])
+    })
+    bainContainer[[currentPair]] <- createJaspState(p, dependencies = c("hypothesis", "seed"))
+    bainContainer[[currentPair]]$dependOn(optionContainsValue=list("pairs" = pair))
+  }
+
+  return(bainContainer[[currentPair]]$object)
+}
+
 .bainPairedSamplesResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready, position) {
     
     if (!is.null(bainContainer[["bainTable"]])) return()
 
     bainTable <- createJaspTable("Bain Paired Samples T-Test")
-    bainTable$dependOn(options = c("hypothesis", "bayesFactorType"))
+    bainTable$dependOn(options = c("pairs", "hypothesis", "bayesFactorType"))
     bainTable$position <- position
 
     bf.type <- options$bayesFactorType
@@ -94,47 +147,34 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     if (!ready)
       return()
 
+    bainTable$setExpectedSize(length(options[["pairs"]]))
+
     startProgressbar(length(options[["pairs"]]))
-    bainResult <- list()
 
-    for (pair in options[["pairs"]]) {
+    for (pair in options[["pairs"]]){
 
-        currentPair <- paste(pair, collapse=" - ")
+      currentPair <- paste(pair, collapse=" - ")
 
-        if (length(pair) > 0 && pair[[2]] != "" && pair[[1]] != pair[[2]]) {
+      if(pair[[2]] != ""){
+        
+        bainAnalysis <- .bainPairedSampleState(pair, options, dataset, bainContainer)
 
-            subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
-            c1 <- subDataSet[[ .v(pair[[1]]) ]]
-            c2 <- subDataSet[[ .v(pair[[2]]) ]]
-
-            p <- try({
-                analysisPerformed <- TRUE
-                bainAnalysis <- .bain_ttest_cran(x = c1, y = c2, type = type, paired = TRUE, seed = options[["seed"]])
-                bainResult[[currentPair]] <- bainAnalysis
-            })
-
-        } else {
-            analysisPerformed <- FALSE
+        if (isTryError(bainAnalysis)) {
+          bainTable$addRows(list(Variable=currentPair), rowNames=currentPair)
+          bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(bainAnalysis)), colNames="Variable", rowNames=currentPair)
+          progressbarTick()
+          next
+        } 
+              
+        if (any(pair %in% missingValuesIndicator)) {
+          i <- which(pair %in% missingValuesIndicator)
+          if (length(i) > 1) {
+            message <- paste0("Both variables contain missing values, the rows containing these values are removed in the analysis.")
+          } else {
+            message <- paste0("The variable ", pair[i], " contains missing values, the rows containing these values are removed in the analysis.")
+          }
+          bainTable$addFootnote(message=message, colNames="Variable", rowNames=currentPair)
         }
-
-        if (analysisPerformed) {
-
-            if (isTryError(p)) {
-              bainTable$addRows(list(Variable=variable), rowNames=variable)
-              bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=currentPair)
-              progressbarTick()
-              next
-            } 
-            
-            if (any(pair %in% missingValuesIndicator)) {
-              i <- which(pair %in% missingValuesIndicator)
-              if (length(i) > 1) {
-                message <- paste0("Both variables contain missing values, the rows containing these values are removed in the analysis.")
-              } else {
-                message <- paste0("The variable ", pair[i], " contains missing values, the rows containing these values are removed in the analysis.")
-              }
-              bainTable$addFootnote(message=message, colNames="Variable", rowNames=currentPair)
-            }
 
         if (type == 1) {
           BF_0u <- bainAnalysis$fit$BF[1]
@@ -237,22 +277,20 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
                                    "BF[less]" = BF_02,
                                    "pmp[less]" = PMP_2)
             }
-        }
+          }
     } else {
-        if (options$hypothesis == "equalBiggerSmaller") {
+      if (options$hypothesis == "equalBiggerSmaller") {
             row <- list(Variable=currentPair, "type[equal]" = ".", "BF[equal]"= ".", "pmp[equal]" = ".",
                                "type[greater]"= ".", "BF[greater]" = ".", "pmp[greater]" = ".",
                                "type[less]" = ".", "BF[less]" = ".", "pmp[less]" = ".")
-        } else {
+      } else {
             row <- list(Variable=currentPair, "hypothesis[type1]" = ".", "BF[type1]"= ".", "pmp[type1]" = ".",
                                "hypothesis[type2]" = ".", "BF[type2]" = ".", "pmp[type2]" = ".")
-        }
+      }
     }
     bainTable$addRows(row, rowNames = currentPair)
     progressbarTick()
   }
-  bainContainer[["bainResult"]] <- createJaspState(bainResult)
-  bainContainer[["bainResult"]]$dependOn(optionsFromObject = bainTable)
 }
 
 .bainPairedSamplesDescriptivesTable <- function(dataset, options, bainContainer, ready, position) {
@@ -260,7 +298,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     if (!is.null(bainContainer[["descriptivesTable"]]) || !options[["descriptives"]]) return() 
       
     descriptivesTable <- createJaspTable("Descriptive Statistics")
-    descriptivesTable$dependOn(options =c("descriptives", "credibleInterval"))
+    descriptivesTable$dependOn(options =c("pairs", "descriptives", "credibleInterval"))
     descriptivesTable$position <- position
 
     descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
@@ -269,8 +307,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
     descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
 
-    interval <- 100 * options[["credibleInterval"]]
-    overTitle <- paste0(interval, "% Credible Interval")
+    overTitle <- paste0(100 * options[["credibleInterval"]], "% Credible Interval")
     descriptivesTable$addColumnInfo(name="lowerCI",              title = "Lower", type="number", overtitle = overTitle)
     descriptivesTable$addColumnInfo(name="upperCI",              title = "Upper", type="number", overtitle = overTitle)
     
@@ -279,55 +316,58 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     if (!ready || bainContainer$getError())
       return()
 
-    bainResult <- bainContainer[["bainResult"]]$object
+    descriptivesTable$setExpectedSize(length( c(options[["pairs"]], unique(unlist(options[["pairs"]])) )))
 
-    # Bain does not provide descriptives for individual variables
+    # Bain does not provide descriptives for individual variables, so calculate them manually.
+    # Therefore, descriptives for individual variables in this table might differ slightly from that of the one sample t test
+    
     for (variable in unique(unlist(options[["pairs"]]))) {
 
-        if (variable == "")
-            next
+      if (variable == "")
+          next
 
-        variableData <- dataset[[.v(variable)]]
+      variableData <- dataset[[.v(variable)]]
 
-        N <- length(variableData)
-        mu <- mean(variableData)
-        sd <- sd(variableData)
-        se <- sd / sqrt(N)
+      N <- length(variableData)
+      mu <- mean(variableData)
+      sd <- sd(variableData)
+      se <- sd / sqrt(N)
 
-        alpha <- 1 - (1 - options[["credibleInterval"]]) / 2
-        ciLower <- mu - qnorm(alpha) * se
-        ciUpper <- mu - qnorm(alpha) + se
+      alpha <- 1 - (1 - options[["credibleInterval"]]) / 2
+      ciLower <- mu - qnorm(alpha) * se
+      ciUpper <- mu - qnorm(alpha) + se
 
-        row <- data.frame(v = variable, N = N, mean = mu, sd = sd, se = se, lowerCI = ciLower, upperCI = ciUpper)
-        descriptivesTable$addRows(row)
+      row <- data.frame(v = variable, N = N, mean = mu, sd = sd, se = se, lowerCI = ciLower, upperCI = ciUpper)
+      descriptivesTable$addRows(row)
     }
 
     for (pair in options[["pairs"]]) {
 
-      if (!(pair[[1]] == "" || pair[[2]] == "" || pair[[1]] == pair[[2]])) {
+      if (pair[[2]] != "" && pair[[1]] != pair[[2]]) {
 
-        subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])))
+      subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])))
 
-        c1 <- subDataSet[[ .v(pair[[1]]) ]]
-        c2 <- subDataSet[[ .v(pair[[2]]) ]]
-        difference <- c1 - c2
+      c1 <- subDataSet[[ .v(pair[[1]]) ]]
+      c2 <- subDataSet[[ .v(pair[[2]]) ]]
+      difference <- c1 - c2
 
-        currentPair <- paste(pair, collapse=" - ")
+      currentPair <- paste(pair, collapse=" - ")
 
-        bainResult_tmp <- bainResult[[currentPair]]
-        bainSummary <- summary(bainResult_tmp, ci = options[["credibleInterval"]])
+      bainAnalysis <- .bainPairedSampleState(pair, options, dataset, bainContainer)
+      bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 
-        N <- bainSummary[["n"]]
-        mu <- bainSummary[["Estimate"]]
-        CiLower <- bainSummary[["lb"]]
-        CiUpper <- bainSummary[["ub"]]
-        se <- sqrt(diag(bainResult_tmp[["posterior"]]))
-        sd <- sd(difference)
+      # Descriptive statistics from bain, sd calculated manually
+      N <- bainSummary[["n"]]
+      mu <- bainSummary[["Estimate"]]
+      CiLower <- bainSummary[["lb"]]
+      CiUpper <- bainSummary[["ub"]]
+      se <- sqrt(diag(bainAnalysis[["posterior"]]))
+      sd <- sd(difference)
 
-        row <- list(v = currentPair, N = N, mean = mu, sd = sd, se = se, lowerCI = CiLower, upperCI = CiUpper)
-        descriptivesTable$addRows(row)
-      }
+      row <- list(v = currentPair, N = N, mean = mu, sd = sd, se = se, lowerCI = CiLower, upperCI = CiUpper)
+      descriptivesTable$addRows(row)
     }
+  }
 }
 
 .bainPairedSamplesDescriptivesPlots <- function(dataset, options, bainContainer, ready, position) {
@@ -335,7 +375,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
   if (!is.null(bainContainer[["descriptivesPlots"]]) || !options[["descriptivesPlots"]]) return()
 
   descriptivesPlots <- createJaspContainer("Descriptive Plots")
-  descriptivesPlots$dependOn(options =c("descriptivesPlots", "credibleInterval"))
+  descriptivesPlots$dependOn(options =c("pairs", "descriptivesPlots", "credibleInterval"))
   descriptivesPlots$position <- position
 
   bainContainer[["descriptivesPlots"]] <- descriptivesPlots
@@ -343,16 +383,16 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
   if (!ready || bainContainer$getError())
     return()
 
-  bainResult <- bainContainer[["bainResult"]]$object
-
   for (pair in options[["pairs"]]) {
 
     currentPair <- paste(pair, collapse=" - ")
 
-    if (is.null(bainContainer[["descriptivesPlots"]][[currentPair]]) && length(pair) == 2){
+    if (is.null(bainContainer[["descriptivesPlots"]][[currentPair]]) && pair[[2]] != "" && pair[[1]] != pair[[2]]){
 
-      bainSummary <- summary(bainResult[[currentPair]], ci = options[["credibleInterval"]])
+      bainAnalysis <- .bainPairedSampleState(pair, options, dataset, bainContainer)
+      bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 
+      # Descriptive statistics from bain
       N <- bainSummary[["n"]]
       mu <- bainSummary[["Estimate"]]
       CiLower <- bainSummary[["lb"]]
@@ -371,30 +411,8 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
             ggplot2::scale_x_continuous(breaks = 0:2, labels = NULL)
       p <- JASPgraphs::themeJasp(p, xAxis = FALSE) + ggplot2::theme(axis.ticks.x = ggplot2::element_blank())
       
-      descriptivesPlots[[paste(pair, collapse=" - ")]] <- createJaspPlot(plot=p, title = currentPair)
-      descriptivesPlots[[paste(pair, collapse=" - ")]]$dependOn(optionContainsValue=list(pairs = pair))
+      descriptivesPlots[[currentPair]] <- createJaspPlot(plot=p, title = currentPair)
+      descriptivesPlots[[currentPair]]$dependOn(optionContainsValue=list("pairs" = pair))
     }
   }
-}
-
-.readDataBainPairedSamples <- function(options, dataset) {
-
-    all.variables <- unique(unlist(options[["pairs"]]))
-    all.variables <- all.variables[all.variables != ""]
-    pairs <- options[["pairs"]]
-
-    if (is.null(dataset)) {
-            trydata <- .readDataSetToEnd(columns.as.numeric=all.variables)
-            missingValuesIndicator <- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
-            dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
-    }
-
-    .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
-                all.target=all.variables, observations.amount="< 3",
-                exitAnalysisIfErrors = TRUE)
-
-    readList <- list()
-    readList[["dataset"]] <- dataset
-    readList[["missingValuesIndicator"]] <- missingValuesIndicator
-    return(readList)
 }

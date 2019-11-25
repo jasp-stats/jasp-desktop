@@ -378,9 +378,31 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     }
 
   } else if (type == "pairedSamples"){
-    option <- "pairs"
-    dependencies <- options[["pairs"]]
-    variables <- unlist(lapply(options[["pairs"]], paste, collapse=" - "))
+    
+    for(pair in options[["pairs"]]){
+
+      currentPair <- paste(pair, collapse=" - ")
+
+      if (is.null(bayesFactorPlots[[currentPair]]) && pair[[2]] != "" && pair[[1]] != pair[[2]]){
+
+        bainAnalysis <- .bainPairedSampleState(pair, options, dataset, bainContainer)
+
+        plot <- createJaspPlot(plot = NULL, title = currentPair, height = 300, width = 400)
+        plot$dependOn(optionContainsValue=list("pairs" = pair))
+
+        if(isTryError(bainAnalysis)){
+          plot$setError("Plotting not possible: the results for this variable were not computed.")
+        } else {
+          p <- try({
+            plot$plotObject <- .plot_bain_ttest_cran(bainAnalysis, type = analysisType)
+          })
+          if(isTryError(p)){
+            plot$setError(paste0("Plotting not possible: ", .extractErrorMessage(p)))
+          }
+        }    
+        bayesFactorPlots[[currentPair]] <- plot
+      }
+    }
   }
 }
 
