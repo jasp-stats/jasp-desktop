@@ -289,6 +289,14 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
       }
     }
     bainTable$addRows(row, rowNames = currentPair)
+
+    if(pair[[1]] == pair[[2]]){
+      bainTable$addFootnote(message="Results not computed: The variables in this pair are the same.", colNames="Variable", rowNames=currentPair)
+    }
+    if(pair[[2]] == ""){
+      bainTable$addFootnote(message="Results not computed: The pair is incomplete.", colNames="Variable", rowNames=currentPair)
+    }
+
     progressbarTick()
   }
 }
