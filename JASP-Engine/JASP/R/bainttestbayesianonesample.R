@@ -25,7 +25,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   dataset									<- readList[["dataset"]]
   missingValuesIndicator	<- readList[["missingValuesIndicator"]]
 
-  bainContainer <- .bainGetContainer(jaspResults, deps=c("variables", "testValue", "seed"))
+  bainContainer <- .bainGetContainer(jaspResults, deps=c("testValue", "seed"))
   
   ### RESULTS ###
   .bainOneSampleResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
@@ -55,13 +55,37 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     return(readList)
 }
 
+.bainOneSampleState <- function(variable, options, dataset, bainContainer){
+
+  if(!is.null(bainContainer[[variable]]))
+    return(bainContainer[[variable]]$object)
+
+  type <- base::switch(options[["hypothesis"]],
+                    "equalNotEqual"       = 1,
+                    "equalBigger"         = 2,
+                    "equalSmaller"        = 3,
+                    "biggerSmaller"       = 4,
+                    "equalBiggerSmaller"  = 5)
+    
+  variableData <- dataset[[ .v(variable) ]]
+
+  p <- try({
+    # Call bain from package
+    .bain_ttest_cran(x = variableData, nu = options[["testValue"]], type = type, seed = options[["seed"]])
+  })
+  bainContainer[[variable]] <- createJaspState(p, dependencies = c("testValue", "hypothesis", "seed"))
+  bainContainer[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
+  
+  return(bainContainer[[variable]]$object)
+}
+
 .bainOneSampleResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready, position) {
 
   if (!is.null(bainContainer[["bainTable"]])) return()
 
   bainTable <- createJaspTable("Bain One Sample T-test")
   bainTable$position <- position
-  bainTable$dependOn(options =c("hypothesis", "bayesFactorType"))
+  bainTable$dependOn(options = c("variables", "hypothesis", "bayesFactorType"))
 
   bf.type <- options[["bayesFactorType"]]
   BFH1H0 <- FALSE
@@ -115,21 +139,17 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   if (!ready)
     return()
 
+  bainTable$setExpectedSize(length(options[["variables"]]))
+
   startProgressbar(length(options[["variables"]]))
-  bainResult <- list()
-  
+
   for (variable in options[["variables"]]) {
 
-    variableData <- dataset[[ .v(variable) ]]
+    bainAnalysis <- .bainOneSampleState(variable, options, dataset, bainContainer)
 
-    p <- try({
-      bainAnalysis <- .bain_ttest_cran(x = variableData, nu = options[["testValue"]], type = type, seed = options[["seed"]])
-      bainResult[[variable]] <- bainAnalysis
-    })
-
-    if (isTryError(p)) {
+    if (isTryError(bainAnalysis)){
 			bainTable$addRows(list(Variable=variable), rowNames=variable)
-			bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=variable)
+			bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(bainAnalysis)), colNames="Variable", rowNames=variable)
 			progressbarTick()
 			next
 		}
@@ -221,8 +241,6 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     bainTable$addRows(row, rowNames = variable)
     progressbarTick()
   }
-  bainContainer[["bainResult"]] <- createJaspState(bainResult)
-  bainContainer[["bainResult"]]$dependOn(optionsFromObject = bainTable)
 }
 
 .bainOneSampleDescriptivesTable <- function(dataset, options, bainContainer, ready, position) {
@@ -230,7 +248,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   if (!is.null(bainContainer[["descriptivesTable"]]) || !options[["descriptives"]]) return()
       
   descriptivesTable <- createJaspTable("Descriptive Statistics")
-  descriptivesTable$dependOn(options = c("descriptives", "credibleInterval"))
+  descriptivesTable$dependOn(options = c("variables", "descriptives", "credibleInterval"))
   descriptivesTable$position <- position
 
   descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
@@ -239,8 +257,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
   descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
 
-  interval <- 100 * options[["credibleInterval"]]
-  overTitle <- paste0(interval, "% Credible Interval")
+  overTitle <- paste0(100 * options[["credibleInterval"]], "% Credible Interval")
   descriptivesTable$addColumnInfo(name="lowerCI",              title = "Lower", type="number", overtitle = overTitle)
   descriptivesTable$addColumnInfo(name="upperCI",              title = "Upper", type="number", overtitle = overTitle)
   
@@ -249,19 +266,19 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   if (!ready || bainContainer$getError())
     return()
 
-  bainResult <- bainContainer[["bainResult"]]$object
+  descriptivesTable$setExpectedSize(length(options[["variables"]]))
 
   for (variable in options[["variables"]]) {
 
-    bainResult_tmp <- bainResult[[variable]]
-    bainSummary <- summary(bainResult_tmp, ci = options[["credibleInterval"]])
+    bainAnalysis <- .bainOneSampleState(variable, options, dataset, bainContainer)
+    bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 
     N <- bainSummary[["n"]]
     mu <- bainSummary[["Estimate"]]
     CiLower <- bainSummary[["lb"]]
     CiUpper <- bainSummary[["ub"]]
     sd <- sd(dataset[, .v(variable)])
-    se <- sqrt(diag(bainResult_tmp[["posterior"]]))
+    se <- sqrt(diag(bainAnalysis[["posterior"]]))
 
     row <- list(v = variable, N = N, mean = mu, sd = sd, se = se, lowerCI = CiLower, upperCI = CiUpper)
     descriptivesTable$addRows(row)
@@ -273,7 +290,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   if (!is.null(bainContainer[["descriptivesPlots"]]) || !options[["descriptivesPlots"]]) return()
 
 	descriptivesPlots <- createJaspContainer("Descriptive Plots")
-	descriptivesPlots$dependOn(options =c("descriptivesPlots", "credibleInterval"))
+	descriptivesPlots$dependOn(options =c("variables", "descriptivesPlots", "credibleInterval"))
 	descriptivesPlots$position <- position
 
   bainContainer[["descriptivesPlots"]] <- descriptivesPlots
@@ -281,13 +298,13 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 	if (!ready || bainContainer$getError())
 		return()
 
-	bainResult <- bainContainer[["bainResult"]]$object
-
   for (variable in options[["variables"]]) {
+
+    bainAnalysis <- .bainOneSampleState(variable, options, dataset, bainContainer)
 
     if (is.null(bainContainer[["descriptivesPlots"]][[variable]])){
 
-      bainSummary <- summary(bainResult[[variable]], ci = options[["credibleInterval"]])
+      bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 
       N <- bainSummary[["n"]]
       mu <- bainSummary[["Estimate"]]
@@ -318,7 +335,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   if (!is.null(bainContainer[["bayesFactorPlots"]]) || !options[["bayesFactorPlot"]]) return()
 
 	bayesFactorPlots <- createJaspContainer("Posterior Probabilities")
-	bayesFactorPlots$dependOn(options = c("bayesFactorPlot", "hypothesis"))
+	bayesFactorPlots$dependOn(options = c("variables", "bayesFactorPlot", "hypothesis", "pairs"))
 	bayesFactorPlots$position <- position
 
   bainContainer[["bayesFactorPlots"]] <- bayesFactorPlots
@@ -326,47 +343,42 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   if (!ready || bainContainer$getError())
 		return()
 
-  bainResult <- bainContainer[["bainResult"]]$object
-  
-  if (type == "pairedSamples") {
+  analysisType <- base::switch(options[["hypothesis"]],
+                    "equalNotEqual"		= 1,
+                    "equalBigger"		  = 2,
+                    "equalSmaller"		= 3,
+                    "biggerSmaller"		= 4,
+                    "equalBiggerSmaller"= 5)
+
+  if(type == "oneSample" || type == "independentSamples"){
+
+    for(variable in options[["variables"]]){
+
+      if (is.null(bayesFactorPlots[[variable]])){
+
+        bainAnalysis <- .bainOneSampleState(variable, options, dataset, bainContainer)
+
+        plot <- createJaspPlot(plot = NULL, title = variable, height = 300, width = 400)
+        plot$dependOn(optionContainsValue=list("variables" = variable))
+
+        if(isTryError(bainAnalysis)){
+          plot$setError("Plotting not possible: the results for this variable were not computed.")
+        } else {
+          p <- try({
+            plot$plotObject <- .plot_bain_ttest_cran(bainAnalysis, type = analysisType)
+          })
+          if(isTryError(p)){
+            plot$setError(paste0("Plotting not possible: ", .extractErrorMessage(p)))
+          }
+        }    
+        bayesFactorPlots[[variable]] <- plot
+      }
+    }
+
+  } else if (type == "pairedSamples"){
     option <- "pairs"
     dependencies <- options[["pairs"]]
     variables <- unlist(lapply(options[["pairs"]], paste, collapse=" - "))
-  } else {
-    option <- "variables"
-    variables <- dependencies <- options[["variables"]]
-  }
-
-  analysisType <- base::switch(options[["hypothesis"]],
-                      "equalNotEqual"		= 1,
-                      "equalBigger"		  = 2,
-                      "equalSmaller"		= 3,
-                      "biggerSmaller"		= 4,
-                      "equalBiggerSmaller"= 5)
-  
-  for (i in seq_along(variables)) {
-    variable <- variables[i]
-    if (!is.null(bayesFactorPlots[[variable]]))
-      next
-
-    plot <- createJaspPlot(plot = NULL, title = variable, height = 300, width = 400)
-
-    dependency <- list()
-    dependency[[option]] <- dependencies[[i]]
-    plot$dependOn(optionContainsValue=dependency)
-
-    if (!is.null(bainResult[[variable]])){
-      p <- try({
-          plot$plotObject <- .plot_bain_ttest_cran(bainResult[[variable]], type = analysisType)
-      })
-      if(isTryError(p)){
-        plot$setError(paste0("Plotting not possible: ", .extractErrorMessage(p)))
-      }
-    } else {
-      plot$setError("Plotting not possible: the results for this variable were not computed.")
-    }
-      
-    bayesFactorPlots[[variable]] <- plot
   }
 }
 
