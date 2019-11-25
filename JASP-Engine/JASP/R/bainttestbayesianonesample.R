@@ -273,6 +273,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
     bainAnalysis <- .bainOneSampleState(variable, options, dataset, bainContainer)
     bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 
+    # Descriptives from bain, sd calculated manually
     N <- bainSummary[["n"]]
     mu <- bainSummary[["Estimate"]]
     CiLower <- bainSummary[["lb"]]
@@ -306,6 +307,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
       bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 
+      # Descriptive statistics from bain
       N <- bainSummary[["n"]]
       mu <- bainSummary[["Estimate"]]
       CiLower <- bainSummary[["lb"]]

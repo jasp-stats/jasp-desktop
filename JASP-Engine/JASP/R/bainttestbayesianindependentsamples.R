@@ -25,7 +25,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	dataset	<- readList[["dataset"]]
 	missingValuesIndicator	<- readList[["missingValuesIndicator"]]
 
-	bainContainer <- .bainGetContainer(jaspResults, deps=c("variables", "groupingVariable", "hypothesis", "seed"))
+	bainContainer <- .bainGetContainer(jaspResults, deps=c("groupingVariable", "seed"))
     
 	### RESULTS ###
     .bainIndependentSamplesResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
@@ -40,12 +40,76 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	.bainIndependentSamplesDescriptivesPlots(dataset, options, bainContainer, ready, position = 4)
 }
 
+.readDataBainTwoSample <- function(options, dataset) {
+
+	all.variables 									<- unlist(options$variables)
+	grouping   										<- options$groupingVariable
+	read.variables 									<- c(all.variables, grouping)
+	if (options[["groupingVariable"]] == "")
+		grouping <- NULL
+
+	if (is.null(dataset)) {
+						trydata                	<- .readDataSetToEnd(columns.as.numeric=all.variables)
+						missingValuesIndicator 	<- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
+            dataset 								<- .readDataSetToEnd(columns.as.numeric=all.variables, columns.as.factor=grouping, exclude.na.listwise=read.variables)
+    }
+	
+	.hasErrors(dataset, type="factorLevels",
+			   factorLevels.target=grouping, factorLevels.amount = "!= 2",
+			   exitAnalysisIfErrors = TRUE)
+	
+	.hasErrors(dataset, type=c("infinity", "variance", "observations"),
+				all.target=all.variables, observations.amount="< 3",
+				exitAnalysisIfErrors = TRUE)
+	
+	readList <- list()
+  	readList[["dataset"]] <- dataset
+  	readList[["missingValuesIndicator"]] <- missingValuesIndicator
+	return(readList)
+}
+
+.bainTwoSampleState <- function(variable, options, dataset, bainContainer){
+
+  if(!is.null(bainContainer[[variable]]))
+    return(bainContainer[[variable]]$object)
+
+  type <- base::switch(options[["hypothesis"]],
+                    "equalNotEqual"       = 1,
+                    "equalBigger"         = 2,
+                    "equalSmaller"        = 3,
+                    "biggerSmaller"       = 4,
+                    "equalBiggerSmaller"  = 5)
+
+	levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
+	if (length(levels) != 2) {
+		g1 <- "1"
+		g2 <- "2"
+	} else {
+		g1 <- levels[1]
+		g2 <- levels[2]
+	}
+
+	subDataSet <- dataset[, c(.v(variable), .v(options[["groupingVariable"]]))]
+
+	group1 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g1,.v(variable)]
+	group2 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g2,.v(variable)]
+
+	p <- try({
+		.bain_ttest_cran(x = group1, y = group2, type = type, seed = options[["seed"]])
+	})
+    
+  bainContainer[[variable]] <- createJaspState(p, dependencies = c("hypothesis", "seed"))
+  bainContainer[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
+  
+  return(bainContainer[[variable]]$object)
+}
+
 .bainIndependentSamplesResultsTable <- function(dataset, options, bainContainer, missingValuesIndicator, ready, position) {
 
 	if (!is.null(bainContainer[["bainTable"]])) return()
 
 	bainTable <- createJaspTable("Bain Independent Samples Welch's T-Test")
-	bainTable$dependOn(options = c("bayesFactorType"))
+	bainTable$dependOn(options = c("variables", "bayesFactorType", "hypothesis"))
 	bainTable$position <- position
 
 	bf.type <- options[["bayesFactorType"]]
@@ -85,7 +149,8 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 													"equalBigger"		= "The alternative hypothesis H1 specifies that mean of group 1 is bigger than the mean of group 2. The posterior probabilities are based on equal prior probabilities.",
 													"biggerSmaller"		= "The hypothesis H1 specifies that the mean of group 1 is bigger than the mean of group 2. The hypothesis H2 specifies that the mean in group 1 is smaller than the mean in group 2. The posterior probabilities are based on equal prior probabilities.",
 													"equalBiggerSmaller"= "The null hypothesis H0 (equal group means) is tested against H1 (first mean larger than second mean) and H2 (first mean smaller than second mean). The posterior probabilities are based on equal prior probabilities.")
-  	bainTable$addFootnote(message=message)
+  
+	bainTable$addFootnote(message=message)
 	bainTable$addCitation(.bainGetCitations())
 	
 	bainContainer[["bainTable"]] <- bainTable
@@ -93,82 +158,67 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	if (!ready)
 		return()
 
+	bainTable$setExpectedSize(length(options[["variables"]]))
+
 	startProgressbar(length(options[["variables"]]))
-	bainResult <- list()
-	levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
-	if (length(levels) != 2) {
-		g1 <- "1"
-		g2 <- "2"
-	} else {
-		g1 <- levels[1]
-		g2 <- levels[2]
-	}
 
   for (variable in options[["variables"]]) {
 
-	subDataSet <- dataset[, c(.v(variable), .v(options[["groupingVariable"]]))]
+		bainAnalysis <- .bainTwoSampleState(variable, options, dataset, bainContainer)
 
-	group1 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g1,.v(variable)]
-	group2 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g2,.v(variable)]
-
-	p <- try({
-		bainAnalysis <- .bain_ttest_cran(x = group1, y = group2, type = type, seed = options[["seed"]])
-      	bainResult[[variable]] <- bainAnalysis
-	})
-
-	if (isTryError(p)) {
-		bainTable$addRows(list(Variable=variable), rowNames=variable)
-		bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=variable)
-		progressbarTick()
-		next
-	}
-	
-	if (variable %in% missingValuesIndicator) {
-		bainTable$addFootnote(message= paste0("Variable contains missing values, the rows containing these values are removed in the analysis."), colNames="Variable", rowNames=variable)
-	}
-
-	if (type == 1) {
-		BF_0u <- bainAnalysis$fit$BF[1]
-		PMP_u <- bainAnalysis$fit$PMPb[2]
-		PMP_0 <- bainAnalysis$fit$PMPb[1]
-		if (options$bayesFactorType == "BF10")
-			BF_0u <- 1/BF_0u
-	}
-	if (type == 2) {
-		BF_01 <- bainAnalysis$BFmatrix[1,2]
-		PMP_1 <- bainAnalysis$fit$PMPa[2]
-		PMP_0 <- bainAnalysis$fit$PMPa[1]
-		if (options$bayesFactorType == "BF10")
-			BF_01 <- 1/BF_01
-	}
-	if (type == 3) {
-		BF_01 <- bainAnalysis$BFmatrix[1,2]
-		PMP_0 <- bainAnalysis$fit$PMPa[1]
-		PMP_1 <- bainAnalysis$fit$PMPa[2]
-		if (options$bayesFactorType == "BF10")
-			BF_01 <- 1/BF_01
-	}
-	if (type == 4) {
-		BF_01 <- bainAnalysis$BFmatrix[1,2]
-		PMP_0 <- bainAnalysis$fit$PMPa[1]
-		PMP_1 <- bainAnalysis$fit$PMPa[2]
-		if (options$bayesFactorType == "BF10")
-			BF_01 <- 1/BF_01
-	}
-	if (type == 5) {
-		BF_01 <- bainAnalysis$BFmatrix[1,2]
-		BF_02 <- bainAnalysis$BFmatrix[1,3]
-		BF_12 <- bainAnalysis$BFmatrix[2,3]
-		PMP_0 <- bainAnalysis$fit$PMPa[1]
-		PMP_1 <- bainAnalysis$fit$PMPa[2]
-		PMP_2 <- bainAnalysis$fit$PMPa[3]
-		if (options$bayesFactorType == "BF10")
-		{
-			BF_01 <- 1/BF_01
-			BF_02 <- 1/BF_02
-			BF_12 <- 1/BF_12
+		if (isTryError(bainAnalysis)) {
+			bainTable$addRows(list(Variable=variable), rowNames=variable)
+			bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=variable)
+			progressbarTick()
+			next
 		}
-	}
+	
+		if (variable %in% missingValuesIndicator) {
+			bainTable$addFootnote(message= paste0("Variable contains missing values, the rows containing these values are removed in the analysis."), colNames="Variable", rowNames=variable)
+		}
+
+		if (type == 1) {
+			BF_0u <- bainAnalysis$fit$BF[1]
+			PMP_u <- bainAnalysis$fit$PMPb[2]
+			PMP_0 <- bainAnalysis$fit$PMPb[1]
+			if (options$bayesFactorType == "BF10")
+				BF_0u <- 1/BF_0u
+		}
+		if (type == 2) {
+			BF_01 <- bainAnalysis$BFmatrix[1,2]
+			PMP_1 <- bainAnalysis$fit$PMPa[2]
+			PMP_0 <- bainAnalysis$fit$PMPa[1]
+			if (options$bayesFactorType == "BF10")
+				BF_01 <- 1/BF_01
+		}
+		if (type == 3) {
+			BF_01 <- bainAnalysis$BFmatrix[1,2]
+			PMP_0 <- bainAnalysis$fit$PMPa[1]
+			PMP_1 <- bainAnalysis$fit$PMPa[2]
+			if (options$bayesFactorType == "BF10")
+				BF_01 <- 1/BF_01
+		}
+		if (type == 4) {
+			BF_01 <- bainAnalysis$BFmatrix[1,2]
+			PMP_0 <- bainAnalysis$fit$PMPa[1]
+			PMP_1 <- bainAnalysis$fit$PMPa[2]
+			if (options$bayesFactorType == "BF10")
+				BF_01 <- 1/BF_01
+		}
+		if (type == 5) {
+			BF_01 <- bainAnalysis$BFmatrix[1,2]
+			BF_02 <- bainAnalysis$BFmatrix[1,3]
+			BF_12 <- bainAnalysis$BFmatrix[2,3]
+			PMP_0 <- bainAnalysis$fit$PMPa[1]
+			PMP_1 <- bainAnalysis$fit$PMPa[2]
+			PMP_2 <- bainAnalysis$fit$PMPa[3]
+			if (options$bayesFactorType == "BF10")
+			{
+				BF_01 <- 1/BF_01
+				BF_02 <- 1/BF_02
+				BF_12 <- 1/BF_12
+			}
+		}
 
     if (options$bayesFactorType == "BF01") {
         if (options$hypothesis == "equalNotEqual") {
@@ -224,8 +274,6 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
     bainTable$addRows(row, rowNames=variable)
     progressbarTick()
   }
-  bainContainer[["bainResult"]] <- createJaspState(bainResult)
-  bainContainer[["bainResult"]]$dependOn(optionsFromObject = bainTable)
 }
 
 .bainIndependentSamplesDescriptivesTable <- function(dataset, options, bainContainer, ready, position) {
@@ -233,7 +281,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	if (!is.null(bainContainer[["descriptivesTable"]]) || !options[["descriptives"]]) return() 
 
 	descriptivesTable <- createJaspTable("Descriptive Statistics")
-	descriptivesTable$dependOn(options =c("variables", "descriptives", "credibleInterval", "groupingVariable"))
+	descriptivesTable$dependOn(options =c("variables", "descriptives", "credibleInterval"))
 	descriptivesTable$position <- position
 
 	descriptivesTable$addColumnInfo(name="v",                    title = "", type="string")
@@ -243,8 +291,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	descriptivesTable$addColumnInfo(name="sd",                   title = "SD", type="number")
 	descriptivesTable$addColumnInfo(name="se",                   title = "SE", type="number")
 
-	interval <- 100 * options[["credibleInterval"]]
-	overTitle <- paste0(interval, "% Credible Interval")
+	overTitle <- paste0(100 * options[["credibleInterval"]], "% Credible Interval")
 	descriptivesTable$addColumnInfo(name="lowerCI",              title = "Lower", type="number", overtitle = overTitle)
 	descriptivesTable$addColumnInfo(name="upperCI",              title = "Upper", type="number", overtitle = overTitle)
 	
@@ -253,7 +300,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	if (!ready || bainContainer$getError())
 		return()
 
-	bainResult <- bainContainer[["bainResult"]]$object
+	descriptivesTable$setExpectedSize(length(options[["variables"]]) * 2)
 
 	levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
 	if (length(levels) != 2) {
@@ -266,15 +313,16 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 
 	for (variable in options[["variables"]]) {
 		
-		bainResult_tmp <- bainResult[[variable]]
-		bainSummary <- summary(bainResult_tmp, ci = options[["credibleInterval"]])
+		bainAnalysis <- .bainTwoSampleState(variable, options, dataset, bainContainer)
+		bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 
+		# Descriptives from bain, sd calculated manually
 		N <- bainSummary[["n"]]
 		mu <- bainSummary[["Estimate"]]
 		CiLower <- bainSummary[["lb"]]
 		CiUpper <- bainSummary[["ub"]]
 		sd <- aggregate(dataset[, .v(variable)], list(dataset[, .v(options[["groupingVariable"]])]), sd)[, 2]
-		se <- sqrt(diag(bainResult_tmp[["posterior"]]))
+		se <- sqrt(diag(bainAnalysis[["posterior"]]))
 
 		row <- data.frame(v = variable, group = g1, N = N[1], mean = mu[1], sd = sd[1], se = se[1], lowerCI = CiLower[1], upperCI = CiUpper[1])
 		descriptivesTable$addRows(row)
@@ -289,7 +337,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	if (!is.null(bainContainer[["descriptivesPlots"]]) || !options[["descriptivesPlots"]]) return()
 
 	descriptivesPlots <- createJaspContainer("Descriptive Plots")
-	descriptivesPlots$dependOn(options = c("descriptivesPlots", "credibleInterval"))
+	descriptivesPlots$dependOn(options = c("variables", "descriptivesPlots", "credibleInterval"))
 	descriptivesPlots$position <- position
 
 	bainContainer[["descriptivesPlots"]] <- descriptivesPlots
@@ -297,15 +345,16 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	if (!ready || bainContainer$getError())
 		return()
 
-	bainResult <- bainContainer[["bainResult"]]$object
-
 	for (variable in options[["variables"]]) {
+
+		bainAnalysis <- .bainTwoSampleState(variable, options, dataset, bainContainer)
 		
 		if (is.null(bainContainer[["descriptivesPlots"]][[variable]])){
 
-			bainSummary <- summary(bainResult[[variable]], ci = options[["credibleInterval"]])
-
+			bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 			levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
+			
+			# Descriptive statistics from bain
 			N <- bainSummary[["n"]]
 			mu <- bainSummary[["Estimate"]]
 			CiLower <- bainSummary[["lb"]]
@@ -328,32 +377,4 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 			descriptivesPlots[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
 		}
 	}
-}
-
-.readDataBainTwoSample <- function(options, dataset) {
-
-	all.variables 									<- unlist(options$variables)
-	grouping   										<- options$groupingVariable
-	read.variables 									<- c(all.variables, grouping)
-	if (options[["groupingVariable"]] == "")
-		grouping <- NULL
-
-	if (is.null(dataset)) {
-						trydata                	<- .readDataSetToEnd(columns.as.numeric=all.variables)
-						missingValuesIndicator 	<- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
-            dataset 								<- .readDataSetToEnd(columns.as.numeric=all.variables, columns.as.factor=grouping, exclude.na.listwise=read.variables)
-    }
-	
-	.hasErrors(dataset, type="factorLevels",
-			   factorLevels.target=grouping, factorLevels.amount = "!= 2",
-			   exitAnalysisIfErrors = TRUE)
-	
-	.hasErrors(dataset, type=c("infinity", "variance", "observations"),
-				all.target=all.variables, observations.amount="< 3",
-				exitAnalysisIfErrors = TRUE)
-	
-	readList <- list()
-  	readList[["dataset"]] <- dataset
-  	readList[["missingValuesIndicator"]] <- missingValuesIndicator
-	return(readList)
 }
