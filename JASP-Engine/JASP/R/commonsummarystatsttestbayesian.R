@@ -193,17 +193,18 @@
 .summaryStatsTTestMainFunction <- function(jaspResults, options, analysis) {
   
   # This function is the main workhorse, and also makes the table
-  if (is.null(jaspResults[["ttestContainer"]])) {
-    jaspResults[["ttestContainer"]] <- createJaspContainer()
-    container <- jaspResults[["ttestContainer"]]
+  container <- jaspResults[["ttestContainer"]]
+  if (is.null(container)) {
+    container <- createJaspContainer()
     # add dependencies for main table (i.e., when does it have to recompute values for the main table)
     container$dependOn(c("tStatistic", "n1Size", "n2Size"             , "hypothesis"                       ,        # standard entries
-                                       "defaultStandardizedEffectSize", "informativeStandardizedEffectSize",        # informative or default
-                                       "priorWidth"                   , "effectSizeStandardized",                   # default prior
-                                       "informativeCauchyLocation"    , "informativeCauchyScale",                   # informed cauchy priors
-                                       "informativeNormalMean"        , "informativeNormalStd"  ,                   # informed normal priors
-                                       "informativeTLocation"         , "informativeTScale"     , "informativeTDf"  # informed t-distribution
+                         "defaultStandardizedEffectSize", "informativeStandardizedEffectSize",        # informative or default
+                         "priorWidth"                   , "effectSizeStandardized",                   # default prior
+                         "informativeCauchyLocation"    , "informativeCauchyScale",                   # informed cauchy priors
+                         "informativeNormalMean"        , "informativeNormalStd"  ,                   # informed normal priors
+                         "informativeTLocation"         , "informativeTScale"     , "informativeTDf"  # informed t-distribution
     ))
+    jaspResults[["ttestContainer"]] <- container
   }
   
   # If table already exists in the state, return it
@@ -518,7 +519,9 @@
   if (!BFH1H0) {
     dfLines$y <- - dfLines$y
     BF10user  <- 1 / BF10user
-    maxBF10   <- 1 / maxBF10
+    idx       <- which.max(1/BF10)
+    maxBF10   <- exp(BF10[idx])
+    maxBFrVal <- rValues[idx]
     BF10w     <- 1 / BF10w
     BF10ultra <- 1 / BF10ultra
   }

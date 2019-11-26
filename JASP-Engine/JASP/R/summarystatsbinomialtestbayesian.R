@@ -34,10 +34,11 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
 .summaryStatsBinomialMainFunction <- function(jaspResults, options) {
   
   # This function is the main workhorse, and also makes the table
-  if (is.null(jaspResults[["binomialContainer"]])) {
-    jaspResults[["binomialContainer"]] <- createJaspContainer()
-    container                          <- jaspResults[["binomialContainer"]]
+  container <- jaspResults[["binomialContainer"]]
+  if (is.null(container)) {
+    container <- createJaspContainer()
     container$dependOn(c("successes", "failures", "betaPriorParamA", "betaPriorParamB", "testValue", "hypothesis"))
+    jaspResults[["binomialContainer"]] <- container
   }
   
   # If table already exists in the state, return it
