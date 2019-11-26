@@ -22,7 +22,7 @@
 #include <boost/nowide/convert.hpp>
 #include "boost/nowide/fstream.hpp"
 
-#include "base64.h"
+#include "columnencoder.h"
 #include "utils.h"
 
 #include "dirs.h"

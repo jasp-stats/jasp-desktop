@@ -30,6 +30,7 @@ public:
 
 	void					set(const Json::Value& value)			override;
 	Json::Value				asJSON()						const	override;
+	Json::Value				asMetaJSON()					const	override;
 	Option					*clone()						const	override;
 
 	std::string				variable()						const;

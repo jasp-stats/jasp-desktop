@@ -31,6 +31,7 @@ public:
 			void						set(const Json::Value& value)			override;
 			Option*						clone()							const	override;
 			Json::Value					asJSON()						const	override;
+			Json::Value					asMetaJSON()					const	override;
 	const	std::vector<std::string>	options()						const;
 			void						resetOptions(const std::vector<std::string> &options, int selected) { _options = options; _selected = selected; }
 			void						set(size_t index);

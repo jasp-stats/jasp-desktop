@@ -81,7 +81,7 @@ typedef bool						(STDCALL *SetColumnAsOrdinal)           (const char* columnNam
 typedef bool						(STDCALL *SetColumnAsNominal)           (const char* columnName, int *          nominalData,	size_t length, const char ** levels, size_t numLevels);
 typedef bool						(STDCALL *SetColumnAsNominalText)       (const char* columnName, const char **	nominalData,	size_t length);
 typedef int							(STDCALL *DataSetRowCount)              ();
-
+typedef const char *				(STDCALL *EnDecodeDef)					(const char *);
 
 struct RBridgeCallBacks {
 	ReadDataSetCB				readDataSetCB;
@@ -100,12 +100,17 @@ struct RBridgeCallBacks {
 	SetColumnAsNominal			dataSetColumnAsNominal;
 	SetColumnAsNominalText		dataSetColumnAsNominalText;
 	DataSetRowCount				dataSetRowCount;
+	EnDecodeDef					encoder,
+								decoder,
+								encoderAll,
+								decoderAll;
 };
 
-typedef void	(*sendFuncDef)			(const char *);
-typedef bool	(*pollMessagesFuncDef)	();
-typedef int		(*logFlushDef)			();
-typedef size_t	(*logWriteDef)			(const void * buf, size_t len);
+typedef void			(*sendFuncDef)			(const char *);
+typedef bool			(*pollMessagesFuncDef)	();
+typedef int				(*logFlushDef)			();
+typedef size_t			(*logWriteDef)			(const void * buf, size_t len);
+
 
 // Calls from rbridge to jaspRCPP
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCallBacks *calbacks, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, logFlushDef logFlushFunction, logWriteDef logWriteFunction);

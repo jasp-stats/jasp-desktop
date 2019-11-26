@@ -30,6 +30,7 @@
 #include "rbridge.h"
 #include "timers.h"
 #include "log.h"
+#include "columnencoder.h"
 
 void SendFunctionForJaspresults(const char * msg) { Engine::theEngine()->sendString(msg); }
 bool PollMessagesFunctionForJaspResults()
@@ -398,7 +399,6 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_analysisName			= jsonRequest.get("name",				Json::nullValue).asString();
 		_analysisTitle			= jsonRequest.get("title",				Json::nullValue).asString();
 		_analysisDataKey		= jsonRequest.get("dataKey",			Json::nullValue).toStyledString();
-		_analysisOptions		= jsonRequest.get("options",			Json::nullValue).toStyledString();
 		_analysisResultsMeta	= jsonRequest.get("resultsMeta",		Json::nullValue).toStyledString();
 		_analysisStateKey		= jsonRequest.get("stateKey",			Json::nullValue).toStyledString();
 		_analysisRevision		= jsonRequest.get("revision",			-1).asInt();
@@ -411,8 +411,71 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_analysisDeveloperMode	= jsonRequest.get("developerMode",		false).asBool();
 		_analysisJaspResults	= _dynamicModuleCall != "" || jsonRequest.get("jaspResults",	false).asBool();
 		_engineState			= engineState::analysis;
+
+		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
+		encodeColumnNamesinOptions(optionsEnc);
+		_analysisOptions		= optionsEnc.toStyledString();
 	}
 }
+
+
+void Engine::encodeColumnNamesinOptions(Json::Value & options)
+{
+	_encodeColumnNamesinOptions(options, options[".meta"]);
+}
+
+void Engine::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta)
+{
+#ifdef JASP_COLUMN_ENCODE_ALL
+	if(meta.isNull())
+		return;
+
+	bool encodePlease = meta.isObject() && meta.isMember("containsColumn") && meta["containsColumn"].asBool();
+
+	switch(options.type())
+	{
+	case Json::arrayValue:
+		if(encodePlease)
+			ColumnEncoder::encodeJson(options, false); //If we already think we have columnNames just change it all
+		else
+			for(size_t i=0; i<options.size() && i < meta.size(); i++)
+				_encodeColumnNamesinOptions(options[i], meta[i]);
+		return;
+
+	case Json::objectValue:
+		for(const std::string & memberName : options.getMemberNames())
+			if(memberName != ".meta" && meta.isMember(memberName))
+				_encodeColumnNamesinOptions(options[memberName], meta[memberName]);
+			else if(encodePlease)
+				ColumnEncoder::encodeJson(options, false); //If we already think we have columnNames just change it all I guess?
+		return;
+
+	case Json::stringValue:
+			if(encodePlease)
+				options = ColumnEncoder::encodeAll(options.asString());
+		return;
+
+	default:
+		return;
+	}
+#endif
+}
+
+void Engine::sendString(std::string message)
+{
+	Json::Value msgJson;
+
+	if(Json::Reader().parse(message, msgJson)) //If everything is converted to jaspResults maybe we can do this there?
+	{
+#ifdef JASP_COLUMN_ENCODE_ALL
+		ColumnEncoder::decodeJson(msgJson); // decode all columnnames as far as you can
+#endif
+		_channel->send(msgJson.toStyledString());
+	}
+	else
+		_channel->send(message);
+}
+
 
 void Engine::runAnalysis()
 {
@@ -738,6 +801,8 @@ void Engine::sendEngineStopped()
 
 void Engine::pauseEngine()
 {
+	Log::log() << "Engine paused" << std::endl;
+
 	switch(_engineState)
 	{
 	default:							/* everything not mentioned is fine */	break;
@@ -755,8 +820,6 @@ void Engine::pauseEngine()
 
 void Engine::sendEnginePaused()
 {
-	Log::log() << "Engine paused" << std::endl;
-
 	Json::Value rCodeResponse		= Json::objectValue;
 	rCodeResponse["typeRequest"]	= engineStateToString(engineState::paused);
 
@@ -765,13 +828,16 @@ void Engine::sendEnginePaused()
 
 void Engine::resumeEngine()
 {
+	Log::log() << "Engine resuming, rescanning columnNames for en/decoding" << std::endl;
+	//Any changes to the data that engine needs to know about are accompanied by pause + resume I think.
+	ColumnEncoder::setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
+
 	_engineState = engineState::idle;
 	sendEngineResumed();
 }
 
 void Engine::sendEngineResumed()
 {
-	Log::log() << "Engine resuming" << std::endl;
 
 	Json::Value rCodeResponse		= Json::objectValue;
 	rCodeResponse["typeRequest"]	= engineStateToString(engineState::resuming);

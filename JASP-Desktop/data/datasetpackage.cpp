@@ -21,6 +21,7 @@
 #include <QThread>
 #include "engine/enginesync.h"
 #include "qquick/jasptheme.h"
+#include "columnencoder.h"
 
 #define ENUM_DECLARATION_CPP
 #include "datasetpackage.h"
@@ -786,6 +787,8 @@ bool DataSetPackage::initColumnAsScale(size_t colNo, std::string newName, const 
 		out = column.setColumnAsScale(values);
 	}, "initColumnAsScale");
 
+	emit columnNamesChanged();
+
 	return out;
 }
 
@@ -799,6 +802,8 @@ std::map<int, std::string> DataSetPackage::initColumnAsNominalText(size_t colNo,
 		column.setName(newName);
 		out = column.setColumnAsNominalText(values, labels);
 	}, "initColumnAsNominalText");
+
+	emit columnNamesChanged();
 
 	return out;
 }
@@ -814,6 +819,8 @@ bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, std::string newN
 		out = column.setColumnAsNominalOrOrdinal(values, is_ordinal);
 	}, "initColumnAsNominalOrOrdinal");
 
+	emit columnNamesChanged();
+
 	return out;
 }
 
@@ -827,6 +834,8 @@ bool DataSetPackage::initColumnAsNominalOrOrdinal(size_t colNo, std::string newN
 		column.setName(newName);
 		out = column.setColumnAsNominalOrOrdinal(values, uniqueValues, is_ordinal);
 	}, "initColumnAsNominalOrOrdinal");
+
+	emit columnNamesChanged();
 
 	return out;
 }
@@ -921,6 +930,7 @@ void DataSetPackage::renameColumn(std::string oldColumnName, std::string newColu
 	{
 		Column & col = _dataSet->column(oldColumnName);
 		col.setName(newColumnName);
+		emit columnNamesChanged();
 	}
 	catch(...)
 	{
@@ -1119,6 +1129,7 @@ void DataSetPackage::columnLabelsFromJsonForJASPFile(Json::Value xData, Json::Va
 
 	}, "columnLabelsFromJsonForJASPFile");
 
+	emit columnNamesChanged();
 }
 
 std::vector<int> DataSetPackage::getColumnDataInts(size_t columnIndex)
@@ -1302,6 +1313,8 @@ void DataSetPackage::removeColumn(std::string name)
 	int colIndex = getColumnIndex(name);
 	if(colIndex == -1) return;
 
+
+
 	beginResetModel();
 	_dataSet->columns().removeColumn(name);
 	endResetModel();
@@ -1321,5 +1334,10 @@ std::vector<bool> DataSetPackage::filterVector()
 	}
 
 	return out;
+
+}
+
+void DataSetPackage::rescanColumnNamesForEncoder()
+{
 
 }

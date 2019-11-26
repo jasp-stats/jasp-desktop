@@ -39,7 +39,6 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
                     if (html) {
 						content = content.replace(/\u273B/g, "<small>\u273B</small>");
 						//content = content.replace(/<(\w)/gi, function(p1, p2) { return '< '+p2; }) //Makes sure there is a space between <char: a<b -> a< b // breaks any tag used in cells... like the above <small>
-
                     }
                 }
                 formatted = { content: content, "class": clazz };

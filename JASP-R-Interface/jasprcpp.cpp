@@ -18,11 +18,12 @@
 #include "jasprcpp.h"
 #include "jaspResults/src/jaspResults.h"
 #include <fstream>
+#include "columnencoder.h"
 
 
-static const	std::string NullString = "null";
-static			std::string lastErrorMessage = "";
-static			cetype_t Encoding = CE_UTF8;
+static const	std::string NullString			= "null";
+static			std::string lastErrorMessage	= "";
+static			cetype_t	Encoding			= CE_UTF8;
 
 RInside						*rinside;
 ReadDataSetCB				readDataSetCB;
@@ -43,6 +44,11 @@ SetColumnAsNominal			dataSetColumnAsNominal;
 SetColumnAsNominalText		dataSetColumnAsNominalText;
 
 DataSetRowCount				dataSetRowCount;
+
+EnDecodeDef					encodeColumnName,
+							decodeColumnName,
+							encodeAllColumnNames,
+							decodeAllColumnNames;
 
 static logFlushDef			_logFlushFunction		= nullptr;
 static logWriteDef			_logWriteFunction		= nullptr;
@@ -75,8 +81,12 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	readDataColumnNamesCB					= callbacks->readDataColumnNamesCB;
 	dataSetColumnAsScale					= callbacks->dataSetColumnAsScale;
 	dataSetGetColumnType					= callbacks->dataSetGetColumnType;
+	encodeAllColumnNames					= callbacks->encoderAll;
+	decodeAllColumnNames					= callbacks->decoderAll;
 	readFilterDataSetCB						= callbacks->readFilterDataSetCB;
 	readFullDataSetCB						= callbacks->readFullDataSetCB;
+	encodeColumnName						= callbacks->encoder;
+	decodeColumnName						= callbacks->decoder;
 	dataSetRowCount							= callbacks->dataSetRowCount;
 	runCallbackCB							= callbacks->runCallbackCB;
 	readDataSetCB							= callbacks->readDataSetCB;
@@ -94,13 +104,17 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
 	rInside[".columnIsOrdinal"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsOrdinal);
 	rInside[".columnIsNominal"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsNominal);
+	rInside[".encodeColumnName"]			= Rcpp::InternalFunction(&jaspRCPP_encodeColumnName);
+	rInside[".decodeColumnName"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnName);
 	rInside[".columnIsNominalText"]			= Rcpp::InternalFunction(&jaspRCPP_columnIsNominalText);
+	rInside[".encodeAllColumnNames"]		= Rcpp::InternalFunction(&jaspRCPP_encodeAllColumnNames);
+	rInside[".decodeAllColumnNames"]		= Rcpp::InternalFunction(&jaspRCPP_decodeAllColumnNames);
 	rInside[".setColumnDataAsScale"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
 	rInside[".readFullDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
-	rInside[".setColumnDataAsOrdinal"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsOrdinal);
-	rInside[".setColumnDataAsNominal"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsNominal);
 	rInside[".readDatasetToEndNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
 	rInside[".readFilterDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFilterDataSet);
+	rInside[".setColumnDataAsOrdinal"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsOrdinal);
+	rInside[".setColumnDataAsNominal"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsNominal);
 	rInside[".readDataSetHeaderNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetHeaderSEXP);
 	rInside[".createCaptureConnection"]		= Rcpp::InternalFunction(&jaspRCPP_CreateCaptureConnection);
 	rInside[".postProcessLibraryModule"]	= Rcpp::InternalFunction(&jaspRCPP_postProcessLocalPackageInstall);
@@ -147,19 +161,25 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 #ifdef __APPLE__
 	jaspRCPP_parseEvalQNT("options(jags.moddir=paste0(Sys.getenv('JAGS_HOME'),'/modules-4'))");
 #endif
+
+	jaspRCPP_parseEvalQNT(".automaticColumnEncDecoding <- "
+#ifdef JASP_COLUMN_ENCODE_ALL
+														  "TRUE" );
+#else
+														  "FALSE");
+#endif
 }
 
 const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground, bool developerMode)
 {
 	SEXP results;
 
-	RInside &rInside = rinside->instance();
+	RInside &		rInside			= rinside->instance();
+	Rcpp::String	jsonOptions		= options;
+	Rcpp::String	jsonResultsMeta	= resultsMeta;
 
-	Rcpp::String jsonOptions = options;
-	Rcpp::String jsonResultsMeta = resultsMeta;
 	jsonOptions.set_encoding(Encoding);
 	jsonResultsMeta.set_encoding(Encoding);
-
 
 	rInside["name"]				= name;
 	rInside["title"]			= title;
@@ -537,7 +557,7 @@ int jaspRCPP_dataSetRowCount()
 
 columnType jaspRCPP_getColumnType(std::string columnName)
 {
-	return columnType(dataSetGetColumnType(columnName.c_str()));
+	return columnType(dataSetGetColumnType(columnName.c_str())); // columnName decoded in rbridge
 }
 
 bool jaspRCPP_columnIsScale(		std::string columnName) { return jaspRCPP_getColumnType(columnName) == columnType::scale;		}
@@ -547,6 +567,8 @@ bool jaspRCPP_columnIsNominalText(	std::string columnName) { return jaspRCPP_get
 
 bool jaspRCPP_setColumnDataAsScale(std::string columnName, Rcpp::RObject scalarData)
 {
+	//columnName = decodeColumnName(columnName.c_str()); // decoded in rbridge
+
 	if(Rcpp::is<Rcpp::Vector<REALSXP>>(scalarData))
 		return _jaspRCPP_setColumnDataAsScale(columnName, Rcpp::as<Rcpp::Vector<REALSXP>>(scalarData));
 
@@ -578,6 +600,8 @@ bool _jaspRCPP_setColumnDataAsScale(std::string columnName, Rcpp::Vector<REALSXP
 
 bool jaspRCPP_setColumnDataAsOrdinal(std::string columnName, Rcpp::RObject ordinalData)
 {
+	//columnName = decodeColumnName(columnName.c_str()); // decoded in rbridge
+
 	if(Rcpp::is<Rcpp::Vector<INTSXP>>(ordinalData))
 		return _jaspRCPP_setColumnDataAsOrdinal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(ordinalData));
 
@@ -616,6 +640,8 @@ bool _jaspRCPP_setColumnDataAsOrdinal(std::string columnName, Rcpp::Vector<INTSX
 
 bool jaspRCPP_setColumnDataAsNominal(std::string columnName, Rcpp::RObject nominalData)
 {
+	//columnName = decodeColumnName(columnName.c_str()); // decoded in rbridge
+
 	if(Rcpp::is<Rcpp::Vector<INTSXP>>(nominalData))
 		return _jaspRCPP_setColumnDataAsNominal(columnName, Rcpp::as<Rcpp::Vector<INTSXP>>(nominalData));
 
@@ -654,6 +680,8 @@ bool _jaspRCPP_setColumnDataAsNominal(std::string columnName, Rcpp::Vector<INTSX
 
 bool jaspRCPP_setColumnDataAsNominalText(std::string columnName, Rcpp::RObject nominalData)
 {
+	//columnName = decodeColumnName(columnName.c_str()); // decoded in rbridge
+
 	if(Rf_isNull(nominalData))
 		return _jaspRCPP_setColumnDataAsNominalText(columnName, Rcpp::Vector<STRSXP>());
 
@@ -726,11 +754,13 @@ void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *
 
 RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, size_t * colMax)
 {
-	std::map<std::string, columnType> columnsRequested;
+	std::map<std::string, columnType>	columnsRequested;
+	std::map<std::string, size_t>		columnsOrder;		//Let's remember the order in which they are requested
 
 	if (Rf_isLogical(allColumns) && Rcpp::as<bool>(allColumns))
 	{
 		char** columns = readDataColumnNamesCB(colMax);
+
 		if (columns)
 		{
 			for (size_t i = 0; i < *colMax; i++)
@@ -738,13 +768,22 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 		}
 	}
 
-	auto setTypeRequested = [&columnsRequested](SEXP cols, columnType SetThis)
+	*colMax = 0;
+
+	auto setTypeRequested = [&] (SEXP cols, columnType SetThis)
 	{
 		if(Rf_isString(cols))
 		{
-			std::vector<std::string> temp = Rcpp::as<std::vector<std::string>>(cols);
-			for (size_t i = 0; i < temp.size(); i++)
-				columnsRequested[temp.at(i)] = SetThis;
+			std::vector<std::string> tmps = Rcpp::as<std::vector<std::string>>(cols);
+			for (const std::string & tmp : tmps)
+			{
+				columnsRequested[tmp] = SetThis;
+
+				if(columnsOrder.count(tmp) > 0)
+					Rf_error(("You've specified column '" + tmp + "' more than once!").c_str());
+
+				columnsOrder[tmp] = (*colMax)++;
+			}
 		}
 	};
 
@@ -754,14 +793,13 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 	setTypeRequested(columnsAsNominal,	columnType::nominal);
 
 	RBridgeColumnType* result = static_cast<RBridgeColumnType*>(calloc(columnsRequested.size(), sizeof(RBridgeColumnType)));
-	int colNo = 0;
+
 	for (auto const &columnRequested : columnsRequested)
 	{
-		result[colNo].name = strdup(columnRequested.first.c_str());
-		result[colNo].type = int(columnRequested.second);
-		colNo++;
+		size_t colNo		= columnsOrder[columnRequested.first];
+		result[colNo].name	= strdup(columnRequested.first.c_str());
+		result[colNo].type	= int(columnRequested.second);
 	}
-	*colMax = colNo;
 
 	return result;
 }
@@ -808,22 +846,20 @@ Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn*
 
 	if (colResults)
 	{
-		Rcpp::List list(colMax);
-		Rcpp::StringVector columnNames(colMax);
+		Rcpp::List			list(colMax);
+		Rcpp::StringVector	columnNames(colMax);
 
 		for (int i = 0; i < colMax; i++)
 		{
-			const RBridgeColumn& colResult = colResults[i];
-			Rcpp::String colName = colResult.name;
+			const RBridgeColumn &	colResult	= colResults[i];
+			Rcpp::String			colName		= colResult.name;
+
 			colName.set_encoding(Encoding);
 			columnNames[i] = colName;
 
-			if (colResult.isScale)
-				list[i] = Rcpp::NumericVector(colResult.doubles, colResult.doubles + colResult.nbRows);
-			else if(!colResult.hasLabels)
-				list[i] = Rcpp::IntegerVector(colResult.ints, colResult.ints + colResult.nbRows);
-			else
-				list[i] = jaspRCPP_makeFactor(Rcpp::IntegerVector(colResult.ints, colResult.ints + colResult.nbRows), colResult.labels, colResult.nbLabels, colResult.isOrdinal);
+			if (colResult.isScale)			list[i] = Rcpp::NumericVector(colResult.doubles, colResult.doubles + colResult.nbRows);
+			else if(!colResult.hasLabels)	list[i] = Rcpp::IntegerVector(colResult.ints, colResult.ints + colResult.nbRows);
+			else							list[i] = jaspRCPP_makeFactor(Rcpp::IntegerVector(colResult.ints, colResult.ints + colResult.nbRows), colResult.labels, colResult.nbLabels, colResult.isOrdinal);
 
 		}
 
@@ -1088,6 +1124,26 @@ void jaspRCPP_postProcessLocalPackageInstall(SEXP moduleLibFileNames)
 		}
 	}
 #endif
+}
+
+std::string jaspRCPP_encodeColumnName(std::string in)
+{
+	return encodeColumnName(in.c_str());
+}
+
+std::string jaspRCPP_decodeColumnName(std::string in)
+{
+	return decodeColumnName(in.c_str());
+}
+
+std::string jaspRCPP_encodeAllColumnNames(	std::string in)
+{
+	return encodeAllColumnNames(in.c_str());
+}
+
+std::string jaspRCPP_decodeAllColumnNames(	std::string in)
+{
+	return decodeAllColumnNames(in.c_str());
 }
 
 // ------------------- Below here be dragons -------------------- //

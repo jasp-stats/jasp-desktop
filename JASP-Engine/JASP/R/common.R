@@ -1455,9 +1455,23 @@ isTryError <- function(obj){
   return(result)
 }
 
-.readDataSetToEnd <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {
+.readDataSetCleanNAs <- function(cols) {
+  cols <- cols[!is.na(cols)]
 
-	if (is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor) && all.columns == FALSE)
+  if(length(cols) == 0)
+    return(NULL);
+  return(cols);
+}
+
+.readDataSetToEnd <- function(columns=NULL, columns.as.numeric=NULL, columns.as.ordinal=NULL, columns.as.factor=NULL, all.columns=FALSE, exclude.na.listwise=NULL, ...) {
+
+  columns              <- .readDataSetCleanNAs(columns)
+  columns.as.numeric   <- .readDataSetCleanNAs(columns.as.numeric)
+  columns.as.ordinal   <- .readDataSetCleanNAs(columns.as.ordinal)
+  columns.as.factor    <- .readDataSetCleanNAs(columns.as.factor)
+  exclude.na.listwise  <- .readDataSetCleanNAs(exclude.na.listwise)
+
+  if (all.columns == FALSE && is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor))
 		return (data.frame())
 
 	dataset <- .fromRCPP(".readDatasetToEndNative", unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
@@ -1466,17 +1480,22 @@ isTryError <- function(obj){
 	dataset
 }
 
-.readDataSetHeader <- function(columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, ...) {
+.readDataSetHeader <- function(columns=NULL, columns.as.numeric=NULL, columns.as.ordinal=NULL, columns.as.factor=NULL, all.columns=FALSE, ...) {
 
-	if (is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor) && all.columns == FALSE)
-		return (data.frame())
+  columns              <- .readDataSetCleanNAs(columns)
+  columns.as.numeric   <- .readDataSetCleanNAs(columns.as.numeric)
+  columns.as.ordinal   <- .readDataSetCleanNAs(columns.as.ordinal)
+  columns.as.factor    <- .readDataSetCleanNAs(columns.as.factor)
+
+  if (all.columns == FALSE && is.null(columns) && is.null(columns.as.numeric) && is.null(columns.as.ordinal) && is.null(columns.as.factor))
+    return (data.frame())
 
 	dataset <- .fromRCPP(".readDataSetHeaderNative", unlist(columns), unlist(columns.as.numeric), unlist(columns.as.ordinal), unlist(columns.as.factor), all.columns != FALSE)
 
 	dataset
 }
 
-.vdf <- function(df, columns=c(), columns.as.numeric=c(), columns.as.ordinal=c(), columns.as.factor=c(), all.columns=FALSE, exclude.na.listwise=c(), ...) {
+.vdf <- function(df, columns=NULL, columns.as.numeric=NULL, columns.as.ordinal=NULL, columns.as.factor=NULL, all.columns=FALSE, exclude.na.listwise=NULL, ...) {
 	new.df <- NULL
 	namez <- NULL
 
@@ -2226,47 +2245,53 @@ as.list.footnotes <- function(footnotes) {
   eval(plotFunc, parent.frame())
 }
 
-.writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL) {
+.writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathsvg = NULL,
+                        units = c("pixels", "inches")) {
+  
+  units <- match.arg(units)
   # Set values from JASP'S Rcpp when available
   if (exists(".fromRCPP")) {
-    location        <- .fromRCPP(".requestTempFileNameNative", "png")
+    location        <- .fromRCPP(".requestTempFileNameNative", "svg")
     backgroundColor <- .fromRCPP(".imageBackground")
     ppi             <- .fromRCPP(".ppi")
   }
-
+  
+  # convert width & height from pixels to inches. ppi = pixels per inch. 4 is a magic number.
+  width  <- width  / ppi * 4
+  height <- height / ppi * 4
+  image <- list()
+  
   # TRUE if called from analysis, FALSE if called from editImage
-  if (is.null(relativePathpng))
-    relativePathpng <- location$relativePath
+  if (is.null(relativePathsvg))
+    relativePathsvg <- location$relativePath
 
   image                           <- list()
-  fullPathpng                     <- paste(location$root, relativePathpng, sep="/")
+  fullPathpng                     <- paste(location$root, relativePathsvg, sep="/")
   plotEditingOptions              <- NULL
   root                            <- location$root
-  base::Encoding(relativePathpng) <- "UTF-8"
+  base::Encoding(relativePathsvg) <- "UTF-8"
   base::Encoding(root)            <- "UTF-8"
   oldwd                           <- getwd()
   setwd(root)
   on.exit(setwd(oldwd))
 
-  type <- "cairo" # Operating System information (where to draw to)
-  if(Sys.info()["sysname"]=="Darwin")
-    type <- "quartz"
-
-
-  if (ggplot2::is.ggplot(plot) || inherits(plot, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-
-    pngMultip <- ppi / 96
+  plot2draw <- plot
+  if(.automaticColumnEncDecoding)
+    plot2draw <- decodeplot(plot2draw)
+  
+  if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable"))) {
+    
+    # TODO: ggsave adds very little when we use a function as device...
     ggplot2::ggsave(
-      filename  = relativePathpng,
-      plot      = plot,
-      device    = grDevices::png,
-      width     = width  * pngMultip,
-      height    = height * pngMultip,
+      filename  = relativePathsvg,
+      plot      = plot2draw,
+      device    = function(filename, ...) svglite::svglite(file = filename, ...),
       dpi       = ppi,
+      width     = width,
+      height    = height,
+      units     = "in", 
       bg        = backgroundColor,
-      res       = 72 * pngMultip,
-      type      = type,
-      limitsize = FALSE # because we supply png as a function, we specify pixels rather than inches
+      limitsize = FALSE # only necessary if users make the plot ginormous.
     )
 
     #If we have JASPgraphs available we can get the plotEditingOptions for this plot
@@ -2274,58 +2299,51 @@ as.list.footnotes <- function(footnotes) {
       plotEditingOptions <- JASPgraphs::plotEditingOptions(graph=plot, asJSON=TRUE)
 
   } else {
-
-    # Calculate pixel multiplier
-    pngMultip <- ppi / 96
-    isRecordedPlot <- inherits(plot, "recordedplot")
-
+    
+    isRecordedPlot <- inherits(plot2draw, "recordedplot")
+    
     # Open graphics device and plot
-    grDevices::png(filename=relativePathpng, width=width * pngMultip,
-                 height=height * pngMultip, bg=backgroundColor,
-                   res=72 * pngMultip, type=type)
+    svglite::svglite(file = relativePathsvg, width = width, height = height, bg = backgroundColor)
 
-    if (is.function(plot) && !isRecordedPlot) {
-
+    if (is.function(plot2draw) && !isRecordedPlot) {
+      
       if (obj) dev.control('enable') # enable plot recording
       eval(plot())
-      if (obj) plot <- recordPlot() # save plot to R object
+      if (obj) plot2draw <- recordPlot() # save plot to R object
 
     } else if (isRecordedPlot) { # function was called from editImage to resize the plot
-
-      .redrawPlot(plot) #(see below)
-
-    } else if (inherits(plot, "qgraph")) {
-
-      qgraph:::plot.qgraph(plot)
-
+      
+      .redrawPlot(plot2draw) #(see below)
+    } else if (inherits(plot2draw, "qgraph")) {
+      
+      qgraph:::plot.qgraph(plot2draw)
+      
     } else {
-      plot(plot)
+      plot(plot2draw)
     }
 
     dev.off()
   }
-
-
+  
   # Save path & plot object to output
-  image[["png"]] <- relativePathpng
+  image[["png"]] <- relativePathsvg
+  
   if (obj) {
-
-    image[["obj"]]         <- plot
+    image[["obj"]]         <- plot2draw
     image[["editOptions"]] <- plotEditingOptions
   }
-
-
-
-  # Return relative paths in list
-  image
+  
+  return(image)
 }
-
 
 # not .saveImage() because RInside (interface to CPP) cannot handle that
 saveImage <- function(plotName, format, height, width)
 {
   state           <- .retrieveState()     # Retrieve plot object from state
   plt             <- state[["figures"]][[plotName]][["obj"]]
+
+  if(.automaticColumnEncDecoding)
+    plt           <- decodeplot(plt);
   
   location        <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
   backgroundColor <- .fromRCPP(".imageBackground")
@@ -2376,7 +2394,7 @@ saveImage <- function(plotName, format, height, width)
 			
 			hiResMultip <- 300 / 72
 			grDevices::tiff(
-				relativePath,
+				filename    = relativePath,
 				width       = width * hiResMultip,
 				height      = height * hiResMultip,
 				res         = 300,
@@ -2399,6 +2417,18 @@ saveImage <- function(plotName, format, height, width)
 				bg = "transparent"
 			)
 			
+		} else if (format == "png") {
+
+		  # Open graphics device and plot
+		  grDevices::png(
+		    filename = relativePath,
+		    width    = width * pngMultip,
+		    height   = height * pngMultip,
+		    bg       = backgroundColor,
+		    res      = 72 * pngMultip,
+		    type     = type
+		  )
+
 		} else { # add optional other formats here in "else if"-statements
 		
 			stop("Format incorrectly specified")
@@ -2734,7 +2764,7 @@ rewriteImages <- function() {
       width    <- oldPlot[["width"]]
       height   <- oldPlot[["height"]]
       plot     <- oldPlot[["obj"]]
-      invisible(.writeImage(width = width, height = height, plot = plot, obj = FALSE, relativePathpng = plotName))
+      invisible(.writeImage(width = width, height = height, plot = plot, obj = FALSE, relativePathsvg = plotName))
     })
   }
 
@@ -2759,8 +2789,6 @@ editImage <- function(optionsJson) {
   isGgplot      <- ggplot2::is.ggplot(oldPlot) # FALSE implies oldPlot is a  recordedPlot
   requireResize <- type == "resize"
 
-  save(optionsJson, optionsList, oldPlot, file = "~/plotEditing.Rdata")
-  print(optionsList)
 
   if (!is.null(oldPlot)) {
   # this try is required because resizing and editing may fail for various reasons.
@@ -2780,29 +2808,28 @@ editImage <- function(optionsJson) {
         plot          <- JASPgraphs::plotEditing(plot, newOpts)
       }
       
-      # nothing was modified in ggedit, or editing was cancelled
-      if (identical(plot, oldPlot) && !requireResize)
-        return(oldPlot)
-
-      # plot is modified or needs to be resized, let's save the new plot
-      newPlot <- list()
-      content <- .writeImage(width = width, height = height, plot = plot, obj = TRUE, relativePathpng = plotName) #Should we switch this over to the writeImage from jaspResults or we could also just directly use jaspPlot
-
-      newPlot[["data"]]   <- content[["png"]]
-      newPlot[["width"]]  <- width
-      newPlot[["height"]] <- height
-
-      # no new recorded plot is created in .writeImage so we recycle the old one
-      # we can only resize recordedPlots anyway
-      if (isGgplot) newPlot[["obj"]] <- content[["obj"]]
-      else          newPlot[["obj"]] <- plot
-
-      newPlot # results == newPlot
+      # plot editing did nothing or was cancelled
+      if (identical(plot, oldPlot) && !requireResize) {
+        state[["figures"]][[plotName]] # the old state object
+      } else {
+        
+        # plot is modified or needs to be resized, let's save the new plot
+        newPlot <- list()
+        content <- .writeImage(width = width, height = height, plot = plot, obj = TRUE, relativePathsvg = plotName, units = "inches") #Should we switch this over to the writeImage from jaspResults or we could also just directly use jaspPlot
+        
+        newPlot[["data"]]   <- content[["png"]]
+        newPlot[["width"]]  <- width
+        newPlot[["height"]] <- height
+        
+        # no new recorded plot is created in .writeImage so we recycle the old one
+        # we can only resize recordedPlots anyway
+        if (isGgplot) newPlot[["obj"]] <- content[["obj"]]
+        else          newPlot[["obj"]] <- plot
+        
+        newPlot # results == newPlot
+      }
     })
   }
-
-  # plotName <- base::normalizePath(plotName)
-  # plotName <- stringr::str_split(plotName, "JASP")[[1]][[2]]
 
   # create json list for QT
   response <- list(

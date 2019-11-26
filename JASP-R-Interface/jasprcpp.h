@@ -50,6 +50,12 @@ void jaspRCPP_setRWarning(SEXP Message);
 void jaspRCPP_setRError(SEXP Message);
 void jaspRCPP_setLog(SEXP Message);
 
+std::string jaspRCPP_encodeColumnName(		std::string in);
+std::string jaspRCPP_decodeColumnName(		std::string in);
+std::string jaspRCPP_encodeAllColumnNames(	std::string in);
+std::string jaspRCPP_decodeAllColumnNames(	std::string in);
+
+
 int jaspRCPP_dataSetRowCount();
 
 bool jaspRCPP_columnIsScale(				std::string columnName	);

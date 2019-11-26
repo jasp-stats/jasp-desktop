@@ -47,6 +47,14 @@ Json::Value Options::asJSON() const
 	return asJSON(true);
 }
 
+Json::Value Options::asJSONWithMeta() const
+{
+	Json::Value json			= asJSON(true);
+				json[".meta"]	= asMetaJSON();
+
+	return json;
+}
+
 void Options::add(string name, Option *option)
 {
 	remove(name);
@@ -82,7 +90,7 @@ Json::Value Options::asJSON(bool includeTransient) const
 {
 	Json::Value top = Json::objectValue;
 
-	for (const OptionNamed& item : _options)
+	for (const OptionNamed & item : _options)
 	{
 		if (includeTransient == false && item.second->isTransient())
 			continue;
@@ -95,9 +103,26 @@ Json::Value Options::asJSON(bool includeTransient) const
 	return top;
 }
 
+
+Json::Value Options::asMetaJSON() const
+{
+	Json::Value top = Json::objectValue;
+
+	for (const OptionNamed & item : _options)
+	{
+		string name			= item.first;
+		Json::Value value	= item.second->asMetaJSON();
+
+		if(!value.isNull() && !(value.isArray() && value.size() == 0) && !(value.isObject() && value.getMemberNames().size() == 0))
+			insertValue(name, value, top);
+	}
+
+	return top;
+}
+
 void Options::set(const Json::Value &json)
 {
-	for (const OptionNamed& item : _options)
+	for (const OptionNamed & item : _options)
 	{
 		string		name = item.first;
 		Json::Value value;
