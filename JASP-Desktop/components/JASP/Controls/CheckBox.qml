@@ -101,7 +101,7 @@ JASPControl
 		{
 			id:					label
 			text:				control.text
-			color:				jaspTheme.textEnabled
+			color:				enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 			font:				jaspTheme.font
 			leftPadding:		checkIndicator.width + control.spacing
 			verticalAlignment:	Text.AlignVCenter

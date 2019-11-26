@@ -88,14 +88,15 @@ FocusScope
 
 	Text
 	{
-		id: computeColumnTitle
-		text: computedColumnsInterface.computeColumnNameSelected !== "" ? "Computed Column: " + computedColumnsInterface.computeColumnNameSelected : "Select a column"
-		anchors.top: parent.top
-		anchors.horizontalCenter: parent.horizontalCenter
+		id:							computeColumnTitle
+		text:						computedColumnsInterface.computeColumnNameSelected !== "" ? "Computed Column: " + computedColumnsInterface.computeColumnNameSelected : "Select a column"
+		color:						jaspTheme.textEnabled
+		anchors.top:				parent.top
+		anchors.horizontalCenter:	parent.horizontalCenter
 
-		horizontalAlignment: Text.AlignHCenter
-		font.pixelSize: (baseFontSize + 4) * preferencesModel.uiScale
-		font.bold: true
+		horizontalAlignment:		Text.AlignHCenter
+		font.pixelSize:				(baseFontSize + 4) * preferencesModel.uiScale
+		font.bold:					true
 
 	}
 
@@ -141,9 +142,10 @@ FocusScope
 
 				property bool changedSinceLastApply: text !== computedColumnContainer.lastAppliedcomputeColumn
 
-				font.family: "Courier"
-				font.pixelSize: baseFontSize * preferencesModel.uiScale
-				wrapMode: TextArea.WrapAtWordBoundaryOrAnywhere
+				font.family:			"Courier"
+				font.pixelSize:			baseFontSize * preferencesModel.uiScale
+				wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
+				color:					jaspTheme.textEnabled
 
 				property bool changed: text != computedColumnsInterface.computeColumnRCode
 			}

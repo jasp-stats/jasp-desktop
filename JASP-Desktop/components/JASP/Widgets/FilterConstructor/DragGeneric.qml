@@ -186,7 +186,7 @@ MouseArea
 		if(dropTarget !== null && dropTarget.objectName === "DropTrash")
 		{
 			this.destroy();
-			dropTarget.somethingHovers = false
+			//dropTarget.somethingHovers = false
 			return;
 		}
 

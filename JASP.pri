@@ -109,5 +109,5 @@ macx {
   QMAKE_CXXFLAGS          += -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi -stdlib=libc++ -Wno-deprecated-declarations
 }
 
-
+#uncomment the following line to enable automatic encoding and decoding of columnNames. Be sure to recompile all necessary objects
 #DEFINES += JASP_COLUMN_ENCODE_ALL

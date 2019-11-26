@@ -62,6 +62,7 @@ FocusScope
 		{
 			id:				columnNameVariablesWindow
 			text:			"Column Name/Title here"
+			color:			jaspTheme.textEnabled
 			font:			jaspTheme.fontGroupTitle
 			anchors.top:	parent.top
 			anchors.left:	parent.left
