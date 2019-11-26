@@ -24,40 +24,19 @@
         <file>js/jquery-ui-1.10.1.custom.min.js</file>
         <file>js/table.js</file>
         <file>js/utils.js</file>
-        <file>css/images/copy.png</file>
-        <file>css/images/running.gif</file>
-        <file>css/images/waiting.gif</file>
-        <file>css/images/logo.svg</file>
         <file>js/image.js</file>
         <file>js/analysis.js</file>
-        <file>css/images/cite.svg</file>
-        <file>css/images/running-large.gif</file>
-        <file>css/images/waiting-large.png</file>
         <file>js/jaspwidgets.js</file>
-        <file>css/images/arrowsmalldownbtn.png</file>
-        <file>css/images/resizer.png</file>
-        <file>css/images/menu-indicator.svg</file>
-        <file>css/images/empty-plot.png</file>
         <file>js/etch.js</file>
         <file>css/etch.css</file>
         <file>css/images/editor_icons.png</file>
         <file>js/mrkdwn.js</file>
         <file>js/analyses.js</file>
-        <file>css/images/closer.png</file>
         <file>js/object.js</file>
         <file>js/collection.js</file>
-        <file>css/images/expand.png</file>
-        <file>css/images/collapse.png</file>
-        <file>css/images/tinylogo.svg</file>
         <file>font/Lato-Light.ttf</file>
         <file>font/Lato-Regular.ttf</file>
-        <file>img/jasp-logo.svg</file>
-        <file>img/jasp-wave-down-blue-120.svg</file>
-        <file>img/jasp-wave-down-blue-150.svg</file>
-        <file>img/jasp-wave-up-green-100.svg</file>
-        <file>img/jasp-wave-up-green-120.svg</file>
         <file>img/ul-orange-dot.png</file>
-        <file>css/images/waiting.svg</file>
         <file>img/jasp-wave-down-blue-120-squat.svg</file>
         <file>css/bootstrap.min.css</file>
         <file>img/jasp-logo-black.svg</file>
@@ -67,7 +46,31 @@
         <file>js/htmlNode.js</file>
         <file>js/column.js</file>
         <file>css/darkTheme-jasp.css</file>
+        <file>css/images/darkTheme/running.gif</file>
+        <file>css/images/darkTheme/waiting.gif</file>
+        <file>css/images/darkTheme/waiting.svg</file>
+        <file>css/images/darkTheme/arrowsmalldownbtn.png</file>
+        <file>css/images/darkTheme/resizer.png</file>
+        <file>css/images/darkTheme/menu-indicator.svg</file>
+        <file>css/images/darkTheme/empty-plot.png</file>
+        <file>css/images/darkTheme/running-large.gif</file>
+        <file>css/images/darkTheme/waiting-large.png</file>
+        <file>css/images/darkTheme/closer.png</file>
+        <file>css/images/darkTheme/expand.png</file>
+        <file>css/images/darkTheme/collapse.png</file>
         <file>css/lightTheme-jasp.css</file>
+        <file>css/images/lightTheme/running.gif</file>
+        <file>css/images/lightTheme/waiting.gif</file>
+        <file>css/images/lightTheme/waiting.svg</file>
+        <file>css/images/lightTheme/arrowsmalldownbtn.png</file>
+        <file>css/images/lightTheme/resizer.png</file>
+        <file>css/images/lightTheme/menu-indicator.svg</file>
+        <file>css/images/lightTheme/empty-plot.png</file>
+        <file>css/images/lightTheme/running-large.gif</file>
+        <file>css/images/lightTheme/waiting-large.png</file>
+        <file>css/images/lightTheme/closer.png</file>
+        <file>css/images/lightTheme/expand.png</file>
+        <file>css/images/lightTheme/collapse.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

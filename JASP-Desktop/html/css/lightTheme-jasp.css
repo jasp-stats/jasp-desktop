@@ -4,21 +4,20 @@
 }
 
 body {
-	font-family: sans-serif ;
-	margin: 0 ;
-	cursor: default;
-}
-
-body:not(.windows) {
-	font-size: 12px ;
-}
-
-body.windows {
-	font-size: 12px ;
+        font-family:  sans-serif ;
+        margin:       0 ;
+        cursor:       default;
+        color:        #000;
+        font-size:    12px ;
 }
 
 body.selected {
-        background-color: #ECECEC ; /*grayMuchLighter*/
+        background-color: #EFEFEF ; /*grayMuchLighter*/
+}
+
+
+body.selected .jasp-analysis:not(.selected){
+    filter: opacity(0.5);
 }
 
 h1, .h1-toolbar .jasp-menu {
@@ -54,8 +53,8 @@ h6, .h6-toolbar .jasp-menu {
 }
 
 .jasp-display-item {
-        background-color: rgba(224, 224, 224, 0) ; /*grayLighter*/
-        border: 1px solid rgba(105, 105, 105, 0) ; /*grayDarker but not really because this is #696969 */
+  background-color: rgba(224, 224, 224, 0) ; /*grayLighter*/
+  border: 1px solid rgba(105, 105, 105, 0) ; /*grayDarker but not really because this is #696969 */
 	border-radius : 6px ;
 	margin-top: 0.1em ;
 	margin-bottom: 0.6em ;
@@ -219,6 +218,18 @@ tbody tr:nth-last-child(2) th {
 	background: #FFF
 }
 
+
+.jasp-analysis.unselected:not(.jasp-menu-selected) {
+
+        background-color: #E8E8E8 ;
+}
+
+.jasp-analysis.selected:not(.jasp-menu-selected) {
+
+    background-color: white ;
+    color:            #000;
+}
+
 td.text {
 	text-align: left ;
 }
@@ -297,16 +308,6 @@ svg > text
 	/*display: inline-block ;*/
 }
 
-.jasp-analysis.unselected:not(.jasp-menu-selected) {
-
-	background-color: #E8E8E8 ;
-}
-
-.jasp-analysis.selected:not(.jasp-menu-selected) {
-
-	background-color: white ;
-}
-
 div.toolbar {
 
 	display: block ;
@@ -338,30 +339,30 @@ div.status {
 
 div.status.running {
 
-	background : url(images/running.gif) no-repeat ;
+  background : url('images/lightTheme/running.gif') no-repeat ;
 	visibility: visible ;
 }
 
 div.status.waiting {
 
-	background : url(images/waiting.gif) no-repeat ;
+  background : url('images/lightTheme/waiting.gif') no-repeat ;
 	visibility: visible ;
 }
 
 div.image-status.running {
 
-	background-image : url('images/running-large.gif') ;
+  background-image : url('images/lightTheme/running-large.gif') ;
 	visibility: visible ;
 }
 
 div.image-status.waiting {
 
-	background-image : url('images/waiting-large.png') ;
+  background-image : url('images/lightTheme/waiting-large.png') ;
 	visibility: visible ;
 }
 
 div.jasp-image-image.no-data {
-	background-image: url('images/empty-plot.png') ;
+  background-image: url('images/lightTheme/empty-plot.png') ;
 	background-repeat: no-repeat;
 	background-size: contain;
 	position: relative;
@@ -370,7 +371,7 @@ div.jasp-image-image.no-data {
 }
 
 div.jasp-image-image.no-data.error {
-	background-image: linear-gradient(rgba(255,255,255,0.67), rgba(255,255,255,0.67)), url('images/empty-plot.png');
+  background-image: linear-gradient(rgba(255,255,255,0.67), rgba(255,255,255,0.67)), url('images/lightTheme/empty-plot.png');
 }
 
 .jasp-analysis.error-state div.jasp-image-image {
@@ -441,7 +442,7 @@ div.jasp-image-image.no-data.error {
 
 .stack-trace-arrow {
 	
-  background: center no-repeat url("images/expand.png") ;
+  background: center no-repeat url("images/lightTheme/expand.png") ;
   background-size: 70% ;
 	width: 16px ;
   height: 16px ;
@@ -482,7 +483,7 @@ td.squash-left
 }
 
 .jasp-resize {
-    background: top left no-repeat url(images/resizer.png);
+    background: top left no-repeat url(images/lightTheme/resizer.png);
     right: 2px;
     cursor: nw-resize;
 	bottom: 2px;
@@ -492,7 +493,7 @@ td.squash-left
 }
 
 .jasp-closer {
-    background: top left no-repeat url(images/closer.png);
+    background: top left no-repeat url(images/lightTheme/closer.png);
     right: 2px;
     top: 2px;
     position: -webkit-sticky;
@@ -510,7 +511,7 @@ td.squash-left
 
 .jasp-menu {
 
-	background: center no-repeat url(images/menu-indicator.svg);
+  background: center no-repeat url(images/lightTheme/menu-indicator.svg);
 	background-size: 70% ;
 	width:  16px ;
 	height: 16px ;
@@ -518,7 +519,7 @@ td.squash-left
 }
 
 .jasp-collapsed .jasp-menu {
-	background: center no-repeat url(images/expand.png);
+  background: center no-repeat url(images/lightTheme/expand.png);
 	background-size: 70% ;
 	width:  16px ;
 	height: 16px ;
