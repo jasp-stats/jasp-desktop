@@ -257,7 +257,8 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
     bfType <- "BF01"
     dfLines$y <- -dfLines$y
     BF10user  <- 1 / BF10user
-    maxBF10   <- 1 / maxBF10
+    maxBF10   <- max(1/BF10)
+    maxBFrVal <- rValues[which.max(1/BF10)]
     BF10w     <- 1 / BF10w
     BF10ultra <- 1 / BF10ultra
   }
@@ -280,7 +281,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
     dfLines      = dfLines,
     dfPoints     = dfPoints,
     pointLegend  = additionalInfo,
-    xName        = "Cauchy prior width",
+    xName        = "r scale", 
     hypothesis   = "equal",
     bfType       = bfType
   )
