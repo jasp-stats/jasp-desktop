@@ -32,7 +32,7 @@ Form
 		AssignedVariablesList { name: "variables"; suggestedColumns: ["ordinal", "nominal"] }
 	}
 	
-	DoubleField { label: qsTr("Test value: "); name: "testValue"; defaultValue: 0.5 ; max: 1; decimals: 2; Layout.columnSpan: 2 }
+	FormulaField { label: qsTr("Test value: "); name: "testValue"; defaultValue: "0.5" ; min:0; max: 1; Layout.columnSpan: 2 }
 	
 	RadioButtonGroup
 	{
@@ -63,7 +63,7 @@ Form
 	Group
 	{
 		title: qsTr("Prior")
-		DoubleField { name: "priorA"; label: qsTr("Beta prior: parameter a"); defaultValue: 1; max: 10000; inclusive: "no"; decimals: 3 }
-		DoubleField { name: "priorB"; label: qsTr("Beta prior: parameter b"); defaultValue: 1; max: 10000; inclusive: "no"; decimals: 3 }
+		FormulaField { name: "priorA"; label: qsTr("Beta prior: parameter a"); defaultValue: "1"; min:0; max: 10000; inclusive: "no" }
+		FormulaField { name: "priorB"; label: qsTr("Beta prior: parameter b"); defaultValue: "1"; min:0; max: 10000; inclusive: "no" }
 	}
 }

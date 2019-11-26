@@ -46,7 +46,9 @@ public:
 	void						removeDependency(QMLItem* item);
 	QVariant					getItemProperty(const QString& name);
 	void						setItemProperty(const QString& name, const QVariant& value);
-	
+	void						showControlError(QString msg);
+	void						showControlErrorTemporary(QString msg);
+
 protected:
 	
 	QQuickItem*				_item;

@@ -12,7 +12,7 @@ ExpanderButton   1.0 ExpanderButton.qml
 Section          1.0 ExpanderButton.qml
 Form             1.0 Form.qml
 GridLayout        1.0 GridLayout.qml
-Group	             1.0 GroupBox.qml
+Group	           1.0 GroupBox.qml
 GroupBox            1.0 GroupBox.qml
 IntegerField         1.0 IntegerField.qml
 JASPControl           1.0 JASPControl.qml
@@ -35,6 +35,7 @@ VariablesForm           1.0 VariablesForm.qml
 VariablesList          1.0 VariablesList.qml
 ExtraControlColumn    1.0 ExtraControlColumn.qml
 ExtraControls        1.0 ExtraControls.qml
-ComputedColumnField  1.0 ComputedColumnField.qml
-AddColumnField      1.0 AddColumnField.qml
-HelpButton         1.0 HelpButton.qml
+ComputedColumnField 1.0 ComputedColumnField.qml
+FormulaField       1.0 FormulaField.qml
+AddColumnField    1.0 AddColumnField.qml
+HelpButton       1.0 HelpButton.qml

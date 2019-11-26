@@ -26,7 +26,7 @@
 #include "analysis/options/optioncomputedcolumn.h"
 #include "analysis/options/optionintegerarray.h"
 #include "analysis/options/optiondoublearray.h"
-
+#include "analysis/options/optionterm.h"
 #include <QObject>
 
 
@@ -35,30 +35,33 @@ class BoundQMLTextInput : public QObject, public BoundQMLItem
 	Q_OBJECT
 
 public:
-	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType };
+	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, IntegerArrayInputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, FormulaType};
 
 	BoundQMLTextInput(QQuickItem* item, AnalysisForm* form);
 	void initTextInput();
 
-	void bindTo(Option *option)			override;
+	void		bindTo(Option *option)						override;
 
-	Option* createOption()				override;
-	bool isOptionValid(Option* option)	override;
-	bool isJsonValid(const Json::Value& optionValue) override;
-	Option* boundTo()					override { return _option; }
-	void resetQMLItem(QQuickItem *item) override;
-
-signals:
+	Option*		createOption()								override;
+	bool		isOptionValid(Option* option)				override;
+	bool		isJsonValid(const Json::Value& optionValue) override;
+	Option*		boundTo()									override { return _option; }
+	void		resetQMLItem(QQuickItem *item)				override;
+	void		rScriptDoneHandler(const QString& result)	override;
 
 private slots:
 	void textChangedSlot();
 
 private:
 	void _setOptionValue(Option* option, QString& text);
+	void _setFormulaOptions(std::string formula, bool valid = false);
+	void _setFormulaValidated(bool valid);
+	bool _formulaResultInBounds(double result);
 
 	QString					  _getPercentValue();
 	QString					  _getIntegerArrayValue();
 	QString					  _getDoubleArrayValue();
+	QString					  _getFormulaValue();
 
 	TextInputType			  _inputType;
 	OptionInteger			* _integer			= nullptr;
@@ -66,6 +69,7 @@ private:
 	OptionDoubleArray		* _doubleArray		= nullptr;
 	OptionNumber			* _number			= nullptr;
 	OptionString			* _string			= nullptr;
+	OptionTerm				* _formula			= nullptr;
 	OptionComputedColumn	* _computedColumn	= nullptr;
 	Option					* _option			= nullptr;
 	QString					  _value;

@@ -22,8 +22,6 @@
 #include <QQmlProperty>
 #include <QQuickItem>
 
-using namespace std;
-
 BoundQMLTextInput::BoundQMLTextInput(QQuickItem* item, AnalysisForm* form)
 	: QMLItem(item, form)
 	, QObject(form)
@@ -43,6 +41,7 @@ void BoundQMLTextInput::initTextInput()
 	else if (type == "doubleArray")		_inputType = TextInputType::DoubleArrayInputType;
 	else if (type == "computedColumn")	_inputType = TextInputType::ComputedColumnType;
 	else if (type == "addColumn")		_inputType = TextInputType::AddColumnType;
+	else if (type == "formula")			_inputType = TextInputType::FormulaType;
 	else								_inputType = TextInputType::StringInputType;
 
 	if (_item)
@@ -64,7 +63,7 @@ QString BoundQMLTextInput::_getPercentValue()
 QString BoundQMLTextInput::_getIntegerArrayValue()
 {
 	QString value;
-	vector<int> intValues = _integerArray->value();
+	std::vector<int> intValues = _integerArray->value();
 	bool first  = true;
 	for (int intValue : intValues)
 	{
@@ -80,7 +79,7 @@ QString BoundQMLTextInput::_getIntegerArrayValue()
 QString BoundQMLTextInput::_getDoubleArrayValue()
 {
 	QString value;
-	vector<double> doubleValues = _doubleArray->value();
+	std::vector<double> doubleValues = _doubleArray->value();
 	bool first  = true;
 	for (double doubleValue : doubleValues)
 	{
@@ -155,6 +154,13 @@ void BoundQMLTextInput::bindTo(Option *option)
 		_option = _computedColumn = dynamic_cast<OptionComputedColumn *>(option);
 		_value	= QString::fromStdString(_computedColumn->value());
 		break;
+	case TextInputType::FormulaType:
+		_formula = dynamic_cast<OptionTerm *>(option);
+		if (!_formula)
+			_formula = new OptionTerm();
+		_option = _formula;
+		_value = _getFormulaValue();
+		break;
 
 	default:
 		_string = dynamic_cast<OptionString *>(option);
@@ -171,7 +177,7 @@ void BoundQMLTextInput::bindTo(Option *option)
 Option *BoundQMLTextInput::createOption()
 {
 	Option* option = nullptr;
-	_value = getItemProperty("value").toString();
+
 	switch (_inputType)
 	{
 	case TextInputType::IntegerInputType:		option = new OptionInteger();			break;
@@ -179,6 +185,7 @@ Option *BoundQMLTextInput::createOption()
 	case TextInputType::PercentIntputType:		option = new OptionNumber();			break;
 	case TextInputType::IntegerArrayInputType:	option = new OptionIntegerArray();		break;
 	case TextInputType::DoubleArrayInputType:	option = new OptionDoubleArray();		break;
+	case TextInputType::FormulaType:			option = new OptionTerm();				break;
 	case TextInputType::ComputedColumnType:
 	{
 		option = new OptionComputedColumn();
@@ -199,7 +206,16 @@ Option *BoundQMLTextInput::createOption()
 	default:									option = new OptionString();			break;
 	}
 
-	_setOptionValue(option, _value);
+	_value = getItemProperty("value").toString();
+	if(_inputType != TextInputType::FormulaType)
+		_setOptionValue(option, _value);
+	else
+	{
+		if(_formula != option)
+			_formula = dynamic_cast<OptionTerm*>(option);
+
+		_setFormulaOptions(fq(_value), true);
+	}
 	return option;
 }
 
@@ -211,9 +227,10 @@ bool BoundQMLTextInput::isOptionValid(Option *option)
 	case TextInputType::NumberInputType:		return dynamic_cast<OptionNumber*>(option)			!= nullptr;
 	case TextInputType::PercentIntputType:		return dynamic_cast<OptionNumber*>(option)			!= nullptr;
 	case TextInputType::IntegerArrayInputType:	return dynamic_cast<OptionIntegerArray*>(option)	!= nullptr;
-	case TextInputType::DoubleArrayInputType:	return dynamic_cast<OptionDoubleArray*>(option)	!= nullptr;
+	case TextInputType::DoubleArrayInputType:	return dynamic_cast<OptionDoubleArray*>(option)		!= nullptr;
 	case TextInputType::AddColumnType:
 	case TextInputType::ComputedColumnType:		return dynamic_cast<OptionComputedColumn*>(option)	!= nullptr;
+	case TextInputType::FormulaType:			return dynamic_cast<OptionTerm*>(option)			!= nullptr;
 	case TextInputType::StringInputType:
 	default:									return dynamic_cast<OptionString*>(option)			!= nullptr;
 	}
@@ -243,6 +260,7 @@ bool BoundQMLTextInput::isJsonValid(const Json::Value &optionValue)
 	case TextInputType::PercentIntputType:		valid = (optionValue.type() == Json::intValue || optionValue.type() == Json::realValue) ;	break;
 	case TextInputType::IntegerArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
 	case TextInputType::DoubleArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
+	case TextInputType::FormulaType:			valid = (optionValue.type() == Json::arrayValue);			break;
 	case TextInputType::StringInputType:
 	default:									valid = (optionValue.type() == Json::stringValue);			break;
 	}
@@ -256,6 +274,72 @@ void BoundQMLTextInput::resetQMLItem(QQuickItem *item)
 	setItemProperty("value", _value);
 	if (_item)
 		QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
+}
+
+void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
+{
+	bool succes;
+	double val = result.toDouble(&succes);
+
+	if (!succes)
+		showControlErrorTemporary("The expression did not return a number.");
+	else
+		succes = _formulaResultInBounds(val);
+
+	if (succes) {
+		_item->setProperty("hasScriptError", false);
+
+	} else {
+		_item->setProperty("hasScriptError", true);
+		_item->setProperty("infoText", result);
+	}
+	_setFormulaValidated(succes);
+}
+
+void BoundQMLTextInput::_setFormulaOptions(std::string formula, bool valid)
+{
+	if (_formula)
+		_formula->setValue( { formula, valid ? "T" : "F"});
+}
+
+void BoundQMLTextInput::_setFormulaValidated(bool valid)
+{
+	if (_formula)
+	{
+		auto oldVal = _formula->term();
+		oldVal[1] = valid ? "T" : "F";
+		_formula->setValue(oldVal);
+	}
+}
+
+bool BoundQMLTextInput::_formulaResultInBounds(double result)
+{
+	double min		= getItemProperty("min").toDouble();
+	double max		= getItemProperty("max").toDouble();
+	bool inclusive	= getItemProperty("inclusive").toBool();
+
+	bool tooSmall = inclusive ? result < min : result <= min;
+	bool tooLarge = inclusive ? result > max : result >= max;
+	bool inBounds = !(tooSmall || tooLarge);
+
+	if (!inBounds)
+	{
+		QString end;
+		if (tooSmall)	end = (inclusive ? "&ge; " : "&gt; ") + getItemProperty("min").toString();
+		else			end = (inclusive ? "&le; " : "&lt; ") + getItemProperty("max").toString();
+		showControlErrorTemporary("The result (" + QString::number(result) + ") must be " + end);
+	}
+
+	return inBounds;
+}
+
+QString	BoundQMLTextInput::_getFormulaValue()
+{
+	auto oldVal = _formula->term();
+	if (oldVal.size() > 0)
+		return tq(oldVal[0]);
+	else
+		return QString();
 }
 
 void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
@@ -314,6 +398,10 @@ void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 		dynamic_cast<OptionComputedColumn*>(option)->setValue(text.toStdString());
 		break;
 
+	case TextInputType::FormulaType:
+		//This is done in textChangedSlot
+		break;
+
 	default:
 		dynamic_cast<OptionString*>(option)->setValue(text.toStdString());
 		break;
@@ -323,6 +411,12 @@ void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 void BoundQMLTextInput::textChangedSlot()
 {
 	_value = getItemProperty("value").toString();
-	if (_option)
+	if (_inputType == TextInputType::FormulaType)
+	{
+		_setFormulaOptions(fq(_value));
+		runRScript("as.character(" + _value + ")", true);
+	}
+	else if (_option)
 		_setOptionValue(_option, _value);
+
 }
