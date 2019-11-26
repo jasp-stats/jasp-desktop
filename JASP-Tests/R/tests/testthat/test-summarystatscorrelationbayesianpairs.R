@@ -1,16 +1,28 @@
-context("Summary Statistics Bayesian Correlation Pairs")
+context("SummaryStatsCorrelationBayesianPairs")
 
-test_that("Main table results match", {
-  set.seed(0)
-  options <- analysisOptions("SummaryStatsCorrelationBayesianPairs")
-  options$correlationCoefficient <- "pearsonRho"
-  options$sampleSize             <- 51
-  options$pearsonRhoValue        <- 0.3
-  options$priorWidth             <- 2
-  options$bayesFactorType        <- "LogBF10"
-  options$hypothesis             <- "correlated"
-  results <- jasptools::run("SummaryStatsCorrelationBayesianPairs", "debug.csv", options)
+options <- jasptools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
+  options$pearsonRhoValue <- 0.7
+  options$plotBayesFactorRobustness <- TRUE
+  options$plotPriorAndPosterior <- TRUE
+  options$priorWidth <- 1.2
+  options$sampleSize <- 50
+  set.seed(1)
+  results <- jasptools::run("SummaryStatsCorrelationBayesianPairs", "test.csv", options)
   
-  table <- results[["results"]][["correlationTable"]][["data"]]
-  expect_equal_tables(table, list(0.0801325678537714, 0.3, 51, 0.0324477786167482))
-})
+  test_that("Bayesian Pearson Correlation table results match", {
+    table <- results[["results"]][["table"]][["data"]]
+    expect_equal_tables(table,
+                        list(973435.048301983, 50, 0.7, 1.53820662839905e-08))
+  })		
+  
+  test_that("Prior and Posterior plot matches", {		
+    plotName <- results[["results"]][["inferentialPlots"]][["PriorPosteriorPlot"]][["data"]]		
+    testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]		
+    expect_equal_plots(testPlot, "prior-and-posterior", dir="SummaryStatsCorrelationBayesianPairs")		
+  })		
+  
+  test_that("Bayes Factor Robustness Check plot matches", {		
+    plotName <- results[["results"]][["inferentialPlots"]][["BFrobustnessPlot"]][["data"]]		
+    testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]		
+    expect_equal_plots(testPlot, "bayes-factor-robustness-check", dir="SummaryStatsCorrelationBayesianPairs")
+  })
