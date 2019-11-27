@@ -299,9 +299,13 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 
 	_engineState = engineState::computeColumn;
 
-	std::string	computeColumnName = jsonRequest.get("columnName", "").asString();
-	std::string	computeColumnCode = jsonRequest.get("computeCode", "").asString();
-	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType", "").asString());
+	std::string	computeColumnName =						 jsonRequest.get("columnName",  "").asString();
+	std::string	computeColumnCode =						 jsonRequest.get("computeCode", "").asString();
+	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType",  "").asString());
+
+#ifdef JASP_COLUMN_ENCODE_ALL
+	computeColumnName = ColumnEncoder::encode(computeColumnName);
+#endif
 
 	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType);
 }
@@ -311,10 +315,10 @@ void Engine::runComputeColumn(const std::string & computeColumnName, const std::
 	Log::log() << "Engine::runComputeColumn()" << std::endl;
 
 	static const std::map<columnType, std::string> setColumnFunction = {
-		{columnType::scale,		".setColumnDataAsScale"},
-		{columnType::ordinal,		".setColumnDataAsOrdinal"},
-		{columnType::nominal,		".setColumnDataAsNominal"},
-		{columnType::nominalText,	".setColumnDataAsNominalText"}};
+		{columnType::scale,			".setColumnDataAsScale"			},
+		{columnType::ordinal,		".setColumnDataAsOrdinal"		},
+		{columnType::nominal,		".setColumnDataAsNominal"		},
+		{columnType::nominalText,	".setColumnDataAsNominalText"	}};
 
 	std::string computeColumnCodeComplete	= "local({;calcedVals <- {"+computeColumnCode +"};\n"  "return(toString(" + setColumnFunction.at(computeColumnType) + "('" + computeColumnName +"', calcedVals)));})";
 	std::string computeColumnResultStr		= rbridge_evalRCodeWhiteListed(computeColumnCodeComplete);
