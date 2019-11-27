@@ -65,6 +65,13 @@ getEmptyTheme <- function() {
     axis.ticks.length = unit(0,"null")
   )
 
+  # t <- ggplot2::theme_void() +
+  #     theme(
+  #       panel.spacing = grid::unit(0,"null"),
+  #       plot.margin   = rep(grid::unit(0,"null"), 4)
+  #     )
+  # if (getGraphOption("debug"))
+  # t <- t + ggplot2::theme(rect = ggplot2::element_rect(colour = "red", size = 1, linetype = 1, fill = "transparent"))
   return(t)
 }
 
@@ -72,9 +79,9 @@ getEmptyPlot <- function(axes = FALSE) {
 
 
   if (axes) {
-  	stop("Not implemented")
+    stop("Not implemented")
   } else {
-		ggplot2::ggplot() + ggplot2::geom_blank() + getEmptyTheme()
+    ggplot2::ggplot() + ggplot2::geom_blank() + getEmptyTheme()
   }
 
 }
@@ -95,21 +102,21 @@ draw2Lines <- function(l, x = 0.5, parse = needsParsing(l), align = c("center", 
     stop("incorrect class for align. Expected character of numeric.")
   }
 
-	nLabels <- length(l)
-	y <- rep(.5, nLabels)
-	diff <- seq(0, nLabels * 0.15, length.out = nLabels)
-	diff <- diff - mean(diff)
-	y <- y + diff
-	dfText <- data.frame(
-	  x = x,
-	  y = y,
-	  l = l
-	)
+  nLabels <- length(l)
+  y <- rep(.5, nLabels)
+  diff <- seq(0, nLabels * 0.15, length.out = nLabels)
+  diff <- diff - mean(diff)
+  y <- y + diff
+  dfText <- data.frame(
+    x = x,
+    y = y,
+    l = l
+  )
   return(
     ggplot2::ggplot(data = dfText, ggplot2::aes(x = .data$x, y = .data$y, label = .data$l)) +
       ggplot2::geom_text(size = scaleFont * getGraphOption("fontsize"), parse = parse, hjust = hjust) +
       ggplot2::scale_y_continuous(limits = c(0, 1)) +#, expand = c(0, 0)) +
-    	ggplot2::scale_x_continuous(limits = c(0, 1)) +#, expand = c(0, 0)) +
+      ggplot2::scale_x_continuous(limits = c(0, 1)) +#, expand = c(0, 0)) +
       # ggplot2::coord_fixed(ratio = 1) +
       getEmptyTheme()
   )
@@ -118,7 +125,7 @@ draw2Lines <- function(l, x = 0.5, parse = needsParsing(l), align = c("center", 
 errCheckPlotPriorAndPosterior <- function(x, length = 1L, nullOk = TRUE) {
   if (is.null(x))
     return(!nullOk)
-	return(length(x) != length || !is.numeric(x) || anyNA(x))
+  return(length(x) != length || !is.numeric(x) || anyNA(x))
 }
 
 errCheckPlots <- function(dfLines, dfPoints = NULL, CRI = NULL, median = NULL, BF = NULL) {
@@ -224,32 +231,8 @@ makeBFlabels <- function(bfSubscripts, BFvalues, subs = NULL, bfTxt = NULL) {
 #'
 #' @export
 hypothesis2BFtxt <- function(hypothesis = c("equal", "smaller", "greater")) {
-  if (is.null(hypothesis)) {
-    hypothesis <- "equal"
-  } else {
-    hypothesis <- hypothesis[1]
 
-    # Note(Alexander): we can make these lists more generic
-    #
-    hypTwoSided <- c("two.sided", "twoSided", "two-sided", "equal", #General R
-                     "notEqualToTestValue", "groupsNotEqual", #t-tests/binomial
-                     "correlated")
-    hypPlusSided <- c("greater", "plusSided",
-                      "greaterThanTestValue", "groupOneGreater",
-                      "correlatedPositively", "right", "positive")
-    hypMinSided <- c("less", "minSided",
-                     "lessThanTestValue", "groupTwoGreater",
-                     "correlatedNegatively", "left", "negative")
-
-    if (hypothesis %in% hypTwoSided) {
-      hypothesis <- "equal"
-    } else if (hypothesis %in% hypPlusSided) {
-      hypothesis <- "greater"
-    } else if (hypothesis %in% hypMinSided) {
-      hypothesis <- "smaller"
-    }
-  }
-
+  hypothesis <- match.arg(hypothesis)
   return(
     switch(
       hypothesis,
@@ -269,21 +252,30 @@ hypothesis2BFtxt <- function(hypothesis = c("equal", "smaller", "greater")) {
   )
 }
 
-#' @title Obtain strings of expressions for common Bayes factor types depending on the hypothesis.
-#' @param bfType Bayes factor type
-#' @param hypothesis hypothesis
-#'
+#' @export
+pizzaTxtFromBF <- function(x) {
+
+  if (grepl("+", x, fixed = TRUE)) {
+    pizzaTxt = c("data | H0", "data | H+")
+  } else if(grepl("-", x, fixed = TRUE)) {
+    pizzaTxt = c("data | H0", "data | H-")
+  } else {
+    pizzaTxt = c("data | H0", "data | H1")
+  }
+  pizzaTxt
+}
+
 #' @export
 getBFSubscripts <- function(bfType = c("BF01", "BF10", "LogBF10"), hypothesis = c("equal", "smaller", "greater")) {
 
   bfType <- match.arg(bfType)
-  hypothesis <- .matchHypothesis(hypothesis)
+  hypothesis <- match.arg(hypothesis)
 
   if (bfType == "BF01") {
     subscripts <- switch (hypothesis,
-      "equal"   = c("BF[1][0]",   "BF[0][1]"),
-      "smaller" = c("BF['-'][0]", "BF[0]['-']"),
-      "greater" = c("BF['+'][0]", "BF[0]['+']")
+                          "equal"   = c("BF[1][0]",   "BF[0][1]"),
+                          "smaller" = c("BF['-'][0]", "BF[0]['-']"),
+                          "greater" = c("BF['+'][0]", "BF[0]['+']")
     )
     # subscripts <- switch (hypothesis,
     #   "equal"   = c("BF[0][1]",   "BF[1][0]"),
@@ -292,15 +284,15 @@ getBFSubscripts <- function(bfType = c("BF01", "BF10", "LogBF10"), hypothesis = 
     # )
   } else if (bfType == "BF10") {
     subscripts <- switch (hypothesis,
-      "equal"   = c("BF[1][0]",   "BF[0][1]"),
-      "smaller" = c("BF['-'][0]", "BF[0]['-']"),
-      "greater" = c("BF['+'][0]", "BF[0]['+']")
+                          "equal"   = c("BF[1][0]",   "BF[0][1]"),
+                          "smaller" = c("BF['-'][0]", "BF[0]['-']"),
+                          "greater" = c("BF['+'][0]", "BF[0]['+']")
     )
   } else {
     subscripts <- switch (hypothesis,
-      "equal"   = c("log(BF[0][1])",   "log(BF[1][0])"    ),
-      "smaller" = c("log(BF[0]['-'])", "log(BF['-'][0])"),
-      "greater" = c("log(BF[0]['+'])", "log(BF['+'][0])")
+                          "equal"   = c("log(BF[0][1])",   "log(BF[1][0])"    ),
+                          "smaller" = c("log(BF[0]['-'])", "log(BF['-'][0])"),
+                          "greater" = c("log(BF[0]['+'])", "log(BF['+'][0])")
     )
   }
   return(parseThis(subscripts))
@@ -323,8 +315,8 @@ makeBFwheelAndText <- function(BF, bfSubscripts, pizzaTxt, drawPizzaTxt = is.nul
 
   labels <- makeBFlabels(bfTxt = bfSubscripts, BFvalues = BFvalues)
   return(list(
-      gTextBF = draw2Lines(labels, x = 0.7),
-      gWheel = drawBFpizza(
+    gTextBF = draw2Lines(labels, x = 0.7),
+    gWheel = drawBFpizza(
       dat = data.frame(y = c(1, BF01)),
       labels = if (drawPizzaTxt) pizzaTxt else NULL
     )
@@ -368,9 +360,9 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
                                   CRItxt = "95% CI: ", medianTxt = "Median:",
                                   ...) {
 
-	errCheckPlots(dfLines, dfPoints, CRI, median, BF)
+  errCheckPlots(dfLines, dfPoints, CRI, median, BF)
   bfType <- match.arg(bfType)
-  hypothesis <- .matchHypothesis(hypothesis)
+  hypothesis <- match.arg(hypothesis)
 
   emptyPlot <- list()
 
@@ -386,9 +378,9 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
   else
     aes(x = .data$x, y = .data$y, group = .data$g, linetype = .data$g)
   g <- ggplot2::ggplot(data = dfLines, mapping) +
-      geom_line() +
-      scale_x_continuous(xName) +
-      scale_y_continuous(yName, breaks = yBreaks, limits = c(0, newymax))
+    geom_line() +
+    scale_x_continuous(xName) +
+    scale_y_continuous(yName, breaks = yBreaks, limits = c(0, newymax))
 
   if (!is.null(lineColors) && is.character(lineColors))
     g <- g + ggplot2::scale_color_manual(values = lineColors)
@@ -400,12 +392,12 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
 
   labelsCRI <- NULL
   if (!is.null(CRI)) {
-  	dfCI <- data.frame(
-  		xmin = CRI[1],
-  		xmax = CRI[2],
-  		y    = (newymax - obsYmax) / 2 + obsYmax
-  	)
-  	maxheight <- (newymax - dfCI$y)
+    dfCI <- data.frame(
+      xmin = CRI[1],
+      xmax = CRI[2],
+      y    = (newymax - obsYmax) / 2 + obsYmax
+    )
+    maxheight <- (newymax - dfCI$y)
 
     g <- g + ggplot2::geom_errorbarh(
       data = dfCI, ggplot2::aes(y = .data$y, xmin = .data$xmin, xmax = .data$xmax), inherit.aes = FALSE,
@@ -420,14 +412,14 @@ PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NUL
   }
 
   if (!is.null(median)) {
-  	labelsCRI <- c(labelsCRI, paste(medianTxt, formatC(median, 3, format = "f")))
+    labelsCRI <- c(labelsCRI, paste(medianTxt, formatC(median, 3, format = "f")))
   }
 
   if (length(labelsCRI) > 0) {
 
-  	gTextCI <- draw2Lines(labelsCRI, x = 1, align = "right")
+    gTextCI <- draw2Lines(labelsCRI, x = 1, align = "right")
   } else {
-  	gTextCI <- emptyPlot
+    gTextCI <- emptyPlot
   }
 
   xr   <- range(dfLines$x)
