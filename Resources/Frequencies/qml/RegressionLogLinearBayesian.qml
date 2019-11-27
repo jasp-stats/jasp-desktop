@@ -25,12 +25,12 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList { name: "allVariablesList" }		
-        AssignedVariablesList { name: "counts";	 title: qsTr("Counts (optional)");	singleVariable: true;	suggestedColumns:["scale", "ordinal"]}
+		AssignedVariablesList { name: "counts";	 title: qsTr("Counts (optional)");	singleVariable: true;	suggestedColumns:["scale", "ordinal"]}
 		AssignedVariablesList { name: "factors"; title: qsTr("Factors"); itemType: "fixedFactors"; suggestedColumns: ["ordinal", "nominal"] }
 	}
 	
 	columns: 3
-    BayesFactorType { }
+	BayesFactorType { }
 
 	Group
 	{
@@ -87,7 +87,7 @@ Form
 			{
 				indent: true;
 				enabled: regressionCoefficientsSubmodel.checked
-                CheckBox
+				CheckBox
 				{
 					name: "regressionCoefficientsSubmodelCredibleIntervals"; label: qsTr("Credible intervals")
 					CIField { name: "regressionCoefficientsSubmodelCredibleIntervalsInterval"; label: qsTr("Interval") }
@@ -111,5 +111,8 @@ Form
 				IntegerField { name: "fixedSamplesNumber"; label: qsTr("No. samples"); defaultValue: 10000; fieldWidth: 60 }
 			}
 		}
+
+		SetSeed{}
+
 	}
 }

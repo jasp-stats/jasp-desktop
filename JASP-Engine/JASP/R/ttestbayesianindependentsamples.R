@@ -134,6 +134,7 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
 
         } else {
 
+          .setSeedJASP(options)
           r <- try(.rankSumGibbsSampler(
             x = group1, y = group2, nSamples = options[["wilcoxonSamplesNumber"]], nBurnin = 0,
             cauchyPriorParameter = options[["priorWidth"]]

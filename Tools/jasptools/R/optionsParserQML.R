@@ -21,7 +21,8 @@
     "ExpanderButton",
     "BayesFactorType",
     "SubjectivePriors",
-    "ContrastsList"
+    "ContrastsList",
+    "SetSeed"
   )
 
   fileSize <- file.info(file)$size 
@@ -70,6 +71,12 @@
   regMatch <- "ContrastsList\\{"
   if (grepl(regMatch, fileContents)) {
     result[["contrast"]] <- "none"
+  }
+  
+  regMatch <- "SetSeed\\{"
+  if (grepl(regMatch, fileContents)) {
+    result[["setSeed"]] <- FALSE
+    result[["seed"]] <- 1
   }
   
   regMatch <- "SubjectivePriors\\{"

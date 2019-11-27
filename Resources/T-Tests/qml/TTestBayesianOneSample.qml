@@ -94,6 +94,9 @@ Form
 		RadioButton { value: "excludeListwise";				label: qsTr("Exclude cases listwise")							}
 	}
 	
+
+	SetSeed{}
+
 	SubjectivePriors { }
 	
 }
