@@ -63,19 +63,9 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   # Conduct Bayesian linear regression for H1
   regressionResultsH1 <- BayesFactor::linearReg.R2stat(N = N, p = nCovariatesH1, R2 = rSquaredH1, rscale = rScale)
   LogBF10_H1          <- regressionResultsH1$bf
-  BFlist_H1           <- list(BF10    = exp(LogBF10_H1),
-                              BF01    = 1/exp(LogBF10_H1),
-                              LogBF10 = LogBF10_H1)
   
   # Add results to results object
   results[["tableInfo"]]       <- tableInfo
-  results[["regressionTable"]] <- list(
-    sampleSize        = N,
-    nCovariates       = nCovariatesH1,
-    R2                = rSquaredH1,
-    BF                = BFlist_H1[[options$bayesFactorType]],
-    error             = regressionResultsH1[["properror"]]
-  )
   
   # If specified: conduct Bayesian linear regression for H0
   if(nullModelSpecified) {
@@ -85,27 +75,40 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
     
     # Adjust Bayes factor lists for Allow Model Comparison
     LogBF10             <- LogBF10_H1 - LogBF10_H0
-    LogBF01             <- LogBF10_H0 - LogBF10_H1
     BFlist_H1           <- list(BF10    = exp(LogBF10),
                                 BF01    = 1/exp(LogBF10),
                                 LogBF10 = LogBF10)
-    BFlist_H0           <- list(BF10    = exp(LogBF01),
-                                BF01    = 1/exp(LogBF01),
-                                LogBF10 = LogBF01)
     
     # Add results to results object
     results[["regressionTable"]] <- data.frame(
       sampleSize        = c("Null model"                        , "Alternative model"),
       nCovariates       = c(nCovariatesH0                       , nCovariatesH1),
       R2                = c(rSquaredH0                          , rSquaredH1),
-      BF                = c(BFlist_H0[[options$bayesFactorType]], BFlist_H1[[options$bayesFactorType]]),
+      BF                = c(BFlist_H1[["BF01"]]                 , BFlist_H1[["BF10"]]),
       error             = c(regressionResultsH0[["properror"]]  , regressionResultsH1[["properror"]])
     )
-    results[["BFlist"]] <- BFlist_H0
+    
+    # if user selects LogBF10, log the values in the table
+    if(options$bayesFactorType == "LogBF10"){
+      results[["regressionTable"]][["BF"]] <- log(results[["regressionTable"]][["BF"]])
+    }
+    
   } else {
-    results[["BFlist"]] <- BFlist_H1
+    # null model is not specified
+    BFlist_H1           <- list(BF10    = exp(LogBF10_H1),
+                                BF01    = 1/exp(LogBF10_H1),
+                                LogBF10 = LogBF10_H1)
+    results[["regressionTable"]] <- list(
+      sampleSize        = N,
+      nCovariates       = nCovariatesH1,
+      R2                = rSquaredH1,
+      BF                = BFlist_H1[[options$bayesFactorType]],
+      error             = regressionResultsH1[["properror"]]
+    )
   }
-
+  
+  results[["BFlist"]] <- BFlist_H1
+  
   # Save results to state
   mainContainer[["stateSummaryStatsRegressionResults"]] <- createJaspState(results)
   
@@ -241,7 +244,6 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   BF10w     <- computeBF(options, 1)
   BF10ultra <- computeBF(options, sqrt(2))
   
-  BF10post  <- summaryStatsRegressionResults[["BFlist"]][["BF10"]]
   maxBF10 <- max(BF10)
   maxBFrVal <- rValues[which.max(BF10)]
   
@@ -250,13 +252,13 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
     y = log(BF10)
   )
   
-  BF10user <- 1/BF10post
   if (BFH1H0) {
     bfType <- "BF10"
+    BF10user <- summaryStatsRegressionResults[["BFlist"]][["BF10"]]
   } else {
     bfType <- "BF01"
     dfLines$y <- -dfLines$y
-    BF10user  <- 1 / BF10user
+    BF10user  <- summaryStatsRegressionResults[["BFlist"]][["BF01"]]
     maxBF10   <- max(1/BF10)
     maxBFrVal <- rValues[which.max(1/BF10)]
     BF10w     <- 1 / BF10w
