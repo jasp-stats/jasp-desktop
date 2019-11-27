@@ -84,8 +84,8 @@ JASPControl
 			{
 				switch(child.controlType)
 				{
-				case "RadioButton":			child.buttonGroup = buttonGroup;	break;
-				case "RadioButtonGroup":										break;
+				case 5:			child.buttonGroup = buttonGroup;	break;
+				case 6:										break;
 				default:					linkRadioButtons(child);			break;
                 }
 			} else
