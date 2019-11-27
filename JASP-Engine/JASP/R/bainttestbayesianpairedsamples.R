@@ -324,30 +324,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     if (!ready || bainContainer$getError())
       return()
 
-    descriptivesTable$setExpectedSize(length( c(options[["pairs"]], unique(unlist(options[["pairs"]])) )))
-
-    # Bain does not provide descriptives for individual variables, so calculate them manually.
-    # Therefore, descriptives for individual variables in this table might differ slightly from that of the one sample t test
-    
-    for (variable in unique(unlist(options[["pairs"]]))) {
-
-      if (variable == "")
-          next
-
-      variableData <- dataset[[.v(variable)]]
-
-      N <- length(variableData)
-      mu <- mean(variableData)
-      sd <- sd(variableData)
-      se <- sd / sqrt(N)
-
-      alpha <- 1 - (1 - options[["credibleInterval"]]) / 2
-      ciLower <- mu - qnorm(alpha) * se
-      ciUpper <- mu - qnorm(alpha) + se
-
-      row <- data.frame(v = variable, N = N, mean = mu, sd = sd, se = se, lowerCI = ciLower, upperCI = ciUpper)
-      descriptivesTable$addRows(row)
-    }
+    descriptivesTable$setExpectedSize(length(options[["pairs"]]))
 
     for (pair in options[["pairs"]]) {
 
