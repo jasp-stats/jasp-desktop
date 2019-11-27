@@ -243,12 +243,16 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
     newState                        <- list()
     newState[["figures"]]           <- jaspResultsCPP$getPlotObjectsForState()
     newState[["other"]]             <- jaspResultsCPP$getOtherObjectsForState()
+
+print('newState[["other"]]:')
+print(newState[["other"]])
+
     jaspResultsCPP$relativePathKeep <- .saveState(newState)$relativePath
 
     returnThis <- list(keep=jaspResultsCPP$getKeepList()) #To keep the old keep-code functional we return it like this
 
     jaspResultsCPP$complete() #sends last results to desktop, changes status to complete and saves results to json in tempfiles
-		
+
 		json <- try({ toJSON(returnThis) })
 		if (class(json) == "try-error")
 			return(paste("{ \"status\" : \"error\", \"results\" : { \"error\" : 1, \"errorMessage\" : \"", "Unable to jsonify", "\" } }", sep=""))

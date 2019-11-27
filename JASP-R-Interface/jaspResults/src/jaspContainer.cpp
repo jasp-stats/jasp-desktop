@@ -398,7 +398,10 @@ void jaspContainer::checkDependenciesChildren(Json::Value currentOptions)
 			removeThese.push_back(d.first);
 
 	for(auto & removeThis : removeThese)
+	{
+		delete _data[removeThis];
 		_data.erase(removeThis);
+	}
 }
 
 void jaspContainer::setError()

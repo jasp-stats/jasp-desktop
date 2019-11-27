@@ -364,14 +364,14 @@ void jaspResults::addSerializedOtherObjsForStateFromJaspObject(jaspObject * obj,
 {
 	if(obj->getType() == jaspObjectType::state)
 	{
-		jaspState * state				= (jaspState*)obj; //If other objects are needed this code can be more general
+		jaspState * state				= (jaspState*)obj; //If other objects are needed this code can be generalized
 
 		if(objectExistsInEnv(state->_envName))
 			cumulativeList[state->_envName]	= state->getObject();
 	}
 
-	for(auto c : obj->getChildren())
-		addSerializedOtherObjsForStateFromJaspObject(c, cumulativeList);
+	for(auto child : obj->getChildren())
+		addSerializedOtherObjsForStateFromJaspObject(child, cumulativeList);
 }
 
 void jaspResults::fillEnvironmentWithStateObjects(Rcpp::List state)

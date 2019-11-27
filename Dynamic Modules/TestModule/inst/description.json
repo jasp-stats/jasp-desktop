@@ -31,6 +31,11 @@
 			"function":							"testFootnotesTableFunc"
 		},
 		{
+			"title":							"Test jaspState",
+			"qml":								"testState.qml",
+			"function":							"testStateFunc"
+		},
+		{
 			"title": "-"
 		},
 		{ 
