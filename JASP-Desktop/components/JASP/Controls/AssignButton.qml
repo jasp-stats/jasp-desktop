@@ -54,14 +54,15 @@ Button
 	function setState()
 	{
 		var result = false;
-		if (source.selectedItems.length > 0)
+		if (source.model && source.model.selectedItems().length > 0)
 		{
 			if (target.allowedColumns.length > 0)
 			{
 				result = true;
-				for (var i = 0; i < source.selectedItemsTypes.length; i++)
+				var sourceSelectedItemsTypes = source.model.selectedItemsTypes()
+				for (var i = 0; i < sourceSelectedItemsTypes.length; i++)
 				{
-					var itemType = source.selectedItemsTypes[i];
+					var itemType = sourceSelectedItemsTypes[i];
 					if (!target.allowedColumns.includes(itemType))
 						result = false;
 				}
@@ -72,9 +73,9 @@ Button
 
 		if (interactionControl)
 		{
-			if (target.addInteractionOptions)
+			if (target.addInteractionOptions && source.model)
 			{
-				var nb = source.selectedItems.length
+				var nb = source.model.selectedItems().length
 				interactionControl.enabled = result
 				var enabledOptions = [ true, nb > 1, nb > 2, nb > 3, nb > 4, true ]
 				interactionControl.enabledOptions = enabledOptions

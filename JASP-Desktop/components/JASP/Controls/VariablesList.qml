@@ -43,7 +43,6 @@ JASPListControl
 	property var	allowedColumns:		[]
 	property bool	dropModeInsert:		dropMode === "Insert"
 	property bool	dropModeReplace:	dropMode === "Replace"
-	property var	selectedItemsTypes:	[]
 	property var	suggestedColumns:	[]
 	property bool	showElementBorder:	false
 	property bool	dragOnlyVariables:	false
@@ -63,50 +62,31 @@ JASPListControl
 
 	property int	startShiftSelected:	0
 	property int	endShiftSelected:	-1
-	property var	selectedItems:		[]
 	property bool	mousePressed:		false
 	property bool	shiftPressed:		false
 	property var	draggingItems:		[]
 	property var	itemContainingDrag
+	property string	searchKeys:			""
 	
 	signal itemDoubleClicked(int index);
 	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
 	signal hasSelectedItemsChanged();
 	signal draggingChanged(var context, bool dragging);
 
-	function setSelectedItems()
-	{
-		var items = variablesList.getExistingItems()
-		variablesList.selectedItemsTypes = []
-		for (var i = 0; i < items.length; i++)
-		{
-			var item = items[i]
-			if (variablesList.selectedItems.includes(item.rank))
-			{
-				item.selected = true
-				if (!variablesList.selectedItemsTypes.includes(item.columnType))
-					variablesList.selectedItemsTypes.push(item.columnType)
-			}
-			else
-				item.selected = false;
-		}
-
-		hasSelectedItemsChanged();
-	}
-
 	function setEnabledState(source, dragging)
 	{
 		var result = !dragging;
 		if (dragging)
 		{
-			if (source.selectedItems.length > 0)
+			if (source.model.selectedItems().length > 0)
 			{
 				if (variablesList.allowedColumns.length > 0)
 				{
 					result = true;
-					for (var i = 0; i < source.selectedItemsTypes.length; i++)
+					var sourceSelectedItemsTypes = source.model.selectedItemsTypes()
+					for (var i = 0; i < sourceSelectedItemsTypes.length; i++)
 					{
-						var itemType = source.selectedItemsTypes[i];
+						var itemType = sourceSelectedItemsTypes[i];
 						if (!variablesList.allowedColumns.includes(itemType))
 							result = false;
 					}
@@ -124,11 +104,12 @@ JASPListControl
 
 	function moveSelectedItems(target)
 	{
-		if (variablesList.selectedItems.length === 0) return;
+		var selectedItems = variablesList.model.selectedItems()
+		if (selectedItems.length === 0) return;
 
 		var assignOption = (target && target.interactionControl) ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
 		itemsDropped(selectedItems, target, -1, assignOption);
-		variablesList.clearSelectedItems(true);
+		//variablesList.clearSelectedItems(true);
 	}
 
 
@@ -151,29 +132,21 @@ JASPListControl
 
 	function addSelectedItem(itemRank)
 	{
-		if (selectedItems.includes(itemRank))
-			return;
-
-		selectedItems.push(itemRank);
-		selectedItems.sort();
-		variablesList.setSelectedItems()
+		variablesList.model.selectItem(itemRank, true);
+		hasSelectedItemsChanged();
 	}
 
 	function removeSelectedItem(itemRank)
 	{
-		var index = selectedItems.indexOf(itemRank)
-		if (index >= 0)
-		{
-			selectedItems.splice(index, 1);
-			variablesList.setSelectedItems()
-		}
+		variablesList.model.selectItem(itemRank, false);
+		hasSelectedItemsChanged();
 	}
 
 	function clearSelectedItems(emitSignal)
 	{
-		selectedItems = [];
+		variablesList.model.clearSelectedItems();
 		if (emitSignal)
-			variablesList.setSelectedItems()
+			hasSelectedItemsChanged();
 	}
 
 	function selectShiftItems(selected)
@@ -187,25 +160,9 @@ JASPListControl
 			endIndex = temp;
 		}
 
-		if (selected)
-		{
-			for (var i = startIndex; i <= endIndex; i++)
-			{
-				if (!variablesList.selectedItems.includes(i))
-					variablesList.selectedItems.push(i)
-			}
-			variablesList.selectedItems.sort();
-		}
-		else
-		{
-			for (var i = startIndex; i <= endIndex; i++)
-			{
-				var index = selectedItems.indexOf(i)
-				if (index >= 0)
-					selectedItems.splice(index, 1);
-			}
-		}
-		variablesList.setSelectedItems()
+		for (var i = startIndex; i <= endIndex; i++)
+			variablesList.model.selectItem(i, selected)
+		hasSelectedItemsChanged();
 	}
 
 		
@@ -370,11 +327,36 @@ JASPListControl
 			}
 		}
 	}
-			
+
+	Timer
+	{
+		id: searchKeysTimer
+		interval: 500
+		onTriggered: variablesList.searchKeys = ""
+	}
+
 	Keys.onPressed:
 	{
 		if (event.key === Qt.Key_Shift)
 			variablesList.shiftPressed = true;
+		else if (event.key >= Qt.Key_Exclam && event.key <= Qt.Key_ydiaeresis)
+		{
+			var currentSearchKeys = variablesList.searchKeys
+			var stringToSearch = (currentSearchKeys.length === 1 && currentSearchKeys === event.text) ? event.text : currentSearchKeys + event.text
+			var nextIndex = variablesList.model.searchTermWith(stringToSearch)
+
+			if (nextIndex >= 0)
+			{
+				listGridView.positionViewAtIndex(nextIndex, GridView.Contain)
+				if (listGridView.currentIndex !== nextIndex)
+				{
+					variablesList.clearSelectedItems();
+					listGridView.currentIndex = nextIndex;
+				}
+				searchKeysTimer.restart()
+				variablesList.searchKeys = stringToSearch
+			}
+		}
 	}
 
 	Keys.onReleased:
@@ -418,7 +400,7 @@ JASPListControl
 				
 				
 				property bool clearOtherSelectedItemsWhenClicked: false
-				property bool selected:				variablesList.selectedItems.includes(rank)
+				property bool selected:				model.selected
 				property bool isDependency:			variablesList.dependencyMustContain.indexOf(colName.text) >= 0
 				property bool dragging:				false
 				property int offsetX:				0
@@ -595,7 +577,7 @@ JASPListControl
 								for (var i = 0; i < items.length; i++)
 								{
 									var item = items[i];
-									if (!variablesList.selectedItems.includes(item.rank))
+									if (!variablesList.model.selectedItems().includes(item.rank))
 										continue;
 
 									if (item.rank !== index)
@@ -625,12 +607,13 @@ JASPListControl
 							if (itemRectangle.Drag.target)
 							{
 								var dropTarget = itemRectangle.Drag.target.parent
-								if (dropTarget.singleVariable && variablesList.selectedItems.length > 1)
+								var selectedItems = variablesList.model.selectedItems()
+								if (dropTarget.singleVariable && selectedItems.length > 1)
 									return;
 								
 								var variablesListName = variablesList.name
 								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : ""
-								itemsDropped(variablesList.selectedItems, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
+								itemsDropped(selectedItems, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
 								variablesList.clearSelectedItems(true);
 							}
 						}

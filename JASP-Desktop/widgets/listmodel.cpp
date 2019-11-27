@@ -38,6 +38,7 @@ QHash<int, QByteArray> ListModel::roleNames() const
 	if(setMe)
 	{
 		roles[TypeRole]				= "type";
+		roles[SelectedRole]			= "selected";
 		roles[ColumnTypeRole]		= "columnType";
 		roles[NameRole]				= "name";
 		roles[RowComponentsRole]	= "rowComponents";
@@ -145,6 +146,96 @@ void ListModel::setUpRowControls()
 	}
 }
 
+int ListModel::searchTermWith(QString searchString)
+{
+	int result = -1;
+	const Terms& myTerms = terms();
+	int startIndex = 0;
+	if (_selectedItems.length() > 0)
+	{
+		startIndex = _selectedItems.first();
+		if (searchString.length() == 1)
+			startIndex++;
+	}
+
+	if (searchString.length() > 0)
+	{
+		QString searchStringLower = searchString.toLower();
+		for (size_t i = 0; i < myTerms.size(); i++)
+		{
+			size_t index = (size_t(startIndex) + i) % myTerms.size();
+			const Term& term = myTerms.at(index);
+			if (term.asQString().toLower().startsWith(searchStringLower))
+			{
+				result = int(index);
+				break;
+			}
+		}
+	}
+
+	return result;
+}
+
+void ListModel::_addSelectedItemType(int _index)
+{
+	QString type = data(index(_index, 0), ListModel::ColumnTypeRole).toString();
+	if (!type.isEmpty())
+		_selectedItemsTypes.insert(type);
+}
+
+void ListModel::selectItem(int _index, bool _select)
+{
+	bool changed = false;
+	if (_select)
+	{
+		int i = 0;
+		for (; i < _selectedItems.length(); i++)
+		{
+			if (_selectedItems[i] == _index)
+				break;
+			else if (_selectedItems[i] > _index)
+			{
+				_selectedItems.insert(i, _index);
+				_addSelectedItemType(_index);
+				changed = true;
+			}
+		}
+		if (i == _selectedItems.length())
+		{
+			_selectedItems.append(_index);
+			_addSelectedItemType(_index);
+			changed = true;
+		}
+	}
+	else
+	{
+		if (_selectedItems.removeAll(_index) > 0)
+		{
+			_selectedItemsTypes.clear();
+			for (int i : _selectedItems)
+			{
+				QString type = data(index(i, 0), ListModel::ColumnTypeRole).toString();
+				if (!type.isEmpty())
+					_selectedItemsTypes.insert(type);
+			}
+			changed = true;
+		}
+	}
+
+	if (changed)
+		emit dataChanged(index(_index, 0), index(_index, 0));
+
+}
+
+void ListModel::clearSelectedItems()
+{
+	QList<int> selected = _selectedItems;
+	_selectedItems.clear();
+	_selectedItemsTypes.clear();
+	for (int i : selected)
+		emit dataChanged(index(i,0), index(i,0));
+}
+
 
 void ListModel::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 {
@@ -170,6 +261,13 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 		const Term& term = _terms.at(row_t);
 		return QVariant(term.asQString());
 	}
+	if (role == ListModel::SelectedRole)
+	{
+		if (_selectedItems.contains(row))
+			return true;
+		else
+			return false;
+	}
 	if (role == ListModel::RowComponentsRole)
 	{
 		if (_rowControlsMap.size() > 0)
@@ -189,8 +287,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 		if (term.size() != 1)
 			return QVariant();
 
-		QString variableTypeName = requestInfo(term, VariableInfo::VariableTypeName).toString();
-		return QVariant(variableTypeName);
+		return requestInfo(term, VariableInfo::VariableTypeName);
 	}
 	
 	return QVariant();

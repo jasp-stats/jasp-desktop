@@ -87,9 +87,14 @@ void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdrop
 	}
 	
 	QList<QVariant> vvindexes = vindexes.toList();
-	_tempIndexes.clear();
-	for (QVariant &index : vvindexes)
-		_tempIndexes.push_back(index.toInt());
+	if (!vvindexes.empty())
+	{
+		_tempIndexes.clear();
+		for (QVariant &index : vvindexes)
+			_tempIndexes.push_back(index.toInt());
+	}
+	else
+		_tempIndexes = vindexes.value<QList<int> >();
 	
 	_tempDropModel = dropModel;
 	_tempDropItemIndex = dropItemIndex;
