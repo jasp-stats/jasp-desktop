@@ -40,6 +40,7 @@ public:
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
+	void columnAboutToBeRemoved(int column);
 
 
 signals:

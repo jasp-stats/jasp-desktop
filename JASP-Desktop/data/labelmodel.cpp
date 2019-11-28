@@ -8,6 +8,7 @@ LabelModel::LabelModel(DataSetPackage * package) : DataSetTableProxy(package, pa
 	connect(_package,	&DataSetPackage::modelReset,					this, &LabelModel::columnNameChanged		);
 	connect(_package,	&DataSetPackage::allFiltersReset,				this, &LabelModel::allFiltersReset			);
 	connect(_package,	&DataSetPackage::labelFilterChanged,			this, &LabelModel::labelFilterChanged		);
+	connect(_package,	&DataSetPackage::columnAboutToBeRemoved,		this, &LabelModel::columnAboutToBeRemoved	);
 }
 
 bool LabelModel::labelNeedsFilter(size_t col)
@@ -107,4 +108,10 @@ void LabelModel::setVisible(bool visible)
 int LabelModel::dataColumnCount() const
 {
 	return _package->dataColumnCount();
+}
+
+void LabelModel::columnAboutToBeRemoved(int column)
+{
+	if(proxyParentColumn() == column)
+		setVisible(false);
 }

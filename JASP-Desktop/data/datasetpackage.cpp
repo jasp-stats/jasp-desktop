@@ -1313,7 +1313,7 @@ void DataSetPackage::removeColumn(std::string name)
 	int colIndex = getColumnIndex(name);
 	if(colIndex == -1) return;
 
-
+	emit columnAboutToBeRemoved(colIndex);
 
 	beginResetModel();
 	_dataSet->columns().removeColumn(name);
@@ -1334,7 +1334,6 @@ std::vector<bool> DataSetPackage::filterVector()
 	}
 
 	return out;
-
 }
 
 void DataSetPackage::rescanColumnNamesForEncoder()

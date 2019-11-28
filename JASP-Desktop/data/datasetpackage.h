@@ -231,6 +231,7 @@ signals:
 				bool				checkDoSync();
 				void				modelInit();
 				void				columnNamesChanged();
+				void				columnAboutToBeRemoved(int column);
 
 public slots:
 				void				refresh() { beginResetModel(); endResetModel(); }

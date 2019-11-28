@@ -32,4 +32,7 @@ Theme
 	cyan:								"#196EA9"
 
 	shadow:								"#BB000000"
+
+	controlErrorBackgroundColor:		redDarker
+	controlErrorTextColor:				black
 }
