@@ -26,7 +26,8 @@ openGrDevice <- function(...) {
     grDevices::png(..., units="in", res = 72, type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
 }
 
-writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathsvg=NULL, ppi=300, backgroundColor="white", location=getImageLocation())
+writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathsvg=NULL, ppi=300, backgroundColor="white", location=getImageLocation(),
+                                  emptyPlotEnvironment = TRUE)
 {
   # Set values from JASP'S Rcpp when available
   if (exists(".fromRCPP")) {
@@ -60,16 +61,67 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable"))) {
 
     # TODO: ggsave adds very little when we use a function as device...
-    ggplot2::ggsave(
-      filename  = relativePathsvg,
-      plot      = plot2draw,
-      dpi       = ppi,
-      width     = width,
-      height    = height,
-      units     = "in", 
-      bg        = backgroundColor,
-      limitsize = FALSE # only necessary if users make the plot ginormous.
-    )
+
+    if (emptyPlotEnvironment) {
+
+      plot2drawEmpty <- emptyGGplotEnvironment(plot2draw)
+
+      e <- try(
+        ggplot2::ggsave(
+          filename  = relativePathsvg,
+          plot      = plot2drawEmpty,
+          dpi       = ppi,
+          width     = width,
+          height    = height,
+          units     = "in",
+          bg        = backgroundColor,
+          limitsize = FALSE # only necessary if users make the plot ginormous.
+        )
+      )
+
+      if (inherits(e, "try-error")) {
+
+        # failed without plot environment so let's do it again!
+        # if this fails, then both fail and the error message is caught by
+        # tryToWriteImageJaspResults. If this doesn't fail then the plot environment
+        # matters so we return a custom error message.
+        ggplot2::ggsave(
+          filename  = relativePathsvg,
+          plot      = plot2draw,
+          dpi       = ppi,
+          width     = width,
+          height    = height,
+          units     = "in",
+          bg        = backgroundColor,
+          limitsize = FALSE # only necessary if users make the plot ginormous.
+        )
+
+        image[["error"]] <- paste(
+          "ggplot could not be rendered without the enclosing environment.",
+          "Please ensure that all objects are passed to ggplot functions directly and do not need to be found in the enclosing environment.",
+          "\nThe following error occured:\n\n",
+          e
+        )
+
+      } else {
+        # save the smaller plot in the state
+        emptyGGplotEnvironment(plot2draw, inplace = TRUE)
+      }
+
+    } else {
+
+      ggplot2::ggsave(
+        filename  = relativePathsvg,
+        plot      = plot2draw,
+        dpi       = ppi,
+        width     = width,
+        height    = height,
+        units     = "in",
+        bg        = backgroundColor,
+        limitsize = FALSE # only necessary if users make the plot ginormous.
+      )
+    }
+
 
     #If we have JASPgraphs available we can get the plotEditingOptions for this plot
     if(requireNamespace("JASPgraphs", quietly = TRUE))
@@ -111,6 +163,36 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   }
 
   return(image)
+}
+
+emptyGGplotEnvironment <- function(old, inplace = FALSE) {
+
+  # try to reduce the size of ggplots by clearing the environments.
+  # ideally we assign then empty environment (that's the smallest)
+  # but somehow that breaks for certain environments.
+  # Instead we delete all objects in that environment.
+
+  # deep copy of the ggplot object -- inefficient but thorough
+  if (!inplace) new <- unserialize(serialize(old, NULL))
+  else          new <- old
+
+  # assign emptyenv() to this environment.
+  new$plot_env <- emptyenv()
+
+  # note: layers are environment so they are modified in place
+  for (l in new$layers)
+    for (m in seq_along(l$mapping))
+      if (!is.null(attr(l$mapping[[m]], ".Environment"))) {
+        clearEnvironment(attr(l$mapping[[m]], ".Environment"))
+        # results in faulty plots, but useful to test the errors
+        # attr(l$mapping[[m]], ".Environment") <- emptyenv()
+      }
+  return(new)
+
+}
+
+clearEnvironment <- function(env) {
+  rm(list = ls(all.names = TRUE, envir = env), envir = env)
 }
 
 # Source: https://github.com/Rapporter/pander/blob/master/R/evals.R#L1389
