@@ -130,5 +130,6 @@
         <file>components/JASP/Controls/RowComponents.qml</file>
         <file>components/JASP/Controls/ModelTermsList.qml</file>
         <file>components/JASP/Controls/AssignedPairsVariablesList.qml</file>
+        <file>components/JASP/Controls/AssignedRepeatedMeasuresCells.qml</file>
     </qresource>
 </RCC>
