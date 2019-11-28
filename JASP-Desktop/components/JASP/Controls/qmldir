@@ -1,5 +1,6 @@
 module JASP.Controls
-AssignButton                1.0 AssignButton.qml
+AssignButton                   1.0 AssignButton.qml
+AssignedRepeatedMeasuresCells 1.0 AssignedRepeatedMeasuresCells.qml
 AssignedPairsVariablesList 1.0 AssignedPairsVariablesList.qml
 AssignedVariablesList     1.0 AssignedVariablesList.qml
 AvailableVariablesList   1.0 AvailableVariablesList.qml

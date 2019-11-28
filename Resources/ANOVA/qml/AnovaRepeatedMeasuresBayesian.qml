@@ -32,14 +32,11 @@ Form
 			title: qsTr("Repeated Measures Factors")
 			height: 180
 		}
-		AssignedVariablesList
+		AssignedRepeatedMeasuresCells
 		{
 			name: "repeatedMeasuresCells"
 			title: qsTr("Repeated Measures Cells")
-			suggestedColumns: ["scale"]
-			listViewType: "RepeatedMeasures"
 			source: "repeatedMeasuresFactors"
-			height: 140
 		}
 		AssignedVariablesList
 		{
