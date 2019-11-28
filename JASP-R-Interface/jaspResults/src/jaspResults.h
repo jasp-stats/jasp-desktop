@@ -97,6 +97,8 @@ private:
 			_sendingFeedbackLastTime		= -1,
 			_progressbarBetweenUpdatesTime	= 250,
 			_sendingFeedbackInterval		= 500;
+
+
 };
 
 void JASPresultFinalizer(jaspResults * obj);

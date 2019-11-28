@@ -203,6 +203,7 @@ HEADERS += \
     analysis/options/optionboolean.h \
     analysis/options/optioncomputedcolumn.h \
     analysis/options/optiondoublearray.h \
+    analysis/options/optionencodablestring.h \
     analysis/options/optioni.h \
     analysis/options/optioninteger.h \
     analysis/options/optionintegerarray.h \
@@ -388,6 +389,7 @@ SOURCES += \
     analysis/options/optionboolean.cpp \
     analysis/options/optioncomputedcolumn.cpp \
     analysis/options/optiondoublearray.cpp \
+    analysis/options/optionencodablestring.cpp \
     analysis/options/optioninteger.cpp \
     analysis/options/optionintegerarray.cpp \
     analysis/options/optionlist.cpp \

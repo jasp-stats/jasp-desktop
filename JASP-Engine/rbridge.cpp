@@ -28,6 +28,7 @@ DataSet						*	rbridge_dataSet		= NULL;
 RCallback						rbridge_callback	= NULL;
 std::set<std::string>			filterColumnsUsed;
 std::vector<std::string>		columnNamesInDataSet;
+ColumnEncoder					extraEncodings("JaspExtraOptions_.");
 
 boost::function<DataSet *()>				rbridge_dataSetSource		= NULL;
 boost::function<size_t()>					rbridge_getDataSetRowCount	= NULL;
@@ -117,28 +118,34 @@ void rbridge_setGetDataSetRowCountSource(boost::function<int()> source)	{	rbridg
 extern "C" const char * STDCALL rbridge_encodeColumnName(const char * in)
 {
 	static std::string out;
-	out = ColumnEncoder::encode(in);
+
+	if(extraEncodings.shouldEncode(in))	out = extraEncodings.encode(in);
+	else								out = ColumnEncoder::columnEncoder()->encode(in);
+
 	return out.c_str();
 }
 
 extern "C" const char * STDCALL rbridge_decodeColumnName(const char * in)
 {
 	static std::string out;
-	out = ColumnEncoder::decode(in);
+
+	if(extraEncodings.shouldDecode(in))	out = extraEncodings.decode(in);
+	else								out = ColumnEncoder::columnEncoder()->decode(in);
+
 	return out.c_str();
 }
 
 extern "C" const char * STDCALL rbridge_encodeAllColumnNames(const char * in)
 {
 	static std::string out;
-	out = ColumnEncoder::encodeAll(in);
+	out = ColumnEncoder::columnEncoder()->encodeAll(extraEncodings.encodeAll(in));
 	return out.c_str();
 }
 
 extern "C" const char * STDCALL rbridge_decodeAllColumnNames(const char * in)
 {
 	static std::string out;
-	out = ColumnEncoder::decodeAll(in);
+	out = ColumnEncoder::columnEncoder()->decodeAll(extraEncodings.decodeAll(in));
 	return out.c_str();
 }
 
@@ -212,6 +219,7 @@ std::string rbridge_run(const std::string &name, const std::string &title, const
 	if (rbridge_dataSet != NULL)
 		rbridge_dataSet		= rbridge_dataSetSource();
 
+	extraEncodings.setCurrentNamesFromOptionsMeta(options);
 
 	const char* results = jaspRCPP_run(name.c_str(), title.c_str(), rfile.c_str(), requiresInit, dataKey.c_str(), options.c_str(), resultsMeta.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, useJaspResults, imageBackground.c_str(), developerMode);
 	rbridge_callback = NULL;
@@ -226,6 +234,8 @@ std::string rbridge_runModuleCall(const std::string &name, const std::string &ti
 	rbridge_callback	= NULL; //Only jaspResults here so callback is not needed
 	if (rbridge_dataSet != NULL)
 		rbridge_dataSet		= rbridge_dataSetSource();
+
+	extraEncodings.setCurrentNamesFromOptionsMeta(options);
 
 	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), perform.c_str(), ppi, analysisID, analysisRevision, imageBackground.c_str(), developerMode);
 }
@@ -245,7 +255,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
 	for(int i=0; i<(*colMax); i++)
 	{
 #ifdef JASP_COLUMN_ENCODE_ALL
-		colHeaders[i].name = strdup(ColumnEncoder::encode(columns[i].name()).c_str());
+		colHeaders[i].name = strdup(ColumnEncoder::columnEncoder()->encode(columns[i].name()).c_str());
 #else
 		colHeaders[i].name = strdup(columns[i].name().c_str());
 #endif
@@ -279,7 +289,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMa
 		if(filterColumnsUsed.count(columns[iIn].name()) > 0)
 		{
 #ifdef JASP_COLUMN_ENCODE_ALL
-			colHeaders[iOut].name = strdup(ColumnEncoder::encode(columns[iIn].name()).c_str());
+			colHeaders[iOut].name = strdup(ColumnEncoder::columnEncoder()->encode(columns[iIn].name()).c_str());
 #else
 			colHeaders[iOut].name = strdup(columns[iIn].name().c_str());
 #endif
@@ -337,11 +347,11 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 		RBridgeColumnType	&	columnInfo		= colHeaders[colNo];
 		RBridgeColumn		&	resultCol		= datasetStatic[colNo];
 #ifdef JASP_COLUMN_ENCODE_ALL
-		std::string				columnName		= ColumnEncoder::decode(columnInfo.name);
+		std::string				columnName		= ColumnEncoder::columnEncoder()->decode(columnInfo.name);
 								resultCol.name	= strdup(columnInfo.name);
 #else
 		std::string				columnName		= columnInfo.name;
-								resultCol.name	= strdup(ColumnEncoder::encode(columnName).c_str());
+								resultCol.name	= strdup(ColumnEncoder::columnEncoder()->encode(columnName).c_str());
 #endif
 		Column				&	column			= columns.get(columnName);
 		columnType				colType			= column.getColumnType(),
@@ -502,7 +512,7 @@ extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 	for (const Column &column: columns)
 		staticResult[colNo++] =
 #ifdef JASP_COLUMN_ENCODE_ALL
-				strdup(ColumnEncoder::encode(column.name()).c_str());
+				strdup(ColumnEncoder::columnEncoder()->encode(column.name()).c_str());
 #else
 				strdup(column.name().c_str());
 #endif
@@ -532,11 +542,11 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 		RBridgeColumnType			&	columnInfo		= columnsType[colNo];
 		RBridgeColumnDescription	&	resultCol		= resultCols[colNo];
 #ifdef JASP_COLUMN_ENCODE_ALL
-		std::string						columnName		= ColumnEncoder::decode(columnInfo.name);
+		std::string						columnName		= ColumnEncoder::columnEncoder()->decode(columnInfo.name);
 										resultCol.name	= strdup(columnInfo.name);
 #else
 		std::string						columnName		= columnInfo.name;
-										resultCol.name	= strdup(ColumnEncoder::encode(columnInfo.name).c_str());
+										resultCol.name	= strdup(ColumnEncoder::columnEncoder()->encode(columnInfo.name).c_str());
 #endif
 		Column						&	column			= columns.get(columnName);
 		columnType						colType			= column.getColumnType(),
@@ -601,7 +611,7 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 }
 
 #ifdef JASP_COLUMN_ENCODE_ALL
-#define JASP_COLUMN_DECODE_HERE std::string colName(ColumnEncoder::decode(columnName))
+#define JASP_COLUMN_DECODE_HERE std::string colName(ColumnEncoder::columnEncoder()->decode(columnName))
 #else
 #define JASP_COLUMN_DECODE_HERE std::string colName(columnName)
 #endif
@@ -752,7 +762,7 @@ std::string rbridge_check()
 
 std::string	rbridge_encodeColumnNamesInScript(const std::string & filterCode)
 {
-	return ColumnEncoder::encodeRScript(filterCode, &filterColumnsUsed);
+	return ColumnEncoder::columnEncoder()->encodeRScript(filterCode, &filterColumnsUsed);
 }
 
 const char * rbridge_setupRCodeEnv(int rowCount)
@@ -794,7 +804,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	if(arrayLength < 0)
 	{
-		errorMsg = ColumnEncoder::decodeAll(jaspRCPP_getLastErrorMsg());
+		errorMsg = ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg());
 		throw filterException(errorMsg.c_str());
 	}
 
@@ -842,7 +852,7 @@ std::string rbridge_evalRCodeWhiteListed(const std::string & rCode)
 	std::string result = jaspRCPP_evalRCode(rCode64.c_str());
 	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
-	jaspRCPP_setErrorMsg(ColumnEncoder::decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
+	jaspRCPP_setErrorMsg(ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
 
 	return result;
 }

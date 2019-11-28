@@ -21,9 +21,9 @@ using namespace std;
 
 void OptionString::init(const Json::Value &data)
 {
-	_value = data.get("default", "").asString();
+	_value	= data.get("default", "").asString();
 	_regexp = data.get("regexp", "").asString();
-	_max = data.get("max", -1).asInt();
+	_max	= data.get("max", -1).asInt();
 }
 
 Json::Value OptionString::asJSON() const

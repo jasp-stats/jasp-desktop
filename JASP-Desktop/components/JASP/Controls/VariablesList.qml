@@ -451,6 +451,7 @@ JASPListControl
 					source:					(!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) || !model.columnType) ? "" : jaspTheme.iconPath + (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType])
 					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable
 				}
+
 				Text
 				{
 					id:						colName

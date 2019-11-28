@@ -304,7 +304,7 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType",  "").asString());
 
 #ifdef JASP_COLUMN_ENCODE_ALL
-	computeColumnName = ColumnEncoder::encode(computeColumnName);
+	computeColumnName = ColumnEncoder::columnEncoder()->encode(computeColumnName);
 #endif
 
 	runComputeColumn(computeColumnName, computeColumnCode, computeColumnType);
@@ -440,7 +440,7 @@ void Engine::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & me
 	{
 	case Json::arrayValue:
 		if(encodePlease)
-			ColumnEncoder::encodeJson(options, false); //If we already think we have columnNames just change it all
+			ColumnEncoder::columnEncoder()->encodeJson(options, false); //If we already think we have columnNames just change it all
 		else
 			for(size_t i=0; i<options.size() && i < meta.size(); i++)
 				_encodeColumnNamesinOptions(options[i], meta[i]);
@@ -451,12 +451,12 @@ void Engine::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & me
 			if(memberName != ".meta" && meta.isMember(memberName))
 				_encodeColumnNamesinOptions(options[memberName], meta[memberName]);
 			else if(encodePlease)
-				ColumnEncoder::encodeJson(options, false); //If we already think we have columnNames just change it all I guess?
+				ColumnEncoder::columnEncoder()->encodeJson(options, false); //If we already think we have columnNames just change it all I guess?
 		return;
 
 	case Json::stringValue:
 			if(encodePlease)
-				options = ColumnEncoder::encodeAll(options.asString());
+				options = ColumnEncoder::columnEncoder()->encodeAll(options.asString());
 		return;
 
 	default:
@@ -472,7 +472,7 @@ void Engine::sendString(std::string message)
 	if(Json::Reader().parse(message, msgJson)) //If everything is converted to jaspResults maybe we can do this there?
 	{
 #ifdef JASP_COLUMN_ENCODE_ALL
-		ColumnEncoder::decodeJson(msgJson); // decode all columnnames as far as you can
+		ColumnEncoder::columnEncoder()->decodeJson(msgJson); // decode all columnnames as far as you can
 #endif
 		_channel->send(msgJson.toStyledString());
 	}
@@ -834,7 +834,7 @@ void Engine::resumeEngine()
 {
 	Log::log() << "Engine resuming, rescanning columnNames for en/decoding" << std::endl;
 	//Any changes to the data that engine needs to know about are accompanied by pause + resume I think.
-	ColumnEncoder::setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
+	ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
 
 	_engineState = engineState::idle;
 	sendEngineResumed();

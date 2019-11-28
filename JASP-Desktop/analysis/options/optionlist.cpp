@@ -62,11 +62,11 @@ Option *OptionList::clone() const
 
 Json::Value OptionList::asMetaJSON() const
 {
-	if(!ColumnEncoder::isColumnName(value()))
+	if(!ColumnEncoder::columnEncoder()->isColumnName(value()))
 		return Json::nullValue;
 
 	for(const std::string & opt : _options)
-		if(!ColumnEncoder::isColumnName(opt))
+		if(!ColumnEncoder::columnEncoder()->isColumnName(opt))
 			return Json::nullValue;
 
 	//If everything is a columnName then you know, its probably a bunch of columnNames

@@ -33,26 +33,26 @@ Form
 	VariablesForm
 	{
 		height: 520
-		AvailableVariablesList { name: "allVariablesList" }		
+		AvailableVariablesList		{ name: "allVariablesList" }
 		RepeatedMeasuresFactorsList { name: "repeatedMeasuresFactors"; title: qsTr("Repeated Measures Factors"); height: 180 }
 		AssignedRepeatedMeasuresCells
 		{
-			name: "repeatedMeasuresCells"
-			title: qsTr("Repeated Measures Cells")
-			source: "repeatedMeasuresFactors"
+			name:				"repeatedMeasuresCells"
+			title:				qsTr("Repeated Measures Cells")
+			source:				"repeatedMeasuresFactors"
 		}
 		AssignedVariablesList
 		{
-			name: "betweenSubjectFactors"
-			title: qsTr("Between Subject Factors")
-			suggestedColumns: ["ordinal", "nominal"]
-			itemType: "fixedFactors"
+			name:				"betweenSubjectFactors"
+			title:				qsTr("Between Subject Factors")
+			suggestedColumns:	["ordinal", "nominal"]
+			itemType:			"fixedFactors"
 		}
 		AssignedVariablesList
 		{
-			name: "covariates"
-			title: qsTr("Covariates")
-			suggestedColumns: ["scale"]
+			name:				"covariates"
+			title:				qsTr("Covariates")
+			suggestedColumns:	["scale"]
 		}
 	}
 	

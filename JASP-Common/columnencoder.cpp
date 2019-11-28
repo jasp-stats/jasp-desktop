@@ -18,10 +18,16 @@
 #include "columnencoder.h"
 #include <regex>
 
-std::map<std::string, std::string>	ColumnEncoder::_encodingMap;
-std::map<std::string, std::string>	ColumnEncoder::_decodingMap;
-std::vector<std::string>			ColumnEncoder::_originalNames;
-std::vector<std::string>			ColumnEncoder::_encodedNames;
+ColumnEncoder * ColumnEncoder::_columnEncoder = nullptr;
+
+ColumnEncoder * ColumnEncoder::columnEncoder()
+{
+	if(!_columnEncoder)
+		_columnEncoder = new ColumnEncoder();
+
+	return _columnEncoder;
+}
+
 
 std::string ColumnEncoder::encode(const std::string &in)
 {
@@ -43,7 +49,7 @@ std::string ColumnEncoder::decode(const std::string &in)
 	return _decodingMap[in];
 }
 
-void ColumnEncoder::setCurrentColumnNames(const std::vector<std::string> & names)
+void ColumnEncoder::setCurrentNames(const std::vector<std::string> & names)
 {
 	_encodingMap.clear();
 	_decodingMap.clear();
@@ -64,12 +70,12 @@ void ColumnEncoder::setCurrentColumnNames(const std::vector<std::string> & names
 	std::sort(_originalNames.begin(), _originalNames.end(), [](std::string & a, std::string & b) { return a.size() > b.size(); }); //We need this to make sure smaller columnNames do not bite chunks off of larger ones
 }
 
-bool ColumnEncoder::isColumnName(const std::string & in)
+bool ColumnEncoder::shouldEncode(const std::string & in)
 {
 	return _encodingMap.count(in) > 0;
 }
 
-bool ColumnEncoder::isEncodedColumnName(const std::string & in)
+bool ColumnEncoder::shouldDecode(const std::string & in)
 {
 	return _decodingMap.count(in) > 0;
 }
@@ -207,5 +213,42 @@ void ColumnEncoder::replaceAll(Json::Value & json, const std::map<std::string, s
 	}
 }
 
+void ColumnEncoder::setCurrentNamesFromOptionsMeta(const std::string & optionsStr)
+{
+	Json::Value options;
+	Json::Reader().parse(optionsStr, options);
 
+	std::vector<std::string> namesFound;
 
+	if(options.isMember(".meta"))
+		collectExtraEncodingsFromMetaJson(options[".meta"], namesFound);
+
+	setCurrentNames(namesFound);
+}
+
+void ColumnEncoder::collectExtraEncodingsFromMetaJson(const Json::Value & json, std::vector<std::string> & namesCollected) const
+{
+	switch(json.type())
+	{
+	case Json::arrayValue:
+		for(const Json::Value & option : json)
+			collectExtraEncodingsFromMetaJson(option, namesCollected);
+		return;
+
+	case Json::objectValue:
+		if(json.isMember("encodeThis"))
+		{
+			if(json["encodeThis"].isString())		namesCollected.push_back(json["encodeThis"].asString());
+			else if(json["encodeThis"].isArray())
+				for(const Json::Value & enc : json["encodeThis"])
+					namesCollected.push_back(enc.asString());
+		}
+		else
+			for(const std::string & optionName : json.getMemberNames())
+			collectExtraEncodingsFromMetaJson(json[optionName], namesCollected);
+		return;
+
+	default:
+		return;
+	}
+}

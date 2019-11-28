@@ -59,10 +59,10 @@ public:
 	virtual void		clear() {}
 
 
-	virtual std::set<std::string> usedVariables()		const							{ return std::set<std::string>(); }
-	virtual void		removeUsedVariable(std::string)									{}
-	virtual void		replaceVariableName(std::string oldName, std::string newName)	{}
-	virtual std::set<std::string> columnsCreated()										{ return std::set<std::string>(); }
+	virtual std::set<std::string>	usedVariables()		const										{ return std::set<std::string>(); }
+	virtual void					removeUsedVariable(std::string)									{}
+	virtual void					replaceVariableName(std::string oldName, std::string newName)	{}
+	virtual std::set<std::string>	columnsCreated()												{ return std::set<std::string>(); }
 
 			void		blockSignals(bool block, bool notifyOnceUnblocked = true);
 			bool		isTransient() const;
@@ -77,7 +77,7 @@ public:
 	ComputedColumn *	notifyRequestComputedColumnCreation(std::string columnName)			{ return requestComputedColumnCreation(columnName); }
 	void				notifyRequestComputedColumnDestruction(std::string columnName)		{ requestComputedColumnDestruction(columnName); }
 	
-	Json::Value			defaultMetaEntryContainingColumn() const;
+	Json::Value			defaultMetaEntryContainingColumn(bool containsColumn = true) const;
 
 protected:
 	void				notifyChanged();

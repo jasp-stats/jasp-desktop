@@ -28,16 +28,20 @@ Json::Value OptionVariables::asJSON() const
 {
 	Json::Value v(Json::arrayValue);
 
-	if (_value.size() > 0)
-		for(vector<string> variable : _value)
-			v.append(variable.front());
+	for(vector<string> variable : _value)
+		v.append(variable.front());
 
 	return v;
 }
 
 Json::Value OptionVariables::asMetaJSON() const
 {
-	return defaultMetaEntryContainingColumn();
+	Json::Value metaBase = defaultMetaEntryContainingColumn(!_extraEncodings);
+
+	if(_extraEncodings)
+		metaBase["encodeThis"] = asJSON();
+
+	return metaBase;
 }
 
 void OptionVariables::set(const Json::Value &value)
@@ -55,6 +59,7 @@ Option *OptionVariables::clone() const
 {
 	OptionVariables *c = new OptionVariables();
 	c->setValue(value());
+	c->setExtraEncodings(_extraEncodings);
 	return c;
 }
 

@@ -23,7 +23,7 @@
 	vs <- c()
 
 	for (v in variable.names)
-    vs[length(vs)+1] <- .encodeColumnName(v)
+    vs[length(vs)+1] <- encodeAllColumnNames(v)
 
   return(vs)
 }
@@ -40,7 +40,7 @@
 		if (nchar(v) == 0)
 			stop(paste("bad call to .unv() : v is empty"))
 
-      vs[length(vs)+1] <- .decodeColumnName(v)
+      vs[length(vs)+1] <- decodeAllColumnNames(v)
 	}
 
   return(vs)

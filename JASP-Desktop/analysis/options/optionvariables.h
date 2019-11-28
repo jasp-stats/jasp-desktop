@@ -24,8 +24,8 @@
 class OptionVariables : public OptionTerms, public OptionVariableI
 {
 public:
-	OptionVariables()								: OptionTerms(true, false) {}
-	OptionVariables(std::vector<std::string> vars)	: OptionTerms(true, false) { setValue(vars); }
+	OptionVariables(bool extraEncodes = false)									: OptionTerms(true, false), _extraEncodings(extraEncodes) {}
+	OptionVariables(std::vector<std::string> vars, bool extraEncodes = false)	: OptionTerms(true, false), _extraEncodings(extraEncodes) { setValue(vars); }
 
 	Json::Value					asJSON()												const	override;
 	Json::Value					asMetaJSON()											const	override;
@@ -40,9 +40,12 @@ public:
 	void						removeUsedVariable(std::string var)								override;
 	void						replaceVariableName(std::string oldName, std::string newName)	override	{ replaceName(oldName, newName); }
 
-protected:
-	OptionVariables(bool onlyOneTerm) : OptionTerms(true, onlyOneTerm)	{}
+	void						setExtraEncodings(bool theyAreIt)											{ _extraEncodings = theyAreIt; }
 
+protected:
+	OptionVariables(bool onlyOneTerm, bool extraEncodes) : OptionTerms(true, onlyOneTerm), _extraEncodings(extraEncodes)	{}
+
+	bool _extraEncodings = false;
 };
 
 #endif // OPTIONVARIABLES_H

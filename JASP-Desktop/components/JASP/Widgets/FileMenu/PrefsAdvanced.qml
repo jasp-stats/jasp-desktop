@@ -7,7 +7,7 @@ ScrollView
 {
 	id:						scrollPrefs
 	focus:					true
-	onActiveFocusChanged:	if(activeFocus) uiScaleSpinBox.forceActiveFocus();
+	onActiveFocusChanged:	if(activeFocus) rememberModulesSelected.forceActiveFocus();
 	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
 	Column

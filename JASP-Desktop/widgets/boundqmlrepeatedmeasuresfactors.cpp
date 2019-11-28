@@ -17,7 +17,7 @@
 //
 
 #include "boundqmlrepeatedmeasuresfactors.h"
-#include "analysis/options/optionstring.h"
+#include "analysis/options/optionencodablestring.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/jaspcontrolbase.h"
 
@@ -44,8 +44,8 @@ void BoundQMLRepeatedMeasuresFactors::bindTo(Option *option)
 	
 	for (const Options* options : allOptions)
 	{
-		OptionString *factorNameOption = static_cast<OptionString *>(options->get("name"));
-		OptionVariables *factorLevelsOption = static_cast<OptionVariables *>(options->get("levels"));
+		OptionEncodableString *factorNameOption = static_cast<OptionEncodableString *>(options->get("name"));
+		OptionVariables *factorLevelsOption		= static_cast<OptionVariables *>(options->get("levels"));
 		
 		factors.push_back(make_pair(factorNameOption->value(), factorLevelsOption->variables()));
 	}
@@ -57,18 +57,19 @@ Option* BoundQMLRepeatedMeasuresFactors::createOption()
 {
 	
 	Options* templote = new Options();
-	templote->add("name", new OptionString());
-	templote->add("levels", new OptionVariables());
+	templote->add("name", new OptionEncodableString());
+	templote->add("levels", new OptionVariables(true));
 	
 	OptionsTable* optionsTable = new OptionsTable(templote);
-	
-	Options* options = new Options();
-	options->add("name", new OptionString("RM Factor 1"));
-	OptionVariables* levels = new OptionVariables();
+
+	OptionVariables* levels = new OptionVariables(true);
 	std::vector<std::string> firstLevels;
 	firstLevels.push_back("Level 1");
 	firstLevels.push_back("Level 2");
 	levels->setValue(firstLevels);
+
+	Options* options = new Options();
+	options->add("name", new OptionEncodableString("RM Factor 1"));
 	options->add("levels", levels);
 	
 	std::vector<Options*> allOptions;
@@ -95,8 +96,9 @@ bool BoundQMLRepeatedMeasuresFactors::isJsonValid(const Json::Value &optionValue
 			valid = value.type() == Json::objectValue;
 			if (valid)
 			{
-				const Json::Value& nameOption = value["name"];
-				const Json::Value& variablesOption = value["levels"];
+				const Json::Value & nameOption		= value["name"],
+								  & variablesOption	= value["levels"];
+
 				valid = nameOption.type() == Json::stringValue && variablesOption.type() == Json::arrayValue;
 
 				if (!valid)
@@ -115,14 +117,16 @@ void BoundQMLRepeatedMeasuresFactors::modelChangedHandler()
 	
 	for (const auto &factor : factors)
 	{
-		Options* options = new Options();
-		options->add("name", new OptionString(factor.first));
-		OptionVariables* levelVariables = new OptionVariables();
+		OptionVariables* levelVariables = new OptionVariables(true);
 		vector<string> levels;
 		for (const string &level : factor.second)
 			levels.push_back(level);
 		levelVariables->setValue(levels);
+
+		Options* options = new Options();
+		options->add("name", new OptionEncodableString(factor.first));
 		options->add("levels", levelVariables);
+
 		allOptions.push_back(options);
 	}
 	

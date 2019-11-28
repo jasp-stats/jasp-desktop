@@ -792,11 +792,15 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 	setTypeRequested(columnsAsOrdinal,	columnType::ordinal);
 	setTypeRequested(columnsAsNominal,	columnType::nominal);
 
-	RBridgeColumnType* result = static_cast<RBridgeColumnType*>(calloc(columnsRequested.size(), sizeof(RBridgeColumnType)));
+	size_t lastOrderedIndex = *colMax;
+
+	*colMax = columnsRequested.size();
+
+	RBridgeColumnType* result = static_cast<RBridgeColumnType*>(calloc(*colMax, sizeof(RBridgeColumnType)));
 
 	for (auto const &columnRequested : columnsRequested)
 	{
-		size_t colNo		= columnsOrder[columnRequested.first];
+		size_t colNo		= columnsOrder.count(columnRequested.first) > 0 ? columnsOrder[columnRequested.first] : lastOrderedIndex++;
 		result[colNo].name	= strdup(columnRequested.first.c_str());
 		result[colNo].type	= int(columnRequested.second);
 	}
