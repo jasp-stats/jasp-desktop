@@ -36,6 +36,11 @@
 			"function":							"testStateFunc"
 		},
 		{
+			"title":							"Test jaspHtml",
+			"qml":								"testHtml.qml",
+			"function":							"testHtmlFunc"
+		},
+		{
 			"title": "-"
 		},
 		{ 

@@ -22,20 +22,22 @@ std::string jaspHtml::convertTextToHtml(std::string text) const
 
     // Then add element tags
     std::stringstream out;
-    if(_elementType != "")
-        out << "<" << _elementType  << (_class != "" ? "class=\""+_class+'"' : "") << ">";
+	if(_elementType != "" && _elementType != "errorMsg")
+		out << "<" << _elementType  << (_class != "" ? "class=\""+_class+'"' : "") << ">";
 
     out << text;
 
-    if(_elementType != "")
-        out << " </" << _elementType << ">";
+	if(_elementType != "" && _elementType != "errorMsg")
+		out << " </" << _elementType << ">";
 
     return out.str();
 }
 
 std::string jaspHtml::toHtml()
 {
-	return "<div class=\"jaspHtml\">" "\n" + htmlTitle() + "\n" + dataToString() + "</div>" "\n";
+	return (_elementType != "errorMsg" ? "<div class=\"jaspHtml\">\n" : "<div class=\"analysis-error-message error-message-box ui-state-error\"><span class=\"ui-icon ui-icon-alert\" style=\"float: left; margin-right: .3em;\"/>\n" )
+			+ htmlTitle() + "\n" + dataToString() + "</div>" "\n";
+
 }
 
 Json::Value jaspHtml::dataEntry(std::string & errorMessage) const

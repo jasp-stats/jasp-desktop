@@ -1,5 +1,6 @@
 export(testTransposedTableFunc)
 export(testFootnotesTableFunc)
 export(testStateFunc)
+export(testHtmlFunc)
 export(customContrasts)
   import('svglite');

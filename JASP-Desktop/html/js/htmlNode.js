@@ -27,9 +27,10 @@ convertModelToHtml = function(model)
 		optText = "";
 
 	var html;
-	if(optElementType === "")	html =														optText;
-	else if(optClass === "")	html = '<'+ optElementType +'>' +							optText + '</'+ optElementType +'>';
-	else						html = '<'+ optElementType +' class="'+ optClass +'">' +	optText + '</'+ optElementType +'>';
+	if(optElementType === "errorMsg")	html = '<div class="fatalError analysis-error-message error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"/>' + optText + '</div>'
+	else if(optElementType === "")		html =														optText;
+	else if(optClass === "")			html = '<'+ optElementType +'>' +							optText + '</'+ optElementType +'>';
+	else								html = '<'+ optElementType +' class="'+ optClass +'">' +	optText + '</'+ optElementType +'>';
 
 	return html;
 }
