@@ -49,9 +49,9 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   setwd(root)
   on.exit(setwd(oldwd))
 
-  # convert width & height from pixels to inches. ppi = pixels per inch. 4 is a magic number.
-  width  <- width  / ppi * 4
-  height <- height / ppi * 4
+  # convert width & height from pixels to inches. ppi = pixels per inch. 96 is a magic number inherited from the past.
+  width  <- width  / 96
+  height <- height / 96
 
   plot2draw <- decodeplot(plot)
 
