@@ -114,28 +114,28 @@ void rbridge_setColumnFunctionSources(			boost::function<int (const std::string 
 
 void rbridge_setGetDataSetRowCountSource(boost::function<int()> source)	{	rbridge_getDataSetRowCount = source;	}
 
-extern "C" const char * rbridge_encodeColumnName(const char * in)
+extern "C" const char * STDCALL rbridge_encodeColumnName(const char * in)
 {
 	static std::string out;
 	out = ColumnEncoder::encode(in);
 	return out.c_str();
 }
 
-extern "C" const char * rbridge_decodeColumnName(const char * in)
+extern "C" const char * STDCALL rbridge_decodeColumnName(const char * in)
 {
 	static std::string out;
 	out = ColumnEncoder::decode(in);
 	return out.c_str();
 }
 
-extern "C" const char * rbridge_encodeAllColumnNames(const char * in)
+extern "C" const char * STDCALL rbridge_encodeAllColumnNames(const char * in)
 {
 	static std::string out;
 	out = ColumnEncoder::encodeAll(in);
 	return out.c_str();
 }
 
-extern "C" const char * rbridge_decodeAllColumnNames(const char * in)
+extern "C" const char * STDCALL rbridge_decodeAllColumnNames(const char * in)
 {
 	static std::string out;
 	out = ColumnEncoder::decodeAll(in);
