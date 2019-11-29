@@ -88,7 +88,6 @@ Form
 		{
 			name: "model"
 			implicitHeight: 200
-			infoText: Qt.platform.os == "osx" ? "\u2318 + Enter to apply" : "Ctrl + Enter to apply"
 			text: ""
 			textType: "model"
 			trim: true

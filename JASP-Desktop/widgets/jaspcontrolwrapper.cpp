@@ -25,6 +25,8 @@
 #include "widgets/boundqmlslider.h"
 #include "widgets/boundqmltextinput.h"
 #include "widgets/boundqmltextarea.h"
+#include "widgets/boundqmllavaantextarea.h"
+#include "widgets/boundqmljagstextarea.h"
 #include "widgets/boundqmlradiobuttons.h"
 #include "widgets/boundqmllistviewterms.h"
 #include "widgets/boundqmllistviewmeasurescells.h"
@@ -54,7 +56,17 @@ JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase*
 	case JASPControlBase::ControlType::Switch:			//fallthrough:
 	case JASPControlBase::ControlType::CheckBox:					controlWrapper		= new BoundQMLCheckBox(control);					break;
 	case JASPControlBase::ControlType::Slider:						controlWrapper		= new BoundQMLSlider(control);						break;
-	case JASPControlBase::ControlType::TextArea:					controlWrapper		= new BoundQMLTextArea(control);					break;
+	case JASPControlBase::ControlType::TextArea:
+	{
+		QString textType = control->property("textType").toString();
+		if (textType == "lavaan")
+			controlWrapper = new BoundQMLLavaanTextArea(control);
+		if (textType == "JAGSmodel")
+			controlWrapper = new BoundQMLJAGSTextArea(control);
+		else
+			controlWrapper = new BoundQMLTextArea(control);
+		break;
+	}
 	case JASPControlBase::ControlType::ComboBox:					controlWrapper		= new BoundQMLComboBox(control);					break;
 	case JASPControlBase::ControlType::Expander:					controlWrapper		= new QMLExpander(control);							break;
 	case JASPControlBase::ControlType::TableView:					controlWrapper		= new BoundQMLTableView(control);					break;
