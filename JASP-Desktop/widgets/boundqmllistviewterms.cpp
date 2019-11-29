@@ -261,17 +261,15 @@ void BoundQMLListViewTerms::modelChangedHandler()
 		_optionVariables->setValue(_termsModel->terms().asVectorOfVectors());
 	else if (_optionVariablesGroups)
 	{
-		vector<vector<string> > allTuples;
-
-		for (const Term &term : _termsModel->terms())
+		ListModelMultiTermsAssigned* multiTermsModel = dynamic_cast<ListModelMultiTermsAssigned*>(_termsModel);
+		if (multiTermsModel)
 		{
-			vector<string> tuple;
-			for (const std::string& comp : term.scomponents())
-				tuple.push_back(comp);
-			allTuples.push_back(tuple);
+			const QList<Terms>& tuples = multiTermsModel->tuples();
+			std::vector<std::vector<std::string> > values;
+			for (const Terms& terms : tuples)
+				values.push_back(terms.asVector());
+			_optionVariablesGroups->setValue(values);
 		}
-
-		_optionVariablesGroups->setValue(allTuples);
 	}
 }
 

@@ -125,7 +125,7 @@ void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* ta
 		{
 			bool success = true;		
 			Terms* removedTermsWhenDropping = nullptr;
-			if (!sourceModel->copyTermsWhenDropped() && targetModel->removeTermsWhenDragged())
+			if (!sourceModel->copyTermsWhenDropped())
 			{
 				Terms* terms = sourceModel->termsFromIndexes(indexes);
 				if (terms == nullptr || terms->size() == 0)
@@ -141,7 +141,7 @@ void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* ta
 				delete terms;
 			}
 				
-			if (success && !targetModel->copyTermsWhenDropped() && sourceModel->removeTermsWhenDragged())
+			if (success && !targetModel->copyTermsWhenDropped())
 			{
 				sourceModel->removeTerms(indexes);
 				if (removedTermsWhenDropping && removedTermsWhenDropping->size() > 0)
@@ -171,11 +171,4 @@ void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* ta
 	{
 		Log::log()  << (!targetModel ? "no dropModel" : "no indexes") << std::endl;
 	}
-}
-
-void QMLListViewDraggable::setDropMode(qmlDropMode dropMode)
-{
-	dynamic_cast<ListModelDraggable*>(model())->setDropMode(dropMode);
-	QString dropModeStr = qmlDropModeToQString(dropMode);
-	QQmlProperty::write(_item, "dropMode",dropModeStr);			
 }

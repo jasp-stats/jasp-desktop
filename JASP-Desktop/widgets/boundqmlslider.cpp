@@ -39,7 +39,7 @@ void BoundQMLSlider::bindTo(Option *option)
 	if (_boundTo != nullptr)
 	{
 		_number = _boundTo->value();
-		_item->setProperty("value", _number);
+		setItemProperty("value", _number);
 	}
 	else
 		Log::log()  << "Option is not an OptionNumber in BoundQMLSlider" << std::endl;

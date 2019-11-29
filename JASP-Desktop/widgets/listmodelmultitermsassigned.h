@@ -27,17 +27,17 @@ class ListModelMultiTermsAssigned: public ListModelAssignedInterface
 public:
 	ListModelMultiTermsAssigned(QMLListView* listView, int columns = 2);
 	
-	int rowCount(const QModelIndex &parent = QModelIndex())							const override;
-	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole)				const override;
+	Terms*			addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "")	override;
+	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;
+	void			removeTerms(const QList<int> &indexes)												override;
 
-	Terms* termsFromIndexes(const QList<int> &indexes)								const override;
-	bool canAddTerms(Terms *terms) const override;
-	Terms* addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "") override;
-	void moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;	
-	void removeTerms(const QList<int> &indexes)												override;
+	const QList<Terms>&	tuples() const { return _tuples; }
+private:
+	void			_setTerms();
 
 protected:
-	int	_columns = 2;
+	int				_columns = 2;
+	QList<Terms>	_tuples;
 };
 
 #endif // LISTMODELMULTITERMSASSIGNED_H

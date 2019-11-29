@@ -29,14 +29,13 @@ class ListModelMeasuresCellsAssigned : public ListModelAssignedInterface
 public:
 	ListModelMeasuresCellsAssigned(QMLListView* listView);
 
-	int			rowCount(const QModelIndex &parent = QModelIndex())							const	override;
-	QVariant	data(const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
-	Terms*		termsFromIndexes(const QList<int> &indexes)									const	override;	
-	Terms*		addTerms(Terms* terms, int dropItemIndex = -1, const QString& assignOption = "")	override;
-	void		moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;
-	void		removeTerms(const QList<int>& indexes) override;
+	QVariant		data(const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
+	Terms*			termsFromIndexes(const QList<int> &indexes)									const	override;
+	Terms*			addTerms(Terms* terms, int dropItemIndex = -1, const QString& assignOption = "")	override;
+	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;
+	void			removeTerms(const QList<int>& indexes) override;
 
-	void		initLevels(const Terms& levels, const Terms &variables = Terms(), bool initVariables = false);
+	void			initLevels(const Terms& levels, const Terms &variables = Terms(), bool initVariables = false);
 	
 
 	const QList<QString>& variables() const { return _variables; }	

@@ -41,6 +41,8 @@ void ListModelLayersAssigned::initLayers(const std::vector<std::vector<std::stri
 		_variables.push_back(layer);
 	}
 
+	_setTerms();
+
 	if (source() != nullptr)
 	{
 		if (!_copyTermsWhenDropped)
@@ -60,28 +62,45 @@ std::vector<std::pair<string, std::vector<string> > > ListModelLayersAssigned::g
 		std::vector<string> layer;
 		for (const QString& variable : variables)
 			layer.push_back(variable.toStdString());
-		layers.push_back(make_pair("Layer " + std::to_string(layerNr), layer));
+		layers.push_back(make_pair(tr("Layer %1").arg(layerNr).toStdString(), layer));
 	}
 	
 	return layers;
 }
 
-int ListModelLayersAssigned::_getLayer(int index, int& indexInLayer) const
+int ListModelLayersAssigned::_getLayer(int index, int& indexInLayer, bool inclusive) const
 {
 	int layer = 0;
 	int layerIndex = 0; // Layer 1
 	indexInLayer = -1;
 	
+	if (inclusive) index--;
 	while ((layer < _variables.length()) && (layerIndex + _variables[layer].length() < index))
 	{
 		layerIndex += _variables[layer].length() + 1;
 		layer++;
 	}
 	
+	if (inclusive) index++;
 	if (layer < _variables.length())
 		indexInLayer = index - layerIndex - 1;
 		
-	return layer;	
+	return layer;
+}
+
+void ListModelLayersAssigned::_setTerms()
+{
+	_terms.clear();
+	int layer = 1;
+	for (const QList<QString>& variables : _variables)
+	{
+		_terms.add(tr("Layer %1").arg(layer));
+		for (const QString& variable : variables)
+			_terms.add(variable);
+		layer++;
+	}
+
+	_terms.add(tr("Layer %1").arg(layer));
 }
 
 Terms *ListModelLayersAssigned::termsFromIndexes(const QList<int> &indexes) const
@@ -110,7 +129,7 @@ Terms *ListModelLayersAssigned::addTerms(Terms *terms, int dropItemIndex, const 
 	int layer = _variables.length();
 	int indexInLayer = 0;
 	if (dropItemIndex >= 0)
-		layer = _getLayer(dropItemIndex, indexInLayer);
+		layer = _getLayer(dropItemIndex, indexInLayer, true);
 	
 	if (layer >= _variables.length())	
 	{
@@ -124,6 +143,8 @@ Terms *ListModelLayersAssigned::addTerms(Terms *terms, int dropItemIndex, const 
 	
 	for (const Term& term : *terms)
 		_variables[layer].insert(indexInLayer, term.asQString());
+
+	_setTerms();
 	
 	endResetModel();
 	
@@ -139,7 +160,7 @@ void ListModelLayersAssigned::moveTerms(const QList<int> &indexes, int dropItemI
 	int layerDrop = _variables.length();
 	int indexInLayerDrop = 0;
 	if (dropItemIndex >= 0)
-		layerDrop = _getLayer(dropItemIndex, indexInLayerDrop);
+		layerDrop = _getLayer(dropItemIndex, indexInLayerDrop, true);
 	
 	if (layerDrop >= _variables.length())	
 	{
@@ -186,6 +207,8 @@ void ListModelLayersAssigned::moveTerms(const QList<int> &indexes, int dropItemI
 		if (_variables[i].length() == 0)
 			_variables.removeAt(i);
 	}
+
+	_setTerms();
 	
 	endResetModel();
 	
@@ -216,34 +239,12 @@ void ListModelLayersAssigned::removeTerms(const QList<int> &indexes)
 		if (_variables[i].length() == 0)
 			_variables.removeAt(i);
 	}
+
+	_setTerms();
 	
 	endResetModel();
 	
 	emit modelChanged();
-}
-
-const Terms &ListModelLayersAssigned::terms(const QString &)
-{
-	_tempTerms.clear();
-	for (const QList<QString>& layer : _variables)
-	{
-		for (const QString& variable : layer)
-			_tempTerms.add(variable);
-	}
-
-	return _tempTerms;
-}
-
-int ListModelLayersAssigned::rowCount(const QModelIndex &parent) const
-{
-	Q_UNUSED(parent);
-
-	int count = 1; // extra virtual layer
-	
-	for (const QList<QString>& variables : _variables)
-		count += variables.length() + 1;
-	
-	return count;
 }
 
 QVariant ListModelLayersAssigned::data(const QModelIndex &index, int role) const
@@ -251,29 +252,26 @@ QVariant ListModelLayersAssigned::data(const QModelIndex &index, int role) const
 	if ( ! index.isValid())
 		return QVariant();
 
-	QString result;
-	
+	QVariant result;
 	
 	int indexInLayer = -1;
 	int layer = _getLayer(index.row(), indexInLayer);
 	
-	if (role == Qt::DisplayRole || role == ListModel::NameRole)
+	if (role == ListModel::SelectableRole)
 	{
-		if (indexInLayer < 0)
-			result = tq("Layer ") + QString::number(layer + 1);
-		else if (layer >= 0 && layer < _variables.length() && indexInLayer >= 0 && indexInLayer < _variables[layer].length())			
-			result = _variables[layer][indexInLayer];
+		result = (indexInLayer >= 0);
 	}
 	else if (role == ListModel::TypeRole)
 	{
 		if (indexInLayer < 0)
 		{
-			result = "layer";
+			QString type = "layer";
 			if (layer == _variables.length())
-				result += ",virtual";			
+				type += ",virtual";
+			result = type;
 		}
 		else
-			result = "variable";			
+			result = "variable";
 	}
 	else if (role == ListModel::ColumnTypeRole)
 	{
@@ -283,6 +281,9 @@ QVariant ListModelLayersAssigned::data(const QModelIndex &index, int role) const
 			result = requestInfo(variable, VariableInfo::VariableTypeName).toString();
 		}
 	}
+	else
+		result = ListModelAssignedInterface::data(index, role);
+
 
 	return result;
 }

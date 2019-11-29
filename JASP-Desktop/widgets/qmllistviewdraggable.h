@@ -37,7 +37,6 @@ public:
 	
 	ListModelDraggable* draggableModel() const		{ return _draggableModel; }
 	
-	void setDropMode(qmlDropMode dropMode);
 	void moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, const QString& assignOption = "");
 
 protected:

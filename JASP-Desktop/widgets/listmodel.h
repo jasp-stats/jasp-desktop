@@ -39,6 +39,7 @@ public:
         NameRole = Qt::UserRole + 1,
 		TypeRole,
 		SelectedRole,
+		SelectableRole,
 		ColumnTypeRole,
 		RowComponentsRole
     };
@@ -55,7 +56,7 @@ public:
 
 			QMLListView*			listView() const								{ return _listView; }
 			const QString &			name() const;
-	virtual const Terms &			terms(const QString& what = QString())			{ return _terms; }
+	virtual const Terms &			terms(const QString& what = QString())	const	{ return _terms; }
 			bool					areTermsVariables() const						{ return _areTermsVariables; }
 			bool					areTermsInteractions() const					{ return _areTermsInteractions; }
 	virtual QString					getItemType(const Term& term) const				{ return _itemType; }

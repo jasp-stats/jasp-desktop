@@ -21,24 +21,25 @@
 
 ListModelDraggable::ListModelDraggable(QMLListView* listView)
 	: ListModel(listView)
-	, _removeTermsWhenDragged(true)
 	, _copyTermsWhenDropped(false)	
 {
 }
 
 Terms *ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const
 {
-	Terms* terms = new Terms;
-	for (uint index : indexes)
+	Terms* result = new Terms;
+	const Terms& myTerms = terms();
+	for (int index : indexes)
 	{
-		if (index < _terms.size())
+		size_t index_t = size_t(index);
+		if (index_t < myTerms.size())
 		{
-			Term term = _terms.at(index);
-			terms->add(term);
+			const Term& term = myTerms.at(index_t);
+			result->add(term);
 		}
 	}
 	
-	return terms;
+	return result;
 }
 
 void ListModelDraggable::removeTerms(const QList<int> &indices)
@@ -46,7 +47,7 @@ void ListModelDraggable::removeTerms(const QList<int> &indices)
 	beginResetModel();
 	_tempTermsToRemove.clear();
 	for (const int &index : indices)
-		_tempTermsToRemove.add(_terms.at(index));
+		_tempTermsToRemove.add(_terms.at(size_t(index)));
 
 	_terms.remove(_tempTermsToRemove);
 	endResetModel();
@@ -80,7 +81,7 @@ void ListModelDraggable::moveTerms(const QList<int> &indexes, int dropItemIndex)
 	endResetModel();
 }
 
-Terms* ListModelDraggable::addTerms(Terms *terms, int dropItemIndex, const QString& assignOption)
+Terms* ListModelDraggable::addTerms(Terms *terms, int dropItemIndex, const QString&)
 {
 	Q_UNUSED(dropItemIndex);
 

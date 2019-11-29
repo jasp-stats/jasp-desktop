@@ -45,7 +45,7 @@ protected slots:
 	void modelChangedHandler() override;
 	
 private:
-	OptionVariables*							_boundTo;
+	OptionVariables*							_boundTo				= nullptr;
 	ListModelMeasuresCellsAssigned*				_measuresCellsModel;
 	QList<ListModelRepeatedMeasuresFactors*>	_sourceFactorsModels;
 	Terms										_tempTerms;

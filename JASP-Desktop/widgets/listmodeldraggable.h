@@ -33,7 +33,6 @@ public:
 	ListModelDraggable(QMLListView* listView);
 	
 	bool copyTermsWhenDropped() const						{ return _copyTermsWhenDropped; }
-	bool removeTermsWhenDragged() const						{ return _removeTermsWhenDragged; }	
 	qmlDropMode dropMode() const							{ return _dropMode; }
 	
 	void setDropMode(qmlDropMode dropMode)					{ _dropMode = dropMode; }
@@ -46,7 +45,6 @@ public:
 	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1);
 
 protected:
-	bool		_removeTermsWhenDragged;
 	bool		_copyTermsWhenDropped;
 	bool		_addNewAvailableTermsToAssignedModel = false;
 	qmlDropMode _dropMode;
