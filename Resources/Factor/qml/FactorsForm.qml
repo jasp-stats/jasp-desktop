@@ -68,7 +68,7 @@ JASPControl
 					Component.onDestruction:
 					{
 						availableVariablesList.activeFocusChanged.disconnect(button.setIconToRight);
-						availableVariablesList.hasSelectedItemsChanged.disconnect(button.setState);
+						availableVariablesList.selectedItemsChanged.disconnect(button.setState);
 					}
 
                 }
@@ -90,8 +90,8 @@ JASPControl
 			{
 				item.factorList.activeFocusChanged.connect(item.button.setIconToLeft);
 				availableVariablesList.activeFocusChanged.connect(item.button.setIconToRight);
-				item.factorList.hasSelectedItemsChanged.connect(item.button.setState);
-				availableVariablesList.hasSelectedItemsChanged.connect(item.button.setState);
+				item.factorList.selectedItemsChanged.connect(item.button.setState);
+				availableVariablesList.selectedItemsChanged.connect(item.button.setState);
 				factorsForm.factorAdded(index, item.factorList);
 			}
         }

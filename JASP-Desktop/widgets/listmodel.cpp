@@ -223,17 +223,48 @@ void ListModel::selectItem(int _index, bool _select)
 	}
 
 	if (changed)
+	{
 		emit dataChanged(index(_index, 0), index(_index, 0));
-
+		emit selectedItemsChanged();
+	}
 }
 
-void ListModel::clearSelectedItems()
+void ListModel::clearSelectedItems(bool emitSelectedChange)
 {
 	QList<int> selected = _selectedItems;
+
 	_selectedItems.clear();
 	_selectedItemsTypes.clear();
+
 	for (int i : selected)
 		emit dataChanged(index(i,0), index(i,0));
+
+	if (selected.length() > 0 && emitSelectedChange)
+		emit selectedItemsChanged();
+}
+
+void ListModel::setSelectedItem(int _index)
+{
+	clearSelectedItems(false);
+	selectItem(_index, true);
+}
+
+void ListModel::selectAllItems()
+{
+	int nbTerms = int(terms().size());
+	if (nbTerms == 0) return;
+
+	_selectedItems.clear();
+	_selectedItemsTypes.clear();
+
+	for (int i = 0; i < nbTerms; i++)
+	{
+		_selectedItems.append(i);
+		_addSelectedItemType(i);
+	}
+
+	emit dataChanged(index(0, 0), index(nbTerms - 1, 0));
+	emit selectedItemsChanged();
 }
 
 

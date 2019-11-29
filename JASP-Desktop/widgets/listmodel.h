@@ -74,13 +74,16 @@ public:
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
 	Q_INVOKABLE void				selectItem(int _index, bool _select);
-	Q_INVOKABLE void				clearSelectedItems();
+	Q_INVOKABLE void				clearSelectedItems(bool emitSelectedChange = true);
+	Q_INVOKABLE void				setSelectedItem(int _index);
+	Q_INVOKABLE void				selectAllItems();
 	Q_INVOKABLE QList<int>			selectedItems() { return _selectedItems; }
 	Q_INVOKABLE QList<QString>		selectedItemsTypes() { return _selectedItemsTypes.toList(); }
 
 
 signals:
 			void modelChanged(Terms* added = nullptr, Terms* removed = nullptr);
+			void selectedItemsChanged();
 
 public slots:	
 	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved);
