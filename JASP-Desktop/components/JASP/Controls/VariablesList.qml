@@ -70,8 +70,10 @@ JASPListControl
 	
 	signal itemDoubleClicked(int index);
 	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
-	signal hasSelectedItemsChanged();
 	signal draggingChanged(var context, bool dragging);
+	signal selectedItemsChanged();
+
+	onModelChanged: if (model) model.selectedItemsChanged.connect(selectedItemsChanged);
 
 	function setEnabledState(source, dragging)
 	{
@@ -109,7 +111,6 @@ JASPListControl
 
 		var assignOption = (target && target.interactionControl) ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
 		itemsDropped(selectedItems, target, -1, assignOption);
-		//variablesList.clearSelectedItems(true);
 	}
 
 
@@ -133,20 +134,21 @@ JASPListControl
 	function addSelectedItem(itemRank)
 	{
 		variablesList.model.selectItem(itemRank, true);
-		hasSelectedItemsChanged();
 	}
 
 	function removeSelectedItem(itemRank)
 	{
 		variablesList.model.selectItem(itemRank, false);
-		hasSelectedItemsChanged();
 	}
 
-	function clearSelectedItems(emitSignal)
+	function clearSelectedItems()
 	{
 		variablesList.model.clearSelectedItems();
-		if (emitSignal)
-			hasSelectedItemsChanged();
+	}
+
+	function setSelectedItem(itemRank)
+	{
+		variablesList.model.setSelectedItem(itemRank);
 	}
 
 	function selectShiftItems(selected)
@@ -162,7 +164,6 @@ JASPListControl
 
 		for (var i = startIndex; i <= endIndex; i++)
 			variablesList.model.selectItem(i, selected)
-		hasSelectedItemsChanged();
 	}
 
 		
@@ -320,8 +321,7 @@ JASPListControl
 			if (itemWrapper)
 			{
 				var itemRectangle = itemWrapper.children[0];
-				variablesList.clearSelectedItems(false);
-				variablesList.addSelectedItem(itemRectangle.rank);
+				variablesList.setSelectedItem(itemRectangle.rank);
 				variablesList.startShiftSelected = listGridView.currentIndex;
 				variablesList.endShiftSelected = -1;
 			}
@@ -339,6 +339,8 @@ JASPListControl
 	{
 		if (event.key === Qt.Key_Shift)
 			variablesList.shiftPressed = true;
+		else if (event.key === Qt.Key_A && event.modifiers & Qt.ControlModifier)
+			variablesList.model.selectAllItems();
 		else if (event.key >= Qt.Key_Exclam && event.key <= Qt.Key_ydiaeresis)
 		{
 			var currentSearchKeys = variablesList.searchKeys
@@ -506,7 +508,7 @@ JASPListControl
 					{
 						if (itemRectangle.draggable)
 						{
-							variablesList.clearSelectedItems(true); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
+							variablesList.clearSelectedItems(); // Must be before itemDoubleClicked: listView does not exist anymore afterwards
 							itemDoubleClicked(index);
 						}
 					}
@@ -514,10 +516,7 @@ JASPListControl
 					onClicked:
 					{
 						if (itemRectangle.clearOtherSelectedItemsWhenClicked)
-						{
-							variablesList.clearSelectedItems(false)
-							variablesList.addSelectedItem(itemRectangle.rank)
-						}
+							variablesList.setSelectedItem(itemRectangle.rank)
 					}
 					
 					onPressed:
@@ -545,14 +544,9 @@ JASPListControl
 						{
 							itemWrapper.forceActiveFocus()
 							if (!itemRectangle.selected)
-							{
-								variablesList.clearSelectedItems(false);
-								variablesList.addSelectedItem(itemRectangle.rank);
-							}
+								variablesList.setSelectedItem(itemRectangle.rank);
 							else
-							{
 								itemRectangle.clearOtherSelectedItemsWhenClicked = true;
-							}
 							
 							variablesList.startShiftSelected = index;
 							variablesList.endShiftSelected = -1;
@@ -615,7 +609,7 @@ JASPListControl
 								var variablesListName = variablesList.name
 								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : ""
 								itemsDropped(selectedItems, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
-								variablesList.clearSelectedItems(true);
+								variablesList.clearSelectedItems();
 							}
 						}
 					}
