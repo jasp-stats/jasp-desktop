@@ -37,7 +37,7 @@ class BoundQMLTextArea : public QMLListView, public BoundQMLItem
 {
 	Q_OBJECT
 	
-	enum TextType {Default, Lavaan, Model, Rcode, JAGSmodel};
+	enum TextType {Default, Model, Rcode, JAGSmodel};
 	
 public:
 	BoundQMLTextArea(JASPControlBase* item);
@@ -51,20 +51,17 @@ public:
 
 	void	resetQMLItem(JASPControlBase *item)			override;
 	void	rScriptDoneHandler(const QString &result)	override;
-	void	setJagsParameters();
 
 	bool	modelHasAllVariables()								{ return _modelHasAllVariables; }
 
 public slots:
-	void checkSyntax();
-	void dataSetChangedHandler();
+	virtual	void checkSyntax();
+			void dataSetChangedHandler();
     
 protected:
 	OptionString*				_boundTo = nullptr;
 	QString						_text;
 	TextType					_textType;
-	QString						_applyScriptInfo;
-	QSet<QString>				_usedColumnNames;
 	
 	LavaanSyntaxHighlighter*	_lavaanHighlighter = nullptr;
 	ListModelTermsAvailable*	_model = nullptr;

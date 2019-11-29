@@ -379,7 +379,9 @@ HEADERS += \
     widgets/jaspcontrolwrapper.h \
     widgets/rowcontrols.h \
     widgets/qmlexpander.h \
-    widgets/listmodelmultitermsassigned.h
+    widgets/listmodelmultitermsassigned.h \
+    widgets/boundqmllavaantextarea.h \
+    widgets/boundqmljagstextarea.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -556,7 +558,9 @@ SOURCES += \
     widgets/jaspcontrolwrapper.cpp \
     widgets/rowcontrols.cpp \
     widgets/qmlexpander.cpp \
-    widgets/listmodelmultitermsassigned.cpp
+    widgets/listmodelmultitermsassigned.cpp \
+    widgets/boundqmllavaantextarea.cpp \
+    widgets/boundqmljagstextarea.cpp
 
 
 RESOURCES += \
