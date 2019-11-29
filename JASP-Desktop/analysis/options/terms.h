@@ -51,7 +51,7 @@ public:
 	void removeParent();
 	void setSortParent(const Terms &parent);
 
-	void add(const Term &term);
+	void add(const Term &term, bool isUnique = true);
 	void add(const Terms &terms);
 
 	void insert(int index, const Term &term);
@@ -69,6 +69,7 @@ public:
 	void remove(const Term &term);
 	void remove(const Terms &terms);
 	void remove(size_t pos, size_t n = 1);
+	void replace(int pos, const Term& term);
 	bool discardWhatDoesntContainTheseComponents(const Terms &terms);
 	bool discardWhatDoesContainTheseComponents(const Terms &terms);
 	bool discardWhatDoesContainTheseTerms(const Terms &terms);

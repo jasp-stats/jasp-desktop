@@ -39,6 +39,7 @@ QHash<int, QByteArray> ListModel::roleNames() const
 	{
 		roles[TypeRole]				= "type";
 		roles[SelectedRole]			= "selected";
+		roles[SelectableRole]		= "selectable";
 		roles[ColumnTypeRole]		= "columnType";
 		roles[NameRole]				= "name";
 		roles[RowComponentsRole]	= "rowComponents";
@@ -135,7 +136,7 @@ void ListModel::setUpRowControls()
 		return;
 
 	int row = 0;
-	for (const Term& term : _terms)
+	for (const Term& term : terms())
 	{
 		const QString& key = term.asQString();
 		if (!_rowControlsMap.contains(key))
@@ -188,23 +189,27 @@ void ListModel::selectItem(int _index, bool _select)
 	bool changed = false;
 	if (_select)
 	{
-		int i = 0;
-		for (; i < _selectedItems.length(); i++)
+		if (data(index(_index, 0), ListModel::SelectableRole).toBool())
 		{
-			if (_selectedItems[i] == _index)
-				break;
-			else if (_selectedItems[i] > _index)
+			int i = 0;
+			for (; i < _selectedItems.length(); i++)
 			{
-				_selectedItems.insert(i, _index);
+				if (_selectedItems[i] == _index)
+					break;
+				else if (_selectedItems[i] > _index)
+				{
+					_selectedItems.insert(i, _index);
+					_addSelectedItemType(_index);
+					changed = true;
+					break;
+				}
+			}
+			if (i == _selectedItems.length())
+			{
+				_selectedItems.append(_index);
 				_addSelectedItemType(_index);
 				changed = true;
 			}
-		}
-		if (i == _selectedItems.length())
-		{
-			_selectedItems.append(_index);
-			_addSelectedItemType(_index);
-			changed = true;
 		}
 	}
 	else
@@ -259,8 +264,11 @@ void ListModel::selectAllItems()
 
 	for (int i = 0; i < nbTerms; i++)
 	{
-		_selectedItems.append(i);
-		_addSelectedItemType(i);
+		if (data(index(i, 0), ListModel::SelectableRole).toBool())
+		{
+			_selectedItems.append(i);
+			_addSelectedItemType(i);
+		}
 	}
 
 	emit dataChanged(index(0, 0), index(nbTerms - 1, 0));
@@ -277,21 +285,24 @@ void ListModel::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
 
 int ListModel::rowCount(const QModelIndex &) const
 {
-	return int(_terms.size());
+	return int(terms().size());
 }
 
 QVariant ListModel::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();
+	const Terms& myTerms = terms();
 	size_t row_t = size_t(row);
-	if (row_t >= _terms.size())
+	if (row_t >= myTerms.size())
 		return QVariant();
 
 	if (role == Qt::DisplayRole || role == ListModel::NameRole)
 	{
-		const Term& term = _terms.at(row_t);
+		const Term& term = myTerms.at(row_t);
 		return QVariant(term.asQString());
 	}
+	if (role == ListModel::SelectableRole)
+		return !myTerms.at(row_t).asQString().isEmpty();
 	if (role == ListModel::SelectedRole)
 	{
 		if (_selectedItems.contains(row))
@@ -302,7 +313,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	if (role == ListModel::RowComponentsRole)
 	{
 		if (_rowControlsMap.size() > 0)
-			return QVariant::fromValue(_rowControlsMap[_terms.at(row_t).asQString()]->getControls());
+			return QVariant::fromValue(_rowControlsMap[myTerms.at(row_t).asQString()]->getControls());
 		else
 			return QVariant();
 	}
@@ -314,7 +325,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 		return QVariant("variable");
 	else if (role == ListModel::ColumnTypeRole)
 	{
-		Term term = _terms.at(row_t);
+		const Term& term = myTerms.at(row_t);
 		if (term.size() != 1)
 			return QVariant();
 

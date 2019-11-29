@@ -193,9 +193,11 @@ void ListModelTableViewBase::itemChanged(int column, int row, QVariant value)
 	}
 }
 
-const Terms &ListModelTableViewBase::terms(const QString &what)
+const Terms& ListModelTableViewBase::terms(const QString &what) const
 {
-	_tempTerms.clear();
+	static Terms tempTerms;
+	tempTerms.clear();
+
 	int colNb = -1;
 	if (what.isEmpty() && _values.length() == 1)
 		colNb = 0;
@@ -222,7 +224,7 @@ const Terms &ListModelTableViewBase::terms(const QString &what)
 			{
 				QString value = val.toString();
 				if (!value.isEmpty() && value != "...")
-					_tempTerms.add(val.toString());
+					tempTerms.add(val.toString());
 			}
 		}
 		else
@@ -237,7 +239,7 @@ const Terms &ListModelTableViewBase::terms(const QString &what)
 	}
 
 
-	return _tempTerms;
+	return tempTerms;
 }
 
 QVariant ListModelTableViewBase::headerData( int section, Qt::Orientation orientation, int role) const

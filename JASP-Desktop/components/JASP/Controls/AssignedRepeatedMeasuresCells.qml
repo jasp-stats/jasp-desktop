@@ -24,5 +24,6 @@ VariablesList
 	columns					: 2
 	showVariableTypeIcon	: false
 	suggestedColumns		: ["scale"]
+	dragOnlyVariables		: true
 	height					: 140
 }

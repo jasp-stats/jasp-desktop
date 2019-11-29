@@ -31,15 +31,8 @@ BoundQMLListViewMeasuresCells::BoundQMLListViewMeasuresCells(JASPControlBase* it
 	: JASPControlWrapper(item)
 	, BoundQMLListViewDraggable(item)
 {
-	_boundTo = nullptr;
 	_needsSourceModels = true;	
-	_measuresCellsModel = new ListModelMeasuresCellsAssigned(this);
-	
-	setDropMode(qmlDropMode::Replace);
-	setProperty("showElementBorder", true);
-	setProperty("columns", 2);
-	setProperty("dragOnlyVariables", true);
-	setProperty("showVariableTypeIcon", false);
+	_measuresCellsModel = new ListModelMeasuresCellsAssigned(this);	
 }
 
 void BoundQMLListViewMeasuresCells::bindTo(Option *option)

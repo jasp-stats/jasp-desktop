@@ -125,9 +125,11 @@ void Terms::removeParent() {
 	_parent = nullptr;
 }
 
-void Terms::add(const Term &term)
+void Terms::add(const Term &term, bool isUnique)
 {
-	if (_parent != nullptr)
+	if (!isUnique)
+		_terms.push_back(term);
+	else if (_parent != nullptr)
 	{
 		vector<Term>::iterator itr = _terms.begin();
 		int result = -1;
@@ -484,6 +486,16 @@ void Terms::remove(size_t pos, size_t n)
 
 	for (; n > 0 && itr != _terms.end(); n--)
 		_terms.erase(itr);
+}
+
+void Terms::replace(int pos, const Term &term)
+{
+	size_t pos_t = size_t(pos);
+	if (pos_t <_terms.size())
+	{
+		remove(pos_t);
+		insert(pos, term);
+	}
 }
 
 bool Terms::discardWhatDoesntContainTheseComponents(const Terms &terms)

@@ -290,11 +290,11 @@ void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 		succes = _formulaResultInBounds(val);
 
 	if (succes) {
-		_item->setProperty("hasScriptError", false);
+		setItemProperty("hasScriptError", false);
 
 	} else {
-		_item->setProperty("hasScriptError", true);
-		_item->setProperty("infoText", result);
+		setItemProperty("hasScriptError", true);
+		setItemProperty("infoText", result);
 	}
 	_setFormulaValidated(succes);
 }

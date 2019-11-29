@@ -27,22 +27,20 @@ class ListModelLayersAssigned : public ListModelAssignedInterface
 public:
 	ListModelLayersAssigned(QMLListView* listView);
 
-	int			rowCount(const QModelIndex &parent = QModelIndex())							const	override;
 	QVariant	data(const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
 	Terms*		termsFromIndexes(const QList<int> &indexes)									const	override;	
 	Terms*		addTerms(Terms* terms, int dropItemIndex = -1, const QString& assignOption = "")	override;
 	void		moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;
 	void		removeTerms(const QList<int>& indexes)												override;
-	const Terms& terms(const QString& what = QString())												override;
 	
 	void		initLayers(const std::vector<std::vector<std::string> >& allVariables);
 	std::vector<std::pair<std::string, std::vector<std::string> > > getLayers()				const;
 		
 private:
-	int _getLayer(int index, int& realIndex) const;
+	int			_getLayer(int index, int& realIndex, bool inclusive = false) const;
+	void		_setTerms();
 	
 	QList<QList<QString> >	_variables;
-	Terms					_tempTerms;
 };
 
 #endif // LISTMODELLAYERSASSIGNED_H

@@ -66,7 +66,7 @@ public:
 				const QVector<QVector<QVariant>>	&	values()	const { return _values;		}
 				const QVector<QString>				&	rowNames()	const { return _rowNames;	}
 				const QVector<QString>				&	colNames()	const { return _colNames;	}
-	virtual		const Terms&		terms(const QString& what = QString())														override;
+				const Terms							&	terms(const QString& what = QString())	const override;
 
 
 				void runRScript(		const QString & script);
@@ -96,7 +96,6 @@ protected:
 								_initialColCnt	= 0,
 								_initialRowCnt	= 0;
 	QVariant					_defaultCellVal;
-	Terms						_tempTerms;
 };
 
 #endif // LISTMODELTABLEVIEWBASE_H

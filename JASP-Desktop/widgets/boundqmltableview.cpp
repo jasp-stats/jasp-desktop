@@ -54,8 +54,8 @@ BoundQMLTableView::BoundQMLTableView(JASPControlBase* item)
 	QQuickItem::connect(item, SIGNAL(reset()),							this, SLOT(resetSlot()));
 	QQuickItem::connect(item, SIGNAL(itemChanged(int, int, QString)),	this, SLOT(itemChangedSlot(int, int, QString)));
 
-	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	[&](){ _item->setProperty("columnCount",	_tableModel->colNames().size()); }); //Possibly the best way to connect the signals of the listmodel to the slots of the qml item?
-	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		[&](){ _item->setProperty("rowCount",		_tableModel->rowNames().size()); });
+	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	[&](){ setItemProperty("columnCount",	_tableModel->colNames().size()); }); //Possibly the best way to connect the signals of the listmodel to the slots of the qml item?
+	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		[&](){ setItemProperty("rowCount",		_tableModel->rowNames().size()); });
 	connect(form(),		&AnalysisForm::refreshTableViewModels,			this, &BoundQMLTableView::refreshMe	);
 
 	int		initialColumnCount	= getItemProperty("initialColumnCount").toInt(),

@@ -41,7 +41,7 @@ BoundQMLLavaanTextArea::BoundQMLLavaanTextArea(JASPControlBase* item)
 		QFont font(family);
 		font.setStyleHint(QFont::Monospace);
 		font.setPointSize(10);
-		_item->setProperty("font", font);
+		setItemProperty("font", font);
 	}
 
 	QVariant textDocumentVariant = _item->property("textDocument");

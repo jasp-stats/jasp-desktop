@@ -135,7 +135,7 @@ void BoundQMLFactorsForm::addListViewSlot(BoundQMLListViewTerms* listView)
 	for (auto factor : factors)
 		names.push_back(tq(get<0>(factor)));
 	_availableVariablesListItem->setProperty("dropKeys", names);
-	_item->setProperty("dropKeys", _availableVariablesListName);
+	setItemProperty("dropKeys", _availableVariablesListName);
 	
 	QMLListView* availableListView = dynamic_cast<QMLListView*>(_availableVariablesListItem->getWrapper());
 	form()->addListView(listView, availableListView);
