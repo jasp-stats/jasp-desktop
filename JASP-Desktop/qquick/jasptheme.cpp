@@ -309,6 +309,25 @@ void JaspTheme::setShadow(QColor shadow)
 	emit shadowChanged(_shadow);
 }
 
+
+void JaspTheme::setJaspBlue(QColor jaspBlue)
+{
+	if (_jaspBlue == jaspBlue)
+		return;
+
+	_jaspBlue = jaspBlue;
+	emit jaspBlueChanged(_jaspBlue);
+}
+
+void JaspTheme::setJaspGreen(QColor jaspGreen)
+{
+	if (_jaspGreen == jaspGreen)
+		return;
+
+	_jaspGreen = jaspGreen;
+	emit jaspGreenChanged(_jaspGreen);
+}
+
 void JaspTheme::setTextEnabled(QColor textEnabled)
 {
 	if (_textEnabled == textEnabled)

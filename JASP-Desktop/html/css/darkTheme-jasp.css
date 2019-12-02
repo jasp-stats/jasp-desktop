@@ -7,7 +7,7 @@ body {
         font-family:      sans-serif ;
         margin:           0;
         cursor:           default;
-        color:            #FFF;
+        color:            #EEE;
         background-color: #404040 ; /*grayLighter*/
         font-size:        12px;
 }
@@ -53,7 +53,7 @@ h6, .h6-toolbar .jasp-menu {
 }
 
 .jasp-display-item {
-        background-color: #000 ; /*grayLighter*/
+        background-color: #333 ;
         border:           1px solid #747677 ; /*grayDarker but not really because this is #696969 */
         border-radius :   6px ;
         margin-top:       0.1em ;
@@ -216,7 +216,7 @@ tbody tr:nth-last-child(2) th {
 
 .jasp-analysis.selected tbody tr:nth-child(odd) th,
 .jasp-analysis.selected tbody tr:nth-child(odd) td {
-        background: #00000000
+        background: #333
 }
 /*
 .jasp-analysis:not(.selected) {
@@ -224,7 +224,7 @@ tbody tr:nth-last-child(2) th {
 }*/
 
 .jasp-analysis.selected {
-        color: #FFF;
+        color: #EEE;
 }
 
 .jasp-analysis.unselected:not(.jasp-menu-selected) {
@@ -261,15 +261,7 @@ svg > text
 }
 
 .jasp-image {
-
-  /*border: 2px solid transparent ;
-  border-radius : 2px ;
-  padding: 0px ;*/
   position: relative ;
-  /*background-color:   #FFF;
-  */
-
-
 }
 
 .jasp-image-image {

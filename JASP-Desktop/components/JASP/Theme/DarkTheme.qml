@@ -5,9 +5,9 @@ Theme
 	themeName:							"darkTheme"
 
 	//Color definitions:
-	white:								"black"
+	white:								"#333"
 	whiteBroken:						"#050505"
-	black:								"white"
+	black:								"#EEE"
 
 	grayDarker:							"#747677"
 	gray:								"#5c5c5c"
@@ -32,6 +32,10 @@ Theme
 	cyan:								"#196EA9"
 
 	shadow:								"#BB000000"
+
+
+	jaspBlue:							"#0481c3"
+	jaspGreen:							"#7ca61e"
 
 	controlErrorBackgroundColor:		redDarker
 	controlErrorTextColor:				black

@@ -377,7 +377,7 @@ FocusScope
 	{
 		id:			blueBackgroundTop
 		z:			-1
-		color:		"#14a1e3"
+		color:		jaspTheme.jaspBlue
 		anchors
 		{
 			top:	parent.top
@@ -391,7 +391,7 @@ FocusScope
 	{
 		id:			greenBackgroundTop
 		z:			-1
-		color:		"#8cc63e"
+		color:		jaspTheme.jaspGreen
 		anchors
 		{
 			top:	parent.verticalCenter
@@ -407,7 +407,7 @@ FocusScope
 
 		property var date:	new Date();
 
-		visible:			date.getMonth() === 11 //11 is december
+		visible:			date.getMonth() === 11 && date.getDay() > 21 //11 is december and winter starts on the 21st
 		playing:			visible
 		source:				visible ? "qrc:/core/img/snow.gif" : ""
 		fillMode:			Image.TileHorizontally

@@ -84,9 +84,8 @@ JaspTheme
 
 	shadow:								"#33000000"
 
-	//these might be added in JaspTheme class:
-	//readonly property color jaspBlue: "#14a1e3"
-	//readonly property color jaspGreen: "#8cc63e"
+	jaspBlue:							"#14a1e3"
+	jaspGreen:							"#8cc63e"
 
 	textEnabled:						black
 	textDisabled:						grayDarker

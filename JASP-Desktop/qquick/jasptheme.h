@@ -14,155 +14,157 @@ class JaspTheme : public QQuickItem
 {
 	Q_OBJECT
 
-	Q_PROPERTY(float uiScale READ uiScale	NOTIFY uiScaleChanged)
-	Q_PROPERTY(float ribbonScaleHovered READ ribbonScaleHovered WRITE setRibbonScaleHovered NOTIFY ribbonScaleHoveredChanged)
+	Q_PROPERTY(float              uiScale                         READ uiScale                                                                  NOTIFY uiScaleChanged                         )
+	Q_PROPERTY(float              ribbonScaleHovered              READ ribbonScaleHovered              WRITE setRibbonScaleHovered              NOTIFY ribbonScaleHoveredChanged              )
 
 	//Colors (base):
-	Q_PROPERTY(QColor white READ white WRITE setWhite NOTIFY whiteChanged)
-	Q_PROPERTY(QColor whiteBroken READ whiteBroken WRITE setWhiteBroken NOTIFY whiteBrokenChanged)
-	Q_PROPERTY(QColor black READ black WRITE setBlack NOTIFY blackChanged)
-	Q_PROPERTY(QColor gray READ gray WRITE setGray NOTIFY grayChanged)
-	Q_PROPERTY(QColor grayDarker READ grayDarker WRITE setGrayDarker NOTIFY grayDarkerChanged)
-	Q_PROPERTY(QColor grayLighter READ grayLighter WRITE setGrayLighter NOTIFY grayLighterChanged)
-	Q_PROPERTY(QColor grayMuchLighter READ grayMuchLighter WRITE setGrayMuchLighter NOTIFY grayMuchLighterChanged)
-	Q_PROPERTY(QColor grayVeryMuchLighter READ grayVeryMuchLighter WRITE setGrayVeryMuchLighter NOTIFY grayVeryMuchLighterChanged)
-	Q_PROPERTY(QColor blue READ blue WRITE setBlue NOTIFY blueChanged)
-	Q_PROPERTY(QColor blueDarker READ blueDarker WRITE setBlueDarker NOTIFY blueDarkerChanged)
-	Q_PROPERTY(QColor blueLighter READ blueLighter WRITE setBlueLighter NOTIFY blueLighterChanged)
-	Q_PROPERTY(QColor blueMuchLighter READ blueMuchLighter WRITE setBlueMuchLighter NOTIFY blueMuchLighterChanged)
-	Q_PROPERTY(QColor red READ red WRITE setRed NOTIFY redChanged)
-	Q_PROPERTY(QColor redDarker READ redDarker WRITE setRedDarker NOTIFY redDarkerChanged)
-	Q_PROPERTY(QColor green READ green WRITE setGreen NOTIFY greenChanged)
-	Q_PROPERTY(QColor yellowLight READ yellowLight WRITE setYellowLight NOTIFY yellowLightChanged)
-	Q_PROPERTY(QColor rose READ rose WRITE setRose NOTIFY roseChanged)
-	Q_PROPERTY(QColor roseLight READ roseLight WRITE setRoseLight NOTIFY roseLightChanged)
-	Q_PROPERTY(QColor cyan READ cyan WRITE setCyan NOTIFY cyanChanged)
-	Q_PROPERTY(QColor shadow READ shadow WRITE setShadow NOTIFY shadowChanged)
+	Q_PROPERTY(QColor             white                           READ white                           WRITE setWhite                           NOTIFY whiteChanged                           )
+	Q_PROPERTY(QColor             whiteBroken                     READ whiteBroken                     WRITE setWhiteBroken                     NOTIFY whiteBrokenChanged                     )
+	Q_PROPERTY(QColor             black                           READ black                           WRITE setBlack                           NOTIFY blackChanged                           )
+	Q_PROPERTY(QColor             gray                            READ gray                            WRITE setGray                            NOTIFY grayChanged                            )
+	Q_PROPERTY(QColor             grayDarker                      READ grayDarker                      WRITE setGrayDarker                      NOTIFY grayDarkerChanged                      )
+	Q_PROPERTY(QColor             grayLighter                     READ grayLighter                     WRITE setGrayLighter                     NOTIFY grayLighterChanged                     )
+	Q_PROPERTY(QColor             grayMuchLighter                 READ grayMuchLighter                 WRITE setGrayMuchLighter                 NOTIFY grayMuchLighterChanged                 )
+	Q_PROPERTY(QColor             grayVeryMuchLighter             READ grayVeryMuchLighter             WRITE setGrayVeryMuchLighter             NOTIFY grayVeryMuchLighterChanged             )
+	Q_PROPERTY(QColor             blue                            READ blue                            WRITE setBlue                            NOTIFY blueChanged                            )
+	Q_PROPERTY(QColor             blueDarker                      READ blueDarker                      WRITE setBlueDarker                      NOTIFY blueDarkerChanged                      )
+	Q_PROPERTY(QColor             blueLighter                     READ blueLighter                     WRITE setBlueLighter                     NOTIFY blueLighterChanged                     )
+	Q_PROPERTY(QColor             blueMuchLighter                 READ blueMuchLighter                 WRITE setBlueMuchLighter                 NOTIFY blueMuchLighterChanged                 )
+	Q_PROPERTY(QColor             red                             READ red                             WRITE setRed                             NOTIFY redChanged                             )
+	Q_PROPERTY(QColor             redDarker                       READ redDarker                       WRITE setRedDarker                       NOTIFY redDarkerChanged                       )
+	Q_PROPERTY(QColor             green                           READ green                           WRITE setGreen                           NOTIFY greenChanged                           )
+	Q_PROPERTY(QColor             yellowLight                     READ yellowLight                     WRITE setYellowLight                     NOTIFY yellowLightChanged                     )
+	Q_PROPERTY(QColor             rose                            READ rose                            WRITE setRose                            NOTIFY roseChanged                            )
+	Q_PROPERTY(QColor             roseLight                       READ roseLight                       WRITE setRoseLight                       NOTIFY roseLightChanged                       )
+	Q_PROPERTY(QColor             cyan                            READ cyan                            WRITE setCyan                            NOTIFY cyanChanged                            )
+	Q_PROPERTY(QColor             shadow                          READ shadow                          WRITE setShadow                          NOTIFY shadowChanged                          )
+	Q_PROPERTY(QColor             jaspBlue                        READ jaspBlue                        WRITE setJaspBlue                        NOTIFY jaspBlueChanged                        )
+	Q_PROPERTY(QColor             jaspGreen                       READ jaspGreen                       WRITE setJaspGreen                       NOTIFY jaspGreenChanged                       )
 
 	//Colors (ui):
-	Q_PROPERTY(QColor textEnabled READ textEnabled WRITE setTextEnabled NOTIFY textEnabledChanged)
-	Q_PROPERTY(QColor textDisabled READ textDisabled WRITE setTextDisabled NOTIFY textDisabledChanged)
-	Q_PROPERTY(QColor uiBackground READ uiBackground WRITE setUiBackground NOTIFY uiBackgroundChanged)
-	Q_PROPERTY(QColor uiBorder READ uiBorder WRITE setUiBorder NOTIFY uiBorderChanged)
-	Q_PROPERTY(QColor fileMenuColorBackground READ fileMenuColorBackground WRITE setFileMenuColorBackground NOTIFY fileMenuColorBackgroundChanged)
-	Q_PROPERTY(QColor fileMenuLightBorder READ fileMenuLightBorder WRITE setFileMenuLightBorder NOTIFY fileMenuLightBorderChanged)
+	Q_PROPERTY(QColor             textEnabled                     READ textEnabled                     WRITE setTextEnabled                     NOTIFY textEnabledChanged                     )
+	Q_PROPERTY(QColor             textDisabled                    READ textDisabled                    WRITE setTextDisabled                    NOTIFY textDisabledChanged                    )
+	Q_PROPERTY(QColor             uiBackground                    READ uiBackground                    WRITE setUiBackground                    NOTIFY uiBackgroundChanged                    )
+	Q_PROPERTY(QColor             uiBorder                        READ uiBorder                        WRITE setUiBorder                        NOTIFY uiBorderChanged                        )
+	Q_PROPERTY(QColor             fileMenuColorBackground         READ fileMenuColorBackground         WRITE setFileMenuColorBackground         NOTIFY fileMenuColorBackgroundChanged         )
+	Q_PROPERTY(QColor             fileMenuLightBorder             READ fileMenuLightBorder             WRITE setFileMenuLightBorder             NOTIFY fileMenuLightBorderChanged             )
 
-	Q_PROPERTY(QColor buttonColor READ buttonColor WRITE setButtonColor NOTIFY buttonColorChanged)
-	Q_PROPERTY(QColor buttonColorHovered READ buttonColorHovered WRITE setButtonColorHovered NOTIFY buttonColorHoveredChanged)
-	Q_PROPERTY(QColor buttonColorPressed READ buttonColorPressed WRITE setButtonColorPressed NOTIFY buttonColorPressedChanged)
-	Q_PROPERTY(QColor buttonBorderColor READ buttonBorderColor WRITE setButtonBorderColor NOTIFY buttonBorderColorChanged)
-	Q_PROPERTY(QColor buttonBorderColorHovered READ buttonBorderColorHovered WRITE setButtonBorderColorHovered NOTIFY buttonBorderColorHoveredChanged)
+	Q_PROPERTY(QColor             buttonColor                     READ buttonColor                     WRITE setButtonColor                     NOTIFY buttonColorChanged                     )
+	Q_PROPERTY(QColor             buttonColorHovered              READ buttonColorHovered              WRITE setButtonColorHovered              NOTIFY buttonColorHoveredChanged              )
+	Q_PROPERTY(QColor             buttonColorPressed              READ buttonColorPressed              WRITE setButtonColorPressed              NOTIFY buttonColorPressedChanged              )
+	Q_PROPERTY(QColor             buttonBorderColor               READ buttonBorderColor               WRITE setButtonBorderColor               NOTIFY buttonBorderColorChanged               )
+	Q_PROPERTY(QColor             buttonBorderColorHovered        READ buttonBorderColorHovered        WRITE setButtonBorderColorHovered        NOTIFY buttonBorderColorHoveredChanged        )
 
-	Q_PROPERTY(QColor itemHighlight READ itemHighlight WRITE setItemHighlight NOTIFY itemHighlightChanged)
-	Q_PROPERTY(QColor itemHoverColor READ itemHoverColor WRITE setItemHoverColor NOTIFY itemHoverColorChanged)
-	Q_PROPERTY(QColor itemSelectedColor READ itemSelectedColor WRITE setItemSelectedColor NOTIFY itemSelectedColorChanged)
-	Q_PROPERTY(QColor itemSelectedNoFocusColor READ itemSelectedNoFocusColor WRITE setItemSelectedNoFocusColor NOTIFY itemSelectedNoFocusColorChanged)
+	Q_PROPERTY(QColor             itemHighlight                   READ itemHighlight                   WRITE setItemHighlight                   NOTIFY itemHighlightChanged                   )
+	Q_PROPERTY(QColor             itemHoverColor                  READ itemHoverColor                  WRITE setItemHoverColor                  NOTIFY itemHoverColorChanged                  )
+	Q_PROPERTY(QColor             itemSelectedColor               READ itemSelectedColor               WRITE setItemSelectedColor               NOTIFY itemSelectedColorChanged               )
+	Q_PROPERTY(QColor             itemSelectedNoFocusColor        READ itemSelectedNoFocusColor        WRITE setItemSelectedNoFocusColor        NOTIFY itemSelectedNoFocusColorChanged        )
 
-	Q_PROPERTY(QColor darkeningColour READ darkeningColour WRITE setDarkeningColour NOTIFY darkeningColourChanged)
+	Q_PROPERTY(QColor             darkeningColour                 READ darkeningColour                 WRITE setDarkeningColour                 NOTIFY darkeningColourChanged                 )
 
 	//JASPControl colors mostly:
-	Q_PROPERTY(QColor borderColor READ borderColor WRITE setBorderColor NOTIFY borderColorChanged)
-	Q_PROPERTY(QColor focusBorderColor READ focusBorderColor WRITE setFocusBorderColor NOTIFY focusBorderColorChanged)
-	Q_PROPERTY(QColor dependencyBorderColor READ dependencyBorderColor WRITE setDependencyBorderColor NOTIFY dependencyBorderColorChanged)
-	Q_PROPERTY(QColor dependencySelectedColor READ dependencySelectedColor WRITE setDependencySelectedColor NOTIFY dependencySelectedColorChanged)
-	Q_PROPERTY(QColor containsDragBorderColor READ containsDragBorderColor WRITE setContainsDragBorderColor NOTIFY containsDragBorderColorChanged)
+	Q_PROPERTY(QColor             borderColor                     READ borderColor                     WRITE setBorderColor                     NOTIFY borderColorChanged                     )
+	Q_PROPERTY(QColor             focusBorderColor                READ focusBorderColor                WRITE setFocusBorderColor                NOTIFY focusBorderColorChanged                )
+	Q_PROPERTY(QColor             dependencyBorderColor           READ dependencyBorderColor           WRITE setDependencyBorderColor           NOTIFY dependencyBorderColorChanged           )
+	Q_PROPERTY(QColor             dependencySelectedColor         READ dependencySelectedColor         WRITE setDependencySelectedColor         NOTIFY dependencySelectedColorChanged         )
+	Q_PROPERTY(QColor             containsDragBorderColor         READ containsDragBorderColor         WRITE setContainsDragBorderColor         NOTIFY containsDragBorderColorChanged         )
 
-	Q_PROPERTY(QColor analysisBackgroundColor READ analysisBackgroundColor WRITE setAnalysisBackgroundColor NOTIFY analysisBackgroundColorChanged)
-	Q_PROPERTY(QColor controlBackgroundColor READ controlBackgroundColor WRITE setControlBackgroundColor NOTIFY controlBackgroundColorChanged)
-	Q_PROPERTY(QColor disableControlBackgroundColor READ disableControlBackgroundColor WRITE setDisableControlBackgroundColor NOTIFY disableControlBackgroundColorChanged)
-	Q_PROPERTY(QColor rowEvenColor READ rowEvenColor WRITE setRowEvenColor NOTIFY rowEvenColorChanged)
-	Q_PROPERTY(QColor rowOnevenColor READ rowOnevenColor WRITE setRowOnevenColor NOTIFY rowOnevenColorChanged)
-	Q_PROPERTY(QColor controlErrorBackgroundColor READ controlErrorBackgroundColor WRITE setControlErrorBackgroundColor NOTIFY controlErrorBackgroundColorChanged)
-	Q_PROPERTY(QColor controlErrorTextColor READ controlErrorTextColor WRITE setControlErrorTextColor NOTIFY controlErrorTextColorChanged)
+	Q_PROPERTY(QColor             analysisBackgroundColor         READ analysisBackgroundColor         WRITE setAnalysisBackgroundColor         NOTIFY analysisBackgroundColorChanged         )
+	Q_PROPERTY(QColor             controlBackgroundColor          READ controlBackgroundColor          WRITE setControlBackgroundColor          NOTIFY controlBackgroundColorChanged          )
+	Q_PROPERTY(QColor             disableControlBackgroundColor   READ disableControlBackgroundColor   WRITE setDisableControlBackgroundColor   NOTIFY disableControlBackgroundColorChanged   )
+	Q_PROPERTY(QColor             rowEvenColor                    READ rowEvenColor                    WRITE setRowEvenColor                    NOTIFY rowEvenColorChanged                    )
+	Q_PROPERTY(QColor             rowOnevenColor                  READ rowOnevenColor                  WRITE setRowOnevenColor                  NOTIFY rowOnevenColorChanged                  )
+	Q_PROPERTY(QColor             controlErrorBackgroundColor     READ controlErrorBackgroundColor     WRITE setControlErrorBackgroundColor     NOTIFY controlErrorBackgroundColorChanged     )
+	Q_PROPERTY(QColor             controlErrorTextColor           READ controlErrorTextColor           WRITE setControlErrorTextColor           NOTIFY controlErrorTextColorChanged           )
 
-	Q_PROPERTY(QColor buttonBackgroundColor READ buttonBackgroundColor WRITE setButtonBackgroundColor NOTIFY buttonBackgroundColorChanged)
-	Q_PROPERTY(QColor tooltipBackgroundColor READ tooltipBackgroundColor WRITE setTooltipBackgroundColor NOTIFY tooltipBackgroundColorChanged)
-	Q_PROPERTY(QColor debugBackgroundColor READ debugBackgroundColor WRITE setDebugBackgroundColor NOTIFY debugBackgroundColorChanged)
-	Q_PROPERTY(QColor errorMessagesBackgroundColor READ errorMessagesBackgroundColor WRITE setErrorMessagesBackgroundColor NOTIFY errorMessagesBackgroundColorChanged)
-	Q_PROPERTY(QColor sliderPartOn READ sliderPartOn WRITE setSliderPartOn NOTIFY sliderPartOnChanged)
-	Q_PROPERTY(QColor sliderPartOff READ sliderPartOff WRITE setSliderPartOff NOTIFY sliderPartOffChanged)
+	Q_PROPERTY(QColor             buttonBackgroundColor           READ buttonBackgroundColor           WRITE setButtonBackgroundColor           NOTIFY buttonBackgroundColorChanged           )
+	Q_PROPERTY(QColor             tooltipBackgroundColor          READ tooltipBackgroundColor          WRITE setTooltipBackgroundColor          NOTIFY tooltipBackgroundColorChanged          )
+	Q_PROPERTY(QColor             debugBackgroundColor            READ debugBackgroundColor            WRITE setDebugBackgroundColor            NOTIFY debugBackgroundColorChanged            )
+	Q_PROPERTY(QColor             errorMessagesBackgroundColor    READ errorMessagesBackgroundColor    WRITE setErrorMessagesBackgroundColor    NOTIFY errorMessagesBackgroundColorChanged    )
+	Q_PROPERTY(QColor             sliderPartOn                    READ sliderPartOn                    WRITE setSliderPartOn                    NOTIFY sliderPartOnChanged                    )
+	Q_PROPERTY(QColor             sliderPartOff                   READ sliderPartOff                   WRITE setSliderPartOff                   NOTIFY sliderPartOffChanged                   )
 
 	//Distances:
-	Q_PROPERTY(theme_distanceType borderRadius READ borderRadius WRITE setBorderRadius NOTIFY borderRadiusChanged)
-	Q_PROPERTY(theme_distanceType shadowRadius READ shadowRadius WRITE setShadowRadius NOTIFY shadowRadiusChanged)
+	Q_PROPERTY(theme_distanceType borderRadius                    READ borderRadius                    WRITE setBorderRadius                    NOTIFY borderRadiusChanged                    )
+	Q_PROPERTY(theme_distanceType shadowRadius                    READ shadowRadius                    WRITE setShadowRadius                    NOTIFY shadowRadiusChanged                    )
 
-	Q_PROPERTY(theme_distanceType itemPadding READ itemPadding WRITE setItemPadding NOTIFY itemPaddingChanged)
-	Q_PROPERTY(theme_distanceType jaspControlPadding READ jaspControlPadding WRITE setJaspControlPadding NOTIFY jaspControlPaddingChanged)
-	Q_PROPERTY(theme_distanceType ribbonButtonPadding READ ribbonButtonPadding WRITE setRibbonButtonPadding NOTIFY ribbonButtonPaddingChanged)
-	Q_PROPERTY(theme_distanceType groupContentPadding READ groupContentPadding WRITE setGroupContentPadding NOTIFY groupContentPaddingChanged)
+	Q_PROPERTY(theme_distanceType itemPadding                     READ itemPadding                     WRITE setItemPadding                     NOTIFY itemPaddingChanged                     )
+	Q_PROPERTY(theme_distanceType jaspControlPadding              READ jaspControlPadding              WRITE setJaspControlPadding              NOTIFY jaspControlPaddingChanged              )
+	Q_PROPERTY(theme_distanceType ribbonButtonPadding             READ ribbonButtonPadding             WRITE setRibbonButtonPadding             NOTIFY ribbonButtonPaddingChanged             )
+	Q_PROPERTY(theme_distanceType groupContentPadding             READ groupContentPadding             WRITE setGroupContentPadding             NOTIFY groupContentPaddingChanged             )
 
-	Q_PROPERTY(theme_distanceType rowSpacing READ rowSpacing WRITE setRowSpacing NOTIFY rowSpacingChanged)
-	Q_PROPERTY(theme_distanceType rowGridSpacing READ rowGridSpacing WRITE setRowGridSpacing NOTIFY rowGridSpacingChanged)
-	Q_PROPERTY(theme_distanceType rowGroupSpacing READ rowGroupSpacing WRITE setRowGroupSpacing NOTIFY rowGroupSpacingChanged)
-	Q_PROPERTY(theme_distanceType columnGridSpacing READ columnGridSpacing WRITE setColumnGridSpacing NOTIFY columnGridSpacingChanged)
-	Q_PROPERTY(theme_distanceType columnGroupSpacing READ columnGroupSpacing WRITE setColumnGroupSpacing NOTIFY columnGroupSpacingChanged)
-	Q_PROPERTY(theme_distanceType indentationLength READ indentationLength WRITE setIndentationLength NOTIFY indentationLengthChanged)
-	Q_PROPERTY(theme_distanceType labelSpacing READ labelSpacing WRITE setLabelSpacing NOTIFY labelSpacingChanged)
-	Q_PROPERTY(theme_distanceType menuSpacing READ menuSpacing WRITE setMenuSpacing NOTIFY menuSpacingChanged)
-	Q_PROPERTY(theme_distanceType menuPadding READ menuPadding WRITE setMenuPadding NOTIFY menuPaddingChanged)
+	Q_PROPERTY(theme_distanceType rowSpacing                      READ rowSpacing                      WRITE setRowSpacing                      NOTIFY rowSpacingChanged                      )
+	Q_PROPERTY(theme_distanceType rowGridSpacing                  READ rowGridSpacing                  WRITE setRowGridSpacing                  NOTIFY rowGridSpacingChanged                  )
+	Q_PROPERTY(theme_distanceType rowGroupSpacing                 READ rowGroupSpacing                 WRITE setRowGroupSpacing                 NOTIFY rowGroupSpacingChanged                 )
+	Q_PROPERTY(theme_distanceType columnGridSpacing               READ columnGridSpacing               WRITE setColumnGridSpacing               NOTIFY columnGridSpacingChanged               )
+	Q_PROPERTY(theme_distanceType columnGroupSpacing              READ columnGroupSpacing              WRITE setColumnGroupSpacing              NOTIFY columnGroupSpacingChanged              )
+	Q_PROPERTY(theme_distanceType indentationLength               READ indentationLength               WRITE setIndentationLength               NOTIFY indentationLengthChanged               )
+	Q_PROPERTY(theme_distanceType labelSpacing                    READ labelSpacing                    WRITE setLabelSpacing                    NOTIFY labelSpacingChanged                    )
+	Q_PROPERTY(theme_distanceType menuSpacing                     READ menuSpacing                     WRITE setMenuSpacing                     NOTIFY menuSpacingChanged                     )
+	Q_PROPERTY(theme_distanceType menuPadding                     READ menuPadding                     WRITE setMenuPadding                     NOTIFY menuPaddingChanged                     )
 
-	Q_PROPERTY(theme_distanceType generalAnchorMargin READ generalAnchorMargin WRITE setGeneralAnchorMargin NOTIFY generalAnchorMarginChanged)
-	Q_PROPERTY(theme_distanceType generalMenuMargin READ generalMenuMargin WRITE setGeneralMenuMargin NOTIFY generalMenuMarginChanged)
-	Q_PROPERTY(theme_distanceType titleBottomMargin READ titleBottomMargin WRITE setTitleBottomMargin NOTIFY titleBottomMarginChanged)
-	Q_PROPERTY(theme_distanceType subOptionOffset READ subOptionOffset WRITE setSubOptionOffset NOTIFY subOptionOffsetChanged)
+	Q_PROPERTY(theme_distanceType generalAnchorMargin             READ generalAnchorMargin             WRITE setGeneralAnchorMargin             NOTIFY generalAnchorMarginChanged             )
+	Q_PROPERTY(theme_distanceType generalMenuMargin               READ generalMenuMargin               WRITE setGeneralMenuMargin               NOTIFY generalMenuMarginChanged               )
+	Q_PROPERTY(theme_distanceType titleBottomMargin               READ titleBottomMargin               WRITE setTitleBottomMargin               NOTIFY titleBottomMarginChanged               )
+	Q_PROPERTY(theme_distanceType subOptionOffset                 READ subOptionOffset                 WRITE setSubOptionOffset                 NOTIFY subOptionOffsetChanged                 )
 
 	//Sizes:
-	Q_PROPERTY(theme_sizeType minPanelWidth READ minPanelWidth WRITE setMinPanelWidth NOTIFY minPanelWidthChanged)
-	Q_PROPERTY(theme_sizeType resultWidth READ resultWidth WRITE setResultWidth NOTIFY resultWidthChanged)
-	Q_PROPERTY(theme_sizeType formWidth READ formWidth WRITE setFormWidth NOTIFY formWidthChanged)
-	Q_PROPERTY(theme_sizeType formMargin READ formMargin WRITE setFormMargin NOTIFY formMarginChanged)
-	Q_PROPERTY(theme_sizeType formExpanderHeaderHeight READ formExpanderHeaderHeight WRITE setFormExpanderHeaderHeight NOTIFY formExpanderHeaderHeightChanged)
-	Q_PROPERTY(theme_sizeType sliderWidth READ sliderWidth WRITE setSliderWidth NOTIFY sliderWidthChanged)
-	Q_PROPERTY(theme_sizeType sliderLength READ sliderLength WRITE setSliderLength NOTIFY sliderLengthChanged)
-	Q_PROPERTY(theme_sizeType switchHeight READ switchHeight WRITE setSwitchHeight NOTIFY switchHeightChanged)
-	Q_PROPERTY(theme_sizeType spinBoxHeight READ spinBoxHeight WRITE setSpinBoxHeight NOTIFY spinBoxHeightChanged)
-	Q_PROPERTY(theme_sizeType spinBoxWidth READ spinBoxWidth WRITE setSpinBoxWidth NOTIFY spinBoxWidthChanged)
-	Q_PROPERTY(theme_sizeType comboBoxHeight READ comboBoxHeight WRITE setComboBoxHeight NOTIFY comboBoxHeightChanged)
-	Q_PROPERTY(theme_sizeType textFieldWidth READ textFieldWidth WRITE setTextFieldWidth NOTIFY textFieldWidthChanged)
-	Q_PROPERTY(theme_sizeType textFieldHeight READ textFieldHeight WRITE setTextFieldHeight NOTIFY textFieldHeightChanged)
-	Q_PROPERTY(theme_sizeType numericFieldWidth READ numericFieldWidth WRITE setNumericFieldWidth NOTIFY numericFieldWidthChanged)
-	Q_PROPERTY(theme_sizeType splitHandleWidth READ splitHandleWidth WRITE setSplitHandleWidth NOTIFY splitHandleWidthChanged)
-	Q_PROPERTY(theme_sizeType subMenuIconHeight READ subMenuIconHeight WRITE setSubMenuIconHeight NOTIFY subMenuIconHeightChanged)
-	Q_PROPERTY(theme_sizeType ribbonButtonHeight READ ribbonButtonHeight WRITE setRibbonButtonHeight NOTIFY ribbonButtonHeightChanged)
-	Q_PROPERTY(theme_sizeType variablesListTitle READ variablesListTitle WRITE setVariablesListTitle NOTIFY variablesListTitleChanged)
-	Q_PROPERTY(theme_sizeType sliderHandleDiameter READ sliderHandleDiameter WRITE setSliderHandleDiameter NOTIFY sliderHandleDiameterChanged)
-	Q_PROPERTY(theme_sizeType defaultTextAreaHeight READ defaultTextAreaHeight WRITE setDefaultTextAreaHeight NOTIFY defaultTextAreaHeightChanged)
-	Q_PROPERTY(theme_sizeType jaspControlHighlightWidth READ jaspControlHighlightWidth WRITE setJaspControlHighlightWidth NOTIFY jaspControlHighlightWidthChanged)
-	Q_PROPERTY(theme_sizeType defaultVariablesFormHeight READ defaultVariablesFormHeight WRITE setDefaultVariablesFormHeight NOTIFY defaultVariablesFormHeightChanged)
-	Q_PROPERTY(theme_sizeType jaspControlHighlightWidth READ jaspControlHighlightWidth WRITE setJaspControlHighlightWidth NOTIFY jaspControlHighlightWidthChanged)
-	Q_PROPERTY(theme_sizeType defaultVariablesFormHeight READ defaultVariablesFormHeight WRITE setDefaultVariablesFormHeight NOTIFY defaultVariablesFormHeightChanged)
-	Q_PROPERTY(theme_sizeType defaultSingleItemListHeight READ defaultSingleItemListHeight WRITE setDefaultSingleItemListHeight NOTIFY defaultSingleItemListHeightChanged)
-	Q_PROPERTY(theme_sizeType defaultRectangularButtonHeight READ defaultRectangularButtonHeight WRITE setDefaultRectangularButtonHeight NOTIFY defaultRectangularButtonHeightChanged)
-	Q_PROPERTY(theme_sizeType smallDefaultVariablesFormHeight READ smallDefaultVariablesFormHeight WRITE setSmallDefaultVariablesFormHeight NOTIFY smallDefaultVariablesFormHeightChanged)
-	Q_PROPERTY(theme_sizeType messageBoxButtonHeight READ messageBoxButtonHeight WRITE setMessageBoxButtonHeight NOTIFY messageBoxButtonHeightChanged)
-	Q_PROPERTY(theme_sizeType scrollbarBoxWidthBig READ scrollbarBoxWidthBig WRITE setScrollbarBoxWidthBig NOTIFY scrollbarBoxWidthBigChanged)
-	Q_PROPERTY(theme_sizeType scrollbarBoxWidth READ scrollbarBoxWidth WRITE setScrollbarBoxWidth NOTIFY scrollbarBoxWidthChanged)
-	Q_PROPERTY(theme_sizeType menuItemHeight READ menuItemHeight WRITE setMenuItemHeight NOTIFY menuItemHeightChanged)
-	Q_PROPERTY(theme_sizeType menuGroupTitleHeight READ menuGroupTitleHeight WRITE setMenuGroupTitleHeight NOTIFY menuGroupTitleHeightChanged)
-	Q_PROPERTY(theme_sizeType menuHeaderHeight READ menuHeaderHeight WRITE setMenuHeaderHeight NOTIFY menuHeaderHeightChanged)
+	Q_PROPERTY(theme_sizeType     minPanelWidth                   READ minPanelWidth                   WRITE setMinPanelWidth                   NOTIFY minPanelWidthChanged                   )
+	Q_PROPERTY(theme_sizeType     resultWidth                     READ resultWidth                     WRITE setResultWidth                     NOTIFY resultWidthChanged                     )
+	Q_PROPERTY(theme_sizeType     formWidth                       READ formWidth                       WRITE setFormWidth                       NOTIFY formWidthChanged                       )
+	Q_PROPERTY(theme_sizeType     formMargin                      READ formMargin                      WRITE setFormMargin                      NOTIFY formMarginChanged                      )
+	Q_PROPERTY(theme_sizeType     formExpanderHeaderHeight        READ formExpanderHeaderHeight        WRITE setFormExpanderHeaderHeight        NOTIFY formExpanderHeaderHeightChanged        )
+	Q_PROPERTY(theme_sizeType     sliderWidth                     READ sliderWidth                     WRITE setSliderWidth                     NOTIFY sliderWidthChanged                     )
+	Q_PROPERTY(theme_sizeType     sliderLength                    READ sliderLength                    WRITE setSliderLength                    NOTIFY sliderLengthChanged                    )
+	Q_PROPERTY(theme_sizeType     switchHeight                    READ switchHeight                    WRITE setSwitchHeight                    NOTIFY switchHeightChanged                    )
+	Q_PROPERTY(theme_sizeType     spinBoxHeight                   READ spinBoxHeight                   WRITE setSpinBoxHeight                   NOTIFY spinBoxHeightChanged                   )
+	Q_PROPERTY(theme_sizeType     spinBoxWidth                    READ spinBoxWidth                    WRITE setSpinBoxWidth                    NOTIFY spinBoxWidthChanged                    )
+	Q_PROPERTY(theme_sizeType     comboBoxHeight                  READ comboBoxHeight                  WRITE setComboBoxHeight                  NOTIFY comboBoxHeightChanged                  )
+	Q_PROPERTY(theme_sizeType     textFieldWidth                  READ textFieldWidth                  WRITE setTextFieldWidth                  NOTIFY textFieldWidthChanged                  )
+	Q_PROPERTY(theme_sizeType     textFieldHeight                 READ textFieldHeight                 WRITE setTextFieldHeight                 NOTIFY textFieldHeightChanged                 )
+	Q_PROPERTY(theme_sizeType     numericFieldWidth               READ numericFieldWidth               WRITE setNumericFieldWidth               NOTIFY numericFieldWidthChanged               )
+	Q_PROPERTY(theme_sizeType     splitHandleWidth                READ splitHandleWidth                WRITE setSplitHandleWidth                NOTIFY splitHandleWidthChanged                )
+	Q_PROPERTY(theme_sizeType     subMenuIconHeight               READ subMenuIconHeight               WRITE setSubMenuIconHeight               NOTIFY subMenuIconHeightChanged               )
+	Q_PROPERTY(theme_sizeType     ribbonButtonHeight              READ ribbonButtonHeight              WRITE setRibbonButtonHeight              NOTIFY ribbonButtonHeightChanged              )
+	Q_PROPERTY(theme_sizeType     variablesListTitle              READ variablesListTitle              WRITE setVariablesListTitle              NOTIFY variablesListTitleChanged              )
+	Q_PROPERTY(theme_sizeType     sliderHandleDiameter            READ sliderHandleDiameter            WRITE setSliderHandleDiameter            NOTIFY sliderHandleDiameterChanged            )
+	Q_PROPERTY(theme_sizeType     defaultTextAreaHeight           READ defaultTextAreaHeight           WRITE setDefaultTextAreaHeight           NOTIFY defaultTextAreaHeightChanged           )
+	Q_PROPERTY(theme_sizeType     jaspControlHighlightWidth       READ jaspControlHighlightWidth       WRITE setJaspControlHighlightWidth       NOTIFY jaspControlHighlightWidthChanged       )
+	Q_PROPERTY(theme_sizeType     defaultVariablesFormHeight      READ defaultVariablesFormHeight      WRITE setDefaultVariablesFormHeight      NOTIFY defaultVariablesFormHeightChanged      )
+	Q_PROPERTY(theme_sizeType     jaspControlHighlightWidth       READ jaspControlHighlightWidth       WRITE setJaspControlHighlightWidth       NOTIFY jaspControlHighlightWidthChanged       )
+	Q_PROPERTY(theme_sizeType     defaultVariablesFormHeight      READ defaultVariablesFormHeight      WRITE setDefaultVariablesFormHeight      NOTIFY defaultVariablesFormHeightChanged      )
+	Q_PROPERTY(theme_sizeType     defaultSingleItemListHeight     READ defaultSingleItemListHeight     WRITE setDefaultSingleItemListHeight     NOTIFY defaultSingleItemListHeightChanged     )
+	Q_PROPERTY(theme_sizeType     defaultRectangularButtonHeight  READ defaultRectangularButtonHeight  WRITE setDefaultRectangularButtonHeight  NOTIFY defaultRectangularButtonHeightChanged  )
+	Q_PROPERTY(theme_sizeType     smallDefaultVariablesFormHeight READ smallDefaultVariablesFormHeight WRITE setSmallDefaultVariablesFormHeight NOTIFY smallDefaultVariablesFormHeightChanged )
+	Q_PROPERTY(theme_sizeType     messageBoxButtonHeight          READ messageBoxButtonHeight          WRITE setMessageBoxButtonHeight          NOTIFY messageBoxButtonHeightChanged          )
+	Q_PROPERTY(theme_sizeType     scrollbarBoxWidthBig            READ scrollbarBoxWidthBig            WRITE setScrollbarBoxWidthBig            NOTIFY scrollbarBoxWidthBigChanged            )
+	Q_PROPERTY(theme_sizeType     scrollbarBoxWidth               READ scrollbarBoxWidth               WRITE setScrollbarBoxWidth               NOTIFY scrollbarBoxWidthChanged               )
+	Q_PROPERTY(theme_sizeType     menuItemHeight                  READ menuItemHeight                  WRITE setMenuItemHeight                  NOTIFY menuItemHeightChanged                  )
+	Q_PROPERTY(theme_sizeType     menuGroupTitleHeight            READ menuGroupTitleHeight            WRITE setMenuGroupTitleHeight            NOTIFY menuGroupTitleHeightChanged            )
+	Q_PROPERTY(theme_sizeType     menuHeaderHeight                READ menuHeaderHeight                WRITE setMenuHeaderHeight                NOTIFY menuHeaderHeightChanged                )
 
 	//Velocities:
-	Q_PROPERTY(float maximumFlickVelocity READ maximumFlickVelocity NOTIFY maximumFlickVelocityChanged)
+	Q_PROPERTY(float              maximumFlickVelocity            READ maximumFlickVelocity                                                     NOTIFY maximumFlickVelocityChanged            )
 
 	//Times: https://www.youtube.com/watch?v=90WD_ats6eE
 	//typedef int int;
-	Q_PROPERTY(theme_timeType hoverTime READ hoverTime WRITE setHoverTime NOTIFY hoverTimeChanged)
-	Q_PROPERTY(theme_timeType fileMenuSlideDuration READ fileMenuSlideDuration WRITE setFileMenuSlideDuration NOTIFY fileMenuSlideDurationChanged)
-	Q_PROPERTY(theme_timeType toolTipDelay READ toolTipDelay WRITE setToolTipDelay NOTIFY toolTipDelayChanged)
-	Q_PROPERTY(theme_timeType toolTipTimeout READ toolTipTimeout WRITE setToolTipTimeout NOTIFY toolTipTimeoutChanged)
+	Q_PROPERTY(theme_timeType     hoverTime                       READ hoverTime                       WRITE setHoverTime                       NOTIFY hoverTimeChanged                       )
+	Q_PROPERTY(theme_timeType     fileMenuSlideDuration           READ fileMenuSlideDuration           WRITE setFileMenuSlideDuration           NOTIFY fileMenuSlideDurationChanged           )
+	Q_PROPERTY(theme_timeType     toolTipDelay                    READ toolTipDelay                    WRITE setToolTipDelay                    NOTIFY toolTipDelayChanged                    )
+	Q_PROPERTY(theme_timeType     toolTipTimeout                  READ toolTipTimeout                  WRITE setToolTipTimeout                  NOTIFY toolTipTimeoutChanged                  )
 
 	//Fonts:
-	Q_PROPERTY(QFont jaspFont READ jaspFont WRITE setJaspFont NOTIFY jaspFontChanged)
+	Q_PROPERTY(QFont              jaspFont                        READ jaspFont                        WRITE setJaspFont                        NOTIFY jaspFontChanged                        )
 
-	Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged)
-	Q_PROPERTY(QFont fontLabel READ fontLabel WRITE setFontLabel NOTIFY fontLabelChanged)
-	Q_PROPERTY(QFont fontRibbon READ fontRibbon WRITE setFontRibbon NOTIFY fontRibbonChanged)
-	Q_PROPERTY(QFont fontGroupTitle READ fontGroupTitle WRITE setFontGroupTitle NOTIFY fontGroupTitleChanged)
-	Q_PROPERTY(QFont fontPrefOptionsGroupTitle READ fontPrefOptionsGroupTitle WRITE setFontPrefOptionsGroupTitle NOTIFY fontPrefOptionsGroupTitleChanged)
+	Q_PROPERTY(QFont              font                            READ font                            WRITE setFont                            NOTIFY fontChanged                            )
+	Q_PROPERTY(QFont              fontLabel                       READ fontLabel                       WRITE setFontLabel                       NOTIFY fontLabelChanged                       )
+	Q_PROPERTY(QFont              fontRibbon                      READ fontRibbon                      WRITE setFontRibbon                      NOTIFY fontRibbonChanged                      )
+	Q_PROPERTY(QFont              fontGroupTitle                  READ fontGroupTitle                  WRITE setFontGroupTitle                  NOTIFY fontGroupTitleChanged                  )
+	Q_PROPERTY(QFont              fontPrefOptionsGroupTitle       READ fontPrefOptionsGroupTitle       WRITE setFontPrefOptionsGroupTitle       NOTIFY fontPrefOptionsGroupTitleChanged       )
 
 	//Iconfolder:
-	Q_PROPERTY(QString iconPath READ iconPath NOTIFY iconPathChanged)
-	Q_PROPERTY(QString themeName READ themeName WRITE setThemeName NOTIFY themeNameChanged)
+	Q_PROPERTY(QString            iconPath                        READ iconPath                                                                 NOTIFY iconPathChanged                        )
+	Q_PROPERTY(QString            themeName                       READ themeName                       WRITE setThemeName                       NOTIFY themeNameChanged                       )
 
 public:
 	explicit JaspTheme(QQuickItem * item = nullptr);
@@ -193,6 +195,8 @@ public:
 	QColor				roseLight()							const	{ return _roseLight; }
 	QColor				cyan()								const	{ return _cyan; }
 	QColor				shadow()							const	{ return _shadow; }
+	QColor				jaspBlue()							const	{ return _jaspBlue;	}
+	QColor				jaspGreen()							const	{ return _jaspGreen; }
 	QColor				textEnabled()						const	{ return _textEnabled; }
 	QColor				textDisabled()						const	{ return _textDisabled; }
 	QColor				uiBackground()						const	{ return _uiBackground; }
@@ -316,6 +320,8 @@ signals:
 	void roseLightChanged(QColor roseLight);
 	void cyanChanged(QColor cyan);
 	void shadowChanged(QColor shadow);
+	void jaspBlueChanged(QColor jaspBlue);
+	void jaspGreenChanged(QColor jaspGreen);
 	void textEnabledChanged(QColor textEnabled);
 	void textDisabledChanged(QColor textDisabled);
 	void uiBackgroundChanged(QColor uiBackground);
@@ -437,6 +443,8 @@ public slots:
 	void setRoseLight(QColor roseLight);
 	void setCyan(QColor cyan);
 	void setShadow(QColor shadow);
+	void setJaspBlue(QColor jaspBlue);
+	void setJaspGreen(QColor jaspGreen);
 	void setTextEnabled(QColor textEnabled);
 	void setTextDisabled(QColor textDisabled);
 	void setUiBackground(QColor uiBackground);
@@ -536,11 +544,6 @@ public slots:
 
 	static void setPreferencesModel(PreferencesModel * preferences) { _preferences = preferences; }
 
-
-
-
-
-
 private:
 	void connectSizeDistancesToUiScaleChanged();
 
@@ -570,6 +573,8 @@ private:
 						_roseLight,
 						_cyan,
 						_shadow,
+						_jaspBlue,
+						_jaspGreen,
 						_textEnabled,
 						_textDisabled,
 						_uiBackground,
