@@ -51,7 +51,6 @@ protected:
 	Terms		_tempTermsToRemove;
 		
 	bool		isAllowed(const Term &term) const;
-	bool		isSuggested(const Term &term) const;
 };
 
 #endif // LISTMODELDRAGGABLE_H

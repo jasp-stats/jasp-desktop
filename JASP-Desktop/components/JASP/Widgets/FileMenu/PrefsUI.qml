@@ -88,7 +88,6 @@ ScrollView
 				label:					qsTr("Choose Language  ")
 
 				useModelDefinedIcon:	true
-				isDirectModel:			true
 
 				currentIndex:			languageModel.currentIndex
 				onActivated:			languageModel.changeLanguage(index);
