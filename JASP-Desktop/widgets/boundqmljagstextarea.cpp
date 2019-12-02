@@ -50,6 +50,13 @@ void BoundQMLJAGSTextArea::bindTo(Option *option)
 			for (const std::string& variable : variables)
 				_usedColumnNames.insert(QString::fromStdString(variable));
 		}
+		OptionVariables* parametersOption = dynamic_cast<OptionVariables*>(_options->get("parameters"));
+		if (parametersOption)
+		{
+			std::vector<std::string> variables = parametersOption->variables();
+			for (const std::string& variable : variables)
+				_usedParameters.insert(QString::fromStdString(variable));
+		}
 	}
 }
 
@@ -58,8 +65,9 @@ Option *BoundQMLJAGSTextArea::createOption()
 	Options* result = new Options();
 	std::string text = getItemProperty("text").toString().toStdString();
 
-	result->add("model", new OptionString(text));
-	result->add("columns", new OptionVariables());
+	result->add("model",		new OptionString(text));
+	result->add("columns",		new OptionVariables());
+	result->add("parameters",	new OptionVariables());
 
 	return result;
 }
@@ -84,10 +92,9 @@ void BoundQMLJAGSTextArea::checkSyntax()
 	std::vector<std::string> colnms = DataSetPackage::pkg()->getColumnNames();
 	std::set<std::string> columnNames(std::make_move_iterator(colnms.begin()), std::make_move_iterator(colnms.end()));
 
-
 	QRegularExpression relationSymbol = QRegularExpression("<-|=|~");
 	QStringList textByLine = _text.split(QRegularExpression(";|\n"));
-	QSet<QString> parameterNames;
+	_usedParameters.clear();
 	_usedColumnNames.clear();
 
 	for (QString & line : textByLine)
@@ -111,7 +118,7 @@ void BoundQMLJAGSTextArea::checkSyntax()
 			if (paramName != "")
 			{
 				if (columnNames.find(paramName.toUtf8().constData()) == columnNames.end())
-					parameterNames << paramName;
+					_usedParameters << paramName;
 				else
 					_usedColumnNames << paramName;
 			}
@@ -137,12 +144,22 @@ void BoundQMLJAGSTextArea::checkSyntax()
 		for (const QString& col : _usedColumnNames)
 			columnsVec.push_back(col.toStdString());
 		columns->setValue(columnsVec);
-	}
 
+		OptionVariables* parameters = dynamic_cast<OptionVariables*>(_options->get("parameters"));
+		if (!parameters)
+		{
+			parameters = new OptionVariables();
+			_options->add("parameters", parameters);
+		}
+		std::vector<std::string> parametersVec;
+		for (const QString& param : _usedParameters)
+			parametersVec.push_back(param.toStdString());
+		parameters->setValue(parametersVec);
+	}
 
 	if (_model)
 	{
-		_model->initTerms(parameterNames.toList());
+		_model->initTerms(_usedParameters.toList());
 		emit _model->modelChanged();
 	}
 }

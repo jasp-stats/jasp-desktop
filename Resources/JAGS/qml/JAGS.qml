@@ -24,8 +24,8 @@ import JASP.Controls	1.0
 
 Form
 {
-    columns: 1
-    TextArea
+	columns: 1
+	TextArea
 	{
 		id:			jagsModel
 		title:		qsTr("Enter JAGS model below")
@@ -34,173 +34,203 @@ Form
 		text:		"model{\n\n}"
 	}
     
-    VariablesForm
-    {
-        visible: !monitorAllParameters.checked
-        preferredHeight: 200
-        AvailableVariablesList  
-        { 
-            name: "parametersList";            
-            title: qsTr("Parameters in model")
-            source: [{ name: "model", discard: { name: "userData", use: "Parameter"}}]
-        }
-        AssignedVariablesList   { name: "monitoredParametersList";   title: qsTr("Monitor these parameters"); }
-    }
+//    VariablesForm
+//    {
+//        visible: !monitorAllParameters.checked
+//        preferredHeight: 200
+//        AvailableVariablesList
+//        {
+//            name: "parametersList";
+//            title: qsTr("Parameters in model")
+//            source: [{ name: "model", discard: { name: "userData", use: "Parameter"}}]
+//        }
+//        AssignedVariablesList   { name: "monitoredParametersList";   title: qsTr("Monitor these parameters"); }
+//    }
     
-    VariablesForm
-    {
-        preferredHeight: 200
-        AvailableVariablesList  
-        { 
-            id:     monitoredParametersList2
-            name:   "monitoredParametersList2"
-            title:  monitorAllParameters.checked ? qsTr("Parameters in model") : qsTr("Monitored parameters")
-            source: monitorAllParameters.checked ? [{ name: "model", discard: { name: "userData", use: "Parameter"}}] : ["monitoredParametersList"]
-        }
-        AssignedVariablesList   { name: "parametersShown";         title: qsTr("Show results for these parameters")}
-    }
+//    VariablesForm
+//    {
+//        preferredHeight: 200
+//        AvailableVariablesList
+//        {
+//            id:     monitoredParametersList2
+//            name:   "monitoredParametersList2"
+//            title:  monitorAllParameters.checked ? qsTr("Parameters in model") : qsTr("Monitored parameters")
+//            source: monitorAllParameters.checked ? [{ name: "model", discard: { name: "userData", use: "Parameter"}}] : ["monitoredParametersList"]
+//        }
+//        AssignedVariablesList   { name: "parametersShown";         title: qsTr("Show results for these parameters")}
+//    }
 
-    Section
-    {            
-        title: qsTr("Plots")
-        Group
-        {
-            DropDown
-            {
-                name: "colorScheme"
-                indexDefaultValue: 0
-                label: qsTr("Color scheme for plots:")
-                values:
-                [
-                    { label: qsTr("Colorblind"),      value: "colorblind" },
-                    { label: qsTr("Colorblind Alt."), value: "colorblind2"},
-                    { label: qsTr("Viridis"),         value: "viridis"    },
-                    { label: qsTr("Blue"),            value: "blue"       },
-                    { label: qsTr("Gray"),            value: "gray"       }
-                ]
-            }
-            CheckBox { name: "aggregateChains"; label: qsTr("Aggregate chains for densities and histograms");    checked:true   }
-            CheckBox { name: "showLegend";      label: qsTr("Show legends");                                     checked:true   }
-            CheckBox { name: "plotDensity";     label: qsTr("Density")                                                          }
-            CheckBox { name: "plotHistogram";   label: qsTr("Histogram")                                                        }
-            CheckBox { name: "plotTrace";       label: qsTr("Trace");                                                           }
-        }
-        Group
-        {
-            CheckBox { label: qsTr("Autocorrelation");    name: "plotAutoCor"; id: autoCorrelation
-                IntegerField
-                {
-                    name: "noLags"
-                    label: qsTr("No. lags")
-                    defaultValue: 20
-                    min: 1
-                    max: 100
-                }
-                RadioButtonGroup
-                {
-                    name: "acfType"
-                    title: qsTr("Type")
-                    RadioButton { value: "acfLines";  label: qsTr("line"); checked:true }
-                    RadioButton { value: "acfBars";   label: qsTr("bar")                }
-                }
-            }
-            CheckBox { label: qsTr("Bivariate scatter");  name: "plotBivarHex"; id: bivariateScatter
-                RadioButtonGroup
-                {
-                    name: "bivariateScatterDiagType"
-                    title: qsTr("Diagonal plot type")
-                    RadioButton { value: "dens";  label: qsTr("Density"); checked:true  }
-                    RadioButton { value: "hist";  label: qsTr("Histogram")              }
-                }
-                RadioButtonGroup
-                {
-                    name: "bivariateScatterOffDiagType"
-                    title: qsTr("Off-diagonal plot type")
-                    RadioButton { value: "hex";     label: qsTr("Hexagonal"); checked:true}
-                    RadioButton { value: "scatter"; label: qsTr("Contour")                }
-                }
-            }
-        }
-    }
-    
-    Section
-    {
-        title: qsTr("Initial Values")
-        JagsTableView
-        {
-            name        :   "initialValues"
-            tableType   :   "initialValues"
-            source      :   [{ name: "model", discard: { name: "userData", use: "Parameter"}}]
-        }
-    }
+	VariablesForm
+	{
+		visible: !monitorAllParameters.checked
+		height: 200
+		AvailableVariablesList
+		{
+			name: "parametersList";
+			title: qsTr("Parameters in model")
+			source: [{ name: "model", discard: { name: "userData", use: "Parameter"}}]
+		}
+		AssignedVariablesList   { name: "monitoredParametersList";   title: qsTr("Monitor these parameters"); }
+	}
 
-    Section
-    {
-        title: qsTr("Observed Values")
-        JagsTableView
-        {
-            name        :   "userData"
-            tableType   :   "userDataInput"
-        }
-    }
+	VariablesForm
+	{
+		height: 200
+		AvailableVariablesList
+		{
+			id:		monitoredParametersList2
+			name:	"monitoredParametersList2"
+			title:	monitorAllParameters.checked ? qsTr("Parameters in model") : qsTr("Monitored parameters")
+			source:	monitorAllParameters.checked ? [{ name: "model", discard: { name: "userData", use: "Parameter"}}] : ["monitoredParametersList"]
+		}
+		AssignedVariablesList   { name: "parametersShown";		title: qsTr("Show results for these parameters")}
+	}
 
-    Section
-    {
-        title: qsTr("Advanced")
-        columns: 2
-        Group
-        {
-            title: qsTr("MCMC parameters")
-            IntegerField
-            {
-                name: "noSamples"
-                label: qsTr("No. samples")
-                defaultValue: 2e3
-                min: 10
-                max: 1e9
-                fieldWidth: 100
-            }
-            IntegerField
-            {
-                name: "noBurnin"
-                label: qsTr("No. burnin samples")
-                defaultValue: 500
-                min: 1
-                max: 1e9
-                fieldWidth: 100
-            }
-            IntegerField
-            {
-                name: "noThinning"
-                label: qsTr("Thinning")
-                defaultValue: 1
-                min: 1
-                max: 1e9
-                fieldWidth: 100
-            }
-            IntegerField
-            {
-                name: "noChains"
-                label: qsTr("No. chains")
-                defaultValue: 3
-                min: 1
-                max: 50
-                fieldWidth: 100
-            }
-        }
-        
-        Group
-        {
-            CheckBox { label: qsTr("Monitor Deviance"); name: "monitorDeviance";    visible:false}
-            CheckBox { label: qsTr("Monitor DIC");      name: "monitorDIC";         visible:false}
-        }
-        
-        RadioButtonGroup
-        {
-            name: "showResultsFor"
-            title: qsTr("Show results for")
-            RadioButton { value: "monitorAllParameters";        label: qsTr("all monitored parameters"); checked: true; id: monitorAllParameters }
-            RadioButton { value: "monitorSelectedParameters";   label: qsTr("selected parameters")                                              }
-        }
-    }
+	Section
+	{
+		title: qsTr("Plots")
+		Group
+		{
+			DropDown
+			{
+				name: "colorScheme"
+				indexDefaultValue: 0
+				label: qsTr("Color scheme for plots:")
+				values:
+					[
+					{ label: qsTr("Colorblind"),		value: "colorblind"		},
+					{ label: qsTr("Colorblind Alt."),	value: "colorblind2"	},
+					{ label: qsTr("Viridis"),			value: "viridis"		},
+					{ label: qsTr("Blue"),				value: "blue"			},
+					{ label: qsTr("Gray"),				value: "gray"			}
+				]
+			}
+			CheckBox { name: "aggregateChains";	label: qsTr("Aggregate chains for densities and histograms");	checked:true	}
+			CheckBox { name: "showLegend";		label: qsTr("Show legends");									checked:true	}
+			CheckBox { name: "plotDensity";		label: qsTr("Density")															}
+			CheckBox { name: "plotHistogram";	label: qsTr("Histogram")														}
+			CheckBox { name: "plotTrace";		label: qsTr("Trace");															}
+		}
+		Group
+		{
+			CheckBox { label: qsTr("Autocorrelation");    name: "plotAutoCor"; id: autoCorrelation
+				IntegerField
+				{
+					name: "noLags"
+					label: qsTr("No. lags")
+					defaultValue: 20
+					min: 1
+					max: 100
+				}
+				RadioButtonGroup
+				{
+					name: "acfType"
+					title: qsTr("Type")
+					RadioButton { value: "acfLines";  label: qsTr("line"); checked:true	}
+					RadioButton { value: "acfBars";   label: qsTr("bar")				}
+				}
+			}
+			CheckBox { label: qsTr("Bivariate scatter");  name: "plotBivarHex"; id: bivariateScatter
+				RadioButtonGroup
+				{
+					name: "bivariateScatterDiagType"
+					title: qsTr("Diagonal plot type")
+					RadioButton { value: "dens";  label: qsTr("Density"); checked:true	}
+					RadioButton { value: "hist";  label: qsTr("Histogram")				}
+				}
+				RadioButtonGroup
+				{
+					name: "bivariateScatterOffDiagType"
+					title: qsTr("Off-diagonal plot type")
+					RadioButton { value: "hex";     label: qsTr("Hexagonal"); checked:true	}
+					RadioButton { value: "scatter"; label: qsTr("Contour")					}
+				}
+			}
+		}
+	}
+
+	Section
+	{
+		title: qsTr("Initial Values")
+		JagsTableView
+		{
+			name		:	"initialValues"
+			tableType	:	"initialValues"
+			source		:	[{ name: "model", discard: { name: "userData", use: "Parameter"}}]
+		}
+	}
+
+	Section
+	{
+		title: qsTr("Observed Values")
+		JagsTableView
+		{
+			name		:	"userData"
+			tableType	:	"userDataInput"
+		}
+	}
+
+	Section
+	{
+		title: qsTr("Advanced")
+		columns: 2
+		Group
+		{
+			title: qsTr("MCMC parameters")
+			IntegerField
+			{
+				name: "noSamples"
+				label: qsTr("No. samples")
+				defaultValue: 2e3
+				min: 10
+				max: 1e9
+				fieldWidth: 100
+			}
+			IntegerField
+			{
+				name: "noBurnin"
+				label: qsTr("No. burnin samples")
+				defaultValue: 500
+				min: 1
+				max: 1e9
+				fieldWidth: 100
+			}
+			IntegerField
+			{
+				name: "noThinning"
+				label: qsTr("Thinning")
+				defaultValue: 1
+				min: 1
+				max: 1e9
+				fieldWidth: 100
+			}
+			IntegerField
+			{
+				name: "noChains"
+				label: qsTr("No. chains")
+				defaultValue: 3
+				min: 1
+				max: 50
+				fieldWidth: 100
+			}
+		}
+
+		Group
+		{
+			CheckBox
+			{
+				label: qsTr("Monitor Deviance")
+				name: "monitorDeviance"
+				CheckBox { label: qsTr("Compute DIC");		name: "monitorDIC"}
+			}
+		}
+
+		RadioButtonGroup
+		{
+			name: "showResultsFor"
+			title: qsTr("Show results for")
+			RadioButton { value: "monitorAllParameters";		label: qsTr("all monitored parameters"); checked: true; id: monitorAllParameters	}
+			RadioButton { value: "monitorSelectedParameters";	label: qsTr("selected parameters")													}
+		}
+	}
 }
