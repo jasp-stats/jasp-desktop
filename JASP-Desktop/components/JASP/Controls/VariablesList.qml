@@ -412,7 +412,7 @@ JASPListControl
 				property bool isVirtual:			(typeof model.type !== "undefined") && model.type.includes("virtual")
 				property bool isVariable:			(typeof model.type !== "undefined") && model.type.includes("variable")
 				property bool isLayer:				(typeof model.type !== "undefined") && model.type.includes("layer")
-				property bool draggable:			variablesList.draggable && (!variablesList.dragOnlyVariables || isVariable)
+				property bool draggable:			variablesList.draggable && model.selectable
 				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 
 				enabled: variablesList.listViewType != "AvailableVariables" || !columnType || variablesList.allowedColumns.length == 0 || (variablesList.allowedColumns.indexOf(columnType) >= 0)
@@ -425,7 +425,7 @@ JASPListControl
 				
 				color:
 				{
-					if(itemRectangle.isDependency)											return itemRectangle.selected ? jaspTheme.dependencySelectedColor : jaspTheme.dependencyBorderColor;
+					if (itemRectangle.isDependency)											return itemRectangle.selected ? jaspTheme.dependencySelectedColor : jaspTheme.dependencyBorderColor;
 					if (!itemRectangle.draggable)											return jaspTheme.controlBackgroundColor;
 					if (itemRectangle.selected)												return variablesList.activeFocus ? jaspTheme.itemSelectedColor: jaspTheme.itemSelectedNoFocusColor;
 					if (itemRectangle.containsDragItem && variablesList.dropModeReplace)	return jaspTheme.itemSelectedColor;

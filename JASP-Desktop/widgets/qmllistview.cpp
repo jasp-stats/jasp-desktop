@@ -278,7 +278,6 @@ int QMLListView::_getAllowedColumnsTypes()
 
 void QMLListView::_setAllowedVariables()
 {
-	_variableTypesSuggested = 0;
 	_variableTypesAllowed = 0xff;
 	
 	int allowedColumnsTypes = _getAllowedColumnsTypes();

@@ -30,7 +30,6 @@ void ListModelTermsAvailable::sortItems(SortType sortType)
 {	
 	if (sortType == Sortable::None)
 	{
-		Terms suggested;
 		Terms allowed;
 		Terms forbidden;
 
@@ -38,14 +37,11 @@ void ListModelTermsAvailable::sortItems(SortType sortType)
 		{
 			if ( ! isAllowed(term))
 				forbidden.add(term);
-			else if (isSuggested(term))
-				suggested.add(term);
 			else
 				allowed.add(term);
 		}
 
 		_allTerms.clear();
-		_allTerms.add(suggested);
 		_allTerms.add(allowed);
 		_allTerms.add(forbidden);
 	}

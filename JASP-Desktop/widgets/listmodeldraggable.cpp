@@ -123,15 +123,3 @@ bool ListModelDraggable::isAllowed(const Term &term) const
 
 	return variableType == 0 || variableType & variableTypesAllowed;
 }
-
-bool ListModelDraggable::isSuggested(const Term &term) const
-{
-	int variableTypesSuggested = listView()->variableTypesSuggested();
-	if (variableTypesSuggested == 0 || term.size() > 1)
-		return false;
-	
-	QVariant	v				= requestInfo(term, VariableInfo::VariableType);
-	int			variableType	= v.toInt();
-
-	return variableType == 0 || variableType & variableTypesSuggested;
-}

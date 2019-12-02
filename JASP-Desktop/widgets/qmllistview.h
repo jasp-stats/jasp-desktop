@@ -57,7 +57,6 @@ public:
 	virtual void			setTermsAreInteractions();
 	
 			int				variableTypesAllowed()		const	{ return _variableTypesAllowed; }
-			int				variableTypesSuggested()	const	{ return _variableTypesSuggested; }
 
 	const QList<SourceType*>& sourceModels()			const	{ return _sourceModels; }
 			bool			hasSource()					const	{ return _sourceModels.length() > 0; }
@@ -74,8 +73,7 @@ protected:
 protected:
 	QList<SourceType*>	_sourceModels;
 	bool				_needsSourceModels;
-	int					_variableTypesAllowed,
-						_variableTypesSuggested;
+	int					_variableTypesAllowed;
 	bool				_hasRowComponents	= false;
 	std::string			_optionKeyName;
 	
