@@ -98,12 +98,14 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
           limitsize = FALSE # only necessary if users make the plot ginormous.
         )
 
-        image[["error"]] <- paste(
-          "ggplot could not be rendered without the enclosing environment.",
-          "Please ensure that all objects are passed to ggplot functions directly and do not need to be found in the enclosing environment.",
-          "\nThe following error occured:\n\n",
-          e
-        )
+        if (developerMode) {
+          image[["error"]] <- paste(
+            "ggplot could not be rendered without the enclosing environment.",
+            "Please ensure that all objects are passed to ggplot functions directly and do not need to be found in the enclosing environment.",
+            "\nThe following error occured:\n\n",
+            e
+          )
+        }
 
       } else {
         # save the smaller plot in the state
@@ -181,6 +183,11 @@ emptyGGplotEnvironment <- function(old, inplace = FALSE) {
   # assign emptyenv() to this environment.
   new$plot_env <- emptyenv()
 
+  # clear environment of the mapping in the first call to ggplot2
+  for (m in seq_along(new$mapping))
+    if (!is.null(attr(new$mapping[[m]], ".Environment")))
+      clearEnvironment(attr(new$mapping[[m]], ".Environment"))
+
   # note: layers are environment so they are modified in place
   for (l in new$layers)
     for (m in seq_along(l$mapping))
@@ -194,7 +201,9 @@ emptyGGplotEnvironment <- function(old, inplace = FALSE) {
 }
 
 clearEnvironment <- function(env) {
-  rm(list = ls(all.names = TRUE, envir = env), envir = env)
+  # unlikely case, but shouldn't happen
+  if (identical(env, globalenv())) warning("Plot environment was the global environment and hence not emptied.")
+  else rm(list = ls(all.names = TRUE, envir = env), envir = env)
 }
 
 # Source: https://github.com/Rapporter/pander/blob/master/R/evals.R#L1389
