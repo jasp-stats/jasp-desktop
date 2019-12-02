@@ -23,6 +23,8 @@ RCPP_MODULE(jaspResults)
 	Rcpp::function("cpp_startProgressbar",	jaspResults::staticStartProgressbar);
 	Rcpp::function("cpp_progressbarTick",	jaspResults::staticProgressbarTick);
 
+	Rcpp::function("cpp_developerMode",		jaspObject::developerMode);
+
 	Rcpp::function("destroyAllAllocatedObjects", jaspObject::destroyAllAllocatedObjects);
 	Rcpp::class_<jaspObject_Interface>("jaspObject")
 

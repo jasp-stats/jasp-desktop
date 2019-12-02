@@ -125,7 +125,7 @@ public:
 
 	static int getCurrentTimeMs();
 	static void setDeveloperMode(bool developerMode);
-
+	static bool developerMode() { return _developerMode; }
 protected:
 	jaspObjectType				_type;
 	std::string					_errorMessage = "";

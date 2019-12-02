@@ -40,7 +40,9 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   if (is.null(relativePathsvg))
     relativePathsvg <- location$relativePath
 
+
   image                           <- list()
+  developerMode                   <- jaspResultsModule$cpp_developerMode() #This function can be used anywhere, also in "old style code" for however long we support it anyway.
   fullPathpng                     <- paste(location$root, relativePathsvg, sep="/")
   plotEditingOptions              <- NULL
   root                            <- location$root
