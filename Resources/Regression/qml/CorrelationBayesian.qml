@@ -34,8 +34,8 @@ Form
     Group
     {
         title: qsTr("Correlation Coefficient")
-        CheckBox { name: "pearson";			label: qsTr("Pearson"); checked: true       }
-        CheckBox { name: "spearman";		label: qsTr("Spearman"); debug: true		}
+        CheckBox { name: "pearson";         label: qsTr("Pearson"); checked: true       }
+        CheckBox { name: "spearman";        label: qsTr("Spearman"); debug: true		}
         CheckBox { name: "kendall";         label: qsTr("Kendall's tau-b")				}
     }
 
@@ -88,8 +88,8 @@ Form
         VariablesForm
         {
             height: 200
-            AvailableVariablesList { name: "allVariablesList2" }
-            AssignedVariablesList { name: "pairs"; suggestedColumns: ["ordinal", "scale"]; listViewType: "Pairs" }
+            AvailableVariablesList { name: "allVariablesList2";     source:"variables"}
+            AssignedVariablesList { name:  "pairs";                 suggestedColumns: ["ordinal", "scale"]; listViewType: "Pairs" }
         }
 
         RadioButtonGroup

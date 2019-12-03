@@ -8,39 +8,42 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A P          ARTICULAR PURPOSE.  See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, options, ...) {
-
-  # TODO(Alexander): When we allow for other test points, add something like this
+  # Note(Alexander): Rename the ridiculous old option names to new names 
+  options <- .renameCorOptions(options)
+    
+  # TODO(Alexander): When we allow for other test points, add a check like this
   #
   # .checkErrors.summarystats.binomial(options)
-
   # Compute the results and create main results table
   ready <- options[["n"]] > 0
 
-  bfObject <- .sumStatCorrelationTable(jaspResults, options, ready)
+  bfObject <- .computeAndDisplaySumStatCorrelationTable(jaspResults, options, ready)
   # Output plots
-  bfObject <- .sumStatCorrelationPlots(jaspResults, options, bfObject, ready)
+  bfObject <- .computeAndDisplaySumStatCorrelationPlots(jaspResults, options, bfObject, ready)
 
-  jaspResults[["bfState"]] <- createJaspState(bfObject, dependencies=c("n", "method", "rObs", "tauObs",
-                                                                       "rhoObs", "kappa"))
+  jaspResults[["bfState"]] <- createJaspState(bfObject, dependencies=c("sampleSize", "correlationCoefficient", 
+                                                                       "pearsonRhoValue", "kendallTauValue",
+                                                                       "rhoSObs", "priorWidth"))
   # return()
 }
 
 # Execute Bayesian binomial test ----
-.sumStatCorrelationTable <- function(jaspResults, options, ready) {
+.computeAndDisplaySumStatCorrelationTable <- function(jaspResults, options, ready) {
   # a. Retrieve from state ------
   #
   correlationContainer <- jaspResults[["correlationContainer"]]
 
   if (is.null(correlationContainer)) {
     correlationContainer <- createJaspContainer()
-    correlationContainer$dependOn(c("n", "method", "rObs", "tauObs", "rhoObs", "alternative", "kappa"))
+    correlationContainer$dependOn(c("sampleSize", "correlationCoefficient", "pearsonRhoValue", "kendallTauValue", 
+                                    "rhoSObs", "hypothesis", "priorWidth"))
     jaspResults[["correlationContainer"]] <- correlationContainer
   }
 
@@ -62,7 +65,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
     statObs <- switch(options[["method"]],
                       "pearson"=options[["rObs"]],
                       "kendall"=options[["tauObs"]],
-                      "spearman"=options[["rhoObs"]])
+                      "spearman"=options[["rhoSObs"]])
     
     emptyIshRow <-list("n"=".", "stat"=statObs, "bf"=".", "p"=".")
     
@@ -86,7 +89,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
     statObs <- switch(options[["method"]],
                       "pearson"=options[["rObs"]],
                       "kendall"=options[["tauObs"]],
-                      "spearman"=options[["rhoObs"]]
+                      "spearman"=options[["rhoSObs"]]
     )
 
     bfObject <- bcor.testSumStat("n"=options[["n"]], "stat"=statObs, "alternative"=options[["alternative"]],
@@ -169,7 +172,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
 }
 
 # Prior and Posterior plot ----
-.sumStatCorrelationPlots <- function(jaspResults, options, bfObject, ready) {
+.computeAndDisplaySumStatCorrelationPlots <- function(jaspResults, options, bfObject, ready) {
   # 
   # 
   plotItems <- .getCorPlotItems(options, sumStat=TRUE)
@@ -183,7 +186,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   
   if (is.null(plotContainer)) {
     plotContainer <- createJaspContainer(title="Inferential Plots")
-    plotContainer$dependOn(c("plotPriorPosterior", "plotBfRobustness"))
+    plotContainer$dependOn(c("plotPriorAndPosterior", "plotBayesFactorRobustness"))
     plotContainer$position <- 2
     jaspResults[["correlationContainer"]][["plotContainer"]] <- plotContainer
   }
@@ -191,7 +194,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   # b. Define dependencies for the plots ----- 
   # For plotPriorPosterior
   # 
-  bfPlotPriorPosteriorDependencies <- c("plotPriorPosteriorAddTestingInfo", "plotPriorPosteriorAddEstimationInfo")
+  bfPlotPriorPosteriorDependencies <- c("plotPriorAndPosteriorAdditionalInfo", "plotPriorPosteriorAddEstimationInfo")
   
   if (options[["plotPriorPosteriorAddEstimationInfo"]]) 
     bfPlotPriorPosteriorDependencies <- c(bfPlotPriorPosteriorDependencies, "ciValue")
@@ -200,7 +203,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   # 
   bfPlotRobustnessDependencies <- c("plotBfRobustnessAddInfo")
   
-  if (options[["plotBfRobustnessAddInfo"]]) 
+  if (options[["plotBayesFactorRobustnessAdditionalInfo"]]) 
     bfPlotRobustnessDependencies <- c(bfPlotRobustnessDependencies, "bayesFactorType")
   
   plotItemDependencies <- list(
@@ -248,4 +251,82 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   }
   
   return(bfObject)
+}
+
+
+.oldSumStatsOptionsNames <- c("sampleSize", "correlationCoefficient", 
+                             "pearsonRhoValue", "kendallTauValue", "hypothesis", "plotPriorAndPosterior",
+                             "plotPriorAndPosteriorAdditionalInfo", "plotBayesFactorRobustness", 
+                             "plotBayesFactorRobustnessAdditionalInfo", "priorWidth")
+
+.renameCorOptions <- function(options) {
+  allOptionsNames <- names(options)
+  
+  for (i in seq_along(allOptionsNames)) {
+    currentName <- allOptionsNames[i]
+
+    if (currentName %in% .oldSumStatsOptionsNames) {
+      if (currentName=="sampleSize")  {
+        options[["n"]] <- options[[currentName]]
+      } else if (currentName=="correlationCoefficient") {
+        options[["method"]] <- options[[currentName]]
+        options[["method"]] <- switch(options[["method"]],
+                                      "pearsonRho"="pearson",
+                                      "kendallTau"="kendall",
+                                      "spearman"="spearman")
+      } else if (currentName=="pearsonRhoValue") {
+        options[["rObs"]] <- options[[currentName]]
+      } else if (currentName=="kendallTauValue") {
+        options[["tauObs"]] <- options[[currentName]]
+      } else if  (currentName=="hypothesis") {
+        options[["alternative"]] <- options[[currentName]]
+        options[["alternative"]] <- switch(options[["alternative"]],
+                                           "correlated"="two.sided",
+                                           "correlatedPositively"="greater",
+                                           "correlatedNegatively"="less")
+      } else if (currentName=="plotPriorAndPosterior") {
+        options[["plotPriorPosterior"]] <- options[[currentName]]
+      }
+
+
+      if (currentName=="plotPriorAndPosteriorAdditionalInfo") {
+        options[["plotPriorPosteriorAddTestingInfo"]] <- options[[currentName]]
+      }
+
+
+      if (currentName=="plotBayesFactorRobustness") {
+        options[["plotBfRobustness"]] <- options[[currentName]]
+      }
+
+
+      if (currentName=="plotBayesFactorRobustnessAdditionalInfo") {
+        options[["plotBfRobustnessAddInfo"]] <- options[[currentName]]
+      }
+
+
+      if (currentName=="priorWidth") {
+        options[["kappa"]] <- options[[currentName]]
+      }
+    }
+  }
+  
+  # tempList <- options[[.oldSumStatsOptionsNames]]
+  # names(tempList) <- c("n", "method", "rObs", "tauObs", "method", "plotPriorPosterior", 
+  #                      "plotPriorPosteriorAddTestingInfo", "plotBfRobustness", 
+  #                      "plotBfRobustnessAddInfo", "kappa")
+  # 
+  # tempList[["method"]] <- switch(tempList[["method"]], 
+  #                                "pearsonRho"="pearson", 
+  #                                "kendallTau"="kendall",
+  #                                "spearman"="spearman")
+  # 
+  # tempList[["alternative"]] <- switch(tempList[["alternative"]], 
+  #                                    "correlated"="two.sided",
+  #                                    "correlatedPositively"="greater",
+  #                                    "correlatedNegatively"="less")
+  # 
+  # options <- modifyList(options, tempList)
+  # return(options)
+  
+  return(options)
 }

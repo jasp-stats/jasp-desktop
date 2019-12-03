@@ -58,27 +58,6 @@ hypMinSided <- c("less", "minSided",
   return(itemNames)
 }
 
-.bCorRowNames <- function(options, itemNames, method=c("pearson", "kendall", "spearman")) {
-  rowStatName <- list(pearson="Pearson's r", kendall="Kendall's tau", spearman="Spearman's rho")
-  
-  bfTitle <- .getBfTitle("bfType"=options[["bayesFactorType"]], "alternative"=options[["alternative"]])
-  
-  if (!is.null(method)) {
-    allRowNames <- list("n"="n", "stat"=rowStatName[[method[1]]], "bf"=bfTitle, 
-                        "upperCi"=paste0("Upper ", options[["ciValue"]]*100, "% CI"),
-                        "lowerCi"=paste0("Lower ", options[["ciValue"]]*100, "% CI")
-    )
-  } else {
-    allRowNames <- list("n"="n", "bf"=bfTitle, 
-                        "upperCi"=paste0("Upper ", options[["ciValue"]]*100, "% CI"),
-                        "lowerCi"=paste0("Lower ", options[["ciValue"]]*100, "% CI")
-    )
-  }
-  
-  
-  return(allRowNames[itemNames])
-}
-
 .bfFlagKey <- function(options) {
   bfTitle <- .getBfTitle("bfType"=options[["bayesFactorType"]], "alternative"=options[["alternative"]])
   bfKey <- list("LogBF10"=list("*"=paste0(bfTitle, " > log(10)"), 

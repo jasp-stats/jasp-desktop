@@ -38,12 +38,12 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 
   # 3. Table: Get, compute and fill -----------
   #
-  allBfObjects <- .makeTableCorBayes("jaspResults"=jaspResults, "allBfObjects"=allBfObjects,
+  allBfObjects <- .computeAndDisplayTableCorBayes("jaspResults"=jaspResults, "allBfObjects"=allBfObjects,
                                      "dataset"=dataset, "options"=options, "ready"=readyMatrix)
 
   # 4. Matrix plot: Get, compute and draw ------
   #
-  allBfObjects <- .makeMatrixPlot("jaspResults"=jaspResults,
+  allBfObjects <- .computeAndDisplayMatrixPlot("jaspResults"=jaspResults,
                                   "dataset"=dataset, "options"=options,
                                   "allBfObjects"=allBfObjects, "ready"=readyMatrix)
 
@@ -120,7 +120,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   }
 }
 
-.makeTableCorBayes <- function(jaspResults, allBfObjects, dataset, options, ready) {
+.computeAndDisplayTableCorBayes <- function(jaspResults, allBfObjects, dataset, options, ready) {
   # a. Retrieve from state ----
   #
   corBayesTable <- jaspResults[["corBayesTable"]]
@@ -287,11 +287,11 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 
   # e. Fill ----
   #
-  allBfObjects <- .fillCorBayesTable("table"=corBayesTable, "options"=options, 
+  allBfObjects <- .recomputeAndFillCorBayesTable("table"=corBayesTable, "options"=options, 
                                      "allBfObjects"=allBfObjects)
   
   # if (!is.null(allBfObjects))
-  #   .fillCorBayesTable("table"=corBayesTable, "options"=options, "allBfObjects"=allBfObjects)
+  #   .recomputeAndFillCorBayesTable("table"=corBayesTable, "options"=options, "allBfObjects"=allBfObjects)
 
 
   return(allBfObjects)
@@ -426,7 +426,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   return(allBfObjects)
 }
 
-.fillCorBayesTable <- function(table, options, allBfObjects) {
+.recomputeAndFillCorBayesTable <- function(table, options, allBfObjects) {
   methodItems <- .getCorMethods(options)
   nVariables <- length(options[["variables"]])
   
@@ -451,7 +451,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
         var1 <- options[["variables"]][1]
       }
       var2 <- "..."
-      table$addRows(list("variable1"=var1, "separator"="-", "variable2"=var2))
+      table$addRows(list("variable1"=var1, "separator"="\u2014", "variable2"=var2))
       return(allBfObjects)
     }
     
@@ -563,7 +563,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       
       # Note(Alexander): Dash on the diagonal
       # 
-      emptyCellInfo[[i]] <- "-"
+      emptyCellInfo[[i]] <- "\u2014"
       
       itemNames <- .bSelectItems(options)
       nItems <- length(itemNames)
@@ -695,7 +695,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   #
   if (options[["flagSupported"]]) {
     for (i in seq_along(supportFootnotes)) {
-      table$addFootnote(message=supportFootnotes[[i]], symbol = supportSymbols[[i]], rowNames = supportRowName[[i]], colNames = supportColName[[i]])
+      table$addFootnote(symbol = supportSymbols[[i]], rowNames = supportRowName[[i]], colNames = supportColName[[i]])
     }
   }
   return(allBfObjects)
@@ -708,7 +708,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
                        observationsPairwise.amount=2)
 }
 
-.makeMatrixPlot <- function(jaspResults, allBfObjects, dataset, options, ready) {
+.computeAndDisplayMatrixPlot <- function(jaspResults, allBfObjects, dataset, options, ready) {
   # a. Retrieve from state ----
   #
   if (!is.null(jaspResults[["matrixPlot"]]))
@@ -798,6 +798,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
         dataError <- bfObjectBig[[1]][["dataError"]]
         
         if (!is.null(dataError)) {
+          # TODO(Alexander): This is probably not run here anyways, but try avoid displayerror
           scatterPlot <- .displayError(errorMessage=dataError)
         } else {
           subData <- dataset[, .v(c(var1, var2)), drop=FALSE]
@@ -817,6 +818,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
           )
           
           if (isTryError(densityPlot))
+            # TODO(Alexander): again with error case for matrix
             densityPlot <- .displayError(errorMessage=.extractErrorMessage(densityPlot))
           
         }
@@ -831,6 +833,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     )
     
     if (isTryError(densityPlot))
+      # TODO(Alexander): again with error case for matrix
       densityPlot <- .displayError(errorMessage=.extractErrorMessage(densityPlot))
     
     plotMat[[nVariables, nVariables]] <- densityPlot
@@ -845,7 +848,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   labelPos[4, 2] <- .65
   
   obj <- try(JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = vars, topLabels = vars,
-                                      scaleXYlabels = NULL, labelPos=labelPos))
+                                      scaleXYlabels = 0.9, labelPos=labelPos))
   
   if (isTryError(obj)) {
     matrixPlot$setError(.extractErrorMessage(obj))
@@ -862,15 +865,20 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   purpose <- match.arg(purpose)
 
   plotResult <- ""
+  
+  # TODO(Alexander): Check whether we can do .setErrorMessages() to plots in correlation matrix plot
 
   if (purpose=="matrix") {
     if (!options[["plotMatrixPosteriors"]]) {
-      # TODO(Alexander): This should never happen as, this shouldn't be called with plotMatrixPosteriors <- TRUE
+      # Note(Alexander): This should never happen as, this shouldn't be called with plotMatrixPosteriors <- TRUE
+      # TODO(Alexander) return empty list instead?
       plotResult <- .displayError(errorMessage="")
       return(plotResult)
     }
   } else if (purpose=="pairs" | purpose=="sumStat") {
     if (!is.null(options[["plotPriorPosteriors"]])) {
+      # Note(Alexander): This should never happen as, this shouldn't be called with plotMatrixPosteriors <- TRUE
+      # TODO(Alexander) return empty list instead?
       plotResult <- .displayError(errorMessage="")
       return(plotResult)
     }
@@ -883,7 +891,11 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   }
 
   if (!is.null(dataError)) {
-    plotResult <- .displayError(errorMessage=dataError)
+    if (purpose=="matrix") {
+      plotResult <- .displayError(errorMessage=dataError)
+    } else {
+      plotResult <- dataError
+    }
     return(plotResult)
   }
 
@@ -931,11 +943,14 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   # b. Check for error ----
   #
   if (!is.null(error)) {
-    plotResult <- .displayError(errorMessage=error)
+    if (purpose=="matrix") {
+      plotResult <- .displayError(errorMessage=error)
+    } else {
+      plotResult <- error
+    }
     return(plotResult)
   }
-
-
+  
   # c. No errors, combine plot info ------
   #
   domainLength <- length(sidedObject[["xDomain"]])
@@ -982,7 +997,6 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     }
 
     if (isTRUE(options[["plotPriorPosteriorAddTestingInfo"]])) {
-
       dfPoints <- data.frame(
         x = c(sidedObject[["h0"]], sidedObject[["h0"]]),
         y = c(sidedObject[["priorAtH0"]], sidedObject[["posteriorAtH0"]]),
@@ -997,10 +1011,9 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
                        "greater"="greater",
                        "less"="smaller"
   )
-  plotResult <- try(JASPgraphs::PlotPriorAndPosterior(dfLines, dfPoints, BF10,
-                                                      "CRI"=CRI, "CRItxt"=CRItxt, "median"=medianPoint, 
-                                                      "xName"=xName, "hypothesis"=hypothesis))
-
+  plotResult <- try(JASPgraphs::PlotPriorAndPosterior(
+    dfLines, dfPoints, BF10, "CRI"=CRI, "CRItxt"=CRItxt, "median"=medianPoint, "xName"=xName, "hypothesis"=hypothesis)
+  )
   return(plotResult)
 }
 
@@ -1117,7 +1130,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
         if (item=="plotScatter") {
           subData <- dataset[, .v(c(var1, var2)), drop=FALSE]
           subData <- subData[complete.cases(subData), , drop=FALSE]
-          triedPlot <- try(.bCorScatter(x=subData[, 1, drop=TRUE], y=subData[, 2, drop=TRUE], options))
+          triedPlot <- try(.bCorScatter(x=subData[, 1, drop=TRUE], y=subData[, 2, drop=TRUE], xName=var1, yName=var2, options))
           .checkAndSetPlotCorBayes(triedPlot, jaspPlotResult)
         } else if (item=="plotPriorPosterior") {
           triedPlot <- .drawPosteriorPlotCorBayes(bfObjectBig, options, thisMethod, purpose="pairs")
@@ -1162,14 +1175,15 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       yPoint <- c(maxBf, userBf)
     }
     
-    plotResult <- plotRobustnessCor("xLine"=xLine, "yLine"=yLine, "xPoint"=xPoint, "yPoint"=yPoint, 
+    plotResult <- .plotRobustnessCor("xLine"=xLine, "yLine"=yLine, "xPoint"=xPoint, "yPoint"=yPoint, 
                                     "bfType"=options[["bayesFactorType"]], "alternative"=options[["alternative"]], 
                                     nDigits=4)
   }
   return(plotResult)
 }
 
-plotRobustnessCor <- function(xLine, yLine, xPoint, yPoint, bfType, alternative, nDigits=4) {
+.plotRobustnessCor <- function(xLine, yLine, xPoint, yPoint, bfType, alternative, nDigits=4, 
+                               pointColors=c("red", "grey", "black", "white"), pointFill=c("grey", "black", "white")) {
   # TODO(Alexander): Perhaps add an argument
   #     category=c("max", "user")
   # 
@@ -1203,8 +1217,8 @@ plotRobustnessCor <- function(xLine, yLine, xPoint, yPoint, bfType, alternative,
     pointFill <- NULL
   } else {
     nPoints <- length(xPoint)
-    pointColors  <- c("red", "grey", "black", "white")[1:nPoints]
-    pointFill  <- c("grey", "black", "white")[1:nPoints]
+    pointColors  <- pointColors[1:nPoints]
+    pointFill  <- pointFill[1:nPoints]
     
     bfLegendLabel <- JASPgraphs::getBFSubscripts(bfPlotType, hypothesis=hypothesisJASPgraphsName)[1]
     legendText <- vector("character", length(xPoint))
@@ -1227,8 +1241,6 @@ plotRobustnessCor <- function(xLine, yLine, xPoint, yPoint, bfType, alternative,
       x = xPoint,
       y = logYPoint,
       g = JASPgraphs::parseThis(legendText),
-      pointColors = pointColors,
-      pointFill = pointFill, 
       stringsAsFactors = FALSE
     )
   }
@@ -1239,6 +1251,8 @@ plotRobustnessCor <- function(xLine, yLine, xPoint, yPoint, bfType, alternative,
     xName        = expression(paste("Stretched beta prior width ", kappa)),
     dfPoints     = dfPoints,
     bfType       = bfPlotType,
+    pointColors  = pointColors,
+    pointFill    = pointFill, 
     hypothesis   = hypothesisJASPgraphsName
   ))
   
