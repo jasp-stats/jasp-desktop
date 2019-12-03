@@ -67,10 +67,20 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   
   # Test 3: Levels and integer check for counts
   if(options$factor != ""){
+    
+    # Number of levels of the variables must be bigger than 1
+    .hasErrors(dataset              = dataset,
+               perform              = "run",
+               type                 = "factorLevels",
+               factorLevels.target  = options$factor,
+               factorLevels.amount  = '< 1',
+               exitAnalysisIfErrors = TRUE)
+    
     # first determine the hypotheses
     factorVariable <- na.omit(dataset[[.v(options$factor)]])
     factorVariable <- as.factor(factorVariable)
-    nlevels <- nlevels(factorVariable)
+    nlevels        <- nlevels(factorVariable)
+    
     if (options$counts != "") {
       counts   <- na.omit(dataset[[.v(options$counts)]])
       variable <- "Invalid counts: "
