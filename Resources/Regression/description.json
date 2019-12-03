@@ -34,10 +34,6 @@
 			"function":	"CorrelationBayesian"
 		},
 		{
-			"title":	"Bayesian Correlation Pairs",
-			"function":	"CorrelationBayesianPairs"
-		},
-		{
 			"title":	"Bayesian Linear Regression",
 			"function":	"RegressionLinearBayesian"
 		}
