@@ -104,11 +104,11 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
 	rInside[".columnIsOrdinal"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsOrdinal);
 	rInside[".columnIsNominal"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsNominal);
-	rInside[".encodeColumnName"]			= Rcpp::InternalFunction(&jaspRCPP_encodeColumnName);
-	rInside[".decodeColumnName"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnName);
+	rInside[".encodeColNamesStrict"]		= Rcpp::InternalFunction(&jaspRCPP_encodeColumnName);
+	rInside[".decodeColNamesStrict"]		= Rcpp::InternalFunction(&jaspRCPP_decodeColumnName);
 	rInside[".columnIsNominalText"]			= Rcpp::InternalFunction(&jaspRCPP_columnIsNominalText);
-	rInside[".encodeAllColumnNames"]		= Rcpp::InternalFunction(&jaspRCPP_encodeAllColumnNames);
-	rInside[".decodeAllColumnNames"]		= Rcpp::InternalFunction(&jaspRCPP_decodeAllColumnNames);
+	rInside[".encodeColNamesLax"]			= Rcpp::InternalFunction(&jaspRCPP_encodeAllColumnNames);
+	rInside[".decodeColNamesLax"]			= Rcpp::InternalFunction(&jaspRCPP_decodeAllColumnNames);
 	rInside[".setColumnDataAsScale"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
 	rInside[".readFullDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
 	rInside[".readDatasetToEndNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);

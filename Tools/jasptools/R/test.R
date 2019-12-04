@@ -63,9 +63,17 @@ testAnalysis <- function(analysis) {
 #' @export testAll
 testAll <- function() {  
   testDir <- .getPkgOption("tests.dir")
+  
   envirValue <- Sys.getenv("NOT_CRAN")
   Sys.setenv("NOT_CRAN" = "true")
-  on.exit(Sys.setenv("NOT_CRAN" = envirValue))
+  
+  optsValue <- getOption("testthat.progress.max_fails")
+  options("testthat.progress.max_fails" = 1000)
+  
+  on.exit({
+    Sys.setenv("NOT_CRAN" = envirValue)
+    options("testthat.progress.max_fails" = optsValue)
+  })
 
   .fixRNGForTesting()
   results <- testthat::test_dir(testDir)
@@ -101,12 +109,16 @@ manageTestPlots <- function(analysis = NULL) {
 
   envirValue <- Sys.getenv("NOT_CRAN")
   Sys.setenv("NOT_CRAN" = "true")
+  
+  optsValue <- getOption("testthat.progress.max_fails")
+  options("testthat.progress.max_fails" = 1000)
 
   oldLibPaths <- .libPaths()
   .libPaths(c(.getPkgOption("pkgs.dir"), .libPaths()))
 
   on.exit({
     Sys.setenv("NOT_CRAN" = envirValue)
+    options("testthat.progress.max_fails" = optsValue)
     .libPaths(oldLibPaths)
     unloadNamespace("SomePkg") # unload fake pkg in JASP unit tests, which is needed to run vdiffr
   })

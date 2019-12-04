@@ -980,19 +980,19 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   semPlotMod <- semPlot::semPlotModel(list(lavResult), list(mplusStd = "std"))[[1]]
 
   manifests <- semPlotMod@Vars$name[semPlotMod@Vars$manifest]
-  semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- decodeAllColumnNames(manifests)
+  semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- decodeColNames(manifests)
   latents   <- semPlotMod@Vars$name[!semPlotMod@Vars$manifest]
   semPlotMod@Vars$name[!semPlotMod@Vars$manifest] <- .translateFactorNames(latents, options)
 
   lhsAreManifest <- semPlotMod@Pars$lhs %in% manifests
-  if (any(lhsAreManifest)) semPlotMod@Pars$lhs[lhsAreManifest] <- decodeAllColumnNames(semPlotMod@Pars$lhs[lhsAreManifest])
+  if (any(lhsAreManifest)) semPlotMod@Pars$lhs[lhsAreManifest] <- decodeColNames(semPlotMod@Pars$lhs[lhsAreManifest])
   lhsAreLatent   <- semPlotMod@Pars$lhs %in% latents
   if (any(lhsAreLatent))
     semPlotMod@Pars$lhs[lhsAreLatent] <- .translateFactorNames(semPlotMod@Pars$lhs[lhsAreLatent], options)
 
 
   rhsAreManifest <- semPlotMod@Pars$rhs %in% manifests
-  if (any(rhsAreManifest)) semPlotMod@Pars$rhs[rhsAreManifest] <- decodeAllColumnNames(semPlotMod@Pars$rhs[rhsAreManifest])
+  if (any(rhsAreManifest)) semPlotMod@Pars$rhs[rhsAreManifest] <- decodeColNames(semPlotMod@Pars$rhs[rhsAreManifest])
   rhsAreLatent   <- semPlotMod@Pars$rhs %in% latents
   if (any(rhsAreLatent))
     semPlotMod@Pars$rhs[rhsAreLatent] <- .translateFactorNames(semPlotMod@Pars$rhs[rhsAreLatent], options)
@@ -1031,8 +1031,8 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   ggmisfit$labels <- substr(round(ggmisfit$value, 2), 2, 4)
   ggmisfit$labels[ggmisfit$labels == ""] <- "0"
 
-  levels(ggmisfit$Var1) <- decodeColumnName(levels(ggmisfit$Var1))
-  levels(ggmisfit$Var2) <- decodeColumnName(levels(ggmisfit$Var2))
+  levels(ggmisfit$Var1) <- decodeColNames(levels(ggmisfit$Var1), strict = TRUE)
+  levels(ggmisfit$Var2) <- decodeColNames(levels(ggmisfit$Var2), strict = TRUE)
 
   misfitplot <-
     ggplot2::ggplot(ggmisfit, ggplot2::aes(x = Var1, y = Var2, fill = value,

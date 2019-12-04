@@ -225,4 +225,7 @@ isJaspDesktopDir <- function(path) {
       lockBinding(".masks",        env)
     })
   }
+  
+  # this is not used in combination with getAnywhere() in the code so it cannot be found
+  assign(".automaticColumnEncDecoding", FALSE, envir = .GlobalEnv)
 }

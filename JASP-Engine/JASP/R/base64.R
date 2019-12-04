@@ -15,36 +15,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.v <- function(variable.names) {
-
-  if(.automaticColumnEncDecoding)
-    return(variable.names);
-
-	vs <- c()
-
-	for (v in variable.names)
-    vs[length(vs)+1] <- encodeAllColumnNames(v)
-
-  return(vs)
+.v <- function(x) {
+  if (.automaticColumnEncDecoding)
+    x
+  else
+    encodeColNames(x)
 }
 
-.unv <- function(variable.names) {
-
-  if(.automaticColumnEncDecoding)
-    return(variable.names);
-
-	vs <- c()
-
-	for (v in variable.names) {
-
-		if (nchar(v) == 0)
-			stop(paste("bad call to .unv() : v is empty"))
-
-      vs[length(vs)+1] <- decodeAllColumnNames(v)
-	}
-
-  return(vs)
+.unv <- function(x) {
+  if (.automaticColumnEncDecoding)
+    x
+  else
+    decodeColNames(x)
 }
-
-
-

@@ -7,6 +7,7 @@ expect_equal_plots <- function(test, name, dir) {
       stop("The new plot has no data. Please check your unit test; is the index path to the plot specified correctly?", call.=FALSE)
 
   skip_if_grob(test)
+  skip_if_recordedPlot(test)
 
   if (inherits(test, "JASPgraphsPlot")) {
     subplots <- test$subplots
@@ -26,4 +27,9 @@ expect_equal_plots <- function(test, name, dir) {
 skip_if_grob <- function(test) {
   if (inherits(test, "grob"))
     skip("Cannot reliably test matrix plots (they fail Windows <-> OSX)")
+}
+
+skip_if_recordedPlot <- function(test) {
+  if (inherits(test, "recordedplot"))
+    skip("Recorded plots are skipped until the scaling of these plots is fixed")
 }

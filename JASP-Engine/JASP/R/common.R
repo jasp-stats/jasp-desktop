@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-fromJSON  <- function(x) jsonlite::fromJSON(x, TRUE, FALSE, FALSE)
-toJSON    <- function(x) jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, null="null")
+fromJSON <- function(x) jsonlite::fromJSON(x, TRUE, FALSE, FALSE)
+toJSON   <- function(x) jsonlite::toJSON(x, auto_unbox = TRUE, digits = NA, null="null")
 
 run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresInit=TRUE, perform="run")
 {
@@ -2245,6 +2245,13 @@ as.list.footnotes <- function(footnotes) {
   eval(plotFunc, parent.frame())
 }
 
+openGrDevice <- function(...) {
+  if (jaspResultsCalledFromJasp())
+    svglite::svglite(...)
+  else
+    grDevices::png(..., units="in", res = 72, type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
+}
+
 .writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathsvg = NULL,
                         units = c("pixels", "inches")) {
   
@@ -2275,9 +2282,7 @@ as.list.footnotes <- function(footnotes) {
   setwd(root)
   on.exit(setwd(oldwd))
 
-  plot2draw <- plot
-  if(.automaticColumnEncDecoding)
-    plot2draw <- decodeplot(plot2draw)
+  plot2draw <- decodeplot(plot)
   
   if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable"))) {
     
@@ -2285,7 +2290,6 @@ as.list.footnotes <- function(footnotes) {
     ggplot2::ggsave(
       filename  = relativePathsvg,
       plot      = plot2draw,
-      device    = function(filename, ...) svglite::svglite(file = filename, ...),
       dpi       = ppi,
       width     = width,
       height    = height,
@@ -2303,7 +2307,8 @@ as.list.footnotes <- function(footnotes) {
     isRecordedPlot <- inherits(plot2draw, "recordedplot")
     
     # Open graphics device and plot
-    svglite::svglite(file = relativePathsvg, width = width, height = height, bg = backgroundColor)
+    openGrDevice(file = relativePathsvg, width = width, height = height, bg = backgroundColor)
+    on.exit(dev.off())
 
     if (is.function(plot2draw) && !isRecordedPlot) {
       
@@ -2322,7 +2327,6 @@ as.list.footnotes <- function(footnotes) {
       plot(plot2draw)
     }
 
-    dev.off()
   }
   
   # Save path & plot object to output
@@ -2342,8 +2346,7 @@ saveImage <- function(plotName, format, height, width)
   state           <- .retrieveState()     # Retrieve plot object from state
   plt             <- state[["figures"]][[plotName]][["obj"]]
 
-  if(.automaticColumnEncDecoding)
-    plt           <- decodeplot(plt);
+  plt             <- decodeplot(plt);
   
   location        <- .fromRCPP(".requestTempFileNameNative", "png") # create file location string to extract the root location
   backgroundColor <- .fromRCPP(".imageBackground")
