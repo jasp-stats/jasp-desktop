@@ -186,7 +186,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
 
   varImpOrder <- sort(result[["rfit_test"]]$importance[,1], decr = TRUE, index.return = TRUE)$ix
   
-  tableVariableImportance[["predictor"]] <- .unv(.v(result[["varImp"]]$Variable))
+  tableVariableImportance[["predictor"]] <- as.character(result[["varImp"]]$Variable)
   tableVariableImportance[["MDiA"]]      <- result[["varImp"]]$MeanIncrMSE    
   tableVariableImportance[["MDiNI"]]     <- result[["varImp"]]$TotalDecrNodeImp
   

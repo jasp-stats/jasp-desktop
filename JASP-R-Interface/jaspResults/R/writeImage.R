@@ -8,18 +8,25 @@ tryToWriteImageJaspResults <- function(...)
   )
 }
 
-getImageLocation <- function(type="png") {
+getImageLocation <- function() {
   root <- file.path(tempdir(), "jaspResults", "plots")
   if (! dir.exists(root))
     dir.create(root, recursive=TRUE)
   numPlots <- length(list.files(root))
   list(
     root = root,
-    relativePath = paste(numPlots + 1, type, sep=".")
+    relativePath = paste(numPlots + 1, "png", sep=".")
   )
 }
 
-writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathsvg=NULL, ppi=300, backgroundColor="white", location=getImageLocation("png"))
+openGrDevice <- function(...) {
+  if (jaspResultsCalledFromJasp())
+    svglite::svglite(...)
+  else
+    grDevices::png(..., units="in", res = 72, type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
+}
+
+writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathsvg=NULL, ppi=300, backgroundColor="white", location=getImageLocation())
 {
   # Set values from JASP'S Rcpp when available
   if (exists(".fromRCPP")) {
@@ -46,9 +53,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   width  <- width  / ppi * 4
   height <- height / ppi * 4
 
-  plot2draw <- plot
-  if(.automaticColumnEncDecoding)
-    plot2draw <- decodeplot(plot2draw)
+  plot2draw <- decodeplot(plot)
 
   if (ggplot2::is.ggplot(plot2draw) || inherits(plot2draw, c("gtable"))) {
 
@@ -56,7 +61,6 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
     ggplot2::ggsave(
       filename  = relativePathsvg,
       plot      = plot2draw,
-      device    = function(filename, ...) svglite::svglite(file = filename, ...),
       dpi       = ppi,
       width     = width,
       height    = height,
@@ -74,7 +78,8 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
     isRecordedPlot <- inherits(plot2draw, "recordedplot")
 
     # Open graphics device and plot
-    svglite::svglite(file = relativePathsvg, width = width, height = height, bg = backgroundColor)
+    openGrDevice(file = relativePathsvg, width = width, height = height, bg = backgroundColor)
+    on.exit(dev.off())
 
     if (is.function(plot2draw) && !isRecordedPlot) {
 
@@ -93,7 +98,6 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
       plot(plot2draw)
     }
 
-    dev.off()
   }
   
   # Save path & plot object to output
@@ -142,6 +146,9 @@ redrawPlotJaspResults <- function(rec_plot)
 }
 
 decodeplot <- function(x, ...) {
+  if (!.automaticColumnEncDecoding)
+    return(x)
+  
   UseMethod("decodeplot", x)
 }
 
@@ -158,7 +165,7 @@ decodeplot.gg <- function(x, returnGrob = TRUE) {
   labels <- x[["labels"]]
   for (i in seq_along(labels))
     if (!is.null(labels[[i]]))
-      labels[[i]] <- decodeAllColumnNames(labels[[i]])
+      labels[[i]] <- decodeColNames(labels[[i]])
     
     x[["labels"]] <- labels
     if (returnGrob) {
@@ -178,16 +185,16 @@ decodeplot.recordedplot <- function(x) {
   decodeplot.gTree(grid::grid.grabExpr(gridGraphics::grid.echo(x)))
 }
 
-decodeplot.gtable <- function(x) rapply(x, f = decodeAllColumnNames, classes = "character", how = "replace")
-decodeplot.grob   <- function(x) rapply(x, f = decodeAllColumnNames, classes = "character", how = "replace")
-decodeplot.gTree  <- function(x) rapply(x, f = decodeAllColumnNames, classes = "character", how = "replace")
-decodeplot.gDesc  <- function(x) rapply(x, f = decodeAllColumnNames, classes = "character", how = "replace")
+decodeplot.gtable <- function(x) rapply(x, f = decodeColNames, classes = "character", how = "replace")
+decodeplot.grob   <- function(x) rapply(x, f = decodeColNames, classes = "character", how = "replace")
+decodeplot.gTree  <- function(x) rapply(x, f = decodeColNames, classes = "character", how = "replace")
+decodeplot.gDesc  <- function(x) rapply(x, f = decodeColNames, classes = "character", how = "replace")
 
 decodeplot.qgraph <- function(x) {
   labels <- x[["graphAttributes"]][["Nodes"]][["labels"]]
   names  <- x[["graphAttributes"]][["Nodes"]][["names"]]
-  labels <- decodeAllColumnNames(labels)
-  names  <- decodeAllColumnNames(names)
+  labels <- decodeColNames(labels)
+  names  <- decodeColNames(names)
   x[["graphAttributes"]][["Nodes"]][["labels"]] <- labels
   x[["graphAttributes"]][["Nodes"]][["names"]]  <- names
   return(x)
@@ -213,12 +220,37 @@ decodeplot.function <- function(x) {
 
 #Some functions that act as a bridge between R and JASP. If JASP isn't running then all columnNames are expected to not be encoded
 
-# four convenience functions to encode/ decode jasp column names. The key difference is that
-# the first two look for exact matches whereas the bottom two do pattern matching.
-encodeColumnName     <- function(x, fun = get0(".encodeColumnName"), ...)     return(.applyEnDeCoder(x, fun, ...))
-decodeColumnName     <- function(x, fun = get0(".decodeColumnName"), ...)     return(.applyEnDeCoder(x, fun, ...))
-encodeAllColumnNames <- function(x, fun = get0(".encodeAllColumnNames"), ...) return(.applyEnDeCoder(x, fun, ...))
-decodeAllColumnNames <- function(x, fun = get0(".decodeAllColumnNames"), ...) return(.applyEnDeCoder(x, fun, ...))
+# two convenience functions to encode/ decode jasp column names. If strict then
+# every value of x must be an exact column name, otherwise other values may be mixed in and pattern matching is performed.
+encodeColNames <- function(x, strict = FALSE, fun = NULL, ...) {
+  if (!is.function(fun))
+    fun <- .findFunc(name = ifelse(strict, ".encodeColNamesStrict", ".encodeColNamesLax"))
+  return(.applyEnDeCoder(x, fun, ...))
+}
+decodeColNames <- function(x, strict = FALSE, fun = NULL, ...) {
+  if (!is.function(fun))
+    fun <- .findFunc(name = ifelse(strict, ".decodeColNamesStrict", ".decodeColNamesLax"))
+  return(.applyEnDeCoder(x, fun, ...))
+}
+
+# this ensures that functions can also be found in jasptools (it needs to search in the package namespace)
+.findFunc <- function(name) {
+  obj <- NULL
+  if (exists(name))
+    obj <- eval(parse(text = name))
+  
+  if (!exists(name) || !is.function(obj)) {
+    location <- getAnywhere(name)
+    for (i in seq_along(location[["objs"]]))
+      if (is.function(location[["objs"]][[i]]))
+        return(location[["objs"]][[i]])
+  }
+  
+  if (!is.function(obj))
+    return(NULL)
+    
+  return(obj)
+}
 
 # internal function that applies a decoding or encoding function (or actually any function) to R objects
 # as long as they are character
@@ -256,11 +288,13 @@ decodeAllColumnNames <- function(x, fun = get0(".decodeAllColumnNames"), ...) re
   }
 }
 
+.applyEnDeCoder.matrix <- function(x, fun) {
+  return(.applyEnDeCoder.data.frame(x, fun))
+}
+
 .applyEnDeCoder.data.frame <- function(x, fun) {
-  dnames <- dimnames(x)
   for (i in seq_along(dimnames(x)))
-    .applyEnDeCoder.character(dnames[[i]], fun)
-  dimnames(x) <- dnames
+    dimnames(x)[[i]] <- .applyEnDeCoder.character(dimnames(x)[[i]], fun)
   return(x)
 }
 

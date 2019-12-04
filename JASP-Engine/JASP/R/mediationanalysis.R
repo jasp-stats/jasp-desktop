@@ -555,7 +555,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     sizeMan        = round(8*exp(-n_totl/80)+1),
     legend         = options$plotlegend,
     legend.mode    = ifelse(options$plotlegend, "names", "style1"),
-    nodeLabels     = decodeAllColumnNames(po@Vars$name)
+    nodeLabels     = decodeColNames(po@Vars$name)
   ))
   
   # post-process plot
@@ -575,9 +575,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   semPlotMod <- semPlot::semPlotModel(list(lavResult), list(mplusStd = "std"))[[1]]
 
   manifests <- semPlotMod@Vars$name[semPlotMod@Vars$manifest]
-  semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- decodeAllColumnNames(manifests)
-  semPlotMod@Pars$lhs <- vapply(semPlotMod@Pars$lhs, function(v) ifelse(nchar(v) > 0, decodeAllColumnNames(v), ""), "")
-  semPlotMod@Pars$rhs <- vapply(semPlotMod@Pars$rhs, function(v) ifelse(nchar(v) > 0, decodeAllColumnNames(v), ""), "")
+  semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- decodeColNames(manifests)
+  semPlotMod@Pars$lhs <- vapply(semPlotMod@Pars$lhs, function(v) ifelse(nchar(v) > 0, decodeColNames(v), ""), "")
+  semPlotMod@Pars$rhs <- vapply(semPlotMod@Pars$rhs, function(v) ifelse(nchar(v) > 0, decodeColNames(v), ""), "")
 
   return(semPlotMod)
 }

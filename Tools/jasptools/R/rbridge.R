@@ -1,5 +1,10 @@
 # functions to replace JASP's rcpp functions
 
+.encodeColNamesStrict <- function(x) return(x)
+.decodeColNamesStrict <- function(x) return(x)
+.encodeColNamesLax <- function(x) return(x)
+.decodeColNamesLax <- function(x) return(x)
+
 .readDatasetToEndNative <- function(columns = c(), columns.as.numeric = c(), columns.as.ordinal = c(),
                                     columns.as.factor = c(), all.columns = FALSE) {
 

@@ -183,7 +183,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
                           "classification" = jaspResults[["classificationResult"]]$object,
                           "regression" = jaspResults[["regressionResult"]]$object)
 
-  classBoostRelInfTable[["predictor"]]  <- .unv(result[["relInf"]]$var)
+  classBoostRelInfTable[["predictor"]]  <- .unv(as.character(result[["relInf"]]$var))
   classBoostRelInfTable[["relIn"]]  <- result[["relInf"]]$rel.inf
 }
 
