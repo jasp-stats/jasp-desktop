@@ -380,7 +380,8 @@ Properties
     * `scale` allows Nominal Integer and Ordinal columns
     * `nominal` allows all Nominal columns (Integer or String), and Ordinal column
     * if no `suggestedColumns` and no `allowedColumns` is specified, then all types of columns are allowed
-- `singleVariable`: [optional, default: `false`] boolean specifying if this field will accept a maximum of one variable
+- `maxRows`: [optional, default: `-1`] maximum number of rows the list can accept. -1 means no limit.
+- `singleVariable`: [optional, default: `false`] if true, set the maxRows to 1
 - `listViewType`: [optional] string that specifies the type of `AssignedVariablesList`, when omitted we get a normal list,  options are `"Layers"` (see Contingency Tables), `"Interaction"` (see ANOVA) and `"RepeatedMeasures"` (see Repeated Measures ANOVA)
 - `width`: [optional, default: 2/5 of the VariablesForm width] in pixels how wide should the field be
 - `height`: [optional] in pixels how heigh should the field be. Per default, it is set so that all AssignedVariablesList's fit the VariablesForm. If you set the height for 1 AssignedVariablesList, it will try to set height of the other AssignedVariablesLists's so that they all fit the heigth of the VariablesForm.

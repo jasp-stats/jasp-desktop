@@ -38,7 +38,7 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(JASPControlBase* item, bool interac
 {
 	_optionsTable = nullptr;
 	_optionVariables = nullptr;
-	_singleItem = getItemProperty("singleVariable").toBool();
+	_maxRows = getItemProperty("maxRows").toInt();
 	_columns = getItemProperty("columns").toInt();
 	bool addAvailableTermsToAssigned = getItemProperty("addAvailableVariablesToAssigned").toBool();
 	bool interactionContainLowerTerms = getItemProperty("interactionContainLowerTerms").toBool();
@@ -49,7 +49,7 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(JASPControlBase* item, bool interac
 	else if (_columns > 1)
 		_termsModel = new ListModelMultiTermsAssigned(this, _columns);
 	else
-		_termsModel = new ListModelTermsAssigned(this, _singleItem);
+		_termsModel = new ListModelTermsAssigned(this, _maxRows);
 }
 
 void BoundQMLListViewTerms::bindTo(Option *option)
@@ -145,7 +145,7 @@ Option* BoundQMLListViewTerms::createOption()
 		result = new OptionsTable(templote);
 	}
 	else
-		result = _singleItem ? new OptionVariable() : new OptionVariables();
+		result = (_maxRows == 1) ? new OptionVariable() : new OptionVariables();
 	
 	return result;
 }
@@ -156,7 +156,7 @@ bool BoundQMLListViewTerms::isOptionValid(Option *option)
 		return dynamic_cast<OptionVariablesGroups*>(option) != nullptr;
 	else if (_hasRowComponents || _termsModel->areTermsInteractions())
 		return dynamic_cast<OptionsTable*>(option) != nullptr;
-	else if (_singleItem)
+	else if (_maxRows == 1)
 		return dynamic_cast<OptionVariable*>(option) != nullptr;
 	else	
 		return dynamic_cast<OptionVariables*>(option) != nullptr;
@@ -189,7 +189,7 @@ bool BoundQMLListViewTerms::isJsonValid(const Json::Value &optionValue)
 			}
 		}
 	}
-	else if (_singleItem)
+	else if (_maxRows == 1)
 		valid = optionValue.type() == Json::stringValue;
 	else
 	{

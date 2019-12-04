@@ -272,7 +272,7 @@ Item
 
 			if (!isControlList)
 				minHeightOfAssignedControls += control.height;
-			else if (control.singleVariable || !control.setHeightInForm)
+			else if (control.maxRows === 1 || !control.setHeightInForm)
 				minHeightOfAssignedControls += control.height;
 			else
 			{

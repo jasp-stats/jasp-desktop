@@ -27,7 +27,7 @@ class ListModelTermsAssigned : public ListModelAssignedInterface
 	Q_OBJECT
 	
 public:
-	ListModelTermsAssigned(QMLListView* listView, bool onlyOneTerm = false);
+	ListModelTermsAssigned(QMLListView* listView, int maxRows = -1);
 	
 	void	initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())	override;
 	bool	canAddTerms(Terms *terms)																		const	override;
@@ -36,8 +36,8 @@ public:
 public slots:
 	virtual void availableTermsChanged(Terms* termsToAdd, Terms* termsToRemove) override;
 	
-private:	
-	bool	_onlyOneTerm;
+private:
+	int _maxRows = -1;
 
 };
 

@@ -28,7 +28,7 @@ JASPListControl
 {
 	id:						variablesList
 	controlType:			JASPControlBase.VariablesListView
-	height:					singleVariable ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
+	height:					maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
 	itemComponent:			itemVariableComponent
 	optionKey:				listViewType === "Interaction" ? "components" : "variable"
 
@@ -39,13 +39,13 @@ JASPListControl
 	property var	sortMenuModel:		null
 	property bool	showSortMenu:		true
 	property bool	singleVariable:		false
+	property int	maxRows:			(singleVariable ? 1 : -1)
 	property string listViewType:		"AvailableVariables"
 	property var	allowedColumns:		[]
 	property bool	dropModeInsert:		dropMode === "Insert"
 	property bool	dropModeReplace:	dropMode === "Replace"
 	property var	suggestedColumns:	[]
 	property bool	showElementBorder:	false
-	property bool	dragOnlyVariables:	false
 	property bool	showVariableTypeIcon:	true
 	property bool	setWidthInForm:		false
 	property bool	setHeightInForm:	false
@@ -194,7 +194,7 @@ JASPListControl
 
 		onPositionChanged:
 		{
-			if (variablesList.singleVariable || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
+			if (variablesList.maxRows === 1 || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
 
 			var onTop = true;
 			var item = listGridView.itemAt(drag.x, drag.y + listGridView.contentY)
@@ -603,7 +603,7 @@ JASPListControl
 							{
 								var dropTarget = itemRectangle.Drag.target.parent
 								var selectedItems = variablesList.model.selectedItems()
-								if (dropTarget.singleVariable && selectedItems.length > 1)
+								if (dropTarget.maxRows > 0 && selectedItems.length > dropTarget.maxRows)
 									return;
 								
 								var variablesListName = variablesList.name
