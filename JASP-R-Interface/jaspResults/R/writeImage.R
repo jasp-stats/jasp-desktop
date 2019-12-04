@@ -49,9 +49,11 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   setwd(root)
   on.exit(setwd(oldwd))
 
-  # convert width & height from pixels to inches. ppi = pixels per inch. 96 is a magic number inherited from the past.
-  width  <- width  / 96
-  height <- height / 96
+  # convert width & height from pixels to inches. ppi = pixels per inch. 72 is a magic number inherited from the past.
+  # originally, this number was 96 but svglite scales this by (72/96 = 0.75). 0.75 * 96 = 72.
+  # for reference see https://cran.r-project.org/web/packages/svglite/vignettes/scaling.html
+  width  <- width  / 72
+  height <- height / 72
 
   plot2draw <- decodeplot(plot)
 
