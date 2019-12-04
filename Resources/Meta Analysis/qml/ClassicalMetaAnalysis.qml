@@ -32,8 +32,8 @@ Form
 		AssignedVariablesList { name: "wlsWeights";	title: qsTr("Effect Size Standard Error"); singleVariable: true; suggestedColumns: ["scale"] }
 		DropDown { name: "method"; label: qsTr("Method"); currentIndex: 2; values: [ "Fixed Effects", "Maximum Likelihood", "Restricted ML", "DerSimonian-Laird", "Hedges", "Hunter-Schmidt", "Sidik-Jonkman", "Empirical Bayes", "Paule-Mandel"]; }
         AssignedVariablesList { name: "studyLabels";	title: qsTr("Study Labels"); singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
-		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates"); singleVariable: false; suggestedColumns: ["scale"] }
-		AssignedVariablesList { name: "factors";	title: qsTr("Factors"); singleVariable: false; suggestedColumns: ["ordinal", "nominal"] }
+		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates"); suggestedColumns: ["scale"] }
+		AssignedVariablesList { name: "factors";	title: qsTr("Factors"); suggestedColumns: ["ordinal", "nominal"] }
 	}
 
 	Section

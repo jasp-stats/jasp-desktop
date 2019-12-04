@@ -30,7 +30,6 @@ Form {
             id: predictors
             name: "predictors"
             title: qsTr("Variables")
-            singleVariable: false
             allowedColumns: ["scale"]
         }
     }

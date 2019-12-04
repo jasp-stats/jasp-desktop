@@ -23,9 +23,9 @@
 
 using namespace std;
 
-ListModelTermsAssigned::ListModelTermsAssigned(QMLListView* listView, bool onlyOneTerm)
+ListModelTermsAssigned::ListModelTermsAssigned(QMLListView* listView, int maxRows)
 	: ListModelAssignedInterface(listView)
-	, _onlyOneTerm(onlyOneTerm)
+	, _maxRows(maxRows)
 {
 }
 
@@ -60,38 +60,36 @@ bool ListModelTermsAssigned::canAddTerms(Terms *terms) const
 	if ( ! ListModelDraggable::canAddTerms(terms))
 		return false;
 
-	if (_onlyOneTerm && terms->size() != 1)
+	if (_maxRows >= 0 && int(terms->size()) > _maxRows)
 		return false;
 
 	return true;
 }
 
-Terms* ListModelTermsAssigned::addTerms(Terms *terms, int dropItemIndex, const QString& assignOption)
+Terms* ListModelTermsAssigned::addTerms(Terms *terms, int dropItemIndex, const QString&)
 {
 	Terms newTerms;
 	Terms *toSendBack = new Terms;
 	beginResetModel();
 
-	if (_onlyOneTerm)
-	{
-		if (terms->size() > 0)
-			newTerms.add(terms->at(0));
-
-		if (_terms.size() > 0)
-			toSendBack->set(_terms);
-	}
-	else if (dropItemIndex >= 0 && dropItemIndex < static_cast<int>(_terms.size()))
-	{
-		newTerms.set(_terms);
+	newTerms.set(_terms);
+	if (dropItemIndex < 0 && _maxRows == 1)
+		dropItemIndex = 0; // for single row, per default replace old item by new one.
+	if (dropItemIndex >= 0 && dropItemIndex < int(_terms.size()))
 		newTerms.insert(dropItemIndex, *terms);
-	}
 	else
-	{
-		newTerms.set(_terms);
 		newTerms.add(*terms);
+
+	size_t maxRows = size_t(_maxRows);
+	if (newTerms.size() > maxRows)
+	{
+		for (size_t i = maxRows; i < newTerms.size(); i++)
+			toSendBack->add(newTerms.at(i));
+		newTerms.remove(maxRows, newTerms.size() - maxRows);
 	}
-	
+
 	_terms.set(newTerms);
+
 	endResetModel();	
 
 	emit modelChanged(terms, toSendBack);

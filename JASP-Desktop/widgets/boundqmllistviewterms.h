@@ -59,7 +59,7 @@ private:
 	OptionsTable*					_optionsTable			= nullptr;
 	OptionVariablesGroups*			_optionVariablesGroups	= nullptr;
 	ListModelAssignedInterface*		_termsModel				= nullptr;
-	bool							_singleItem				= false;
+	int								_maxRows				= -1;
 	int								_columns				= 1;
 	QString							_interactionHighOrderCheckBoxName;
 };

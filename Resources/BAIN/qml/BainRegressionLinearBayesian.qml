@@ -36,7 +36,6 @@ Form
 		{
 			name: "covariates"
 			title: qsTr("Covariates")
-			singleVariable: false
 			suggestedColumns: ["scale"]
 		}
 	}

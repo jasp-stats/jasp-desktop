@@ -33,9 +33,7 @@ BoundQMLListViewLayers::BoundQMLListViewLayers(JASPControlBase* item)
 	, BoundQMLListViewDraggable(item)
 {
 	_boundTo = nullptr;
-	_layersModel = new ListModelLayersAssigned(this);
-	
-	setItemProperty("dragOnlyVariables", true);
+	_layersModel = new ListModelLayersAssigned(this);	
 }
 
 void BoundQMLListViewLayers::bindTo(Option *option)
