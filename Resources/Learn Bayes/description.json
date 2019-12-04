@@ -1,0 +1,27 @@
+{
+	"moduleDescription" :
+	{
+		"title" :		"Learn Bayes",
+		"icon":			"learning-stats.png",
+		"description":	"Learning Bayesian Statistics with JASP",
+		"version":		"0.1",
+		"requiresData": false,
+		"author":		"JASP Team",
+		"maintainer":	"JASP Team <info@jasp-stats.org>",
+		"website":		"www.jasp-stats.org",
+		"license":		"GPL (>= 2)"
+	},
+
+
+	"menu":
+	[
+		{
+			"title": 	"Binomial"
+		},
+		{
+			"title":	"Estimation",
+			"qml":		"LSbinomialestimation.qml",
+			"function":	"LSbinomialestimation"
+		}
+	]
+}
