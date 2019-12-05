@@ -100,6 +100,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       container$dependOn(options              = c("layers", "counts"),
                          optionContainsValue  = list(rows     = analysis$rows, 
                                                      columns  = analysis$columns))
+      container$position <- 1
       jaspResults[[paste0("container", i)]] <- container
     }
   }
@@ -565,11 +566,12 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   grp.mat <- .crossTabGroupMatrices(subdataset, analysis$rows, 
                                       analysis$columns, groups, 
                                       counts.var, 
-                                      options$rowOrder=="descending", 
+                                      options$rowOrder   =="descending", 
                                       options$columnOrder=="descending", 
                                       ready)
   groupsList$group.matrices <- grp.mat
   analysisContainer[["groupList"]] <- createJaspState(groupsList)
+  analysisContainer[["groupList"]]$dependOn(c("rowOrder", "columnOrder"))
   return(groupsList)
 }
 
