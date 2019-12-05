@@ -15,619 +15,475 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-TTestPairedSamples <- function(dataset = NULL, options, perform = "run",
-							   callback = function(...) 0,  ...) {
-	
-	state <- .retrieveState()	
-	
-	## call the common initialization function
-	init <- .initializeTTest(dataset, options, perform, type = 'paired')
-
-	results <- init[["results"]]
-	dataset <- init[["dataset"]]
-	
-	# test whether pairs are identical
-	if (length(options$pairs) > 0) {
-	  for (i in 1:length(options$pairs)) {
-	    datasetErrorCheck <- data.frame(dataset[[.v(options$pairs[[i]][[1]])]] - dataset[[.v(options$pairs[[i]][[2]])]])
-	    colnames(datasetErrorCheck) <- .v(paste0("Difference between ", options$pairs[[i]][[1]], " and ", options$pairs[[i]][[2]]))
-	    .hasErrors(datasetErrorCheck, perform, type = "variance", exitAnalysisIfErrors = TRUE)
-	  }
-	}
-	
-	## call the specific paired T-Test functions
-	results[["ttest"]] <- .ttestPairedSamples(dataset, options, perform)
-	descriptivesTable <- .ttestPairedSamplesDescriptives(dataset, options, perform)
-	shapiroWilk <- .ttestPairedNormalityTest(dataset, options, perform)
-	results[["assumptionChecks"]] <- list(shapiroWilk = shapiroWilk, title = "Assumption Checks")
-
-
-	keep <- NULL
-	## if the user wants descriptive plots, s/he shall get them!
-	if (options$descriptivesPlots) {
-
-		plotTitle <- ifelse(length(options$pairs) > 1, "Descriptives Plots", "Descriptives Plot")
-		descriptivesPlots <- .pairedSamplesTTestDescriptivesPlot(dataset, options, perform)
-		if (!is.null(descriptivesPlots[[1]][["obj"]])){
-			keep <- unlist(lapply(descriptivesPlots, function(x) x[["data"]]),NULL)
-		}
-		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, 
-																			title = "Descriptives", 
-																			descriptivesPlots = list(collection = descriptivesPlots, 
-																															 title = plotTitle))
-
-	} else {
-
-		results[["descriptives"]] <- list(descriptivesTable = descriptivesTable, title = "Descriptives")
-	}
-
-	## return the results object
-	if (perform == "init") {
-		return(list(results=results, status="inited"))
-	} else {
-		return(list(results=results, status="complete", 
-								state = list(options = options, results = results),
-								keep = keep))
-	}
-}
-
-
-.ttestPairedSamples <- function(dataset, options, perform) {
-
-	ttest <- list()
-
-	## what does the user want? what does s/he really want??
-	wantsEffect <- options$effectSize
-	wantsDifference <- options$meanDifference
-	wantsConfidenceMeanDiff <- (options$meanDiffConfidenceIntervalCheckbox &&  options$meanDifference)
-	wantsConfidenceEffSize <- (options$effSizeConfidenceIntervalCheckbox && options$effectSize)
-	percentConfidenceMeanDiff <- options$meanDiffConfidenceIntervalPercent
-	percentConfidenceEffSize <- options$effSizeConfidenceIntervalPercent
-	wantsStudents <- options$students
-	wantsWilcox <- options$wilcoxonSignedRank
-
-	allTests <- c(wantsStudents, wantsWilcox)
-	onlyTest <- sum(allTests) == 1
-
-	## setup table for paired t-test results
-	fields <- list(list(name = "v1", type = "string", title = ""),
-				   list(name = "sep",  type = "separator", title = ""),
-				   list(name = "v2", type = "string", title = ""),
-				   list(name = "df",  type = "integer"),
-				   list(name = "p", type = "number", format = "dp:3;p:.001"))
-
-	footnotes <- .newFootnotes()
-	title <- "Paired Samples T-Test"
-
-	## get the right statistics for the table and, if only one test type, add footnote
-	if (wantsWilcox && onlyTest) {
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Wilcoxon signed-rank test.")
-		testStat <- "W"
-		fields <- fields[-4] #Wilcoxon's test doesn't have degrees of freedoms
-		nameOfLocationParameter <- "Hodges-Lehmann Estimate"
-		nameOfEffectSize <- "Rank-Biserial Correlation"
-	} else if (wantsStudents && onlyTest) {
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = "Student's t-test.")
-		testStat <- "t"
-		nameOfLocationParameter <- "Mean Difference"
-		nameOfEffectSize <- "Cohen's d"
-	} else {
-		testStat <- "Statistic"
-		nameOfLocationParameter <-  "Location Parameter"
-		nameOfEffectSize <-  "Effect Size"
-	}
-
-	ttest[["title"]] <- title
-
-	## if only conducting Student's, the table should have "t" as column name
-	## for the test statistic when doing only Wilcoxon's, the name should be "V";
-	## when doing both, it should be "statistic"
-	fields <- append(fields, list(list(name = testStat,
-								  type = "number", format = "sf:4;dp:3")), 3)
-
-	## if the user wants all tests, add a column called "Test"
-	if (sum(allTests) == 2) {
-		fields <- append(fields, list(list(name = "test",
-									  type = "string", title = "Test")), 3)
-	}
-
-	if (options$VovkSellkeMPR) {
-    .addFootnote(footnotes, symbol = "\u002A", text = "Vovk-Sellke Maximum
-		<em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
-		possible odds in favor of H\u2081 over H\u2080 equals
-		1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37
-		(Sellke, Bayarri, & Berger, 2001).")
-    fields[[length(fields) + 1]] <- list(name = "VovkSellkeMPR",
-                                        title = "VS-MPR\u002A",
-                                        type = "number",
-                                        format = "sf:4;dp:3")
+TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
+  ready <- length(options$pairs) > 0  #at least one variable pair
+  type  <- "paired"
+  if(ready) {
+    dataset <- .ttestReadData(dataset, options, type)
+    .ttestCheckErrors(        dataset, options, type)
   }
+  # Output tables (each calls its own results function)
+  .ttestPairedMainTable(  jaspResults, dataset, options, ready, type)
+  .ttestPairedNormalTable(jaspResults, dataset, options, ready, type)
+  # Descriptives
+  vars <- unique(unlist(options$pairs))
+  .ttestDescriptivesTable(     jaspResults, dataset, options, ready, vars)
+  .ttestPairedDescriptivesPlot(jaspResults, dataset, options, ready)
+  
+  return()
+}
 
-	if (wantsDifference) {
-		fields[[length(fields) + 1]] <- list(name = "md", title = nameOfLocationParameter,
-											 type = "number", format = "sf:4;dp:3")
-		if(wantsStudents) {
-		  fields[[length(fields) + 1]] <- list(name = "sed", title = "SE Difference",
-											 type = "number", format = "sf:4;dp:3")
-		}
-		if (wantsWilcox && wantsStudents) {
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
-  	               location parameter is given by mean difference <em>d</em>; for the Wilcoxon test, 
-  	               effect size is given by the Hodges-Lehmann estimate.")
-		} 
-	}
-	
-	if (wantsConfidenceMeanDiff) {
-	  interval <- 100 * percentConfidenceMeanDiff
-	  title <- paste0(interval, "% CI for ", nameOfLocationParameter)
-	  
-	  fields[[length(fields) + 1]] <- list(name = "lowerCIlocationParameter", type = "number",
-	                                       format = "sf:4;dp:3", title = "Lower",
-	                                       overTitle = title)
-	  fields[[length(fields) + 1]] <- list(name = "upperCIlocationParameter", type = "number",
-	                                       format = "sf:4;dp:3", title = "Upper",
-	                                       overTitle = title)
-	}
+.ttestPairedMainTable <- function(jaspResults, dataset, options, ready, type) {
+  if (!is.null(jaspResults[["ttest"]])) 
+    return()
+  optionsList <- .ttestOptionsList(options, type)
+  # Create table
+  ttest <- createJaspTable(title = "Paired Samples T-Test")
+  dependList <- c("effectSize", "effSizeConfidenceIntervalCheckbox", "variables",
+                  "effSizeConfidenceIntervalPercent", "students", "mannWhitneyU",
+                  "meanDifference", "meanDiffConfidenceIntervalCheckbox", "stddev",
+                  "meanDiffConfidenceIntervalPercent", "hypothesis", 
+                  "VovkSellkeMPR", "missingValues")
+  pairList        <- c("pairs", "wilcoxonSignedRank")
+  ttest$dependOn(c(dependList, pairList))
+  ttest$showSpecifiedColumnsOnly <- TRUE
+  ttest$position <- 1
+  
+  ttest$addColumnInfo(name = "v1", type = "string", title = "")
+  ttest$addColumnInfo(name = "sep",  type = "string", title = "")
+  ttest$addColumnInfo(name = "v2", type = "string", title = "")
+  if (optionsList$wantsWilcox && optionsList$onlyTest) {
+    ttest$addFootnote("Wilcoxon signed-rank test.")
+    testStat <- "W"
+    #fields <- fields[-4] #Wilcoxon's test doesn't have degrees of freedom
+    nameOfLocationParameter <- "Hodges-Lehmann Estimate"
+    nameOfEffectSize <- "Rank-Biserial Correlation"
+  } else if (optionsList$wantsStudents && optionsList$onlyTest) {
+    ttest$addFootnote("Student's t-test.")
+    testStat <- "t"
+    nameOfLocationParameter <- "Mean Difference"
+    nameOfEffectSize <- "Cohen's d"
+  } else {
+    testStat <- "Statistic"
+    nameOfLocationParameter <-  "Location Parameter"
+    nameOfEffectSize <-  "Effect Size"
+  }
+  
+  ## if the user wants all tests, add a column called "Test"
+  if (sum(optionsList$allTests) == 2)
+    ttest$addColumnInfo(name = "test", type = "string", title = "Test")
+  ttest$addColumnInfo(name = testStat, type = "number")
+  ttest$addColumnInfo(name = "df",     type = "integer")
+  ttest$addColumnInfo(name = "p",      type = "pvalue")
+  .ttestVovkSellke(ttest, options)
+  
+  if (optionsList$wantsDifference) {
+    ttest$addColumnInfo(name = "md", title = nameOfLocationParameter, type = "number")
+    if(optionsList$wantsStudents)
+      ttest$addColumnInfo(name = "sed", title = "SE Difference", type = "number")
+    if (optionsList$wantsWilcox && optionsList$wantsStudents) {
+      message <- "For the Student t-test, location parameter is given by mean 
+      difference <em>d</em>; for the Wilcoxon test, effect size is given by the 
+      Hodges-Lehmann estimate."
+      ttest$addFootnote(message)
+    } 
+  }
+  
+  if (optionsList$wantsConfidenceMeanDiff) {
+    interval <- 100 * optionsList$percentConfidenceMeanDiff
+    title <- paste0(interval, "% CI for ", nameOfLocationParameter)
+    ttest$addColumnInfo(name = "lowerCIlocationParameter", type = "number",
+                        title = "Lower", overtitle = title)
+    ttest$addColumnInfo(name = "upperCIlocationParameter", type = "number",
+                        title = "Upper", overtitle = title)
+  }
+  
+  if (optionsList$wantsEffect) {
+    ttest$addColumnInfo(name = "d", title = nameOfEffectSize, type = "number")
+    if (optionsList$wantsWilcox && optionsList$wantsStudents) {
+      message <- "For the Student t-test, 
+    effect size is given by Cohen's <em>d</em>; for the Wilcoxon test, 
+    effect size is given by the matched rank biserial correlation."
+      ttest$addFootnote(message)
+    } 
+  }
+  
+  if (optionsList$wantsConfidenceEffSize) {
+    interval <- 100 * optionsList$percentConfidenceEffSize
+    title <- paste0(interval, "% CI for ", nameOfEffectSize)
+    ttest$addColumnInfo(name = "lowerCIeffectSize", type = "number",
+                        title = "Lower", overtitle = title)
+    ttest$addColumnInfo(name = "upperCIeffectSize", type = "number",
+                        title = "Upper", overtitle = title)
+  }
+  
+  if (options$hypothesis == "groupOneGreater") {
+    message   <- "All tests, hypothesis is measurement one greater than measurement two."
+    ttest$addFootnote(message)
+  } else if (options$hypothesis == "groupTwoGreater") {
+    message   <- "All tests, hypothesis is measurement one less than measurement two."
+    ttest$addFootnote(message)
+  }
+  
+  jaspResults[["ttest"]] <- ttest
+  
+  if(!ready) return()
+  res <- try(.ttestPairedMainFill(jaspResults, dataset, options, testStat, optionsList))
+  .ttestSetError(res, ttest)
+}
 
-	if (wantsEffect) {
-		fields[[length(fields) + 1]] <- list(name = "d", title = nameOfEffectSize,
-											 type = "number",  format = "sf:4;dp:3")
-		if (wantsWilcox && wantsStudents) {
-		  .addFootnote(footnotes, symbol = "<em>Note.</em>", text = "For the Student t-test, 
-  	               effect size is given by Cohen's <em>d</em>; for the Wilcoxon test, 
-  	               effect size is given by the matched rank biserial correlation.")
-		} 
-	}
+.ttestPairedNormalTable <- function(jaspResults, dataset, options, ready, type) {
+  # Container
+  .ttestAssumptionCheckContainer(jaspResults, options, type)
+  container <- jaspResults[["AssumptionChecks"]]
+  if (!options$normalityTests || !is.null(container[["ttestNormalTable"]])) 
+    return()
+  container <- jaspResults[["AssumptionChecks"]]
+  # Create table
+  ttestNormalTable <- createJaspTable(title = "Test of Normality (Shapiro-Wilk)")
+  ttestNormalTable$showSpecifiedColumnsOnly <- TRUE
+  ttestNormalTable$position <- 2
+  
+  
+  ttestNormalTable$addColumnInfo(name = "v1",  type = "string",    title = "")
+  ttestNormalTable$addColumnInfo(name = "sep", type = "string", title = "")
+  ttestNormalTable$addColumnInfo(name = "v2",  type = "string",    title = "")
+  ttestNormalTable$addColumnInfo(name = "W",   type = "number", title = "W")
+  ttestNormalTable$addColumnInfo(name = "p",   type = "pvalue", title = "p")
+  
+  message <- "Significant results suggest a deviation from normality."
+  ttestNormalTable$addFootnote(message)
+  
+  container[["ttestNormalTable"]] <- ttestNormalTable
+  
+  if(!ready) return()
+  
+  res <- try(.ttestPairedNormalFill(container, dataset, options, ready))
+  .ttestSetError(res, ttestNormalTable)
+}
 
-	if (wantsConfidenceEffSize) {
-	  interval <- 100 * percentConfidenceEffSize
-	  title <- paste0(interval, "% CI for ", nameOfEffectSize)
-	  
-	  fields[[length(fields) + 1]] <- list(name = "lowerCIeffectSize", type = "number",
-	                                       format = "sf:4;dp:3", title = "Lower",
-	                                       overTitle = title)
-	  fields[[length(fields) + 1]] <- list(name = "upperCIeffectSize", type = "number",
-	                                       format = "sf:4;dp:3", title = "Upper",
-	                                       overTitle = title)
-	}
-
-	ttest[["schema"]] <- list(fields = fields)
-
-	#########################
-	## check the directionality
-	if (options$hypothesis == "groupOneGreater") {
-		direction <- "greater"
-		message <- "All tests, hypothesis is measurement one greater than measurement two."
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-
-	} else if (options$hypothesis == "groupTwoGreater") {
-		direction <- "less"
-		message <- "All tests, hypothesis is measurement one less than measurement two."
-		.addFootnote(footnotes, symbol = "<em>Note.</em>", text = message)
-	} else {
-		direction <- "two.sided"
-	}
-
-	rowNo <- 1
-	ttest.rows <- list() # for each pair and each test, save stuff in there
-	whichTests <- list("1" = wantsStudents, "2" = wantsWilcox)
-
-	## add a row for each variable, even before we are conducting tests
-    for (pair in options$pairs) {
-        ttest.rows[[length(ttest.rows) + 1]] <- list(v1 = pair[[1]],
-                                                     sep = '-',
-                                                     v2 = pair[[2]])
+.ttestPairedMainFill <-function(jaspResults, dataset, options, testStat, optionsList) {
+  direction <- .ttestMainGetDirection(options$hypothesis)
+  
+  rowNo      <- 1
+  ttest.rows <- list() # for each pair and each test, save stuff in there
+  whichTests <- list("1" = optionsList$wantsStudents, "2" = optionsList$wantsWilcox)
+  
+  ## add a row for each variable, even before we are conducting tests
+  
+  #for (pair in options$pairs)
+  #  ttest.rows[[length(ttest.rows) + 1]] <- list(v1 = pair[[1]], sep = '-', v2 = pair[[2]])
+  
+  ## for each pair, run the checked tests and update the table
+  for (pair in options$pairs) {
+    p1 <- pair[[1]]
+    p2 <- pair[[2]]
+    
+    errors <- .hasErrors(dataset,
+                         message = 'short',
+                         type = c('observations', 'variance', 'infinity'),
+                         all.target = c(p1, p2), 
+                         observations.amount  = c('< 2'))
+    
+    ## test is a number, indicating which tests should be run
+    for (test in seq_len(length(optionsList$whichTests))) {
+      row <- list(v1 = p1, sep = "-", v2 = p2)
+      currentTest <- optionsList$whichTests[[test]]
+      ## don't run a test the user doesn't want
+      if (!currentTest)
+        next
+      if (!identical(errors, FALSE) && length(pair[pair != ""]) == 2){
+        jaspResults[["ttest"]]$addFootnote(errors$message, colNames = testStat, rowNames = paste(p1, p2, sep = "-"))
+        isFirst <- (rowNo %% 2 == 1 && sum(optionsList$allTests) == 2) || (sum(optionsList$allTests) == 1)
+        row <- list(v1  = ifelse(isFirst, p1, ""),
+                    sep = ifelse(isFirst, "-", ""),
+                    v2  = ifelse(isFirst, p2, ""))
+        row[[testStat]] <- NaN
+        jaspResults[["ttest"]]$addRows(row, rowNames = paste(p1, p2, sep = "-"))
+        next
+      }
+      
+      row.footnotes <- NULL
+      
+      if (p1 != "" && p2 != "") {
+        
+        c1 <- dataset[[ .v(p1) ]]
+        c2 <- dataset[[ .v(p2) ]]
+        df <- na.omit(data.frame(c1 = c1, c2 = c2))
+        c1 <- df$c1
+        c2 <- df$c2
+        n  <- length(c1)
+        
+        result <- try(silent = FALSE, expr = {
+          ## if Wilcox box is ticked, run a paired wilcoxon signed rank test
+          if (test == 2) {
+            res <- stats::wilcox.test(c1, c2, paired = TRUE,
+                                      conf.level = optionsList$percentConfidenceMeanDiff, 
+                                      conf.int = TRUE,
+                                      alternative = direction)
+            # only count the difference scores that are not 0.
+            nd   <- sum(c1 - c2 != 0)
+            maxw <- (nd * (nd + 1))/2
+            d    <- as.numeric((res$statistic / maxw) * 2 - 1)
+            wSE  <- sqrt((nd * (nd + 1) * (2 * nd + 1)) / 6) / 2
+            mrSE <- sqrt(wSE^2  * 4 * (1 / maxw^2)) 
+            # zSign <- (ww$statistic - ((n*(n+1))/4))/wSE
+            zmbiss <- atanh(d)
+            if(direction == "two.sided")
+              confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize)/2)*mrSE), tanh(zmbiss + qnorm((1+optionsList$percentConfidenceEffSize)/2)*mrSE)))
+            else if (direction == "less")
+              confIntEffSize <- sort(c(-Inf, tanh(zmbiss + qnorm(optionsList$percentConfidenceEffSize)*mrSE)))
+            else if (direction == "greater")
+              confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize))*mrSE), Inf))
+            ## else run a simple paired t-test
+          } else {
+            res <- stats::t.test(c1, c2, paired = TRUE, conf.level = optionsList$percentConfidenceMeanDiff,
+                                 alternative = direction)
+            df  <- ifelse(is.null(res$parameter), "", as.numeric(res$parameter))
+            d   <- mean(c1 - c2) / sd(c1 - c2)
+            t   <- as.numeric(res$statistic)
+            confIntEffSize <- c(0,0)
+            
+            if (optionsList$wantsConfidenceEffSize) {
+              
+              ciEffSize  <- options$effSizeConfidenceIntervalPercent
+              alphaLevel <- ifelse(direction == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
+              
+              confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt(n), df = df, 
+                                                             alpha.lower = alphaLevel,
+                                                             alpha.upper = alphaLevel)[c(1, 3)]
+              confIntEffSize <- unlist(confIntEffSize) / sqrt(n)
+              
+              if (direction == "greater")
+                confIntEffSize[2] <- Inf
+              else if (direction == "less")
+                confIntEffSize[1] <- -Inf
+              
+              confIntEffSize <- sort(confIntEffSize)
+            }
+          }
+          
+          ## don't use a return statement in expressions
+          ## ... it will take ages to debug :)
+          res
+        })
+        
+        ## same for all tests
+        p    <- as.numeric(result$p.value)
+        stat <- as.numeric(result$statistic)
+        sed  <- sd(c1 - c2) / sqrt(length(c1))
+        # num <- sqrt(sd(c1)^2 + sd(c2)^2 -  2 * cov(c1, c2))
+        # d   <- mean(c1) - mean(c2) / num
+        
+        m <- as.numeric(result$estimate)
+        ciLow <- ifelse(direction == "less", -Inf,
+                        as.numeric(result$conf.int[1]))
+        ciUp  <- ifelse(direction == "greater", Inf,
+                        as.numeric(result$conf.int[2]))
+        ciLowEffSize <- as.numeric(confIntEffSize[1])
+        ciUpEffSize  <- as.numeric(confIntEffSize[2])
+        
+        ## paired t-test has it, wilcox doesn't!
+        df  <- ifelse(is.null(result$parameter), "", as.numeric(result$parameter))
+        sed <- ifelse(is.null(result$parameter), "", sed)
+        
+        # add things to the intermediate results object
+        row <- list(df = df, p = p, md = m, d = d,
+                    lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp, 
+                    lowerCIeffectSize = ciLowEffSize, upperCIeffectSize = ciUpEffSize,
+                    sed = sed)
+        
+        if (options$VovkSellkeMPR)
+          row[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
+        row[[testStat]] <- stat
+      } else {
+        row <- list(df = "", p = "", md = "", d = "", lowerCI = "", upperCI = "", sed = "")
+        row[[testStat]] <- ""
+      }
+      
+      ## if this is the first test / row for specific variables, add variable names
+      ## since we have only two tests, the first test always will be an odd number
+      isFirst <- (rowNo %% 2 == 1 && sum(optionsList$allTests) %in% 1:2)
+      row[["v1"]]  <- ifelse(isFirst, p1, "")
+      row[["sep"]] <- ifelse(isFirst, "-", "")
+      row[["v2"]]  <- ifelse(isFirst, p2, "")
+      
+      if (!isFirst)
+        row[["test"]] <- "Wilcoxon"
+        ##jaspResults[["ttest"]][["data"]][[rowNo - 1]][["test"]] <- "Student"
+        #ttest.rows[[rowNo - 1]][["test"]] <- "Student"
+      #}
+      if(test == 1)
+        row[["test"]] <- "Student"
+      
+      jaspResults[["ttest"]]$addRows(row)
+      #ttest.rows[[rowNo]] <- row
+      rowNo <- rowNo + 1
     }
+  }
+  
+  #jaspResults[["ttest"]]$addRows(ttest.rows)
+}
 
-	## for each pair, run the checked tests and update the table
-	for (pair in options$pairs) {
+.ttestPairedNormalFill <- function(container, dataset, options, ready) {
+  pairs <- options$pairs
+  rowNo <- 1
+  if (!ready)
+    pairs[[1]] <- list(".", ".")
+  for (pair in pairs) {
+    if(length(pair) < 2) next
+    p1 <- pair[[1]]
+    p2 <- pair[[2]]
+    
+    errors <- .hasErrors(dataset,
+                         type = c('observations', 'variance', 'infinity'),
+                         all.target = c(p1, p2), 
+                         observations.amount  = c('< 2', '>5000'))
+    if(!identical(errors, FALSE)) {
+      container[["ttestNormalTable"]]$addFootnote(errors$message, colNames = c("W", "p"), rowNames = paste(p1, p2, sep = "-"))
+      container[["ttestNormalTable"]]$addRows(list(v1 = p1, sep = "-", v2 = p2, W = "NaN", p = "NaN"), rowNames = paste(p1, p2, sep = "-"))
+      next
+    }
+    if (ready && p1 != p2) {
+      c1   <- dataset[[ .v(p1) ]]
+      c2   <- dataset[[ .v(p2) ]]
+      data <- na.omit(c1 - c2)
+      
+      r <- stats::shapiro.test(data)
+      W <- as.numeric(r$statistic)
+      p <- r$p.value
+      row <- list(v1 = p1, sep = "-", v2 = p2, W = W,    p = p)
+    } else 
+      row <- list(v1 = p1, sep = "-", v2 = p2, W = ".",  p = ".")
+    row[[".isNewGroup"]] <- rowNo == 1
+    container[["ttestNormalTable"]]$addRows(row)
+    rowNo <- rowNo + 1
+  }
+}
 
-		p1 <- pair[[1]]
-		p2 <- pair[[2]]
-		
-		errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
-							 all.target = c(p1, p2),
-							 observations.amount = '< 2')
-		
-		row <- list(v1 = "", sep = "", v2 = "")
+.ttestDescriptivesTable <- function(jaspResults, dataset, options, ready, vars) {
+  # Container
+  .ttestDescriptivesContainer(jaspResults, options)
+  container <- jaspResults[["ttestDescriptives"]]
+  if (!options$descriptives || !is.null(container[["table"]])) 
+    return()
+  # Create table
+  ttestDescriptivesTable <- createJaspTable(title = "Descriptives")
+  ttestDescriptivesTable$showSpecifiedColumnsOnly <- TRUE
+  ttestDescriptivesTable$position <- 4
+  ttestDescriptivesTable$addColumnInfo(name = "v",    type = "string",  title = "")
+  ttestDescriptivesTable$addColumnInfo(name = "N",    type = "integer", title = "N")
+  ttestDescriptivesTable$addColumnInfo(name = "mean", type = "number",  title = "Mean")
+  ttestDescriptivesTable$addColumnInfo(name = "sd",   type = "number",  title = "SD")
+  ttestDescriptivesTable$addColumnInfo(name = "se",   type = "number",  title = "SE")
+  
+  container[["table"]] <- ttestDescriptivesTable
+  
+  if(!ready) 
+    return()
+  res <- try(.ttestDescriptivesFill(container, dataset, options, desc.vars = vars))
+  .ttestSetError(res, ttestDescriptivesTable)
+}
 
-		## test is a number, indicating which tests should be run
-		for (test in seq_len(length(whichTests))) {
+.ttestDescriptivesFill <- function(container, dataset, options, desc.vars) {
+  desc.vars <- desc.vars[desc.vars != ""]
+  
+  if(length(desc.vars) == 0)
+    return()
+  rowNo <- 1
+  for (var in desc.vars) {
+    row <- list(v = var)
+    
+    dat <- na.omit(dataset[[ .v(var) ]])
+    n   <- as.numeric(length(dat))
+    m   <- as.numeric(mean(dat, na.rm = TRUE))
+    std <- as.numeric(sd(dat,   na.rm = TRUE))
+    
+    if (is.numeric(std))
+      se <- as.numeric(std/sqrt(n))
+    else
+      se <- NaN
+    
+    row[["N"]]    <- n
+    row[["mean"]] <- m
+    row[["sd"]]   <- std
+    row[["se"]]   <- se
+    rowNo <- rowNo + 1
+    container[["table"]]$addRows(row)
+  }
+}
 
-			currentTest <- whichTests[[test]]
+.ttestPairedDescriptivesPlot <- function(jaspResults, dataset, options, ready) {
+  if(!options$descriptivesPlots)
+    return()
+  .ttestDescriptivesContainer(jaspResults, options)
+  container <- jaspResults[["ttestDescriptives"]]
+  container[["plots"]] <- createJaspContainer("Descriptives Plots")
+  subcontainer <- container[["plots"]]
+  subcontainer$position <- 5
+  for(pair in options$pairs) {
+    title <- paste(pair, collapse = " - ")
+    if(!is.null(subcontainer[[title]]))
+      next
+    descriptivesPlot <- createJaspPlot(title = title, width = 480, height = 320)
+    descriptivesPlot$dependOn(optionContainsValue = list(pairs = pair))
+    subcontainer[[title]] <- descriptivesPlot
+    if(ready){
+      p <- try(.ttestPairedDescriptivesPlotFill(dataset, options, pair))
+      if(isTryError(p))
+        descriptivesPlot$setError(.extractErrorMessage(p))
+      else
+        descriptivesPlot$plotObject <- p
+    }
+  } 
+  return()
+}
 
-			## don't run a test the user doesn't want
-			if (!currentTest) {
-				next
-			}
-			
-			if (!identical(errors, FALSE)) {
-				errorMessage <- errors$message
-
-			} else {
-			    errorMessage <- NULL
-			}
-
-			if (perform == "run") {
-
-				row.footnotes <- NULL
-
-				if (p1 != "" && p2 != "") {
-
-					c1 <- dataset[[ .v(p1) ]]
-					c2 <- dataset[[ .v(p2) ]]
-
-					df <- na.omit(data.frame(c1 = c1, c2 = c2))
-
-					c1 <- df$c1
-					c2 <- df$c2
-					n <- length(c1)
-
-					if(is.null(errorMessage)){
-
-					result <- try(silent = FALSE, expr = {
-
-						## if Wilcox box is ticked, run a paired wilcoxon signed rank test
-						if (test == 2) {
-							res <- stats::wilcox.test(c1, c2, paired = TRUE,
-													  conf.level = percentConfidenceMeanDiff, conf.int = TRUE,
-													  alternative = direction)
-							# only count the difference scores that are not 0.
-							nd <- sum(c1 - c2 != 0)
-							maxw <- (nd * (nd + 1))/2
-							d <- as.numeric((res$statistic / maxw) * 2 - 1)
-							wSE <- sqrt((nd * (nd + 1) * (2 * nd + 1)) / 6) / 2
-							mrSE <- sqrt(wSE^2  * 4 * (1 / maxw^2)) 
-							# zSign <- (ww$statistic - ((n*(n+1))/4))/wSE
-							zmbiss <- atanh(d)
-							d <- .clean(d)
-							if(direction == "two.sided") {
-							  confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-percentConfidenceEffSize)/2)*mrSE), tanh(zmbiss + qnorm((1+percentConfidenceEffSize)/2)*mrSE)))
-							}else if (direction == "less") {
-							  confIntEffSize <- sort(c(-Inf, tanh(zmbiss + qnorm(percentConfidenceEffSize)*mrSE)))
-							}else if (direction == "greater") {
-							  confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-percentConfidenceEffSize))*mrSE), Inf))
-							}
-						## else run a simple paired t-test
-						} else {
-							res <- stats::t.test(c1, c2, paired = TRUE, conf.level = percentConfidenceMeanDiff,
-												 alternative = direction)
-							df <- ifelse(is.null(res$parameter), "", as.numeric(res$parameter))
-							d <- .clean(mean(c1 - c2) / sd(c1 - c2))
-							t <- as.numeric(res$statistic)
-							confIntEffSize <- c(0,0)
-
-							if (wantsConfidenceEffSize) {
-							  
-							  ciEffSize <- options$effSizeConfidenceIntervalPercent
-							  alphaLevel <- ifelse(direction == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
-							  
-							  confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt(n), df = df, alpha.lower = alphaLevel,
-							                                                 alpha.upper = alphaLevel)[c(1, 3)]
-							  confIntEffSize <- unlist(confIntEffSize) / sqrt(n)
-							  
-							  if (direction == "greater") {
-							    confIntEffSize[2] <- Inf
-							  } else if (direction == "less")
-							    confIntEffSize[1] <- -Inf
-							  
-							  confIntEffSize <- sort(confIntEffSize)
-							}
-						}
-
-						## don't use a return statement in expressions
-						## ... it will take ages to debug :)
-						res
-					})
-
-					## if testing raised an error, we extract information from it
-					if (class(result) != "try-error") {
-
-						## same for all tests
-						p <- as.numeric(result$p.value)
-						stat <- .clean(as.numeric(result$statistic))
-						sed <- .clean(sd(c1 - c2) / sqrt(length(c1)))
-						# num <- sqrt(sd(c1)^2 + sd(c2)^2 -  2 * cov(c1, c2))
-						# d <- .clean(mean(c1) - mean(c2) / num)
-
-						m <- as.numeric(result$estimate)
-						ciLow <- ifelse(direction == "less", .clean(-Inf),
-										as.numeric(result$conf.int[1]))
-						ciUp <- ifelse(direction == "greater", .clean(Inf),
-									   as.numeric(result$conf.int[2]))
-						ciLowEffSize = .clean(as.numeric(confIntEffSize[1]))
-						ciUpEffSize = .clean(as.numeric(confIntEffSize[2]))
-
-						## paired t-test has it, wilcox doesn't!
-						df <- ifelse(is.null(result$parameter), "", as.numeric(result$parameter))
-						sed <- ifelse(is.null(result$parameter), "", sed)
-						
-						# add things to the intermediate results object
-						row <- list(df = df, p = p, md = m, d = d,
-			            lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp, 
-			            lowerCIeffectSize = ciLowEffSize, upperCIeffectSize = ciUpEffSize,
-									sed = sed, .footnotes = row.footnotes)
-
-						if (options$VovkSellkeMPR){
-						  row[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
-						}
-
-						row[[testStat]] <- stat
-
-					## however, if there has been an error
-					## find out which and log it as a footnote
-
-					} else if (isTryError(result)) {
-					    errorMessage <- .extractErrorMessage(result)
-					}
-					
-					}
-					
-					if (!is.null(errorMessage)){
-
-
-						index <- .addFootnote(footnotes, errorMessage)
-						row.footnotes <- list(t = list(index))
-
-						## since an error occured, we could not extract information
-						row <- list(df = "", p = "", md = "",
-									d = "", lowerCI = "", upperCI = "",
-									sed = "", .footnotes = row.footnotes)
-						row[[testStat]] <- .clean(NaN)
-					}
-
-				  } else {
-
-					  ## if p1 or p2 are undefined (empty string), also show an empty table
-					  row <- list(df = "", p = "", md = "", d = "",
-								lowerCI = "", upperCI = "", sed = "")
-					  row[[testStat]] <- ""
-				  }
-			}
-
-			## if this is the first test / row for specific variables, add variable names
-			## since we have only two tests, the first test always will be an odd number
-			isFirst <- (rowNo %% 2 == 1 && sum(allTests) == 2) || (sum(allTests) == 1)
-			row[["v1"]] <- ifelse(isFirst, p1, "")
-			row[["sep"]] <- ifelse(isFirst, "-", "")
-			row[["v2"]] <- ifelse(isFirst, p2, "")
-
-			## if the user wants both tests, change the columns such that there is
-			## one called "Test" and "statistic" to differentiate Student's from Wilcoxon
-			if (!isFirst) {
-				row[["test"]] <- "Wilcoxon"
-				ttest.rows[[rowNo - 1]][["test"]] <- "Student"
-			}
-
-			ttest.rows[[rowNo]] <- row
-			rowNo <- rowNo + 1
-		}
-	}
-
-	## if no test was conducted
-	if (length(ttest.rows) == 0) {
-		ttest.rows[[1]] <- list()
-	}
-
-	ttest[["data"]] <- ttest.rows
-	ttest[["footnotes"]] <- as.list(footnotes)
-	ttest
+.ttestPairedDescriptivesPlotFill <- function(dataset, options, pair) {
+  errors <- .hasErrors(dataset, 
+                       message = 'short', 
+                       type = c('variance', 'infinity'),
+                       all.target = pair)
+  if(!identical(errors, FALSE))
+    stop(errors$message)
+  base_breaks_x <- function(x) {
+    b <- unique(as.numeric(x))
+    d <- data.frame(y = -Inf, yend = -Inf, x = min(b), xend = max(b))
+    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
+                                                      yend = yend), inherit.aes = FALSE, size = 1))
+  }
+  
+  base_breaks_y <- function(x) {
+    ci.pos <- c(x[, "dependent"] - x[, "ci"], x[, "dependent"] + x[, "ci"])
+    b <- pretty(ci.pos)
+    d <- data.frame(x = -Inf, xend = -Inf, y = min(b), yend = max(b))
+    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
+                                                      yend = yend), inherit.aes = FALSE, size = 1), ggplot2::scale_y_continuous(breaks = c(min(b),
+                                                                                                                                           max(b))))
+  }
+  c1 <- dataset[[ .v(pair[[1]]) ]]
+  c2 <- dataset[[ .v(pair[[2]]) ]]
+  ####
+  data <- data.frame(id = rep(1:length(c1), 2), dependent = c(c1, c2),
+                     groupingVariable = c(rep(paste("1.", pair[[1]], sep = ""), length(c1)),
+                                          rep(paste("2.", pair[[2]], sep = ""), length(c2))))
+  
+  summaryStat <- .summarySEwithin(data, measurevar = "dependent", withinvars = "groupingVariable",
+                                  idvar = "id", conf.interval = options$descriptivesPlotsConfidenceInterval,
+                                  na.rm = TRUE, .drop = FALSE)
+  
+  pd <- ggplot2::position_dodge(0.2)
+  
+  p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable,
+                                                 y = dependent, group = 1)) + ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower,
+                                                                                                                  ymax = ciUpper), colour = "black", width = 0.2, position = pd) +
+    ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd,
+                                                                        size = 4) + ggplot2::ylab(NULL) + ggplot2::xlab(NULL) + base_breaks_y(summaryStat) +
+    base_breaks_x(summaryStat$groupingVariable) + ggplot2::scale_x_discrete(labels = c(pair[[1]], pair[[2]]))
+  
+  p <- JASPgraphs::themeJasp(p)
+  
+  return(p)
 }
 
 
-.ttestPairedSamplesDescriptives <- function(dataset, options, perform) {
-	if (!options$descriptives) return(NULL)
-
-	descriptives <- list(title = "Descriptives")
-
-	fields <- list(
-		list(name = "v", title = "", type = "string"),
-		list(name = "N",  type = "integer"),
-		list(name = "mean", title = "Mean", type = "number",  format = "sf:4;dp:3"),
-		list(name = "sd", title = "SD", type = "number", format = "sf:4;dp:3"),
-		list(name = "se", title = "SE", type = "number",  format = "sf:4;dp:3")
-	)
-
-	descriptives[["schema"]] <- list(fields = fields)
-
-	descriptives.results <- list()
-	desc.vars <- unique(unlist(options$pairs))
-	desc.vars <- desc.vars[desc.vars != ""]
-
-	for (var in desc.vars) {
-
-		row <- list(v = var)
-
-		if (perform == "run") {
-
-			dat <- na.omit(dataset[[ .v(var) ]])
-			n <- .clean(as.numeric(length(dat)))
-			m <- .clean(as.numeric(mean(dat, na.rm = TRUE)))
-			std <- .clean(as.numeric(sd(dat, na.rm = TRUE)))
-
-			if (is.numeric(std)) {
-				se <- .clean(as.numeric(std/sqrt(n)))
-			} else {
-				se <- .clean(NaN)
-			}
-
-			row[["N"]] <- n
-			row[["mean"]] <- m
-			row[["sd"]] <- std
-			row[["se"]] <- se
-		}
-
-		descriptives.results[[length(descriptives.results) + 1]] <- row
-	}
-
-	descriptives[["data"]] <- descriptives.results
-	descriptives
-}
-
-
-.ttestPairedNormalityTest <- function(dataset, options, perform) {
-	if (!options$normalityTests) return(NULL)
-
-	normalityTests <- list(title = "Test of Normality (Shapiro-Wilk)")
-	normalityTests[["cases"]] <- I(options$variables)
-
-	fields <- list(
-		list(name = "v1", type = "string", title = ""),
-		list(name = "sep",  type = "separator", title = ""),
-		list(name = "v2", type = "string", title = ""),
-		list(name = "W", title = "W", type = "number", format = "sf:4;dp:3"),
-		list(name = "p", title = "p", type = "number", format = "dp:3;p:.001")
-	)
-
-	normalityTests[["schema"]] <- list(fields = fields)
-
-	footnotes <- .newFootnotes()
-	normalityTests.results <- list()
-	.addFootnote(footnotes, symbol = "<em>Note.</em>",
-				 text = "Significant results suggest a deviation from normality.")
-
-
-	pairs <- options$pairs
-	if (length(pairs) == 0) {
-		pairs[[1]] <- list(".", ".")
-	}
-
-	for (pair in pairs) {
-
-		p1 <- pair[[1]]
-		p2 <- pair[[2]]
-		
-		if (perform == "run" && length(options$pairs) > 0 && p1 != p2) {
-
-			c1 <- dataset[[ .v(p1) ]]
-			c2 <- dataset[[ .v(p2) ]]
-			data <- na.omit(c1 - c2)
-
-			row.footnotes <- NULL
-			error <- FALSE
-			
-			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
-			                     all.target = c(p1, p2),
-			                     observations.amount = c('< 3', '> 5000'))
-			
-			if (!identical(errors, FALSE)) {
-			    errorMessage <- errors$message
-			    foot.index <- .addFootnote(footnotes, errorMessage)
-			    row.footnotes <- list(W = list(foot.index), p = list(foot.index))
-			    error <- TRUE
-			}
-
-			if (!error) {
-
-				r <- stats::shapiro.test(data)
-				W <- .clean(as.numeric(r$statistic))
-				p <- .clean(r$p.value)
-				newGroup <- length(normalityTests.results) == 0
-
-				result <- list(v1 = p1, sep = "-", v2 = p2,
-							   W = W,  p = p, .isNewGroup = newGroup)
-			} else {
-				newGroup <- length(normalityTests.results) == 0
-				result <- list(v1 = p1, sep = "-", v2 = p2, W = "NaN",
-							 p = "NaN", .isNewGroup = newGroup,
-							 .footnotes = row.footnotes)
-			}
-		} else {
-
-			newGroup <- length(normalityTests.results) == 0
-			result <- list(v1 = p1, sep = "-", v2 = p2,
-						   W = ".",  p = ".", .isNewGroup = newGroup)
-		}
-		normalityTests.results[[length(normalityTests.results) + 1]] <- result
-	}
-
-	normalityTests[["data"]] <- normalityTests.results
-	normalityTests[["footnotes"]] <- as.list(footnotes)
-	normalityTests
-}
-
-
-.pairedSamplesTTestDescriptivesPlot <- function(dataset, options, perform) {
-	if (!options$descriptivesPlots) return(NULL)
-
-	descriptivesPlotList <- list()
-	base_breaks_x <- function(x) {
-		b <- unique(as.numeric(x))
-		d <- data.frame(y = -Inf, yend = -Inf, x = min(b), xend = max(b))
-		list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
-			yend = yend), inherit.aes = FALSE, size = 1))
-	}
-
-	base_breaks_y <- function(x) {
-		ci.pos <- c(x[, "dependent"] - x[, "ci"], x[, "dependent"] + x[, "ci"])
-		b <- pretty(ci.pos)
-		d <- data.frame(x = -Inf, xend = -Inf, y = min(b), yend = max(b))
-		list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
-			yend = yend), inherit.aes = FALSE, size = 1), ggplot2::scale_y_continuous(breaks = c(min(b),
-			max(b))))
-	}
-
-	for (i in .indices(options$pairs)) {
-		
-		pair <- options$pairs[[i]]
-		descriptivesPlot <- list(title = paste(pair, collapse=" - "))
-		descriptivesPlot[["width"]] <- options$plotWidth
-		descriptivesPlot[["height"]] <- options$plotHeight
-		descriptivesPlot[["custom"]] <- list(width = "plotWidth", height = "plotHeight")
-
-		if (perform == "run" && pair[[1]] != "" && pair[[2]] != "") {
-
-			c1 <- dataset[[ .v(pair[[1]]) ]]
-			c2 <- dataset[[ .v(pair[[2]]) ]]
-			###
-			errors <- .hasErrors(dataset, perform, message = 'short', type = c('observations', 'variance', 'infinity'),
-								 all.target = c(pair[[1]], pair[[2]]),
-								 observations.amount = '< 2')
-			
-			if (!identical(errors, FALSE)) {
-				errorMessage <- errors$message
-				
-				descriptivesPlot[["data"]] <- ""
-				descriptivesPlot[["error"]] <- list(error="badData", errorMessage=errorMessage)
-			} else {
-
-			####
-			data <- data.frame(id = rep(1:length(c1), 2), dependent = c(c1, c2),
-				groupingVariable = c(rep(paste("1.", pair[[1]], sep = ""), length(c1)),
-				  rep(paste("2.", pair[[2]], sep = ""), length(c2))))
-
-			summaryStat <- .summarySEwithin(data, measurevar = "dependent", withinvars = "groupingVariable",
-				idvar = "id", conf.interval = options$descriptivesPlotsConfidenceInterval,
-				na.rm = TRUE, .drop = FALSE)
-
-			pd <- ggplot2::position_dodge(0.2)
-
-			p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable,
-				y = dependent, group = 1)) + ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower,
-				ymax = ciUpper), colour = "black", width = 0.2, position = pd) +
-				ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd,
-				size = 4) + ggplot2::ylab(NULL) + ggplot2::xlab(NULL) + base_breaks_y(summaryStat) +
-				base_breaks_x(summaryStat$groupingVariable) + ggplot2::scale_x_discrete(labels = c(pair[[1]], pair[[2]]))
-				
-			p <- JASPgraphs::themeJasp(p)
-
-			imgObj <- .writeImage(width = options$plotWidth, 
-														height = options$plotHeight, 
-														plot = p)
-
-			descriptivesPlot[["data"]] <- imgObj[["png"]]
-			descriptivesPlot[["obj"]] <- imgObj[["obj"]]
-			
-		}
-
-			descriptivesPlot[["convertible"]] <- TRUE
-			descriptivesPlot[["status"]] <- "complete"
-
-
-		}
-
-		descriptivesPlotList[[i]] <- descriptivesPlot
-	}
-
-	descriptivesPlotList
-}

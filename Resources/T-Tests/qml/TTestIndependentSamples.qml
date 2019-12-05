@@ -22,7 +22,6 @@ import JASP.Controls 1.0
 
 Form
 {
-	usesJaspResults: false
 	plotHeight: 300
 	plotWidth:  350
 
