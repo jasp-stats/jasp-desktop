@@ -22,7 +22,7 @@
   MPR <- ifelse(p >= 1/exp(1), 1, 1/(-exp(1)*p*log(p)))
   if (any(is.nan(MPR)))
     MPR[is.nan(MPR)] <- Inf
-  return(sapply(MPR, .clean))
+  return(MPR)
 }
 
 # Type I error probability / posterior probability from same paper
