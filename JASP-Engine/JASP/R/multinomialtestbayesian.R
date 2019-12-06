@@ -31,31 +31,6 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   return()
 }
 
-
-#' Funciton checks for errors
-#'   1. Number of levels of the variables must be bigger than 1
-#'   2. 0 observations for a level of a variable
-#'
-#' @param dataset
-#' @param options user input options
-# .multinomCheckErrors <- function(dataset, options) {
-# 
-#   if (options$factor == "")
-#     return()
-# 
-#   fact <- options$factor
-# 
-#   # Error Check 1: Number of levels of the variables must be bigger than 1
-#   .hasErrors(dataset              = dataset,
-#              perform              = "run",
-#              type                 = "factorLevels",
-#              factorLevels.target  = fact,
-#              factorLevels.amount  = '< 1',
-#              exitAnalysisIfErrors = TRUE)
-# 
-# }
-
-
 #' Compute results for multinomial table
 #'
 #' @param jaspResults
@@ -79,7 +54,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   if (!multinomialResults$specs[["ready"]])
     return(multinomialResults)
-
+  
   # Prepare for running the Bayesian Multinomial test
   factorVariable <- multinomialResults$specs$factorVariable
   countVariable  <- multinomialResults$specs$countVariable
