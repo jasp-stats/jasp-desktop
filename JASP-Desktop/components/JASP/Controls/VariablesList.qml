@@ -26,47 +26,47 @@ import QtQuick.Layouts	1.3
 
 JASPListControl
 {
-	id:						variablesList
-	controlType:			JASPControlBase.VariablesListView
-	height:					maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
-	itemComponent:			itemVariableComponent
-	optionKey:				listViewType === "Interaction" ? "components" : "variable"
+	id						: variablesList
+	controlType				: JASPControlBase.VariablesListView
+	height					: maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
+	itemComponent			: itemVariableComponent
+	optionKey				: listViewType === "Interaction" ? "components" : "variable"
 
-	property string itemType:			"variables"
-	property alias	dropKeys:			dropArea.keys
-	property string	dropMode:			"None"
-	property bool	draggable:			true
-	property var	sortMenuModel:		null
-	property bool	showSortMenu:		true
-	property bool	singleVariable:		false
-	property int	maxRows:			(singleVariable ? 1 : -1)
-	property string listViewType:		"AvailableVariables"
-	property var	allowedColumns:		[]
-	property bool	dropModeInsert:		dropMode === "Insert"
-	property bool	dropModeReplace:	dropMode === "Replace"
-	property var	suggestedColumns:	[]
-	property bool	showElementBorder:	false
-	property bool	showVariableTypeIcon:	true
-	property bool	setWidthInForm:		false
-	property bool	setHeightInForm:	false
-	property bool	interactionContainLowerTerms: true
+	property string itemType						: "variables"
+	property alias	dropKeys						: dropArea.keys
+	property string	dropMode						: "None"
+	property bool	draggable						: true
+	property var	sortMenuModel					: null
+	property bool	showSortMenu					: true
+	property bool	singleVariable					: false
+	property int	maxRows							: (singleVariable ? 1 : -1)
+	property string listViewType					: "AvailableVariables"
+	property var	allowedColumns					: []
+	property bool	dropModeInsert					: dropMode === "Insert"
+	property bool	dropModeReplace					: dropMode === "Replace"
+	property var	suggestedColumns				: []
+	property bool	showElementBorder				: false
+	property bool	showVariableTypeIcon			: true
+	property bool	setWidthInForm					: false
+	property bool	setHeightInForm					: false
+	property bool	interactionContainLowerTerms	: true
 	property var	interactionHighOrderCheckBox
-	property bool	addAvailableVariablesToAssigned: listViewType === "Interaction"
+	property bool	addAvailableVariablesToAssigned	: listViewType === "Interaction"
 	
 	property var	interactionControl
-	property bool	addInteractionOptions:	false
+	property bool	addInteractionOptions			:false
 
 	property int	indexInDroppedListViewOfDraggedItem:	-1
 	
-	readonly property int rectangleY: listRectangle.y
+	readonly property int rectangleY				: listRectangle.y
 
-	property int	startShiftSelected:	0
-	property int	endShiftSelected:	-1
-	property bool	mousePressed:		false
-	property bool	shiftPressed:		false
-	property var	draggingItems:		[]
+	property int	startShiftSelected				: 0
+	property int	endShiftSelected				: -1
+	property bool	mousePressed					: false
+	property bool	shiftPressed					: false
+	property var	draggingItems					: []
 	property var	itemContainingDrag
-	property string	searchKeys:			""
+	property string	searchKeys						: ""
 	
 	signal itemDoubleClicked(int index);
 	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
@@ -469,8 +469,12 @@ JASPListControl
 				
 				RowComponents
 				{
-					id:					rowComponents
-					controls:			model.rowComponents
+					id						: rowComponents
+					controls				: model.rowComponents
+					anchors.verticalCenter	: parent.verticalCenter
+					anchors.right			: parent.right
+					anchors.rightMargin		: 3 * preferencesModel.uiScale
+
 				}
 				
 				states: [

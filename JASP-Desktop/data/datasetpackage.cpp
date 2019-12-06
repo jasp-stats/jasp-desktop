@@ -347,7 +347,8 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 			return false;
 
 		//We know which column we need through the parent index!
-		Labels				&	labels	= _dataSet->column(index.parent().column()).labels();
+		int columnIndex = index.parent().column();
+		Labels				&	labels	= _dataSet->column(columnIndex).labels();
 		switch(role)
 		{
 		case int(specialRoles::filter):
@@ -369,6 +370,7 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 				parent = parentModelForType(parIdxType::data);
 				emit dataChanged(DataSetPackage::index(0, col, parent), DataSetPackage::index(rowCount(), col, parent), { Qt::DisplayRole });
 
+				emit labelChanged(columnIndex);
 				return true;
 			}
 			break;

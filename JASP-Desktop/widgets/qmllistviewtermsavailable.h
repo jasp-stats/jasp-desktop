@@ -27,19 +27,20 @@ class ListModelAssignedInterface;
 
 class QMLListViewTermsAvailable : public QMLListViewDraggable
 {
-Q_OBJECT
+	Q_OBJECT
+
 public:
 	QMLListViewTermsAvailable(JASPControlBase* item, bool isInteractions = false);
 	
-	ListModel*				model() override			{ return _availableModel; }
-	ListModelAvailableInterface*	availableModel()	{ return _availableModel; }
-	void setTermsAreNotVariables() override;
-	void setTermsAreInteractions() override;
-	void setUp() override;
+	ListModel*						model()						override	{ return _availableModel; }
+	ListModelAvailableInterface*	availableModel()						{ return _availableModel; }
+	void							setTermsAreNotVariables()	override;
+	void							setTermsAreInteractions()	override;
+	void							setUp()						override;
 
-	void addAssignedModel(ListModelAssignedInterface* model);
+	void							addAssignedModel(ListModelAssignedInterface* model);
 	
-	const QList<ListModelAssignedInterface*>& assignedModel() const { return _assignedModels; }
+	const QList<ListModelAssignedInterface*>& assignedModel()	const		{ return _assignedModels; }
 	
 	
 protected:

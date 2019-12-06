@@ -33,7 +33,6 @@ DoubleField
 	inputType:			"percent"
 	fieldWidth:			jaspTheme.font.pixelSize * (percentField.decimals + 3)
 
-	lastValidValue:		defaultValue
 	afterLabel:			showPercent ? "%" : ""
 	cursorShape:		Qt.IBeamCursor	
 }

@@ -11,7 +11,7 @@ Form
 	{
 		label:			"Save me!"
 		name:			"saveMe"
-		defaultValue:	"Blablabla"
+		value:			"Blablabla"
 	}
 
 	CheckBox

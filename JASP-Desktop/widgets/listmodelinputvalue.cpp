@@ -161,6 +161,9 @@ void ListModelInputValue::itemChanged(int row, QVariant value)
 	}
 	else
 	{
+		if (val.isEmpty() && row < _minRows)
+			val = "1";
+
 		if (val.isEmpty())
 			_removeTerm(row);
 		else

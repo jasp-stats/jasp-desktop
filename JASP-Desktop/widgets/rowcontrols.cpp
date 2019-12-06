@@ -29,7 +29,8 @@ RowControls::RowControls(
 	, QVector<QQmlComponent *> &components
 	, const QMap<QString, Option*>& rowOptions
 	, int row
-	, const QString& key)
+	, const QString& key
+	, bool isDummy)
 	: QObject(parent), _parentModel(parent)
 {
 	QMLListView* listView = _parentModel->listView();
@@ -37,6 +38,8 @@ RowControls::RowControls(
 	for (QQmlComponent* comp : components)
 	{
 		QQmlContext* context = new QQmlContext(qmlContext(listView->item()), listView->item());
+		if (isDummy)
+			context->setContextProperty("noDirectSetup", true);
 		context->setContextProperty("hasContextForm", true);
 		context->setContextProperty("form", listView->form());
 		context->setContextProperty("listView", listView);
@@ -45,34 +48,41 @@ RowControls::RowControls(
 		context->setContextProperty("fromRowComponents", _rowControlsVarMap);
 		context->setContextProperty("rowIndex",	row);
 		context->setContextProperty("rowValue", key);
-		QObject* obj = comp->create(context);
-		if (obj)
+		QObject* control = comp->create(context);
+		if (control)
 		{
-			JASPControlBase* control = dynamic_cast<JASPControlBase*>(obj);
-			if (control)
+			_rowControls.push_back(QVariant::fromValue(control));
+			JASPControlBase* jaspControl = dynamic_cast<JASPControlBase*>(control);
+			if (!jaspControl)
 			{
-				if (control->name().isEmpty())
+				QVariant controlVar = control->property("control");
+				if (!controlVar.isNull())
+					jaspControl = qobject_cast<JASPControlBase*>(controlVar.value<QObject *>());
+			}
+
+			if (jaspControl)
+			{
+				if (jaspControl->name().isEmpty())
 					listView->addError(tr("A row component in %1 does not have a name").arg(listView->name()));
-				else if (_rowControlsVarMap.contains(control->name()))
-					listView->addError(tr("2 row components in %1 have the same name").arg(listView->name()).arg(control->name()));
+				else if (_rowControlsVarMap.contains(jaspControl->name()))
+					listView->addError(tr("2 row components in %1 have the same name").arg(listView->name()).arg(jaspControl->name()));
 				else
 				{
-					_rowControls.push_back(QVariant::fromValue(control));
-					_contextMap[control->name()] = context;
-					_rowControlsVarMap[control->name()] = QVariant::fromValue(control);
-					JASPControlWrapper* controlWrapper = control->getWrapper();
+					_contextMap[jaspControl->name()] = context;
+					_rowControlsVarMap[jaspControl->name()] = QVariant::fromValue(jaspControl);
+					JASPControlWrapper* controlWrapper = jaspControl->getWrapper();
 					if (controlWrapper)
 					{
-						_rowControlsMap[control->name()] = controlWrapper;
+						_rowJASPWrapperMap[jaspControl->name()] = controlWrapper;
 						BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(controlWrapper);
-						if (boundItem)
+						if (boundItem && !isDummy)
 						{
 							Option* option = rowOptions.contains(boundItem->name()) ? rowOptions[boundItem->name()] : boundItem->createOption();
 							boundItem->bindTo(option);
 						}
 					}
 					else
-						Log::log() << "A JASP Control (name: " << control->name() << ") has no wrapper" << std::endl;
+						Log::log() << "A JASP Control (name: " << jaspControl->name() << ") has no wrapper" << std::endl;
 				}
 			}
 			else
@@ -86,7 +96,7 @@ RowControls::RowControls(
 
 void RowControls::setContext(int row, const QString &key)
 {
-	for (JASPControlWrapper* controlWrapper : _rowControlsMap.values())
+	for (JASPControlWrapper* controlWrapper : _rowJASPWrapperMap.values())
 	{
 		QQmlContext* context = _contextMap[controlWrapper->name()];
 		context->setContextProperty("rowIndex",	row);

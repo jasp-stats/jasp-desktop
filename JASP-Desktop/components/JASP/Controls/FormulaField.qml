@@ -24,7 +24,7 @@ import JASP 1.0
 TextField
 {
 					id:					formulaField
-					defaultValue:		"0"
+					value:				"0"
 	property double	min:				-Infinity
 	property double	max:				Infinity
 	property string	inclusive:			"yes"

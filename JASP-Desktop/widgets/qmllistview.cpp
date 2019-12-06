@@ -21,6 +21,7 @@
 #include "../analysis/jaspcontrolbase.h"
 #include "listmodel.h"
 #include "log.h"
+#include "rowcontrols.h"
 
 #include <QQmlContext>
 
@@ -160,23 +161,87 @@ void QMLListView::addRowComponentsDefaultOptions(Options *options)
 	if (!_hasRowComponents)
 		return;
 
-	for (QQmlComponent* component : item()->getRowComponents())
+	RowControls* controls = new RowControls(this->model(), item()->getRowComponents(), QMap<QString, Option*>(), 0, "", true);
+	const QMap<QString, JASPControlWrapper*>& map = controls->getJASPWrapperMap();
+	QMapIterator<QString, JASPControlWrapper*> it(map);
+
+	while (it.hasNext())
 	{
-		QQmlContext* context = new QQmlContext(qmlContext(item()), item());
-		context->setContextProperty("noDirectSetup", true);
-		QObject* item = component->create(context);
-		JASPControlBase* control = qobject_cast<JASPControlBase*>(item);
-		if (control)
+		it.next();
+		JASPControlWrapper* wrapper = it.value();
+		BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(wrapper);
+		if (boundItem)
 		{
-			JASPControlWrapper* wrapper = control->getWrapper();
-			BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(wrapper);
-			if (boundItem)
+			Option* option = boundItem->createOption();
+			options->add(boundItem->name().toStdString(), option);
+		}
+	}
+	delete controls;
+}
+
+void QMLListView::readModelProperty(QMap<QString, QString>* keyValueMap)
+{
+	QVariant modelVar = getItemProperty("values");
+
+	if (modelVar.isNull())
+	{
+		if (getItemProperty("source").isNull())
+			_modelHasAllVariables = true;
+	}
+	else
+	{
+		QString textRole = getItemProperty("textRole").toString();
+		QString valueRole = getItemProperty("valueRole").toString();
+		Terms terms;
+		QList<QVariant> list = modelVar.toList();
+		if (!list.isEmpty())
+		{
+			for (const QVariant& itemVariant : list)
 			{
-				Option* option = boundItem->createOption();
-				options->add(boundItem->name().toStdString(), option);
+				QMap<QString, QVariant> labelValueMap = itemVariant.toMap();
+				if (labelValueMap.isEmpty())
+					terms.add(itemVariant.toString());
+				else
+				{
+					QString key = labelValueMap[textRole].toString();
+					QString value = labelValueMap[valueRole].toString();
+					terms.add(key);
+					if (keyValueMap)
+						(*keyValueMap)[key] = value;
+				}
+			}
+			model()->initTerms(terms);
+		}
+		else
+		{
+			QAbstractListModel *srcModel = qobject_cast<QAbstractListModel *>(modelVar.value<QObject *>());
+			if (srcModel)
+			{
+				QMap<QString, int> roleMap;
+				QHash<int, QByteArray> roles = srcModel->roleNames();
+				QHashIterator<int, QByteArray> i(roles);
+				while (i.hasNext())
+				{
+					i.next();
+					QString valueStr = QString::fromStdString(i.value().toStdString());
+					roleMap[valueStr] = i.key();
+				}
+				for (int i = 0; i < srcModel->rowCount(); i++)
+				{
+					QModelIndex ind(srcModel->index(i));
+					QString key = srcModel->data(ind, roleMap[textRole]).toString();
+					QString value = srcModel->data(ind, roleMap[valueRole]).toString();
+					terms.add(key);
+					if (keyValueMap)
+						(*keyValueMap)[key] = value;
+				}
+				model()->initTerms(terms);
+			}
+			else
+			{
+				model()->initTerms(Terms());
 			}
 		}
-		delete item;
 	}
 }
 

@@ -380,7 +380,8 @@ HEADERS += \
     widgets/qmlexpander.h \
     widgets/listmodelmultitermsassigned.h \
     widgets/boundqmllavaantextarea.h \
-    widgets/boundqmljagstextarea.h
+    widgets/boundqmljagstextarea.h \
+    widgets/boundqmlcomponentslist.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -559,7 +560,8 @@ SOURCES += \
     widgets/qmlexpander.cpp \
     widgets/listmodelmultitermsassigned.cpp \
     widgets/boundqmllavaantextarea.cpp \
-    widgets/boundqmljagstextarea.cpp
+    widgets/boundqmljagstextarea.cpp \
+    widgets/boundqmlcomponentslist.cpp
 
 
 RESOURCES += \

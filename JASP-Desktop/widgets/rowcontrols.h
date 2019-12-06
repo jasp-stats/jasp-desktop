@@ -23,6 +23,7 @@
 #include <QQmlComponent>
 #include <QObject>
 
+class QMLListView;
 class ListModel;
 class JASPControlWrapper;
 class JASPControlBase;
@@ -39,16 +40,18 @@ public:
 			, QVector<QQmlComponent *>& components
 			, const QMap<QString, Option*>& rowOptions
 			, int row
-			, const QString& key);
+			, const QString& key
+			, bool isDummy = false);
 	virtual ~RowControls() {}
 	
 	void										setContext(int row, const QString& key);
 	const QList<QVariant>&						getControls() const		{ return _rowControls; }
-	const QMap<QString, JASPControlWrapper*>&	getControlsMap() const	{ return _rowControlsMap; }
+	const QMap<QString, JASPControlWrapper*>&	getJASPWrapperMap() const	{ return _rowJASPWrapperMap; }
 
 private:
+
 	ListModel*							_parentModel;
-	QMap<QString, JASPControlWrapper*>	_rowControlsMap;
+	QMap<QString, JASPControlWrapper*>	_rowJASPWrapperMap;
 	QMap<QString, QQmlContext*>			_contextMap;
 	QMap<QString, QVariant>				_rowControlsVarMap;
 	QList<QVariant>						_rowControls;

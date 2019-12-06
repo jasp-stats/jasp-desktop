@@ -21,7 +21,25 @@ private:
 	Q_PROPERTY( QQmlListProperty<QQmlComponent> rowComponents READ rowComponents)
 
 public:
-	enum ControlType {JASPControl, Expander, CheckBox, Switch, TextField, RadioButton, RadioButtonGroup, VariablesListView, ComboBox, RepeatedMeasuresFactorsList, InputListView, TableView, Slider, TextArea, Button, FactorsForm};
+	enum ControlType {
+		  JASPControl
+		, Expander
+		, CheckBox
+		, Switch
+		, TextField
+		, RadioButton
+		, RadioButtonGroup
+		, VariablesListView
+		, ComboBox
+		, RepeatedMeasuresFactorsList
+		, InputListView
+		, TableView
+		, Slider
+		, TextArea
+		, Button
+		, FactorsForm
+		, ComponentsList
+	};
 
 	Q_ENUM(ControlType)
 

@@ -21,6 +21,7 @@
 
 #include "listmodeltableviewbase.h"
 
+class ListModelRepeatedMeasuresFactors;
 
 class ListModelANOVACustomContrasts : public ListModelTableViewBase
 {
@@ -39,22 +40,27 @@ public:
 	void			reset()															override;
 
 	QString			colName()												const				{ return _colName;	}
+	virtual	QString	getRowName(size_t index)								const	override	{ return tr("Level %1").arg(index + 1); }
+
+	void			setFactorsSource(ListModelRepeatedMeasuresFactors* factorsSourceModel);
 
 public slots:
-	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)					override;
-	void setColLabels(QVector<QString> labels);
 	void setColName(QString colName);
 	void dataSetChangedHandler();
-
+	void factorsSourceChanged();
 
 signals:
 	void colNameChanged(QString colName);
 
 private:
 	void modifyValuesNamesEtcetera();
+	void setFactors();
+	void setColLabels();
 
 private:
-	QString		_colName;
+	ListModelRepeatedMeasuresFactors*	_factorsSourceModel;
+	QString								_colName;
+	QMap<QString, QList<QString> >		_factors;
 };
 
 #endif // LISTMODELANOVACUSTOMCONTRASTS_H

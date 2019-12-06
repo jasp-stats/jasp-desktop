@@ -16,25 +16,27 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import JASP.Controls 1.0
+import QtQuick	2.0
+import JASP		1.0
+import QtQuick.Layouts 1.3
 
-import JASP 1.0
-
-TextField
+JASPListControl
 {
-					id:				textField
-	property int	defaultValue:	0
-	property bool	negativeValues:	false
-	property int	min:			negativeValues ? -2147483647 : 0 // 2^32 - 1
-	property int	max:			2147483647
-	property string inclusive:		"Yes"
-	property alias	intValidator:	intValidator
-    
-					inputType:		"integer"
-					validator:		JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0; inclusive: textField.inclusive }
-					lastValidValue:	defaultValue;
-					value:			defaultValue
-					cursorShape:	Qt.IBeamCursor
-					fieldWidth:		jaspTheme.numericFieldWidth
+	id				: componentsList
+	controlType		: JASPControlBase.ComponentsList
+	itemComponent	: components
+
+	signal addTerm(string term);
+	signal removeTerm(string term);
+
+	Component
+	{
+		id: components
+
+		RowComponents
+		{
+			controls	: model.rowComponents
+		}
+	}
+
 }

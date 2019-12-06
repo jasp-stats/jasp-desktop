@@ -29,6 +29,4 @@ PercentField
 	decimals:			1
 	inclusive:			"no"
 	fieldWidth:			jaspTheme.font.pixelSize * (ciField.decimals + 3)
-
-	lastValidValue:		defaultValue
 }

@@ -34,72 +34,14 @@ BoundQMLComboBox::BoundQMLComboBox(JASPControlBase* item)
 	if (getItemProperty("addEmptyValue").toBool())
 		_model->addEmptyValue();
 
-	QVariant model = getItemProperty("model");
-	if (model.isNull())
-		model = getItemProperty("values");
+	readModelProperty(&_keyToValueMap);
+	QMapIterator<QString, QString> it(_keyToValueMap);
+	while (it.hasNext())
+	{
+		it.next();
+		_valueToKeyMap[it.value()] = it.key();
+	}
 
-	if (model.isNull())
-	{
-		if (getItemProperty("source").isNull())
-			_modelHasAllVariables = true;
-	}
-	else
-	{
-		QString textRole = getItemProperty("textRole").toString();
-		QString valueRole = getItemProperty("valueRole").toString();
-		_model->setTermsAreVariables(false);
-		Terms terms;
-		QList<QVariant> list = model.toList();
-		if (!list.isEmpty())
-		{
-			for (const QVariant& itemVariant : list)
-			{
-				QMap<QString, QVariant> labelValueMap = itemVariant.toMap();
-				if (labelValueMap.isEmpty())
-					terms.add(itemVariant.toString());
-				else
-				{
-					QString key = labelValueMap[textRole].toString();
-					QString value = labelValueMap[valueRole].toString();
-					terms.add(key);
-					_keyToValueMap[key] = value;
-					_valueToKeyMap[value] = key;					
-				}
-			}
-			_model->initTerms(terms);
-		}
-		else
-		{
-			QAbstractListModel *srcModel = qobject_cast<QAbstractListModel *>(model.value<QObject *>());
-			if (srcModel)
-			{
-				QMap<QString, int> roleMap;
-				QHash<int, QByteArray> roles = srcModel->roleNames();
-				QHashIterator<int, QByteArray> i(roles);
-				while (i.hasNext()) 
-				{
-					i.next();
-					QString valueStr = QString::fromStdString(i.value().toStdString());
-					roleMap[valueStr] = i.key();
-				}
-				for (int i = 0; i < srcModel->rowCount(); i++)
-				{
-					QModelIndex ind(srcModel->index(i));
-					QString key = srcModel->data(ind, roleMap[textRole]).toString();
-					QString value = srcModel->data(ind, roleMap[valueRole]).toString();
-					terms.add(key);
-					_keyToValueMap[key] = value;
-					_valueToKeyMap[value] = key;
-				}
-				_model->initTerms(terms);
-			}
-			else
-			{
-				addError(tr("Wrong kind of model specified in ComboBox %1").arg(name()));
-			}
-		}
-	}
-	
 	_resetItemWidth();
 
 	if (_item)

@@ -35,8 +35,7 @@ JASPControl
 	property alias	label:				beforeLabel.text
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text
-	property string	defaultValue:		""
-	property string lastValidValue:		defaultValue
+	property string lastValidValue:		""
 	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	true
@@ -48,6 +47,7 @@ JASPControl
 	property alias	controlLabel:		beforeLabel
 	property alias	afterLabel:			afterLabel.text
 	property string	inputType:			"string"
+	property bool	useLastValidValue:	true
 
 	property double controlXOffset:		0
 
@@ -94,7 +94,6 @@ JASPControl
 		id:						control
 		anchors.left:			beforeLabelRect.visible ? beforeLabelRect.right : parent.left
 		anchors.leftMargin:		controlXOffset + (beforeLabelRect.visible ? jaspTheme.labelSpacing : 0)
-		text:					textField.lastValidValue
 		width:					textField.fieldWidth //+ (textField.useExternalBorder ? 2 * jaspTheme.jaspControlHighlightWidth : 0)
 		font:					jaspTheme.font
 		activeFocusOnPress:		true
@@ -142,7 +141,8 @@ JASPControl
 				if (control.validator && (typeof control.validator.validationMessage === "function"))
 					msg = control.validator.validationMessage(beforeLabel.text) + "<br><br>";
 
-				text = textField.lastValidValue
+				if (textField.useLastValidValue)
+					text = textField.lastValidValue
 				msg += qsTr("Restoring last correct value: %1").arg(text);
 				showControlErrorTemporary(msg)
 				textField.background.border.color = jaspTheme.red;

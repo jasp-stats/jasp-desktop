@@ -58,6 +58,7 @@ public:
 					connect(this,		&Analyses::requestComputedColumnDestruction,	this,	&Analyses::dataSetColumnsChanged	, Qt::QueuedConnection	);
 					connect(_package,	&DataSetPackage::dataSetChanged,				this,	&Analyses::dataSetChanged									);
 					connect(_package,	&DataSetPackage::columnDataTypeChanged,			this,	&Analyses::dataSetColumnsChanged							);
+					connect(_package,	&DataSetPackage::labelChanged,					this,	&Analyses::dataSetColumnsChanged							);
 				}
 
 	Analysis*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);

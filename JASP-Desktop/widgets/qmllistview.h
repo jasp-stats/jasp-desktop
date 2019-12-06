@@ -60,22 +60,26 @@ public:
 
 	const QList<SourceType*>& sourceModels()			const	{ return _sourceModels; }
 			bool			hasSource()					const	{ return _sourceModels.length() > 0; }
+			bool			modelHasAllVariables()		const	{ return _modelHasAllVariables; }
+
 
 	Q_INVOKABLE QString		getSourceType(QString name);
 protected slots:
-	virtual void modelChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
-			void sourceChangedHandler();
+	virtual void			modelChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
+			void			sourceChangedHandler();
 
 protected:
-	virtual void setSources();
-			void addRowComponentsDefaultOptions(Options* optionTable);
+	virtual void			setSources();
+	virtual void			readModelProperty(QMap<QString, QString>* map = nullptr);
+			void			addRowComponentsDefaultOptions(Options* optionTable);
 
 protected:
 	QList<SourceType*>	_sourceModels;
 	bool				_needsSourceModels;
 	int					_variableTypesAllowed;
-	bool				_hasRowComponents	= false;
+	bool				_hasRowComponents		= false;
 	std::string			_optionKeyName;
+	bool				_modelHasAllVariables	= false;
 	
 private:
 	int		_getAllowedColumnsTypes();

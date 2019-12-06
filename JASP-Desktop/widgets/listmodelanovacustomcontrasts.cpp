@@ -25,11 +25,12 @@
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optiondoublearray.h"
 #include "analysis/jaspcontrolbase.h"
+#include "listmodelrepeatedmeasuresfactors.h"
 
 ListModelANOVACustomContrasts::ListModelANOVACustomContrasts(BoundQMLTableView * parent) : ListModelTableViewBase(parent)
 {
 	_defaultCellVal	= 0;
-	_initialRowCnt	= 1;
+	_initialRowCnt	= 1;	
 	QQuickItem::connect(_tableView->item(), SIGNAL(colNameSignal(QString)),	this, SLOT(setColName(QString))	);
 }
 
@@ -38,12 +39,11 @@ void ListModelANOVACustomContrasts::loadColumnInfo()
 	setColName(	_tableView->getItemProperty("colName").toString());
 }
 
-void ListModelANOVACustomContrasts::sourceTermsChanged(Terms *termsAdded, Terms *)
+void ListModelANOVACustomContrasts::factorsSourceChanged()
 {
-	if (termsAdded && termsAdded->size() > 0)
-		setColName(tq(termsAdded->at(0).asString()));
+	setFactors();
+	setColLabels();
 }
-
 
 void ListModelANOVACustomContrasts::reset()
 {
@@ -53,6 +53,12 @@ void ListModelANOVACustomContrasts::reset()
 	setColName(colName);
 }
 
+void ListModelANOVACustomContrasts::setFactorsSource(ListModelRepeatedMeasuresFactors *factorsSourceModel)
+{
+	_factorsSourceModel = factorsSourceModel;
+
+	setFactors();
+}
 
 QString ListModelANOVACustomContrasts::getColName(size_t index) const
 {
@@ -69,15 +75,23 @@ void ListModelANOVACustomContrasts::setColName(QString colName)
 	_colName = colName;
 	emit colNameChanged(_colName);
 
-	setColLabels((_colName == "" ? QStringList() : listView()->form()->getDataSetPackage()->getColumnLabelsAsStringList(_colName.toStdString())).toVector());
+	setColLabels();
 
 	emit modelChanged();
 }
 
-void ListModelANOVACustomContrasts::setColLabels(QVector<QString> colLabels)
+void ListModelANOVACustomContrasts::setColLabels()
 {
-	if(_colNames == colLabels)
-		return;
+	QVector<QString> colLabels;
+
+	if (!_colName.isEmpty())
+	{
+		if (_factors.contains(_colName))
+			colLabels = _factors[_colName].toVector();
+		else
+			colLabels = (_colName == "" ? QStringList() : listView()->form()->getDataSetPackage()->getColumnLabelsAsStringList(_colName.toStdString())).toVector();
+	}
+
 
 	_colNames	= colLabels;
 	_rowCount	= _initialRowCnt;
@@ -115,7 +129,6 @@ void ListModelANOVACustomContrasts::modelChangedSlot()
 	}
 }
 
-
 OptionsTable *ListModelANOVACustomContrasts::createOption()
 {
 	Options* optsTemplate =			new Options();
@@ -151,6 +164,23 @@ void ListModelANOVACustomContrasts::modifyValuesNamesEtcetera()
 
 	emit columnCountChanged();
 	emit rowCountChanged();
+}
+
+void ListModelANOVACustomContrasts::setFactors()
+{
+	_factors.clear();
+
+	if (_factorsSourceModel)
+	{
+		std::vector<std::pair<std::string, std::vector<std::string> > > factors = _factorsSourceModel->getFactors();
+		for (const auto& factor : factors)
+		{
+			QList<QString> levels;
+			for (const std::string& level : factor.second)
+				levels.push_back(QString::fromStdString(level));
+			_factors[QString::fromStdString(factor.first)] = levels;
+		}
+	}
 }
 
 void ListModelANOVACustomContrasts::initValues(OptionsTable * bindHere)
@@ -193,6 +223,5 @@ void ListModelANOVACustomContrasts::initValues(OptionsTable * bindHere)
 
 void ListModelANOVACustomContrasts::dataSetChangedHandler()
 {
-	Log::log() << "void ListModelANOVACustomContrasts::dataSetChangedHandler() wonders, the dataset was changed somehow, maybe the labels of the used column have changed?" << std::endl;
-	loadColumnInfo();
+	setColLabels();
 }

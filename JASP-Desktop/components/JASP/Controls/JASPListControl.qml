@@ -23,102 +23,100 @@ import JASP			1.0
 
 JASPControl
 {
-	id:						jaspListControl
-	controlType:			JASPControlBase.VariablesListView
-	background:				listRectangle
-	width:					parent.width
-	implicitWidth:			width
-	height:					jaspTheme.defaultVariablesFormHeight
-	implicitHeight:			height
-	useControlMouseArea:	false
+	id						: jaspListControl
+	controlType				: JASPControlBase.VariablesListView
+	background				: listRectangle
+	width					: parent.width
+	implicitWidth			: width
+	height					: jaspTheme.defaultVariablesFormHeight
+	implicitHeight			: height
+	useControlMouseArea		: false
 
 	property var	model
+	property var	values
 	property string title
-	property alias	label:				jaspListControl.title
-	property alias	count:				listGridView.count
-	property string	optionKey:			"value"
-	property int	columns:			1
+	property alias	label				: jaspListControl.title
+	property alias	count				: listGridView.count
+	property string	optionKey			: "value"
+	property int	columns				: 1
 	property var	source
-	property alias	syncModels:			jaspListControl.source
+	property alias	syncModels			: jaspListControl.source
 
-	property alias	listGridView:		listGridView
-	property alias	listRectangle:		listRectangle
-	property alias	scrollBar:			scrollBar
-	property alias	listTitle:			listTitle
-	property alias	rowComponentsTitles: titles.model
-	property alias	rowComponentsLabels: titles.model
+	property alias	listGridView		: listGridView
+	property alias	cellHeight			: listGridView.cellHeight
+	property alias	listRectangle		: listRectangle
+	property alias	scrollBar			: scrollBar
+	property alias	listTitle			: listTitle
+	property alias	rowComponentsTitles	: titles.model
+	property alias	rowComponentsLabels	: titles.model
 
 	property var	itemComponent
 
 	Text
 	{
-		id:				listTitle
-		anchors.top:	parent.top
-		anchors.left:	parent.left
-		text:			title
-		height:			title ? jaspTheme.listTitle : 0
-		font:			jaspTheme.font
-		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-
+		id				: listTitle
+		anchors.top		: parent.top
+		anchors.left	: parent.left
+		text			: title
+		height			: title ? jaspTheme.listTitle : 0
+		font			: jaspTheme.font
+		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 	}
 
 	Row
 	{
-		width:				parent.width
-		anchors.top:		jaspListControl.top;
-		spacing:			5
-		layoutDirection:	Qt.RightToLeft
+		width			: parent.width
+		anchors.top		: jaspListControl.top;
+		spacing			: 5
+		layoutDirection	: Qt.RightToLeft
 		Repeater
 		{
-			id: titles;
-			Label { text: modelData }
+			id	: titles;
+			Label { text : modelData }
 		}
 	}
 
 	Rectangle
 	{
-		id:				listRectangle
-		anchors.top:	listTitle.bottom
-		anchors.left:	parent.left
-		height:			jaspListControl.height - listTitle.height
-		width:			parent.width
-		color:			debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
-		border.width:	1
-		border.color:	jaspTheme.borderColor
-
+		id				: listRectangle
+		anchors.top		: listTitle.bottom
+		anchors.left	: parent.left
+		height			: jaspListControl.height - listTitle.height
+		width			: parent.width
+		color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
+		border.width	: 1
+		border.color	: jaspTheme.borderColor
 
 		JASPScrollBar
 		{
-			id:				scrollBar
-			flickable:		listGridView
-			manualAnchor:	true
-			vertical:		true
-			z:				1337
+			id				: scrollBar
+			flickable		: listGridView
+			manualAnchor	: true
+			vertical		: true
+			z				: 1337
 
 			anchors
 			{
-				top:		parent.top
-				right:		parent.right
-				bottom:		parent.bottom
-				margins:	2
+				top			: parent.top
+				right		: parent.right
+				bottom		: parent.bottom
+				margins		: 2
 			}
 		}
 
 		GridView
 		{
-			id:						listGridView
-			cellHeight:				20  * preferencesModel.uiScale
-			cellWidth:				width / jaspListControl.columns
-			clip:					true
-			focus:					true
-			anchors.fill:			parent
-			anchors.margins:		4  * preferencesModel.uiScale
-			anchors.rightMargin:	scrollBar.width + anchors.margins
-			model:					jaspListControl.model
-			delegate:				jaspListControl.itemComponent
-			boundsBehavior:			Flickable.StopAtBounds
-
+			id						: listGridView
+			cellHeight				: 20  * preferencesModel.uiScale
+			cellWidth				: width / jaspListControl.columns
+			clip					: true
+			focus					: true
+			anchors.fill			: parent
+			anchors.margins			: 4  * preferencesModel.uiScale
+			anchors.rightMargin		: scrollBar.width + anchors.margins
+			model					: jaspListControl.model
+			delegate				: jaspListControl.itemComponent
+			boundsBehavior			: Flickable.StopAtBounds
 		}
 	}
-
 }

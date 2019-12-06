@@ -26,12 +26,14 @@ Item
 	id				: customContrastsTV
 	width			: parent.width
 	implicitWidth	: width
-	height			: implicitHeight
-	implicitHeight	: 200 * preferencesModel.uiScale
+	height			: 200 * preferencesModel.uiScale
+	implicitHeight	: height
 
+	property	alias	control				: tableView // needed for RowComponents
 	property	alias	name				: tableView.name
 	property	alias	columnName			: tableView.colName
 	property	alias	source				: tableView.source
+	property	alias	factorsSource		: tableView.factorsSource
 	property	alias	tableView			: tableView
 	property	alias	showAddButton		: addButton.visible
 	property	alias	showDeleteButton	: deleteButton.visible
@@ -43,11 +45,15 @@ Item
 
 		TableView
 		{
-			id				: tableView
-			implicitWidth	: customContrastsTV.width * 3 / 4 - layout.spacing
-			implicitHeight	: customContrastsTV.height
-			modelType		: "CustomContrasts"
-			itemType		: "double"
+			id					: tableView
+			implicitWidth		: customContrastsTV.width * 3 / 4 - layout.spacing
+			implicitHeight		: customContrastsTV.height
+			modelType			: "CustomContrasts"
+			itemType			: "double"
+			minimum				: -Infinity
+			cornerText			: qsTr("Contrast #")
+
+			Component.onCompleted: tableView.rowNumberWidth = 80 * preferencesModel.uiScale
 		}
 
 		Group
@@ -58,7 +64,7 @@ Item
 			Button
 			{
 				id				: addButton
-				text			: qsTr("Add Row")
+				text			: qsTr("Add Contrast")
 				name			: "addButton"
 				control.width	: customContrastsTV.width * 1 / 4
 				onClicked		: tableView.addRow()
@@ -67,7 +73,7 @@ Item
 			Button
 			{
 				id				: deleteButton
-				text			: qsTr("Delete Row")
+				text			: qsTr("Delete Contrast")
 				name			: "deleteButton"
 				control.width	: customContrastsTV.width * 1 / 4
 				onClicked		: tableView.removeARow()
