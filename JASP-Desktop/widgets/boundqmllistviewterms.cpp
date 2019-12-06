@@ -238,7 +238,7 @@ void BoundQMLListViewTerms::modelChangedHandler()
 			RowControls* rowControls = allControls[term.asQString()];
 			if (rowControls)
 			{
-				const QMap<QString, JASPControlWrapper*>& controlsMap = rowControls->getControlsMap();
+				const QMap<QString, JASPControlWrapper*>& controlsMap = rowControls->getJASPWrapperMap();
 				QMapIterator<QString, JASPControlWrapper*> it(controlsMap);
 				while (it.hasNext())
 				{
@@ -311,7 +311,7 @@ void BoundQMLListViewTerms::interactionHighOrderHandler(Option *option)
 						if (!nOption->value())
 						{
 							RowControls* rowControls = _termsModel->getRowControls()[t.asQString()];
-							JASPControlWrapper* control = rowControls->getControlsMap()[_interactionHighOrderCheckBoxName];
+							JASPControlWrapper* control = rowControls->getJASPWrapperMap()[_interactionHighOrderCheckBoxName];
 							BoundQMLCheckBox* checkBox = dynamic_cast<BoundQMLCheckBox*>(control);
 							if (checkBox)
 								checkBox->setQMLItemChecked(true);							
@@ -326,7 +326,7 @@ void BoundQMLListViewTerms::interactionHighOrderHandler(Option *option)
 						if (nOption->value())
 						{
 							RowControls* rowControls = _termsModel->getRowControls()[t.asQString()];
-							JASPControlWrapper* control = rowControls->getControlsMap()[_interactionHighOrderCheckBoxName];
+							JASPControlWrapper* control = rowControls->getJASPWrapperMap()[_interactionHighOrderCheckBoxName];
 							BoundQMLCheckBox* checkBox = dynamic_cast<BoundQMLCheckBox*>(control);
 							if (checkBox)
 								checkBox->setQMLItemChecked(false);							

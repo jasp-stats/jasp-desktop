@@ -155,6 +155,7 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 	}
 	case JASPControlBase::ControlType::RepeatedMeasuresFactorsList:
 	case JASPControlBase::ControlType::InputListView:
+	case JASPControlBase::ControlType::ComponentsList:
 	case JASPControlBase::ControlType::FactorsForm:
 	case JASPControlBase::ControlType::TableView:
 	case JASPControlBase::ControlType::VariablesListView:
@@ -165,12 +166,15 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 		QMLListViewTermsAvailable* listViewTermsAvailable = dynamic_cast<QMLListViewTermsAvailable*>(listView);
 		if (listViewTermsAvailable)
 		{
-			bool noSource = listViewTermsAvailable->sourceModels().isEmpty(); // If there is no sourceModels, set all available variables.
-
 			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(listViewTermsAvailable->model());
 
 			if (availableModel)
-				(noSource ? _allAvailableVariablesModels : _allAvailableVariablesModelsWithSource).push_back(availableModel);
+			{
+				if (!listViewTermsAvailable->hasSource())
+					_allAvailableVariablesModels.push_back(availableModel);
+				else
+					_allAvailableVariablesModelsWithSource.push_back(availableModel);
+			}
 		}
 		break;
 	}
@@ -375,8 +379,8 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 		}
 	}
 
-	if(refreshAssigned)
-		for(ListModelTermsAvailable * model : _allAvailableVariablesModelsWithSource)
+	if (refreshAssigned)
+		for (ListModelTermsAvailable * model : _allAvailableVariablesModelsWithSource)
 			model->resetTermsFromSourceModels(true);
 
 }

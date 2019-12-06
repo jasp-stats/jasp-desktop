@@ -71,10 +71,12 @@ JASPListControl
 
 			RowComponents
 			{
-				id:					rowComponentsItem
-				anchors.rightMargin: deleteIconID.width
-				controls:			model.rowComponents
-				enabled:			!itemWrapper.isVirtual && inputListView.enableRowComponents
+				id						: rowComponentsItem
+				anchors.verticalCenter	: parent.verticalCenter
+				anchors.right			: parent.right
+				anchors.rightMargin		: deleteIconID.width
+				controls				: model.rowComponents
+				enabled					: !itemWrapper.isVirtual && inputListView.enableRowComponents
 			}
 
 			Image

@@ -35,5 +35,6 @@ TextField
 					inputType:			"number"
 					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: doubleField.decimals; inclusive: doubleField.inclusive; notation: DoubleValidator.StandardNotation }
 					lastValidValue:		defaultValue
+					value:				defaultValue
 					fieldWidth:			jaspTheme.numericFieldWidth
 }

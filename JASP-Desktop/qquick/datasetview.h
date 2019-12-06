@@ -43,7 +43,7 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( QQuickItem * extraColumnItem			READ extraColumnItem		WRITE setExtraColumnItem		NOTIFY extraColumnItemChanged		)
 	Q_PROPERTY( QFont font								MEMBER _font												NOTIFY fontChanged					)
 	Q_PROPERTY( float headerHeight						READ headerHeight											NOTIFY headerHeightChanged			)
-	Q_PROPERTY( float rowNumberWidth					READ rowNumberWidth											NOTIFY rowNumberWidthChanged		)
+	Q_PROPERTY( float rowNumberWidth					READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
 
 
 public:

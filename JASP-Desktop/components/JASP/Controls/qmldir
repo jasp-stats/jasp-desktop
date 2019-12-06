@@ -29,6 +29,7 @@ RadioButton                 1.0 RadioButton.qml
 RadioButtonGroup             1.0 RadioButtonGroup.qml
 RepeatedMeasuresFactorsList   1.0 RepeatedMeasuresFactorsList.qml
 InputListView                  1.0 InputListView.qml
+ComponentsList                1.0 ComponentsList.qml
 Slider                       1.0 Slider.qml
 Switch                      1.0 Switch.qml
 TableView                  1.0 TableView.qml

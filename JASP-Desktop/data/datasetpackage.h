@@ -220,6 +220,7 @@ signals:
 				void				badDataEntered(const QModelIndex index);
 				void				allFiltersReset();
 				void				labelFilterChanged();
+				void				labelChanged(int column);
 				void				dataSetChanged();
 				void				columnDataTypeChanged(std::string columnName);
 				void				isModifiedChanged(DataSetPackage *source);

@@ -32,6 +32,7 @@
 #include "widgets/boundqmllistviewmeasurescells.h"
 #include "widgets/boundqmllistviewlayers.h"
 #include "widgets/boundqmlinputlist.h"
+#include "widgets/boundqmlcomponentslist.h"
 #include "widgets/boundqmlrepeatedmeasuresfactors.h"
 #include "widgets/boundqmlfactorsform.h"
 #include "widgets/boundqmltableview.h"
@@ -73,6 +74,7 @@ JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase*
 	case JASPControlBase::ControlType::TextField:					controlWrapper		= new BoundQMLTextInput(control);					break;
 	case JASPControlBase::ControlType::FactorsForm:					controlWrapper		= new BoundQMLFactorsForm(control);					break;
 	case JASPControlBase::ControlType::InputListView:				controlWrapper		= new BoundQMLInputList(control);					break;
+	case JASPControlBase::ControlType::ComponentsList:				controlWrapper		= new BoundQMLComponentsList(control);				break;
 	case JASPControlBase::ControlType::RadioButtonGroup:			controlWrapper		= new BoundQMLRadioButtons(control);				break;
 	case JASPControlBase::ControlType::RepeatedMeasuresFactorsList:	controlWrapper		= new BoundQMLRepeatedMeasuresFactors(control);		break;
 	case JASPControlBase::ControlType::VariablesListView:

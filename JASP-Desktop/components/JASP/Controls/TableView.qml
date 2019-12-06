@@ -38,22 +38,27 @@ JASPControl
 	implicitHeight:		400
 
 	property var	source
-	property alias	syncModels:		tableView.source
+	property string factorsSource	: ""
+	property alias	syncModels		: tableView.source
 	property string	modelType
-	property string	itemType:		"string"
-	property string filter:			"rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
-	property string colName:		"data"					//Used by ListModelFilteredDataEntry and ListMOdelANOVACustomContrasts
-	property string	extraCol:		""						//Used by ListModelFilteredDataEntry
+	property string	itemType		: "string"
+	property string filter			: "rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
+	property string colName			: "data"					//Used by ListModelFilteredDataEntry and ListMOdelANOVACustomContrasts
+	property string	extraCol		: ""						//Used by ListModelFilteredDataEntry
 	property string	tableType
-	property alias	model:			theView.model
-	property var	validator:		(itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
-	property int	colSelected:	-1
-	property int	rowSelected:	-1
-	property int	columnCount:	0	//Readonly
-	property int	rowCount:		0	//Readonly
+	property alias	model			: theView.model
+	property alias	rowNumberWidth	: theView.rowNumberWidth
+	property var	validator		: (itemType === "integer") ? intValidator : (itemType === "double" ? doubleValidator : stringValidator)
+	property int	minimum			: 0
+	property int	decimals		: 1
+	property int	colSelected		: -1
+	property int	rowSelected		: -1
+	property int	columnCount		: 0	//Readonly
+	property int	rowCount		: 0	//Readonly
+	property string cornerText		: qsTr("Row #")
 
-	property int	initialColumnCount:		0	//Only read on init
-	property int	initialRowCount:		0	//Only read on init
+	property int	initialColumnCount	: 0	//Only read on init
+	property int	initialRowCount		: 0	//Only read on init
 
 
 	signal reset()
@@ -153,8 +158,8 @@ JASPControl
 				}
 			}
 
-			JASPDoubleValidator	{ id: intValidator;		bottom: 0; decimals: 0	}
-			JASPDoubleValidator { id: doubleValidator;	bottom: 0; decimals: 1	}
+			JASPDoubleValidator	{ id: intValidator;		bottom: tableView.minimum; decimals: 0	}
+			JASPDoubleValidator { id: doubleValidator;	bottom: tableView.minimum; decimals: tableView.decimals	}
 			RegExpValidator		{ id: stringValidator							}
 
 			itemDelegate: Rectangle
@@ -197,6 +202,7 @@ JASPControl
 					visible:			false
 					useExternalBorder:	false
 					value:				itemText
+					useLastValidValue:	false
 					selectValueOnFocus:	true
 					validator:			tableView.validator
 					onPressed:			tableView.colSelected = columnIndex
@@ -211,7 +217,7 @@ JASPControl
 
 				Text
 				{
-					text:					"Row #"
+					text:					cornerText
 					horizontalAlignment:	Text.AlignHCenter
 					verticalAlignment:		Text.AlignVCenter
 					leftPadding:			3 * preferencesModel.uiScale

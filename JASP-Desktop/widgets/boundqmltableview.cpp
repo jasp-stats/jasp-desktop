@@ -25,6 +25,7 @@
 #include "listmodelfiltereddataentry.h"
 #include "listmodelmultinomialchi2test.h"
 #include "listmodelanovacustomcontrasts.h"
+#include "listmodelrepeatedmeasuresfactors.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optiondoublearray.h"
@@ -56,7 +57,6 @@ BoundQMLTableView::BoundQMLTableView(JASPControlBase* item)
 
 	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	[&](){ setItemProperty("columnCount",	_tableModel->colNames().size()); }); //Possibly the best way to connect the signals of the listmodel to the slots of the qml item?
 	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		[&](){ setItemProperty("rowCount",		_tableModel->rowNames().size()); });
-	connect(form(),		&AnalysisForm::refreshTableViewModels,			this, &BoundQMLTableView::refreshMe	);
 
 	int		initialColumnCount	= getItemProperty("initialColumnCount").toInt(),
 			initialRowCount		= getItemProperty("initialRowCount").toInt();
@@ -67,8 +67,6 @@ BoundQMLTableView::BoundQMLTableView(JASPControlBase* item)
 	if(initialRowCount > 0 && _tableModel)
 		_tableModel->setInitialRowCount(initialRowCount);
 
-	if(modelType == "CustomContrasts")
-		static_cast<ListModelANOVACustomContrasts*>(_tableModel)->loadColumnInfo();
 }
 
 void BoundQMLTableView::bindTo(Option *option)
@@ -98,6 +96,23 @@ bool BoundQMLTableView::isJsonValid(const Json::Value &optionValue)
 void BoundQMLTableView::setUp()
 {
 	QMLListView::setUp();
+
+	// form is not always known in the constructor, so all references to form (and dataset) must be done here
+	connect(form(),		&AnalysisForm::refreshTableViewModels,			this, &BoundQMLTableView::refreshMe	);
+	QString modelType	= getItemProperty("modelType").toString();
+	if(modelType == "CustomContrasts")
+	{
+		ListModelANOVACustomContrasts* customContrastsModel = dynamic_cast<ListModelANOVACustomContrasts*>(_tableModel);
+		connect(form(), &AnalysisForm::dataSetChanged, customContrastsModel, &ListModelANOVACustomContrasts::dataSetChangedHandler,	Qt::QueuedConnection	);
+		QString factorsSourceName = getItemProperty("factorsSource").toString();
+		if (!factorsSourceName.isEmpty())
+		{
+			ListModelRepeatedMeasuresFactors* factorsSourceModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(form()->getModel(factorsSourceName));
+			customContrastsModel->setFactorsSource(factorsSourceModel);
+			connect(factorsSourceModel, &ListModelRepeatedMeasuresFactors::modelChanged, customContrastsModel, &ListModelANOVACustomContrasts::factorsSourceChanged);
+		}
+		customContrastsModel->loadColumnInfo();
+	}
 }
 
 void BoundQMLTableView::addColumnSlot()

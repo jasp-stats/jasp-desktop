@@ -40,8 +40,6 @@ public:
 	Option*		boundTo()									override	{ return _boundTo; }
 	void		setUp()										override;
 	ListModel*	model()										override	{ return _model; }
-
-	bool		modelHasAllVariables()									{ return _modelHasAllVariables; }
 	
 protected slots:
 	void modelChangedHandler() override;
@@ -55,7 +53,6 @@ protected:
 	ListModelTermsAvailable*	_model					= nullptr;
 	QMap<QString, QString>		_keyToValueMap;
 	QMap<QString, QString>		_valueToKeyMap;
-	bool						_modelHasAllVariables	= false;
 
 
 	void _resetItemWidth();

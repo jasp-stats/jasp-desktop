@@ -23,12 +23,12 @@ import QtQuick.Layouts	1.3
 
 Item
 {
-	id:					variablesForm
-	implicitWidth:		form.width
-	height:				jaspTheme.defaultVariablesFormHeight
-	implicitHeight:		height
-	Layout.columnSpan:	parent.columns
-	visible:			!debug || DEBUG_MODE
+	id					: variablesForm
+	implicitWidth		: form.width
+	height				: jaspTheme.defaultVariablesFormHeight
+	implicitHeight		: height
+	Layout.columnSpan	: parent.columns
+	visible				: !debug || DEBUG_MODE
 
 	default property alias	content:						items.children
 			property int	listWidth:						implicitWidth * 2 / 5

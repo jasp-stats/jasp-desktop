@@ -19,26 +19,87 @@
 import QtQuick			2.0
 import JASP.Controls	1.0
 import QtQuick.Layouts	1.3 as L
+import JASP				1.0
 
-VariablesList {
-    title: qsTr("Factors")
-    source: "fixedFactors"
-    name: "contrasts"
-    listViewType: "AssignedVariables"
-    height: 200
-    draggable: false
-	
-	L.Layout.columnSpan: parent.columns	
+Item
+{
+	id					: contratsList
+	height				: contrasts.height + (customContrastsView.visible ? customContrastsView.height : 0)
+	implicitHeight		: height
+	width				: parent.width
+	implicitWidth		: width
+	L.Layout.columnSpan	: parent.columns
 
-	rowComponents: [
-		Component
-		{
-			DropDown
+	property alias source					: contrasts.source
+	property string	repeatedMeasureFactors	: "repeatedMeasuresFactors"
+
+	VariablesList
+	{
+		id				: contrasts
+		title			: qsTr("Factors")
+		source			: "fixedFactors"
+		name			: "contrasts"
+		listViewType	: "AssignedVariables"
+		height			: 200 * preferencesModel.uiScale
+		draggable		: false
+
+		rowComponents:
+		[
+			Component
 			{
-				name: "contrast"
-				values: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
+				DropDown
+				{
+					name		: "contrast"
+					values		: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial", "custom"]
+					onActivated	:
+					{
+						if (index == 7)
+							customContrastsView.addTerm(rowValue)
+						else
+							customContrastsView.removeTerm(rowValue)
+					}
+				}
 			}
-		}
-	]
+		]
 
+	}
+
+	ComponentsList
+	{
+		id					: customContrastsView
+		name				: "customContrasts"
+		anchors.top			: contrasts.bottom
+		anchors.topMargin	: jaspTheme.rowSpacing
+		cellHeight			: 160 * preferencesModel.uiScale
+		height				: count * cellHeight + 10
+		visible				: count > 0
+
+		rowComponents:
+		[
+			Component
+			{
+				Group
+				{
+					id					: group
+					property var control: tableCustomContrasts.control
+
+					Text
+					{
+						height			: 30 * preferencesModel.uiScale
+						text			: qsTr("Custom contrast for %1").arg(rowValue)
+					}
+
+					CustomContrastsTableView
+					{
+						id						: tableCustomContrasts
+						columnName				: rowValue
+						factorsSource			: contratsList.repeatedMeasureFactors
+						name					: "values"
+						implicitHeight			: 130 * preferencesModel.uiScale
+						implicitWidth			: customContrastsView.width
+					}
+				}
+			}
+		]
+	}
 }
