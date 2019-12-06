@@ -336,6 +336,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
     p2 <- pair[[2]]
     
     errors <- .hasErrors(dataset,
+                         message = 'short',
                          type = c('observations', 'variance', 'infinity'),
                          all.target = c(p1, p2), 
                          observations.amount  = c('< 2', '>5000'))
