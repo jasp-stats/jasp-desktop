@@ -33,9 +33,7 @@ test_that("Descriptives prenumb - postnumb plot matches", {
 test_that("Descriptive Statistics table results match", {
   table <- results[["results"]][["bainContainer"]][["collection"]][["bainContainer_descriptivesTable"]][["data"]]
   expect_equal_tables(table,
-                      list(240, 19.4150788423063, 20.7583333333333, 10.6173425930313, 0.685346517396481,
-                           19.4837158661898, "prenumb", 240, 27.8574275457606, 29.45, 12.5879998643857,
-                           0.81255189728045, 28.3025879127404, "postnumb", 240, -9.89599389735516,
+                      list(240, -9.89599389735516,
                            -8.69166666666667, 9.51923473009165, 0.61446395963807, -7.48733943597818,
                            "prenumb - postnumb"))
 })
