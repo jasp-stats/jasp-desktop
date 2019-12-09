@@ -71,7 +71,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
   p <- try({
     # Call bain from package
-    .bain_ttest_cran(x = variableData, nu = options[["testValue"]], type = type, seed = options[["seed"]])
+    bain:::bain_ttest_cran(x = variableData, nu = options[["testValue"]], type = type, seed = options[["seed"]])
   })
   bainContainer[[variable]] <- createJaspState(p, dependencies = c("testValue", "hypothesis", "seed"))
   bainContainer[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
@@ -440,84 +440,4 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
           ggplot2::scale_fill_brewer(palette="Set1")
 
     return(p)
-}
-
-# This function is not from JASP and will be migrated to the bain CRAN package in time
-.bain_ttest_cran <- function(x, y = NULL, nu = 0, type = 1, paired = FALSE, seed){
-
-  set.seed(seed)
-
-  # ONE GROUP
-  if(is.null(y) && !paired){
-    
-    tres <- bain::t_test(x)  
-    
-    if(type == 1){
-      c3 <- paste0("result <- bain::bain(tres,\"x=",nu,"\")")  
-      result <- eval(parse(text = c3))
-    }
-    if(type == 2){
-      c3 <- paste0("result <- bain::bain(tres,\"x=",nu,"; x>",nu,"\")")  
-      result <- eval(parse(text = c3))
-    }
-    if(type == 3){
-      c3 <- paste0("result <- bain::bain(tres,\"x=",nu,"; x<",nu,"\")")  
-      result <- eval(parse(text = c3))
-    }
-    if(type == 4){
-      c3 <- paste0("result <- bain::bain(tres,\"x>",nu,"; x<",nu,"\")")  
-      result <- eval(parse(text = c3))
-    }
-    if(type == 5){
-      c3 <- paste0("result <- bain::bain(tres,\"x=",nu,"; x>",nu,"; x<",nu,"\")")  
-      result <- eval(parse(text = c3))
-    }
-
-  }
-
-  # INDEPENDENT SAMPLES
-  if(!is.null(y) && !paired){
-    
-    tres <- bain::t_test(x, y, paired = FALSE, var.equal = FALSE)
-    
-    if(type == 1){
-      result <- bain::bain(tres,"x=y")
-    } 
-    if(type == 2){
-      result <- bain::bain(tres,"x=y; x>y")
-    }
-    if(type == 3){
-      result <- bain::bain(tres,"x=y; x<y")
-    }
-    if(type == 4){
-      result <- bain::bain(tres,"x>y; x<y")
-    }
-    if(type == 5){
-      result <- bain::bain(tres,"x=y; x>y; x<y")
-      }
-  }
-
-  # PAIRED SAMPLE
-  if(!is.null(y) && paired){
-    
-    tres <- bain::t_test(x, y, paired = TRUE)
-
-    if(type == 1){
-      result <- bain::bain(tres,"difference=0")
-    }
-    if(type == 2){
-      result <- bain::bain(tres,"difference=0;difference>0")
-    }
-    if(type == 3){
-      result <- bain::bain(tres,"difference=0;difference<0")
-    }
-    if(type == 4){
-      result <- bain::bain(tres,"difference>0;difference<0")
-    }
-    if(type == 5){
-      result <- bain::bain(tres,"difference=0;difference>0;difference<0")
-    }
-  }
-
-  return(invisible(result))
 }

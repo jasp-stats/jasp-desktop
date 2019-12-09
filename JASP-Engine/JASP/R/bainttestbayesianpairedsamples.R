@@ -84,7 +84,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
 
     p <- try({
       # Call bain from package
-      .bain_ttest_cran(x = c1, y = c2, type = type, paired = TRUE, seed = options[["seed"]])
+      bain:::bain_ttest_cran(x = c1, y = c2, type = type, paired = TRUE, seed = options[["seed"]])
     })
     bainContainer[[currentPair]] <- createJaspState(p, dependencies = c("hypothesis", "seed"))
     bainContainer[[currentPair]]$dependOn(optionContainsValue=list("pairs" = pair))

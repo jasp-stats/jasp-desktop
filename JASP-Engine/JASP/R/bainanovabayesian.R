@@ -98,7 +98,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	names(dataset) <- .unv(names(dataset))
 
 	p <- try(silent= FALSE, expr= {
-		bainResult <- .bain_anova_cran(X = dataset, dep = options[["dependent"]], group = options[["fixedFactors"]], hyp = rest.string, seed = options[["seed"]])
+		bainResult <- bain:::bain_anova_cran(X = dataset, dep = options[["dependent"]], group = options[["fixedFactors"]], hyp = rest.string, seed = options[["seed"]])
 		bainContainer[["bainResult"]] <- createJaspState(bainResult)
 	})
 
@@ -299,29 +299,4 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 		jaspResults[["bainContainer"]]$position = 1
 	}
 	invisible(jaspResults[["bainContainer"]])
-}
-
-# This function is not from JASP and will be migrated to the bain CRAN package in time
-.bain_anova_cran<-function(X, dep, group, hyp, seed){
-
-	set.seed(seed)
-
-	# Make group a factor
-	c1 <- paste0("X$",group,"<- as.factor(X$",group,")")
-	eval(parse(text = c1))
-	# roep lm aan
-	c2 <- paste0("lmres <- lm(",dep,"~",group,"-1, data = X)")
-	eval(parse(text = c2))  
-
-	# Make hyp if argument is NULL
-	if (is.null(hyp)){
-		hyp <- names(coef(lmres))
-		hyp <- paste0(hyp, collapse = "=")
-	}
-
-	# Call bain with lmres and hyp as input
-	c3 <- paste0("bain::bain(lmres,","\"",hyp,"\"",")")
-	result <- eval(parse(text = c3))
-
-	return(invisible(result))
 }

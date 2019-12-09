@@ -85,7 +85,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	names(dataset) <- .unv(names(dataset))
 
 	p <- try({
-		bainResult <- .bain_regression_cran(X = dataset, dep = options[["dependent"]], pred = paste(options[["covariates"]], collapse = " "), hyp = rest.string, std = options[["standardized"]], seed = options[["seed"]])
+		bainResult <- bain:::bain_regression_cran(X = dataset, dep = options[["dependent"]], pred = paste(options[["covariates"]], collapse = " "), hyp = rest.string, std = options[["standardized"]], seed = options[["seed"]])
 		bainContainer[["bainResult"]] <- createJaspState(bainResult)
 	})
 
@@ -285,29 +285,4 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	
     return(pp)
   }
-}
-
-# This function is not from JASP and will be migrated to the bain CRAN package in time
-.bain_regression_cran<-function(X, dep, pred, hyp, std, seed){
-
-  	set.seed(seed)
-
-	pred <- as.character(strsplit(pred," ")[[1]])
-	predforhyp <- pred
-	npred <- length(pred)
-	pred <- paste0(pred,collapse = "+")
-
-	c2 <- paste0("lmres <-lm(",dep,"~",pred,",data = X)")
-	eval(parse(text = c2)) 
-
-	if (is.null(hyp)){
-		hyp <- predforhyp
-		hyp <- sapply(hyp,function(x) paste0(x,"=0"))
-		hyp <- paste0(hyp, collapse = " & ")
-	}
-
-	c3 <- paste0("bain::bain(lmres,","\"",hyp,"\",","standardize =",std,")")
-	result <- eval(parse(text = c3))
-
-	return(invisible(result))
 }

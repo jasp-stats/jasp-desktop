@@ -95,7 +95,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	group2 <- subDataSet[subDataSet[[.v(options[["groupingVariable"]])]]== g2,.v(variable)]
 
 	p <- try({
-		.bain_ttest_cran(x = group1, y = group2, type = type, seed = options[["seed"]])
+		bain:::bain_ttest_cran(x = group1, y = group2, type = type, seed = options[["seed"]])
 	})
     
   bainContainer[[variable]] <- createJaspState(p, dependencies = c("hypothesis", "seed"))

@@ -96,7 +96,7 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	names(dataset) <- .unv(names(dataset))
 
 	p <- try({
-		bainResult <- .bain_ancova_cran(X = dataset, dep = options[["dependent"]], cov = paste(options[["covariates"]], collapse = " "), group = options[["fixedFactors"]], hyp = rest.string, seed = options[["seed"]])
+		bainResult <- bain:::bain_ancova_cran(X = dataset, dep = options[["dependent"]], cov = paste(options[["covariates"]], collapse = " "), group = options[["fixedFactors"]], hyp = rest.string, seed = options[["seed"]])
 		bainContainer[["bainResult"]] <- createJaspState(bainResult)
 	})
 
@@ -265,37 +265,4 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
     
     return(pp)
   }
-}
-
-# This function is not from JASP and will be migrated to the bain CRAN package in time
-.bain_ancova_cran <- function(X, dep, cov, group, hyp, seed){
-
-	set.seed(seed)
-
-	c1 <- paste0("X$",group,"<- as.factor(X$",group,")")
-	eval(parse(text = c1))
-	c4 <- paste0("ngroup <- nlevels(X$",group,")") 
-	eval(parse(text = c4))
-
-	cov <- as.character(strsplit(cov," ")[[1]])
-	ncov <- length(cov)
-	cov <- paste0(cov,collapse = "+")
-
-	for (i in 1:ncov){
-		X[,(1+i)] <- X[,(1+i)] - mean(X[,(1+i)])
-	}
-	
-	c2 <- paste0("lmres <-lm(",dep,"~",group,"+",cov,"-1,data = X)")
-	eval(parse(text = c2)) 
-
-	if (is.null(hyp)){
-		hyp <- names(coef(lmres))
-		hyp <- hyp[1:(length(hyp)-ncov)]
-		hyp <- paste0(hyp, collapse = "=")
-	}
-
-	c3 <- paste0("bain::bain(lmres,","\"",hyp,"\"",")")
-	result <- eval(parse(text = c3))
-
-	return(invisible(result))
 }
