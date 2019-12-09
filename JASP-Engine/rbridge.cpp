@@ -22,6 +22,7 @@
 #include "appinfo.h"
 #include "tempfiles.h"
 #include "log.h"
+#include "timers.h"
 #include "r_functionwhitelist.h"
 
 DataSet						*	rbridge_dataSet		= NULL;
@@ -83,6 +84,8 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 		rbridge_decodeAllColumnNames
 	};
 
+	JASPTIMER_START(jaspRCPP_init);
+
 	jaspRCPP_init(
 					AppInfo::getBuildYear().c_str(),
 					AppInfo::version.asString().c_str(),
@@ -92,6 +95,8 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 					[](){ Log::log(false).flush(); return 0;},
 					_logWriteFunction
 	);
+
+	JASPTIMER_STOP(jaspRCPP_init);
 	Log::log() << "jaspRCPP_init was run and R_HOME: "<< jaspRCPP_runScriptReturnString("R.home('')") << std::endl;
 }
 

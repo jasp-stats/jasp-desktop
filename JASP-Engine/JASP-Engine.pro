@@ -36,10 +36,9 @@ linux {
 }
 
 $$JASPTIMER_USED {
-    windows:CONFIG(ReleaseBuild)    LIBS += -llibboost_timer$$BOOST_POSTFIX -llibboost_chrono$$BOOST_POSTFIX
-    windows:CONFIG(DebugBuild)      LIBS += -llibboost_timer-vc141-mt-gd-1_71 -llibboost_chrono-vc141-mt-gd-1_71
-    linux:                          LIBS += -lboost_timer -lboost_chrono
-    macx:                           LIBS += -lboost_timer-mt -lboost_chrono-mt
+    windows:  LIBS += -llibboost_timer$$BOOST_POSTFIX -llibboost_chrono$$BOOST_POSTFIX
+    linux:    LIBS += -lboost_timer -lboost_chrono
+    macx:     LIBS += -lboost_timer-mt -lboost_chrono-mt
 }
 
 linux: LIBS += -L$$_R_HOME/lib -lR -lrt # because linux JASP-R-Interface is staticlib

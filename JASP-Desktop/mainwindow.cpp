@@ -1128,7 +1128,7 @@ void MainWindow::resultsPageLoaded()
 	_resultsViewLoaded = true;
 
 	if (_openOnLoadFilename != "")
-		QTimer::singleShot(500, this, &MainWindow::_openFile); // this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
+		QTimer::singleShot(0, this, &MainWindow::_openFile); // this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
 }
 
 void MainWindow::_openFile()

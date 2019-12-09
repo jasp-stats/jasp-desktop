@@ -85,12 +85,16 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	rbridge_setGetDataSetRowCountSource( boost::bind(&Engine::dataSetRowCount, this));
 
 	JASPTIMER_STOP(Engine Constructor);
+}
 
+void Engine::initialize()
+{
 	JASPTIMER_START(rbridge_init);
 	rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults);
 	JASPTIMER_STOP(rbridge_init);
 
-
+	_engineState = engineState::idle;
+	sendEngineResumed(); //Then the desktop knows we've finished init.
 }
 
 Engine::~Engine()
@@ -119,7 +123,7 @@ void Engine::run()
 	std::string memoryName = "JASP-IPC-" + std::to_string(_parentPID);
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
 
-	sendEngineResumed(); //Then the desktop knows we've finished init.
+	JASPTIMER_STOP(Engine::run startup);
 
 	while(_engineState != engineState::stopped && ProcessInfo::isParentRunning())
 	{
@@ -127,6 +131,7 @@ void Engine::run()
 
 		switch(_engineState)
 		{
+		case engineState::initializing:		initialize();		break;
 		case engineState::idle:									break;
 		case engineState::analysis:			runAnalysis();		break;
 		case engineState::paused:			/* Do nothing */

@@ -63,6 +63,8 @@ public:
 
 
 private: // Methods:
+	void initialize();
+
 	void receiveRCodeMessage(			const Json::Value & jsonRequest);
 	void receiveFilterMessage(			const Json::Value & jsonRequest);
 	void receiveAnalysisMessage(		const Json::Value & jsonRequest);
@@ -139,7 +141,7 @@ private: // Data:
 
 	unsigned long _parentPID = 0;
 
-	engineState _engineState = engineState::idle;
+	engineState _engineState = engineState::initializing;
 };
 
 #endif // ENGINE_H

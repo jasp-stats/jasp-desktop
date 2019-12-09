@@ -64,11 +64,14 @@ int main(int argc, char *argv[])
 		Log::log() << "Log and possible redirects initialized!" << std::endl;
 		Log::log() << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;
 
-		JASPTIMER_START(Engine Starting);
+
 
 		try
 		{
+			JASPTIMER_START(Engine Starting);
 			Engine e(slaveNo, parentPID);
+			JASPTIMER_STOP(Engine Starting);
+
 			e.run();
 
 		}
