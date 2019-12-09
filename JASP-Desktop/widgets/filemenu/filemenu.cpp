@@ -408,26 +408,13 @@ void FileMenu::setSyncRequest(const QString& path)
 
 bool FileMenu::checkSyncFileExists(const QString &path)
 {
-	bool exists = path.startsWith("http") ? true : (QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0);
+	if(path.startsWith("http") || (QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0))
+		return true;
 
-    if (!exists)
-	{
-        int attempts = 1;
-        while (!exists && attempts < 20)
-        {
-			Utils::sleep(1);
-            attempts++;
-            exists = QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0;
-        }
-    }
+	Log::log() << "Sync file does not exist: " << path.toStdString() << std::endl;
+	clearSyncData();
 
-	if (!exists)
-    {
-        Log::log() << "Sync file does not exist: " << path.toStdString() << std::endl;
-		clearSyncData();
-	}
-
-	return exists;
+	return false;
 }
 
 

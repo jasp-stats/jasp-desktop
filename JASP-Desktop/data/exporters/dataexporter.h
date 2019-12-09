@@ -24,7 +24,7 @@ class DataExporter : public Exporter
 {
 public:
 	DataExporter(bool includeComputeColumns);
-	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
+	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) override;
 
 	bool _includeComputeColumns;
 };
