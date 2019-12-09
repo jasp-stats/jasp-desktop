@@ -1024,6 +1024,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 void MainWindow::populateUIfromDataSet()
 {
+	JASPTIMER_SCOPE(MainWindow::populateUIfromDataSet);
 	bool errorFound = false;
 	stringstream errorMsg;
 
@@ -1054,7 +1055,11 @@ void MainWindow::populateUIfromDataSet()
 				}
 			}
 
-			for (Json::Value &analysisData : analysesDataList)
+			JASPTIMER_START(MainWindow::populateUIfromDataSet for analysisData : analysesDataList);
+
+
+			//There is no point trying to show progress here because qml is not updated while this function runs...
+			for (Json::Value & analysisData : analysesDataList)
 			{
 				try
 				{
@@ -1077,6 +1082,8 @@ void MainWindow::populateUIfromDataSet()
 					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
 				}
 			}
+
+			JASPTIMER_STOP(MainWindow::populateUIfromDataSet for analysisData : analysesDataList);
 		}
 
 		if (corruptAnalyses == 1)			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();

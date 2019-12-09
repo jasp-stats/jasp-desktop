@@ -160,7 +160,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 		progress = (33.0 * i) / columnCount;
 		if (progress != lastProgress)
 		{
-			progressCallback("Loading Data Set", progress);
+			progressCallback("Loading Data Set Description", progress);
 			lastProgress = progress;
 		}
 
@@ -232,8 +232,6 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 		resultXmlCompare::compareResults::theOne()->setOriginalResult(QString::fromStdString(html));
 	}
 
-	progressCallback("Initializing Workspace", 66);
-
 	packageData->computedColumnsPointer()->convertFromJson(metaData.get("computedColumns", Json::arrayValue));
 
 	std::vector<bool> filterVector;
@@ -287,7 +285,7 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const std::
 	JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 read analyses.json);
 	Json::Value analysesData;
 
-	progressCallback("Loading Analyses from File", 66);
+	progressCallback("Loading Analyses", 66);
 
 	if (parseJsonEntry(analysesData, path, "analyses.json", false))
 	{
@@ -352,7 +350,7 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const std::
 	packageData->setAnalysesData(analysesData);
 	JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 packageData->setAnalysesData(analysesData));
 
-	progressCallback("Showing Analyses", 100);
+	progressCallback("Initializing Analyses & Results", 100);
 }
 
 
