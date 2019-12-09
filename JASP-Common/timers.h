@@ -18,6 +18,15 @@ void _printAllTimers();
 #define JASPTIMER_FINISH( TIMERNAME ) JASPTIMER_STOP(TIMERNAME); JASPTIMER_PRINT(TIMERNAME)
 #define JASPTIMER_PRINTALL() _printAllTimers()
 
+struct _JaspTimerScopeMeasure
+{
+	_JaspTimerScopeMeasure(const char * name) : _name(name) { _getTimer(_name)->resume(); }
+	~_JaspTimerScopeMeasure()								{ _getTimer(_name)->stop(); }
+
+	const char * _name;
+};
+#define JASPTIMER_SCOPE(TIMERNAME) _JaspTimerScopeMeasure singleScopeTimer(#TIMERNAME);
+
 #else
 //No timers please!
 #define JASPTIMER_START(  TIMERNAME ) /* TIMERNAME */
@@ -26,6 +35,7 @@ void _printAllTimers();
 #define JASPTIMER_PRINT(  TIMERNAME ) /* TIMERNAME */
 #define JASPTIMER_FINISH( TIMERNAME ) /* TIMERNAME */
 #define JASPTIMER_PRINTALL() /* bla bla bla */
+#define JASPTIMER_SCOPE(TIMERNAME) /* Hmm hmm */
 #endif
 
 #endif // TIMERS_H

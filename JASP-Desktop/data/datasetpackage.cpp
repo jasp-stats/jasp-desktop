@@ -22,6 +22,7 @@
 #include "engine/enginesync.h"
 #include "qquick/jasptheme.h"
 #include "columnencoder.h"
+#include "timers.h"
 
 #define ENUM_DECLARATION_CPP
 #include "datasetpackage.h"
@@ -746,6 +747,8 @@ void DataSetPackage::endSynchingData(std::vector<std::string>			&	changedColumns
 
 void DataSetPackage::beginLoadingData()
 {
+	JASPTIMER_SCOPE(DataSetPackage::beginLoadingData);
+
 	_enginesLoadedAtBeginSync = !enginesInitializing();
 
 	if(_enginesLoadedAtBeginSync)
@@ -756,6 +759,8 @@ void DataSetPackage::beginLoadingData()
 
 void DataSetPackage::endLoadingData()
 {
+	JASPTIMER_SCOPE(DataSetPackage::endLoadingData);
+
 	endResetModel();
 
 	if(_enginesLoadedAtBeginSync)

@@ -61,6 +61,8 @@ size_t _logWriteFunction(const void * buf, size_t len)
 
 void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction)
 {
+	JASPTIMER_SCOPE(rbridge_init);
+
 	RBridgeCallBacks callbacks = {
 		rbridge_readDataSet,
 		rbridge_readDataColumnNames,
@@ -85,7 +87,6 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 	};
 
 	JASPTIMER_START(jaspRCPP_init);
-
 	jaspRCPP_init(
 					AppInfo::getBuildYear().c_str(),
 					AppInfo::version.asString().c_str(),
@@ -95,8 +96,8 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 					[](){ Log::log(false).flush(); return 0;},
 					_logWriteFunction
 	);
-
 	JASPTIMER_STOP(jaspRCPP_init);
+
 	Log::log() << "jaspRCPP_init was run and R_HOME: "<< jaspRCPP_runScriptReturnString("R.home('')") << std::endl;
 }
 

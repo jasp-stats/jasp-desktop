@@ -157,7 +157,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 	{
 		packageData->columnLabelsFromJsonForJASPFile(xData, columnDesc, i, mapNominalTextValues);
 
-		progress = 50 * i / columnCount;
+		progress = (33.0 * i) / columnCount;
 		if (progress != lastProgress)
 		{
 			progressCallback("Loading Data Set", progress);
@@ -204,7 +204,7 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 				ints[r] = value;
 			}
 
-			progress = 50 + (50 * ((c * rowCount) + (r + 1)) / (columnCount * rowCount));
+			progress = 33.0 + ((33.0 * ((c * rowCount) + (r + 1))) / (columnCount * rowCount));
 			if (progress != lastProgress)
 			{
 				progressCallback("Loading Data Set", progress);
@@ -231,6 +231,8 @@ void JASPImporter::loadDataArchive_1_00(DataSetPackage *packageData, const std::
 
 		resultXmlCompare::compareResults::theOne()->setOriginalResult(QString::fromStdString(html));
 	}
+
+	progressCallback("Initializing Workspace", 66);
 
 	packageData->computedColumnsPointer()->convertFromJson(metaData.get("computedColumns", Json::arrayValue));
 
@@ -285,14 +287,15 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const std::
 	JASPTIMER_RESUME(JASPImporter::loadJASPArchive_1_00 read analyses.json);
 	Json::Value analysesData;
 
+	progressCallback("Loading Analyses from File", 66);
+
 	if (parseJsonEntry(analysesData, path, "analyses.json", false))
 	{
 		std::vector<std::string> resources = FileReader::getEntryPaths(path, "resources");
 	
+		double resourceCounter = 0;
 		for (std::string resource : resources)
 		{
-
-
 			FileReader resourceEntry = FileReader(path, resource);
 	
 			std::string filename	= resourceEntry.fileName();
@@ -338,6 +341,8 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const std::
 				throw std::runtime_error("Could not read resource files.");
 
 			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Create resource files);
+
+			progressCallback("Loading Analyses", 67 + int((33.0 / double(resources.size())) * ++resourceCounter));
 		}
 	}
 
@@ -347,6 +352,7 @@ void JASPImporter::loadJASPArchive_1_00(DataSetPackage *packageData, const std::
 	packageData->setAnalysesData(analysesData);
 	JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 packageData->setAnalysesData(analysesData));
 
+	progressCallback("Showing Analyses", 100);
 }
 
 

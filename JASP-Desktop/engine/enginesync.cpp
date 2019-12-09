@@ -513,7 +513,7 @@ void EngineSync::stopEngines()
 
 void EngineSync::pause()
 {
-	JASPTIMER_RESUME(EngineSync::pause);
+	JASPTIMER_SCOPE(EngineSync::pause);
 
 	if(!_engineStarted) return;
 
@@ -527,13 +527,11 @@ void EngineSync::pause()
 	while(!allEnginesPaused())
 		for (auto * engine : _engines)
 			engine->process();
-
-	JASPTIMER_STOP(EngineSync::pause);
 }
 
 void EngineSync::resume()
 {
-	JASPTIMER_RESUME(EngineSync::resume);
+	JASPTIMER_SCOPE(EngineSync::resume);
 
 	if(!_engineStarted) return;
 
@@ -543,8 +541,6 @@ void EngineSync::resume()
 	while(!allEnginesResumed())
 		for (auto * engine : _engines)
 			engine->process();
-
-	JASPTIMER_STOP(EngineSync::resume);
 }
 
 bool EngineSync::allEnginesStopped()

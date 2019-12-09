@@ -63,7 +63,7 @@ Engine * Engine::_EngineInstance = NULL;
 Engine::Engine(int slaveNo, unsigned long parentPID)
 	: _slaveNo(slaveNo), _parentPID(parentPID)
 {
-	JASPTIMER_START(Engine Constructor);
+	JASPTIMER_SCOPE(Engine Constructor);
 	assert(_EngineInstance == NULL);
 	_EngineInstance = this;
 
@@ -84,14 +84,11 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 
 	rbridge_setGetDataSetRowCountSource( boost::bind(&Engine::dataSetRowCount, this));
 
-	JASPTIMER_STOP(Engine Constructor);
 }
 
 void Engine::initialize()
 {
-	JASPTIMER_START(rbridge_init);
 	rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults);
-	JASPTIMER_STOP(rbridge_init);
 
 	_engineState = engineState::idle;
 	sendEngineResumed(); //Then the desktop knows we've finished init.

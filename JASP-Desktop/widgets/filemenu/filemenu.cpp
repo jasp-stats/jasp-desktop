@@ -415,7 +415,7 @@ bool FileMenu::checkSyncFileExists(const QString &path)
         int attempts = 1;
         while (!exists && attempts < 20)
         {
-            Utils::sleep(100);
+			Utils::sleep(1);
             attempts++;
             exists = QFileInfo::exists(path) && Utils::getFileSize(path.toStdString()) > 0;
         }
