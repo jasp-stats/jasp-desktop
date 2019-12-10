@@ -7,6 +7,18 @@ The Bayesian A/B test allows one to monitor the evidence for the hypotheses that
 ### Input
 ---------
 
+#### Data
+The input data needs to contain the following elements:
+
+- Number of successes in group 1 (control condition)
+- Number of trials in group 1 (control condition)
+- Number of successes in group 2 (experimental condition)
+- Number of trials in group 2 (experimental condition)
+
+1. Each of the above elements needs to an integer.
+2. A cumulative sequence of successes/trials can also be given as input.
+
+
 #### Bayes Factor
 - BF<sub>10</sub>: By selecting this option, the Bayes factor will show evidence for the alternative hypothesis relative to the null hypothesis. This option is selected by default.
 - BF<sub>01</sub> : By selecting this option, the Bayes factor will show evidence for the null hypothesis relative to the alternative hypothesis. This is equal to 1/BF<sub>10</sub>.
@@ -25,6 +37,7 @@ The Bayesian A/B test allows one to monitor the evidence for the hypotheses that
 
     (In addition, posterior median and central credible interval are also displayed in the plot)
   - Sequential analysis: Displays the development of posterior probabilities as the data come in. The probability wheels visualize prior and posterior probabilities of the hypotheses.
+  - Bayes factor robustness check: Displays the prior sensitivity analysis.
   - Prior: Plot parameter prior distributions. Available quantities are the same as mentioned for Prior and posterior plot.
 
 

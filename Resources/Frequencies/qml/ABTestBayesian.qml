@@ -24,7 +24,7 @@ import JASP.Widgets 1.0
 
 Form
 {
-	usesJaspResults: false
+	usesJaspResults: true
 
 	VariablesForm
 	{
@@ -93,6 +93,11 @@ Form
 					name: "plotPriorType"
 					values: [ "LogOddsRatio", "OddsRatio", "RelativeRisk", "AbsoluteRisk", "p1&p2", "p1", "p2" ]
 				}
+			}
+			CheckBox
+			{
+				name	: "plotRobustness"
+				label	: qsTr("Bayes factor robustness check")
 			}
 		}
 
