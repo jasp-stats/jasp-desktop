@@ -33,10 +33,10 @@ public:
 		_initialColCnt = 1;
 	}
 
-	QString			getColName(size_t index)						const	override;
+	QString			getColName(size_t index)							const	override;
 
 public slots:
-	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)			override;
+	void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)	override;
 };
 
 #endif // LISTMODELMULTINOMIALCHI2TEST_H

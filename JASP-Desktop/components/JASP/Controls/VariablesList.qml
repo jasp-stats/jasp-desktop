@@ -84,13 +84,13 @@ JASPListControl
 			{
 				if (variablesList.allowedColumns.length > 0)
 				{
-					result = true;
+					result = false;
 					var sourceSelectedItemsTypes = source.model.selectedItemsTypes()
 					for (var i = 0; i < sourceSelectedItemsTypes.length; i++)
 					{
 						var itemType = sourceSelectedItemsTypes[i];
-						if (!variablesList.allowedColumns.includes(itemType))
-							result = false;
+						if (variablesList.allowedColumns.includes(itemType))
+							result = true;
 					}
 				}
 				else

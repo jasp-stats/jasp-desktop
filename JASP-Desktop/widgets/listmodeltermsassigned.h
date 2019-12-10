@@ -29,15 +29,16 @@ class ListModelTermsAssigned : public ListModelAssignedInterface
 public:
 	ListModelTermsAssigned(QMLListView* listView, int maxRows = -1);
 	
-	void	initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())	override;
-	bool	canAddTerms(Terms *terms)																		const	override;
-	Terms*	addTerms(Terms *terms, int dropItemIndex = -1, const QString& assignOption = "")				override;
+	void	initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())			override;
+	Terms	canAddTerms(const Terms& terms)																	const	override;
+	Terms	addTerms(const Terms& terms, int dropItemIndex = -1, const QString& assignOption = "")					override;
 
 public slots:
-	virtual void availableTermsChanged(Terms* termsToAdd, Terms* termsToRemove) override;
+	virtual void availableTermsChanged(const Terms* termsToAdd, const Terms* termsToRemove)							override;
 	
 private:
-	int _maxRows = -1;
+	int		_maxRows = -1;
+	Terms	_tempTermsToSendBack;
 
 };
 

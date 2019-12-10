@@ -276,7 +276,7 @@ void ListModel::selectAllItems()
 }
 
 
-void ListModel::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
+void ListModel::sourceTermsChanged(const Terms *termsAdded, const Terms *termsRemoved)
 {
 	initTerms(getSourceTerms());
 	

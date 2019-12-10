@@ -66,7 +66,7 @@ void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, const Terms
 	endResetModel();
 }
 
-void ListModelMeasuresCellsAssigned::sourceTermsChanged(Terms *termsAdded, Terms *termsRemoved)
+void ListModelMeasuresCellsAssigned::sourceTermsChanged(const Terms *termsAdded, const Terms *termsRemoved)
 {
 	BoundQMLListViewMeasuresCells* measureCellsListView = dynamic_cast<BoundQMLListViewMeasuresCells*>(listView());
 	if (measureCellsListView)
@@ -78,35 +78,35 @@ void ListModelMeasuresCellsAssigned::sourceTermsChanged(Terms *termsAdded, Terms
 		Log::log() << "ListView from Measures cells model is not of a Measures Cell type!!";
 }
 
-Terms *ListModelMeasuresCellsAssigned::termsFromIndexes(const QList<int> &indexes) const
+Terms ListModelMeasuresCellsAssigned::termsFromIndexes(const QList<int> &indexes) const
 {
-	Terms* terms = new Terms;
-	for (const int &index : indexes)
+	Terms terms;
+	for (int index : indexes)
 	{
 		int realIndex = index / 2;
 		if (realIndex < _variables.size())
-			terms->add(Term(_variables[realIndex]));
+			terms.add(Term(_variables[realIndex]));
 	}
 	
 	return terms;
 }
 
-Terms *ListModelMeasuresCellsAssigned::addTerms(Terms *terms, int dropItemIndex, const QString& assignOption)
+Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& terms, int dropItemIndex, const QString&)
 {
 	beginResetModel();
 	if (dropItemIndex >= 0)
 		dropItemIndex = dropItemIndex / 2;
-	Terms* termsToSendBack = new Terms();
+	Terms termsToSendBack;
 	if (dropItemIndex >= 0)
 	{
-		if (terms->size() > 1 || dropItemIndex >= _variables.size())
-			termsToSendBack->set(*terms);
+		if (terms.size() > 1 || dropItemIndex >= _variables.size())
+			termsToSendBack.set(terms);
 		else
 		{
-			const Term& newTerm = terms->at(0);
+			const Term& newTerm = terms.at(0);
 			const QString& oldTerm = _variables.at(dropItemIndex);
 			if (!oldTerm.isEmpty())
-				termsToSendBack->add(Term(oldTerm));
+				termsToSendBack.add(Term(oldTerm));
 			_variables.replace(dropItemIndex, newTerm.asQString());
 			_terms.replace(dropItemIndex * 2, newTerm);
 		}
@@ -114,22 +114,22 @@ Terms *ListModelMeasuresCellsAssigned::addTerms(Terms *terms, int dropItemIndex,
 	else
 	{
 		uint index = 0;
-		for (int i = 0; i < _variables.size() && index < terms->size(); i++)
+		for (int i = 0; i < _variables.size() && index < terms.size(); i++)
 		{
 			const QString& oldTerm = _variables.at(i);
 			if (oldTerm.isEmpty())
 			{
-				const Term& newTerm = terms->at(index);
+				const Term& newTerm = terms.at(index);
 				_variables.replace(i, newTerm.asQString());
 				_terms.replace(2 * i, newTerm);
 				index++;
 			}
 		}
 		
-		for (uint i = index; i < terms->size(); i++)
+		for (uint i = index; i < terms.size(); i++)
 		{
-			const Term& term = terms->at(i);
-			termsToSendBack->add(term);
+			const Term& term = terms.at(i);
+			termsToSendBack.add(term);
 		}
 	}
 	

@@ -30,8 +30,8 @@ public:
 	ListModelMeasuresCellsAssigned(QMLListView* listView);
 
 	QVariant		data(const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
-	Terms*			termsFromIndexes(const QList<int> &indexes)									const	override;
-	Terms*			addTerms(Terms* terms, int dropItemIndex = -1, const QString& assignOption = "")	override;
+	Terms			termsFromIndexes(const QList<int> &indexes)									const	override;
+	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, const QString& assignOption = "")	override;
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;
 	void			removeTerms(const QList<int>& indexes) override;
 
@@ -41,7 +41,7 @@ public:
 	const QList<QString>& variables() const { return _variables; }	
 
 public slots:	
-	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;	
+	void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved) override;
 	
 private:
 	QList<QString> _levels;

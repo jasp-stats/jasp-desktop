@@ -25,9 +25,9 @@ ListModelDraggable::ListModelDraggable(QMLListView* listView)
 {
 }
 
-Terms *ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const
+Terms ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const
 {
-	Terms* result = new Terms;
+	Terms result;
 	const Terms& myTerms = terms();
 	for (int index : indexes)
 	{
@@ -35,7 +35,7 @@ Terms *ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const
 		if (index_t < myTerms.size())
 		{
 			const Term& term = myTerms.at(index_t);
-			result->add(term);
+			result.add(term);
 		}
 	}
 	
@@ -45,11 +45,13 @@ Terms *ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const
 void ListModelDraggable::removeTerms(const QList<int> &indices)
 {
 	beginResetModel();
+
 	_tempTermsToRemove.clear();
-	for (const int &index : indices)
+	for (int index : indices)
 		_tempTermsToRemove.add(_terms.at(size_t(index)));
 
 	_terms.remove(_tempTermsToRemove);
+
 	endResetModel();
 
 	emit modelChanged(nullptr, &_tempTermsToRemove);
@@ -63,52 +65,49 @@ void ListModelDraggable::moveTerms(const QList<int> &indexes, int dropItemIndex)
 		return;	
 
 	beginResetModel();
-	Terms* terms = termsFromIndexes(indexes);
+	Terms terms = termsFromIndexes(indexes);
 	removeTerms(indexes); // Remove first before adding: we cannot add terms that already exist
 	for (int index : indexes)
 	{
 		if (index < dropItemIndex)
 			dropItemIndex--;
 	}
-	Terms* removedTerms = addTerms(terms, dropItemIndex);
-	if (removedTerms && removedTerms->size() > 0)
+	Terms removedTerms = addTerms(terms, dropItemIndex);
+	if (removedTerms.size() > 0)
 	{
 		addTerms(removedTerms);
-		delete removedTerms;
 	}
 	
-	delete terms;
 	endResetModel();
 }
 
-Terms* ListModelDraggable::addTerms(Terms *terms, int dropItemIndex, const QString&)
+Terms ListModelDraggable::addTerms(const Terms& terms, int dropItemIndex, const QString&)
 {
 	Q_UNUSED(dropItemIndex);
 
-	if (terms->size() > 0)
+	if (terms.size() > 0)
 	{
 		beginResetModel();
-		_terms.add(*terms);
+		_terms.add(terms);
 		endResetModel();
 
-		emit modelChanged(terms, nullptr);
+		_tempTermsToAdd = terms;
+		emit modelChanged(&_tempTermsToAdd, nullptr);
 	}
 
 	return nullptr;
 }
 
-bool ListModelDraggable::canAddTerms(Terms *terms) const
+Terms ListModelDraggable::canAddTerms(const Terms& terms) const
 {
-	if (!terms)
-		return false;
-
-	for (const Term &term : *terms)
+	Terms result;
+	for (const Term &term : terms)
 	{
-		if ( ! isAllowed(term))
-			return false;
+		if (isAllowed(term))
+			result.add(term);
 	}
 
-	return true;
+	return result;
 }
 
 bool ListModelDraggable::isAllowed(const Term &term) const

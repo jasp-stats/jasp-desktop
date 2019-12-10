@@ -48,7 +48,7 @@ signals:
 			void allAvailableTermsChanged(Terms* termsAdded, Terms* termsRemoved);
 
 public slots:
-			void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved) override;
+			void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved) override;
 
 protected:
 	bool					_addEmptyValue = false;

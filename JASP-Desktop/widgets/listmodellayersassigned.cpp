@@ -103,27 +103,27 @@ void ListModelLayersAssigned::_setTerms()
 	_terms.add(tr("Layer %1").arg(layer));
 }
 
-Terms *ListModelLayersAssigned::termsFromIndexes(const QList<int> &indexes) const
+Terms ListModelLayersAssigned::termsFromIndexes(const QList<int> &indexes) const
 {
-	Terms* terms = new Terms;
-	QList<int> sortedIndexes = indexes;
-	std::sort(sortedIndexes.begin(), sortedIndexes.end());
-	for (const int &index : sortedIndexes)
+	Terms terms;
+
+	for (int index : indexes)
 	{
 		int indexInLayer = -1;
 		int layer = _getLayer(index, indexInLayer);
 		if (layer < _variables.length())
 		{
 			if (indexInLayer >= 0 && indexInLayer < _variables[layer].length())
-				terms->add(Term(_variables[layer][indexInLayer]));			
+				terms.add(Term(_variables[layer][indexInLayer]));
 		}
 	}
 	
 	return terms;
 }
 
-Terms *ListModelLayersAssigned::addTerms(Terms *terms, int dropItemIndex, const QString& assignOption)
+Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, const QString&)
 {
+	Terms result;
 	beginResetModel();
 	
 	int layer = _variables.length();
@@ -141,7 +141,7 @@ Terms *ListModelLayersAssigned::addTerms(Terms *terms, int dropItemIndex, const 
 	if (indexInLayer < 0)
 		indexInLayer = 0;
 	
-	for (const Term& term : *terms)
+	for (const Term& term : terms)
 		_variables[layer].insert(indexInLayer, term.asQString());
 
 	_setTerms();
@@ -150,7 +150,7 @@ Terms *ListModelLayersAssigned::addTerms(Terms *terms, int dropItemIndex, const 
 	
 	emit modelChanged();
 	
-	return nullptr;
+	return result;
 }
 
 void ListModelLayersAssigned::moveTerms(const QList<int> &indexes, int dropItemIndex)
@@ -221,17 +221,17 @@ void ListModelLayersAssigned::removeTerms(const QList<int> &indexes)
 	
 	QList<int> sortedIndexes = indexes;
 	std::sort(sortedIndexes.begin(), sortedIndexes.end(), std::greater<int>());
-	
-	
+
+
 	for (int index : sortedIndexes)
 	{
 		int layer = _variables.length();
 		int indexInLayer = 0;
-		
+
 		layer = _getLayer(index, indexInLayer);
 		if (layer >= 0 && layer < _variables.length() && indexInLayer >= 0 && indexInLayer < _variables[layer].length())
 			_variables[layer].removeAt(indexInLayer);
-		
+
 	}
 	
 	for (int i = _variables.length() - 1; i >= 0; i--)

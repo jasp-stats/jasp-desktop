@@ -40,7 +40,7 @@ void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsOpti
 	}
 }
 
-void ListModelTermsAssigned::availableTermsChanged(Terms* termsAdded, Terms* termsRemoved)
+void ListModelTermsAssigned::availableTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)
 {
 	// Only remove the terms that are not available anymore
 	Q_UNUSED(termsAdded);
@@ -50,41 +50,40 @@ void ListModelTermsAssigned::availableTermsChanged(Terms* termsAdded, Terms* ter
 		beginResetModel();
 		_terms.remove(*termsRemoved);
 		endResetModel();
-		_tempTermsToRemove.set(termsRemoved);
+
+		_tempTermsToRemove.set(*termsRemoved);
 		emit modelChanged(nullptr, &_tempTermsToRemove);
 	}	
 }
 
-bool ListModelTermsAssigned::canAddTerms(Terms *terms) const
+Terms ListModelTermsAssigned::canAddTerms(const Terms& terms) const
 {
-	if ( ! ListModelDraggable::canAddTerms(terms))
-		return false;
+	if (_maxRows >= 0 && int(terms.size()) > _maxRows)
+		return Terms();
 
-	if (_maxRows >= 0 && int(terms->size()) > _maxRows)
-		return false;
-
-	return true;
+	return ListModelDraggable::canAddTerms(terms);
 }
 
-Terms* ListModelTermsAssigned::addTerms(Terms *terms, int dropItemIndex, const QString&)
+Terms ListModelTermsAssigned::addTerms(const Terms& terms, int dropItemIndex, const QString&)
 {
 	Terms newTerms;
-	Terms *toSendBack = new Terms;
+	_tempTermsToSendBack.clear();
+
 	beginResetModel();
 
 	newTerms.set(_terms);
 	if (dropItemIndex < 0 && _maxRows == 1)
 		dropItemIndex = 0; // for single row, per default replace old item by new one.
 	if (dropItemIndex >= 0 && dropItemIndex < int(_terms.size()))
-		newTerms.insert(dropItemIndex, *terms);
+		newTerms.insert(dropItemIndex, terms);
 	else
-		newTerms.add(*terms);
+		newTerms.add(terms);
 
 	size_t maxRows = size_t(_maxRows);
 	if (newTerms.size() > maxRows)
 	{
 		for (size_t i = maxRows; i < newTerms.size(); i++)
-			toSendBack->add(newTerms.at(i));
+			_tempTermsToSendBack.add(newTerms.at(i));
 		newTerms.remove(maxRows, newTerms.size() - maxRows);
 	}
 
@@ -92,7 +91,7 @@ Terms* ListModelTermsAssigned::addTerms(Terms *terms, int dropItemIndex, const Q
 
 	endResetModel();	
 
-	emit modelChanged(terms, toSendBack);
+	emit modelChanged(&terms, &_tempTermsToSendBack);
 	
-	return toSendBack;
+	return _tempTermsToSendBack;
 }

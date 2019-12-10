@@ -24,7 +24,7 @@
 #include "analysis/options/optionterm.h"
 #include "r_functionwhitelist.h"
 
-void ListModelJAGSDataInput::sourceTermsChanged(Terms *, Terms *)
+void ListModelJAGSDataInput::sourceTermsChanged(const Terms *, const Terms *)
 {
 	beginResetModel();
 
