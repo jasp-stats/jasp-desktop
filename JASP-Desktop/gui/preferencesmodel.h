@@ -55,7 +55,7 @@ public:
 	bool		useDefaultPPI()				const;
 	bool		whiteBackground()			const;
 	bool		developerMode()				const;
-	double		uiScale()					const;
+	double		uiScale()						 ;
 	QString		customEditor()				const;
 	QString		developerFolder()			const;
 	QString		fixedDecimalsForJS()		const;
@@ -160,6 +160,7 @@ signals:
 private:
 	int		_defaultPPI		= 192;
 	QFont	_defaultFont	= QFont("SansSerif");
+	double	_uiScale		= -1;
 };
 
 #endif // PREFERENCESDIALOG_H
