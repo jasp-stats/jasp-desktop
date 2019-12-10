@@ -102,8 +102,8 @@ void QMLListView::setSources()
 						addError(tr("Wrong parameter discard in VariablesList %1").arg(name()));
 					discards.push_back(QPair<QString, QString>(discardName, discardUse));
 				}
-				_sourceModels.append(new SourceType(sourceName, modelUse, discards));
 			}
+			_sourceModels.append(new SourceType(sourceName, modelUse, discards));
 		}
 	}
 	

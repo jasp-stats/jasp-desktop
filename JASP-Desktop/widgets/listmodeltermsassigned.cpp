@@ -18,6 +18,7 @@
 
 #include "listmodeltermsassigned.h"
 #include "listmodeltermsavailable.h"
+#include "analysis/analysisform.h"
 #include <QTimer>
 
 
@@ -94,4 +95,24 @@ Terms ListModelTermsAssigned::addTerms(const Terms& terms, int dropItemIndex, co
 	emit modelChanged(&terms, &_tempTermsToSendBack);
 	
 	return _tempTermsToSendBack;
+}
+
+const Terms &ListModelTermsAssigned::terms(const QString &what) const
+{
+	if (_maxRows == 1 && what == "levels")
+	{
+		static Terms terms;
+		terms.clear();
+		if (rowCount() == 1)
+		{
+			QString term = data(index(0,0)).toString();
+			QStringList labels = DataSetPackage::pkg()->getColumnLabelsAsStringList(term.toStdString());
+			for (const QString& label : labels)
+				terms.add(label);
+		}
+
+		return terms;
+	}
+	else
+		return ListModelAssignedInterface::terms(what);
 }
