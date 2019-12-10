@@ -29,11 +29,11 @@ public:
 	static const Version dataArchiveVersion;
 
 	JASPExporter();
-	void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) override;
+	void saveDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback) override;
 
 private:
-	static void saveDataArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)> progressCallback);
-	static void saveJASPArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)> progressCallback);
+	static void saveDataArchive(archive *a, boost::function<void (const std::string &, int)> progressCallback);
+	static void saveJASPArchive(archive *a, boost::function<void (const std::string &, int)> progressCallback);
 
 	static void createJARContents(archive *a);
 	static std::string getColumnTypeName(columnType columnType);

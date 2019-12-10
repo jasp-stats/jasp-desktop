@@ -84,6 +84,8 @@ RibbonButton::RibbonButton(QObject *parent, Modules::DynamicModule * module)  : 
 
 void RibbonButton::descriptionReloaded(Modules::DynamicModule * dynMod)
 {
+	assert(dynMod == _module);
+
 	setMenu(			_module->menu()	);
 	setTitle(			_module->title()			);
 	setRequiresData(	_module->requiresData()	);
@@ -91,18 +93,20 @@ void RibbonButton::descriptionReloaded(Modules::DynamicModule * dynMod)
 
 void RibbonButton::bindYourself()
 {
-	connect(this, &RibbonButton::enabledChanged,		this, &RibbonButton::somePropertyChanged);
-	connect(this, &RibbonButton::titleChanged,			this, &RibbonButton::somePropertyChanged);
-	connect(this, &RibbonButton::isDynamicChanged,		this, &RibbonButton::somePropertyChanged);
-	connect(this, &RibbonButton::titleChanged,			this, &RibbonButton::somePropertyChanged);
-	connect(this, &RibbonButton::moduleNameChanged,		this, &RibbonButton::somePropertyChanged);
-	connect(this, &RibbonButton::dataLoadedChanged,		this, &RibbonButton::somePropertyChanged);
-	connect(this, &RibbonButton::requiresDataChanged,	this, &RibbonButton::somePropertyChanged);
-	connect(this, &RibbonButton::activeChanged,			this, &RibbonButton::somePropertyChanged);
+	connect(this,						&RibbonButton::enabledChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this,						&RibbonButton::titleChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this,						&RibbonButton::isDynamicChanged,	this, &RibbonButton::somePropertyChanged);
+	connect(this,						&RibbonButton::titleChanged,		this, &RibbonButton::somePropertyChanged);
+	connect(this,						&RibbonButton::moduleNameChanged,	this, &RibbonButton::somePropertyChanged);
+	connect(this,						&RibbonButton::dataLoadedChanged,	this, &RibbonButton::somePropertyChanged);
+	connect(this,						&RibbonButton::requiresDataChanged,	this, &RibbonButton::somePropertyChanged);
+	connect(this,						&RibbonButton::activeChanged,		this, &RibbonButton::somePropertyChanged);
 
-	connect(this, &RibbonButton::enabledChanged,		this, &RibbonButton::activeChanged);
-	connect(this, &RibbonButton::dataLoadedChanged,		this, &RibbonButton::activeChanged);
-	connect(this, &RibbonButton::requiresDataChanged,	this, &RibbonButton::activeChanged);
+	connect(this,						&RibbonButton::enabledChanged,		this, &RibbonButton::activeChanged		);
+	connect(this,						&RibbonButton::dataLoadedChanged,	this, &RibbonButton::activeChanged		);
+	connect(this,						&RibbonButton::requiresDataChanged,	this, &RibbonButton::activeChanged		);
+
+	connect(DynamicModules::dynMods(),	&DynamicModules::dataLoadedChanged,	this, &RibbonButton::dataLoadedChanged	);
 }
 
 void RibbonButton::setMenu(const Modules::AnalysisEntries& entries)
@@ -147,17 +151,17 @@ void RibbonButton::setEnabled(bool enabled)
 	_enabled = enabled;
 	emit enabledChanged();
 
-	if(_dynamicModules != nullptr)
+	if(DynamicModules::dynMods())
 	{
 
 		if(isDynamic())
 		{
-			if(enabled)	_dynamicModules->loadModule(moduleName());
-			else		_dynamicModules->unloadModule(moduleName());
+			if(enabled)	DynamicModules::dynMods()->loadModule(moduleName());
+			else		DynamicModules::dynMods()->unloadModule(moduleName());
 
 		}
 
-		emit _dynamicModules->moduleEnabledChanged(moduleNameQ(), enabled);
+		emit DynamicModules::dynMods()->moduleEnabledChanged(moduleNameQ(), enabled);
 	}
 }
 
@@ -190,7 +194,7 @@ void RibbonButton::setModuleName(std::string moduleName)
 
 Modules::DynamicModule * RibbonButton::myDynamicModule()
 {
-	return !isDynamic() ? nullptr : _dynamicModules->dynamicModule(_moduleName);
+	return !isDynamic() ? nullptr : DynamicModules::dynMods()->dynamicModule(_moduleName);
 }
 
 Modules::AnalysisEntry *RibbonButton::getAnalysis(const std::string &name)
@@ -213,8 +217,3 @@ std::vector<std::string> RibbonButton::getAllAnalysisNames() const
 	return allAnalyses;
 }
 
-void RibbonButton::setDynamicModules(DynamicModules * dynamicModules)
-{
-	_dynamicModules = dynamicModules;
-	connect(_dynamicModules, &DynamicModules::dataLoadedChanged, this, &RibbonButton::dataLoadedChanged);
-}

@@ -28,7 +28,7 @@ class PlotEditorModel : public QObject
 
 
 public:
-	explicit PlotEditorModel(Analyses * analyses);
+	explicit PlotEditorModel();
 
 	bool					visible()	const {	return _visible;	}
 	QString					name()		const { return _name;		}
@@ -71,12 +71,11 @@ private:
 	Json::Value generateEditOptions()	const;
 
 private:
-	Analyses			*	_analyses		= nullptr;
 	Analysis			*	_analysis		= nullptr;
 	AxisModel			*	_xAxis			= nullptr,
 						*	_yAxis			= nullptr;
-	Coordinates				_coordinates;
 
+	Coordinates				_coordinates;
 	Json::Value				_editOptions	= Json::nullValue,
 							_imgOptions		= Json::nullValue;
 	QString					_name,

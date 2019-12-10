@@ -25,7 +25,7 @@
 #include "data/datasetpackage.h"
 #include "mainwindow.h"
 
-FileMenu::FileMenu(QObject *parent, DataSetPackage* package) : QObject(parent), _package(package)
+FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {	
 	_mainWindow				= dynamic_cast<MainWindow*>(parent);
 	_recentFiles			= new RecentFiles(parent);
@@ -233,7 +233,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 			{
 				QString datafile = event->dataFilePath();
 				if (datafile.isEmpty())
-					datafile = QString::fromStdString(_package->dataFilePath());
+					datafile = QString::fromStdString(DataSetPackage::pkg()->dataFilePath());
 				setCurrentDataFile(datafile);
 			}
 

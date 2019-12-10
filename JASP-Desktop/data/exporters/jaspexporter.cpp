@@ -43,7 +43,7 @@ JASPExporter::JASPExporter() {
     _allowedFileTypes.push_back(Utils::jasp);
 }
 
-void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+void JASPExporter::saveDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	struct archive *a;
 
@@ -59,8 +59,8 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 	if (errorCode != ARCHIVE_OK)
 		throw std::runtime_error("File could not be opened.");
 
-	saveDataArchive(a, package, progressCallback);
-	saveJASPArchive(a, package, progressCallback);
+	saveDataArchive(a, progressCallback);
+	saveJASPArchive(a, progressCallback);
 
 	errorCode = archive_write_close(a);
 	if (errorCode != ARCHIVE_OK)
@@ -72,8 +72,10 @@ void JASPExporter::saveDataSet(const std::string &path, DataSetPackage* package,
 }
 
 
-void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)> progressCallback)
+void JASPExporter::saveDataArchive(archive *a, boost::function<void (const std::string &, int)> progressCallback)
 {
+	DataSetPackage * package = DataSetPackage::pkg();
+
 	createJARContents(a);
 
 	struct archive_entry *entry;
@@ -97,7 +99,7 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 	metaData["emptyValues"]				= emptyValuesJson;
 	metaData["filterData"]				= Json::Value(package->dataFilter());
 	metaData["filterConstructorJSON"]	= package->filterConstructorJson();
-	metaData["computedColumns"]			= package->computedColumnsPointer()->convertToJson();
+	metaData["computedColumns"]			= ComputedColumns::singleton()->convertToJson();
 	dataSet["rowCount"]					= Json::Value(package->rowCount());
 	dataSet["columnCount"]				= Json::Value(package->columnCount());
 
@@ -223,13 +225,13 @@ void JASPExporter::saveDataArchive(archive *a, DataSetPackage *package, boost::f
 
 }
 
-void JASPExporter::saveJASPArchive(archive *a, DataSetPackage *package, boost::function<void (const std::string &, int)>)
+void JASPExporter::saveJASPArchive(archive *a, boost::function<void (const std::string &, int)>)
 {
-	if (package->hasAnalyses())
+	if (DataSetPackage::pkg()->hasAnalyses())
 	{
 		struct archive_entry *entry;
 
-		const Json::Value &analysesJson = package->analysesData();
+		const Json::Value &analysesJson = DataSetPackage::pkg()->analysesData();
 
 		//Create new entry for archive NOTE: must be done before data is added
 		std::string analysesString = analysesJson.toStyledString();

@@ -37,6 +37,8 @@ class DynamicModules : public QObject
 public:
 	explicit DynamicModules(QObject *parent) ;
 
+	static DynamicModules * dynMods() { return _singleton; }
+
 	~DynamicModules() override;
 
 	void		initializeInstalledModules();
@@ -128,6 +130,7 @@ private:
 	void						registerForInstallingSubFunc(const std::string & moduleName, bool onlyModPkg);
 
 private:
+	static DynamicModules								*	_singleton;
 	std::vector<std::string>								_moduleNames;
 	std::map<std::string, Modules::DynamicModule*>			_modules;
 	std::map<std::string, bool>								_modulesInstallPackagesNeeded; //bool true ==> only modPkg

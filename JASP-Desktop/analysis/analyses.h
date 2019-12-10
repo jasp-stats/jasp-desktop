@@ -53,13 +53,8 @@ public:
 					nameRole,
 					idRole};
 
-				Analyses(DataSetPackage * package, DynamicModules * dynamicModules) : QAbstractListModel(package), _package(package), _dynamicModules(dynamicModules)
-				{
-					connect(this,		&Analyses::requestComputedColumnDestruction,	this,	&Analyses::dataSetColumnsChanged	, Qt::QueuedConnection	);
-					connect(_package,	&DataSetPackage::dataSetChanged,				this,	&Analyses::dataSetChanged									);
-					connect(_package,	&DataSetPackage::columnDataTypeChanged,			this,	&Analyses::dataSetColumnsChanged							);
-					connect(_package,	&DataSetPackage::labelChanged,					this,	&Analyses::dataSetColumnsChanged							);
-				}
+						Analyses();
+	static Analyses *	analyses() { return _singleton; }
 
 	Analysis*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
 	Analysis*	create(const QString &module, const QString &name, const QString &title, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
@@ -98,8 +93,6 @@ public:
 	bool					moving()													const			{ return _moving;				}
 	double					currentFormPrevH()											const			{ return _currentFormPrevH;		}
 	Analysis*				getAnalysisBeforeMoving(size_t index);
-
-	DataSetPackage *		getDataSetPackage()											const			{ return _package;				}
 
 public slots:
 	void removeAnalysisById(size_t id);
@@ -176,9 +169,7 @@ private:
 
 
 private:
-	DataSetPackage				*	_package				= nullptr;
-	DynamicModules				*	_dynamicModules			= nullptr;
-
+	static Analyses				*	_singleton;
 	std::map<size_t, Analysis*>		_analysisMap;
 	std::vector<size_t>				_orderedIds;
 	std::vector<size_t>				_orderedIdsBeforeMoving;

@@ -37,20 +37,20 @@ class AsyncLoader : public QObject
 public:
 	explicit AsyncLoader(QObject *parent = 0);
 
-	void io(FileEvent *event, DataSetPackage *package);
+	void io(FileEvent *event);
 	void free(DataSet *dataSet);
 	void setOnlineDataManager(OnlineDataManager *odm);
 
 signals:
-	void beginLoad(FileEvent*, DataSetPackage*);
-	void beginSave(FileEvent*, DataSetPackage*);
+	void beginLoad(FileEvent*);
+	void beginSave(FileEvent*);
 	void progress(const QString &status, int progress);
 	void beginFileUpload(QString nodePath, QString sourcePath);
 	bool checkDoSync();
 
 private slots:
-	void loadTask(FileEvent *event, DataSetPackage *package);
-	void saveTask(FileEvent *event, DataSetPackage *package);
+	void loadTask(FileEvent *event);
+	void saveTask(FileEvent *event);
 	void loadPackage(QString id);
 	void uploadFileFinished(QString id);
 	//void errorFlagged(QString msg, QString id);
@@ -63,10 +63,9 @@ private:
 
 
 
-	DataSetLoader		_loader;
-	FileEvent *			_currentEvent = nullptr;
-	DataSetPackage *	_currentPackage = nullptr;
-	OnlineDataManager *	_odm = nullptr;
+	DataSetLoader			_loader;
+	FileEvent			*	_currentEvent	= nullptr;
+	OnlineDataManager	*	_odm			= nullptr;
 };
 
 #endif // ASYNCLOADER_H

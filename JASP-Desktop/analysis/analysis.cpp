@@ -29,16 +29,15 @@
 #include "log.h"
 
 
-Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data) :
-	QObject(analyses),
+Analysis::Analysis(size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data) :
+	QObject(Analyses::analyses()),
 	_options(new Options()),
 	_id(id),
 	_module(module),
 	_name(name),
 	_titleDefault(title),
 	_title(title),
-	_version(version),
-	_analyses(analyses)
+	_version(version)
 {
 	if (data)
 		// We cannot set the options now because it sometimes needs more information from the QML file
@@ -49,8 +48,8 @@ Analysis::Analysis(Analyses* analyses, size_t id, std::string module, std::strin
 	bindOptionHandlers();
 }
 
-Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, Json::Value *data) :
-	  QObject(analyses),
+Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, Json::Value *data) :
+	  QObject(Analyses::analyses()),
 	  _options(new Options()),
 	  _id(id),
 	  _name(analysisEntry->title()),
@@ -58,8 +57,7 @@ Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analy
 	  _title(title == "" ? _titleDefault : title),
 	  _version(AppInfo::version),
 	  _moduleData(analysisEntry),
-	  _dynamicModule(_moduleData->dynamicModule()),
-	  _analyses(analyses)
+	  _dynamicModule(_moduleData->dynamicModule())
 {
 	if (data)
 		_optionsDotJASP = *data; //Same story as other constructor
@@ -69,8 +67,8 @@ Analysis::Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analy
 	bindOptionHandlers();
 }
 
-Analysis::Analysis(Analyses* analyses, size_t id, Analysis * duplicateMe)
-	: QObject(			analyses					)
+Analysis::Analysis(size_t id, Analysis * duplicateMe)
+	: QObject(			Analyses::analyses()		)
 	, _status(			duplicateMe->_status		)
 	, _options(			static_cast<Options*>(duplicateMe->_options->clone()))
 	, _optionsDotJASP(	duplicateMe->_optionsDotJASP)
@@ -90,7 +88,6 @@ Analysis::Analysis(Analyses* analyses, size_t id, Analysis * duplicateMe)
 	, _version(			duplicateMe->_version		)
 	, _moduleData(		duplicateMe->_moduleData	)
 	, _dynamicModule(	duplicateMe->_dynamicModule	)
-	, _analyses(						analyses	)
 	, _codedReferenceToAnalysisEntry(	duplicateMe->_codedReferenceToAnalysisEntry)
 	, _helpFile(						duplicateMe->_helpFile)
 {
@@ -168,12 +165,12 @@ void Analysis::imageEdited(const Json::Value & results)
 
 void Analysis::reload()
 {
-	_analyses->reload(this, true);
+	Analyses::analyses()->reload(this, true);
 }
 
 void Analysis::exportResults()
 {
-    emit _analyses->analysesExportResults();
+	emit Analyses::analyses()->analysesExportResults();
 }
 
 void Analysis::refresh()
@@ -231,8 +228,8 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 						_analysisForm	= form;
 	if(!_isDuplicate)	_status			= isNewAnalysis ? Empty : Complete;
 	
-	connect(_analyses, &Analyses::dataSetChanged,			_analysisForm, &AnalysisForm::dataSetChangedHandler);
-	connect(_analyses, &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
+	connect(Analyses::analyses(), &Analyses::dataSetChanged,			_analysisForm, &AnalysisForm::dataSetChangedHandler);
+	connect(Analyses::analyses(), &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
 }
 
 std::string Analysis::statusToString(Status status)
@@ -399,7 +396,7 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
 	json["jaspResults"]			= usesJaspResults();
 	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();
-	json["developerMode"]		= _analyses->developerMode();
+	json["developerMode"]		= Analyses::analyses()->developerMode();
 
 	if (!isAborted())
 	{
@@ -470,12 +467,7 @@ QString	Analysis::fullHelpPath(QString helpFileName)
 
 void Analysis::duplicateMe()
 {
-	_analyses->duplicateAnalysis(_id);
-}
-
-DataSetPackage * Analysis::getDataSetPackage() const
-{
-	return _analyses->getDataSetPackage();
+	Analyses::analyses()->duplicateAnalysis(_id);
 }
 
 void Analysis::showDependenciesOnQMLForObject(QString uniqueName)

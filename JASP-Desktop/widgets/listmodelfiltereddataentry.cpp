@@ -63,7 +63,7 @@ void ListModelFilteredDataEntry::runFilter(QString filter)
 
 size_t ListModelFilteredDataEntry::getDataSetRowCount()
 {
-	return _tableView->form()->getDataSetPackage()->rowCount();
+	return DataSetPackage::pkg()->rowCount();
 }
 
 void ListModelFilteredDataEntry::rScriptDoneHandler(const QString & result)
@@ -329,13 +329,13 @@ QVariant ListModelFilteredDataEntry::data(const QModelIndex &index, int role) co
 	if(column == _editableColumn)
 		return QVariant(_values[0][row]);
 
-	if(!_tableView->form()->getDataSetPackage()->hasDataSet() || column > _colNames.size() || column < 0)
+	if(!DataSetPackage::pkg()->hasDataSet() || column > _colNames.size() || column < 0)
 		return QVariant();
 
 	std::string colName = _colNames[column].toStdString();
 	size_t rowData		= _filteredRowToData[static_cast<size_t>(row)];
 
-	DataSetPackage * package = _tableView->form()->getDataSetPackage();
+	DataSetPackage * package = DataSetPackage::pkg();
 
 	int colIndex = package->getColumnIndex(colName);
 
@@ -350,7 +350,7 @@ int ListModelFilteredDataEntry::getMaximumColumnWidthInCharacters(size_t column)
 		return ListModelTableViewBase::getMaximumColumnWidthInCharacters(0);
 
 
-	DataSetPackage * package = _tableView->form()->getDataSetPackage();
+	DataSetPackage * package = DataSetPackage::pkg();
 
 	if(!(package->hasDataSet() || column > _colNames.size() || column < 0))
 	{

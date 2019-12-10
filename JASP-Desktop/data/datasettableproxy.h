@@ -10,7 +10,7 @@ class DataSetTableProxy : public QSortFilterProxyModel
 	Q_PROPERTY(int proxyParentColumn READ proxyParentColumn WRITE setProxyParentColumn NOTIFY proxyParentColumnChanged)
 
 public:
-	explicit				DataSetTableProxy(DataSetPackage * package, parIdxType proxyType);
+	explicit				DataSetTableProxy(parIdxType proxyType);
 
 	QModelIndex				mapToSource(	const QModelIndex & proxyIndex)		const	override;
 	QModelIndex				mapFromSource(	const QModelIndex & sourceIndex)	const	override;
@@ -24,9 +24,6 @@ public slots:
 
 signals:
 	void proxyParentColumnChanged();
-
-protected:
-	DataSetPackage		*	_package		= nullptr;
 
 private:
 	parIdxType				_proxyType			= parIdxType::root;

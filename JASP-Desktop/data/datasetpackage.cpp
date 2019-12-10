@@ -27,8 +27,13 @@
 #define ENUM_DECLARATION_CPP
 #include "datasetpackage.h"
 
+
+DataSetPackage * DataSetPackage::_singleton = nullptr;
+
 DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 {
+	if(_singleton) throw std::runtime_error("DataSetPackage can be constructed only once!");
+	_singleton = this;
 	//True init is done in setEngineSync!
 }
 
@@ -41,7 +46,6 @@ void DataSetPackage::setEngineSync(EngineSync * engineSync)
 	connect(this,	&DataSetPackage::resumeEnginesSignal,	_engineSync,	&EngineSync::resume,	Qt::BlockingQueuedConnection);
 
 	reset();
-	informComputedColumnsOfPackage();
 }
 
 bool DataSetPackage::isThisTheSameThreadAsEngineSync()
@@ -76,7 +80,7 @@ void DataSetPackage::reset()
 	_isArchive					= false;
 	_dataFilter					= DEFAULT_FILTER;
 	_filterConstructorJSON		= DEFAULT_FILTER_JSON;
-	_computedColumns			= ComputedColumns(this);
+	_computedColumns.reset();
 	_filterShouldRunInit		= false;
 
 	setModified(false);
@@ -495,7 +499,7 @@ void DataSetPackage::setModified(bool value)
 	if ((!value || _isLoaded || _hasAnalysesWithoutData) && value != _isModified)
 	{
 		_isModified = value;
-		emit isModifiedChanged(this);
+		emit isModifiedChanged();
 	}
 }
 
@@ -562,13 +566,6 @@ std::string DataSetPackage::getComputedColumnError(size_t colIndex) const
 
 	return "";
 }
-
-
-ComputedColumns	* DataSetPackage::computedColumnsPointer()
-{
-	return &_computedColumns;
-}
-
 
 void DataSetPackage::setColumnsUsedInEasyFilter(std::set<std::string> usedColumns)
 {

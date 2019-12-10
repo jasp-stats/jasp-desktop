@@ -40,7 +40,7 @@ class EngineSync : public QObject
 	Q_OBJECT
 
 public:
-	EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModules *dynamicModules, QObject *parent);
+	EngineSync(QObject *parent);
 	~EngineSync();
 
 	void start(int ppi);
@@ -115,9 +115,6 @@ private slots:
 	void	logCfgReplyReceived(size_t channelNr);
 
 private:
-	Analyses						*	_analyses						= nullptr;
-	DataSetPackage					*	_package						= nullptr;
-	DynamicModules					*	_dynamicModules					= nullptr;
 	RFilterStore					*	_waitingFilter					= nullptr;
 
 	bool								_engineStarted					= false,

@@ -13,10 +13,10 @@ class LabelModel : public DataSetTableProxy
 	Q_PROPERTY(QString	columnName		READ columnNameQ									NOTIFY columnNameChanged		)
 
 public:
-				LabelModel(DataSetPackage * package);
+				LabelModel();
 
 	bool		labelNeedsFilter(size_t col);
-	std::string columnName(size_t col)	{ return _package->getColumnName(col);								}
+	std::string columnName(size_t col)	{ return DataSetPackage::pkg()->getColumnName(col);								}
 	QString		columnNameQ()			{ return QString::fromStdString(columnName(proxyParentColumn()));	}
 	bool		setData(const QModelIndex & index, const QVariant & value, int role)			override;
 

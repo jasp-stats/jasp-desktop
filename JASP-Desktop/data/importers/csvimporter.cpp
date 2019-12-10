@@ -21,9 +21,9 @@
 #include "timers.h"
 using namespace std;
 
-CSVImporter::CSVImporter(DataSetPackage *packageData) : Importer(packageData)
+CSVImporter::CSVImporter() : Importer()
 {
-	_packageData->setIsArchive(false);
+	DataSetPackage::pkg()->setIsArchive(false);
 }
 
 ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)

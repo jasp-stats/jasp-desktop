@@ -61,7 +61,7 @@ public:
 	Modules::AnalysisEntry*			getAnalysis(const std::string& name);
 	QVariant						analysisMenu()												const			{ return QVariant::fromValue(_analysisMenuModel); }
 	std::vector<std::string>		getAllAnalysisNames()										const;
-	bool							dataLoaded()												const			{ return _dynamicModules && _dynamicModules->dataLoaded();	}
+	bool							dataLoaded()												const			{ return DynamicModules::dynMods() &&  DynamicModules::dynMods()->dataLoaded();	}
 	bool							active()													const			{ return _enabled && (!requiresData() || dataLoaded());	}
 
 public slots:
@@ -75,7 +75,6 @@ public slots:
 	void setModuleName(std::string moduleName);
 	void setModuleNameQ(QString moduleName)							{ setModuleName(moduleName.toStdString()); }
 	void somePropertyChanged()										{ emit iChanged(this); }
-	void setDynamicModules(DynamicModules * dynamicModules);
 	void descriptionReloaded(Modules::DynamicModule * dynMod);
 
 signals:
@@ -105,7 +104,6 @@ private:
 									_enabled			= false;
 	std::string						_title				= "",
 									_moduleName			= "";
-	DynamicModules				*	_dynamicModules		= nullptr;
 	Modules::DynamicModule		*	_module				= nullptr;
 	QString							_iconSource;
 };

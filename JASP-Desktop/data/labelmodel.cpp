@@ -1,19 +1,19 @@
 #include "labelmodel.h"
 
-LabelModel::LabelModel(DataSetPackage * package) : DataSetTableProxy(package, parIdxType::label)
+LabelModel::LabelModel() : DataSetTableProxy(parIdxType::label)
 {
-	connect(_package,	&DataSetPackage::filteredOutChanged,			this, &LabelModel::filteredOutChangedHandler);
-	connect(this,		&DataSetTableProxy::proxyParentColumnChanged,	this, &LabelModel::filteredOutChanged		);
-	connect(this,		&DataSetTableProxy::proxyParentColumnChanged,	this, &LabelModel::columnNameChanged		);
-	connect(_package,	&DataSetPackage::modelReset,					this, &LabelModel::columnNameChanged		);
-	connect(_package,	&DataSetPackage::allFiltersReset,				this, &LabelModel::allFiltersReset			);
-	connect(_package,	&DataSetPackage::labelFilterChanged,			this, &LabelModel::labelFilterChanged		);
-	connect(_package,	&DataSetPackage::columnAboutToBeRemoved,		this, &LabelModel::columnAboutToBeRemoved	);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::filteredOutChanged,			this, &LabelModel::filteredOutChangedHandler);
+	connect(this,					&DataSetTableProxy::proxyParentColumnChanged,	this, &LabelModel::filteredOutChanged		);
+	connect(this,					&DataSetTableProxy::proxyParentColumnChanged,	this, &LabelModel::columnNameChanged		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,					this, &LabelModel::columnNameChanged		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::allFiltersReset,				this, &LabelModel::allFiltersReset			);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::labelFilterChanged,			this, &LabelModel::labelFilterChanged		);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::columnAboutToBeRemoved,		this, &LabelModel::columnAboutToBeRemoved	);
 }
 
 bool LabelModel::labelNeedsFilter(size_t col)
 {
-	QVariant result = _package->headerData(col, Qt::Orientation::Horizontal, int(DataSetPackage::specialRoles::labelsHasFilter));
+	QVariant result = DataSetPackage::pkg()->headerData(col, Qt::Orientation::Horizontal, int(DataSetPackage::specialRoles::labelsHasFilter));
 
 	if(result.type() == QMetaType::Bool)	return result.toBool();
 	return false;
@@ -21,22 +21,24 @@ bool LabelModel::labelNeedsFilter(size_t col)
 
 std::vector<bool> LabelModel::filterAllows(size_t col)
 {
-	QModelIndex p = _package->parentModelForType(parIdxType::label, col);
-	std::vector<bool> allows(_package->rowCount(p));
+	DataSetPackage *	pkg = DataSetPackage::pkg();
+	QModelIndex			p	= pkg->parentModelForType(parIdxType::label, col);
+	std::vector<bool>	allows(pkg->rowCount(p));
 
-	for(size_t row=0; row<_package->rowCount(p); row++)
-		allows[row] = _package->data(_package->index(row, 0, p), int(DataSetPackage::specialRoles::filter)).toBool();
+	for(size_t row=0; row<pkg->rowCount(p); row++)
+		allows[row] = pkg->data(pkg->index(row, 0, p), int(DataSetPackage::specialRoles::filter)).toBool();
 
 	return allows;
 }
 
 std::vector<std::string> LabelModel::labels(size_t col)
 {
-	QModelIndex p = _package->parentModelForType(parIdxType::label, col);
-	std::vector<std::string> labels(_package->rowCount(p));
+	DataSetPackage *			pkg = DataSetPackage::pkg();
+	QModelIndex					p	= pkg->parentModelForType(parIdxType::label, col);
+	std::vector<std::string>	labels(pkg->rowCount(p));
 
-	for(size_t row=0; row<_package->rowCount(p); row++)
-		labels[row] = _package->data(_package->index(row, 0, p), Qt::DisplayRole).toString().toStdString();
+	for(size_t row=0; row<pkg->rowCount(p); row++)
+		labels[row] = pkg->data(pkg->index(row, 0, p), Qt::DisplayRole).toString().toStdString();
 
 	return labels;
 }
@@ -44,17 +46,17 @@ std::vector<std::string> LabelModel::labels(size_t col)
 
 void LabelModel::moveUp(std::vector<size_t> selection)
 {
-	_package->labelMoveRows(proxyParentColumn(), selection, true);
+	DataSetPackage::pkg()->labelMoveRows(proxyParentColumn(), selection, true);
 }
 
 void LabelModel::moveDown(std::vector<size_t> selection)
 {
-	_package->labelMoveRows(proxyParentColumn(), selection, false);
+	DataSetPackage::pkg()->labelMoveRows(proxyParentColumn(), selection, false);
 }
 
 void LabelModel::reverse()
 {
-	_package->labelReverse(proxyParentColumn());
+	DataSetPackage::pkg()->labelReverse(proxyParentColumn());
 }
 
 std::vector<size_t> LabelModel::convertQVariantList_to_RowVec(QVariantList selection)
@@ -76,7 +78,7 @@ std::vector<size_t> LabelModel::convertQVariantList_to_RowVec(QVariantList selec
 bool LabelModel::setData(const QModelIndex & index, const QVariant & value, int role)
 {
 	int roleToSet = index.column() == 0 ? int(DataSetPackage::specialRoles::filter) : index.column() == 1 ? int(DataSetPackage::specialRoles::value) : Qt::DisplayRole;
-	return _package->setData(mapToSource(index), value, roleToSet);
+	return DataSetPackage::pkg()->setData(mapToSource(index), value, roleToSet);
 }
 
 void LabelModel::filteredOutChangedHandler(int c)
@@ -86,12 +88,12 @@ void LabelModel::filteredOutChangedHandler(int c)
 
 int LabelModel::filteredOut() const
 {
-	return _package->filteredOut(proxyParentColumn());
+	return DataSetPackage::pkg()->filteredOut(proxyParentColumn());
 }
 
 void LabelModel::resetFilterAllows()
 {
-	_package->resetFilterAllows(proxyParentColumn());
+	DataSetPackage::pkg()->resetFilterAllows(proxyParentColumn());
 }
 
 void LabelModel::setVisible(bool visible)
@@ -107,7 +109,7 @@ void LabelModel::setVisible(bool visible)
 
 int LabelModel::dataColumnCount() const
 {
-	return _package->dataColumnCount();
+	return DataSetPackage::pkg()->dataColumnCount();
 }
 
 void LabelModel::columnAboutToBeRemoved(int column)

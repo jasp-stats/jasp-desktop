@@ -20,7 +20,7 @@ class FilterModel : public QObject
 	Q_PROPERTY( QString defaultRFilter		READ defaultRFilter									NOTIFY defaultRFilterChanged	)
 
 public:
-	explicit FilterModel(DataSetPackage * package, labelFilterGenerator * labelfilterGenerator);
+	explicit FilterModel(labelFilterGenerator * labelfilterGenerator);
 
 	void init();
 
@@ -83,7 +83,6 @@ private:
 	bool _setRFilter(const QString& newRFilter);
 
 private:
-	DataSetPackage			*	_package				= nullptr;
 	labelFilterGenerator	*	_labelFilterGenerator	= nullptr;
 	QString						_generatedFilter		= DEFAULT_FILTER_GEN,
 								_rFilter				= DEFAULT_FILTER,

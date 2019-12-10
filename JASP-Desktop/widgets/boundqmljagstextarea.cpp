@@ -81,7 +81,7 @@ void BoundQMLJAGSTextArea::checkSyntax()
 	// google: jags_user_manual (4.3.0) for documentation on JAGS symbols
 
 	// get the column names of the data set
-	std::vector<std::string> colnms = form()->getDataSetPackage()->getColumnNames();
+	std::vector<std::string> colnms = DataSetPackage::pkg()->getColumnNames();
 	std::set<std::string> columnNames(std::make_move_iterator(colnms.begin()), std::make_move_iterator(colnms.end()));
 
 

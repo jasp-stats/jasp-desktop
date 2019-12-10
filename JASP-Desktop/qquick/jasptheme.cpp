@@ -2,7 +2,6 @@
 #include "log.h"
 #include "utilities/qutils.h"
 
-PreferencesModel	*	JaspTheme::_preferences		= nullptr;
 JaspTheme			*	JaspTheme::_currentTheme	= nullptr;
 QFont					JaspTheme::_jaspFont		= QFont("SansSerif");
 
@@ -10,13 +9,13 @@ std::map<QString, JaspTheme *> JaspTheme::_themes;
 
 JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 {
-	_jaspFont = _preferences->defaultFont();
+	_jaspFont = PreferencesModel::prefs()->defaultFont();
 
-	connect(this,			&JaspTheme::currentThemeNameChanged,		_preferences,	&PreferencesModel::setCurrentThemeName	);
-	connect(this,			&JaspTheme::jaspThemeChanged,				_preferences,	&PreferencesModel::jaspThemeChanged		);
-	connect(_preferences,	&PreferencesModel::uiScaleChanged,			this,			&JaspTheme::uiScaleChanged				);
-	connect(_preferences,	&PreferencesModel::maxFlickVelocityChanged, this,			&JaspTheme::maximumFlickVelocity		);
-	connect(_preferences,	&PreferencesModel::defaultFontChanged,		this,			&JaspTheme::jaspFontChanged				);
+	connect(this,			&JaspTheme::currentThemeNameChanged,		PreferencesModel::prefs(),	&PreferencesModel::setCurrentThemeName	);
+	connect(this,			&JaspTheme::jaspThemeChanged,				PreferencesModel::prefs(),	&PreferencesModel::jaspThemeChanged		);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,			this,			&JaspTheme::uiScaleChanged				);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::maxFlickVelocityChanged, this,			&JaspTheme::maximumFlickVelocity		);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::defaultFontChanged,		this,			&JaspTheme::jaspFontChanged				);
 
 	connectSizeDistancesToUiScaleChanged();
 

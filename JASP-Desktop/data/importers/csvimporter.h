@@ -24,7 +24,7 @@
 class CSVImporter : public Importer
 {
 public:
-	CSVImporter(DataSetPackage *packageData);
+	CSVImporter();
 
 protected:
 	ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback) override;

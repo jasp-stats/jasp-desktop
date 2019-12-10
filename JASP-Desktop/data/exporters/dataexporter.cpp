@@ -32,13 +32,13 @@ DataExporter::DataExporter(bool includeComputeColumns) : _includeComputeColumns(
     _allowedFileTypes.push_back(Utils::tsv);
 }
 
-void DataExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+void DataExporter::saveDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 	progressCallback("Export Data Set", 0);
 
 	boost::nowide::ofstream outfile(path.c_str(), ios::out);
 
-	package->writeDataSetToOStream(outfile, _includeComputeColumns);
+	DataSetPackage::pkg()->writeDataSetToOStream(outfile, _includeComputeColumns);
 
 	outfile.flush();
 	outfile.close();

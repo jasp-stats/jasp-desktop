@@ -62,7 +62,6 @@ public:
 				
 				void			itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) override;
 
-				DataSetPackage *getDataSetPackage() const { return _package; }
 				void			setMustBe(		std::set<std::string>						mustBe);
 				void			setMustContain(	std::map<std::string,std::set<std::string>> mustContain);
 					
@@ -127,7 +126,6 @@ private slots:
 
 protected:
 	Analysis								*	_analysis			= nullptr;
-	DataSetPackage							*	_package			= nullptr;
 	Options									*	_options			= nullptr;
 	QMap<QString, JASPControlWrapper* >			_controls;
 

@@ -63,9 +63,9 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 	try {
 		switch(info)
 		{
-		case VariableInfo::VariableType:		return int(_package->getColumnType(term.asString()));
-		case VariableInfo::VariableTypeName:	return columnTypeToQString(_package->getColumnType(term.asString()));
-		case VariableInfo::Labels:				return _package->getColumnLabelsAsStringList(term.asString());
+		case VariableInfo::VariableType:		return int(					DataSetPackage::pkg()->getColumnType(term.asString()));
+		case VariableInfo::VariableTypeName:	return columnTypeToQString(	DataSetPackage::pkg()->getColumnType(term.asString()));
+		case VariableInfo::Labels:				return						DataSetPackage::pkg()->getColumnLabelsAsStringList(term.asString());
 		}
 	}
 	catch(columnNotFound & e) {} //just return an empty QVariant right?
@@ -360,7 +360,7 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 	if (_allAvailableVariablesModels.size() == 0)
 		return;
 
-	std::vector<std::string> columnNames = _package->getColumnNames();
+	std::vector<std::string> columnNames = DataSetPackage::pkg()->getColumnNames();
 
 
 	for (ListModelTermsAvailable* model : _allAvailableVariablesModels)
@@ -391,7 +391,6 @@ void AnalysisForm::bindTo()
 		unbind();
 
 	const Json::Value& optionsFromJASPFile = _analysis->optionsFromJASPFile();
-	_package = _analysis->getDataSetPackage();
 	_options = _analysis->options();
 	QVector<ListModelAvailableInterface*> availableModelsToBeReset;
 
@@ -521,7 +520,6 @@ void AnalysisForm::_formCompletedHandler()
 	if (!analysisVariant.isNull())
 	{
 		_analysis	= qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
-		_package	= _analysis->getDataSetPackage();
 
 		_setUpControls();
 

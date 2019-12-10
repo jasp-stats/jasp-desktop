@@ -41,6 +41,9 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QString		currentThemeName		READ currentThemeName			WRITE setCurrentThemeName			NOTIFY currentThemeNameChanged			)
 
 public:
+	static PreferencesModel * prefs() { return _singleton; }
+	static PreferencesModel * _singleton;
+
 	explicit	 PreferencesModel(QObject *parent = 0);
 				~PreferencesModel();
 

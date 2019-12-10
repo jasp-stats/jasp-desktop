@@ -7,9 +7,14 @@
 
 using namespace std;
 
+PreferencesModel * PreferencesModel::_singleton = nullptr;
+
 PreferencesModel::PreferencesModel(QObject *parent) :
 	QObject(parent)
 {
+	if(_singleton) throw std::runtime_error("PreferencesModel can only be instantiated once!");
+	_singleton = this;
+
 	connect(this, &PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues		);
 	connect(this, &PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged			);
 	connect(this, &PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::onDefaultPPIChanged			);

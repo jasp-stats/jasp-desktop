@@ -39,36 +39,36 @@ AsyncLoader::AsyncLoader(QObject *parent) :
 	connect(this, &AsyncLoader::beginSave, this, &AsyncLoader::saveTask, Qt::QueuedConnection);
 }
 
-void AsyncLoader::io(FileEvent *event, DataSetPackage *package)
+void AsyncLoader::io(FileEvent *event)
 {
 
 	switch (event->operation())
 	{
 	case FileEvent::FileOpen:
 		emit progress("Loading Data Set", 0);
-		emit beginLoad(event, package);
+		emit beginLoad(event);
 		break;
 
 	case FileEvent::FileSave:
 		emit progress("Saving Data Set", 0);
-		emit beginSave(event, package);
+		emit beginSave(event);
 		break;
 
 	case FileEvent::FileExportResults:
 		emit progress("Exporting Result Set", 0);
-		emit beginSave(event, package);
+		emit beginSave(event);
 		break;
 
 	case FileEvent::FileExportData:
 	case FileEvent::FileGenerateData:
 		emit progress("Exporting Data Set", 0);
-		emit beginSave(event, package);
+		emit beginSave(event);
 		break;
 
 	case FileEvent::FileSyncData:
 	{
 		emit progress("Sync Data Set", 0);
-		emit beginLoad(event, package);
+		emit beginLoad(event);
 		break;
 	}
 
@@ -83,10 +83,9 @@ void AsyncLoader::free(DataSet *dataSet)
 	_loader.freeDataSet(dataSet);
 }
 
-void AsyncLoader::loadTask(FileEvent *event, DataSetPackage *package)
+void AsyncLoader::loadTask(FileEvent *event)
 {
 	_currentEvent = event;
-	_currentPackage = package;
 
 	if (event->isOnlineNode())
 		QMetaObject::invokeMethod(_odm, "beginDownloadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"));
@@ -94,7 +93,7 @@ void AsyncLoader::loadTask(FileEvent *event, DataSetPackage *package)
 		this->loadPackage("asyncloader");
 }
 
-void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
+void AsyncLoader::saveTask(FileEvent *event)
 {
 
 	_currentEvent = event;
@@ -110,7 +109,7 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 		int maxSleepTime = 2000;
 		int sleepTime = 100;
 		int delay = 0;
-		while (package->isReady() == false)
+		while (DataSetPackage::pkg()->isReady() == false)
 		{
 			if (delay > maxSleepTime)
 				break;
@@ -120,18 +119,19 @@ void AsyncLoader::saveTask(FileEvent *event, DataSetPackage *package)
 		}
 
 		Exporter *exporter = event->exporter();
-		if (exporter)
-		{
-			exporter->saveDataSet(fq(tempPath), package, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-		} else {
-			throw runtime_error("No Exporter found!");
-		}
+		if (exporter)	exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		else			throw runtime_error("No Exporter found!");
 
 		if ( ! Utils::renameOverwrite(fq(tempPath), fq(path)))
 			throw runtime_error("File '" + fq(path) + "' is being used by another application.");
 
-		if (event->isOnlineNode())
-			QMetaObject::invokeMethod(_odm, "beginUploadFile", Qt::AutoConnection, Q_ARG(QString, event->path()), Q_ARG(QString, "asyncloader"), Q_ARG(QString, tq(package->id())), Q_ARG(QString, tq(package->initialMD5())));
+		if (event->isOnlineNode())	// Not really sure why we would need to do the invokeMethod here?
+			QMetaObject::invokeMethod(
+						_odm, "beginUploadFile", Qt::AutoConnection,
+						Q_ARG(QString, event->path()),
+						Q_ARG(QString, "asyncloader"),
+						Q_ARG(QString, tq(DataSetPackage::pkg()->id())),
+						Q_ARG(QString, tq(DataSetPackage::pkg()->initialMD5())));
 		else
 			event->setComplete();
 	}
@@ -209,31 +209,33 @@ void AsyncLoader::loadPackage(QString id)
 			extension = _loader.getExtension(path, extension); //Because it might still be ""...
 
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
-					_loader.syncPackage(_currentPackage, path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-			else	_loader.loadPackage(_currentPackage, path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+					_loader.syncPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+			else	_loader.loadPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
 
 			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);
 
 			if (dataNode != nullptr && calcMD5 != dataNode->md5().toLower())
 				throw runtime_error("The security check of the downloaded file has failed.\n\nLoading has been cancelled due to an MD5 mismatch.");
 
-			_currentPackage->setInitialMD5(fq(calcMD5));
+			DataSetPackage * pkg = DataSetPackage::pkg();
+
+			pkg->setInitialMD5(fq(calcMD5));
 
 			if (dataNode != nullptr)
 			{
-				_currentPackage->setId(fq(dataNode->nodeId()));
+				pkg->setId(fq(dataNode->nodeId()));
 				_currentEvent->setPath(dataNode->path());
 			}
 			else
-				_currentPackage->setId(path);
+				pkg->setId(path);
 
 			if (_currentEvent->type() != Utils::FileType::jasp)
 			{
-				_currentPackage->setDataFilePath(_currentEvent->path().toStdString());
-				_currentPackage->setDataFileTimestamp(_currentEvent->isOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toTime_t());
+				pkg->setDataFilePath(_currentEvent->path().toStdString());
+				pkg->setDataFileTimestamp(_currentEvent->isOnlineNode() ? 0 : QFileInfo(_currentEvent->path()).lastModified().toTime_t());
 			}
-			_currentPackage->setDataFileReadOnly(_currentEvent->isReadOnly());
-			_currentEvent->setDataFilePath(QString::fromStdString(_currentPackage->dataFilePath()));
+			pkg->setDataFileReadOnly(_currentEvent->isReadOnly());
+			_currentEvent->setDataFilePath(QString::fromStdString(pkg->dataFilePath()));
 			_currentEvent->setComplete();
 
 			if (dataNode != nullptr)
@@ -296,8 +298,8 @@ void AsyncLoader::uploadFileFinished(QString id)
 				_currentEvent->setPath(dataNode->path());
 			}
 
-			_currentPackage->setInitialMD5(fq(fileChecksum(tq(path), QCryptographicHash::Md5)));
-			_currentPackage->setId(dataNode != nullptr ? fq(dataNode->nodeId()) : path);
+			DataSetPackage::pkg()->setInitialMD5(fq(fileChecksum(tq(path), QCryptographicHash::Md5)));
+			DataSetPackage::pkg()->setId(dataNode != nullptr ? fq(dataNode->nodeId()) : path);
 
 			_currentEvent->setComplete();
 

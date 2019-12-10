@@ -25,9 +25,13 @@
 #include "utilities/qutils.h"
 #include "log.h"
 
+DynamicModules * DynamicModules::_singleton = nullptr;
 
 DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 {
+	if(_singleton) throw std::runtime_error("Can only instantiate DynamicModules once!");
+	_singleton = this;
+
 	connect(this, &DynamicModules::stopEngines, this, &DynamicModules::enginesStopped, Qt::QueuedConnection);
 
 	_modulesInstallDirectory = AppDirs::modulesDir().toStdWString();

@@ -33,6 +33,19 @@
 
 using namespace std;
 
+Analyses * Analyses::_singleton = nullptr;
+
+Analyses::Analyses()
+	: QAbstractListModel(DataSetPackage::pkg())
+{
+	if(_singleton) throw std::runtime_error("Can only instantiate single copy of Analyses!");
+	_singleton = this;
+
+	connect(this,					&Analyses::requestComputedColumnDestruction,	this,	&Analyses::dataSetColumnsChanged	, Qt::QueuedConnection	);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::dataSetChanged,				this,	&Analyses::dataSetChanged									);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this,	&Analyses::dataSetColumnsChanged							);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this,	&Analyses::dataSetColumnsChanged							);
+}
 
 void Analyses::_makeBackwardCompatible(RibbonModel* ribbonModel, Version &version, Json::Value &analysisData)
 {
@@ -94,7 +107,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	else
 	{
 		std::string title			= analysisData.get("title", "").asString();
-		auto *	analysisEntry		= _dynamicModules->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
+		auto *	analysisEntry		= DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
 				analysis			= create(analysisEntry, id, status, false, title, &optionsJson);
 		auto *	dynMod				= analysisEntry->dynamicModule();
 
@@ -111,7 +124,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 Analysis* Analyses::create(const QString &module, const QString &name, const QString &title, size_t id, const Version &version, Json::Value *options, Analysis::Status status, bool notifyAll)
 {
-	Analysis *analysis = new Analysis(this, id, module.toStdString(), name.toStdString(), title.toStdString(), version, options);
+	Analysis *analysis = new Analysis(id, module.toStdString(), name.toStdString(), title.toStdString(), version, options);
 	analysis->setStatus(status);
 	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
@@ -121,7 +134,7 @@ Analysis* Analyses::create(const QString &module, const QString &name, const QSt
 
 Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title, Json::Value *options)
 {
-	Analysis *analysis = new Analysis(this, id, analysisEntry, title, options);
+	Analysis *analysis = new Analysis(id, analysisEntry, title, options);
 
 	analysis->setStatus(status);
 	analysis->setResults(analysisEntry->getDefaultResults());
@@ -489,7 +502,7 @@ void Analyses::move(int fromIndex, int toIndex)
 
 void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisTitle, QString module)
 {
-	Modules::DynamicModule * dynamicModule = _dynamicModules->dynamicModule(module.toStdString());
+	Modules::DynamicModule * dynamicModule = DynamicModules::dynMods()->dynamicModule(module.toStdString());
 
 	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry((analysisTitle + "~" + analysisFunction).toStdString()));
 	else							create(module, analysisFunction, analysisTitle);
@@ -659,7 +672,7 @@ void Analyses::duplicateAnalysis(size_t id)
 	if(!get(id)) return;
 
 	Analysis	* original = get(id),
-				* analysis = new Analysis(this, ++_nextId, original);
+				* analysis = new Analysis(++_nextId, original);
 
 	storeAnalysis(analysis, analysis->id(), true);
 	bindAnalysisHandler(analysis);

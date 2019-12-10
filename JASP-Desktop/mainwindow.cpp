@@ -93,14 +93,15 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	makeAppleMenu(); //Doesnt do anything outside of magical apple land
 
+	//The order of these constructors is deliberate (up to some extent anyway). If you change the order you might find that stuff explodes randomly (although most likely during startup)
 	_loader					= new AsyncLoader(nullptr);
 	_preferences			= new PreferencesModel(this);
 	_package				= new DataSetPackage(this);
 	_dynamicModules			= new DynamicModules(this);
-	_analyses				= new Analyses(_package, _dynamicModules);
-	_engineSync				= new EngineSync(_analyses, _package, _dynamicModules, this);
-	_datasetTableModel		= new DataSetTableModel(_package);
-	_labelModel				= new LabelModel(_package);
+	_analyses				= new Analyses();
+	_engineSync				= new EngineSync(this);
+	_datasetTableModel		= new DataSetTableModel();
+	_labelModel				= new LabelModel();
 
 	initLog(); //initLog needs _preferences and _engineSync!
 
@@ -113,19 +114,17 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	_labelFilterGenerator	= new labelFilterGenerator(_labelModel, this);
 	_columnsModel			= new ColumnsModel(_datasetTableModel);
-	_computedColumnsModel	= new ComputedColumnsModel(_analyses, _package);
-	_filterModel			= new FilterModel(_package, _labelFilterGenerator);
-	_ribbonModel			= new RibbonModel(_dynamicModules, _preferences,
-									{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
-									{ "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics", "JAGS"});
+	_computedColumnsModel	= new ComputedColumnsModel();
+	_filterModel			= new FilterModel(_labelFilterGenerator);
+	_ribbonModel			= new RibbonModel(	{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
+												{ "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics", "JAGS"});
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
-	_fileMenu				= new FileMenu(this, _package);
+	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
-	_plotEditorModel		= new PlotEditorModel(_analyses);
+	_plotEditorModel		= new PlotEditorModel();
 	_columnTypesModel		= new ColumnTypesModel(this);
-	JaspTheme::setPreferencesModel(_preferences);
 
 	new MessageForwarder(this); //We do not need to store this
 
@@ -788,7 +787,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 			setWelcomePageVisible(false);
 
-			_loader->io(event, _package);
+			_loader->io(event);
 			showProgress();
 		}
 	}
@@ -808,7 +807,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		connectFileEventCompleted(event);
 
-		_loader->io(event, _package);
+		_loader->io(event);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
@@ -817,13 +816,13 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 		_resultsJsInterface->exportHTML();
 
-		_loader->io(event, _package);
+		_loader->io(event);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
 		connectFileEventCompleted(event);
-		_loader->io(event, _package);
+		_loader->io(event);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
@@ -832,7 +831,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			return;
 
 		connectFileEventCompleted(event);
-		_loader->io(event, _package);
+		_loader->io(event);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileClose)
@@ -1124,7 +1123,7 @@ void MainWindow::checkUsedModules()
 
 void MainWindow::matchComputedColumnsToAnalyses()
 {
-	for(ComputedColumn * col : *_package->computedColumnsPointer())
+	for(ComputedColumn * col : *ComputedColumns::singleton())
 		if(col->analysisId() != -1)
 			col->setAnalysis(_analyses->get(col->analysisId()));
 }
@@ -1353,7 +1352,7 @@ void MainWindow::startDataEditorHandler()
 		connect(event, &FileEvent::completed, this, &MainWindow::startDataEditorEventCompleted);
 		connect(event, &FileEvent::completed, _fileMenu, &FileMenu::setSyncFile);
 		event->setPath(path);
-		_loader->io(event, _package);
+		_loader->io(event);
 		showProgress();
 	}
 	else

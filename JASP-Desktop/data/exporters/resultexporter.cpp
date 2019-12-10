@@ -31,14 +31,14 @@ ResultExporter::ResultExporter()
 #endif
 }
 
-void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback)
+void ResultExporter::saveDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
 {
 
 	int maxSleepTime = 5000;
 	int sleepTime = 100;
 	int delay = 0;
 
-	while (package->isReady() == false)
+	while (DataSetPackage::pkg()->isReady() == false)
 	{
 		if (delay > maxSleepTime)
 			break;
@@ -50,7 +50,7 @@ void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* packag
 
 	if (_currentFileType == Utils::pdf)
 	{
-		QString htmlContent = QString::fromStdString(package->analysesHTML());
+		QString htmlContent = QString::fromStdString(DataSetPackage::pkg()->analysesHTML());
 
 		//Next code could be a hack to show plots in pdf
 		//QUrl url = QUrl::fromLocalFile(QDir::current().absoluteFilePath("htmloutput.html"));
@@ -72,8 +72,7 @@ void ResultExporter::saveDataSet(const std::string &path, DataSetPackage* packag
 	{
 		boost::nowide::ofstream outfile(path.c_str(), std::ios::out);
 
-		outfile << package->analysesHTML();
-		outfile.flush();
+		outfile << DataSetPackage::pkg()->analysesHTML() << std::flush;
 		outfile.close();
 	}
 

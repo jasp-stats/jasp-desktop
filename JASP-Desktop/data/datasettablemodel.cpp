@@ -18,9 +18,9 @@
 
 #include "datasettablemodel.h"
 
-DataSetTableModel::DataSetTableModel(DataSetPackage * package) : DataSetTableProxy(package, parIdxType::data)
+DataSetTableModel::DataSetTableModel() : DataSetTableProxy(parIdxType::data)
 {
-	connect(_package,	&DataSetPackage::columnsFilteredCountChanged,	this, &DataSetTableModel::columnsFilteredCountChanged	);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::columnsFilteredCountChanged,	this, &DataSetTableModel::columnsFilteredCountChanged	);
 	//connect(this,		&DataSetTableModel::dataChanged,				this, &DataSetTableModel::onDataChanged,				Qt::QueuedConnection);
 
 	setFilterRole(int(DataSetPackage::specialRoles::filter));
@@ -41,5 +41,5 @@ void DataSetTableModel::setShowInactive(bool showInactive)
 
 bool DataSetTableModel::filterAcceptsRow(int source_row, const QModelIndex & source_parent)	const
 {
-	return _showInactive || _package->getRowFilter(source_row);
+	return _showInactive || DataSetPackage::pkg()->getRowFilter(source_row);
 }

@@ -114,17 +114,17 @@ void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
 	switch(col->getColumnType())
 	{
 	case columnType::scale:
-		_packageData->initColumnAsScale(colId, col->name(), col->doubles());
+		DataSetPackage::pkg()->initColumnAsScale(colId, col->name(), col->doubles());
 		break;
 
 	case columnType::ordinal:
 	case columnType::nominal:
-		if(col->hasLabels())	_packageData->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(), col->intLabels(),	col->getColumnType() == columnType::ordinal);
-		else					_packageData->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(),						col->getColumnType() == columnType::ordinal);
+		if(col->hasLabels())	DataSetPackage::pkg()->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(), col->intLabels(),	col->getColumnType() == columnType::ordinal);
+		else					DataSetPackage::pkg()->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(),						col->getColumnType() == columnType::ordinal);
 		break;
 
 	case columnType::nominalText:
-		_packageData->storeInEmptyValues(col->name(), _packageData->initColumnAsNominalText(colId, col->name(), col->strings(), col->strLabels()));
+		DataSetPackage::pkg()->storeInEmptyValues(col->name(), DataSetPackage::pkg()->initColumnAsNominalText(colId, col->name(), col->strings(), col->strLabels()));
 		break;
 
 	default:

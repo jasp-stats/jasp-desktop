@@ -20,9 +20,9 @@ class ComputedColumnsModel : public QObject
 	Q_PROPERTY(QString	showThisColumn				READ showThisColumn					WRITE setShowThisColumn					NOTIFY showThisColumnChanged			)
 
 public:
-	explicit	ComputedColumnsModel(Analyses * analyses, DataSetPackage * dataSetPackage);
+	explicit	ComputedColumnsModel();
 
-				bool	datasetLoaded()					{ return _package->hasDataSet(); }
+				bool	datasetLoaded()					{ return DataSetPackage::pkg()->hasDataSet(); }
 				QString	computeColumnRCode();
 				QString computeColumnRCodeCommentStripped();
 				QString computeColumnError();
@@ -33,7 +33,6 @@ public:
 				bool	computeColumnUsesRCode();
 
 				void	setComputeColumnRCode(QString newCode);
-				void	setDataSetPackage(DataSetPackage * package);
 				void	setComputeColumnNameSelected(QString newName);
 				void	setComputeColumnJson(QString newJson);
 
@@ -43,7 +42,7 @@ public:
 	Q_INVOKABLE void	sendCode(QString code);
 	Q_INVOKABLE void	sendCode(QString code, QString json);
 
-	Q_INVOKABLE bool	isColumnNameFree(QString name)						{ return _package->isColumnNameFree(name.toStdString()); }
+	Q_INVOKABLE bool	isColumnNameFree(QString name)						{ return DataSetPackage::pkg()->isColumnNameFree(name.toStdString()); }
 
 				ComputedColumn*		createComputedColumn(QString name, int columnType, ComputedColumn::computedType computeType, Analysis * analysis = nullptr);
 	Q_INVOKABLE void				createComputedColumn(QString name, int columnType, bool jsonPlease)									{ createComputedColumn(name, columnType, jsonPlease ? ComputedColumn::computedType::constructorCode : ComputedColumn::computedType::rCode);	}
@@ -51,12 +50,13 @@ public:
 				bool				areLoopDependenciesOk(std::string columnName);
 				bool				areLoopDependenciesOk(std::string columnName, std::string code);
 
-	Q_INVOKABLE bool	showAnalysisFormForColumn(QString columnName);
+	Q_INVOKABLE bool				showAnalysisFormForColumn(QString columnName);
+
+				ComputedColumns *	computedColumns() { return ComputedColumns::singleton(); }
 
 
 private:
 				void				validate(QString name);
-				void				setAnalyses(Analyses * analyses)				{ _analyses = analyses; }
 				void				emitHeaderDataChanged(QString name);
 				void				revertToDefaultInvalidatedColumns();
 				void				checkForDependentAnalyses(std::string columnName);
@@ -64,8 +64,6 @@ private:
 				void				invalidateDependents(std::string columnName);
 				void				checkForDependentColumnsToBeSent(std::string columnName, bool refreshMe = false);
 				void				emitSendComputeCode(QString columnName, QString code, columnType colType);
-				ComputedColumns	*	computedColumns() { return _package->computedColumnsPointer(); }
-
 
 signals:
 				void	datasetLoadedChanged();
@@ -100,8 +98,6 @@ private:
 	QString					_currentlySelectedName	= "",
 							_lastCreatedColumn		= "",
 							_showThisColumn			= "";
-	DataSetPackage		*	_package				= nullptr;
-	Analyses			*	_analyses				= nullptr;
 };
 
 #endif // COMPUTEDCOLUMNSCODEITEM_H

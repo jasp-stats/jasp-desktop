@@ -52,9 +52,9 @@ public:
 	void setStatus(Status status);
 	static std::string statusToString(Status status);
 
-	Analysis(Analyses* analyses, size_t id, Analysis * duplicateMe);
-	Analysis(Analyses* analyses, size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
-	Analysis(Analyses* analyses, size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", Json::Value *data = nullptr);
+	Analysis(size_t id, Analysis * duplicateMe);
+	Analysis(size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
+	Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", Json::Value *data = nullptr);
 
 	virtual ~Analysis();
 
@@ -106,7 +106,6 @@ public:
 			int					revision()			const	{ return _revision;							}
 			bool				isRefreshBlocked()	const	{ return _refreshBlocked;					}
 			QString				helpFile()			const	{ return _helpFile;							}
-			DataSetPackage	*	getDataSetPackage()	const;
 	const	Json::Value		&	imgOptions()		const	{ return _imgOptions;						}
 	const	Json::Value		&	imgResults()		const	{ return _imgResults;						}
 	Modules::DynamicModule	*	dynamicModule()		const	{ return _dynamicModule;					}
@@ -221,7 +220,6 @@ private:
 
 	Modules::AnalysisEntry*	_moduleData		= nullptr;
 	Modules::DynamicModule* _dynamicModule	= nullptr;
-	Analyses*				_analyses		= nullptr;
 	AnalysisForm*			_analysisForm	= nullptr;
 
 	std::string				_codedReferenceToAnalysisEntry = "";

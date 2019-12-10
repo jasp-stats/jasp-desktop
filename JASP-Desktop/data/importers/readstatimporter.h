@@ -10,9 +10,9 @@ class ReadStatImporter : public Importer
 {
 
 public:
-	ReadStatImporter(DataSetPackage *packageData, std::string ext) : Importer(packageData), _ext(ext)
+	ReadStatImporter(std::string ext) : Importer(), _ext(ext)
 	{
-		_packageData->setIsArchive(false);
+		DataSetPackage::pkg()->setIsArchive(false);
 
 		if(_ext.size() == 0)	throw std::runtime_error("ReadStatImporter NEEDS to know the extension!");
 		if(_ext[0] == '.')		_ext = _ext.substr(1);

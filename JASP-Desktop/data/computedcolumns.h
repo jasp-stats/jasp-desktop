@@ -4,19 +4,21 @@
 #include "columntype.h"
 #include "computedcolumn.h"
 
-class DataSetPackage;
-
 class ComputedColumns
 {
 public:
+	static ComputedColumns * singleton() { return _singleton; }
+	static ComputedColumns * _singleton;
+
 	typedef std::vector<ComputedColumn*>::iterator iterator;
 
-						ComputedColumns(DataSetPackage * package = NULL) { setPackage(package); }
+
+	void				reset();
+						ComputedColumns() { if(_singleton) throw std::runtime_error("ComputedColumns can be instantiated only once!"); _singleton = this; }
 	ComputedColumn *	createComputedColumn(std::string name, columnType type, ComputedColumn::computedType desiredType);
 	void				createColumn(std::string name, columnType type);
 	void				removeComputedColumn(std::string name);
 	void				refreshColumnPointers();
-	void				setPackage(DataSetPackage * package) { _package = package; }
 	void				findAllColumnNames();
 
 	bool				setConstructorJson(std::string name, std::string json);
@@ -49,8 +51,6 @@ public:
 private:
 
 	std::vector<ComputedColumn*>	_computedColumns;
-	DataSetPackage*					_package = nullptr;
-
 };
 
 #endif // COMPUTEDCOLUMNS_H

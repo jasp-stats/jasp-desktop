@@ -40,21 +40,21 @@
 using namespace boost::interprocess;
 
 
-EngineSync::EngineSync(Analyses *analyses, DataSetPackage *package, DynamicModules *dynamicModules, QObject *parent = 0)
-	: QObject(parent), _analyses(analyses), _package(package), _dynamicModules(dynamicModules)
+EngineSync::EngineSync(QObject *parent)
+	: QObject(parent)
 {
-	connect(_analyses,			&Analyses::sendRScript,								this,					&EngineSync::sendRCode							);
-	connect(this,				&EngineSync::moduleLoadingFailed,					_dynamicModules,		&DynamicModules::loadingFailed					);
-	connect(this,				&EngineSync::moduleLoadingSucceeded,				_dynamicModules,		&DynamicModules::loadingSucceeded				);
-	connect(this,				&EngineSync::moduleInstallationFailed,				_dynamicModules,		&DynamicModules::installationPackagesFailed		);
-	connect(this,				&EngineSync::moduleInstallationSucceeded,			_dynamicModules,		&DynamicModules::installationPackagesSucceeded	);
-	connect(_dynamicModules,	&DynamicModules::stopEngines,						this,					&EngineSync::stopEngines						);
-	connect(_dynamicModules,	&DynamicModules::restartEngines,					this,					&EngineSync::restartEngines						);
+	connect(Analyses::analyses(),		&Analyses::sendRScript,								this,						&EngineSync::sendRCode							);
+	connect(this,						&EngineSync::moduleLoadingFailed,					DynamicModules::dynMods(),	&DynamicModules::loadingFailed					);
+	connect(this,						&EngineSync::moduleLoadingSucceeded,				DynamicModules::dynMods(),	&DynamicModules::loadingSucceeded				);
+	connect(this,						&EngineSync::moduleInstallationFailed,				DynamicModules::dynMods(),	&DynamicModules::installationPackagesFailed		);
+	connect(this,						&EngineSync::moduleInstallationSucceeded,			DynamicModules::dynMods(),	&DynamicModules::installationPackagesSucceeded	);
+	connect(DynamicModules::dynMods(),	&DynamicModules::stopEngines,						this,						&EngineSync::stopEngines						);
+	connect(DynamicModules::dynMods(),	&DynamicModules::restartEngines,					this,						&EngineSync::restartEngines						);
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, &EngineSync::deleteOrphanedTempFiles);
 
-	_package->setEngineSync(this);
+	DataSetPackage::pkg()->setEngineSync(this);
 }
 
 EngineSync::~EngineSync()
@@ -75,6 +75,8 @@ EngineSync::~EngineSync()
 
 void EngineSync::start(int ppi)
 {
+	JASPTIMER_SCOPE(EngineSync::start);
+
 	if (_engineStarted)
 		return;
 
@@ -92,26 +94,26 @@ void EngineSync::start(int ppi)
 		{
 			_engines[i] = new EngineRepresentation(new IPCChannel(_memoryName, i), startSlaveProcess(i), this);
 
-			connect(_engines[i],	&EngineRepresentation::rCodeReturned,					_analyses,		&Analyses::rCodeReturned												);
-			connect(_engines[i],	&EngineRepresentation::engineTerminated,				this,			&EngineSync::engineTerminated											);
-			connect(_engines[i],	&EngineRepresentation::processNewFilterResult,			this,			&EngineSync::processNewFilterResult										);
-			connect(_engines[i],	&EngineRepresentation::filterDone,						this,			&EngineSync::filterDone													);
-			connect(_engines[i],	&EngineRepresentation::processFilterErrorMsg,			this,			&EngineSync::processFilterErrorMsg										);
-			connect(_engines[i],	&EngineRepresentation::columnDataTypeChanged,			this,			&EngineSync::columnDataTypeChanged,				Qt::QueuedConnection	);
-			connect(_engines[i],	&EngineRepresentation::computeColumnSucceeded,			this,			&EngineSync::computeColumnSucceeded,			Qt::QueuedConnection	);
-			connect(_engines[i],	&EngineRepresentation::computeColumnFailed,				this,			&EngineSync::computeColumnFailed,				Qt::QueuedConnection	);
-			connect(_engines[i],	&EngineRepresentation::moduleLoadingFailed,				this,			&EngineSync::moduleLoadingFailedHandler									);
-			connect(_engines[i],	&EngineRepresentation::moduleLoadingSucceeded,			this,			&EngineSync::moduleLoadingSucceededHandler								);
-			connect(_engines[i],	&EngineRepresentation::moduleInstallationFailed,		this,			&EngineSync::moduleInstallationFailed									);
-			connect(_engines[i],	&EngineRepresentation::moduleInstallationSucceeded,		this,			&EngineSync::moduleInstallationSucceeded								);
-			connect(_engines[i],	&EngineRepresentation::moduleUnloadingFinished,			this,			&EngineSync::moduleUnloadingFinishedHandler								);
-			connect(_engines[i],	&EngineRepresentation::moduleUninstallingFinished,		this,			&EngineSync::moduleUninstallingFinished									);
-			connect(_engines[i],	&EngineRepresentation::logCfgReplyReceived,				this,			&EngineSync::logCfgReplyReceived										);
-			connect(_engines[i],	&EngineRepresentation::plotEditorRefresh,				this,			&EngineSync::plotEditorRefresh											);
-			connect(_engines[i],	&EngineRepresentation::requestEngineRestart,			this,			&EngineSync::restartEngineAfterCrash												);
-			connect(this,			&EngineSync::ppiChanged,								_engines[i],	&EngineRepresentation::ppiChanged										);
-			connect(this,			&EngineSync::imageBackgroundChanged,					_engines[i],	&EngineRepresentation::imageBackgroundChanged							);
-			connect(_analyses,		&Analyses::analysisRemoved,								_engines[i],	&EngineRepresentation::analysisRemoved									);
+			connect(_engines[i],			&EngineRepresentation::rCodeReturned,					Analyses::analyses(),	&Analyses::rCodeReturned												);
+			connect(_engines[i],			&EngineRepresentation::engineTerminated,				this,					&EngineSync::engineTerminated											);
+			connect(_engines[i],			&EngineRepresentation::processNewFilterResult,			this,					&EngineSync::processNewFilterResult										);
+			connect(_engines[i],			&EngineRepresentation::filterDone,						this,					&EngineSync::filterDone													);
+			connect(_engines[i],			&EngineRepresentation::processFilterErrorMsg,			this,					&EngineSync::processFilterErrorMsg										);
+			connect(_engines[i],			&EngineRepresentation::columnDataTypeChanged,			this,					&EngineSync::columnDataTypeChanged,				Qt::QueuedConnection	);
+			connect(_engines[i],			&EngineRepresentation::computeColumnSucceeded,			this,					&EngineSync::computeColumnSucceeded,			Qt::QueuedConnection	);
+			connect(_engines[i],			&EngineRepresentation::computeColumnFailed,				this,					&EngineSync::computeColumnFailed,				Qt::QueuedConnection	);
+			connect(_engines[i],			&EngineRepresentation::moduleLoadingFailed,				this,					&EngineSync::moduleLoadingFailedHandler									);
+			connect(_engines[i],			&EngineRepresentation::moduleLoadingSucceeded,			this,					&EngineSync::moduleLoadingSucceededHandler								);
+			connect(_engines[i],			&EngineRepresentation::moduleInstallationFailed,		this,					&EngineSync::moduleInstallationFailed									);
+			connect(_engines[i],			&EngineRepresentation::moduleInstallationSucceeded,		this,					&EngineSync::moduleInstallationSucceeded								);
+			connect(_engines[i],			&EngineRepresentation::moduleUnloadingFinished,			this,					&EngineSync::moduleUnloadingFinishedHandler								);
+			connect(_engines[i],			&EngineRepresentation::moduleUninstallingFinished,		this,					&EngineSync::moduleUninstallingFinished									);
+			connect(_engines[i],			&EngineRepresentation::logCfgReplyReceived,				this,					&EngineSync::logCfgReplyReceived										);
+			connect(_engines[i],			&EngineRepresentation::plotEditorRefresh,				this,					&EngineSync::plotEditorRefresh											);
+			connect(_engines[i],			&EngineRepresentation::requestEngineRestart,			this,					&EngineSync::restartEngineAfterCrash									);
+			connect(this,					&EngineSync::ppiChanged,								_engines[i],			&EngineRepresentation::ppiChanged										);
+			connect(this,					&EngineSync::imageBackgroundChanged,					_engines[i],			&EngineRepresentation::imageBackgroundChanged							);
+			connect(Analyses::analyses(),	&Analyses::analysisRemoved,								_engines[i],			&EngineRepresentation::analysisRemoved									);
 
 		}
 	}
@@ -146,7 +148,7 @@ void EngineSync::restartEngines()
 		Log::log() << "restarted engine " << i << " but should still reload any active (dynamic) modules!"<< std::endl;
 	}
 
-	setModuleWideCastVars(_dynamicModules->getJsonForReloadingActiveModules());
+	setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
 	logCfgRequest();
 
 	_engineStarted = true;
@@ -157,7 +159,7 @@ void EngineSync::restartEngineAfterCrash(int nr)
 	EngineRepresentation * eng = _engines[size_t(nr)];
 
 	eng->restartEngine(startSlaveProcess(nr));
-	setModuleWideCastVars(_dynamicModules->getJsonForReloadingActiveModules());
+	setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
 }
 
 void EngineSync::process()
@@ -271,13 +273,13 @@ void EngineSync::processScriptQueue()
 
 void EngineSync::processDynamicModules()
 {
-	if(!amICastingAModuleRequestWide() && (_dynamicModules->aModuleNeedsToBeLoadedInR() || _dynamicModules->aModuleNeedsToBeUnloadedFromR()))
+	if(!amICastingAModuleRequestWide() && (DynamicModules::dynMods()->aModuleNeedsToBeLoadedInR() || DynamicModules::dynMods()->aModuleNeedsToBeUnloadedFromR()))
 	{
-		if(_dynamicModules->aModuleNeedsToBeLoadedInR())			setModuleWideCastVars(_dynamicModules->getJsonForPackageLoadingRequest());
-		else if(_dynamicModules->aModuleNeedsToBeUnloadedFromR())	setModuleWideCastVars(_dynamicModules->getJsonForPackageUnloadingRequest());
+		if(DynamicModules::dynMods()->aModuleNeedsToBeLoadedInR())			setModuleWideCastVars(DynamicModules::dynMods()->getJsonForPackageLoadingRequest());
+		else if(DynamicModules::dynMods()->aModuleNeedsToBeUnloadedFromR())	setModuleWideCastVars(DynamicModules::dynMods()->getJsonForPackageUnloadingRequest());
 	}
 
-	if	(!_dynamicModules->aModuleNeedsPackagesInstalled() && _requestWideCastModuleJson.isNull())
+	if	(!DynamicModules::dynMods()->aModuleNeedsPackagesInstalled() && _requestWideCastModuleJson.isNull())
 		return;
 
 
@@ -287,7 +289,7 @@ void EngineSync::processDynamicModules()
 		{
 			if(engine->isIdle())
 			{
-				if		(_dynamicModules->aModuleNeedsPackagesInstalled())															engine->runModuleRequestOnProcess(_dynamicModules->getJsonForPackageInstallationRequest());
+				if		(DynamicModules::dynMods()->aModuleNeedsPackagesInstalled())															engine->runModuleRequestOnProcess(DynamicModules::dynMods()->getJsonForPackageInstallationRequest());
 				else if	(!_requestWideCastModuleJson.isNull() && _requestWideCastModuleResults.count(engine->channelNumber()) == 0)	engine->runModuleRequestOnProcess(_requestWideCastModuleJson);
 			}
 		}
@@ -311,7 +313,7 @@ void EngineSync::ProcessAnalysisRequests()
 	for(auto engine : _engines)
 		engine->handleRunningAnalysisStatusChanges();
 
-	_analyses->applyToSome([&](Analysis * analysis)
+	Analyses::analyses()->applyToSome([&](Analysis * analysis)
 	{
 		if (analysis == nullptr || analysis->isWaitingForModule())
 			return true;
@@ -344,6 +346,7 @@ void EngineSync::ProcessAnalysisRequests()
 
 QProcess * EngineSync::startSlaveProcess(int no)
 {
+	JASPTIMER_SCOPE(EngineSync::startSlaveProcess);
 	QDir programDir			= QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir();
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 	QString engineExe		= QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absoluteFilePath("JASPEngine");
@@ -450,7 +453,6 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	});
 #endif
 
-	EngineSync * engSync = this;
 	slave->start(engineExe, args);
 
 	return slave;

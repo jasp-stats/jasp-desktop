@@ -46,21 +46,21 @@ string DataSetLoader::getExtension(const string &locator, const string &extensio
 	return ext;
 }
 
-Importer* DataSetLoader::getImporter(DataSetPackage *packageData, const string & locator, const string &ext)
+Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 {
 	if (boost::iequals(ext,".csv") || boost::iequals(ext,".txt") ||
-		boost::iequals(ext,".tsv"))									return new CSVImporter(packageData);
-	else if(boost::iequals(ext,".ods"))								return new ODSImporter(packageData);
-	else if(ReadStatImporter::extSupported(ext))					return new ReadStatImporter(packageData, ext);
+		boost::iequals(ext,".tsv"))									return new CSVImporter();
+	else if(boost::iequals(ext,".ods"))								return new ODSImporter();
+	else if(ReadStatImporter::extSupported(ext))					return new ReadStatImporter(ext);
 
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }
 
-void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+void DataSetLoader::loadPackage(const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
 {
 	JASPTIMER_RESUME(DataSetLoader::loadPackage);
 
-	Importer* importer = getImporter(packageData, locator, extension);
+	Importer* importer = getImporter(locator, extension);
 
 	if (importer)
 	{
@@ -68,16 +68,16 @@ void DataSetLoader::loadPackage(DataSetPackage *packageData, const string &locat
 		delete importer;
 	}
 	else if(extension == ".jasp" || extension == "jasp")
-		JASPImporter::loadDataSet(packageData, locator, progress);
+		JASPImporter::loadDataSet(locator, progress);
 	else
 		throw std::runtime_error("JASP does not support loading the file-type \"" + extension + '"');
 
 	JASPTIMER_STOP(DataSetLoader::loadPackage);
 }
 
-void DataSetLoader::syncPackage(DataSetPackage *packageData, const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+void DataSetLoader::syncPackage(const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
 {
-	Importer* importer = getImporter(packageData, locator, extension);
+	Importer* importer = getImporter(locator, extension);
 
 	if (importer)
 	{

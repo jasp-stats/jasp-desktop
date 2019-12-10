@@ -8,8 +8,8 @@
 namespace PlotEditor
 {
 
-PlotEditorModel::PlotEditorModel(Analyses * analyses)
-	: QObject(analyses), _analyses(analyses)
+PlotEditorModel::PlotEditorModel()
+	: QObject(Analyses::analyses())
 {
 	_xAxis = new AxisModel(this, true);
 	_yAxis = new AxisModel(this, false);
@@ -21,7 +21,7 @@ PlotEditorModel::PlotEditorModel(Analyses * analyses)
 void PlotEditorModel::showPlotEditor(int id, QString options)
 {
 	_analysisId	= id;
-	_analysis	= _analyses->get(id);
+	_analysis	= Analyses::analyses()->get(id);
 	_imgOptions	= Json::objectValue;
 
 	Json::Reader().parse(fq(options), _imgOptions);

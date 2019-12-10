@@ -1,15 +1,24 @@
 #include "computedcolumns.h"
 #include "datasetpackage.h"
 
+ComputedColumns * ComputedColumns::_singleton = nullptr;
+
+void ComputedColumns::reset()
+{
+	for(ComputedColumn * col : _computedColumns)
+		delete col;
+	_computedColumns.clear();
+}
+
 void ComputedColumns::setPackageModified()
 {
-	if(_package != nullptr && _package->isLoaded())
-		_package->setModified(true);
+	if(DataSetPackage::pkg() != nullptr && DataSetPackage::pkg()->isLoaded())
+		DataSetPackage::pkg()->setModified(true);
 }
 
 ComputedColumn * ComputedColumns::createComputedColumn(std::string name, columnType type, ComputedColumn::computedType desiredType)
 {
-	_package->createColumn(name, type);
+	DataSetPackage::pkg()->createColumn(name, type);
 	ComputedColumn	* newComputedColumn = new ComputedColumn(name, &_computedColumns, desiredType);
 
 	_computedColumns.push_back(newComputedColumn);
@@ -22,7 +31,7 @@ ComputedColumn * ComputedColumns::createComputedColumn(std::string name, columnT
 
 void ComputedColumns::createColumn(std::string name, columnType type)
 {
-	_package->createColumn(name, type);
+	DataSetPackage::pkg()->createColumn(name, type);
 	findAllColumnNames();
 	setPackageModified();
 }
@@ -39,7 +48,7 @@ void ComputedColumns::removeComputedColumn(std::string name)
 
 	setPackageModified();
 
-	_package->removeColumn(name);
+	DataSetPackage::pkg()->removeColumn(name);
 	findAllColumnNames();
 }
 
@@ -139,7 +148,7 @@ std::string ComputedColumns::getError(std::string name)
 
 void ComputedColumns::findAllColumnNames()
 {
-	ComputedColumn::setAllColumnNames(_package->getColumnNames());
+	ComputedColumn::setAllColumnNames(DataSetPackage::pkg()->getColumnNames());
 }
 
 Json::Value	ComputedColumns::convertToJson()

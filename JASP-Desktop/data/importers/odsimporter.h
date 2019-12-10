@@ -19,7 +19,6 @@
 #define __ODSIMPORTER_H_
 
 #include "importer.h"
-//#include "ods/odsdata.h"
 #include "ods/odsimportdataset.h"
 #include <boost/function.hpp>
 
@@ -33,7 +32,7 @@ class ODSImportDataSet;
 class ODSImporter : public Importer
 {
 public:
-	ODSImporter(DataSetPackage *packageData)  : Importer(packageData) {	packageData->setIsArchive(false); }
+	ODSImporter()  : Importer() {	DataSetPackage::pkg()->setIsArchive(false); }
 	virtual ~ODSImporter() {}
 
 protected:

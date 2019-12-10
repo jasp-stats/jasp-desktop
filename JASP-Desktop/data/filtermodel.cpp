@@ -1,13 +1,13 @@
 #include "filtermodel.h"
 #include "utilities/jsonutilities.h"
 
-FilterModel::FilterModel(DataSetPackage * package, labelFilterGenerator * labelFilterGenerator)
-	: QObject(package), _package(package), _labelFilterGenerator(labelFilterGenerator)
+FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)
+	: QObject(DataSetPackage::pkg()), _labelFilterGenerator(labelFilterGenerator)
 {
 	reset();
 	connect(this,		&FilterModel::rFilterChanged,	this, &FilterModel::rescanRFilterForColumns	);
-	connect(_package,	&DataSetPackage::modelReset,	this, &FilterModel::dataSetPackageResetDone	);
-	connect(_package,	&DataSetPackage::modelInit,		this, &FilterModel::modelInit				);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,	this, &FilterModel::dataSetPackageResetDone	);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::modelInit,		this, &FilterModel::modelInit				);
 }
 
 void FilterModel::reset()
@@ -16,25 +16,25 @@ void FilterModel::reset()
 	setConstructedJSON(	DEFAULT_FILTER_JSON	);
 	_setRFilter(		DEFAULT_FILTER		);
 
-	if(_package->rowCount() > 0)
+	if(DataSetPackage::pkg()->rowCount() > 0)
 		sendGeneratedAndRFilter();
 }
 
 void FilterModel::dataSetPackageResetDone()
 {
 	_setGeneratedFilter(tq(_labelFilterGenerator->generateFilter())			);
-	setConstructedJSON(	tq(_package				->filterConstructorJson())	);
-	_setRFilter(		tq(_package				->dataFilter())				);
+	setConstructedJSON(	tq(DataSetPackage::pkg()				->filterConstructorJson())	);
+	_setRFilter(		tq(DataSetPackage::pkg()				->dataFilter())				);
 
 
 }
 
 void FilterModel::modelInit()
 {
-	if(!_package->isArchive() || _package->filterShouldRunInit()) //Either this wasn't a JASP file (archive) and we need to run the filter after loading, or it *is* a JASP file but it is old (<0.11) and doesn't have filterVector stored in it yet.
+	if(!DataSetPackage::pkg()->isArchive() || DataSetPackage::pkg()->filterShouldRunInit()) //Either this wasn't a JASP file (archive) and we need to run the filter after loading, or it *is* a JASP file but it is old (<0.11) and doesn't have filterVector stored in it yet.
 		sendGeneratedAndRFilter();
 
-	_package->setFilterShouldRunInit(true); //Make sure next time we come here (because of computed columns or something) we do actually run the filter
+	DataSetPackage::pkg()->setFilterShouldRunInit(true); //Make sure next time we come here (because of computed columns or something) we do actually run the filter
 }
 
 void FilterModel::setRFilter(QString newRFilter)
@@ -83,8 +83,8 @@ void FilterModel::setConstructedJSON(QString newConstructedJSON)
 		emit constructedJSONChanged();
 	}
 
-	if(_package != nullptr)
-		_package->setFilterConstructorJson(newConstructedJSON.toStdString());
+	if(DataSetPackage::pkg() != nullptr)
+		DataSetPackage::pkg()->setFilterConstructorJson(newConstructedJSON.toStdString());
 }
 
 void FilterModel::setConstructedR(QString newConstructedR)
@@ -122,7 +122,7 @@ void FilterModel::processFilterResult(std::vector<bool> filterResult, int reques
 		return;
 
 	//store the filter that was last used and actually gave results and those results:
-	if(_package->setFilterData(_rFilter.toStdString(), filterResult))
+	if(DataSetPackage::pkg()->setFilterData(_rFilter.toStdString(), filterResult))
 	{
 		refreshAllAnalyses();
 		emit filterUpdated();
@@ -145,14 +145,14 @@ void FilterModel::sendGeneratedAndRFilter()
 
 void FilterModel::updateStatusBar()
 {
-	if(!_package->hasDataSet())
+	if(!DataSetPackage::pkg()->hasDataSet())
 	{
 		setStatusBarText("No data loaded!");
 		return;
 	}
 
-	int		TotalCount			= _package->rowCount(),
-			TotalThroughFilter	= _package->filteredRowCount();
+	int		TotalCount			= DataSetPackage::pkg()->rowCount(),
+			TotalThroughFilter	= DataSetPackage::pkg()->filteredRowCount();
 	double	PercentageThrough	= 100.0 * ((double)TotalThroughFilter) / ((double)TotalCount);
 
 	std::stringstream ss;

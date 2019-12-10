@@ -173,7 +173,7 @@ public:
 	static void setCurrentTheme(JaspTheme * theme);
 	static void setCurrentThemeFromName(QString name);
 
-	float				uiScale()							const	{ return _preferences->uiScale(); }
+	float				uiScale()							const	{ return PreferencesModel::prefs()->uiScale(); }
 	float				ribbonScaleHovered()				const	{ return _ribbonScaleHovered; }
 	QColor				white()								const	{ return _white; }
 	QColor				whiteBroken()						const	{ return _whiteBroken; }
@@ -281,7 +281,7 @@ public:
 	theme_sizeType		menuItemHeight()					const	{ return _menuItemHeight * uiScale(); }
 	theme_sizeType		menuGroupTitleHeight()				const	{ return _menuGroupTitleHeight * uiScale(); }
 	theme_sizeType		menuHeaderHeight()					const	{ return _menuHeaderHeight * uiScale(); }
-	float				maximumFlickVelocity()				const	{ return _preferences->maxFlickVelocity(); }
+	float				maximumFlickVelocity()				const	{ return PreferencesModel::prefs()->maxFlickVelocity(); }
 	int					hoverTime()							const	{ return _hoverTime; }
 	int					fileMenuSlideDuration()				const	{ return _fileMenuSlideDuration; }
 	int					toolTipDelay()						const	{ return _toolTipDelay; }
@@ -542,13 +542,10 @@ public slots:
 	void setIconPath(QString iconPath);
 	void setThemeName(QString themeName);
 
-	static void setPreferencesModel(PreferencesModel * preferences) { _preferences = preferences; }
-
 private:
 	void connectSizeDistancesToUiScaleChanged();
 
 private:
-	static PreferencesModel * _preferences;
 	static JaspTheme		* _currentTheme;
 
 	float				_ribbonScaleHovered;

@@ -59,7 +59,7 @@ public:
 
 	Q_ENUM(FileMenuListItemType)
 
-	explicit FileMenu(QObject *parent = nullptr, DataSetPackage* package = nullptr);
+	explicit FileMenu(QObject *parent = nullptr);
 	virtual ~FileMenu() {}
 	
 
@@ -146,7 +146,6 @@ private:
 	bool							_currentFileReadOnly		= false,
 									_visible					= false;
 	ActionButtons::FileOperation	_fileoperation				= ActionButtons::None;
-	DataSetPackage*					_package					= nullptr;
 	MainWindow*						_mainWindow					= nullptr;
 };
 

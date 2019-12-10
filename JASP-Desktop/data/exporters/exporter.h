@@ -30,20 +30,20 @@
 class Exporter
 {
 protected:
-	Utils::FileType _defaultFileType;
-	Utils::FileTypeVector _allowedFileTypes;
-	Utils::FileType _currentFileType;
+	Utils::FileType			_defaultFileType;
+	Utils::FileTypeVector	_allowedFileTypes;
+	Utils::FileType			_currentFileType;
 	Exporter();
 
 public:
 
 	virtual ~Exporter();
-	virtual void saveDataSet(const std::string &path, DataSetPackage* package, boost::function<void (const std::string &, int)> progressCallback) = 0;
+	virtual void saveDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback) = 0;
 
-	Utils::FileType getDefaultFileType();
-	bool isFileTypeAllowed(Utils::FileType filetype);
-	Utils::FileTypeVector getAllowedFileTypes();
-	bool setFileType(Utils::FileType filetype);
+	Utils::FileType			getDefaultFileType();
+	Utils::FileTypeVector	getAllowedFileTypes();
+	bool					isFileTypeAllowed(Utils::FileType filetype);
+	bool					setFileType(Utils::FileType filetype);
 };
 
 #endif // EXPORTER_H

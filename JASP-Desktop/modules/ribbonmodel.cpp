@@ -21,8 +21,8 @@
 #include "dirs.h"
 #include "log.h"
 
-RibbonModel::RibbonModel(DynamicModules * dynamicModules, PreferencesModel * preferences, std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
-	: QAbstractListModel(dynamicModules), _dynamicModules(dynamicModules), _preferences(preferences)
+RibbonModel::RibbonModel(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
+	: QAbstractListModel(DynamicModules::dynMods())
 {
 
 	for(const std::string & moduleName : commonModulesToLoad)
@@ -31,15 +31,15 @@ RibbonModel::RibbonModel(DynamicModules * dynamicModules, PreferencesModel * pre
 	for(const std::string & moduleName : extraModulesToLoad)
 		addRibbonButtonModelFromModulePath(QFileInfo(QString::fromStdString(Dirs::resourcesDir() + moduleName + "/")), false);
 
-	connect(_dynamicModules, &DynamicModules::dynamicModuleAdded,		this, &RibbonModel::addDynamicRibbonButtonModel);
-	connect(_dynamicModules, &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel);
+	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleAdded,		this, &RibbonModel::addDynamicRibbonButtonModel);
+	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel);
 
-	for(const std::string & modName : _dynamicModules->moduleNames())
-		addRibbonButtonModelFromDynamicModule((*_dynamicModules)[modName]);
+	for(const std::string & modName : DynamicModules::dynMods()->moduleNames())
+		addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[modName]);
 
-	if(_preferences->modulesRemember())
+	if(PreferencesModel::prefs()->modulesRemember())
 	{
-		QStringList enabledModules = _preferences->modulesRemembered();
+		QStringList enabledModules = PreferencesModel::prefs()->modulesRemembered();
 
 		for(const QString & enabledModule : enabledModules)
 		{
@@ -84,8 +84,6 @@ void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool 
 
 void RibbonModel::addRibbonButtonModel(RibbonButton* model)
 {
-	model->setDynamicModules(_dynamicModules);
-
 	if(isModuleName(model->moduleName()))
 		removeRibbonButtonModel(model->moduleName());
 

@@ -46,6 +46,8 @@ class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel becau
 public:
 	enum class	specialRoles { filter = Qt::UserRole, lines, maxColString, columnIsComputed, computedColumnIsInvalidated, labelsHasFilter, computedColumnError, value, columnType };
 
+	static DataSetPackage *	pkg() { return _singleton; }
+
 							DataSetPackage(QObject * parent);
 		void				setEngineSync(EngineSync * engineSync);
 		void				reset();
@@ -133,10 +135,6 @@ public:
 				void				setWaitingForReady()							{ _analysesHTMLReady			= false;			}
 				void				setLoaded()										{ _isLoaded						= true;				}
 
-				void				informComputedColumnsOfPackage()	{ _computedColumns.setPackage(this); }
-
-				ComputedColumns	*	computedColumnsPointer();
-
 				bool						initColumnAsScale(				size_t colNo,			std::string newName, const std::vector<double>		& values);
 				bool						initColumnAsScale(				std::string colName,	std::string newName, const std::vector<double>		& values)	{ return initColumnAsScale(_dataSet->getColumnIndex(colName), newName, values); }
 				bool						initColumnAsScale(				QVariant colID,			std::string newName, const std::vector<double>		& values);
@@ -223,7 +221,7 @@ signals:
 				void				labelChanged(int column);
 				void				dataSetChanged();
 				void				columnDataTypeChanged(std::string columnName);
-				void				isModifiedChanged(DataSetPackage *source);
+				void				isModifiedChanged();
 				void				pauseEnginesSignal();
 				void				resumeEnginesSignal();
 				bool				enginesInitializingSignal();
@@ -253,6 +251,7 @@ private:
 
 
 private:
+	static DataSetPackage	*	_singleton;
 	DataSet					*	_dataSet					= nullptr;
 	EngineSync				*	_engineSync					= nullptr;
 	emptyValsType				_emptyValuesMap;
