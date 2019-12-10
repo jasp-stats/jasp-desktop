@@ -85,7 +85,6 @@ GET_PREF_FUNC_BOOL(	useDefaultPPI,				Settings::PPI_USE_DEFAULT							)
 GET_PREF_FUNC_INT(	customPPI,					Settings::PPI_CUSTOM_VALUE							)
 GET_PREF_FUNC_WHT(	whiteBackground,			Settings::IMAGE_BACKGROUND							)
 GET_PREF_FUNC_BOOL(	developerMode,				Settings::DEVELOPER_MODE							)
-GET_PREF_FUNC_DBL(	uiScale,					Settings::UI_SCALE									)
 GET_PREF_FUNC_BOOL(	customThresholdScale,		Settings::USE_CUSTOM_THRESHOLD_SCALE				)
 GET_PREF_FUNC_INT(	thresholdScale,				Settings::THRESHOLD_SCALE							)
 GET_PREF_FUNC_BOOL(	devModRegenDESC,			Settings::DEVELOPER_MODE_REGENERATE_DESCRIPTION_ETC	)
@@ -96,6 +95,13 @@ GET_PREF_FUNC_BOOL(	modulesRemember,			Settings::MODULES_REMEMBER							)
 GET_PREF_FUNC_BOOL(	safeGraphics,				Settings::SAFE_GRAPHICS_MODE						)
 GET_PREF_FUNC_STR(	cranRepoURL,				Settings::CRAN_REPO_URL								)
 GET_PREF_FUNC_STR(	currentThemeName,			Settings::THEME_NAME								)
+
+double PreferencesModel::uiScale()
+{
+	if (_uiScale < 0)
+		_uiScale = Settings::value(Settings::UI_SCALE).toDouble();
+	return _uiScale;
+}
 
 QStringList PreferencesModel::missingValues()		const
 {
@@ -227,6 +233,8 @@ void PreferencesModel::setUiScale(double newUiScale)
 		return;
 
 	Settings::setValue(Settings::UI_SCALE, newUiScale);
+	_uiScale = newUiScale;
+
 	emit uiScaleChanged(newUiScale);
 }
 
