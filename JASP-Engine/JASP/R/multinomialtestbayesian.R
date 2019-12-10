@@ -20,7 +20,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   dataset            <- .multinomialBayesReadData(dataset, options)
 
-  .multinomialBayesCheckErrors(dataset, options)
+  .multinomCheckErrors(dataset, options)
 
   multinomialResults <- .computeMultinomialResults(jaspResults, dataset, options)
 
@@ -30,31 +30,6 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   return()
 }
-
-
-#' Funciton checks for errors
-#'   1. Number of levels of the variables must be bigger than 1
-#'   2. 0 observations for a level of a variable
-#'
-#' @param dataset
-#' @param options user input options
-.multinomialBayesCheckErrors <- function(dataset, options) {
-
-  if (options$factor == "")
-    return()
-
-  fact <- options$factor
-
-  # Error Check 1: Number of levels of the variables must be bigger than 1
-  .hasErrors(dataset              = dataset,
-             perform              = "run",
-             type                 = "factorLevels",
-             factorLevels.target  = fact,
-             factorLevels.amount  = '< 1',
-             exitAnalysisIfErrors = TRUE)
-
-}
-
 
 #' Compute results for multinomial table
 #'
@@ -79,7 +54,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   if (!multinomialResults$specs[["ready"]])
     return(multinomialResults)
-
+  
   # Prepare for running the Bayesian Multinomial test
   factorVariable <- multinomialResults$specs$factorVariable
   countVariable  <- multinomialResults$specs$countVariable
@@ -93,8 +68,6 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     counts <- dataset[[.v(options$counts)]]
     # omit count entries for which factor variable is NA
     counts <- counts[!is.na(fact)]
-    # check for invalid counts
-    .checkCountsMultinomial(counts, nlev)
     dataTable        <- counts
     names(dataTable) <- levels(fact)
   } else {

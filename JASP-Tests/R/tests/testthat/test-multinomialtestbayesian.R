@@ -46,3 +46,17 @@ test_that("Descriptives plots match", {
   expect_equal_plots(testPlot, "multinomialBayesianDescriptivesPlot", dir="MultinomialTestBayesian")
 })
 
+test_that("Bayesian Multinomial Test table results match in short data format", {
+  options <- jasptools::analysisOptions("MultinomialTestBayesian")
+  options$factor <- "Month"
+  options$counts <- "Stress.frequency"
+  options$priorCounts <- list(list(values = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                              1, 1, 1, 1), levels = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+                                                                      1, 1, 1, 1, 1)))
+  set.seed(1)
+  results <- jasptools::run("MultinomialTestBayesian", "Memory of Life Stresses.csv", options)
+  table <- results[["results"]][["multinomialTable"]][["data"]]
+  expect_equal_tables(table,
+                      list(27.1062505863656, "Multinomial", 18))
+})
+
