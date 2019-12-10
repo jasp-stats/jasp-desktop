@@ -37,6 +37,7 @@ struct _JaspTimerScopeMeasure
 #define JASPTIMER_FINISH( TIMERNAME ) /* TIMERNAME */
 #define JASPTIMER_PRINTALL() /* bla bla bla */
 #define JASPTIMER_SCOPE(TIMERNAME) /* Hmm hmm */
+#define JASPTIMER_CLASS(TIMERNAME) /* Hmm hmm */
 #endif
 
 #endif // TIMERS_H
