@@ -98,7 +98,7 @@ void ListModelAvailableInterface::sortItems(SortType sortType)
 	endResetModel();
 }
 
-void ListModelAvailableInterface::sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)
+void ListModelAvailableInterface::sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)
 {
 	Q_UNUSED(termsAdded);
 	Q_UNUSED(termsRemoved);

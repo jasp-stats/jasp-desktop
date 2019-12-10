@@ -40,8 +40,8 @@ public:
 	void			initValues(OptionsTable * bindHere)					override;
 
 public slots:
-	void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)		override;
-	void modelChangedSlot()												override;
+	void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)	override;
+	void modelChangedSlot()														override;
 };
 
 #endif // ListModelJAGSDataInput_H

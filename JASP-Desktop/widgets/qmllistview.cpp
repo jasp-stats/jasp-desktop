@@ -32,7 +32,6 @@ QMLListView::QMLListView(JASPControlBase *item)
 {
 	_hasRowComponents = item->rowComponentsCount() > 0;
 	_optionKeyName = getItemProperty("optionKey").toString().toStdString();
-	_setAllowedVariables();
 }
 
 QList<QVariant> QMLListView::_getListVariant(QVariant var)
@@ -248,7 +247,8 @@ void QMLListView::readModelProperty(QMap<QString, QString>* keyValueMap)
 void QMLListView::setUp()
 {
 	JASPControlWrapper::setUp();
-	
+	_setAllowedVariables();
+
 	ListModel* listModel = model();
 	if (!listModel)
 		return;

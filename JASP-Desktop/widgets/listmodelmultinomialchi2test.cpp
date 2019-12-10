@@ -23,7 +23,7 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optiondoublearray.h"
 
-void ListModelMultinomialChi2Test::sourceTermsChanged(Terms *termsAdded, Terms *)
+void ListModelMultinomialChi2Test::sourceTermsChanged(const Terms *termsAdded, const Terms *)
 {
 	beginResetModel();
 

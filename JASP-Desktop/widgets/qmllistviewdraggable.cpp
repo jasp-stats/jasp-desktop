@@ -123,44 +123,56 @@ void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* ta
 			sourceModel->moveTerms(indexes, dropItemIndex);
 		else
 		{
-			bool success = true;		
-			Terms* removedTermsWhenDropping = nullptr;
+			bool refreshSource = false;
+			Terms termsAdded;
+			Terms removedTermsWhenAdding;
+			QList<int> indexAdded = indexes;
+
 			if (!sourceModel->copyTermsWhenDropped())
 			{
-				Terms* terms = sourceModel->termsFromIndexes(indexes);
-				if (terms == nullptr || terms->size() == 0)
+				Terms terms = sourceModel->termsFromIndexes(indexes);
+				if (terms.size() == 0)
 				{
 					Log::log() << "No terms found when trying to moving them" << std::endl;
-					if (terms)
-						delete terms;
 					return;
 				}
-				success = targetModel->canAddTerms(terms);
-				if (success)
-					removedTermsWhenDropping = targetModel->addTerms(terms, dropItemIndex, assignOption);
-				delete terms;
-			}
-				
-			if (success && !targetModel->copyTermsWhenDropped())
-			{
-				sourceModel->removeTerms(indexes);
-				if (removedTermsWhenDropping && removedTermsWhenDropping->size() > 0)
-				{
-					if (sourceModel->canAddTerms(removedTermsWhenDropping))
-						sourceModel->addTerms(removedTermsWhenDropping);
-					else
-					{
-						// Strange situation: the target has added the terms, but the source cannot add the terms sent back by the target.
-						// We try to find the available model and to add these terms there.
-						ListModelAssignedInterface* assignedModel = dynamic_cast<ListModelAssignedInterface*>(targetModel);
-						if (assignedModel)
-							assignedModel->source()->addTerms(removedTermsWhenDropping);
-					}
+				termsAdded = targetModel->canAddTerms(terms);
 
-					delete removedTermsWhenDropping;
+				if (termsAdded.size() > 0)
+					removedTermsWhenAdding = targetModel->addTerms(termsAdded, dropItemIndex, assignOption);
+
+				if (termsAdded.size() != terms.size())
+				{
+					indexAdded.clear();
+					for (int i = 0; i < indexes.size(); i++)
+					{
+						int index = indexes[i];
+						if (i < int(terms.size()))
+						{
+							const Term& term = terms[size_t(i)];
+							if (termsAdded.contains(term))
+								indexAdded.append(index);
+						}
+					}
+					refreshSource = true;
 				}
 			}
-			else
+				
+			if (!targetModel->copyTermsWhenDropped())
+			{
+				if (indexAdded.size() > 0)
+				{
+					sourceModel->removeTerms(indexAdded);
+					refreshSource = false;
+				}
+				if (removedTermsWhenAdding.size() > 0)
+				{
+					sourceModel->addTerms(removedTermsWhenAdding);
+					refreshSource = false;
+				}
+			}
+
+			if (refreshSource)
 				sourceModel->refresh();
 		}
 		

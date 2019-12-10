@@ -38,9 +38,9 @@ public:
 	void setDropMode(qmlDropMode dropMode)					{ _dropMode = dropMode; }
 	void setCopyTermsWhenDropped(bool copy)					{ _copyTermsWhenDropped = copy; }
 	
-	virtual Terms* termsFromIndexes(const QList<int> &indexes) const;
-	virtual bool canAddTerms(Terms* terms) const;
-	virtual Terms* addTerms(Terms* terms, int dropItemIndex = -1, const QString& assignOption = "") ;
+	virtual Terms termsFromIndexes(const QList<int> &indexes) const;
+	virtual Terms canAddTerms(const Terms& terms) const;
+	virtual Terms addTerms(const Terms& terms, int dropItemIndex = -1, const QString& assignOption = "") ;
 	virtual void removeTerms(const QList<int>& indexes);
 	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1);
 
@@ -49,6 +49,7 @@ protected:
 	bool		_addNewAvailableTermsToAssignedModel = false;
 	qmlDropMode _dropMode;
 	Terms		_tempTermsToRemove;
+	Terms		_tempTermsToAdd;
 		
 	bool		isAllowed(const Term &term) const;
 };

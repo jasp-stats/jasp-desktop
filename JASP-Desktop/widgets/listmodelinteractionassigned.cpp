@@ -50,24 +50,26 @@ void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
 {
 	Terms toRemove;
 
-	for (size_t index : indices)
+	for (int i : indices)
 	{
+		size_t index = size_t(i);
 		if (index < _terms.size())
 			toRemove.add(_terms.at(index));
 	}
 
 	removeInteractionTerms(toRemove);
-	
+
 	setTerms();
 }
 
-Terms *ListModelInteractionAssigned::termsFromIndexes(const QList<int> &indexes) const
+Terms ListModelInteractionAssigned::termsFromIndexes(const QList<int> &indexes) const
 {
-	Terms* terms = new Terms;
-	for (size_t index : indexes)
+	Terms terms;
+	for (int i : indexes)
 	{
+		size_t index = size_t(i);
 		if (index < _terms.size())
-			terms->add(_terms.at(index));
+			terms.add(_terms.at(index));
 	}
 	
 	return terms;
@@ -118,7 +120,7 @@ void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWit
 	
 }
 
-void ListModelInteractionAssigned::availableTermsChanged(Terms *termsAdded, Terms *termsRemoved)
+void ListModelInteractionAssigned::availableTermsChanged(const Terms *termsAdded, const Terms *termsRemoved)
 {
 	if (termsAdded && termsAdded->size() > 0 && _addNewAvailableTermsToAssignedModel)
 	{
@@ -151,11 +153,11 @@ QString ListModelInteractionAssigned::getItemType(const Term &term) const
 	return type;
 }
 
-bool ListModelInteractionAssigned::canAddTerms(Terms *terms) const
+Terms ListModelInteractionAssigned::canAddTerms(const Terms& terms) const
 {
 	Q_UNUSED(terms);
 
-	return true;
+	return terms;
 }
 
 void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, qmlAssignType assignType)
@@ -199,12 +201,14 @@ void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, qmlAssig
 	setTerms();
 }
 
-Terms* ListModelInteractionAssigned::addTerms(Terms *terms, int dropItemIndex, const QString& assignOptionStr)
+Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemIndex, const QString& assignOptionStr)
 {
 	Q_UNUSED(dropItemIndex);
+
+	Terms result;
 	
-	if (!terms || terms->size() == 0)
-		return nullptr;
+	if (terms.size() == 0)
+		return result;
 	
 	qmlAssignType assignType = qmlAssignType::Cross;
 	
@@ -214,7 +218,7 @@ Terms* ListModelInteractionAssigned::addTerms(Terms *terms, int dropItemIndex, c
 		catch(std::exception)	{ addError(tr("Unknown Assign type: %1").arg(assignOptionStr)); }
 	}
 	
-	addCombinedTerms(*terms, assignType);
+	addCombinedTerms(terms, assignType);
 	
 	return nullptr;
 }
@@ -226,9 +230,9 @@ void ListModelInteractionAssigned::moveTerms(const QList<int> &indexes, int drop
 		return;
 
 	beginResetModel();
-	Terms* terms = termsFromIndexes(indexes);
+	Terms terms = termsFromIndexes(indexes);
 	if (dropItemIndex == -1)
-		dropItemIndex = _terms.size();
+		dropItemIndex = int(_terms.size());
 	for (int index : indexes)
 	{
 		if (index < dropItemIndex)
@@ -236,10 +240,9 @@ void ListModelInteractionAssigned::moveTerms(const QList<int> &indexes, int drop
 	}
 
 	Terms newTerms = _interactionTerms;
-	newTerms.remove(*terms);
-	newTerms.insert(dropItemIndex, *terms);
+	newTerms.remove(terms);
+	newTerms.insert(dropItemIndex, terms);
 	_terms = _interactionTerms = newTerms;
-	delete terms;
 
 	endResetModel();
 

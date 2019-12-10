@@ -62,7 +62,7 @@ void ListModelMultiTermsAssigned::removeTerms(const QList<int> &indexes)
 			}
 		}
 	}
-	
+
 	_setTerms();
 	endResetModel();
 
@@ -80,16 +80,16 @@ void ListModelMultiTermsAssigned::_setTerms()
 }
 
 
-Terms* ListModelMultiTermsAssigned::addTerms(Terms *termsToAdd, int dropItemIndex, const QString&)
+Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const QString&)
 {
 	beginResetModel();
-	Terms* removedTerms = new Terms();
+	Terms removedTerms;
 	
-	if (termsToAdd->size() == 0)
+	if (termsToAdd.size() == 0)
 		return removedTerms;
 	
 	bool done = false;
-	if (termsToAdd->size() == 1 && dropItemIndex >= 0)
+	if (termsToAdd.size() == 1 && dropItemIndex >= 0)
 	{
 		int realRow = dropItemIndex / _columns;
 		int realCol = dropItemIndex % _columns;
@@ -98,8 +98,8 @@ Terms* ListModelMultiTermsAssigned::addTerms(Terms *termsToAdd, int dropItemInde
 			Terms row = _tuples[realRow];
 			const Term& term = row[size_t(realCol)];
 			if (!term.asQString().isEmpty())
-				removedTerms->add(term);
-			row.replace(realCol, termsToAdd->at(0));
+				removedTerms.add(term);
+			row.replace(realCol, termsToAdd.at(0));
 			_tuples[realRow] = row;
 			done = true;
 		}
@@ -108,15 +108,15 @@ Terms* ListModelMultiTermsAssigned::addTerms(Terms *termsToAdd, int dropItemInde
 	if (!done)
 	{
 		size_t index = 0;
-		for (int row = 0; row < _tuples.length() && index < termsToAdd->size(); row++)
+		for (int row = 0; row < _tuples.length() && index < termsToAdd.size(); row++)
 		{
 			Terms tuple = _tuples.at(row);
 			bool changed = false;
-			for (int col = 0; col < _columns && index < termsToAdd->size(); col++)
+			for (int col = 0; col < _columns && index < termsToAdd.size(); col++)
 			{
 				if (tuple[size_t(col)].asQString().isEmpty())
 				{
-					tuple.replace(col, termsToAdd->at(index));
+					tuple.replace(col, termsToAdd.at(index));
 					changed = true;
 					index++;
 				}
@@ -125,14 +125,14 @@ Terms* ListModelMultiTermsAssigned::addTerms(Terms *termsToAdd, int dropItemInde
 				_tuples[row] = tuple;
 		}
 		
-		while (index < termsToAdd->size())
+		while (index < termsToAdd.size())
 		{
 			Terms newTuple;
 			for (int i = 0; i < _columns; i++)
 			{
-				if (index < termsToAdd->size())
+				if (index < termsToAdd.size())
 				{
-					newTuple.add(termsToAdd->at(index), false);
+					newTuple.add(termsToAdd.at(index), false);
 					index++;
 				}
 				else

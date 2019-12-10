@@ -149,7 +149,7 @@ Qt::ItemFlags ListModelFilteredDataEntry::flags(const QModelIndex & index) const
 }
 
 
-void ListModelFilteredDataEntry::sourceTermsChanged(Terms *, Terms *)
+void ListModelFilteredDataEntry::sourceTermsChanged(const Terms *, const Terms *)
 {
 	//std::cout << "ListModelFilteredDataEntry::sourceTermsChanged(Terms *, Terms *)" << std::endl;
 

@@ -83,11 +83,11 @@ public:
 
 
 signals:
-			void modelChanged(Terms* added = nullptr, Terms* removed = nullptr);
+			void modelChanged(const Terms* added = nullptr, const Terms* removed = nullptr);
 			void selectedItemsChanged();
 
 public slots:	
-	virtual void sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved);
+	virtual void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved);
 
 private:
 			void _addSelectedItemType(int _index);

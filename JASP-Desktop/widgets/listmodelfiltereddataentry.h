@@ -47,7 +47,7 @@ public:
 
 
 public slots:
-	void	sourceTermsChanged(Terms* termsAdded, Terms* termsRemoved)						override;
+	void	sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)			override;
 	void	modelChangedSlot()																override;
 	void	setFilter(QString filter);
 	void	dataSetChangedHandler();

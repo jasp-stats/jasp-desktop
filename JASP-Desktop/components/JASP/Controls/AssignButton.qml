@@ -53,22 +53,20 @@ Button
 	function setIconToLeft()	{ if (rightSource.activeFocus) leftToRight = false;		}
 	function setState()
 	{
-		var result = false;
+		var result = true;
 		if (source.model && source.model.selectedItems().length > 0)
 		{
 			if (target.allowedColumns.length > 0)
 			{
-				result = true;
+				result = false;
 				var sourceSelectedItemsTypes = source.model.selectedItemsTypes()
 				for (var i = 0; i < sourceSelectedItemsTypes.length; i++)
 				{
 					var itemType = sourceSelectedItemsTypes[i];
-					if (!target.allowedColumns.includes(itemType))
-						result = false;
+					if (target.allowedColumns.includes(itemType))
+						result = true;
 				}
 			}
-			else
-				result = true;
 		}
 
 		if (interactionControl)
