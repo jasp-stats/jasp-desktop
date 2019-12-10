@@ -116,7 +116,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
       "priorRegressionCoefficients", "alpha", "rScale",
       "modelPrior", "betaBinomialParamA", "betaBinomialParamB", "bernoulliParam",
       "wilsonParamLambda", "castilloParamU",
-      "samplingMethod", "iterationsMCMC", "numberOfModels"
+      "samplingMethod", "iterationsMCMC", "numberOfModels", "seed", "setSeed"
     ))
     jaspResults[["basreg"]] <- basregContainer
   }
@@ -128,7 +128,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     postSumContainer <- createJaspContainer("Posterior Summary")
     postSumContainer$position <- position
     postSumContainer$dependOn(c(
-      "summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI"
+      "summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI", "seed", "setSeed"
     ))
     basregContainer[["postSumContainer"]] <- postSumContainer
   }
@@ -760,7 +760,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   postDistContainer$position <- position
   postDistContainer$dependOn(c(
     "plotCoefficientsPosterior", "summaryType", 
-    "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI"
+    "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI", "seed", "setSeed"
   )) #TODO: check if dependencies are correct for this item: was probably wrong in release
 
   .basregInsertPosteriorDistributionPlots("placeholders", postDistContainer, plotNames, options, basregModel)
@@ -1022,6 +1022,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   )
   
   # Bayesian Adaptive Sampling
+  .setSeedJASP(options)
   bas_lm <- try(BAS::bas.lm(
     formula         = formula,
     data            = dataset,
@@ -1093,6 +1094,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   # if a user selects the same options. (The method uses approximations and otherwise decimals are off)
   footnote <- NULL
   
+  .setSeedJASP(options)
   coefBMA <- .basregOverwritecoefBas(basregModel, estimator = "BMA", dataset = dataset, options = options, weights = basregModel[["weights"]])
   conf95BMA <- try(stats::confint(coefBMA, level = 0.95, nsim = options$nSimForCRI))
   if (isTryError(conf95BMA)) {
@@ -1110,6 +1112,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     coef <- coefBMA
     conf95 <- conf95BMA
   } else {
+    .setSeedJASP(options)
     coef <- .basregOverwritecoefBas(basregModel, estimator = estimator, dataset = dataset, options = options, weights = basregModel[["weights"]])
     conf95 <- stats::confint(coef, level = criVal, nsim = options$nSimForCRI)
   }
@@ -1129,7 +1132,8 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
                            conf95 = conf95, coefBMA = coefBMA, conf95BMA = conf95BMA, footnote = footnote)
   
   basregContainer[["postSumModel"]] <- createJaspState(postSumModel)
-  basregContainer[["postSumModel"]]$dependOn(c("summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI"))
+  basregContainer[["postSumModel"]]$dependOn(c("summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI",
+                                               "seed", "setSeed"))
   
   return(postSumModel)
 }

@@ -26,8 +26,8 @@ Form {
 	VariablesForm
 	{
 		AvailableVariablesList	{ name: "allVariablesList" }
-        AssignedVariablesList	{ name: "dependent";	title: qsTr("Dependent Variable");		suggestedColumns: ["scale"];	singleVariable: true	}
-        AssignedVariablesList	{ name: "covariates";	title: qsTr("Covariates");				suggestedColumns: ["scale"];    allowedColumns: ["scale"]   }
+		AssignedVariablesList	{ name: "dependent";	title: qsTr("Dependent Variable");		suggestedColumns: ["scale"];	singleVariable: true	}
+		AssignedVariablesList	{ name: "covariates";	title: qsTr("Covariates");				suggestedColumns: ["scale"];	allowedColumns: ["scale"]}
 		AssignedVariablesList	{ name: "wlsWeights";	title: qsTr("WLS Weights (optional)");	suggestedColumns: ["scale"];	singleVariable: true	}
 	}
 
@@ -39,13 +39,13 @@ Form {
 		columns: 2
 
 		CheckBox{ name: "postSummaryTable"; label: qsTr("Posterior summary"); id: postSummaryTable
-            RadioButtonGroup
-            {
-                name: "effectsType"
-                RadioButton { value: "allModels";		label: qsTr("Across all models");   checked: true	}
-                RadioButton { value: "matchedModels";	label: qsTr("Across matched models")				}
-            }
-        }
+			RadioButtonGroup
+			{
+				name: "effectsType"
+				RadioButton { value: "allModels";		label: qsTr("Across all models");   checked: true	}
+				RadioButton { value: "matchedModels";	label: qsTr("Across matched models")				}
+			}
+		}
 
 		DropDown
 		{
@@ -122,7 +122,9 @@ Form {
 				width: parent.width / 4
 				source: ['covariates']
 			}
+
 			ModelTermsList { width: parent.width * 5 / 9 }
+
 		}
 
 	}
@@ -149,8 +151,8 @@ Form {
 		Group
 		{
 			title: qsTr("Residuals")
-			CheckBox { name: "plotResidualsVsFitted";	label: qsTr("Residuals vs. fitted")				  }
-			CheckBox { name: "plotQQplot";	            label: qsTr("Q-Q plot of model averaged residuals")}
+			CheckBox { name: "plotResidualsVsFitted";	label: qsTr("Residuals vs. fitted")					}
+			CheckBox { name: "plotQQplot";				label: qsTr("Q-Q plot of model averaged residuals")	}
 		}
 	}
 	
@@ -165,7 +167,7 @@ Form {
 
 			RadioButton { value: "AIC";			label: qsTr("AIC")		}
 			RadioButton { value: "BIC";			label: qsTr("BIC")		}
-			RadioButton { value: "EB-global";	label: qsTr("EB-global")	}
+			RadioButton { value: "EB-global";	label: qsTr("EB-global")}
 			RadioButton { value: "EB-local";	label: qsTr("EB-local")	}
 			RadioButton { value: "g-prior";		label: qsTr("g-prior")	}
 			GridLayout
@@ -174,7 +176,7 @@ Form {
 				columnSpacing: 0
 				Group
 				{
-					RadioButton { value: "hyper-g";			label: qsTr("Hyper-g");			    id: hyperg			}
+					RadioButton { value: "hyper-g";			label: qsTr("Hyper-g");				id: hyperg			}
 					RadioButton { value: "hyper-g-laplace";	label: qsTr("Hyper-g-Laplace");		id: hyperglaplace	}
 					RadioButton { value: "hyper-g-n";		label: qsTr("Hyper-g-n");			id: hypergn			}
 				}
@@ -184,9 +186,9 @@ Form {
 					label: qsTr("alpha")
 					enabled: hyperg.checked || hyperglaplace.checked || hypergn.checked
 					defaultValue: 3.0
-                    min: 2
-                    max: 4
-                    inclusive: "no"
+					min: 2
+					max: 4
+					inclusive: "no"
 				}
 				RadioButton { value: "JZS"; label: qsTr("JZS"); checked: true; id: jzs }
 				DoubleField
@@ -197,7 +199,7 @@ Form {
 					fieldWidth: 50
 					defaultValue: 0.354
 					max: 100000
-                    inclusive: "maxOnly"
+					inclusive: "maxOnly"
 				}
 			}
 		}
@@ -273,6 +275,9 @@ Form {
 					max: 1000000
 				}
 			}
+
+			SetSeed{}
+
 		}
 	}
 

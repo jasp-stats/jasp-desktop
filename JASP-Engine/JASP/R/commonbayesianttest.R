@@ -1,3 +1,4 @@
+
 #
 # Copyright (C) 2013-2018 University of Amsterdam
 #
@@ -28,7 +29,7 @@
   #     |            "informativeNormalStd", "informativeStandardizedEffectSize",
   #     |            "informativeTDf", "informativeTLocation", "informativeTScale",
   #     |            "missingValues", "priorWidth", "testStatistic", "wilcoxonSamplesNumber",
-  #     |            "testValue"
+  #     |            "testValue", "seed"
   #     | ))
   #     |-ttestResults (main table with BF for each test)
   #
@@ -80,7 +81,7 @@
       "informativeNormalStd", "informativeStandardizedEffectSize",
       "informativeTDf", "informativeTLocation", "informativeTScale",
       "missingValues", "priorWidth", "testStatistic", "wilcoxonSamplesNumber",
-      "testValue"
+      "testValue","seed", "setSeed"
     ))
     ttestContainer$position <- 1L
   } else {
@@ -1839,6 +1840,7 @@
   } else {
     # sample from delta posterior
     if (!wilcoxTest) {
+      .setSeedJASP(options)
       bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r)
       # library(BayesFactor)
       samples <- BayesFactor::posterior(model = bfObject, iterations = iterations,
@@ -2048,6 +2050,7 @@
     return(NULL)
   }
 }
+
 # citations ----
 .ttestBayesianCitations <- c(
   "MoreyEtal2015"    = "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",

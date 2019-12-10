@@ -138,6 +138,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
       names(dataset)[names(dataset) == "freq"] <- dependentBase64
     # Calculate here
     #gives an object computed using Bayesian Analysis of Complete Contingency Tables
+    .setSeedJASP(options)
     bcctObj <- try(conting::bcct(formula = modelFormula, data = dataset, 
                                  prior = "SBH", n.sample = 2000, 
                                  a = options$priorShape, b = options$priorScale), 
@@ -146,6 +147,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
     
     # Always do auto and then manual adds additional samples
     if (options$sampleMode == "manual"){
+      .setSeedJASP(options)
       bcctObj <- try(conting::bcctu(object = bcctObj, 
                                     n.sample = options$fixedSamplesNumber), 
                      silent = TRUE)
@@ -189,7 +191,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
     }
   } 
   container[["bfObject"]] <- createJaspState(bfObject)
-  container[["bfObject"]]$dependOn(c("fixedSamplesNumber", "sampleMode"))
+  container[["bfObject"]]$dependOn(c("fixedSamplesNumber", "sampleMode", "seed", "setSeed"))
   return(bfObject)
 }
 
@@ -429,7 +431,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
   if(is.null(jaspResults[["Container"]])) {
     jaspResults[["Container"]] <- createJaspContainer()
     jaspResults[["Container"]]$dependOn(c("counts", "modelTerms", "priorShape", 
-                                          "priorScale", "sampleMode", "fixedSamplesNumber"))
+                                          "priorScale", "sampleMode", "fixedSamplesNumber", "seed", "setSeed"))
   }
 }
 

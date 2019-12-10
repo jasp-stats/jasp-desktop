@@ -98,10 +98,12 @@
   } else if (!is.null(stateObj)) {
     if ((identical(stateObj$fixedFactors, options$fixedFactors) &&
          identical(stateObj$modelTerms,   options$modelTerms)   &&
-         identical(stateObj$covariates,   options$covariates)
+         identical(stateObj$covariates,   options$covariates)   &&
+         identical(stateObj$seed,         options$seed)         &&
+         identical(stateObj$setSeed,      options$setSeed)
     )) {
 
-      # if the statement above is TRUE then no new variables were added
+      # if the statement above is TRUE then no new variables were added (or seed changed)
       # and the only change is in the Bayes factor type or the ordering
       modelTable <- .BANOVAinitModelComparisonTable(options)
       modelTable[["Models"]] <- c("Null model", sapply(stateObj$models, `[[`, "title"))
@@ -242,6 +244,7 @@
     # loop over all models, where the first is the null-model and the last the most complex model
     if (is.na(reuseable[m])) {
       if (!is.null(model.list[[m]])) {
+        .setSeedJASP(options)
         bf <- try(BayesFactor::lmBF(
           formula      = model.list[[m]],
           data         = dataset,
@@ -328,7 +331,8 @@
 
   # save state
   stateObj <- createJaspState(object = model, dependencies = c(
-    "dependent", "priorFixedEffects", "priorRandomEffects", "sampleModeNumAcc", "fixedNumAcc", "repeatedMeasuresCells"
+    "dependent", "priorFixedEffects", "priorRandomEffects", "sampleModeNumAcc", "fixedNumAcc", "repeatedMeasuresCells",
+    "seed", "setSeed"
   ))
   jaspResults[["tableModelComparisonState"]] <- stateObj
 
@@ -350,7 +354,7 @@
   effectsTable$position <- 2
   effectsTable$dependOn(c(
     "effects", "effectsType", "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects",
-    "sampleModeNumAcc", "fixedNumAcc", "bayesFactorType", "modelTerms", "fixedFactors"
+    "sampleModeNumAcc", "fixedNumAcc", "bayesFactorType", "modelTerms", "fixedFactors", "seed", "setSeed"
   ))
 
   effectsTable$addCitation(.BANOVAcitations[1:2])
@@ -619,7 +623,6 @@
     }
 
   } else { # compute posteriors and credible intervals
-
     posteriors    <- .BANOVAsamplePosteriors(jaspResults, dataset, options, model, posteriors)
     posteriorsCRI <- .BANOVAcomputePosteriorCRI(dataset, options, model, posteriors)
 
@@ -647,7 +650,7 @@
   estsTable$dependOn(c(
     "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects", "sampleModeMCMC",
     "fixedMCMCSamples", "modelTerms", "fixedFactors", "posteriorEstimates",
-    "repeatedMeasuresFactors", "credibleInterval", "repeatedMeasuresCells"
+    "repeatedMeasuresFactors", "credibleInterval", "repeatedMeasuresCells", "seed", "setSeed"
   ))
 
   overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
@@ -713,7 +716,7 @@
   criTable$dependOn(c(
     "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects", "sampleModeMCMC",
     "fixedMCMCSamples", "bayesFactorType", "modelTerms", "fixedFactors", "criTable",
-    "repeatedMeasuresFactors", "credibleInterval"
+    "repeatedMeasuresFactors", "credibleInterval", "seed", "setSeed"
   ))
   
   overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
@@ -968,9 +971,9 @@
   # the same footnote for all the tables
   footnote <- gsub("[\r\n\t]", "", 
     "The posterior odds have been corrected for multiple testing by 
-		fixing to 0.5 the prior probability that the null hypothesis holds
-		across all comparisons (Westfall, Johnson, & Utts, 1997). Individual
-		comparisons are based on the default t-test with a Cauchy (0, r =
+		fixing to 0.5 the prior probability that the null hypothesis holds 
+		across all comparisons (Westfall, Johnson, & Utts, 1997). Individual 
+		comparisons are based on the default t-test with a Cauchy (0, r = 
 		1/sqrt(2)) prior. The \"U\" in the Bayes factor denotes that it is uncorrected.")
 
   bfTxt <- if (options[["postHocTestsNullControl"]]) ", U" else ""
@@ -1042,7 +1045,7 @@
         y <- na.omit(allSplits[[pairs[2L, i]]])
 
         ttest <- try(BayesFactor::ttestBF(x = x, y = y, rscale = priorWidth, paired = paired), silent=TRUE)
-
+        
         if (isTryError(ttest)) {
 
           priorOdds <- postOdds <- logBF <- error <- "NaN"
@@ -1495,6 +1498,7 @@
 
         # NULL model only contains an intercept, use custom sampler
         # NOTE: RM-ANOVA never enters here (and would crash if it did)
+        .setSeedJASP(options)
         samples <- .BANOVAsampleNullModel(dataset[[.v(options$dependent)]], nsamples = nIter)
         types <- NULL
 
@@ -1502,6 +1506,7 @@
 
         # NOTE: we have to sample the random effects, otherwise we cant make predictions (needed for residuals and R^2)
         # put the dataset back in
+        .setSeedJASP(options)
         bfObj <- model$models[[i]][[3L]]
         bfObj@data <- dataset
         samples <- try(BayesFactor::posterior(bfObj, iterations = nIter))
@@ -1724,7 +1729,7 @@
   # compute residuals and r-squared
   # sample from the joint posterior over models and parameters
   tmp  <- .BANOVAgetSMIResidRsq(weightedDensities, dataset, model$model.list[[nmodels]], nIter, model, 
-                                posterior$levelInfo)
+                                posterior$levelInfo, options)
   means  <- rowMeans(tmp$resid)
   h <- (1 - cri) / 2
   quants <- matrixStats::rowQuantiles(tmp$resid, probs = c(h, 1 - h))
@@ -1934,7 +1939,7 @@
   return(samples)
 }
 
-.BANOVAgetSMIResidRsq <- function(posterior, dataset, formula, nIter, model, levelInfo = NULL) {
+.BANOVAgetSMIResidRsq <- function(posterior, dataset, formula, nIter, model, levelInfo = NULL, options) {
 
   # @param posterior  object from Bayesfactor package, or SxPx2 array of weighted densities
   # @param dataset    dataset
@@ -1982,6 +1987,7 @@
     rownames(effects) <- NULL # drop rownames, otherwise they get copied later on
     postProbs <- model[["postProbs"]]
     postProbs[is.na(postProbs)] <- 0
+    .setSeedJASP(options)
     modelIdx <- sample(nrow(effects), nIter, TRUE, postProbs) # resample the models according to posterior prob
     samples <- matrix(0, nrow = nIter, ncol = ncol(posterior))
     
@@ -2003,6 +2009,7 @@
 
     # resample nuisance parameters
     for (i in which(isNuisance[pos])) {
+      .setSeedJASP(options)
       samples[, i] <- .BANOVAreSample(n = nIter, x = posterior[, i, "x"], y = posterior[, i, "y"]) 
     }
 
@@ -2011,8 +2018,10 @@
       idx <- bases[pos[i]] # get the variable from which this parameter comes
       mult <- effects[modelIdx, idx] # how often models with this variable are sampled
       nTemp <- sum(mult)
-      if (nTemp > 0L)
+      if (nTemp > 0L){
+        .setSeedJASP(options)
         samples[mult, i] <- .BANOVAreSample(n = sum(mult), x = posterior[, i, "x"], y = posterior[, i, "y"])
+      }
     }
 
     preds <- tcrossprod(datOneHot, samples)
@@ -2257,7 +2266,7 @@
     singleModelContainer <- createJaspContainer(title = "Single Model Inference")
     singleModelContainer$dependOn(c(
       "singleModelTerms", "dependent", "sampleModeMCMC", "fixedMCMCSamples", "priorCovariates",
-      "priorFixedEffects", "priorRandomEffects", "repeatedMeasuresCells"
+      "priorFixedEffects", "priorRandomEffects", "repeatedMeasuresCells", "seed", "setSeed"
     ))
     jaspResults[["containerSingleModel"]] <- singleModelContainer
     singleModelContainer$position <- 8
@@ -2312,6 +2321,7 @@
   levelInfo  <- .BANOVAgetLevelInfo(dataset, formula)
   allParamNames <- c("mu", unlist(levelInfo$levelNames))
 
+  .setSeedJASP(options)
   samples <- BayesFactor::lmBF(
     formula      = formula,
     data         = dataset,
@@ -2354,7 +2364,7 @@
 
   densities <- .BANOVAfitDensity(samples, 2^9, FALSE)
 
-  tmp  <- .BANOVAgetSMIResidRsq(samples, dataset, formula, nIter)
+  tmp  <- .BANOVAgetSMIResidRsq(samples, dataset, formula, nIter, options = options)
   residmeans  <- rowMeans(tmp$resid)
   residquants <- matrixStats::rowQuantiles(tmp$resid, probs = c(h, 1-h))
 
