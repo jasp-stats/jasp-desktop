@@ -102,6 +102,7 @@ JASPControl
 		padding:				jaspTheme.jaspControlPadding
 		leftPadding:			jaspTheme.labelSpacing
 		selectByMouse:			true
+		focus:					true
 		selectedTextColor:		jaspTheme.white
 		selectionColor:			jaspTheme.itemSelectedColor
 
