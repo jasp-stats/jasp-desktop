@@ -26,6 +26,9 @@ protected:
 	ImportDataSet *	loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback)	override;
 
 	std::string		_ext;
+
+private:
+	JASPTIMER_CLASS(ReadStatImporter);
 };
 
 #endif // READSTATIMPORTER_H

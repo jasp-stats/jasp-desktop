@@ -59,6 +59,8 @@ private:
 	 */
 	void readContents(const std::string &path, ODSImportDataSet *dataset);
 
+	JASPTIMER_CLASS(ODSImporter);
+
 };
 
 } // end namespace ods

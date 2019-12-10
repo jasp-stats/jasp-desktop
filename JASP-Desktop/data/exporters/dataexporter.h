@@ -27,6 +27,9 @@ public:
 	void saveDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback) override;
 
 	bool _includeComputeColumns;
+
+private:
+	JASPTIMER_CLASS(DataExporter);
 };
 
 #endif // DATAEXPORTER_H

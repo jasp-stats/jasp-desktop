@@ -4,6 +4,7 @@
 #include <boost/function.hpp>
 #include "../datasetpackage.h"
 #include "importdataset.h"
+#include "timers.h"
 
 class ImportDataSet;
 class ImportColumn;

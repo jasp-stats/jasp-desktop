@@ -24,6 +24,7 @@
 #include <boost/assign/list_of.hpp>
 #include <vector>
 
+#include "timers.h"
 #include "common.h"
 #include "utils.h"
 

@@ -29,6 +29,8 @@ public:
 protected:
 	ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback) override;
 
+private:
+	JASPTIMER_CLASS(CSVImporter);
 };
 
 #endif // CSVIMPORTER_H

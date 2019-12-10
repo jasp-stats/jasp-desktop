@@ -25,7 +25,8 @@ struct _JaspTimerScopeMeasure
 
 	const char * _name;
 };
-#define JASPTIMER_SCOPE(TIMERNAME) _JaspTimerScopeMeasure singleScopeTimer(#TIMERNAME);
+#define JASPTIMER_SCOPE(TIMERNAME) _JaspTimerScopeMeasure singleScopeTimer(#TIMERNAME)
+#define JASPTIMER_CLASS(TIMERNAME) _JaspTimerScopeMeasure singleScopeTimer = #TIMERNAME;
 
 #else
 //No timers please!

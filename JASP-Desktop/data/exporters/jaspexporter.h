@@ -19,7 +19,6 @@
 #define JASPEXPORTER_H
 
 #include "exporter.h"
-
 #include "libzip/archive.h"
 
 class JASPExporter: public Exporter
@@ -37,6 +36,8 @@ private:
 
 	static void createJARContents(archive *a);
 	static std::string getColumnTypeName(columnType columnType);
+
+	JASPTIMER_CLASS(JASPExporter);
 };
 
 #endif // JASPEXPORTER_H
