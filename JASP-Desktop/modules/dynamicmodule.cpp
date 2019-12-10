@@ -356,8 +356,15 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 
 	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "', .libPaths(.Library))";
 
+	const char * pkgType =
+#ifdef __linux__
+							"source";
+#else
+							"binary";
+#endif
+
 	if(!onlyModPkg)	//First install dependencies:
-		R	<< standardRIndent <<								"withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "', INSTALL_opts=c('--no-test-load'), upgrade=TRUE, repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n"
+		R	<< standardRIndent <<								"withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "', type='" << pkgType << "',  INSTALL_opts=c('--no-test-load'), upgrade=FALSE, repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n"
 		//And fix Mac OS libraries of dependencies:
 		<< standardRIndent << "postProcessModuleInstall(\"" << moduleRLibrary().toStdString() << "\");\n";
 
