@@ -37,7 +37,7 @@ class BoundQMLTextArea : public QMLListView, public BoundQMLItem
 {
 	Q_OBJECT
 	
-	enum TextType {Default, Model, Rcode, JAGSmodel};
+	enum TextType {Default, Model, Rcode, JAGSmodel, Source};
 	
 public:
 	BoundQMLTextArea(JASPControlBase* item);
@@ -57,6 +57,8 @@ public slots:
 			void dataSetChangedHandler();
     
 protected:
+	void						_setSourceTerms();
+
 	OptionString*				_boundTo = nullptr;
 	QString						_text;
 	TextType					_textType;

@@ -63,6 +63,12 @@ BoundQMLTextArea::BoundQMLTextArea(JASPControlBase* item)
 		setItemProperty("font", font);
 				
 	}
+	else if (textType == "source")
+	{
+		_textType = TextType::Source;
+		_model = new ListModelTermsAvailable(this);
+		setTermsAreNotVariables();
+	}
 	else
 		_textType = TextType::Default;
 
@@ -78,6 +84,9 @@ void BoundQMLTextArea::bindTo(Option *option)
 	{
 		_text = QString::fromStdString(_boundTo->value());
 		setItemProperty("text", _text);
+
+		if (_textType == TextType::Source)
+			_setSourceTerms();
 	}
 	else
 		Log::log()  << "could not bind to OptionBoolean in BoundQuickCheckBox.cpp" << std::endl;
@@ -119,28 +128,37 @@ void BoundQMLTextArea::checkSyntax()
 			R_FunctionWhiteList::scriptIsSafe(_text.toStdString()); 
 			setItemProperty("hasScriptError", false);
 			setItemProperty("infoText", tr("valid R code"));
-			if (_boundTo != nullptr)
-				_boundTo->setValue(_text.toStdString());			
 		}
 		catch(filterException & e)
 		{
 			setItemProperty("hasScriptError", true);
 			std::string errorMessage(e.what());
 			setItemProperty("infoText", errorMessage.c_str());
-		}		
-		
+		}				
 	}
-	else
-	{
-		if (_boundTo != nullptr)
-			_boundTo->setValue(_text.toStdString());
-	}
+	else if (_textType == TextType::Source)
+		_setSourceTerms();
+
+	if (_boundTo != nullptr)
+		_boundTo->setValue(_text.toStdString());
 
 }
 
 void BoundQMLTextArea::dataSetChangedHandler()
 {
 	form()->refreshAnalysis();
+}
+
+void BoundQMLTextArea::_setSourceTerms()
+{
+	QStringList list = _text.split('\n', QString::SkipEmptyParts);
+	QStringList terms;
+
+	for (const QString& term : list)
+		terms.append(term.trimmed());
+	_model->initTerms(terms);
+
+	emit _model->modelChanged(nullptr, nullptr);
 }
 
 void BoundQMLTextArea::rScriptDoneHandler(const QString & result)
