@@ -366,6 +366,13 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 
 	std::string moduleName = dynMod->name();
 
+	if(moduleName == defaultDevelopmentModuleName())
+	{
+		MessageForwarder::showWarning("Cannot install module because it is named '" + defaultDevelopmentModuleName() + "' and that name is reserved for installing the development module.\nChange the name (in DESCRIPTION and description.json) and try it again. If you are not the author of this module and do not know how to do this, contact: " + dynMod->author());
+		delete dynMod;
+		return;
+	}
+
 	if(moduleIsInstalled(moduleName))
 		uninstallModule(moduleName);
 

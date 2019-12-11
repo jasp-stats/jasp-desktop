@@ -52,6 +52,8 @@ DynamicModule::DynamicModule(std::string modulePackageFile, QObject *parent) : Q
 	_name			= extractPackageNameFromArchive(modulePackageFile);
 	_moduleFolder	= QFileInfo(AppDirs::modulesDir() + QString::fromStdString(_name) + "/");
 	unpackage();
+
+	parseDescriptionFile(getDescriptionJsonFromFolder(_modulePackage));
 }
 
 QFileInfo DynamicModule::developmentModuleFolder()
@@ -321,6 +323,7 @@ void DynamicModule::unpackage()
 	Log::log() << "Unpacked module to folder " << modDir << std::endl;
 
 	_modulePackage = modDir;
+
 }
 
 std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)

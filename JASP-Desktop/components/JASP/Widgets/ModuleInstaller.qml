@@ -120,6 +120,7 @@ Popup
 						id:					descriptionViewer
 						anchors.fill:		parent
 						anchors.margins:	jaspTheme.generalAnchorMargin
+						color:				jaspTheme.textEnabled
 						text:				defaultText
 						textFormat:			Text.StyledText
 						wrapMode:			Text.WrapAtWordBoundaryOrAnywhere
