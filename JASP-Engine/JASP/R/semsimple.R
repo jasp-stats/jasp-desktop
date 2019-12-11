@@ -24,7 +24,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   ready <- length(variables) > 1 && length(dheader) > 1 && options$model != ""
   
   if (options$groupingVariable != "")
-    variables <- c(variables, options$groupingVariable)
+    variables <- unique(c(variables, options$groupingVariable))
   
   if (is.null(dataset)) {
     if (ready && options$Data != "varcov") {
@@ -46,21 +46,21 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   
   .getSemResult(semContainer, options, dataset, ready)
   
-  .semMainTable(semContainer, options, dataset, ready)
+  .semMainTable(semContainer, options, dataset, ready, position = 1)
   
-  .semEstimatesTable(semContainer, options, dataset, ready, variables)
+  .semEstimatesTable(semContainer, options, dataset, ready, variables, position = 2)
   
-  .semModIndicesTable(semContainer, options, dataset, ready)
+  .semAdditionalFitMeasuresTables(semContainer, options, dataset, ready, position = 3)
   
-  .semAdditionalFitMeasuresTables(semContainer, options, dataset, ready)
+  .semRSquaredTable(semContainer, options, dataset, ready, position = 4)
   
-  .semRSquaredTable(semContainer, options, dataset, ready)
+  .semCovCorTable(semContainer, options, dataset, ready, position = 5)
   
-  .semCovCorTable(semContainer, options, dataset, ready)
+  .semModIndicesTable(semContainer, options, dataset, ready, position = 6)
   
-  .semMardiasCoefficientTable(semContainer, options, dataset, ready)
+  .semMardiasCoefficientTable(semContainer, options, dataset, ready, position = 7)
 
-  .lavCreatePathDiagram(semContainer, options, ready)
+  .lavCreatePathDiagram(semContainer, options, ready, position = 8)
   
   return()  
 }
@@ -70,7 +70,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     semContainer <- jaspResults[["semContainer"]]
   } else {
     # semContainer <- createJaspContainer(title = "Structural Equation Modeling<br/><span style='color:#888888;font-family:monospace;font-size:12px;font-weight:normal;'>Powered by lavaan.org</span>")
-    semContainer <- createJaspContainer(title = "Structural Equation Modeling")
+    semContainer <- createJaspContainer()
     
     semContainer$dependOn(c("model",  "model", "SampleSize", "errorCalculationBootstrapSamples", 
                             "groupingVariable", "eq_loadings", "eq_intercepts", "eq_residuals", "eq_residualcovariances",
@@ -285,11 +285,12 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   }
 }
 
-.semMainTable <- function(semContainer, options, dataset, ready) {
+.semMainTable <- function(semContainer, options, dataset, ready, position) {
   if (!is.null(semContainer[["semFitTable"]]))
     return()
   
   semFitTable <- createJaspTable(title = "Chi Square Test Statistic (unscaled)")
+  semFitTable$position <- position
   
   semFitTable$addColumnInfo(name="Model", title = "", type="string")
   semFitTable$addColumnInfo(name="Df", title = "df", type="number")
@@ -321,11 +322,12 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   return()
 }
 
-.semEstimatesTable <- function(semContainer, options, dataset, ready, variables) {
+.semEstimatesTable <- function(semContainer, options, dataset, ready, variables, position) {
   if (!is.null(semContainer[["semEstimatesTable"]]))
     return()
   
   semEstimatesTable <- createJaspTable(title = "Parameter Estimates")
+  semEstimatesTable$position <- position
   
   semEstimatesTable$addColumnInfo(name="lhs", title = "", type="string")
   semEstimatesTable$addColumnInfo(name="op", title = "", type="string")
@@ -351,14 +353,19 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     return()
 
   semEstimates <- lavaan:::parameterEstimates(semContainer[["semResultsList"]]$object$semResults, standardized=TRUE)
-  semEstimatesTable$setData(semEstimates)
+  semEstimatesTable$setData(lapply(semEstimates, .unv))
       
   return()
 }
 
-.semAdditionalFitMeasuresTables <- function(semContainer, options, dataset, ready) {
-  if (!ready || !options[["outputAdditionalFitMeasures"]] || !is.null(semContainer[["fitMeasuresModelTest"]]))
+.semAdditionalFitMeasuresTables <- function(semContainer, options, dataset, ready, position) {
+  if (!options[["outputAdditionalFitMeasures"]] || !is.null(semContainer[["fitMeasuresModelTest"]]))
     return()
+  
+  fitMeasures <- createJaspContainer()
+  fitMeasures$position <- position
+  
+  semContainer[["fitMeasures"]] <- fitMeasures
   
   ## Model test
   semModelTestTable <- createJaspTable(title = "Model test baseline model")
@@ -370,7 +377,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semModelTestTable$addColumnInfo(name="pvalue", title="p", type="pvalue")
   
   semModelTestTable$dependOn("outputAdditionalFitMeasures")
-  semContainer[["fitMeasuresModelTest"]] <- semModelTestTable
+  fitMeasures[["fitMeasuresModelTest"]] <- semModelTestTable
   
   ### Baseline
   semBaselineTable <- createJaspTable(title = "User model versus baseline model")
@@ -386,7 +393,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semBaselineTable$addColumnInfo(name="rni", title="Relative Noncentrality Index (RNI)", type="number")
   
   semBaselineTable$dependOn("outputAdditionalFitMeasures")
-  semContainer[["fitMeasuresBaseline"]] <- semBaselineTable
+  fitMeasures[["fitMeasuresBaseline"]] <- semBaselineTable
   
   ### LogLik measures
   semLoglikTable <- createJaspTable(title = "Loglikelihood and Information Criteria")
@@ -400,7 +407,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semLoglikTable$addColumnInfo(name="bic2", title="Sample-size adjusted Bayesian (BIC)", type="number")
   
   semLoglikTable$dependOn("outputAdditionalFitMeasures")
-  semContainer[["fitMeasuresLikelihood"]] <- semLoglikTable
+  fitMeasures[["fitMeasuresLikelihood"]] <- semLoglikTable
   
   
   ### RMSEA measures
@@ -416,7 +423,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semRMSEATable$addColumnInfo(name="rmsea.pvalue", title="p-value RMSEA <= 0.05 ", type="pvalue")  
   
   semRMSEATable$dependOn("outputAdditionalFitMeasures")
-  semContainer[["fitMeasuresRMSEA"]] <- semRMSEATable
+  fitMeasures[["fitMeasuresRMSEA"]] <- semRMSEATable
   
   
   ### RMR measures
@@ -428,7 +435,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semRMRTable$addColumnInfo(name="srmr", title="SRMR", type="number")  
   
   semRMRTable$dependOn("outputAdditionalFitMeasures")
-  semContainer[["fitMeasuresRMR"]] <- semRMRTable
+  fitMeasures[["fitMeasuresRMR"]] <- semRMRTable
   
   ### Other fit measures
   semOtherFitTable <- createJaspTable(title = "Other Fit Indices")
@@ -442,7 +449,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   # semOtherFitTable$addColumnInfo(name="ecvi", title="Expected Cross-Validation Index (ECVI)", type="number")
   
   semOtherFitTable$dependOn("outputAdditionalFitMeasures")
-  semContainer[["fitMeasuresOther"]] <- semOtherFitTable
+  fitMeasures[["fitMeasuresOther"]] <- semOtherFitTable
   
   if (!ready || semContainer$getError())
     return()
@@ -461,11 +468,12 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   return()
 }
 
-.semRSquaredTable <- function(semContainer, options, dataset, ready) {
+.semRSquaredTable <- function(semContainer, options, dataset, ready, position) {
   if (!options[["outputRSquared"]] || !is.null(semContainer[["semRSquaredTable"]]))
     return()
   
   semRSquaredTable <- createJaspTable(title = "R-Squared")
+  semRSquaredTable$position <- position
   
   semRSquaredTable$addColumnInfo(name="var", title = "Variable", type="string")
   semRSquaredTable$dependOn("outputRSquared")
@@ -474,7 +482,6 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   
   if (!ready || semContainer$getError())
     return()
-  
   
   r2 <- lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "r2")
   nm <- names(r2)
@@ -495,15 +502,15 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     }
   }
 
-
   return()
 }
 
-.semModIndicesTable <- function(semContainer, options, dataset, ready) {
+.semModIndicesTable <- function(semContainer, options, dataset, ready, position) {
   if (!options[["outputModificationIndices"]] || !is.null(semContainer[["semModIndicesTable"]]))
     return()
   
   semModIndicesTable <- createJaspTable(title = "Modification Indices")
+  semModIndicesTable$position <- position
   
   semModIndicesTable$addColumnInfo(name="lhs", title = "", type="string")
   semModIndicesTable$addColumnInfo(name="op",  title = "",type="string")
@@ -517,6 +524,8 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semModIndicesTable$dependOn(c("outputModificationIndices", "outputModificationIndicesHideLowIndices", 
                               "outputModificationIndicesHideLowIndicesThreshold"))
   semModIndicesTable$showSpecifiedColumnsOnly <- TRUE
+  
+  semContainer[["semModIndicesTable"]] <- semModIndicesTable
   
   if (!ready || semContainer$getError())
     return()
@@ -535,19 +544,18 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     semModIndResult <- semModIndResult[semModIndResult$mi > options$outputModificationIndicesHideLowIndicesThreshold, , drop=FALSE]
   }
   
-  semModIndicesTable$setData(semModIndResult)
-  semContainer[["semModIndicesTable"]] <- semModIndicesTable
-  
+  semModIndicesTable$setData(lapply(semModIndResult, .unv))
   
   return()
 }
 
-.semCovCorTable <- function(semContainer, options, dataset, ready) {
+.semCovCorTable <- function(semContainer, options, dataset, ready, position) {
   if (!(options$outputObservedCovarianceCorrelations || options$outputFittedCovarianceCorrelations || 
-                  options$outputResidualCovarianceCorrelations)  || !is.null(semContainer[["semCovCorCollection"]]))
+                  options$outputResidualCovarianceCorrelations) || !is.null(semContainer[["semCovCorCollection"]]))
     return()
-  
-  semCovCorCollection <- createJaspContainer(title = "Covariances (lower triangle) / correlations (upper triangle)")
+ 
+  semCovCorCollection <- createJaspContainer()
+  semCovCorCollection$position <- position
   semContainer[["semCovCorCollection"]] <- semCovCorCollection
   
   semCovCorCollection$dependOn(c("outputFittedCovarianceCorrelations", "outputObservedCovarianceCorrelations", 
@@ -560,8 +568,12 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
                                                     options$outputFittedCovarianceCorrelations,
                                                     options$outputResidualCovarianceCorrelations)]
 
-  nm <- names(lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "sampstat"))
-  if (options$groupingVariable == "") nm <- 1
+  mainTitle <- "Covariances (lower triangle) / correlations (upper triangle)"
+  nm <- ""
+  if (options$groupingVariable != "") {
+    semCovCorCollection$title <- mainTitle
+    nm <- names(lavaan::inspect(semContainer[["semResultsList"]]$object$semResults, "sampstat"))
+  }
   
   for (thisGroup in 1:length(nm)) {
     
@@ -598,11 +610,10 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     matDF <- matDF[order(matDF$..sortingDummy), ]
     matDF <- matDF[, -1]
     
-    if (options$groupingVariable == "") {
-      thisTitle <- ""
-    } else {
+    if (options$groupingVariable == "")
+      thisTitle <- mainTitle
+    else
       thisTitle <- paste0("Level of ", options$groupingVariable, ": ", nm[thisGroup])
-    }
     
     semCovCorCollection[[paste0("semCovCorTable", thisGroup)]] <- createJaspTable(title = thisTitle)
     semCovCorCollection[[paste0("semCovCorTable", thisGroup)]]$addColumnInfo(name="Variable", title="", type="string", 
@@ -619,12 +630,12 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   return()
 }
 
-.semMardiasCoefficientTable <- function(semContainer, options, dataset, ready) {
+.semMardiasCoefficientTable <- function(semContainer, options, dataset, ready, position) {
   if (!options[["outputMardiasCoefficients"]] || !is.null(semContainer[["semMardiasTable"]]))
     return()
   
   semMardiasTable <- createJaspTable(title = "Mardia's coefficients")
-  
+  semMardiasTable$position <- position
   
   semMardiasTable$addColumnInfo(name="Type", title="", type="string")
   semMardiasTable$addColumnInfo(name="Coefficient", type="number")
@@ -789,15 +800,16 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   stringr::str_replace_all(message, decodedVars)
 }
 
-.lavCreatePathDiagram <- function(semContainer, options, ready) {
+.lavCreatePathDiagram <- function(semContainer, options, ready, position) {
   if (!is.null(semContainer[["pathDiagramPlotCollection"]]) || !options[["addPathDiagram"]])
     return()
   
-  pathDiagramPlotCollection <- createJaspContainer(title = "Path Diagrams")
+  pathDiagramPlotCollection <- createJaspContainer()
+  pathDiagramPlotCollection$position <- position
+  
   pathDiagramPlotCollection$dependOn(c("addPathDiagram", "outputpathdiagramstandardizedparameter"))
   
   semContainer[["pathDiagramPlotCollection"]] <- pathDiagramPlotCollection
-  
   
   if (!ready || semContainer$getError()) {
     pathDiagramPlotCollection[["placeHolderPathDiagram"]] <- createJaspPlot(title = "Path Diagram")
@@ -831,11 +843,14 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   
   if (isTryError(p)) {
     errorMessage <- .extractErrorMessage(p)
-    semContainer$setError(errorMessage)
+    pathDiagramPlotCollection[["placeHolderPathDiagram"]] <- createJaspPlot(title = "Path Diagram")
+    pathDiagramPlotCollection[["placeHolderPathDiagram"]]$setError(errorMessage)
     return()
   }
   
   if (options$groupingVariable != "") {
+    pathDiagramPlotCollection$title <- "Path Diagrams"
+    
     # semplot returns an unnamed list, but which plot belongs to which grouping level?
     # The order should match the order of the levels in the lavaan model..
     titles <- semPlotModel@Original[[1]]@Data@group.label
@@ -858,36 +873,30 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
 }
 
 .lavWritePathDiagram <- function(plotObj, title, options, pathDiagramPlotCollection) {
-  pathDiagram <- list()
-  pathDiagram$title <- title
-  pathDiagram$width <- options$plotWidth
-  pathDiagram$height <- options$plotHeight
-  if (pathDiagram$height == 0) {
-    pathDiagram$height <- 1 + 299 * (length(options$variables)/5)
-  }
-  pathDiagram$custom <- list(width="plotWidth", height="plotHeight")
+  width <- options$plotWidth
+  height <- options$plotHeight
+  if (height == 0)
+    height <- 1 + 299 * (length(options$variables) / 5)
 
-  pathDiagramPlotCollection[[paste0("pathPlot", title)]] <- createJaspPlot(width = pathDiagram$width, 
-                         height = pathDiagram$height, plot = plotObj, title = title)
-  
-  pathDiagramPlotCollection[[paste0("pathPlot", title)]]$dependOn(c("plotWidth", "plotHeight"))
+  pathDiagramPlotCollection[[paste0("pathPlot", title)]] <- createJaspPlot(width = width, 
+                         height = height, plot = plotObj, title = title)
   
   return()
 }
 
 .lavToPlotObj <- function(lavResult) {
-  # Create semplot model and unv the names of the manifest variables
+  # Create semplot model and decode the names of the manifest variables
   # Sorry, this code is really ugly but all it does is replace names for plot.
   semPlotMod <- semPlot::semPlotModel(list(lavResult), list(mplusStd = "std"))[[1]]
   
   manifests <- semPlotMod@Vars$name[semPlotMod@Vars$manifest]
-  semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- .unv(manifests)
+  semPlotMod@Vars$name[semPlotMod@Vars$manifest] <- decodeColNames(manifests)
   
   lhsAreManifest <- semPlotMod@Pars$lhs %in% manifests
-  if (any(lhsAreManifest)) semPlotMod@Pars$lhs[lhsAreManifest] <- .unv(semPlotMod@Pars$lhs[lhsAreManifest])
+  if (any(lhsAreManifest)) semPlotMod@Pars$lhs[lhsAreManifest] <- decodeColNames(semPlotMod@Pars$lhs[lhsAreManifest])
   
   rhsAreManifest <- semPlotMod@Pars$rhs %in% manifests
-  if (any(rhsAreManifest)) semPlotMod@Pars$rhs[rhsAreManifest] <- .unv(semPlotMod@Pars$rhs[rhsAreManifest])
+  if (any(rhsAreManifest)) semPlotMod@Pars$rhs[rhsAreManifest] <- decodeColNames(semPlotMod@Pars$rhs[rhsAreManifest])
   
   return(semPlotMod)
 }
