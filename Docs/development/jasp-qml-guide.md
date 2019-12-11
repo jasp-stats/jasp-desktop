@@ -16,6 +16,7 @@ Table of Contents:
     + [PercentField](#percentfield)
     + [CIField](#cifield)
     + [TextField](#textfield)
+    + [TextArea](#textarea)
   * [Variable Specification](#variable-specification)
     + [AvailableVariablesList](#availablevariableslist)
     + [AssignedVariablesList](#assignedvariableslist)
@@ -335,6 +336,14 @@ Properties:
 
 </details>
 
+#### TextArea
+For an input with text that can have many lines, use this component. As an `Enter` just adds a new line, and thus does not finish the editing, in order to apply the text you entered, you need to type `Ctrl-Enter`.<br>
+Properties:
+- `title`: [optional, default: `""`] title displayed above the TextArea.
+- `textType`: [optional, default: `""`, values: `lavaan`, `JAGS`, `Rcode`, `model`, `source`]: this component is in fact often used in a specialized mode, specified by this property):<br>
+	* `lavaan`, `JAGS` and `Rcode`: the TextArea is used for Lavaan, JAGS or R code: it gets automatically the right syntax check
+	* `model`: the TextArea is used as R model.
+	* `source`: The TextArea can be then used as source for a VariablesList: all unique strings separated by a new line will be then the terms of the VariablesList.<br>
 
 ### Variable Specification
 Most analyses are performed on variables. JASP offers a few ways of visualizing these variables in the input form. The general idea is that you get a field of available variables (taken from the dataset) and then one or more fields that the variables can be dragged to. Variable fields should be wrapped in a `VariablesForm`. This makes it possible to automatically align multiple variable fields and add assign-buttons.
@@ -343,7 +352,7 @@ Most analyses are performed on variables. JASP offers a few ways of visualizing 
 Properties
 - `name`: identifier of the variables list, this is never send to R
 - `label`: [optional, default: `""`] text that will be shown above the variable field
-- `source`: [optional] can be set to the `name` (or a list of names) of an `AssignedVariablesList`, when omitted variables are taken from the dataset (example usage: you have a second `AvailableVariablesList` for plotting the variables that are assigned to an `AssignedVariablesList`; see also the example)
+- `source`: [optional, default: `""`] this can be set to the `name` (or a list of names) of an `AssignedVariablesList`. If no source is specified, then all variables of the loaded file is used as source. To specify several sources, you need to use an array: `["source1", "source2"]`. If you have a `singleVariable` Variables List as source, it is possible to specify you want the `levels` of the variable. For this uses: `source: [{name: "splitby", use: "levels"}]`. If a VariablesList source is itself composed by several kinds of sources, you can discard one of them in this way: `source: [{ name: "modelTerms", discard: "covariates" }]`
 - `width`: [optional, default: 2/5 of the VariablesForm width] in pixels how wide should the field be
 
 Note: `height` should be defined on `VariablesForm` itself.
