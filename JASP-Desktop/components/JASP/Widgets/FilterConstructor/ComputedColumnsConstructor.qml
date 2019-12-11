@@ -34,9 +34,10 @@ Item
 	{
 		focus = true
 		filterConstructor.somethingChanged = false
-		var allCorrect = true
-		var onlyOneFormula = scriptColumn.children.length === 1
-		var noFormulas = scriptColumn.children.length === 0
+
+		var allCorrect		= true
+		var onlyOneFormula	= scriptColumn.children.length === 1
+		var noFormulas		= scriptColumn.children.length === 0
 
 		for (var i = 0; i < scriptColumn.children.length; ++i)
 		{
@@ -70,21 +71,6 @@ Item
 		return lastCheckPassed
 	}
 
-	OperatorSelectorComputedColumns
-	{
-		id: columnsRow
-		anchors.top: parent.top
-		anchors.left: parent.left
-		anchors.right: parent.right
-
-		height: filterConstructor.blockDim * 1.75
-
-		z: 3
-
-		horizontalCenterX: computedHintsColumns.x + (computedHintsColumns.width * 0.5)
-
-	}
-
 	Rectangle {
 		id: background
 
@@ -109,6 +95,21 @@ Item
 			width:						implicitWidth * ratio
 			height:						implicitHeight * ratio
 		}
+	}
+
+	OperatorSelectorComputedColumns
+	{
+		id:				columnsRow
+		anchors.top:	parent.top
+		anchors.left:	parent.left
+		anchors.right:	parent.right
+
+		height:			filterConstructor.blockDim * 1.75
+
+		z:				3
+
+		horizontalCenterX: computedHintsColumns.x + (computedHintsColumns.width * 0.5)
+
 	}
 
 	Item
@@ -258,6 +259,7 @@ Item
 
 			textFormat:				Text.StyledText
 			font.pixelSize:			filterConstructor.fontPixelSize
+			color:					jaspTheme.textEnabled
 		}
 
 		Rectangle
@@ -272,13 +274,15 @@ Item
 			height:					visible ? generatedRcode.contentHeight + 8: 0
 			visible:				filterConstructor.showGeneratedRCode
 
-			border.color:			"grey"
+			color:					jaspTheme.white
+			border.color:			jaspTheme.gray
 			border.width:			1
 
 			Text
 			{
 				id:							rLetter
 				text:						"R:"
+				color:						jaspTheme.textEnabled
 				anchors.left:				parent.left
 				anchors.verticalCenter:		parent.verticalCenter
 				anchors.leftMargin:			4
@@ -290,19 +294,11 @@ Item
 
 				id:						generatedRcode
 				text:					filterConstructor.rCode
-
-				//anchors.top:			parent.top
-				anchors.left:			rLetter.right
-				anchors.right:			parent.right
-				//anchors.bottom:			parent.bottom
-				anchors.verticalCenter:	rLetter.verticalCenter
-				anchors.leftMargin:		4
-
+				color:					jaspTheme.textEnabled
 
 				wrapMode:				TextArea.WordWrap
 				horizontalAlignment:	TextArea.AlignLeft
 				verticalAlignment:		TextArea.AlignVCenter
-
 
 				textFormat:				Text.PlainText
 				font.family:			"Courier"
@@ -310,6 +306,15 @@ Item
 				selectByMouse:			true
 				selectByKeyboard:		true
 				readOnly:				true
+
+				anchors
+				{
+					left:			rLetter.right
+					right:			parent.right
+
+					verticalCenter:	rLetter.verticalCenter
+					leftMargin:		4
+				}
 			}
 		}
 

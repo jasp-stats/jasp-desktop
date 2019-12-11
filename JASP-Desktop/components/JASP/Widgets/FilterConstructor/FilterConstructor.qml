@@ -72,21 +72,6 @@ Item
 		return lastCheckPassed
 	}
 
-	OperatorSelector
-	{
-		id:					operatorsRow
-		height:				filterConstructor.blockDim * 1.75
-		z:					3
-		horizontalCenterX:	filterHintsColumns.x + (filterHintsColumns.width * 0.5)
-		anchors
-		{
-			top:	parent.top
-			left:	parent.left
-			right:	parent.right
-		}
-
-	}
-
 	Rectangle
 	{
 		id:				background
@@ -112,205 +97,237 @@ Item
 		}
 	}
 
+
 	Item
 	{
-		id:		columnList
-		width:	columns.width + columnsLeftScrollBar.width
+		id:				fadeCollector
+
+		property int minWidthConstructor: 400 * preferencesModel.uiScale
 
 		anchors
 		{
-			top:			operatorsRow.bottom
+			top:			parent.top
 			left:			parent.left
+			right:			parent.right
 			bottom:			parent.bottom
-			bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
+			rightMargin:	Math.min(0, filterConstructor.width - fadeCollector.minWidthConstructor)
 		}
 
-
-		JASPScrollBar
+		OperatorSelector
 		{
-			id:				columnsLeftScrollBar
-			flickable:		columns
-			manualAnchor:	true
-
-			anchors
-			{
-				top:		parent.top
-				left:		parent.left
-				bottom:		parent.bottom
-			}
-		}
-
-		ElementView
-		{
-			id:				columns
-			model:			columnsModel
-			anchors.top:	parent.top
-			anchors.left:	columnsLeftScrollBar.right
-			anchors.bottom:	parent.bottom
-		}
-	}
-
-	Item
-	{
-		id:				filterHintsColumns
-		z:				-1
-		anchors
-		{
-			top:	operatorsRow.bottom
-			left:	columnList.right
-			right:	funcVarLists.left
-			bottom: parent.bottom
-		}
-
-		Rectangle
-		{
-			id:				rectangularColumnContainer
-			z:				parent.z + 1
-			border.width:	1
-			border.color:	jaspTheme.uiBorder
-			color:			"transparent"
-
+			id:					operatorsRow
+			height:				filterConstructor.blockDim * 1.75
+			z:					3
+			horizontalCenterX:	filterHintsColumns.x + (filterHintsColumns.width * 0.5)
 			anchors
 			{
 				top:	parent.top
 				left:	parent.left
 				right:	parent.right
-				bottom:	hints.top
 			}
-
-			ScrollView
-			{
-				id:					scrollScriptColumn
-				anchors.fill:		parent
-				anchors.margins:	4
-				clip:				true
-
-				contentWidth:		scriptColumn.childrenRect.width
-				contentHeight:		scriptColumn.childrenRect.height
-
-				Item
-				{
-
-					Column
-					{
-						z: parent.z + 1
-						id: scriptColumn
-						objectName: "scriptColumn"
-						property string __debugName: "scriptColumn"
-
-						anchors.fill: parent
-						anchors.margins: 4
-
-						function convertToR()
-						{
-							var uit = ""
-							for (var i = 0; i < children.length; ++i)
-								uit += ( i > 0 ? "& ": "") + children[i].returnR() + "\n"
-
-							return uit
-						}
-
-						function convertToJSON()
-						{
-							var jsonObj = { "formulas": [] }
-							for (var i = 0; i < children.length; ++i)
-								jsonObj.formulas.push(children[i].convertToJSON())
-
-							return jsonObj
-						}
-					}
-				}
-			}
-
-			MouseArea
-			{
-				anchors.fill: parent
-				onPressed: { scriptColumn.focus = true; mouse.accepted = false; }
-			}
-
-			DropTrash
-			{
-				id: trashCan
-
-				anchors.bottom: parent.bottom
-				anchors.right: parent.right
-
-				height: Math.min(60 * preferencesModel.uiScale, scrollScriptColumn.height)
-			}
-
 
 		}
 
-		Text
+		Item
 		{
-			property string filterText: "Welcome to the drag and drop filter!<br>"
-
-			id:						hints
-			text:					filterText + (filterModel.filterErrorMsg !== "" ? "<br><i><font color=\"red\">"+filterModel.filterErrorMsg+"</font></i>" : "")
-
-			color:					jaspTheme.textEnabled
-
-			height:					filterConstructor.fontPixelSize + contentHeight
-
-			wrapMode:				TextArea.WordWrap
-			horizontalAlignment:	TextArea.AlignHCenter
-
-			textFormat:				Text.StyledText
-			font.pixelSize:			filterConstructor.fontPixelSize
+			id:		columnList
+			width:	columns.width + columnsLeftScrollBar.width
 
 			anchors
 			{
-				left:				parent.left
-				right:				parent.right
-				bottom:				parent.bottom
-			}
-		}
-
-	}
-
-	Item
-	{
-		id:					funcVarLists
-
-		anchors
-		{
-			top:			operatorsRow.bottom
-			right:			parent.right
-			bottom:			parent.bottom
-			rightMargin:	4 * preferencesModel.uiScale
-		}
-
-		width: functieLijst.width + anchors.rightMargin + functionsRightScrollBar.width
-
-		JASPScrollBar
-		{
-			id:				functionsRightScrollBar
-			flickable:		functieLijst
-			manualAnchor:	true
-
-			anchors
-			{
-				top:			parent.top
-				right:			parent.right
+				top:			operatorsRow.bottom
+				left:			parent.left
 				bottom:			parent.bottom
-				margins:		functieLijst.anchors.margins
-				bottomMargin:	functieLijst.anchors.bottomMargin
-			}
-		}
-
-		ElementView
-		{
-			id:						functieLijst
-			anchors
-			{
-				top:			parent.top
-				right:			functionsRightScrollBar.left
-				bottom:			parent.bottom
-				margins:		2 * preferencesModel.uiScale
 				bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
 			}
 
-			width:	80 * preferencesModel.uiScale //for init or something?
+
+			JASPScrollBar
+			{
+				id:				columnsLeftScrollBar
+				flickable:		columns
+				manualAnchor:	true
+
+				anchors
+				{
+					top:		parent.top
+					left:		parent.left
+					bottom:		parent.bottom
+				}
+			}
+
+			ElementView
+			{
+				id:				columns
+				model:			columnsModel
+				anchors.top:	parent.top
+				anchors.left:	columnsLeftScrollBar.right
+				anchors.bottom:	parent.bottom
+			}
+		}
+
+		Item
+		{
+			id:				filterHintsColumns
+			z:				-1
+			anchors
+			{
+				top:	operatorsRow.bottom
+				left:	columnList.right
+				right:	funcVarLists.left
+				bottom: parent.bottom
+			}
+
+			Rectangle
+			{
+				id:				rectangularColumnContainer
+				z:				parent.z + 1
+				border.width:	1
+				border.color:	jaspTheme.uiBorder
+				color:			"transparent"
+
+				anchors
+				{
+					top:	parent.top
+					left:	parent.left
+					right:	parent.right
+					bottom:	hints.top
+				}
+
+				ScrollView
+				{
+					id:					scrollScriptColumn
+					anchors.fill:		parent
+					anchors.margins:	4
+					clip:				true
+
+					contentWidth:		scriptColumn.childrenRect.width
+					contentHeight:		scriptColumn.childrenRect.height
+
+					Item
+					{
+
+						Column
+						{
+							z: parent.z + 1
+							id: scriptColumn
+							objectName: "scriptColumn"
+							property string __debugName: "scriptColumn"
+
+							anchors.fill: parent
+							anchors.margins: 4
+
+							function convertToR()
+							{
+								var uit = ""
+								for (var i = 0; i < children.length; ++i)
+									uit += ( i > 0 ? "& ": "") + children[i].returnR() + "\n"
+
+								return uit
+							}
+
+							function convertToJSON()
+							{
+								var jsonObj = { "formulas": [] }
+								for (var i = 0; i < children.length; ++i)
+									jsonObj.formulas.push(children[i].convertToJSON())
+
+								return jsonObj
+							}
+						}
+					}
+				}
+
+				MouseArea
+				{
+					anchors.fill: parent
+					onPressed: { scriptColumn.focus = true; mouse.accepted = false; }
+				}
+
+				DropTrash
+				{
+					id: trashCan
+
+					anchors.bottom: parent.bottom
+					anchors.right: parent.right
+
+					height: Math.min(60 * preferencesModel.uiScale, scrollScriptColumn.height)
+				}
+
+
+			}
+
+			Text
+			{
+				property string filterText: "Welcome to the drag and drop filter!<br>"
+
+				id:						hints
+				text:					filterText + (filterModel.filterErrorMsg !== "" ? "<br><i><font color=\"red\">"+filterModel.filterErrorMsg+"</font></i>" : "")
+
+				color:					jaspTheme.textEnabled
+
+				height:					filterConstructor.fontPixelSize + contentHeight
+
+				wrapMode:				TextArea.WordWrap
+				horizontalAlignment:	TextArea.AlignHCenter
+
+				textFormat:				Text.StyledText
+				font.pixelSize:			filterConstructor.fontPixelSize
+
+				anchors
+				{
+					left:				parent.left
+					right:				parent.right
+					bottom:				parent.bottom
+				}
+			}
+
+		}
+
+		Item
+		{
+			id:					funcVarLists
+
+			anchors
+			{
+				top:			operatorsRow.bottom
+				right:			parent.right
+				bottom:			parent.bottom
+				rightMargin:	4 * preferencesModel.uiScale
+			}
+
+			width: functieLijst.width + anchors.rightMargin + functionsRightScrollBar.width
+
+			JASPScrollBar
+			{
+				id:				functionsRightScrollBar
+				flickable:		functieLijst
+				manualAnchor:	true
+
+				anchors
+				{
+					top:			parent.top
+					right:			parent.right
+					bottom:			parent.bottom
+					margins:		functieLijst.anchors.margins
+					bottomMargin:	functieLijst.anchors.bottomMargin
+				}
+			}
+
+			ElementView
+			{
+				id:						functieLijst
+				anchors
+				{
+					top:			parent.top
+					right:			functionsRightScrollBar.left
+					bottom:			parent.bottom
+					margins:		2 * preferencesModel.uiScale
+					bottomMargin:	filterConstructor.extraSpaceUnderColumns + filterConstructor.blockDim
+				}
+
+				width:	80 * preferencesModel.uiScale //for init or something?
+			}
 		}
 	}
 

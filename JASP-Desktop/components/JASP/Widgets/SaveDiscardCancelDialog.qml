@@ -8,7 +8,7 @@ Dialog
 					title:		qsTr("Changes were made")
 	property alias	text:		contentText.text
 					modal:		true
-					x:			(parent.width - width) / 2
+					x:			(mainWindowRoot.width - width) / 2
 					y:			(parent.height - height) / 2
 					width:		mainWindowRoot.width / 2
 
@@ -16,6 +16,13 @@ Dialog
 	signal			save();
 	signal			cancel();
 	signal			discard();
+
+	background: Rectangle
+	{
+		color:			jaspTheme.uiBackground
+		border.color:	jaspTheme.uiBorder
+		border.width:	1
+	}
 
 	header: Item
 	{
@@ -28,6 +35,7 @@ Dialog
 			text:				dialogRoot.title
 			font:				jaspTheme.fontGroupTitle
 			anchors.centerIn:	parent
+			color:				jaspTheme.textEnabled
 		}
 	}
 
@@ -41,6 +49,7 @@ Dialog
 			id:						contentText
 			text:					qsTr("There are unapplied changes; what would you like to do?")
 			font:					jaspTheme.font
+			color:					jaspTheme.textEnabled
 			wrapMode:				Text.WrapAtWordBoundaryOrAnywhere
 			horizontalAlignment:	Text.AlignHCenter
 			anchors.centerIn:		parent
@@ -62,7 +71,7 @@ Dialog
 			RectangularButton
 			{
 				id:			saveButton
-				text:		qsTr("Save")
+				text:		qsTr("Apply")
 				width:		discardButton.width
 				onClicked:
 				{

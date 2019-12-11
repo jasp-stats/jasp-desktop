@@ -1309,6 +1309,9 @@ bool DataSetPackage::createColumn(std::string name, columnType columnType)
 	_dataSet->columns().initializeColumnAs(newColumnIndex, name)->setDefaultValues(columnType);
 	endResetModel();
 
+	pauseEngines();
+	resumeEngines();
+
 	return true;
 }
 

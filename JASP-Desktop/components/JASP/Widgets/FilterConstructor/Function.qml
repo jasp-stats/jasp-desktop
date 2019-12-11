@@ -150,14 +150,14 @@ Item
 
 	Text
 	{
-		id: haakjesLinks
-		anchors.top: meanBar.top
+		id:				haakjesLinks
+		anchors.top:	meanBar.top
 		anchors.bottom: parent.bottom
 
-		x: functionDef.width + functionDef.x
+		x:				functionDef.width + functionDef.x
 
-		verticalAlignment: Text.AlignVCenter
-		horizontalAlignment: Text.AlignHCenter
+		verticalAlignment:		Text.AlignVCenter
+		horizontalAlignment:	Text.AlignHCenter
 
 		width: showParentheses ? filterConstructor.blockDim / 3 : 0
 		text: ! showParentheses || funcRoot.isAbs || funcRoot.isRoot ? "" : "("

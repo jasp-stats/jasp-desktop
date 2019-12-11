@@ -170,7 +170,7 @@ FocusScope
 					{
 						// This animation may interfere during the Analysis expanding animation.
 						// So ensure that it is enabled only when an analysis is dragging
-						enabled: analysesModel.moving
+						enabled:	analysesModel.moving && !preferencesModel.safeGraphics
 						NumberAnimation { properties: "y"; easing.type: Easing.OutQuad }
 					}
 

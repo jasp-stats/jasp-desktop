@@ -94,7 +94,7 @@ JaspTheme
 	uiBorder:							grayDarker
 
 	fileMenuColorBackground:			grayVeryMuchLighter
-	fileMenuLightBorder:				grayMuchLighter
+	fileMenuLightBorder:				grayLighter
 
 	buttonColor:						uiBackground
 	buttonColorHovered:					grayLighter

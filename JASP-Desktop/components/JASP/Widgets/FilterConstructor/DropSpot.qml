@@ -157,6 +157,7 @@ DropArea {
 			anchors.top: parent.top
 
 			visible: !dropTextInput.visible
+			color:	jaspTheme.textEnabled
 		}
 
 		TextInput
