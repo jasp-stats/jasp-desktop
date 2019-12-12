@@ -25,7 +25,6 @@ import JASP.Widgets 1.0
 
 Form 
 {
-	usesJaspResults: false
 
 	Group
 	{

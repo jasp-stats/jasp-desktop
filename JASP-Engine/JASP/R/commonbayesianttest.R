@@ -1840,7 +1840,9 @@
   } else {
     # sample from delta posterior
     if (!wilcoxTest) {
-      .setSeedJASP(options)
+      # remove, once setSeedJASP() function is added to summary stats t-test
+      if(c("setSeed", "seed") %in% names(options))
+        .setSeedJASP(options)
       bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r)
       # library(BayesFactor)
       samples <- BayesFactor::posterior(model = bfObject, iterations = iterations,

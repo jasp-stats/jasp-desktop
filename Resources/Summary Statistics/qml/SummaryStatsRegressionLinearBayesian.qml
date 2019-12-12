@@ -24,7 +24,6 @@ import JASP.Widgets 1.0
 
 Form 
 {
-	usesJaspResults: false
 
 	IntegerField { label: qsTr("Sample size"); name: "sampleSize" ; min: 3; Layout.columnSpan: 2; defaultValue: 3 }
 

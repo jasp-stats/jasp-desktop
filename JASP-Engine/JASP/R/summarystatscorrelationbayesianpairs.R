@@ -29,12 +29,11 @@ SummaryStatsCorrelationBayesianPairs <- function(dataset = NULL, options,
 	}
 
 	# Bayes factor type (BF10, BF01, log(BF10))
-	bf.type <- .getBayesfactorTitle.summarystats.ttest(
+	bf.title <- .getBayesfactorTitleSummaryStats(
 								bayesFactorType = options$bayesFactorType,
 								hypothesis = options$hypothesis
 							)
-	bf.title <- bf.type$bftitle
-	BFH1H0 <- bf.type$BFH1H0
+	BFH1H0 <- ifelse(options$bayesFactorType == 'BF01', FALSE, TRUE)
 
 	hypothesis.variables <- .hypothesisType.summarystats.correlation(options$hypothesis)
 	oneSided <- hypothesis.variables$oneSided

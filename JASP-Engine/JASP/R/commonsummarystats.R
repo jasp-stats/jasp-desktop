@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.getBayesfactorTitle.summarystats.ttest <- function(bayesFactorType, hypothesis) {
+# set BF title for main table
+.getBayesfactorTitleSummaryStats <- function(bayesFactorType, hypothesis) {
 	# returns the Bayes factor title to be shown on the table
 	#
 	# Args:
@@ -25,32 +26,23 @@
 	# Output:
 	#   A list containing:
 	#     bftitle: title of Bayes factor to be used in the output table
-	#     BFH1H0: true if BF10 or Log(BF10) is selected
 
 	hypothesisMap <- NULL
-	BFH1H0 <- TRUE
 
 	# map hypothesis type to a number
-	if (hypothesis == "groupsNotEqual" ||
-			hypothesis == "notEqualToTestValue" ||
-			hypothesis == "correlated") {
+	if (hypothesis == "twoSided" || hypothesis == "correlated") {
 
 		hypothesisMap <- 1
-	} else if (hypothesis == "groupOneGreater" ||
-			hypothesis == "greaterThanTestValue" ||
-			hypothesis == "correlatedPositively") {
+	} else if (hypothesis == "plusSided" || hypothesis == "correlatedPositively") {
 
 		hypothesisMap <- 2
-	} else if (hypothesis == "groupTwoGreater" ||
-			hypothesis == "lessThanTestValue" ||
-			hypothesis == "correlatedNegatively") {
+	} else if (hypothesis == "minSided" || hypothesis == "correlatedNegatively") {
 
 		hypothesisMap <- 3
 	}
 
 	if (bayesFactorType == "BF01") {
 
-		BFH1H0 <- FALSE
 		bf.title <- switch(
 									hypothesisMap,
 									"BF\u2080\u2081",
@@ -76,5 +68,18 @@
 								)
 	}
 
-	return(list(bftitle = bf.title, BFH1H0 = BFH1H0))
+	return(bf.title)
 }
+
+# citations for summary stats module
+.summaryStatsCitations <- c(
+  "GronauEtAl2017"     = "Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. The American Statistician.",
+  "Haldane1932"        = "Haldane, J. B. S. (1932). A note on inverse probability. Mathematical Proceedings of the Cambridge Philosophical Society, 28, 55-61.",
+  "Jeffreys1961"       = "Jeffreys, H. (1961). Theory of Probability. Oxford, Oxford University Press.",
+  "LiangEtAl2008"      = "Liang, F. and Paulo, R. and Molina, G. and Clyde, M. A. and Berger, J. O. (2008). Mixtures of g-priors for Bayesian Variable Selection. Journal of the American Statistical Association, 103, pp. 410-423",
+  "LyEtAl2016"         = "Ly, A., Verhagen, A. J. & Wagenmakers, E.-J. (2016). Harold Jeffreys's Default Bayes Factor Hypothesis Tests: Explanation, Extension, and Application in Psychology. Journal of Mathematical Psychology, 72, 19-32.",
+  "MoreyRounder2015"   = "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
+  "OHaganForster2004"  = "O'Hagan, A., & Forster, J. (2004). Kendall's advanced theory of statistics vol. 2B: Bayesian inference (2nd ed.). London: Arnold.",
+  "RounderEtAl2009"    = "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.",
+  "RouderMoreyInPress" = "Rouder, J. N. and Morey, R. D. (in press). Bayesian testing in regression. Multivariate Behavioral Research."
+)

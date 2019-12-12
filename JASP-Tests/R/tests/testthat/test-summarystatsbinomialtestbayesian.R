@@ -1,24 +1,68 @@
-context("SummaryStatsBinomialTestBayesian")
+context("Summary Stats Binomial Test Bayesian")
 
-options <- jasptools::analysisOptions("SummaryStatsBinomialTestBayesian")
-options$betaPriorParamA <- 2
-options$betaPriorParamB <- 3
-options$failures <- 45
-options$plotPriorAndPosterior <- TRUE
-options$successes <- 55
-options$testValue <- 0.6
-set.seed(1)
-results <- jasptools::run("SummaryStatsBinomialTestBayesian", "test.csv", options)
-
-
-test_that("Prior and Posterior plot matches", {
-	plotName <- results[["results"]][["inferentialPlots"]][["PriorPosteriorPlot"]][["data"]]
-	testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
-	expect_equal_plots(testPlot, "prior-and-posterior", dir="SummaryStatsBinomialTestBayesian")
+test_that("Main table results match", {
+  options <- jasptools::analysisOptions("SummaryStatsBinomialTestBayesian")
+  
+  options$successes                           <- 58
+  options$failures                            <- 42
+  options$betaPriorParamA                     <- 4
+  options$betaPriorParamB                     <- 2
+  options$testValue                           <- 0.2
+  options$bayesFactorType                     <- "BF01"
+  options$plotPriorAndPosterior               <- FALSE
+  options$plotPriorAndPosteriorAdditionalInfo <- FALSE
+  
+  results <- jasptools::run("SummaryStatsBinomialTestBayesian", "debug.csv", options)
+  table   <- results[["results"]][["binomialContainer"]][["collection"]][["binomialContainer_bayesianBinomialTable"]][["data"]]
+  expect_equal_tables(table,
+                      list(4.32337507642424e-15, 42, 8.41375589059492e-17, 58, 0.2)
+  )
 })
 
-test_that("Bayesian Binomial Test table results match", {
-	table <- results[["results"]][["table"]][["data"]]
-	expect_equal_tables(table,
-		list(0.275361608438223, 55, 45, 0.6, 0.309238161634108))
+test_that("Prior posterior plots match", {
+  options <- jasptools::analysisOptions("SummaryStatsBinomialTestBayesian")
+  # without additional information
+  options$successes                           <- 58
+  options$failures                            <- 42
+  options$plotPriorAndPosterior               <- TRUE
+  options$plotPriorAndPosteriorAdditionalInfo <- FALSE
+  results  <- jasptools::run("SummaryStatsBinomialTestBayesian", "debug.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "prior-posterior-1", dir="SummaryStatsBinomialTestBayesian")
+  
+  options$successes                           <- 42
+  options$failures                            <- 58
+  results  <- jasptools::run("SummaryStatsBinomialTestBayesian", "debug.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "prior-posterior-2", dir="SummaryStatsBinomialTestBayesian")
+  
+  # with additional information
+  options$plotPriorAndPosterior               <- TRUE
+  options$plotPriorAndPosteriorAdditionalInfo <- TRUE
+  results  <- jasptools::run("SummaryStatsBinomialTestBayesian", "debug.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "prior-posterior-3", dir="SummaryStatsBinomialTestBayesian")
+  
+  options$successes                           <- 58
+  options$failures                            <- 42
+  results  <- jasptools::run("SummaryStatsBinomialTestBayesian", "debug.csv", options)
+  testPlot <- results[["state"]][["figures"]][[1]][["obj"]]
+  expect_equal_plots(testPlot, "prior-posterior-4", dir="SummaryStatsBinomialTestBayesian")
+})
+
+test_that("Error message is validation", {
+  options <- jasptools::analysisOptions("SummaryStatsBinomialTestBayesian")
+  
+  options$successes                           <- 10
+  options$failures                            <- 0
+  options$betaPriorParamA                     <- 0.001
+  options$betaPriorParamB                     <- 9999
+  options$testValue                           <- 0.5
+  options$hypothesis                          <- "greaterThanTestValue"
+  options$plotPriorAndPosterior               <- TRUE
+  options$plotPriorAndPosteriorAdditionalInfo <- TRUE
+  
+  results <- jasptools::run("SummaryStatsBinomialTestBayesian", "debug.csv", options)
+  error   <- results[["results"]][["binomialContainer"]][["collection"]][["binomialContainer_priorPosteriorPlot"]][["error"]][["type"]]
+  expect_identical(error, "badData")
 })
