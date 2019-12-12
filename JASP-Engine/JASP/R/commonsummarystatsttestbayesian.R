@@ -197,12 +197,12 @@
   if (is.null(container)) {
     container <- createJaspContainer()
     # add dependencies for main table (i.e., when does it have to recompute values for the main table)
-    container$dependOn(c("tStatistic", "n1Size", "n2Size"             , "hypothesis"                       ,        # standard entries
-                         "defaultStandardizedEffectSize", "informativeStandardizedEffectSize",        # informative or default
-                         "priorWidth"                   , "effectSizeStandardized",                   # default prior
-                         "informativeCauchyLocation"    , "informativeCauchyScale",                   # informed cauchy priors
-                         "informativeNormalMean"        , "informativeNormalStd"  ,                   # informed normal priors
-                         "informativeTLocation"         , "informativeTScale"     , "informativeTDf"  # informed t-distribution
+    container$dependOn(c("tStatistic", "n1Size", "n2Size", "hypothesis", "bayesFactorType",            # standard entries
+                         "defaultStandardizedEffectSize" , "informativeStandardizedEffectSize",        # informative or default
+                         "priorWidth"                    , "effectSizeStandardized",                   # default prior
+                         "informativeCauchyLocation"     , "informativeCauchyScale",                   # informed cauchy priors
+                         "informativeNormalMean"         , "informativeNormalStd"  ,                   # informed normal priors
+                         "informativeTLocation"          , "informativeTScale"     , "informativeTDf"  # informed t-distribution
     ))
     jaspResults[["ttestContainer"]] <- container
   }
@@ -218,8 +218,6 @@
   
   if (!is.null(container[["stateSummaryStatsTTestResults"]])) {
     results <- container[["stateSummaryStatsTTestResults"]]$object
-    # only change possible: BF type
-    results[["ttestTableData"]][["BF"]] <- results[["BFlist"]][[options$bayesFactorType]]
   } else {
     results <- .summaryStatsTTestComputeResults(hypothesisList, options, analysis)
     # Save results to state
@@ -336,26 +334,33 @@
     ttestTableMessage  <- NULL
   }
   
-  # Add information for plots
+  # Add information for plots; never show the log Bayes factor in the plots (it interferes with the pie charts)
+  if(options$bayesFactorType == "BF01"){
+    BFPlots <- "BF01"
+  } else {
+    BFPlots <- "BF10"
+  }
+  
   ttestPriorPosteriorPlot <- list(
     t        = t,
     n1       = n1,
     n2       = NULL,
     paired   = TRUE,
     oneSided = hypothesisList$oneSided,
-    BF       = BFlist[[options$bayesFactorType]],
+    BF       = BFlist[[BFPlots]],
     BFH1H0   = BFlist[["BF10"]]
   )
   
   ttestRobustnessPlot <- list(
-    t                     = t,
-    n1                    = n1,
-    n2                    = 0 ,
-    paired                = FALSE,
-    BF10user              = BFlist[["BF10"]],
-    nullInterval          = hypothesisList$nullInterval,
-    rscale                = options$priorWidth,
-    oneSided              = hypothesisList$oneSided
+    t                         = t,
+    n1                        = n1,
+    n2                        = 0 ,
+    paired                    = FALSE,
+    BF10user                  = BFlist[["BF10"]],
+    yAxisLegendRobustnessPlot = BFPlots,
+    nullInterval              = hypothesisList$nullInterval,
+    rscale                    = options$priorWidth,
+    oneSided                  = hypothesisList$oneSided
   )
   
   if(analysis == "independentSamples"){
@@ -459,7 +464,7 @@
     n2                    = robustnessInfo$n2,
     paired                = robustnessInfo$paired,
     BF10user              = robustnessInfo$BF10user,
-    bfType                = options$bayesFactorType,
+    bfType                = robustnessInfo$yAxisLegendRobustnessPlot,
     nullInterval          = hypothesisList$nullInterval,
     rscale                = robustnessInfo$rscale,
     oneSided              = hypothesisList$oneSided,
@@ -528,17 +533,21 @@
   
   BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
   
-  dfPoints <- data.frame(
-    x = c(maxBFrVal, rscale, 1, sqrt(2)),
-    y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
-    g = JASPgraphs::parseThis(c(
-      sprintf("paste(max, ~%s, ':',   phantom(phollll), %s, ~at, ~'r'==%s)", BFsubscript, format(maxBF10  , digits = 4), format(maxBFrVal, digits = 4)),
-      sprintf("paste(user~prior, ':', phantom(phll[0]), ~%s==%s)"          , BFsubscript, format(BF10user , digits = 4)),
-      sprintf("paste(wide~prior, ':', phantom(ph[0][0]), ~%s==%s)"         , BFsubscript, format(BF10w    , digits = 4)),
-      sprintf("paste(ultrawide~prior, ':', ~%s==%s)"                       , BFsubscript, format(BF10ultra, digits = 4))
-    )),
-    stringsAsFactors = FALSE
-  )
+  if(additionalInformation){
+    dfPoints <- data.frame(
+      x = c(maxBFrVal, rscale, 1, sqrt(2)),
+      y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
+      g = JASPgraphs::parseThis(c(
+        sprintf("paste(max, ~%s, ':',   phantom(phollll), %s, ~at, ~'r'==%s)", BFsubscript, format(maxBF10  , digits = 4), format(maxBFrVal, digits = 4)),
+        sprintf("paste(user~prior, ':', phantom(phll[0]), ~%s==%s)"          , BFsubscript, format(BF10user , digits = 4)),
+        sprintf("paste(wide~prior, ':', phantom(ph[0][0]), ~%s==%s)"         , BFsubscript, format(BF10w    , digits = 4)),
+        sprintf("paste(ultrawide~prior, ':', ~%s==%s)"                       , BFsubscript, format(BF10ultra, digits = 4))
+      )),
+      stringsAsFactors = FALSE
+    )    
+  } else {
+    dfPoints <- NULL
+  }
   
   hypothesis <- switch(oneSided,
                        "right" = "greater",

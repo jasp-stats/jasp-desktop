@@ -202,7 +202,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   ppCri           <- c(CIlower, CIupper)
   dfLinesPP       <- .dfLinesPP(dataset = NULL, a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
   dfPointsPP      <- .dfPointsPP(dataset = NULL, a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
-  xName           <- expression(paste("Population proportion ", theta))
+  xName           <- expression(paste("Population proportion", ~theta))
   
   # error check: Cannot evaluate prior or posterior density?
   if(any(is.na(c(dfPointsPP$y, dfLinesPP$y))) || any(is.infinite(c(dfPointsPP$y, dfLinesPP$y)))){
