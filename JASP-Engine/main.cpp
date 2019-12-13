@@ -60,11 +60,10 @@ int main(int argc, char *argv[])
 		Log::initRedirects();
 		Log::setLogFileName(logFileBase + " Engine " + std::to_string(slaveNo) + ".log");
 		Log::setWhere(logTypeFromString(logFileWhere));
+		Log::setEngineNo(slaveNo);
 
 		Log::log() << "Log and possible redirects initialized!" << std::endl;
 		Log::log() << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;
-
-
 
 		try
 		{

@@ -18,6 +18,7 @@
 import QtQuick			2.11
 import QtQuick.Controls 2.12
 import JASP				1.0
+import JASP.Widgets		1.0
 
 
 JASPControl
@@ -26,46 +27,23 @@ JASPControl
 	controlType:		JASPControlBase.Button
 	implicitHeight:		control.implicitHeight
 	implicitWidth:		control.implicitWidth
+	width:				control.width
+	height:				control.height
 	isBound:			false
 	opacity:			enabled ? 1 : .7
 	
-	property alias control: control
-    property alias text:	control.text
-	property alias label:	control.text
-    property alias image:	image
-	property alias down:	control.down
-	property alias pressed:	control.pressed
-	property alias background: control.background
-    
+	readonly	property alias control:		control
+				property alias text:		control.text
+				property alias label:		control.text
+				property alias iconSource:	control.iconSource
+	readonly	property alias pressed:		control._pressed
+
     signal clicked()
     
 	Component.onCompleted: control.clicked.connect(clicked);
 
-	Button
+	RectangularButton
 	{
-		id:	control
-
-		font: jaspTheme.font
-		Image
-		{
-			id:					image
-			fillMode:			Image.PreserveAspectFit
-			anchors.centerIn:	parent
-			sourceSize.height:	background.height - (6 * preferencesModel.uiScale)
-			height:				sourceSize.height
-			visible:			source ? true : false
-        }
-    
-		background: Rectangle
-		{
-			id:				rectangle
-			border.width:	1
-			border.color:	jaspTheme.borderColor
-			radius:			jaspTheme.borderRadius
-			color:			enabled ? (control.down ? jaspTheme.gray : jaspTheme.controlBackgroundColor) : jaspTheme.disableControlBackgroundColor
-            
-			Behavior on color {	enabled: !preferencesModel.safeGraphics;	ColorAnimation { duration: 100 } }
-        }
-        
+		id:	control       
     }
 }

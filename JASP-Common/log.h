@@ -9,6 +9,8 @@
 DECLARE_ENUM(logType,  cout, file, null);
 DECLARE_ENUM(logError, noProblem, fileNotOpen, filePathNotSet);
 
+
+
 class Log
 {
 public:
@@ -23,12 +25,12 @@ public:
 
 	static void			setLoggingToFile(bool logToFile);
 	static void			setWhere(logType where);
+	static void			setEngineNo(int num)	{ _engineNo = num; }
 
 	static Json::Value	createLogCfgMsg();
 	static void			parseLogCfgMsg(const Json::Value & json);
 
 	static std::string	whereStr() { return logTypeToString(_where); }
-
 
 private:
 						Log() { }
@@ -39,7 +41,8 @@ private:
 	static logType		_where;
 	static std::string	_logFilePath;
 	static logError		_logError;
-	static int			_stdoutfd;
+	static int			_stdoutfd,
+						_engineNo;
 
 	static const char*	_nullStream;
 };

@@ -29,8 +29,9 @@ class ListModelMultinomialChi2Test : public ListModelTableViewBase
 public:
 	explicit ListModelMultinomialChi2Test(BoundQMLTableView * parent, QString tableType) : ListModelTableViewBase(parent, tableType)
 	{
-		_defaultCellVal	= 1;
-		_initialColCnt = 1;
+		_defaultCellVal		= 1;
+		_initialColCnt		= 1;
+		_keepRowsOnReset	= true;
 	}
 
 	QString			getColName(size_t index)							const	override;

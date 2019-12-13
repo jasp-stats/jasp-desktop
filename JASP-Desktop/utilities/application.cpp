@@ -62,6 +62,11 @@ bool Application::notify(QObject *receiver, QEvent *event)
 		Log::log() << "Error in object: " << receiver->objectName().toStdString() << ", with event: " << event->type() << ": " << e.what() << std::endl;
 		throw e;
 	}
+	catch (...)
+	{
+		Log::log() << "Unknown error in object: " << receiver->objectName().toStdString() << ", with event: " << event->type() << std::endl;
+		throw std::exception();
+	}
 }
 
 bool Application::event(QEvent *event)

@@ -31,6 +31,7 @@ JASPControl
 	height					: jaspTheme.defaultVariablesFormHeight
 	implicitHeight			: height
 	useControlMouseArea		: false
+	shouldStealHover		: false
 
 	property var	model
 	property var	values

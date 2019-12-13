@@ -64,6 +64,7 @@ Item
 			property var myLeftSource:			availableVariablesList
 			property var myRightSource:			allAssignedVariablesList[index];
 			property bool interactionAssign:	allAssignedVariablesList[index].addInteractionOptions
+			z:	10
 			
 			
 			sourceComponent: interactionAssign ? assignInteractionButtonComponent : assignButtonComponent
@@ -93,8 +94,9 @@ Item
 		id: assignButtonComponent
 		AssignButton 
 		{
-			leftSource: myLeftSource
-			rightSource: myRightSource
+			z:				30
+			leftSource:		myLeftSource
+			rightSource:	myRightSource
 		}		
 	}
 	
@@ -103,12 +105,15 @@ Item
 		id: assignInteractionButtonComponent
 		Item
 		{
+			z:	10
+
 			property alias assignButton: assignButton
 			property alias interactionControl: interactionControl
 			
 			function setIconToLeft()	{ assignButton.setIconToLeft() }
 			function setIconToRight()	{ assignButton.setIconToRight() }
 			function setState()			{ assignButton.setState() }
+
 			
 			AssignButton
 			{
@@ -116,6 +121,7 @@ Item
 				leftSource:			myLeftSource
 				rightSource:		myRightSource
 				interactionControl: interactionControl
+				z:					3
 			}
 			
 			DropDown

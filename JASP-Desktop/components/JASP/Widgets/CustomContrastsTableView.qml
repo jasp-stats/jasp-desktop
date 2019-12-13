@@ -21,73 +21,26 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.11
 import JASP.Controls 1.0
 
-Item
+BasicThreeButtonTableView
 {
 	id				: customContrastsTV
-	width			: parent.width
-	implicitWidth	: width
-	height			: 200 * preferencesModel.uiScale
-	implicitHeight	: height
 
-	property	alias	control				: tableView // needed for RowComponents
-	property	alias	name				: tableView.name
-	property	alias	columnName			: tableView.colName
-	property	alias	source				: tableView.source
-	property	alias	factorsSource		: tableView.factorsSource
-	property	alias	tableView			: tableView
-	property	alias	showAddButton		: addButton.visible
-	property	alias	showDeleteButton	: deleteButton.visible
-	property	int		maxNumHypotheses	: 10
+	itemType		: "double"
+	modelType		: "CustomContrasts"
+	cornerText		: qsTr("Contrast #")
+	minimum			: -Infinity
 
-	RowLayout
-	{
-		id: layout
 
-		TableView
-		{
-			id					: tableView
-			implicitWidth		: customContrastsTV.width * 3 / 4 - layout.spacing
-			implicitHeight		: customContrastsTV.height
-			modelType			: "CustomContrasts"
-			itemType			: "double"
-			minimum				: -Infinity
-			cornerText			: qsTr("Contrast #")
+	buttonAddText		: qsTr("Add Contrast")
+	onAddClicked		: tableView.addRow()
 
-			Component.onCompleted: tableView.rowNumberWidth = 80 * preferencesModel.uiScale
-		}
+	buttonDeleteText	: qsTr("Delete Contrast")
+	onDeleteClicked		: tableView.removeARow()
+	buttonDeleteEnabled	: tableView.rowCount > 1
 
-		Group
-		{
-			implicitWidth	: customContrastsTV.width * 1 / 4
-			implicitHeight	: customContrastsTV.height
+	buttonResetText		: qsTr("Reset")
+	onResetClicked		: tableView.reset()
+	buttonResetEnabled	: tableView.rowCount > 0
 
-			Button
-			{
-				id				: addButton
-				text			: qsTr("Add Contrast")
-				name			: "addButton"
-				control.width	: customContrastsTV.width * 1 / 4
-				onClicked		: tableView.addRow()
-			}
-
-			Button
-			{
-				id				: deleteButton
-				text			: qsTr("Delete Contrast")
-				name			: "deleteButton"
-				control.width	: customContrastsTV.width * 1 / 4
-				onClicked		: tableView.removeARow()
-				enabled			: tableView.rowCount > 1
-			}
-
-			Button
-			{
-				text			: qsTr("Reset")
-				name			: "resetButton"
-				control.width	: customContrastsTV.width * 1 / 4
-				onClicked		: tableView.reset()
-				enabled			: tableView.rowCount > 0
-			}
-		}
-	}
+	onTableViewCompleted:  tableView.rowNumberWidth = 80 * preferencesModel.uiScale //Is this really necessary? Possibly for rowComponents
 }

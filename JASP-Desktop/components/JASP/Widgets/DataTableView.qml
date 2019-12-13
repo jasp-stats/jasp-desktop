@@ -36,9 +36,10 @@ FocusScope
 			itemDelegate:
 				Text
 				{
-					text:	itemText
-					color:	itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
-					font:	dataFont
+					text:				itemText
+					color:				itemActive ? jaspTheme.textEnabled : jaspTheme.textDisabled
+					font:				dataFont
+					verticalAlignment:	Text.AlignVCenter
 				}
 
 			leftTopCornerItem:

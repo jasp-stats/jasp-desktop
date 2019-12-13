@@ -23,7 +23,7 @@ import JASP				1.0
 
 Item
 {
-	id					: contratsList
+	id					: contrastsList
 	height				: contrasts.height + (customContrastsView.visible ? customContrastsView.height : 0)
 	implicitHeight		: height
 	width				: parent.width
@@ -93,10 +93,12 @@ Item
 					{
 						id						: tableCustomContrasts
 						columnName				: rowValue
-						factorsSource			: contratsList.repeatedMeasureFactors
+						factorsSource			: contrastsList.repeatedMeasureFactors
 						name					: "values"
 						implicitHeight			: 130 * preferencesModel.uiScale
 						implicitWidth			: customContrastsView.width
+						width					: implicitWidth
+						height					: implicitHeight
 					}
 				}
 			}

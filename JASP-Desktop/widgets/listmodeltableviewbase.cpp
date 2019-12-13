@@ -77,9 +77,10 @@ int ListModelTableViewBase::getMaximumColumnWidthInCharacters(size_t columnIndex
 	return maxL + 3;
 }
 
-void ListModelTableViewBase::addColumn()
+void ListModelTableViewBase::addColumn(bool emitStuff)
 {
-	beginResetModel();
+	if(emitStuff)
+		beginResetModel();
 
 	if (columnCount() < _maxColumn)
 	{
@@ -88,15 +89,19 @@ void ListModelTableViewBase::addColumn()
 		_columnCount++;
 	}
 
-	endResetModel();
+	if(emitStuff)
+	{
+		endResetModel();
 
-	emit columnCountChanged();
-	emit modelChanged();
+		emit columnCountChanged();
+		emit modelChanged();
+	}
 }
 
-void ListModelTableViewBase::removeColumn(size_t col)
+void ListModelTableViewBase::removeColumn(size_t col, bool emitStuff)
 {
-	beginResetModel();
+	if(emitStuff)
+		beginResetModel();
 
 	if (col < columnCount())
 	{
@@ -105,15 +110,19 @@ void ListModelTableViewBase::removeColumn(size_t col)
 		_columnCount--;
 	}
 
-	endResetModel();
+	if(emitStuff)
+	{
+		endResetModel();
 
-	emit columnCountChanged();
-	emit modelChanged();
+		emit columnCountChanged();
+		emit modelChanged();
+	}
 }
 
-void ListModelTableViewBase::addRow()
+void ListModelTableViewBase::addRow(bool emitStuff)
 {
-	beginResetModel();
+	if(emitStuff)
+		beginResetModel();
 
 	if (rowCount() < _maxRow)
 	{
@@ -125,15 +134,19 @@ void ListModelTableViewBase::addRow()
 				value.push_back(_defaultCellVal);
 	}
 
-	endResetModel();
+	if(emitStuff)
+	{
+		endResetModel();
 
-	emit rowCountChanged();
-	emit modelChanged();
+		emit rowCountChanged();
+		emit modelChanged();
+	}
 }
 
-void ListModelTableViewBase::removeRow(size_t row)
+void ListModelTableViewBase::removeRow(size_t row, bool emitStuff)
 {
-	beginResetModel();
+	if(emitStuff)
+		beginResetModel();
 
 	if (row < rowCount())
 	{
@@ -143,35 +156,48 @@ void ListModelTableViewBase::removeRow(size_t row)
 		_rowCount--;
 	}
 
-	endResetModel();
+	if(emitStuff)
+	{
+		endResetModel();
 
-	emit rowCountChanged();
-	emit modelChanged();
+		emit rowCountChanged();
+		emit modelChanged();
+	}
 }
 
 void ListModelTableViewBase::reset()
 {
 	beginResetModel();
 
-	_colNames.clear();
-	_rowNames.clear();
-	_values.clear();
-	_columnCount	= 0;
-	_rowCount		= 0;
+	if(!_keepColsOnReset)
+	{
+		_colNames.clear();
+		_columnCount	= 0;
+	}
 
-	for(size_t col=0; col < _initialColCnt; col++)
-		addColumn();
+	if(!_keepRowsOnReset)
+	{
+		_rowNames.clear();
+		_rowCount		= 0;
+	}
+
+	_values.clear();
+
+	if(!_keepColsOnReset)
+		for(size_t col=0; col < _initialColCnt; col++)
+			addColumn(false);
 
 	size_t rows = std::max(size_t(_rowNames.length()), _initialRowCnt);
 
-	for(size_t row=0; row < rows; row++)
-		addRow();
-
-	endResetModel();
+	if(!_keepRowsOnReset)
+		for(size_t row=0; row < rows; row++)
+			addRow();
 
 	emit columnCountChanged();
 	emit rowCountChanged();
 	emit modelChanged();
+
+	endResetModel();
 }
 
 void ListModelTableViewBase::itemChanged(int column, int row, QVariant value)

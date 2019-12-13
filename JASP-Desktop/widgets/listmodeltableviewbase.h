@@ -48,10 +48,10 @@ public:
 
 	virtual		int					getMaximumColumnWidthInCharacters(size_t columnIndex)								const;
 
-				void				addColumn();
-				void				removeColumn(size_t index);
-				void				addRow();
-				void				removeRow(size_t index);
+				void				addColumn(					bool emitStuff = true);
+				void				removeColumn(size_t index,	bool emitStuff = true);
+				void				addRow(						bool emitStuff = true);
+				void				removeRow(size_t index,		bool emitStuff = true);
 	virtual		void				reset();
 				void				setInitialColumnCount(	size_t initialColumnCount)	{ _initialColCnt = initialColumnCount;	}
 				void				setInitialRowCount(		size_t initialRowCount)		{ _initialRowCnt = initialRowCount;		}
@@ -96,6 +96,8 @@ protected:
 								_initialColCnt	= 0,
 								_initialRowCnt	= 0;
 	QVariant					_defaultCellVal;
+	bool						_keepRowsOnReset = false,
+								_keepColsOnReset = false;
 };
 
 #endif // LISTMODELTABLEVIEWBASE_H

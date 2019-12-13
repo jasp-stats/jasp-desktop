@@ -387,7 +387,7 @@ Form
 			Layout.fillWidth: 	true
 			enabled:			!pasteVariables.checked
 
-			Button 
+			Button
 			{
 				id: 				downloadReportPlanning
 				anchors.right: 		samplingChecked.left
@@ -409,7 +409,7 @@ Form
 				checked: 		false 
 			}
 
-			Button 
+			Button
 			{
 				id: 			toSampling
 				anchors.right: 	parent.right
@@ -637,14 +637,14 @@ Form
 			Layout.fillWidth: 	true
 			enabled:			!pasteVariables.checked
 
-			Button 
+			Button
 			{
 				anchors.left: 	parent.left
 				text: 			qsTr("<b>Reset Workflow</b>")
 				onClicked: 		form.reset()
 			}
 
-			Button 
+			Button
 			{
 				id: 			downloadReportSelection
 				enabled: 		materialityRelative.checked ? (materialityPercentage.value == "0" ? false : true) : (materialityValue.value == "0" ? false : true)
@@ -663,7 +663,7 @@ Form
 				checked: 			false
 			}
 
-			Button 
+			Button
 			{
 				id: 				toExecution
 				anchors.right: 		parent.right
@@ -866,7 +866,7 @@ Form
 				checked: 			false
 			}
 
-			Button 
+			Button
 			{
 				id: 				toEvaluation
 				enabled: 			pasteVariables.checked
@@ -1074,7 +1074,7 @@ Form
 			height: 				toInterpretation.height
 			Layout.fillWidth: 		true
 
-			Button 
+			Button
 			{
 				id: 			toInterpretation
 				anchors.right: 	parent.right

@@ -267,7 +267,7 @@ FocusScope
 		id				: menuShadow
 		anchors.fill	: menuRectangle
 
-		color			: jaspTheme.grayDarker
+		color			: jaspTheme.shadow
 		spread			: 0.2
 		cornerRadius	: menuRectangle.radius + glowRadius
 		glowRadius		: 5

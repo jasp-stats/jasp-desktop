@@ -39,4 +39,6 @@ Theme
 
 	controlErrorBackgroundColor:		redDarker
 	controlErrorTextColor:				black
+
+	textDisabled:						grayLighter
 }

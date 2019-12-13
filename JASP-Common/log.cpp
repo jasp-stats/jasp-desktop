@@ -21,6 +21,7 @@ logType		Log::_where				= logType::cout;
 std::string	Log::_logFilePath		= "";
 logError	Log::_logError			= logError::noProblem;
 int			Log::_stdoutfd			= -1;
+int			Log::_engineNo			= -1;
 
 
 logType		Log::_default			=
@@ -160,7 +161,11 @@ std::ostream & Log::log(bool addTimestamp)
 	default:				//Gcc is stupid and is not aware that the next three cases cover all
 #endif
 #endif
-	case logType::cout:		return std::cout;
+	case logType::cout:
+	{
+		if (addTimestamp) std::cout << ( _engineNo < 0 ? std::string("Desktop:\t") : "Engine#" + std::to_string(_engineNo) + ":\t");
+		return std::cout;
+	}
 	case logType::null:
 	{
 		static boost::iostreams::stream<boost::iostreams::null_sink> nullstream((boost::iostreams::null_sink())); //https://stackoverflow.com/questions/8243743/is-there-a-null-stdostream-implementation-in-c-or-libraries

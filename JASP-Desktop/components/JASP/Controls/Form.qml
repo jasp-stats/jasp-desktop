@@ -208,7 +208,6 @@ AnalysisForm
 				id:				crossArea
 				anchors.fill:	parent
 				onClicked:		controlErrorMessage.closeMessage()
-				hoverEnabled:	true
 				cursorShape:	Qt.PointingHandCursor
 			}
 		}

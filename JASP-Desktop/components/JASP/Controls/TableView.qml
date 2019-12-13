@@ -36,6 +36,7 @@ JASPControl
 	height:				implicitHeight
 	implicitWidth:		400
 	implicitHeight:		400
+	shouldStealHover:	false
 
 	property var	source
 	property string factorsSource	: ""
@@ -129,7 +130,7 @@ JASPControl
 			columnHeaderDelegate: Rectangle
 			{
 				color: columnIndex === tableView.colSelected ? jaspTheme.grayLighter : jaspTheme.analysisBackgroundColor
-				Text { text: headerText; anchors.centerIn: parent; font: jaspTheme.font }
+				Text { text: headerText; anchors.centerIn: parent; font: jaspTheme.font; color:	jaspTheme.textEnabled }
 				MouseArea
 				{
 					anchors.fill: parent
@@ -147,6 +148,7 @@ JASPControl
 				Text
 				{
 					text:					headerText;
+					color:					jaspTheme.textEnabled
 					anchors.centerIn:		parent;
 					horizontalAlignment:	Text.AlignHCenter
 					verticalAlignment:		Text.AlignVCenter
@@ -162,7 +164,7 @@ JASPControl
 			JASPDoubleValidator { id: doubleValidator;	bottom: tableView.minimum; decimals: tableView.decimals	}
 			RegExpValidator		{ id: stringValidator							}
 
-			itemDelegate: Rectangle
+			itemDelegate: Item
 			{
 				Text
 				{
@@ -193,22 +195,23 @@ JASPControl
 
 				TextField
 				{
-					id:					textInput
-					isBound:			false
-					anchors.top:		parent.top
-					anchors.left:		parent.left
-					fieldHeight:		parent.height
-					fieldWidth:			parent.width
-					visible:			false
-					useExternalBorder:	false
-					value:				itemText
-					useLastValidValue:	false
-					selectValueOnFocus:	true
-					validator:			tableView.validator
-					onPressed:			tableView.colSelected = columnIndex
-					onEditingFinished:	tableView.itemChanged(columnIndex, rowIndex, value)
-					onActiveFocusChanged: if(!activeFocus) visible = false;
+					id:						textInput
+					isBound:				false
+					anchors.verticalCenter: parent.verticalCenter
+					anchors.left:			parent.left
+					//fieldHeight:			parent.height
+					fieldWidth:				parent.width
+					visible:				false
+					useExternalBorder:		false
+					value:					itemText
+					useLastValidValue:		false
+					selectValueOnFocus:		true
+					validator:				tableView.validator
+					onPressed:				tableView.colSelected = columnIndex
+					onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value)
+					onActiveFocusChanged:	if(!activeFocus) visible = false;
 				}
+
 			}
 
 			leftTopCornerItem: Rectangle
@@ -221,6 +224,7 @@ JASPControl
 					horizontalAlignment:	Text.AlignHCenter
 					verticalAlignment:		Text.AlignVCenter
 					leftPadding:			3 * preferencesModel.uiScale
+					color:					jaspTheme.textEnabled
 					elide:					Text.ElideRight;
 					width:					parent.width
 					height:					parent.height

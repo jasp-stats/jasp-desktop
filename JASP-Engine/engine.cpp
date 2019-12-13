@@ -90,6 +90,11 @@ void Engine::initialize()
 {
 	rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults);
 
+#if defined(JASP_DEBUG) || defined(__linux__)
+	if (_slaveNo == 0)
+		Log::log() << rbridge_check() << std::endl;
+#endif
+
 	_engineState = engineState::idle;
 	sendEngineResumed(); //Then the desktop knows we've finished init.
 }
@@ -105,17 +110,6 @@ Engine::~Engine()
 void Engine::run()
 {
 	JASPTIMER_START(Engine::run startup);
-#if defined(QT_DEBUG) || defined(__linux__)
-	if (_slaveNo == 0)
-	{
-		std::string engineInfo = rbridge_check();
-
-		Json::Value v;
-		Json::Reader().parse(engineInfo, v);
-
-		Log::log() << v.toStyledString() << std::endl;
-	}
-#endif
 
 	std::string memoryName = "JASP-IPC-" + std::to_string(_parentPID);
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
@@ -140,8 +134,11 @@ void Engine::run()
 
 		freeRBridgeColumns();
 
-		if(_engineState != engineState::idle)
+		static engineState previousState = engineState::idle;
+
+		if(previousState != _engineState)
 			Log::log() << "current Engine state == "<< engineStateToString(_engineState) << std::endl;
+		previousState = _engineState;
 	}
 
 	if(_engineState == engineState::stopped)

@@ -1,3 +1,4 @@
+//
 // Copyright (C) 2013-2018 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
@@ -20,73 +21,30 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.11
 import JASP.Controls 1.0
 
-Item
+BasicThreeButtonTableView
 {
-	id				: jagsTableView
-	width			: implicitWidth
-	implicitWidth	: parent.width
-	height			: implicitHeight
-	implicitHeight	: 200 * preferencesModel.uiScale
+	id					: jagsTableView
 
-	property	alias	name				: tableView.name
-	property	alias	source				: tableView.source
-	property	alias	tableView			: tableView
-	property	alias	showAddButton		: addButton.visible
-	property	alias	showDeleteButton	: deleteButton.visible
-	property	string	tableType			: "userDataInput"
-	property	string	itemType			: "string"
+	tableType			: "userDataInput"
+	itemType			: "string"
+	modelType			: "JAGSDataInputModel"
+	initialColumnCount	: 2
+	initialRowCount		: 0
+	showButtons			: tableType === "userDataInput"
+
+
 	property	int		maxDataEntries  	: 30
 
-	RowLayout
-	{
-		id: layout
 
-		TableView
-		{
-			id					: tableView
-			implicitWidth		: jagsTableView.tableType == "userDataInput" ? jagsTableView.width * 3 / 4 - layout.spacing : jagsTableView.width
-			implicitHeight		: jagsTableView.height
-			modelType			: "JAGSDataInputModel"
-			itemType			: jagsTableView.itemType
-			tableType			: jagsTableView.tableType
-			initialColumnCount	: 2
-			initialRowCount		: 0
-		}
+	buttonAddText		: qsTr("Add Data")
+	onAddClicked		: tableView.addRow()
+	buttonAddEnabled	: tableView.columnCount > 0 && tableView.rowCount < maxDataEntries
 
-		Group
-		{
-            visible         : jagsTableView.tableType == "userDataInput"
-			implicitWidth	: jagsTableView.width * 1 / 4
-			implicitHeight	: jagsTableView.height
+	buttonDeleteText	: qsTr("Delete Data")
+	onDeleteClicked		: tableView.removeARow()
+	buttonDeleteEnabled	: tableView.rowCount > 1
 
-			Button
-			{
-				id				: addButton
-				text			: qsTr("Add Data")
-				name			: "addButton"
-				control.width	: jagsTableView.width * 1 / 4
-				onClicked		: tableView.addRow()
-				enabled			: (tableView.columnCount > 0 && tableView.rowCount < maxDataEntries)
-			}
-
-			Button
-			{
-				id				: deleteButton
-				text			: qsTr("Delete Data")
-				name			: "deleteButton"
-				control.width	: jagsTableView.width * 1 / 4
-				onClicked		: tableView.removeARow()
-				enabled			: tableView.rowCount > 1
-			}
-
-			Button
-			{
-				text			: qsTr("Reset")
-				name			: "resetButton"
-				control.width	: jagsTableView.width * 1 / 4
-				onClicked		: tableView.reset()
-				enabled			: tableView.rowCount > 0
-			}
-		}
-	}
+	buttonResetText		: qsTr("Reset")
+	onResetClicked		: tableView.reset()
+	buttonResetEnabled	: tableView.rowCount > 0
 }

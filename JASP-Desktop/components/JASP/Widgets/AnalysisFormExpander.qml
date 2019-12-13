@@ -105,7 +105,6 @@ DropArea
 		MouseArea
 		{
 			id:				mouseArea
-			anchors.fill:	parent
 			onClicked:		analysisFormExpander.toggleExpander();
 			hoverEnabled:	true
 			cursorShape:	Qt.PointingHandCursor
@@ -125,6 +124,14 @@ DropArea
 					mainWindow.moveAnalysesResults(loader.myAnalysis, draggableItem.droppedIndex)
 				}
 			}
+
+			anchors
+			{
+				top:	parent.top
+				left:	parent.left
+				right:	parent.right
+			}
+			height: jaspTheme.formExpanderHeaderHeight + (2 * jaspTheme.formMargin) //We only want to see a tooltip when we are hovering the "button" part of AnalysisFormExpander
 		}
 
 		RectangularGlow

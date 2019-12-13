@@ -763,7 +763,9 @@ char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevel
 
 std::string rbridge_check()
 {
-	return jaspRCPP_check();
+	Json::Value v;
+	Json::Reader().parse(jaspRCPP_check(), v);
+	return v.toStyledString(); //Adds some nice newlines etc
 }
 
 std::string	rbridge_encodeColumnNamesInScript(const std::string & filterCode)

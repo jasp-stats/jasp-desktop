@@ -350,7 +350,7 @@ Form
 				id: 			samplingChecked
 				name: 			"samplingChecked"
 				anchors.right:	toSampling.left
-				width:			height
+				width:			0
 				visible: 		false
 				checked: 		false
 			}
@@ -603,7 +603,7 @@ Form
 			{
 				id: 				executionChecked
 				anchors.right: 		toExecution.left
-				width: 				height
+				width: 				0
 				visible: 			false
 				name: 				"executionChecked"
 				checked: 			false

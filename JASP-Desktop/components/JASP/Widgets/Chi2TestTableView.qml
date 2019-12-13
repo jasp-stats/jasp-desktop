@@ -21,70 +21,25 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.11
 import JASP.Controls 1.0
 
-Item
+BasicThreeButtonTableView
 {
 	id				: chi2TestTableView
-	width			: parent.width
-	implicitWidth	: width
-	height			: implicitHeight
-	implicitHeight	: 200 * preferencesModel.uiScale
 
-	property	alias	name				: tableView.name
-	property	alias	source				: tableView.source
-	property	alias	tableView			: tableView
-	property	alias	showAddButton		: addButton.visible
-	property	alias	showDeleteButton	: deleteButton.visible
-	property	string	tableType			: "ExpectedProportions"
-	property	string	itemType			: "double"
+	tableType		: "ExpectedProportions"
+	itemType		: "double"
+	modelType		: "MultinomialChi2Model"
+
 	property	int		maxNumHypotheses	: 10
 
-	RowLayout
-	{
-		id: layout
+	buttonAddText		: qsTr("Add Column")
+	onAddClicked		: tableView.addColumn()
+	buttonAddEnabled	: (tableView.columnCount > 0 && tableView.columnCount < maxNumHypotheses)
 
-		TableView
-		{
-			id				: tableView
-			implicitWidth	: chi2TestTableView.width * 3 / 4 - layout.spacing
-			implicitHeight	: chi2TestTableView.height
-			modelType		: "MultinomialChi2Model"
-			itemType		: chi2TestTableView.itemType
-			tableType		: chi2TestTableView.tableType
-		}
+	buttonDeleteText	: qsTr("Delete Column")
+	onDeleteClicked		: tableView.removeAColumn()
+	buttonDeleteEnabled	: tableView.columnCount > 1
 
-		Group
-		{
-			implicitWidth	: chi2TestTableView.width * 1 / 4
-			implicitHeight	: chi2TestTableView.height
-
-			Button
-			{
-				id				: addButton
-				text			: qsTr("Add Column")
-				name			: "addButton"
-				control.width	: chi2TestTableView.width * 1 / 4
-				onClicked		: tableView.addColumn()
-				enabled			: (tableView.columnCount > 0 && tableView.columnCount < maxNumHypotheses)
-			}
-
-			Button
-			{
-				id				: deleteButton
-				text			: qsTr("Delete Column")
-				name			: "deleteButton"
-				control.width	: chi2TestTableView.width * 1 / 4
-				onClicked		: tableView.removeAColumn()
-				enabled			: tableView.columnCount > 1
-			}
-
-			Button
-			{
-				text			: qsTr("Reset")
-				name			: "resetButton"
-				control.width	: chi2TestTableView.width * 1 / 4
-				onClicked		: tableView.reset()
-				enabled			: tableView.columnCount > 0
-			}
-		}
-	}
+	buttonResetText		: qsTr("Reset")
+	onResetClicked		: tableView.reset()
+	buttonResetEnabled	: tableView.columnCount > 0
 }

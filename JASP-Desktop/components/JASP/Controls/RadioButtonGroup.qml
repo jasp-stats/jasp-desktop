@@ -29,6 +29,7 @@ JASPControl
 	controlType:		JASPControlBase.RadioButtonGroup
 	childControlsArea:	contentArea
 	focusOnTab:			false
+	shouldStealHover:	false
 
 	default property alias	content:				contentArea.children
 			property alias	buttons:				buttonGroup.buttons

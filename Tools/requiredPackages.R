@@ -45,7 +45,7 @@ for (rFile in rFiles) {
 }
 
 # some packages are not detected correctly as a dependency (e.g., GPArotation is incorrectly marked as "Suggest' in psych)
-reqPkgs <- c(reqPkgs, "GPArotation","RcppArmadillo", "modules", "remotes")
+reqPkgs <- c(reqPkgs, "GPArotation","RcppArmadillo", "modules", "remotes", "Rcsdp")
 
 # exclude all packages shipped by JASP
 reqPkgs <- reqPkgs[!reqPkgs %in% c('JASPgraphs', "jaspResults", "jasptools")]

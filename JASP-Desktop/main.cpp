@@ -305,7 +305,7 @@ int main(int argc, char *argv[])
 
 		if(total == 0)
 		{
-			std::cerr << "Couldn't find any jasp-files in specified directory " << filePath << ", it will be treated as a failure to notify you of this!" << std::endl;
+			std::cerr << "Couldn't find any jasp-files in specified directory " << filePath << ", it is be treated as a failure to notify you of this!" << std::endl;
 			exit(2);
 		}
 

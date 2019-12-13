@@ -41,3 +41,4 @@ SaveDiscardCancelDialog     1.0 SaveDiscardCancelDialog.qml
 PlotEditor                  1.0 PlotEditor.qml
 CustomContrastsTableView    1.0 CustomContrastsTableView.qml
 SetSeed                     1.0 SetSeed.qml
+BasicThreeButtonTableView   1.0 BasicThreeButtonTableView.qml

@@ -29,8 +29,9 @@
 
 ListModelANOVACustomContrasts::ListModelANOVACustomContrasts(BoundQMLTableView * parent) : ListModelTableViewBase(parent)
 {
-	_defaultCellVal	= 0;
-	_initialRowCnt	= 1;	
+	_defaultCellVal		= 0;
+	_initialRowCnt		= 1;
+	_keepColsOnReset	= true;
 	QQuickItem::connect(_tableView->item(), SIGNAL(colNameSignal(QString)),	this, SLOT(setColName(QString))	);
 }
 

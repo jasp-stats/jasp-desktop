@@ -38,14 +38,10 @@ Button
 	
 	text:			""
 	enabled:		false
-	image.source:	leftToRight ? iconToRight : iconToLeft
+	iconSource:			leftToRight ? iconToRight : iconToLeft
     
-	control.width:	40 * preferencesModel.uiScale
-	control.height: 20 * preferencesModel.uiScale
-	width:			control.width
-	height:			control.height
-	implicitWidth:  width
-    implicitHeight:	height	
+	//control.implicitWidth:	40 * preferencesModel.uiScale
+	//control.implicitHeight: 20 * preferencesModel.uiScale
     
 	onClicked:		source.moveSelectedItems(target)
 

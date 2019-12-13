@@ -55,6 +55,8 @@ FocusScope
 
 	transitions: Transition
 	{
+		enabled:	!preferencesModel.safeGraphics
+		
 		NumberAnimation		{ property: "implicitHeight";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
 		RotationAnimation	{								duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
 	}
@@ -68,6 +70,7 @@ FocusScope
 		childControlsArea:		expanderArea
 		width:					parent.width
 		height:					22 * preferencesModel.uiScale
+		shouldStealHover:		false //Because sometimes maybe something *inside* an expanderButton might want to get hovered
 		Keys.onSpacePressed:	toggleExpander()
 		Keys.onReturnPressed:   toggleExpander()
 		KeyNavigation.tab:		expanderWrapper.expanded ? firstControl : nextExpander
