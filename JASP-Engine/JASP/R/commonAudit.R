@@ -23,11 +23,11 @@
 
   ARMcontainer <- createJaspContainer(title= "<u>Audit Risk Model</u>")
   ARMcontainer$position <- 2
-  ARMcontainer$dependOn(options = c("confidence", "IR", "CR", "materialityPercentage", "materialityValue", "materiality", "explanatoryText", "valuta"))
+  ARMcontainer$dependOn(options = c("confidence", "IR", "CR", "materialityPercentage", "materialityValue", "materiality", "explanatoryText", "valuta", "irCustom", "crCustom"))
 
   #  Audit Risk Model formula
   .ARMformula(options, jaspResults, position = 2, ARMcontainer)
-  DR                          <- jaspResults[["DR"]]$object
+  DR <- jaspResults[["DR"]]$object
   
   if(!is.null(ARMcontainer[["AuditRiskModelParagraph"]])){
     return()
@@ -36,15 +36,22 @@
       materialityLevelLabel <- base::switch(options[["materiality"]], "materialityRelative" = paste0(round(options[["materialityPercentage"]], 10) * 100, "%"), "materialityAbsolute" = paste(jaspResults[["valutaTitle"]]$object, format(options[["materialityValue"]], scientific = FALSE)))
       auditRiskLabel        <- paste0(round((1 - options[["confidence"]]) * 100, 2), "%")
       dectectionRiskLabel   <- paste0(round(DR * 100, 2), "%")
-  
-      ARMcontainer[["AuditRiskModelParagraph"]] <- createJaspHtml(paste0("Prior to the substantive testing phase, the inherent risk was determined to be <b>", options[["IR"]] ,"</b>. The internal control risk was determined
+
+      message <- paste0("Prior to the substantive testing phase, the inherent risk was determined to be <b>", options[["IR"]] ,"</b>. The internal control risk was determined
                                                                       to be <b>", options[["CR"]] ,"</b>. According to the Audit Risk Model, the required detection risk to maintain an audit risk of <b>", auditRiskLabel, "</b> for a materiality
-                                                                      of <b>", materialityLevelLabel ,"</b> should be <b>", dectectionRiskLabel , "</b>. The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>."), "p")
+                                                                      of <b>", materialityLevelLabel ,"</b> should be <b>", dectectionRiskLabel , "</b>.")
+      if(options[["IR"]] == "Custom" || options[["CR"]] == "Custom"){
+        message <- paste0(message, " The translation of High, Medium and Low to probabilities is done according custom values</b>.")
+      } else {
+        message <- paste0(message, " The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>.")
+      }
+      ARMcontainer[["AuditRiskModelParagraph"]] <- createJaspHtml(message, "p")
       ARMcontainer[["AuditRiskModelParagraph"]]$position <- 1
       ARMcontainer[["AuditRiskModelParagraph"]]$dependOn(options = c("confidence", "IR", "CR", "materialityPercentage", "materialityValue", "valuta"))
     }
   }
   jaspResults[["ARMcontainer"]] <- ARMcontainer
+  return(DR)
 }
 
 .ARMformula <- function(options, jaspResults, position = 2, ARMcontainer){
@@ -52,18 +59,29 @@
     if(!is.null(ARMcontainer[["ARMformula"]])) return()
 
     AR                      <- 1 - options[["confidence"]]
-    IR                      <- base::switch(options[["IR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
-    CR                      <- base::switch(options[["CR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
+
+    if(options[["IR"]] != "Custom"){
+      IR <- base::switch(options[["IR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
+    } else {
+      IR <- options[["irCustom"]]
+    }
+
+    if(options[["CR"]] != "Custom"){
+      CR <- base::switch(options[["CR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
+    } else {
+      CR <- options[["crCustom"]]
+    }
+
     DR                      <- AR / IR / CR
 
     jaspResults[["DR"]]     <- createJaspState(DR)
-    jaspResults[["DR"]]     $dependOn(options = c("IR", "CR", "confidence"))
+    jaspResults[["DR"]]     $dependOn(options = c("IR", "CR", "confidence", "irCustom", "crCustom"))
 
     text <- paste0("Audit risk (", round(AR * 100, 2),"%) = Inherent risk (", round(IR * 100, 2), "%) x Control risk (", round(CR * 100, 2), "%) x Detection risk (", round(DR * 100, 2), "%)")
 
     ARMcontainer[["ARMformula"]] <- createJaspHtml(text, "h3")
     ARMcontainer[["ARMformula"]]$position <- position
-    ARMcontainer[["ARMformula"]]$dependOn(options = c("IR", "CR", "confidence"))
+    ARMcontainer[["ARMformula"]]$dependOn(options = c("IR", "CR", "confidence", "irCustom", "crCustom"))
 }
 
 .bookValueDescriptives <- function(dataset, options, jaspResults, position, procedureContainer){
