@@ -298,17 +298,17 @@ Form {
 
 				RadioButton
 				{
-					id: 				poisson
-					text: 			qsTr("Poisson")
-					name: 			"Poisson"
+					id: 				binomial
+					text: 			qsTr("Binomial")
+					name: 			"binomial"
 					checked: 		true
 				}
 
 				RadioButton
 				{
-					id: 				binomial
-					text: 			qsTr("Binomial")
-					name: 			"binomial"
+					id: 				poisson
+					text: 			qsTr("Poisson")
+					name: 			"Poisson"
 				}
 
 				RadioButton
