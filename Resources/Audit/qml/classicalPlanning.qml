@@ -379,14 +379,14 @@ Form {
 
 				CheckBox
 				{
-					text: 	qsTr("Implied sampling distribution")
-					name: 	"samplingDistribution"
+					text: 	qsTr("Decision analysis")
+					name: 	"decisionPlot"
 				}
 
 				CheckBox
 				{
-					text: 	qsTr("Decision analysis")
-					name: 	"decisionPlot"
+					text: 	qsTr("Implied sampling distribution")
+					name: 	"samplingDistribution"
 				}
 			}
 		}
