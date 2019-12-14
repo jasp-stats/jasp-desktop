@@ -24,298 +24,339 @@ Form {
 
 	usesJaspResults: true
 
-	GridLayout 
+	GridLayout
 	{
-		columns: 3
+		columns: 		3
 
-		RadioButtonGroup 
+		RadioButtonGroup
 		{
-			id: 		materiality
+			id: 			materiality
 			name: 		"materiality"
 			title: 		qsTr("Population Materiality")
 
-			RowLayout 
+			RowLayout
 			{
-				RadioButton 
+				RadioButton
 				{
-					id: 				materialityAbsolute
-					name: 				"materialityAbsolute"
-					text: 				qsTr("Absolute")
-					checked: 			true
+					id: 								materialityAbsolute
+					name: 							"materialityAbsolute"
+					text: 							qsTr("Absolute")
+					checked: 						true
 					childrenOnSameRow: 	true
 
-					DoubleField 
+					DoubleField
 					{
-						id: 			materialityValue
-						visible: 		materialityAbsolute.checked
-						name: 			"materialityValue"
-						defaultValue: 	0
-						min: 			0
-						fieldWidth: 	90
-						decimals: 		2
-						label: 			euroValuta.checked ? "€" : (dollarValuta.checked ? "$" : otherValutaName.value)
+						id: 							materialityValue
+						visible: 					materialityAbsolute.checked
+						name: 						"materialityValue"
+						defaultValue: 		0
+						min: 							0
+						fieldWidth: 			90
+						decimals: 				2
+						label: 						euroValuta.checked ? "€" : (dollarValuta.checked ? "$" : otherValutaName.value)
 					}
 				}
 			}
 
-			RowLayout 
+			RowLayout
 			{
-				RadioButton 
+				RadioButton
 				{
-					id: 					materialityRelative
-					name: 					"materialityRelative"
-					text: 					qsTr("Relative")
-					childrenOnSameRow: 		true
+					id: 								materialityRelative
+					name: 							"materialityRelative"
+					text: 							qsTr("Relative")
+					childrenOnSameRow: 	true
 
-					PercentField 
+					PercentField
 					{
-						id: 			materialityPercentage
-						visible: 		materialityRelative.checked
-						decimals: 		2
-						defaultValue: 	0
-						name: 			"materialityPercentage"
-						fieldWidth: 	40
+						id: 							materialityPercentage
+						visible: 					materialityRelative.checked
+						decimals: 				2
+						defaultValue: 		0
+						name: 						"materialityPercentage"
+						fieldWidth: 			40
 					}
 				}
 			}
 		}
 
-		GroupBox 
+		GroupBox
 		{
-			title: qsTr("Population")
+			title: 					qsTr("Population")
 
-			IntegerField 
+			IntegerField
 			{
-				id: 			populationSize
-				name: 			"populationSize"
-				text: 			qsTr("Size")
+				id: 					populationSize
+				name: 				"populationSize"
+				text: 				qsTr("Size")
 				fieldWidth: 	100
-				defaultValue: 	0
-				min: 			0
+				defaultValue: 0
+				min: 					0
 			}
 
-			DoubleField 
+			DoubleField
 			{
-				id: 				populationValue
+				id: 					populationValue
 				name: 				"populationValue"
 				text: 				qsTr("Value")
-				defaultValue: 		0
+				defaultValue: 0
 				enabled: 			materialityAbsolute.checked
-				fieldWidth: 		100
-				min: 				0
-				decimals: 			2
+				fieldWidth: 	100
+				min: 					0
+				decimals: 		2
 			}
 		}
 
-		GroupBox 
+		GroupBox
 		{
-			id: 	auditRisk
-			title: 	qsTr("Audit Risk")
+			id: 						auditRisk
+			title: 					qsTr("Audit Risk")
 
-			PercentField 
+			PercentField
 			{
-				name: 			"confidence"
-				label: 			qsTr("Confidence")
+				name: 				"confidence"
+				label: 				qsTr("Confidence")
 				decimals: 		2
-				defaultValue: 	95
+				defaultValue: 95
 			}
 		}
 	}
 
-	Section 
+	Section
 	{
-		text: qsTr("Advanced Options")
+		text: 			qsTr("Advanced Options")
 
-		GridLayout 
+		GridLayout
 		{
-			columns: 3
+			columns: 	3
 
-			RadioButtonGroup 
+			RadioButtonGroup
 			{
-				id: 		ir
-				title: 		qsTr("Inherent Risk")
-				name: 		"IR"
+				id: 					ir
+				title: 				qsTr("Inherent Risk")
+				name: 				"IR"
 
-				RadioButton 
+				RadioButton
 				{
-					text: 		qsTr("High")
-					name: 		"High"
-					checked: 	true
+					text: 			qsTr("High")
+					name: 			"High"
+					checked: 		true
 				}
 
-				RadioButton 
+				RadioButton
 				{
-					text: 		qsTr("Medium")
-					name: 		"Medium"
+					text: 			qsTr("Medium")
+					name: 			"Medium"
 				}
 
-				RadioButton 
+				RadioButton
 				{
-					text: 		qsTr("Low")
-					name: 		"Low"
+					text: 			qsTr("Low")
+					name: 			"Low"
+				}
+
+				RadioButton
+				{
+					id: 							irCustom
+					text:	 						qsTr("Custom")
+					name: 						"Custom"
+					childrenOnSameRow: true
+
+					PercentField
+					{
+						name: 					"irCustom"
+						visible: 				irCustom.checked
+						decimals: 			2
+						defaultValue: 	100
+						min:						25
+					}
 				}
 			}
 
-			RadioButtonGroup 
+			RadioButtonGroup
 			{
-				id: 		expectedErrors
-				name: 		"expectedErrors"
-				title: 		qsTr("Expected Errors")
+				id: 							expectedErrors
+				name: 						"expectedErrors"
+				title: 						qsTr("Expected Errors")
 
-				RowLayout 
+				RowLayout
 				{
-					enabled: materialityAbsolute.checked
+					enabled: 				materialityAbsolute.checked
 
-					RadioButton 
+					RadioButton
 					{
-						id: 		expectedAbsolute
-						text: 		qsTr("Absolute")
-						name: 		"expectedAbsolute"
+						id: 					expectedAbsolute
+						text: 				qsTr("Absolute")
+						name: 				"expectedAbsolute"
 					}
 
-					DoubleField 
+					DoubleField
 					{
 						name: 				"expectedNumber"
 						enabled: 			expectedAbsolute.checked
-						defaultValue: 		0
-						min: 				0
-						decimals: 			2
+						defaultValue: 0
+						min: 					0
+						decimals: 		2
 						visible: 			expectedAbsolute.checked
-						fieldWidth: 		60
+						fieldWidth: 	60
 						label: 				euroValuta.checked ? "€" : (dollarValuta.checked ? "$" : otherValutaName.value)
 					}
 				}
 
-				RowLayout 
+				RowLayout
 				{
-					RadioButton 
+					RadioButton
 					{
-						id: 		expectedRelative
-						text: 		qsTr("Relative")
-						name: 		"expectedRelative"
-						checked: 	true
+						id: 					expectedRelative
+						text: 				qsTr("Relative")
+						name: 				"expectedRelative"
+						checked: 			true
 					}
 
-					PercentField 
+					PercentField
 					{
-						name: 			"expectedPercentage"
-						enabled: 		expectedRelative.checked
+						name: 				"expectedPercentage"
+						enabled: 			expectedRelative.checked
 						decimals: 		3
-						defaultValue: 	0
-						visible: 		expectedRelative.checked
+						defaultValue: 0
+						visible: 			expectedRelative.checked
 						fieldWidth: 	40
 					}
 				}
 			}
 
-			GroupBox 
+			GroupBox
 			{
 				title: qsTr("Explanatory Text")
 
-				RowLayout 
+				RowLayout
 				{
-					CheckBox 
+					CheckBox
 					{
-						id: 		explanatoryText
+						id: 			explanatoryText
 						text: 		qsTr("Enable")
 						name: 		"explanatoryText"
 						checked: 	true
 					}
 
-					HelpButton 
-					{ 
+					HelpButton
+					{
 						helpPage:			"Audit/explanatoryText"
 						toolTip: 			"Show explanatory text at each step of the analysis"
 					}
 				}
 			}
 
-			RadioButtonGroup 
+			RadioButtonGroup
 			{
-				id: 		cr
-				title: 		qsTr("Control Risk")
-				name: 		"CR"
+				id: 						cr
+				title: 					qsTr("Control Risk")
+				name: 					"CR"
 
-				RadioButton 
+				RadioButton
 				{
-					text: 		qsTr("High")
-					name: 		"High"
-					checked: 	true
+					text: 				qsTr("High")
+					name: 				"High"
+					checked: 			true
 				}
 
-				RadioButton 
+				RadioButton
 				{
-					text: 		qsTr("Medium")
-					name: 		"Medium"
+					text: 				qsTr("Medium")
+					name: 				"Medium"
 				}
 
-				RadioButton 
+				RadioButton
 				{
-					text: 		qsTr("Low")
-					name: 		"Low"
+					text: 				qsTr("Low")
+					name: 				"Low"
+				}
+
+				RadioButton
+				{
+					id: 							crCustom
+					text:	 						qsTr("Custom")
+					name: 						"Custom"
+					childrenOnSameRow: true
+
+					PercentField
+					{
+						name: 					"crCustom"
+						visible: 				crCustom.checked
+						decimals: 			2
+						defaultValue: 	100
+						min:						25
+					}
 				}
 			}
 
-			RadioButtonGroup 
+			RadioButtonGroup
 			{
-				id: 		planningModel
-				title: 		qsTr("Planning Distribution")
-				name: 		"planningModel"
+				id: 								planningModel
+				title: 							qsTr("Planning Distribution")
+				name: 							"planningModel"
 
-				RadioButton 
+				RadioButton
 				{
-					id: 		beta
-					text: 		qsTr("Beta")
-					name: 		"beta"
-					checked: 	true
+					id: 				beta
+					text: 			qsTr("Beta")
+					name: 			"beta"
+					checked: 		true
 				}
 
-				RadioButton 
+				RadioButton
 				{
-					id: 		betaBinomial
-					text: 		qsTr("Beta-binomial")
-					name: 		"beta-binomial"
+					id: 				gamma
+					text: 			qsTr("Gamma")
+					name: 			"gamma"
+				}
+
+				RadioButton
+				{
+					id: 				betaBinomial
+					text: 			qsTr("Beta-binomial")
+					name: 			"beta-binomial"
 				}
 			}
 
-			RadioButtonGroup 
+			RadioButtonGroup
 			{
-				id: 		valuta
-				title: 		qsTr("Currency")
-				name: 		"valuta"
-				visible:	materialityAbsolute.checked
+				id: 					valuta
+				title: 				qsTr("Currency")
+				name: 				"valuta"
+				visible:			materialityAbsolute.checked
 
-				RadioButton 
+				RadioButton
 				{
-					id: 		euroValuta
-					text: 		qsTr("Euro (€)")
-					name: 		"euroValuta"
-					checked: 	true
+					id: 				euroValuta
+					text: 			qsTr("Euro (€)")
+					name: 			"euroValuta"
+					checked: 		true
 				}
 
-				RadioButton 
+				RadioButton
 				{
-					id: 		dollarValuta
+					id: 			dollarValuta
 					text: 		qsTr("Dollar ($)")
 					name: 		"dollarValuta"
 					checked: 	false
 				}
 
-				RowLayout 
+				RowLayout
 				{
-					RadioButton 
+					RadioButton
 					{
-						id: 		otherValuta
+						id: 			otherValuta
 						text: 		qsTr("Other")
 						name: 		"otherValuta"
 						checked: 	false
 					}
 
-					TextField 
+					TextField
 					{
-						id: 			otherValutaName
+						id: 				otherValutaName
 						name: 			"otherValutaName"
-						fieldWidth: 	100
+						fieldWidth: 100
 						enabled: 		otherValuta.checked
 						visible: 		otherValuta.checked
 					}
@@ -324,32 +365,32 @@ Form {
 		}
 	}
 
-	Section 
+	Section
 	{
 		title: qsTr("Tables and Plots")
 
-		GridLayout 
+		GridLayout
 		{
 			columns: 2
 
-			ColumnLayout 
+			ColumnLayout
 			{
-				GroupBox 
+				GroupBox
 				{
 					title: qsTr("Statistics")
 
-					CheckBox 
+					CheckBox
 					{
 						text: qsTr("Expected Bayes factor\u208B\u208A")
 						name: "expectedBF"
 					}
 				}
 
-				GroupBox 
+				GroupBox
 				{
 					title: qsTr("Tables")
 
-					CheckBox 
+					CheckBox
 					{
 						text: qsTr("Implicit sample")
 						name: "implicitSampleTable"
@@ -357,64 +398,61 @@ Form {
 				}
 			}
 
-			GroupBox 
+			GroupBox
 			{
 				title: qsTr("Plots")
 
-				CheckBox 
+				CheckBox
 				{
 					text: qsTr("Decision analysis")
 					name: "decisionPlot"
 				}
-				CheckBox 
-				{
-					id: 		priorPlot
-					text: 		qsTr("Implied prior from risk assessments")
-					name: 		"priorPlot"
-				}
-				PercentField 
-				{
-					text: 				qsTr("x-axis limit")
-					name: 				"priorPlotLimit"
-					defaultValue: 		100
-					Layout.leftMargin: 	20 * preferencesModel.uiScale
-					enabled: 			priorPlot.checked
-				}
 
-				CheckBox 
+				CheckBox
 				{
-					text: 				qsTr("Additional info")
-					name: 				"priorPlotAdditionalInfo"
-					Layout.leftMargin: 	20 * preferencesModel.uiScale
-					checked: 			true
-					enabled: 			priorPlot.checked
-				}
+					text: 								qsTr("Implied prior from risk assessments")
+					name: 								"priorPlot"
+					childrenOnSameRow: 		false
 
-				CheckBox 
-				{
-					text: 				qsTr("Expected posterior")
-					name: 				"priorPlotExpectedPosterior"
-					Layout.leftMargin: 	20 * preferencesModel.uiScale
-					checked: 			false
-					enabled: 			priorPlot.checked
+					PercentField
+					{
+						text: 							qsTr("x-axis limit")
+						name: 							"priorPlotLimit"
+						defaultValue: 			100
+					}
+
+					CheckBox
+					{
+						text: 							qsTr("Additional info")
+						name: 							"priorPlotAdditionalInfo"
+						checked: 						true
+					}
+
+					CheckBox
+					{
+						text: 							qsTr("Expected posterior")
+						name: 							"priorPlotExpectedPosterior"
+						checked: 						false
+					}
 				}
 			}
 		}
 	}
 
-	Item 
+	Item
 	{
 		Layout.preferredHeight: 			downloadReportPlanning.height
 		Layout.fillWidth: 	true
 
-		Button 
+		Button
 		{
-			id: 				downloadReportPlanning
-			enabled: 			materialityRelative.checked ? (populationSize.value != 0 && materialityPercentage.value != 0) : (populationSize.value != 0 && materialityValue.value != 0 && populationValue.value != 0)
+			id: 							downloadReportPlanning
+			enabled: 					materialityRelative.checked ? (populationSize.value != 0 && materialityPercentage.value != 0) : (populationSize.value != 0 && materialityValue.value != 0 && populationValue.value != 0)
 			anchors.right: 		parent.right
 			anchors.bottom: 	parent.bottom
-			text: 				qsTr("<b>Download Report</b>")
-			onClicked: 
+			text: 						qsTr("<b>Download Report</b>")
+
+			onClicked:
 			{
 				form.exportResults()
 			}

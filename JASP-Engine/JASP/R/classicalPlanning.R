@@ -59,11 +59,12 @@ classicalPlanning <- function(jaspResults, dataset, options, ...){
   # Create an index for figure numbers
   planningContainer[["figNumber"]] <- createJaspState(1)
 
-  # Create the implied sampling distribution plot
-  .samplingDistributionPlot(options, planningOptions, planningState, planningContainer, position = 4, ready)
-
   # Create the decision analysis plot
-  .decisionAnalysisPlot(options, planningOptions, planningState, planningContainer, type = "frequentist", position = 5, ready)
+  .decisionAnalysisPlot(options, planningOptions, planningState, planningContainer, type = "frequentist", position = 4, ready)
+
+  # Create the implied sampling distribution plot
+  .samplingDistributionPlot(options, planningOptions, planningState, planningContainer, position = 5, ready)
+
 }
 
 .classicalPlanningOptions <- function(options){
@@ -226,71 +227,6 @@ classicalPlanning <- function(jaspResults, dataset, options, ...){
   }
 }
 
-.samplingDistributionPlot <- function(options, planningOptions, planningState, planningContainer, position, ready){
-
-  if(!is.null(planningContainer[["samplingDistribution"]]) || !options[["samplingDistribution"]]) return()
-
-  samplingDistribution <- createJaspPlot(plot = NULL, title = "Implied Sampling Distribution", width = 600, height = 300)
-  samplingDistribution$position <- position
-  samplingDistribution$dependOn(options = c("IR", "CR", "confidence", "materialityPercentage", "expectedErrors", "expectedPercentage", "planningModel", 
-                                            "expectedNumber", "samplingDistribution", "materialityValue", "explanatoryText", "irCustom", "crCustom"))
-
-  planningContainer[["samplingDistribution"]] <- samplingDistribution
-
-  if(!ready || planningContainer$getError()) 
-    return()
-
-  limx <- length(0:planningState[["sampleSize"]])
-  if(limx > 31) {
-      limx <- 31
-  }
-
-  xVals <- (0:planningState[["sampleSize"]])[1:limx]
-  if(planningState[["likelihood"]] == "poisson"){
-    d0 <- stats::dpois(x = xVals, lambda = planningState[["materiality"]] * planningState[["sampleSize"]])
-    d1 <- stats::dpois(x = 0:planningState[["expectedSampleError"]], lambda = planningState[["materiality"]] * planningState[["sampleSize"]])
-  } else if(planningState[["likelihood"]] == "binomial"){
-    d0 <- stats::dbinom(x = xVals, size = planningState[["sampleSize"]], prob = planningState[["materiality"]])
-    d1 <- stats::dbinom(x = 0:planningState[["expectedSampleError"]], size = planningState[["sampleSize"]], prob = planningState[["materiality"]])
-  } else if(planningState[["likelihood"]] == "hypergeometric"){
-    d0 <- stats::dhyper(x = xVals, m = planningState[["populationK"]], n = planningState[["N"]] - planningState[["populationK"]], k = planningState[["sampleSize"]])
-    d1 <- stats::dhyper(x = 0:planningState[["expectedSampleError"]], m = planningState[["populationK"]], n = planningState[["N"]] - planningState[["populationK"]], k = planningState[["sampleSize"]])
-  }
-
-  data0 <- data.frame(x = xVals, y = d0)
-  data1 <- data.frame(x = 0:planningState[["expectedSampleError"]], y = d1)
-
-  xTicks <- JASPgraphs::getPrettyAxisBreaks(xVals)
-  yTicks <- JASPgraphs::getPrettyAxisBreaks(data0$y)
-
-  pdata <- data.frame(x = c(0, 0), y = c(0, 0), type = c("Expected error-free", "Expected errors"))
-  pdata$type <- factor(pdata$type, levels(pdata$type)[c(2,1)])
-
-  p <- ggplot2::ggplot(data = pdata, ggplot2::aes(x = x, y = y, fill = type)) +
-        ggplot2::geom_point(shape = 2, alpha = 0) +
-        ggplot2::labs(fill = "") +
-        ggplot2::scale_x_continuous(name = "n", labels = xTicks, breaks = xTicks) +
-        ggplot2::scale_y_continuous(name = "Probability", labels = yTicks, breaks = yTicks) +
-        ggplot2::geom_bar(data = data0, mapping = ggplot2::aes(x = x, y = y), stat = "identity", fill = "#7FE58B", size = 0.5, color = "black") +
-        ggplot2::geom_bar(data = data1, mapping = ggplot2::aes(x = x, y = y), stat = "identity", fill = "#FF6666", size = 0.5, color = "black") +
-        ggplot2::geom_point(data = pdata, mapping = ggplot2::aes(x = x, y = y, fill = type), size = 0) +
-        ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = 0, r = 30))) +
-        ggplot2::scale_fill_manual(values=c("#7FE58B", "#FF6666"), guide = ggplot2::guide_legend(reverse = TRUE)) +
-        ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(size = 12, shape = 22, fill = c("#FF6666", "#7FE58B"), stroke = 1.5, color = "black")))
-  p <- JASPgraphs::themeJasp(p, legend.position = "top") + ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color="#cbcbcb"))
-
-  samplingDistribution$plotObject <- p
-
-  if(options[["explanatoryText"]]){
-        figure3 <- createJaspHtml(paste0("<b>Figure ", planningContainer[["figNumber"]]$object ,".</b> The implied <b>", options[["planningModel"]], "</b> distribution. The number of expected errors in the selection is colored in red and 
-                                          the number of expected error-free observations is colored in green. The total probability of the errors does not exceed the detection risk."), "p")
-        figure3$position <- position + 1
-        figure3$dependOn(optionsFromObject = samplingDistribution)
-        planningContainer[["figure3"]] <- figure3
-        planningContainer[["figNumber"]] <- createJaspState(planningContainer[["figNumber"]]$object + 1)
-  }
-}
-
 .decisionAnalysisPlot <- function(options, planningOptions, planningState, planningContainer, type, position, ready){
 
   if(!is.null(planningContainer[["decisionPlot"]]) || !options[["decisionPlot"]]) return()
@@ -404,6 +340,71 @@ classicalPlanning <- function(jaspResults, dataset, options, ...){
         figure2$position <- position + 1
         figure2$dependOn(optionsFromObject = decisionPlot)
         planningContainer[["figure2"]] <- figure2
+        planningContainer[["figNumber"]] <- createJaspState(planningContainer[["figNumber"]]$object + 1)
+  }
+}
+
+.samplingDistributionPlot <- function(options, planningOptions, planningState, planningContainer, position, ready){
+
+  if(!is.null(planningContainer[["samplingDistribution"]]) || !options[["samplingDistribution"]]) return()
+
+  samplingDistribution <- createJaspPlot(plot = NULL, title = "Implied Sampling Distribution", width = 600, height = 300)
+  samplingDistribution$position <- position
+  samplingDistribution$dependOn(options = c("IR", "CR", "confidence", "materialityPercentage", "expectedErrors", "expectedPercentage", "planningModel", 
+                                            "expectedNumber", "samplingDistribution", "materialityValue", "explanatoryText", "irCustom", "crCustom"))
+
+  planningContainer[["samplingDistribution"]] <- samplingDistribution
+
+  if(!ready || planningContainer$getError()) 
+    return()
+
+  limx <- length(0:planningState[["sampleSize"]])
+  if(limx > 31) {
+      limx <- 31
+  }
+
+  xVals <- (0:planningState[["sampleSize"]])[1:limx]
+  if(planningState[["likelihood"]] == "poisson"){
+    d0 <- stats::dpois(x = xVals, lambda = planningState[["materiality"]] * planningState[["sampleSize"]])
+    d1 <- stats::dpois(x = 0:planningState[["expectedSampleError"]], lambda = planningState[["materiality"]] * planningState[["sampleSize"]])
+  } else if(planningState[["likelihood"]] == "binomial"){
+    d0 <- stats::dbinom(x = xVals, size = planningState[["sampleSize"]], prob = planningState[["materiality"]])
+    d1 <- stats::dbinom(x = 0:planningState[["expectedSampleError"]], size = planningState[["sampleSize"]], prob = planningState[["materiality"]])
+  } else if(planningState[["likelihood"]] == "hypergeometric"){
+    d0 <- stats::dhyper(x = xVals, m = planningState[["populationK"]], n = planningState[["N"]] - planningState[["populationK"]], k = planningState[["sampleSize"]])
+    d1 <- stats::dhyper(x = 0:planningState[["expectedSampleError"]], m = planningState[["populationK"]], n = planningState[["N"]] - planningState[["populationK"]], k = planningState[["sampleSize"]])
+  }
+
+  data0 <- data.frame(x = xVals, y = d0)
+  data1 <- data.frame(x = 0:planningState[["expectedSampleError"]], y = d1)
+
+  xTicks <- JASPgraphs::getPrettyAxisBreaks(xVals)
+  yTicks <- JASPgraphs::getPrettyAxisBreaks(data0$y)
+
+  pdata <- data.frame(x = c(0, 0), y = c(0, 0), type = c("Expected error-free", "Expected errors"))
+  pdata$type <- factor(pdata$type, levels(pdata$type)[c(2,1)])
+
+  p <- ggplot2::ggplot(data = pdata, ggplot2::aes(x = x, y = y, fill = type)) +
+        ggplot2::geom_point(shape = 2, alpha = 0) +
+        ggplot2::labs(fill = "") +
+        ggplot2::scale_x_continuous(name = "n", labels = xTicks, breaks = xTicks) +
+        ggplot2::scale_y_continuous(name = "Probability", labels = yTicks, breaks = yTicks) +
+        ggplot2::geom_bar(data = data0, mapping = ggplot2::aes(x = x, y = y), stat = "identity", fill = "#7FE58B", size = 0.5, color = "black") +
+        ggplot2::geom_bar(data = data1, mapping = ggplot2::aes(x = x, y = y), stat = "identity", fill = "#FF6666", size = 0.5, color = "black") +
+        ggplot2::geom_point(data = pdata, mapping = ggplot2::aes(x = x, y = y, fill = type), size = 0) +
+        ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = 0, r = 30))) +
+        ggplot2::scale_fill_manual(values=c("#7FE58B", "#FF6666"), guide = ggplot2::guide_legend(reverse = TRUE)) +
+        ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(size = 12, shape = 22, fill = c("#FF6666", "#7FE58B"), stroke = 1.5, color = "black")))
+  p <- JASPgraphs::themeJasp(p, legend.position = "top") + ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color="#cbcbcb"))
+
+  samplingDistribution$plotObject <- p
+
+  if(options[["explanatoryText"]]){
+        figure3 <- createJaspHtml(paste0("<b>Figure ", planningContainer[["figNumber"]]$object ,".</b> The implied <b>", options[["planningModel"]], "</b> distribution. The number of expected errors in the selection is colored in red and 
+                                          the number of expected error-free observations is colored in green. The total probability of the errors does not exceed the detection risk."), "p")
+        figure3$position <- position + 1
+        figure3$dependOn(optionsFromObject = samplingDistribution)
+        planningContainer[["figure3"]] <- figure3
         planningContainer[["figNumber"]] <- createJaspState(planningContainer[["figNumber"]]$object + 1)
   }
 }
