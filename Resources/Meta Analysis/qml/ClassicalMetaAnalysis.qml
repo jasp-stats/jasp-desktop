@@ -44,9 +44,22 @@ Form
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["covariates","factors"]}
 			AssignedVariablesList  { name: "modelTerms"; title: qsTr("Model Terms"); listViewType: JASP.Interaction }
 		}
+        CheckBox { name: "includeConstant"; label: qsTr("Include intercept"); checked: true }
 
-		CheckBox { name: "includeConstant"; text: qsTr("Include intercept"); checked: true }
-	}
+        VariablesForm
+        {
+            height: 200
+            AvailableVariablesList
+            {
+                name: "components"
+                title: qsTr("Components")
+                width: parent.width / 4
+                source: ['covariates', 'factors']
+            }
+            ModelTermsList { width: parent.width * 5 / 9 }
+        }
+
+    }
 
 	Section
 	{
@@ -54,13 +67,19 @@ Form
 		Group
 		{
 			title: qsTr("Regression Coefficients")
-			CheckBox { name: "regressionCoefficientsEstimates"; text: qsTr("Estimates"); checked: true }
-			CheckBox
-			{
-				name: "regressionCoefficientsConfidenceIntervals"; text: qsTr("Confidence intervals")
-				CIField { name: "regressionCoefficientsConfidenceIntervalsInterval"; label: qsTr("Interval") }
-				DropDown { name: "test"; label: qsTr("Test"); values: [ "z", "knha"]; }
-			}
+            CheckBox
+            {   name: "regressionCoefficientsEstimates";
+                text: qsTr("Estimates");
+                checked: true
+                onClicked: { if (!checked && estimatesConfInt.checked) estimatesConfInt.click() }
+                CheckBox
+                {
+                    id: estimatesConfInt
+                    name: "regressionCoefficientsConfidenceIntervals"; text: qsTr("Confidence intervals")
+                    CIField { name: "regressionCoefficientsConfidenceIntervalsInterval"; label: qsTr("Interval") }
+                    DropDown { name: "test"; label: qsTr("Test"); values: [ "z", "knha"]; }
+                }
+            }
 			CheckBox { name: "regressionCoefficientsCovarianceMatrix"; text: qsTr("Covariance matrix") }
 
 		}

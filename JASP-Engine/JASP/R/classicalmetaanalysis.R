@@ -70,15 +70,13 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   if (!is.null(dataset)) 
     return(dataset)
   else {
-    studyLabels <- options$studyLabels
     effsizeName <- unlist(options$dependent)
     stderrName  <- unlist(options$wlsWeights)
     covarNames  <- if (length(options$covariates) > 0) unlist(options$covariates)
     factNames   <- if (length(options$factors) > 0) unlist(options$factors)
     
-    list.variables    <- Filter(function(s) s != "", c(effsizeName, covarNames))
     numeric.variables <- Filter(function(s) s != "", c(effsizeName, covarNames, stderrName))
-    factor.variables  <- Filter(function(s) s != "", c(factNames, studyLabels))
+    factor.variables  <- Filter(function(s) s != "", c(factNames, options$studyLabels))
     return(.readDataSetToEnd(columns.as.factor   = factor.variables,
                              columns.as.numeric  = numeric.variables,
                              exclude.na.listwise = numeric.variables))
@@ -91,7 +89,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   covarNames  <- if (length(options$covariates) > 0) unlist(options$covariates)
   numeric.variables <- Filter(function(s) s != "", c(effsizeName, covarNames, stderrName))
   .hasErrors(dataset              = dataset, 
-             type                 = c("infinity", "observations"),
+             type                 = c("infinity", "observations", "variance"),
              all.target           = numeric.variables, 
              observations.amount  = "< 2",
              exitAnalysisIfErrors = TRUE)
@@ -108,7 +106,6 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 .metaAnalysisComputeModel <- function(jaspResults, dataset, options, ready) {
   if (!is.null(jaspResults[["Model"]])) 
     return(jaspResults[["Model"]]$object)
-  method  <- .metaAnalysisGetMethod(options)
   rma.fit <- structure(list('b'     = numeric(),
                             'se'    = numeric(),
                             'ci.lb' = numeric(), 
@@ -117,26 +114,9 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
                             'pval'  = numeric()), 
                        class = c("dummy", "rma"))
   if (ready) {
-    if(length(options$modelTerms) > 0) {
-      .vmodelTerms <- NULL
-      for (i in seq_along(options$modelTerms)) {
-        components   <- options$modelTerms[[i]]$components
-        .vmodelTerms <- c(.vmodelTerms, .v(components)) 
-        #browser()
-        #if (length(components) == 1)
-        #  .vmodelTerms <- c(.vmodelTerms, .v(components[[1]]))
-        #else {
-        #  components.unlisted <- unlist(components)
-        #  term.base64         <- paste0(.v(components.unlisted), collapse = ":")
-        #  .vmodelTerms        <- c(.vmodelTerms, term.base64)
-        #}
-      }
-      # infer model formula
-      #.vmodelTerms <- .v(options$modelTerms)
-      .vmodelTerms <- .vmodelTerms[.vmodelTerms != ""]
-      #browser()
-      formula.rhs <- as.formula(.vmodelTerms)
-    } else
+    if (length(options$modelTerms) > 0)
+      formula.rhs <- formula(as.modelTerms(.v(options$modelTerms)))
+    else
       formula.rhs <- NULL
     
     if (is.null(formula.rhs))
@@ -153,17 +133,17 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
         yi      = get(.v(options$dependent)), 
         sei     = get(.v(options$wlsWeights)), 
         data    = dataset,
-        method  = method, 
-        mods    = formula.rhs, 
+        method  = .metaAnalysisGetMethod(options), 
+        mods    = formula.rhs,  #.metaAnalysisFormula(options), 
         test    = options$test,
         slab    = if(options$studyLabels != "") paste0(get(.v(options$studyLabels))),
         # add tiny amount because 1 is treated by rma() as 100% whereas values > 1 as percentages
         level   = options$regressionCoefficientsConfidenceIntervalsInterval + 1e-9, 
         control = list(maxiter = 500)), 
-      error = function(e) .quitAnalysis(e$message))
+      error = function(e) .quitAnalysis(paste("The metafor package crashed with the following error:", e$message)))
     
-    rma.fit <- .v(rma.fit)#, values = all.vars(formula.rhs))
-  }
+    rma.fit <- .unv(rma.fit)#, values = all.vars(formula.rhs))
+  } 
   
   # Save results to state
   jaspResults[["Model"]] <- createJaspState(rma.fit)
@@ -178,7 +158,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   if (!is.null(jaspResults[["fixRandTable"]])) return()
   
   mainTable <- createJaspTable("Fixed and Random Effects")
-  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels")
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels", "method")
   mainTable$dependOn(dependList)
   mainTable$position <- 1
   msg <- ("Hedges, L. V., & Olkin, I. (1985). Statistical methods for meta-analysis. 
@@ -204,7 +184,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     return()
   
   coeffTable <- createJaspTable("Coefficients")
-  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels", "method",
                   "regressionCoefficientsConfidenceIntervals", "regressionCoefficientsEstimates")
   coeffTable$dependOn(dependList)
   coeffTable$position <- 2
@@ -289,7 +269,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   
   covMatTable <- createJaspTable("Parameter Covariances")
   dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
-                  "regressionCoefficientsCovarianceMatrix")
+                  "regressionCoefficientsCovarianceMatrix", "method")
   covMatTable$dependOn(dependList)
   covMatTable$position <- 5
   covMatTable$showSpecifiedColumnsOnly <- TRUE
@@ -299,15 +279,20 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   covariates <- c("intrcpt", covariates)
   
   covMatTable$addColumnInfo(name = "name",  type = "string",  title = " ")
-  if(!ready)
+  if(!ready) {
+    coeffVcov <- NULL
     covMatTable$addColumnInfo(name = "intrcpt", type = "number", title = "...")
-  else
-    for(i in 1:length(covariates))
-      covMatTable$addColumnInfo(name = covariates[[i]], type = "number")
+  } else {
+    rma.fit   <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+    coeffVcov <- try(vcov(rma.fit))
+    cov       <- colnames(coeffVcov)
+    for(i in 1:length(cov))
+      covMatTable$addColumnInfo(name = cov[[i]], type = "number")
+  }
   
   jaspResults[["covMatTable"]] <- covMatTable
 
-  res <- try(.metaAnalysisCovMatFill(jaspResults, dataset, options, ready))
+  res <- try(.metaAnalysisCovMatFill(jaspResults, dataset, options, ready, coeffVcov))
   
   .metaAnalysisSetError(res, covMatTable)
 }
@@ -318,7 +303,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   
   rankTestTable <- createJaspTable("Rank correlation test for Funnel plot asymmetry")
   dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
-                  "rSquaredChange")
+                  "rSquaredChange", "method")
   rankTestTable$dependOn(dependList)
   rankTestTable$position <- 6
   rankTestTable$showSpecifiedColumnsOnly <- TRUE
@@ -341,7 +326,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   title <- "Regression test for Funnel plot asymmetry (\"Egger's test\")"
   regTestTable <- createJaspTable(title)
   dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
-                  "funnelPlotAsymmetryTest", "test")
+                  "funnelPlotAsymmetryTest", "test", "method")
   regTestTable$dependOn(dependList)
   regTestTable$position <- 6
   regTestTable$showSpecifiedColumnsOnly <- TRUE
@@ -411,7 +396,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   
   failSafeTable <- createJaspTable("File Drawer Analysis")
   dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
-                  "plotResidualsCovariates")
+                  "plotResidualsCovariates", "method")
   failSafeTable$dependOn(dependList)
   failSafeTable$position <- 6
   failSafeTable$showSpecifiedColumnsOnly <- TRUE
@@ -454,12 +439,9 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 .metaAnalysisCoeffFill <- function(jaspResults, dataset, options) {
   # Compute/get model
   rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready = TRUE)
-  
   coeff   <- coef(summary(rma.fit))
-  cov     <- unlist(options$modelTerms)
-  cov     <- c("intrcpt", cov)
-  len.cov <- length(cov)
-  for(i in 1:len.cov) {
+  cov     <- rownames(coeff)
+  for(i in 1:length(cov)) {
     jaspResults[["coeffTable"]]$addRows(list(
       name  = cov[[i]],
       est   = coeff[i,1],
@@ -543,15 +525,9 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   ))
 }
 
-.metaAnalysisCovMatFill <- function(jaspResults, dataset, options, ready) {
-  cov     <- unlist(options$modelTerms)
-  cov     <- c("intrcpt", cov)
-  len.cov <- length(cov)
+.metaAnalysisCovMatFill <- function(jaspResults, dataset, options, ready, coeffVcov) {
   if(ready) {
-    # Compute/get model
-    rma.fit   <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
-    confInt   <- options$regressionCoefficientsConfidenceIntervalsInterval
-    coeffVcov <- try(vcov(rma.fit))
+    cov <- colnames(coeffVcov)
     for(i in 1:length(cov)) {
       row <- list(name = cov[[i]])
       for(j in 1:length(cov))
@@ -836,30 +812,38 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   if (all(is.na(psize))) 
     psize <- rep(1, k)
   if(rma.fit$slab.null)
-    slabs <- paste0("Study ", rma.fit$ids)
+    slabs <- paste0("Study ", rma.fit$ids[rma.fit$not.na])
   else
-    slabs <- rma.fit$slab
-  
-  rma.data <-  data.frame(StudyNo = k + 1 - rma.fit$ids, 
+    slabs <- rma.fit$slab[rma.fit$not.na]
+  rma.data <-  data.frame(StudyNo = k + 1 - rma.fit$ids[rma.fit$not.na], 
                           labs    = slabs,
                           ES      = rma.fit$yi,
                           ci.int  = ci.int,
                           ci.lb   = ci.lb,
                           ci.ub   = ci.ub,
-                          shape   = rep(15, k),
+                          shape   = rep(15, sum(rma.fit$not.na)),
                           size    = psize)
   
+  #grey polygons when not intercept only
   if(!rma.fit$int.only){
-    #TODO: these need to be polygons/segments as in forest.rma
-    add.data <- data.frame(StudyNo = k + 1 - rma.fit$ids, 
-                           labs    = rep(NA_real_, k),
-                           ES      = fitted(rma.fit),
-                           ci.int  = rep(NA_real_, k),
-                           ci.lb   = rep(NA_real_, k),
-                           ci.ub   = rep(NA_real_, k),
-                           shape   = rep(18, k),
-                           size    = rep(min(psize), k))
+    pred   <- fitted(rma.fit)
+    height <- (ylims[2] - ylims[1])/100
+    alim   <- range(k + 1 - rma.fit$ids[rma.fit$not.na])
+    add.data <- data.frame()
+    for(study in seq_len(k)) {
+      if (is.na(pred[study])) 
+        next
+      rownum <- k + 1 - rma.fit$ids[study]
+      row1 <- data.frame(ES      = c(pred[study], b.ci.ub[study], pred[study]), 
+                         StudyNo = c(rownum - height, rownum, rownum + height),
+                         group   = as.character(rep(study,3)))
+      row2 <- data.frame(ES      = c(pred[study], b.ci.lb[study], pred[study]), 
+                        StudyNo  = c(rownum - height, rownum, rownum + height),
+                        group    = as.character(rep(study+0.5,3)))
+      add.data <- rbind(add.data, row1, row2)
+    }
   }
+  
   if(rma.fit$int.only){
     mName <- ifelse((rma.fit$method == "FE"), "FE Model", "RE Model")
     mData <- data.frame(StudyNo = -1, 
@@ -875,13 +859,11 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   else
     dat <- rma.data
   
-  p <- ggplot2::ggplot(data = dat, ggplot2::aes(x = StudyNo, y = ES))
+  
+  
+  p <- ggplot2::ggplot(data = dat, ggplot2::aes(x = StudyNo, y = ES)) 
   if(!rma.fit$int.only)
-    p <- p + ggplot2::geom_point(data = add.data, 
-                                 ggplot2::aes(x = StudyNo, y = ES,
-                                              size = size, 
-                                              shape = factor(shape)), 
-                                 colour = "grey")
+    p <- p + ggplot2::geom_polygon(data = add.data, fill = "lightgrey", ggplot2::aes(group = group))
   
   p <- p + ggplot2::geom_point(data = dat, ggplot2::aes(size = size, shape = factor(shape)), colour = cols[1]) +
     ggplot2::geom_errorbar(ggplot2::aes(x = StudyNo, ymax = ci.ub, ymin = ci.lb), 
@@ -891,6 +873,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     ggplot2::geom_vline(ggplot2::aes(xintercept = k+1), lty = "solid",  size = 0.5, colour = cols[1])
   if(rma.fit$int.only)
     p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = 0), lty = "solid",  size = 0.5, colour = cols[2])
+    
   p <- p + ggplot2::coord_flip() + 
     ggplot2::xlab("") + ggplot2::ylab("Observed Outcome") +
     ggplot2::scale_y_continuous(limits = ylims, breaks = pretty(ylims),
@@ -901,7 +884,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   #p <- JASPgraphs::themeJasp(p)
   p <- p + ggplot2::theme(axis.text.y.left  = ggplot2::element_text(hjust = 0, size = 10),
                           axis.text.y.right = ggplot2::element_text(hjust = 1, size = 10),
-                          axis.line.y.left  = ggplot2::element_line(),
+                          axis.line.x.bottom= ggplot2::element_line(),
                           panel.background  = ggplot2::element_blank(),
                           panel.grid        = ggplot2::element_blank(),
                           axis.ticks.y      = ggplot2::element_blank(),
@@ -999,7 +982,8 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   else {
     refline <- 0
     res     <- rstandard(x)
-    not.na  <- !is.na(res$resid)
+    not.na  <- x$not.na
+    #not.na  <- !is.na(res$resid)
     yi      <- res$resid[not.na]
     sei     <- res$se[not.na]
     ni      <- x$ni.f[not.na]
@@ -1008,7 +992,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     xlab    <- "Residual Value"
   }
 
-  ylim <- c(0, max(sei))
+  ylim <- c(0, max(sei[!is.na(sei)]))
  
   level <- ifelse(level == 0, 1, 
                   ifelse(level >= 1, (100 - level)/100, 
@@ -1019,7 +1003,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   x.lb.bot <- refline - qnorm(level.min/2, lower.tail = FALSE) * ylim[2]
   x.ub.bot <- refline + qnorm(level.min/2, lower.tail = FALSE) * ylim[2]
   
-  xlim    <- c(min(x.lb.bot, min(yi)), max(x.ub.bot, max(yi)))
+  xlim    <- c(min(x.lb.bot, min(yi[!is.na(yi)])), max(x.ub.bot, max(yi[!is.na(yi)])))
   rxlim   <- xlim[2] - xlim[1]
   xlim[2] <- xlim[1] - (rxlim * 0.1)
   xlim[1] <- xlim[2] + (rxlim * 0.1)
@@ -1030,7 +1014,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   #new_ylim[1] <- ylim[1] + (rylim * 0.1)
   new_ylim[2] <- ylim[2]
   new_ylim[2] <- max(0, ylim[2] - (rylim * 0.1))
-
+  
   yi.vals <- seq(from = new_ylim[2], to = new_ylim[1], length.out = ci.res)
 
   xaxis.vals <- yi
@@ -1043,7 +1027,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     fillcol <- ifelse(rma.fit$fill, "white", "black")
     shape   <- ifelse(rma.fit$fill, 1, 19)
   } else {
-    fillcol <- rep("black", k)
+    fillcol <- rep("black", sum(rma.fit$not.na))
     shape   <- 19
   }
 
@@ -1203,7 +1187,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   arc.text   <- .arc.text(xlims, yi, ya.xpos, asp.rat)
   arc.int    <- .arc.int(xlims, zlims, ci.xpos, ci.lb, beta, ci.ub, asp.rat)
 
-  len   <- ya.xpos + 0.5 * (xlims[2] - xlims[1])
+  len   <- ya.xpos + 0.02 * (xlims[2] - xlims[1])
   atyis <- seq(min(yi), max(yi), length = 7)
   x.margin.right <- max(sqrt(len^2/(1 + (atyis)/asp.rat)^2))
   
@@ -1230,8 +1214,8 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   p <- JASPgraphs::themeJasp(p)
   p <- p + ggplot2::theme(axis.line.x       = ggplot2::element_blank(),
                           axis.line.y       = ggplot2::element_blank(),
-                          axis.title.y      = ggplot2::element_text(angle = 0, vjust = 0.5),
-                          axis.title.x      = ggplot2::element_text(hjust = 0.5),
+                          axis.title.y      = ggplot2::element_text(size = 12, angle = 0, vjust = 0.5),
+                          axis.title.x      = ggplot2::element_text(size = 12), #, hjust = 0.5),
                           panel.background  = ggplot2::element_blank(), 
                           panel.grid.major  = ggplot2::element_blank(), 
                           panel.grid.minor  = ggplot2::element_blank(),
@@ -1334,6 +1318,23 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 }
 
 # Extra functions
+.metaAnalysisFormula <- function(options){
+  if (length(options$modelTerms) > 0)
+    formula.rhs <- formula(as.modelTerms(.v(options$modelTerms)))
+  else
+    formula.rhs <- NULL
+  
+  if (is.null(formula.rhs))
+    formula.rhs <- ~1
+  if (!options$includeConstant)
+    formula.rhs <- update(formula.rhs, ~ . + 0)
+  
+  if (identical(formula.rhs, ~ 1 - 1))
+    .quitAnalysis("The model should contain at least one predictor or an intercept.")
+  
+  return(formula.rhs)
+}
+
 .metaAnalysisGetMethod <- function(options){
   switch(options$method, 
          `Fixed Effects`      = "FE", 
