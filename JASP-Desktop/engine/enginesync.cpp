@@ -358,7 +358,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 
 #ifdef _WIN32
 	QString rHomePath = programDir.absoluteFilePath("R");
-#elifdef __APPLE__
+#elif defined(__APPLE__)
     QString rHomePath = programDir.absoluteFilePath("../Frameworks/R.framework/Versions/" + QString::fromStdString(AppInfo::getRVersion()) + "/Resources");
 #else //linux
 
