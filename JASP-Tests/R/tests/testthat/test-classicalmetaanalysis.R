@@ -18,6 +18,7 @@ options$rSquaredChange <- TRUE
 options$regressionCoefficientsConfidenceIntervals <- TRUE
 options$regressionCoefficientsCovarianceMatrix <- TRUE
 options$residualsCasewiseDiagnostics <- TRUE
+options$residualsParameters <- TRUE
 options$studyLabels  <- "contBinom"
 options$trimFillPlot <- TRUE
 options$wlsWeights   <- "debCollin1"
@@ -373,13 +374,3 @@ test_that("Analysis handles errors", {
   expect_identical(results[["status"]], "validationError", label="Negative wlsWeights check")
   
 })
-
-
-#options <- jasptools::analysisOptions("ClassicalMetaAnalysis")
-#options$dependent  <- "contNormal"
-#options$covariates <- c("contcor1", "contcor2")
-#options$factors <- "debBinMiss20"
-#options$studyLabels <- "facExperim"
-#options$wlsWeights <- "contGamma"
-#options$modelTerms <- list(list(components = "contcor1"), list(components = "contcor2"), list(components = "debBinMiss20"))
-#results <- jasptools::run("ClassicalMetaAnalysis", "debug.csv", options)

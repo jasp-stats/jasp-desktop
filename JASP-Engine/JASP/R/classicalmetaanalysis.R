@@ -114,19 +114,6 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
                             'pval'  = numeric()), 
                        class = c("dummy", "rma"))
   if (ready) {
-    if (length(options$modelTerms) > 0)
-      formula.rhs <- formula(as.modelTerms(.v(options$modelTerms)))
-    else
-      formula.rhs <- NULL
-    
-    if (is.null(formula.rhs))
-      formula.rhs <- ~1
-    if (!options$includeConstant)
-      formula.rhs <- update(formula.rhs, ~ . + 0)
-    
-    if (identical(formula.rhs, ~ 1 - 1))
-      .quitAnalysis("The model should contain at least one predictor or an intercept.")
-    
     # analysis
     rma.fit <- tryCatch( # rma generates informative error messages; use them!
       metafor::rma(
@@ -134,7 +121,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
         sei     = get(.v(options$wlsWeights)), 
         data    = dataset,
         method  = .metaAnalysisGetMethod(options), 
-        mods    = formula.rhs,  #.metaAnalysisFormula(options), 
+        mods    = .metaAnalysisFormula(options), 
         test    = options$test,
         slab    = if(options$studyLabels != "") paste0(get(.v(options$studyLabels))),
         # add tiny amount because 1 is treated by rma() as 100% whereas values > 1 as percentages
@@ -142,7 +129,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
         control = list(maxiter = 500)), 
       error = function(e) .quitAnalysis(paste("The metafor package crashed with the following error:", e$message)))
     
-    rma.fit <- .unv(rma.fit)#, values = all.vars(formula.rhs))
+    rma.fit <- .unv(rma.fit)
   } 
   
   # Save results to state
@@ -157,7 +144,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 .metaAnalysisFixRandTable <- function(jaspResults, dataset, options, ready) {
   if (!is.null(jaspResults[["fixRandTable"]])) return()
   
-  mainTable <- createJaspTable("Fixed and Random Effects")
+  mainTable  <- createJaspTable("Fixed and Random Effects")
   dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels", "method")
   mainTable$dependOn(dependList)
   mainTable$position <- 1
@@ -212,13 +199,12 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 }
 
 .metaAnalysisFitMeasuresTable <- function(jaspResults, dataset, options, ready) {
-  
   if (!options$modelFit || !is.null(jaspResults[["fitMeasuresTable"]])) 
     return()
   
   fitMeasuresTable <- createJaspTable("Fit measures")
-  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
-                  "modelFit", "method")
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", 
+                  "studyLabels", "modelFit", "method")
   fitMeasuresTable$dependOn(dependList)
   fitMeasuresTable$position <- 3
   
@@ -239,8 +225,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 .metaAnalysisResidualTable <- function(jaspResults, dataset, options, ready) {
   method <- .metaAnalysisGetMethod(options)
   
-  if (!options$residualsParameters || method == "FE"|| 
-      !is.null(jaspResults[["residualTable"]])) 
+  if (!options$residualsParameters || method == "FE" || !is.null(jaspResults[["residualTable"]])) 
     return()
   
   residualTable <- createJaspTable("Residual Heterogeneity Estimates")
@@ -249,7 +234,6 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   residualTable$dependOn(dependList)
   residualTable$position <- 4
   residualTable$showSpecifiedColumnsOnly <- TRUE
-  
   
   residualTable$addColumnInfo(name = "name",  type = "string",  title = " ")
   residualTable$addColumnInfo(name = "est",   type = "number",  title = "Estimate")
@@ -263,8 +247,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 }
 
 .metaAnalysisCovMatTable <- function(jaspResults, dataset, options, ready) {
-  if (!options$regressionCoefficientsCovarianceMatrix || 
-      !is.null(jaspResults[["covMatTable"]])) 
+  if (!options$regressionCoefficientsCovarianceMatrix || !is.null(jaspResults[["covMatTable"]])) 
     return()
   
   covMatTable <- createJaspTable("Parameter Covariances")
@@ -273,10 +256,6 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   covMatTable$dependOn(dependList)
   covMatTable$position <- 5
   covMatTable$showSpecifiedColumnsOnly <- TRUE
-  
-  
-  covariates <- unlist(options$modelTerms)
-  covariates <- c("intrcpt", covariates)
   
   covMatTable$addColumnInfo(name = "name",  type = "string",  title = " ")
   if(!ready) {
@@ -323,8 +302,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 .metaAnalysisRegTestTable <- function(jaspResults, dataset, options, ready) {
   if (!options$funnelPlotAsymmetryTest || !is.null(jaspResults[["regTestTable"]])) 
     return()
-  title <- "Regression test for Funnel plot asymmetry (\"Egger's test\")"
-  regTestTable <- createJaspTable(title)
+  regTestTable <- createJaspTable("Regression test for Funnel plot asymmetry (\"Egger's test\")")
   dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
                   "funnelPlotAsymmetryTest", "test", "method")
   regTestTable$dependOn(dependList)
@@ -336,11 +314,13 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   
   regTestTable$addColumnInfo(name = "name",    type = "string", title = " ")
   if (options$test == "knha")
-    regTestTable$addColumnInfo(name = "t", type = "number")
+    title <- "t"
   else
-    regTestTable$addColumnInfo(name = "z", type = "number")
+    title <- "z"
+  regTestTable$addColumnInfo(name = "test", title = title, type = "number")
   regTestTable$addColumnInfo(name = "pval",    type = "pvalue", title = "p")
-  ##Should I add confidence intervals, and intercept values?
+  ##TODO: Should I add confidence intervals, and intercept values?
+  #.metaAnalysisConfidenceInterval(options, regTestTable)
   
   jaspResults[["regTestTable"]] <- regTestTable
   
@@ -362,8 +342,8 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   casewiseTable$dependOn(dependList)
   casewiseTable$position <- 6
   casewiseTable$showSpecifiedColumnsOnly <- TRUE
-  tau2title <- "\u3C4\u00B2<sub>(-i)</sub>" #"\u3C4\u00B2\u208D\u208B\u1D62\u208E"
-  QEtitle   <- "Q<sub>E(-i)</sub>"         #"Q[E]\u208D\u208B\u1D62\u208E"
+  tau2title <- "\u3C4\u00B2<sub>(-i)</sub>" 
+  QEtitle   <- "Q<sub>E(-i)</sub>"
   
   casewiseTable$addColumnInfo(name = "name",   type = "string",  title = " ")
   casewiseTable$addColumnInfo(name = "sdRes",  type = "number",  title = "Std. Residual")
@@ -488,7 +468,10 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     I2   = ".",
     H2   = "."
   )
-  
+  tau2Name <- "\u3C4\u00B2"
+  tauName  <- "\u3C4"
+  I2Name   <- "I\u00B2 (%)"
+  H2Name   <- "H\u00B2"
   if(ready) {
     # Compute/get model
     rma.fit   <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
@@ -511,16 +494,16 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     ci.upper$H2   <- residPars[4,3]
   }
   
-  #TODO: need name column entries in <em></em>
+  ##TODO: need name column entries in <em></em>
   # Fill table
   jaspResults[["residualTable"]]$addRows(list(
-    list(name = "\u3C4\u00B2", est = est$tau2, 
+    list(name = tau2Name, est = est$tau2, 
          lower = ci.lower$tau2, upper = ci.upper$tau2),
-    list(name = "\u3C4", est = est$tau,
+    list(name = tauName, est = est$tau,
          lower = ci.lower$tau, upper = ci.upper$tau),
-    list(name = "I\u00B2 (%)", est = est$I2,
+    list(name = I2Name, est = est$I2,
          lower = ci.lower$I2, upper = ci.upper$I2),
-    list(name = "H\u00B2", est = est$H2,
+    list(name = H2Name, est = est$H2,
          lower = ci.lower$H2, upper = ci.upper$H2)
   ))
 }
@@ -553,31 +536,19 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 .metaAnalysisRegTestFill <- function(jaspResults, dataset, options) {
   # Compute/get model
   rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready = TRUE)
-  egger <- metafor::regtest(rma.fit)
-  coef  <- metafor::coef.summary.rma(summary(egger$fit))
-  #if(options$includeConstant) {
-  #  results <- list()
-  #  results$name <- rownames(coef)[[1]]
-  #  if (options$test == "knha")
-  #    results$t <- coef[1,3]
-  #  else
-  #    results$z <- coef[1,3]
-  #  results$pval <- coef[1,4]
-  #  #results$lower <- coef[1,5]
-  #  #results$upper <- coef[1,6]
-  #  jaspResults[["regTestTable"]]$addRows(results)
-  #}
-  results <- list()
-  results$name <- .unv(rownames(coef)[[2]])
-  if (options$test == "knha")
-    results$t <- coef[2,3]
-  else
-    results$z <- coef[2,3]
-  results$pval <- coef[2,4]
-  #results$lower <- coef[2,5]
-  #results$upper <- coef[2,6]
-  
-  jaspResults[["regTestTable"]]$addRows(results)
+  egger   <- metafor::regtest(rma.fit)
+  coef    <- metafor::coef.summary.rma(summary(egger$fit))
+  #if(options$includeConstant)
+  #  jaspResults[["regTestTable"]]$addRows(list(name  = .unv(rownames(coef)[[1]]),
+  #                                             pval  = coef[1,4],
+  #                                             lower = coef[1,5],
+  #                                             upper = coef[1,6],
+  #                                             test  = coef[1,3]))
+  jaspResults[["regTestTable"]]$addRows(list(name  = .unv(rownames(coef)[[2]]),
+                                             pval  = coef[2,4],
+                                             lower = coef[2,5],
+                                             upper = coef[2,6],
+                                             test  = coef[2,3]))
 }
 
 .metaAnalysisCasewiseFill <- function(jaspResults, dataset, options, rma.fit) {
@@ -1097,10 +1068,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
                  1.1 * max(atyis) * ya.xpos, 1.1 * max(yi) * ya.xpos, 
                  1.1 * zcrit + xaxismax * beta))
   
-  #asp.rat <- 8.00059307685
   asp.rat <- (zlims[2] - zlims[1])/(xlims[2] - xlims[1])
-  #par.usr <- par("usr")
-  #asp.rat <- (par.usr[4] - par.usr[3])/(par.usr[2] - par.usr[1])
   
   if(x$method == "FE") {
     xlabExpression <- bquote(x[i] == frac(1, sqrt(v[i])))
