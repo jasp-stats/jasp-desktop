@@ -300,7 +300,7 @@ Form {
 				{
 					id: 				beta
 					text: 			qsTr("Beta")
-					name: 			"beta"
+					name: 			"binomial"
 					checked: 		true
 				}
 
@@ -308,14 +308,14 @@ Form {
 				{
 					id: 				gamma
 					text: 			qsTr("Gamma")
-					name: 			"gamma"
+					name: 			"Poisson"
 				}
 
 				RadioButton
 				{
 					id: 				betaBinomial
 					text: 			qsTr("Beta-binomial")
-					name: 			"beta-binomial"
+					name: 			"hypergeometric"
 				}
 			}
 

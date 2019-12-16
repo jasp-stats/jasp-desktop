@@ -17,12 +17,61 @@
 
 # When making changes to this file always mention @koenderks as a reviewer in the Pull Request
 
-.auditRiskModel <- function(options, jaspResults){
+.auditRiskModelParagraph <- function(options, planningOptions, jaspResults, position){
 
   if(!is.null(jaspResults[["ARMcontainer"]])) return()
 
   ARMcontainer <- createJaspContainer(title= "<u>Audit Risk Model</u>")
-  ARMcontainer$position <- 2
+  ARMcontainer$position <- position
+  ARMcontainer$dependOn(options = c("confidence", "IR", "CR", "materialityPercentage", "materialityValue", "materiality", "explanatoryText", "valuta", "irCustom", "crCustom"))
+  jaspResults[["ARMcontainer"]] <- ARMcontainer
+
+  auditRisk <- 1 - options[["confidence"]]
+  if(options[["IR"]] != "Custom"){
+    inherentRisk <- base::switch(options[["IR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
+  } else {
+    inherentRisk <- options[["irCustom"]]
+  }
+  if(options[["CR"]] != "Custom"){
+    controlRisk <- base::switch(options[["CR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
+  } else {
+    controlRisk <- options[["crCustom"]]
+  }
+  detectionRisk <- auditRisk / inherentRisk / controlRisk
+
+  textARM <- paste0("Audit risk (", round(auditRisk * 100, 2),"%) = Inherent risk (", 
+                    round(inherentRisk * 100, 2), "%) x Control risk (", 
+                    round(controlRisk * 100, 2), "%) x Detection risk (", 
+                    round(detectionRisk * 100, 2), "%)")
+  
+  ARMcontainer[["ARMformula"]] <- createJaspHtml(textARM, "h3")
+  ARMcontainer[["ARMformula"]]$position <- 2
+
+  if(options[["explanatoryText"]]){
+
+    auditRiskLabel        <- paste0(round((1 - options[["confidence"]]) * 100, 2), "%")
+    dectectionRiskLabel   <- paste0(round(detectionRisk * 100, 2), "%")
+
+    message <- paste0("Prior to the substantive testing phase, the inherent risk was determined to be <b>", options[["IR"]] ,"</b>. The internal control risk was determined
+                        to be <b>", options[["CR"]] ,"</b>. According to the Audit Risk Model, the required detection risk to maintain an audit risk of <b>", auditRiskLabel, "</b> for a materiality
+                        of <b>", planningOptions[["materialityLabel"]] ,"</b> should be <b>", dectectionRiskLabel , "</b>.")
+    if(options[["IR"]] == "Custom" || options[["CR"]] == "Custom"){
+      message <- paste0(message, " The translation of High, Medium and Low to probabilities is done according custom values</b>.")
+    } else {
+      message <- paste0(message, " The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>.")
+    }
+    ARMcontainer[["AuditRiskModelParagraph"]] <- createJaspHtml(message, "p")
+    ARMcontainer[["AuditRiskModelParagraph"]]$position <- 1
+  }
+}
+
+# The following function will be deprecated
+.auditRiskModel <- function(options, jaspResults, position){
+
+  if(!is.null(jaspResults[["ARMcontainer"]])) return()
+
+  ARMcontainer <- createJaspContainer(title= "<u>Audit Risk Model</u>")
+  ARMcontainer$position <- position
   ARMcontainer$dependOn(options = c("confidence", "IR", "CR", "materialityPercentage", "materialityValue", "materiality", "explanatoryText", "valuta", "irCustom", "crCustom"))
 
   #  Audit Risk Model formula
@@ -54,6 +103,7 @@
   return(DR)
 }
 
+# The following function will be deprecated
 .ARMformula <- function(options, jaspResults, position = 2, ARMcontainer){
 
     if(!is.null(ARMcontainer[["ARMformula"]])) return()
@@ -82,6 +132,345 @@
     ARMcontainer[["ARMformula"]] <- createJaspHtml(text, "h3")
     ARMcontainer[["ARMformula"]]$position <- position
     ARMcontainer[["ARMformula"]]$dependOn(options = c("IR", "CR", "confidence", "irCustom", "crCustom"))
+}
+
+.auditPlanningOptions <- function(options){
+  
+  valuta <- base::switch(options[["valuta"]], "euroValuta" = "\u20AC", "dollarValuta" = "\u0024", "otherValuta" = options[["otherValutaName"]])
+  
+  confidence <- options[["confidence"]]
+  confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
+  absRel <- base::switch(options[["materiality"]], "materialityRelative" = "<b>percentage</b>", "materialityAbsolute" = "<b>amount</b>")
+  
+  populationSize <- options[["populationSize"]]
+  populationValue <- ifelse(options[["populationValue"]] == 0, yes = 0.01, no = options[["populationValue"]])
+  
+  materiality <- ifelse(options[["materiality"]] == "materialityAbsolute", yes = options[["materialityValue"]] / populationValue, no = options[["materialityPercentage"]])
+  materialityLabel <- base::switch(options[["materiality"]], "materialityRelative" = paste0(round(options[["materialityPercentage"]] * 100, 2), "%"), "materialityAbsolute" = paste(valuta, format(options[["materialityValue"]], scientific = FALSE)))
+  
+  expectedErrors <- ifelse(options[["expectedErrors"]] == "expectedRelative", yes = options[["expectedPercentage"]], no = options[["expectedNumber"]] / options[["populationValue"]])
+  expectedErrorsLabel <- ifelse(options[["expectedErrors"]] == "expectedRelative", yes = paste0(round(options[["expectedPercentage"]] * 100, 2), "%"), no = paste(valuta, options[["expectedNumber"]]))
+  
+  likelihood <- base::switch(options[["planningModel"]], "Poisson" = "poisson", "binomial" = "binomial", "hypergeometric" = "hypergeometric")
+  
+  optionsList <- list("valuta" = valuta, 
+                      "confidence" = confidence, 
+                      "confidenceLabel" = confidenceLabel, 
+                      "absRel" = absRel, 
+                      "populationSize" = populationSize, 
+                      "populationValue" = populationValue, 
+                      "materiality" = materiality, 
+                      "materialityLabel" = materialityLabel, 
+                      "expectedErrors" = expectedErrors, 
+                      "expectedErrorsLabel" = expectedErrorsLabel,
+                      "likelihood" = likelihood)
+  return(optionsList)
+}
+
+.auditExplanatoryTextProcedure <- function(options, planningOptions, jaspResults, position){
+  if(options[["explanatoryText"]] && is.null(jaspResults[["procedureContainer"]])){
+    procedureContainer <- createJaspContainer(title= "<u>Procedure</u>")
+    procedureContainer$position <- position
+    procedureContainer[["procedureParagraph"]] <- createJaspHtml(paste0("The objective of this substantive testing procedure is to determine with a specified confidence <b>(", planningOptions[["confidenceLabel"]], ")</b> whether the ", planningOptions[["absRel"]] ," of
+                                                                        misstatement in the target population is lower than the specified materiality of <b>", planningOptions[["materialityLabel"]], "</b>."), "p")
+    procedureContainer[["procedureParagraph"]]$position <- 1
+    procedureContainer$dependOn(options = c("explanatoryText", "confidence", "materiality", "materialityValue", "materialityPercentage", "valuta"))
+    jaspResults[["procedureContainer"]] <- procedureContainer
+  }
+}
+
+.auditPlanningReady <- function(options, planningOptions){
+  if(options[["materiality"]] == "materialityAbsolute"){
+    ready <- options[["materialityValue"]] != 0 && planningOptions[["populationSize"]] != 0 && planningOptions[["populationValue"]] != 0
+  } else {
+    ready <- options[["materialityPercentage"]] != 0 && planningOptions[["populationSize"]] != 0
+  }
+  return(ready)
+}
+
+.auditPlanningGetContainer <- function(jaspResults, position){
+  planningContainer <- createJaspContainer(title= "<u>Planning</u>")
+  planningContainer$position <- position
+  planningContainer$dependOn(options = c("IR", "CR", "confidence", "expectedErrors", "materialityPercentage", "populationSize", "expectedPercentage", 
+                                          "expectedNumber", "materialityValue", "populationValue", "materiality", "irCustom", "crCustom"))
+  jaspResults[["planningContainer"]] <- planningContainer
+  return(planningContainer)
+}
+
+.auditPlanningErrorChecks <- function(options, planningOptions, planningContainer, ready){
+  if(ready){
+    if(options[["materiality"]] == "materialityAbsolute" && options[["materialityValue"]] >= planningOptions[["populationValue"]])
+     planningContainer$setError("Analysis not possible: Your materiality is higher than the total value of the observations.") 
+
+    expTMP <- ifelse(options[['expectedErrors']] == "expectedRelative", yes = options[["expectedPercentage"]], no = options[["expectedNumber"]] / planningOptions[["populationValue"]])
+    if(expTMP > planningOptions[["materiality"]]){
+      planningContainer$setError("Analysis not possible: Your expected errors are higher than materiality.")
+    }
+  }
+}
+
+.auditPlanningState <- function(options, planningOptions, planningContainer, ready, type){
+  if(!is.null(planningContainer[["planningState"]])){
+    return(planningContainer[["planningState"]]$object)
+  } else if(ready){
+    auditRisk <- 1 - options[["confidence"]]
+    if(options[["IR"]] != "Custom"){
+      inherentRisk <- base::switch(options[["IR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
+    } else {
+      inherentRisk <- options[["irCustom"]]
+    }
+    if(options[["CR"]] != "Custom"){
+      controlRisk <- base::switch(options[["CR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
+    } else {
+      controlRisk <- options[["crCustom"]]
+    }
+    detectionRisk <- auditRisk / inherentRisk / controlRisk
+    adjustedConfidence <- 1 - detectionRisk
+
+    if(type == "frequentist"){
+
+      result <- try({
+        jfa::planning(materiality = planningOptions[["materiality"]], confidence = adjustedConfidence, 
+                      expectedError = planningOptions[["expectedErrors"]], likelihood = planningOptions[["likelihood"]], 
+                      N = planningOptions[["populationSize"]])
+      })
+
+    } else if(type == "bayesian"){
+
+      result <- try({
+        prior <- jfa::auditPrior(materiality = planningOptions[["materiality"]], confidence = planningOptions[["confidence"]],
+                                expectedError = planningOptions[["expectedErrors"]], likelihood = planningOptions[["likelihood"]], 
+                                N = planningOptions[["populationSize"]], ir = inherentRisk, cr = controlRisk)
+        jfa::planning(materiality = planningOptions[["materiality"]], confidence = planningOptions[["confidence"]], 
+                      expectedError = planningOptions[["expectedErrors"]], N = planningOptions[["populationSize"]], prior = prior)
+      })
+
+    }
+
+    if(isTryError(result)){
+      planningContainer$setError(paste0("An error occurred: ", JASP:::.extractErrorMessage(result)))
+      return()
+    }
+    if(result[["sampleSize"]] > planningOptions[["populationSize"]]){
+      planningContainer$setError("The resulting sample size is larger than the population size.")
+      return()
+    }
+    planningContainer[["planningState"]] <- createJaspState(result)
+    planningContainer[["planningState"]]$dependOn(options = c("planningModel"))
+    return(result)
+  } else {
+    bPrior <- ifelse(options[["planningModel"]] == "Poisson", yes = 0, no = 1)
+    return(list(sampleSize = 0, materiality = planningOptions[["materiality"]], N = planningOptions[["populationSize"]], 
+                prior = list(aPrior = 1, bPrior = bPrior, nPrior = 0, kPrior = 0), expectedSampleError = 0))
+  }
+}
+
+.auditExplanatoryTextPlanning <- function(options, planningOptions, planningState, planningContainer, ready, type, positionInContainer){
+  if(options[["explanatoryText"]] && is.null(planningContainer[["planningParagraph"]]) && !planningContainer$getError()){
+    if(type == "frequentist"){
+      planningContainer[["planningParagraph"]] <- createJaspHtml(paste0("The most likely error in the data was expected to be <b>", planningOptions[["expectedErrorsLabel"]] ,"</b>. The sample size that is required to for a materiality of <b>", planningOptions[["materialityLabel"]] ,"</b>, assuming
+                                                                          the sample contains <b>", planningState[["expectedSampleError"]] ,"</b> full errors, is <b>", planningState[["sampleSize"]] ,"</b>. This sample size is based on the <b>", options[["planningModel"]] , "</b> distribution, the inherent risk <b>(", options[["IR"]] , ")</b>, the
+                                                                          control risk <b>(", options[["CR"]] , ")</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>", planningOptions[["expectedErrorsLabel"]] ,"</b>, the
+                                                                          maximum misstatement is estimated to be below materiality and the population can be approved."), "p")
+    } else if(type == "bayesian"){
+      distribution <- base::switch(planningOptions[["likelihood"]], "poisson" = "gamma", "binomial" = "beta", "hypergeometric" = "beta-binomial")
+      planningContainer[["planningParagraph"]] <- createJaspHtml(paste0("The most likely error in the data was expected to be <b>", planningOptions[["expectedErrorsLabel"]] ,"</b>.  The sample size that is required to for a materiality of <b>", planningOptions[["materialityLabel"]] ,"</b>, assuming
+                                                                          the sample contains <b>", planningState[["expectedSampleError"]] ,"</b> full errors, is <b>", planningState[["sampleSize"]] ,"</b>. This sample size is calculated according to the <b>", distribution , "</b> distribution, the inherent risk <b>(", options[["IR"]] , ")</b>,
+                                                                          the control risk <b>(", options[["CR"]] , ")</b> and the expected errors. The information in this prior distribution states that there is a <b>",
+                                                                          round(pbeta(planningState[["materiality"]], planningState[["prior"]]$aPrior, planningState[["prior"]]$bPrior) * 100, 2) ,"%</b> prior probability 
+                                                                          that the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains 
+                                                                          below <b>", planningOptions[["expectedErrorsLabel"]] ,"</b> the maximum misstatement is estimated to be below materiality and the population can be approved."), "p")
+    }
+    planningContainer[["planningParagraph"]]$position <- positionInContainer
+  }
+}
+
+.auditPlanningSummaryTable <- function(options, planningOptions, planningState, planningContainer, ready, type, positionInContainer){
+
+  summaryTable <- createJaspTable("Planning Summary")
+  summaryTable$position <- positionInContainer
+  summaryTable$dependOn(options = c("planningModel"))
+
+  summaryTable$addColumnInfo(name = 'materiality',          title = "Materiality",          type = 'string')
+  summaryTable$addColumnInfo(name = 'IR',                   title = "Inherent risk",        type = 'string')
+  summaryTable$addColumnInfo(name = 'CR',                   title = "Control risk",         type = 'string')
+  summaryTable$addColumnInfo(name = 'DR',                   title = "Detection risk",       type = 'string')
+  summaryTable$addColumnInfo(name = 'k',                    title = "Expected errors",       type = 'string')
+  summaryTable$addColumnInfo(name = 'n',                    title = "Required sample size", type = 'string')
+  if(type == "bayesian" && options[["expectedBF"]])
+    summaryTable$addColumnInfo(name = 'expBF',              title = "Expected BF\u208B\u208A", type = 'string')
+
+  planningContainer[["summaryTable"]] <- summaryTable
+
+  auditRisk <- 1 - options[["confidence"]]
+  if(options[["IR"]] != "Custom"){
+    inherentRisk <- base::switch(options[["IR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
+  } else {
+    inherentRisk <- options[["irCustom"]]
+  }
+  if(options[["CR"]] != "Custom"){
+    controlRisk <- base::switch(options[["CR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
+  } else {
+    controlRisk <- options[["crCustom"]]
+  }
+  detectionRisk <- auditRisk / inherentRisk / controlRisk
+
+  if(!ready || planningContainer$getError()){
+
+    if(type == "frequentist"){
+      message <- base::switch(options[["planningModel"]],
+                              "Poisson" = paste0("The required sample size is based on the <b>Poisson</b> distribution."),
+                              "binomial" =  paste0("The required sample size is based on the <b>binomial</b> distribution."),
+                              "hypergeometric" = paste0("The required sample size is based on the <b>hypergeometric</b> distribution."))
+    } else if(type == "bayesian"){
+      message <- base::switch(options[["planningModel"]],
+                              "Poisson" = "The required sample size is based on the <b>gamma</b> distribution.",
+                              "binomial" = "The required sample size is based on the <b>beta</b> distribution.",
+                              "hypergeometric" = paste0("The required sample size is based on the <b>beta-binomial</b> distribution (N = ", options[["populationSize"]] ,")."))
+    }
+    summaryTable$addFootnote(message = message, symbol="<i>Note.</i>")
+
+    row <- data.frame(materiality = planningOptions[["materialityLabel"]], IR = paste0(round(inherentRisk * 100, 2), "%"), CR = paste0(round(controlRisk * 100, 2), "%"), DR = paste0(round(detectionRisk * 100, 2), "%"), k = ".", n = ".")
+    if(type == "bayesian" && options[["expectedBF"]])
+      row <- cbind(row, expBF = ".")
+    summaryTable$addRows(row)
+    summaryTable$addFootnote(message = "The materiality is defined as zero.", symbol="<b>Analysis not ready.</b>")
+    return()
+  }
+
+  if(type == "frequentist"){
+    message <- base::switch(options[["planningModel"]],
+                            "Poisson" = paste0("The required sample size is based on the <b>Poisson</b> distribution <i>(\u03BB = ", round(planningState[["materiality"]] * planningState[["sampleSize"]], 4) , ")</i>."),
+                            "binomial" =  paste0("The required sample size is based on the <b>binomial</b> distribution <i>(p = ", round(planningState[["materiality"]], 2) ,")</i>."),
+                            "hypergeometric" = paste0("The required sample size is based on the <b>hypergeometric</b> distribution <i>(N = ", planningState[["N"]] ,", K = ", ceiling(planningState[["N"]] * planningState[["materiality"]]) ,")</i>."))
+  } else if(type == "bayesian"){
+    message <- base::switch(options[["planningModel"]],
+                            "Poisson" = paste0("The required sample size is based on the <b>gamma</b> distribution <i>(\u03B1 = ", planningState[["prior"]]$aPrior ,", \u03B2 = ", planningState[["prior"]]$bPrior, ")</i>."),
+                            "binomial" = paste0("The required sample size is based on the <b>beta</b> distribution <i>(\u03B1 = ", planningState[["prior"]]$aPrior ,", \u03B2 = ", planningState[["prior"]]$bPrior, ")</i>."),
+                            "hypergeometric" = paste0("The required sample size is based on the <b>beta-binomial</b> distribution <i>(N = ", planningState[["N"]] ,", \u03B1 = ", planningState[["prior"]]$aPrior , ", \u03B2 = ", planningState[["prior"]]$bPrior, ")</i>."))
+  }
+  summaryTable$addFootnote(message = message, symbol="<i>Note.</i>")
+
+  k <- base::switch(options[["expectedErrors"]], "expectedRelative" = planningState[["expectedSampleError"]], "expectedAbsolute" = paste(planningOptions[["valuta"]], options[["expectedNumber"]]))
+  n <- planningState[["sampleSize"]]
+
+  row <- data.frame(materiality = planningOptions[["materialityLabel"]], IR = paste0(round(inherentRisk * 100, 2), "%"), CR = paste0(round(controlRisk * 100, 2), "%"), DR = paste0(round(detectionRisk * 100, 2), "%"), k = k, n = n)
+  if(type == "bayesian" && options[["expectedBF"]])
+    row <- cbind(row, expBF = .expectedBF(planningState))
+  summaryTable$addRows(row)
+}
+
+.decisionAnalysisPlot <- function(options, planningOptions, planningState, planningContainer, ready, type, positionInContainer){
+
+  if(!options[["decisionPlot"]]) return()
+
+  if(is.null(planningContainer[["decisionPlot"]])){
+
+    decisionPlot <- createJaspPlot(plot = NULL, title = "Decision Analysis Plot", width = 600, height = 300)
+    decisionPlot$position <- positionInContainer
+    decisionPlot$dependOn(options = c("IR", "CR", "confidence", "materialityPercentage", "expectedErrors", "expectedPercentage", 
+                                      "expectedNumber", "decisionPlot", "materialityValue", "explanatoryText", "irCustom", "crCustom"))
+
+    planningContainer[["decisionPlot"]] <- decisionPlot
+
+    if(!ready || planningContainer$getError()) 
+      return()
+
+    auditRisk <- 1 - options[["confidence"]]
+    if(options[["IR"]] != "Custom"){
+      inherentRisk <- base::switch(options[["IR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
+    } else {
+      inherentRisk <- options[["irCustom"]]
+    }
+    if(options[["CR"]] != "Custom"){
+      controlRisk <- base::switch(options[["CR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
+    } else {
+      controlRisk <- options[["crCustom"]]
+    }
+    detectionRisk <- auditRisk / inherentRisk / controlRisk
+    adjustedConfidence <- 1 - detectionRisk
+
+    if(type == "frequentist"){
+
+      startProgressbar(3)
+      progressbarTick()
+      n1 <- jfa::planning(materiality = planningOptions[["materiality"]], confidence = adjustedConfidence, 
+            expectedError = planningOptions[["expectedErrors"]], likelihood = "binomial", 
+            N = planningOptions[["populationSize"]])
+      progressbarTick()   
+      n2 <- jfa::planning(materiality = planningOptions[["materiality"]], confidence = adjustedConfidence, 
+                      expectedError = planningOptions[["expectedErrors"]], likelihood = "poisson", 
+                      N = planningOptions[["populationSize"]])
+      progressbarTick()                         
+      n3 <- jfa::planning(materiality = planningOptions[["materiality"]], confidence = adjustedConfidence, 
+                      expectedError = planningOptions[["expectedErrors"]], likelihood = "hypergeometric", 
+                      N = planningOptions[["populationSize"]])
+      
+      n <- c(n1$sampleSize, n2$sampleSize, n3$sampleSize)   
+      k <- c(n1$expectedSampleError, n2$expectedSampleError, n3$expectedSampleError)
+      d <- data.frame(y = c(n, k), dist = rep(c("Binomial", "Poisson", "Hypergeometric"), 2),
+                      nature = rep(c("Expected error-free", "Expected errors"), each = 3))
+      d$dist <- factor(d$dist, levels(d$dist)[c(2, 3, 1)])
+      d$nature <- factor(d$nature, levels(d$nature)[c(1, 2)])
+
+    } else if(type == "bayesian"){
+
+      startProgressbar(3)
+      progressbarTick()
+      p1 <- jfa::auditPrior(materiality = planningOptions[["materiality"]], confidence = planningOptions[["confidence"]],
+                      expectedError = planningOptions[["expectedErrors"]], likelihood = "binomial", 
+                      N = planningOptions[["populationSize"]], ir = inherentRisk, cr = controlRisk)
+      n1 <- jfa::planning(materiality = planningOptions[["materiality"]], confidence = planningOptions[["confidence"]], 
+                          expectedError = planningOptions[["expectedErrors"]], N = planningOptions[["populationSize"]], prior = p1)
+      progressbarTick()
+      p2 <- jfa::auditPrior(materiality = planningOptions[["materiality"]], confidence = planningOptions[["confidence"]],
+                            expectedError = planningOptions[["expectedErrors"]], likelihood = "poisson", 
+                            N = planningOptions[["populationSize"]], ir = inherentRisk, cr = controlRisk)
+      n2 <- jfa::planning(materiality = planningOptions[["materiality"]], confidence = planningOptions[["confidence"]], 
+                          expectedError = planningOptions[["expectedErrors"]], N = planningOptions[["populationSize"]], prior = p2)
+      progressbarTick()
+      p3 <- jfa::auditPrior(materiality = planningOptions[["materiality"]], confidence = planningOptions[["confidence"]],
+                            expectedError = planningOptions[["expectedErrors"]], likelihood = "hypergeometric", 
+                            N = planningOptions[["populationSize"]], ir = inherentRisk, cr = controlRisk)
+      n3 <- jfa::planning(materiality = planningOptions[["materiality"]], confidence = planningOptions[["confidence"]], 
+                          expectedError = planningOptions[["expectedErrors"]], N = planningOptions[["populationSize"]], prior = p3)
+
+      n <- c(n1$sampleSize, n2$sampleSize, n3$sampleSize)   
+      k <- c(n1$expectedSampleError, n2$expectedSampleError, n3$expectedSampleError)
+      d <- data.frame(y = c(n, k), dist = rep(c("Beta", "Gamma", "Beta-binomial"), 2),
+                      nature = rep(c("Expected error-free", "Expected errors"), each = 3))
+      d$dist <- factor(d$dist, levels(d$dist)[c(2, 3, 1)])
+      d$nature <- factor(d$nature, levels(d$nature)[c(1, 2)])
+
+    }
+
+    p <- ggplot2::ggplot(data = d, ggplot2::aes(x = dist, y = y, fill = nature)) +
+      ggplot2::geom_bar(stat = "identity", col = "black", size = 1) +
+      ggplot2::coord_flip() +
+      ggplot2::xlab("") +
+      ggplot2::ylab("Required sample size") +
+      ggplot2::theme(axis.ticks.x = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(), axis.text.y = ggplot2::element_text(hjust = 0)) +
+      ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color="#cbcbcb")) +
+      ggplot2::labs(fill = "") +
+      ggplot2::scale_fill_manual(values=c("#7FE58B", "#FF6666"), guide = ggplot2::guide_legend(reverse = TRUE)) +
+      ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = 0, r = 30))) +
+      ggplot2::annotate("text", y = k, x = c(3, 2, 1), label = k, size = 6, vjust = 0.5, hjust = -0.3) + 
+      ggplot2::annotate("text", y = n, x = c(3, 2, 1), label = n, size = 6, vjust = 0.5, hjust = -0.5) + 
+      ggplot2::scale_y_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(0:(ceiling(1.1 * max(n))), min.n = 4), limits = c(0, ceiling(1.2 * max(n))))
+    p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE, legend.position = "top")
+
+    decisionPlot$plotObject <- p
+
+  }
+
+  if(options[["explanatoryText"]]){
+    figure2 <- createJaspHtml(paste0("<b>Figure ", planningContainer[["figNumber"]]$object ,".</b> Decision analysis for the current options. The bars represent the sample size that is required under different planning distributions.
+                              The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green."), "p")
+    figure2$position <- positionInContainer + 1
+    figure2$dependOn(optionsFromObject = planningContainer[["decisionPlot"]])
+    planningContainer[["figure2"]] <- figure2
+    planningContainer[["figNumber"]] <- createJaspState(planningContainer[["figNumber"]]$object + 1)
+  }
 }
 
 .bookValueDescriptives <- function(dataset, options, jaspResults, position, procedureContainer){
