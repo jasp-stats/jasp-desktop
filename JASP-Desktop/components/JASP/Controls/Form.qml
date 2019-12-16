@@ -25,26 +25,26 @@ import JASP				1.0
 
 AnalysisForm
 {
-	id:					form
-	implicitWidth:		jaspTheme.formWidth - ( 2 * jaspTheme.formMargin )
-	implicitHeight:		formContent.height + (jaspTheme.formMargin * 2)
-	width:				implicitWidth
-	height:				implicitHeight
-	errorMessagesItem:	errorMessagesBox
+	id					: form
+	implicitWidth		: jaspTheme.formWidth - ( 2 * jaspTheme.formMargin )
+	implicitHeight		: formContent.height + (jaspTheme.formMargin * 2)
+	width				: implicitWidth
+	height				: implicitHeight
+	errorMessagesItem	: errorMessagesBox
 	
-	default property alias	content:	contentArea.children
-	property alias	form:				form
-	property bool	usesJaspResults:	true
-	property int	majorVersion:		1
-	property int	minorVersion:		0
-	property bool	usesVariablesModel: false
-	property int	availableWidth:		form.width - 2 * jaspTheme.formMargin
-	property var    analysis:           myAnalysis
-	property var	backgroundForms:	backgroundFlickable
-	property alias	columns:			contentArea.columns
-	
-	property int    plotHeight:         320
-	property int    plotWidth:          480	
+	default property alias	content		: contentArea.children
+	property alias	form				: form
+	property bool	usesJaspResults		: true
+	property int	majorVersion		: 1
+	property int	minorVersion		: 0
+	property bool	usesVariablesModel	: false
+	property int	availableWidth		: form.width - 2 * jaspTheme.formMargin
+	property var    analysis			: myAnalysis
+	property var	backgroundForms		: backgroundFlickable
+	property alias	columns				: contentArea.columns
+
+	property int    plotHeight			: 320
+	property int    plotWidth			: 480
 
 	function getJASPControls(controls, item, deep)
 	{
@@ -71,158 +71,6 @@ AnalysisForm
 			}
 			else
 				getJASPControls(controls, child, deep);
-		}
-	}
-	
-	function showControlError(control, message, temporary)
-	{
-		controlErrorMessage.showMessage(control, message)
-		if (temporary)
-			controlErrorMessage.startTimeout()
-	}
-
-	function clearControlError()
-	{
-		if (controlErrorMessage.visible)
-			controlErrorMessage.closeMessage()
-	}
-	
-	Rectangle
-	{
-		id:				controlErrorMessage
-		color:			jaspTheme.controlErrorBackgroundColor
-		visible:		false
-		opacity:		0
-		width:			messageText.width + 20
-		height:			messageText.height + 12
-		z:				10
-		radius:			4
-		border.color:	jaspTheme.controlErrorTextColor
-		border.width:	1
-
-		function startTimeout()
-		{
-			messageTimer.start()
-		}
-
-		function closeMessage()
-		{
-			controlErrorMessage.opacity = 0
-		}
-
-		Timer
-		{
-			id:				messageTimer
-			running:		false
-			repeat:			false
-			interval:		4000
-			onTriggered:	controlErrorMessage.closeMessage()
-		}
-
-		Behavior on opacity
-		{
-			enabled: !preferencesModel.safeGraphics;
-
-			NumberAnimation
-			{
-				duration: 300
-				easing.type: Easing.InOutQuad
-				onStopped: { controlErrorMessage.visible = (controlErrorMessage.opacity == 1) }
-			}
-		}
-
-		function showMessage(control, message)
-		{
-			messageText.wrapMode = Text.NoWrap
-			messageText.width = undefined
-			messageText.text = message
-			var controlPoint = control.mapToItem(form, control.width/2, 0)
-			var x = controlPoint.x - (controlErrorMessage.width / 2)
-			if (x < 0) x = 0
-			if (x + controlErrorMessage.width > form.width)
-			{
-				if (controlErrorMessage.width < form.width)
-					x = form.width - controlErrorMessage.width
-				else
-				{
-					x = 0
-					messageText.width = form.width - 10
-					messageText.wrapMode = Text.Wrap
-				}
-			}
-
-			var y = controlPoint.y - controlErrorMessage.height - 5
-			if (y < 0) y = controlPoint.y + control.height + 5
-
-			controlErrorMessage.x = x
-			controlErrorMessage.y = y
-
-			visible = true
-			opacity = 1
-		}
-
-		Rectangle
-		{
-			id:				crossRectangle
-			width:			12
-			height:			12
-			anchors.top:	parent.top
-			anchors.right:	parent.right
-			color:			"transparent"
-
-			property int crossThickness: 2
-			property int crossLengthOffset: -4
-
-			Rectangle
-			{
-				anchors.centerIn:	parent
-				height:				crossRectangle.crossThickness
-				width:				parent.width + crossRectangle.crossLengthOffset
-				rotation:			45
-				color:				jaspTheme.controlErrorTextColor
-			}
-
-			Rectangle
-			{
-				anchors.centerIn:	parent
-				height:				crossRectangle.crossThickness
-				width:				parent.width + crossRectangle.crossLengthOffset
-				rotation:			-45
-				color:				jaspTheme.controlErrorTextColor
-			}
-
-			states:
-			[
-				State
-				{
-					when: crossArea.containsMouse
-					PropertyChanges
-					{
-						target:				crossRectangle
-						crossThickness:		3
-						crossLengthOffset:	-2
-					}
-				}
-			]
-
-			MouseArea
-			{
-				id:				crossArea
-				anchors.fill:	parent
-				onClicked:		controlErrorMessage.closeMessage()
-				cursorShape:	Qt.PointingHandCursor
-			}
-		}
-
-		Text
-		{
-			id:						messageText
-			font:					jaspTheme.font
-			color:					jaspTheme.controlErrorTextColor
-			anchors.verticalCenter: parent.verticalCenter
-			anchors.left:			parent.left
-			anchors.leftMargin:		5
-			textFormat:				Text.RichText
 		}
 	}
 

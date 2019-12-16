@@ -33,7 +33,7 @@ public:
 			 JASPControlWrapper(JASPControlBase* item);
 	virtual ~JASPControlWrapper() {}
 
-	virtual void				setUp() {}
+	virtual void				setUp();
 	virtual void				cleanUp();
 	virtual void				resetQMLItem(JASPControlBase* item);
 
@@ -41,13 +41,11 @@ public:
 	AnalysisForm			*	form()					const;
 	JASPControlBase			*	item()					const	{ return _item; }
 	const QVector<JASPControlWrapper*>	&	depends()	const	{ return _depends; }
-	void						addError(const QString& error);
+	void						addControlError(const QString& error);
 	bool						addDependency(JASPControlWrapper* item);
 	void						removeDependency(JASPControlWrapper* item);
 	QVariant					getItemProperty(const QString& name);
 	void						setItemProperty(const QString& name, const QVariant& value);
-	void						showControlError(QString msg);
-	void						showControlErrorTemporary(QString msg);
 
 	static JASPControlWrapper*	buildJASPControlWrapper(JASPControlBase* control);
 	

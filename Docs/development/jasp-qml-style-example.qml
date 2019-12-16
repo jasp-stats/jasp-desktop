@@ -10,7 +10,6 @@ import JASP.Widgets 	1.0
 //Not exactly a style thing but every QML form should have Form as it's root:
 Form 
 {				//Opening braces should on their own line and at the exact same indent as the closing brace.
-    id: form	//If an id is specified then it should *always* be the first property
 
 	GroupBox	//A subitem is indented and always has a space between the previous subitem/property/function
 	{

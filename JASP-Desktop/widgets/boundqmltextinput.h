@@ -54,13 +54,11 @@ private slots:
 private:
 	void _setOptionValue(Option* option, QString& text);
 	void _setFormulaOptions(std::string formula, bool valid = false);
-	void _setFormulaValidated(bool valid);
 	bool _formulaResultInBounds(double result);
 
 	QString					  _getPercentValue();
 	QString					  _getIntegerArrayValue();
 	QString					  _getDoubleArrayValue();
-	QString					  _getFormulaValue();
 
 	TextInputType			  _inputType;
 	OptionInteger			* _integer			= nullptr;
@@ -68,7 +66,7 @@ private:
 	OptionDoubleArray		* _doubleArray		= nullptr;
 	OptionNumber			* _number			= nullptr;
 	OptionString			* _string			= nullptr;
-	OptionTerm				* _formula			= nullptr;
+	OptionString			* _formula			= nullptr;
 	OptionComputedColumn	* _computedColumn	= nullptr;
 	Option					* _option			= nullptr;
 	QString					  _value;

@@ -139,12 +139,12 @@ Item
 				currentIndex:		0
 				values: ListModel 
 				{
-					ListElement { label: "Main Effects";	value: "MainEffects" }
-					ListElement { label: "Only 2 way";		value: "All2Way" }
-					ListElement { label: "Only 3 way";		value: "All3Way" }
-					ListElement { label: "Only 4 way";		value: "All4Way" }
-					ListElement { label: "Only 5 way";		value: "All5Way" }
-					ListElement { label: "All";				value: "Cross" }
+					ListElement { label: qsTr("Main Effects");	value: "MainEffects" }
+					ListElement { label: qsTr("Only 2 way");		value: "All2Way" }
+					ListElement { label: qsTr("Only 3 way");		value: "All3Way" }
+					ListElement { label: qsTr("Only 4 way");		value: "All4Way" }
+					ListElement { label: qsTr("Only 5 way");		value: "All5Way" }
+					ListElement { label: qsTr("All");				value: "Cross" }
 				}
 			}			
 		}
@@ -156,6 +156,7 @@ Item
 	{
 		allJASPControls = []
 		allAssignedVariablesList = []
+		availableVariablesList = null
 		
         for (var i = 0; i < items.children.length; ++i) {
             var child = items.children[i];
@@ -175,7 +176,7 @@ Item
 				if (control.listViewType === "AvailableVariables" || control.listViewType === "AvailableInteraction")
 				{
 					if (availableVariablesList)
-						form.addError(qsTr("Only 1 Available Variables list can be set in a VariablesForm"));
+						control.addControlError(qsTr("Only 1 Available Variables list can be set in a VariablesForm"));
 
 					availableVariablesList = control;
 					availableVariablesListIndex = i;
@@ -190,7 +191,7 @@ Item
 		
 		if (!availableVariablesList)
 		{
-			form.addError(qsTr("There is no Available List in the VariablesForm"));
+			form.addFormError(qsTr("There is no Available List in the Variables Form"));
 			return;
 		}
 		else

@@ -215,7 +215,7 @@ Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemInd
 	if (!assignOptionStr.isEmpty())
 	{
 		try						{ assignType	= qmlAssignTypeFromQString(assignOptionStr);	}
-		catch(std::exception)	{ addError(tr("Unknown Assign type: %1").arg(assignOptionStr)); }
+		catch(std::exception)	{ addControlError(tr("Unknown Assign type: %1").arg(assignOptionStr)); }
 	}
 	
 	addCombinedTerms(terms, assignType);

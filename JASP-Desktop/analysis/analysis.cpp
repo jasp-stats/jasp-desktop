@@ -138,13 +138,20 @@ void Analysis::abort()
 	emit optionsChanged(this);
 }
 
+void Analysis::remove()
+{
+	abort();
+	if (form())
+		form()->cleanUpForm();
+}
+
 
 void Analysis::setResults(const Json::Value & results, const Json::Value & progress)
 {
 	_results = results;
 	_progress = progress;
 	if (_analysisForm)
-		_analysisForm->clearErrors();
+		_analysisForm->clearFormErrors();
 	emit resultsChangedSignal(this);
 
 	processResultsForDependenciesToBeShown();
@@ -324,6 +331,9 @@ void Analysis::optionsChangedHandler(Option *option)
 	if (_refreshBlocked)
 		return;
 
+	if (form() && form()->hasError())
+		return;
+
 	_status = Empty;
 	optionsChanged(this);
 }
@@ -369,7 +379,8 @@ std::string Analysis::qmlFormPath() const
 
 void Analysis::runScriptRequestDone(const QString& result, const QString& controlName)
 {
-	_analysisForm->runScriptRequestDone(result, controlName);
+	if (_analysisForm)
+		_analysisForm->runScriptRequestDone(result, controlName);
 }
 
 Json::Value Analysis::createAnalysisRequestJson()

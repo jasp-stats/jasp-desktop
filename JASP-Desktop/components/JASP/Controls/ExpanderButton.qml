@@ -22,27 +22,45 @@ import JASP				1.0
 
 FocusScope
 {
-	id:					expanderWrapper
-	implicitHeight:		expanderButton.height
-	implicitWidth:		parent.width
-	anchors.topMargin:	15 * preferencesModel.uiScale
-	clip:				true
-	L.Layout.columnSpan: form.columns
-	objectName:			"Section"
+	id					: expanderWrapper
+	implicitHeight		: expanderButton.height
+	implicitWidth		: parent.width
+	anchors.topMargin	: 15 * preferencesModel.uiScale
+	clip				: true
+	L.Layout.columnSpan	: form.columns
+	objectName			: "Section"
 
-	default		property alias	content:				expanderArea.children
-				property alias	button:					expanderButton
-				property alias	childControlsArea:		expanderArea
-				property alias	spacing:				expanderArea.rowSpacing
-				property alias	text:					label.text
-				property alias  title:					label.text
-				property bool	expanded:				false
-				property alias	debug:					expanderButton.debug
-	readonly	property string iconsFolder:			jaspTheme.iconPath
-	readonly	property string	expanderButtonIcon:		"expander-arrow-up.png"
-				property alias	columns:				expanderArea.columns
-				property alias	alignChildrenTopLeft:	expanderArea.alignChildrenTopLeft
+	default		property alias	content					: expanderArea.children
+				property alias	button					: expanderButton
+				property alias	childControlsArea		: expanderArea
+				property alias	spacing					: expanderArea.rowSpacing
+				property alias	text					: label.text
+				property alias  title					: label.text
+				property bool	expanded				: false
+				property alias	debug					: expanderButton.debug
+	readonly	property string iconsFolder				: jaspTheme.iconPath
+	readonly	property string	expanderButtonIcon		: "expander-arrow-up.png"
+				property alias	columns					: expanderArea.columns
+				property alias	alignChildrenTopLeft	: expanderArea.alignChildrenTopLeft
 
+	function addControlWithError(name, add)
+	{
+		if (!name) return;
+
+		var index = expanderButton.controlsWithError.indexOf(name);
+		if (add)
+		{
+			if (index < 0)
+				expanderButton.controlsWithError.push(name);
+		}
+		else
+		{
+			if (index >= 0)
+				expanderButton.controlsWithError.splice(index, 1);
+		}
+
+		expanderButton.nbControlsWithError = expanderButton.controlsWithError.length;
+	}
 	
 	states: [
 		State
@@ -63,25 +81,26 @@ FocusScope
 	
 	JASPControl
 	{
-		id:						expanderButton
-		controlType:			JASPControlBase.Expander
-		isBound:				false
-		background:				expanderRectangle
-		childControlsArea:		expanderArea
-		width:					parent.width
-		height:					22 * preferencesModel.uiScale
-		shouldStealHover:		false //Because sometimes maybe something *inside* an expanderButton might want to get hovered
-		Keys.onSpacePressed:	toggleExpander()
-		Keys.onReturnPressed:   toggleExpander()
-		KeyNavigation.tab:		expanderWrapper.expanded ? firstControl : nextExpander
+		id						: expanderButton
+		controlType				: JASPControlBase.Expander
+		isBound					: false
+		background				: expanderRectangle
+		childControlsArea		: expanderArea
+		width					: parent.width
+		height					: 22 * preferencesModel.uiScale
+		shouldStealHover		: false //Because sometimes maybe something *inside* an expanderButton might want to get hovered
+		Keys.onSpacePressed		: toggleExpander()
+		Keys.onReturnPressed	: toggleExpander()
+		KeyNavigation.tab		: expanderWrapper.expanded ? firstControl : nextExpander
+		hasError				: nbControlsWithError > 0 && !expanderWrapper.expanded
 
-		property var nextExpander: null
-		property var firstControl: null
-
+		property var nextExpander			: null
+		property var firstControl			: null
+		property int nbControlsWithError	: 0
+		property var controlsWithError		: []
 
 		function toggleExpander() { expanderWrapper.expanded = !expanderWrapper.expanded; }
         
-
 		MouseArea
 		{
             anchors.fill: parent
@@ -94,60 +113,61 @@ FocusScope
         
 		Rectangle
 		{
-			id:				expanderRectangle
-			anchors.fill:	parent
-			border.width:	1
-			border.color:	jaspTheme.borderColor
-			radius:			jaspTheme.borderRadius
-			color:			debug ? jaspTheme.debugBackgroundColor : jaspTheme.white
-			
+			id				: expanderRectangle
+			anchors.fill	: parent
+			border.width	: 1
+			border.color	: jaspTheme.borderColor
+			radius			: jaspTheme.borderRadius
+			color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.white
+
 			Image
 			{
-				id:					expanderIcon
+				id					: expanderIcon
 				anchors
 				{
-					left:			parent.left
-					leftMargin:		6 * preferencesModel.uiScale
-					verticalCenter:	parent.verticalCenter
+					left			: parent.left
+					leftMargin		: 6 * preferencesModel.uiScale
+					verticalCenter	: parent.verticalCenter
 				}
-				height:					15 * preferencesModel.uiScale
-				width:					15 * preferencesModel.uiScale
-				source:			jaspTheme.iconPath + "/large-arrow-right.png"
+				height				: 15 * preferencesModel.uiScale
+				width				: 15 * preferencesModel.uiScale
+				source				: jaspTheme.iconPath + "/large-arrow-right.png"
 				sourceSize
 				{
-					width:	expanderIcon.width * 2
-					height:	expanderIcon.height * 2
+					width			: expanderIcon.width * 2
+					height			: expanderIcon.height * 2
 				}
 			}
             
 			Text
 			{
-				id:						label
-				anchors.left:			expanderIcon.right
-				anchors.leftMargin:		5 * preferencesModel.uiScale
-                anchors.verticalCenter: parent.verticalCenter
-				font:					jaspTheme.font
-				color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+				id						: label
+				anchors.left			: expanderIcon.right
+				anchors.leftMargin		: 5 * preferencesModel.uiScale
+				anchors.verticalCenter	: parent.verticalCenter
+				font					: jaspTheme.font
+				color					: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
             }
         }
     }
 
 	GridLayout
 	{
-		id:						expanderArea
-		rowSpacing:				jaspTheme.rowGridSpacing
-		columnSpacing:			jaspTheme.columnGridSpacing
-		anchors.leftMargin:		5  * preferencesModel.uiScale
-		anchors.top:			expanderButton.bottom
-		anchors.topMargin:		15 * preferencesModel.uiScale
-		width:					parent.width
-		columns:				2
+		id						: expanderArea
+		rowSpacing				: jaspTheme.rowGridSpacing
+		columnSpacing			: jaspTheme.columnGridSpacing
+		anchors.leftMargin		: 5  * preferencesModel.uiScale
+		anchors.top				: expanderButton.bottom
+		anchors.topMargin		: 15 * preferencesModel.uiScale
+		width					: parent.width
+		columns					: 2
+//		anchors.bottomMargin	: 20 * preferencesModel.uiScale
     }
 
 	Rectangle
 	{
-		z:				-1
-		anchors.fill:	parent
-		color:			jaspTheme.analysisBackgroundColor
+		z				: -1
+		anchors.fill	: parent
+		color			: jaspTheme.analysisBackgroundColor
 	}    
 }

@@ -44,13 +44,13 @@ void BoundQMLListViewDraggable::setUp()
 	if (!availableModel)
 	{
 		if (sourceModels().empty() && !getItemProperty("debug").toBool())
-			addError(tr("Cannot find source for VariableList %1").arg(name()));
+			addControlError(tr("Cannot find source for VariableList %1").arg(name()));
 	}
 	else
 	{
 		_availableModel = dynamic_cast<ListModelAvailableInterface*>(availableModel);
 		if (!_availableModel)
-			addError(tr("Wrong kind of source for VariableList %1").arg(name()));
+			addControlError(tr("Wrong kind of source for VariableList %1").arg(name()));
 		else
 		{
 			_assignedModel->setAvailableModel(_availableModel);

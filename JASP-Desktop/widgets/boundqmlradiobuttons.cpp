@@ -41,7 +41,7 @@ void BoundQMLRadioButtons::setUp()
 	{	
 		const QString& controlName = button->name();
 		if (controlName.isEmpty())
-			addError(tr("A RadioButton inside RadioButtonGroup element (name: %1) does not have any name").arg(name()));
+			addControlError(tr("A RadioButton inside RadioButtonGroup element (name: %1) does not have any name").arg(name()));
 		else
 		{
 			_buttons[controlName] = button;
@@ -91,7 +91,7 @@ void BoundQMLRadioButtons::bindTo(Option *option)
 		JASPControlWrapper* button = _buttons[QString::fromStdString(value)];
 		if (!button)
 		{
-			addError(tr("No radio button corresponding to name %1").arg(QString::fromStdString(value)));
+			addControlError(tr("No radio button corresponding to name %1").arg(QString::fromStdString(value)));
 			QStringList names = _buttons.keys();
 			Log::log()  << "Known button: " << names.join(',').toStdString() << std::endl;
 		}
@@ -147,7 +147,7 @@ void BoundQMLRadioButtons::radioButtonClickedHandler(const QVariant& button)
 			}
 		}
 		else
-			addError(tr("Radio button clicked is unknown: %1").arg(buttonName));
+			addControlError(tr("Radio button clicked is unknown: %1").arg(buttonName));
 	}
 	else
 		Log::log() << "Object clicked is not a quick item! Name" << objButton->objectName().toStdString();

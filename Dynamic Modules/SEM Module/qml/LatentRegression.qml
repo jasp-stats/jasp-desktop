@@ -21,8 +21,7 @@ import JASP.Controls 1.0
 import "." as SEM
 
 Form {
-    id: form
-    
+
     Label {
         text: qsTr("Latent variables")
     }

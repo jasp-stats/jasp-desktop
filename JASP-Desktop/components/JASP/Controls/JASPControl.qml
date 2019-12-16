@@ -25,19 +25,19 @@ JASPControlBase
 {
 	id: jaspControl
 
-	property bool	debug:					false
-	property var	background:				null
-	property var	focusIndicator:			background
-	property bool   indent:                 false
-	property alias	cursorShape:			controlMouseArea.cursorShape
-	property alias	hovered:				controlMouseArea.containsMouse
-	property bool	useControlMouseArea:	true
-	property bool	childControlHasFocus:	false
-	property bool	isDependency:			false
-	property var	dependencyMustContain:	[] //Will be filled with QStringList when necessary
-	property bool	shouldShowFocus:		activeFocus && focusOnTab && !childControlHasFocus
-	property bool	shouldStealHover:		toolTip !== ""
-	property string	toolTip:				""
+	property bool	debug					: false
+	property var	background				: null
+	property var	focusIndicator			: background
+	property bool   indent					: false
+	property alias	cursorShape				: controlMouseArea.cursorShape
+	property alias	hovered					: controlMouseArea.containsMouse
+	property bool	useControlMouseArea		: true
+	property bool	childControlHasFocus	: false
+	property bool	isDependency			: false
+	property var	dependencyMustContain	: [] //Will be filled with QStringList when necessary
+	property bool	shouldShowFocus			: activeFocus && focusOnTab && !childControlHasFocus
+	property bool	shouldStealHover		: toolTip !== ""
+	property string	toolTip					: ""
 
 	width:						implicitWidth
 	height:						implicitHeight
@@ -48,21 +48,6 @@ JASPControlBase
 	L.Layout.preferredWidth:	preferredWidth
 	L.Layout.preferredHeight:	preferredHeight
 	L.Layout.leftMargin: indent ? aspTheme.indentationLength : 0
-
-	function showControlError(message)
-	{
-		form.showControlError(jaspControl, message, false)
-	}
-
-	function showControlErrorTemporary(message)
-	{
-		form.showControlError(jaspControl, message, true)
-	}
-
-	function clearControlError()
-	{
-		form.clearControlError()
-	}
 
 	function setDebugState()
 	{
@@ -111,6 +96,28 @@ JASPControlBase
 	states: [
 		State
 		{
+			name: "hasError"
+			when: jaspControl.hasError
+			PropertyChanges
+			{
+				target:			focusIndicator
+				border.color:	jaspTheme.red
+				border.width:	jaspTheme.jaspControlHighlightWidth
+			}
+		},
+		State
+		{
+			name: "hasWarning"
+			when: jaspControl.hasWarning
+			PropertyChanges
+			{
+				target:			focusIndicator
+				border.color:	jaspTheme.rose
+				border.width:	jaspTheme.jaspControlHighlightWidth
+			}
+		},
+		State
+		{
 			name: "hasFocus"
 			when: focusIndicator && jaspControl.shouldShowFocus
 			PropertyChanges
@@ -120,7 +127,6 @@ JASPControlBase
 				border.width:	jaspTheme.jaspControlHighlightWidth
 			}
 		},
-
 		State
 		{
 			name: "isDependency"

@@ -22,9 +22,6 @@ import JASP.Widgets 	1.0
 
 Form 
 {
-    id: form
-
-
     CheckBox
     {
         name: "checkbox_0"
