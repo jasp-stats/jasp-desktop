@@ -5,8 +5,6 @@ import JASP.Widgets 	1.0
 
 Form 
 {
-	id: form
-
 	TextField
 	{
 		label:			"Save me!"

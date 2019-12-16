@@ -116,6 +116,7 @@ public:
 			void		reload();
 			void        exportResults();
 	virtual void		abort();
+			void		remove();
 
 			Json::Value asJSON()		const;
 			void		loadExtraFromJSON(Json::Value & options);

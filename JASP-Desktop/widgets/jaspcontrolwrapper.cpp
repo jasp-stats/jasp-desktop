@@ -46,6 +46,16 @@ JASPControlWrapper::JASPControlWrapper(JASPControlBase *item)
 {
 }
 
+void JASPControlWrapper::setUp()
+{
+	QQuickItem* parent = item();
+	while (parent && parent->objectName() != "Section")
+		parent = parent->parentItem();
+
+	if (parent && parent->objectName() == "Section")
+		item()->setSection(parent);
+}
+
 JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase* control)
 {
 	JASPControlWrapper* controlWrapper = nullptr;
@@ -131,10 +141,10 @@ AnalysisForm *JASPControlWrapper::form() const
 	return _item->form();
 }
 
-void JASPControlWrapper::addError(const QString &error)
+void JASPControlWrapper::addControlError(const QString &error)
 {
 	if (form())
-		form()->addError(error);
+		form()->addFormError(error);
 }
 
 bool JASPControlWrapper::addDependency(JASPControlWrapper *item)
@@ -164,14 +174,4 @@ QVariant JASPControlWrapper::getItemProperty(const QString &name)
 	else {
 		return QVariant();
 	}
-}
-
-void JASPControlWrapper::showControlError(QString msg)
-{
-	QMetaObject::invokeMethod(_item, "showControlError", Q_ARG(QVariant, msg));
-}
-
- void JASPControlWrapper::showControlErrorTemporary(QString msg)
-{
-	QMetaObject::invokeMethod(_item, "showControlErrorTemporary", Q_ARG(QVariant, msg));
 }

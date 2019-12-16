@@ -45,7 +45,7 @@ BoundQMLTableView::BoundQMLTableView(JASPControlBase* item)
 	if (modelType == "FilteredDataEntryModel")	_tableModel = new ListModelFilteredDataEntry(	this, tableType	);
 	if (modelType == "CustomContrasts")			_tableModel = new ListModelANOVACustomContrasts(this			);
 
-	if(!_tableModel) addError(tr("No model specified for TableView!"));
+	if(!_tableModel) addControlError(tr("No model specified for TableView!"));
 	else			_tableModel->setItemType(itemType);
 
 	QQuickItem::connect(item, SIGNAL(addColumn()),						this, SLOT(addColumnSlot()));

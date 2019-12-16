@@ -7,8 +7,10 @@ JASPControl
 {
 	id:					textArea
 	controlType:		JASPControlBase.TextArea
-	implicitHeight:		jaspTheme.defaultTextAreaHeight
-	implicitWidth:		parent.width
+	height:				jaspTheme.defaultTextAreaHeight
+	implicitHeight:		height
+	width:				parent.width
+	implicitWidth:		width
 	focusIndicator:		flickableRectangle
 	
 	property alias  control:			control

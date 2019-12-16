@@ -63,9 +63,9 @@ RowControls::RowControls(
 			if (jaspControl)
 			{
 				if (jaspControl->name().isEmpty())
-					listView->addError(tr("A row component in %1 does not have a name").arg(listView->name()));
+					listView->addControlError(tr("A row component in %1 does not have a name").arg(listView->name()));
 				else if (_rowControlsVarMap.contains(jaspControl->name()))
-					listView->addError(tr("2 row components in %1 have the same name").arg(listView->name()).arg(jaspControl->name()));
+					listView->addControlError(tr("2 row components in %1 have the same name").arg(listView->name()).arg(jaspControl->name()));
 				else
 				{
 					_contextMap[jaspControl->name()] = context;

@@ -146,22 +146,10 @@ JASPControl
 				if (textField.useLastValidValue)
 					text = textField.lastValidValue
 				msg += qsTr("Restoring last correct value: %1").arg(text);
-				showControlErrorTemporary(msg)
-				textField.background.border.color = jaspTheme.red;
-				redToNormal.start()
+				addControlErrorTemporary(msg)
 			}
 			else
 				clearControlError();
-		}
-
-		PropertyAnimation
-		{
-			id:			redToNormal
-			target:		textField.background
-			property:	"border.color"
-			to:			jaspTheme.focusBorderColor
-			duration:	1000
-			onStopped:	textField.background.border.color = control.activeFocus ? jaspTheme.focusBorderColor : "transparent"
 		}
 
 		Keys.onReturnPressed:
@@ -169,9 +157,7 @@ JASPControl
 			if (!control.acceptableInput)
 			{
 				if (control.validator && (typeof control.validator.validationMessage === "function"))
-					showControlError(control.validator.validationMessage(beforeLabel.text));
-				textField.background.border.color = jaspTheme.red;
-				redToNormal.start()
+					addControlError(control.validator.validationMessage(beforeLabel.text));
 			}
 			else
 			{

@@ -56,9 +56,9 @@ void ListModel::refresh()
 	endResetModel();
 }
 
-void ListModel::addError(const QString &error) const
+void ListModel::addControlError(const QString &error) const
 {
-	_listView->addError(error);
+	_listView->addControlError(error);
 }
 
 void ListModel::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)

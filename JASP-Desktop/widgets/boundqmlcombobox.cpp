@@ -68,7 +68,7 @@ void BoundQMLComboBox::bindTo(Option *option)
 				index = values.indexOf(selectedValue);
 				if (index == -1)
 				{
-					addError(tr("Unknown option %1 in ComboBox %2").arg(selectedValue).arg(name()));
+					addControlError(tr("Unknown option %1 in ComboBox %2").arg(selectedValue).arg(name()));
 					index = 0;
 				}
 			}
@@ -81,7 +81,7 @@ void BoundQMLComboBox::bindTo(Option *option)
 		_resetItemWidth();
 	}
 	else
-		addError(tr("Unknown error in ComboBox %1").arg(name()));
+		addControlError(tr("Unknown error in ComboBox %1").arg(name()));
 }
 
 void BoundQMLComboBox::resetQMLItem(JASPControlBase *item)

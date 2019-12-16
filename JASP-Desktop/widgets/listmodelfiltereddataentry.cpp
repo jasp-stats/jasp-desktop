@@ -193,11 +193,11 @@ void ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)
 	std::vector<Options *>	options = bindHere->value();
 
 	if(options.size() > 1)
-		addError(tr("Too many rows in OptionsTable for ListModelFilteredDataEntry"));
+		addControlError(tr("Too many rows in OptionsTable for ListModelFilteredDataEntry"));
 
 	if(options.size() == 0)
 	{
-		//addError("Not a single row in OptionsTable for ListModelFilteredDataEntry!");
+		//addControlError("Not a single row in OptionsTable for ListModelFilteredDataEntry!");
 		fillTable();
 		emit modelChanged();
 		return;
