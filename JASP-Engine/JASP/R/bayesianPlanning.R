@@ -20,55 +20,91 @@
 
 bayesianPlanning <- function(jaspResults, dataset, options, ...){
 
-  # Bayesian analysis
+  # We're doing a Bayesian analysis
   type <- "bayesian"
 
-  # Set the nessecary options before the analysis
+  # Deduct the nessecary values from the input options
   planningOptions <- .auditPlanningOptions(options)
 
-  # Explanatory text for the procedure paragraph
-  .auditExplanatoryTextProcedure(options, planningOptions, 
-                                  jaspResults, position = 1)
+  # Create the procedure paragraph
+  .auditExplanatoryTextProcedure(options, 
+                                 planningOptions, 
+                                 jaspResults, 
+                                 position = 1)
 
-  # Explanatory text for the audit risk model paragraph
-  .auditRiskModelParagraph(options, planningOptions, jaspResults, position = 2)
+  # Create the audit risk model paragraph
+  .auditRiskModelParagraph(options, 
+                           planningOptions, 
+                           jaspResults, 
+                           position = 2)
 
-  # Check if analysis can be run
-  ready <- .auditPlanningReady(options, planningOptions)
+  # Check if the options have valid values for running the analysis
+  ready <- .auditPlanningReady(options, 
+                               planningOptions)
 
-  # Create the planning container
-  planningContainer <- .auditPlanningGetContainer(jaspResults, position = 3)
+  # Create the container that holds the planning output
+  planningContainer <- .auditPlanningGetContainer(jaspResults, 
+                                                  position = 3)
 
-  # Perform early error checks
-  .auditPlanningErrorChecks(options, planningOptions, planningContainer, ready)
+  # Perfrom early error checks
+  .auditPlanningErrorChecks(options, 
+                            planningOptions, 
+                            planningContainer, 
+                            ready)
 
-  # Get the planningResult object
-  planningState <- .auditPlanningState(options, planningOptions, 
-                                        planningContainer, ready, type)
+  # Get the planning state if it exists, otherwise make one
+  planningState <- .auditPlanningState(options, 
+                                       planningOptions, 
+                                       planningContainer, 
+                                       ready, 
+                                       type)
 
-  # Explanatory text for the planning paragraph
-  .auditExplanatoryTextPlanning(options, planningOptions, planningState, 
-                                  planningContainer, ready, type, 
-                                  positionInContainer = 1)
+  # Create explanatory text for the planning
+  .auditExplanatoryTextPlanning(options, 
+                                planningOptions, 
+                                planningState, 
+                                planningContainer, 
+                                ready, 
+                                type, 
+                                positionInContainer = 1)
 
-  # Fill the planning summary table
-  .auditPlanningSummaryTable(options, planningOptions, planningState, 
-                              planningContainer, ready, type, 
-                              positionInContainer = 2)
+  ## TABLES
+
+  # Create the summary table
+  .auditPlanningSummaryTable(options, 
+                             planningOptions, 
+                             planningState, 
+                             planningContainer, 
+                             ready, 
+                             type, 
+                             positionInContainer = 2)
   
   # Create the implicit sample table
-  .auditImplicitSampleTable(options, planningState, planningContainer, 
-                              ready, positionInContainer = 3)
+  .auditImplicitSampleTable(options, 
+                            planningState, 
+                            planningContainer, 
+                            ready, 
+                            positionInContainer = 3)
 
-  # Create an index for figure numbers
+  ## PLOTS
+
+  # Create a state to keep track of figure numbers
   planningContainer[["figNumber"]] <- createJaspState(1)
 
   # Create the decision analysis plot
-  .decisionAnalysisPlot(options, planningOptions, planningState, 
-                          planningContainer, ready, type, 
-                          positionInContainer = 4)
+  .decisionAnalysisPlot(options, 
+                        planningOptions, 
+                        planningState, 
+                        planningContainer, 
+                        ready, 
+                        type, 
+                        positionInContainer = 4)
 
   # Create the prior and expected posterior plot
-  .auditPlanningPlotPrior(options, planningOptions, planningState, 
-                          planningContainer, ready, positionInContainer = 5)
+  .auditPlanningPlotPrior(options, 
+                          planningOptions, 
+                          planningState, 
+                          planningContainer, 
+                          ready, 
+                          positionInContainer = 5)
 }

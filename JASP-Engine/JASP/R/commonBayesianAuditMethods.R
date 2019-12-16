@@ -19,6 +19,7 @@
 # reviewer in the Pull Request
 
 .expectedBF <- function(planningState){
+
   if(planningState[["likelihood"]] == "poisson"){
 
     priorOdds <- diff(pgamma(c(0, planningState[["materiality"]]), 
@@ -64,8 +65,9 @@
   } else if(planningState[["likelihood"]] == "hypergeometric"){
 
     tolerableE <- 0:floor(planningState[["materiality"]] * 
-                                          planningState[["N"]])
-    intolerableE <- (max(errors_below_materiality) + 1):
+                          planningState[["N"]])
+
+    intolerableE <- (max(tolerableE) + 1):
                         (planningState[["N"]] - planningState[["sampleSize"]])
 
     priorOdds <- sum(jfa:::.dBetaBinom(x = tolerableE, 
@@ -99,25 +101,47 @@
   }
 
   expectedBF <- round(postOdds / priorOdds, 2)
+
   if(expectedBF == "NaN") # Bayes factor for gamma(1, 0) distribution is undefined.
     expectedBF <- Inf
 
   return(expectedBF)
 }
 
-.auditImplicitSampleTable <- function(options, planningState, planningContainer, ready, positionInContainer){
+.auditImplicitSampleTable <- function(options, 
+                                      planningState, 
+                                      planningContainer, 
+                                      ready, 
+                                      positionInContainer){
 
-  if(!is.null(planningContainer[["sampletable"]]) || !options[["implicitSampleTable"]]) return() #The options for this table didn't change so we don't need to rebuild it
+  if(!is.null(planningContainer[["sampletable"]]) || 
+      !options[["implicitSampleTable"]]) 
+    return()
+
+  cbTitle <- paste0(options[["confidence"]]*100,"% Prior credible bound")
 
   sampletable <- createJaspTable("Implicit Sample")
   sampletable$position <- positionInContainer
-  sampletable$dependOn(options = c("implicitSampleTable", "planningModel"))
 
-  sampletable$addColumnInfo(name = 'implicitn', title = "Implicit sample size", type = 'string')
-  sampletable$addColumnInfo(name = 'implicitk', title = "Implicit errors", type = 'string')
-  sampletable$addColumnInfo(name = 'priorbound', title = paste0(options[["confidence"]]*100,"% Prior credible bound"), type = 'string')
+  sampletable$dependOn(options = c("implicitSampleTable", 
+                                   "planningModel"))
 
-  message <- paste0("Sample sizes shown are implicit sample sizes derived from the ARM risk assessments: IR = <b>", options[["IR"]], "</b> and CR = <b>", options[["CR"]], "</b>.")
+  sampletable$addColumnInfo(name = 'implicitn', 
+                            title = "Implicit sample size", 
+                            type = 'string')
+  sampletable$addColumnInfo(name = 'implicitk', 
+                            title = "Implicit errors", 
+                            type = 'string')
+  sampletable$addColumnInfo(name = 'priorbound', 
+                            title = cbTitle, 
+                            type = 'string')
+
+  message <- paste0("Sample sizes shown are implicit sample sizes derived from the ARM risk assessments: IR = <b>", 
+                    options[["IR"]], 
+                    "</b> and CR = <b>", 
+                    options[["CR"]], 
+                    "</b>.")
+
   sampletable$addFootnote(message = message, symbol="<i>Note.</i>")
 
   planningContainer[["sampletable"]] <- sampletable
@@ -126,26 +150,59 @@
     return()
 
   if(planningState[["likelihood"]] == "poisson")
-    priorBound <- round(qgamma(p = options[["confidence"]], shape = planningState[["prior"]]$aPrior, rate = planningState[["prior"]]$bPrior), 3)
+    priorBound <- round(qgamma(p = options[["confidence"]], 
+                               shape = planningState[["prior"]]$aPrior, 
+                               rate = planningState[["prior"]]$bPrior), 3)
+  
   if(planningState[["likelihood"]] == "binomial")
-    priorBound <- round(qbeta(p = options[["confidence"]], shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior), 3)
+    priorBound <- round(qbeta(p = options[["confidence"]], 
+                              shape1 = planningState[["prior"]]$aPrior, 
+                              shape2 = planningState[["prior"]]$bPrior), 3)
+  
   if(planningState[["likelihood"]] == "hypergeometric")
-    priorBound <- round(.qBetaBinom(p = options[["confidence"]], N = planningState[["N"]] - planningState[["sampleSize"]], shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior) / planningState[["N"]], 3)
-  priorBound <- paste0(priorBound * 100, "%")
+    priorBound <- round(.qBetaBinom(p = options[["confidence"]], 
+                                    N = planningState[["N"]] - 
+                                        planningState[["sampleSize"]], 
+                                    shape1 = planningState[["prior"]]$aPrior, 
+                                    shape2 = planningState[["prior"]]$bPrior) / 
+                        planningState[["N"]], 3)
+  
+  if(planningState[["likelihood"]] != "hypergeometric")
+    priorBound <- paste0(priorBound * 100, "%")
+  if(planningState[["likelihood"]] == "hypergeometric")
+    priorBound <- ceiling(priorBound * planningState[["N"]])
 
-  row <- data.frame(implicitn = planningState[["prior"]]$nPrior, implicitk = planningState[["prior"]]$kPrior, priorbound = priorBound)
+  row <- data.frame(implicitn = planningState[["prior"]]$nPrior, 
+                    implicitk = planningState[["prior"]]$kPrior, 
+                    priorbound = priorBound)
+
   sampletable$addRows(row)
 }
 
-.auditPlanningPlotPrior <- function(options, planningOptions, planningState, planningContainer, ready, positionInContainer){
+.auditPlanningPlotPrior <- function(options, 
+                                    planningOptions, 
+                                    planningState, 
+                                    planningContainer, 
+                                    ready, 
+                                    positionInContainer){
 
-  if(!options[["priorPlot"]]) return()
+  if(!options[["priorPlot"]]) 
+    return()
 
   if(is.null(planningContainer[["priorPlot"]])){
 
-    priorPlot <- createJaspPlot(plot = NULL, title = "Implied Prior from Risk Assessments", width = 600, height = 400)
+    priorPlot <- createJaspPlot(plot = NULL, 
+                                title = "Implied Prior from Risk Assessments", 
+                                width = 600, 
+                                height = 400)
     priorPlot$position <- positionInContainer
-    priorPlot$dependOn(options = c("priorPlotLimit", "priorPlot", "priorPlotAdditionalInfo", "priorPlotExpectedPosterior", "planningModel"))
+
+    priorPlot$dependOn(options = c("priorPlotLimit", 
+                                   "priorPlot", 
+                                   "priorPlotAdditionalInfo", 
+                                   "priorPlotExpectedPosterior", 
+                                   "planningModel"))
+
     planningContainer[["priorPlot"]] <- priorPlot
 
     if(!ready || planningContainer$getError()) 
@@ -154,51 +211,159 @@
     xseq <- seq(0, options[["priorPlotLimit"]], 0.001)
 
     if(planningState[["likelihood"]] == "binomial"){
-      priorData <- data.frame(x = xseq, y = dbeta(x = xseq, shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior),
-                              type = rep("Prior", length(xseq)))
-      postData <- data.frame(x = xseq, y = dbeta(x = xseq, shape1 = planningState[["prior"]]$aPrior + planningState[["expectedSampleError"]], shape2 = planningState[["prior"]]$bPrior + planningState[["sampleSize"]] - planningState[["expectedSampleError"]]),
-                            type = rep("Expected posterior", length(xseq)))
-      pdata <- data.frame(x = planningState[["materiality"]], y = dbeta(planningState[["materiality"]], shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior))
-      pdata2 <- data.frame(x = planningOptions[["expectedErrors"]], y = dbeta(planningOptions[["expectedErrors"]], shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior))
-      priorBound <- qbeta(planningState[["confidence"]], shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior)
-      posteriorBound <- qbeta(planningState[["confidence"]], shape1 = planningState[["prior"]]$aPrior + planningState[["expectedSampleError"]], shape2 = planningState[["prior"]]$bPrior + planningState[["sampleSize"]] - planningState[["expectedSampleError"]])
-    } 
 
-    if(planningState[["likelihood"]] == "poisson"){
-      priorData <- data.frame(x = xseq, y = dgamma(x = xseq, shape = planningState[["prior"]]$aPrior, rate = planningState[["prior"]]$bPrior),
+      priorData <- data.frame(x = xseq, 
+                              y = dbeta(x = xseq, 
+                                        shape1 = planningState[["prior"]]$aPrior, 
+                                        shape2 = planningState[["prior"]]$bPrior),
                               type = rep("Prior", length(xseq)))
-      postData <- data.frame(x = xseq, y = dgamma(x = xseq, shape = planningState[["prior"]]$aPrior + planningState[["expectedSampleError"]], rate = planningState[["prior"]]$bPrior + planningState[["sampleSize"]]),
-                              type = rep("Expected posterior", length(xseq)))
-      pdata <- data.frame(x = planningState[["materiality"]], y = dgamma(planningState[["materiality"]], shape = planningState[["prior"]]$aPrior, rate = planningState[["prior"]]$bPrior))
-      pdata2 <- data.frame(x = planningOptions[["expectedErrors"]], y = dgamma(planningOptions[["expectedErrors"]], shape = planningState[["prior"]]$aPrior, rate = planningState[["prior"]]$bPrior))
-      priorBound <- qgamma(planningState[["confidence"]], shape = planningState[["prior"]]$aPrior, rate = planningState[["prior"]]$bPrior)
-      posteriorBound <- qgamma(planningState[["confidence"]], shape = planningState[["prior"]]$aPrior + planningState[["expectedSampleError"]], rate = planningState[["prior"]]$bPrior + planningState[["sampleSize"]])
+
+      postData <- data.frame(x = xseq, 
+                             y = dbeta(x = xseq, 
+                                       shape1 = planningState[["prior"]]$aPrior + 
+                                                planningState[["expectedSampleError"]], 
+                                       shape2 = planningState[["prior"]]$bPrior + 
+                                                planningState[["sampleSize"]] - 
+                                                planningState[["expectedSampleError"]]),
+                            type = rep("Expected posterior", length(xseq)))
+
+      pdata <- data.frame(x = planningState[["materiality"]], 
+                          y = dbeta(planningState[["materiality"]], 
+                                    shape1 = planningState[["prior"]]$aPrior, 
+                                    shape2 = planningState[["prior"]]$bPrior))
+
+      pdata2 <- data.frame(x = planningOptions[["expectedErrors"]], 
+                           y = dbeta(planningOptions[["expectedErrors"]], 
+                                     shape1 = planningState[["prior"]]$aPrior, 
+                                     shape2 = planningState[["prior"]]$bPrior))
+
+      priorBound <- qbeta(planningState[["confidence"]], 
+                          shape1 = planningState[["prior"]]$aPrior, 
+                          shape2 = planningState[["prior"]]$bPrior)
+
+      posteriorBound <- qbeta(planningState[["confidence"]], 
+                              shape1 = planningState[["prior"]]$aPrior + 
+                                       planningState[["expectedSampleError"]], 
+                              shape2 = planningState[["prior"]]$bPrior + 
+                                       planningState[["sampleSize"]] - 
+                                       planningState[["expectedSampleError"]])
+
+    } else if(planningState[["likelihood"]] == "poisson"){
+
+      priorData <- data.frame(x = xseq, 
+                              y = dgamma(x = xseq, 
+                                         shape = planningState[["prior"]]$aPrior, 
+                                         rate = planningState[["prior"]]$bPrior),
+                              type = rep("Prior", length(xseq)))
+
+      postData <- data.frame(x = xseq, 
+                             y = dgamma(x = xseq, 
+                                        shape = planningState[["prior"]]$aPrior + 
+                                                planningState[["expectedSampleError"]], 
+                                        rate = planningState[["prior"]]$bPrior + 
+                                               planningState[["sampleSize"]]),
+                             type = rep("Expected posterior", length(xseq)))
+
+      pdata <- data.frame(x = planningState[["materiality"]], 
+                          y = dgamma(planningState[["materiality"]], 
+                          shape = planningState[["prior"]]$aPrior, 
+                          rate = planningState[["prior"]]$bPrior))
+
+      pdata2 <- data.frame(x = planningOptions[["expectedErrors"]], 
+                           y = dgamma(planningOptions[["expectedErrors"]], 
+                           shape = planningState[["prior"]]$aPrior, 
+                           rate = planningState[["prior"]]$bPrior))
+
+      priorBound <- qgamma(planningState[["confidence"]], 
+                           shape = planningState[["prior"]]$aPrior, 
+                           rate = planningState[["prior"]]$bPrior)
+
+      posteriorBound <- qgamma(planningState[["confidence"]], 
+                               shape = planningState[["prior"]]$aPrior + 
+                                       planningState[["expectedSampleError"]], 
+                               rate = planningState[["prior"]]$bPrior + 
+                                      planningState[["sampleSize"]])
     }
 
     if(planningState[["likelihood"]] == "hypergeometric"){
-      selects <- 1:(ceiling(options[["priorPlotLimit"]] * (planningState[["N"]] - planningState[["sampleSize"]])) + 1)
-      xseq <- seq(0, planningState[["N"]] - planningState[["sampleSize"]], by = 1)[selects]
+
+      xseq <- 0:ceiling(options[["priorPlotLimit"]] * planningState[["N"]])
+
       priorData <- data.frame(x = xseq, 
-                              y = jfa:::.dBetaBinom(x = xseq, N = planningState[["N"]] - planningState[["sampleSize"]], shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior),
+                              y = jfa:::.dBetaBinom(x = xseq, 
+                                                    N = planningState[["N"]] - 
+                                                        planningState[["sampleSize"]], 
+                                                    shape1 = planningState[["prior"]]$aPrior, 
+                                                    shape2 = planningState[["prior"]]$bPrior),
                               type = rep("Prior", length(xseq)))
+
       postData <- data.frame(x = xseq, 
-                            y = jfa:::.dBetaBinom(x = xseq, N = planningState[["N"]] - planningState[["sampleSize"]], shape1 = planningState[["prior"]]$aPrior + planningState[["expectedSampleError"]], shape2 = planningState[["prior"]]$bPrior + planningState[["sampleSize"]] - planningState[["expectedSampleError"]]),
-                            type = rep("Expected posterior", length(xseq)))
-      pdata <- data.frame(x = planningState[["materiality"]] * planningState[["N"]], y = jfa:::.dBetaBinom(ceiling(planningState[["materiality"]] * planningState[["N"]]),
-                          N = planningState[["N"]] - planningState[["sampleSize"]], shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior))
-      populationK <- base::switch(options[["expectedErrors"]], "expectedRelative" = options[["expectedPercentage"]] * planningState[["N"]], "expectedAbsolute" = round(options[["expectedNumber"]] / planningOptions[["populationValue"]] * planningState[["N"]], 2)) 
-      pdata2 <- data.frame(x = populationK, y = jfa:::.dBetaBinom(populationK, N = planningState[["N"]] - planningState[["sampleSize"]], shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior))
-      priorBound <- .qBetaBinom(p = options[["confidence"]], N = planningState[["N"]] - planningState[["sampleSize"]], shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior)    
-      posteriorBound <- .qBetaBinom(p = options[["confidence"]], N = planningState[["N"]] - planningState[["sampleSize"]], shape1 = planningState[["prior"]]$aPrior + planningState[["expectedSampleError"]], shape2 = planningState[["prior"]]$bPrior + planningState[["sampleSize"]] - planningState[["expectedSampleError"]])
+                             y = jfa:::.dBetaBinom(x = xseq, 
+                             N = planningState[["N"]] - 
+                                 planningState[["sampleSize"]], 
+                             shape1 = planningState[["prior"]]$aPrior + 
+                                      planningState[["expectedSampleError"]], 
+                             shape2 = planningState[["prior"]]$bPrior + 
+                                      planningState[["sampleSize"]] - 
+                                      planningState[["expectedSampleError"]]),
+                             type = rep("Expected posterior", length(xseq)))
+
+      pdata <- data.frame(x = planningState[["materiality"]] * planningState[["N"]], 
+                          y = jfa:::.dBetaBinom(ceiling(
+                                                  planningState[["materiality"]] * 
+                                                  planningState[["N"]]
+                                                  ),
+                                                N = planningState[["N"]] - 
+                                                    planningState[["sampleSize"]], 
+                                                shape1 = planningState[["prior"]]$aPrior, 
+                                                shape2 = planningState[["prior"]]$bPrior))
+
+      populationK <- base::switch(options[["expectedErrors"]], 
+                                  "expectedRelative" = options[["expectedPercentage"]] * 
+                                                       planningState[["N"]], 
+                                  "expectedAbsolute" = round(
+                                                        options[["expectedNumber"]] / 
+                                                        planningOptions[["populationValue"]] * 
+                                                        planningState[["N"]], 
+                                                        2)) 
+
+      pdata2 <- data.frame(x = populationK, 
+                          y = jfa:::.dBetaBinom(populationK, 
+                                                N = planningState[["N"]] - 
+                                                    planningState[["sampleSize"]], 
+                                                shape1 = planningState[["prior"]]$aPrior, 
+                                                shape2 = planningState[["prior"]]$bPrior))
+
+      priorBound <- jfa:::.qBetaBinom(p = options[["confidence"]], 
+                                      N = planningState[["N"]] - 
+                                          planningState[["sampleSize"]], 
+                                      shape1 = planningState[["prior"]]$aPrior, 
+                                      shape2 = planningState[["prior"]]$bPrior) 
+
+      posteriorBound <- jfa:::.qBetaBinom(p = options[["confidence"]], 
+                                          N = planningState[["N"]] - 
+                                              planningState[["sampleSize"]], 
+                                          shape1 = planningState[["prior"]]$aPrior + 
+                                                   planningState[["expectedSampleError"]], 
+                                          shape2 = planningState[["prior"]]$bPrior + 
+                                                   planningState[["sampleSize"]] - 
+                                                   planningState[["expectedSampleError"]])
     }
 
-    pdata3 <- data.frame(x = 0, y = 0, l = "1")
+    pdata3 <- data.frame(x = 0, 
+                         y = 0, 
+                         l = "1")
 
     if(options[["priorPlotExpectedPosterior"]]){
+
       plotData <- rbind(priorData, postData)
-      plotData$type <- factor(plotData$type,levels(plotData$type)[c(1,2)])
+      plotData$type <- factor(x = plotData$type, 
+                              levels = levels(plotData$type)[c(1,2)])
+    
     } else {
+
       plotData <- priorData
+    
     }
 
     xBreaks <- JASPgraphs::getPrettyAxisBreaks(xseq, min.n = 4)
@@ -212,71 +377,181 @@
       guide <- ggplot2::guide_legend(nrow = 1, byrow = FALSE, title = "", order = 1)
     }
 
-    p <- ggplot2::ggplot(plotData, ggplot2::aes(x = x, y = y)) +
-          ggplot2::geom_line(ggplot2::aes(x = x, y = y, linetype = type), lwd = 1) +
-          ggplot2::scale_linetype_manual(values = scaleValues, guide = guide) +
-          ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, labels = c("", ""), limits = range(yBreaks))
+    p <- ggplot2::ggplot(data = plotData, 
+                         mapping = ggplot2::aes(x = x, y = y)) +
+          ggplot2::geom_line(mapping = ggplot2::aes(x = x, y = y, linetype = type), 
+                             lwd = 1) +
+          ggplot2::scale_linetype_manual(values = scaleValues, 
+                                         guide = guide) +
+          ggplot2::scale_y_continuous(name = "Density", 
+                                      breaks = yBreaks, 
+                                      labels = c("", ""), 
+                                      limits = range(yBreaks))
 
     if(planningState[["likelihood"]] == "hypergeometric"){
-      p <- p + ggplot2::scale_x_continuous(name = "Population errors", breaks = xBreaks, limits = range(xBreaks), labels = xBreaks)
+
+      p <- p + ggplot2::scale_x_continuous(name = "Population errors", 
+                                           breaks = xBreaks, 
+                                           limits = range(xBreaks), 
+                                           labels = xBreaks)
+
     } else {
-      p <- p + ggplot2::scale_x_continuous(name = "Probability of misstatement", breaks = xBreaks, limits = range(xBreaks), labels = paste0(xBreaks * 100, "%"))
+
+      p <- p + ggplot2::scale_x_continuous(name = "Probability of misstatement", 
+                                           breaks = xBreaks, 
+                                           limits = range(xBreaks), 
+                                           labels = paste0(xBreaks * 100, "%"))
+
     }
     
     if(options[["priorPlotAdditionalInfo"]]){
-      p <- p + ggplot2::geom_point(data = pdata3, mapping = ggplot2::aes(x = x, y = y, shape = l), size = 0, color = rgb(0, 1, 0.5, 0))
+
+      p <- p + ggplot2::geom_point(data = pdata3, 
+                                   mapping = ggplot2::aes(x = x, y = y, shape = l), 
+                                   size = 0, 
+                                   color = rgb(0, 1, 0.5, 0))
+
       if(options[["priorPlotExpectedPosterior"]]){
-        p <- p + ggplot2::scale_shape_manual(name = "", values = 21, labels = paste0(options[["confidence"]]*100, "% Prior \ncredible region"))
+
+        p <- p + ggplot2::scale_shape_manual(name = "", 
+                                             values = 21, 
+                                             labels = paste0(
+                                                        options[["confidence"]]*100, 
+                                                        "% Prior \ncredible region"
+                                                      ))
       } else {
-        p <- p + ggplot2::scale_shape_manual(name = "", values = 21, labels = paste0(options[["confidence"]]*100, "% Prior credible region"))
+
+        p <- p + ggplot2::scale_shape_manual(name = "", 
+                                             values = 21, 
+                                             labels = paste0(
+                                                        options[["confidence"]]*100, 
+                                                        "% Prior credible region"
+                                                      ))
+      
       }
-      p <- p + ggplot2::guides(shape = ggplot2::guide_legend(override.aes = list(size = 15, shape = 22, fill = rgb(0, 1, 0.5, .7), stroke = 2, color = "black")))
+
+      p <- p + ggplot2::guides(shape = ggplot2::guide_legend(
+                                                  override.aes = list(size = 15, 
+                                                                      shape = 22, 
+                                                                      fill = rgb(0, 1, 0.5, .7), 
+                                                                      stroke = 2, 
+                                                                      color = "black")))
+
       if(planningState[["likelihood"]] == "binomial"){
-        p <- p + ggplot2::stat_function(fun = dbeta, args = list(shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior),
+
+        p <- p + ggplot2::stat_function(fun = dbeta, 
+                                        args = list(
+                                                shape1 = planningState[["prior"]]$aPrior, 
+                                                shape2 = planningState[["prior"]]$bPrior
+                                                ),
                                         xlim = c(0, priorBound),
-                                        geom = "area", fill = rgb(0, 1, 0.5, .7))
+                                        geom = "area", 
+                                        fill = rgb(0, 1, 0.5, .7))
+
       } else if(planningState[["likelihood"]] == "poisson"){
-        p <- p + ggplot2::stat_function(fun = dgamma, args = list(shape = planningState[["prior"]]$aPrior, rate = planningState[["prior"]]$bPrior),
+
+        p <- p + ggplot2::stat_function(fun = dgamma, 
+                                        args = list(
+                                                shape = planningState[["prior"]]$aPrior, 
+                                                rate = planningState[["prior"]]$bPrior
+                                                ),
                                         xlim = c(0, priorBound),
-                                        geom = "area", fill = rgb(0, 1, 0.5, .7))
+                                        geom = "area", 
+                                        fill = rgb(0, 1, 0.5, .7))
+
       } else if(planningState[["likelihood"]] == "hypergeometric"){
+
         xseq <- xseq[1:(priorBound + 1)]
-        barData <- data.frame(x = xseq, y = jfa:::.dBetaBinom(x = xseq, N = planningState[["N"]] - planningState[["sampleSize"]], 
-                              shape1 = planningState[["prior"]]$aPrior, shape2 = planningState[["prior"]]$bPrior))
-        p <- p + ggplot2::geom_bar(data = barData, stat="identity", fill = rgb(0, 1, 0.5, .7))
+        barData <- data.frame(x = xseq, 
+                              y = jfa:::.dBetaBinom(x = xseq, 
+                                                    N = planningState[["N"]] - 
+                                                        planningState[["sampleSize"]], 
+                                                    shape1 = planningState[["prior"]]$aPrior, 
+                                                    shape2 = planningState[["prior"]]$bPrior))
+
+        p <- p + ggplot2::geom_bar(data = barData, 
+                                   stat="identity", 
+                                   fill = rgb(0, 1, 0.5, .7))
+      
       }
 
-      p <- p + ggplot2::geom_point(ggplot2::aes(x = x, y = y), data = pdata, size = 3, shape = 21, stroke = 2, color = "black", fill = "red") +
-          ggplot2::geom_point(ggplot2::aes(x = x, y = y), data = pdata2, size = 3, shape = 21, stroke = 2, color = "black", fill = "grey")
+      p <- p + ggplot2::geom_point(mapping = ggplot2::aes(x = x, y = y), 
+                                   data = pdata, 
+                                   size = 3, 
+                                   shape = 21, 
+                                   stroke = 2, 
+                                   color = "black", 
+                                   fill = "red") +
+                ggplot2::geom_point(mapping = ggplot2::aes(x = x, y = y), 
+                                    data = pdata2, 
+                                    size = 3, 
+                                    shape = 21, 
+                                    stroke = 2, 
+                                    color = "black", 
+                                    fill = "grey")
     }
 
-    if(options[["priorPlotExpectedPosterior"]]){
-      p <- p + ggplot2::geom_segment(x = 0, xend = posteriorBound, y = max(plotData$y) * 1.1, yend = max(plotData$y) * 1.1, linetype = 1, size = 1, arrow = ggplot2::arrow(length = ggplot2::unit(0.03, "npc"), angle = 90)) +
-                ggplot2::geom_segment(x = posteriorBound, xend = 0, y = max(plotData$y) * 1.1, yend = max(plotData$y) * 1.1, linetype = 1, size = 1, arrow = ggplot2::arrow(length = ggplot2::unit(0.03, "npc"), angle = 90))
+    if(options[["priorPlotAdditionalInfo"]] && 
+        options[["priorPlotExpectedPosterior"]]){
+
+      p <- p + ggplot2::geom_segment(x = 0, 
+                                     xend = posteriorBound, 
+                                     y = max(plotData$y) * 1.1, 
+                                     yend = max(plotData$y) * 1.1, 
+                                     linetype = 1, 
+                                     size = 1, 
+                                     arrow = ggplot2::arrow(length = ggplot2::unit(0.03, "npc"), 
+                                                            angle = 90)) +
+                ggplot2::geom_segment(x = posteriorBound, 
+                                      xend = 0, y = max(plotData$y) * 1.1, 
+                                      yend = max(plotData$y) * 1.1, 
+                                      linetype = 1, 
+                                      size = 1, 
+                                      arrow = ggplot2::arrow(length = ggplot2::unit(0.03, "npc"), 
+                                                             angle = 90))
     }
 
-    thm <- ggplot2::theme(
-      axis.ticks.y = ggplot2::element_blank(),
-      axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0)),
-      legend.text = ggplot2::element_text(margin = ggplot2::margin(l = 10, r = 20))
-    )
+    myTheme <- ggplot2::theme(axis.ticks.y = ggplot2::element_blank(),
+                              axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0)),
+                              legend.key.size = ggplot2::unit(4, "line"))
   
-    p <- JASPgraphs::themeJasp(p, legend.position = "top") + thm
-    priorPlot$plotObject <- p
+    p <- JASPgraphs::themeJasp(p, 
+                               legend.position = "top") + myTheme
 
+    priorPlot$plotObject <- p
   }
 
   if(options[["explanatoryText"]]){
-    distribution <- base::switch(planningOptions[["likelihood"]], "poisson" = "gamma", "binomial" = "beta", "hypergeometric" = "beta-binomial")
-    figure3 <- createJaspHtml(paste0("<b>Figure ", planningContainer[["figNumber"]]$object ,".</b> The prior probability distribution <b>(", distribution ,")</b> on the misstatement in the population. The prior parameters 
-                                      <i>\u03B1 = ", planningState[["prior"]]$aPrior, ", \u03B2 = ", planningState[["prior"]]$aPrior, "</i> are derived from the assessments of the inherent and control risk, along with the expected errors.", ifelse(options[["priorPlotExpectedPosterior"]], yes = " 
-                                      The expected posterior has its upper confidence bound below materiality. ", no = ""), ifelse(options[["priorPlotAdditionalInfo"]], yes = "
-                                      The expected errors (grey) receive the highest probability. The red dot represents the materiality.", no = "")), "p")
-    figure3$position <- positionInContainer + 1
-    figure3$dependOn(optionsFromObject = planningContainer[["priorPlot"]])
-    planningContainer[["figure3"]] <- figure3
+
+    distribution <- base::switch(planningOptions[["likelihood"]], 
+                                 "poisson" = "gamma", 
+                                 "binomial" = "beta", 
+                                 "hypergeometric" = "beta-binomial")
+
+    priorPlotText <- createJaspHtml(paste0("<b>Figure ", 
+                                           planningContainer[["figNumber"]]$object,
+                                           ".</b> The prior probability distribution <b>(", 
+                                           distribution,
+                                           ")</b> on the misstatement in the population. The prior parameters 
+                                           <i>\u03B1 = ", 
+                                           planningState[["prior"]]$aPrior, 
+                                           ", \u03B2 = ", 
+                                           planningState[["prior"]]$aPrior, 
+                                           "</i> are derived from the assessments of the inherent and control risk, along with the expected errors.", 
+                                           ifelse(options[["priorPlotExpectedPosterior"]], 
+                                           yes = " 
+                                           The expected posterior has its upper confidence bound below materiality. ", 
+                                           no = ""), 
+                                           ifelse(options[["priorPlotAdditionalInfo"]], 
+                                           yes = "
+                                           The expected errors (grey) receive the highest probability. The red dot represents the materiality.", 
+                                           no = "")), "p")
+
+    priorPlotText$position <- positionInContainer + 1
+    priorPlotText$dependOn(optionsFromObject = planningContainer[["priorPlot"]])
+    planningContainer[["priorPlotText"]] <- priorPlotText
+
     planningContainer[["figNumber"]] <- createJaspState(planningContainer[["figNumber"]]$object + 1)
-    planningContainer[["figNumber"]]$dependOn(options = c("bookValueDistribution", "decisionPlot", "priorPlot"))
   }
 }
 
