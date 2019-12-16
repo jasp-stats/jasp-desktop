@@ -19,6 +19,36 @@ void JASPControlBase::setFocusOnTab(bool focus)
 	}
 }
 
+void JASPControlBase::setHasError(bool hasError)
+{
+	if (section())
+		QMetaObject::invokeMethod(section(), "addControlWithError", Qt::DirectConnection, Q_ARG(QVariant, name()), Q_ARG(QVariant, hasError));
+
+	if (form())
+		form()->addControlErrorSet(this, hasError);
+
+	if (hasError != _hasError)
+	{
+		_hasError = hasError;
+		emit hasErrorChanged();
+	}
+}
+
+void JASPControlBase::setHasWarning(bool hasWarning)
+{
+	if (section())
+		QMetaObject::invokeMethod(section(), "addControlWithError", Qt::DirectConnection, Q_ARG(QVariant, name()), Q_ARG(QVariant, hasWarning));
+
+	if (form())
+		form()->addControlWarningSet(this, hasWarning);
+
+	if (hasWarning != _hasWarning)
+	{
+		_hasWarning = hasWarning;
+		emit hasWarningChanged();
+	}
+}
+
 void JASPControlBase::componentComplete()
 {
 	QQuickItem::componentComplete();
@@ -43,6 +73,36 @@ void JASPControlBase::componentComplete()
 		_form->addControl(this);
 	else if (!noDirectSetup)
 		_wrapper->setUp();
+}
+
+void JASPControlBase::addControlError(QString message)
+{
+	if (_form)
+		_form->addControlError(this, message, false);
+}
+
+void JASPControlBase::addControlErrorTemporary(QString message)
+{
+	if (_form)
+		_form->addControlError(this, message, true);
+}
+
+void JASPControlBase::addControlWarning(QString message)
+{
+	if (_form)
+		_form->addControlError(this, message, false, true);
+}
+
+void JASPControlBase::addControlWarningTemporary(QString message)
+{
+	if (_form)
+		_form->addControlError(this, message, true, true);
+}
+
+void JASPControlBase::clearControlError()
+{
+	if (_form)
+		_form->clearControlError(this);
 }
 
 QQmlListProperty<QQmlComponent> JASPControlBase::rowComponents()

@@ -92,17 +92,20 @@ void AnalysisForm::refreshAnalysis()
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
 {
 	if (change == ItemChange::ItemSceneChange && !value.window)
-		_cleanUpForm();
+		cleanUpForm();
 	QQuickItem::itemChange(change, value);
 }
 
-void AnalysisForm::_cleanUpForm()
+void AnalysisForm::cleanUpForm()
 {
-	_removed = true;
-	for (JASPControlWrapper* control : _orderedControls)
-		// controls will be automatically deleted by the deletion of AnalysisForm
-		// But they must be first disconnected: sometimes an event seems to be triggered before the item is completely destroyed
-		control->cleanUp();
+	if (!_removed)
+	{
+		_removed = true;
+		for (JASPControlWrapper* control : _orderedControls)
+			// controls will be automatically deleted by the deletion of AnalysisForm
+			// But they must be first disconnected: sometimes an event seems to be triggered before the item is completely destroyed
+			control->cleanUp();
+	}
 }
 
 void AnalysisForm::runScriptRequestDone(const QString& result, const QString& controlName)
@@ -190,9 +193,9 @@ void AnalysisForm::addControl(JASPControlBase *control)
 	{
 		const QString& name = control->name();
 		if (name.isEmpty())
-			_errorMessages.append(tr("A control %1 has no name").arg(control->controlType()));
+			_formErrorMessages.append(tr("A control %1 has no name").arg(control->controlType()));
 		else if (_controls.keys().contains(name))
-			_errorMessages.append(tr("2 controls have the same name: %1").arg(name));
+			_formErrorMessages.append(tr("2 controls have the same name: %1").arg(name));
 		else
 		{
 			JASPControlWrapper* wrapper = control->getWrapper();
@@ -212,7 +215,7 @@ void AnalysisForm::_setUpControls()
 	_setUpRelatedModels();
 	_setUpItems();
 
-	if (!_errorMessagesItem)
+	if (!_formErrorMessagesItem)
 		Log::log()  << "No errorMessages Item found!" << std::endl;
 
 	_setErrorMessages();
@@ -232,13 +235,13 @@ void AnalysisForm::_setUpRelatedModels()
 			if (targetModel)
 				_relatedModelMap[listView] = targetModel;
 			else
-				_errorMessages.append(tr("Cannot find a source %1 for VariableList %2").arg(dropKey).arg(listView->name()));
+				_formErrorMessages.append(tr("Cannot find a source %1 for VariableList %2").arg(dropKey).arg(listView->name()));
 		}
 		else
 		{
 			bool draggable = listView->getItemProperty("draggabble").toBool();
 			if (draggable)
-				_errorMessages.append(tr("No drop key found for %1").arg(listView->name()));
+				_formErrorMessages.append(tr("No drop key found for %1").arg(listView->name()));
 		}
 
 	}
@@ -262,7 +265,7 @@ void AnalysisForm::_setUpItems()
 			for (JASPControlWrapper* dependdepend : dependdepends)
 			{
 				if (dependdepend == control)
-					addError(tq("Circular dependency between control ") + control->name() + tq(" and ") + depend->name());
+					addFormError(tq("Circular dependency between control ") + control->name() + tq(" and ") + depend->name());
 				else
 				{
 					if (control->addDependency(dependdepend))
@@ -330,27 +333,27 @@ void AnalysisForm::exportResults()
 
 void AnalysisForm::_setErrorMessages()
 {
-	if (_errorMessagesItem)
+	if (_formErrorMessagesItem)
 	{
-		if (!_errorMessages.isEmpty())
+		if (!_formErrorMessages.isEmpty())
 		{
 			QString text;
-			if (_errorMessages.length() == 1)
-				text = _errorMessages[0];
+			if (_formErrorMessages.length() == 1)
+				text = _formErrorMessages[0];
 			else
 			{
 				text.append("<ul style=\"margin-bottom:0px\">");
-				for (const QString& errorMessage : _errorMessages)
+				for (const QString& errorMessage : _formErrorMessages)
 					text.append("<li>").append(errorMessage).append("</li>");
 				text.append("</ul>");
 			}
-			QQmlProperty(_errorMessagesItem, "text").write(QVariant::fromValue(text));
-			_errorMessagesItem->setVisible(true);
+			QQmlProperty(_formErrorMessagesItem, "text").write(QVariant::fromValue(text));
+			_formErrorMessagesItem->setVisible(true);
 		}
 		else
 		{
-			QQmlProperty(_errorMessagesItem, "text").write(QVariant::fromValue(QString()));
-			_errorMessagesItem->setVisible(false);
+			QQmlProperty(_formErrorMessagesItem, "text").write(QVariant::fromValue(QString()));
+			_formErrorMessagesItem->setVisible(false);
 		}
 	}
 }
@@ -385,6 +388,50 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 
 }
 
+QString AnalysisForm::_getControlLabel(JASPControlBase* control)
+{
+	QString label = control->property("label").toString();
+
+	if (label.isEmpty())
+		label = control->property("title").toString();
+
+	if (label.isEmpty())
+		label = control->name();
+
+	label = label.simplified();
+	if (label.right(1) == ":")
+		label = label.chopped(1);
+
+	return label;
+}
+
+void AnalysisForm::_addLoadingError()
+{
+	if (_jaspControlsWithWarningSet.size() > 0)
+	{
+		QString errorMsg;
+		if (_jaspControlsWithWarningSet.size() == 1)
+			errorMsg = tr("Component %1 was loaded with a wrong kind of value and is set with its default value.<br>").arg(_getControlLabel(_jaspControlsWithWarningSet.toList()[0]));
+		else if (_jaspControlsWithWarningSet.size() < 4)
+		{
+			QString names = "<ul>";
+			QSetIterator<JASPControlBase *> it(_jaspControlsWithWarningSet);
+			while (it.hasNext())
+				names += "<li>" + _getControlLabel(it.next()) + "</li>";
+			names += "</ul>";
+
+			errorMsg = tr("These components were loaded with a wrong kind of value and are set with their default values:%1").arg(names);
+		}
+		else
+			errorMsg = tr("Many components were loaded with a wrong kind of value and are set with their default values.<br>");
+
+		errorMsg += tr("The file probably comes from an older version of JASP.");
+		errorMsg += "<br>" + tr("That means that the results currently displayed do not correspond to the options selected.");
+		errorMsg += "<br>" + tr("Refreshing the analysis may change the results.");
+		addFormError(errorMsg);
+	}
+}
+
 void AnalysisForm::bindTo()
 {
 	if (_options != nullptr)
@@ -409,7 +456,7 @@ void AnalysisForm::bindTo()
 			if (option && !boundControl->isOptionValid(option))
 			{
 				option = nullptr;
-				addError(tq("Item " + name + " was loaded with a wrong kind of value." + (optionsFromJASPFile != Json::nullValue ? ". Probably the file comes from an older version of JASP." : "")));
+				boundControl->item()->setHasWarning(true);
 			}
 
 			if (!option)
@@ -421,25 +468,7 @@ void AnalysisForm::bindTo()
 					if (optionValue != Json::nullValue)
 					{
 						if (!boundControl->isJsonValid(optionValue))
-						{
-							std::string labelStr;
-							QVariant label = boundControl->getItemProperty("label");
-
-							if (!label.isNull())
-								labelStr = label.toString().toStdString();
-
-							if (labelStr.empty())
-							{
-								label = boundControl->getItemProperty("title");
-								labelStr = label.toString().toStdString();
-							}
-
-							if (labelStr.empty())
-								labelStr = name;
-
-							addError(tq("Control " + labelStr + " was loaded with a wrong kind of value. The file probably comes from an older version of JASP.<br>"
-										+ "That means that the results currently displayed do not correspond to the options selected.<br>Refreshing the analysis may change the results"));
-						}
+							boundControl->item()->setHasWarning(true);
 						else
 							option->set(optionValue);
 					}
@@ -475,6 +504,8 @@ void AnalysisForm::bindTo()
 	for (ListModelAvailableInterface* availableModel : availableModelsToBeReset)
 		availableModel->resetTermsFromSourceModels(true);
 	
+	_addLoadingError();
+
 	_options->blockSignals(false, false);
 }
 
@@ -493,19 +524,124 @@ void AnalysisForm::unbind()
 	_options = nullptr;
 }
 
-void AnalysisForm::addError(const QString &error)
+void AnalysisForm::addFormError(const QString &error)
 {
-	_errorMessages.append(error);
+	_formErrorMessages.append(error);
 	_lastAddedErrorTimestamp = Utils::currentSeconds();
 	_setErrorMessages();
 }
 
-void AnalysisForm::clearErrors()
+QQuickItem* AnalysisForm::_getControlErrorMessageUsingThisJaspControl(JASPControlBase* jaspControl)
+{
+	QQuickItem* result = nullptr;
+
+	for (QQuickItem* item : _controlErrorMessageCache)
+		if (item->parentItem() == jaspControl)
+		{
+			result = item;
+			break;
+		}
+
+	return result;
+}
+
+void AnalysisForm::addControlError(QQuickItem* control, QString message, bool temporary, bool warning)
+{
+	if (!control) return;
+
+	if (!message.isEmpty())
+	{
+		QQuickItem*	controlErrorMessageItem = nullptr;
+
+		for (QQuickItem* item : _controlErrorMessageCache)
+		{
+			if (item->parentItem() == control || !item->parentItem())
+			{
+				controlErrorMessageItem = item;
+				break;
+			}
+		}
+
+		if (!controlErrorMessageItem)
+		{
+			controlErrorMessageItem = qobject_cast<QQuickItem*>(_controlErrorMessageComponent->create());
+			if (!controlErrorMessageItem)
+			{
+				Log::log() << "Could not create Control Error Item!!" << std::endl;
+				return;
+			}
+			controlErrorMessageItem->setProperty("form", QVariant::fromValue(this));
+			_controlErrorMessageCache.append(controlErrorMessageItem);
+		}
+
+		controlErrorMessageItem->setProperty("warning", warning);
+		controlErrorMessageItem->setParentItem(control);
+		QMetaObject::invokeMethod(controlErrorMessageItem, "showMessage", Qt::DirectConnection, Q_ARG(QVariant, message), Q_ARG(QVariant, temporary));
+	}
+
+	JASPControlBase* jaspControl = qobject_cast<JASPControlBase*>(control);
+	if (jaspControl)
+	{
+		if (warning)
+			jaspControl->setHasWarning(true);
+		else
+			jaspControl->setHasError(true);
+	}
+}
+
+void AnalysisForm::addControlErrorSet(JASPControlBase *control, bool add)
+{
+	if (!control) return;
+
+	if (add)
+		_jaspControlsWithErrorSet.insert(control);
+	else
+		_jaspControlsWithErrorSet.remove(control);
+}
+
+void AnalysisForm::addControlWarningSet(JASPControlBase *control, bool add)
+{
+	if (!control) return;
+
+	if (add)
+		_jaspControlsWithWarningSet.insert(control);
+	else
+		_jaspControlsWithWarningSet.remove(control);
+}
+
+void AnalysisForm::clearControlError(QQuickItem* control)
+{
+	if (!control) return;
+
+	for (QQuickItem* errorItem : _controlErrorMessageCache)
+	{
+		if (errorItem->parentItem() == control)
+			errorItem->setParentItem(nullptr);
+	}
+
+	JASPControlBase* jaspControl = qobject_cast<JASPControlBase*>(control);
+	if (jaspControl)
+	{
+		jaspControl->setHasError(false);
+		jaspControl->setHasWarning(false);
+	}
+}
+
+void AnalysisForm::clearFormErrors()
 {
 	if (Utils::currentSeconds() - _lastAddedErrorTimestamp > 5)
 	{
-		_errorMessages.clear();
+		_formErrorMessages.clear();
 		_setErrorMessages();
+
+		// Remove also warning without text
+		QSet<JASPControlBase*> controlsWithWarning = _jaspControlsWithWarningSet; // Copy the set: the setHasWarning method changes it.
+
+		for (JASPControlBase* control : controlsWithWarning)
+		{
+			if (!_getControlErrorMessageUsingThisJaspControl(control))
+				control->setHasWarning(false);
+		}
 	}
 }
 
@@ -516,6 +652,8 @@ void AnalysisForm::formCompletedHandler()
 
 void AnalysisForm::_formCompletedHandler()
 {
+	_controlErrorMessageComponent = new QQmlComponent(qmlEngine(this), "qrc:///components/JASP/Widgets/ControlErrorMessage.qml");
+
 	QVariant analysisVariant = QQmlProperty(this, "analysis").read();
 	if (!analysisVariant.isNull())
 	{

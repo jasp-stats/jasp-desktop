@@ -87,7 +87,7 @@ public:
 	Options*	getAnalysisOptions()					{ return _analysis->options(); }
 	JASPControlWrapper*	getControl(const QString& name)			{ return _controls[name]; }
 	void		addListView(QMLListView* listView, QMLListView* sourceListView);
-	void		clearErrors();
+	void		clearFormErrors();
 	QMLExpander* nextExpander(QMLExpander* expander)	{ return _nextExpanderMap[expander]; }
 
 	Options*	options() { return _options; }
@@ -95,13 +95,19 @@ public:
 
 	Q_INVOKABLE void reset();
     Q_INVOKABLE void exportResults();
-	Q_INVOKABLE void addError(const QString& message);
+	Q_INVOKABLE void addFormError(const QString& message);
 
+	void		addControlError(QQuickItem* control, QString message, bool temporary = false, bool warning = false);
+	void		clearControlError(QQuickItem* control);
+	void		cleanUpForm();
+	void		addControlErrorSet(JASPControlBase* control, bool add);
+	void		addControlWarningSet(JASPControlBase* control, bool add);
 	void		refreshAvailableVariablesModels() { _setAllAvailableVariablesModel(true); }
 
-	QQuickItem*	errorMessagesItem()		{ return _errorMessagesItem;	}
-	GENERIC_SET_FUNCTION(ErrorMessagesItem, _errorMessagesItem, errorMessagesItemChanged, QQuickItem*)
+	QQuickItem*	errorMessagesItem()		{ return _formErrorMessagesItem;	}
+	GENERIC_SET_FUNCTION(ErrorMessagesItem, _formErrorMessagesItem, errorMessagesItemChanged, QQuickItem*)
 
+	bool		hasError() { return _jaspControlsWithErrorSet.size() > 0; }
 
 protected:
 	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
@@ -114,11 +120,13 @@ private:
 	void		_setUpItems();
 	void		_orderExpanders();
 	void		_setErrorMessages();
-	void		_cleanUpForm();
+	QString		_getControlLabel(JASPControlBase* boundControl);
+	void		_addLoadingError();
 	void		setControlIsDependency(QString controlName, bool isDependency);
 	void		setControlMustContain(QString controlName, QStringList containThis);
 	void		setControlIsDependency(std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
 	void		setControlMustContain(std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
+	QQuickItem* _getControlErrorMessageUsingThisJaspControl(JASPControlBase* jaspControl);
 
 private slots:
 	void		formCompletedHandler();
@@ -134,16 +142,21 @@ protected:
 	QMap<QString, ListModel* >					_modelMap;
 	QVector<QMLExpander*>						_expanders;
 	QMap<QMLExpander*, QMLExpander*>			_nextExpanderMap;
+	QMap<JASPControlWrapper*, QMLExpander*>		_controlExpanderMap;
 	bool										_removed = false;
 	std::set<std::string>						_mustBe;
 	std::map<std::string,std::set<std::string>>	_mustContain;
 	
 private:
-	QQuickItem								*	_errorMessagesItem	= nullptr;
+	QQuickItem								*	_formErrorMessagesItem	= nullptr;
 	std::vector<ListModelTermsAvailable*>		_allAvailableVariablesModels,
 												_allAvailableVariablesModelsWithSource;
-	QList<QString>								_errorMessages;
+	QList<QString>								_formErrorMessages;
 	long										_lastAddedErrorTimestamp = 0;
+	QQmlComponent*								_controlErrorMessageComponent = nullptr;
+	QList<QQuickItem*>							_controlErrorMessageCache;
+	QSet<JASPControlBase*>						_jaspControlsWithErrorSet;
+	QSet<JASPControlBase*>						_jaspControlsWithWarningSet;
 
 };
 

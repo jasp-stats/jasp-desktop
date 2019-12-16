@@ -78,7 +78,7 @@ void QMLListView::setSources()
 			QString modelUse = map["use"].toString();
 			QVector<QPair<QString, QString> > discards;
 			if (sourceName.isEmpty())
-				addError(tr("No name given in source attribute of VariableList %1").arg(name()));
+				addControlError(tr("No name given in source attribute of VariableList %1").arg(name()));
 			else if (map.contains("discard"))
 			{
 
@@ -95,11 +95,11 @@ void QMLListView::setSources()
 						QMap<QString, QVariant> discardMap = discardSource.toMap();
 						discardName = discardMap["name"].toString();
 						if (discardName.isEmpty())
-							addError(tr("No name given in discard source attribute of VariableList %1" ).arg(name()));
+							addControlError(tr("No name given in discard source attribute of VariableList %1" ).arg(name()));
 						discardUse = discardMap["use"].toString();
 					}
 					else
-						addError(tr("Wrong parameter discard in VariablesList %1").arg(name()));
+						addControlError(tr("Wrong parameter discard in VariablesList %1").arg(name()));
 					discards.push_back(QPair<QString, QString>(discardName, discardUse));
 				}
 			}
@@ -112,7 +112,7 @@ void QMLListView::setSources()
 	if (_sourceModels.isEmpty())
 	{
 		if (_needsSourceModels)
-			addError(tr("Needs source model for VariablesList %1").arg(name()));
+			addControlError(tr("Needs source model for VariablesList %1").arg(name()));
 	}
 	else
 	{
@@ -140,11 +140,11 @@ void QMLListView::setSources()
 						connect(discardModel, &ListModel::modelChanged, listModel, &ListModel::sourceTermsChanged);
 					}
 					else
-						addError(tr("Unknown discard model %1 for VariableList %2").arg(discardSource.name).arg(name()));
+						addControlError(tr("Unknown discard model %1 for VariableList %2").arg(discardSource.name).arg(name()));
 				}
 			}
 			else
-				addError(tr("Cannot find source %1 for VariablesList %2").arg(sourceItem->name).arg(name()));
+				addControlError(tr("Cannot find source %1 for VariablesList %2").arg(sourceItem->name).arg(name()));
 		}
 
 		if (!termsAreVariables)
@@ -334,7 +334,7 @@ int QMLListView::_getAllowedColumnsTypes()
 			else if (allowedColumn == "nominalText")	allowedColumnsTypes |= int(columnType::nominalText);
 			else if (allowedColumn == "scale")			allowedColumnsTypes |= int(columnType::scale);
 			else
-				addError(tr("Wrong column type: %1 for ListView %2").arg(allowedColumn).arg(name()));
+				addControlError(tr("Wrong column type: %1 for ListView %2").arg(allowedColumn).arg(name()));
 		}
 	}
 	

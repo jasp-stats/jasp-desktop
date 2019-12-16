@@ -20,8 +20,6 @@ import JASP.Controls 	1.0
 
 Form 
 {
-    id: form
-
 
     CheckBox
     {

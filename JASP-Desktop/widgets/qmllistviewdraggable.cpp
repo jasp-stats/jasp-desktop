@@ -51,14 +51,14 @@ void QMLListViewDraggable::itemDoubleClickedHandler(int index)
 	
 	if (!targetModel)
 	{
-		addError(tr("No related list found for VariablesList %1").arg(name()));
+		addControlError(tr("No related list found for VariablesList %1").arg(name()));
 		return;
 	}
 	
 	ListModelDraggable *draggableTargetModel = dynamic_cast<ListModelDraggable*>(targetModel);
 	if (!draggableTargetModel)
 	{
-		addError(tr("Wrong kind of related list (%1) found for VariablesList %2").arg(targetModel->name()).arg(name()));
+		addControlError(tr("Wrong kind of related list (%1) found for VariablesList %2").arg(targetModel->name()).arg(name()));
 		return;
 	}
 	

@@ -285,10 +285,21 @@ void Analyses::removeAnalysis(Analysis *analysis)
 			break;
 		}
 
+	QList<int> toRemove;
+	QMapIterator<int, QPair<Analysis*, QString> > it(_scriptIDMap);
+	while (it.hasNext())
+	{
+		it.next();
+		if (it.value().first == analysis)
+			toRemove.push_back(it.key());
+	}
+
 	beginRemoveRows(QModelIndex(), indexAnalysis, indexAnalysis);
-	analysis->abort();
+	analysis->remove();
 	_analysisMap.erase(id);
 	_orderedIds.erase(_orderedIds.begin() + indexAnalysis);
+	for (int requestId : toRemove)
+		_scriptIDMap.remove(requestId);
 	endRemoveRows();
 
 	emit countChanged();
@@ -519,7 +530,7 @@ void Analyses::rCodeReturned(QString result, int requestId)
 		pair.first->runScriptRequestDone(result, pair.second);
 	}
 	else
-		Log::log()  << "Unkown Returned Rcode request ID " << requestId << std::endl;
+		Log::log()  << "Unknown Returned Rcode request ID " << requestId << std::endl;
 }
 
 void Analyses::sendRScriptHandler(Analysis* analysis, QString script, QString controlName, bool whiteListedVersion)

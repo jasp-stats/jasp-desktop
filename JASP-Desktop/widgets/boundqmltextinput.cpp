@@ -158,11 +158,11 @@ void BoundQMLTextInput::bindTo(Option *option)
 		_value	= QString::fromStdString(_computedColumn->value());
 		break;
 	case TextInputType::FormulaType:
-		_formula = dynamic_cast<OptionTerm *>(option);
+		_formula = dynamic_cast<OptionString *>(option);
 		if (!_formula)
-			_formula = new OptionTerm();
+			_formula = new OptionString();
 		_option = _formula;
-		_value = _getFormulaValue();
+		_value = QString::fromStdString(_formula ? _formula->value() : "");
 		break;
 
 	default:
@@ -188,7 +188,7 @@ Option *BoundQMLTextInput::createOption()
 	case TextInputType::PercentIntputType:		option = new OptionNumber();			break;
 	case TextInputType::IntegerArrayInputType:	option = new OptionIntegerArray();		break;
 	case TextInputType::DoubleArrayInputType:	option = new OptionDoubleArray();		break;
-	case TextInputType::FormulaType:			option = new OptionTerm();				break;
+	case TextInputType::FormulaType:			option = new OptionString();			break;
 	case TextInputType::ComputedColumnType:
 	{
 		option = new OptionComputedColumn();
@@ -209,15 +209,7 @@ Option *BoundQMLTextInput::createOption()
 	}
 
 	_value = getItemProperty("value").toString();
-	if(_inputType != TextInputType::FormulaType)
-		_setOptionValue(option, _value);
-	else
-	{
-		if(_formula != option)
-			_formula = dynamic_cast<OptionTerm*>(option);
-
-		_setFormulaOptions(fq(_value), true);
-	}
+	_setOptionValue(option, _value);
 	return option;
 }
 
@@ -232,7 +224,7 @@ bool BoundQMLTextInput::isOptionValid(Option *option)
 	case TextInputType::DoubleArrayInputType:	return dynamic_cast<OptionDoubleArray*>(option)		!= nullptr;
 	case TextInputType::AddColumnType:
 	case TextInputType::ComputedColumnType:		return dynamic_cast<OptionComputedColumn*>(option)	!= nullptr;
-	case TextInputType::FormulaType:			return dynamic_cast<OptionTerm*>(option)			!= nullptr;
+	case TextInputType::FormulaType:			return dynamic_cast<OptionString*>(option)			!= nullptr;
 	case TextInputType::StringInputType:
 	default:									return dynamic_cast<OptionString*>(option)			!= nullptr;
 	}
@@ -284,7 +276,7 @@ void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 	double val = result.toDouble(&succes);
 
 	if (!succes)
-		showControlErrorTemporary("The expression did not return a number.");
+		item()->addControlError(tr("The expression did not return a number."));
 	else
 		succes = _formulaResultInBounds(val);
 
@@ -295,23 +287,15 @@ void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 		setItemProperty("hasScriptError", true);
 		setItemProperty("infoText", result);
 	}
-	_setFormulaValidated(succes);
+
+	if (_formula)
+		_formula->setValue(_value.toStdString());
 }
 
 void BoundQMLTextInput::_setFormulaOptions(std::string formula, bool valid)
 {
-	if (_formula)
-		_formula->setValue( { formula, valid ? "T" : "F"});
-}
-
-void BoundQMLTextInput::_setFormulaValidated(bool valid)
-{
-	if (_formula)
-	{
-		auto oldVal = _formula->term();
-		oldVal[1] = valid ? "T" : "F";
-		_formula->setValue(oldVal);
-	}
+	if (_formula && valid)
+		_formula->setValue(formula);
 }
 
 bool BoundQMLTextInput::_formulaResultInBounds(double result)
@@ -329,19 +313,10 @@ bool BoundQMLTextInput::_formulaResultInBounds(double result)
 		QString end;
 		if (tooSmall)	end = (inclusive ? "&ge; " : "&gt; ") + getItemProperty("min").toString();
 		else			end = (inclusive ? "&le; " : "&lt; ") + getItemProperty("max").toString();
-		showControlErrorTemporary("The result (" + QString::number(result) + ") must be " + end);
+		item()->addControlError(tr("The result (%1) must be %2").arg(result).arg(end));
 	}
 
 	return inBounds;
-}
-
-QString	BoundQMLTextInput::_getFormulaValue()
-{
-	auto oldVal = _formula->term();
-	if (oldVal.size() > 0)
-		return tq(oldVal[0]);
-	else
-		return QString();
 }
 
 void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
@@ -401,9 +376,6 @@ void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 		break;
 
 	case TextInputType::FormulaType:
-		//This is done in textChangedSlot
-		break;
-
 	default:
 		dynamic_cast<OptionString*>(option)->setValue(text.toStdString());
 		break;
@@ -413,11 +385,9 @@ void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 void BoundQMLTextInput::textChangedSlot()
 {
 	_value = getItemProperty("value").toString();
+
 	if (_inputType == TextInputType::FormulaType)
-	{
-		_setFormulaOptions(fq(_value));
 		runRScript("as.character(" + _value + ")", true);
-	}
 	else if (_option)
 		_setOptionValue(_option, _value);
 

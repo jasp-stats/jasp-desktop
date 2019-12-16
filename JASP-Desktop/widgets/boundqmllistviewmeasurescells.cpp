@@ -85,7 +85,7 @@ void BoundQMLListViewMeasuresCells::setUp()
 	{
 		ListModelRepeatedMeasuresFactors* factorsModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(sourceItem->model);
 		if (!factorsModel)
-			addError(tr("Source model of %1 must be from a Factor List").arg(name()));
+			addControlError(tr("Source model of %1 must be from a Factor List").arg(name()));
 		addDependency(factorsModel->listView());
 		_sourceFactorsModels.push_back(factorsModel);
 	}

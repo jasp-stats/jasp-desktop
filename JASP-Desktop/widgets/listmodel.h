@@ -63,7 +63,7 @@ public:
 			void					setTermsAreVariables(bool areVariables)			{ _areTermsVariables = areVariables; }
 			void					setTermsAreInteractions(bool interactions)		{ _areTermsInteractions = interactions; }
 			void					setItemType(QString type)						{ _itemType = type; }
-			void					addError(const QString& error) const;
+			void					addControlError(const QString& error) const;
 	virtual void					refresh();
 	virtual void					initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions());
 	virtual Terms					getSourceTerms();

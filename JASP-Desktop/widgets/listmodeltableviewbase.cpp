@@ -254,14 +254,14 @@ const Terms& ListModelTableViewBase::terms(const QString &what) const
 			}
 		}
 		else
-			addError(tr("Column number in source use is bigger than the number of columns of %1").arg(name()));
+			addControlError(tr("Column number in source use is bigger than the number of columns of %1").arg(name()));
 	}
 	else
 	{
 		if (what.isEmpty())
-			addError(tr("No column specified in the source of %1").arg(name()));
+			addControlError(tr("No column specified in the source of %1").arg(name()));
 		else
-			addError(tr("The source use does not specified a valid column in %1").arg(name()));
+			addControlError(tr("The source use does not specified a valid column in %1").arg(name()));
 	}
 
 
@@ -398,7 +398,7 @@ void ListModelTableViewBase::initValues(OptionsTable * bindHere)
 
 	//No need to check colnames to cols in values because they are created during the same loop and thus crash if non-matching somehow
 	if (_values.size() > 0 && int(_values[0].size()) != _rowNames.size())
-		addError("Number of rows specifed in Options for ListModelTableViewBase does not match number of rows in values!");
+		addControlError("Number of rows specifed in Options for ListModelTableViewBase does not match number of rows in values!");
 
 
 	beginResetModel();
