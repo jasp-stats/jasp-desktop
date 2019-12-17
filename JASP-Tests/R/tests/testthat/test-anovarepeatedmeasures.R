@@ -46,8 +46,11 @@ initOpts <- function(){
 
 test_that("Within subjects table results match", {
   options <- initOpts()
-  options$sphericityCorrections <- TRUE
-
+  
+  options$sphericityNone <- TRUE
+  options$sphericityHuynhFeldt <- TRUE
+  options$sphericityGreenhouseGeisser <- TRUE
+  
   results <- jasptools::run(name = "AnovaRepeatedMeasures", dataset = "AnovaRepeatedMeasures.csv",
                             options = options)
   table <- results[["results"]]$rmAnovaContainer$collection$rmAnovaContainer_withinAnovaTable$data
@@ -265,6 +268,7 @@ test_that("Descriptives Match", {
 
 
 test_that("Field - Chapter 8 marginal means match", {
+
   # compared to SPSS, we pool the standard errors in marginal means
   options <- initOpts()
   
@@ -416,8 +420,6 @@ test_that("Effect Size Calculation correct", {
 
 
 test_that("Simple Effects table match", {
-  skip("This test fails after updating our R packages, but this is fixed in Johnny's rewrite")
-  
   options <- initOpts()
   
   options$betweenSubjectFactors <- "gender"
@@ -494,7 +496,7 @@ test_that("Conover table match", {
                     "None", 1.57641185962271, 306.5, 187.5, 0.116931046150649, 0.350793138451948,
                     0.233862092301299, 158)
   
-  table <- results[["results"]]$rmAnovaContainer$collection$rmAnovaContainer_nonparametricContainer$collection$rmAnovaContainer_nonparametricContainer_Charisma$data
+  table <- results[["results"]]$rmAnovaContainer$collection$rmAnovaContainer_nonparametricContainer$collection$rmAnovaContainer_nonparametricContainer_conoverContainer$collection$rmAnovaContainer_nonparametricContainer_conoverContainer_Charisma$data
   expect_equal_tables(table, refTable)
 })
 
@@ -514,7 +516,9 @@ test_that("Field - Chapter 8 results match", {
   )
   
   options$sphericityTests <- TRUE
-  options$sphericityCorrections <- TRUE
+  options$sphericityNone <- TRUE
+  options$sphericityHuynhFeldt <- TRUE
+  options$sphericityGreenhouseGeisser <- TRUE
   
   options$postHocTestsVariables <- "Animal"
   options$postHocTestPooledError <- FALSE

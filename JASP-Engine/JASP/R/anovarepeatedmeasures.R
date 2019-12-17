@@ -225,13 +225,12 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     }
   }
   
-  # there is still some encoding here, hardcoded, I will leave it for now, and wait if it breaks after rebasing
   main <- paste("(",paste(unlist(terms.base64), collapse=" + "),")", sep="")
   termsBS <- paste("(",paste(termsBS.base64, collapse=" + "),")", sep="")
-  errorRM <- paste("Error(",paste("Xc3ViamVjdA/(", termsRM.base64, ")",sep="", collapse=" + "),")",sep="")
+  errorRM <- paste("Error(",paste("subject/(", termsRM.base64, ")",sep="", collapse=" + "),")",sep="")
   
   if (is.null(termsBS.base64) && is.null(termsRM.base64)) {
-    model.def <- XZGVwZW5kZW50 ~ 1
+    model.def <- dependent ~ 1
   } else if (is.null(termsBS.base64)) {
     model.def <- paste(.v("dependent"), "~", paste(main, errorRM, sep=" + "))
   } else if (is.null(termsRM.base64)) {
@@ -266,7 +265,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
 
   for (variable in variables)
-    dataset[[.v(variable)]] <- .v(dataset[[.v(variable)]])
 
   options(contrasts=c("contr.sum","contr.poly"))
   
