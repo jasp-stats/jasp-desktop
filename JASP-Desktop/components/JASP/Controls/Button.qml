@@ -44,6 +44,7 @@ JASPControl
 
 	RectangularButton
 	{
-		id:	control       
+		id:		control
+		radius:	jaspTheme.borderRadius
     }
 }

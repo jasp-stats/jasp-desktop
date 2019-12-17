@@ -398,7 +398,7 @@ JASPListControl
 				focus:			true
 				border.width:	containsDragItem && variablesList.dropModeReplace ? 2 : (variablesList.showElementBorder ? 1 : 0)
 				border.color:	containsDragItem && variablesList.dropModeReplace ? jaspTheme.containsDragBorderColor : jaspTheme.grayLighter
-				
+				radius:			jaspTheme.borderRadius
 				
 				property bool clearOtherSelectedItemsWhenClicked: false
 				property bool selected:				model.selected

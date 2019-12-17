@@ -41,4 +41,5 @@ Theme
 	controlErrorTextColor:				black
 
 	textDisabled:						grayLighter
+	buttonColorDisabled:				gray
 }

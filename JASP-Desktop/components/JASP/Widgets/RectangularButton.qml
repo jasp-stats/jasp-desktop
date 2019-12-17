@@ -55,7 +55,6 @@ Item
 	ToolTip.delay:				jaspTheme.toolTipDelay
 	ToolTip.toolTip.font:		jaspTheme.font
 	ToolTip.visible:			toolTip !== "" && buttonMouseArea.containsMouse
-	ToolTip.toolTip.background: Rectangle { color:	jaspTheme.tooltipBackgroundColor } //This does set it for ALL tooltips ever after
 
 	Keys.onSpacePressed:	clicked();
 	Keys.onEnterPressed:	clicked();
@@ -67,8 +66,8 @@ Item
 	{
 		id: rect
 
-		color:			(_pressed || selected) ? jaspTheme.buttonColorPressed :	filterButtonRoot.hovered ?					jaspTheme.buttonColorHovered		: jaspTheme.buttonColor
-		border.color:														(filterButtonRoot.hovered || selected) ?	jaspTheme.buttonBorderColorHovered	: jaspTheme.buttonBorderColor
+		color:			!enabled ? jaspTheme.buttonColorDisabled : (_pressed || selected) ? jaspTheme.buttonColorPressed :	filterButtonRoot.hovered ?					jaspTheme.buttonColorHovered		: jaspTheme.buttonColor
+		border.color:	(filterButtonRoot.hovered || selected) ?	jaspTheme.buttonBorderColorHovered	: jaspTheme.buttonBorderColor
 		border.width:	1
 		width:			parent.width
 		height:			parent.height

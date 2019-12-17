@@ -335,14 +335,15 @@ Form
 
 			Button
 			{
-				id: 			downloadReportPlanning;
-				anchors.right: 	samplingChecked.left;
-				text: 			qsTr("<b>Download Report</b>")
-				enabled: 		materialityRelative.checked ?
-									materialityPercentage.value != "0" 	:
-									materialityValue.value 		!= "0" && recordNumberVariable.count > 0 && monetaryVariable.count > 0
+				id:						downloadReportPlanning;
+				anchors.right:			toSampling.left
+				anchors.rightMargin:	jaspTheme.generalAnchorMargin
+				text:					qsTr("<b>Download Report</b>")
+				enabled:				materialityRelative.checked ?
+										materialityPercentage.value != "0" 	:
+										materialityValue.value 		!= "0" && recordNumberVariable.count > 0 && monetaryVariable.count > 0
 
-				onClicked: 	form.exportResults()
+				onClicked:				form.exportResults()
 			}
 
 			CheckBox
@@ -592,11 +593,12 @@ Form
 
 			Button
 			{
-				id: 			downloadReportSelection
-				enabled: 		materialityRelative.checked ? (materialityPercentage.value == "0" ? false : true) : (materialityValue.value == "0" ? false : true)
-				anchors.right: 	executionChecked.left
-				text: 			qsTr("<b>Download Report</b>")
-				onClicked: 		form.exportResults()
+				id:						downloadReportSelection
+				enabled:				materialityRelative.checked ? (materialityPercentage.value == "0" ? false : true) : (materialityValue.value == "0" ? false : true)
+				anchors.right:			toExecution.left
+				anchors.rightMargin:	jaspTheme.generalAnchorMargin
+				text:					qsTr("<b>Download Report</b>")
+				onClicked:				form.exportResults()
 			}
 
 			CheckBox

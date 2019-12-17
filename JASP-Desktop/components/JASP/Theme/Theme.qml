@@ -99,6 +99,7 @@ JaspTheme
 	buttonColor:						uiBackground
 	buttonColorHovered:					grayLighter
 	buttonColorPressed:					gray
+	buttonColorDisabled:				grayMuchLighter
 	buttonBorderColor:					gray
 	buttonBorderColorHovered:			black
 

@@ -28,7 +28,7 @@ MenuButton
 
 	//width: 				20 * preferencesModel.uiScale
 	iconSource: 		jaspTheme.iconPath + "info-button.png"
-	radius: 			10 * preferencesModel.uiScale
+	radius: 			100 * preferencesModel.uiScale
 	Layout.alignment: 	Qt.AlignRight
 	onClicked: 			helpModel.showOrTogglePage(myAnalysis.fullHelpPath(helpPage))
 }

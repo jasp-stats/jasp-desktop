@@ -87,6 +87,7 @@ JASPControl
 		color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
 		border.width	: 1
 		border.color	: jaspTheme.borderColor
+		radius			: jaspTheme.borderRadius
 
 		JASPScrollBar
 		{
