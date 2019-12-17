@@ -16,9 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.8
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import QtQuick			2.12
+import JASP.Controls	1.0
+import JASP.Widgets		1.0
 
 Form
 {
@@ -32,7 +32,7 @@ Form
 	
 	VariablesForm
 	{
-		height: 520
+		preferredHeight: 520
 		AvailableVariablesList		{ name: "allVariablesList" }
 		RepeatedMeasuresFactorsList { name: "repeatedMeasuresFactors"; title: qsTr("Repeated Measures Factors"); height: 180 }
 		AssignedRepeatedMeasuresCells
@@ -63,14 +63,14 @@ Form
 		
 		VariablesForm
 		{
-			height: 150
+			preferredHeight: 150
 			AvailableVariablesList	{ name: "withinComponents"; title: qsTr("Repeated Measures Components"); source: ["repeatedMeasuresFactors"] }
 			AssignedVariablesList	{ name: "withinModelTerms"; title: qsTr("Model Terms");	listViewType: "Interaction"	}
 		}
 		
 		VariablesForm
 		{
-			height: 150
+			preferredHeight: 150
 			AvailableVariablesList	{ name: "betweenComponents"; title: qsTr("Between Subjects Components"); source: ["betweenSubjectFactors", "covariates"] }
 			AssignedVariablesList	{ name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
 		}
@@ -121,7 +121,7 @@ Form
 
 		VariablesForm
 		{
-			height: 150
+			preferredHeight: 150
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }]; mixedModelTerms: true }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
@@ -157,7 +157,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 150
+			preferredHeight: 150
 			AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors");			source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal Axis"); singleVariable: true }
 			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate Lines");	singleVariable: true }
@@ -200,7 +200,7 @@ Form
 			
 			VariablesForm
 			{
-				height: 150
+				preferredHeight: 150
 				AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }] }
 				AssignedVariablesList {  name: "marginalMeansTerms" }
 			}
@@ -258,7 +258,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 150
+			preferredHeight: 150
 			AvailableVariablesList { name: "effectsVariables";	title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "simpleFactor";		title: qsTr("Simple Effect Factor");	singleVariable: true }
 			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator Factor 1");		singleVariable: true }
@@ -274,7 +274,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 150
+			preferredHeight: 150
 			AvailableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "friedmanWithinFactor";		title: qsTr("RM Factor") }
 			AssignedVariablesList {  name: "friedmanBetweenFactor";		title: qsTr("Optional Grouping Factor"); singleVariable: true }

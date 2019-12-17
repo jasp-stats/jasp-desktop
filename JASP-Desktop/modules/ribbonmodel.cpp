@@ -31,7 +31,7 @@ RibbonModel::RibbonModel(std::vector<std::string> commonModulesToLoad, std::vect
 	for(const std::string & moduleName : extraModulesToLoad)
 		addRibbonButtonModelFromModulePath(QFileInfo(QString::fromStdString(Dirs::resourcesDir() + moduleName + "/")), false);
 
-	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleAdded,		this, &RibbonModel::addDynamicRibbonButtonModel);
+	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleAdded,			this, &RibbonModel::addDynamicRibbonButtonModel);
 	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel);
 
 	for(const std::string & modName : DynamicModules::dynMods()->moduleNames())

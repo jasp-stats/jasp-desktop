@@ -22,9 +22,9 @@ import QtQuick.Layouts	1.3 as L
 import JASP				1.0
 
 
-Rectangle {
+Rectangle
+{
 	id:					control
-	
 	implicitWidth:		Math.max(label.realWidth, jaspTheme.groupContentPadding + contentArea.implicitWidth)
 	implicitHeight:		label.realHeight + jaspTheme.titleBottomMargin + contentArea.implicitHeight	
 	color:				jaspTheme.analysisBackgroundColor // transparent generates sometimes temporary black blocks

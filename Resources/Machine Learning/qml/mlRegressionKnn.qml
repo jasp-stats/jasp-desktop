@@ -170,7 +170,7 @@ Form {
     }
 
     Item {
-        height: 			addValues.height*2
+        preferredHeight: 			addValues.height*2
         Layout.fillWidth: 	true
         Layout.columnSpan: 2
 

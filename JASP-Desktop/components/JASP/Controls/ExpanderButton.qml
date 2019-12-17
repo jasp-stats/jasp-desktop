@@ -140,7 +140,6 @@ FocusScope
 		anchors.leftMargin:		5  * preferencesModel.uiScale
 		anchors.top:			expanderButton.bottom
 		anchors.topMargin:		15 * preferencesModel.uiScale
-		anchors.bottomMargin:	20 * preferencesModel.uiScale
 		width:					parent.width
 		columns:				2
     }

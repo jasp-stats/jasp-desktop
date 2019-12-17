@@ -28,7 +28,7 @@ Form
 
 	VariablesForm
 	{
-		height						: 260 * preferencesModel.uiScale
+		preferredHeight: 260 * preferencesModel.uiScale
 		marginBetweenVariablesLists	: 15
 
 		AvailableVariablesList	{ name: "allVariablesList" }

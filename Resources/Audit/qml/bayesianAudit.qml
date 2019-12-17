@@ -113,7 +113,7 @@ Form
 
 		Item 
 		{
-			height: 				variableSelectionTitle.height
+			preferredHeight: 				variableSelectionTitle.height
 			Layout.fillWidth: 		true
 
 			Label
@@ -383,7 +383,7 @@ Form
 
 		Item
 		{
-			height: 			toSampling.height
+			preferredHeight: 			toSampling.height
 			Layout.fillWidth: 	true
 			enabled:			!pasteVariables.checked
 
@@ -467,7 +467,7 @@ Form
 			{
 				name: 			"additionalVariables"
 				title: 			qsTr("Additional Variables <i>(optional)</i>")
-				height: 		140
+				preferredHeight: 		140
 				allowedColumns: ["scale", "ordinal", "nominal"]
 			}
 		}
@@ -634,7 +634,7 @@ Form
 
 		Item
 		{
-			height: 			toExecution.height
+			preferredHeight: 			toExecution.height
 			Layout.fillWidth: 	true
 			enabled:			!pasteVariables.checked
 
@@ -696,7 +696,7 @@ Form
 
 		Item 
 		{
-			height: 				selectHowToAnalyseObservations.height
+			preferredHeight: 				selectHowToAnalyseObservations.height
 			Layout.fillWidth: 		true
 			
 			Label
@@ -709,7 +709,7 @@ Form
 
 		Item 
 		{
-			height: 				variableType.height
+			preferredHeight: 				variableType.height
 			Layout.fillWidth: 		true
 
 			RadioButtonGroup 
@@ -783,7 +783,7 @@ Form
 
 			Item 
 			{
-				height: 				groupBoxVariableNames.height
+				preferredHeight: 				groupBoxVariableNames.height
 				Layout.fillWidth: 		true
 
 				CheckBox 
@@ -814,7 +814,7 @@ Form
 		}
 
 		Item {
-			height: 			performAuditText.height
+			preferredHeight: 			performAuditText.height
 			Layout.fillWidth: 	true
 
 			Label 
@@ -847,7 +847,7 @@ Form
 
 		Item
 		{
-			height: 			toEvaluation.height
+			preferredHeight: 			toEvaluation.height
 			Layout.fillWidth: 	true
 			enabled:			!evaluationChecked.checked
 
@@ -1073,7 +1073,7 @@ Form
 
 		Item 
 		{
-			height: 				toInterpretation.height
+			preferredHeight: 				toInterpretation.height
 			Layout.fillWidth: 		true
 
 			Button

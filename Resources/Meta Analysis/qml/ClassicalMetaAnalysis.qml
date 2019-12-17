@@ -26,7 +26,7 @@ Form
 
 	VariablesForm
 	{
-		height: 400
+		preferredHeight: 400
 		AvailableVariablesList { name: "allVariables" }
 		AssignedVariablesList { name: "dependent";	title: qsTr("Effect Size"); singleVariable: true; suggestedColumns: ["scale"] }
 		AssignedVariablesList { name: "wlsWeights";	title: qsTr("Effect Size Standard Error"); singleVariable: true; suggestedColumns: ["scale"] }
@@ -41,7 +41,7 @@ Form
 		title: qsTr("Model")
 		VariablesForm
 		{
-			height: 150
+			preferredHeight: 150
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["covariates","factors"]}
 			AssignedVariablesList  { name: "modelTerms"; title: qsTr("Model Terms"); listViewType: "Interaction"}
 		}

@@ -41,6 +41,7 @@ Item
 	property alias	border:				rect.border
 	property alias	radius:				rect.radius
 	property alias	font:				buttonText.font
+	property alias	icon:				buttonIcon
 
 	implicitWidth:	showIconAndText ?
 						buttonText.implicitWidth + buttonPadding + _scaledDim + buttonPadding :

@@ -27,7 +27,7 @@ import QtQuick.Layouts	1.3
 JASPListControl
 {
 	id						: variablesList
-	height					: maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
+	implicitHeight			: maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
 	itemComponent			: itemVariableComponent
 	optionKey				: listViewType === "Interaction" ? "components" : "variable"
 

@@ -26,8 +26,10 @@ import JASP				1.0
 AnalysisForm
 {
 	id:					form
-	width:				jaspTheme.formWidth - ( 2 * jaspTheme.formMargin )
-	height:				formContent.height + (jaspTheme.formMargin * 2)
+	implicitWidth:		jaspTheme.formWidth - ( 2 * jaspTheme.formMargin )
+	implicitHeight:		formContent.height + (jaspTheme.formMargin * 2)
+	width:				implicitWidth
+	height:				implicitHeight
 	errorMessagesItem:	errorMessagesBox
 	
 	default property alias	content:	contentArea.children

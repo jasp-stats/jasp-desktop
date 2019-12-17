@@ -96,10 +96,10 @@ JaspTheme
 	fileMenuColorBackground:			grayVeryMuchLighter
 	fileMenuLightBorder:				grayLighter
 
-	buttonColor:						uiBackground
+	buttonColor:						grayVeryMuchLighter
 	buttonColorHovered:					grayLighter
 	buttonColorPressed:					gray
-	buttonColorDisabled:				grayMuchLighter
+	buttonColorDisabled:				grayLighter
 	buttonBorderColor:					gray
 	buttonBorderColorHovered:			black
 
@@ -179,7 +179,7 @@ JaspTheme
 	defaultTextAreaHeight:					250
 	jaspControlHighlightWidth:				3
 	defaultVariablesFormHeight:				350
-	defaultSingleItemListHeight:			49
+	defaultSingleItemListHeight:			44
 	defaultRectangularButtonHeight:			32
 	smallDefaultVariablesFormHeight:		200
 	messageBoxButtonHeight:					40

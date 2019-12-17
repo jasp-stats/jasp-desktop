@@ -23,8 +23,8 @@ import JASP				1.0
 JASPControl
 {
 	controlType:				JASPControlBase.Switch
-	implicitWidth:				control.width
-	implicitHeight:				control.height
+	implicitWidth:				control.indicator.height + (4 * preferencesModel.uiScale)
+	implicitHeight:				control.indicator.width + controlLabel.implicitWidth + control.spacing + (6 * preferencesModel.uiScale)
 	
 	property alias control:		control
 	property alias label:		control.text
@@ -35,9 +35,8 @@ JASPControl
     
 	Switch
 	{
-		id:			control
-		height:		control.indicator.height + (4 * preferencesModel.uiScale)
-		width:		control.indicator.width + controlLabel.implicitWidth + control.spacing + (6 * preferencesModel.uiScale)
+		id:				control
+		anchors.fill:	parent
 
 		indicator:	Rectangle
 		{

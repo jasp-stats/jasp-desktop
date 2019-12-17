@@ -52,7 +52,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 200
+			preferredHeight: 200
 			
 			AvailableVariablesList { name: "availableTerms"; title: qsTr("Components"); width: parent.width / 4; source: ['factors'] }
 			AssignedVariablesList {  name: "modelTerms";	 title: qsTr("Model Terms"); width: parent.width * 5 / 9; listViewType: "Interaction" }

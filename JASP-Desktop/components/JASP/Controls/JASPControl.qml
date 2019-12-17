@@ -15,10 +15,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick				2.11
+import QtQuick				2.12
 import JASP					1.0
-import QtQuick.Controls		2.4
-import QtQuick.Layouts		1.3 as L
+import QtQuick.Controls		2.12
+import QtQuick.Layouts		1.12 as L
 
 
 JASPControlBase
@@ -39,6 +39,14 @@ JASPControlBase
 	property bool	shouldStealHover:		toolTip !== ""
 	property string	toolTip:				""
 
+	width:						implicitWidth
+	height:						implicitHeight
+
+	property int preferredHeight:	implicitHeight
+	property int preferredWidth:	implicitWidth
+
+	L.Layout.preferredWidth:	preferredWidth
+	L.Layout.preferredHeight:	preferredHeight
 	L.Layout.leftMargin: indent ? aspTheme.indentationLength : 0
 
 	function showControlError(message)

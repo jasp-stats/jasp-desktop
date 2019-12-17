@@ -15,7 +15,7 @@ JC.VariablesList
 		isBound: false
         anchors.top: parent.top
         anchors.left: parent.left
-        height: text.height
+        preferredHeight: text.height
         fieldWidth: parent.width
     }
 

@@ -26,10 +26,10 @@ JASPControl
 	id						: jaspListControl
 	controlType				: JASPControlBase.VariablesListView
 	background				: listRectangle
-	width					: parent.width
-	implicitWidth			: width
-	height					: jaspTheme.defaultVariablesFormHeight
-	implicitHeight			: height
+	width					: implicitWidth
+	height					: implicitHeight
+	implicitWidth			: parent.width
+	implicitHeight			: jaspTheme.defaultVariablesFormHeight
 	useControlMouseArea		: false
 	shouldStealHover		: false
 

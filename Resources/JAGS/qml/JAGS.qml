@@ -37,7 +37,7 @@ Form
     VariablesForm
     {
         visible: !monitorAllParameters.checked
-        height: 200
+        preferredHeight: 200
         AvailableVariablesList  
         { 
             name: "parametersList";            
@@ -49,7 +49,7 @@ Form
     
     VariablesForm
     {
-        height: 200
+        preferredHeight: 200
         AvailableVariablesList  
         { 
             id:     monitoredParametersList2

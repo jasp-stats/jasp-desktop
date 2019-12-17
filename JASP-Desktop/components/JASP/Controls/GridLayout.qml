@@ -20,7 +20,8 @@ import QtQuick 2.11
 import QtQuick.Layouts 1.3
 
 
-GridLayout {
+GridLayout
+{
 	id:						gridLayout
 	rowSpacing:				jaspTheme.rowGridSpacing
 	columnSpacing:			jaspTheme.columnGridSpacing

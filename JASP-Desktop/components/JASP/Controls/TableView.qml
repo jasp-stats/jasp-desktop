@@ -32,8 +32,6 @@ JASPControl
 
 	controlType:		JASPControlBase.TableView
 	focusOnTab:			false
-	width:				implicitWidth
-	height:				implicitHeight
 	implicitWidth:		400
 	implicitHeight:		400
 	shouldStealHover:	false

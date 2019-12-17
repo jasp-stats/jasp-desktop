@@ -43,11 +43,11 @@ Button
 	control.buttonPadding:	2
 	control.implicitWidth:	40 * preferencesModel.uiScale
 	control.implicitHeight: 20 * preferencesModel.uiScale
-    
+
 	onClicked:		source.moveSelectedItems(target)
 
-	function setIconToRight()	{ if (leftSource.activeFocus)	 leftToRight = true;	}
-	function setIconToLeft()	{ if (rightSource.activeFocus) leftToRight = false;		}
+	function setIconToRight()	{ if (leftSource.activeFocus)	leftToRight = true;		}
+	function setIconToLeft()	{ if (rightSource.activeFocus)	leftToRight = false;	}
 	function setState()
 	{
 		var result = true;

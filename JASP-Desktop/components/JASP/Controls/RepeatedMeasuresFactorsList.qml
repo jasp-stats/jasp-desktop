@@ -25,10 +25,8 @@ JASPControl
 {
 	id:							repeatedMeasuresFactorsList
 	controlType:				JASPControlBase.RepeatedMeasuresFactorsList
-	width:						parent.width
-	implicitWidth:				width
-	height:						jaspTheme.defaultVariablesFormHeight
-	implicitHeight:				height
+	implicitWidth:				parent.width
+	implicitHeight:				jaspTheme.defaultVariablesFormHeight
 	background:					rectangle
 
 				property var	model

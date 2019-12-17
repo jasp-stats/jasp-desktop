@@ -52,7 +52,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 200
+			preferredHeight: 200
 			AvailableVariablesList
 			{
 				name: "availableTerms"
