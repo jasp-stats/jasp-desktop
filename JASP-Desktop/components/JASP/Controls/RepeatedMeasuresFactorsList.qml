@@ -111,8 +111,10 @@ JASPControl
 				id:				itemRectangle
 				anchors.fill:	parent
 				focus:			true
-				border.width:	0
+				color:			jaspTheme.controlBackgroundColor
 				border.color:	jaspTheme.grayLighter
+				border.width:	1
+				radius:			jaspTheme.borderRadius
 
 				property bool isDeletable:	model.type.includes("deletable")
 				property bool isVirtual:	model.type.includes("virtual")
@@ -123,8 +125,9 @@ JASPControl
 					id:								colName
 					value:							itemRectangle.isVirtual ? "" : model.name
 					placeholderText:				itemRectangle.isVirtual ? model.name : ""
-					anchors.verticalCenter:			parent.verticalCenter
-					fieldWidth:						parent.width
+					anchors.centerIn:				parent
+					fieldWidth:						parent.width  - (2 * itemRectangle.border.width)
+					fieldHeight:					parent.height - (2 * itemRectangle.border.width)
 					useExternalBorder:				false
 					selectValueOnFocus:				true
 					control.horizontalAlignment:	itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter

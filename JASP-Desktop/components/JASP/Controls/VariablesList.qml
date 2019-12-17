@@ -425,11 +425,12 @@ JASPListControl
 				color:
 				{
 					if (itemRectangle.isDependency)											return itemRectangle.selected ? jaspTheme.dependencySelectedColor : jaspTheme.dependencyBorderColor;
-					if (!itemRectangle.draggable)											return jaspTheme.controlBackgroundColor;
-					if (itemRectangle.selected)												return variablesList.activeFocus ? jaspTheme.itemSelectedColor: jaspTheme.itemSelectedNoFocusColor;
-					if (itemRectangle.containsDragItem && variablesList.dropModeReplace)	return jaspTheme.itemSelectedColor;
-					if (mouseArea.containsMouse)											return jaspTheme.itemHoverColor;
-
+					if (itemRectangle.draggable)
+					{
+						if (itemRectangle.selected)												return variablesList.activeFocus ? jaspTheme.itemSelectedColor: jaspTheme.itemSelectedNoFocusColor;
+						if (itemRectangle.containsDragItem && variablesList.dropModeReplace)	return jaspTheme.itemSelectedColor;
+						if (mouseArea.containsMouse)											return jaspTheme.itemHoverColor;
+					}
 					return jaspTheme.controlBackgroundColor;
 				}
 
@@ -447,16 +448,18 @@ JASPListControl
 				{
 					id:						icon
 					height:					15 * preferencesModel.uiScale
-					width:					15 * preferencesModel.uiScale
+					width:					source === "" ? 0 : 15 * preferencesModel.uiScale
+					x:						jaspTheme.borderRadius
 					anchors.verticalCenter:	parent.verticalCenter
 					source:					(!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) || !model.columnType) ? "" : jaspTheme.iconPath + (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType])
-					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable
+					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable && source !== ""
 				}
 
 				Text
 				{
 					id:						colName
-					x:						(variablesList.showVariableTypeIcon ? 20 : 4) * preferencesModel.uiScale
+					anchors.left:			icon.right
+					anchors.leftMargin:		jaspTheme.generalAnchorMargin
 					text:					model.name
 					width:					itemRectangle.width - x - rowComponents.width
 					elide:					Text.ElideRight
