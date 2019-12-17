@@ -166,7 +166,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   if (orNotEqualTo1Prob > 0) {
     rowCount = rowCount + 1
     output.rows[[rowCount]] <- list(
-      "Models"    = "Log odds ratio ≠ 0",
+      "Models"    = "Log odds ratio \u2260 0",
       "BF"        = ab_obj$bf[["bf10"]],
       "P(M|data)" = ab_obj$post_prob[["H1"]],
       "P(M)"      = orNotEqualTo1Prob
