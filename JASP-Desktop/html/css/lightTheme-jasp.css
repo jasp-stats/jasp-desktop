@@ -560,10 +560,10 @@ td.squash-left
 
 
 .jasp-notes {
-	border-top: 1px solid rgb(205, 205, 205);
-	border-bottom: 1px solid rgb(205, 205, 205) ;
+	/* border-top: 1px solid rgb(205, 205, 205);
+	border-bottom: 1px solid rgb(205, 205, 205) ; */
 	border-radius : 0 ;
-	color: rgb(0, 122, 204) ;
+	/* color: rgb(0, 122, 204) ; */
 	max-width: 70em;
 	min-width: 40em;
 	position: relative ;
@@ -575,9 +575,9 @@ td.squash-left
 	margin-bottom: 0.5em;
 }
 
-[contenteditable]:focus 
-{ 
-	outline: 0px solid transparent; 
+[contenteditable]:focus
+{
+	outline: 0px solid transparent;
 
 }
 

@@ -575,8 +575,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		}
 	},
 
-	knownTags: ['p', 'br', 'ol', 'ul', 'li', 'b', 'i', 's', 'u', 'sup', 'sub', 'code', 'strong', 'em', 'blockquote', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-
 	_keydown: function (e) {
 		var self = e.data;
 		if (e.which == 9) {
