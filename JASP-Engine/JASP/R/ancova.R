@@ -837,7 +837,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                                                   options[['postHocTestsBootstrappingReplicates']], " successful replicates."))
       postHocStandardContainer[[thisVarName]]$addFootnote(message = "Mean Difference estimate is based on the median of 
                                                           the bootstrap distribution.")
-      postHocStandardContainer[[thisVarName]]$addFootnote(symbol = "\u002A", message = "Bias corrected accelerated.") 
+      postHocStandardContainer[[thisVarName]]$addFootnote(symbol = "\u2020", message = "Bias corrected accelerated.") 
       
       startProgressbar(options[["postHocTestsBootstrappingReplicates"]] * length(postHocVariables), 
                        label = "Bootstrapping Post Hoc Test")
@@ -853,7 +853,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       
       if (class(bootstrapPostHoc) == "try-error") {
         postHocStandardContainer[[thisVarName]]$setError(bootstrapPostHoc)
-        return()
+        next()
       }
       
       bootstrapSummary <- summary(bootstrapPostHoc)
@@ -1440,7 +1440,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       
       if (class(bootstrapMarginalMeans) == "try-error") {
         marginalMeansContainer[[thisVarName]]$setError(bootstrapMarginalMeans)
-        return()
+        next()
       }
       
       bootstrapSummary <- summary(bootstrapMarginalMeans)
@@ -1449,13 +1449,11 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       bootstrapMarginalMeansCI <- t(sapply(1:nrow(bootstrapSummary), function(index){
         res <- try(boot::boot.ci(boot.out = bootstrapMarginalMeans, conf = 0.95, type = "bca",
                                  index = index)[['bca']][1,4:5])
-        if(!inherits(res, "try-error")){
+        if (!inherits(res, "try-error")){
           return(res)
-        } else if(identical(attr(res, "condition")$message, "estimated adjustment 'a' is NA")){
+        } else {
           ci.fails <<- TRUE
           return(c(NA, NA))
-        } else{
-          return(res)
         }
       }))
       

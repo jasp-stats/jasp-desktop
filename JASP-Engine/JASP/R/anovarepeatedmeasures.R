@@ -1337,7 +1337,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 
       if (class(bootstrapMarginalMeans) == "try-error") {
         marginalMeansContainer[[termBase64]]$setError(bootstrapMarginalMeans)
-        return()
+        next
       }
       
       bootstrapSummary <- summary(bootstrapMarginalMeans)
@@ -1347,14 +1347,12 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       bootstrapMarginalMeansCI <- t(sapply(1:nrow(bootstrapSummary), function(index){
         res <- try(boot::boot.ci(boot.out = bootstrapMarginalMeans, conf = 0.95, type = "bca",
                                  index = index)[['bca']][1,4:5])
-        
-        if(!inherits(res, "try-error")){
+        if (!inherits(res, "try-error")){
           return(res)
         } else {
           ci.fails <<- TRUE
           return(c(NA, NA))
         } 
-        
       }))
       
       if (ci.fails) {
