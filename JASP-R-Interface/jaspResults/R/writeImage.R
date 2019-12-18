@@ -257,30 +257,36 @@ decodeColNames <- function(x, strict = FALSE, fun = NULL, ...) {
 # internal function that applies a decoding or encoding function (or actually any function) to R objects
 # as long as they are character
 .applyEnDeCoder <- function(x, fun, ...) {
-  # get0 returns NULL if not found
+  # .findFunc returns NULL if not found
   if (is.null(fun) || !is.function(fun))
     return(x)
+  
   UseMethod(".applyEnDeCoder", x)
 }
 
-# default does nothing
-.applyEnDeCoder.default <- function(x, fun) return(x)
+# default acts as a fallback for model objects which have overwritten the list class
+.applyEnDeCoder.default <- function(x, fun, ...) {
+  if (!"list" %in% class(x) && is.list(x))
+    x <- .applyEnDeCoder.list(x, fun, ...)
 
-.applyEnDeCoder.character <- function(x, fun) {
+  return(x)
+}
+
+.applyEnDeCoder.character <- function(x, fun, ...) {
   for (i in seq_along(x))
     x[i] <- fun(x[i])
   return(x)
 }
 
-.applyEnDeCoder.factor <- function(x, fun) {
+.applyEnDeCoder.factor <- function(x, fun, ...) {
   levels(x) <- .applyEnDeCoder.character(levels(x), fun)
   return(x)
 }
 
-.applyEnDeCoder.list <- function(x, fun, recursive = FALSE) {
+.applyEnDeCoder.list <- function(x, fun, recursive = TRUE, ...) {
   # this function calls the .character method directly to avoid dispatching to .list and starting recursion.
   if (recursive) {
-    return(rapply(x, f = .applyEnDeCoder.character, classes = "character", how = "replace"))
+    return(rapply(x, f = .applyEnDeCoder, how = "replace", fun = fun))
   } else {
     for (i in seq_along(x))
       if (is.character(x[[i]]))
@@ -290,11 +296,11 @@ decodeColNames <- function(x, strict = FALSE, fun = NULL, ...) {
   }
 }
 
-.applyEnDeCoder.matrix <- function(x, fun) {
+.applyEnDeCoder.matrix <- function(x, fun, ...) {
   return(.applyEnDeCoder.data.frame(x, fun))
 }
 
-.applyEnDeCoder.data.frame <- function(x, fun) {
+.applyEnDeCoder.data.frame <- function(x, fun, ...) {
   for (i in seq_along(dimnames(x)))
     dimnames(x)[[i]] <- .applyEnDeCoder.character(dimnames(x)[[i]], fun)
   return(x)
