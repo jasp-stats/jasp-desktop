@@ -24,6 +24,8 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
   readList <- .readDataBainPairedSamples(options, dataset)
   dataset <- readList[["dataset"]]
   missingValuesIndicator <- readList[["missingValuesIndicator"]]
+
+  .bainPairedSamplesErrorCheck(dataset, options)
   
   bainContainer <- .bainGetContainer(jaspResults, deps=c("seed"))
 
@@ -52,14 +54,18 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
             dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, exclude.na.listwise=all.variables)
     }
 
-    .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
-                all.target=all.variables, observations.amount="< 3",
-                exitAnalysisIfErrors = TRUE)
-
     readList <- list()
     readList[["dataset"]] <- dataset
     readList[["missingValuesIndicator"]] <- missingValuesIndicator
     return(readList)
+}
+
+.bainPairedSamplesErrorCheck <- function(dataset, options){
+  all.variables <- unique(unlist(options[["pairs"]]))
+  all.variables <- all.variables[all.variables != ""]
+  .hasErrors(dataset, type=c("infinity", "variance", "observations"),
+            all.target=all.variables, observations.amount="< 3",
+            exitAnalysisIfErrors = TRUE)
 }
 
 .bainPairedSampleState <- function(pair, options, dataset, bainContainer){
@@ -321,7 +327,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     
     bainContainer[["descriptivesTable"]] <- descriptivesTable
     
-    if (!ready || bainContainer$getError())
+    if (!ready)
       return()
 
     descriptivesTable$setExpectedSize(length(options[["pairs"]]))
@@ -339,18 +345,27 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
       currentPair <- paste(pair, collapse=" - ")
 
       bainAnalysis <- .bainPairedSampleState(pair, options, dataset, bainContainer)
-      bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 
-      # Descriptive statistics from bain, sd calculated manually
-      N <- bainSummary[["n"]]
-      mu <- bainSummary[["Estimate"]]
-      CiLower <- bainSummary[["lb"]]
-      CiUpper <- bainSummary[["ub"]]
-      se <- sqrt(diag(bainAnalysis[["posterior"]]))
-      sd <- sd(difference)
+      if(isTryError(bainAnalysis)){
 
-      row <- list(v = currentPair, N = N, mean = mu, sd = sd, se = se, lowerCI = CiLower, upperCI = CiUpper)
-      descriptivesTable$addRows(row)
+      descriptivesTable$addRows(data.frame(v=currentPair), rowNames=currentPair)
+			descriptivesTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(bainAnalysis)), colNames="v", rowNames=currentPair)	
+    
+      } else {
+
+        bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
+
+        # Descriptive statistics from bain, sd calculated manually
+        N <- bainSummary[["n"]]
+        mu <- bainSummary[["Estimate"]]
+        CiLower <- bainSummary[["lb"]]
+        CiUpper <- bainSummary[["ub"]]
+        se <- sqrt(diag(bainAnalysis[["posterior"]]))
+        sd <- sd(difference)
+
+        row <- list(v = currentPair, N = N, mean = mu, sd = sd, se = se, lowerCI = CiLower, upperCI = CiUpper)
+        descriptivesTable$addRows(row)
+      }
     }
   }
 }
@@ -365,7 +380,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
 
   bainContainer[["descriptivesPlots"]] <- descriptivesPlots
 
-  if (!ready || bainContainer$getError())
+  if (!ready)
     return()
 
   for (pair in options[["pairs"]]) {
@@ -375,29 +390,39 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     if (is.null(bainContainer[["descriptivesPlots"]][[currentPair]]) && pair[[2]] != "" && pair[[1]] != pair[[2]]){
 
       bainAnalysis <- .bainPairedSampleState(pair, options, dataset, bainContainer)
-      bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 
-      # Descriptive statistics from bain
-      N <- bainSummary[["n"]]
-      mu <- bainSummary[["Estimate"]]
-      CiLower <- bainSummary[["lb"]]
-      CiUpper <- bainSummary[["ub"]]
+      if(isTryError(bainAnalysis)){
 
-      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, CiLower, CiUpper), min.n = 4)
-      d <- data.frame(v = "Difference", N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1)
+      descriptivesPlots[[currentPair]] <- createJaspPlot(plot=NULL, title = currentPair)
+      descriptivesPlots[[currentPair]]$dependOn(optionContainsValue=list("variables" = currentPair))
+			descriptivesPlots[[currentPair]]$setError(.extractErrorMessage(bainAnalysis))
 
-      p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
-            ggplot2::geom_segment(ggplot2::aes(x = -Inf, xend = Inf, y = 0, yend = 0), linetype = 2, color = "darkgray") +
-            ggplot2::geom_errorbar(ggplot2::aes(ymin=lowerCI, ymax=upperCI), colour="black", width=.1, position = ggplot2::position_dodge(.2)) +
-            ggplot2::geom_point(position=ggplot2::position_dodge(.2), size=4) +
-            ggplot2::ylab("") +
-            ggplot2::xlab("") +
-            ggplot2::scale_y_continuous(breaks = yBreaks, labels = yBreaks) +
-            ggplot2::scale_x_continuous(breaks = 0:2, labels = NULL)
-      p <- JASPgraphs::themeJasp(p, xAxis = FALSE) + ggplot2::theme(axis.ticks.x = ggplot2::element_blank())
-      
-      descriptivesPlots[[currentPair]] <- createJaspPlot(plot=p, title = currentPair)
-      descriptivesPlots[[currentPair]]$dependOn(optionContainsValue=list("pairs" = pair))
+		  } else {
+
+        bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
+
+        # Descriptive statistics from bain
+        N <- bainSummary[["n"]]
+        mu <- bainSummary[["Estimate"]]
+        CiLower <- bainSummary[["lb"]]
+        CiUpper <- bainSummary[["ub"]]
+
+        yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, CiLower, CiUpper), min.n = 4)
+        d <- data.frame(v = "Difference", N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1)
+
+        p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
+              ggplot2::geom_segment(ggplot2::aes(x = -Inf, xend = Inf, y = 0, yend = 0), linetype = 2, color = "darkgray") +
+              ggplot2::geom_errorbar(ggplot2::aes(ymin=lowerCI, ymax=upperCI), colour="black", width=.1, position = ggplot2::position_dodge(.2)) +
+              ggplot2::geom_point(position=ggplot2::position_dodge(.2), size=4) +
+              ggplot2::ylab("") +
+              ggplot2::xlab("") +
+              ggplot2::scale_y_continuous(breaks = yBreaks, labels = yBreaks, limits = range(yBreaks)) +
+              ggplot2::scale_x_continuous(breaks = 0:2, labels = NULL)
+        p <- JASPgraphs::themeJasp(p, xAxis = FALSE) + ggplot2::theme(axis.ticks.x = ggplot2::element_blank())
+        
+        descriptivesPlots[[currentPair]] <- createJaspPlot(plot=p, title = currentPair)
+        descriptivesPlots[[currentPair]]$dependOn(optionContainsValue=list("pairs" = pair))
+      }
     }
   }
 }

@@ -24,6 +24,8 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	readList <- .readDataBainLinearRegression(options, dataset)
 	dataset <- readList[["dataset"]]
 	missingValuesIndicator <- readList[["missingValuesIndicator"]]
+
+	.bainCommonErrorCheck(dataset, options)
 	
 	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "covariates", "model", "standardized", "seed"))
 
@@ -179,9 +181,6 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	} else {
 		dataset <- .vdf(dataset, columns.as.numeric=all.variables)
 	}
-	.hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
-				all.target=all.variables, observations.amount="< 3",
-				exitAnalysisIfErrors = TRUE)
 	readList <- list()
   readList[["dataset"]] <- dataset
   readList[["missingValuesIndicator"]] <- missingValuesIndicator

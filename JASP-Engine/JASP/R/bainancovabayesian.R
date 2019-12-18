@@ -24,6 +24,8 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	readList <- .readDataBainAncova(options, dataset)
 	dataset <- readList[["dataset"]]
 	missingValuesIndicator <- readList[["missingValuesIndicator"]]
+
+	.bainCommonErrorCheck(dataset, options)
 	
 	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "fixedFactors", "covariates", "model"))
 	
@@ -167,9 +169,6 @@ BainAncovaBayesian	 <- function(jaspResults, dataset, options, ...) {
 	} else {
 		dataset									<- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
 	}
-	.hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
-				all.target=all.variables, observations.amount="< 3",
-				exitAnalysisIfErrors = TRUE)
 	readList <- list()
   readList[["dataset"]] <- dataset
   readList[["missingValuesIndicator"]] <- missingValuesIndicator

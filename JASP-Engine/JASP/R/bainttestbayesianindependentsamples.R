@@ -25,10 +25,12 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	dataset	<- readList[["dataset"]]
 	missingValuesIndicator	<- readList[["missingValuesIndicator"]]
 
+	.bainTwoSampleErrorCheck(dataset, options)
+
 	bainContainer <- .bainGetContainer(jaspResults, deps=c("groupingVariable", "seed"))
     
 	### RESULTS ###
-    .bainIndependentSamplesResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
+  .bainIndependentSamplesResultsTable(dataset, options, bainContainer, missingValuesIndicator, ready, position = 1)
     
 	### DESCRIPTIVES ###
 	.bainIndependentSamplesDescriptivesTable(dataset, options, bainContainer, ready, position = 2)
@@ -48,24 +50,26 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	if (options[["groupingVariable"]] == "")
 		grouping <- NULL
 
-	if (is.null(dataset)) {
-						trydata                	<- .readDataSetToEnd(columns.as.numeric=all.variables)
-						missingValuesIndicator 	<- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
-            dataset 								<- .readDataSetToEnd(columns.as.numeric=all.variables, columns.as.factor=grouping, exclude.na.listwise=read.variables)
-    }
-	
-	.hasErrors(dataset, type="factorLevels",
-			   factorLevels.target=grouping, factorLevels.amount = "!= 2",
-			   exitAnalysisIfErrors = TRUE)
-	
-	.hasErrors(dataset, type=c("infinity", "variance", "observations"),
-				all.target=all.variables, observations.amount="< 3",
-				exitAnalysisIfErrors = TRUE)
+	if(is.null(dataset)) {
+		trydata <- .readDataSetToEnd(columns.as.numeric=all.variables)
+		missingValuesIndicator <- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
+		dataset <- .readDataSetToEnd(columns.as.numeric=all.variables, columns.as.factor=grouping, exclude.na.listwise=read.variables)
+  }
 	
 	readList <- list()
   	readList[["dataset"]] <- dataset
   	readList[["missingValuesIndicator"]] <- missingValuesIndicator
 	return(readList)
+}
+
+.bainTwoSampleErrorCheck <- function(dataset, options){
+	if(options[["groupingVariable"]] != ""){
+		.hasErrors(dataset, type="factorLevels",
+			factorLevels.target=options[["groupingVariable"]], factorLevels.amount = "!= 2",
+			exitAnalysisIfErrors = TRUE)
+	}
+	
+	.bainCommonErrorCheck(dataset, options)
 }
 
 .bainTwoSampleState <- function(variable, options, dataset, bainContainer){
@@ -168,7 +172,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 
 		if (isTryError(bainAnalysis)) {
 			bainTable$addRows(list(Variable=variable), rowNames=variable)
-			bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(p)), colNames="Variable", rowNames=variable)
+			bainTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(bainAnalysis)), colNames="Variable", rowNames=variable)
 			progressbarTick()
 			next
 		}
@@ -297,7 +301,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	
 	bainContainer[["descriptivesTable"]] <- descriptivesTable
 
-	if (!ready || bainContainer$getError())
+	if (!ready)
 		return()
 
 	descriptivesTable$setExpectedSize(length(options[["variables"]]) * 2)
@@ -314,21 +318,30 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 	for (variable in options[["variables"]]) {
 		
 		bainAnalysis <- .bainTwoSampleState(variable, options, dataset, bainContainer)
-		bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 
-		# Descriptives from bain, sd calculated manually
-		N <- bainSummary[["n"]]
-		mu <- bainSummary[["Estimate"]]
-		CiLower <- bainSummary[["lb"]]
-		CiUpper <- bainSummary[["ub"]]
-		sd <- aggregate(dataset[, .v(variable)], list(dataset[, .v(options[["groupingVariable"]])]), sd)[, 2]
-		se <- sqrt(diag(bainAnalysis[["posterior"]]))
+		if(isTryError(bainAnalysis)){
 
-		row <- data.frame(v = variable, group = g1, N = N[1], mean = mu[1], sd = sd[1], se = se[1], lowerCI = CiLower[1], upperCI = CiUpper[1])
-		descriptivesTable$addRows(row)
-		row <- data.frame(v = "", group = g2, N = N[2], mean = mu[2], sd = sd[2], se = se[2], lowerCI = CiLower[2], upperCI = CiUpper[2])
-		descriptivesTable$addRows(row)
+			descriptivesTable$addRows(data.frame(v=variable), rowNames=variable)
+			descriptivesTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(bainAnalysis)), colNames="v", rowNames=variable)	
 
+		} else {
+
+			bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
+
+			# Descriptives from bain, sd calculated manually
+			N <- bainSummary[["n"]]
+			mu <- bainSummary[["Estimate"]]
+			CiLower <- bainSummary[["lb"]]
+			CiUpper <- bainSummary[["ub"]]
+			sd <- aggregate(dataset[, .v(variable)], list(dataset[, .v(options[["groupingVariable"]])]), sd)[, 2]
+			se <- sqrt(diag(bainAnalysis[["posterior"]]))
+
+			row <- data.frame(v = variable, group = g1, N = N[1], mean = mu[1], sd = sd[1], se = se[1], lowerCI = CiLower[1], upperCI = CiUpper[1])
+			descriptivesTable$addRows(row)
+			row <- data.frame(v = "", group = g2, N = N[2], mean = mu[2], sd = sd[2], se = se[2], lowerCI = CiLower[2], upperCI = CiUpper[2])
+			descriptivesTable$addRows(row)
+
+		}
 	}
 }
 
@@ -342,39 +355,49 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 
 	bainContainer[["descriptivesPlots"]] <- descriptivesPlots
 
-	if (!ready || bainContainer$getError())
+	if (!ready)
 		return()
 
 	for (variable in options[["variables"]]) {
 
-		bainAnalysis <- .bainTwoSampleState(variable, options, dataset, bainContainer)
-		
 		if (is.null(bainContainer[["descriptivesPlots"]][[variable]])){
 
-			bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
-			levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
-			
-			# Descriptive statistics from bain
-			N <- bainSummary[["n"]]
-			mu <- bainSummary[["Estimate"]]
-			CiLower <- bainSummary[["lb"]]
-			CiUpper <- bainSummary[["ub"]]
+			bainAnalysis <- .bainTwoSampleState(variable, options, dataset, bainContainer)
 
-			yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(CiLower, CiUpper), min.n = 4)
-			d <- data.frame(v = levels, N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1:length(levels))
+			if(isTryError(bainAnalysis)){
 
-			p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
-					ggplot2::geom_errorbar(ggplot2::aes(ymin=lowerCI, ymax=upperCI), colour="black", width=.2, position = ggplot2::position_dodge(.2)) +
-					ggplot2::geom_line(position=ggplot2::position_dodge(.2), size = .7) +
-					ggplot2::geom_point(position=ggplot2::position_dodge(.2), size=4) +
-					ggplot2::ylab(variable) +
-					ggplot2::xlab(options[["groupingVariable"]]) +
-					ggplot2::scale_x_continuous(breaks = 1:length(levels), labels = as.character(levels)) +
-					ggplot2::scale_y_continuous(breaks = yBreaks, labels = yBreaks)
-			p <- JASPgraphs::themeJasp(p)
-			
-			descriptivesPlots[[variable]] <- createJaspPlot(plot=p, title = variable)
-			descriptivesPlots[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
+				descriptivesPlots[[variable]] <- createJaspPlot(plot=NULL, title = variable)
+				descriptivesPlots[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
+				descriptivesPlots[[variable]]$setError(.extractErrorMessage(bainAnalysis))
+
+			} else {
+
+				bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
+				levels <- base::levels(dataset[[ .v(options[["groupingVariable"]]) ]])
+				
+				# Descriptive statistics from bain
+				N <- bainSummary[["n"]]
+				mu <- bainSummary[["Estimate"]]
+				CiLower <- bainSummary[["lb"]]
+				CiUpper <- bainSummary[["ub"]]
+
+				yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(CiLower, CiUpper), min.n = 4)
+				d <- data.frame(v = levels, N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1:length(levels))
+
+				p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
+						ggplot2::geom_errorbar(ggplot2::aes(ymin=lowerCI, ymax=upperCI), colour="black", width=.2, position = ggplot2::position_dodge(.2)) +
+						ggplot2::geom_line(position=ggplot2::position_dodge(.2), size = .7) +
+						ggplot2::geom_point(position=ggplot2::position_dodge(.2), size=4) +
+						ggplot2::ylab(variable) +
+						ggplot2::xlab(options[["groupingVariable"]]) +
+						ggplot2::scale_x_continuous(breaks = 1:length(levels), labels = as.character(levels)) +
+						ggplot2::scale_y_continuous(breaks = yBreaks, labels = yBreaks, limits = range(yBreaks))
+				p <- JASPgraphs::themeJasp(p)
+
+				descriptivesPlots[[variable]] <- createJaspPlot(plot=p, title = variable)
+				descriptivesPlots[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
+			}
+
 		}
 	}
 }

@@ -25,6 +25,8 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   dataset									<- readList[["dataset"]]
   missingValuesIndicator	<- readList[["missingValuesIndicator"]]
 
+  .bainCommonErrorCheck(dataset, options)
+
   bainContainer <- .bainGetContainer(jaspResults, deps=c("testValue", "seed"))
   
   ### RESULTS ###
@@ -46,13 +48,16 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
             missingValuesIndicator	<- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
             dataset									<- .readDataSetToEnd(columns.as.numeric = options[["variables"]], exclude.na.listwise = options[["variables"]])
     }
-    .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
-                all.target = options[["variables"]], observations.amount="< 3",
-                exitAnalysisIfErrors = TRUE)
     readList <- list()
     readList[["dataset"]] <- dataset
     readList[["missingValuesIndicator"]] <- missingValuesIndicator
     return(readList)
+}
+
+.bainCommonErrorCheck <- function(dataset, options){
+  .hasErrors(dataset, type=c("infinity", "variance", "observations"),
+            all.target = options[["variables"]], observations.amount="< 3",
+            exitAnalysisIfErrors = TRUE)
 }
 
 .bainOneSampleState <- function(variable, options, dataset, bainContainer){
@@ -263,7 +268,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   
   bainContainer[["descriptivesTable"]] <- descriptivesTable
 
-  if (!ready || bainContainer$getError())
+  if (!ready)
     return()
 
   descriptivesTable$setExpectedSize(length(options[["variables"]]))
@@ -271,18 +276,27 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
   for (variable in options[["variables"]]) {
 
     bainAnalysis <- .bainOneSampleState(variable, options, dataset, bainContainer)
-    bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
 
-    # Descriptives from bain, sd calculated manually
-    N <- bainSummary[["n"]]
-    mu <- bainSummary[["Estimate"]]
-    CiLower <- bainSummary[["lb"]]
-    CiUpper <- bainSummary[["ub"]]
-    sd <- sd(dataset[, .v(variable)])
-    se <- sqrt(diag(bainAnalysis[["posterior"]]))
+    if(isTryError(bainAnalysis)){
 
-    row <- list(v = variable, N = N, mean = mu, sd = sd, se = se, lowerCI = CiLower, upperCI = CiUpper)
-    descriptivesTable$addRows(row)
+      descriptivesTable$addRows(data.frame(v=variable), rowNames=variable)
+			descriptivesTable$addFootnote(message=paste0("Results not computed: ", .extractErrorMessage(bainAnalysis)), colNames="v", rowNames=variable)	
+    
+    } else {
+
+      bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
+
+      # Descriptives from bain, sd calculated manually
+      N <- bainSummary[["n"]]
+      mu <- bainSummary[["Estimate"]]
+      CiLower <- bainSummary[["lb"]]
+      CiUpper <- bainSummary[["ub"]]
+      sd <- sd(dataset[, .v(variable)])
+      se <- sqrt(diag(bainAnalysis[["posterior"]]))
+
+      row <- list(v = variable, N = N, mean = mu, sd = sd, se = se, lowerCI = CiLower, upperCI = CiUpper)
+      descriptivesTable$addRows(row)
+    }
   }
 }
 
@@ -296,38 +310,47 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
   bainContainer[["descriptivesPlots"]] <- descriptivesPlots
 
-	if (!ready || bainContainer$getError())
+	if (!ready)
 		return()
 
   for (variable in options[["variables"]]) {
 
-    bainAnalysis <- .bainOneSampleState(variable, options, dataset, bainContainer)
+    if(is.null(bainContainer[["descriptivesPlots"]][[variable]])){
 
-    if (is.null(bainContainer[["descriptivesPlots"]][[variable]])){
+      bainAnalysis <- .bainOneSampleState(variable, options, dataset, bainContainer)
 
-      bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
+      if(isTryError(bainAnalysis)){
 
-      # Descriptive statistics from bain
-      N <- bainSummary[["n"]]
-      mu <- bainSummary[["Estimate"]]
-      CiLower <- bainSummary[["lb"]]
-      CiUpper <- bainSummary[["ub"]]
+        descriptivesPlots[[variable]] <- createJaspPlot(plot=NULL, title = variable)
+        descriptivesPlots[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
+        descriptivesPlots[[variable]]$setError(.extractErrorMessage(bainAnalysis))
 
-      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(options[["testValue"]], CiLower, CiUpper), min.n = 4)
-      d <- data.frame(v = variable, N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1)
+      } else {
 
-      p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
-            ggplot2::geom_segment(ggplot2::aes(x = -Inf, xend = Inf, y = options[["testValue"]], yend = options[["testValue"]]), linetype = 2, color = "darkgray") +
-            ggplot2::geom_errorbar(ggplot2::aes(ymin=lowerCI, ymax=upperCI), colour="black", width=.1, position = ggplot2::position_dodge(.2)) +
-            ggplot2::geom_point(position=ggplot2::position_dodge(.2), size=4) +
-            ggplot2::ylab("") +
-            ggplot2::xlab("") +
-            ggplot2::scale_y_continuous(breaks = yBreaks, labels = yBreaks) +
-            ggplot2::scale_x_continuous(breaks = 0:2, labels = NULL)
-      p <- JASPgraphs::themeJasp(p, xAxis = FALSE) + ggplot2::theme(axis.ticks.x = ggplot2::element_blank())
-      
-      descriptivesPlots[[variable]] <- createJaspPlot(plot=p, title = variable)
-      descriptivesPlots[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
+        bainSummary <- summary(bainAnalysis, ci = options[["credibleInterval"]])
+
+        # Descriptive statistics from bain
+        N <- bainSummary[["n"]]
+        mu <- bainSummary[["Estimate"]]
+        CiLower <- bainSummary[["lb"]]
+        CiUpper <- bainSummary[["ub"]]
+
+        yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(options[["testValue"]], CiLower, CiUpper), min.n = 4)
+        d <- data.frame(v = variable, N = N, mean = mu, lowerCI = CiLower, upperCI = CiUpper, index = 1)
+
+        p <- ggplot2::ggplot(d, ggplot2::aes(x=index, y=mean)) +
+              ggplot2::geom_segment(ggplot2::aes(x = -Inf, xend = Inf, y = options[["testValue"]], yend = options[["testValue"]]), linetype = 2, color = "darkgray") +
+              ggplot2::geom_errorbar(ggplot2::aes(ymin=lowerCI, ymax=upperCI), colour="black", width=.1, position = ggplot2::position_dodge(.2)) +
+              ggplot2::geom_point(position=ggplot2::position_dodge(.2), size=4) +
+              ggplot2::ylab("") +
+              ggplot2::xlab("") +
+              ggplot2::scale_y_continuous(breaks = yBreaks, labels = yBreaks, limits = range(yBreaks)) +
+              ggplot2::scale_x_continuous(breaks = 0:2, labels = NULL)
+        p <- JASPgraphs::themeJasp(p, xAxis = FALSE) + ggplot2::theme(axis.ticks.x = ggplot2::element_blank())
+        
+        descriptivesPlots[[variable]] <- createJaspPlot(plot=p, title = variable)
+        descriptivesPlots[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
+      }
     }
   }
 }
@@ -342,7 +365,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
 
   bainContainer[["bayesFactorPlots"]] <- bayesFactorPlots
 
-  if (!ready || bainContainer$getError())
+  if (!ready)
 		return()
 
   analysisType <- base::switch(options[["hypothesis"]],
