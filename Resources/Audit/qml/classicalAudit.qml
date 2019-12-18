@@ -331,7 +331,7 @@ Form
 		{
 			Layout.preferredHeight: 			toSampling.height
 			Layout.fillWidth: 	true
-			enabled:			!pasteVariables.checked
+			enabled:						!pasteVariables.checked
 
 			Button
 			{
@@ -582,7 +582,7 @@ Form
 		{
 			Layout.preferredHeight: 			toExecution.height
 			Layout.fillWidth: 	true
-			enabled:			!pasteVariables.checked
+			enabled:						!pasteVariables.checked
 
 			Button
 			{
@@ -796,7 +796,7 @@ Form
 		{
 			Layout.preferredHeight: 			toEvaluation.height
 			Layout.fillWidth: 	true
-			enabled:			!evaluationChecked.checked
+			enabled:						!evaluationChecked.checked
 
 			Button
 			{
