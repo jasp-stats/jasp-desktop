@@ -284,25 +284,24 @@ decodeColNames <- function(x, strict = FALSE, fun = NULL, ...) {
 }
 
 .applyEnDeCoder.list <- function(x, fun, recursive = TRUE, ...) {
-  # this function calls the .character method directly to avoid dispatching to .list and starting recursion.
   if (recursive) {
-    return(rapply(x, f = .applyEnDeCoder, how = "replace", fun = fun))
+    return(rapply(x, f = .applyEnDeCoder, how = "replace", fun = fun, ...))
   } else {
     for (i in seq_along(x))
       if (is.character(x[[i]]))
-        x[[i]] <- .applyEnDeCoder.character(x[[i]], fun)
+        x[[i]] <- .applyEnDeCoder.character(x[[i]], fun, ...)
 
       return(x)
   }
 }
 
 .applyEnDeCoder.matrix <- function(x, fun, ...) {
-  return(.applyEnDeCoder.data.frame(x, fun))
+  return(.applyEnDeCoder.data.frame(x, fun, ...))
 }
 
 .applyEnDeCoder.data.frame <- function(x, fun, ...) {
   for (i in seq_along(dimnames(x)))
-    dimnames(x)[[i]] <- .applyEnDeCoder.character(dimnames(x)[[i]], fun)
+    dimnames(x)[[i]] <- .applyEnDeCoder.character(dimnames(x)[[i]], fun, ...)
   return(x)
 }
 
