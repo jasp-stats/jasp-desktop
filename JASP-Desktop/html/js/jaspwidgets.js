@@ -467,6 +467,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			[{ 'script': 'sub'}, { 'script': 'super' }],
 			['blockquote', { 'indent': '-1'}, { 'indent': '+1' }],
 			// [{ 'font': [] }, { 'align': [] }],
+			[{ size: [ 'small', false, 'large' ]}],
 			['clean']
 		];
 
