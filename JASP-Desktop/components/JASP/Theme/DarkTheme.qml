@@ -33,7 +33,6 @@ Theme
 
 	shadow:								"#BB000000"
 
-
 	jaspBlue:							"#0481c3"
 	jaspGreen:							"#7ca61e"
 

@@ -71,6 +71,7 @@ private: // Methods:
 	void receiveComputeColumnMessage(	const Json::Value & jsonRequest);
 	void receiveModuleRequestMessage(	const Json::Value & jsonRequest);
 	void receiveLogCfg(					const Json::Value & jsonRequest);
+	void receiveSettings(				const Json::Value & jsonRequest);
 
 	void runAnalysis();
 	void runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType);
@@ -108,40 +109,43 @@ private: // Methods:
 	void _encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta);
 
 private: // Data:
-	static Engine * _EngineInstance;
+	static Engine	*	_EngineInstance;
+	const int			_slaveNo;
+	const unsigned long	_parentPID = 0;
+	engineState			_engineState = engineState::initializing;
 
-	Status		_analysisStatus = Status::empty;
+	Status				_analysisStatus = Status::empty;
 
-	int			_analysisId,
-				_analysisRevision,
-				_progress,
-				_ppi = 96,
-				_slaveNo = 0;
+	int					_analysisId,
+						_analysisRevision,
+						_progress,
+						_ppi		= 96;
 
-	bool		_analysisRequiresInit,
-				_analysisJaspResults,
-				_currentAnalysisKnowsAboutChange,
-				_analysisDeveloperMode;
+	bool				_analysisRequiresInit,
+						_analysisJaspResults,
+						_currentAnalysisKnowsAboutChange,
+						_developerMode		= false;
 
-	std::string _analysisName,
-				_analysisTitle,
-				_analysisDataKey,
-				_analysisOptions,
-				_analysisResultsMeta,
-				_analysisStateKey,
-				_analysisResultsString,
-				_imageBackground = "white",
-				_analysisRFile		= "",
-				_dynamicModuleCall	= "";
+	std::string			_analysisName,
+						_analysisTitle,
+						_analysisDataKey,
+						_analysisOptions,
+						_analysisResultsMeta,
+						_analysisStateKey,
+						_analysisResultsString,
+						_imageBackground	= "white",
+						_analysisRFile		= "",
+						_dynamicModuleCall	= "",
+						_langR				= "en";
 
-	Json::Value _imageOptions,
-				_analysisResults;
+	Json::Value			_imageOptions,
+						_analysisResults;
 
-	IPCChannel *_channel = nullptr;
+	IPCChannel *		_channel = nullptr;
 
-	unsigned long _parentPID = 0;
 
-	engineState _engineState = engineState::initializing;
+
+
 };
 
 #endif // ENGINE_H

@@ -372,7 +372,7 @@ void Analysis::runScriptRequestDone(const QString& result, const QString& contro
 	_analysisForm->runScriptRequestDone(result, controlName);
 }
 
-Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackground)
+Json::Value Analysis::createAnalysisRequestJson()
 {
 	performType perform = desiredPerformTypeFromAnalysisStatus();
 
@@ -396,14 +396,11 @@ Json::Value Analysis::createAnalysisRequestJson(int ppi, std::string imageBackgr
 	json["rfile"]				= _moduleData == nullptr ? rfile() : "";
 	json["jaspResults"]			= usesJaspResults();
 	json["dynamicModuleCall"]	= _moduleData == nullptr ? "" : _moduleData->getFullRCall();
-	json["developerMode"]		= Analyses::analyses()->developerMode();
 
 	if (!isAborted())
 	{
 		json["name"]			= name();
 		json["title"]			= title();
-		json["ppi"]				= ppi;
-		json["imageBackground"] = imageBackground; //comes from engine representation!
 
 		bool imgP = perform == performType::saveImg || perform == performType::editImg;
 		if (imgP)	json["image"]		= imgOptions();

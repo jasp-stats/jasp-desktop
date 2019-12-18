@@ -21,6 +21,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(bool			useDefaultPPI			READ useDefaultPPI				WRITE setUseDefaultPPI				NOTIFY useDefaultPPIChanged				)
 	Q_PROPERTY(int			customPPI				READ customPPI					WRITE setCustomPPI					NOTIFY customPPIChanged					)
 	Q_PROPERTY(bool			whiteBackground			READ whiteBackground			WRITE setWhiteBackground			NOTIFY whiteBackgroundChanged			)
+	Q_PROPERTY(QString		plotBackground			READ plotBackground				WRITE setPlotBackground				NOTIFY plotBackgroundChanged			)
 	Q_PROPERTY(double		uiScale					READ uiScale					WRITE setUiScale					NOTIFY uiScaleChanged					)
 	Q_PROPERTY(QStringList	missingValues			READ missingValues													NOTIFY missingValuesChanged				)
 	Q_PROPERTY(int			defaultPPI				READ defaultPPI					WRITE setDefaultPPI					NOTIFY defaultPPIChanged				)
@@ -39,6 +40,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(int			plotPPI					READ plotPPI														NOTIFY plotPPIPropChanged				)
 	Q_PROPERTY(QFont		defaultFont				READ defaultFont				WRITE setDefaultFont				NOTIFY defaultFontChanged				)
 	Q_PROPERTY(QString		currentThemeName		READ currentThemeName			WRITE setCurrentThemeName			NOTIFY currentThemeNameChanged			)
+	Q_PROPERTY(QString		languageCode			READ languageCode													NOTIFY languageCodeChanged				)
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
@@ -57,6 +59,7 @@ public:
 	bool		useDefaultEditor()			const;
 	bool		useDefaultPPI()				const;
 	bool		whiteBackground()			const;
+	QString		plotBackground()			const;
 	bool		developerMode()				const;
 	double		uiScale()						 ;
 	QString		customEditor()				const;
@@ -75,13 +78,12 @@ public:
 	QString		cranRepoURL()				const;
 	QFont		defaultFont()				const	{ return _defaultFont;	}
 	QString		currentThemeName()			const;
+	QString		languageCode()				const	{ return "en";	} //This function should actually take the value from LanguageModel
 
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
-
-
 
 
 
@@ -96,6 +98,7 @@ public slots:
 	void setUseDefaultPPI(				bool		useDefaultPPI);
 	void setDeveloperMode(				bool		developerMode);
 	void setWhiteBackground(			bool		whiteBackground);
+	void setPlotBackground(				QString		plotBackground);
 	void setDeveloperFolder(			QString		developerFolder);
 	void setUseDefaultEditor(			bool		useDefaultEditor);
 	void setDataAutoSynchronization(	bool		dataAutoSynchronization);
@@ -126,7 +129,6 @@ public slots:
 	void setDefaultFont(QFont defaultFont);
 	void onCurrentThemeNameChanged(QString newThemeName);
 
-
 signals:
 	void jaspThemeChanged(				JaspTheme * newTheme);
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -137,7 +139,7 @@ signals:
 	void useDefaultEditorChanged(		bool		useDefaultEditor);
 	void customEditorChanged(			QString		customEditor);
 	void useDefaultPPIChanged(			bool		useDefaultPPI);
-	void whiteBackgroundChanged(		bool		whiteBackground);
+	void whiteBackgroundChanged();
 	void uiScaleChanged(				double		uiScale);
 	void customPPIChanged(				int			customPPI);
 	void defaultPPIChanged(				int			defaultPPI);
@@ -145,7 +147,7 @@ signals:
 	void developerModeChanged(			bool		developerMode);
 	void developerFolderChanged(		QString		developerFolder);
 	void plotPPIChanged(				int			ppiForPlot,			bool	wasUserAction);
-	void plotBackgroundChanged(			QString		background);
+	void plotBackgroundChanged(			QString		plotBackground);
 	void customThresholdScaleChanged(	bool		customThresholdScale);
 	void thresholdScaleChanged(			int			thresholdScale);
 	void devModRegenDESCChanged(		bool		devModRegenDESC);
@@ -159,6 +161,7 @@ signals:
 	void defaultFontChanged(			QFont		defaultFont);
 	void currentThemeNameChanged(		QString		currentThemeName);
 	void plotPPIPropChanged();
+	void languageCodeChanged(			QString languageCode); //This signal should be the destination of LanguageModel::languageCodeChanged
 
 private:
 	int		_defaultPPI		= 192;

@@ -179,12 +179,11 @@ private:
 
 	void _openFile();
 	void connectFileEventCompleted(FileEvent * event);
+	void refreshPlotsHandler(bool askUserForRefresh = true);
 
 signals:
 	void saveJaspFile();
-	void imageBackgroundChanged(QString value);
 	void editImageCancelled(int id);
-	void ppiChanged(int ppi);
 	void updateAnalysesUserData(QString userData);
 	void runButtonTextChanged(QString runButtonText);
 	void runButtonEnabledChanged(bool runButtonEnabled);

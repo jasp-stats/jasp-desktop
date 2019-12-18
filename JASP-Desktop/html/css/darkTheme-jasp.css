@@ -262,6 +262,7 @@ svg > text
 
 .jasp-image {
   position: relative ;
+  background-color:   #000;
 }
 
 .jasp-image-image {

@@ -207,8 +207,6 @@ Q_DECLARE_METATYPE(columnType)
 void MainWindow::makeConnections()
 {
 	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
-	connect(this,					&MainWindow::imageBackgroundChanged,				_engineSync,			&EngineSync::imageBackgroundChanged							);
-	connect(this,					&MainWindow::ppiChanged,                        	_engineSync,			&EngineSync::ppiChanged                                     );
 	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
 	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
 	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
@@ -625,24 +623,22 @@ void MainWindow::refreshAnalysesUsingColumns(	QStringList				changedColumns,
 	_computedColumnsModel->packageSynchronized(changedColumnsStd, missingColumnsStd, changeNameColumnsStd, rowCountChanged);
 }
 
-void MainWindow::setImageBackgroundHandler(QString value)
+void MainWindow::setImageBackgroundHandler(QString)
 {
-	emit imageBackgroundChanged(value);
-
-	if (_analyses->allCreatedInCurrentVersion())
-		_engineSync->refreshAllPlots();
-	else if (MessageForwarder::showYesNo("Version incompatibility", "Your analyses were created in an older version of JASP, to change the background of the images they must be refreshed first.\n\nRefresh all analyses?"))
-		_analyses->refreshAllAnalyses();
+	refreshPlotsHandler();
 }
 
 
-void MainWindow::plotPPIChangedHandler(int ppi, bool wasUserAction)
+void MainWindow::plotPPIChangedHandler(int, bool wasUserAction)
 {
-    emit ppiChanged(ppi);
+	refreshPlotsHandler(wasUserAction);
+}
 
+void MainWindow::refreshPlotsHandler(bool askUserForRefresh)
+{
 	if (_analyses->allCreatedInCurrentVersion())
 		_engineSync->refreshAllPlots();
-	else if (wasUserAction && MessageForwarder::showYesNo("Version incompatibility", "Your analyses were created in an older version of JASP, to change the PPI of the images they must be refreshed first.\n\nRefresh all analyses?"))
+	else if (askUserForRefresh && MessageForwarder::showYesNo("Version incompatibility", "Your analyses were created in an older version of JASP, to change the PPI of the images they must be refreshed first.\n\nRefresh all analyses?"))
 		_analyses->refreshAllAnalyses();
 }
 

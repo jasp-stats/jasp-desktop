@@ -173,6 +173,7 @@ bool Engine::receiveMessages(int timeout)
 		case engineState::moduleRequest:	receiveModuleRequestMessage(jsonRequest);	break;
 		case engineState::stopRequested:	stopEngine();								break;
 		case engineState::logCfg:			receiveLogCfg(jsonRequest);					break;
+		case engineState::settings:			receiveSettings(jsonRequest);				break;
 		default:							throw std::runtime_error("Engine::receiveMessages begs you to add your new engineState to it!");
 		}
 	}
@@ -409,14 +410,14 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_analysisRFile			= jsonRequest.get("rfile",				"").asString();
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
 		_analysisRequiresInit	= jsonRequest.get("requiresInit",		Json::nullValue).isNull() ? true : jsonRequest.get("requiresInit", true).asBool();
-		_ppi					= jsonRequest.get("ppi",				96).asInt();
-		_imageBackground		= jsonRequest.get("imageBackground",	"white").asString();
-		_analysisDeveloperMode	= jsonRequest.get("developerMode",		false).asBool();
+
 		_analysisJaspResults	= _dynamicModuleCall != "" || jsonRequest.get("jaspResults",	false).asBool();
 		_engineState			= engineState::analysis;
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
+#ifdef JASP_COLUMN_ENCODE_ALL
 		encodeColumnNamesinOptions(optionsEnc);
+#endif
 		_analysisOptions		= optionsEnc.toStyledString();
 	}
 }
@@ -508,8 +509,8 @@ void Engine::runAnalysis()
 	Log::log() << "Analysis will be run now." << std::endl;
 
 	_analysisResultsString = _dynamicModuleCall != "" ?
-			rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, perform, _ppi, _analysisId, _analysisRevision, _imageBackground, _analysisDeveloperMode)
-		:	rbridge_run(_analysisName, _analysisTitle, _analysisRFile, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, _imageBackground, callback, _analysisJaspResults, _analysisDeveloperMode);
+			rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey, _analysisOptions, _analysisStateKey, perform, _ppi, _analysisId, _analysisRevision, _imageBackground, _developerMode)
+		:	rbridge_run(_analysisName, _analysisTitle, _analysisRFile, _analysisRequiresInit, _analysisDataKey, _analysisOptions, _analysisResultsMeta, _analysisStateKey, _analysisId, _analysisRevision, perform, _ppi, _imageBackground, callback, _analysisJaspResults, _developerMode);
 
 	if (!_analysisJaspResults && (_analysisStatus == Status::initing || _analysisStatus == Status::running))  // if status hasn't changed
 		receiveMessages();
@@ -858,6 +859,26 @@ void Engine::receiveLogCfg(const Json::Value & jsonRequest)
 	logCfgResponse["typeRequest"]	= engineStateToString(engineState::logCfg);
 
 	sendString(logCfgResponse.toStyledString());
+
+	_engineState = engineState::idle;
+}
+
+
+void Engine::receiveSettings(const Json::Value & jsonRequest)
+{
+	Log::log() << "Settings received" << std::endl;
+
+	_ppi				= jsonRequest.get("ppi",				_ppi			).asInt();
+	_developerMode		= jsonRequest.get("developerMode",		_developerMode	).asBool();
+	_imageBackground	= jsonRequest.get("imageBackground",	_imageBackground).asString();
+	_langR				= jsonRequest.get("languageCode",		_langR			).asString();
+
+	rbridge_setLANG(_langR);
+
+	Json::Value response	= Json::objectValue;
+	response["typeRequest"]	= engineStateToString(engineState::settings);
+
+	sendString(response.toStyledString());
 
 	_engineState = engineState::idle;
 }

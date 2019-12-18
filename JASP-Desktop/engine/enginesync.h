@@ -68,9 +68,6 @@ signals:
 	void	filterUpdated(int requestID);
 	void	filterErrorTextChanged(const QString & error);
 
-	void	ppiChanged(int newPPI);
-	void	imageBackgroundChanged(const QString & value);
-
 	void	computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
 	void	computeColumnFailed(		const QString & columnName, const QString & error);
 	void	columnDataTypeChanged(		const QString & columnName);
@@ -83,6 +80,7 @@ signals:
 
 	void	refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
 	void	plotEditorRefresh();
+	void	settingsChanged();
 
 private:
 	bool		allEnginesStopped();
@@ -93,20 +91,21 @@ private:
 	void		processLogCfgRequests();
 	void		processDynamicModules();
 	void		processFilterScript();
+	void		processSettingsChanged();
 	void		checkModuleWideCastDone();
 	void		resetModuleWideCastVars();
 	void		setModuleWideCastVars(Json::Value newVars);
 	bool		amICastingAModuleRequestWide()	{ return !_requestWideCastModuleJson.isNull(); }
 
 private slots:
-	void	ProcessAnalysisRequests();
+	void	processAnalysisRequests();
 	void	deleteOrphanedTempFiles();
 	void	heartbeatTempFiles();
 
 	void	process();
 
 	void	moduleLoadingFailedHandler(		const QString & moduleName, const QString & errorMessage, int channelID);
-	void	moduleLoadingSucceededHandler(		const QString & moduleName, int channelID);
+	void	moduleLoadingSucceededHandler(	const QString & moduleName, int channelID);
 	void	moduleUnloadingFinishedHandler(	const QString & moduleName, int channelID);
 
 	void	restartEngines();
