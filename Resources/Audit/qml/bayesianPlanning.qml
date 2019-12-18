@@ -395,6 +395,12 @@ Form {
 						text: qsTr("Implicit sample")
 						name: "implicitSampleTable"
 					}
+
+					CheckBox
+					{
+						text: qsTr("Prior and posterior descriptives")
+						name: "priorStatistics"
+					}
 				}
 			}
 
@@ -418,7 +424,7 @@ Form {
 					{
 						text: 							qsTr("x-axis limit")
 						name: 							"priorPlotLimit"
-						defaultValue: 			100
+						defaultValue: 			20
 					}
 
 					CheckBox

@@ -629,7 +629,8 @@
 
   if(type == "bayesian" && options[["expectedBF"]]){
 
-    expectedBF <- .expectedBF(planningState)
+    BFresult <- .expectedBF(planningState)
+    expectedBF <- BFresult[["expectedBF"]]
     row <- cbind(row, expBF = expectedBF)
   
   }

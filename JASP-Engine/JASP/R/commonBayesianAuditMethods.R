@@ -20,47 +20,65 @@
 
 .expectedBF <- function(planningState){
 
+  # For calculation of the Bayes factor, the are below materiality is 
+  # regarded to be H1 and the area equal to and above materiality is regarded
+  # to be H0.
+
   if(planningState[["likelihood"]] == "poisson"){
 
-    priorOdds <- diff(pgamma(c(0, planningState[["materiality"]]), 
-                        shape = planningState[["prior"]]$aPrior, 
-                        rate = planningState[["prior"]]$bPrior)) / 
-                  diff(pgamma(c(planningState[["materiality"]], 1), 
-                        shape = planningState[["prior"]]$aPrior, 
-                        rate = planningState[["prior"]]$bPrior))
+    priorH1 <- diff(pgamma(c(0, planningState[["materiality"]]), 
+                           shape = planningState[["prior"]]$aPrior, 
+                           rate = planningState[["prior"]]$bPrior))
 
-    postOdds <- diff(pgamma(c(0, planningState[["materiality"]]), 
-                      shape = planningState[["prior"]]$aPrior + 
-                              planningState[["expectedSampleError"]], 
-                      rate = planningState[["prior"]]$bPrior + 
-                              planningState[["sampleSize"]])) / 
-                diff(pgamma(c(planningState[["materiality"]], 1), 
-                      shape = planningState[["prior"]]$aPrior + 
-                              planningState[["expectedSampleError"]], 
-                      rate = planningState[["prior"]]$bPrior + 
-                              planningState[["sampleSize"]]))
+    priorH0 <- diff(pgamma(c(planningState[["materiality"]], 1), 
+                           shape = planningState[["prior"]]$aPrior, 
+                           rate = planningState[["prior"]]$bPrior))
+    
+    priorOdds <- priorH1 / priorH0
+
+    postH1 <- diff(pgamma(c(0, planningState[["materiality"]]), 
+                          shape = planningState[["prior"]]$aPrior + 
+                                  planningState[["expectedSampleError"]], 
+                          rate = planningState[["prior"]]$bPrior + 
+                                 planningState[["sampleSize"]]))
+
+    postH0 <- diff(pgamma(c(planningState[["materiality"]], 1), 
+                          shape = planningState[["prior"]]$aPrior + 
+                                  planningState[["expectedSampleError"]], 
+                          rate = planningState[["prior"]]$bPrior + 
+                                 planningState[["sampleSize"]]))
+
+    postOdds <- postH1 / postH0
 
   } else if(planningState[["likelihood"]] == "binomial"){
 
-    priorOdds <- diff(pbeta(c(0, planningState[["materiality"]]), 
-                        shape1 = planningState[["prior"]]$aPrior, 
-                        shape2 = planningState[["prior"]]$bPrior)) / 
-                  diff(pbeta(c(planningState[["materiality"]], 1), 
-                        shape1 = planningState[["prior"]]$aPrior, 
-                        shape2 = planningState[["prior"]]$bPrior))
+    priorH1 <- diff(pbeta(c(0, planningState[["materiality"]]), 
+                          shape1 = planningState[["prior"]]$aPrior, 
+                          shape2 = planningState[["prior"]]$bPrior))
 
-    postOdds <- diff(pbeta(c(0, planningState[["materiality"]]), 
-                      shape1 = planningState[["prior"]]$aPrior + 
-                                planningState[["expectedSampleError"]], 
-                      shape2 = planningState[["prior"]]$bPrior + 
-                                planningState[["sampleSize"]] - 
-                                planningState[["expectedSampleError"]])) / 
-                diff(pbeta(c(planningState[["materiality"]], 1), 
-                      shape1 = planningState[["prior"]]$aPrior + 
-                                planningState[["expectedSampleError"]], 
-                      shape2 = planningState[["prior"]]$bPrior + 
-                                planningState[["sampleSize"]] - 
-                                planningState[["expectedSampleError"]]))
+    priorH0 <- diff(pbeta(c(planningState[["materiality"]], 1), 
+                          shape1 = planningState[["prior"]]$aPrior, 
+                          shape2 = planningState[["prior"]]$bPrior))
+
+    priorOdds <- priorH1 / priorH0
+
+    postH1 <- diff(pbeta(c(0, planningState[["materiality"]]), 
+                        shape1 = planningState[["prior"]]$aPrior + 
+                                 planningState[["expectedSampleError"]], 
+                        shape2 = planningState[["prior"]]$bPrior + 
+                                 planningState[["sampleSize"]] - 
+                                 planningState[["expectedSampleError"]]))
+
+    postH0 <- diff(pbeta(c(planningState[["materiality"]], 1), 
+                         shape1 = planningState[["prior"]]$aPrior + 
+                                  planningState[["expectedSampleError"]], 
+                         shape2 = planningState[["prior"]]$bPrior + 
+                                  planningState[["sampleSize"]] - 
+                                  planningState[["expectedSampleError"]]))
+                  
+
+    postOdds <- postH1 / postH0
+                
 
   } else if(planningState[["likelihood"]] == "hypergeometric"){
 
@@ -69,30 +87,36 @@
 
     intolerableE <- (max(tolerableE) + 1):planningState[["N"]]
 
-    priorOdds <- sum(jfa:::.dBetaBinom(x = tolerableE, 
-                                        N = planningState[["N"]], 
-                                        shape1 = planningState[["prior"]]$aPrior, 
-                                        shape2 = planningState[["prior"]]$bPrior)) / 
-                  sum(jfa:::.dBetaBinom(x = intolerableE, 
+    priorH1 <- sum(jfa:::.dBetaBinom(x = tolerableE, 
                                         N = planningState[["N"]], 
                                         shape1 = planningState[["prior"]]$aPrior, 
                                         shape2 = planningState[["prior"]]$bPrior))
 
-    postOdds <- sum(jfa:::.dBetaBinom(x = tolerableE, 
-                                      N = planningState[["N"]], 
-                                      shape1 = planningState[["prior"]]$aPrior + 
-                                                planningState[["expectedSampleError"]], 
-                                      shape2 = planningState[["prior"]]$bPrior + 
-                                                planningState[["sampleSize"]] - 
-                                                planningState[["expectedSampleError"]])) / 
-                sum(jfa:::.dBetaBinom(x = intolerableE, 
+    priorH0 <- sum(jfa:::.dBetaBinom(x = intolerableE, 
+                                        N = planningState[["N"]], 
+                                        shape1 = planningState[["prior"]]$aPrior, 
+                                        shape2 = planningState[["prior"]]$bPrior))
+
+    priorOdds <- priorH1 / priorH0
+
+    postH1 <- sum(jfa:::.dBetaBinom(x = tolerableE, 
                                       N = planningState[["N"]], 
                                       shape1 = planningState[["prior"]]$aPrior + 
                                                 planningState[["expectedSampleError"]], 
                                       shape2 = planningState[["prior"]]$bPrior + 
                                                 planningState[["sampleSize"]] - 
                                                 planningState[["expectedSampleError"]]))
-  
+
+    postH0 <- sum(jfa:::.dBetaBinom(x = intolerableE, 
+                                      N = planningState[["N"]], 
+                                      shape1 = planningState[["prior"]]$aPrior + 
+                                                planningState[["expectedSampleError"]], 
+                                      shape2 = planningState[["prior"]]$bPrior + 
+                                                planningState[["sampleSize"]] - 
+                                                planningState[["expectedSampleError"]]))
+
+    postOdds <- postH1 / postH0
+
   }
 
   expectedBF <- round(postOdds / priorOdds, 2)
@@ -100,7 +124,15 @@
   if(expectedBF == "NaN") # Bayes factor for gamma(1, 0) distribution is undefined.
     expectedBF <- Inf
 
-  return(expectedBF)
+  result <- list(expectedBF = expectedBF, 
+                 priorOdds = priorOdds, 
+                 priorH1 = priorH1, 
+                 priorH0 = priorH0,
+                 postH1 = postH1,
+                 postH0 = postH0,
+                 postOdds = postOdds)
+
+  return(result)
 }
 
 .auditImplicitSampleTable <- function(options, 
@@ -113,8 +145,6 @@
       !options[["implicitSampleTable"]]) 
     return()
 
-  cbTitle <- paste0(options[["confidence"]]*100,"% Prior credible bound")
-
   sampletable <- createJaspTable("Implicit Sample")
   sampletable$position <- positionInContainer
 
@@ -126,9 +156,6 @@
                             type = 'string')
   sampletable$addColumnInfo(name = 'implicitk', 
                             title = "Implicit errors", 
-                            type = 'string')
-  sampletable$addColumnInfo(name = 'priorbound', 
-                            title = cbTitle, 
                             type = 'string')
 
   message <- paste0("Sample sizes shown are implicit sample sizes derived from the ARM risk assessments: IR = <b>", 
@@ -144,33 +171,189 @@
   if(!ready || planningContainer$getError()) 
     return()
 
-  if(planningState[["likelihood"]] == "poisson")
-    priorBound <- round(qgamma(p = options[["confidence"]], 
-                               shape = planningState[["prior"]]$aPrior, 
-                               rate = planningState[["prior"]]$bPrior), 3)
-  
-  if(planningState[["likelihood"]] == "binomial")
-    priorBound <- round(qbeta(p = options[["confidence"]], 
-                              shape1 = planningState[["prior"]]$aPrior, 
-                              shape2 = planningState[["prior"]]$bPrior), 3)
-  
-  if(planningState[["likelihood"]] == "hypergeometric")
-    priorBound <- round(.qBetaBinom(p = options[["confidence"]], 
-                                    N = planningState[["N"]], 
-                                    shape1 = planningState[["prior"]]$aPrior, 
-                                    shape2 = planningState[["prior"]]$bPrior) / 
-                        planningState[["N"]], 3)
-  
-  if(planningState[["likelihood"]] != "hypergeometric")
-    priorBound <- paste0(priorBound * 100, "%")
-  if(planningState[["likelihood"]] == "hypergeometric")
-    priorBound <- ceiling(priorBound * planningState[["N"]])
-
   row <- data.frame(implicitn = planningState[["prior"]]$nPrior, 
-                    implicitk = planningState[["prior"]]$kPrior, 
-                    priorbound = priorBound)
+                    implicitk = planningState[["prior"]]$kPrior)
 
   sampletable$addRows(row)
+}
+
+.auditPriorAndPosterStatisticsTable <- function(options, 
+                                                planningState, 
+                                                planningContainer, 
+                                                ready, 
+                                                positionInContainer){
+
+  if(!is.null(planningContainer[["priorStatistics"]]) || 
+      !options[["priorStatistics"]]) 
+    return()
+
+  priorStatisticsTable <- createJaspTable("Prior and Posterior Descriptives")
+  priorStatisticsTable$position <- positionInContainer
+
+  priorStatisticsTable$dependOn(options = c("priorStatistics", 
+                                            "planningModel"))
+
+  priorStatisticsTable$addColumnInfo(name = 'v', 
+                                  title = "", 
+                                  type = 'string')
+  priorStatisticsTable$addColumnInfo(name = 'form', 
+                                     title = "Functional form", 
+                                     type = 'string')
+  priorStatisticsTable$addColumnInfo(name = 'priorH1', 
+                                     title = "p(H\u208B)", 
+                                     type = 'string')
+  priorStatisticsTable$addColumnInfo(name = 'priorH0', 
+                                     title = "p(H\u208A)", 
+                                     type = 'string')
+  priorStatisticsTable$addColumnInfo(name = 'priorOdds', 
+                                     title = "Odds <sup>p(H\u208B)</sup>&frasl;<sub>p(H\u208A)</sub>", 
+                                     type = 'string')
+  priorStatisticsTable$addColumnInfo(name = 'priorBound', 
+                                     title = paste0(options[["confidence"]]*100,"% Credible bound") , 
+                                     type = 'string')
+
+  priorStatisticsTable$addFootnote(message = "p(H\u208B): The probability that 
+                                              the misstatement is lower than materiality. 
+                                              p(H\u208A): The probability that the misstatement 
+                                              is equal to, or higher than, materiality.
+                                              The prior odds shown are to be interpreted with 
+                                              respect to tolerable misstatement.", 
+                                  symbol="<i>Note.</i>")
+
+  planningContainer[["priorStatistics"]] <- priorStatisticsTable
+
+  if(!ready || planningContainer$getError()) {
+
+      row <- data.frame(v = c("Prior", "Expected posterior", "Shift"))
+      priorStatisticsTable$addRows(row)
+      return()
+
+  }
+
+  if(planningState[["likelihood"]] == "poisson"){
+
+    priorBound <- round(qgamma(p = options[["confidence"]], 
+                                shape = planningState[["prior"]]$aPrior, 
+                                rate = planningState[["prior"]]$bPrior), 6)
+
+    postBound <- round(qgamma(p = options[["confidence"]], 
+                              shape = planningState[["prior"]]$aPrior + 
+                                      planningState[["expectedSampleError"]], 
+                              rate = planningState[["prior"]]$bPrior + 
+                                      planningState[["sampleSize"]]), 6)
+
+    priorForm <- paste0("Gamma(\u03B1 = ", 
+                        planningState[["prior"]]$aPrior,
+                        ", \u03B2 = ",
+                        planningState[["prior"]]$bPrior,
+                        ")")
+
+    posteriorForm <- paste0("Gamma(\u03B1 = ", 
+                            planningState[["prior"]]$aPrior + 
+                            planningState[["expectedSampleError"]],
+                            ", \u03B2 = ",
+                            planningState[["prior"]]$bPrior +
+                            planningState[["sampleSize"]],
+                            ")")
+
+  } else if(planningState[["likelihood"]] == "binomial"){
+
+    priorBound <- round(qbeta(p = options[["confidence"]], 
+                              shape1 = planningState[["prior"]]$aPrior, 
+                              shape2 = planningState[["prior"]]$bPrior), 6)
+
+    postBound <- round(qbeta(p = options[["confidence"]], 
+                              shape1 = planningState[["prior"]]$aPrior + 
+                                      planningState[["expectedSampleError"]], 
+                              shape2 = planningState[["prior"]]$bPrior +
+                                      planningState[["sampleSize"]] - 
+                                      planningState[["expectedSampleError"]]), 6)
+
+    priorForm <- paste0("Beta(\u03B1 = ", 
+                        planningState[["prior"]]$aPrior,
+                        ", \u03B2 = ",
+                        planningState[["prior"]]$bPrior,
+                        ")")
+
+    posteriorForm <- paste0("Beta(\u03B1 = ", 
+                            planningState[["prior"]]$aPrior + 
+                            planningState[["expectedSampleError"]],
+                            ", \u03B2 = ",
+                            planningState[["prior"]]$bPrior +
+                            planningState[["sampleSize"]] -
+                            planningState[["expectedSampleError"]],
+                            ")")
+
+  } else if(planningState[["likelihood"]] == "hypergeometric"){
+
+    priorBound <- round(.qBetaBinom(p = options[["confidence"]], 
+                                N = planningState[["N"]], 
+                                shape1 = planningState[["prior"]]$aPrior, 
+                                shape2 = planningState[["prior"]]$bPrior) / 
+                    planningState[["N"]], 6)
+
+    postBound <- round(.qBetaBinom(p = options[["confidence"]], 
+                                    N = planningState[["N"]], 
+                                    shape1 = planningState[["prior"]]$aPrior + 
+                                             planningState[["expectedSampleError"]], 
+                                    shape2 = planningState[["prior"]]$bPrior +
+                                             planningState[["sampleSize"]] - 
+                                             planningState[["expectedSampleError"]]) / 
+                        planningState[["N"]], 6)
+
+    priorForm <- paste0("Beta-binomial(N = ",
+                        planningState[["N"]],
+                        ", \u03B1 = ", 
+                        planningState[["prior"]]$aPrior,
+                        ", \u03B2 = ",
+                        planningState[["prior"]]$bPrior,
+                        ")")
+
+    posteriorForm <- paste0("Beta-binomial(N = ", 
+                            planningState[["N"]],
+                            ", \u03B1 = ",
+                            planningState[["prior"]]$aPrior + 
+                            planningState[["expectedSampleError"]],
+                            ", \u03B2 = ",
+                            planningState[["prior"]]$bPrior +
+                            planningState[["sampleSize"]] -
+                            planningState[["expectedSampleError"]],
+                            ")")
+
+  }
+  
+  if(planningState[["likelihood"]] != "hypergeometric"){
+
+    priorBound  <- paste0(priorBound * 100, "%")
+    postBound   <- paste0(postBound * 100, "%")
+
+  } else {
+
+    priorBound  <- ceiling(priorBound * planningState[["N"]])
+    postBound   <- ceiling(postBound * planningState[["N"]])
+
+  }
+    
+  BFresult <- .expectedBF(planningState)
+
+  priorOdds <- round(BFresult[["priorOdds"]], 2)
+  priorH1 <- round(BFresult[["priorH1"]], 2)
+  priorH0 <- round(BFresult[["priorH0"]], 2)
+  postOdds <- round(BFresult[["postOdds"]], 2)
+  postH1 <- round(BFresult[["postH1"]], 2)
+  postH0 <- round(BFresult[["postH0"]], 2)
+  shiftH1 <- round(postH1 / priorH1, 2)
+  shiftH0 <- round(postH0 / priorH0, 2)
+  shiftOdds <- round(BFresult[["postOdds"]] / BFresult[["priorOdds"]], 2)
+
+  rows <- data.frame(v = c("Prior", "Expected posterior", "Shift"),
+                     form = c(priorForm, posteriorForm, ""),
+                     priorH1 = c(priorH1, postH1, shiftH1),
+                     priorH0 = c(priorH0, postH0, shiftH0),
+                     priorOdds = c(priorOdds, postOdds, shiftOdds),
+                     priorBound = c(priorBound, postBound, ""))
+  
+  priorStatisticsTable$addRows(rows)
 }
 
 .auditPlanningPlotPrior <- function(options, 
@@ -523,7 +706,7 @@
                                            <i>\u03B1 = ", 
                                            planningState[["prior"]]$aPrior, 
                                            ", \u03B2 = ", 
-                                           planningState[["prior"]]$aPrior, 
+                                           planningState[["prior"]]$bPrior, 
                                            "</i> are derived from the assessments of the inherent and control risk, along with the expected errors.", 
                                            ifelse(options[["priorPlotExpectedPosterior"]], 
                                            yes = " 

@@ -86,6 +86,13 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
                             ready, 
                             positionInContainer = 3)
 
+  # Cerate the prior and posterior statistics table
+  .auditPriorAndPosterStatisticsTable(options, 
+                                      planningState, 
+                                      planningContainer, 
+                                      ready, 
+                                      positionInContainer = 4)
+
   ## PLOTS
 
   # Create a state to keep track of figure numbers
@@ -98,7 +105,7 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
                         planningContainer, 
                         ready, 
                         type, 
-                        positionInContainer = 4)
+                        positionInContainer = 5)
 
   # Create the prior and expected posterior plot
   .auditPlanningPlotPrior(options, 
@@ -106,5 +113,5 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
                           planningState, 
                           planningContainer, 
                           ready, 
-                          positionInContainer = 5)
+                          positionInContainer = 6)
 }
