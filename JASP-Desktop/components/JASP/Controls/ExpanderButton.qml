@@ -23,9 +23,9 @@ import JASP				1.0
 FocusScope
 {
 	id					: expanderWrapper
-	implicitHeight		: expanderButton.height
-	implicitWidth		: parent.width
-	anchors.topMargin	: 15 * preferencesModel.uiScale
+	implicitHeight		: expanderButton.visible ? expanderButton.height : 0
+	implicitWidth		: expanderButton.visible ? parent.width : 0
+	anchors.topMargin	: expanderButton.visible ? 15 * preferencesModel.uiScale : 0
 	clip				: true
 	L.Layout.columnSpan	: form.columns
 	objectName			: "Section"
