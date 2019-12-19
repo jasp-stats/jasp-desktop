@@ -15,16 +15,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.v <- function(x) {
+.v <- function(x, ...) {
   if (.automaticColumnEncDecoding)
     x
   else
-    encodeColNames(x)
+    encodeColNames(x, ...)
 }
 
-.unv <- function(x) {
+.unv <- function(x, ...) {
   if (.automaticColumnEncDecoding)
     x
   else
-    decodeColNames(x)
+    decodeColNames(x, ...)
 }
