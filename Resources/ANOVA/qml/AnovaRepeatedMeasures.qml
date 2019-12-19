@@ -21,9 +21,7 @@ import JASP.Controls	1.0
 import JASP.Widgets		1.0
 
 Form
-{
-	usesJaspResults: false
-	
+{	
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"     ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"   ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"      ; defaultValue: 450 }
@@ -56,6 +54,21 @@ Form
 		}
 	}
 	
+	Group
+	{
+		title: qsTr("Display")
+		CheckBox { name: "descriptives";		label: qsTr("Descriptive statistics") }
+		CheckBox
+		{
+			name: "effectSizeEstimates";	label: qsTr("Estimates of effect size")
+			columns: 3
+			CheckBox { name: "effectSizeEtaSquared";		label: qsTr("η²")         ; checked: true	}
+			CheckBox { name: "effectSizePartialEtaSquared";	label: qsTr("partial η²")					}
+			CheckBox { name: "effectSizeGenEtaSquared";	label: qsTr("general η²")					}
+			CheckBox { name: "effectSizeOmegaSquared";		label: qsTr("ω²")							}
+		}
+		CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke maximum p-ratio")	}
+	}
 	
 	Section
 	{
@@ -96,13 +109,13 @@ Form
 		Group
 		{
 			CheckBox { name: "sphericityTests";	label: qsTr("Sphericity tests") }
-			CheckBox
+			Group
 			{
-				name: "sphericityCorrections";	label: qsTr("Sphericity corrections")
+				title: qsTr("Sphericity corrections")
 				columns: 3
 				CheckBox { name: "sphericityNone";				label: qsTr("None");					checked: true }
-				CheckBox { name: "sphericityGreenhouseGeisser";	label: qsTr("Greenhouse-Geisser");	checked: true }
-				CheckBox { name: "sphericityHuynhFeldt";		label: qsTr("Huynh-Feldt");			checked: true }
+				CheckBox { name: "sphericityGreenhouseGeisser";	label: qsTr("Greenhouse-Geisser");	checked: false }
+				CheckBox { name: "sphericityHuynhFeldt";		label: qsTr("Huynh-Feldt");			checked: false }
 			}
 			CheckBox { name: "homogeneityTests"; label: qsTr("Homogeneity tests") }
 		}
@@ -112,6 +125,14 @@ Form
 	{
 		title: qsTr("Contrasts")
 		ContrastsList { source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
+		
+		CheckBox { name: "contrastAssumeEqualVariance"; label: qsTr("Assume equal variances"); checked: true }
+		CheckBox
+		{
+			name: "confidenceIntervalsContrast"; label: qsTr("Confidence intervals")
+			childrenOnSameRow: true
+			CIField { name: "confidenceIntervalIntervalContrast" }
+		}
 	}
 	
 	Section
@@ -126,12 +147,12 @@ Form
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
 		
-        CheckBox
-        {
+		CheckBox
+		{
 			name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence intervals")
-            childrenOnSameRow: true
-            CIField {name: "confidenceIntervalIntervalPostHoc" }
-        }
+			childrenOnSameRow: true
+			CIField {name: "confidenceIntervalIntervalPostHoc" }
+		}
 
 		Group
 		{
@@ -147,6 +168,12 @@ Form
 			CheckBox { name: "postHocTestsBonferroni";	label: qsTr("Bonferroni")			}
 			CheckBox { name: "postHocTestsTukey";		label: qsTr("Tukey")				}
 			CheckBox { name: "postHocTestsScheffe";		label: qsTr("Scheffe")				}
+		}
+		
+		Group
+		{
+			title: qsTr("Display")
+			CheckBox { name: "postHocFlagSignificant";	label: qsTr("Flag Significant Comparisons") }
 		}
 	}
 	
@@ -191,7 +218,7 @@ Form
 	
 	Section
 	{
-		title: qsTr("Additional Options")
+		title: qsTr("Marginal Means")
 		columns: 1
 
 		Group
@@ -205,19 +232,19 @@ Form
 				AssignedVariablesList {  name: "marginalMeansTerms" }
 			}
 			
-            CheckBox
-            {
-                name: "marginalMeansBootstrapping"; label: qsTr("From")
-                childrenOnSameRow: true
-                IntegerField
-                {
-                    name: "marginalMeansBootstrappingReplicates"
-                    defaultValue: 1000
-                    fieldWidth: 50
-                    min: 100
-                    afterLabel: qsTr("bootstraps")
-                }
-            }
+			CheckBox
+			{
+				name: "marginalMeansBootstrapping"; label: qsTr("From")
+				childrenOnSameRow: true
+				IntegerField
+				{
+					name: "marginalMeansBootstrappingReplicates"
+					defaultValue: 1000
+					fieldWidth: 50
+					min: 100
+					afterLabel: qsTr("bootstraps")
+				}
+			}
 
 			CheckBox
 			{
@@ -227,29 +254,14 @@ Form
 					name: "marginalMeansCIAdjustment"
 					label: qsTr("Confidence interval adjustment")
 					values: [
-                        { label: qsTr("None"),		value: "none"},
-                        { label: qsTr("Bonferroni"),	value: "bonferroni"},
-                        { label: qsTr("Šidák"),		value: "sidak"}
+						{ label: qsTr("None"),		value: "none"},
+						{ label: qsTr("Bonferroni"),	value: "bonferroni"},
+						{ label: qsTr("Šidák"),		value: "sidak"}
 					]
 				}
 			}
 		}
 		
-		Group
-		{
-			title: qsTr("Display")
-			CheckBox { name: "descriptives";		label: qsTr("Descriptive statistics") }
-			CheckBox
-			{
-				name: "effectSizeEstimates";	label: qsTr("Estimates of effect size")
-				columns: 3
-				CheckBox { name: "effectSizeEtaSquared";		label: qsTr("η²")         ; checked: true	}
-				CheckBox { name: "effectSizePartialEtaSquared";	label: qsTr("partial η²")					}
-				CheckBox { name: "effectSizeGenEtaSquared";	label: qsTr("general η²")					}
-				CheckBox { name: "effectSizeOmegaSquared";		label: qsTr("ω²")							}
-			}
-			CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke maximum p-ratio")	}
-		}
 	}
 	
 	Section

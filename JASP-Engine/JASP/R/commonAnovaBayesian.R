@@ -1155,15 +1155,16 @@
 }
 
 # Descriptives ----
-.BANOVAdescriptives <- function(jaspResults, dataset, options, errors, analysisType) {
-
+.BANOVAdescriptives <- function(jaspResults, dataset, options, errors, analysisType, ready = TRUE) {
+  if (!ready)
+    return()
   # the main use of this function is that descriptives can now be reused for the frequentist ANOVAs
   # without the container, the position could mess things up
   descriptivesContainer <- jaspResults[["descriptivesContainer"]]
   if (is.null(descriptivesContainer)) {
-    descriptivesContainer <- createJaspContainer()
+    descriptivesContainer <- createJaspContainer(title = "Descriptives")
     descriptivesContainer$dependOn(c("dependent", "repeatedMeasuresCells"))
-    descriptivesContainer$position <- 900 # always last
+    descriptivesContainer$position <- 9001 # always last
     jaspResults[["descriptivesContainer"]] <- descriptivesContainer
   }
 
@@ -1208,9 +1209,12 @@
   overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
   descriptivesTable$addColumnInfo(name = "Mean",  type = "number")
   descriptivesTable$addColumnInfo(name = "SD",    type = "number")
-  descriptivesTable$addColumnInfo(name = "N",     type = "number", format = "dp:0")
-  descriptivesTable$addColumnInfo(name = "Lower", type = "number", overtitle = overTitle)
-  descriptivesTable$addColumnInfo(name = "Upper", type = "number", overtitle = overTitle)
+  descriptivesTable$addColumnInfo(name = "N",     type = "integer")
+  if (is.null(options$confidenceIntervalInterval)) {
+    descriptivesTable$addColumnInfo(name = "Lower", type = "number", overtitle = overTitle)
+    descriptivesTable$addColumnInfo(name = "Upper", type = "number", overtitle = overTitle)
+  }
+  descriptivesTable$showSpecifiedColumnsOnly <- TRUE
   jaspContainer[["tableDescriptives"]] <- descriptivesTable
 
   if (errors$noVariables) 
@@ -1302,8 +1306,11 @@
 
   } else {
     plotErrorBars <- options$plotErrorBars
-    errorBarType  <- "confidenceInterval"
+    errorBarType  <- options$errorBarType
     conf.interval <- options$confidenceIntervalInterval
+    descriptivesPlotContainer$dependOn(c("dependent", "plotErrorBars", "errorBarType", "confidenceIntervalInterval",
+                                         "usePooledStandErrorCI"))
+    
   }
 
   descriptivesPlotContainer$dependOn(c("plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots", "labelYAxis"))
@@ -1328,6 +1335,40 @@
                             conf.interval = conf.interval, na.rm = TRUE, .drop = FALSE,
                             errorBarType = errorBarType)
 
+  if (options[["plotHorizontalAxis"]] %in% options[["covariates"]] && !is.null(options$confidenceIntervalInterval)) {
+    splitScatterOptions <- options
+    splitScatterOptions[["colorPalette"]] <- "ggplot2" 
+    splitScatterOptions[["showLegend"]] <- TRUE
+    splitScatterOptions[["addSmooth"]] <- TRUE
+    splitScatterOptions[["addSmoothCI"]] <- TRUE
+    splitScatterOptions[["addSmoothCIValue"]] <- TRUE
+    splitScatterOptions[["regressionType"]] <- "linear"
+    splitScatterOptions[["graphTypeAbove"]] <- "none"
+    splitScatterOptions[["graphTypeRight"]] <- "none"
+    splitScatterOptions[["addSmoothCIValue"]] <- options[["confidenceIntervalInterval"]]
+    
+    if (options$plotSeparatePlots != "") {
+      
+      for (thisLevel in levels(dataset[[.v(options[["plotSeparatePlots"]])]])) {
+        
+        subData <- dataset[dataset[[.v(options[["plotSeparatePlots"]])]] == thisLevel, ]
+        thisPlotName <- paste0(options[["plotHorizontalAxis"]], " - ", options[["dependent"]], ": ", 
+                               options[["plotSeparatePlots"]], " = ", thisLevel)
+        .descriptivesScatterPlots(descriptivesPlotContainer, subData, c(options[["plotHorizontalAxis"]], options[["dependent"]]), 
+                                  split = options[["plotSeparateLines"]], options = splitScatterOptions, name = thisPlotName)
+      }
+
+    } else {
+      .descriptivesScatterPlots(descriptivesPlotContainer, dataset, c(options[["plotHorizontalAxis"]], options[["dependent"]]), 
+                                split = options[["plotSeparateLines"]], options = splitScatterOptions, name = NULL)
+    }
+   
+    return()
+    
+  } else if (options[["plotHorizontalAxis"]] %in% options[["covariates"]]) {
+    summaryStat <- dataset
+  }
+  
   colnames(summaryStat)[colnames(summaryStat) == dependentV] <- "dependent"
 
   if (options$plotHorizontalAxis != "") {
@@ -1375,7 +1416,7 @@
     if (nPlots > 1L) {
       title <- paste(options$plotSeparatePlots,": ",subsetPlots[i], sep = "")
     } else {
-      title <- "Descriptives Plot"
+      title <- ""
     }
     descriptivesPlot <- createJaspPlot(title = title)
     descriptivesPlotContainer[[title]] <- descriptivesPlot
@@ -1393,7 +1434,7 @@
       summaryStatSubset <- summaryStat
     }
 
-    if(options$plotSeparateLines == "") {
+    if (options$plotSeparateLines == "") {
 
       p <- ggplot2::ggplot(summaryStatSubset, ggplot2::aes(x=plotHorizontalAxis,
                                                            y=dependent,
@@ -1409,7 +1450,7 @@
 
     }
 
-    if (plotErrorBars) {
+    if (plotErrorBars && !(options[["plotHorizontalAxis"]] %in% options[["covariates"]])) {
 
       pd <- ggplot2::position_dodge(.2)
       p = p + ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower,
@@ -1422,18 +1463,46 @@
 
     }
 
-    guideLegend <- ggplot2::guide_legend(nrow = min(10, nlevels(summaryStatSubset$plotSeparateLines)), title = options$plotSeparateLines, keywidth = 0.1, keyheight = 0.3, default.unit = "inch")
+    guideLegend <- ggplot2::guide_legend(nrow = min(10, nlevels(summaryStatSubset$plotSeparateLines)), 
+                                         title = options$plotSeparateLines, keywidth = 0.1, keyheight = 0.3, 
+                                         default.unit = "inch")
 
-    p <- p + ggplot2::geom_line(position=pd, size = .7) +
+    if (options[["plotHorizontalAxis"]] %in% options[["covariates"]]) {
+      line <- ggplot2::geom_smooth(method = "lm", size = .7, color = "black", se = FALSE)
+      addHorizontalVar <- summaryStatSubset[,"plotHorizontalAxis"]
+    } else {
+      line <- ggplot2::geom_line(position=pd, size = .7)
+    }
+
+    if (plotErrorBars) {
+      ci.pos <- c(summaryStatSubset[,"dependent"], 
+                  summaryStatSubset[,"dependent"]-summaryStatSubset[,"ci"],
+                  summaryStatSubset[,"dependent"]+summaryStatSubset[,"ci"],
+                  min(summaryStatSubset[,"dependent"])-1,
+                  max(summaryStatSubset[,"dependent"])+1)
+      yBreaks <- JASPgraphs::getPrettyAxisBreaks(ci.pos)
+    } else {
+      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(summaryStatSubset[,"dependent"], 
+                                                   min(summaryStatSubset[,"dependent"])-1,
+                                                   max(summaryStatSubset[,"dependent"])+1))
+    }
+
+    if (options[["plotHorizontalAxis"]] %in% options[["covariates"]]) {
+      ggXaxis <- ggplot2::scale_x_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(summaryStatSubset[,"plotHorizontalAxis"]))
+    } else {
+      ggXaxis <- ggplot2::scale_x_discrete(breaks = JASPgraphs::getPrettyAxisBreaks(summaryStatSubset[,"plotHorizontalAxis"]))
+    } 
+
+    p <- p + line +
       ggplot2::geom_point(position=pd, size=4) +
       ggplot2::scale_fill_manual(values = c(rep(c("white","black"),5),rep("grey",100)), guide=guideLegend) +
       ggplot2::scale_shape_manual(values = c(rep(c(21:25),each=2),21:25,7:14,33:112), guide=guideLegend) +
       ggplot2::scale_color_manual(values = rep("black",200),guide=guideLegend) +
       ggplot2::labs(y = yLabel, x = options[["plotHorizontalAxis"]]) +
-      base_breaks_y(summaryStat, plotErrorBars) +
-      base_breaks_x(summaryStatSubset[,"plotHorizontalAxis"])
-
-    p <- JASPgraphs::themeJasp(p, legend.position = "right")
+      ggplot2::scale_y_continuous(breaks = yBreaks, limits = range(yBreaks)) +
+      ggXaxis +
+      JASPgraphs::geom_rangeframe() + 
+      JASPgraphs::themeJaspRaw(legend.position = "right")
 
     descriptivesPlot$plotObject <- p
   }

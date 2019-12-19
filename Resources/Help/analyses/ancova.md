@@ -19,6 +19,15 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
 - Covariates: In this box the variable that is the covariate can be selected. Covariates are continuous variables that have an influence on the dependent variable but are not part of the experimental manipulation.  
 - WLS Weights: Weighted Least Squares, here the variable specifying which points have more weight and are therefore considered more informative can be selected. For this last option it is important to know the weights a priori. This option is primarily used when the errors are heteroskedastic. 
 
+#### Display: 
+- Descriptive statistics: When this option is selected, the mean, standard deviation, and the sample size will be displayed for each level combination of the independent variables. 
+- Estimates of effect size: By selecting this option, the specific types of calculations to estimate the effect size can be specified. 
+    - &eta;<sup>2</sup> : When this option is selected, the eta-squared is calculated as an estimate of the effect size. However, this method is considered to overestimate the population variance, making it hard to compare the effect of the same variable across different studies (Goss-Sampson, 2018).       
+    - partial &eta;<sup>2</sup> : When this option is selected, the partial eta-squared is calculated as an estimate of the effect size. This method is considered to solve the problem of overestimation of the population variance, which makes it less difficult to compare the effect of the same variable from different studies (Goss-Sampson, 2018). 
+    - &omega;<sup>2</sup> : When this option is selected, the Omega squared is calculated as an estimate of the effect size. This is considered a good estimate when the sample size is small (Goss-Sampson, 2018). 
+- Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>. More information can be found in this <a href="https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/">blogpost</a>. 
+
+
 ### Model 
 - Components and model terms: 
     - Components: All the independent variables and covariates that can be included in the model. 
@@ -32,6 +41,7 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
     - Type I: Sequential sum of squares. It is the reduction of error when each factor of the model is added to the factors already included, preserving the order of factors in the model. The results depend on the order in which the factors are added to the model. This is important to consider when the model contains more than one factor. 
     - Type II: Hierarchical/partially sequential sum of squares. It is the reduction of error when each factor is added to the model that includes all the other factors, except the factors where the added factor is a part of, such as interactions containing that factor. Langsrud (2003) advises to apply this type for an ANOVA with unbalanced data. 
     - Type III: Partial sum of squares. It is the reduction of error when each factor is added to the model that includes all the other factors, including interactions with this factor. This type is often selected, because it takes interactions into account (Langsrud, 2003). This type is selected by default. 
+
 
 ### Assumption Checks 
 - Homogeneity tests: By selecting this option, it will be checked whether the variance of the dependent variable is equal between the groups by performing Levene's test of equal variances.  
@@ -59,16 +69,12 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
 
 ### Post Hoc Tests
 - To perform a post hoc test, drag one or more factor names to the right column. Several options are available:    
-  - Effect size: By selecting this option, the effect size (i.e., the magnitude of the observed effect) will be displayed. The used measure for the effect size is Cohen's d. The effect size will only be displayed for the post hoc type `Standard`. 
-  - Confidence intervals: When this option is selected, the confidence interval for the mean difference is calculated. This is done for every post hoc method except for Dunn. By default this is set to 95% but this can be adjusted into the desired percentage.  
-  - From `...` bootstraps: By selecting this option, the bootstrapped post hoc test is applied. By default, the number of replications is set to 1000. This can be changed into the desired number. 
-  - Correction: To correct for multiple comparison testing and avoid Type I errors, different methods for correcting the p-value are available:  
-      - Tukey: Compare all possible pairs of group means. This correction can be used when the groups of the independent variable have an equal sample size and variance. This method is commonly used and is selected by default. 
-      - Scheffe: Adjusting significance levels in a linear regression, to account for multiple comparisons. This method is considered to be quite conservative. 
-      - Bonferroni: This correction is considered conservative. The risk of Type I error is reduced, however the statistical power decreases as well. 
-      - Holm: This method is also called sequential Bonferroni, and considered less conservative than the Bonferroni method. 
-  - Type: Different types of post hoc tests can be selected. 
+- Type: Different types of post hoc tests can be selected. 
       -  Standard: Pairwise t-tests are performed. All the corrections can be applied to this method. This option is selected by default. 
+        - Confidence intervals: When this option is selected, the confidence interval for the mean difference is calculated. This is done for every post hoc method except for Dunn. By default this is set to 95% but this can be adjusted into the desired percentage.  
+        - From `...` bootstraps: By selecting this option, the bootstrapped post hoc test is applied. By default, the number of replications is set to 1000. This can be changed into the desired number. 
+        - Effect size: By selecting this option, the effect size (i.e., the magnitude of the observed effect) will be displayed. The used measure for the effect size is Cohen's d. The effect size will only be displayed for the post hoc type `Standard`. 
+
       -  Games-Howell: This method can be used when equal group/level variances are not assumed. The p-values are corrected with the Tukey method.
       -  Dunnett: When selecting this method, all the levels are compared to one specific level, for example to the control group. At the moment, it is not possible to manually specify to which level the others levels are compared, but it is based on the order of the levels. To change the order of the levels, the level labels can be adjusted. 
         <details>
@@ -77,6 +83,12 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
       </details> 
     
       -  Dunn: This is a non-parametric test that can be used for testing small subsets of pairs. This post hoc test is a follow up for the Kruskal-Wallis test. The p-values are corrected with the Bonferroni and Holm methods.
+  - Correction: To correct for multiple comparison testing and avoid Type I errors, different methods for correcting the p-value are available:  
+      - Tukey: Compare all possible pairs of group means. This correction can be used when the groups of the independent variable have an equal sample size and variance. This method is commonly used and is selected by default. 
+      - Scheffe: Adjusting significance levels in a linear regression, to account for multiple comparisons. This method is considered to be quite conservative. 
+      - Bonferroni: This correction is considered conservative. The risk of Type I error is reduced, however the statistical power decreases as well. 
+      - Holm: This method is also called sequential Bonferroni, and considered less conservative than the Bonferroni method. 
+- Flag Significant Comparisons: Add asterisks to the table to indicate 3 levels of significance.
 
 ### Descriptive Plots
 - To create a descriptive plot, select the independent variable to be placed on the horizontal axis. If there are more than one independent variable, the variables can be displayed in one plot by putting the other variable in the box Separate lines, or the variables can be displayed in separate plots by selecting the other variable in the box Separate plots.
@@ -89,7 +101,7 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
         - Confidence interval: This option is selected by default. With this option, the error bars will represent confidence intervals of the mean of each level combination of the independent variables. By default, the confidence interval is set to 95%, but this can be changed into the desired percentage.  
         - Standard error: By selecting this option, the error bars will represent standard errors of the mean of each level combination of the independent variables. 
 
-### Additional Options
+### Marginal Means
 - Marginal means: When this option is selected, the mean for each level of the independent variable, adjusted for all the other variables in the model, is calculated. 
 - Compare marginal means to 0: By selecting this option, the adjusted means are compared to 0 and the confidence intervals of the adjusted means are calculated.  
     - Confidence interval adjustment: The confidence intervals can be adjusted in several ways. 
@@ -97,13 +109,7 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
         - Bonferroni: Bonferroni correction of the confidence intervals. 
         - Sidak: Sidak correction of the confidence intervals. 
 - From `...` bootstraps: When this option is selected, the bootstrapped marginal means are calculated. By default, the number of replications is set to 1000. This can be changed into the desired number. 
-- Display: 
-    - Descriptive statistics: When this option is selected, the mean, standard deviation, and the sample size will be displayed for each level combination of the independent variables. 
-    - Estimates of effect size: By selecting this option, the specific types of calculations to estimate the effect size can be specified. 
-        - &eta;<sup>2</sup> : When this option is selected, the eta-squared is calculated as an estimate of the effect size. However, this method is considered to overestimate the population variance, making it hard to compare the effect of the same variable across different studies (Goss-Sampson, 2018).       
-        - partial &eta;<sup>2</sup> : When this option is selected, the partial eta-squared is calculated as an estimate of the effect size. This method is considered to solve the problem of overestimation of the population variance, which makes it less difficult to compare the effect of the same variable from different studies (Goss-Sampson, 2018). 
-        - &omega;<sup>2</sup> : When this option is selected, the Omega squared is calculated as an estimate of the effect size. This is considered a good estimate when the sample size is small (Goss-Sampson, 2018). 
-    - Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>. More information can be found in this <a href="https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/">blogpost</a>. 
+
 
 ### Simple Main Effects
 - The simple main effects represent the effect of one independent variable for each level of the other independent variable, by conducting an ANOVA for each subset of the data as specified by the moderator variables. 
@@ -134,6 +140,13 @@ ANCOVA - dependent variable:
 - &eta;<sup>2</sup> : Estimated effect size eta-squared.      
 - &eta;<sup>2</sup><sub>p</sub> : Estimated effect size partial eta-squared.  
 - &omega;<sup>2</sup> : Estimated effect size omega-squared. 
+
+#### Descriptives
+Descriptives - dependent variable:
+- Independent variables: The levels of the independent variable(s) included in the analysis. If more than 1, the descriptives will be displayed for each combination of levels of the independent variables. 
+- Mean: The mean per level or, if more than 1 independent variable, the mean per combination of levels. 
+- SD: The standard deviation.  
+- N: The sample size. 
 
 #### Assumptions Checks
 Test for Equality of Variances (Levene's):  
@@ -246,12 +259,7 @@ Kruskal-Wallis Test:
 - df: The degrees of freedom. 
 - p: The p-value. 
 
-#### Descriptives
-Descriptives - dependent variable:
-- Independent variables: The levels of the independent variable(s) included in the analysis. If more than 1, the descriptives will be displayed for each combination of levels of the independent variables. 
-- Mean: The mean per level or, if more than 1 independent variable, the mean per combination of levels. 
-- SD: The standard deviation.  
-- N: The sample size. 
+
 
 #### Descriptives Plot
 Independent variable on the x-axis and dependent variable on the y-axis. If other independent variables are included, either different lines representing different values of the other independent variable are displayed in the same plot, or different plots representing different values of the other independent variable are displayed. 
