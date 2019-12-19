@@ -129,15 +129,15 @@ Form {
                 label: qsTr("Weights:")
                 values:
                 [
-                    { label: "Rectangular", value: "rectangular"},
-                    { label: "Epanechnikov", value: "epanechnikov"},
-                    { label: "Biweight", value: "biweight"},
-                    { label: "Triweight", value: "triweight"},
-                    { label: "Cosine", value: "cos"},
-                    { label: "Inverse", value: "inv"},
-                    { label: "Gaussian", value: "gaussian"},
-                    { label: "Rank", value: "rank"},
-                    { label: "Optimal", value: "optimal"}
+					{ label: qsTr("Rectangular"), value: "rectangular"},
+					{ label: qsTr("Epanechnikov"), value: "epanechnikov"},
+					{ label: qsTr("Biweight"), value: "biweight"},
+					{ label: qsTr("Triweight"), value: "triweight"},
+					{ label: qsTr("Cosine"), value: "cos"},
+					{ label: qsTr("Inverse"), value: "inv"},
+					{ label: qsTr("Gaussian"), value: "gaussian"},
+					{ label: qsTr("Rank"), value: "rank"},
+					{ label: qsTr("Optimal"), value: "optimal"}
                 ]
             }
 
@@ -147,8 +147,8 @@ Form {
                 label: qsTr("Distance:")
                 values:
                 [
-                    { label: "Euclidian", value: "2"},
-                    { label: "Manhattan", value: "1"}
+					{ label: qsTr("Euclidian"), value: "2"},
+					{ label: qsTr("Manhattan"), value: "1"}
                 ]
             }
 

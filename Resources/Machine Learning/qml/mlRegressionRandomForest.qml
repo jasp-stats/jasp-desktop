@@ -116,8 +116,8 @@ Form {
                     label: qsTr("Predictors per split:")
                     values:
                     [
-                        { label: "Auto", value: "auto"},
-                        { label: "Manual", value: "manual"}
+						{ label: qsTr("Auto"), value: "auto"},
+						{ label: qsTr("Manual"), value: "manual"}
                     ]
                 } 
 
