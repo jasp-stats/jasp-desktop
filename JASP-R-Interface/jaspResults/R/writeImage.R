@@ -220,23 +220,40 @@ decodeplot.function <- function(x) {
   return(decodeplot.recordedplot(out))
 }
 
-#Some functions that act as a bridge between R and JASP. If JASP isn't running then all columnNames are expected to not be encoded
+# Some functions that act as a bridge between R and JASP. If JASP isn't running then all columnNames are expected to not be encoded
 
-# two convenience functions to encode/ decode jasp column names. If strict then
-# every value of x must be an exact column name, otherwise other values may be mixed in and pattern matching is performed.
+# Two convenience functions to encode/decode jasp column names. A custom encoder/decoder function may be supplied, otherwise a default is used.
+# The strict parameter affects the default; if TRUE then every value of x must be an exact column name, otherwise other values may be mixed in and pattern matching is performed.
 encodeColNames <- function(x, strict = FALSE, fun = NULL, ...) {
   if (!is.function(fun))
-    fun <- .findFunc(name = ifelse(strict, ".encodeColNamesStrict", ".encodeColNamesLax"))
+    fun <- .getDefaultEnDeCoderFun("encode", strict)
   return(.applyEnDeCoder(x, fun, ...))
 }
 decodeColNames <- function(x, strict = FALSE, fun = NULL, ...) {
   if (!is.function(fun))
-    fun <- .findFunc(name = ifelse(strict, ".decodeColNamesStrict", ".decodeColNamesLax"))
+    fun <- .getDefaultEnDeCoderFun("decode", strict)
   return(.applyEnDeCoder(x, fun, ...))
 }
 
-# this ensures that functions can also be found in jasptools (it needs to search in the package namespace)
-.findFunc <- function(name) {
+.getDefaultEnDeCoderFun <- function(type, strict) {
+  defaults <- list(encode = list(strict = ".encodeColNamesStrict", lax = ".encodeColNamesLax"),
+                   decode = list(strict = ".decodeColNamesStrict", lax = ".decodeColNamesLax"))
+  
+  if (strict)
+    method <- "strict"
+  else
+    method <- "lax"
+  
+  fun <- .findFun(defaults[[type]][[method]])
+  
+  if (!is.function(fun))
+    stop(paste("Could not locate", type, "function; an analysis won't work correctly unless run inside JASP or jasptools"))
+  
+  return(fun)
+}
+
+# This ensures that functions can also be found in jasptools (it needs to search in the package namespace)
+.findFun <- function(name) {
   obj <- NULL
   if (exists(name))
     obj <- eval(parse(text = name))
@@ -250,21 +267,17 @@ decodeColNames <- function(x, strict = FALSE, fun = NULL, ...) {
   
   if (!is.function(obj))
     return(NULL)
-    
+  
   return(obj)
 }
 
-# internal function that applies a decoding or encoding function (or actually any function) to R objects
+# Internal function that applies a decoding or encoding function (or actually any function) to R objects
 # as long as they are character
 .applyEnDeCoder <- function(x, fun, ...) {
-  # .findFunc returns NULL if not found
-  if (is.null(fun) || !is.function(fun))
-    return(x)
-  
   UseMethod(".applyEnDeCoder", x)
 }
 
-# default acts as a fallback for model objects which have overwritten the list class
+# Default acts as a fallback for model objects which have overwritten the list class
 .applyEnDeCoder.default <- function(x, fun, ...) {
   if (!"list" %in% class(x) && is.list(x))
     x <- .applyEnDeCoder.list(x, fun, ...)
