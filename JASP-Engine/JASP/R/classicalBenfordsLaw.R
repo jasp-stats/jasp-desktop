@@ -20,6 +20,8 @@
 
 classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
+  # Create the procedure paragraph
+
   # Read in the data 
   dataset <- .auditReadDataBenfordsLaw(dataset, 
                                        options)
@@ -31,26 +33,29 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   # Ready for analysis
   ready <- .auditClassicalBenfordsLawReady(options)
 
-  # Create explanatory text
-  # .auditClassicalEstimation(dataset, 
-  #                           options, 
-  #                           jaspResults, 
-  #                           ready, 
-  #                           position = 1)
-
   # Create results table
+  .auditClassicalBenfordsLawTestTable(dataset, 
+                                    options, 
+                                    jaspResults, 
+                                    ready, 
+                                    position = 2)
+
+  # Create the observed and predicted probabilities table                                  
   .auditClassicalBenfordsLawSummaryTable(dataset, 
                                          options, 
                                          jaspResults, 
                                          ready, 
-                                         position = 2)
+                                         position = 3)
 
-  # Benfords Law plot
+  # Create the observed and predicted probabilities plot
   .benfordsLawPlot(dataset, 
                    options, 
                    jaspResults, 
                    ready, 
                    position = 4)
+
+  # Create the conclusion paragraph
+
 }
 
 .auditReadDataBenfordsLaw <- function(dataset, 
@@ -87,26 +92,130 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
 }
 
+.auditClassicalBenfordsLawState <- function(dataset, 
+                                            options, 
+                                            jaspResults,
+                                            ready){
+
+  if(!is.null(jaspResults[["result"]])){
+
+    return(jaspResults[["result"]]$object)
+
+  } else if(ready){
+
+    totalObs <- nrow(dataset)
+    obs <- dataset[[.v(options[["values"]])]]
+
+    extractFirstNumber <- function(x){
+      as.numeric(strsplit(as.character(abs(x)), "")[[1]][1])
+    }
+    firstDigitofEveryObs <- sapply(obs, extractFirstNumber)
+
+    digits <- 1:9
+    counts <- rep(0, length(digits))
+    percentages <- rep(0, length(digits))
+
+    includedNumbers <- as.numeric(names(table(firstDigitofEveryObs)))
+
+    counts[includedNumbers] <- as.numeric(table(firstDigitofEveryObs))
+    percentages <- counts / totalObs
+    percentagesLabel <- paste0(round(percentages * 100, 2), "%")
+
+    inBenford <- log10(1 + 1 / digits)
+    inBenfordLabel <- paste0(round(inBenford * 100, 2), "%")
+
+    result <- list(digits = digits,
+                  counts = counts, 
+                  percentages = percentages,
+                  inBenford = inBenford,
+                  N = totalObs)
+
+    jaspResults[["result"]] <- createJaspState(result)
+    jaspResults[["result"]]$dependOn(options = c("values", "confidence"))
+    return(jaspResults[["result"]]$object)
+
+  } else {
+    return(list())
+  }
+}
+
+.auditClassicalBenfordsLawTestTable <- function(dataset, 
+                                                options, 
+                                                jaspResults, 
+                                                ready, 
+                                                position){
+
+  if(!is.null(jaspResults[["benfordsLawTestTable"]])) 
+    return()
+
+  benfordsLawTestTable <- createJaspTable("Benford's Law Goodness-of-fit Table")
+  benfordsLawTestTable$position <- position
+
+  benfordsLawTestTable$dependOn(options = c("values",
+                                             "confidence"))
+
+  benfordsLawTestTable$addColumnInfo(name = 'test', 
+                                title = '', 
+                                type = 'string')
+  benfordsLawTestTable$addColumnInfo(name = 'measure', 
+                                title = 'Statistic', 
+                                type = 'string')
+  benfordsLawTestTable$addColumnInfo(name = 'value',  
+                                title = 'Value', 
+                                type = 'string')
+  benfordsLawTestTable$addColumnInfo(name = 'pvalue', 
+                                title = "<i>p</i> value", 
+                                type = 'pvalue')
+
+  message <- "The null hypothesis specifies that the distribution of 
+              first digits in the population conforms to Benford’s Law."
+  benfordsLawTestTable$addFootnote(message = message, symbol="<i>Note.</i>")
+
+  jaspResults[["benfordsLawTestTable"]] <- benfordsLawTestTable
+
+  if(!ready){
+
+    row <- data.frame(test = "Chi-squared", measure = "X\u00B2")
+    benfordsLawTestTable$addRows(row)
+    return()
+  }
+
+  state <- .auditClassicalBenfordsLawState(dataset, 
+                                           options, 
+                                           jaspResults,
+                                           ready)
+
+  observed <- state[["N"]] * state[["percentages"]]
+  expected <- state[["N"]] * state[["inBenford"]]
+  chiSquare <- sum( (observed - expected)^2 / expected )
+  df <- 8
+  p <- pchisq(q = 1 - options[["confidence"]], df = df)
+
+  row <- data.frame(test = "Chi-square", measure = "X\u00B2", value = round(chiSquare, 3), pvalue = p)
+  benfordsLawTestTable$addRows(row)
+}
+
 .auditClassicalBenfordsLawSummaryTable <- function(dataset, 
                                                    options, 
                                                    jaspResults, 
                                                    ready, 
                                                    position){
 
-  if(!is.null(jaspResults[["benfordsLawTable"]])) 
-    return() #The options for this table didn't change so we don't need to rebuild it
+  if(!is.null(jaspResults[["benfordsLawTable"]]) || !options[["summaryTable"]])
+    return()
 
-  benfordsLawTable <- createJaspTable("Benford's Law Summary Table")
+  benfordsLawTable <- createJaspTable("Descriptive Statistics")
   benfordsLawTable$position <- position
 
-  benfordsLawTable$dependOn(options = c("values"))
+  benfordsLawTable$dependOn(options = c("values", 
+                                        "summaryTable"))
 
   benfordsLawTable$addColumnInfo(name = 'digit', 
                                  title = 'Leading digit', 
-                                 type = 'string')
+                                 type = 'integer')
   benfordsLawTable$addColumnInfo(name = 'count', 
                                  title = 'Count', 
-                                 type = 'string')
+                                 type = 'integer')
   benfordsLawTable$addColumnInfo(name = 'percentage',  
                                  title = 'Observed %', 
                                  type = 'string')
@@ -116,43 +225,27 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
   jaspResults[["benfordsLawTable"]] <- benfordsLawTable
 
-  if(!ready)
+  if(!ready){
+
+    row <- data.frame(digit = 1:9, inBenford = paste0(round(log10(1 + 1 / 1:9) * 100, 2), "%"))
+    benfordsLawTable$addRows(row)
     return()
+  } 
 
-  totalObs <- nrow(dataset)
-  obs <- dataset[[.v(options[["values"]])]]
+  state <- .auditClassicalBenfordsLawState(dataset, 
+                                           options, 
+                                           jaspResults,
+                                           ready)
 
-  extractFirstNumber <- function(x){
-    as.numeric(strsplit(as.character(abs(x)), "")[[1]][1])
-  }
-  firstDigitofEveryObs <- sapply(obs, extractFirstNumber)
+  percentagesLabel <- paste0(round(state[["percentages"]] * 100, 2), "%")
+  inBenfordLabel <- paste0(round(state[["inBenford"]] * 100, 2), "%")
 
-  digits <- 1:9
-  counts <- rep(0, length(digits))
-  percentages <- rep(0, length(digits))
-
-  includedNumbers <- as.numeric(names(table(firstDigitofEveryObs)))
-
-  counts[includedNumbers] <- as.numeric(table(firstDigitofEveryObs))
-  percentages <- counts / totalObs
-  percentagesLabel <- paste0(round(percentages * 100, 2), "%")
-
-  inBenford <- log10(1 + 1 / digits)
-  inBenfordLabel <- paste0(round(inBenford * 100, 2), "%")
-
-  result <- list(digits = digits,
-                 counts = counts, 
-                 percentages = percentages,
-                 inBenford = inBenford)
-
-  row <- data.frame(digit = digits, 
-                    count = counts, 
+  row <- data.frame(digit = state[["digits"]], 
+                    count = state[["counts"]], 
                     percentage = percentagesLabel, 
                     inBenford = inBenfordLabel)
 
   benfordsLawTable$addRows(row)
-
-  jaspResults[["result"]] <- createJaspState(result)
 }
 
 .benfordsLawPlot <- function(dataset, 
@@ -165,8 +258,8 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
     return()
 
   benfordsLawPlot <- createJaspPlot(plot = NULL, 
-                                    title = "Observed and predicted Probabilities", 
-                                    width = 500, 
+                                    title = "Benford's Law vs. Observed Percentages", 
+                                    width = 600, 
                                     height = 400)
 
   benfordsLawPlot$position <- position
@@ -178,18 +271,21 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   if(!ready) 
     return()
 
-  state <- jaspResults[["result"]]$object
+  state <- .auditClassicalBenfordsLawState(dataset, 
+                                          options, 
+                                          jaspResults,
+                                          ready)
 
   d <- data.frame(x = c(1:9, 1:9),
                   y = c(state[["percentages"]], state[["inBenford"]]),
-                  type = c(rep("Observed", 9), rep("In Benford's Law", 9)))
+                  type = c(rep("Observed", 9), rep("Benford's Law", 9)))
 
   yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y, min.n = 4)
 
-  p <- ggplot2::ggplot(data = data.frame(x = c(0,0), y = c(0,1), type = c("Observed", "In Benford's Law")), 
+  p <- ggplot2::ggplot(data = data.frame(x = c(0,0), y = c(0,1), type = c("Observed", "Benford's Law")), 
                        mapping = ggplot2::aes(x = x, y = y, fill = type)) +
         ggplot2::geom_point(alpha = 0) +
-        ggplot2::geom_bar(data = subset(d,d$type == "In Benford's Law"), 
+        ggplot2::geom_bar(data = subset(d,d$type == "Benford's Law"), 
                           mapping = ggplot2::aes(x = x, y = y), 
                           fill = "darkgray", 
                           stat = "identity", 
@@ -204,18 +300,18 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                fill = "dodgerblue", 
                                size = 5, 
                                stroke = 1.5) +
-        ggplot2::scale_x_continuous(name = "Digit",
+        ggplot2::scale_x_continuous(name = "Leading digit",
                                     breaks = 1:9, 
                                     labels = 1:9,
                                     limits = c(0.5, 9.5)) +
-        ggplot2::scale_y_continuous(name = "Probability",
+        ggplot2::scale_y_continuous(name = "",
                                   breaks = yBreaks, 
-                                  labels = yBreaks,
+                                  labels = paste0(round(yBreaks * 100, 2), "%"),
                                   limits = c(0, max(yBreaks))) +
         ggplot2::labs(fill = "") +
         ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = -5, r = 50))) +
         ggplot2::guides(fill = ggplot2::guide_legend(
-                                                  override.aes = list(size = c(10, 8), 
+                                                  override.aes = list(size = c(10, 7), 
                                                                       shape = c(22, 21), 
                                                                       fill = c("darkgray", "dodgerblue"), 
                                                                       stroke = 2, 

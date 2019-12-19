@@ -40,7 +40,7 @@ Form {
 			name: 					"values"
 			title: 					qsTr("Variable")
 			singleVariable:	true
-			allowedColumns:	["scale"]
+			allowedColumns:	["ordinal", "scale"]
 		}
 	}
 
@@ -51,6 +51,14 @@ Form {
 		GridLayout 
 		{
 			columns: 3
+
+			PercentField
+			{
+				name: 				"confidence"
+				label: 				qsTr("Confidence")
+				decimals: 		2
+				defaultValue: 95
+			}
 
 			GroupBox 
 			{
@@ -81,7 +89,19 @@ Form {
 
 		GridLayout 
 		{
-			columns: 3
+			columns: 2
+
+			GroupBox
+			{
+				title: qsTr("Tables")
+
+				CheckBox
+				{
+					text: qsTr("Descriptive statistics")
+					name: "summaryTable"
+					checked: true
+				}
+			}
 
 			GroupBox
 			{
@@ -89,7 +109,7 @@ Form {
 
 				CheckBox
 				{
-					text: qsTr("Observed and predicted probabilities")
+					text: qsTr("Compare vs. Benford's Law")
 					name: "benfordsLawPlot"
 				}
 			}
