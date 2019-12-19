@@ -453,12 +453,12 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semFitMeasures <- unlist(lavaan:::fitMeasures(semContainer[["semResultsList"]]$object$semResults))
   
   modl <- list(model = gettext("Model"))
-  semModelTestTable$setData(modl, semFitMeasures[c('fmin', 'chisq', 'df', 'pvalue')]))
-  semBaselineTable$setData(modl,  semFitMeasures[c('cfi', 'tli', 'nnfi', 'nfi', 'pnfi', 'rfi', 'ifi', 'rni')]))
-  semLoglikTable$setData(modl,    semFitMeasures[c('logl', 'unrestricted.logl', 'npar', 'aic', 'bic', 'bic2')]))
-  semRMSEATable$setData(modl,     semFitMeasures[c('rmsea', 'rmsea.ci.lower', 'rmsea.ci.upper', 'rmsea.pvalue')]))
-  semRMRTable$setData(modl,       semFitMeasures[c('rmr', 'rmr_nomean', 'srmr')]))
-  semOtherFitTable$setData(modl,  semFitMeasures[c('cn_05', 'cn_01', 'gfi', 'agfi', 'mfi')]))
+  semModelTestTable$setData(c(modl, semFitMeasures[c('fmin', 'chisq', 'df', 'pvalue')]))
+  semBaselineTable$setData( c(modl, semFitMeasures[c('cfi', 'tli', 'nnfi', 'nfi', 'pnfi', 'rfi', 'ifi', 'rni')]))
+  semLoglikTable$setData(   c(modl, semFitMeasures[c('logl', 'unrestricted.logl', 'npar', 'aic', 'bic', 'bic2')]))
+  semRMSEATable$setData(    c(modl, semFitMeasures[c('rmsea', 'rmsea.ci.lower', 'rmsea.ci.upper', 'rmsea.pvalue')]))
+  semRMRTable$setData(      c(modl, semFitMeasures[c('rmr', 'rmr_nomean', 'srmr')]))
+  semOtherFitTable$setData( c(modl, semFitMeasures[c('cn_05', 'cn_01', 'gfi', 'agfi', 'mfi')]))
   
   return()
 }
