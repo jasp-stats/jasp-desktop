@@ -29,7 +29,7 @@ Form
 			name: "dependent"
 			title: qsTr("Dependent Variable")
 			singleVariable: true
-			suggestedColumns: ["scale"]
+			allowedColumns: ["scale"]
 		}
 
 		AssignedVariablesList

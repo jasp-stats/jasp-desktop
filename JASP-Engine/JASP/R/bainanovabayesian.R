@@ -24,6 +24,8 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	readList <- .readDataBainAnova(options, dataset)
 	dataset <- readList[["dataset"]]
 	missingValuesIndicator <- readList[["missingValuesIndicator"]]
+
+	.bainCommonErrorCheck(dataset, options)
 	
 	bainContainer <- .bainGetContainer(jaspResults, deps=c("dependent", "fixedFactors", "model"))
 	
@@ -98,7 +100,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	names(dataset) <- .unv(names(dataset))
 
 	p <- try(silent= FALSE, expr= {
-		bainResult <- .bain_anova_cran(X = dataset, dep = options[["dependent"]], group = options[["fixedFactors"]], hyp = rest.string, seed = options[["seed"]])
+		bainResult <- bain:::bain_anova_cran(X = dataset, dep = options[["dependent"]], group = options[["fixedFactors"]], hyp = rest.string, seed = options[["seed"]])
 		bainContainer[["bainResult"]] <- createJaspState(bainResult)
 	})
 
@@ -158,13 +160,10 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	CiUpper <- bainSummary[["ub"]]
 
 	if(type == "anova"){
-		# The standard errors are taken from the data
+		# Include the standard deviation from the groups
 		sd <- aggregate(dataset[, .v(options[["dependent"]])], list(dataset[, .v(options[["fixedFactors"]])]), sd)[, 2]
-		se <- sd / sqrt(N)	
-	} else {
-		# The standard errors are taken from bain, since we have adjusted means
-		se <- sqrt(sigma)
 	}
+	se <- sqrt(sigma)	
 
 	row <- data.frame(v = variable, N = N, mean = mu, se = se, lowerCI = CiLower, upperCI = CiUpper)
 	if(type == "anova")
@@ -173,9 +172,19 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .bainAnovaBayesFactorPlots <- function(dataset, options, bainContainer, ready, position) {
+	
 	if (!is.null(bainContainer[["bayesFactorPlot"]]) || !options[["bayesFactorPlot"]]) return()
 
-	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = 400, width = 600)
+	if(options[["model"]] == ""){
+		height <- 300
+		width <- 400
+	} else {
+		height <- 400
+		width <- 600
+	}
+
+	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = height, width = width)
+
 	bayesFactorPlot$dependOn(options=c("bayesFactorPlot", "seed"))
 	bayesFactorPlot$position <- position
 	
@@ -189,6 +198,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .bainAnovaDescriptivesPlot <- function(dataset, options, bainContainer, ready, type = "anova", position) {
+	
 	if (!is.null(bainContainer[["descriptivesPlot"]]) || !options[["descriptivesPlot"]]) return()
 	
 	plotTitle <- ifelse(type == "anova", yes = "Descriptives Plot", no = "Adjusted Means")
@@ -246,27 +256,25 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 .readDataBainAnova <- function(options, dataset) {
+	
 	numeric.variables	<- c(unlist(options[["dependent"]]))
 	numeric.variables	<- numeric.variables[numeric.variables != ""]
 	factor.variables	<- unlist(options[["fixedFactors"]])
 	factor.variables	<- factor.variables[factor.variables != ""]
-	all.variables			<- c(numeric.variables, factor.variables)
+	all.variables		<- c(numeric.variables, factor.variables)
 
 	if (is.null(dataset)) {
-		trydata									<- .readDataSetToEnd(columns.as.numeric=all.variables)
+		trydata	<- .readDataSetToEnd(columns.as.numeric=all.variables)
 		missingValuesIndicator	<- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
-		dataset 								<- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=all.variables)
+		dataset <- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=all.variables)
 	} else {
-		dataset 								<- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
+		dataset <- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
 	}
 
-	.hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
-				all.target=all.variables, observations.amount="< 3",
-				exitAnalysisIfErrors = TRUE)
 	readList <- list()
-  readList[["dataset"]] <- dataset
-  readList[["missingValuesIndicator"]] <- missingValuesIndicator
-  return(readList)
+  	readList[["dataset"]] <- dataset
+  	readList[["missingValuesIndicator"]] <- missingValuesIndicator
+  	return(readList)
 }
 
 .bainCleanModelInput <- function(input) {
@@ -289,29 +297,4 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 		jaspResults[["bainContainer"]]$position = 1
 	}
 	invisible(jaspResults[["bainContainer"]])
-}
-
-# This function is not from JASP and will be migrated to the bain CRAN package in time
-.bain_anova_cran<-function(X, dep, group, hyp, seed){
-
-	set.seed(seed)
-
-	# Make group a factor
-	c1 <- paste0("X$",group,"<- as.factor(X$",group,")")
-	eval(parse(text = c1))
-	# roep lm aan
-	c2 <- paste0("lmres <- lm(",dep,"~",group,"-1, data = X)")
-	eval(parse(text = c2))  
-
-	# Make hyp if argument is NULL
-	if (is.null(hyp)){
-		hyp <- names(coef(lmres))
-		hyp <- paste0(hyp, collapse = "=")
-	}
-
-	# Call bain with lmres and hyp as input
-	c3 <- paste0("bain::bain(lmres,","\"",hyp,"\"",")")
-	result <- eval(parse(text = c3))
-
-	return(invisible(result))
 }
