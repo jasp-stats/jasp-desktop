@@ -21,7 +21,7 @@ bayesianAudit <- function(jaspResults, dataset, options, ...){
     ### PROCEDURE ###
     .bayesianProcedure(options, jaspResults)
     ### AUDIT RISK MODEL ###
-    .auditRiskModel(options, jaspResults)
+    .auditRiskModel(options, jaspResults, position = 2)
     ### PLANNING ###
     .bayesianPlanning(dataset, options, jaspResults)
     ### SELECTION ###

@@ -45,8 +45,13 @@
 			"requiresData":					false
 		},
 		{
-			"title":    					"Estimation",
+			"title":    					"Other",
 			"icon":							"audit-estimation.svg"
+		},
+		{
+			"title":						"Benford's Law",
+			"function":						"classicalBenfordsLaw",
+			"requiresData":					true
 		},
 		{
 			"title":						"Estimation",

@@ -1301,6 +1301,7 @@
             exitAnalysisIfErrors = TRUE)
 }
 
+# The following function will be deprecated
 .decisionAnalysis <- function(options, jaspResults, position, planningContainer, type){
 
   if(!is.null(planningContainer[["decisionPlot"]])) return()

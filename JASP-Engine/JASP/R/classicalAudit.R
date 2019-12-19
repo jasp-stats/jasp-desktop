@@ -21,7 +21,7 @@ classicalAudit <- function(jaspResults, dataset, options, ...){
     ### PROCEDURE ###
     .classicalProcedure(dataset, options, jaspResults)
     ### AUDIT RISK MODEL ###
-    .auditRiskModel(options, jaspResults)
+    .auditRiskModel(options, jaspResults, position = 2)
     ### PLANNING ###
     .classicalPlanning(dataset, options, jaspResults)
     ### SELECTION ###
