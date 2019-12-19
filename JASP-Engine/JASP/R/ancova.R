@@ -853,7 +853,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       
       if (class(bootstrapPostHoc) == "try-error") {
         postHocStandardContainer[[thisVarName]]$setError(bootstrapPostHoc)
-        next()
+        next
       }
       
       bootstrapSummary <- summary(bootstrapPostHoc)
@@ -1440,7 +1440,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       
       if (class(bootstrapMarginalMeans) == "try-error") {
         marginalMeansContainer[[thisVarName]]$setError(bootstrapMarginalMeans)
-        next()
+        next
       }
       
       bootstrapSummary <- summary(bootstrapMarginalMeans)

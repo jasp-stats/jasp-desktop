@@ -31,7 +31,7 @@ Form
 	
 	VariablesForm
 	{
-		height: 400
+		preferredHeight: 400
 		AvailableVariablesList { name: "allVariablesList" }
 		AssignedVariablesList { name: "dependent";		title: qsTr("Dependent Variable");	suggestedColumns: ["scale"]; singleVariable: true		}
 		AssignedVariablesList { name: "fixedFactors";	title: qsTr("Fixed Factors");		suggestedColumns: ["ordinal", "nominal"]				}
@@ -218,7 +218,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 200
+			preferredHeight: 200
 			AvailableVariablesList { name: "marginalMeansTermsAvailable"; source: "modelTerms" }
 			AssignedVariablesList {  name: "marginalMeansTerms" }
 		}

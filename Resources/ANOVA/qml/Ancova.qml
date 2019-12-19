@@ -31,7 +31,7 @@ Form
 	
 	VariablesForm
 	{
-		height: 400
+		preferredHeight: 400
 		AvailableVariablesList { name: "allVariablesList" }
 		AssignedVariablesList
 		{
@@ -141,7 +141,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 200
+			preferredHeight: 200
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: [{ name: "modelTerms", discard: "covariates" }]}
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 
@@ -207,7 +207,7 @@ Form
 		title: qsTr("Descriptives Plots")
 		
 		VariablesForm {
-			height: 200
+			preferredHeight: 200
 			AvailableVariablesList { name: "descriptivePlotsVariables"; source: ["fixedFactors", "covariates"]	}
 			AssignedVariablesList {	name: "plotHorizontalAxis";			title: qsTr("Horizontal Axis"); singleVariable: true}
 			AssignedVariablesList {	name: "plotSeparateLines";			title: qsTr("Separate Lines");  singleVariable: true; suggestedColumns: ["ordinal", "nominal"]		}
@@ -242,7 +242,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 200
+			preferredHeight: 200
 			AvailableVariablesList { name: "marginalMeansTermsAvailable"; source: [{ name: "modelTerms", discard: "covariates" }] }
 			AssignedVariablesList {	 name: "marginalMeansTerms"  }
 		}
