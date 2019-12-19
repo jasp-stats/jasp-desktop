@@ -135,7 +135,7 @@ FocusScope
 				{
 					id:		easySaveDialog
 
-					title:	"Filter Changed"
+					title:	qsTr("Filter Changed")
 					text:	qsTr("There are unapplied changes to your filter; what would you like to do?")
 
 					property var closeFunc: undefined
@@ -368,7 +368,7 @@ FocusScope
 				{
 					id:		saveDialog
 
-					title:	"Filter Changed"
+					title:	qsTr("Filter Changed")
 					text:	qsTr("There are unapplied changes to your filter; what would you like to do?")
 
 					property var closeFunc: undefined

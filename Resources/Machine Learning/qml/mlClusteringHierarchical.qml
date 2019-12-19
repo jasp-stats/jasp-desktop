@@ -117,7 +117,7 @@ Form {
                 label: qsTr("Distance:")
                 values:
                 [
-                    { label: "Euclidean", value: "Euclidean"},
+					{ label: qsTr("Euclidean"), value: "Euclidean"},
                     { label: "Pearson", value: "Pearson correlation"}
                 ]
             }
@@ -128,10 +128,10 @@ Form {
                 label: qsTr("Linkage:")
                 values:
                 [
-                    { label: "Average", value: "average"},
-                    { label: "Single", value: "single"},
-                    { label: "Complete", value: "complete"},
-                    { label: "Centroid", value: "centroid"}
+					{ label: qsTr("Average"), value: "average"},
+					{ label: qsTr("Single"), value: "single"},
+					{ label: qsTr("Complete"), value: "complete"},
+					{ label: qsTr("Centroid"), value: "centroid"}
                 ]
             }   
 
@@ -223,7 +223,7 @@ Form {
             ComputedColumnField { 
                 id: 		clusterColumn
                 name: 		"clusterColumn"
-                text: 		"Column name: "
+				text: 		qsTr("Column name: ")
                 fieldWidth: 120
                 visible:    addClusters.checked
             }
