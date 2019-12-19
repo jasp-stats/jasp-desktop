@@ -1245,24 +1245,23 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   hlines     <- qnorm(c(0.025, 0.5, 0.975))
   linetypes  <- c("dotted", "dashed", "dotted")
   maxStudy   <- rma.fit$k
-  xbreaks    <- seq(from = 1, to = maxStudy, by = 1)
+  xbreaks    <- 1:maxStudy
   xlabels    <- as.character(xbreaks)
   xlabels[xbreaks%%7 != 0] <- " "
   xlabels[1] <- "1"
   xlims      <- c(1, maxStudy)
   ybreaks    <- pretty(range(zi))
   ylims      <- range(ybreaks)
-  p <- ggplot2::ggplot(data = stand.data, 
-                       ggplot2::aes(x = study, y = resid)) +
-    ggplot2::geom_point(shape = 19, colour = "black") + ggplot2::geom_line()
-  p <- p + ggplot2::geom_hline(yintercept = hlines, linetype  = linetypes, colour = "black")
-  p <- p + ggplot2::xlab("Study") + ggplot2::ylab(" ") + ggplot2::ggtitle(title)
-  p <- p + ggplot2::scale_x_continuous(breaks = xbreaks, labels = xlabels, limits = xlims)
-  p <- p + ggplot2::scale_y_continuous(breaks = ybreaks, limits = ylims)
-  p <- p + ggplot2::theme(axis.line.x         = ggplot2::element_line(),
-                          axis.line.y         = ggplot2::element_line(),
-                          axis.ticks.x.bottom = ggplot2::element_line()
-                          )
+  
+  p <- ggplot2::ggplot(data = stand.data, ggplot2::aes(x = study, y = resid)) +
+    ggplot2::geom_point(shape = 19, colour = "black") + ggplot2::geom_line() +
+    ggplot2::geom_hline(yintercept = hlines, linetype  = linetypes, colour = "black") + 
+    ggplot2::xlab("Study") + ggplot2::ylab(" ") + ggplot2::ggtitle(title)
+  p <- p + ggplot2::scale_x_discrete(labels = xlabels) + 
+    ggplot2::scale_y_continuous(breaks = ybreaks, limits = ylims) + 
+    ggplot2::theme(axis.line.x         = ggplot2::element_line(),
+                   axis.line.y         = ggplot2::element_line(),
+                   axis.ticks.x.bottom = ggplot2::element_line())
   p <- JASPgraphs::themeJasp(p, legend.position = "none")
   return(p)
 }
