@@ -25,6 +25,7 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this, &PreferencesModel::customPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
 	connect(this, &PreferencesModel::jaspThemeChanged,			this, &PreferencesModel::setCurrentThemeNameFromClass,	Qt::QueuedConnection);
 	connect(this, &PreferencesModel::currentThemeNameChanged,	this, &PreferencesModel::onCurrentThemeNameChanged		);
+	connect(this, &PreferencesModel::plotBackgroundChanged,		this, &PreferencesModel::whiteBackgroundChanged			);
 }
 
 PreferencesModel::~PreferencesModel()
@@ -89,6 +90,7 @@ GET_PREF_FUNC_STR(	developerFolder,			Settings::DEVELOPER_FOLDER							)
 GET_PREF_FUNC_BOOL(	useDefaultPPI,				Settings::PPI_USE_DEFAULT							)
 GET_PREF_FUNC_INT(	customPPI,					Settings::PPI_CUSTOM_VALUE							)
 GET_PREF_FUNC_WHT(	whiteBackground,			Settings::IMAGE_BACKGROUND							)
+GET_PREF_FUNC_STR(	plotBackground,				Settings::IMAGE_BACKGROUND							)
 GET_PREF_FUNC_BOOL(	developerMode,				Settings::DEVELOPER_MODE							)
 GET_PREF_FUNC_BOOL(	customThresholdScale,		Settings::USE_CUSTOM_THRESHOLD_SCALE				)
 GET_PREF_FUNC_INT(	thresholdScale,				Settings::THRESHOLD_SCALE							)
@@ -210,15 +212,14 @@ SET_PREF_FUNCTION(int,		setMaxFlickVelocity,		maxFlickVelocity,			maxFlickVeloci
 SET_PREF_FUNCTION(bool,		setModulesRemember,			modulesRemember,			modulesRememberChanged,			Settings::MODULES_REMEMBER							)
 SET_PREF_FUNCTION(QString,	setCranRepoURL,				cranRepoURL,				cranRepoURLChanged,				Settings::CRAN_REPO_URL								)
 SET_PREF_FUNCTION(QString,	setCurrentThemeName,		currentThemeName,			currentThemeNameChanged,		Settings::THEME_NAME								)
+SET_PREF_FUNCTION(QString,	setPlotBackground,			plotBackground,				plotBackgroundChanged,			Settings::IMAGE_BACKGROUND							)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {
 	if (whiteBackground() == newWhiteBackground)
 		return;
 
-	Settings::setValue(Settings::IMAGE_BACKGROUND, newWhiteBackground ? "white" : "transparent");
-	emit whiteBackgroundChanged(newWhiteBackground);
-	emit plotBackgroundChanged(Settings::value(Settings::IMAGE_BACKGROUND).toString());
+	setPlotBackground(newWhiteBackground ? "white" : "transparent");
 }
 
 void PreferencesModel::setDefaultPPI(int defaultPPI)
@@ -368,3 +369,4 @@ void PreferencesModel::onCurrentThemeNameChanged(QString newThemeName)
 {
 	JaspTheme::setCurrentThemeFromName(currentThemeName());
 }
+

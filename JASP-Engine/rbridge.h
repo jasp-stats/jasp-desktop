@@ -93,5 +93,5 @@ extern "C" {
 	std::vector<bool>	rbridge_applyFilter(					const std::string & filterCode, const std::string & generatedFilterCode);
 	std::string			rbridge_encodeColumnNamesInScript(		const std::string & filterCode);
 	std::string			rbridge_evalRCodeWhiteListed(			const std::string & rCode);
-
+	void				rbridge_setLANG(						const std::string & lang);
 #endif // RBRIDGE_H

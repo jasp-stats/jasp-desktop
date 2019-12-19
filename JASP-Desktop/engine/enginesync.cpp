@@ -34,8 +34,10 @@
 #include "utilities/qutils.h"
 #include "tempfiles.h"
 #include "timers.h"
+#include "gui/preferencesmodel.h"
 #include "utilities/appdirs.h"
 #include "log.h"
+
 
 using namespace boost::interprocess;
 
@@ -50,6 +52,11 @@ EngineSync::EngineSync(QObject *parent)
 	connect(this,						&EngineSync::moduleInstallationSucceeded,			DynamicModules::dynMods(),	&DynamicModules::installationPackagesSucceeded	);
 	connect(DynamicModules::dynMods(),	&DynamicModules::stopEngines,						this,						&EngineSync::stopEngines						);
 	connect(DynamicModules::dynMods(),	&DynamicModules::restartEngines,					this,						&EngineSync::restartEngines						);
+
+	connect(PreferencesModel::prefs(),	&PreferencesModel::plotPPIChanged,					this,						&EngineSync::settingsChanged					);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::plotBackgroundChanged,			this,						&EngineSync::settingsChanged					);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::languageCodeChanged,				this,						&EngineSync::settingsChanged					);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::developerModeChanged,			this,						&EngineSync::settingsChanged					);
 
 	// delay start so as not to increase program start up time
 	QTimer::singleShot(100, this, &EngineSync::deleteOrphanedTempFiles);
@@ -111,10 +118,8 @@ void EngineSync::start(int ppi)
 			connect(_engines[i],			&EngineRepresentation::logCfgReplyReceived,				this,					&EngineSync::logCfgReplyReceived										);
 			connect(_engines[i],			&EngineRepresentation::plotEditorRefresh,				this,					&EngineSync::plotEditorRefresh											);
 			connect(_engines[i],			&EngineRepresentation::requestEngineRestart,			this,					&EngineSync::restartEngineAfterCrash									);
-			connect(this,					&EngineSync::ppiChanged,								_engines[i],			&EngineRepresentation::ppiChanged										);
-			connect(this,					&EngineSync::imageBackgroundChanged,					_engines[i],			&EngineRepresentation::imageBackgroundChanged							);
+			connect(this,					&EngineSync::settingsChanged,							_engines[i],			&EngineRepresentation::settingsChanged									);
 			connect(Analyses::analyses(),	&Analyses::analysisRemoved,								_engines[i],			&EngineRepresentation::analysisRemoved									);
-
 		}
 	}
 	catch (interprocess_exception & e)
@@ -131,8 +136,6 @@ void EngineSync::start(int ppi)
 
 	timerProcess->start(50);
 	timerBeat->start(30000);
-
-	emit ppiChanged(ppi);
 }
 
 void EngineSync::restartEngines()
@@ -166,7 +169,8 @@ void EngineSync::process()
 {
 	for (auto engine : _engines)
 		engine->process();
-	
+
+	processSettingsChanged();
 	processFilterScript();
 
 	if(_filterRunning) return; //Do not do anything else while waiting for a filter to return
@@ -174,7 +178,7 @@ void EngineSync::process()
 	processLogCfgRequests();
 	processScriptQueue();
 	processDynamicModules();
-	ProcessAnalysisRequests();
+	processAnalysisRequests();
 }
 
 int EngineSync::sendFilter(const QString & generatedFilter, const QString & filter)
@@ -223,7 +227,7 @@ void EngineSync::processFilterScript()
 	try
 	{
 		for (auto *engine : _engines)
-			if (engine->isIdle())
+			if (engine->idle())
 			{
 				engine->runScriptOnProcess(_waitingFilter);
 				_waitingFilter = nullptr;
@@ -241,13 +245,20 @@ void EngineSync::filterDone(int requestID)
 	_filterRunning = false; //Allow other stuff to happen
 }
 
+void EngineSync::processSettingsChanged()
+{
+	for(auto * engine : _engines)
+		if(engine->shouldSendSettings())
+			engine->sendSettings();
+}
+
 void EngineSync::processScriptQueue()
 {
 	try
 	{
 		for(auto * engine : _engines)
 		{
-			if(engine->isIdle() && _waitingScripts.size() > 0)
+			if(engine->idle() && _waitingScripts.size() > 0)
 			{
 				RScriptStore * waiting = _waitingScripts.front();
 
@@ -287,7 +298,7 @@ void EngineSync::processDynamicModules()
 	{
 		for(auto engine : _engines)
 		{
-			if(engine->isIdle())
+			if(engine->idle())
 			{
 				if		(DynamicModules::dynMods()->aModuleNeedsPackagesInstalled())															engine->runModuleRequestOnProcess(DynamicModules::dynMods()->getJsonForPackageInstallationRequest());
 				else if	(!_requestWideCastModuleJson.isNull() && _requestWideCastModuleResults.count(engine->channelNumber()) == 0)	engine->runModuleRequestOnProcess(_requestWideCastModuleJson);
@@ -301,7 +312,7 @@ void EngineSync::processDynamicModules()
 
 }
 
-void EngineSync::ProcessAnalysisRequests()
+void EngineSync::processAnalysisRequests()
 {	
 	const size_t initedAnalysesStartIndex =
 #ifndef JASP_DEBUG
@@ -327,7 +338,7 @@ void EngineSync::ProcessAnalysisRequests()
 			{
 				for (size_t i = canUseFirstEngine ? 0 : initedAnalysesStartIndex; i<_engines.size(); i++)
 				{
-					if (_engines[i]->isIdle())
+					if (_engines[i]->idle())
 					{
 						_engines[i]->runAnalysisOnProcess(analysis);
 						break;
@@ -664,6 +675,13 @@ void EngineSync::refreshAllPlots()
 		if(engine->analysisInProgress() != nullptr)
 			inProgress.insert(engine->analysisInProgress());
 
+	//If an analysis is empty it means it will be reran anyway, so rewriteImgs is pointless
+	Analyses::analyses()->applyToAll([&](Analysis * analysis)
+	{
+		if(analysis->isEmpty())
+			inProgress.insert(analysis);
+	});
+
 	emit refreshAllPlotsExcept(inProgress);
 }
 
@@ -688,7 +706,7 @@ void EngineSync::processLogCfgRequests()
 	try
 	{
 		for(size_t channelNr : _logCfgRequested)
-			if(_engines[channelNr]->isIdle())
+			if(_engines[channelNr]->idle())
 				_engines[channelNr]->sendLogCfg();
 	}
 	catch (...)

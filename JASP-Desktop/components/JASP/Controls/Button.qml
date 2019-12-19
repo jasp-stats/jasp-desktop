@@ -27,10 +27,8 @@ JASPControl
 	controlType:		JASPControlBase.Button
 	implicitHeight:		control.implicitHeight
 	implicitWidth:		control.implicitWidth
-	width:				control.width
-	height:				control.height
 	isBound:			false
-	opacity:			enabled ? 1 : .7
+	shouldStealHover:	false
 	
 	readonly	property alias control:		control
 				property alias text:		control.text
@@ -44,6 +42,8 @@ JASPControl
 
 	RectangularButton
 	{
-		id:	control       
+		id:				control
+		radius:			jaspTheme.borderRadius
+		anchors.fill:	parent
     }
 }

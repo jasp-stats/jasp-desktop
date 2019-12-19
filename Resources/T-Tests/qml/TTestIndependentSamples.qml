@@ -27,7 +27,7 @@ Form
 
 	VariablesForm
 	{
-		height: 200
+		preferredHeight: 200
 		AvailableVariablesList { name: "allVariablesList" }		
 		AssignedVariablesList { name: "variables";			title: qsTr("Variables");			suggestedColumns: ["scale"]	}
 		AssignedVariablesList { name: "groupingVariable";	title: qsTr("Grouping Variable");	suggestedColumns: ["ordinal", "nominal"]; singleVariable: true }

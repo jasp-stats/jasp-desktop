@@ -204,7 +204,7 @@ Form {
     }
 
     Item {
-        height: 			addClusters.height*2
+        Layout.preferredHeight: 	addClusters.height*2
         Layout.fillWidth: 	true
         Layout.columnSpan: 2
 

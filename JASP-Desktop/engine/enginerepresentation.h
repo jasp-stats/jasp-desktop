@@ -28,8 +28,6 @@ public:
 	void		setAnalysisInProgress(Analysis* analysis);
 	Analysis *	analysisInProgress() const { return _analysisInProgress; }
 
-	bool isIdle() { return _engineState == engineState::idle; }
-
 	void handleRunningAnalysisStatusChanges();
 
 	void runScriptOnProcess(RFilterStore * filterStore);
@@ -38,16 +36,19 @@ public:
 	void runAnalysisOnProcess(Analysis *analysis);
 	void runModuleRequestOnProcess(Json::Value request);
 	void sendLogCfg();
+	void sendSettings();
 
 	void killEngine();
 	void stopEngine();
 	void pauseEngine();
 	void resumeEngine();
 	void restartEngine(QProcess * jaspEngineProcess);
-	bool paused()		const { return _engineState == engineState::paused;												}
-	bool initializing()	const { return _engineState == engineState::initializing;										}
-	bool resumed()		const { return _engineState != engineState::paused && _engineState != engineState::resuming;	}
-	bool stopped()		const { return _engineState == engineState::stopped;											}
+	bool paused()				const { return _engineState == engineState::paused;												}
+	bool initializing()			const { return _engineState == engineState::initializing;										}
+	bool resumed()				const { return _engineState != engineState::paused && _engineState != engineState::resuming;	}
+	bool stopped()				const { return _engineState == engineState::stopped;											}
+	bool idle()					const { return _engineState == engineState::idle; }
+	bool shouldSendSettings()	const { return idle() && _settingsChanged; }
 
 	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr; }
 
@@ -61,6 +62,7 @@ public:
 	void processEngineStoppedReply();
 	void processEngineResumedReply();
 	void processLogCfgReply();
+	void processSettingsReply();
 
 	size_t	channelNumber()		const { return _channel->channelNumber(); }
 
@@ -69,11 +71,9 @@ public:
 	std::string currentState() const;
 
 public slots:
-	void ppiChanged(int newPPI);
-	void imageBackgroundChanged(QString value);
 	void analysisRemoved(Analysis * analysis);
 	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
-	void processError(QProcess::ProcessError error);
+	void settingsChanged();
 
 signals:
 	void engineTerminated();
@@ -102,27 +102,27 @@ signals:
 private:
 	void sendPauseEngine();
 	void sendStopEngine();
-	void rerunRunningAnalysis();
 	void setChannel(IPCChannel * channel)			{ _channel = channel; }
 	void setSlaveProcess(QProcess * slaveProcess);
 	void checkForComputedColumns(const Json::Value & results);
 	void handleEngineCrash();
+	void abortAnalysisInProgress();
 
 private:
 	Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis);
 
-	QProcess*	_slaveProcess		= nullptr;
-	IPCChannel*	_channel			= nullptr;
-	Analysis*	_analysisInProgress = nullptr;
-	engineState	_engineState		= engineState::initializing;
-	int			_ppi				= 96,
-				_idRemovedAnalysis	= -1,
-				_lastRequestId		= -1;
-	QString		_imageBackground	= "white";
-	bool		_pauseRequested		= false,
-				_stopRequested		= false,
-				_slaveCrashed		= false;
-	std::string	_lastCompColName	= "???";
+	QProcess	*	_slaveProcess		= nullptr;
+	IPCChannel	*	_channel			= nullptr;
+	Analysis	*	_analysisInProgress = nullptr,
+				*	_analysisAborted	= nullptr;
+	engineState		_engineState		= engineState::initializing;
+	int				_idRemovedAnalysis	= -1,
+					_lastRequestId		= -1;
+	bool			_pauseRequested		= false,
+					_stopRequested		= false,
+					_slaveCrashed		= false,
+					_settingsChanged	= false;
+	std::string		_lastCompColName	= "???";
 
 };
 

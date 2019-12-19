@@ -15,10 +15,9 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-
-import QtQuick 2.8
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import QtQuick			2.12
+import JASP.Controls	1.0
+import JASP.Widgets		1.0
 
 Form
 {
@@ -57,7 +56,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 200
+			preferredHeight: 200
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {  name: "modelTerms"; title: qsTr("Model Terms"); listViewType: "Interaction" }
 		}
@@ -116,7 +115,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 200
+			preferredHeight: 200
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: "modelTerms" }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 
@@ -183,7 +182,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 150
+			preferredHeight: 150
 			AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors"); source: ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList { name: "plotHorizontalAxis";			title: qsTr("Horizontal Axis"); singleVariable: true }
 			AssignedVariablesList { name: "plotSeparateLines";			title: qsTr("Separate Lines");	singleVariable: true }
@@ -260,7 +259,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 170
+			preferredHeight: 170
 			AvailableVariablesList { name: "effectsVariables";	title: qsTr("Factors")				; source:  ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {	name: "simpleFactor";		title: qsTr("Simple Effect Factor") ; singleVariable: true }
 			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator Factor 1")	; singleVariable: true }
@@ -274,7 +273,7 @@ Form
 		
 		VariablesForm
 		{
-			height: 170
+			preferredHeight: 170
 			AvailableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Kruskal-Wallis Test"); source:  ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {	name: "kruskalVariablesAssigned"; title: qsTr(" ") }
 		}

@@ -256,12 +256,13 @@ svg > text
 }
 
 .jasp-collection-image {
-
-  display: inline-block;
+  display:            inline-block;
+  background-color:   #000;
 }
 
 .jasp-image {
   position: relative ;
+  background-color:   #000;
 }
 
 .jasp-image-image {

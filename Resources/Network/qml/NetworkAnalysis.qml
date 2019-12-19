@@ -428,7 +428,7 @@ Form
 		VariablesForm
 		{
 			visible: dataRatioButton.checked
-			height: 200
+			preferredHeight: 200
 			AvailableVariablesList	{ name: "allXYVariables" }
 			AssignedVariablesList	{ name: "layoutX"; title: qsTr("x"); singleVariable: true; suggestedColumns: "nominalText"}
 			AssignedVariablesList	{ name: "layoutY"; title: qsTr("y"); singleVariable: true; suggestedColumns: "nominalText"}

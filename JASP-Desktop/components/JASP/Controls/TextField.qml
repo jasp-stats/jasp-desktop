@@ -112,6 +112,7 @@ JASPControl
 			color:			jaspTheme.controlBackgroundColor
 			border.width:	textField.showBorder && !control.activeFocus	? 1					: 0
 			border.color:	textField.showBorder							? jaspTheme.borderColor : "transparent"
+			radius:			jaspTheme.borderRadius
 		}
 
 		Rectangle

@@ -16,17 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-
-import QtQuick.Layouts	1.3
-
+import QtQuick			2.12
+import QtQuick.Layouts	1.12
 
 Item
 {
 	id					: variablesForm
 	implicitWidth		: form.width
-	height				: jaspTheme.defaultVariablesFormHeight
-	implicitHeight		: height
+	implicitHeight		: jaspTheme.defaultVariablesFormHeight
+	height				: implicitHeight
+	width				: implicitWidth
 	Layout.columnSpan	: parent.columns
 	visible				: !debug || DEBUG_MODE
 
@@ -42,6 +41,11 @@ Item
 
 			property double	_lastListWidth:					0
 	
+	property int preferredHeight:	implicitHeight
+	property int preferredWidth:	implicitWidth
+
+	Layout.preferredWidth:	preferredWidth
+	Layout.preferredHeight:	preferredHeight
 
 	Item { id: items }
 	

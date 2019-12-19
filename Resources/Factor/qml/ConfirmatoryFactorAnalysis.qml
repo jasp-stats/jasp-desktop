@@ -44,7 +44,7 @@ Form
 				name: "availableFactors"
 				source: [{ name: "factors", use: "title" }]
 				showVariableTypeIcon: false
-				height: jaspTheme.defaultVariablesFormHeight / 3 - 10
+				preferredHeight: jaspTheme.defaultVariablesFormHeight / 3 - 10
 			}
 			AssignedVariablesList
 			{
@@ -52,7 +52,7 @@ Form
 				name:  "secondOrder"
 				suggestedColumns: []
 			}
-			height: jaspTheme.defaultVariablesFormHeight / 3
+			preferredHeight: jaspTheme.defaultVariablesFormHeight / 3
 		}
 
 		//		SEM.FactorsForm
@@ -66,7 +66,7 @@ Form
 		//                name: "availableFactors"
 		//				source: [{ name: "factors", use: "title" }]
 		//                showVariableTypeIcon: false
-		//                height: jaspTheme.defaultVariablesFormHeight / 3 - 10
+		//                preferredHeight: jaspTheme.defaultVariablesFormHeight / 3 - 10
 		//            }
 		//            initNumberFactors: 1
 		//        }
@@ -101,7 +101,7 @@ Form
 			VariablesForm
 			{
 				id: rescov
-				height: 120
+				preferredHeight: 120
 				AvailableVariablesList {name: "observedvars";	syncModels: factors.name	}
 				AssignedPairsVariablesList { name: "rescov" }
 			}

@@ -28,10 +28,10 @@ Form
 	{
 		AvailableVariablesList	{ name: "allVariablesList"								}
 		AssignedVariablesList	{ name: "variables";		title: qsTr("Variables")	}
-		AssignedVariablesList	{ name: "splitby";			title: qsTr("Split");		singleVariable: true; suggestedColumns: ["ordinal", "nominal"];	id:splitBy}
+		AssignedVariablesList	{ name: "splitby";			title: qsTr("Split");		singleVariable: true; suggestedColumns: ["ordinal", "nominal"];	id: splitBy }
 	}
 
-	CheckBox { name: "frequencyTables"; label: qsTr("Frequency tables (nominal and ordinal variables)") }
+	CheckBox { name: "frequencyTables"; label: qsTr("Frequency tables (nominal and ordinal variables)"); }
 
 	Section
 	{

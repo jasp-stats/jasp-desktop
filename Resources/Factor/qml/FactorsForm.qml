@@ -11,7 +11,7 @@ JASPControl
     id:					    factorsForm
 	controlType:		    JASPControlBase.FactorsForm
     implicitWidth:	        parent.width
-	height:			        jaspTheme.defaultVariablesFormHeight + Math.max((factorsFormRepeater.count - 3), 0) * (factorsForm.factorListHeight + factorsFormColumn.spacing)
+	preferredHeight:			        jaspTheme.defaultVariablesFormHeight + Math.max((factorsFormRepeater.count - 3), 0) * (factorsForm.factorListHeight + factorsFormColumn.spacing)
     implicitHeight:         height
     useControlMouseArea:    false
 
@@ -31,7 +31,7 @@ JASPControl
 		id:				availableVariablesList
 		name:			availableVariablesListName
 		width:			listWidth
-		height:			parent.height
+		preferredHeight:			parent.height
 		anchors.top:	parent.top
 		anchors.left:	parent.left
     }
@@ -81,7 +81,7 @@ JASPControl
 					suggestedColumns:	allowAll ? [] : ["scale"]
                     allowedColumns:     ["scale"]
                     implicitWidth:      listWidth
-					height:             factorsForm.factorListHeight
+					preferredHeight:             factorsForm.factorListHeight
 
 					onTitleIsChanged: factorsForm.titleChanged(index, editableTitle)
 				}

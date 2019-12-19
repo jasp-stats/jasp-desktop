@@ -25,32 +25,30 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
     dataset <- .abTestBayesianReadData(dataset, options)
 
   ## COMPUTE AB OBJECT         ###
-  ab_obj <- NULL
-  if (ready)
-    ab_obj <- try(.calcModel.abTest(dataset = dataset, options = options))
+  ab_obj <- .calcModel.abTest(jaspResults, dataset, options, ready)
 
   ### RESULTS - MAIN TABLE     ###
-  .abTestBayesianTableMain(jaspResults, ab_obj, options, ready)
+  .abTestBayesianTableMain(jaspResults, ab_obj, options, ready, position = 1)
 
   ### DESCRIPTIVES TABLE       ###
   if (options$descriptives)
-    .abTestBayesianDescriptivesTable(jaspResults, dataset, options, ready)
+    .abTestBayesianDescriptivesTable(jaspResults, dataset, options, ready, position = 2)
 
   ### PRIOR AND POSTERIOR PLOT ###
   if (options$plotPriorAndPosterior)
-    .abTestPlotPriorPosterior(jaspResults, ab_obj, options, ready)
+    .abTestPlotPriorPosterior(jaspResults, ab_obj, options, ready, position = 3)
 
   ### SEQUENTIAL PLOT          ###
   if (options$plotSequentialAnalysis)
-    .abTestPlotSequential(jaspResults, ab_obj, ready)
+    .abTestPlotSequential(jaspResults, ab_obj, ready, position = 4)
 
   ### ROBUSTNESS PLOT          ###
   if (options$plotRobustness)
-    .abTestPlotRobustness(jaspResults, ab_obj, ready)
+    .abTestPlotRobustness(jaspResults, ab_obj, ready, position = 5)
 
   ### PRIOR PLOT               ###
   if (options$plotPriorOnly)
-    .abTestPlotPriorOnly(jaspResults, options)
+    .abTestPlotPriorOnly(jaspResults, options, position = 6)
 }
 
 
@@ -65,7 +63,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   #   The (numeric) columns given as dependent/covariates/wlsWeights
 
   if (!is.null(dataset))
-    return (dataset)
+    return(dataset)
 
   asNum             <- c(options$n1, options$y1, options$n2, options$y2)
   dataset           <- .readDataSetToEnd(columns.as.numeric = asNum, excluse.na.listwise = asNum)
@@ -77,16 +75,15 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 
-.abTestBayesianTableMain <- function(jaspResults, ab_obj, options, ready) {
+.abTestBayesianTableMain <- function(jaspResults, ab_obj, options, ready, position) {
 
   if (!is.null(jaspResults[["abTestBayesianTable"]]))
     return()
 
   # Create the main table
   abTestBayesianTable <- createJaspTable(title = "Bayesian A/B Test")
-  abTestBayesianTable$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "orEqualTo1Prob", "bayesFactorType",
-                                 "orLessThan1Prob", "orGreaterThan1Prob", "orNotEqualTo1Prob", "numSamples", "bayesFactorOrder"))
-  abTestBayesianTable$position <- 1
+  abTestBayesianTable$dependOn(options = c("bayesFactorType", "bayesFactorOrder"), optionsFromObject = jaspResults[["model"]])
+  abTestBayesianTable$position <- position
 
   # abTestBayesianTable$addCitation("JASP Team (2018). JASP (Version 0.9.3) [Computer software].")
 
@@ -166,7 +163,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   if (orNotEqualTo1Prob > 0) {
     rowCount = rowCount + 1
     output.rows[[rowCount]] <- list(
-      "Models"    = "Log odds ratio ≠ 0",
+      "Models"    = "Log odds ratio \u2260 0",
       "BF"        = ab_obj$bf[["bf10"]],
       "P(M|data)" = ab_obj$post_prob[["H1"]],
       "P(M)"      = orNotEqualTo1Prob
@@ -185,7 +182,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   }
 
   for (r in 1:rowCount) {
-    if        (options$bayesFactorType == "BF01") {
+    if (options$bayesFactorType == "BF01") {
       output.rows[[r]]$BF <- 1 / output.rows[[r]]$BF
     } else if (options$bayesFactorType == "LogBF10") {
       output.rows[[r]]$BF <- base::log(output.rows[[r]]$BF)
@@ -196,36 +193,41 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 
-.calcModel.abTest <- function(dataset, options) {
-    # Conducts A/B Test
-    #
-    # Args:
-    #   dataset: dataset input by user
-    #   options: a list of user options
-    #
-    # Return:
-    #   list containing the ab object
+.calcModel.abTest <- function(jaspResults, dataset, options, ready) {
+  
+  if (!is.null(jaspResults[["model"]]))
+    return(jaspResults[["model"]]$object)
+  
+  # we copy dependencies from this state object in a few places, so it must always exist
+  jaspResults[["model"]] <- createJaspState()
+  jaspResults[["model"]]$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "orEqualTo1Prob",
+                                    "orLessThan1Prob", "orGreaterThan1Prob", "orNotEqualTo1Prob", "numSamples"))
+  
+  if (!ready)
+    return(NULL)
+  
+  prior_par <- list(mu_psi = options$normal_mu, sigma_psi = options$normal_sigma, mu_beta = 0, sigma_beta = 1)
 
-    prior_par <- list(mu_psi = options$normal_mu, sigma_psi = options$normal_sigma, mu_beta = 0, sigma_beta = 1)
+  # Normalize prior probabilities
+  sum_logor          <- options$orGreaterThan1Prob + options$orLessThan1Prob + options$orEqualTo1Prob + options$orNotEqualTo1Prob
+  orGreaterThan1Prob <- options$orGreaterThan1Prob / sum_logor
+  orLessThan1Prob    <- options$orLessThan1Prob / sum_logor
+  orEqualTo1Prob     <- options$orEqualTo1Prob / sum_logor
+  orNotEqualTo1Prob  <- options$orNotEqualTo1Prob / sum_logor
 
-    # Normalize prior probabilities
-    sum_logor          <- options$orGreaterThan1Prob + options$orLessThan1Prob + options$orEqualTo1Prob + options$orNotEqualTo1Prob
-    orGreaterThan1Prob <- options$orGreaterThan1Prob / sum_logor
-    orLessThan1Prob    <- options$orLessThan1Prob / sum_logor
-    orEqualTo1Prob     <- options$orEqualTo1Prob / sum_logor
-    orNotEqualTo1Prob  <- options$orNotEqualTo1Prob / sum_logor
+  prior_prob <- c(orNotEqualTo1Prob, orGreaterThan1Prob, orLessThan1Prob, orEqualTo1Prob)
+  names(prior_prob) <- c("H1", "H+", "H-", "H0")
 
-    prior_prob <- c(orNotEqualTo1Prob, orGreaterThan1Prob, orLessThan1Prob, orEqualTo1Prob)
-    names(prior_prob) <- c("H1", "H+", "H-", "H0")
+  ab <- try(abtest::ab_test(data = dataset, prior_par = prior_par, prior_prob = prior_prob,
+                            posterior = TRUE, nsamples = options$numSamples))
 
-    ab <- try(abtest::ab_test(data = dataset, prior_par = prior_par, prior_prob = prior_prob,
-                              posterior = TRUE, nsamples = options$numSamples))
+  jaspResults[["model"]]$object <- ab
 
-    return(ab)
+  return(ab)
 }
 
 
-.abTestBayesianDescriptivesTable <- function(jaspResults, dataset, options, ready) {
+.abTestBayesianDescriptivesTable <- function(jaspResults, dataset, options, ready, position) {
 
   if (!is.null(jaspResults[["abTestBayesianDescriptivesTable"]]))
     return()
@@ -233,7 +235,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   abTestBayesianDescriptivesTable <- createJaspTable(title = "Descriptives")
 
   abTestBayesianDescriptivesTable$dependOn(c("n1", "y1", "n2", "y2", "descriptives"))
-  abTestBayesianDescriptivesTable$position <- 2
+  abTestBayesianDescriptivesTable$position <- position
 
   abTestBayesianDescriptivesTable$addColumnInfo(name = "group",      title = "",           type = "string")
   abTestBayesianDescriptivesTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
@@ -268,10 +270,12 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 
-.abTestPlotPriorPosterior <- function(jaspResults, ab_obj, options, ready) {
+.abTestPlotPriorPosterior <- function(jaspResults, ab_obj, options, ready, position) {
 
   abTestPriorAndPosteriorPlot <- createJaspPlot(title = "Prior and Posterior",  width = 530, height = 400)
-  abTestPriorAndPosteriorPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "plotPosteriorType", "plotPriorAndPosterior"))
+  abTestPriorAndPosteriorPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "numSamples", "plotPosteriorType", "plotPriorAndPosterior"))
+  abTestPriorAndPosteriorPlot$position <- position
+  
   jaspResults[["abTestPriorAndPosteriorPlot"]] <- abTestPriorAndPosteriorPlot
 
   if (!ready)
@@ -304,10 +308,12 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 
-.abTestPlotSequential <- function(jaspResults, ab_obj, ready) {
+.abTestPlotSequential <- function(jaspResults, ab_obj, ready, position) {
 
   abTestSequentialPlot <- createJaspPlot(title = "Sequential Analysis",  width = 530, height = 400)
-  abTestSequentialPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "plotSequentialAnalysis"))
+  abTestSequentialPlot$dependOn(options = "plotSequentialAnalysis", optionsFromObject = jaspResults[["model"]])
+  abTestSequentialPlot$position <- position
+  
   jaspResults[["abTestSequentialPlot"]] <- abTestSequentialPlot
 
   if (!ready)
@@ -328,10 +334,12 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   return (plotFunc)
 }
 
-.abTestPlotRobustness <- function(jaspResults, ab_obj, ready) {
+.abTestPlotRobustness <- function(jaspResults, ab_obj, ready, position) {
 
   abTestRobustnessPlot <- createJaspPlot(title = "Bayes Factor Robustness Check",  width = 530, height = 400)
-  abTestRobustnessPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "plotRobustness"))
+  abTestRobustnessPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "numSamples", "plotRobustness"))
+  abTestRobustnessPlot$position <- position
+  
   jaspResults[["abTestRobustnessPlot"]] <- abTestRobustnessPlot
 
   if (!ready)
@@ -353,10 +361,12 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 }
 
 
-.abTestPlotPriorOnly <- function(jaspResults, options) {
+.abTestPlotPriorOnly <- function(jaspResults, options, position) {
 
   abTestPriorPlot <- createJaspPlot(title = "Prior",  width = 530, height = 400)
   abTestPriorPlot$dependOn(c("normal_mu", "normal_sigma", "plotPriorType", "plotPriorOnly"))
+  abTestPriorPlot$position <- position
+  
   jaspResults[["abTestPriorPlot"]] <- abTestPriorPlot
 
   abTestPriorPlot$plotObject <- .plotPrior.abTest(options)

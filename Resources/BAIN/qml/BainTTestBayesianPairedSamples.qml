@@ -23,7 +23,7 @@ Form
 {
 	VariablesForm
 	{
-		height: 200
+		preferredHeight: 200
 		AvailableVariablesList { name: "allVariablesList" }
 		AssignedPairsVariablesList { name: "pairs"; title: qsTr("Pairs"); suggestedColumns: ["scale"] }
 	}
@@ -35,11 +35,11 @@ Form
 			title: qsTr("Hypothesis Test")
 			name: "hypothesis"
 
-			RadioButton { text: qsTr("Equal vs. not equal")                     ; name: "groupsNotEqual" ; checked: true}
-			RadioButton { text: qsTr("Equal vs. bigger")                        ; name: "groupOneGreater" }
-			RadioButton { text: qsTr("Equal vs. smaller")                       ; name: "groupTwoGreater" }
-			RadioButton { text: qsTr("Bigger vs. smaller")                      ; name: "_4type" }
-			RadioButton { text: qsTr("Equal vs. bigger vs. smaller")            ; name: "allTypes" }
+			RadioButton { text: qsTr("Equal vs. not equal")                     ; name: "equalNotEqual" ; checked: true}
+			RadioButton { text: qsTr("Equal vs. bigger")                        ; name: "equalBigger" }
+			RadioButton { text: qsTr("Equal vs. smaller")                       ; name: "equalSmaller" }
+			RadioButton { text: qsTr("Bigger vs. smaller")                      ; name: "biggerSmaller" }
+			RadioButton { text: qsTr("Equal vs. bigger vs. smaller")            ; name: "equalBiggerSmaller" }
 		}
 
 		RadioButtonGroup
@@ -55,13 +55,13 @@ Form
 		{
 			title: qsTr("Additional Options")
 
-			DoubleField  { 
+			DoubleField  {
 				name: "seed"
 				text: qsTr("Seed")
 				defaultValue: 100
 				min: -999999
 				max: 999999
-				fieldWidth: 60 
+				fieldWidth: 60
 			}
 		}
 	}
@@ -72,7 +72,8 @@ Form
 		{
 			title: qsTr("Tables")
 			CheckBox { name: "descriptives"; text: qsTr("Descriptives") 
-				CIField { name: "descriptivesPlotsCredibleInterval"; text: qsTr("Credible interval") }
+				CIField { name: "credibleInterval"; text: qsTr("Credible interval") }
+			}
 		}
 
 		Group
@@ -80,10 +81,7 @@ Form
 			title: qsTr("Plots")
 
 			CheckBox { name: "bayesFactorPlot"; text: qsTr("Posterior probabilities") }
-			CheckBox
-			{
-				name: "descriptivesPlots"; text: qsTr("Descriptives plots")}
-			}
+			CheckBox { name: "descriptivesPlots"; text: qsTr("Descriptives plots") }
 		}
 	}
 }

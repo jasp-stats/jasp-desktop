@@ -113,7 +113,7 @@ Form
 
 		Item 
 		{
-			height: 				variableSelectionTitle.height
+			preferredHeight: 				variableSelectionTitle.height
 			Layout.fillWidth: 		true
 
 			Label
@@ -381,20 +381,21 @@ Form
 			}
 		}
 
-		Item 
+		Item
 		{
-			height: 			toSampling.height
+			preferredHeight: 			toSampling.height
 			Layout.fillWidth: 	true
 			enabled:			!pasteVariables.checked
 
 			Button
 			{
-				id: 				downloadReportPlanning
-				anchors.right: 		samplingChecked.left
-				text: 				qsTr("<b>Download Report</b>")
-				enabled: 		materialityRelative.checked ? 
-									materialityPercentage.value != "0" 	: 
-									materialityValue.value 		!= "0" && recordNumberVariable.count > 0 && monetaryVariable.count > 0
+				id:						downloadReportPlanning
+				anchors.right:	 		toSampling.left
+				anchors.rightMargin:	jaspTheme.generalAnchorMargin
+				text:					qsTr("<b>Download Report</b>")
+				enabled:				materialityRelative.checked ?
+										materialityPercentage.value != "0" 	:
+										materialityValue.value 		!= "0" && recordNumberVariable.count > 0 && monetaryVariable.count > 0
 				
 				onClicked: 	form.exportResults()
 			}
@@ -404,7 +405,7 @@ Form
 				id: 			samplingChecked
 				name: 			"samplingChecked"
 				anchors.right:	toSampling.left
-				width:			height
+				width:			0
 				visible: 		false
 				checked: 		false 
 			}
@@ -466,7 +467,7 @@ Form
 			{
 				name: 			"additionalVariables"
 				title: 			qsTr("Additional Variables <i>(optional)</i>")
-				height: 		140
+				preferredHeight: 		140
 				allowedColumns: ["scale", "ordinal", "nominal"]
 			}
 		}
@@ -631,9 +632,9 @@ Form
 			}
 		}
 
-		Item 
+		Item
 		{
-			height: 			toExecution.height
+			preferredHeight: 			toExecution.height
 			Layout.fillWidth: 	true
 			enabled:			!pasteVariables.checked
 
@@ -646,11 +647,12 @@ Form
 
 			Button
 			{
-				id: 			downloadReportSelection
-				enabled: 		materialityRelative.checked ? (materialityPercentage.value == "0" ? false : true) : (materialityValue.value == "0" ? false : true)
-				anchors.right: 	executionChecked.left
-				text: 			qsTr("<b>Download Report</b>")
-				onClicked: 		form.exportResults()
+				id:						downloadReportSelection
+				enabled:				materialityRelative.checked ? (materialityPercentage.value == "0" ? false : true) : (materialityValue.value == "0" ? false : true)
+				anchors.right:			toExecution.left
+				anchors.rightMargin:	jaspTheme.generalAnchorMargin
+				text:					qsTr("<b>Download Report</b>")
+				onClicked:				form.exportResults()
 			}
 
 			CheckBox 
@@ -694,7 +696,7 @@ Form
 
 		Item 
 		{
-			height: 				selectHowToAnalyseObservations.height
+			preferredHeight: 				selectHowToAnalyseObservations.height
 			Layout.fillWidth: 		true
 			
 			Label
@@ -707,7 +709,7 @@ Form
 
 		Item 
 		{
-			height: 				variableType.height
+			preferredHeight: 				variableType.height
 			Layout.fillWidth: 		true
 
 			RadioButtonGroup 
@@ -781,7 +783,7 @@ Form
 
 			Item 
 			{
-				height: 				groupBoxVariableNames.height
+				preferredHeight: 				groupBoxVariableNames.height
 				Layout.fillWidth: 		true
 
 				CheckBox 
@@ -812,7 +814,7 @@ Form
 		}
 
 		Item {
-			height: 			performAuditText.height
+			preferredHeight: 			performAuditText.height
 			Layout.fillWidth: 	true
 
 			Label 
@@ -843,9 +845,9 @@ Form
 			}
 		}
 
-		Item 
+		Item
 		{
-			height: 			toEvaluation.height
+			preferredHeight: 			toEvaluation.height
 			Layout.fillWidth: 	true
 			enabled:			!evaluationChecked.checked
 
@@ -1071,7 +1073,7 @@ Form
 
 		Item 
 		{
-			height: 				toInterpretation.height
+			preferredHeight: 				toInterpretation.height
 			Layout.fillWidth: 		true
 
 			Button

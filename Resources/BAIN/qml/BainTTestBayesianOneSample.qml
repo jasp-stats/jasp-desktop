@@ -23,7 +23,7 @@ Form
 {
 	VariablesForm
 	{
-		height: 200
+		preferredHeight: 200
 		AvailableVariablesList { name: "variablesList" }
 		AssignedVariablesList {
 			name: "variables"
@@ -48,11 +48,11 @@ Form
 			title: qsTr("Hypothesis Test")
 			name: "hypothesis"
 
-			RadioButton { text: qsTr("Equal vs. not equal")                     ; name: "notEqualToTestValue" ; checked: true}
-			RadioButton { text: qsTr("Equal vs. bigger")                        ; name: "greaterThanTestValue" }
-			RadioButton { text: qsTr("Equal vs. smaller")                       ; name: "lessThanTestValue" }
-			RadioButton { text: qsTr("Bigger vs. smaller")                      ; name: "_4type" }
-			RadioButton { text: qsTr("Equal vs. bigger vs. smaller")            ; name: "allTypes" }
+			RadioButton { text: qsTr("Equal vs. not equal")                     ; name: "equalNotEqual" ; checked: true}
+			RadioButton { text: qsTr("Equal vs. bigger")                        ; name: "equalBigger" }
+			RadioButton { text: qsTr("Equal vs. smaller")                       ; name: "equalSmaller" }
+			RadioButton { text: qsTr("Bigger vs. smaller")                      ; name: "biggerSmaller" }
+			RadioButton { text: qsTr("Equal vs. bigger vs. smaller")            ; name: "equalBiggerSmaller" }
 		}
 
 		RadioButtonGroup
@@ -86,7 +86,8 @@ Form
 			title: qsTr("Tables")
 
 			CheckBox { name: "descriptives"; text: qsTr("Descriptives") 
-				CIField { name: "descriptivesPlotsCredibleInterval"; text: qsTr("Credible interval")}
+				CIField { name: "credibleInterval"; text: qsTr("Credible interval")}
+			}
 		}
 
 		Group
@@ -94,10 +95,7 @@ Form
 			title: qsTr("Plots")
 
 			CheckBox { name: "bayesFactorPlot"; text: qsTr("Posterior probabilities") }
-			CheckBox
-			{
-				name: "descriptivesPlots"; text: qsTr("Descriptives plots") }
-			}
+			CheckBox { name: "descriptivesPlots"; text: qsTr("Descriptives plots") }
 		}
 	}
 }

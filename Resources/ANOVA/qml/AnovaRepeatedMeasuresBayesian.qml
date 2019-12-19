@@ -24,13 +24,13 @@ Form
 
 	VariablesForm
 	{
-		height: 520
+		preferredHeight: 520
 		AvailableVariablesList { name: "allVariablesList" }		
 		RepeatedMeasuresFactorsList
 		{
 			name: "repeatedMeasuresFactors"
 			title: qsTr("Repeated Measures Factors")
-			height: 180
+			preferredHeight: 180
 		}
 		AssignedRepeatedMeasuresCells
 		{
@@ -103,7 +103,7 @@ Form
 
 		VariablesForm
 		{
-			height: 200
+			preferredHeight: 200
 
 			AvailableVariablesList
 			{
@@ -123,7 +123,7 @@ Form
 
 		VariablesForm
 		{
-			height: 200
+			preferredHeight: 200
 			AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]}
 			AssignedVariablesList
 			{
@@ -168,7 +168,7 @@ Form
 
 		VariablesForm
 		{
-			height: 200
+			preferredHeight: 200
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "postHocTestsVariables"}
 		}
@@ -187,7 +187,7 @@ Form
 
 		VariablesForm
 		{
-			height: 150
+			preferredHeight: 150
 			AvailableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal Axis");	singleVariable: true }
 			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate Lines");	singleVariable: true }

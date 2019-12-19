@@ -230,7 +230,7 @@ Form {
     }
 
     Item {
-        height: 			addClasses.height*2
+		Layout.preferredHeight: 	addClasses.height*2
         Layout.fillWidth: 	true
         Layout.columnSpan: 2
 

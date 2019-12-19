@@ -54,6 +54,7 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(QColor             buttonColorPressed              READ buttonColorPressed              WRITE setButtonColorPressed              NOTIFY buttonColorPressedChanged              )
 	Q_PROPERTY(QColor             buttonBorderColor               READ buttonBorderColor               WRITE setButtonBorderColor               NOTIFY buttonBorderColorChanged               )
 	Q_PROPERTY(QColor             buttonBorderColorHovered        READ buttonBorderColorHovered        WRITE setButtonBorderColorHovered        NOTIFY buttonBorderColorHoveredChanged        )
+	Q_PROPERTY(QColor			  buttonColorDisabled			  MEMBER _buttonColorDisabled													NOTIFY buttonColorDisabledChanged			  )
 
 	Q_PROPERTY(QColor             itemHighlight                   READ itemHighlight                   WRITE setItemHighlight                   NOTIFY itemHighlightChanged                   )
 	Q_PROPERTY(QColor             itemHoverColor                  READ itemHoverColor                  WRITE setItemHoverColor                  NOTIFY itemHoverColorChanged                  )
@@ -331,6 +332,7 @@ signals:
 	void buttonColorChanged(QColor buttonColor);
 	void buttonColorHoveredChanged(QColor buttonColorHovered);
 	void buttonColorPressedChanged(QColor buttonColorPressed);
+	void buttonColorDisabledChanged(QColor buttonColorPressed);
 	void buttonBorderColorChanged(QColor buttonBorderColor);
 	void buttonBorderColorHoveredChanged(QColor buttonBorderColorHovered);
 	void itemHighlightChanged(QColor itemHighlight);
@@ -581,6 +583,7 @@ private:
 						_buttonColor,
 						_buttonColorHovered,
 						_buttonColorPressed,
+						_buttonColorDisabled,
 						_buttonBorderColor,
 						_buttonBorderColorHovered,
 						_itemHighlight,

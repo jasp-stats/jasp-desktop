@@ -119,7 +119,7 @@ public:
 
 			Json::Value asJSON()		const;
 			void		loadExtraFromJSON(Json::Value & options);
-			Json::Value createAnalysisRequestJson(int ppi, std::string imageBackground);
+			Json::Value createAnalysisRequestJson();
 
 	static	Status		parseStatus(std::string name);
 

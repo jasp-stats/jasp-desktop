@@ -1,5 +1,5 @@
 #include "enginerepresentation.h"
-#include "utilities/settings.h"
+#include "gui/preferencesmodel.h"
 #include "gui/messageforwarder.h"
 #include "utilities/qutils.h"
 #include "log.h"
@@ -7,7 +7,6 @@
 EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent)
 	: QObject(parent), _channel(channel)
 {
-	_imageBackground = Settings::value(Settings::IMAGE_BACKGROUND).toString();
 	setSlaveProcess(slaveProcess);
 }
 
@@ -19,7 +18,6 @@ void EngineRepresentation::setSlaveProcess(QProcess * slaveProcess)
 	_slaveProcess->setParent(this);
 
 	connect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this, &EngineRepresentation::processFinished);
-	connect(_slaveProcess, &QProcess::errorOccurred,										this, &EngineRepresentation::processError	);
 }
 
 EngineRepresentation::~EngineRepresentation()
@@ -54,11 +52,6 @@ void EngineRepresentation::processFinished(int exitCode, QProcess::ExitStatus ex
 
 	if(exitCode != 0 || _slaveCrashed)
 		handleEngineCrash();
-}
-
-void EngineRepresentation::processError(QProcess::ProcessError error)
-{
-	//This is kind of a pointless slot, because processFinished also gets called after this...
 }
 
 void EngineRepresentation::handleEngineCrash()
@@ -162,6 +155,7 @@ void EngineRepresentation::process()
 		case engineState::stopped:			processEngineStoppedReply();		break;
 		case engineState::moduleRequest:	processModuleRequestReply(json);	break;
 		case engineState::logCfg:			processLogCfgReply();				break;
+		case engineState::settings:			processSettingsReply();				break;
 		default:							throw std::logic_error("If you define new engineStates you should add them to the switch in EngineRepresentation::process()!");
 		}
 	}
@@ -288,16 +282,13 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 
 	setAnalysisInProgress(analysis);
 
-	Json::Value json(analysis->createAnalysisRequestJson(_ppi, _imageBackground.toStdString()));
-	_channel->send(json.toStyledString());
+	Json::Value json(analysis->createAnalysisRequestJson());
 
 #ifdef PRINT_ENGINE_MESSAGES
 	Log::log() << "sending: " << json.toStyledString() << std::endl;
 #endif
 
-	//It is dangerous to clear an aborted analysis because it might still be running and ignoring this!
-	//if(analysis->isAborted())
-	//	clearAnalysisInProgress();
+	_channel->send(json.toStyledString());
 
 }
 
@@ -323,10 +314,7 @@ void EngineRepresentation::analysisRemoved(Analysis * analysis)
 		return;
 
 	_idRemovedAnalysis = analysis->id();
-	if(analysis->status() != Analysis::Status::Aborting && analysis->status() != Analysis::Status::Aborted)
-		analysis->setStatus(Analysis::Status::Aborting);
-
-	runAnalysisOnProcess(analysis); //should abort
+	abortAnalysisInProgress();
 	_analysisInProgress = nullptr; //Because it will be deleted!
 	//But we keep the engineState at analysis to make sure another analysis won't try to run until the aborted one gets the message!
 }
@@ -388,9 +376,9 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	{
 		Log::log() << "Analysis reply was for an older revision (" << revision << ") than the one currently requested (" << analysis->revision() << "), so it can be ignored." << std::endl;
 
-		if(_pauseRequested)
+		if(_pauseRequested || _analysisAborted == analysis)
 		{
-			Log::log() << "A pause was requested though so the analysis will be aborted." << std::endl;
+			Log::log() << "A pause was requested or some setting changed, so the analysis was aborted." << std::endl;
 			clearAnalysisInProgress();
 		}
 
@@ -482,7 +470,7 @@ void EngineRepresentation::handleRunningAnalysisStatusChanges()
 	if (_engineState != engineState::analysis || _idRemovedAnalysis >= 0)
 		return;
 
-	if(_analysisInProgress->isEmpty() || _analysisInProgress->isAborted())
+	if((_analysisInProgress->isEmpty() || _analysisInProgress->isAborted()) && _analysisAborted != _analysisInProgress)
 		runAnalysisOnProcess(_analysisInProgress);
 }
 
@@ -570,6 +558,9 @@ void EngineRepresentation::processEngineResumedReply()
 	if(_engineState != engineState::resuming && _engineState != engineState::initializing)
 		throw std::runtime_error("Received an unexpected engine resumed reply!");
 
+	if(_engineState == engineState::initializing)
+		_settingsChanged = true; //Make sure we send the settings at least once
+
 	_engineState = engineState::idle;
 }
 
@@ -619,28 +610,6 @@ void EngineRepresentation::processModuleRequestReply(Json::Value & json)
 	default:
 		throw std::runtime_error("Unsupported module request reply to EngineRepresentation::processModuleRequestReply!");
 	}
-}
-
-void EngineRepresentation::ppiChanged(int newPPI)
-{
-	_ppi = newPPI;
-	Log::log() << "ppi for engineRep set to: " << _ppi << std::endl;
-
-	rerunRunningAnalysis();
-}
-
-void EngineRepresentation::imageBackgroundChanged(QString value)
-{
-	_imageBackground = value;
-	Log::log() << "image background for engineRep set to: " << _imageBackground.toStdString() << std::endl;
-
-	rerunRunningAnalysis();
-}
-
-void  EngineRepresentation::rerunRunningAnalysis()
-{
-	if(_engineState == engineState::analysis && _analysisInProgress != nullptr)
-		_analysisInProgress->refresh();
 }
 
 void EngineRepresentation::sendLogCfg()
@@ -693,4 +662,55 @@ std::string EngineRepresentation::currentState() const
 	{
 		return "EngineRepresentation::currentState() didn't work...";
 	}
+}
+
+//This function is now only used by settingsChanged
+void EngineRepresentation::abortAnalysisInProgress()
+{
+	if(_engineState == engineState::analysis && _analysisInProgress != nullptr)
+	{
+		if(_analysisInProgress->status() != Analysis::Status::Aborting && _analysisInProgress->status() != Analysis::Status::Aborted)
+			_analysisInProgress->setStatus(Analysis::Status::Aborting);
+
+		runAnalysisOnProcess(_analysisInProgress);
+
+		_analysisAborted = _analysisInProgress;
+	}
+}
+
+void EngineRepresentation::settingsChanged()
+{
+	Log::log() << "void EngineRepresentation::settingsChanged()" << std::endl;
+	_settingsChanged = true;
+	abortAnalysisInProgress();
+}
+
+void EngineRepresentation::sendSettings()
+{
+	Log::log() << "EngineRepresentation::sendSettings()" << std::endl;
+
+	if(_engineState != engineState::idle)
+		throw std::runtime_error("EngineRepresentation::sendSettings() expects to be run from an idle engine.");
+
+	_engineState			= engineState::settings;
+	Json::Value msg			= Json::objectValue;
+	msg["typeRequest"]		= engineStateToString(_engineState);
+	msg["ppi"]				= PreferencesModel::prefs()->plotPPI();
+	msg["developerMode"]	= PreferencesModel::prefs()->developerMode();
+	msg["imageBackground"]	= fq(PreferencesModel::prefs()->plotBackground());
+	msg["languageCode"]		= fq(PreferencesModel::prefs()->languageCode());
+
+	sendString(msg.toStyledString());
+
+	_settingsChanged = false;
+}
+
+void EngineRepresentation::processSettingsReply()
+{
+	_engineState = engineState::idle;
+
+	if(_analysisAborted && _analysisAborted->isAborted())
+		_analysisAborted->refresh();
+
+	_analysisAborted = nullptr;
 }

@@ -32,8 +32,6 @@ JASPControl
 
 	controlType:		JASPControlBase.TableView
 	focusOnTab:			false
-	width:				implicitWidth
-	height:				implicitHeight
 	implicitWidth:		400
 	implicitHeight:		400
 	shouldStealHover:	false
@@ -97,164 +95,182 @@ JASPControl
 		width:				parent.width
 		height:				parent.height
 		border.width:		1
-		border.color:		jaspTheme.borderColor
+		border.color:		jaspTheme.black
 		color:				jaspTheme.white
-	}
 
-	Flickable
-	{
-		id:				myFlickable
-		anchors.top:	parent.top
-		anchors.left:	parent.left
-		anchors.right:	vertiScroller.left
-		anchors.bottom: horiScroller.top
-		contentWidth:	theView.width
-		contentHeight:	theView.height
-		clip:			true
-		boundsBehavior	: Flickable.StopAtBounds
-		boundsMovement	: Flickable.StopAtBounds
-
-		DataSetView
+		Flickable
 		{
-			z:						-1
-			id:						theView
-			model:					null
-			itemHorizontalPadding:	0
-			itemVerticalPadding:	8 * preferencesModel.uiScale
+			id:				myFlickable
 
-			viewportX: myFlickable.visibleArea.xPosition * width
-			viewportY: myFlickable.visibleArea.yPosition * height
-			viewportW: myFlickable.visibleArea.widthRatio * width
-			viewportH: myFlickable.visibleArea.heightRatio * height
-
-			columnHeaderDelegate: Rectangle
+			anchors
 			{
-				color: columnIndex === tableView.colSelected ? jaspTheme.grayLighter : jaspTheme.analysisBackgroundColor
-				Text { text: headerText; anchors.centerIn: parent; font: jaspTheme.font; color:	jaspTheme.textEnabled }
-				MouseArea
-				{
-					anchors.fill: parent
-					onClicked: {
-						if (tableView.colSelected === columnIndex)
-							columnIndex = -1
-						tableView.colSelected = columnIndex;
-					}
-				}
+				topMargin:	1
+				leftMargin:	1
+				top:		parent.top
+				left:		parent.left
+				right:		vertiScroller.left
+				bottom:		horiScroller.top
 			}
 
-			rowNumberDelegate: Rectangle
+			contentWidth:	theView.width
+			contentHeight:	theView.height
+
+			boundsBehavior	: Flickable.StopAtBounds
+			boundsMovement	: Flickable.StopAtBounds
+			clip:				true
+
+			DataSetView
 			{
-				color: jaspTheme.analysisBackgroundColor
-				Text
-				{
-					text:					headerText;
-					color:					jaspTheme.textEnabled
-					anchors.centerIn:		parent;
-					horizontalAlignment:	Text.AlignHCenter
-					verticalAlignment:		Text.AlignVCenter
-					leftPadding:			3 * preferencesModel.uiScale
-					elide:					Text.ElideRight;
-					width:					parent.width
-					height:					parent.width
-					font:					jaspTheme.font
-				}
-			}
+				z:						-1
+				id:						theView
+				model:					null
+				itemHorizontalPadding:	0
+				itemVerticalPadding:	8 * preferencesModel.uiScale
 
-			JASPDoubleValidator	{ id: intValidator;		bottom: tableView.minimum; decimals: 0	}
-			JASPDoubleValidator { id: doubleValidator;	bottom: tableView.minimum; decimals: tableView.decimals	}
-			RegExpValidator		{ id: stringValidator							}
+				viewportX: myFlickable.visibleArea.xPosition * width
+				viewportY: myFlickable.visibleArea.yPosition * height
+				viewportW: myFlickable.visibleArea.widthRatio * width
+				viewportH: myFlickable.visibleArea.heightRatio * height
 
-			itemDelegate: Item
-			{
-				Text
+				columnHeaderDelegate: Rectangle
 				{
-					id:					textDisplay
-					anchors.fill:	 	parent
-					font:				jaspTheme.font
-					color:				itemEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
-					visible:			!textInput.visible
-					text:				itemText
-					padding:			jaspTheme.jaspControlPadding
-					leftPadding:		jaspTheme.labelSpacing
-					verticalAlignment:	Text.AlignVCenter
-				}
-
-				MouseArea
-				{
-					anchors.fill:		parent
-					visible:			itemEditable && !textInput.visible
-					z:					2
-					onClicked:
+					color: columnIndex === tableView.colSelected ? jaspTheme.grayLighter : jaspTheme.analysisBackgroundColor
+					Text { text: headerText; anchors.centerIn: parent; font: jaspTheme.font; color:	jaspTheme.textEnabled }
+					MouseArea
 					{
-						textInput.visible	= true;
-						textInput.value		= itemText === "..." ? "" : itemText
-						textInput.forceActiveFocus();
+						anchors.fill: parent
+						onClicked: {
+							if (tableView.colSelected === columnIndex)
+								columnIndex = -1
+							tableView.colSelected = columnIndex;
+						}
 					}
-					cursorShape:		Qt.IBeamCursor
 				}
 
-				TextField
+				rowNumberDelegate: Rectangle
 				{
-					id:						textInput
-					isBound:				false
-					anchors.verticalCenter: parent.verticalCenter
-					anchors.left:			parent.left
-					//fieldHeight:			parent.height
-					fieldWidth:				parent.width
-					visible:				false
-					useExternalBorder:		false
-					value:					itemText
-					useLastValidValue:		false
-					selectValueOnFocus:		true
-					validator:				tableView.validator
-					onPressed:				tableView.colSelected = columnIndex
-					onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value)
-					onActiveFocusChanged:	if(!activeFocus) visible = false;
+					color: jaspTheme.analysisBackgroundColor
+					Text
+					{
+						text:					headerText;
+						color:					jaspTheme.textEnabled
+						anchors.centerIn:		parent;
+						horizontalAlignment:	Text.AlignHCenter
+						verticalAlignment:		Text.AlignVCenter
+						leftPadding:			3 * preferencesModel.uiScale
+						elide:					Text.ElideRight;
+						width:					parent.width
+						height:					parent.width
+						font:					jaspTheme.font
+					}
+				}
+
+				JASPDoubleValidator	{ id: intValidator;		bottom: tableView.minimum; decimals: 0	}
+				JASPDoubleValidator { id: doubleValidator;	bottom: tableView.minimum; decimals: tableView.decimals	}
+				RegExpValidator		{ id: stringValidator							}
+
+				itemDelegate: Item
+				{
+					Text
+					{
+						id:					textDisplay
+						anchors.fill:	 	parent
+						font:				jaspTheme.font
+						color:				itemEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
+						visible:			!textInput.visible
+						text:				itemText
+						padding:			jaspTheme.jaspControlPadding
+						leftPadding:		jaspTheme.labelSpacing
+						verticalAlignment:	Text.AlignVCenter
+					}
+
+					MouseArea
+					{
+						anchors.fill:		parent
+						visible:			itemEditable && !textInput.visible
+						z:					2
+						onClicked:
+						{
+							textInput.visible	= true;
+							textInput.value		= itemText === "..." ? "" : itemText
+							textInput.forceActiveFocus();
+						}
+						cursorShape:		Qt.IBeamCursor
+					}
+
+					TextField
+					{
+						id:						textInput
+						isBound:				false
+						anchors.verticalCenter: parent.verticalCenter
+						anchors.left:			parent.left
+						//fieldHeight:			parent.height
+						fieldWidth:				parent.width
+						visible:				false
+						useExternalBorder:		false
+						value:					itemText
+						useLastValidValue:		false
+						selectValueOnFocus:		true
+						validator:				tableView.validator
+						onPressed:				tableView.colSelected = columnIndex
+						onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value)
+						onActiveFocusChanged:	if(!activeFocus) visible = false;
+					}
+
+				}
+
+				leftTopCornerItem: Rectangle
+				{
+					color: jaspTheme.analysisBackgroundColor
+
+					Text
+					{
+						text:					cornerText
+						horizontalAlignment:	Text.AlignHCenter
+						verticalAlignment:		Text.AlignVCenter
+						leftPadding:			3 * preferencesModel.uiScale
+						color:					jaspTheme.textEnabled
+						elide:					Text.ElideRight;
+						width:					parent.width
+						height:					parent.height
+						font:					jaspTheme.font
+						anchors.right:			parent.right
+						anchors.bottom:			parent.bottom
+					}
 				}
 
 			}
-
-			leftTopCornerItem: Rectangle
-			{
-				color: jaspTheme.analysisBackgroundColor
-
-				Text
-				{
-					text:					cornerText
-					horizontalAlignment:	Text.AlignHCenter
-					verticalAlignment:		Text.AlignVCenter
-					leftPadding:			3 * preferencesModel.uiScale
-					color:					jaspTheme.textEnabled
-					elide:					Text.ElideRight;
-					width:					parent.width
-					height:					parent.height
-					font:					jaspTheme.font
-					anchors.right:			parent.right
-					anchors.bottom:			parent.bottom
-				}
-			}
-
 		}
-	}
 
-	JASPScrollBar
-	{
-		id:				vertiScroller;
-		flickable:		myFlickable
-		anchors.top:	parent.top
-		anchors.right:	parent.right
-		anchors.bottom: horiScroller.top
-		bigBar:			false
-	}
+		JASPScrollBar
+		{
+			id:				vertiScroller;
+			flickable:		myFlickable
+			anchors
+			{
+				top:			parent.top
+				right:			parent.right
+				bottom:			horiScroller.top
+				topMargin:		1
+				rightMargin:	1
+			}
+			bigBar:			false
+		}
 
-	JASPScrollBar
-	{
-		id:				horiScroller;
-		flickable:		myFlickable
-		vertical:		false
-		anchors.left:	parent.left
-		anchors.right:	vertiScroller.left
-		anchors.bottom: parent.bottom
-		bigBar:			false
+		JASPScrollBar
+		{
+			id:				horiScroller;
+			flickable:		myFlickable
+			vertical:		false
+			anchors
+			{
+				left:			parent.left
+				right:			vertiScroller.left
+				bottom:			parent.bottom
+				leftMargin:	1
+				bottomMargin:	1
+			}
+			bigBar:			false
+		}
 	}
 }
