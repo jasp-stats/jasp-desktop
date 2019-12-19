@@ -62,6 +62,7 @@ protected:
 	OptionString*				_boundTo = nullptr;
 	QString						_text;
 	TextType					_textType;
+	QList<QString>				_separators;
 	
 	LavaanSyntaxHighlighter*	_lavaanHighlighter = nullptr;
 	ListModelTermsAvailable*	_model = nullptr;

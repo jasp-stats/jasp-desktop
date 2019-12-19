@@ -37,6 +37,14 @@ BoundQMLTextArea::BoundQMLTextArea(JASPControlBase* item)
 	, BoundQMLItem()
 {
 	QString textType = getItemProperty("textType").toString();
+	QList<QVariant> separators = getItemProperty("separators").toList();
+	if (separators.isEmpty())
+		_separators.push_back(getItemProperty("separator").toString());
+	else
+	{
+		for (QVariant& separator : separators)
+			_separators.push_back(separator.toString());
+	}
 
 	if (textType == "model")
 	{
@@ -151,7 +159,15 @@ void BoundQMLTextArea::dataSetChangedHandler()
 
 void BoundQMLTextArea::_setSourceTerms()
 {
-	QStringList list = _text.split('\n', QString::SkipEmptyParts);
+	QStringList list = {_text};
+	for (const QString& separator : _separators)
+	{
+		QStringList newList;
+		for (const QString& listPart : list)
+			newList.append(listPart.split(separator, QString::SkipEmptyParts));
+		list = newList;
+	}
+
 	QStringList terms;
 
 	for (const QString& term : list)

@@ -343,7 +343,8 @@ Properties:
 - `textType`: [optional, default: `""`, values: `lavaan`, `JAGS`, `Rcode`, `model`, `source`]: this component is in fact often used in a specialized mode, specified by this property):<br>
 	* `lavaan`, `JAGS` and `Rcode`: the TextArea is used for Lavaan, JAGS or R code: it gets automatically the right syntax check
 	* `model`: the TextArea is used as R model.
-	* `source`: The TextArea can be then used as source for a VariablesList: all unique strings separated by a new line will be then the terms of the VariablesList.<br>
+        * `source`: The TextArea can be then used as source for a VariablesList: all unique strings separated by a separator (per default a new line, but can be change via property `separator` will be then the terms of the VariablesList.<br>
+- `separtor`, `separators`: [optional, default: `"\n"`] string or array of strings used to split the string of a `source` TextArea
 
 ### Variable Specification
 Most analyses are performed on variables. JASP offers a few ways of visualizing these variables in the input form. The general idea is that you get a field of available variables (taken from the dataset) and then one or more fields that the variables can be dragged to. Variable fields should be wrapped in a `VariablesForm`. This makes it possible to automatically align multiple variable fields and add assign-buttons.
