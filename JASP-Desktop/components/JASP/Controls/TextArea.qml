@@ -13,17 +13,19 @@ JASPControl
 	implicitWidth:		width
 	focusIndicator:		flickableRectangle
 	
-	property alias  control:			control
-	property alias  text:				control.text
+	property alias  control				: control
+	property alias  text				: control.text
     property string textType
-	property string applyScriptInfo:	Qt.platform.os == "osx" ? qsTr("\u2318 + Enter to apply") : qsTr("Ctrl + Enter to apply")
-	property alias  infoText:			infoText.text
-	property bool   hasScriptError:		false
-	property alias  font:				control.font
-	property alias  textDocument:		control.textDocument
-	property alias  title:				textAreaTitle.text
-	property bool   trim:				false
-    property var    modelParameterView: null
+	property string applyScriptInfo		: Qt.platform.os == "osx" ? qsTr("\u2318 + Enter to apply") : qsTr("Ctrl + Enter to apply")
+	property alias  infoText			: infoText.text
+	property bool   hasScriptError		: false
+	property alias  font				: control.font
+	property alias  textDocument		: control.textDocument
+	property alias  title				: textAreaTitle.text
+	property bool   trim				: false
+	property var    modelParameterView	: null
+	property string separator			: "\n"
+	property var	separators			: []
     
     
     signal applyRequest()
