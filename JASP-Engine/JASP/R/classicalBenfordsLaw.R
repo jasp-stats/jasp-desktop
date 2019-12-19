@@ -175,7 +175,7 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
   if(!ready){
 
-    row <- data.frame(test = "Chi-squared", measure = "X\u00B2")
+    row <- data.frame(test = "Chi-squared", measure = "X\u00B2", value = ".", pvalue = ".")
     benfordsLawTestTable$addRows(row)
     return()
   }
@@ -227,7 +227,10 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
   if(!ready){
 
-    row <- data.frame(digit = 1:9, inBenford = paste0(round(log10(1 + 1 / 1:9) * 100, 2), "%"))
+    row <- data.frame(digit = 1:9, 
+                      count = rep(".", 9),
+                      percentage = rep(".", 9),
+                      inBenford = paste0(round(log10(1 + 1 / 1:9) * 100, 2), "%"))
     benfordsLawTable$addRows(row)
     return()
   } 
