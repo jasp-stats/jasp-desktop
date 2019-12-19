@@ -48,18 +48,16 @@ Form
 
         VariablesForm
         {
-            height: 200
-            AvailableVariablesList
+            title: qsTr("Model")
+            VariablesForm
             {
-                name: "components"
-                title: qsTr("Components")
-                width: parent.width / 4
-                source: ['covariates', 'factors']
+                preferredHeight: 150
+                AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["covariates","factors"]}
+                AssignedVariablesList  { name: "modelTerms"; title: qsTr("Model Terms"); listViewType: "Interaction"}
             }
-            ModelTermsList { width: parent.width * 5 / 9 }
-        }
 
-    }
+            CheckBox { name: "includeConstant"; text: qsTr("Include intercept"); checked: true }
+        }
 
 	Section
 	{
