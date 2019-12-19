@@ -1,20 +1,13 @@
 context("Binomial Test Bayesian")
 
-addFormulaFieldOptions <- function(options) {
-  options$priorA    <- list("1",   "T")
-  options$priorB    <- list("1",   "T")
-  options$testValue <- list("0.5", "T")
-  return(options)
-}
-
 test_that("Main table results match", {
   options <- jasptools::analysisOptions("BinomialTestBayesian")
   options$variables <- "contBinom"
   options$bayesFactorType <- "BF01"
   options$hypothesis <- "notEqualToTestValue"
-  options$priorA <- list("4", "T")
-  options$priorB <- list("2", "T")
-  options$testValue <- list("0.2", "T")
+  options$priorA <- 1
+  options$priorB <- 2
+  options$testValue <- 0.2
   results <- jasptools::run("BinomialTestBayesian", "test.csv", options)
   table <- results[["results"]][["binomTable"]][["data"]]
   expect_equal_tables(table,
@@ -25,7 +18,9 @@ test_that("Main table results match", {
 
 test_that("Prior posterior plots match", {
   options <- jasptools::analysisOptions("BinomialTestBayesian")
-  options <- addFormulaFieldOptions(options)
+  options$priorA <- 1
+  options$priorB <- 1
+  options$testValue <- 0.5
   options$variables <- "contBinom"
   options$plotPriorAndPosterior <- TRUE
   options$plotPriorAndPosteriorAdditionalInfo <- TRUE
@@ -40,7 +35,9 @@ test_that("Prior posterior plots match", {
 
 test_that("Sequential analysis plots match", {
   options <- jasptools::analysisOptions("BinomialTestBayesian")
-  options <- addFormulaFieldOptions(options)
+  options$priorA <- 1
+  options$priorB <- 1
+  options$testValue <- 0.5
   options$variables <- "contBinom"
   options$plotSequentialAnalysis <- TRUE
   results <- jasptools::run("BinomialTestBayesian", "test.csv", options)
