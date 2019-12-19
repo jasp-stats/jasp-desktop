@@ -132,8 +132,8 @@ Form {
                 label: qsTr("Distance:")
                 values:
                 [
-                    { label: "Normal", value: "Normal densities"},
-                    { label: "Correlated", value: "Correlated densities"}
+					{ label: qsTr("Normal"), value: "Normal densities"},
+					{ label: qsTr("Correlated"), value: "Correlated densities"}
                 ]
             }
 

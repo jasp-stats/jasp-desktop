@@ -107,7 +107,7 @@ Form {
                 label: qsTr("Distance:")
                 values:
                 [
-                    { label: "Euclidian", value: "2"},
+					{ label: qsTr("Euclidian"), value: "2"},
                     { label: "Manhattan", value: "1"}
                 ]
             }
