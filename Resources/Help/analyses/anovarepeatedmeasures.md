@@ -17,6 +17,15 @@ The repeated Measures ANOVA allows the user to analyze the differences between m
 - Between Subject Factors: When the subjects have been assigned into two or more separate groups this variable can be selected.
 - Covariates: In this box the variable that is the covariate can be selected. Covariates are continuous variables that have an influence on the dependent variable but are not part of the experimental manipulation.
 
+#### Display:
+    - Descriptive statistics: When this option is selected, the mean, standard deviation, and the sample size will be displayed for each level combination of the repeated measures factors.
+    - Estimates of effect size: By selecting this option, the specific types of calculations to estimate the effect size can be specified.
+        - &eta;<sup>2</sup> : When this option is selected, the eta-squared is calculated as an estimate of the effect size. However, this method is considered to overestimate the population variance, making it hard to compare the effect of the same variable across different studies (Goss-Sampson, 2018).
+        - partial &eta;<sup>2</sup> : When this option is selected, the Partial eta-squared is calculated as an estimate of the effect size. This method is considered to solve the problem of overestimation of the population variance, which makes it less difficult to compare the effect of the same variable from different studies (Goss-Sampson, 2018).
+        - general &eta;<sup>2</sup> : When this option is selected, the Generalized eta-squared is calculated as an estimate of the effect size.
+        - &omega;<sup>2</sup> : When this option is selected, the Omega squared is calculated as an estimate of the effect size. This is considered a good estimate when the sample size is small (Goss-Sampson, 2018).
+    - Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>.
+
 ### Model
 - Components and model terms:
   - Repeated Measures Components: All the repeated measures factors and covariates that can be included in the model.
@@ -48,17 +57,22 @@ For each repeated measures factor, a specific contrast can be selected by clicki
     - Helmert: When this contrast is selected, the mean of each level is compared to the mean of the subsequent levels. This is the reverse of the difference contrast.
     - repeated: By selecting this contrast, the mean of each level is compared to the mean of the following level.
     - polynomial: This contrast tests polynomial trends in the data. The specific polynomial that will be used for the analysis depends on the number of levels of the repeated measures factor. The degree of the trend used for the analysis is the number of levels minus 1. Therefore, if the repeated measures factor consist of 2 levels, a linear trend is analysed. If the repeated measures factor consists of three levels, a quadratic trend is analysed in addition to the linear trend.
+- Assume equal variances: This option can be selected when the variances of the levels of the independent variable are assumed to be equal. 
+  - Confidence interval: Confidence interval for the location parameter. By default, the confidence interval is set to 95%. This can be changed into the desired percentage.
+
 
 ### Post Hoc Tests
+- Confidence intervals: When this option is selected, the confidence interval for the mean difference is calculated. This is done for every post hoc method except for Dunn. By default this is set to 95% but this can be adjusted into the desired percentage.
 To perform a post hoc test, drag one or more factor names to the right column. Several options are available:    
 - Effect size: By selecting this option, the effect size (i.e., the magnitude of the observed effect) will be displayed. The used measure for the effect size is Cohen's d. The effect size will only be displayed for the post hoc type `Standard`.
-- Confidence intervals: When this option is selected, the confidence interval for the mean difference is calculated. This is done for every post hoc method except for Dunn. By default this is set to 95% but this can be adjusted into the desired percentage.
 - Pool error term for RM factors: A pooled error term assumes that the variances of the contrast scores are approximately equal (i.e., sphericity assumption) See Morey (2008) for more details.
 - Correction: To correct for multiple comparison testing and avoid Type I errors, different methods for correcting the p-value are available:  
     - Tukey: Compare all possible pairs of group means. This correction can be used when the groups of the repeated measures have an equal sample size and variance. This method is commonly used and is selected by default.
     - Scheffe: Adjusting significance levels in a linear regression, to account for multiple comparisons. This method is considered to be quite conservative.
     - Bonferroni: This correction is considered conservative. The risk of Type I error is reduced, however the statistical power decreases as well.
     - Holm: This method is also called sequential Bonferroni, and considered less conservative than the Bonferroni method.
+- Display
+    - Flag Significant Comparisons: Add asterisks to the table to indicate 3 levels of significance.
 
 ### Descriptives Plots
 To create a descriptive plot, select the repeated measures factor to be placed on the horizontal axis. If there are more than one repeated measures factor, the variables can be displayed in one plot by putting the other variable in the box Separate lines, or the variables can be displayed in separate plots by selecting the other variable in the box Separate plots.
@@ -74,21 +88,14 @@ To create a descriptive plot, select the repeated measures factor to be placed o
     - Average across unused RM factors: When there are multiple RM factors in the model, but only plotting a subset of these factors, the mean is taken across the unused RM factors. For instance, when there are two RM factors with two levels in the model, A (1&2) and B (1&2), and only A is selected to be plotted, the average is taken of B across its levels. This means that when the mean of A1 is plotted, it is actually the average of A1B1 and A1B2). This procedure is discussed by Loftus & Masson (1994). When the box is not ticked, the averages are not taken, and the columns A1B1 and A1B2 are simply concatenated.
 
 
-### Additional Options:
+### Marginal Means:
 - Marginal means: When this option is selected, the mean for each level of the repeated measures factor, adjusted for all the other variables in the model, is calculated.
+- From `...` bootstraps: When this option is selected, the bootstrapped marginal means are calculated. By default, the number of replications is set to 1000. This can be changed into the desired number.
 - Compare marginal means to 0: By selecting this option, the adjusted means are compared to 0 and the confidence intervals of the adjusted means are calculated.
     - Confidence interval adjustment: The confidence intervals can be adjusted in several ways.
         - None: When this option is selected, no adjustment will be applied.
         - Bonferroni: Bonferroni correction of the confidence intervals.
         - Sidak: Sidak correction of the confidence intervals.
-- From `...` bootstraps: When this option is selected, the bootstrapped marginal means are calculated. By default, the number of replications is set to 1000. This can be changed into the desired number.
-- Display:
-    - Descriptive statistics: When this option is selected, the mean, standard deviation, and the sample size will be displayed for each level combination of the repeated measures factors.
-    - Estimates of effect size: By selecting this option, the specific types of calculations to estimate the effect size can be specified.
-        - &eta;<sup>2</sup> : When this option is selected, the eta-squared is calculated as an estimate of the effect size. However, this method is considered to overestimate the population variance, making it hard to compare the effect of the same variable across different studies (Goss-Sampson, 2018).
-        - partial &eta;<sup>2</sup> : When this option is selected, the Partial eta-squared is calculated as an estimate of the effect size. This method is considered to solve the problem of overestimation of the population variance, which makes it less difficult to compare the effect of the same variable from different studies (Goss-Sampson, 2018).
-        - &omega;<sup>2</sup> : When this option is selected, the Omega squared is calculated as an estimate of the effect size. This is considered a good estimate when the sample size is small (Goss-Sampson, 2018).
-    - Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>.
 
 ### Simple Main Effects:
 The simple main effects represent the effect of one repeated measure factor for each level of the other repeated measures factor, by conducting an ANOVA for each subset of the data as specified by the moderator variables.
@@ -210,8 +217,11 @@ The independent variable / repeated measures factor on the x-axis and dependent 
 ### References
 ---
 - Conover,W. J. (1999). *Practical nonparametric Statistics, 3rd. Edition*, Wiley.
+-	Field, A., Miles, J., & Field, Z. (2012). Discovering statistics using R. Sage Publishing.
 - Morey, R. D. (2008) Confidence Intervals from Normalized Data: A correction to Cousineau (2005). Tutorial in *Quantatitative Methods for Psychology, 4*(2), 61-64.
 - Loftus, G. R., & Masson, M. E. J. (1994). Using confidence intervals in within-subject designs. *Psychonomic Bulletin and Review, 1*, 476–490.
+-  Maxwell, S. E. (1980). Pairwise Multiple Comparisons in Repeated Measures Designs. *Journal of Educational Statistics*, 5(3), 269–287.
+
 
 ### R-packages
 ---

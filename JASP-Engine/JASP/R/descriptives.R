@@ -1318,7 +1318,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   return(plotObj)
 }
 
-.descriptivesScatterPlots <- function(jaspContainer, dataset, variables, split, options) {
+.descriptivesScatterPlots <- function(jaspContainer, dataset, variables, split, options, name = NULL) {
 
   JASPgraphs::setGraphOption("palette", options[["colorPalette"]])
   if (!is.null(split) && split != "") {
@@ -1351,7 +1351,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   for (i in 1:(nvar - 1L)) for (j in (i + 1L):nvar) {
     v1 <- variables[i]
     v2 <- variables[j]
-    name <- paste(v1, "-", v2)
+    if (is.null(name)) name <- paste(v1, "-", v2)
     if (is.null(jaspContainer[[name]])) {
       scatterPlot <- createJaspPlot(title = name)
       scatterPlot$dependOn(optionContainsValue = list(variables = c(v1, v2)))

@@ -17,6 +17,14 @@ ANOVA allows the user to analyze the difference between multiple group means.
 - Fixed Factors: The variables that are manipulated/define the different groups. These are also called the independent variables.  
 - WLS Weights: Weighted Least Squares, here the variable specifying which points have more weight and are therefore considered more informative can be selected. For this last option it is important to know the weights a priori. This option is primarily used when the errors are heteroskedastic. 
 
+#### Display: 
+- Descriptive statistics: When this option is selected, the mean, standard deviation, and the sample size will be displayed for each level combination of the independent variables. 
+- Estimates of effect size: By selecting this option, the specific types of calculations to estimate the effect size can be specified. 
+    - &eta;<sup>2</sup> : When this option is selected, the eta-squared is calculated as an estimate of the effect size. However, this method is considered to overestimate the population variance, making it hard to compare the effect of the same variable across different studies (Goss-Sampson, 2018).       
+    - partial &eta;<sup>2</sup> : When this option is selected, the partial eta-squared is calculated as an estimate of the effect size. This method is considered to solve the problem of overestimation of the population variance, which makes it less difficult to compare the effect of the same variable from different studies (Goss-Sampson, 2018). 
+    - &omega;<sup>2</sup> : When this option is selected, the Omega squared is calculated as an estimate of the effect size. This is considered a good estimate when the sample size is small (Goss-Sampson, 2018). 
+- Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>. More information can be found in this <a href="https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/">blogpost</a>. 
+
 ### Model 
 - Components and model terms: 
     - Components: All the independent variables that can be included in the model. 
@@ -91,7 +99,7 @@ ANOVA allows the user to analyze the difference between multiple group means.
         - Confidence interval: This option is selected by default. With this option, the error bars will represent confidence intervals of the mean of each level combination of the independent variables. By default, the confidence interval is set to 95%, but this can be changed into the desired percentage.  
         - Standard error: By selecting this option, the error bars will represent standard errors of the mean of each level combination of the independent variables. 
 
-### Additional Options 
+### Marginal Means
 - Marginal means: When this option is selected, the mean for each level of the independent variable, adjusted for all the other variables in the model, is calculated. 
 - Compare marginal means to 0: By selecting this option, the adjusted means are compared to 0 and the confidence intervals of the adjusted means are calculated.  
     - Confidence interval adjustment: The confidence intervals can be adjusted in several ways. 
@@ -136,6 +144,13 @@ ANOVA - dependent variable:
 - &eta;<sup>2</sup> : Estimated effect size eta-squared.      
 - &eta;<sup>2</sup><sub>p</sub> : Estimated effect size partial eta-squared.  
 - &omega;<sup>2</sup> : Estimated effect size omega-squared. 
+
+#### Descriptives
+Descriptives - dependent variable:
+- Independent variables: The levels of the independent variable(s) included in the analysis. If more than 1, the descriptives will be displayed for each combination of levels of the independent variables. 
+- Mean: The mean per level or, if more than 1 independent variable, the mean per combination of levels. 
+- SD: The standard deviation.  
+- N: The sample size. 
 
 #### Assumptions Checks 
 Test for Equality of Variances (Levene's): 
