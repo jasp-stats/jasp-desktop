@@ -390,19 +390,19 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                                  ready,
                                                  position){
 
-  if(options[["explanatoryText"]] && 
-     is.null(jaspResults[["conclusionContainer"]]) &&
+  if(is.null(jaspResults[["conclusionContainer"]]) &&
       ready){
 
     conclusionContainer <- createJaspContainer(title= "<u>Conclusion</u>")
     conclusionContainer$position <- position
-
-    confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
+    conclusionContainer$dependOn(options = c("values",
+                                             "confidence",
+                                             "explanatoryText"))
 
     state <- .auditClassicalBenfordsLawState(dataset, 
-                                        options, 
-                                        benfordsLawContainer,
-                                        ready)
+                                    options, 
+                                    benfordsLawContainer,
+                                    ready)
 
     observed <- state[["N"]] * state[["percentages"]]
     expected <- state[["N"]] * state[["inBenford"]]
@@ -412,34 +412,60 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
     approve <- p >= (1 - options[["confidence"]])
 
-    conclusion <- ifelse(approve, no = "can be rejected", yes = "can not be rejected")
-    confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
+    if(options[["explanatoryText"]]){
 
-    conclusionText <- paste0("The <i>p</i> value is determined to be ", p, ". Therefore, the null hypothesis that the distribution of first digits in 
-                              the population conforms to Benford's law <b>", conclusion, "</b> with <b>", confidenceLabel, "</b> confidence.")
+      confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
 
-    conclusionContainer[["conclusionParagraph"]] <- createJaspHtml(conclusionText, "p")
-    conclusionContainer[["conclusionParagraph"]]$position <- 1
-    conclusionContainer$dependOn(options = c("explanatoryText", 
-                                            "confidence",
-                                            "values"))
+      conclusion <- ifelse(approve, no = "can be rejected", yes = "can not be rejected")
+      confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
 
-    if(approve){
-      plotTitle <- "Badge: <i>Approved</i>"
-    } else {
-      plotTitle <- "Badge: <i>Not approved</i>"
+      conclusionText <- paste0("The <i>p</i> value is determined to be ", p, ". Therefore, the null hypothesis that the distribution of first digits in 
+                                the population conforms to Benford's law <b>", conclusion, "</b> with <b>", confidenceLabel, "</b> confidence.")
+
+      conclusionContainer[["conclusionParagraph"]] <- createJaspHtml(conclusionText, "p")
+      conclusionContainer[["conclusionParagraph"]]$position <- 1
+      conclusionContainer$dependOn(options = c("explanatoryText", 
+                                              "confidence",
+                                              "values"))
+
     }
 
-    conclusionPlot <- createJaspPlot(plot = NULL, 
-                                     title = plotTitle, 
-                                     width = 150, 
-                                     height = 150)
+    # Badge for annotation
+    if(options[["explanatoryText"]]){
 
-    conclusionPlot$position <- 2
-    conclusionPlot$dependOn(optionsFromObject = conclusionContainer[["conclusionParagraph"]])
-    conclusionContainer[["conclusionPlot"]] <- conclusionPlot
+      annotationBadge <- createJaspPlot(plot = NULL, 
+                                  title = "Badge: <i>Annotated</i>", 
+                                  width = 150, 
+                                  height = 150)
 
-    conclusionPlot$plotObject <- .createBadge(approve)
+      annotationBadge$position <- 2
+      annotationBadge$dependOn(options = c("explanatoryText"))
+      conclusionContainer[["annotationBadge"]] <- annotationBadge
+
+      annotationBadge$plotObject <- .createBadge(type = "annotated")
+
+    }
+
+    # Badge for result
+    if(approve){
+      plotTitle <- "Badge: <i>Approved</i>"
+      type <- "approved"
+    } else {
+      plotTitle <- "Badge: <i>Not approved</i>"
+      type <- "not approved"
+    }
+
+    resultBadge <- createJaspPlot(plot = NULL, 
+                                  title = plotTitle, 
+                                  width = 150, 
+                                  height = 150)
+
+    resultBadge$position <- 3
+    resultBadge$dependOn(options = c("confidence",
+                                     "values"))
+    conclusionContainer[["resultBadge"]] <- resultBadge
+
+    resultBadge$plotObject <- .createBadge(type)
 
     jaspResults[["conclusionContainer"]] <- conclusionContainer
   }

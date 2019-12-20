@@ -1473,7 +1473,7 @@
     ARMcontainer[["ARMformula"]]$dependOn(options = c("IR", "CR", "confidence", "irCustom", "crCustom"))
 }
 
-.createBadge <- function(approve){
+.createBadge <- function(type){
 
   center <- 1
   radius <- 1
@@ -1481,12 +1481,12 @@
   w <- sqrt(3)/2 * radius
   m <- 1.02
 
-  if(approve){
+  if(type == "approved"){
     fillA <- "#3CB371"
-    fillB <- "#000000"
-  } else {
+  } else if(type == "not approved"){
     fillA <- "#ff0000"
-    fillB <- "#000000"
+  } else if(type == "annotated"){
+    fillA <- "#57A7E0"
   }
 
   myTheme <- ggplot2::theme(panel.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
@@ -1506,7 +1506,7 @@
   plot <- ggplot2::ggplot() + 
           ggplot2::geom_polygon(mapping = ggplot2::aes_(x = ~x, y = ~y), 
                                 data = hexd, size = 1.2, 
-                                color = fillB, 
+                                color = "black", 
                                 fill = NA) + 
           ggplot2::geom_polygon(mapping = ggplot2::aes_(x = ~x, y = ~y), 
                                 data = hexd,
@@ -1524,20 +1524,27 @@
                              angle = 30, 
                              hjust = 0)
 
-  if(approve){
+  if(type == "approved"){
     plot <- plot + ggplot2::geom_segment(ggplot2::aes(x = 0.8, xend = 1.6, y = 0.6, yend = 1.4), 
                                         color = "black", 
                                         size = 8) +
                     ggplot2::geom_segment(ggplot2::aes(x = 0.9, xend = 0.55, y = 0.72, yend = 1.07),
                                           color = "black", 
                                           size = 8)
-  } else {
+  } else if(type == "not approved"){
     plot <- plot + ggplot2::geom_segment(ggplot2::aes(x = 0.6, xend = 1.4, y = 0.6, yend = 1.4), 
                                          color = "black", 
                                          size = 8) +
                     ggplot2::geom_segment(ggplot2::aes(x = 0.6, xend = 1.4, y = 1.4, yend = 0.6), 
                                           color = "black", 
                                           size = 8)
+  } else if(type == "annotated"){
+    plot <- plot + ggplot2::geom_segment(ggplot2::aes(x = 1, xend = 1, y = 0.5, yend = 1.2), 
+                                         color = "black", 
+                                         size = 7) +
+                    ggplot2::geom_segment(ggplot2::aes(x = 1, xend = 1, y = 1.4, yend = 1.6), 
+                                          color = "black", 
+                                          size = 7)
   }
   
   plot <- plot + myTheme     
