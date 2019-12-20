@@ -144,7 +144,7 @@ void BoundQMLComponentsList::addTermHandler(QString term)
 	{
 		Terms newTerms;
 		newTerms.add(term);
-		_termsModel->addTerms(&newTerms);
+		_termsModel->addTerms(newTerms);
 	}
 }
 
