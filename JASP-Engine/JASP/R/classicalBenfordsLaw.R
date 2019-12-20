@@ -21,7 +21,10 @@
 classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
   # Create the procedure paragraph
-
+  .auditBenfordsLawProcedureParagraph(options, 
+                                      jaspResults,
+                                      position = 1)
+  
   # Read in the data 
   dataset <- .auditReadDataBenfordsLaw(dataset, 
                                        options)
@@ -33,29 +36,36 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   # Ready for analysis
   ready <- .auditClassicalBenfordsLawReady(options)
 
-  # Create results table
+  benfordsLawContainer <- .auditBenfordsLawGetContainer(jaspResults, 
+                                                        position = 2)
+
+  # Create the goodness-of-fit table
   .auditClassicalBenfordsLawTestTable(dataset, 
                                     options, 
-                                    jaspResults, 
+                                    benfordsLawContainer, 
                                     ready, 
-                                    position = 2)
+                                    positionInContainer = 1)
 
   # Create the observed and predicted probabilities table                                  
   .auditClassicalBenfordsLawSummaryTable(dataset, 
                                          options, 
                                          jaspResults, 
                                          ready, 
-                                         position = 3)
+                                         positionInContainer = 2)
 
   # Create the observed and predicted probabilities plot
   .benfordsLawPlot(dataset, 
                    options, 
                    jaspResults, 
                    ready, 
-                   position = 4)
+                   positionInContainer = 3)
 
   # Create the conclusion paragraph
-
+  .auditBenfordsLawConclusionParagraph(options,
+                                       benfordsLawContainer,
+                                       jaspResults,
+                                       ready,
+                                       position = 4)
 }
 
 .auditReadDataBenfordsLaw <- function(dataset, 
@@ -68,6 +78,32 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   dataset <- .readDataSetToEnd(columns.as.numeric = values, 
                                exclude.na.listwise = values)
   return(dataset)
+}
+
+.auditBenfordsLawProcedureParagraph <- function(options,
+                                                jaspResults,
+                                                position){
+
+  if(options[["explanatoryText"]] && 
+     is.null(jaspResults[["procedureContainer"]])){
+
+    procedureContainer <- createJaspContainer(title= "<u>Procedure</u>")
+    procedureContainer$position <- position
+
+    confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
+
+    procedureText <- paste0("Benford's Law states that in many naturally occurring collections of numbers, the leading significant digit 
+                             is likely to be small. The goal of this procedure is to determine to which extend the leading digits in the 
+                             population follow Benford's law, and to test this relation with <b>", confidenceLabel, "</b> confidence. Data that do not conform 
+                             to Benford's law might need further verification.")
+
+    procedureContainer[["procedureParagraph"]] <- createJaspHtml(procedureText, "p")
+    procedureContainer[["procedureParagraph"]]$position <- 1
+    procedureContainer$dependOn(options = c("explanatoryText", 
+                                            "confidence"))
+
+    jaspResults[["procedureContainer"]] <- procedureContainer
+  }
 }
 
 .auditClassicalBenfordsLawErrorCheck <- function(dataset, 
@@ -92,14 +128,27 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
 }
 
+.auditBenfordsLawGetContainer <- function(jaspResults, 
+                                          position){
+                                         
+  benfordsLawContainer <- createJaspContainer(title= "<u>Assessing Benford's Law</u>")
+  benfordsLawContainer$position <- position
+  benfordsLawContainer$dependOn(options = c("values",
+                                            "confidence"))
+
+  jaspResults[["benfordsLawContainer"]] <- benfordsLawContainer
+
+  return(benfordsLawContainer)
+}
+
 .auditClassicalBenfordsLawState <- function(dataset, 
                                             options, 
-                                            jaspResults,
+                                            benfordsLawContainer,
                                             ready){
 
-  if(!is.null(jaspResults[["result"]])){
+  if(!is.null(benfordsLawContainer[["result"]])){
 
-    return(jaspResults[["result"]]$object)
+    return(benfordsLawContainer[["result"]]$object)
 
   } else if(ready){
 
@@ -130,9 +179,9 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                   inBenford = inBenford,
                   N = totalObs)
 
-    jaspResults[["result"]] <- createJaspState(result)
-    jaspResults[["result"]]$dependOn(options = c("values", "confidence"))
-    return(jaspResults[["result"]]$object)
+    benfordsLawContainer[["result"]] <- createJaspState(result)
+    benfordsLawContainer[["result"]]$dependOn(options = c("values", "confidence"))
+    return(benfordsLawContainer[["result"]]$object)
 
   } else {
     return(list())
@@ -141,15 +190,15 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
 .auditClassicalBenfordsLawTestTable <- function(dataset, 
                                                 options, 
-                                                jaspResults, 
+                                                benfordsLawContainer, 
                                                 ready, 
-                                                position){
+                                                positionInContainer){
 
-  if(!is.null(jaspResults[["benfordsLawTestTable"]])) 
+  if(!is.null(benfordsLawContainer[["benfordsLawTestTable"]])) 
     return()
 
   benfordsLawTestTable <- createJaspTable("Benford's Law Goodness-of-fit Table")
-  benfordsLawTestTable$position <- position
+  benfordsLawTestTable$position <- positionInContainer
 
   benfordsLawTestTable$dependOn(options = c("values",
                                              "confidence"))
@@ -163,6 +212,9 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   benfordsLawTestTable$addColumnInfo(name = 'value',  
                                 title = 'Value', 
                                 type = 'string')
+  benfordsLawTestTable$addColumnInfo(name = 'df',  
+                                title = 'df', 
+                                type = 'integer')
   benfordsLawTestTable$addColumnInfo(name = 'pvalue', 
                                 title = "<i>p</i> value", 
                                 type = 'pvalue')
@@ -171,41 +223,47 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
               first digits in the population conforms to Benford’s Law."
   benfordsLawTestTable$addFootnote(message = message, symbol="<i>Note.</i>")
 
-  jaspResults[["benfordsLawTestTable"]] <- benfordsLawTestTable
+  benfordsLawContainer[["benfordsLawTestTable"]] <- benfordsLawTestTable
 
   if(!ready){
 
-    row <- data.frame(test = "Chi-squared", measure = "X\u00B2", value = ".", pvalue = ".")
+    row <- data.frame(test = "Chi-squared", 
+                      measure = "X\u00B2", 
+                      df = 8, 
+                      value = ".", 
+                      pvalue = ".")
     benfordsLawTestTable$addRows(row)
     return()
   }
 
   state <- .auditClassicalBenfordsLawState(dataset, 
                                            options, 
-                                           jaspResults,
+                                           benfordsLawContainer,
                                            ready)
 
   observed <- state[["N"]] * state[["percentages"]]
   expected <- state[["N"]] * state[["inBenford"]]
   chiSquare <- sum( (observed - expected)^2 / expected )
   df <- 8
-  p <- pchisq(q = 1 - options[["confidence"]], df = df)
+  p <- pchisq(q = chiSquare, df = df, lower.tail = FALSE)
 
-  row <- data.frame(test = "Chi-square", measure = "X\u00B2", value = round(chiSquare, 3), pvalue = p)
+  row <- data.frame(test = "Chi-square", 
+                    measure = "X\u00B2", df = 8, value = round(chiSquare, 3), pvalue = p)
   benfordsLawTestTable$addRows(row)
 }
 
 .auditClassicalBenfordsLawSummaryTable <- function(dataset, 
                                                    options, 
-                                                   jaspResults, 
+                                                   benfordsLawContainer, 
                                                    ready, 
-                                                   position){
+                                                   positionInContainer){
 
-  if(!is.null(jaspResults[["benfordsLawTable"]]) || !options[["summaryTable"]])
+  if(!is.null(benfordsLawContainer[["benfordsLawTable"]]) || 
+      !options[["summaryTable"]])
     return()
 
   benfordsLawTable <- createJaspTable("Descriptive Statistics")
-  benfordsLawTable$position <- position
+  benfordsLawTable$position <- positionInContainer
 
   benfordsLawTable$dependOn(options = c("values", 
                                         "summaryTable"))
@@ -223,7 +281,7 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                  title = "Benford's law", 
                                  type = 'string')
 
-  jaspResults[["benfordsLawTable"]] <- benfordsLawTable
+  benfordsLawContainer[["benfordsLawTable"]] <- benfordsLawTable
 
   if(!ready){
 
@@ -237,7 +295,7 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
   state <- .auditClassicalBenfordsLawState(dataset, 
                                            options, 
-                                           jaspResults,
+                                           benfordsLawContainer,
                                            ready)
 
   percentagesLabel <- paste0(round(state[["percentages"]] * 100, 2), "%")
@@ -253,11 +311,11 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
 .benfordsLawPlot <- function(dataset, 
                              options, 
-                             jaspResults, 
+                             benfordsLawContainer, 
                              ready, 
-                             position){
+                             positionInContainer){
 
-  if(!is.null(jaspResults[["benfordsLawPlot"]]) || !options[["benfordsLawPlot"]])
+  if(!is.null(benfordsLawContainer[["benfordsLawPlot"]]) || !options[["benfordsLawPlot"]])
     return()
 
   benfordsLawPlot <- createJaspPlot(plot = NULL, 
@@ -265,18 +323,18 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                     width = 600, 
                                     height = 400)
 
-  benfordsLawPlot$position <- position
+  benfordsLawPlot$position <- positionInContainer
   benfordsLawPlot$dependOn(options = c("benfordsLawPlot", 
                                        "values"))
 
-  jaspResults[["benfordsLawPlot"]] <- benfordsLawPlot
+  benfordsLawContainer[["benfordsLawPlot"]] <- benfordsLawPlot
 
   if(!ready) 
     return()
 
   state <- .auditClassicalBenfordsLawState(dataset, 
                                           options, 
-                                          jaspResults,
+                                          benfordsLawContainer,
                                           ready)
 
   d <- data.frame(x = c(1:9, 1:9),
@@ -324,4 +382,65 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   p <- JASPgraphs::themeJasp(p, legend.position = "top")
 
   benfordsLawPlot$plotObject <- p
+}
+
+.auditBenfordsLawConclusionParagraph <- function(options,
+                                                 benfordsLawContainer,
+                                                 jaspResults,
+                                                 ready,
+                                                 position){
+
+  if(options[["explanatoryText"]] && 
+     is.null(jaspResults[["conclusionContainer"]]) &&
+      ready){
+
+    conclusionContainer <- createJaspContainer(title= "<u>Conclusion</u>")
+    conclusionContainer$position <- position
+
+    confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
+
+    state <- .auditClassicalBenfordsLawState(dataset, 
+                                        options, 
+                                        benfordsLawContainer,
+                                        ready)
+
+    observed <- state[["N"]] * state[["percentages"]]
+    expected <- state[["N"]] * state[["inBenford"]]
+    chiSquare <- sum( (observed - expected)^2 / expected )
+    df <- 8
+    p <- round(pchisq(q = chiSquare, df = df, lower.tail = FALSE), 4)
+
+    approve <- p >= (1 - options[["confidence"]])
+
+    conclusion <- ifelse(approve, no = "can be rejected", yes = "can not be rejected")
+    confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
+
+    conclusionText <- paste0("The <i>p</i> value is determined to be ", p, ". Therefore, the null hypothesis that the distribution of first digits in 
+                              the population conforms to Benford's law <b>", conclusion, "</b> with <b>", confidenceLabel, "</b> confidence.")
+
+    conclusionContainer[["conclusionParagraph"]] <- createJaspHtml(conclusionText, "p")
+    conclusionContainer[["conclusionParagraph"]]$position <- 1
+    conclusionContainer$dependOn(options = c("explanatoryText", 
+                                            "confidence",
+                                            "values"))
+
+    if(approve){
+      plotTitle <- "Badge: <i>Approved</i>"
+    } else {
+      plotTitle <- "Badge: <i>Not approved</i>"
+    }
+
+    conclusionPlot <- createJaspPlot(plot = NULL, 
+                                     title = plotTitle, 
+                                     width = 150, 
+                                     height = 150)
+
+    conclusionPlot$position <- 2
+    conclusionPlot$dependOn(optionsFromObject = conclusionContainer[["conclusionParagraph"]])
+    conclusionContainer[["conclusionPlot"]] <- conclusionPlot
+
+    conclusionPlot$plotObject <- .createBadge(approve)
+
+    jaspResults[["conclusionContainer"]] <- conclusionContainer
+  }
 }

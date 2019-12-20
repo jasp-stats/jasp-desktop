@@ -1472,3 +1472,75 @@
     ARMcontainer[["ARMformula"]]$position <- position
     ARMcontainer[["ARMformula"]]$dependOn(options = c("IR", "CR", "confidence", "irCustom", "crCustom"))
 }
+
+.createBadge <- function(approve){
+
+  center <- 1
+  radius <- 1
+  h <- radius
+  w <- sqrt(3)/2 * radius
+  m <- 1.02
+
+  if(approve){
+    fillA <- "#3CB371"
+    fillB <- "#000000"
+  } else {
+    fillA <- "#ff0000"
+    fillB <- "#000000"
+  }
+
+  myTheme <- ggplot2::theme(panel.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
+                            plot.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
+                            legend.key = ggplot2::element_rect(fill = "transparent", colour = NA), 
+                            legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
+                            plot.margin = ggplot2::margin(b = -0.5, l = 1.5, r = 1.5, unit = "lines"), 
+                            strip.text = ggplot2::element_blank(), 
+                            line = ggplot2::element_blank(), 
+                            text = ggplot2::element_blank(), 
+                            title = ggplot2::element_blank())
+
+  hexd <- data.frame(x = 1 + c(rep(-sqrt(3)/2, 2), 0, rep(sqrt(3)/2, 2), 0), 
+                     y = 1 + c(0.5, -0.5, -1, -0.5, 0.5, 1))
+  hexd <- rbind(hexd, hexd[1, ])
+
+  plot <- ggplot2::ggplot() + 
+          ggplot2::geom_polygon(mapping = ggplot2::aes_(x = ~x, y = ~y), 
+                                data = hexd, size = 1.2, 
+                                color = fillB, 
+                                fill = NA) + 
+          ggplot2::geom_polygon(mapping = ggplot2::aes_(x = ~x, y = ~y), 
+                                data = hexd,
+                                fill = fillA, 
+                                color = NA) + 
+          ggplot2::coord_fixed() +
+          ggplot2::scale_y_continuous(expand = c(0, 0), 
+                                      limits = c(center - h * m, center + h * m)) + 
+          ggplot2::scale_x_continuous(expand = c(0, 0), 
+                                      limits = c(center - w * m, center + w * m)) +
+          ggplot2::geom_text(data = data.frame(x = 1, y = 0.08, label = "JASP for Audit"), 
+                             mapping = ggplot2::aes(x = x, y = y, label = label), 
+                             size = 2, 
+                             color = "black",
+                             angle = 30, 
+                             hjust = 0)
+
+  if(approve){
+    plot <- plot + ggplot2::geom_segment(ggplot2::aes(x = 0.8, xend = 1.6, y = 0.6, yend = 1.4), 
+                                        color = "black", 
+                                        size = 8) +
+                    ggplot2::geom_segment(ggplot2::aes(x = 0.9, xend = 0.55, y = 0.72, yend = 1.07),
+                                          color = "black", 
+                                          size = 8)
+  } else {
+    plot <- plot + ggplot2::geom_segment(ggplot2::aes(x = 0.6, xend = 1.4, y = 0.6, yend = 1.4), 
+                                         color = "black", 
+                                         size = 8) +
+                    ggplot2::geom_segment(ggplot2::aes(x = 0.6, xend = 1.4, y = 1.4, yend = 0.6), 
+                                          color = "black", 
+                                          size = 8)
+  }
+  
+  plot <- plot + myTheme     
+
+  return(plot)
+}
