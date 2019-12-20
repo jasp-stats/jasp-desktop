@@ -174,7 +174,10 @@ JASPControl
 					Text
 					{
 						id:					textDisplay
-						anchors.fill:	 	parent
+						anchors.verticalCenter: parent.verticalCenter
+						anchors.left:			parent.left
+						anchors.top:			parent.top
+						anchors.topMargin:		- 8 * preferencesModel.uiScale
 						font:				jaspTheme.font
 						color:				itemEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 						visible:			!textInput.visible
@@ -198,13 +201,16 @@ JASPControl
 						cursorShape:		Qt.IBeamCursor
 					}
 
-					TextField
+
+					/*TextField
 					{
 						id:						textInput
 						isBound:				false
 						anchors.verticalCenter: parent.verticalCenter
 						anchors.left:			parent.left
-						//fieldHeight:			parent.height
+						anchors.top:			parent.top
+						anchors.topMargin:		- 8 * preferencesModel.uiScale
+						fieldHeight:			parent.height + 16 * preferencesModel.uiScale
 						fieldWidth:				parent.width
 						visible:				false
 						useExternalBorder:		false
@@ -214,6 +220,31 @@ JASPControl
 						validator:				tableView.validator
 						onPressed:				tableView.colSelected = columnIndex
 						onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value)
+						onActiveFocusChanged:	if(!activeFocus) visible = false;
+					} */
+
+
+					QTC.TextField
+					{
+						id:						textInput
+						//isBound:				false
+						anchors.verticalCenter: parent.verticalCenter
+						anchors.left:			parent.left
+						//fieldHeight:			parent.height
+						//fieldWidth:				parent.width
+						width:					parent.width
+						height:					parent.height + 16 * preferencesModel.uiScale
+						visible:				false
+						//useExternalBorder:		false
+						text:					itemText
+						//value:					itemText
+						//useLastValidValue:		false
+						//selectValueOnFocus:		true
+						selectByMouse:			true
+						validator:				tableView.validator
+						onPressed:				tableView.colSelected = columnIndex
+						//onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value)
+						onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, text)
 						onActiveFocusChanged:	if(!activeFocus) visible = false;
 					}
 
