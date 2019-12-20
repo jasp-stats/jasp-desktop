@@ -85,22 +85,25 @@
     tolerableE <- 0:floor(planningState[["materiality"]] * 
                           planningState[["N"]])
 
-    intolerableE <- (max(tolerableE) + 1):planningState[["N"]]
+    intolerableE <- (max(tolerableE) + 1):(planningState[["N"]]  - planningState[["sampleSize"]])
 
     priorH1 <- sum(jfa:::.dBetaBinom(x = tolerableE, 
-                                        N = planningState[["N"]], 
+                                        N = planningState[["N"]] - 
+                                            planningState[["sampleSize"]], 
                                         shape1 = planningState[["prior"]]$aPrior, 
                                         shape2 = planningState[["prior"]]$bPrior))
 
     priorH0 <- sum(jfa:::.dBetaBinom(x = intolerableE, 
-                                        N = planningState[["N"]], 
+                                        N = planningState[["N"]] - 
+                                            planningState[["sampleSize"]], 
                                         shape1 = planningState[["prior"]]$aPrior, 
                                         shape2 = planningState[["prior"]]$bPrior))
 
     priorOdds <- priorH1 / priorH0
 
     postH1 <- sum(jfa:::.dBetaBinom(x = tolerableE, 
-                                      N = planningState[["N"]], 
+                                      N = planningState[["N"]] - 
+                                          planningState[["sampleSize"]], 
                                       shape1 = planningState[["prior"]]$aPrior + 
                                                 planningState[["expectedSampleError"]], 
                                       shape2 = planningState[["prior"]]$bPrior + 
@@ -108,7 +111,8 @@
                                                 planningState[["expectedSampleError"]]))
 
     postH0 <- sum(jfa:::.dBetaBinom(x = intolerableE, 
-                                      N = planningState[["N"]], 
+                                      N = planningState[["N"]] - 
+                                          planningState[["sampleSize"]], 
                                       shape1 = planningState[["prior"]]$aPrior + 
                                                 planningState[["expectedSampleError"]], 
                                       shape2 = planningState[["prior"]]$bPrior + 
@@ -286,14 +290,16 @@
 
   } else if(planningState[["likelihood"]] == "hypergeometric"){
 
-    priorBound <- round(.qBetaBinom(p = options[["confidence"]], 
-                                N = planningState[["N"]], 
+    priorBound <- round(jfa:::.qBetaBinom(p = options[["confidence"]], 
+                                N = planningState[["N"]] - 
+                                      planningState[["sampleSize"]], 
                                 shape1 = planningState[["prior"]]$aPrior, 
                                 shape2 = planningState[["prior"]]$bPrior) / 
                     planningState[["N"]], 6)
 
-    postBound <- round(.qBetaBinom(p = options[["confidence"]], 
-                                    N = planningState[["N"]], 
+    postBound <- round(jfa:::.qBetaBinom(p = options[["confidence"]], 
+                                    N = planningState[["N"]] - 
+                                      planningState[["sampleSize"]], 
                                     shape1 = planningState[["prior"]]$aPrior + 
                                              planningState[["expectedSampleError"]], 
                                     shape2 = planningState[["prior"]]$bPrior +
@@ -302,7 +308,8 @@
                         planningState[["N"]], 6)
 
     priorForm <- paste0("Beta-binomial(N = ",
-                        planningState[["N"]],
+                        planningState[["N"]] - 
+                          planningState[["sampleSize"]],
                         ", \u03B1 = ", 
                         planningState[["prior"]]$aPrior,
                         ", \u03B2 = ",
@@ -310,7 +317,8 @@
                         ")")
 
     posteriorForm <- paste0("Beta-binomial(N = ", 
-                            planningState[["N"]],
+                            planningState[["N"]] - 
+                              planningState[["sampleSize"]],
                             ", \u03B1 = ",
                             planningState[["prior"]]$aPrior + 
                             planningState[["expectedSampleError"]],
@@ -468,14 +476,16 @@
 
       priorData <- data.frame(x = xseq, 
                               y = jfa:::.dBetaBinom(x = xseq, 
-                                                    N = planningState[["N"]], 
+                                                    N = planningState[["N"]] - 
+                                                          planningState[["sampleSize"]], 
                                                     shape1 = planningState[["prior"]]$aPrior, 
                                                     shape2 = planningState[["prior"]]$bPrior),
                               type = rep("Prior", length(xseq)))
 
       postData <- data.frame(x = xseq, 
                              y = jfa:::.dBetaBinom(x = xseq, 
-                             N = planningState[["N"]], 
+                             N = planningState[["N"]] - 
+                                 planningState[["sampleSize"]], 
                              shape1 = planningState[["prior"]]$aPrior + 
                                       planningState[["expectedSampleError"]], 
                              shape2 = planningState[["prior"]]$bPrior + 
@@ -488,7 +498,8 @@
                                                   planningState[["materiality"]] * 
                                                   planningState[["N"]]
                                                   ),
-                                                N = planningState[["N"]], 
+                                                N = planningState[["N"]] - 
+                                                    planningState[["sampleSize"]], 
                                                 shape1 = planningState[["prior"]]$aPrior, 
                                                 shape2 = planningState[["prior"]]$bPrior))
 
@@ -503,17 +514,20 @@
 
       pdata2 <- data.frame(x = populationK, 
                           y = jfa:::.dBetaBinom(populationK, 
-                                                N = planningState[["N"]], 
+                                                N = planningState[["N"]]  - 
+                                                    planningState[["sampleSize"]], 
                                                 shape1 = planningState[["prior"]]$aPrior, 
                                                 shape2 = planningState[["prior"]]$bPrior))
 
       priorBound <- jfa:::.qBetaBinom(p = options[["confidence"]], 
-                                      N = planningState[["N"]], 
+                                      N = planningState[["N"]] - 
+                                          planningState[["sampleSize"]], 
                                       shape1 = planningState[["prior"]]$aPrior, 
                                       shape2 = planningState[["prior"]]$bPrior) 
 
       posteriorBound <- jfa:::.qBetaBinom(p = options[["confidence"]], 
-                                          N = planningState[["N"]], 
+                                          N = planningState[["N"]] - 
+                                              planningState[["sampleSize"]], 
                                           shape1 = planningState[["prior"]]$aPrior + 
                                                    planningState[["expectedSampleError"]], 
                                           shape2 = planningState[["prior"]]$bPrior + 
@@ -635,7 +649,8 @@
         xseq <- xseq[1:(priorBound + 1)]
         barData <- data.frame(x = xseq, 
                               y = jfa:::.dBetaBinom(x = xseq, 
-                                                    N = planningState[["N"]], 
+                                                    N = planningState[["N"]] - 
+                                                        planningState[["sampleSize"]], 
                                                     shape1 = planningState[["prior"]]$aPrior, 
                                                     shape2 = planningState[["prior"]]$bPrior))
 
