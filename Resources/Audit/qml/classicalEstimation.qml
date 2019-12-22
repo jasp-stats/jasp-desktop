@@ -205,7 +205,7 @@ Form {
 
 	Item 
 	{
-		preferredHeight: 			downloadReportEstimation.height
+		Layout.preferredHeight: 			downloadReportEstimation.height
 		Layout.fillWidth: 	true
 
 		Button 
