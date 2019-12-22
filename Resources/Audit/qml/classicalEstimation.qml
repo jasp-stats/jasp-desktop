@@ -13,7 +13,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-// When making changes to this file always mention @koenderks as a reviewer in the Pull Request
+// When making changes to this file always mention @koenderks as a
+// reviewer in the Pull Request
 
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
@@ -160,6 +161,13 @@ Form {
 						toolTip: 			"Show explanatory text and formulas"
 					}
 				}
+
+				CheckBox
+				{
+					text:	 		qsTr("Report badges")
+					name: 		"reportBadges"
+					checked: 	true
+				}
 			}
 		}
 	}
@@ -205,16 +213,16 @@ Form {
 
 	Item
 	{
-		Layout.preferredHeight: 			downloadReportEstimation.height
-		Layout.fillWidth: 	true
+		Layout.preferredHeight: downloadReportEstimation.height
+		Layout.fillWidth: 			true
 
 		Button
 		{
-			id: 			downloadReportEstimation
-			enabled: 		populationSize.value != 0 && populationValue.value != 0 && auditValues.count > 0 && bookValues.count > 0
-			anchors.right: 	parent.right
-			anchors.bottom: parent.bottom
-			text: 			qsTr("<b>Download Report</b>")
+			id: 									downloadReportEstimation
+			enabled: 							populationSize.value != 0 && populationValue.value != 0 && auditValues.count > 0 && bookValues.count > 0
+			anchors.right: 				parent.right
+			anchors.bottom: 			parent.bottom
+			text: 								qsTr("<b>Download Report</b>")
 			onClicked:
 			{
 				form.exportResults()

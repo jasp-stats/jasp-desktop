@@ -13,7 +13,8 @@
 // <http://www.gnu.org/licenses/>.\
 //
 
-// When making changes to this file always mention @koenderks as a reviewer in the Pull Request
+// When making changes to this file always mention @koenderks as a
+// reviewer in the Pull Request
 
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
@@ -245,6 +246,13 @@ Form {
 						toolTip: 			"Show explanatory text at each step of the analysis"
 					}
 				}
+
+				CheckBox
+				{
+					text:	 		qsTr("Report badges")
+					name: 		"reportBadges"
+					checked: 	true
+				}
 			}
 
 			RadioButtonGroup
@@ -447,16 +455,16 @@ Form {
 
 	Item
 	{
-		Layout.preferredHeight: 			downloadReportPlanning.height
-		Layout.fillWidth: 	true
+		Layout.preferredHeight: downloadReportPlanning.height
+		Layout.fillWidth: 			true
 
 		Button
 		{
-			id: 							downloadReportPlanning
-			enabled: 					materialityRelative.checked ? (populationSize.value != 0 && materialityPercentage.value != 0) : (populationSize.value != 0 && materialityValue.value != 0 && populationValue.value != 0)
-			anchors.right: 		parent.right
-			anchors.bottom: 	parent.bottom
-			text: 						qsTr("<b>Download Report</b>")
+			id: 									downloadReportPlanning
+			enabled: 							materialityRelative.checked ? (populationSize.value != 0 && materialityPercentage.value != 0) : (populationSize.value != 0 && materialityValue.value != 0 && populationValue.value != 0)
+			anchors.right: 				parent.right
+			anchors.bottom: 			parent.bottom
+			text: 								qsTr("<b>Download Report</b>")
 
 			onClicked:
 			{

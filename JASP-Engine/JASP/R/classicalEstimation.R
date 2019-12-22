@@ -38,6 +38,8 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
                             ready, 
                             position = 1)
 
+  # --- TABLES
+  
   # Create results table
   .auditClassicalEstimationSummaryTable(dataset, 
                                         options, 
@@ -52,12 +54,30 @@ classicalEstimation <- function(jaspResults, dataset, options, ...){
                                            ready, 
                                            position = 3)
 
+  # ---
+  
+  # --- PLOTS
+  
   # Correlation plot
   .auditCorrelationPlot(dataset, 
                         options, 
                         jaspResults, 
                         ready, 
                         position = 4)
+
+  # ---
+  
+  # --- BADGES
+  
+  # Provide the analysis badges
+  .auditBadgeSection(options,
+                     type = "estimation",
+                     stateContainer = NULL,
+                     jaspResults, 
+                     ready, 
+                     position = 6)
+
+  # ---
 }
 
 .auditReadDataEstimation <- function(dataset, 

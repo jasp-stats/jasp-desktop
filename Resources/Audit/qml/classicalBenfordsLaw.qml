@@ -13,7 +13,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-// When making changes to this file always mention @koenderks as a reviewer in the Pull Request
+// When making changes to this file always mention @koenderks as a 
+// reviewer in the Pull Request
 
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
@@ -23,6 +24,7 @@ import JASP.Widgets 1.0
 Form {
 
 	usesJaspResults: true
+	columns: 1
 
 	VariablesForm
 	{
@@ -80,6 +82,13 @@ Form {
 						toolTip: 			"Show explanatory text and formulas"
 					}
 				}
+
+				CheckBox
+				{
+					text:	 		qsTr("Report badges")
+					name: 		"reportBadges"
+					checked: 	true
+				}
 			}
 		}
 	}
@@ -118,8 +127,8 @@ Form {
 
 	Item 
 	{
-		height: 						downloadReportBenfordsLaw.height
-		Layout.fillWidth: 	true
+		Layout.preferredHeight: downloadReportBenfordsLaw.height
+		Layout.fillWidth: 			true
 
 		Button 
 		{

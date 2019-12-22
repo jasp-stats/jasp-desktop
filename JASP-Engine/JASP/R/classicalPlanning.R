@@ -68,7 +68,7 @@ classicalPlanning <- function(jaspResults, dataset, options, ...){
                                 type, 
                                 positionInContainer = 1)
 
-  ## TABLES
+  # --- TABLES
   
   # Create the summary table
   .auditPlanningSummaryTable(options, 
@@ -79,7 +79,9 @@ classicalPlanning <- function(jaspResults, dataset, options, ...){
                              type, 
                              positionInContainer = 2)
   
-  ## PLOTS
+  # ---
+  
+  # --- PLOTS
   
   # Create a state to keep track of figure numbers
   planningContainer[["figNumber"]] <- createJaspState(1)
@@ -100,6 +102,20 @@ classicalPlanning <- function(jaspResults, dataset, options, ...){
                             planningContainer, 
                             ready, 
                             positionInContainer = 4)
+
+  # ---
+  
+  # --- BADGES
+
+  # Provide the analysis badges
+  .auditBadgeSection(options,
+                     type = "planning",
+                     stateContainer = NULL,
+                     jaspResults, 
+                     ready, 
+                     position = 5)
+
+  # --- 
 }
 
 .samplingDistributionPlot <- function(options, 

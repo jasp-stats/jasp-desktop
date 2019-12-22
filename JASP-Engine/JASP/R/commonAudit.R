@@ -380,9 +380,9 @@
                       N = planningOptions[["populationSize"]], 
                       expectedSampleError = 0,
                       prior = list(aPrior = 1, 
-                                  bPrior = bPrior, 
-                                  nPrior = 0, 
-                                  kPrior = 0))
+                                   bPrior = bPrior, 
+                                   nPrior = 0, 
+                                   kPrior = 0))
 
     return(noResults)
 
@@ -1475,7 +1475,107 @@
     ARMcontainer[["ARMformula"]]$dependOn(options = c("IR", "CR", "confidence", "irCustom", "crCustom"))
 }
 
-.createBadge <- function(type){
+# FUNCTIONS FOR BADGES
+
+.auditBadgeSection <- function(options, 
+                               type,
+                               stateContainer = NULL,
+                               jaspResults, 
+                               ready, 
+                               position){
+
+  if(is.null(jaspResults[["badgeSection"]]) && 
+     ready && 
+     options[["reportBadges"]]){
+
+    if(!is.null(stateContainer) && stateContainer$getError())
+      return()
+
+    badgeSection <- createJaspContainer(title= "<u>Report Badges</u>")
+    badgeSection$position <- position
+    badgeSection$dependOn(options = c("values",
+                                      "confidence",
+                                      "explanatoryText",
+                                      "reportBadges",
+                                      "IR", 
+                                      "irCustom",
+                                      "CR",  
+                                      "crCustom", 
+                                      "confidence",
+                                      "populationSize", 
+                                      "populationValue",
+                                      "materiality",
+                                      "materialityPercentage", 
+                                      "materialityValue",
+                                      "expectedPercentage",
+                                      "expectedErrors", 
+                                      "expectedNumber",
+                                      "planningModel",
+                                      "bookValues", 
+                                      "auditValues", 
+                                       "estimator"))
+
+    # Badge for annotation
+    annotatedBadge <- options[["explanatoryText"]]
+
+    if(annotatedBadge){
+      
+      badge <- .auditCreateBadge(type = "annotated")
+      annotationBadge <- createJaspPlot(plot = badge, 
+                          title = "Badge: <i>Annotated</i>", 
+                          width = 150, 
+                          height = 150)
+
+      annotationBadge$position <- 1
+      badgeSection[["annotationBadge"]] <- annotationBadge
+
+    }
+
+    if(type == "benfordsLaw"){
+
+      state <- .auditClassicalBenfordsLawState(dataset, 
+                                                options, 
+                                                stateContainer,
+                                                ready)
+
+      observed <- state[["N"]] * state[["percentages"]]
+      expected <- state[["N"]] * state[["inBenford"]]
+      chiSquare <- sum( (observed - expected)^2 / expected )
+      df <- 8
+      p <- round(pchisq(q = chiSquare, df = df, lower.tail = FALSE), 4)
+
+      approveBadge <- p >= (1 - options[["confidence"]])
+
+    }
+
+    if(type %in% c("benfordsLaw", "workflow")){
+
+      # Badge for result
+      if(approveBadge){
+        plotTitle <- "Badge: <i>Approved</i>"
+        plotType <- "approved"
+      } else {
+        plotTitle <- "Badge: <i>Not approved</i>"
+        plotType <- "not approved"
+      }
+
+      badge <- .auditCreateBadge(type = plotType)
+      resultBadge <- createJaspPlot(plot = badge, 
+                                    title = plotTitle, 
+                                    width = 150, 
+                                    height = 150)
+
+      resultBadge$position <- 2
+      badgeSection[["resultBadge"]] <- resultBadge
+
+    }
+
+    jaspResults[["badgeSection"]] <- badgeSection
+
+  }
+}
+
+.auditCreateBadge <- function(type){
 
   center <- 1
   radius <- 1
@@ -1490,16 +1590,6 @@
   } else if(type == "annotated"){
     fillA <- "#57A7E0"
   }
-
-  myTheme <- ggplot2::theme(panel.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
-                            plot.background = ggplot2::element_rect(fill = "transparent", colour = NA), 
-                            legend.key = ggplot2::element_rect(fill = "transparent", colour = NA), 
-                            legend.background = ggplot2::element_rect(fill = "transparent", colour = NA),
-                            plot.margin = ggplot2::margin(b = -0.5, l = 1.5, r = 1.5, unit = "lines"), 
-                            strip.text = ggplot2::element_blank(), 
-                            line = ggplot2::element_blank(), 
-                            text = ggplot2::element_blank(), 
-                            title = ggplot2::element_blank())
 
   hexd <- data.frame(x = 1 + c(rep(-sqrt(3)/2, 2), 0, rep(sqrt(3)/2, 2), 0), 
                      y = 1 + c(0.5, -0.5, -1, -0.5, 0.5, 1))
@@ -1541,13 +1631,32 @@
                                           color = "black", 
                                           size = 8)
   } else if(type == "annotated"){
-    plot <- plot + ggplot2::geom_segment(ggplot2::aes(x = 1, xend = 1, y = 0.5, yend = 1.2), 
+    plot <- plot + ggplot2::geom_segment(ggplot2::aes(x = 1, xend = 1, y = 0.5, yend = 1.1), 
                                          color = "black", 
-                                         size = 7) +
-                    ggplot2::geom_segment(ggplot2::aes(x = 1, xend = 1, y = 1.4, yend = 1.6), 
+                                         size = 7,
+                                         lineend = "round") +
+                    ggplot2::geom_segment(ggplot2::aes(x = 1, xend = 1, y = 1.5, yend = 1.5), 
                                           color = "black", 
-                                          size = 7)
+                                          size = 7,
+                                          lineend = "round")
   }
+
+  myTheme <- ggplot2::theme(panel.background = ggplot2::element_rect(fill = "transparent", 
+                                                                     colour = NA), 
+                          plot.background = ggplot2::element_rect(fill = "transparent", 
+                                                                  colour = NA), 
+                          legend.key = ggplot2::element_rect(fill = "transparent", 
+                                                             colour = NA), 
+                          legend.background = ggplot2::element_rect(fill = "transparent", 
+                                                                    colour = NA),
+                          plot.margin = ggplot2::margin(b = -0.5, 
+                                                        l = 1.5, 
+                                                        r = 1.5, 
+                                                        unit = "lines"), 
+                          strip.text = ggplot2::element_blank(), 
+                          line = ggplot2::element_blank(), 
+                          text = ggplot2::element_blank(), 
+                          title = ggplot2::element_blank())
   
   plot <- plot + myTheme     
 

@@ -68,7 +68,7 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
                                 type, 
                                 positionInContainer = 1)
 
-  ## TABLES
+  # --- TABLES
 
   # Create the summary table
   .auditPlanningSummaryTable(options, 
@@ -93,7 +93,9 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
                                       ready, 
                                       positionInContainer = 4)
 
-  ## PLOTS
+  # ---
+
+  # --- PLOTS
 
   # Create a state to keep track of figure numbers
   planningContainer[["figNumber"]] <- createJaspState(1)
@@ -114,4 +116,18 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
                           planningContainer, 
                           ready, 
                           positionInContainer = 6)
+ 
+  # ---
+
+  # --- BADGES
+
+  # Provide the analysis badges
+  .auditBadgeSection(options,
+                     type = "planning",
+                     stateContainer = NULL,
+                     jaspResults, 
+                     ready, 
+                     position = 7)
+
+  # ---
 }

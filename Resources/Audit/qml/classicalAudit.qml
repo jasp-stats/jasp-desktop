@@ -16,7 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-// When making changes to this file always mention @koenderks as a reviewer in the Pull Request
+// When making changes to this file always mention @koenderks as a
+// reviewer in the Pull Request
 
 import QtQuick			2.8
 import QtQuick.Layouts	1.3
@@ -113,8 +114,8 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			variableSelectionTitle.height
-			Layout.fillWidth: 	true
+			Layout.preferredHeight: variableSelectionTitle.height
+			Layout.fillWidth: 			true
 
 			Label
 			{
@@ -329,9 +330,9 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			toSampling.height
-			Layout.fillWidth: 	true
-			enabled:						!pasteVariables.checked
+			Layout.preferredHeight: toSampling.height
+			Layout.fillWidth: 			true
+			enabled:								!pasteVariables.checked
 
 			Button
 			{
@@ -580,9 +581,9 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			toExecution.height
-			Layout.fillWidth: 	true
-			enabled:						!pasteVariables.checked
+			Layout.preferredHeight: toExecution.height
+			Layout.fillWidth: 			true
+			enabled:								!pasteVariables.checked
 
 			Button
 			{
@@ -642,8 +643,8 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			selectHowToAnalyseObservations.height
-			Layout.fillWidth: 	true
+			Layout.preferredHeight: selectHowToAnalyseObservations.height
+			Layout.fillWidth: 			true
 
 			Label
 			{
@@ -655,8 +656,8 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			variableType.height
-			Layout.fillWidth:	true
+			Layout.preferredHeight: variableType.height
+			Layout.fillWidth:				true
 
 			RadioButtonGroup
 			{
@@ -730,8 +731,8 @@ Form
 
 			Item
 			{
-				Layout.preferredHeight:				groupBoxVariableNames.height
-				Layout.fillWidth: 	true
+				Layout.preferredHeight:	groupBoxVariableNames.height
+				Layout.fillWidth: 			true
 
 				CheckBox
 				{
@@ -761,8 +762,8 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			performAuditText.height
-			Layout.fillWidth: 	true
+			Layout.preferredHeight: performAuditText.height
+			Layout.fillWidth: 			true
 
 			Label
 			{
@@ -794,9 +795,9 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			toEvaluation.height
-			Layout.fillWidth: 	true
-			enabled:						!evaluationChecked.checked
+			Layout.preferredHeight: toEvaluation.height
+			Layout.fillWidth: 			true
+			enabled:								!evaluationChecked.checked
 
 			Button
 			{
@@ -952,8 +953,8 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			toInterpretation.height
-			Layout.fillWidth: 	true
+			Layout.preferredHeight: toInterpretation.height
+			Layout.fillWidth: 			true
 
 			Button
 			{
