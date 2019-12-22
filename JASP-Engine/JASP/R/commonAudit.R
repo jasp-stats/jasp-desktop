@@ -602,7 +602,8 @@
                                                 ")</i>."),
                             "hypergeometric" = paste0("The required sample size is based on the <b>beta-binomial</b> distribution <i>(N = ", 
                                                       planningState[["N"]] - 
-                                                      planningState[["sampleSize"]],
+                                                      planningState[["sampleSize"]] +
+                                                      planningState[["expectedSampleError"]],
                                                       ", \u03B1 = ", 
                                                       planningState[["prior"]]$aPrior, 
                                                       ", \u03B2 = ", 
