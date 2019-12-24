@@ -226,8 +226,8 @@
                                               the misstatement is lower than materiality. 
                                               p(H\u208A): The probability that the misstatement 
                                               is equal to, or higher than, materiality.
-                                              The prior odds shown are to be interpreted with 
-                                              respect to tolerable misstatement.", 
+                                              The odds are to be interpreted in favor of 
+                                              tolerable misstatement.", 
                                   symbol="<i>Note.</i>")
 
   planningContainer[["priorStatistics"]] <- priorStatisticsTable
