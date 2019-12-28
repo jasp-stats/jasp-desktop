@@ -228,7 +228,7 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   if(!is.null(benfordsLawContainer[["benfordsLawTestTable"]])) 
     return()
 
-  benfordsLawTestTable <- createJaspTable("Benford's Law Goodness-of-fit Table")
+  benfordsLawTestTable <- createJaspTable("Goodness-of-fit Table")
   benfordsLawTestTable$position <- positionInContainer
 
   benfordsLawTestTable$dependOn(options = c("values",

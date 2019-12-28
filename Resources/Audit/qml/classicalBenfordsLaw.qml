@@ -118,7 +118,7 @@ Form {
 
 				CheckBox
 				{
-					text: qsTr("Compare vs. Benford's Law")
+					text: qsTr("Compare vs. Benford's law")
 					name: "benfordsLawPlot"
 				}
 			}
