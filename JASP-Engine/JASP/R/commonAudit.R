@@ -1513,7 +1513,8 @@
                                       "planningModel",
                                       "bookValues", 
                                       "auditValues", 
-                                       "estimator"))
+                                      "estimator",
+                                      "digits"))
 
     # Badge for annotation
     annotatedBadge <- options[["explanatoryText"]]

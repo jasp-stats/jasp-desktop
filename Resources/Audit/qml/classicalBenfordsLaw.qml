@@ -44,6 +44,17 @@ Form {
 			singleVariable:	true
 			allowedColumns:	["ordinal", "scale"]
 		}
+
+		DropDown {
+				name: 							"digits"
+				indexDefaultValue: 	0
+				label: 							qsTr("Check numbers:")
+				values:
+				[
+						{ label: "1 - 9", value: "first"},
+						{ label: "10 - 99", value: "firstSecond"},
+				]
+		}
 	}
 
 	Section 
