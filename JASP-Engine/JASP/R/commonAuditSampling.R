@@ -15,8 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# When making changes to this file always mention @koenderks as a reviewer in the Pull Request
+# When making changes to this file always mention @koenderks as a 
+# reviewer in the Pull Request
 
+# The following function will be deprecated
 .randomSampling <- function(dataset, options, jaspResults, position = 1, selectionContainer){
 
     if(!is.null(selectionContainer[["sampleTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
@@ -93,6 +95,7 @@
     }
 }
 
+# The following function will be deprecated
 .cellSampling <- function(dataset, options, jaspResults, position = 2, selectionContainer){
 
     if(!is.null(selectionContainer[["sampleTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
@@ -198,6 +201,7 @@
     }
 }
 
+# The following function will be deprecated
 .systematicSampling <- function(dataset, options, jaspResults, position = 2, selectionContainer) {
 
     if(!is.null(selectionContainer[["sampleTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
@@ -320,6 +324,7 @@
     }
 }
 
+# The following function will be deprecated
 .sampleDescriptivesTable <- function(dataset, options, jaspResults, position = 3, selectionContainer){
 
     if(!is.null(selectionContainer[["sampleDescriptivesTable"]])) return()
@@ -378,6 +383,7 @@
     }
 }
 
+# The following function will be deprecated
 .selectionInformationTable <- function(dataset, options, jaspResults, position = 1, selectionContainer){
 
   if(!is.null(selectionContainer[["selectionInformationTable"]])) return()

@@ -18,6 +18,10 @@
 # When making changes to this file always mention @koenderks as a 
 # reviewer in the Pull Request
 
+################################################################################
+################## Functions for Bayes factors #################################
+################################################################################
+
 .expectedBF <- function(planningState){
 
   # For calculation of the Bayes factor, the are below materiality is 
@@ -145,244 +149,271 @@
   return(result)
 }
 
+################################################################################
+################## Functions for the planning ##################################
+################################################################################
+
 .auditImplicitSampleTable <- function(options, 
                                       planningState, 
                                       planningContainer, 
+                                      jaspResults,
                                       ready, 
                                       positionInContainer){
 
-  if(!is.null(planningContainer[["sampletable"]]) || 
-      !options[["implicitSampleTable"]]) 
+  if(!options[["implicitSampleTable"]]) 
     return()
 
-  sampletable <- createJaspTable("Implicit Sample")
-  sampletable$position <- positionInContainer
+  .updateTabNumber(jaspResults)
 
-  sampletable$dependOn(options = c("implicitSampleTable", 
-                                   "planningModel"))
+  if(is.null(planningContainer[["sampletable"]])){
 
-  sampletable$addColumnInfo(name = 'implicitn', 
-                            title = "Implicit sample size", 
-                            type = 'string')
-  sampletable$addColumnInfo(name = 'implicitk', 
-                            title = "Implicit errors", 
-                            type = 'string')
+    tableTitle <- paste0("<b>Table ", 
+                        jaspResults[["tabNumber"]]$object, 
+                        ".</b> Implicit Sample")
+    
+    sampletable <- createJaspTable(tableTitle)
+    sampletable$position <- positionInContainer
 
-  message <- paste0("Sample sizes shown are implicit sample sizes derived from the ARM risk assessments: IR = <b>", 
-                    options[["IR"]], 
-                    "</b> and CR = <b>", 
-                    options[["CR"]], 
-                    "</b>.")
+    sampletable$dependOn(options = c("implicitSampleTable", 
+                                    "planningModel",
+                                    "priorStatistics"))
 
-  sampletable$addFootnote(message = message, symbol="<i>Note.</i>")
+    sampletable$addColumnInfo(name = 'implicitn', 
+                              title = "Implicit sample size", 
+                              type = 'string')
+    sampletable$addColumnInfo(name = 'implicitk', 
+                              title = "Implicit errors", 
+                              type = 'string')
 
-  planningContainer[["sampletable"]] <- sampletable
+    message <- paste0("Sample sizes shown are implicit sample sizes derived from the ARM risk assessments: IR = <b>", 
+                      options[["IR"]], 
+                      "</b> and CR = <b>", 
+                      options[["CR"]], 
+                      "</b>.")
 
-  if(!ready || planningContainer$getError()) 
-    return()
+    sampletable$addFootnote(message = message, symbol="<i>Note.</i>")
 
-  row <- data.frame(implicitn = planningState[["prior"]]$nPrior, 
-                    implicitk = planningState[["prior"]]$kPrior)
+    planningContainer[["sampletable"]] <- sampletable
 
-  sampletable$addRows(row)
+    if(!ready || planningContainer$getError()) 
+      return()
+
+    row <- data.frame(implicitn = planningState[["prior"]]$nPrior, 
+                      implicitk = planningState[["prior"]]$kPrior)
+
+    sampletable$addRows(row)
+  }
 }
 
 .auditPriorAndPosterStatisticsTable <- function(options, 
                                                 planningState, 
                                                 planningContainer, 
+                                                jaspResults,
                                                 ready, 
                                                 positionInContainer){
 
-  if(!is.null(planningContainer[["priorStatistics"]]) || 
-      !options[["priorStatistics"]]) 
+  if(!options[["priorStatistics"]]) 
     return()
+    
+  .updateTabNumber(jaspResults)
 
-  priorStatisticsTable <- createJaspTable("Prior and Posterior Descriptives")
-  priorStatisticsTable$position <- positionInContainer
+  if(is.null(planningContainer[["priorStatistics"]])){
 
-  priorStatisticsTable$dependOn(options = c("priorStatistics", 
-                                            "planningModel"))
+    tableTitle <- paste0("<b>Table ", 
+                        jaspResults[["tabNumber"]]$object, 
+                        ".</b> Prior and Posterior Descriptive Statistics")
+    
+    priorStatisticsTable <- createJaspTable(tableTitle)
+    priorStatisticsTable$position <- positionInContainer
 
-  priorStatisticsTable$addColumnInfo(name = 'v', 
-                                  title = "", 
-                                  type = 'string')
-  priorStatisticsTable$addColumnInfo(name = 'form', 
-                                     title = "Functional form", 
-                                     type = 'string')
-  priorStatisticsTable$addColumnInfo(name = 'priorH1', 
-                                     title = "p(H\u208B)", 
-                                     type = 'string')
-  priorStatisticsTable$addColumnInfo(name = 'priorH0', 
-                                     title = "p(H\u208A)", 
-                                     type = 'string')
-  priorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                     title = "Odds <sup>p(H\u208B)</sup>&frasl;<sub>p(H\u208A)</sub>", 
-                                     type = 'string')
-  priorStatisticsTable$addColumnInfo(name = 'priorBound', 
-                                     title = paste0(options[["confidence"]]*100,"% Credible bound") , 
-                                     type = 'string')
+    priorStatisticsTable$dependOn(options = c("priorStatistics", 
+                                              "planningModel",
+                                              "implicitSampleTable"))
 
-  priorStatisticsTable$addFootnote(message = "p(H\u208B): The probability that 
-                                              the misstatement is lower than materiality. 
-                                              p(H\u208A): The probability that the misstatement 
-                                              is equal to, or higher than, materiality.
-                                              The odds are to be interpreted in favor of 
-                                              tolerable misstatement.", 
-                                  symbol="<i>Note.</i>")
+    priorStatisticsTable$addColumnInfo(name = 'v', 
+                                    title = "", 
+                                    type = 'string')
+    priorStatisticsTable$addColumnInfo(name = 'form', 
+                                      title = "Functional form", 
+                                      type = 'string')
+    priorStatisticsTable$addColumnInfo(name = 'priorH1', 
+                                      title = "p(H\u208B)", 
+                                      type = 'string')
+    priorStatisticsTable$addColumnInfo(name = 'priorH0', 
+                                      title = "p(H\u208A)", 
+                                      type = 'string')
+    priorStatisticsTable$addColumnInfo(name = 'priorOdds', 
+                                      title = "Odds <sup>p(H\u208B)</sup>&frasl;<sub>p(H\u208A)</sub>", 
+                                      type = 'string')
+    priorStatisticsTable$addColumnInfo(name = 'priorBound', 
+                                      title = paste0(options[["confidence"]]*100,"% Credible bound") , 
+                                      type = 'string')
 
-  planningContainer[["priorStatistics"]] <- priorStatisticsTable
+    priorStatisticsTable$addFootnote(message = "p(H\u208B): The probability that 
+                                                the misstatement is lower than materiality. 
+                                                p(H\u208A): The probability that the misstatement 
+                                                is equal to, or higher than, materiality.
+                                                The odds are to be interpreted in favor of 
+                                                tolerable misstatement.", 
+                                    symbol="<i>Note.</i>")
 
-  if(!ready || planningContainer$getError()) {
+    planningContainer[["priorStatistics"]] <- priorStatisticsTable
 
-      row <- data.frame(v = c("Prior", "Expected posterior", "Shift"))
-      priorStatisticsTable$addRows(row)
-      return()
+    if(!ready || planningContainer$getError()) {
 
-  }
+        row <- data.frame(v = c("Prior", "Expected posterior", "Shift"))
+        priorStatisticsTable$addRows(row)
+        return()
 
-  if(planningState[["likelihood"]] == "poisson"){
+    }
 
-    priorBound <- round(qgamma(p = options[["confidence"]], 
-                                shape = planningState[["prior"]]$aPrior, 
-                                rate = planningState[["prior"]]$bPrior), 6)
+    if(planningState[["likelihood"]] == "poisson"){
 
-    postBound <- round(qgamma(p = options[["confidence"]], 
-                              shape = planningState[["prior"]]$aPrior + 
-                                      planningState[["expectedSampleError"]], 
-                              rate = planningState[["prior"]]$bPrior + 
-                                      planningState[["sampleSize"]]), 6)
+      priorBound <- round(qgamma(p = options[["confidence"]], 
+                                  shape = planningState[["prior"]]$aPrior, 
+                                  rate = planningState[["prior"]]$bPrior), 6)
 
-    priorForm <- paste0("Gamma(\u03B1 = ", 
-                        planningState[["prior"]]$aPrior,
-                        ", \u03B2 = ",
-                        planningState[["prior"]]$bPrior,
-                        ")")
+      postBound <- round(qgamma(p = options[["confidence"]], 
+                                shape = planningState[["prior"]]$aPrior + 
+                                        planningState[["expectedSampleError"]], 
+                                rate = planningState[["prior"]]$bPrior + 
+                                        planningState[["sampleSize"]]), 6)
 
-    posteriorForm <- paste0("Gamma(\u03B1 = ", 
-                            planningState[["prior"]]$aPrior + 
-                            planningState[["expectedSampleError"]],
-                            ", \u03B2 = ",
-                            planningState[["prior"]]$bPrior +
-                            planningState[["sampleSize"]],
-                            ")")
+      priorForm <- paste0("Gamma(\u03B1 = ", 
+                          planningState[["prior"]]$aPrior,
+                          ", \u03B2 = ",
+                          planningState[["prior"]]$bPrior,
+                          ")")
 
-  } else if(planningState[["likelihood"]] == "binomial"){
+      posteriorForm <- paste0("Gamma(\u03B1 = ", 
+                              planningState[["prior"]]$aPrior + 
+                              planningState[["expectedSampleError"]],
+                              ", \u03B2 = ",
+                              planningState[["prior"]]$bPrior +
+                              planningState[["sampleSize"]],
+                              ")")
 
-    priorBound <- round(qbeta(p = options[["confidence"]], 
-                              shape1 = planningState[["prior"]]$aPrior, 
-                              shape2 = planningState[["prior"]]$bPrior), 6)
+    } else if(planningState[["likelihood"]] == "binomial"){
 
-    postBound <- round(qbeta(p = options[["confidence"]], 
-                              shape1 = planningState[["prior"]]$aPrior + 
-                                      planningState[["expectedSampleError"]], 
-                              shape2 = planningState[["prior"]]$bPrior +
-                                      planningState[["sampleSize"]] - 
-                                      planningState[["expectedSampleError"]]), 6)
-
-    priorForm <- paste0("Beta(\u03B1 = ", 
-                        planningState[["prior"]]$aPrior,
-                        ", \u03B2 = ",
-                        planningState[["prior"]]$bPrior,
-                        ")")
-
-    posteriorForm <- paste0("Beta(\u03B1 = ", 
-                            planningState[["prior"]]$aPrior + 
-                            planningState[["expectedSampleError"]],
-                            ", \u03B2 = ",
-                            planningState[["prior"]]$bPrior +
-                            planningState[["sampleSize"]] -
-                            planningState[["expectedSampleError"]],
-                            ")")
-
-  } else if(planningState[["likelihood"]] == "hypergeometric"){
-
-    priorBound <- round(jfa:::.qBetaBinom(p = options[["confidence"]], 
-                                N = planningState[["N"]] - 
-                                    planningState[["sampleSize"]] + 
-                                    planningState[["expectedSampleError"]], 
+      priorBound <- round(qbeta(p = options[["confidence"]], 
                                 shape1 = planningState[["prior"]]$aPrior, 
-                                shape2 = planningState[["prior"]]$bPrior) / 
-                    planningState[["N"]], 6)
+                                shape2 = planningState[["prior"]]$bPrior), 6)
 
-    postBound <- round(jfa:::.qBetaBinom(p = options[["confidence"]], 
-                                    N = planningState[["N"]] - 
+      postBound <- round(qbeta(p = options[["confidence"]], 
+                                shape1 = planningState[["prior"]]$aPrior + 
+                                        planningState[["expectedSampleError"]], 
+                                shape2 = planningState[["prior"]]$bPrior +
+                                        planningState[["sampleSize"]] - 
+                                        planningState[["expectedSampleError"]]), 6)
+
+      priorForm <- paste0("Beta(\u03B1 = ", 
+                          planningState[["prior"]]$aPrior,
+                          ", \u03B2 = ",
+                          planningState[["prior"]]$bPrior,
+                          ")")
+
+      posteriorForm <- paste0("Beta(\u03B1 = ", 
+                              planningState[["prior"]]$aPrior + 
+                              planningState[["expectedSampleError"]],
+                              ", \u03B2 = ",
+                              planningState[["prior"]]$bPrior +
+                              planningState[["sampleSize"]] -
+                              planningState[["expectedSampleError"]],
+                              ")")
+
+    } else if(planningState[["likelihood"]] == "hypergeometric"){
+
+      priorBound <- round(jfa:::.qBetaBinom(p = options[["confidence"]], 
+                                  N = planningState[["N"]] - 
                                       planningState[["sampleSize"]] + 
                                       planningState[["expectedSampleError"]], 
-                                    shape1 = planningState[["prior"]]$aPrior + 
-                                             planningState[["expectedSampleError"]], 
-                                    shape2 = planningState[["prior"]]$bPrior +
-                                             planningState[["sampleSize"]] - 
-                                             planningState[["expectedSampleError"]]) / 
-                        planningState[["N"]], 6)
+                                  shape1 = planningState[["prior"]]$aPrior, 
+                                  shape2 = planningState[["prior"]]$bPrior) / 
+                      planningState[["N"]], 6)
 
-    priorForm <- paste0("Beta-binomial(N = ",
-                        planningState[["N"]] - 
-                        planningState[["sampleSize"]] + 
-                        planningState[["expectedSampleError"]],
-                        ", \u03B1 = ", 
-                        planningState[["prior"]]$aPrior,
-                        ", \u03B2 = ",
-                        planningState[["prior"]]$bPrior,
-                        ")")
+      postBound <- round(jfa:::.qBetaBinom(p = options[["confidence"]], 
+                                      N = planningState[["N"]] - 
+                                        planningState[["sampleSize"]] + 
+                                        planningState[["expectedSampleError"]], 
+                                      shape1 = planningState[["prior"]]$aPrior + 
+                                              planningState[["expectedSampleError"]], 
+                                      shape2 = planningState[["prior"]]$bPrior +
+                                              planningState[["sampleSize"]] - 
+                                              planningState[["expectedSampleError"]]) / 
+                          planningState[["N"]], 6)
 
-    posteriorForm <- paste0("Beta-binomial(N = ", 
-                            planningState[["N"]] - 
-                            planningState[["sampleSize"]] + 
-                            planningState[["expectedSampleError"]],
-                            ", \u03B1 = ",
-                            planningState[["prior"]]$aPrior + 
-                            planningState[["expectedSampleError"]],
-                            ", \u03B2 = ",
-                            planningState[["prior"]]$bPrior +
-                            planningState[["sampleSize"]] -
-                            planningState[["expectedSampleError"]],
-                            ")")
+      priorForm <- paste0("Beta-binomial(N = ",
+                          planningState[["N"]] - 
+                          planningState[["sampleSize"]] + 
+                          planningState[["expectedSampleError"]],
+                          ", \u03B1 = ", 
+                          planningState[["prior"]]$aPrior,
+                          ", \u03B2 = ",
+                          planningState[["prior"]]$bPrior,
+                          ")")
 
-  }
-  
-  if(planningState[["likelihood"]] != "hypergeometric"){
+      posteriorForm <- paste0("Beta-binomial(N = ", 
+                              planningState[["N"]] - 
+                              planningState[["sampleSize"]] + 
+                              planningState[["expectedSampleError"]],
+                              ", \u03B1 = ",
+                              planningState[["prior"]]$aPrior + 
+                              planningState[["expectedSampleError"]],
+                              ", \u03B2 = ",
+                              planningState[["prior"]]$bPrior +
+                              planningState[["sampleSize"]] -
+                              planningState[["expectedSampleError"]],
+                              ")")
 
-    priorBound  <- paste0(priorBound * 100, "%")
-    postBound   <- paste0(postBound * 100, "%")
-
-  } else {
-
-    priorBound  <- ceiling(priorBound * planningState[["N"]])
-    postBound   <- ceiling(postBound * planningState[["N"]])
-
-  }
+    }
     
-  BFresult <- .expectedBF(planningState)
+    if(planningState[["likelihood"]] != "hypergeometric"){
 
-  priorOdds <- round(BFresult[["priorOdds"]], 2)
-  priorH1 <- round(BFresult[["priorH1"]], 2)
-  priorH0 <- round(BFresult[["priorH0"]], 2)
-  postOdds <- round(BFresult[["postOdds"]], 2)
-  postH1 <- round(BFresult[["postH1"]], 2)
-  postH0 <- round(BFresult[["postH0"]], 2)
-  shiftH1 <- round(postH1 / priorH1, 2)
-  shiftH0 <- round(postH0 / priorH0, 2)
-  shiftOdds <- round(BFresult[["postOdds"]] / BFresult[["priorOdds"]], 2)
+      priorBound  <- paste0(priorBound * 100, "%")
+      postBound   <- paste0(postBound * 100, "%")
 
-  rows <- data.frame(v = c("Prior", "Expected posterior", "Shift"),
-                     form = c(priorForm, posteriorForm, ""),
-                     priorH1 = c(priorH1, postH1, shiftH1),
-                     priorH0 = c(priorH0, postH0, shiftH0),
-                     priorOdds = c(priorOdds, postOdds, shiftOdds),
-                     priorBound = c(priorBound, postBound, ""))
-  
-  priorStatisticsTable$addRows(rows)
+    } else {
+
+      priorBound  <- ceiling(priorBound * planningState[["N"]])
+      postBound   <- ceiling(postBound * planningState[["N"]])
+
+    }
+      
+    BFresult <- .expectedBF(planningState)
+
+    priorOdds <- round(BFresult[["priorOdds"]], 2)
+    priorH1 <- round(BFresult[["priorH1"]], 2)
+    priorH0 <- round(BFresult[["priorH0"]], 2)
+    postOdds <- round(BFresult[["postOdds"]], 2)
+    postH1 <- round(BFresult[["postH1"]], 2)
+    postH0 <- round(BFresult[["postH0"]], 2)
+    shiftH1 <- round(postH1 / priorH1, 2)
+    shiftH0 <- round(postH0 / priorH0, 2)
+    shiftOdds <- round(BFresult[["postOdds"]] / BFresult[["priorOdds"]], 2)
+
+    rows <- data.frame(v = c("Prior", "Expected posterior", "Shift"),
+                      form = c(priorForm, posteriorForm, ""),
+                      priorH1 = c(priorH1, postH1, shiftH1),
+                      priorH0 = c(priorH0, postH0, shiftH0),
+                      priorOdds = c(priorOdds, postOdds, shiftOdds),
+                      priorBound = c(priorBound, postBound, ""))
+    
+    priorStatisticsTable$addRows(rows)
+  }
 }
 
 .auditPlanningPlotPrior <- function(options, 
                                     planningOptions, 
                                     planningState, 
                                     planningContainer, 
+                                    jaspResults,
                                     ready, 
                                     positionInContainer){
 
   if(!options[["priorPlot"]]) 
     return()
+
+  .updateFigNumber(jaspResults)
 
   if(is.null(planningContainer[["priorPlot"]])){
 
@@ -731,7 +762,7 @@
                                  "hypergeometric" = "beta-binomial")
 
     priorPlotText <- createJaspHtml(paste0("<b>Figure ", 
-                                           planningContainer[["figNumber"]]$object,
+                                           jaspResults[["figNumber"]]$object,
                                            ".</b> The prior probability distribution <b>(", 
                                            distribution,
                                            ")</b> on the misstatement in the population. The prior parameters 
@@ -752,10 +783,12 @@
     priorPlotText$position <- positionInContainer + 1
     priorPlotText$dependOn(optionsFromObject = planningContainer[["priorPlot"]])
     planningContainer[["priorPlotText"]] <- priorPlotText
-
-    planningContainer[["figNumber"]] <- createJaspState(planningContainer[["figNumber"]]$object + 1)
   }
 }
+
+################################################################################
+################## End functions ###############################################
+################################################################################
 
 # The following function will be deprecated
 .calc.n.beta <- function(options, alpha, jaspResults){
@@ -813,6 +846,7 @@
   (df1 ** (df1 / 2) * df2**(df2 / 2) * (x / multiplicationFactor) ** (- 1 + df1 / 2) * (df2 + (df1 * x) / multiplicationFactor)**(( -df1 - df2) / 2))/(abs(multiplicationFactor) * beta(df1/2, df2/2))
 }
 
+# The following function will be deprecated
 .bayesianPlanningHelper <- function(options, jaspResults, planningContainer){
 
     if(!is.null(jaspResults[["planningResult"]]))
@@ -878,6 +912,7 @@
     return(jaspResults[["planningResult"]]$object)
 }
 
+# The following function will be deprecated
 .bayesianPlanningTable <- function(dataset, options, planningResult, jaspResults, position = 1, planningContainer){
 
   if(!is.null(planningContainer[["planningSummary"]])) return() #The options for this table didn't change so we don't need to rebuild it
@@ -944,6 +979,7 @@
   planningSummary$addRows(row)
 }
 
+# The following function will be deprecated
 .plotPrior <- function(options, planningResult, jaspResults, position, planningContainer){
 
   if(!is.null(planningContainer[["priorPlot"]])) return()
@@ -1120,6 +1156,7 @@
   }
 }
 
+# The following function will be deprecated
 .bayesianAttributesBound <- function(dataset, options, jaspResults){
 
   if(!is.null(jaspResults[["evaluationResult"]]))
@@ -1196,6 +1233,7 @@
     return(jaspResults[["evaluationResult"]]$object)
 }
 
+# The following function will be deprecated
 .bayesianAttributesBoundTable <- function(options, evaluationResult, jaspResults, position = 1, evaluationContainer){
 
     if(!is.null(evaluationContainer[["evaluationTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
@@ -1288,6 +1326,7 @@
     evaluationTable$addRows(row)
 }
 
+# The following function will be deprecated
 .priorAndPosteriorBayesianAttributes <- function(options, evaluationResult, jaspResults){
 
   if(options[["estimator"]] == "betaBound"){
@@ -1395,6 +1434,7 @@
   return(p)
 }
 
+# The following function will be deprecated
 .BF <- function(options, planningResult, jaspResults){
   priorOdds         <- diff(pbeta(c(0, jaspResults[["materiality"]]$object), planningResult[["priorA"]], planningResult[["priorB"]])) / diff(pbeta(c(jaspResults[["materiality"]]$object, 1), planningResult[["priorA"]], planningResult[["priorB"]]))
   posteriorOdds     <- diff(pbeta(c(0, jaspResults[["materiality"]]$object), planningResult[["posteriorA"]], planningResult[["posteriorB"]])) / diff(pbeta(c(jaspResults[["materiality"]]$object, 1), planningResult[["posteriorA"]], planningResult[["posteriorB"]]))
@@ -1402,6 +1442,7 @@
   return(BF)
 }
 
+# The following function will be deprecated
 .BFsamples <- function(options, evaluationResult, jaspResults){
   set.seed(options[["seed"]])
   prior             <- rbeta(n = 1e5, shape1 = evaluationResult[["priorA"]], shape2 = evaluationResult[["priorB"]])
@@ -1420,6 +1461,7 @@
   return(BF)
 }
 
+# The following function will be deprecated
 .coxAndSnellBound <- function(dataset, options, jaspResults, priorA = 0, priorB = 0){
   if(!is.null(jaspResults[["evaluationResult"]]))
     return(jaspResults[["evaluationResult"]]$object)
@@ -1486,6 +1528,7 @@
     return(jaspResults[["evaluationResult"]]$object)
 }
 
+# The following function will be deprecated
 .bayesianAuditValueBoundTable <- function(options, evaluationResult, jaspResults, position = 1, evaluationContainer){
 
     if(!is.null(evaluationContainer[["evaluationTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
@@ -1585,6 +1628,7 @@
     evaluationTable$addRows(row)
 }
 
+# The following function will be deprecated
 .priorAndPosteriorCoxAndSnell <- function(options, evaluationResult, jaspResults){
 
   xseq <- seq(0, options[["priorAndPosteriorPlotLimit"]], 0.001)
@@ -1637,6 +1681,7 @@
   return(p)
 }
 
+# The following function will be deprecated
 .regressionBoundBayesian <- function(dataset, options, total_data_value, jaspResults){
 
   if(!is.null(jaspResults[["evaluationResult"]]))
@@ -1719,6 +1764,7 @@
     return(jaspResults[["evaluationResult"]]$object)
 }
 
+# The following function will be deprecated
 .priorAndPosteriorPlot <- function(options, evaluationResult, jaspResults, position, evaluationContainer){
 
   if(!is.null(evaluationContainer[["priorAndPosteriorPlot"]])) return()

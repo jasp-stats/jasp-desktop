@@ -171,6 +171,22 @@ Form
 					RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
 					RadioButton { text: qsTr("Medium");		name: "Medium" 					}
 					RadioButton { text: qsTr("Low"); 		name: "Low" 					}
+					RadioButton
+					{
+						id: 								irCustom
+						text:	 							qsTr("Custom")
+						name: 							"Custom"
+						childrenOnSameRow: 	true
+
+						PercentField
+						{
+							name: 						"irCustom"
+							visible: 					irCustom.checked
+							decimals: 				2
+							defaultValue: 		100
+							min: 							25
+						}
+					}
 				}
 
 				RadioButtonGroup
@@ -236,6 +252,13 @@ Form
 							toolTip: 			"Show explanatory text at each step of the analysis"
 						}
 					}
+
+					CheckBox
+					{
+						text:	 		qsTr("Report badges")
+						name: 		"reportBadges"
+						checked: 	true
+					}
 				}
 
 				RadioButtonGroup
@@ -248,6 +271,22 @@ Form
 					RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
 					RadioButton { text: qsTr("Medium"); 	name: "Medium" 					}
 					RadioButton { text: qsTr("Low"); 		name: "Low" 					}
+					RadioButton
+					{
+						id: 							crCustom
+						text:	 						qsTr("Custom")
+						name: 						"Custom"
+						childrenOnSameRow: true
+
+						PercentField
+						{
+							name: 					"crCustom"
+							visible: 				crCustom.checked
+							decimals: 			2
+							defaultValue: 	100
+							min:						25
+						}
+					}
 				}
 
 				RadioButtonGroup
@@ -257,9 +296,25 @@ Form
 					name: 		"planningModel"
 					enabled:	!pasteVariables.checked
 
-					RadioButton { text: qsTr("Poisson")         ; name: "Poisson" ; 		checked: true; 	id: poisson			}
-					RadioButton { text: qsTr("Binomial")        ; name: "binomial"; 						id: binomial		}
-					RadioButton { text: qsTr("Hypergeometric")  ; name: "hypergeometric" ; 					id: hypergeometric	}
+					RadioButton 
+					{ 
+						text: qsTr("Binomial")
+						name: "binomial"
+						id: binomial		
+						checked: true 
+					}
+
+					RadioButton { 
+						text: qsTr("Poisson")        
+						name: "Poisson" 
+						id: poisson			
+					}
+
+					RadioButton { 
+						text: qsTr("Hypergeometric") 
+						name: "hypergeometric" 
+						id: hypergeometric	
+					}
 				}
 
 				RadioButtonGroup
@@ -323,6 +378,12 @@ Form
 					{
 						text: 		qsTr("Decision analysis");
 						name: 		"decisionPlot"
+					}
+
+					CheckBox
+					{
+						text: 	qsTr("Implied sampling distribution")
+						name: 	"samplingDistribution"
 					}
 				}
 			}
@@ -528,6 +589,7 @@ Form
 				IntegerField
 				{
 					id: 			seed
+					enabled:	!systematicSampling.checked
 					text: 			qsTr("Seed")
 					name: 			"seed"
 					defaultValue: 	1
@@ -838,8 +900,8 @@ Form
 
 					if(variableTypeCorrect.checked)
 					{
-						if (poisson.checked) 		gammaBound.click()
-						if (binomial.checked) 		binomialBound.click()
+						if (poisson.checked) 				gammaBound.click()
+						if (binomial.checked) 			binomialBound.click()
 						if (hypergeometric.checked) hyperBound.click()
 					}
 				}
@@ -910,13 +972,63 @@ Form
 						}
 					}
 
-					RadioButton { name: "directBound"; 		text: qsTr("Direct"); 			id: directBound; 		visible: recordSampling.checked && variableTypeAuditValues.checked && evaluationChecked.checked }
-					RadioButton { name: "differenceBound"; 	text: qsTr("Difference"); 		id: differenceBound; 	visible: directBound.visible }
-					RadioButton { name: "ratioBound";		text: qsTr("Ratio"); 			id: ratioBound; 		visible: directBound.visible }
-					RadioButton { name: "regressionBound"; 	text: qsTr("Regression"); 		id: regressionBound; 	visible: directBound.visible }
-					RadioButton { name: "gammaBound"; 		text: qsTr("Gamma"); 			id: gammaBound; 		visible: variableTypeCorrect.checked }
-					RadioButton { name: "binomialBound"; 	text: qsTr("Binomial"); 		id: binomialBound; 		visible: variableTypeCorrect.checked }
-					RadioButton { name: "hyperBound"; 		text: qsTr("Hypergeometric");	id: hyperBound; 		visible: variableTypeCorrect.checked }
+					RadioButton 
+					{ 
+						name: "directBound"		
+						text: qsTr("Direct") 			
+						id: directBound		
+						visible: recordSampling.checked && 
+											variableTypeAuditValues.checked && 
+											evaluationChecked.checked 
+					}
+					
+					RadioButton 
+					{ 
+						name: "differenceBound"
+						text: qsTr("Difference")
+						id: differenceBound
+						visible: directBound.visible 
+					}
+
+					RadioButton 
+					{ 
+						name: "ratioBound"
+						text: qsTr("Ratio")
+						id: ratioBound
+						visible: directBound.visible 
+					}
+
+					RadioButton 
+					{ 
+						name: "regressionBound"
+						text: qsTr("Regression")
+						id: regressionBound
+						visible: directBound.visible 
+					}
+					
+					RadioButton 
+					{ 
+						name: "binomialBound"
+						text: qsTr("Binomial")
+						id: binomialBound
+						visible: variableTypeCorrect.checked && binomial.checked
+					}
+					
+					RadioButton 
+					{ 
+						name: "gammaBound"
+						text: qsTr("Poisson")
+						id: gammaBound
+						visible: variableTypeCorrect.checked && poisson.checked
+					}
+					
+					RadioButton 
+					{ 
+						name: "hyperBound"
+						text: qsTr("Hypergeometric")
+						id: hyperBound
+						visible: variableTypeCorrect.checked && hypergeometric.checked 
+					}
 				}
 			}
 		}
@@ -945,8 +1057,18 @@ Form
 				{
 					title: qsTr("Plots")
 
-					CheckBox { text: qsTr("Evaluation information"); 	name: "evaluationInformation" 												}
-					CheckBox { text: qsTr("Correlation plot"); 			name: "correlationPlot";		visible: variableTypeAuditValues.checked 	}
+					CheckBox 
+					{ 
+						text: qsTr("Evaluation information")
+						name: "evaluationInformation" 												
+					}
+
+					CheckBox 
+					{ 
+						text: qsTr("Correlation plot")
+						name: "correlationPlot"
+						visible: variableTypeAuditValues.checked 	
+					}
 				}
 			}
 		}

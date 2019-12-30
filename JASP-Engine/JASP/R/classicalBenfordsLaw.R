@@ -40,11 +40,15 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                                         position = 2)
 
   # --- TABLES
+
+  # Create a state to keep track of table numbers
+  .auditCreateTableNumber(jaspResults)
   
   # Create the goodness-of-fit table
   .auditClassicalBenfordsLawTestTable(dataset, 
                                     options, 
                                     benfordsLawContainer, 
+                                    jaspResults,
                                     ready, 
                                     positionInContainer = 1)
 
@@ -52,17 +56,21 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   .auditClassicalBenfordsLawSummaryTable(dataset, 
                                          options, 
                                          benfordsLawContainer, 
+                                         jaspResults,
                                          ready, 
                                          positionInContainer = 2)
 
   # ---
 
   # --- PLOTS
+
+  .auditCreateFigureNumber(jaspResults)
   
   # Create the observed and predicted probabilities plot
   .benfordsLawPlot(dataset, 
                    options, 
                    benfordsLawContainer, 
+                   jaspResults,
                    ready, 
                    positionInContainer = 3)
 
@@ -73,7 +81,7 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                        benfordsLawContainer,
                                        jaspResults,
                                        ready,
-                                       position = 4)
+                                       position = 3)
   
   # --- BADGES
 
@@ -83,7 +91,7 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                      stateContainer = benfordsLawContainer,
                      jaspResults, 
                      ready, 
-                     position = 5)
+                     position = 4)
 
   # ---
 }
@@ -136,7 +144,7 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   .hasErrors(dataset, 
               type=c("infinity", "variance", "observations"),
               all.target = values, 
-              message="short", 
+              message = "short", 
               observations.amount= "< 10",
               exitAnalysisIfErrors = TRUE)
 }
@@ -246,7 +254,8 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                   pvalue = pvalue)
 
     benfordsLawContainer[["result"]] <- createJaspState(result)
-    benfordsLawContainer[["result"]]$dependOn(options = c("values", "confidence"))
+    benfordsLawContainer[["result"]]$dependOn(options = c("values", 
+                                                          "confidence"))
     return(benfordsLawContainer[["result"]]$object)
 
   } else {
@@ -257,13 +266,20 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 .auditClassicalBenfordsLawTestTable <- function(dataset, 
                                                 options, 
                                                 benfordsLawContainer, 
+                                                jaspResults,
                                                 ready, 
                                                 positionInContainer){
+ 
+  .updateTabNumber(jaspResults)
 
   if(!is.null(benfordsLawContainer[["benfordsLawTestTable"]])) 
     return()
 
-  benfordsLawTestTable <- createJaspTable("Goodness-of-fit Table")
+  tableTitle <- paste0("<b>Table ", 
+                    jaspResults[["tabNumber"]]$object, 
+                    ".</b> Goodness-of-fit Test")
+
+  benfordsLawTestTable <- createJaspTable(tableTitle)
   benfordsLawTestTable$position <- positionInContainer
 
   benfordsLawTestTable$addColumnInfo(name = 'test', 
@@ -329,177 +345,193 @@ classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 .auditClassicalBenfordsLawSummaryTable <- function(dataset, 
                                                    options, 
                                                    benfordsLawContainer, 
+                                                   jaspResults,
                                                    ready, 
                                                    positionInContainer){
 
-  if(!is.null(benfordsLawContainer[["benfordsLawTable"]]) || 
-      !options[["summaryTable"]])
+  if(!options[["summaryTable"]])
     return()
 
-  benfordsLawTable <- createJaspTable("Descriptive Statistics")
-  benfordsLawTable$position <- positionInContainer
+  .updateTabNumber(jaspResults)
 
-  benfordsLawTable$dependOn(options = "summaryTable")
+  if(is.null(benfordsLawContainer[["benfordsLawTable"]])){
 
-  benfordsLawTable$addColumnInfo(name = 'digit', 
-                                 title = 'Leading digit', 
-                                 type = 'integer')
-  benfordsLawTable$addColumnInfo(name = 'count', 
-                                 title = 'Count', 
-                                 type = 'integer')
-  benfordsLawTable$addColumnInfo(name = 'percentage',  
-                                 title = 'Percentage', 
-                                 type = 'string')
-  benfordsLawTable$addColumnInfo(name = 'inBenford', 
-                                 title = "Benford's law", 
-                                 type = 'string')
+    tableTitle <- paste0("<b>Table ", 
+                  jaspResults[["tabNumber"]]$object, 
+                  ".</b> Descriptive Statistics")
 
-  benfordsLawContainer[["benfordsLawTable"]] <- benfordsLawTable
+    benfordsLawTable <- createJaspTable(tableTitle)
+    benfordsLawTable$position <- positionInContainer
 
-  if(options[["digits"]] == "first"){
-    digits <- 1:9
-  } else {
-    digits <- 10:99
-  }
+    benfordsLawTable$dependOn(options = "summaryTable")
 
-  if(!ready){
+    benfordsLawTable$addColumnInfo(name = 'digit', 
+                                  title = 'Leading digit', 
+                                  type = 'integer')
+    benfordsLawTable$addColumnInfo(name = 'count', 
+                                  title = 'Count', 
+                                  type = 'integer')
+    benfordsLawTable$addColumnInfo(name = 'percentage',  
+                                  title = 'Percentage', 
+                                  type = 'string')
+    benfordsLawTable$addColumnInfo(name = 'inBenford', 
+                                  title = "Benford's law", 
+                                  type = 'string')
 
-    row <- data.frame(digit = digits, 
-                      count = rep(".", length(digits)),
-                      percentage = rep(".", length(digits)),
-                      inBenford = paste0(round(log10(1 + 1 / digits) * 100, 2), 
-                                          "%"))
+    benfordsLawContainer[["benfordsLawTable"]] <- benfordsLawTable
+
+    if(options[["digits"]] == "first"){
+      digits <- 1:9
+    } else {
+      digits <- 10:99
+    }
+
+    if(!ready){
+
+      row <- data.frame(digit = digits, 
+                        count = rep(".", length(digits)),
+                        percentage = rep(".", length(digits)),
+                        inBenford = paste0(round(log10(1 + 1 / digits) * 100, 2), 
+                                            "%"))
+      benfordsLawTable$addRows(row)
+      return()
+    } 
+
+    state <- .auditClassicalBenfordsLawState(dataset, 
+                                            options, 
+                                            benfordsLawContainer,
+                                            ready)
+
+    percentagesLabel <- paste0(round(state[["percentages"]] * 100, 2), "%")
+    inBenfordLabel <- paste0(round(state[["inBenford"]] * 100, 2), "%")
+
+    row <- data.frame(digit = state[["digits"]], 
+                      count = state[["counts"]], 
+                      percentage = percentagesLabel, 
+                      inBenford = inBenfordLabel)
+
     benfordsLawTable$addRows(row)
-    return()
-  } 
-
-  state <- .auditClassicalBenfordsLawState(dataset, 
-                                           options, 
-                                           benfordsLawContainer,
-                                           ready)
-
-  percentagesLabel <- paste0(round(state[["percentages"]] * 100, 2), "%")
-  inBenfordLabel <- paste0(round(state[["inBenford"]] * 100, 2), "%")
-
-  row <- data.frame(digit = state[["digits"]], 
-                    count = state[["counts"]], 
-                    percentage = percentagesLabel, 
-                    inBenford = inBenfordLabel)
-
-  benfordsLawTable$addRows(row)
+  }
 }
 
 .benfordsLawPlot <- function(dataset, 
                              options, 
                              benfordsLawContainer, 
+                             jaspResults,
                              ready, 
                              positionInContainer){
 
-  if(!is.null(benfordsLawContainer[["benfordsLawPlot"]]) || 
-     !options[["benfordsLawPlot"]])
+  if(!options[["benfordsLawPlot"]])
     return()
 
-  benfordsLawPlot <- createJaspPlot(plot = NULL, 
-                                    title = "Observed Percentages vs. Benford's Law", 
-                                    width = 600, 
-                                    height = 400)
+  .updateFigNumber(jaspResults)
 
-  benfordsLawPlot$position <- positionInContainer
-  benfordsLawPlot$dependOn(options = c("benfordsLawPlot"))
+  if(is.null(benfordsLawContainer[["benfordsLawPlot"]])){
 
-  benfordsLawContainer[["benfordsLawPlot"]] <- benfordsLawPlot
+    benfordsLawPlot <- createJaspPlot(plot = NULL, 
+                                      title = "Observed Percentages vs. Benford's Law", 
+                                      width = 600, 
+                                      height = 400)
 
-  if(!ready) 
-    return()
+    benfordsLawPlot$position <- positionInContainer
+    benfordsLawPlot$dependOn(options = c("benfordsLawPlot"))
 
-  if(options[["digits"]] == "first"){
-    pointSize     <- 5
-    lineSize      <- 1.5
-  } else if(options[["digits"]] == "firstSecond"){
-    pointSize     <- 2
-    lineSize      <- 1.2
+    benfordsLawContainer[["benfordsLawPlot"]] <- benfordsLawPlot
+
+    if(!ready) 
+      return()
+
+    if(options[["digits"]] == "first"){
+      pointSize     <- 5
+      lineSize      <- 1.5
+    } else if(options[["digits"]] == "firstSecond"){
+      pointSize     <- 2
+      lineSize      <- 1.2
+    }
+
+    state <- .auditClassicalBenfordsLawState(dataset, 
+                                            options, 
+                                            benfordsLawContainer,
+                                            ready)
+
+    d <- data.frame(x = c(state[["digits"]], state[["digits"]]),
+                    y = c(state[["percentages"]], state[["inBenford"]]),
+                    type = c(rep("Observed", length(state[["digits"]])), 
+                            rep("Benford's law", length(state[["digits"]]))))
+
+    yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y, min.n = 4)
+
+    if(options[["digits"]] == "first"){
+      xBreaks <- state[["digits"]]
+      xLabels <- state[["digits"]]
+    } else {
+      xBreaks <- state[["digits"]]
+      xLabels <- c(10, rep("", 9), 
+                  20, rep("", 9), 
+                  30, rep("", 9),
+                  40, rep("", 9),
+                  50, rep("", 9),
+                  60, rep("", 9),
+                  70, rep("", 9),
+                  80, rep("", 9),
+                  90, rep("", 8),
+                  99)
+    }
+
+    p <- ggplot2::ggplot(data = data.frame(x = c(0,0), y = c(0,1), type = c("Observed", "Benford's law")), 
+                        mapping = ggplot2::aes(x = x, y = y, fill = type)) +
+          ggplot2::geom_point(alpha = 0) +
+          ggplot2::geom_bar(data = subset(d,d$type == "Benford's law"), 
+                            mapping = ggplot2::aes(x = x, y = y), 
+                            fill = "darkgray", 
+                            stat = "identity", 
+                            color = "black",
+                            size = 1.2) +
+          JASPgraphs::geom_line(data = subset(d,d$type == 'Observed'), 
+                                mapping = ggplot2::aes(x = x, y = y), 
+                                color = "dodgerblue", 
+                                size = lineSize) +
+          JASPgraphs::geom_point(data = subset(d,d$type == 'Observed'), 
+                                mapping = ggplot2::aes(x = x, y = y), 
+                                fill = "dodgerblue", 
+                                size = pointSize, 
+                                stroke = 1.5) +
+          ggplot2::scale_x_continuous(name = "Leading digit",
+                                      breaks = xBreaks, 
+                                      labels = xLabels,
+                                      limits = c(min(state[["digits"]]) - 0.5, 
+                                                max(state[["digits"]]) + 0.5),) +
+          ggplot2::scale_y_continuous(name = "",
+                                    breaks = yBreaks, 
+                                    labels = paste0(round(yBreaks * 100, 2), "%"),
+                                    limits = c(0, max(yBreaks))) +
+          ggplot2::labs(fill = "") +
+          ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = -5, r = 50))) +
+          ggplot2::guides(fill = ggplot2::guide_legend(reverse = TRUE,
+                                                      override.aes = list(size = c(7, 10), 
+                                                                          shape = c(21, 22), 
+                                                                          fill = c("dodgerblue", "darkgray"), 
+                                                                          stroke = 2, 
+                                                                          color = "black",
+                                                                          alpha = 1)))
+
+    p <- JASPgraphs::themeJasp(p, legend.position = "top")
+
+    benfordsLawPlot$plotObject <- p
+
   }
-
-  state <- .auditClassicalBenfordsLawState(dataset, 
-                                          options, 
-                                          benfordsLawContainer,
-                                          ready)
-
-  d <- data.frame(x = c(state[["digits"]], state[["digits"]]),
-                  y = c(state[["percentages"]], state[["inBenford"]]),
-                  type = c(rep("Observed", length(state[["digits"]])), 
-                           rep("Benford's law", length(state[["digits"]]))))
-
-  yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y, min.n = 4)
-
-  if(options[["digits"]] == "first"){
-    xBreaks <- state[["digits"]]
-    xLabels <- state[["digits"]]
-  } else {
-    xBreaks <- state[["digits"]]
-    xLabels <- c(10, rep("", 9), 
-                20, rep("", 9), 
-                30, rep("", 9),
-                40, rep("", 9),
-                50, rep("", 9),
-                60, rep("", 9),
-                70, rep("", 9),
-                80, rep("", 9),
-                90, rep("", 8),
-                99)
-  }
-
-  p <- ggplot2::ggplot(data = data.frame(x = c(0,0), y = c(0,1), type = c("Observed", "Benford's law")), 
-                       mapping = ggplot2::aes(x = x, y = y, fill = type)) +
-        ggplot2::geom_point(alpha = 0) +
-        ggplot2::geom_bar(data = subset(d,d$type == "Benford's law"), 
-                          mapping = ggplot2::aes(x = x, y = y), 
-                          fill = "darkgray", 
-                          stat = "identity", 
-                          color = "black",
-                          size = 1.2) +
-        JASPgraphs::geom_line(data = subset(d,d$type == 'Observed'), 
-                               mapping = ggplot2::aes(x = x, y = y), 
-                               color = "dodgerblue", 
-                               size = lineSize) +
-        JASPgraphs::geom_point(data = subset(d,d$type == 'Observed'), 
-                               mapping = ggplot2::aes(x = x, y = y), 
-                               fill = "dodgerblue", 
-                               size = pointSize, 
-                               stroke = 1.5) +
-        ggplot2::scale_x_continuous(name = "Leading digit",
-                                    breaks = xBreaks, 
-                                    labels = xLabels,
-                                    limits = c(min(state[["digits"]]) - 0.5, 
-                                               max(state[["digits"]]) + 0.5),) +
-        ggplot2::scale_y_continuous(name = "",
-                                  breaks = yBreaks, 
-                                  labels = paste0(round(yBreaks * 100, 2), "%"),
-                                  limits = c(0, max(yBreaks))) +
-        ggplot2::labs(fill = "") +
-        ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = -5, r = 50))) +
-        ggplot2::guides(fill = ggplot2::guide_legend(reverse = TRUE,
-                                                     override.aes = list(size = c(7, 10), 
-                                                                         shape = c(21, 22), 
-                                                                         fill = c("dodgerblue", "darkgray"), 
-                                                                         stroke = 2, 
-                                                                         color = "black",
-                                                                         alpha = 1)))
-
-  p <- JASPgraphs::themeJasp(p, legend.position = "top")
-
-  benfordsLawPlot$plotObject <- p
 
   if(options[["explanatoryText"]]){
 
-    benfordsLawPlotText <- createJaspHtml(paste0("<b>Figure 1:</b> The observed percentages of each leading number in the population compared to the expected percentage
+    benfordsLawPlotText <- createJaspHtml(paste0("<b>Figure ",
+                                                  jaspResults[["figNumber"]]$object,
+                                                  ":</b> The observed percentages of each leading number in the population compared to the expected percentage
                                                   under Benford's law. The more the blue dots lie near the top of the grey bars, the more the population conforms to 
                                                   Benford's law."), "p")
     
     benfordsLawPlotText$position <- positionInContainer + 1
     benfordsLawPlotText$dependOn(optionsFromObject = benfordsLawContainer[["benfordsLawPlot"]])
     benfordsLawContainer[["benfordsLawPlotText"]] <- benfordsLawPlotText
-
   }
 }
 

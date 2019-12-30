@@ -24,13 +24,15 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
   type <- "bayesian"
 
   # Deduct the nessecary values from the input options
-  planningOptions <- .auditPlanningOptions(options)
+  planningOptions <- .auditPlanningOptions(options,
+                                           jaspResults,
+                                           rawData = FALSE)
 
   # Create the procedure paragraph
   .auditExplanatoryTextProcedure(options, 
                                  planningOptions, 
                                  jaspResults, 
-                                 position = 1)
+                                 positionInContainer = 1)
 
   # Create the audit risk model paragraph
   .auditRiskModelParagraph(options, 
@@ -70,11 +72,15 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
 
   # --- TABLES
 
+  # Create a state to keep track of table numbers
+  .auditCreateTableNumber(jaspResults)
+
   # Create the summary table
   .auditPlanningSummaryTable(options, 
                              planningOptions, 
                              planningState, 
                              planningContainer, 
+                             jaspResults,
                              ready, 
                              type, 
                              positionInContainer = 2)
@@ -83,6 +89,7 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
   .auditImplicitSampleTable(options, 
                             planningState, 
                             planningContainer, 
+                            jaspResults,
                             ready, 
                             positionInContainer = 3)
 
@@ -90,6 +97,7 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
   .auditPriorAndPosterStatisticsTable(options, 
                                       planningState, 
                                       planningContainer, 
+                                      jaspResults,
                                       ready, 
                                       positionInContainer = 4)
 
@@ -98,13 +106,14 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
   # --- PLOTS
 
   # Create a state to keep track of figure numbers
-  planningContainer[["figNumber"]] <- createJaspState(1)
+  .auditCreateFigureNumber(jaspResults)
 
   # Create the decision analysis plot
   .decisionAnalysisPlot(options, 
                         planningOptions, 
                         planningState, 
                         planningContainer, 
+                        jaspResults,
                         ready, 
                         type, 
                         positionInContainer = 5)
@@ -113,9 +122,10 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
   .auditPlanningPlotPrior(options, 
                           planningOptions, 
                           planningState, 
-                          planningContainer, 
+                          planningContainer,
+                          jaspResults, 
                           ready, 
-                          positionInContainer = 6)
+                          positionInContainer = 7)
  
   # ---
 
@@ -127,7 +137,7 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
                      stateContainer = NULL,
                      jaspResults, 
                      ready, 
-                     position = 7)
+                     position = 8)
 
   # ---
 }
