@@ -18,7 +18,7 @@
 # When making changes to this file always mention @koenderks as a 
 # reviewer in the Pull Request
 
-classicalEstimation <- function(jaspResults, dataset, options, ...){
+auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
 
   # Read in the data 
   dataset <- .auditReadDataEstimation(dataset, 

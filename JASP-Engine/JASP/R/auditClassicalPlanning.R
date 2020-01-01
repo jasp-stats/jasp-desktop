@@ -18,16 +18,16 @@
 # When making changes to this file always mention @koenderks as a 
 # reviewer in the Pull Request
 
-bayesianPlanning <- function(jaspResults, dataset, options, ...){
+auditClassicalPlanning <- function(jaspResults, dataset, options, ...){
 
-  # We're doing a Bayesian analysis
-  type <- "bayesian"
+  # We're doing a frequentist analysis
+  type <- "frequentist"
 
   # Deduct the nessecary values from the input options
   planningOptions <- .auditPlanningOptions(options,
                                            jaspResults,
                                            rawData = FALSE)
-
+  
   # Create the procedure paragraph
   .auditExplanatoryTextProcedure(options, 
                                  planningOptions, 
@@ -74,37 +74,21 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
 
   # Create a state to keep track of table numbers
   .auditCreateTableNumber(jaspResults)
-
+  
   # Create the summary table
   .auditPlanningSummaryTable(options, 
                              planningOptions, 
                              planningState, 
-                             planningContainer, 
-                             jaspResults,
+                             planningContainer,
+                             jaspResults, 
                              ready, 
                              type, 
                              positionInContainer = 2)
   
-  # Create the implicit sample table
-  .auditImplicitSampleTable(options, 
-                            planningState, 
-                            planningContainer, 
-                            jaspResults,
-                            ready, 
-                            positionInContainer = 3)
-
-  # Cerate the prior and posterior statistics table
-  .auditPriorAndPosterStatisticsTable(options, 
-                                      planningState, 
-                                      planningContainer, 
-                                      jaspResults,
-                                      ready, 
-                                      positionInContainer = 4)
-
   # ---
-
+  
   # --- PLOTS
-
+  
   # Create a state to keep track of figure numbers
   .auditCreateFigureNumber(jaspResults)
 
@@ -116,19 +100,19 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
                         jaspResults,
                         ready, 
                         type, 
-                        positionInContainer = 5)
+                        positionInContainer = 3)
 
-  # Create the prior and expected posterior plot
-  .auditPlanningPlotPrior(options, 
-                          planningOptions, 
-                          planningState, 
-                          planningContainer,
-                          jaspResults, 
-                          ready, 
-                          positionInContainer = 7)
- 
+  # Create the implied sampling distribution plot
+  .samplingDistributionPlot(options, 
+                            planningOptions, 
+                            planningState, 
+                            planningContainer, 
+                            jaspResults,
+                            ready, 
+                            positionInContainer = 5)
+
   # ---
-
+  
   # --- BADGES
 
   # Provide the analysis badges
@@ -137,7 +121,7 @@ bayesianPlanning <- function(jaspResults, dataset, options, ...){
                      stateContainer = NULL,
                      jaspResults, 
                      ready, 
-                     position = 8)
+                     position = 5)
 
-  # ---
+  # --- 
 }

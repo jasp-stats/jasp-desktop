@@ -406,7 +406,7 @@ Form {
 
 					CheckBox
 					{
-						text: qsTr("Prior and posterior descriptives")
+						text: qsTr("Prior and expected posterior descriptives")
 						name: "priorStatistics"
 					}
 				}
@@ -446,7 +446,7 @@ Form {
 					{
 						text: 							qsTr("Expected posterior")
 						name: 							"priorPlotExpectedPosterior"
-						checked: 						false
+						checked: 						true
 					}
 				}
 			}

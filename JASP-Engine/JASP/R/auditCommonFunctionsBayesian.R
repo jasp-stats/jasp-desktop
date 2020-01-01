@@ -24,7 +24,7 @@
 
 .expectedBF <- function(planningState){
 
-  # For calculation of the Bayes factor, the are below materiality is 
+  # For calculation of the Bayes factor, the area below materiality is 
   # regarded to be H1 and the area equal to and above materiality is regarded
   # to be H0.
 
@@ -221,7 +221,7 @@
 
     tableTitle <- paste0("<b>Table ", 
                         jaspResults[["tabNumber"]]$object, 
-                        ".</b> Prior and Posterior Descriptive Statistics")
+                        ".</b> Prior and Expected Posterior Descriptive Statistics")
     
     priorStatisticsTable <- createJaspTable(tableTitle)
     priorStatisticsTable$position <- positionInContainer
@@ -427,11 +427,13 @@
                                    "priorPlot", 
                                    "priorPlotAdditionalInfo", 
                                    "priorPlotExpectedPosterior", 
-                                   "planningModel"))
+                                   "planningModel",
+                                   "priorAndPosteriorPlotLimit"))
 
     planningContainer[["priorPlot"]] <- priorPlot
 
-    if(!ready || planningContainer$getError()) 
+    if(!ready || 
+       planningContainer$getError()) 
       return()
 
     xseq <- seq(0, options[["priorPlotLimit"]], 0.001)
@@ -509,9 +511,8 @@
                                        planningState[["expectedSampleError"]], 
                                rate = planningState[["prior"]]$bPrior + 
                                       planningState[["sampleSize"]])
-    }
 
-    if(planningState[["likelihood"]] == "hypergeometric"){
+    } else if(planningState[["likelihood"]] == "hypergeometric"){
 
       xseq <- 0:ceiling(options[["priorPlotLimit"]] * planningState[["N"]])
 
@@ -782,6 +783,7 @@
 
     priorPlotText$position <- positionInContainer + 1
     priorPlotText$dependOn(optionsFromObject = planningContainer[["priorPlot"]])
+    priorPlotText$dependOn(options = "explanatoryText")
     planningContainer[["priorPlotText"]] <- priorPlotText
   }
 }
@@ -792,127 +794,384 @@
 
 .auditEvaluationPriorAndPosterior <- function(options,
                                               planningOptions,
+                                              planningState,
                                               evaluationState,
                                               evaluationContainer,
                                               jaspResults,
                                               positionInContainer){
 
+  if(!options[["priorAndPosteriorPlot"]]) 
+    return()
 
+  .updateFigNumber(jaspResults)
 
+  if(is.null(evaluationContainer[["priorAndPosteriorPlot"]])){
+
+    priorAndPosteriorPlot <- createJaspPlot(plot = NULL, 
+                                            title = "Prior and Posterior Distribution", 
+                                            width = 600, 
+                                            height = 400)
+    priorAndPosteriorPlot$position <- positionInContainer
+
+    priorAndPosteriorPlot$dependOn(options = c("priorAndPosteriorPlot", 
+                                               "priorAndPosteriorPlotLimit", 
+                                               "priorAndPosteriorPlotAdditionalInfo",
+                                               "priorAndPosteriorPlotExpectedPosterior",
+                                               "priorPlotLimit"))
+
+    evaluationContainer[["priorAndPosteriorPlot"]] <- priorAndPosteriorPlot
+
+    if(is.null(evaluationState) || 
+        evaluationContainer$getError()) 
+      return()
+
+    xseq <- seq(0, options[["priorAndPosteriorPlotLimit"]], 0.001)
+
+    if(planningState[["likelihood"]] == "binomial"){
+
+      priorData <- data.frame(x = xseq, 
+                              y = dbeta(x = xseq, 
+                                        shape1 = 1 + evaluationState[["kPrior"]], 
+                                        shape2 = 1 + evaluationState[["nPrior"]] -
+                                                 evaluationState[["kPrior"]]),
+                              type = rep("Prior", length(xseq)))
+
+      expPostData <- data.frame(x = xseq, 
+                                y = dbeta(x = xseq, 
+                                          shape1 = planningState[["prior"]]$aPrior + 
+                                                    planningState[["expectedSampleError"]], 
+                                          shape2 = planningState[["prior"]]$bPrior + 
+                                                    planningState[["sampleSize"]] - 
+                                                    planningState[["expectedSampleError"]]),
+                                type = rep("Expected\nposterior", length(xseq)))
+
+      postData <- data.frame(x = xseq, 
+                             y = dbeta(x = xseq, 
+                                       shape1 = 1 + evaluationState[["kPrior"]] +  
+                                                evaluationState[["t"]], 
+                                       shape2 = 1 + evaluationState[["nPrior"]] -
+                                                evaluationState[["kPrior"]] + 
+                                                evaluationState[["n"]] - 
+                                                evaluationState[["t"]]),
+                            type = rep("Posterior", length(xseq)))
+
+      pdata <- data.frame(x = evaluationState[["materiality"]], 
+                          y = dbeta(evaluationState[["materiality"]], 
+                                    shape1 = 1 + evaluationState[["kPrior"]] +  
+                                             evaluationState[["t"]], 
+                                    shape2 = 1 + evaluationState[["nPrior"]] -
+                                             evaluationState[["kPrior"]] + 
+                                             evaluationState[["n"]] - 
+                                             evaluationState[["t"]]))
+
+    } else if(planningState[["likelihood"]] == "poisson"){
+
+      priorData <- data.frame(x = xseq, 
+                              y = dgamma(x = xseq, 
+                                         shape = 1 + evaluationState[["kPrior"]], 
+                                         rate = evaluationState[["nPrior"]]),
+                              type = rep("Prior", length(xseq)))
+
+      postData <- data.frame(x = xseq, 
+                             y = dgamma(x = xseq, 
+                                        shape = 1 + evaluationState[["kPrior"]] + 
+                                                evaluationState[["t"]], 
+                                        rate = evaluationState[["nPrior"]] + 
+                                               evaluationState[["n"]]),
+                             type = rep("Posterior", length(xseq)))
+
+      expPostData <- data.frame(x = xseq, 
+                                y = dgamma(x = xseq, 
+                                            shape = planningState[["prior"]]$aPrior + 
+                                                    planningState[["expectedSampleError"]], 
+                                            rate = planningState[["prior"]]$bPrior + 
+                                                  planningState[["sampleSize"]]),
+                                type = rep("Expected\nposterior", length(xseq)))
+
+      pdata <- data.frame(x = evaluationState[["materiality"]], 
+                          y = dgamma(evaluationState[["materiality"]], 
+                                    shape = 1 + evaluationState[["kPrior"]] + 
+                                            evaluationState[["t"]], 
+                                    rate = evaluationState[["nPrior"]] + 
+                                           evaluationState[["n"]]))
+                                      
+    } else if(planningState[["likelihood"]] == "hypergeometric"){
+
+      xseq <- 0:ceiling(options[["priorAndPosteriorPlotLimit"]] * planningOptions[["populationSize"]])
+
+      priorData <- data.frame(x = xseq, 
+                              y = jfa:::.dBetaBinom(x = xseq, 
+                                                    N = planningOptions[["populationSize"]] - 
+                                                        evaluationState[["n"]] + 
+                                                        evaluationState[["k"]], 
+                                                    shape1 = 1 + evaluationState[["kPrior"]], 
+                                                    shape2 = 1 + evaluationState[["nPrior"]] -
+                                                             evaluationState[["kPrior"]]),
+                              type = rep("Prior", length(xseq)))
+
+      expPostData <- data.frame(x = xseq, 
+                                y = jfa:::.dBetaBinom(x = xseq, 
+                                N = planningState[["N"]] - 
+                                    planningState[["sampleSize"]] + 
+                                    planningState[["expectedSampleError"]], 
+                                shape1 = planningState[["prior"]]$aPrior + 
+                                          planningState[["expectedSampleError"]], 
+                                shape2 = planningState[["prior"]]$bPrior + 
+                                          planningState[["sampleSize"]] - 
+                                          planningState[["expectedSampleError"]]),
+                                type = rep("Expected\nposterior", length(xseq)))
+
+      postData <- data.frame(x = xseq, 
+                             y = jfa:::.dBetaBinom(x = xseq, 
+                             N = planningOptions[["populationSize"]] - 
+                                 evaluationState[["n"]] + 
+                                 evaluationState[["k"]], 
+                             shape1 = 1 + evaluationState[["kPrior"]] + 
+                                      evaluationState[["k"]], 
+                             shape2 = 1 + evaluationState[["nPrior"]] -
+                                      evaluationState[["kPrior"]] + 
+                                      evaluationState[["n"]] - 
+                                      evaluationState[["k"]]),
+                             type = rep("Posterior", length(xseq)))
+
+      pdata <- data.frame(x = evaluationState[["materiality"]] * planningOptions[["populationSize"]], 
+                          y = jfa:::.dBetaBinom(ceiling(
+                                                  evaluationState[["materiality"]] * 
+                                                  planningOptions[["populationSize"]]
+                                                  ),
+                                                N = planningOptions[["populationSize"]] - 
+                                                    evaluationState[["n"]] + 
+                                                    evaluationState[["k"]], 
+                                                shape1 = 1 + evaluationState[["kPrior"]] + 
+                                                         evaluationState[["k"]], 
+                                                shape2 = 1 + evaluationState[["nPrior"]] -
+                                                         evaluationState[["kPrior"]] + 
+                                                         evaluationState[["n"]] - 
+                                                         evaluationState[["k"]]))
+
+    }
+
+    if(evaluationState[["method"]] == "coxsnell"){
+
+      postData <- data.frame(x = xseq, 
+                             y = jfa:::.dCoxAndSnellF(xseq,
+                                  df1 = evaluationState[["df1"]],
+                                  df2 = evaluationState[["df2"]],
+                                  multiplicationFactor = evaluationState[["multiplicationFactor"]]
+                             ),
+                             type = rep("Posterior", length(xseq)))
+
+      pdata <- data.frame(x = evaluationState[["materiality"]], 
+                             y = jfa:::.dCoxAndSnellF(evaluationState[["materiality"]],
+                                  df1 = evaluationState[["df1"]],
+                                  df2 = evaluationState[["df2"]],
+                                  multiplicationFactor = evaluationState[["multiplicationFactor"]]
+                             ))
+
+    }
+
+    posteriorBound <- evaluationState[["confBound"]]
+
+    pdata3 <- data.frame(x = 0, 
+                      y = 0, 
+                      l = "1")
+
+    plotData <- rbind(priorData, postData)
+    plotData$type <- factor(x = plotData$type, 
+                        levels = levels(plotData$type)[c(1,2)])
+
+    if(options[["priorAndPosteriorPlotExpectedPosterior"]]){
+
+      plotData <- rbind(plotData, expPostData)
+      plotData$type <- factor(x = plotData$type, 
+                        levels = levels(plotData$type)[c(1,2, 3)])
+
+    }
+
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(xseq, min.n = 4)
+    yBreaks <- c(0, 1.2 * max(plotData$y))
+
+    # Adjust legend
+    if(options[["priorAndPosteriorPlotExpectedPosterior"]]){
+
+      scaleValues <- c("dashed", "solid", "dotted")
+
+    } else {
+
+      scaleValues <- c("dashed", "solid")
+    }
+
+    guide <- ggplot2::guide_legend(nrow = 1, 
+                                byrow = FALSE, 
+                                title = "", 
+                                order = 1)
+
+    p <- ggplot2::ggplot(data = plotData, 
+                         mapping = ggplot2::aes(x = x, y = y)) +
+          ggplot2::geom_line(mapping = ggplot2::aes(x = x, y = y, linetype = type), 
+                             lwd = 1) +
+          ggplot2::scale_linetype_manual(values = scaleValues, 
+                                         guide = guide) +
+          ggplot2::scale_y_continuous(name = "Density", 
+                                      breaks = yBreaks, 
+                                      labels = c("", ""), 
+                                      limits = range(yBreaks))
+
+    if(planningOptions[["likelihood"]] == "hypergeometric"){
+
+        p <- p + ggplot2::scale_x_continuous(name = "Population errors", 
+                                            breaks = xBreaks, 
+                                            limits = range(xBreaks), 
+                                            labels = xBreaks)
+
+      } else {
+
+        p <- p + ggplot2::scale_x_continuous(name = "Probability of misstatement", 
+                                            breaks = xBreaks, 
+                                            limits = range(xBreaks), 
+                                            labels = paste0(xBreaks * 100, "%"))
+
+    }
+
+    if(options[["priorAndPosteriorPlotAdditionalInfo"]]){
+
+      p <- p + ggplot2::geom_point(data = pdata3, 
+                                   mapping = ggplot2::aes(x = x, y = y, shape = l), 
+                                   size = 0, 
+                                   color = rgb(0, 0.25, 1, 0))
+
+      p <- p + ggplot2::scale_shape_manual(name = "", 
+                                            values = 21, 
+                                            labels = paste0(
+                                                      options[["confidence"]]*100, 
+                                                      "% Posterior \ncredible region"
+                                                    ))
+
+      p <- p + ggplot2::guides(shape = ggplot2::guide_legend(
+                                              override.aes = list(size = 15, 
+                                                                  shape = 22, 
+                                                                  fill = rgb(0, 0.25, 1, .5), 
+                                                                  stroke = 2, 
+                                                                  color = "black")))
+
+      if(evaluationState[["method"]] == "coxsnell"){
+
+        p <- p + ggplot2::stat_function(fun = jfa:::.dCoxAndSnellF, 
+                                args = list(
+                                        df1 = evaluationState[["df1"]], 
+                                        df2 = evaluationState[["df2"]],
+                                        multiplicationFactor = evaluationState[["multiplicationFactor"]] 
+                                        ),
+                                xlim = c(0, posteriorBound),
+                                geom = "area", 
+                                fill = rgb(0, 0.25, 1, .5))
+
+      } else if(evaluationState[["method"]] == "binomial"){
+
+          p <- p + ggplot2::stat_function(fun = dbeta, 
+                                          args = list(
+                                                  shape1 = 1 + evaluationState[["kPrior"]] +
+                                                           evaluationState[["t"]], 
+                                                  shape2 = 1 + evaluationState[["nPrior"]] - 
+                                                           evaluationState[["kPrior"]] +
+                                                           evaluationState[["n"]] - 
+                                                           evaluationState[["t"]] 
+                                                  ),
+                                          xlim = c(0, posteriorBound),
+                                          geom = "area", 
+                                          fill = rgb(0, 0.25, 1, .5))
+
+      } else if(evaluationState[["method"]] == "poisson"){
+
+        p <- p + ggplot2::stat_function(fun = dgamma, 
+                                        args = list(
+                                                shape = 1 + evaluationState[["kPrior"]] +
+                                                        evaluationState[["t"]], 
+                                                rate = evaluationState[["nPrior"]] + 
+                                                       evaluationState[["n"]]
+                                                ),
+                                        xlim = c(0, posteriorBound),
+                                        geom = "area", 
+                                        fill = rgb(0, 0.25, 1, .5))
+
+      } else if(evaluationState[["method"]] == "hypergeometric"){
+
+        posteriorBound <- ceiling(posteriorBound * planningOptions[["populationSize"]])  
+        xseq <- xseq[1:(posteriorBound + 1)]
+        barData <- data.frame(x = xseq, 
+                              y = jfa:::.dBetaBinom(x = xseq, 
+                                                    N = planningOptions[["populationSize"]] - 
+                                                        evaluationState[["n"]] + 
+                                                        evaluationState[["k"]], 
+                                                    shape1 = 1 + evaluationState[["kPrior"]] + 
+                                                             evaluationState[["k"]], 
+                                                    shape2 = 1 + evaluationState[["nPrior"]] -
+                                                             evaluationState[["kPrior"]] + 
+                                                             evaluationState[["n"]] - 
+                                                             evaluationState[["k"]]))
+
+        p <- p + ggplot2::geom_bar(data = barData, 
+                                   stat = "identity", 
+                                   fill = rgb(0, 0.25, 1, .5))
+      
+      }
+
+      p <- p + ggplot2::geom_point(mapping = ggplot2::aes(x = x, y = y), 
+                                data = pdata, 
+                                size = 3, 
+                                shape = 21, 
+                                stroke = 2, 
+                                color = "black", 
+                                fill = "red")
+    }
+
+    if(options[["priorAndPosteriorPlotAdditionalInfo"]] && 
+        options[["priorAndPosteriorPlotExpectedPosterior"]]){
+      keySize <- 3
+    } else {
+      keySize <- 4
+    }
+
+    myTheme <- ggplot2::theme(axis.ticks.y = ggplot2::element_blank(),
+                              axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0)),
+                              legend.key.size = ggplot2::unit(keySize, "line"))
+  
+    p <- JASPgraphs::themeJasp(p, 
+                               legend.position = "top") + myTheme
+
+    priorAndPosteriorPlot$plotObject <- p
+  }
+
+  if(options[["explanatoryText"]]){
+
+    distribution <- base::switch(evaluationState[["method"]], 
+                                 "poisson" = "gamma", 
+                                 "binomial" = "beta", 
+                                 "hypergeometric" = "beta-binomial",
+                                 "coxsnell" = "Cox and Snell")
+
+    priorAndPosteriorPlotText <- createJaspHtml(paste0("<b>Figure ", 
+                                                        jaspResults[["figNumber"]]$object ,
+                                                        ".</b> The prior and posterior probability distrubution <b>(", 
+                                                        distribution, 
+                                                        ")</b> on the misstatement in the population.",
+                                                        ifelse(options[["priorAndPosteriorPlotAdditionalInfo"]],
+                                                        yes = "The red 
+                                                        dot represents the specified materiality. If the credible area under the distribution surpasses this point, the estimate 
+                                                        of the maximum misstatement exceeds the materiality.",
+                                                        no = "")), "p")
+
+    priorAndPosteriorPlotText$position <- positionInContainer + 1
+    priorAndPosteriorPlotText$dependOn(optionsFromObject = evaluationContainer[["priorAndPosteriorPlot"]])
+    priorAndPosteriorPlotText$dependOn(options = "explanatoryText")
+    evaluationContainer[["priorAndPosteriorPlotText"]] <- priorAndPosteriorPlotText
+  }
 }
 
 ################################################################################
 ################## End functions ###############################################
 ################################################################################
 
-
-# The following function will be deprecated
-.priorAndPosteriorBayesianAttributes <- function(options, evaluationResult, jaspResults){
-
-  if(options[["estimator"]] == "betaBound"){
-
-    xseq <- seq(0, options[["priorAndPosteriorPlotLimit"]], 0.001)
-    d <- data.frame(
-        x = rep(xseq, 2),
-        y = c(dbeta(x = xseq, shape1 = evaluationResult[["priorA"]], shape2 = evaluationResult[["priorB"]]), dbeta(x = xseq, shape1 = evaluationResult[["posteriorA"]], shape2 = evaluationResult[["posteriorB"]])),
-        type = c(rep("Prior", length(xseq)), rep("Posterior", length(xseq)))
-    )
-    # Reorder factor levels to display in legend
-    d$type = factor(d$type,levels(d$type)[c(2,1)])
-
-    xBreaks <- JASPgraphs::getPrettyAxisBreaks(xseq, min.n = 4)
-    xLim <- range(xBreaks)
-    yBreaks <- c(0, 1.2*max(d$y))
-    yLim <- range(yBreaks)
-
-    pointdata <- data.frame(x = jaspResults[["materiality"]]$object, y = dbeta(jaspResults[["materiality"]]$object, evaluationResult[["posteriorA"]], evaluationResult[["posteriorB"]]))
-
-    p <- ggplot2::ggplot(d, ggplot2::aes(x = x, y = y)) +
-        ggplot2::geom_line(ggplot2::aes(x = x, y = y, linetype = type), lwd = 1) +
-        ggplot2::scale_linetype_manual(values=c("dashed", "solid"), guide = ggplot2::guide_legend(nrow = 1, byrow = FALSE, title = "", order = 1))
-
-    p <- p + ggplot2::scale_x_continuous(name = "Error percentage", breaks = xBreaks, limits = xLim, labels = paste0(xBreaks * 100, "%"))
-
-    if(options[["priorAndPosteriorPlotAdditionalInfo"]]){
-      pdata <- data.frame(x = 0, y = 0, l = "1")
-      p <- p + ggplot2::geom_point(data = pdata, mapping = ggplot2::aes(x = x, y = y, shape = l), size = 0, color = rgb(0, 0.25, 1, 0))
-      p <- p + ggplot2::scale_shape_manual(name = "", values = 21, labels = paste0(options[["confidence"]]*100, "% Posterior \ncredible region"))
-      p <- p + ggplot2::guides(shape = ggplot2::guide_legend(override.aes = list(size = 15, shape = 22, fill = rgb(0, 0.25, 1, .5), stroke = 2, color = "black")), order = 2)
-
-      if(options[["areaUnderPosterior"]]=="displayCredibleBound"){
-        p <- p + ggplot2::stat_function(fun = dbeta, args = list(shape1 = evaluationResult[["posteriorA"]], shape2 = evaluationResult[["posteriorB"]]), xlim = c(0, evaluationResult[["bound"]]),
-                                        geom = "area", fill = rgb(0, 0.25, 1, .5))
-      } else {
-        p <- p + ggplot2::stat_function(fun = dbeta, args = list(shape1 = evaluationResult[["posteriorA"]], shape2 = evaluationResult[["posteriorB"]]), xlim = evaluationResult[["interval"]],
-                                        geom = "area", fill = rgb(0, 0.25, 1, .5))
-      }
-    }
-
-    p <- p + ggplot2::geom_point(ggplot2::aes(x = x, y = y), data = pointdata, size = 3, shape = 21, stroke = 2, color = "black", fill = "red")
-
-    thm <- ggplot2::theme(
-  		axis.ticks.y = ggplot2::element_blank(),
-  		axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0))
-  	)
-    p <- p + ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, labels = c("", ""), limits = yLim) +
-    	       ggplot2::theme()
-
-    p <- JASPgraphs::themeJasp(p, legend.position = "top") + thm
-
-  } else if(options[["estimator"]] == "betabinomialBound"){
-
-      xseq <- seq(0, jaspResults[["N"]]$object, 1)[1:ceiling(options[["priorAndPosteriorPlotLimit"]] * jaspResults[["N"]]$object)]
-      d <- data.frame(
-          x = rep(xseq, 2),
-          y = c(.dBetaBinom(x = 0:jaspResults[["N"]]$object, N = jaspResults[["N"]]$object - evaluationResult[["n"]], shape1 = evaluationResult[["priorA"]], shape2 = evaluationResult[["priorB"]])[1:ceiling(options[["priorAndPosteriorPlotLimit"]] * jaspResults[["N"]]$object)],
-                .dBetaBinom(x = 0:jaspResults[["N"]]$object, N = jaspResults[["N"]]$object - evaluationResult[["n"]], shape1 = evaluationResult[["posteriorA"]], shape2 = evaluationResult[["posteriorB"]])[1:ceiling(options[["priorAndPosteriorPlotLimit"]] * jaspResults[["N"]]$object)]),
-          type = c(rep("Prior", length(xseq)), rep("Posterior", length(xseq)))
-      )
-
-      xBreaks <- JASPgraphs::getPrettyAxisBreaks(xseq, min.n = 4)
-      xLim <- range(xBreaks)
-      yBreaks <- c(0, 1.2*max(d$y))
-      yLim <- range(yBreaks)
-
-      pointdata <- data.frame(x = jaspResults[["materiality"]]$object * jaspResults[["N"]]$object, y = .dBetaBinom(ceiling(jaspResults[["materiality"]]$object * jaspResults[["N"]]$object),
-                            N = jaspResults[["N"]]$object - evaluationResult[["n"]], shape1 = evaluationResult[["posteriorA"]], shape2 = evaluationResult[["posteriorB"]]))
-
-      p <- ggplot2::ggplot(d, ggplot2::aes(x = x, y = y)) +
-          ggplot2::geom_line(ggplot2::aes(x = x, y = y, linetype = type), lwd = 1) +
-          ggplot2::scale_linetype_manual(values=c("solid", "dashed"), guide = FALSE)
-
-      p <- p + ggplot2::scale_x_continuous(name = "Population errors", breaks = xBreaks, limits = xLim, labels = xBreaks)
-
-      if(options[["priorAndPosteriorPlotAdditionalInfo"]]){
-          pdata <- data.frame(x = 0, y = 0, l = "1")
-          p <- p + ggplot2::geom_point(data = pdata, mapping = ggplot2::aes(x = x, y = y, shape = l), size = 0, color = rgb(0, 1, 0.5, 0))
-          p <- p + ggplot2::scale_shape_manual(name = "", values = 21, labels = paste0(options[["confidence"]]*100, "% Posterior credible region"))
-          p <- p + ggplot2::guides(shape = ggplot2::guide_legend(override.aes = list(size = 15, shape = 22, fill = rgb(0, 0.25, 1, .5), stroke = 2, color = "black")))
-
-          df <- data.frame(x = 0:jaspResults[["N"]]$object, y = .dBetaBinom(x = 0:jaspResults[["N"]]$object, N = jaspResults[["N"]]$object - evaluationResult[["n"]], shape1 = evaluationResult[["posteriorA"]], shape2 = evaluationResult[["posteriorB"]]))
-          if(options[["areaUnderPosterior"]]=="displayCredibleBound"){
-            lim <- .qBetaBinom(p = options[["confidence"]], N = jaspResults[["N"]]$object - evaluationResult[["n"]], shape1 = evaluationResult[["posteriorA"]], shape2 = evaluationResult[["posteriorB"]])
-            df <- df[1:lim, ]
-            p <- p + ggplot2::geom_bar(data = df, stat="identity", fill = rgb(0, 0.25, 1, .5))
-          } else {
-            lim <- .qBetaBinom(p = c((1 - options[["confidence"]])/2, 1 - (1 - options[["confidence"]])/2), N = jaspResults[["N"]]$object - evaluationResult[["n"]], shape1 = evaluationResult[["posteriorA"]], shape2 = evaluationResult[["posteriorB"]])
-            df <- df[lim[1]:lim[2], ]
-            p <- p + ggplot2::geom_bar(data = df, stat="identity", fill = rgb(0, 0.25, 1, .5))
-          }
-      }
-
-      p <- p + ggplot2::geom_point(ggplot2::aes(x = x, y = y), data = pointdata, size = 3, shape = 21, stroke = 2, color = "black", fill = "red")
-
-      thm <- ggplot2::theme(
-        axis.ticks.y = ggplot2::element_blank(),
-        axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0))
-      )
-      p <- p + ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, labels = c("", ""), limits = yLim) +
-                ggplot2::theme()
-      p <- JASPgraphs::themeJasp(p, legend.position = "top") + thm
-    }
-  return(p)
-}
 
 # The following function will be deprecated
 .BF <- function(options, planningResult, jaspResults){
@@ -1075,40 +1334,4 @@
     jaspResults[["evaluationResult"]] <- createJaspState(resultList)
     jaspResults[["evaluationResult"]]$dependOn(options = c("IR", "CR", "confidence", "auditResult", "sampleFilter", "materiality", "estimator", "monetaryVariable", "performAudit"))
     return(jaspResults[["evaluationResult"]]$object)
-}
-
-# The following function will be deprecated
-.priorAndPosteriorPlot <- function(options, evaluationResult, jaspResults, position, evaluationContainer){
-
-  if(!is.null(evaluationContainer[["priorAndPosteriorPlot"]])) return()
-
-  priorAndPosteriorPlot <- createJaspPlot(plot = NULL, title = "Prior and Posterior", width = 600, height = 400)
-  priorAndPosteriorPlot$position <- position
-  priorAndPosteriorPlot$dependOn(options = c("IR", "CR", "confidence", "priorAndPosteriorPlotLimit", "priorAndPosteriorPlot", "priorAndPosteriorPlotAdditionalInfo", "materialityPercentage", "auditResult",
-                                              "expectedErrors", "expectedPercentage", "expectedNumber", "sampleFilter", "planningModel", "materialityValue", "displayCredibleInterval", "performAudit", "estimator"))
-
-  evaluationContainer[["priorAndPosteriorPlot"]] <- priorAndPosteriorPlot
-
-  if(!jaspResults[["runEvaluation"]]$object) return()
-
-  if(options[["variableType"]] == "variableTypeCorrect"){
-    p <- .priorAndPosteriorBayesianAttributes(options, evaluationResult, jaspResults)
-  } else {
-    p <- .priorAndPosteriorCoxAndSnell(options, evaluationResult, jaspResults)
-  }
-
-  priorAndPosteriorPlot$plotObject <- p
-
-  if(options[["explanatoryText"]]){
-    posteriorName <- ifelse(options[["variableType"]] == "variableTypeCorrect", 
-                        yes = ifelse(options[["planningModel"]] == "beta", yes = "<b>(beta)</b>", no = "<b>(beta-binomial)</b>"),
-                        no = "<b>(Cox and Snell)</b>")
-    figure5 <- createJaspHtml(paste0("<b>Figure ", jaspResults[["figNumber"]]$object ,".</b> The prior and posterior probability distrubution ", posteriorName, " on the percentage of misstatement in the population. 
-                                      The red dot represents the specified materiality. If the credible area under the distribution surpasses this point, the 
-                                      estimate of the maximum misstatement exceeds the materiality."), "p")
-    figure5$position <- position + 1
-    figure5$dependOn(optionsFromObject = priorAndPosteriorPlot)
-    evaluationContainer[["figure5"]] <- figure5
-    jaspResults[["figNumber"]] <- createJaspState(jaspResults[["figNumber"]]$object + 1)
-  }
 }

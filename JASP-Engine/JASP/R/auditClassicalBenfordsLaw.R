@@ -18,7 +18,7 @@
 # When making changes to this file always mention @koenderks as a 
 # reviewer in the Pull Request
 
-classicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
+auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
   # Create the procedure paragraph
   .auditBenfordsLawProcedureParagraph(options, 

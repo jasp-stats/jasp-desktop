@@ -18,10 +18,11 @@
 # When making changes to this file always mention @koenderks as a 
 # reviewer in the Pull Request
 
-classicalAudit <- function(jaspResults, dataset, options, ...){
-   
+auditBayesianWorkflow <- function(jaspResults, dataset, options, ...){
+
   # Perform the audit workflow
   .auditWorkflow(options, 
                  jaspResults, 
-                 type = "frequentist")
+                 type = "bayesian")
+    
 }

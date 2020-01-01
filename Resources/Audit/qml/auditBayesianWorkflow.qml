@@ -386,7 +386,7 @@ Form
 
 						CheckBox
 						{
-							text: qsTr("Prior and posterior descriptives")
+							text: qsTr("Prior and expected posterior descriptives")
 							name: "priorStatistics"
 						}
 					}
@@ -418,6 +418,7 @@ Form
 
 						PercentField
 						{
+							id: 								priorPlotLimit
 							text: 							qsTr("x-axis limit")
 							name: 							"priorPlotLimit"
 							defaultValue: 			20
@@ -434,7 +435,7 @@ Form
 						{
 							text: 							qsTr("Expected posterior")
 							name: 							"priorPlotExpectedPosterior"
-							checked: 						false
+							checked: 						true
 						}
 					}
 				}
@@ -1107,7 +1108,7 @@ Form
 						{
 							id: 						priorAndPosteriorPlotLimit
 							text: 					qsTr("x-axis limit")
-							defaultValue: 	20
+							defaultValue: 	priorPlotLimit.value
 							name: 					"priorAndPosteriorPlotLimit"
 							visible:				!regressionBound.visible
 						}
@@ -1118,7 +1119,14 @@ Form
 							text: 					qsTr("Additional info")
 							name: 					"priorAndPosteriorPlotAdditionalInfo"
 							checked: 				true
-							enabled: 				priorAndPosteriorPlot.checked
+							visible:				!regressionBound.visible
+						}
+
+						CheckBox
+						{
+							id: 						priorAndPosteriorPlotExpectedPosterior
+							text: 					qsTr("Expected posterior")
+							name: 					"priorAndPosteriorPlotExpectedPosterior"
 							visible:				!regressionBound.visible
 						}
 					}

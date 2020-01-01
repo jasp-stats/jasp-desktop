@@ -399,7 +399,7 @@
 
   p <- JASPgraphs::drawAxis(
                     xName = paste0("Book values (", valuta, ")"), 
-                    yName = "Counts", 
+                    yName = "Frequency", 
                     xBreaks = xBreaks,
                     yBreaks = yBreaks, 
                     force = TRUE,
@@ -526,10 +526,10 @@
     myTheme <- ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = -10, r = 50)),
                               panel.grid.major.y = ggplot2::element_line(color = "#cbcbcb"))
     
-    p <- JASPgraphs::themeJasp(p, legend.position = "top") + myTheme
+    p <- JASPgraphs::themeJasp(p, 
+                               legend.position = "top") + myTheme
 
     bookValuePlot$plotObject <- p
-
   }
 
   if(options[["explanatoryText"]]){
@@ -544,7 +544,6 @@
       bookValuePlotText$dependOn(optionsFromObject = procedureContainer[["bookValueDistribution"]])
       bookValuePlotText$dependOn(options = "explanatoryText")
       procedureContainer[["bookValuePlotText"]] <- bookValuePlotText
-
   }
 }
 
@@ -2303,7 +2302,9 @@
   .auditExplanatoryTextEvaluation(options,
                                   planningOptions,
                                   planningState,
+                                  selectionState,
                                   evaluationContainer, 
+                                  type,
                                   positionInContainer = 1)
 
   # --- TABLES
@@ -2326,6 +2327,7 @@
     # Create a plot containing the prior and posterior distribution
     .auditEvaluationPriorAndPosterior(options,
                                       planningOptions,
+                                      planningState,
                                       evaluationState,
                                       evaluationContainer,
                                       jaspResults,
@@ -2371,7 +2373,8 @@
                                              "mostLikelyError",
                                              "estimator",
                                              "performAudit",
-                                             "stringerBoundLtaAdjustment"))
+                                             "stringerBoundLtaAdjustment",
+                                             "areaUnderPosterior"))
 
     jaspResults[["evaluationContainer"]] <- evaluationContainer
 
@@ -2474,7 +2477,7 @@
       kSumstats <- length(which(sample[, .v(options[["auditResult"]])] == 1))
 
       result <- try({
-      
+  
         # call jfa evaluation
         jfa::evaluation(sample = sample,
                         confidence = confidence,
@@ -2500,6 +2503,7 @@
       if(method == "stringer" && options[["stringerBoundLtaAdjustment"]])
         method <- "stringer-lta"
 
+      # Adjust the confidence since jfa only returns a confidence interval
       if(method %in% c("direct", "difference", "quotient", "regression")){
         confidence <- confidence + ((1 - confidence) / 2)
       }
@@ -2546,7 +2550,9 @@
 .auditExplanatoryTextEvaluation <- function(options,
                                             planningOptions,
                                             planningState,
+                                            selectionState,
                                             evaluationContainer, 
+                                            type,
                                             positionInContainer = 1){
 
   if(options[["explanatoryText"]]){
@@ -2587,20 +2593,41 @@
 
     }
 
+    if(sum(selectionState[["count"]]) > nrow(selectionState)){
+      sampleSizeMessage <- paste0(planningState[["sampleSize"]], 
+                                  " (",
+                                  nrow(selectionState),
+                                  " + ",
+                                  length(which(selectionState[["count"]] != 1)),
+                                  ")")
+    } else {
+      sampleSizeMessage <- planningState[["sampleSize"]]
+    }
+
+    if(type == "frequentist"){
+      additionalMessage <- "probability that, when one would repeatedly sample from this population, the maximum misstatement is calculated to be lower
+                            than"
+    } else if(type == "bayesian"){
+      additionalMessage <- "probability that the maximum misstatement is lower than"
+    }
+
     message <- paste0("The selection consisted of <b>", 
-                      planningState[["sampleSize"]] , 
+                      sampleSizeMessage, 
                       "</b> observations, of which <b>", 
                       errorLabel, 
                       "</b> were found to contain an error. The knowledge from these data, com-
                       bined with the risk assessments results in an <b>", 
                       planningOptions[["confidenceLabel"]], 
                       "</b> upper confidence bound of <b>", 
-                      boundLabel ,
+                      boundLabel,
                       "</b>. The cumulative knowledge states that there
                       is a <b>", 
                       planningOptions[["confidenceLabel"]], 
-                      "</b> probability that, when one would repeaditly sample from this population, the maximum misstatement is calculated to be lower
-                      than <b>", boundLabel ,"</b>.")
+                      "</b> ",
+                      additionalMessage, 
+                      " <b>",
+                      boundLabel,
+                      "</b>.")
 
     evaluationContainer[["evaluationParagraph"]] <- createJaspHtml(message, "p")
     evaluationContainer[["evaluationParagraph"]]$position <- positionInContainer
@@ -2853,7 +2880,8 @@
                               axis.text.y = ggplot2::element_text(hjust = 0),
                               panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb"))
 
-    p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE) + myTheme
+    p <- JASPgraphs::themeJasp(p, 
+                               sides = "") + myTheme
 
     evaluationInformation$plotObject <- p
 
@@ -3326,350 +3354,3 @@
 ################################################################################
 ################## End functions ###############################################
 ################################################################################
-
-# The following function will be deprecated
-.evaluationInformation <- function(options, evaluationResult, jaspResults, position, evaluationContainer){
-
-  if(!is.null(evaluationContainer[["evaluationInformation"]])) return()
-
-  evaluationInformation <- createJaspPlot(plot = NULL, title = "Evaluation Information", width = 600, height = 300)
-  evaluationInformation$position <- position
-  evaluationInformation$dependOn(options = c("IR", "CR", "confidence", "auditResult", "evaluationInformation", "materialityPercentage", "estimator", "materialityValue", "valuta", "performAudit"))
-
-  evaluationContainer[["evaluationInformation"]] <- evaluationInformation
-
-  if(!jaspResults[["runEvaluation"]]$object) return()
-
-  materiality       <- jaspResults[["materiality"]]$object
-  bound             <- evaluationResult[["bound"]]
-  proj.misstatement <- bound * jaspResults[["total_data_value"]]$object
-  if(options[["variableType"]] == "variableTypeCorrect"){
-    if(options[["estimator"]] == "gammaBound" || options[["estimator"]] == "binomialBound" || options[["estimator"]] == "hyperBound"){
-      mle <- evaluationResult[["k"]] / evaluationResult[["n"]]
-    } else {
-      mle <- (evaluationResult[["posteriorA"]] - 1) / (evaluationResult[["posteriorA"]] + evaluationResult[["posteriorB"]] - 2)
-    }
-  } else {
-    if(options[["estimator"]] == "stringerBound"){
-      mle <- sum(evaluationResult[["z"]]) / evaluationResult[["n"]]
-    } else if(options[["estimator"]] == "coxAndSnellBound") {
-      mle <- evaluationResult[["mf"]] * ( (evaluationResult[["df1"]] - 2)  / evaluationResult[["df1"]] ) * ( evaluationResult[["df2"]] / (evaluationResult[["df2"]] + 2) ) 
-    } else {
-      mle <- abs(evaluationResult[["mleTable"]])
-    }
-  }
- 
-  label             <- rev(c("Materiality", "Maximum error", "Most likely error"))
-  values            <- rev(c(materiality, bound, mle))
-  
-  if(options[["variableType"]] == "variableTypeAuditValues" && options[["materiality"]] == "materialityAbsolute")
-    values          <- values * jaspResults[["total_data_value"]]$object
-  
-  boundColor        <- ifelse(bound < materiality, yes = rgb(0,1,.7,1), no = rgb(1,0,0,1))
-  fillUp            <- rev(c("#1380A1", boundColor, "#1380A1"))
-  yBreaks           <- as.numeric(JASPgraphs::getPrettyAxisBreaks(c(0, values), min.n = 4))
-  
-  if(options[["variableType"]] == "variableTypeAuditValues" && options[["materiality"]] == "materialityAbsolute"){
-    x.labels        <- format(JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1*max(values), length.out = 100), min.n = 4), scientific = FALSE)
-    values.labels   <- paste(jaspResults[["valutaTitle"]]$object, ceiling(values))
-    x.title         <- ""
-  } else {
-    x.labels        <- paste0(round(JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1*max(values), length.out = 100), min.n = 4) * 100, 4), "%")
-    values.labels   <- paste0(round(values * 100, 2), "%")
-    x.title         <- ""
-  }
-
-  tb                <- data.frame(x = label, values = values)
-  tb$x              <- factor(tb$x, levels = tb$x)
-  p                 <- ggplot2::ggplot(data = data.frame(x = tb[, 1], y = tb[, 2]), ggplot2::aes(x = x, y = y)) +
-                        ggplot2::geom_bar(stat = "identity", col = "black", size = 1, fill = fillUp) +
-                        ggplot2::coord_flip() +
-                        ggplot2::xlab(NULL) +
-                        ggplot2::ylab(x.title) +
-                        ggplot2::theme(axis.ticks.x = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(), axis.text.y = ggplot2::element_text(hjust = 0)) +
-                        ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb"))+
-                        ggplot2::annotate("text", y = values, x = c(1, 2, 3), label = values.labels, size = 6, vjust = 0.5, hjust = -0.3) + 
-                        ggplot2::scale_y_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1*max(values), length.out = 100), min.n = 4), limits = c(0, 1.1*max(values)), labels = x.labels)
-  p                 <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE)
-
-  evaluationInformation$plotObject <- p
-
-  if(options[["explanatoryText"]]){
-      figure4 <- createJaspHtml(paste0("<b>Figure ", jaspResults[["figNumber"]]$object ,".</b> Evaluation information regarding the evaluation of the selection. The materiality is compared with the 
-                                        maximum misstatement and the most likely error. The most likely error (MLE) is an estimate of the true misstatement 
-                                        in the population. The maximum error is an estimate of the maximum error in the population."), "p")
-      figure4$position <- position + 1
-      figure4$dependOn(optionsFromObject = evaluationInformation)
-      evaluationContainer[["figure4"]] <- figure4
-      jaspResults[["figNumber"]] <- createJaspState(jaspResults[["figNumber"]]$object + 1)
-  }
-}
-
-# The following function will be deprecated
-.correlationPlot <- function(dataset, options, jaspResults, position, evaluationContainer) {
-
-  if(!is.null(evaluationContainer[["correlationPlot"]])) return()
-
-  correlationPlot <- createJaspPlot(plot = NULL, title = "Correlation Plot", width = 500, height = 400)
-  correlationPlot$position <- position
-  correlationPlot$dependOn(options = c("auditResult", "correlationPlot", "monetaryVariable", "valuta", "performAudit"))
-
-  evaluationContainer[["correlationPlot"]] <- correlationPlot
-
-  if(!jaspResults[["runEvaluation"]]$object) return()
-
-  d <- data.frame(xx= dataset[,.v(options[["monetaryVariable"]])], yy= dataset[,.v(options[["auditResult"]])])
-  co <- cor(d$xx, d$yy, method = "pearson")
-  d <- na.omit(d)
-  d <- ceiling(d)
-  xVar <- d$xx
-  yVar <- d$yy
-
-  fit <- vector("list", 1)# vector("list", 4)
-  fit[[1]] <- lm(yy ~ poly(xx, 1, raw= TRUE), data = d)
-
-  bestModel <- 1 # which.min(Bic)
-
-  # format x labels
-  xlow <- min(pretty(xVar))
-  xhigh <- max(pretty(xVar))
-  xticks <- pretty(c(xlow, xhigh))
-  xLabs <- vector("character", length(xticks))
-  xLabs <- format(xticks, digits= 3, scientific = FALSE)
-
-  # Format y labels
-  yticks <- xticks
-  yLabs <- vector("character", length(yticks))
-  yLabs <- format(yticks, digits= 3, scientific = FALSE)
-
-  co <- round(co, 3)
-
-  cols <- rep("gray", nrow(d))
-  cols[which(d$xx != d$yy)] <- "red"
-
-  p <- JASPgraphs::drawAxis(xName = paste0("Book values (", jaspResults[["valutaTitle"]]$object, ")"), yName = paste0("Audit values (", jaspResults[["valutaTitle"]]$object, ")"), xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
-  p <- JASPgraphs::drawPoints(p, dat = d, size = 3, fill = cols)
-  p <- .poly.predJfA(fit[[bestModel]], plot = p, line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd = 1)
-  p <- p + ggplot2::annotate("text", x = xticks[1], y = (yticks[length(yticks)] - ((yticks[length(yticks)] - yticks[length(yticks) - 1]) / 2)),
-                              label = paste0("italic(r) == ", co), size = 8, parse = TRUE, hjust = -0.5, vjust = 0.5)
-  p <- p + ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color="#cbcbcb"), panel.grid.major.y = ggplot2::element_line(color="#cbcbcb"))
-  
-  p <- JASPgraphs::themeJasp(p)
-
-  correlationPlot$plotObject <- p
-
-  if(options[["explanatoryText"]]){
-      figure6 <- createJaspHtml(paste0("<b>Figure ", jaspResults[["figNumber"]]$object ,".</b> Scatterplot of the book values in the selection and their audit values. Red dots indicate observations that 
-                                        did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. 
-                                        If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient 
-                                        of the book values and the audit values, an indicator of the strengh of the linear relationship between the two variables."), "p")
-      figure6$position <- position + 1
-      figure6$dependOn(optionsFromObject = correlationPlot)
-      evaluationContainer[["figure6"]] <- figure6
-      jaspResults[["figNumber"]] <- createJaspState(jaspResults[["figNumber"]]$object + 1)
-  }
-}
-
-# The following function will be deprecated
-.readDataEvaluation <- function(options, jaspResults){
-  recordVariable                  <- unlist(options[["recordNumberVariable"]])
-  if(recordVariable == "")        recordVariable <- NULL
-  monetaryVariable                <- unlist(options[["monetaryVariable"]])
-  if(monetaryVariable == "")      monetaryVariable <- NULL
-  sampleFilter                    <- unlist(options[["sampleFilter"]])
-  if(sampleFilter == "")          sampleFilter <- NULL
-  auditResult                     <- unlist(options[["auditResult"]])
-  if(auditResult == "")           auditResult <- NULL
-  variables.to.read               <- c(recordVariable, auditResult, sampleFilter, monetaryVariable)
-  dataset                         <- .readDataSetToEnd(columns.as.numeric = variables.to.read)
-
-  jaspResults[["runEvaluation"]] <- createJaspState( (!is.null(auditResult) && !is.null(sampleFilter)) )
-  jaspResults[["runEvaluation"]]$dependOn(options = c("auditResult", "sampleFilter", "performAudit"))
-  return(dataset)
-}
-
-# The following function will be deprecated
-.errorHandlingProcedure <- function(options, dataset){
-  variables <- NULL
-  if(options[["recordNumberVariable"]] != "")
-    variables <- c(variables, options[["recordNumberVariable"]])
-  if(options[["monetaryVariable"]] != "")
-    variables <- c(variables, options[["monetaryVariable"]])
-  n <- nrow(dataset)
-
-    .hasErrors(dataset, perform, type=c("infinity", "variance", "observations"),
-            all.target = variables, message="short", observations.amount= paste0("< ", n),
-            exitAnalysisIfErrors = TRUE)
-}
-
-# The following function will be deprecated
-.decisionAnalysis <- function(options, jaspResults, position, planningContainer, type){
-
-  if(!is.null(planningContainer[["decisionPlot"]])) return()
-
-  decisionPlot <- createJaspPlot(plot = NULL, title = "Decision Analysis", width = 600, height = 300)
-  decisionPlot$position <- position
-  decisionPlot$dependOn(options = c("IR", "CR", "confidence", "materialityPercentage", "expectedErrors", "expectedPercentage", "expectedNumber", "decisionPlot", "materialityValue", "explanatoryText"))
-
-  planningContainer[["decisionPlot"]] <- decisionPlot
-
-  if(!jaspResults[["ready"]]$object || planningContainer$getError()) return()
-
-  ar                      <- 1 - options[["confidence"]]
-  ir                      <- base::switch(options[["IR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
-  cr                      <- base::switch(options[["CR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
-  alpha                   <- ar / ir / cr
-
-  if(type == "frequentist"){
-
-      n <- c(.calc.n.poisson(options, alpha, jaspResults),
-          .calc.n.binomial(options, alpha, jaspResults),
-          .calc.n.hypergeometric(options, alpha, jaspResults))
-
-      kpois <- base::switch(options[["expectedErrors"]], "expectedRelative" = round(options[["expectedPercentage"]] * n[1], 2), "expectedAbsolute" = round(options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * n[1], 2))
-      kbinom <- base::switch(options[["expectedErrors"]], "expectedRelative" = ceiling(options[["expectedPercentage"]] * n[2]), "expectedAbsolute" = ceiling(options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * n[2]))
-      khyper <- base::switch(options[["expectedErrors"]], "expectedRelative" = ceiling(options[["expectedPercentage"]] * n[3]), "expectedAbsolute" = ceiling(options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * n[3]))
-
-      k <- c(round(kpois, 2), kbinom, khyper)
-
-      d <- data.frame(y = c(n, k), 
-                      dist = rep(c("Poisson", "Binomial", "Hypergeometric"), 2),
-                      nature = rep(c("Expected error-free", "Expected errors"), each = 3))
-      d$dist = factor(d$dist,levels(d$dist)[c(2,1,3)])
-      d$nature = factor(d$nature,levels(d$nature)[c(1,2)])
-      
-      p <- ggplot2::ggplot(data = d, ggplot2::aes(x = dist, y = y, fill = nature)) +
-          ggplot2::geom_bar(stat = "identity", col = "black", size = 1) +
-          ggplot2::coord_flip() +
-          ggplot2::xlab("") +
-          ggplot2::ylab("Required sample size") +
-          ggplot2::theme(axis.ticks.x = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(), axis.text.y = ggplot2::element_text(hjust = 0)) +
-          ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color="#cbcbcb")) +
-          ggplot2::labs(fill = "") +
-          ggplot2::scale_fill_manual(values=c("#7FE58B", "#FF6666"), guide = ggplot2::guide_legend(reverse = TRUE)) +
-          ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = 0, r = 30))) +
-          ggplot2::annotate("text", y = k, x = c(3, 2, 1), label = k, size = 6, vjust = 0.5, hjust = -0.3) + 
-          ggplot2::annotate("text", y = n, x = c(3, 2, 1), label = n, size = 6, vjust = 0.5, hjust = -0.5) + 
-          ggplot2::scale_y_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(0:(ceiling(1.1*max(n))), min.n = 4), limits = c(0, ceiling(1.1*max(n)))) +
-          ggplot2::ylim(0, ceiling(1.2*max(n)))
-      p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE, legend.position = "top")
-
-      optN <- base::switch(which.min(n), "1" = "Poisson", "2" = "binomial", "3" = "hypergeometric")
-      jaspResults[["mostEfficientPlanningDistribution"]] <- createJaspState(optN)
-      jaspResults[["mostEfficientPlanningDistribution"]]$dependOn(options = c("IR", "CR", "confidence", "materialityPercentage", "expectedErrors", "expectedPercentage", "expectedNumber", 
-                                                                          "decisionPlot", "materialityValue"))
-
-  } else if(type == "bayesian"){
-
-      n <- c(.calc.n.beta(options, alpha, jaspResults), .calc.n.betabinom(options, alpha, jaspResults))
-      k <- base::switch(options[["expectedErrors"]], "expectedRelative" = round(options[["expectedPercentage"]] * n, 2), "expectedAbsolute" = round(options[["expectedNumber"]] / jaspResults[["total_data_value"]]$object * n, 2))
-      
-      d <- data.frame(y = c(n, k), 
-                      dist = rep(c("Beta", "Beta-binomial"), 2),
-                      nature = rep(c("Expected error-free", "Expected errors"), each = 2))
-      d$dist = factor(d$dist,levels(d$dist)[c(2,1)])
-      d$nature = factor(d$nature,levels(d$nature)[c(1,2)])
-      
-      p <- ggplot2::ggplot(data = d, ggplot2::aes(x = dist, y = y, fill = nature)) +
-          ggplot2::geom_bar(stat = "identity", col = "black", size = 1) +
-          ggplot2::coord_flip() +
-          ggplot2::xlab("") +
-          ggplot2::ylab("Required sample size") +
-          ggplot2::theme(axis.ticks.x = ggplot2::element_blank(), axis.ticks.y = ggplot2::element_blank(), axis.text.y = ggplot2::element_text(hjust = 0)) +
-          ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color="#cbcbcb")) +
-          ggplot2::labs(fill = "") +
-          ggplot2::scale_fill_manual(values=c("#7FE58B", "#FF6666"), guide = ggplot2::guide_legend(reverse = TRUE)) +
-          ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = 0, r = 30))) +
-          ggplot2::annotate("text", y = k, x = c(2, 1), label = k, size = 6, vjust = 0.5, hjust = -0.3) + 
-          ggplot2::annotate("text", y = n, x = c(2, 1), label = n, size = 6, vjust = 0.5, hjust = -0.5) + 
-          ggplot2::scale_y_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(0:(ceiling(1.1*max(n))), min.n = 4), limits = c(0, ceiling(1.1*max(n)))) +
-          ggplot2::ylim(0, ceiling(1.2*max(n)))
-      p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE, legend.position = "top")
-
-      optN <- base::switch(which.min(n), "1" = "beta", "2" = "beta-binomial")
-      jaspResults[["mostEfficientPlanningDistribution"]] <- createJaspState(optN)
-      jaspResults[["mostEfficientPlanningDistribution"]]$dependOn(options = c("IR", "CR", "confidence", "materialityPercentage", "expectedErrors", "expectedPercentage", "expectedNumber", 
-                                                                            "decisionPlot", "materialityValue"))
-  }
-
-  decisionPlot$plotObject <- p
-
-  if(options[["explanatoryText"]]){
-        figure2 <- createJaspHtml(paste0("<b>Figure ", jaspResults[["figNumber"]]$object ,".</b> Decision analysis for the current options. The bars represent the sample size that is required under different planning distributions.
-                                                                                    The the number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green. 
-                                                                                    The most efficient distribution for these options is the <b>", jaspResults[["mostEfficientPlanningDistribution"]]$object ,"</b> distribution."), "p")
-        figure2$position <- position + 1
-        figure2$dependOn(optionsFromObject = decisionPlot)
-        planningContainer[["figure2"]] <- figure2
-        jaspResults[["figNumber"]] <- createJaspState(jaspResults[["figNumber"]]$object + 1)
-  }
-}
-
-# The following function will be deprecated
-.auditRiskModel <- function(options, jaspResults, position){
-
-  if(!is.null(jaspResults[["ARMcontainer"]])) return()
-
-  ARMcontainer <- createJaspContainer(title= "<u>Audit Risk Model</u>")
-  ARMcontainer$position <- position
-  ARMcontainer$dependOn(options = c("confidence", "IR", "CR", "materialityPercentage", "materialityValue", "materiality", "explanatoryText", "valuta", "irCustom", "crCustom"))
-
-  #  Audit Risk Model formula
-  .ARMformula(options, jaspResults, position = 2, ARMcontainer)
-  DR <- jaspResults[["DR"]]$object
-  
-  if(!is.null(ARMcontainer[["AuditRiskModelParagraph"]])){
-    return()
-  } else {
-    if(options[["explanatoryText"]]){
-      materialityLevelLabel <- base::switch(options[["materiality"]], "materialityRelative" = paste0(round(options[["materialityPercentage"]], 10) * 100, "%"), "materialityAbsolute" = paste(jaspResults[["valutaTitle"]]$object, format(options[["materialityValue"]], scientific = FALSE)))
-      auditRiskLabel        <- paste0(round((1 - options[["confidence"]]) * 100, 2), "%")
-      dectectionRiskLabel   <- paste0(round(DR * 100, 2), "%")
-
-      message <- paste0("Prior to the substantive testing phase, the inherent risk was determined to be <b>", options[["IR"]] ,"</b>. The internal control risk was determined
-                                                                      to be <b>", options[["CR"]] ,"</b>. According to the Audit Risk Model, the required detection risk to maintain an audit risk of <b>", auditRiskLabel, "</b> for a materiality
-                                                                      of <b>", materialityLevelLabel ,"</b> should be <b>", dectectionRiskLabel , "</b>.")
-      if(options[["IR"]] == "Custom" || options[["CR"]] == "Custom"){
-        message <- paste0(message, " The translation of High, Medium and Low to probabilities is done according custom values</b>.")
-      } else {
-        message <- paste0(message, " The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>.")
-      }
-      ARMcontainer[["AuditRiskModelParagraph"]] <- createJaspHtml(message, "p")
-      ARMcontainer[["AuditRiskModelParagraph"]]$position <- 1
-      ARMcontainer[["AuditRiskModelParagraph"]]$dependOn(options = c("confidence", "IR", "CR", "materialityPercentage", "materialityValue", "valuta"))
-    }
-  }
-  jaspResults[["ARMcontainer"]] <- ARMcontainer
-  return(DR)
-}
-
-# The following function will be deprecated
-.ARMformula <- function(options, jaspResults, position = 2, ARMcontainer){
-
-    if(!is.null(ARMcontainer[["ARMformula"]])) return()
-
-    AR                      <- 1 - options[["confidence"]]
-
-    if(options[["IR"]] != "Custom"){
-      IR <- base::switch(options[["IR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
-    } else {
-      IR <- options[["irCustom"]]
-    }
-
-    if(options[["CR"]] != "Custom"){
-      CR <- base::switch(options[["CR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
-    } else {
-      CR <- options[["crCustom"]]
-    }
-
-    DR                      <- AR / IR / CR
-
-    jaspResults[["DR"]]     <- createJaspState(DR)
-    jaspResults[["DR"]]     $dependOn(options = c("IR", "CR", "confidence", "irCustom", "crCustom"))
-
-    text <- paste0("Audit risk (", round(AR * 100, 2),"%) = Inherent risk (", round(IR * 100, 2), "%) x Control risk (", round(CR * 100, 2), "%) x Detection risk (", round(DR * 100, 2), "%)")
-
-    ARMcontainer[["ARMformula"]] <- createJaspHtml(text, "h3")
-    ARMcontainer[["ARMformula"]]$position <- position
-    ARMcontainer[["ARMformula"]]$dependOn(options = c("IR", "CR", "confidence", "irCustom", "crCustom"))
-}
