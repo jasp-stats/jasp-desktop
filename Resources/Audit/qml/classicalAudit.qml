@@ -168,9 +168,9 @@ Form
 					name: 		"IR"
 					enabled:	!pasteVariables.checked
 
-					RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
-					RadioButton { text: qsTr("Medium");		name: "Medium" 					}
-					RadioButton { text: qsTr("Low"); 		name: "Low" 					}
+					RadioButton { text: qsTr("High"); 		name: "High"; checked: true	}
+					RadioButton { text: qsTr("Medium");		name: "Medium"}
+					RadioButton { text: qsTr("Low"); 			name: "Low"}
 					RadioButton
 					{
 						id: 								irCustom
@@ -268,9 +268,9 @@ Form
 					name: 		"CR"
 					enabled:	!pasteVariables.checked
 
-					RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
-					RadioButton { text: qsTr("Medium"); 	name: "Medium" 					}
-					RadioButton { text: qsTr("Low"); 		name: "Low" 					}
+					RadioButton { text: qsTr("High"); 		name: "High"; checked: true	}
+					RadioButton { text: qsTr("Medium"); 	name: "Medium"}
+					RadioButton { text: qsTr("Low"); 			name: "Low"}
 					RadioButton
 					{
 						id: 							crCustom
@@ -588,14 +588,14 @@ Form
 
 				IntegerField
 				{
-					id: 			seed
-					enabled:	!systematicSampling.checked
-					text: 			qsTr("Seed")
-					name: 			"seed"
-					defaultValue: 	1
-					min: 			1
-					max: 			999
-					fieldWidth: 	60
+					id: 							seed
+					enabled:					!systematicSampling.checked
+					text: 						qsTr("Seed")
+					name: 						"seed"
+					defaultValue: 		1
+					min: 							1
+					max: 							999
+					fieldWidth: 			60
 				}
 			}
 		}
@@ -845,13 +845,13 @@ Form
 
 			TableView
 			{
-				id:					performAuditTable
-				name:				"performAudit"
+				id:									performAuditTable
+				name:								"performAudit"
 				Layout.fillWidth: 	true
-				modelType:			"FilteredDataEntryModel"
-				source:     		["recordNumberVariable", "monetaryVariable", "additionalVariables"]
-                colName:			"Filter"
-				itemType:			"double"
+				modelType:					"FilteredDataEntryModel"
+				source:     				["recordNumberVariable", "monetaryVariable", "additionalVariables"]
+        colName:						"Filter"
+				itemType:						"double"
 			}
 		}
 
@@ -900,7 +900,7 @@ Form
 
 					if(variableTypeCorrect.checked)
 					{
-						if (poisson.checked) 				gammaBound.click()
+						if (poisson.checked) 				poissonBound.click()
 						if (binomial.checked) 			binomialBound.click()
 						if (hypergeometric.checked) hyperBound.click()
 					}
@@ -1016,9 +1016,9 @@ Form
 					
 					RadioButton 
 					{ 
-						name: "gammaBound"
+						name: "poissonBound"
 						text: qsTr("Poisson")
-						id: gammaBound
+						id: poissonBound
 						visible: variableTypeCorrect.checked && poisson.checked
 					}
 					

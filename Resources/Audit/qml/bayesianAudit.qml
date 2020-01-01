@@ -168,9 +168,25 @@ Form
 					name: 		"IR"
 					enabled:	!pasteVariables.checked
 
-					RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
-					RadioButton { text: qsTr("Medium");		name: "Medium" 					}
-					RadioButton { text: qsTr("Low"); 		name: "Low" 					}
+					RadioButton { text: qsTr("High"); 		name: "High"; checked: true	}
+					RadioButton { text: qsTr("Medium");		name: "Medium"}
+					RadioButton { text: qsTr("Low"); 			name: "Low"}
+					RadioButton
+					{
+						id: 								irCustom
+						text:	 							qsTr("Custom")
+						name: 							"Custom"
+						childrenOnSameRow: 	true
+
+						PercentField
+						{
+							name: 						"irCustom"
+							visible: 					irCustom.checked
+							decimals: 				2
+							defaultValue: 		100
+							min: 							25
+						}
+					}
 				}
 
 				RadioButtonGroup
@@ -237,6 +253,13 @@ Form
 							toolTip: 			"Show explanatory text at each step of the analysis"
 						}
 					}
+
+					CheckBox
+					{
+						text:	 		qsTr("Report badges")
+						name: 		"reportBadges"
+						checked: 	true
+					}
 				}
 
 				RadioButtonGroup
@@ -249,6 +272,22 @@ Form
 					RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
 					RadioButton { text: qsTr("Medium"); 	name: "Medium" 					}
 					RadioButton { text: qsTr("Low"); 		name: "Low" 					}
+					RadioButton
+					{
+						id: 							crCustom
+						text:	 						qsTr("Custom")
+						name: 						"Custom"
+						childrenOnSameRow: true
+
+						PercentField
+						{
+							name: 					"crCustom"
+							visible: 				crCustom.checked
+							decimals: 			2
+							defaultValue: 	100
+							min:						25
+						}
+					}
 				}
 
 				RadioButtonGroup
@@ -258,8 +297,27 @@ Form
 					name: 		"planningModel"
 					enabled:	!pasteVariables.checked
 
-					RadioButton { id: beta; 		text: qsTr("Beta"); 			name: "beta"; 			checked: true}
-					RadioButton { id: betaBinomial; text: qsTr("Beta-binomial"); 	name: "beta-binomial"}
+					RadioButton
+					{
+						id: 				beta
+						text: 			qsTr("Beta")
+						name: 			"binomial"
+						checked: 		true
+					}
+
+					RadioButton
+					{
+						id: 				gamma
+						text: 			qsTr("Gamma")
+						name: 			"Poisson"
+					}
+
+					RadioButton
+					{
+						id: 				betaBinomial
+						text: 			qsTr("Beta-binomial")
+						name: 			"hypergeometric"
+					}
 				}
 
 
@@ -325,6 +383,12 @@ Form
 							text: 		qsTr("Implicit sample")
 							name: 		"implicitSampleTable"
 						}
+
+						CheckBox
+						{
+							text: qsTr("Prior and posterior descriptives")
+							name: "priorStatistics"
+						}
 					}
 				}
 
@@ -348,35 +412,30 @@ Form
 
 					CheckBox
 					{
-						id: 		priorPlot
-						text: 		qsTr("Implied prior from risk assessments")
-						name: 		"priorPlot"
-					}
+						text: 								qsTr("Implied prior from risk assessments")
+						name: 								"priorPlot"
+						childrenOnSameRow: 		false
 
-					PercentField
-					{
-						text: 				qsTr("x-axis limit")
-						name: 				"priorPlotLimit"
-						defaultValue: 		100
-						Layout.leftMargin: 	20 * preferencesModel.uiScale
-						enabled: 			priorPlot.checked
-					}
+						PercentField
+						{
+							text: 							qsTr("x-axis limit")
+							name: 							"priorPlotLimit"
+							defaultValue: 			20
+						}
 
-					CheckBox
-					{
-						text: 				qsTr("Additional info")
-						name: 				"priorPlotAdditionalInfo"
-						Layout.leftMargin: 	20 * preferencesModel.uiScale
-						checked: 			true
-						enabled: 			priorPlot.checked
-					}
+						CheckBox
+						{
+							text: 							qsTr("Additional info")
+							name: 							"priorPlotAdditionalInfo"
+							checked: 						true
+						}
 
-					CheckBox {
-						text: 				qsTr("Expected posterior")
-						name: 				"priorPlotExpectedPosterior"
-						Layout.leftMargin: 	20 * preferencesModel.uiScale
-						checked: 			false
-						enabled: 			priorPlot.checked
+						CheckBox
+						{
+							text: 							qsTr("Expected posterior")
+							name: 							"priorPlotExpectedPosterior"
+							checked: 						false
+						}
 					}
 				}
 			}
@@ -581,13 +640,14 @@ Form
 
 				IntegerField
 				{
-					id: 			seed
-					text: 			qsTr("Seed")
-					name: 			"seed"
+					id: 						seed
+					enabled:				!systematicSampling.checked
+					text: 					qsTr("Seed")
+					name: 					"seed"
 					defaultValue: 	1
-					min: 			1
-					max: 			999
-					fieldWidth: 	60
+					min: 						1
+					max: 						999
+					fieldWidth: 		60
 				}
 			}
 		}
@@ -836,13 +896,13 @@ Form
 
 			TableView
 			{
-				id:					performAuditTable
-				name:				"performAudit"
+				id:									performAuditTable
+				name:								"performAudit"
 				Layout.fillWidth: 	true
-				modelType:			"FilteredDataEntryModel"
-        		source:     		["recordNumberVariable", "monetaryVariable", "additionalVariables"]
-                colName:    		"Filter"
-				itemType:			"double"
+				modelType:					"FilteredDataEntryModel"
+        source:     				["recordNumberVariable", "monetaryVariable", "additionalVariables"]
+        colName:    				"Filter"
+				itemType:						"double"
 			}
 		}
 
@@ -889,8 +949,9 @@ Form
 
 					if(variableTypeCorrect.checked)
 					{
-						if (beta.checked) 				betaBound.click()
+						if (beta.checked) 						betaBound.click()
 						if (betaBinomial.checked) 		betabinomialBound.click()
+						if (gamma.checked) 						gammaBound.click()
 					}
 				}
 			}
@@ -953,18 +1014,26 @@ Form
 
 					RadioButton
 					{
-						id: 		betaBound
+						id: 			betaBound
 						name: 		"betaBound"
 						text: 		qsTr("Beta")
-						visible: 	variableTypeCorrect.checked
+						visible: 	variableTypeCorrect.checked && beta.checked
 					}
 
 					RadioButton
 					{
-						id: 		betabinomialBound
+						id: 			gammaBound
+						name: 		"gammaBound"
+						text: 		qsTr("Gamma")
+						visible: 	variableTypeCorrect.checked && gamma.checked
+					}
+
+					RadioButton
+					{
+						id: 			betabinomialBound
 						name: 		"betabinomialBound"
 						text: 		qsTr("Beta-binomial")
-						visible: 	variableTypeCorrect.checked
+						visible: 	variableTypeCorrect.checked && betaBinomial.checked
 					}
 
 					RadioButton
@@ -1016,7 +1085,7 @@ Form
 
 					CheckBox
 					{
-						id: 		bayesFactor
+						id: 			bayesFactor
 						text: 		qsTr("Bayes factor\u208B\u208A")
 						name: 		"bayesFactor"
 						visible: 	!regressionBound.visible
@@ -1029,37 +1098,35 @@ Form
 
 					CheckBox
 					{
+						id: 							priorAndPosteriorPlot
+						text: 						qsTr("Prior and posterior")
+						name: 						"priorAndPosteriorPlot"
+						visible: 					!regressionBound.visible
+
+						PercentField
+						{
+							id: 						priorAndPosteriorPlotLimit
+							text: 					qsTr("x-axis limit")
+							defaultValue: 	20
+							name: 					"priorAndPosteriorPlotLimit"
+							visible:				!regressionBound.visible
+						}
+
+						CheckBox
+						{
+							id: 						priorAndPosteriorPlotAdditionalInfo
+							text: 					qsTr("Additional info")
+							name: 					"priorAndPosteriorPlotAdditionalInfo"
+							checked: 				true
+							enabled: 				priorAndPosteriorPlot.checked
+							visible:				!regressionBound.visible
+						}
+					}
+
+					CheckBox
+					{
 						text: 	qsTr("Evaluation information")
 						name: 	"evaluationInformation"
-					}
-
-					CheckBox
-					{
-						id: 		priorAndPosteriorPlot
-						text: 		qsTr("Prior and posterior")
-						name: 		"priorAndPosteriorPlot"
-						visible: 	!regressionBound.visible
-					}
-
-					PercentField
-					{
-						id: 				priorAndPosteriorPlotLimit
-						text: 				qsTr("x-axis limit")
-						defaultValue: 		20
-						name: 				"priorAndPosteriorPlotLimit"
-						Layout.leftMargin: 	20 * preferencesModel.uiScale
-						visible:			!regressionBound.visible
-					}
-
-					CheckBox
-					{
-						id: 					priorAndPosteriorPlotAdditionalInfo
-						text: 					qsTr("Additional info")
-						name: 					"priorAndPosteriorPlotAdditionalInfo"
-						Layout.leftMargin: 		20 * preferencesModel.uiScale
-						checked: 				true
-						enabled: 				priorAndPosteriorPlot.checked
-						visible:				!regressionBound.visible
 					}
 
 					CheckBox
