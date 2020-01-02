@@ -2484,6 +2484,8 @@
     if(options[["variableType"]] == "variableTypeCorrect"){
 
       method <- options[["planningModel"]]
+      if(method == "Poisson")
+        method <- "poisson"
 
       nSumstats <- nrow(sample)
       kSumstats <- length(which(sample[, .v(options[["auditResult"]])] == 1))
@@ -2564,7 +2566,9 @@
 
     if(options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
 
-      result[["confBound"]] <- (planningOptions[["populationValue"]] - result[["lowerBound"]]) / planningOptions[["populationValue"]]
+      result[["confBound"]] <- (planningOptions[["populationValue"]] - result[["lowerBound"]]) / 
+                               planningOptions[["populationValue"]]
+                               
       if(result[["confBound"]] < planningOptions[["materiality"]]){
         result[["conclusion"]] <- "Approve population"
       } else {
@@ -2715,22 +2719,86 @@
 
   if(type == "frequentist"){
 
-    boundTitle <- paste0(options[["confidence"]] * 100,"% Confidence bound")
+    auditRisk <- 1 - options[["confidence"]]
+
+    if(options[["IR"]] != "Custom"){
+
+      inherentRisk <- base::switch(options[["IR"]], 
+                                  "Low" = 0.50, 
+                                  "Medium" = 0.60, 
+                                  "High" = 1)
+
+    } else {
+
+      inherentRisk <- options[["irCustom"]]
+    }
+
+    if(options[["CR"]] != "Custom"){
+
+      controlRisk <- base::switch(options[["CR"]], 
+                                  "Low" = 0.50, 
+                                  "Medium" = 0.60, 
+                                  "High" = 1)
+
+    } else {
+
+      controlRisk <- options[["crCustom"]]
+
+    }
+
+    detectionRisk <- auditRisk / inherentRisk / controlRisk
+
+    boundTitle <- paste0(round((1 - detectionRisk) * 100, 2),"% Confidence bound")
+
+    evaluationTable$addColumnInfo(name = 'bound',         
+                              title = boundTitle, 
+                              type = 'string')
+
+    if(options[["monetaryVariable"]] != "")
+      evaluationTable$addColumnInfo(name = 'projm',         
+                                title = "Maximum Misstatement",           
+                                type = 'string')
 
   } else if(type == "bayesian"){
 
-    boundTitle <- paste0(options[["confidence"]] * 100,"% Credible bound")
-    
-  }
+    if(options[["areaUnderPosterior"]] == "displayCredibleBound"){
 
-  evaluationTable$addColumnInfo(name = 'bound',         
-                                title = boundTitle, 
-                                type = 'string')
-
-  if(options[["monetaryVariable"]] != "")
-    evaluationTable$addColumnInfo(name = 'projm',         
-                              title = "Maximum Misstatement",           
+      boundTitle <- paste0(options[["confidence"]] * 100,"% Credible bound")
+      evaluationTable$addColumnInfo(name = 'bound',         
+                              title = boundTitle, 
                               type = 'string')
+
+      if(options[["monetaryVariable"]] != "")
+        evaluationTable$addColumnInfo(name = 'projm',         
+                                  title = "Maximum Misstatement",           
+                                  type = 'string')
+
+    } else if (options[["areaUnderPosterior"]] == "displayCredibleInterval"){
+
+      boundTitle <- paste0(options[["confidence"]] * 100,"% Credible interval")
+      evaluationTable$addColumnInfo(name = 'lowerBound',  
+                              title = "Lower",       
+                              overtitle = boundTitle, 
+                              type = 'string')
+       evaluationTable$addColumnInfo(name = 'upperBound',  
+                              title = "Upper",       
+                              overtitle = boundTitle, 
+                              type = 'string')  
+
+      if(options[["monetaryVariable"]] != ""){
+
+        evaluationTable$addColumnInfo(name = 'lowerProjm',  
+                          title = "Lower",       
+                          overtitle = "Maximum Misstatement",           
+                          type = 'string') 
+        evaluationTable$addColumnInfo(name = 'upperProjm',  
+                                  title = "Upper",       
+                                  overtitle = "Maximum Misstatement",           
+                                  type = 'string')                           
+
+      }                                                       
+    }
+  }
 
   if(type == "bayesian" && options[["bayesFactor"]])
     evaluationTable$addColumnInfo(name = 'bf',
@@ -2746,10 +2814,10 @@
                           "directBound" = "The confidence bound is calculated according to the <b>direct</b> method.",
                           "differenceBound" = "The confidence bound is calculated according to the <b>difference</b> method.",
                           "ratioBound" = "The confidence bound is calculated according to the <b>ratio</b> method.",
-                          "betaBound" = "The confidence bound is calculated according to the <b>beta</b> distribution.",
-                          "gammaBound" = "The confidence bound is calculated according to the <b>gamma</b> distribution.",
-                          "betabinomialBound" = "The confidence bound is calculated according to the <b>beta-binomial</b> distribution.",
-                          "coxAndSnellBound" = "The confidence bound is calculated according to the <b>Cox and Snell</b> method.")
+                          "betaBound" = "The credible bound is calculated according to the <b>beta</b> distribution and requires the assumption that the sample taints are interchangeable.",
+                          "gammaBound" = "The credible bound is calculated according to the <b>gamma</b> distribution and requires the assumption that the sample taints are interchangeable.",
+                          "betabinomialBound" = "The credible bound is calculated according to the <b>beta-binomial</b> distribution and requires the assumption that the sample taints are interchangeable.",
+                          "coxAndSnellBound" = "The credible bound is calculated according to the <b>Cox and Snell</b> method and requires the assumption that the population taints are uniformly distributed.")
 
   if(options[["estimator"]] == "stringerBound" &&
       options[["stringerBoundLtaAdjustment"]])
@@ -2765,13 +2833,34 @@
     return()
 
   taintLabel <- round(evaluationState[["t"]], 2)
-  boundLabel <- paste0(round(evaluationState[["confBound"]] * 100, 3), "%")
 
-  row <- data.frame(materiality = planningOptions[["materialityLabel"]],
-                    sampleSize = evaluationState[["n"]],
-                    fullErrors = evaluationState[["k"]],
-                    totalTaint = taintLabel,
-                    bound = boundLabel)
+  if(type == "bayesian" && options[["areaUnderPosterior"]] == "displayCredibleInterval"){
+
+    credibleInterval <- .auditCalculateCredibleInterval(evaluationState)
+    lowerBound <- credibleInterval[["lowerBound"]]
+    upperBound <- credibleInterval[["upperBound"]]
+
+    LowerBoundLabel <- paste0(round(lowerBound * 100, 3), "%")
+    UpperBoundLabel <- paste0(round(upperBound * 100, 3), "%")
+
+    row <- data.frame(materiality = planningOptions[["materialityLabel"]],
+                      sampleSize = evaluationState[["n"]],
+                      fullErrors = evaluationState[["k"]],
+                      totalTaint = taintLabel,
+                      lowerBound = LowerBoundLabel,
+                      upperBound = UpperBoundLabel)    
+
+  } else {
+
+    boundLabel <- paste0(round(evaluationState[["confBound"]] * 100, 3), "%")
+
+    row <- data.frame(materiality = planningOptions[["materialityLabel"]],
+                      sampleSize = evaluationState[["n"]],
+                      fullErrors = evaluationState[["k"]],
+                      totalTaint = taintLabel,
+                      bound = boundLabel)
+
+  }
 
   if(options[["mostLikelyError"]]){
 
@@ -2840,12 +2929,28 @@
 
   if(options[["monetaryVariable"]] != ""){
 
-    projm <- round(evaluationState[["confBound"]] * 
-                   planningOptions[["populationValue"]], 2)
-    projmLabel <- paste(planningOptions[["valuta"]], projm)
-    row <- cbind(row, 
-                 projm = projmLabel)
+    if(type == "bayesian" && options[["areaUnderPosterior"]] == "displayCredibleInterval"){
 
+      lowerProjm <- round(lowerBound * 
+                          planningOptions[["populationValue"]], 2)
+      upperProjm <- round(upperBound * 
+                          planningOptions[["populationValue"]], 2) 
+      lowerProjmLabl <- paste(planningOptions[["valuta"]], lowerProjm)
+      upperProjmLabel <- paste(planningOptions[["valuta"]], upperProjm)
+
+      row <- cbind(row, 
+                  lowerProjm = lowerProjmLabl,
+                  upperProjm = upperProjmLabel) 
+
+    } else {
+
+      projm <- round(evaluationState[["confBound"]] * 
+                    planningOptions[["populationValue"]], 2)
+      projmLabel <- paste(planningOptions[["valuta"]], projm)
+      row <- cbind(row, 
+                  projm = projmLabel)
+
+    }
   }
 
   if(type == "bayesian" && options[["bayesFactor"]]){

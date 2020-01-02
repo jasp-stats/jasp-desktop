@@ -581,7 +581,7 @@
        planningContainer$getError()) 
       return()
 
-    xseq <- seq(0, options[["priorPlotLimit"]], 0.001)
+    xseq <- seq(0, options[["priorPlotLimit"]], 0.0001)
 
     if(planningState[["likelihood"]] == "binomial"){
 
@@ -970,7 +970,7 @@
         evaluationContainer$getError()) 
       return()
 
-    xseq <- seq(0, options[["priorAndPosteriorPlotLimit"]], 0.001)
+    xseq <- seq(0, options[["priorAndPosteriorPlotLimit"]], 0.0001)
 
     if(planningState[["likelihood"]] == "binomial"){
 
@@ -1199,6 +1199,16 @@
                                                                   stroke = 2, 
                                                                   color = "black")))
 
+      if(options[["areaUnderPosterior"]] == "displayCredibleInterval"){
+
+        credibleInterval <- .auditCalculateCredibleInterval(evaluationState)
+        functionLimits <- c(credibleInterval[["lowerBound"]], 
+                             credibleInterval[["upperBound"]])
+
+      } else if(options[["areaUnderPosterior"]] == "displayCredibleBound"){
+        functionLimits <- c(0, posteriorBound)
+      }                                                                  
+
       if(evaluationState[["method"]] == "coxsnell"){
 
         p <- p + ggplot2::stat_function(fun = jfa:::.dCoxAndSnellF, 
@@ -1207,7 +1217,7 @@
                                         df2 = evaluationState[["df2"]],
                                         multiplicationFactor = evaluationState[["multiplicationFactor"]] 
                                         ),
-                                xlim = c(0, posteriorBound),
+                                xlim = functionLimits,
                                 geom = "area", 
                                 fill = rgb(0, 0.25, 1, .5))
 
@@ -1222,7 +1232,7 @@
                                                            evaluationState[["n"]] - 
                                                            evaluationState[["t"]] 
                                                   ),
-                                          xlim = c(0, posteriorBound),
+                                          xlim = functionLimits,
                                           geom = "area", 
                                           fill = rgb(0, 0.25, 1, .5))
 
@@ -1235,14 +1245,14 @@
                                                 rate = evaluationState[["nPrior"]] + 
                                                        evaluationState[["n"]]
                                                 ),
-                                        xlim = c(0, posteriorBound),
+                                        xlim = functionLimits,
                                         geom = "area", 
                                         fill = rgb(0, 0.25, 1, .5))
 
       } else if(evaluationState[["method"]] == "hypergeometric"){
-
-        posteriorBound <- ceiling(posteriorBound * planningOptions[["populationSize"]])  
-        xseq <- xseq[1:(posteriorBound + 1)]
+ 
+        xseq <- xseq[(ceiling(functionLimits[1] * planningOptions[["populationSize"]]) + 1):
+                     (ceiling(functionLimits[2] * planningOptions[["populationSize"]]) + 1)]
         barData <- data.frame(x = xseq, 
                               y = jfa:::.dBetaBinom(x = xseq, 
                                                     N = planningOptions[["populationSize"]] - 
@@ -1369,7 +1379,7 @@
         evaluationContainer$getError()) {
 
         row <- data.frame(v = c("Prior", "Posterior", "Shift"))
-        priorStatisticsTable$addRows(row)
+        priorAndPosteriorStatisticsTable$addRows(row)
         return()
 
     }
@@ -1411,9 +1421,9 @@
                                 evaluationState[["N"]], 6)
 
       priorForm <- paste0("Beta-binomial(N = ",
-                          planningState[["N"]] - 
-                          planningState[["sampleSize"]] + 
-                          planningState[["expectedSampleError"]],
+                          evaluationState[["N"]] - 
+                          evaluationState[["k"]] + 
+                          evaluationState[["k"]],
                           ", \u03B1 = ", 
                           round(1 + evaluationState[["kPrior"]], 3),
                           ", \u03B2 = ",
@@ -1535,10 +1545,100 @@
   }
 }
 
+.auditCalculateCredibleInterval <- function(evaluationState){
+
+  lowerBoundConfidence <- (1 - evaluationState[["confidence"]]) / 2
+  upperBoundConfidence <- evaluationState[["confidence"]] + (1 - evaluationState[["confidence"]]) / 2
+
+  if(evaluationState[["method"]] == "poisson"){
+
+      lowerBound <- round(qgamma(p = lowerBoundConfidence, 
+                                shape = 1 + evaluationState[["kPrior"]] +
+                                        evaluationState[["t"]], 
+                                rate = evaluationState[["nPrior"]] + 
+                                       evaluationState[["n"]]), 6)
+
+      upperBound <- round(qgamma(p = upperBoundConfidence, 
+                                shape = 1 + evaluationState[["kPrior"]] +
+                                        evaluationState[["t"]], 
+                                rate = evaluationState[["nPrior"]] + 
+                                       evaluationState[["n"]]), 6)
+
+    } else if(evaluationState[["method"]] == "binomial"){
+
+      lowerBound <- round(qbeta(p = lowerBoundConfidence, 
+                                shape1 = 1 + evaluationState[["kPrior"]] +
+                                          evaluationState[["t"]], 
+                                shape2 = 1 + evaluationState[["nPrior"]] -
+                                         evaluationState[["kPrior"]] +
+                                         evaluationState[["n"]] - 
+                                         evaluationState[["t"]]), 6)
+
+      upperBound <- round(qbeta(p = upperBoundConfidence, 
+                                shape1 = 1 + evaluationState[["kPrior"]] +
+                                          evaluationState[["t"]], 
+                                shape2 = 1 + evaluationState[["nPrior"]] -
+                                         evaluationState[["kPrior"]] +
+                                         evaluationState[["n"]] - 
+                                         evaluationState[["t"]]), 6)                                         
+
+      
+    } else if(evaluationState[["method"]] == "hypergeometric"){
+
+      lowerBound <- round(jfa:::.qBetaBinom(p = lowerBoundConfidence, 
+                                      N = evaluationState[["N"]] - 
+                                          evaluationState[["n"]] + 
+                                          evaluationState[["k"]], 
+                                      shape1 = 1 + evaluationState[["kPrior"]] + 
+                                               evaluationState[["k"]], 
+                                      shape2 = 1 + evaluationState[["nPrior"]] -
+                                               evaluationState[["kPrior"]] +
+                                               evaluationState[["n"]] - 
+                                               evaluationState[["k"]]) / 
+                                  evaluationState[["N"]], 6)
+
+      upperBound <- round(jfa:::.qBetaBinom(p = upperBoundConfidence, 
+                                      N = evaluationState[["N"]] - 
+                                          evaluationState[["n"]] + 
+                                          evaluationState[["k"]], 
+                                      shape1 = 1 + evaluationState[["kPrior"]] + 
+                                               evaluationState[["k"]], 
+                                      shape2 = 1 + evaluationState[["nPrior"]] -
+                                               evaluationState[["kPrior"]] +
+                                               evaluationState[["n"]] - 
+                                               evaluationState[["k"]]) / 
+                                  evaluationState[["N"]], 6)                                  
+
+    } else if(evaluationState[["method"]] == "coxsnell"){
+
+      lowerBound <- round(evaluationState[["multiplicationFactor"]] * 
+                          qf(p = lowerBoundConfidence,
+                             df1 = evaluationState[["df1"]], 
+                             df2 = evaluationState[["df2"]]), 6)
+
+      upperBound <- round(evaluationState[["multiplicationFactor"]] * 
+                          qf(p = upperBoundConfidence,
+                             df1 = evaluationState[["df1"]], 
+                             df2 = evaluationState[["df2"]]), 6)
+      
+    } else if(evaluationState[["method"]] == "regression"){
+
+      lowerBound <- (evaluationState[["popBookvalue"]] - evaluationState[["lowerBound"]]) / 
+                     evaluationState[["popBookvalue"]]
+      upperBound <- (evaluationState[["popBookvalue"]] - evaluationState[["upperBound"]]) / 
+                     evaluationState[["popBookvalue"]]
+
+    }
+
+    results <- list(lowerBound = lowerBound,
+                    upperBound = upperBound)
+    return(results)
+}
+
 .auditBayesianRegression <- function(sample, 
-                                    confidence,
-                                    options,
-                                    planningOptions){
+                                     confidence,
+                                     options,
+                                     planningOptions){
 
   # Bayesian Linear Regression Using the BAS package
   sample <- stats::na.omit(sample)
@@ -1554,10 +1654,21 @@
   } else {
     
     basResult <- BAS::bas.lm(formula, data = sample)
-    basSummary <- BAS:::confint.coef.bas(coef(basResult)  , level = planningOptions[["confidence"]] - (1 - planningOptions[["confidence"]])) 
+    
+    if(options[["areaUnderPosterior"]] == "displayCredibleBound"){
+
+      basSummary <- BAS:::confint.coef.bas(coef(basResult), 
+                                           level = planningOptions[["confidence"]] - (1 - planningOptions[["confidence"]]))
+    
+    } else {
+
+      basSummary <- BAS:::confint.coef.bas(coef(basResult), 
+                                           level = planningOptions[["confidence"]])
+    
+    }
     
     betaStats <- as.numeric(basSummary[2, c(1,2, 3)]) 
-    
+
   }
   
   beta <- betaStats[3]
@@ -1597,37 +1708,10 @@
   results[["lowerBound"]] <- as.numeric(lowerBound)
   results[["upperBound"]] <- as.numeric(upperBound)
   results[["materiality"]] <- as.numeric(planningOptions[["materiality"]])
+
   return(results)
 }
 
 ################################################################################
 ################## End functions ###############################################
 ################################################################################
-
-
-# The following function will be deprecated
-.BF <- function(options, planningResult, jaspResults){
-  priorOdds         <- diff(pbeta(c(0, jaspResults[["materiality"]]$object), planningResult[["priorA"]], planningResult[["priorB"]])) / diff(pbeta(c(jaspResults[["materiality"]]$object, 1), planningResult[["priorA"]], planningResult[["priorB"]]))
-  posteriorOdds     <- diff(pbeta(c(0, jaspResults[["materiality"]]$object), planningResult[["posteriorA"]], planningResult[["posteriorB"]])) / diff(pbeta(c(jaspResults[["materiality"]]$object, 1), planningResult[["posteriorA"]], planningResult[["posteriorB"]]))
-  BF                <- round(posteriorOdds / priorOdds, 2)
-  return(BF)
-}
-
-# The following function will be deprecated
-.BFsamples <- function(options, evaluationResult, jaspResults){
-  set.seed(options[["seed"]])
-  prior             <- rbeta(n = 1e5, shape1 = evaluationResult[["priorA"]], shape2 = evaluationResult[["priorB"]])
-  posterior         <- evaluationResult[["mf"]] * rf(n = 1e5, df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]])
-  densprior         <- density(prior)
-  priorCDF          <- approxfun(densprior$x, densprior$y, yleft=0, yright=0)
-  priorLeft         <- integrate(priorCDF, lower = 0, upper = jaspResults[["materiality"]]$object)$value
-  priorRight        <- integrate(priorCDF, lower = jaspResults[["materiality"]]$object, upper = 1)$value
-  priorOdds         <- priorLeft / priorRight
-  densposterior     <- density(posterior)
-  posteriorCDF      <- approxfun(densposterior$x, densposterior$y, yleft=0, yright=0)
-  posteriorLeft     <- integrate(posteriorCDF, lower = 0, upper = jaspResults[["materiality"]]$object)$value
-  posteriorRight    <- integrate(posteriorCDF, lower = jaspResults[["materiality"]]$object, upper = 1)$value
-  posteriorOdds     <- posteriorLeft / posteriorRight
-  BF                <- round(posteriorOdds / priorOdds, 2)
-  return(BF)
-}

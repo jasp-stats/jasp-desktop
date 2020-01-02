@@ -94,12 +94,12 @@ auditBayesianPlanning <- function(jaspResults, dataset, options, ...){
                             positionInContainer = 3)
 
   # Cerate the prior and posterior statistics table
-  .auditPriorAndPosterStatisticsTable(options, 
-                                      planningState, 
-                                      planningContainer, 
-                                      jaspResults,
-                                      ready, 
-                                      positionInContainer = 4)
+  .auditPriorAndExpectedPosteriorStatisticsTable(options, 
+                                                 planningState, 
+                                                 planningContainer, 
+                                                 jaspResults,
+                                                 ready, 
+                                                 positionInContainer = 4)
 
   # ---
 

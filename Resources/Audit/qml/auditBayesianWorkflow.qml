@@ -487,6 +487,8 @@ Form
 					if (monetaryVariable.count > 0)   musSampling.click()
 					if (monetaryVariable.count == 0)  variableTypeCorrect.click()
 					if (monetaryVariable.count > 0)   variableTypeAuditValues.click()
+					
+					if (betaBinomial.checked)					variableTypeCorrect.click()
 				}
 			}
 		}
@@ -737,8 +739,8 @@ Form
 				{
 					executionChecked.checked = true
 
-					if (monetaryVariable.count == 0)	variableTypeCorrect.click()
-					else								variableTypeAuditValues.click()
+					if (monetaryVariable.count == 0 || betaBinomial.checked)	variableTypeCorrect.click()
+					else																											variableTypeAuditValues.click()
 				}
 			}
 		}
@@ -794,7 +796,7 @@ Form
 							text: 		qsTr("Audit values")
 							name: 		"variableTypeAuditValues"
 							checked: 	true
-							enabled: 	monetaryVariable.count > 0
+							enabled: 	monetaryVariable.count > 0 && !betaBinomial.checked
 						}
 
 						HelpButton { toolTip: "Adds a column to specify the audit value of the observations"; helpPage: "?" }
@@ -942,18 +944,13 @@ Form
 					executeAuditSection.expanded	= false
 					evaluationChecked.checked 		= true
 
-					if (musSampling.checked && variableTypeAuditValues.checked)
-						coxAndSnellBound.click()
+					if (beta.checked) 						betaBound.click()
+					if (betaBinomial.checked) 		betabinomialBound.click()
+					if (gamma.checked) 						gammaBound.click()
 
 					if (recordSampling.checked && variableTypeAuditValues.checked)
 						regressionBound.click()
 
-					if(variableTypeCorrect.checked)
-					{
-						if (beta.checked) 						betaBound.click()
-						if (betaBinomial.checked) 		betabinomialBound.click()
-						if (gamma.checked) 						gammaBound.click()
-					}
 				}
 			}
 		}
@@ -1007,14 +1004,6 @@ Form
 
 					RadioButton
 					{
-						id: 		coxAndSnellBound
-						name: 		"coxAndSnellBound"
-						text: 		qsTr("Cox and Snell")
-						visible: 	musSampling.checked && variableTypeAuditValues.checked
-					}
-
-					RadioButton
-					{
 						id: 			betaBound
 						name: 		"betaBound"
 						text: 		qsTr("Beta")
@@ -1035,6 +1024,14 @@ Form
 						name: 		"betabinomialBound"
 						text: 		qsTr("Beta-binomial")
 						visible: 	!regressionBound.visible && betaBinomial.checked
+					}
+
+					RadioButton
+					{
+						id: 		coxAndSnellBound
+						name: 		"coxAndSnellBound"
+						text: 		qsTr("Cox and Snell")
+						visible: 	musSampling.checked && variableTypeAuditValues.checked
 					}
 
 					RadioButton

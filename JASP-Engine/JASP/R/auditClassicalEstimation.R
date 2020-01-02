@@ -32,11 +32,11 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
   ready <- .auditClassicalEstimationReady(options)
 
   # Create explanatory text
-  .auditClassicalEstimation(dataset, 
-                            options, 
-                            jaspResults, 
-                            ready, 
-                            position = 1)
+  .auditClassicalEstimationParagraph(dataset, 
+                                     options, 
+                                     jaspResults, 
+                                     ready, 
+                                     position = 1)
 
   # --- TABLES
   
@@ -59,11 +59,11 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
   # --- PLOTS
   
   # Correlation plot
-  .auditCorrelationPlot(dataset, 
-                        options, 
-                        jaspResults, 
-                        ready, 
-                        position = 4)
+  .auditEstimationCorrelationPlot(dataset, 
+                                  options, 
+                                  jaspResults, 
+                                  ready, 
+                                  position = 4)
 
   # ---
   
@@ -354,11 +354,11 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
   jaspResults[["result"]] <- createJaspState(result)
 }
 
-.auditClassicalEstimation <- function(dataset, 
-                                      options, 
-                                      jaspResults, 
-                                      ready, 
-                                      position){
+.auditClassicalEstimationParagraph <- function(dataset, 
+                                               options, 
+                                               jaspResults, 
+                                               ready, 
+                                               position){
 
   if(options[["explanatoryText"]] || !is.null(jaspResults[["calculationsContainer"]])){
 
@@ -751,11 +751,11 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
 
 }
 
-.auditCorrelationPlot <- function(dataset, 
-                                  options, 
-                                  jaspResults, 
-                                  ready, 
-                                  position){
+.auditEstimationCorrelationPlot <- function(dataset, 
+                                            options, 
+                                            jaspResults, 
+                                            ready, 
+                                            position){
 
   if(!is.null(jaspResults[["correlationPlot"]]) || !options[["correlationPlot"]] || options[["estimator"]] == "mpu") return()
 
@@ -798,7 +798,12 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
 
   p <- JASPgraphs::drawAxis(xName = "Book values", yName = "Audit values", xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
   p <- JASPgraphs::drawPoints(p, dat = d, size = 3, fill = cols)
-  p <- .poly.predJfA(fit[[bestModel]], plot = p, line= TRUE, xMin= xticks[1], xMax= xticks[length(xticks)], lwd = 1)
+  p <- .auditCorrelationPlotAddLine(fit = fit[[bestModel]], 
+                                  plot = p, 
+                                  line = TRUE, 
+                                  xMin= xticks[1], 
+                                  xMax = xticks[length(xticks)], 
+                                  lwd = 1)
   p <- p + ggplot2::annotate("text", x = xticks[1], y = (yticks[length(yticks)] - ((yticks[length(yticks)] - yticks[length(yticks) - 1]) / 2)),
                               label = paste0("italic(r) == ", co), size = 8, parse = TRUE, hjust = -0.5, vjust = 0.5)
   p <- p + ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color="#cbcbcb"), panel.grid.major.y = ggplot2::element_line(color="#cbcbcb"))
@@ -814,6 +819,7 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
                                         of the book values and the audit values, an indicator of the strengh of the linear relationship between the two variables."), "p")
       figure1$position <- position + 1
       figure1$dependOn(optionsFromObject = correlationPlot)
+      figure1$dependOn(options = "explanatoryText")
       jaspResults[["figure1"]] <- figure1
   }
 }
