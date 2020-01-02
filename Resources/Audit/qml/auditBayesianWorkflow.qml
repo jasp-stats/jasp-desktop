@@ -1018,7 +1018,7 @@ Form
 						id: 			betaBound
 						name: 		"betaBound"
 						text: 		qsTr("Beta")
-						visible: 	variableTypeCorrect.checked && beta.checked
+						visible: 	!regressionBound.visible && beta.checked
 					}
 
 					RadioButton
@@ -1026,7 +1026,7 @@ Form
 						id: 			gammaBound
 						name: 		"gammaBound"
 						text: 		qsTr("Gamma")
-						visible: 	variableTypeCorrect.checked && gamma.checked
+						visible: 	!regressionBound.visible && gamma.checked
 					}
 
 					RadioButton
@@ -1034,7 +1034,7 @@ Form
 						id: 			betabinomialBound
 						name: 		"betabinomialBound"
 						text: 		qsTr("Beta-binomial")
-						visible: 	variableTypeCorrect.checked && betaBinomial.checked
+						visible: 	!regressionBound.visible && betaBinomial.checked
 					}
 
 					RadioButton

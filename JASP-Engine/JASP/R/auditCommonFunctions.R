@@ -2510,7 +2510,10 @@
                               "directBound"       = "direct",
                               "differenceBound"   = "difference",
                               "ratioBound"        = "quotient",
-                              "coxAndSnellBound"  = "coxsnell")
+                              "coxAndSnellBound"  = "coxsnell",
+                              "betaBound"         = "binomial",
+                              "gammaBound"        = "poisson",
+                              "betaBinomialBound" = "hypergeometric")
 
       if(method == "stringer" && options[["stringerBoundLtaAdjustment"]])
         method <- "stringer-lta"
@@ -2710,8 +2713,18 @@
                                   title = "MLE", 
                                   type = 'string')
 
+  if(type == "frequentist"){
+
+    boundTitle <- paste0(options[["confidence"]] * 100,"% Confidence bound")
+
+  } else if(type == "bayesian"){
+
+    boundTitle <- paste0(options[["confidence"]] * 100,"% Credible bound")
+    
+  }
+
   evaluationTable$addColumnInfo(name = 'bound',         
-                                title = paste0(options[["confidence"]] * 100,"% Confidence bound"), 
+                                title = boundTitle, 
                                 type = 'string')
 
   if(options[["monetaryVariable"]] != "")

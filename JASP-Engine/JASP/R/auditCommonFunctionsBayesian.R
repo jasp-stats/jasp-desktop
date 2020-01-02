@@ -243,15 +243,15 @@
   } else if(evaluationState[["method"]] == "hypergeometric"){
 
     postH1 <- sum(jfa:::.dBetaBinom(x = tolerableE, 
-                                  N = evaluationState[["N"]] - 
-                                      evaluationState[["n"]] + 
-                                      evaluationState[["k"]], 
-                                  shape1 = 1 + evaluationState[["kPrior"]] + 
-                                            evaluationState[["k"]], 
-                                  shape2 = 1 + evaluationState[["nPrior"]] -
-                                            evaluationState[["kPrior"]] + 
-                                            evaluationState[["n"]] - 
-                                            evaluationState[["k"]]))
+                                    N = evaluationState[["N"]] - 
+                                        evaluationState[["n"]] + 
+                                        evaluationState[["k"]], 
+                                    shape1 = 1 + evaluationState[["kPrior"]] + 
+                                              evaluationState[["k"]], 
+                                    shape2 = 1 + evaluationState[["nPrior"]] -
+                                              evaluationState[["kPrior"]] + 
+                                              evaluationState[["n"]] - 
+                                              evaluationState[["k"]]))
 
     postH0 <- sum(jfa:::.dBetaBinom(x = intolerableE, 
                                      N = evaluationState[["N"]] - 
@@ -1381,9 +1381,9 @@
                                   rate = evaluationState[["nPrior"]]), 6)
 
       priorForm <- paste0("Gamma(\u03B1 = ", 
-                          1 + evaluationState[["kPrior"]],
+                          round(1 + evaluationState[["kPrior"]], 3),
                           ", \u03B2 = ",
-                          evaluationState[["nPrior"]],
+                          round(evaluationState[["nPrior"]], 3),
                           ")")
 
     } else if(planningOptions[["likelihood"]] == "binomial"){
@@ -1394,29 +1394,31 @@
                                          evaluationState[["kPrior"]]), 6)
 
       priorForm <- paste0("Beta(\u03B1 = ", 
-                          1 + evaluationState[["kPrior"]],
+                          round(1 + evaluationState[["kPrior"]], 3),
                           ", \u03B2 = ",
-                          1 + evaluationState[["nPrior"]],
+                          round(1 + evaluationState[["nPrior"]], 3),
                           ")")
 
     } else if(planningOptions[["likelihood"]] == "hypergeometric"){
 
       priorBound <- round(jfa:::.qBetaBinom(p = options[["confidence"]], 
-                                  N = planningState[["N"]] - 
-                                      planningState[["sampleSize"]] + 
-                                      planningState[["expectedSampleError"]], 
-                                  shape1 = planningState[["prior"]]$aPrior, 
-                                  shape2 = planningState[["prior"]]$bPrior) / 
-                      planningState[["N"]], 6)
+                                  N = evaluationState[["N"]] - 
+                                      evaluationState[["n"]] + 
+                                      evaluationState[["k"]], 
+                                  shape1 = 1 + evaluationState[["kPrior"]], 
+                                  shape2 = 1 + evaluationState[["nPrior"]] -
+                                           evaluationState[["kPrior"]]) / 
+                                evaluationState[["N"]], 6)
 
       priorForm <- paste0("Beta-binomial(N = ",
                           planningState[["N"]] - 
                           planningState[["sampleSize"]] + 
                           planningState[["expectedSampleError"]],
                           ", \u03B1 = ", 
-                          planningState[["prior"]]$aPrior,
+                          round(1 + evaluationState[["kPrior"]], 3),
                           ", \u03B2 = ",
-                          planningState[["prior"]]$bPrior,
+                          round(1 + evaluationState[["nPrior"]] - 
+                                evaluationState[["kPrior"]], 3),
                           ")")
 
     }
@@ -1430,11 +1432,11 @@
                                        evaluationState[["n"]]), 6)
 
       posteriorForm <- paste0("Gamma(\u03B1 = ", 
-                              evaluationState[["kPrior"]] + 
-                              evaluationState[["t"]],
+                              round(evaluationState[["kPrior"]] + 
+                                    evaluationState[["t"]], 3),
                               ", \u03B2 = ",
-                              evaluationState[["nPrior"]] +
-                              evaluationState[["n"]],
+                              round(evaluationState[["nPrior"]] +
+                                    evaluationState[["n"]], 3),
                               ")")
 
     } else if(evaluationState[["method"]] == "binomial"){
@@ -1448,38 +1450,40 @@
                                          evaluationState[["t"]]), 6)
 
       posteriorForm <- paste0("Beta(\u03B1 = ", 
-                              1 + evaluationState[["kPrior"]] + 
-                              evaluationState[["t"]],
+                              round(1 + evaluationState[["kPrior"]] + 
+                                    evaluationState[["t"]], 3),
                               ", \u03B2 = ",
-                              1 + evaluationState[["nPrior"]] +
-                              evaluationState[["n"]] -
-                              evaluationState[["t"]],
+                              round(1 + evaluationState[["nPrior"]] +
+                                    evaluationState[["n"]] -
+                                    evaluationState[["t"]], 3),
                               ")")
       
     } else if(evaluationState[["method"]] == "hypergeometric"){
 
       postBound <- round(jfa:::.qBetaBinom(p = options[["confidence"]], 
-                                      N = planningState[["N"]] - 
-                                        planningState[["sampleSize"]] + 
-                                        planningState[["expectedSampleError"]], 
-                                      shape1 = planningState[["prior"]]$aPrior + 
-                                              planningState[["expectedSampleError"]], 
-                                      shape2 = planningState[["prior"]]$bPrior +
-                                              planningState[["sampleSize"]] - 
-                                              planningState[["expectedSampleError"]]) / 
-                          planningState[["N"]], 6)
+                                      N = evaluationState[["N"]] - 
+                                          evaluationState[["n"]] + 
+                                          evaluationState[["k"]], 
+                                      shape1 = 1 + evaluationState[["kPrior"]] + 
+                                               evaluationState[["k"]], 
+                                      shape2 = 1 + evaluationState[["nPrior"]] -
+                                               evaluationState[["kPrior"]] +
+                                               evaluationState[["n"]] - 
+                                               evaluationState[["k"]]) / 
+                                  evaluationState[["N"]], 6)
 
       posteriorForm <- paste0("Beta-binomial(N = ", 
-                              planningState[["N"]] - 
-                              planningState[["sampleSize"]] + 
-                              planningState[["expectedSampleError"]],
+                              evaluationState[["N"]] - 
+                              evaluationState[["n"]] + 
+                              evaluationState[["k"]],
                               ", \u03B1 = ",
-                              planningState[["prior"]]$aPrior + 
-                              planningState[["expectedSampleError"]],
+                              round(1 + evaluationState[["kPrior"]] + 
+                                    evaluationState[["k"]], 3),
                               ", \u03B2 = ",
-                              planningState[["prior"]]$bPrior +
-                              planningState[["sampleSize"]] -
-                              planningState[["expectedSampleError"]],
+                              round(1 + evaluationState[["nPrior"]] -
+                                    evaluationState[["kPrior"]] +
+                                    evaluationState[["n"]] - 
+                                    evaluationState[["k"]], 3),
                               ")")   
 
     } else if(evaluationState[["method"]] == "coxsnell"){
