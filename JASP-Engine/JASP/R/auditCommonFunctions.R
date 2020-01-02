@@ -719,12 +719,12 @@
                               positionInContainer = 3)
 
     # Cerate the prior and posterior statistics table
-    .auditPriorAndPosterStatisticsTable(options, 
-                                        planningState, 
-                                        planningContainer, 
-                                        jaspResults,
-                                        ready, 
-                                        positionInContainer = 4)
+    .auditPriorAndExpectedPosteriorStatisticsTable(options, 
+                                                   planningState, 
+                                                   planningContainer, 
+                                                   jaspResults,
+                                                   ready, 
+                                                   positionInContainer = 4)
 
   }
 
@@ -1289,7 +1289,7 @@
 
   if(type == "bayesian" && options[["expectedBF"]]){
 
-    BFresult <- .expectedBF(planningState)
+    BFresult <- .auditExpectedBayesFactor(planningState)
     expectedBF <- BFresult[["expectedBF"]]
     row <- cbind(row, expBF = expectedBF)
   
@@ -1942,10 +1942,10 @@
   selectionInformationTable <- createJaspTable(tableTitle)
   selectionInformationTable$position <- positionInContainer
   selectionInformationTable$dependOn(options = c("bookValueDescriptives",
-                                                "sampleDescriptives",
-                                                "displaySample",
-                                                "samplingChecked",
-                                                "evaluationChecked"))
+                                                 "sampleDescriptives",
+                                                 "displaySample",
+                                                 "samplingChecked",
+                                                 "evaluationChecked"))
   
   selectionInformationTable$addColumnInfo(name = "size", 
                                           title ="Selection size", 
@@ -2318,6 +2318,17 @@
                                type,
                                positionInContainer = 2)
 
+  if(type == "bayesian"){
+
+    .auditPriorAndPosteriorStatisticsTable(options, 
+                                           planningOptions,
+                                           evaluationState, 
+                                           evaluationContainer, 
+                                           jaspResults,
+                                           positionInContainer = 3)
+
+  }
+
   # ---
 
   # --- PLOTS
@@ -2331,7 +2342,7 @@
                                       evaluationState,
                                       evaluationContainer,
                                       jaspResults,
-                                      positionInContainer = 3)
+                                      positionInContainer = 4)
 
   }
 
@@ -2341,7 +2352,8 @@
                                   evaluationState,
                                   evaluationContainer,
                                   jaspResults,
-                                  positionInContainer = 5)
+                                  type,
+                                  positionInContainer = 6)
 
   # Create a plot containing the correlation between the book and audit values
   .auditCorrelationPlot(options,
@@ -2349,7 +2361,7 @@
                         sample,
                         evaluationContainer,
                         jaspResults,
-                        positionInContainer = 7)
+                        positionInContainer = 8)
 
   # ---
 }
@@ -2455,7 +2467,7 @@
       confidence <- 1 - detectionRisk
       prior <- NULL
 
-    } else {
+    } else if(type == "bayesian"){
 
       prior <- jfa::auditPrior(materiality = planningOptions[["materiality"]], 
                               confidence = planningOptions[["confidence"]],
@@ -2508,20 +2520,36 @@
         confidence <- confidence + ((1 - confidence) / 2)
       }
 
-      result <- try({
-      
-        # call jfa evaluation
-        jfa::evaluation(sample = sample,
-                        confidence = confidence,
-                        bookValues = .v(options[["monetaryVariable"]]),
-                        auditValues = .v(options[["auditResult"]]),
-                        method = method,
-                        materiality = planningOptions[["materiality"]],
-                        N = planningOptions[["populationSize"]],
-                        populationBookValue = planningOptions[["populationValue"]],
-                        prior = prior)
+      # Bayesian regression is not implemented in jfa R package
+      if(type == "bayesian" && method == "regression"){
 
-      })
+        result <- try({
+      
+          .auditBayesianRegression(sample, 
+                                   confidence,
+                                   options,
+                                   planningOptions)
+
+        })
+
+      } else {
+
+        result <- try({
+        
+          # call jfa evaluation
+          jfa::evaluation(sample = sample,
+                          confidence = confidence,
+                          bookValues = .v(options[["monetaryVariable"]]),
+                          auditValues = .v(options[["auditResult"]]),
+                          method = method,
+                          materiality = planningOptions[["materiality"]],
+                          N = planningOptions[["populationSize"]],
+                          populationBookValue = planningOptions[["populationValue"]],
+                          prior = prior)
+
+        })
+
+      }
     }
 
     if(isTryError(result)){
@@ -2660,7 +2688,9 @@
                                         "samplingChecked",
                                         "evaluationChecked",
                                         "auditResult",
-                                        "bayesFactor"))
+                                        "bayesFactor",
+                                        "valuta",
+                                        "otherValutaName"))
 
   evaluationTable$addColumnInfo(name = 'materiality',   
                                 title = "Materiality",
@@ -2695,35 +2725,22 @@
                                   type = 'string')
 
   message <- base::switch(options[["estimator"]],
-                          "poissonBound" = "The confidence bound is calculated 
-                          according to the <b>Poisson</b> distributon.",
-                          "binomialBound" = "The confidence bound is calculated 
-                          according to the <b>binomial</b> distributon.",
-                          "hyperBound" = "The confidence bound is calculated 
-                          according to the <b>hypergeometric</b> distribution.",
-                          "stringerBound" = "The confidence bound is calculated 
-                          according to the <b>Stringer</b> method.",
-                          "regressionBound" = "The confidence bound is calculated 
-                          according to the <b>regression</b> method.",
-                          "directBound" = "The confidence bound is calculated 
-                          according to the <b>direct</b> method.",
-                          "differenceBound" = "The confidence bound is calculated 
-                          according to the <b>difference</b> method.",
-                          "ratioBound" = "The confidence bound is calculated 
-                          according to the <b>ratio</b> method.",
-                          "betaBound" = "The confidence bound is calculated
-                          according to the <b>beta</b> distribution.",
-                          "gammaBound" = "The confidence bound is calculated
-                          according to the <b>gamma</b> distribution.",
-                          "betabinomialBound" = "The confidence bound is calculated
-                          according to the <b>beta-binomial</b> distribution.",
-                          "coxAndSnellBound" = "The confidence bound is calculated
-                          according to the <b>Cox and Snell</b> method.")
+                          "poissonBound" = "The confidence bound is calculated according to the <b>Poisson</b> distributon.",
+                          "binomialBound" = "The confidence bound is calculated according to the <b>binomial</b> distributon.",
+                          "hyperBound" = "The confidence bound is calculated according to the <b>hypergeometric</b> distribution.",
+                          "stringerBound" = "The confidence bound is calculated according to the <b>Stringer</b> method.",
+                          "regressionBound" = "The confidence bound is calculated according to the <b>regression</b> method.",
+                          "directBound" = "The confidence bound is calculated according to the <b>direct</b> method.",
+                          "differenceBound" = "The confidence bound is calculated according to the <b>difference</b> method.",
+                          "ratioBound" = "The confidence bound is calculated according to the <b>ratio</b> method.",
+                          "betaBound" = "The confidence bound is calculated according to the <b>beta</b> distribution.",
+                          "gammaBound" = "The confidence bound is calculated according to the <b>gamma</b> distribution.",
+                          "betabinomialBound" = "The confidence bound is calculated according to the <b>beta-binomial</b> distribution.",
+                          "coxAndSnellBound" = "The confidence bound is calculated according to the <b>Cox and Snell</b> method.")
 
   if(options[["estimator"]] == "stringerBound" &&
       options[["stringerBoundLtaAdjustment"]])
-  message <- "The confidence bound is calculated according to the <b>Stringer</b>
-              method with <b>LTA adjustment</b>."
+  message <- "The confidence bound is calculated according to the <b>Stringer</b> method with <b>LTA adjustment</b>."
 
   evaluationTable$addFootnote(message = message, 
                               symbol="<i>Note.</i>")
@@ -2747,12 +2764,50 @@
 
     if(options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
 
-      mle <- (planningOptions[["populationValue"]] - evaluationState[["pointEstimate"]]) / planningOptions[["populationValue"]]
+      mle <- (planningOptions[["populationValue"]] - evaluationState[["pointEstimate"]]) / 
+              planningOptions[["populationValue"]]
     
     } else {
 
-      mle <- evaluationState[["t"]] / evaluationState[["n"]]
+      if(type == "frequentist"){
 
+        mle <- evaluationState[["t"]] / evaluationState[["n"]]
+
+      } else if(type == "bayesian"){
+
+        if(evaluationState[["t"]] == 0 && evaluationState[["kPrior"]] == 0){
+
+          mle <- 0
+
+        } else {
+
+          if(evaluationState[["method"]] == "binomial")
+            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) /
+                    (evaluationState[["kPrior"]] + evaluationState[["t"]] +
+                      evaluationState[["nPrior"]] + evaluationState[["n"]] -
+                      evaluationState[["t"]] - 2)
+
+          if(evaluationState[["method"]] == "poisson")
+            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) / 
+                    (evaluationState[["nPrior"]] + evaluationState[["n"]])
+
+          if(evaluationState[["method"]] == "hypergeometric")
+            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]]) / 
+                    (evaluationState[["kPrior"]] + evaluationState[["t"]] +
+                    evaluationState[["nPrior"]] + evaluationState[["n"]] -
+                    evaluationState[["t"]])
+
+          if(evaluationState[["method"]] == "coxsnell")
+            mle <- evaluationState[["multiplicationFactor"]] * 
+                    ( (evaluationState[["df1"]] - 2)  / 
+                       evaluationState[["df1"]] 
+                    ) * 
+                    ( evaluationState[["df2"]] / 
+                      (evaluationState[["df2"]] + 2) 
+                    )
+
+        }
+      }
     }
 
     if(options[["materiality"]] == "materialityRelative"){
@@ -2779,6 +2834,15 @@
                  projm = projmLabel)
 
   }
+
+  if(type == "bayesian" && options[["bayesFactor"]]){
+
+    BFresult <- .auditBayesFactor(planningOptions, 
+                                  evaluationState)
+    bf <- BFresult[["BF"]]
+    row <- cbind(row, bf = bf)
+  
+  }
   
   evaluationTable$addRows(row)
 }
@@ -2788,6 +2852,7 @@
                                             evaluationState,
                                             evaluationContainer,
                                             jaspResults,
+                                            type,
                                             positionInContainer = 3){
 
   if(!options[["evaluationInformation"]]) 
@@ -2812,7 +2877,54 @@
 
     materiality <- evaluationState[["materiality"]]
     bound <- evaluationState[["confBound"]]
-    mle <- evaluationState[["t"]] / evaluationState[["n"]]
+    
+    if(options[["estimator"]] %in% c("directBound", "differenceBound", "ratioBound", "regressionBound")){
+
+      mle <- (planningOptions[["populationValue"]] - evaluationState[["pointEstimate"]]) / 
+              planningOptions[["populationValue"]]
+    
+    } else {
+
+      if(type == "frequentist"){
+
+        mle <- evaluationState[["t"]] / evaluationState[["n"]]
+
+      } else if(type == "bayesian"){
+
+        if(evaluationState[["t"]] == 0 && evaluationState[["kPrior"]] == 0){
+
+          mle <- 0
+
+        } else {
+
+          if(evaluationState[["method"]] == "binomial")
+            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) /
+                    (evaluationState[["kPrior"]] + evaluationState[["t"]] +
+                      evaluationState[["nPrior"]] + evaluationState[["n"]] -
+                      evaluationState[["t"]] - 2)
+
+          if(evaluationState[["method"]] == "poisson")
+            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) / 
+                    (evaluationState[["nPrior"]] + evaluationState[["n"]])
+
+          if(evaluationState[["method"]] == "hypergeometric")
+            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]]) / 
+                    (evaluationState[["kPrior"]] + evaluationState[["t"]] +
+                    evaluationState[["nPrior"]] + evaluationState[["n"]] -
+                    evaluationState[["t"]])
+
+          if(evaluationState[["method"]] == "coxsnell")
+            mle <- evaluationState[["multiplicationFactor"]] * 
+                    ( (evaluationState[["df1"]] - 2)  / 
+                       evaluationState[["df1"]] 
+                    ) * 
+                    ( evaluationState[["df2"]] / 
+                      (evaluationState[["df2"]] + 2) 
+                    )
+
+        }
+      }
+    }
   
     label <- rev(c("Materiality", "Maximum error", "Most likely error"))
     values <- rev(c(materiality, bound, mle))
@@ -2822,8 +2934,8 @@
       values <- values * planningOptions[["populationValue"]]
     
     boundColor <- ifelse(bound < materiality, 
-                        yes = rgb(0,1,.7,1), 
-                        no = rgb(1,0,0,1))
+                         yes = rgb(0, 1, .7, 1), 
+                         no = rgb(1, 0, 0, 1))
 
     fillUp <- rev(c("#1380A1", boundColor, "#1380A1"))
 
@@ -2853,7 +2965,8 @@
     plotData$x <- factor(plotData$x, levels = plotData$x)
 
     yLimits <- c(0, 1.1 * max(values))
-    yBreaks <- JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1 * max(values), length.out = 100), min.n = 4)
+    yBreaks <- JASPgraphs::getPrettyAxisBreaks(seq(0, 1.1 * max(values), length.out = 100), 
+                                               min.n = 4)
 
     p <- ggplot2::ggplot(data = plotData, 
                         mapping = ggplot2::aes(x = x, y = y)) +
@@ -2891,7 +3004,7 @@
 
     evaluationInformationText <- createJaspHtml(paste0("<b>Figure ", 
                                                 jaspResults[["figNumber"]]$object,
-                                                ".</b> Evaluation information regarding the evaluation of the selection. The materiality is compared with the 
+                                                ".</b> Evaluation information for the current annotated selection. The materiality is compared with the 
                                                 maximum misstatement and the most likely error. The most likely error (MLE) is an estimate of the true misstatement 
                                                 in the population. The maximum error is an estimate of the maximum error in the population."), "p")
     

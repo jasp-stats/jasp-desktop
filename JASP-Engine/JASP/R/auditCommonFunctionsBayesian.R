@@ -22,7 +22,7 @@
 ################## Functions for Bayes factors #################################
 ################################################################################
 
-.expectedBF <- function(planningState){
+.auditExpectedBayesFactor <- function(planningState){
 
   # For calculation of the Bayes factor, the area below materiality is 
   # regarded to be H1 and the area equal to and above materiality is regarded
@@ -149,6 +149,151 @@
   return(result)
 }
 
+.auditBayesFactor <- function(planningOptions,
+                              evaluationState){
+
+  # For calculation of the Bayes factor, the area below materiality is 
+  # regarded to be H1 and the area equal to and above materiality is regarded
+  # to be H0.
+
+  if(planningOptions[["likelihood"]] == "poisson"){
+
+    priorH1 <- diff(pgamma(c(0, evaluationState[["materiality"]]), 
+                           shape = 1 + evaluationState[["kPrior"]], 
+                           rate = evaluationState[["nPrior"]]))
+
+    priorH0 <- diff(pgamma(c(evaluationState[["materiality"]], 1), 
+                           shape = 1 + evaluationState[["kPrior"]], 
+                           rate = evaluationState[["nPrior"]]))
+    
+  } else if(planningOptions[["likelihood"]] == "binomial"){
+
+    priorH1 <- diff(pbeta(c(0, evaluationState[["materiality"]]), 
+                          shape1 = 1 + evaluationState[["kPrior"]], 
+                          shape2 = 1 + evaluationState[["nPrior"]] - 
+                                   evaluationState[["kPrior"]]))
+
+    priorH0 <- diff(pbeta(c(evaluationState[["materiality"]], 1), 
+                          shape1 = 1 + evaluationState[["kPrior"]], 
+                          shape2 = 1 + evaluationState[["nPrior"]] - 
+                                   evaluationState[["kPrior"]]))
+                
+
+  } else if(planningOptions[["likelihood"]] == "hypergeometric"){
+
+    tolerableE <- 0:floor(evaluationState[["materiality"]] * 
+                          evaluationState[["N"]])
+
+    intolerableE <- (max(tolerableE) + 1):(evaluationState[["N"]]  - 
+                                           evaluationState[["n"]] + 
+                                           evaluationState[["k"]])
+
+    priorH1 <- sum(jfa:::.dBetaBinom(x = tolerableE, 
+                                      N = evaluationState[["N"]] - 
+                                          evaluationState[["n"]] + 
+                                          evaluationState[["k"]], 
+                                      shape1 = 1 + evaluationState[["kPrior"]], 
+                                      shape2 = 1 + evaluationState[["nPrior"]] - 
+                                               evaluationState[["kPrior"]]))
+
+    priorH0 <- sum(jfa:::.dBetaBinom(x = intolerableE, 
+                                      N = evaluationState[["N"]] - 
+                                          evaluationState[["n"]] + 
+                                          evaluationState[["k"]], 
+                                      shape1 = 1 + evaluationState[["kPrior"]], 
+                                      shape2 = 1 + evaluationState[["nPrior"]] - 
+                                               evaluationState[["kPrior"]]))
+
+  } 
+
+  priorOdds <- priorH1 / priorH0
+
+  if(evaluationState[["method"]] == "poisson"){
+
+    postH1 <- diff(pgamma(c(0, evaluationState[["materiality"]]), 
+                          shape = 1 + evaluationState[["kPrior"]] + 
+                                  evaluationState[["t"]], 
+                          rate = evaluationState[["nPrior"]] + 
+                                 evaluationState[["n"]]))
+
+    postH0 <- diff(pgamma(c(evaluationState[["materiality"]], 1), 
+                          shape = 1 + evaluationState[["kPrior"]] + 
+                                  evaluationState[["t"]], 
+                          rate = evaluationState[["nPrior"]] + 
+                                 evaluationState[["n"]]))
+
+  } else if(evaluationState[["method"]] == "binomial"){
+
+    postH1 <- diff(pbeta(c(0, evaluationState[["materiality"]]), 
+                    shape1 = 1 + evaluationState[["kPrior"]] + 
+                              evaluationState[["t"]], 
+                    shape2 = 1 + evaluationState[["nPrior"]] -
+                              evaluationState[["kPrior"]] + 
+                              evaluationState[["n"]] - 
+                              evaluationState[["t"]]))
+
+    postH0 <- diff(pbeta(c(evaluationState[["materiality"]], 1), 
+                         shape1 = 1 + evaluationState[["kPrior"]] + 
+                                  evaluationState[["t"]], 
+                          shape2 = 1 + evaluationState[["nPrior"]] -
+                                   evaluationState[["kPrior"]] + 
+                                   evaluationState[["n"]] - 
+                                   evaluationState[["t"]]))
+
+  } else if(evaluationState[["method"]] == "hypergeometric"){
+
+    postH1 <- sum(jfa:::.dBetaBinom(x = tolerableE, 
+                                  N = evaluationState[["N"]] - 
+                                      evaluationState[["n"]] + 
+                                      evaluationState[["k"]], 
+                                  shape1 = 1 + evaluationState[["kPrior"]] + 
+                                            evaluationState[["k"]], 
+                                  shape2 = 1 + evaluationState[["nPrior"]] -
+                                            evaluationState[["kPrior"]] + 
+                                            evaluationState[["n"]] - 
+                                            evaluationState[["k"]]))
+
+    postH0 <- sum(jfa:::.dBetaBinom(x = intolerableE, 
+                                     N = evaluationState[["N"]] - 
+                                         evaluationState[["n"]] + 
+                                         evaluationState[["k"]], 
+                                      shape1 = 1 + evaluationState[["kPrior"]] + 
+                                               evaluationState[["k"]], 
+                                      shape2 = 1 + evaluationState[["nPrior"]] -
+                                               evaluationState[["kPrior"]] + 
+                                               evaluationState[["n"]] - 
+                                               evaluationState[["k"]]))
+
+  } else if(evaluationState[["method"]] == "coxsnell"){
+
+    pCoxAndSnellF <- ecdf(jfa:::.dCoxAndSnellF(seq(0, 1, length.out = 100000), 
+                                               df1 = evaluationState[["df1"]],
+                                               df2 = evaluationState[["df2"]],
+                                               multiplicationFactor = evaluationState[["multiplicationFactor"]]))
+    
+    postH1 <- pCoxAndSnellF(evaluationState[["materiality"]])
+    postH0 <- pCoxAndSnellF(1) - pCoxAndSnellF(evaluationState[["materiality"]])
+
+  }
+
+  postOdds <- postH1 / postH0
+
+  BF <- round(postOdds / priorOdds, 2)
+
+  if(BF == "NaN") # Bayes factor for gamma(1, 0) distribution is undefined.
+    BF <- Inf
+
+  result <- list(BF = BF, 
+                 priorOdds = priorOdds, 
+                 priorH1 = priorH1, 
+                 priorH0 = priorH0,
+                 postH1 = postH1,
+                 postH0 = postH0,
+                 postOdds = postOdds)
+
+  return(result)
+}
+
 ################################################################################
 ################## Functions for the planning ##################################
 ################################################################################
@@ -205,12 +350,12 @@
   }
 }
 
-.auditPriorAndPosterStatisticsTable <- function(options, 
-                                                planningState, 
-                                                planningContainer, 
-                                                jaspResults,
-                                                ready, 
-                                                positionInContainer){
+.auditPriorAndExpectedPosteriorStatisticsTable <- function(options, 
+                                                            planningState, 
+                                                            planningContainer, 
+                                                            jaspResults,
+                                                            ready, 
+                                                            positionInContainer){
 
   if(!options[["priorStatistics"]]) 
     return()
@@ -261,7 +406,7 @@
 
     if(!ready || planningContainer$getError()) {
 
-        row <- data.frame(v = c("Prior", "Expected posterior", "Shift"))
+        row <- data.frame(v = c("Prior", "Expected posterior", "Expected shift"))
         priorStatisticsTable$addRows(row)
         return()
 
@@ -379,7 +524,7 @@
 
     }
       
-    BFresult <- .expectedBF(planningState)
+    BFresult <- .auditExpectedBayesFactor(planningState)
 
     priorOdds <- round(BFresult[["priorOdds"]], 2)
     priorH1 <- round(BFresult[["priorH1"]], 2)
@@ -391,7 +536,7 @@
     shiftH0 <- round(postH0 / priorH0, 2)
     shiftOdds <- round(BFresult[["postOdds"]] / BFresult[["priorOdds"]], 2)
 
-    rows <- data.frame(v = c("Prior", "Expected posterior", "Shift"),
+    rows <- data.frame(v = c("Prior", "Expected posterior", "Expected shift"),
                       form = c(priorForm, posteriorForm, ""),
                       priorH1 = c(priorH1, postH1, shiftH1),
                       priorH0 = c(priorH0, postH0, shiftH0),
@@ -1152,7 +1297,7 @@
 
     priorAndPosteriorPlotText <- createJaspHtml(paste0("<b>Figure ", 
                                                         jaspResults[["figNumber"]]$object ,
-                                                        ".</b> The prior and posterior probability distrubution <b>(", 
+                                                        ".</b> The prior and posterior probability distribution <b>(", 
                                                         distribution, 
                                                         ")</b> on the misstatement in the population.",
                                                         ifelse(options[["priorAndPosteriorPlotAdditionalInfo"]],
@@ -1166,6 +1311,289 @@
     priorAndPosteriorPlotText$dependOn(options = "explanatoryText")
     evaluationContainer[["priorAndPosteriorPlotText"]] <- priorAndPosteriorPlotText
   }
+}
+
+.auditPriorAndPosteriorStatisticsTable <- function(options, 
+                                                   planningOptions,
+                                                   evaluationState, 
+                                                   evaluationContainer, 
+                                                   jaspResults,
+                                                   positionInContainer){
+
+  if(!options[["priorAndPosteriorStatistics"]]) 
+    return()
+    
+  .updateTabNumber(jaspResults)
+
+  if(is.null(evaluationContainer[["priorAndPosteriorStatistics"]])){
+
+    tableTitle <- paste0("<b>Table ", 
+                        jaspResults[["tabNumber"]]$object, 
+                        ".</b> Prior and Posterior Descriptive Statistics")
+    
+    priorAndPosteriorStatisticsTable <- createJaspTable(tableTitle)
+    priorAndPosteriorStatisticsTable$position <- positionInContainer
+
+    priorAndPosteriorStatisticsTable$dependOn(options = "priorAndPosteriorStatistics")
+
+    priorAndPosteriorStatisticsTable$addColumnInfo(name = 'v', 
+                                                   title = "", 
+                                                   type = 'string')
+    priorAndPosteriorStatisticsTable$addColumnInfo(name = 'form', 
+                                                   title = "Functional form", 
+                                                   type = 'string')
+    priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH1', 
+                                                   title = "p(H\u208B)", 
+                                                   type = 'string')
+    priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH0', 
+                                                   title = "p(H\u208A)", 
+                                                   type = 'string')
+    priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorOdds', 
+                                                   title = "Odds <sup>p(H\u208B)</sup>&frasl;<sub>p(H\u208A)</sub>", 
+                                                   type = 'string')
+    priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorBound', 
+                                                   title = paste0(options[["confidence"]]*100,"% Credible bound") , 
+                                                   type = 'string')
+
+    priorAndPosteriorStatisticsTable$addFootnote(message = "p(H\u208B): The probability that 
+                                                the misstatement is lower than materiality. 
+                                                p(H\u208A): The probability that the misstatement 
+                                                is equal to, or higher than, materiality.
+                                                The odds are to be interpreted in favor of 
+                                                tolerable misstatement.", 
+                                    symbol="<i>Note.</i>")
+
+    evaluationContainer[["priorAndPosteriorStatistics"]] <- priorAndPosteriorStatisticsTable
+
+    if(options[["auditResult"]] == "" || 
+        evaluationContainer$getError()) {
+
+        row <- data.frame(v = c("Prior", "Posterior", "Shift"))
+        priorStatisticsTable$addRows(row)
+        return()
+
+    }
+
+    if(planningOptions[["likelihood"]] == "poisson"){
+
+      priorBound <- round(qgamma(p = options[["confidence"]], 
+                                  shape = 1 + evaluationState[["kPrior"]], 
+                                  rate = evaluationState[["nPrior"]]), 6)
+
+      priorForm <- paste0("Gamma(\u03B1 = ", 
+                          1 + evaluationState[["kPrior"]],
+                          ", \u03B2 = ",
+                          evaluationState[["nPrior"]],
+                          ")")
+
+    } else if(planningOptions[["likelihood"]] == "binomial"){
+
+      priorBound <- round(qbeta(p = options[["confidence"]], 
+                                shape1 = 1 + evaluationState[["kPrior"]], 
+                                shape2 = 1 + evaluationState[["nPrior"]] -
+                                         evaluationState[["kPrior"]]), 6)
+
+      priorForm <- paste0("Beta(\u03B1 = ", 
+                          1 + evaluationState[["kPrior"]],
+                          ", \u03B2 = ",
+                          1 + evaluationState[["nPrior"]],
+                          ")")
+
+    } else if(planningOptions[["likelihood"]] == "hypergeometric"){
+
+      priorBound <- round(jfa:::.qBetaBinom(p = options[["confidence"]], 
+                                  N = planningState[["N"]] - 
+                                      planningState[["sampleSize"]] + 
+                                      planningState[["expectedSampleError"]], 
+                                  shape1 = planningState[["prior"]]$aPrior, 
+                                  shape2 = planningState[["prior"]]$bPrior) / 
+                      planningState[["N"]], 6)
+
+      priorForm <- paste0("Beta-binomial(N = ",
+                          planningState[["N"]] - 
+                          planningState[["sampleSize"]] + 
+                          planningState[["expectedSampleError"]],
+                          ", \u03B1 = ", 
+                          planningState[["prior"]]$aPrior,
+                          ", \u03B2 = ",
+                          planningState[["prior"]]$bPrior,
+                          ")")
+
+    }
+
+    if(evaluationState[["method"]] == "poisson"){
+
+      postBound <- round(qgamma(p = options[["confidence"]], 
+                                shape = 1 + evaluationState[["kPrior"]] +
+                                        evaluationState[["t"]], 
+                                rate = evaluationState[["nPrior"]] + 
+                                       evaluationState[["n"]]), 6)
+
+      posteriorForm <- paste0("Gamma(\u03B1 = ", 
+                              evaluationState[["kPrior"]] + 
+                              evaluationState[["t"]],
+                              ", \u03B2 = ",
+                              evaluationState[["nPrior"]] +
+                              evaluationState[["n"]],
+                              ")")
+
+    } else if(evaluationState[["method"]] == "binomial"){
+
+      postBound <- round(qbeta(p = options[["confidence"]], 
+                                shape1 = 1 + evaluationState[["kPrior"]] +
+                                          evaluationState[["t"]], 
+                                shape2 = 1 + evaluationState[["nPrior"]] -
+                                         evaluationState[["kPrior"]] +
+                                         evaluationState[["n"]] - 
+                                         evaluationState[["t"]]), 6)
+
+      posteriorForm <- paste0("Beta(\u03B1 = ", 
+                              1 + evaluationState[["kPrior"]] + 
+                              evaluationState[["t"]],
+                              ", \u03B2 = ",
+                              1 + evaluationState[["nPrior"]] +
+                              evaluationState[["n"]] -
+                              evaluationState[["t"]],
+                              ")")
+      
+    } else if(evaluationState[["method"]] == "hypergeometric"){
+
+      postBound <- round(jfa:::.qBetaBinom(p = options[["confidence"]], 
+                                      N = planningState[["N"]] - 
+                                        planningState[["sampleSize"]] + 
+                                        planningState[["expectedSampleError"]], 
+                                      shape1 = planningState[["prior"]]$aPrior + 
+                                              planningState[["expectedSampleError"]], 
+                                      shape2 = planningState[["prior"]]$bPrior +
+                                              planningState[["sampleSize"]] - 
+                                              planningState[["expectedSampleError"]]) / 
+                          planningState[["N"]], 6)
+
+      posteriorForm <- paste0("Beta-binomial(N = ", 
+                              planningState[["N"]] - 
+                              planningState[["sampleSize"]] + 
+                              planningState[["expectedSampleError"]],
+                              ", \u03B1 = ",
+                              planningState[["prior"]]$aPrior + 
+                              planningState[["expectedSampleError"]],
+                              ", \u03B2 = ",
+                              planningState[["prior"]]$bPrior +
+                              planningState[["sampleSize"]] -
+                              planningState[["expectedSampleError"]],
+                              ")")   
+
+    } else if(evaluationState[["method"]] == "coxsnell"){
+
+      postBound <- round(evaluationState[["confBound"]], 6)
+
+      posteriorForm <- paste0(round(evaluationState[["multiplicationFactor"]], 5),
+                              " \u00D7 F(df1 = ",
+                              evaluationState[["df1"]],
+                              ", df2 = ",
+                              evaluationState[["df2"]],
+                              ")")
+      
+    }
+    
+    if(evaluationState[["method"]] != "hypergeometric"){
+
+      priorBound  <- paste0(priorBound * 100, "%")
+      postBound   <- paste0(postBound * 100, "%")
+
+    } else {
+
+      priorBound  <- ceiling(priorBound * planningOptions[["populationSize"]])
+      postBound   <- ceiling(postBound * planningOptions[["populationSize"]])
+
+    }
+      
+    BFresult <- .auditBayesFactor(planningOptions,
+                                  evaluationState)
+
+    priorOdds <- round(BFresult[["priorOdds"]], 2)
+    priorH1 <- round(BFresult[["priorH1"]], 2)
+    priorH0 <- round(BFresult[["priorH0"]], 2)
+    postOdds <- round(BFresult[["postOdds"]], 2)
+    postH1 <- round(BFresult[["postH1"]], 2)
+    postH0 <- round(BFresult[["postH0"]], 2)
+    shiftH1 <- round(postH1 / priorH1, 2)
+    shiftH0 <- round(postH0 / priorH0, 2)
+    shiftOdds <- round(BFresult[["postOdds"]] / BFresult[["priorOdds"]], 2)
+
+    rows <- data.frame(v = c("Prior", "Posterior", "Shift"),
+                      form = c(priorForm, posteriorForm, ""),
+                      priorH1 = c(priorH1, postH1, shiftH1),
+                      priorH0 = c(priorH0, postH0, shiftH0),
+                      priorOdds = c(priorOdds, postOdds, shiftOdds),
+                      priorBound = c(priorBound, postBound, ""))
+    
+    priorAndPosteriorStatisticsTable$addRows(rows)
+  }
+}
+
+.auditBayesianRegression <- function(sample, 
+                                    confidence,
+                                    options,
+                                    planningOptions){
+
+  # Bayesian Linear Regression Using the BAS package
+  sample <- stats::na.omit(sample)
+  
+  sample <- sample[, c(.v(options[["monetaryVariable"]]), .v(options[["auditResult"]]))]
+  colnames(sample) <- c("bookValue", "auditValue")
+  formula <- auditValue ~ bookValue
+  
+  if(all(sample[,1] == sample[,2])){
+    
+    betaStats <- c(1, 1, 1)
+    
+  } else {
+    
+    basResult <- BAS::bas.lm(formula, data = sample)
+    basSummary <- BAS:::confint.coef.bas(coef(basResult)  , level = planningOptions[["confidence"]] - (1 - planningOptions[["confidence"]])) 
+    
+    betaStats <- as.numeric(basSummary[2, c(1,2, 3)]) 
+    
+  }
+  
+  beta <- betaStats[3]
+  betaMin <- betaStats[1]
+  betaMax <- betaStats[2]
+  
+  n <- nrow(sample)
+  N <- planningOptions[["populationSize"]]
+  taints <- (sample[["bookValue"]] - sample[["auditValue"]])/ sample[["bookValue"]]
+  k <- length(which(taints != 0))
+  t <- sum(taints)
+  
+  meanB <- mean(sample[["bookValue"]])
+  meanW <- mean(sample[["auditValue"]])
+  
+  corBW <- cor(sample[["bookValue"]], 
+               sample[["auditValue"]])
+  
+  sdW <- sd(sample[["auditValue"]])
+
+  pointEstimate <- N * meanW + 
+                    beta * (planningOptions[["populationValue"]] - 
+                            N * meanB)
+  
+  stDev <- sdW * sqrt(1 - corBW^2) * ( N / sqrt(n)) * sqrt( (N-n) / (N-1) )
+  lowerBound <- pointEstimate - betaMax * stDev
+  upperBound <- pointEstimate - betaMin * stDev
+
+  results <- list()
+  results[["n"]] <- as.numeric(n)
+  results[["k"]] <- as.numeric(k)
+  results[["t"]] <- as.numeric(t)
+  results[["confidence"]] <- as.numeric(planningOptions[["confidence"]])
+  results[["method"]] <- "regression"
+  results[["popBookvalue"]] <- as.numeric(planningOptions[["populationValue"]])
+  results[["pointEstimate"]] <- as.numeric(pointEstimate)
+  results[["lowerBound"]] <- as.numeric(lowerBound)
+  results[["upperBound"]] <- as.numeric(upperBound)
+  results[["materiality"]] <- as.numeric(planningOptions[["materiality"]])
+  return(results)
 }
 
 ################################################################################
@@ -1198,140 +1626,4 @@
   posteriorOdds     <- posteriorLeft / posteriorRight
   BF                <- round(posteriorOdds / priorOdds, 2)
   return(BF)
-}
-
-# The following function will be deprecated
-.priorAndPosteriorCoxAndSnell <- function(options, evaluationResult, jaspResults){
-
-  xseq <- seq(0, options[["priorAndPosteriorPlotLimit"]], 0.001)
-  d <- data.frame(
-      x = rep(xseq, 2),
-      y = c(dbeta(x = xseq, shape1 = evaluationResult[["priorA"]], shape2 = evaluationResult[["priorB"]]), .dCoxAndSnellF(x = xseq, df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]], multiplicationFactor = evaluationResult[["mf"]])),
-      type = c(rep("Prior", length(xseq)), rep("Posterior", length(xseq)))
-  )
-  # Reorder factor levels to display in legend
-  d$type = factor(d$type,levels(d$type)[c(2,1)])
-
-  xBreaks <- JASPgraphs::getPrettyAxisBreaks(xseq, min.n = 4)
-  xLim <- range(xBreaks)
-  yBreaks <- c(0, 1.2*max(d$y))
-  yLim <- range(yBreaks)
-
-  pointdata <- data.frame(x = jaspResults[["materiality"]]$object, y = .dCoxAndSnellF(x = jaspResults[["materiality"]]$object, df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]], multiplicationFactor = evaluationResult[["mf"]]))
-
-  p <- ggplot2::ggplot(d, ggplot2::aes(x = x, y = y)) +
-      ggplot2::geom_line(ggplot2::aes(x = x, y = y, linetype = type), lwd = 1) +
-      ggplot2::scale_linetype_manual(values=c("dashed", "solid"), guide = ggplot2::guide_legend(nrow = 1, byrow = FALSE, title = "", order = 1))
-
-  p <- p + ggplot2::scale_x_continuous(name = "Error percentage", breaks = xBreaks, limits = xLim, labels = paste0(xBreaks * 100, "%"))
-
-  if(options[["priorAndPosteriorPlotAdditionalInfo"]]){
-    pdata <- data.frame(x = 0, y = 0, l = "1")
-    p <- p + ggplot2::geom_point(data = pdata, mapping = ggplot2::aes(x = x, y = y, shape = l), size = 0, color = rgb(0, 0.25, 1, 0))
-    p <- p + ggplot2::scale_shape_manual(name = "", values = 21, labels = paste0(options[["confidence"]]*100, "% Posterior \ncredible region"))
-    p <- p + ggplot2::guides(shape = ggplot2::guide_legend(override.aes = list(size = 15, shape = 22, fill = rgb(0, 0.25, 1, .5), stroke = 2, color = "black")), order = 2)
-
-    if(options[["areaUnderPosterior"]]=="displayCredibleBound"){
-      p <- p + ggplot2::stat_function(fun = .dCoxAndSnellF, args = list(df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]], multiplicationFactor = evaluationResult[["mf"]]), xlim = c(0, evaluationResult[["bound"]]),
-                                      geom = "area", fill = rgb(0, 0.25, 1, .5))
-    } else {
-      p <- p + ggplot2::stat_function(fun = .dCoxAndSnellF, args = list(df1 = evaluationResult[["df1"]], df2 = evaluationResult[["df2"]], multiplicationFactor = evaluationResult[["mf"]]), xlim = evaluationResult[["interval"]],
-                                      geom = "area", fill = rgb(0, 0.25, 1, .5))
-    }
-  }
-
-  p <- p + ggplot2::geom_point(ggplot2::aes(x = x, y = y), data = pointdata, size = 3, shape = 21, stroke = 2, color = "black", fill = "red")
-
-  thm <- ggplot2::theme(
-    axis.ticks.y = ggplot2::element_blank(),
-    axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0))
-  )
-  p <- p + ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, labels = c("", ""), limits = yLim) +
-            ggplot2::theme()
-
-  p <- JASPgraphs::themeJasp(p, legend.position = "top") + thm
-  return(p)
-}
-
-# The following function will be deprecated
-.regressionBoundBayesian <- function(dataset, options, total_data_value, jaspResults){
-
-  if(!is.null(jaspResults[["evaluationResult"]]))
-    return(jaspResults[["evaluationResult"]]$object)
-
-    ar                      <- 1 - options[["confidence"]]
-    ir                      <- base::switch(options[["IR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
-    cr                      <- base::switch(options[["CR"]], "Low" = 0.50, "Medium" = 0.60, "High" = 1)
-    alpha                   <- ar / ir / cr
-
-    n                       <- 0
-    M                       <- 0
-    z                       <- 0
-    bound                   <- "."
-    interval              <- c(".", ".")
-    mle                     <- 0
-    mleTable                <- 0
-
-    if(options[["auditResult"]] != "" && options[["sampleFilter"]] != "" && options[["monetaryVariable"]] != ""){
-        sample                  <- dataset[, c(.v(options[["monetaryVariable"]]), .v(options[["auditResult"]]))]
-        n                       <- nrow(sample)
-
-        t                       <- sample[, .v(options[["monetaryVariable"]])] - sample[, .v(options[["auditResult"]])]
-        z                       <- t / sample[, .v(options[["monetaryVariable"]])]
-        zplus                   <- sort(subset(z, z > 0), decreasing = TRUE)
-        M                       <- length(which(t != 0))
-
-        B                       <- total_data_value
-        N                       <- jaspResults[["N"]]$object
-        b                       <- sample[, .v(options[["monetaryVariable"]])]
-        w                       <- sample[, .v(options[["auditResult"]])]
-
-        # Bayesian Linear Regression Using the BAS package
-        colnames(sample)        <- c("bookValue", "auditValue")
-        formula                 <- auditValue ~ bookValue
-
-        regResult               <- BAS::bas.lm(formula, data=sample)
-        coefReg                 <- coef(regResult)  
-        beta                    <- coefReg$postmean[2]
-
-        cred.interval           <- BAS:::confint.coef.bas(coefReg, level = options[["confidence"]])  
-        betaMaxInterval         <- cred.interval[2, c(1,2)] 
-
-        cred.bound              <- BAS:::confint.coef.bas(coefReg, level = options[["confidence"]] - (1 - options[["confidence"]])) 
-        betaMax                 <- cred.bound[2, 2] 
-
-        meanb                   <- mean(b)
-        meanw                   <- mean(w)
-
-        mle                     <- N * meanw + beta * (B - N * meanb)
-        stand.dev               <- sd(w) * sqrt(1 - cor(b, w)^2) * ( N / sqrt(n)) * sqrt( (N-n) / (N-1) )
-        lowerValue              <- mle - betaMax * stand.dev
-        lowerValueInterval      <- c(mle + betaMaxInterval[1] * stand.dev, mle - betaMaxInterval[2] * stand.dev)
-
-        if(lowerValue == 0){
-          bound                 <- 0
-          interval              <- c(0, 0)
-        } else {
-          bound                 <- (B - lowerValue) / B
-          interval              <- (B - lowerValueInterval) / B
-        }
-        mleTable                <- (B - mle) / B    
-    }
-
-    resultList <- list()
-    resultList[["n"]]           <- n
-    resultList[["k"]]           <- M
-    resultList[["z"]]           <- z
-    resultList[["IR"]]          <- options[["IR"]]
-    resultList[["CR"]]          <- options[["CR"]]
-    resultList[["confidence"]]  <- options[["confidence"]]
-    resultList[["bound"]]       <- bound
-    resultList[["interval"]]    <- interval
-    resultList[["alpha"]]       <- alpha
-    resultList[["mle"]]         <- mle
-    resultList[["mleTable"]]    <- mleTable
-
-    jaspResults[["evaluationResult"]] <- createJaspState(resultList)
-    jaspResults[["evaluationResult"]]$dependOn(options = c("IR", "CR", "confidence", "auditResult", "sampleFilter", "materiality", "estimator", "monetaryVariable", "performAudit"))
-    return(jaspResults[["evaluationResult"]]$object)
 }

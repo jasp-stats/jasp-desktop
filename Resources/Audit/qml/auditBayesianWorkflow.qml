@@ -1039,7 +1039,7 @@ Form
 
 					RadioButton
 					{
-						id: 		regressionBound
+						id: 			regressionBound
 						name: 		"regressionBound"
 						text: 		qsTr("Regression")
 						visible: 	recordSampling.checked && variableTypeAuditValues.checked && evaluationChecked.checked
@@ -1074,22 +1074,38 @@ Form
 			{
 				columns: 2
 
-				GroupBox
+				ColumnLayout
 				{
-					title: qsTr("Statistics")
 
-					CheckBox
+					GroupBox
 					{
-						text: 	qsTr("Most likely error (MLE)")
-						name: 	"mostLikelyError"
+						title: qsTr("Statistics")
+
+						CheckBox
+						{
+							text: 	qsTr("Most likely error (MLE)")
+							name: 	"mostLikelyError"
+						}
+
+						CheckBox
+						{
+							id: 			bayesFactor
+							text: 		qsTr("Bayes factor\u208B\u208A")
+							name: 		"bayesFactor"
+							visible: 	!regressionBound.visible
+						}
 					}
 
-					CheckBox
+					GroupBox
 					{
-						id: 			bayesFactor
-						text: 		qsTr("Bayes factor\u208B\u208A")
-						name: 		"bayesFactor"
-						visible: 	!regressionBound.visible
+						title: qsTr("Tables")
+						visible: !regressionBound.visible
+
+						CheckBox
+						{
+							text: 	qsTr("Prior and posterior descriptives")
+							name: 	"priorAndPosteriorStatistics"
+						}
 					}
 				}
 
