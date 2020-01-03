@@ -29,6 +29,12 @@ Item
 	implicitWidth	: parent.width
 	implicitHeight	: 200 * preferencesModel.uiScale
 
+	property int preferredHeight:	implicitHeight
+	property int preferredWidth:	implicitWidth
+
+	Layout.preferredWidth:	preferredWidth
+	Layout.preferredHeight:	preferredHeight
+
 	property	alias	name				: tableView.name
 	property	alias	source				: tableView.source
 	property	alias	tableView			: tableView
