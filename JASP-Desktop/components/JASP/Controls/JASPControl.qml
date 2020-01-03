@@ -47,7 +47,7 @@ JASPControlBase
 
 	L.Layout.preferredWidth:	preferredWidth
 	L.Layout.preferredHeight:	preferredHeight
-	L.Layout.leftMargin: indent ? aspTheme.indentationLength : 0
+	L.Layout.leftMargin: indent ? jaspTheme.indentationLength : 0
 
 	function setDebugState()
 	{

@@ -51,10 +51,10 @@ Form
 
 		Chi2TestTableView
 		{
-			name	: "tableWidget"
-			width	: form.availableWidth - hypothesisGroup.leftPadding
-			visible	: expectedProbs.checked
-			source	: "factor"
+			name			: "tableWidget"
+			preferredWidth	: form.availableWidth - hypothesisGroup.leftPadding
+			visible			: expectedProbs.checked
+			source			: "factor"
 		}
 	}
 
