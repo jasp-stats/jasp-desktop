@@ -81,7 +81,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
     return()
 
   # Create the main table
-  abTestBayesianTable <- createJaspTable(title = "Bayesian A/B Test")
+  abTestBayesianTable <- createJaspTable(title = gettext("Bayesian A/B Test"))
   abTestBayesianTable$dependOn(options = c("bayesFactorType", "bayesFactorOrder"), optionsFromObject = jaspResults[["model"]])
   abTestBayesianTable$position <- position
 
@@ -95,9 +95,9 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
       bf.title <- "Log(BF<sub>10</sub>)"
   }
 
-  abTestBayesianTable$addColumnInfo(name = "Models",    title = "Models",    type = "string")
-  abTestBayesianTable$addColumnInfo(name = "P(M)",      title = "P(M)",      type = "number", format = "sf:4;dp:3")
-  abTestBayesianTable$addColumnInfo(name = "P(M|data)", title = "P(M|data)", type = "number", format = "sf:4;dp:3")
+  abTestBayesianTable$addColumnInfo(name = "Models",    title = gettext("Models"),    type = "string")
+  abTestBayesianTable$addColumnInfo(name = "P(M)",      title = gettext("P(M)"),      type = "number", format = "sf:4;dp:3")
+  abTestBayesianTable$addColumnInfo(name = "P(M|data)", title = gettext("P(M|data)"), type = "number", format = "sf:4;dp:3")
   abTestBayesianTable$addColumnInfo(name = "BF",        title = bf.title,    type = "number")
 
   jaspResults[["abTestBayesianTable"]] <- abTestBayesianTable
@@ -107,7 +107,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   .abTestBayesianFillTableMain(abTestBayesianTable, ab_obj, options)
 
-  abTestBayesianTable$addFootnote("A positive log odds ratio means that the success rate in Group 2 is higher than in Group 1.")
+  abTestBayesianTable$addFootnote(gettext("A positive log odds ratio means that the success rate in Group 2 is higher than in Group 1."))
 }
 
 
@@ -133,7 +133,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   if (orEqualTo1Prob > 0) {
     rowCount = rowCount + 1
     output.rows[[rowCount]] <- list(
-      "Models"    = "Log odds ratio = 0",
+      "Models"    = gettext("Log odds ratio = 0"),
       "BF"        = 1.00,
       "P(M|data)" = ab_obj$post_prob[["H0"]],
       "P(M)"      = orEqualTo1Prob
@@ -143,7 +143,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   if (orGreaterThan1Prob > 0) {
     rowCount = rowCount + 1
     output.rows[[rowCount]] <- list(
-      "Models"    = "Log odds ratio > 0",
+      "Models"    = gettext("Log odds ratio > 0"),
       "BF"        = ab_obj$bf[["bfplus0"]],
       "P(M|data)" = ab_obj$post_prob[["H+"]],
       "P(M)"      = orGreaterThan1Prob
@@ -153,7 +153,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   if (orLessThan1Prob > 0) {
     rowCount = rowCount + 1
     output.rows[[rowCount]] <- list(
-      "Models"    = "Log odds ratio < 0",
+      "Models"    = gettext("Log odds ratio < 0"),
       "BF"        = ab_obj$bf[["bfminus0"]],
       "P(M|data)" = ab_obj$post_prob[["H-"]],
       "P(M)"      = orLessThan1Prob
@@ -163,7 +163,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   if (orNotEqualTo1Prob > 0) {
     rowCount = rowCount + 1
     output.rows[[rowCount]] <- list(
-      "Models"    = "Log odds ratio \u2260 0",
+      "Models"    = gettextf("Log odds ratio %s 0","\u2260"),
       "BF"        = ab_obj$bf[["bf10"]],
       "P(M|data)" = ab_obj$post_prob[["H1"]],
       "P(M)"      = orNotEqualTo1Prob
@@ -232,15 +232,15 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   if (!is.null(jaspResults[["abTestBayesianDescriptivesTable"]]))
     return()
 
-  abTestBayesianDescriptivesTable <- createJaspTable(title = "Descriptives")
+  abTestBayesianDescriptivesTable <- createJaspTable(title = gettext("Descriptives"))
 
   abTestBayesianDescriptivesTable$dependOn(c("n1", "y1", "n2", "y2", "descriptives"))
   abTestBayesianDescriptivesTable$position <- position
 
-  abTestBayesianDescriptivesTable$addColumnInfo(name = "group",      title = "",           type = "string")
-  abTestBayesianDescriptivesTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
-  abTestBayesianDescriptivesTable$addColumnInfo(name = "total",      title = "Total",      type = "integer")
-  abTestBayesianDescriptivesTable$addColumnInfo(name = "proportion", title = "Proportion", type = "number", format = "sf:4;dp:3")
+  abTestBayesianDescriptivesTable$addColumnInfo(name = "group",      title = "",                    type = "string")
+  abTestBayesianDescriptivesTable$addColumnInfo(name = "counts",     title = gettext("Counts"),     type = "integer")
+  abTestBayesianDescriptivesTable$addColumnInfo(name = "total",      title = gettext("Total"),      type = "integer")
+  abTestBayesianDescriptivesTable$addColumnInfo(name = "proportion", title = gettext("Proportion"), type = "number", format = "sf:4;dp:3")
 
   jaspResults[["abTestBayesianDescriptivesTable"]] <- abTestBayesianDescriptivesTable
 
@@ -260,11 +260,11 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   num_rows = length(dataset$y1)
   counts = dataset$y1[num_rows]
   total = dataset$n1[num_rows]
-  output.rows[[1]] <- list(group = "Group 1", counts = counts, total = total, proportion = counts / total)
+  output.rows[[1]] <- list(group = gettext("Group 1"), counts = counts, total = total, proportion = counts / total)
 
   counts = dataset$y2[num_rows]
   total = dataset$n2[num_rows]
-  output.rows[[2]] <- list(group = "Group 2", counts = counts, total = total, proportion = counts / total)
+  output.rows[[2]] <- list(group = gettext("Group 2"), counts = counts, total = total, proportion = counts / total)
 
   abTestBayesianDescriptivesTable$addRows(output.rows)
 }
@@ -272,7 +272,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 
 .abTestPlotPriorPosterior <- function(jaspResults, ab_obj, options, ready, position) {
 
-  abTestPriorAndPosteriorPlot <- createJaspPlot(title = "Prior and Posterior",  width = 530, height = 400)
+  abTestPriorAndPosteriorPlot <- createJaspPlot(title = gettext("Prior and Posterior"),  width = 530, height = 400)
   abTestPriorAndPosteriorPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "numSamples", "plotPosteriorType", "plotPriorAndPosterior"))
   abTestPriorAndPosteriorPlot$position <- position
   
@@ -310,7 +310,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 
 .abTestPlotSequential <- function(jaspResults, ab_obj, ready, position) {
 
-  abTestSequentialPlot <- createJaspPlot(title = "Sequential Analysis",  width = 530, height = 400)
+  abTestSequentialPlot <- createJaspPlot(title = gettext("Sequential Analysis"),  width = 530, height = 400)
   abTestSequentialPlot$dependOn(options = "plotSequentialAnalysis", optionsFromObject = jaspResults[["model"]])
   abTestSequentialPlot$position <- position
   
@@ -336,7 +336,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 
 .abTestPlotRobustness <- function(jaspResults, ab_obj, ready, position) {
 
-  abTestRobustnessPlot <- createJaspPlot(title = "Bayes Factor Robustness Check",  width = 530, height = 400)
+  abTestRobustnessPlot <- createJaspPlot(title = gettext("Bayes Factor Robustness Check"),  width = 530, height = 400)
   abTestRobustnessPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "numSamples", "plotRobustness"))
   abTestRobustnessPlot$position <- position
   
@@ -363,7 +363,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 
 .abTestPlotPriorOnly <- function(jaspResults, options, position) {
 
-  abTestPriorPlot <- createJaspPlot(title = "Prior",  width = 530, height = 400)
+  abTestPriorPlot <- createJaspPlot(title = gettext("Prior"),  width = 530, height = 400)
   abTestPriorPlot$dependOn(c("normal_mu", "normal_sigma", "plotPriorType", "plotPriorOnly"))
   abTestPriorPlot$position <- position
   
