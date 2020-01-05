@@ -36,7 +36,6 @@ auditBayesianPlanning <- function(jaspResults, dataset, options, ...){
 
   # Create the audit risk model paragraph
   .auditRiskModelParagraph(options, 
-                           planningOptions, 
                            jaspResults, 
                            position = 2)
 

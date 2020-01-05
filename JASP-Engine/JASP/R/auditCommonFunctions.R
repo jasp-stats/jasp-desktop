@@ -148,7 +148,6 @@
 
   # Create the audit risk model paragraph
   .auditRiskModelParagraph(options, 
-                           planningOptions, 
                            jaspResults, 
                            position = 2)
 }
@@ -552,7 +551,6 @@
 ################################################################################
 
 .auditRiskModelParagraph <- function(options, 
-                                     planningOptions, 
                                      jaspResults, 
                                      position){
 
@@ -602,14 +600,22 @@
 
   }
 
+  if(options[["explanatoryText"]]){
+    irLabel <- paste0(options[["IR"]], " = " , round(inherentRisk * 100, 2))
+    crLabel <- paste0(options[["CR"]], " = " , round(controlRisk * 100, 2))
+  } else {
+    irLabel <- round(inherentRisk * 100, 2)
+    crLabel <- round(controlRisk * 100, 2)
+  }
+
   detectionRisk <- auditRisk / inherentRisk / controlRisk
 
   textARM <- paste0("Audit risk (", 
                     round(auditRisk * 100, 2),
                     "%) = Inherent risk (", 
-                    round(inherentRisk * 100, 2), 
+                    irLabel, 
                     "%) x Control risk (", 
-                    round(controlRisk * 100, 2), 
+                    crLabel, 
                     "%) x Detection risk (", 
                     round(detectionRisk * 100, 2), 
                     "%)")
@@ -619,32 +625,31 @@
 
   if(options[["explanatoryText"]]){
 
+    irLabel <- paste0(options[["IR"]], " (", round(inherentRisk * 100, 2), "%)")
+    crLabel <- paste0(options[["CR"]], " (", round(controlRisk * 100, 2), "%)")
     auditRiskLabel <- paste0(round(auditRisk * 100, 2), "%")
     dectectionRiskLabel <- paste0(round(detectionRisk * 100, 2), "%")
 
     message <- paste0("Prior to the substantive testing phase, the inherent risk was determined to be <b>", 
-                      options[["IR"]] ,
+                      irLabel,
                       "</b>. The internal control risk was determined
                       to be <b>", 
-                      options[["CR"]] ,
+                      crLabel,
                       "</b>. According to the Audit Risk Model, the required detection risk to maintain an audit risk of <b>", 
                       auditRiskLabel, 
-                      "</b> for a materiality
-                      of <b>", 
-                      planningOptions[["materialityLabel"]],
                       "</b> should be <b>", 
                       dectectionRiskLabel , 
                       "</b>.")
 
     if(options[["IR"]] == "Custom" || options[["CR"]] == "Custom"){
 
-      message <- paste0(message, 
-                        " The translation of High, Medium and Low to probabilities is done according custom values</b>.")
+      message <- paste0(message, " 
+                        The translation of High, Medium and Low to probabilities is done according custom preferences</b>.")
     
     } else {
 
-      message <- paste0(message, 
-                        " The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>.")
+      message <- paste0(message, " 
+                        The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>.")
     
     }
 
@@ -957,6 +962,13 @@
   }
 
   detectionRisk <- auditRisk / inherentRisk / controlRisk
+
+  if(detectionRisk >= 1){
+    planningContainer$setError("The detection risk is higher than 100%. Please 
+                                re-specify your custom values for the Inherent 
+                                risk and/or Control risk.")  
+    return()
+  }
 
     if(type == "frequentist"){
 
