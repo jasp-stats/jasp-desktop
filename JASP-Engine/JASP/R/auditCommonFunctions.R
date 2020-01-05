@@ -74,7 +74,154 @@
 }
 
 ################################################################################
-################## Functions for the figure and table numbers ##################
+################## The Audit Planning Analysis #################################
+################################################################################
+
+.auditPlanningAnalysis <- function(options,
+                                   jaspResults,
+                                   type){
+
+  # Deduct the nessecary values from the input options
+  planningOptions <- .auditPlanningOptions(options,
+                                           jaspResults,
+                                           rawData = FALSE)
+  
+  # Create the procedure paragraph
+  .auditExplanatoryTextProcedure(options, 
+                                 planningOptions, 
+                                 jaspResults, 
+                                 positionInContainer = 1)
+
+  # Create the audit risk model paragraph
+  .auditRiskModelParagraph(options, 
+                           jaspResults, 
+                           position = 2)
+
+  # Check if the options have valid values for running the analysis
+  ready <- .auditPlanningReady(options, 
+                               planningOptions)
+
+  # Create the container that holds the planning output
+  planningContainer <- .auditPlanningGetContainer(jaspResults, 
+                                                  position = 3)
+
+  # Perfrom early error checks
+  .auditPlanningErrorChecks(options, 
+                            planningOptions, 
+                            planningContainer, 
+                            ready)
+
+  # Get the planning state if it exists, otherwise make one
+  planningState <- .auditPlanningState(options, 
+                                       planningOptions, 
+                                       planningContainer, 
+                                       ready, 
+                                       type)
+
+  # Create explanatory text for the planning
+  .auditExplanatoryTextPlanning(options, 
+                                planningOptions, 
+                                planningState, 
+                                planningContainer, 
+                                ready, 
+                                type, 
+                                positionInContainer = 1)
+
+  # --- TABLES
+
+  # Create a state to keep track of table numbers
+  .auditCreateTableNumber(jaspResults)
+  
+  # Create the summary table
+  .auditPlanningSummaryTable(options, 
+                             planningOptions, 
+                             planningState, 
+                             planningContainer,
+                             jaspResults, 
+                             ready, 
+                             type, 
+                             positionInContainer = 2)
+
+  if(type == "bayesian"){
+
+    # Create the implicit sample table
+    .auditImplicitSampleTable(options, 
+                              planningState, 
+                              planningContainer, 
+                              jaspResults,
+                              ready, 
+                              positionInContainer = 3)
+
+    # Cerate the prior and posterior statistics table
+    .auditPriorAndExpectedPosteriorStatisticsTable(options, 
+                                                  planningState, 
+                                                  planningContainer, 
+                                                  jaspResults,
+                                                  ready, 
+                                                  positionInContainer = 4)
+
+  }
+  
+  # ---
+  
+  # --- PLOTS
+  
+  # Create a state to keep track of figure numbers
+  .auditCreateFigureNumber(jaspResults)
+
+  # Create the decision analysis plot
+  .decisionAnalysisPlot(options, 
+                        planningOptions, 
+                        planningState, 
+                        planningContainer, 
+                        jaspResults,
+                        ready, 
+                        type, 
+                        positionInContainer = 5)
+
+  if(type == "frequentist"){
+
+    # Create the implied sampling distribution plot
+    .samplingDistributionPlot(options, 
+                              planningOptions, 
+                              planningState, 
+                              planningContainer, 
+                              jaspResults,
+                              ready, 
+                              positionInContainer = 7)
+    
+  }
+
+  if(type == "bayesian"){
+
+    # Create the prior and expected posterior plot
+    .auditPlanningPlotPrior(options, 
+                            planningOptions, 
+                            planningState, 
+                            planningContainer,
+                            jaspResults, 
+                            ready, 
+                            positionInContainer = 7)
+
+  }
+
+  # ---
+  
+  # --- BADGES
+
+  # Provide the analysis badges
+  .auditBadgeSection(options,
+                     type = "planning",
+                     stateContainer = NULL,
+                     jaspResults, 
+                     ready, 
+                     position = 9)
+
+  # --- 
+}
+
+################################################################################
+################## Common functions for the figure and table numbers ###########
 ################################################################################
 
 .auditCreateFigureNumber <- function(jaspResults){
@@ -96,7 +243,7 @@
 }
 
 ################################################################################
-################## Functions for the procedure #################################
+################## Common functions for the procedure ##########################
 ################################################################################
 
 .auditProcedureStage <- function(options, 
@@ -547,7 +694,7 @@
 }
 
 ################################################################################
-################## Functions for the Audit Risk Model ##########################
+################## Common functions for the Audit Risk Model ###################
 ################################################################################
 
 .auditRiskModelParagraph <- function(options, 
@@ -659,7 +806,7 @@
 }
 
 ################################################################################
-################## Functions for the planning ##################################
+################## Common functions for the planning ###########################
 ################################################################################
 
 .auditPlanningStage <- function(options, 
@@ -1695,7 +1842,7 @@
 }
 
 ################################################################################
-################## Functions for the selection #################################
+################## Common functions for the selection ##########################
 ################################################################################
 
 .auditSelectionStage <- function(options, 
@@ -2228,7 +2375,7 @@
 }
 
 ################################################################################
-################## Functions for the execution #################################
+################## Common functions for the execution ##########################
 ################################################################################
 
 .auditExecutionStage <- function(options,
@@ -2268,7 +2415,7 @@
 }
 
 ################################################################################
-################## Functions for the evaluation ################################
+################## Common functions for the evaluation #########################
 ################################################################################
 
 .auditEvaluationStage <- function(options, 
@@ -3294,7 +3441,7 @@
 }
 
 ################################################################################
-################## Functions for the conclusion ################################
+################## Common functions for the conclusion #########################
 ################################################################################
 
 .auditConclusionStage <- function(options, 
@@ -3361,7 +3508,7 @@
 }
 
 ################################################################################
-################## Functions for the badges ####################################
+################## Common functions for the badges #############################
 ################################################################################
 
 .auditBadgeSection <- function(options, 
