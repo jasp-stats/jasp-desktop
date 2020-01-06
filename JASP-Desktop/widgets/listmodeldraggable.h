@@ -47,6 +47,7 @@ public:
 protected:
 	bool						_copyTermsWhenDropped;
 	bool						_addNewAvailableTermsToAssignedModel	= false;
+	bool						_allowAnalysisOwnComputedColumns		= true;
 	JASPControlBase::DropMode	_dropMode								= JASPControlBase::DropMode::DropNone;
 	Terms						_tempTermsToRemove;
 	Terms						_tempTermsToAdd;

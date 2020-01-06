@@ -17,12 +17,13 @@
 //
 
 #include "listmodeldraggable.h"
-
+#include "analysis/analysisform.h"
 
 ListModelDraggable::ListModelDraggable(QMLListView* listView)
 	: ListModel(listView)
 	, _copyTermsWhenDropped(false)	
 {
+	_allowAnalysisOwnComputedColumns = listView->getItemProperty("allowAnalysisOwnComputedColumns").toBool();
 }
 
 Terms ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const
@@ -112,6 +113,12 @@ Terms ListModelDraggable::canAddTerms(const Terms& terms) const
 
 bool ListModelDraggable::isAllowed(const Term &term) const
 {
+	if (!_allowAnalysisOwnComputedColumns)
+	{
+		if (listView()->form()->isOwnComputedColumn(term.asQString()))
+			return false;
+	}
+
 	int variableTypesAllowed = listView()->variableTypesAllowed();
 
 	if (variableTypesAllowed == 0xff || term.size() > 1)

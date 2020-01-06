@@ -51,6 +51,7 @@ JASPListControl
 	property bool	interactionContainLowerTerms	: true
 	property var	interactionHighOrderCheckBox
 	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
+	property bool	allowAnalysisOwnComputedColumns	: true
 	
 	property var	interactionControl
 	property bool	addInteractionOptions			:false
