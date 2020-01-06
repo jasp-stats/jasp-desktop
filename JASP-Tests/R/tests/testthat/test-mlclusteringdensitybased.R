@@ -31,10 +31,11 @@ test_that("Evaluation Metrics table results match", {
 test_that("Cluster Information table results match", {
   table <- results[["results"]][["clusterInfoTable"]][["data"]]
   expect_equal_tables(table,
-                      list("Noisepoints", 0, 85, 0, 1, 0.221855962945892, 74, 570.509086532522,
-                           2, 0.341893541680517, 5, 8.10716385876036, 3, 0.445300681167908,
-                           5, 5.79282743516943, 4, 0.289663743234524, 9, 18.8238030065082
-                      ))
+                      list("Noisepoints", 0, 0, 85, 0, 1, 0.945752634943818, 0.221855962945892,
+                           74, 570.509086532522, 2, 0.0134395257890548, 0.341893541680517,
+                           5, 8.10716385876036, 3, 0.00960297029427597, 0.445300681167908,
+                           5, 5.79282743516943, 4, 0.0312048689728515, 0.289663743234524,
+                           9, 18.8238030065082))
 })
 
 test_that("Density-Based Clustering table results match", {

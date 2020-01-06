@@ -31,8 +31,9 @@ test_that("Evaluation Metrics table results match", {
 test_that("Cluster Information table results match", {
   table <- results[["results"]][["clusterInfoTable"]][["data"]]
   expect_equal_tables(table,
-                      list(1, 0.409774198440774, 57, 267.166873258102, 2, 0.0820430005029718,
-                           75, 803.901673729259, 3, 0.394537832399485, 46, 257.15091062954
+                      list(1, 0.201146634109287, 0.409774198440774, 57, 267.166873258102,
+                           2, 0.605247626150293, 0.0820430005029718, 75, 803.901673729259,
+                           3, 0.19360573974042, 0.394537832399485, 46, 257.15091062954
                       ))
 })
 

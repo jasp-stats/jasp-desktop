@@ -187,11 +187,11 @@
 
   clusterInfoTable$addColumnInfo(name = 'cluster', title = 'Cluster', type = 'integer')
   clusterInfoTable$addColumnInfo(name = 'size', title = 'Size', type = 'integer')
-  clusterInfoTable$addColumnInfo(name = 'percentage', title = 'Explained % of within cluster heterogeneity', type = 'string')
+  clusterInfoTable$addColumnInfo(name = 'percentage', title = 'Explained proportion within-cluster heterogeneity', type = 'number')
   if(options[["tableClusterInfoWSS"]])
-    clusterInfoTable$addColumnInfo(name = 'withinss', title = 'Within sum of squares', type = 'number', format = 'dp:2')
+    clusterInfoTable$addColumnInfo(name = 'withinss', title = 'Within sum of squares', type = 'number')
   if(options[["tableClusterInfoSilhouette"]])
-    clusterInfoTable$addColumnInfo(name = 'silh_scores', title = 'Silhouette score', type = 'number', format = 'dp:2')
+    clusterInfoTable$addColumnInfo(name = 'silh_scores', title = 'Silhouette score', type = 'number')
 
   jaspResults[["clusterInfoTable"]]       <- clusterInfoTable
 
@@ -225,7 +225,7 @@
 
   row <- data.frame(cluster = cluster, 
                     size = size, 
-                    percentage = paste0(round(withinss / sum(withinss) * 100, 3), "%"))
+                    percentage = withinss / sum(withinss))
 
   if(options[["tableClusterInfoWSS"]])
     row <- cbind(row, withinss = withinss)
