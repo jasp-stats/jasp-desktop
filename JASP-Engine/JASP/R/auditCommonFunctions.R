@@ -543,17 +543,14 @@
   xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(column, h$breaks), 
                                             min.n = 4)
 
-  p <- JASPgraphs::drawAxis(
-                    xName = paste0("Book values (", valuta, ")"), 
-                    yName = "Frequency", 
-                    xBreaks = xBreaks,
-                    yBreaks = yBreaks, 
-                    force = TRUE,
-                    xLimits = range(xBreaks),
-                    yLimits = c(0, max(yBreaks))) +
+  p <- ggplot2::ggplot(data = data.frame(column), mapping = ggplot2::aes(x = column, y = ..count..)) + 
+        ggplot2::scale_x_continuous(name = paste0("Book values (", valuta, ")"),
+                                    breaks = xBreaks,
+                                    limits = range(xBreaks)) +
+        ggplot2::scale_y_continuous(name = "Frequency",
+                                    breaks = yBreaks,
+                                    limits = c(0, max(yBreaks))) + 
         ggplot2::geom_histogram(
-                  data = data.frame(column),
-                  mapping = ggplot2::aes(x = column, y = ..count..),
                   binwidth = (h$breaks[2] - h$breaks[1]),
                   fill = "grey",
                   col = "black",
@@ -3390,14 +3387,14 @@
     cols <- rep("gray", nrow(plotData))
     cols[which(plotData$x != plotData$y)] <- "red"
 
-    p <- JASPgraphs::drawAxis(xName = paste0("Book values (", planningOptions[["valuta"]], ")"), 
-                              yName = paste0("Audit values (", planningOptions[["valuta"]], ")"), 
-                              xBreaks = xticks, 
-                              yBreaks = yticks, 
-                              yLabels = yLabs, 
-                              xLabels = xLabs, 
-                              force = TRUE)
-    p <- JASPgraphs::drawPoints(p, dat = plotData, size = 3, fill = cols)
+    p <- ggplot2::ggplot(data = plotData, mapping = ggplot2::aes(x = x, y = y)) +
+          ggplot2::scale_x_continuous(name = paste0("Book values (", planningOptions[["valuta"]], ")"),
+                                      breaks = xticks,
+                                      labels = xLabs) +
+        ggplot2::scale_y_continuous(name = paste0("Audit values (", planningOptions[["valuta"]], ")"),
+                            breaks = yticks,
+                            labels = yLabs) + 
+        JASPgraphs::geom_point(size = 3, fill = cols)
 
     p <- .auditCorrelationPlotAddLine(fit = fit[[bestModel]], 
                                       plot = p, 

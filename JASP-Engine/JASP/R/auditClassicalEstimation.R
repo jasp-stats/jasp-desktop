@@ -796,8 +796,15 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
   cols <- rep("gray", nrow(d))
   cols[which(d$xx != d$yy)] <- "red"
 
-  p <- JASPgraphs::drawAxis(xName = "Book values", yName = "Audit values", xBreaks = xticks, yBreaks = yticks, yLabels = yLabs, xLabels = xLabs, force = TRUE)
-  p <- JASPgraphs::drawPoints(p, dat = d, size = 3, fill = cols)
+  p <- ggplot2::ggplot(data = d, mapping = ggplot2::aes(x = xx, y = yy)) +
+        ggplot2::scale_x_continuous(name = "Book values",
+                            breaks = xticks,
+                            labels = xLabs) +
+        ggplot2::scale_y_continuous(name = "Audit values",
+                            breaks = yticks,
+                            labels = yLabs) + 
+        JASPgraphs::geom_point(size = 3, fill = cols)
+        
   p <- .auditCorrelationPlotAddLine(fit = fit[[bestModel]], 
                                   plot = p, 
                                   line = TRUE, 
