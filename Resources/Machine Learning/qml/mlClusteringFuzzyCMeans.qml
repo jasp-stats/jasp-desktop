@@ -38,6 +38,11 @@ Form {
         title: qsTr("Tables")
 
         CheckBox { 
+            text: qsTr("Cluster means") 
+            name: "tableClusterMeans" 
+        }
+
+        CheckBox { 
             id: clusterInfo
             text: qsTr("Cluster information") 
             name: "tableClusterInformation" 

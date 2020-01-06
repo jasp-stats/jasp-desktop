@@ -33,17 +33,20 @@ mlClusteringRandomForest <- function(jaspResults, dataset, options, ...) {
   # Create the cluster information table
   .clusterInformationTable(options, jaspResults, ready, position = 2, type = "randomForest")
 
+  # Create the cluster means table
+  .clusterMeansTable(dataset, options, jaspResults, ready, position = 3)
+
   # Create the cluster evaluation metrics table
-  .clusterEvaluationMetrics(dataset, options, jaspResults, ready, position = 3)
+  .clusterEvaluationMetrics(dataset, options, jaspResults, ready, position = 4)
 
   # Create the variable importance table
-  .randomForestClusteringVarImpTable(options, jaspResults, ready, position = 4)
+  .randomForestClusteringVarImpTable(options, jaspResults, ready, position = 5)
 
   # Create the within sum of squares plot
-  .elbowCurvePlot(dataset, options, jaspResults, ready, position = 5)
+  .elbowCurvePlot(dataset, options, jaspResults, ready, position = 6)
 
   # Create the cluster plot
-  .tsneClusterPlot(dataset, options, jaspResults, ready, position = 6, type = "randomForest")
+  .tsneClusterPlot(dataset, options, jaspResults, ready, position = 7, type = "randomForest")
   
 }
 

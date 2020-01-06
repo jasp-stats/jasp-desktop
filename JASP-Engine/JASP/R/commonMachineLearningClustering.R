@@ -434,3 +434,44 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
     jaspResults[["clusterColumn"]]$setNominal(clusterColumn)
   }
 }
+
+.clusterMeansTable <- function(dataset, options, jaspResults, ready, position){
+
+  if(!is.null(jaspResults[["clusterMeansTable"]]) || !options[["tableClusterMeans"]]) return()
+
+  clusterMeansTable <- createJaspTable("Cluster Means")
+  clusterMeansTable$dependOn(options = c("tableClusterMeans","predictors", "modelOpt", "noOfIterations",
+                                      "noOfClusters","noOfRandomSets", "tableClusterInfoSize", "tableClusterInfoSilhouette", "optimizationCriterion",
+                                      "tableClusterInfoSumSquares", "tableClusterInfoCentroids", "scaleEqualSD", "tableClusterInfoWSS", "minPts", "eps",
+                                      "tableClusterInfoBetweenSumSquares", "tableClusterInfoTotalSumSquares", "maxClusters", "m", "linkage", "distance", "noOfTrees", "maxTrees"))
+  clusterMeansTable$position               <- position
+
+  jaspResults[["clusterMeansTable"]] <- clusterMeansTable
+
+  if(!ready) return()
+
+  clusterMeansTable$addColumnInfo(name = "cluster", title = "", type = 'number')
+  if(options[["predictors"]] != ""){
+    for(i in 1:length(unlist(options[["predictors"]]))){
+      columnName <- as.character(options[["predictors"]][i])
+      clusterMeansTable$addColumnInfo(name = columnName, title = columnName, type = 'number')
+    }
+  }
+
+  clusterResult <- jaspResults[["clusterResult"]]$object
+
+  clusters <- as.factor(clusterResult[["pred.values"]])
+  clusterLevels <- as.numeric(levels(clusters))
+  clusterTitles <- paste0("Cluster ", clusterLevels)
+  clusterMeans <- NULL
+  
+  for(i in clusterLevels){
+    clusterSubset <- subset(dataset, clusters == i)
+    clusterMeans <- rbind(clusterMeans, colMeans(clusterSubset))
+  }
+
+  clusterMeans <- cbind(cluster = clusterTitles, data.frame(clusterMeans))
+  colnames(clusterMeans) <- c("cluster", as.character(options[["predictors"]]))
+
+  clusterMeansTable$setData(clusterMeans)
+}

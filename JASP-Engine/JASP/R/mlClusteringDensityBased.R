@@ -33,14 +33,17 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
   # Create the cluster information table
   .clusterInformationTable(options, jaspResults, ready, position = 2, type = "densitybased")
 
+  # Create the cluster means table
+  .clusterMeansTable(dataset, options, jaspResults, ready, position = 3)
+
   # Create the cluster evaluation metrics table
-  .clusterEvaluationMetrics(dataset, options, jaspResults, ready, position = 3)
+  .clusterEvaluationMetrics(dataset, options, jaspResults, ready, position = 4)
   
   # Create the k-distance plot
-  .densityBasedClusteringKdistPlot(dataset, options, jaspResults, ready, position = 4)
+  .densityBasedClusteringKdistPlot(dataset, options, jaspResults, ready, position = 5)
 
   # Create the cluster plot
-  .tsneClusterPlot(dataset, options, jaspResults, ready, position = 5, type = "densitybased")
+  .tsneClusterPlot(dataset, options, jaspResults, ready, position = 6, type = "densitybased")
 
 }
 
