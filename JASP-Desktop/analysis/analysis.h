@@ -183,9 +183,9 @@ protected:
 
 private:
 	void					optionsChangedHandler(Option *option = nullptr);
-	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)		{ return requestComputedColumnCreation(tq(columnName), this); }
-	void					requestColumnCreationHandler(std::string columnName, int colType)	{ return requestColumnCreation(tq(columnName), this, colType); }
-	void					requestComputedColumnDestructionHandler(std::string columnName)		{ requestComputedColumnDestruction(tq(columnName)); }
+	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName);
+	void					requestColumnCreationHandler(std::string columnName, int colType)	{ requestColumnCreation(tq(columnName), this, colType); }
+	void					requestComputedColumnDestructionHandler(std::string columnName);
 	void					processResultsForDependenciesToBeShown();
 	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
 	bool					_editOptionsOfPlot(const Json::Value & results, const std::string & uniqueName, Json::Value & editOptions);

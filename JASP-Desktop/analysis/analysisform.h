@@ -108,6 +108,10 @@ public:
 
 	bool		hasError() { return _jaspControlsWithErrorSet.size() > 0; }
 
+	bool		isOwnComputedColumn(const QString& col)			const	{ return _computedColumns.contains(col); }
+	void		addOwnComputedColumn(const QString& col)				{ _computedColumns.push_back(col); }
+	void		removeOwnComputedColumn(const QString& col)				{ _computedColumns.removeAll(col); }
+
 protected:
 	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
 
@@ -156,6 +160,7 @@ private:
 	QList<QQuickItem*>							_controlErrorMessageCache;
 	QSet<JASPControlBase*>						_jaspControlsWithErrorSet;
 	QSet<JASPControlBase*>						_jaspControlsWithWarningSet;
+	QList<QString>								_computedColumns;
 
 };
 

@@ -338,6 +338,24 @@ void Analysis::optionsChangedHandler(Option *option)
 	optionsChanged(this);
 }
 
+ComputedColumn *Analysis::requestComputedColumnCreationHandler(std::string columnName)
+{
+	ComputedColumn *result = requestComputedColumnCreation(tq(columnName), this);
+
+	if (result && form())
+		form()->addOwnComputedColumn(tq(columnName));
+
+	return result;
+}
+
+void Analysis::requestComputedColumnDestructionHandler(std::string columnName)
+{
+	requestComputedColumnDestruction(tq(columnName));
+
+	if (form())
+		form()->removeOwnComputedColumn(tq(columnName));
+}
+
 
 int Analysis::callback(Json::Value results)
 {
