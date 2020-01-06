@@ -529,8 +529,14 @@ jaspTableR <- R6Class(
     setData     = function(data) private$jaspObject$setData(data),
 
 		addFootnote = function(message = "", symbol = NULL, colNames = NULL, rowNames = NULL) {
-      if (is.null(symbol)	&& is.null(colNames)&& is.null(rowNames)&& !grepl("^<.*?>note\\.?</.*?>", message, ignore.case=TRUE)) #If the symbol, colNames and rowNames aren't filled we do this for some reason?
-				symbol <- "<em>Note.</em>"
+      if (is.null(message) || !is.character(message) || length(message) == 0)
+        stop(paste0("jaspTable$addFootnote expects \"message\" to be a string!\nRight now it is: ", paste(as.character(message), collapse=", ")))
+
+      if (is.null(symbol)	&& is.null(colNames) && is.null(rowNames))
+      { #If the symbol, colNames and rowNames aren't filled we do this for some reason?
+        if(!grepl("^<.*?>note\\.?</.*?>", message, ignore.case=TRUE))
+          symbol <- "<em>Note.</em>"
+      }
 			private$jaspObject$addFootnoteHelper(message, symbol, colNames, rowNames)
 		},
 
@@ -549,7 +555,7 @@ jaspTableR <- R6Class(
 
     addRows = function(rows, rowNames = NULL) {
 
-      maxElementLength <- 0 # Lets check if the users means a single row...
+      maxElementLength <- 0 # Lets check if the user means a single row...
       if(is.list(rows) & !is.data.frame(rows))  maxElementLength <- max(unlist(lapply(rows, length)))
       else if(is.vector(rows))                  maxElementLength <- 1
 
