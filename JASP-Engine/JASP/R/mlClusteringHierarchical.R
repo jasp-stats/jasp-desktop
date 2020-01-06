@@ -45,11 +45,14 @@ mlClusteringHierarchical <- function(jaspResults, dataset, options, ...) {
   # Create dendrogram
   .hierarchicalClusteringDendogram(dataset, options, jaspResults, ready, position = 6)
 
+  # Create the cluster means plot
+  .clusterMeansPlot(dataset, options, jaspResults, ready, position = 7)
+
   # Create the cluster densities plot
-  .clusterDensitiesPlot(dataset, options, jaspResults, ready, position = 7)
+  .clusterDensitiesPlot(dataset, options, jaspResults, ready, position = 8)
 
   # Create the cluster plot
-  .tsneClusterPlot(dataset, options, jaspResults, ready, position = 8, type = "hierarchical")
+  .tsneClusterPlot(dataset, options, jaspResults, ready, position = 9, type = "hierarchical")
   
 }
 

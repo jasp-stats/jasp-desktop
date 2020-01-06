@@ -507,12 +507,58 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
     p <- ggplot2::ggplot(plotData, ggplot2::aes(x = value, fill = Cluster)) +
           ggplot2::geom_density(color = "transparent", alpha = 0.6) +
           ggplot2::ylab("Density") +
-          ggplot2::scale_x_continuous(name = variable, breaks = xBreaks, labels = xBreaks)
+          ggplot2::scale_x_continuous(name = variable, breaks = xBreaks, labels = xBreaks, limits = range(xBreaks))
     p <- JASPgraphs::themeJasp(p, legend.position = "right") + 
           ggplot2::theme(axis.ticks.y = ggplot2::element_blank(), 
                          axis.text.y = ggplot2::element_blank())
     
     clusterDensities[[variable]] <- createJaspPlot(plot = p, title = variable, height = 300, width = 500)
     clusterDensities[[variable]]$dependOn(optionContainsValue=list("predictors" = variable))
+  }
+}
+
+.clusterMeansPlot <- function(dataset, options, jaspResults, ready, position){
+
+  if (!is.null(jaspResults[["clusterMeans"]]) || !options[["plotClusterMeans"]]) return()
+
+	clusterMeans <- createJaspContainer("Cluster Mean Plots")
+  clusterMeans$dependOn(options = c("plotClusterMeans","predictors", "modelOpt", "noOfIterations",
+                                      "noOfClusters","noOfRandomSets", "tableClusterInfoSize", "tableClusterInfoSilhouette", "optimizationCriterion",
+                                      "tableClusterInfoSumSquares", "tableClusterInfoCentroids", "scaleEqualSD", "tableClusterInfoWSS", "minPts", "eps",
+                                      "tableClusterInfoBetweenSumSquares", "tableClusterInfoTotalSumSquares", "maxClusters", "m", "linkage", "distance", "noOfTrees", "maxTrees"))
+  clusterMeans$position <- position
+
+  jaspResults[["clusterMeans"]] <- clusterMeans
+
+	if (!ready)
+		return()
+
+  clusterResult <- jaspResults[["clusterResult"]]$object
+
+  for (variable in unlist(options[["predictors"]])){
+
+    clusters <- as.factor(clusterResult[["pred.values"]])
+    xBreaks <- as.numeric(levels(clusters))
+    clusterMeansData <- aggregate(dataset[[.v(variable)]], list(clusters), mean)
+    clusterSdData <- aggregate(dataset[[.v(variable)]], list(clusters), sd)
+    clusterLengthData <- aggregate(dataset[[.v(variable)]], list(clusters), length)
+    
+    plotData <- data.frame(Cluster = clusterMeansData[, 1], 
+                           value = clusterMeansData[, 2],
+                           lower = clusterMeansData[, 2] - qnorm(0.95) * clusterSdData[, 2] / sqrt(clusterLengthData[, 2]),
+                           upper = clusterMeansData[, 2] + qnorm(0.95) * clusterSdData[, 2] / sqrt(clusterLengthData[, 2]))
+
+    yBreaks <- JASPgraphs::getPrettyAxisBreaks(unlist(plotData[, -1]), min.n = 4)
+    
+    p <- ggplot2::ggplot(plotData, ggplot2::aes(x = Cluster, y = value)) +
+          ggplot2::geom_errorbar(data = plotData, ggplot2::aes(x = Cluster, ymin=lower, ymax=upper), width = 0.2, size = 1) + 
+          JASPgraphs::geom_point(color = "black", fill = "lightgray") +
+          ggplot2::scale_x_discrete(name = "Cluster", breaks = xBreaks, labels = xBreaks) +
+          ggplot2::scale_y_continuous(name = variable, breaks = yBreaks, labels = yBreaks, limits = range(yBreaks))
+    p <- JASPgraphs::themeJasp(p, legend.position = "right", sides = "l") + 
+          ggplot2::theme(axis.ticks.x = ggplot2::element_blank())
+    
+    clusterMeans[[variable]] <- createJaspPlot(plot = p, title = variable, height = 300, width = 500)
+    clusterMeans[[variable]]$dependOn(optionContainsValue=list("predictors" = variable))
   }
 }

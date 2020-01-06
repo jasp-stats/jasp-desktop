@@ -91,6 +91,11 @@ Form {
         }
 
         CheckBox { 
+            text: qsTr("Cluster means") 
+            name: "plotClusterMeans" 
+        }
+
+        CheckBox { 
             text: qsTr("Cluster densities") 
             name: "plotClusterDensities" 
         }
