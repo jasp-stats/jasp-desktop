@@ -86,6 +86,11 @@ Form {
         }
 
         CheckBox { 
+            text: qsTr("Cluster densities") 
+            name: "plotClusterDensities" 
+        }
+
+        CheckBox { 
             text: qsTr("t-SNE cluster plot") 
             name: "plot2dCluster" 
 

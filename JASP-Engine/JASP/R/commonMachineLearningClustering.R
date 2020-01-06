@@ -475,3 +475,44 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
 
   clusterMeansTable$setData(clusterMeans)
 }
+
+.clusterDensitiesPlot <- function(dataset, options, jaspResults, ready, position){
+
+  if (!is.null(jaspResults[["clusterDensities"]]) || !options[["plotClusterDensities"]]) return()
+
+	clusterDensities <- createJaspContainer("Cluster Density Plots")
+  clusterDensities$dependOn(options = c("plotClusterDensities","predictors", "modelOpt", "noOfIterations",
+                                      "noOfClusters","noOfRandomSets", "tableClusterInfoSize", "tableClusterInfoSilhouette", "optimizationCriterion",
+                                      "tableClusterInfoSumSquares", "tableClusterInfoCentroids", "scaleEqualSD", "tableClusterInfoWSS", "minPts", "eps",
+                                      "tableClusterInfoBetweenSumSquares", "tableClusterInfoTotalSumSquares", "maxClusters", "m", "linkage", "distance", "noOfTrees", "maxTrees"))
+  clusterDensities$position <- position
+
+  jaspResults[["clusterDensities"]] <- clusterDensities
+
+	if (!ready)
+		return()
+
+  clusterResult <- jaspResults[["clusterResult"]]$object
+
+  for (variable in unlist(options[["predictors"]])) {
+
+    clusters <- as.factor(clusterResult[["pred.values"]])
+    colorPalette <- colorspace::qualitative_hcl(n = length(unique(clusters)))
+
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(dataset[[.v(variable)]], min.n = 4)
+
+    plotData <- data.frame(Cluster = clusters, 
+                           value = dataset[[.v(variable)]])
+
+    p <- ggplot2::ggplot(plotData, ggplot2::aes(x = value, fill = Cluster)) +
+          ggplot2::geom_density(color = "transparent", alpha = 0.6) +
+          ggplot2::ylab("Density") +
+          ggplot2::scale_x_continuous(name = variable, breaks = xBreaks, labels = xBreaks)
+    p <- JASPgraphs::themeJasp(p, legend.position = "right") + 
+          ggplot2::theme(axis.ticks.y = ggplot2::element_blank(), 
+                         axis.text.y = ggplot2::element_blank())
+    
+    clusterDensities[[variable]] <- createJaspPlot(plot = p, title = variable, height = 300, width = 500)
+    clusterDensities[[variable]]$dependOn(optionContainsValue=list("predictors" = variable))
+  }
+}
