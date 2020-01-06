@@ -530,7 +530,11 @@ jaspTableR <- R6Class(
 
 		addFootnote = function(message = "", symbol = NULL, colNames = NULL, rowNames = NULL) {
       if (is.null(message) || !is.character(message) || length(message) == 0)
-        stop(paste0("jaspTable$addFootnote expects \"message\" to be a string!\nRight now it is: ", paste(as.character(message), collapse=", ")))
+      {
+        print("addFootnote got a strange message:")
+        print(message)
+        stop("jaspTable$addFootnote expects \"message\" to be a string!")
+      }
 
       if (is.null(symbol)	&& is.null(colNames) && is.null(rowNames))
       { #If the symbol, colNames and rowNames aren't filled we do this for some reason?
