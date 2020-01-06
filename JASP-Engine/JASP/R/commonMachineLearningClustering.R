@@ -187,6 +187,7 @@
 
   clusterInfoTable$addColumnInfo(name = 'cluster', title = 'Cluster', type = 'integer')
   clusterInfoTable$addColumnInfo(name = 'size', title = 'Size', type = 'integer')
+  clusterInfoTable$addColumnInfo(name = 'percentage', title = 'Explained % of within cluster heterogeneity', type = 'string')
   if(options[["tableClusterInfoWSS"]])
     clusterInfoTable$addColumnInfo(name = 'withinss', title = 'Within sum of squares', type = 'number', format = 'dp:2')
   if(options[["tableClusterInfoSilhouette"]])
@@ -222,7 +223,10 @@
     }
   }
 
-  row <- data.frame(cluster = cluster, size = size)
+  row <- data.frame(cluster = cluster, 
+                    size = size, 
+                    percentage = paste0(round(withinss / sum(withinss) * 100, 3), "%"))
+
   if(options[["tableClusterInfoWSS"]])
     row <- cbind(row, withinss = withinss)
   if(options[["tableClusterInfoSilhouette"]])
@@ -539,17 +543,20 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
 
     clusters <- as.factor(clusterResult[["pred.values"]])
     xBreaks <- as.numeric(levels(clusters))
+    
     clusterMeansData <- aggregate(dataset[[.v(variable)]], list(clusters), mean)
     clusterSdData <- aggregate(dataset[[.v(variable)]], list(clusters), sd)
     clusterLengthData <- aggregate(dataset[[.v(variable)]], list(clusters), length)
-    
+
     plotData <- data.frame(Cluster = clusterMeansData[, 1], 
                            value = clusterMeansData[, 2],
                            lower = clusterMeansData[, 2] - qnorm(0.95) * clusterSdData[, 2] / sqrt(clusterLengthData[, 2]),
                            upper = clusterMeansData[, 2] + qnorm(0.95) * clusterSdData[, 2] / sqrt(clusterLengthData[, 2]))
+    
+    plotData <- plotData[complete.cases(plotData), ]
 
     yBreaks <- JASPgraphs::getPrettyAxisBreaks(unlist(plotData[, -1]), min.n = 4)
-    
+
     p <- ggplot2::ggplot(plotData, ggplot2::aes(x = Cluster, y = value)) +
           ggplot2::geom_errorbar(data = plotData, ggplot2::aes(x = Cluster, ymin=lower, ymax=upper), width = 0.2, size = 1) + 
           JASPgraphs::geom_point(color = "black", fill = "lightgray") +
