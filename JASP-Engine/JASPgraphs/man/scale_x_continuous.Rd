@@ -5,15 +5,33 @@
 \alias{scale_y_continuous}
 \title{Continuous axis scales}
 \usage{
-scale_x_continuous(name = waiver(), breaks = getPrettyAxisBreaks,
-  minor_breaks = waiver(), labels = axesLabeller, limits = "JASP",
-  expand = waiver(), oob = censor, na.value = NA_real_,
-  trans = "identity", position = "bottom", sec.axis = waiver())
+scale_x_continuous(
+  name = waiver(),
+  breaks = getPrettyAxisBreaks,
+  minor_breaks = waiver(),
+  labels = axesLabeller,
+  limits = "JASP",
+  expand = waiver(),
+  oob = censor,
+  na.value = NA_real_,
+  trans = "identity",
+  position = "bottom",
+  sec.axis = waiver()
+)
 
-scale_y_continuous(name = waiver(), breaks = getPrettyAxisBreaks,
-  minor_breaks = waiver(), labels = axesLabeller, limits = "JASP",
-  expand = waiver(), oob = censor, na.value = NA_real_,
-  trans = "identity", position = "left", sec.axis = waiver())
+scale_y_continuous(
+  name = waiver(),
+  breaks = getPrettyAxisBreaks,
+  minor_breaks = waiver(),
+  labels = axesLabeller,
+  limits = "JASP",
+  expand = waiver(),
+  oob = censor,
+  na.value = NA_real_,
+  trans = "identity",
+  position = "left",
+  sec.axis = waiver()
+)
 }
 \arguments{
 \item{name}{see details}

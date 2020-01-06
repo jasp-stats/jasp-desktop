@@ -5,22 +5,35 @@
 \alias{themeJaspRaw}
 \title{JASP theme for ggplot2 objects}
 \usage{
-themeJasp(graph, xAxis = TRUE, yAxis = TRUE, sides = "bl",
+themeJasp(
+  graph,
+  xAxis = TRUE,
+  yAxis = TRUE,
+  sides = "bl",
   axis.title.cex = getGraphOption("axis.title.cex"),
-  bty = getGraphOption("bty"), fontsize = getGraphOption("fontsize"),
-  family = getGraphOption("family"), horizontal = FALSE,
+  bty = getGraphOption("bty"),
+  fontsize = getGraphOption("fontsize"),
+  family = getGraphOption("family"),
+  horizontal = FALSE,
   legend.position = getGraphOption("legend.position"),
   legend.justification = "top",
   axisTickLength = getGraphOption("axisTickLength"),
-  axisTickWidth = getGraphOption("axisTickWidth"))
+  axisTickWidth = getGraphOption("axisTickWidth")
+)
 
-themeJaspRaw(legend.position = "none", legend.cex = 1,
-  axis.title.cex = 1, family = NULL,
+themeJaspRaw(
+  legend.position = "none",
+  legend.cex = 1,
+  axis.title.cex = 1,
+  family = NULL,
   axisTickLength = getGraphOption("axisTickLength"),
   axisTickWidth = getGraphOption("axisTickWidth"),
-  fontsize = getGraphOption("fontsize"), legend.justification = "top",
-  legend.title = element_text(family = family, size = fontsize, hjust =
-  0.5), Xvjust = NULL, Yvjust = NULL)
+  fontsize = getGraphOption("fontsize"),
+  legend.justification = "top",
+  legend.title = element_text(family = family, size = fontsize, hjust = 0.5),
+  Xvjust = NULL,
+  Yvjust = NULL
+)
 }
 \arguments{
 \item{graph}{a ggplot2 object}

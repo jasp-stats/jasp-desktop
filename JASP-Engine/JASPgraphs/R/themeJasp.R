@@ -1,4 +1,4 @@
-#' @importFrom ggplot2 element_line element_text element_rect margin coord_flip
+#' @importFrom ggplot2 element_line element_text element_rect margin coord_flip element_blank
 #' @importFrom grid unit
 
 #' @title JASP theme for ggplot2 objects
@@ -113,7 +113,7 @@ themeJaspRaw = function(legend.position = "none",
         # panel
         panel.border = element_rect(color = "transparent", fill = "transparent", size = 0),
         panel.spacing = unit(2, "cm"),
-        panel.grid = element_line(color = "transparent", size = 0),
+        panel.grid = element_blank(),
         panel.background = element_rect(color = "transparent", fill = "transparent"),
 
         # plot
