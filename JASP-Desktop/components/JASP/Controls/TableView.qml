@@ -126,6 +126,7 @@ JASPControl
 				model:					null
 				itemHorizontalPadding:	0
 				itemVerticalPadding:	8 * preferencesModel.uiScale
+				cacheItems:				false
 
 				viewportX: myFlickable.visibleArea.xPosition * width
 				viewportY: myFlickable.visibleArea.yPosition * height
@@ -171,38 +172,8 @@ JASPControl
 
 				itemDelegate: Item
 				{
-					Text
-					{
-						id:					textDisplay
-						anchors.verticalCenter: parent.verticalCenter
-						anchors.left:			parent.left
-						anchors.top:			parent.top
-						anchors.topMargin:		- 8 * preferencesModel.uiScale
-						font:				jaspTheme.font
-						color:				itemEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
-						visible:			!textInput.visible
-						text:				itemText
-						padding:			jaspTheme.jaspControlPadding
-						leftPadding:		jaspTheme.labelSpacing
-						verticalAlignment:	Text.AlignVCenter
-					}
 
-					MouseArea
-					{
-						anchors.fill:		parent
-						visible:			itemEditable && !textInput.visible
-						z:					2
-						onClicked:
-						{
-							textInput.visible	= true;
-							textInput.value		= itemText === "..." ? "" : itemText
-							textInput.forceActiveFocus();
-						}
-						cursorShape:		Qt.IBeamCursor
-					}
-
-
-					/*TextField
+					TextField
 					{
 						id:						textInput
 						isBound:				false
@@ -212,7 +183,7 @@ JASPControl
 						anchors.topMargin:		- 8 * preferencesModel.uiScale
 						fieldHeight:			parent.height + 16 * preferencesModel.uiScale
 						fieldWidth:				parent.width
-						visible:				false
+						visible:				true
 						useExternalBorder:		false
 						value:					itemText
 						useLastValidValue:		false
@@ -220,34 +191,7 @@ JASPControl
 						validator:				tableView.validator
 						onPressed:				tableView.colSelected = columnIndex
 						onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value)
-						onActiveFocusChanged:	if(!activeFocus) visible = false;
-					} */
-
-
-					QTC.TextField
-					{
-						id:						textInput
-						//isBound:				false
-						anchors.verticalCenter: parent.verticalCenter
-						anchors.left:			parent.left
-						//fieldHeight:			parent.height
-						//fieldWidth:				parent.width
-						width:					parent.width
-						height:					parent.height + 16 * preferencesModel.uiScale
-						visible:				false
-						//useExternalBorder:		false
-						text:					itemText
-						//value:					itemText
-						//useLastValidValue:		false
-						//selectValueOnFocus:		true
-						selectByMouse:			true
-						validator:				tableView.validator
-						onPressed:				tableView.colSelected = columnIndex
-						//onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value)
-						onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, text)
-						onActiveFocusChanged:	if(!activeFocus) visible = false;
 					}
-
 				}
 
 				leftTopCornerItem: Rectangle

@@ -41,10 +41,11 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( QQmlComponent * columnHeaderDelegate	READ columnHeaderDelegate	WRITE setColumnHeaderDelegate	NOTIFY columnHeaderDelegateChanged	)
 	Q_PROPERTY( QQuickItem * leftTopCornerItem			READ leftTopCornerItem		WRITE setLeftTopCornerItem		NOTIFY leftTopCornerItemChanged		)
 	Q_PROPERTY( QQuickItem * extraColumnItem			READ extraColumnItem		WRITE setExtraColumnItem		NOTIFY extraColumnItemChanged		)
-	Q_PROPERTY( QFont font								MEMBER _font												NOTIFY fontChanged					)
+	Q_PROPERTY( QFont font								READ font					WRITE setFont					NOTIFY fontChanged					)
 	Q_PROPERTY( double headerHeight						READ headerHeight											NOTIFY headerHeightChanged			)
 	Q_PROPERTY( double rowNumberWidth					READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
-
+	Q_PROPERTY( double rowNumberWidth					READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
+	Q_PROPERTY( bool cacheItems							READ cacheItems				WRITE setCacheItems				NOTIFY cacheItemsChanged			)
 
 public:
 	DataSetView(QQuickItem *parent = nullptr);
@@ -69,6 +70,11 @@ public:
 	QQuickItem * leftTopCornerItem()		{ return _leftTopItem; }
 	QQuickItem * extraColumnItem()			{ return _extraColumnItem; }
 
+	bool cacheItems()						{ return _cacheItems; }
+	QFont font()							{ return _font; }
+
+	GENERIC_SET_FUNCTION(CacheItems, _cacheItems, cacheItemsChanged, bool)
+
 	GENERIC_SET_FUNCTION(ViewportX, _viewportX, viewportXChanged, double)
 	GENERIC_SET_FUNCTION(ViewportY, _viewportY, viewportYChanged, double)
 	GENERIC_SET_FUNCTION(ViewportW, _viewportW, viewportWChanged, double)
@@ -83,6 +89,8 @@ public:
 
 	void setLeftTopCornerItem(		QQuickItem * newItem);
 	void setExtraColumnItem(		QQuickItem * newItem);
+
+	void setFont(const QFont& font);
 
 	int headerHeight()			{ return _dataRowsMaxHeight; }
 	int rowNumberWidth()		{ return _rowNumberMaxWidth; }
@@ -113,6 +121,8 @@ signals:
 
 	void headerHeightChanged();
 	void rowNumberWidthChanged();
+
+	void cacheItemsChanged();
 
 public slots:
 	void calculateCellSizes();
@@ -159,6 +169,8 @@ protected:
 
 	void addLine(float x0, float y0, float x1, float y1);
 
+	QSizeF getTextSize(const QString& text)	const		{ 	return _metricsFont.size(Qt::TextSingleLine, text); }
+	QSizeF getColumnSize(int col);
 
 protected:
 	QAbstractItemModel *									_model = nullptr;
@@ -167,6 +179,7 @@ protected:
 	std::vector<double>										_colXPositions; //[col][row]
 	std::vector<double>										_dataColsMaxWidth;
 	std::stack<ItemContextualized*>							_textItemStorage;
+	bool													_cacheItems = true;
 	std::stack<ItemContextualized*>							_rowNumberStorage;
 	std::map<int, ItemContextualized *>						_rowNumberItems;
 	std::stack<ItemContextualized*>							_columnHeaderStorage;
