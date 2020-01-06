@@ -19,11 +19,21 @@ getImageLocation <- function() {
   )
 }
 
-openGrDevice <- function(...) {
-  if (jaspResultsCalledFromJasp())
-    svglite::svglite(...)
-  else
+openGrDevice <- function(..., baseSvg = FALSE) {
+  if (jaspResultsCalledFromJasp()) {
+    if (baseSvg) {
+      dots <- list(...)
+      if ("file" %in% names(dots)) {
+        dots[["filename"]] <- dots[["file"]]
+        dots[["file"]]     <- NULL
+      }
+      do.call(grDevices::svg, dots)
+    } else {
+      svglite::svglite(...)
+    }
+  } else {
     grDevices::png(..., units="in", res = 72, type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
+  }
 }
 
 writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathsvg=NULL, ppi=300, backgroundColor="white", location=getImageLocation())
@@ -80,7 +90,8 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
     isRecordedPlot <- inherits(plot2draw, "recordedplot")
 
     # Open graphics device and plot
-    openGrDevice(file = relativePathsvg, width = width, height = height, bg = backgroundColor)
+    openGrDevice(file = relativePathsvg, width = width, height = height, bg = backgroundColor,
+                 baseSvg = is.function(plot2draw))
     on.exit(dev.off())
 
     if (is.function(plot2draw) && !isRecordedPlot) {
