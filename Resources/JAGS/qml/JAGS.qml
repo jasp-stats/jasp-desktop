@@ -33,32 +33,6 @@ Form
 		textType:	"JAGSmodel"
 		text:		"model{\n\n}"
 	}
-    
-//    VariablesForm
-//    {
-//        visible: !monitorAllParameters.checked
-//        preferredHeight: 200
-//        AvailableVariablesList
-//        {
-//            name: "parametersList";
-//            title: qsTr("Parameters in model")
-//            source: [{ name: "model", discard: { name: "userData", use: "Parameter"}}]
-//        }
-//        AssignedVariablesList   { name: "monitoredParametersList";   title: qsTr("Monitor these parameters"); }
-//    }
-    
-//    VariablesForm
-//    {
-//        preferredHeight: 200
-//        AvailableVariablesList
-//        {
-//            id:     monitoredParametersList2
-//            name:   "monitoredParametersList2"
-//            title:  monitorAllParameters.checked ? qsTr("Parameters in model") : qsTr("Monitored parameters")
-//            source: monitorAllParameters.checked ? [{ name: "model", discard: { name: "userData", use: "Parameter"}}] : ["monitoredParametersList"]
-//        }
-//        AssignedVariablesList   { name: "parametersShown";         title: qsTr("Show results for these parameters")}
-//    }
 
 	VariablesForm
 	{
@@ -212,16 +186,6 @@ Form
 				min: 1
 				max: 50
 				fieldWidth: 100
-			}
-		}
-
-		Group
-		{
-			CheckBox
-			{
-				label: qsTr("Monitor Deviance")
-				name: "monitorDeviance"
-				CheckBox { label: qsTr("Compute DIC");		name: "monitorDIC"}
 			}
 		}
 

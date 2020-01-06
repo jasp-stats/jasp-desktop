@@ -189,8 +189,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   )
 
   tmp <- createJaspState(object = out)
-  tmp$dependOn(c("model", "noSamples", "noBurnin", "noThinning", "noChains", "initialValues", "userData", "showResultsFor",
-                 "monitorDeviance"))
+  tmp$dependOn(c("model", "noSamples", "noBurnin", "noThinning", "noChains", "initialValues", "userData", "showResultsFor"))
   if (options[["showResultsFor"]] == "monitorAllParameters")
     tmp$dependOn("parametersShown")
   else
