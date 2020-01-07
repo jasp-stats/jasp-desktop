@@ -95,7 +95,7 @@ JASPControl
 		width:				parent.width
 		height:				parent.height
 		border.width:		1
-		border.color:		jaspTheme.black
+		border.color:		jaspTheme.uiBorder
 		color:				jaspTheme.white
 
 		Flickable
