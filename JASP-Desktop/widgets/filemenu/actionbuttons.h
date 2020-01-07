@@ -33,6 +33,7 @@ public:
 	Q_INVOKABLE	void selectButtonDown();
 
 	std::set<ResourceButtons::ButtonType> resourceButtonsForButton(FileOperation button);
+	void refresh();
 
 signals:
 				void selectedActionChanged(FileOperation selectedAction);
@@ -42,7 +43,10 @@ public slots:
 	void setEnabled(ActionButtons::FileOperation operation, bool enabledState);
 	void setSelectedAction(FileOperation selectedAction);
 
+
 private:
+	void loadButtonData(std::vector<DataRow> & data);
+
 	std::vector<DataRow>				_data;
 	std::map<FileOperation, size_t>		_opToIndex;
 	FileOperation						_selected = None;

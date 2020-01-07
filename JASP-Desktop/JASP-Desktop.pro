@@ -160,9 +160,9 @@ macx {
     RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
 	equals(GENERATE_LANGUAGE_FILES,1) {
-	maketranslations.commands += lupdate -extensions cpp,qml -recursive $$PWD/.. -ts $$PWD/../jasp.po ;
-	maketranslations.commands += lupdate -extensions cpp,qml -target-language dutch -recursive $$PWD/.. -ts $$PWD/../jasp_nl.po ;
-	#maketranslations.commands += lupdate -extensions cpp,qml -target-language japanese -recursive $$PWD/.. -ts $$PWD/../jasp_ja.po ;
+	maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$PWD/../jasp.po ;
+  #maketranslations.commands += lupdate -locations none -extensions cpp,qml -target-language Dutch -recursive $$PWD/.. -ts $$PWD/../jasp_nl.po ;
+	#maketranslations.commands += lupdate -extensions h,cpp,qml -target-language japanese -recursive $$PWD/.. -ts $$PWD/../jasp_ja.po ;
 	maketranslations.commands += lrelease $$PWD/../jasp_nl.po -qm $$PWD/../Resources/Translations/jasp_nl.qm ;
 	#maketranslations.commands += lrelease $$PWD/../jasp_ja.po -qm $$PWD/../Resources/Translations/jasp_ja.qm ;
 	maketranslations.commands += cp $$RESOURCES_PATH/Translations/*.qm $$RESOURCES_PATH_DEST/Translations/ ;

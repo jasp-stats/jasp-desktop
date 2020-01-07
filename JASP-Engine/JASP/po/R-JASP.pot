@@ -1,0 +1,553 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: JASP 0.9.2\n"
+"POT-Creation-Date: 2019-12-19 16:03\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+
+msgid "Bayesian A/B Test"
+msgstr ""
+
+msgid "Models"
+msgstr ""
+
+msgid "P(M)"
+msgstr ""
+
+msgid "P(M|data)"
+msgstr ""
+
+msgid "A positive log odds ratio means that the success rate in Group 2 is higher than in Group 1."
+msgstr ""
+
+msgid "Log odds ratio = 0"
+msgstr ""
+
+msgid "Log odds ratio > 0"
+msgstr ""
+
+msgid "Log odds ratio < 0"
+msgstr ""
+
+msgid "Log odds ratio %s %s"
+msgstr ""
+
+msgid "Descriptives"
+msgstr ""
+
+msgid "Counts"
+msgstr ""
+
+msgid "Total"
+msgstr ""
+
+msgid "Proportion"
+msgstr ""
+
+msgid "Group 1"
+msgstr ""
+
+msgid "Group 2"
+msgstr ""
+
+msgid "Prior and Posterior"
+msgstr ""
+
+msgid "Sequential Analysis"
+msgstr ""
+
+msgid "Bayes Factor Robustness Check"
+msgstr ""
+
+msgid "Prior"
+msgstr ""
+
+msgid "Bootstrapping options have changed"
+msgstr ""
+
+msgid "One or more Bayes factors cannot be computed"
+msgstr ""
+
+msgid "One or more Bayes factors are infinite"
+msgstr ""
+
+msgid "Undefined hypothesis"
+msgstr ""
+
+msgid "Currently cannot infer 'values' when 'mods' is not a formula. Please provide 'values'."
+msgstr ""
+
+msgid "No items to show, please add a results description or set init to true"
+msgstr ""
+
+msgid "None of the result items has show set to 'true', cannot skip init phase"
+msgstr ""
+
+msgid "Cannot create empty placeholder for element of type"
+msgstr ""
+
+msgid "Cannot locate any items in the results description"
+msgstr ""
+
+msgid "Unknown type ("
+msgstr ""
+
+msgid ")  provided in results description"
+msgstr ""
+
+msgid "Could not create meta for"
+msgstr ""
+
+msgid "at depth"
+msgstr ""
+
+msgid "(class:"
+msgstr ""
+
+msgid ", names:"
+msgstr ""
+
+msgid ", class children:"
+msgstr ""
+
+msgid ", names children:"
+msgstr ""
+
+msgid ")"
+msgstr ""
+
+msgid "Could not figure out the container structure in"
+msgstr ""
+
+msgid "Could not find meta description for current plot"
+msgstr ""
+
+msgid "Could not find meta description for current table"
+msgstr ""
+
+msgid "Could not locate 'name' in custom table meta"
+msgstr ""
+
+msgid "Could not find any data in the table, cannot fetch items from the results description"
+msgstr ""
+
+msgid "Could not locate any of the columns specified in the results description"
+msgstr ""
+
+msgid "expecting output to be a data.frame"
+msgstr ""
+
+msgid "no columns found to be imported"
+msgstr ""
+
+msgid "expecting the JASP options to be a named list"
+msgstr ""
+
+msgid "Trying to find dataset columns to read, but it appears some options don't exist: '"
+msgstr ""
+
+msgid ","
+msgstr ""
+
+msgid "'"
+msgstr ""
+
+msgid "Invalid type supplied to .fromRCPP, expected character"
+msgstr ""
+
+msgid "Unknown RCPP object"
+msgstr ""
+
+msgid "Could not locate"
+msgstr ""
+
+msgid "in environment (.fromRCPP)"
+msgstr ""
+
+msgid "Provide a numeric value to the progress updater"
+msgstr ""
+
+msgid "could not clean value"
+msgstr ""
+
+msgid "Missing required replacement(s): \""
+msgstr ""
+
+msgid "\""
+msgstr ""
+
+msgid "Expecting row to be a numeric index"
+msgstr ""
+
+msgid "Expecting cols to be a (vector of) character name(s)"
+msgstr ""
+
+msgid "None of the gui options ("
+msgstr ""
+
+msgid ") is in the options list."
+msgstr ""
+
+msgid "Format incorrectly specified"
+msgstr ""
+
+msgid "Loading plot snapshot from a different session with possible side effects or errors."
+msgstr ""
+
+msgid "Invalid value provided to 'ticks', expecting positive integer"
+msgstr ""
+
+msgid "The value provided to 'callback' does not appear to be a function"
+msgstr ""
+
+msgid "Invalid value provided to 'skim', expecting numeric value in the range of 0-99"
+msgstr ""
+
+msgid "Object provided in 'progressbar' is not of class JASP progressbar"
+msgstr ""
+
+msgid "Object provided in 'cluster' is not of class cluster"
+msgstr ""
+
+msgid "Cancelled by callback"
+msgstr ""
+
+msgid ".setSeedJASP was called with an incorrect argument."
+msgstr ""
+
+msgid "The argument options should be the options list from QML."
+msgstr ""
+
+msgid "Ensure that the SetSeed{} QML component is present in the QML file for this analysis."
+msgstr ""
+
+msgid "length of samples must be equal to length of weights!"
+msgstr ""
+
+msgid "This function should not be used. In for reference."
+msgstr ""
+
+msgid "Object passed to .scaleNumericData.matrix was not numeric!"
+msgstr ""
+
+msgid "Non-valid type argument provided"
+msgstr ""
+
+msgid "Unknown check type provided: \""
+msgstr ""
+
+msgid "Missing required argument(s): \""
+msgstr ""
+
+msgid "Each grouping variable must have a level specified"
+msgstr ""
+
+msgid "the modelterms list must contain the named item `components`"
+msgstr ""
+
+msgid "Could not find message for class"
+msgstr ""
+
+msgid "and type"
+msgstr ""
+
+msgid "Bayes factors could not be computed for 100 values of the prior."
+msgstr ""
+
+msgid "Odds ratio restricted to 2 x 2 tables"
+msgstr ""
+
+msgid "Odds ratio for this model not yet implemented"
+msgstr ""
+
+msgid "The Bayes factor is undefined"
+msgstr ""
+
+msgid "The Bayes factor is too small"
+msgstr ""
+
+msgid "The Bayes factor is infinite"
+msgstr ""
+
+msgid "Invalid sampling model selected"
+msgstr ""
+
+msgid "Posterior is too peaked"
+msgstr ""
+
+msgid "One or more Bayes factors are infinity"
+msgstr ""
+
+msgid "A String with a space %s %d"
+msgstr ""
+
+msgid "Frequency Tables"
+msgstr ""
+
+msgid "Correlation plots"
+msgstr ""
+
+msgid "Correlation plot"
+msgstr ""
+
+msgid "Distribution Plots"
+msgstr ""
+
+msgid "Boxplots"
+msgstr ""
+
+msgid "Q-Q Plots"
+msgstr ""
+
+msgid "Q-Q Plot"
+msgstr ""
+
+msgid "Plotting is not possible: Variable only contains NA!"
+msgstr ""
+
+msgid "Pie charts"
+msgstr ""
+
+msgid "Scatter Plots"
+msgstr ""
+
+msgid "Descriptive Statistics"
+msgstr ""
+
+msgid "Frequencies for %s"
+msgstr ""
+
+msgid "Currently this only works with rma and rma.mv objects that have specified 'yi' as a formula."
+msgstr ""
+
+msgid "Formula is refering to factors that are not in the model."
+msgstr ""
+
+msgid "There are no predictors in the model that correspond to factors in '"
+msgstr ""
+
+msgid "'. Factor levels:"
+msgstr ""
+
+msgid ". Data names:"
+msgstr ""
+
+msgid "; Used Terms:"
+msgstr ""
+
+msgid "; Data set head:"
+msgstr ""
+
+msgid "Argument 'contrasts' should be a matrix."
+msgstr ""
+
+msgid "Invalid contrasts: Rows in"
+msgstr ""
+
+msgid "do not add to 0."
+msgstr ""
+
+msgid "Only using first element of"
+msgstr ""
+
+msgid "."
+msgstr ""
+
+msgid "is small than 2."
+msgstr ""
+
+msgid "No components with an eigenvalue >"
+msgstr ""
+
+msgid "Maximum observed eigenvalue:"
+msgstr ""
+
+msgid "Cannot plot the posterior - possibly too concentrated near 0."
+msgstr ""
+
+msgid "no terms in scope"
+msgstr ""
+
+msgid "no terms in scope for adding to object"
+msgstr ""
+
+msgid "trying + %s"
+msgstr ""
+
+msgid "F test assumes 'quasi%s' family"
+msgstr ""
+
+msgid "'use.start' cannot be used with R's version of 'glm'"
+msgstr ""
+
+msgid "AIC is not defined for this model, so 'stepAIC' cannot proceed"
+msgstr ""
+
+msgid "AIC is -infinity for this model, so 'stepAIC' cannot proceed"
+msgstr ""
+
+msgid "0 df terms are changing AIC"
+msgstr ""
+
+msgid "number of rows in use has changed: remove missing values?"
+msgstr ""
+
+msgid "AIC undefined for REML fit"
+msgstr ""
+
+msgid "End of recursion reached without converging"
+msgstr ""
+
+msgid "x and y must be numeric and finite. Missing values not allowed."
+msgstr ""
+
+msgid "x and y must be of equal length."
+msgstr ""
+
+msgid "Need more points to find cutoff."
+msgstr ""
+
+msgid "Need to specify fraction of maximum slope."
+msgstr ""
+
+msgid "Fraction of maximum slope must be positive and be less than or equal to 1."
+msgstr ""
+
+msgid "Method must be either 'first' or 'curvature'."
+msgstr ""
+
+msgid "Cutoff point is beyond range. Returning NA."
+msgstr ""
+
+msgid "'data' can only be missing if type = 'parametric'. Setting type = 'parametric' and performing parametric bootstrap instead."
+msgstr ""
+
+msgid "'graph' may not be missing in parametric bootstrap when 'data' is missing."
+msgstr ""
+
+msgid "'sampleSize' may not be missing in parametric bootstrap when 'data' is missing."
+msgstr ""
+
+msgid "'data' is ignored when using manual parametric bootstrap."
+msgstr ""
+
+msgid "Removing non-numeric columns:"
+msgstr ""
+
+msgid ";"
+msgstr ""
+
+msgid "Jacknife overwrites nBoot to sample size"
+msgstr ""
+
+msgid "Node-wise bootstrapping requires at least three nodes."
+msgstr ""
+
+msgid "'data' argument must be a data frame"
+msgstr ""
+
+msgid "'model' must be set in parametric bootstrap without 'data'."
+msgstr ""
+
+msgid "model set to '"
+msgstr ""
+
+msgid "Estimating sample network..."
+msgstr ""
+
+msgid "Bootstrapping..."
+msgstr ""
+
+msgid "Model '"
+msgstr ""
+
+msgid "' not supported."
+msgstr ""
+
+msgid "Maximum number of errors in bootstraps reached"
+msgstr ""
+
+msgid "Computing statistics..."
+msgstr ""
+
+msgid "expecting both arguments to be data.frames"
+msgstr ""
+
+msgid "Unknown value provided for modelType, possible values: `alternative`, `null`"
+msgstr ""
+
+msgid "We need at least one predictor, or an intercept to make a formula"
+msgstr ""
+
+msgid "variables cannot be read"
+msgstr ""
+
+msgid "R Package error:"
+msgstr ""
+
+msgid "R Package error: Cannot retrieve table probabilities"
+msgstr ""
+
+msgid "Submodel specified is not within possible submodels"
+msgstr ""
+
+msgid "Bayesian Binomial Test"
+msgstr ""
+
+msgid "Successes"
+msgstr ""
+
+msgid "Failures"
+msgstr ""
+
+msgid "Test value"
+msgstr ""
+
+msgid "p"
+msgstr ""
+
+msgid "Plotting not possible: Posterior too peaked!"
+msgstr ""
+
+msgid "Population proportion"
+msgstr ""
+
+msgid "Plotting not possible: Cannot evaluate prior or posterior density!"
+msgstr ""
+
+msgid "Plotting not possible: Bayes factor should be numeric!"
+msgstr ""
+
+msgid "Plotting not possible: %s"
+msgstr ""
+
+msgid "Proportions tested against value:"
+msgstr ""
+
+msgid "For all tests, the alternative hypothesis specifies that the proportion is greater than"
+msgstr ""
+
+msgid "For all tests, the alternative hypothesis specifies that the proportion is less than"
+msgstr ""
+
+msgid "Cannot test the hypothesis that the test value is greater than 1."
+msgstr ""
+
+msgid "Cannot test the hypothesis that the test value is less than 0."
+msgstr ""
+
+msgid "data are essentially constant"
+msgstr ""
+
+msgid "could not calculate enough valid Bayes Factors for different values of the prior"
+msgstr ""
+
+msgid        "using the %d/%d row from a combined fit"
+msgid_plural "using the %d/%d rows from a combined fit"
+msgstr[0]    ""
+msgstr[1]    ""

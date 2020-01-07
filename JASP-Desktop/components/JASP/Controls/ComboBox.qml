@@ -234,7 +234,7 @@ JASPControl
 					x:							1 * preferencesModel.uiScale
 					height:						15 * preferencesModel.uiScale
 					width:						15 * preferencesModel.uiScale
-					source:						useModelDefinedIcon ? model.iconfile : ((visible && comboBox.initialized) ? jaspTheme.iconPath + (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : "")
+					source:						useModelDefinedIcon ? model.iconfile : (visible ? jaspTheme.iconPath + (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType]) : "")
 					visible:					comboBox.showVariableTypeIcon && !itemRectangle.isEmptyValue
 
 					anchors.verticalCenter:		parent.verticalCenter
@@ -242,7 +242,7 @@ JASPControl
 
 				Text {
 					x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
-					text:						comboBox.initialized ? (itemRectangle.isEmptyValue ? comboBox.placeholderText : (comboBox.isDirectModel ? model.label : model.name)) : ""
+					text:						itemRectangle.isEmptyValue ? comboBox.placeholderText : model.name
 					font:						jaspTheme.font
 					color:						itemRectangle.isEmptyValue || !enabled ? jaspTheme.grayDarker : (comboBox.currentIndex === index ? jaspTheme.white : jaspTheme.black)
 					anchors.verticalCenter:		parent.verticalCenter

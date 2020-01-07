@@ -1,7 +1,17 @@
 #include "resourcebuttons.h"
 
 ResourceButtons::ResourceButtons(QObject *parent) : QAbstractListModel (parent),
-	_data({
+	_data()
+{
+	loadButtonData(_data);
+
+	for(size_t i=0; i<_data.size(); i++)
+		_buttonToIndex[_data[i].button] = i;
+}
+
+void ResourceButtons::loadButtonData(std::vector<ResourceButtons::DataRow> &data)
+{
+	_data = {
 		{ButtonType::RecentFiles,	tr("Recent Files"),	false,	"./RecentFiles.qml"		, true},
 		{ButtonType::CurrentFile,	tr("Current File"),	false,	"./CurrentFile.qml"		, false},
 		{ButtonType::Computer,		tr("Computer"),		false,	"./Computer.qml"		, true},
@@ -11,12 +21,9 @@ ResourceButtons::ResourceButtons(QObject *parent) : QAbstractListModel (parent),
 		{ButtonType::PrefsResults,	tr("Results"),		false,	"./PrefsResults.qml"	, true},
 		{ButtonType::PrefsUI,		tr("Interface"),	false,	"./PrefsUI.qml"			, true},
 		{ButtonType::PrefsAdvanced,	tr("Advanced"),		false,	"./PrefsAdvanced.qml"	, true}
-	})
-{
-	for(size_t i=0; i<_data.size(); i++)
-		_buttonToIndex[_data[i].button] = i;
+	};
+
 }
-//nameRole = Qt::UserRole + 1, TypeRole, VisibleRole, QmlRole };
 
 QVariant ResourceButtons::data(const QModelIndex &index, int role)	const
 {
@@ -139,6 +146,7 @@ void ResourceButtons::setSelectedButton(ButtonType selectedButton)
 	emit selectedButtonChanged(_selectedButton);
 }
 
+
 void ResourceButtons::selectFirstButtonIfNoneSelected()
 {
 	if(_selectedButton == None)
@@ -180,4 +188,22 @@ void ResourceButtons::selectButtonDown()
 			return;
 		}
 	}
+}
+
+void ResourceButtons::refresh()
+{
+	beginResetModel();
+
+	std::vector<DataRow> savedata = _data;
+
+	loadButtonData(_data);
+
+	for(int i=0 ; i < savedata.size() ; i++)
+	{
+		_data[i].enabled = savedata[i].enabled;
+		_data[i].visible = savedata[i].visible;
+	}
+
+	endResetModel();
+
 }

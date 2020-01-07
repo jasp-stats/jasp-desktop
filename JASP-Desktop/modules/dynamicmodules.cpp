@@ -17,6 +17,7 @@
 //
 
 
+
 #include "dynamicmodules.h"
 #include "utilities/extractarchive.h"
 #include "utilities/settings.h"
@@ -24,6 +25,7 @@
 #include "utilities/appdirs.h"
 #include "utilities/qutils.h"
 #include "log.h"
+
 
 DynamicModules * DynamicModules::_singleton = nullptr;
 
@@ -102,7 +104,10 @@ bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 		}
 
 		if(!wasAddedAlready)
+		{
 			emit dynamicModuleAdded(module);
+			emit loadModuleTranslationFile(module);
+		}
 
 		return true;
 	}
@@ -111,6 +116,8 @@ bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 		MessageForwarder::showWarning("An error occured trying to initialize a module from dir " + module->moduleRLibrary().toStdString() + ", the error was: " + e.what());
 		return false;
 	}
+
+
 }
 
 std::string DynamicModules::loadModule(const std::string & moduleName)
@@ -383,6 +390,7 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 	_modules[moduleName] = dynMod;
 
 	registerForInstalling(moduleName);
+
 }
 
 void DynamicModules::installJASPDeveloperModule()
@@ -435,7 +443,7 @@ void DynamicModules::startWatchingDevelopersModule()
 		{
 			QDir instDir(entry.absoluteFilePath());
 			for(const QFileInfo & entryinst : instDir.entryInfoList(QDir::Filter::Dirs | QDir::Filter::Files | QDir::Filter::NoDotAndDotDot))
-				if(entryinst.isFile() && entryinst.fileName().toLower() == "description.json")
+				if(entryinst.isFile() && entryinst.fileName().toLower() == Modules::DynamicModule::getJsonDesriptionFileName())
 					descriptionFound = true;
 				else if(entryinst.isDir())
 				{
@@ -465,7 +473,7 @@ void DynamicModules::startWatchingDevelopersModule()
 
 void DynamicModules::devModCopyDescription()
 {
-	const QString descJson = "inst/description.json";
+	const QString descJson = "inst/" + Modules::DynamicModule::getJsonDesriptionFileName();
 	QFileInfo src(_devModSourceDirectory.filePath(descJson));
 	QFileInfo dst(QString::fromStdString(moduleDirectory(developmentModuleName()) + developmentModuleName() + "/")  + descJson);
 

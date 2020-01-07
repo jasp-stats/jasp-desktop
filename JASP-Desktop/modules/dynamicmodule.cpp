@@ -26,6 +26,7 @@
 #include <locale>
 #include "log.h"
 #include "utilities/qutils.h"
+#include "utilities/languagemodel.h"
 
 namespace Modules
 {
@@ -67,6 +68,16 @@ void DynamicModule::developmentModuleFolderCreate()
 	if(developmentModuleFolder().dir().exists()) return;
 
 	QDir(AppDirs::modulesDir()).mkdir(QString::fromStdString(defaultDevelopmentModuleName()));
+}
+
+QString DynamicModule::getJsonDesriptionFileName()
+{
+	LanguageInfo li = LanguageModel::CurrentLanguageInfo;
+
+	//Leave help filenames from JASP native language - English - with localname en_US unchanged
+	QString _localname = li.language  == QLocale::English ? "" : ("_" + li.localName);
+
+	return "description" + _localname + ".json";
 }
 
 ///This constructor is meant specifically for the development module and only *it*!
@@ -115,7 +126,7 @@ void DynamicModule::initialize()
 		return checkInfo;
 	};
 
-	QFileInfo descriptionInfo = checkForExistence("description.json", true);
+	QFileInfo descriptionInfo = checkForExistence(getJsonDesriptionFileName().toStdString(), true);
 								checkForExistence("icons");
 								checkForExistence("qml");
 								//checkForExistence("R"); The module is now a package so there is no point in checking for R code because what kind of R package has *no* r-code?
@@ -645,7 +656,7 @@ void  DynamicModule::setRequiredPackages(Json::Value requiredPackages)
 
 void DynamicModule::reloadDescription()
 {
-	QFile descriptionFile(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/description.json");
+	QFile descriptionFile(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/" + getJsonDesriptionFileName());
 
 	descriptionFile.open(QIODevice::ReadOnly);
 
@@ -680,7 +691,7 @@ std::string DynamicModule::getDESCRIPTIONFromFolder(const std::string & filepath
 std::string DynamicModule::getDescriptionJsonFromArchive(const std::string &  filepath)
 {
 	try {
-		return ExtractArchive::extractSingleTextFileFromArchive(filepath, "description.json");
+		return ExtractArchive::extractSingleTextFileFromArchive(filepath, getJsonDesriptionFileName().toStdString());
 	} catch (...) {
 		return "";
 	}
@@ -688,7 +699,7 @@ std::string DynamicModule::getDescriptionJsonFromArchive(const std::string &  fi
 
 std::string DynamicModule::getDescriptionJsonFromFolder(const std::string &  filepath)
 {
-	return getFileFromFolder(QString::fromStdString(filepath), "description.json").toStdString();
+	return getFileFromFolder(QString::fromStdString(filepath), getJsonDesriptionFileName()).toStdString();
 }
 
 QString DynamicModule::getFileFromFolder(const QString &  filepath, const QString & searchMe)

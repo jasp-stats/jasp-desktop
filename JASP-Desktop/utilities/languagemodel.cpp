@@ -12,66 +12,76 @@
 #include <QDir>
 #include <locale>
 #include "gui/messageforwarder.h"
+#include "dirs.h"
+#include "qutils.h"
+#include <QDirIterator>
+
 
 using namespace std;
 
 LanguageInfo  LanguageModel::CurrentLanguageInfo;
+LanguageModel * LanguageModel::_singleton = nullptr;
 
-LanguageModel::LanguageModel(QString qmsourcepath, QApplication *app, QObject *parent)
+LanguageModel::LanguageModel(QString qmresourcepath, QApplication *app, QQmlApplicationEngine *qml, QObject *parent)
 	: QAbstractListModel(parent)
 {
+	assert(!_singleton);
+
+	_singleton = this;
+
 	_mApp = app;
 	_parent = parent;
+	_qml = qml;
+	_mTransLator = new QTranslator(parent);
+	_qmlocation = tq(Dirs::resourcesDir()) + qmresourcepath;
+	_languages.clear();
 
-	_qmlocation = QDir::currentPath() + QDir::separator() + qmsourcepath;
+	initialize();
+}
+
+void LanguageModel::initialize()
+{
 
 	//Support English as native JASP language
 	_languages.push_back(QLocale::English);  // 31
 	QLocale loc(QLocale::English);
 
 	// No language file needed for English (only to show in dropdown in preferences languages)
-	_languagesInfo[QLocale::English] = LanguageInfo ("English", loc.name(), "");
+	//_languagesInfo[QLocale::English] = LanguageInfo (QLocale::English, "English", "English", loc.name(), "", _qmlocation);
+	_languagesInfo[QLocale::English] = LanguageInfo (QLocale::English, "English", "English", "en", "", _qmlocation);
+
 
 	//Default values are now:
 	//loc.name();				//en_US
 	//loc.nativeCountryName();	//United States
 	//loc.nativeLanguageName(); //American English
 
-	findQmFiles();
-
-	QQmlEngine *e = new QQmlEngine(parent);
-	_mTransLator = new QTranslator(e);
-
-	QString qmfilename; //Name of the tranlated message file name
-
-	int cl = Settings::value(Settings::PREFERRED_LANGUAGE).toInt();
-
-	QString defaultLocale = QLocale::system().name(); // e.g. "nl_NL"
-	defaultLocale.truncate(defaultLocale.lastIndexOf('_')); // e.g. "nl"
+	findQmFiles(_qmlocation);
 
 	QLocale::Language prefLanguage = static_cast<QLocale::Language>(Settings::value(Settings::PREFERRED_LANGUAGE).toInt());
+	LanguageInfo & li = _languagesInfo[prefLanguage];
+	CurrentLanguageInfo = li;
 
-	if ( prefLanguage == 0 ) // No preferrred language ever set
+	if (prefLanguage == 0 || prefLanguage == QLocale::English) // No preferred language yet set or native JASP language English
 	{
 		Settings::setValue(Settings::PREFERRED_LANGUAGE, QLocale::English);
-		_mApp->removeTranslator(_mTransLator);
 		setCurrentIndex(0);
 	}
 	else
 	{
-		LanguageInfo li = _languagesInfo[prefLanguage];
 		setCurrentIndex(_languages.indexOf(prefLanguage)); //Update the PrefAdvanced info
 
-		// Load all translated language files for specific languages
-		for (QString qmfilename: li.qmFilenames)
-			_mTransLator->load(qmfilename, _qmlocation);
+		// Load all translated language files for specific language
+		loadQmFilesForLanguage(li.language);
 
-		_mApp->installTranslator(_mTransLator);
-		CurrentLanguageInfo = li;
+		_qml->retranslate();
 	}
 
-	e->retranslate();
+}
 
+QString LanguageModel::currentLanguageCode() const
+{
+	return getLocalName(_languages[currentIndex()]);
 }
 
 int LanguageModel::rowCount(const QModelIndex &parent) const
@@ -96,7 +106,7 @@ QVariant LanguageModel::data(const QModelIndex &index, int role) const
 	QString result;
 	switch(role)
 	{
-	case NameRole:			result = getLocalName(cl); break;
+	case NameRole:			result = getNativeLanguaName(cl); break;
 	case LabelRole:			result = getNativeLanguaName(cl); break;
 	case ValueRole:			result = getNativeLanguaName(cl); break;
 	case NationFlagRole:	result = "qrc:/translations/images/flag_nl.png"; break;
@@ -119,37 +129,37 @@ QHash<int, QByteArray> LanguageModel::roleNames() const
 	};
 
 	return roles;
+
 }
 
 void LanguageModel::changeLanguage(int index)
 {	
 	// Called from PrefsUI.qml
 
-	bool changed = false;
 	QLocale::Language cl = _languages[index];
-	LanguageInfo li = _languagesInfo[cl];
+	if (CurrentLanguageInfo.language == cl)
+		return; //No change of language
+
+	LanguageInfo & li = _languagesInfo[cl];
+	CurrentLanguageInfo = li;
 
 	if (cl == QLocale::English)
 	{
-		_mApp->removeTranslator(_mTransLator);
-		changed = true;
+		removeTranslators();
+		_qml->retranslate();
+
 	}
 	else
 	{
-		for (QString qmfilename: li.qmFilenames)
-			_mTransLator->load(qmfilename, _qmlocation);
-		changed = _mApp->installTranslator(_mTransLator);
+		loadQmFilesForLanguage(li.language);
+		_qml->retranslate();
 	}
 
-	if (changed)
-	{
-		Settings::setValue(Settings::PREFERRED_LANGUAGE, cl);
-		setCurrentIndex(index);
-		emit languageChanged();
-		MessageForwarder::showWarning(tr("After changing languages you need to restart JASP for it to take effect."));
-	}
+	Settings::setValue(Settings::PREFERRED_LANGUAGE, cl);
+	setCurrentIndex(index);
+	emit languageChanged();
+
 }
-
 
 QString LanguageModel::getLocalName(QLocale::Language cl) const
 {
@@ -164,7 +174,6 @@ QString LanguageModel::getNativeLanguaName(QLocale::Language cl) const
 	return li.nativeLanguageName;
 
 }
-
 
 QLocale::Language LanguageModel::getLanguageKeyFromName(QString languagename) const
 {
@@ -184,9 +193,6 @@ QLocale::Language LanguageModel::getLanguageKeyFromName(QString languagename) co
 QString  LanguageModel::getLocalNameFromQmFileName(QString filename) const
 {
 
-	//QString localname = filename.right(filename.indexOf('_', 0) + 1);
-	//localname = localname.left(localname.lastIndexOf('.'));
-
 	int start = filename.indexOf('_');
 	QString localname = filename.mid(start + 1);
 
@@ -197,73 +203,207 @@ QString  LanguageModel::getLocalNameFromQmFileName(QString filename) const
 
 }
 
-QString LanguageModel::getQmTranslationName(QLocale::Language cl) const
+bool LanguageModel::isValidLocalName(QString filename, QLocale::Language & cl)
 {
 
-	QString qmfilename;
-	QString basename = "jasp_";
+	//Checks if the filename has a proper localename suffix for a valid CLocale::Language
+	//https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+	//We use the two lettecode in the qm filename
 
-	LanguageInfo li = _languagesInfo[cl];
+	QString localname = getLocalNameFromQmFileName(filename);
+	QLocale loc(localname);
+	QString languagename = "";
+	languagename = loc.nativeLanguageName();
+	if (languagename == "")
+		return false;
+	cl = loc.language();
+	return true;
 
-	qmfilename  = basename + li.localName + ".qm";
+}
 
-	return qmfilename;
+bool LanguageModel::isValidLocalName(QString filename, QLocale & local)
+{
+	//Checks if the filename has a proper localename suffix for a valid CLocale::Language
+	//https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+	//We use the two lettecode in the qm filename
+
+	QString localname = getLocalNameFromQmFileName(filename);
+	QLocale loc(localname);
+	QString languagename = "";
+	languagename = loc.nativeLanguageName();
+	if (languagename == "")
+		return false;
+
+	local = loc;
+	return true;
+
+}
+
+bool LanguageModel::isJaspSupportedLanguage(QLocale::Language lang)
+{
+	if (find(_languages.begin(), _languages.end(), lang) != _languages.end()) return true;
+	return false;
+
 }
 
 void LanguageModel::setCurrentIndex(int currentIndex)
 {
-	if (m_currentIndex == currentIndex)
+	if (_currentIndex == currentIndex)
 		return;
 
-	m_currentIndex = currentIndex;
-	emit currentIndexChanged(m_currentIndex);
+	_currentIndex = currentIndex;
+	emit currentIndexChanged();
+
 }
 
-QStringList LanguageModel::findQmFiles()
-{	
+void LanguageModel::loadModuleTranslationFile(Modules::DynamicModule *dyn)
+{
+	bool result;
+	QLocale loc;
+	QLocale::Language cl;
+	bool newfileloaded = false;
 
-	QDir dir(_qmlocation);
+	//Get qm folder as subfolder from qml folder
+	QString qmFolder = QString::fromStdString(dyn->qmlFilePath("")) + "qm";
 
-	QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files, QDir::Name);
-	QMutableStringListIterator i(fileNames);
+	QDirIterator qdi(qmFolder, QStringList() << "*.qm" << "*.QM");
 
-	while (i.hasNext()) {
-		i.next();
-		QString filename =  i.value();
-		QString localname = getLocalNameFromQmFileName(filename);
-		QLocale lock(localname);
-		QLocale loc(localname);
-		QString languagename = "";
-		languagename = loc.nativeLanguageName();
-		if (languagename == "")
+	while (qdi.hasNext())
+	{
+		qdi.next();
+		QFileInfo fi = qdi.fileInfo();
+
+		//Can QLocale be found from localname suffix?
+		if (!isValidLocalName(fi.fileName(), loc))
 		{
-			// Invalid tranlation file found
-			Log::log() << "Invalid tranlation file found with name: " << filename.toStdString()  << std::endl ;
+			Log::log() << "Invalid translation file found with name: " << fi.fileName().toStdString()  << std::endl ;
 			continue;
 		}
-		QString qmfilename = dir.filePath(i.value());
-		i.setValue(dir.filePath(i.value()));
+
+		cl = loc.language();
+		if (!isJaspSupportedLanguage(cl))
+		{
+			Log::log() << "Not a Jasp supported language in: " << fi.fileName().toStdString()  << std::endl ;
+			continue;
+		}
+
+		LanguageInfo & li = _languagesInfo[cl];
+		QString addFile = fi.filePath();
+		li.qmFilenames.push_back(addFile);
+		//li.qmFilenames.push_front(addFile);
+
+		if (cl != CurrentLanguageInfo.language)
+		{
+			//Module language differs from Jasp language. Just add to qmFiles for further use.			
+			Log::log() << "This module translation" << dyn->name() << " with " << fi.fileName().toStdString() << "does not support the current language "<<  CurrentLanguageInfo.languageName << std::endl ;
+		}
+		else
+		{
+			newfileloaded = true;
+			loadQmFile(fi.filePath());
+		}
+	}
+	if (newfileloaded)
+	{
+		result = _mApp->installTranslator(_mTransLator);
+		_qml->retranslate();
+	}
+
+}
+
+void LanguageModel::findQmFiles(QString qmlocation)
+{	
+
+	QDir dir(qmlocation);
+	QLocale loc;
+	QLocale::Language cl;
+
+	QDirIterator qdi(qmlocation, QStringList() << "*.qm" << "*.QM");
+
+	while (qdi.hasNext())
+	{
+		qdi.next();
+
+		QFileInfo fi = qdi.fileInfo();
+
+//		qDebug() << "fileName : " << fi.fileName() << endl; //e.g. jasp_nl.qm
+//		qDebug() << "baseName : " << fi.baseName() << endl; //e.g. jasp_nl
+//		qDebug() << "path : " << fi.path() << endl; //Library/Application..
+//		qDebug() << "full filename " << fi.filePath() << endl; // e.g. /Users/fransmeerhoff/JASP/Develop/build-Debug/Resources/Translations/module_np.qm
+//		qDebug() << "absoluteFilePath : " << fi.absoluteFilePath() << endl; // e.g. /Users/fransmeerhoff/JASP/Develop/build-Debug/Resources/Translations/module_np.qm
+//		qDebug() << "absolutePath " << fi.absolutePath() << endl; //e.g. /Users/fransmeerhoff/JASP/Develop/build-Debug/Resources/Translations
+//		qDebug() << "absoluteDir" << fi.absoluteDir() << endl; //e.g. QDir( "/Users/fransmeerhoff/JASP/Develop/build-Debug/Resources/Translations" , nameFilters = { "*" },  QDir::SortFlags( Name | IgnoreCase ) , QDir::Filters( Dirs|Files|Drives|AllEntries ) )
+
+		QString localname = getLocalNameFromQmFileName(fi.fileName());
+
+		//Can QLocale be found from localname suffix e.g. _nl?
+		if (!isValidLocalName(fi.fileName(), loc))
+		{
+			Log::log() << "Invalid translation file found with name: " << fi.fileName().toStdString()  << std::endl ;
+			continue;
+
+		}
+
 		if (count(_languages.begin(), _languages.end(), loc.language()) == 0)
 		{
-			//First Language found
+			//First time new language found
 			_languages.push_back(loc.language());
-			_languagesInfo[loc.language()] = LanguageInfo(languagename, localname, filename);
+			_languagesInfo[loc.language()] = LanguageInfo(loc.language(), QLocale::languageToString(loc.language()), loc.nativeLanguageName(), localname, fi.filePath(), qmlocation);
 		}
 		else
 			//More translated language files for a language
-			_languagesInfo[loc.language()].qmFilenames.push_back(filename);
+			_languagesInfo[loc.language()].qmFilenames.push_back(fi.filePath());
 	}
-	return fileNames;
+
+}
+
+void LanguageModel::loadQmFilesForLanguage(QLocale::Language cl)
+{
+	LanguageInfo & li = _languagesInfo[cl];
+	bool result;
+	for (QString qmfilename: li.qmFilenames)
+		loadQmFile(qmfilename);
+
+}
+
+void LanguageModel::loadQmFile(QString filename)
+{
+	QFileInfo fi(filename);
+
+	QTranslator *qtran = new QTranslator();
+
+	if (!qtran->load(filename))
+	{
+		Log::log() << "Unable to load translation file: " << fi.filePath()  << std::endl ;
+		delete qtran;
+		return;
+	}
+
+	_translators.push_back(qtran);
+	_mApp->installTranslator(qtran);
+
+}
+
+void LanguageModel::removeTranslators()
+{
+	for (QTranslator *qtran: _translators)
+	{
+		_mApp->removeTranslator( qtran);
+		delete qtran;
+	}
+	_translators.clear();
+
 }
 
 int LanguageModel::currentIndex() const
 {
-	return m_currentIndex;
+	return _currentIndex;
+
 }
 
-QString LanguageModel::getEmptyString() const
+QString LanguageModel::getCurrentLanguageFileExtension()
 {
-	return tr("");
+	return CurrentLanguageInfo.localName;
 }
 
 void LanguageModel::setApplicationEngine(QQmlApplicationEngine * ae)
@@ -271,6 +411,7 @@ void LanguageModel::setApplicationEngine(QQmlApplicationEngine * ae)
 	_qml = ae;
 
 }
+
 
 
 

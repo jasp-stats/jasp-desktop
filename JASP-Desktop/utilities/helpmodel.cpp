@@ -19,9 +19,6 @@ void HelpModel::setPagePath(QString pagePath)
 {
 	pagePath = convertPagePathToLower(pagePath); //Otherwise we get into to trouble on systems that discern between cases in the filesystem. Also means we should make sure all documentation html are named lowercase!
 
-	if (_pagePath == pagePath)
-		return;
-
 	_pagePath = pagePath;
 	emit pagePathChanged(_pagePath);
 }
@@ -35,16 +32,15 @@ void HelpModel::generateJavascript()
 {
 	QString content, renderFunc = "window.render";
 
-	QFile fileMD, fileHTML;
-	QFileInfo pathMd(_pagePath + ".md");
-
-	bool relative = pathMd.isRelative();
-
 	LanguageInfo li = LanguageModel::CurrentLanguageInfo;
 
-	QString localname = li.localName;
 	//Leave help filenames from JASP native language - English - with localname en_US unchanged
-	QString _localname = localname  == "en_US" ? "" : ("_" + localname);
+	QString _localname = li.language  == QLocale::English ? "" : ("_" + li.localName);
+
+	QFile fileMD, fileHTML;
+	QFileInfo pathMd(_pagePath + _localname + ".md");
+
+	bool relative = pathMd.isRelative();
 
 
 	if(relative) //This is probably a file in resources then
@@ -95,8 +91,6 @@ void HelpModel::generateJavascript()
 
 void HelpModel::setHelpJS(QString helpJS)
 {
-	if (_helpJS == helpJS)
-		return;
 
 	_helpJS = helpJS;
 	emit helpJSChanged(_helpJS);

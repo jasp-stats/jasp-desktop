@@ -29,9 +29,11 @@ public:
 	
 	void appendCrumb(const QString &crumbname, const QString &path);
 	QString switchCrumb(const int &index);
+	void refresh();
 	
 private:
 	bool removeCrumbsAfterIndex(int index);
+	QString getTranslaterRootElement();
 	
 public slots:
 	void indexChanged(const int &index);
@@ -42,7 +44,8 @@ signals:
 private:
 	QStringList _crumbNameList;
 	QStringList _physicalPathList;
-	QChar _separator = QChar('/');	
+	QChar _separator = QChar('/');
+
 };
 
 #endif // DATALIBRARYBREADCRUMBSLISTMODEL_H

@@ -13,6 +13,13 @@ DataLibraryListModel::DataLibraryListModel(QObject *parent, DataLibraryBreadCrum
 	connect(this, &DataLibraryListModel::openFileEvent, dynamic_cast<DataLibrary *>(parent), &DataLibrary::openFile);
 }
 
+void DataLibraryListModel::refresh()
+{
+	_fsbmDataLibrary->refresh();
+	_dataLibraryBreadCrumbsListModel->refresh();
+
+}
+
 void DataLibraryListModel::changePath(const QString &name, const QString &path)
 {
 	// Called from datalibrarylist
