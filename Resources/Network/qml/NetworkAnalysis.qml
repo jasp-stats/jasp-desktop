@@ -266,9 +266,10 @@ Form
 			defaultValues		: ["Group 1", "Group 2"]
 			placeHolder			: qsTr("New Group")
 			minRows				: 2
-			width				: (2 * form.width) / 5
+			preferredWidth		: (2 * form.width) / 5
 			enableRowComponents	: manualColors.checked
 			rowComponentsTitles	: [qsTr("Group color")]
+
 
 			rowComponents:
 			[
@@ -286,7 +287,8 @@ Form
 
 		AssignedVariablesList
 		{
-			width							: (2 * form.width) / 5
+			Layout.fillWidth				: true
+			Layout.leftMargin				: 40
 			title							: qsTr("Variables in network")
 			name							: "variablesForColor"
 			source							: ["variables"]
