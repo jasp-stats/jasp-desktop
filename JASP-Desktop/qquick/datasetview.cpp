@@ -54,7 +54,7 @@ void DataSetView::setModel(QAbstractItemModel * model)
 
 		setRolenames();
 
-		QSizeF calcedSizeRowNumber = _metricsFont.size(Qt::TextSingleLine, QString::fromStdString(std::to_string(_model->rowCount()) + "XXX"));
+		QSizeF calcedSizeRowNumber = getTextSize(QString::fromStdString(std::to_string(_model->rowCount()) + "XXX"));
 		setRowNumberWidth(calcedSizeRowNumber.width() + 30);
 
 		//recalculateCellSizes = true;
@@ -78,10 +78,24 @@ void DataSetView::setRolenames()
 
 }
 
-void DataSetView::modelDataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)
+
+QSizeF DataSetView::getColumnSize(int col)
 {
-	modelAboutToBeReset();
-	calculateCellSizes();
+	QString text = _model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["maxColString"]).toString();
+
+	return getTextSize(text);
+}
+
+void DataSetView::modelDataChanged(const QModelIndex &index, const QModelIndex &, const QVector<int> &)
+{
+	int col = index.column();
+	QSizeF calcSize = getColumnSize(col);
+
+	if (int(_cellSizes[size_t(col)].width() * 10) != int(calcSize.width() * 10))
+	{
+		modelAboutToBeReset();
+		calculateCellSizes();
+	}
 }
 
 void DataSetView::modelHeaderDataChanged(Qt::Orientation, int, int)
@@ -137,15 +151,8 @@ void DataSetView::calculateCellSizes()
 	_colXPositions.resize(_model->columnCount());
 	_cellTextItems.clear();
 
-	_metricsFont = QFontMetricsF(_font);
-
 	for(int col=0; col<_model->columnCount(); col++)
-	{
-		QString text = _model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["maxColString"]).toString();
-		QSizeF calcedSize = _metricsFont.size(Qt::TextSingleLine, text);
-
-		_cellSizes[col] = calcedSize;
-	}
+		_cellSizes[col] = getColumnSize(col);
 
 	_dataColsMaxWidth.resize(_model->columnCount());
 
@@ -539,7 +546,9 @@ void DataSetView::storeTextItem(int row, int col, bool cleanUp)
 
 	textItem->item->setVisible(false);
 
-	_textItemStorage.push(textItem);
+	if (_cacheItems)		_textItemStorage.push(textItem);
+	else					delete textItem;
+
 	JASPTIMER_STOP(storeTextItem);
 }
 
@@ -925,6 +934,12 @@ void DataSetView::setExtraColumnItem(QQuickItem * newItem)
 
 		emit extraColumnItemChanged();
 	}
+}
+
+void DataSetView::setFont(const QFont &font)
+{
+	_font = font;
+	_metricsFont = QFontMetricsF(_font);
 }
 
 void DataSetView::reloadTextItems()
