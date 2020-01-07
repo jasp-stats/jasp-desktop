@@ -15,6 +15,7 @@ class DataLibraryListModel : public FileMenuBasicListModel
 public:
 	explicit DataLibraryListModel(QObject *parent, DataLibraryBreadCrumbsListModel* crumbs);	
 	void setBreadCrumbsListModel (DataLibraryBreadCrumbsListModel *dataLibraryBreadCrumbsModel);
+	void refresh();
 
 signals:
 	void openFileEvent(FileEvent *event);

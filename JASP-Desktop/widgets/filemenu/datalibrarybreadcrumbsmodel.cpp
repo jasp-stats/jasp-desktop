@@ -1,10 +1,12 @@
 #include "datalibrarybreadcrumbsmodel.h"
 #include "datalibraryfilesystem.h"
 
+#define CAT "Categories"
+
 DataLibraryBreadCrumbsListModel::DataLibraryBreadCrumbsListModel(QObject *parent, const QChar sep)
 	: QAbstractListModel(parent), _separator(sep)
 {	
-	_crumbNameList.append(DataLibraryFileSystem::rootelementname);
+	_crumbNameList.append(getTranslaterRootElement());
 	_physicalPathList.append(DataLibraryFileSystem::rootelementname);
 }
 
@@ -89,6 +91,19 @@ QString DataLibraryBreadCrumbsListModel::switchCrumb(const int &index)
 	return _physicalPathList.at(index);
 }
 
+void DataLibraryBreadCrumbsListModel::refresh()
+{
+	beginResetModel();
+
+	_crumbNameList.clear();
+	_crumbNameList.append(getTranslaterRootElement());
+	switchCrumb(0);
+	emit crumbIndexChanged(0);
+
+	endResetModel();
+
+}
+
 
 bool DataLibraryBreadCrumbsListModel::removeCrumbsAfterIndex(int index)
 {
@@ -107,6 +122,11 @@ bool DataLibraryBreadCrumbsListModel::removeCrumbsAfterIndex(int index)
 	
 	return true;
 	
+}
+
+QString DataLibraryBreadCrumbsListModel::getTranslaterRootElement()
+{
+	return tr("Categories");
 }
 
 void DataLibraryBreadCrumbsListModel::indexChanged(const int &index)

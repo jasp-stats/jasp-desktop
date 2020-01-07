@@ -32,7 +32,6 @@ public slots:
 	QString	indexURL();
 	void	reloadPage();
 
-
 signals:
 	void renderCode(QString javascript);
 	void visibleChanged(bool visible);

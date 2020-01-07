@@ -37,6 +37,7 @@ public:
 
 	DataLibraryListModel *				listModel()			const {	return _dataLibraryListModel; }
 	DataLibraryBreadCrumbsListModel *	breadcrumbsmodel()	const {	return _dataLibraryBreadCrumbsListModel; }
+	void refres();
 
 signals:
 	void breadcrumbsmodelChanged();

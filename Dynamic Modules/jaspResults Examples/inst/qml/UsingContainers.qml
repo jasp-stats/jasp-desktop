@@ -25,7 +25,7 @@ Form
 	Text
 	{
 		Layout.columnSpan: 2
-		text: "This example shows two strategies to writing a jaspResults analysis.\n" +
+		text: qsTr("This example shows two strategies to writing a jaspResults analysis.\n" +
 		"Strategy one uses a classic R approach: compute a model, then pass it along to every function.\n" +
 		"Stratey two uses an unorthodox approach: computing the model when it's actually required\n" +
 		"and relying on pass-by-reference mechanics to get it to all functions that need it.\n" +
@@ -36,36 +36,36 @@ Form
 		"Checking `Use the container code` forces the analysis to use strategy two (otherwise it uses one).\n" +
 		"Checking `Optional table` creates an optional table (as analyses often have optional elements).\n" +
 		"Checking `A random dependency` emulates a dependency change that forces a recompute.\n" +
-		"Checking `Generate computation error` forces an error to occur in the compution phase."
+		"Checking `Generate computation error` forces an error to occur in the compution phase.")
 	}
 	
 	CheckBox
 	{
-		label: "We are ready"
+		label: qsTr("We are ready")
 		name: "weAreReady"
 	}
 
 	CheckBox
 	{
-		label: "Use the container code"
+		label: qsTr("Use the container code")
 		name: "useContainers"
 	}
 
 	CheckBox
 	{
-		label: "Optional table"
+		label: qsTr("Optional table")
 		name: "optionalTable"
 	}
 
 	CheckBox
 	{
-		label: "A random dependency"
+		label:qsTr( "A random dependency")
 		name: "randomDependency"
 	}
 
 	CheckBox
 	{
-		label: "Generate computation error"
+		label: qsTr("Generate computation error")
 		name: "setError"
 	}
 	

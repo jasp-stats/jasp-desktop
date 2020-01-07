@@ -4,18 +4,11 @@
 #include "log.h"
 
 ActionButtons::ActionButtons(QObject *parent) : QAbstractListModel (parent),
-	_data({
-		{FileOperation::Open,			tr("Open"),				true,	{ResourceButtons::RecentFiles,	ResourceButtons::Computer,	ResourceButtons::DataLibrary, ResourceButtons::OSF }},
-		{FileOperation::Save,			tr("Save"),				false,	{}																												},
-		{FileOperation::SaveAs,			tr("Save As"),			false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
-		{FileOperation::ExportResults,	tr("Export Results"),	false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
-		{FileOperation::ExportData,		tr("Export Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
-		{FileOperation::SyncData,		tr("Sync Data"),		false,	{ResourceButtons::CurrentFile, ResourceButtons::Computer, ResourceButtons::OSF }								},
-		{FileOperation::Close,			tr("Close"),			false,	{}																												},
-		{FileOperation::Preferences,	tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsUI, ResourceButtons::PrefsAdvanced }					},
-		{FileOperation::About,			tr("About"),			true,	{}																												}
-	})
+  _data()
+
 {
+	loadButtonData(_data);
+
 	for(size_t i=0; i<_data.size(); i++)
 		_opToIndex[_data[i].operation] = i;
 
@@ -24,7 +17,21 @@ ActionButtons::ActionButtons(QObject *parent) : QAbstractListModel (parent),
 	connect(this, &ActionButtons::buttonClicked, this, &ActionButtons::setSelectedAction);
 }
 
-
+void ActionButtons::loadButtonData(std::vector<ActionButtons::DataRow> &data)
+{
+	_data =
+	{
+		  {FileOperation::Open,				tr("Open"),				true,	{ResourceButtons::RecentFiles,	ResourceButtons::Computer,	ResourceButtons::DataLibrary, ResourceButtons::OSF }},
+		  {FileOperation::Save,				tr("Save"),				false,	{}																												},
+		  {FileOperation::SaveAs,			tr("Save As"),			false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
+		  {FileOperation::ExportResults,	tr("Export Results"),	false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
+		  {FileOperation::ExportData,		tr("Export Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
+		  {FileOperation::SyncData,			tr("Sync Data"),		false,	{ResourceButtons::CurrentFile, ResourceButtons::Computer, ResourceButtons::OSF }								},
+		  {FileOperation::Close,			tr("Close"),			false,	{}																												},
+		  {FileOperation::Preferences,		tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsUI, ResourceButtons::PrefsAdvanced}},
+		  {FileOperation::About,			tr("About"),			true,	{}																												}
+	  };
+}
 
 QVariant ActionButtons::data(const QModelIndex &index, int role)	const
 {
@@ -96,6 +103,20 @@ void ActionButtons::setSelectedAction(FileOperation selectedAction)
 	if(!newIsNone)	emit dataChanged(newIndex, newIndex);
 
 	emit selectedActionChanged(_selected);
+}
+
+void ActionButtons::refresh()
+{
+	beginResetModel();
+
+	std::vector<DataRow> savedata = _data;
+
+	loadButtonData(_data);
+
+	for(int i=0 ; i < savedata.size() ; i++)
+		_data[i].enabled = savedata[i].enabled;
+
+	endResetModel();
 }
 
 std::set<ResourceButtons::ButtonType> ActionButtons::resourceButtonsForButton(FileOperation button)

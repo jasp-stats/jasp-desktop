@@ -366,6 +366,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	args << QString::number(no) << QString::number(ProcessInfo::currentPID()) << QString::fromStdString(Log::logFileNameBase) << QString::fromStdString(Log::whereStr());
 
 	env.insert("TMPDIR", tq(TempFiles::createTmpFolder()));
+	//env.insert("LANG", "nl"); //This works to change language from engine start
 
 #ifdef _WIN32
 	QString rHomePath = programDir.absoluteFilePath("R");
