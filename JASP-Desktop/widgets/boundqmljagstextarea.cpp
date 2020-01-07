@@ -18,7 +18,7 @@
 
 #include "boundqmljagstextarea.h"
 #include "analysis/analysisform.h"
-
+#include "gui/preferencesmodel.h"
 
 BoundQMLJAGSTextArea::BoundQMLJAGSTextArea(JASPControlBase* item)
 	: JASPControlWrapper(item)
@@ -29,7 +29,7 @@ BoundQMLJAGSTextArea::BoundQMLJAGSTextArea(JASPControlBase* item)
 
 	QFont font(family);
 	font.setStyleHint(QFont::Monospace);
-	font.setPointSize(10);
+	font.setPointSize(10 * PreferencesModel::prefs()->uiScale());
 	setItemProperty("font", font);
 	_model = new ListModelTermsAvailable(this);
 	_model->setTermsAreVariables(false);
@@ -57,6 +57,9 @@ void BoundQMLJAGSTextArea::bindTo(Option *option)
 			for (const std::string& variable : variables)
 				_usedParameters.insert(QString::fromStdString(variable));
 		}
+
+		setItemProperty("text", _text);
+		checkSyntax();
 	}
 }
 
@@ -99,7 +102,7 @@ void BoundQMLJAGSTextArea::checkSyntax()
 
 	for (QString & line : textByLine)
 	{
-		if (!line.startsWith("#") && line.contains(relationSymbol))
+		if (!line.trimmed().startsWith("#") && line.contains(relationSymbol))
 		{
 			// extract parameter and remove whitespace
 			QString paramName = line.split(relationSymbol).first().trimmed();

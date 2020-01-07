@@ -19,6 +19,7 @@
 #include "boundqmllavaantextarea.h"
 #include "analysis/analysisform.h"
 #include "analysis/jaspcontrolbase.h"
+#include "gui/preferencesmodel.h"
 #include "log.h"
 
 #include <QQuickTextDocument>
@@ -40,7 +41,7 @@ BoundQMLLavaanTextArea::BoundQMLLavaanTextArea(JASPControlBase* item)
 
 		QFont font(family);
 		font.setStyleHint(QFont::Monospace);
-		font.setPointSize(10);
+		font.setPointSize(10 * PreferencesModel::prefs()->uiScale());
 		setItemProperty("font", font);
 	}
 

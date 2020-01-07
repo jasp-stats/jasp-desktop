@@ -18,7 +18,7 @@
 JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   # check model
-  .JAGSInit    (jaspResults, options)
+  .JAGSInit(jaspResults, options)
   dataset <- .JAGSReadData(jaspResults, options)
 
   # run model or update model
@@ -106,8 +106,8 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   if (any(names(userData) %in% names(datList))) {
     commonNames <- intersect(names(userData), names(datList))
-    jaspResults[["mainContainer"]]$setError(paste(
-      "The following names appeared both in the data set and in the user specified data:\n",
+    jaspResults[["mainContainer"]]$setError(gettextf(
+      "The following names appeared both in the data set and in the user specified data:\n%s",
       commonNames
     ))
     return(NULL)
@@ -241,11 +241,11 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   } else if (nParamAvailable > 0L) {
     if (manualMonitor && nParamMonitored == 0L) {
       goodModel <- FALSE
-      monitorWarning <- "Please specify which parameters to monitor!"
+      monitorWarning <- gettext("Please specify which parameters to monitor!")
     } else if (( manualMonitor && nParamMonitored > 0L && nParamShown == 0L) ||
                (!manualMonitor && nParamShown == 0L)) {
       goodModel <- FALSE
-      monitorWarning <- "Please specify which parameters to show output for!"
+      monitorWarning <- gettext("Please specify which parameters to show output for!")
     }
   }
   .JAGSsetGoodModel     (jaspResults, goodModel)
@@ -269,22 +269,22 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   tb <- createJaspTable("MCMC summary")
   tb$position <- 1L
-  ovt  <- "95% Credible Interval"
-  ovt2 <- "Rhat"
-  tb$addColumnInfo(name = "parameter", title = "Parameter",            type = "string")
-  tb$addColumnInfo(name = "Mean",      title = "mean",                 type = "number")
-  tb$addColumnInfo(name = "SD",        title = "sd",                   type = "number")
-  tb$addColumnInfo(name = "50%",       title = "median",               type = "number")
-  tb$addColumnInfo(name = "2.5%",      title = "Lower",                type = "number", overtitle = ovt)
-  tb$addColumnInfo(name = "97.5%",     title = "Upper",                type = "number", overtitle = ovt)
-  tb$addColumnInfo(name = "rhatPoint", title = "Point est.",           type = "number", overtitle = ovt2)
-  tb$addColumnInfo(name = "rhatCI",    title = "Upper CI",             type = "number", overtitle = ovt2)
-  tb$addColumnInfo(name = "neff",      title = "Effecive Sample Size", type = "number")
+  ovt  <- gettext("95% Credible Interval")
+  ovt2 <- gettext("Rhat")
+  tb$addColumnInfo(name = "parameter", title = gettext("Parameter"),            type = "string")
+  tb$addColumnInfo(name = "Mean",      title = gettext("mean"),                 type = "number")
+  tb$addColumnInfo(name = "SD",        title = gettext("sd"),                   type = "number")
+  tb$addColumnInfo(name = "50%",       title = gettext("median"),               type = "number")
+  tb$addColumnInfo(name = "2.5%",      title = gettext("Lower"),                type = "number", overtitle = ovt)
+  tb$addColumnInfo(name = "97.5%",     title = gettext("Upper"),                type = "number", overtitle = ovt)
+  tb$addColumnInfo(name = "rhatPoint", title = gettext("Point est."),           type = "number", overtitle = ovt2)
+  tb$addColumnInfo(name = "rhatCI",    title = gettext("Upper CI"),             type = "number", overtitle = ovt2)
+  tb$addColumnInfo(name = "neff",      title = gettext("Effecive Sample Size"), type = "number")
 
   if (!is.null(mcmcResult) && !jaspResults[["mainContainer"]]$getError()) {
 
     if (!.JAGShasData(options) && !mcmcResult[["hasUserData"]])
-      tb$addFootnote(message = "No data was supplied, everything was sampled from the priors!", symbol = .JAGSWarningSymbol)
+      tb$addFootnote(message = gettext("No data was supplied, everything was sampled from the priors!"), symbol = .JAGSWarningSymbol)
 
     parametersToShow <- options[["parametersShown"]]
     if (mcmcResult[["DIC"]])
@@ -304,16 +304,13 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
       tbR[["rhatPoint"]] <- rhat[["psrf"]][idx, 1L]
       tbR[["rhatCI"]]    <- rhat[["psrf"]][idx, 2L]
       if (!is.null(rhat[["mpsrf"]])) {
-        tb$addFootnote(message = sprintf(
+        tb$addFootnote(message = gettextf(
           "The multivariate potential scale reduction factor is estimated at %.3f.",
           rhat[["mpsrf"]]
         ))
       }
     } else {
-      tb$addFootnote(message = paste(
-        "Rhat statistic cannot be computed for only one chain.",
-        "It is strongly recommoned to run more than one chain to assess MCMC convergence!"
-      ))
+      tb$addFootnote(message = gettext("Rhat statistic cannot be computed for only one chain. It is strongly recommoned to run more than one chain to assess MCMC convergence!"))
     }
     tb$setData(tbR)
   }
@@ -365,7 +362,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
     add <- list("function" = ".JAGSPlotDensity")
     if (is.null(plotContainer[["plotDensity"]])) {
-      add[["container"]] <- createJaspContainer(title = "Marginal Density",  position = 1,
+      add[["container"]] <- createJaspContainer(title = gettext("Marginal Density"),  position = 1,
                                                 dependencies = c("plotDensity", "aggregateChains"))
       plotContainer[["plotDensity"]] <- add[["container"]]
     } else {
@@ -378,8 +375,8 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
     add <- list("function" = ".JAGSPlotHistogram")
     if (is.null(plotContainer[["plotHistogram"]])) {
-      add[["container"]] <- createJaspContainer(title = "Marginal Histogram",  position = 2,
-                                                dependencies = c("plotHistogram", "aggregateChains"))
+      add[["container"]] <- createJaspContainer(title = gettext("Marginal Histogram"),  position = 2,
+                                                dependencies = c("plotHistogram", "aggregateChains", "showLegend"))
       plotContainer[["plotHistogram"]] <- add[["container"]]
     } else {
       add[["container"]] <- plotContainer[["plotHistogram"]]
@@ -391,8 +388,8 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
     add <- list("function" = ".JAGSPlotTrace")
     if (is.null(plotContainer[["plotTrace"]])) {
-      add[["container"]] <- createJaspContainer(title = "Trace Plots",  position = 3,
-                                                dependencies = c("plotTrace"))
+      add[["container"]] <- createJaspContainer(title = gettext("Trace Plots"),  position = 3,
+                                                dependencies = c("plotTrace", "showLegend"))
       plotContainer[["plotTrace"]] <- add[["container"]]
     } else {
       add[["container"]] <- plotContainer[["plotTrace"]]
@@ -404,7 +401,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
     add <- list("function" = ".JAGSPlotAutoCor")
     if (is.null(plotContainer[["plotAutoCor"]])) {
-      add[["container"]] <- createJaspContainer(title = "Autocorrelation Plots",  position = 4,
+      add[["container"]] <- createJaspContainer(title = gettext("Autocorrelation Plots"),  position = 4,
                                                 dependencies = c("plotAutoCor", "noLags", "acfType"))
       plotContainer[["plotAutoCor"]] <- add[["container"]]
     } else {
@@ -415,7 +412,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   if (options[["plotBivarHex"]] && is.null(plotContainer[["plotBivarHex"]])) {
 
-    jaspPlot <- createJaspPlot(title  = "Bivariate Scatter Plot",  position = 5,
+    jaspPlot <- createJaspPlot(title  = gettext("Bivariate Scatter Plot"),  position = 5,
                                dependencies = c("plotBivarHex", "parametersShown", "bivariateScatterDiagType",
                                                 "bivariateScatterOffDiagType"))
     plotContainer[["plotBivarHex"]] <- jaspPlot
@@ -485,7 +482,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   if (removeAxisLabels)
     labs <- ggplot2::labs(x = NULL, y = NULL)
   else
-    labs <- ggplot2::labs(x = param, y = "Density")
+    labs <- ggplot2::labs(x = param, y = gettext("Density"))
 
   g <- JASPgraphs::themeJasp(
     ggplot2::ggplot(df, mapping) +
@@ -506,8 +503,8 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
       return(data.frame(x = d[["mids"]], y = d[["counts"]], g = factor(i)))
     }))
     mapping <- ggplot2::aes(x = x, y = y, color = g, fill = g)
-    colorScale <- JASPgraphs::scale_JASPcolor_discrete(name = "Chain")
-    fillScale  <- JASPgraphs::scale_JASPfill_discrete(name = "Chain")
+    colorScale <- JASPgraphs::scale_JASPcolor_discrete(name = gettext("Chain"))
+    fillScale  <- JASPgraphs::scale_JASPfill_discrete(name = gettext("Chain"))
   } else {
     n <- nrow(samples[[1L]])
     d <- hist(unlist(lapply(samples, `[`, i = 1:n, j = param), use.names = FALSE), plot = FALSE)
@@ -519,7 +516,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   if (removeAxisLabels)
     labs <- ggplot2::labs(x = NULL, y = NULL)
   else
-    labs <- ggplot2::labs(x = param, y = "Counts")
+    labs <- ggplot2::labs(x = param, y = gettext("Counts"))
 
   g <- JASPgraphs::themeJasp(
     ggplot2::ggplot(df, mapping) +
@@ -542,7 +539,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   g <- JASPgraphs::themeJasp(
     ggplot2::ggplot(df, ggplot2::aes(x = x, y = y, color = g)) +
       ggplot2::geom_line(show.legend = FALSE) +
-      ggplot2::labs(x = "Iteration", y = param) +
+      ggplot2::labs(x = gettext("Iteration"), y = param) +
       JASPgraphs::scale_JASPcolor_discrete()
   )
   return(g)
@@ -569,12 +566,12 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   } else {
     geom <- ggplot2::geom_col(position = ggplot2::position_dodge())
   }
-  colorScale <- JASPgraphs::scale_JASPcolor_discrete(name = "Chain")
-  fillScale  <- JASPgraphs::scale_JASPfill_discrete(name = "Chain")
+  colorScale <- JASPgraphs::scale_JASPcolor_discrete(name = gettext("Chain"))
+  fillScale  <- JASPgraphs::scale_JASPfill_discrete(name = gettext("Chain"))
 
   g <- JASPgraphs::themeJasp(
     ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = x, y = y, color = g, group = g, fill = g)) +
-      geom + colorScale + fillScale + ggplot2::labs(x = "Lag", y = "Autocorrelation"),
+      geom + colorScale + fillScale + ggplot2::labs(x = gettext("Lag"), y = gettext("Autocorrelation")),
     legend.position = if (options[["showLegend"]]) "right" else "none"
   )
   return(g)
@@ -590,8 +587,9 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
     jaspPlot$width  <- sum(lengths(mcmcResult[["params"]])) * 320L
     jaspPlot$height <- sum(lengths(mcmcResult[["params"]])) * 320L
     jaspPlot$plotObject <- .JAGSPlotBivariateMatrix(options, mcmcResult)
-  } else {
-    jaspPlot$setError("At least two parameters need to be monitored and shown to make a bivariate scatter plot!")
+  } else if (length(options[["parametersShown"]]) == 1L) {
+    # only show an error when some variables are selected to avoid error messages when users set the options
+    jaspPlot$setError(gettext("At least two parameters need to be monitored and shown to make a bivariate scatter plot!"))
   }
 }
 
@@ -608,7 +606,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   for (j in seq_len(nParams)) {
     for (i in seq_len(nParams)) {
-      # for (i in i:nParams) {
+
       if (i == j) {
         if (options[["bivariateScatterDiagType"]] == "dens") {
           plotMatrix[[i, j]] <- .JAGSPlotDensity(samples, allParams[[j]], options, removeAxisLabels = TRUE)
@@ -695,7 +693,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
     }
 
     if (!is.null(toAdd))
-      errorMessage <- paste0(errorMessage, "\n\nPossible typos detected:\n\n", toAdd)
+      errorMessage <- gettextf("%s\n\nPossible typos detected:\n\n%s", errorMessage, toAdd)
 
   }
 
@@ -722,7 +720,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
     counts <- counts[2:1]
     chars <- chars[2:1]
   }
-  return(sprintf(
+  return(gettextf(
     "The model contains more '%s' than '%s' (%d vs %d)",
     chars[1L], chars[2L], counts[1L], counts[2L]
   ))
@@ -734,9 +732,10 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   e <- try(loadNamespace("rjags"), silent = TRUE)
   if (isTryError(e)) {
     # Sys.getenv() returns "" if nothing was found
-    jaspContainer$setError(paste0("There was a problem loading JAGS, JAGS_HOME is: ", Sys.getenv("JAGS_HOME"), ".\nPlease contact the JASP team for support.\nError was: ", e))
+    jaspContainer$setError(gettextf("There was a problem loading JAGS, JAGS_HOME is: '%s'.\nPlease contact the JASP team for support.\nError was: %s.",
+                                    Sys.getenv("JAGS_HOME"), e))
   } else if (isTRUE(rjags::jags.version() < "4.3.0")) {
-    jaspContainer$setError(paste("Expected JAGS version 4.3.0 but found", as.character(rjags::jags.version())))
+    jaspContainer$setError(gettextf("Expected JAGS version 4.3.0 but found %s", as.character(rjags::jags.version())))
   }
   return(NULL)
 }
@@ -771,17 +770,15 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
       string <- rcodes[i]
       if (is.null(string) || string == "" || string == "...") { # this shouldn't be possible, but if string = NULL, parse prompts for user input.
         next
-        # jaspResults[["mainContainer"]]$setError("The R code for %s was NULL!", type)
-        # return()
       }
       obj <- try(eval(parse(text = string)))
       if (isTryError(obj)) {
-        jaspResults[["mainContainer"]]$setError(sprintf("The R code for %s crashed with error:\n%s",
+        jaspResults[["mainContainer"]]$setError(gettextf("The R code for %s crashed with error:\n%s",
                                                         type, .extractErrorMessage(obj)))
         return()
       } else if (!is.numeric(obj)) {
-        jaspResults[["mainContainer"]]$setError("The result of %s R code should be numeric but it was of mode %s and class %s",
-                                                type, mode(obj), paste(class(obj), collapse = ","))
+        jaspResults[["mainContainer"]]$setError(gettextf("The result of %s R code should be numeric but it was of mode %s and class %s",
+                                                type, mode(obj), paste(class(obj), collapse = ",")))
         return()
       } else {
         oneOutput[[i]] <- obj
@@ -833,9 +830,6 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   "JAGS"    = "Plummer, Martyn. (2003). JAGS: A Program for Analysis of Bayesian Graphical Models using Gibbs Sampling. 3rd International Workshop on Distributed Statistical Computing (DSC 2003); Vienna, Austria. 124."
 )
 
-
-# useful!
-# rjags::jags.version()
 
 # TODO long term: ----
 # - get parameter bounds and respect these in the plots and density estimation, e.g., truncate [0, 1] (probably pretty hard though).
