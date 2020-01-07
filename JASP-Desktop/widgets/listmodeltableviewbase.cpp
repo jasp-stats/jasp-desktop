@@ -207,14 +207,14 @@ void ListModelTableViewBase::itemChanged(int column, int row, QVariant value)
 	{
 		if (_values[column][row] != value)
 		{
-			bool gotLarger = _values[column][row].toString().size() != value.toString().size();
 			_values[column][row] = _itemType == "integer" ? value.toInt() : _itemType == "double" ? value.toDouble() : value;
 
+			// the following triggers a reset of the view if the colwidth changes, but that is wrong. actually it should just change the cell-value.
 			emit dataChanged(index(row, column), index(row, column), { Qt::DisplayRole });
 			emit modelChanged();
 
-			if(gotLarger)
-				emit headerDataChanged(Qt::Orientation::Horizontal, column, column);
+			// Here we should *actually* check if specialRoles::maxColString changes and in that case: (so that the view can recalculate stuff)
+			//	emit headerDataChanged(Qt::Orientation::Horizontal, column, column);
 		}
 	}
 }
