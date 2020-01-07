@@ -54,11 +54,8 @@ void BoundQMLTextInput::initTextInput()
 
 QString BoundQMLTextInput::_getPercentValue()
 {
-	double doubleValue = _number->value();
-	if (doubleValue <= 1) // The value is internally divided by 100, but is displayed as a percent number
-		doubleValue = doubleValue * 100;
-	if (doubleValue > 100) doubleValue = 100;
-	else if (doubleValue < 0) doubleValue = 0;
+	double doubleValue = _number->value() * 100; // The value is stored as a double from 0...1, but is displayed as a percent number
+	doubleValue = std::max(0., std::min(100., doubleValue));
 
 	return QString::number(doubleValue);
 }
@@ -117,8 +114,10 @@ void BoundQMLTextInput::bindTo(Option *option)
 
 	case TextInputType::PercentIntputType:
 		_number = dynamic_cast<OptionNumber *>(option);
-		if (!_number)
-			_number = new OptionNumber();
+		if (!_number)	_number = new OptionNumber();
+		else if(_number->value() > 1) //How is this possible? Doesn't matter
+				_number->setValue(std::min(100., std::max(0., _number->value() / 100.0)));
+
 		_option = _number;
 		_value = _getPercentValue();
 		break;
