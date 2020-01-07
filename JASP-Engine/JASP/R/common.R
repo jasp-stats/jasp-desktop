@@ -2246,10 +2246,16 @@ as.list.footnotes <- function(footnotes) {
 }
 
 openGrDevice <- function(...) {
-  if (jaspResultsCalledFromJasp())
-    svglite::svglite(...)
-  else
+  if (jaspResultsCalledFromJasp()) {
+    dots <- list(...)
+    if ("file" %in% names(dots)) {
+      dots[["filename"]] <- dots[["file"]]
+      dots[["file"]]     <- NULL
+    }
+    do.call(grDevices::svg, dots)
+  } else {
     grDevices::png(..., units="in", res = 72, type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
+  }
 }
 
 .writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathsvg = NULL,
