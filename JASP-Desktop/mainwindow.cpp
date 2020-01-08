@@ -402,7 +402,7 @@ void MainWindow::loadQML()
 
 	_qml->addImportPath("qrc:///components");
 
-	connect(_qml, &QQmlApplicationEngine::objectCreated, [&](QObject * obj, QUrl url) { if(obj == nullptr) { std::cerr << "Could not load QML: " + url.toString().toStdString() << std::endl; _application->exit(10); }});
+	connect(_qml, &QQmlApplicationEngine::objectCreated, [&](QObject * obj, QUrl url) { if(obj == nullptr) { std::cerr << "Could not load QML: " + url.toString().toStdString() << std::endl; exit(10); }});
 
 	// load chosen theme first
 	if(_preferences->currentThemeName() == "lightTheme")
@@ -966,7 +966,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			MessageForwarder::showWarning("Unable to open file because:\n" + event->message());
 
-			if (_openedUsingArgs)	_application->exit(1);
+			if (_openedUsingArgs)	exit(3);
 
 		}
 	}
@@ -1240,7 +1240,7 @@ void MainWindow::fatalError()
 			openGitHubBugReport();
 		}
 		else
-			_application->exit(1);
+			exit(2);
 	}
 }
 
@@ -1454,7 +1454,7 @@ void MainWindow::testLoadedJaspFile(int timeOut, bool save)
 void MainWindow::unitTestTimeOut()
 {
 	std::cerr << "Time out for unit test!" << std::endl;
-	_application->exit(2);
+	exit(3);
 }
 
 void MainWindow::startComparingResults()
@@ -1504,7 +1504,7 @@ void MainWindow::finishComparingResults()
 		if(resultXmlCompare::compareResults::theOne()->shouldSave())
 			emit saveJaspFile();
 		else
-			_application->exit(resultXmlCompare::compareResults::theOne()->compareSucces() ? 0 : 1);
+			exit(resultXmlCompare::compareResults::theOne()->compareSucces() ? 0 : 1);
 	}
 }
 
@@ -1512,7 +1512,7 @@ void MainWindow::finishSavingComparedResults()
 {
 	if(resultXmlCompare::compareResults::theOne()->testMode() && resultXmlCompare::compareResults::theOne()->shouldSave())
 	{
-		_application->exit(resultXmlCompare::compareResults::theOne()->compareSucces() ? 0 : 1);
+		exit(resultXmlCompare::compareResults::theOne()->compareSucces() ? 0 : 1);
 	}
 }
 
