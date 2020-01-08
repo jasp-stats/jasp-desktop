@@ -118,11 +118,13 @@ void Engine::run()
 
 	while(_engineState != engineState::stopped && ProcessInfo::isParentRunning())
 	{
+		if(_engineState == engineState::initializing) //Do this first, otherwise receiveMessages possibly triggers some other functions
+			initialize();
+
 		receiveMessages(100);
 
 		switch(_engineState)
 		{
-		case engineState::initializing:		initialize();		break;
 		case engineState::idle:									break;
 		case engineState::analysis:			runAnalysis();		break;
 		case engineState::paused:			/* Do nothing */

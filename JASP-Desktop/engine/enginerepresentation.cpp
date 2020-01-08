@@ -82,9 +82,17 @@ void EngineRepresentation::handleEngineCrash()
 		break;
 
 	case engineState::logCfg:
-		//So if the engine crashes on log config change request then we can still continue becaues it will also get the proper settings on startup.
+		//So if the engine crashes on log config change request then we can still continue because it will also get the proper settings on startup.
 		//And if it is still broken then we will simply see a crash screen then...
 		break;
+
+	case engineState::idle:
+	{
+		static int idleCrashes = 0;
+
+		if(idleCrashes++ < 3)
+			break; //Try it a couple of times because the engine might have crashed right after completing an analysis (because of .crashPlease() for instance) or something. But if it keeps happening something is probably wrong
+	}
 
 	default: //If not one of the above then let the engine crash and burn (https://www.youtube.com/watch?v=UtUpXPiSJEg)
 		emit engineTerminated();
@@ -137,10 +145,16 @@ void EngineRepresentation::process()
 #endif
 
 		Json::Value json;
-		Json::Reader().parse(data, json);
+		bool		jsonIsOK = false;
 
-		if(!json.get("typeRequest", Json::nullValue).isString() && _engineState != engineState::analysis)
+		try { jsonIsOK = Json::Reader().parse(data, json) && (json.get("typeRequest", Json::nullValue).isString() || _engineState == engineState::analysis); }
+		catch(...) {}
+
+		if(!jsonIsOK)
+		{
+			Log::log() << "Malformed reply from engine in state " << _engineState << ": '" << data << "'" << std::endl;
 			throw std::runtime_error("Malformed reply from engine!");
+		}
 
 		engineState typeRequest = engineStateFromString(json.get("typeRequest", "analysis").asString());
 
