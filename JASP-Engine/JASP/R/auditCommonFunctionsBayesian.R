@@ -1406,7 +1406,8 @@
       priorForm <- paste0("Beta(\u03B1 = ", 
                           round(1 + evaluationState[["kPrior"]], 3),
                           ", \u03B2 = ",
-                          round(1 + evaluationState[["nPrior"]], 3),
+                          round(1 + evaluationState[["nPrior"]] - 
+                                 evaluationState[["kPrior"]], 3),
                           ")")
 
     } else if(planningOptions[["likelihood"]] == "hypergeometric"){

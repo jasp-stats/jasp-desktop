@@ -120,8 +120,8 @@ test_that("Prior and Posterior Distribution plot matches", {
 test_that("<b>Table 9.</b> Prior and Posterior Descriptive Statistics results match", {
   table <- results[["results"]][["evaluationContainer"]][["collection"]][["evaluationContainer_priorAndPosteriorStatistics"]][["data"]]
   expect_equal_tables(table,
-                      list("Beta(<unicode><unicode> = 2.275, <unicode><unicode> = 52)", "9.6012%",
-                           0.33, 0.67, 2.05, "Prior", "Beta(<unicode><unicode> = 4.075, <unicode><unicode> = 219.2)",
+                      list("Beta(<unicode><unicode> = 2.275, <unicode><unicode> = 50.725)",
+                           "9.6012%", 0.33, 0.67, 2.05, "Prior", "Beta(<unicode><unicode> = 4.075, <unicode><unicode> = 219.2)",
                            "3.5184%", 0, 1, 223.72, "Posterior", "", "", 0, 1.49, 108.94,
                            "Shift"))
 })

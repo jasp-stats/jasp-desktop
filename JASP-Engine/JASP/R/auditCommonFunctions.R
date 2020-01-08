@@ -667,7 +667,7 @@
                             order = 1) 
 
     myTheme <- ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = -10, r = 50)),
-                              panel.grid.major.y = ggplot2::element_line(color = "#cbcbcb"))
+                              panel.grid.major.y = ggplot2::element_line(color = "#cbcbcb", size = 0.5))
     
     p <- JASPgraphs::themeJasp(p, 
                                legend.position = "top") + myTheme
@@ -1631,7 +1631,7 @@
     myTheme <- ggplot2::theme(axis.ticks.x = ggplot2::element_blank(), 
                               axis.ticks.y = ggplot2::element_blank(), 
                               axis.text.y = ggplot2::element_text(hjust = 0),
-                              panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb"),
+                              panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb", size = 0.5),
                               legend.text = ggplot2::element_text(margin = ggplot2::margin(l = 0, r = 30)))
 
     p <- ggplot2::ggplot(data = d, 
@@ -1782,7 +1782,7 @@
                                                        stroke = 1.5, 
                                                        color = "black"))
     
-    myTheme <- ggplot2::theme(panel.grid.major.y = ggplot2::element_line(color = "#cbcbcb"),
+    myTheme <- ggplot2::theme(panel.grid.major.y = ggplot2::element_line(color = "#cbcbcb", size = 0.5),
                               legend.text = ggplot2::element_text(margin = ggplot2::margin(l = 0, r = 30)))
 
     p <- ggplot2::ggplot(data = dataLegend, 
@@ -3265,7 +3265,7 @@
     myTheme <- ggplot2::theme(axis.ticks.x = ggplot2::element_blank(), 
                               axis.ticks.y = ggplot2::element_blank(), 
                               axis.text.y = ggplot2::element_text(hjust = 0),
-                              panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb"))
+                              panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb", size = 0.5))
 
     p <- JASPgraphs::themeJasp(p, 
                                sides = "") + myTheme
@@ -3412,8 +3412,8 @@
                               hjust = -0.5, 
                               vjust = 0.5)
     
-    myTheme <- ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb"), 
-                            panel.grid.major.y = ggplot2::element_line(color = "#cbcbcb"))
+    myTheme <- ggplot2::theme(panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb", size = 0.5), 
+                            panel.grid.major.y = ggplot2::element_line(color = "#cbcbcb", size = 0.5))
     
     p <- JASPgraphs::themeJasp(p) + myTheme
 
