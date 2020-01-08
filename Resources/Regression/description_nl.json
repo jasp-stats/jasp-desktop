@@ -1,7 +1,8 @@
 {
 	"moduleDescription"  :
 	{
-		"title"          : "Regression",
+		"name"           : "Regression",
+		"title"          : "Regressie",
 		"description"    : "This module offers the standard Frequentist and Bayesian Regression analyses.",
 		"icon"			 : "analysis-classical-regression.svg",
 		"version"        : 1,
@@ -15,30 +16,30 @@
 	"menu":
 	[
 		{
-			"title":	"Correlation Matrix",
+			"title":	"Correlatie Matrix",
 			"function":	"Correlation"
 		},
 		{
-			"title":	"Linear Regression",
+			"title":	"Lineaire Regressie",
 			"function":	"RegressionLinear"
 		},
 		{
-			"title":	"Logistic Regression",
+			"title":	"Logistische Regressie",
 			"function":	"RegressionLogistic"
 		},
 		{
 			"title":	"-"
 		},
 		{
-			"title":	"Bayesian Correlation Matrix",
+			"title":	"Bayesiaanse Correlatie Matrix",
 			"function":	"CorrelationBayesian"
 		},
 		{
-			"title":	"Bayesian Correlation Pairs",
+			"title":	"Bayesiaanse Correlatie Paren",
 			"function":	"CorrelationBayesianPairs"
 		},
 		{
-			"title":	"Bayesian Linear Regression",
+			"title":	"Bayesiaanse Lineaire Regressie",
 			"function":	"RegressionLinearBayesian"
 		}
 	]

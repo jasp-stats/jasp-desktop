@@ -1,6 +1,7 @@
 {
 	"moduleDescription" :
 	{
+		"name" : 		"SEM",
 		"title" : 		"SEM",
 		"description" : "SEM module.",
 		"icon":			"sem-latreg.svg",
@@ -21,7 +22,7 @@
 			"function":	"SEMSimple"
 		},
         {
-            "title":	"Mediation Analysis",
+            "title":	"Mediatie Analyse",
             "qml":		"MediationAnalysis.qml",
             "function":	"MediationAnalysis"
         }
