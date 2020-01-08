@@ -195,7 +195,6 @@ INSTALLS += Resources
 
 HEADERS += \
     analysis/analysisform.h \
-    analysis/analysisqmldefines.h \
     analysis/boundqmlitem.h \
     analysis/options/bound.h \
     analysis/options/option.h \
@@ -385,7 +384,6 @@ HEADERS += \
 
 SOURCES += \
     analysis/analysisform.cpp \
-    analysis/analysisqmldefines.cpp \
     analysis/boundqmlitem.cpp \
     analysis/options/option.cpp \
     analysis/options/optionboolean.cpp \

@@ -16,8 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+import JASP		1.0
+
 VariablesList
 {
-	listViewType:	"AssignedVariables"
-	dropMode:		"Insert"
+	listViewType:	JASP.AssignedVariables
+	dropMode:		JASP.DropInsert
 }

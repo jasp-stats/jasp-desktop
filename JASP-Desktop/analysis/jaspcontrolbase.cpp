@@ -66,8 +66,18 @@ void JASPControlBase::componentComplete()
 	QQmlContext* context = qmlContext(this);
 	bool hasContextForm = context->contextProperty("hasContextForm").toBool();
 	bool noDirectSetup = context->contextProperty("noDirectSetup").toBool();
+
 	if (hasContextForm)
+	{
 		_form = context->contextProperty("form").value<AnalysisForm*>();
+		QMLListView* control = dynamic_cast<QMLListView*>(context->contextProperty("listView").value<QObject*>());
+		if (control)
+		{
+			_parentListView = control->item();
+			_parentListViewKey = context->contextProperty("rowValue").toString();
+			emit parentListViewChanged();
+		}
+	}
 
 	if (!hasContextForm && _form)
 		_form->addControl(this);

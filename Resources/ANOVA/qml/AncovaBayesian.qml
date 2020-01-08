@@ -19,6 +19,7 @@
 import QtQuick			2.12
 import JASP.Controls	1.0
 import JASP.Widgets		1.0
+import JASP				1.0
 
 Form
 {
@@ -111,7 +112,7 @@ Form
 			{
 				title: qsTr("Specific Model Terms")
 				name: "singleModelTerms"
-				listViewType: "Interaction"
+				listViewType: JASP.Interaction
 			}
 		}
 
@@ -192,9 +193,9 @@ Form
 		Group
 		{
 			title: qsTr("Prior")
-			DoubleField { name: "priorFixedEffects";		label: qsTr("r scale fixed effects");	defaultValue: 0.5;	 max: 2; inclusive: "maxOnly"; decimals: 3 }
-			DoubleField { name: "priorRandomEffects";		label: qsTr("r scale random effects");	defaultValue: 1;	 max: 2; inclusive: "maxOnly"; decimals: 3 }
-			DoubleField { name: "priorCovariates";			label: qsTr("r scale covariates");		defaultValue: 0.354; max: 2; inclusive: "maxOnly"; decimals: 3 }
+			DoubleField { name: "priorFixedEffects";		label: qsTr("r scale fixed effects");	defaultValue: 0.5;	 max: 2; inclusive: JASP.MaxOnly; decimals: 3 }
+			DoubleField { name: "priorRandomEffects";		label: qsTr("r scale random effects");	defaultValue: 1;	 max: 2; inclusive: JASP.MaxOnly; decimals: 3 }
+			DoubleField { name: "priorCovariates";			label: qsTr("r scale covariates");		defaultValue: 0.354; max: 2; inclusive: JASP.MaxOnly; decimals: 3 }
 		}
 
 		RadioButtonGroup

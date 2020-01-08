@@ -1,13 +1,13 @@
-import QtQuick 2.8
-import JASP.Controls 1.0 as JC
-
+import QtQuick			2.8
+import JASP.Controls	1.0 as JC
+import JASP				1.0
 
 JC.VariablesList
 {
 	property alias editableTitle: titleField.value
 	signal titleIsChanged()
 	title: " " //dummy
-	listViewType: "AssignedVariables"
+	listViewType: JASP.AssignedVariables
 
     JC.TextField 
     {

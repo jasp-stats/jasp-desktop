@@ -70,12 +70,9 @@ JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase*
 	case JASPControlBase::ControlType::TextArea:
 	{
 		QString textType = control->property("textType").toString();
-		if (textType == "lavaan")
-			controlWrapper = new BoundQMLLavaanTextArea(control);
-		if (textType == "JAGSmodel")
-			controlWrapper = new BoundQMLJAGSTextArea(control);
-		else
-			controlWrapper = new BoundQMLTextArea(control);
+		if (textType == "lavaan")									controlWrapper		= new BoundQMLLavaanTextArea(control);
+		else if (textType == "JAGSmodel")							controlWrapper		= new BoundQMLJAGSTextArea(control);
+		else														controlWrapper		= new BoundQMLTextArea(control);
 		break;
 	}
 	case JASPControlBase::ControlType::ComboBox:					controlWrapper		= new BoundQMLComboBox(control);					break;
@@ -89,24 +86,16 @@ JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase*
 	case JASPControlBase::ControlType::RepeatedMeasuresFactorsList:	controlWrapper		= new BoundQMLRepeatedMeasuresFactors(control);		break;
 	case JASPControlBase::ControlType::VariablesListView:
 	{
-		QString			listViewTypeStr = QQmlProperty(control, "listViewType").read().toString();
-		qmlListViewType	listViewType;
-
-		try	{ listViewType	= qmlListViewTypeFromQString(listViewTypeStr);	}
-		catch(std::exception&)
-		{
-			Log::log() << "Unknown listViewType: " << listViewType << " form VariablesList " << controlName << std::endl;
-			listViewType = qmlListViewType::AssignedVariables;
-		}
+		JASPControlBase::ListViewType	listViewType = JASPControlBase::ListViewType(control->property("listViewType").toInt());
 
 		switch(listViewType)
 		{
-		case qmlListViewType::AssignedVariables:	controlWrapper = new BoundQMLListViewTerms(control, false);		break;
-		case qmlListViewType::Interaction:			controlWrapper = new BoundQMLListViewTerms(control, true);		break;
-		case qmlListViewType::RepeatedMeasures:		controlWrapper = new BoundQMLListViewMeasuresCells(control);	break;
-		case qmlListViewType::Layers:				controlWrapper = new BoundQMLListViewLayers(control);			break;
-		case qmlListViewType::AvailableVariables:	controlWrapper = new QMLListViewTermsAvailable(control, false);	break;
-		case qmlListViewType::AvailableInteraction: controlWrapper = new QMLListViewTermsAvailable(control, true);	break;
+		case JASPControlBase::ListViewType::AssignedVariables:		controlWrapper = new BoundQMLListViewTerms(control, false);		break;
+		case JASPControlBase::ListViewType::Interaction:			controlWrapper = new BoundQMLListViewTerms(control, true);		break;
+		case JASPControlBase::ListViewType::RepeatedMeasures:		controlWrapper = new BoundQMLListViewMeasuresCells(control);	break;
+		case JASPControlBase::ListViewType::Layers:					controlWrapper = new BoundQMLListViewLayers(control);			break;
+		case JASPControlBase::ListViewType::AvailableVariables:		controlWrapper = new QMLListViewTermsAvailable(control, false);	break;
+		case JASPControlBase::ListViewType::AvailableInteraction:	controlWrapper = new QMLListViewTermsAvailable(control, true);	break;
 		}
 		break;
 	}
@@ -167,11 +156,23 @@ void JASPControlWrapper::setItemProperty(const QString& name, const QVariant& va
 		_item->setProperty(name.toStdString().c_str(), value);
 }
 
+JASPControlWrapper* JASPControlWrapper::parentListControl()
+{
+	JASPControlBase* listView = qobject_cast<JASPControlBase*>(_item->parentListView());
+
+	if (listView)	return listView->getWrapper();
+	else			return nullptr;
+}
+
+QString JASPControlWrapper::parentListControlKey()
+{
+	return _item->parentListViewKey();
+}
+
 QVariant JASPControlWrapper::getItemProperty(const QString &name)
 {
 	if (_item)
 		return _item->property(name.toStdString().c_str());
-	else {
+	else
 		return QVariant();
-	}
 }

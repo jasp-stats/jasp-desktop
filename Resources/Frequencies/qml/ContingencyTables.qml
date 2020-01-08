@@ -15,9 +15,10 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
+import QtQuick			2.8
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP				1.0
 
 Form
 {
@@ -27,7 +28,7 @@ Form
 		AssignedVariablesList { name: "rows";		title: qsTr("Rows");	suggestedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "columns";	title: qsTr("Columns");	suggestedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "counts";		title: qsTr("Counts");	suggestedColumns: ["scale", "ordinal"]; singleVariable: true }
-		AssignedVariablesList { name: "layers";		title: qsTr("Layers");	suggestedColumns: ["ordinal", "nominal"]; listViewType: "Layers"; preferredHeight: 120 }
+		AssignedVariablesList { name: "layers";		title: qsTr("Layers");	suggestedColumns: ["ordinal", "nominal"]; listViewType: JASP.Layers; preferredHeight: 120 }
 	}
 	
 	Section

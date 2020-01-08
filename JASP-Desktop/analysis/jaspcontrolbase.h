@@ -21,10 +21,11 @@ private:
 	Q_PROPERTY( bool			hasWarning			READ hasWarning			WRITE setHasWarning			NOTIFY hasWarningChanged			)
 	Q_PROPERTY( QVariant		childControlsArea	READ childControlsArea	WRITE setChildControlsArea										)
 	Q_PROPERTY( QQuickItem*		section				READ section			WRITE setSection												)
+	Q_PROPERTY( QQuickItem*		parentListView		READ parentListView									NOTIFY parentListViewChanged		)
 	Q_PROPERTY( QQmlListProperty<QQmlComponent> rowComponents READ rowComponents)
 
 public:
-	enum ControlType {
+	enum class ControlType {
 		  JASPControl
 		, Expander
 		, CheckBox
@@ -44,7 +45,18 @@ public:
 		, ComponentsList
 	};
 
+	// Be careful not to reuse a name in a enum type: in QML, they are mixed up with a 'JASP' prefix: JASP.DropNone or JASP.None
+	enum class Inclusive	{ None = 0, MinMax, MinOnly, MaxOnly };
+	enum class DropMode		{ DropNone = static_cast<int>(Inclusive::MaxOnly) + 1, DropInsert, DropReplace };
+	enum class ListViewType { AssignedVariables = static_cast<int>(DropMode::DropReplace) + 1, Interaction, AvailableVariables, RepeatedMeasures, Layers, AvailableInteraction };
+	enum class AssignType	{ AssignDefault = static_cast<int>(ListViewType::AvailableInteraction) + 1, AssignCross, AssignMainEffects, AssignInteraction, AssignAll2Way, AssignAll3Way, AssignAll4Way, AssignAll5Way };
+
+
 	Q_ENUM(ControlType)
+	Q_ENUM(Inclusive)
+	Q_ENUM(DropMode)
+	Q_ENUM(ListViewType)
+	Q_ENUM(AssignType)
 
 	JASPControlBase(QQuickItem *parent = nullptr);
 
@@ -56,6 +68,8 @@ public:
 	bool			focusOnTab()			const	{ return activeFocusOnTab();	}
 	AnalysisForm*	form()					const	{ return _form;					}
 	const QVariant&	childControlsArea()		const	{ return _childControlsArea;	}
+	QQuickItem*		parentListView()		const	{ return _parentListView;		}
+	QString			parentListViewKey()		const	{ return _parentListViewKey;	}
 	QQuickItem*		section()				const	{ return _section;				}
 
 	void	setControlType(ControlType controlType)				{ _controlType = controlType; }
@@ -90,6 +104,7 @@ signals:
 	void hasErrorChanged();
 	void hasWarningChanged();
 	void focusOnTabChanged();
+	void parentListViewChanged();
 
 protected:
 	void componentComplete() override;
@@ -99,13 +114,15 @@ protected:
 protected:
 	ControlType			_controlType;
 	QString				_name;
-	bool				_isBound		= true;
-	bool				_hasError		= false;
-	bool				_hasWarning		= false;
-	JASPControlWrapper*	_wrapper		= nullptr;
-	AnalysisForm*		_form			= nullptr;
+	bool				_isBound				= true;
+	bool				_hasError				= false;
+	bool				_hasWarning				= false;
+	JASPControlWrapper*	_wrapper				= nullptr;
+	QQuickItem*			_parentListView			= nullptr;
+	QString				_parentListViewKey;
+	AnalysisForm*		_form					= nullptr;
 	QVariant			_childControlsArea;
-	QQuickItem*			_section		= nullptr;
+	QQuickItem*			_section				= nullptr;
 
 	static void				appendRowComponent(QQmlListProperty<QQmlComponent>*, QQmlComponent*);
 	static int				rowComponentsCount(QQmlListProperty<QQmlComponent>*);

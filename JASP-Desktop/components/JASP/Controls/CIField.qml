@@ -16,10 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import JASP.Controls 1.0
-
-import JASP 1.0
+import QtQuick			2.11
+import JASP.Controls	1.0
+import JASP				1.0
 
 PercentField
 {
@@ -27,6 +26,6 @@ PercentField
 
 	defaultValue:		95
 	decimals:			1
-	inclusive:			"no"
+	inclusive:			JASP.None
 	fieldWidth:			jaspTheme.font.pixelSize * (ciField.decimals + 3)
 }

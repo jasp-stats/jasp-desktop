@@ -283,6 +283,22 @@ void QMLListView::setTermsAreInteractions()
 	model()->setTermsAreInteractions(true);
 }
 
+JASPControlWrapper *QMLListView::getRowControl(const QString &key, const QString &name)
+{
+	JASPControlWrapper* control = nullptr;
+
+	const QMap<QString, RowControls*>& allControls = model()->getRowControls();
+	if (allControls.contains(key))
+	{
+		RowControls* rowControls = allControls[key];
+		const QMap<QString, JASPControlWrapper*>& controls = rowControls->getJASPWrapperMap();
+		if (controls.contains(name))
+			control = controls[name];
+	}
+
+	return control;
+}
+
 QString QMLListView::getSourceType(QString name)
 {
 	return model()->getItemType(name);

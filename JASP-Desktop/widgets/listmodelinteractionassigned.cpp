@@ -160,7 +160,7 @@ Terms ListModelInteractionAssigned::canAddTerms(const Terms& terms) const
 	return terms;
 }
 
-void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, qmlAssignType assignType)
+void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, JASPControlBase::AssignType assignType)
 {
 	Terms dropped;
 	dropped.setSortParent(source()->allTerms());
@@ -172,25 +172,26 @@ void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, qmlAssig
 
 	switch (assignType)
 	{
-	case qmlAssignType::Cross:
+	case JASPControlBase::AssignType::AssignDefault:
+	case JASPControlBase::AssignType::AssignCross:
 		newTerms = dropped.crossCombinations();
 		break;
-	case qmlAssignType::Interaction:
+	case JASPControlBase::AssignType::AssignInteraction:
 		newTerms = dropped.wayCombinations(nbTerms);
 		break;
-	case qmlAssignType::MainEffects:
+	case JASPControlBase::AssignType::AssignMainEffects:
 		newTerms = dropped.wayCombinations(1);
 		break;
-	case qmlAssignType::All2Way:
+	case JASPControlBase::AssignType::AssignAll2Way:
 		newTerms = dropped.wayCombinations(nbTerms < 2 ? nbTerms : 2);
 		break;
-	case qmlAssignType::All3Way:
+	case JASPControlBase::AssignType::AssignAll3Way:
 		newTerms = dropped.wayCombinations(nbTerms < 3 ? nbTerms : 3);
 		break;
-	case qmlAssignType::All4Way:
+	case JASPControlBase::AssignType::AssignAll4Way:
 		newTerms = dropped.wayCombinations(nbTerms < 4 ? nbTerms : 4);
 		break;
-	case qmlAssignType::All5Way:
+	case JASPControlBase::AssignType::AssignAll5Way:
 		newTerms = dropped.wayCombinations(nbTerms < 5 ? nbTerms : 5);
 		break;
 	default:
@@ -201,7 +202,7 @@ void ListModelInteractionAssigned::addCombinedTerms(const Terms& terms, qmlAssig
 	setTerms();
 }
 
-Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemIndex, const QString& assignOptionStr)
+Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemIndex, JASPControlBase::AssignType assignType)
 {
 	Q_UNUSED(dropItemIndex);
 
@@ -210,14 +211,9 @@ Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemInd
 	if (terms.size() == 0)
 		return result;
 	
-	qmlAssignType assignType = qmlAssignType::Cross;
-	
-	if (!assignOptionStr.isEmpty())
-	{
-		try						{ assignType	= qmlAssignTypeFromQString(assignOptionStr);	}
-		catch(std::exception)	{ addControlError(tr("Unknown Assign type: %1").arg(assignOptionStr)); }
-	}
-	
+	if (assignType == JASPControlBase::AssignType::AssignDefault)
+		assignType = JASPControlBase::AssignType::AssignCross;
+		
 	addCombinedTerms(terms, assignType);
 	
 	return nullptr;
@@ -225,8 +221,8 @@ Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int dropItemInd
 
 void ListModelInteractionAssigned::moveTerms(const QList<int> &indexes, int dropItemIndex)
 {
-	qmlDropMode _dropMode = dropMode();
-	if (indexes.length() == 0 || _dropMode == qmlDropMode::None)
+	JASPControlBase::DropMode _dropMode = dropMode();
+	if (indexes.length() == 0 || _dropMode == JASPControlBase::DropMode::DropNone)
 		return;
 
 	beginResetModel();

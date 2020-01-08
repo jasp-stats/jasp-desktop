@@ -121,7 +121,7 @@ Terms ListModelLayersAssigned::termsFromIndexes(const QList<int> &indexes) const
 	return terms;
 }
 
-Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, const QString&)
+Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, JASPControlBase::AssignType)
 {
 	Terms result;
 	beginResetModel();

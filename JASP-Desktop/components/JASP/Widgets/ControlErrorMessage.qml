@@ -34,11 +34,12 @@ Rectangle
 	property var control		: parent
 	property bool warning		: false
 	property var form
-	property int formWidth		: form ? form.width : 0
+	property var container
+	property int containerWidth	: container ? (container === form ? form.availableWidth : container.width) : 0
 	property int paddingWidth	: 10 * jaspTheme.uiScale
 	property int paddingHeight	: 6 * jaspTheme.uiScale
 
-	onFormWidthChanged: if (visible) showMessage()
+	onContainerWidthChanged: if (visible) showMessage()
 
 	onControlChanged:
 	{
@@ -91,13 +92,13 @@ Rectangle
 		var x = (control.width / 2) - (controlErrorMessage.width / 2)
 		var y = -controlErrorMessage.height - 5
 
-		if (form)
+		if (container)
 		{
-			var maxWidth = form.availableWidth
-			var controlPoint = control.mapToItem(form, x, 0)
+			var maxWidth = containerWidth
+			var controlPoint = control.mapToItem(container, x, 0)
 
 			if (controlPoint.x < 0) x = x - controlPoint.x
-			controlPoint = control.mapToItem(form, x, 0)
+			controlPoint = control.mapToItem(container, x, 0)
 
 			if (controlPoint.x + controlErrorMessage.width > maxWidth)
 			{
