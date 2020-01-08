@@ -46,8 +46,8 @@ Form
 		{
 			title	: qsTr("Normal Prior on Log Odds Ratio")
 
-			DoubleField { label: qsTr("μ:"); name: "normal_mu";		defaultValue: 0 }
-			DoubleField { label: qsTr("σ:"); name: "normal_sigma";	defaultValue: 1 }
+			DoubleField { label: qsTr("\u03bc:"); name: "normal_mu";		defaultValue: 0;	negativeValues: true}
+			DoubleField { label: qsTr("\u03c3:"); name: "normal_sigma";	defaultValue: 1 }
 		}
 
 		CheckBox
@@ -123,7 +123,7 @@ Form
 				DoubleField { name: "orEqualTo1Prob";		label: qsTr("Log odds ratio = 0"); defaultValue: 0.5;  max: 1; min: 0; decimals: 3 }
 				DoubleField { name: "orGreaterThan1Prob";	label: qsTr("Log odds ratio > 0"); defaultValue: 0.25; max: 1; min: 0; decimals: 3 }
 				DoubleField { name: "orLessThan1Prob";		label: qsTr("Log odds ratio < 0"); defaultValue: 0.25; max: 1; min: 0; decimals: 3 }
-				DoubleField { name: "orNotEqualTo1Prob";	label: qsTr("Log odds ratio ≠ 0"); defaultValue: 0;    max: 1; min: 0; decimals: 3 }
+				DoubleField { name: "orNotEqualTo1Prob";	label: qsTr("Log odds ratio \u2260 0"); defaultValue: 0;    max: 1; min: 0; decimals: 3 }
 			}
 		}
 
