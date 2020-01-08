@@ -17,10 +17,10 @@
 //
 
 
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-
+import QtQuick			2.8
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP				1.0
 
 Section
 {
@@ -53,7 +53,7 @@ Section
 					RadioButton
 					{
 						label: qsTr("Cauchy"); name: "cauchy"; checked: true; childrenOnSameRow: true
-						DoubleField { label: qsTr("scale"); name: "priorWidth"; defaultValue: 0.707; fieldWidth: 50; max: 2; inclusive: "maxOnly" }
+						DoubleField { label: qsTr("scale"); name: "priorWidth"; defaultValue: 0.707; fieldWidth: 50; max: 2; inclusive: JASP.MaxOnly }
 					}
 				}
 			}
@@ -69,7 +69,7 @@ Section
 					{
 						label: qsTr("Cauchy"); name: "cauchy"; checked: true; childrenOnSameRow: true; id: cauchyInformative
 						DoubleField { label: qsTr("location:"); name: "informativeCauchyLocation"; visible: cauchyInformative.checked; defaultValue: 0; min: -3; max: 3 }
-						DoubleField { label: qsTr("scale:"); name: "informativeCauchyScale"; visible: cauchyInformative.checked; defaultValue: 0.707; fieldWidth: 50; max: 2; inclusive: "maxOnly" }
+						DoubleField { label: qsTr("scale:"); name: "informativeCauchyScale"; visible: cauchyInformative.checked; defaultValue: 0.707; fieldWidth: 50; max: 2; inclusive: JASP.MaxOnly }
 					}
 					RadioButton
 					{
@@ -81,7 +81,7 @@ Section
 					{
 						label: qsTr("t"); name: "t"; childrenOnSameRow: true; id: tInformative
 						DoubleField { label: qsTr("location:"); name: "informativeTLocation"; visible: tInformative.checked; defaultValue: 0; min: -3; max: 3 }
-						DoubleField { label: qsTr("scale:"); name: "informativeTScale"; visible: tInformative.checked; defaultValue: 0.707; fieldWidth: 50; max: 2; inclusive: "maxOnly" }
+						DoubleField { label: qsTr("scale:"); name: "informativeTScale"; visible: tInformative.checked; defaultValue: 0.707; fieldWidth: 50; max: 2; inclusive: JASP.MaxOnly }
 						DoubleField { label: qsTr("df:"); name: "informativeTDf"; visible: tInformative.checked; defaultValue: 1; min: 1; max: 100 }
 					}
 				}

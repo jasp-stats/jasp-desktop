@@ -16,10 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import JASP.Controls 1.0
-
-import JASP 1.0
+import QtQuick			2.11
+import JASP.Controls	1.0
+import JASP				1.0
 
 TextField
 {
@@ -30,10 +29,10 @@ TextField
 	property double	min:				negativeValues ? -Infinity : 0
 	property double	max:				Infinity
 	property int	decimals:			3
-	property string inclusive:			"yes"
+	property alias	inclusive:			doubleValidator.inclusive
 
 					inputType:			"number"
-					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: doubleField.decimals; inclusive: doubleField.inclusive; notation: DoubleValidator.StandardNotation }
+					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: doubleField.decimals; notation: DoubleValidator.StandardNotation }
 					lastValidValue:		defaultValue
 					value:				defaultValue
 					fieldWidth:			jaspTheme.numericFieldWidth

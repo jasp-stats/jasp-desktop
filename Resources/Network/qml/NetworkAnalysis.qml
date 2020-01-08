@@ -278,7 +278,6 @@ Form
 					DropDown
 					{
 						name: "groupColors"
-						useExternalBorder: true
 						values: ["red", "blue", "yellow", "green", "purple", "orange"]
 					}
 				}
@@ -302,7 +301,6 @@ Form
 					DropDown
 					{
 						name: "groupAssigned"
-						useExternalBorder: true
 						source: ["groupNames"]
 					}
 				}

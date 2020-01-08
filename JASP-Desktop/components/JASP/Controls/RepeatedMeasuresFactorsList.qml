@@ -110,9 +110,6 @@ JASPControl
 				anchors.fill:	parent
 				focus:			true
 				color:			jaspTheme.controlBackgroundColor
-				border.color:	jaspTheme.grayLighter
-				border.width:	1
-				radius:			jaspTheme.borderRadius
 
 				property bool isDeletable:	model.type.includes("deletable")
 				property bool isVirtual:	model.type.includes("virtual")
@@ -124,9 +121,10 @@ JASPControl
 					value:							itemRectangle.isVirtual ? "" : model.name
 					placeholderText:				itemRectangle.isVirtual ? model.name : ""
 					anchors.centerIn:				parent
-					fieldWidth:						parent.width  - (2 * itemRectangle.border.width)
-					fieldHeight:					parent.height - (2 * itemRectangle.border.width)
+					fieldWidth:						parent.width
+					fieldHeight:					parent.height
 					useExternalBorder:				false
+					showBorder:						false
 					selectValueOnFocus:				true
 					control.horizontalAlignment:	itemRectangle.isLevel ? TextInput.AlignLeft : TextInput.AlignHCenter
 					onEditingFinished:				itemChanged(index, value)

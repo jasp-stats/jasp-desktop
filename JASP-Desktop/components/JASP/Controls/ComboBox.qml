@@ -242,7 +242,7 @@ JASPControl
 
 				Text {
 					x:							(delegateIcon.visible ? 20 : 4) * preferencesModel.uiScale
-					text:						itemRectangle.isEmptyValue ? comboBox.placeholderText : model.name
+					text:						itemRectangle.isEmptyValue ? comboBox.placeholderText : (model && model.name ? model.name : "")
 					font:						jaspTheme.font
 					color:						itemRectangle.isEmptyValue || !enabled ? jaspTheme.grayDarker : (comboBox.currentIndex === index ? jaspTheme.white : jaspTheme.black)
 					anchors.verticalCenter:		parent.verticalCenter

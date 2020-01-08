@@ -153,6 +153,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<JaspTheme>				("JASP", 1, 0, "JaspTheme");
 	qmlRegisterType<AnalysisForm>			("JASP", 1, 0, "AnalysisForm");
 	qmlRegisterType<JASPControlBase>		("JASP", 1, 0, "JASPControlBase");
+	qmlRegisterUncreatableType<JASPControlBase>("JASP", 1,0,"JASP","Impossible to create JASP Object");
 	qmlRegisterType<JASPDoubleValidator>	("JASP", 1, 0, "JASPDoubleValidator");
 	qmlRegisterType<ResultsJsInterface>		("JASP", 1, 0, "ResultsJsInterface");
 

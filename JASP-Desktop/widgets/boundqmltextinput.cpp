@@ -299,19 +299,21 @@ void BoundQMLTextInput::_setFormulaOptions(std::string formula, bool valid)
 
 bool BoundQMLTextInput::_formulaResultInBounds(double result)
 {
-	double min		= getItemProperty("min").toDouble();
-	double max		= getItemProperty("max").toDouble();
-	bool inclusive	= getItemProperty("inclusive").toBool();
+	double min			= getItemProperty("min").toDouble();
+	double max			= getItemProperty("max").toDouble();
+	JASPControlBase::Inclusive inclusive = JASPControlBase::Inclusive(getItemProperty("inclusive").toInt());
+	bool includeMin = (inclusive == JASPControlBase::Inclusive::MinMax || inclusive == JASPControlBase::Inclusive::MinOnly);
+	bool includeMax = (inclusive == JASPControlBase::Inclusive::MinMax || inclusive == JASPControlBase::Inclusive::MaxOnly);
 
-	bool tooSmall = inclusive ? result < min : result <= min;
-	bool tooLarge = inclusive ? result > max : result >= max;
+	bool tooSmall = includeMin ? result < min : result <= min;
+	bool tooLarge = includeMax ? result > max : result >= max;
 	bool inBounds = !(tooSmall || tooLarge);
 
 	if (!inBounds)
 	{
 		QString end;
-		if (tooSmall)	end = (inclusive ? "&ge; " : "&gt; ") + getItemProperty("min").toString();
-		else			end = (inclusive ? "&le; " : "&lt; ") + getItemProperty("max").toString();
+		if (tooSmall)	end = (includeMin ? "&ge; " : "&gt; ") + getItemProperty("min").toString();
+		else			end = (includeMax ? "&le; " : "&lt; ") + getItemProperty("max").toString();
 		item()->addControlError(tr("The result (%1) must be %2").arg(result).arg(end));
 	}
 

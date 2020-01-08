@@ -38,8 +38,8 @@ JASPControl
 	property string lastValidValue:		""
 	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
-	property bool	useExternalBorder:	true
-	property bool	showBorder:			useExternalBorder
+	property bool	useExternalBorder:	!parentListView
+	property bool	showBorder:			true
 	property alias	placeholderText:	control.placeholderText
 	property bool	selectValueOnFocus:	false
 	

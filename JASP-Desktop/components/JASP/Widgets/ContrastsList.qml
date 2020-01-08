@@ -39,7 +39,7 @@ Item
 		title			: qsTr("Factors")
 		source			: "fixedFactors"
 		name			: "contrasts"
-		listViewType	: "AssignedVariables"
+		listViewType	: JASP.AssignedVariables
 		height			: 200 * preferencesModel.uiScale
 		draggable		: false
 

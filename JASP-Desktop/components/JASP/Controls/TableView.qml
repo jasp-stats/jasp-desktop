@@ -185,6 +185,7 @@ JASPControl
 						fieldWidth:				parent.width
 						visible:				true
 						useExternalBorder:		false
+						showBorder:				false
 						value:					itemText
 						useLastValidValue:		false
 						selectValueOnFocus:		true
