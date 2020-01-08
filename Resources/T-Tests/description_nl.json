@@ -1,7 +1,8 @@
 {
 	"moduleDescription"  :
 	{
-		"title"          : "T-Tests",
+		"name"           : "T-Tests",
+		"title"          : "T-Toets",
 		"description"    : "This module offers the standard Frequentist and Bayesian T-Tests analyses.",
 		"version"        : 1,
 		"author"         : "JASP Team",
@@ -15,30 +16,30 @@
 	"menu":
 	[
 		{
-			"title":	"Independent Samples T-Test",
+			"title":	"Onafhankelijke Steekproeven T-Toets",
 			"function":	"TTestIndependentSamples"
 		},
 		{
-			"title":	"Paired Samples T-Test",
+			"title":	"Gepaarde T-Toets",
 			"function":	"TTestPairedSamples"
 		},
 		{
-			"title":	"One Sample T-Test",
+			"title":	"One Sample T-Toets",
 			"function":	"TTestOneSample"
 		},
 		{
 			"title":	"-"
 		},
 		{
-			"title":	"Bayesian Independent Samples T-Test",
+			"title":	"Bayesiaanse T-Toets Onafhankelijke Steekproeven",
 			"function":	"TTestBayesianIndependentSamples"
 		},
 		{
-			"title":	"Bayesian Paired Samples T-Test",
+			"title":	"Bayesiaanse Gepaarde T-Toets",
 			"function":	"TTestBayesianPairedSamples"
 		},
 		{
-			"title":	"Bayesian One Sample T-Test",
+			"title":	"Bayesiaanse One Sample T-Toets",
 			"function":	"TTestBayesianOneSample"
 		}
 	]

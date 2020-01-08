@@ -1,7 +1,8 @@
 {
 	"moduleDescription" :
 	{
-		"title"          : "Summary Statistics",
+		"name"           : "Summary Statistics",
+		"title"          : "Samenvatting Statistieken" ,
 		"description"    : "Summary Statistics module",
 		"icon"			 : "analysis-bayesian-ttest.svg",
 		"requiresData"	 : false,
@@ -16,45 +17,39 @@
 	"menu":
 	[
 		{
-			"title"   : "T-Tests",
+			"title"   : "T-Toets",
 			"icon"	  : "analysis-bayesian-ttest.svg"
 		},
 		{
-			"menu"    : "Bayesian Independent Samples T-Test",
-			"title"   : "S.S. Bayesian Independent Samples T-Test",
+			"title"   : "S.S. Bayesiaanse Onafhankelijke T-toets",
 			"function": "SummaryStatsTTestBayesianIndependentSamples"
 		},
 		{
-			"menu"    : "Bayesian Paired Samples T-Test",
-			"title"   : "S.S. Bayesian Paired Samples T-Test",
+			"title"   : "S.S. Bayesiaanse Paired Samples T-toets",
 			"function": "SummaryStatsTTestBayesianPairedSamples"
 		},
 		{
-			"menu"    : "Bayesian One Sample T-Test",
-			"title"   : "S.S. Bayesian One Sample T-Test",
+			"title"   : "S.S. Bayesiaans One Sample T-toets",
 			"function": "SummaryStatsTTestBayesianOneSample"
 		},
 		{
-			"title"   : "Regression",
+			"title"   : "Regressie",
 			"icon"    : "analysis-bayesian-regression.svg"
 		},
 		{
-			"menu"    : "Bayesian Correlation Pairs",
-			"title"   : "S.S. Bayesian Correlation Pairs",
+			"title"   : "S.S. Bayesiaanse Correlatie Paren",
 			"function": "SummaryStatsCorrelationBayesianPairs"
 		},
 		{
-			"menu"    : "Bayesian Linear Regression",
-			"title"   : "S.S. Bayesian Linear Regression",
+			"title"   : "S.S. Bayesiaanse Lineaire Regressie",
 			"function": "SummaryStatsRegressionLinearBayesian"
 		},
 		{
-			"title"   : "Frequencies",
+			"title"   : "Frequenties",
 			"icon"    : "analysis-bayesian-crosstabs.svg"
 		},
 		{
-			"menu"    : "Bayesian Binomial Test",
-			"title"   : "S.S. Bayesian Binomial Test",
+			"title"   : "S.S. Bayesiaanse Binomiaal toets",
 			"function": "SummaryStatsBinomialTestBayesian"
 		}
 	]
