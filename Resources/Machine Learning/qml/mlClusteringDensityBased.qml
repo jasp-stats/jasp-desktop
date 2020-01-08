@@ -88,6 +88,18 @@ Form {
         CheckBox { 
             text: qsTr("Cluster means") 
             name: "plotClusterMeans" 
+
+            CheckBox {
+                text: qsTr("Display barplot")
+                name: "showBars"
+                checked: true
+            }
+
+            CheckBox {
+                text: qsTr("Group into one figure")
+                name: "oneFigure"
+                checked: true
+            }
         }
 
         CheckBox { 
