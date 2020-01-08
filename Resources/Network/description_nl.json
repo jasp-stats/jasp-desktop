@@ -1,7 +1,8 @@
 {
 	"moduleDescription" :
 	{
-		"title" : 		"Network",
+		"name": 		"Network",
+		"title" : 		"Netwerk",
 		"description" : "Network module.",
 		"icon":			"analysis-network.svg",
 		"version":		1,
@@ -16,7 +17,7 @@
 
 	"menu":  [
 		{
-			"title":	"Network",
+			"title":	"Netwerkanalyse",
 			"function":	"NetworkAnalysis"
 		}
 	]

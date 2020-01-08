@@ -1,7 +1,8 @@
 {
 	"moduleDescription"  :
 	{
-		"title"          : "Descriptives",
+		"name"           : "Descriptives",
+		"title"          : "Beschrijvingen",
 		"description"    : "This module offers the Descriptives and Reliability analyses.",
 		"version"        : 1,
 		"author"         : "JASP Team",
@@ -15,11 +16,11 @@
 	"menu":
 	[
 		{
-			"title":	"Descriptive Statistics",
+			"title":	"Beschrijvende statistiek",
 			"function":	"Descriptives"
 		},
 		{
-			"title":	"Reliability Analysis",
+			"title":	"Betrouwbaarheidsanalyse",
 			"function":	"ReliabilityAnalysis"
 		}
 	]

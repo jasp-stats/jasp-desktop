@@ -1,6 +1,7 @@
 {
 	"moduleDescription"  :
 	{
+		"name"           : "Factor",
 		"title"          : "Factor",
 		"icon"			 : "analysis-classical-sem.svg",
 		"description"    : "This module offers the Principal Component, Confirmatory and Exploratory Factor analyses",
@@ -15,15 +16,15 @@
 	"menu":
 	[
 		{
-			"title":	"Principal Component Analysis",
+			"title":	"Principiële Componentenanalyse",
 			"function":	"PrincipalComponentAnalysis"
 		},
 		{
-			"title":	"Exploratory Factor Analysis",
+			"title":	"Exploratieve Factoranalyse",
 			"function":	"ExploratoryFactorAnalysis"
 		},
 		{
-			"title":	"Confirmatory Factor Analysis",
+			"title":	"Bevestigende Factoranalyse",
 			"function":	"ConfirmatoryFactorAnalysis"
 		}
 	]

@@ -1,6 +1,7 @@
 {
 	"moduleDescription"  :
 	{
+		"name"           : "ANOVA",
 		"title"          : "ANOVA",
 		"icon"			 : "analysis-classical-anova.svg",
 		"description"    : "This module offers the standard Frequentist and Bayesian ANOVA tests.",
@@ -19,7 +20,7 @@
 			"function":	"Anova"
 		},
 		{
-			"title":	"Repeated Measures ANOVA",
+			"title":	"Herhaalde Metingen ANOVA",
 			"function":	"AnovaRepeatedMeasures"
 		},
 		{
@@ -34,15 +35,15 @@
 			"title":	"-"
 		},
 		{
-			"title":	"Bayesian ANOVA",
+			"title":	"Bayesiaanse ANOVA",
 			"function":	"AnovaBayesian"
 		},
 		{
-			"title":	"Bayesian Repeated Measures ANOVA",
+			"title":	"Bayesiaanse Herhaalde Metingen ANOVA",
 			"function":	"AnovaRepeatedMeasuresBayesian"
 		},
 		{
-			"title":	"Bayesian ANCOVA",
+			"title":	"Bayesiaanse ANCOVA",
 			"function":	"AncovaBayesian"
 		}
 	]

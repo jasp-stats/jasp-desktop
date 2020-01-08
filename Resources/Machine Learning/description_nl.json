@@ -29,43 +29,43 @@
 	"menu":
 		[
 			{
-				"title": 							"Regression",
+				"title": 							"Regressie",
 				"icon": 							"analysis-ml-regression.svg"
 			},
 			{
-				"title":							"Boosting Regression",
+				"title":							"Boosting Regressie",
 				"function":							"mlRegressionBoosting"
 			},
 			{
-				"title":							"K-Nearest Neighbors Regression",
+				"title":							"K-Naaste Buren Regressie",
 				"function":							"mlRegressionKnn"
 			},
 			{
-				"title":							"Random Forest Regression",
+				"title":							"Random Forest Regressie",
 				"function":							"mlRegressionRandomForest"
 			},
 			{
-				"title":							"Regularized Linear Regression",
+				"title":							"Geregulariseerde Lineaire Regressie",
 				"function":							"mlRegressionRegularized"
 			},
 			{
-				"title": 							"Classification",
+				"title": 							"Classificatie",
 				"icon": 							"analysis-ml-classification.svg"
 			},
 			{
-				"title":							"Boosting Classification",
+				"title":							"Boosting Classificatie",
 				"function":							"mlClassificationBoosting"
 			},
 			{
-				"title":							"K-Nearest Neighbors Classification",
+				"title":							"K-Naaste Buren Classificatie",
 				"function":							"mlClassificationKnn"
 			},
 			{
-				"title": 							"Linear Discriminant Classification",
+				"title": 							"Linear Discriminant Classificatie",
 				"function": 						"mlClassificationLda"
 			},
 			{
-				"title":							"Random Forest Classification",
+				"title":							"Random Forest Classificatie",
 				"function":							"mlClassificationRandomForest"
 			},
 			{
@@ -73,19 +73,19 @@
 				"icon": 							"analysis-ml-clustering.svg"
 			},
 			{
-				"title":							"Density-Based Clustering",
+				"title":							"Density Based Clustering",
 				"function":							"mlClusteringDensityBased"
 			},
 			{
-				"title":							"Fuzzy C-Means Clustering",
+				"title":							"Fuzzy C-means Clustering",
 				"function":							"mlClusteringFuzzyCMeans"
 			},
 			{
-				"title":							"Hierarchical Clustering",
+				"title":							"Hiërarchisch Clustering",
 				"function":							"mlClusteringHierarchical"
 			},
 			{
-				"title":							"K-Means Clustering",
+				"title":							"K-means Clustering",
 				"function":							"mlClusteringKMeans"
 			},
 			{
