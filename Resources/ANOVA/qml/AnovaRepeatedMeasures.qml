@@ -19,6 +19,7 @@
 import QtQuick			2.12
 import JASP.Controls	1.0
 import JASP.Widgets		1.0
+import JASP				1.0
 
 Form
 {	
@@ -78,14 +79,14 @@ Form
 		{
 			preferredHeight: 150
 			AvailableVariablesList	{ name: "withinComponents"; title: qsTr("Repeated Measures Components"); source: ["repeatedMeasuresFactors"] }
-			AssignedVariablesList	{ name: "withinModelTerms"; title: qsTr("Model Terms");	listViewType: "Interaction"	}
+			AssignedVariablesList	{ name: "withinModelTerms"; title: qsTr("Model Terms");	listViewType: JASP.Interaction	}
 		}
 		
 		VariablesForm
 		{
 			preferredHeight: 150
 			AvailableVariablesList	{ name: "betweenComponents"; title: qsTr("Between Subjects Components"); source: ["betweenSubjectFactors", "covariates"] }
-			AssignedVariablesList	{ name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: "Interaction" }
+			AssignedVariablesList	{ name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: JASP.Interaction }
 		}
 		
 		DropDown

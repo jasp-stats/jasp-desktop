@@ -22,7 +22,7 @@
 #include "qmllistview.h"
 #include <QVariant>
 #include <QList>
-#include "analysis/analysisqmldefines.h"
+#include "analysis/jaspcontrolbase.h"
 
 class ListModelDraggable;
 
@@ -37,7 +37,7 @@ public:
 	
 	ListModelDraggable* draggableModel() const		{ return _draggableModel; }
 	
-	void moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, const QString& assignOption = "");
+	void moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1, JASPControlBase::AssignType assignOption = JASPControlBase::AssignType::AssignDefault);
 
 protected:
 	ListModelDraggable* _draggableModel;
@@ -45,13 +45,13 @@ protected:
 private slots:
 	void moveItemsDelayedHandler();
 	void itemDoubleClickedHandler(int index);
-	void itemsDroppedHandler(QVariant indexes, QVariant vdropList, int dropItemIndex, QString assignOption);	
+	void itemsDroppedHandler(QVariant indexes, QVariant vdropList, int dropItemIndex, int assignOption);
 	
 private:
-	ListModelDraggable	*	_tempDropModel = nullptr;
-	QList<int>				_tempIndexes;
-	int						_tempDropItemIndex;
-	QString					_tempAssignOption;
+	ListModelDraggable	*			_tempDropModel = nullptr;
+	QList<int>						_tempIndexes;
+	int								_tempDropItemIndex;
+	JASPControlBase::AssignType		_tempAssignOption = JASPControlBase::AssignType::AssignDefault;
 	
 };
 

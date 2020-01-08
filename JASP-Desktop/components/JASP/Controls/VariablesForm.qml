@@ -18,6 +18,7 @@
 
 import QtQuick			2.12
 import QtQuick.Layouts	1.12
+import JASP				1.0
 
 Item
 {
@@ -173,7 +174,7 @@ Item
             var control = allJASPControls[i];
 			if (control instanceof VariablesList)
 			{
-				if (control.listViewType === "AvailableVariables" || control.listViewType === "AvailableInteraction")
+				if (control.listViewType === JASP.AvailableVariables || control.listViewType === JASP.AvailableInteraction)
 				{
 					if (availableVariablesList)
 						control.addControlError(qsTr("Only 1 Available Variables list can be set in a VariablesForm"));

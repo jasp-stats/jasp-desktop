@@ -213,7 +213,7 @@ Properties
 - `negativeValues`: [optional, default: `false`] specifies if the user should be able to input negative values (works only when the `min` argument is omitted)
 - `min`: [optional, default: `0` if negativeValues is `false`, otherwise `-Infinity`] numeric specifying the minimum value a user can enter
 - `max`: [optional, default: `Infinity`] numeric specifying the maximum value a user can enter
-- `inclusive`: [optional, default: `yes`, possible values: `yes`, `minOnly`, `maxOnly`, `no`] specify whether the `min` and `max` parameters are inclusive or not. For example if `min` is `1` and `inclusive` is `yes` or `minOnly` then value `1` is allowed.
+- `inclusive`: [optional, default: `JASP.MinMax`, possible values: `JASP.MinMax`, `JASP.MinOnly`, `JASP.MaxOnly`, `JASP.None`] specify whether the `min` and `max` parameters are inclusive or not. For example if `min` is `1` and `inclusive` is `JASP.MinMax` or `JASP.MinOnly` then value `1` is allowed.
 - `decimals`: [optional, default: `3`] integer specifying how many decimals the user can enter
 - `fieldWidth`: [optional, default: `40`] in pixels how wide should the field be
 
@@ -392,7 +392,7 @@ Properties
     * if no `suggestedColumns` and no `allowedColumns` is specified, then all types of columns are allowed
 - `maxRows`: [optional, default: `-1`] maximum number of rows the list can accept. -1 means no limit.
 - `singleVariable`: [optional, default: `false`] if true, set the maxRows to 1
-- `listViewType`: [optional] string that specifies the type of `AssignedVariablesList`, when omitted we get a normal list,  options are `"Layers"` (see Contingency Tables), `"Interaction"` (see ANOVA) and `"RepeatedMeasures"` (see Repeated Measures ANOVA)
+- `listViewType`: [optional] enumerative that specifies the type of `AssignedVariablesList`, when omitted we get a normal list, options are `JASP.Layers` (see Contingency Tables), `JASP.Interaction` (see ANOVA) and `JASP.RepeatedMeasures` (see Repeated Measures ANOVA)
 - `width`: [optional, default: 2/5 of the VariablesForm width] in pixels how wide should the field be
 - `height`: [optional] in pixels how heigh should the field be. Per default, it is set so that all AssignedVariablesList's fit the VariablesForm. If you set the height for 1 AssignedVariablesList, it will try to set height of the other AssignedVariablesLists's so that they all fit the heigth of the VariablesForm.
 - `count`: [read-only integer] Gives the number of rows of the list.
@@ -443,7 +443,7 @@ Properties
     {
       name: "modelTerms"
       label: qsTr("Model terms")
-      listViewType: "Interaction"
+      listViewType: JASP.Interaction
 
       rowComponentsLabels: ["Add to null model"]
       rowComponents:
@@ -485,7 +485,7 @@ Properties
       name: "repeatedMeasuresCells"
       label: qsTr("Repeated Measures Cells")
       allowedColumns: ["scale"]
-      listViewType: "MeasuresCells"
+      listViewType: JASP.MeasuresCells
       source: "repeatedMeasuresFactors"
       height: 140
     }
@@ -532,7 +532,6 @@ Properties
                       DropDown
                       {
                               name: "groupColors"
-                              useExternalBorder: true
                               values: ["red", "blue", "yellow", "green", "purple", "orange"]
                       }
               }

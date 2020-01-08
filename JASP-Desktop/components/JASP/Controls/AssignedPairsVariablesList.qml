@@ -16,10 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+import JASP		1.0
+
 VariablesList
 {
-	listViewType			: "Assigned"
-	dropMode				: "Replace"
+	listViewType			: JASP.AssignedVariables
+	dropMode				: JASP.DropReplace
 	showElementBorder		: true
 	columns					: 2
 	showVariableTypeIcon	: false

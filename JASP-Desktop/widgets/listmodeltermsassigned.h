@@ -31,7 +31,7 @@ public:
 	
 	void			initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())			override;
 	Terms			canAddTerms(const Terms& terms)																	const	override;
-	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, const QString& assignOption = "")					override;
+	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, JASPControlBase::AssignType assignOption = JASPControlBase::AssignType::AssignDefault)	override;
 	const Terms&	terms(const QString& what = QString())															const	override;
 
 

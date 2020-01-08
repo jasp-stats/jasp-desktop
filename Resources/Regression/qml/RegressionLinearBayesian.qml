@@ -15,10 +15,11 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import QtQuick			2.8
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP.Widgets		1.0
+import JASP				1.0
 
 
 Form {
@@ -188,7 +189,7 @@ Form {
 					defaultValue: 3.0
 					min: 2
 					max: 4
-					inclusive: "no"
+					inclusive: JASP.None
 				}
 				RadioButton { value: "JZS"; label: qsTr("JZS"); checked: true; id: jzs }
 				DoubleField
@@ -199,7 +200,7 @@ Form {
 					fieldWidth: 50
 					defaultValue: 0.354
 					max: 100000
-					inclusive: "maxOnly"
+					inclusive: JASP.MaxOnly
 				}
 			}
 		}
@@ -216,8 +217,8 @@ Form {
 					value: "beta.binomial"; label: qsTr("Beta binomial")
 					childrenOnSameRow: true
 					childrenArea.columnSpacing: 1
-					DoubleField { name: "betaBinomialParamA"; label: qsTr("a"); defaultValue: 1; inclusive: "maxOnly"}
-					DoubleField { name: "betaBinomialParamB"; label: qsTr("b"); defaultValue: 1; inclusive: "maxOnly"}
+					DoubleField { name: "betaBinomialParamA"; label: qsTr("a"); defaultValue: 1; inclusive: JASP.MaxOnly}
+					DoubleField { name: "betaBinomialParamB"; label: qsTr("b"); defaultValue: 1; inclusive: JASP.MaxOnly}
 				}
 				RadioButton { value: "uniform"; label: qsTr("Uniform")}
 				RadioButton
@@ -226,7 +227,7 @@ Form {
 					label: qsTr("Wilson")
 					childrenOnSameRow: true
 					childrenArea.columnSpacing: 1
-					DoubleField { name: "wilsonParamLambda"; label: qsTr("λ"); defaultValue: 1; inclusive: "no"; min: 0}
+					DoubleField { name: "wilsonParamLambda"; label: qsTr("λ"); defaultValue: 1; inclusive: JASP.None; min: 0}
 				}
 				RadioButton
 				{
@@ -234,13 +235,13 @@ Form {
 					label: qsTr("Castillo")
 					childrenOnSameRow: true
 					childrenArea.columnSpacing: 1
-					DoubleField { name: "castilloParamU"; label: qsTr("u"); defaultValue: 1; inclusive: "yes"; min: 1}
+					DoubleField { name: "castilloParamU"; label: qsTr("u"); defaultValue: 1; inclusive: JASP.MinMax; min: 1}
 				}
 				RadioButton
 				{
 					value: "Bernoulli"; label: qsTr("Bernouilli")
 					childrenOnSameRow: true
-					DoubleField { name: "bernoulliParam"; label: qsTr("p"); defaultValue: 0.5; max: 1; inclusive: "no"; decimals: 3 }
+					DoubleField { name: "bernoulliParam"; label: qsTr("p"); defaultValue: 0.5; max: 1; inclusive: JASP.None; decimals: 3 }
 				}
 			}
 

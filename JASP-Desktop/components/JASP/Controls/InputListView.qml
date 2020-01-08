@@ -107,6 +107,7 @@ JASPListControl
 			value:							isVirtual ? "" : modelValue.name
 			placeholderText:				isVirtual ? modelValue.name : ""
 			useExternalBorder:				false
+			showBorder:						false
 			selectValueOnFocus:				true
 			control.horizontalAlignment:	TextInput.AlignLeft
 			onEditingFinished:				inputListView.itemChanged(modelIndex, value)

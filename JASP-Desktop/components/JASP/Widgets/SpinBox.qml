@@ -16,11 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
+import QtQuick			2.11
 import QtQuick.Controls 2.5
-import JASP.Widgets 1.0
-
-import JASP 1.0
+import JASP.Widgets		1.0
+import JASP				1.0
 
 FocusScope
 {
@@ -32,7 +31,7 @@ FocusScope
 	property double	min:					negativeValues ? -Infinity : 0
 	property double	max:					Infinity
 	property int	decimals:				0
-	property string inclusive:				"yes"
+	property alias  inclusive:				doubleValidator.inclusive
 	property alias	to:						root.max
 	property alias	from:					root.min
 	property double	lastValidValue:			defaultValue
@@ -96,7 +95,7 @@ FocusScope
 	TextField
 	{
 		id:							valueField
-		validator:					JASPDoubleValidator { id: doubleValidator; bottom: root.min; top: root.max ; decimals: root.decimals; inclusive: root.inclusive }
+		validator:					JASPDoubleValidator { id: doubleValidator; bottom: root.min; top: root.max ; decimals: root.decimals }
 		anchors
 		{
 			left:					minus.right

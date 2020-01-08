@@ -62,6 +62,8 @@ public:
 			bool			hasSource()					const	{ return _sourceModels.length() > 0; }
 			bool			modelHasAllVariables()		const	{ return _modelHasAllVariables; }
 
+			JASPControlWrapper* getRowControl(const QString& key, const QString& name);
+
 
 	Q_INVOKABLE QString		getSourceType(QString name);
 protected slots:

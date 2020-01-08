@@ -46,6 +46,8 @@ public:
 	void						removeDependency(JASPControlWrapper* item);
 	QVariant					getItemProperty(const QString& name);
 	void						setItemProperty(const QString& name, const QVariant& value);
+	JASPControlWrapper		*	parentListControl();
+	QString						parentListControlKey();
 
 	static JASPControlWrapper*	buildJASPControlWrapper(JASPControlBase* control);
 	

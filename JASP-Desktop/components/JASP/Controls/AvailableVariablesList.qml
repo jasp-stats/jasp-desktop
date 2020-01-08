@@ -16,9 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+import JASP 1.0
+
 VariablesList
 {
-	listViewType:	"AvailableVariables"
+	listViewType:	JASP.AvailableVariables
 	showSortMenu:	true
 
 	property bool	mixedModelTerms:	false

@@ -35,7 +35,6 @@
 #include "boundqmlitem.h"
 #include "widgets/listmodel.h"
 #include "options/variableinfo.h"
-#include "analysisqmldefines.h"
 #include "widgets/listmodeltermsavailable.h"
 #include "gui/messageforwarder.h"
 #include "utilities/qutils.h"
@@ -97,8 +96,8 @@ public:
     Q_INVOKABLE void exportResults();
 	Q_INVOKABLE void addFormError(const QString& message);
 
-	void		addControlError(QQuickItem* control, QString message, bool temporary = false, bool warning = false);
-	void		clearControlError(QQuickItem* control);
+	void		addControlError(JASPControlBase* control, QString message, bool temporary = false, bool warning = false);
+	void		clearControlError(JASPControlBase* control);
 	void		cleanUpForm();
 	void		addControlErrorSet(JASPControlBase* control, bool add);
 	void		addControlWarningSet(JASPControlBase* control, bool add);

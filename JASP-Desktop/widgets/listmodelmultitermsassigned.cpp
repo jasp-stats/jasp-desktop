@@ -80,7 +80,7 @@ void ListModelMultiTermsAssigned::_setTerms()
 }
 
 
-Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const QString&)
+Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, JASPControlBase::AssignType)
 {
 	beginResetModel();
 	Terms removedTerms;

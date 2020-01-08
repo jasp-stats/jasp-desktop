@@ -16,10 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import JASP.Controls 1.0
-
-import JASP 1.0
+import QtQuick			2.11
+import JASP.Controls	1.0
+import JASP				1.0
 
 TextField
 {
@@ -27,7 +26,7 @@ TextField
 					value:				"0"
 	property double	min:				-Infinity
 	property double	max:				Infinity
-	property string	inclusive:			"yes"
+	property int	inclusive:			JASP.MinMax
 					inputType:			"formula"
 					fieldWidth:			jaspTheme.textFieldWidth / 2
 }
