@@ -56,6 +56,8 @@ void HelpModel::generateJavascript()
 		fileHTML.setFileName(_pagePath + _localname + ".html");
 	}
 
+	qDebug() << "--------------- Try to open the following help file : " << fileMD.fileName() << " ----------------" ;
+
 	if (fileHTML.exists())
 	{
 		fileHTML.open(QFile::ReadOnly);

@@ -1,7 +1,8 @@
 {
 	"moduleDescription" :
 	{
-		"title" : 		"Meta Analysis",
+		"name" : 		"Meta Analysis",
+		"title" : 		"Meta Analyse",
 		"description" : "Meta Analysis module.",
 		"icon":			"meta-analysis.svg",
 		"version":		1,
@@ -16,7 +17,7 @@
 
 	"menu":  [
 		{
-			"title":	"Classical Meta Analysis",
+			"title":	"Klassieke Meta-Analyse",
 			"function":	"ClassicalMetaAnalysis"
 		}
 	]

@@ -17,19 +17,19 @@
 	"menu":
 		[
 			{
-				"title": 							"T-Tests",
+				"title": 							"T-Toets",
 				"icon": 							"analysis-bain-ttest.svg"
 			},
 			{
-				"title":							"Welch's T-Test",
+				"title":							"Welch's T-Toets",
 				"function":							"BainTTestBayesianIndependentSamples"
 			},
 			{
-				"title":							"Paired Samples T-Test",
+				"title":							"Gepaarde T-Toets",
 				"function":							"BainTTestBayesianPairedSamples"
 			},
 			{
-				"title":							"One Sample T-Test",
+				"title":							"One Sample T-Toets",
 				"function":							"BainTTestBayesianOneSample"
 			},
 			{
@@ -45,11 +45,11 @@
 				"function":							"BainAncovaBayesian"
 			},
 			{
-				"title": 							"Regression",
+				"title": 							"Regressie",
 				"icon": 							"analysis-bain-regression.svg"
 			},
 			{
-				"title":							"Linear Regression",
+				"title":							"Lineaire Regressie",
 				"function":							"BainRegressionLinearBayesian"
 			}
 		]
