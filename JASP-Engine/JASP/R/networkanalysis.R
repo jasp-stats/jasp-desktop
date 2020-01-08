@@ -616,7 +616,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
   # we use an empty container without a name if there is only 1 graph. This container is hidden from the output but it
   # enables us to use the same code for a single network plot and for a collection of network plots.
-  title <- if (nGraphs == 1L) "" else "Network Plots"
+  title <- if (nGraphs == 1L) "" else gettext("Network Plots")
 
   networkPlotContainer <- createJaspContainer(title = title, position = 51, dependencies = c(
     "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
@@ -1263,27 +1263,6 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   )
   return(bootstrapResult)
 }
-
-# functions for tables ----
-# .networkAnalysisMgmVariableInfoTable <- function(network, variables, options, perform) {
-#
-# 	table <- list(
-# 		title = "Type of variables",
-# 		schema = list(fields = list(
-# 			list(name = "Variable", title = "Variable", type = "string"),
-# 			list(name = "Type", title = "Type", type = "string")
-# 		))
-# 	)
-#
-# 	vars <- variables
-# 	types <- options[["mgmVariableTypeData"]]
-# 	types <- c("Gaussian", "Categorical", "Poisson")[match(options[["mgmVariableTypeData"]], c("g", "c", "p"))]
-#
-# 	table[["data"]] <- .TBcolumns2TBrows(list(Variable = vars, Type = types))
-#
-# 	return(table)
-#
-# }
 
 # helper functions ----
 .networkAnalysisAddReferencesToTables <- function(results, options) {
