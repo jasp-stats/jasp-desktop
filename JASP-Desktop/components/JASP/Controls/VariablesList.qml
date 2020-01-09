@@ -458,7 +458,7 @@ JASPListControl
 				Text
 				{
 					id:						colName
-					anchors.left:			icon.right
+					anchors.left:			variablesList.showVariableTypeIcon ? icon.right : itemRectangle.left
 					anchors.leftMargin:		jaspTheme.generalAnchorMargin
 					text:					model.name
 					width:					itemRectangle.width - x - rowComponents.width
