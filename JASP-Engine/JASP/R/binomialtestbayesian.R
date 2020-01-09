@@ -316,7 +316,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   quantiles <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, a, b, counts, n, hypothesis=hyp, theta0 = testValue)
   dfLinesPP <- .dfLinesPP(a=a, b=b, hyp = hyp, theta0 = testValue, counts = counts, n = n)
   dfPointsPP <- .dfPointsPP(a=a, b=b, hyp = hyp, theta0 = testValue, counts = counts, n = n)
-  xName <- expression(paste(gettext("Population proportion "), theta))
+  xName <- bquote(paste(.(gettext("Population proportion")), theta))
   
   hypForPlots <- .binomHypothesisForPlots(hyp)
   
