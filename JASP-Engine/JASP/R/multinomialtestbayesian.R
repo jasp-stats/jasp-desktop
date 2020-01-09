@@ -134,7 +134,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   # Create table
   defaultOptions                    <- multinomialResults$specs$defaultOptions
-  multinomialTable                  <- createJaspTable(title = "Bayesian Multinomial Test")
+  multinomialTable                  <- createJaspTable(title = gettext("Bayesian Multinomial Test"))
   multinomialTable$position         <- 1
   multinomialTable$dependOn(c(defaultOptions, "bayesFactorType"))
 
@@ -148,9 +148,9 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   }
 
   # Add columns
-  multinomialTable$addColumnInfo(name = "case",    title = "",       type = "string", combine = TRUE)
-  multinomialTable$addColumnInfo(name = "level",   title = "Levels", type = "integer")
-  multinomialTable$addColumnInfo(name = "BF",      title = bf.title, type = "number")
+  multinomialTable$addColumnInfo(name = "case",    title = "",                type = "string", combine = TRUE)
+  multinomialTable$addColumnInfo(name = "level",   title = gettext("Levels"), type = "integer")
+  multinomialTable$addColumnInfo(name = "BF",      title = bf.title,          type = "number")
 
   jaspResults[["multinomialTable"]] <- multinomialTable
 
@@ -188,27 +188,27 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     return()
 
   # Create table
-  descriptivesTable                          <- createJaspTable(title = "Descriptives")
+  descriptivesTable <- createJaspTable(title = gettext("Descriptives"))
 
   # settings for Bayesian and frequentist analysis
   if(bayesianAnalysis){
     ciRequested   <- options$credibleInterval
     ciInterval    <- options$credibleIntervalInterval
-    ciColumnName  <- "Credible Interval"
-    tableFootnote <- "Credible intervals are based on independent binomial distributions with flat priors."
+    ciColumnName  <- gettext("Credible Interval")
+    tableFootnote <- gettext("Credible intervals are based on independent binomial distributions with flat priors.")
     descriptivesTable$dependOn(c("countProp", "descriptives", "credibleIntervalInterval"))
   } else {
     ciRequested   <- options$confidenceInterval
     ciInterval    <- options$confidenceIntervalInterval 
-    ciColumnName  <- "Confidence Interval"
-    tableFootnote <- "Confidence intervals are based on independent binomial distributions."
+    ciColumnName  <- gettext("Confidence Interval")
+    tableFootnote <- gettext("Confidence intervals are based on independent binomial distributions.")
     descriptivesTable$dependOn(c("countProp", "descriptives", "confidenceIntervalInterval"))
   }
 
   descriptivesTable$showSpecifiedColumnsOnly <- TRUE
-  descriptivesTable$position                 <- 2
+  descriptivesTable$position <- 2
 
-  factorVariable                             <- multinomialResults[["specs"]][["factorVariable"]]
+  factorVariable <- multinomialResults[["specs"]][["factorVariable"]]
 
   if(options$countProp == "descCounts")
     numberType <- "integer"
@@ -219,24 +219,24 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   nhyps <- multinomialResults[["mainTable"]][["nhyps"]]
   nms   <- multinomialResults[["specs"]][["hypNames"]]
 
-  descriptivesTable$addColumnInfo(name = "fact",   title = factorVariable, type = "string", combine = TRUE)
-  descriptivesTable$addColumnInfo(name="observed", title = "Observed",     type = numberType)
+  descriptivesTable$addColumnInfo(name = "fact",     title = factorVariable,      type = "string", combine = TRUE)
+  descriptivesTable$addColumnInfo(name = "observed", title = gettext("Observed"), type = numberType)
 
   # If no variable is selected, adjust column title
   if(is.null(nhyps)){
-    descriptivesTable$addColumnInfo(name = "expected", title = "Expected", type = numberType)
+    descriptivesTable$addColumnInfo(name = "expected", title = gettext("Expected"), type = numberType)
   } else if(nhyps == 1) {
-      descriptivesTable$addColumnInfo(name = nms, title = paste0("Expected: ", nms), type = numberType)
+      descriptivesTable$addColumnInfo(name = nms, title = paste0(gettext("Expected: "), nms), type = numberType)
   } else if(nhyps > 1) {
     for(h in 1:nhyps){
-      descriptivesTable$addColumnInfo(name = nms[h], title = nms[h], type = numberType, overtitle = "Expected")
+      descriptivesTable$addColumnInfo(name = nms[h], title = nms[h], type = numberType, overtitle = gettext("Expected"))
     }
   }
 
   if (ciRequested) {
-      descriptivesTable$addColumnInfo(name = "lowerCI", title = "Lower", type = "number",
+      descriptivesTable$addColumnInfo(name = gettext("lowerCI"), title = "Lower", type = "number",
                                       overtitle = paste0(100 * ciInterval, "% ", ciColumnName))
-      descriptivesTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number",
+      descriptivesTable$addColumnInfo(name = gettext("upperCI"), title = "Upper", type = "number",
                                       overtitle = paste0(100 * ciInterval, "% ", ciColumnName))
     } 
 
@@ -255,10 +255,10 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   if(ciRequested){
     ciInfo <- multinomialResults[["descriptivesTable"]][[paste0(options$countProp, "CI")]]
     descDF <- cbind(descDF, ciInfo)
-    descriptivesTable$addFootnote(message = tableFootnote, symbol = "<em>Note.</em>")
+    descriptivesTable$addFootnote(message = tableFootnote, symbol = gettext("<em>Note.</em>"))
     
     if (any(is.nan(unlist(descDF[, c('lowerCI', 'upperCI')])))){
-      descriptivesTable$addFootnote(message = paste0("Could not compute ", tolower(ciColumnName), 's.'))
+      descriptivesTable$addFootnote(message = paste0(gettext("Could not compute "), tolower(ciColumnName), 's.'))
     }
   } 
   
@@ -280,9 +280,8 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   factorVariable   <- multinomialResults[["specs"]][["factorVariable"]]
   descriptivesPlot <- .multBayesPlotHelper(factorVariable, options, multinomialResults)
 
-  jaspResults[["descriptivesPlot"]] <- createJaspPlot(plot = descriptivesPlot, title = "Descriptives plot", width = 480, height = 320)
-  jaspResults[["descriptivesPlot"]]$dependOn(c("descriptivesPlot", "factor", "counts",
-                                                      "descriptivesPlotsCredibleInterval"))
+  jaspResults[["descriptivesPlot"]] <- createJaspPlot(plot = descriptivesPlot, title = gettext("Descriptives plot"), width = 480, height = 320)
+  jaspResults[["descriptivesPlot"]]$dependOn(c("descriptivesPlot", "factor", "counts", "descriptivesPlotsCredibleInterval"))
 
   descriptivesPlot$position <- 2
 }
@@ -337,9 +336,9 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   # Counts or props
   if (options$countProp == "descCounts") {
-    yname <- "Observed Counts"
+    yname <- gettext("Observed Counts")
   } else {
-    yname <- "Observed Proportions"
+    yname <- gettext("Observed Proportions")
   }
 
   # Prepare data for plotting
