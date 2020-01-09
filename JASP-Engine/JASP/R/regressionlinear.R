@@ -644,8 +644,15 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 
   xlab      <- paste0("Residuals ", .unvf(predictor))
   ylab      <- paste0("Residuals ", options$dependent)
-
-  .linregInsertPlot(partialPlot, .linregPlotResiduals, xVar = xVar, res = resid, xlab = xlab, ylab = ylab, regressionLine = TRUE, standardizedResiduals = FALSE)
+  
+  # Compute regresion lines
+  weights <- dataset[[.v(options$wlsWeights)]]
+  line <- as.list(setNames(lm(residualsDep~residualsPred, data = plotData, weights = weights)$coeff,
+                           c("intercept", "slope"))
+                  )
+  
+  .linregInsertPlot(partialPlot, .linregPlotResiduals, xVar = xVar, res = resid, xlab = xlab, ylab = ylab,
+                    regressionLine = TRUE, standardizedResiduals = FALSE, intercept = line[['intercept']], slope = line[['slope']])
 }
 
 .linregCreateDescriptivesTable <- function(modelContainer, dataset, options, position) {
@@ -1395,11 +1402,11 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   formulaPred   <- .linregGetFormula(predictor, predictors = predictors, includeConstant = TRUE)
   fitPred       <- stats::lm(formula = formulaPred, data = dataset, weights = weights)
   residualsPred <- residuals(fitPred)
-
+  
   return(data.frame(residualsPred = residualsPred, residualsDep = residualsDep))
 }
 
-.linregPlotResiduals <- function(xVar = NULL, res = NULL, xlab, ylab = "Residuals", cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2, regressionLine = TRUE, standardizedResiduals = TRUE) {
+.linregPlotResiduals <- function(xVar = NULL, res = NULL, xlab, ylab = "Residuals", cexPoints= 1.3, cexXAxis= 1.3, cexYAxis= 1.3, lwd= 2, lwdAxis=1.2, regressionLine = TRUE, standardizedResiduals = TRUE, intercept = 0, slope = 0) {
   d     <- data.frame(xx= xVar, yy= res)
   d     <- na.omit(d)
   xVar  <- d$xx
@@ -1443,7 +1450,9 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   }
 
   if (regressionLine)
-    p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(0, 0)), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = .5)
+    p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)),
+                                                  y = intercept + slope * c(min(xticks), max(xticks))),
+                                mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = .5)
 
   p <- JASPgraphs::drawPoints(p, dat = data.frame(x = xVar, y = res), size = 3)
 
