@@ -267,14 +267,14 @@ Correlation <- function(jaspResults, dataset, options){
            correlatedNegatively = "less",
            correlatedPositively = "greater")[options$hypothesis]
   
-  if(length(options$conditioningVariables) == 0){
-    pcor <- FALSE
-  } else{
-    pcor <- TRUE
-  }
+  pcor <- !length(options$conditioningVariables) == 0
   
   results <- list()
+  startProgressbar(length(vpair) * nrow(dataset))
+
   for(i in seq_along(vpair)){
+
+
     # some variable pairs might be reusable, so we don't need to compute them again
     if(!is.null(jaspResults[[vpair[i]]])) {
       results[[vpair[i]]] <- jaspResults[[vpair[i]]]$object
@@ -304,25 +304,30 @@ Correlation <- function(jaspResults, dataset, options){
         errors$message <- sprintf("Number of observations is < %s", 3+length(options$conditioningVariables))
       }
       
-      stats <- c("estimate", "p.value", "conf.int", "vsmpr")
+      stats      <- c("estimate", "p.value", "conf.int", "vsmpr")
       statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
       
       if(isFALSE(errors)){
-        pearson <- .corr.test(x = data[,1], y = data[,2], z = condData, 
+        xVarName <- vcomb[[i]][[1]]
+        yVarName <- vcomb[[i]][[2]]
+
+        pearson <- .corr.test(x = data[,1], y = data[,2], z = condData,
                               method = "pearson", alternative = alt, 
                               conf.level = options$confidenceIntervalsInterval)
         pearsonErrors <- pearson$errors
         pearson <- pearson$result
         
-        spearman <- .corr.test(x = data[,1], y = data[,2], z = condData, 
+        spearman <- .corr.test(x = data[,1], y = data[,2], z = condData,
                                method = "spearman", alternative = alt, 
-                               conf.level = options$confidenceIntervalsInterval)
+                               conf.level = options$confidenceIntervalsInterval,
+                               xVarName=xVarName, yVar=yVarName, jaspResults=jaspResults)
         spearmanErrors <- spearman$errors
         spearman <- spearman$result
         
         kendall <- .corr.test(x = data[,1], y = data[,2], z = condData, 
                               method = "kendall", alternative = alt, 
-                              conf.level = options$confidenceIntervalsInterval)
+                              conf.level = options$confidenceIntervalsInterval,
+                              xVarName=xVarName, yVar=yVarName, jaspResults=jaspResults)
         kendallErrors <- kendall$errors
         kendall <- kendall$result
       } else {
@@ -362,7 +367,8 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 # helper that unifies output of cor.test and ppcor::pcor.test
-.corr.test <- function(x, y, z = NULL, alternative, method, exact = NULL, conf.level = 0.95, continuity = FALSE, ...){
+.corr.test <- function(x, y, z = NULL, xVarName=NULL, yVarName=NULL, alternative, method, exact = NULL, conf.level = 0.95, continuity = FALSE, jaspResults=NULL, ...){
+
   stats <- c("estimate", "p.value", "conf.int", "vsmpr")
   statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
   
@@ -378,11 +384,11 @@ Correlation <- function(jaspResults, dataset, options){
     } else{
       errors <- FALSE
       
-      if(method != "pearson"){
-        result$conf.int <- .createNonparametricConfidenceIntervals(x = x, y = y, obsCor = result$estimate,
+      if(method != "pearson")
+        result$conf.int <- .createNonparametricConfidenceIntervals(x = x, y = y, xVarName=xVarName, yVarName=yVarName, obsCor = result$estimate,
                                                                    hypothesis = alternative, confLevel = conf.level,
-                                                                   method = method)
-      }
+                                                                   method = method, jaspResults=jaspResults)
+
       result$vsmpr <- .VovkSellkeMPR(result$p.value)
       result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
       result <- unlist(result[stats], use.names = FALSE)
@@ -1288,31 +1294,68 @@ Correlation <- function(jaspResults, dataset, options){
 
 ### helpers ----
 ### Utility functions for nonparametric confidence intervals ###
-.concordanceFunction <- function(i, j) {
-  concordanceIndicator <- 0
-  ij <- (j[2] - i[2]) * (j[1] - i[1])
-  if (ij > 0) concordanceIndicator <- 1
-  if (ij < 0) concordanceIndicator <- -1
-  return(concordanceIndicator)
+.concordanceFunction <- function(xi, yi, xk, yk) {
+  return(sign( (yk - yi) * (xk - xi) ))
 }
+
+#let's reuse this:
+.concordancesIntermediate <- integer(0)
 
 .addConcordances <- function(x, y, i) {
-  concordanceIndex <- 0
-  for (k in 1:length(x)) {
-    if (k != i) {
-      concordanceIndex <- concordanceIndex + .concordanceFunction(c(x[i], y[i]), c(x[k], y[k]))
-    }
-  }
-  return(concordanceIndex)
+
+  if(length(.concordancesIntermediate) != length(x))
+    .concordancesIntermediate <- integer(length(x))
+
+  for (k in 1:length(x))
+    if (k != i)
+      .concordancesIntermediate[k] <- .concordanceFunction(x[i], y[i], x[k], y[k])
+
+  .concordancesIntermediate[k] <- 0
+
+  return(sum(.concordancesIntermediate))
 }
 
-.createNonparametricConfidenceIntervals <- function(x, y, obsCor, hypothesis = "two-sided", confLevel = 0.95, method = "kendall"){
+.calculateConcordanceSumsVariance <- function(x, y, xVar, yVar, jaspResults)
+{
+  if(yVar < xVar) #the order is not important, see .concordanceFunction
+  {
+    firstVar  <- xVar
+    secondVar <- yVar
+  } else {
+    firstVar  <- yVar
+    secondVar <- xVar
+  }
+
+  varianceStateName <- paste("concordanceVarianceState", firstVar, secondVar, sep="_")
+
+  if(!is.null(jaspResults[[varianceStateName]]))
+  {
+    for(notImportant in 1:length(x))
+      progressbarTick()
+    return(jaspResults[[varianceStateName]]$object)
+  }
+
+  concordanceSumsVector <- integer(length(x))
+
+  for (i in 1:length(x))
+  {
+    progressbarTick()
+    concordanceSumsVector[i] <- .addConcordances(x, y, i)
+  }
+
+  sumVar <- var(concordanceSumsVector)
+  jaspResults[[varianceStateName]] <- createJaspState(sumVar)
+
+  return(sumVar)
+}
+
+.createNonparametricConfidenceIntervals <- function(x, y, xVarName, yVarName, obsCor, hypothesis = "two-sided", confLevel = 0.95, method = "kendall", jaspResults){
   # Based on sections 8.3 and 8.4 of Hollander, Wolfe & Chicken, Nonparametric Statistical Methods, 3e.
-  alpha <- 1 - confLevel
+  alpha          <- 1 - confLevel
   missingIndices <- as.logical(is.na(x) + is.na(y)) # index those values that are missing
-  x <- x[!missingIndices] # remove those values
-  y <- y[!missingIndices]
-  n <- length(x)
+  x              <- x[!missingIndices] # remove those values
+  y              <- y[!missingIndices]
+  n              <- length(x)
   
   hypothesis <- switch(hypothesis, 
                        "two.sided" = "correlated",
@@ -1320,11 +1363,9 @@ Correlation <- function(jaspResults, dataset, options){
                        "less" = "correlatedNegatively",
                        hypothesis)
  if (method == "kendall") {
-   concordanceSumsVector <- numeric(n)
-    for (i in 1:n) {
-      concordanceSumsVector[i] <- .addConcordances(x, y, i)
-    }
-    sigmaHatSq <- 2 * (n-2) * var(concordanceSumsVector) / (n*(n-1))
+   concordanceSumsVariance <- .calculateConcordanceSumsVariance(x, y, xVarName, yVarName, jaspResults)
+
+    sigmaHatSq <- 2 * (n-2) * concordanceSumsVariance / (n*(n-1))
     sigmaHatSq <- sigmaHatSq + 1 - (obsCor)^2
     sigmaHatSq <- sigmaHatSq * 2 / (n*(n-1))
 
