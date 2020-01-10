@@ -196,5 +196,7 @@ Form
 			RadioButton { value: "monitorAllParameters";		label: qsTr("all monitored parameters"); checked: true; id: monitorAllParameters	}
 			RadioButton { value: "monitorSelectedParameters";	label: qsTr("selected parameters")													}
 		}
+
+		SetSeed{}
 	}
 }

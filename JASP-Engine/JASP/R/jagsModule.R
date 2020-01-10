@@ -62,9 +62,9 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   }
 
   # TODO: uncomment these before merge in JASP!
-  # location <- .fromRCPP(".requestTempFileNameNative", ".txt")
-  # modelFile <- file.path(location$root, location$relativePath)
-  modelFile <- tempfile(pattern = "jagsModel", fileext = ".txt")
+  location <- .fromRCPP(".requestTempFileNameNative", ".txt")
+  modelFile <- file.path(location$root, location$relativePath)
+  # modelFile <- tempfile(pattern = "jagsModel", fileext = ".txt")
   print(modelFile)
   fileConn <- file(modelFile)
   writeLines(modelb64, fileConn)
@@ -113,6 +113,17 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
     return(NULL)
   } else {
     datList <- c(datList, userData)
+  }
+
+  # set a seed (same procedure as R2jags)
+  .setSeedJASP(options)
+  RNGname <- "base::Wichmann-Hill"
+  if (is.null(inits)) {
+    inits <- vector("list", noChains)
+    for (i in seq_len(noChains)) {
+      inits[[i]]$.RNG.name <- RNGname
+      inits[[i]]$.RNG.seed <- runif(1, 0, 2^31)
+    }
   }
 
   # this code is similar to how R2jags does it, but with
@@ -189,7 +200,8 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   )
 
   tmp <- createJaspState(object = out)
-  tmp$dependOn(c("model", "noSamples", "noBurnin", "noThinning", "noChains", "initialValues", "userData", "showResultsFor"))
+  tmp$dependOn(c("model", "noSamples", "noBurnin", "noThinning", "noChains", "initialValues", "userData", "showResultsFor",
+                 "setSeed", "seed"))
   if (options[["showResultsFor"]] == "monitorAllParameters")
     tmp$dependOn("parametersShown")
   else
@@ -210,7 +222,8 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   if (is.null(jaspResults[["mainContainer"]])) {
     # setup outer container with all common dependencies
     mainContainer <- createJaspContainer(dependencies = c("model", "noSamples", "noBurnin", "noThinning", "noChains",
-                                                          "parametersMonitored", "parametersShown", "initialValues", "userData"))
+                                                          "parametersMonitored", "parametersShown", "initialValues", "userData",
+                                                          "setSeed", "seed"))
     mainContainer$addCitation(.JAGSCitations)
     jaspResults[["mainContainer"]] <- mainContainer
   }
@@ -218,8 +231,9 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   # checks and sets errors
   .JAGSCheckJAGSInstallation(jaspResults[["mainContainer"]])
   if (jaspResults[["mainContainer"]]$getError()) {
+    print("JAGS INSTALLATION FAILED!")
     .JAGSsetGoodModel(FALSE)
-    return(options)
+    return()
   }
 
   # user specified monitoring?
