@@ -34,7 +34,7 @@ class BoundQMLFactorsForm :  public QMLListView, public BoundQMLItem
 public:
 	BoundQMLFactorsForm(JASPControlBase* item);
 
-	ListModel*	model()										override { return _factorsModel; }
+	ListModel*	model()								const	override { return _factorsModel; }
 	Option*		boundTo()									override { return _boundTo; }
 	void		bindTo(Option *option)						override;
 	Option*		createOption()								override;

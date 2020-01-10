@@ -26,7 +26,6 @@
 class QMLListView;
 class ListModel;
 class JASPControlWrapper;
-class JASPControlBase;
 class Option;
 
 class RowControls : public QObject
@@ -37,24 +36,26 @@ public:
 	
 	RowControls(
 			ListModel* parent
-			, QVector<QQmlComponent *>& components
+			, QList<QQmlComponent *>& components
 			, const QMap<QString, Option*>& rowOptions
-			, int row
-			, const QString& key
-			, bool isDummy = false);
+			, bool isDummy = false) : _parentModel(parent), _rowComponents(components), _rowOptions(rowOptions), _isDummy(isDummy) {}
 	virtual ~RowControls() {}
-	
+
+	void										init(int row, const QString& key);
 	void										setContext(int row, const QString& key);
-	const QList<QVariant>&						getControls() const		{ return _rowControls; }
-	const QMap<QString, JASPControlWrapper*>&	getJASPWrapperMap() const	{ return _rowJASPWrapperMap; }
+	const QList<QVariant>&						getObjects()								const	{ return _rowObjects;			}
+	const QMap<QString, JASPControlWrapper*>&	getJASPControlsMap()						const	{ return _rowJASPWrapperMap;	}
+	bool										addJASPControl(JASPControlWrapper* control);
 
 private:
 
 	ListModel*							_parentModel;
+	QList<QQmlComponent *>				_rowComponents;
+	QList<QVariant>						_rowObjects;
 	QMap<QString, JASPControlWrapper*>	_rowJASPWrapperMap;
-	QMap<QString, QQmlContext*>			_contextMap;
 	QMap<QString, QVariant>				_rowControlsVarMap;
-	QList<QVariant>						_rowControls;
+	QMap<QString, Option*>				_rowOptions;
+	bool								_isDummy = false;
 };
 
 #endif // ROWCOMPONENTS_H

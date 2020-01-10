@@ -34,7 +34,7 @@ class BoundQMLListViewTerms : public BoundQMLListViewDraggable
 public:
 	BoundQMLListViewTerms(JASPControlBase* item, bool interaction = false);
 	
-	ListModel*	model()										override { return _termsModel; }
+	ListModel*	model()								const	override { return _termsModel; }
 	Option*		boundTo()									override
 	{
 		if (_hasRowComponents || _termsModel->areTermsInteractions())
