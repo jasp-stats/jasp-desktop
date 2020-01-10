@@ -382,24 +382,20 @@
                                       title = "Functional form", 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorH1', 
-                                      title = "p(H\u208B)", 
+                                      title = "Support H\u2081", 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorH0', 
-                                      title = "p(H\u208A)", 
+                                      title = "Support H\u2080", 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                      title = "Odds <sup>p(H\u208B)</sup>&frasl;<sub>p(H\u208A)</sub>", 
+                                      title = "Support <sup>H\u2081</sup>&frasl;<sub>H\u2080</sub>", 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorBound', 
                                       title = paste0(options[["confidence"]]*100,"% Credible bound") , 
                                       type = 'string')
 
-    priorStatisticsTable$addFootnote(message = "p(H\u208B): The probability that 
-                                                the misstatement is lower than materiality. 
-                                                p(H\u208A): The probability that the misstatement 
-                                                is equal to, or higher than, materiality.
-                                                The odds are to be interpreted in favor of 
-                                                tolerable misstatement.", 
+    priorStatisticsTable$addFootnote(message = "H\u2081: The population misstatement is lower than materiality. 
+                                                H\u2080: The population misstatement is equal to, or higher than, materiality.", 
                                     symbol="<i>Note.</i>")
 
     planningContainer[["priorStatistics"]] <- priorStatisticsTable
@@ -1353,25 +1349,21 @@
                                                    title = "Functional form", 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH1', 
-                                                   title = "p(H\u208B)", 
+                                                   title = "Support H\u2081", 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH0', 
-                                                   title = "p(H\u208A)", 
+                                                   title = "Support H\u2080", 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                                   title = "Odds <sup>p(H\u208B)</sup>&frasl;<sub>p(H\u208A)</sub>", 
+                                                   title = "Support <sup>H\u2081</sup>&frasl;<sub>H\u2080</sub>", 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorBound', 
                                                    title = paste0(options[["confidence"]]*100,"% Credible bound") , 
                                                    type = 'string')
 
-    priorAndPosteriorStatisticsTable$addFootnote(message = "p(H\u208B): The probability that 
-                                                the misstatement is lower than materiality. 
-                                                p(H\u208A): The probability that the misstatement 
-                                                is equal to, or higher than, materiality.
-                                                The odds are to be interpreted in favor of 
-                                                tolerable misstatement.", 
-                                    symbol="<i>Note.</i>")
+    priorAndPosteriorStatisticsTable$addFootnote(message = "H\u2081: The population misstatement is lower than materiality. 
+                                                            H\u2080: The population misstatement is equal to, or higher than, materiality.", 
+                                                 symbol="<i>Note.</i>")
 
     evaluationContainer[["priorAndPosteriorStatistics"]] <- priorAndPosteriorStatisticsTable
 
