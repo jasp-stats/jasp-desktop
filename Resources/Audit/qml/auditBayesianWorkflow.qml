@@ -362,8 +362,8 @@ Form
 
 						CheckBox
 						{
-							text: qsTr("Expected Bayes factor\u208B\u208A")
-							name: "expectedBF"
+							text: qsTr("Expected evidence ratio")
+							name: "expectedEvidenceRatio"
 						}
 					}
 
@@ -1086,9 +1086,8 @@ Form
 
 						CheckBox
 						{
-							id: 			bayesFactor
-							text: 		qsTr("Bayes factor\u208B\u208A")
-							name: 		"bayesFactor"
+							text: 		qsTr("Evidence ratio")
+							name: 		"evidenceRatio"
 							visible: 	!regressionBound.visible
 						}
 					}

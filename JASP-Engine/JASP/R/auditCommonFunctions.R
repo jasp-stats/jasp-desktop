@@ -1284,7 +1284,7 @@
                                     "samplingChecked",
                                     "evaluationChecked",
                                     "planningModel",
-                                    "expectedBF"))
+                                    "expectedEvidenceRatio"))
 
   summaryTable$addColumnInfo(name = 'materiality',          
                              title = "Materiality",          
@@ -1305,9 +1305,9 @@
                              title = "Required sample size", 
                              type = 'string')
 
-  if(type == "bayesian" && options[["expectedBF"]]){
-    summaryTable$addColumnInfo(name = 'expBF',              
-                               title = "Expected BF\u208B\u208A", 
+  if(type == "bayesian" && options[["expectedEvidenceRatio"]]){
+    summaryTable$addColumnInfo(name = 'expectedEvidenceRatio',              
+                               title = "Expected evidence ratio", 
                                type = 'string')
   }
 
@@ -1369,8 +1369,8 @@
                       k = ".", 
                       n = ".")
 
-    if(type == "bayesian" && options[["expectedBF"]])
-      row <- cbind(row, expBF = ".")
+    if(type == "bayesian" && options[["expectedEvidenceRatio"]])
+      row <- cbind(row, expectedEvidenceRatio = ".")
     
     summaryTable$addRows(row)
     summaryTable$addFootnote(message = "Either the materiality, the population size, or the population value is defined as zero.", symbol="<b>Analysis not ready.</b>")
@@ -1443,11 +1443,11 @@
                     k = k, 
                     n = n)
 
-  if(type == "bayesian" && options[["expectedBF"]]){
+  if(type == "bayesian" && options[["expectedEvidenceRatio"]]){
 
-    BFresult <- .auditExpectedBayesFactor(planningState)
-    expectedBF <- BFresult[["expectedBF"]]
-    row <- cbind(row, expBF = expectedBF)
+    expResult <- .auditExpectedEvidenceRatio(planningState)
+    expectedEvidenceRatio <- round(expResult[["posteriorEvidenceRatio"]], 2)
+    row <- cbind(row, expectedEvidenceRatio = expectedEvidenceRatio)
   
   }
 
@@ -2851,7 +2851,7 @@
                                         "samplingChecked",
                                         "evaluationChecked",
                                         "auditResult",
-                                        "bayesFactor",
+                                        "evidenceRatio",
                                         "valuta",
                                         "otherValutaName"))
 
@@ -2956,9 +2956,9 @@
     }
   }
 
-  if(type == "bayesian" && options[["bayesFactor"]])
-    evaluationTable$addColumnInfo(name = 'bf',
-                                  title = "BF\u208B\u208A",     
+  if(type == "bayesian" && options[["evidenceRatio"]])
+    evaluationTable$addColumnInfo(name = 'evidenceRatio',
+                                  title = "Evidence ratio",     
                                   type = 'string')
 
   message <- base::switch(options[["estimator"]],
@@ -3109,12 +3109,12 @@
     }
   }
 
-  if(type == "bayesian" && options[["bayesFactor"]]){
+  if(type == "bayesian" && options[["evidenceRatio"]]){
 
-    BFresult <- .auditBayesFactor(planningOptions, 
-                                  evaluationState)
-    bf <- BFresult[["BF"]]
-    row <- cbind(row, bf = bf)
+    expResult <- .auditEvidenceRatio(planningOptions, 
+                                     evaluationState)
+    evidenceRatio <- round(expResult[["posteriorEvidenceRatio"]], 2)
+    row <- cbind(row, evidenceRatio = evidenceRatio)
   
   }
   

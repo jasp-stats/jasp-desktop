@@ -5,7 +5,7 @@ options$.meta <- list()
 options$CR <- "High"
 options$IR <- "High"
 options$decisionPlot <- TRUE
-options$expectedBF <- TRUE
+options$expectedEvidenceRatio <- TRUE
 options$expectedErrors <- "expectedRelative"
 options$implicitSampleTable <- TRUE
 options$materiality <- "materialityRelative"
@@ -55,5 +55,5 @@ test_that("<b>Table 2.</b> Implicit Sample results match", {
 test_that("<b>Table 1.</b> Planning Summary results match", {
   table <- results[["results"]][["planningContainer"]][["collection"]][["planningContainer_summaryTable"]][["data"]]
   expect_equal_tables(table,
-                      list("100%", "5%", "100%", 372.8, 0, "5%", 58))
+                      list("100%", "5%", "100%", 19.62, 0, "5%", 58))
 })

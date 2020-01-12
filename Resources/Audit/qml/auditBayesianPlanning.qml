@@ -389,8 +389,8 @@ Form {
 
 					CheckBox
 					{
-						text: qsTr("Expected Bayes factor\u208B\u208A")
-						name: "expectedBF"
+						text: qsTr("Expected evidence ratio")
+						name: "expectedEvidenceRatio"
 					}
 				}
 

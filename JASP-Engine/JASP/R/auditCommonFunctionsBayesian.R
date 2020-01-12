@@ -19,12 +19,12 @@
 # reviewer in the Pull Request
 
 ################################################################################
-################## Common functions for Bayes factors ##########################
+################## Common functions the evidence ratio #########################
 ################################################################################
 
-.auditExpectedBayesFactor <- function(planningState){
+.auditExpectedEvidenceRatio <- function(planningState){
 
-  # For calculation of the Bayes factor, the area below materiality is 
+  # For calculation of the evidence ratio the area below materiality is 
   # regarded to be H1 and the area equal to and above materiality is regarded
   # to be H0.
 
@@ -38,7 +38,7 @@
                            shape = planningState[["prior"]]$aPrior, 
                            rate = planningState[["prior"]]$bPrior))
     
-    priorOdds <- priorH1 / priorH0
+    priorEvidenceRatio <- priorH1 / priorH0
 
     postH1 <- diff(pgamma(c(0, planningState[["materiality"]]), 
                           shape = planningState[["prior"]]$aPrior + 
@@ -52,7 +52,7 @@
                           rate = planningState[["prior"]]$bPrior + 
                                  planningState[["sampleSize"]]))
 
-    postOdds <- postH1 / postH0
+    posteriorEvidenceRatio <- postH1 / postH0
 
   } else if(planningState[["likelihood"]] == "binomial"){
 
@@ -64,7 +64,7 @@
                           shape1 = planningState[["prior"]]$aPrior, 
                           shape2 = planningState[["prior"]]$bPrior))
 
-    priorOdds <- priorH1 / priorH0
+    priorEvidenceRatio <- priorH1 / priorH0
 
     postH1 <- diff(pbeta(c(0, planningState[["materiality"]]), 
                         shape1 = planningState[["prior"]]$aPrior + 
@@ -81,9 +81,8 @@
                                   planningState[["expectedSampleError"]]))
                   
 
-    postOdds <- postH1 / postH0
+    posteriorEvidenceRatio <- postH1 / postH0
                 
-
   } else if(planningState[["likelihood"]] == "hypergeometric"){
 
     tolerableE <- 0:floor(planningState[["materiality"]] * 
@@ -107,7 +106,7 @@
                                         shape1 = planningState[["prior"]]$aPrior, 
                                         shape2 = planningState[["prior"]]$bPrior))
 
-    priorOdds <- priorH1 / priorH0
+    priorEvidenceRatio <- priorH1 / priorH0
 
     postH1 <- sum(jfa:::.dBetaBinom(x = tolerableE, 
                                       N = planningState[["N"]] - 
@@ -129,30 +128,30 @@
                                                 planningState[["sampleSize"]] - 
                                                 planningState[["expectedSampleError"]]))
 
-    postOdds <- postH1 / postH0
+    posteriorEvidenceRatio <- postH1 / postH0
 
   }
 
-  expectedBF <- round(postOdds / priorOdds, 2)
+  expectedShift <- round(priorEvidenceRatio / posteriorEvidenceRatio, 2)
 
-  if(expectedBF == "NaN") # Bayes factor for gamma(1, 0) distribution is undefined.
-    expectedBF <- Inf
+  if(expectedShift == "NaN") # Happens when the prior is improper (e.g., Gamma(1, 0))
+    expectedShift <- Inf
 
-  result <- list(expectedBF = expectedBF, 
-                 priorOdds = priorOdds, 
+  result <- list(expectedShift = expectedShift, 
+                 priorEvidenceRatio = priorEvidenceRatio, 
                  priorH1 = priorH1, 
                  priorH0 = priorH0,
                  postH1 = postH1,
                  postH0 = postH0,
-                 postOdds = postOdds)
+                 posteriorEvidenceRatio = posteriorEvidenceRatio)
 
   return(result)
 }
 
-.auditBayesFactor <- function(planningOptions,
-                              evaluationState){
+.auditEvidenceRatio <- function(planningOptions,
+                                evaluationState){
 
-  # For calculation of the Bayes factor, the area below materiality is 
+  # For calculation of the evidence ratio, the area below materiality is 
   # regarded to be H1 and the area equal to and above materiality is regarded
   # to be H0.
 
@@ -206,7 +205,7 @@
 
   } 
 
-  priorOdds <- priorH1 / priorH0
+  priorEvidenceRatio <- priorH1 / priorH0
 
   if(evaluationState[["method"]] == "poisson"){
 
@@ -276,20 +275,20 @@
 
   }
 
-  postOdds <- postH1 / postH0
+  posteriorEvidenceRatio <- postH1 / postH0
 
-  BF <- round(postOdds / priorOdds, 2)
+  shift <- round(posteriorEvidenceRatio / priorEvidenceRatio, 2)
 
-  if(BF == "NaN") # Bayes factor for gamma(1, 0) distribution is undefined.
-    BF <- Inf
+  if(shift == "NaN") # Happens when the prior is improper (e.g., Gamma(1, 0))
+    shift <- Inf
 
-  result <- list(BF = BF, 
-                 priorOdds = priorOdds, 
+  result <- list(shift = shift, 
+                 priorEvidenceRatio = priorEvidenceRatio, 
                  priorH1 = priorH1, 
                  priorH0 = priorH0,
                  postH1 = postH1,
                  postH0 = postH0,
-                 postOdds = postOdds)
+                 posteriorEvidenceRatio = posteriorEvidenceRatio)
 
   return(result)
 }
@@ -351,11 +350,11 @@
 }
 
 .auditPriorAndExpectedPosteriorStatisticsTable <- function(options, 
-                                                            planningState, 
-                                                            planningContainer, 
-                                                            jaspResults,
-                                                            ready, 
-                                                            positionInContainer){
+                                                           planningState, 
+                                                           planningContainer, 
+                                                           jaspResults,
+                                                           ready, 
+                                                           positionInContainer){
 
   if(!options[["priorStatistics"]]) 
     return()
@@ -376,8 +375,8 @@
                                               "implicitSampleTable"))
 
     priorStatisticsTable$addColumnInfo(name = 'v', 
-                                    title = "", 
-                                    type = 'string')
+                                       title = "", 
+                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'form', 
                                       title = "Functional form", 
                                       type = 'string')
@@ -388,14 +387,17 @@
                                       title = "Support H\u2080", 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                      title = "Support <sup>H\u2081</sup>&frasl;<sub>H\u2080</sub>", 
+                                      title = "Evidence ratio <sup>H\u2081</sup>&frasl;<sub>H\u2080</sub>", 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorBound', 
                                       title = paste0(options[["confidence"]]*100,"% Credible bound") , 
                                       type = 'string')
 
-    priorStatisticsTable$addFootnote(message = "H\u2081: The population misstatement is lower than materiality. 
-                                                H\u2080: The population misstatement is equal to, or higher than, materiality.", 
+    priorStatisticsTable$addFootnote(message = paste0("H\u2081: The population misstatement is lower than materiality (\u03B8 < ",
+                                                       round(planningState[["materiality"]], 4),
+                                                       "). H\u2080: The population misstatement is equal to, or higher than, materiality (\u03B8 \u2265 ",
+                                                       round(planningState[["materiality"]], 4),
+                                                       ")."), 
                                     symbol="<i>Note.</i>")
 
     planningContainer[["priorStatistics"]] <- priorStatisticsTable
@@ -520,17 +522,18 @@
 
     }
       
-    BFresult <- .auditExpectedBayesFactor(planningState)
+    expResult <- .auditExpectedEvidenceRatio(planningState)
 
-    priorOdds <- round(BFresult[["priorOdds"]], 2)
-    priorH1 <- round(BFresult[["priorH1"]], 2)
-    priorH0 <- round(BFresult[["priorH0"]], 2)
-    postOdds <- round(BFresult[["postOdds"]], 2)
-    postH1 <- round(BFresult[["postH1"]], 2)
-    postH0 <- round(BFresult[["postH0"]], 2)
+    priorOdds <- round(expResult[["priorEvidenceRatio"]], 2)
+    priorH1 <- round(expResult[["priorH1"]], 2)
+    priorH0 <- round(expResult[["priorH0"]], 2)
+    postOdds <- round(expResult[["posteriorEvidenceRatio"]], 2)
+    postH1 <- round(expResult[["postH1"]], 2)
+    postH0 <- round(expResult[["postH0"]], 2)
     shiftH1 <- round(postH1 / priorH1, 2)
     shiftH0 <- round(postH0 / priorH0, 2)
-    shiftOdds <- round(BFresult[["postOdds"]] / BFresult[["priorOdds"]], 2)
+    shiftOdds <- round(expResult[["posteriorEvidenceRatio"]] / 
+                       expResult[["priorEvidenceRatio"]], 2)
 
     rows <- data.frame(v = c("Prior", "Expected posterior", "Expected shift"),
                       form = c(priorForm, posteriorForm, ""),
@@ -1355,15 +1358,18 @@
                                                    title = "Support H\u2080", 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                                   title = "Support <sup>H\u2081</sup>&frasl;<sub>H\u2080</sub>", 
+                                                   title = "Evidence ratio <sup>H\u2081</sup>&frasl;<sub>H\u2080</sub>", 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorBound', 
-                                                   title = paste0(options[["confidence"]]*100,"% Credible bound") , 
+                                                   title = paste0(options[["confidence"]] * 100,"% Credible bound") , 
                                                    type = 'string')
 
-    priorAndPosteriorStatisticsTable$addFootnote(message = "H\u2081: The population misstatement is lower than materiality. 
-                                                            H\u2080: The population misstatement is equal to, or higher than, materiality.", 
-                                                 symbol="<i>Note.</i>")
+    priorAndPosteriorStatisticsTable$addFootnote(message = paste0("H\u2081: The population misstatement is lower than materiality (\u03B8 < ",
+                                                                  round(evaluationState[["materiality"]], 3),
+                                                                  "). H\u2080: The population misstatement is equal to, or higher than, materiality (\u03B8 \u2265 ",
+                                                                  round(evaluationState[["materiality"]], 3),
+                                                                  ")."), 
+                                                symbol="<i>Note.</i>")
 
     evaluationContainer[["priorAndPosteriorStatistics"]] <- priorAndPosteriorStatisticsTable
 
@@ -1514,18 +1520,19 @@
 
     }
       
-    BFresult <- .auditBayesFactor(planningOptions,
-                                  evaluationState)
+    expResult <- .auditEvidenceRatio(planningOptions,
+                                     evaluationState)
 
-    priorOdds <- round(BFresult[["priorOdds"]], 2)
-    priorH1 <- round(BFresult[["priorH1"]], 2)
-    priorH0 <- round(BFresult[["priorH0"]], 2)
-    postOdds <- round(BFresult[["postOdds"]], 2)
-    postH1 <- round(BFresult[["postH1"]], 2)
-    postH0 <- round(BFresult[["postH0"]], 2)
+    priorOdds <- round(expResult[["priorEvidenceRatio"]], 2)
+    priorH1 <- round(expResult[["priorH1"]], 2)
+    priorH0 <- round(expResult[["priorH0"]], 2)
+    postOdds <- round(expResult[["posteriorEvidenceRatio"]], 2)
+    postH1 <- round(expResult[["postH1"]], 2)
+    postH0 <- round(expResult[["postH0"]], 2)
     shiftH1 <- round(postH1 / priorH1, 2)
     shiftH0 <- round(postH0 / priorH0, 2)
-    shiftOdds <- round(BFresult[["postOdds"]] / BFresult[["priorOdds"]], 2)
+    shiftOdds <- round(expResult[["posteriorEvidenceRatio"]] / 
+                       expResult[["priorEvidenceRatio"]], 2)
 
     rows <- data.frame(v = c("Prior", "Posterior", "Shift"),
                       form = c(priorForm, posteriorForm, ""),

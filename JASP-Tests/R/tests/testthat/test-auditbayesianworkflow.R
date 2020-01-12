@@ -12,7 +12,7 @@ options$CR <- "Medium"
 options$IR <- "High"
 options$areaUnderPosterior <- "displayCredibleBound"
 options$auditResult <- "auditValue"
-options$bayesFactor <- TRUE
+options$evidenceRatio <- TRUE
 options$bookValueDescriptives <- TRUE
 options$bookValueDistribution <- TRUE
 options$decisionPlot <- TRUE
@@ -20,7 +20,7 @@ options$displaySample <- TRUE
 options$estimator <- "betaBound"
 options$evaluationChecked <- TRUE
 options$evaluationInformation <- TRUE
-options$expectedBF <- TRUE
+options$expectedEvidenceRatio <- TRUE
 options$expectedErrors <- "expectedRelative"
 options$expectedPercentage <- 0.025
 options$implicitSampleTable <- TRUE
@@ -107,7 +107,7 @@ test_that("Evaluation Information plot matches", {
 test_that("<b>Table 8.</b> Evaluation Summary results match", {
   table <- results[["results"]][["evaluationContainer"]][["collection"]][["evaluationContainer_evaluationTable"]][["data"]]
   expect_equal_tables(table,
-                      list(108.94, "3.518%", 3, "$ 70161", "$ 13278.835", "$ 49370.9", 169,
+                      list("3.518%", 223.72, 3, "$ 70161", "$ 13278.835", "$ 49370.9", 169,
                            1.8))
 })
 
@@ -156,7 +156,7 @@ test_that("<b>Table 3.</b> Implicit Sample results match", {
 test_that("<b>Table 2.</b> Planning Summary results match", {
   table <- results[["results"]][["planningContainer"]][["collection"]][["planningContainer_summaryTable"]][["data"]]
   expect_equal_tables(table,
-                      list("60%", "8.33%", "100%", 9.28, 4.23, "$ 70161", 169))
+                      list("60%", "8.33%", "100%", 19.07, 4.23, "$ 70161", 169))
 })
 
 test_that("<b>Table 1.</b> Book Value Descriptive Statistics results match", {
