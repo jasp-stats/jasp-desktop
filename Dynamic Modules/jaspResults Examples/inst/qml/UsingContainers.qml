@@ -27,7 +27,7 @@ Form
 		Layout.columnSpan: 2
 		text: qsTr("This example shows two strategies to writing a jaspResults analysis.\n" +
 		"Strategy one uses a classic R approach: compute a model, then pass it along to every function.\n" +
-		"Stratey two uses an unorthodox approach: computing the model when it's actually required\n" +
+		"Strateqy two uses an unorthodox approach: computing the model when it's actually required\n" +
 		"and relying on pass-by-reference mechanics to get it to all functions that need it.\n" +
 		"This is accomplished by using containers\n\n" +
 		"The second approach has the benefit that passing errors is easier, dependencies are shared (and\n" +
