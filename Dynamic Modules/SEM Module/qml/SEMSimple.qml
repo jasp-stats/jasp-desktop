@@ -104,7 +104,7 @@ Form
 				CheckBox { name: "eq_residuals";			label: qsTr("Residuals")			}
 				CheckBox { name: "eq_residualcovariances";	label: qsTr("Residual covariances")	}
 				CheckBox { name: "eq_means";				label: qsTr("Means")				}
-				CheckBox { name: "eq_thresholds";			label: qsTr("Threashold")			}
+				CheckBox { name: "eq_thresholds";			label: qsTr("Thresholds")			}
 				CheckBox { name: "eq_regressions";			label: qsTr("Regressions")			}
 				CheckBox { name: "eq_variances";			label: qsTr("Latent variances")		}
 				CheckBox { name: "eq_lvcovariances";		label: qsTr("Latent covariances")	}
