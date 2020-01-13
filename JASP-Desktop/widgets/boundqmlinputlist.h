@@ -31,7 +31,7 @@ class BoundQMLInputList : public QMLListView, public BoundQMLItem
 public:
 	BoundQMLInputList(JASPControlBase* item);
 
-	ListModel*	model()										override { return _inputModel; }
+	ListModel*	model()								const	override { return _inputModel; }
 	Option*		boundTo()									override { return _boundTo; }
 	void		bindTo(Option *option)						override;
 	Option*		createOption()								override;

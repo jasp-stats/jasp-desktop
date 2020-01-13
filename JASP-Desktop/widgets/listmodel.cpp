@@ -119,7 +119,7 @@ QMap<ListModel*, Terms> ListModel::getSourceTermsPerModel()
 	return result;
 }
 
-void ListModel::setRowComponents(QVector<QQmlComponent *> &rowComponents)
+void ListModel::setRowComponents(QList<QQmlComponent *> &rowComponents)
 {
 	_rowComponents = rowComponents;
 }
@@ -140,11 +140,40 @@ void ListModel::setUpRowControls()
 	{
 		const QString& key = term.asQString();
 		if (!_rowControlsMap.contains(key))
-			_rowControlsMap[key] = new RowControls(this, _rowComponents, _rowControlsOptions[key], row, key);
+		{
+			RowControls* rowControls = new RowControls(this, _rowComponents, _rowControlsOptions[key]);
+			_rowControlsMap[key] = rowControls;
+			rowControls->init(row, key);
+		}
 		else
 			_rowControlsMap[key]->setContext(row, key);
 		row++;
 	}
+}
+
+JASPControlWrapper *ListModel::getRowControl(const QString &key, const QString &name) const
+{
+	JASPControlWrapper* control = nullptr;
+
+	if (_rowControlsMap.contains(key))
+	{
+		RowControls* rowControls = _rowControlsMap[key];
+		const QMap<QString, JASPControlWrapper*>& controls = rowControls->getJASPControlsMap();
+		if (controls.contains(name))
+			control = controls[name];
+	}
+
+	return control;
+}
+
+bool ListModel::addRowControl(const QString &key, JASPControlWrapper *control)
+{
+	bool success = false;
+
+	if (_rowControlsMap.contains(key))
+		success = _rowControlsMap[key]->addJASPControl(control);
+
+	return success;
 }
 
 int ListModel::searchTermWith(QString searchString)
@@ -313,7 +342,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	if (role == ListModel::RowComponentsRole)
 	{
 		if (_rowControlsMap.size() > 0)
-			return QVariant::fromValue(_rowControlsMap[myTerms.at(row_t).asQString()]->getControls());
+			return QVariant::fromValue(_rowControlsMap[myTerms.at(row_t).asQString()]->getObjects());
 		else
 			return QVariant();
 	}

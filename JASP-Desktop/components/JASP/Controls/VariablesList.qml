@@ -476,7 +476,7 @@ JASPListControl
 					anchors.verticalCenter	: parent.verticalCenter
 					anchors.right			: parent.right
 					anchors.rightMargin		: 3 * preferencesModel.uiScale
-
+					spacing					: variablesList.rowComponentsSpacing
 				}
 				
 				states: [

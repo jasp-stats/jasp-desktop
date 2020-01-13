@@ -175,7 +175,7 @@ void BoundQMLInputList::modelChangedHandler()
 			RowControls* rowControls = allControls[QString::fromStdString(value)];
 			if (rowControls)
 			{
-				const QMap<QString, JASPControlWrapper*>& controlsMap = rowControls->getJASPWrapperMap();
+				const QMap<QString, JASPControlWrapper*>& controlsMap = rowControls->getJASPControlsMap();
 				QMapIterator<QString, JASPControlWrapper*> it(controlsMap);
 				while (it.hasNext())
 				{

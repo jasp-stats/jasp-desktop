@@ -47,7 +47,7 @@ public:
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
 	Option*		boundTo()									override { return _boundTo; }
-	ListModel*	model()										override { return _model; }
+	ListModel*	model()								const	override { return _model; }
 
 	void		resetQMLItem(JASPControlBase *item)			override;
 	void		rScriptDoneHandler(const QString &result)	override;

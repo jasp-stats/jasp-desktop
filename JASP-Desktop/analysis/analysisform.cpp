@@ -600,10 +600,9 @@ void AnalysisForm::addControlError(JASPControlBase* control, QString message, bo
 		QQuickItem* container = this;
 		if (control->parentListView())
 		{
-			QQuickItem* listView = control->parentListView();
-
-			if (listView)	container = listView->property("listGridView").value<QQuickItem*>();
-			else			container = control->parentListView();
+			container = control->parentListView()->property("listGridView").value<QQuickItem*>();
+			if (!container)
+				container = control->parentListView();
 		}
 
 		controlErrorMessageItem->setProperty("container", QVariant::fromValue(container));

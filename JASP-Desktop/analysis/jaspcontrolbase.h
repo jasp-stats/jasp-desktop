@@ -90,7 +90,7 @@ public:
 	QQmlComponent*					rowComponent(int) const;
 	void							clearRowComponents();
 
-	QVector<QQmlComponent*> &		getRowComponents() { return _rowComponents; }
+	QList<QQmlComponent*> &			getRowComponents() { return _rowComponents; }
 
 	Q_INVOKABLE	void				addControlError(QString message);
 	Q_INVOKABLE void				addControlErrorTemporary(QString message);
@@ -129,7 +129,7 @@ protected:
 	static QQmlComponent*	rowComponent(QQmlListProperty<QQmlComponent>*, int);
 	static void				clearRowComponents(QQmlListProperty<QQmlComponent>*);
 
-	QVector<QQmlComponent*>	_rowComponents;
+	QList<QQmlComponent*>	_rowComponents;
 };
 
 

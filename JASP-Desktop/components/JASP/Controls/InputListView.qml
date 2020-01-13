@@ -75,6 +75,7 @@ JASPListControl
 				anchors.verticalCenter	: parent.verticalCenter
 				anchors.right			: parent.right
 				anchors.rightMargin		: deleteIconID.width
+				spacing					: inputListView.rowComponentsSpacing
 				controls				: model.rowComponents
 				enabled					: !itemWrapper.isVirtual && inputListView.enableRowComponents
 			}

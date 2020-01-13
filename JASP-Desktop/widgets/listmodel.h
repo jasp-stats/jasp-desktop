@@ -28,6 +28,7 @@
 
 class QMLListView;
 class RowControls;
+class JASPControlWrapper;
 class Option;
 
 class ListModel : public QAbstractTableModel, public VariableInfoConsumer
@@ -69,9 +70,11 @@ public:
 	virtual Terms					getSourceTerms();
 	QMap<ListModel*, Terms> 		getSourceTermsPerModel();
 
-			void					setRowComponents(QVector<QQmlComponent*> &rowComponents);
+			void					setRowComponents(QList<QQmlComponent*> &rowComponents);
 	virtual void					setUpRowControls();
 	const QMap<QString, RowControls*>& getRowControls() const { return _rowControlsMap; }
+			JASPControlWrapper*		getRowControl(const QString& key, const QString& name)			const;
+			bool					addRowControl(const QString& key, JASPControlWrapper* control);
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
 	Q_INVOKABLE void				selectItem(int _index, bool _select);
@@ -101,7 +104,7 @@ protected:
 	bool			_areTermsVariables;
 	bool			_areTermsInteractions = false;
 	QMap<QString, RowControls* >	_rowControlsMap;
-	QVector<QQmlComponent *>		_rowComponents;
+	QList<QQmlComponent *>			_rowComponents;
 	RowControlsOptions				_rowControlsOptions;
 
 };
