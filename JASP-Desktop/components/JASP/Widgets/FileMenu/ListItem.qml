@@ -26,10 +26,12 @@ FocusScope
 	property var cppModel:			undefined
 
 	property bool mainHovered:		descriptionMouseArea.containsMouse || fileEntryMouseArea.containsMouse
-	property bool allHovered:		mainHovered || firstFileOrFolderMouseArea.containsMouse || datafileMouseArea.containsMouse
+	property bool allHovered:		(mainHovered || firstFileOrFolderMouseArea.containsMouse) || datafileMouseArea.containsMouse
 	property bool mainPressed:		descriptionMouseArea.pressed || fileEntryMouseArea.pressed
 	property bool allPressed:		mainPressed || firstFileOrFolderMouseArea.pressed || datafileMouseArea.pressed
 	property bool hasBreadCrumbs:	false
+
+	onAllHoveredChanged:	if(allHovered) { ListView.currentIndex = index; forceActiveFocus(); }
 
 	Keys.onEnterPressed:									openStuff(model);
 	Keys.onReturnPressed:									openStuff(model);
@@ -54,13 +56,16 @@ FocusScope
 		anchors.top:		parent.top
 		anchors.margins:	1
 
-		color:				rectTitleAndDescripton.allPressed || rectTitleAndDescripton.activeFocus ? jaspTheme.buttonColorPressed : rectTitleAndDescripton.allHovered ? jaspTheme.buttonColorHovered : jaspTheme.buttonColor
+		color:				rectTitleAndDescripton.allPressed || (rectTitleAndDescripton.activeFocus && !datafileMouseArea.containsMouse) ?
+								jaspTheme.buttonColorPressed :
+								rectTitleAndDescripton.allHovered
+								? jaspTheme.buttonColorHovered : jaspTheme.buttonColor
 
 		Image
 		{
 			id :				firstFileOrFolderImage
 
-			height:					model.type==3 ? 0.75 * parent.height : 0.95 * parent.height  //Tune folder image to file image (wtih topmargin in svg)
+			height:					model.type==3 ? 0.75 * rectTitle.height : 0.95 * rectTitle.height  //Tune folder image to file image (wtih topmargin in svg)
 			width:					height
 			anchors.left:			rectTitle.left
 			anchors.verticalCenter: parent.verticalCenter
@@ -97,37 +102,59 @@ FocusScope
 			}
 		}
 
-		Image
+		Rectangle
 		{
-			id :			associatedDatafileImage
+			id:				rectTitleAndDataFile
+			height:			textTitle.height
+			color:			!hasDatafile ? "transparent" :
+										   datafileMouseArea.pressed || (rectTitleAndDescripton.activeFocus && datafileMouseArea.containsMouse) ?
+											   jaspTheme.buttonColorPressed :
+											   datafileMouseArea.containsMouse || rectTitleAndDescripton.activeFocus ?
+												   jaspTheme.buttonColorHovered : jaspTheme.buttonColor
+			border.color:	jaspTheme.uiBorder
+			border.width:	hasDatafile ? 1 : 0
 
-			height:			0.95 * parent.height
-			width:			model.associated_datafile === "" ? 0 : height
-			anchors.left:	firstFileOrFolderImage.right
-			anchors.top:	rectTitle.top
+			property bool hasDatafile: model.associated_datafile !== ""
 
-
-			fillMode:		Image.PreserveAspectFit
-			source:			model.dataiconsource
-			visible :		model.associated_datafile !== ""
-			mipmap:			true
-
-
-			sourceSize
+			anchors
 			{
-				width:	associatedDatafileImage.width * 2
-				height:	associatedDatafileImage.height * 2
+				left:		firstFileOrFolderImage.right
+				top:		parent.top
+				right:		parent.right
+				margins:	1
+			}
+
+			Image
+			{
+				id :			associatedDatafileImage
+
+				height:			0.95 * parent.height
+				width:			model.associated_datafile === "" ? 0 : height
+				anchors.left:	parent.left
+				anchors.top:	parent.top
+
+
+				fillMode:		Image.PreserveAspectFit
+				source:			model.dataiconsource
+				visible :		rectTitleAndDataFile.hasDatafile
+				mipmap:			true
+
+
+				sourceSize
+				{
+					width:	associatedDatafileImage.width * 2
+					height:	associatedDatafileImage.height * 2
+				}
 			}
 
 			MouseArea
 			{
 				id:				datafileMouseArea
 				z:				-2
-				anchors.fill:	parent
+				anchors.fill:	rectTitleAndDataFile.hasDatafile ? parent : undefined
 				hoverEnabled:	true
 
 				onClicked:		rectTitleAndDescripton.cppModel.openFile(model.dirpath + model.associated_datafile)
-				onDoubleClicked:{}
 				cursorShape:	Qt.PointingHandCursor
 			}
 
@@ -139,24 +166,24 @@ FocusScope
 				visible:	datafileMouseArea.containsMouse
 				font:		jaspTheme.font
 			}
-		}
 
-		Text
-		{
-			id:					textTitle
+			Text
+			{
+				id:					textTitle
 
-			height:				hasBreadCrumbs ?  parent.height : parent.height / 2
-			anchors.top:		parent.top
-			anchors.left:		associatedDatafileImage.right
-			anchors.right:		parent.right
-			anchors.leftMargin:	10 * preferencesModel.uiScale
+				height:				hasBreadCrumbs ?  rectTitle.height : rectTitle.height / 2
+				anchors.top:		parent.top
+				anchors.left:		associatedDatafileImage.right
+				anchors.right:		parent.right
+				anchors.leftMargin:	10 * preferencesModel.uiScale
 
-			text:					model.name
-			color:					jaspTheme.textEnabled
-			font:					jaspTheme.font
-			horizontalAlignment:	Text.AlignLeft
-			verticalAlignment:		Text.AlignVCenter
-			elide:					Text.ElideMiddle
+				text:					model.name
+				color:					jaspTheme.textEnabled
+				font:					jaspTheme.font
+				horizontalAlignment:	Text.AlignLeft
+				verticalAlignment:		Text.AlignVCenter
+				elide:					Text.ElideMiddle
+			}
 		}
 
 		Text
@@ -165,10 +192,10 @@ FocusScope
 			visible:				!hasBreadCrumbs
 
 			height:					hasBreadCrumbs ?  parent.height :parent.height / 2
-			anchors.top:			textTitle.bottom
-			anchors.left:			associatedDatafileImage.right
+			anchors.top:			rectTitleAndDataFile.bottom
+			anchors.left:			rectTitleAndDataFile.left
 			anchors.right:			parent.right
-			anchors.leftMargin:		10 * preferencesModel.uiScale
+			anchors.leftMargin:		(10 * preferencesModel.uiScale) + associatedDatafileImage.width
 			text:					model.dirpath
 			color:					jaspTheme.textEnabled
 			horizontalAlignment:	Text.AlignLeft
