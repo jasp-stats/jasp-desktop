@@ -339,9 +339,9 @@ FocusScope
 			id:						blueWave
 			fillMode:				Image.TileHorizontally
 			horizontalAlignment:	Image.AlignHCenter
-			height:					100  * welcomeRoot.scaler
+			height:					sourceSize.height //200  * welcomeRoot.scaler
 			sourceSize.width:		1400 * welcomeRoot.scaler
-			sourceSize.height:		height
+			sourceSize.height:		86 * welcomeRoot.scaler
 			source:					jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
 			cache:					false
 			anchors
@@ -349,7 +349,6 @@ FocusScope
 				top:				parent.top
 				left:				parent.left
 				right:				parent.right
-
 			}
 		}
 
@@ -368,7 +367,6 @@ FocusScope
 				left:				parent.left
 				right:				parent.right
 				bottom:				parent.bottom
-
 			}
 		}
 	}
