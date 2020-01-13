@@ -39,7 +39,6 @@ ListView
 		width:					listView.width -  (rightscrollbar.width > 0 ? rightscrollbar.width + listView.spacing : 0)
 		cppModel:				listView.cppModel
 		hasBreadCrumbs:			listView.breadCrumbs !== null
-		onAllHoveredChanged:	if(allHovered) { listView.currentIndex = index; forceActiveFocus(); }
 	}
 
 	JASPScrollBar
