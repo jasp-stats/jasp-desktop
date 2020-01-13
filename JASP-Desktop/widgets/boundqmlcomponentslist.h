@@ -30,7 +30,7 @@ class BoundQMLComponentsList : public QMLListView, public BoundQMLItem
 public:
 	BoundQMLComponentsList(JASPControlBase* item);
 
-	ListModel*	model()										override { return _termsModel; }
+	ListModel*	model()								const	override { return _termsModel; }
 	Option*		boundTo()									override { return _boundTo; }
 	void		bindTo(Option *option)						override;
 	Option*		createOption()								override;

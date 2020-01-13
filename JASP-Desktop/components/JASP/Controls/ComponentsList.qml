@@ -35,6 +35,7 @@ JASPListControl
 
 		RowComponents
 		{
+			spacing		: componentsList.rowComponentsSpacing
 			controls	: model.rowComponents
 		}
 	}

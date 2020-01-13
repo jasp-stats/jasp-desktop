@@ -113,7 +113,7 @@ void BoundQMLComponentsList::modelChangedHandler()
 			RowControls* rowControls = allControls[term.asQString()];
 			if (rowControls)
 			{
-				const QMap<QString, JASPControlWrapper*>& controlsMap = rowControls->getJASPWrapperMap();
+				const QMap<QString, JASPControlWrapper*>& controlsMap = rowControls->getJASPControlsMap();
 				QMapIterator<QString, JASPControlWrapper*> it(controlsMap);
 				while (it.hasNext())
 				{

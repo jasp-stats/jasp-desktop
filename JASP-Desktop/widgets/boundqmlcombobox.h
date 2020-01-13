@@ -39,7 +39,7 @@ public:
 	bool		isJsonValid(const Json::Value& optionValue) override;
 	Option*		boundTo()									override	{ return _boundTo; }
 	void		setUp()										override;
-	ListModel*	model()										override	{ return _model; }
+	ListModel*	model()								const	override	{ return _model; }
 	
 protected slots:
 	void modelChangedHandler() override;

@@ -24,6 +24,7 @@ TextField
 {
 					id:					formulaField
 					value:				"0"
+	property double realValue:			0
 	property double	min:				-Infinity
 	property double	max:				Infinity
 	property int	inclusive:			JASP.MinMax

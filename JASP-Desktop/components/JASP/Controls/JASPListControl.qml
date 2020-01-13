@@ -26,9 +26,7 @@ JASPControl
 	id						: jaspListControl
 	controlType				: JASPControlBase.VariablesListView
 	background				: listRectangle
-	width					: implicitWidth
-	height					: implicitHeight
-	implicitWidth			: parent.width
+	implicitWidth 			: parent.width
 	implicitHeight			: jaspTheme.defaultVariablesFormHeight
 	useControlMouseArea		: false
 	shouldStealHover		: false
@@ -50,6 +48,7 @@ JASPControl
 	property alias	listTitle			: listTitle
 	property alias	rowComponentsTitles	: titles.model
 	property alias	rowComponentsLabels	: titles.model
+	property int	rowComponentsSpacing : 1
 
 	property var	itemComponent
 

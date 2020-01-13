@@ -33,7 +33,7 @@ public:
 	BoundQMLTableView(JASPControlBase* item);
 
 	void		bindTo(Option *option)							override;
-	ListModel*	model()											override { return _tableModel; }
+	ListModel*	model()									const	override { return _tableModel; }
 	Option*		createOption()									override;
 	bool		isOptionValid(Option * option)					override;
 	bool		isJsonValid(const Json::Value & optionValue)	override;

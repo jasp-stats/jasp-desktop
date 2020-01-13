@@ -162,6 +162,7 @@ void BoundQMLTextInput::bindTo(Option *option)
 			_formula = new OptionString();
 		_option = _formula;
 		_value = QString::fromStdString(_formula ? _formula->value() : "");
+		runRScript("as.character(" + _value + ")", true);
 		break;
 
 	default:
@@ -277,7 +278,10 @@ void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 	if (!succes)
 		item()->addControlError(tr("The expression did not return a number."));
 	else
+	{
+		setItemProperty("realValue", val);
 		succes = _formulaResultInBounds(val);
+	}
 
 	if (succes) {
 		setItemProperty("hasScriptError", false);
@@ -388,7 +392,10 @@ void BoundQMLTextInput::textChangedSlot()
 	_value = getItemProperty("value").toString();
 
 	if (_inputType == TextInputType::FormulaType)
-		runRScript("as.character(" + _value + ")", true);
+	{
+		if (_formula->value() != _value.toStdString())
+			runRScript("as.character(" + _value + ")", true);
+	}
 	else if (_option)
 		_setOptionValue(_option, _value);
 

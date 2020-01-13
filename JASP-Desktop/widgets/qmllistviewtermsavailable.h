@@ -32,7 +32,7 @@ class QMLListViewTermsAvailable : public QMLListViewDraggable
 public:
 	QMLListViewTermsAvailable(JASPControlBase* item, bool isInteractions = false);
 	
-	ListModel*						model()						override	{ return _availableModel; }
+	ListModel*						model()				const	override	{ return _availableModel; }
 	ListModelAvailableInterface*	availableModel()						{ return _availableModel; }
 	void							setTermsAreNotVariables()	override;
 	void							setTermsAreInteractions()	override;

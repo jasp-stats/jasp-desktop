@@ -53,36 +53,46 @@ void JASPControlBase::componentComplete()
 {
 	QQuickItem::componentComplete();
 
-	QObject* p = this;
-	do
+	QQmlContext* context = qmlContext(this);
+	bool hasContextForm = context->contextProperty("hasContextForm").toBool();
+
+	if (hasContextForm)
+		_form = context->contextProperty("form").value<AnalysisForm*>();
+	else
 	{
-		p = p->parent();
-		_form = qobject_cast<AnalysisForm*>(p);
+		QObject* p = this;
+		do
+		{
+			p = p->parent();
+			_form = qobject_cast<AnalysisForm*>(p);
+		}
+		while (p && !_form);
 	}
-	while (p && !_form);
 
 	_wrapper = JASPControlWrapper::buildJASPControlWrapper(this);
 
-	QQmlContext* context = qmlContext(this);
-	bool hasContextForm = context->contextProperty("hasContextForm").toBool();
-	bool noDirectSetup = context->contextProperty("noDirectSetup").toBool();
-
-	if (hasContextForm)
+	if (!hasContextForm)
 	{
-		_form = context->contextProperty("form").value<AnalysisForm*>();
-		QMLListView* control = dynamic_cast<QMLListView*>(context->contextProperty("listView").value<QObject*>());
-		if (control)
+		if (_form)
+			_form->addControl(this);
+	}
+	else
+	{
+		bool noDirectSetup = context->contextProperty("noDirectSetup").toBool();
+		if (!noDirectSetup)
+			_wrapper->setUp();
+
+		QMLListView* listView = dynamic_cast<QMLListView*>(context->contextProperty("listView").value<QObject*>());
+		if (listView && isBound())
 		{
-			_parentListView = control->item();
+			_parentListView = listView->item();
 			_parentListViewKey = context->contextProperty("rowValue").toString();
+
+			listView->addRowControl(_parentListViewKey, _wrapper);
+
 			emit parentListViewChanged();
 		}
 	}
-
-	if (!hasContextForm && _form)
-		_form->addControl(this);
-	else if (!noDirectSetup)
-		_wrapper->setUp();
 }
 
 void JASPControlBase::addControlError(QString message)
