@@ -216,7 +216,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   if (!is.null(jaspResults[["scaleTable"]])) return()
   
   # Create table
-  scaleTable <- createJaspTable(title = "Scale Reliability Statistics")
+  scaleTable <- createJaspTable(title = gettext("Scale Reliability Statistics"))
   dependList <- c("variables", "confAlpha", "mcDonaldScale", "alphaScale", "meanScale",
                   "alphaScaleStandardized", "gutmannScale", "glbScale", "reverseScaledItems",
                   "averageInterItemCor",  "sdScale", "missingValues", "confAlphaLevel")
@@ -225,38 +225,24 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   scaleTable$position <- 1
   
   # Add columns to table
-  scaleTable$addColumnInfo(name = "case", title = "", type = "string")
-  if (options$meanScale)
-    scaleTable$addColumnInfo(name = "mu", title = "mean", type = "number")
-  if (options$sdScale)
-    scaleTable$addColumnInfo(name = "sd", title = "sd", type = "number")
-  if (options$mcDonaldScale)
-    scaleTable$addColumnInfo(name = "omega", title = "McDonald's \u03C9",     
-                             type = "number")
-  if (options$alphaScale)
-    scaleTable$addColumnInfo(name = "alpha", title = "Cronbach's \u03B1",
-                             type = "number")
-  if (options$gutmannScale)
-    scaleTable$addColumnInfo(name = "lambda", title = "Gutmann's \u03BB6",
-                             type = "number")
-  if (options$glbScale)
-    scaleTable$addColumnInfo(name = "glb", title = "Greatest lower bound",
-                             type = "number")
-  if (options$averageInterItemCor)
-    scaleTable$addColumnInfo(name = "rho", title = "Average interitem correlation",
-                             type = "number")
-  if (options$confAlpha && options[["alphaScaleStandardized"]] == "_1unstandardized"){
-    overTitle <- paste0(100 * options$confAlphaLevel, "% Confidence Interval")
-    scaleTable$addColumnInfo(name = "lower", title = "Lower", type = "number", 
-                             overtitle = overTitle)
-    scaleTable$addColumnInfo(name = "upper", title = "Upper", type = "number", 
-                             overtitle = overTitle)
+                                    scaleTable$addColumnInfo(name = "case",   title = "",                                        type = "string")
+  if (options$meanScale)            scaleTable$addColumnInfo(name = "mu",     title = gettext("mean"),                           type = "number")
+  if (options$sdScale)              scaleTable$addColumnInfo(name = "sd",     title = gettext("sd"),                             type = "number")
+  if (options$mcDonaldScale)        scaleTable$addColumnInfo(name = "omega",  title = gettextf("McDonald's %s", "\u03C9"),       type = "number")
+  if (options$alphaScale)           scaleTable$addColumnInfo(name = "alpha",  title = gettextf("Cronbach's %s", "\u03B1"),       type = "number")
+  if (options$gutmannScale)         scaleTable$addColumnInfo(name = "lambda", title = gettextf("Gutmann's %s", "\u03BB6"),       type = "number")
+  if (options$glbScale)             scaleTable$addColumnInfo(name = "glb",    title = gettext("Greatest lower bound"),           type = "number")
+  if (options$averageInterItemCor)  scaleTable$addColumnInfo(name = "rho",    title = gettext("Average interitem correlation"),  type = "number")
+
+  if (options$confAlpha && options[["alphaScaleStandardized"]] == "_1unstandardized")
+  {
+    overTitle <- gettextf("%.0f%% Confidence Interval", 100 * options$confAlphaLevel)
+    scaleTable$addColumnInfo(name = "lower", title = gettext("Lower"), type = "number", overtitle = overTitle)
+    scaleTable$addColumnInfo(name = "upper", title = gettext("Upper"), type = "number", overtitle = overTitle)
   }
   
-  if (options$missingValues == "excludeCasesListwise") 
-    exclwise <- " listwise"
-  else 
-    exclwise <- " pairwise"
+  if (options$missingValues == "excludeCasesListwise")  exclwise <- "listwise"
+  else                                                  exclwise <- "pairwise"
   
   jaspResults[["scaleTable"]] <- scaleTable
   
@@ -272,11 +258,11 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     nObs      <- nrow(dataset)
     nExcluded <- sum(!complete.cases(dataset))
     nValid    <- nObs - nExcluded
-    message <- sprintf("Of the observations, %d were used, %d were excluded%s, 
-                     and %d were provided.", nValid, nExcluded, exclwise, nObs)
+    message   <- gettextf("Of the observations, %1$i were used, %2$i were excluded %3$s, and %4$i were provided.", nValid, nExcluded, exclwise, nObs)
+    
     if (options$glbScale && length(variables) == 2) 
-      message <- paste(message, "Warning: Greatest lower bound can 
-    only be calculated for three or more variables.")
+      message <- gettextf("%s\nWarning: Greatest lower bound can only be calculated for three or more variables.", message)
+
     jaspResults[["scaleTable"]]$addFootnote(message)
   }
 }
@@ -295,32 +281,21 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   itemTable$showSpecifiedColumnsOnly <- TRUE
   itemTable$position <- 2
 
-  overTitle <- paste0("If item dropped")
+  overTitle <- gettext("If item dropped")
   
   # Add columns to table
-  itemTable$addColumnInfo(name = "case", title = "", type = "string")
-  if (options$meanItem)
-    itemTable$addColumnInfo(name = "mu", title = "mean", type = "number")
-  if (options$sdItem)
-    itemTable$addColumnInfo(name = "sd", title = "sd",   type = "number")
-  if (options$itemRestCor)
-    itemTable$addColumnInfo(name = "itemRestCor", title = "item-rest correlation", 
-                            type = "number")
-  if (options$mcDonaldItem)
-    itemTable$addColumnInfo(name = "omega", title = "McDonald's \u03C9", 
-                            type = "number", overtitle = overTitle)
-  if (options$alphaItem)
-    itemTable$addColumnInfo(name = "alpha", title = "Cronbach's \u03B1", 
-                            type = "number", overtitle = overTitle)
-  if (options$gutmannItem)
-    itemTable$addColumnInfo(name = "lambda", title = "Gutmann's \u03BB6", 
-                            type = "number", overtitle = overTitle)
+                            itemTable$addColumnInfo(name = "case",        title = "",                                   type = "string")
+  if (options$meanItem)     itemTable$addColumnInfo(name = "mu",          title = gettext("mean"),                      type = "number")
+  if (options$sdItem)       itemTable$addColumnInfo(name = "sd",          title = gettext("sd"),                        type = "number")
+  if (options$itemRestCor)  itemTable$addColumnInfo(name = "itemRestCor", title = gettext("item-rest correlation"),     type = "number")
+  if (options$mcDonaldItem) itemTable$addColumnInfo(name = "omega",       title = gettextf("McDonald's %s", "\u03C9"),  type = "number", overtitle = overTitle)
+  if (options$alphaItem)    itemTable$addColumnInfo(name = "alpha",       title = gettextf("Cronbach's %s", "\u03B1"),  type = "number", overtitle = overTitle)
+  if (options$gutmannItem)  itemTable$addColumnInfo(name = "lambda",      title = gettextf("Gutmann's %s", "\u03BB6"),  type = "number", overtitle = overTitle)
   
   # can only be computed if there are at least 3 variables.
   if (options$mcDonaldItem && length(options$variables) < 3) {
-    message <- "McDonald's \u03C9 if item dropped can only be calculated 
-                for three or more variables."
-    itemTable$addFootnote(message, symbol = "\u1D43 Warning: ")
+    message <- gettextf("McDonald's %s if item dropped can only be calculated for three or more variables.", "\u03C9")
+    itemTable$addFootnote(message, symbol = gettextf("%s Warning: ", "\u1D43"))
   }
   
   jaspResults[["itemTable"]] <- itemTable 
@@ -334,7 +309,7 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   .reliabilityItemFill(jaspResults, dataset, options, relyFit)
   
   if (length(options$reverseScaledItems) > 0)
-    itemTable$addFootnote("reverse-scaled item", symbol = "\u207B")
+    itemTable$addFootnote(gettext("reverse-scaled item"), symbol = "\u207B")
 }
 
 .reliabilityAlphaCI <- function(relyFit, ci, nullAlpha = 0) {

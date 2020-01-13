@@ -112,7 +112,7 @@ Form
 			CheckBox
 			{
 				name: "coeffCI";				label: qsTr("Confidence intervals")
-				CIField {	name: "coeffCIInterval"; label: "Interval" }
+				CIField {		name: "coeffCIInterval"; label: "Interval" }
 				CheckBox {		name: "coeffCIOR";		label: qsTr("Odds ratio scale")		}
 			}
 			CheckBox { name: "robustSEOpt";		label: qsTr("Robust standard errors")		}
