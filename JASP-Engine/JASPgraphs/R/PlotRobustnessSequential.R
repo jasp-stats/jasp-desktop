@@ -372,7 +372,7 @@ PlotRobustnessSequential <- function(
     widths  <- c(.4, .2, .4)
 
     plot <- JASPgraphsPlot$new(
-      subplots     = topPlotList,
+      subplots     = topPlotList[!idx],
       layout       = layout,
       heights      = heights,
       widths       = widths
