@@ -51,17 +51,17 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 
 	variables <- c(options[["dependent"]], unlist(options[["covariates"]]))
 
-	bainTable <- createJaspTable("Bain Linear Regression")
+  bainTable <- createJaspTable(gettext("Bain Linear Regression"))
 	bainContainer[["bainTable"]] <- bainTable
 	bainTable$position <- position
 
 	bainTable$addColumnInfo(name="hypotheses", type="string", title="")
-	bainTable$addColumnInfo(name="BF", type="number", title= "BF.c")
-	bainTable$addColumnInfo(name="PMP1", type="number", title="PMP a")
-	bainTable$addColumnInfo(name="PMP2", type="number", title="PMP b")
+  bainTable$addColumnInfo(name="BF",         type="number", title=gettext("BF.c"))
+  bainTable$addColumnInfo(name="PMP1",       type="number", title=gettext("PMP a"))
+  bainTable$addColumnInfo(name="PMP2",       type="number", title=gettext("PMP b"))
 
-	message <- "BF.c denotes the Bayes factor of the hypothesis in the row versus its complement.
-				Posterior model probabilities (a: excluding the unconstrained hypothesis, b: including the unconstrained hypothesis) are based on equal prior model probabilities."
+  message <- gettext("BF.c denotes the Bayes factor of the hypothesis in the row versus its complement.\
+Posterior model probabilities (a: excluding the unconstrained hypothesis, b: including the unconstrained hypothesis) are based on equal prior model probabilities.")
 	bainTable$addFootnote(message=message)
 
 	bainTable$addCitation(.bainGetCitations())
@@ -72,9 +72,9 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	if (any(variables %in% missingValuesIndicator)) {
 		i <- which(variables %in% missingValuesIndicator)
 		if (length(i) > 1) {
-			bainTable$addFootnote(message= paste0("The variables ", paste(variables[i], collapse = ", "), " contain missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
+      bainTable$addFootnote(message= gettextf("The variables %s contain missing values, the rows containing these values are removed in the analysis.", paste(variables[i], collapse = ", ")), symbol=gettext("<b>Warning.</b>"))
 		} else if (length(i) == 1) {
-			bainTable$addFootnote(message= paste0("The variable ", variables[i], " contains missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
+      bainTable$addFootnote(message= gettextf("The variable %s contains missing values, the rows containing these values are removed in the analysis.", variables[i]), symbol=gettext("<b>Warning.</b>"))
 		}
 	}
 
@@ -92,15 +92,15 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	})
 
 	if (isTryError(p)) {
-		bainContainer$setError(paste0("An error occurred in the analysis:<br>", .extractErrorMessage(p), "<br><br>Please double check your variables and model constraints."))
+    bainContainer$setError(gettextf("An error occurred in the analysis:<br>%s<br><br>Please double check your variables and model constraints.", .extractErrorMessage(p)))
 		return()
 	}
 
 	for (i in 1:(length(bainResult$fit$BF)-1)) {
-		row <- list(hypotheses = paste0("H",i), BF = bainResult$fit$BF[i], PMP1 = bainResult$fit$PMPa[i], PMP2 = bainResult$fit$PMPb[i])
+    row <- list(hypotheses = gettextf("H%i",i), BF = bainResult$fit$BF[i], PMP1 = bainResult$fit$PMPa[i], PMP2 = bainResult$fit$PMPb[i])
 		bainTable$addRows(row)
 	}
-	row <- list(hypotheses = "Hu", BF = "", PMP1 = "", PMP2 = bainResult$fit$PMPb[length(bainResult$fit$BF)])
+  row <- list(hypotheses = gettext("Hu"), BF = "", PMP1 = "", PMP2 = bainResult$fit$PMPb[length(bainResult$fit$BF)])
 	bainTable$addRows(row) 
 }
 
@@ -116,7 +116,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 		width <- 600
 	}
 
-	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = height, width = width)
+  bayesFactorPlot <- createJaspPlot(plot = NULL, title = gettext("Posterior Probabilities"), height = height, width = width)
 	bayesFactorPlot$dependOn(options = c("bayesFactorPlot"))
 	bayesFactorPlot$position <- position
 
@@ -133,21 +133,21 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	
 	if (!is.null(bainContainer[["coefficientsTable"]]) || !options[["coefficients"]]) return()
 
-	coefficientsTable <- createJaspTable("Coefficients")
+  coefficientsTable <- createJaspTable(gettext("Coefficients"))
 	coefficientsTable$dependOn(options = c("coefficients", "CredibleInterval"))
 	coefficientsTable$position <- position
 
-	overTitle <- paste0(round(options[["CredibleInterval"]] * 100), "% Credible Interval")
+  overTitle <- gettextf("%i%% Credible Interval", round(options[["CredibleInterval"]] * 100))
 
-	coefficientsTable$addColumnInfo(name="v",       title="Covariate",   type="string")
-	coefficientsTable$addColumnInfo(name="N",    	title="N", 			type="integer")
-	coefficientsTable$addColumnInfo(name="mean",    title="Coefficient", type="number")
-	coefficientsTable$addColumnInfo(name="SE",      title="SE",  type="number")
-	coefficientsTable$addColumnInfo(name="CiLower", title="Lower",     	type="number", overtitle = overTitle)
-	coefficientsTable$addColumnInfo(name="CiUpper", title="Upper",     	type="number", overtitle = overTitle)
+  coefficientsTable$addColumnInfo(name="v",       title=gettext("Covariate"),   type="string")
+  coefficientsTable$addColumnInfo(name="N",     	title=gettext("N"), 	 	 	    type="integer")
+  coefficientsTable$addColumnInfo(name="mean",    title=gettext("Coefficient"), type="number")
+  coefficientsTable$addColumnInfo(name="SE",      title=gettext("SE"),          type="number")
+  coefficientsTable$addColumnInfo(name="CiLower", title=gettext("Lower"),     	type="number", overtitle = overTitle)
+  coefficientsTable$addColumnInfo(name="CiUpper", title=gettext("Upper"),     	type="number", overtitle = overTitle)
 
 	if(options[["standardized"]])
-		coefficientsTable$addFootnote(message = "The displayed coefficients are standardized.")
+    coefficientsTable$addFootnote(message = gettext("The displayed coefficients are standardized."))
 	
 	bainContainer[["coefficientsTable"]] <- coefficientsTable
 
@@ -194,8 +194,8 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 	legendTable <- createJaspTable("Hypothesis Legend")
 	legendTable$dependOn(options =c("model", "covariates"))
 	legendTable$position <- position
-	legendTable$addColumnInfo(name="number", type="string", title="")
-	legendTable$addColumnInfo(name="hypothesis", type="string", title="Hypothesis")
+  legendTable$addColumnInfo(name="number",     type="string", title="")
+  legendTable$addColumnInfo(name="hypothesis", type="string", title=gettext("Hypothesis"))
 
 	jaspResults[["legendTable"]] <- legendTable
 
@@ -204,22 +204,22 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
 		hyp.vector <- unlist(strsplit(rest.string, "[;]"))
 
 			for (i in 1:length(hyp.vector)) {
-				row <- list(number = paste0("H",i), hypothesis = hyp.vector[i])
+        row <- list(number = gettextf("H%i",i), hypothesis = hyp.vector[i])
 				legendTable$addRows(row)
 			}
 	} else {
 		variables <- options$covariates
 		if (length(variables) == 0) {
 			string <- ""
-			row <- list(number = "H1", hypothesis = string)
+      row <- list(number = gettext("H1"), hypothesis = string)
 			legendTable$addRows(row)
 		} else if (length(variables) == 1) {
 			string <- paste(variables, "= 0")
-			row <- list(number = "H1", hypothesis = string)
+      row <- list(number = gettext("H1"), hypothesis = string)
 			legendTable$addRows(row)
 		} else {
 			string <- paste0(paste0(variables, " = 0"), collapse = " & ")
-			row <- list(number = "H1", hypothesis = string)
+      row <- list(number = gettext("H1"), hypothesis = string)
 			legendTable$addRows(row)
 		}
 	}
@@ -230,9 +230,9 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
   PMPa <- na.omit(x$fit$PMPa)
   PMPb <- x$fit$PMPb
   numH <- length(PMPa)
-  P_lables <- paste("H", 1:numH, sep = "")
+  P_lables <- paste(gettext("H"), 1:numH, sep = "")
   ggdata1 <- data.frame(lab = P_lables, PMP = PMPa)
-  ggdata2 <- data.frame(lab = c(P_lables, "Hu"), PMP = PMPb)
+  ggdata2 <- data.frame(lab = c(P_lables, gettext("Hu")), PMP = PMPb)
   
   if (numH == 1) {
     
@@ -257,7 +257,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
           ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
           ggplot2::geom_col() +
           ggplot2::coord_polar(theta = "y", direction = -1) +
-          ggplot2::labs(x = "", y = "", title = "Excluding Hu") +
+          ggplot2::labs(x = "", y = "", title = gettext("Excluding Hu")) +
           ggplot2::theme(panel.grid = ggplot2::element_blank(),legend.position = "none") +
           ggplot2::scale_y_continuous(breaks = cumsum(rev(PMPa)) - rev(PMPa)/2, labels = rev(P_lables)) +            
           ggplot2::theme(panel.background = ggplot2::element_blank(),
@@ -270,7 +270,7 @@ BainRegressionLinearBayesian <- function(jaspResults, dataset, options, ...) {
           ggplot2::geom_bar(stat = "identity", width = 1e10, color = "black", size = 1) +
           ggplot2::geom_col() + 
           ggplot2::coord_polar(theta = "y", direction = -1) +
-          ggplot2::labs(x = "", y = "", title = "Including Hu") +
+          ggplot2::labs(x = "", y = "", title = gettext("Including Hu")) +
           ggplot2::theme(panel.grid = ggplot2::element_blank(), legend.position = "none") +
           ggplot2::scale_y_continuous(breaks = cumsum(rev(PMPb)) - rev(PMPb)/2, labels = rev(c(P_lables, "Hu"))) +
           ggplot2::theme(panel.background = ggplot2::element_blank(),
