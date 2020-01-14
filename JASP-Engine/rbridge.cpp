@@ -501,6 +501,13 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 {
 					rbridge_dataSet = rbridge_dataSetSource();
+
+	if(!rbridge_dataSet)
+	{
+		*colMax = 0;
+		return nullptr;
+	}
+
 	Columns		&	columns			= rbridge_dataSet->columns();
 	static int		staticColMax	= 0;
 	static char	**	staticResult	= NULL;
