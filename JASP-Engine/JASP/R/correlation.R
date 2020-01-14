@@ -245,7 +245,7 @@ Correlation <- function(jaspResults, dataset, options){
   
   if(options$confidenceIntervals){
     mainTable$addColumnInfo(name = sprintf(name, "upper.ci"), 
-                            title = gettext("Upper %s%% CI", 100*options$confidenceIntervalsInterval),
+                            title = gettextf("Upper %s%% CI", 100*options$confidenceIntervalsInterval),
                             type = "number", overtitle = overtitle)
     mainTable$addColumnInfo(name = sprintf(name, "lower.ci"), 
                             title = gettextf("Lower %s%% CI", 100*options$confidenceIntervalsInterval),

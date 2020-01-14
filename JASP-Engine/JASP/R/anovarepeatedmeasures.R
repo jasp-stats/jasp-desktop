@@ -982,7 +982,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   if (!includeCI) {
     correctionFootnote <- gettextf("P-value adjusted for comparing a family of %s", as.character(nEstimates))
   } else {
-    correctionFootnote <- gettextf("P-value and confidence intervals adjusted for comparing a family of %1$i estimates (confidence intervals corrected using the %2$s method).", nEstimates, confAdjust)
+    correctionFootnote <- gettextf("P-value and confidence intervals adjusted for comparing a family of %1$s estimates (confidence intervals corrected using the %2$s method).", nEstimates, confAdjust)
   }
   
   return(correctionFootnote)
