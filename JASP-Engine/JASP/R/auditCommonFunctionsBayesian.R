@@ -572,7 +572,8 @@
                                    "priorPlotAdditionalInfo", 
                                    "priorPlotExpectedPosterior", 
                                    "planningModel",
-                                   "priorAndPosteriorPlotLimit"))
+                                   "priorAndPosteriorPlotLimit",
+                                   "shadePrior"))
 
     planningContainer[["priorPlot"]] <- priorPlot
 
@@ -597,7 +598,7 @@
                                        shape2 = planningState[["prior"]]$bPrior + 
                                                 planningState[["sampleSize"]] - 
                                                 planningState[["expectedSampleError"]]),
-                            type = rep("Expected posterior", length(xseq)))
+                            type = rep("Expected\nposterior", length(xseq)))
 
       pdata <- data.frame(x = planningState[["materiality"]], 
                           y = dbeta(planningState[["materiality"]], 
@@ -634,7 +635,7 @@
                                                 planningState[["expectedSampleError"]], 
                                         rate = planningState[["prior"]]$bPrior + 
                                                planningState[["sampleSize"]]),
-                             type = rep("Expected posterior", length(xseq)))
+                             type = rep("Expected\nposterior", length(xseq)))
 
       pdata <- data.frame(x = planningState[["materiality"]], 
                           y = dgamma(planningState[["materiality"]], 
@@ -679,7 +680,7 @@
                              shape2 = planningState[["prior"]]$bPrior + 
                                       planningState[["sampleSize"]] - 
                                       planningState[["expectedSampleError"]]),
-                             type = rep("Expected posterior", length(xseq)))
+                             type = rep("Expected\nposterior", length(xseq)))
 
       pdata <- data.frame(x = planningState[["materiality"]] * planningState[["N"]], 
                           y = jfa:::.dBetaBinom(ceiling(
@@ -727,9 +728,11 @@
                                                    planningState[["expectedSampleError"]])
     }
 
-    pdata3 <- data.frame(x = 0, 
-                         y = 0, 
-                         l = "1")
+    if(options[["shadePrior"]] == "shadePriorCredibleRegion"){
+      pdata3 <- data.frame(x = 0, y = 0, l = "1")
+    } else if(options[["shadePrior"]] == "shadePriorHypotheses"){
+      pdata3 <- data.frame(x = c(0, 0), y = c(0, 0), l = c("1", "2"))
+    }
 
     if(options[["priorPlotExpectedPosterior"]]){
 
@@ -783,74 +786,176 @@
     
     if(options[["priorPlotAdditionalInfo"]]){
 
-      p <- p + ggplot2::geom_point(data = pdata3, 
-                                   mapping = ggplot2::aes(x = x, y = y, shape = l), 
-                                   size = 0, 
-                                   color = rgb(0, 1, 0.5, 0))
+      if(options[["shadePrior"]] != "shadePriorNone"){
 
-      if(options[["priorPlotExpectedPosterior"]]){
+        if(options[["shadePrior"]] == "shadePriorCredibleRegion"){
 
-        p <- p + ggplot2::scale_shape_manual(name = "", 
-                                             values = 21, 
-                                             labels = paste0(
-                                                        options[["confidence"]]*100, 
-                                                        "% Prior \ncredible region"
-                                                      ))
-      } else {
+          shadeColors <- rgb(0, 1, 0.5, .7) # Lightgreen
 
-        p <- p + ggplot2::scale_shape_manual(name = "", 
-                                             values = 21, 
-                                             labels = paste0(
-                                                        options[["confidence"]]*100, 
-                                                        "% Prior credible region"
-                                                      ))
+        } else {
+
+          shadeColors <- c(rgb(0.16, 0.35, 0, .6), rgb(0.87, 0, 0, .6)) # Darkgreen and red
+
+        }
       
-      }
+        p <- p + ggplot2::geom_point(data = pdata3, 
+                                    mapping = ggplot2::aes(x = x, y = y, shape = l), 
+                                    size = 0, 
+                                    color = shadeColors)
 
-      p <- p + ggplot2::guides(shape = ggplot2::guide_legend(
-                                                  override.aes = list(size = 15, 
-                                                                      shape = 22, 
-                                                                      fill = rgb(0, 1, 0.5, .7), 
-                                                                      stroke = 2, 
-                                                                      color = "black")))
+        if(options[["shadePrior"]] == "shadePriorCredibleRegion"){
 
-      if(planningState[["likelihood"]] == "binomial"){
+          if(options[["priorPlotExpectedPosterior"]]){
 
-        p <- p + ggplot2::stat_function(fun = dbeta, 
+            p <- p + ggplot2::scale_shape_manual(name = "", 
+                                                values = 21, 
+                                                labels = paste0(
+                                                            options[["confidence"]]*100, 
+                                                            "% Prior \ncredible region"
+                                                          ))
+          } else {
+
+            p <- p + ggplot2::scale_shape_manual(name = "", 
+                                                values = 21, 
+                                                labels = paste0(
+                                                            options[["confidence"]]*100, 
+                                                            "% Prior credible region"
+                                                          ))
+          
+          }
+
+        } else if(options[["shadePrior"]] == "shadePriorHypotheses"){
+
+          p <- p + ggplot2::scale_shape_manual(name = "", 
+                                                values = c(21, 21), 
+                                                labels = c("Support\nH\u2081", "Support\nH\u2080"))
+
+        }
+
+        p <- p + ggplot2::guides(shape = ggplot2::guide_legend(
+                                                    override.aes = list(size = 15, 
+                                                                        shape = 22, 
+                                                                        fill = shadeColors, 
+                                                                        stroke = 2, 
+                                                                        color = "black")))
+
+        if(planningState[["likelihood"]] == "binomial"){
+
+          if(options[["shadePrior"]] == "shadePriorCredibleRegion"){
+
+            p <- p + ggplot2::stat_function(fun = dbeta, 
+                                            args = list(
+                                                    shape1 = planningState[["prior"]]$aPrior, 
+                                                    shape2 = planningState[["prior"]]$bPrior
+                                                    ),
+                                            xlim = c(0, priorBound),
+                                            geom = "area", 
+                                            fill = shadeColors)
+
+          } else if(options[["shadePrior"]] == "shadePriorHypotheses"){
+
+            p <- p + ggplot2::stat_function(fun = dbeta, 
+                                  args = list(
+                                          shape1 = planningState[["prior"]]$aPrior, 
+                                          shape2 = planningState[["prior"]]$bPrior
+                                          ),
+                                  xlim = c(0, planningState[["materiality"]]),
+                                  geom = "area", 
+                                  fill = shadeColors[1]) +
+                      ggplot2::stat_function(fun = dbeta, 
                                         args = list(
                                                 shape1 = planningState[["prior"]]$aPrior, 
                                                 shape2 = planningState[["prior"]]$bPrior
                                                 ),
-                                        xlim = c(0, priorBound),
+                                        xlim = c(planningState[["materiality"]], 1),
                                         geom = "area", 
-                                        fill = rgb(0, 1, 0.5, .7))
+                                        fill = shadeColors[2])
 
-      } else if(planningState[["likelihood"]] == "poisson"){
+          }
 
-        p <- p + ggplot2::stat_function(fun = dgamma, 
-                                        args = list(
-                                                shape = planningState[["prior"]]$aPrior, 
-                                                rate = planningState[["prior"]]$bPrior
-                                                ),
-                                        xlim = c(0, priorBound),
-                                        geom = "area", 
-                                        fill = rgb(0, 1, 0.5, .7))
+        } else if(planningState[["likelihood"]] == "poisson"){
 
-      } else if(planningState[["likelihood"]] == "hypergeometric"){
+          if(options[["shadePrior"]] == "shadePriorCredibleRegion"){
 
-        xseq <- xseq[1:(priorBound + 1)]
-        barData <- data.frame(x = xseq, 
-                              y = jfa:::.dBetaBinom(x = xseq, 
-                                                    N = planningState[["N"]] - 
-                                                        planningState[["sampleSize"]] + 
-                                                        planningState[["expectedSampleError"]], 
-                                                    shape1 = planningState[["prior"]]$aPrior, 
-                                                    shape2 = planningState[["prior"]]$bPrior))
+            p <- p + ggplot2::stat_function(fun = dgamma, 
+                                            args = list(
+                                                    shape = planningState[["prior"]]$aPrior, 
+                                                    rate = planningState[["prior"]]$bPrior
+                                                    ),
+                                            xlim = c(0, priorBound),
+                                            geom = "area", 
+                                            fill = shadeColors)
 
-        p <- p + ggplot2::geom_bar(data = barData, 
-                                   stat="identity", 
-                                   fill = rgb(0, 1, 0.5, .7))
-      
+          } else if(options[["shadePrior"]] == "shadePriorHypotheses"){
+
+            p <- p + ggplot2::stat_function(fun = dgamma, 
+                                            args = list(
+                                                    shape = planningState[["prior"]]$aPrior, 
+                                                    rate = planningState[["prior"]]$bPrior
+                                                    ),
+                                            xlim = c(0, planningState[["materiality"]]),
+                                            geom = "area", 
+                                            fill = shadeColors[1]) +
+                    ggplot2::stat_function(fun = dgamma, 
+                                            args = list(
+                                                    shape = planningState[["prior"]]$aPrior, 
+                                                    rate = planningState[["prior"]]$bPrior
+                                                    ),
+                                            xlim = c(planningState[["materiality"]], 1),
+                                            geom = "area", 
+                                            fill = shadeColors[2])
+            
+          }
+
+        } else if(planningState[["likelihood"]] == "hypergeometric"){
+
+          if(options[["shadePrior"]] == "shadePriorCredibleRegion"){
+
+            xseq <- xseq[1:(priorBound + 1)]
+            barData <- data.frame(x = xseq, 
+                                  y = jfa:::.dBetaBinom(x = xseq, 
+                                                        N = planningState[["N"]] - 
+                                                            planningState[["sampleSize"]] + 
+                                                            planningState[["expectedSampleError"]], 
+                                                        shape1 = planningState[["prior"]]$aPrior, 
+                                                        shape2 = planningState[["prior"]]$bPrior))
+
+            p <- p + ggplot2::geom_bar(data = barData, 
+                                      stat="identity", 
+                                      fill = shadeColors)
+
+          } else if(options[["shadePrior"]] == "shadePriorHypotheses"){
+
+            nseq <- (planningState[["N"]] * planningState[["materiality"]] + 1)
+            xseq1 <- xseq[1:nseq]
+            barData <- data.frame(x = xseq1, 
+                                  y = jfa:::.dBetaBinom(x = xseq1, 
+                                                        N = planningState[["N"]] - 
+                                                            planningState[["sampleSize"]] + 
+                                                            planningState[["expectedSampleError"]], 
+                                                        shape1 = planningState[["prior"]]$aPrior, 
+                                                        shape2 = planningState[["prior"]]$bPrior))
+
+            p <- p + ggplot2::geom_bar(data = barData, 
+                                      stat = "identity", 
+                                      fill = shadeColors[1])
+
+            xseq2 <- xseq[(nseq + 1):planningState[["N"]]]
+            barData <- data.frame(x = xseq2, 
+                                  y = jfa:::.dBetaBinom(x = xseq2, 
+                                                        N = planningState[["N"]] - 
+                                                            planningState[["sampleSize"]] + 
+                                                            planningState[["expectedSampleError"]], 
+                                                        shape1 = planningState[["prior"]]$aPrior, 
+                                                        shape2 = planningState[["prior"]]$bPrior))
+
+            p <- p + ggplot2::geom_bar(data = barData, 
+                                      stat = "identity", 
+                                      fill = shadeColors[2])
+
+          }
+        
+        }
       }
 
       p <- p + ggplot2::geom_point(mapping = ggplot2::aes(x = x, y = y), 

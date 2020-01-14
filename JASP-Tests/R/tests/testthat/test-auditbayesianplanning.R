@@ -13,6 +13,8 @@ options$materialityPercentage <- 0.05
 options$planningModel <- "binomial"
 options$populationSize <- 1000
 options$priorPlot <- TRUE
+options$shadePrior <- "shadePriorCredibleRegion"
+options$priorPlotExpectedPosterior <- TRUE
 options$priorStatistics <- TRUE
 options$valuta <- "euroValuta"
 set.seed(1)

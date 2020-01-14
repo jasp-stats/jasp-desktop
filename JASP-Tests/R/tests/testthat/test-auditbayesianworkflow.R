@@ -64,6 +64,8 @@ options$priorAndPosteriorPlotExpectedPosterior <- TRUE
 options$priorAndPosteriorPlotLimit <- 0.2
 options$priorAndPosteriorStatistics <- TRUE
 options$priorPlot <- TRUE
+options$priorPlotExpectedPosterior <- TRUE
+options$shadePrior <- "shadePriorCredibleRegion"
 options$priorStatistics <- TRUE
 options$recordNumberVariable <- "ID"
 options$sampleDescriptives <- TRUE

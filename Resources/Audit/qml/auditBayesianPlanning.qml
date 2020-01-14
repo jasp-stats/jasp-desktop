@@ -437,16 +437,40 @@ Form {
 
 					CheckBox
 					{
-						text: 							qsTr("Additional info")
-						name: 							"priorPlotAdditionalInfo"
-						checked: 						true
+						text: 							qsTr("Expected posterior")
+						name: 							"priorPlotExpectedPosterior"
 					}
 
 					CheckBox
 					{
-						text: 							qsTr("Expected posterior")
-						name: 							"priorPlotExpectedPosterior"
+						text: 							qsTr("Additional info")
+						name: 							"priorPlotAdditionalInfo"
 						checked: 						true
+
+						RadioButtonGroup 
+						{
+							title: 				qsTr("Shade")
+							name: 				"shadePrior"
+
+							RadioButton
+							{
+								text: 			qsTr("Credible region")
+								name: 			"shadePriorCredibleRegion"
+								checked: 		true
+							}
+
+							RadioButton
+							{
+								text: 			qsTr("Support regions")
+								name: 			"shadePriorHypotheses"
+							}
+
+							RadioButton
+							{
+								text: 			qsTr("None")
+								name: 			"shadePriorNone"
+							}
+						}
 					}
 				}
 			}
