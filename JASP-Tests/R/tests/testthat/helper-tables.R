@@ -114,7 +114,7 @@ expect_equal_tables <- function(test, ref, label=NULL) {
     
   errorMsg <- jasptools:::.getErrorMsgFromLastResults()
   if (!is.null(errorMsg))
-    stop(paste("Tried retrieving table from results, but last run of jasptools exited with an error:", errorMsg), call.=FALSE)
+    stop(paste("Tried retrieving table from results, but last run of jasptools exited with an error:\n", errorMsg), call.=FALSE)
     
   if (length(test) == 0)
       stop(paste(label, "has no data. Please check your unit test; is the index path to the table specified correctly?"), call.=FALSE)
