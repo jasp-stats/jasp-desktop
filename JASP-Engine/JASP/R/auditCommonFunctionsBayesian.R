@@ -790,11 +790,11 @@
 
         if(options[["shadePrior"]] == "shadePriorCredibleRegion"){
 
-          shadeColors <- rgb(0, 1, 0.5, .7) # Lightgreen
+          shadeColors <- rgb(0.5, 0.8, 0.57, .7) # Lightgreen
 
         } else {
 
-          shadeColors <- c(rgb(0.16, 0.35, 0, .6), rgb(0.87, 0, 0, .6)) # Darkgreen and red
+          shadeColors <- c(rgb(0, 0.64, 0.80, .6), rgb(0.98, 0.34, 0, .6)) # Blue and orange 
 
         }
       
@@ -953,8 +953,7 @@
                                       stat = "identity", 
                                       fill = shadeColors[2])
 
-          }
-        
+          } 
         }
       }
 
@@ -996,7 +995,7 @@
 
     myTheme <- ggplot2::theme(axis.ticks.y = ggplot2::element_blank(),
                               axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0)),
-                              legend.key.size = ggplot2::unit(4, "line"))
+                              legend.key.size = ggplot2::unit(2.5, "line"))
   
     p <- JASPgraphs::themeJasp(p, 
                                legend.position = "top") + myTheme
@@ -1066,7 +1065,8 @@
                                                "priorAndPosteriorPlotLimit", 
                                                "priorAndPosteriorPlotAdditionalInfo",
                                                "priorAndPosteriorPlotExpectedPosterior",
-                                               "priorPlotLimit"))
+                                               "priorPlotLimit",
+                                               "shadePosterior"))
 
     evaluationContainer[["priorAndPosteriorPlot"]] <- priorAndPosteriorPlot
 
@@ -1221,9 +1221,11 @@
 
     posteriorBound <- evaluationState[["confBound"]]
 
-    pdata3 <- data.frame(x = 0, 
-                      y = 0, 
-                      l = "1")
+    if(options[["shadePosterior"]] == "shadePosteriorCredibleRegion"){
+      pdata3 <- data.frame(x = 0, y = 0, l = "1")
+    } else if(options[["shadePosterior"]] == "shadePosteriorHypotheses"){
+      pdata3 <- data.frame(x = c(0, 0), y = c(0, 0), l = c("1", "2"))
+    }
 
     plotData <- rbind(priorData, postData)
     plotData$type <- factor(x = plotData$type, 
@@ -1284,95 +1286,241 @@
 
     if(options[["priorAndPosteriorPlotAdditionalInfo"]]){
 
-      p <- p + ggplot2::geom_point(data = pdata3, 
-                                   mapping = ggplot2::aes(x = x, y = y, shape = l), 
-                                   size = 0, 
-                                   color = rgb(0, 0.25, 1, 0))
+        if(options[["shadePosterior"]] != "shadePosteriorNone"){
 
-      p <- p + ggplot2::scale_shape_manual(name = "", 
-                                            values = 21, 
-                                            labels = paste0(
-                                                      options[["confidence"]]*100, 
-                                                      "% Posterior \ncredible region"
-                                                    ))
+          if(options[["shadePosterior"]] == "shadePosteriorCredibleRegion"){
 
-      p <- p + ggplot2::guides(shape = ggplot2::guide_legend(
-                                              override.aes = list(size = 15, 
-                                                                  shape = 22, 
-                                                                  fill = rgb(0, 0.25, 1, .5), 
-                                                                  stroke = 2, 
-                                                                  color = "black")))
+            shadeColors <- rgb(0.37, 0.42, 0.69, 0.5) # Darkpurple
 
-      if(options[["areaUnderPosterior"]] == "displayCredibleInterval"){
+          } else {
 
-        credibleInterval <- .auditCalculateCredibleInterval(evaluationState)
-        functionLimits <- c(credibleInterval[["lowerBound"]], 
-                             credibleInterval[["upperBound"]])
+            shadeColors <- c(rgb(0, 0.64, 0.80, .6), rgb(0.98, 0.34, 0, .6)) # Blue and orange 
 
-      } else if(options[["areaUnderPosterior"]] == "displayCredibleBound"){
-        functionLimits <- c(0, posteriorBound)
-      }                                                                  
+          }
 
-      if(evaluationState[["method"]] == "coxsnell"){
+          p <- p + ggplot2::geom_point(data = pdata3, 
+                                      mapping = ggplot2::aes(x = x, y = y, shape = l), 
+                                      size = 0, 
+                                      color = shadeColors)
 
-        p <- p + ggplot2::stat_function(fun = jfa:::.dCoxAndSnellF, 
-                                args = list(
-                                        df1 = evaluationState[["df1"]], 
-                                        df2 = evaluationState[["df2"]],
-                                        multiplicationFactor = evaluationState[["multiplicationFactor"]] 
-                                        ),
-                                xlim = functionLimits,
-                                geom = "area", 
-                                fill = rgb(0, 0.25, 1, .5))
+          if(options[["shadePosterior"]] == "shadePosteriorCredibleRegion"){
 
-      } else if(evaluationState[["method"]] == "binomial"){
+              p <- p + ggplot2::scale_shape_manual(name = "", 
+                                                  values = 21, 
+                                                  labels = paste0(
+                                                              options[["confidence"]]*100, 
+                                                              "% Posterior\ncredible region"
+                                                            ))
 
-          p <- p + ggplot2::stat_function(fun = dbeta, 
-                                          args = list(
-                                                  shape1 = 1 + evaluationState[["kPrior"]] +
-                                                           evaluationState[["t"]], 
-                                                  shape2 = 1 + evaluationState[["nPrior"]] - 
-                                                           evaluationState[["kPrior"]] +
-                                                           evaluationState[["n"]] - 
-                                                           evaluationState[["t"]] 
-                                                  ),
-                                          xlim = functionLimits,
-                                          geom = "area", 
-                                          fill = rgb(0, 0.25, 1, .5))
+          } else if(options[["shadePosterior"]] == "shadePosteriorHypotheses"){
 
-      } else if(evaluationState[["method"]] == "poisson"){
+            p <- p + ggplot2::scale_shape_manual(name = "", 
+                                                  values = c(21, 21), 
+                                                  labels = c("Support\nH\u2081", "Support\nH\u2080"))
 
-        p <- p + ggplot2::stat_function(fun = dgamma, 
-                                        args = list(
-                                                shape = 1 + evaluationState[["kPrior"]] +
-                                                        evaluationState[["t"]], 
-                                                rate = evaluationState[["nPrior"]] + 
-                                                       evaluationState[["n"]]
-                                                ),
-                                        xlim = functionLimits,
-                                        geom = "area", 
-                                        fill = rgb(0, 0.25, 1, .5))
+          }
 
-      } else if(evaluationState[["method"]] == "hypergeometric"){
- 
-        xseq <- xseq[(ceiling(functionLimits[1] * planningOptions[["populationSize"]]) + 1):
-                     (ceiling(functionLimits[2] * planningOptions[["populationSize"]]) + 1)]
-        barData <- data.frame(x = xseq, 
-                              y = jfa:::.dBetaBinom(x = xseq, 
-                                                    N = planningOptions[["populationSize"]] - 
-                                                        evaluationState[["n"]] + 
-                                                        evaluationState[["k"]], 
-                                                    shape1 = 1 + evaluationState[["kPrior"]] + 
-                                                             evaluationState[["k"]], 
-                                                    shape2 = 1 + evaluationState[["nPrior"]] -
-                                                             evaluationState[["kPrior"]] + 
-                                                             evaluationState[["n"]] - 
-                                                             evaluationState[["k"]]))
+          p <- p + ggplot2::guides(shape = ggplot2::guide_legend(
+                                                      override.aes = list(size = 15, 
+                                                                          shape = 22, 
+                                                                          fill = shadeColors, 
+                                                                          stroke = 2, 
+                                                                          color = "black")))
 
-        p <- p + ggplot2::geom_bar(data = barData, 
-                                   stat = "identity", 
-                                   fill = rgb(0, 0.25, 1, .5))
-      
+          if(options[["areaUnderPosterior"]] == "displayCredibleInterval"){
+
+            credibleInterval <- .auditCalculateCredibleInterval(evaluationState)
+            functionLimits <- c(credibleInterval[["lowerBound"]], 
+                                credibleInterval[["upperBound"]])
+
+          } else if(options[["areaUnderPosterior"]] == "displayCredibleBound"){
+            functionLimits <- c(0, posteriorBound)
+          }                                                                  
+
+        if(evaluationState[["method"]] == "coxsnell"){
+
+          if(options[["shadePosterior"]] == "shadePosteriorCredibleRegion"){
+
+            p <- p + ggplot2::stat_function(fun = jfa:::.dCoxAndSnellF, 
+                                    args = list(
+                                            df1 = evaluationState[["df1"]], 
+                                            df2 = evaluationState[["df2"]],
+                                            multiplicationFactor = evaluationState[["multiplicationFactor"]] 
+                                            ),
+                                    xlim = functionLimits,
+                                    geom = "area", 
+                                    fill = shadeColors)
+
+          } else if(options[["shadePosterior"]] == "shadePosteriorHypotheses"){
+
+            p <- p + ggplot2::stat_function(fun = jfa:::.dCoxAndSnellF, 
+                                    args = list(
+                                            df1 = evaluationState[["df1"]], 
+                                            df2 = evaluationState[["df2"]],
+                                            multiplicationFactor = evaluationState[["multiplicationFactor"]] 
+                                            ),
+                                    xlim = c(0, evaluationState[["materiality"]]),
+                                    geom = "area", 
+                                    fill = shadeColors[1]) +
+                      ggplot2::stat_function(fun = jfa:::.dCoxAndSnellF, 
+                                    args = list(
+                                            df1 = evaluationState[["df1"]], 
+                                            df2 = evaluationState[["df2"]],
+                                            multiplicationFactor = evaluationState[["multiplicationFactor"]] 
+                                            ),
+                                    xlim = c(evaluationState[["materiality"]], 1),
+                                    geom = "area", 
+                                    fill = shadeColors[2])
+
+          }
+
+        } else if(evaluationState[["method"]] == "binomial"){
+
+          if(options[["shadePosterior"]] == "shadePosteriorCredibleRegion"){
+
+            p <- p + ggplot2::stat_function(fun = dbeta, 
+                                            args = list(
+                                                    shape1 = 1 + evaluationState[["kPrior"]] +
+                                                            evaluationState[["t"]], 
+                                                    shape2 = 1 + evaluationState[["nPrior"]] - 
+                                                            evaluationState[["kPrior"]] +
+                                                            evaluationState[["n"]] - 
+                                                            evaluationState[["t"]] 
+                                                    ),
+                                            xlim = functionLimits,
+                                            geom = "area", 
+                                            fill = shadeColors)
+
+          } else if(options[["shadePosterior"]] == "shadePosteriorHypotheses"){
+
+            p <- p + ggplot2::stat_function(fun = dbeta, 
+                                            args = list(
+                                                    shape1 = 1 + evaluationState[["kPrior"]] +
+                                                            evaluationState[["t"]], 
+                                                    shape2 = 1 + evaluationState[["nPrior"]] - 
+                                                            evaluationState[["kPrior"]] +
+                                                            evaluationState[["n"]] - 
+                                                            evaluationState[["t"]] 
+                                                    ),
+                                            xlim = c(0, evaluationState[["materiality"]]),
+                                            geom = "area", 
+                                            fill = shadeColors[1]) + 
+                    ggplot2::stat_function(fun = dbeta, 
+                                            args = list(
+                                                    shape1 = 1 + evaluationState[["kPrior"]] +
+                                                            evaluationState[["t"]], 
+                                                    shape2 = 1 + evaluationState[["nPrior"]] - 
+                                                            evaluationState[["kPrior"]] +
+                                                            evaluationState[["n"]] - 
+                                                            evaluationState[["t"]] 
+                                                    ),
+                                            xlim = c(evaluationState[["materiality"]], 1),
+                                            geom = "area", 
+                                            fill = shadeColors[2])
+
+          }
+
+        } else if(evaluationState[["method"]] == "poisson"){
+
+          if(options[["shadePosterior"]] == "shadePosteriorCredibleRegion"){
+
+            p <- p + ggplot2::stat_function(fun = dgamma, 
+                                            args = list(
+                                                    shape = 1 + evaluationState[["kPrior"]] +
+                                                            evaluationState[["t"]], 
+                                                    rate = evaluationState[["nPrior"]] + 
+                                                          evaluationState[["n"]]
+                                                    ),
+                                            xlim = functionLimits,
+                                            geom = "area", 
+                                            fill = shadeColors)
+
+          } else if(options[["shadePosterior"]] == "shadePosteriorHypotheses"){
+
+            p <- p + ggplot2::stat_function(fun = dgamma, 
+                                            args = list(
+                                                    shape = 1 + evaluationState[["kPrior"]] +
+                                                            evaluationState[["t"]], 
+                                                    rate = evaluationState[["nPrior"]] + 
+                                                          evaluationState[["n"]]
+                                                    ),
+                                            xlim = c(0, evaluationState[["materiality"]]),
+                                            geom = "area", 
+                                            fill = shadeColors[1]) +
+                      ggplot2::stat_function(fun = dgamma, 
+                                            args = list(
+                                                    shape = 1 + evaluationState[["kPrior"]] +
+                                                            evaluationState[["t"]], 
+                                                    rate = evaluationState[["nPrior"]] + 
+                                                          evaluationState[["n"]]
+                                                    ),
+                                            xlim = c(evaluationState[["materiality"]], 1),
+                                            geom = "area", 
+                                            fill = shadeColors[2]) 
+
+          }
+
+        } else if(evaluationState[["method"]] == "hypergeometric"){
+
+          if(options[["shadePosterior"]] == "shadePosteriorCredibleRegion"){
+
+            xseq <- xseq[(ceiling(functionLimits[1] * planningOptions[["populationSize"]]) + 1):
+                        (ceiling(functionLimits[2] * planningOptions[["populationSize"]]) + 1)]
+            barData <- data.frame(x = xseq, 
+                                  y = jfa:::.dBetaBinom(x = xseq, 
+                                                        N = planningOptions[["populationSize"]] - 
+                                                            evaluationState[["n"]] + 
+                                                            evaluationState[["k"]], 
+                                                        shape1 = 1 + evaluationState[["kPrior"]] + 
+                                                                evaluationState[["k"]], 
+                                                        shape2 = 1 + evaluationState[["nPrior"]] -
+                                                                evaluationState[["kPrior"]] + 
+                                                                evaluationState[["n"]] - 
+                                                                evaluationState[["k"]]))
+
+            p <- p + ggplot2::geom_bar(data = barData, 
+                                      stat = "identity", 
+                                      fill = shadeColors)
+
+          } else if(options[["shadePosterior"]] == "shadePosteriorHypotheses"){
+
+            nseq <- (planningOptions[["populationSize"]] * planningState[["materiality"]] + 1)
+            xseq1 <- xseq[1:nseq]
+            barData <- data.frame(x = xseq1, 
+                                  y = jfa:::.dBetaBinom(x = xseq1, 
+                                                        N = planningOptions[["populationSize"]] - 
+                                                            evaluationState[["n"]] + 
+                                                            evaluationState[["k"]], 
+                                                        shape1 = 1 + evaluationState[["kPrior"]] + 
+                                                                evaluationState[["k"]], 
+                                                        shape2 = 1 + evaluationState[["nPrior"]] -
+                                                                evaluationState[["kPrior"]] + 
+                                                                evaluationState[["n"]] - 
+                                                                evaluationState[["k"]]))
+
+            p <- p + ggplot2::geom_bar(data = barData, 
+                                      stat = "identity", 
+                                      fill = shadeColors[1])
+
+            xseq2 <- xseq[(nseq + 1):planningOptions[["populationSize"]]]
+            barData <- data.frame(x = xseq2, 
+                                  y = jfa:::.dBetaBinom(x = xseq2, 
+                                                        N = planningOptions[["populationSize"]] - 
+                                                            evaluationState[["n"]] + 
+                                                            evaluationState[["k"]], 
+                                                        shape1 = 1 + evaluationState[["kPrior"]] + 
+                                                                evaluationState[["k"]], 
+                                                        shape2 = 1 + evaluationState[["nPrior"]] -
+                                                                evaluationState[["kPrior"]] + 
+                                                                evaluationState[["n"]] - 
+                                                                evaluationState[["k"]]))
+
+            p <- p + ggplot2::geom_bar(data = barData, 
+                                      stat = "identity", 
+                                      fill = shadeColors[2])
+
+          }
+        }
       }
 
       p <- p + ggplot2::geom_point(mapping = ggplot2::aes(x = x, y = y), 
@@ -1386,7 +1534,7 @@
 
     if(options[["priorAndPosteriorPlotAdditionalInfo"]] && 
         options[["priorAndPosteriorPlotExpectedPosterior"]]){
-      keySize <- 3
+      keySize <- 2.5
     } else {
       keySize <- 4
     }

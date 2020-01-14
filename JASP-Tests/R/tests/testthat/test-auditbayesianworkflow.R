@@ -16,6 +16,7 @@ options$evidenceRatio <- TRUE
 options$bookValueDescriptives <- TRUE
 options$bookValueDistribution <- TRUE
 options$decisionPlot <- TRUE
+options$correlationPlot <- TRUE
 options$displaySample <- TRUE
 options$estimator <- "betaBound"
 options$evaluationChecked <- TRUE
@@ -61,6 +62,7 @@ rowIndices = c(4, 38, 65, 72, 87, 124, 141, 166, 194, 198,
 options$planningModel <- "binomial"
 options$priorAndPosteriorPlot <- TRUE
 options$priorAndPosteriorPlotExpectedPosterior <- TRUE
+options$shadePosterior <- "shadePosteriorCredibleRegion"
 options$priorAndPosteriorPlotLimit <- 0.2
 options$priorAndPosteriorStatistics <- TRUE
 options$priorPlot <- TRUE

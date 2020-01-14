@@ -1134,6 +1134,19 @@ Form
 
 					CheckBox
 					{
+						text: 	qsTr("Evaluation information")
+						name: 	"evaluationInformation"
+					}
+
+					CheckBox
+					{
+						text: 		qsTr("Correlation plot")
+						name: 		"correlationPlot"
+						enabled: 	variableTypeAuditValues.checked
+					}
+
+					CheckBox
+					{
 						id: 							priorAndPosteriorPlot
 						text: 						qsTr("Prior and posterior")
 						name: 						"priorAndPosteriorPlot"
@@ -1143,17 +1156,8 @@ Form
 						{
 							id: 						priorAndPosteriorPlotLimit
 							text: 					qsTr("x-axis limit")
-							defaultValue: 	priorPlotLimit.value
+							defaultValue: 	20
 							name: 					"priorAndPosteriorPlotLimit"
-							visible:				!regressionBound.visible
-						}
-
-						CheckBox
-						{
-							id: 						priorAndPosteriorPlotAdditionalInfo
-							text: 					qsTr("Additional info")
-							name: 					"priorAndPosteriorPlotAdditionalInfo"
-							checked: 				true
 							visible:				!regressionBound.visible
 						}
 
@@ -1164,19 +1168,40 @@ Form
 							name: 					"priorAndPosteriorPlotExpectedPosterior"
 							visible:				!regressionBound.visible
 						}
-					}
 
-					CheckBox
-					{
-						text: 	qsTr("Evaluation information")
-						name: 	"evaluationInformation"
-					}
+						CheckBox
+						{
+							id: 						priorAndPosteriorPlotAdditionalInfo
+							text: 					qsTr("Additional info")
+							name: 					"priorAndPosteriorPlotAdditionalInfo"
+							checked: 				true
+							visible:				!regressionBound.visible
 
-					CheckBox
-					{
-						text: 		qsTr("Correlation plot")
-						name: 		"correlationPlot"
-						visible: 	variableTypeAuditValues.checked
+							RadioButtonGroup 
+							{
+								title: 				qsTr("Shade")
+								name: 				"shadePosterior"
+
+								RadioButton
+								{
+									text: 			qsTr("Credible region")
+									name: 			"shadePosteriorCredibleRegion"
+									checked: 		true
+								}
+
+								RadioButton
+								{
+									text: 			qsTr("Support regions")
+									name: 			"shadePosteriorHypotheses"
+								}
+
+								RadioButton
+								{
+									text: 			qsTr("None")
+									name: 			"shadePosteriorNone"
+								}
+							}
+						}
 					}
 				}
 			}
