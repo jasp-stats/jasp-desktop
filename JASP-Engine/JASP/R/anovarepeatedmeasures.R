@@ -1370,7 +1370,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   marginalMeansTable$addColumnInfo(name="lsmean", title=gettext("Marginal Mean"), type="number")
   
   if (makeBootstrapTable) {
-    thisOverTitle <- gettext("95%% bca%s CI", "\u002A")
+    thisOverTitle <- gettextf("95%% bca%s CI", "\u002A")
   } else {
     thisOverTitle <- gettext("95% CI for Mean Difference")
   }
