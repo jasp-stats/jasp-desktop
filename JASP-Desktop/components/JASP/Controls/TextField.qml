@@ -48,6 +48,7 @@ JASPControl
 	property alias	afterLabel:			afterLabel.text
 	property string	inputType:			"string"
 	property bool	useLastValidValue:	true
+	property bool	hasScriptError:		false
 
 	property double controlXOffset:		0
 
@@ -148,8 +149,8 @@ JASPControl
 				msg += qsTr("Restoring last correct value: %1").arg(text);
 				addControlErrorTemporary(msg)
 			}
-			else
-				clearControlError();
+			else if (!hasScriptError)
+				clearControlError()
 		}
 
 		Keys.onReturnPressed:
@@ -161,7 +162,8 @@ JASPControl
 			}
 			else
 			{
-				clearControlError();
+				if (!hasScriptError)
+					clearControlError();
 				event.accepted = false;
 			}
 		}

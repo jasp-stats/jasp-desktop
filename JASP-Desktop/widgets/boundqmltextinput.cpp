@@ -276,19 +276,14 @@ void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 	double val = result.toDouble(&succes);
 
 	if (!succes)
+	{
 		item()->addControlError(tr("The expression did not return a number."));
+		setItemProperty("hasScriptError", true);
+	}
 	else
 	{
 		setItemProperty("realValue", val);
-		succes = _formulaResultInBounds(val);
-	}
-
-	if (succes) {
-		setItemProperty("hasScriptError", false);
-
-	} else {
-		setItemProperty("hasScriptError", true);
-		setItemProperty("infoText", result);
+		_formulaResultInBounds(val);
 	}
 
 	if (_formula)
@@ -319,6 +314,12 @@ bool BoundQMLTextInput::_formulaResultInBounds(double result)
 		if (tooSmall)	end = (includeMin ? "&ge; " : "&gt; ") + getItemProperty("min").toString();
 		else			end = (includeMax ? "&le; " : "&lt; ") + getItemProperty("max").toString();
 		item()->addControlError(tr("The result (%1) must be %2").arg(result).arg(end));
+		setItemProperty("hasScriptError", true);
+	}
+	else
+	{
+		setItemProperty("hasScriptError", false);
+		item()->clearControlError();
 	}
 
 	return inBounds;
