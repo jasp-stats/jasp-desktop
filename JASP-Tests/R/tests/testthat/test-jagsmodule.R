@@ -1,5 +1,5 @@
 context("JAGS")
-
+skip("JAGS doesn't work on Travis")
 options <- jasptools::analysisOptions("JAGS")
 options$.meta <- list(initialValues = list(list(levels = list(containsColumn = TRUE)), 
                                            list(levels = list(containsColumn = TRUE))), model = list(
