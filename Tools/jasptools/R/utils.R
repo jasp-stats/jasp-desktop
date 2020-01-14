@@ -364,9 +364,13 @@ collapseTable <- function(rows) {
 }
 
 .errorMsgFromHtml <- function(html) {
-  parsedMsg <- gsub("<br>", " ", html, fixed=TRUE)
-  indexStackTrace <- unlist(gregexpr("<div class=stack-trace", parsedMsg, fixed=TRUE))[1]
-  if (indexStackTrace > -1)
-    parsedMsg <- substr(parsedMsg, 1, indexStackTrace - 1)
+  indexStackTrace <- unlist(gregexpr("<div class=stack-trace", html, fixed=TRUE))[1]
+  if (indexStackTrace > -1) {
+    error <- substr(html, 1, indexStackTrace - 1)
+    error <- gsub("<br>", " ", error, fixed=TRUE)
+    stackTrace <- stringr::str_match(html, "<div class=stack-trace>(.*)<\\/div>")[1, 2]
+    html <- paste0(error, "\n\nStacktrace within JASP:\n----------\n", stackTrace, "\n----------\n")
+  }
+  parsedMsg <- gsub("<br>", "\n", html, fixed=TRUE)
   return(parsedMsg)
 }
