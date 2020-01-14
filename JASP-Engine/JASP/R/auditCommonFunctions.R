@@ -3385,7 +3385,7 @@
     corResult <- round(corResult, 3)
 
     cols <- rep("gray", nrow(plotData))
-    cols[which(plotData$x != plotData$y)] <- "red"
+    cols[which(plotData$x != plotData$y)] <- rgb(0.9, 0, 0, 1)
 
     p <- ggplot2::ggplot(data = plotData, mapping = ggplot2::aes(x = x, y = y)) +
           ggplot2::scale_x_continuous(name = paste0("Book values (", planningOptions[["valuta"]], ")"),

@@ -963,7 +963,7 @@
                                    shape = 21, 
                                    stroke = 2, 
                                    color = "black", 
-                                   fill = "red") +
+                                   fill = rgb(0.9, 0, 0, 1)) +
                 ggplot2::geom_point(mapping = ggplot2::aes(x = x, y = y), 
                                     data = pdata2, 
                                     size = 3, 
@@ -1529,7 +1529,7 @@
                                 shape = 21, 
                                 stroke = 2, 
                                 color = "black", 
-                                fill = "red")
+                                fill = rgb(0.9, 0, 0, 1))
     }
 
     if(options[["priorAndPosteriorPlotAdditionalInfo"]] && 
