@@ -2246,43 +2246,43 @@ as.list.footnotes <- function(footnotes) {
 }
 
 openGrDevice <- function(...) {
-  if (jaspResultsCalledFromJasp())
-    svglite::svglite(...)
-  else
-    grDevices::png(..., units="in", res = 72, type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
+  #if (jaspResultsCalledFromJasp())
+  #  svglite::svglite(...)
+  #else
+  grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
 }
 
-.writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathsvg = NULL,
-                        units = c("pixels", "inches")) {
-  
-  units <- match.arg(units)
+.writeImage <- function(width=320, height=320, plot, obj = TRUE, relativePathpng = NULL) {
   # Set values from JASP'S Rcpp when available
   if (exists(".fromRCPP")) {
-    location        <- .fromRCPP(".requestTempFileNameNative", "svg")
+    location        <- .fromRCPP(".requestTempFileNameNative", "png")
     backgroundColor <- .fromRCPP(".imageBackground")
     ppi             <- .fromRCPP(".ppi")
   }
   
-  # convert width & height from pixels to inches. ppi = pixels per inch. 72 is a magic number inherited from the past.
-  # originally, this number was 96 but svglite scales this by (72/96 = 0.75). 0.75 * 96 = 72.
-  # for reference see https://cran.r-project.org/web/packages/svglite/vignettes/scaling.html
-  width  <- width  / 72
-  height <- height / 72
-  image <- list()
-  
   # TRUE if called from analysis, FALSE if called from editImage
-  if (is.null(relativePathsvg))
-    relativePathsvg <- location$relativePath
+  if (is.null(relativePathpng))
+    relativePathpng <- location$relativePath
 
-  image                           <- list()
-  fullPathpng                     <- paste(location$root, relativePathsvg, sep="/")
+  fullPathpng                     <- paste(location$root, relativePathpng, sep="/")
   plotEditingOptions              <- NULL
   root                            <- location$root
-  base::Encoding(relativePathsvg) <- "UTF-8"
+  base::Encoding(relativePathpng) <- "UTF-8"
   base::Encoding(root)            <- "UTF-8"
   oldwd                           <- getwd()
   setwd(root)
   on.exit(setwd(oldwd))
+  
+  # IN CASE WE SWITCH TO SVG:
+  # # convert width & height from pixels to inches. ppi = pixels per inch. 72 is a magic number inherited from the past.
+  # # originally, this number was 96 but svglite scales this by (72/96 = 0.75). 0.75 * 96 = 72.
+  # # for reference see https://cran.r-project.org/web/packages/svglite/vignettes/scaling.html
+  # width  <- width / 72
+  # height <- height / 72
+  
+  width  <- width * (ppi / 96)
+  height <- height * (ppi / 96)
+  image <- list()
 
   plot2draw <- decodeplot(plot)
   
@@ -2290,13 +2290,15 @@ openGrDevice <- function(...) {
     
     # TODO: ggsave adds very little when we use a function as device...
     ggplot2::ggsave(
-      filename  = relativePathsvg,
+      filename  = relativePathpng,
       plot      = plot2draw,
+      device    = grDevices::png,
       dpi       = ppi,
       width     = width,
       height    = height,
-      units     = "in", 
       bg        = backgroundColor,
+      res       = 72 * (ppi / 96),
+      type      = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"),
       limitsize = FALSE # only necessary if users make the plot ginormous.
     )
 
@@ -2309,7 +2311,7 @@ openGrDevice <- function(...) {
     isRecordedPlot <- inherits(plot2draw, "recordedplot")
     
     # Open graphics device and plot
-    openGrDevice(file = relativePathsvg, width = width, height = height, bg = backgroundColor)
+    openGrDevice(file = relativePathpng, width = width, height = height, res = 72 * (ppi / 96), bg = backgroundColor)
     on.exit(dev.off())
 
     if (is.function(plot2draw) && !isRecordedPlot) {
@@ -2321,6 +2323,7 @@ openGrDevice <- function(...) {
     } else if (isRecordedPlot) { # function was called from editImage to resize the plot
       
       .redrawPlot(plot2draw) #(see below)
+      
     } else if (inherits(plot2draw, "qgraph")) {
       
       qgraph:::plot.qgraph(plot2draw)
@@ -2332,7 +2335,7 @@ openGrDevice <- function(...) {
   }
   
   # Save path & plot object to output
-  image[["png"]] <- relativePathsvg
+  image[["png"]] <- relativePathpng
   
   if (obj) {
     image[["obj"]]         <- plot2draw
@@ -2769,7 +2772,7 @@ rewriteImages <- function() {
       width    <- oldPlot[["width"]]
       height   <- oldPlot[["height"]]
       plot     <- oldPlot[["obj"]]
-      invisible(.writeImage(width = width, height = height, plot = plot, obj = FALSE, relativePathsvg = plotName))
+      invisible(.writeImage(width = width, height = height, plot = plot, obj = FALSE, relativePathpng = plotName))
     })
   }
 
@@ -2820,7 +2823,7 @@ editImage <- function(optionsJson) {
         
         # plot is modified or needs to be resized, let's save the new plot
         newPlot <- list()
-        content <- .writeImage(width = width, height = height, plot = plot, obj = TRUE, relativePathsvg = plotName, units = "inches") #Should we switch this over to the writeImage from jaspResults or we could also just directly use jaspPlot
+        content <- .writeImage(width = width, height = height, plot = plot, obj = TRUE, relativePathpng = plotName) #Should we switch this over to the writeImage from jaspResults or we could also just directly use jaspPlot
         
         newPlot[["data"]]   <- content[["png"]]
         newPlot[["width"]]  <- width
