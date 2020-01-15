@@ -83,14 +83,16 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   if (!is.null(jaspResults[["binomTable"]]))
     return()
   
-  binomTable <- createJaspTable("Bayesian Binomial Test")
+  binomTable <- createJaspTable(gettext("Bayesian Binomial Test"))
   binomTable$dependOn(c("variables", "testValue", "hypothesis", "bayesFactorType", "priorA", "priorB"))
   binomTable$position <- 1
   binomTable$showSpecifiedColumnsOnly <- TRUE
   
-  binomTable$addCitation(c("Jeffreys, H. (1961). Theory of Probability. Oxford, Oxford University Press.",
-                                      "O'Hagan, A., & Forster, J. (2004). Kendall's advanced theory of statistics vol. 2B: Bayesian inference (2nd ed.). London: Arnold.",
-                                      "Haldane, J. B. S. (1932). A note on inverse probability. Mathematical Proceedings of the Cambridge Philosophical Society, 28, 55-61."))
+  binomTable$addCitation(c(
+    "Jeffreys, H. (1961). Theory of Probability. Oxford, Oxford University Press.",
+    "O'Hagan, A., & Forster, J. (2004). Kendall's advanced theory of statistics vol. 2B: Bayesian inference (2nd ed.). London: Arnold.",
+    "Haldane, J. B. S. (1932). A note on inverse probability. Mathematical Proceedings of the Cambridge Philosophical Society, 28, 55-61."
+  ))
   
   bfTitleSpec <- list(null="\u2080")
   if (options$hypothesis == "notEqualToTestValue")
@@ -109,26 +111,26 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
     bfTitle <- paste0("BF", bfTitleSpec[["null"]], bfTitleSpec[["other"]])
   }
   
-  binomTable$addColumnInfo(name = "case",       title = "",           type = "string", combine = TRUE)
-  binomTable$addColumnInfo(name = "level",      title = "Level",      type = "string")
-  binomTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
-  binomTable$addColumnInfo(name = "total",      title = "Total",      type = "integer")
-  binomTable$addColumnInfo(name = "proportion", title = "Proportion", type = "number")
-  binomTable$addColumnInfo(name = bfType,       title = bfTitle,      type = "number")
+  binomTable$addColumnInfo(name = "case",       title = "",                    type = "string", combine = TRUE)
+  binomTable$addColumnInfo(name = "level",      title = gettext("Level"),      type = "string")
+  binomTable$addColumnInfo(name = "counts",     title = gettext("Counts"),     type = "integer")
+  binomTable$addColumnInfo(name = "total",      title = gettext("Total"),      type = "integer")
+  binomTable$addColumnInfo(name = "proportion", title = gettext("Proportion"), type = "number")
+  binomTable$addColumnInfo(name = bfType,       title = bfTitle,               type = "number")
   
   if (.RCodeInOptionsIsOk(options$testValue)) {
 
     if (options$hypothesis == "notEqualToTestValue")
       note <- "Proportions tested against value: "
     else if (options$hypothesis == "greaterThanTestValue")
-      note <- "For all tests, the alternative hypothesis specifies that the proportion is greater than "
+      note <- gettext("For all tests, the alternative hypothesis specifies that the proportion is greater than ")
     else
-      note <- "For all tests, the alternative hypothesis specifies that the proportion is less than "
+      note <- gettext("For all tests, the alternative hypothesis specifies that the proportion is less than ")
 
     testValue <- .parseRCodeInOptions(options$testValue)
     binomTable$addFootnote(paste0(note, round(testValue, 3), "."))
   } else {
-    binomTable$addFootnote("Expression for 'Test value' could not be parsed.")
+    binomTable$addFootnote(gettext("Expression for 'Test value' could not be parsed."))
   }
 
   jaspResults[["binomTable"]] <- binomTable
@@ -249,7 +251,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
     return()
   
   if (is.null(jaspResults[["inferentialPlots"]])) { 
-    inferentialPlots <- createJaspContainer("Inferential Plots")
+    inferentialPlots <- createJaspContainer(gettext("Inferential Plots"))
     inferentialPlots$dependOn(c("testValue", "priorA", "priorB", "hypothesis"))
     inferentialPlots$position <- 2
     jaspResults[["inferentialPlots"]] <- inferentialPlots
@@ -302,7 +304,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   if (!options$plotPriorAndPosterior || !is.null(container[[plotName]]))
     return()
   
-  plot <- createJaspPlot(title = "Prior and Posterior", width = 530, height = 400, aspectRatio = 0.7)
+  plot <- createJaspPlot(title = gettext("Prior and Posterior"), width = 530, height = 400, aspectRatio = 0.7)
   plot$dependOn(c("plotPriorAndPosterior", "plotPriorAndPosteriorAdditionalInfo"))
   
   container[[plotName]] <- plot 
@@ -314,7 +316,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   quantiles <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, a, b, counts, n, hypothesis=hyp, theta0 = testValue)
   dfLinesPP <- .dfLinesPP(a=a, b=b, hyp = hyp, theta0 = testValue, counts = counts, n = n)
   dfPointsPP <- .dfPointsPP(a=a, b=b, hyp = hyp, theta0 = testValue, counts = counts, n = n)
-  xName <- expression(paste("Population proportion ", theta))
+  xName <- bquote(paste(.(gettext("Population proportion")), theta))
   
   hypForPlots <- .binomHypothesisForPlots(hyp)
   
@@ -331,7 +333,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   if (!options$plotSequentialAnalysis || !is.null(container[[plotName]]))
     return()
 
-  plot <- createJaspPlot(title = "Sequential Analysis", width = 530, height = 400, aspectRatio = 0.7)
+  plot <- createJaspPlot(title = gettext("Sequential Analysis"), width = 530, height = 400, aspectRatio = 0.7)
   plot$dependOn("plotSequentialAnalysis")
   
   container[[plotName]] <- plot
@@ -421,10 +423,10 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
     BF10[i] <- .bayesBinomialTest(counts = counts, n = n, theta0, hyp, a, b)
     
     if (is.na(BF10[i]))
-      stop("One or more Bayes factors cannot be computed")
+      stop(gettext("One or more Bayes factors cannot be computed"))
     
     if (is.infinite(BF10[i]))
-      stop("One or more Bayes factors are infinite")
+      stop(gettext("One or more Bayes factors are infinite"))
   }
   dat <- data.frame(x = 1:length(x), y = log(BF10))
   return(dat)
@@ -465,5 +467,5 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   else if(hyp == "two.sided")
     return("equal")
   else
-    stop("Undefined hypothesis")
+    stop(gettext("Undefined hypothesis"))
 }

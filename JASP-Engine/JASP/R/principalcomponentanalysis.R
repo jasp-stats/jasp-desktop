@@ -53,13 +53,12 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
     function() {
       if (length(options$variables) > 0 && options$factorMethod == "manual" &&
           options$numberOfFactors > length(options$variables)) {
-        return(paste0("Too many factors requested (", options$numberOfFactors,
-                      ") for the amount of included variables"))
+        return(gettextf("Too many factors requested (%i) for the amount of included variables", options$numberOfFactors))
       }
     },
     function() {
       if(nrow(dataset) < 3){
-        return(paste0("Not enough valid cases (", nrow(dataset),") to run this analysis"))
+        return(gettextf("Not enough valid cases (%i) to run this analysis", nrow(dataset)))
       }
     },
     # check whether all row variance == 0
@@ -69,7 +68,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
         if(sd(dataset[i,], na.rm = TRUE) == 0) varianceZero <- varianceZero + 1
       }
       if(varianceZero == nrow(dataset)){
-        return("Data not valid: variance is zero in each row")
+        return(gettext("Data not valid: variance is zero in each row"))
       }
     },
     # check whether all variables correlate with each other
@@ -83,7 +82,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
         }
       }
       if(allCorr == nVar*(nVar-1)/2){
-        return("Data not valid: all variables correlate with each other")
+        return(gettext("Data not valid: all variables correlate with each other"))
       }
     }
   )
@@ -119,7 +118,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   )
 
   if (inherits(pcaResult, "try-error")) {
-    errmsg <- paste("Estimation failed. Message:", attr(pcaResult, "condition")$message)
+    errmsg <- paste(gettext("Estimation failed. Message:"), attr(pcaResult, "condition")$message)
     modelContainer$setError(.decodeVarsInMessage(names(dataset), errmsg))
   }
 
@@ -138,8 +137,8 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
     # on the modelcontainer.
     if (ncomp == 0)
       stop(
-        "No components with an eigenvalue > ", options$eigenValuesBox, ". ",
-        "Maximum observed eigenvalue: ", round(max(fa$pc.values), 3)
+        gettext("No components with an eigenvalue > "), options$eigenValuesBox, ". ",
+        gettext("Maximum observed eigenvalue: "), round(max(fa$pc.values), 3)
       )
     return(ncomp)
   }
@@ -151,10 +150,10 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   if (!is.null(modelContainer[["goftab"]])) return()
 
   goftab <- createJaspTable(title = "Chi-squared Test")
-  goftab$addColumnInfo(name = "model", title = "",      type = "string")
-  goftab$addColumnInfo(name = "chisq", title = "Value", type = "number", format = "dp:3")
-  goftab$addColumnInfo(name = "df",    title = "df",    type = "integer")
-  goftab$addColumnInfo(name = "p",     title = "p",     type = "number", format = "dp:3;p:.001")
+  goftab$addColumnInfo(name = "model", title = "",               type = "string")
+  goftab$addColumnInfo(name = "chisq", title = gettext("Value"), type = "number", format = "dp:3")
+  goftab$addColumnInfo(name = "df",    title = gettext("df"),    type = "integer")
+  goftab$addColumnInfo(name = "p",     title = gettext("p"),     type = "number", format = "dp:3;p:.001")
   goftab$position <- 1
 
   modelContainer[["goftab"]] <- goftab
@@ -170,12 +169,12 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   goftab[["p"]]     <- pcaResults$PVAL
 
   if (pcaResults$dof < 0)
-    goftab$addFootnote(message = "Degrees of freedom below 0, model is unidentified.", symbol = "<em>Warning:</em>")
+    goftab$addFootnote(message = gettext("Degrees of freedom below 0, model is unidentified."), symbol = "<em>Warning:</em>")
 }
 
 .pcaLoadingsTable <- function(modelContainer, dataset, options, ready) {
   if (!is.null(modelContainer[["loatab"]])) return()
-  loatab <- createJaspTable("Component Loadings")
+  loatab <- createJaspTable(gettext("Component Loadings"))
   loatab$dependOn("highlightText")
   loatab$position <- 2
   loatab$addColumnInfo(name = "var", title = "", type = "string")
@@ -187,11 +186,11 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
 
   coltitle <- ifelse(options$rotationMethod == "orthogonal", "PC", "RC")
   if (options$rotationMethod == "orthogonal" && options$orthogonalSelector == "none") {
-    loatab$addFootnote(message = "No rotation method applied.", symbol = "<em>Note.</em>")
+    loatab$addFootnote(message = gettext("No rotation method applied."), symbol = "<em>Note.</em>")
   } else {
     loatab$addFootnote(
       message = paste0(
-        "Applied rotation method is ",
+        gettext("Applied rotation method is "),
         ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector),
         "."
       ),
@@ -213,7 +212,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
     }
   }
 
-  loatab$addColumnInfo(name = "uni", title = "Uniqueness", type = "number", format = "dp:3")
+  loatab$addColumnInfo(name = "uni", title = gettext("Uniqueness"), type = "number", format = "dp:3")
   loatab[["uni"]] <- pcaResults$uniquenesses
 }
 
@@ -223,9 +222,9 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
 
   eigtab <- createJaspTable("Component Characteristics")
   eigtab$addColumnInfo(name = "comp", title = "",                type = "string")
-  eigtab$addColumnInfo(name = "eigv", title = "Eigenvalue",      type = "number", format = "sf:4;dp:3")
-  eigtab$addColumnInfo(name = "prop", title = "Proportion var.", type = "number", format = "sf:4;dp:3")
-  eigtab$addColumnInfo(name = "cump", title = "Cumulative",      type = "number", format = "sf:4;dp:3")
+  eigtab$addColumnInfo(name = "eigv", title = gettext("Eigenvalue"),      type = "number", format = "sf:4;dp:3")
+  eigtab$addColumnInfo(name = "prop", title = gettext("Proportion var."), type = "number", format = "sf:4;dp:3")
+  eigtab$addColumnInfo(name = "cump", title = gettext("Cumulative"),      type = "number", format = "sf:4;dp:3")
 
   eigtab$position <- 3
 
@@ -244,7 +243,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
 
 .pcaCorrTable <- function(modelContainer, dataset, options, ready) {
   if (!options[["incl_correlations"]] || !is.null(modelContainer[["cortab"]])) return()
-  cortab <- createJaspTable("Component Correlations")
+  cortab <- createJaspTable(gettext("Component Correlations"))
   cortab$dependOn("incl_correlations")
   cortab$addColumnInfo(name = "col", title = "", type = "string")
   cortab$position <- 4
@@ -270,7 +269,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
 .pcaScreePlot <- function(modelContainer, dataset, options, ready) {
   if (!options[["incl_screePlot"]] || !is.null(modelContainer[["scree"]])) return()
 
-  scree <- createJaspPlot(title = "Scree plot", width = 300, height = 300)
+  scree <- createJaspPlot(title = gettext("Scree plot"), width = 300, height = 300)
   scree$dependOn("incl_screePlot")
   modelContainer[["scree"]] <- scree
 
@@ -278,7 +277,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
 
   fa <- try(psych::fa.parallel(dataset, plot = FALSE))
   if (inherits(fa, "try-error")) {
-    errmsg <- paste("Screeplot not available. Message:", attr(pcaResult, "condition")$message)
+    errmsg <- paste(gettext("Screeplot not available. Message: "), attr(pcaResult, "condition")$message)
     scree$setError(.decodeVarsInMessage(names(dataset), errmsg))
     return()
   }
@@ -287,7 +286,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   df <- data.frame(
     id   = rep(seq_len(n_col), 2),
     ev   = c(fa$pc.values, fa$pc.sim),
-    type = rep(c("Data", "Simulated (95th quantile)"), each = n_col)
+    type = rep(c(gettext("Data"), gettext("Simulated (95th quantile)")), each = n_col)
   )
 
   # basic scree plot
@@ -295,7 +294,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
     ggplot2::ggplot(df, ggplot2::aes(x = id, y = ev, linetype = type, shape = type)) +
     ggplot2::geom_point(na.rm = TRUE, size = 3) +
     ggplot2::geom_line(na.rm = TRUE) +
-    ggplot2::labs(x = "Component", y = "Eigenvalue")
+    ggplot2::labs(x = gettext("Component"), y = gettext("Eigenvalue"))
 
   # optionally add an eigenvalue cutoff line
   if (options$factorMethod == "eigenValues") {
@@ -322,7 +321,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Create plot object
   n_var <- length(options$variables)
-  path <- createJaspPlot(title = "Path Diagram", width = 480, height = ifelse(n_var < 2, 300, 1 + 299 * (n_var / 5)))
+  path <- createJaspPlot(title = gettext("Path Diagram"), width = 480, height = ifelse(n_var < 2, 300, 1 + 299 * (n_var / 5)))
   path$dependOn("incl_pathDiagram")
   modelContainer[["path"]] <- path
   if (!ready || modelContainer$getError()) return()

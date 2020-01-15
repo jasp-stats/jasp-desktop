@@ -41,9 +41,9 @@ BinomialTest <- function(jaspResults, dataset = NULL, options, ...) {
   # perform a check on the hypothesis
   custom <- function() {
     if (options$testValue == 1 && options$hypothesis == "greaterThanTestValue")
-      return("Cannot test the hypothesis that the test value is greater than 1.")
+      return(gettext("Cannot test the hypothesis that the test value is greater than 1."))
     else if (options$testValue == 0 && options$hypothesis == "lessThanTestValue")
-      return("Cannot test the hypothesis that the test value is less than 0.")
+      return(gettext("Cannot test the hypothesis that the test value is less than 0."))
   }
   
   # Error Check 1: Number of levels of the variables and the hypothesis
@@ -157,28 +157,28 @@ BinomialTest <- function(jaspResults, dataset = NULL, options, ...) {
     return()
 
   # Create table
-  binomialTable <- createJaspTable(title = "Binomial Test")
+  binomialTable <- createJaspTable(title = gettext("Binomial Test"))
   binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                                   "confidenceIntervalInterval", "VovkSellkeMPR"))
 
   binomialTable$showSpecifiedColumnsOnly <- TRUE
 
   # Add columns to table
-  binomialTable$addColumnInfo(name = "variable",   title = "Variable",   type = "string", combine = TRUE)
-  binomialTable$addColumnInfo(name = "level",      title = "Level",      type = "string")
-  binomialTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
-  binomialTable$addColumnInfo(name = "total",      title = "Total",      type = "integer")
-  binomialTable$addColumnInfo(name = "proportion", title = "Proportion", type = "number")
-  binomialTable$addColumnInfo(name = "p",          title = "p",          type = "pvalue")
+  binomialTable$addColumnInfo(name = "variable",   title = gettext("Variable"),   type = "string", combine = TRUE)
+  binomialTable$addColumnInfo(name = "level",      title = gettext("Level"),      type = "string")
+  binomialTable$addColumnInfo(name = "counts",     title = gettext("Counts"),     type = "integer")
+  binomialTable$addColumnInfo(name = "total",      title = gettext("Total"),      type = "integer")
+  binomialTable$addColumnInfo(name = "proportion", title = gettext("Proportion"), type = "number")
+  binomialTable$addColumnInfo(name = "p",          title = gettext("p"),          type = "pvalue")
 
   if (options$VovkSellkeMPR)
-    binomialTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR", type = "number")
+    binomialTable$addColumnInfo(name = "VovkSellkeMPR", title = gettext("VS-MPR"), type = "number")
 
   if (options$confidenceInterval) {
-    binomialTable$addColumnInfo(name = "lowerCI", title = "Lower", type = "number",
-      overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
-    binomialTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number",
-      overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
+    binomialTable$addColumnInfo(name = "lowerCI", title = gettext("Lower"), type = "number",
+      overtitle = gettextf("%i%% CI for Proportion", 100 * options$confidenceIntervalInterval))
+    binomialTable$addColumnInfo(name = "upperCI", title = gettext("Upper"), type = "number",
+      overtitle = gettextf("%i%% CI for Proportion", 100 * options$confidenceIntervalInterval))
   }
   
   # Add footnote: VovkSellkeMPR
@@ -187,11 +187,11 @@ BinomialTest <- function(jaspResults, dataset = NULL, options, ...) {
     
   # Add footnote: Alternative hypothesis
   if (options$hypothesis == "lessThanTestValue")
-    note <- "For all tests, the alternative hypothesis specifies that the proportion is less than "
+    note <- gettext("For all tests, the alternative hypothesis specifies that the proportion is less than ")
   else if (options$hypothesis == "greaterThanTestValue")
-    note <- "For all tests, the alternative hypothesis specifies that the proportion is greater than "
+    note <- gettext("For all tests, the alternative hypothesis specifies that the proportion is greater than ")
   else
-    note <- "Proportions tested against value: "
+    note <- gettext("Proportions tested against value: ")
   
   binomialTable$addFootnote(message = paste0(note, options$testValue, "."))
   
@@ -226,7 +226,7 @@ BinomialTest <- function(jaspResults, dataset = NULL, options, ...) {
     return()
 
   if (is.null(jaspResults[["containerPlots"]])) {
-    jaspResults[["containerPlots"]] <- createJaspContainer("Descriptives Plots")
+    jaspResults[["containerPlots"]] <- createJaspContainer(gettext("Descriptives Plots"))
     jaspResults[["containerPlots"]]$dependOn(c("descriptivesPlots", "testValue", ciName))
   }
     

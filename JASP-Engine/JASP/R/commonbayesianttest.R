@@ -52,19 +52,19 @@
   #
 
   analysis <- match.arg(analysis)
-	dataset <- .ttestBayesianReadData(dataset, options)
-	errors  <- .ttestBayesianGetErrorsPerVariable(dataset, options, analysis)
+  dataset <- .ttestBayesianReadData(dataset, options)
+  errors  <- .ttestBayesianGetErrorsPerVariable(dataset, options, analysis)
 
-	# Main analysis
-	ttestResults <- .ttestBayesian(jaspResults, dataset, options, errors, analysis)
+  # Main analysis
+  ttestResults <- .ttestBayesian(jaspResults, dataset, options, errors, analysis)
 
-	# create descriptives table and plots
+  # create descriptives table and plots
   .ttestBayesianDescriptives(jaspResults, dataset, options, ttestResults, errors)
 
   # create inferential plots
-	.ttestBayesianInferentialPlots(jaspResults, dataset, options, ttestResults, errors)
+  .ttestBayesianInferentialPlots(jaspResults, dataset, options, ttestResults, errors)
 
-	return()
+  return()
 
 }
 
@@ -85,7 +85,7 @@
     ))
     ttestContainer$position <- 1L
   } else {
-	  ttestContainer <- jaspResults[["ttestContainer"]]
+    ttestContainer <- jaspResults[["ttestContainer"]]
   }
 
   # check if we actually need to compute things
@@ -106,7 +106,7 @@
   tmp <- createJaspState(ttestResults)
   ttestContainer[["stateTTestResults"]] <- tmp
 
-	return(ttestResults)
+  return(ttestResults)
 
 }
 
@@ -190,11 +190,11 @@
 
       if (pair[[1L]] == "" || pair[[2L]] == "") {
 
-        errors[[var]] <- list(message = sprintf("Please provide another variable."))
+        errors[[var]] <- list(message = gettext("Please provide another variable."))
 
       } else if (identical(pair[[1L]], pair[[2L]])) {
 
-        errors[[var]] <- list(message = sprintf("Variables %s and %s are the same!",
+        errors[[var]] <- list(message = gettextf("Variables %s and %s are the same!",
                                                 pair[[1L]], pair[[2L]]))
 
       } else {
@@ -300,20 +300,20 @@
     c(-Inf, Inf)
   )
 
-	oldDependents <- jaspResults[["stateVariables"]]$object
+  oldDependents <- jaspResults[["stateVariables"]]$object
 
-	# TODO: check if we can do without this
-	if (!is.null(dependents)) {
-	  tmp <- createJaspState(object = dependents)
-	  tmp$dependOn("missingValues") # <-- check if necessary!
-	  if (analysis == "independent")
-	    tmp$dependOn("groupingVariable") # <-- check if necessary!
-	  jaspResults[["stateVariables"]] <- tmp
-	}
+  # TODO: check if we can do without this
+  if (!is.null(dependents)) {
+    tmp <- createJaspState(object = dependents)
+    tmp$dependOn("missingValues") # <-- check if necessary!
+    if (analysis == "independent")
+      tmp$dependOn("groupingVariable") # <-- check if necessary!
+    jaspResults[["stateVariables"]] <- tmp
+  }
 
-	idx <- !(dependents %in% oldDependents)
-	derivedOptions[["anyNewVariables"]] <- any(idx)
-	derivedOptions[["newVariables"]] <- dependents[idx]
+  idx <- !(dependents %in% oldDependents)
+  derivedOptions[["anyNewVariables"]] <- any(idx)
+  derivedOptions[["newVariables"]] <- dependents[idx]
 
   return(derivedOptions)
 
@@ -326,30 +326,30 @@
   hypothesis <- match.arg(hypothesis)
 
   if (bfType == "BF10") {
-	  if (hypothesis == "equal") {
-	    bfTitle <- "BF\u2081\u2080"
-	  } else if (hypothesis == "greater") {
-	    bfTitle <- "BF\u208A\u2080"
-	  } else {
-	    bfTitle <- "BF\u208B\u2080"
-	  }
-	} else if (bfType == "LogBF10") {
-	  if (hypothesis == "equal") {
-	    bfTitle <- "Log(\u0042\u0046\u2081\u2080)"
-	  } else if (hypothesis == "greater") {
-	    bfTitle <- "Log(\u0042\u0046\u208A\u2080)"
-	  } else {
-	    bfTitle <- "Log(\u0042\u0046\u208B\u2080)"
-	  }
-	} else if (bfType == "BF01") {
-	  if (hypothesis == "equal") {
-	    bfTitle <- "BF\u2080\u2081"
-	  } else if (hypothesis == "greater") {
-	    bfTitle <- "BF\u2080\u208A"
-	  } else {
-	    bfTitle <- "BF\u2080\u208B"
-	  }
-	}
+    if (hypothesis == "equal") {
+      bfTitle <- "BF\u2081\u2080"
+    } else if (hypothesis == "greater") {
+      bfTitle <- "BF\u208A\u2080"
+    } else {
+      bfTitle <- "BF\u208B\u2080"
+    }
+  } else if (bfType == "LogBF10") {
+    if (hypothesis == "equal") {
+      bfTitle <- "Log(\u0042\u0046\u2081\u2080)"
+    } else if (hypothesis == "greater") {
+      bfTitle <- "Log(\u0042\u0046\u208A\u2080)"
+    } else {
+      bfTitle <- "Log(\u0042\u0046\u208B\u2080)"
+    }
+  } else if (bfType == "BF01") {
+    if (hypothesis == "equal") {
+      bfTitle <- "BF\u2080\u2081"
+    } else if (hypothesis == "greater") {
+      bfTitle <- "BF\u2080\u208A"
+    } else {
+      bfTitle <- "BF\u2080\u208B"
+    }
+  }
   return(bfTitle)
 }
 
@@ -506,7 +506,10 @@
   if (options[["descriptivesPlots"]]) {
     if (is.null(descriptivesContainer[["plots"]])) {
 
-      descriptivesPlots <- createJaspContainer(title = "Descriptives Plots", dependencies = "descriptivesPlots")
+      descriptivesPlots <- createJaspContainer(
+        title = gettext("Descriptives Plots"), 
+        dependencies = "descriptivesPlots"
+      )
       descriptivesPlots$position <- 2L
       descriptivesContainer[["plots"]] <- descriptivesPlots
 
@@ -535,116 +538,116 @@
                                        pairs = NULL) {
 
   hasGrouping <- !is.null(grouping)
-	hasCRI <- !is.null(CRI)
-	if (!is.null(pairs)) {
-	  dependents <- unique(unlist(pairs))
-	  dependents <- dependents[dependents != ""]
-	}
+  hasCRI <- !is.null(CRI)
+  if (!is.null(pairs)) {
+    dependents <- unique(unlist(pairs))
+    dependents <- dependents[dependents != ""]
+  }
 
-	descriptives$addColumnInfo(name = "variable", title = "",      type = "string", combine = TRUE)
-	if (hasGrouping)
-	  descriptives$addColumnInfo(name = "group",    title = "Group", type = "string")
-	descriptives$addColumnInfo  (name = "N",        title = "N",     type = "number")
-	descriptives$addColumnInfo  (name = "mean",     title = "Mean",  type = "number")
-	descriptives$addColumnInfo  (name = "sd",       title = "SD",    type = "number")
-	descriptives$addColumnInfo  (name = "se",       title = "SE",    type = "number")
+  descriptives$addColumnInfo(name = "variable", title = "", type = "string", combine = TRUE)
+  if (hasGrouping)
+    descriptives$addColumnInfo(name = "group", title = gettext("Group"), type = "string")
+  descriptives$addColumnInfo  (name = "N",     title = gettext("N"),     type = "number")
+  descriptives$addColumnInfo  (name = "mean",  title = gettext("Mean"),  type = "number")
+  descriptives$addColumnInfo  (name = "sd",    title = gettext("SD"),    type = "number")
+  descriptives$addColumnInfo  (name = "se",    title = gettext("SE"),    type = "number")
 
-	if (hasCRI) {
-		interval <- 100 * CRI
-		title <- paste0(interval, "% Credible Interval")
-		descriptives$addColumnInfo(name = "lowerCI", type = "number", format = "sf:4;dp:3", title = "Lower", overtitle = title)
-		descriptives$addColumnInfo(name = "upperCI", type = "number", format = "sf:4;dp:3", title = "Upper", overtitle = title)
-	}
+  if (hasCRI) {
+    interval <- 100 * CRI
+    title <- gettextf("%.0f%% Credible Interval", interval)
+    descriptives$addColumnInfo(name = "lowerCI", type = "number", format = "sf:4;dp:3", title = gettext("Lower"), overtitle = title)
+    descriptives$addColumnInfo(name = "upperCI", type = "number", format = "sf:4;dp:3", title = gettext("Upper"), overtitle = title)
+  }
 
-	nvar <- length(dependents)
-	if (nvar == 0) dependents <- "."
+  nvar <- length(dependents)
+  if (nvar == 0) dependents <- "."
 
-	if (nvar == 0 || nrow(dataset) == 0 || !canRun) {
+  if (nvar == 0 || nrow(dataset) == 0 || !canRun) {
 
-		if (hasGrouping) {
+    if (hasGrouping) {
 
-			tmp <- rep(dependents, each = 2)
-			tmp[seq(2, length(tmp), 2)] <- ""
-			dat <- data.frame(variable = tmp)
+      tmp <- rep(dependents, each = 2)
+      tmp[seq(2, length(tmp), 2)] <- ""
+      dat <- data.frame(variable = tmp)
 
-		} else {
+    } else {
 
-			dat <- data.frame(variable = dependents)
+      dat <- data.frame(variable = dependents)
 
-		}
-		descriptives$setData(dat)
+    }
+    descriptives$setData(dat)
 
-	} else {
-		if (hasGrouping) {
+  } else {
+    if (hasGrouping) {
 
-			levels <- levels(dataset[[ .v(grouping) ]])
-			nlevels <- length(levels)
-			groupingData <- dataset[[.v(grouping)]]
-		} else {
-			levels <- NULL
-			nlevels <- 1
-			groupingData <- NULL
+      levels <- levels(dataset[[ .v(grouping) ]])
+      nlevels <- length(levels)
+      groupingData <- dataset[[.v(grouping)]]
+    } else {
+      levels <- NULL
+      nlevels <- 1
+      groupingData <- NULL
 
-		}
+    }
 
-		for (var in dependents) {
-			if (is.null(stateDescriptivesTable[[var]])) {
-				for (i in seq_len(nlevels)) {
+    for (var in dependents) {
+      if (is.null(stateDescriptivesTable[[var]])) {
+        for (i in seq_len(nlevels)) {
 
-					if (hasGrouping) {
-						level <- levels[i]
-						groupData <- dataset[groupingData == level, .v(var)]
-					} else {
-						groupData <- dataset[[.v(var)]]
-					}
-					groupDataOm <- groupData[!is.na(groupData)]
+          if (hasGrouping) {
+            level <- levels[i]
+            groupData <- dataset[groupingData == level, .v(var)]
+          } else {
+            groupData <- dataset[[.v(var)]]
+          }
+          groupDataOm <- groupData[!is.na(groupData)]
 
-					if (class(groupDataOm) != "factor") {
+          if (class(groupDataOm) != "factor") {
 
-						posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm,
-																													 descriptivesPlotsCredibleInterval=CRI)
-						ciLower <- .clean(posteriorSummary[["ciLower"]])
-						ciUpper <- .clean(posteriorSummary[["ciUpper"]])
+            posteriorSummary <- .posteriorSummaryGroupMean(variable=groupDataOm,
+                                                           descriptivesPlotsCredibleInterval=CRI)
+            ciLower <- .clean(posteriorSummary[["ciLower"]])
+            ciUpper <- .clean(posteriorSummary[["ciUpper"]])
 
-						n <- .clean(length(groupDataOm))
-						mean <- .clean(mean(groupDataOm))
-						std <- .clean(sd(groupDataOm))
-						sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
+            n <- .clean(length(groupDataOm))
+            mean <- .clean(mean(groupDataOm))
+            std <- .clean(sd(groupDataOm))
+            sem <- .clean(sd(groupDataOm) / sqrt(length(groupDataOm)))
 
-						row <- list(variable = var,
-												N = n, mean = mean, sd = std, se = sem)
+            row <- list(variable = var,
+                        N = n, mean = mean, sd = std, se = sem)
 
-						if (hasGrouping)
-							row[["group"]] <- level
+            if (hasGrouping)
+              row[["group"]] <- level
 
-						if (hasCRI)
-							row[c("lowerCI", "upperCI")] <- list(ciLower, ciUpper)
+            if (hasCRI)
+              row[c("lowerCI", "upperCI")] <- list(ciLower, ciUpper)
 
-					} else {
+          } else {
 
-						n <- .clean(length(groupDataOm))
-						row <- list(variable = var, N = n,
-												mean = "", sd = "", se = "")
+            n <- .clean(length(groupDataOm))
+            row <- list(variable = var, N = n,
+                        mean = "", sd = "", se = "")
 
-						if (hasGrouping)
-							row[["group"]] <- ""
-						if (hasCRI)
-							row[c("lowerCI", "upperCI")] <- list("", "")
-					}
+            if (hasGrouping)
+              row[["group"]] <- ""
+            if (hasCRI)
+              row[c("lowerCI", "upperCI")] <- list("", "")
+          }
 
-					descriptives$addRows(row)
-					stateDescriptivesTable[[var]][[i]] <- row
+          descriptives$addRows(row)
+          stateDescriptivesTable[[var]][[i]] <- row
 
-				}
-			} else { # reuse state
-				for (i in seq_len(nlevels)) {
-					descriptives$addRows(stateDescriptivesTable[[var]][[i]])
-				}
-			}
-		}
-	}
+        }
+      } else { # reuse state
+        for (i in seq_len(nlevels)) {
+          descriptives$addRows(stateDescriptivesTable[[var]][[i]])
+        }
+      }
+    }
+  }
 
-	return()
+  return()
 }
 
 .ttestBayesianDescriptivesPlots <- function(descriptivePlots, dataset, dependents, errors,
@@ -750,9 +753,9 @@
   } else { # Wilcoxon
     # only show prior and posterior plot (even if others are checked)
     whichPlotTitles <- which(unlist(options[unlist(opts[1L])]))
-	# ensure prior is Cauchy, not informed (people can hack this in and it would destroy the results)
-	options[["effectSizeStandardized"]]        <- "default"
-	options[["defaultStandardizedEffectSize"]] <- "cauchy"
+    # ensure prior is Cauchy, not informed (people can hack this in and it would destroy the results)
+    options[["effectSizeStandardized"]]        <- "default"
+    options[["defaultStandardizedEffectSize"]] <- "cauchy"
   }
   
 
@@ -763,7 +766,11 @@
     c("plotSequentialAnalysis",    "plotSequentialAnalysisRobustness",        "bayesFactorType")
   )
 
-  plotTitles <- c("Prior and Posterior", "Bayes Factor Robustness Check", "Sequential Analysis")
+  plotTitles <- c(
+    gettext("Prior and Posterior"), 
+    gettext("Bayes Factor Robustness Check"), 
+    gettext("Sequential Analysis")
+  )
   jaspTitles <- c("plotPriorAndPosterior", "plotRobustness", "plotSequential")
   for (var in dependents) { # was there a container for these plots for this variable?
     if (is.null(inferentialPlotsCollection[[var]])) {
@@ -792,29 +799,29 @@
     return()
 
   if (options[["plotPriorAndPosterior"]]) {
-		.ttestBayesianPlotPriorAndPosterior(
-  		collection             = inferentialPlotsCollection,
-  		dependents             = dependents,
-  		errors                 = errors,
-  		pairs                  = pairs,
-  		t                      = ttestResults[["tValue"]],
-  		n1                     = ttestResults[["n1"]],
-  		n2                     = ttestResults[["n2"]],
-  		BF                     = ttestResults[["BF10post"]],
-  		BFH1H0                 = ttestResults[["BFH1H0"]],
-  		delta                  = ttestResults[["delta"]],
-  		plottingError          = ttestResults[["plottingError"]],
-  		paired                 = ttestResults[["paired"]],
-  		oneSided               = ttestResults[["derivedOptions"]][["oneSided"]],
-  		wilcoxTest             = ttestResults[["derivedOptions"]][["wilcoxTest"]],
-  		rscale                 = options[["priorWidth"]],
-  		addInformation         = options[["plotPriorAndPosteriorAdditionalInfo"]],
-  		options                = options
-  	)
+    .ttestBayesianPlotPriorAndPosterior(
+      collection             = inferentialPlotsCollection,
+      dependents             = dependents,
+      errors                 = errors,
+      pairs                  = pairs,
+      t                      = ttestResults[["tValue"]],
+      n1                     = ttestResults[["n1"]],
+      n2                     = ttestResults[["n2"]],
+      BF                     = ttestResults[["BF10post"]],
+      BFH1H0                 = ttestResults[["BFH1H0"]],
+      delta                  = ttestResults[["delta"]],
+      plottingError          = ttestResults[["plottingError"]],
+      paired                 = ttestResults[["paired"]],
+      oneSided               = ttestResults[["derivedOptions"]][["oneSided"]],
+      wilcoxTest             = ttestResults[["derivedOptions"]][["wilcoxTest"]],
+      rscale                 = options[["priorWidth"]],
+      addInformation         = options[["plotPriorAndPosteriorAdditionalInfo"]],
+      options                = options
+    )
   }
 
   if (options[["plotBayesFactorRobustness"]]) {
-  	.ttestBayesianPlotRobustness(
+    .ttestBayesianPlotRobustness(
       collection             = inferentialPlotsCollection,
       dependents             = dependents,
       errors                 = errors,
@@ -831,28 +838,28 @@
       additionalInformation  = options[["plotBayesFactorRobustnessAdditionalInfo"]],
       effectSizeStandardized = options[["effectSizeStandardized"]],
       options                = options
-  	)
+    )
   }
 
   if (options[["plotSequentialAnalysis"]]) {
-  	.ttestBayesianPlotSequential(
-  		collection             = inferentialPlotsCollection,
-  		dependents             = dependents,
-  		errors                 = errors,
-  		dataset                = dataset,
-  		grouping               = grouping,
-  		pairs                  = pairs,
-  		BF10post               = ttestResults[["BF10post"]],
-  		BFH1H0                 = ttestResults[["BFH1H0"]],
-  		paired                 = ttestResults[["paired"]],
-  		plottingError          = ttestResults[["plottingError"]],
-  		oneSided               = ttestResults[["derivedOptions"]][["oneSided"]],
-  		nullInterval           = ttestResults[["derivedOptions"]][["nullInterval"]],
-  		rscale                 = options[["priorWidth"]],
-  		effectSizeStandardized = options[["effectSizeStandardized"]],
-  		plotDifferentPriors    = options[["plotSequentialAnalysisRobustness"]],
-  		options                = options
-  	)
+    .ttestBayesianPlotSequential(
+      collection             = inferentialPlotsCollection,
+      dependents             = dependents,
+      errors                 = errors,
+      dataset                = dataset,
+      grouping               = grouping,
+      pairs                  = pairs,
+      BF10post               = ttestResults[["BF10post"]],
+      BFH1H0                 = ttestResults[["BFH1H0"]],
+      paired                 = ttestResults[["paired"]],
+      plottingError          = ttestResults[["plottingError"]],
+      oneSided               = ttestResults[["derivedOptions"]][["oneSided"]],
+      nullInterval           = ttestResults[["derivedOptions"]][["nullInterval"]],
+      rscale                 = options[["priorWidth"]],
+      effectSizeStandardized = options[["effectSizeStandardized"]],
+      plotDifferentPriors    = options[["plotSequentialAnalysisRobustness"]],
+      options                = options
+    )
   }
 }
 
@@ -931,7 +938,7 @@
     if (is.null(collection[[var]][["plotRobustness"]]$plotObject)) {
       plot <- collection[[var]][["plotRobustness"]]
       if (effectSizeStandardized == "informative") {
-        plot$setError("Bayes factor robustness check plot currently not supported for informed prior.")
+        plot$setError(gettext("Bayes factor robustness check plot currently not supported for informed prior."))
       } else if (isFALSE(errors[[var]]) && is.null(plottingError[[var]])) {
 
         plot$status <- "running"
@@ -998,7 +1005,7 @@
     g1 <- levels[1L]
     g2 <- levels[2L]
     idxG1 <- dataset[[.v(grouping)]] == g1
-	  idxG2 <- dataset[[.v(grouping)]] == g2
+    idxG2 <- dataset[[.v(grouping)]] == g2
   } else {
     g1 <- NULL
     g2 <- NULL
@@ -1011,7 +1018,7 @@
       plot <- collection[[var]][["plotSequential"]]
 
       if (effectSizeStandardized == "informative") {
-        plot$setError("Sequential analysis robustness check plot currently not supported for informed prior.")
+        plot$setError(gettext("Sequential analysis robustness check plot currently not supported for informed prior."))
       } else if (isFALSE(errors[[var]]) && is.null(plottingError[[var]])) {
 
         plot$status <- "running"
@@ -1070,101 +1077,101 @@
 
 # plot functions  ----
 .ttestBayesianPlotKGroupMeans <- function(data, var, grouping = NULL,
-																					groupNames = NULL, CRI = .95,
-																					testValueOpt = NULL, paired = FALSE) {
+                                          groupNames = NULL, CRI = .95,
+                                          testValueOpt = NULL, paired = FALSE) {
 
-	# to be remade in jaspGraphs
-	hasGrouping <- !is.null(grouping)
-	if (hasGrouping) {
+  # to be remade in jaspGraphs
+  hasGrouping <- !is.null(grouping)
+  if (hasGrouping) {
 
-		summaryStat <- tapply(data[[1L]], data[[2L]], function(x) {
-			.posteriorSummaryGroupMean(variable = x, descriptivesPlotsCredibleInterval = CRI)
-		})
-		summaryStat <- do.call(rbind.data.frame, summaryStat)
-		summaryStat$groupingVariable <- factor(groupNames)
-		mapping <- ggplot2::aes(x=groupingVariable, y=median, group=group)
+    summaryStat <- tapply(data[[1L]], data[[2L]], function(x) {
+      .posteriorSummaryGroupMean(variable = x, descriptivesPlotsCredibleInterval = CRI)
+    })
+    summaryStat <- do.call(rbind.data.frame, summaryStat)
+    summaryStat$groupingVariable <- factor(groupNames)
+    mapping <- ggplot2::aes(x=groupingVariable, y=median, group=group)
 
-	} else {
+  } else {
 
-		summaryStat <- as.data.frame(.posteriorSummaryGroupMean(data, descriptivesPlotsCredibleInterval = CRI))
-		summaryStat$groupingVariable <- var
-		mapping <- ggplot2::aes(x=groupingVariable, y=median, group=group)
-		testValue <- data.frame("testValue" = testValueOpt) # default zero
+    summaryStat <- as.data.frame(.posteriorSummaryGroupMean(data, descriptivesPlotsCredibleInterval = CRI))
+    summaryStat$groupingVariable <- var
+    mapping <- ggplot2::aes(x=groupingVariable, y=median, group=group)
+    testValue <- data.frame("testValue" = testValueOpt) # default zero
 
-	}
+  }
 
-	if (hasGrouping && !paired) {
-		ylab <- ggplot2::ylab(var)
-		xlab <- ggplot2::xlab(grouping)
-	} else {
-	  ylab <- ggplot2::ylab(NULL)
-	  xlab <- ggplot2::xlab(NULL)
-	}
+  if (hasGrouping && !paired) {
+    ylab <- ggplot2::ylab(var)
+    xlab <- ggplot2::xlab(grouping)
+  } else {
+    ylab <- ggplot2::ylab(NULL)
+    xlab <- ggplot2::xlab(NULL)
+  }
 
-	summaryStat$group <- 1
+  summaryStat$group <- 1
 
-	pd <- ggplot2::position_dodge(.2)
+  pd <- ggplot2::position_dodge(.2)
 
-	p <-	JASPgraphs::themeJasp(ggplot2::ggplot(summaryStat, mapping = mapping) +
-			ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
-			ggplot2::geom_line(position=pd, size = .7) +
-			ggplot2::geom_point(position=pd, size=4) +
-			xlab + ylab) + 
-	    JASPgraphs::themeJaspRaw() +
-			.base_breaks_y2(summaryStat, testValueOpt) +
-			.base_breaks_x(summaryStat$groupingVariable)
+  p <-  JASPgraphs::themeJasp(ggplot2::ggplot(summaryStat, mapping = mapping) +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=ciLower, ymax=ciUpper), colour="black", width=.2, position=pd) +
+      ggplot2::geom_line(position=pd, size = .7) +
+      ggplot2::geom_point(position=pd, size=4) +
+      xlab + ylab) + 
+      JASPgraphs::themeJaspRaw() +
+      .base_breaks_y2(summaryStat, testValueOpt) +
+      .base_breaks_x(summaryStat$groupingVariable)
 
-	if (!is.null(testValueOpt))
-		p <- p + ggplot2::geom_hline(data = testValue, ggplot2::aes(yintercept=testValue), linetype="dashed")
+  if (!is.null(testValueOpt))
+    p <- p + ggplot2::geom_hline(data = testValue, ggplot2::aes(yintercept=testValue), linetype="dashed")
 
-	return(p)
+  return(p)
 
 }
 
 .base_breaks_x <- function(x) {
 
-	b <- unique(as.numeric(x))
-	d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
-	list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
+  b <- unique(as.numeric(x))
+  d <- data.frame(y=-Inf, yend=-Inf, x=min(b), xend=max(b))
+  list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), inherit.aes=FALSE, size = 1))
 
 }
 
 .ttestBayesianGetBFnamePlots <- function(BFH1H0, nullInterval) {
 
   if (BFH1H0) {
-	  if (identical(nullInterval, c(-Inf, Inf))) {
-	    bfTitle <- "BF[1][0]"
-	  } else if (identical(nullInterval, c(0, Inf))) {
-	    bfTitle <- "BF['+'][0]"
-	  } else {
-	    bfTitle <- "BF['-'][0]"
-	  }
-	} else {
-	  if (identical(nullInterval, c(-Inf, Inf))) {
-	    bfTitle <- "BF[0][1]"
-	  } else if (identical(nullInterval, c(0, Inf))) {
-	    bfTitle <- "BF[0]['+']"
-	  } else {
-	    bfTitle <- "BF[0]['-']"
-	  }
-	}
+    if (identical(nullInterval, c(-Inf, Inf))) {
+      bfTitle <- "BF[1][0]"
+    } else if (identical(nullInterval, c(0, Inf))) {
+      bfTitle <- "BF['+'][0]"
+    } else {
+      bfTitle <- "BF['-'][0]"
+    }
+  } else {
+    if (identical(nullInterval, c(-Inf, Inf))) {
+      bfTitle <- "BF[0][1]"
+    } else if (identical(nullInterval, c(0, Inf))) {
+      bfTitle <- "BF[0]['+']"
+    } else {
+      bfTitle <- "BF[0]['-']"
+    }
+  }
   return(bfTitle)
 }
 
 .ttestBayesianGetRScale <- function(rscale) {
 
   if (is.numeric(rscale)) {
-		return(rscale)
-	} else if (is.character(rscale)) {
-	  return(switch(
-	    rscale,
-	    "medium"    = sqrt(2) / 2,
-	    "wide"      = 1.0,
-	    "ultrawide" = sqrt(2)
-	  ))
-	} else {
-		.quitAnalysis(message = sprintf("Expected numeric or character rscale but got %s.", class(rscale)))
-	}
+    return(rscale)
+  } else if (is.character(rscale)) {
+    return(switch(
+      rscale,
+      "medium"    = sqrt(2) / 2,
+      "wide"      = 1.0,
+      "ultrawide" = sqrt(2)
+    ))
+  } else {
+    .quitAnalysis(message = gettextf("Expected numeric or character rscale but got %s.", class(rscale)))
+  }
 }
 
 .plotBF.robustnessCheck.ttest2 <- function(
@@ -1265,7 +1272,7 @@
     dfLines      = dfLines,
     dfPoints     = dfPoints,
     pointLegend  = additionalInformation,
-    xName        = "Cauchy prior width",
+    xName        = gettext("Cauchy prior width"),
     hypothesis   = hypothesis,
     bfType       = bfType
   )
@@ -1275,17 +1282,17 @@
 }
 
 .plotSequentialBF.ttest2 <- function(
-	x = NULL, y = NULL, paired = FALSE, BF10post, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
-	plotDifferentPriors = FALSE, BFH1H0 = TRUE, dontPlotData = FALSE, level1 = NULL, level2 = NULL,
-	subDataSet = NULL, nullInterval = c(-Inf, Inf), options) {
+  x = NULL, y = NULL, paired = FALSE, BF10post, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
+  plotDifferentPriors = FALSE, BFH1H0 = TRUE, dontPlotData = FALSE, level1 = NULL, level2 = NULL,
+  subDataSet = NULL, nullInterval = c(-Inf, Inf), options) {
 
-	r <- .ttestBayesianGetRScale(rscale)
+  r <- .ttestBayesianGetRScale(rscale)
   evidenceText <- !plotDifferentPriors
   BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
 
   if (is.null(y) || paired) {
 
-    BF10 <- vector("numeric", max(length(x), length(y)))
+    BF10  <- vector("numeric", max(length(x), length(y)))
     BF10w <- vector("numeric", max(length(x), length(y)))
     BF10u <- vector("numeric", max(length(x), length(y)))
 
@@ -1353,12 +1360,12 @@
       BF10[k] <- bfObject[["bf"]]
       # if (oneSided == FALSE) {
       #
-      # 	BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale=r, nullInterval = nullInterval)
-      # 	BF10[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+      #   BF <- BayesFactor::ttestBF(x = x[1:i], y= y[1:j], paired = paired, rscale=r, nullInterval = nullInterval)
+      #   BF10[k] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
       #
       # } else {
       #
-      # 	BF10[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r=r, oneSided=oneSided)
+      #   BF10[k] <- .oneSidedTtestBFRichard(x = x[1:i], y= y[1:j], paired = paired, r=r, oneSided=oneSided)
       # }
 
       k <- k + 1
@@ -1575,16 +1582,16 @@
         BF10[i] <- bfObject[["bf"]]
         # if (oneSided == FALSE) {
         #
-        # 	BF <- BayesFactor::ttestBF(x = xx, y= yy, paired = paired, rscale= r, nullInterval = nullInterval)
-        # 	BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
+        #   BF <- BayesFactor::ttestBF(x = xx, y= yy, paired = paired, rscale= r, nullInterval = nullInterval)
+        #   BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = F)[1, "bf"]
         #
         # } else if (oneSided == "right") {
         #
-        # 	BF10[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "right", r=r)
+        #   BF10[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "right", r=r)
         #
         # } else if (oneSided == "left") {
         #
-        # 	BF10[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "left", r=r)
+        #   BF10[i] <- .oneSidedTtestBFRichard(xx, yy, oneSided= "left", r=r)
         # }
 
       } else {
@@ -1705,7 +1712,7 @@
 
   plot <- JASPgraphs::PlotRobustnessSequential(
     dfLines         = dfLines,
-    xName           = "n",
+    xName           = gettext("n"),
     BF              = BF,
     bfType          = bftype,
     hypothesis      = hypothesis,
@@ -1888,7 +1895,7 @@
 
     if (oneSided == "right") {
       # if (length(delta[delta >= 0]) < 10)
-      #	return("Plotting is not possible: To few posterior samples in tested interval")
+      #  return("Plotting is not possible: To few posterior samples in tested interval")
 
       xlim[1] <- min(-2, quantile(delta[delta >= 0], probs = 0.01)[[1]])
       xlim[2] <- max(2, quantile(delta[delta >= 0], probs = 0.99)[[1]])
@@ -1901,7 +1908,7 @@
 
     if (oneSided == "left") {
       #if (length(delta[delta <= 0]) < 10)
-      #	return("Plotting is not possible: To few posterior samples in tested interval")
+      #  return("Plotting is not possible: To few posterior samples in tested interval")
 
       xlim[1] <- min(-2, quantile(delta[delta <= 0], probs = 0.01)[[1]])
       xlim[2] <- max(2, quantile(delta[delta <= 0], probs = 0.99)[[1]])
@@ -1975,32 +1982,32 @@
   }
 
   if ("effectSizeStandardized" %in% names(options) && options$effectSizeStandardized == "informative") {
-	  heightPriorAtZero <- .dprior_informative(0, oneSided = oneSided, options = options)
-	  heightPosteriorAtZero <- .dposterior_informative(0, t = t, n1 = n1, n2 = n2, paired = paired,
-	                                                   oneSided = oneSided, options = options)
-	} else {
-	  heightPriorAtZero <- .dprior(0, r, oneSided = oneSided)
+    heightPriorAtZero <- .dprior_informative(0, oneSided = oneSided, options = options)
+    heightPosteriorAtZero <- .dposterior_informative(0, t = t, n1 = n1, n2 = n2, paired = paired,
+                                                     oneSided = oneSided, options = options)
+  } else {
+    heightPriorAtZero <- .dprior(0, r, oneSided = oneSided)
 
-	  if (oneSided == FALSE) {
-	    heightPosteriorAtZero <- .dposteriorShiftedT(0, parameters=parameters, oneSided=oneSided)
-	  } else if (oneSided == "right") {
-	    posteriorLineLargerZero <- posteriorLine[posteriorLine > 0]
-	    heightPosteriorAtZero <- posteriorLineLargerZero[1]
-	  } else if (oneSided == "left") {
-	    posteriorLineLargerZero <- posteriorLine[posteriorLine > 0]
-	    heightPosteriorAtZero <- posteriorLineLargerZero[length(posteriorLineLargerZero)]
-	  }
-	}
+    if (oneSided == FALSE) {
+      heightPosteriorAtZero <- .dposteriorShiftedT(0, parameters=parameters, oneSided=oneSided)
+    } else if (oneSided == "right") {
+      posteriorLineLargerZero <- posteriorLine[posteriorLine > 0]
+      heightPosteriorAtZero <- posteriorLineLargerZero[1]
+    } else if (oneSided == "left") {
+      posteriorLineLargerZero <- posteriorLine[posteriorLine > 0]
+      heightPosteriorAtZero <- posteriorLineLargerZero[length(posteriorLineLargerZero)]
+    }
+  }
 
   dfLines <- data.frame(
     x = seq(min(xticks), max(xticks),length.out = 1000L),
     y = c(posteriorLine, priorLine),
-    g = factor(rep(c("Posterior", "Prior"), each = 1000L)) # 1000 is apparently a fixed number
+    g = factor(rep(c(gettext("Posterior"), gettext("Prior")), each = 1000L)) # 1000 is apparently a fixed number
   )
   dfPoints <- data.frame(
     x = 0.0,
     y = c(heightPosteriorAtZero, heightPriorAtZero),
-    g = c("Posterior", "Prior")
+    g = c(gettext("Posterior"), gettext("Prior"))
   )
   CRI <- c(CIlow, CIhigh)
   median <- medianPosterior
@@ -2032,7 +2039,7 @@
     bfType     = bfType,
     hypothesis = hypothesis,
     median     = median,
-    xName      = expression(paste("Effect size", ~delta))
+    xName      = bquote(paste(.(gettext("Effect size")), ~delta))
   )
   return(plot)
 
@@ -2043,11 +2050,11 @@
 .ttestBayesianCheckBFPlot <- function(bf) {
   # test is a Bayes factor is suitable for plotting
   if (is.na(bf)) {
-    return("Bayes factor could not be calculated")
+    return(gettext("Bayes factor could not be calculated"))
   } else if (is.infinite(bf)) {
-    return("Bayes factor is infinite")
+    return(gettext("Bayes factor is infinite"))
   } else if (is.infinite(1 / bf)) {
-    return("The Bayes factor is too small")
+    return(gettext("The Bayes factor is too small"))
   } else {
     return(NULL)
   }
@@ -2056,7 +2063,7 @@
 # citations ----
 .ttestBayesianCitations <- c(
   "MoreyEtal2015"    = "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
-	"RouderEtal2009"   = "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.",
+  "RouderEtal2009"   = "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.",
   "vanDoornEtal2018" = "van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E. J. (2018). Bayesian Latent-Normal Inference for the Rank Sum Test, the Signed Rank Test, and Spearman's rho. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1703.01805",
   "GronauEtal2017"   = "Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479"
 )

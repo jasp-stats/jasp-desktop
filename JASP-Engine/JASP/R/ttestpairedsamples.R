@@ -38,7 +38,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
     return()
   optionsList <- .ttestOptionsList(options, type)
   # Create table
-  ttest <- createJaspTable(title = "Paired Samples T-Test")
+  ttest <- createJaspTable(title = gettext("Paired Samples T-Test"))
   dependList <- c("effectSize", "effSizeConfidenceIntervalCheckbox", "variables",
                   "effSizeConfidenceIntervalPercent", "students", "mannWhitneyU",
                   "meanDifference", "meanDiffConfidenceIntervalCheckbox", "stddev",
@@ -53,75 +53,77 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   ttest$addColumnInfo(name = "sep",  type = "string", title = "")
   ttest$addColumnInfo(name = "v2", type = "string", title = "")
   if (optionsList$wantsWilcox && optionsList$onlyTest) {
-    ttest$addFootnote("Wilcoxon signed-rank test.")
-    testStat <- "W"
-    #fields <- fields[-4] #Wilcoxon's test doesn't have degrees of freedom
-    nameOfLocationParameter <- "Hodges-Lehmann Estimate"
-    nameOfEffectSize <- "Rank-Biserial Correlation"
+    ttest$addFootnote(gettext("Wilcoxon signed-rank test."))
+    testStat                <- "W"
+    testStatName            <- gettext("W")
+    nameOfLocationParameter <- gettext("Hodges-Lehmann Estimate")
+    nameOfEffectSize        <- gettext("Rank-Biserial Correlation")
   } else if (optionsList$wantsStudents && optionsList$onlyTest) {
-    ttest$addFootnote("Student's t-test.")
-    testStat <- "t"
-    nameOfLocationParameter <- "Mean Difference"
-    nameOfEffectSize <- "Cohen's d"
+    ttest$addFootnote(gettext("Student's t-test."))
+    testStat                <- "t"
+    testStatName            <- gettext("t")
+    nameOfLocationParameter <- gettext("Mean Difference")
+    nameOfEffectSize        <- gettext("Cohen's d")
   } else {
-    testStat <- "Statistic"
-    nameOfLocationParameter <-  "Location Parameter"
-    nameOfEffectSize <-  "Effect Size"
+    testStat                <- "Statistic"
+    testStatName            <- gettext("Statistic")
+    nameOfLocationParameter <- gettext("Location Parameter")
+    nameOfEffectSize        <- gettext("Effect Size")
   }
   
   ## if the user wants all tests, add a column called "Test"
   if (sum(optionsList$allTests) == 2)
-    ttest$addColumnInfo(name = "test", type = "string", title = "Test")
-  ttest$addColumnInfo(name = testStat, type = "number")
-  ttest$addColumnInfo(name = "df",     type = "integer")
-  ttest$addColumnInfo(name = "p",      type = "pvalue")
+    ttest$addColumnInfo(name = "test", title = gettext("Test"), type = "string")
+  ttest$addColumnInfo(name = testStat, title = testStatName,    type = "number")
+  ttest$addColumnInfo(name = "df",     title = gettext("df"),   type = "integer")
+  ttest$addColumnInfo(name = "p",      title = gettext("p"),    type = "pvalue")
   .ttestVovkSellke(ttest, options)
   
   if (optionsList$wantsDifference) {
     ttest$addColumnInfo(name = "md", title = nameOfLocationParameter, type = "number")
     if(optionsList$wantsStudents)
-      ttest$addColumnInfo(name = "sed", title = "SE Difference", type = "number")
+      ttest$addColumnInfo(name = "sed", title = gettext("SE Difference"), type = "number")
     if (optionsList$wantsWilcox && optionsList$wantsStudents) {
-      message <- "For the Student t-test, location parameter is given by mean 
+      message <- gettext("For the Student t-test, location parameter is given by mean 
       difference <em>d</em>; for the Wilcoxon test, effect size is given by the 
-      Hodges-Lehmann estimate."
+      Hodges-Lehmann estimate.")
       ttest$addFootnote(message)
     } 
   }
   
   if (optionsList$wantsConfidenceMeanDiff) {
     interval <- 100 * optionsList$percentConfidenceMeanDiff
-    title <- paste0(interval, "% CI for ", nameOfLocationParameter)
+    title <- gettextf("%1$i%% CI for %2$s", interval, nameOfLocationParameter)
     ttest$addColumnInfo(name = "lowerCIlocationParameter", type = "number",
-                        title = "Lower", overtitle = title)
+                        title = gettext("Lower"), overtitle = title)
     ttest$addColumnInfo(name = "upperCIlocationParameter", type = "number",
-                        title = "Upper", overtitle = title)
+                        title = gettext("Upper"), overtitle = title)
   }
   
   if (optionsList$wantsEffect) {
     ttest$addColumnInfo(name = "d", title = nameOfEffectSize, type = "number")
     if (optionsList$wantsWilcox && optionsList$wantsStudents) {
-      message <- "For the Student t-test, 
+      message <- gettext("For the Student t-test, 
     effect size is given by Cohen's <em>d</em>; for the Wilcoxon test, 
-    effect size is given by the matched rank biserial correlation."
+    effect size is given by the matched rank biserial correlation.")
       ttest$addFootnote(message)
     } 
   }
   
   if (optionsList$wantsConfidenceEffSize) {
     interval <- 100 * optionsList$percentConfidenceEffSize
-    title <- paste0(interval, "% CI for ", nameOfEffectSize)
+    title <- gettextf("%1$i%% CI for %2$s", interval, nameOfEffectSize)
     ttest$addColumnInfo(name = "lowerCIeffectSize", type = "number",
-                        title = "Lower", overtitle = title)
+                        title = gettext("Lower"), overtitle = title)
     ttest$addColumnInfo(name = "upperCIeffectSize", type = "number",
-                        title = "Upper", overtitle = title)
+                        title = gettext("Upper"), overtitle = title)
   }
   
   if (options$hypothesis == "groupOneGreater") {
-    message   <- "All tests, hypothesis is measurement one greater than measurement two."
+    message   <- gettext("All tests, hypothesis is measurement one greater than measurement two.")
     ttest$addFootnote(message)
   } else if (options$hypothesis == "groupTwoGreater") {
-    message   <- "All tests, hypothesis is measurement one less than measurement two."
+    message   <- gettext("All tests, hypothesis is measurement one less than measurement two.")
     ttest$addFootnote(message)
   }
   
@@ -140,18 +142,18 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
     return()
   container <- jaspResults[["AssumptionChecks"]]
   # Create table
-  ttestNormalTable <- createJaspTable(title = "Test of Normality (Shapiro-Wilk)")
+  ttestNormalTable <- createJaspTable(title = gettext("Test of Normality (Shapiro-Wilk)"))
   ttestNormalTable$showSpecifiedColumnsOnly <- TRUE
   ttestNormalTable$position <- 2
   
   
-  ttestNormalTable$addColumnInfo(name = "v1",  type = "string",    title = "")
+  ttestNormalTable$addColumnInfo(name = "v1",  type = "string", title = "")
   ttestNormalTable$addColumnInfo(name = "sep", type = "string", title = "")
-  ttestNormalTable$addColumnInfo(name = "v2",  type = "string",    title = "")
-  ttestNormalTable$addColumnInfo(name = "W",   type = "number", title = "W")
-  ttestNormalTable$addColumnInfo(name = "p",   type = "pvalue", title = "p")
+  ttestNormalTable$addColumnInfo(name = "v2",  type = "string", title = "")
+  ttestNormalTable$addColumnInfo(name = "W",   type = "number", title = gettext("W"))
+  ttestNormalTable$addColumnInfo(name = "p",   type = "pvalue", title = gettext("p"))
   
-  message <- "Significant results suggest a deviation from normality."
+  message <- gettext("Significant results suggest a deviation from normality.")
   ttestNormalTable$addFootnote(message)
   
   container[["ttestNormalTable"]] <- ttestNormalTable
@@ -369,14 +371,14 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   if (!options$descriptives || !is.null(container[["table"]])) 
     return()
   # Create table
-  ttestDescriptivesTable <- createJaspTable(title = "Descriptives")
+  ttestDescriptivesTable <- createJaspTable(title = gettext("Descriptives"))
   ttestDescriptivesTable$showSpecifiedColumnsOnly <- TRUE
   ttestDescriptivesTable$position <- 4
   ttestDescriptivesTable$addColumnInfo(name = "v",    type = "string",  title = "")
-  ttestDescriptivesTable$addColumnInfo(name = "N",    type = "integer", title = "N")
-  ttestDescriptivesTable$addColumnInfo(name = "mean", type = "number",  title = "Mean")
-  ttestDescriptivesTable$addColumnInfo(name = "sd",   type = "number",  title = "SD")
-  ttestDescriptivesTable$addColumnInfo(name = "se",   type = "number",  title = "SE")
+  ttestDescriptivesTable$addColumnInfo(name = "N",    type = "integer", title = gettext("N"))
+  ttestDescriptivesTable$addColumnInfo(name = "mean", type = "number",  title = gettext("Mean"))
+  ttestDescriptivesTable$addColumnInfo(name = "sd",   type = "number",  title = gettext("SD"))
+  ttestDescriptivesTable$addColumnInfo(name = "se",   type = "number",  title = gettext("SE"))
   
   container[["table"]] <- ttestDescriptivesTable
   
@@ -419,7 +421,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
     return()
   .ttestDescriptivesContainer(jaspResults, options)
   container <- jaspResults[["ttestDescriptives"]]
-  container[["plots"]] <- createJaspContainer("Descriptives Plots")
+  container[["plots"]] <- createJaspContainer(gettext("Descriptives Plots"))
   subcontainer <- container[["plots"]]
   subcontainer$position <- 5
   for(pair in options$pairs) {
@@ -458,9 +460,8 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
     ci.pos <- c(x[, "dependent"] - x[, "ci"], x[, "dependent"] + x[, "ci"])
     b <- pretty(ci.pos)
     d <- data.frame(x = -Inf, xend = -Inf, y = min(b), yend = max(b))
-    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend,
-                                                      yend = yend), inherit.aes = FALSE, size = 1), ggplot2::scale_y_continuous(breaks = c(min(b),
-                                                                                                                                           max(b))))
+    list(ggplot2::geom_segment(data = d, ggplot2::aes(x = x, y = y, xend = xend, yend = yend), inherit.aes = FALSE, size = 1), 
+         ggplot2::scale_y_continuous(breaks = c(min(b), max(b))))
   }
   c1 <- dataset[[ .v(pair[[1]]) ]]
   c2 <- dataset[[ .v(pair[[2]]) ]]
@@ -475,12 +476,15 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   pd <- ggplot2::position_dodge(0.2)
   
-  p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable,
-                                                 y = dependent, group = 1)) + ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower,
-                                                                                                                  ymax = ciUpper), colour = "black", width = 0.2, position = pd) +
-    ggplot2::geom_line(position = pd, size = 0.7) + ggplot2::geom_point(position = pd,
-                                                                        size = 4) + ggplot2::ylab(NULL) + ggplot2::xlab(NULL) + base_breaks_y(summaryStat) +
-    base_breaks_x(summaryStat$groupingVariable) + ggplot2::scale_x_discrete(labels = c(pair[[1]], pair[[2]]))
+  p <- ggplot2::ggplot(summaryStat, ggplot2::aes(x = groupingVariable, y = dependent, group = 1)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = ciLower, ymax = ciUpper), colour = "black", width = 0.2, position = pd) +
+    ggplot2::geom_line(position = pd, size = 0.7) + 
+    ggplot2::geom_point(position = pd, size = 4) + 
+    ggplot2::ylab(NULL) + 
+    ggplot2::xlab(NULL) + 
+    base_breaks_y(summaryStat) +
+    base_breaks_x(summaryStat$groupingVariable) + 
+    ggplot2::scale_x_discrete(labels = c(pair[[1]], pair[[2]]))
   
   p <- JASPgraphs::themeJasp(p)
   
