@@ -6,7 +6,7 @@
   
   for (i in seq_along(pairs)) {
     pair <- pairs[[i]]
-    if (pair[1]=="" || pair[2]=="") {
+    if ((pair[1] == "" || pair[2] == "") || pair[1] == pair[2]) {
       allIndeces <- setdiff(allIndeces, i)
     }
   }
@@ -161,9 +161,9 @@
 )
 
 
-.corXNames <- list("pearson"=expression(paste("Pearson's ", rho)), 
-                   "spearman"=expression(paste("Spearman's ", rho[s])), 
-                   "kendall"=expression(paste("Kendall's ", tau))
+.corXNames <- list("pearson"=expression(paste("Pearson's ", ~rho)), 
+                   "spearman"=expression(paste("Spearman's ", ~rho[s])), 
+                   "kendall"=expression(paste("Kendall's ", ~tau))
 )
 
 .bCorRowNames <- function(options, itemNames, method=c("pearson", "kendall", "spearman")) {

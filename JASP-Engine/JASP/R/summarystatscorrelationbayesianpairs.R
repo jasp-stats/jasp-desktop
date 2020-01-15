@@ -24,44 +24,64 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   # Compute the results and create main results table
   ready <- options[["n"]] > 0
   
-  bfObject <- .computeAndDisplaySumStatCorrelationTable(jaspResults, options, ready)
-  # Output plots
-  bfObject <- .computeAndDisplaySumStatCorrelationPlots(jaspResults, options, bfObject, ready)
+  correlationContainer <- .getContainerCorSumStats(jaspResults)
   
-  jaspResults[["bfState"]] <- createJaspState(bfObject, dependencies=c("sampleSize", "correlationCoefficient", 
-                                                                       "pearsonRhoValue", "kendallTauValue",
-                                                                       "rhoSObs", "priorWidth"))
-  # return()
+  corModel <- .computeModelCorSumStats(correlationContainer, options, ready)
+  
+  .createTableCorSumStats(correlationContainer, corModel, options)
+  
+  if (options[["plotPriorAndPosterior"]] || options[["plotBayesFactorRobustness"]])
+    .createPlotsCorSumStats(correlationContainer, corModel, options)
 }
 
 # Execute Bayesian binomial test ----
-.computeAndDisplaySumStatCorrelationTable <- function(jaspResults, options, ready) {
-  # a. Retrieve from state ------
-  #
+.computeModelCorSumStats <- function(correlationContainer, options, ready) {
+  if (!is.null(correlationContainer[["corModel"]]))
+    return(correlationContainer[["corModel"]]$object)
+  
+  if (!ready)
+    return(NULL)
+  
+  statObs <- switch(options[["method"]],
+                    "pearson"=options[["rObs"]],
+                    "kendall"=options[["tauObs"]],
+                    "spearman"=options[["rhoSObs"]])
+  
+  corResults <- bstats::bcor.testSumStat(n=options[["n"]], stat=statObs, alternative=options[["alternative"]],
+                                       method=options[["method"]], ciValue=options[["ciValue"]], kappa=options[["kappa"]])
+  pValue <- bstats::pValueFromCor(n=options[["n"]], stat=statObs, method=options[["method"]])
+  results <- modifyList(corResults, pValue)
+  
+  if (!is.null(results[["error"]]))
+    correlationContainer$setError(results[["error"]])
+  
+  correlationContainer[["corModel"]] <- createJaspState(results)
+  correlationContainer[["corModel"]]$dependOn("ciValue")
+  
+  return(results)
+}
+
+.getContainerCorSumStats <- function(jaspResults) {
   correlationContainer <- jaspResults[["correlationContainer"]]
   
   if (is.null(correlationContainer)) {
     correlationContainer <- createJaspContainer()
     correlationContainer$dependOn(c("sampleSize", "correlationCoefficient", "pearsonRhoValue", "kendallTauValue", 
-                                    "rhoSObs", "hypothesis", "priorWidth"))
+                                    "rhoSObs", "priorWidth"))
     jaspResults[["correlationContainer"]] <- correlationContainer
   }
+  return(correlationContainer)
+}
+
+.createTableCorSumStats <- function(correlationContainer, corModel, options) {
+  if (!is.null(correlationContainer[["corBayesTable"]]))
+    return()
+
+  corBayesTable <- .createTableMarkupCorSumStats(options)
   
-  corBayesTable <- correlationContainer[["corBayesTable"]]
+  errorMessage <- corModel[["error"]]
   
-  # If table already exists in the state, return it
-  if (!is.null(corBayesTable))
-    # TODO(Alexander): Here check that bfState has something. Perhaps this might screw up the table
-    #
-    return(jaspResults[["bfState"]]$object)
-  
-  # b. Get ------
-  #
-  corBayesTable <- .getTableSumStatCorBayes(options)
-  
-  # c. Check if it's ready ------
-  #
-  if (!ready) {
+  if (is.null(corModel) || correlationContainer$getError()) {
     statObs <- switch(options[["method"]],
                       "pearson"=options[["rObs"]],
                       "kendall"=options[["tauObs"]],
@@ -73,70 +93,33 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
       emptyIshRow <- modifyList(emptyIshRow, list("upperCi"=".", "lowerCi"="."))
     
     corBayesTable$addRows(emptyIshRow)
-    jaspResults[["correlationContainer"]][["corBayesTable"]] <- corBayesTable
-    return(jaspResults[["bfState"]]$object)
-  }
-  
-  # d. Compute ------
-  #
-  saveToState <- FALSE
-  bfState <- jaspResults[["bfState"]]
-  
-  if (!is.null(bfState)) {
-    # TODO(Alexander): This doesn't necessarily means that bfState$object is not null does it?
-    bfObject <- bfState$object
   } else {
-    statObs <- switch(options[["method"]],
-                      "pearson"=options[["rObs"]],
-                      "kendall"=options[["tauObs"]],
-                      "spearman"=options[["rhoSObs"]]
-    )
+    itemList <- c("n", "stat", "bf", "p")
     
-    bfObject <- bstats::bcor.testSumStat("n"=options[["n"]], "stat"=statObs, "alternative"=options[["alternative"]],
-                                 "method"=options[["method"]], "ciValue"=options[["ciValue"]], "kappa"=options[["kappa"]])
-    tempList <- bstats::pValueFromCor("n"=options[["n"]], "stat"=statObs, "method"=options[["method"]])
-    bfObject <- modifyList(bfObject, tempList)
+    if (options[["ci"]])
+      itemList <- c(itemList, "lowerCi", "upperCi")
+    
+    sidedObject <- bstats::getSidedObject(corModel, alternative=options[["alternative"]])
+    rowResult <- sidedObject[itemList]
+    
+    if (options[["bayesFactorType"]] == "BF01")
+      rowResult[["bf"]] <- 1/rowResult[["bf"]]
+    else if (options[["bayesFactorType"]] == "LogBF10")
+      rowResult[["bf"]] <- log(rowResult[["bf"]])
+    
+    corBayesTable$setData(rowResult)
   }
   
-  errorMessage <- bfObject[["error"]]
-  
-  if (!is.null(errorMessage)) {
-    corBayesTable$setError(errorMessage)
-    jaspResults[["correlationContainer"]][["corBayesTable"]] <- corBayesTable
-    return(bfObject)
-  }
-  
-  itemList <- c("n", "stat", "bf", "p")
-  
-  if (options[["ci"]]) {
-    bfObject <- .refreshCorCredibleInterval(bfObject, "ciValue"=options[["ciValue"]], 
-                                            "method"=options[["method"]])
-    itemList <- c(itemList, "lowerCi", "upperCi")
-  }
-  
-  sidedObject <- bstats::getSidedObject(bfObject, alternative=options[["alternative"]])
-  rowResult <- sidedObject[itemList]
-  
-  if (options[["bayesFactorType"]]=="BF01") {
-    rowResult[["bf"]] <- 1/rowResult[["bf"]]
-  } else if (options[["bayesFactorType"]]=="LogBF10") {
-    rowResult[["bf"]] <- log(rowResult[["bf"]])
-  }
-  
-  # d. Fill ------
-  #
-  corBayesTable$setData(rowResult)
-  jaspResults[["correlationContainer"]][["corBayesTable"]] <- corBayesTable
-  return(bfObject)
+  correlationContainer[["corBayesTable"]] <- corBayesTable
 }
 
-.getTableSumStatCorBayes <- function(options){
+.createTableMarkupCorSumStats <- function(options){
   # create table and state dependencies
   
   corBayesTable <- createJaspTable(title=.getCorTableTitle(options[["test"]], bayes=TRUE))
   corBayesTable$showSpecifiedColumnsOnly <- TRUE
   corBayesTable$position <- 1
-  corBayesTable$dependOn(c("bayesFactorType", "ci", "ciValue"))
+  corBayesTable$dependOn(c("bayesFactorType", "ci", "ciValue", "hypothesis"))
   
   corBayesTable$addCitation(.getCorCitations(options[["method"]], bayes=TRUE))
   
@@ -172,45 +155,38 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
 }
 
 # Prior and Posterior plot ----
-.computeAndDisplaySumStatCorrelationPlots <- function(jaspResults, options, bfObject, ready) {
-  # 
-  # 
-  plotItems <- .getCorPlotItems(options, sumStat=TRUE)
-  
-  if (length(plotItems)==0 | !ready)
-    return(bfObject)
-  
+.createPlotsCorSumStats <- function(correlationContainer, corModel, options) {
   # a. Get plot container ----- 
   #
-  plotContainer <- jaspResults[["correlationContainer"]][["plotContainer"]]
-  
+  plotContainer <- correlationContainer[["plotContainer"]]
   if (is.null(plotContainer)) {
     plotContainer <- createJaspContainer(title="Inferential Plots")
-    plotContainer$dependOn(c("plotPriorAndPosterior", "plotBayesFactorRobustness"))
+    plotContainer$dependOn("hypothesis")
     plotContainer$position <- 2
-    jaspResults[["correlationContainer"]][["plotContainer"]] <- plotContainer
+    correlationContainer[["plotContainer"]] <- plotContainer
   }
   
   # b. Define dependencies for the plots ----- 
   # For plotPriorPosterior
   # 
-  bfPlotPriorPosteriorDependencies <- c("plotPriorAndPosteriorAdditionalInfo", "plotPriorPosteriorAddEstimationInfo")
+  bfPlotPriorPosteriorDependencies <- c("plotPriorAndPosteriorAdditionalInfo", "plotPriorPosteriorAddEstimationInfo", "plotPriorAndPosterior")
   
   if (options[["plotPriorPosteriorAddEstimationInfo"]]) 
     bfPlotPriorPosteriorDependencies <- c(bfPlotPriorPosteriorDependencies, "ciValue")
   
   # For plotBfRobustness
   # 
-  bfPlotRobustnessDependencies <- c("plotBfRobustnessAddInfo")
+  bfPlotRobustnessDependencies <- c("plotBayesFactorRobustnessAdditionalInfo", "plotBayesFactorRobustness")
   
   if (options[["plotBayesFactorRobustnessAdditionalInfo"]]) 
     bfPlotRobustnessDependencies <- c(bfPlotRobustnessDependencies, "bayesFactorType")
   
   plotItemDependencies <- list(
-    "plotPriorPosterior"=bfPlotPriorPosteriorDependencies,
-    "plotBfRobustness"=bfPlotRobustnessDependencies
+    "plotPriorPosterior" = bfPlotPriorPosteriorDependencies,
+    "plotBfRobustness" = bfPlotRobustnessDependencies
   )
   
+  plotItems <- .getCorPlotItems(options, sumStat=TRUE)
   alternative <- options[["alternative"]]
   
   # c. Per plotItem add plot ------
@@ -230,29 +206,18 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
       jaspPlotResult$position <- i
       plotContainer[[item]] <- jaspPlotResult
       
-      if (item=="plotPriorPosterior") {
-        sidedResult <- bstats::computeCorPosteriorLine("bfObject"=bfObject, "method"=options[["method"]], 
-                                                "alternative"=alternative)
-        bfObject[[alternative]] <- sidedResult
-        
-        if (options[["plotPriorPosteriorAddEstimationInfo"]]) 
-          bfObject <- .refreshCorCredibleInterval("bfObject"=bfObject, ciValue=options[["ciValue"]], 
-                                                  "method"=options[["method"]])
-        
-        triedPlot <- .drawPosteriorPlotCorBayes(bfObject, options, "methodItems"=options[["method"]], "purpose"="sumStat")
-        .checkAndSetPlotCorBayes(triedPlot, jaspPlotResult)
-      } else if (item=="plotBfRobustness") {
-        tempResult <-bstats::computeCorRobustnessLine(bfObject, "method"=options[["method"]]) 
-        bfObject <- modifyList(bfObject, tempResult)
-        triedPlot <- .drawBfRobustnessPlotCorBayes(bfObject, options)
-        .checkAndSetPlotCorBayes(triedPlot, jaspPlotResult)
-      }
+      if (correlationContainer$getError() || is.null(corModel))
+        next
+      
+      if (item == "plotPriorPosterior")
+        plot <- .drawPosteriorPlotCorBayes(correlationContainer, corModel, options, methodItems=options[["method"]], purpose="sumStat")
+      else if (item == "plotBfRobustness")
+        plot <- .drawBfRobustnessPlotCorBayes(corModel, options, options[["method"]])
+
+      .checkAndSetPlotCorBayes(plot, jaspPlotResult)
     } 
   }
-  
-  return(bfObject)
 }
-
 
 .oldSumStatsOptionsNames <- c("sampleSize", "correlationCoefficient", 
                               "pearsonRhoValue", "kendallTauValue", "hypothesis", "plotPriorAndPosterior",
