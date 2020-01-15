@@ -9,19 +9,19 @@ options <- jasptools::analysisOptions("SummaryStatsCorrelationBayesianPairs")
   results <- jasptools::run("SummaryStatsCorrelationBayesianPairs", "test.csv", options)
 
   test_that("Bayesian Pearson Correlation table results match", {
-    table <- results[["results"]][["table"]][["data"]]
+    table <- results[["results"]][["correlationContainer"]][["collection"]][["correlationContainer_corBayesTable"]][["data"]]
     expect_equal_tables(table,
                         list(973435.048301983, 50, 0.7, 1.53820662839905e-08))
   })
 
   test_that("Prior and Posterior plot matches", {
-    plotName <- results[["results"]][["inferentialPlots"]][["PriorPosteriorPlot"]][["data"]]
+    plotName <- results[["results"]][["correlationContainer"]][["collection"]][["correlationContainer_plotContainer"]][["collection"]][["correlationContainer_plotContainer_plotPriorPosterior"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
     expect_equal_plots(testPlot, "prior-and-posterior", dir="SummaryStatsCorrelationBayesianPairs")
   })
 
   test_that("Bayes Factor Robustness Check plot matches", {
-    plotName <- results[["results"]][["inferentialPlots"]][["BFrobustnessPlot"]][["data"]]
+    plotName <- results[["results"]][["correlationContainer"]][["collection"]][["correlationContainer_plotContainer"]][["collection"]][["correlationContainer_plotContainer_plotBfRobustness"]][["data"]]
     testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
     expect_equal_plots(testPlot, "bayes-factor-robustness-check", dir="SummaryStatsCorrelationBayesianPairs")
   })

@@ -16,16 +16,20 @@ test_that("Bayesian Correlation Table results match", {
   results <- jasptools::run("CorrelationBayesian", "test.csv", options)
   table <- results[["results"]][["corBayesTable"]][["data"]]
   expect_equal_tables(table,
-                      list("-", "Pearson's r", "contcor1", "-", "BF<unicode><unicode>", "",
-                           "-", "Upper 95% CI", "", "-", "Lower 95% CI", "", "-", "Kendall's tau",
-                           "", "-", "BF<unicode><unicode>", "", "-", "Upper 95% CI", "",
-                           "-", "Lower 95% CI", "", 1, 0.657010063712354, "-", "Pearson's r",
-                           "contcor2", 71191291327.7135, "-", "BF<unicode><unicode>", "",
-                           0.753487301516098, "-", "Upper 95% CI", "", 0.524567068817432,
-                           "-", "Lower 95% CI", "", 1, 0.503030303030303, "-", "Kendall's tau",
-                           "", 78878934747.8062, "-", "BF<unicode><unicode>", "", 0.621810905452726,
-                           "-", "Upper 95% CI", "", 0.36168084042021, "-", "Lower 95% CI",
-                           ""))
+                      list("TRUE", "<unicode>", "Pearson's r", "contcor1", "FALSE", "<unicode>",
+                           "BF<unicode><unicode>", "", "FALSE", "<unicode>", "Upper 95% CI",
+                           "", "FALSE", "<unicode>", "Lower 95% CI", "", "FALSE", "<unicode>",
+                           "Kendall's tau", "", "FALSE", "<unicode>", "BF<unicode><unicode>",
+                           "", "FALSE", "<unicode>", "Upper 95% CI", "", "FALSE", "<unicode>",
+                           "Lower 95% CI", "", 1, "TRUE", 0.657010063712354, "<unicode>",
+                           "Pearson's r", "contcor2", "FALSE", 71191291327.7135, "<unicode>",
+                           "BF<unicode><unicode>", "", "FALSE", 0.753487301516098, "<unicode>",
+                           "Upper 95% CI", "", "FALSE", 0.524567068817432, "<unicode>",
+                           "Lower 95% CI", "", 1, "FALSE", 0.503030303030303, "<unicode>",
+                           "Kendall's tau", "", "FALSE", 78878934747.8062, "<unicode>",
+                           "BF<unicode><unicode>", "", "FALSE", 0.621810905452726, "<unicode>",
+                           "Upper 95% CI", "", "FALSE", 0.36168084042021, "<unicode>",
+                           "Lower 95% CI", ""))
 })
 
 # Note(Alexander): The difference in the Kendall's version is quite small. The differences in ci is due to me using
@@ -107,6 +111,7 @@ test_that("Bayesian Pearson Correlation PAIRWISE table results match", {
 
 # Pairs plot
 options <- jasptools::analysisOptions("CorrelationBayesian")
+options$variables <- list("contcor1", "contcor2")
 options$pairs <- list(c("contcor1", "contcor2"))
 options$plotPriorPosterior <- TRUE
 options$plotBfRobustness <- TRUE
