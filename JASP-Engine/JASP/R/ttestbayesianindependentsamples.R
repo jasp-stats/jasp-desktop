@@ -195,8 +195,12 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
   jaspTable <- createJaspTable()
 	jaspTable$dependOn(c("bayesFactorType", "variables"))
 
-  jaspTable$title <- if (derivedOptions[["wilcoxTest"]]) gettext("Bayesian Mann-Whitney U Test" else "Bayesian Independent Samples T-Test")
-
+  jaspTable$title <- if (derivedOptions[["wilcoxTest"]]) {
+    gettext("Bayesian Mann-Whitney U Test")
+  } else {
+    gettext("Bayesian Independent Samples T-Test")
+  }
+    
   if (options[["effectSizeStandardized"]] == "default" && !derivedOptions[["wilcoxTest"]]) {
     citations <- .ttestBayesianCitations[c("MoreyEtal2015", "RouderEtal2009")]
   } else if (derivedOptions[["wilcoxTest"]]) {
