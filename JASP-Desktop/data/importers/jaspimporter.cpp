@@ -92,7 +92,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 
 	packageData->setDataFilePath(		metaData.get("dataFilePath", "").asString());
 	packageData->setDataFileReadOnly(	metaData.get("dataFileReadOnly", false).asBool());
-	packageData->setDataFileTimestamp(	metaData.get("dataFileTimestamp", 0).asInt());
+	packageData->setDataFileTimestamp(	metaData.get("dataFileTimestamp", 0).asUInt());
 
 	packageData->setDataFilter(			metaData.get("filterData", DEFAULT_FILTER).asString());
 

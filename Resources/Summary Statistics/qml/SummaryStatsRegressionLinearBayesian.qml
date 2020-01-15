@@ -16,10 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import QtQuick			2.8
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP.Widgets		1.0
+import JASP				1.0
 
 
 Form 
@@ -62,7 +63,7 @@ Form
         Group
 		{
             title: qsTr("Prior")
-			DoubleField { label: qsTr("r scale covariates"); defaultValue: 0.354 ; name: "priorWidth" ; fieldWidth: 80; max: 2; inclusive: "maxOnly"; decimals: 3 }
+			DoubleField { label: qsTr("r scale covariates"); defaultValue: 0.354 ; name: "priorWidth" ; fieldWidth: 80; max: 2; inclusive: JASP.MaxOnly; decimals: 3 }
         }
     }
 }

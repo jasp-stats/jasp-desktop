@@ -16,12 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
-
-
+import QtQuick			2.8
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP.Widgets		1.0
+import JASP				1.0
 
 Form
 {
@@ -91,7 +90,7 @@ Form
 			{
 				title: qsTr("Model Terms")
 				name: "modelTerms"
-				listViewType: "Interaction"
+				listViewType: JASP.Interaction
 			}
 		}
 
@@ -115,7 +114,7 @@ Form
 			AssignedVariablesList
 			{
 				name: "randomEffectsChosen"
-				listViewType: "Interaction"
+				listViewType: JASP.Interaction
 			}
 		}
 	}

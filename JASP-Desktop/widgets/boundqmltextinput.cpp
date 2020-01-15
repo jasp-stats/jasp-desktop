@@ -162,6 +162,7 @@ void BoundQMLTextInput::bindTo(Option *option)
 			_formula = new OptionString();
 		_option = _formula;
 		_value = QString::fromStdString(_formula ? _formula->value() : "");
+		runRScript("as.character(" + _value + ")", true);
 		break;
 
 	default:
@@ -275,16 +276,14 @@ void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 	double val = result.toDouble(&succes);
 
 	if (!succes)
+	{
 		item()->addControlError(tr("The expression did not return a number."));
-	else
-		succes = _formulaResultInBounds(val);
-
-	if (succes) {
-		setItemProperty("hasScriptError", false);
-
-	} else {
 		setItemProperty("hasScriptError", true);
-		setItemProperty("infoText", result);
+	}
+	else
+	{
+		setItemProperty("realValue", val);
+		_formulaResultInBounds(val);
 	}
 
 	if (_formula)
@@ -299,20 +298,28 @@ void BoundQMLTextInput::_setFormulaOptions(std::string formula, bool valid)
 
 bool BoundQMLTextInput::_formulaResultInBounds(double result)
 {
-	double min		= getItemProperty("min").toDouble();
-	double max		= getItemProperty("max").toDouble();
-	bool inclusive	= getItemProperty("inclusive").toBool();
+	double min			= getItemProperty("min").toDouble();
+	double max			= getItemProperty("max").toDouble();
+	JASPControlBase::Inclusive inclusive = JASPControlBase::Inclusive(getItemProperty("inclusive").toInt());
+	bool includeMin = (inclusive == JASPControlBase::Inclusive::MinMax || inclusive == JASPControlBase::Inclusive::MinOnly);
+	bool includeMax = (inclusive == JASPControlBase::Inclusive::MinMax || inclusive == JASPControlBase::Inclusive::MaxOnly);
 
-	bool tooSmall = inclusive ? result < min : result <= min;
-	bool tooLarge = inclusive ? result > max : result >= max;
+	bool tooSmall = includeMin ? result < min : result <= min;
+	bool tooLarge = includeMax ? result > max : result >= max;
 	bool inBounds = !(tooSmall || tooLarge);
 
 	if (!inBounds)
 	{
 		QString end;
-		if (tooSmall)	end = (inclusive ? "&ge; " : "&gt; ") + getItemProperty("min").toString();
-		else			end = (inclusive ? "&le; " : "&lt; ") + getItemProperty("max").toString();
+		if (tooSmall)	end = (includeMin ? "&ge; " : "&gt; ") + getItemProperty("min").toString();
+		else			end = (includeMax ? "&le; " : "&lt; ") + getItemProperty("max").toString();
 		item()->addControlError(tr("The result (%1) must be %2").arg(result).arg(end));
+		setItemProperty("hasScriptError", true);
+	}
+	else
+	{
+		setItemProperty("hasScriptError", false);
+		item()->clearControlError();
 	}
 
 	return inBounds;
@@ -386,7 +393,10 @@ void BoundQMLTextInput::textChangedSlot()
 	_value = getItemProperty("value").toString();
 
 	if (_inputType == TextInputType::FormulaType)
-		runRScript("as.character(" + _value + ")", true);
+	{
+		if (_formula->value() != _value.toStdString())
+			runRScript("as.character(" + _value + ")", true);
+	}
 	else if (_option)
 		_setOptionValue(_option, _value);
 

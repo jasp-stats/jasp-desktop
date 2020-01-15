@@ -38,8 +38,8 @@ JASPControl
 	property string lastValidValue:		""
 	property int	fieldWidth:			jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
-	property bool	useExternalBorder:	true
-	property bool	showBorder:			useExternalBorder
+	property bool	useExternalBorder:	!parentListView
+	property bool	showBorder:			true
 	property alias	placeholderText:	control.placeholderText
 	property bool	selectValueOnFocus:	false
 	
@@ -48,6 +48,7 @@ JASPControl
 	property alias	afterLabel:			afterLabel.text
 	property string	inputType:			"string"
 	property bool	useLastValidValue:	true
+	property bool	hasScriptError:		false
 
 	property double controlXOffset:		0
 
@@ -148,8 +149,8 @@ JASPControl
 				msg += qsTr("Restoring last correct value: %1").arg(text);
 				addControlErrorTemporary(msg)
 			}
-			else
-				clearControlError();
+			else if (!hasScriptError)
+				clearControlError()
 		}
 
 		Keys.onReturnPressed:
@@ -161,7 +162,8 @@ JASPControl
 			}
 			else
 			{
-				clearControlError();
+				if (!hasScriptError)
+					clearControlError();
 				event.accepted = false;
 			}
 		}

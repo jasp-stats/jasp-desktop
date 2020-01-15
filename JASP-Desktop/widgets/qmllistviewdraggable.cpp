@@ -37,12 +37,11 @@ void QMLListViewDraggable::setUp()
 	_draggableModel = dynamic_cast<ListModelDraggable*>(model());
 	_draggableModel->setItemType(getItemProperty("itemType").toString());
 	_draggableModel->setTermsAreVariables(getItemProperty("showVariableTypeIcon").toBool());
-	QString dropMode = getItemProperty("dropMode").toString();
-	if (dropMode.isEmpty()) dropMode = "None";
-	_draggableModel->setDropMode(qmlDropModeFromQString(dropMode));
+	JASPControlBase::DropMode dropMode = JASPControlBase::DropMode(getItemProperty("dropMode").toInt());
+	_draggableModel->setDropMode(dropMode);
 	
 	QQuickItem::connect(_item, SIGNAL(itemDoubleClicked(int)),							this, SLOT(itemDoubleClickedHandler(int)));
-	QQuickItem::connect(_item, SIGNAL(itemsDropped(QVariant, QVariant, int, QString)),	this, SLOT(itemsDroppedHandler(QVariant, QVariant, int, QString)));
+	QQuickItem::connect(_item, SIGNAL(itemsDropped(QVariant, QVariant, int, int)),		this, SLOT(itemsDroppedHandler(QVariant, QVariant, int, int)));
 }
 
 void QMLListViewDraggable::itemDoubleClickedHandler(int index)
@@ -67,7 +66,7 @@ void QMLListViewDraggable::itemDoubleClickedHandler(int index)
 	moveItems(indexes, draggableTargetModel);
 }
 
-void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdropList, int dropItemIndex, QString assignOption)
+void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdropList, int dropItemIndex, int assignOption)
 {
 	QQuickItem* dropList = qobject_cast<QQuickItem*>(vdropList.value<QObject*>());
 	ListModelDraggable* dropModel = nullptr;
@@ -98,7 +97,7 @@ void QMLListViewDraggable::itemsDroppedHandler(QVariant vindexes, QVariant vdrop
 	
 	_tempDropModel = dropModel;
 	_tempDropItemIndex = dropItemIndex;
-	_tempAssignOption = assignOption;
+	_tempAssignOption = JASPControlBase::AssignType(assignOption);
 	// the call to itemsDropped is called from an item that will be removed (the items of the variable list
 	// will be re-created). So itemsDropped should not call _moveItems directly.
 	QTimer::singleShot(0, this, SLOT(moveItemsDelayedHandler()));
@@ -109,7 +108,7 @@ void QMLListViewDraggable::moveItemsDelayedHandler()
 	moveItems(_tempIndexes, _tempDropModel, _tempDropItemIndex, _tempAssignOption);
 }
 
-void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* targetModel, int dropItemIndex, const QString& assignOption)
+void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* targetModel, int dropItemIndex, JASPControlBase::AssignType assignOption)
 {
 	if (targetModel && indexes.size() > 0)
 	{

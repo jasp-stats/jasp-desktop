@@ -16,10 +16,9 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
-import JASP.Controls 1.0
-
-import JASP 1.0
+import QtQuick			2.11
+import JASP.Controls	1.0
+import JASP				1.0
 
 TextField
 {
@@ -28,11 +27,11 @@ TextField
 	property bool	negativeValues:	false
 	property int	min:			negativeValues ? -2147483647 : 0 // 2^32 - 1
 	property int	max:			2147483647
-	property string inclusive:		"Yes"
+	property alias	inclusive:		intValidator.inclusive
 	property alias	intValidator:	intValidator
     
 					inputType:		"integer"
-					validator:		JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0; inclusive: textField.inclusive }
+					validator:		JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0 }
 					lastValidValue:	defaultValue;
 					value:			defaultValue
 					cursorShape:	Qt.IBeamCursor

@@ -24,7 +24,6 @@
 #include "interactionmodel.h"
 #include "analysis/options/options.h"
 #include "analysis/options/optionterm.h"
-#include "analysis/analysisqmldefines.h"
 
 class ListModelInteractionAssigned : public ListModelAssignedInterface, public InteractionModel
 {
@@ -37,7 +36,7 @@ public:
 	void	setAvailableModel(ListModelAvailableInterface *source)							override;
 	Terms	termsFromIndexes(const QList<int> &indexes)								const	override;
 	Terms	canAddTerms(const Terms& terms) const override;
-	Terms	addTerms(const Terms& terms, int dropItemIndex = -1, const QString& assignOption = "") override;
+	Terms	addTerms(const Terms& terms, int dropItemIndex = -1, JASPControlBase::AssignType assignType = JASPControlBase::AssignType::AssignDefault) override;
 	void	moveTerms(const QList<int>& indexes, int dropItemIndex = -1)					override;
 	void	removeTerms(const QList<int> &indices)											override;
 	QString getItemType(const Term &term)											const	override;
@@ -47,7 +46,7 @@ public slots:
 	void availableTermsChanged(const Terms* termsToAdd, const Terms* termsToRemove) override;
 	
 protected:
-	void addCombinedTerms(const Terms& terms, qmlAssignType assignType);
+	void addCombinedTerms(const Terms& terms, JASPControlBase::AssignType assignType);
 	void _addTerms(const Terms& terms, bool combineWithExistingTerms);
 	
 	void setTerms();

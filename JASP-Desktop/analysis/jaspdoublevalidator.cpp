@@ -55,8 +55,8 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 			return QValidator::Invalid;
 	}
 
-	bool isMaxExclusive = _inclusive == qmlInclusiveType::No || _inclusive == qmlInclusiveType::MinOnly;
-	bool isMinExclusive = _inclusive == qmlInclusiveType::No || _inclusive == qmlInclusiveType::MaxOnly;
+	bool isMaxExclusive = _inclusive == JASPControlBase::Inclusive::None || _inclusive == JASPControlBase::Inclusive::MinOnly;
+	bool isMinExclusive = _inclusive == JASPControlBase::Inclusive::None || _inclusive == JASPControlBase::Inclusive::MaxOnly;
 
 	if (value >= 0)
 	{
@@ -83,7 +83,7 @@ QString	JASPDoubleValidator::validationMessage(const QString& fieldName)
 	if (!_isInf(bottom()))
 	{
 		hasValidation = true;
-		if (_inclusive == qmlInclusiveType::Yes || _inclusive == qmlInclusiveType::MinOnly)
+		if (_inclusive == JASPControlBase::Inclusive::MinMax || _inclusive == JASPControlBase::Inclusive::MinOnly)
 			message += tr("&#8805; %1").arg(bottom());
 		else
 			message += tr("&gt; %1").arg(bottom());
@@ -94,7 +94,7 @@ QString	JASPDoubleValidator::validationMessage(const QString& fieldName)
 		if (hasValidation)
 			message += tr(" and ");
 		hasValidation = true;
-		if (_inclusive == qmlInclusiveType::Yes || _inclusive == qmlInclusiveType::MaxOnly)
+		if (_inclusive == JASPControlBase::Inclusive::MinMax || _inclusive == JASPControlBase::Inclusive::MaxOnly)
 			message += tr("&#8804; %1").arg(top());
 		else
 			message += tr("&lt; %1").arg(top());
@@ -104,16 +104,6 @@ QString	JASPDoubleValidator::validationMessage(const QString& fieldName)
 		message = tr("No validation error");
 
 	return message;
-}
-
-QString JASPDoubleValidator::_capitalize(const QString& str, bool toCapitalize)
-{
-	QString firstLetter = str.left(1);
-	if (toCapitalize)
-		firstLetter = firstLetter.toUpper();
-	else
-		firstLetter = firstLetter.toLower();
-	return firstLetter + str.right(str.length() - 1);
 }
 
 bool JASPDoubleValidator::_isInf(double value)

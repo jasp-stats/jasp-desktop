@@ -26,6 +26,7 @@
 class ListModel;
 class BoundQMLItem;
 class Options;
+class RowControls;
 
 class QMLListView : public QObject, public virtual JASPControlWrapper
 {
@@ -49,7 +50,7 @@ public:
 	
 	QMLListView(JASPControlBase* item);
 	
-	virtual ListModel	*	model() = 0;
+	virtual ListModel	*	model()			const = 0;
 			void			setUp()			override;
 			void			cleanUp()		override;
 	
@@ -61,6 +62,10 @@ public:
 	const QList<SourceType*>& sourceModels()			const	{ return _sourceModels; }
 			bool			hasSource()					const	{ return _sourceModels.length() > 0; }
 			bool			modelHasAllVariables()		const	{ return _modelHasAllVariables; }
+
+			JASPControlWrapper* getRowControl(const QString& key, const QString& name)		const;
+			bool			addRowControl(const QString& key, JASPControlWrapper* control);
+
 
 
 	Q_INVOKABLE QString		getSourceType(QString name);
@@ -80,6 +85,9 @@ protected:
 	bool				_hasRowComponents		= false;
 	std::string			_optionKeyName;
 	bool				_modelHasAllVariables	= false;
+	RowControls*		_defaultRowControls		= nullptr;
+
+	static const QString _defaultKey;
 	
 private:
 	int		_getAllowedColumnsTypes();

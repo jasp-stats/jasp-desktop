@@ -16,14 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick 2.11
+import QtQuick	2.11
+import JASP		1.0
+
 
 VariablesList
 {
-	dropMode				: "Insert"
+	dropMode				: JASP.DropInsert
 	name					: "modelTerms"
 	title					: qsTr("Model Terms")
-	listViewType			: "Interaction"
+	listViewType			: JASP.Interaction
 
 	rowComponentsTitles		: [qsTr("Add to null model")]
 	interactionHighOrderCheckBox : "isNuisance"

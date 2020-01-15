@@ -18,6 +18,7 @@
 import QtQuick			2.12
 import JASP.Controls	1.0
 import JASP.Widgets		1.0
+import JASP				1.0
 
 Form
 {
@@ -58,7 +59,7 @@ Form
 		{
 			preferredHeight: 200
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"] }
-			AssignedVariablesList {  name: "modelTerms"; title: qsTr("Model Terms"); listViewType: "Interaction" }
+			AssignedVariablesList {  name: "modelTerms"; title: qsTr("Model Terms"); listViewType: JASP.Interaction }
 		}
 		
 		DropDown

@@ -25,7 +25,7 @@ FocusScope
 {
 	id:		welcomeRoot
 
-	property real scaler: Math.max(0.9, Math.min(1.5, 0.8 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight)))
+	property real scaler: Math.max(0.9, Math.min(1.5, 0.9 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight)))
 
 
 	FontLoader { id: latoLightFontFamily;	source: "qrc:/core/font/Lato-Light.ttf" }
@@ -186,7 +186,7 @@ FocusScope
 						verticalAlignment:	Text.AlignVCenter
 						renderType:			Text.QtRendering
 						color:				"#23a1df"
-						width:				80 * welcomeRoot.scaler
+						width:				90 * welcomeRoot.scaler
 						readOnly:			true
 						selectByKeyboard:	false
 						selectByMouse:		false
@@ -339,9 +339,9 @@ FocusScope
 			id:						blueWave
 			fillMode:				Image.TileHorizontally
 			horizontalAlignment:	Image.AlignHCenter
-			height:					100  * welcomeRoot.scaler
+			height:					sourceSize.height //200  * welcomeRoot.scaler
 			sourceSize.width:		1400 * welcomeRoot.scaler
-			sourceSize.height:		height
+			sourceSize.height:		86 * welcomeRoot.scaler
 			source:					jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
 			cache:					false
 			anchors
@@ -349,7 +349,6 @@ FocusScope
 				top:				parent.top
 				left:				parent.left
 				right:				parent.right
-
 			}
 		}
 
@@ -368,7 +367,6 @@ FocusScope
 				left:				parent.left
 				right:				parent.right
 				bottom:				parent.bottom
-
 			}
 		}
 	}

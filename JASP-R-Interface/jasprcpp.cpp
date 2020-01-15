@@ -52,6 +52,7 @@ EnDecodeDef					encodeColumnName,
 
 static logFlushDef			_logFlushFunction		= nullptr;
 static logWriteDef			_logWriteFunction		= nullptr;
+static sendFuncDef			_sendToDesktop			= nullptr;
 
 static std::string			_R_HOME = "";
 
@@ -65,6 +66,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	_logFlushFunction		= logFlushFunction;
 	_logWriteFunction		= logWriteFunction;
+	_sendToDesktop			= sendToDesktopFunction;
 
 	rinside = new RInside();
 

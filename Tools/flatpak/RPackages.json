@@ -82,8 +82,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/BH_1.69.0-1.tar.gz",
-					"sha256": "a0fd4364b7e368f09c56dec030823f52c16da0787580af7e4615eddeb99baca2"
+					"url": "http://static.jasp-stats.org/RPkgs/BH_1.72.0-3.tar.gz",
+					"sha256": "888ec1a3316bb69e1ba749b08ba7e0903ebc4742e3a185de8d148c13cddac8ab"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -432,6 +432,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/fansi_0.4.0.tar.gz",
 					"sha256": "e104e9d01c7ff8a847f6b332ef544c0ef912859f9c6a514fe2e6f3b34fcfc209"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "farver",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/farver_2.0.1.tar.gz",
+					"sha256": "71473e21727357084c6aec4bb9bb258a6797a0f676b4b27504a03f16aa2f4e54"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -1025,6 +1037,18 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
+			"name": "polyclip",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/polyclip_1.10-0.tar.gz",
+					"sha256": "74dabc0dfe5a527114f0bb8f3d22f5d1ae694e6ea9345912909bae885525d34b"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
 			"name": "polynom",
 			"buildsystem": "simple",
 			"sources": [
@@ -1078,8 +1102,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/prettyunits_1.0.2.tar.gz",
-					"sha256": "35a4980586c20650538ae1e4fed4d80fdde3f212b98546fc3c7d9469a1207f5c"
+					"url": "http://static.jasp-stats.org/RPkgs/prettyunits_1.1.0.tar.gz",
+					"sha256": "ac784e059211355ae8dfe7efbd8eb494178c1287c933b0bdf641ce4bf5dea310"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -1246,8 +1270,8 @@
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/RcppEigen_0.3.3.5.0.tar.gz",
-					"sha256": "e5c6af17770c5f57b7cf2fba04ad1a519901b446e8138bfff221952458207f05"
+					"url": "http://static.jasp-stats.org/RPkgs/RcppEigen_0.3.3.7.0.tar.gz",
+					"sha256": "62ea627284425bfdb56613bc315cca492ed3483a56a03c1f9dc9821a25c3e8ac"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -1572,6 +1596,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/truncnorm_1.0-8.tar.gz",
 					"sha256": "49564e8d87063cf9610201fbc833859ed01935cc0581b9e21c42a0d21a47c87e"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "tweenr",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/tweenr_1.0.1.tar.gz",
+					"sha256": "efd68162cd6d5a4f6d833dbf785a2bbce1cb7b9f90ba3fb060931a4bd705096b"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -2477,6 +2513,18 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
+			"name": "graphlayouts",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/graphlayouts_0.5.0.tar.gz",
+					"sha256": "83f61ce07580c5a64c7044c12b20d98ccf138c7e78ff12855cdfc206e1fab10d"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
 			"name": "hms",
 			"buildsystem": "simple",
 			"sources": [
@@ -2993,6 +3041,18 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
+			"name": "ggforce",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/ggforce_0.3.1.tar.gz",
+					"sha256": "a05271da9b226c12ae5fe6bc6eddb9ad7bfe19e1737e2bfcd6d7a89631332211"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
 			"name": "haven",
 			"buildsystem": "simple",
 			"sources": [
@@ -3029,18 +3089,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "qgraph",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/qgraph_1.6.3.tar.gz",
-					"sha256": "363791067ae640cf4bd6f7ec4a84de9c4abaa468dfc18f21890e3f3fd1e45355"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "rio",
 			"buildsystem": "simple",
 			"sources": [
@@ -3053,13 +3101,13 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "semPlot",
+			"name": "tidygraph",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/semPlot_1.1.2.tar.gz",
-					"sha256": "b987d3ea1acdd93702de01cb434646becca971828d703b1d8fa9ec1ba24f3b50"
+					"url": "http://static.jasp-stats.org/RPkgs/tidygraph_1.1.2.tar.gz",
+					"sha256": "5642001d4cccb122d66481b7c61a06c724c02007cbd356ee61cb29726a56fafe"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3077,13 +3125,13 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "graphicalVAR",
+			"name": "ggraph",
 			"buildsystem": "simple",
 			"sources": [
 				{
 					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/graphicalVAR_0.2.2.tar.gz",
-					"sha256": "681d218db5f4498efe387dbf45462fbddf96221953fc8d4443ec5feadbc2f0cb"
+					"url": "http://static.jasp-stats.org/RPkgs/ggraph_2.0.0.tar.gz",
+					"sha256": "4307efe85bfc6a0496797f6b86d6b174ba196538c51b1a6b6af55de0d4e04762"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3101,30 +3149,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "IsingFit",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/IsingFit_0.3.1.tar.gz",
-					"sha256": "8741d65b63818c927819155f13a62d21f7d7f4942b9d218e6f93ce12eeff2ddf"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "mgm",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/mgm_1.2-7.tar.gz",
-					"sha256": "5a415cf32857a1862b78e025bec950bf556c07c2077526d43a063481654f15e8"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "mice",
 			"buildsystem": "simple",
 			"sources": [
@@ -3137,30 +3161,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "NetworkComparisonTest",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/NetworkComparisonTest_2.2.1.tar.gz",
-					"sha256": "1753961e9fb41d3aae6d12392445d7468d312a5e42629d34597ffa1e6e329b28"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
-			"name": "NetworkToolbox",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "archive",
-					"url": "http://static.jasp-stats.org/RPkgs/NetworkToolbox_1.3.2.tar.gz",
-					"sha256": "6a8f5bd609b82a838515622b88f7a07f99418483d18fe89eb175bccda3600936"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "onewaytests",
 			"buildsystem": "simple",
 			"sources": [
@@ -3168,6 +3168,30 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/onewaytests_2.4.tar.gz",
 					"sha256": "464da1ebac5c8909d2d694830118d84aa913ac0647eccbbf00505d5e8dab4ae7"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "qgraph",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/qgraph_1.6.3.tar.gz",
+					"sha256": "363791067ae640cf4bd6f7ec4a84de9c4abaa468dfc18f21890e3f3fd1e45355"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "semPlot",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/semPlot_1.1.2.tar.gz",
+					"sha256": "b987d3ea1acdd93702de01cb434646becca971828d703b1d8fa9ec1ba24f3b50"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]
@@ -3204,6 +3228,66 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/candisc_0.8-0.tar.gz",
 					"sha256": "b1821c11b2fe2a1758015e2f1a626cdeb3b9966c3d09269c8339a483375f0543"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "graphicalVAR",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/graphicalVAR_0.2.2.tar.gz",
+					"sha256": "681d218db5f4498efe387dbf45462fbddf96221953fc8d4443ec5feadbc2f0cb"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "IsingFit",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/IsingFit_0.3.1.tar.gz",
+					"sha256": "8741d65b63818c927819155f13a62d21f7d7f4942b9d218e6f93ce12eeff2ddf"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "mgm",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/mgm_1.2-7.tar.gz",
+					"sha256": "5a415cf32857a1862b78e025bec950bf556c07c2077526d43a063481654f15e8"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "NetworkComparisonTest",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/NetworkComparisonTest_2.2.1.tar.gz",
+					"sha256": "1753961e9fb41d3aae6d12392445d7468d312a5e42629d34597ffa1e6e329b28"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "NetworkToolbox",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "http://static.jasp-stats.org/RPkgs/NetworkToolbox_1.3.2.tar.gz",
+					"sha256": "6a8f5bd609b82a838515622b88f7a07f99418483d18fe89eb175bccda3600936"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]

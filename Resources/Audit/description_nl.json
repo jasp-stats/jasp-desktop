@@ -17,16 +17,16 @@
 	"menu":
 	[
 		{
-			"title":    					"Workflow",
+			"title":    					"Werkproces",
 			"icon":							"audit-workflow.svg"
 		},
 		{
-			"title":						"Audit Workflow",
+			"title":						"Audit Werkproces",
 			"function":						"classicalAudit",
 			"requiresData":					true
 		},
 		{
-			"title":						"Bayesian Audit Workflow",
+			"title":						"Baysiaans Audit Werkproces",
 			"function":						"bayesianAudit",
 			"requiresData":					true
 		},
@@ -40,16 +40,16 @@
 			"requiresData":					false
 		},
 		{
-			"title":						"Bayesian Planning",
+			"title":						"Bayesiaanse Planning",
 			"function":						"bayesianPlanning",
 			"requiresData":					false
 		},
 		{
-			"title":    					"Estimation",
+			"title":    					"Schatting",
 			"icon":							"audit-estimation.svg"
 		},
 		{
-			"title":						"Estimation",
+			"title":						"Schatting",
 			"function":						"classicalEstimation",
 			"requiresData":					true
 		}

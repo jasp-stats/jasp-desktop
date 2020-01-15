@@ -444,17 +444,17 @@ test_that("Fields Book - Chapter 3 results match", {
   options$regressionCoefficientsConfidenceIntervals <- TRUE
   results <- jasptools::run("RegressionLinear", dataset = "Album Sales.csv", options)
   figure3 <- results[["state"]][["figures"]][[1]][["obj"]] # Residuals vs. Predicted
-  #expect_equal_plots(figure3, "?", dir="RegressionLinear") # This command needs to be updated
+  expect_equal_plots(figure3, "field-residuals-predicted", dir="RegressionLinear")
   figure4a <- results[["state"]][["figures"]][[4]][["obj"]] # Partial Plot Adverts
-  #expect_equal_plots(figure4a, "?", dir="RegressionLinear") # This command needs to be updated
+  expect_equal_plots(figure4a, "field-partial-adverts", dir="RegressionLinear")
   figure4b <- results[["state"]][["figures"]][[5]][["obj"]] # Partial Plot Airplay
-  #expect_equal_plots(figure4b, "?", dir="RegressionLinear") # This command needs to be updated
+  expect_equal_plots(figure4b, "field-partial-airplay", dir="RegressionLinear")
   figure4c <- results[["state"]][["figures"]][[6]][["obj"]] # Partial Plot Image
-  #expect_equal_plots(figure4c, "?", dir="RegressionLinear") # This command needs to be updated
+  expect_equal_plots(figure4c, "field-partial-attract", dir="RegressionLinear")
   figure5a <- results[["state"]][["figures"]][[2]][["obj"]] # Standardized Residuals Histogram
-  #expect_equal_plots(figure5a, "?", dir="RegressionLinear") # This command needs to be updated
+  expect_equal_plots(figure5a, "field-residuals-histogram", dir="RegressionLinear")
   figure5b <- results[["state"]][["figures"]][[3]][["obj"]] # Q-Q-Plot
-  #expect_equal_plots(figure5b, "?", dir="RegressionLinear") # This command needs to be updated
+  expect_equal_plots(figure5b, "field-qq", dir="RegressionLinear")
   output1 <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_casewiseTable"]][["data"]]
   expect_equal_tables(output1,
                       list(1, 2.177404, 330, 229.9203, 100.0797, 0.05870388, 

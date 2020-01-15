@@ -114,6 +114,19 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 		return;
 
 	BoundQMLItem* item = dynamic_cast<BoundQMLItem*>(getControl(controlName));
+	if (!item)
+	{
+		QStringList composedName = controlName.split(".");
+		if (composedName.length() == 3)
+		{
+			QMLListView* listView = dynamic_cast<QMLListView*>(getControl(composedName[0]));
+			if (listView)
+			{
+				JASPControlWrapper* control = listView->getRowControl(composedName[1], composedName[2]);
+				item = dynamic_cast<BoundQMLItem*>(control);
+			}
+		}
+	}
 
 	if (item)
 		item->rScriptDoneHandler(result);
@@ -193,7 +206,14 @@ void AnalysisForm::addControl(JASPControlBase *control)
 	{
 		const QString& name = control->name();
 		if (name.isEmpty())
-			_formErrorMessages.append(tr("A control %1 has no name").arg(control->controlType()));
+		{
+			QString label = control->property("label").toString();
+			if (label.isEmpty())
+				label = control->property("title").toString();
+
+			if (label.isEmpty())	_formErrorMessages.append(tr("Control with label '%1' has no name").arg(label));
+			else					_formErrorMessages.append(tr("A control has no name"));
+		}
 		else if (_controls.keys().contains(name))
 			_formErrorMessages.append(tr("2 controls have the same name: %1").arg(name));
 		else
@@ -545,7 +565,7 @@ QQuickItem* AnalysisForm::_getControlErrorMessageUsingThisJaspControl(JASPContro
 	return result;
 }
 
-void AnalysisForm::addControlError(QQuickItem* control, QString message, bool temporary, bool warning)
+void AnalysisForm::addControlError(JASPControlBase* control, QString message, bool temporary, bool warning)
 {
 	if (!control) return;
 
@@ -564,6 +584,9 @@ void AnalysisForm::addControlError(QQuickItem* control, QString message, bool te
 
 		if (!controlErrorMessageItem)
 		{
+			if (!_controlErrorMessageComponent) //Cannot instantiate in the constructor (it crashes), and it might be too late in the formCompletedHandler since error can be generated earlier
+				_controlErrorMessageComponent = new QQmlComponent(qmlEngine(this), "qrc:///components/JASP/Widgets/ControlErrorMessage.qml");
+
 			controlErrorMessageItem = qobject_cast<QQuickItem*>(_controlErrorMessageComponent->create());
 			if (!controlErrorMessageItem)
 			{
@@ -574,42 +597,43 @@ void AnalysisForm::addControlError(QQuickItem* control, QString message, bool te
 			_controlErrorMessageCache.append(controlErrorMessageItem);
 		}
 
+		QQuickItem* container = this;
+		if (control->parentListView())
+		{
+			container = control->parentListView()->property("listGridView").value<QQuickItem*>();
+			if (!container)
+				container = control->parentListView();
+		}
+
+		controlErrorMessageItem->setProperty("container", QVariant::fromValue(container));
 		controlErrorMessageItem->setProperty("warning", warning);
 		controlErrorMessageItem->setParentItem(control);
 		QMetaObject::invokeMethod(controlErrorMessageItem, "showMessage", Qt::DirectConnection, Q_ARG(QVariant, message), Q_ARG(QVariant, temporary));
 	}
 
-	JASPControlBase* jaspControl = qobject_cast<JASPControlBase*>(control);
-	if (jaspControl)
-	{
-		if (warning)
-			jaspControl->setHasWarning(true);
-		else
-			jaspControl->setHasError(true);
-	}
+	if (warning)
+		control->setHasWarning(true);
+	else
+		control->setHasError(true);
 }
 
 void AnalysisForm::addControlErrorSet(JASPControlBase *control, bool add)
 {
 	if (!control) return;
 
-	if (add)
-		_jaspControlsWithErrorSet.insert(control);
-	else
-		_jaspControlsWithErrorSet.remove(control);
+	if (add)	_jaspControlsWithErrorSet.insert(control);
+	else		_jaspControlsWithErrorSet.remove(control);
 }
 
 void AnalysisForm::addControlWarningSet(JASPControlBase *control, bool add)
 {
 	if (!control) return;
 
-	if (add)
-		_jaspControlsWithWarningSet.insert(control);
-	else
-		_jaspControlsWithWarningSet.remove(control);
+	if (add)	_jaspControlsWithWarningSet.insert(control);
+	else		_jaspControlsWithWarningSet.remove(control);
 }
 
-void AnalysisForm::clearControlError(QQuickItem* control)
+void AnalysisForm::clearControlError(JASPControlBase* control)
 {
 	if (!control) return;
 
@@ -619,12 +643,8 @@ void AnalysisForm::clearControlError(QQuickItem* control)
 			errorItem->setParentItem(nullptr);
 	}
 
-	JASPControlBase* jaspControl = qobject_cast<JASPControlBase*>(control);
-	if (jaspControl)
-	{
-		jaspControl->setHasError(false);
-		jaspControl->setHasWarning(false);
-	}
+	control->setHasError(false);
+	control->setHasWarning(false);
 }
 
 void AnalysisForm::clearFormErrors()
@@ -652,8 +672,6 @@ void AnalysisForm::formCompletedHandler()
 
 void AnalysisForm::_formCompletedHandler()
 {
-	_controlErrorMessageComponent = new QQmlComponent(qmlEngine(this), "qrc:///components/JASP/Widgets/ControlErrorMessage.qml");
-
 	QVariant analysisVariant = QQmlProperty(this, "analysis").read();
 	if (!analysisVariant.isNull())
 	{

@@ -21,7 +21,7 @@
 
 #include "listmodel.h"
 #include "qmllistviewdraggable.h"
-#include "analysis/analysisqmldefines.h"
+#include "analysis/jaspcontrolbase.h"
 
 class RowControls;
 
@@ -33,25 +33,25 @@ public:
 	ListModelDraggable(QMLListView* listView);
 	
 	bool copyTermsWhenDropped() const						{ return _copyTermsWhenDropped; }
-	qmlDropMode dropMode() const							{ return _dropMode; }
+	JASPControlBase::DropMode dropMode() const				{ return _dropMode; }
 	
-	void setDropMode(qmlDropMode dropMode)					{ _dropMode = dropMode; }
+	void setDropMode(JASPControlBase::DropMode dropMode)	{ _dropMode = dropMode; }
 	void setCopyTermsWhenDropped(bool copy)					{ _copyTermsWhenDropped = copy; }
 	
 	virtual Terms termsFromIndexes(const QList<int> &indexes) const;
 	virtual Terms canAddTerms(const Terms& terms) const;
-	virtual Terms addTerms(const Terms& terms, int dropItemIndex = -1, const QString& assignOption = "") ;
+	virtual Terms addTerms(const Terms& terms, int dropItemIndex = -1, JASPControlBase::AssignType assignOption = JASPControlBase::AssignType::AssignDefault) ;
 	virtual void removeTerms(const QList<int>& indexes);
 	virtual void moveTerms(const QList<int>& indexes, int dropItemIndex = -1);
 
 protected:
-	bool		_copyTermsWhenDropped;
-	bool		_addNewAvailableTermsToAssignedModel = false;
-	qmlDropMode _dropMode;
-	Terms		_tempTermsToRemove;
-	Terms		_tempTermsToAdd;
+	bool						_copyTermsWhenDropped;
+	bool						_addNewAvailableTermsToAssignedModel	= false;
+	JASPControlBase::DropMode	_dropMode								= JASPControlBase::DropMode::DropNone;
+	Terms						_tempTermsToRemove;
+	Terms						_tempTermsToAdd;
 		
-	bool		isAllowed(const Term &term) const;
+	bool						isAllowed(const Term &term) const;
 };
 
 #endif // LISTMODELDRAGGABLE_H

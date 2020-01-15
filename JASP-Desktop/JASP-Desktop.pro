@@ -158,10 +158,11 @@ win32 {
 
 macx {
     RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
+    message(" huidige pwd is: $$PWD")
 
 	equals(GENERATE_LANGUAGE_FILES,1) {
 	maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$PWD/../jasp.po ;
-  #maketranslations.commands += lupdate -locations none -extensions cpp,qml -target-language Dutch -recursive $$PWD/.. -ts $$PWD/../jasp_nl.po ;
+	maketranslations.commands += lupdate -locations none -extensions cpp,qml -target-language Dutch -recursive $$PWD/.. -ts $$PWD/../jasp_nl.po ;
 	#maketranslations.commands += lupdate -extensions h,cpp,qml -target-language japanese -recursive $$PWD/.. -ts $$PWD/../jasp_ja.po ;
 	maketranslations.commands += lrelease $$PWD/../jasp_nl.po -qm $$PWD/../Resources/Translations/jasp_nl.qm ;
 	#maketranslations.commands += lrelease $$PWD/../jasp_ja.po -qm $$PWD/../Resources/Translations/jasp_ja.qm ;
@@ -195,7 +196,6 @@ INSTALLS += Resources
 
 HEADERS += \
     analysis/analysisform.h \
-    analysis/analysisqmldefines.h \
     analysis/boundqmlitem.h \
     analysis/options/bound.h \
     analysis/options/option.h \
@@ -385,7 +385,6 @@ HEADERS += \
 
 SOURCES += \
     analysis/analysisform.cpp \
-    analysis/analysisqmldefines.cpp \
     analysis/boundqmlitem.cpp \
     analysis/options/option.cpp \
     analysis/options/optionboolean.cpp \

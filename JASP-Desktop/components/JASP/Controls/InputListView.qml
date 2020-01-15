@@ -75,6 +75,7 @@ JASPListControl
 				anchors.verticalCenter	: parent.verticalCenter
 				anchors.right			: parent.right
 				anchors.rightMargin		: deleteIconID.width
+				spacing					: inputListView.rowComponentsSpacing
 				controls				: model.rowComponents
 				enabled					: !itemWrapper.isVirtual && inputListView.enableRowComponents
 			}
@@ -107,6 +108,7 @@ JASPListControl
 			value:							isVirtual ? "" : modelValue.name
 			placeholderText:				isVirtual ? modelValue.name : ""
 			useExternalBorder:				false
+			showBorder:						false
 			selectValueOnFocus:				true
 			control.horizontalAlignment:	TextInput.AlignLeft
 			onEditingFinished:				inputListView.itemChanged(modelIndex, value)

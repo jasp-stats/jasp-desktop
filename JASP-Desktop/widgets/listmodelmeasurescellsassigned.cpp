@@ -91,7 +91,7 @@ Terms ListModelMeasuresCellsAssigned::termsFromIndexes(const QList<int> &indexes
 	return terms;
 }
 
-Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& terms, int dropItemIndex, const QString&)
+Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& terms, int dropItemIndex, JASPControlBase::AssignType)
 {
 	beginResetModel();
 	if (dropItemIndex >= 0)

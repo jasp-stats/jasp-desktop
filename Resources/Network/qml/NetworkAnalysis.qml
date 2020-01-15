@@ -158,7 +158,7 @@ Form
 
 		Group
 		{
-			title: qsTr("Tuning Parameters")
+			title: qsTr("Tuning Parameter")
 			visible: [0, 3, 5, 7].includes(estimator.currentIndex)
 			DoubleField { name: "tuningParameter"; label: qsTr("Value"); defaultValue: 0.5; max: 1 }
 		}
@@ -278,7 +278,6 @@ Form
 					DropDown
 					{
 						name: "groupColors"
-						useExternalBorder: true
 						values: ["red", "blue", "yellow", "green", "purple", "orange"]
 					}
 				}
@@ -302,7 +301,6 @@ Form
 					DropDown
 					{
 						name: "groupAssigned"
-						useExternalBorder: true
 						source: ["groupNames"]
 					}
 				}

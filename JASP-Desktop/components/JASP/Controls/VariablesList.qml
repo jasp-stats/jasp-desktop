@@ -29,20 +29,20 @@ JASPListControl
 	id						: variablesList
 	implicitHeight			: maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight
 	itemComponent			: itemVariableComponent
-	optionKey				: listViewType === "Interaction" ? "components" : "variable"
+	optionKey				: listViewType === JASP.Interaction ? "components" : "variable"
 
 	property string itemType						: "variables"
 	property alias	dropKeys						: dropArea.keys
-	property string	dropMode						: "None"
+	property int	dropMode						: JASP.DropNone
 	property bool	draggable						: true
 	property var	sortMenuModel					: null
 	property bool	showSortMenu					: true
 	property bool	singleVariable					: false
 	property int	maxRows							: (singleVariable ? 1 : -1)
-	property string listViewType					: "AvailableVariables"
+	property int	listViewType					: JASP.AvailableVariables
 	property var	allowedColumns					: []
-	property bool	dropModeInsert					: dropMode === "Insert"
-	property bool	dropModeReplace					: dropMode === "Replace"
+	property bool	dropModeInsert					: dropMode === JASP.DropInsert
+	property bool	dropModeReplace					: dropMode === JASP.DropReplace
 	property var	suggestedColumns				: []
 	property bool	showElementBorder				: false
 	property bool	showVariableTypeIcon			: true
@@ -50,7 +50,7 @@ JASPListControl
 	property bool	setHeightInForm					: false
 	property bool	interactionContainLowerTerms	: true
 	property var	interactionHighOrderCheckBox
-	property bool	addAvailableVariablesToAssigned	: listViewType === "Interaction"
+	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
 	
 	property var	interactionControl
 	property bool	addInteractionOptions			:false
@@ -68,7 +68,7 @@ JASPListControl
 	property string	searchKeys						: ""
 	
 	signal itemDoubleClicked(int index);
-	signal itemsDropped(var indexes, var dropList, int dropItemIndex, string assignOption);
+	signal itemsDropped(var indexes, var dropList, int dropItemIndex, int assignOption);
 	signal draggingChanged(var context, bool dragging);
 	signal selectedItemsChanged();
 
@@ -108,7 +108,7 @@ JASPListControl
 		var selectedItems = variablesList.model.selectedItems()
 		if (selectedItems.length === 0) return;
 
-		var assignOption = (target && target.interactionControl) ? target.interactionControl.model.get(target.interactionControl.currentIndex).value : ""
+		var assignOption = (target && target.interactionControl) ? JASP.AssignCross: JASP.AssignDefault
 		itemsDropped(selectedItems, target, -1, assignOption);
 	}
 
@@ -414,7 +414,7 @@ JASPListControl
 				property bool draggable:			variablesList.draggable && model.selectable
 				property string columnType:			isVariable && (typeof model.columnType !== "undefined") ? model.columnType : ""
 
-				enabled: variablesList.listViewType != "AvailableVariables" || !columnType || variablesList.allowedColumns.length == 0 || (variablesList.allowedColumns.indexOf(columnType) >= 0)
+				enabled: variablesList.listViewType != JASP.AvailableVariables || !columnType || variablesList.allowedColumns.length == 0 || (variablesList.allowedColumns.indexOf(columnType) >= 0)
 				
 				function setRelative(draggedRect)
 				{
@@ -458,7 +458,7 @@ JASPListControl
 				Text
 				{
 					id:						colName
-					anchors.left:			icon.right
+					anchors.left:			variablesList.showVariableTypeIcon ? icon.right : itemRectangle.left
 					anchors.leftMargin:		jaspTheme.generalAnchorMargin
 					text:					model.name
 					width:					itemRectangle.width - x - rowComponents.width
@@ -476,7 +476,7 @@ JASPListControl
 					anchors.verticalCenter	: parent.verticalCenter
 					anchors.right			: parent.right
 					anchors.rightMargin		: 3 * preferencesModel.uiScale
-
+					spacing					: variablesList.rowComponentsSpacing
 				}
 				
 				states: [

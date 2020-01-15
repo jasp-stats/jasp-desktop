@@ -25,6 +25,8 @@
 
 #include <QQmlContext>
 
+const QString QMLListView::_defaultKey = "_JASPDefaultKey";
+
 QMLListView::QMLListView(JASPControlBase *item)
 	: QObject(item)
 	, _needsSourceModels(false)
@@ -160,8 +162,13 @@ void QMLListView::addRowComponentsDefaultOptions(Options *options)
 	if (!_hasRowComponents)
 		return;
 
-	RowControls* controls = new RowControls(this->model(), item()->getRowComponents(), QMap<QString, Option*>(), 0, "", true);
-	const QMap<QString, JASPControlWrapper*>& map = controls->getJASPWrapperMap();
+	if (_defaultRowControls)
+		delete _defaultRowControls;
+
+	_defaultRowControls = new RowControls(this->model(), item()->getRowComponents(), QMap<QString, Option*>(), true);
+	_defaultRowControls->init(0, _defaultKey);
+
+	const QMap<QString, JASPControlWrapper*>& map = _defaultRowControls->getJASPControlsMap();
 	QMapIterator<QString, JASPControlWrapper*> it(map);
 
 	while (it.hasNext())
@@ -175,7 +182,6 @@ void QMLListView::addRowComponentsDefaultOptions(Options *options)
 			options->add(boundItem->name().toStdString(), option);
 		}
 	}
-	delete controls;
 }
 
 void QMLListView::readModelProperty(QMap<QString, QString>* keyValueMap)
@@ -281,6 +287,26 @@ void QMLListView::setTermsAreNotVariables()
 void QMLListView::setTermsAreInteractions()
 {
 	model()->setTermsAreInteractions(true);
+}
+
+bool QMLListView::addRowControl(const QString &key, JASPControlWrapper *control)
+{
+	bool success = false;
+
+	if (key == _defaultKey)
+	{
+		if (_defaultRowControls)
+			success = _defaultRowControls->addJASPControl(control);
+	}
+	else
+		success = model()->addRowControl(key, control);
+
+	return success;
+}
+
+JASPControlWrapper *QMLListView::getRowControl(const QString &key, const QString &name) const
+{
+	return model()->getRowControl(key, name);
 }
 
 QString QMLListView::getSourceType(QString name)
