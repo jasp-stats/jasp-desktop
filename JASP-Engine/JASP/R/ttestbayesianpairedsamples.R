@@ -90,13 +90,13 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
           if (!is.null(error) && is.na(error) && grepl("approximation", r[["method"]])) {
             error <- NaN
             ttestTable$addFootnote(
-              message = "t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given.",
+              message = gettext("t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given."),
               symbol = "", rowNames = var, colNames = "error")
           }
           if (is.null(error) && options[["effectSizeStandardized"]] == "informative" && 
               options[["informativeStandardizedEffectSize"]] == "normal") {
             error <- NA_real_
-            ttestTable$addFootnote(message = "No error estimate is available for normal priors.")
+            ttestTable$addFootnote(message = gettext("No error estimate is available for normal priors."))
           }
         }
         BF <- .recodeBFtype(bfOld     = bf.raw,
@@ -123,7 +123,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
 
 .ttestBPSTTestMarkup <- function(options) {
 
-  jaspTable <- createJaspTable(title = "Bayesian Paired Samples T-Test")
+  jaspTable <- createJaspTable(title = gettext("Bayesian Paired Samples T-Test"))
   jaspTable$dependOn(c("bayesFactorType", "pairs"))
 
   if (options[["effectSizeStandardized"]] == "default") {
@@ -153,7 +153,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
   } else {
     fmt <- "sf:4;dp:3;~"
   }
-  jaspTable$addColumnInfo(name = "error", type = "number", format = fmt, title = "error %")
+  jaspTable$addColumnInfo(name = "error", type = "number", format = fmt, title = gettext("error %"))
   return(jaspTable)
 }
 

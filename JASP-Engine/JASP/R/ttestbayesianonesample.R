@@ -28,8 +28,8 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
   ttestTable <- .ttestBOSTTestMarkup(options)
   ttestResults <- .ttestBayesianEmptyObject(options, derivedOptions, ttestState)
   ttestContainer[["ttestTable"]] <- ttestTable
-	if (!derivedOptions[["ready"]])
-	  return(ttestResults)
+  if (!derivedOptions[["ready"]])
+    return(ttestResults)
 
   dependents <- options[["variables"]]
 
@@ -41,7 +41,7 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
   oneSided <- derivedOptions[["oneSided"]]
   bf.type <- options[["bayesFactorType"]]
-	BFH1H0 <- ttestResults[["BFH1H0"]]
+  BFH1H0 <- ttestResults[["BFH1H0"]]
   .ttestBayesianInitBayesFactorPackageOptions()
 
   for (var in dependents[!alreadyComputed]) {
@@ -68,9 +68,9 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
       if (isTryError(r)) {
 
         errorMessage <- .extractErrorMessage(r)
-    		ttestResults[["status"]][var] <- "error"
-    		ttestResults[["errorFootnotes"]][[var]] <- errorMessage
-    		ttestTable$addFootnote(message = errorMessage, rowNames = var)
+        ttestResults[["status"]][var] <- "error"
+        ttestResults[["errorFootnotes"]][[var]] <- errorMessage
+        ttestTable$addFootnote(message = errorMessage, rowNames = var)
 
       } else {
 
@@ -83,14 +83,14 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
         if (!is.null(error) && is.na(error) && grepl("approximation", r[["method"]])) {
           error <- NaN
-          message <- "t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given."
+          message <- gettext("t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given.")
           ttestTable$addFootnote(message = message, symbol = "", rowNames = var, colNames = "error")
           ttestResults[["footnotes"]][[var]] <- c(ttestResults[["footnotes"]][[var]], message)
         }
         if (is.null(error) && options[["effectSizeStandardized"]] == "informative" && 
             options[["informativeStandardizedEffectSize"]] == "normal") {
           error <- NA_real_
-          message <- "No error estimate is available for normal priors."
+          message <- gettext("No error estimate is available for normal priors.")
           ttestTable$addFootnote(message = message)
           ttestResults[["globalFootnotes"]] <- c(ttestResults[["globalFootnotes"]], message)
         }
@@ -122,15 +122,15 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
 .ttestBOSTTestMarkup <- function(options) {
 
-  jaspTable <- createJaspTable(title = "Bayesian One Sample T-Test")
-	jaspTable$dependOn(c("bayesFactorType", "variables", "testValue"))
+  jaspTable <- createJaspTable(title = gettext("Bayesian One Sample T-Test"))
+  jaspTable$dependOn(c("bayesFactorType", "variables", "testValue"))
 
   if (options[["effectSizeStandardized"]] == "default") {
     citations <- .ttestBayesianCitations[c("MoreyEtal2015", "RouderEtal2009")]
   } else if (options[["effectSizeStandardized"]] == "informative") {
     citations <- .ttestBayesianCitations["GronauEtal2017"]
   }
-	jaspTable$addCitation(citations)
+  jaspTable$addCitation(citations)
 
   bfType <- options[["bayesFactorType"]]
 	hypothesis <- switch(options[["hypothesis"]],
@@ -141,16 +141,23 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 	bfTitle <- .ttestBayesianGetBFTitle(bfType, hypothesis)
 
   if (!(options[["hypothesis"]] == "notEqualToTestValue" && options[["testValue"]] == 0)) {
-    m0 <- "For all tests, the alternative hypothesis specifies that the population"
     testValueFormatted <- format(options[["testValue"]], drop0trailing = TRUE)
-    m1 <- switch(
+    message <- switch(
       options[["hypothesis"]],
-      "greaterThanTestValue" = "mean is greater than %s.",
-      "lessThanTestValue"    = "mean is less than %s.",
-      "notEqualToTestValue"  = "mean differs from %s."
+      "greaterThanTestValue" = gettextf(
+        "For all tests, the alternative hypothesis specifies that the population mean is greater than %s.", 
+        testValueFormatted
+      ),
+      "lessThanTestValue"    = gettextf(
+        "For all tests, the alternative hypothesis specifies that the population mean is less than %s.", 
+        testValueFormatted
+      ),
+      "notEqualToTestValue"  = gettextf(
+        "For all tests, the alternative hypothesis specifies that the population mean differs from %s.", 
+        testValueFormatted
+      )
     )
-    message <- sprintf(paste(m0, m1), testValueFormatted)
-    jaspTable$addFootnote(message = message, symbol = "<em>Note.</em>")
+    jaspTable$addFootnote(message = message, symbol = gettext("<em>Note.</em>"))
   }
 
   jaspTable$addColumnInfo(name = "variable", title = "",      type = "string")
@@ -161,7 +168,7 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
   } else {
     fmt <- "sf:4;dp:3;~"
   }
-  jaspTable$addColumnInfo(name = "error", type = "number", format = fmt, title = "error %")
+  jaspTable$addColumnInfo(name = "error", type = "number", format = fmt, title = gettext("error %"))
   return(jaspTable)
 }
 

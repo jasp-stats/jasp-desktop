@@ -231,7 +231,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
       if (nGraphs == 1L) {
         text <- gettext("Minimum edge strength ignored in the network plot because it was larger than the absolute value of the strongest edge.")
       } else {
-        text <- gettextf("Minimum edge strength ignored in the network plot of group%s %s because it was larger than the absolute value of the strongest edge.",
+        text <- gettextf("Minimum edge strength ignored in the network plot of group%1$s %2$s because it was larger than the absolute value of the strongest edge.",
                         ifelse(sum(ignored) == 2L, "s", ""),
                         paste0(names(network[["network"]])[ignored], collapse = ", ")
         )
@@ -268,10 +268,10 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     return()
 
   nGraphs <- max(1L, length(network[["network"]]))
-  table <- createJaspTable(gettext("Centrality measures per variable"), position = 2,
+  table <- createJaspTable(gettext("Centrality measures per variable"), position = 2, 
                            dependencies = c("tableCentrality", "normalizeCentrality", "maxEdgeStrength", "minEdgeStrength"))
-  table$addColumnInfo(name = "Variable", title = "Variable", type = "string")
-
+  table$addColumnInfo(name = "Variable", title = gettext("Variable"), type = "string")
+  
   # shared titles
   overTitles <- names(network[["network"]])
   if (is.null(overTitles))
@@ -362,8 +362,8 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (any(nMeasures != 4L)) {
     nms <- names(network[["network"]])[nMeasures != 4L]
     s <- if (length(nms) == 1L) "" else "s"
-    text <- gettextf("Clustering measures could not be computed for network%s: %s",
-                    s, paste0(nms, collapse = ", "))
+    text <- gettextf("Clustering measures could not be computed for network%1$s: %2$s",
+                     s, paste0(nms, collapse = ", "))
     table$addFootnote(text, symbol = gettext("<em>Warning: </em>"))
   }
 }
@@ -426,7 +426,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
   bootstrapType <- options[["BootstrapType"]]
   substr(bootstrapType, 1, 1) <- toupper(substr(bootstrapType, 1, 1)) # capitalize first letter
-
+  
   table <- createJaspTable(title = gettext("Bootstrap summary of Network"), position = position)
   table$addColumnInfo(name = "type",               title = gettext("Type"), type = "string")
   table$addColumnInfo(name = "numberOfBootstraps", title = gettext("Number of bootstraps"), type = "integer")
@@ -1349,7 +1349,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     errors <-  c(errors, list(list(
       matches = unlist(matches[trouble, ]),
       type = "missingMatch",
-      message = gettextf("Some variables were not matched in the column names of the dataset.")
+      message = gettext("Some variables were not matched in the column names of the dataset.")
     )))
 
     matches <- matches[!trouble, ]
@@ -1422,14 +1422,13 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (checksX[["errors"]][["fatal"]] || checksY[["errors"]][["fatal"]]) {
 
     if (checksX[["errors"]][["fatal"]] && checksY[["errors"]][["fatal"]]) {
-      firstLine <- gettextf("Data supplied in %s AND %s could not be used to determine node locations.", nameX, nameY)
+      firstLine <- gettextf("Data supplied in %1$s AND %2$s could not be used to determine node locations.", nameX, nameY)
     } else if (checksX[["errors"]][["fatal"]]) {
       firstLine <- gettextf("Data supplied in %s could not be used to determine node locations.", nameX)
     } else {
       firstLine <- gettextf("Data supplied in %s could not be used to determine node locations.", nameY)
     }
-
-    message <- gettextf("%s %sData should only contain numeric:
+    message <- gettextf("%1$s %2$sData should only contain numeric:
                  -start with the column name of the variable.
                  -contain an '=' to distinghuish betweem column name and coordinate.",
                        defMsg, firstLine)
@@ -1493,7 +1492,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     }
 
     newData <- rbind(newData, cbind(checks[["unmatched"]], undefGroup))
-    message <- gettextf("Some entries of %s were not understood. These are now grouped under '%s'.",
+    message <- gettextf("Some entries of %1$s were not understood. These are now grouped under '%2$s'.",
                        options[["colorNodesBy"]], undefGroup)
   }
   newData <- newData[match(variables, newData[, 1]), ]
@@ -1577,7 +1576,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
                                 is.ordered(x) | is.integer(x))
         if (!all(goodColumns)) {
           if (verbose) {
-            warning(paste0("Removing non-numeric columns: ",
+            warning(paste0(gettext("Removing non-numeric columns: "),
                            paste(which(!goodColumns), collapse = "; ")))
           }
           data <- data[, goodColumns, drop = FALSE]
@@ -1849,7 +1848,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
     # if aborted
     if (inherits(bootResults, "warning")) {
-      if (bootResults$message == "progress function failed: Cancelled by callback") {
+      if (bootResults$message == gettext("progress function failed: Cancelled by callback")) {
         return()
       }
     }

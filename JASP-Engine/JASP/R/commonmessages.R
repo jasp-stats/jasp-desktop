@@ -20,53 +20,54 @@
   
   ### Error general
   m$error$opening <- 
-  "The following problem(s) occurred while running the analysis:"
+    gettext("The following problem(s) occurred while running the analysis:")
   m$error$grouping <- 
-  "after grouping on {{grouping}}"
+    gettextf("after grouping on %s", "{{grouping}}")
   m$error$fatalError <- 
-  "This analysis terminated unexpectedly.<br><br>{{error}}<br><div class=stack-trace-selector><span>Stack trace</span><div class=stack-trace-arrow></div></div><div class=stack-trace>{{stackTrace}}</div><br>To receive assistance with this problem, please report the message above at: https://jasp-stats.org/bug-reports"
+    gettextf("This analysis terminated unexpectedly. %s To receive assistance with this problem, please report the message above at: https://jasp-stats.org/bug-reports",
+             "<br><br>{{error}}<br><div class=stack-trace-selector><span>Stack trace</span><div class=stack-trace-arrow></div></div><div class=stack-trace>{{stackTrace}}</div><br>")
   
   ### Error checks
   m$error$infinity <- 
-  "Infinity found in {{variables}}"  
+    gettextf("Infinity found in %s", "{{variables}}")
   m$error$factorLevels <- 
-  "Number of factor levels is {{factorLevels.amount}} in {{variables}}"  
+    gettextf("Number of factor levels is %s in %s", "{{factorLevels.amount}}", "{{variables}}")
   m$error$variance <- 
-  "The variance in {{variables}} is equal to {{variance.equalTo}}"  
+    gettextf("The variance in %s is equal to %s", "{{variables}}", "{{variance.equalTo}}")
   m$error$observations <- 
-  "Number of observations is {{observations.amount}} in {{variables}}"  
+    gettextf("Number of observations is %s in %s", "{{observations.amount}}", "{{variables}}")
   m$error$levene <- 
-  "Cannot compute statistic reliably: number of observations is {{observations.amount}} in {{variables}}"
+    gettextf("Cannot compute statistic reliably: number of observations is %s in %s", "{{observations.amount}}", "{{variables}}")
   m$error$limits <-
-  "Values in {{variables}} outside interval [{{limits.min}}, {{limits.max}}]"
+    gettextf("Values in %s outside interval [%s, %s]", "{{variables}}", "{{limits.min}}", "{{limits.max}}")
   m$error$varCovMatrix <- 
-  "Dataset is not a proper variance-covariance matrix. Please load only a positive definite symmetrical matrix as your dataset."
+    gettext("Dataset is not a proper variance-covariance matrix. Please load only a positive definite symmetrical matrix as your dataset.")
   m$error$varCovData <- 
-  "The variance-covariance matrix of the supplied data is not positive-definite. Please check if variables have many missings observations or are collinear"
+    gettext("The variance-covariance matrix of the supplied data is not positive-definite. Please check if variables have many missings observations or are collinear")
   m$error$modelInteractions <-
-  "Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included"
+    gettext("Main effects and lower-order interactions must be included whenever the corresponding higher-order interaction is included")
   m$error$negativeValues <-
-  "Negative numbers found in {{variables}}"
+    gettextf("Negative numbers found in %s", "{{variables}}")
   m$error$missingValues <-
-  "Missing values encountered in {{variables}}"
+    gettextf("Missing values encountered in %s", "{{variables}}")
   m$error$duplicateColumns <-
-  "Duplicate variables encountered in {{variables}}"
+    gettextf("Duplicate variables encountered in %s", "{{variables}}")
   
   ### Footnotes
   m$footnote$leveneSign <- 
-  "Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"
+    gettext("Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption")
   m$footnote$VovkSellkeMPR <-
-  "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001)."
+    gettext("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001).")
   m$footnote$binomNeq <- 
-  "Proportions tested against value: {{value}}."
+    gettextf("Proportions tested against value: %s", "{{value}}.")
   m$footnote$binomLess <- 
-  "For all tests, the alternative hypothesis specifies that the proportion is less than {{value}}."
+    gettextf("For all tests, the alternative hypothesis specifies that the proportion is less than %s", "{{value}}.")
   m$footnote$binomGreater <- 
-  "For all tests, the alternative hypothesis specifies that the proportion is greater than {{value}}."
+    gettextf("For all tests, the alternative hypothesis specifies that the proportion is greater than %s", "{{value}}.")
   
   message <- m[[class]][[type]]
   if (is.null(message))
-    stop(paste("Could not find message for class", class, "and type", type))
+    stop(gettextf("Could not find message for class %s and type %s", as.character(class), as.character(type)))
   
   args <- list(...)
   if (length(args) > 0)

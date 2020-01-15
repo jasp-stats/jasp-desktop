@@ -47,7 +47,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   
   # Check for missing value handling
   if (options$estimator %in% c("GLS", "WLS", "ULS", "DWLS") && options$missing == "fiml")
-    .quitAnalysis("FIML only available with ML-type estimators.")
+    .quitAnalysis(gettext("FIML only available with ML-type estimators."))
   
   # Exogenous variables can be binary or continuous
   exo <- ifelse(length(options$confounds) > 0, options$confounds, options$predictor)
@@ -63,10 +63,10 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
         return(TRUE)
       }, TRUE)
       if (!all(admissible))
-        paste("Not all exogenous variables are admissible.",
-              "Inadmissible exogenous variables:",
+        paste(gettext("Not all exogenous variables are admissible."),
+              gettext("Inadmissible exogenous variables:"),
               paste(exo[!admissible], collapse = ","),
-              ". Only binary or continuous exogenous variables allowed.")
+              gettext(". Only binary or continuous exogenous variables allowed."))
     },
     
     checkEndogenous = function() {
@@ -79,10 +79,10 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
         return(TRUE)
       }, TRUE)
       if (!all(admissible))
-        paste("Not all endogenous variables are admissible.",
-              "Inadmissible endogenous variables:",
+        paste(gettext("Not all endogenous variables are admissible."),
+              gettext("Inadmissible endogenous variables:"),
               paste(endo[!admissible], collapse = ","),
-              ". Only scale or ordinal endogenous variables allowed.")
+              gettext(". Only scale or ordinal endogenous variables allowed."))
     }
     
   )
@@ -108,7 +108,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   ))
   
   if (inherits(medResult, "try-error")) {
-    errmsg <- paste("Estimation failed\nMessage:\n", attr(medResult, "condition")$message)
+    errmsg <- paste(gettext("Estimation failed\nMessage:\n"), attr(medResult, "condition")$message)
     modelContainer$setError(.decodeVarsInMessage(names(dataset), errmsg))
   }
 
@@ -264,61 +264,61 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
 .medParTable <- function(modelContainer, dataset, options, ready) {
   if (!is.null(modelContainer[["parest"]])) return()
-  modelContainer[["parest"]] <- pecont <- createJaspContainer("Parameter estimates")
+  modelContainer[["parest"]] <- pecont <- createJaspContainer(gettext("Parameter estimates"))
   pecont$dependOn(options = c("ciWidth", "bootCItype"))
   pecont$position <- 0
   
   ## direct effects
-  dirtab <- createJaspTable(title = "Direct effects")
+  dirtab <- createJaspTable(title = gettext("Direct effects"))
   
-  dirtab$addColumnInfo(name = "lhs",      title = "",           type = "string")
-  dirtab$addColumnInfo(name = "op",       title = "",           type = "string")
-  dirtab$addColumnInfo(name = "rhs",      title = "",           type = "string")
-  dirtab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
-  dirtab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
-  dirtab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
-  dirtab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
-  dirtab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  dirtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  dirtab$addColumnInfo(name = "lhs",      title = "",                    type = "string")
+  dirtab$addColumnInfo(name = "op",       title = "",                    type = "string")
+  dirtab$addColumnInfo(name = "rhs",      title = "",                    type = "string")
+  dirtab$addColumnInfo(name = "est",      title = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
+  dirtab$addColumnInfo(name = "se",       title = gettext("Std. Error"), type = "number", format = "sf:4;dp:3")
+  dirtab$addColumnInfo(name = "z",        title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
+  dirtab$addColumnInfo(name = "pvalue",   title = gettext("p"),          type = "number", format = "dp:3;p:.001")
+  dirtab$addColumnInfo(name = "ci.lower", title = gettext("Lower"),      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+  dirtab$addColumnInfo(name = "ci.upper", title = gettext("Upper"),      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
   
   
   pecont[["dir"]] <- dirtab
   
   ## indirect effects
-  indtab <- createJaspTable(title = "Indirect effects")
+  indtab <- createJaspTable(title = gettext("Indirect effects"))
   
-  indtab$addColumnInfo(name = "x",        title = "",           type = "string")
-  indtab$addColumnInfo(name = "op1",      title = "",           type = "string")
-  indtab$addColumnInfo(name = "m",        title = "",           type = "string")
-  indtab$addColumnInfo(name = "op2",      title = "",           type = "string")
-  indtab$addColumnInfo(name = "y",        title = "",           type = "string")
-  indtab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
-  indtab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
-  indtab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
-  indtab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
-  indtab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  indtab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  indtab$addColumnInfo(name = "x",        title = "",                    type = "string")
+  indtab$addColumnInfo(name = "op1",      title = "",                    type = "string")
+  indtab$addColumnInfo(name = "m",        title = "",                    type = "string")
+  indtab$addColumnInfo(name = "op2",      title = "",                    type = "string")
+  indtab$addColumnInfo(name = "y",        title = "",                    type = "string")
+  indtab$addColumnInfo(name = "est",      title = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
+  indtab$addColumnInfo(name = "se",       title = gettext("Std. Error"), type = "number", format = "sf:4;dp:3")
+  indtab$addColumnInfo(name = "z",        title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
+  indtab$addColumnInfo(name = "pvalue",   title = gettext("p"),          type = "number", format = "dp:3;p:.001")
+  indtab$addColumnInfo(name = "ci.lower", title = gettext("Lower"),      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+  indtab$addColumnInfo(name = "ci.upper", title = gettext("Upper"),      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
   
   pecont[["ind"]] <- indtab
   
   ## total effects
   tottab <- createJaspTable(title = "Total effects")
   
-  tottab$addColumnInfo(name = "lhs",      title = "",           type = "string")
-  tottab$addColumnInfo(name = "op",       title = "",           type = "string")
-  tottab$addColumnInfo(name = "rhs",      title = "",           type = "string")
-  tottab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
-  tottab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
-  tottab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
-  tottab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
-  tottab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  tottab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  tottab$addColumnInfo(name = "lhs",      title = "",                    type = "string")
+  tottab$addColumnInfo(name = "op",       title = "",                    type = "string")
+  tottab$addColumnInfo(name = "rhs",      title = "",                    type = "string")
+  tottab$addColumnInfo(name = "est",      title = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
+  tottab$addColumnInfo(name = "se",       title = gettext("Std. Error"), type = "number", format = "sf:4;dp:3")
+  tottab$addColumnInfo(name = "z",        title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
+  tottab$addColumnInfo(name = "pvalue",   title = gettext("p"),          type = "number", format = "dp:3;p:.001")
+  tottab$addColumnInfo(name = "ci.lower", title = gettext("Lower"),      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+  tottab$addColumnInfo(name = "ci.upper", title = gettext("Upper"),      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
   
   pecont[["tot"]] <- tottab
   
@@ -378,20 +378,20 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 .medTotIndTable <- function(modelContainer, options, ready) {
   if (!options[["showtotind"]] || !length(options$mediators) > 1) return()
   
-  ttitab <- createJaspTable(title = "Total indirect effects")
+  ttitab <- createJaspTable(title = gettext("Total indirect effects"))
   ttitab$dependOn("showtotind")
   
-  ttitab$addColumnInfo(name = "lhs",      title = "",           type = "string")
-  ttitab$addColumnInfo(name = "op",       title = "",           type = "string")
-  ttitab$addColumnInfo(name = "rhs",      title = "",           type = "string")
-  ttitab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
-  ttitab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
-  ttitab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
-  ttitab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
-  ttitab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  ttitab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  ttitab$addColumnInfo(name = "lhs",      title = "",                    type = "string")
+  ttitab$addColumnInfo(name = "op",       title = "",                    type = "string")
+  ttitab$addColumnInfo(name = "rhs",      title = "",                    type = "string")
+  ttitab$addColumnInfo(name = "est",      title = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
+  ttitab$addColumnInfo(name = "se",       title = gettext("Std. Error"), type = "number", format = "sf:4;dp:3")
+  ttitab$addColumnInfo(name = "z",        title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
+  ttitab$addColumnInfo(name = "pvalue",   title = gettext("p"),          type = "number", format = "dp:3;p:.001")
+  ttitab$addColumnInfo(name = "ci.lower", title = gettext("Lower"),      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+  ttitab$addColumnInfo(name = "ci.upper", title = gettext("Upper"),      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
 
   modelContainer[["parest"]][["tti"]] <- ttitab
   
@@ -418,20 +418,20 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 .medResTable <- function(modelContainer, options, ready) {
   if (!options[["showres"]] || !length(c(options$mediators, options$dependent)) > 2) return()
   
-  restab <- createJaspTable(title = "Residual covariances")
+  restab <- createJaspTable(title = gettext("Residual covariances"))
   restab$dependOn("showres")
   
-  restab$addColumnInfo(name = "lhs",      title = "",           type = "string")
-  restab$addColumnInfo(name = "op",       title = "",           type = "string")
-  restab$addColumnInfo(name = "rhs",      title = "",           type = "string")
-  restab$addColumnInfo(name = "est",      title = "Estimate",   type = "number", format = "sf:4;dp:3")
-  restab$addColumnInfo(name = "se",       title = "Std. Error", type = "number", format = "sf:4;dp:3")
-  restab$addColumnInfo(name = "z",        title = "z-value",    type = "number", format = "sf:4;dp:3")
-  restab$addColumnInfo(name = "pvalue",   title = "p",          type = "number", format = "dp:3;p:.001")
-  restab$addColumnInfo(name = "ci.lower", title = "Lower",      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  restab$addColumnInfo(name = "ci.upper", title = "Upper",      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  restab$addColumnInfo(name = "lhs",      title = "",                    type = "string")
+  restab$addColumnInfo(name = "op",       title = "",                    type = "string")
+  restab$addColumnInfo(name = "rhs",      title = "",                    type = "string")
+  restab$addColumnInfo(name = "est",      title = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
+  restab$addColumnInfo(name = "se",       title = gettext("Std. Error"), type = "number", format = "sf:4;dp:3")
+  restab$addColumnInfo(name = "z",        title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
+  restab$addColumnInfo(name = "pvalue",   title = gettext("p"),          type = "number", format = "dp:3;p:.001")
+  restab$addColumnInfo(name = "ci.lower", title = gettext("Lower"),      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+  restab$addColumnInfo(name = "ci.upper", title = gettext("Upper"),      type = "number", format = "sf:4;dp:3",
+                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
   
   modelContainer[["parest"]][["res"]] <- restab 
   
@@ -462,28 +462,28 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 .medFootMessage <- function(modelContainer, options) {
   # Create the footnote message
   se_type <- switch(options$se,
-    "bootstrap" = "Delta method",
-    "standard"  = "Delta method",
-    "robust"    = "Robust"
+    "bootstrap" = gettext("Delta method"),
+    "standard"  = gettext("Delta method"),
+    "robust"    = gettext("Robust")
   )
   ci_type <- switch(options$se,
     "bootstrap" = switch(options$bootCItype, 
-      "perc"       = "percentile bootstrap", 
-      "norm"       = "normal theory bootstrap", 
-      "bca.simple" = "bias-corrected percentile bootstrap"
+      "perc"       = gettext("percentile bootstrap"), 
+      "norm"       = gettext("normal theory bootstrap"), 
+      "bca.simple" = gettext("bias-corrected percentile bootstrap")
     ),
-    "standard"  = "normal theory",
-    "robust"    = "robust"
+    "standard"  = gettext("normal theory"),
+    "robust"    = gettext("robust")
   )
   
   if (is.null(modelContainer[["model"]][["object"]])) {
     return(paste0(
-      se_type, " standard errors, ", ci_type, " confidence intervals."
+      se_type, gettext(" standard errors, "), ci_type, gettext(" confidence intervals.")
     ))
   } else {
     return(paste0(
-      se_type, " standard errors, ", ci_type, " confidence intervals, ", 
-      modelContainer[["model"]][["object"]]@Options$estimator, " estimator."
+      se_type, gettext(" standard errors, "), ci_type, gettext(" confidence intervals, "), 
+      modelContainer[["model"]][["object"]]@Options$estimator, gettext(" estimator.")
     ))
   }
   
@@ -492,7 +492,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 .medRsquared <- function(modelContainer, options, ready) {
   if (!options$rsquared || !is.null(modelContainer[["rsquared"]])) return()
   
-  tabr2 <- createJaspTable("R-Squared")
+  tabr2 <- createJaspTable(gettext("R-Squared"))
   tabr2$addColumnInfo(name = "__var__", title = "", type = "string")
   tabr2$addColumnInfo(name = "rsq", title = "R\u00B2", type = "number", format = "sf:4;dp:3")
   tabr2$dependOn(options = "rsquared")
@@ -510,7 +510,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 .medPathPlot <- function(modelContainer, options, ready) {
   if (!options$pathplot || !ready || !is.null(modelContainer[["plot"]])) return()
   
-  plt <- createJaspPlot(title = "Path plot", width = 600, height = 400)
+  plt <- createJaspPlot(title = gettext("Path plot"), width = 600, height = 400)
   plt$dependOn(options = c("pathplot", "plotpars", "plotlegend"))
   plt$position <- 2
   
@@ -606,7 +606,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
 
 .medSyntax <- function(modelContainer, options, ready) {
   if (!options$showSyntax || !ready) return()
-  modelContainer[["syntax"]] <- createJaspHtml(.medToLavMod(options, FALSE), class = "jasp-code", title = "Model syntax")
+  modelContainer[["syntax"]] <- createJaspHtml(.medToLavMod(options, FALSE), class = "jasp-code", title = gettext("Model syntax"))
   modelContainer[["syntax"]]$dependOn("showSyntax")
   modelContainer[["syntax"]]$position <- 3
 }
