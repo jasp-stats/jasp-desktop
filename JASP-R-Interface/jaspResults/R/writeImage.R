@@ -20,40 +20,44 @@ getImageLocation <- function() {
 }
 
 openGrDevice <- function(...) {
-  if (jaspResultsCalledFromJasp())
-    svglite::svglite(...)
-  else
-    grDevices::png(..., units="in", res = 72, type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
+  #if (jaspResultsCalledFromJasp())
+  #  svglite::svglite(...)
+  #else
+  grDevices::png(..., type = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"))
 }
 
-writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathsvg=NULL, ppi=300, backgroundColor="white", location=getImageLocation())
+writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativePathpng=NULL, ppi=300, backgroundColor="white", location=getImageLocation())
 {
   # Set values from JASP'S Rcpp when available
   if (exists(".fromRCPP")) {
-    location        <- .fromRCPP(".requestTempFileNameNative", "svg")
+    location        <- .fromRCPP(".requestTempFileNameNative", "png")
     backgroundColor <- .fromRCPP(".imageBackground")
     ppi             <- .fromRCPP(".ppi")
   }
 
   # TRUE if called from analysis, FALSE if called from editImage
-  if (is.null(relativePathsvg))
-    relativePathsvg <- location$relativePath
+  if (is.null(relativePathpng))
+    relativePathpng <- location$relativePath
 
   image                           <- list()
-  fullPathpng                     <- paste(location$root, relativePathsvg, sep="/")
+  fullPathpng                     <- paste(location$root, relativePathpng, sep="/")
   plotEditingOptions              <- NULL
   root                            <- location$root
-  base::Encoding(relativePathsvg) <- "UTF-8"
+  base::Encoding(relativePathpng) <- "UTF-8"
   base::Encoding(root)            <- "UTF-8"
   oldwd                           <- getwd()
   setwd(root)
   on.exit(setwd(oldwd))
-
-  # convert width & height from pixels to inches. ppi = pixels per inch. 72 is a magic number inherited from the past.
-  # originally, this number was 96 but svglite scales this by (72/96 = 0.75). 0.75 * 96 = 72.
-  # for reference see https://cran.r-project.org/web/packages/svglite/vignettes/scaling.html
-  width  <- width  / 72
-  height <- height / 72
+  
+  # IN CASE WE SWITCH TO SVG:
+  # # convert width & height from pixels to inches. ppi = pixels per inch. 72 is a magic number inherited from the past.
+  # # originally, this number was 96 but svglite scales this by (72/96 = 0.75). 0.75 * 96 = 72.
+  # # for reference see https://cran.r-project.org/web/packages/svglite/vignettes/scaling.html
+  # width  <- width / 72
+  # height <- height / 72
+  
+  width  <- width * (ppi / 96)
+  height <- height * (ppi / 96)
 
   plot2draw <- decodeplot(plot)
 
@@ -61,13 +65,15 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
 
     # TODO: ggsave adds very little when we use a function as device...
     ggplot2::ggsave(
-      filename  = relativePathsvg,
+      filename  = relativePathpng, 
       plot      = plot2draw,
+      device    = grDevices::png,
       dpi       = ppi,
       width     = width,
       height    = height,
-      units     = "in", 
       bg        = backgroundColor,
+      res       = 72 * (ppi / 96),
+      type      = ifelse(Sys.info()["sysname"] == "Darwin", "quartz", "cairo"),
       limitsize = FALSE # only necessary if users make the plot ginormous.
     )
 
@@ -80,7 +86,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
     isRecordedPlot <- inherits(plot2draw, "recordedplot")
 
     # Open graphics device and plot
-    openGrDevice(file = relativePathsvg, width = width, height = height, bg = backgroundColor)
+    openGrDevice(file = relativePathpng, width = width, height = height, res = 72 * (ppi / 96), bg = backgroundColor)
     on.exit(dev.off())
 
     if (is.function(plot2draw) && !isRecordedPlot) {
@@ -103,7 +109,7 @@ writeImageJaspResults <- function(width=320, height=320, plot, obj=TRUE, relativ
   }
   
   # Save path & plot object to output
-  image[["png"]] <- relativePathsvg
+  image[["png"]] <- relativePathpng
 
   if (obj) {
     image[["obj"]]         <- plot2draw
