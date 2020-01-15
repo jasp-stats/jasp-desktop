@@ -405,7 +405,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   plt <-
     ggplot2::ggplot(df, ggplot2::aes(x = id, y = ev, linetype = type, shape = type)) +
     ggplot2::geom_line(na.rm = TRUE) +
-    ggplot2::labs(x = "Component", y = "Eigenvalue")
+    ggplot2::labs(x = "Factor", y = "Eigenvalue")
   
   
   # dynamic function for point size:
