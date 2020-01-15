@@ -307,9 +307,9 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   eigtab <- createJaspTable("Factor Characteristics")
   eigtab$addColumnInfo(name = "comp", title = "",                type = "string")
-  eigtab$addColumnInfo(name = "eigv", title = "Eigenvalue",      type = "number", format = "sf:4;dp:3")
-  eigtab$addColumnInfo(name = "prop", title = "Proportion var.", type = "number", format = "sf:4;dp:3")
-  eigtab$addColumnInfo(name = "cump", title = "Cumulative",      type = "number", format = "sf:4;dp:3")
+  eigtab$addColumnInfo(name = "eigv", title = gettext("SumSq. Loadings"), type = "number", format = "sf:4;dp:3")
+  eigtab$addColumnInfo(name = "prop", title = gettext("Proportion var."), type = "number", format = "sf:4;dp:3")
+  eigtab$addColumnInfo(name = "cump", title = gettext("Cumulative"),      type = "number", format = "sf:4;dp:3")
 
   eigtab$position <- 3
 
@@ -319,11 +319,10 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   efaResults <- modelContainer[["model"]][["object"]]
 
-  eigv <- efaResults$values
   eigtab[["comp"]] <- paste("Factor", 1:efaResults$factors)
-  eigtab[["eigv"]] <- eigv[1:efaResults$factors]
-  eigtab[["prop"]] <- eigv[1:efaResults$factors] / sum(eigv)
-  eigtab[["cump"]] <- cumsum(eigv)[1:efaResults$factors] / sum(eigv)
+  eigtab[["eigv"]] <- efaResults$Vaccounted[1,]
+  eigtab[["prop"]] <- efaResults$Vaccounted[2,]
+  eigtab[["cump"]] <- cumsum(efaResults$Vaccounted[2,])
 }
 
 .efaCorrTable <- function(modelContainer, dataset, options, ready) {
