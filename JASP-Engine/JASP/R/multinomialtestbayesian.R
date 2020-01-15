@@ -234,9 +234,9 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   }
 
   if (ciRequested) {
-      descriptivesTable$addColumnInfo(name = gettext("lowerCI"), title = "Lower", type = "number",
+      descriptivesTable$addColumnInfo(name = "lowerCI", title = gettext("Lower"), type = "number",
                                       overtitle = paste0(100 * ciInterval, "% ", ciColumnName))
-      descriptivesTable$addColumnInfo(name = gettext("upperCI"), title = "Upper", type = "number",
+      descriptivesTable$addColumnInfo(name = "upperCI", title = gettext("Upper"), type = "number",
                                       overtitle = paste0(100 * ciInterval, "% ", ciColumnName))
     } 
 
