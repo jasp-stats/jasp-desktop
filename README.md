@@ -64,3 +64,6 @@ Head on over to our [issue tracker](http://github.com/jasp-stats/jasp-issues/iss
   - [The JASP Guide to Writing Analyses for Humans](Docs/development/jasp-human-guide.md)
   - [Writing Unit Tests for Analyses](JASP-Tests/README.md)
   - [The JASP R package list](https://jasp-stats.org/r-package-list/)
+
+#### Translation
+  - [Some guidance to make souce files ready for translation](Docs/development/jasp-translation-rules.md)
