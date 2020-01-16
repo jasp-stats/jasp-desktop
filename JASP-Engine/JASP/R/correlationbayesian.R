@@ -149,9 +149,9 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 
   .addTableColumnMarkupCorBayes(corBayesTable, methodItems, options)
 
-  jaspResults[["corBayesTable"]] <- corBayesTable
-
   .fillTableCorBayes(corBayesTable, options, corModel)
+  
+  jaspResults[["corBayesTable"]] <- corBayesTable
 }
 
 .addTableColumnMarkupCorBayes <- function(table, methodItems, options) {
@@ -1052,7 +1052,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     )
     
     if (options[["plotBfSequentialAddInfo"]])
-      BF <- sequentialValues[["bf"]]
+      BF <- bfObject[[options[["alternative"]]]][["bf"]]
     
     bfType <- switch(options[["bayesFactorType"]],
                      "LogBF10"="BF10",
