@@ -245,7 +245,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
                                "type[greater]" = gettext("H1: Bigger"),
                                "BF[greater]" = BF_01,
                                "pmp[greater]" = PMP_1,
-                               "type[less]" = ("H2: Smaller"),
+                               "type[less]" = gettext("H2: Smaller"),
                                "BF[less]" = BF_02,
                                "pmp[less]" = PMP_2)
         }
