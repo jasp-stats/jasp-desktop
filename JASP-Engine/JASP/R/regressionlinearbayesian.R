@@ -136,7 +136,10 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregTableModelComparison <- function(basregContainer, basregModel, options, position) {
-  modelComparisonTable <- createJaspTable(title = "Model Comparison")
+  if(options[['dependent']] == "")
+    modelComparisonTable <- createJaspTable(gettext("Model Comparison"))
+  else
+    modelComparisonTable <- createJaspTable(gettextf("Model Comparison - %s", options[['dependent']]))
   modelComparisonTable$position <- position
   modelComparisonTable$dependOn(c(
     "bayesFactorType", "bayesFactorOrder", "shownModels", "numShownModels"
