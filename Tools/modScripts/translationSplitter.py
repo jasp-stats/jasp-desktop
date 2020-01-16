@@ -77,13 +77,15 @@ parseMsgstr = regex.compile(r"""\s*
 	\s+\"				#we capture till the first quote
 	""", regex.VERBOSE | regex.MULTILINE)
 
+toDoDone = 0
 def storeMsg():
 	global msgsDone
 	global msgsToDo
+	global toDoDone
 	translatorFilledAll	= True
 	curMsg 				= msgFactory(msgid = msgid, msgid_plural=msgid_plural, msgstrs=msgstrs)
 
-	print("---------------------------------------------------\nStore msg: " + str(curMsg))
+	print("---------------------------------------------------\nStore msg: " + str(curMsg) + "---------------------------------------------------")
 
 	for msgstr in msgstrs:
 		m = parseMsgstr.match(msgstr)
@@ -101,9 +103,17 @@ def storeMsg():
 	if translatorFilledAll:
 		if msgid in msgsDone:
 			print("msg was filled in twice!\nmsgid doubled:" + msgid + " overwriting it and keeping the last one")
+
+		if msgid in msgsToDo: #Ok, it is also in the ToDo list, so we can remove it from there now
+			del msgsToDo[msgid]
+			toDoDone = toDoDone + 1
+			
 		msgsDone[msgid] = curMsg
 	else:
-		msgsToDo[msgid] = curMsg
+		if msgid in msgsDone:
+			toDoDone = toDoDone + 1
+		else:
+			msgsToDo[msgid] = curMsg
 
 def printParseLine(line):
 	print("State: " + str(msgstate) + " and line: " + line)
@@ -226,3 +236,4 @@ writeMsgsToFile(msgsDone, alreadyTranslatedFilename)
 writeMsgsToFile(msgsToDo, toBeTranslatedFilename)
 
 print("Files written")
+print("Of the non-translated msgs there were #" + str(toDoDone) + " that turned out to be translated somewhere already!")
