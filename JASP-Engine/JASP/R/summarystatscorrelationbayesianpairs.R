@@ -146,7 +146,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   corBayesTable$addColumnInfo(name = "p", title = gettext("p"), type = "number")
   
   if (options[["ci"]]) {
-    overTitle <- gettextf("%i%% Credible interval", options[["ciValue"]] * 100)
+    overTitle <- gettextf("%g%% Credible interval", options[["ciValue"]] * 100)
     corBayesTable$addColumnInfo(name="lowerCi", overtitle=overTitle, type="number", title="Lower")
     corBayesTable$addColumnInfo(name="upperCi", overtitle=overTitle, type="number", title="Upper")
   }
