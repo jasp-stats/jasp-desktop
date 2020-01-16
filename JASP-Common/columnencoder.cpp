@@ -82,13 +82,35 @@ bool ColumnEncoder::shouldDecode(const std::string & in)
 
 std::string	ColumnEncoder::replaceAll(std::string text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names)
 {
-	for(std::string replaceMe : names) //We follow names instead of keyvals from map because they might be sorted from largest to smallest string (_originalNames) to no make sub-replacements
-	{
-		size_t		foundPos	= 0;
-		std::string replacement = map.at(replaceMe);
+	size_t foundPos = 0;
 
-		while((foundPos = text.find(replaceMe, 0)) != std::string::npos)
-			text.replace(foundPos, replaceMe.length(), replacement);
+	while(foundPos < std::string::npos)
+	{
+		size_t firstFoundPos	= std::string::npos;
+
+		std::string replaceThis;
+
+		//First we find the first occurence of a replaceable text.
+		for(const std::string & replaceMe : names) //We follow names instead of keyvals from map because they ought to be sorted from largest to smallest string (_originalNames) to not make sub-replacements
+		{
+			size_t pos = text.find(replaceMe, foundPos);
+			if(pos < firstFoundPos)
+			{
+				firstFoundPos = pos;
+				replaceThis = replaceMe;
+			}
+		}
+
+		//We found something to replace and this will be the first occurence of anything like that. Replace it!
+		if(firstFoundPos != std::string::npos)
+		{
+			foundPos = firstFoundPos;
+			const std::string & replacement = map.at(replaceThis);
+			text.replace(foundPos, replaceThis.length(), replacement);
+			foundPos += replacement.length(); //Let's make sure we start replacing from after where we just replaced
+		}
+		else
+			foundPos = std::string::npos;
 	}
 
 	return text;
