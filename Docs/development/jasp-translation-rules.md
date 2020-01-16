@@ -2,6 +2,7 @@ Rules for the translation of JASP source files
 ==============================================
 
 **1. Qml Files**
+
     a. All literal strings e.g. in a label or text field should be embedded in the
        qsTr function: e.g. _qsTr_ ("Log to file ")
     b. Use %x to Insert parameters into a string.
@@ -15,6 +16,7 @@ Rules for the translation of JASP source files
        so this code produces output like: "File 2 of 3".
 
 **2. C++ files**
+
     a. In the .cpp files you should the tr() function for all titeral text
        e.g. errorMsg = tr("Refreshing the analysis may change the results.");
     b. Similar as mentioned above use the % character for parameters in a
@@ -23,6 +25,7 @@ Rules for the translation of JASP source files
        %2").arg(dropKey).arg(listView->name())
 
 **3. R-files**
+
     a. All literal strings e.g. in titles or messages must be embedded in the
        gettext() function.
        e.g. title=gettext("Hypothesis")
