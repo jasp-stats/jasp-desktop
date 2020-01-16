@@ -258,7 +258,7 @@
           iterations   = bfIterations))
         if (isTryError(bf)) {
           modelName <- .unvf(strsplit(.BANOVAas.character.formula(model.list[[m]]), "~ ")[[1L]][2L])
-          .quitAnalysis(gettextf("Bayes factor could not be computed for model: %s.\nThe error message was: %s.",
+          .quitAnalysis(gettextf("Bayes factor could not be computed for model: %1$s.\nThe error message was: %2$s.",
                                 modelName, .extractErrorMessage(bf)))
         } else {
           # delete the data object -- otherwise it gets saved in the state

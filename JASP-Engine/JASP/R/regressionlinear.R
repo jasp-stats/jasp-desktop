@@ -155,18 +155,18 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   summaryTable$position <- position
   summaryTable$showSpecifiedColumnsOnly <- TRUE
 
-  summaryTable$addColumnInfo(name = "model",  title = gettext("Model"),            type = "string")
-  summaryTable$addColumnInfo(name = "R",      title = gettext("R"),                type = "number", format = "dp:3")
-  summaryTable$addColumnInfo(name = "R2",     title = gettext("R\u00B2"),          type = "number", format = "dp:3")
-  summaryTable$addColumnInfo(name = "adjR2",  title = gettext("Adjusted R\u00B2"), type = "number", format = "dp:3")
-  summaryTable$addColumnInfo(name = "RMSE",   title = gettext("RMSE"),             type = "number")
+  summaryTable$addColumnInfo(name = "model",  title = gettext("Model"),                    type = "string")
+  summaryTable$addColumnInfo(name = "R",      title = gettext("R"),                        type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "R2",     title = gettextf("R%s", "\u00B2"),           type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "adjR2",  title = gettextf("Adjusted R%s", "\u00B2"),  type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "RMSE",   title = gettext("RMSE"),                     type = "number")
 
   if (options$rSquaredChange) {
-    summaryTable$addColumnInfo(name = "R2c",  title = gettext("R\u00B2 Change"), type = "number", format = "dp:3")
-    summaryTable$addColumnInfo(name = "Fc",   title = gettext("F Change"),       type = "number")
-    summaryTable$addColumnInfo(name = "df1",  title = gettext("df1"),            type = "integer")
-    summaryTable$addColumnInfo(name = "df2",  title = gettext("df2"),            type = "integer")
-    summaryTable$addColumnInfo(name = "p",    title = gettext("p"),              type = "pvalue")
+    summaryTable$addColumnInfo(name = "R2c",  title = gettextf("R%s Change", "\u00B2"), type = "number", format = "dp:3")
+    summaryTable$addColumnInfo(name = "Fc",   title = gettext("F Change"),              type = "number")
+    summaryTable$addColumnInfo(name = "df1",  title = gettext("df1"),                   type = "integer")
+    summaryTable$addColumnInfo(name = "df2",  title = gettext("df2"),                   type = "integer")
+    summaryTable$addColumnInfo(name = "p",    title = gettext("p"),                     type = "pvalue")
   }
 
   if (options$residualsDurbinWatson) {
