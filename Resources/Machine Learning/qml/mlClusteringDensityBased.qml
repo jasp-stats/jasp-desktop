@@ -38,6 +38,11 @@ Form {
         title: qsTr("Tables")
 
         CheckBox { 
+            text: qsTr("Cluster means") 
+            name: "tableClusterMeans" 
+        }
+
+        CheckBox { 
             id: clusterInfo
             text: qsTr("Cluster information") 
             name: "tableClusterInformation" 
@@ -78,6 +83,28 @@ Form {
         CheckBox { 
             text: qsTr("K-distance plot")        
             name: "k-distplot"
+        }
+
+        CheckBox { 
+            text: qsTr("Cluster means") 
+            name: "plotClusterMeans" 
+
+            CheckBox {
+                text: qsTr("Display barplot")
+                name: "showBars"
+                checked: true
+            }
+
+            CheckBox {
+                text: qsTr("Group into one figure")
+                name: "oneFigure"
+                checked: true
+            }
+        }
+
+        CheckBox { 
+            text: qsTr("Cluster densities") 
+            name: "plotClusterDensities" 
         }
 
         CheckBox { 
