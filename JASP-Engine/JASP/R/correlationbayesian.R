@@ -201,10 +201,10 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     #
     if (options[["ci"]]) {
       table$addColumnInfo(name=paste0(methodName, "lowerCi"), overtitle=overTitle, type="number",
-                          title=gettextf("Lower %i%% CI", options[["ciValue"]] * 100))
+                          title=gettextf("Lower %g%% CI", options[["ciValue"]] * 100))
       
       table$addColumnInfo(name=paste0(methodName, "upperCi"), overtitle=overTitle, type="number",
-                          title=gettextf("Upper %i%% CI", options[["ciValue"]] * 100))
+                          title=gettextf("Upper %g%% CI", options[["ciValue"]] * 100))
     }
   }
   
@@ -735,7 +735,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 
     if (isTRUE(options[["plotPriorPosteriorAddEstimationInfo"]])) {
       CRI <- c(postPlotValues[["lowerCi"]], postPlotValues[["upperCi"]])
-      CRItxt <- gettextf("%i%% CI:", postPlotValues[["ciValue"]] * 100)
+      CRItxt <- gettextf("%g%% CI:", postPlotValues[["ciValue"]] * 100)
       medianPoint <- postPlotValues[["posteriorMedian"]]
     }
 
