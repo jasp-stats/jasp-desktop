@@ -130,7 +130,7 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   if (optionsList$wantsConfidenceMeanDiff) {
     interval <- 100 * optionsList$percentConfidenceMeanDiff
-    title <- gettextf("%1$i%% CI for %2$s", interval, nameOfLocationParameter)
+    title <- gettextf("%1$s%% CI for %2$s", interval, nameOfLocationParameter)
     ttest$addColumnInfo(name = "lowerCIlocationParameter", type = "number",
                         title = gettext("Lower"), overtitle = title)
     ttest$addColumnInfo(name = "upperCIlocationParameter", type = "number",
@@ -152,7 +152,7 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   if (optionsList$wantsConfidenceEffSize) {
     interval <- 100 * optionsList$percentConfidenceEffSize
-    title <- gettextf("%1$i%% CI for %2$s", interval, nameOfEffectSize)
+    title <- gettextf("%1$s%% CI for %2$s", interval, nameOfEffectSize)
     ttest$addColumnInfo(name = "lowerCIeffectSize", type = "number",
                         title = gettext("Lower"), overtitle = title)
     ttest$addColumnInfo(name = "upperCIeffectSize", type = "number",
