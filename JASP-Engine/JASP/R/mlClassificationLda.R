@@ -172,7 +172,13 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   }
 
   coefficients <- classificationResult[["scaling"]]
-  row <- cbind(pred_level = .unv(rownames(coefficients)), as.data.frame(coefficients))
+
+  # For constants see: https://stats.stackexchange.com/questions/166942/why-are-discriminant-analysis-results-in-r-lda-and-spss-different-constant-t
+  groupmean <- (classificationResult[["model"]]$prior %*% classificationResult[["model"]]$means)
+  constants <- (groupmean %*% classificationResult[["scaling"]])
+
+  row <- cbind(pred_level = c("(Constant)", .unv(rownames(coefficients))), 
+                as.data.frame(rbind(constants, coefficients)))
     
   coefficientsTable$addRows(row) 
 }
