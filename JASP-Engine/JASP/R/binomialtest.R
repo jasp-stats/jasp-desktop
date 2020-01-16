@@ -176,9 +176,9 @@ BinomialTest <- function(jaspResults, dataset = NULL, options, ...) {
 
   if (options$confidenceInterval) {
     binomialTable$addColumnInfo(name = "lowerCI", title = gettext("Lower"), type = "number",
-      overtitle = gettextf("%i%% CI for Proportion", 100 * options$confidenceIntervalInterval))
+      overtitle = gettextf("%s%% CI for Proportion", 100 * options$confidenceIntervalInterval))
     binomialTable$addColumnInfo(name = "upperCI", title = gettext("Upper"), type = "number",
-      overtitle = gettextf("%i%% CI for Proportion", 100 * options$confidenceIntervalInterval))
+      overtitle = gettextf("%s%% CI for Proportion", 100 * options$confidenceIntervalInterval))
   }
   
   # Add footnote: VovkSellkeMPR
