@@ -18,22 +18,22 @@
   if (bayes) {
     if (length(methodItems)==1) {
       tabTitle <- switch(methodItems,
-                         "pearson"="Bayesian Pearson Correlations",
-                         "kendall"="Bayesian Kendall's Tau Correlations",
-                         "spearman"="Bayesian Spearman Correlations"
+                         pearson  = gettext("Bayesian Pearson Correlations"),
+                         kendall  = gettext("Bayesian Kendall's Tau Correlations"),
+                         spearman = gettext("Bayesian Spearman Correlations")
       )
     } else {
-      tabTitle <-"Bayesian Correlation Table"
+      tabTitle <- gettext("Bayesian Correlation Table")
     }
   } else {
     if (length(methodItems)==1) {
       tabTitle <- switch(methodItems,
-                         "pearson"="Pearson Correlations",
-                         "kendall"="Kendall's Tau Correlations",
-                         "spearman"="Spearman Correlations"
+                         pearson  = gettext("Pearson Correlations"),
+                         kendall  = gettext("Kendall's Tau Correlations"),
+                         spearman = gettext("Spearman Correlations")
       )
     } else {
-      tabTitle <-"Correlation Table"
+      tabTitle <- gettext("Correlation Table")
     }
   }
   return(tabTitle)
@@ -106,19 +106,19 @@
 }
 
 
-.corMethodNamesList <- list(pearson="Pearson's r", spearman="Spearman's rho", kendall="Kendall's tau B")
-.corOverTitlesList <- list(pearson="Pearson", spearman="Spearman", kendall="Kendall")
+.corMethodNamesList <- list(pearson = gettext("Pearson's r"), spearman = gettext("Spearman's rho"), kendall = gettext("Kendall's tau B"))
+.corOverTitlesList  <- list(pearson = gettext("Pearson"),     spearman = gettext("Spearman"),       kendall = gettext("Kendall"))
 
 
 # TODO(Alexander):  ADAPTED from Simon
 # 
-.bCorMarginalDistribution <- function(variable, varName, options, xName = NULL, yName = "Density", 
+.bCorMarginalDistribution <- function(variable, varName, options, xName = NULL, yName = gettext("Density"), 
                                       coord_flip = FALSE, plotRanks=FALSE) {
   if (length(variable) < 3) 
-    return(.displayError(errorMessage = "Plotting not possible:\n Number of observations is < 3"))
+    return(.displayError(errorMessage = gettext("Plotting not possible: Number of observations is < 3")))
   
   if (any(is.infinite(variable))) 
-    return(.displayError(errorMessage = "Plotting not possible: Infinite value(s)"))
+    return(.displayError(errorMessage = gettext("Plotting not possible: Infinite value(s)")))
   
   if (!options[["pearson"]])
     variable <- rank(variable)
@@ -155,33 +155,28 @@
 #       .displayError
 #       .plotMarginalCor
 
-.corGLegendList <- list("pearson"="rho",
-                        "kendall"="tau", 
-                        "spearman"="rho[s]"
+.corGLegendList <- list(pearson  = gettext("rho"),
+                        kendall  = gettext("tau"), 
+                        spearman = gettext("rho[s]")
 )
 
-
-.corXNames <- list("pearson"=expression(paste("Pearson's ", ~rho)), 
-                   "spearman"=expression(paste("Spearman's ", ~rho[s])), 
-                   "kendall"=expression(paste("Kendall's ", ~tau))
+.corXNames <- list(pearson  = bquote(paste(.(gettext("Pearson's")), ~rho)),
+                   spearman = bquote(paste(.(gettext("Spearman's")), ~rho[s])),
+                   kendall  = bquote(paste(.(gettext("Kendall's")), ~tau))
 )
 
 .bCorRowNames <- function(options, itemNames, method=c("pearson", "kendall", "spearman")) {
-  rowStatName <- list(pearson="Pearson's r", kendall="Kendall's tau", spearman="Spearman's rho")
+  rowStatName <- list(pearson = gettext("Pearson's r"), kendall = gettext("Kendall's tau"), spearman = gettext("Spearman's rho"))
   
   bfTitle <- .getBfTitle("bfType"=options[["bayesFactorType"]], "alternative"=options[["alternative"]])
+
+  allRowNames <- list(n = gettext("n"), bf = bfTitle, 
+                      upperCi = gettextf("Upper %i%% CI", options[["ciValue"]] * 100),
+                      lowerCi = gettextf("Lower %i%% CI", options[["ciValue"]] * 100))
   
-  if (!is.null(method)) {
-    allRowNames <- list("n"="n", "stat"=rowStatName[[method[1]]], "bf"=bfTitle, 
-                        "upperCi"=paste0("Upper ", options[["ciValue"]]*100, "% CI"),
-                        "lowerCi"=paste0("Lower ", options[["ciValue"]]*100, "% CI")
-    )
-  } else {
-    allRowNames <- list("n"="n", "bf"=bfTitle, 
-                        "upperCi"=paste0("Upper ", options[["ciValue"]]*100, "% CI"),
-                        "lowerCi"=paste0("Lower ", options[["ciValue"]]*100, "% CI")
-    )
-  }
+  if (!is.null(method))
+    allRowNames[["stat"]] <- rowStatName[[method[1]]]
+
   return(allRowNames[itemNames])
 }
 

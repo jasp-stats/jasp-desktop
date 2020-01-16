@@ -87,19 +87,19 @@ hypMinSided <- c("less", "minSided",
   if (analysis=="correlation") {
     effectSize <- "correlation"
     if (alternative=="greater") {
-      message <- paste("For all tests, the alternative hypothesis specifies that the", effectSize, "is positive.")
+      message <- gettextf("For all tests, the alternative hypothesis specifies that the %s is positive.", effectSize)
     } else if (alternative=="less") {
-      message <- paste("For all tests, the alternative hypothesis specifies that the", effectSize, "is negative")
+      message <- gettextf("For all tests, the alternative hypothesis specifies that the %s is negative", effectSize)
     }
   }
   
   return(message)
 }
 
-.bfPlotTitles <- list("plotScatter"="Scatterplot", 
-                      "plotPriorPosterior"="Prior and Posterior", 
-                      "plotBfRobustness"="Bayes Factor Robustness Check", 
-                      "plotBfSequential"="Sequential Analysis")
+.bfPlotTitles <- list(plotScatter         = gettext("Scatterplot"), 
+                      plotPriorPosterior  = gettext("Prior and Posterior"), 
+                      plotBfRobustness    = gettext("Bayes Factor Robustness Check"), 
+                      plotBfSequential    = gettext("Sequential Analysis"))
 
 # if (options[["alternative"]]=="greater") 
 #   corBayesTable$addFootnote(message="For all tests, the alternative hypothesis specifies that the correlation is positive.",

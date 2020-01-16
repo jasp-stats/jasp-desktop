@@ -43,9 +43,9 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
     return(NULL)
   
   statObs <- switch(options[["method"]],
-                    "pearson"=options[["rObs"]],
-                    "kendall"=options[["tauObs"]],
-                    "spearman"=options[["rhoSObs"]])
+                    pearson  = options[["rObs"]],
+                    kendall  = options[["tauObs"]],
+                    spearman = options[["rhoSObs"]])
   
   corResults <- bstats::bcor.testSumStat(n=options[["n"]], stat=statObs, alternative=options[["alternative"]],
                                        method=options[["method"]], ciValue=options[["ciValue"]], kappa=options[["kappa"]])
@@ -83,9 +83,9 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   
   if (is.null(corModel) || correlationContainer$getError()) {
     statObs <- switch(options[["method"]],
-                      "pearson"=options[["rObs"]],
-                      "kendall"=options[["tauObs"]],
-                      "spearman"=options[["rhoSObs"]])
+                      pearson  = options[["rObs"]],
+                      kendall  = options[["tauObs"]],
+                      spearman = options[["rhoSObs"]])
     
     emptyIshRow <-list("n"=".", "stat"=statObs, "bf"=".", "p"=".")
     
@@ -127,26 +127,26 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   #
   if (options[["alternative"]]=="greater")
     corBayesTable$addFootnote(message=.getBfTableSidedFootnote(alternative="greater", analysis="correlation"),
-                              symbol="<i>Note</i>.")
+                              symbol=gettext("<i>Note</i>."))
   
   if (options[["alternative"]]=="less")
     corBayesTable$addFootnote(message=.getBfTableSidedFootnote(alternative="less", analysis="correlation"),
-                              symbol="<i>Note</i>.")
+                              symbol=gettext("<i>Note</i>."))
   
   bfTitle <- .getBfTitle(options[["bayesFactorType"]], options[["alternative"]])
   statName <- switch(options[["method"]],
-                     "pearson"="r",
-                     "kendall"="tau",
-                     "spearman"="rho"
+                     pearson  = gettext("r"),
+                     kendall  = gettext("tau"),
+                     spearman = gettext("rho")
   )
   
-  corBayesTable$addColumnInfo(name = "n", title = "n" , type = "integer")
+  corBayesTable$addColumnInfo(name = "n", title = gettext("n"), type = "integer")
   corBayesTable$addColumnInfo(name = "stat", title = statName, type = "number")
   corBayesTable$addColumnInfo(name="bf", title=bfTitle, type="number")
-  corBayesTable$addColumnInfo(name = "p", title = "p", type = "number")
+  corBayesTable$addColumnInfo(name = "p", title = gettext("p"), type = "number")
   
   if (options[["ci"]]) {
-    overTitle <- paste0(options[["ciValue"]]*100, "% Credible interval")
+    overTitle <- gettextf("%i%% Credible interval", options[["ciValue"]] * 100)
     corBayesTable$addColumnInfo(name="lowerCi", overtitle=overTitle, type="number", title="Lower")
     corBayesTable$addColumnInfo(name="upperCi", overtitle=overTitle, type="number", title="Upper")
   }
@@ -160,7 +160,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   #
   plotContainer <- correlationContainer[["plotContainer"]]
   if (is.null(plotContainer)) {
-    plotContainer <- createJaspContainer(title="Inferential Plots")
+    plotContainer <- createJaspContainer(title=gettext("Inferential Plots"))
     plotContainer$dependOn("hypothesis")
     plotContainer$position <- 2
     correlationContainer[["plotContainer"]] <- plotContainer

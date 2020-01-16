@@ -74,7 +74,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     for (method in c("pearson", "kendall")) {
       
       errorMsg <- NULL
-      dataCheck <- .corBayesCheckPairsErrors(dataset, var1, var2) # TODO(TIM): this should be moved away from the model calculation, but done generally beforehand (given that we care if errors occurred for the plots)
+      dataCheck <- .corBayesCheckPairsErrors(dataset, var1, var2)
       if (!identical(dataCheck, FALSE)) {
         errorMsg <- dataCheck[["message"]]
         v1 <- NA
@@ -179,7 +179,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       # Overwrite the .cormethodNamesList with one that is broken up in overtitle and methodName
       #
       overTitle <- .corOverTitlesList[[methodName]]
-      .corMethodNamesList <- list(pearson="r", spearman="rho", kendall="tau B")
+      .corMethodNamesList <- list(pearson=gettext("r"), spearman=gettext("rho"), kendall=gettext("tau B"))
     }
     
     # Add's "r", "rho", "tau B"
@@ -201,10 +201,10 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     #
     if (options[["ci"]]) {
       table$addColumnInfo(name=paste0(methodName, "lowerCi"), overtitle=overTitle, type="number",
-                                  title=paste0("Lower ", options[["ciValue"]]*100, "% CI"))
+                          title=gettextf("Lower %i%% CI", options[["ciValue"]] * 100))
       
       table$addColumnInfo(name=paste0(methodName, "upperCi"), overtitle=overTitle, type="number",
-                                  title=paste0("Upper ", options[["ciValue"]]*100, "% CI"))
+                          title=gettextf("Upper %i%% CI", options[["ciValue"]] * 100))
     }
   }
   
@@ -308,12 +308,12 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   statColumnPerVar <- c()
   for (methodItem in methodItems) {
     statsToReport <- unlist(.bCorRowNames(options, itemNames, method=methodItem))
-    statsToReport <- statsToReport[statsToReport != "n"] # we want to only report this once per variable. probably better solved in .bCorRowNames() tho
+    statsToReport <- statsToReport[statsToReport != gettext("n")] # we want to only report this once per variable. probably better solved in .bCorRowNames() tho
     statColumnPerVar <- c(statColumnPerVar, statsToReport)
   }
   
   if (options[["reportN"]])
-    statColumnPerVar <- c("n", statColumnPerVar)
+    statColumnPerVar <- c(gettext("n"), statColumnPerVar)
   
   emptyCells <- matrix(c("\u2014", "",
                          ".", "\u2014"), nrow=2, byrow=TRUE)
@@ -496,7 +496,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   
   # c. Get ----
   #
-  matrixPlot <- createJaspPlot(title="Bayesian Correlation Matrix Plot")
+  matrixPlot <- createJaspPlot(title=gettext("Bayesian Correlation Matrix Plot"))
   matrixPlot$position <- 2
   
   matrixDependencies <- c("variables", "plotMatrix", "plotMatrixDensities", "plotMatrixPosteriors", "missingValues")
@@ -667,7 +667,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     error <- postPlotValues[["error"]]
     
     if (postPlotValues[["tooPeaked"]]) {
-      error <- "Posterior is too peaked"
+      error <- gettext("Posterior is too peaked")
       break()
     }
     posteriorLine <- postPlotValues[["posteriorLine"]]
@@ -675,7 +675,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     if (is.null(posteriorLine) ||  length(posteriorLine) == 1) {
       # TODO(Alexander): This covers the case when posteriorLine <- "Could not compute posterior"
       # RETURN FAILED PLOT
-      error <- "Could not compute the posteriors"
+      error <- gettext("Could not compute the posteriors")
       break()
     }
 
@@ -725,8 +725,8 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     }
   } else if (purpose %in% c("pairs", "sumStat")) {
     postPlotValues <- postPlotValuesPerMethod[[1]]
-    xName <- unlist(.corXNames[methodItems], recursive = FALSE)
-    gLegend <- c("Prior", "Posterior")
+    xName <- unlist(.corXNames[[methodItems]], recursive = FALSE)
+    gLegend <- c(gettext("Prior"), gettext("Posterior"))
     dfLines <- data.frame(
       x = xDomain,
       y = c(postPlotValues[["priorLine"]], postPlotValues[["posteriorLine"]]),
@@ -735,7 +735,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 
     if (isTRUE(options[["plotPriorPosteriorAddEstimationInfo"]])) {
       CRI <- c(postPlotValues[["lowerCi"]], postPlotValues[["upperCi"]])
-      CRItxt <- paste0(postPlotValues[["ciValue"]]*100, "% CI:")
+      CRItxt <- gettextf("%i%% CI:", postPlotValues[["ciValue"]] * 100)
       medianPoint <- postPlotValues[["posteriorMedian"]]
     }
 
@@ -743,7 +743,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       dfPoints <- data.frame(
         x = c(postPlotValues[["h0"]], postPlotValues[["h0"]]),
         y = c(postPlotValues[["priorAtH0"]], postPlotValues[["posteriorAtH0"]]),
-        g = c("Prior", "Posterior")
+        g = c(gettext("Prior"), gettext("Posterior"))
       )
       BF10 <- postPlotValues[["bf"]]
     }
@@ -782,7 +782,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   pairsPlotCollection <- jaspResults[["pairsPlotCollection"]]
   
   if (is.null(pairsPlotCollection)) {
-    pairsPlotCollection <- createJaspContainer(title="Bayesian Correlation Pairwise Plots")
+    pairsPlotCollection <- createJaspContainer(title=gettext("Bayesian Correlation Pairwise Plots"))
     pairsPlotCollection$dependOn("missingValues")
     pairsPlotCollection$position <- 3
     jaspResults[["pairsPlotCollection"]] <- pairsPlotCollection
@@ -887,7 +887,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     
     if (!is.null(dataError)) {
       pairContainer$setError(dataError)
-      next()
+      next
     }
     
     for (i in seq_along(plotItems)) {
@@ -1014,7 +1014,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   
   plotResult <- try(JASPgraphs::PlotRobustnessSequential(
     dfLines      = dfLines,
-    xName        = expression(paste("Stretched beta prior width ", ~kappa)),
+    xName        = bquote(paste(.(gettext("Stretched beta prior width")), ~kappa)),
     dfPoints     = dfPoints,
     bfType       = bfPlotType,
     pointColors  = pointColors,
@@ -1062,7 +1062,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     
     plotResult <- try(JASPgraphs::PlotRobustnessSequential(
       dfLines      = dfLines,
-      xName        = "n",
+      xName        = gettext("n"),
       BF           = BF,
       bfType       = bfType,
       hypothesis   = hypothesis
