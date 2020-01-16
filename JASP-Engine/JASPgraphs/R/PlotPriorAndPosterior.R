@@ -304,7 +304,7 @@ makeBFwheelAndText <- function(BF, bfSubscripts, pizzaTxt, drawPizzaTxt = is.nul
 #"
 #' @export
 PlotPriorAndPosterior <- function(dfLines, dfPoints = NULL, BF = NULL, CRI = NULL, median = NULL, xName = NULL,
-                                  yName = "Density", drawPizzaTxt = !is.null(BF), drawCRItxt = !is.null(CRI),
+                                  yName = gettext("Density"), drawPizzaTxt = !is.null(BF), drawCRItxt = !is.null(CRI),
                                   bfType = c("BF01", "BF10", "LogBF10"),
                                   hypothesis = c("equal", "smaller", "greater"),
                                   bfSubscripts = NULL,
