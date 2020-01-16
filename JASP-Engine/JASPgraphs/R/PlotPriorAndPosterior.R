@@ -136,7 +136,7 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
 
     legendPlot <- ggplot(data = dfLegendPlot, aes(x = .data$x, y = .data$y, fill = .data$y, label = .data$l, size = .data$y)) +
       gp +
-      ggplot2::geom_text(nudge_x = 0.1, size = .35 * getGraphOption("fontsize"), hjust = 0,
+      ggplot2::geom_text(nudge_x = 0.0, size = .35 * getGraphOption("fontsize"), hjust = 0,
                          parse = parse) +
       ggplot2::xlim(c(0, 1)) +
       getEmptyTheme()

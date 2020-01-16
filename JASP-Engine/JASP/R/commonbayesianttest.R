@@ -1136,23 +1136,47 @@
 
 }
 
-.ttestBayesianGetBFnamePlots <- function(BFH1H0, nullInterval) {
+.ttestBayesianGetBFnamePlots <- function(BFH1H0, nullInterval, unicode = FALSE) {
 
   if (BFH1H0) {
     if (identical(nullInterval, c(-Inf, Inf))) {
-      bfTitle <- "BF[1][0]"
+      if (unicode) {
+        bfTitle <- "BF\U2081\U2080"
+      } else {
+        bfTitle <- "BF[1][0]"
+      }
     } else if (identical(nullInterval, c(0, Inf))) {
-      bfTitle <- "BF['+'][0]"
+      if (unicode) {
+        bfTitle <- "BF\u208A\u2080"
+      } else {
+        bfTitle <- "BF['+'][0]"
+      }
     } else {
-      bfTitle <- "BF['-'][0]"
+      if (unicode) {
+        bfTitle <- "BF\u208B\U2080"
+      } else {
+        bfTitle <- "BF['-'][0]"
+      }
     }
   } else {
     if (identical(nullInterval, c(-Inf, Inf))) {
-      bfTitle <- "BF[0][1]"
+      if (unicode) {
+        bfTitle <- "BF\U2080\U2081"
+      } else {
+        bfTitle <- "BF[0][1]"
+      }
     } else if (identical(nullInterval, c(0, Inf))) {
-      bfTitle <- "BF[0]['+']"
+      if (unicode) {
+        bfTitle <- "BF\U2080\U208A"
+      } else {
+        bfTitle <- "BF[0]['+']"
+      }
     } else {
-      bfTitle <- "BF[0]['-']"
+      if (unicode) {
+        bfTitle <- "BF\U2080\U208B"
+      } else {
+        bfTitle <- "BF[0]['-']"
+      }
     }
   }
   return(bfTitle)
@@ -1245,20 +1269,31 @@
     BF10ultra <- 1 / BF10ultra
   }
   
-  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
+  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval, unicode = TRUE)
 
   # to mimic old behavior  
   # getBFSubscript <- function(x) .ttestBayesianGetBFnamePlots(x <= 1, nullInterval)
   # getBFValue     <- function(x) if (x <= 1) 1 / x else x
+  labels <- JASPgraphs::alignText(
+    leftSide = c(
+      gettextf("max %s:", BFsubscript),
+      gettext("user prior:"),
+      gettext("wide prior:"),
+      gettext("ultrawide prior:")
+    ),
+    rightSide = c(
+      gettextf("%s at r=%s",   format(maxBF10,  digits = 4), format(maxBFrVal, digits = 4)),
+      paste0(BFsubscript, "=", format(BF10user, digits = 4)),
+      paste0(BFsubscript, "=", format(BF10w,    digits = 4)),
+      paste0(BFsubscript, "=", format(BF10ultra,digits = 4))
+    )
+  )
+  labels <- paste("\t", labels)
+  
   dfPoints <- data.frame(
     x = c(maxBFrVal, r, 1, sqrt(2)),
     y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
-    g = JASPgraphs::parseThis(c(
-      sprintf("paste(max, ~%s, ':',   phantom(phollll), %s, ~at, ~'r'==%s)", BFsubscript, format(maxBF10,   digits = 4), format(maxBFrVal, digits = 4)),
-      sprintf("paste(user~prior, ':', phantom(phll[0]), ~%s==%s)",           BFsubscript, format(BF10user,  digits = 4)),
-      sprintf("paste(wide~prior, ':', phantom(ph[0][0]), ~%s==%s)",          BFsubscript, format(BF10w,     digits = 4)),
-      sprintf("paste(ultrawide~prior, ':', ~%s==%s)",                        BFsubscript, format(BF10ultra, digits = 4))
-    )),
+    g = labels,
     stringsAsFactors = FALSE
   )
   
