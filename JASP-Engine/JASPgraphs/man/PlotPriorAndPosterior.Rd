@@ -11,7 +11,7 @@ PlotPriorAndPosterior(
   CRI = NULL,
   median = NULL,
   xName = NULL,
-  yName = "Density",
+  yName = gettext("Density"),
   drawPizzaTxt = !is.null(BF),
   drawCRItxt = !is.null(CRI),
   bfType = c("BF01", "BF10", "LogBF10"),

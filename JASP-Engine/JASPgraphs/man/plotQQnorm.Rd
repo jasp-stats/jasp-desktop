@@ -10,8 +10,8 @@ plotQQnorm(
   upper = NULL,
   abline = TRUE,
   ablineColor = "red",
-  xName = "Theoretical quantiles",
-  yName = "Observed quantiles"
+  xName = gettext("Theoretical quantiles"),
+  yName = gettext("Observed quantiles")
 )
 }
 \arguments{
