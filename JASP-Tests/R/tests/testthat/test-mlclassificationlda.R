@@ -105,7 +105,6 @@ test_that("Tests of Equality of Class Means table results match", {
 })
 
 test_that("Linear Discriminant Matrix plot matches", {
-  skip("We need to figure out why these plots fail.")
   plotName <- results[["results"]][["matrixplot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "linear-discriminant-matrix", dir="mlClassificationLda")
