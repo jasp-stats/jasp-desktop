@@ -5,6 +5,7 @@
 \title{Make a Q-Q plot}
 \usage{
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 plotQQnorm(residuals, lower = NULL, upper = NULL, abline = TRUE,
@@ -12,6 +13,8 @@ plotQQnorm(residuals, lower = NULL, upper = NULL, abline = TRUE,
   yName = "Observed quantiles")
 =======
 >>>>>>> mwe for bayesian t-tests
+=======
+>>>>>>> added new geom
 plotQQnorm(
   residuals,
   lower = NULL,
@@ -22,9 +25,12 @@ plotQQnorm(
   yName = gettext("Observed quantiles")
 )
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 31b778210... added alignText function to JASPgraphs
 >>>>>>> mwe for bayesian t-tests
+=======
+>>>>>>> added new geom
 }
 \arguments{
 \item{residuals}{Numeric vector, the residuals of the analysis.}

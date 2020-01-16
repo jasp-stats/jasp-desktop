@@ -1269,31 +1269,38 @@
     BF10ultra <- 1 / BF10ultra
   }
   
-  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval, unicode = TRUE)
+  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval, unicode = FALSE)
 
   # to mimic old behavior  
   # getBFSubscript <- function(x) .ttestBayesianGetBFnamePlots(x <= 1, nullInterval)
   # getBFValue     <- function(x) if (x <= 1) 1 / x else x
-  labels <- JASPgraphs::alignText(
-    leftSide = c(
-      gettextf("max %s:", BFsubscript),
-      gettext("user prior:"),
-      gettext("wide prior:"),
-      gettext("ultrawide prior:")
-    ),
-    rightSide = c(
-      gettextf("%s at r=%s",   format(maxBF10,  digits = 4), format(maxBFrVal, digits = 4)),
-      paste0(BFsubscript, "=", format(BF10user, digits = 4)),
-      paste0(BFsubscript, "=", format(BF10w,    digits = 4)),
-      paste0(BFsubscript, "=", format(BF10ultra,digits = 4))
-    )
+  # labels <- JASPgraphs::alignText(
+  label1 <- c(
+    # gettextf("max~%s:", BFsubscript),
+    # gettext("user~prior:"),
+    # gettext("wide~prior:"),
+    # gettext("ultrawide~prior:")
+    gettextf("max %s", BFsubscript),
+    gettext("user prior"),
+    gettext("wide prior"),
+    gettext("ultrawide prior")
   )
-  labels <- paste("\t", labels)
-  
+  label1 <- gsub(pattern = "\\s+", "~", label1)
+  # add quotes so afterwards so they aren't translated accidentally.
+  label2 <- c(
+    gettextf("%s at r==%s",   format(maxBF10,  digits = 4), format(maxBFrVal, digits = 4)),
+    paste0(BFsubscript, "==", format(BF10user, digits = 4)),
+    paste0(BFsubscript, "==", format(BF10w,    digits = 4)),
+    paste0(BFsubscript, "==", format(BF10ultra,digits = 4))
+  )
+  label2[1L] <- gsub(pattern = "\\s+", "~", label2[1])
+
   dfPoints <- data.frame(
     x = c(maxBFrVal, r, 1, sqrt(2)),
     y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
-    g = labels,
+    g = label1,
+    label1 = JASPgraphs::parseThis(label1),
+    label2 = JASPgraphs::parseThis(label2),
     stringsAsFactors = FALSE
   )
   

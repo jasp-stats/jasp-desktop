@@ -5,6 +5,7 @@
 \title{Create a prior-posterior plot.}
 \usage{
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 PlotPriorAndPosterior(dfLines, dfPoints = NULL, BF = NULL,
@@ -17,6 +18,8 @@ PlotPriorAndPosterior(dfLines, dfPoints = NULL, BF = NULL,
   CRItxt = "95\% CI: ", medianTxt = "Median:", ...)
 =======
 >>>>>>> mwe for bayesian t-tests
+=======
+>>>>>>> added new geom
 PlotPriorAndPosterior(
   dfLines,
   dfPoints = NULL,
@@ -38,9 +41,12 @@ PlotPriorAndPosterior(
   ...
 )
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 31b778210... added alignText function to JASPgraphs
 >>>>>>> mwe for bayesian t-tests
+=======
+>>>>>>> added new geom
 }
 \arguments{
 \item{dfLines}{A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.}

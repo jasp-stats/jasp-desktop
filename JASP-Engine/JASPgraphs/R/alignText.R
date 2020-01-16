@@ -2,14 +2,15 @@
 #'
 #' @param leftSide string that should be left aligned
 #' @param rightSide string that should be left aligned and concatenated with 
+#' @param prependBy a string to prependBy
+#' @param asExpression if TRUE, then the returned string is suitabled to be parsed as expression.
 #' @param device a graphics device
-#' @param ... further arguments passed to the device 
+#' @param ... further arguments passed to the device.
 #'
-#' @details Alignment is done by padding with tabs, so this does not work with plotmath. Consider using unicode instead of platmath.
 #' @return a vector of strings
 #'
 #' @export
-alignText <- function(leftSide, rightSide, device = NULL, ...) {
+alignText <- function(leftSide, rightSide, prependBy = NULL, asExpression = FALSE, device = NULL, ...) {
   
   if (length(leftSide) != length(rightSide))
     stop("length(leftSide) != length(rightSide)")
@@ -34,12 +35,18 @@ alignText <- function(leftSide, rightSide, device = NULL, ...) {
     file.remove(f)
   })
   plot.new()
-  tabLength  <- strwidth("\t")
-  leftLength <- strwidth(leftSide)
-  idx <- leftLength == max(leftLength) # not which.max so this includes equally long strings.
-  leftSide[idx] <- paste0(leftSide[idx], "\t")
-  noTabs <- ceiling((strwidth(leftSide[idx][1]) - leftLength[!idx]) / tabLength)
-  leftSide[!idx] <- paste0(leftSide[!idx], strrep("\t", noTabs))
+  if (asExpression) {
+    strwidth(expression(" "))
+    strwidth(expression(""))
+    
+  } else {
+    spaceLength  <- strwidth(" ")
+    leftLength <- strwidth(leftSide)
+    idx <- leftLength == max(leftLength) # not which.max so this includes equally long strings.
+    leftSide[idx] <- paste0(leftSide[idx], " ")
+    noTabs <- ceiling((strwidth(leftSide[idx][1]) - leftLength[!idx]) / spaceLength)
+    leftSide[!idx] <- paste0(leftSide[!idx], strrep(" ", noTabs))
+  }
 
   return(paste0(leftSide, rightSide))
 }

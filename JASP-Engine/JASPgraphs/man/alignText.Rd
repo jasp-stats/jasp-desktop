@@ -4,23 +4,31 @@
 \alias{alignText}
 \title{Align strings in two places}
 \usage{
-alignText(leftSide, rightSide, device = NULL, ...)
+alignText(
+  leftSide,
+  rightSide,
+  prependBy = NULL,
+  asExpression = FALSE,
+  device = NULL,
+  ...
+)
 }
 \arguments{
 \item{leftSide}{string that should be left aligned}
 
 \item{rightSide}{string that should be left aligned and concatenated with}
 
+\item{prependBy}{a string to prependBy}
+
+\item{asExpression}{if TRUE, then the returned string is suitabled to be parsed as expression.}
+
 \item{device}{a graphics device}
 
-\item{...}{further arguments passed to the device}
+\item{...}{further arguments passed to the device.}
 }
 \value{
 a vector of strings
 }
 \description{
 Align strings in two places
-}
-\details{
-Alignment is done by padding with tabs, so this does not work with plotmath. Consider using unicode instead of platmath.
 }
