@@ -294,7 +294,7 @@ Descriptives <- function(jaspResults, dataset, options) {
         stats$addRows(subReturn$resultsCol, rowNames = paste0(variable, l))
         
         if (subReturn$shouldAddIdenticalFootnote)
-          stats$addFootnote(message = "All values are identical",
+          stats$addFootnote(message = gettext("All values are identical"),
                             colNames = c("Skewness", "Kurtosis", "Shapiro-Wilk", "P-value of Shapiro-Wilk"),
                             rowNames = paste0(variable, l))
       }
@@ -310,7 +310,7 @@ Descriptives <- function(jaspResults, dataset, options) {
       stats$addRows(subReturn$resultsCol, rowNames = variable)
       
       if (subReturn$shouldAddIdenticalFootnote)
-        stats$addFootnote(message = "All values are identical",
+        stats$addFootnote(message = gettext("All values are identical"),
                           colNames = c("Skewness", "Kurtosis", "Shapiro-Wilk", "P-value of Shapiro-Wilk"),
                           rowNames = variable)
     }
@@ -354,8 +354,8 @@ Descriptives <- function(jaspResults, dataset, options) {
   resultsCol[["Std. Error of Kurtosis"]]  <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$kurtosis,          na.omitted, .descriptivesSEK)
   resultsCol[["Skewness"]]                <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$skewness,          na.omitted, .descriptivesSkewness)
   resultsCol[["Std. Error of Skewness"]]  <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$skewness,          na.omitted, .descriptivesSES)
-  resultsCol[["Shapiro-Wilk"]]            <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$shapiro,           na.omitted, function(param) { res <- try(shapiro.test(param)$statistic); ifelse(inherits(res, "try-error"), NA, res) })
-  resultsCol[["P-value of Shapiro-Wilk"]] <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$shapiro,           na.omitted, function(param) { res <- try(shapiro.test(param)$p.value);   ifelse(inherits(res, "try-error"), NA, res) })
+  resultsCol[["Shapiro-Wilk"]]            <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$shapiro,           na.omitted, function(param) { res <- try(shapiro.test(param)$statistic); if(isTryError(res)) NA else res })
+  resultsCol[["P-value of Shapiro-Wilk"]] <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$shapiro,           na.omitted, function(param) { res <- try(shapiro.test(param)$p.value);   if(isTryError(res)) NA else res })
   resultsCol[["Range"]]                   <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$range,             na.omitted, function(param) { range(param)[2] - range(param)[1]})
   resultsCol[["Minimum"]]                 <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$minimum,           na.omitted, min)
   resultsCol[["Maximum"]]                 <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$maximum,           na.omitted, max)
