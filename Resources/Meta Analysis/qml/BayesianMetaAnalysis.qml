@@ -223,49 +223,7 @@ Form
 						fieldWidth: 	50
 					}
 
-				/*	Group
-					{
 
-						CheckBox
-						{
-							name: 				"checkLowerTruncCauchy"
-							visible: 			cauchyInformative.checked
-							childrenOnSameRow: 	true
-							checked: 			checkCRE.checked && checkPos.checked
-
-							DoubleField
-							{
-								id: 			lowerTC
-								name: 			"lowerTruncCauchy"
-								label: 			qsTr("Lower bound:")
-								visible: 		cauchyInformative.checked
-								fieldWidth: 	50
-								negativeValues: !checkCRE.checked && checkPos.checked
-								defaultValue: 	0
-								max: 			checkCRE.checked && checkNeg.checked ? 0 : Infinity
-							}
-						}
-
-						CheckBox
-						{
-							name: 				"checkUpperTruncCauchy"
-							visible: 			cauchyInformative.checked
-							childrenOnSameRow: 	true
-							checked: 			checkCRE.checked && checkNeg.checked
-
-							DoubleField
-							{
-								id: 			upperTC
-								name: 			"upperTruncCauchy"
-								label: 			qsTr("Upper bound:")
-								visible: 		cauchyInformative.checked
-								fieldWidth: 	50
-								negativeValues: !checkCRE.checked && checkPos.checked
-								defaultValue: 	0
-								max: 			checkCRE.checked && checkNeg.checked ? 0 : Infinity
-							}
-						}
-					} */
 				}
 
 				RadioButton
@@ -293,49 +251,7 @@ Form
 						fieldWidth: 	50
 					}
 
-			/*		Group
-					{
 
-						CheckBox
-						{
-							name: 				"checkLowerTruncNormal"
-							visible: 			normalInformative.checked
-							childrenOnSameRow: 	true
-							checked: 			checkCRE.checked && checkPos.checked
-
-							DoubleField
-							{
-								id: 			lowerTN
-								name: 			"lowerTruncNormal"
-								label: 			qsTr("Lower bound:")
-								visible: 		normalInformative.checked
-								fieldWidth: 	50
-								negativeValues: !checkCRE.checked && checkPos.checked
-								defaultValue: 	0
-								max: 			checkCRE.checked && checkNeg.checked ? 0 : Infinity
-							}
-						}
-
-						CheckBox
-						{
-							name: 				"checkUpperTruncNormal"
-							visible: 			normalInformative.checked
-							childrenOnSameRow: 	true
-							checked: 			checkCRE.checked && checkNeg.checked
-
-							DoubleField
-							{
-								id: 			upperTN
-								name: 			"upperTruncNormal"
-								label: 			qsTr("Upper bound:")
-								visible: 		normalInformative.checked
-								fieldWidth: 	50
-								negativeValues:	!checkCRE.checked && checkPos.checked
-								defaultValue: 	0
-								max: 			checkCRE.checked && checkNeg.checked ? 0 : Infinity
-							}
-						}
-					}*/
 				}
 
 				RadioButton
@@ -372,49 +288,7 @@ Form
 						defaultValue: 	1
 					}
 
-		/*			Group
-					{
 
-						CheckBox
-						{
-							name: 				"checkLowerTruncT"
-							visible: 			tInformative.checked
-							childrenOnSameRow: 	true
-							checked: 			checkCRE.checked && checkPos.checked
-
-							DoubleField
-							{
-								id: 			lowerTT
-								name: 			"lowerTruncT"
-								label: 			qsTr("Lower bound:")
-								visible: 		tInformative.checked
-								fieldWidth: 	50
-								negativeValues: !checkCRE.checked && checkPos.checked
-								defaultValue: 	0
-								max: 			checkCRE.checked && checkNeg.checked ? 0 : Infinity
-							}
-						}
-
-						CheckBox
-						{
-							name: 				"checkUpperTruncT"
-							visible: 			tInformative.checked
-							childrenOnSameRow: 	true
-							checked: 			checkCRE.checked && checkNeg.checked
-
-							DoubleField
-							{
-								id: upperTT
-								name: 			"upperTruncT"
-								label: 			qsTr("Upper bound:")
-								visible: 		tInformative.checked
-								fieldWidth: 	50
-								negativeValues: !checkCRE.checked && checkPos.checked
-								defaultValue: 	0
-								max: 			checkCRE.checked && checkNeg.checked ? 0 : Infinity
-							}
-						}
-					} */
 				}
 			}
 			Group
@@ -776,7 +650,6 @@ Form
 							name: 				"bridgeSampling"
 							label: 				qsTr("Bridge sampling")
 							childrenOnSameRow: 	true
-							visible: 			bfComp.checked
 
 							IntegerField
 							{

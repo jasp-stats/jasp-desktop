@@ -178,9 +178,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                    "cauchy", "informativeCauchyLocation", "informativeCauchyScale",
                    "checkLowerPrior", "lowerTrunc", "checkUpperPrior", "upperTrunc",
                    "normal", "informativeNormalMean", "informativeNormalStd",
-                   # "checkLowerTruncNormal", "lowerTruncNormal", "checkUpperTruncNormal", "upperTruncNormal",
                    "t", "informativeTLocation", "informativeTScale","informativeTDf",
-                   # "checkLowerTruncT", "lowerTruncT", "checkUpperTruncT", "upperTruncT",
                    "priorSE", "inverseGamma", "inverseGammaShape", "inverseGammaScale",
                    "halfT", "informativehalfTScale", "informativehalfTDf"))
   
@@ -292,9 +290,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   
   
   varES <- options[["effectSize"]]
-  
-  # make lower and upper for all priors the same to stop if prior weird
-  # if(all(varES < 0 && options$)
   
   # Get necessary variables
   y <- dataset[, .v(options[["effectSize"]])]
@@ -669,8 +664,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                          colNames = "BF", rowNames = "row2")
     bmaTable$addFootnote("Model averaged posterior estimates for \u03C4 are not yet available, but will be added in the future.",
                          colNames = "parameter", rowNames = "row4")
-    # bmaTable$addFootnote("The estimates for the model averaged \u03C4 are not yet available. It is currently in development.",
-    #                    colNames = "parameter", rowNames="row5") 
   }
   
   if(options[["BF"]] == "BF01" || options[["BF"]] == "logBF10"){
@@ -914,7 +907,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   plot <- ggplot2::ggplot(df, ggplot2::aes(x)) +
           ggplot2::stat_function(fun = prior, n = 1000, size = 1) +
           ggplot2::labs(x = xlab, y = "Density") +
-          # ggplot2::geom_segment(x = 0, y = 0, xend = 0, yend = Inf, linetype = "dotted", color = "black") +
           ggplot2::xlim(xlimLeft, xlimRight) +
           ggplot2::scale_x_continuous(breaks = xBreaks)
   plot <- JASPgraphs::themeJasp(plot)
@@ -933,14 +925,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   postPlotES <- createJaspPlot(plot = NULL, title = "Effect size", width = 500, height = 350)
   postPlotES$position <- 1
   
-  # Custom dependencies
-  # postPlotES$dependOn(c("priorES", "cauchy", "normal", "t",
-  #                       "informativeCauchyLocation", "informativeCauchyScale",
-  #                       "lowerTrunc", "upperTrunc",
-  #                       "informativeNormalMean", "informativeNormalStd",
-  #                       "lowerTruncNormal", "upperTruncNormal",
-  #                       "informativeTLocation", "informativeTScale", "informativeTDf",
-  #                       "lowerTruncT", "upperTruncT"))
+
   
   # Check if ready
   if(!ready){
@@ -954,8 +939,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   # Make posterior plot heterogeneity
   if(options$modelSpecification != "FE"){
     postPlotSE <- createJaspPlot(plot = NULL, title = "Heterogeneity", width = 500, height = 350)
-    # postPlotSE$dependOn(c("priorSE", "inverseGamma", "inverseGammaShape", "inverseGammaScale",
-    #                       "halfT", "informativehalfTScale", "informativehalfTDf"))
     postPlotSE$position <- 2
     postContainer[["SE"]] <- postPlotSE
     .bmaFillPostPlot(postPlotSE, jaspResults, dataset, options, type = "SE")
@@ -977,7 +960,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     xlab <- expression("Effect size "*mu)
     xlim <- c(-4, 4)
     if(options[["modelSpecification"]] == "BMA"){
-      # valuesLine <- c("solid", "solid", "solid", "dotted")
       int <- c(bmaResults[["bma"]]$estimates["averaged", "2.5%"], bmaResults[["bma"]]$estimates["averaged", "97.5%"])
       postName <- "Averaged"
       if(options[["addLines"]]){
@@ -1138,18 +1120,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     }
   }
   
-  # dfPoints <- data.frame(x = c(0, 0), y = c())
-  
-  # plot <- ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = x, y = y, color = g, linetype = g)) +
-  #   JASPgraphs::geom_line() +
-  #   ggplot2::scale_x_continuous(xlab, breaks = getPrettyAxisBreaks(df$x)) +
-  #   ggplot2::scale_y_continuous("Density", breaks = JASPgraphs::getPrettyAxisBreaks(df$y))
- 
-  # if(any(x == 0)){
-  #   plot <- plot + 
-  #     ggplot2::geom_vline(xintercept = 0, linetype = "dotted")
-  # }
-  
   if(options[["addInfo"]]){
     BF <- round(BF, 3)
     CRI <- round(CRI, 3)
@@ -1178,7 +1148,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   
   if(type == "ES"){
     plot <- PlotPriorAndPosterior(dfLines = df,
-                                  # dfPoints = dfPoints,
                                   lineColors = valuesCol, 
                                   BF = BF,
                                   CRI = CRI,
@@ -1201,8 +1170,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
 
   .extraPost <- function(plot, int, xPost, yPost){
       
-    # plot <- plot + ggplot2::geom_segment(x = 0, y = 0, xend = 0, yend = Inf, linetype = "dotted", color = "black")
-    
+
     if(options[["shade"]]){
       shadeData <- data.frame(x = xPost[xPost < max(int) & xPost > min(int)], y = yPost[xPost < max(int) & xPost > min(int)])
       plot <- plot + ggplot2::geom_area(data = shadeData, mapping = ggplot2::aes(x = x, y = y), fill = "grey", group = 1, linetype = 1, color = NA, alpha = 0.5)
@@ -1660,9 +1628,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   
   df <- data.frame(x = 1:nrow(dataset), y = log(BFs))
   
-  # breaks <- getPrettyAxisBreaks(df$x)
-  # xlim <- range(breaks)
-  
+
   if(type == "ES"){
 
   plot <- JASPgraphs::PlotRobustnessSequential(dfLines = df,
@@ -1686,8 +1652,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                                                  )
   }
   
-  # plot <- plot + ggplot2::xlim(xlim[1], xlim[2])
-  
+
   seqPlot$plotObject <- plot
   return()
 }
@@ -1765,7 +1730,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                                    values = linetypeValues)
   
   
-  # xlim <- range(breaks)
 
   if(nrow(dataset) < 40) {
     plot <- plot + 
@@ -1777,7 +1741,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   }
   
   plot <- JASPgraphs::themeJasp(plot, legend.position = "top")
-  # plot <- plot + ggplot2::xlim(xlim[1], xlim[2])
 
   
   seqPMPlot$plotObject <- plot
