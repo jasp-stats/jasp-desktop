@@ -85,7 +85,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     function() {
       nuisanceTerms <- sapply(options$modelTerms, function(term) term$isNuisance)
       if (sum(nuisanceTerms) == length(options$modelTerms)) {
-        return("All effects are specified as nuisance")
+        return(gettext("All effects are specified as nuisance"))
       }
     },
     function() {
@@ -93,7 +93,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
         weightsVar <- options$wlsWeights
         min.weight <- min(dataset[[ .v(weightsVar) ]])
         if (min.weight <= 0) {
-          return("There are nonpositive weights")
+          return(gettext("There are nonpositive weights"))
         }
       }
     })
@@ -125,7 +125,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 
 .basregGetPosteriorSummaryContainer <- function(basregContainer, position) {
   if (is.null(basregContainer[["postSumContainer"]])) {
-    postSumContainer <- createJaspContainer("Posterior Summary")
+    postSumContainer <- createJaspContainer(gettext("Posterior Summary"))
     postSumContainer$position <- position
     postSumContainer$dependOn(c(
       "summaryType", "posteriorSummaryPlotCredibleIntervalValue", "nSimForCRI", "seed", "setSeed"
@@ -136,7 +136,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregTableModelComparison <- function(basregContainer, basregModel, options, position) {
-  modelComparisonTable <- createJaspTable(title = "Model Comparison")
+  modelComparisonTable <- createJaspTable(title = gettext("Model Comparison"))
   modelComparisonTable$position <- position
   modelComparisonTable$dependOn(c(
     "bayesFactorType", "bayesFactorOrder", "shownModels", "numShownModels"
@@ -153,42 +153,37 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     modelComparisonTable$addCitation(
       "Wilson, M. A., Iversen, E. S., Clyde, M. A., Schmidler, S. C., & Schildkraut, J. M. (2010). Bayesian model search and multilevel inference for SNP association studies. The annals of applied statistics, 4(3), 1342."
     )
-    modelComparisonTable$addFootnote(paste(
-      "The Wilson model prior corresponds to a beta binomial prior with \u03B1 = 1 and \u03B2 = p * \u03BB and",
-      "corresponds to an approximate penalization equal to log(\u03BB + 1) in log-odds scale for each additional",
-      "covariate added to the model (Consonni et al., 2018; Wilson et al., 2010)."
-    ))
+    modelComparisonTable$addFootnote(gettextf(
+"The Wilson model prior corresponds to a beta binomial prior with %1$s = 1 and %2$s = p * %3$s and \
+corresponds to an approximate penalization equal to log(%3$s + 1) in log-odds scale for each additional \
+covariate added to the model (Consonni et al., 2018; Wilson et al., 2010).", "\u03B1", "\u03B2", "\u03BB"))
   } else if (options$modelPrior == "Castillo") {
     modelComparisonTable$addCitation(
       "Castillo, I., Schmidt-Hieber, J., & Van der Vaart, A. (2015). Bayesian linear regression with sparse priors. The Annals of Statistics, 43(5), 1986-2018."
     )
-    modelComparisonTable$addFootnote(paste(
-      "The Castillo model prior corresponds to a beta binomial prior with \u03B1 = 1 and \u03B2 = p^u and is suitable ",
-      "for sparse regression when there are more covariates than observations (Castillo et al., 2015)."
-    ))
+    modelComparisonTable$addFootnote(gettextf(
+      "The Castillo model prior corresponds to a beta binomial prior with %1$s = 1 and %2$s = p^u and is suitable \
+for sparse regression when there are more covariates than observations (Castillo et al., 2015).", "\u03B1", "\u03B2"))
   }
 
-  if (options$bayesFactorType == "BF10")
-    bfTitle <- "BF<sub>10</sub>"
-  else if (options$bayesFactorType == "BF01")
-    bfTitle <- "BF<sub>01</sub>"
-  else
-    bfTitle <- "Log(BF<sub>10</sub>)"
+  if (options$bayesFactorType == "BF10")      bfTitle <- gettext("BF<sub>10</sub>")
+  else if (options$bayesFactorType == "BF01") bfTitle <- gettext("BF<sub>01</sub>")
+  else                                        bfTitle <- gettext("Log(BF<sub>10</sub>)")
   
-  modelComparisonTable$addColumnInfo(name = "Models",         type = "string")
-  modelComparisonTable$addColumnInfo(name = "priorProbModel", type = "number", title = "P(M)")
-  modelComparisonTable$addColumnInfo(name = "postProbModel",  type = "number", title = "P(M|data)")
-  modelComparisonTable$addColumnInfo(name = "BFM",            type = "number", title = "BF<sub>M</sub>")
+  modelComparisonTable$addColumnInfo(name = "Models",         type = "string", title = gettext("Models"))
+  modelComparisonTable$addColumnInfo(name = "priorProbModel", type = "number", title = gettext("P(M)"))
+  modelComparisonTable$addColumnInfo(name = "postProbModel",  type = "number", title = gettext("P(M|data)"))
+  modelComparisonTable$addColumnInfo(name = "BFM",            type = "number", title = gettext("BF<sub>M</sub>"))
   modelComparisonTable$addColumnInfo(name = "BF",             type = "number", title = bfTitle)
-  modelComparisonTable$addColumnInfo(name = "R2",             type = "number", title = "R\u00B2", format = "dp:3")
+  modelComparisonTable$addColumnInfo(name = "R2",             type = "number", title = gettextf("R%s", "\u00B2"), format = "dp:3")
   
   if (!is.null(basregModel)) {
     generalNote <- NULL
     if (sum(basregModel$nuisanceTerms) > 0)
-      generalNote <- paste0("All models include ", paste(names(which(basregModel$nuisanceTerms)), collapse = ", "), ".")
+      generalNote <- gettextf("All models include %s.", paste(names(which(basregModel$nuisanceTerms)), collapse = ", "))
     
     if (options$shownModels == "limited" && options$numShownModels < length(basregModel$which))
-      generalNote <- paste(generalNote, "Table displays only a subset of models; to see all models, select \"No\" under \"Limit No. Models Shown\".")
+      generalNote <- gettextf("%s Table displays only a subset of models; to see all models, select \"No\" under \"Limit No. Models Shown\".", generalNote)
     
     if (!is.null(generalNote))
       modelComparisonTable$addFootnote(message = generalNote)
@@ -252,9 +247,9 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 .basregGetModelNames <- function(basregModel) {
   # null model name
   nuisanceTerms <- basregModel$nuisanceTerms
-  nullModel <- "Null model"
+  nullModel <- gettext("Null model")
   if (sum(nuisanceTerms) > 0) {
-    nullModel <- paste0("Null model (incl. ", paste(names(which(nuisanceTerms)), collapse = ", "), ")")
+    nullModel <- gettextf("Null model (incl. %s)", paste(names(which(nuisanceTerms)), collapse = ", "))
   }
   
   models <- basregModel$which
@@ -282,28 +277,28 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregTablePosteriorSummary <- function(postSumContainer, postSumModel, basregModel, options, position) {
-  postSumTable <- createJaspTable(title = "Posterior Summaries of Coefficients")
+  postSumTable <- createJaspTable(title = gettext("Posterior Summaries of Coefficients"))
   postSumTable$position <- position
   postSumTable$dependOn(c("postSummaryTable", "effectsType", "bayesFactorType"))
   
-  bfTitle <- "BF<sub>inclusion</sub>"
+  bfTitle <- gettext("BF<sub>inclusion</sub>")
   if (options$bayesFactorType == "LogBF10")
-    bfTitle <- "Log(BF<sub>inclusion</sub>)"
+    bfTitle <- gettext("Log(BF<sub>inclusion</sub>)")
   
-  overtitle <- sprintf("%s%% Credible Interval", format(100*options[["posteriorSummaryPlotCredibleIntervalValue"]], digits = 3))
-  postSumTable$addColumnInfo(name = "coefficient", title = "Coefficient",   type = "string")
-  postSumTable$addColumnInfo(name = "mean",        title = "Mean",          type = "number")
-  postSumTable$addColumnInfo(name = "sd",          title = "SD",            type = "number")
-  postSumTable$addColumnInfo(name = "pInclprior",  title = "P(incl)",       type = "number")
-  postSumTable$addColumnInfo(name = "pIncl",       title = "P(incl|data)",  type = "number")
-  postSumTable$addColumnInfo(name = "BFincl",      title = bfTitle,         type = "number")
-  postSumTable$addColumnInfo(name = "lowerCri",    title = "Lower",         type = "number", overtitle = overtitle)
-  postSumTable$addColumnInfo(name = "upperCri",    title = "Upper",         type = "number", overtitle = overtitle)
+  overtitle <- gettextf("%s%% Credible Interval", format(100*options[["posteriorSummaryPlotCredibleIntervalValue"]], digits = 3))
+  postSumTable$addColumnInfo(name = "coefficient", title = gettext("Coefficient"),   type = "string")
+  postSumTable$addColumnInfo(name = "mean",        title = gettext("Mean"),          type = "number")
+  postSumTable$addColumnInfo(name = "sd",          title = gettext("SD"),            type = "number")
+  postSumTable$addColumnInfo(name = "pInclprior",  title = gettext("P(incl)"),       type = "number")
+  postSumTable$addColumnInfo(name = "pIncl",       title = gettext("P(incl|data)"),  type = "number")
+  postSumTable$addColumnInfo(name = "BFincl",      title = bfTitle,                  type = "number")
+  postSumTable$addColumnInfo(name = "lowerCri",    title = gettext("Lower"),         type = "number", overtitle = overtitle)
+  postSumTable$addColumnInfo(name = "upperCri",    title = gettext("Upper"),         type = "number", overtitle = overtitle)
   
   if (!is.null(basregModel) && !is.null(postSumModel)) {
     footnote <- postSumModel[["footnotes"]]
     if (!is.null(footnote))
-      postSumTable$addFootnote(footnote, symbol = "<em>Warning.</em>")
+      postSumTable$addFootnote(footnote, symbol = gettext("<em>Warning.</em>"))
     
     .basregFillTablePosteriorSummary(postSumTable, postSumModel, basregModel, options)
   }
@@ -383,7 +378,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregPlotPosteriorSummary <- function(postSumContainer, postSumModel, options, position) {
-  title <- sprintf("Posterior Coefficients with %s%% Credible Interval", 
+  title <- gettextf("Posterior Coefficients with %s%% Credible Interval",
                    format(100 * options$posteriorSummaryPlotCredibleIntervalValue, digits = 3))
   postSumPlot <- createJaspPlot(title = title, width = 530, height = 400)
   postSumPlot$position <- position
@@ -428,7 +423,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   })
   
   if (isTryError(p)) {
-    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
     postSumPlot$setError(errorMessage)
   } else {
     postSumPlot$plotObject <- p
@@ -436,14 +431,14 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregPlotPosteriorLogOdds <- function(basregContainer, basregModel, options, position) {
-  postLogOddsPlot <- createJaspPlot(title = "Posterior Log Odds", width = 530, height = 400)
+  postLogOddsPlot <- createJaspPlot(title = gettext("Posterior Log Odds"), width = 530, height = 400)
   postLogOddsPlot$position <- position
   postLogOddsPlot$dependOn("plotLogPosteriorOdds")
   
   basregContainer[["logPosteriorOddsPlot"]] <- postLogOddsPlot
 
   if (options$samplingMethod == "MCMC") {
-    postLogOddsPlot$setError("Cannot display Posterior Log Odds when sampling method is MCMC.")
+    postLogOddsPlot$setError(gettext("Cannot display Posterior Log Odds when sampling method is MCMC."))
     return(postLogOddsPlot)
   }
   
@@ -554,7 +549,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 # }
 
 .basregPlotResidualsVsFitted <- function(basregContainer, basregModel, position) {
-  residualsVsFittedPlot <- createJaspPlot(title = "Residuals vs Fitted", width = 530, height = 400)
+  residualsVsFittedPlot <- createJaspPlot(title = gettext("Residuals vs Fitted"), width = 530, height = 400)
   residualsVsFittedPlot$position <- position
   residualsVsFittedPlot$dependOn("plotResidualsVsFitted")
   
@@ -580,12 +575,12 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     g <- JASPgraphs::drawPoints(g, dat = dfPoints, size = 2, alpha = .85)
     g <- JASPgraphs::drawSmooth(g, dat = dfPoints, color = "red", alpha = .7) +
       ggplot2::ylab("Residuals") +
-      ggplot2::scale_x_continuous(name = "Predictions under BMA", breaks = xBreaks, limits = range(xBreaks))
+      ggplot2::scale_x_continuous(name = gettext("Predictions under BMA"), breaks = xBreaks, limits = range(xBreaks))
     JASPgraphs::themeJasp(g)
   })
 
   if (isTryError(p)) {
-    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
     residualsVsFittedPlot$setError(errorMessage)
   } else {
     residualsVsFittedPlot$plotObject <- p
@@ -593,7 +588,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregPlotModelProbabilities <- function(basregContainer, basregModel, position) {
-  modelProbabilitiesPlot <- createJaspPlot(title = "Model Probabilities", width = 530, height = 400)
+  modelProbabilitiesPlot <- createJaspPlot(title = gettext("Model Probabilities"), width = 530, height = 400)
   modelProbabilitiesPlot$position <- position
   modelProbabilitiesPlot$dependOn("plotModelProbabilities")
 
@@ -616,13 +611,13 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     xBreaks <- round(seq(1, basregModel$n.models, length.out = min(5, basregModel$n.models)))
     g <- JASPgraphs::drawSmooth(dat = dfPoints, color = "red", alpha = .7)
     g <- JASPgraphs::drawPoints(g, dat = dfPoints, size = 4) +
-      ggplot2::scale_y_continuous(name = "Cumulative Probability", limits = 0:1) +
-      ggplot2::scale_x_continuous(name = "Model Search Order", breaks = xBreaks)
+      ggplot2::scale_y_continuous(name = gettext("Cumulative Probability"), limits = 0:1) +
+      ggplot2::scale_x_continuous(name = gettext("Model Search Order"), breaks = xBreaks)
     JASPgraphs::themeJasp(g)
   })
   
   if (isTryError(p)) {
-    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
     modelProbabilitiesPlot$setError(errorMessage)
   } else {
     modelProbabilitiesPlot$plotObject <- p
@@ -630,7 +625,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregPlotModelComplexity <- function(basregContainer, basregModel, position) {
-  modelComplexityPlot <- createJaspPlot(title = "Log(P(data|M)) vs. Model Size", width = 530, height = 400)
+  modelComplexityPlot <- createJaspPlot(title = gettext("Log(P(data|M)) vs. Model Size"), width = 530, height = 400)
   modelComplexityPlot$position <- position
   modelComplexityPlot$dependOn("plotModelComplexity")
 
@@ -654,13 +649,13 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     xBreaks <- unique(round(pretty(dim)))
     yBreaks <- JASPgraphs::getPrettyAxisBreaks(range(logmarg), eps.correct = 2)
     g <- JASPgraphs::drawPoints(dat = dfPoints, size = 4) +
-      ggplot2::scale_y_continuous(name = "Log(P(data|M))", breaks = yBreaks, limits = range(yBreaks)) +
-      ggplot2::scale_x_continuous(name = "Model Dimension", breaks = xBreaks)
+      ggplot2::scale_y_continuous(name = gettext("Log(P(data|M))"),  breaks = yBreaks, limits = range(yBreaks)) +
+      ggplot2::scale_x_continuous(name = gettext("Model Dimension"), breaks = xBreaks)
     JASPgraphs::themeJasp(g)
   })
   
   if (isTryError(p)) {
-    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
     modelComplexityPlot$setError(errorMessage)
   } else {
     modelComplexityPlot$plotObject <- p
@@ -668,7 +663,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregPlotInclusionProbabilities <- function(basregContainer, basregModel, position) {
-  inclusionProbabilitiesPlot <- createJaspPlot(title = "Inclusion Probabilities", width = 700, height = 400)
+  inclusionProbabilitiesPlot <- createJaspPlot(title = gettext("Inclusion Probabilities"), width = 700, height = 400)
   inclusionProbabilitiesPlot$position <- position
   inclusionProbabilitiesPlot$dependOn("plotInclusionProbabilities")
 
@@ -711,9 +706,9 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
       ggplot2::geom_bar(width = width, stat = "identity", fill = "gray80", show.legend = FALSE)
     g <- JASPgraphs::drawLines(g, dat = dfLine,
                                mapping = ggplot2::aes(x = x, y = y, group = g, linetype = g0), show.legend = TRUE) +
-      ggplot2::scale_y_continuous("Marginal Inclusion Probability", breaks = yBreaks, limits = yLimits) +
+      ggplot2::scale_y_continuous(gettext("Marginal Inclusion Probability"), breaks = yBreaks, limits = yLimits) +
       ggplot2::xlab("") +
-      ggplot2::scale_linetype_manual(name = "", values = 2, labels = "Prior\nInclusion\nProbabilities")
+      ggplot2::scale_linetype_manual(name = "", values = 2, labels = gettext("Prior\nInclusion\nProbabilities"))
     
     JASPgraphs::themeJasp(g, horizontal = TRUE, legend.position = "right") +
       ggplot2::theme(
@@ -722,7 +717,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   })
   
   if (isTryError(p)) {
-    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
     inclusionProbabilitiesPlot$setError(errorMessage)
   } else {
     inclusionProbabilitiesPlot$plotObject <- p
@@ -730,7 +725,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregPlotQQ <- function(basregContainer, basregModel, position) {
-  qqPlot <- createJaspPlot(title = "Q-Q Plot", width = 700, height = 400)
+  qqPlot <- createJaspPlot(title = gettext("Q-Q Plot"), width = 700, height = 400)
   qqPlot$position <- position
   qqPlot$dependOn("plotQQplot")
 
@@ -748,7 +743,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   })
   
   if (isTryError(p)) {
-    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
     qqPlot$setError(errorMessage)
   } else {
     qqPlot$plotObject <- p
@@ -756,7 +751,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregPlotsPosteriorDistribution <- function(basregContainer, postSumModel, basregModel, options, position) {
-  postDistContainer <- createJaspContainer("Marginal Posterior Distributions") #TODO: check if this name is ok
+  postDistContainer <- createJaspContainer(gettext("Marginal Posterior Distributions")) #TODO: check if this name is ok
   postDistContainer$position <- position
   postDistContainer$dependOn(c(
     "plotCoefficientsPosterior", "summaryType", 
@@ -795,59 +790,59 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 
 .basregFillPlotPosteriorDistribution <- function(posteriorDistributionPlot, index, postSumModel) {
   # these first lines are there to create compatibility with the BAS plotting code we copied
-  x <- postSumModel[["coefBMA"]]
+  x      <- postSumModel[["coefBMA"]]
   conf95 <- postSumModel[["conf95BMA"]]
   subset <- list(index)
-  e <- 1e-04
+  e      <- 1e-04
   
   # based on BAS:::plot.coef.bas.
   # start of copied code
-  df = x$df
-  i <- index
+  df <- x$df
+  i  <- index
   
-  sel = x$conditionalmeans[, i] != 0
-  prob0 = 1 - x$probne0[i]
-  mixprobs = x$postprobs[sel]/(1 - prob0)
-  means = x$conditionalmeans[sel, i, drop = TRUE]
-  sds = x$conditionalsd[sel, i, drop = TRUE]
-  name = x$namesx[i]
-  name = .basregReplaceInteractionUnicodeSymbol(name)
-  df.sel = df[sel]
+  sel      <- x$conditionalmeans[, i] != 0
+  prob0    <- 1 - x$probne0[i]
+  mixprobs <- x$postprobs[sel]/(1 - prob0)
+  means    <- x$conditionalmeans[sel, i, drop = TRUE]
+  sds      <- x$conditionalsd[sel, i, drop = TRUE]
+  name     <- x$namesx[i]
+  name     <- .basregReplaceInteractionUnicodeSymbol(name)
+  df.sel   <- df[sel]
   
   df <- df.sel # modified from original
   
   p <- try(silent = FALSE, expr = {
-    nsteps = 500
+    nsteps <- 500
     if (prob0 == 1 | length(means) == 0) {
-      xlower = -0
-      xupper = 0
-      xmax = 1
+      xlower <- -0
+      xupper <- 0
+      xmax   <- 1
     } else {
-      qmin = min(qnorm(e/2, means, sds))
-      qmax = max(qnorm(1 - e/2, means, sds))
+      qmin <- min(qnorm(e/2, means, sds))
+      qmax <- max(qnorm(1 - e/2, means, sds))
       if (i > 1) {
-        xlower = min(qmin, 0)
-        xupper = max(0, qmax)
+        xlower <- min(qmin, 0)
+        xupper <- max(0, qmax)
       } else {
         xlower <- qmin
         xupper <- qmax
       }
     }
     
-    xx = seq(xlower, xupper, length.out = nsteps)
-    yy = rep(0, times = length(xx))
-    maxyy = 1
+    xx    <- seq(xlower, xupper, length.out = nsteps)
+    yy    <- rep(0, times = length(xx))
+    maxyy <- 1
     if (prob0 < 1 & length(sds) > 0) {
-      yy = mixprobs %*% apply(matrix(xx, ncol = 1), 1,
+      yy <- mixprobs %*% apply(matrix(xx, ncol = 1), 1,
                               FUN = function(x, d, m, s) {
                                 dt(x = (x - m)/s, df = d)/s
                               }, d = df, m = means, s = sds)
-      maxyy = max(yy)
+      maxyy <- max(yy)
     }
-    ymax = max(prob0, 1 - prob0)
+    ymax <- max(prob0, 1 - prob0)
     # end of copied code
     
-    dens <- (1 - prob0) * yy/maxyy
+    dens    <- (1 - prob0) * yy/maxyy
     dfLines <- data.frame(
       x = c(0, 0, xx),
       y = c(0, prob0, dens),
@@ -858,15 +853,15 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, 1.15*max(dfLines$y)))
     
     # figure out whether to draw text left or right of 0
-    step <- (xupper + abs(xlower)) / (nsteps - 1)  # stepsize of grid
-    idx0 <- round(abs(xlower / step))              # idx of x closest to 0
-    idxMax <- which.max(dens)                      # idx of maximum of density
-    maxX <- xx[idxMax]                             # x value at maximum of density
+    step      <- (xupper + abs(xlower)) / (nsteps - 1)  # stepsize of grid
+    idx0      <- round(abs(xlower / step))              # idx of x closest to 0
+    idxMax    <- which.max(dens)                      # idx of maximum of density
+    maxX      <- xx[idxMax]                             # x value at maximum of density
     maxHeight <- dens[idxMax]                        # y value at maximum of density
     if (prob0 > maxHeight) { # if text drawn above posterior no action is required
       
       xText <- 0.05 * xBreaks[length(xBreaks)]
-      hjust = "left"
+      hjust <- "left"
       # text below maxheight
       
     } else {
@@ -879,12 +874,12 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
       if (maxX < 0 && dens[idx0] < prob0) {
         # peak is left of text; density is below text height
         xText <- 0.05 * xBreaks[length(xBreaks)]
-        hjust = "left"
+        hjust <- "left"
         
       } else {
         
         xText <- -abs(0.05 * xBreaks[1])
-        hjust = "right"
+        hjust <- "right"
         
       }
       
@@ -931,7 +926,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
   })
 
   if (isTryError(p)) {
-    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
     posteriorDistributionPlot$setError(errorMessage)
   } else {
     posteriorDistributionPlot$plotObject <- p
@@ -939,14 +934,14 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
 }
 
 .basregTableDescriptives <- function(jaspResults, dataset, options, ready, position) {
-  descriptivesTable <- createJaspTable(title = "Descriptives")
+  descriptivesTable <- createJaspTable(title = gettext("Descriptives"))
   descriptivesTable$position <- position
   descriptivesTable$dependOn(c("descriptives", "dependent", "covariates"))
   
-  descriptivesTable$addColumnInfo(name = "v",     title = "",     type = "string")
-  descriptivesTable$addColumnInfo(name = "N",     title = "N",    type = "integer")
-  descriptivesTable$addColumnInfo(name = "mean",  title = "Mean", type = "number")
-  descriptivesTable$addColumnInfo(name = "sd",    title = "SD",   type = "number")
+  descriptivesTable$addColumnInfo(name = "v",     title = "",              type = "string")
+  descriptivesTable$addColumnInfo(name = "N",     title = gettext("N"),    type = "integer")
+  descriptivesTable$addColumnInfo(name = "mean",  title = gettext("Mean"), type = "number")
+  descriptivesTable$addColumnInfo(name = "sd",    title = gettext("SD"),   type = "number")
   
   if (ready)
     .basregFillTableDescriptives(descriptivesTable, dataset, options)
@@ -1102,7 +1097,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
     rownames(conf95BMA) <- coefBMA$namesx
     colnames(conf95BMA) <- c("2.5%", "97.5%", "beta")
     conf95BMA[is.nan(conf95BMA)] <- NA
-    footnote <- "Parameters estimates and/or credible intervals could not be calculated."
+    footnote <- gettext("Parameters estimates and/or credible intervals could not be calculated.")
   }
   
   # check if results of table and plots should match
