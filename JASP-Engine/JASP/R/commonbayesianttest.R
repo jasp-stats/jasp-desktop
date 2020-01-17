@@ -1136,47 +1136,23 @@
 
 }
 
-.ttestBayesianGetBFnamePlots <- function(BFH1H0, nullInterval, unicode = FALSE) {
+.ttestBayesianGetBFnamePlots <- function(BFH1H0, nullInterval) {
 
   if (BFH1H0) {
     if (identical(nullInterval, c(-Inf, Inf))) {
-      if (unicode) {
-        bfTitle <- "BF\U2081\U2080"
-      } else {
-        bfTitle <- "BF[1][0]"
-      }
+      bfTitle <- "BF[1][0]"
     } else if (identical(nullInterval, c(0, Inf))) {
-      if (unicode) {
-        bfTitle <- "BF\u208A\u2080"
-      } else {
-        bfTitle <- "BF['+'][0]"
-      }
+      bfTitle <- "BF['+'][0]"
     } else {
-      if (unicode) {
-        bfTitle <- "BF\u208B\U2080"
-      } else {
-        bfTitle <- "BF['-'][0]"
-      }
+      bfTitle <- "BF['-'][0]"
     }
   } else {
     if (identical(nullInterval, c(-Inf, Inf))) {
-      if (unicode) {
-        bfTitle <- "BF\U2080\U2081"
-      } else {
-        bfTitle <- "BF[0][1]"
-      }
+      bfTitle <- "BF[0][1]"
     } else if (identical(nullInterval, c(0, Inf))) {
-      if (unicode) {
-        bfTitle <- "BF\U2080\U208A"
-      } else {
-        bfTitle <- "BF[0]['+']"
-      }
+      bfTitle <- "BF[0]['+']"
     } else {
-      if (unicode) {
-        bfTitle <- "BF\U2080\U208B"
-      } else {
-        bfTitle <- "BF[0]['-']"
-      }
+      bfTitle <- "BF[0]['-']"
     }
   }
   return(bfTitle)
@@ -1269,23 +1245,16 @@
     BF10ultra <- 1 / BF10ultra
   }
   
-  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval, unicode = FALSE)
+  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
 
-  # to mimic old behavior  
-  # getBFSubscript <- function(x) .ttestBayesianGetBFnamePlots(x <= 1, nullInterval)
-  # getBFValue     <- function(x) if (x <= 1) 1 / x else x
-  # labels <- JASPgraphs::alignText(
   label1 <- c(
-    # gettextf("max~%s:", BFsubscript),
-    # gettext("user~prior:"),
-    # gettext("wide~prior:"),
-    # gettext("ultrawide~prior:")
     gettextf("max %s", BFsubscript),
     gettext("user prior"),
     gettext("wide prior"),
     gettext("ultrawide prior")
   )
-  label1 <- gsub(pattern = "\\s+", "~", label1)
+  label1[1] <- gsub(pattern = "\\s+", "~", label1[1])
+  label1[-1] <- paste0("\"", label1[-1], "\"")
   # add quotes so afterwards so they aren't translated accidentally.
   label2 <- c(
     gettextf("%s at r==%s",   format(maxBF10,  digits = 4), format(maxBFrVal, digits = 4)),
