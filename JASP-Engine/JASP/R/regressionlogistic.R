@@ -106,10 +106,10 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   modelSummary$addColumnInfo(name = "dof", title = gettext("df"),       type = "integer")
   modelSummary$addColumnInfo(name = "chi", title = chiName,             type = "number", format="dp:3")
   modelSummary$addColumnInfo(name = "pvl", title = gettext("p"),        type = "pvalue")
-  modelSummary$addColumnInfo(name = "fad", title = gettext("McFadden R\u00B2"),    type = "number")
-  modelSummary$addColumnInfo(name = "nag", title = gettext("Nagelkerke R\u00B2"),  type = "number")
-  modelSummary$addColumnInfo(name = "tju", title = gettext("Tjur R\u00B2"),        type = "number")
-  modelSummary$addColumnInfo(name = "cas", title = gettext("Cox & Snell R\u00B2"), type = "number")
+  modelSummary$addColumnInfo(name = "fad", title = gettextf("McFadden R%s","\u00B2"),    type = "number")
+  modelSummary$addColumnInfo(name = "nag", title = gettextf("Nagelkerke R%s","\u00B2"),  type = "number")
+  modelSummary$addColumnInfo(name = "tju", title = gettextf("Tjur R%s","\u00B2"),        type = "number")
+  modelSummary$addColumnInfo(name = "cas", title = gettextf("Cox & Snell R%s","\u00B2"), type = "number")
   
   jaspResults[["modelSummary"]] <- modelSummary
   
