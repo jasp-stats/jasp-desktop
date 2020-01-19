@@ -1975,6 +1975,21 @@
                                   "systematicSampling" = "fixed interval", 
                                   "cellSampling" = "cell")
 
+    if(!is.null(selectionState[["musFailed"]])){
+      # MUS has failed for some reason, fall back to record sampling
+
+      message <- paste0("From the population of <b>", 
+                          planningOptions[["populationSize"]], 
+                          "</b> observations, <b>", 
+                          planningState[["sampleSize"]], 
+                          "</b> observations were selected using a <b>", 
+                          samplingLabel,
+                          " record sampling", 
+                          "</b> method. 
+                          <b>Warning:</b> A monetary unit sampling method was tried but failed.")
+
+    } else {
+
     samplingLabel <- base::switch(options[["selectionType"]], 
                                   "recordSampling" = paste(samplingLabel, "record sampling"), 
                                   "musSampling" = paste(samplingLabel, "monetary unit sampling"))
@@ -1986,6 +2001,8 @@
                         "</b> observations were selected using a <b>", 
                         samplingLabel, 
                         "</b> method.")
+
+    }
 
     if(sum(selectionState[["count"]]) > nrow(selectionState)){
 
@@ -2012,7 +2029,7 @@
                                  options, 
                                  planningState, 
                                  selectionContainer){
-                                  
+                               
   if(!is.null(selectionContainer[["selectionState"]])){
 
     return(selectionContainer[["selectionState"]]$object)
@@ -2030,9 +2047,32 @@
 
     if(isTryError(result)){
 
-      selectionContainer$setError(paste0("An error occurred: ", 
-                                        JASP:::.extractErrorMessage(result)))
-      return()
+      if(options[["selectionType"]] == "musSampling"){
+        # MUS has failed for some reason, fall back to record sampling
+
+        result <- try({
+
+          .auditSampling(dataset,
+                        options,
+                        planningState,
+                        selectionContainer,
+                        unitsExtra = "records")
+
+        }) 
+
+      }
+
+      if(isTryError(result)){
+
+        selectionContainer$setError(paste0("An error occurred: ", 
+                                          JASP:::.extractErrorMessage(result)))
+        return()
+
+      } else {
+        # MUS has failed for some reason, return an indication for this
+        result[["musFailed"]] <- TRUE
+
+      }
     }
 
     selectionContainer[["selectionState"]] <- createJaspState(result)
@@ -2044,7 +2084,16 @@
 .auditSampling <- function(dataset,
                            options,
                            planningState,
-                           selectionContainer){
+                           selectionContainer,
+                           unitsExtra = NULL){
+  
+  if(!is.null(unitsExtra)){
+    units <- unitsExtra
+  } else {
+    units <- base::switch(options[["selectionType"]],
+                          "recordSampling" = "records",
+                          "musSampling" = "mus")
+  }
 
   algorithm <- base::switch(options[["selectionMethod"]],
                             "randomSampling" = "random",
@@ -2062,9 +2111,6 @@
     bookValues <- NULL
   }
 
-  units <- base::switch(options[["selectionType"]],
-                        "recordSampling" = "records",
-                        "musSampling" = "mus")
   sample <- jfa::sampling(population = dataset, 
                           sampleSize = planningState[["sampleSize"]], 
                           algorithm = algorithm, 
@@ -2141,7 +2187,8 @@
 
   selectionContainer[["selectionInformationTable"]] <- selectionInformationTable
 
-  if(options[["selectionType"]] == "recordSampling"){
+  if(options[["selectionType"]] == "recordSampling" || 
+      !is.null(selectionState[["musFailed"]])){
 
     interval <- ceiling(planningOptions[["populationSize"]] / 
                         planningState[["sampleSize"]])
@@ -2175,7 +2222,8 @@
 
   if(options[["selectionMethod"]] != "randomSampling"){
 
-    if(options[["selectionType"]] == "musSampling"){
+    if(options[["selectionType"]] == "musSampling" && 
+        is.null(selectionState[["musFailed"]])){
 
       row <- cbind(row, 
                    interval = paste(planningOptions[["valuta"]], interval))
