@@ -3567,16 +3567,16 @@
 
     if(type == "benfordsLaw"){
 
-      state <- .auditClassicalBenfordsLawState(dataset, 
-                                                options, 
-                                                stateContainer,
-                                                ready)
+      state <- .auditClassicalBenfordsLawGetResults(dataset, 
+                                                    options, 
+                                                    stateContainer,
+                                                    ready)
 
       observed <- state[["N"]] * state[["percentages"]]
       expected <- state[["N"]] * state[["inBenford"]]
       chiSquare <- sum( (observed - expected)^2 / expected )
-      df <- 8
-      p <- round(pchisq(q = chiSquare, df = df, lower.tail = FALSE), 4)
+      df <- state[["df"]]
+      p <- pchisq(q = chiSquare, df = df, lower.tail = FALSE)
 
       approveBadge <- p >= (1 - options[["confidence"]])
 

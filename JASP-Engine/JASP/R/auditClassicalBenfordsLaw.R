@@ -99,6 +99,8 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 .auditReadDataBenfordsLaw <- function(dataset, 
                                      options){
 
+  if (!is.null(dataset)) return(dataset)
+
   values <- options[["values"]]
   if(values == "")  
     values <- NULL
@@ -121,7 +123,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
     confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
 
     procedureText <- paste0("Benford's law states that in many naturally occurring collections of numbers, the leading significant number 
-                             is likely to be small. The goal of this procedure is to determine to which extend the leading numbers in the 
+                             is likely to be small. The goal of this procedure is to determine to which extent the leading numbers in the 
                              population follow Benford's law, and to test this relation with <b>", confidenceLabel, "</b> confidence. Data that do not conform 
                              to Benford's law might need further verification.")
 
@@ -170,30 +172,10 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   return(benfordsLawContainer)
 }
 
-.extractFirstNumber <- function(x){
-  digit <- as.numeric(strsplit(as.character(abs(x)), "")[[1]][1])
-  return(digit)
-}
-
-.extractFirstAndSecondNumber <- function(x){
-  tmp <- strsplit(format(abs(x), scientific = FALSE), "")[[1]]
-  if(tmp[1] == "0")
-    tmp <- tmp[-c(1, 2)]
-  if(length(tmp) != 1 && tmp[2] == ".")
-    tmp <- tmp[-2]
-  if(length(tmp) == 1)
-    return("-")
-  digit <- as.numeric(paste0(
-            tmp[1], 
-            tmp[2]
-          ))
-  return(digit)
-}
-
-.auditClassicalBenfordsLawState <- function(dataset, 
-                                            options, 
-                                            benfordsLawContainer,
-                                            ready){
+.auditClassicalBenfordsLawGetResults <- function(dataset, 
+                                                 options, 
+                                                 benfordsLawContainer,
+                                                 ready){
 
   if(!is.null(benfordsLawContainer[["result"]])){
 
@@ -206,38 +188,35 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
     if(options[["digits"]] == "first"){
 
-      leadingDigits <- sapply(obs, .extractFirstNumber)
+      leadingDigits <- table(as.numeric(substring(format(abs(obs), scientific = TRUE), 1, 1)))
       digits <- 1:9
 
     } else if(options[["digits"]] == "firstSecond"){
 
-      leadingDigits <- sapply(obs, .extractFirstAndSecondNumber)
-      leadingDigits <- as.numeric(leadingDigits[leadingDigits != "-"])
+      leadingDigits <- table(as.numeric(substring(format(abs(obs), scientific = TRUE), 1, 3)) * 10)
       digits <- 10:99
 
     }
-    
+
     counts <- rep(0, length(digits))
     percentages <- rep(0, length(digits))
 
-    includedNumbers <- as.numeric(names(table(leadingDigits)))
+    includedNumbers <- as.numeric(names(leadingDigits))
 
     if(options[["digits"]] == "first"){
-      counts[includedNumbers] <- as.numeric(table(leadingDigits))
+      counts[includedNumbers] <- as.numeric(leadingDigits)
     } else if(options[["digits"]] == "firstSecond"){
-      counts[includedNumbers - 9] <- as.numeric(table(leadingDigits))
+      counts[includedNumbers - 9] <- as.numeric(leadingDigits)
     }
     
     percentages <- counts / totalObs
     percentagesLabel <- paste0(round(percentages * 100, 2), "%")
 
-    inBenford <- log10(1 + 1 / digits)
+    inBenford <- log10(1 + 1 / digits) # Benfords law: log_10(1 + 1 / d)
     inBenfordLabel <- paste0(round(inBenford * 100, 2), "%")
 
-    N <- length(leadingDigits)
-
-    observed <- N * percentages
-    expected <- N * inBenford
+    observed <- totalObs * percentages
+    expected <- totalObs * inBenford
     chiSquare <- sum( (observed - expected)^2 / expected )
     df <- length(digits) - 1
     pvalue <- pchisq(q = chiSquare, df = df, lower.tail = FALSE)
@@ -246,7 +225,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                   counts = counts, 
                   percentages = percentages,
                   inBenford = inBenford,
-                  N = N,
+                  N = totalObs,
                   observed = observed,
                   expected = expected,
                   chiSquare = chiSquare,
@@ -283,23 +262,23 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   benfordsLawTestTable$position <- positionInContainer
 
   benfordsLawTestTable$addColumnInfo(name = 'test', 
-                                title = '', 
-                                type = 'string')
+                                     title = '', 
+                                     type = 'string')
   benfordsLawTestTable$addColumnInfo(name = 'measure', 
-                                title = 'Statistic', 
-                                type = 'string')
+                                     title = 'Statistic', 
+                                     type = 'string')
   benfordsLawTestTable$addColumnInfo(name = 'value',  
-                                title = 'Value', 
-                                type = 'string')
+                                     title = 'Value', 
+                                     type = 'string')
   benfordsLawTestTable$addColumnInfo(name = 'df',  
-                                title = 'df', 
-                                type = 'integer')
+                                     title = 'df', 
+                                     type = 'integer')
   benfordsLawTestTable$addColumnInfo(name = 'pvalue', 
-                                title = "<i>p</i> value", 
-                                type = 'pvalue')
+                                     title = "<i>p</i> value", 
+                                     type = 'pvalue')
   benfordsLawTestTable$addColumnInfo(name = 'N', 
-                              title = "N", 
-                              type = 'integer')
+                                     title = "N", 
+                                     type = 'integer')
 
   digits <- ifelse(options[["digits"]] == "first",
                    yes = " (1 - 9) ",
@@ -328,10 +307,10 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
     return()
   }
 
-  state <- .auditClassicalBenfordsLawState(dataset, 
-                                           options, 
-                                           benfordsLawContainer,
-                                           ready)
+  state <- .auditClassicalBenfordsLawGetResults(dataset, 
+                                                options, 
+                                                benfordsLawContainer,
+                                                ready)
 
   row <- data.frame(test = "Chi-square", 
                     measure = "X\u00B2", 
@@ -397,10 +376,10 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
       return()
     } 
 
-    state <- .auditClassicalBenfordsLawState(dataset, 
-                                            options, 
-                                            benfordsLawContainer,
-                                            ready)
+    state <- .auditClassicalBenfordsLawGetResults(dataset, 
+                                                  options, 
+                                                  benfordsLawContainer,
+                                                  ready)
 
     percentagesLabel <- paste0(round(state[["percentages"]] * 100, 2), "%")
     inBenfordLabel <- paste0(round(state[["inBenford"]] * 100, 2), "%")
@@ -449,10 +428,10 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
       lineSize      <- 1.2
     }
 
-    state <- .auditClassicalBenfordsLawState(dataset, 
-                                            options, 
-                                            benfordsLawContainer,
-                                            ready)
+    state <- .auditClassicalBenfordsLawGetResults(dataset, 
+                                                  options, 
+                                                  benfordsLawContainer,
+                                                  ready)
 
     d <- data.frame(x = c(state[["digits"]], state[["digits"]]),
                     y = c(state[["percentages"]], state[["inBenford"]]),
@@ -555,10 +534,10 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
   confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
 
-  state <- .auditClassicalBenfordsLawState(dataset, 
-                                           options, 
-                                           benfordsLawContainer,
-                                           ready)
+  state <- .auditClassicalBenfordsLawGetResults(dataset, 
+                                                options, 
+                                                benfordsLawContainer,
+                                                ready)
 
   approve <- state[["pvalue"]] >= (1 - options[["confidence"]])
 
