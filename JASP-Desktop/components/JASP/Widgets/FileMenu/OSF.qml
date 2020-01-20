@@ -327,20 +327,15 @@ Item
 	}
 
 
-	Item
+	LoadingIndicator
 	{
 		visible	: processing
-		width	: animation.width;
-		height	: animation.height + 8 * preferencesModel.uiScale
 
 		anchors.horizontalCenter	: osfList.horizontalCenter
 		anchors.verticalCenter		: osfList.verticalCenter
+		width						: parent.width / 1.5
+		height						: parent.height / 1.5
 
-		AnimatedImage
-		{
-			id		: animation
-			source	: jaspTheme.iconPath + "/loading.gif"
-		}
 	}
 
 	FileList

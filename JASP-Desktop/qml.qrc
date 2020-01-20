@@ -134,5 +134,6 @@
         <file>components/JASP/Widgets/SetSeed.qml</file>
         <file>components/JASP/Widgets/BasicThreeButtonTableView.qml</file>
         <file>components/JASP/Widgets/ControlErrorMessage.qml</file>
+        <file>components/JASP/Widgets/LoadingIndicator.qml</file>
     </qresource>
 </RCC>
