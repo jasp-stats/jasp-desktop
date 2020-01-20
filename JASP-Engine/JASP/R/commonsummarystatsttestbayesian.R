@@ -106,8 +106,13 @@
   ### Default case: a non-informative zero-centered Cauchy prior
   if(options$effectSizeStandardized == "default") {
     nullInterval <-
-      switch(options$hypothesis, greaterThanTestValue = c(0, Inf), groupOneGreater = c(0, Inf),
-             lessThanTestValue = c(-Inf,0), groupTwoGreater = c(-Inf, 0), c(-Inf,Inf))    # default is notEqualToTestValue
+
+      switch(options$hypothesis,
+        greaterThanTestValue  = c(0, Inf),
+        groupOneGreater       = c(0, Inf),
+        lessThanTestValue     = c(-Inf,0),
+        groupTwoGreater       = c(-Inf, 0),
+                                c(-Inf,Inf))    # default is notEqualToTestValue
 
     bfObject <- BayesFactor::ttest.tstat(t=tValue, n1=n1, n2=n2, rscale=options$priorWidth,
                                          nullInterval = nullInterval)
@@ -261,25 +266,24 @@
 
   message <- hypothesisList$message
   if (!is.null(message)) ttestTable$addFootnote(message)
-
-  ttestTable$addColumnInfo(name = "t"      , title = "t"       , type = "number")
-
-  if(title == "Bayesian Independent Samples T-Test"){
-
-    ttestTable$addColumnInfo(name = "n1"     , title = "n\u2081" , type = "integer")
-    ttestTable$addColumnInfo(name = "n2"     , title = "n\u2082" , type = "integer")
-
+  
+  ttestTable$addColumnInfo(name = "t"      , title = gettext("t")       , type = "number")
+  
+  if(title == gettext("Bayesian Independent Samples T-Test")) { #This check might mess up with translations, but what to do about it?
+    
+    ttestTable$addColumnInfo(name = "n1"   , title = gettextf("n%s", "\u2081") , type = "integer")
+    ttestTable$addColumnInfo(name = "n2"   , title = gettextf("n%s", "\u2082") , type = "integer")
+    
   } else {
-
-    ttestTable$addColumnInfo(name = "n1"     , title = "n"       , type = "integer")
-
+    
+    ttestTable$addColumnInfo(name = "n1"   , title = gettext("n")       , type = "integer")
+    
   }
-
-  ttestTable$addColumnInfo(name = "BF"     , title = bfTitle   , type = "number")
-  ttestTable$addColumnInfo(name = "error"  , title = "error %" , type = "number")
-  ttestTable$addColumnInfo(name = "pValue" , title = "p"       , type = "pvalue")
-
-
+  
+  ttestTable$addColumnInfo(name = "BF"     , title = bfTitle            , type = "number")
+  ttestTable$addColumnInfo(name = "error"  , title = gettext("error %") , type = "number")
+  ttestTable$addColumnInfo(name = "pValue" , title = gettext("p")       , type = "pvalue")
+  
   return(ttestTable)
 
 }
@@ -329,7 +333,7 @@
   # check whether % error could be computed
   if(is.na(ttestTableData$error) || is.null(ttestTableData$error)){
     ttestTableData$error <- NaN
-    ttestTableMessage    <- "Proportional error estimate could not be computed."
+    ttestTableMessage    <- gettext("Proportional error estimate could not be computed.")
   } else {
     ttestTableMessage  <- NULL
   }
@@ -392,7 +396,7 @@
     return()
 
   plot <- createJaspPlot(
-    title       = "Prior and Posterior",
+    title       = gettext("Prior and Posterior"),
     width       = 530,
     height      = 400,
     aspectRatio = 0.7
@@ -421,7 +425,7 @@
   ))
 
   if (isTryError(p)) {
-    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
     plot$setError(errorMessage)
   } else {
     plot$plotObject <- p
@@ -436,7 +440,7 @@
     return()
 
   plot <- createJaspPlot(
-    title       = "Bayes Factor Robustness Check",
+    title       = gettext("Bayes Factor Robustness Check"),
     width       = 530,
     height      = 400,
     aspectRatio = 0.7
@@ -453,7 +457,7 @@
 
   # error check: Informative prior?
   if ((options$effectSizeStandardized == "informative")) {
-    plot$setError("Plotting not possible: Bayes factor robustness check plot currently not supported for informed prior.")
+    plot$setError(gettext("Plotting not possible: Bayes factor robustness check plot currently not supported for informed prior."))
     return()
   }
 
@@ -473,7 +477,7 @@
   ))
 
   if (isTryError(p)) {
-    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
     plot$setError(errorMessage)
   } else {
     plot$plotObject <- p
@@ -496,7 +500,7 @@
   }
 
   if (sum(is.na(BF10)) > 100){
-    stop("Bayes factors could not be computed for 100 values of the prior.")
+    stop(gettext("Bayes factors could not be computed for 100 values of the prior."))
   }
 
   # maximum BF value
@@ -559,7 +563,7 @@
     dfLines      = dfLines,
     dfPoints     = dfPoints,
     pointLegend  = additionalInformation,
-    xName        = "Cauchy prior width",
+    xName        = gettext("Cauchy prior width"),
     hypothesis   = hypothesis,
     bfType       = bfType
   )
@@ -585,9 +589,9 @@
     nullInterval <- c(0, Inf)
 
     message <- switch (analysis,
-                       "independentSamples" = "For all tests, the alternative hypothesis specifies that group 1 is greater than group 2.",
-                       "oneSample"          = "For all tests, the alternative hypothesis specifies that the mean is greater than 0.",
-                       "pairedSamples"      = "For all tests, the alternative hypothesis specifies that measure 1 is greater than measure 2."
+                       "independentSamples" = gettext("For all tests, the alternative hypothesis specifies that group 1 is greater than group 2."),
+                       "oneSample"          = gettext("For all tests, the alternative hypothesis specifies that the mean is greater than 0."),
+                       "pairedSamples"      = gettext("For all tests, the alternative hypothesis specifies that measure 1 is greater than measure 2.")
     )
 
   } else if (hypothesis_option == "groupTwoGreater" || hypothesis_option == "lessThanTestValue") {
@@ -597,18 +601,18 @@
     nullInterval <- c(-Inf, 0)
 
     message <- switch (analysis,
-                          "independentSamples" = "For all tests, the alternative hypothesis specifies that group 1 is less than group 2.",
-                          "oneSample"          = "For all tests, the alternative hypothesis specifies that the mean is less than 0.",
-                          "pairedSamples"      = "For all tests, the alternative hypothesis specifies that measure 1 is less than measure 2."
+                          "independentSamples" = gettext("For all tests, the alternative hypothesis specifies that group 1 is less than group 2."),
+                          "oneSample"          = gettext("For all tests, the alternative hypothesis specifies that the mean is less than 0."),
+                          "pairedSamples"      = gettext("For all tests, the alternative hypothesis specifies that measure 1 is less than measure 2.")
     )
 
   }
 
   # Set Table Title
   tableTitle <- switch (analysis,
-    "independentSamples" = "Bayesian Independent Samples T-Test",
-    "oneSample"          = "Bayesian One Sample T-Test",
-    "pairedSamples"      = "Bayesian Paired Samples T-Test"
+    "independentSamples" = gettext("Bayesian Independent Samples T-Test"),
+    "oneSample"          = gettext("Bayesian One Sample T-Test"),
+    "pairedSamples"      = gettext("Bayesian Paired Samples T-Test")
   )
 
   bfTitle      <- .getBayesfactorTitleSummaryStats(bayesFactorType, hypothesis)
@@ -628,14 +632,14 @@
 
     custom <- function() {
       if (options$n1Size == 1)
-        return("Not enough observations.")
+        return(gettext("Not enough observations."))
     }
 
   } else {
 
     custom <- function() {
       if (options$n1Size == 1 || options$n2Size == 1)
-        return("Not enough observations.")
+        return(gettext("Not enough observations."))
     }
 
   }

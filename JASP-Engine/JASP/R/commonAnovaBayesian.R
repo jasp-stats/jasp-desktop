@@ -149,13 +149,14 @@
 
   if (length(model.list) == 1L) {
     modelTable <- .BANOVAinitModelComparisonTable(options)
-    modelTable$setError("Bayes factor is undefined -- all effects are specified as nuisance.")
+    modelTable$setError(gettext("Bayes factor is undefined -- all effects are specified as nuisance."))
     jaspResults[["tableModelComparison"]] <- modelTable
     return(list(analysisType = analysisType))
   }
 
   # TODO: discuss if we want a hard limit if length(model.list) > ...
   # that would avoid peoples computers from slowing down tremendously.
+  # JCG: A hard limit would be a bit cruel right? How about a warning instead? (in QML already?)
 
   #Run all other models and store the results in the model.object
   neffects <- length(effects)
@@ -183,10 +184,10 @@
       modelObject[[m]] <- list(ready = TRUE)
       if (m == 1L) {
         if (is.null(nuisance)) { # intercept only
-          modelObject[[m]]$title <- "Null model"
+          modelObject[[m]]$title <- gettext("Null model")
           next # all effects are FALSE anyway
         } else {
-          modelObject[[m]]$title <- paste0("Null model (incl. ", paste(.unvf(nuisance), collapse = ", "), ")")
+          modelObject[[m]]$title <- gettextf("Null model (incl. %s)", paste(.unvf(nuisance), collapse = ", "))
         }
       }
       model.effects <- .BANOVAgetFormulaComponents(model.list[[m]])
@@ -208,14 +209,13 @@
   modelTable[["Models"]] <- modelNames
   jaspResults[["tableModelComparison"]] <- modelTable
   # internalTable is an internal representation of the model comparison table
-  internalTable <- matrix(NA, nmodels, 5L,
-                          dimnames = list(modelNames, c("P(M)", "P(M|data)", "BFM", "BF10", "error %")))
+  internalTable <- matrix(NA, nmodels, 5L, dimnames = list(modelNames, c("P(M)", "P(M|data)", "BFM", "BF10", "error %")))
   # set BF null model and p(M)
   internalTable[1L, 4L] <- 0
   internalTable[, 1L] <- 1 / nmodels
 
   #Now compute Bayes Factors for each model in the list, and populate the tables accordingly
-  startProgressbar(nmodels, "Computing Bayes factors")
+  startProgressbar(nmodels, gettext("Computing Bayes factors"))
 
   # check if any models can be resued from the state
   if (!is.null(stateObj[["modelTerms"]])) {
@@ -258,7 +258,7 @@
           iterations   = bfIterations))
         if (isTryError(bf)) {
           modelName <- .unvf(strsplit(.BANOVAas.character.formula(model.list[[m]]), "~ ")[[1L]][2L])
-          .quitAnalysis(sprintf("Bayes factor could not be computed for model: %s.\nThe error message was: %s.",
+          .quitAnalysis(gettextf("Bayes factor could not be computed for model: %1$s.\nThe error message was: %2$s.",
                                 modelName, .extractErrorMessage(bf)))
         } else {
           # delete the data object -- otherwise it gets saved in the state
@@ -308,8 +308,8 @@
   }
 
   if (anyNuisance) {
-    message <- paste("All models include", paste0(.unvf(nuisance), collapse = ", "))
-    modelTable$addFootnote(message = message, symbol = "<em>Note.</em>")
+    message <- gettextf("All models include %s", paste0(.unvf(nuisance), collapse = ", "))
+    modelTable$addFootnote(message = message, symbol = gettext("<em>Note.</em>"))
   }
 
   model <- list(
@@ -345,9 +345,9 @@
     return()
 
   if (model[["analysisType"]] != "RM-ANOVA" && options[["dependent"]] != "") {
-    title <- paste0("Analysis of Effects - ", options[["dependent"]])
+    title <- gettextf("Analysis of Effects - %s", options[["dependent"]])
   } else {
-    title <- "Analysis of Effects"
+    title <- gettext("Analysis of Effects")
   }
 
   effectsTable <- createJaspTable(title = title)
@@ -361,20 +361,19 @@
 
   inclusion.title <- switch(
     options$bayesFactorType,
-    "LogBF10" = "Log(BF<sub>incl</sub>)",
-    "BF01"    = "BF<sub>excl</sub>",
-    "BF10"    = "BF<sub>incl</sub>"
+    "LogBF10" = gettext("Log(BF<sub>incl</sub>)"),
+    "BF01"    = gettext("BF<sub>excl</sub>"),
+    "BF10"    = gettext("BF<sub>incl</sub>")
   )
 
-  effectsTable$addColumnInfo(name = "Effects",      type = "string")
-  effectsTable$addColumnInfo(name = "P(incl)",      type = "number")
-  effectsTable$addColumnInfo(name = "P(incl|data)", type = "number")
-  effectsTable$addColumnInfo(name = "BFInclusion",  type = "number", title = inclusion.title)
+  effectsTable$addColumnInfo(name = "Effects",      title = gettext("Effects"),      type = "string")
+  effectsTable$addColumnInfo(name = "P(incl)",      title = gettext("P(incl)"),      type = "number")
+  effectsTable$addColumnInfo(name = "P(incl|data)", title = gettext("P(incl|data)"), type = "number")
+  effectsTable$addColumnInfo(name = "BFInclusion",  title = inclusion.title,         type = "number")
 
   if (options$effectsType == "matchedModels") {
-    effectsTable$addFootnote(message = paste("Compares models that contain the effect to equivalent models stripped",
-                                             "of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt."),
-                             symbol = "<em>Note.</em>")
+    effectsTable$addFootnote(message = gettext("Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt."),
+                             symbol = gettext("<em>Note.</em>"))
   }
   
   if (is.null(model$models)) {
@@ -417,11 +416,8 @@
   }
   
   if (sum(!idxNotNan) > 1L) { # null model is always omitted, so 2 or more omitted indicates some models failed 
-    effectsTable$addFootnote(message = paste(
-      "Some Bayes factors could not be calculated.", 
-      "Inclusion probabilities and Bayes factors are calculated while excluding these models.",
-      "The results may be uninterpretable!"), 
-      symbol = "<b><em>Warning.</em></b>"
+    effectsTable$addFootnote(message = gettext("Some Bayes factors could not be calculated. Inclusion probabilities and Bayes factors are calculated while excluding these models. The results may be uninterpretable!"),
+      symbol = gettext("<b><em>Warning.</em></b>")
     )
   }
 
@@ -482,7 +478,7 @@
 .BANOVAinitModelComparisonTable <- function(options) {
 
   # function that creates an empty JASP table to be filled later
-  modelTable <- createJaspTable(title = "Model Comparison")
+  modelTable <- createJaspTable(title = gettext("Model Comparison"))
   modelTable$position <- 1L
   modelTable$addCitation(.BANOVAcitations[1:2])
   modelTable$dependOn(c(
@@ -491,23 +487,27 @@
     "repeatedMeasuresFactors", "repeatedMeasuresCells"
   ))
 
-  if (options$bayesFactorType == "BF10") {
-    bfm.title <- "BF<sub>M</sub>"
-    bf.title <- "BF<sub>10</sub>"
-  } else if (options$bayesFactorType == "BF01") {
-    bfm.title <- "BF<sub>M</sub>"
-    bf.title <- "BF<sub>01</sub>"
-  } else if (options$bayesFactorType == "LogBF10") {
-    bfm.title <- "Log(BF<sub>M</sub>)"
-    bf.title <- "Log(BF<sub>10</sub>)"
-  }
+  switch(options$bayesFactorType,
+    BF10 = {
+      bfm.title <- gettext("BF<sub>M</sub>")
+      bf.title  <- gettext("BF<sub>10</sub>")
+    },
+    BF01 = {
+      bfm.title <- gettext("BF<sub>M</sub>")
+      bf.title  <- gettext("BF<sub>01</sub>")
+    },
+    LogBF10 = {
+      bfm.title <- gettext("Log(BF<sub>M</sub>)")
+      bf.title  <- gettext("Log(BF<sub>10</sub>)")
+    }
+  )
 
-  modelTable$addColumnInfo(name = "Models",    type = "string")
-  modelTable$addColumnInfo(name = "P(M)",      type = "number")
-  modelTable$addColumnInfo(name = "P(M|data)", type = "number")
-  modelTable$addColumnInfo(name = "BFM",       type = "number", title = bfm.title)
-  modelTable$addColumnInfo(name = "BF10",      type = "number", title = bf.title)
-  modelTable$addColumnInfo(name = "error %",   type = "number")
+  modelTable$addColumnInfo(name = "Models",    title = gettext("Models"),    type = "string")
+  modelTable$addColumnInfo(name = "P(M)",      title = gettext("P(M)"),      type = "number")
+  modelTable$addColumnInfo(name = "P(M|data)", title = gettext("P(M|data)"), type = "number")
+  modelTable$addColumnInfo(name = "BFM",       title = bfm.title,            type = "number")
+  modelTable$addColumnInfo(name = "BF10",      title = bf.title,             type = "number")
+  modelTable$addColumnInfo(name = "error %",   title = gettext("error %"),   type = "number")
 
   return(modelTable)
 }
@@ -552,12 +552,7 @@
       internalTable[widxBad, "BFM"]       <- NaN
       internalTable[widxBad, "BF10"]      <- NaN
       footnotes <- list(
-        message = paste(
-          "<b><em>Warning.</em></b>",
-          "Some Bayes factors could not be calculated.", 
-          "Multi model inference is carried out while excluding these models.",
-          "The results may be uninterpretable!"
-        )
+        message = gettext("<b><em>Warning.</em></b> Some Bayes factors could not be calculated. Multi model inference is carried out while excluding these models. The results may be uninterpretable!")
       )
     }
   } # else: results already computed
@@ -645,7 +640,7 @@
   if (!is.null(jaspResults[["tablePosteriorEstimates"]]) || !options[["posteriorEstimates"]])
     return()
 
-  estsTable <- createJaspTable(title = "Model Averaged Posterior Summary")
+  estsTable <- createJaspTable(title = gettext("Model Averaged Posterior Summary"))
   estsTable$position <- 3
   estsTable$dependOn(c(
     "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects", "sampleModeMCMC",
@@ -653,7 +648,7 @@
     "repeatedMeasuresFactors", "credibleInterval", "repeatedMeasuresCells", "seed", "setSeed"
   ))
 
-  overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
+  overTitle <- gettextf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
   estsTable$addColumnInfo(name = "Variable", type = "string")
   estsTable$addColumnInfo(name = "Level",    type = "string")
   estsTable$addColumnInfo(name = "Mean",     type = "number")
@@ -711,7 +706,7 @@
   if (!is.null(jaspResults[["tableBMACRI"]]) || !options[["criTable"]])
     return()
   
-  criTable <- createJaspTable(title = "Model Averaged R\u00B2")
+  criTable <- createJaspTable(title = gettextf("Model Averaged R", "\u00B2"))
   criTable$position <- 3.5
   criTable$dependOn(c(
     "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects", "sampleModeMCMC",
@@ -719,7 +714,7 @@
     "repeatedMeasuresFactors", "credibleInterval", "seed", "setSeed"
   ))
   
-  overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
+  overTitle <- gettextf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
   criTable$addColumnInfo(name = "rsq",   type = "string", title = "")
   criTable$addColumnInfo(name = "Mean",  type = "number")
   criTable$addColumnInfo(name = "Lower", type = "number", overtitle = overTitle)
@@ -749,14 +744,14 @@
   if (!is.null(jaspResults[["posteriorPlot"]]) || !options$posteriorPlot)
     return()
 
-  posteriorPlotContainer <- createJaspContainer(title = "Model Averaged Posterior Distributions")
+  posteriorPlotContainer <- createJaspContainer(title = gettext("Model Averaged Posterior Distributions"))
   jaspResults[["posteriorPlot"]] <- posteriorPlotContainer
   posteriorPlotContainer$dependOn(c("posteriorPlot", "modelTerms", "credibleInterval", "groupPosterior",
                                     "repeatedMeasuresCells", "dependent"))
   posteriorPlotContainer$position <- 4
 
   if (is.null(model$models)) {
-    posteriorPlotContainer[["dummyplot"]] <- createJaspPlot(title = "Posterior distribution", width = 400, height = 400,
+    posteriorPlotContainer[["dummyplot"]] <- createJaspPlot(title = gettext("Posterior distribution"), width = 400, height = 400,
                                                             plot = NULL)
   } else {
     posteriorPlotContainer$dependOn(optionsFromObject = jaspResults[["tableModelComparisonState"]])
@@ -796,8 +791,7 @@
       
       if (all(c(densities[, ind, "y"]) == 0)) { # only TRUE is never sampled and set to 0
         plot <- createJaspPlot(title = nms[i], width = 400, height = 400)
-        plot$setError(paste("Could not plot posterior distribution.",
-                            "Check if an error occurred for models including this parameter."))
+        plot$setError(gettext("Could not plot posterior distribution. Check if an error occurred for models including this parameter."))
       } else {
         # make prior posterior plot
         dfLines <- data.frame(x = c(densities[, ind, "x"]),
@@ -859,14 +853,14 @@
         xlab <- gsub(pattern = "\\u2009\\u273b\\u2009", replacement = " x ", x = xlab, fixed = TRUE)
 
         ncolLegend <- ceiling(lInd / 14)
-        guideLegend <- ggplot2::guide_legend(title = "Level", keywidth = 0.25, keyheight = 0.1, default.unit = "inch", 
+        guideLegend <- ggplot2::guide_legend(title = gettext("Level"), keywidth = 0.25, keyheight = 0.1, default.unit = "inch",
                                              ncol = ncolLegend)
         p <- ggplot2::ggplot(data = dfLines, mapping = aesLine) +
           ggplot2::geom_line(size = 1.1) + 
           ggplot2::geom_errorbarh(data = dfCri, mapping = aesErrorbar, height = maxheight, size = 1.1, 
                                   inherit.aes = FALSE) + 
           ggplot2::scale_x_continuous(name = xlab,      breaks = xBreaks, limits = range(xBreaks)) +
-          ggplot2::scale_y_continuous(name = "Density", breaks = yBreaks, limits = c(0, newymax)) + 
+          ggplot2::scale_y_continuous(name = gettext("Density"), breaks = yBreaks, limits = c(0, newymax)) +
           colorspace::scale_color_discrete_qualitative() + 
           ggplot2::scale_linetype() + 
           ggplot2::guides(color = guideLegend, linetype = guideLegend)
@@ -904,7 +898,7 @@
     return()
 
   plot <- createJaspPlot(
-    title       = "Model Averaged Q-Q Plot",
+    title       = gettext("Model Averaged Q-Q Plot"),
     width       = 400,
     height      = 400,
     aspectRatio = 1
@@ -931,7 +925,7 @@
     return()
 
   plot <- createJaspPlot(
-    title       = "Model Averaged Posterior R\u00B2",
+    title       = gettextf("Model Averaged Posterior R","\u00B2"),
     width       = 400,
     height      = 400,
     aspectRatio = 1
@@ -970,20 +964,19 @@
 
   # the same footnote for all the tables
   footnote <- gsub("[\r\n\t]", "", 
-    "The posterior odds have been corrected for multiple testing by 
+    gettext("The posterior odds have been corrected for multiple testing by
 		fixing to 0.5 the prior probability that the null hypothesis holds 
 		across all comparisons (Westfall, Johnson, & Utts, 1997). Individual 
 		comparisons are based on the default t-test with a Cauchy (0, r = 
-		1/sqrt(2)) prior. The \"U\" in the Bayes factor denotes that it is uncorrected.")
+    1/sqrt(2)) prior. The \"U\" in the Bayes factor denotes that it is uncorrected."))
 
   bfTxt <- if (options[["postHocTestsNullControl"]]) ", U" else ""
-  if (options[["bayesFactorType"]] == "BF10") {
-    bf.title <- paste0("BF<sub>10", bfTxt, "</sub>")
-  } else if (options[["bayesFactorType"]] == "BF01") {
-    bf.title <- paste0("BF<sub>01", bfTxt, "</sub>")
-  } else if (options[["bayesFactorType"]] == "LogBF10") {
-    bf.title <- paste0("Log(BF<sub>10", bfTxt, "</sub>)")
-  }
+
+  switch(options[["bayesFactorType"]],
+    BF10    = { bf.title <- paste0("BF<sub>10",     bfTxt, "</sub>")  },
+    BF01    = { bf.title <- paste0("BF<sub>01",     bfTxt, "</sub>")  },
+    LogBF10 = { bf.title <- paste0("Log(BF<sub>10", bfTxt, "</sub>)") }
+   )
 
   priorWidth <- 1 / sqrt(2)
   posthoc.variables <- unlist(options[["postHocTestsVariables"]])
@@ -1003,15 +996,15 @@
 
     postHocTable$addColumnInfo(name = "(I)",            type = "string", title = "", combine=TRUE)
     postHocTable$addColumnInfo(name = "(J)",            type = "string", title = "")
-    postHocTable$addColumnInfo(name = "Prior Odds",     type = "number")
-    postHocTable$addColumnInfo(name = "Posterior Odds", type = "number")
+    postHocTable$addColumnInfo(name = "Prior Odds",     type = "number", title = gettext("Prior Odds"))
+    postHocTable$addColumnInfo(name = "Posterior Odds", type = "number", title = gettext("Posterior Odds"))
     postHocTable$addColumnInfo(name = "BF",             type = "number", title = bf.title)
-    postHocTable$addColumnInfo(name = "error %",        type = "number")
+    postHocTable$addColumnInfo(name = "error %",        type = "number", title = gettext("error %"))
 
     postHocTable$dependOn(optionContainsValue = list("postHocTestsVariables" = posthoc.var))
 
     if (options[["postHocTestsNullControl"]])
-      postHocTable$addFootnote(symbol = "<em>Note.</em>", message = footnote)
+      postHocTable$addFootnote(symbol = gettext("<em>Note.</em>"), message = footnote)
       
     if (is.null(model$models)) { # only show empty table
       postHocCollection[[paste0("postHoc_", posthoc.var)]] <- postHocTable
@@ -1097,7 +1090,7 @@
 
     if (!is.null(errMessages)) {
       for (i in seq_along(errMessages))
-        postHocTable$addFootnote(symbol    = "<em>Note.</em>", 
+        postHocTable$addFootnote(symbol    = gettext("<em>Note.</em>"),
                                  message   = errMessages[[i]][["message"]], 
                                  rowNames = paste0("row", errMessages[[i]][["row_names"]]))
       
@@ -1162,7 +1155,7 @@
   # without the container, the position could mess things up
   descriptivesContainer <- jaspResults[["descriptivesContainer"]]
   if (is.null(descriptivesContainer)) {
-    descriptivesContainer <- createJaspContainer(title = "Descriptives")
+    descriptivesContainer <- createJaspContainer(title = gettext("Descriptives"))
     descriptivesContainer$dependOn(c("dependent", "repeatedMeasuresCells"))
     descriptivesContainer$position <- 9001 # always last
     jaspResults[["descriptivesContainer"]] <- descriptivesContainer
@@ -1182,14 +1175,14 @@
   if (analysisType == "RM-ANOVA") {
     dependent <- "dependent"
     fixed <- unlist(c(lapply(options[["repeatedMeasuresFactors"]], `[[`, "name"), options[["betweenSubjectFactors"]]))
-    title <- "Descriptives"
+    title <- gettext("Descriptives")
   } else {
     dependent <- options[["dependent"]]
     fixed <- options[["fixedFactors"]]
     if (!is.null(dependent) && dependent != "") {
-      title <- paste("Descriptives - ", options$dependent, sep = "")
+      title <- gettextf("Descriptives - %s", options$dependent)
     } else {
-      title <- "Descriptives"
+      title <- gettext("Descriptives")
     }
   }
 
@@ -1206,13 +1199,13 @@
     descriptivesTable$addColumnInfo(name = nmsB64[i], type = "string", title = fixed[i], combine = TRUE)
   }
 
-  overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
-  descriptivesTable$addColumnInfo(name = "Mean",  type = "number")
-  descriptivesTable$addColumnInfo(name = "SD",    type = "number")
-  descriptivesTable$addColumnInfo(name = "N",     type = "integer")
+  overTitle <- gettextf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
+  descriptivesTable$addColumnInfo(name = "Mean", title = gettext("Mean"),  type = "number")
+  descriptivesTable$addColumnInfo(name = "SD",   title = gettext("SD"),    type = "number")
+  descriptivesTable$addColumnInfo(name = "N",    title = gettext("N"),     type = "integer")
   if (is.null(options$confidenceIntervalInterval)) {
-    descriptivesTable$addColumnInfo(name = "Lower", type = "number", overtitle = overTitle)
-    descriptivesTable$addColumnInfo(name = "Upper", type = "number", overtitle = overTitle)
+    descriptivesTable$addColumnInfo(name = gettext("Lower"), type = "number", overtitle = overTitle)
+    descriptivesTable$addColumnInfo(name = gettext("Upper"), type = "number", overtitle = overTitle)
   }
   descriptivesTable$showSpecifiedColumnsOnly <- TRUE
   jaspContainer[["tableDescriptives"]] <- descriptivesTable
@@ -1274,7 +1267,7 @@
   if (nObserved != nPossible) {
     descriptivesTable$addFootnote(
       symbol = "<em>Note.</em>", 
-      message = sprintf(
+      message = gettextf(
         "Some combinations of factors are not observed and hence omitted (%g out of %g combinations are unobserved).",
         nPossible - nObserved, nPossible
       )
@@ -1293,7 +1286,7 @@
       || !is.null(jaspContainer[["containerDescriptivesPlots"]]))
     return()
 
-  descriptivesPlotContainer <- createJaspContainer(title = "Descriptives plots")
+  descriptivesPlotContainer <- createJaspContainer(title = gettext("Descriptives plots"))
   descriptivesPlotContainer$position <- 2
   jaspContainer[["containerDescriptivesPlots"]] <- descriptivesPlotContainer
 
@@ -1316,7 +1309,7 @@
   descriptivesPlotContainer$dependOn(c("plotHorizontalAxis", "plotSeparateLines", "plotSeparatePlots", "labelYAxis"))
 
   if (errors$noVariables) {
-    descriptivesPlotContainer[["dummyplot"]] <- createJaspPlot(title = "Descriptives Plot")
+    descriptivesPlotContainer[["dummyplot"]] <- createJaspPlot(title = gettext("Descriptives Plot"))
     return()
   }
 
@@ -1559,7 +1552,7 @@
   h <- (1 - options[["credibleInterval"]]) / 2
   probs <- c(h, 1-h)
 
-  startProgressbar(nmodels, "Sampling posteriors")
+  startProgressbar(nmodels, gettext("Sampling posteriors"))
   for (i in seq_len(nmodels)) {
     if (is.na(reuseable[i])) {
 
@@ -1967,7 +1960,7 @@
   # @return a list with $x the x-coordinates and $y the y-coordinates.
 
   if (length(samples) != length(weights))
-    stop("length of samples must be equal to length of weights!")
+    stop(gettext("length of samples must be equal to length of weights!"))
 
   # remove NULL indices
   idxNonNull <- lengths(samples) > 0
@@ -2148,7 +2141,7 @@
     idx <- is.na(gg)
     if (all(idx)) {
       # this means that either the posterior sampling failed or the input data is bogus.
-      .quitAnalysis("All predictions had zero variance. Check the predictors for anomalies or increase the number of posterior samples.")
+      .quitAnalysis(gettext("All predictions had zero variance. Check the predictors for anomalies or increase the number of posterior samples."))
     } else {
       # this shouldn't happen, but is necessary because otherwise stuff will crash downstream.
       gg[is.na(gg)] <- mean(gg, na.rm = TRUE)
@@ -2187,7 +2180,7 @@
     silent = TRUE)
 
   if (isTryError(out))
-    .quitAnalysis(paste("The following error occured in BayesFactor::enumerateGeneralModels:", 
+    .quitAnalysis(gettextf("The following error occured in BayesFactor::enumerateGeneralModels: %s",
                         .extractErrorMessage(out)))
 
   if (is.null(nuisance)) {
@@ -2332,7 +2325,7 @@
   if (!is.null(jaspResults[["collectionSingleModel"]])) {
     singleModelContainer <- jaspResults[["containerSingleModel"]]
   } else {
-    singleModelContainer <- createJaspContainer(title = "Single Model Inference")
+    singleModelContainer <- createJaspContainer(title = gettext("Single Model Inference"))
     singleModelContainer$dependOn(c(
       "singleModelTerms", "dependent", "sampleModeMCMC", "fixedMCMCSamples", "priorCovariates",
       "priorFixedEffects", "priorRandomEffects", "repeatedMeasuresCells", "seed", "setSeed"
@@ -2345,7 +2338,7 @@
   if (!is.null(model[["models"]]) && is.null(singleModel) && length(options$singleModelTerms) > 0L && userWantsSMI) {
     singleModel <- try(.BANOVAsmiSamplePosterior(dataset, options, model[["analysisType"]]))
     if (isTryError(singleModel)) {
-      singleModelContainer$setError(paste("Error in single model inference:\n", singleModel))
+      singleModelContainer$setError(gettextf("Error in single model inference:\n%s", singleModel))
       singleModel <- NULL
     } else {
       singleModelState <- createJaspState(object = singleModel)
@@ -2458,17 +2451,17 @@
   if (!is.null(jaspContainer[["SMItablePosteriorEstimates"]]) || !options[["singleModelEstimates"]])
     return()
 
-  estsTable <- createJaspTable(title = "Single Model Posterior Summary")
+  estsTable <- createJaspTable(title = gettext("Single Model Posterior Summary"))
   estsTable$position <- 1
   estsTable$dependOn(c("singleModelEstimates", "credibleInterval"))
 
-  overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
-  estsTable$addColumnInfo(name = "Variable", type = "string")
-  estsTable$addColumnInfo(name = "Level",    type = "string")
-  estsTable$addColumnInfo(name = "Mean",     type = "number")
-  estsTable$addColumnInfo(name = "SD",       type = "number")
-  estsTable$addColumnInfo(name = "Lower",    type = "number", overtitle = overTitle)
-  estsTable$addColumnInfo(name = "Upper",    type = "number", overtitle = overTitle)
+  overTitle <- gettextf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
+  estsTable$addColumnInfo(name = "Variable", title = gettext("Variable"), type = "string")
+  estsTable$addColumnInfo(name = "Level",    title = gettext("Level"),    type = "string")
+  estsTable$addColumnInfo(name = "Mean",     title = gettext("Mean"),     type = "number")
+  estsTable$addColumnInfo(name = "SD",       title = gettext("SD"),       type = "number")
+  estsTable$addColumnInfo(name = "Lower",    title = gettext("Lower"),    type = "number", overtitle = overTitle)
+  estsTable$addColumnInfo(name = "Upper",    title = gettext("Upper"),    type = "number", overtitle = overTitle)
 
   if (!(is.null(model) || estsTable$getError())) {
     .BANOVAfillEstimatesTable(
@@ -2491,12 +2484,12 @@
   if (!is.null(jaspContainer[["SMIposteriorPlot"]]) || !options$singleModelPosteriorPlot)
     return()
 
-  posteriorPlotContainer <- createJaspContainer(title = "Single Model Posterior Distributions")
+  posteriorPlotContainer <- createJaspContainer(title = gettext("Single Model Posterior Distributions"))
   jaspContainer[["SMIposteriorPlot"]] <- posteriorPlotContainer
   posteriorPlotContainer$position <- 2
   posteriorPlotContainer$dependOn(c("singleModelPosteriorPlot", "singleModelGroupPosterior"))
   if (is.null(model) || posteriorPlotContainer$getError()) {
-    posteriorPlotContainer[["dummyplot"]] <- createJaspPlot(title = "Posterior distribution", width = 400, height = 400,
+    posteriorPlotContainer[["dummyplot"]] <- createJaspPlot(title = gettext("Posterior distribution"), width = 400, height = 400,
                                                             plot = NULL)
   } else {
     .BANOVAfillPosteriorPlotContainer(
@@ -2525,7 +2518,7 @@
     )
   }
   plot <- createJaspPlot(
-    title       = "Q-Q Plot",
+    title       = gettext("Q-Q Plot"),
     width       = 400,
     height      = 400,
     plot        = p,
@@ -2552,7 +2545,7 @@
     p <- JASPgraphs::PlotPriorAndPosterior(dfLines = df, xName = xName, CRI = rsqCri, drawCRItxt = FALSE)
   }
   plot <- createJaspPlot(
-    title       = "Posterior R\u00B2",
+    title       = gettextf("Posterior R%s", "\u00B2"),
     width       = 400,
     height      = 400,
     plot        = p,
@@ -2569,15 +2562,15 @@
   if (!is.null(jaspResults[["tableSMICRI"]]) || !options[["singleModelCriTable"]])
     return()
   
-  criTable <- createJaspTable(title = "Single Model R\u00B2")
+  criTable <- createJaspTable(title = gettext("Single Model R%s", "\u00B2"))
   criTable$position <- 3.5
   criTable$dependOn(c("singleModelCriTable", "credibleInterval"))
   
-  overTitle <- sprintf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
-  criTable$addColumnInfo(name = "rsq",   type = "string", title = "")
-  criTable$addColumnInfo(name = "Mean",  type = "number")
-  criTable$addColumnInfo(name = "Lower", type = "number", overtitle = overTitle)
-  criTable$addColumnInfo(name = "Upper", type = "number", overtitle = overTitle)
+  overTitle <- gettextf("%s%% Credible Interval", format(100 * options[["credibleInterval"]], digits = 3))
+  criTable$addColumnInfo(name = "rsq",   title = "",               type = "string")
+  criTable$addColumnInfo(name = "Mean",  title = gettext("Mean"),  type = "number")
+  criTable$addColumnInfo(name = "Lower", title = gettext("Lower"), type = "number", overtitle = overTitle)
+  criTable$addColumnInfo(name = "Upper", title = gettext("Upper"), type = "number", overtitle = overTitle)
 
   if (!is.null(model)) {
     cri <- model[["rsqCri"]]

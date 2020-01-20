@@ -125,7 +125,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
   } else {
     # Nothing worked out:
     modelDefinition <- NULL #this model has no parameters
-    stop("variables cannot be read")
+    stop(gettext("variables cannot be read"))
   }
   
   # Save in object
@@ -157,7 +157,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
     if(inherits(bcctObj, "bcct"))
       bfObject$bcctObj <- bcctObj
     else if(isTryError(bcctObj))
-      stop(paste0("R Package error: ", .extractErrorMessage(bcctObj)))
+      stop(gettextf("R Package error: %s", .extractErrorMessage(bcctObj)))
   }
   
   # Post processing
@@ -185,7 +185,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
           bfObject$bf10s <-  postModelProbs/ max(postModelProbs)
         } else {
           # NAs: nModelsVisited, bf10s, postModelProbs
-          stop("R Package error: Cannot retrieve table probabilities")
+          stop(gettext("R Package error: Cannot retrieve table probabilities"))
         }
       }
     }
@@ -233,7 +233,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
     posteriorTableRows[[i]]$"bf"      <- reportBfs[i]
   }
   
-  message <- paste("Total number of models visited =", bfObject$nModelsVisited, sep=" ")
+  message <- gettextf("Total number of models visited = %i", bfObject$nModelsVisited)
   container[["MainTable"]]$addFootnote(message)
   container[["MainTable"]]$addRows(posteriorTableRows)
 }
@@ -273,20 +273,15 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
           actualName[[j]] <- paste(lookup.table[[ terms[j] ]], collapse = " = ")
         varName <- paste0(actualName, collapse = "*")
         
-        results[[ len.Blogreg ]] <- list()
+        results[[ len.Blogreg ]]             <- list()
         results[[ len.Blogreg ]]$"Name"      <- varName
-        post_prob <- as.numeric(logBlm.estimates$prob[var])
-        results[[ len.Blogreg ]]$"post_prob" <- post_prob
-        post_mean <- as.numeric(logBlm.estimates$post_mean[var])
-        results[[ len.Blogreg ]]$"post_mean" <- post_mean
-        post_var <- as.numeric(logBlm.estimates$post_var[var])
-        results[[ len.Blogreg ]]$"post_var" <- post_var
+        results[[ len.Blogreg ]]$"post_prob" <- as.numeric(logBlm.estimates$prob[var])
+        results[[ len.Blogreg ]]$"post_mean" <- as.numeric(logBlm.estimates$post_mean[var])
+        results[[ len.Blogreg ]]$"post_var"  <- as.numeric(logBlm.estimates$post_var[var])
         
         if (options$regressionCoefficientsCredibleIntervals == TRUE){			
-          lower_lim <- as.numeric(logBlm.estimates$lower[var])
-          results[[ len.Blogreg ]]$"lower_lim" <- lower_lim
-          upper_lim <- as.numeric(logBlm.estimates$upper[var])
-          results[[ len.Blogreg ]]$"upper_lim" <- upper_lim
+          results[[ len.Blogreg ]]$"lower_lim" <- as.numeric(logBlm.estimates$lower[var])
+          results[[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.estimates$upper[var])
         }
         
         len.Blogreg <- len.Blogreg + 1
@@ -328,7 +323,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
   # Compute/get the model
   bfObject <- .basRegLogLinComputeBFObject(container, dataset, options)
   if(!(options$regressionCoefficientsSubmodelNo %in% 1:bfObject$nModelsVisited))
-    stop("Submodel specified is not within possible submodels")
+    stop(gettext("Submodel specified is not within possible submodels"))
   
   results <- list()
   lookup.table <- .regressionLogLinearBayesianBuildLookup(dataset, options$factors)
@@ -353,8 +348,8 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
       extractedModelFormula <- as.character(extractedModelFormula)
       extractedModelFormula <- substring(extractedModelFormula, first = 2) # trim leading ~
       extractedModelFormula <- .unvf(extractedModelFormula)	
-      container[["SubSummaryTable"]]$addFootnote(extractedModelFormula, symbol = "<em>Model formula:</em>")
-      container[["SubSummaryTable"]]$addFootnote(paste(round(logBlm.subestimates$post_prob, 3)), symbol = "<em>Posterior model probability =</em>")
+      container[["SubSummaryTable"]]$addFootnote(extractedModelFormula, symbol = gettext("<em>Model formula:</em>"))
+      container[["SubSummaryTable"]]$addFootnote(paste(round(logBlm.subestimates$post_prob, 3)), symbol = gettext("<em>Posterior model probability =</em>"))
 
       if (length(bfObject$variables) > 0) {
         
@@ -373,16 +368,12 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
           
           results[[ len.Blogreg ]] <- list()
           results[[ len.Blogreg ]]$"Name"      <- varName
-          post_mean <- as.numeric(logBlm.subestimates$post_mean[var])
-          results[[ len.Blogreg ]]$"post_mean" <- post_mean
-          post_var <- as.numeric(logBlm.subestimates$post_var[var])
-          results[[ len.Blogreg ]]$"post_var"  <- post_var
+          results[[ len.Blogreg ]]$"post_mean" <- as.numeric(logBlm.subestimates$post_mean[var])
+          results[[ len.Blogreg ]]$"post_var"  <- as.numeric(logBlm.subestimates$post_var[var])
           
           if (options$regressionCoefficientsSubmodelCredibleIntervals){			
-            lower_lim <- as.numeric(logBlm.subestimates$lower[var])
-            results[[ len.Blogreg ]]$"lower_lim" <- lower_lim
-            upper_lim <- as.numeric(logBlm.subestimates$upper[var])
-            results[[ len.Blogreg ]]$"upper_lim" <- upper_lim
+            results[[ len.Blogreg ]]$"lower_lim" <- as.numeric(logBlm.subestimates$lower[var])
+            results[[ len.Blogreg ]]$"upper_lim" <- as.numeric(logBlm.subestimates$upper[var])
           }
           len.Blogreg <- len.Blogreg + 1
         }		
@@ -441,24 +432,23 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
     return()
   
   # Create table
-  mainTable <- createJaspTable(title = "Model Comparison")
+  mainTable <- createJaspTable(title = gettext("Model Comparison"))
   mainTable$dependOn(c("bayesFactorType", "maxModels", "posteriorProbabilityCutOff"))
   .basRegLogLinCitation(mainTable)
   mainTable$showSpecifiedColumnsOnly <- TRUE
   mainTable$position <- 1
   if (options$bayesFactorType == "BF10") 
-    bfTitle <- "BF<sub>10</sub>"
+    bfTitle <- gettext("BF<sub>10</sub>")
   else if (options$bayesFactorType == "BF01") 
-    bfTitle <- "BF<sub>01</sub>"
+    bfTitle <- gettext("BF<sub>01</sub>")
   else 
-    bfTitle <- "Log(BF<sub>10</sub>)"
+    bfTitle <- gettext("Log(BF<sub>10</sub>)")
   
   # Add columns to table
-  mainTable$addColumnInfo(name = "number", title = " ",         type = "integer")
-  mainTable$addColumnInfo(name = "model",  title = "Models",    type = "string")
-  mainTable$addColumnInfo(name = "pMdata", title = "P(M|data)", type = "number", 
-                          format = "dp:3")
-  mainTable$addColumnInfo(name = "bf", title = bfTitle, type = "number")
+  mainTable$addColumnInfo(name = "number",  title = " ",                  type = "integer")
+  mainTable$addColumnInfo(name = "model",   title = gettext("Models"),    type = "string")
+  mainTable$addColumnInfo(name = "pMdata",  title = gettext("P(M|data)"), type = "number", format = "dp:3")
+  mainTable$addColumnInfo(name = "bf",      title = bfTitle,              type = "number")
 
   container[["MainTable"]] <- mainTable
   if (!ready) 
@@ -473,7 +463,7 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
     return()
   
   # Create table
-  summaryTable <- createJaspTable(title = "Posterior Summary Statistics")
+  summaryTable <- createJaspTable(title = gettext("Posterior Summary Statistics"))
   summaryTable$dependOn(c("regressionCoefficientsEstimates",
                           "regressionCoefficientsCredibleIntervals",
                           "regressionCoefficientsCredibleIntervalsInterval"))
@@ -482,20 +472,14 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
   summaryTable$position <- 2
   
   # Add columns to table
-  summaryTable$addColumnInfo(name = "Name", title = " ", type = "string")
-  summaryTable$addColumnInfo(name = "post_prob", title = "P(incl|data)", 
-                             type = "number", format = "dp:3")
-  summaryTable$addColumnInfo(name = "post_mean", title = "Mean",
-                             type = "number", format = "dp:3")
-  summaryTable$addColumnInfo(name = "post_var",  title = "Variance",
-                             type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "Name",      title = " ",                     type = "string")
+  summaryTable$addColumnInfo(name = "post_prob", title = gettext("P(incl|data)"), type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "post_mean", title = gettext("Mean"),         type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "post_var",  title = gettext("Variance"),     type = "number", format = "dp:3")
   if(options$regressionCoefficientsCredibleIntervals){
-    ci.label <- paste0(100*options$regressionCoefficientsCredibleIntervalsInterval, 
-                       "% Credible intervals")
-    summaryTable$addColumnInfo(name = "lower_lim", title = "Lower", 
-                               type = "number", overtitle = ci.label)
-    summaryTable$addColumnInfo(name = "upper_lim", title = "Upper", 
-                               type = "number", overtitle = ci.label)
+    ci.label <- gettextf("%s%% Credible intervals", 100*options$regressionCoefficientsCredibleIntervalsInterval)
+    summaryTable$addColumnInfo(name = "lower_lim", title = gettext("Lower"), type = "number", overtitle = ci.label)
+    summaryTable$addColumnInfo(name = "upper_lim", title = gettext("Upper"), type = "number", overtitle = ci.label)
   }
   
   container[["SummaryTable"]] <- summaryTable
@@ -514,8 +498,8 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
     return()
   
   # Create table
-  title <- paste("Posterior Summary Statistics For Submodel", 
-                 options$regressionCoefficientsSubmodelNo, sep=" ")
+  title <- gettextf("Posterior Summary Statistics For Submodel %s", options$regressionCoefficientsSubmodelNo)
+
   subSummaryTable <- createJaspTable(title = title)
   subSummaryTable$dependOn(c("regressionCoefficientsSubmodel",
                              "regressionCoefficientsSubmodelCredibleIntervals",
@@ -526,18 +510,16 @@ RegressionLogLinearBayesian <- function(jaspResults, dataset = NULL, options, ..
   subSummaryTable$position <- 3
   
   # Add columns to table
-  subSummaryTable$addColumnInfo(name = "Name", title = " ", type = "string")
-  subSummaryTable$addColumnInfo(name = "post_mean", title = "Mean",
-                                type = "number", format = "dp:3")
-  subSummaryTable$addColumnInfo(name = "post_var", title = "Variance",
-                                type = "number", format = "dp:3")
+  subSummaryTable$addColumnInfo(name = "Name",      title = " ",                 type = "string")
+  subSummaryTable$addColumnInfo(name = "post_mean", title = gettext("Mean"),     type = "number", format = "dp:3")
+  subSummaryTable$addColumnInfo(name = "post_var",  title = gettext("Variance"), type = "number", format = "dp:3")
+
   if(options$regressionCoefficientsSubmodelCredibleIntervals){
-    ciVal <- options$regressionCoefficientsSubmodelCredibleIntervalsInterval
-    ci.label <- paste0(100*ciVal, "% Credible intervals")
-    subSummaryTable$addColumnInfo(name = "lower_lim", title = "Lower", type = "number", 
-                                  overtitle = ci.label)
-    subSummaryTable$addColumnInfo(name = "upper_lim", title = "Upper", type = "number", 
-                                  overtitle = ci.label)
+    ciVal    <- options$regressionCoefficientsSubmodelCredibleIntervalsInterval
+    ci.label <- gettextf("%.0f%% Credible intervals", 100*ciVal)
+
+    subSummaryTable$addColumnInfo(name = "lower_lim", title = gettext("Lower"), type = "number", overtitle = ci.label)
+    subSummaryTable$addColumnInfo(name = "upper_lim", title = gettext("Upper"), type = "number", overtitle = ci.label)
   }
   
   container[["SubSummaryTable"]] <- subSummaryTable

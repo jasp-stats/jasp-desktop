@@ -107,13 +107,13 @@ Form
                 }
 
             }
-			CheckBox { name: "stdCoeff";		label: qsTr("Standardized coefficients")			}
-			CheckBox { name: "oddsRatios";		label: qsTr("Odds ratios")						}
+			CheckBox { name: "stdCoeff";		label: qsTr("Standardized coefficients")	}
+			CheckBox { name: "oddsRatios";		label: qsTr("Odds ratios")					}
 			CheckBox
 			{
-				name: "coeffCI";				label: qsTr("Confidence intervals")
-				CIField {	name: "coeffCIInterval"; label: "Interval" }
-				CheckBox {		name: "coeffCIOR";		label: qsTr("Odds ratio scale")		}
+							name: "coeffCI";			label: qsTr("Confidence intervals")
+				CIField {	name: "coeffCIInterval";	label: qsTr("Interval")				}
+				CheckBox {	name: "coeffCIOR";			label: qsTr("Odds ratio scale")		}
 			}
 			CheckBox { name: "robustSEOpt";		label: qsTr("Robust standard errors")		}
 			CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio")	}
@@ -125,10 +125,10 @@ Form
             CheckBox { name: "AUC";			label: qsTr("AUC")					}
             CheckBox { name: "Sens";		label: qsTr("Sensitivity / Recall")	}
             CheckBox { name: "Spec";		label: qsTr("Specificity")			}
-            CheckBox { name: "Prec";		label: qsTr("Precision")				}
-            CheckBox { name: "Fmsr";		label: qsTr("F-measure")				}
+			CheckBox { name: "Prec";		label: qsTr("Precision")			}
+			CheckBox { name: "Fmsr";		label: qsTr("F-measure")			}
             CheckBox { name: "BrierScr";	label: qsTr("Brier score")			}
-            CheckBox { name: "Hmsr";		label: qsTr("H-measure")				}
+			CheckBox { name: "Hmsr";		label: qsTr("H-measure")			}
         }
 
         Group
@@ -167,16 +167,16 @@ Form
 			title: qsTr("Inferential Plots")
 			CheckBox
 			{
-				name: "estimatesPlotsOpt"; label: qsTr("Display conditional estimates plots")
-				CIField {	name: "estimatesPlotsCI";	label: qsTr("Confidence interval") }
-				CheckBox {		name: "showPoints";			label: qsTr("Show data points")						}
+							name: "estimatesPlotsOpt";	label: qsTr("Display conditional estimates plots")
+				CIField {	name: "estimatesPlotsCI";	label: qsTr("Confidence interval")					}
+				CheckBox {	name: "showPoints";			label: qsTr("Show data points")						}
 			}
 		}
 
 		Group
 		{
 			title: qsTr("Residual Plots")
-			CheckBox { name: "predictedPlotOpt";		label: qsTr("Predicted - residual plot")			}
+			CheckBox { name: "predictedPlotOpt";		label: qsTr("Predicted - residual plot")		}
 			CheckBox { name: "predictorPlotsOpt";		label: qsTr("Predictor - residual plots")		}
 			CheckBox { name: "squaredPearsonPlotOpt";	label: qsTr("Squared Pearson residuals plot")	}
 		}

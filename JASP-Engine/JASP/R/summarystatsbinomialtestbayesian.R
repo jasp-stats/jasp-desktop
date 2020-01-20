@@ -132,7 +132,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
 .summaryStatsBinomialTableMain <- function(options, hypothesisList){
   
   # create table and state dependencies
-  bayesianBinomialTable <- createJaspTable("Bayesian Binomial Test")
+  bayesianBinomialTable <- createJaspTable(gettext("Bayesian Binomial Test"))
   bayesianBinomialTable$dependOn("bayesFactorType")
   bayesianBinomialTable$position <- 1
   
@@ -145,11 +145,11 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   message <- hypothesisList$message
   if (!is.null(message)) bayesianBinomialTable$addFootnote(message)
   
-  bayesianBinomialTable$addColumnInfo(name = "successes", title = "Successes" , type = "integer")
-  bayesianBinomialTable$addColumnInfo(name = "failures" , title = "Failures"  , type = "integer")
-  bayesianBinomialTable$addColumnInfo(name = "theta0"   , title = "Test value", type = "number")
+  bayesianBinomialTable$addColumnInfo(name = "successes", title = gettext("Successes") , type = "integer")
+  bayesianBinomialTable$addColumnInfo(name = "failures" , title = gettext("Failures")  , type = "integer")
+  bayesianBinomialTable$addColumnInfo(name = "theta0"   , title = gettext("Test value"), type = "number")
   bayesianBinomialTable$addColumnInfo(name = "BF"       , title = bfTitle     , type = "number")
-  bayesianBinomialTable$addColumnInfo(name = "pValue"   , title = "p"         , type = "pvalue")
+  bayesianBinomialTable$addColumnInfo(name = "pValue"   , title = gettext("p")         , type = "pvalue")
   
   return(bayesianBinomialTable)
 
@@ -162,7 +162,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
     return()
   
   plot <- createJaspPlot(
-    title       = "Prior and Posterior",
+    title       = gettext("Prior and Posterior"),
     width       = 530,
     height      = 400,
     aspectRatio = 0.7
@@ -195,18 +195,18 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   
   # error check: Posterior too peaked?
   if(abs(CIlower - CIupper) <= .Machine$double.eps){
-    plot$setError("Plotting not possible: Posterior too peaked!")
+    plot$setError(gettext("Plotting not possible: Posterior too peaked!"))
     return()
   }
   
   ppCri           <- c(CIlower, CIupper)
   dfLinesPP       <- .dfLinesPP(dataset = NULL, a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
   dfPointsPP      <- .dfPointsPP(dataset = NULL, a = a, b = b, hyp = hypothesis, theta0 = theta0, counts = successes, n = n)
-  xName           <- expression(paste("Population proportion", ~theta))
+  xName <- bquote(paste(.(gettext("Population proportion")), ~theta))
   
   # error check: Cannot evaluate prior or posterior density?
   if(any(is.na(c(dfPointsPP$y, dfLinesPP$y))) || any(is.infinite(c(dfPointsPP$y, dfLinesPP$y)))){
-    plot$setError("Plotting not possible: Cannot evaluate prior or posterior density!")
+    plot$setError(gettext("Plotting not possible: Cannot evaluate prior or posterior density!"))
     return()
   }
   
@@ -214,7 +214,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
     
     # error check: infinite Bayes factors?
     if(!is.numeric(BF10) || is.infinite(BF10)){
-      plot$setError("Plotting not possible: Bayes factor should be numeric!")
+      plot$setError(gettext("Plotting not possible: Bayes factor should be numeric!"))
       return()
     }
     
@@ -228,7 +228,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   
   # create JASP object
   if (isTryError(p)) {
-    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
     plot$setError(errorMessage)
   } else {
     plot$plotObject <- p
@@ -242,20 +242,19 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
     
     hypothesis_for_common_functions   <- "twoSided"
     hypothesis                        <- "two.sided"
-    message <- paste0("Proportions tested against value: ", theta0, ".")
+    message <- gettextf("Proportions tested against value: %s.", theta0)
     
   } else if (hypothesis_option == "greaterThanTestValue") {
     
     hypothesis_for_common_functions   <- "plusSided"
     hypothesis                        <- "greater"
-    message <- paste0("For all tests, the alternative hypothesis specifies that the proportion is greater than ", theta0, ".")
+    message <- gettextf("For all tests, the alternative hypothesis specifies that the proportion is greater than %s.", theta0)
     
   } else if (hypothesis_option == "lessThanTestValue") {
     
     hypothesis_for_common_functions   <- "minSided"
     hypothesis                        <- "less"
-    message <- paste0("For all tests, the alternative hypothesis specifies that the proportion is less than ", theta0, ".")
-    
+    message <- gettextf("For all tests, the alternative hypothesis specifies that the proportion is less than %s.", theta0)
   }
   
   bfTitle      <- .getBayesfactorTitleSummaryStats(bayesFactorType, hypothesis_for_common_functions)
@@ -271,9 +270,9 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   # perform a check on the hypothesis
   custom <- function() {
     if (options$testValue == 1 && options$hypothesis == "greaterThanTestValue")
-      return("Cannot test the hypothesis that the test value is greater than 1.")
+      return(gettext("Cannot test the hypothesis that the test value is greater than 1."))
     else if (options$testValue == 0 && options$hypothesis == "lessThanTestValue")
-      return("Cannot test the hypothesis that the test value is less than 0.")
+      return(gettext("Cannot test the hypothesis that the test value is less than 0."))
   }
   
   # Error Check 1: Number of levels of the variables and the hypothesis
