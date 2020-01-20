@@ -2562,7 +2562,7 @@
   if (!is.null(jaspResults[["tableSMICRI"]]) || !options[["singleModelCriTable"]])
     return()
   
-  criTable <- createJaspTable(title = gettext("Single Model R%s", "\u00B2"))
+  criTable <- createJaspTable(title = gettextf("Single Model R%s", "\u00B2"))
   criTable$position <- 3.5
   criTable$dependOn(c("singleModelCriTable", "credibleInterval"))
   
