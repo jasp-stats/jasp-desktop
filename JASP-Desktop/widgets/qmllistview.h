@@ -50,33 +50,34 @@ public:
 	
 	QMLListView(JASPControlBase* item);
 	
-	virtual ListModel	*	model()			const = 0;
-			void			setUp()			override;
-			void			cleanUp()		override;
+	virtual ListModel		*	model()			const = 0;
+			void				setUp()			override;
+			void				cleanUp()		override;
 	
-	virtual void			setTermsAreNotVariables();
-	virtual void			setTermsAreInteractions();
+	virtual void				setTermsAreNotVariables();
+	virtual void				setTermsAreInteractions();
 	
-			int				variableTypesAllowed()		const	{ return _variableTypesAllowed; }
+			int					variableTypesAllowed()		const	{ return _variableTypesAllowed; }
 
-	const QList<SourceType*>& sourceModels()			const	{ return _sourceModels; }
-			bool			hasSource()					const	{ return _sourceModels.length() > 0; }
-			bool			modelHasAllVariables()		const	{ return _modelHasAllVariables; }
+	const QList<SourceType*>&	sourceModels()				const	{ return _sourceModels; }
+			bool				hasSource()					const	{ return _sourceModels.length() > 0; }
+			bool				modelHasAllVariables()		const	{ return _modelHasAllVariables; }
 
-			JASPControlWrapper* getRowControl(const QString& key, const QString& name)		const;
-			bool			addRowControl(const QString& key, JASPControlWrapper* control);
+			JASPControlWrapper*	getRowControl(const QString& key, const QString& name)		const;
+			bool				addRowControl(const QString& key, JASPControlWrapper* control);
 
+			JASPControlWrapper*	getChildControl(QString key, QString name) override;
 
+	Q_INVOKABLE QString			getSourceType(QString name);
 
-	Q_INVOKABLE QString		getSourceType(QString name);
 protected slots:
-	virtual void			modelChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
-			void			sourceChangedHandler();
+	virtual void				modelChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed
+			void				sourceChangedHandler();
 
 protected:
-	virtual void			setSources();
-	virtual void			readModelProperty(QMap<QString, QString>* map = nullptr);
-			void			addRowComponentsDefaultOptions(Options* optionTable);
+	virtual void				setSources();
+	virtual void				readModelProperty(QMap<QString, QString>* map = nullptr);
+			void				addRowComponentsDefaultOptions(Options* optionTable);
 
 protected:
 	QList<SourceType*>	_sourceModels;

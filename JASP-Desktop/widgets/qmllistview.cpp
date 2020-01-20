@@ -139,6 +139,7 @@ void QMLListView::setSources()
 					if (discardModel)
 					{
 						discardSource.model = discardModel;
+						addDependency(discardModel->listView());
 						connect(discardModel, &ListModel::modelChanged, listModel, &ListModel::sourceTermsChanged);
 					}
 					else
@@ -302,6 +303,11 @@ bool QMLListView::addRowControl(const QString &key, JASPControlWrapper *control)
 		success = model()->addRowControl(key, control);
 
 	return success;
+}
+
+JASPControlWrapper *QMLListView::getChildControl(QString key, QString name)
+{
+	return getRowControl(key, name);
 }
 
 JASPControlWrapper *QMLListView::getRowControl(const QString &key, const QString &name) const

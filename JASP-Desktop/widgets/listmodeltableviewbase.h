@@ -74,6 +74,9 @@ public:
 
 				bool valueOk(QVariant value);
 
+	JASPControlWrapper*	getRowControl(const QString& key, const QString& name)			const	override;
+				bool addRowControl(const QString& key, JASPControlWrapper* control)				override;
+
 signals:
 	void columnCountChanged();
 	void rowCountChanged();
@@ -98,6 +101,8 @@ protected:
 	QVariant					_defaultCellVal;
 	bool						_keepRowsOnReset = false,
 								_keepColsOnReset = false;
+
+	QMap<QString, QMap<QString, JASPControlWrapper*> >	_itemControls;
 };
 
 #endif // LISTMODELTABLEVIEWBASE_H

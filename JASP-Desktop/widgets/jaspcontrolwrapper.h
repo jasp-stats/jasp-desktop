@@ -48,6 +48,8 @@ public:
 	void						setItemProperty(const QString& name, const QVariant& value);
 	JASPControlWrapper		*	parentListControl();
 	QString						parentListControlKey();
+	virtual JASPControlWrapper*	getChildControl(QString key, QString name)	{ return nullptr; }
+
 
 	static JASPControlWrapper*	buildJASPControlWrapper(JASPControlBase* control);
 	

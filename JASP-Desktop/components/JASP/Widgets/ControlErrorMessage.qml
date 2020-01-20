@@ -31,10 +31,10 @@ Rectangle
 	border.color	: warning ? jaspTheme.rose : jaspTheme.controlErrorTextColor
 	border.width	: 1
 
-	property var control		: parent
+	property var control
 	property bool warning		: false
 	property var form
-	property var container
+	property var container		: parent
 	property int containerWidth	: container ? (container === form ? form.availableWidth : container.width) : 0
 	property int paddingWidth	: 10 * jaspTheme.uiScale
 	property int paddingHeight	: 6 * jaspTheme.uiScale
@@ -83,37 +83,37 @@ Rectangle
 	function showMessage(message, temporary)
 	{
 		messageTimer.stop();
-		if (!message || !control) return;
+		if (!message || !control || !container) return;
 
 		messageText.text = message
 		messageText.wrapMode = Text.NoWrap
 		messageText.width = messageText.implicitWidth
 
-		var x = (control.width / 2) - (controlErrorMessage.width / 2)
-		var y = -controlErrorMessage.height - 5
+		var controlPoint = control.mapToItem(container, control.width / 2, 0)
 
-		if (container)
+		var x = controlPoint.x - (controlErrorMessage.width / 2)
+		var y = controlPoint.y - controlErrorMessage.height - 5
+
+		var maxWidth = containerWidth
+
+		if (x < 0) x = 0
+
+		if (x + controlErrorMessage.width > maxWidth)
 		{
-			var maxWidth = containerWidth
-			var controlPoint = control.mapToItem(container, x, 0)
-
-			if (controlPoint.x < 0) x = x - controlPoint.x
-			controlPoint = control.mapToItem(container, x, 0)
-
-			if (controlPoint.x + controlErrorMessage.width > maxWidth)
+			if (controlErrorMessage.width < maxWidth)
+				x = maxWidth - controlErrorMessage.width
+			else
 			{
-				if (controlErrorMessage.width < maxWidth)
-					x = x - (controlPoint.x + controlErrorMessage.width - maxWidth)
-				else
-				{
-					x = x - controlPoint.x
-					messageText.wrapMode = Text.Wrap
-					messageText.width = maxWidth
-				}
+				x = 0
+				messageText.wrapMode = Text.Wrap
+				messageText.width = maxWidth
 			}
-
-			if (controlPoint.y + y < 0) y = -controlPoint.y
 		}
+
+		if (y < 0) y = 0
+
+		if (y + controlErrorMessage.height > controlPoint.y)
+			y = controlPoint.y + controlErrorMessage.height + 5
 
 		controlErrorMessage.x = x
 		controlErrorMessage.y = y
