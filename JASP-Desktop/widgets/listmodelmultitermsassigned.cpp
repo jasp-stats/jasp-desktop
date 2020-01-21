@@ -29,6 +29,26 @@ ListModelMultiTermsAssigned::ListModelMultiTermsAssigned(QMLListView* listView, 
 	_copyTermsWhenDropped = true;
 }
 
+void ListModelMultiTermsAssigned::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)
+{
+	beginResetModel();
+
+	_tuples.clear();
+	for (const Term& term : terms)
+	{
+		Terms row;
+		for (const QString& comp : term.components())
+			row.add(comp, false);
+		_tuples.push_back(row);
+	}
+
+	_setTerms();
+
+	_rowControlsOptions = allOptionsMap;
+	endResetModel();
+
+}
+
 void ListModelMultiTermsAssigned::removeTerms(const QList<int> &indexes)
 {
 	if (indexes.length() == 0) return;

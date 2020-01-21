@@ -27,9 +27,10 @@ class ListModelMultiTermsAssigned: public ListModelAssignedInterface
 public:
 	ListModelMultiTermsAssigned(QMLListView* listView, int columns = 2);
 	
+	void			initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())		override;
 	Terms			addTerms(const Terms &terms, int dropItemIndex = -1, JASPControlBase::AssignType assignOption = JASPControlBase::AssignType::AssignDefault)	override;
-	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)							override;
-	void			removeTerms(const QList<int> &indexes)													override;
+	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)										override;
+	void			removeTerms(const QList<int> &indexes)																override;
 
 	const QList<Terms>&	tuples() const { return _tuples; }
 private:
