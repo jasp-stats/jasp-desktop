@@ -4,8 +4,15 @@
 \alias{drawLines}
 \title{Deprecated: use \code{ggplot2::geom_line} instead.}
 \usage{
-drawLines(graph = drawAxis(), dat, mapping = NULL, size = 1.25,
-  alpha = 1, show.legend = TRUE, ...)
+drawLines(
+  graph = drawAxis(),
+  dat,
+  mapping = NULL,
+  size = 1.25,
+  alpha = 1,
+  show.legend = TRUE,
+  ...
+)
 }
 \arguments{
 \item{graph}{ggplot2 object}

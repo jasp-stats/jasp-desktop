@@ -4,12 +4,24 @@
 \alias{drawAxis}
 \title{(Deprecated) draw an empty ggplot with just axes.}
 \usage{
-drawAxis(graph = NULL, xName = waiver(), yName = waiver(),
-  breaks = waiver(), xBreaks = waiver(), yBreaks = waiver(),
-  dat = NULL, xLabels = waiver(), yLabels = waiver(),
-  xLimits = waiver(), yLimits = waiver(), force = FALSE,
-  secondaryXaxis = waiver(), secondaryYaxis = waiver(),
-  xTrans = "identity", yTrans = "identity")
+drawAxis(
+  graph = NULL,
+  xName = waiver(),
+  yName = waiver(),
+  breaks = waiver(),
+  xBreaks = waiver(),
+  yBreaks = waiver(),
+  dat = NULL,
+  xLabels = waiver(),
+  yLabels = waiver(),
+  xLimits = waiver(),
+  yLimits = waiver(),
+  force = FALSE,
+  secondaryXaxis = waiver(),
+  secondaryYaxis = waiver(),
+  xTrans = "identity",
+  yTrans = "identity"
+)
 }
 \arguments{
 \item{graph}{ggplot object.}

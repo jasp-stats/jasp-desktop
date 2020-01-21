@@ -4,8 +4,16 @@
 \alias{drawPoints}
 \title{Deprecated: use \code{ggplot2::geom_point} instead.}
 \usage{
-drawPoints(graph = drawAxis(), dat, mapping = NULL, size = 1.25,
-  shape = 21, fill = "gray", show.legend = TRUE, ...)
+drawPoints(
+  graph = drawAxis(),
+  dat,
+  mapping = NULL,
+  size = 1.25,
+  shape = 21,
+  fill = "gray",
+  show.legend = TRUE,
+  ...
+)
 }
 \arguments{
 \item{graph}{ggplot2 object}

@@ -4,11 +4,18 @@
 \alias{plotPieChart}
 \title{Make a Pie Chart}
 \usage{
-plotPieChart(value, group, legendName = deparse(substitute(group)),
+plotPieChart(
+  value,
+  group,
+  legendName = deparse(substitute(group)),
   legendLabels = if (is.factor(group)) levels(group) else unique(group),
-  legendColors = NULL, showAxisText = TRUE,
-  showAxisTicks = showAxisText, asPercentages = TRUE,
-  palette = getGraphOption("palette"), ...)
+  legendColors = NULL,
+  showAxisText = TRUE,
+  showAxisTicks = showAxisText,
+  asPercentages = TRUE,
+  palette = getGraphOption("palette"),
+  ...
+)
 }
 \arguments{
 \item{value}{The value for each group.}

@@ -4,9 +4,15 @@
 \alias{plotQQnorm}
 \title{Make a Q-Q plot}
 \usage{
-plotQQnorm(residuals, lower = NULL, upper = NULL, abline = TRUE,
-  ablineColor = "red", xName = "Theoretical quantiles",
-  yName = "Observed quantiles")
+plotQQnorm(
+  residuals,
+  lower = NULL,
+  upper = NULL,
+  abline = TRUE,
+  ablineColor = "red",
+  xName = gettext("Theoretical quantiles"),
+  yName = gettext("Observed quantiles")
+)
 }
 \arguments{
 \item{residuals}{Numeric vector, the residuals of the analysis.}

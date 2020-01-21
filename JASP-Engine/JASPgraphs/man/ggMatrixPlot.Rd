@@ -7,32 +7,72 @@
 \alias{ggMatrixPlot.default}
 \title{ggMatrixPlot}
 \usage{
-ggMatrixPlot(plotList = NULL, nr = NULL, nc = NULL, ...,
-  leftLabels = NULL, topLabels = NULL, rightLabels = NULL,
-  bottomLabels = NULL, removeXYlabels = c("xy", "x", "y", "none"),
-  labelSize = 0.4 * graphOptions("fontsize"), labelPos = matrix(0.5, 4,
-  2), scaleXYlabels = c(0.9, 0.9), debug = FALSE)
+ggMatrixPlot(
+  plotList = NULL,
+  nr = NULL,
+  nc = NULL,
+  ...,
+  leftLabels = NULL,
+  topLabels = NULL,
+  rightLabels = NULL,
+  bottomLabels = NULL,
+  removeXYlabels = c("xy", "x", "y", "none"),
+  labelSize = 0.4 * graphOptions("fontsize"),
+  labelPos = matrix(0.5, 4, 2),
+  scaleXYlabels = c(0.9, 0.9),
+  debug = FALSE
+)
 
-\method{ggMatrixPlot}{matrix}(plotList = NULL, nr = NULL, nc = NULL,
-  layout = NULL, ..., leftLabels = NULL, topLabels = NULL,
-  rightLabels = NULL, bottomLabels = NULL, removeXYlabels = c("xy",
-  "x", "y", "none"), labelSize = 0.4 * graphOptions("fontsize"),
-  labelPos = matrix(0.5, 4, 2), scaleXYlabels = c(0.9, 0.9),
-  debug = FALSE)
+\method{ggMatrixPlot}{matrix}(
+  plotList = NULL,
+  nr = NULL,
+  nc = NULL,
+  layout = NULL,
+  ...,
+  leftLabels = NULL,
+  topLabels = NULL,
+  rightLabels = NULL,
+  bottomLabels = NULL,
+  removeXYlabels = c("xy", "x", "y", "none"),
+  labelSize = 0.4 * graphOptions("fontsize"),
+  labelPos = matrix(0.5, 4, 2),
+  scaleXYlabels = c(0.9, 0.9),
+  debug = FALSE
+)
 
-\method{ggMatrixPlot}{list}(plotList = NULL, nr = NULL, nc = NULL,
-  layout = NULL, ..., leftLabels = NULL, topLabels = NULL,
-  rightLabels = NULL, bottomLabels = NULL, removeXYlabels = c("xy",
-  "x", "y", "none"), labelSize = 0.4 * graphOptions("fontsize"),
-  labelPos = matrix(0.5, 4, 2), scaleXYlabels = c(0.9, 0.9),
-  debug = FALSE)
+\method{ggMatrixPlot}{list}(
+  plotList = NULL,
+  nr = NULL,
+  nc = NULL,
+  layout = NULL,
+  ...,
+  leftLabels = NULL,
+  topLabels = NULL,
+  rightLabels = NULL,
+  bottomLabels = NULL,
+  removeXYlabels = c("xy", "x", "y", "none"),
+  labelSize = 0.4 * graphOptions("fontsize"),
+  labelPos = matrix(0.5, 4, 2),
+  scaleXYlabels = c(0.9, 0.9),
+  debug = FALSE
+)
 
-\method{ggMatrixPlot}{default}(plotList = NULL, nr = NULL, nc = NULL,
-  layout = NULL, ..., leftLabels = NULL, topLabels = NULL,
-  rightLabels = NULL, bottomLabels = NULL, removeXYlabels = c("xy",
-  "x", "y", "none"), labelSize = 0.4 * graphOptions("fontsize"),
-  labelPos = matrix(0.5, 4, 2), scaleXYlabels = c(0.9, 0.9),
-  debug = FALSE)
+\method{ggMatrixPlot}{default}(
+  plotList = NULL,
+  nr = NULL,
+  nc = NULL,
+  layout = NULL,
+  ...,
+  leftLabels = NULL,
+  topLabels = NULL,
+  rightLabels = NULL,
+  bottomLabels = NULL,
+  removeXYlabels = c("xy", "x", "y", "none"),
+  labelSize = 0.4 * graphOptions("fontsize"),
+  labelPos = matrix(0.5, 4, 2),
+  scaleXYlabels = c(0.9, 0.9),
+  debug = FALSE
+)
 }
 \arguments{
 \item{plotList}{a list of ggplot2 objects}
