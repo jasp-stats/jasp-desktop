@@ -17,8 +17,15 @@
 
 #include "columnencoder.h"
 #include <regex>
+#include "log.h"
 
-ColumnEncoder * ColumnEncoder::_columnEncoder = nullptr;
+ColumnEncoder				*	ColumnEncoder::_columnEncoder				= nullptr;
+std::set<ColumnEncoder*>	*	ColumnEncoder::_otherEncoders				= nullptr;
+bool							ColumnEncoder::_encodingMapInvalidated		= true;
+bool							ColumnEncoder::_decodingMapInvalidated		= true;
+bool							ColumnEncoder::_originalNamesInvalidated	= true;
+bool							ColumnEncoder::_encodedNamesInvalidated		= true;
+
 
 ColumnEncoder * ColumnEncoder::columnEncoder()
 {
@@ -28,6 +35,47 @@ ColumnEncoder * ColumnEncoder::columnEncoder()
 	return _columnEncoder;
 }
 
+void ColumnEncoder::invalidateAll()
+{
+	_encodingMapInvalidated		= true;
+	_decodingMapInvalidated		= true;
+	_originalNamesInvalidated	= true;
+	_encodedNamesInvalidated	= true;
+}
+
+ColumnEncoder::ColumnEncoder(std::string prefix, std::string postfix)
+	: _encodePrefix(prefix), _encodePostfix(postfix)
+{
+	if(!_otherEncoders)
+	{
+		_otherEncoders = new ColumnEncoder::ColumnEncoders();
+		invalidateAll();
+	}
+
+	_otherEncoders->insert(this);
+}
+
+ColumnEncoder::~ColumnEncoder()
+{
+	if(this != _columnEncoder)	_otherEncoders->erase(this);
+	else
+	{
+		_columnEncoder = nullptr;
+
+		ColumnEncoders others = *_otherEncoders;
+
+		for(ColumnEncoder * colEnc : others)
+			delete colEnc;
+
+		if(_otherEncoders->size() > 0)
+			Log::log() << "Something went wrong removing other ColumnEncoders..." << std::endl;
+
+		delete _otherEncoders;
+		_otherEncoders = nullptr;
+
+		invalidateAll();
+	}
+}
 
 std::string ColumnEncoder::encode(const std::string &in)
 {
@@ -59,7 +107,7 @@ void ColumnEncoder::setCurrentNames(const std::vector<std::string> & names)
 
 	for(size_t col = 0; col < names.size(); col++)
 	{
-		std::string newName			= "JaspColumn_." + std::to_string(col) + "._Encoded"; //Slightly weird (but R-syntactically valid) name to avoid collisions with user stuff.
+		std::string newName			= _encodePrefix + std::to_string(col) + _encodePostfix; //Slightly weird (but R-syntactically valid) name to avoid collisions with user stuff.
 		_encodingMap[names[col]]	= newName;
 		_decodingMap[newName]		= names[col];
 
@@ -67,7 +115,95 @@ void ColumnEncoder::setCurrentNames(const std::vector<std::string> & names)
 	}
 
 	_originalNames = names;
-	std::sort(_originalNames.begin(), _originalNames.end(), [](std::string & a, std::string & b) { return a.size() > b.size(); }); //We need this to make sure smaller columnNames do not bite chunks off of larger ones
+	sortVectorBigToSmall(_originalNames);
+	invalidateAll();
+}
+
+void ColumnEncoder::sortVectorBigToSmall(std::vector<std::string> & vec)
+{
+	std::sort(vec.begin(), vec.end(), [](std::string & a, std::string & b) { return a.size() > b.size(); }); //We need this to make sure smaller columnNames do not bite chunks off of larger ones
+}
+
+const ColumnEncoder::colMap	&	ColumnEncoder::encodingMap()
+{
+	static ColumnEncoder::colMap map;
+
+	if(_encodingMapInvalidated)
+	{
+		map = _columnEncoder->_encodingMap;
+
+		if(_otherEncoders)
+			for(const ColumnEncoder * other : *_otherEncoders)
+				for(const auto & keyVal : other->_encodingMap)
+					if(map.count(keyVal.first) == 0)
+						map[keyVal.first] = keyVal.second;
+
+		_encodingMapInvalidated = false;
+	}
+
+	return map;
+}
+
+const ColumnEncoder::colMap	&	ColumnEncoder::decodingMap()
+{
+	static ColumnEncoder::colMap map;
+
+	if(_decodingMapInvalidated)
+	{
+		map = _columnEncoder->_decodingMap;
+
+		if(_otherEncoders)
+			for(const ColumnEncoder * other : *_otherEncoders)
+				for(const auto & keyVal : other->_decodingMap)
+					if(map.count(keyVal.first) == 0)
+						map[keyVal.first] = keyVal.second;
+
+		_decodingMapInvalidated = false;
+	}
+
+	return map;
+}
+
+const ColumnEncoder::colVec	&	ColumnEncoder::originalNames()
+{
+	static ColumnEncoder::colVec vec;
+
+	if(_originalNamesInvalidated)
+	{
+		vec = _columnEncoder->_originalNames;
+
+		if(_otherEncoders)
+			for(const ColumnEncoder * other : *_otherEncoders)
+				for(const std::string name : other->_originalNames)
+					vec.push_back(name);
+
+		_originalNamesInvalidated = false;
+	}
+
+	sortVectorBigToSmall(vec);
+
+	return vec;
+}
+
+const ColumnEncoder::colVec	&	ColumnEncoder::encodedNames()
+{
+	static ColumnEncoder::colVec vec;
+
+	if(_encodedNamesInvalidated)
+	{
+		vec = _columnEncoder->_encodedNames;
+
+		if(_otherEncoders)
+			for(const ColumnEncoder * other : *_otherEncoders)
+				for(const std::string name : other->_encodedNames)
+					vec.push_back(name);
+
+		_encodedNamesInvalidated = false;
+	}
+
+	sortVectorBigToSmall(vec);
+
+	return vec;
 }
 
 bool ColumnEncoder::shouldEncode(const std::string & in)
@@ -81,7 +217,7 @@ bool ColumnEncoder::shouldDecode(const std::string & in)
 }
 
 std::string	ColumnEncoder::replaceAll(std::string text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names)
-{
+{		
 	size_t foundPos = 0;
 
 	while(foundPos < std::string::npos)
@@ -179,14 +315,14 @@ std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::stri
 void ColumnEncoder::encodeJson(Json::Value & json, bool replaceNames)
 {
 	//std::cout << "Json before encoding:\n" << json.toStyledString();
-	replaceAll(json, _encodingMap, _originalNames, replaceNames);
+	replaceAll(json, encodingMap(), originalNames(), replaceNames);
 	//std::cout << "Json after encoding:\n" << json.toStyledString() << std::endl;
 }
 
 void ColumnEncoder::decodeJson(Json::Value & json, bool replaceNames)
 {
 	//std::cout << "Json before encoding:\n" << json.toStyledString();
-	replaceAll(json, _decodingMap, _encodedNames, replaceNames);
+	replaceAll(json, decodingMap(), encodedNames(), replaceNames);
 	//std::cout << "Json after encoding:\n" << json.toStyledString() << std::endl;
 }
 

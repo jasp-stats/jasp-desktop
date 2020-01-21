@@ -29,8 +29,14 @@
 /// If you want to en- or decode other names then you instantiate a separate copy and use it's functions.
 class ColumnEncoder
 {
+	typedef std::map<std::string, std::string>	colMap;
+	typedef std::vector<std::string>			colVec;
+	typedef std::set<ColumnEncoder *>			ColumnEncoders;
+
+private:						ColumnEncoder() { invalidateAll(); }
 public:
-								ColumnEncoder(std::string prefix, std::string postfix = "._Encoded") : _encodePrefix(prefix), _encodePostfix(postfix) {}
+								ColumnEncoder(std::string prefix, std::string postfix = "._Encoded");
+								~ColumnEncoder();
 	static ColumnEncoder	*	columnEncoder();
 
 	static	bool				isColumnName(const std::string & in)							{ return columnEncoder()->shouldEncode(in); }
@@ -50,33 +56,44 @@ public:
 			std::string			encodeRScript(std::string text, std::set<std::string> * columnNamesFound);
 
 			///Replace all occurences of columnNames in a string by their encoded versions, regardless of word boundaries or parentheses.
-			std::string			encodeAll(const std::string & text) { return replaceAll(text, _encodingMap, _originalNames); }
+	static	std::string			encodeAll(const std::string & text) { return replaceAll(text, encodingMap(), originalNames()); }
 
 			///Replace all occurences of encoded columnNames in a string by their decoded versions, regardless of word boundaries or parentheses.
-			std::string			decodeAll(const std::string & text) { return replaceAll(text, _decodingMap, _encodedNames);  }
+	static	std::string			decodeAll(const std::string & text) { return replaceAll(text, decodingMap(), encodedNames());  }
 
 			///Replace all occurences of columnNames in a string by their encoded versions in all json-names and string-values, regardless of word boundaries or parentheses.
-			void				encodeJson(Json::Value & json, bool replaceNames = false);
+	static	void				encodeJson(Json::Value & json, bool replaceNames = false);
 
 			///Replace all occurences of encoded columnNames in a string by their decoded versions in all json-names and string-values, regardless of word boundaries or parentheses.
-			void				decodeJson(Json::Value & json, bool replaceNames = true);
+	static	void				decodeJson(Json::Value & json, bool replaceNames = true);
 
 private:
-								ColumnEncoder() {}
 	static	std::string			replaceAll(std::string		text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names);
 	static	void				replaceAll(Json::Value &	json, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, bool replaceNames);
 	static	std::vector<size_t>	getPositionsColumnNameMatches(const std::string & text, const std::string & columnName);
 			void				collectExtraEncodingsFromMetaJson(const Json::Value & in, std::vector<std::string> & namesCollected) const;
+	static	void				sortVectorBigToSmall(std::vector<std::string> & vec);
+	static	const colMap	&	encodingMap();
+	static	const colMap	&	decodingMap();
+	static	const colVec	&	originalNames();
+	static	const colVec	&	encodedNames();
+	static	void				invalidateAll();
 
-	static ColumnEncoder				*	_columnEncoder;
+	static	bool				_encodingMapInvalidated,
+								_decodingMapInvalidated,
+								_originalNamesInvalidated,
+								_encodedNamesInvalidated;
 
-	std::map<std::string, std::string>		_encodingMap,
-											_decodingMap;
-	std::vector<std::string>				_originalNames,
-											_encodedNames;
+	static ColumnEncoder	*	_columnEncoder;
+	static ColumnEncoders	*	_otherEncoders;
 
-	std::string								_encodePrefix  = "JaspColumn_.",
-											_encodePostfix = "._Encoded";
+	colMap						_encodingMap,
+								_decodingMap;
+	colVec						_originalNames,
+								_encodedNames;
+
+	std::string					_encodePrefix  = "JaspColumn_.",
+								_encodePostfix = "._Encoded";
 };
 
 #endif // COLUMNENCODER_H
