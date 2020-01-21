@@ -135,22 +135,44 @@ PlotRobustnessSequential(
   xName        = "Prior width"
 )
 
+# In JASP, we often prefer more information in the plot
+x <- dfLines$x[c(15, 30, 50, 80)]
+y <- dfLines$y[c(15, 30, 50, 80)]
+maxBFrVal <- x[1]
+maxBF10 <- y[1]
+BF10user <- y[2]
+BF10w <- y[3]
+BF10ultra <- y[4]
 
-# Robustness plot add info
-# Note(Alexander): At the moment, I need to do quite some work to get the right BF label, 
-# perhaps it's easier if we incorporate this into a function with as argument BF10, BF01, logBF10
-# Furthermore, adding digits=4 manually seems a bit redundant. Would it be nice if we can set this jaspGraphs wide?
-# Moreover, I can't get this right for fewer than 4 points. 
-# 
+BFsubscript <- "[0][1]"
+label1 <- c(
+  gettextf("max BF\%s", BFsubscript),
+  gettext("user prior"),
+  gettext("wide prior"),
+  gettext("ultrawide prior")
+)
+# some failsafes to parse translations as expressions
+label1[1] <- gsub(pattern = "\\\\s+", "~", label1[1])
+label1[-1] <- paste0("\"", label1[-1], "\"")
+label1 <- paste0("paste(", label1, ", ':')")
+
+BFandSubscript <- gettextf("BF\%s", BFsubscript)
+BFandSubscript <- gsub(pattern = "\\\\s+", "~", BFandSubscript)
+label2 <- c(
+  gettextf("\%s at r==\%s",      format(maxBF10,  digits = 4), format(maxBFrVal, digits = 4)),
+  paste0(BFandSubscript, "==", format(BF10user, digits = 4)),
+  paste0(BFandSubscript, "==", format(BF10w,    digits = 4)),
+  paste0(BFandSubscript, "==", format(BF10ultra,digits = 4))
+)
+label2[1L] <- gsub(pattern = "\\\\s+", "~", label2[1])
+
+
 dfPoints <- data.frame(
-  x = c(x[15], x[30], x[50], x[80]),
-  y = c(y[15], y[30], y[50], y[80]),
-  g = JASPgraphs::parseThis(c(
-    sprintf("paste(max, ~\%s, ':',   phantom(phollll), \%s, ~at, ~'r'==\%s)", "BF['+'][0]", format(y[15],   digits = 4), format(x[15], digits = 4)),
-    sprintf("paste(user~prior, ':', phantom(phll[0]), ~\%s==\%s)",           "BF[0][1]", format(y[30],  digits = 4)),
-    sprintf("paste(wide~prior, ':', phantom(ph[0][0]), ~\%s==\%s)",          "BF['+'][alpha]", format(y[50],     digits = 4)),
-    sprintf("paste(ultrawide~prior, ':', ~\%s==\%s)",                        "log(BF['+']['-'])", format(y[80], digits = 4))
-  )),
+  x = x,
+  y = c(maxBF10, BF10user, BF10w, BF10ultra),
+  g = label1,
+  label1 = JASPgraphs::parseThis(label1),
+  label2 = JASPgraphs::parseThis(label2),
   stringsAsFactors = FALSE
 )
 
