@@ -4,22 +4,6 @@
 \alias{PlotPriorAndPosterior}
 \title{Create a prior-posterior plot.}
 \usage{
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-PlotPriorAndPosterior(dfLines, dfPoints = NULL, BF = NULL,
-  CRI = NULL, median = NULL, xName = NULL, yName = "Density",
-  drawPizzaTxt = !is.null(BF), drawCRItxt = !is.null(CRI),
-  bfType = c("BF01", "BF10", "LogBF10"), hypothesis = c("equal",
-  "smaller", "greater"), bfSubscripts = NULL,
-  pizzaTxt = hypothesis2BFtxt(hypothesis)$pizzaTxt, bty = list(type =
-  "n", ldwX = 0.5, lwdY = 0.5), lineColors = NULL,
-  CRItxt = "95\% CI: ", medianTxt = "Median:", ...)
-=======
->>>>>>> mwe for bayesian t-tests
-=======
->>>>>>> added new geom
 PlotPriorAndPosterior(
   dfLines,
   dfPoints = NULL,
@@ -40,13 +24,6 @@ PlotPriorAndPosterior(
   medianTxt = "Median:",
   ...
 )
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 31b778210... added alignText function to JASPgraphs
->>>>>>> mwe for bayesian t-tests
-=======
->>>>>>> added new geom
 }
 \arguments{
 \item{dfLines}{A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}.}
