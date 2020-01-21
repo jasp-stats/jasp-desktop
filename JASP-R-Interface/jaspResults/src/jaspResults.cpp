@@ -339,6 +339,7 @@ void jaspResults::addSerializedPlotObjsForStateFromJaspObject(jaspObject * obj, 
 			pngImg["obj"]					= plot->getPlotObject();
 			pngImg["width"]					= plot->_width;
 			pngImg["height"]				= plot->_height;
+			pngImg["revision"]				= plot->_revision;
 			pngImg["envName"]				= plot->_envName;
 			pngImg["getUnique"]				= plot->getUniqueNestedName();
 			pngImgObj[plot->_filePathPng]	= pngImg;

@@ -137,9 +137,13 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.imageBeingEdited.restoreSize();
 	},
 	
-	insertNewImage: function() {
-		if (this.imageBeingEdited !== null)
+	insertNewImage: function(imageEditResults) {
+		if (this.imageBeingEdited !== null) {
+			if ("revision" in imageEditResults)
+				this.imageBeingEdited.setRevision(imageEditResults["revision"]);
+
 			this.imageBeingEdited.reRender();
+		}
 	},
 
 	detachNotes: function() {
