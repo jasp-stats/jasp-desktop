@@ -156,30 +156,7 @@ Form
 		}
 
 	//// BF ////
-		RadioButtonGroup
-		{
-			name:	"BF"
-			title: 	qsTr("Bayes factor")
-
-			RadioButton
-			{
-				value: 		"BF10"
-				label: 		qsTr("BF\u2081\u2080")
-				checked:	true
-			}
-
-			RadioButton
-			{
-				value: 	"BF01"
-				label: 	qsTr("BF\u2080\u2081")
-			}
-
-			RadioButton
-			{
-				value: 	"logBF10"
-				label: 	qsTr("Log(BF\u2081\u2080)")
-			}
-		}
+BayesFactorType{}
 
 
 	//// Priors ////
@@ -663,19 +640,7 @@ Form
 						}
 					}
 				}
-				CheckBox { 
-						name: "seedBox"
-						text: qsTr("Seed")
-						childrenOnSameRow: true
-
-						DoubleField  { 
-								name: "seed"
-								defaultValue: 1
-								min: -999999
-								max: 999999
-								fieldWidth: 60 
-						}
-				}
+				SetSeed{}
 			}
 		}
  	}
