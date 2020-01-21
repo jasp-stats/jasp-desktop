@@ -53,16 +53,16 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	if (!is.null(bainContainer[["bainTable"]])) return()
 
 	variables <- c(options[["dependent"]], options[["fixedFactors"]])
-	bainTable <- createJaspTable("Bain ANOVA")
+  bainTable <- createJaspTable(gettext("Bain ANOVA"))
 	bainTable$position <- position
 
-	bainTable$addColumnInfo(name="hypotheses", 				type="string", title="")
-	bainTable$addColumnInfo(name="BF", 						type="number", title="BF.c")
-	bainTable$addColumnInfo(name="PMP1", 					type="number", title="PMP a")
-	bainTable$addColumnInfo(name="PMP2", 					type="number", title="PMP b")
+  bainTable$addColumnInfo(name="hypotheses", 	  type="string", title="")
+  bainTable$addColumnInfo(name="BF", 						type="number", title=gettext("BF.c"))
+  bainTable$addColumnInfo(name="PMP1", 					type="number", title=gettext("PMP a"))
+  bainTable$addColumnInfo(name="PMP2", 					type="number", title=gettext("PMP b"))
 
-	message <- "BF.c denotes the Bayes factor of the hypothesis in the row versus its complement.
-				Posterior model probabilities (a: excluding the unconstrained hypothesis, b: including the unconstrained hypothesis) are based on equal prior model probabilities."
+  message <- gettext("BF.c denotes the Bayes factor of the hypothesis in the row versus its complement.\
+Posterior model probabilities (a: excluding the unconstrained hypothesis, b: including the unconstrained hypothesis) are based on equal prior model probabilities.")
 	bainTable$addFootnote(message=message)
 
 	bainTable$addCitation(.bainGetCitations())
@@ -77,9 +77,9 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	if (any(variables %in% missingValuesIndicator)) {
 		i <- which(variables %in% missingValuesIndicator)
 		if (length(i) > 1) {
-			bainTable$addFootnote(message= paste0("The variables ", variables[1], " and ", variables[2], " contain missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
+      bainTable$addFootnote(message= gettextf("The variables %1$s and %2$s contain missing values, the rows containing these values are removed in the analysis.", variables[1], variables[2]), symbol=gettext("<b>Warning.</b>"))
 		} else if (length(i) == 1) {
-			bainTable$addFootnote(message= paste0("The variable ", variables[i], " contains missing values, the rows containing these values are removed in the analysis."), symbol="<b>Warning.</b>")
+      bainTable$addFootnote(message= gettextf("The variable %s contains missing values, the rows containing these values are removed in the analysis.", variables[i]), symbol=gettext("<b>Warning.</b>"))
 		}
 	}
 
@@ -87,7 +87,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	varLevels <- levels(groupCol)
 
 	if (length(varLevels) > 15) {
-		bainContainer$setError("The fixed factor has too many levels for a Bain analysis.")
+    bainContainer$setError(gettext("The fixed factor has too many levels for a Bain analysis."))
 		return()
 	}
 
@@ -105,15 +105,15 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	})
 
 	if (isTryError(p)) {
-		bainContainer$setError(paste0("An error occurred in the analysis:<br>", .extractErrorMessage(p), "<br><br>Please double check your variables and model constraints."))
+    bainContainer$setError(gettextf("An error occurred in the analysis:<br>%s<br><br>Please double check your variables and model constraints.", .extractErrorMessage(p)))
 		return()
 	}
 
 	for (i in 1:(length(bainResult$fit$BF)-1)) {
-		row <- list(hypotheses = paste0("H",i), BF = bainResult$fit$BF[i], PMP1 = bainResult$fit$PMPa[i], PMP2 = bainResult$fit$PMPb[i])
+    row <- list(hypotheses = gettextf("H%i",i), BF = bainResult$fit$BF[i], PMP1 = bainResult$fit$PMPa[i], PMP2 = bainResult$fit$PMPb[i])
 		bainTable$addRows(row)
 	}
-	row <- list(hypotheses = "Hu", BF = "", PMP1 = "", PMP2 = bainResult$fit$PMPb[length(bainResult$fit$BF)])
+  row <- list(hypotheses = gettext("Hu"), BF = "", PMP1 = "", PMP2 = bainResult$fit$PMPb[length(bainResult$fit$BF)])
 	bainTable$addRows(row) 
 }
 
@@ -121,24 +121,23 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 
 	if (!is.null(bainContainer[["descriptivesTable"]]) || !options[["descriptives"]]) return()
 
-	title <- ifelse(type == "anova", yes = "Descriptive Statistics", no = "Coefficients for Groups plus Covariates")
-	meanTitle <- ifelse(type == "anova", yes = "Mean", no = "Coefficient")
+  title     <- ifelse(type == "anova", yes = gettext("Descriptive Statistics"), no = gettext("Coefficients for Groups plus Covariates"))
+  meanTitle <- ifelse(type == "anova", yes = gettext("Mean"),                   no = gettext("Coefficient"))
 
 	descriptivesTable <- createJaspTable(title)
 	descriptivesTable$dependOn(options =c("descriptives", "CredibleInterval", "coefficients"))
 	descriptivesTable$position <- position
 
-	descriptivesTable$addColumnInfo(name="v",    		title="",	type="string")
-	descriptivesTable$addColumnInfo(name="N",    		title="N",			type="integer")
-	descriptivesTable$addColumnInfo(name="mean", 		title=meanTitle,		type="number")
+  descriptivesTable$addColumnInfo(name="v",    		title="",         	 type="string")
+  descriptivesTable$addColumnInfo(name="N",    		title=gettext("N"),	 type="integer")
+  descriptivesTable$addColumnInfo(name="mean", 		title=meanTitle,		 type="number")
 	if(type == "anova")
-		descriptivesTable$addColumnInfo(name="sd", 		title="SD",		type="number")
-	descriptivesTable$addColumnInfo(name="se",   		title="SE", 		type="number")
+    descriptivesTable$addColumnInfo(name="sd", 		title=gettext("SD"),	type="number")
+  descriptivesTable$addColumnInfo(name="se",   		title=gettext("SE"), 	type="number")
 
-	interval <- options[["CredibleInterval"]] * 100
-	overTitle <- paste0(interval, "% Credible Interval")
-	descriptivesTable$addColumnInfo(name="lowerCI",      title = "Lower", type="number", overtitle = overTitle)
-	descriptivesTable$addColumnInfo(name="upperCI",      title = "Upper", type="number", overtitle = overTitle)
+  overTitle <- gettextf("%.0f%% Credible Interval", options[["CredibleInterval"]] * 100)
+  descriptivesTable$addColumnInfo(name="lowerCI",      title = gettext("Lower"), type="number", overtitle = overTitle)
+  descriptivesTable$addColumnInfo(name="upperCI",      title = gettext("Upper"), type="number", overtitle = overTitle)
 	
 	bainContainer[["descriptivesTable"]] <- descriptivesTable
 
@@ -154,10 +153,10 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	
 	# Extract all but sd and se from bain result
 	variable <- bainSummary[["Parameter"]]
-	N <- bainSummary[["n"]]
-	mu <- bainSummary[["Estimate"]]
-	CiLower <- bainSummary[["lb"]]
-	CiUpper <- bainSummary[["ub"]]
+  N        <- bainSummary[["n"]]
+  mu       <- bainSummary[["Estimate"]]
+  CiLower  <- bainSummary[["lb"]]
+  CiUpper  <- bainSummary[["ub"]]
 
 	if(type == "anova"){
 		# Include the standard deviation from the groups
@@ -183,7 +182,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 		width <- 600
 	}
 
-	bayesFactorPlot <- createJaspPlot(plot = NULL, title = "Posterior Probabilities", height = height, width = width)
+  bayesFactorPlot <- createJaspPlot(plot = NULL, title = gettext("Posterior Probabilities"), height = height, width = width)
 
 	bayesFactorPlot$dependOn(options=c("bayesFactorPlot", "seed"))
 	bayesFactorPlot$position <- position
@@ -201,7 +200,7 @@ BainAnovaBayesian <- function(jaspResults, dataset, options, ...) {
 	
 	if (!is.null(bainContainer[["descriptivesPlot"]]) || !options[["descriptivesPlot"]]) return()
 	
-	plotTitle <- ifelse(type == "anova", yes = "Descriptives Plot", no = "Adjusted Means")
+  plotTitle <- ifelse(type == "anova", yes = gettext("Descriptives Plot"), no = ("Adjusted Means"))
 
 	descriptivesPlot <- createJaspPlot(plot = NULL, title = plotTitle)
 	descriptivesPlot$dependOn(options=c("descriptivesPlot", "CredibleInterval"))

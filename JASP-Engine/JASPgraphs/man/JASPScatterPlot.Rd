@@ -4,13 +4,25 @@
 \alias{JASPScatterPlot}
 \title{Create a scatter plot with density}
 \usage{
-JASPScatterPlot(x, y, group = NULL, xName = NULL, yName = NULL,
-  addSmooth = TRUE, addSmoothCI = TRUE, smoothCIValue = 0.95,
-  forceLinearSmooth = FALSE, plotAbove = c("density", "histogram",
-  "none"), plotRight = c("density", "histogram", "none"),
-  colorAreaUnderDensity = TRUE, alphaAreaUnderDensity = 0.5,
-  showLegend = !is.null(group), legendTitle = NULL,
-  emulateGgMarginal = FALSE, ...)
+JASPScatterPlot(
+  x,
+  y,
+  group = NULL,
+  xName = NULL,
+  yName = NULL,
+  addSmooth = TRUE,
+  addSmoothCI = TRUE,
+  smoothCIValue = 0.95,
+  forceLinearSmooth = FALSE,
+  plotAbove = c("density", "histogram", "none"),
+  plotRight = c("density", "histogram", "none"),
+  colorAreaUnderDensity = TRUE,
+  alphaAreaUnderDensity = 0.5,
+  showLegend = !is.null(group),
+  legendTitle = NULL,
+  emulateGgMarginal = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{x variable.}

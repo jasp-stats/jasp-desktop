@@ -4,8 +4,13 @@
 \alias{drawBFpizza}
 \title{Make a pizza plot}
 \usage{
-drawBFpizza(dat, linewidth = 1, scaleText = 0.3, show.legend = FALSE,
-  labels = NULL)
+drawBFpizza(
+  dat,
+  linewidth = 1,
+  scaleText = 0.3,
+  show.legend = FALSE,
+  labels = NULL
+)
 }
 \arguments{
 \item{dat}{data.frame with \code{$y}, or vector.}

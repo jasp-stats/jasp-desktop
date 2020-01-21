@@ -472,8 +472,8 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     gettext("RMSEA 90% CI upper bound"),
     gettext("RMSEA p-value"),
     gettext("Standardized root mean square residual (SRMR)"),
-    gettext("Hoelter's critical N (\u03B1 = .05)"),
-    gettext("Hoelter's critical N (\u03B1 = .01)"),
+    gettextf("Hoelter's critical N (%s = .05)","\u03B1"),
+    gettextf("Hoelter's critical N (%s = .01)","\u03B1"),
     gettext("Goodness of fit index (GFI)"),
     gettext("McDonald fit index (MFI)"),
     gettext("Expected cross validation index (ECVI)")

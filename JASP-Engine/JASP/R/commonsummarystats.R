@@ -41,32 +41,32 @@
 		hypothesisMap <- 3
 	}
 
-	if (bayesFactorType == "BF01") {
-
-		bf.title <- switch(
-									hypothesisMap,
-									"BF\u2080\u2081",
-									"BF\u2080\u208A",
-									"BF\u2080\u208B"
-								)
-	} else if (bayesFactorType == "BF10") {
-
-		bf.title <- switch(
-									hypothesisMap,
-									"BF\u2081\u2080",
-									"BF\u208A\u2080",
-									"BF\u208B\u2080"
-								)
-
-	} else if (bayesFactorType == "LogBF10") {
-
-		bf.title <- switch(
-									hypothesisMap,
-									"Log(\u0042\u0046\u2081\u2080)",
-									"Log(\u0042\u0046\u208A\u2080)",
-									"Log(\u0042\u0046\u208B\u2080)"
-								)
-	}
+  switch(bayesFactorType,
+    BF01 = {
+      bf.title <- switch(
+                    hypothesisMap,
+                    gettextf("BF%s", "\u2080\u2081"),
+                    gettextf("BF%s", "\u2080\u208A"),
+                    gettextf("BF%s", "\u2080\u208B")
+                  )
+    },
+    BF10 = {
+      bf.title <- switch(
+                    hypothesisMap,
+                    gettextf("BF%s", "\u2081\u2080"),
+                    gettextf("BF%s", "\u208A\u2080"),
+                    gettextf("BF%s", "\u208B\u2080")
+                  )
+    },
+    LogBF10 = {
+      bf.title <- switch(
+                    hypothesisMap,
+                    gettextf("Log(BF%s)", "\u2081\u2080"),
+                    gettextf("Log(BF%s)", "\u208A\u2080"),
+                    gettextf("Log(BF%s)", "\u208B\u2080")
+                  )
+    }
+  )
 
 	return(bf.title)
 }

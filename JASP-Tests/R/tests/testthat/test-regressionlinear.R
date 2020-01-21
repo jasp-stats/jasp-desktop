@@ -323,7 +323,6 @@ test_that("Analysis handles errors", {
 # Below are the unit tests for Andy Field's book
 
 # Chapter 1
-context("ANOVA")
 test_that("Fields Book - Chapter 1 results match", {
   options <- jasptools::analysisOptions("RegressionLinear")
   options$dependent <- "sales"

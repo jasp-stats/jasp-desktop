@@ -98,11 +98,8 @@ DISTFILES += \
     JASP/R/abtestbayesian.R \
     JASP/R/ancova.R \
     JASP/R/ancovabayesian.R \
-    JASP/R/ancovamultivariate.R \
     JASP/R/anova.R \
     JASP/R/anovabayesian.R \
-    JASP/R/anovamultivariate.R \
-    JASP/R/anovaoneway.R \
     JASP/R/anovarepeatedmeasures.R \
     JASP/R/anovarepeatedmeasuresbayesian.R \
     JASP/R/assignFunctionInPackage.R \

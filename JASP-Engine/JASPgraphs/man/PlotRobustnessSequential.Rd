@@ -4,19 +4,34 @@
 \alias{PlotRobustnessSequential}
 \title{Create a robustness or sequential plot}
 \usage{
-PlotRobustnessSequential(dfLines, dfPoints = NULL, BF = NULL,
-  hasRightAxis = TRUE, xName = NULL, yName = NULL,
-  addEvidenceArrowText = TRUE, drawPizzaTxt = !is.null(BF),
-  evidenceLeveltxt = !is.null(BF), pointLegend = !is.null(dfPoints),
-  linesLegend = !is.null(dfLines$g), bfSubscripts = NULL,
-  pizzaTxt = hypothesis2BFtxt(hypothesis)$pizzaTxt, bfType = c("BF01",
-  "BF10", "LogBF10"), hypothesis = c("equal", "smaller", "greater"),
+PlotRobustnessSequential(
+  dfLines,
+  dfPoints = NULL,
+  BF = NULL,
+  hasRightAxis = TRUE,
+  xName = NULL,
+  yName = NULL,
+  addEvidenceArrowText = TRUE,
+  drawPizzaTxt = !is.null(BF),
+  evidenceLeveltxt = !is.null(BF),
+  pointLegend = !is.null(dfPoints),
+  linesLegend = !is.null(dfLines$g),
+  bfSubscripts = NULL,
+  pizzaTxt = hypothesis2BFtxt(hypothesis)$pizzaTxt,
+  bfType = c("BF01", "BF10", "LogBF10"),
+  hypothesis = c("equal", "smaller", "greater"),
   pointColors = c("red", "grey", "black", "white"),
-  lineColors = c("black", "grey", "black"), lineTypes = c("solid",
-  "solid", "dotted"), addLineAtOne = TRUE, bty = list(type = "n", ldwX
-  = 0.5, lwdY = 0.5), plotLineOrPoint = c("line", "point"),
-  pointShape = rep(21, 3), pointFill = c("grey", "black", "white"),
-  pointColor = rep("black", 3), pointSize = c(3, 2, 2), ...)
+  lineColors = c("black", "grey", "black"),
+  lineTypes = c("solid", "solid", "dotted"),
+  addLineAtOne = TRUE,
+  bty = list(type = "n", ldwX = 0.5, lwdY = 0.5),
+  plotLineOrPoint = c("line", "point"),
+  pointShape = rep(21, 3),
+  pointFill = c("grey", "black", "white"),
+  pointColor = rep("black", 3),
+  pointSize = c(3, 2, 2),
+  ...
+)
 }
 \arguments{
 \item{dfLines}{A dataframe with \code{$x}, \code{$y}, and optionally \code{$g}. \code{$y} is assumed to be on the log scale.}
