@@ -355,38 +355,37 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   
 .ldaDensityplot <- function(classificationResult, options, col){
 
-  force(col) # Force early evaluation of plot call because the plot is evaluated later
-
   target <- classificationResult[["train"]][, .v(options[["target"]])]
   lda.fit.scaled <- cbind.data.frame(
-    .scaleNumericData(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]]), drop = FALSE]), scale = FALSE) %*% classificationResult[["scaling"]], 
+    LD = .scaleNumericData(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]]), drop = FALSE]), scale = FALSE) %*% classificationResult[["scaling"]][, col], 
     V2 = classificationResult[["train"]][,.v(options[["target"]])]
   )
+  lda.fit.scaled[["V2"]] <- as.factor(lda.fit.scaled[["V2"]])
 
-  xBreaks <- JASPgraphs::getPrettyAxisBreaks(lda.fit.scaled[,paste("LD", col, sep = "")])
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(lda.fit.scaled[, "LD"], min.n = 4)
   
   if (length(colnames(classificationResult[["scaling"]])) == 1) {
 
-    p <- ggplot2::ggplot(data = lda.fit.scaled, ggplot2::aes(x = lda.fit.scaled[,paste("LD", col, sep = "")], group = as.factor(V2), color = as.factor(V2), show.legend = TRUE)) +
+    p <- ggplot2::ggplot(data = lda.fit.scaled, ggplot2::aes(x = LD, group = V2, color = V2, show.legend = TRUE)) +
           JASPgraphs::geom_line(stat = "density") + 
-          ggplot2::ylab("Density") + 
           ggplot2::labs(color = options[["target"]]) + 
           ggplot2::theme(legend.key = ggplot2::element_blank()) +
           ggplot2::scale_color_manual(values = colorspace::qualitative_hcl(n = length(unique(target)))) +
-          ggplot2::scale_x_continuous(name = "", breaks = xBreaks)
-    p <- JASPgraphs::themeJasp(p, xAxis = TRUE, yAxis = TRUE, legend.position = "left")
+          ggplot2::scale_x_continuous(name = "", breaks = xBreaks, limits = range(xBreaks)) +
+          ggplot2::scale_y_continuous(name = "Density")
+    
+    p <- JASPgraphs::themeJasp(p, legend.position = "right")
     p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank())
     p <- p + ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(shape = 21)))
     
   } else {
 
-    p <- ggplot2::ggplot(data = lda.fit.scaled, ggplot2::aes(x = lda.fit.scaled[,paste("LD", col, sep = "")], group = as.factor(V2), color = as.factor(V2), show.legend = FALSE)) +
+    p <- ggplot2::ggplot(data = lda.fit.scaled, ggplot2::aes(x = LD, group = V2, color = V2)) +
           JASPgraphs::geom_line(stat = "density") + 
-          ggplot2::ylab("Density") + 
-          ggplot2::xlab("") + 
           ggplot2::scale_color_manual(values = colorspace::qualitative_hcl(n = length(unique(target)))) +
-          ggplot2::scale_x_continuous(name = "", breaks = xBreaks)
-    p <- JASPgraphs::themeJasp(p, xAxis = TRUE, yAxis = TRUE)
+          ggplot2::scale_x_continuous(name = "", breaks = xBreaks, limits = range(xBreaks)) +
+          ggplot2::scale_y_continuous(name = "Density")
+    p <- JASPgraphs::themeJasp(p)
     p <- p + ggplot2::theme(axis.ticks.y = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank())
 
   }
@@ -395,22 +394,23 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
 
 .ldaScatterPlot <- function(classificationResult, options, col){
 
-  force(col) # Force early evaluation of plot call because the plot is evaluated later
-
-  data <- classificationResult[["train"]] 
+  data <- classificationResult[["train"]]
   target <- data[, .v(options[["target"]])]
   model <- classificationResult[["model"]]
-  lda.data <- cbind(data, stats::predict(model, newdata = data)$x[,c(col - 1, col)])
 
-  xBreaks <- JASPgraphs::getPrettyAxisBreaks(lda.data[,paste("LD", col, sep = "")])
-  yBreaks <- JASPgraphs::getPrettyAxisBreaks(lda.data[,paste("LD", col - 1, sep = "")])
+  pred.values <- stats::predict(model, newdata = data)$x[,c(col, col - 1)]
+  lda.data <- data.frame(pred.values, target = target)
+  colnames(lda.data) <- c("x", "y", "target")
+
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(lda.data[, "x"], min.n = 4)
+  yBreaks <- JASPgraphs::getPrettyAxisBreaks(lda.data[, "y"], min.n = 4)
   
-  p <- ggplot2::ggplot(lda.data, ggplot2::aes(y = lda.data[,paste("LD", col - 1, sep = "")], x = lda.data[,paste("LD", col, sep = "")], show.legend = FALSE)) +
-        JASPgraphs::geom_point(ggplot2::aes(fill = lda.data[,.v(options[["target"]])])) + 
-        ggplot2::labs(fill=options[["target"]]) + 
+  p <- ggplot2::ggplot(lda.data, ggplot2::aes(x = x, y = y)) +
+        JASPgraphs::geom_point(ggplot2::aes(fill = target)) + 
+        ggplot2::labs(fill = options[["target"]]) + 
         ggplot2::scale_fill_manual(values = colorspace::qualitative_hcl(n = length(unique(target)))) +
-        ggplot2::scale_x_continuous(name = "", breaks = xBreaks) + 
-        ggplot2::scale_y_continuous(name = "", breaks = yBreaks)
+        ggplot2::scale_x_continuous(name = "", breaks = xBreaks, limits = range(xBreaks)) + 
+        ggplot2::scale_y_continuous(name = "", breaks = yBreaks, limits = range(yBreaks))
   p <- JASPgraphs::themeJasp(p)    
   
   return(p)
