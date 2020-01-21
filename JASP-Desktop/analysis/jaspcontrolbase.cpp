@@ -73,8 +73,8 @@ void JASPControlBase::componentComplete()
 
 	if (!hasContextForm)
 	{
-		if (_form)
-			_form->addControl(this);
+		if (_form)	_form->addControl(this);
+		else		_wrapper->setUp();
 	}
 	else
 	{
