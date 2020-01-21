@@ -45,21 +45,9 @@ Form
 			AssignedVariablesList  { name: "modelTerms"; title: qsTr("Model Terms"); listViewType: JASP.Interaction }
 		}
         CheckBox { name: "includeConstant"; label: qsTr("Include intercept"); checked: true }
+    }
 
-        VariablesForm
-        {
-            title: qsTr("Model")
-            VariablesForm
-            {
-                preferredHeight: 150
-                AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["covariates","factors"]}
-                AssignedVariablesList  { name: "modelTerms"; title: qsTr("Model Terms"); listViewType: "Interaction"}
-            }
-
-            CheckBox { name: "includeConstant"; text: qsTr("Include intercept"); checked: true }
-        }
-
-	Section
+    Section
 	{
 		title: qsTr("Statistics")
 		Group

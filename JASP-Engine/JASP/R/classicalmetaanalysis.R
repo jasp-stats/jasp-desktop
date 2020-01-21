@@ -171,7 +171,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     return()
   
   coeffTable <- createJaspTable("Coefficients")
-  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels", "method",
+  dependList <- c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels", "method", "includeConstant",
                   "regressionCoefficientsConfidenceIntervals", "regressionCoefficientsEstimates")
   coeffTable$dependOn(dependList)
   coeffTable$position <- 2
@@ -421,7 +421,15 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready = TRUE)
   coeff   <- coef(summary(rma.fit))
   cov     <- rownames(coeff)
-  for(i in 1:length(cov)) {
+  if(options$includeConstant)
+    start <- 1
+  else {
+    if(length(cov) == 1)
+      return()
+    else
+      start <- 2 
+  }
+  for(i in start:length(cov)) {
     jaspResults[["coeffTable"]]$addRows(list(
       name  = cov[[i]],
       est   = coeff[i,1],
@@ -786,7 +794,9 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     slabs <- paste0("Study ", rma.fit$ids[rma.fit$not.na])
   else
     slabs <- rma.fit$slab[rma.fit$not.na]
-  rma.data <-  data.frame(StudyNo = k + 1 - rma.fit$ids[rma.fit$not.na], 
+  studyNos <- rma.fit$ids[rma.fit$not.na]
+  studies.not.na <- sum(rma.fit$not.na)
+  rma.data <-  data.frame(StudyNo = studies.not.na + 1 - 1:studies.not.na, 
                           labs    = slabs,
                           ES      = rma.fit$yi,
                           ci.int  = ci.int,
@@ -801,10 +811,10 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     height <- (ylims[2] - ylims[1])/100
     alim   <- range(k + 1 - rma.fit$ids[rma.fit$not.na])
     add.data <- data.frame()
-    for(study in seq_len(k)) {
+    for(study in 1:studies.not.na) {
       if (is.na(pred[study])) 
         next
-      rownum <- k + 1 - rma.fit$ids[study]
+      rownum <- studies.not.na + 1 - study
       row1 <- data.frame(ES      = c(pred[study], b.ci.ub[study], pred[study]), 
                          StudyNo = c(rownum - height, rownum, rownum + height),
                          group   = as.character(rep(study,3)))
