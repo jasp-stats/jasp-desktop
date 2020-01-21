@@ -334,8 +334,6 @@ Item
 		anchors.horizontalCenter	: osfList.horizontalCenter
 		anchors.verticalCenter		: osfList.verticalCenter
 		width						: parent.width / 1.5
-		height						: parent.height / 1.5
-
 	}
 
 	FileList

@@ -5,7 +5,9 @@ Image
 	id						: img
 	source					: jaspTheme.iconPath + "/loading.svg"
 	sourceSize.width		: width
-	sourceSize.height		: height
+	sourceSize.height		: width
+	height					: width
+	transformOrigin			: Item.Center
 
 
 	property int	segments: 12
