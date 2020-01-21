@@ -139,3 +139,47 @@ test_that("Pie chart and scatter plots matchs", {
   testPlot <- results[["state"]][["figures"]][[2]][["obj"]]
   expect_equal_plots(testPlot, "scatterplot", dir="Descriptives")
 })
+
+test_that("Analysis handles identical variables", {
+  # catches this: https://github.com/jasp-stats/jasp-issues/issues/553
+  options <- jasptools::analysisOptions("descriptives")
+  options$variables <- list("contNormal", "debSame")
+  options$splitby <- "facFive"
+  options$shapiro <- TRUE
+  options$skewness <- TRUE
+  options$kurtosis <- TRUE
+  
+  results <- jasptools::run("descriptives", "test.csv", options)
+  
+  expect_equal_tables(results[['results']][['stats']][['data']],
+                      list(-1.19915675837133, 1, 1.007309698, -0.33853731055, -1.625143884,
+                           0, 0.0819021844894419, 0.915696014062066, 0.338805595442952,
+                           0.850644958728125, 0.992383612541845, 0.512103336707757, 20,
+                           "contNormal", 0.992813181737034, 2, 1.889051803, -0.38388772215,
+                           -1.953344972, 0, 0.467911256938122, 0.956031076407404, 0.535107137711909,
+                           0.893846327627993, 0.992383612541845, 0.512103336707757, 20,
+                           "contNormal", 1.36037376866094, 3, 2.958797116, 0.1427499711,
+                           -1.627592736, 0, 0.532926410776693, 0.959450290686737, 0.725619918998665,
+                           1.0709839671614, 0.992383612541845, 0.512103336707757, 20, "contNormal",
+                           2.42193307435088, 4, 2.179421126, -0.357863015, -3.023963827,
+                           0, 0.358996514131301, 0.949461949369392, -0.0489162694087717,
+                           1.04541944723916, 0.992383612541845, 0.512103336707757, 20,
+                           "contNormal", 1.62009376503733, 5, 3.356094448, -0.00620486110000001,
+                           -2.336742886, 0, 0.0681263561514, 0.911517098559219, 0.828552911812968,
+                           1.35277978138929, 0.992383612541845, 0.512103336707757, 20,
+                           "contNormal", 0, 0, 0, 0, "NaN", 1, 12.3, 12.3, 12.3, 0, "NaN",
+                           "NaN", "NaN", 0, 0.992383612541845, 0.512103336707757, 20, "debSame",
+                           0, 0, 0, 0, "NaN", 2, 12.3, 12.3, 12.3, 0, "NaN", "NaN", "NaN",
+                           0, 0.992383612541845, 0.512103336707757, 20, "debSame", 0, 0,
+                           0, 0, "NaN", 3, 12.3, 12.3, 12.3, 0, "NaN", "NaN", "NaN", 0,
+                           0.992383612541845, 0.512103336707757, 20, "debSame", 0, 0, 0,
+                           0, "NaN", 4, 12.3, 12.3, 12.3, 0, "NaN", "NaN", "NaN", 0, 0.992383612541845,
+                           0.512103336707757, 20, "debSame", 0, 0, 0, 0, "NaN", 5, 12.3,
+                           12.3, 12.3, 0, "NaN", "NaN", "NaN", 0, 0.992383612541845, 0.512103336707757,
+                           20, "debSame"))
+  
+  # also check footnotes
+  expect_equal_tables(results[['results']][['stats']][['footnotes']],
+                      list("Kurtosis", "P-value of Shapiro-Wilk", "Shapiro-Wilk", "Skewness",
+                           174, "debSame1", 0, "All values are identical"))
+})

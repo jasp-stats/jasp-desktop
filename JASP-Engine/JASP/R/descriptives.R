@@ -290,7 +290,12 @@ Descriptives <- function(jaspResults, dataset, options) {
         shouldAddNominalTextFootnote      <- subReturn$shouldAddNominalTextFootnote
         shouldAddModeMoreThanOnceFootnote <- subReturn$shouldAddModeMoreThanOnceFootnote
         
-        stats$addRows(subReturn$resultsCol)
+        stats$addRows(subReturn$resultsCol, rowNames = paste0(variable, l))
+        
+        if (subReturn$shouldAddIdenticalFootnote)
+          stats$addFootnote(message = gettext("All values are identical"),
+                            colNames = c("Skewness", "Kurtosis", "Shapiro-Wilk", "P-value of Shapiro-Wilk"),
+                            rowNames = paste0(variable, l))
       }
     }
   } else { #we dont want to split
@@ -301,7 +306,12 @@ Descriptives <- function(jaspResults, dataset, options) {
       shouldAddNominalTextFootnote      <- subReturn$shouldAddNominalTextFootnote
       shouldAddModeMoreThanOnceFootnote <- subReturn$shouldAddModeMoreThanOnceFootnote
 
-      stats$addRows(subReturn$resultsCol)
+      stats$addRows(subReturn$resultsCol, rowNames = variable)
+      
+      if (subReturn$shouldAddIdenticalFootnote)
+        stats$addFootnote(message = gettext("All values are identical"),
+                          colNames = c("Skewness", "Kurtosis", "Shapiro-Wilk", "P-value of Shapiro-Wilk"),
+                          rowNames = variable)
     }
   }
 
@@ -328,7 +338,9 @@ Descriptives <- function(jaspResults, dataset, options) {
   if (base::is.factor(na.omitted) && (options$mean || options$mode || options$median || options$minimum || options$standardErrorMean || options$iqr || options$mad || options$madrobust || options$kurtosis || options$shapiro || options$skewness || options$percentileValuesQuartiles || options$variance || options$standardDeviation || options$percentileValuesPercentiles || options$sum || options$maximum)) {
     shouldAddNominalTextFootnote <- TRUE
   }
-    
+  
+  shouldAddIdenticalFootnote <- all(na.omitted[1] == na.omitted) && (options$skewness || options$kurtosis || options$shapiro)  
+  
   resultsCol[["Mean"]]                    <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$mean,              na.omitted, mean)
   resultsCol[["Std. Error of Mean"]]      <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$standardErrorMean, na.omitted, function(param) { sd(param)/sqrt(length(param))} )
   resultsCol[["Median"]]                  <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$median,            na.omitted, median)
@@ -341,8 +353,8 @@ Descriptives <- function(jaspResults, dataset, options) {
   resultsCol[["Std. Error of Kurtosis"]]  <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$kurtosis,          na.omitted, .descriptivesSEK)
   resultsCol[["Skewness"]]                <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$skewness,          na.omitted, .descriptivesSkewness)
   resultsCol[["Std. Error of Skewness"]]  <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$skewness,          na.omitted, .descriptivesSES)
-  resultsCol[["Shapiro-Wilk"]]            <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$shapiro,           na.omitted, function(param) { shapiro.test(param)$statistic })
-  resultsCol[["P-value of Shapiro-Wilk"]] <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$shapiro,           na.omitted, function(param) { shapiro.test(param)$p.value })
+  resultsCol[["Shapiro-Wilk"]]            <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$shapiro,           na.omitted, function(param) { res <- try(shapiro.test(param)$statistic); if(isTryError(res)) NA else res })
+  resultsCol[["P-value of Shapiro-Wilk"]] <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$shapiro,           na.omitted, function(param) { res <- try(shapiro.test(param)$p.value);   if(isTryError(res)) NA else res })
   resultsCol[["Range"]]                   <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$range,             na.omitted, function(param) { range(param)[2] - range(param)[1]})
   resultsCol[["Minimum"]]                 <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$minimum,           na.omitted, min)
   resultsCol[["Maximum"]]                 <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$maximum,           na.omitted, max)
@@ -429,7 +441,10 @@ Descriptives <- function(jaspResults, dataset, options) {
     }
   }
 
-  return(list(resultsCol=resultsCol, shouldAddNominalTextFootnote=shouldAddNominalTextFootnote, shouldAddModeMoreThanOnceFootnote=shouldAddModeMoreThanOnceFootnote))
+  return(list(resultsCol=resultsCol, 
+              shouldAddNominalTextFootnote=shouldAddNominalTextFootnote,
+              shouldAddModeMoreThanOnceFootnote=shouldAddModeMoreThanOnceFootnote,
+              shouldAddIdenticalFootnote=shouldAddIdenticalFootnote))
 }
 
 
