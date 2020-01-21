@@ -2335,8 +2335,9 @@ openGrDevice <- function(...) {
   }
 
   # Save path & plot object to output
-  image[["png"]] <- relativePathpng
-
+  image[["png"]]           <- relativePathpng
+  image[["revision"]]      <- 0
+  
   if (obj) {
     image[["obj"]]         <- plot2draw
     image[["editOptions"]] <- plotEditingOptions
@@ -2794,6 +2795,7 @@ editImage <- function(optionsJson) {
   results       <- NULL
   state         <- .retrieveState()
   oldPlot       <- state[["figures"]][[plotName]][["obj"]]
+  revision      <- state[["figures"]][[plotName]][["revision"]] + 1
   isGgplot      <- ggplot2::is.ggplot(oldPlot) # FALSE implies oldPlot is a  recordedPlot
   requireResize <- type == "resize"
 
@@ -2824,11 +2826,12 @@ editImage <- function(optionsJson) {
         # plot is modified or needs to be resized, let's save the new plot
         newPlot <- list()
         content <- .writeImage(width = width, height = height, plot = plot, obj = TRUE, relativePathpng = plotName) #Should we switch this over to the writeImage from jaspResults or we could also just directly use jaspPlot
-
-        newPlot[["data"]]   <- content[["png"]]
-        newPlot[["width"]]  <- width
-        newPlot[["height"]] <- height
-
+        
+        newPlot[["data"]]     <- content[["png"]]
+        newPlot[["width"]]    <- width
+        newPlot[["height"]]   <- height
+        newPlot[["revision"]] <- revision
+        
         # no new recorded plot is created in .writeImage so we recycle the old one
         # we can only resize recordedPlots anyway
         if (isGgplot) newPlot[["obj"]] <- content[["obj"]]
@@ -2842,7 +2845,7 @@ editImage <- function(optionsJson) {
   # create json list for QT
   response <- list(
     status="imageEdited",
-    results=list(name=plotName, resized=requireResize, height=height, width=width, error=FALSE) #How do we give feedback? I guess the same as jaspPlot would, so that we may overwrite the info that is currently stored in results
+    results=list(name=plotName, resized=requireResize, height=height, width=width, revision=revision, error=FALSE) #How do we give feedback? I guess the same as jaspPlot would, so that we may overwrite the info that is currently stored in results
   )
   # The info should also go to jaspResults somehow... Not sure how, maybe update it from here? And perhaps it could also be used to send stuff back? Or at least to form the response json or smth...
 
@@ -2860,8 +2863,7 @@ editImage <- function(optionsJson) {
 
     state[["figures"]][[plotName]][["width"]]  <- width
     state[["figures"]][[plotName]][["height"]] <- height
-
-    replacement <- list(width=width, height=height)
+    state[["figures"]][[plotName]][["revision"]]  <- revision
 
     if (type == "interactive") {
       state[["figures"]][[plotName]][["obj"]] <- content[["obj"]]
@@ -2869,8 +2871,8 @@ editImage <- function(optionsJson) {
     }
 
     key                 <- attr(x = state, which = "key")
-    state               <- .modifyStateFigures(state, identifier=plotName,
-                                               replacement=replacement,
+    state               <- .modifyStateFigures(state, identifier=plotName, 
+                                               replacement=list(width=width, height=height, revision=revision), 
                                                completeObject = FALSE)
     attr(state, "key")  <- key
 

@@ -35,12 +35,12 @@ $(document).ready(function () {
 	window.reRenderAnalyses = function ()				{ analyses.reRender();											}
 	window.moveAnalyses		= function (fromId, toId)	{ analyses.move(fromId, toId);									}
 
-	window.refreshEditedImage = function(id, results) {
+	window.refreshEditedImage = function(id, imageEditResults) {
 		var analysis = analyses.getAnalysis(id);
 		if (analysis === undefined) return;
 
-		if (results.error && results.resized)	analysis.undoImageResize();
-		else									analysis.insertNewImage();
+		if (imageEditResults.error && imageEditResults.resized)	analysis.undoImageResize();
+		else													analysis.insertNewImage(imageEditResults);
 	}
 
 	window.cancelImageEdit = function(id) {
