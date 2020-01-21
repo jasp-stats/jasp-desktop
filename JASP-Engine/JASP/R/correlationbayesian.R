@@ -987,18 +987,28 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     pointFill  <- pointFill[1:nPoints]
     
     bfLegendLabel <- JASPgraphs::getBFSubscripts(bfPlotType, hypothesis=hypothesisJASPgraphsName)[1]
-    legendText <- vector("character", length(xPoint))
+    legendText1 <- vector("character", length(xPoint))
+    legendText2 <- vector("character", length(xPoint))
     
     for (i in seq_along(xPoint)) {
       if (i==1) {
-        legendText[i] <- sprintf("paste(max, ~%s, ':',   phantom(phollll), %s, ~at, ~kappa==%s)", 
-                                 bfLegendLabel, format(yPoint[i], digits=nDigits), format(xPoint[i], digits=nDigits))
+
+        legendText1[i] <- gettextf("max %s", bfLegendLabel)
+        legendText1[i] <- gsub(pattern = "\\s+", "~", legendText1[i])
+        legendText2[i] <- gettextf("%s at kappa==%s", format(yPoint[i], digits=nDigits), format(xPoint[i], digits=nDigits))
+        legendText2[i] <- gsub(pattern = "\\s+", "~", legendText2[i])
+
       } else if (i==2) {
-        legendText[i] <- sprintf("paste(user~prior, ':', phantom(phll[0]), ~%s==%s)", bfLegendLabel, 
-                                 format(yPoint[i],  digits=nDigits))
+
+        legendText1[i] <- gettext("user prior")
+        legendText1[i] <- paste0("\"", legendText1[i], "\"")
+        legendText2[i] <- gettextf("%s at kappa==%s", format(yPoint[i], digits=nDigits), format(xPoint[i], digits=nDigits))
+        legendText2[i] <- gsub(pattern = "\\s+", "~", legendText2[i])
+
       }
       # TODO(Alexander): Do something here, with user-prior, wide etc etc. Also loop over colours
     }
+    legendText1 <- paste0("paste(", legendText1, ", ':')")
     
     # TODO(Alexander): Try and think of how to default
     logYPoint <- log(yPoint)
@@ -1006,7 +1016,9 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     dfPoints <- data.frame(
       x = xPoint,
       y = logYPoint,
-      g = JASPgraphs::parseThis(legendText),
+      g = legendText1,
+      label1 = JASPgraphs::parseThis(legendText1),
+      label2 = JASPgraphs::parseThis(legendText2),
       stringsAsFactors = FALSE
     )
   }

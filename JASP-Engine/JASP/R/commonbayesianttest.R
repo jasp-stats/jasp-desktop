@@ -1136,7 +1136,7 @@
 
 }
 
-.ttestBayesianGetBFnamePlots <- function(BFH1H0, nullInterval) {
+.ttestBayesianGetBFnamePlots <- function(BFH1H0, nullInterval, subscriptsOnly = FALSE) {
 
   if (BFH1H0) {
     if (identical(nullInterval, c(-Inf, Inf))) {
@@ -1155,7 +1155,10 @@
       bfTitle <- "BF[0]['-']"
     }
   }
-  return(bfTitle)
+  if (subscriptsOnly)
+    return(substring(bfTitle, 3L))
+  else
+    return(bfTitle)
 }
 
 .ttestBayesianGetRScale <- function(rscale) {
@@ -1245,22 +1248,26 @@
     BF10ultra <- 1 / BF10ultra
   }
   
-  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
+  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval, subscriptsOnly = TRUE)
 
   label1 <- c(
-    gettextf("max %s", BFsubscript),
+    gettextf("max BF%s", BFsubscript),
     gettext("user prior"),
     gettext("wide prior"),
     gettext("ultrawide prior")
   )
+  # some failsafes to parse translations as expressions
   label1[1] <- gsub(pattern = "\\s+", "~", label1[1])
   label1[-1] <- paste0("\"", label1[-1], "\"")
-  # add quotes so afterwards so they aren't translated accidentally.
+  label1 <- paste0("paste(", label1, ", ':')")
+
+  BFandSubscript <- gettextf("BF%s", BFsubscript)
+  BFandSubscript <- gsub(pattern = "\\s+", "~", BFandSubscript)
   label2 <- c(
-    gettextf("%s at r==%s",   format(maxBF10,  digits = 4), format(maxBFrVal, digits = 4)),
-    paste0(BFsubscript, "==", format(BF10user, digits = 4)),
-    paste0(BFsubscript, "==", format(BF10w,    digits = 4)),
-    paste0(BFsubscript, "==", format(BF10ultra,digits = 4))
+    gettextf("%s at r==%s",      format(maxBF10,  digits = 4), format(maxBFrVal, digits = 4)),
+    paste0(BFandSubscript, "==", format(BF10user, digits = 4)),
+    paste0(BFandSubscript, "==", format(BF10w,    digits = 4)),
+    paste0(BFandSubscript, "==", format(BF10ultra,digits = 4))
   )
   label2[1L] <- gsub(pattern = "\\s+", "~", label2[1])
 
