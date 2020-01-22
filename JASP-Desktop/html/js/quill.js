@@ -8940,20 +8940,11 @@ var Clipboard = function (_Module) {
   }, {
     key: 'convert',
     value: function convert(html) {
-
-      console.log(">>>>>>")
-      console.log(typeof html)
-      console.log(html)
-
       if (typeof html === 'string') {
         this.container.innerHTML = html.replace(/\>\r?\n +\</g, '><'); // Remove spaces between tags
 
-        console.log(this)
-
         return this.convert();
       }
-
-      console.log("hello world");
 
       var formats = this.quill.getFormat(this.quill.selection.savedRange.index);
       if (formats[_code2.default.blotName]) {
@@ -8969,9 +8960,9 @@ var Clipboard = function (_Module) {
 
       var delta = traverse(this.container, elementMatchers, textMatchers);
       // Remove trailing newline
-      // if (deltaEndsWith(delta, '\n') && delta.ops[delta.ops.length - 1].attributes == null) {
-      //   delta = delta.compose(new _quillDelta2.default().retain(delta.length() - 1).delete(1));
-      // }
+      if (deltaEndsWith(delta, '\n') && delta.ops[delta.ops.length - 1].attributes == null) {
+        delta = delta.compose(new _quillDelta2.default().retain(delta.length() - 1).delete(1));
+      }
       debug.log('convert', this.container.innerHTML, delta);
       this.container.innerHTML = '';
       return delta;
@@ -9085,6 +9076,13 @@ function deltaEndsWith(delta, text) {
 function isLine(node) {
   if (node.childNodes.length === 0) return false; // Exclude embed blocks
   var style = computeStyle(node);
+
+  // This is a fix. window.getComputedStyle(node) returns a CSSStyleDeclaration
+  // but all the properties are empty. This causes newline characters to be missed
+  if (node.nodeName === 'P') {
+    return true;
+  }
+
   return ['block', 'list-item'].indexOf(style.display) > -1;
 }
 
@@ -9189,7 +9187,7 @@ function matchIndent(node, delta) {
 
 function matchNewline(node, delta) {
   if (!deltaEndsWith(delta, '\n')) {
-    if (isLine(node) || delta.length() > 0 && node.nextSibling && isLine(node.nextSibling)) {
+    if (isLine(node) || (delta.length() > 0 && node.nextSibling && isLine(node.nextSibling))) {
       delta.insert('\n');
     }
   }
