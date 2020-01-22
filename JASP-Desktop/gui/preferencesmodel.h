@@ -41,6 +41,7 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QFont		defaultFont				READ defaultFont				WRITE setDefaultFont				NOTIFY defaultFontChanged				)
 	Q_PROPERTY(QString		currentThemeName		READ currentThemeName			WRITE setCurrentThemeName			NOTIFY currentThemeNameChanged			)
 	Q_PROPERTY(QString		languageCode			READ languageCode													NOTIFY languageCodeChanged				)
+	Q_PROPERTY(bool			useNativeFileDialog		READ useNativeFileDialog		WRITE setUseNativeFileDialog		NOTIFY useNativeFileDialogChanged		)
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
@@ -78,11 +79,15 @@ public:
 	QFont		defaultFont()				const	{ return _defaultFont;	}
 	QString		currentThemeName()			const;
 	QString		languageCode()				const;
+	bool		useNativeFileDialog()		const;
 
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
+
+
+
 
 
 
@@ -124,8 +129,9 @@ public slots:
 	void onDefaultPPIChanged(			int);
 	void setCurrentThemeName(			QString		currentThemeName);
 	void setCurrentThemeNameFromClass(	JaspTheme * theme);
+	void setDefaultFont(				QFont		defaultFont);
+	void setUseNativeFileDialog(		bool		useNativeFileDialog);
 
-	void setDefaultFont(QFont defaultFont);
 	void onCurrentThemeNameChanged(QString newThemeName);
 
 signals:
@@ -161,6 +167,8 @@ signals:
 	void currentThemeNameChanged(		QString		currentThemeName);
 	void plotPPIPropChanged();
 	void languageCodeChanged();
+
+	void useNativeFileDialogChanged(	bool		useNativeFileDialog);
 
 private:
 	static PreferencesModel * _singleton;
