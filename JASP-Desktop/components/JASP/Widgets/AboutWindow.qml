@@ -66,7 +66,13 @@ Window
 
 	Rectangle
 	{
-		id:				aboutInfoBox
+		id:							aboutInfoBox
+		property int labelwidth:	Math.max(jaspVersionLabel.implicitWidth,
+										  buildDateLabel.implicitWidth,
+										  sourceLabel.implicitWidth,
+										  downloadLabel.implicitWidth,
+										  citationLabel.implicitWidth) + 10
+
 		anchors
 		{
 			top:			topWave.bottom
@@ -99,7 +105,7 @@ Window
 			anchors.left:	parent.left
 			anchors.top:	copyrightMessage.bottom
 			height:			25
-			width:			75
+			width:			aboutInfoBox.labelwidth
 
 			text:			qsTr("Version:")
 			color:			labelcolor
@@ -123,7 +129,7 @@ Window
 			anchors.left:	parent.left
 			anchors.top:	jaspVersionLabel.bottom
 			height:			25
-			width:			75
+			width:			aboutInfoBox.labelwidth
 
 			text:			qsTr("Built on:")
 			color:			labelcolor
@@ -143,11 +149,11 @@ Window
 
 		Label
 		{
-			id:				commitLabel
+			id:				sourceLabel
 			anchors.left:	parent.left
 			anchors.top:	buildDateLabel.bottom
 			height:			25
-			width:			75
+			width:			aboutInfoBox.labelwidth
 
 			text:			qsTr("Source:")
 			color:			labelcolor
@@ -177,9 +183,9 @@ Window
 		{
 			id:				downloadLabel
 			anchors.left:	parent.left
-			anchors.top:	commitLabel.bottom
+			anchors.top:	sourceLabel.bottom
 			height:			25
-			width:			75
+			width:			aboutInfoBox.labelwidth
 
 			text:			qsTr("Download:")
 			color:			labelcolor
@@ -212,7 +218,7 @@ Window
 			anchors.left:	parent.left
 			anchors.top:	downloadLabel.bottom
 			height:			20
-			width:			75
+			width:			aboutInfoBox.labelwidth
 
 			text:			qsTr("Citation:")
 			color:			labelcolor
