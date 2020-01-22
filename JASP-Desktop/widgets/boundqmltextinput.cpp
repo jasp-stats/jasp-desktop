@@ -254,7 +254,7 @@ bool BoundQMLTextInput::isJsonValid(const Json::Value &optionValue)
 	case TextInputType::PercentIntputType:		valid = (optionValue.type() == Json::intValue || optionValue.type() == Json::realValue) ;	break;
 	case TextInputType::IntegerArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
 	case TextInputType::DoubleArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
-	case TextInputType::FormulaType:			valid = (optionValue.type() == Json::arrayValue);			break;
+	case TextInputType::FormulaType:
 	case TextInputType::StringInputType:
 	default:									valid = (optionValue.type() == Json::stringValue);			break;
 	}
@@ -394,7 +394,7 @@ void BoundQMLTextInput::textChangedSlot()
 
 	if (_inputType == TextInputType::FormulaType)
 	{
-		if (_formula->value() != _value.toStdString())
+		if (!_formula || (_formula->value() != _value.toStdString()))
 			runRScript("as.character(" + _value + ")", true);
 	}
 	else if (_option)

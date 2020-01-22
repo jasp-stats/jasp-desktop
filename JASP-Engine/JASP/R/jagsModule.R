@@ -231,8 +231,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   # checks and sets errors
   .JAGSCheckJAGSInstallation(jaspResults[["mainContainer"]])
   if (jaspResults[["mainContainer"]]$getError()) {
-    print("JAGS INSTALLATION FAILED!")
-    .JAGSsetGoodModel(FALSE)
+    .JAGSsetGoodModel(jaspResults, FALSE)
     return()
   }
 

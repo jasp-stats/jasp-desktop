@@ -73,8 +73,8 @@ public:
 			void					setRowComponents(QList<QQmlComponent*> &rowComponents);
 	virtual void					setUpRowControls();
 	const QMap<QString, RowControls*>& getRowControls() const { return _rowControlsMap; }
-			JASPControlWrapper*		getRowControl(const QString& key, const QString& name)			const;
-			bool					addRowControl(const QString& key, JASPControlWrapper* control);
+	virtual JASPControlWrapper*		getRowControl(const QString& key, const QString& name)			const;
+	virtual bool					addRowControl(const QString& key, JASPControlWrapper* control);
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
 	Q_INVOKABLE void				selectItem(int _index, bool _select);

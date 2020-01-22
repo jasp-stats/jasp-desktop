@@ -259,9 +259,9 @@ const Terms& ListModelTableViewBase::terms(const QString &what) const
 	else
 	{
 		if (what.isEmpty())
-			addControlError(tr("No column specified in the source of %1").arg(name()));
+			addControlError(tr("No column in TableView source %1").arg(name()));
 		else
-			addControlError(tr("The source use does not specified a valid column in %1").arg(name()));
+			addControlError(tr("Unknown column specified (%1) in TableView source %2").arg(what).arg(name()));
 	}
 
 
@@ -326,6 +326,19 @@ bool ListModelTableViewBase::valueOk(QVariant value)
 	else if	(_itemType == "integer")	value.toInt(&ok);
 
 	return ok;
+}
+
+JASPControlWrapper *ListModelTableViewBase::getRowControl(const QString &key, const QString &name) const
+{
+	if (_itemControls.contains(key))	return _itemControls[key][name];
+	else								return nullptr;
+}
+
+bool ListModelTableViewBase::addRowControl(const QString &key, JASPControlWrapper *control)
+{
+	_itemControls[key][control->name()] = control;
+
+	return true;
 }
 
 void ListModelTableViewBase::modelChangedSlot()

@@ -808,6 +808,8 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 	previousContext->setContextProperty("columnIndex",		static_cast<int>(col));
 	previousContext->setContextProperty("rowIndex",			static_cast<int>(row));
 	previousContext->setContextProperty("dataFont",			_font);
+	previousContext->setContextProperty("hasContextForm",	true);
+	previousContext->setContextProperty("tableView",		_tableViewItem);
 
 	return previousContext;
 }

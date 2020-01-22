@@ -59,7 +59,6 @@ JASPControl
 	property int	initialColumnCount	: 0	//Only read on init
 	property int	initialRowCount		: 0	//Only read on init
 
-
 	signal reset()
 	signal addRow()
 	signal addColumn()
@@ -101,7 +100,6 @@ JASPControl
 		Flickable
 		{
 			id:				myFlickable
-
 			anchors
 			{
 				topMargin:	1
@@ -127,6 +125,7 @@ JASPControl
 				itemHorizontalPadding:	0
 				itemVerticalPadding:	8 * preferencesModel.uiScale
 				cacheItems:				false
+				tableViewItem:			tableView
 
 				viewportX: myFlickable.visibleArea.xPosition * width
 				viewportY: myFlickable.visibleArea.yPosition * height
@@ -172,10 +171,10 @@ JASPControl
 
 				itemDelegate: Item
 				{
-
-					TextField
+					FormulaField
 					{
-						id:						textInput
+						id:						formlaInput
+						inputType:				(tableView.modelType === "JAGSDataInputModel" && columnIndex === 1) ? "formula" : "string"
 						isBound:				false
 						anchors.verticalCenter: parent.verticalCenter
 						anchors.left:			parent.left
@@ -183,7 +182,6 @@ JASPControl
 						anchors.topMargin:		- 8 * preferencesModel.uiScale
 						fieldHeight:			parent.height + 16 * preferencesModel.uiScale
 						fieldWidth:				parent.width
-						visible:				true
 						useExternalBorder:		false
 						showBorder:				false
 						value:					itemText
