@@ -262,6 +262,10 @@ HEADERS += \
     engine/enginesync.h \
     engine/rscriptstore.h \
     gui/columntypesmodel.h \
+    modules/upgrader/upgradechange.h \
+    modules/upgrader/upgrader.h \
+    modules/upgrader/upgradestep.h \
+    modules/upgrader/version.h \
     qquick/datasetview.h \
     modules/analysisentry.h \
     modules/dynamicmodule.h \
@@ -444,6 +448,10 @@ SOURCES += \
     engine/enginerepresentation.cpp \
     engine/enginesync.cpp \
     gui/columntypesmodel.cpp \
+    modules/upgrader/upgradechange.cpp \
+    modules/upgrader/upgrader.cpp \
+    modules/upgrader/upgradestep.cpp \
+    modules/upgrader/version.cpp \
     qquick/datasetview.cpp \
     modules/analysisentry.cpp \
     modules/dynamicmodule.cpp \
@@ -573,4 +581,6 @@ RESOURCES += \
 windows:OTHER_FILES += icon.rc
 
 DISTFILES += \
+    modules/upgrader/upgrades.json \
+    modules/upgrader/upgrades_template.json \
     resources/CC-Attributions.txt

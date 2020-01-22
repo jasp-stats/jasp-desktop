@@ -524,6 +524,22 @@ void AnalysisForm::bindTo()
 	_addLoadingError();
 
 	_options->blockSignals(false, false);
+
+	//Ok we can only set the warnings on the components now, because otherwise _addLoadingError() will add a big fat red warning on top of the analysisform without reason...
+	for (JASPControlWrapper* control : _orderedControls)
+	{
+		QString upgradeMsg(tq(_analysis->upgradeMsgsForOption(fq(control->name()))));
+
+		if(upgradeMsg != "")
+			control->item()->addControlWarning(upgradeMsg);
+	}
+
+	//Also check for a warning to show above the analysis:
+	QString upgradeMsg(tq(_analysis->upgradeMsgsForOption("")));
+
+	if(upgradeMsg != "")
+		addFormError(upgradeMsg);
+
 }
 
 void AnalysisForm::unbind()
@@ -608,7 +624,7 @@ void AnalysisForm::addControlError(JASPControlBase* control, QString message, bo
 		controlErrorMessageItem->setProperty("control", QVariant::fromValue(control));
 		controlErrorMessageItem->setProperty("warning", warning);
 		controlErrorMessageItem->setParentItem(container);
-		QMetaObject::invokeMethod(controlErrorMessageItem, "showMessage", Qt::DirectConnection, Q_ARG(QVariant, message), Q_ARG(QVariant, temporary));
+		QMetaObject::invokeMethod(controlErrorMessageItem, "showMessage", Qt::QueuedConnection, Q_ARG(QVariant, message), Q_ARG(QVariant, temporary));
 	}
 
 	if (warning)

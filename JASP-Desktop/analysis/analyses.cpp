@@ -30,8 +30,8 @@
 #include "tempfiles.h"
 #include "log.h"
 
-
 using namespace std;
+using Modules::Upgrader;
 
 Analyses * Analyses::_singleton = nullptr;
 
@@ -47,28 +47,6 @@ Analyses::Analyses()
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this,	&Analyses::dataSetColumnsChanged							);
 }
 
-void Analyses::_makeBackwardCompatible(RibbonModel* ribbonModel, Version &version, Json::Value &analysisData)
-{
-	Version			V0_9_3('0', '9', '3', '0');
-
-	if (version <= V0_9_3)
-	{
-		std::string module = analysisData["module"].asString();
-		if (module.empty())
-			module = "Common";
-
-		// An old JASP file may still have references to the old Common module.
-		if (module == "Common")
-		{
-			QString	name = QString::fromStdString(analysisData["name"].asString());
-			module = ribbonModel->getModuleNameFromAnalysisName(name).toStdString();
-		}
-		else if (module == "MetaAnalysis")		module = "Meta Analysis";
-		else if (module == "SummaryStats")		module = "Summary Statistics";
-
-		analysisData["module"] = module;
-	}
-}
 
 
 Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
@@ -78,7 +56,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	if(_nextId <= id) _nextId = id + 1;
 
-	Analysis *analysis;
+	Analysis * analysis = nullptr;
+
+	Modules::UpgradeMsgs msgs = Upgrader::upgrader()->upgradeAnalysisData(analysisData);
 
 	Json::Value &	optionsJson	= analysisData["options"];
 
@@ -86,14 +66,10 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	{
 		Json::Value	&	versionJson		= analysisData["version"];
 		Version			version			= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
-		_makeBackwardCompatible(ribbonModel, version, analysisData);
-
 
 		QString			name				= QString::fromStdString(analysisData["name"].asString()),
 						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common",
 						title				= QString::fromStdString(analysisData.get("title", "").asString());
-
-
 
 		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
 
@@ -118,6 +94,8 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	analysis->setUserData(analysisData["userdata"]);
 	analysis->setResults(analysisData["results"]);
+
+	analysis->setUpgradeMsgs(msgs);
 
 	return analysis;
 }

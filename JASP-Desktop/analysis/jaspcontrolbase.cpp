@@ -37,7 +37,7 @@ void JASPControlBase::setHasError(bool hasError)
 void JASPControlBase::setHasWarning(bool hasWarning)
 {
 	if (section())
-		QMetaObject::invokeMethod(section(), "addControlWithError", Qt::DirectConnection, Q_ARG(QVariant, name()), Q_ARG(QVariant, hasWarning));
+		QMetaObject::invokeMethod(section(), "addControlWithWarning", Qt::DirectConnection, Q_ARG(QVariant, name()), Q_ARG(QVariant, hasWarning));
 
 	if (form())
 		form()->addControlWarningSet(this, hasWarning);

@@ -501,27 +501,26 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Val
 	if(moduleVersion != version())
 		std::cerr << "Loading analysis based on different version of module(" << moduleName << "), but going ahead anyway. Analysis based on version: " << moduleVersion << " and actual loaded version of module is: " << version() << std::endl;
 
-	std::string analysisTitle = jsonFromJaspFile.get("analysisEntry", "AnalysisEntry's title wasn't actually specified!").asString();
+	std::string codedReference = jsonFromJaspFile.get("analysisEntry", "AnalysisEntry's coded reference wasn't actually specified!").asString();
 
-	return retrieveCorrespondingAnalysisEntry(analysisTitle);
+	return retrieveCorrespondingAnalysisEntry(codedReference);
 }
 
 AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const std::string & codedReference) const
 {
 	auto parts = stringUtils::splitString(codedReference, '~');
 
-	std::string moduleName		= parts.size() > 2 ? parts[0] : "",
-				title			= parts.size() > 2 ? parts[1] : parts[0],
-				function		= parts.size() > 2 ? parts[2] : parts[1];
+	std::string moduleName		= parts.size() > 1 ? parts[0] : "",
+				function		= parts.size() > 1 ? parts[1] : parts[0];
 
 	if(!moduleName.empty() && _name != moduleName)
 		throw Modules::ModuleException(_name, "This coded reference belongs to a different dynamic module, this one: "+moduleName);
 
 	for (AnalysisEntry * menuEntry : _menuEntries)
-		if (menuEntry->isAnalysis() && menuEntry->title() == title && menuEntry->function() == function)
+		if (menuEntry->isAnalysis() && menuEntry->function() == function)
 			return menuEntry;
 
-	throw Modules::ModuleException(_name, "Cannot find analysis with title " + title + " and function " + function + "...");
+	throw Modules::ModuleException(_name, "Cannot find analysis with function " + function + "...");
 }
 
 void DynamicModule::setInstallLog(std::string installLog)
@@ -850,6 +849,19 @@ bool DynamicModule::requiresData() const
 			return false;
 
 	return true;
+}
+
+Json::Value DynamicModule::asJsonForJaspFile(const std::string & analysisFunction) const
+{
+	Json::Value json(Json::objectValue);
+
+	json["moduleName"]			= name();
+	json["moduleVersion"]		= version();
+	json["moduleMaintainer"]	= maintainer();
+	json["moduleWebsite"]		= website();
+	json["analysisEntry"]		= analysisFunction;
+
+	return json;
 }
 
 }

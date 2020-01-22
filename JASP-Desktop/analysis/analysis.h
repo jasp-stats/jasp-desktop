@@ -31,6 +31,7 @@
 #include "modules/dynamicmodules.h"
 #include "data/datasetpackage.h"
 #include "utilities/qutils.h"
+#include "modules/upgrader/upgradechange.h"
 
 class ComputedColumn;
 class Analyses;
@@ -144,6 +145,9 @@ public:
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}
 	void					runScriptRequestDone(const QString& result, const QString& controlName);
 
+	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs) { _msgs = msgs; }
+	std::string				upgradeMsgsForOption(const std::string & name) const;
+
 
 signals:
 	void				nameChanged();
@@ -225,6 +229,8 @@ private:
 
 	std::string				_codedReferenceToAnalysisEntry = "";
 	QString					_helpFile;
+
+	Modules::UpgradeMsgs	_msgs;
 };
 
 #endif // ANALYSIS_H

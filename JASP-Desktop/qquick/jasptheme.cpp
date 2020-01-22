@@ -570,6 +570,24 @@ void JaspTheme::setControlErrorTextColor(QColor controlErrorTextColor)
 	emit controlErrorTextColorChanged(_controlErrorTextColor);
 }
 
+void JaspTheme::setControlWarningBackgroundColor(QColor controlWarningBackgroundColor)
+{
+	if (_controlWarningBackgroundColor == controlWarningBackgroundColor)
+		return;
+
+	_controlWarningBackgroundColor = controlWarningBackgroundColor;
+	emit controlWarningBackgroundColorChanged(_controlWarningBackgroundColor);
+}
+
+void JaspTheme::setControlWarningTextColor(QColor controlWarningTextColor)
+{
+	if (_controlWarningTextColor == controlWarningTextColor)
+		return;
+
+	_controlWarningTextColor = controlWarningTextColor;
+	emit controlWarningTextColorChanged(_controlWarningTextColor);
+}
+
 void JaspTheme::setButtonBackgroundColor(QColor buttonBackgroundColor)
 {
 	if (_buttonBackgroundColor == buttonBackgroundColor)
