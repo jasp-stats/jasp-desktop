@@ -87,7 +87,12 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
                                           options, ready) {
   if(!is.null(jaspResults[["modelSummary"]]))
     return()
-  modelSummary <- createJaspTable(gettext("Model Summary"))
+  
+  if(options[['dependent']] == "")
+    modelSummary <- createJaspTable(gettext("Model Summary"))
+  else 
+    modelSummary <- createJaspTable(gettextf("Model Summary - %s", options[['dependent']]))
+  
   dependList <- c("dependent", "method", "modelTerms", "includeIntercept")
   modelSummary$dependOn(dependList)
   modelSummary$position <- 1

@@ -150,7 +150,11 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 }
 
 .linregCreateSummaryTable <- function(modelContainer, model, options, position) {
-  summaryTable <- createJaspTable(gettext("Model Summary"))
+  if(options[['dependent']] == "")
+    summaryTable <- createJaspTable(gettext("Model Summary"))
+  else 
+    summaryTable <- createJaspTable(gettextf("Model Summary - %s", options[['dependent']]))
+  
   summaryTable$dependOn(c("residualsDurbinWatson", "rSquaredChange"))
   summaryTable$position <- position
   summaryTable$showSpecifiedColumnsOnly <- TRUE
