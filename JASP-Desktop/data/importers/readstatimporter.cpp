@@ -23,7 +23,7 @@ int handle_variable(int, readstat_variable_t *variable, const char *val_labels, 
 	std::string				name			= readstat_variable_get_name(variable),
 							labelsID		= val_labels != NULL ? val_labels : "";
 	readstat_measure_t		colMeasure		= readstat_variable_get_measure(variable);
-	columnType		colType;
+	columnType				colType;
 
 	switch(colMeasure)
 	{

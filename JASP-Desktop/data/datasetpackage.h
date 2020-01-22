@@ -21,7 +21,7 @@
 #include <QAbstractItemModel>
 #include "common.h"
 #include "dataset.h"
-#include "version.h"
+#include "../JASP-Common/version.h"
 #include <map>
 #include "jsonredirect.h"
 #include "computedcolumns.h"
