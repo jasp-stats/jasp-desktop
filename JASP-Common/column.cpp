@@ -674,6 +674,7 @@ bool Column::setColumnAsNominalOrOrdinal(const std::vector<int> &values, bool is
 bool Column::setColumnAsNominalOrOrdinal(const vector<int> &values, map<int, string> uniqueValues, bool is_ordinal)
 {
 	std::set<int> uniqueValuesData(values.begin(), values.end());
+	uniqueValuesData.erase(INT_MIN);
 
 	for(int uniqVal : uniqueValuesData)
 		if(uniqueValues.count(uniqVal) == 0)
@@ -735,7 +736,7 @@ bool Column::setColumnAsScale(const std::vector<double> &values)
 		if(doubleInputItr == AsDoubles.end())
 			throw std::runtime_error("Column::setColumnAsScale ran out of Doubles in assigning..");
 
-		if(*doubleInputItr != value && (isnan(*doubleInputItr) != isnan(value))) //clang warns us this is unsafe but what does IT know?! If it changes it changes! Maybe clang was right after all, nan != nan == true...
+		if(*doubleInputItr != value && (isnan(*doubleInputItr) != isnan(value))) //clang warns us this is unsafe but what does IT know?! If it changes it changes! Maybe clang was right after all, (nan != nan) == true...
 			changedSomething = true;
 
 		*doubleInputItr = value;
