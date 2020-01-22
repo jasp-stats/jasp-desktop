@@ -2,6 +2,7 @@
 #include "mainwindow.h"
 #include <QMessageBox>
 #include <QFileDialog>
+#include "utilities/settings.h"
 
 MessageForwarder::MessageForwarder(MainWindow *main) : QObject(main), _main(main)
 {
@@ -59,15 +60,18 @@ MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString
 
 QString MessageForwarder::browseOpenFile(QString caption, QString browsePath, QString filter)
 {
-	return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter);
+	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter);
+	else															return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter, nullptr, QFileDialog::DontUseNativeDialog);
 }
 
 QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedFilter)
 {
-	return 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, selectedFilter);
+	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	return 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, selectedFilter);
+	else															return 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, selectedFilter, QFileDialog::DontUseNativeDialog);
 }
 
 QString MessageForwarder::browseOpenFolder(QString caption, QString browsePath)
 {
-	return QFileDialog::getExistingDirectory(nullptr, caption, browsePath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	return QFileDialog::getExistingDirectory(nullptr, caption, browsePath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	else															return QFileDialog::getExistingDirectory(nullptr, caption, browsePath, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks | QFileDialog::DontUseNativeDialog);
 }
