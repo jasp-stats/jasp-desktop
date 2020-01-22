@@ -951,7 +951,8 @@ JASPWidgets.Progressbar = Backbone.Model.extend({
 
 JASPWidgets.ProgressbarView = JASPWidgets.View.extend({
 	initialize: function() {
-		this.fadeOutDuration = 500;
+		this.$el.addClass("jasp-progressbar-container");
+		this.fadeOutActive = false;
 	},
 
 	render: function() {
@@ -983,7 +984,7 @@ JASPWidgets.ProgressbarView = JASPWidgets.View.extend({
 
 	clear: function() {
 		this.$el.empty();
-		this.$el.addClass("jasp-progressbar-container");
+		this.initialize();
 	},
 
 	isActive: function() {
@@ -1001,10 +1002,15 @@ JASPWidgets.ProgressbarView = JASPWidgets.View.extend({
 	},
 
 	_fadeOut: function() {
+		this.fadeOutActive = true;
 		var self = this;
 		window.setTimeout(function() {
-			self._getCurrent().fadeOut();
-		}, this.fadeOutDuration);
+			if (self.fadeOutActive) { // no new progressbar was made in the mean time
+				self._getCurrent().fadeOut(750, function() {
+					self.clear();
+				});
+			}
+		}, 250);
 	},
 
 	_getCurrent: function() {
