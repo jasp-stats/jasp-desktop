@@ -42,6 +42,7 @@ JASPControl
 		id:			textAreaTitle
 		visible:	text !== ""
 		font:		jaspTheme.font
+		color:		!enabled ? jaspTheme.textDisabled : jaspTheme.textEnabled
 	}
 
 	Rectangle

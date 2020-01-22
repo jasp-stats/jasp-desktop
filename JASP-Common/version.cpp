@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "version.h"
+#include "../JASP-Common/version.h"
 #include <string.h>
 #include <iomanip>
 #include <sstream>

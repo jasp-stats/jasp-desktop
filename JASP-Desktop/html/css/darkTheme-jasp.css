@@ -250,9 +250,9 @@ tfoot td {
 
 svg > text
 {
-  font-family: sans-serif ;
-  font-weight: bold;
-  font-size: 120% ;
+  font-family:  sans-serif ;
+  font-weight:  bold;
+  font-size:    120% ;
 }
 
 .jasp-collection-image {
@@ -273,18 +273,18 @@ svg > text
 }
 
 .etch-editor-panel {
-  position:fixed;
-    top:0;
-    width:100%;
-    z-index:100;
+  position:   fixed;
+    top:      0;
+    width:    100%;
+    z-index:  100;
 }
 
 .jasp-image-resizer {
 
-  background-color : #5F89A7 ;
-  border: 1px solid #7C95CB ;
-  border-radius : 3px ;
-  margin: 0px ;
+  background-color :  #5F89A7 ;
+  border:             1px solid #7C95CB ;
+  border-radius :     3px ;
+  margin:             0px ;
 }
 
 .jasp-image-resizable {

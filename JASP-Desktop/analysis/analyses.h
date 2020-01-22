@@ -22,6 +22,7 @@
 #include "analysis.h"
 #include "appinfo.h"
 #include "data/datasetpackage.h"
+#include "modules/upgrader/upgrader.h"
 
 #include <QString>
 #include <QMap>
@@ -170,6 +171,7 @@ private:
 
 private:
 	static Analyses				*	_singleton;
+
 	std::map<size_t, Analysis*>		_analysisMap;
 	std::vector<size_t>				_orderedIds;
 	std::vector<size_t>				_orderedIdsBeforeMoving;

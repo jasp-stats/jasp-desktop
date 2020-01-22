@@ -13,7 +13,7 @@ insert_final_newline = true
 [*]
 charset = utf-8
 
-[*.{cpp,h,qml,json}]
+[*.{cpp,h,qml,json,md}]
 indent_style = tab
 indent_size = 4
 

@@ -44,6 +44,7 @@
 #include "modules/ribbonbutton.h"
 #include "modules/ribbonmodelfiltered.h"
 #include "modules/ribbonmodel.h"
+#include "modules/upgrader/upgrader.h"
 #include "qquick/jasptheme.h"
 #include "results/ploteditormodel.h"
 #include "results/resultsjsinterface.h"
@@ -58,6 +59,7 @@
 using namespace std;
 
 using PlotEditor::PlotEditorModel;
+using Modules::Upgrader;
 
 class MainWindow : public QObject
 {
@@ -263,6 +265,7 @@ private:
 	LabelModel					*	_labelModel				= nullptr;
 	PlotEditorModel				*	_plotEditorModel		= nullptr;
 	JaspTheme					*	_jaspTheme				= nullptr;
+	Upgrader					*	_upgrader				= nullptr;
 
 	QSettings						_settings;
 

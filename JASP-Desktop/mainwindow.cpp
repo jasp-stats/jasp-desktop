@@ -111,11 +111,12 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_preferences			= new PreferencesModel(this);
 	_package				= new DataSetPackage(this);
 	_dynamicModules			= new DynamicModules(this);
+	_upgrader				= new Upgrader(this);
 	_analyses				= new Analyses();
 	_engineSync				= new EngineSync(this);
 	_datasetTableModel		= new DataSetTableModel();
 	_labelModel				= new LabelModel();
-
+	
 	initLog(); //initLog needs _preferences and _engineSync!
 
 	Log::log() << "JASP " << AppInfo::version.asString() << " is initializing." << std::endl;
@@ -422,6 +423,8 @@ void MainWindow::loadQML()
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
 	connect(_preferences, &PreferencesModel::uiScaleChanged, DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
+
+	_upgrader->loadOldSchoolUpgrades();
 }
 
 void MainWindow::jaspThemeChanged(JaspTheme * newTheme)

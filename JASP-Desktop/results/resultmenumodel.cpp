@@ -114,7 +114,10 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 			}
 		}
 		else
-			entries.push_back(entry);
+#ifndef JASP_DEBUG
+			if (key != "hasEditImg")
+#endif
+				entries.push_back(entry);
 	}
 
 	_resultMenuEntries = entries;

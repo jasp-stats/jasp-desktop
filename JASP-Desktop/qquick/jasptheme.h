@@ -77,6 +77,8 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(QColor             rowOnevenColor                  READ rowOnevenColor                  WRITE setRowOnevenColor                  NOTIFY rowOnevenColorChanged                  )
 	Q_PROPERTY(QColor             controlErrorBackgroundColor     READ controlErrorBackgroundColor     WRITE setControlErrorBackgroundColor     NOTIFY controlErrorBackgroundColorChanged     )
 	Q_PROPERTY(QColor             controlErrorTextColor           READ controlErrorTextColor           WRITE setControlErrorTextColor           NOTIFY controlErrorTextColorChanged           )
+	Q_PROPERTY(QColor             controlWarningBackgroundColor   READ controlWarningBackgroundColor   WRITE setControlWarningBackgroundColor   NOTIFY controlWarningBackgroundColorChanged   )
+	Q_PROPERTY(QColor             controlWarningTextColor         READ controlWarningTextColor         WRITE setControlWarningTextColor         NOTIFY controlWarningTextColorChanged         )
 
 	Q_PROPERTY(QColor             buttonBackgroundColor           READ buttonBackgroundColor           WRITE setButtonBackgroundColor           NOTIFY buttonBackgroundColorChanged           )
 	Q_PROPERTY(QColor             tooltipBackgroundColor          READ tooltipBackgroundColor          WRITE setTooltipBackgroundColor          NOTIFY tooltipBackgroundColorChanged          )
@@ -114,7 +116,6 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(theme_sizeType     resultWidth                     READ resultWidth                     WRITE setResultWidth                     NOTIFY resultWidthChanged                     )
 	Q_PROPERTY(theme_sizeType     formWidth                       READ formWidth                       WRITE setFormWidth                       NOTIFY formWidthChanged                       )
 	Q_PROPERTY(theme_sizeType     formMargin                      READ formMargin                      WRITE setFormMargin                      NOTIFY formMarginChanged                      )
-	Q_PROPERTY(theme_sizeType     formExpanderHeaderHeight        READ formExpanderHeaderHeight        WRITE setFormExpanderHeaderHeight        NOTIFY formExpanderHeaderHeightChanged        )
 	Q_PROPERTY(theme_sizeType     sliderWidth                     READ sliderWidth                     WRITE setSliderWidth                     NOTIFY sliderWidthChanged                     )
 	Q_PROPERTY(theme_sizeType     sliderLength                    READ sliderLength                    WRITE setSliderLength                    NOTIFY sliderLengthChanged                    )
 	Q_PROPERTY(theme_sizeType     switchHeight                    READ switchHeight                    WRITE setSwitchHeight                    NOTIFY switchHeightChanged                    )
@@ -130,6 +131,7 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(theme_sizeType     variablesListTitle              READ variablesListTitle              WRITE setVariablesListTitle              NOTIFY variablesListTitleChanged              )
 	Q_PROPERTY(theme_sizeType     sliderHandleDiameter            READ sliderHandleDiameter            WRITE setSliderHandleDiameter            NOTIFY sliderHandleDiameterChanged            )
 	Q_PROPERTY(theme_sizeType     defaultTextAreaHeight           READ defaultTextAreaHeight           WRITE setDefaultTextAreaHeight           NOTIFY defaultTextAreaHeightChanged           )
+	Q_PROPERTY(theme_sizeType     formExpanderHeaderHeight        READ formExpanderHeaderHeight        WRITE setFormExpanderHeaderHeight        NOTIFY formExpanderHeaderHeightChanged        )
 	Q_PROPERTY(theme_sizeType     jaspControlHighlightWidth       READ jaspControlHighlightWidth       WRITE setJaspControlHighlightWidth       NOTIFY jaspControlHighlightWidthChanged       )
 	Q_PROPERTY(theme_sizeType     defaultVariablesFormHeight      READ defaultVariablesFormHeight      WRITE setDefaultVariablesFormHeight      NOTIFY defaultVariablesFormHeightChanged      )
 	Q_PROPERTY(theme_sizeType     jaspControlHighlightWidth       READ jaspControlHighlightWidth       WRITE setJaspControlHighlightWidth       NOTIFY jaspControlHighlightWidthChanged       )
@@ -225,6 +227,8 @@ public:
 	QColor				rowOnevenColor() 					const	{ return _rowOnevenColor; }
 	QColor				controlErrorBackgroundColor() 		const	{ return _controlErrorBackgroundColor; }
 	QColor				controlErrorTextColor() 			const	{ return _controlErrorTextColor; }
+	QColor				controlWarningBackgroundColor() 	const	{ return _controlWarningBackgroundColor; }
+	QColor				controlWarningTextColor() 			const	{ return _controlWarningTextColor; }
 	QColor				buttonBackgroundColor() 			const	{ return _buttonBackgroundColor; }
 	QColor				tooltipBackgroundColor() 			const	{ return _tooltipBackgroundColor; }
 	QColor				debugBackgroundColor() 				const	{ return _debugBackgroundColor; }
@@ -351,6 +355,8 @@ signals:
 	void rowOnevenColorChanged(QColor rowOnevenColor);
 	void controlErrorBackgroundColorChanged(QColor controlErrorBackgroundColor);
 	void controlErrorTextColorChanged(QColor controlErrorTextColor);
+	void controlWarningBackgroundColorChanged(QColor controlWarningBackgroundColor);
+	void controlWarningTextColorChanged(QColor controlWarningTextColor);
 	void buttonBackgroundColorChanged(QColor buttonBackgroundColor);
 	void tooltipBackgroundColorChanged(QColor tooltipBackgroundColor);
 	void debugBackgroundColorChanged(QColor debugBackgroundColor);
@@ -474,6 +480,8 @@ public slots:
 	void setRowOnevenColor(QColor rowOnevenColor);
 	void setControlErrorBackgroundColor(QColor controlErrorBackgroundColor);
 	void setControlErrorTextColor(QColor controlErrorTextColor);
+	void setControlWarningBackgroundColor(QColor controlWarningBackgroundColor);
+	void setControlWarningTextColor(QColor controlWarningTextColor);
 	void setButtonBackgroundColor(QColor buttonBackgroundColor);
 	void setTooltipBackgroundColor(QColor tooltipBackgroundColor);
 	void setDebugBackgroundColor(QColor debugBackgroundColor);
@@ -602,6 +610,8 @@ private:
 						_rowOnevenColor,
 						_controlErrorBackgroundColor,
 						_controlErrorTextColor,
+						_controlWarningBackgroundColor,
+						_controlWarningTextColor,
 						_buttonBackgroundColor,
 						_tooltipBackgroundColor,
 						_debugBackgroundColor,

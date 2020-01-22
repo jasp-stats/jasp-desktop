@@ -15,6 +15,7 @@ A module folder should look as follows:
 - ModuleName/
   - [inst/](#inst)
     - [description.json](#descriptionjson)
+    - [upgrade.json](#upgradejson)
     - [icons/](#icons)
     - [qml/](#qml)
     - [help/](#help)
@@ -30,6 +31,9 @@ The description.json file is the main configuration file for a JASP Module and u
   | `moduleDescription` | A json-object that specifies what your module is called, who made it and more. See [moduleDescription](#module-description). |
   | `requiredPackages`  | An optional field that, if specified, is an array of R packages that your analysis depends on and that are not shipped with JASP (see [the package list](https://jasp-stats.org/r-package-list)). This can take the form of a simple array of strings `["package1", "package2"]` or an array of objects `[{ "package": "package1", "version": "1.2.3"}, { "package": "packageWithoutVersion" }, ...]`. |
   | `menu`              | Specifies the icon to show in the ribbon and the analyses your module adds, see [description-menu](#description-menu). |
+
+### upgrade.json
+The (optional) upgrade.json file contains any upgrades that must be done on older, saved, versions of your analyses. So this is only of importance after you release a second or later version of your module and it will allow for seamless loading of these older files. For more information on this, see [the manual on upgrade.json](jasp-upgrade-json.md).
 
 #### Module Description
 This field should contain a json object with the following fields:

@@ -86,21 +86,13 @@ Json::Value AnalysisEntry::getDefaultResults() const
 
 Json::Value AnalysisEntry::asJsonForJaspFile()	const
 {
-	Json::Value json(Json::objectValue);
-
-	json["moduleName"]			= dynamicModule()->name();
-	json["moduleVersion"]		= dynamicModule()->version();
-	json["moduleMaintainer"]	= dynamicModule()->maintainer();
-	json["moduleWebsite"]		= dynamicModule()->website();
-	json["analysisEntry"]		= _title + "~" + _function;
-
-	return json;
+	return dynamicModule()->asJsonForJaspFile(_function);
 }
 
 std::string AnalysisEntry::codedReference() const
 {
 	std::string modName  = dynamicModule()->name(),
-				coded    = modName + "~" + title() + '~' + function();
+				coded    = modName + "~" + function();
 
 	return coded;
 }

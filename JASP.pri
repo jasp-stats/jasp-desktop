@@ -107,6 +107,8 @@ DEFINES += QT_NO_FOREACH #Come on Qt we can just use the nice new ranged for fro
 macx {
   QMAKE_CXXFLAGS_WARN_ON  += -Wno-unused-parameter -Wno-unused-local-typedef
   QMAKE_CXXFLAGS          += -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi -stdlib=libc++ -Wno-deprecated-declarations
+
+  CONFIG(debug): QMAKE_CXXFLAGS +=  -fstandalone-debug
 }
 
 #uncomment the following line to enable automatic encoding and decoding of columnNames. Be sure to recompile all necessary objects

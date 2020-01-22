@@ -36,9 +36,12 @@ Theme
 	jaspBlue:							"#0481c3"
 	jaspGreen:							"#7ca61e"
 
-	controlErrorBackgroundColor:		redDarker
-	controlErrorTextColor:				black
+	controlErrorBackgroundColor:		"#800"
+	controlErrorTextColor:				redDarker
+	controlWarningBackgroundColor:		"#620"
+	controlWarningTextColor:			"#B80"
 
 	textDisabled:						grayLighter
 	buttonColorDisabled:				gray
+	buttonBorderColorHovered:			black
 }

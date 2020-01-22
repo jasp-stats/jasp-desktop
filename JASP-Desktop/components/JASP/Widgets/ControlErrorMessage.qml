@@ -21,15 +21,17 @@ import JASP				1.0
 Rectangle
 {
 	id				: controlErrorMessage
-	color			: jaspTheme.controlErrorBackgroundColor
+	color			: warning ? jaspTheme.controlWarningBackgroundColor : jaspTheme.controlErrorBackgroundColor
 	visible			: opacity > 0
 	opacity			: 0
-	width			: messageText.width + 2 * paddingWidth
+	width			: messageText.width  + 2 * paddingWidth
 	height			: messageText.height + 2 * paddingHeight
 	z				: 10
 	radius			: 4
-	border.color	: warning ? jaspTheme.rose : jaspTheme.controlErrorTextColor
+	border.color	: foreCol
 	border.width	: 1
+
+	property color foreCol: warning ? jaspTheme.controlWarningTextColor : jaspTheme.controlErrorTextColor
 
 	property var control
 	property bool warning		: false
@@ -122,14 +124,13 @@ Rectangle
 		if (temporary) messageTimer.start();
 	}
 
-	Rectangle
+	Item
 	{
 		id				: crossRectangle
 		width			: 12
 		height			: 12
 		anchors.top		: parent.top
 		anchors.right	: parent.right
-		color			: "transparent"
 
 		property int crossThickness		: 2
 		property int crossLengthOffset	: -4
@@ -148,7 +149,7 @@ Rectangle
 			height				: crossRectangle.crossThickness
 			width				: parent.width + crossRectangle.crossLengthOffset
 			rotation			: 45
-			color				: controlErrorMessage.warning ? jaspTheme.rose : jaspTheme.controlErrorTextColor
+			color				: controlErrorMessage.foreCol
 		}
 
 		Rectangle
@@ -157,7 +158,7 @@ Rectangle
 			height				: crossRectangle.crossThickness
 			width				: parent.width + crossRectangle.crossLengthOffset
 			rotation			: -45
-			color				: controlErrorMessage.warning ? jaspTheme.rose : jaspTheme.controlErrorTextColor
+			color				: controlErrorMessage.foreCol
 		}
 
 		states:
@@ -188,7 +189,7 @@ Rectangle
 	{
 		id						: messageText
 		font					: jaspTheme.font
-		color					: jaspTheme.controlErrorTextColor
+		color					: controlErrorMessage.foreCol
 		anchors.verticalCenter	: parent.verticalCenter
 		anchors.left			: parent.left
 		anchors.leftMargin		: 5
