@@ -134,7 +134,7 @@ Correlation <- function(jaspResults, dataset, options){
   pairTitles <- combn(variables, 2, simplify = FALSE)
   
   mainTable$addColumnInfo(name = "variable1", title = "", type = "string")
-  mainTable$addColumnInfo(name = "separator", title = "", type = "string")
+  mainTable$addColumnInfo(name = "separator", title = "", type = "separator")
   mainTable$addColumnInfo(name = "variable2", title = "", type = "string")
 
   mainTable[['variable1']] <- sapply(pairTitles, function(x) x[[1]])
@@ -513,7 +513,7 @@ Correlation <- function(jaspResults, dataset, options){
   shapiroTable$showSpecifiedColumnsOnly <- TRUE
   
   shapiroTable$addColumnInfo(name = "var1",      title = "",                      type = "string")
-  shapiroTable$addColumnInfo(name = "separator", title = "",                      type = "string")
+  shapiroTable$addColumnInfo(name = "separator", title = "",                      type = "separator")
   shapiroTable$addColumnInfo(name = "var2",      title = "",                      type = "string")
   shapiroTable$addColumnInfo(name = "W",         title = gettext("Shapiro-Wilk"), type = "number")
   shapiroTable$addColumnInfo(name = "p",         title = gettext("p"),            type = "pvalue")

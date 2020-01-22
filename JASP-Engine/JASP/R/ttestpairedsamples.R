@@ -50,7 +50,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   ttest$position <- 1
   
   ttest$addColumnInfo(name = "v1", type = "string", title = "")
-  ttest$addColumnInfo(name = "sep",  type = "string", title = "")
+  ttest$addColumnInfo(name = "sep",  type = "separator", title = "")
   ttest$addColumnInfo(name = "v2", type = "string", title = "")
   if (optionsList$wantsWilcox && optionsList$onlyTest) {
     ttest$addFootnote(gettext("Wilcoxon signed-rank test."))
@@ -148,7 +148,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   
   ttestNormalTable$addColumnInfo(name = "v1",  type = "string", title = "")
-  ttestNormalTable$addColumnInfo(name = "sep", type = "string", title = "")
+  ttestNormalTable$addColumnInfo(name = "sep", type = "separator", title = "")
   ttestNormalTable$addColumnInfo(name = "v2",  type = "string", title = "")
   ttestNormalTable$addColumnInfo(name = "W",   type = "number", title = gettext("W"))
   ttestNormalTable$addColumnInfo(name = "p",   type = "pvalue", title = gettext("p"))

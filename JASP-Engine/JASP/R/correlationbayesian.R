@@ -165,7 +165,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   # Add the variables names paired
   #
   table$addColumnInfo(name="variable1", title="", type="string")
-  table$addColumnInfo(name="separator", title="", type="string")
+  table$addColumnInfo(name="separator", title="", type="separator")
   table$addColumnInfo(name="variable2", title="", type="string")
   
   if (options[["reportN"]])

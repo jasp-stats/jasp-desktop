@@ -144,7 +144,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
   bfTitle <- .ttestBayesianGetBFTitle(bfType, hypothesis)
 
   jaspTable$addColumnInfo(name = "variable1", title = "",      type = "string")
-  jaspTable$addColumnInfo(name = "separator", title = "",      type = "string")
+  jaspTable$addColumnInfo(name = "separator", title = "",      type = "separator")
   jaspTable$addColumnInfo(name = "variable2", title = "",      type = "string")
   jaspTable$addColumnInfo(name = "BF",        title = bfTitle, type = "number")
 
