@@ -459,7 +459,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$el.append("<div id=\"editor\"></div>");
 
 		var toolbarOptions = [
-			['bold', 'italic', 'underline', 'code-block'],  // image
+			['bold', 'italic', 'underline', 'image'],
 			// [{ 'size': ['small', false, 'large', 'huge'] }],
 			[{ 'header': [1, 2, 3, 4, false] }],
 			[{ 'list': 'ordered'}, { 'list': 'bullet' }],
@@ -490,14 +490,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 				html = this.model.get("text");
 			}
 
-			console.log("______");
-			console.log(html);
-
-
 			delt = this.$quill.clipboard.convert(html);
-
-			console.log("*******");
-			console.log(delt);
 		}
 		this.$quill.setContents(delt);
 		self.onNoteChanged(self.$quill.root.innerHTML, self.$quill.getContents());
@@ -591,13 +584,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		}
 		else if (e.which === 13 && e.ctrlKey) {
 			e.preventDefault();
-			self.$textbox.blur();
-			self._endEditing(); // this is called because the blur doesn't always invoke a focus loss event
 		}
 		else if (e.which === 27) {
 			e.preventDefault();
-			self.$textbox.blur();
-			self._endEditing(); // this is called because the blur doesn't always invoke a focus loss event
 		}
 		else if (e.which === 66 && e.ctrlKey) { //ctrl+b
 			document.execCommand('bold', false, null);
@@ -638,70 +627,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		});
 
 		this.editing = true;
-
-		//Only for linux that doesn't have relatedTarget for focusOut event
-		if (this.$editor !== undefined)
-			this.$editor.off("mousedown", this.editorClicked);
-		///////////////////////////////
-
-		this.$editor = etch.startEditing(this.$textbox, pageX, pageY);
-
-		//Only for linux that doesn't have relatedTarget for focusOut event
-		this.$editor.on("mousedown", null, this, this.editorClicked);
-		///////////////////////////////
-
-		this.$textbox.attr('contenteditable', true);
-		this.$textbox.focus();
-		// this.updateView();
-
-		this.$el.addClass('jasp-text-editing');
-
 		var self = this;
 
 		window.setTimeout(function () { self.editingSetup = false; }, 0); //needsd to wait for all ui events to finish before ending
-	},
-
-	editorClicked: function (event) {
-		var self = event.data;
-
-		self.editorClicked = true;
-	},
-
-	_endEditing: function () {
-		if (this.editing === false || this.editingSetup === true)
-			return;
-
-		this.editing = false;
-
-		if (JASPWidgets.NoteBox.activeNoteBox === this)
-			JASPWidgets.NoteBox.activeNoteBox = null;
-
-		this.$el.removeClass('jasp-text-editing');
-
-		this.$textbox.attr('contenteditable', false);
-		if (this.$editor !== undefined) {
-			this.$editor.off("mousedown", this.editorClicked);
-			etch.closeEditor(this.$editor, this.$textbox);
-			delete this.$editor;
-		}
-	},
-
-	_looseFocus: function (e) {
-		//Needed to catch the blur event caused while setting up the editing box. This also infers that the the click event was not propagated and needs to be called.
-		var self = e.data;
-		if (self.editingSetup === true) {
-			self.$textbox.click();
-			self.$textbox.focus();
-			return false;
-		}
-
-		var relatedtarget = e.relatedTarget;
-		if (relatedtarget === null || $(relatedtarget).not('.etch-editor-panel, .etch-editor-panel *, .etch-image-tools, .etch-image-tools *').size() || (relatedtarget === undefined && !self.editorClicked))
-			self._endEditing();
-
-		self.editorClicked = false;
-
-		return true;
 	},
 
 	exportBegin: function (exportParams, completedCallback) {
@@ -735,9 +663,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	},
 
 	onClosed: function() {
-		if (this.$textbox !== undefined)
-			this.$textbox.off();
-
 		this.closeButton.close();
 	}
 })
