@@ -318,11 +318,7 @@ Item
 			anchors.right		: parent.right
 			anchors.top			: parent.top
 			KeyNavigation.tab	: osfList
-
-			onClicked	:
-			{
-				fileMenuModel.osf.saveFile(filenameText.text)
-			}
+			onClicked			: fileMenuModel.osf.saveFile(filenameText.text)
 		}
 	}
 
@@ -333,7 +329,8 @@ Item
 
 		anchors.horizontalCenter	: osfList.horizontalCenter
 		anchors.verticalCenter		: osfList.verticalCenter
-		width						: parent.width / 1.5
+		width						: parent.width  / 2
+		height						: parent.height / 2
 	}
 
 	FileList

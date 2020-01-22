@@ -21,7 +21,7 @@
 #include <boost/uuid/uuid.hpp>
 
 #include "common.h"
-#include "version.h"
+#include "../JASP-Common/version.h"
 
 #include "options/options.h"
 #include "enginedefinitions.h"

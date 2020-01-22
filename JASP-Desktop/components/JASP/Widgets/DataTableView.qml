@@ -199,14 +199,11 @@ FocusScope
 					anchors.verticalCenter:		headerRoot.verticalCenter
 				}
 
-				AnimatedImage
+				LoadingIndicator
 				{
 					id:			colIsInvalidated
 
-					source:		jaspTheme.iconPath + "/loading.gif"
-					width:		visible ? headerRoot.__iconDim : 0
-					height:		headerRoot.__iconDim
-					playing:	visible
+					width:		headerRoot.__iconDim
 					visible:	columnIsInvalidated
 
 					anchors.right:			colFilterOn.left

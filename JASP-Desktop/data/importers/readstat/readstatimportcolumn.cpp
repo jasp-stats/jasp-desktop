@@ -91,6 +91,13 @@ void ReadStatImportColumn::addValue(const double & val)
 {
 	switch(_type)
 	{
+	case columnType::ordinal:		//How does ordinal with doubles make sense? Well, it doesn't!
+		//Let us make sure all previous int's are converted to doubles  (Although if this datafile is sane there really shouldn't be any ints...)
+		for(int i : _ints)
+			_doubles.push_back(i);
+		_ints.clear();
+		[[clang::fallthrough]];
+
 	case columnType::unknown:
 		_type = columnType::scale;
 		[[clang::fallthrough]];
@@ -99,13 +106,19 @@ void ReadStatImportColumn::addValue(const double & val)
 		_doubles.push_back(val);
 		break;
 
-	case columnType::nominalText:
-		addValue(std::to_string(val));
-		break;
-
-	case columnType::ordinal:
 	case columnType::nominal:
-		addValue(int(val));
+		_type = columnType::nominalText; //Nominal with float also doesn't work.. Lets make sure any previous ints are converted to string
+		for(int i : _ints)
+			_strings.push_back(std::to_string(i));
+		_ints.clear();
+		[[clang::fallthrough]];
+
+	case columnType::nominalText:
+	{
+		std::stringstream conv;
+		conv << val;
+		addValue(conv.str());
+	}
 		break;
 	}
 }
