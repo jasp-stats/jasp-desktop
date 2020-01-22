@@ -569,7 +569,7 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
                            lower = lowerValues,
                            upper = upperValues)
     
-    yBreaks <- JASPgraphs::getPrettyAxisBreaks(unlist(plotData[complete.cases(plotData), -c(1, 2)]), min.n = 4)
+    yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, unlist(plotData[complete.cases(plotData), -c(1, 2)])), min.n = 4)
     
     xBreaks <- (1:length(options[["predictors"]])) * (length(levels(clusters)) + 2)
     xBreaks <- xBreaks - (length(levels(clusters)) + 2)
@@ -617,7 +617,7 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
       
       plotData <- plotData[complete.cases(plotData), ]
 
-      yBreaks <- JASPgraphs::getPrettyAxisBreaks(unlist(plotData[, -1]), min.n = 4)
+      yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, unlist(plotData[, -1])), min.n = 4)
 
       p <- ggplot2::ggplot(plotData, ggplot2::aes(x = Cluster, y = value, fill = Cluster))
 
