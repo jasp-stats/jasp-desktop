@@ -1294,7 +1294,7 @@ msgctxt "ComboBox|"
 msgid "<no choice>"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Controls/TextField.qml:148
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Controls/TextField.qml:149
 #, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
@@ -1492,22 +1492,22 @@ msgctxt "DataLibrary|"
 msgid "Data Library"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:251
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:278
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:256
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:283
 msgctxt "ListItem|"
 msgid "Navigate to folder"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:259
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:286
 msgctxt "ListItem|"
 msgid "Open JASP file"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:261
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/FileMenu/ListItem.qml:288
 msgctxt "ListItem|"
 msgid "Open data file"
 msgstr ""
@@ -7598,183 +7598,183 @@ msgid "Predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:46
+#: Learning/qml/mlClassificationBoosting.qml:47
 msgctxt "mlClassificationBoosting|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:49
+#: Learning/qml/mlClassificationBoosting.qml:50
 msgctxt "mlClassificationBoosting|"
 msgid "Confusion matrix"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:54
+#: Learning/qml/mlClassificationBoosting.qml:55
 msgctxt "mlClassificationBoosting|"
 msgid "Display proportions"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:60
+#: Learning/qml/mlClassificationBoosting.qml:61
 msgctxt "mlClassificationBoosting|"
 msgid "Class proportions"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:65
+#: Learning/qml/mlClassificationBoosting.qml:66
 msgctxt "mlClassificationBoosting|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:71
+#: Learning/qml/mlClassificationBoosting.qml:72
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:106
+#: Learning/qml/mlClassificationBoosting.qml:107
 msgctxt "mlClassificationBoosting|"
 msgid "Relative influence"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:76
+#: Learning/qml/mlClassificationBoosting.qml:77
 msgctxt "mlClassificationBoosting|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:79
+#: Learning/qml/mlClassificationBoosting.qml:80
 msgctxt "mlClassificationBoosting|"
 msgid "Data split"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:86
+#: Learning/qml/mlClassificationBoosting.qml:87
 msgctxt "mlClassificationBoosting|"
 msgid "Out-of-bag improvement"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:91
+#: Learning/qml/mlClassificationBoosting.qml:92
 msgctxt "mlClassificationBoosting|"
 msgid "ROC curves"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:96
+#: Learning/qml/mlClassificationBoosting.qml:97
 msgctxt "mlClassificationBoosting|"
 msgid "Andrews curves"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:101
+#: Learning/qml/mlClassificationBoosting.qml:102
 msgctxt "mlClassificationBoosting|"
 msgid "Deviance"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:111
+#: Learning/qml/mlClassificationBoosting.qml:112
 msgctxt "mlClassificationBoosting|"
 msgid "Decision boundary matrix"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:117
+#: Learning/qml/mlClassificationBoosting.qml:118
 msgctxt "mlClassificationBoosting|"
 msgid "Legend"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:123
+#: Learning/qml/mlClassificationBoosting.qml:124
 msgctxt "mlClassificationBoosting|"
 msgid "Points"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:137
+#: Learning/qml/mlClassificationBoosting.qml:138
 msgctxt "mlClassificationBoosting|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:140
+#: Learning/qml/mlClassificationBoosting.qml:141
 msgctxt "mlClassificationBoosting|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:144
+#: Learning/qml/mlClassificationBoosting.qml:145
 msgctxt "mlClassificationBoosting|"
 msgid "Shrinkage:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:153
+#: Learning/qml/mlClassificationBoosting.qml:154
 msgctxt "mlClassificationBoosting|"
 msgid "Interaction depth:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:162
+#: Learning/qml/mlClassificationBoosting.qml:163
 msgctxt "mlClassificationBoosting|"
 msgid "Min. observations in node:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:171
+#: Learning/qml/mlClassificationBoosting.qml:172
 msgctxt "mlClassificationBoosting|"
 msgid "Training data used per tree:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:176
+#: Learning/qml/mlClassificationBoosting.qml:177
 msgctxt "mlClassificationBoosting|"
 msgid "Scale predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:183
+#: Learning/qml/mlClassificationBoosting.qml:184
 msgctxt "mlClassificationBoosting|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:197
+#: Learning/qml/mlClassificationBoosting.qml:198
 msgctxt "mlClassificationBoosting|"
 msgid "Number of Trees"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:201
+#: Learning/qml/mlClassificationBoosting.qml:202
 msgctxt "mlClassificationBoosting|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:206
+#: Learning/qml/mlClassificationBoosting.qml:207
 msgctxt "mlClassificationBoosting|"
 msgid "Trees:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:216
+#: Learning/qml/mlClassificationBoosting.qml:217
 msgctxt "mlClassificationBoosting|"
 msgid "Optimized"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:222
+#: Learning/qml/mlClassificationBoosting.qml:223
 msgctxt "mlClassificationBoosting|"
 msgid "Max. trees:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:240
+#: Learning/qml/mlClassificationBoosting.qml:241
 msgctxt "mlClassificationBoosting|"
 msgid "Add predicted classes to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationBoosting.qml:258
+#: Learning/qml/mlClassificationBoosting.qml:259
 msgctxt "mlClassificationBoosting|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -7792,157 +7792,157 @@ msgid "Predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:46
+#: Learning/qml/mlClassificationKnn.qml:47
 msgctxt "mlClassificationKnn|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:49
+#: Learning/qml/mlClassificationKnn.qml:50
 msgctxt "mlClassificationKnn|"
 msgid "Confusion matrix"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:54
+#: Learning/qml/mlClassificationKnn.qml:55
 msgctxt "mlClassificationKnn|"
 msgid "Display proportions"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:60
+#: Learning/qml/mlClassificationKnn.qml:61
 msgctxt "mlClassificationKnn|"
 msgid "Class proportions"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:65
+#: Learning/qml/mlClassificationKnn.qml:66
 msgctxt "mlClassificationKnn|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:71
+#: Learning/qml/mlClassificationKnn.qml:72
 msgctxt "mlClassificationKnn|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:74
+#: Learning/qml/mlClassificationKnn.qml:75
 msgctxt "mlClassificationKnn|"
 msgid "Data split"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:80
+#: Learning/qml/mlClassificationKnn.qml:81
 msgctxt "mlClassificationKnn|"
 msgid "Classification accuracy"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:87
+#: Learning/qml/mlClassificationKnn.qml:88
 msgctxt "mlClassificationKnn|"
 msgid "ROC curves"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:92
+#: Learning/qml/mlClassificationKnn.qml:93
 msgctxt "mlClassificationKnn|"
 msgid "Andrews curves"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:97
+#: Learning/qml/mlClassificationKnn.qml:98
 msgctxt "mlClassificationKnn|"
 msgid "Decision boundary matrix"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:103
+#: Learning/qml/mlClassificationKnn.qml:104
 msgctxt "mlClassificationKnn|"
 msgid "Legend"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:109
+#: Learning/qml/mlClassificationKnn.qml:110
 msgctxt "mlClassificationKnn|"
 msgid "Points"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:121
+#: Learning/qml/mlClassificationKnn.qml:122
 msgctxt "mlClassificationKnn|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:124
+#: Learning/qml/mlClassificationKnn.qml:125
 msgctxt "mlClassificationKnn|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:129
+#: Learning/qml/mlClassificationKnn.qml:130
 msgctxt "mlClassificationKnn|"
 msgid "Weights:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:147
+#: Learning/qml/mlClassificationKnn.qml:148
 msgctxt "mlClassificationKnn|"
 msgid "Distance:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:156
+#: Learning/qml/mlClassificationKnn.qml:157
 msgctxt "mlClassificationKnn|"
 msgid "Scale predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:163
+#: Learning/qml/mlClassificationKnn.qml:164
 msgctxt "mlClassificationKnn|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:177
+#: Learning/qml/mlClassificationKnn.qml:178
 msgctxt "mlClassificationKnn|"
 msgid "Number of Nearest Neighbors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:181
+#: Learning/qml/mlClassificationKnn.qml:182
 msgctxt "mlClassificationKnn|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:186
+#: Learning/qml/mlClassificationKnn.qml:187
 msgctxt "mlClassificationKnn|"
 msgid "Nearest neighbors:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:196
+#: Learning/qml/mlClassificationKnn.qml:197
 msgctxt "mlClassificationKnn|"
 msgid "Optimized"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:202
+#: Learning/qml/mlClassificationKnn.qml:203
 msgctxt "mlClassificationKnn|"
 msgid "Max. nearest neighbors:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:220
+#: Learning/qml/mlClassificationKnn.qml:221
 msgctxt "mlClassificationKnn|"
 msgid "Add predicted classes to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:238
+#: Learning/qml/mlClassificationKnn.qml:239
 msgctxt "mlClassificationKnn|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -7960,175 +7960,175 @@ msgid "Predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:48
+#: Learning/qml/mlClassificationLda.qml:49
 msgctxt "mlClassificationLda|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:51
+#: Learning/qml/mlClassificationLda.qml:52
 msgctxt "mlClassificationLda|"
 msgid "Confusion matrix"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:56
+#: Learning/qml/mlClassificationLda.qml:57
 msgctxt "mlClassificationLda|"
 msgid "Display proportions"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:62
+#: Learning/qml/mlClassificationLda.qml:63
 msgctxt "mlClassificationLda|"
 msgid "Class proportions"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:67
+#: Learning/qml/mlClassificationLda.qml:68
 msgctxt "mlClassificationLda|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:73
+#: Learning/qml/mlClassificationLda.qml:74
 msgctxt "mlClassificationLda|"
 msgid "Coefficients"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:78
+#: Learning/qml/mlClassificationLda.qml:79
 msgctxt "mlClassificationLda|"
 msgid "Prior and posterior probabilities"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:83
+#: Learning/qml/mlClassificationLda.qml:84
 msgctxt "mlClassificationLda|"
 msgid "Class means training data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:90
+#: Learning/qml/mlClassificationLda.qml:91
 msgctxt "mlClassificationLda|"
 msgid "Assumption Checks"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:94
+#: Learning/qml/mlClassificationLda.qml:95
 msgctxt "mlClassificationLda|"
 msgid "Equality of class means"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:99
+#: Learning/qml/mlClassificationLda.qml:100
 msgctxt "mlClassificationLda|"
 msgid "Equality of covariance matrices"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:104
+#: Learning/qml/mlClassificationLda.qml:105
 msgctxt "mlClassificationLda|"
 msgid "Multicollinearity"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:110
+#: Learning/qml/mlClassificationLda.qml:111
 msgctxt "mlClassificationLda|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:113
+#: Learning/qml/mlClassificationLda.qml:114
 msgctxt "mlClassificationLda|"
 msgid "Data split"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:120
+#: Learning/qml/mlClassificationLda.qml:121
 msgctxt "mlClassificationLda|"
 msgid "ROC curves"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:125
+#: Learning/qml/mlClassificationLda.qml:126
 msgctxt "mlClassificationLda|"
 msgid "Andrews curves"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:130
+#: Learning/qml/mlClassificationLda.qml:131
 msgctxt "mlClassificationLda|"
 msgid "Linear discriminant matrix"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:136
+#: Learning/qml/mlClassificationLda.qml:137
 msgctxt "mlClassificationLda|"
 msgid "Densities"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:142
+#: Learning/qml/mlClassificationLda.qml:143
 msgctxt "mlClassificationLda|"
 msgid "Scatter plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:150
+#: Learning/qml/mlClassificationLda.qml:151
 msgctxt "mlClassificationLda|"
 msgid "Decision boundary matrix"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:156
+#: Learning/qml/mlClassificationLda.qml:157
 msgctxt "mlClassificationLda|"
 msgid "Legend"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:162
+#: Learning/qml/mlClassificationLda.qml:163
 msgctxt "mlClassificationLda|"
 msgid "Points"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:176
+#: Learning/qml/mlClassificationLda.qml:177
 msgctxt "mlClassificationLda|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:179
+#: Learning/qml/mlClassificationLda.qml:180
 msgctxt "mlClassificationLda|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:184
+#: Learning/qml/mlClassificationLda.qml:185
 msgctxt "mlClassificationLda|"
 msgid "Estimation method:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:195
+#: Learning/qml/mlClassificationLda.qml:196
 msgctxt "mlClassificationLda|"
 msgid "Scale predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:202
+#: Learning/qml/mlClassificationLda.qml:203
 msgctxt "mlClassificationLda|"
 msgid "Set seed: "
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:234
+#: Learning/qml/mlClassificationLda.qml:235
 msgctxt "mlClassificationLda|"
 msgid "Add predicted classes to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationLda.qml:252
+#: Learning/qml/mlClassificationLda.qml:253
 msgctxt "mlClassificationLda|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -8146,175 +8146,175 @@ msgid "Predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:46
+#: Learning/qml/mlClassificationRandomForest.qml:47
 msgctxt "mlClassificationRandomForest|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:49
+#: Learning/qml/mlClassificationRandomForest.qml:50
 msgctxt "mlClassificationRandomForest|"
 msgid "Confusion matrix"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:54
+#: Learning/qml/mlClassificationRandomForest.qml:55
 msgctxt "mlClassificationRandomForest|"
 msgid "Display proportions"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:60
+#: Learning/qml/mlClassificationRandomForest.qml:61
 msgctxt "mlClassificationRandomForest|"
 msgid "Class proportions"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:65
+#: Learning/qml/mlClassificationRandomForest.qml:66
 msgctxt "mlClassificationRandomForest|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:71
+#: Learning/qml/mlClassificationRandomForest.qml:72
 msgctxt "mlClassificationRandomForest|"
 msgid "Variable importance"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:76
+#: Learning/qml/mlClassificationRandomForest.qml:77
 msgctxt "mlClassificationRandomForest|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:79
+#: Learning/qml/mlClassificationRandomForest.qml:80
 msgctxt "mlClassificationRandomForest|"
 msgid "Data split"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:86
+#: Learning/qml/mlClassificationRandomForest.qml:87
 msgctxt "mlClassificationRandomForest|"
 msgid "Out-of-bag accuracy"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:91
+#: Learning/qml/mlClassificationRandomForest.qml:92
 msgctxt "mlClassificationRandomForest|"
 msgid "ROC curves"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:96
+#: Learning/qml/mlClassificationRandomForest.qml:97
 msgctxt "mlClassificationRandomForest|"
 msgid "Andrews curves"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:101
+#: Learning/qml/mlClassificationRandomForest.qml:102
 msgctxt "mlClassificationRandomForest|"
 msgid "Mean decrease in accuracy"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:106
+#: Learning/qml/mlClassificationRandomForest.qml:107
 msgctxt "mlClassificationRandomForest|"
 msgid "Total increase in node purity"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:111
+#: Learning/qml/mlClassificationRandomForest.qml:112
 msgctxt "mlClassificationRandomForest|"
 msgid "Decision boundary matrix"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:117
+#: Learning/qml/mlClassificationRandomForest.qml:118
 msgctxt "mlClassificationRandomForest|"
 msgid "Legend"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:123
+#: Learning/qml/mlClassificationRandomForest.qml:124
 msgctxt "mlClassificationRandomForest|"
 msgid "Points"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:137
+#: Learning/qml/mlClassificationRandomForest.qml:138
 msgctxt "mlClassificationRandomForest|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:140
+#: Learning/qml/mlClassificationRandomForest.qml:141
 msgctxt "mlClassificationRandomForest|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:144
+#: Learning/qml/mlClassificationRandomForest.qml:145
 msgctxt "mlClassificationRandomForest|"
 msgid "Training data used per tree:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:156
+#: Learning/qml/mlClassificationRandomForest.qml:157
 msgctxt "mlClassificationRandomForest|"
 msgid "Predictors per split:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:174
+#: Learning/qml/mlClassificationRandomForest.qml:175
 msgctxt "mlClassificationRandomForest|"
 msgid "Scale predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:181
+#: Learning/qml/mlClassificationRandomForest.qml:182
 msgctxt "mlClassificationRandomForest|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:195
+#: Learning/qml/mlClassificationRandomForest.qml:196
 msgctxt "mlClassificationRandomForest|"
 msgid "Number of Trees"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:199
+#: Learning/qml/mlClassificationRandomForest.qml:200
 msgctxt "mlClassificationRandomForest|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:204
+#: Learning/qml/mlClassificationRandomForest.qml:205
 msgctxt "mlClassificationRandomForest|"
 msgid "Trees:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:214
+#: Learning/qml/mlClassificationRandomForest.qml:215
 msgctxt "mlClassificationRandomForest|"
 msgid "Optimized"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:220
+#: Learning/qml/mlClassificationRandomForest.qml:221
 msgctxt "mlClassificationRandomForest|"
 msgid "Max. trees:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:238
+#: Learning/qml/mlClassificationRandomForest.qml:239
 msgctxt "mlClassificationRandomForest|"
 msgid "Add predicted classes to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:256
+#: Learning/qml/mlClassificationRandomForest.qml:257
 msgctxt "mlClassificationRandomForest|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -8326,55 +8326,55 @@ msgid "Variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:38
+#: Learning/qml/mlClusteringDensityBased.qml:39
 msgctxt "mlClusteringDensityBased|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:42
+#: Learning/qml/mlClusteringDensityBased.qml:48
 msgctxt "mlClusteringDensityBased|"
 msgid "Cluster information"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:47
+#: Learning/qml/mlClusteringDensityBased.qml:53
 msgctxt "mlClusteringDensityBased|"
 msgid "Within sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:53
+#: Learning/qml/mlClusteringDensityBased.qml:59
 msgctxt "mlClusteringDensityBased|"
 msgid "Silhouette score"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:58
+#: Learning/qml/mlClusteringDensityBased.qml:64
 msgctxt "mlClusteringDensityBased|"
 msgid "Between sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:63
+#: Learning/qml/mlClusteringDensityBased.qml:69
 msgctxt "mlClusteringDensityBased|"
 msgid "Total sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:69
+#: Learning/qml/mlClusteringDensityBased.qml:75
 msgctxt "mlClusteringDensityBased|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:76
+#: Learning/qml/mlClusteringDensityBased.qml:82
 msgctxt "mlClusteringDensityBased|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:79
+#: Learning/qml/mlClusteringDensityBased.qml:85
 msgctxt "mlClusteringDensityBased|"
 msgid "K-distance plot"
 msgstr ""
@@ -8385,85 +8385,85 @@ msgstr ""
 #~ msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:84
+#: Learning/qml/mlClusteringDensityBased.qml:112
 msgctxt "mlClusteringDensityBased|"
 msgid "t-SNE cluster plot"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:90
+#: Learning/qml/mlClusteringDensityBased.qml:118
 msgctxt "mlClusteringDensityBased|"
 msgid "Legend"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:96
+#: Learning/qml/mlClusteringDensityBased.qml:124
 msgctxt "mlClusteringDensityBased|"
 msgid "Labels"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:104
+#: Learning/qml/mlClusteringDensityBased.qml:132
 msgctxt "mlClusteringDensityBased|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:107
+#: Learning/qml/mlClusteringDensityBased.qml:135
 msgctxt "mlClusteringDensityBased|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:111
+#: Learning/qml/mlClusteringDensityBased.qml:139
 msgctxt "mlClusteringDensityBased|"
 msgid "Epsilon neighborhood size:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:122
+#: Learning/qml/mlClusteringDensityBased.qml:150
 msgctxt "mlClusteringDensityBased|"
 msgid "Min. core points:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:132
+#: Learning/qml/mlClusteringDensityBased.qml:160
 msgctxt "mlClusteringDensityBased|"
 msgid "Distance:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:141
+#: Learning/qml/mlClusteringDensityBased.qml:169
 msgctxt "mlClusteringDensityBased|"
 msgid "Scale variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:148
+#: Learning/qml/mlClusteringDensityBased.qml:176
 msgctxt "mlClusteringDensityBased|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:162
+#: Learning/qml/mlClusteringDensityBased.qml:190
 msgctxt "mlClusteringDensityBased|"
 msgid "Model Optimization"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:168
+#: Learning/qml/mlClusteringDensityBased.qml:196
 msgctxt "mlClusteringDensityBased|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:182
+#: Learning/qml/mlClusteringDensityBased.qml:210
 msgctxt "mlClusteringDensityBased|"
 msgid "Add predicted clusters to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:200
+#: Learning/qml/mlClusteringDensityBased.qml:228
 msgctxt "mlClusteringDensityBased|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -8475,61 +8475,61 @@ msgid "Variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:38
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:39
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:42
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:48
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Cluster information"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:47
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:53
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Within sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:53
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:59
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Silhouette score"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:58
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:64
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Centroids"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:63
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:69
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Between sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:68
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:74
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Total sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:74
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:80
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:80
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:86
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:83
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:89
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Elbow method"
 msgstr ""
@@ -8540,97 +8540,97 @@ msgstr ""
 #~ msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:89
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:117
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "t-SNE cluster plot"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:95
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:123
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Legend"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:101
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:129
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Labels"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:109
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:137
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:112
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:140
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:116
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:144
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Max. iterations:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:125
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:153
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Fuzziness parameter:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:134
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:162
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Scale variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:141
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:169
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:155
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:183
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Cluster Determination"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:160
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:188
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:165
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:193
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Clusters:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:175
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:203
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Optimized according to"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:195
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:223
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Max. clusters:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:214
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:242
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Add predicted clusters to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringFuzzyCMeans.qml:232
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:260
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -8642,61 +8642,61 @@ msgid "Variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:38
+#: Learning/qml/mlClusteringHierarchical.qml:39
 msgctxt "mlClusteringHierarchical|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:42
+#: Learning/qml/mlClusteringHierarchical.qml:48
 msgctxt "mlClusteringHierarchical|"
 msgid "Cluster information"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:47
+#: Learning/qml/mlClusteringHierarchical.qml:53
 msgctxt "mlClusteringHierarchical|"
 msgid "Within sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:53
+#: Learning/qml/mlClusteringHierarchical.qml:59
 msgctxt "mlClusteringHierarchical|"
 msgid "Silhouette score"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:58
+#: Learning/qml/mlClusteringHierarchical.qml:64
 msgctxt "mlClusteringHierarchical|"
 msgid "Between sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:63
+#: Learning/qml/mlClusteringHierarchical.qml:69
 msgctxt "mlClusteringHierarchical|"
 msgid "Total sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:69
+#: Learning/qml/mlClusteringHierarchical.qml:75
 msgctxt "mlClusteringHierarchical|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:75
+#: Learning/qml/mlClusteringHierarchical.qml:81
 msgctxt "mlClusteringHierarchical|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:78
+#: Learning/qml/mlClusteringHierarchical.qml:84
 msgctxt "mlClusteringHierarchical|"
 msgid "Elbow method"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:84
+#: Learning/qml/mlClusteringHierarchical.qml:90
 msgctxt "mlClusteringHierarchical|"
 msgid "Dendrogram"
 msgstr ""
@@ -8707,97 +8707,97 @@ msgstr ""
 #~ msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:89
+#: Learning/qml/mlClusteringHierarchical.qml:117
 msgctxt "mlClusteringHierarchical|"
 msgid "t-SNE cluster plot"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:95
+#: Learning/qml/mlClusteringHierarchical.qml:123
 msgctxt "mlClusteringHierarchical|"
 msgid "Legend"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:101
+#: Learning/qml/mlClusteringHierarchical.qml:129
 msgctxt "mlClusteringHierarchical|"
 msgid "Labels"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:109
+#: Learning/qml/mlClusteringHierarchical.qml:137
 msgctxt "mlClusteringHierarchical|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:112
+#: Learning/qml/mlClusteringHierarchical.qml:140
 msgctxt "mlClusteringHierarchical|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:117
+#: Learning/qml/mlClusteringHierarchical.qml:145
 msgctxt "mlClusteringHierarchical|"
 msgid "Distance:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:128
+#: Learning/qml/mlClusteringHierarchical.qml:156
 msgctxt "mlClusteringHierarchical|"
 msgid "Linkage:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:139
+#: Learning/qml/mlClusteringHierarchical.qml:167
 msgctxt "mlClusteringHierarchical|"
 msgid "Scale variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:146
+#: Learning/qml/mlClusteringHierarchical.qml:174
 msgctxt "mlClusteringHierarchical|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:160
+#: Learning/qml/mlClusteringHierarchical.qml:188
 msgctxt "mlClusteringHierarchical|"
 msgid "Cluster Determination"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:165
+#: Learning/qml/mlClusteringHierarchical.qml:193
 msgctxt "mlClusteringHierarchical|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:170
+#: Learning/qml/mlClusteringHierarchical.qml:198
 msgctxt "mlClusteringHierarchical|"
 msgid "Clusters:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:180
+#: Learning/qml/mlClusteringHierarchical.qml:208
 msgctxt "mlClusteringHierarchical|"
 msgid "Optimized according to"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:200
+#: Learning/qml/mlClusteringHierarchical.qml:228
 msgctxt "mlClusteringHierarchical|"
 msgid "Max. clusters:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:219
+#: Learning/qml/mlClusteringHierarchical.qml:247
 msgctxt "mlClusteringHierarchical|"
 msgid "Add predicted clusters to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:237
+#: Learning/qml/mlClusteringHierarchical.qml:265
 msgctxt "mlClusteringHierarchical|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -8809,61 +8809,61 @@ msgid "Variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:38
+#: Learning/qml/mlClusteringKMeans.qml:39
 msgctxt "mlClusteringKMeans|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:42
+#: Learning/qml/mlClusteringKMeans.qml:48
 msgctxt "mlClusteringKMeans|"
 msgid "Cluster information"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:47
+#: Learning/qml/mlClusteringKMeans.qml:53
 msgctxt "mlClusteringKMeans|"
 msgid "Within sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:53
+#: Learning/qml/mlClusteringKMeans.qml:59
 msgctxt "mlClusteringKMeans|"
 msgid "Silhouette score"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:58
+#: Learning/qml/mlClusteringKMeans.qml:64
 msgctxt "mlClusteringKMeans|"
 msgid "Centroids"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:63
+#: Learning/qml/mlClusteringKMeans.qml:69
 msgctxt "mlClusteringKMeans|"
 msgid "Between sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:68
+#: Learning/qml/mlClusteringKMeans.qml:74
 msgctxt "mlClusteringKMeans|"
 msgid "Total sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:74
+#: Learning/qml/mlClusteringKMeans.qml:80
 msgctxt "mlClusteringKMeans|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:80
+#: Learning/qml/mlClusteringKMeans.qml:86
 msgctxt "mlClusteringKMeans|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:83
+#: Learning/qml/mlClusteringKMeans.qml:89
 msgctxt "mlClusteringKMeans|"
 msgid "Elbow method"
 msgstr ""
@@ -8874,103 +8874,103 @@ msgstr ""
 #~ msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:89
+#: Learning/qml/mlClusteringKMeans.qml:117
 msgctxt "mlClusteringKMeans|"
 msgid "t-SNE cluster plot"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:95
+#: Learning/qml/mlClusteringKMeans.qml:123
 msgctxt "mlClusteringKMeans|"
 msgid "Legend"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:101
+#: Learning/qml/mlClusteringKMeans.qml:129
 msgctxt "mlClusteringKMeans|"
 msgid "Labels"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:109
+#: Learning/qml/mlClusteringKMeans.qml:137
 msgctxt "mlClusteringKMeans|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:112
+#: Learning/qml/mlClusteringKMeans.qml:140
 msgctxt "mlClusteringKMeans|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:116
+#: Learning/qml/mlClusteringKMeans.qml:144
 msgctxt "mlClusteringKMeans|"
 msgid "Max. iterations:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:125
+#: Learning/qml/mlClusteringKMeans.qml:153
 msgctxt "mlClusteringKMeans|"
 msgid "Random sets:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:135
+#: Learning/qml/mlClusteringKMeans.qml:163
 msgctxt "mlClusteringKMeans|"
 msgid "Algorithm:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:145
+#: Learning/qml/mlClusteringKMeans.qml:173
 msgctxt "mlClusteringKMeans|"
 msgid "Scale variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:152
+#: Learning/qml/mlClusteringKMeans.qml:180
 msgctxt "mlClusteringKMeans|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:166
+#: Learning/qml/mlClusteringKMeans.qml:194
 msgctxt "mlClusteringKMeans|"
 msgid "Cluster Determination"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:171
+#: Learning/qml/mlClusteringKMeans.qml:199
 msgctxt "mlClusteringKMeans|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:176
+#: Learning/qml/mlClusteringKMeans.qml:204
 msgctxt "mlClusteringKMeans|"
 msgid "Clusters:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:186
+#: Learning/qml/mlClusteringKMeans.qml:214
 msgctxt "mlClusteringKMeans|"
 msgid "Optimized according to"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:206
+#: Learning/qml/mlClusteringKMeans.qml:234
 msgctxt "mlClusteringKMeans|"
 msgid "Max. clusters:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:225
+#: Learning/qml/mlClusteringKMeans.qml:253
 msgctxt "mlClusteringKMeans|"
 msgid "Add predicted clusters to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringKMeans.qml:243
+#: Learning/qml/mlClusteringKMeans.qml:271
 msgctxt "mlClusteringKMeans|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -8982,61 +8982,61 @@ msgid "Variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:38
+#: Learning/qml/mlClusteringRandomForest.qml:39
 msgctxt "mlClusteringRandomForest|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:42
+#: Learning/qml/mlClusteringRandomForest.qml:48
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster information"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:47
+#: Learning/qml/mlClusteringRandomForest.qml:53
 msgctxt "mlClusteringRandomForest|"
 msgid "Within sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:53
+#: Learning/qml/mlClusteringRandomForest.qml:59
 msgctxt "mlClusteringRandomForest|"
 msgid "Silhouette score"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:58
+#: Learning/qml/mlClusteringRandomForest.qml:64
 msgctxt "mlClusteringRandomForest|"
 msgid "Between sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:63
+#: Learning/qml/mlClusteringRandomForest.qml:69
 msgctxt "mlClusteringRandomForest|"
 msgid "Total sum of squares"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:69
+#: Learning/qml/mlClusteringRandomForest.qml:75
 msgctxt "mlClusteringRandomForest|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:74
+#: Learning/qml/mlClusteringRandomForest.qml:80
 msgctxt "mlClusteringRandomForest|"
 msgid "Variable importance"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:80
+#: Learning/qml/mlClusteringRandomForest.qml:86
 msgctxt "mlClusteringRandomForest|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:83
+#: Learning/qml/mlClusteringRandomForest.qml:89
 msgctxt "mlClusteringRandomForest|"
 msgid "Elbow method"
 msgstr ""
@@ -9047,91 +9047,91 @@ msgstr ""
 #~ msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:89
+#: Learning/qml/mlClusteringRandomForest.qml:117
 msgctxt "mlClusteringRandomForest|"
 msgid "t-SNE cluster plot"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:95
+#: Learning/qml/mlClusteringRandomForest.qml:123
 msgctxt "mlClusteringRandomForest|"
 msgid "Legend"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:101
+#: Learning/qml/mlClusteringRandomForest.qml:129
 msgctxt "mlClusteringRandomForest|"
 msgid "Labels"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:109
+#: Learning/qml/mlClusteringRandomForest.qml:137
 msgctxt "mlClusteringRandomForest|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:112
+#: Learning/qml/mlClusteringRandomForest.qml:140
 msgctxt "mlClusteringRandomForest|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:116
+#: Learning/qml/mlClusteringRandomForest.qml:144
 msgctxt "mlClusteringRandomForest|"
 msgid "Trees:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:124
+#: Learning/qml/mlClusteringRandomForest.qml:152
 msgctxt "mlClusteringRandomForest|"
 msgid "Scale variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:131
+#: Learning/qml/mlClusteringRandomForest.qml:159
 msgctxt "mlClusteringRandomForest|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:145
+#: Learning/qml/mlClusteringRandomForest.qml:173
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster Determination"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:150
+#: Learning/qml/mlClusteringRandomForest.qml:178
 msgctxt "mlClusteringRandomForest|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:155
+#: Learning/qml/mlClusteringRandomForest.qml:183
 msgctxt "mlClusteringRandomForest|"
 msgid "Clusters:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:165
+#: Learning/qml/mlClusteringRandomForest.qml:193
 msgctxt "mlClusteringRandomForest|"
 msgid "Optimized according to"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:185
+#: Learning/qml/mlClusteringRandomForest.qml:213
 msgctxt "mlClusteringRandomForest|"
 msgid "Max. clusters:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:204
+#: Learning/qml/mlClusteringRandomForest.qml:232
 msgctxt "mlClusteringRandomForest|"
 msgid "Add predicted clusters to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringRandomForest.qml:222
+#: Learning/qml/mlClusteringRandomForest.qml:250
 msgctxt "mlClusteringRandomForest|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -9149,147 +9149,147 @@ msgid "Predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:46
+#: Learning/qml/mlRegressionBoosting.qml:47
 msgctxt "mlRegressionBoosting|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:49
+#: Learning/qml/mlRegressionBoosting.qml:50
 msgctxt "mlRegressionBoosting|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:55
+#: Learning/qml/mlRegressionBoosting.qml:56
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:85
+#: Learning/qml/mlRegressionBoosting.qml:86
 msgctxt "mlRegressionBoosting|"
 msgid "Relative influence"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:60
+#: Learning/qml/mlRegressionBoosting.qml:61
 msgctxt "mlRegressionBoosting|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:63
+#: Learning/qml/mlRegressionBoosting.qml:64
 msgctxt "mlRegressionBoosting|"
 msgid "Data split"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:70
+#: Learning/qml/mlRegressionBoosting.qml:71
 msgctxt "mlRegressionBoosting|"
 msgid "Out-of-bag improvement"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:74
+#: Learning/qml/mlRegressionBoosting.qml:75
 msgctxt "mlRegressionBoosting|"
 msgid "Predictive performance"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:80
+#: Learning/qml/mlRegressionBoosting.qml:81
 msgctxt "mlRegressionBoosting|"
 msgid "Deviance"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:95
+#: Learning/qml/mlRegressionBoosting.qml:96
 msgctxt "mlRegressionBoosting|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:98
+#: Learning/qml/mlRegressionBoosting.qml:99
 msgctxt "mlRegressionBoosting|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:102
+#: Learning/qml/mlRegressionBoosting.qml:103
 msgctxt "mlRegressionBoosting|"
 msgid "Shrinkage:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:111
+#: Learning/qml/mlRegressionBoosting.qml:112
 msgctxt "mlRegressionBoosting|"
 msgid "Interaction depth:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:120
+#: Learning/qml/mlRegressionBoosting.qml:121
 msgctxt "mlRegressionBoosting|"
 msgid "Min. observations in node:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:129
+#: Learning/qml/mlRegressionBoosting.qml:130
 msgctxt "mlRegressionBoosting|"
 msgid "Training data used per tree:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:136
+#: Learning/qml/mlRegressionBoosting.qml:137
 msgctxt "mlRegressionBoosting|"
 msgid "Loss function:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:147
+#: Learning/qml/mlRegressionBoosting.qml:148
 msgctxt "mlRegressionBoosting|"
 msgid "Scale variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:154
+#: Learning/qml/mlRegressionBoosting.qml:155
 msgctxt "mlRegressionBoosting|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:168
+#: Learning/qml/mlRegressionBoosting.qml:169
 msgctxt "mlRegressionBoosting|"
 msgid "Number of Trees"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:172
+#: Learning/qml/mlRegressionBoosting.qml:173
 msgctxt "mlRegressionBoosting|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:177
+#: Learning/qml/mlRegressionBoosting.qml:178
 msgctxt "mlRegressionBoosting|"
 msgid "Trees:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:187
+#: Learning/qml/mlRegressionBoosting.qml:188
 msgctxt "mlRegressionBoosting|"
 msgid "Optimized"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:193
+#: Learning/qml/mlRegressionBoosting.qml:194
 msgctxt "mlRegressionBoosting|"
 msgid "Max. trees:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:211
+#: Learning/qml/mlRegressionBoosting.qml:212
 msgctxt "mlRegressionBoosting|"
 msgid "Add predicted values to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionBoosting.qml:229
+#: Learning/qml/mlRegressionBoosting.qml:230
 msgctxt "mlRegressionBoosting|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -9307,115 +9307,115 @@ msgid "Predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:46
+#: Learning/qml/mlRegressionKnn.qml:47
 msgctxt "mlRegressionKnn|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:49
+#: Learning/qml/mlRegressionKnn.qml:50
 msgctxt "mlRegressionKnn|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:56
+#: Learning/qml/mlRegressionKnn.qml:57
 msgctxt "mlRegressionKnn|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:59
+#: Learning/qml/mlRegressionKnn.qml:60
 msgctxt "mlRegressionKnn|"
 msgid "Data split"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:65
+#: Learning/qml/mlRegressionKnn.qml:66
 msgctxt "mlRegressionKnn|"
 msgid "Mean squared error"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:71
+#: Learning/qml/mlRegressionKnn.qml:72
 msgctxt "mlRegressionKnn|"
 msgid "Predictive performance"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:81
+#: Learning/qml/mlRegressionKnn.qml:82
 msgctxt "mlRegressionKnn|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:84
+#: Learning/qml/mlRegressionKnn.qml:85
 msgctxt "mlRegressionKnn|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:89
+#: Learning/qml/mlRegressionKnn.qml:90
 msgctxt "mlRegressionKnn|"
 msgid "Weights:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:107
+#: Learning/qml/mlRegressionKnn.qml:108
 msgctxt "mlRegressionKnn|"
 msgid "Distance:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:116
+#: Learning/qml/mlRegressionKnn.qml:117
 msgctxt "mlRegressionKnn|"
 msgid "Scale variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:123
+#: Learning/qml/mlRegressionKnn.qml:124
 msgctxt "mlRegressionKnn|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:137
+#: Learning/qml/mlRegressionKnn.qml:138
 msgctxt "mlRegressionKnn|"
 msgid "Number of Nearest Neighbors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:141
+#: Learning/qml/mlRegressionKnn.qml:142
 msgctxt "mlRegressionKnn|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:146
+#: Learning/qml/mlRegressionKnn.qml:147
 msgctxt "mlRegressionKnn|"
 msgid "Nearest neighbors:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:156
+#: Learning/qml/mlRegressionKnn.qml:157
 msgctxt "mlRegressionKnn|"
 msgid "Optimized"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:162
+#: Learning/qml/mlRegressionKnn.qml:163
 msgctxt "mlRegressionKnn|"
 msgid "Max. nearest neighbors:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:180
+#: Learning/qml/mlRegressionKnn.qml:181
 msgctxt "mlRegressionKnn|"
 msgid "Add predicted values to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:198
+#: Learning/qml/mlRegressionKnn.qml:199
 msgctxt "mlRegressionKnn|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -9433,133 +9433,133 @@ msgid "Predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:46
+#: Learning/qml/mlRegressionRandomForest.qml:47
 msgctxt "mlRegressionRandomForest|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:49
+#: Learning/qml/mlRegressionRandomForest.qml:50
 msgctxt "mlRegressionRandomForest|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:55
+#: Learning/qml/mlRegressionRandomForest.qml:56
 msgctxt "mlRegressionRandomForest|"
 msgid "Variable importance"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:60
+#: Learning/qml/mlRegressionRandomForest.qml:61
 msgctxt "mlRegressionRandomForest|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:63
+#: Learning/qml/mlRegressionRandomForest.qml:64
 msgctxt "mlRegressionRandomForest|"
 msgid "Data split"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:70
+#: Learning/qml/mlRegressionRandomForest.qml:71
 msgctxt "mlRegressionRandomForest|"
 msgid "Out-of-bag error"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:75
+#: Learning/qml/mlRegressionRandomForest.qml:76
 msgctxt "mlRegressionRandomForest|"
 msgid "Predictive performance"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:80
+#: Learning/qml/mlRegressionRandomForest.qml:81
 msgctxt "mlRegressionRandomForest|"
 msgid "Mean decrease in accuracy"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:85
+#: Learning/qml/mlRegressionRandomForest.qml:86
 msgctxt "mlRegressionRandomForest|"
 msgid "Total increase in node purity"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:97
+#: Learning/qml/mlRegressionRandomForest.qml:98
 msgctxt "mlRegressionRandomForest|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:100
+#: Learning/qml/mlRegressionRandomForest.qml:101
 msgctxt "mlRegressionRandomForest|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:104
+#: Learning/qml/mlRegressionRandomForest.qml:105
 msgctxt "mlRegressionRandomForest|"
 msgid "Training data used per tree:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:116
+#: Learning/qml/mlRegressionRandomForest.qml:117
 msgctxt "mlRegressionRandomForest|"
 msgid "Predictors per split:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:134
+#: Learning/qml/mlRegressionRandomForest.qml:135
 msgctxt "mlRegressionRandomForest|"
 msgid "Scale variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:141
+#: Learning/qml/mlRegressionRandomForest.qml:142
 msgctxt "mlRegressionRandomForest|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:155
+#: Learning/qml/mlRegressionRandomForest.qml:156
 msgctxt "mlRegressionRandomForest|"
 msgid "Number of Trees"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:159
+#: Learning/qml/mlRegressionRandomForest.qml:160
 msgctxt "mlRegressionRandomForest|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:164
+#: Learning/qml/mlRegressionRandomForest.qml:165
 msgctxt "mlRegressionRandomForest|"
 msgid "Trees:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:174
+#: Learning/qml/mlRegressionRandomForest.qml:175
 msgctxt "mlRegressionRandomForest|"
 msgid "Optimized"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:180
+#: Learning/qml/mlRegressionRandomForest.qml:181
 msgctxt "mlRegressionRandomForest|"
 msgid "Max. trees:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:198
+#: Learning/qml/mlRegressionRandomForest.qml:199
 msgctxt "mlRegressionRandomForest|"
 msgid "Add predicted values to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:216
+#: Learning/qml/mlRegressionRandomForest.qml:217
 msgctxt "mlRegressionRandomForest|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -9577,147 +9577,147 @@ msgid "Predictors"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:45
+#: Learning/qml/mlRegressionRegularized.qml:46
 msgctxt "mlRegressionRegularized|"
 msgid "Weights"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:52
+#: Learning/qml/mlRegressionRegularized.qml:53
 msgctxt "mlRegressionRegularized|"
 msgid "Tables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:55
+#: Learning/qml/mlRegressionRegularized.qml:56
 msgctxt "mlRegressionRegularized|"
 msgid "Evaluation metrics"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:61
+#: Learning/qml/mlRegressionRegularized.qml:62
 msgctxt "mlRegressionRegularized|"
 msgid "Regression coefficients"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:66
+#: Learning/qml/mlRegressionRegularized.qml:67
 msgctxt "mlRegressionRegularized|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:69
+#: Learning/qml/mlRegressionRegularized.qml:70
 msgctxt "mlRegressionRegularized|"
 msgid "Data split"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:76
+#: Learning/qml/mlRegressionRegularized.qml:77
 msgctxt "mlRegressionRegularized|"
 msgid "Predictive performance"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:81
+#: Learning/qml/mlRegressionRegularized.qml:82
 msgctxt "mlRegressionRegularized|"
 msgid "Variable trace"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:85
+#: Learning/qml/mlRegressionRegularized.qml:86
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:96
+#: Learning/qml/mlRegressionRegularized.qml:97
 msgctxt "mlRegressionRegularized|"
 msgid "Legend"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:92
+#: Learning/qml/mlRegressionRegularized.qml:93
 msgctxt "mlRegressionRegularized|"
 msgid "λ evaluation"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:109
+#: Learning/qml/mlRegressionRegularized.qml:110
 msgctxt "mlRegressionRegularized|"
 msgid "Training Parameters"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:112
+#: Learning/qml/mlRegressionRegularized.qml:113
 msgctxt "mlRegressionRegularized|"
 msgid "Algorithmic Settings"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:116
+#: Learning/qml/mlRegressionRegularized.qml:117
 msgctxt "mlRegressionRegularized|"
 msgid "Convergence threshold:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:128
+#: Learning/qml/mlRegressionRegularized.qml:129
 msgctxt "mlRegressionRegularized|"
 msgid "Penalty:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:139
+#: Learning/qml/mlRegressionRegularized.qml:140
 msgctxt "mlRegressionRegularized|"
 msgid "Elastic net parameter (α):"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:148
+#: Learning/qml/mlRegressionRegularized.qml:149
 msgctxt "mlRegressionRegularized|"
 msgid "Fit intercept"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:153
+#: Learning/qml/mlRegressionRegularized.qml:154
 msgctxt "mlRegressionRegularized|"
 msgid "Scale variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:160
+#: Learning/qml/mlRegressionRegularized.qml:161
 msgctxt "mlRegressionRegularized|"
 msgid "Set seed:"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:174
+#: Learning/qml/mlRegressionRegularized.qml:175
 msgctxt "mlRegressionRegularized|"
 msgid "Lambda (λ)"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:179
+#: Learning/qml/mlRegressionRegularized.qml:180
 msgctxt "mlRegressionRegularized|"
 msgid "Fixed"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:193
+#: Learning/qml/mlRegressionRegularized.qml:194
 msgctxt "mlRegressionRegularized|"
 msgid "Optimized"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:199
+#: Learning/qml/mlRegressionRegularized.qml:200
 msgctxt "mlRegressionRegularized|"
 msgid "Largest λ within 1 SE of min."
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:213
+#: Learning/qml/mlRegressionRegularized.qml:214
 msgctxt "mlRegressionRegularized|"
 msgid "Add predicted values to data"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRegularized.qml:231
+#: Learning/qml/mlRegressionRegularized.qml:232
 msgctxt "mlRegressionRegularized|"
 msgid "<b>Save Model</b>"
 msgstr ""
@@ -10617,8 +10617,9 @@ msgid "Mean"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Network/qml/NetworkAnalysis.qml:161
+#| msgid "Tuning Parameters"
 msgctxt "NetworkAnalysis|"
-msgid "Tuning Parameters"
+msgid "Tuning Parameter"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Network/qml/NetworkAnalysis.qml:163
@@ -11223,27 +11224,26 @@ msgctxt "Correlation|"
 msgid "Exclude cases listwise"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:37
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:36
 msgctxt "CorrelationBayesian|"
 msgid "Correlation Coefficient"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:38
-msgctxt "CorrelationBayesian|"
-msgid "Pearson's rho"
-msgstr ""
+#~ msgctxt "CorrelationBayesian|"
+#~ msgid "Pearson's rho"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:39
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:38
 msgctxt "CorrelationBayesian|"
 msgid "Spearman"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:40
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:39
 msgctxt "CorrelationBayesian|"
 msgid "Kendall's tau-b"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:45
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:44
 msgctxt "CorrelationBayesian|"
 msgid "Additional Options"
 msgstr ""
@@ -11258,196 +11258,173 @@ msgctxt "CorrelationBayesian|"
 msgid "Flag supported correlations"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:50
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:52
 msgctxt "CorrelationBayesian|"
 msgid "Credible intervals"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:51
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:53
 msgctxt "CorrelationBayesian|"
 msgid "Interval"
-msgstr ""
-
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:58
-msgctxt "CorrelationBayesian|"
-msgid "Alt. Hypothesis"
-msgstr ""
-
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:59
-msgctxt "CorrelationBayesian|"
-msgid "Correlated"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:60
 msgctxt "CorrelationBayesian|"
-msgid "Correlated positively"
+msgid "Alt. Hypothesis"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:61
 msgctxt "CorrelationBayesian|"
+msgid "Correlated"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:62
+msgctxt "CorrelationBayesian|"
+msgid "Correlated positively"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:63
+msgctxt "CorrelationBayesian|"
 msgid "Correlated negatively"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:66
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:68
 msgctxt "CorrelationBayesian|"
 msgid "Plots"
-msgstr ""
-
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:69
-msgctxt "CorrelationBayesian|"
-msgid "Correlation matrix"
-msgstr ""
-
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:70
-msgctxt "CorrelationBayesian|"
-msgid "Densities for variables"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:71
 msgctxt "CorrelationBayesian|"
+msgid "Correlation matrix"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:72
+msgctxt "CorrelationBayesian|"
+msgid "Densities for variables"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:73
+msgctxt "CorrelationBayesian|"
 msgid "Posteriors under H₁"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:79
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:81
 msgctxt "CorrelationBayesian|"
 msgid "Prior"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:80
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:82
 msgctxt "CorrelationBayesian|"
 msgid "Stretched beta prior width"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:85
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:130
 msgctxt "CorrelationBayesian|"
 msgid "Options"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:90
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:135
 msgctxt "CorrelationBayesian|"
 msgid "Missing Values"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:91
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:136
 msgctxt "CorrelationBayesian|"
 msgid "Exclude cases pairwise"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:92
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:137
 msgctxt "CorrelationBayesian|"
 msgid "Exclude cases listwise"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:36
-msgctxt "CorrelationBayesianPairs|"
-msgid "Correlation Coefficients"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Correlation Coefficients"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:37
-msgctxt "CorrelationBayesianPairs|"
-msgid "Pearson's rho"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Pearson's rho"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:38
-msgctxt "CorrelationBayesianPairs|"
-msgid "Kendall's tau-b"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Kendall's tau-b"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:44
-msgctxt "CorrelationBayesianPairs|"
-msgid "Additional Options"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Additional Options"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:47
-msgctxt "CorrelationBayesianPairs|"
-msgid "Credible intervals"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Credible intervals"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:48
-msgctxt "CorrelationBayesianPairs|"
-msgid "Interval"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Interval"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:55
-msgctxt "CorrelationBayesianPairs|"
-msgid "Alt. Hypothesis"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Alt. Hypothesis"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:56
-msgctxt "CorrelationBayesianPairs|"
-msgid "Correlated"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Correlated"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:57
-msgctxt "CorrelationBayesianPairs|"
-msgid "Correlated positively"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Correlated positively"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:58
-msgctxt "CorrelationBayesianPairs|"
-msgid "Correlated negatively"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Correlated negatively"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:63
-msgctxt "CorrelationBayesianPairs|"
-msgid "Plots"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Plots"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:65
-msgctxt "CorrelationBayesianPairs|"
-msgid "Scatterplot"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Scatterplot"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:68
-msgctxt "CorrelationBayesianPairs|"
-msgid "Prior and posterior"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Prior and posterior"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:69
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:74
-msgctxt "CorrelationBayesianPairs|"
-msgid "Additional info"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Additional info"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:73
-msgctxt "CorrelationBayesianPairs|"
-msgid "Bayes factor robustness check"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Bayes factor robustness check"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:78
-msgctxt "CorrelationBayesianPairs|"
-msgid "Sequential analysis"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Sequential analysis"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:79
-msgctxt "CorrelationBayesianPairs|"
-msgid "Robustness check"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Robustness check"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:87
-msgctxt "CorrelationBayesianPairs|"
-msgid "Prior"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Prior"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:88
-msgctxt "CorrelationBayesianPairs|"
-msgid "Stretched beta prior width"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Stretched beta prior width"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:94
-msgctxt "CorrelationBayesianPairs|"
-msgid "Missing Values"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Missing Values"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:95
-msgctxt "CorrelationBayesianPairs|"
-msgid "Exclude cases analysis by analysis"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Exclude cases analysis by analysis"
+#~ msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesianPairs.qml:96
-msgctxt "CorrelationBayesianPairs|"
-msgid "Exclude cases listwise"
-msgstr ""
+#~ msgctxt "CorrelationBayesianPairs|"
+#~ msgid "Exclude cases listwise"
+#~ msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLinear.qml:29
 msgctxt "RegressionLinear|"
@@ -12636,63 +12613,61 @@ msgid "Kendall's tau-b"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
-#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:52
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:58
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Alt. Hypothesis"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
-#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:54
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:60
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Correlated"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
-#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:55
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:61
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Correlated positively"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
-#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:56
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:62
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Correlated negatively"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
-#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:61
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:73
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Plots"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
-#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:64
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:76
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Prior and posterior"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
-#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:65
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
-#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:70
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:83
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Additional info"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
-#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:69
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:82
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Bayes factor robustness check"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
-#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:78
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:91
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Prior"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
-#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:79
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:92
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Stretched beta prior width"
 msgstr ""
@@ -14315,27 +14290,25 @@ msgctxt "JAGS|"
 msgid "No. chains"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/JAGS/qml/JAGS.qml:194
-msgctxt "JAGS|"
-msgid "Monitor Deviance"
-msgstr ""
+#~ msgctxt "JAGS|"
+#~ msgid "Monitor Deviance"
+#~ msgstr ""
+
+#~ msgctxt "JAGS|"
+#~ msgid "Monitor DIC"
+#~ msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/JAGS/qml/JAGS.qml:195
-msgctxt "JAGS|"
-msgid "Monitor DIC"
-msgstr ""
-
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/JAGS/qml/JAGS.qml:201
 msgctxt "JAGS|"
 msgid "Show results for"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/JAGS/qml/JAGS.qml:202
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/JAGS/qml/JAGS.qml:196
 msgctxt "JAGS|"
 msgid "all monitored parameters"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/JAGS/qml/JAGS.qml:203
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/JAGS/qml/JAGS.qml:197
 msgctxt "JAGS|"
 msgid "selected parameters"
 msgstr ""
@@ -14358,43 +14331,43 @@ msgctxt "ListModelTableViewBase|"
 msgid "The source use does not specified a valid column in %1"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:81
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:83
 #, qt-format
 msgctxt "QMLListView|"
 msgid "No name given in source attribute of VariableList %1"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:98
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:100
 #, qt-format
 msgctxt "QMLListView|"
 msgid "No name given in discard source attribute of VariableList %1"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:102
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:104
 #, qt-format
 msgctxt "QMLListView|"
 msgid "Wrong parameter discard in VariablesList %1"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:115
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:117
 #, qt-format
 msgctxt "QMLListView|"
 msgid "Needs source model for VariablesList %1"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:143
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:145
 #, qt-format
 msgctxt "QMLListView|"
 msgid "Unknown discard model %1 for VariableList %2"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:147
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:149
 #, qt-format
 msgctxt "QMLListView|"
 msgid "Cannot find source %1 for VariablesList %2"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:353
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/qmllistview.cpp:363
 #, qt-format
 msgctxt "QMLListView|"
 msgid "Wrong column type: %1 for ListView %2"
@@ -14767,13 +14740,13 @@ msgctxt "QMLListViewDraggable|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/rowcontrols.cpp:66
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/rowcontrols.cpp:74
 #, qt-format
 msgctxt "RowControls|"
 msgid "A row component in %1 does not have a name"
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/rowcontrols.cpp:68
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/rowcontrols.cpp:76
 #, qt-format
 msgctxt "RowControls|"
 msgid "2 row components in %1 have the same name"
@@ -14901,145 +14874,145 @@ msgid "Highlight"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:132
+#: Learning/qml/mlClassificationKnn.qml:133
 msgctxt "mlClassificationKnn|"
 msgid "Rectangular"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:133
+#: Learning/qml/mlClassificationKnn.qml:134
 msgctxt "mlClassificationKnn|"
 msgid "Epanechnikov"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:134
+#: Learning/qml/mlClassificationKnn.qml:135
 msgctxt "mlClassificationKnn|"
 msgid "Biweight"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:135
+#: Learning/qml/mlClassificationKnn.qml:136
 msgctxt "mlClassificationKnn|"
 msgid "Triweight"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:136
+#: Learning/qml/mlClassificationKnn.qml:137
 msgctxt "mlClassificationKnn|"
 msgid "Cosine"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:137
+#: Learning/qml/mlClassificationKnn.qml:138
 msgctxt "mlClassificationKnn|"
 msgid "Inverse"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:138
+#: Learning/qml/mlClassificationKnn.qml:139
 msgctxt "mlClassificationKnn|"
 msgid "Gaussian"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:139
+#: Learning/qml/mlClassificationKnn.qml:140
 msgctxt "mlClassificationKnn|"
 msgid "Rank"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:140
+#: Learning/qml/mlClassificationKnn.qml:141
 msgctxt "mlClassificationKnn|"
 msgid "Optimal"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:150
+#: Learning/qml/mlClassificationKnn.qml:151
 msgctxt "mlClassificationKnn|"
 msgid "Euclidian"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationKnn.qml:151
+#: Learning/qml/mlClassificationKnn.qml:152
 msgctxt "mlClassificationKnn|"
 msgid "Manhattan"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:159
+#: Learning/qml/mlClassificationRandomForest.qml:160
 msgctxt "mlClassificationRandomForest|"
 msgid "Auto"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClassificationRandomForest.qml:160
+#: Learning/qml/mlClassificationRandomForest.qml:161
 msgctxt "mlClassificationRandomForest|"
 msgid "Manual"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:135
+#: Learning/qml/mlClusteringDensityBased.qml:163
 msgctxt "mlClusteringDensityBased|"
 msgid "Normal"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringDensityBased.qml:136
+#: Learning/qml/mlClusteringDensityBased.qml:164
 msgctxt "mlClusteringDensityBased|"
 msgid "Correlated"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:120
+#: Learning/qml/mlClusteringHierarchical.qml:148
 msgctxt "mlClusteringHierarchical|"
 msgid "Euclidean"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:131
+#: Learning/qml/mlClusteringHierarchical.qml:159
 msgctxt "mlClusteringHierarchical|"
 msgid "Average"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:132
+#: Learning/qml/mlClusteringHierarchical.qml:160
 msgctxt "mlClusteringHierarchical|"
 msgid "Single"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:133
+#: Learning/qml/mlClusteringHierarchical.qml:161
 msgctxt "mlClusteringHierarchical|"
 msgid "Complete"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:134
+#: Learning/qml/mlClusteringHierarchical.qml:162
 msgctxt "mlClusteringHierarchical|"
 msgid "Centroid"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlClusteringHierarchical.qml:226
+#: Learning/qml/mlClusteringHierarchical.qml:254
 msgctxt "mlClusteringHierarchical|"
 msgid "Column name: "
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionKnn.qml:110
+#: Learning/qml/mlRegressionKnn.qml:111
 msgctxt "mlRegressionKnn|"
 msgid "Euclidian"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:119
+#: Learning/qml/mlRegressionRandomForest.qml:120
 msgctxt "mlRegressionRandomForest|"
 msgid "Auto"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
-#: Learning/qml/mlRegressionRandomForest.qml:120
+#: Learning/qml/mlRegressionRandomForest.qml:121
 msgctxt "mlRegressionRandomForest|"
 msgid "Manual"
 msgstr ""
@@ -15095,12 +15068,12 @@ msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/boundqmltextinput.cpp:278
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/boundqmltextinput.cpp:280
 msgctxt "BoundQMLTextInput|"
 msgid "The expression did not return a number."
 msgstr ""
 
-#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/boundqmltextinput.cpp:317
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/widgets/boundqmltextinput.cpp:316
 #, qt-format
 msgctxt "BoundQMLTextInput|"
 msgid "The result (%1) must be %2"
@@ -15139,6 +15112,258 @@ msgstr ""
 #: Module/qml/SEMSimple.qml:107
 msgctxt "SEMSimple|"
 msgid "Thresholds"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/JASPDataView.qml:37
+msgctxt "JASPDataView|"
+msgid "Double click to edit data"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringDensityBased.qml:42
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringDensityBased.qml:90
+msgctxt "mlClusteringDensityBased|"
+msgid "Cluster means"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringDensityBased.qml:94
+msgctxt "mlClusteringDensityBased|"
+msgid "Display barplot"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringDensityBased.qml:100
+msgctxt "mlClusteringDensityBased|"
+msgid "Group into one figure"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringDensityBased.qml:107
+msgctxt "mlClusteringDensityBased|"
+msgid "Cluster densities"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:42
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:95
+msgctxt "mlClusteringFuzzyCMeans|"
+msgid "Cluster means"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:99
+msgctxt "mlClusteringFuzzyCMeans|"
+msgid "Display barplot"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:105
+msgctxt "mlClusteringFuzzyCMeans|"
+msgid "Group into one figure"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringFuzzyCMeans.qml:112
+msgctxt "mlClusteringFuzzyCMeans|"
+msgid "Cluster densities"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringHierarchical.qml:42
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringHierarchical.qml:95
+msgctxt "mlClusteringHierarchical|"
+msgid "Cluster means"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringHierarchical.qml:99
+msgctxt "mlClusteringHierarchical|"
+msgid "Display barplot"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringHierarchical.qml:105
+msgctxt "mlClusteringHierarchical|"
+msgid "Group into one figure"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringHierarchical.qml:112
+msgctxt "mlClusteringHierarchical|"
+msgid "Cluster densities"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringKMeans.qml:42
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringKMeans.qml:95
+msgctxt "mlClusteringKMeans|"
+msgid "Cluster means"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringKMeans.qml:99
+msgctxt "mlClusteringKMeans|"
+msgid "Display barplot"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringKMeans.qml:105
+msgctxt "mlClusteringKMeans|"
+msgid "Group into one figure"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringKMeans.qml:112
+msgctxt "mlClusteringKMeans|"
+msgid "Cluster densities"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringRandomForest.qml:42
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringRandomForest.qml:95
+msgctxt "mlClusteringRandomForest|"
+msgid "Cluster means"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringRandomForest.qml:99
+msgctxt "mlClusteringRandomForest|"
+msgid "Display barplot"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringRandomForest.qml:105
+msgctxt "mlClusteringRandomForest|"
+msgid "Group into one figure"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Machine
+#: Learning/qml/mlClusteringRandomForest.qml:112
+msgctxt "mlClusteringRandomForest|"
+msgid "Cluster densities"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:37
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:99
+msgctxt "CorrelationBayesian|"
+msgid "Pearson"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:45
+msgctxt "CorrelationBayesian|"
+msgid "Display pairwise table"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:48
+msgctxt "CorrelationBayesian|"
+msgid "Sample size"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:49
+msgctxt "CorrelationBayesian|"
+msgid "Posterior median"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:87
+msgctxt "CorrelationBayesian|"
+msgid "Plot Individual Pairs"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:98
+msgctxt "CorrelationBayesian|"
+msgid "Correlation coefficient to plot"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:100
+msgctxt "CorrelationBayesian|"
+msgid "Spearman's rho"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:101
+msgctxt "CorrelationBayesian|"
+msgid "Kendall's tau"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:106
+msgctxt "CorrelationBayesian|"
+msgid "Scatterplot"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:107
+msgctxt "CorrelationBayesian|"
+msgid "Robustness check"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:112
+msgctxt "CorrelationBayesian|"
+msgid "Prior and posterior"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:113
+msgctxt "CorrelationBayesian|"
+msgid "Estimation info"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:114
+msgctxt "CorrelationBayesian|"
+msgid "Testing info"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:118
+msgctxt "CorrelationBayesian|"
+msgid "Bayes factor robustness check"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:119
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:124
+msgctxt "CorrelationBayesian|"
+msgid "Additional info"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/CorrelationBayesian.qml:123
+msgctxt "CorrelationBayesian|"
+msgid "Sequential analysis"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Regression/qml/RegressionLogistic.qml:115
+msgctxt "RegressionLogistic|"
+msgid "Interval"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:50
+msgctxt "SummaryStatsCorrelationBayesianPairs|"
+msgid "Spearman's rho"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:67
+msgctxt "SummaryStatsCorrelationBayesianPairs|"
+msgid "Credible intervals"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:68
+msgctxt "SummaryStatsCorrelationBayesianPairs|"
+msgid "Interval"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:77
+msgctxt "SummaryStatsCorrelationBayesianPairs|"
+msgid "Estimation info"
+msgstr ""
+
+#: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Summary
+#: Statistics/qml/SummaryStatsCorrelationBayesianPairs.qml:78
+msgctxt "SummaryStatsCorrelationBayesianPairs|"
+msgid "Testing info"
 msgstr ""
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/Audit/qml/bayesianAudit.qml:719

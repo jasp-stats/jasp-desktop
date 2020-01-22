@@ -76,10 +76,17 @@ void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool 
 
 	Json::Value descriptionJson;
 
-	if(Json::Reader().parse(descriptionTxt, descriptionJson))
-		addRibbonButtonModel(new RibbonButton(this, descriptionJson, isCommon));
-	else
-		Log::log() << "Error when reading description.json of " << modulePath.filePath().toStdString() << std::flush;
+	try
+	{
+		if(Json::Reader().parse(descriptionTxt, descriptionJson))
+			addRibbonButtonModel(new RibbonButton(this, descriptionJson, isCommon));
+		else
+			Log::log() << "Error when reading description.json of " << modulePath.filePath().toStdString() << std::flush;
+	}
+	catch(std::runtime_error e)
+	{
+		Log::log() << e.what() << std::flush;
+	}
 }
 
 void RibbonModel::addRibbonButtonModel(RibbonButton* model)
@@ -175,6 +182,11 @@ void RibbonModel::refresh()
 
 	beginResetModel();
 
+	for (const std::string& myModuleName : _moduleNames)
+	{
+		RibbonButton* button = _buttonModelsByName[myModuleName];
+		button->reloadMenuFromDescriptionJson();
+	}
 
 	endResetModel();
 

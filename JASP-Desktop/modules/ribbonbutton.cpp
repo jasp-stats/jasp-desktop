@@ -16,7 +16,6 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-
 #include "ribbonbutton.h"
 #include "enginedefinitions.h"
 #include "modules/dynamicmodule.h"
@@ -215,5 +214,67 @@ std::vector<std::string> RibbonButton::getAllAnalysisNames() const
 	}
 
 	return allAnalyses;
+}
+
+void RibbonButton::reloadMenuFromDescriptionJson()
+{
+	//Find the location of the module path
+	QFileInfo modulepath = QFileInfo(QString::fromStdString(Dirs::resourcesDir() + _moduleName + "/"));
+	if(!modulepath.exists())
+	{
+		Log::log() << "Path " << modulepath.absoluteFilePath().toStdString() << " does not exist!" << std::endl << std::flush;
+		return;
+	}
+
+	//Check existence of the description.json
+	QFile descriptionFile(modulepath.absoluteFilePath() + "/" + Modules::DynamicModule::getJsonDesriptionFileName());
+	if(!descriptionFile.exists())
+	{
+		Log::log() << "Could not find the json description file : " << descriptionFile.fileName().toStdString() << std::endl;
+		return;
+	}
+
+	//Open the description.json
+	if (!descriptionFile.open(QFile::ReadOnly))
+	{
+		Log::log() << "Could not open the json description file : " << descriptionFile.fileName().toStdString()  << std::endl;
+		return;
+
+	}
+
+	//Parse the description.json
+	std::string	descriptionTxt(descriptionFile.readAll().toStdString());
+	Json::Value descriptionJson;
+	if (!Json::Reader().parse(descriptionTxt, descriptionJson))
+	{
+		Log::log() << "Could not parse description.json file in " << descriptionFile.fileName().toStdString() << std::endl;
+		return;
+	}
+
+	Modules::AnalysisEntries saveMenuEntries = _menuEntries;
+
+	//Find the menu entries in the description.json
+	try
+	{				
+		_menuEntries.clear();
+		Json::Value & moduleDescription = descriptionJson["moduleDescription"];
+		_title = moduleDescription["title"].asString();
+		for(Json::Value & menuEntry : descriptionJson["menu"])
+		{
+#ifndef JASP_DEBUG
+			if (menuEntry.get("debug", false).asBool())
+				continue;
+#endif
+			Modules::AnalysisEntry * entry = new Modules::AnalysisEntry(menuEntry, nullptr, _requiresData);
+			_menuEntries.push_back(entry);
+		}
+		setMenu(_menuEntries);
+	}
+	catch(std::exception e)
+	{
+		Log::log() << "During the parsing of the description.json of the Module " << _title  << " something went wrong: " <<  e.what() << std::endl;
+		_menuEntries = saveMenuEntries;
+	}
+
 }
 

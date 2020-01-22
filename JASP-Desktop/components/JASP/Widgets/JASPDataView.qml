@@ -34,7 +34,7 @@ FocusScope
 		anchors.leftMargin:	theView.rowNumberWidth
 		anchors.topMargin:	theView.headerHeight
 
-		toolTipText:		"Double click to edit data"
+		toolTipText:		qsTr("Double click to edit data")
 
 		acceptedButtons:	Qt.LeftButton
 		dragging:			myFlickable.dragging
