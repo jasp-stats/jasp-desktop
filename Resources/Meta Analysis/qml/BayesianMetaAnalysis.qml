@@ -156,7 +156,7 @@ Form
 		}
 
 	//// BF ////
-BayesFactorType{}
+		BayesFactorType { }
 
 
 	//// Priors ////
