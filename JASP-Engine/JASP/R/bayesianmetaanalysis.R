@@ -288,7 +288,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
 
     negativeValues <- function(){
       if(all(dataset[, .v(options[["effectSize"]])] < 0))
-        return(gettext("No positive numbers found in ", options[["effectSize"]]))
+        return(gettextf("No positive numbers found in %s", options[["effectSize"]]))
     }
 
     .hasErrors(dataset = dataset,
@@ -299,7 +299,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
 
     positiveValues <- function(){
       if(all(dataset[, .v(options[["effectSize"]])] > 0))
-        return(gettext("No negative numbers found in ", options[["effectSize"]]))
+        return(gettextf("No negative numbers found in %s", options[["effectSize"]]))
     }
 
      .hasErrors(dataset = dataset,
@@ -391,7 +391,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   }
   
   if(isTryError(p)){
-    .quitAnalysis(gettext("The model could not fit. Error while running R code from the metaBMA package: ", .extractErrorMessage(p))) 
+    .quitAnalysis(gettextf("The model could not fit. Error while running R code from the metaBMA package: %s", .extractErrorMessage(p))) 
   }
 
   return(results)
@@ -471,11 +471,11 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   bmaTable$dependOn(options = c(.bmaDependencies, "bayesFactorType"))
   
   if (options$bayesFactorType == "BF10")
-    bfTitle <- gettextf("BF", "\u2081", "\u2080")
+    bfTitle <- gettextf("BF%s%s", "\u2081", "\u2080")
   else if (options$bayesFactorType == "BF01")
-    bfTitle <- gettextf("BF", "\u2080", "\u2081")
+    bfTitle <- gettextf("BF%s%s", "\u2080", "\u2081")
   else
-    bfTitle <- gettextf("Log(BF", "\u2081", "\u2080")
+    bfTitle <- gettextf("Log(BF%s%s)", "\u2081", "\u2080")
   
   # Add columns
   bmaTable$addColumnInfo(name = "model", title = "", type = "string", combine = TRUE)
@@ -523,9 +523,9 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   }
 
   if(options$modelSpecification != "FE"){
-    bmaTable$addFootnote(gettextf("\u03BC", " and ", "\u03C4", " are the group-level effect size and standard deviation, respectively."))
+    bmaTable$addFootnote(gettextf("%s and %s are the group-level effect size and standard deviation, respectively.", "\u03BC", "\u03C4"))
   } else {
-    bmaTable$addFootnote(gettextf("\u03BC", " is the group-level effect size."))
+    bmaTable$addFootnote(gettextf("%s is the group-level effect size.", "\u03BC"))
   }
 
   jaspResults[["bmaTable"]] <- bmaTable
@@ -613,25 +613,19 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   }
   
   
-  footnoteRandomBFtau <- gettextf("Bayes factor of the random effects H\u2081 over the fixed effects H", "\u2081", ".")
-  footnoteAverage <- gettextf("Posterior estimates are based on the models that assume an effect to be present. 
-  The Bayes factor is based on all four models: random effects H", 
-                              "\u2080", " & H", "\u2081", "over the fixed effects H", "\u2080", "& H", "\u2081", ".")
-  footnoteOrderedBFtau <- gettextf("Bayes factor of the (unconstrained/constrained) random effects H", 
-                                   "\u2081", " over the fixed effects H", "\u2081", ".")
+  footnoteRandomBFtau <- gettextf("Bayes factor of the random effects H%1$s over the fixed effects H%1$s.", "\u2081")
+  
+  footnoteAverage <- gettextf("Posterior estimates are based on the models that assume an effect to be present. The Bayes factor is based on all four models: random effects H%1$s & H%2$s over the fixed effects H%1$s & H%2$s.", "\u2080", "\u2081")
+  footnoteOrderedBFtau <- gettextf("Bayes factor of the (unconstrained/constrained) random effects H%1$s over the fixed effects H%1$s.", "\u2081")
   
   if(options[["modelSpecification"]] == "CRE") 
     creBF <- bmaResults[["bf"]]$BF["ordered", "random"]
 
   if(options[["bayesFactorType"]] == "BF01"){
     BF <- 1/BF
-    footnoteRandomBFtau <- gettextf("Bayes factor of the fixed effects H", "\u2081", 
-                                    " over the random effects H", "\u2081", ".")
-    footnoteAverage <- gettextf("Model averaged posterior estimates are based on the models that assume an effect to be present.
-  The Bayes factor is based on all four models: fixed effects H", 
-                                "\u2080", "& H", "\u2081", "over the random effects H", "\u2080", "& H", "\u2081", ".")
-    footnoteOrderedBFtau <- gettextf("Bayes factor of the fixed effects H", "\u2081", 
-                                     " over the (unconstrained/constrained) random effects H", "\u2081", ".")
+    footnoteRandomBFtau <- gettextf("Bayes factor of the fixed effects H%1$s over the random effects H%1$s.", "\u2081")
+    footnoteAverage <- gettextf("Model averaged posterior estimates are based on the models that assume an effect to be present. The Bayes factor is based on all four models: fixed effects H%1$s & H%2$s over the random effects H%1$s & H%2$s.", "\u2080", "\u2081")
+    footnoteOrderedBFtau <- gettextf("Bayes factor of the fixed effects H%1$s over the (unconstrained/constrained) random effects H%1$s.", "\u2081")
     
     if(options[["modelSpecification"]] == "CRE"){
       creBF <- 1/bmaResults[["bf"]]$BF["ordered", "random"]
@@ -696,11 +690,11 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   # Add table to output
   jaspResults[["postTable"]] <- postTable
   
-  modelFixedH0 <- gettext("Fixed H\u2080")
-  modelFixedH1 <- gettext("Fixed H\u2081")
-  modelRandomH0 <- gettext("Random H\u2080")
-  modelRandomH1 <- gettext("Random H\u2081")
-  modelOrderedH1 <- gettext("Ordered H\u2081")
+  modelFixedH0 <- gettextf("Fixed H%s", "\u2080")
+  modelFixedH1 <- gettextf("Fixed H%s", "\u2081")
+  modelRandomH0 <- gettextf("Random H%s", "\u2080")
+  modelRandomH1 <- gettextf("Random H%s", "\u2081")
+  modelOrderedH1 <- gettextf("Ordered H%s", "\u2081")
   
   if(options$modelSpecification == "BMA"){
     model <- c(modelFixedH0, modelFixedH1, modelRandomH0, "Random H\u2081")
