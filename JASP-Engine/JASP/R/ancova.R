@@ -310,7 +310,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                  custom = function() {
                    if (grepl(tryContrMat[1], pattern = "singular contrast matrix")) {
                      return("Singular custom contrast matrix.")
-                   } else if (contrast$contrast == "custom" && grepl(tryContrMat[1], pattern = "number of contrast matrix rows")) {
+                   } else if (grepl(tryContrMat[1], pattern = "number of contrast matrix rows")) {
                      return("Wrong number of custom contrast matrix rows.")
                    } else if (ncol(tryContrMat) >= nlevels(dataset[[v]])) {
                      return("Please specify fewer contrasts. (Maximum #contrasts = #levels - 1)")
