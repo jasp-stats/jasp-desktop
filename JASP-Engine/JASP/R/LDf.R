@@ -176,12 +176,8 @@ LDf <- function(jaspResults, dataset, options, state=NULL){
   if(is.null(results)) return()
   if(is.null(table)) return()
   
-  par1 <- c(mu = "\u03BC")
-  par2 <- c(sigma2 = "\u03C3\u00B2", sigma = "\u03C3", 
-            tau2   = "\u03C4\u00B2", tau   = "\u03C4")[options$parametrization]
   res <- results$structured
-  res <- res[res$par %in% names(c(par1, par2)),]
-  res$parName <- c(par1, par2)
+  res$parName <- c("df 1", "df 2", "ncp")
   
   if(results$fitdist$convergence != 0){
     table$addFootnote(gettext("The optimization did not converge, try adjusting the parameter values."), symbol = gettext("<i>Warning.</i>"))
@@ -198,7 +194,7 @@ LDf <- function(jaspResults, dataset, options, state=NULL){
 .ldFMethodMLEStructureResults <- function(fit, options){
   if(is.null(fit)) return()
   
-  transformations <- c(mu = "mean", sigma2 = "sd^2", sigma = "sd", tau2 = "1/sd^2", tau = "1/sd")
+  transformations <- c(df1 = "df1", df2 = "df2", ncp = "ncp")
   
   res <- sapply(transformations, function(tr) car::deltaMethod(fit$estimate, tr, fit$vcov, level = options$ciIntervalInterval))
   rownames(res) <- c("estimate", "se", "lower", "upper")

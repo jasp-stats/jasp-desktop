@@ -203,7 +203,7 @@
     JASPgraphs::geom_point(ggplot2::aes(x = mids, y = pmf)) +
     ggplot2::scale_x_continuous(limits = range + c(-0.5, 0.5), 
                                 expand = c(0.1, 0.1),
-                                breaks = JASPgraphs::axesBreaks(range)) + 
+                                breaks = dat$mids) + 
     ggplot2::xlab(options$variable) +
     ggplot2::ylab(paste0(gettext("Probability Mass")))
   

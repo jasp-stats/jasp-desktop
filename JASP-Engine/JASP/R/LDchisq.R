@@ -174,7 +174,7 @@ LDchisq <- function(jaspResults, dataset, options, state=NULL){
   if(is.null(table)) return()
   
   par1 <- c(df = "k")
-  par2 <- c(ncp = "&lambda;")
+  par2 <- c(ncp = "\u03BB")
   res <- results$structured
   res <- res[res$par %in% names(c(par1, par2)),]
   res$parName <- c(par1, par2)
