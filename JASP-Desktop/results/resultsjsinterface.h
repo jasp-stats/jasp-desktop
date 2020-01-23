@@ -125,7 +125,7 @@ private:
 	double			_webEngineZoom = 1.0;
 	Json::Value		_resultsMeta;
 	QVariant		_allUserData;
-	QString			_resultsPageUrl = "qrc:///core/index.html";
+	QString			_resultsPageUrl = "qrc:///html/index.html";
 };
 
 

@@ -23,5 +23,10 @@ Er kan ook gebruik worden gemaakt van toetsenbord shortcuts:
 Deze snelheid, in pixels per seconde, specificeert wat de maximale flick- / scrollsnelheid is in verschillende bewegende elementen in JASP. 
 Wanneer scrollen te snel of te langzaam gaat, kan dat hier aangepast worden. 
 
-### Safe Graphics
+### Veilige Grafische Weergave
 Als dit aanstaat, zal JASP in een software rendering modus werken, wat betekent dat de interface langzamer is, maar dat vreemde glitches en andere problemen mogelijk verdwijnen. Om deze instelling te starten moet JASP opnieuw opgestart worden. 
+
+### Gebruik Ingebouwde Bestandsdialogen
+Sommige gebruikers op bepaalde systemen (Windows) kunnen problemen hebben met de ingebouwde systeem bestandsdialogen.
+In die gevallen crasht JASP zodra je op "Bladeren" drukt en om dat te voorkomen kan deze optie uitgezet worden.
+Voor veruit de meeste gebruikers zal het niet nodig zijn om dit uit te zetten.

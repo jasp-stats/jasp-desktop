@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/core">
+    <qresource prefix="/html">
         <file>index.html</file>
         <file>css/jquery-ui-1.10.1.custom.css</file>
         <file>css/images/animated-overlay.gif</file>
@@ -73,6 +73,10 @@
         <file>css/images/lightTheme/closer.png</file>
         <file>css/images/lightTheme/expand.png</file>
         <file>css/images/lightTheme/collapse.png</file>
+        <file>help/index.html</file>
+        <file>help/index.md</file>
+        <file>help/marked.js</file>
+        <file>help/lightTheme.css</file>
+        <file>help/darkTheme.css</file>
     </qresource>
-    <qresource prefix="/"/>
 </RCC>

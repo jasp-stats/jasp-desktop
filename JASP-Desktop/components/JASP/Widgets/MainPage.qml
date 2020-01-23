@@ -164,6 +164,7 @@ Item
 				onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus);
 				onContextMenuRequested: request.accepted = true
 				onNavigationRequested:	request.action = request.navigationType === WebEngineNavigationRequest.ReloadNavigation || request.url == resultsJsInterface.resultsPageUrl ? WebEngineNavigationRequest.AcceptRequest : WebEngineNavigationRequest.IgnoreRequest
+				backgroundColor:		jaspTheme.uiBackground
 
 				Connections
 				{
