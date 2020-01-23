@@ -104,8 +104,8 @@
 			[
 				{
 					"type":		"git",
-					"branch":	"development",
-					"url": 		"https://github.com/jasp-stats/jasp-desktop"
+					"branch":	"flatpakSpreadsheet",
+					"url": 		"https://github.com/JorisGoosen/jasp-desktop"
 				},
 				{
 					"type": "shell",
