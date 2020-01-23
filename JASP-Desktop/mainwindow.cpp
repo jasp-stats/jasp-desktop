@@ -227,6 +227,7 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
 	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
 
+	connect(_package,				&DataSetPackage::refreshAnalysesWithColumn,				this,					&MainWindow::refreshAnalysesUsingColumn,					Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::dataSynched,						this,					&MainWindow::refreshAnalysesUsingColumns,					Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
@@ -607,6 +608,11 @@ void MainWindow::packageChanged()
 
 
 	setWindowTitle(title);
+}
+
+void MainWindow::refreshAnalysesUsingColumn(QString columnName)
+{
+	refreshAnalysesUsingColumns({columnName}, {}, {}, false, false);
 }
 
 

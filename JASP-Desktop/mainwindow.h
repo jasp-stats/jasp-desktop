@@ -151,6 +151,7 @@ private:
 
 	void packageChanged();
 	void setPackageModified();
+	void refreshAnalysesUsingColumn(	QString columnName);
 	void refreshAnalysesUsingColumns(	QStringList				changedColumns,
 										QStringList				missingColumns,
 										QMap<QString, QString>	changeNameColumns,

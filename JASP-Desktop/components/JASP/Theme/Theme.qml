@@ -103,7 +103,7 @@ JaspTheme
 	buttonBorderColor:					gray
 	buttonBorderColorHovered:			grayDarker
 
-	itemHighlight:						blueMuchLighter
+	itemHighlight:						focusBorderColor
 	itemHoverColor:						blueMuchLighter
 	itemSelectedColor:					blueDarker
 	itemSelectedNoFocusColor:			grayLighter

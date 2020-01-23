@@ -221,6 +221,7 @@ signals:
 				void				labelChanged(int column);
 				void				dataSetChanged();
 				void				columnDataTypeChanged(std::string columnName);
+				void				refreshAnalysesWithColumn(QString columnName);
 				void				isModifiedChanged();
 				void				pauseEnginesSignal();
 				void				resumeEnginesSignal();

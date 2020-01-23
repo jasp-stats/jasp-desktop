@@ -41,7 +41,7 @@ Theme
 	controlWarningBackgroundColor:		"#620"
 	controlWarningTextColor:			"#B80"
 
-	textDisabled:						grayLighter
+	textDisabled:						gray
 	buttonColorDisabled:				gray
 	buttonBorderColorHovered:			black
 }
