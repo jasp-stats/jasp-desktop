@@ -76,7 +76,7 @@ public:
 	
 signals:
 				void currentButtonModelChanged();
-	Q_INVOKABLE void analysisClickedSignal(QString analysisFunction, QString analysisTitle, QString module);
+	Q_INVOKABLE void analysisClickedSignal(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 				void highlightedModuleIndexChanged(int highlightedModuleIndex);
 
 public slots:
