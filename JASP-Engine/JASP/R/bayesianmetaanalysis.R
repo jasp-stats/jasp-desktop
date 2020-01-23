@@ -883,12 +883,12 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     prior <- priors$d
     mean <- attr(prior, "param")[1]
     s <- attr(prior, "param")[2]
-    xlimLeft <- mean - (s * 5)mu))
+    xlimLeft <- mean - (s * 5)
   } else if(type == "SE"){
     prior <- priors$tau
     mean <- attr(prior, "param")[1]
     s <- attr(prior, "param")[2]
-    xlab <- bquote(paste(.(gettext("Effect size")), ~
+    xlab <- bquote(paste(.(gettext("Effect size")), ~mu))
     xlimLeft <- 0
     xlab <- bquote(paste(.(gettext("Heterogeneity")), ~tau))
   }
