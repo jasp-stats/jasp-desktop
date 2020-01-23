@@ -13,7 +13,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-// When making changes to this file always mention @koenderks as a reviewer in the Pull Request
+// When making changes to this file always mention @koenderks as a
+// reviewer in the Pull Request
 
 import QtQuick 2.8
 import QtQuick.Layouts 1.3
@@ -24,15 +25,15 @@ Form {
 
 	usesJaspResults: true
 
-	GridLayout 
+	GridLayout
 	{
 		columns: 2
 
-		GroupBox 
+		GroupBox
 		{
 			title: qsTr("Population")
 
-			IntegerField 
+			IntegerField
 			{
 				id: 			populationSize
 				name: 			"populationSize"
@@ -42,7 +43,7 @@ Form {
 				min: 			0
 			}
 
-			DoubleField 
+			DoubleField
 			{
 				id: 			populationValue
 				name: 			"populationValue"
@@ -55,12 +56,12 @@ Form {
 			}
 		}
 
-		GroupBox 
+		GroupBox
 		{
 			id: 		auditRisk
 			title: 		qsTr("Audit Risk")
 
-			PercentField 
+			PercentField
 			{
 				name: 			"confidence"
 				label: 			qsTr("Confidence")
@@ -99,40 +100,40 @@ Form {
 		}
 	}
 
-	Section 
+	Section
 	{
 		text: qsTr("Advanced Options")
 
-		GridLayout 
+		GridLayout
 		{
 			columns: 3
 
-			RadioButtonGroup 
+			RadioButtonGroup
 			{
 				id: 		ir
 				title: 		qsTr("Estimator")
 				name: 		"estimator"
 
-				RadioButton 
-				{	
+				RadioButton
+				{
 					id:			mpu
 					text: 		qsTr("Direct")
 					name: 		"mpu"
 				}
 
-				RadioButton 
+				RadioButton
 				{
 					text: 		qsTr("Difference")
 					name: 		"difference"
 				}
 
-				RadioButton 
+				RadioButton
 				{
 					text:	 	qsTr("Ratio")
 					name: 		"ratio"
 				}
 
-				RadioButton 
+				RadioButton
 				{
 					text:	 	qsTr("Regression")
 					name: 		"regression"
@@ -140,13 +141,13 @@ Form {
 				}
 			}
 
-			GroupBox 
+			GroupBox
 			{
 				title: qsTr("Explanatory Text")
 
-				RowLayout 
+				RowLayout
 				{
-					CheckBox 
+					CheckBox
 					{
 						id: 		explanatoryText
 						text:	 	qsTr("Enable")
@@ -154,11 +155,18 @@ Form {
 						checked: 	true
 					}
 
-					HelpButton 
-					{ 
+					HelpButton
+					{
 						helpPage:			"Audit/explanatoryText"
 						toolTip: 			"Show explanatory text and formulas"
 					}
+				}
+
+				CheckBox
+				{
+					text:	 		qsTr("Report badges")
+					name: 		"reportBadges"
+					checked: 	true
 				}
 			}
 		}
@@ -167,17 +175,17 @@ Form {
 	Section {
 		title: qsTr("Tables and Plots")
 
-		GroupBox 
+		GroupBox
 		{
 			title: qsTr("Tables")
 
-			CheckBox 
+			CheckBox
 			{
 				id: requiredSampleSize
 				text: qsTr("Required sample size")
 				name: "requiredSampleSizeTable"
 
-				DoubleField 
+				DoubleField
 				{
 					name: 			"requiredUncertainty"
 					visible: 		requiredSampleSize.checked
@@ -190,11 +198,11 @@ Form {
 			}
 		}
 
-		GroupBox 
+		GroupBox
 		{
 			title: qsTr("Plots")
 
-			CheckBox 
+			CheckBox
 			{
 				text: qsTr("Correlation plot")
 				name: "correlationPlot"
@@ -203,19 +211,19 @@ Form {
 		}
 	}
 
-	Item 
+	Item
 	{
-		Layout.preferredHeight: 			downloadReportEstimation.height
-		Layout.fillWidth: 	true
+		Layout.preferredHeight: downloadReportEstimation.height
+		Layout.fillWidth: 			true
 
-		Button 
+		Button
 		{
-			id: 			downloadReportEstimation
-			enabled: 		populationSize.value != 0 && populationValue.value != 0 && auditValues.count > 0 && bookValues.count > 0
-			anchors.right: 	parent.right
-			anchors.bottom: parent.bottom
-			text: 			qsTr("<b>Download Report</b>")
-			onClicked: 
+			id: 									downloadReportEstimation
+			enabled: 							populationSize.value != 0 && populationValue.value != 0 && auditValues.count > 0 && bookValues.count > 0
+			anchors.right: 				parent.right
+			anchors.bottom: 			parent.bottom
+			text: 								qsTr("<b>Download Report</b>")
+			onClicked:
 			{
 				form.exportResults()
 			}

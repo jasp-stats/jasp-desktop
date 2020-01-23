@@ -16,7 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-// When making changes to this file always mention @koenderks as a reviewer in the Pull Request
+// When making changes to this file always mention @koenderks as a
+// reviewer in the Pull Request
 
 import QtQuick			2.8
 import QtQuick.Layouts	1.3
@@ -113,8 +114,8 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			variableSelectionTitle.height
-			Layout.fillWidth: 	true
+			Layout.preferredHeight: variableSelectionTitle.height
+			Layout.fillWidth: 			true
 
 			Label
 			{
@@ -167,9 +168,25 @@ Form
 					name: 		"IR"
 					enabled:	!pasteVariables.checked
 
-					RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
-					RadioButton { text: qsTr("Medium");		name: "Medium" 					}
-					RadioButton { text: qsTr("Low"); 		name: "Low" 					}
+					RadioButton { text: qsTr("High"); 		name: "High"; checked: true	}
+					RadioButton { text: qsTr("Medium");		name: "Medium"}
+					RadioButton { text: qsTr("Low"); 			name: "Low"}
+					RadioButton
+					{
+						id: 								irCustom
+						text:	 							qsTr("Custom")
+						name: 							"Custom"
+						childrenOnSameRow: 	true
+
+						PercentField
+						{
+							name: 						"irCustom"
+							visible: 					irCustom.checked
+							decimals: 				2
+							defaultValue: 		100
+							min: 							25
+						}
+					}
 				}
 
 				RadioButtonGroup
@@ -235,6 +252,13 @@ Form
 							toolTip: 			"Show explanatory text at each step of the analysis"
 						}
 					}
+
+					CheckBox
+					{
+						text:	 		qsTr("Report badges")
+						name: 		"reportBadges"
+						checked: 	true
+					}
 				}
 
 				RadioButtonGroup
@@ -244,9 +268,25 @@ Form
 					name: 		"CR"
 					enabled:	!pasteVariables.checked
 
-					RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
-					RadioButton { text: qsTr("Medium"); 	name: "Medium" 					}
-					RadioButton { text: qsTr("Low"); 		name: "Low" 					}
+					RadioButton { text: qsTr("High"); 		name: "High"; checked: true	}
+					RadioButton { text: qsTr("Medium"); 	name: "Medium"}
+					RadioButton { text: qsTr("Low"); 			name: "Low"}
+					RadioButton
+					{
+						id: 							crCustom
+						text:	 						qsTr("Custom")
+						name: 						"Custom"
+						childrenOnSameRow: true
+
+						PercentField
+						{
+							name: 					"crCustom"
+							visible: 				crCustom.checked
+							decimals: 			2
+							defaultValue: 	100
+							min:						25
+						}
+					}
 				}
 
 				RadioButtonGroup
@@ -256,9 +296,25 @@ Form
 					name: 		"planningModel"
 					enabled:	!pasteVariables.checked
 
-					RadioButton { text: qsTr("Poisson")         ; name: "Poisson" ; 		checked: true; 	id: poisson			}
-					RadioButton { text: qsTr("Binomial")        ; name: "binomial"; 						id: binomial		}
-					RadioButton { text: qsTr("Hypergeometric")  ; name: "hypergeometric" ; 					id: hypergeometric	}
+					RadioButton 
+					{ 
+						text: qsTr("Binomial")
+						name: "binomial"
+						id: binomial		
+						checked: true 
+					}
+
+					RadioButton { 
+						text: qsTr("Poisson")        
+						name: "Poisson" 
+						id: poisson			
+					}
+
+					RadioButton { 
+						text: qsTr("Hypergeometric") 
+						name: "hypergeometric" 
+						id: hypergeometric	
+					}
 				}
 
 				RadioButtonGroup
@@ -323,15 +379,21 @@ Form
 						text: 		qsTr("Decision analysis");
 						name: 		"decisionPlot"
 					}
+
+					CheckBox
+					{
+						text: 	qsTr("Implied sampling distribution")
+						name: 	"samplingDistribution"
+					}
 				}
 			}
 		}
 
 		Item
 		{
-			Layout.preferredHeight: 			toSampling.height
-			Layout.fillWidth: 	true
-			enabled:			!pasteVariables.checked
+			Layout.preferredHeight: toSampling.height
+			Layout.fillWidth: 			true
+			enabled:								!pasteVariables.checked
 
 			Button
 			{
@@ -526,13 +588,14 @@ Form
 
 				IntegerField
 				{
-					id: 			seed
-					text: 			qsTr("Seed")
-					name: 			"seed"
-					defaultValue: 	1
-					min: 			1
-					max: 			999
-					fieldWidth: 	60
+					id: 							seed
+					enabled:					!systematicSampling.checked
+					text: 						qsTr("Seed")
+					name: 						"seed"
+					defaultValue: 		1
+					min: 							1
+					max: 							999
+					fieldWidth: 			60
 				}
 			}
 		}
@@ -580,9 +643,9 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			toExecution.height
-			Layout.fillWidth: 	true
-			enabled:			!pasteVariables.checked
+			Layout.preferredHeight: toExecution.height
+			Layout.fillWidth: 			true
+			enabled:								!pasteVariables.checked
 
 			Button
 			{
@@ -642,8 +705,8 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			selectHowToAnalyseObservations.height
-			Layout.fillWidth: 	true
+			Layout.preferredHeight: selectHowToAnalyseObservations.height
+			Layout.fillWidth: 			true
 
 			Label
 			{
@@ -655,8 +718,8 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			variableType.height
-			Layout.fillWidth:	true
+			Layout.preferredHeight: variableType.height
+			Layout.fillWidth:				true
 
 			RadioButtonGroup
 			{
@@ -730,8 +793,8 @@ Form
 
 			Item
 			{
-				Layout.preferredHeight:				groupBoxVariableNames.height
-				Layout.fillWidth: 	true
+				Layout.preferredHeight:	groupBoxVariableNames.height
+				Layout.fillWidth: 			true
 
 				CheckBox
 				{
@@ -761,8 +824,8 @@ Form
 
 		Item
 		{
-			Layout.preferredHeight: 			performAuditText.height
-			Layout.fillWidth: 	true
+			Layout.preferredHeight: performAuditText.height
+			Layout.fillWidth: 			true
 
 			Label
 			{
@@ -782,21 +845,21 @@ Form
 
 			TableView
 			{
-				id:					performAuditTable
-				name:				"performAudit"
+				id:									performAuditTable
+				name:								"performAudit"
 				Layout.fillWidth: 	true
-				modelType:			"FilteredDataEntryModel"
-				source:     		["recordNumberVariable", "monetaryVariable", "additionalVariables"]
-                colName:			"Filter"
-				itemType:			"double"
+				modelType:					"FilteredDataEntryModel"
+				source:     				["recordNumberVariable", "monetaryVariable", "additionalVariables"]
+        colName:						"Filter"
+				itemType:						"double"
 			}
 		}
 
 		Item
 		{
-			Layout.preferredHeight: 			toEvaluation.height
-			Layout.fillWidth: 	true
-			enabled:			!evaluationChecked.checked
+			Layout.preferredHeight: toEvaluation.height
+			Layout.fillWidth: 			true
+			enabled:								!evaluationChecked.checked
 
 			Button
 			{
@@ -837,8 +900,8 @@ Form
 
 					if(variableTypeCorrect.checked)
 					{
-						if (poisson.checked) 		gammaBound.click()
-						if (binomial.checked) 		binomialBound.click()
+						if (poisson.checked) 				poissonBound.click()
+						if (binomial.checked) 			binomialBound.click()
 						if (hypergeometric.checked) hyperBound.click()
 					}
 				}
@@ -909,13 +972,63 @@ Form
 						}
 					}
 
-					RadioButton { name: "directBound"; 		text: qsTr("Direct"); 			id: directBound; 		visible: recordSampling.checked && variableTypeAuditValues.checked && evaluationChecked.checked }
-					RadioButton { name: "differenceBound"; 	text: qsTr("Difference"); 		id: differenceBound; 	visible: directBound.visible }
-					RadioButton { name: "ratioBound";		text: qsTr("Ratio"); 			id: ratioBound; 		visible: directBound.visible }
-					RadioButton { name: "regressionBound"; 	text: qsTr("Regression"); 		id: regressionBound; 	visible: directBound.visible }
-					RadioButton { name: "gammaBound"; 		text: qsTr("Gamma"); 			id: gammaBound; 		visible: variableTypeCorrect.checked }
-					RadioButton { name: "binomialBound"; 	text: qsTr("Binomial"); 		id: binomialBound; 		visible: variableTypeCorrect.checked }
-					RadioButton { name: "hyperBound"; 		text: qsTr("Hypergeometric");	id: hyperBound; 		visible: variableTypeCorrect.checked }
+					RadioButton 
+					{ 
+						name: "directBound"		
+						text: qsTr("Direct") 			
+						id: directBound		
+						visible: recordSampling.checked && 
+											variableTypeAuditValues.checked && 
+											evaluationChecked.checked 
+					}
+					
+					RadioButton 
+					{ 
+						name: "differenceBound"
+						text: qsTr("Difference")
+						id: differenceBound
+						visible: directBound.visible 
+					}
+
+					RadioButton 
+					{ 
+						name: "ratioBound"
+						text: qsTr("Ratio")
+						id: ratioBound
+						visible: directBound.visible 
+					}
+
+					RadioButton 
+					{ 
+						name: "regressionBound"
+						text: qsTr("Regression")
+						id: regressionBound
+						visible: directBound.visible 
+					}
+					
+					RadioButton 
+					{ 
+						name: "binomialBound"
+						text: qsTr("Binomial")
+						id: binomialBound
+						visible: variableTypeCorrect.checked && binomial.checked
+					}
+					
+					RadioButton 
+					{ 
+						name: "poissonBound"
+						text: qsTr("Poisson")
+						id: poissonBound
+						visible: variableTypeCorrect.checked && poisson.checked
+					}
+					
+					RadioButton 
+					{ 
+						name: "hyperBound"
+						text: qsTr("Hypergeometric")
+						id: hyperBound
+						visible: variableTypeCorrect.checked && hypergeometric.checked 
+					}
 				}
 			}
 		}
@@ -944,16 +1057,26 @@ Form
 				{
 					title: qsTr("Plots")
 
-					CheckBox { text: qsTr("Evaluation information"); 	name: "evaluationInformation" 												}
-					CheckBox { text: qsTr("Correlation plot"); 			name: "correlationPlot";		visible: variableTypeAuditValues.checked 	}
+					CheckBox 
+					{ 
+						text: qsTr("Evaluation information")
+						name: "evaluationInformation" 												
+					}
+
+					CheckBox 
+					{ 
+						text: qsTr("Correlation plot")
+						name: "correlationPlot"
+						visible: variableTypeAuditValues.checked 	
+					}
 				}
 			}
 		}
 
 		Item
 		{
-			Layout.preferredHeight: 			toInterpretation.height
-			Layout.fillWidth: 	true
+			Layout.preferredHeight: toInterpretation.height
+			Layout.fillWidth: 			true
 
 			Button
 			{
