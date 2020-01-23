@@ -231,5 +231,6 @@
         <file>icons/lightTheme/jasp-logo-black.svg</file>
         <file>icons/darkTheme/code-icon.png</file>
         <file>icons/lightTheme/code-icon.png</file>
+        <file>icons/FlexplotLogo.svg</file>
     </qresource>
 </RCC>
