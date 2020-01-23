@@ -969,9 +969,12 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
       int <- c(bmaResults[["bma"]]$estimates["averaged", "2.5%"], bmaResults[["bma"]]$estimates["averaged", "97.5%"])
       postName <- "Averaged"
       if(options[["addLines"]]){
-        labelsModel <- c(bquote(paste(.(gettext("Fixed H")), [1])), bquote(paste(.(gettext("Random H")), [1])), bquote(paste(.(gettext("Averaged H")), [1])), bquote(paste(.(gettext("Prior H")), [1])))
+        labelsModel <- c(bquote(.(gettext("Fixed H"))[1]),
+                         bquote(.(gettext("Random H"))[1]),
+                         bquote(.(gettext("Averaged H"))[1]), 
+                         bquote(.(gettext("Prior H"))[1]))
       } else {
-        labelsModel <- c(bquote(paste(.(gettext("Averaged H")), [1])), bquote(paste(.(gettext("Prior H")), [1])))
+        labelsModel <- c(bquote(.(gettext("Averaged H"))[1]), bquote(.(gettext("Prior H"))[1]))
       }
       yPrior <- bmaResults[["bma"]]$yPrior
       xPost <- bmaResults[["bma"]]$xPost
@@ -980,7 +983,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     } else if(options[["modelSpecification"]] == "RE"){
       int <- c(bmaResults[["bma"]]$estimates["random", "2.5%"], bmaResults[["bma"]]$estimates["random", "97.5%"])
       postName <- "Random"
-      labelsModel <- c(bquote(paste(.(gettext("Random H")), [0])), bquote(paste(.(gettext("Prior H")), [1])))
+      labelsModel <- c(bquote(.(gettext("Random H"))[0]), bquote(.(gettext("Prior H"))[1]))
       yPrior <- bmaResults[["random"]]$yPrior
       xPost <- bmaResults[["random"]]$xPost
       yPost <- bmaResults[["random"]]$yPost
@@ -988,7 +991,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     } else if(options[["modelSpecification"]] == "FE"){
       int <- c(bmaResults[["bma"]]$estimates["fixed", "2.5%"], bmaResults[["bma"]]$estimates["fixed", "97.5%"])
       postName <- "Fixed"
-      labelsModel <- c(bquote(paste(.(gettext("Fixed H")), [1])), bquote(paste(.(gettext("Prior H")), [1])))
+      labelsModel <- c(bquote(.(gettext("Fixed H"))[1]), bquote(.(gettext("Prior H"))[1]))
       yPrior <- bmaResults[["fixed"]]$yPrior
       xPost <- bmaResults[["fixed"]]$xPost
       yPost <- bmaResults[["fixed"]]$yPost
@@ -997,14 +1000,14 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
       int <- c(bmaResults[["bma"]]$estimates["ordered", "2.5%"], bmaResults[["bma"]]$estimates["ordered", "97.5%"])
       postName <- "Ordered"
       if(options[["addLines"]]){
-        labelsModel <- c(bquote(paste(.(gettext("Fixed H")), [1])), 
-                         bquote(paste(.(gettext("Ordered H")), [1])), 
-                         bquote(paste(.(gettext("Random H")), [1])), 
-                         bquote(paste(.(gettext("Prior H")), [1]))
+        labelsModel <- c(bquote(.(gettext("Fixed H"))[1]), 
+                         bquote(.(gettext("Ordered H"))[1]), 
+                         bquote(.(gettext("Random H"))[1]), 
+                         bquote(.(gettext("Prior H"))[1])
                          )
       } else {
-        labelsModel <- c(bquote(paste(.(gettext("Ordered H")), [1])), 
-                         bquote(paste(.(gettext("Prior H")), [1])))
+        labelsModel <- c(bquote(.(gettext("Ordered H"))[1]), 
+                         bquote(.(gettext("Prior H"))[1]))
       }
       yPrior <- bmaResults[["ordered"]]$yPrior
       xPost <- bmaResults[["ordered"]]$xPost
@@ -1036,10 +1039,10 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     xlim <- c(0, 3)
     alpha <- 0.3
 
-    if(options[["modelSpecification"]] == "BMA") labelsModel <- c(bquote(paste(.(gettext("Random H")), [1])), bquote(paste(.(gettext("Prior H")), [1])))
-    if(options[["modelSpecification"]] == "CRE") labelsModel <- c(bquote(paste(.(gettext("Ordered H")), [1])), bquote(paste(.(gettext("Prior H")), [1])))
-    if(options[["modelSpecification"]] == "FE") labelsModel <- c(bquote(paste(.(gettext("Fixed H")), [1])), bquote(paste(.(gettext("Prior H")), [1])))
-    if(options[["modelSpecification"]] == "RE") labelsModel <- c(bquote(paste(.(gettext("Random H")), [1])), bquote(paste(.(gettext("Prior H")), [1])))
+    if(options[["modelSpecification"]] == "BMA") labelsModel <- c(bquote(.(gettext("Random H"))[1]), bquote(.(gettext("Prior H"))[1]))
+    if(options[["modelSpecification"]] == "CRE") labelsModel <- c(bquote(.(gettext("Ordered H"))[1]), bquote(.(gettext("Prior H"))[1]))
+    if(options[["modelSpecification"]] == "FE") labelsModel <- c(bquote(.(gettext("Fixed H"))[1]), bquote(.(gettext("Prior H"))[1]))
+    if(options[["modelSpecification"]] == "RE") labelsModel <- c(bquote(.(gettext("Random H"))[1]), bquote(.(gettext("Prior H"))[1]))
   }
   
   df <- data.frame(x = c(xPost, xPost), y = c(yPrior, yPost), g = rep(c("Prior", postName), each = length(xPost)))
@@ -1064,9 +1067,9 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
       if(options[["modelSpecification"]] == "CRE"){
         valuesCol <- c("black", "#009E73", "black")
         valuesLine <- c("solid", "solid", "dotted")
-        labelsModel <- c(bquote(paste(.(gettext("Ordered H")), [1])), 
-                         bquote(paste(.(gettext("Random H")), [1])), 
-                         bquote(paste(.(gettext("Prior H")), [1])))
+        labelsModel <- c(bquote(.(gettext("Ordered H"))[1]), 
+                         bquote(.(gettext("Random H"))[1]), 
+                         bquote(.(gettext("Prior H"))[1]))
       }
     }
     df <- rbind(df, dfPost)
@@ -1687,15 +1690,15 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
 
   if(options[["modelSpecification"]] == "BMA" || options[["modelSpecification"]] == "CRE"){
 
-    labels <- c(bquote(paste(.(gettext("Fixed H")), [0])),bquote(paste(.(gettext("Fixed H")), [1])),
-                bquote(paste(.(gettext("Random H")), [0])), bquote(paste(.(gettext("Random H")), [1])))
+    labels <- c(bquote(.(gettext("Fixed H"))[0]),bquote(.(gettext("Fixed H"))[1]),
+                bquote(.(gettext("Random H"))[0]), bquote(.(gettext("Random H"))[1]))
     colorValues <- c("#fcae91ff", "#fcae91ff", "#009E73", "#009E73")
     linetypeValues <- rep("solid", 4)
     pointValues <- c(21, 19, 21, 19)
     lineValues <- c("dotted", "solid", "dotted", "solid")
 
   } else if(options[["modelSpecification"]] == "FE"){
-    labels <- c(bquote(paste(.(gettext("Fixed H")), [0])), bquote(paste(.(gettext("Fixed H")), [1])))
+    labels <- c(bquote(.(gettext("Fixed H"))[0]), bquote(.(gettext("Fixed H"))[1]))
     colorValues <- c("#fcae91ff", "#fcae91ff")
     linetypeValues <- rep("solid", 2)
     pointValues <- c(21, 19)
@@ -1704,7 +1707,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
 
   } else if(options[["modelSpecification"]] == "RE"){
 
-    labels <- c(bquote(paste(.(gettext("Random H")), [0])), bquote(paste(.(gettext("Random H")), [1])))
+    labels <- c(bquote(.(gettext("Random H"))[0]), bquote(.(gettext("Random H"))[1]))
     colorValues <- c("#009E73", "#009E73")
     linetypeValues <- rep("solid", 2)
     pointValues <- c(21, 19)
