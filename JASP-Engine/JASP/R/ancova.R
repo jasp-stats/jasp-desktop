@@ -314,7 +314,9 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                      return("Wrong number of custom contrast matrix rows.")
                    } else if (ncol(tryContrMat) >= nlevels(dataset[[v]])) {
                      return("Please specify fewer contrasts. (Maximum #contrasts = #levels - 1)")
-                   } 
+                   } else if (any(round(colSums(tryContrMat), 15) != 0)) {
+                     return("Some contrasts do not sum to 0.")
+                   }
                  })
       
     dataset[[v]] <- column
@@ -689,7 +691,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   if (!ready || anovaContainer$getError()) 
     return()
   
-  
   ## Computation
   model <- anovaContainer[["model"]]$object
   contrastSummary <- summary.lm(model)[["coefficients"]]
@@ -740,11 +741,12 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
         
         dv <- dataset[[ .v(options$dependent) ]]
 
-        contrastMat <- (model[['contrasts']][[v]])
-        contrastMat <- matrix((solve(cbind((contrastMat), 1/nLevelsFac))[-nLevelsFac,]), ncol = nLevelsFac)
+        contrastMat <- (model[['contrasts']][[v]])[,1:nrow(thisContrastResult)]
+        contrastMat <- MASS::ginv(contrastMat)
+        # contrastMat <- matrix((solve(cbind((contrastMat), 1/nLevelsFac))[-nLevelsFac,]), ncol = nLevelsFac)
         sds <- tapply(dv, column, sd)
         ns <- tapply(dv, column, length)
-        
+
         df <- apply(contrastMat, 1, function(x) {
           ((sum((x)^2 * sds^2 / ns))^2) /
             sum(((x)^4 * sds^4) / (ns^2 * (ns - 1)))
