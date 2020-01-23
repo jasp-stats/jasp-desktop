@@ -4,6 +4,14 @@
 #include <QFileInfo>
 #include <QDir>
 #include "stringutils.h"
+#include "gui/preferencesmodel.h"
+
+HelpModel::HelpModel(QObject * parent) : QObject(parent)
+{
+	setPagePath("index");
+	connect(this,						&HelpModel::pagePathChanged,				this, &HelpModel::generateJavascript);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::currentThemeNameChanged, this, &HelpModel::setThemeCss);
+}
 
 void HelpModel::setVisible(bool visible)
 {
@@ -25,7 +33,7 @@ void HelpModel::setPagePath(QString pagePath)
 
 QString	HelpModel::indexURL()
 {
-	return "file:" + AppDirs::help() + "/index.html";
+	return "qrc:///html/help/index.html";
 }
 
 void HelpModel::generateJavascript()
@@ -86,14 +94,7 @@ void HelpModel::generateJavascript()
 	content.replace("\r", "\\n");
 	content.replace("\n", "\\n");
 
-	setHelpJS(renderFunc + "(\"" + content + "\")");
-}
-
-void HelpModel::setHelpJS(QString helpJS)
-{
-
-	_helpJS = helpJS;
-	emit helpJSChanged(_helpJS);
+	runJavaScript(renderFunc + "(\"" + content + "\")");
 }
 
 QString HelpModel::convertPagePathToLower(const QString & pagePath)
@@ -134,4 +135,10 @@ void HelpModel::reloadPage()
 		setPagePath("index");
 		setPagePath(curPage);
 	}
+}
+
+
+void HelpModel::setThemeCss(QString themeName)
+{
+	runJavaScript("window.setTheme(\"" + themeName + "\");");
 }
