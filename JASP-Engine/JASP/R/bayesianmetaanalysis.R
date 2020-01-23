@@ -28,9 +28,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   # Dataset with effectSize, standardError, and studyLabels
   # If data is null stuff is missing
   dataset <- .bmaReadData(jaspResults, options)
-  
-  # Set seed if user wants to
-  .setSeedJASP(options)
 
   # Table: Posterior Model Estimates
   .bmaMainTable(jaspResults, dataset, options, ready, .bmaDependencies)
@@ -74,7 +71,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                       "informativeTLocation", "informativeTScale", "informativeTDf",
                       "priorSE", "inverseGammaShape", "inverseGammaScale",
                       "informativehalfTScale", "informativehalfTDf",
-                      "BFComputation", "iterBridge", "iterMCMC", "chainsMCMC", "seed", "seedBox")
+                      "BFComputation", "iterBridge", "iterMCMC", "chainsMCMC", "seed", "setSeed")
 
 # Get dataset
 .bmaReadData <- function(jaspResults, options){
@@ -131,7 +128,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   }
   
   if (lowerES >= upperES)
-    JASP:::.quitAnalysis(gettext("The prior lower bound is not smaller than the upper bound.")) 
+    .quitAnalysis(gettext("The prior lower bound is not smaller than the upper bound.")) 
   
   # Heterogeneity prior parameters
   # Inverse gamma prior
@@ -155,12 +152,12 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   if(options[["modelSpecification"]] == "CRE" && options$direction == "allPos"){
     x <- seq(-1, -1e-05, 0.001)
     if(any(d(x) > 0))
-      JASP:::.quitAnalysis(gettext("Your prior contains negative values."))
+      .quitAnalysis(gettext("Your prior contains negative values."))
   } 
   if(options[["modelSpecification"]] == "CRE" && options$direction == "allNeg"){
     x <- seq(1e-05, 1, 0.001)
     if(any(d(x) > 0))
-       JASP:::.quitAnalysis(gettext("Your prior contains positive values."))
+       .quitAnalysis(gettext("Your prior contains positive values."))
   } 
 
   
@@ -350,7 +347,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
              options[["priorH0RE"]], options[["priorH1RE"]])
   
   if(all(prior == 0) && options[["modelSpecification"]] != "CRE") 
-    JASP:::.quitAnalysis(gettext("You cannot set all the prior model probabilties to zero."))
+    .quitAnalysis(gettext("You cannot set all the prior model probabilties to zero."))
   
   # Get priors from jasp state
   .bmaPriors(jaspResults, options)
@@ -358,6 +355,10 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   d   <- jaspResults[["bmaPriors"]]$object[["d"]]
   tau <- jaspResults[["bmaPriors"]]$object[["tau"]]
 
+  seed <- NA
+  if (options[["setSeed"]])
+    seed <- options[["seed"]]
+  
   # Bayesian meta analysis
   if(options$modelSpecification != "CRE"){
     p <- try({
@@ -370,7 +371,8 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                                   logml   = logml,
                                   logml_iter = logml_iter,
                                   iter     = iter,
-                                  chains = chains)
+                                  chains = chains,
+                                  seed = seed)
     })
   } else {
     p <- try({
@@ -379,6 +381,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                                       SE = SE, 
                                       d = d, 
                                       tau = tau,
+                                      seed = seed,
                                       # logml = logml,
                                       # logml_iter = logml_iter,
                                       iter = 10000 # because of an issue with stored variables, it is not yet possible to make it reactive.
@@ -388,7 +391,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   }
   
   if(isTryError(p)){
-    JASP:::.quitAnalysis(gettext("The model could not fit. Error while running R code from the metaBMA package: ", JASP:::.extractErrorMessage(p))) 
+    .quitAnalysis(gettext("The model could not fit. Error while running R code from the metaBMA package: ", .extractErrorMessage(p))) 
   }
 
   return(results)
@@ -465,11 +468,11 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   bmaTable$position <- 1
   
   # Add standard depencies
-  bmaTable$dependOn(options = c(.bmaDependencies, "BF"))
+  bmaTable$dependOn(options = c(.bmaDependencies, "bayesFactorType"))
   
-  if (options$BF == "BF10")
+  if (options$bayesFactorType == "BF10")
     bfTitle <- gettextf("BF", "\u2081", "\u2080")
-  else if (options$BF == "BF01")
+  else if (options$bayesFactorType == "BF01")
     bfTitle <- gettextf("BF", "\u2080", "\u2081")
   else
     bfTitle <- gettextf("Log(BF", "\u2081", "\u2080")
@@ -620,7 +623,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   if(options[["modelSpecification"]] == "CRE") 
     creBF <- bmaResults[["bf"]]$BF["ordered", "random"]
 
-  if(options[["BF"]] == "BF01"){
+  if(options[["bayesFactorType"]] == "BF01"){
     BF <- 1/BF
     footnoteRandomBFtau <- gettextf("Bayes factor of the fixed effects H", "\u2081", 
                                     " over the random effects H", "\u2081", ".")
@@ -634,7 +637,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
       creBF <- 1/bmaResults[["bf"]]$BF["ordered", "random"]
     }
   }
-  if(options[["BF"]] == "logBF10"){
+  if(options[["bayesFactorType"]] == "logBF10"){
     BF <- log(BF)
     if(options[["modelSpecification"]] == "CRE"){
       creBF <- log(bmaResults[["bf"]]$BF["ordered", "random"])
@@ -660,21 +663,18 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                          colNames = "parameter", rowNames="row3") 
     bmaTable$addFootnote(footnoteRandomBFtau,
                          colNames = "BF", rowNames = "row2")
-    bmaTable$addFootnote(gettextf("Model averaged posterior estimates for ", "\u03C4", " are not yet available, but will be added in the future."),
+    bmaTable$addFootnote(gettextf("Model averaged posterior estimates for %s are not yet available, but will be added in the future.", "\u03C4"),
                          colNames = "parameter", rowNames = "row4")
   }
   
-  if(options[["BF"]] == "BF01" || options[["BF"]] == "logBF10"){
-    footnoteCREbf <- gettextf("Bayes factor of the ordered effects H", "\u2081", 
-                              " over the fixed effects H", "\u2081", 
-                              ". The Bayes factor for the ordered effects H", "\u2081", "versus the unconstrained (random) effects H\u2081 model is ")
-  } else if(options[["BF"]] == "BF10"){
-    footnoteCREbf <- gettextf("Bayes factor of the fixed effects H", "\u2081", " over the ordered effects H", "\u2081", 
-                              ". The Bayes factor for the random effects H", "\u2081", 
-                              " versus the ordered effects H", "\u2081", " model is ", round(creBF, 3), ".")
-  }
-  
   if(options$modelSpecification == "CRE"){
+    if(options[["bayesFactorType"]] == "BF01" || options[["bayesFactorType"]] == "logBF10"){
+      footnoteCREbf <- gettextf("Bayes factor of the ordered effects H%1$s over the fixed effects H%1$s. The Bayes factor for the ordered effects H%1$s versus the unconstrained (random) effects H%1$s model is %2$.3f.", "\u2081", creBF)
+    } else if(options[["bayesFactorType"]] == "BF10"){
+      footnoteCREbf <-gettextf("Bayes factor of the fixed effects H%1$s over the ordered effects H%1$s. The Bayes factor for the unconstrained (random) effects H%1$s versus the ordered effects H%1$s model is %2$.3f.", "\u2081", creBF)
+    }
+  
+
     bmaTable$addFootnote(footnoteCREbf,
                          colNames = "BF", rowNames="row1") 
     bmaTable$addFootnote(footnoteOrderedBFtau, colNames = "BF", rowNames = c("row2", "row4"))
@@ -817,7 +817,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   if(options[["studyLabels"]] != ""){
     studyLabels <- dataset[, .v(options[["studyLabels"]])]
   } else {
-    studyLabels <- gettext("Study ", 1:length(varES))
+    studyLabels <- paste(gettext("Study"), 1:length(varES))
   }
   
   # Add results to table
@@ -884,11 +884,11 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     mean <- attr(prior, "param")[1]
     s <- attr(prior, "param")[2]
     xlimLeft <- mean - (s * 5)
+    xlab <- bquote(paste(.(gettext("Effect size")), ~mu))
   } else if(type == "SE"){
     prior <- priors$tau
     mean <- attr(prior, "param")[1]
     s <- attr(prior, "param")[2]
-    xlab <- bquote(paste(.(gettext("Effect size")), ~mu))
     xlimLeft <- 0
     xlab <- bquote(paste(.(gettext("Heterogeneity")), ~tau))
   }
@@ -1125,10 +1125,10 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     bfType <- NULL
     med <- NULL
   } else {
-    if(options[["BF"]] == "BF01") {
+    if(options[["bayesFactorType"]] == "BF01") {
       BF    <- 1/BF
       bfType <- "BF01"
-    } else if(options[["BF"]] == "logBF10") {
+    } else if(options[["bayesFactorType"]] == "logBF10") {
       BF <- log(BF)
       bfType <- "LogBF10"
     } else {
@@ -1410,7 +1410,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   
   # Get y coordinates, labels, and text for diamonds
   if(options$modelSpecification == "BMA"){
-    model <- c(gettext("Fixed effects"), gettext("Random effects"), gettext)
+    model <- c(gettext("Fixed effects"), gettext("Random effects"), gettext("Averaged"))
     textDiamond <- c(text_fixed, text_random, textMain)
   } else if(options$modelSpecification == "RE"){
     model <- gettext("Random effects")
@@ -1611,11 +1611,11 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   }
   BFs[1] <- 1  
     
-  if(options$BF == "BF01") {
+  if(options$bayesFactorType == "BF01") {
     BFs    <- 1/BFs
     bfType <- "BF01"
     yName <- "BF[italic(fr)]"
-  } else if(options$BF == "logBF10") {
+  } else if(options$bayesFactorType == "logBF10") {
     bfType <- "LogBF10"
   } else {
     bfType <- "BF10" 
@@ -1630,7 +1630,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     pizzaTxt <- c("data | f H1", "data | o H1")
     bfSubscripts <-  c("BF[italic(of)]", "BF[italic(fo)]")
     if(type == "SE") yName <- "BF[italic(of)]"
-    if(type == "SE" && options$BF == "BF01") yName <- "BF[italic(fo)]"
+    if(type == "SE" && options$bayesFactorType == "BF01") yName <- "BF[italic(fo)]"
   }
 
   if(any(is.infinite(BFs))){
