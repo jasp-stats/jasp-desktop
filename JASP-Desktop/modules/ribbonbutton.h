@@ -26,6 +26,9 @@
 #include "modules/dynamicmodules.h"
 #include "modules/analysismenumodel.h"
 
+#include "dirs.h"
+#include "log.h"
+
 
 class RibbonButton : public QObject
 {
@@ -63,6 +66,7 @@ public:
 	std::vector<std::string>		getAllAnalysisNames()										const;
 	bool							dataLoaded()												const			{ return DynamicModules::dynMods() &&  DynamicModules::dynMods()->dataLoaded();	}
 	bool							active()													const			{ return _enabled && (!requiresData() || dataLoaded());	}
+	void							reloadMenuFromDescriptionJson();
 
 public slots:
 	void setRequiresData(bool requiresData);
@@ -89,6 +93,7 @@ signals:
 	void analysisMenuChanged();
 	void dataLoadedChanged();
 	void activeChanged();
+	void analysisTitleChanged(std::string moduleName, std::string oldTitle, std::string newTitle);
 
 
 private:

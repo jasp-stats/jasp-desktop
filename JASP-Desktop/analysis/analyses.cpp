@@ -677,3 +677,13 @@ void Analyses::showDependenciesInAnalysis(size_t analysis_id, QString optionName
 
 	get(analysis_id)->showDependenciesOnQMLForObject(optionName);
 }
+
+void Analyses::analysisTitleChangedHandler(string moduleName, string oldTitle, string newTitle)
+{
+	applyToAll([&](Analysis * a)
+	{
+		if (a->module() == moduleName && a->title() == oldTitle)
+			a->setTitle(newTitle);
+
+	});
+}

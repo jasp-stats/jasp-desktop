@@ -316,6 +316,7 @@ void MainWindow::makeConnections()
 	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			_filterModel,			&FilterModel::setGeneratedFilter							);
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
+	connect(_ribbonModel,			&RibbonModel::analysisTitleChanged,					_analyses,				&Analyses::analysisTitleChangedHandler						);
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule					);
@@ -436,6 +437,7 @@ void MainWindow::refreshFilemenu()
 {
 	_fileMenu->refresh();
 	_ribbonModel->refresh();
+	_analyses->refreshAllAnalyses();
 }
 
 void MainWindow::initLog()
