@@ -16,13 +16,13 @@ test_that("Bayesian Correlation Table results match", {
   results <- jasptools::run("CorrelationBayesian", "test.csv", options)
   table <- results[["results"]][["corBayesTable"]][["data"]]
   expect_equal_tables(table,
-                      list("TRUE", "<unicode>", "Pearson's r", "contcor1", "FALSE", "<unicode>",
+                      list("TRUE", "<unicode>", "Pearson's r", "1. contcor1", "FALSE", "<unicode>",
                            "BF<unicode><unicode>", "", "FALSE", "<unicode>", "Upper 95% CI",
                            "", "FALSE", "<unicode>", "Lower 95% CI", "", "FALSE", "<unicode>",
                            "Kendall's tau", "", "FALSE", "<unicode>", "BF<unicode><unicode>",
                            "", "FALSE", "<unicode>", "Upper 95% CI", "", "FALSE", "<unicode>",
                            "Lower 95% CI", "", 1, "TRUE", 0.657010063712354, "<unicode>",
-                           "Pearson's r", "contcor2", "FALSE", 71191291327.7135, "<unicode>",
+                           "Pearson's r", "2. contcor2", "FALSE", 71191291327.7135, "<unicode>",
                            "BF<unicode><unicode>", "", "FALSE", 0.753487301516098, "<unicode>",
                            "Upper 95% CI", "", "FALSE", 0.524567068817432, "<unicode>",
                            "Lower 95% CI", "", 1, "FALSE", 0.503030303030303, "<unicode>",

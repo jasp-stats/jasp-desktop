@@ -4,7 +4,7 @@ context("Paired Samples TTest")
 # - missing values exclusion
 # - error handling of plots
 
-test_that("Main table results match", {
+test_that("Main table results match for one pair * multiple tests", {
   options <- jasptools::analysisOptions("TTestPairedSamples")
   options$pairs <- list(c("contNormal", "contGamma"))
   options$wilcoxonSignedRank <- TRUE
@@ -24,6 +24,18 @@ test_that("Main table results match", {
   )
 })
 
+test_that("Main table results match for multiple pairs * one test", {
+  options <- jasptools::analysisOptions("TTestPairedSamples")
+  options$pairs <- list(c("contNormal", "contGamma"), c("contNormal", "contcor1"))
+  results <- jasptools::run("TTestPairedSamples", "test.csv", options)
+  table <- results[["results"]][["ttest"]][["data"]]
+  expect_equal_tables(table,
+                      list(99, 3.4809614504484e-20, "-", -11.6121720596087, "contNormal",
+                           "contGamma", 99, 0.0750733655901379, "-", -1.79895113042557,
+                           "contNormal", "contcor1")
+  )
+})
+
 test_that("Normality table matches", {
   options <- jasptools::analysisOptions("TTestPairedSamples")
   options$pairs <- list(c("contNormal", "contGamma"))
@@ -31,8 +43,7 @@ test_that("Normality table matches", {
   results <- jasptools::run("TTestPairedSamples", "test.csv", options)
   table <- results[["results"]][["AssumptionChecks"]][["collection"]][["AssumptionChecks_ttestNormalTable"]][["data"]]
   expect_equal_tables(table,
-    list("contNormal", "-", "contGamma", 0.969542808533914, 0.0203952735337306,
-         "TRUE")
+                      list(0.969542808533914, 0.0203952735337306, "-", "contNormal", "contGamma")
   )
 })
 
