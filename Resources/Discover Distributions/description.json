@@ -1,7 +1,7 @@
 {
 	"moduleDescription" :
 	{
-        "title" :       "Discover Distributions",
+        "title" :       "Discover Distributions (Beta)",
         "name":         "Discover Distributions",
         "icon":         "discoverdistributions-distributions.svg",
         "description": 	"Discover distributions with JASP",
