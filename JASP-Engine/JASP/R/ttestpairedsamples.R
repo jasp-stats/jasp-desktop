@@ -50,7 +50,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   ttest$position <- 1
   
   ttest$addColumnInfo(name = "v1", type = "string", title = "")
-  ttest$addColumnInfo(name = "sep",  type = "string", title = "")
+  ttest$addColumnInfo(name = "sep",  type = "separator", title = "")
   ttest$addColumnInfo(name = "v2", type = "string", title = "")
   if (optionsList$wantsWilcox && optionsList$onlyTest) {
     ttest$addFootnote(gettext("Wilcoxon signed-rank test."))
@@ -148,7 +148,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   
   ttestNormalTable$addColumnInfo(name = "v1",  type = "string", title = "")
-  ttestNormalTable$addColumnInfo(name = "sep", type = "string", title = "")
+  ttestNormalTable$addColumnInfo(name = "sep", type = "separator", title = "")
   ttestNormalTable$addColumnInfo(name = "v2",  type = "string", title = "")
   ttestNormalTable$addColumnInfo(name = "W",   type = "number", title = gettext("W"))
   ttestNormalTable$addColumnInfo(name = "p",   type = "pvalue", title = gettext("p"))
@@ -167,9 +167,9 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
 .ttestPairedMainFill <-function(jaspResults, dataset, options, testStat, optionsList) {
   direction <- .ttestMainGetDirection(options$hypothesis)
   
-  rowNo      <- 1
   ttest.rows <- list() # for each pair and each test, save stuff in there
   whichTests <- list("1" = optionsList$wantsStudents, "2" = optionsList$wantsWilcox)
+  numTests <- sum(optionsList$allTests)
   
   ## add a row for each variable, even before we are conducting tests
   
@@ -189,17 +189,28 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
     
     ## test is a number, indicating which tests should be run
     for (test in seq_len(length(optionsList$whichTests))) {
-      row <- list(v1 = p1, sep = "-", v2 = p2)
+      row <- list()
+      
       currentTest <- optionsList$whichTests[[test]]
       ## don't run a test the user doesn't want
       if (!currentTest)
         next
+      
+      ## hide the name of the variable pair for the second statistic
+      isSecondStatisticOfPair <- numTests > 1 && test == 2
+      row[["v1"]]  <- ifelse(isSecondStatisticOfPair, "", p1)
+      row[["sep"]] <- ifelse(isSecondStatisticOfPair, "", "-")
+      row[["v2"]]  <- ifelse(isSecondStatisticOfPair, "", p2)
+      
+      if (numTests > 1) {
+        if (test == 1)
+          row[["test"]] <- "Student"
+        else if (test == 2)
+          row[["test"]] <- "Wilcoxon"
+      }
+      
       if (!identical(errors, FALSE) && length(pair[pair != ""]) == 2){
         jaspResults[["ttest"]]$addFootnote(errors$message, colNames = testStat, rowNames = paste(p1, p2, sep = "-"))
-        isFirst <- (rowNo %% 2 == 1 && sum(optionsList$allTests) == 2) || (sum(optionsList$allTests) == 1)
-        row <- list(v1  = ifelse(isFirst, p1, ""),
-                    sep = ifelse(isFirst, "-", ""),
-                    v2  = ifelse(isFirst, p2, ""))
         row[[testStat]] <- NaN
         jaspResults[["ttest"]]$addRows(row, rowNames = paste(p1, p2, sep = "-"))
         next
@@ -290,37 +301,20 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
         sed <- ifelse(is.null(result$parameter), "", sed)
         
         # add things to the intermediate results object
-        row <- list(df = df, p = p, md = m, d = d,
+        row <- c(row, list(df = df, p = p, md = m, d = d,
                     lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp, 
                     lowerCIeffectSize = ciLowEffSize, upperCIeffectSize = ciUpEffSize,
-                    sed = sed)
+                    sed = sed))
         
         if (options$VovkSellkeMPR)
           row[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
         row[[testStat]] <- stat
       } else {
-        row <- list(df = "", p = "", md = "", d = "", lowerCI = "", upperCI = "", sed = "")
+        row <- c(row, list(df = "", p = "", md = "", d = "", lowerCI = "", upperCI = "", sed = ""))
         row[[testStat]] <- ""
       }
       
-      ## if this is the first test / row for specific variables, add variable names
-      ## since we have only two tests, the first test always will be an odd number
-      isFirst <- (rowNo %% 2 == 1 && sum(optionsList$allTests) %in% 1:2)
-      row[["v1"]]  <- ifelse(isFirst, p1, "")
-      row[["sep"]] <- ifelse(isFirst, "-", "")
-      row[["v2"]]  <- ifelse(isFirst, p2, "")
-      
-      if (!isFirst)
-        row[["test"]] <- "Wilcoxon"
-        ##jaspResults[["ttest"]][["data"]][[rowNo - 1]][["test"]] <- "Student"
-        #ttest.rows[[rowNo - 1]][["test"]] <- "Student"
-      #}
-      if(test == 1)
-        row[["test"]] <- "Student"
-      
       jaspResults[["ttest"]]$addRows(row)
-      #ttest.rows[[rowNo]] <- row
-      rowNo <- rowNo + 1
     }
   }
   
@@ -329,7 +323,6 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
 
 .ttestPairedNormalFill <- function(container, dataset, options, ready) {
   pairs <- options$pairs
-  rowNo <- 1
   if (!ready)
     pairs[[1]] <- list(".", ".")
   for (pair in pairs) {
@@ -358,9 +351,8 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
       row <- list(v1 = p1, sep = "-", v2 = p2, W = W,    p = p)
     } else 
       row <- list(v1 = p1, sep = "-", v2 = p2, W = ".",  p = ".")
-    row[[".isNewGroup"]] <- rowNo == 1
+
     container[["ttestNormalTable"]]$addRows(row)
-    rowNo <- rowNo + 1
   }
 }
 
@@ -393,7 +385,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   if(length(desc.vars) == 0)
     return()
-  rowNo <- 1
+
   for (var in desc.vars) {
     row <- list(v = var)
     
@@ -411,7 +403,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
     row[["mean"]] <- m
     row[["sd"]]   <- std
     row[["se"]]   <- se
-    rowNo <- rowNo + 1
+
     container[["table"]]$addRows(row)
   }
 }

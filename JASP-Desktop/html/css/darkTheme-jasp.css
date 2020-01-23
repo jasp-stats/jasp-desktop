@@ -383,7 +383,7 @@ div.jasp-image-image.no-data.error {
   opacity: 0.33
 }
 
-.error-state {
+.error-state:not(.jasp-analysis), .jasp-analysis.error-state>.jasp-analysis {
   color: darkgray;
 }
 

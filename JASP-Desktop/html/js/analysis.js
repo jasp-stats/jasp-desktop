@@ -560,6 +560,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		errorMessage = errorMessage.replace(/\n/g, '<br>');
 		errorMessage = errorMessage.replace(/  /g, '&nbsp;&nbsp;');
 
+		$lastResult.removeClass("unselected selected");
+
 		if ($lastResult.hasClass("error-state"))
 			$result.append($lastResult.find(".jasp-analysis").not(".error-state").clone())
 		else

@@ -17,7 +17,7 @@ body.selected {
 
 
 body.selected .jasp-analysis:not(.selected){
-    filter: opacity(0.5);
+    filter: opacity(0.75);
 }
 
 h1, .h1-toolbar .jasp-menu {
@@ -378,7 +378,7 @@ div.jasp-image-image.no-data.error {
 	opacity: 0.33
 }
 
-.error-state {
+.error-state:not(.jasp-analysis), .jasp-analysis.error-state>.jasp-analysis {
 	color: silver;
 }
 

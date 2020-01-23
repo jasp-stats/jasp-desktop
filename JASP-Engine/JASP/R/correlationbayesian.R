@@ -165,7 +165,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   # Add the variables names paired
   #
   table$addColumnInfo(name="variable1", title="", type="string")
-  table$addColumnInfo(name="separator", title="", type="string")
+  table$addColumnInfo(name="separator", title="", type="separator")
   table$addColumnInfo(name="variable2", title="", type="string")
   
   if (options[["reportN"]])
@@ -230,8 +230,8 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 .addMatrixTableColumnMarkupCorBayes <- function(table, methodItems, options) {
   # Note(Alexander): Correlation Matrix
   #
-  table$addColumnInfo(name="variable", title="", type="string", combine=TRUE)
-  table$addColumnInfo(name="itemColumn", title="", type="number")
+  table$addColumnInfo(name="variable", title=gettext("Variable"), type="string", combine=TRUE)
+  table$addColumnInfo(name="itemColumn", title="", type="string")
   
   nVariables <- length(options[["variables"]])
   if (nVariables < 2) {
@@ -299,9 +299,9 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 .insertMatrixDefaultEmptyTableCellsCorBayes <- function(table, options) {
   variables <- unlist(options[["variables"]])
   if (length(variables) == 1)
-    variables <- c(variables, "...")
+    variables <- c(paste("1.", variables), "2. ...")
   else
-    variables <- c("...", "... ") # this space is a little hack to ensure the js combine shows both 'variables'
+    variables <- c("1. ...", "2. ...")
   
   methodItems <- .getCorMethods(options)
   itemNames <- .bSelectItems(options)
@@ -454,7 +454,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       
       for (k in seq_along(itemNames)) {
         if (k == 1 && m == 1)
-          tempRow <- list(variable = var1, itemColumn = rowItemNames[[k]], .isNewGroup = TRUE) # First item gets the variable name
+          tempRow <- list(variable = paste0(i, ". ", var1), itemColumn = rowItemNames[[k]], .isNewGroup = TRUE) # First item gets the variable name
         else
           tempRow <- list(variable = "", itemColumn = rowItemNames[[k]], .isNewGroup = FALSE)
         

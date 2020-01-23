@@ -546,9 +546,10 @@ jaspTableR <- R6Class(
 
     addColumnInfo = function(name = NULL, title = NULL, overtitle = NULL, type = NULL, format = NULL, combine = NULL) {
 			if (!is.null(type)) {
-				permittedTypes <- c("integer", "number", "pvalue", "string")
+				permittedTypes <- c("integer", "number", "pvalue", "string", "separator")
 				if (!type %in% permittedTypes)
 					stop("type must be ", paste0("`", permittedTypes, "`", collapse=", "), " (provided type: `", type, "`)")
+
 				if (is.null(format) && type == "number")
 					format <- "sf:4;dp:3"
 				else if (type == "pvalue")
