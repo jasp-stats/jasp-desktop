@@ -41,22 +41,26 @@ LanguageModel::LanguageModel(QString qmresourcepath, QApplication *app, QQmlAppl
 
 void LanguageModel::initialize()
 {
+	//Find the Locale from the Machine
+	QLocale locsystem = QLocale::system();
+	QLocale::Language syslang = locsystem.language();
 
 	//Support English as native JASP language
 	_languages.push_back(QLocale::English);  // 31
-	QLocale loc(QLocale::English);
 
 	// No language file needed for English (only to show in dropdown in preferences languages)
 	//_languagesInfo[QLocale::English] = LanguageInfo (QLocale::English, "English", "English", loc.name(), "", _qmlocation);
 	_languagesInfo[QLocale::English] = LanguageInfo (QLocale::English, "English", "English", "en", "", _qmlocation);
 
+	//Check all the JASP supported langugaes by by checking the qm translations files
+	findQmFiles(_qmlocation);
+
+	bool isMachineLocaleSupported = isJaspSupportedLanguage(syslang);
 
 	//Default values are now:
 	//loc.name();				//en_US
 	//loc.nativeCountryName();	//United States
 	//loc.nativeLanguageName(); //American English
-
-	findQmFiles(_qmlocation);
 
 	QLocale::Language prefLanguage = static_cast<QLocale::Language>(Settings::value(Settings::PREFERRED_LANGUAGE).toInt());
 	LanguageInfo & li = _languagesInfo[prefLanguage];
