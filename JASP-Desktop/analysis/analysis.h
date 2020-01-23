@@ -54,7 +54,7 @@ public:
 	static std::string statusToString(Status status);
 
 	Analysis(size_t id, Analysis * duplicateMe);
-	Analysis(size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
+	Analysis(size_t id, std::string module, std::string name, std::string qml, std::string title, const Version &version, Json::Value *data);
 	Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", Json::Value *data = nullptr);
 
 	virtual ~Analysis();
@@ -95,6 +95,7 @@ public:
 	const	Json::Value		&	userData()			const	{ return _userData;							}
 	const	std::string		&	name()				const	{ return _name;								}
 	const	QString				nameQ()				const	{ return tq(_name);							}
+	const	std::string		&	qml()				const	{ return _qml;								}
 	const	Version			&	version()			const	{ return _version;							}
 	const	std::string		&	title()				const	{ return _title;							}
 			QString				titleQ()			const	{ return tq(_title);						}
@@ -214,6 +215,7 @@ private:
 							_counter		= 0;
 	std::string				_module			= "dynamic",
 							_name,
+							_qml,
 							_titleDefault,
 							_title,
 							_rfile,

@@ -69,14 +69,15 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 		QString			name				= QString::fromStdString(analysisData["name"].asString()),
 						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common",
-						title				= QString::fromStdString(analysisData.get("title", "").asString());
+						title				= QString::fromStdString(analysisData.get("title", "").asString()),
+						qml					= QString::fromStdString(analysisData.get("title", name.toStdString()).asString());
 
 		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
 
 		if(title == "")
 			title = analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
 		
-		analysis = create(module, name, title, id, version, &optionsJson, status, false);
+		analysis = create(module, name, qml, title, id, version, &optionsJson, status, false);
 
 		analysis->loadExtraFromJSON(analysisData);
 	}
@@ -100,9 +101,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	return analysis;
 }
 
-Analysis* Analyses::create(const QString &module, const QString &name, const QString &title, size_t id, const Version &version, Json::Value *options, Analysis::Status status, bool notifyAll)
+Analysis* Analyses::create(const QString &module, const QString &name, const QString& qml, const QString &title, size_t id, const Version &version, Json::Value *options, Analysis::Status status, bool notifyAll)
 {
-	Analysis *analysis = new Analysis(id, module.toStdString(), name.toStdString(), title.toStdString(), version, options);
+	Analysis *analysis = new Analysis(id, module.toStdString(), name.toStdString(), qml.toStdString(), title.toStdString(), version, options);
 	analysis->setStatus(status);
 	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
@@ -489,12 +490,12 @@ void Analyses::move(int fromIndex, int toIndex)
 	}
 }
 
-void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisTitle, QString module)
+void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module)
 {
 	Modules::DynamicModule * dynamicModule = DynamicModules::dynMods()->dynamicModule(module.toStdString());
 
 	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry((analysisTitle + "~" + analysisFunction).toStdString()));
-	else							create(module, analysisFunction, analysisTitle);
+	else							create(module, analysisFunction, analysisQML, analysisTitle);
 }
 
 

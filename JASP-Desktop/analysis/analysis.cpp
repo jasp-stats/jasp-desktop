@@ -29,12 +29,13 @@
 #include "log.h"
 
 
-Analysis::Analysis(size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data) :
+Analysis::Analysis(size_t id, std::string module, std::string name, std::string qml, std::string title, const Version &version, Json::Value *data) :
 	QObject(Analyses::analyses()),
 	_options(new Options()),
 	_id(id),
 	_module(module),
 	_name(name),
+	_qml(qml),
 	_titleDefault(title),
 	_title(title),
 	_version(version)
@@ -53,6 +54,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 	  _options(new Options()),
 	  _id(id),
 	  _name(analysisEntry->title()),
+	  _qml(analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
 	  _titleDefault(analysisEntry->title()),
 	  _title(title == "" ? _titleDefault : title),
 	  _version(AppInfo::version),
@@ -80,6 +82,7 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _id(				id							)
 	, _module(			duplicateMe->_module		)
 	, _name(			duplicateMe->_name			)
+	, _qml(				duplicateMe->_qml			)
 	, _titleDefault(	duplicateMe->_titleDefault	)
 	, _title("Copy of "+duplicateMe->_title			)
 	, _rfile(			duplicateMe->_rfile			)
@@ -392,7 +395,7 @@ std::string Analysis::qmlFormPath() const
 {
 	return "file:" + (_moduleData != nullptr	?
 				_moduleData->qmlFilePath()	:
-				Dirs::resourcesDir() + "/" + module() + "/qml/"  + name() + ".qml");
+				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
 }
 
 void Analysis::runScriptRequestDone(const QString& result, const QString& controlName)
