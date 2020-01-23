@@ -336,17 +336,17 @@
   results$fitdist <- try(fitdistrplus::fitdist(data = variable, distr = distName, method = "mle", 
                                                start = starts, fix.arg = options$fix.pars,
                                                keepdata = FALSE, optim.method = "L-BFGS-B",
-                                               lower = options$lowerBound, upper = options$upperBound))
+                                               lower = options$lowerBound, upper = options$upperBound), silent = TRUE)
   
   if(inherits(results$fitdist, "try-error")){
     results$fitdist <- try(MASS::fitdistr(x = variable, densfun = options$pdfFun, start = starts, 
-                                          lower = options$lowerBound, upper = options$upperBound))
+                                          lower = options$lowerBound, upper = options$upperBound), silent = TRUE)
   }
   
   if(inherits(results$fitdist, "try-error")){
     results$fitdist <- try(fitdistrplus::fitdist(data = variable, distr = distName, method = "mle", 
                                                  start = starts, fix.arg = options$fix.pars,
-                                                 keepdata = FALSE))
+                                                 keepdata = FALSE), silent = TRUE)
   } else{
     results$fitdist$convergence <- 0
   }
