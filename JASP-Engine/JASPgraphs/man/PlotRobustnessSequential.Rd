@@ -30,6 +30,8 @@ PlotRobustnessSequential(
   pointFill = c("grey", "black", "white"),
   pointColor = rep("black", 3),
   pointSize = c(3, 2, 2),
+  evidenceTxt = NULL,
+  arrowLabel = NULL,
   ...
 )
 }
@@ -84,6 +86,10 @@ Ignored if \code{!is.null(dfLines$g) && linesLegend}.}
 \item{pointColor}{String, if \code{plotLineOrPoint == "point"} then this controls the color aesthetic.}
 
 \item{pointSize}{String, if \code{plotLineOrPoint == "point"} then this controls the size aesthetic.}
+
+\item{evidenceTxt}{String to display evidence level in the topright of the plot. If NULL then a default is used.}
+
+\item{arrowLabel}{String to display text next to arrows inside the plot. If NULL then a default is used.}
 
 \item{...}{Unused.}
 }
@@ -181,4 +187,26 @@ PlotRobustnessSequential(
   xName        = expression(paste("Prior width ", kappa)), 
   dfPoints     = dfPoints
 )
+
+# convenience function for showing plots side by side. You may need to click zoom in Rstudio
+# to properly view the plots.
+showSideBySide <- function(..., nrow = 1L, ncol = ...length()) {
+  require(gridExtra)
+  jaspgraphplot2grob <- function(x) {
+    if (!inherits(x, "JASPgraphsPlot")) return(x)
+    else return(x$plotFunction(x$subplots, args = x$plotArgs, grob = TRUE))
+  }
+  gridExtra::grid.arrange(gridExtra::arrangeGrob(grobs = lapply(list(...), jaspgraphplot2grob),  nrow = nrow, ncol = ncol))
+}
+
+# arrow labels can be modified
+g1 <- PlotRobustnessSequential(dfLines = dfLines, arrowLabel = c("top", "bottom"))
+g2 <- PlotRobustnessSequential(dfLines = dfLines, arrowLabel = JASPgraphs::parseThis(c("alpha", "beta")))
+showSideBySide(g1, g2)
+
+# text in the top right (evidence text) can be modified
+g1 <- PlotRobustnessSequential(dfLines = dfLines, BF = 1)
+g2 <- PlotRobustnessSequential(dfLines = dfLines, BF = 1, evidenceTxt = c("I'm above!", "I'm below!"))
+g3 <- PlotRobustnessSequential(dfLines = dfLines, BF = 1, evidenceTxt = JASPgraphs::parseThis(c("alpha", "omega")))
+showSideBySide(g1, g2, g3)
 }
