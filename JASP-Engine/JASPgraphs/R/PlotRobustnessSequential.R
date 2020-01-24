@@ -26,6 +26,8 @@
 #' @param pointFill String, if \code{plotLineOrPoint == "point"} then this controls the fill aesthetic.
 #' @param pointColor String, if \code{plotLineOrPoint == "point"} then this controls the color aesthetic.
 #' @param pointSize String, if \code{plotLineOrPoint == "point"} then this controls the size aesthetic.
+#' @param evidenceTxt String to display evidence level in the topright of the plot. If NULL then a default is used.
+#' @param arrowLabel String to display text next to arrows inside the plot. If NULL then a default is used.
 #' @param ... Unused.
 #'
 #' @example inst/examples/ex-PlotRobustnessSequential.R
@@ -47,6 +49,8 @@ PlotRobustnessSequential <- function(
   pointFill  = c("grey", "black", "white"),
   pointColor = rep("black", 3),
   pointSize = c(3, 2, 2),
+  evidenceTxt = NULL,
+  arrowLabel = NULL,
   ...) {
 
   errCheckPlots(dfLines = dfLines, dfPoints = dfPoints, BF = BF)
@@ -274,22 +278,23 @@ PlotRobustnessSequential <- function(
                                       fill = pointFill, sizes = pointSize)
   } else if (evidenceLeveltxt) {
 
-    val <- BF
-    if (val < 1)
-      val <- 1 / val
-    # returns 1 if val in [1, 3], 2 if val in [3, 10], ...
-    idx <- findInterval(val, c(1, 3, 10, 30, 100), rightmost.closed = FALSE)
-    evidenceLevel <- c("Anecdotal", "Moderate", "Strong", "Very~Strong", "Extreme")[idx]
-    
-    if (BF > 1 && bfType == "BF01" || BF < 1 && bfType != "BF01")
-      evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[0], ':')"))
-    else if (hypothesis == "greater")
-      evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H['+'], ':')"))
-    else if (hypothesis == "smaller")
-      evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H['-'], ':')"))
-    else 
-      evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[1], ':')"))
-    
+    if (is.null(evidenceTxt)) {
+      val <- BF
+      if (val < 1)
+        val <- 1 / val
+      # returns 1 if val in [1, 3], 2 if val in [3, 10], ...
+      idx <- findInterval(val, c(1, 3, 10, 30, 100), rightmost.closed = FALSE)
+      evidenceLevel <- c("Anecdotal", "Moderate", "Strong", "Very~Strong", "Extreme")[idx]
+      
+      if (BF > 1 && bfType == "BF01" || BF < 1 && bfType != "BF01")
+        evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[0], ':')"))
+      else if (hypothesis == "greater")
+        evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H['+'], ':')"))
+      else if (hypothesis == "smaller")
+        evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H['-'], ':')"))
+      else 
+        evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[1], ':')"))
+    }
     gTextEvidence <- draw2Lines(evidenceTxt, x = 0.75, align = "right")
 
   }
@@ -311,12 +316,17 @@ PlotRobustnessSequential <- function(
       yend = c(yBreaksL[2L] + 0.75 * d1, yBreaksL[n] + 0.75 * d2)
     )
     
-    if(hypothesis == "greater")
-      arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H['+']")
-    else if (hypothesis == "smaller")
-      arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H['-']")
-    else
-      arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H[1]")
+    if (is.null(arrowLabel)) {
+      if(hypothesis == "greater")
+        arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H['+']")
+      else if (hypothesis == "smaller")
+        arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H['-']")
+      else
+        arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H[1]")
+      parseArrowLabel <- TRUE
+    } else {
+      parseArrowLabel <- needsParsing(arrowLabel)
+    }
     
     dfArrowTxt <- data.frame(
       y = (dfArrow$y + dfArrow$yend) / 2,
@@ -338,7 +348,7 @@ PlotRobustnessSequential <- function(
       ggplot2::geom_text(
         data        = dfArrowTxt,
         mapping     = aes(x = .data$x, y = .data$y, label = .data$label),
-        parse       = TRUE,
+        parse       = parseArrowLabel,
         size        = .40 * getGraphOption("fontsize"),
         inherit.aes = FALSE,
         hjust       = 0.0
