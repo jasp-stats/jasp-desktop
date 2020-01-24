@@ -110,7 +110,7 @@ errCheckPlots <- function(dfLines, dfPoints = NULL, CRI = NULL, median = NULL, B
 }
 
 makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetypes = NULL, sizes = NULL,
-                           type = c("point", "line")) {
+                           type = c("point", "line"), label1 = NULL, label2 = NULL) {
 
   type <- match.arg(type)
   if (is.factor(groupingVariable)) {
@@ -122,24 +122,52 @@ makeLegendPlot <- function(groupingVariable, colors = NULL, fill = NULL, linetyp
 
   if (type == "point") {
 
-    dfLegendPlot <- data.frame(
-      x = 0.1,
-      y = factor(seq_along(l)),
-      l = rev(l) # y = 1, 2, ... so first one at the bottom, hence reverse the labels
-    )
+    if (!is.null(label1) && !is.null(label2)) {
+      # new behavior
+      dfLegendPlot <- data.frame(
+        x  = 0.1,
+        y  = factor(seq_along(l)),
+        l1 = rev(label1), # y = 1, 2, ... so first one at the bottom, hence reverse the labels
+        l2 = rev(label2)
+      )
+      parse <- needsParsing(label1) || needsParsing(label2)
 
-    if (is.null(sizes)) {
-      gp <- geom_point(show.legend = FALSE, size = 1.15 * jaspGeomPoint$default_aes$size)
+      if (is.null(sizes)) {
+        gp <- geom_point(show.legend = FALSE, size = 1.15 * jaspGeomPoint$default_aes$size)
+      } else {
+        gp <- geom_point(show.legend = FALSE)
+      }
+
+      legendPlot <- ggplot(data = dfLegendPlot, aes(x = .data$x, y = .data$y, fill = .data$y,
+                                                    label1 = .data$l1, label2 = .data$l2, size = .data$y)) +
+        gp +
+        geom_aligned_text(nudge_x = 0.0, size = .35 * getGraphOption("fontsize"), hjust = 0,
+                           parse = parse, prepend = "  ") +
+        ggplot2::xlim(c(0, 1)) +
+        getEmptyTheme()
+
     } else {
-      gp <- geom_point(show.legend = FALSE)
-    }
 
-    legendPlot <- ggplot(data = dfLegendPlot, aes(x = .data$x, y = .data$y, fill = .data$y, label = .data$l, size = .data$y)) +
-      gp +
-      ggplot2::geom_text(nudge_x = 0.1, size = .35 * getGraphOption("fontsize"), hjust = 0,
-                         parse = parse) +
-      ggplot2::xlim(c(0, 1)) +
-      getEmptyTheme()
+      dfLegendPlot <- data.frame(
+        x = 0.1,
+        y = factor(seq_along(l)),
+        l = rev(l) # y = 1, 2, ... so first one at the bottom, hence reverse the labels
+      )
+
+      if (is.null(sizes)) {
+        gp <- geom_point(show.legend = FALSE, size = 1.15 * jaspGeomPoint$default_aes$size)
+      } else {
+        gp <- geom_point(show.legend = FALSE)
+      }
+
+      legendPlot <- ggplot(data = dfLegendPlot, aes(x = .data$x, y = .data$y, fill = .data$y, label = .data$l, size = .data$y)) +
+        gp +
+        ggplot2::geom_text(nudge_x = 0.0, size = .35 * getGraphOption("fontsize"), hjust = 0,
+                           parse = parse) +
+        ggplot2::xlim(c(0, 1)) +
+        getEmptyTheme()
+
+    }
 
   } else {
 

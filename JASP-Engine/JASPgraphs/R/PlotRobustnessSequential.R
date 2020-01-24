@@ -245,7 +245,11 @@ PlotRobustnessSequential <- function(
 
     if (pointLegend) {
 
-      legendPlot <- makeLegendPlot(dfPoints$g, fill = pointColors, type = "point")
+      if (!is.null(dfPoints$label1) && !is.null(dfPoints$label2))
+        legendPlot <- makeLegendPlot(dfPoints$g, fill = pointColors, type = "point",
+                                     label1 = dfPoints$label1, label2 = dfPoints$label2)
+      else
+        legendPlot <- makeLegendPlot(dfPoints$g, fill = pointColors, type = "point")
 
     }
   }
