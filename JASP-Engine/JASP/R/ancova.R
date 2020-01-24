@@ -38,9 +38,9 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     dataset <- droplevels(dataset)
   } 
   
-  dataset <- .anovaSetupContrasts(dataset, options, ready)
-  
   anovaContainer <- .getAnovaContainer(jaspResults)
+  
+  dataset <- .anovaSetupContrasts(dataset, options, ready)
   
   .anovaCheckErrors(dataset, options, ready)
   
@@ -71,13 +71,13 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   } else {
     anovaContainer <- createJaspContainer()
     # we set the dependencies on the container, this means that all items inside the container automatically have these dependencies
-    anovaContainer$dependOn(c("dependent", "modelTerms", "contrasts", "covariates", "sumOfSquares", "wlsWeights"))
+    anovaContainer$dependOn(c("dependent", "modelTerms", "contrasts", "covariates", "sumOfSquares", "wlsWeights", "customContrasts"))
     jaspResults[["anovaContainer"]] <- anovaContainer
   }
   return(anovaContainer)
 }
 
-.anovaContrastCases <- function(column, contrastType) {
+.anovaContrastCases <- function(column, contrastType, customContrast) {
   
   levels <- levels(column)
   nLevels <- length(levels)
@@ -130,6 +130,37 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
             cases[[i]] <- paste("degree", i, "polynomial", sep=" ")
           }
         }
+      },
+      custom = {
+        
+        contrMatrix <- (as.matrix(sapply(customContrast$values, function(x) x$value)))
+        levelNames <- as.matrix(sapply(customContrast$values, function(x) x$colLabel))
+        
+        if (length(levelNames) > 2) contrMatrix <- t(contrMatrix)
+        
+        for (i in 1:ncol(contrMatrix)) {
+          
+          curContr <- contrMatrix[,i]
+
+          plusLevels <- abbreviate(levelNames[curContr > 0], minlength = 4, dot = TRUE)
+          plusWeights <- curContr[curContr > 0]
+          
+          minLevels <- abbreviate(levelNames[curContr < 0], minlength = 4, dot = TRUE)
+          minWeights <- curContr[curContr < 0]
+          
+          plusTermFull <- paste0(paste0(abs(plusWeights), "*", plusLevels,  collapse = " + "))
+          minTermFull <- paste0(paste0(abs(minWeights), "*", minLevels,  collapse = " + "))
+          
+          if (length(plusLevels) == 0) {
+            cases[[i]]  <-  paste0("- (",minTermFull, ")")
+          } else if (length(minLevels) == 0) {
+            cases[[i]]  <-  plusTermFull
+          } else {
+            cases[[i]]  <-  paste0("(", plusTermFull, ")", " - ", "(", minTermFull, ")")
+          }
+          
+        }
+        
       }
     )
   }
@@ -137,12 +168,13 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   cases
 }
 
-.anovaCreateContrast <- function (column, contrastType) {
+.anovaCreateContrast <- function (column, contrastType, customContrast) {
   
   levels <- levels(column)
   nLevels <- length(levels)
   
   contr <- NULL
+  
 
   switch(contrastType,
     none = {
@@ -190,13 +222,25 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
     polynomial = {
       contr <- contr.poly(levels)
+    },
+    
+    custom = {
+
+      desiredRows <- nrow(MASS::contr.sdif(levels) * -1)
+
+      if (desiredRows == 2) {
+        contr <- MASS::ginv(t(sapply(customContrast$values, function(x) x$values)))
+      } else {
+        contr <- MASS::ginv(sapply(customContrast$values, function(x) x$values))
+      }
+
     }
   )
   
   if ( ! is.null(contr))
     dimnames(contr) <- list(NULL, 1:dim(contr)[2])
   
-  contr
+  return(contr)
 }
 
 .anovaCheckErrors <- function(dataset, options, ready) {
@@ -238,7 +282,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                  return(gettext("The WLS weights contain negative and/or zero values.<br><br>(only positive WLS weights allowed)."))
              },
              exitAnalysisIfErrors = TRUE)
-  
 }
 
 .anovaSetupContrasts <- function(dataset, options, ready) {
@@ -248,9 +291,34 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   for (contrast in options$contrasts) {
     
     v <- .v(contrast$variable)
-    
     column <- dataset[[v]]
-    contrasts(column) <- .anovaCreateContrast(column, contrast$contrast)
+
+    if (contrast$contrast == "custom") {
+      customContrastSetup <- options$customContrasts[[which(sapply(options$customContrasts, function(x) x$value == contrast$variable))]]
+    } else {
+      customContrastSetup <- NULL
+    }
+
+    tryContrMat <- try(silent = TRUE, 
+                       expr =  contrasts(column) <- .anovaCreateContrast(column, contrast$contrast, customContrastSetup))
+
+    if (contrast$contrast == "custom")
+      # Check whether the custom contrast matrix works
+      .hasErrors(dataset = NULL,
+                 allowEmptyDataset = FALSE,
+                 exitAnalysisIfErrors = TRUE,
+                 custom = function() {
+                   if (grepl(tryContrMat[1], pattern = "singular contrast matrix")) {
+                     return("Singular custom contrast matrix.")
+                   } else if (grepl(tryContrMat[1], pattern = "number of contrast matrix rows")) {
+                     return("Wrong number of custom contrast matrix rows.")
+                   } else if (ncol(tryContrMat) >= nlevels(dataset[[v]])) {
+                     return("Please specify fewer contrasts. (Maximum #contrasts = #levels - 1)")
+                   } else if (any(round(colSums(tryContrMat), 15) != 0)) {
+                     return("Some contrasts do not sum to 0.")
+                   }
+                 })
+      
     dataset[[v]] <- column
   }
   
@@ -579,8 +647,8 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   
   contrastContainer <- createJaspContainer(title = gettext("Contrast Tables"))
   contrastContainer$dependOn(c("contrasts", "contrastAssumeEqualVariance", "confidenceIntervalIntervalContrast", 
-                               "confidenceIntervalsContrast"))
-  
+                               "confidenceIntervalsContrast", "customContrasts"))
+
   createContrastTable <- function(myTitle, options) {
     
     contrastTable <- createJaspTable(title = myTitle)
@@ -605,7 +673,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     
     return(contrastTable)
   }
-  
   for (contrast in options$contrasts) {
     
     if (contrast$contrast != "none") {
@@ -624,7 +691,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   if (!ready || anovaContainer$getError()) 
     return()
   
-  
   ## Computation
   model <- anovaContainer[["model"]]$object
   contrastSummary <- summary.lm(model)[["coefficients"]]
@@ -642,15 +708,21 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     
       variable <- contrast$variable
       v <- .v(variable)
+
+      if (contrast$contrast == "custom") {
+        customContrastSetup <- options$customContrasts[[which(sapply(options$customContrasts, function(x) x$value == contrast$variable))]]
+      } else {
+        customContrastSetup <- NULL
+      }
       
       column <- dataset[[ v ]]
-      cases <- .anovaContrastCases(column, contrast$contrast)
+      cases <- .anovaContrastCases(column, contrast$contrast, customContrastSetup)
       
       thisContrastResult <- data.frame(Comparison = do.call(rbind, cases))
       
       if (contrast == "polynomial" && length(cases) > 5)
         cases <- cases[1:5]
-      
+
       nams <- paste(v, .indices(cases), sep="")
 
       thisContrastResult[["Estimate"]] <- contrastSummary[nams, "Estimate"]
@@ -669,11 +741,12 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
         
         dv <- dataset[[ .v(options$dependent) ]]
 
-        contrastMat <- (model[['contrasts']][[v]])
-        contrastMat <- matrix((solve(cbind((contrastMat), 1/nLevelsFac))[-nLevelsFac,]), ncol = nLevelsFac)
+        contrastMat <- (model[['contrasts']][[v]])[,1:nrow(thisContrastResult)]
+        contrastMat <- MASS::ginv(contrastMat)
+        # contrastMat <- matrix((solve(cbind((contrastMat), 1/nLevelsFac))[-nLevelsFac,]), ncol = nLevelsFac)
         sds <- tapply(dv, column, sd)
         ns <- tapply(dv, column, length)
-        
+
         df <- apply(contrastMat, 1, function(x) {
           ((sum((x)^2 * sds^2 / ns))^2) /
             sum(((x)^4 * sds^4) / (ns^2 * (ns - 1)))
