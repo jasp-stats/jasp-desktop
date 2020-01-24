@@ -9,7 +9,7 @@
 #'
 #' @return a table, plot, etc. 
 #' @export
-linmod_jasp<- function(jaspResults, dataset, options) {
+linmod<- function(jaspResults, dataset, options) {
 
   ### check if they have an IV and a DV
   ready <- (options$dependent != "" & length(options$variables)>0)
@@ -25,83 +25,81 @@ linmod_jasp<- function(jaspResults, dataset, options) {
     }
     character = sapply(dataset[,options$variables, drop=F], check.non.number)
     numeric = !character
+  }
 
-    ### compute results
-    if (is.null(jaspResults[["linmod_results"]]))
-      .linmod_compute(jaspResults, dataset, options, ready)
+  ### compute results
+  if (is.null(jaspResults[["linmod_results"]]))
+    .linmod_compute(jaspResults, dataset, options, ready)
 
-    ### show plots (if user specifies them)
-    if (options$model) {
+  ### show plots (if user specifies them)
+  if (options$model) {
 
-      if (is.null(jaspResults[["linmod_model_plot"]])){
-        .linmod_model_plot(jaspResults, options, ready)
-      }
+    if (is.null(jaspResults[["linmod_model_plot"]])){
+      .linmod_model_plot(jaspResults, options, ready)
     }
-    
-    if (options$avp) {
-      if (is.null(jaspResults[["linmod_avp_plot"]])){
-        .linmod_avp_plot(jaspResults, options, ready)
-      }
+  }
+  
+  if (options$avp) {
+    if (is.null(jaspResults[["linmod_avp_plot"]])){
+      .linmod_avp_plot(jaspResults, options, ready)
     }
-    
-    if (options$residuals) {
-      if (is.null(jaspResults[["linmod_residual_plot"]])){
-        .linmod_residual_plot(jaspResults, options, ready)
-      }
+  }
+  
+  if (options$residuals) {
+    if (is.null(jaspResults[["linmod_residual_plot"]])){
+      .linmod_residual_plot(jaspResults, options, ready)
     }
-    #### show plots (if user specifies them)
-    if (options$univariate) {
-      if (is.null(jaspResults[["linmod_univariate_plot"]])){
-        .linmod_univariate_plot(jaspResults, options, ready, dataset)
-      }
+  }
+  #### show plots (if user specifies them)
+  if (options$univariate) {
+    if (is.null(jaspResults[["linmod_univariate_plot"]])){
+      .linmod_univariate_plot(jaspResults, options, ready, dataset)
     }
+  }
 
-    ### show output, depending on results
-    if (sum(numeric)>0){
+  ### show output, depending on results
+  if (ready && sum(numeric)>0){
 
-      if (length(options$variables)>1){
-        if (options$modinf){
-          if (is.null(jaspResults[["linmod_table_modcomp"]])){
-            .create_linmod_table_modcomp(jaspResults, options, ready)
-          }
-        }
-      }
-
-      if (options$sl){
-        if (is.null(jaspResults[["linmod_table_slopes"]])){
-          .create_linmod_table_slopes(jaspResults, options, ready)
+    if (length(options$variables)>1){
+      if (options$modinf){
+        if (is.null(jaspResults[["linmod_table_modcomp"]])){
+          .create_linmod_table_modcomp(jaspResults, options, ready)
         }
       }
     }
 
-    if (sum(character)>0){
-
-      if (length(options$variables)>1){
-        if (options$modinf) {
-          if (is.null(jaspResults[["linmod_table_modcomp"]])){
-            .create_linmod_table_modcomp(jaspResults, options, ready)
-          }
-        }
+    if (options$sl){
+      if (is.null(jaspResults[["linmod_table_slopes"]])){
+        .create_linmod_table_slopes(jaspResults, options, ready)
       }
-
-      ### check if there's a jasp table already. if not, create it
-      if (options$means){
-        if (is.null(jaspResults[["linmod_table_means"]])){
-        .create_linmod_table_means(jaspResults, options, ready)
-        }
-      }
-
-      if (options$diff) {
-        if (is.null(jaspResults[["linmod_table_differences"]])){
-          .create_linmod_table_differences(jaspResults, options, ready)
-        }
-      }
-
     }
-    
-    # 
+  }
 
-  }  
+  if (ready && sum(character)>0){
+
+    if (length(options$variables)>1){
+      if (options$modinf) {
+        if (is.null(jaspResults[["linmod_table_modcomp"]])){
+          .create_linmod_table_modcomp(jaspResults, options, ready)
+        }
+      }
+    }
+
+    ### check if there's a jasp table already. if not, create it
+    if (options$means){
+      if (is.null(jaspResults[["linmod_table_means"]])){
+      .create_linmod_table_means(jaspResults, options, ready)
+      }
+    }
+
+    if (options$diff) {
+      if (is.null(jaspResults[["linmod_table_differences"]])){
+        .create_linmod_table_differences(jaspResults, options, ready)
+      }
+    }
+
+  }
+
 }
 
 .linmod_model_plot <- function(jaspResults, options, ready) {
@@ -143,11 +141,11 @@ linmod_jasp<- function(jaspResults, dataset, options) {
   ### loop through and plot everything
   all.variables = c(options$dependent, options$variables)
   
-  a = theme_it(flexplot::flexplot(make.formula(options$dependent, "1"), dataset), options$theme)
+  a = theme_it(flexplot::flexplot(flexplot::make.formula(options$dependent, "1"), dataset), options$theme)
   plot.list = list(rep(a, times=length(all.variables)))
   plot.list[[1]] = a
   for (i in 2:length(all.variables)){
-    p = theme_it(flexplot::flexplot(make.formula(options$variables[i-1], "1"), dataset), options$theme)
+    p = theme_it(flexplot::flexplot(flexplot::make.formula(options$variables[i-1], "1"), dataset), options$theme)
     plot.list[[i]] = p
   }
   #save(all.variables, options, dataset, plot.list, file="/Users/fife/Documents/flexplot/jaspresults.Rdata")
@@ -209,7 +207,7 @@ linmod_jasp<- function(jaspResults, dataset, options) {
   
   linmod_results <- jaspResults[["linmod_results"]]$object
   
-  generated.formula = make_flexplot_formula(options$variables, options$dependent, linmod_results$model$model)
+  generated.formula = flexplot:::make_flexplot_formula(options$variables, options$dependent, linmod_results$model$model)
   
 
   if	(options$ghost & length(options$variables)<4){
@@ -222,10 +220,10 @@ linmod_jasp<- function(jaspResults, dataset, options) {
                   "standard errors" = "sterr",
                   "standard deviations", "stdev")
   if (model.type=="model"){
-    plot = compare.fits(generated.formula, data = linmod_results$model$model, model1 = linmod_results$model,
+    plot = flexplot::compare.fits(generated.formula, data = linmod_results$model$model, model1 = linmod_results$model,
                       alpha=options$alpha, ghost.line=ghost, jitter=c(options$jitx, options$jity))
   } else if (model.type == "residuals"){
-    plot = visualize(linmod_results$model, linmod_results, plot=model.type, plots.as.list=TRUE,
+    plot = flexplot::visualize(linmod_results$model, linmod_results, plot=model.type, plots.as.list=TRUE,
                      alpha=options$alpha, jitter=c(options$jitx, options$jity))
     plot = arrange_jasp_plots(plot, options$theme)
   } else if (model.type == "added"){
@@ -233,23 +231,23 @@ linmod_jasp<- function(jaspResults, dataset, options) {
     methods = list("Regression"="lm", 
                    "Quadratic"="quadratic", 
                    "Cubic"="cubic")
-    formla = make.formula(options$dependent,options$variables)
-    plot = added.plot(formla, linmod_results$model$model, method=methods[options$linetype], alpha=options$alpha,
+    formla = flexplot::make.formula(options$dependent,options$variables)
+    plot = flexplot::added.plot(formla, linmod_results$model$model, method=methods[options$linetype], alpha=options$alpha,
                       jitter=c(options$jitx, options$jity))
   }
   
   if (options$theme == "JASP"){
     plot = JASPgraphs::themeJasp(plot)
   } else {
-    theme = list("Black and white"="theme_bw()+ theme(text=element_text(size=18))",
-                 "Minimal" = "theme_minimal()+ theme(text=element_text(size=18))",
-                 "Classic" = "theme_classic()+ theme(text=element_text(size=18))",
-                 "Dark" = "theme_dark() + theme(text=element_text(size=18))")
+    theme = list("Black and white"="ggplot2::theme_bw()+ ggplot2::theme(text=ggplot2::element_text(size=18))",
+                 "Minimal" = "ggplot2::theme_minimal()+ ggplot2::theme(text=ggplot2::element_text(size=18))",
+                 "Classic" = "ggplot2::theme_classic()+ ggplot2::theme(text=ggplot2::element_text(size=18))",
+                 "Dark" = "ggplot2::theme_dark() + ggplot2::theme(text=ggplot2::element_text(size=18))")
     plot = plot + eval(parse(text=theme[[options$theme]]))
   }  
   
   if (length(options$variables)<4){
-    plot = plot + theme(legend.position = "none")      
+    plot = plot + ggplot2::theme(legend.position = "none")      
   }
     
       #+ theme(legend.position = "none")
@@ -294,7 +292,7 @@ linmod_jasp<- function(jaspResults, dataset, options) {
     
     ### store all the information
     model = lm(f, dataset)
-    est = estimates(model)
+    est = flexplot::estimates(model)
     #save(options, dataset, ready, model, file="/Users/fife/Documents/jaspresults.Rdat")
     est$model = model
     

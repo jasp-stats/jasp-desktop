@@ -9,10 +9,10 @@
 #'
 #' @return a table, plot, etc. 
 #' @export
-glinmod_jasp<- function(jaspResults, dataset, options) {
+glinmod<- function(jaspResults, dataset, options) {
 
   ### check if they have an IV and a DV
-  ready <- (options$dependent != "" & length(options$variables)>0)
+  ready <- (options$dependent != "" && length(options$variables)>0)
   
   ### read in the dataset if it's ready
   if (ready){
@@ -30,35 +30,34 @@ glinmod_jasp<- function(jaspResults, dataset, options) {
     }
     character = sapply(dataset[,options$variables, drop=F], check.non.number)
     numeric = !character
-    
-    #### compute results
-    if (is.null(jaspResults[["glinmod_results"]]))
-      .glinmod_compute(jaspResults, dataset, options, ready)
-    
-    
-    #### show plots (if user specifies them)
-    if (options$model) {
-      if (is.null(jaspResults[["glinmod_model_plot"]])){
-        .glinmod_model_plot(jaspResults, options, ready, dataset)
-      }
+  }
+  
+  #### compute results
+  if (is.null(jaspResults[["glinmod_results"]]))
+    .glinmod_compute(jaspResults, dataset, options, ready)
+  
+  
+  #### show plots (if user specifies them)
+  if (options$model) {
+    if (is.null(jaspResults[["glinmod_model_plot"]])){
+      .glinmod_model_plot(jaspResults, options, ready, dataset)
     }
-    
-    #### show plots (if user specifies them)
-    if (options$univariates) {
-      if (is.null(jaspResults[["glinmod_univariate_plot"]])){
-        .glinmod_univariate_plot(jaspResults, options, ready, dataset)
-      }
+  }
+  
+  #### show plots (if user specifies them)
+  if (options$univariates) {
+    if (is.null(jaspResults[["glinmod_univariate_plot"]])){
+      .glinmod_univariate_plot(jaspResults, options, ready, dataset)
     }
-    
-    ### report parameter estimates
-    if (options$ests){
-      if (is.null(jaspResults[["glinmod_table_fixed"]])){
-        .create_glinmod_coefs(jaspResults, options, ready)
-      }
+  }
+  
+  ### report parameter estimates
+  if (options$ests){
+    if (is.null(jaspResults[["glinmod_table_fixed"]])){
+      .create_glinmod_coefs(jaspResults, options, ready)
     }
+  }
 
-
-  }  
 }
 
 
@@ -83,11 +82,11 @@ glinmod_jasp<- function(jaspResults, dataset, options) {
   ### loop through and plot everything
   all.variables = c(options$dependent, options$variables)
   
-  a = theme_it(flexplot::flexplot(make.formula(options$dependent, "1"), dataset), options$theme)
+  a = theme_it(flexplot::flexplot(flexplot::make.formula(options$dependent, "1"), dataset), options$theme)
   plot.list = list(rep(a, times=length(all.variables)))
   plot.list[[1]] = a
   for (i in 2:length(all.variables)){
-    p = theme_it(flexplot::flexplot(make.formula(options$variables[i-1], "1"), dataset), options$theme)
+    p = theme_it(flexplot::flexplot(flexplot::make.formula(options$variables[i-1], "1"), dataset), options$theme)
     plot.list[[i]] = p
   }
   #save(all.variables, options, dataset, plot.list, file="/Users/fife/Documents/flexplot/jaspresults.Rdata")
@@ -127,7 +126,7 @@ glinmod_jasp<- function(jaspResults, dataset, options) {
 .create_flexplot_glinmod <- function(jaspResults, modelplot, options, dataset) {
   
   glinmod_results <- jaspResults[["glinmod_results"]]$object 
-  generated.formula = make_flexplot_formula(options$variables, options$dependent, dataset)
+  generated.formula = flexplot:::make_flexplot_formula(options$variables, options$dependent, dataset)
   
   if	(options$ghost & length(options$variables)<4){
     ghost=rgb(1,0,0,.4)
@@ -135,10 +134,10 @@ glinmod_jasp<- function(jaspResults, dataset, options) {
     ghost = NULL
   }
   
-  plot = compare.fits(generated.formula, data=dataset, glinmod_results, 
+  plot = flexplot::compare.fits(generated.formula, data=dataset, glinmod_results, 
                       alpha = options$alpha, jitter=c(options$jitx, options$jity),
                       ghost.line=ghost) 
-  plot = theme_it(plot, options$theme) + theme(legend.position = "none")
+  plot = theme_it(plot, options$theme) + ggplot2::theme(legend.position = "none")
   
   modelplot$plotObject <- plot
   

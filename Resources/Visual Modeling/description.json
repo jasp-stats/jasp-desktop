@@ -16,25 +16,25 @@
       {
         "title":   	"Flexplot",
         "qml":    	"Flexplot.qml",
-        "function": "flexplot_jasp2"
+        "function": "flexplot"
       },
 
       {
         "title":   	"Linear Modeling",
         "qml":    	"linmod.qml",
-        "function": "linmod_jasp"
+        "function": "linmod"
       },
       
       {
         "title":   	"Mixed Modeling",
         "qml":    	"mixedmod.qml",
-        "function": "mixedmod_jasp"
+        "function": "mixedmod"
       },
       
       {
         "title":   	"Generalized Linear Modeling",
         "qml":    	"glinmod.qml",
-        "function": "glinmod_jasp"
+        "function": "glinmod"
       }         
   ]
 }
