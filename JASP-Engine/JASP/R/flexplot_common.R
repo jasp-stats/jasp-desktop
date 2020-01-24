@@ -2,7 +2,9 @@
 # variables = options$variables
 # dataset =data = exercise_data
 add_polynomials = function(variables, data, degree=2){
-  cat = sapply(data[,variables, drop=FALSE], check.non.number)
+  check.non.number = 
+  
+  cat = sapply(data[,variables, drop=FALSE], function(x) { ifelse(is.character(x) | is.factor(x), TRUE, FALSE)})
   f = function(x) paste0("I(", x, "^", degree, ")")
   sapply(variables[!cat], f)
 }
@@ -27,10 +29,10 @@ theme_it = function(plot, theme){
   if (theme == "JASP"){
     plot = JASPgraphs::themeJasp(plot)
   } else {
-    themes = list("Black and white"="theme_bw()+ theme(text=element_text(size=18))",
-                 "Minimal" = "theme_minimal()+ theme(text=element_text(size=18))",
-                 "Classic" = "theme_classic()+ theme(text=element_text(size=18))",
-                 "Dark" = "theme_dark() + theme(text=element_text(size=18))")
+    themes = list("Black and white"="ggplot2::theme_bw()+ ggplot2::theme(text=ggplot2::element_text(size=18))",
+                  "Minimal" = "ggplot2::theme_minimal()+ ggplot2::theme(text=ggplot2::element_text(size=18))",
+                  "Classic" = "ggplot2::theme_classic()+ ggplot2::theme(text=ggplot2::element_text(size=18))",
+                  "Dark" = "ggplot2::theme_dark() + ggplot2::theme(text=ggplot2::element_text(size=18))")
     plot = plot + eval(parse(text=themes[[theme]]))
   }
   return(plot)

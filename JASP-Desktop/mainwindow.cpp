@@ -128,7 +128,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_computedColumnsModel	= new ComputedColumnsModel();
 	_filterModel			= new FilterModel(_labelFilterGenerator);
 	_ribbonModel			= new RibbonModel(	{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
-												{ "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics", "JAGS"});
+												{ "Audit", "BAIN", "JAGS", "Machine Learning", "Meta Analysis", "Network", "SEM", "Summary Statistics", "Visual Modeling"});
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 
 	_fileMenu				= new FileMenu(this);

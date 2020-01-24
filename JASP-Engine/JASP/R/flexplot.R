@@ -9,7 +9,7 @@
 #'
 #' @return a flexplot graphic. 
 #' @export
-flexplot_jasp2 = function(jaspResults, dataset, options) {
+flexplot = function(jaspResults, dataset, options) {
 
 	### check if they've entered anything	  
   #save(dataset, options, file="~/Documents/JaspResults.Rdat")
@@ -24,47 +24,36 @@ flexplot_jasp2 = function(jaspResults, dataset, options) {
 		} else {
 			return(dataset) 
 		}
+	}
 	  
-		### create plots
-		.flexPlotRes(jaspResults, formula, dataset, options, ready)
-		
-		return()	  
-		#}  
-	} else {
-		return()
-	} 
+	### create plots
+	.flexPlotRes(jaspResults, formula, dataset, options, ready)
 }
 
 
 .flexPlotRes <- function(jaspResults, formula, dataset, options, ready) {
-        print("HELLO1")
 	#### set up parameters
 	flex_Plot <- createJaspPlot(title = "Flexplot",  width = 600, height = 450)
 	flex_Plot$dependOn(c("confidence", "dependent", "variables", "paneledVars", "ghostLines"))
 	flex_Plot$addCitation("Fife, Dustin A. (2019). Flexplot (Version 0.9.2) [Computer software].")
-        print("HELLO1")
 
 	#### pre-populate the jasp object
 	jaspResults[["flex_Plot"]] <- flex_Plot
-        print("HELLO1")
 
 	if (!ready){
 		return()
 	}
    
-print("HELLO1")
                 #### prepare the data for flexplot
 		k = data.frame(matrix(nrow=nrow(dataset), ncol=length(options$variables) + length(options$dependent) + length(options$paneledVars)))
 		names(k) = c(options$dependent, options$variables, options$paneledVars)
 		variables <- unlist(options$variables)
 		panels <- unlist(options$paneledVars)
-                print("HELLO1")
                 if (length(panels)>0){
 			vars = c(variables, panels)
 		} else {
 			vars = variables
 		}
-                print("HELLO1")
                 k[,1] = dataset[[.v(options$dependent)]]
 		if (length(vars)>0){		#### this statement is necessary to allow histograms
 			for (i in 2:(length(vars)+1)){
@@ -72,7 +61,6 @@ print("HELLO1")
 			}
 		}
 
-print("HELLO1")
                 if (length(options$variables)==0){
 			formula = as.formula(paste0(options$dependent, "~1"))		
 		} else if (length(options$paneledVars)>0){
@@ -82,7 +70,6 @@ print("HELLO1")
 		}
 		tst = data.frame(x=1:10, y=1:10)
 		require(ggplot2)
-                print("HELLO1")
 
 		#### do a ghost line
 		if	(options$ghost){
@@ -90,19 +77,16 @@ print("HELLO1")
 		} else {
 		  ghost = NULL
 		}
-                print("HELLO1")
 
 		whiskers = list("Quartiles" = "quartiles",
 		                "Standard errors" = "sterr",
 		                "Standard deviations" = "stdev")
 
 		linetype = tolower(options$type)
-                print("HELLO10")
 
 		#save(k, formula, file="/Users/fife/Documents/jaspbroke.rdata")
 		jitter = c(options$jitx,options$jity)
 		if (linetype == "regression") linetype = "lm"
-                print("HELLO11")
                 plot = flexplot::flexplot(formula, data=k, method=linetype, se=options$confidence, alpha=options$alpha,
 		                ghost.line=ghost,
 		                spread=whiskers[[options$intervals]],
@@ -111,22 +95,16 @@ print("HELLO1")
 		if (options$theme == "JASP"){
                   plot = JASPgraphs::themeJasp(plot)
 		} else {
-  		theme = list("black and white"="theme_bw()+ theme(text=element_text(size=18))",
-  		                  "minimal" = "theme_minimal()+ theme(text=element_text(size=18))",
-  		                 "classic" = "theme_classic()+ theme(text=element_text(size=18))",
-  		                 "dark" = "theme_dark() + theme(text=element_text(size=18))")
+  		theme = list("Black and white"="ggplot2::theme_bw()+ ggplot2::theme(text=ggplot2::element_text(size=18))",
+  		             "Minimal" = "ggplot2::theme_minimal()+ ggplot2::theme(text=ggplot2::element_text(size=18))",
+  		             "Classic" = "ggplot2::theme_classic()+ ggplot2::theme(text=ggplot2::element_text(size=18))",
+  		             "Dark" = "ggplot2::theme_dark() + ggplot2::theme(text=ggplot2::element_text(size=18))")
   		plot = plot + eval(parse(text=theme[[tolower(options$theme)]]))
 		}
 		
 		# #### create flexplot object   
 		flex_Plot$plotObject <- plot
 		return()   
-}   
-
-  
-.flexplotFill <- function(flex_Plot, formula, dataset, options){
- 
-  return()
 }
 
 
