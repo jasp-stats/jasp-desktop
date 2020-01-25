@@ -1809,8 +1809,7 @@
                               alpha = 0) +
           ggplot2::scale_x_continuous(name = "Errors", 
                                       labels = xTicks, 
-                                      breaks = xTicks,
-                                      limits = range(xTicks)) +
+                                      breaks = xTicks) +
           ggplot2::scale_y_continuous(name = "Probability", 
                                       labels = yTicks, 
                                       breaks = yTicks,
