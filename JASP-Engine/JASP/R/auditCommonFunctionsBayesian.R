@@ -381,21 +381,21 @@
                                       title = "Functional form", 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorH1', 
-                                      title = "Support H\u2081", 
+                                      title = "Support H\u208B", 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorH0', 
-                                      title = "Support H\u2080", 
+                                      title = "Support H\u208A", 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                      title = "Evidence ratio <sup>H\u2081</sup>&frasl;<sub>H\u2080</sub>", 
+                                      title = "Evidence ratio <sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>", 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorBound', 
                                       title = paste0(options[["confidence"]]*100,"% Credible bound") , 
                                       type = 'string')
 
-    priorStatisticsTable$addFootnote(message = paste0("H\u2081: The population misstatement is lower than materiality (\u03B8 < ",
+    priorStatisticsTable$addFootnote(message = paste0("H\u208B: The population misstatement is lower than materiality (\u03B8 < ",
                                                        round(planningState[["materiality"]], 4),
-                                                       "). H\u2080: The population misstatement is equal to, or higher than, materiality (\u03B8 \u2265 ",
+                                                       "). H\u208A: The population misstatement is equal to, or higher than, materiality (\u03B8 \u2265 ",
                                                        round(planningState[["materiality"]], 4),
                                                        ")."), 
                                     symbol="<i>Note.</i>")
@@ -828,7 +828,7 @@
 
           p <- p + ggplot2::scale_shape_manual(name = "", 
                                                 values = c(21, 21), 
-                                                labels = c("Support\nH\u2081", "Support\nH\u2080"))
+                                                labels = c("Support\nH\u208B", "Support\nH\u208A"))
 
         }
 
@@ -1316,7 +1316,7 @@
 
             p <- p + ggplot2::scale_shape_manual(name = "", 
                                                   values = c(21, 21), 
-                                                  labels = c("Support\nH\u2081", "Support\nH\u2080"))
+                                                  labels = c("Support\nH\u208B", "Support\nH\u208A"))
 
           }
 
@@ -1605,21 +1605,21 @@
                                                    title = "Functional form", 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH1', 
-                                                   title = "Support H\u2081", 
+                                                   title = "Support H\u208B", 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH0', 
-                                                   title = "Support H\u2080", 
+                                                   title = "Support H\u208A", 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                                   title = "Evidence ratio <sup>H\u2081</sup>&frasl;<sub>H\u2080</sub>", 
+                                                   title = "Evidence ratio <sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>", 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorBound', 
                                                    title = paste0(options[["confidence"]] * 100,"% Credible bound") , 
                                                    type = 'string')
 
-    priorAndPosteriorStatisticsTable$addFootnote(message = paste0("H\u2081: The population misstatement is lower than materiality (\u03B8 < ",
+    priorAndPosteriorStatisticsTable$addFootnote(message = paste0("H\u208B: The population misstatement is lower than materiality (\u03B8 < ",
                                                                   round(evaluationState[["materiality"]], 3),
-                                                                  "). H\u2080: The population misstatement is equal to, or higher than, materiality (\u03B8 \u2265 ",
+                                                                  "). H\u208A: The population misstatement is equal to, or higher than, materiality (\u03B8 \u2265 ",
                                                                   round(evaluationState[["materiality"]], 3),
                                                                   ")."), 
                                                 symbol="<i>Note.</i>")

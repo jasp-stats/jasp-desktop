@@ -407,7 +407,7 @@ Form
 
 					CheckBox
 					{
-						text: 		qsTr("Decision analysis")
+						text: 		qsTr("Sample size comparison")
 						name: 		"decisionPlot"
 					}
 

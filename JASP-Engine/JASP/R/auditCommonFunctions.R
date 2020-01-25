@@ -169,15 +169,15 @@
   # Create a state to keep track of figure numbers
   .auditCreateFigureNumber(jaspResults)
 
-  # Create the decision analysis plot
-  .decisionAnalysisPlot(options, 
-                        planningOptions, 
-                        planningState, 
-                        planningContainer, 
-                        jaspResults,
-                        ready, 
-                        type, 
-                        positionInContainer = 5)
+  # Create the sample size comparison plot
+  .sampleSizeComparisonPlot(options, 
+                            planningOptions, 
+                            planningState, 
+                            planningContainer, 
+                            jaspResults,
+                            ready, 
+                            type, 
+                            positionInContainer = 5)
 
   if(type == "frequentist"){
 
@@ -881,15 +881,15 @@
 
   # --- PLOTS
 
-  # Create the decision analysis plot
-  .decisionAnalysisPlot(options, 
-                        planningOptions, 
-                        planningState, 
-                        planningContainer, 
-                        jaspResults,
-                        ready, 
-                        type, 
-                        positionInContainer = 5)
+  # Create the sample size comparison plot
+  .sampleSizeComparisonPlot(options, 
+                            planningOptions, 
+                            planningState, 
+                            planningContainer, 
+                            jaspResults,
+                            ready, 
+                            type, 
+                            positionInContainer = 5)
 
   if(type == "frequentist"){
 
@@ -1454,14 +1454,14 @@
   summaryTable$addRows(row)
 }
 
-.decisionAnalysisPlot <- function(options, 
-                                  planningOptions, 
-                                  planningState, 
-                                  planningContainer, 
-                                  jaspResults,
-                                  ready, 
-                                  type, 
-                                  positionInContainer){
+.sampleSizeComparisonPlot <- function(options, 
+                                      planningOptions, 
+                                      planningState, 
+                                      planningContainer, 
+                                      jaspResults,
+                                      ready, 
+                                      type, 
+                                      positionInContainer){
 
   if(!options[["decisionPlot"]]) 
     return()
@@ -1471,7 +1471,7 @@
   if(is.null(planningContainer[["decisionPlot"]])){
 
     decisionPlot <- createJaspPlot(plot = NULL, 
-                                  title = "Decision Analysis Plot", 
+                                  title = "Sample Size Comparison", 
                                   width = 600, 
                                   height = 300)
 
@@ -1673,7 +1673,7 @@
 
     decisionPlotText <- createJaspHtml(paste0("<b>Figure ", 
                                               jaspResults[["figNumber"]]$object,
-                                              ".</b> Decision analysis for the current options. The bars represent the sample size that is required under different planning distributions.
+                                              ".</b> Sample size comparison for the current options. The bars represent the sample size that is required under different planning distributions.
                                               The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green."), "p")
     
     decisionPlotText$position <- positionInContainer + 1
