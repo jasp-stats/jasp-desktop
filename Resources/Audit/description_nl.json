@@ -2,12 +2,12 @@
 	"moduleDescription" :
 	{
 		"title" : 							"Audit",
-		"name" :							"Audit",
-		"description": 						"JASP for Audit (JfA) is an officially supported add-on module that is designed specifically with the auditor in mind. JfA helps the auditor in interpreting, explaining, and reporting the analyses and leaves a transparent audit trail.",
+		"name" :								"Audit",
+		"description": 					"JASP for Audit (JfA) is an officially supported add-on module that is designed specifically with the auditor in mind. JfA helps the auditor in interpreting, explaining, and reporting the analyses and leaves a transparent audit trail.",
 		"version":							"0.1",
-		"author":							"Koen Derks, Jacques de Swart , Eric-Jan Wagenmakers, Jan Wille & Ruud Wetzels",
+		"author":								"Koen Derks, Jacques de Swart, Eric-Jan Wagenmakers, Jan Wille & Ruud Wetzels",
 		"maintainer":						"Koen Derks <k.derks@nyenrode.nl>",
-		"website":							"www.github.com/koenderks/JASP-for-Audit",
+		"website":							"www.github.com/koenderks/jfa",
 		"license":							"GPL (>= 2)",
 		"icon":     						"audit-module.svg"
 	},
@@ -17,41 +17,46 @@
 	"menu":
 	[
 		{
-			"title":    					"Werkproces",
-			"icon":							"audit-workflow.svg"
+			"title":    					"Workflow",
+			"icon":								"audit-workflow.svg"
 		},
 		{
-			"title":						"Audit Werkproces",
-			"function":						"classicalAudit",
-			"requiresData":					true
+			"title":							"Audit Workflow",
+			"function":						"auditClassicalWorkflow",
+			"requiresData":				true
 		},
 		{
-			"title":						"Baysiaans Audit Werkproces",
-			"function":						"bayesianAudit",
-			"requiresData":					true
+			"title":							"Bayesiaanse Audit Workflow",
+			"function":						"auditBayesianWorkflow",
+			"requiresData":				true
 		},
 		{
 			"title":    					"Planning",
-			"icon":							"audit-planning.svg"
+			"icon":								"audit-planning.svg"
 		},
 		{
-			"title":						"Planning",
-			"function":						"classicalPlanning",
-			"requiresData":					false
+			"title":							"Planning",
+			"function":						"auditClassicalPlanning",
+			"requiresData":				false
 		},
 		{
-			"title":						"Bayesiaanse Planning",
-			"function":						"bayesianPlanning",
-			"requiresData":					false
+			"title":							"Bayesiaanse Planning",
+			"function":						"auditBayesianPlanning",
+			"requiresData":				false
 		},
 		{
-			"title":    					"Schatting",
-			"icon":							"audit-estimation.svg"
+			"title":    					"Anders",
+			"icon":								"audit-estimation.svg"
 		},
 		{
-			"title":						"Schatting",
-			"function":						"classicalEstimation",
-			"requiresData":					true
+			"title":							"Wet van Benford",
+			"function":						"auditClassicalBenfordsLaw",
+			"requiresData":				true
+		},
+		{
+			"title":							"Schatting",
+			"function":						"auditClassicalEstimation",
+			"requiresData":				true
 		}
 	]
 }

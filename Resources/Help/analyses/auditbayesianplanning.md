@@ -58,10 +58,6 @@ size of the selection.
 - Enables explanatory text throughout the workflow to help you interpret the 
 statistical results and procedure.
 
-### Report badges:
-- When enabled, shows badges below the conclusion to faciliate easy 
-interpretation of the report.
-
 ### Planning distribution:
 - Beta: The beta distribution for infinite population sampling 
 (de Swart, Wille & Majoor, 2013).
@@ -126,7 +122,6 @@ posterior has its upper credible bound just below the materiality.
 
 R Packages
 -------
-- base R
 - jfa
 
 ----
@@ -137,6 +132,8 @@ References
 Dyer, D., and Pierce, R. L. (1993). On the choice of the prior distribution in 
 hypergeometric sampling. <i>Communications in Statistics-Theory and Methods</i>, 
 22(8), 2125-2146.
+
+Derks, K (2020). jfa: Bayesian and Classical Audit Sampling. R package version 0.1.0.
 
 Interdepartementaal Overlegorgaan Departementale Accountantsdiensten (2007). 
 <i>Handboek Auditing Rijksoverheid 2007</i>, established by the 

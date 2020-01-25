@@ -55,10 +55,6 @@ size of the selection.
 - Enables explanatory text throughout the workflow to help you interpret the 
 statistical results and procedure.
 
-### Report badges:
-- When enabled, shows badges below the conclusion to faciliate easy 
-interpretation of the report.
-
 ### Planning distribution:
 - Binomial: The binomial distribution for infinite population sampling.
 - Poisson: The poisson distribution for infinite population sampling 
@@ -95,7 +91,6 @@ corresponding sample sizes.
 
 R Packages
 -------
-- base R
 - jfa
 
 ----
@@ -105,6 +100,8 @@ References
 
 AICPA (2017). <i>Audit Guide: Audit Sampling</i>. American Institute of 
 Certied Public Accountants.
+
+Derks, K (2020). jfa: Bayesian and Classical Audit Sampling. R package version 0.1.0.
 
 Interdepartementaal Overlegorgaan Departementale Accountantsdiensten (2007). 
 <i>Handboek Auditing Rijksoverheid 2007</i>, established by the 
