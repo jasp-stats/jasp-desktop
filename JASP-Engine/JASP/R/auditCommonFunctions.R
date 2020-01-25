@@ -478,32 +478,32 @@
                                           "evaluationChecked"))
 
     descriptiveTable$addColumnInfo(name = 'populationSize',     
-                                  title = "Population size",        
-                                  type = 'string')
+                                   title = "Population size",        
+                                   type = 'string')
     descriptiveTable$addColumnInfo(name = 'populationValue',       
-                                  title = "Total value",            
-                                  type = 'string')
+                                   title = "Total value",            
+                                   type = 'string')
     descriptiveTable$addColumnInfo(name = 'absValue',       
-                                  title = "Absolute value",            
-                                  type = 'string')
+                                   title = "Absolute value",            
+                                   type = 'string')
     descriptiveTable$addColumnInfo(name = 'meanValue',        
-                                  title = "Mean",                   
-                                  type = 'string')
+                                   title = "Mean",                   
+                                   type = 'string')
     descriptiveTable$addColumnInfo(name = 'sigmaValue',          
-                                  title = "Std. deviation",         
-                                  type = 'string')
+                                   title = "Std. deviation",         
+                                   type = 'string')
     descriptiveTable$addColumnInfo(name = 'q1',          
-                                  title = "25%",                    
-                                  type = 'string', 
-                                  overtitle = "Percentile")
+                                   title = "25%",                    
+                                   type = 'string', 
+                                   overtitle = "Percentile")
     descriptiveTable$addColumnInfo(name = 'q2',          
-                                  title = "50%",                    
-                                  type = 'string', 
-                                  overtitle = "Percentile")
+                                   title = "50%",                    
+                                   type = 'string', 
+                                   overtitle = "Percentile")
     descriptiveTable$addColumnInfo(name = 'q3',          
-                                  title = "75%",                    
-                                  type = 'string', 
-                                  overtitle = "Percentile")
+                                   title = "75%",                    
+                                   type = 'string', 
+                                   overtitle = "Percentile")
 
     procedureContainer[["bookValueDescriptives"]] <- descriptiveTable
 
@@ -1219,7 +1219,7 @@
                                                                         ")</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>", 
                                                                         planningOptions[["expectedErrorsLabel"]] ,
                                                                         "</b>, the
-                                                                        maximum misstatement is estimated to be below materiality and the population can be approved."), "p")
+                                                                        maximum misstatement is estimated to be below materiality."), "p")
     
     } else if(type == "bayesian"){
 
@@ -1250,7 +1250,7 @@
                                                                         that the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains 
                                                                         below <b>", 
                                                                         planningOptions[["expectedErrorsLabel"]],
-                                                                        "</b> the maximum misstatement is estimated to be below materiality and the population can be approved."), "p")
+                                                                        "</b> the maximum misstatement is estimated to be below materiality."), "p")
     }
 
     planningContainer[["planningParagraph"]]$position <- positionInContainer
@@ -2436,6 +2436,7 @@
                                            jaspResults[["planningState"]], 
                                            jaspResults[["selectionContainer"]])
     selectionState <- data.frame(selectionState)
+    
     dataset                       <- .readDataSetToEnd(columns.as.numeric = options[["recordNumberVariable"]])
     sampleFilter                  <- rep(0, planningOptions[["populationSize"]])
 
@@ -3522,26 +3523,31 @@
 
     if(conclusion == "Approve population"){
 
-      relative <- "below"
-      containsMisstatement <- "<b>no material misstatement</b>"
+      aboveBelow <- "below"
+      lowerHigher <- "lower"
 
     } else {
 
-      relative <- "above"
-      containsMisstatement <- "<b>material misstatement</b>"
+      aboveBelow <- "above"
+      lowerHigher <- "higher"
 
     }
 
-    message <- paste0("To approve these data, a <b>", 
+    message <- paste0("The objective of this substantive testing procedure was to determine with <b>", 
                       planningOptions[["confidenceLabel"]],
-                      "</b> upper confidence bound on the population misstatement had to be determined to be
-                      lower than materiality, in this case <b>", 
+                      "</b> confidence whether the population misstatement 
+                      is lower than materiality, in this case <b>", 
                       planningOptions[["materialityLabel"]],
-                      "</b>. For the current data, the confidence bound is <b>", 
-                      relative ,"</b> materiality. The conclusion for 
-                      these data is that the data contain ", 
-                      containsMisstatement,
-                      ".")
+                      "</b>. For the current data, the <b>",
+                      planningOptions[["confidenceLabel"]],
+                      "</b> confidence bound is <b>", 
+                      aboveBelow,
+                      "</b> materiality. The conclusion 
+                      on the basis of these results is that, with <b>", 
+                      planningOptions[["confidenceLabel"]],
+                      "</b> confidence, the population misstatement is <b>", 
+                      lowerHigher,
+                      "</b> than materiality.")
 
     conclusionContainer[["conclusionParagraph"]] <- createJaspHtml(message, "p")
     conclusionContainer[["conclusionParagraph"]]$position <- 1
