@@ -483,7 +483,8 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                     labels = paste0(round(yBreaks * 100, 2), "%"),
                                     limits = c(0, max(yBreaks))) +
           ggplot2::labs(fill = "") +
-          ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = -5, r = 50))) +
+          ggplot2::theme(legend.text = ggplot2::element_text(margin = ggplot2::margin(l = -5, r = 50)),
+                         panel.grid.major.y = ggplot2::element_line(color = "#cbcbcb", size = 0.5)) +
           ggplot2::guides(fill = ggplot2::guide_legend(reverse = TRUE,
                                                       override.aes = list(size = c(7, 10), 
                                                                           shape = c(21, 22), 
