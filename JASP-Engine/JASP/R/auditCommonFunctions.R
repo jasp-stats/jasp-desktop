@@ -1772,8 +1772,8 @@
     dataLegend$type <- factor(x = dataLegend[["type"]], 
                               levels = levels(dataLegend[["type"]])[c(2,1)])
 
-    xTicks <- JASPgraphs::getPrettyAxisBreaks(xVals)
-    yTicks <- JASPgraphs::getPrettyAxisBreaks(dataErrorFree[["y"]])
+    xTicks <- JASPgraphs::getPrettyAxisBreaks(c(0, xVals))
+    yTicks <- JASPgraphs::getPrettyAxisBreaks(c(0, dataErrorFree[["y"]]))
 
     myLegend <- ggplot2::guide_legend(override.aes=list(size = 12, 
                                                        shape = 22, 
@@ -1789,12 +1789,14 @@
                          mapping = ggplot2::aes(x = x, y = y, fill = type)) +
           ggplot2::geom_point(shape = 2, 
                               alpha = 0) +
-          ggplot2::scale_x_continuous(name = "n", 
+          ggplot2::scale_x_continuous(name = "Errors", 
                                       labels = xTicks, 
-                                      breaks = xTicks) +
+                                      breaks = xTicks,
+                                      limits = range(xTicks)) +
           ggplot2::scale_y_continuous(name = "Probability", 
                                       labels = yTicks, 
-                                      breaks = yTicks) +
+                                      breaks = yTicks,
+                                      limits = range(yTicks)) +
           ggplot2::geom_bar(data = dataErrorFree, 
                             mapping = ggplot2::aes(x = x, y = y), 
                             stat = "identity", 
