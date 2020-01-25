@@ -393,6 +393,12 @@ Form {
 						text: qsTr("Expected evidence ratio")
 						name: "expectedEvidenceRatio"
 					}
+
+					CheckBox
+					{
+						text: qsTr("Expected Bayes factor (BF\u208B\u208A)")
+						name: "expectedBayesFactor"
+					}
 				}
 
 				GroupBox

@@ -1284,7 +1284,8 @@
                                     "samplingChecked",
                                     "evaluationChecked",
                                     "planningModel",
-                                    "expectedEvidenceRatio"))
+                                    "expectedEvidenceRatio",
+                                    "expectedBayesFactor"))
 
   summaryTable$addColumnInfo(name = 'materiality',          
                              title = "Materiality",          
@@ -1308,6 +1309,12 @@
   if(type == "bayesian" && options[["expectedEvidenceRatio"]]){
     summaryTable$addColumnInfo(name = 'expectedEvidenceRatio',              
                                title = "Expected evidence ratio", 
+                               type = 'string')
+  }
+
+  if(type == "bayesian" && options[["expectedBayesFactor"]]){
+    summaryTable$addColumnInfo(name = 'expectedBayesFactor',              
+                               title = "Expected BF\u208B\u208A", 
                                type = 'string')
   }
 
@@ -1371,6 +1378,8 @@
 
     if(type == "bayesian" && options[["expectedEvidenceRatio"]])
       row <- cbind(row, expectedEvidenceRatio = ".")
+    if(type == "bayesian" && options[["expectedBayesFactor"]])
+      row <- cbind(row, expectedBayesFactor = ".")
     
     summaryTable$addRows(row)
     summaryTable$addFootnote(message = "Either the materiality, the population size, or the population value is defined as zero.", symbol="<b>Analysis not ready.</b>")
@@ -1443,12 +1452,21 @@
                     k = k, 
                     n = n)
 
-  if(type == "bayesian" && options[["expectedEvidenceRatio"]]){
+  if(type == "bayesian" && 
+      (options[["expectedEvidenceRatio"]] || options[["expectedBayesFactor"]])){
 
     expResult <- .auditExpectedEvidenceRatio(planningState)
-    expectedEvidenceRatio <- round(expResult[["posteriorEvidenceRatio"]], 2)
-    row <- cbind(row, expectedEvidenceRatio = expectedEvidenceRatio)
-  
+
+    if(options[["expectedEvidenceRatio"]]){
+      expectedEvidenceRatio <- round(expResult[["posteriorEvidenceRatio"]], 2)
+      row <- cbind(row, expectedEvidenceRatio = expectedEvidenceRatio)
+    }
+
+    if(options[["expectedBayesFactor"]]){
+      expectedBayesFactor <- round(expResult[["expectedShift"]], 2)
+      row <- cbind(row, expectedBayesFactor = expectedBayesFactor)
+    }
+
   }
 
   summaryTable$addRows(row)
@@ -2903,6 +2921,7 @@
                                         "evaluationChecked",
                                         "auditResult",
                                         "evidenceRatio",
+                                        "bayesFactor",
                                         "valuta",
                                         "otherValutaName"))
 
@@ -3010,6 +3029,10 @@
   if(type == "bayesian" && options[["evidenceRatio"]])
     evaluationTable$addColumnInfo(name = 'evidenceRatio',
                                   title = "Evidence ratio",     
+                                  type = 'string')
+  if(type == "bayesian" && options[["bayesFactor"]])
+    evaluationTable$addColumnInfo(name = 'bayesFactor',
+                                  title = "BF\u208B\u208A",     
                                   type = 'string')
 
   message <- base::switch(options[["estimator"]],
@@ -3160,13 +3183,22 @@
     }
   }
 
-  if(type == "bayesian" && options[["evidenceRatio"]]){
+  if(type == "bayesian" && 
+      (options[["evidenceRatio"]] || options[["bayesFactor"]])){
 
     expResult <- .auditEvidenceRatio(planningOptions, 
                                      evaluationState)
-    evidenceRatio <- round(expResult[["posteriorEvidenceRatio"]], 2)
-    row <- cbind(row, evidenceRatio = evidenceRatio)
-  
+
+    if(options[["evidenceRatio"]]){
+      evidenceRatio <- round(expResult[["posteriorEvidenceRatio"]], 2)
+      row <- cbind(row, evidenceRatio = evidenceRatio)
+    }
+
+    if(options[["bayesFactor"]]){
+      bayesFactor <- round(expResult[["shift"]], 2)
+      row <- cbind(row, bayesFactor = bayesFactor)
+    }
+
   }
   
   evaluationTable$addRows(row)

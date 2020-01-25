@@ -132,7 +132,7 @@
 
   }
 
-  expectedShift <- round(priorEvidenceRatio / posteriorEvidenceRatio, 2)
+  expectedShift <- round(posteriorEvidenceRatio / priorEvidenceRatio, 2)
 
   if(expectedShift == "NaN") # Happens when the prior is improper (e.g., Gamma(1, 0))
     expectedShift <- Inf
