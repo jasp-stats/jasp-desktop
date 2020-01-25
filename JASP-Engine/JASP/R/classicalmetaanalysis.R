@@ -1308,11 +1308,17 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   fit.data <- data.frame(x = fitted(rma.fit), y = rstandard(rma.fit)$z)
   hlines   <- qnorm(c(0.025, 0.5, 0.975))
   lty      <- c("dotted", "dashed", "dotted")
+  xlims    <- range(fitted(rma.fit))
+  ylims    <- range(rstandard(rma.fit)$z)
   p <- ggplot2::ggplot(data = fit.data) + 
     ggplot2::geom_point(ggplot2::aes(x = x, y = y)) +
     ggplot2::geom_hline(yintercept = hlines, linetype = lty, colour = "black") +
     ggplot2::xlab("Fitted Value") + ggplot2::ylab("Standardized Residual") + 
-    ggplot2::ggtitle(title)
+    ggplot2::ggtitle(title) +
+    ggplot2::scale_x_continuous(limits = xlims,
+                                breaks = JASPgraphs::getPrettyAxisBreaks(xlims)) +
+    ggplot2::scale_y_continuous(limits = ylims,
+                                breaks = JASPgraphs::getPrettyAxisBreaks(ylims))
   p <- p + ggplot2::theme(axis.line.x         = ggplot2::element_line(),
                           axis.line.y         = ggplot2::element_line(),
                           axis.ticks.x.bottom = ggplot2::element_line()
