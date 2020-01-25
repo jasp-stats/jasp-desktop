@@ -769,6 +769,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 .metaAnalysisForestPlotFill <- function(rma.fit){
   ci.lb    <- rma.fit$yi - qnorm(rma.fit$level/2, lower.tail = FALSE) * sqrt(rma.fit$vi)
   ci.ub    <- rma.fit$yi + qnorm(rma.fit$level/2, lower.tail = FALSE) * sqrt(rma.fit$vi)
+  xlims    <- c(-1, rma.fit$k+1)
   ylims    <- c(min(ci.lb), max(ci.ub))
   ci.lb    <- round(ci.lb, digits = 2)
   ci.ub    <- round(ci.ub, digits = 2)
@@ -857,11 +858,15 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     
   p <- p + ggplot2::coord_flip() + 
     ggplot2::xlab("") + ggplot2::ylab("Observed Outcome") +
-    ggplot2::scale_y_continuous(limits = ylims, breaks = pretty(ylims),
+    ggplot2::scale_y_continuous(limits = ylims, 
+                                breaks = JASPgraphs::getPrettyAxisBreaks(ylims),
                                 expand = ggplot2::expand_scale(mult = c(0.3,0.3), add = 0))
-  p <- p + ggplot2::scale_x_continuous(breaks = dat$StudyNo, labels = dat$labs,  
+  
+  p <- p + ggplot2::scale_x_continuous(breaks   = dat$StudyNo, 
+                                       limits   = xlims,
+                                       labels   = dat$labs,  
                                        sec.axis = ggplot2::dup_axis(trans = ~., labels = dat$ci.int),
-                                       expand = ggplot2::expand_scale(mult = c(0.1,0), add = 0)) 
+                                       expand   = ggplot2::expand_scale(mult = c(0.1,0), add = 0)) 
   #p <- JASPgraphs::themeJasp(p)
   p <- p + ggplot2::theme(axis.text.y.left  = ggplot2::element_text(hjust = 0, size = 10),
                           axis.text.y.right = ggplot2::element_text(hjust = 1, size = 10),
@@ -911,6 +916,8 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   xlab         <- expression(paste(tau^2, " Value"))
   title        <- expression(paste("Profile Plot for ", tau^2))
   profile.data <- data.frame(tau2 = vcs, ll = lls)
+  
+  ylim <- c(min(lls, logLik(x)[1]), max(lls, logLik(x)[1] + 0.001*abs(logLik(x)[1])))
 
   p <- ggplot2::ggplot(data = profile.data, ggplot2::aes(x = tau2, y = ll)) +
     ggplot2::geom_point(data = profile.data, shape = 19, colour = "black") +
@@ -918,7 +925,11 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     ggplot2::geom_hline(yintercept = logLik(x), linetype = "dotted", colour = "black") +
     ggplot2::geom_vline(xintercept = x$tau2,    linetype = "dotted", colour = "black") +
     ggplot2::xlab(xlab) + ggplot2::ylab("Restricted Log-Likelihood") +
-    ggplot2::ggtitle(title) + ggplot2::scale_x_continuous(breaks = pretty(xlim))
+    ggplot2::ggtitle(title) +
+    ggplot2::scale_x_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(xlim),
+                                limits = xlim) +
+    ggplot2::scale_y_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(ylim),
+                                limits = ylim) 
   p <- p + ggplot2::theme(axis.line.x = ggplot2::element_line(),
                           axis.line.y = ggplot2::element_line())
   p <- JASPgraphs::themeJasp(p, legend.position = "none")
@@ -1004,6 +1015,9 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   ci.left  <- refline - qnorm(level[1]/2, lower.tail = FALSE) * yi.vals
   ci.right <- refline + qnorm(level[1]/2, lower.tail = FALSE) * yi.vals
 
+  xend <- max(abs(c(ci.left, ci.right, xlim)))
+  xlims <- c(-1*xend, xend)
+  
   if(inherits(x, "rma.uni.trimfill")) {
     fillcol <- ifelse(rma.fit$fill, "white", "black")
     shape   <- ifelse(rma.fit$fill, 1, 19)
@@ -1015,7 +1029,8 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   funnel.data   <- data.frame(x = xaxis.vals, y = yaxis.vals, slab = slab, fill = fillcol)
   triangle.data <- data.frame(x = c(ci.left, ci.right[ci.res:1]), 
                               y = c(yi.vals, yi.vals[ci.res:1]))
-  hlines <- seq(from = ylim[1], to = ylim[2], length.out = 5)
+  hlines <- JASPgraphs::getPrettyAxisBreaks(ylim)
+  #hlines <- seq(from = ylim[1], to = ylim[2], length.out = 5)
   p <- ggplot2::ggplot(data = funnel.data, ggplot2::aes(x = x, y = y)) 
   p <- p + ggplot2::geom_hline(yintercept = hlines, linetype  = "solid", colour = "white")
   p <- p + ggplot2::geom_polygon(data = triangle.data, fill = "white")
@@ -1036,9 +1051,12 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
                           panel.grid.major  = ggplot2::element_blank(), 
                           panel.grid.minor  = ggplot2::element_blank(),
                           legend.position   = "none")
-  p <- p + ggplot2::scale_y_reverse(limits = c(new_ylim[2], new_ylim[1]), 
-                           breaks = hlines, labels = round(hlines, 3),
-                           expand = ggplot2::expand_scale(mult = c(0,0.05), add = 0))
+  p <- p + ggplot2::scale_y_reverse(limits = c(new_ylim[2], new_ylim[1]),
+                                    breaks = hlines,
+                                    labels = round(hlines, 3),
+                                    expand = ggplot2::expand_scale(mult = c(0,0.05), add = 0)) +
+    ggplot2::scale_x_continuous(limits = xlims,
+                                breaks = JASPgraphs::getPrettyAxisBreaks(xlims))
   return(p)
 }
 
@@ -1231,6 +1249,9 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   temp.ub <- qqnorm(ub, plot.it = FALSE)
   temp.ub <- supsmu(temp.ub$x, temp.ub$y)
   
+  xlims <- range(pos.x)
+  ylims <- range(pos.y)
+  
   qq.data <- data.frame(x = pos.x, y = pos.y, ci.lb = temp.lb$y, ci.ub = temp.ub$y)
   p <- ggplot2::ggplot(data = qq.data) +
     ggplot2::ggtitle("Normal Q-Q Plot") +
@@ -1240,7 +1261,11 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     ggplot2::geom_abline(slope = 1, intercept = 0) +
     ggplot2::ylim(min(pretty(pos.y)), max(pretty(pos.y))) +
     ggplot2::xlab("Theoretical Quantiles") + 
-    ggplot2::ylab("Sample Quantiles")
+    ggplot2::ylab("Sample Quantiles") +
+    ggplot2::scale_x_continuous(limits = xlims,
+                                breaks = JASPgraphs::getPrettyAxisBreaks(xlims)) +
+    ggplot2::scale_x_continuous(limits = ylims,
+                                breaks = JASPgraphs::getPrettyAxisBreaks(ylims))
   p <- JASPgraphs::themeJasp(p)
   return(p)
 }
@@ -1260,15 +1285,17 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   xlabels[xbreaks%%7 != 0] <- " "
   xlabels[1] <- "1"
   xlims      <- c(1, maxStudy)
-  ybreaks    <- pretty(range(zi))
-  ylims      <- range(ybreaks)
+  ylims      <- range(zi)
   
   p <- ggplot2::ggplot(data = stand.data, ggplot2::aes(x = study, y = resid)) +
     ggplot2::geom_point(shape = 19, colour = "black") + ggplot2::geom_line() +
     ggplot2::geom_hline(yintercept = hlines, linetype  = linetypes, colour = "black") + 
     ggplot2::xlab("Study") + ggplot2::ylab(" ") + ggplot2::ggtitle(title)
   p <- p + ggplot2::scale_x_discrete(labels = xlabels) + 
-    ggplot2::scale_y_continuous(breaks = ybreaks, limits = ylims) + 
+    ggplot2::scale_y_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(ylims), 
+                                limits = ylims) + 
+    ggplot2::scale_X_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(xlims), 
+                                limits = xlims) +
     ggplot2::theme(axis.line.x         = ggplot2::element_line(),
                    axis.line.y         = ggplot2::element_line(),
                    axis.ticks.x.bottom = ggplot2::element_line())
