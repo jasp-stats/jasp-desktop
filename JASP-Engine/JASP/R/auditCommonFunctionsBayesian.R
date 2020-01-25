@@ -311,9 +311,8 @@
 
   if(is.null(planningContainer[["sampletable"]])){
 
-    tableTitle <- paste0("<b>Table ", 
-                        jaspResults[["tabNumber"]]$object, 
-                        ".</b> Implicit Sample")
+    tableTitle <- gettextf("<b>Table %i.</b> Implicit Sample", 
+                           jaspResults[["tabNumber"]]$object)
     
     sampletable <- createJaspTable(tableTitle)
     sampletable$position <- positionInContainer
@@ -323,19 +322,16 @@
                                     "priorStatistics"))
 
     sampletable$addColumnInfo(name = 'implicitn', 
-                              title = "Implicit sample size", 
+                              title = gettext("Implicit sample size"), 
                               type = 'string')
     sampletable$addColumnInfo(name = 'implicitk', 
-                              title = "Implicit errors", 
+                              title = gettext("Implicit errors"), 
                               type = 'string')
 
-    message <- paste0("Sample sizes shown are implicit sample sizes derived from the ARM risk assessments: IR = <b>", 
-                      options[["IR"]], 
-                      "</b> and CR = <b>", 
-                      options[["CR"]], 
-                      "</b>.")
+    message <- gettextf("Sample sizes shown are implicit sample sizes derived from the ARM risk assessments: 
+                        IR = <b>%s</b> and CR = <b>%s</b>.", options[["IR"]], options[["CR"]])
 
-    sampletable$addFootnote(message = message, symbol="<i>Note.</i>")
+    sampletable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
 
     planningContainer[["sampletable"]] <- sampletable
 
@@ -363,9 +359,8 @@
 
   if(is.null(planningContainer[["priorStatistics"]])){
 
-    tableTitle <- paste0("<b>Table ", 
-                        jaspResults[["tabNumber"]]$object, 
-                        ".</b> Prior and Expected Posterior Descriptive Statistics")
+    tableTitle <- gettextf("<b>Table %i.</b> Prior and Expected Posterior Descriptive Statistics",
+                           jaspResults[["tabNumber"]]$object)
     
     priorStatisticsTable <- createJaspTable(tableTitle)
     priorStatisticsTable$position <- positionInContainer
@@ -375,36 +370,35 @@
                                               "implicitSampleTable"))
 
     priorStatisticsTable$addColumnInfo(name = 'v', 
-                                       title = "", 
+                                       title = gettext(""), 
                                        type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'form', 
-                                      title = "Functional form", 
+                                      title = gettext("Functional form"), 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorH1', 
-                                      title = "Support H\u208B", 
+                                      title = gettextf("Support %s", "H\u208B"), 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorH0', 
-                                      title = "Support H\u208A", 
+                                      title = gettextf("Support %s", "H\u208A"), 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                      title = "Evidence ratio <sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>", 
+                                      title = gettextf("Evidence ratio %s", "<sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>"), 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorBound', 
-                                      title = paste0(options[["confidence"]]*100,"% Credible bound") , 
+                                      title = gettextf("%s%% Credible bound", options[["confidence"]]*100) , 
                                       type = 'string')
 
-    priorStatisticsTable$addFootnote(message = paste0("H\u208B: The population misstatement is lower than materiality (\u03B8 < ",
-                                                       round(planningState[["materiality"]], 4),
-                                                       "). H\u208A: The population misstatement is equal to, or higher than, materiality (\u03B8 \u2265 ",
-                                                       round(planningState[["materiality"]], 4),
-                                                       ")."), 
-                                    symbol="<i>Note.</i>")
+    priorStatisticsTable$addFootnote(message = gettextf("%s: The population misstatement is lower than materiality (%s %s). 
+                                                      %s: The population misstatement is equal to, or higher than, materiality (%s %s).", 
+                                                      "H\u208B", "\u03B8 <", round(planningState[["materiality"]], 4), 
+                                                      "H\u208A", "\u03B8 \u2265", round(planningState[["materiality"]], 4)), 
+                                    symbol = gettext("<i>Note.</i>"))
 
     planningContainer[["priorStatistics"]] <- priorStatisticsTable
 
     if(!ready || planningContainer$getError()) {
 
-        row <- data.frame(v = c("Prior", "Expected posterior", "Expected shift"))
+        row <- data.frame(v = c(gettext("Prior"), gettext("Expected posterior"), gettext("Expected shift")))
         priorStatisticsTable$addRows(row)
         return()
 
@@ -535,7 +529,7 @@
     shiftOdds <- round(expResult[["posteriorEvidenceRatio"]] / 
                        expResult[["priorEvidenceRatio"]], 2)
 
-    rows <- data.frame(v = c("Prior", "Expected posterior", "Expected shift"),
+    rows <- data.frame(v = c(gettext("Prior"), gettext("Expected posterior"), gettext("Expected shift")),
                       form = c(priorForm, posteriorForm, ""),
                       priorH1 = c(priorH1, postH1, shiftH1),
                       priorH0 = c(priorH0, postH0, shiftH0),
@@ -562,7 +556,7 @@
   if(is.null(planningContainer[["priorPlot"]])){
 
     priorPlot <- createJaspPlot(plot = NULL, 
-                                title = "Implied Prior from Risk Assessments", 
+                                title = gettext("Implied Prior from Risk Assessments"), 
                                 width = 600, 
                                 height = 400)
     priorPlot$position <- positionInContainer
@@ -589,7 +583,7 @@
                               y = dbeta(x = xseq, 
                                         shape1 = planningState[["prior"]]$aPrior, 
                                         shape2 = planningState[["prior"]]$bPrior),
-                              type = rep("Prior", length(xseq)))
+                              type = rep(gettext("Prior"), length(xseq)))
 
       postData <- data.frame(x = xseq, 
                              y = dbeta(x = xseq, 
@@ -598,7 +592,7 @@
                                        shape2 = planningState[["prior"]]$bPrior + 
                                                 planningState[["sampleSize"]] - 
                                                 planningState[["expectedSampleError"]]),
-                            type = rep("Expected\nposterior", length(xseq)))
+                            type = rep(gettext("Expected\nposterior"), length(xseq)))
 
       pdata <- data.frame(x = planningState[["materiality"]], 
                           y = dbeta(planningState[["materiality"]], 
@@ -627,7 +621,7 @@
                               y = dgamma(x = xseq, 
                                          shape = planningState[["prior"]]$aPrior, 
                                          rate = planningState[["prior"]]$bPrior),
-                              type = rep("Prior", length(xseq)))
+                              type = rep(gettext("Prior"), length(xseq)))
 
       postData <- data.frame(x = xseq, 
                              y = dgamma(x = xseq, 
@@ -635,7 +629,7 @@
                                                 planningState[["expectedSampleError"]], 
                                         rate = planningState[["prior"]]$bPrior + 
                                                planningState[["sampleSize"]]),
-                             type = rep("Expected\nposterior", length(xseq)))
+                             type = rep(gettext("Expected\nposterior"), length(xseq)))
 
       pdata <- data.frame(x = planningState[["materiality"]], 
                           y = dgamma(planningState[["materiality"]], 
@@ -668,7 +662,7 @@
                                                         planningState[["expectedSampleError"]], 
                                                     shape1 = planningState[["prior"]]$aPrior, 
                                                     shape2 = planningState[["prior"]]$bPrior),
-                              type = rep("Prior", length(xseq)))
+                              type = rep(gettext("Prior"), length(xseq)))
 
       postData <- data.frame(x = xseq, 
                              y = jfa:::.dBetaBinom(x = xseq, 
@@ -680,7 +674,7 @@
                              shape2 = planningState[["prior"]]$bPrior + 
                                       planningState[["sampleSize"]] - 
                                       planningState[["expectedSampleError"]]),
-                             type = rep("Expected\nposterior", length(xseq)))
+                             type = rep(gettext("Expected\nposterior"), length(xseq)))
 
       pdata <- data.frame(x = planningState[["materiality"]] * planningState[["N"]], 
                           y = jfa:::.dBetaBinom(ceiling(
@@ -763,21 +757,21 @@
                              lwd = 1) +
           ggplot2::scale_linetype_manual(values = scaleValues, 
                                          guide = guide) +
-          ggplot2::scale_y_continuous(name = "Density", 
+          ggplot2::scale_y_continuous(name = gettext("Density"), 
                                       breaks = yBreaks, 
                                       labels = c("", ""), 
                                       limits = range(yBreaks))
 
     if(planningState[["likelihood"]] == "hypergeometric"){
 
-      p <- p + ggplot2::scale_x_continuous(name = "Population errors", 
+      p <- p + ggplot2::scale_x_continuous(name = gettext("Population errors"), 
                                            breaks = xBreaks, 
                                            limits = range(xBreaks), 
                                            labels = xBreaks)
 
     } else {
 
-      p <- p + ggplot2::scale_x_continuous(name = "Probability of misstatement", 
+      p <- p + ggplot2::scale_x_continuous(name = gettext("Probability of misstatement"), 
                                            breaks = xBreaks, 
                                            limits = range(xBreaks), 
                                            labels = paste0(xBreaks * 100, "%"))
@@ -809,18 +803,14 @@
 
             p <- p + ggplot2::scale_shape_manual(name = "", 
                                                 values = 21, 
-                                                labels = paste0(
-                                                            options[["confidence"]]*100, 
-                                                            "% Prior \ncredible region"
-                                                          ))
+                                                labels = gettextf("%s%% Prior \ncredible region",
+                                                                  round(options[["confidence"]] * 100, 2)))
           } else {
 
             p <- p + ggplot2::scale_shape_manual(name = "", 
                                                 values = 21, 
-                                                labels = paste0(
-                                                            options[["confidence"]]*100, 
-                                                            "% Prior credible region"
-                                                          ))
+                                                labels = gettextf("%s%% Prior credible region",
+                                                                  round(options[["confidence"]] * 100, 2)))
           
           }
 
@@ -828,7 +818,8 @@
 
           p <- p + ggplot2::scale_shape_manual(name = "", 
                                                 values = c(21, 21), 
-                                                labels = c("Support\nH\u208B", "Support\nH\u208A"))
+                                                labels = c(bquote(paste(.(gettext("Support")), ~H[{"-"}])), 
+                                                           bquote(paste(.(gettext("Support")), ~H[{"+"}]))))
 
         }
 
@@ -1010,23 +1001,21 @@
                                  "binomial" = "beta", 
                                  "hypergeometric" = "beta-binomial")
 
-    priorPlotText <- createJaspHtml(paste0("<b>Figure ", 
+    priorPlotText <- createJaspHtml(gettextf("<b>Figure %i.</b> The prior probability distribution <b>(%s)</b> on the misstatement in the population. The prior parameters 
+                                           <i>%s = %s, %s = %s</i> are derived from the assessments of the inherent and control risk, along with the expected errors. %s %s",  
                                            jaspResults[["figNumber"]]$object,
-                                           ".</b> The prior probability distribution <b>(", 
                                            distribution,
-                                           ")</b> on the misstatement in the population. The prior parameters 
-                                           <i>\u03B1 = ", 
-                                           planningState[["prior"]]$aPrior, 
-                                           ", \u03B2 = ", 
-                                           planningState[["prior"]]$bPrior, 
-                                           "</i> are derived from the assessments of the inherent and control risk, along with the expected errors.",  
+                                           "\u03B1",
+                                           planningState[["prior"]]$aPrior,
+                                           "\u03B2",
+                                           planningState[["prior"]]$bPrior,
                                            ifelse(options[["priorPlotAdditionalInfo"]], 
                                            yes = "
                                            The expected errors (grey dot) receive the highest probability. The red dot represents the materiality.", 
                                            no = ""),
                                            ifelse(options[["priorPlotExpectedPosterior"]], 
-                                           yes = " 
-                                           The expected posterior has its upper confidence bound below materiality. ", 
+                                           yes = "
+                                           The expected posterior has its upper confidence bound below materiality.", 
                                            no = "")), "p")
 
     priorPlotText$position <- positionInContainer + 1
@@ -1056,7 +1045,7 @@
   if(is.null(evaluationContainer[["priorAndPosteriorPlot"]])){
 
     priorAndPosteriorPlot <- createJaspPlot(plot = NULL, 
-                                            title = "Prior and Posterior Distribution", 
+                                            title = gettext("Prior and Posterior Distribution"), 
                                             width = 600, 
                                             height = 400)
     priorAndPosteriorPlot$position <- positionInContainer
@@ -1083,7 +1072,7 @@
                                         shape1 = 1 + evaluationState[["kPrior"]], 
                                         shape2 = 1 + evaluationState[["nPrior"]] -
                                                  evaluationState[["kPrior"]]),
-                              type = rep("Prior", length(xseq)))
+                              type = rep(gettext("Prior"), length(xseq)))
 
       expPostData <- data.frame(x = xseq, 
                                 y = dbeta(x = xseq, 
@@ -1092,7 +1081,7 @@
                                           shape2 = planningState[["prior"]]$bPrior + 
                                                     planningState[["sampleSize"]] - 
                                                     planningState[["expectedSampleError"]]),
-                                type = rep("Expected\nposterior", length(xseq)))
+                                type = rep(gettext("Expected\nposterior"), length(xseq)))
 
       postData <- data.frame(x = xseq, 
                              y = dbeta(x = xseq, 
@@ -1102,7 +1091,7 @@
                                                 evaluationState[["kPrior"]] + 
                                                 evaluationState[["n"]] - 
                                                 evaluationState[["t"]]),
-                            type = rep("Posterior", length(xseq)))
+                            type = rep(gettext("Posterior"), length(xseq)))
 
       pdata <- data.frame(x = evaluationState[["materiality"]], 
                           y = dbeta(evaluationState[["materiality"]], 
@@ -1119,7 +1108,7 @@
                               y = dgamma(x = xseq, 
                                          shape = 1 + evaluationState[["kPrior"]], 
                                          rate = evaluationState[["nPrior"]]),
-                              type = rep("Prior", length(xseq)))
+                              type = rep(gettext("Prior"), length(xseq)))
 
       postData <- data.frame(x = xseq, 
                              y = dgamma(x = xseq, 
@@ -1127,7 +1116,7 @@
                                                 evaluationState[["t"]], 
                                         rate = evaluationState[["nPrior"]] + 
                                                evaluationState[["n"]]),
-                             type = rep("Posterior", length(xseq)))
+                             type = rep(gettext("Posterior"), length(xseq)))
 
       expPostData <- data.frame(x = xseq, 
                                 y = dgamma(x = xseq, 
@@ -1135,7 +1124,7 @@
                                                     planningState[["expectedSampleError"]], 
                                             rate = planningState[["prior"]]$bPrior + 
                                                   planningState[["sampleSize"]]),
-                                type = rep("Expected\nposterior", length(xseq)))
+                                type = rep(gettext("Expected\nposterior"), length(xseq)))
 
       pdata <- data.frame(x = evaluationState[["materiality"]], 
                           y = dgamma(evaluationState[["materiality"]], 
@@ -1156,7 +1145,7 @@
                                                     shape1 = 1 + evaluationState[["kPrior"]], 
                                                     shape2 = 1 + evaluationState[["nPrior"]] -
                                                              evaluationState[["kPrior"]]),
-                              type = rep("Prior", length(xseq)))
+                              type = rep(gettext("Prior"), length(xseq)))
 
       expPostData <- data.frame(x = xseq, 
                                 y = jfa:::.dBetaBinom(x = xseq, 
@@ -1168,7 +1157,7 @@
                                 shape2 = planningState[["prior"]]$bPrior + 
                                           planningState[["sampleSize"]] - 
                                           planningState[["expectedSampleError"]]),
-                                type = rep("Expected\nposterior", length(xseq)))
+                                type = rep(gettext("Expected\nposterior"), length(xseq)))
 
       postData <- data.frame(x = xseq, 
                              y = jfa:::.dBetaBinom(x = xseq, 
@@ -1181,7 +1170,7 @@
                                       evaluationState[["kPrior"]] + 
                                       evaluationState[["n"]] - 
                                       evaluationState[["k"]]),
-                             type = rep("Posterior", length(xseq)))
+                             type = rep(gettext("Posterior"), length(xseq)))
 
       pdata <- data.frame(x = evaluationState[["materiality"]] * planningOptions[["populationSize"]], 
                           y = jfa:::.dBetaBinom(ceiling(
@@ -1208,7 +1197,7 @@
                                   df2 = evaluationState[["df2"]],
                                   multiplicationFactor = evaluationState[["multiplicationFactor"]]
                              ),
-                             type = rep("Posterior", length(xseq)))
+                             type = rep(gettext("Posterior"), length(xseq)))
 
       pdata <- data.frame(x = evaluationState[["materiality"]], 
                              y = jfa:::.dCoxAndSnellF(evaluationState[["materiality"]],
@@ -1263,21 +1252,21 @@
                              lwd = 1) +
           ggplot2::scale_linetype_manual(values = scaleValues, 
                                          guide = guide) +
-          ggplot2::scale_y_continuous(name = "Density", 
+          ggplot2::scale_y_continuous(name = gettext("Density"), 
                                       breaks = yBreaks, 
                                       labels = c("", ""), 
                                       limits = range(yBreaks))
 
     if(planningOptions[["likelihood"]] == "hypergeometric"){
 
-        p <- p + ggplot2::scale_x_continuous(name = "Population errors", 
+        p <- p + ggplot2::scale_x_continuous(name = gettext("Population errors"), 
                                             breaks = xBreaks, 
                                             limits = range(xBreaks), 
                                             labels = xBreaks)
 
       } else {
 
-        p <- p + ggplot2::scale_x_continuous(name = "Probability of misstatement", 
+        p <- p + ggplot2::scale_x_continuous(name = gettext("Probability of misstatement"), 
                                             breaks = xBreaks, 
                                             limits = range(xBreaks), 
                                             labels = paste0(xBreaks * 100, "%"))
@@ -1307,16 +1296,15 @@
 
               p <- p + ggplot2::scale_shape_manual(name = "", 
                                                   values = 21, 
-                                                  labels = paste0(
-                                                              options[["confidence"]]*100, 
-                                                              "% Posterior\ncredible region"
-                                                            ))
+                                                  labels = gettextf("%s%% Posterior \ncredible region",
+                                                                  round(options[["confidence"]] * 100, 2)))
 
           } else if(options[["shadePosterior"]] == "shadePosteriorHypotheses"){
 
-            p <- p + ggplot2::scale_shape_manual(name = "", 
-                                                  values = c(21, 21), 
-                                                  labels = c("Support\nH\u208B", "Support\nH\u208A"))
+          p <- p + ggplot2::scale_shape_manual(name = "", 
+                                                values = c(21, 21), 
+                                                labels = c(bquote(paste(.(gettext("Support")), ~H[{"-"}])), 
+                                                           bquote(paste(.(gettext("Support")), ~H[{"+"}]))))
 
           }
 
@@ -1524,25 +1512,24 @@
       }
 
       p <- p + ggplot2::geom_point(mapping = ggplot2::aes(x = x, y = y), 
-                                data = pdata, 
-                                size = 3, 
-                                shape = 21, 
-                                stroke = 2, 
-                                color = "black", 
-                                fill = rgb(0.9, 0, 0, 1))
-    }
-
-    if(options[["priorAndPosteriorPlotAdditionalInfo"]] && 
-        options[["priorAndPosteriorPlotExpectedPosterior"]]){
-      keySize <- 2.5
-    } else {
-      keySize <- 4
+                                   data = pdata, 
+                                   size = 3, 
+                                   shape = 21, 
+                                   stroke = 2, 
+                                   color = "black", 
+                                   fill = rgb(0.9, 0, 0, 1))
     }
 
     myTheme <- ggplot2::theme(axis.ticks.y = ggplot2::element_blank(),
                               axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0)),
-                              legend.key.size = ggplot2::unit(keySize, "line"))
+                              legend.key.size = ggplot2::unit(3, "line"))
   
+    if(options[["priorAndPosteriorPlotAdditionalInfo"]] && 
+        options[["priorAndPosteriorPlotExpectedPosterior"]] &&
+        options[["shadePosterior"]] == "shadePosteriorHypotheses"){
+      myTheme <- myTheme +  ggplot2::theme(legend.text = ggplot2::element_text(size = 12))
+    } 
+
     p <- JASPgraphs::themeJasp(p, 
                                legend.position = "top") + myTheme
 
@@ -1552,16 +1539,14 @@
   if(options[["explanatoryText"]]){
 
     distribution <- base::switch(evaluationState[["method"]], 
-                                 "poisson" = "gamma", 
-                                 "binomial" = "beta", 
-                                 "hypergeometric" = "beta-binomial",
-                                 "coxsnell" = "Cox and Snell")
+                                 "poisson" = gettext("gamma"), 
+                                 "binomial" = gettext("beta"), 
+                                 "hypergeometric" = gettext("beta-binomial"),
+                                 "coxsnell" = gettext("Cox and Snell"))
 
-    priorAndPosteriorPlotText <- createJaspHtml(paste0("<b>Figure ", 
-                                                        jaspResults[["figNumber"]]$object ,
-                                                        ".</b> The prior and posterior probability distribution <b>(", 
-                                                        distribution, 
-                                                        ")</b> on the misstatement in the population.",
+    priorAndPosteriorPlotText <- createJaspHtml(gettextf("<b>Figure %i.</b> The prior and posterior probability distribution <b>(%s)</b> on the misstatement in the population. %s",
+                                                        jaspResults[["figNumber"]]$object,
+                                                        distribution,
                                                         ifelse(options[["priorAndPosteriorPlotAdditionalInfo"]],
                                                         yes = "The red 
                                                         dot represents the specified materiality. If the credible area under the distribution surpasses this point, the estimate 
@@ -1589,9 +1574,8 @@
 
   if(is.null(evaluationContainer[["priorAndPosteriorStatistics"]])){
 
-    tableTitle <- paste0("<b>Table ", 
-                        jaspResults[["tabNumber"]]$object, 
-                        ".</b> Prior and Posterior Descriptive Statistics")
+    tableTitle <- gettextf("<b>Table %i.</b> Prior and Posterior Descriptive Statistics",
+                        jaspResults[["tabNumber"]]$object)
     
     priorAndPosteriorStatisticsTable <- createJaspTable(tableTitle)
     priorAndPosteriorStatisticsTable$position <- positionInContainer
@@ -1599,37 +1583,36 @@
     priorAndPosteriorStatisticsTable$dependOn(options = "priorAndPosteriorStatistics")
 
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'v', 
-                                                   title = "", 
+                                                   title = gettext(""), 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'form', 
-                                                   title = "Functional form", 
+                                                   title = gettext("Functional form"), 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH1', 
-                                                   title = "Support H\u208B", 
+                                                   title = gettextf("Support %s", "H\u208B"), 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH0', 
-                                                   title = "Support H\u208A", 
+                                                   title = gettextf("Support %s", "H\u208A"), 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                                   title = "Evidence ratio <sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>", 
+                                                   title = gettextf("Evidence ratio %s", "<sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>"), 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorBound', 
-                                                   title = paste0(options[["confidence"]] * 100,"% Credible bound") , 
+                                                   title = gettextf("%s%% Credible bound", round(options[["confidence"]] * 100, 2)) , 
                                                    type = 'string')
 
-    priorAndPosteriorStatisticsTable$addFootnote(message = paste0("H\u208B: The population misstatement is lower than materiality (\u03B8 < ",
-                                                                  round(evaluationState[["materiality"]], 3),
-                                                                  "). H\u208A: The population misstatement is equal to, or higher than, materiality (\u03B8 \u2265 ",
-                                                                  round(evaluationState[["materiality"]], 3),
-                                                                  ")."), 
-                                                symbol="<i>Note.</i>")
+    priorAndPosteriorStatisticsTable$addFootnote(message = gettextf("%s: The population misstatement is lower than materiality (%s %s). 
+                                                                    %s: The population misstatement is equal to, or higher than, materiality (%s %s).",
+                                                                    "H\u208B", "\u03B8 <", round(evaluationState[["materiality"]], 3),
+                                                                    "H\u208A", "\u03B8 \u2265", round(evaluationState[["materiality"]], 3)), 
+                                                symbol = gettext("<i>Note.</i>"))
 
     evaluationContainer[["priorAndPosteriorStatistics"]] <- priorAndPosteriorStatisticsTable
 
     if(options[["auditResult"]] == "" || 
         evaluationContainer$getError()) {
 
-        row <- data.frame(v = c("Prior", "Posterior", "Shift"))
+        row <- data.frame(v = c(gettext("Prior"), gettext("Posterior"), gettext("Shift")))
         priorAndPosteriorStatisticsTable$addRows(row)
         return()
 
@@ -1787,7 +1770,7 @@
     shiftOdds <- round(expResult[["posteriorEvidenceRatio"]] / 
                        expResult[["priorEvidenceRatio"]], 2)
 
-    rows <- data.frame(v = c("Prior", "Posterior", "Shift"),
+    rows <- data.frame(v = c(gettext("Prior"), gettext("Posterior"), gettext("Shift")),
                       form = c(priorForm, posteriorForm, ""),
                       priorH1 = c(priorH1, postH1, shiftH1),
                       priorH0 = c(priorH0, postH0, shiftH0),
