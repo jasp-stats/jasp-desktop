@@ -405,7 +405,7 @@
 
   } else {
                                          
-    procedureContainer <- createJaspContainer(title= "<u>Procedure</u>")
+    procedureContainer <- createJaspContainer(title = gettext("<u>Procedure</u>"))
     procedureContainer$position <- position
 
     procedureContainer$dependOn(options = c("explanatoryText", 
@@ -435,14 +435,11 @@
                                                       position = 1)
 
 
-    procedureText <- paste0("The objective of this substantive testing procedure is to determine with a specified confidence <b>(", 
-                            planningOptions[["confidenceLabel"]], 
-                            ")</b> whether the ", 
-                            planningOptions[["absRel"]] ,
-                            " of
-                            misstatement in the target population is lower than the specified materiality of <b>", 
-                            planningOptions[["materialityLabel"]],
-                            "</b>.")
+    procedureText <- gettextf("The objective of this substantive testing procedure is to determine with a specified confidence <b>(%s)</b> whether the %s of
+                              misstatement in the target population is lower than the specified materiality of <b>%s</b>.",
+                              planningOptions[["confidenceLabel"]],
+                              planningOptions[["absRel"]],
+                              planningOptions[["materialityLabel"]])
 
     procedureContainer[["procedureParagraph"]] <- createJaspHtml(procedureText, "p")
     procedureContainer[["procedureParagraph"]]$position <- positionInContainer
@@ -465,9 +462,8 @@
 
   if(is.null(procedureContainer[["bookValueDescriptives"]])){
 
-    tableTitle <- paste0("<b>Table ", 
-                        jaspResults[["tabNumber"]]$object, 
-                        ".</b> Book Value Descriptive Statistics")
+    tableTitle <- gettextf("<b>Table %i.</b> Book Value Descriptive Statistics",
+                           jaspResults[["tabNumber"]]$object)
     
     descriptiveTable <- createJaspTable(tableTitle)
     descriptiveTable$position <- positionInContainer
@@ -478,32 +474,32 @@
                                           "evaluationChecked"))
 
     descriptiveTable$addColumnInfo(name = 'populationSize',     
-                                   title = "Population size",        
+                                   title = gettext("Population size"),        
                                    type = 'string')
     descriptiveTable$addColumnInfo(name = 'populationValue',       
-                                   title = "Total value",            
+                                   title = gettext("Total value"),            
                                    type = 'string')
     descriptiveTable$addColumnInfo(name = 'absValue',       
-                                   title = "Absolute value",            
+                                   title = gettext("Absolute value"),            
                                    type = 'string')
     descriptiveTable$addColumnInfo(name = 'meanValue',        
-                                   title = "Mean",                   
+                                   title = gettext("Mean"),                   
                                    type = 'string')
     descriptiveTable$addColumnInfo(name = 'sigmaValue',          
-                                   title = "Std. deviation",         
+                                   title = gettext("Std. deviation"),         
                                    type = 'string')
     descriptiveTable$addColumnInfo(name = 'q1',          
-                                   title = "25%",                    
+                                   title = gettext("25th"),                    
                                    type = 'string', 
                                    overtitle = "Percentile")
     descriptiveTable$addColumnInfo(name = 'q2',          
-                                   title = "50%",                    
+                                   title = gettext("50th"),                    
                                    type = 'string', 
-                                   overtitle = "Percentile")
+                                   overtitle = gettext("Percentile"))
     descriptiveTable$addColumnInfo(name = 'q3',          
-                                   title = "75%",                    
+                                   title = gettext("75th"),                    
                                    type = 'string', 
-                                   overtitle = "Percentile")
+                                   overtitle = gettext("Percentile"))
 
     procedureContainer[["bookValueDescriptives"]] <- descriptiveTable
 
@@ -544,10 +540,10 @@
                                             min.n = 4)
 
   p <- ggplot2::ggplot(data = data.frame(column), mapping = ggplot2::aes(x = column, y = ..count..)) + 
-        ggplot2::scale_x_continuous(name = paste0("Book values (", valuta, ")"),
+        ggplot2::scale_x_continuous(name = gettextf("Book values (%s)", valuta),
                                     breaks = xBreaks,
                                     limits = range(xBreaks)) +
-        ggplot2::scale_y_continuous(name = "Frequency",
+        ggplot2::scale_y_continuous(name = gettext("Frequency"),
                                     breaks = yBreaks,
                                     limits = c(0, max(yBreaks))) + 
         ggplot2::geom_histogram(
@@ -581,7 +577,7 @@
   if(is.null(procedureContainer[["bookValueDistribution"]])){
 
     bookValuePlot <- createJaspPlot(plot = NULL, 
-                                    title = "Book Value Distribution", 
+                                    title = gettext("Book Value Distribution"), 
                                     width = 600, 
                                     height = 300)
 
@@ -653,9 +649,9 @@
                                 color = rgb(0, 1, 0, 0)) +
             ggplot2::scale_shape_manual(name = "", 
                                         values = c(21, 21, 21), 
-                                        labels = c("Mean", 
-                                                    "Mean \u00B1 sd", 
-                                                    "Quartile")) +
+                                        labels = c(gettext("Mean"), 
+                                                    gettextf("Mean %s sd", "\u00B1"), 
+                                                    gettext("Quartile"))) +
             ggplot2::guides(shape = ggplot2::guide_legend(
                               override.aes = list(size = c(4, 3, 2), 
                                                   shape = c(21, 21, 21), 
@@ -677,11 +673,10 @@
 
   if(options[["explanatoryText"]]){
 
-      bookValuePlotText <- createJaspHtml(paste0("<b>Figure ", 
-                                                 jaspResults[["figNumber"]]$object ,
-                                                 ".</b> The distribution of book values in the population. The red and blue dots respectively represent the mean
+      bookValuePlotText <- createJaspHtml(gettextf("<b>Figure %s.</b> The distribution of book values in the population. The red and blue dots respectively represent the mean
                                                  and the values exactly one standard deviation from the mean. The orange dots represent the 25th, 50th (median) and
-                                                 75th percentile of the book values."), "p")
+                                                 75th percentile of the book values.",
+                                                 jaspResults[["figNumber"]]$object), "p")
       
       bookValuePlotText$position <- positionInContainer + 1
       bookValuePlotText$dependOn(optionsFromObject = procedureContainer[["bookValueDistribution"]])
@@ -701,7 +696,7 @@
   if(!is.null(jaspResults[["ARMcontainer"]])) 
     return()
 
-  ARMcontainer <- createJaspContainer(title= "<u>Audit Risk Model</u>")
+  ARMcontainer <- createJaspContainer(title = gettext("<u>Audit Risk Model</u>"))
   ARMcontainer$position <- position
   ARMcontainer$dependOn(options = c("confidence", 
                                     "IR",
@@ -774,26 +769,24 @@
     auditRiskLabel <- paste0(round(auditRisk * 100, 2), "%")
     dectectionRiskLabel <- paste0(round(detectionRisk * 100, 2), "%")
 
-    message <- paste0("Prior to the substantive testing phase, the inherent risk was determined to be <b>", 
-                      irLabel,
-                      "</b>. The internal control risk was determined
-                      to be <b>", 
-                      crLabel,
-                      "</b>. According to the Audit Risk Model, the required detection risk to maintain an audit risk of <b>", 
-                      auditRiskLabel, 
-                      "</b> should be <b>", 
-                      dectectionRiskLabel , 
-                      "</b>.")
+    message <- gettextf("Prior to the substantive testing phase, the inherent risk was determined to be <b>%s</b>. The internal control risk was determined
+                        to be <b>%s</b>. According to the Audit Risk Model, the required detection risk to maintain an audit risk of <b>%s</b> should be <b>%s</b>.",
+                        irLabel,
+                        crLabel,
+                        auditRiskLabel,
+                        dectectionRiskLabel)
 
     if(options[["IR"]] == "Custom" || options[["CR"]] == "Custom"){
 
-      message <- paste0(message, " 
-                        The translation of High, Medium and Low to probabilities is done according custom preferences</b>.")
+      message <- gettextf("%s 
+                          The translation of High, Medium and Low to probabilities is done according custom preferences</b>.",
+                          message)
     
     } else {
 
-      message <- paste0(message, " 
-                        The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>.")
+      message <- gettextf("%s 
+                        The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>.",
+                        message)
     
     }
 
@@ -929,7 +922,7 @@
 
   } else {
                                          
-    planningContainer <- createJaspContainer(title = "<u>Planning</u>")
+    planningContainer <- createJaspContainer(title = gettext("<u>Planning</u>"))
     planningContainer$position <- position
     planningContainer$dependOn(options = c("IR", 
                                            "irCustom",
@@ -963,7 +956,7 @@
   if(ready){
     if(options[["materiality"]] == "materialityAbsolute" && 
         options[["materialityValue"]] >= planningOptions[["populationValue"]])
-      planningContainer$setError("Analysis not possible: Your materiality is higher than the total value of the observations.") 
+      planningContainer$setError(gettext("Analysis not possible: Your materiality is higher than the total value of the observations.")) 
 
     expTMP <- ifelse(options[['expectedErrors']] == "expectedRelative", 
                      yes = options[["expectedPercentage"]], 
@@ -971,7 +964,7 @@
                           planningOptions[["populationValue"]])
 
     if(expTMP > planningOptions[["materiality"]])
-      planningContainer$setError("Analysis not possible: Your expected errors are higher than materiality.")
+      planningContainer$setError(gettext("Analysis not possible: Your expected errors are higher than materiality."))
   }
 }
 
@@ -1003,8 +996,8 @@
   }
 
   absRel <- ifelse(options[["materiality"]] == "materialityRelative", 
-                   yes = "<b>percentage</b>", 
-                   no = "<b>amount</b>")
+                   yes = gettext("<b>percentage</b>"), 
+                   no = gettext("<b>amount</b>"))
 
   materiality <- ifelse(options[["materiality"]] == "materialityRelative",
                         yes = options[["materialityPercentage"]], 
@@ -1108,9 +1101,9 @@
   detectionRisk <- auditRisk / inherentRisk / controlRisk
 
   if(detectionRisk >= 1){
-    planningContainer$setError("The detection risk is higher than 100%. Please 
-                                re-specify your custom values for the Inherent 
-                                risk and/or Control risk.")  
+    planningContainer$setError(gettext("The detection risk is higher than 100%. Please 
+                                        re-specify your custom values for the Inherent 
+                                        risk and/or Control risk."))  
     return()
   }
 
@@ -1150,14 +1143,14 @@
 
     if(isTryError(result)){
 
-      planningContainer$setError(paste0("An error occurred: ", 
-                                        JASP:::.extractErrorMessage(result)))
+      planningContainer$setError(gettextf("An error occurred: %s", 
+                                          JASP:::.extractErrorMessage(result)))
       return()
     }
 
     if(result[["sampleSize"]] > planningOptions[["populationSize"]]){
 
-      planningContainer$setError("The resulting sample size is larger than the population size.")
+      planningContainer$setError(gettext("The resulting sample size is larger than the population size."))
       return()
     }
 
@@ -1200,26 +1193,18 @@
 
     if(type == "frequentist"){
 
-      planningContainer[["planningParagraph"]] <- createJaspHtml(paste0("The most likely error in the data was expected to be <b>", 
+      planningContainer[["planningParagraph"]] <- createJaspHtml(gettextf("The most likely error in the data was expected to be <b>%s</b>. The sample size that is required to for a materiality of <b>%s</b>, assuming
+                                                                        the sample contains <b>%s</b> full errors, is <b>%s</b>. This sample size is based on the <b>%s</b> distribution, the inherent risk <b>(%s)</b>, the
+                                                                        control risk <b>(%s)</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>%s</b>, the
+                                                                        maximum misstatement is estimated to be below materiality.",
                                                                         planningOptions[["expectedErrorsLabel"]],
-                                                                        "</b>. The sample size that is required to for a materiality of <b>", 
-                                                                        planningOptions[["materialityLabel"]] ,
-                                                                        "</b>, assuming
-                                                                        the sample contains <b>", 
-                                                                        planningOptions[["expectedSampleError"]],
-                                                                        "</b> full errors, is <b>", 
-                                                                        planningState[["sampleSize"]] ,
-                                                                        "</b>. This sample size is based on the <b>", 
-                                                                        options[["planningModel"]], 
-                                                                        "</b> distribution, the inherent risk <b>(", 
-                                                                        options[["IR"]], 
-                                                                        ")</b>, the
-                                                                        control risk <b>(", 
-                                                                        options[["CR"]], 
-                                                                        ")</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>", 
-                                                                        planningOptions[["expectedErrorsLabel"]] ,
-                                                                        "</b>, the
-                                                                        maximum misstatement is estimated to be below materiality."), "p")
+                                                                        planningOptions[["materialityLabel"]],
+                                                                        planningState[["expectedSampleError"]],
+                                                                        planningState[["sampleSize"]],
+                                                                        options[["planningModel"]],
+                                                                        options[["IR"]],
+                                                                        options[["CR"]],
+                                                                        planningOptions[["expectedErrorsLabel"]]), "p")
     
     } else if(type == "bayesian"){
 
@@ -1228,29 +1213,20 @@
                                   "binomial" = "beta", 
                                   "hypergeometric" = "beta-binomial")
 
-      planningContainer[["planningParagraph"]] <- createJaspHtml(paste0("The most likely error in the data was expected to be <b>", 
-                                                                        planningOptions[["expectedErrorsLabel"]],
-                                                                        "</b>.  The sample size that is required to for a materiality of <b>", 
-                                                                        planningOptions[["materialityLabel"]],
-                                                                        "</b>, assuming
-                                                                        the sample contains <b>", 
-                                                                        planningState[["expectedSampleError"]],
-                                                                        "</b> full errors, is <b>", 
-                                                                        planningState[["sampleSize"]],
-                                                                        "</b>. This sample size is calculated according to the <b>", 
-                                                                        distribution, 
-                                                                        "</b> distribution, the inherent risk <b>(", 
-                                                                        options[["IR"]], 
-                                                                        ")</b>,
-                                                                        the control risk <b>(", 
-                                                                        options[["CR"]], 
-                                                                        ")</b> and the expected errors. The information in this prior distribution states that there is a <b>",
-                                                                        round(pbeta(planningState[["materiality"]], planningState[["prior"]]$aPrior, planningState[["prior"]]$bPrior) * 100, 2),
-                                                                        "%</b> prior probability 
-                                                                        that the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains 
-                                                                        below <b>", 
-                                                                        planningOptions[["expectedErrorsLabel"]],
-                                                                        "</b> the maximum misstatement is estimated to be below materiality."), "p")
+      planningContainer[["planningParagraph"]] <- createJaspHtml(gettextf("The most likely error in the data was expected to be <b>%s</b>. The sample size that is required to for a materiality of <b>%s</b>, assuming
+                                                                          the sample contains <b>%s</b> full errors, is <b>%s</b>. This sample size is based on the <b>%s</b> distribution, the inherent risk <b>(%s)</b>, the 
+                                                                          control risk <b>(%s)</b> and the expected errors. The information in this prior distribution states that there is a <b>%s%%</b> prior probability that 
+                                                                          the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains 
+                                                                          below <b>%s</b> the maximum misstatement is estimated to be below materiality.",
+                                                                          planningOptions[["expectedErrorsLabel"]],
+                                                                          planningOptions[["materialityLabel"]],
+                                                                          planningState[["expectedSampleError"]],
+                                                                          planningState[["sampleSize"]],
+                                                                          distribution,
+                                                                          options[["IR"]],
+                                                                          options[["CR"]],
+                                                                          round(pbeta(planningState[["materiality"]], planningState[["prior"]]$aPrior, planningState[["prior"]]$bPrior) * 100, 2),
+                                                                          planningOptions[["expectedErrorsLabel"]]), "p")
     }
 
     planningContainer[["planningParagraph"]]$position <- positionInContainer
@@ -1272,9 +1248,8 @@
   if(!is.null(planningContainer[["summaryTable"]]))
     return()
 
-  tableTitle <- paste0("<b>Table ", 
-                      jaspResults[["tabNumber"]]$object, 
-                      ".</b> Planning Summary")                                        
+  tableTitle <- gettextf("<b>Table %i.</b> Planning Summary",
+                         jaspResults[["tabNumber"]]$object)                                        
 
   summaryTable <- createJaspTable(tableTitle)
   summaryTable$position <- positionInContainer
@@ -1288,33 +1263,33 @@
                                     "expectedBayesFactor"))
 
   summaryTable$addColumnInfo(name = 'materiality',          
-                             title = "Materiality",          
+                             title = gettext("Materiality"),          
                              type = 'string')
   summaryTable$addColumnInfo(name = 'IR',                   
-                             title = "Inherent risk",        
+                             title = gettext("Inherent risk"),        
                              type = 'string')
   summaryTable$addColumnInfo(name = 'CR',                   
-                             title = "Control risk",         
+                             title = gettext("Control risk"),         
                              type = 'string')
   summaryTable$addColumnInfo(name = 'DR',                   
-                             title = "Detection risk",       
+                             title = gettext("Detection risk"),       
                              type = 'string')
   summaryTable$addColumnInfo(name = 'k',                    
-                             title = "Expected errors",       
+                             title = gettext("Expected errors"),       
                              type = 'string')
   summaryTable$addColumnInfo(name = 'n',                    
-                             title = "Required sample size", 
+                             title = gettext("Required sample size"), 
                              type = 'string')
 
   if(type == "bayesian" && options[["expectedEvidenceRatio"]]){
     summaryTable$addColumnInfo(name = 'expectedEvidenceRatio',              
-                               title = "Expected evidence ratio", 
+                               title = gettext("Expected evidence ratio"), 
                                type = 'string')
   }
 
   if(type == "bayesian" && options[["expectedBayesFactor"]]){
     summaryTable$addColumnInfo(name = 'expectedBayesFactor',              
-                               title = "Expected BF\u208B\u208A", 
+                               title = gettextf("Expected %s", "BF\u208B\u208A"), 
                                type = 'string')
   }
 
@@ -1354,20 +1329,21 @@
     if(type == "frequentist"){
 
       message <- base::switch(options[["planningModel"]],
-                              "Poisson" = paste0("The required sample size is based on the <b>Poisson</b> distribution."),
-                              "binomial" =  paste0("The required sample size is based on the <b>binomial</b> distribution."),
-                              "hypergeometric" = paste0("The required sample size is based on the <b>hypergeometric</b> distribution."))
+                              "Poisson" = gettext("The required sample size is based on the <b>Poisson</b> distribution."),
+                              "binomial" =  gettext("The required sample size is based on the <b>binomial</b> distribution."),
+                              "hypergeometric" = gettext("The required sample size is based on the <b>hypergeometric</b> distribution."))
     
     } else if(type == "bayesian"){
 
       message <- base::switch(options[["planningModel"]],
-                              "Poisson" = "The required sample size is based on the <b>gamma</b> distribution.",
-                              "binomial" = "The required sample size is based on the <b>beta</b> distribution.",
-                              "hypergeometric" = paste0("The required sample size is based on the <b>beta-binomial</b> distribution (N = ", options[["populationSize"]] ,")."))
+                              "Poisson" = gettext("The required sample size is based on the <b>gamma</b> distribution."),
+                              "binomial" = gettext("The required sample size is based on the <b>beta</b> distribution."),
+                              "hypergeometric" = gettextf("The required sample size is based on the <b>beta-binomial</b> distribution (N = %s).",
+                                                          options[["populationSize"]]))
     
     }
 
-    summaryTable$addFootnote(message = message, symbol="<i>Note.</i>")
+    summaryTable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
 
     row <- data.frame(materiality = planningOptions[["materialityLabel"]], 
                       IR = paste0(round(inherentRisk * 100, 2), "%"), 
@@ -1382,7 +1358,8 @@
       row <- cbind(row, expectedBayesFactor = ".")
     
     summaryTable$addRows(row)
-    summaryTable$addFootnote(message = "Either the materiality, the population size, or the population value is defined as zero.", symbol="<b>Analysis not ready.</b>")
+    summaryTable$addFootnote(message = gettext("Either the materiality, the population size, or the population value is defined as zero."), 
+                             symbol = gettext("<b>Analysis not ready.</b>"))
     
     return()
   }
@@ -1390,52 +1367,47 @@
   if(type == "frequentist"){
 
     message <- base::switch(options[["planningModel"]],
-                            "Poisson" = paste0("The required sample size is based on the <b>Poisson</b> distribution <i>(\u03BB = ", 
-                                          round(
-                                            planningState[["materiality"]] * 
-                                            planningState[["sampleSize"]], 
-                                            4), 
-                                          ")</i>."),
-                            "binomial" =  paste0("The required sample size is based on the <b>binomial</b> distribution <i>(p = ", 
-                                            round(
-                                              planningState[["materiality"]], 
-                                              2) ,
-                                            ")</i>."),
-                            "hypergeometric" = paste0("The required sample size is based on the <b>hypergeometric</b> distribution <i>(N = ", 
-                                                      planningState[["N"]],
-                                                      ", K = ", 
+                            "Poisson" = gettextf("The required sample size is based on the <b>Poisson</b> distribution <i>(%s = %s)</i>.",
+                                                 "\u03BB", 
+                                                  round(
+                                                    planningState[["materiality"]] * 
+                                                    planningState[["sampleSize"]], 
+                                                    4)),
+                            "binomial" =  gettextf("The required sample size is based on the <b>binomial</b> distribution <i>(p = %s)</i>", 
+                                                   round(planningState[["materiality"]], 
+                                                         2)),
+                            "hypergeometric" = gettextf("The required sample size is based on the <b>hypergeometric</b> distribution <i>(N = %s, K = %s)</i>.", 
+                                                      planningState[["N"]], 
                                                       ceiling(
                                                         planningState[["N"]] * 
                                                         planningState[["materiality"]]
-                                                        ),
-                                                      ")</i>."))
+                                                        )))
   
   } else if(type == "bayesian"){
 
     message <- base::switch(options[["planningModel"]],
-                            "Poisson" = paste0("The required sample size is based on the <b>gamma</b> distribution <i>(\u03B1 = ", 
-                                               planningState[["prior"]]$aPrior,
-                                               ", \u03B2 = ", 
-                                               planningState[["prior"]]$bPrior, 
-                                               ")</i>."),
-                            "binomial" = paste0("The required sample size is based on the <b>beta</b> distribution <i>(\u03B1 = ", 
-                                                planningState[["prior"]]$aPrior,
-                                                ", \u03B2 = ", 
-                                                planningState[["prior"]]$bPrior, 
-                                                ")</i>."),
-                            "hypergeometric" = paste0("The required sample size is based on the <b>beta-binomial</b> distribution <i>(N = ", 
-                                                      planningState[["N"]] - 
-                                                      planningState[["sampleSize"]] +
-                                                      planningState[["expectedSampleError"]],
-                                                      ", \u03B1 = ", 
-                                                      planningState[["prior"]]$aPrior, 
-                                                      ", \u03B2 = ", 
-                                                      planningState[["prior"]]$bPrior, 
-                                                      ")</i>."))
+                            "Poisson" = gettextf("The required sample size is based on the <b>gamma</b> distribution <i>(%s = %s, %s = %s)</i>",
+                                                  "\u03B1", 
+                                                  planningState[["prior"]]$aPrior,
+                                                  "\u03B2", 
+                                                  planningState[["prior"]]$bPrior),
+                            "binomial" = gettextf("The required sample size is based on the <b>beta</b> distribution <i>(%s = %s, %s = %s)</i>.", 
+                                                  "\u03B1",
+                                                  planningState[["prior"]]$aPrior,
+                                                  "\u03B2", 
+                                                  planningState[["prior"]]$bPrior),
+                            "hypergeometric" = gettextf("The required sample size is based on the <b>beta-binomial</b> distribution <i>(N = %s, %s = %s, %s = %s)</i>.", 
+                                                        planningState[["N"]] - 
+                                                        planningState[["sampleSize"]] +
+                                                        planningState[["expectedSampleError"]],
+                                                        "\u03B1", 
+                                                        planningState[["prior"]]$aPrior, 
+                                                        "\u03B2", 
+                                                        planningState[["prior"]]$bPrior))
   
   }
 
-  summaryTable$addFootnote(message = message, symbol="<i>Note.</i>")
+  summaryTable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
 
   k <- base::switch(options[["expectedErrors"]], 
                     "expectedRelative" = planningState[["expectedSampleError"]], 
@@ -1489,7 +1461,7 @@
   if(is.null(planningContainer[["decisionPlot"]])){
 
     decisionPlot <- createJaspPlot(plot = NULL, 
-                                  title = "Sample Size Comparison", 
+                                  title = gettext("Sample Size Comparison"), 
                                   width = 600, 
                                   height = 300)
 
@@ -1570,7 +1542,7 @@
 
       d <- data.frame(y = c(n, k), 
                       dist = rep(c("Binomial", "Poisson", "Hypergeometric"), 2),
-                      nature = rep(c("Expected error-free", "Expected errors"), 
+                      nature = rep(c(gettext("Expected error-free"), gettext("Expected errors")), 
                                    each = 3))
       d$dist <- factor(x = d$dist, levels = levels(d$dist)[c(2, 3, 1)])
       d$nature <- factor(d$nature, levels = levels(d$nature)[c(1, 2)])
@@ -1637,7 +1609,7 @@
 
       d <- data.frame(y = c(n, k), 
                       dist = rep(c("Beta", "Gamma", "Beta-binomial"), 2),
-                      nature = rep(c("Expected error-free", "Expected errors"), 
+                      nature = rep(c(gettext("Expected error-free"), gettext("Expected errors")), 
                                    each = 3))
       d$dist <- factor(x = d$dist, levels = levels(d$dist)[c(2, 3, 1)])
       d$nature <- factor(x = d$nature, levels = levels(d$nature)[c(1, 2)])
@@ -1675,7 +1647,7 @@
                         vjust = 0.5, 
                         hjust = -0.5) +
       ggplot2::xlab("") +
-      ggplot2::ylab("Required sample size") +
+      ggplot2::ylab(gettext("Required sample size")) +
       ggplot2::labs(fill = "") +
       ggplot2::scale_fill_manual(values=c("#7FE58B", "#FF6666"), 
                                  guide = ggplot2::guide_legend(reverse = TRUE))
@@ -1689,10 +1661,9 @@
 
   if(options[["explanatoryText"]] && ready){
 
-    decisionPlotText <- createJaspHtml(paste0("<b>Figure ", 
-                                              jaspResults[["figNumber"]]$object,
-                                              ".</b> Sample size comparison for the current options. The bars represent the sample size that is required under different planning distributions.
-                                              The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green."), "p")
+    decisionPlotText <- createJaspHtml(gettextf("<b>Figure %i.</b> Sample size comparison for the current options. The bars represent the sample size that is required under different planning distributions.
+                                                The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green.",
+                                                jaspResults[["figNumber"]]$object), "p")
     
     decisionPlotText$position <- positionInContainer + 1
     decisionPlotText$dependOn(optionsFromObject = planningContainer[["decisionPlot"]])
@@ -1721,7 +1692,7 @@
                                "binomial" = "Binomial", 
                                "hypergeometric" = "Hypergeometric")
 
-    plotTitle <- paste0("Implied ", likelihood, " Sampling Distribution")
+    plotTitle <- gettextf("Implied %s Sampling Distribution", likelihood)
 
     samplingDistribution <- createJaspPlot(plot = NULL, 
                                            title = plotTitle, 
@@ -1786,7 +1757,7 @@
 
     dataLegend <- data.frame(x = c(0, 0), 
                              y = c(0, 0), 
-                             type = c("Expected error-free", "Expected errors"))
+                             type = c(gettext("Expected error-free"), gettext("Expected errors")))
     dataLegend$type <- factor(x = dataLegend[["type"]], 
                               levels = levels(dataLegend[["type"]])[c(2,1)])
 
@@ -1807,10 +1778,10 @@
                          mapping = ggplot2::aes(x = x, y = y, fill = type)) +
           ggplot2::geom_point(shape = 2, 
                               alpha = 0) +
-          ggplot2::scale_x_continuous(name = "Errors", 
+          ggplot2::scale_x_continuous(name = gettext("Errors"), 
                                       labels = xTicks, 
                                       breaks = xTicks) +
-          ggplot2::scale_y_continuous(name = "Probability", 
+          ggplot2::scale_y_continuous(name = gettext("Probability"), 
                                       labels = yTicks, 
                                       breaks = yTicks,
                                       limits = range(yTicks)) +
@@ -1842,13 +1813,11 @@
 
   if(options[["explanatoryText"]] && ready){
 
-    samplingDistributionText <- createJaspHtml(paste0("<b>Figure ", 
-                                                      jaspResults[["figNumber"]]$object ,
-                                                      ".</b> The implied <b>", 
-                                                      options[["planningModel"]], 
-                                                      "</b> sampling distribution. The number of expected errors in the selection is colored in 
+    samplingDistributionText <- createJaspHtml(gettextf("<b>Figure %i.</b> The implied <b>%s</b> sampling distribution. The number of expected errors in the selection is colored in 
                                                       red and the number of expected error-free observations is colored in green. The total probability of the errors does 
-                                                      not exceed the detection risk as specified through the audit risk model."), "p")
+                                                      not exceed the detection risk as specified through the audit risk model.",
+                                                      jaspResults[["figNumber"]]$object,
+                                                      options[["planningModel"]]), "p")
     
     samplingDistributionText$position <- positionInContainer + 1
     samplingDistributionText$dependOn(optionsFromObject = planningContainer[["samplingDistribution"]])
@@ -1961,7 +1930,7 @@
 
   } else if(!is.null(planningState)){
                                          
-    selectionContainer <- createJaspContainer(title= "<u>Selection</u>")
+    selectionContainer <- createJaspContainer(title = gettext("<u>Selection</u>"))
     selectionContainer$position <- position
     selectionContainer$dependOn(optionsFromObject = planningContainer,
                                 options = c("samplingChecked",
@@ -1990,50 +1959,41 @@
   if(options[["explanatoryText"]]){
 
     samplingLabel <- base::switch(options[["selectionMethod"]], 
-                                  "randomSampling" = "random", 
-                                  "systematicSampling" = "fixed interval", 
-                                  "cellSampling" = "cell")
+                                  "randomSampling" = gettext("random"), 
+                                  "systematicSampling" = gettext("fixed interval"), 
+                                  "cellSampling" = gettext("cell"))
 
     if(!is.null(selectionState[["musFailed"]])){
       # MUS has failed for some reason, fall back to record sampling
 
-      message <- paste0("From the population of <b>", 
-                          planningOptions[["populationSize"]], 
-                          "</b> observations, <b>", 
-                          planningState[["sampleSize"]], 
-                          "</b> observations were selected using a <b>", 
-                          samplingLabel,
-                          " record sampling", 
-                          "</b> method. 
-                          <b>Warning:</b> A monetary unit sampling method was tried but failed.")
+      message <- gettextf("From the population of <b>%s</b> observations, <b>%s</b> observations were selected using a <b>%s record sampling</b> method. 
+                          <b>Warning:</b> A monetary unit sampling method was tried but failed.",
+                          planningOptions[["populationSize"]],
+                          planningState[["sampleSize"]],
+                          samplingLabel)
 
     } else {
 
     samplingLabel <- base::switch(options[["selectionType"]], 
-                                  "recordSampling" = paste(samplingLabel, "record sampling"), 
-                                  "musSampling" = paste(samplingLabel, "monetary unit sampling"))
+                                  "recordSampling" = gettextf("% record sampling", samplingLabel), 
+                                  "musSampling" = gettextf("%s monetary unit sampling", samplingLabel))
 
-    message <- paste0("From the population of <b>", 
-                        planningOptions[["populationSize"]], 
-                        "</b> observations, <b>", 
-                        planningState[["sampleSize"]], 
-                        "</b> observations were selected using a <b>", 
-                        samplingLabel, 
-                        "</b> method.")
+    message <- gettextf("From the population of <b>%s</b> observations, <b>%s</b> observations were selected using a <b>%s</b> method.",
+                        planningOptions[["populationSize"]],
+                        planningState[["sampleSize"]],
+                        samplingLabel)
 
     }
 
     if(sum(selectionState[["count"]]) > nrow(selectionState)){
 
-      message <- paste0(message, " 
-                        <b>Note:</b> The selected subset (", 
-                        nrow(selectionState) ,
-                        ") is smaller than the planned sample size (", 
-                        planningState[["sampleSize"]] ,
-                        "), as observations are selected multiple times due 
-                        to their high value. These observations (", 
-                        planningState[["sampleSize"]] - nrow(selectionState),
-                        ") are counted multiple times in the evaluation.")
+      message <- gettextf("%s 
+                          <b>Note:</b> The selected subset (%s) is smaller than the planned sample size (%s), as observations are selected multiple times due 
+                          to their high value. These observations (%s) are counted multiple times in the evaluation.",
+                          message,
+                          nrow(selectionState),
+                          planningState[["sampleSize"]],
+                          planningState[["sampleSize"]] - nrow(selectionState))
       
     }
 
@@ -2083,8 +2043,8 @@
 
       if(isTryError(result)){
 
-        selectionContainer$setError(paste0("An error occurred: ", 
-                                          JASP:::.extractErrorMessage(result)))
+        selectionContainer$setError(gettextf("An error occurred: %s", 
+                                             JASP:::.extractErrorMessage(result)))
         return()
 
       } else {
@@ -2156,9 +2116,8 @@
   if(!is.null(selectionContainer[["selectionInformationTable"]])) 
     return()
 
-  tableTitle <- paste0("<b>Table ", 
-                      jaspResults[["tabNumber"]]$object, 
-                      ".</b> Selection Summary")
+  tableTitle <- gettextf("<b>Table %i.</b> Selection Summary", 
+                         jaspResults[["tabNumber"]]$object)
   
   selectionInformationTable <- createJaspTable(tableTitle)
   selectionInformationTable$position <- positionInContainer
@@ -2169,21 +2128,21 @@
                                                  "evaluationChecked"))
   
   selectionInformationTable$addColumnInfo(name = "size", 
-                                          title ="Selection size", 
+                                          title = gettext("Selection size"), 
                                           type = "integer")
 
   if(options[["materiality"]] == "materialityAbsolute"){
 
     selectionInformationTable$addColumnInfo(name = "value", 
-                                            title = "Selection value", 
+                                            title = gettext("Selection value"), 
                                             type = "string")
     selectionInformationTable$addColumnInfo(name = "percentage", 
-                                            title = "% of population value", 
+                                            title = gettext("% of population value"), 
                                             type = "string")  
   } else {
 
     selectionInformationTable$addColumnInfo(name = "percentage", 
-                                            title = "% of total observations", 
+                                            title = gettext("% of total observations"), 
                                             type = "string")  
 
   }
@@ -2194,15 +2153,14 @@
                                             type = "string")
 
   if(options[["selectionMethod"]] != "systematicSampling"){
-    message <- paste0("The sample is drawn with <i>seed ", 
-                  options[["seed"]], 
-                  "</i>.")
+    message <- gettextf("The sample is drawn with <i>seed %s</i>.",
+                        options[["seed"]])
   } else {
-    message <- "The first unit from every interval is selected."
+    message <- gettext("The first unit from every interval is selected.")
   }
 
   selectionInformationTable$addFootnote(message = message, 
-                                        symbol = "<i>Note.</i>")
+                                        symbol = gettext("<i>Note.</i>"))
 
   selectionContainer[["selectionInformationTable"]] <- selectionInformationTable
 
@@ -2268,9 +2226,8 @@
 
   if(is.null(selectionContainer[["selectionSampleTable"]])){
 
-    tableTitle <- paste0("<b>Table ", 
-                        jaspResults[["tabNumber"]]$object, 
-                        ".</b> Selected Observations")
+    tableTitle <- gettextf("<b>Table %i.</b> Selected Observations",
+                           jaspResults[["tabNumber"]]$object)
     
     sampleTable <- createJaspTable(tableTitle)
     sampleTable$position <- positionInContainer
@@ -2280,8 +2237,7 @@
                                     "samplingChecked",
                                     "evaluationChecked"))
 
-    columnNames <- c("Row number",
-                    "Count")
+    columnNames <- c("Row number", "Count")
 
     recordVariable                  <- unlist(options[["recordNumberVariable"]])
     if(recordVariable == "")        recordVariable <- NULL
@@ -2348,18 +2304,12 @@
                         monetaryVariable, 
                         variables)
 
-    tableTitle <- paste0("<b>Table ", 
-                      jaspResults[["tabNumber"]]$object, 
-                      ".</b> Selection Descriptive Statistics")
+    tableTitle <- gettextf("<b>Table %i.</b> Selection Descriptive Statistics",
+                           jaspResults[["tabNumber"]]$object)
     
     sampleDescriptivesTable <- createJaspTable(tableTitle)
     sampleDescriptivesTable$transpose <- TRUE
     sampleDescriptivesTable$position <- positionInContainer
-
-    sampleDescriptivesTable$addFootnote(message = "Not all statistics may be 
-                                                    available for <i>Nominal Text</i> 
-                                                    variables", 
-                                        symbol="<i>Note.</i>")
 
     sampleDescriptivesTable$dependOn(options = c("sampleDescriptives", 
                                                   "mean", 
@@ -2378,36 +2328,36 @@
     sampleDescriptivesTable$addColumnInfo(name = "name",                        
                                           type = "string", 
                                           title = "")
-    sampleDescriptivesTable$addColumnInfo(name = "Valid cases",                 
+    sampleDescriptivesTable$addColumnInfo(name = gettext("Valid cases"),                 
                                           type = "integer")
     if (options[["mean"]])               
       sampleDescriptivesTable$addColumnInfo(name = "Mean",
                                             type = "number",
-                                            title = "Mean")
+                                            title = gettext("Mean"))
     if (options[["median"]])             
       sampleDescriptivesTable$addColumnInfo(name = "Median",
                                             type = "number",
-                                            title = "Median")
+                                            title = gettext("Median"))
     if (options[["sd"]])                 
       sampleDescriptivesTable$addColumnInfo(name = "Std. Deviation",
                                             type = "number", 
-                                            title = "Std. Deviation")
+                                            title = gettext("Std. Deviation"))
     if (options[["var"]])                
       sampleDescriptivesTable$addColumnInfo(name = "Variance",                    
                                             type = "number", 
-                                            title = "Variance")
+                                            title = gettext("Variance"))
     if (options[["range"]])              
       sampleDescriptivesTable$addColumnInfo(name = "Range", 
                                             type = "number", 
-                                            title = "Range")
+                                            title = gettext("Range"))
     if (options[["min"]])                
       sampleDescriptivesTable$addColumnInfo(name = "Minimum", 
                                             type = "number",
-                                            title = "Minimum")
+                                            title = gettext("Minimum"))
     if (options[["max"]])                
       sampleDescriptivesTable$addColumnInfo(name = "Maximum", 
                                             type = "number",
-                                            title = "Maximum")
+                                            title = gettext("Maximum"))
 
     selectionContainer[["sampleDescriptivesTable"]]   <- sampleDescriptivesTable
 
@@ -2602,7 +2552,7 @@
 
   } else if(!is.null(selectionState)){
                                          
-    evaluationContainer <- createJaspContainer(title = "<u>Evaluation</u>")
+    evaluationContainer <- createJaspContainer(title = gettext("<u>Evaluation</u>"))
     evaluationContainer$position <- position
     evaluationContainer$dependOn(options = c("evaluationChecked",
                                              "auditResult",
@@ -2864,29 +2814,22 @@
     }
 
     if(type == "frequentist"){
-      additionalMessage <- "probability that, when one would repeatedly sample from this population, the maximum misstatement is calculated to be lower
-                            than"
+      additionalMessage <- gettext("probability that, when one would repeatedly sample from this population, the maximum misstatement is calculated to be lower
+                            than")
     } else if(type == "bayesian"){
-      additionalMessage <- "probability that the maximum misstatement is lower than"
+      additionalMessage <- gettext("probability that the maximum misstatement is lower than")
     }
 
-    message <- paste0("The selection consisted of <b>", 
-                      sampleSizeMessage, 
-                      "</b> observations, of which <b>", 
-                      errorLabel, 
-                      "</b> were found to contain an error. The knowledge from these data, com-
-                      bined with the risk assessments results in an <b>", 
-                      planningOptions[["confidenceLabel"]], 
-                      "</b> upper confidence bound of <b>", 
-                      boundLabel,
-                      "</b>. The cumulative knowledge states that there
-                      is a <b>", 
-                      planningOptions[["confidenceLabel"]], 
-                      "</b> ",
-                      additionalMessage, 
-                      " <b>",
-                      boundLabel,
-                      "</b>.")
+    message <- gettextf("The selection consisted of <b>%s</b> observations, of which <b>%s</b> were found to contain an error. The knowledge from these data, com-
+                        bined with the risk assessments results in an <b>%s</b> upper confidence bound of <b>%s</b>. The cumulative knowledge states that there
+                        is a <b>%s</b>%s<b>%s</b>.",
+                        sampleSizeMessage,
+                        errorLabel,
+                        planningOptions[["confidenceLabel"]],
+                        boundLabel,
+                        planningOptions[["confidenceLabel"]],
+                        additionalMessage,
+                        boundLabel)
 
     evaluationContainer[["evaluationParagraph"]] <- createJaspHtml(message, "p")
     evaluationContainer[["evaluationParagraph"]]$position <- positionInContainer
@@ -2907,9 +2850,8 @@
   if(!is.null(evaluationContainer[["evaluationTable"]])) 
     return()
 
-  tableTitle <- paste0("<b>Table ", 
-                    jaspResults[["tabNumber"]]$object, 
-                    ".</b> Evaluation Summary")
+  tableTitle <- gettextf("<b>Table %i.</b> Evaluation Summary",
+                         jaspResults[["tabNumber"]]$object)
   
   evaluationTable <- createJaspTable(tableTitle)
   evaluationTable$position  <- positionInContainer
@@ -2925,21 +2867,21 @@
                                         "otherValutaName"))
 
   evaluationTable$addColumnInfo(name = 'materiality',   
-                                title = "Materiality",
+                                title = gettext("Materiality"),
                                 type = 'string')
   evaluationTable$addColumnInfo(name = 'sampleSize', 
-                                title = "Sample size", 
+                                title = gettext("Sample size"), 
                                 type = 'string')
   evaluationTable$addColumnInfo(name = 'fullErrors',  
-                                title = "Errors", 
+                                title = gettext("Errors"), 
                                 type = 'string')
   evaluationTable$addColumnInfo(name = 'totalTaint',             
-                                title = "Total tainting",
+                                title = gettext("Total tainting"),
                                 type = 'string')
 
   if(options[["mostLikelyError"]])
     evaluationTable$addColumnInfo(name = 'mle',         
-                                  title = "MLE", 
+                                  title = gettext("MLE"), 
                                   type = 'string')
 
   if(type == "frequentist"){
@@ -2973,7 +2915,7 @@
 
     detectionRisk <- auditRisk / inherentRisk / controlRisk
 
-    boundTitle <- paste0(round((1 - detectionRisk) * 100, 2),"% Confidence bound")
+    boundTitle <- gettextf("%s%% Confidence bound", round((1 - detectionRisk) * 100, 2))
 
     evaluationTable$addColumnInfo(name = 'bound',         
                               title = boundTitle, 
@@ -2981,7 +2923,7 @@
 
     if(options[["monetaryVariable"]] != "")
       evaluationTable$addColumnInfo(name = 'projm',         
-                                title = "Maximum Misstatement",           
+                                title = gettext("Maximum Misstatement"),           
                                 type = 'string')
 
   } else if(type == "bayesian"){
@@ -2995,30 +2937,30 @@
 
       if(options[["monetaryVariable"]] != "")
         evaluationTable$addColumnInfo(name = 'projm',         
-                                  title = "Maximum Misstatement",           
+                                  title = gettext("Maximum Misstatement"),           
                                   type = 'string')
 
     } else if (options[["areaUnderPosterior"]] == "displayCredibleInterval"){
 
       boundTitle <- paste0(options[["confidence"]] * 100,"% Credible interval")
       evaluationTable$addColumnInfo(name = 'lowerBound',  
-                              title = "Lower",       
+                              title = gettext("Lower"),       
                               overtitle = boundTitle, 
                               type = 'string')
        evaluationTable$addColumnInfo(name = 'upperBound',  
-                              title = "Upper",       
+                              title = gettext("Upper"),       
                               overtitle = boundTitle, 
                               type = 'string')  
 
       if(options[["monetaryVariable"]] != ""){
 
         evaluationTable$addColumnInfo(name = 'lowerProjm',  
-                          title = "Lower",       
-                          overtitle = "Maximum Misstatement",           
+                          title = gettext("Lower"),       
+                          overtitle = gettext("Maximum Misstatement"),           
                           type = 'string') 
         evaluationTable$addColumnInfo(name = 'upperProjm',  
-                                  title = "Upper",       
-                                  overtitle = "Maximum Misstatement",           
+                                  title = gettext("Upper"),       
+                                  overtitle = gettext("Maximum Misstatement"),           
                                   type = 'string')                           
 
       }                                                       
@@ -3027,33 +2969,33 @@
 
   if(type == "bayesian" && options[["evidenceRatio"]])
     evaluationTable$addColumnInfo(name = 'evidenceRatio',
-                                  title = "Evidence ratio",     
+                                  title = gettext("Evidence ratio"),     
                                   type = 'string')
   if(type == "bayesian" && options[["bayesFactor"]])
     evaluationTable$addColumnInfo(name = 'bayesFactor',
-                                  title = "BF\u208B\u208A",     
+                                  title = gettextf("BF%s", "\u208B\u208A"),     
                                   type = 'string')
 
   message <- base::switch(options[["estimator"]],
-                          "poissonBound" = "The confidence bound is calculated according to the <b>Poisson</b> distributon.",
-                          "binomialBound" = "The confidence bound is calculated according to the <b>binomial</b> distributon.",
-                          "hyperBound" = "The confidence bound is calculated according to the <b>hypergeometric</b> distribution.",
-                          "stringerBound" = "The confidence bound is calculated according to the <b>Stringer</b> method.",
-                          "regressionBound" = "The confidence bound is calculated according to the <b>regression</b> method.",
-                          "directBound" = "The confidence bound is calculated according to the <b>direct</b> method.",
-                          "differenceBound" = "The confidence bound is calculated according to the <b>difference</b> method.",
-                          "ratioBound" = "The confidence bound is calculated according to the <b>ratio</b> method.",
-                          "betaBound" = "The credible bound is calculated according to the <b>beta</b> distribution and requires the assumption that the sample taints are interchangeable.",
-                          "gammaBound" = "The credible bound is calculated according to the <b>gamma</b> distribution and requires the assumption that the sample taints are interchangeable.",
-                          "betabinomialBound" = "The credible bound is calculated according to the <b>beta-binomial</b> distribution and requires the assumption that the sample taints are interchangeable.",
-                          "coxAndSnellBound" = "The credible bound is calculated according to the <b>Cox and Snell</b> method and requires the assumption that the population taints are uniformly distributed.")
+                          "poissonBound" = gettext("The confidence bound is calculated according to the <b>Poisson</b> distributon."),
+                          "binomialBound" = gettext("The confidence bound is calculated according to the <b>binomial</b> distributon."),
+                          "hyperBound" = gettext("The confidence bound is calculated according to the <b>hypergeometric</b> distribution."),
+                          "stringerBound" = gettext("The confidence bound is calculated according to the <b>Stringer</b> method."),
+                          "regressionBound" = gettext("The confidence bound is calculated according to the <b>regression</b> method."),
+                          "directBound" = gettext("The confidence bound is calculated according to the <b>direct</b> method."),
+                          "differenceBound" = gettext("The confidence bound is calculated according to the <b>difference</b> method."),
+                          "ratioBound" = gettext("The confidence bound is calculated according to the <b>ratio</b> method."),
+                          "betaBound" = gettext("The credible bound is calculated according to the <b>beta</b> distribution and requires the assumption that the sample taints are interchangeable."),
+                          "gammaBound" = gettext("The credible bound is calculated according to the <b>gamma</b> distribution and requires the assumption that the sample taints are interchangeable."),
+                          "betabinomialBound" = gettext("The credible bound is calculated according to the <b>beta-binomial</b> distribution and requires the assumption that the sample taints are interchangeable."),
+                          "coxAndSnellBound" = gettext("The credible bound is calculated according to the <b>Cox and Snell</b> method and requires the assumption that the population taints are uniformly distributed."))
 
   if(options[["estimator"]] == "stringerBound" &&
       options[["stringerBoundLtaAdjustment"]])
-  message <- "The confidence bound is calculated according to the <b>Stringer</b> method with <b>LTA adjustment</b>."
+  message <- gettext("The confidence bound is calculated according to the <b>Stringer</b> method with <b>LTA adjustment</b>.")
 
   evaluationTable$addFootnote(message = message, 
-                              symbol="<i>Note.</i>")
+                              symbol = gettext("<i>Note.</i>"))
 
   evaluationContainer[["evaluationTable"]] <- evaluationTable
 
@@ -3219,7 +3161,7 @@
   if(is.null(evaluationContainer[["evaluationInformation"]])){
 
     evaluationInformation <- createJaspPlot(plot = NULL, 
-                                            title = "Evaluation Information", 
+                                            title = gettext("Evaluation Information"), 
                                             width = 600, 
                                             height = 300)
     evaluationInformation$position <- positionInContainer
@@ -3282,7 +3224,7 @@
       }
     }
   
-    label <- rev(c("Materiality", "Maximum error", "Most likely error"))
+    label <- rev(c(gettext("Materiality"), gettext("Maximum error"), gettext("Most likely error")))
     values <- rev(c(materiality, bound, mle))
     
     if(options[["variableType"]] == "variableTypeAuditValues" && 
@@ -3358,11 +3300,10 @@
 
   if(options[["explanatoryText"]]){
 
-    evaluationInformationText <- createJaspHtml(paste0("<b>Figure ", 
-                                                jaspResults[["figNumber"]]$object,
-                                                ".</b> Evaluation information for the current annotated selection. The materiality is compared with the 
-                                                maximum misstatement and the most likely error. The most likely error (MLE) is an estimate of the true misstatement 
-                                                in the population. The maximum error is an estimate of the maximum error in the population."), "p")
+    evaluationInformationText <- createJaspHtml(gettextf("<b>Figure %i.</b> Evaluation information for the current annotated selection. The materiality is compared with the 
+                                                          maximum misstatement and the most likely error. The most likely error (MLE) is an estimate of the true misstatement 
+                                                          in the population. The maximum error is an estimate of the maximum error in the population.",
+                                                          jaspResults[["figNumber"]]$object), "p")
     
     evaluationInformationText$position <- positionInContainer + 1
     evaluationInformationText$dependOn(optionsFromObject = evaluationContainer[["evaluationInformation"]])
@@ -3422,7 +3363,7 @@
   if(is.null(evaluationContainer[["correlationPlot"]])){
 
     correlationPlot <- createJaspPlot(plot = NULL, 
-                                      title = "Correlation Plot", 
+                                      title = gettext("Correlation Plot"), 
                                       width = 500, 
                                       height = 400)
 
@@ -3470,10 +3411,10 @@
     cols[which(plotData$x != plotData$y)] <- rgb(0.9, 0, 0, 1)
 
     p <- ggplot2::ggplot(data = plotData, mapping = ggplot2::aes(x = x, y = y)) +
-          ggplot2::scale_x_continuous(name = paste0("Book values (", planningOptions[["valuta"]], ")"),
+          ggplot2::scale_x_continuous(name = gettextf("Book values (%s)", planningOptions[["valuta"]]),
                                       breaks = xticks,
                                       labels = xLabs) +
-        ggplot2::scale_y_continuous(name = paste0("Audit values (", planningOptions[["valuta"]], ")"),
+        ggplot2::scale_y_continuous(name = gettextf("Audit values (%s)", planningOptions[["valuta"]]),
                             breaks = yticks,
                             labels = yLabs) + 
         JASPgraphs::geom_point(size = 3, fill = cols)
@@ -3505,12 +3446,11 @@
 
   if(options[["explanatoryText"]]){
 
-    correLationPlotText <- createJaspHtml(paste0("<b>Figure ", 
-                                          jaspResults[["figNumber"]]$object ,
-                                          ".</b> Scatterplot of the book values in the selection and their audit values. Red dots indicate observations that 
+    correLationPlotText <- createJaspHtml(gettextf("<b>Figure %i.</b> Scatterplot of the book values in the selection and their audit values. Red dots indicate observations that 
                                           did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. 
                                           If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient 
-                                          of the book values and the audit values, an indicator of the strengh of the linear relationship between the two variables."), "p")
+                                          of the book values and the audit values, an indicator of the strengh of the linear relationship between the two variables.",
+                                          jaspResults[["figNumber"]]$object), "p")
     
     correLationPlotText$position <- positionInContainer + 1
     correLationPlotText$dependOn(optionsFromObject = evaluationContainer[["correlationPlot"]])
@@ -3546,7 +3486,7 @@
       return()
 
     # Create a container for the conclusion
-    conclusionContainer <- createJaspContainer(title = "<u>Conclusion</u>")
+    conclusionContainer <- createJaspContainer(title = gettext("<u>Conclusion</u>"))
     conclusionContainer$position <- 5
     conclusionContainer$dependOn(optionsFromObject = evaluationContainer)
     conclusionContainer$dependOn(options = "explanatoryText")
@@ -3556,31 +3496,25 @@
 
     if(conclusion == "Approve population"){
 
-      aboveBelow <- "below"
-      lowerHigher <- "lower"
+      aboveBelow <- gettext("below")
+      lowerHigher <- gettext("lower")
 
     } else {
 
-      aboveBelow <- "above"
-      lowerHigher <- "higher"
+      aboveBelow <- gettext("above")
+      lowerHigher <- gettext("higher")
 
     }
 
-    message <- paste0("The objective of this substantive testing procedure was to determine with <b>", 
-                      planningOptions[["confidenceLabel"]],
-                      "</b> confidence whether the population misstatement 
-                      is lower than materiality, in this case <b>", 
-                      planningOptions[["materialityLabel"]],
-                      "</b>. For the current data, the <b>",
-                      planningOptions[["confidenceLabel"]],
-                      "</b> confidence bound is <b>", 
-                      aboveBelow,
-                      "</b> materiality. The conclusion 
-                      on the basis of these results is that, with <b>", 
-                      planningOptions[["confidenceLabel"]],
-                      "</b> confidence, the population misstatement is <b>", 
-                      lowerHigher,
-                      "</b> than materiality.")
+    message <- gettextf("The objective of this substantive testing procedure was to determine with <b>%s</b> confidence whether the population misstatement 
+                        is lower than materiality, in this case <b>%s</b>. For the current data, the <b>%s</b> confidence bound is <b>%s</b> materiality. The conclusion 
+                        on the basis of these results is that, with <b>%s</b> confidence, the population misstatement is <b>%s</b> than materiality.",
+                        planningOptions[["confidenceLabel"]],
+                        planningOptions[["materialityLabel"]],
+                        planningOptions[["confidenceLabel"]],
+                        aboveBelow,
+                        planningOptions[["confidenceLabel"]],
+                        lowerHigher)
 
     conclusionContainer[["conclusionParagraph"]] <- createJaspHtml(message, "p")
     conclusionContainer[["conclusionParagraph"]]$position <- 1
@@ -3609,7 +3543,7 @@
     if(!is.null(stateContainer) && stateContainer$getError())
       return()
 
-    badgeSection <- createJaspContainer(title= "<u>Report Badges</u>")
+    badgeSection <- createJaspContainer(title = gettext("<u>Report Badges</u>"))
     badgeSection$position <- position
     badgeSection$dependOn(options = c("values",
                                       "confidence",
@@ -3643,7 +3577,7 @@
       
       badge <- .auditCreateBadge(type = "annotated")
       annotationBadge <- createJaspPlot(plot = badge, 
-                          title = "Badge: <i>Annotated</i>", 
+                          title = gettext("Badge: <i>Annotated</i>"), 
                           width = 150, 
                           height = 150)
 
@@ -3696,10 +3630,10 @@
 
       # Badge for result
       if(approveBadge){
-        plotTitle <- "Badge: <i>Approved</i>"
+        plotTitle <- gettext("Badge: <i>Approved</i>")
         plotType <- "approved"
       } else {
-        plotTitle <- "Badge: <i>Not approved</i>"
+        plotTitle <- gettext("Badge: <i>Not approved</i>")
         plotType <- "not approved"
       }
 
