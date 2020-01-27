@@ -2822,7 +2822,7 @@
 
     message <- gettextf("The selection consisted of <b>%s</b> observations, of which <b>%s</b> were found to contain an error. The knowledge from these data, com-
                         bined with the risk assessments results in an <b>%s</b> upper confidence bound of <b>%s</b>. The cumulative knowledge states that there
-                        is a <b>%s</b>%s<b>%s</b>.",
+                        is a <b>%s</b> %s <b>%s</b>.",
                         sampleSizeMessage,
                         errorLabel,
                         planningOptions[["confidenceLabel"]],
