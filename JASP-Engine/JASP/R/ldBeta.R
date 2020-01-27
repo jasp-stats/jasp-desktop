@@ -130,14 +130,14 @@ LDbeta <- function(jaspResults, dataset, options, state=NULL){
 .ldBetaParsSupportMoments <- function(jaspResults, options){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
-    pars[[1]] <- gettext("shape: &alpha; \u2208 \u211D<sup>+</sup>")
-    pars[[2]] <- gettext("shape: &beta;  \u2208 \u211D<sup>+</sup>")
+    pars[[1]] <- gettextf("shape: %s", "&alpha; \u2208 \u211D<sup>+</sup>")
+    pars[[2]] <- gettextf("shape: %s", "&beta; \u2208 \u211D<sup>+</sup>")
     
-    support <- gettext("x \u2208 [0, 1]")
+    support <- "x \u2208 [0, 1]"
     
     moments <- list()
-    moments$expectation <- gettext("&alpha; (&alpha; + &beta;)<sup>-1</sup>")
-    moments$variance    <- gettext("&alpha;&beta; (&alpha; + &beta;)<sup>-2</sup> (&alpha; + &beta; + 1)<sup>-1</sup>")
+    moments$expectation <- "&alpha; (&alpha; + &beta;)<sup>-1</sup>"
+    moments$variance    <- "&alpha;&beta; (&alpha; + &beta;)<sup>-2</sup> (&alpha; + &beta; + 1)<sup>-1</sup>"
     
     jaspResults[['parsSupportMoments']] <- .ldParsSupportMoments(pars, support, moments)
   }

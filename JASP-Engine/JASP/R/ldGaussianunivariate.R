@@ -141,19 +141,19 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
     pars <- list()
     pars[[1]] <- gettext("mean: &mu; \u2208 \u211D")
     pars[[2]] <- switch(options[['parametrization']],
-                        sigma2 = gettext("variance: &sigma;<sup>2</sup> \u2208 \u211D<sup>+</sup>"),
-                        sigma  = gettext("standard deviation: &sigma; \u2208 \u211D<sup>+</sup>"),
-                        tau2   = gettext("precision: &tau;<sup>2</sup> \u2208 \u211D<sup>+</sup>"),
-                        tau    = gettext("square root of precision: &tau; \u2208 \u211D<sup>+</sup>"))
+                        sigma2 = gettextf("variance: %s",                 "&sigma;<sup>2</sup> \u2208 \u211D<sup>+</sup>"),
+                        sigma  = gettextf("standard deviation: %s",       "&sigma; \u2208 \u211D<sup>+</sup>"),
+                        tau2   = gettextf("precision: %s",                "&tau;<sup>2</sup> \u2208 \u211D<sup>+</sup>"),
+                        tau    = gettextf("square root of precision: %s", "&tau; \u2208 \u211D<sup>+</sup>"))
     
-    support <- gettext("x \u2208 \u211D")
+    support <- "x \u2208 \u211D"
     
     moments <- list()
     moments$expectation <- gettext("&mu;")
     moments$variance <- switch(options[['parametrization']],
-                               sigma2 = gettext("&sigma;<sup>2</sup>"),
-                               sigma  = gettext("&sigma;<sup>2</sup>"),
-                               gettext("1/&tau;<sup>2</sup>"))
+                               sigma2 = "&sigma;<sup>2</sup>",
+                               sigma  = "&sigma;<sup>2</sup>",
+                                        "1/&tau;<sup>2</sup>")
 
     jaspResults[['parsSupportMoments']] <- .ldParsSupportMoments(pars, support, moments)
   }

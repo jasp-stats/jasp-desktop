@@ -136,18 +136,18 @@ LDexponential <- function(jaspResults, dataset, options, state=NULL){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
     pars[[1]] <- switch(options[['parametrization']],
-                        scale = gettext("scale: &beta; \u2208 \u211D<sup>+</sup>"),
-                        gettext("rate: &lambda; \u2208 \u211D<sup>+</sup>"))
+                        scale = gettextf("scale: %s", "&beta; \u2208 \u211D<sup>+</sup>"),
+                        gettextf("rate: %s", "&lambda; \u2208 \u211D<sup>+</sup>"))
     
-    support <- gettext("x \u2208 \u211D<sup>+</sup>")
+    support <- "x \u2208 \u211D<sup>+</sup>"
     
     moments <- list()
     moments$expectation <- switch(options[['parametrization']],
-                                  scale = gettext("&beta;"),
-                                  gettext("&lambda;<sup>-1</sup>"))
+                                  scale = "&beta;",
+                                  "&lambda;<sup>-1</sup>")
     moments$variance <- switch(options[['parametrization']],
-                               scale = gettext("&beta;<sup>2</sup>"),
-                               gettext("&lambda;<sup>-2</sup>"))
+                               scale = "&beta;<sup>2</sup>",
+                               "&lambda;<sup>-2</sup>")
     
     jaspResults[['parsSupportMoments']] <- .ldParsSupportMoments(pars, support, moments)
   }

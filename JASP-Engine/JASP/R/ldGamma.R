@@ -138,25 +138,25 @@ LDgamma <- function(jaspResults, dataset, options, state=NULL){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
     pars[[1]] <- switch(options[['parametrization']],
-                        scale = gettext("shape: k \u2208 \u211D<sup>+</sup>"),
-                        mean  = gettext("shape: k \u2208 \u211D<sup>+</sup>"),
-                        gettext("shape: &alpha; \u2208 \u211D<sup>+</sup>"))
+                        scale = gettextf("shape: %s", "k \u2208 \u211D<sup>+</sup>"),
+                        mean  = gettextf("shape: %s", "k \u2208 \u211D<sup>+</sup>"),
+                                gettextf("shape: %s", "&alpha; \u2208 \u211D<sup>+</sup>"))
     pars[[2]] <- switch(options[['parametrization']],
-                        scale = gettext("scale: &theta; \u2208 \u211D<sup>+</sup>"),
-                        mean  = gettext("mean: &mu; \u2208 \u211D<sup>+</sup>"),
-                        gettext("rate: &beta; \u2208 \u211D<sup>+</sup>"))
+                        scale = gettextf("scale: %s", "&theta; \u2208 \u211D<sup>+</sup>"),
+                        mean  = gettextf("mean: %s",  "&mu; \u2208 \u211D<sup>+</sup>"),
+                                gettextf("rate: %s",  "&beta; \u2208 \u211D<sup>+</sup>"))
     
-    support <- gettext("x \u2208 \u211D<sup>+</sup>")
+    support <- "x \u2208 \u211D<sup>+</sup>"
     
     moments <- list()
     moments$expectation <- switch(options[['parametrization']], 
-                                  scale = gettext("k&theta;"), 
-                                  mean  = gettext("&mu;"),
-                                  gettext("&alpha;&beta;<sup>-1</sup>"))
+                                  scale = "k&theta;", 
+                                  mean  = "&mu;",
+                                          "&alpha;&beta;<sup>-1</sup>")
     moments$variance <- switch(options[['parametrization']],
-                               scale = gettext("k&theta;<sup>2</sup>"),
-                               mean  = gettext("&mu;<sup>2</sup>k<sup>-1</sup>"),
-                               gettext("&alpha;&beta;<sup>-2</sup>"))
+                               scale = "k&theta;<sup>2</sup>",
+                               mean  = "&mu;<sup>2</sup>k<sup>-1</sup>",
+                                       "&alpha;&beta;<sup>-2</sup>")
     
     jaspResults[['parsSupportMoments']] <- .ldParsSupportMoments(pars, support, moments)
   }

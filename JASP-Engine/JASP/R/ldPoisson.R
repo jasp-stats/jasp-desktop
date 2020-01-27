@@ -120,13 +120,13 @@ LDpoisson <- function(jaspResults, dataset, options, state=NULL){
 .ldPoissonParsSupportMoments <- function(jaspResults, options){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
-    pars[[1]] <- gettext("rate: \u03BB \u2208 \u211D: \u03BB \u003E 0")
+    pars[[1]] <- gettextf("rate: %s", "\u03BB \u2208 \u211D: \u03BB \u003E 0")
     
-    support <- gettext("x \u2208 \u2124: x \u2265 0")
+    support <- "x \u2208 \u2124: x \u2265 0"
     
     moments <- list()
-    moments$expectation <- gettext("\u03BB")
-    moments$variance <- gettext("\u03BB")
+    moments$expectation <- "\u03BB"
+    moments$variance <- "\u03BB"
     
     jaspResults[['parsSupportMoments']] <- .ldParsSupportMoments(pars, support, moments)
   }

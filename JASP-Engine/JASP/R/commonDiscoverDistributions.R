@@ -554,7 +554,7 @@
                                 expand = c(0.1, 0.1),
                                 breaks = dat$mids) + 
     ggplot2::xlab(options$variable) +
-    ggplot2::ylab(paste0(gettext("Probability Mass")))
+    ggplot2::ylab(gettext("Probability Mass"))
   
   p <- JASPgraphs::themeJasp(p)
   
@@ -591,7 +591,8 @@
     ggplot2::stat_function(fun = options[['cdfFun']], args = as.list(estParameters), size = 1.5) + 
     ggplot2::scale_x_continuous(limits = range(variable), breaks = pretty(range(variable))) +
     ggplot2::scale_y_continuous(limits = 0:1) + 
-    ggplot2::ylab(gettext("Probability (X \u2264 x)")) + ggplot2::xlab(options[['variable']])
+    ggplot2::ylab(substitute(p~(X <= x), list(p = gettext("Probability")))) +
+    ggplot2::xlab(options[['variable']])
   
   p <- JASPgraphs::themeJasp(p)
   
@@ -853,7 +854,7 @@
   
   
   plot <- plot + 
-    ggplot2::ylab(gettext("Probability (X \u2264 x)")) +
+    ggplot2::ylab(substitute(p~(X <= x), list(p = gettext("Probability")))) +
     ggplot2::scale_x_continuous(limits = options[['range_x']], 
                                 breaks = JASPgraphs::getPrettyAxisBreaks(options[['range_x']])) +
     ggplot2::scale_y_continuous(limits = c(0, 1))
@@ -910,7 +911,7 @@
   
   plot <- ggplot2::ggplot(data = data.frame(x = prange), ggplot2::aes(x = x)) +
     ggplot2::stat_function(fun = options[['qFun']], n = 151, args = args, size = 1.25)  +
-    ggplot2::ylab("x") + ggplot2::xlab(gettext("Probability(X \u2264 x)")) +
+    ggplot2::ylab("x") + ggplot2::xlab(substitute(p~(X <= x), list(p = gettext("Probability")))) +
     ggplot2::scale_x_continuous(limits = 0:1) +
     ggplot2::scale_y_continuous(limits = options[['range_x']], 
                                 breaks = JASPgraphs::getPrettyAxisBreaks(options[['range_x']]))
@@ -1045,7 +1046,7 @@
   # display only pretty integers
   breaks <- breaks[breaks %% 1 == 0]
   plot <- plot + 
-    ggplot2::ylab(gettext("Probability (X = x)")) + 
+    ggplot2::ylab(substitute(p~(X == x), list(p = gettext("Probability")))) + 
     ggplot2::scale_x_continuous(limits = xlim,
                                 breaks = breaks,
                                 labels = breaks,
@@ -1176,7 +1177,7 @@
   # display only pretty integers
   breaks <- breaks[breaks %% 1 == 0]
   plot <- plot + 
-    ggplot2::ylab(gettext("Probability (X \u2264 x)")) + 
+    ggplot2::ylab(substitute(p~(X <= x), list(p = gettext("Probability")))) + 
     ggplot2::scale_x_continuous(limits = xlim,
                                 breaks = breaks,
                                 labels = breaks,
@@ -1280,7 +1281,7 @@
     ggplot2::geom_rug() +
     ggplot2::scale_x_continuous(limits = range(variable)*1.1) +
     ggplot2::xlab(options$variable) +
-    ggplot2::ylab(gettextf("Freq (%s \u2264 x)", options[['variable']]))
+    ggplot2::ylab(substitute(f~(v == x), list(f = gettext("Freq"), v = options[['variable']])))
   
   p <- JASPgraphs::themeJasp(p)
   plot[['plotObject']] <- p

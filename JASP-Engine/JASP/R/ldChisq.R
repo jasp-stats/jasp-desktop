@@ -129,14 +129,14 @@ LDchisq <- function(jaspResults, dataset, options, state=NULL){
 .ldChisqParsSupportMoments <- function(jaspResults, options){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
-    pars[[1]] <- gettext("degree of freedom: k \u2208 \u211D<sup>+</sup>")
-    pars[[2]] <- gettext("non-centrality: &lambda; \u2208 \u211D")
+    pars[[1]] <- gettextf("degree of freedom: %s", "k \u2208 \u211D<sup>+</sup>")
+    pars[[2]] <- gettextf("non-centrality: %s",    "&lambda; \u2208 \u211D")
     
-    support <- gettext("x \u2208 \u211D<sup>+</sup>")
+    support <- "x \u2208 \u211D<sup>+</sup>"
     
     moments <- list()
-    moments$expectation <- gettext("k + &lambda;")
-    moments$variance <- gettext("2(k + 2 &lambda;)")
+    moments$expectation <- "k + &lambda;"
+    moments$variance <- "2(k + 2 &lambda;)"
     
     jaspResults[['parsSupportMoments']] <- .ldParsSupportMoments(pars, support, moments)
   }
