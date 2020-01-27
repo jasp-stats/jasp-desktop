@@ -233,7 +233,7 @@
 
 .computeObservedMoments <- function(x, max.moment = 2, about.mean = FALSE){
   x <- na.omit(x)
-  n <- length(x)
+  
   moments <- numeric(length = max.moment)
   moments[1] <- mean(x)
   
@@ -245,7 +245,7 @@
   
   
   for(i in 2:max.moment){
-    moments[i] <- sum(x^i) / n
+    moments[i] <- mean(x^i)
   }
   
   return(moments)
@@ -599,23 +599,6 @@
   
   return()
 }
-
-#
-# Copyright (C) 2019 University of Amsterdam
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
 
 .ldGetPlotContainer <- function(jaspResults, options, name, title, position){
   if(!is.null(jaspResults[[name]])){
