@@ -38,11 +38,15 @@
 .ldCheckInteger <- function(variable, errors){
   is_integer <- all((variable %% 1) == 0)
   
-  if(isFALSE(errors)){
-    errors <- !is_integer
+  if(isFALSE(errors) && is_integer){
+    errors <- FALSE
+  } else if(isFALSE(errors) && !is_integer){
+    errors <- list(integer = TRUE, message = gettext("The following problem(s) occurred while running the analysis:<ul><li>Variable has to be discrete (i.e., integer)</li></ul>"))
   } else if(!is_integer){
     errors[['integer']] <- TRUE
-    errors[['message']] <- paste(errors[['message']], gettext("<ul><li>Variable has to be discrete (i.e., integer).</li></ul>"))
+    errors[['message']] <- paste(errors[['message']], gettext("<ul><li>Variable has to be discrete (i.e., integer)</li></ul>"))
+  } else{
+    errors <- errors
   }
   
   return(errors)
@@ -275,7 +279,7 @@
   if(!is.null(container[['estParametersTable']])) return()
   
   tab <- createJaspTable(title = gettext("Estimated Parameters"))
-  tab$dependOn(c("outputEstimates", "outputSE", "ciInterval", "ciIntervalInterval", "parametrization", method))
+  tab$dependOn(c("outputEstimates", "outputSE", "ciInterval", "ciIntervalInterval", "parametrization", method, options$parValNames))
   tab$position <- 1
   tab$showSpecifiedColumnsOnly <- TRUE
   tab$setExpectedSize(rows = length(options$pars) - length(options$fix.pars))
@@ -358,7 +362,7 @@
   
   results$structured <- structureFun(results$fitdist, options)
   
-  mleContainer[['mleResults']] <- createJaspState(object = results, dependencies = c(options$parValNames, "ciIntervalInterval"))
+  mleContainer[['mleResults']] <- createJaspState(object = results, dependencies = c(options$parValNames, "ciIntervalInterval", "parametrization"))
   
   return(results)
 }
