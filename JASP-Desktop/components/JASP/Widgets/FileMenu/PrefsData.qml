@@ -46,27 +46,43 @@ Item
 
 			Item //Use default spreadsheet editor
 			{
-				height:	useDefaultEditor.height + (editCustomEditor.visible ? editCustomEditor.height : 0)
-				width:	parent.width - jaspTheme.generalAnchorMargin
+
+				height:		useDefaultEditor.height + (editCustomEditor.visible ? editCustomEditor.height : linuxInfo.visible ? linuxInfo.height : 0)
+				width:		parent.width - jaspTheme.generalAnchorMargin
 
 				CheckBox
 				{
 					id:					useDefaultEditor
 					label:				qsTr("Use default spreadsheet editor")
-					checked:			preferencesModel.useDefaultEditor
+					checked:			LINUX || preferencesModel.useDefaultEditor
 					onCheckedChanged:	preferencesModel.useDefaultEditor = checked
 					KeyNavigation.down:	browseEditorButton
 					KeyNavigation.tab:	browseEditorButton
+					enabled:			!LINUX
+				}
+
+				Label
+				{
+					id:					linuxInfo
+					text:				"<i>On linux the default spreadsheet editor is always used.</i>"
+					visible:			LINUX
+					textFormat:			Text.StyledText
+
+					anchors
+					{
+						top:			useDefaultEditor.bottom
+						left:			useDefaultEditor.left
+						leftMargin:		jaspTheme.subOptionOffset
+					}
 				}
 
 				Item
 				{
 					id:					editCustomEditor
-					visible:			!preferencesModel.useDefaultEditor
+					visible:			!LINUX && !preferencesModel.useDefaultEditor
 					width:				parent.width
 					height:				browseEditorButton.height
 					anchors.top:		useDefaultEditor.bottom
-
 
 					RectangularButton
 					{
@@ -118,7 +134,6 @@ Item
 								target:					preferencesModel
 								onCustomEditorChanged:	customEditorText.text = preferencesModel.customEditor
 							}
-
 						}
 					}
 				}

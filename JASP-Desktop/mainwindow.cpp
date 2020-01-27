@@ -384,8 +384,9 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(columnType::nominal)		);
 	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
 
-	bool	debug = false,
-			isMac = false;
+	bool	debug	= false,
+			isMac	= false,
+			isLinux = false;
 
 #ifdef JASP_DEBUG
 	debug = true;
@@ -395,8 +396,16 @@ void MainWindow::loadQML()
 	isMac = true;
 #endif
 
+#ifdef __linux__
+	isLinux = true;
+#endif
+
+	bool isWindows = !isMac && !isLinux;
+
 	_qml->rootContext()->setContextProperty("DEBUG_MODE",			debug);
 	_qml->rootContext()->setContextProperty("MACOS",				isMac);
+	_qml->rootContext()->setContextProperty("LINUX",				isLinux);
+	_qml->rootContext()->setContextProperty("WINDOWS",				isWindows);
 	_qml->rootContext()->setContextProperty("iconFiles",			_iconFiles);
 	_qml->rootContext()->setContextProperty("iconInactiveFiles",	_iconInactiveFiles);
 	_qml->rootContext()->setContextProperty("iconDisabledFiles",	_iconDisabledFiles);
@@ -1400,6 +1409,10 @@ void MainWindow::startDataEditor(QString path)
 {
 	QFileInfo fileInfo(path);
 
+#ifdef __linux__
+	//Linux means flatpak, which doesn't support launching a random binary
+#else
+
 	bool useDefaultSpreadsheetEditor = Settings::value(Settings::USE_DEFAULT_SPREADSHEET_EDITOR).toBool();
 	QString appname = Settings::value(Settings::SPREADSHEET_EDITOR_NAME).toString();
 
@@ -1425,6 +1438,7 @@ void MainWindow::startDataEditor(QString path)
 			MessageForwarder::showWarning("Start Editor", "Unable to start the editor : " + appname + ". Please check your editor settings in the preference menu.");
 	}
 	else
+#endif
 		if (!QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode)))
 			MessageForwarder::showWarning("Start Spreadsheet Editor", "No default spreadsheet editor for file " + fileInfo.completeBaseName() + ". Use Preferences to set the right editor.");
 
