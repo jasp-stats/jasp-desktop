@@ -259,14 +259,14 @@ Descriptives <- function(jaspResults, dataset, options) {
     tempPercentNames <- 1/equalGroupsNo * 1:(equalGroupsNo-1) * 100
     
     for (i in seq_along(tempPercentNames)) 
-      stats$addColumnInfo(name=paste("eg", i, sep=""), title=gettextf("%dth percentile", round(tempPercentNames[i], 2)), type="number")
+      stats$addColumnInfo(name=paste("eg", i, sep=""), title=gettextf("%gth percentile", round(tempPercentNames[i], 2)), type="number")
     
   }
 
   if (options$percentileValuesPercentiles) {
     
     for (i in percentilesPercentiles) 
-      stats$addColumnInfo(name=paste("pc", i, sep=""), title=gettextf("%dth percentile", i), type="number")
+      stats$addColumnInfo(name=paste("pc", i, sep=""), title=gettextf("%gth percentile", i), type="number")
     
   }
   

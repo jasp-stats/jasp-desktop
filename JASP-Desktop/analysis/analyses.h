@@ -68,7 +68,7 @@ public:
 	void		clear();
 	void		reload(Analysis* analysis, bool logProblem);
 	
-	bool		allCreatedInCurrentVersion() const;
+	bool		allFresh() const;
 
 	void		setAnalysesUserData(Json::Value userData);
 	void		refreshAnalysesUsingColumns(std::vector<std::string> changedColumns,	 std::vector<std::string> missingColumns,	 std::map<std::string, std::string> changeNameColumns,	 std::vector<std::string> oldColumnNames, bool hasNewColumns = false);

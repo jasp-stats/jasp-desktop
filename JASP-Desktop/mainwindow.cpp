@@ -660,7 +660,7 @@ void MainWindow::plotPPIChangedHandler(int, bool wasUserAction)
 
 void MainWindow::refreshPlotsHandler(bool askUserForRefresh)
 {
-	if (_analyses->allCreatedInCurrentVersion())
+	if (_analyses->allFresh())
 		_engineSync->refreshAllPlots();
 	else if (askUserForRefresh && MessageForwarder::showYesNo("Version incompatibility", "Your analyses were created in an older version of JASP, to change the PPI of the images they must be refreshed first.\n\nRefresh all analyses?"))
 		_analyses->refreshAllAnalyses();
@@ -695,7 +695,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	if (analysis == nullptr)
 		return;
 
-	if (analysis->version() != AppInfo::version)
+	if (analysis->needsRefresh())
 	{
 		if(MessageForwarder::showYesNo("Version incompatibility", "This analysis was created in an older version of JASP, to save the image it must be refreshed first.\n\nRefresh the analysis?"))
 			analysis->refresh();
@@ -767,7 +767,7 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
     if (analysis == nullptr)
         return;
 
-	if (analysis->version() != AppInfo::version)
+	if (analysis->needsRefresh())
 	{
 		if (MessageForwarder::showYesNo("Version incompatibility", "This analysis was created in an older version of JASP, to resize the image it must be refreshed first.\n\nRefresh the analysis?"))
 			analysis->refresh();

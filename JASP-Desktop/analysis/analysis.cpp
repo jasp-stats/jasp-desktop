@@ -158,6 +158,8 @@ void Analysis::setResults(const Json::Value & results, const Json::Value & progr
 	emit resultsChangedSignal(this);
 
 	processResultsForDependenciesToBeShown();
+
+	_wasUpgraded = false;
 }
 
 void Analysis::imageSaved(const Json::Value & results)
@@ -645,4 +647,9 @@ std::string Analysis::upgradeMsgsForOption(const std::string & name) const
 		out << (i > 0 ? "\n" : "") << msg[i];
 
 	return out.str();
+}
+
+bool Analysis::needsRefresh() const
+{
+	return version() != AppInfo::version || _wasUpgraded;
 }
