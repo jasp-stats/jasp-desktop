@@ -13,6 +13,8 @@ typedef std::map<std::string, std::vector<std::string>> UpgradeMsgs; //option na
 DECLARE_ENUM(BoolOpType, AND, OR, NOT, XOR);
 DECLARE_ENUM(ModifyType, Flatten); //Looks silly now but maybe we will have more then one possibility later ;)
 
+extern const char * logId;
+
 struct BoolOp
 {
 	BoolOp() : _noOp(true) {}
@@ -21,6 +23,8 @@ struct BoolOp
 	static bool optionContainsConditional(const Json::Value & conditional, const Json::Value & options);
 
 	bool apply(const Json::Value & options) const;
+
+	std::string toString() const;
 
 private:
 	BoolOpType					_type;
@@ -47,9 +51,9 @@ private:
 	void applyRename(	Json::Value & options, const std::string & oldName, const std::string & newName,	UpgradeMsgs & msgs)	const;
 	void applyCopy(		Json::Value & options, const std::string & oldName, const std::string & newName,	UpgradeMsgs & msgs)	const;
 	void applyRemove(	Json::Value & options, const std::string & name,									UpgradeMsgs & msgs)	const;
-	void applySetValue(	Json::Value & options, const std::string & name,	const Json::Value & newValue)						const;
-	void applySetBool(	Json::Value & options, const std::string & name,	const BoolOp	  & newBool)						const;
-	void applyModifier(	Json::Value & options, const std::string & name,	const ModifyType	modifier)						const;
+	void applySetValue(	Json::Value & options, const std::string & name,	const Json::Value & newValue,	UpgradeMsgs & msgs) const;
+	void applySetBool(	Json::Value & options, const std::string & name,	const BoolOp	  & newBool ,	UpgradeMsgs & msgs) const;
+	void applyModifier(	Json::Value & options, const std::string & name,	const ModifyType	modifier,	UpgradeMsgs & msgs) const;
 
 	BoolOp								_conditional;
 	std::map<std::string, std::string>	_optionMsgs,

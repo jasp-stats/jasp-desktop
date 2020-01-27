@@ -67,8 +67,9 @@ public:
 	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
 	Q_INVOKABLE void	duplicateMe();
 
-	bool isWaitingForModule()	{ return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
-	bool isDynamicModule()		{ return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
+	bool needsRefresh()			const;
+	bool isWaitingForModule()	const { return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
+	bool isDynamicModule()		const { return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
 	void setResults(	const Json::Value & results, const Json::Value & progress = Json::nullValue);
 	void imageSaved(	const Json::Value & results);
 	void saveImage(		const Json::Value & options);
@@ -146,7 +147,7 @@ public:
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}
 	void					runScriptRequestDone(const QString& result, const QString& controlName);
 
-	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs) { _msgs = msgs; }
+	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs) { _msgs = msgs; _wasUpgraded = true; }
 	std::string				upgradeMsgsForOption(const std::string & name) const;
 
 
@@ -221,7 +222,8 @@ private:
 							_rfile,
 							_showDepsName	= "";
 	bool					_useJaspResults = false,
-							_isDuplicate	= false;
+							_isDuplicate	= false,
+							_wasUpgraded	= false;
 	Version					_version;
 	int						_revision		= 0;
 

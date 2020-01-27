@@ -119,20 +119,29 @@ UpgradeMsgs Upgrader::upgradeAnalysisData(Json::Value & analysis) const
 
 void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs & msgs, StepsTaken & stepsTaken) const
 {
-	std::string		module		= analysis["module"].asString(), //analysis.isMember("dynamicModule") ? analysis["dynamicModule"][
+	std::string		module		= analysis.get("module", "Common").asString(), //analysis.isMember("dynamicModule") ? analysis["dynamicModule"][
 					function	= analysis["name"].asString(); //name in a jasp file analyses.json refers to the function...
 	Version			version		= analysis["version"].asString();
 	Json::Value &	options		= analysis["options"];
 
+	//Ok apparently some old JASP files have version-numbers like "1.0" in 0.8.2, which is not good.. So let's check if module was filled and version is that, in that case we treat it as 0
+	if(!analysis.isMember("module") && version == Version(1))
+		version = Version(0, 8, 2);
+
+	Log::log() << "Checking if there are upgrade options for module '" << module << "' with function '" << function << "' and version '" << version.toString() << "'!" << std::endl;
+
 	if(_searcher.count(module) == 0)
+	{
+		Log::log() << "No such upgrade options was found, keeping it as is." << std::endl;
 		return;
+	}
 
 	const StepsPerVersion & perVersion = _searcher.at(module);
 
 	Version closestVersion = version;
-	if(perVersion.count(version) == 0) //If this specific version has no upgrades then maybe a later version does!
+	if(perVersion.count(version) == 0 || perVersion.at(version).count(function) == 0) //If this specific version has no upgrades then maybe a later version does!
 		for(auto & versionSteps : perVersion)
-			if(versionSteps.first > version)
+			if(versionSteps.first > version && versionSteps.second.count(function) > 0)
 			{
 				closestVersion = versionSteps.first;
 				break;
@@ -140,6 +149,8 @@ void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs &
 
 	if(perVersion.count(closestVersion) > 0 && perVersion.at(closestVersion).count(function) > 0) //apply step!
 	{
+		Log::log() << "Closest (from) version found was: '" << closestVersion.toString() << "'" << std::endl;
+
 		const UpgradeStep * step = perVersion.at(closestVersion).at(function);
 
 		//Do some loop detection
@@ -162,8 +173,16 @@ void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs &
 		analysis["version"] = step->toVersion().toString();
 		analysis["name"]	= step->toFunction();
 
+		for(const std::string & optionLog : msgs[logId])
+			Log::log() << optionLog << std::endl;
+		msgs[logId].clear();
+
+		Log::log() << "Options were upgraded to module '" << step->toModule() << "' with function '" << step->toFunction() << "' and version '" << step->toVersion().toString() << "'!" << std::endl;
+
 		_upgradeOptionsFromJaspFile(analysis, msgs, stepsTaken); //See if we can upgrade some more
 	}
+	else
+		Log::log () << "Nope, no upgrades to be done." << std::endl;
 }
 
 void Upgrader::loadOldSchoolUpgrades()

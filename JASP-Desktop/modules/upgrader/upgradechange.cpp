@@ -3,6 +3,8 @@
 #define ENUM_DECLARATION_CPP
 #include "upgradestep.h"
 
+
+
 namespace Modules
 {
 
@@ -12,11 +14,14 @@ const char * UpgradeChange::upgradeError::what() const noexcept
 	return std::runtime_error::what();
 }
 
-const char	* _boolOp	= "_boolOp",
-			* _args		= "_args",
-			* _renamed	= "_renamed",
-			* _copied	= "_copied",
-			* _modified	= "_modified";
+const char			*	_boolOp		= "_boolOp",
+					*	_args		= "_args",
+					*	_renamed	= "_renamed",
+					*	_copied		= "_copied",
+					*	_modified	= "_modified",
+					* logId = "!log!";;
+const std::string		prefixLog	= "\t\t";
+
 
 BoolOp::BoolOp(Json::Value def)
 {
@@ -63,6 +68,56 @@ bool BoolOp::optionContainsConditional(const Json::Value & conditional, const Js
 			return false;
 
 	return true;
+}
+
+std::string BoolOp::toString() const
+{
+	if(_noOp) return "";
+
+	std::stringstream str;
+
+	size_t totalArgs = _funcArgs.size() + _valArgs.size();
+
+	if(totalArgs > 1) str << "( ";
+
+
+	auto makeArgs = [&](const std::string & op)
+	{
+		bool firstArg = true;
+
+		for(const BoolOp & funcArg : _funcArgs)
+		{
+			str << funcArg.toString();
+			if(!firstArg)
+				str << " " << op << " ";
+			firstArg = false;
+		}
+
+		for(const Json::Value & valArg : _valArgs)
+		{
+			str << valArg;
+			if(!firstArg)
+				str << " " << op << " ";
+			firstArg = false;
+		}
+	};
+
+	switch(_type)
+	{
+	case BoolOpType::NOT:
+		str << "!" ;
+		if(_funcArgs.size() == 1)	str << _funcArgs[0].toString();
+		else						str << _valArgs[0];
+		break;
+
+	case BoolOpType::AND:		makeArgs("&&");		break;
+	case BoolOpType::OR:		makeArgs("||");		break;
+	case BoolOpType::XOR:		makeArgs("^^");		break;
+	}
+
+	if(totalArgs > 1) str << " )";
+
+	return str.str();
 }
 
 bool BoolOp::apply(const Json::Value & options) const
@@ -168,6 +223,8 @@ void UpgradeChange::applyRename(Json::Value & options, const std::string & oldNa
 
 	msgs[newName] = msgs[oldName];
 	msgs.erase(oldName);
+
+	msgs[logId].push_back(prefixLog + "Renamed option '" + oldName + "' to '" + newName + "'");
 }
 
 void UpgradeChange::applyCopy(Json::Value & options, const std::string & oldName, const std::string & newName, UpgradeMsgs & msgs) const
@@ -179,6 +236,8 @@ void UpgradeChange::applyCopy(Json::Value & options, const std::string & oldName
 
 	options[newName]	= options[oldName];
 	msgs[newName]		= msgs[oldName];
+
+	msgs[logId].push_back(prefixLog + "Copied option '" + oldName + "' to '" + newName + "'");
 }
 
 void UpgradeChange::applyRemove(Json::Value & options, const std::string & name, UpgradeMsgs & msgs) const
@@ -188,16 +247,23 @@ void UpgradeChange::applyRemove(Json::Value & options, const std::string & name,
 
 	options.removeMember(name);
 	msgs.erase(name);
+
+	msgs[logId].push_back(prefixLog + "Removed option '" + name + "'");
 }
 
-void UpgradeChange::applySetValue(Json::Value & options, const std::string & name,	const Json::Value & newValue) const
+void UpgradeChange::applySetValue(Json::Value & options, const std::string & name,	const Json::Value & newValue, UpgradeMsgs & msgs) const
 {
 	options[name] = newValue;
+
+	msgs[logId].push_back(prefixLog + "Set option '" + name + "' to '" + newValue.toStyledString() + "'");
+
 }
 
-void UpgradeChange::applySetBool(Json::Value & options, const std::string & name,	const BoolOp & newBool) const
+void UpgradeChange::applySetBool(Json::Value & options, const std::string & name,	const BoolOp & newBool, UpgradeMsgs & msgs) const
 {
 	options[name] = newBool.apply(options);
+
+	msgs[logId].push_back(prefixLog + "Set option '" + name + "' to '" + (options[name].asBool() ? "true" : "false") + "'");
 }
 
 void UpgradeChange::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) const
@@ -205,18 +271,22 @@ void UpgradeChange::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs) cons
 	if(!_conditional.apply(options))
 		return;
 
+	const std::string cond = _conditional.toString();
+	if(cond != "")
+		msgs[logId].push_back("Conditional passed:\n" + cond + "=============================================");
+
 	for(const auto & newOldName		: _optionsCopied	) applyCopy(	options, newOldName.second,		newOldName.first,		msgs);
 	for(const auto & newOldName		: _optionsRenamed	) applyRename(	options, newOldName.second,		newOldName.first,		msgs);
 	for(const auto & removeMe		: _optionsRemoved	) applyRemove(	options, removeMe,										msgs);
-	for(const auto & nameValue		: _optionsNewValue	) applySetValue(options, nameValue.first,		nameValue.second			);
-	for(const auto & nameValue		: _optionsBoolOp	) applySetBool(	options, nameValue.first,		nameValue.second			);
-	for(const auto & optionModifier : _optionsModified	) applyModifier(options, optionModifier.first,	optionModifier.second		);
+	for(const auto & nameValue		: _optionsNewValue	) applySetValue(options, nameValue.first,		nameValue.second,		msgs);
+	for(const auto & nameValue		: _optionsBoolOp	) applySetBool(	options, nameValue.first,		nameValue.second,		msgs);
+	for(const auto & optionModifier : _optionsModified	) applyModifier(options, optionModifier.first,	optionModifier.second,	msgs);
 
 	for(const auto & optionMsg : _optionMsgs)
 		msgs[optionMsg.first].push_back(optionMsg.second);
 }
 
-void UpgradeChange::applyModifier(Json::Value & options, const std::string & name,	const ModifyType modifier) const
+void UpgradeChange::applyModifier(Json::Value & options, const std::string & name,	const ModifyType modifier, UpgradeMsgs & msgs) const
 {
 	if(!options.isMember(name))
 		throw upgradeError("Could not modify option '" + name + "' with operation '"+ ModifyTypeToString(modifier) +"' because options does not contain it.");
@@ -245,6 +315,8 @@ void UpgradeChange::applyModifier(Json::Value & options, const std::string & nam
 	}
 	default: throw std::runtime_error("Upgrading with a modifier '" + ModifyTypeToString(modifier) + "' is not yet supported by JASP!");
 	}
+
+	msgs[logId].push_back(prefixLog + "Modified option '" + name + "' with modifier '" + modifier + "'");
 }
 
 }

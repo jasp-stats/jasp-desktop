@@ -67,15 +67,15 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 		Json::Value	&	versionJson		= analysisData["version"];
 		Version			version			= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
 
-		QString			name				= QString::fromStdString(analysisData["name"].asString()),
-						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common",
-						title				= QString::fromStdString(analysisData.get("title", "").asString()),
-						qml					= QString::fromStdString(analysisData.get("title", name.toStdString()).asString());
-
+		QString			name			= tq(analysisData["name"].asString()),
+						module			= analysisData["module"].asString() != "" ? tq(analysisData["module"].asString()) : "Common",
+						title			= tq(analysisData.get("title", "").asString());
 		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
+		QString			qml				= analysisEntry ? tq(analysisEntry->qml()) : name + ".qml";
+
 
 		if(title == "")
-			title = analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
+			title = analysisEntry ? tq(analysisEntry->title()) : name;
 		
 		analysis = create(module, name, qml, title, id, version, &optionsJson, status, false);
 
@@ -169,7 +169,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	
 	if (Settings::value(Settings::DEVELOPER_MODE).toBool())
 	{
-		QString filePath = QString::fromStdString(analysis->qmlFormPath());
+		QString filePath = tq(analysis->qmlFormPath());
 		
 		if (filePath.startsWith("file:"))
 			filePath.remove(0,5);
@@ -226,10 +226,10 @@ void Analyses::reload(Analysis *analysis, bool logProblem)
 }
 
 
-bool Analyses::allCreatedInCurrentVersion() const
+bool Analyses::allFresh() const
 {
 	for (auto idAnalysis : _analysisMap)
-		if (idAnalysis.second->version() != AppInfo::version)
+		if (idAnalysis.second->needsRefresh())
 			return false;
 
 	return true;
@@ -443,10 +443,10 @@ QVariant Analyses::data(const QModelIndex &index, int role)	const
 
 	switch(role)
 	{
-	case formPathRole:		return QString::fromStdString(analysis->qmlFormPath());
+	case formPathRole:		return tq(analysis->qmlFormPath());
 	case Qt::DisplayRole:
-	case titleRole:			return QString::fromStdString(analysis->title());
-	case nameRole:			return QString::fromStdString(analysis->name());
+	case titleRole:			return tq(analysis->title());
+	case nameRole:			return tq(analysis->name());
 	case analysisRole:		return QVariant::fromValue(analysis);
 	case idRole:			return int(analysis->id());
 	default:				return QVariant();

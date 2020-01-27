@@ -157,6 +157,21 @@
 	},
 
 	{
+		"from": { "module": "Common",		"version": "0.8.2", 	"function": "CorrelationBayesianPairs"	},
+		"to":	{ "module": "Common",		"version": "0.8.3.1"											},
+
+		"options":	
+		[
+			{
+				"changes":
+				{ 
+					"plotBayesFactorRobustnessAdditionalInfo":	true
+				}
+			}
+		]
+	},
+
+	{
 		"msg": 	"For version 0.12 we merged Bayesian Correlation Pairs into Bayesian Correlation Matrix, all options are migrated and the values kept.",
 		"from": { "module": "Regression",		"version": "0.11.1", 	"function": "CorrelationBayesianPairs"	},
 		"to":	{ "module": "Regression",		"version": "0.12", 		"function": "CorrelationBayesian"		},
@@ -181,7 +196,9 @@
 				"plotBfRobustness":			{ "_renamed": "plotBayesFactorRobustness" },
 				"plotBfRobustnessAddInfo":	{ "_renamed": "plotBayesFactorRobustnessAdditionalInfo" },
 				"plotBfSequential":			{ "_renamed": "plotSequentialAnalysis" },
-				"plotBfSequentialAddInfo":	{ "_renamed": "plotSequentialAnalysisRobustness" }
+				"plotBfSequentialAddInfo":	{ "_renamed": "plotSequentialAnalysisRobustness" },
+				"displayPairwise":			true,
+				"reportBayesFactors":		true
 			}
 		},
 		{
