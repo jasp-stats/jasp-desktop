@@ -59,7 +59,7 @@
                        exitAnalysisIfErrors = TRUE)
 
   if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && nlevels(factor(dataset[,.v(options[["testSetIndicatorVariable"]])])) != 2){
-    JASP:::.quitAnalysis("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set).")
+    JASP:::.quitAnalysis(gettext("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."))
   }
 }
 
@@ -91,7 +91,7 @@
     }
     
     if (nn >= valueToTest)
-      return(paste0("You have specified more nearest neighbors than there are observations in the training set. Please choose a number lower than ", valueToTest, "."))
+      return(gettextf("You have specified more nearest neighbors than there are observations in the training set. Please choose a number lower than %d.", as.integer(valueToTest)))
   }
   
   # check for too many folds (folds > nTrain+validation) before the analysis starts
@@ -99,7 +99,7 @@
     if (options[["modelValid"]] == "validationKFold")  {
       kFolds <- options[["noOfFolds"]]
       if (kFolds > nTrainAndValid)
-        return(paste0("You have specified more folds than there are observations in the training and validation set. Please choose a number lower than ", nTrainAndValid + 1, "."))
+        return(gettextf("You have specified more folds than there are observations in the training and validation set. Please choose a number lower than %d.", as.integer(nTrainAndValid + 1)))
     }
   }
   
@@ -116,9 +116,10 @@
     bag.fraction <- options[["bagFrac"]]
     n.minobsinnode <- options[["nNode"]]
     if (nTrain * bag.fraction <= 2 * n.minobsinnode + 1)
-      return(paste0("The minimum number of observations per node is too large. ",
-                    "Ensure that `2 * Min. observations in node + 1` > ",
-                    "`Training data used per tree * available training data` (in this case the minimum can be ", nTrain * bag.fraction / 2 - 1, " at most)", collapse = ""))
+      return(gettextf(
+        "The minimum number of observations per node is too large. Ensure that `2 * Min. observations in node + 1` > `Training data used per tree * available training data` (in this case the minimum can be %.3f at most",
+        nTrain * bag.fraction / 2 - 1
+      ))
   }
   
   return(list(checkNearestNeighbors, checkIfFoldsExceedValidation, checkMinObsNode))
@@ -174,10 +175,10 @@
   if(!is.null(jaspResults[["regressionTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
   title <- base::switch(type,
-                      "knn" = "K-Nearest Neighbors Regression",
-                      "regularized" = "Regularized Linear Regression",
-                      "randomForest" = "Random Forest Regression",
-                      "boosting" = "Boosting Regression")
+                      "knn" = gettext("K-Nearest Neighbors Regression"),
+                      "regularized" = gettext("Regularized Linear Regression"),
+                      "randomForest" = gettext("Random Forest Regression"),
+                      "boosting" = gettext("Boosting Regression"))
 
   regressionTable <- createJaspTable(title)
   regressionTable$position <- position
@@ -190,52 +191,52 @@
   # Add analysis-specific columns
   if(type == "knn"){
 
-    regressionTable$addColumnInfo(name = 'nn', title = 'Nearest neighbors', type = 'integer')
-    regressionTable$addColumnInfo(name = 'weights', title = 'Weights', type = 'string')
-    regressionTable$addColumnInfo(name = 'distance', title = 'Distance', type = 'string')
+    regressionTable$addColumnInfo(name = 'nn',       title = gettext('Nearest neighbors'), type = 'integer')
+    regressionTable$addColumnInfo(name = 'weights',  title = gettext('Weights'),           type = 'string')
+    regressionTable$addColumnInfo(name = 'distance', title = gettext('Distance'),          type = 'string')
 
   } else if(type == "regularized"){
 
-    regressionTable$addColumnInfo(name = 'penalty', title = 'Penalty', type = 'string')
+    regressionTable$addColumnInfo(name = 'penalty', title = gettext('Penalty'), type = 'string')
     if(options[["penalty"]] == "elasticNet")
       regressionTable$addColumnInfo(name = 'alpha', title = '\u03B1', type = 'number')
     regressionTable$addColumnInfo(name = 'lambda', title = '\u03BB', type = 'number')
 
   } else if(type == "randomForest"){
 
-    regressionTable$addColumnInfo(name = 'trees', title = 'Trees', type = 'integer')
-    regressionTable$addColumnInfo(name = 'preds', title = 'Predictors per split', type = 'integer')
+    regressionTable$addColumnInfo(name = 'trees', title = gettext('Trees'),                type = 'integer')
+    regressionTable$addColumnInfo(name = 'preds', title = gettext('Predictors per split'), type = 'integer')
   
   } else if(type == "boosting"){
 
-    regressionTable$addColumnInfo(name = 'trees', title = 'Trees', type = 'integer')
-    regressionTable$addColumnInfo(name = 'shrinkage', title = 'Shrinkage', type = 'number')
-    regressionTable$addColumnInfo(name = 'distribution', title = 'Loss function', type = 'integer')
+    regressionTable$addColumnInfo(name = 'trees',        title = gettext('Trees'),         type = 'integer')
+    regressionTable$addColumnInfo(name = 'shrinkage',    title = gettext('Shrinkage'),     type = 'number')
+    regressionTable$addColumnInfo(name = 'distribution', title = gettext('Loss function'), type = 'integer')
 
   }
 
   # Add common columns
-  regressionTable$addColumnInfo(name = 'ntrain', title = 'n(Train)', type = 'integer')
+  regressionTable$addColumnInfo(name = 'ntrain', title = gettext('n(Train)'), type = 'integer')
 
   if(options[["modelOpt"]] != "optimizationManual")
-    regressionTable$addColumnInfo(name = 'nvalid', title = 'n(Validation)', type = 'integer')
+    regressionTable$addColumnInfo(name = 'nvalid', title = gettext('n(Validation)'), type = 'integer')
 
-  regressionTable$addColumnInfo(name = 'ntest', title = 'n(Test)', type = 'integer')
+  regressionTable$addColumnInfo(name = 'ntest', title = gettext('n(Test)'), type = 'integer')
 
   if(options[["modelOpt"]] != "optimizationManual")
-    regressionTable$addColumnInfo(name = 'validMSE', title = 'Validation MSE', type = 'number')
+    regressionTable$addColumnInfo(name = 'validMSE', title = gettext('Validation MSE'), type = 'number')
 
-  regressionTable$addColumnInfo(name = 'testMSE', title = 'Test MSE', type = 'number')
+  regressionTable$addColumnInfo(name = 'testMSE', title = gettext('Test MSE'), type = 'number')
 
   # Add analysis-specific columns after common columns
   if(type == "randomForest"){
-    regressionTable$addColumnInfo(name = 'oob', title = 'OOB Error', type = 'number')
+    regressionTable$addColumnInfo(name = 'oob', title = gettext('OOB Error'), type = 'number')
   }
 
 # If no analysis is run, specify the required variables in a footnote
-  requiredVars <- ifelse(type == "knn", yes = 1, no = 2)
+  requiredVars <- if(type == "knn") 1L else 2L
   if(!ready)
-    regressionTable$addFootnote(message = paste0("Please provide a target variable and at least ", requiredVars, " predictor variable(s)."), symbol = "<i>Note.</i>")
+    regressionTable$addFootnote(message = gettextf("Please provide a target variable and at least %d predictor variable(s).", requiredVars), symbol = gettext("<i>Note.</i>"))
 
   jaspResults[["regressionTable"]] <- regressionTable
   
@@ -264,10 +265,10 @@
   if(type == "knn"){
 
     if(options[["modelOpt"]] == "optimizationError")
-      regressionTable$addFootnote(message="The model is optimized with respect to the <i>validation set mean squared error</i>.", symbol="<i>Note.</i>")
+      regressionTable$addFootnote(message=gettext("The model is optimized with respect to the <i>validation set mean squared error</i>."), symbol="<i>Note.</i>")
 
     if(regressionResult[["nn"]] == options[["maxK"]] && options[["modelOpt"]] != "validationManual"){
-      regressionTable$addFootnote(message="The optimum number of nearest neighbors is the maximum number. You might want to adjust the range of optimization.", symbol="<i>Note.</i>")
+      regressionTable$addFootnote(message=gettext("The optimum number of nearest neighbors is the maximum number. You might want to adjust the range of optimization."), symbol="<i>Note.</i>")
     }
 
     distance  <- ifelse(regressionResult[["distance"]] == 1, yes = "Manhattan", no = "Euclidean")    
@@ -284,10 +285,10 @@
   } else if(type == "regularized"){
 
     if(options[["modelOpt"]] != "optimizationManual")
-      regressionTable$addFootnote(message="The model is optimized with respect to the <i>validation set mean squared error</i>.", symbol="<i>Note.</i>")
+      regressionTable$addFootnote(message=gettext("The model is optimized with respect to the <i>validation set mean squared error</i>."), symbol="<i>Note.</i>")
 
     if (regressionResult[["lambda"]] == 0)
-      regressionTable$addFootnote("When \u03BB is set to 0 linear regression is performed.", symbol="<i>Note.</i>") 
+      regressionTable$addFootnote(gettextf("When %s is set to 0 linear regression is performed.", "\u03BB"), symbol="<i>Note.</i>") 
 
     row <- data.frame(penalty = regressionResult[["penalty"]], 
                       lambda = regressionResult[["lambda"]], 
@@ -303,7 +304,7 @@
   } else if(type == "randomForest"){
 
     if(options[["modelOpt"]] == "optimizationError")
-      regressionTable$addFootnote(message="The model is optimized with respect to the <i>out-of-bag mean squared error</i>.", symbol="<i>Note.</i>")
+      regressionTable$addFootnote(message=gettext("The model is optimized with respect to the <i>out-of-bag mean squared error</i>."), symbol="<i>Note.</i>")
 
     row <- data.frame(trees = regressionResult[["noOfTrees"]], 
                       preds = regressionResult[["predPerSplit"]], 
@@ -318,7 +319,7 @@
   } else if(type == "boosting"){
 
     if(options[["modelOpt"]] == "optimizationOOB")
-      regressionTable$addFootnote(message="The model is optimized with respect to the <i>out-of-bag mean squared error</i>.", symbol="<i>Note.</i>")
+      regressionTable$addFootnote(message=gettext("The model is optimized with respect to the <i>out-of-bag mean squared error</i>."), symbol="<i>Note.</i>")
 
     distribution <- base::switch(options[["distance"]], "tdist" = "t", "gaussian" = "Gaussian", "laplace" = "Laplace")
     row <- data.frame(trees = regressionResult[["noOfTrees"]], 
@@ -374,7 +375,7 @@
   validationMeasures[["values"]] <- values
 
   if(is.na(r_squared))
-    validationMeasures$addFootnote(message="R\u00B2 cannot be computed due to lack of variance in the predictions.</i>", symbol="<i>Note.</i>")
+    validationMeasures$addFootnote(message=gettextf("R%s cannot be computed due to lack of variance in the predictions.</i>", "\u00B2"), symbol="<i>Note.</i>")
   
 }
 
@@ -402,8 +403,8 @@
   p <- ggplot2::ggplot(data = predPerformance, mapping = ggplot2::aes(x = true, y = predicted)) +
         JASPgraphs::geom_line(data = data.frame(x = c(allBreaks[1], allBreaks[length(allBreaks)]), y = c(allBreaks[1], allBreaks[length(allBreaks)])), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1) +
         JASPgraphs::geom_point() +
-        ggplot2::scale_x_continuous("Observed test values", breaks = allBreaks, labels = allBreaks) +
-        ggplot2::scale_y_continuous("Predicted test values", breaks = allBreaks, labels = allBreaks)
+        ggplot2::scale_x_continuous(gettext("Observed test values"), breaks = allBreaks, labels = allBreaks) +
+        ggplot2::scale_y_continuous(gettext("Predicted test values"), breaks = allBreaks, labels = allBreaks)
   p <- JASPgraphs::themeJasp(p)
 
   predictedPerformancePlot$plotObject <- p
@@ -413,7 +414,7 @@
 
   if(!is.null(jaspResults[["dataSplitPlot"]]) || !options[["dataSplitPlot"]]) return()
 
-  dataSplitPlot <- createJaspPlot(plot = NULL, title = "Data Split", width = 800, height = 70)
+  dataSplitPlot <- createJaspPlot(plot = NULL, title = gettext("Data Split"), width = 800, height = 70)
   dataSplitPlot$position <- position
   dataSplitPlot$dependOn(options = c("dataSplitPlot", "target", "predictors", "trainingDataManual", "modelValid", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual", "holdoutData", "testDataManual", "modelOpt"))
   jaspResults[["dataSplitPlot"]] <- dataSplitPlot
@@ -440,7 +441,7 @@
             ggplot2::xlab("") +
             ggplot2::ylab("") +
             ggplot2::scale_fill_manual(values = c("tomato2", "steelblue2")) +
-            ggplot2::annotate("text", y = c(0, nTrain, nTrain + nTest), x = 1, label = c(paste0("Train: ", nTrain), paste0("Test: ", nTest), paste0("Total: ", nTrain + nTest)), size = 4, vjust = 0.5, hjust = -0.1) 
+            ggplot2::annotate("text", y = c(0, nTrain, nTrain + nTest), x = 1, label = c(gettextf("Train: %d", nTrain), gettextf("Test: %d", nTest), gettextf("Total: %d", nTrain + nTest)), size = 4, vjust = 0.5, hjust = -0.1) 
       p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE)
 
       p <- p + ggplot2::theme(axis.ticks = ggplot2::element_blank(), 
@@ -465,7 +466,9 @@
             ggplot2::xlab("") +
             ggplot2::ylab("") +
             ggplot2::scale_fill_manual(values = c("tomato2", "darkgoldenrod2", "steelblue2")) +
-            ggplot2::annotate("text", y = c(0, nTrain, nTrain + nValid, nTrain + nValid + nTest), x = 1, label = c(paste0("Train: ", nTrain), paste0("Validation: ", nValid), paste0("Test: ", nTest), paste0("Total: ", nTrain + nValid + nTest)), size = 4, vjust = 0.5, hjust = -0.1) 
+            ggplot2::annotate("text", y = c(0, nTrain, nTrain + nValid, nTrain + nValid + nTest), x = 1, 
+                              label = c(gettextf("Train: %d", nTrain), gettextf("Validation: %d", nValid), gettextf("Test: %d", nTest), gettextf("Total: %d", nTrain + nValid + nTest)), 
+                              size = 4, vjust = 0.5, hjust = -0.1) 
       p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE)
 
       p <- p + ggplot2::theme(axis.ticks = ggplot2::element_blank(), 
@@ -487,7 +490,9 @@
             ggplot2::xlab("") +
             ggplot2::ylab("") +
             ggplot2::scale_fill_manual(values = c("tomato2", "seagreen2")) +
-            ggplot2::annotate("text", y = c(0, nTrainAndValid, nTrainAndValid + nTest), x = 1, label = c(paste0("Train and validation: ", nTrainAndValid), paste0("Test: ", nTest), paste0("Total: ", nTrainAndValid + nTest)), size = 4, vjust = 0.5, hjust = -0.1) 
+            ggplot2::annotate("text", y = c(0, nTrainAndValid, nTrainAndValid + nTest), x = 1, 
+                              label = c(gettextf("Train and validation: %d", nTrainAndValid), gettextf("Test: %d", nTest), gettextf("Total: %d", nTrainAndValid + nTest)), 
+                              size = 4, vjust = 0.5, hjust = -0.1) 
       p <- JASPgraphs::themeJasp(p, xAxis = FALSE, yAxis = FALSE)
 
       p <- p + ggplot2::theme(axis.ticks = ggplot2::element_blank(), axis.text.y = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank())
