@@ -258,7 +258,8 @@ Form
 					{
 						text:	 		qsTr("Report badges")
 						name: 		"reportBadges"
-						checked: 	true
+						checked: 	false
+						visible: 	false
 					}
 				}
 
@@ -365,6 +366,12 @@ Form
 							text: qsTr("Expected evidence ratio")
 							name: "expectedEvidenceRatio"
 						}
+
+						CheckBox
+						{
+							text: qsTr("Expected Bayes factor (BF\u208B\u208A)")
+							name: "expectedBayesFactor"
+						}
 					}
 
 					GroupBox
@@ -406,7 +413,7 @@ Form
 
 					CheckBox
 					{
-						text: 		qsTr("Decision analysis")
+						text: 		qsTr("Sample size comparison")
 						name: 		"decisionPlot"
 					}
 
@@ -1111,6 +1118,13 @@ Form
 						{
 							text: 		qsTr("Evidence ratio")
 							name: 		"evidenceRatio"
+							visible: 	!regressionBound.visible
+						}
+
+						CheckBox
+						{
+							text: qsTr("Bayes factor (BF\u208B\u208A)")
+							name: "bayesFactor"
 							visible: 	!regressionBound.visible
 						}
 					}

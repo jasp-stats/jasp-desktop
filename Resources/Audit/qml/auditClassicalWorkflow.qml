@@ -257,7 +257,8 @@ Form
 					{
 						text:	 		qsTr("Report badges")
 						name: 		"reportBadges"
-						checked: 	true
+						checked: 	false
+						visible: 	false
 					}
 				}
 
@@ -376,7 +377,7 @@ Form
 
 					CheckBox
 					{
-						text: 		qsTr("Decision analysis");
+						text: 		qsTr("Sample size comparison");
 						name: 		"decisionPlot"
 					}
 

@@ -33,10 +33,6 @@ risk of the audit.
 - Enables explanatory text throughout the workflow to help you interpret the 
 statistical results and procedure.
 
-### Report badges:
-- When enabled, shows badges below the conclusion to faciliate easy 
-interpretation of the report.
-
 ----
 
 Default Output
