@@ -124,7 +124,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
     procedureText <- gettextf("Benford's law states that in many naturally occurring collections of numbers, the leading significant number 
                               is likely to be small. The goal of this procedure is to determine to which extent the leading numbers in the 
-                              population follow Benford's law, and to test this relation with <b>%s</b> confidence. Data that do not conform 
+                              population follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform 
                               to Benford's law might need further verification.", confidenceLabel)
 
     procedureContainer[["procedureParagraph"]] <- createJaspHtml(procedureText, "p")
@@ -284,7 +284,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                    no = gettext(" (10 - 99) "))
 
   message <- gettextf("The null hypothesis specifies that the distribution of 
-                      first numbers %s in the population conforms to 
+                      first numbers %1$s in the population conforms to 
                       Benford’s law.", digits)
   benfordsLawTestTable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
 
@@ -297,7 +297,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   if(!ready){
     
     row <- data.frame(test = gettext("Chi-square"), 
-                      measure = gettextf("X%s", "\u00B2"), 
+                      measure = gettextf("X%1$s", "\u00B2"), 
                       df = df, 
                       value = ".", 
                       pvalue = ".",
@@ -312,7 +312,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                                 ready)
 
   row <- data.frame(test = gettext("Chi-square"), 
-                    measure = gettextf("X%s", "\u00B2"), 
+                    measure = gettextf("X%1$s", "\u00B2"), 
                     df = state[["df"]], 
                     value = round(state[["chiSquare"]], 3), 
                     pvalue = state[["pvalue"]],
@@ -541,9 +541,13 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
   conclusion <- ifelse(approve, no = gettext("can be rejected"), yes = gettext("can not be rejected"))
   confidenceLabel <- paste0(round(options[["confidence"]] * 100, 2), "%")
+  
+  pvalue <- round(state[["pvalue"]], 4)
+  if(pvalue < 0.01)
+    pvalue <- "< .01"
 
-  conclusionText <- gettextf("The <i>p</i> value is determined to be %s. Therefore, the null hypothesis that the distribution of first numbers in the 
-                            population conforms to Benford's law <b>%s</b> with <b>%s</b> confidence.", round(state[["pvalue"]], 4), conclusion, confidenceLabel)
+  conclusionText <- gettextf("The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of first numbers in the 
+                            population conforms to Benford's law <b>%2$s</b> with <b>%3$s</b> confidence.", pvalue, conclusion, confidenceLabel)
 
   conclusionContainer[["conclusionParagraph"]] <- createJaspHtml(conclusionText, "p")
   conclusionContainer[["conclusionParagraph"]]$position <- 1

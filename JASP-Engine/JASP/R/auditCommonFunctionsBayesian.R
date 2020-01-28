@@ -329,7 +329,7 @@
                               type = 'string')
 
     message <- gettextf("Sample sizes shown are implicit sample sizes derived from the ARM risk assessments: 
-                        IR = <b>%s</b> and CR = <b>%s</b>.", options[["IR"]], options[["CR"]])
+                        IR = <b>%1$s</b> and CR = <b>%2$s</b>.", options[["IR"]], options[["CR"]])
 
     sampletable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
 
@@ -376,20 +376,20 @@
                                       title = gettext("Functional form"), 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorH1', 
-                                      title = gettextf("Support %s", "H\u208B"), 
+                                      title = gettextf("Support %1$s", "H\u208B"), 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorH0', 
-                                      title = gettextf("Support %s", "H\u208A"), 
+                                      title = gettextf("Support %1$s", "H\u208A"), 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                      title = gettextf("Evidence ratio %s", "<sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>"), 
+                                      title = gettextf("Evidence ratio %1$s", "<sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>"), 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorBound', 
-                                      title = gettextf("%s%% Credible bound", options[["confidence"]]*100) , 
+                                      title = gettextf("%1$s%% Credible bound", options[["confidence"]]*100) , 
                                       type = 'string')
 
-    priorStatisticsTable$addFootnote(message = gettextf("%s: The population misstatement is lower than materiality (%s %s). 
-                                                      %s: The population misstatement is equal to, or higher than, materiality (%s %s).", 
+    priorStatisticsTable$addFootnote(message = gettextf("%1$s: The population misstatement is lower than materiality (%2$s %3$s). 
+                                                      %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s).", 
                                                       "H\u208B", "\u03B8 <", round(planningState[["materiality"]], 4), 
                                                       "H\u208A", "\u03B8 \u2265", round(planningState[["materiality"]], 4)), 
                                     symbol = gettext("<i>Note.</i>"))
@@ -803,13 +803,13 @@
 
             p <- p + ggplot2::scale_shape_manual(name = "", 
                                                 values = 21, 
-                                                labels = gettextf("%s%% Prior \ncredible region",
+                                                labels = gettextf("%1$s%% Prior \ncredible region",
                                                                   round(options[["confidence"]] * 100, 2)))
           } else {
 
             p <- p + ggplot2::scale_shape_manual(name = "", 
                                                 values = 21, 
-                                                labels = gettextf("%s%% Prior credible region",
+                                                labels = gettextf("%1$s%% Prior credible region",
                                                                   round(options[["confidence"]] * 100, 2)))
           
           }
@@ -1001,8 +1001,8 @@
                                  "binomial" = "beta", 
                                  "hypergeometric" = "beta-binomial")
 
-    priorPlotText <- createJaspHtml(gettextf("<b>Figure %i.</b> The prior probability distribution <b>(%s)</b> on the misstatement in the population. The prior parameters 
-                                           <i>%s = %s, %s = %s</i> are derived from the assessments of the inherent and control risk, along with the expected errors. %s %s",  
+    priorPlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> The prior probability distribution <b>(%2$s)</b> on the misstatement in the population. The prior parameters 
+                                           <i>%3$s = %4$s, %5$s = %6$s</i> are derived from the assessments of the inherent and control risk, along with the expected errors. %7$s %8$s",  
                                            jaspResults[["figNumber"]]$object,
                                            distribution,
                                            "\u03B1",
@@ -1296,7 +1296,7 @@
 
               p <- p + ggplot2::scale_shape_manual(name = "", 
                                                   values = 21, 
-                                                  labels = gettextf("%s%% Posterior \ncredible region",
+                                                  labels = gettextf("%1$s%% Posterior \ncredible region",
                                                                   round(options[["confidence"]] * 100, 2)))
 
           } else if(options[["shadePosterior"]] == "shadePosteriorHypotheses"){
@@ -1544,7 +1544,7 @@
                                  "hypergeometric" = gettext("beta-binomial"),
                                  "coxsnell" = gettext("Cox and Snell"))
 
-    priorAndPosteriorPlotText <- createJaspHtml(gettextf("<b>Figure %i.</b> The prior and posterior probability distribution <b>(%s)</b> on the misstatement in the population. %s",
+    priorAndPosteriorPlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> The prior and posterior probability distribution <b>(%2$s)</b> on the misstatement in the population. %3$s",
                                                         jaspResults[["figNumber"]]$object,
                                                         distribution,
                                                         ifelse(options[["priorAndPosteriorPlotAdditionalInfo"]],
@@ -1589,20 +1589,20 @@
                                                    title = gettext("Functional form"), 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH1', 
-                                                   title = gettextf("Support %s", "H\u208B"), 
+                                                   title = gettextf("Support %1$s", "H\u208B"), 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH0', 
-                                                   title = gettextf("Support %s", "H\u208A"), 
+                                                   title = gettextf("Support %1$s", "H\u208A"), 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                                   title = gettextf("Evidence ratio %s", "<sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>"), 
+                                                   title = gettextf("Evidence ratio %1$s", "<sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>"), 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorBound', 
-                                                   title = gettextf("%s%% Credible bound", round(options[["confidence"]] * 100, 2)) , 
+                                                   title = gettextf("%1$s%% Credible bound", round(options[["confidence"]] * 100, 2)) , 
                                                    type = 'string')
 
-    priorAndPosteriorStatisticsTable$addFootnote(message = gettextf("%s: The population misstatement is lower than materiality (%s %s). 
-                                                                    %s: The population misstatement is equal to, or higher than, materiality (%s %s).",
+    priorAndPosteriorStatisticsTable$addFootnote(message = gettextf("%1$s: The population misstatement is lower than materiality (%2$s %3$s). 
+                                                                    %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s).",
                                                                     "H\u208B", "\u03B8 <", round(evaluationState[["materiality"]], 3),
                                                                     "H\u208A", "\u03B8 \u2265", round(evaluationState[["materiality"]], 3)), 
                                                 symbol = gettext("<i>Note.</i>"))
