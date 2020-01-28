@@ -75,11 +75,11 @@ exists(/app/lib/*) {
 	POST_TARGETDEPS     += RemoveJASPRPkgLock
 	}
 
-	#QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage
-	#POST_TARGETDEPS     += InstallJASPgraphsRPackage
+	QMAKE_EXTRA_TARGETS += InstallJASPgraphsRPackage
+	POST_TARGETDEPS     += InstallJASPgraphsRPackage
 
-	#QMAKE_EXTRA_TARGETS += InstallJASPRPackage
-	#POST_TARGETDEPS     += InstallJASPRPackage
+	QMAKE_EXTRA_TARGETS += InstallJASPRPackage
+	POST_TARGETDEPS     += InstallJASPRPackage
 }
 
 QMAKE_CLEAN += $$OUT_PWD/../R/library/* #Does this not mess up Windows somehow?
