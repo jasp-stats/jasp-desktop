@@ -165,7 +165,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
   if (!options[["classBoostRelInfTable"]] || !is.null(jaspResults[["classBoostRelInfTable"]])) return()
 
-  classBoostRelInfTable <- createJaspTable(title = "Relative Influence")
+  classBoostRelInfTable <- createJaspTable(title = gettext("Relative Influence"))
   classBoostRelInfTable$position <- position
   classBoostRelInfTable$dependOn(options = c("classBoostRelInfTable", "target", "predictors", "modelOpt", "maxTrees", "intDepth", "shrinkage",
                                                 "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "seed", "seedBox", "modelValid",
@@ -173,7 +173,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
                                                 "holdoutData", "testDataManual"))
 
   classBoostRelInfTable$addColumnInfo(name = "predictor",  title = "", type = "string")
-  classBoostRelInfTable$addColumnInfo(name = "relIn",  title = "Relative Influence", type = "number")
+  classBoostRelInfTable$addColumnInfo(name = "relIn",  title = gettext("Relative Influence"), type = "number")
 
   jaspResults[["classBoostRelInfTable"]] <- classBoostRelInfTable
 
@@ -191,7 +191,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["plotOOBChangeDev"]]) || !options[["plotOOBChangeDev"]]) return()
 
-  plotOOBChangeDev <- createJaspPlot(plot = NULL, title = "Out-of-bag Improvement Plot", width = 500, height = 300)
+  plotOOBChangeDev <- createJaspPlot(plot = NULL, title = gettext("Out-of-bag Improvement Plot"), width = 500, height = 300)
   plotOOBChangeDev$position <- position
   plotOOBChangeDev$dependOn(options = c("plotOOBChangeDev", "target", "predictors", "modelOpt", "maxTrees", "intDepth", "shrinkage",
                                 "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "seed", "seedBox", "modelValid",
@@ -209,13 +209,13 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
   if(purpose == "classification"){
     if (nlevels(result[["test"]][,.v(options[["target"]])]) > 2L) {
-      ylab <- "OOB Change in \n Multinomial Deviance"
+      ylab <- gettextf("OOB Change in %s Multinomial Deviance", "\n")
     } else {
-      ylab <- "OOB Change in \n Binomial Deviance"
+      ylab <- gettextf("OOB Change in %s Binomial Deviance", "\n")
     }
   } else {
-    distribution <- base::switch(options[["distance"]], "tdist" = "t", "gaussian" = "Gaussian", "laplace" = "Laplace")
-    ylab <- paste0("OOB Change in \n", distribution, " Deviance")
+    distribution <- .regressionGetDistributionFromDistance(options[["distance"]])
+    ylab <- gettextf("OOB Change in %s%s Deviance", "\n", distribution)
   }
 
   if (nrow(oobDev) <= 5L) {
@@ -235,8 +235,8 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
     ggplot2::geom_segment(data = data.frame(xstart = 0, xend = xend, ystart = 0, yend = 0), ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), linetype = 2, col = "darkgrey") +
     geom() +
     ggplot2::geom_smooth(size = 1, colour = "darkred", se = FALSE) +
-    ggplot2::scale_x_continuous(name = "Number of Trees", labels = xLabels, breaks = xBreaks, limits = range(xBreaks)) +
-    ggplot2::scale_y_continuous(name = ylab,              labels = yLabels, breaks = yBreaks, limits = range(yBreaks)) +
+    ggplot2::scale_x_continuous(name = gettext("Number of Trees"), labels = xLabels, breaks = xBreaks, limits = range(xBreaks)) +
+    ggplot2::scale_y_continuous(name = ylab,                       labels = yLabels, breaks = yBreaks, limits = range(yBreaks)) +
     ggplot2::labs(linetype = "")
 
   p <- JASPgraphs::themeJasp(p, legend.position = "top")
@@ -248,7 +248,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["plotDeviance"]]) || !options[["plotDeviance"]]) return()
 
-  plotDeviance <- createJaspPlot(plot = NULL, title = "Deviance Plot", width = 500, height = 300)
+  plotDeviance <- createJaspPlot(plot = NULL, title = gettext("Deviance Plot"), width = 500, height = 300)
   plotDeviance$position <- position
   plotDeviance$dependOn(options = c("plotDeviance", "target", "predictors", "modelOpt", "maxTrees", "intDepth", "shrinkage",
                                 "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "seed", "seedBox", "modelValid",
@@ -270,13 +270,13 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
   if(purpose == "classification"){
     if (nlevels(result[["test"]][,.v(options[["target"]])]) > 2L) {
-      ylab <- "Multinomial Deviance"
+      ylab <- gettext("Multinomial Deviance")
     } else {
-      ylab <- "Binomial Deviance"
+      ylab <- gettext("Binomial Deviance")
     }
   } else {
-    distribution <- base::switch(options[["distance"]], "tdist" = "t", "gaussian" = "Gaussian", "laplace" = "Laplace")
-    ylab <- paste0(distribution, " Deviance")
+    distribution <- .regressionGetDistributionFromDistance(options[["distance"]])
+    ylab <- gettextf("%s Deviance", distribution)
   }
 
   if (max(deviance[["trees"]]) <= 5L) {
@@ -297,8 +297,8 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
         ggplot2::geom_segment(data = data.frame(xstart = 1, xend = xend, ystart = 0, yend = 0, group = "Out-of-bag", what = "Out-of-bag"),
                               ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), linetype = 2, col = "darkgrey") +
         geom(show.legend = result[["method"]] != "OOB") +
-        ggplot2::scale_x_continuous(name = "Number of Trees", labels = xLabels, breaks = xBreaks, limits = range(xBreaks)) +
-        ggplot2::scale_y_continuous(name = ylab,              labels = yLabels, breaks = yBreaks, limits = range(yBreaks)) +
+        ggplot2::scale_x_continuous(name = gettext("Number of Trees"), labels = xLabels, breaks = xBreaks, limits = range(xBreaks)) +
+        ggplot2::scale_y_continuous(name = ylab,              				 labels = yLabels, breaks = yBreaks, limits = range(yBreaks)) +
         ggplot2::scale_color_manual(name = "", values = c("Out-of-bag" = "gray20", "Cross-validated" = "#99c454"))
   p <- JASPgraphs::themeJasp(p, legend.position = "top")
 
@@ -309,7 +309,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["plotRelInf"]]) || !options[["plotRelInf"]]) return()
 
-  plotRelInf <- createJaspPlot(plot = NULL, title = "Relative Influence Plot", width = 500, height = 300)
+  plotRelInf <- createJaspPlot(plot = NULL, title = gettext("Relative Influence Plot"), width = 500, height = 300)
   plotRelInf$position <- position
   plotRelInf$dependOn(options = c("plotRelInf", "target", "predictors", "modelOpt", "maxTrees", "intDepth", "shrinkage",
                                 "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "seed", "seedBox", "modelValid",
@@ -325,7 +325,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
 
   p <- ggplot2::ggplot(result[["relInf"]], ggplot2::aes(x = reorder(.unv(as.factor(var)), rel.inf), y = rel.inf)) +
         ggplot2::geom_bar(stat = "identity", fill = "gray", col = "black", size = .3) +
-        ggplot2::labs(x = "", y = "Relative Influence")
+        ggplot2::labs(x = "", y = gettext("Relative Influence"))
   p <- JASPgraphs::themeJasp(p, horizontal = TRUE, xAxis = FALSE) + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
 
   plotRelInf$plotObject <- p

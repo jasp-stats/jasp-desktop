@@ -321,7 +321,7 @@
     if(options[["modelOpt"]] == "optimizationOOB")
       regressionTable$addFootnote(message=gettext("The model is optimized with respect to the <i>out-of-bag mean squared error</i>."), symbol="<i>Note.</i>")
 
-    distribution <- base::switch(options[["distance"]], "tdist" = "t", "gaussian" = "Gaussian", "laplace" = "Laplace")
+    distribution <- .regressionGetDistributionFromDistance(options[["distance"]])
     row <- data.frame(trees = regressionResult[["noOfTrees"]], 
                       shrinkage = options[["shrinkage"]], 
                       distribution = distribution, 
@@ -333,6 +333,15 @@
     regressionTable$addRows(row)
 
   }
+}
+
+.regressionGetDistributionFromDistance <- function(distance) {
+  return(switch(
+    distance, 
+    "tdist"    = gettext("t"), 
+    "gaussian" = gettext("Gaussian"), 
+    "laplace"  = gettext("Laplace")
+  ))
 }
 
 .regressionEvaluationMetrics <- function(dataset, options, jaspResults, ready, position){
