@@ -208,8 +208,8 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 						"regression" = jaspResults[["regressionResult"]]$object)
 
   ylabel <- base::switch(purpose,
-  							"classification" = gettext("Classification Accuracy"),
- 		   					"regression"     = gettext("Mean Squared Error"))
+                "classification" = gettext("Classification Accuracy"),
+                "regression"     = gettext("Mean Squared Error"))
 
   if(options[["modelValid"]] == "validationManual"){
 
@@ -217,7 +217,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
     yvalues1 <- result[["accuracyStore"]]  
     yvalues2 <- result[["trainAccuracyStore"]] 
     yvalues <- c(yvalues1, yvalues2)
-    type <- rep(c("Validation set", "Training set"), each = length(yvalues1))
+    type <- rep(c(gettext("Validation set"), gettext("Training set")), each = length(yvalues1))
     d <- data.frame(x = xvalues, y = yvalues, type = type)
 
     xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, d$x), min.n = 4)
@@ -240,7 +240,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 
     xvalues <- 1:options[["maxK"]]
     yvalues <- result[["accuracyStore"]]     
-	type <- rep("Training and validation set", each = length(xvalues))
+	type <- rep(gettext("Training and validation set"), each = length(xvalues))
     d <- data.frame(x = xvalues, y = yvalues, type = type)
 
     xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, d$x), min.n = 4)

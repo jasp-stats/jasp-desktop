@@ -229,7 +229,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
     treesMSE <- data.frame(
       trees = rep(1:length(values2), 2),
       error = values, 
-      type = rep(c("Validation set", "Training set"), each = length(values2))
+      type = rep(c(gettext("Validation set"), gettext("Training set")), each = length(values2))
     )
 
     xBreaks <- JASPgraphs::getPrettyAxisBreaks(treesMSE[["trees"]], min.n = 4)
@@ -249,7 +249,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
     treesMSE <- data.frame(
       trees = 1:length(values),
       error = values, 
-      type = rep("Training set", each = length(values))
+      type = rep(gettext("Training set"), each = length(values))
     )
 
     xBreaks <- JASPgraphs::getPrettyAxisBreaks(treesMSE[["trees"]], min.n = 4)

@@ -205,7 +205,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
                       "classification" = jaspResults[["classificationResult"]]$object,
                       "regression" = jaspResults[["regressionResult"]]$object)
 
-  oobDev <- data.frame(trees = 1:result[["model"]]$n.trees, oobImprove = result[["model"]]$oobag.improve, type = "Training set")
+  oobDev <- data.frame(trees = 1:result[["model"]]$n.trees, oobImprove = result[["model"]]$oobag.improve, type = gettext("Training set"))
 
   if(purpose == "classification"){
     if (nlevels(result[["test"]][,.v(options[["target"]])]) > 2L) {
@@ -298,7 +298,7 @@ mlRegressionBoosting <- function(jaspResults, dataset, options, ...) {
                               ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), linetype = 2, col = "darkgrey") +
         geom(show.legend = result[["method"]] != "OOB") +
         ggplot2::scale_x_continuous(name = gettext("Number of Trees"), labels = xLabels, breaks = xBreaks, limits = range(xBreaks)) +
-        ggplot2::scale_y_continuous(name = ylab,              				 labels = yLabels, breaks = yBreaks, limits = range(yBreaks)) +
+        ggplot2::scale_y_continuous(name = ylab,                       labels = yLabels, breaks = yBreaks, limits = range(yBreaks)) +
         ggplot2::scale_color_manual(name = "", values = c("Out-of-bag" = "gray20", "Cross-validated" = "#99c454"))
   p <- JASPgraphs::themeJasp(p, legend.position = "top")
 
