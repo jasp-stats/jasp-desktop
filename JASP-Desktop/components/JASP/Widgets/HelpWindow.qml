@@ -33,8 +33,8 @@ Window
 		anchors.bottomMargin:	searchBar.height
 		zoomFactor:				preferencesModel.uiScale
 		backgroundColor:		jaspTheme.uiBackground
-		onLoadingChanged:		if(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus)
-									helpView.runJavaScript("window.setTheme(\"" + preferencesModel.currentThemeName + "\")");
+		onLoadingChanged:		if(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus) helpModel.loadingSucceeded()
+
 		onNavigationRequested:
 			if(request.navigationType === WebEngineNavigationRequest.LinkClickedNavigation)
 			{
@@ -45,7 +45,7 @@ Window
 		Connections
 		{
 			target:				helpModel
-			onRunJavaScript:	helpView.runJavaScript(helpJS)
+            onRunJavaScript:	helpView.runJavaScript(helpJS)
 		}
 	}
 

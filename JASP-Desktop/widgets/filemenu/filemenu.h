@@ -82,7 +82,6 @@ public:
 
 	void			showPreferences();
 	void			syncDataFile(const QString& path);
-	void			refresh();
 
 
 	ActionButtons::FileOperation		fileoperation()				const	{ return _fileoperation;			}
@@ -118,6 +117,7 @@ public slots:
 	void showAboutRequest();
 	void dataColumnAdded(QString columnName);
     void analysesExportResults();
+	void refresh();
 
 private slots:
 	void dataSetIORequestHandler(FileEvent *event);

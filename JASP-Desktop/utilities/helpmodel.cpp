@@ -10,7 +10,7 @@ HelpModel::HelpModel(QObject * parent) : QObject(parent)
 {
 	setPagePath("index");
 	connect(this,						&HelpModel::pagePathChanged,				this, &HelpModel::generateJavascript);
-	connect(PreferencesModel::prefs(),	&PreferencesModel::currentThemeNameChanged, this, &HelpModel::setThemeCss);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::currentThemeNameChanged, this, &HelpModel::setThemeCss,			Qt::QueuedConnection);
 }
 
 void HelpModel::setVisible(bool visible)
@@ -20,6 +20,13 @@ void HelpModel::setVisible(bool visible)
 
 	_visible = visible;
 	emit visibleChanged(_visible);
+
+}
+
+void HelpModel::loadingSucceeded()
+{
+	setThemeCss(PreferencesModel::prefs()->currentThemeName());
+	generateJavascript();
 }
 
 

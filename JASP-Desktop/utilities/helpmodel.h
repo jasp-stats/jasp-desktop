@@ -25,6 +25,7 @@ public slots:
 	QString	indexURL();
 	void	reloadPage();
 	void	setThemeCss(QString themeName);
+	void	loadingSucceeded();
 
 signals:
 	void renderCode(QString javascript);

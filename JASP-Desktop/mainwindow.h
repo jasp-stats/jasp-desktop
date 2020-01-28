@@ -232,7 +232,6 @@ private slots:
 
 	void plotEditingFileChanged();
 	void jaspThemeChanged(JaspTheme * newTheme);
-	void refreshFilemenu();
 
 private:
 	void _analysisSaveImageHandler(Analysis* analysis, QString options);

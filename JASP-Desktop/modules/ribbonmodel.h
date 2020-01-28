@@ -58,7 +58,7 @@ public:
 	void						addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module);
 
 	void						removeRibbonButtonModel(std::string moduleName);
-	void						refresh();
+
 
 	bool						isModuleName(std::string name)						const	{ return _buttonModelsByName.count(name) > 0; }
 	QString						moduleName(size_t index)							const	{ return QString::fromStdString(_moduleNames[index]);}
@@ -85,6 +85,7 @@ public slots:
 	void removeDynamicRibbonButtonModel(QString moduleName)				{ removeRibbonButtonModel(moduleName.toStdString());				}
 	void setHighlightedModuleIndex(int highlightedModuleIndex);
 	void moduleLoadingSucceeded(const QString & moduleName);
+	void refresh();
 
 private slots:
 	void ribbonButtonModelChanged(RibbonButton* model);

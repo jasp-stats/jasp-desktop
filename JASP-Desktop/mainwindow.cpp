@@ -227,7 +227,7 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
 	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
 
-	connect(_package,				&DataSetPackage::refreshAnalysesWithColumn,				this,					&MainWindow::refreshAnalysesUsingColumn,					Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::refreshAnalysesWithColumn,			this,					&MainWindow::refreshAnalysesUsingColumn,					Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::dataSynched,						this,					&MainWindow::refreshAnalysesUsingColumns,					Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
@@ -325,7 +325,12 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::reloadHelpPage,					_helpModel,				&HelpModel::reloadPage										);
 	connect(_dynamicModules,		&DynamicModules::moduleEnabledChanged,				_preferences,			&PreferencesModel::moduleEnabledChanged						);
 	connect(_dynamicModules,		&DynamicModules::loadModuleTranslationFile,			_languageModel,			&LanguageModel::loadModuleTranslationFile					);
-	connect(_languageModel,			&LanguageModel::languageChanged,					this,					&MainWindow::refreshFilemenu								);
+
+	connect(_languageModel,			&LanguageModel::languageChanged,					_fileMenu,				&FileMenu::refresh											);
+	connect(_languageModel,			&LanguageModel::languageChanged,					_ribbonModel,			&RibbonModel::refresh										);
+	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
+	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
+
 
 	// Temporary to facilitate plot editing
 	_plotEditingFilePath = QString::fromStdString(Dirs::resourcesDir()) + "PlotEditor.qml";
@@ -441,13 +446,6 @@ void MainWindow::loadQML()
 void MainWindow::jaspThemeChanged(JaspTheme * newTheme)
 {
 	_qml->rootContext()->setContextProperty("jaspTheme",				newTheme);
-}
-
-void MainWindow::refreshFilemenu()
-{
-	_fileMenu->refresh();
-	_ribbonModel->refresh();
-	_analyses->refreshAllAnalyses();
 }
 
 void MainWindow::initLog()

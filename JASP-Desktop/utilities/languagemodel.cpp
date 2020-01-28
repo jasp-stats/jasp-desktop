@@ -140,21 +140,13 @@ void LanguageModel::changeLanguage(int index)
 	if (CurrentLanguageInfo.language == cl)
 		return; //No change of language
 
-	LanguageInfo & li = _languagesInfo[cl];
-	CurrentLanguageInfo = li;
+	CurrentLanguageInfo = _languagesInfo[cl];
 
-	if (cl == QLocale::English)
-	{
-		removeTranslators();
-		_qml->retranslate();
+	if (cl == QLocale::English)	removeTranslators();
+	else						loadQmFilesForLanguage(CurrentLanguageInfo.language);
 
-	}
-	else
-	{
-		loadQmFilesForLanguage(li.language);
-		_qml->retranslate();
-	}
 
+	_qml->retranslate();
 	Settings::setValue(Settings::PREFERRED_LANGUAGE, cl);
 	setCurrentIndex(index);
 	emit languageChanged();
