@@ -4,11 +4,12 @@
 }
 
 body {
-        font-family:  "Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;
-        margin:       0 ;
-        cursor:       default;
-        color:        #000;
-        font-size:    12px ;
+        font-family:      "Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;
+        margin:           0 ;
+        cursor:           default;
+        color:            #000;
+        font-size:        12px ;
+        background-color: #FFF ; /*grayMuchLighter*/
 }
 
 body.selected {
@@ -560,15 +561,15 @@ td.squash-left
 
 
 .jasp-notes {
-	/* border-top: 1px solid rgb(205, 205, 205);
-	border-bottom: 1px solid rgb(205, 205, 205) ; */
-	border-radius : 0 ;
-	/* color: rgb(0, 122, 204) ; */
-	max-width: 70em;
-	min-width: 40em;
-	position: relative ;
-	margin-top: 0.6em ;
-	margin-bottom: 0.6em ;
+  border-top:       1px solid rgb(205, 205, 205);
+  border-bottom:    1px solid rgb(205, 205, 205) ;
+  border-radius :   0 ;
+  color:            #000;
+  max-width:        70em;
+  min-width:        40em;
+  position:         relative ;
+  margin-top:       0.6em ;
+  margin-bottom:    0.6em ;
 }
 
 .jasp-firstNote-note {

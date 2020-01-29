@@ -386,8 +386,9 @@ div.jasp-image-image.no-data.error {
 }
 
 .fatalError.error-message-box {
-  border-width: 3px;
-  border-style: double;
+  border: 3px double  #faa;
+  color:              #faa;
+  background:         #400;
 }
 
 .analysis-error-message {
@@ -555,15 +556,16 @@ td.squash-left
 
 
 .jasp-notes {
-  border-top: 1px solid #5c5c5c;
-  border-bottom: 1px solid #5c5c5c;
-  border-radius : 0 ;
-  color: #4784B2 ; /*blue*/
-  max-width: 70em;
-  min-width: 40em;
-  position: relative ;
-  margin-top: 0.6em ;
-  margin-bottom: 0.6em ;
+  border-top:     1px solid #5c5c5c;
+  border-bottom:  1px solid #5c5c5c;
+  border-radius:  0;
+  color:          #000;
+  max-width:      70em;
+  min-width:      40em;
+  position:       relative ;
+  margin-top:     0.6em ;
+  margin-bottom:  0.6em ;
+  filter:         invert(1);
 }
 
 .jasp-firstNote-note {
