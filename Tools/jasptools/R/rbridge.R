@@ -5,10 +5,10 @@
 .encodeColNamesLax <- function(x) return(x)
 .decodeColNamesLax <- function(x) return(x)
 
-.setColumnDataAsScale <- function(...) return(NULL)
-.setColumnDataAsOrdinal <- function(...) return(NULL)
-.setColumnDataAsNominal <- function(...) return(NULL)
-.setColumnDataAsNominalText <- function(...) return(NULL)
+.setColumnDataAsScale <- function(...) return(TRUE)
+.setColumnDataAsOrdinal <- function(...) return(TRUE)
+.setColumnDataAsNominal <- function(...) return(TRUE)
+.setColumnDataAsNominalText <- function(...) return(TRUE)
 
 .readDatasetToEndNative <- function(columns = c(), columns.as.numeric = c(), columns.as.ordinal = c(),
                                     columns.as.factor = c(), all.columns = FALSE) {
