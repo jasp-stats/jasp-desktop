@@ -355,7 +355,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   fittab <- createJaspTable(gettext("Additional fit indices"))
   fittab$dependOn("incl_fitIndices")
   fittab$addColumnInfo(name = "RMSEA",   title = gettext("RMSEA"), type = "number", format = "dp:3")
-  fittab$addColumnInfo(name = "RMSEAci", title = gettext("RMSEA 90% confidence"),   type = "string")
+  fittab$addColumnInfo(name = "RMSEAci", title = gettextf("RMSEA 90%% confidence"),   type = "string")
   fittab$addColumnInfo(name = "TLI",     title = gettext("TLI"),   type = "number", format = "dp:3")
   fittab$addColumnInfo(name = "BIC",     title = gettext("BIC"),   type = "number", format = "dp:3")
   fittab$position <- 4.5

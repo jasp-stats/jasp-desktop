@@ -1361,7 +1361,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
 .metaAnalysisConfidenceInterval <- function(options, table) {
   if(options$regressionCoefficientsConfidenceIntervals) {
-    ci <- paste0(100*options$regressionCoefficientsConfidenceIntervalsInterval, "% Confidence Interval")
+    ci <- gettextf("%s%% Confidence Interval", 100*options$regressionCoefficientsConfidenceIntervalsInterval)
     table$addColumnInfo(name = "lower", type = "number", title = "Lower", overtitle = ci)
     table$addColumnInfo(name = "upper", type = "number", title = "Upper", overtitle = ci)
   }

@@ -413,8 +413,8 @@ linmod<- function(jaspResults, dataset, options) {
   }
   
   ### add message about what type of interval was used
-  message <- paste0("Confidence intervals computed 95% Confidence Intervals.")
-  message = paste0(message, "\n All estimates are conditional estimates.")
+  message <- gettextf("Confidence intervals computed 95%% Confidence Intervals.")
+  message = paste0(message, gettext("\n All estimates are conditional estimates."))
   linmod_table_slopes$addFootnote(message)  
   linmod_table_slopes$showSpecifiedColumnsOnly <- TRUE
   ### store the table structure
