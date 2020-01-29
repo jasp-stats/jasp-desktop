@@ -22,7 +22,7 @@ run <- function(name, title, dataKey, options, resultsMeta, stateKey, requiresIn
     if (identical(.Platform$OS.type, "windows"))
             compiler::enableJIT(0)
 
-    RNGkind(sample.kind = "Rounding") # R 3.6.0 changed its rng; this ensures that for the time being the results do not change
+    suppressWarnings(RNGkind(sample.kind = "Rounding")) # R 3.6.0 changed its rng; this ensures that for the time being the results do not change
 
     dataKey     <- fromJSON(dataKey)
     options     <- fromJSON(options)
@@ -180,7 +180,7 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
   if (identical(.Platform$OS.type, "windows"))
     compiler::enableJIT(0)
 
-  RNGkind(sample.kind = "Rounding")  # R 3.6.0 changed its rng; this ensures that for the time being the results do not change
+  suppressWarnings(RNGkind(sample.kind = "Rounding"))  # R 3.6.0 changed its rng; this ensures that for the time being the results do not change
 
   jaspResultsCPP        <- jaspResultsModule$create_cpp_jaspResults(name, .retrieveState())
   jaspResults           <- jaspResultsR$new(jaspResultsCPP)
