@@ -179,7 +179,7 @@ mlClusteringHierarchical <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["dendrogram"]]) || !options[["dendrogram"]]) return()
 
-  dendrogram <- createJaspPlot(plot = NULL, title = "Dendogram", width = 500, height = 300)
+  dendrogram <- createJaspPlot(plot = NULL, title = gettext("Dendogram"), width = 500, height = 300)
   dendrogram$position <- position
   dendrogram$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "algorithm", "eps", "minPts", "distance",
                                           "noOfIterations", "modelOpt", "ready", "seed", "plot2dCluster", "maxClusters", "scaleEqualSD", "seedBox",

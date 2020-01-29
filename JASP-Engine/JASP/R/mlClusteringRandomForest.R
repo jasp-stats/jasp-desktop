@@ -184,14 +184,14 @@ if(options[["modelOpt"]] == "validationManual"){
   if (!is.null(jaspResults[["importanceTable"]]) || !options[["importanceTable"]]) return()
   
   # Create table
-  importanceTable <- createJaspTable(title = "Variable Importance")
+  importanceTable <- createJaspTable(title = gettext("Variable Importance"))
   importanceTable$position <- position
   importanceTable$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed", "optimizationCriterion",
                                                       "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "maxTrees", "importanceTable"))
   
   # Add column info
-  importanceTable$addColumnInfo(name = "variable",  title = " ", type = "string")
-  importanceTable$addColumnInfo(name = "measure",  title = "Mean decrease in Gini Index", type = "number", format = "sf:4")
+  importanceTable$addColumnInfo(name = "variable",  title = "", type = "string")
+  importanceTable$addColumnInfo(name = "measure",  title = gettext("Mean decrease in Gini Index"), type = "number", format = "sf:4")
 
   jaspResults[["importanceTable"]] <- importanceTable
 

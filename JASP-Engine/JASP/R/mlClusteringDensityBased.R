@@ -139,7 +139,7 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["kdistPlot"]]) || !options[["k-distplot"]]) return()
 
-  kdistPlot <- createJaspPlot(plot = NULL, title = "K-Distance Plot", width = 500, height = 300)
+  kdistPlot <- createJaspPlot(plot = NULL, title = gettext("K-Distance Plot"), width = 500, height = 300)
   kdistPlot$position <- position
   kdistPlot$dependOn(options = c("predictors", "eps", "minPts", "modelOpt", "seed", "scaleEqualSD", "ready", "k-distplot", "distance"))
   jaspResults[["kdistPlot"]] <- kdistPlot
@@ -171,12 +171,12 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
   lineData <- data.frame(xstart = xBreaks[1], xend = xBreaks[length(xBreaks)], ystart = options[["eps"]], yend = options[["eps"]])
  
   p <-  ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y)) + 
-        ggplot2::scale_x_continuous(name = "Points sorted by distance", breaks = xBreaks, limits = c(0, max(xBreaks))) + 
-        ggplot2::scale_y_continuous(name = paste0(options[['minPts']], '-nearest neighbors \ndistance'), breaks = yBreaks, limits = range(yBreaks))
+        ggplot2::scale_x_continuous(name = gettext("Points sorted by distance"), breaks = xBreaks, limits = c(0, max(xBreaks))) + 
+        ggplot2::scale_y_continuous(name = gettextf('%s-nearest neighbors \ndistance', options[['minPts']]), breaks = yBreaks, limits = range(yBreaks))
   
   if (!is.null(suggestedLine)) {
         p <-  p + ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = suggestedLine, linetype = 2, color = "darkred") +
-                  ggrepel::geom_text_repel(data = suggestedLine, ggplot2::aes(label= paste0("Maximum curvature = ", round(yend, 2), ""), x = xstart, y = yend), hjust = 0, vjust = -0.5, color = "darkred")
+                  ggrepel::geom_text_repel(data = suggestedLine, ggplot2::aes(label= gettextf("Maximum curvature = %s", round(yend, 2)), x = xstart, y = yend), hjust = 0, vjust = -0.5, color = "darkred")
   }
   
   p <-  p + ggplot2::geom_segment(ggplot2::aes(x = xstart, xend = xend, y = ystart, yend = yend), data = lineData, linetype = 2, color = "darkgray") +
@@ -191,16 +191,16 @@ mlClusteringDensityBased <- function(jaspResults, dataset, options, ...) {
 findCutoff <- function (x, y, method = "first", frac.of.steepest.slope = 0.5) {
   stack <- Cstack_info()[names(Cstack_info()) == "eval_depth"] * 6 # each run adds 6 to the stack
   if (getOption("expressions") <= (stack + 6)) 
-    stop("End of recursion reached without converging")
+    stop(gettext("End of recursion reached without converging"))
 
   is.invalid <- function(x) {
       any((!is.numeric(x)) | is.infinite(x))
   }
   if (is.invalid(x) || is.invalid(y)) {
-      stop("x and y must be numeric and finite. Missing values not allowed.")
+      stop(gettext("x and y must be numeric and finite. Missing values not allowed."))
   }
   if (length(x) != length(y)) {
-      stop("x and y must be of equal length.")
+      stop(gettext("x and y must be of equal length."))
   }
   
   new.x <- seq(from = min(x), to = max(x), length.out = length(x))
@@ -223,7 +223,7 @@ findCutoff <- function (x, y, method = "first", frac.of.steepest.slope = 0.5) {
               7)
       }
       if (filt.length <= p) {
-          stop("Need more points to find cutoff.")
+          stop(gettext("Need more points to find cutoff."))
       }
       signal::sgolayfilt(y, p = p, n = filt.length, ts = ts, 
           ...)
@@ -258,11 +258,11 @@ findCutoff <- function (x, y, method = "first", frac.of.steepest.slope = 0.5) {
   cutoff.x <- NA
   if (method == "first") {
       if (is.invalid(frac.of.steepest.slope)) {
-          stop("Need to specify fraction of maximum slope.")
+          stop(gettext("Need to specify fraction of maximum slope."))
       }
       if (frac.of.steepest.slope <= 0 || frac.of.steepest.slope > 
           1) {
-          stop("Fraction of maximum slope must be positive and be less than or equal to 1.")
+          stop(gettext("Fraction of maximum slope must be positive and be less than or equal to 1."))
       }
       slope.cutoff <- frac.of.steepest.slope * max(first.deriv)
       cutoff.x <- findInverse(new.x, first.deriv, slope.cutoff)
@@ -272,10 +272,10 @@ findCutoff <- function (x, y, method = "first", frac.of.steepest.slope = 0.5) {
       cutoff.x <- findInverse(new.x, curvature, max(curvature))
   }
   else {
-      stop("Method must be either 'first' or 'curvature'.")
+      stop(gettext("Method must be either 'first' or 'curvature'."))
   }
   if (is.na(cutoff.x)) {
-      warning("Cutoff point is beyond range. Returning NA.")
+      warning(gettext("Cutoff point is beyond range. Returning NA."))
       list(x = NA, y = NA)
   }
   else {
