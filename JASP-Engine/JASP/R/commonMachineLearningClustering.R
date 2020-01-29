@@ -44,7 +44,7 @@
     if (type != "densitybased") {
       clusters  <- base::switch(options[["modelOpt"]], "validationManual" = options[["noOfClusters"]], "validationOptimized" = options[["maxClusters"]])
       if (clusters > (nrow(dataset) - 1))
-        return(paste0("You have specified more clusters than distinct data points. Please choose a number lower than ", nrow(dataset), "."))
+        return(gettextf("You have specified more clusters than distinct data points. Please choose a number lower than %s.", nrow(dataset)))
     }
   }
 
@@ -53,7 +53,7 @@
       return()
 
     if(nrow(dataset) >= 65536L)
-      return("R package error: The hclust clustering algorithm from the stats R package cannot handle data that has 65536 or more rows. We are working on a solution for this problem. Please try another algorithm in the meantime.")
+      return(gettext("R package error: The hclust clustering algorithm from the stats R package cannot handle data that has 65536 or more rows. We are working on a solution for this problem. Please try another algorithm in the meantime."))
   }
 
   return(list(checkClusters, checkDataHierarchicalClustering))
@@ -118,27 +118,27 @@
   if(!is.null(jaspResults[["clusteringTable"]])) return() #The options for this table didn't change so we don't need to rebuild it
 
   title <- base::switch(type,
-                        "kmeans" = "K-Means Clustering",
-                        "cmeans" = "Fuzzy C-Means Clustering",
-                        "hierarchical" = "Hierarchical Clustering",
-                        "densitybased" = "Density-Based Clustering",
-                        "randomForest" = "Random Forest Clustering")
+                        "kmeans" = gettext("K-Means Clustering"),
+                        "cmeans" = gettext("Fuzzy C-Means Clustering"),
+                        "hierarchical" = gettext("Hierarchical Clustering"),
+                        "densitybased" = gettext("Density-Based Clustering"),
+                        "randomForest" = gettext("Random Forest Clustering"))
 
   clusteringTable                       <- createJaspTable(title)
   clusteringTable$position <- position
   clusteringTable$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed", "optimizationCriterion",
                                                       "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "maxTrees"))
 
-  clusteringTable$addColumnInfo(name = 'clusters', title = 'Clusters', type = 'integer')
-  clusteringTable$addColumnInfo(name = 'n', title = 'N', type = 'integer')
-  clusteringTable$addColumnInfo(name = 'measure', title = 'R\u00B2', type = 'number', format = 'dp:2')
-  clusteringTable$addColumnInfo(name = 'aic', title = 'AIC', type = 'number', format = 'dp:2')
-  clusteringTable$addColumnInfo(name = 'bic', title = 'BIC', type = 'number', format = 'dp:2')
+  clusteringTable$addColumnInfo(name = 'clusters', title = gettext('Clusters'), type = 'integer')
+  clusteringTable$addColumnInfo(name = 'n', title = gettext('N'), type = 'integer')
+  clusteringTable$addColumnInfo(name = 'measure', title = gettextf('R%s', "\u00B2"), type = 'number', format = 'dp:2')
+  clusteringTable$addColumnInfo(name = 'aic', title = gettext('AIC'), type = 'number', format = 'dp:2')
+  clusteringTable$addColumnInfo(name = 'bic', title = gettext('BIC'), type = 'number', format = 'dp:2')
   clusteringTable$addColumnInfo(name = 'Silh', title = 'Silhouette', type = 'number', format = 'dp:2')
 
   clusteringTable$addCitation("Hartigan, J. A., & Wong, M. A. (1979). Algorithm AS 136: A k-means clustering algorithm. Journal of the Royal Statistical Society. Series C (Applied Statistics), 28(1), 100-108.")
 
-  if(!ready) clusteringTable$addFootnote(message="Please provide at least 2 variables.", symbol="<i>Note.</i>")
+  if(!ready) clusteringTable$addFootnote(message = gettext("Please provide at least 2 variables."), symbol = gettext("<i>Note.</i>"))
 
   jaspResults[["clusteringTable"]]      <- clusteringTable
 
@@ -149,24 +149,24 @@
   clusterResult <- jaspResults[["clusterResult"]]$object
 
   if(options[["modelOpt"]] != "validationManual"){
-    criterion <- base::switch(options[["optimizationCriterion"]], "validationAIC" = "AIC", "validationBIC" = "BIC", "validationSilh" = "silhouette")
-    clusteringTable$addFootnote(message = paste0("The model is optimized with respect to the <i>", criterion, "</i> value."), symbol="<i>Note.</i>")
+    criterion <- base::switch(options[["optimizationCriterion"]], "validationAIC" = gettext("AIC"), "validationBIC" = gettext("BIC"), "validationSilh" = gettext("silhouette"))
+    clusteringTable$addFootnote(message = gettextf("The model is optimized with respect to the <i>%s</i> value.", criterion), symbol = gettext("<i>Note.</i>"))
   }
 
   if(clusterResult[["clusters"]] == options[["maxClusters"]] && options[["modelOpt"]] != "validationManual"){
-    message <- "The optimum number of clusters is the maximum number of clusters. You might want to adjust the range of optimization."
+    message <- gettext("The optimum number of clusters is the maximum number of clusters. You might want to adjust the range of optimization.")
     clusteringTable$addFootnote(message=message, symbol="<i>Note.</i>")
   }
 
   if(type=="densitybased"){
     if(clusterResult[["zeroMark"]] == 1)
-      clusteringTable$addFootnote(message = "Your cluster model contains 0 clusters and only Noisepoints, we advise to change the Eps and MinPts parameters.", symbol="<i>Note.</i>")
+      clusteringTable$addFootnote(message = gettext("Your cluster model contains 0 clusters and only Noisepoints, we advise to change the Eps and MinPts parameters."), symbol = gettext("<i>Note.</i>"))
     if(clusterResult[["oneMark"]] == 1)
-      clusteringTable$addFootnote(message = "Your cluster model contains 1 cluster and 0 Noisepoints. You could change the Eps and MinPts parameters.", symbol="<i>Note.</i>")
+      clusteringTable$addFootnote(message = gettext("Your cluster model contains 1 cluster and 0 Noisepoints. You could change the Eps and MinPts parameters."), symbol = gettext("<i>Note.</i>"))
   }
 
   if(!options[["scaleEqualSD"]])
-    clusteringTable$addFootnote(message = "The variables in the model are <b>unstandardized</b>.", symbol="<i>Note.</i>")
+    clusteringTable$addFootnote(message = gettext("The variables in the model are <b>unstandardized</b>."), symbol = gettext("<i>Note.</i>"))
 
   row <- data.frame(clusters = clusterResult[['clusters']], measure = clusterResult[['BSS']]/clusterResult[['TSS']], aic = round(clusterResult[['AIC']], 2),
                     bic = round(clusterResult[['BIC']], 2), Silh = round(clusterResult[['Silh_score']], 2), n = clusterResult[["N"]])
@@ -177,7 +177,7 @@
 
   if(!is.null(jaspResults[["clusterInfoTable"]]) || !options[["tableClusterInformation"]]) return()
 
-    clusterInfoTable                        <- createJaspTable("Cluster Information")
+    clusterInfoTable                        <- createJaspTable(gettext("Cluster Information"))
     clusterInfoTable$dependOn(options =c("tableClusterInformation","predictors", "modelOpt", "noOfIterations",
                                         "noOfClusters","noOfRandomSets", "tableClusterInfoSize", "tableClusterInfoSilhouette", "optimizationCriterion",
                                         "tableClusterInfoSumSquares", "tableClusterInfoCentroids", "scaleEqualSD", "tableClusterInfoWSS", "minPts", "eps",
@@ -185,13 +185,13 @@
   clusterInfoTable$position               <- position
   clusterInfoTable$transpose              <- TRUE
 
-  clusterInfoTable$addColumnInfo(name = 'cluster', title = 'Cluster', type = 'integer')
-  clusterInfoTable$addColumnInfo(name = 'size', title = 'Size', type = 'integer')
-  clusterInfoTable$addColumnInfo(name = 'percentage', title = 'Explained proportion within-cluster heterogeneity', type = 'number')
+  clusterInfoTable$addColumnInfo(name = 'cluster', title = gettext('Cluster'), type = 'integer')
+  clusterInfoTable$addColumnInfo(name = 'size', title = gettext('Size'), type = 'integer')
+  clusterInfoTable$addColumnInfo(name = 'percentage', title = gettext('Explained proportion within-cluster heterogeneity'), type = 'number')
   if(options[["tableClusterInfoWSS"]])
-    clusterInfoTable$addColumnInfo(name = 'withinss', title = 'Within sum of squares', type = 'number')
+    clusterInfoTable$addColumnInfo(name = 'withinss', title = gettext('Within sum of squares'), type = 'number')
   if(options[["tableClusterInfoSilhouette"]])
-    clusterInfoTable$addColumnInfo(name = 'silh_scores', title = 'Silhouette score', type = 'number')
+    clusterInfoTable$addColumnInfo(name = 'silh_scores', title = gettext('Silhouette score'), type = 'number')
 
   jaspResults[["clusterInfoTable"]]       <- clusterInfoTable
 
@@ -202,7 +202,7 @@
   if(type == "kmeans" || type == "cmeans"){
     if(options[['tableClusterInfoCentroids']]){
       for( i in 1:length(options[["predictors"]])){
-          clusterInfoTable$addColumnInfo(name = paste0('centroid', i), title = paste0('Centroid ', options[["predictors"]][i]), type = 'number', format = 'dp:3')
+          clusterInfoTable$addColumnInfo(name = paste0('centroid', i), title = gettextf('Centroid %s', options[["predictors"]][i]), type = 'number', format = 'dp:3')
       }
     }
   }
@@ -214,10 +214,10 @@
 
   if(type == "densitybased"){
     if(sum(size) == clusterResult[["noisePoints"]]) {
-      cluster <- "Noisepoints"
+      cluster <- gettext("Noisepoints")
       withinss <- 0
     } else if(clusterResult[["noisePoints"]] > 0) {
-      cluster <- c("Noisepoints", 1:(clusterResult[["clusters"]]))
+      cluster <- c(gettext("Noisepoints"), 1:(clusterResult[["clusters"]]))
       withinss <- c(0, withinss)
       silh_scores[1] <- 0
     }
@@ -244,12 +244,12 @@
   clusterInfoTable$addRows(row)
 
   if(options[['tableClusterInfoBetweenSumSquares']]){
-      message <- paste0('The Between Sum of Squares of the ', clusterResult[["clusters"]], ' cluster model is ', round(clusterResult[['BSS']],2))
-      clusterInfoTable$addFootnote(message=message, symbol="<i>Note.</i>")
+      message <- gettextf('The Between Sum of Squares of the %1$s cluster model is %2$s', clusterResult[["clusters"]], round(clusterResult[['BSS']], 2))
+      clusterInfoTable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
   }
   if(options[['tableClusterInfoTotalSumSquares']]){
-      message <- paste0('The Total Sum of Squares of the ', clusterResult[["clusters"]], ' cluster model is ', round(clusterResult[['TSS']],2))
-      clusterInfoTable$addFootnote(message=message, symbol="<i>Note.</i>")
+      message <- gettextf('The Total Sum of Squares of the %1$s cluster model is %2$s', clusterResult[["clusters"]], round(clusterResult[['TSS']], 2))
+      clusterInfoTable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
   }
 }
 
@@ -257,14 +257,14 @@
 
   if(!is.null(jaspResults[["clusterEvaluationMetrics"]]) || !options[["clusterEvaluationMetrics"]]) return()
 
-  clusterEvaluationMetrics                        <- createJaspTable("Evaluation Metrics")
+  clusterEvaluationMetrics                        <- createJaspTable(gettext("Evaluation Metrics"))
   clusterEvaluationMetrics$dependOn(options =c("clusterEvaluationMetrics","predictors", "modelOpt", "noOfIterations",
                                       "noOfClusters","noOfRandomSets", "optimizationCriterion", "scaleEqualSD", "minPts", "eps",
                                       "maxClusters", "m", "linkage", "distance", "noOfTrees", "maxTrees"))
   clusterEvaluationMetrics$position               <- position
 
   clusterEvaluationMetrics$addColumnInfo(name = 'metric', title = '', type = 'string')
-  clusterEvaluationMetrics$addColumnInfo(name = 'value', title = 'Value', type = 'number')
+  clusterEvaluationMetrics$addColumnInfo(name = 'value', title = gettext('Value'), type = 'number')
 
   jaspResults[["clusterEvaluationMetrics"]]       <- clusterEvaluationMetrics
 
@@ -276,16 +276,21 @@
   distance <- dist(dataset)
   metrics <- fpc::cluster.stats(distance, clustering, silhouette = FALSE, sepindex = FALSE, sepwithnoise = FALSE)
 
-  clusterEvaluationMetrics[["metric"]] <- c("Maximum diameter", "Minimum separation", "Pearson's \u03B3", "Dunn index", "Entropy", "Calinski-Harabasz index")
+  clusterEvaluationMetrics[["metric"]] <- c(gettext("Maximum diameter"), 
+                                            gettext("Minimum separation"), 
+                                            gettextf("Pearson's %s", "\u03B3"), 
+                                            gettext("Dunn index"), 
+                                            gettext("Entropy"), 
+                                            gettext("Calinski-Harabasz index"))
 
   if(length(unique(clustering)) != 1){
 
     clusterEvaluationMetrics[["value"]] <- c(metrics[["max.diameter"]], metrics[["min.separation"]], metrics[["pearsongamma"]], metrics[["dunn"]], metrics[["entropy"]], metrics[["ch"]])
-    clusterEvaluationMetrics$addFootnote(message="All metrics are based on the <i>euclidean</i> distance.", symbol="<i>Note.</i>")
+    clusterEvaluationMetrics$addFootnote(message = gettext("All metrics are based on the <i>euclidean</i> distance."), symbol = gettext("<i>Note.</i>"))
 
   } else {
 
-    clusterEvaluationMetrics$addFootnote(message="Evaluation metrics cannot be computed when there is only 1 cluster.", symbol="<i>Note.</i>")
+    clusterEvaluationMetrics$addFootnote(message = gettext("Evaluation metrics cannot be computed when there is only 1 cluster."), symbol = gettext("<i>Note.</i>"))
 
   }
 
@@ -295,7 +300,7 @@
 
   if(!is.null(jaspResults[["plot2dCluster"]]) || !options[["plot2dCluster"]]) return()
 
-  clusterPlot <- createJaspPlot(plot = NULL, title = "t-SNE Cluster Plot", width = 500, height = 300)
+  clusterPlot <- createJaspPlot(plot = NULL, title = gettext("t-SNE Cluster Plot"), width = 500, height = 300)
   clusterPlot$position <- position
   clusterPlot$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "algorithm", "eps", "minPts", "distance",
                                           "noOfIterations", "modelOpt", "ready", "seed", "plot2dCluster", "maxClusters", "scaleEqualSD", "seedBox",
@@ -352,7 +357,7 @@
 
   clusterAssignment <- factor(pred.values)
   if(type=="densitybased")
-    levels(clusterAssignment)[levels(clusterAssignment)=="0"] <- "Noisepoint"
+    levels(clusterAssignment)[levels(clusterAssignment)=="0"] <- gettext("Noisepoint")
   tsne_plot <- data.frame(x = tsne_out$Y[,1], y = tsne_out$Y[,2], Cluster = clusterAssignment)
   p <- ggplot2::ggplot(tsne_plot) +
         ggplot2::geom_point(ggplot2::aes(x = x, y = y, fill = Cluster), size = 4, stroke = 1, shape = 21, color = "black") +
@@ -377,7 +382,7 @@
 
 if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options[["modelOpt"]] == "validationManual") return()
 
-  optimPlot <- createJaspPlot(plot = NULL, title = "Elbow Method Plot", width = 500, height = 300)
+  optimPlot <- createJaspPlot(plot = NULL, title = gettext("Elbow Method Plot"), width = 500, height = 300)
   optimPlot$position <- position
   optimPlot$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "algorithm", "eps", "minPts", "distance",
                                           "noOfIterations", "modelOpt", "ready", "seed", "plot2dCluster", "maxClusters", "scaleEqualSD", "seedBox",
@@ -393,12 +398,12 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
   bic <- clusterResult[['bicStore']]
 
   values <- c(wss, aic, bic)
-  type <- rep(c("Within Sum of Squares", "AIC", "BIC"), each = length(wss))
+  type <- rep(c(gettext("Within Sum of Squares"), gettext("AIC"), gettext("BIC")), each = length(wss))
 
   requiredPoint <- base::switch(options[["optimizationCriterion"]],
-                                  "validationAIC" = "AIC",
-                                  "validationBIC" = "BIC",
-                                  "validationSilh" = "Within Sum of Squares")
+                                  "validationAIC" = gettext("AIC"),
+                                  "validationBIC" = gettext("BIC"),
+                                  "validationSilh" = gettext("Within Sum of Squares"))
 
   d <- data.frame(x = rep(2:options[["maxClusters"]], 3), y = values, type = type)
 
@@ -412,7 +417,7 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
 
   p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y, linetype = type)) +
         JASPgraphs::geom_line() +
-        ggplot2::scale_x_continuous(name = "Number of Clusters", breaks = xBreaks, labels = xBreaks) +
+        ggplot2::scale_x_continuous(name = gettext("Number of Clusters"), breaks = xBreaks, labels = xBreaks) +
         ggplot2::scale_y_continuous(name = "", breaks = yBreaks, labels = yBreaks) +
         ggplot2::labs(linetype = "") +
         ggplot2::scale_linetype_manual(values = c(3, 2, 1)) +
@@ -443,7 +448,7 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
 
   if(!is.null(jaspResults[["clusterMeansTable"]]) || !options[["tableClusterMeans"]]) return()
 
-  clusterMeansTable <- createJaspTable("Cluster Means")
+  clusterMeansTable <- createJaspTable(gettext("Cluster Means"))
   clusterMeansTable$dependOn(options = c("tableClusterMeans","predictors", "modelOpt", "noOfIterations",
                                       "noOfClusters","noOfRandomSets", "tableClusterInfoSize", "tableClusterInfoSilhouette", "optimizationCriterion",
                                       "tableClusterInfoSumSquares", "tableClusterInfoCentroids", "scaleEqualSD", "tableClusterInfoWSS", "minPts", "eps",
@@ -466,7 +471,7 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
 
   clusters <- as.factor(clusterResult[["pred.values"]])
   clusterLevels <- as.numeric(levels(clusters))
-  clusterTitles <- paste0("Cluster ", clusterLevels)
+  clusterTitles <- gettextf("Cluster %s", clusterLevels)
   clusterMeans <- NULL
   
   for(i in clusterLevels){
@@ -484,7 +489,7 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
 
   if (!is.null(jaspResults[["clusterDensities"]]) || !options[["plotClusterDensities"]]) return()
 
-	clusterDensities <- createJaspContainer("Cluster Density Plots")
+	clusterDensities <- createJaspContainer(gettext("Cluster Density Plots"))
   clusterDensities$dependOn(options = c("plotClusterDensities","predictors", "modelOpt", "noOfIterations",
                                       "noOfClusters","noOfRandomSets", "tableClusterInfoSize", "tableClusterInfoSilhouette", "optimizationCriterion",
                                       "tableClusterInfoSumSquares", "tableClusterInfoCentroids", "scaleEqualSD", "tableClusterInfoWSS", "minPts", "eps",
@@ -510,7 +515,7 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
 
     p <- ggplot2::ggplot(plotData, ggplot2::aes(x = value, fill = Cluster)) +
           ggplot2::geom_density(color = "transparent", alpha = 0.6) +
-          ggplot2::ylab("Density") +
+          ggplot2::ylab(gettext("Density")) +
           ggplot2::scale_x_continuous(name = variable, breaks = xBreaks, labels = xBreaks, limits = range(xBreaks))
     p <- JASPgraphs::themeJasp(p, legend.position = "right") + 
           ggplot2::theme(axis.ticks.y = ggplot2::element_blank(), 
@@ -525,7 +530,7 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
 
   if (!is.null(jaspResults[["clusterMeans"]]) || !options[["plotClusterMeans"]]) return()
 
-	clusterMeans <- createJaspContainer("Cluster Mean Plots")
+	clusterMeans <- createJaspContainer(gettext("Cluster Mean Plots"))
   clusterMeans$dependOn(options = c("plotClusterMeans", "showBars", "oneFigure", "predictors", "modelOpt", "noOfIterations",
                                       "noOfClusters","noOfRandomSets", "tableClusterInfoSize", "tableClusterInfoSilhouette", "optimizationCriterion",
                                       "tableClusterInfoSumSquares", "tableClusterInfoCentroids", "scaleEqualSD", "tableClusterInfoWSS", "minPts", "eps",
@@ -591,12 +596,12 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
     }
     
     p <- p + ggplot2::scale_x_continuous(name = "", breaks = xBreaks, labels = xLabels) +
-      ggplot2::scale_y_continuous(name = "Value", breaks = yBreaks, labels = yBreaks, limits = range(yBreaks))
+      ggplot2::scale_y_continuous(name = gettext("Value"), breaks = yBreaks, labels = yBreaks, limits = range(yBreaks))
     p <- JASPgraphs::themeJasp(p, legend.position = "right", sides = "l") + 
           ggplot2::theme(axis.ticks.x = ggplot2::element_blank(),
                           axis.text.x = ggplot2::element_text(angle = 20))
     
-    clusterMeans[["oneFigure"]] <- createJaspPlot(plot = p, title = "All predictors", height = 400, width = 200 * length(options[["predictors"]]))
+    clusterMeans[["oneFigure"]] <- createJaspPlot(plot = p, title = gettext("All predictors"), height = 400, width = 200 * length(options[["predictors"]]))
 
 
   } else {
@@ -629,7 +634,7 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
                   JASPgraphs::geom_point(color = "black")
       }
 
-      p <- p + ggplot2::scale_x_discrete(name = "Cluster", breaks = xBreaks, labels = xBreaks) +
+      p <- p + ggplot2::scale_x_discrete(name = gettext("Cluster"), breaks = xBreaks, labels = xBreaks) +
                 ggplot2::scale_y_continuous(name = variable, breaks = yBreaks, labels = yBreaks, limits = range(yBreaks))
       p <- JASPgraphs::themeJasp(p, sides = "l") + 
             ggplot2::theme(axis.ticks.x = ggplot2::element_blank())
