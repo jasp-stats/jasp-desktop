@@ -494,7 +494,7 @@ void Analyses::analysisClickedHandler(QString analysisFunction, QString analysis
 {
 	Modules::DynamicModule * dynamicModule = DynamicModules::dynMods()->dynamicModule(module.toStdString());
 
-	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry((analysisTitle + "~" + analysisFunction).toStdString()));
+	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysisFunction)));
 	else							create(module, analysisFunction, analysisQML, analysisTitle);
 }
 
