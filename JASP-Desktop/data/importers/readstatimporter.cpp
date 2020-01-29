@@ -111,6 +111,8 @@ void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
 {
 	ReadStatImportColumn * col = static_cast<ReadStatImportColumn*>(importColumn);
 
+	col->tryNominalMinusText(); //If we converted some doubles to strings as value because spss has weird datatypes then maybe they are ints anyway. so try to convert it back to nominal in that case.
+
 	switch(col->getColumnType())
 	{
 	case columnType::scale:
@@ -120,7 +122,7 @@ void ReadStatImporter::initColumn(QVariant colId, ImportColumn * importColumn)
 	case columnType::ordinal:
 	case columnType::nominal:
 		if(col->hasLabels())	DataSetPackage::pkg()->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(), col->intLabels(),	col->getColumnType() == columnType::ordinal);
-		else					DataSetPackage::pkg()->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(),						col->getColumnType() == columnType::ordinal);
+		else					DataSetPackage::pkg()->initColumnAsNominalOrOrdinal(colId, col->name(), col->ints(),					col->getColumnType() == columnType::ordinal);
 		break;
 
 	case columnType::nominalText:

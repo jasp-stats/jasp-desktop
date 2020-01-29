@@ -22,7 +22,9 @@ public:
 	void						addValue(const double			& val);
 	void						addValue(const int				& val);
 	void						addValue(const std::string		& val);
+
 	void						addLabel(const int				& val,	const std::string & label);
+	void						addLabel(const double			& val,	const std::string & label);
 	void						addLabel(const std::string		& val,	const std::string & label);
 
 	bool						isMissingValue(double d)		const { return isnan(d);				}
@@ -46,6 +48,8 @@ public:
 
 	const std::map<int,std::string>			&	intLabels()		const { return _intLabels; }
 	const std::map<std::string,std::string>	&	strLabels()		const { return _strLabels; }
+
+	void						tryNominalMinusText();
 
 private:
 	std::string					_labelsID;

@@ -56,15 +56,16 @@ std::vector<std::string> ReadStatImportColumn::allValuesAsStrings() const
 	return strs;
 }
 
+//This code could perhaps be split up into canConvertToType that checks if the conversion would work, and this one. That way recovering from errors could be done a bit more gracefully and the code in tryNominalMinusText() could be a lot more succint.
 void ReadStatImportColumn::setType(columnType newType)
 {
 	if(_type == newType)
 		return;
 
-	//Log::log() << "Changing columntype of '" << _name << "'\tto " << columnTypeToString(newType) << "\tfrom " << columnTypeToString(_type) << std::endl;
+	Log::log() << "Changing columntype of '" << _name << "'\tto " << columnTypeToString(newType) << "\tfrom " << columnTypeToString(_type) << std::endl;
 
-	auto conversionFailed = [&](){
-		throw std::runtime_error("An attempt was made to change the columntype of '" + _name + "' to "+ columnTypeToString(newType) + " from " + columnTypeToString(_type) + " but the conversion failed...");
+	auto conversionFailed = [&](const std::string & extraMsg){
+		throw std::runtime_error("An attempt was made to change the columntype of '" + _name + "' to "+ columnTypeToString(newType) + " from " + columnTypeToString(_type) + " but the conversion failed.\n" + extraMsg);
 	};
 
 	switch(_type)
@@ -84,8 +85,9 @@ void ReadStatImportColumn::setType(columnType newType)
 		case columnType::nominal:
 			for(double d : _doubles)
 				if(isMissingValue(d))			_ints.push_back(missingValueInt());
-				else if(d != double(int(d)))	conversionFailed();
+				else if(d != double(int(d)))	conversionFailed("Double '" + doubleAsString(d) + "' cannot be converted to int.");
 				else							_ints.push_back(int(d));
+
 			break;
 
 		case columnType::nominalText:
@@ -108,6 +110,9 @@ void ReadStatImportColumn::setType(columnType newType)
 			return;
 
 		case columnType::scale:
+			if(_intLabels.size() > 0)
+				conversionFailed("Because we would have to drop labels.");
+
 			for(int i : _ints)
 				_doubles.push_back(isMissingValue(i) ? missingValueDouble() : i);
 			_ints.clear();
@@ -117,6 +122,10 @@ void ReadStatImportColumn::setType(columnType newType)
 			for(int i : _ints)
 				_strings.push_back(isMissingValue(i) ? missingValueString() : std::to_string(i));
 			_ints.clear();
+
+			for(const auto & intLabel : _intLabels)
+				_strLabels[std::to_string(intLabel.first)] = intLabel.second;
+			_intLabels.clear();
 			break;
 		}
 		break;
@@ -129,10 +138,13 @@ void ReadStatImportColumn::setType(columnType newType)
 		case columnType::scale:
 			for(const std::string & str : _strings)
 			{
+				if(_strLabels.size() > 0)
+					conversionFailed("Because we would have to drop some labels.");
+
 				double dblVal;
 				if(isMissingValue(str))										_doubles.push_back(missingValueDouble());
 				else if(Utils::convertValueToDoubleForImport(str, dblVal))	_doubles.push_back(dblVal);
-				else														conversionFailed();
+				else														conversionFailed("String '" + str + "' cannot be converted to double.");
 			}
 			break;
 
@@ -143,8 +155,17 @@ void ReadStatImportColumn::setType(columnType newType)
 				int intVal;
 				if(isMissingValue(str))									_ints.push_back(missingValueInt());
 				else if(Utils::convertValueToIntForImport(str, intVal))	_ints.push_back(intVal);
-				else													conversionFailed();
+				else													conversionFailed("String '" + str + "' cannot be converted to int.");
 			}
+
+			for(const auto & strLabel : _strLabels)
+			{
+				int val;
+				if(Utils::convertValueToIntForImport(strLabel.first, val))	_intLabels[val] = strLabel.second;
+				else														conversionFailed("String key '" + strLabel.first + "' (for label '" + strLabel.second + "') cannot be converted to int.");
+			}
+			_strLabels.clear();
+
 			break;
 		}
 		break;
@@ -246,7 +267,8 @@ void ReadStatImportColumn::addLabel(const int & val, const std::string & label)
 {
 	if(_type == columnType::nominalText)
 	{
-		Log::log() << "Column '" << name() << "' being imported through readstat is of type nominaltext but receives an int (" << val << ") as value for label '" << label << "'. Ignoring it!" << std::endl;
+		Log::log() << "Column '" << name() << "' being imported through readstat is of type nominaltext but receives an int (" << val << ") as value for label '" << label << "'. Converting it to string!" << std::endl;
+		addLabel(std::to_string(val), label);
 		return;
 	}
 
@@ -261,6 +283,17 @@ void ReadStatImportColumn::addLabel(const int & val, const std::string & label)
 	}
 
 	_intLabels[val] = label;
+}
+
+void ReadStatImportColumn::addLabel(const double & val, const std::string & label)
+{
+	if(_type != columnType::nominalText)
+	{
+		Log::log() << "Column '" << name() << "' being imported through readstat was of type " << _type << " but receives a double (" << val << ") as value for label '" << label << "'. Converting it's type to nominalText!" << std::endl;
+		setType(columnType::nominalText); //Because we do not support having doubles as values for labels
+	}
+
+	addLabel(doubleAsString(val), label);
 }
 
 void ReadStatImportColumn::addLabel(const std::string & val, const std::string & label)
@@ -309,7 +342,27 @@ void ReadStatImportColumn::addValue(const readstat_value_t & value)
 		case READSTAT_TYPE_INT32:		addValue(int(		readstat_int32_value(value))	);	return;
 		case READSTAT_TYPE_FLOAT:		addValue(double(	readstat_float_value(value))	);	return;
 		case READSTAT_TYPE_DOUBLE:		addValue(			readstat_double_value(value)	);	return;
+		case READSTAT_TYPE_STRING_REF:	throw std::runtime_error("File contains string references and we do not support this.");
 		}
 
 	addMissingValue();
+}
+
+void ReadStatImportColumn::tryNominalMinusText()
+{
+	if(_type != columnType::nominalText)
+		return;
+
+	int val;
+	for(const std::string & str : _strings)
+		if(!Utils::convertValueToIntForImport(str, val) && str != Utils::emptyValue)
+			return;
+
+	for(const auto & strLabel : _strLabels)
+		if(!Utils::convertValueToIntForImport(strLabel.first, val))
+			return;
+
+	Log::log() << "Converting column '" << _name << "' from nominalText to nominal because all values can be converted to int without losing information." << std::endl;
+
+	setType(columnType::nominal);
 }
