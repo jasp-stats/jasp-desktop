@@ -84,6 +84,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
         v2 <- dataset[[.v(var2)]]
       }
       
+      .setSeedJASP(options)
       bfObject <- bstats::bcor.test("x"=v1, "y"=v2, "kappa"=options[["kappa"]],
                                     "method"=method, "ciValue"=options[["ciValue"]])
       
@@ -100,7 +101,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   }
   
   jaspResults[["corModel"]] <- createJaspState(result)
-  jaspResults[["corModel"]]$dependOn(c("missingValues", "variables", "kappa", "ciValue"))
+  jaspResults[["corModel"]]$dependOn(c("missingValues", "variables", "kappa", "ciValue", "setSeed", "seed"))
   
   return(result)
 }
@@ -126,7 +127,8 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   corBayesTable$dependOn(c("pearson", "kendall", "spearman", "alternative", "kappa", "variables",
                            "displayPairwise","reportBayesFactors", "missingValues",
                            "flagSupported", "ci", "ciValue",
-                           "reportN", "posteriorMedian", "bayesFactorType"))
+                           "reportN", "posteriorMedian", "bayesFactorType",
+                           "setSeed", "seed"))
 
   corBayesTable$showSpecifiedColumnsOnly <- TRUE
   corBayesTable$position <- 1
@@ -499,7 +501,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   matrixPlot <- createJaspPlot(title=gettext("Bayesian Correlation Matrix Plot"))
   matrixPlot$position <- 2
   
-  matrixDependencies <- c("variables", "plotMatrix", "plotMatrixDensities", "plotMatrixPosteriors", "missingValues")
+  matrixDependencies <- c("variables", "plotMatrix", "plotMatrixDensities", "plotMatrixPosteriors", "missingValues", "setSeed", "seed")
   if (options[["plotMatrixPosteriors"]])
     matrixDependencies <- c(matrixDependencies, "pearson", "spearman", "kendall", "alternative", "kappa")
   
@@ -766,11 +768,12 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     return(jaspResults[[indexName]]$object)
 
   results <- list()
+  .setSeedJASP(options)
   for (method in names(bfObject))
     results[[method]] <- bstats::computeCorPosteriorLine(bfObject = bfObject[[method]], method = method, alternative = options[["alternative"]])
   
   jaspResults[[indexName]] <- createJaspState(results)
-  jaspResults[[indexName]]$dependOn(c("missingValues", "alternative", "kappa"))
+  jaspResults[[indexName]]$dependOn(c("missingValues", "alternative", "kappa", "setSeed", "seed"))
   
   return(results)
 }
@@ -807,7 +810,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 .initPlotContainerSubStructureCorBayes <- function(pairsPlotCollection, options) {
   plotItems <- .getCorPlotItems(options, bayes=TRUE,  sumStat=FALSE)
   
-  bfPlotPriorPosteriorDependencies <- c("pairsMethod", "kappa", "alternative")
+  bfPlotPriorPosteriorDependencies <- c("pairsMethod", "kappa", "alternative", "setSeed", "seed")
   bfPlotDependencies <- c(bfPlotPriorPosteriorDependencies, "bayesFactorType")
   
   if (options[["plotPriorPosterior"]] && options[["plotPriorPosteriorAddEstimationInfo"]])
@@ -918,6 +921,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 }
 
 .drawBfRobustnessPlotCorBayes <- function(bfObject, options, method) {
+  .setSeedJASP(options)
   robustnessValuesPerHypothesis <- bstats::computeCorRobustnessLine(bfObject, method=method)
   robustnessValues <- bstats::getSidedObject(robustnessValuesPerHypothesis, alternative=options[["alternative"]], 
                                         itemNames=c("kappaDomain", "kappa"))
@@ -1038,6 +1042,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 }
 
 .drawBfSequentialPlotCorBayes <- function(v1, v2, bfObject, options) {
+  .setSeedJASP(options)
   sequentialValuesPerHyp <- bstats::computeCorSequentialLine(x=v1, y=v2, bfObject=bfObject, method=options[["pairsMethod"]])
   sequentialValues <- bstats::getSidedObject(sequentialValuesPerHyp, alternative=options[["alternative"]], itemNames="nDomain")
 

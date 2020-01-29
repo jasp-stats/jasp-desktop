@@ -128,5 +128,7 @@ Form
 			RadioButton { value: "ascending";	label: qsTr("Ascending"); checked: true	}
 			RadioButton { value: "descending";	label: qsTr("Descending")				}
 		}
+
+		SetSeed{}
 	}
 }
