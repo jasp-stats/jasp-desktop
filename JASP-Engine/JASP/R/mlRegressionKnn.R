@@ -192,7 +192,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 
   if(!is.null(jaspResults[["plotErrorVsK"]]) || !options[["plotErrorVsK"]] || options[["modelOpt"]] == "optimizationManual") return()
 
-  plotTitle <- base::switch(purpose, "classification" = "Classification Accuracy Plot", "regression" = "Mean Squared Error Plot")
+  plotTitle <- base::switch(purpose, "classification" = gettext("Classification Accuracy Plot"), "regression" = gettext("Mean Squared Error Plot"))
 
   plotErrorVsK <- createJaspPlot(plot = NULL, title = plotTitle, width = 500, height = 300)
   plotErrorVsK$position <- position
@@ -208,8 +208,8 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 						"regression" = jaspResults[["regressionResult"]]$object)
 
   ylabel <- base::switch(purpose,
-  							"classification" = "Classification Accuracy",
-							"regression" = "Mean Squared Error")
+                "classification" = gettext("Classification Accuracy"),
+                "regression"     = gettext("Mean Squared Error"))
 
   if(options[["modelValid"]] == "validationManual"){
 
@@ -217,7 +217,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
     yvalues1 <- result[["accuracyStore"]]  
     yvalues2 <- result[["trainAccuracyStore"]] 
     yvalues <- c(yvalues1, yvalues2)
-    type <- rep(c("Validation set", "Training set"), each = length(yvalues1))
+    type <- rep(c(gettext("Validation set"), gettext("Training set")), each = length(yvalues1))
     d <- data.frame(x = xvalues, y = yvalues, type = type)
 
     xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, d$x), min.n = 4)
@@ -229,7 +229,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 
     p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y, linetype = type)) + 
 			JASPgraphs::geom_line() +
-			ggplot2::scale_x_continuous(name = "Number of Nearest Neighbors", breaks = xBreaks, labels = xBreaks, limits = c(0, max(xBreaks))) + 
+			ggplot2::scale_x_continuous(name = gettext("Number of Nearest Neighbors"), breaks = xBreaks, labels = xBreaks, limits = c(0, max(xBreaks))) + 
 			ggplot2::scale_y_continuous(name = ylabel, breaks = yBreaks, labels = yBreaks) +
 			ggplot2::labs(linetype = "") +
 			ggplot2::scale_linetype_manual(values = c(2,1)) + 
@@ -240,7 +240,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 
     xvalues <- 1:options[["maxK"]]
     yvalues <- result[["accuracyStore"]]     
-	type <- rep("Training and validation set", each = length(xvalues))
+	type <- rep(gettext("Training and validation set"), each = length(xvalues))
     d <- data.frame(x = xvalues, y = yvalues, type = type)
 
     xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, d$x), min.n = 4)
@@ -248,7 +248,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
       
     p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y, linetype = type)) + 
 			JASPgraphs::geom_line() +
-			ggplot2::scale_x_continuous(name = "Number of Nearest Neighbors", breaks = xBreaks, labels = xBreaks, limits = c(0, max(xBreaks))) + 
+			ggplot2::scale_x_continuous(name = gettext("Number of Nearest Neighbors"), breaks = xBreaks, labels = xBreaks, limits = c(0, max(xBreaks))) + 
 			ggplot2::scale_y_continuous(name = ylabel, breaks = yBreaks, labels = yBreaks) + 
 			JASPgraphs::geom_point(ggplot2::aes(x = x, y = y, linetype = type), data = data.frame(x = result[["nn"]], y = yvalues[result[["nn"]]], type = "Training and validation set"), fill = "red") +
 			ggplot2::labs(linetype = "")

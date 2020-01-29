@@ -205,7 +205,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["coefTable"]]) || !options[["coefTable"]]) return() #The options for this table didn't change so we don't need to rebuild it
 
-  coefTable <- createJaspTable("Regression Coefficients")
+  coefTable <- createJaspTable(gettext("Regression Coefficients"))
   coefTable$position <- position
   coefTable$dependOn(options =c("coefTable","trainingDataManual", "weights", "scaleEqualSD", "modelOpt",
                                           "target", "predictors", "seed", "seedBox", "modelValid",
@@ -214,7 +214,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
                                           "holdoutData", "testDataManual"))
   
   coefTable$addColumnInfo(name = "var",  title = "", type = "string")
-  coefTable$addColumnInfo(name = "coefs",  title = "Coefficient (\u03B2)", type = "number")
+  coefTable$addColumnInfo(name = "coefs",  title = gettextf("Coefficient (%s)", "\u03B2"), type = "number")
 
   jaspResults[["coefTable"]] <- coefTable
 
@@ -247,7 +247,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["variableTrace"]]) || !options[["variableTrace"]]) return()
 
-  variableTrace <- createJaspPlot(plot = NULL, title = "Variable Trace Plot", width = 500, height = 300)
+  variableTrace <- createJaspPlot(plot = NULL, title = gettext("Variable Trace Plot"), width = 500, height = 300)
   variableTrace$position <- position
   variableTrace$dependOn(options = c("variableTrace", "variableTraceLegend" ,"trainingDataManual", "weights", "scaleEqualSD", "modelOpt",
                                           "target", "predictors", "seed", "seedBox", "modelValid",
@@ -272,7 +272,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   p <- ggplot2::ggplot(data = d, mapping = ggplot2::aes(x = lambda, y = values, colour = ind), show.legend = TRUE) +
         JASPgraphs::geom_line() +
         ggplot2::scale_x_continuous("\u03BB", breaks = xBreaks, labels = xBreaks) +
-        ggplot2::scale_y_continuous("Coefficients", breaks = yBreaks, labels = yBreaks) + 
+        ggplot2::scale_y_continuous(gettext("Coefficients"), breaks = yBreaks, labels = yBreaks) + 
         ggplot2::scale_color_manual(values = colorspace::qualitative_hcl(n = length(options[["predictors"]]))) +
         ggplot2::labs(color = "")
 
@@ -289,7 +289,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["lambdaEvaluation"]]) || !options[["lambdaEvaluation"]]) return()
 
-  lambdaEvaluation <- createJaspPlot(plot = NULL, title = "Lambda Evaluation Plot", width = 500, height = 300)
+  lambdaEvaluation <- createJaspPlot(plot = NULL, title = gettext("Lambda Evaluation Plot"), width = 500, height = 300)
   lambdaEvaluation$position <- position
   lambdaEvaluation$dependOn(options = c("lambdaEvaluation", "lambdaEvaluationLegend" ,"trainingDataManual", "weights", "scaleEqualSD", "modelOpt",
                                           "target", "predictors", "seed", "seedBox", "modelValid",
@@ -311,10 +311,10 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
         ggplot2::geom_ribbon(data = regressionResult[["cvMSELambda"]], mapping = ggplot2::aes(ymin = MSE - sd, ymax = MSE + sd), fill = "grey90") +
         JASPgraphs::geom_line() +
         ggplot2::scale_x_continuous("\u03BB", breaks = xBreaks, labels = xBreaks) +
-        ggplot2::scale_y_continuous("Cross-Validated \nMean Squared Error", breaks = yBreaks, labels = yBreaks) +
+        ggplot2::scale_y_continuous(gettextf("Cross-Validated %sMean Squared Error", "\n"), breaks = yBreaks, labels = yBreaks) +
         ggplot2::geom_vline(ggplot2::aes(xintercept = regressionResult[["model"]]$lambda.min, color = "lambdaMin"), linetype = "dashed") +
         ggplot2::geom_vline(ggplot2::aes(xintercept = regressionResult[["model"]]$lambda.1se, color = "lambda1se"), linetype = "dashed") +
-        ggplot2::scale_color_manual(name = "", values = c(lambdaMin = "#14a1e3", lambda1se = "#99c454"), labels = c(lambdaMin = "Min. CV MSE", lambda1se = "\u03BB 1 SE"))
+        ggplot2::scale_color_manual(name = "", values = c(lambdaMin = "#14a1e3", lambda1se = "#99c454"), labels = c(lambdaMin = gettext("Min. CV MSE"), lambda1se = gettextf("%s 1 SE", "\u03BB")))
   
   if(options[["lambdaEvaluationLegend"]]){
     p <- JASPgraphs::themeJasp(p, legend.position = "top")

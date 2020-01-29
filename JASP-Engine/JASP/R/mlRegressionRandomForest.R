@@ -166,15 +166,15 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["tableVariableImportance"]]) || !options[["tableVariableImportance"]]) return()
   
-  tableVariableImportance <- createJaspTable(title = "Variable Importance")
+  tableVariableImportance <- createJaspTable(title = gettext("Variable Importance"))
   tableVariableImportance$position <- position
   tableVariableImportance$dependOn(options = c("tableVariableImportance", "scaleEqualSD", "target", "predictors", "modelOpt", "maxTrees",
                                                 "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "seed", "seedBox",
                                                 "testSetIndicatorVariable", "testSetIndicator", "validationDataManual", "holdoutData", "testDataManual"))
 
   tableVariableImportance$addColumnInfo(name = "predictor",  title = " ", type = "string")
-  tableVariableImportance$addColumnInfo(name = "MDiA",  title = "Mean decrease in accuracy", type = "number")
-  tableVariableImportance$addColumnInfo(name = "MDiNI",  title = "Total increase in node purity", type = "number")
+  tableVariableImportance$addColumnInfo(name = "MDiA",   title = gettext("Mean decrease in accuracy"),     type = "number")
+  tableVariableImportance$addColumnInfo(name = "MDiNI",  title = gettext("Total increase in node purity"), type = "number")
   
   jaspResults[["tableVariableImportance"]] <- tableVariableImportance
 
@@ -196,7 +196,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["plotTreesVsModelError"]]) || !options[["plotTreesVsModelError"]]) return()
 
-  title <- base::switch(purpose, "classification" = "Out-of-bag Classification Accuracy Plot", "regression" = "Out-of-bag Mean Squared Error Plot")
+  title <- base::switch(purpose, "classification" = gettext("Out-of-bag Classification Accuracy Plot"), "regression" = gettext("Out-of-bag Mean Squared Error Plot"))
 
   plotTreesVsModelError <- createJaspPlot(plot = NULL, title = title, width = 500, height = 300)
   plotTreesVsModelError$position <- position
@@ -211,8 +211,8 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
                   "classification" = jaspResults[["classificationResult"]]$object,
                   "regression" = jaspResults[["regressionResult"]]$object)
   xTitle <- base::switch(purpose,
-                          "classification" = "Out-of-bag \nClassification Accuracy",
-                          "regression" = "Out-of-bag \nMean Squared Error")
+                          "classification" = gettextf("Out-of-bag %sClassification Accuracy", "\n"),
+                          "regression"     = gettextf("Out-of-bag %sMean Squared Error", "\n"))
 
   values <- base::switch(purpose,
                         "classification" = 1 - result[["rfit_train"]]$err.rate[,1],
@@ -229,7 +229,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
     treesMSE <- data.frame(
       trees = rep(1:length(values2), 2),
       error = values, 
-      type = rep(c("Validation set", "Training set"), each = length(values2))
+      type = rep(c(gettext("Validation set"), gettext("Training set")), each = length(values2))
     )
 
     xBreaks <- JASPgraphs::getPrettyAxisBreaks(treesMSE[["trees"]], min.n = 4)
@@ -238,8 +238,8 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
     p <- ggplot2::ggplot(data = treesMSE, mapping = ggplot2::aes(x = trees, y = error, linetype = type)) +
           JASPgraphs::geom_line()
 
-    p <- p + ggplot2::scale_x_continuous(name = "Number of Trees", labels = xBreaks, breaks = xBreaks) +
-              ggplot2::scale_y_continuous(name = xTitle, labels = yBreaks, breaks = yBreaks) +
+    p <- p + ggplot2::scale_x_continuous(name = gettext("Number of Trees"), labels = xBreaks, breaks = xBreaks) +
+              ggplot2::scale_y_continuous(name = xTitle,                    labels = yBreaks, breaks = yBreaks) +
               ggplot2::labs(linetype = "") +
               ggplot2::scale_linetype_manual(values = c(2,1))
     p <- JASPgraphs::themeJasp(p, legend.position = "top")
@@ -249,7 +249,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
     treesMSE <- data.frame(
       trees = 1:length(values),
       error = values, 
-      type = rep("Training set", each = length(values))
+      type = rep(gettext("Training set"), each = length(values))
     )
 
     xBreaks <- JASPgraphs::getPrettyAxisBreaks(treesMSE[["trees"]], min.n = 4)
@@ -258,8 +258,8 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
     p <- ggplot2::ggplot(data = treesMSE, mapping = ggplot2::aes(x = trees, y = error, linetype = type)) +
           JASPgraphs::geom_line()
 
-    p <- p + ggplot2::scale_x_continuous(name = "Number of Trees", labels = xBreaks, breaks = xBreaks) +
-              ggplot2::scale_y_continuous(name = xTitle, labels = yBreaks, breaks = yBreaks) +
+    p <- p + ggplot2::scale_x_continuous(name = gettext("Number of Trees"), labels = xBreaks, breaks = xBreaks) +
+              ggplot2::scale_y_continuous(name = xTitle,                    labels = yBreaks, breaks = yBreaks) +
               ggplot2::labs(linetype = "")
     p <- JASPgraphs::themeJasp(p, legend.position = "top")    
 
@@ -272,7 +272,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["plotDecreaseAccuracy"]]) || !options[["plotDecreaseAccuracy"]]) return()
 
-  plotDecreaseAccuracy <- createJaspPlot(plot = NULL, title = "Mean Decrease in Accuracy", width = 500, height = 300)
+  plotDecreaseAccuracy <- createJaspPlot(plot = NULL, title = gettext("Mean Decrease in Accuracy"), width = 500, height = 300)
   plotDecreaseAccuracy$position <- position
   plotDecreaseAccuracy$dependOn(options = c("plotDecreaseAccuracy", "trainingDataManual", "scaleEqualSD", "modelOpt", "maxTrees",
                                             "target", "predictors", "seed", "seedBox", "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors",
@@ -287,7 +287,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
   
   p <- ggplot2::ggplot(result[["varImp"]], ggplot2::aes(x = reorder(Variable, MeanIncrMSE), y = MeanIncrMSE)) +
       ggplot2::geom_bar(stat = "identity", fill = "grey", col = "black", size = .3) +
-      ggplot2::labs(x = "", y = "Mean Decrease in Accuracy")
+      ggplot2::labs(x = "", y = gettext("Mean Decrease in Accuracy"))
   p <-JASPgraphs::themeJasp(p, horizontal = TRUE, xAxis = FALSE) + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
   
   plotDecreaseAccuracy$plotObject <- p
@@ -297,7 +297,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
 
   if(!is.null(jaspResults[["plotIncreasePurity"]]) || !options[["plotIncreasePurity"]]) return()
 
-  plotIncreasePurity <- createJaspPlot(plot = NULL, title = "Total Increase in Node Purity", width = 500, height = 300)
+  plotIncreasePurity <- createJaspPlot(plot = NULL, title = gettext("Total Increase in Node Purity"), width = 500, height = 300)
   plotIncreasePurity$position <- position
   plotIncreasePurity$dependOn(options = c("plotIncreasePurity", "trainingDataManual", "scaleEqualSD", "modelOpt", "maxTrees",
                                             "target", "predictors", "seed", "seedBox", "noOfTrees", "bagFrac", "noOfPredictors", "numberOfPredictors",
@@ -312,7 +312,7 @@ mlRegressionRandomForest <- function(jaspResults, dataset, options, ...) {
   
   p <- ggplot2::ggplot(result[["varImp"]], ggplot2::aes(x = reorder(Variable, TotalDecrNodeImp), y = TotalDecrNodeImp)) +
         ggplot2::geom_bar(stat = "identity", fill = "grey", col = "black", size = .3) +
-        ggplot2::labs(x = "", y = "Total Increase in Node Purity")
+        ggplot2::labs(x = "", y = gettext("Total Increase in Node Purity"))
   p <- JASPgraphs::themeJasp(p, horizontal = TRUE, xAxis = FALSE) + ggplot2::theme(axis.ticks.y = ggplot2::element_blank())
 
   plotIncreasePurity$plotObject <- p
