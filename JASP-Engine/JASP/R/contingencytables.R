@@ -291,7 +291,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     crossTabGamma$showSpecifiedColumnsOnly <- TRUE
     crossTabGamma$position <- 5
     
-    ci.label <- gettext("95% Confidence Intervals")
+    ci.label <- gettextf("95%% Confidence Intervals")
     
     # Add columns to table
     .crossTabLayersColumns(crossTabGamma, analysis)
@@ -771,7 +771,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
         }
         
         if (options$percentagesRow) {
-          row.row.proportions[["type[row.proportions]"]]  <- gettext(" % within row") #This is possibly combined somewhere else into a full sentence and might need to be placed in a gettextf there. But I suspect this will do for now
+          row.row.proportions[["type[row.proportions]"]]  <- gettextf(" %% within row") #This is possibly combined somewhere else into a full sentence and might need to be placed in a gettextf there. But I suspect this will do for now
           row.proportions                                 <- as.list(row.proportions.matrix[j,])
           names(row.proportions)                          <- paste0(names(row.proportions), "[row.proportions]")
           
@@ -785,7 +785,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
         }
         
         if (options$percentagesColumn) {
-          row.col.proportions[["type[col.proportions]"]] <- gettext(" % within column")
+          row.col.proportions[["type[col.proportions]"]] <- gettextf(" %% within column")
           
           col.proportions        <- as.list(col.proportions.matrix[j,])
           names(col.proportions) <- paste0(names(col.proportions), "[col.proportions]")
@@ -804,7 +804,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
         }
         
         if (options$percentagesTotal) {
-          row.total.proportions[["type[proportions]"]]  <- gettext(" % of total")
+          row.total.proportions[["type[proportions]"]]  <- gettextf(" %% of total")
           total.proportions                             <- as.list(proportions.matrix[j,])
           names(total.proportions)                      <- paste0(names(total.proportions), "[proportions]")
           

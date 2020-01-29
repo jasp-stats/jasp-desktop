@@ -353,7 +353,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   }
   if (options$confidenceInterval){
     interval <- 100 * options$confidenceIntervalInterval
-    title <- paste0(interval, gettext("% Confidence Interval"))
+    title <- gettextf("%s%% Confidence Interval", interval)
     descriptivesTable$addColumnInfo(name = "lowerCI", title = gettext("Lower"), 
                                     type = "number", overtitle = title)
     descriptivesTable$addColumnInfo(name = "upperCI", title = gettext("Upper"), 

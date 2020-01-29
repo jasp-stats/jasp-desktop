@@ -282,7 +282,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   tb <- createJaspTable("MCMC summary")
   tb$position <- 1L
-  ovt  <- gettext("95% Credible Interval")
+  ovt  <- gettextf("95%% Credible Interval")
   ovt2 <- gettext("Rhat")
   tb$addColumnInfo(name = "parameter", title = gettext("Parameter"),            type = "string")
   tb$addColumnInfo(name = "Mean",      title = gettext("mean"),                 type = "number")

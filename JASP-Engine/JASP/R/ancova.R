@@ -1243,7 +1243,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     postHocTable$addColumnInfo(name="meanDiff",title=gettext("Mean Difference"), type="number")
     
     if (options$confidenceIntervalsPostHoc) {
-      thisOverTitle <- gettextf("% CI for Mean Difference", options$confidenceIntervalIntervalPostHoc * 100)
+      thisOverTitle <- gettextf("%g%% CI for Mean Difference", options$confidenceIntervalIntervalPostHoc * 100)
       postHocTable$addColumnInfo(name="lowerCI", type = "number", title = gettext("Lower"), overtitle = thisOverTitle)
       postHocTable$addColumnInfo(name="upperCI", type = "number", title = gettext("Upper"), overtitle = thisOverTitle)
     }

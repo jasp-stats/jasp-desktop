@@ -2142,7 +2142,7 @@
   } else {
 
     selectionInformationTable$addColumnInfo(name = "percentage", 
-                                            title = gettext("% of total observations"), 
+                                            title = gettextf("%% of total observations"),
                                             type = "string")  
 
   }

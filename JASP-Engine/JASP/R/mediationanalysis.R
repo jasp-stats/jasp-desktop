@@ -279,9 +279,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   dirtab$addColumnInfo(name = "z",        title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
   dirtab$addColumnInfo(name = "pvalue",   title = gettext("p"),          type = "number", format = "dp:3;p:.001")
   dirtab$addColumnInfo(name = "ci.lower", title = gettext("Lower"),      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                       overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   dirtab$addColumnInfo(name = "ci.upper", title = gettext("Upper"),      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                       overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   
   
   pecont[["dir"]] <- dirtab
@@ -299,9 +299,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   indtab$addColumnInfo(name = "z",        title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
   indtab$addColumnInfo(name = "pvalue",   title = gettext("p"),          type = "number", format = "dp:3;p:.001")
   indtab$addColumnInfo(name = "ci.lower", title = gettext("Lower"),      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                       overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   indtab$addColumnInfo(name = "ci.upper", title = gettext("Upper"),      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                       overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   
   pecont[["ind"]] <- indtab
   
@@ -316,9 +316,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   tottab$addColumnInfo(name = "z",        title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
   tottab$addColumnInfo(name = "pvalue",   title = gettext("p"),          type = "number", format = "dp:3;p:.001")
   tottab$addColumnInfo(name = "ci.lower", title = gettext("Lower"),      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                       overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   tottab$addColumnInfo(name = "ci.upper", title = gettext("Upper"),      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                       overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   
   pecont[["tot"]] <- tottab
   
@@ -389,9 +389,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   ttitab$addColumnInfo(name = "z",        title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
   ttitab$addColumnInfo(name = "pvalue",   title = gettext("p"),          type = "number", format = "dp:3;p:.001")
   ttitab$addColumnInfo(name = "ci.lower", title = gettext("Lower"),      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                       overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   ttitab$addColumnInfo(name = "ci.upper", title = gettext("Upper"),      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                       overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
 
   modelContainer[["parest"]][["tti"]] <- ttitab
   
@@ -429,9 +429,9 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   restab$addColumnInfo(name = "z",        title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
   restab$addColumnInfo(name = "pvalue",   title = gettext("p"),          type = "number", format = "dp:3;p:.001")
   restab$addColumnInfo(name = "ci.lower", title = gettext("Lower"),      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                       overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   restab$addColumnInfo(name = "ci.upper", title = gettext("Upper"),      type = "number", format = "sf:4;dp:3",
-                       overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                       overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   
   modelContainer[["parest"]][["res"]] <- restab 
   

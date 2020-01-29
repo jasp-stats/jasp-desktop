@@ -315,7 +315,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                exitAnalysisIfErrors= TRUE,
                custom = function() {
                  if (!all(lower < upper))
-                   return(gettext("The 95% CI Lower Bound must be smaller than the Upper Bound."))
+                   return(gettextf("The 95%% CI Lower Bound must be smaller than the Upper Bound."))
                })
     
     SE <- (upper - lower)/2/qnorm(0.975)
@@ -483,9 +483,9 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   bmaTable$addColumnInfo(name = "ES", title = gettext("Mean"), type = "number")
   bmaTable$addColumnInfo(name = "SD", title = gettext("SD"), type = "number")
   bmaTable$addColumnInfo(name = "lb", title = gettext("Lower"), type = "number",
-                         overtitle = gettext("95% Credible Interval"))
+                         overtitle = gettextf("95%% Credible Interval"))
   bmaTable$addColumnInfo(name = "ub", title = gettext("Upper"), type = "number",
-                         overtitle = gettext("95% Credible Interval"))   
+                         overtitle = gettextf("95%% Credible Interval"))
   bmaTable$addColumnInfo(name = "BF", title = bfTitle, type = "number")
 
   # Row names (tried to get modelRE idented, but failed)
