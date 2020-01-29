@@ -22,9 +22,10 @@ import QtQuick.Layouts 1.3
 
 JASPListControl
 {
-	id				: componentsList
-	controlType		: JASPControlBase.ComponentsList
-	itemComponent	: components
+	id					: componentsList
+	controlType			: JASPControlBase.ComponentsList
+	itemComponent		: components
+	listRectangle.color	: jaspTheme.analysisBackgroundColor
 
 	signal addTerm(string term);
 	signal removeTerm(string term);

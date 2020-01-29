@@ -79,6 +79,7 @@ void BoundQMLComboBox::bindTo(Option *option)
 		_setCurrentValue(index, true, false);
 		
 		_resetItemWidth();
+		setItemProperty("initialized", true);
 	}
 	else
 		addControlError(tr("Unknown error in ComboBox %1").arg(name()));

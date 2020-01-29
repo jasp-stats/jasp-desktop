@@ -35,16 +35,46 @@ Q_OBJECT
 public:
 	struct SourceType
 	{
-		QString			name,
-						modelUse;
-		ListModel	*	model;
-		QVector<SourceType> discardModels;
+		struct ConditionVariable
+		{
+			QString name,
+					controlName,
+					propertyName;
+			bool	addQuotes = false;
 
-		SourceType(QString _name = "", QString _modelUse = "", const QVector<QPair<QString, QString> >& _discardModels = QVector<QPair<QString, QString> >())
-			: name(_name), modelUse(_modelUse), model(nullptr)
+			ConditionVariable(const QString& _name, const QString& _controlName, const QString& _propertyName, bool _addQuotes = false)
+				: name(_name), controlName(_controlName), propertyName(_propertyName), addQuotes(_addQuotes) {}
+			ConditionVariable(const ConditionVariable& source)
+				: name(source.name), controlName(source.controlName), propertyName(source.propertyName), addQuotes(source.addQuotes) {}
+			ConditionVariable() {}
+		};
+
+		QString						name,
+									modelUse;
+		ListModel	*				model;
+		QVector<SourceType>			discardModels;
+		QString						conditionExpression;
+		QVector<ConditionVariable>	conditionVariables;
+
+		SourceType(
+				  const QString& _name = ""
+				, const QString& _modelUse = ""
+				, const QVector<QPair<QString, QString> >& _discardModels = QVector<QPair<QString, QString> >()
+				, const QString& _conditionExpression = ""
+				, const QVector<QMap<QString, QVariant> >& _conditionVariables = QVector<QMap<QString, QVariant> >())
+			: name(_name), modelUse(_modelUse), model(nullptr), conditionExpression(_conditionExpression)
 		{
 			for (const QPair<QString, QString>& discardModel : _discardModels)
 				discardModels.push_back(SourceType(discardModel.first, discardModel.second));
+
+			for (const QMap<QString, QVariant>& conditionVariable : _conditionVariables)
+			{
+				conditionVariables.push_back(ConditionVariable(conditionVariable["name"].toString()
+											, conditionVariable["component"].toString()
+											, conditionVariable["property"].toString()
+											, conditionVariable["addQuotes"].toBool())
+							);
+			}
 		}
 	};
 	
@@ -69,6 +99,8 @@ public:
 			JASPControlWrapper*	getChildControl(QString key, QString name) override;
 
 	Q_INVOKABLE QString			getSourceType(QString name);
+
+			QMLListView::SourceType* getSourceTypeFromModel(ListModel* model);
 
 protected slots:
 	virtual void				modelChangedHandler() {} // This slot must be overriden in order to update the options when the model has changed

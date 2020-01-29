@@ -38,6 +38,7 @@ public:
 	virtual void				resetQMLItem(JASPControlBase* item);
 
 	const QString			&	name()					const;
+	bool						isBound()				const;
 	AnalysisForm			*	form()					const;
 	JASPControlBase			*	item()					const	{ return _item; }
 	const QVector<JASPControlWrapper*>	&	depends()	const	{ return _depends; }

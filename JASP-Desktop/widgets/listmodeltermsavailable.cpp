@@ -92,17 +92,3 @@ void ListModelTermsAvailable::resetTermsFromSourceModels(bool updateAssigned)
 	if (updateAssigned)
 		emit allAvailableTermsChanged(&_tempAddedTerms, &_tempRemovedTerms);
 }
-
-ListModel *ListModelTermsAvailable::getSourceModelOfTerm(const Term &term)
-{
-	ListModel* result = nullptr;
-	QMap<ListModel*, Terms> map =  getSourceTermsPerModel();
-	QMapIterator<ListModel*, Terms> it(map);
-	while (it.hasNext())
-	{
-		it.next();
-		if (it.value().contains(term))
-			result = it.key();
-	}
-	return result;
-}

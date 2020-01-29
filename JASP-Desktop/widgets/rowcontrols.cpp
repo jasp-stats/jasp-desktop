@@ -44,10 +44,15 @@ void RowControls::init(int row, const QString& key)
 		context->setContextProperty("rowIndex",	row);
 		context->setContextProperty("rowValue", key);
 
-		QObject* obj = comp->create(context);
+		QQuickItem* obj = qobject_cast<QQuickItem*>(comp->create(context));
 
-		if (obj)	_rowObjects.push_back(QVariant::fromValue(obj));
-		else		Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
+		if (obj)
+		{
+			_contextMap[obj] = context;
+			_rowObjects.push_back(QVariant::fromValue(obj));
+		}
+		else
+			Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
 
 		col++;
 	}
@@ -55,13 +60,13 @@ void RowControls::init(int row, const QString& key)
 
 void RowControls::setContext(int row, const QString &key)
 {
-	for (JASPControlWrapper* controlWrapper : _rowJASPWrapperMap.values())
+	for (auto & itemContext : _contextMap)
 	{
-		QQmlContext* context = qmlContext(controlWrapper->item());
-		context->setContextProperty("rowIndex",	row);
-		context->setContextProperty("rowValue", key);
-		context->setContextProperty("isNew", false);
-		controlWrapper->item()->setParent(nullptr);
+		// Cannot use qmlContext(item) : setContextProperty would generate: 'Cannot set property on internal context.' error
+		itemContext.second->setContextProperty("rowIndex",	row);
+		itemContext.second->setContextProperty("rowValue", key);
+		itemContext.second->setContextProperty("isNew", false);
+		itemContext.first->setParentItem(nullptr);
 	}
 }
 
@@ -70,7 +75,9 @@ bool RowControls::addJASPControl(JASPControlWrapper *control)
 	bool success = false;
 	QMLListView* listView = _parentModel->listView();
 
-	if (control->name().isEmpty())
+	if (!control->isBound())
+		success = true;
+	else if (control->name().isEmpty())
 		listView->addControlError(tr("A row component in %1 does not have a name").arg(listView->name()));
 	else if (_rowControlsVarMap.contains(control->name()))
 		listView->addControlError(tr("2 row components in %1 have the same name").arg(listView->name()).arg(control->name()));
