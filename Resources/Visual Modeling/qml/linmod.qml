@@ -15,7 +15,7 @@ Form
 	Section
 	{
 		title: qsTr("Model Terms");
-		enabled: vars.count > 1
+		enabled: varlist.count > 1
 
 		VariablesForm
 		{
@@ -36,7 +36,7 @@ Form
 			name: "linetype"
 			values: ["Regression", "Quadratic", "Cubic"]
 			label: qsTr("Fitted line (scatterplots)")
-			enabled: vars.count > 0
+			enabled: varlist.count > 0
 		}
 
 	}
@@ -51,14 +51,14 @@ Form
 			CheckBox { name:"model"			; label: qsTr("Model plot")	; checked: true							}
 			CheckBox { name:"univariate"	; label: qsTr("Univariate")											}
 			CheckBox { name:"residuals"		; label: qsTr("Diagnostics")										}
-			CheckBox { name:"avp"			; label: qsTr("Added variable plot")	; enabled: vars.count > 1	}
+			CheckBox { name:"avp"			; label: qsTr("Added variable plot")	; enabled: varlist.count > 1	}
 		}
 
 
 		Group
 		{
 			title: qsTr("Estimation")
-			CheckBox { name:"modinf"		; label: qsTr("Show model comparisons")	; enabled: vars.count > 1	}
+			CheckBox { name:"modinf"		; label: qsTr("Show model comparisons")	; enabled: varlist.count > 1	}
 			CheckBox { name:"means"			; label: qsTr("Report means")			; checked: true				}
 			CheckBox { name:"diff"			; label: qsTr("Show mean differences")	; checked: true				}
 			CheckBox { name:"sl"			; label: qsTr("Show slopes/intercepts")	; checked: true				}
@@ -117,7 +117,7 @@ Form
 				name:"ghost";
 				label: qsTr("Ghost lines");
 				checked: true
-				enabled: vars.count > 1 & vars.count< 4
+				enabled: varlist.count > 1 & varlist.count< 4
 			}
 		}
 	}
