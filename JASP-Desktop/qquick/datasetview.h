@@ -44,7 +44,6 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( QFont font								READ font					WRITE setFont					NOTIFY fontChanged					)
 	Q_PROPERTY( double headerHeight						READ headerHeight											NOTIFY headerHeightChanged			)
 	Q_PROPERTY( double rowNumberWidth					READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
-	Q_PROPERTY( double rowNumberWidth					READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
 	Q_PROPERTY( bool cacheItems							READ cacheItems				WRITE setCacheItems				NOTIFY cacheItemsChanged			)
 	Q_PROPERTY( QQuickItem * tableViewItem				READ tableViewItem			WRITE setTableViewItem												)
 

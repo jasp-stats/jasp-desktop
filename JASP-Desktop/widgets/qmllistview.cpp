@@ -78,12 +78,18 @@ void QMLListView::setSources()
 			QMap<QString, QVariant> map = source.toMap();
 			QString sourceName = map["name"].toString();
 			QString modelUse = map["use"].toString();
+			QString conditionExpression = map["condition"].toString();
 			QVector<QPair<QString, QString> > discards;
-			if (sourceName.isEmpty())
-				addControlError(tr("No name given in source attribute of VariableList %1").arg(name()));
-			else if (map.contains("discard"))
-			{
+			QVector<QMap<QString, QVariant> > conditionVariables;
 
+			if (sourceName.isEmpty())
+			{
+				addControlError(tr("No name given in source attribute of VariableList %1").arg(name()));
+				continue;
+			}
+
+			if (map.contains("discard"))
+			{
 				QList<QVariant> discardSources = _getListVariant(map["discard"]);
 
 				for (const QVariant& discardSource : discardSources)
@@ -105,7 +111,19 @@ void QMLListView::setSources()
 					discards.push_back(QPair<QString, QString>(discardName, discardUse));
 				}
 			}
-			_sourceModels.append(new SourceType(sourceName, modelUse, discards));
+
+			if (map.contains("conditionVariables"))
+			{
+				QList<QVariant> conditionVariablesList = _getListVariant(map["conditionVariables"]);
+
+				for (const QVariant& conditionVariablesVar : conditionVariablesList)
+				{
+					if (conditionVariablesVar.canConvert<QMap<QString, QVariant> >())
+						conditionVariables.push_back(conditionVariablesVar.toMap());
+				}
+			}
+
+			_sourceModels.append(new SourceType(sourceName, modelUse, discards, conditionExpression, conditionVariables));
 		}
 	}
 	
@@ -319,6 +337,22 @@ QString QMLListView::getSourceType(QString name)
 {
 	return model()->getItemType(name);
 }
+
+QMLListView::SourceType* QMLListView::getSourceTypeFromModel(ListModel* model)
+{
+	QMLListView::SourceType* result = nullptr;
+	const QList<QMLListView::SourceType*>& sourceTypes = sourceModels();
+
+	for (QMLListView::SourceType* sourceType : sourceTypes)
+	{
+		if (sourceType->model == model)
+			result = sourceType;
+	}
+
+	return result;
+}
+
+
 
 void QMLListView::sourceChangedHandler()
 {

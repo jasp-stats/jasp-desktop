@@ -125,6 +125,11 @@ const QString& JASPControlWrapper::name() const
 	return _item->name();
 }
 
+bool JASPControlWrapper::isBound() const
+{
+	return _item->isBound();
+}
+
 AnalysisForm *JASPControlWrapper::form() const
 {
 	return _item->form();

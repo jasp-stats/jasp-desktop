@@ -30,8 +30,9 @@ Item
 	implicitWidth		: width
 	L.Layout.columnSpan	: parent.columns
 
-	property alias source					: contrasts.source
+	property alias	source					: contrasts.source
 	property string	repeatedMeasureFactors	: "repeatedMeasuresFactors"
+	property bool	addCustom				: true
 
 	VariablesList
 	{
@@ -50,14 +51,10 @@ Item
 				DropDown
 				{
 					name		: "contrast"
-					values		: ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial", "custom"]
-					onActivated	:
-					{
-						if (index == 7)
-							customContrastsView.addTerm(rowValue)
-						else
-							customContrastsView.removeTerm(rowValue)
-					}
+					values		: addCustom
+								  ? ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial", "custom"]
+								  :	["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
+
 				}
 			}
 		]
@@ -73,32 +70,36 @@ Item
 		cellHeight			: 160 * preferencesModel.uiScale
 		height				: count * cellHeight + 10
 		visible				: count > 0
+		source				: [ { name: "contrasts", condition: "contrastValue == 'custom'", conditionVariables: [{ name: "contrastValue", component: "contrast", property: "currentText"}] }]
 
 		rowComponents:
 		[
 			Component
 			{
-				Group
+				FocusScope // This is needed to keep focus working right when reusing the component
 				{
-					id					: group
-					property var control: tableCustomContrasts.control
-
-					Text
+					Group
 					{
-						height			: 30 * preferencesModel.uiScale
-						text			: qsTr("Custom contrast for %1").arg(rowValue)
-					}
+						id					: group
+						property var control: tableCustomContrasts.control
 
-					CustomContrastsTableView
-					{
-						id						: tableCustomContrasts
-						columnName				: rowValue
-						factorsSource			: contrastsList.repeatedMeasureFactors
-						name					: "values"
-						implicitHeight			: 130 * preferencesModel.uiScale
-						implicitWidth			: customContrastsView.width
-						width					: implicitWidth
-						height					: implicitHeight
+						Text
+						{
+							height			: 30 * preferencesModel.uiScale
+							text			: qsTr("Custom contrast for %1").arg(rowValue)
+						}
+
+						CustomContrastsTableView
+						{
+							id						: tableCustomContrasts
+							columnName				: rowValue
+							factorsSource			: contrastsList.repeatedMeasureFactors
+							name					: "values"
+							implicitHeight			: 130 * preferencesModel.uiScale
+							implicitWidth			: customContrastsView.cellWidth
+							width					: implicitWidth
+							height					: implicitHeight
+						}
 					}
 				}
 			}

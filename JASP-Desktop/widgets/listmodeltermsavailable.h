@@ -29,10 +29,7 @@ public:
 	ListModelTermsAvailable(QMLListView* listView, bool mixedModelTerms = false);
 		
 	void		sortItems(SortType sortType)							override;
-	void		resetTermsFromSourceModels(bool updateAssigned = true)	override;
-	
-	ListModel*	getSourceModelOfTerm(const Term& term);
-	
+	void		resetTermsFromSourceModels(bool updateAssigned = true)	override;	
 };
 
 #endif // LISTMODELTERMSAVAILABLE_H
