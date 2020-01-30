@@ -93,11 +93,7 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 	isCollapsed:				function()  { return this.model.get('collapsed'); },
 	_hoveringStart:				function(e) { this.toolbar.setVisibility(true);},
 	_hoveringEnd:				function(e) { this.toolbar.setVisibility(false);},
-	_mouseClicked: function (e) {
-		if (!this.noteBox.$quill.hasFocus()) {
-			// this.noteBox.setQuillToolbarVisibility('none');
-		}
-	},
+	_mouseClicked: function (e) {	},
 
 	eventEcho:					function (eventName, arg1, arg2, arg3, arg4, arg5, arg6, arg7) { this.trigger(eventName, arg1, arg2, arg3, arg4, arg5, arg6, arg7); },
 

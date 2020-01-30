@@ -433,7 +433,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	_mouseClicked: function (e) {
 
-		for (var i = 0; i < this.viewNotes.list.length; i++) {
+		/*for (var i = 0; i < this.viewNotes.list.length; i++) {
 			var noteBoxData = this.viewNotes.list[i];
 
 			if (noteBoxData.noteDetails.level === 0) {
@@ -442,7 +442,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 					// noteBox.setQuillToolbarVisibility('none');
 				}
 			}
-		}
+		}*/
 	},
 
 	notesMenuClicked: function (noteType, visibility) {

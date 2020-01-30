@@ -190,11 +190,7 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 		this.toolbar.setVisibility(false);
 	},
 
-	_mouseClicked: function (e) {
-		if (!this.noteBox.$quill.hasFocus()) {
-			// this.noteBox.setQuillToolbarVisibility('none');
-		}
-	},
+	_mouseClicked: function (e) {},
 
 	constructChildren: function (constructor, data) {
 		var meta = data.meta;
