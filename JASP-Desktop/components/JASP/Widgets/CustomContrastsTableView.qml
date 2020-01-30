@@ -27,7 +27,7 @@ BasicThreeButtonTableView
 
 	itemType		: "double"
 	modelType		: "CustomContrasts"
-	cornerText		: qsTr("Level #")
+	cornerText		: ""
 	minimum			: -Infinity
 	decimals		: 3
 

@@ -285,9 +285,10 @@ QVariant ListModelTableViewBase::headerData( int section, Qt::Orientation orient
 
 		return dummyText;
 	}
-	case Qt::DisplayRole:			return QVariant(orientation == Qt::Horizontal ? _colNames[section] : _rowNames[section]);
-	case Qt::TextAlignmentRole:		return QVariant(Qt::AlignCenter);
-	default:						return QVariant();
+	case int(specialRoles::maxRowHeaderString):	return getRowName(size_t(rowCount())) + "XXX";
+	case Qt::DisplayRole:						return QVariant(orientation == Qt::Horizontal ? _colNames[section] : _rowNames[section]);
+	case Qt::TextAlignmentRole:					return QVariant(Qt::AlignCenter);
+	default:									return QVariant();
 	}
 }
 
@@ -299,9 +300,10 @@ QHash<int, QByteArray> ListModelTableViewBase::roleNames() const
 
 	if(addRoles)
 	{
-		roles[int(specialRoles::active)]		= QString("active").toUtf8();
-		roles[int(specialRoles::lines)]			= QString("lines").toUtf8();
-		roles[int(specialRoles::maxColString)]	= QString("maxColString").toUtf8();
+		roles[int(specialRoles::active)]				= QString("active").toUtf8();
+		roles[int(specialRoles::lines)]					= QString("lines").toUtf8();
+		roles[int(specialRoles::maxColString)]			= QString("maxColString").toUtf8();
+		roles[int(specialRoles::maxRowHeaderString)]	= QString("maxRowHeaderString").toUtf8();
 		addRoles = false;
 	}
 

@@ -54,8 +54,7 @@ void DataSetView::setModel(QAbstractItemModel * model)
 
 		setRolenames();
 
-		QSizeF calcedSizeRowNumber = getTextSize(QString::fromStdString(std::to_string(_model->rowCount()) + "XXX"));
-		setRowNumberWidth(calcedSizeRowNumber.width() + 30);
+		setRowNumberWidth(getRowHeaderSize().width());
 
 		//recalculateCellSizes = true;
 		calculateCellSizes();
@@ -82,6 +81,13 @@ void DataSetView::setRolenames()
 QSizeF DataSetView::getColumnSize(int col)
 {
 	QString text = _model->headerData(col, Qt::Orientation::Horizontal, _roleNameToRole["maxColString"]).toString();
+
+	return getTextSize(text);
+}
+
+QSizeF DataSetView::getRowHeaderSize()
+{
+	QString text = _model->headerData(0, Qt::Orientation::Horizontal, _roleNameToRole["maxRowHeaderString"]).toString();
 
 	return getTextSize(text);
 }
@@ -160,6 +166,8 @@ void DataSetView::calculateCellSizes()
 		_dataColsMaxWidth[col] = _cellSizes[col].width() + _itemHorizontalPadding * 2;
 
 	setHeaderHeight(_model->columnCount() == 0 ? 0 : _cellSizes[0].height() + _itemVerticalPadding * 2);
+
+	setRowNumberWidth(getRowHeaderSize().width());
 
 	float w = _rowNumberMaxWidth;
 	for(int col=0; col<_model->columnCount(); col++)
