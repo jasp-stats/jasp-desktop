@@ -39,7 +39,7 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     return()
   optionsList <- .ttestOptionsList(options, type)
   # Create table
-  ttest <- createJaspTable(title = "Independent Samples T-Test")
+  ttest <- createJaspTable(title = gettext("Independent Samples T-Test"))
   dependList <- c("effectSize", "effSizeConfidenceIntervalCheckbox", "variables",
                   "descriptivesEffectSizeConfidenceIntervalPercent", "students", "mannWhitneyU",
                   "meanDifference", "meanDiffConfidenceIntervalCheckbox", "stddev",
@@ -53,24 +53,29 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   ttest$position <- 1
   
   if (optionsList$wantsWilcox && optionsList$onlyTest) {
-    ttest$addFootnote("Mann-Whitney U test.")
+    ttest$addFootnote(gettext("Mann-Whitney U test."))
     testStat <- "W"
+    testStatName <- gettext("W")
   } else if (optionsList$wantsWelchs && optionsList$onlyTest) {
-    ttest$addFootnote("Welch's t-test.")
+    ttest$addFootnote(gettext("Welch's t-test."))
     testStat <- "t"
+    testStatName <- gettext("t")
   } else if (optionsList$wantsStudents && optionsList$onlyTest) {
-    ttest$addFootnote("Student's t-test.")
-    testStat <- "t"
-  } else
-    testStat <- "Statistic"
+    ttest$addFootnote(gettext("Student's t-test."))
+    testStat     <- "t"
+    testStatName <- gettext("t")
+  } else {
+    testStat     <- "Statistic"
+    testStatName <- gettext("Statistic")
+  }
+    
   
   ttest$addColumnInfo(name = "v", title = " ", type = "string", combine = TRUE)
   if (sum(optionsList$allTests) >= 2) 
-    ttest$addColumnInfo(name = "test", type = "string", title = "Test")
-  ttest$addColumnInfo(name = testStat, type = "number")
-  #type integer, not number, correct?
-  ttest$addColumnInfo(name = "df",  type = "number")
-  ttest$addColumnInfo(name = "p", type = "pvalue")
+    ttest$addColumnInfo(name = "test", type = "string",  title = gettext("Test"))
+  ttest$addColumnInfo(name = testStat, type = "number",  title = testStatName)
+  ttest$addColumnInfo(name = "df",     type = "integer", title = gettext("df"))
+  ttest$addColumnInfo(name = "p",      type = "pvalue",  title = gettext("p"))
   .ttestVovkSellke(ttest, options)
   
   if (options$effectSizesType == "cohensD")
@@ -81,55 +86,55 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     effSize <- "hedges"
   
   nameOfEffectSizeParametric <- switch(effSize, 
-                                       cohen  = "Cohen's d", 
-                                       glass  = "Glass' delta",
-                                       hedges = "Hedges' g")
+                                       cohen  = gettext("Cohen's d"), 
+                                       glass  = gettext("Glass' delta"),
+                                       hedges = gettext("Hedges' g"))
   
   if (!optionsList$wantsWilcox) {
-    nameOfLocationParameter <- "Mean Difference"
+    nameOfLocationParameter <- gettext("Mean Difference")
     nameOfEffectSize        <- nameOfEffectSizeParametric
   } else if (optionsList$wantsWilcox && optionsList$onlyTest) {
-    nameOfLocationParameter <- "Hodges-Lehmann Estimate"
-    nameOfEffectSize        <- "Rank-Biserial Correlation"
+    nameOfLocationParameter <- gettext("Hodges-Lehmann Estimate")
+    nameOfEffectSize        <- gettext("Rank-Biserial Correlation")
   } else if (optionsList$wantsWilcox && (optionsList$wantsStudents || optionsList$wantsWelchs)) {
-    nameOfLocationParameter <-  "Location Parameter"
-    nameOfEffectSize        <-  "Effect Size"
+    nameOfLocationParameter <-  gettext("Location Parameter")
+    nameOfEffectSize        <-  gettext("Effect Size")
   }
   
   ## add mean difference and standard error difference
   if (optionsList$wantsDifference) {
     ttest$addColumnInfo(name = "md", title = nameOfLocationParameter, type = "number")
     if (!(optionsList$wantsWilcox && optionsList$onlyTest))  # Only add SE Difference if not only MannWhitney is requested
-      ttest$addColumnInfo(name = "sed", title = "SE Difference", type = "number")
+      ttest$addColumnInfo(name = "sed", title = gettext("SE Difference"), type = "number")
   }
   
   if (optionsList$wantsDifference && optionsList$wantsWilcox && 
       optionsList$wantsStudents && optionsList$wantsWelchs) {
-    message <- "For the Student t-test and Welch t-test, 
+    message <- gettext("For the Student t-test and Welch t-test, 
               location parameter is given by mean difference; for the Mann-Whitney test, 
-              location parameter is given by the Hodges-Lehmann estimate."
+              location parameter is given by the Hodges-Lehmann estimate.")
     ttest$addFootnote(message)
   } else if (optionsList$wantsDifference && 
              optionsList$wantsWilcox && optionsList$wantsStudents) {
-    message <- "For the Student t-test, 
+    message <- gettext("For the Student t-test, 
               location parameter is given by mean difference; for the Mann-Whitney test, 
-              location parameter is given by Hodges-Lehmann estimate."
+              location parameter is given by Hodges-Lehmann estimate.")
     ttest$addFootnote(message)
   } else if (optionsList$wantsDifference &&
              optionsList$wantsWilcox && optionsList$wantsWelchs) {
-    message <- "For the Welch t-test, 
+    message <- gettext("For the Welch t-test, 
               location parameter is given by mean difference; for the Mann-Whitney test,
-              location parameter is given by Hodges-Lehmann estimate."
+              location parameter is given by Hodges-Lehmann estimate.")
     ttest$addFootnote(message)
   }
   
   if (optionsList$wantsConfidenceMeanDiff) {
     interval <- 100 * optionsList$percentConfidenceMeanDiff
-    title <- paste0(interval, "% CI for ", nameOfLocationParameter)
+    title <- gettextf("%1$s%% CI for %2$s", interval, nameOfLocationParameter)
     ttest$addColumnInfo(name = "lowerCIlocationParameter", type = "number",
-                        title = "Lower", overtitle = title)
+                        title = gettext("Lower"), overtitle = title)
     ttest$addColumnInfo(name = "upperCIlocationParameter", type = "number",
-                        title = "Upper", overtitle = title)
+                        title = gettext("Upper"), overtitle = title)
   }
   
   ## add Cohen's d
@@ -137,21 +142,21 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     ttest$addColumnInfo(name = "d", title = nameOfEffectSize, type = "number")
     if (optionsList$wantsWilcox) {
       if (optionsList$wantsStudents || optionsList$wantsWelchs) 
-        message <- paste0("For the Mann-Whitney test, effect size is given by the rank biserial correlation. 
-                         For the other test(s), by ", nameOfEffectSizeParametric, ".")
+        message <- paste0(gettext("For the Mann-Whitney test, effect size is given by the rank biserial correlation. 
+                         For the other test(s), by "), nameOfEffectSizeParametric, ".")
       else
-        message <- "For the Mann-Whitney test, effect size is given by the rank biserial correlation."
+        message <- gettext("For the Mann-Whitney test, effect size is given by the rank biserial correlation.")
       ttest$addFootnote(message)
     }
   }
   
   if (optionsList$wantsConfidenceEffSize) {
     interval <- 100 * optionsList$percentConfidenceEffSize
-    title <- paste0(interval, "% CI for ", nameOfEffectSize)
+    title <- gettextf("%1$s%% CI for %2$s", interval, nameOfEffectSize)
     ttest$addColumnInfo(name = "lowerCIeffectSize", type = "number",
-                        title = "Lower", overtitle = title)
+                        title = gettext("Lower"), overtitle = title)
     ttest$addColumnInfo(name = "upperCIeffectSize", type = "number",
-                        title = "Upper", overtitle = title)
+                        title = gettext("Upper"), overtitle = title)
   }
   
   jaspResults[["ttest"]] <- ttest
@@ -167,16 +172,16 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     return()
   container <- jaspResults[["AssumptionChecks"]]
   # Create table
-  ttestNormalTable <- createJaspTable(title = "Test of Normality (Shapiro-Wilk)")
+  ttestNormalTable <- createJaspTable(title = gettext("Test of Normality (Shapiro-Wilk)"))
   ttestNormalTable$showSpecifiedColumnsOnly <- TRUE
   ttestNormalTable$position <- 2
   
   ttestNormalTable$addColumnInfo(name = "dep", type = "string", title = "", combine = TRUE)
   ttestNormalTable$addColumnInfo(name = "lev", type = "string", title = "")
-  ttestNormalTable$addColumnInfo(name = "W",   type = "number", title = "W")
-  ttestNormalTable$addColumnInfo(name = "p",   type = "pvalue", title = "p")
+  ttestNormalTable$addColumnInfo(name = "W",   type = "number", title = gettext("W"))
+  ttestNormalTable$addColumnInfo(name = "p",   type = "pvalue", title = gettext("p"))
   
-  message <- "Significant results suggest a deviation from normality."
+  message <- gettext("Significant results suggest a deviation from normality.")
   ttestNormalTable$addFootnote(message)
   
   container[["ttestNormalTable"]] <- ttestNormalTable
@@ -192,13 +197,13 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   if (!options$equalityOfVariancesTests || !is.null(container[["equalityVariance"]])) 
     return()
   # Create table
-  equalityVariance <- createJaspTable(title = "Test of Equality of Variances (Levene's)")
+  equalityVariance <- createJaspTable(title = gettext("Test of Equality of Variances (Levene's)"))
   equalityVariance$showSpecifiedColumnsOnly <- TRUE
   equalityVariance$position <- 3
-  equalityVariance$addColumnInfo(name = "variable", type = "string", title = "")
-  equalityVariance$addColumnInfo(name = "F",  type = "number")
-  equalityVariance$addColumnInfo(name = "df", type = "integer")
-  equalityVariance$addColumnInfo(name = "p",  type = "pvalue")
+  equalityVariance$addColumnInfo(name = "variable", type = "string",  title = "")
+  equalityVariance$addColumnInfo(name = "F",        type = "number",  title = gettext("F"))
+  equalityVariance$addColumnInfo(name = "df",       type = "integer", title = gettext("df"))
+  equalityVariance$addColumnInfo(name = "p",        type = "pvalue",  title = gettext("p"))
   
   container[["equalityVariance"]] <- equalityVariance
   res <- try(.ttestIndependentEqVarFill(container, dataset, options, ready))
@@ -216,9 +221,9 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     effSize <- "hedges"
   
   nameOfEffectSizeParametric <- switch(effSize, 
-                                       cohen  = "Cohen's d", 
-                                       glass  = "Glass' delta",
-                                       hedges = "Hedges' g")
+                                       cohen  = gettext("Cohen's d"), 
+                                       glass  = gettext("Glass' delta"),
+                                       hedges = gettext("Hedges' g"))
   
   variables  <- options$variables
   if (length(variables) == 0) 
@@ -230,14 +235,16 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   } else {
     levels <- levels(dataset[[ .v(options$groupingVariable) ]])
     
-    msgStart <- "For all tests, the alternative hypothesis specifies that group <em>"
     if (options$hypothesis == "groupOneGreater")
-      msgDirection <- "</em> is greater than group <em>"
+      message <- gettextf("For all tests, the alternative hypothesis specifies that group %1$s is greater than group %2$s.",
+                          paste("<em>", levels[1], "</em>"), paste("<em>", levels[2], "</em>"))
     else if (options$hypothesis == "groupTwoGreater")
-      msgDirection <- "</em> is less than group <em>"
+      message <- gettextf("For all tests, the alternative hypothesis specifies that group %1$s is less than group %2$s.",
+                          paste("<em>", levels[1], "</em>"), paste("<em>", levels[2], "</em>"))
     else
-      msgDirection <- "</em> is not equal to group <em>"
-    message <- paste0(msgStart, levels[1], msgDirection, levels[2], "</em>.")
+      message <- gettextf("For all tests, the alternative hypothesis specifies that group %1$s is not equal to group %2$s.",
+                          paste("<em>", levels[1], "</em>"), paste("<em>", levels[2], "</em>"))
+    
     jaspResults[["ttest"]]$addFootnote(message)
     
     groupingData <- dataset[[ .v(options$groupingVariable) ]]
@@ -366,8 +373,8 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
             
             ## arbitrary cut-offs are arbitrary
             if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
-              msg <- "Levene's test is significant (p < .05), 
-					  suggesting a violation of the equal variance assumption"
+              msg <- gettext("Levene's test is significant (p < .05), 
+					  suggesting a violation of the equal variance assumption")
               jaspResults[["ttest"]]$addFootnote(msg)
             }
           }
@@ -393,8 +400,7 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     }
     
     if (effSize == "glass") {
-      sdMessage <- paste0("Glass' delta uses the standard deviation of group ", names(ns[2]),
-                          " of variable ", options$groupingVariable, ".")
+      sdMessage <- gettextf("Glass' delta uses the standard deviation of group %1$s of variable %2$s.", names(ns[2]), options$groupingVariable)
       jaspResults[["ttest"]]$addFootnote(sdMessage)
     }
   }
@@ -440,7 +446,7 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
         row <- list(variable = variable, F = F, df = df, p = p)
         
         if (is.na(levene[1, "F value"])) {
-          note <- "F-statistic could not be calculated"
+          note <- gettext("F-statistic could not be calculated")
           container[["equalityVariance"]]$addFootnote(note)
         }
         row
@@ -508,12 +514,12 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   ttestDescriptivesTable <- createJaspTable(title = "Group Descriptives")
   ttestDescriptivesTable$showSpecifiedColumnsOnly <- TRUE
   ttestDescriptivesTable$position <- 4
-  ttestDescriptivesTable$addColumnInfo(name = "variable", title = "", type = "string", combine = TRUE)
-  ttestDescriptivesTable$addColumnInfo(name = "group", title = "Group", type = "string")
-  ttestDescriptivesTable$addColumnInfo(name = "N",    type = "integer", title = "N")
-  ttestDescriptivesTable$addColumnInfo(name = "mean", type = "number",  title = "Mean")
-  ttestDescriptivesTable$addColumnInfo(name = "sd",   type = "number",  title = "SD")
-  ttestDescriptivesTable$addColumnInfo(name = "se",   type = "number",  title = "SE")
+  ttestDescriptivesTable$addColumnInfo(name = "variable", type = "string",  title = "", combine = TRUE)
+  ttestDescriptivesTable$addColumnInfo(name = "group",    type = "string",  title = gettext("Group"))
+  ttestDescriptivesTable$addColumnInfo(name = "N",        type = "integer", title = gettext("N"))
+  ttestDescriptivesTable$addColumnInfo(name = "mean",     type = "number",  title = gettext("Mean"))
+  ttestDescriptivesTable$addColumnInfo(name = "sd",       type = "number",  title = gettext("SD"))
+  ttestDescriptivesTable$addColumnInfo(name = "se",       type = "number",  title = gettext("SE"))
   
   container[["table"]] <- ttestDescriptivesTable
   
@@ -578,7 +584,7 @@ data <- list()
     return()
   .ttestDescriptivesContainer(jaspResults, options)
   container <- jaspResults[["ttestDescriptives"]]
-  container[["plots"]] <- createJaspContainer("Descriptives Plots")
+  container[["plots"]] <- createJaspContainer(gettext("Descriptives Plots"))
   subcontainer <- container[["plots"]]
   subcontainer$position <- 5
   for(variable in options$variables) {

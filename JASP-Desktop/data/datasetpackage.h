@@ -21,7 +21,7 @@
 #include <QAbstractItemModel>
 #include "common.h"
 #include "dataset.h"
-#include "version.h"
+#include "../JASP-Common/version.h"
 #include <map>
 #include "jsonredirect.h"
 #include "computedcolumns.h"
@@ -44,7 +44,7 @@ class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel becau
 	typedef std::map<std::string, std::map<int, std::string>> emptyValsType;
 
 public:
-	enum class	specialRoles { filter = Qt::UserRole, lines, maxColString, columnIsComputed, computedColumnIsInvalidated, labelsHasFilter, computedColumnError, value, columnType };
+	enum class	specialRoles { filter = Qt::UserRole, lines, maxColString, maxRowHeaderString, columnIsComputed, computedColumnIsInvalidated, labelsHasFilter, computedColumnError, value, columnType };
 
 	static DataSetPackage *	pkg() { return _singleton; }
 
@@ -221,6 +221,7 @@ signals:
 				void				labelChanged(int column);
 				void				dataSetChanged();
 				void				columnDataTypeChanged(std::string columnName);
+				void				refreshAnalysesWithColumn(QString columnName);
 				void				isModifiedChanged();
 				void				pauseEnginesSignal();
 				void				resumeEnginesSignal();

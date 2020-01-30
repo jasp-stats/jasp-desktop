@@ -43,7 +43,7 @@
         <file>icons/lightTheme/file-jasp.svg</file>
         <file>icons/lightTheme/expand.png</file>
         <file>icons/lightTheme/collapse.png</file>
-        <file>icons/lightTheme/loading.gif</file>
+        <file>icons/lightTheme/loading.svg</file>
         <file>icons/lightTheme/summarize.svg</file>
         <file>icons/lightTheme/addition-sign.svg</file>
         <file>icons/lightTheme/editImage.png</file>
@@ -140,7 +140,7 @@
         <file>icons/darkTheme/file-jasp.svg</file>
         <file>icons/darkTheme/expand.png</file>
         <file>icons/darkTheme/collapse.png</file>
-        <file>icons/darkTheme/loading.gif</file>
+        <file>icons/darkTheme/loading.svg</file>
         <file>icons/darkTheme/summarize.svg</file>
         <file>icons/darkTheme/addition-sign.svg</file>
         <file>icons/darkTheme/editImage.png</file>
@@ -231,5 +231,9 @@
         <file>icons/lightTheme/jasp-logo-black.svg</file>
         <file>icons/darkTheme/code-icon.png</file>
         <file>icons/lightTheme/code-icon.png</file>
+        <file>icons/FlexplotLogo.svg</file>
+        <file>icons/discoverdistributions-continuousDist.svg</file>
+        <file>icons/discoverdistributions-discreteDist.svg</file>
+        <file>icons/discoverdistributions-distributions.svg</file>
     </qresource>
 </RCC>

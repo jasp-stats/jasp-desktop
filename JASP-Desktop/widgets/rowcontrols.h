@@ -21,7 +21,7 @@
 
 #include "common.h"
 #include <QQmlComponent>
-#include <QObject>
+#include <QQuickItem>
 
 class QMLListView;
 class ListModel;
@@ -49,13 +49,14 @@ public:
 
 private:
 
-	ListModel*							_parentModel;
-	QList<QQmlComponent *>				_rowComponents;
-	QList<QVariant>						_rowObjects;
-	QMap<QString, JASPControlWrapper*>	_rowJASPWrapperMap;
-	QMap<QString, QVariant>				_rowControlsVarMap;
-	QMap<QString, Option*>				_rowOptions;
-	bool								_isDummy = false;
+	ListModel*								_parentModel;
+	QList<QQmlComponent *>					_rowComponents;
+	QList<QVariant>							_rowObjects;
+	QMap<QString, JASPControlWrapper*>		_rowJASPWrapperMap;
+	std::map<QQuickItem*, QQmlContext*>		_contextMap;
+	QMap<QString, QVariant>					_rowControlsVarMap;
+	QMap<QString, Option*>					_rowOptions;
+	bool									_isDummy = false;
 };
 
 #endif // ROWCOMPONENTS_H

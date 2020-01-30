@@ -181,13 +181,11 @@ void FileMenu::setCurrentDataFile(const QString &path)
 void FileMenu::setDataFileWatcher(bool watch)
 {
 	QString path = _currentDataFile->getCurrentFilePath();
-	if (!path.isEmpty())
-	{
-		if (watch && !_currentDataFile->isOnlineFile(path))
-			_watcher.addPath(path);
-		else
-			_watcher.removePath(path);
-	}
+	if (path.isEmpty())
+		return;
+
+	if (watch && !_currentDataFile->isOnlineFile(path))	_watcher.addPath(path);
+	else												_watcher.removePath(path);
 }
 
 
@@ -423,7 +421,7 @@ bool FileMenu::checkSyncFileExists(const QString &path)
 		int trials = 0;
 		while (Utils::getFileSize(path.toStdString()) == 0 && trials < 5)
 		{
-			// sometimes it is temporarly empty...
+			// sometimes it is temporarily empty...
 			trials++;
 			Utils::sleep(100);
 		}

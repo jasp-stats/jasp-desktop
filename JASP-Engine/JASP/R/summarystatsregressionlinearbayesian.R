@@ -151,7 +151,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   bfTitle            <- tableInfo$bfTitle
   
   # display "BF" instead of "BF10" or "BF01" for Model Comparison
-  if(mainResultsTitle == "Model Comparison" && bfTitle != "Log(\u0042\u0046\u2081\u2080)"){
+  if(mainResultsTitle == gettext("Model Comparison") && bfTitle != "Log(\u0042\u0046\u2081\u2080)"){
       bfTitle <- "BF"
     }
   
@@ -162,11 +162,11 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   message <- tableInfo[["message"]]
   if (!is.null(message)) regressionTable$addFootnote(message)
   
-  regressionTable$addColumnInfo(name = "sampleSize" , title = sampleSizeTitle       , type = sampleSizeCellType)
-  regressionTable$addColumnInfo(name = "nCovariates", title = "Number of covariates", type = "integer")
-  regressionTable$addColumnInfo(name = "R2"         , title = "R\u00B2"             , type = "number", format = "dp:3")
-  regressionTable$addColumnInfo(name = "BF"         , title = bfTitle               , type = "number")
-  regressionTable$addColumnInfo(name = "error"      , title = "error %"             , type = "number")
+  regressionTable$addColumnInfo(name = "sampleSize" , title = sampleSizeTitle                , type = sampleSizeCellType)
+  regressionTable$addColumnInfo(name = "nCovariates", title = gettext("Number of covariates"), type = "integer")
+  regressionTable$addColumnInfo(name = "R2"         , title = gettextf("R%s", "\u00B2")      , type = "number", format = "dp:3")
+  regressionTable$addColumnInfo(name = "BF"         , title = bfTitle                        , type = "number")
+  regressionTable$addColumnInfo(name = "error"      , title = gettext("error %")             , type = "number")
   
   mainContainer[["regressionTable"]] <- regressionTable
   
@@ -181,7 +181,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   if (!options[["plotBayesFactorRobustness"]] || !is.null(mainContainer[["plotBayesFactorRobustness"]]))
     return()
 
-  plot <- createJaspPlot(title = "Robustness Plot", width = 530, height = 400)
+  plot <- createJaspPlot(title = gettext("Robustness Plot"), width = 530, height = 400)
   plot$dependOn(c("plotBayesFactorRobustness", "plotBayesFactorRobustnessAdditionalInfo"))
   mainContainer[["plotBayesFactorRobustness"]] <- plot
   if (mainContainer$getError())
@@ -189,7 +189,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
 
   p <- try(.summaryStatsRegressionCreateRobustnessPlot(options, summaryStatsRegressionResults))
   if (isTryError(p)) {
-    errorMessage <- paste("Plotting not possible:", .extractErrorMessage(p))
+    errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
     plot$setError(errorMessage)
   } else {
     plot$plotObject <- p
@@ -265,17 +265,35 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
     BF10ultra <- 1 / BF10ultra
   }
   
-  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, c(-Inf, Inf))
+  BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, c(-Inf, Inf), subscriptsOnly = TRUE)
+
+  label1 <- c(
+    gettextf("max BF%s", BFsubscript),
+    gettext("user prior"),
+    gettext("wide prior"),
+    gettext("ultrawide prior")
+  )
+  # some failsafes to parse translations as expressions
+  label1[1] <- gsub(pattern = "\\s+", "~", label1[1])
+  label1[-1] <- paste0("\"", label1[-1], "\"")
+  label1 <- paste0("paste(", label1, ", ':')")
+
+  BFandSubscript <- gettextf("BF%s", BFsubscript)
+  BFandSubscript <- gsub(pattern = "\\s+", "~", BFandSubscript)
+  label2 <- c(
+    gettextf("%s at r==%s",      format(maxBF10,  digits = 4), format(maxBFrVal, digits = 4)),
+    paste0(BFandSubscript, "==", format(BF10user, digits = 4)),
+    paste0(BFandSubscript, "==", format(BF10w,    digits = 4)),
+    paste0(BFandSubscript, "==", format(BF10ultra,digits = 4))
+  )
+  label2[1L] <- gsub(pattern = "\\s+", "~", label2[1])
   
   dfPoints <- data.frame(
     x = c(maxBFrVal, rscale, 1, sqrt(2)),
     y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
-    g = JASPgraphs::parseThis(c(
-      sprintf("paste(max, ~%s, ':',   phantom(phollll), %s, ~at, ~'r'==%s)", BFsubscript, format(maxBF10,   digits = 4), format(maxBFrVal, digits = 4)),
-      sprintf("paste(user~prior, ':', phantom(phll[0]), ~%s==%s)",           BFsubscript, format(BF10user,  digits = 4)),
-      sprintf("paste(wide~prior, ':', phantom(ph[0][0]), ~%s==%s)",          BFsubscript, format(BF10w,     digits = 4)),
-      sprintf("paste(ultrawide~prior, ':', ~%s==%s)",                        BFsubscript, format(BF10ultra, digits = 4))
-    )),
+    g = label1,
+    label1 = JASPgraphs::parseThis(label1),
+    label2 = JASPgraphs::parseThis(label2),
     stringsAsFactors = FALSE
   )
   
@@ -283,7 +301,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
     dfLines      = dfLines,
     dfPoints     = dfPoints,
     pointLegend  = additionalInfo,
-    xName        = "r scale", 
+    xName        = gettext("r scale"),
     hypothesis   = "equal",
     bfType       = bfType
   )
@@ -297,7 +315,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
 .tableInfoSummaryStatsRegression <- function(options) {
   
   # set footnote message and Bayes factor title
-  message      <- paste0("r scale used is: ", options$priorWidth, ".")
+  message      <- gettextf("r scale used is: %s.", options$priorWidth)
   bfTitle      <- .getBayesfactorTitleSummaryStats(options$bayesFactorType, hypothesis = 'twoSided')
   
   # determine title for main results table
@@ -306,15 +324,15 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   
   if(nullModelSpecified) {
     
-    mainResultsTitle   <- "Model Comparison"
-    sampleSizeTitle    <- paste0("n = ", options$sampleSize)
+    mainResultsTitle   <- gettext("Model Comparison")
+    sampleSizeTitle    <- gettextf("n = %i", options$sampleSize)
     sampleSizeCellType <- "string"
 
     
   } else {
     
-    mainResultsTitle  <- "Bayesian Linear Regression"
-    sampleSizeTitle   <- "n"
+    mainResultsTitle   <- gettext("Bayesian Linear Regression")
+    sampleSizeTitle    <- gettext("n")
     sampleSizeCellType <- "integer"
     
   }
@@ -332,22 +350,21 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   # check if number of covariates is correct in H1
   if(options$numberOfCovariatesAlternative!=0 && options$sampleSize!=0 && ((options$sampleSize - options$numberOfCovariatesAlternative) < 2)) {
     
-    .quitAnalysis("Number of Covariates must be less than N-1 (sample size minus 1)")
+    .quitAnalysis(gettext("Number of Covariates must be less than N-1 (sample size minus 1)"))
     
   }
   
   # check if number of covariates is correct in H0
   if(options$numberOfCovariatesNull!=0 && options$sampleSize!=0 && ((options$sampleSize - options$numberOfCovariatesNull) < 2)) {
     
-    .quitAnalysis("Number of Covariates must be less than N-1 (sample size minus 1)")
+    .quitAnalysis(gettext("Number of Covariates must be less than N-1 (sample size minus 1)"))
     
   }
   
   # check if R squared input is correct
   if((options$numberOfCovariatesAlternative > options$numberOfCovariatesNull) && (options$unadjustedRSquaredAlternative < options$unadjustedRSquaredNull)) {
     
-    .quitAnalysis("Input: When number of covariates for Alternative hypothesis is greater than that of Null hypothesis, the R\u00B2 has to be higher under Alternative than under Null hypothesis")
-    
+    .quitAnalysis(gettextf("Input: When number of covariates for Alternative hypothesis is greater than that of Null hypothesis, the R%s has to be higher under Alternative than under Null hypothesis","\u00B2"))
   }
   
 }

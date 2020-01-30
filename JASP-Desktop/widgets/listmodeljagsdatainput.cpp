@@ -24,6 +24,17 @@
 #include "analysis/options/optionterm.h"
 #include "r_functionwhitelist.h"
 
+ListModelJAGSDataInput::ListModelJAGSDataInput(BoundQMLTableView *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
+{
+	_defaultCellVal = "...";
+	_colNames.clear();
+	_values.clear();
+	_colNames.push_back(getColName(0));
+	_values.push_back({});
+	_colNames.push_back(getColName(1));
+	_values.push_back({});
+}
+
 void ListModelJAGSDataInput::sourceTermsChanged(const Terms *, const Terms *)
 {
 	beginResetModel();
@@ -72,7 +83,6 @@ QString ListModelJAGSDataInput::getColName(size_t index) const
 		return "Parameter";
 	return "R Code";
 }
-
 
 Qt::ItemFlags ListModelJAGSDataInput::flags(const QModelIndex &index) const
 {

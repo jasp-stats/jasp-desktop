@@ -62,13 +62,12 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     function() {
       if (length(options$variables) > 0 && options$factorMethod == "manual" &&
           options$numberOfFactors > length(options$variables)) {
-        return(paste0("Too many factors requested (", options$numberOfFactors,
-                      ") for the amount of included variables"))
+        return(gettextf("Too many factors requested (%i) for the amount of included variables", options$numberOfFactors))
       }
     },
     function() {
       if(nrow(dataset) < 3){
-        return(paste0("Not enough valid cases (", nrow(dataset),") to run this analysis"))
+        return(gettextf("Not enough valid cases (%i) to run this analysis", nrow(dataset)))
       }
     },
     # check whether all row variance == 0
@@ -78,7 +77,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
         if(sd(dataset[i,], na.rm = TRUE) == 0) varianceZero <- varianceZero + 1
       }
       if(varianceZero == nrow(dataset)){
-        return("Data not valid: variance is zero in each row")
+        return(gettext("Data not valid: variance is zero in each row"))
       }
     },
     # check whether all variables correlate with each other
@@ -92,7 +91,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
         }
       }
       if(allCorr == nVar*(nVar-1)/2){
-        return("Data not valid: all variables correlate with each other")
+        return(gettext("Data not valid: all variables correlate with each other"))
       }
     }
   )
@@ -129,7 +128,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   )
 
   if (inherits(efaResult, "try-error")) {
-    errmsg <- paste("Estimation failed. Message:", attr(efaResult, "condition")$message)
+    errmsg <- paste(gettext("Estimation failed. Message:"), attr(efaResult, "condition")$message)
     modelContainer$setError(.decodeVarsInMessage(names(dataset), errmsg))
   }
 
@@ -148,8 +147,8 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     # on the modelcontainer.
     if (ncomp == 0)
       stop(
-        "No components with an eigenvalue > ", options$eigenValuesBox, ". ",
-        "Maximum observed eigenvalue: ", round(max(pa$fa.values), 3)
+        gettext("No components with an eigenvalue > "), options$eigenValuesBox, ". ",
+        gettext("Maximum observed eigenvalue: "), round(max(pa$fa.values), 3)
       )
     return(ncomp)
   }
@@ -160,7 +159,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 .efaKMOtest <- function(modelContainer, dataset, options, ready) {
   if (!options[["kmotest"]] || !is.null(modelContainer[["kmotab"]])) return()
   
-  kmotab <- createJaspTable("Kaiser-Meyer-Olkin test")
+  kmotab <- createJaspTable(gettext("Kaiser-Meyer-Olkin test"))
   kmotab$dependOn("kmotest")
   kmotab$addColumnInfo(name = "col", title = "", type = "string")
   kmotab$addColumnInfo(name = "val", title = "MSA", type = "number", format = "dp:3")
@@ -170,7 +169,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (!ready) return()
   kmo <- psych::KMO(dataset)
   
-  kmotab[["col"]] <- c("Overall MSA\n", .unv(names(kmo$MSAi)))
+  kmotab[["col"]] <- c(gettext("Overall MSA\n"), .unv(names(kmo$MSAi)))
   kmotab[["val"]] <- c(kmo$MSA, kmo$MSAi)
 }
 
@@ -180,8 +179,8 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   bartab <- createJaspTable("Bartlett's test")
   bartab$dependOn("bartest")
   bartab$addColumnInfo(name = "chisq", title = "\u03a7\u00b2", type = "number", format = "dp:3")
-  bartab$addColumnInfo(name = "df",    title = "df", type = "number", format = "dp:3")
-  bartab$addColumnInfo(name = "pval",  title = "p", type = "number", format = "dp:3;p:.001")
+  bartab$addColumnInfo(name = "df",    title = gettext("df"), type = "number", format = "dp:3")
+  bartab$addColumnInfo(name = "pval",  title = gettext("p"), type = "number", format = "dp:3;p:.001")
   bartab$position <- 0
   modelContainer[["bartab"]] <- bartab
   
@@ -197,10 +196,10 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (!is.null(modelContainer[["goftab"]])) return()
 
   goftab <- createJaspTable(title = "Chi-squared Test")
-  goftab$addColumnInfo(name = "model", title = "",        type = "string")
-  goftab$addColumnInfo(name = "chisq", title = "Value",   type = "number", format = "dp:3")
-  goftab$addColumnInfo(name = "df",    title = "df",      type = "integer")
-  goftab$addColumnInfo(name = "p",     title = "p", type = "number", format = "dp:3;p:.001")
+  goftab$addColumnInfo(name = "model", title = "",                 type = "string")
+  goftab$addColumnInfo(name = "chisq", title = gettext("Value"),   type = "number", format = "dp:3")
+  goftab$addColumnInfo(name = "df",    title = gettext("df"),      type = "integer")
+  goftab$addColumnInfo(name = "p",     title = gettext("p"),       type = "number", format = "dp:3;p:.001")
   goftab$position <- 1
 
   modelContainer[["goftab"]] <- goftab
@@ -216,12 +215,12 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   goftab[["p"]]     <- efaResults$PVAL
 
   if (efaResults$dof < 0)
-    goftab$addFootnote(message = "Degrees of freedom below 0, model is unidentified.", symbol = "<em>Warning:</em>")
+    goftab$addFootnote(message = gettext("Degrees of freedom below 0, model is unidentified."), symbol = gettext("<em>Warning:</em>"))
 }
 
 .efaLoadingsTable <- function(modelContainer, dataset, options, ready) {
   if (!is.null(modelContainer[["loatab"]])) return()
-  loatab <- createJaspTable("Factor Loadings")
+  loatab <- createJaspTable(gettext("Factor Loadings"))
   loatab$dependOn("highlightText")
   loatab$position <- 2
   loatab$addColumnInfo(name = "var", title = "", type = "string")
@@ -232,15 +231,15 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   efaResults <- modelContainer[["model"]][["object"]]
 
   if (options$rotationMethod == "orthogonal" && options$orthogonalSelector == "none") {
-    loatab$addFootnote(message = "No rotation method applied.", symbol = "<em>Note.</em>")
+    loatab$addFootnote(message = gettext("No rotation method applied."), symbol = gettext("<em>Note.</em>"))
   } else {
     loatab$addFootnote(
       message = paste0(
-        "Applied rotation method is ",
+        gettext("Applied rotation method is "),
         ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector),
         "."
       ),
-      symbol = "<em>Note.</em>"
+      symbol = gettext("<em>Note.</em>")
     )
   }
 
@@ -250,21 +249,21 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   for (i in 1:ncol(loads)) {
     # fix weird "all true" issue
     if (all(abs(loads[, i]) < options$highlightText)) {
-      loatab$addColumnInfo(name = paste0("c", i), title = paste("Factor", i), type = "string")
+      loatab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "string")
       loatab[[paste0("c", i)]] <- rep("", nrow(loads))
     } else {
-      loatab$addColumnInfo(name = paste0("c", i), title = paste("Factor", i), type = "number", format = "dp:3")
+      loatab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "number", format = "dp:3")
       loatab[[paste0("c", i)]] <- ifelse(abs(loads[, i]) < options$highlightText, NA, loads[ ,i])
     }
   }
 
-  loatab$addColumnInfo(name = "uni", title = "Uniqueness", type = "number", format = "dp:3")
+  loatab$addColumnInfo(name = "uni", title = gettext("Uniqueness"), type = "number", format = "dp:3")
   loatab[["uni"]] <- efaResults$uniquenesses
 }
 
 .efaStructureTable <- function(modelContainer, dataset, options, ready) {
   if (!options[["incl_structure"]] || !is.null(modelContainer[["strtab"]])) return()
-  strtab <- createJaspTable("Factor Loadings (Structure Matrix)")
+  strtab <- createJaspTable(gettext("Factor Loadings (Structure Matrix)"))
   strtab$dependOn(c("highlightText", "incl_structure"))
   strtab$position <- 2.5
   strtab$addColumnInfo(name = "var", title = "", type = "string")
@@ -275,15 +274,15 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   efaResults <- modelContainer[["model"]][["object"]]
 
   if (options$rotationMethod == "orthogonal" && options$orthogonalSelector == "none") {
-    strtab$addFootnote(message = "No rotation method applied.", symbol = "<em>Note.</em>")
+    strtab$addFootnote(message = gettext("No rotation method applied."), symbol = gettext("<em>Note.</em>"))
   } else {
     strtab$addFootnote(
       message = paste0(
-        "Applied rotation method is ",
+        gettext("Applied rotation method is "),
         ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector),
         "."
       ),
-      symbol = "<em>Note.</em>"
+      symbol = gettext("<em>Note.</em>")
     )
   }
 
@@ -293,10 +292,10 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   for (i in 1:ncol(loads)) {
     # fix weird "all true" issue
     if (all(abs(loads[, i]) < options$highlightText)) {
-      strtab$addColumnInfo(name = paste0("c", i), title = paste("Factor", i), type = "string")
+      strtab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "string")
       strtab[[paste0("c", i)]] <- rep("", nrow(loads))
     } else {
-      strtab$addColumnInfo(name = paste0("c", i), title = paste("Factor", i), type = "number", format = "dp:3")
+      strtab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "number", format = "dp:3")
       strtab[[paste0("c", i)]] <- ifelse(abs(loads[, i]) < options$highlightText, NA, loads[ ,i])
     }
   }
@@ -305,8 +304,8 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 .efaEigenTable <- function(modelContainer, dataset, options, ready) {
   if (!is.null(modelContainer[["eigtab"]])) return()
 
-  eigtab <- createJaspTable("Factor Characteristics")
-  eigtab$addColumnInfo(name = "comp", title = "",                type = "string")
+  eigtab <- createJaspTable(gettext("Factor Characteristics"))
+  eigtab$addColumnInfo(name = "comp", title = "",                         type = "string")
   eigtab$addColumnInfo(name = "eigv", title = gettext("SumSq. Loadings"), type = "number", format = "sf:4;dp:3")
   eigtab$addColumnInfo(name = "prop", title = gettext("Proportion var."), type = "number", format = "sf:4;dp:3")
   eigtab$addColumnInfo(name = "cump", title = gettext("Cumulative"),      type = "number", format = "sf:4;dp:3")
@@ -327,7 +326,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
 .efaCorrTable <- function(modelContainer, dataset, options, ready) {
   if (!options[["incl_correlations"]] || !is.null(modelContainer[["cortab"]])) return()
-  cortab <- createJaspTable("Factor Correlations")
+  cortab <- createJaspTable(gettext("Factor Correlations"))
   cortab$dependOn("incl_correlations")
   cortab$addColumnInfo(name = "col", title = "", type = "string")
   cortab$position <- 4
@@ -352,12 +351,12 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
 .efaAdditionalFitTable <- function(modelContainer, dataset, options, ready) {
   if (!options[["incl_fitIndices"]] || !is.null(modelContainer[["fittab"]])) return()
-  fittab <- createJaspTable("Additional fit indices")
+  fittab <- createJaspTable(gettext("Additional fit indices"))
   fittab$dependOn("incl_fitIndices")
-  fittab$addColumnInfo(name = "RMSEA",   title = "RMSEA", type = "number", format = "dp:3")
-  fittab$addColumnInfo(name = "RMSEAci", title = "RMSEA 90% confidence",   type = "string")
-  fittab$addColumnInfo(name = "TLI",     title = "TLI",   type = "number", format = "dp:3")
-  fittab$addColumnInfo(name = "BIC",     title = "BIC",   type = "number", format = "dp:3")
+  fittab$addColumnInfo(name = "RMSEA",   title = gettext("RMSEA"), type = "number", format = "dp:3")
+  fittab$addColumnInfo(name = "RMSEAci", title = gettext("RMSEA 90% confidence"),   type = "string")
+  fittab$addColumnInfo(name = "TLI",     title = gettext("TLI"),   type = "number", format = "dp:3")
+  fittab$addColumnInfo(name = "BIC",     title = gettext("BIC"),   type = "number", format = "dp:3")
   fittab$position <- 4.5
   modelContainer[["fittab"]] <- fittab
 
@@ -388,7 +387,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   pa <- try(psych::fa.parallel(dataset, plot = FALSE))
   if (inherits(pa, "try-error")) {
-    errmsg <- paste("Screeplot not available. Message:", attr(pa, "condition")$message)
+    errmsg <- paste(gettext("Screeplot not available. Message:"), attr(pa, "condition")$message)
     scree$setError(.decodeVarsInMessage(names(dataset), errmsg))
     return()
   }
@@ -397,14 +396,14 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   df <- data.frame(
     id   = rep(seq_len(n_col), 2),
     ev   = c(pa$fa.values, pa$fa.sim),
-    type = rep(c("Data", "Simulated (95th quantile)"), each = n_col)
+    type = rep(c(gettext("Data"), gettext("Simulated (95th quantile)")), each = n_col)
   )
 
   # basic scree plot
   plt <-
     ggplot2::ggplot(df, ggplot2::aes(x = id, y = ev, linetype = type, shape = type)) +
     ggplot2::geom_line(na.rm = TRUE) +
-    ggplot2::labs(x = "Factor", y = "Eigenvalue")
+    ggplot2::labs(x = gettext("Factor"), y = gettext("Eigenvalue"))
   
   
   # dynamic function for point size:
@@ -442,7 +441,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Create plot object
   n_var <- length(options$variables)
-  path <- createJaspPlot(title = "Path Diagram", width = 480, height = ifelse(n_var < 2, 300, 1 + 299 * (n_var / 5)))
+  path <- createJaspPlot(title = gettext("Path Diagram"), width = 480, height = ifelse(n_var < 2, 300, 1 + 299 * (n_var / 5)))
   path$dependOn("incl_pathDiagram")
   path$position <- 7
   modelContainer[["path"]] <- path

@@ -50,7 +50,7 @@ testAnalysis <- function(analysis) {
 
 
  .fixRNGForTesting <- function() {
-   RNGkind(sample.kind = "Rounding")
+   suppressWarnings(RNGkind(sample.kind = "Rounding"))
  }
 
 

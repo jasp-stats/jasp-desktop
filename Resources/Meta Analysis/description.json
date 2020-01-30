@@ -18,6 +18,13 @@
 		{
 			"title":	"Classical Meta Analysis",
 			"function":	"ClassicalMetaAnalysis"
+		},
+		{
+			"title":	"-"
+		},
+		{
+			"title": 	"Bayesian Meta Analysis",
+			"function":	"BayesianMetaAnalysis"
 		}
 	]
 }

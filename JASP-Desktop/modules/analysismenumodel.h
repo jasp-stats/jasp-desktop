@@ -27,6 +27,7 @@
 class RibbonButton;
 
 
+//This class should not hold it's own data but simply be an interface for RibbonButton/Dynamic Module
 class AnalysisMenuModel : public QAbstractListModel
 {
 	Q_OBJECT
@@ -51,10 +52,12 @@ public:
 	std::vector<Modules::AnalysisEntry*>	getAnalysisEntries()														{	return _analysisEntries;			}
 	Modules::AnalysisEntry*					getAnalysisEntry(const std::string& name);
 
-	Q_INVOKABLE QString						getFirstAnalysisFunction()													{	return QString::fromStdString(_analysisEntries.at(0)->function());	}
-	Q_INVOKABLE QString						getFirstAnalysisTitle()														{	return QString::fromStdString(_analysisEntries.at(0)->title());	}
+	Q_INVOKABLE QString						getFirstAnalysisFunction()													{	return getAnalysisFunction(0);	}
+	Q_INVOKABLE QString						getFirstAnalysisTitle()														{	return getAnalysisTitle(0);		}
+	Q_INVOKABLE QString						getFirstAnalysisQML()														{	return getAnalysisQML(0);		}
 	Q_INVOKABLE QString						getAnalysisFunction(int index)								const			{	return QString::fromStdString(_analysisEntries.at(index)->function());	}
 	Q_INVOKABLE QString						getAnalysisTitle(int index)									const			{	return QString::fromStdString(_analysisEntries.at(index)->title());	}
+	Q_INVOKABLE QString						getAnalysisQML(int index)									const			{	return QString::fromStdString(_analysisEntries.at(index)->qml());	}
 	Q_INVOKABLE bool						hasIcons()													const			{	return _hasIcons; }
 
 private:

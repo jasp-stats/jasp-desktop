@@ -29,6 +29,7 @@
 class QMLListView;
 class RowControls;
 class JASPControlWrapper;
+class BoundQMLItem;
 class Option;
 
 class ListModel : public QAbstractTableModel, public VariableInfoConsumer
@@ -67,14 +68,15 @@ public:
 			void					addControlError(const QString& error) const;
 	virtual void					refresh();
 	virtual void					initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions());
-	virtual Terms					getSourceTerms();
-	QMap<ListModel*, Terms> 		getSourceTermsPerModel();
+			Terms					getSourceTerms();
+			QMap<ListModel*, Terms> getSourceTermsPerModel();
+			ListModel*				getSourceModelOfTerm(const Term& term);
 
 			void					setRowComponents(QList<QQmlComponent*> &rowComponents);
 	virtual void					setUpRowControls();
 	const QMap<QString, RowControls*>& getRowControls() const { return _rowControlsMap; }
-			JASPControlWrapper*		getRowControl(const QString& key, const QString& name)			const;
-			bool					addRowControl(const QString& key, JASPControlWrapper* control);
+	virtual JASPControlWrapper*		getRowControl(const QString& key, const QString& name)			const;
+	virtual bool					addRowControl(const QString& key, JASPControlWrapper* control);
 
 	Q_INVOKABLE int					searchTermWith(QString searchString);
 	Q_INVOKABLE void				selectItem(int _index, bool _select);
@@ -93,7 +95,10 @@ public slots:
 	virtual void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved);
 
 private:
-			void _addSelectedItemType(int _index);
+			void	_addSelectedItemType(int _index);
+			void	_rowControlOptionChangedHandler(Option *option = nullptr);
+			void	_initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap, bool setupRowConnections = true);
+			void	_connectControl(JASPControlWrapper* control);
 
 protected:
 	QMLListView*	_listView = nullptr;
@@ -106,6 +111,7 @@ protected:
 	QMap<QString, RowControls* >	_rowControlsMap;
 	QList<QQmlComponent *>			_rowComponents;
 	RowControlsOptions				_rowControlsOptions;
+	QList<BoundQMLItem *>			_rowControlsConnected;
 
 };
 

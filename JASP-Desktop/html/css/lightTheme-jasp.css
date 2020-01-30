@@ -4,11 +4,12 @@
 }
 
 body {
-        font-family:  sans-serif ;
-        margin:       0 ;
-        cursor:       default;
-        color:        #000;
-        font-size:    12px ;
+        font-family:      "Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;
+        margin:           0 ;
+        cursor:           default;
+        color:            #000;
+        font-size:        12px ;
+        background-color: #FFF ; /*grayMuchLighter*/
 }
 
 body.selected {
@@ -17,7 +18,7 @@ body.selected {
 
 
 body.selected .jasp-analysis:not(.selected){
-    filter: opacity(0.5);
+    filter: opacity(0.75);
 }
 
 h1, .h1-toolbar .jasp-menu {
@@ -378,7 +379,7 @@ div.jasp-image-image.no-data.error {
 	opacity: 0.33
 }
 
-.error-state {
+.error-state:not(.jasp-analysis), .jasp-analysis.error-state>.jasp-analysis {
 	color: silver;
 }
 
@@ -434,14 +435,14 @@ div.jasp-image-image.no-data.error {
 
 .stack-trace-selector div,
 .stack-trace-selector span {
-	
+
   cursor: pointer ;
   display: inline-block ;
   vertical-align: middle ;
 }
 
 .stack-trace-arrow {
-	
+
   background: center no-repeat url("images/lightTheme/expand.png") ;
   background-size: 70% ;
 	width: 16px ;
@@ -450,7 +451,7 @@ div.jasp-image-image.no-data.error {
 }
 
 .stack-trace {
-	
+
   display: none ;
 }
 
@@ -494,14 +495,17 @@ td.squash-left
 
 .jasp-closer {
     background: top left no-repeat url(images/lightTheme/closer.png);
-    right: 2px;
-    top: 2px;
-    position: -webkit-sticky;
-    position: sticky;
+    background-size: 16px;
+	position: absolute;
+	right: 5px;
+	top: 5px;
     width: 16px;
     height: 16px;
-    bottom: 2px;
+    bottom: 1px;
     float: right;
+    border: 8px solid;
+    border-color: transparent;
+    z-index: 1;
 }
 
 .jasp-toolbar h1, .jasp-toolbar h2, .jasp-toolbar h3, .jasp-toolbar h4, .jasp-toolbar h5, .jasp-toolbar h6, .jasp-toolbar div , .jasp-toolbar span {
@@ -557,24 +561,24 @@ td.squash-left
 
 
 .jasp-notes {
-	border-top: 1px solid rgb(205, 205, 205);
-	border-bottom: 1px solid rgb(205, 205, 205) ;
-	border-radius : 0 ;
-	color: rgb(0, 122, 204) ;
-	max-width: 70em;
-	min-width: 40em;
-	position: relative ;
-	margin-top: 0.6em ;
-	margin-bottom: 0.6em ;
+  border-top:       1px solid rgb(205, 205, 205);
+  border-bottom:    1px solid rgb(205, 205, 205) ;
+  border-radius :   0 ;
+  color:            #000;
+  max-width:        70em;
+  min-width:        40em;
+  position:         relative ;
+  margin-top:       0.6em ;
+  margin-bottom:    0.6em ;
 }
 
 .jasp-firstNote-note {
 	margin-bottom: 0.5em;
 }
 
-[contenteditable]:focus 
-{ 
-	outline: 0px solid transparent; 
+[contenteditable]:focus
+{
+	outline: 0px solid transparent;
 
 }
 

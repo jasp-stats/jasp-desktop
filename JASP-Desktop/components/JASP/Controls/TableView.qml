@@ -59,6 +59,9 @@ JASPControl
 	property int	initialColumnCount	: 0	//Only read on init
 	property int	initialRowCount		: 0	//Only read on init
 
+	//The size of the table *inside* the Flickable. + 2 for margins of flickable and scrollbars
+	readonly property int tableWidth:  theView.width  + 2
+	readonly property int tableHeight: theView.height + 2
 
 	signal reset()
 	signal addRow()
@@ -101,7 +104,6 @@ JASPControl
 		Flickable
 		{
 			id:				myFlickable
-
 			anchors
 			{
 				topMargin:	1
@@ -127,6 +129,7 @@ JASPControl
 				itemHorizontalPadding:	0
 				itemVerticalPadding:	8 * preferencesModel.uiScale
 				cacheItems:				false
+				tableViewItem:			tableView
 
 				viewportX: myFlickable.visibleArea.xPosition * width
 				viewportY: myFlickable.visibleArea.yPosition * height
@@ -172,10 +175,10 @@ JASPControl
 
 				itemDelegate: Item
 				{
-
-					TextField
+					FormulaField
 					{
-						id:						textInput
+						id:						formlaInput
+						inputType:				(tableView.modelType === "JAGSDataInputModel" && columnIndex === 1) ? "formula" : "string"
 						isBound:				false
 						anchors.verticalCenter: parent.verticalCenter
 						anchors.left:			parent.left
@@ -183,7 +186,6 @@ JASPControl
 						anchors.topMargin:		- 8 * preferencesModel.uiScale
 						fieldHeight:			parent.height + 16 * preferencesModel.uiScale
 						fieldWidth:				parent.width
-						visible:				true
 						useExternalBorder:		false
 						showBorder:				false
 						value:					itemText
@@ -204,14 +206,10 @@ JASPControl
 						text:					cornerText
 						horizontalAlignment:	Text.AlignHCenter
 						verticalAlignment:		Text.AlignVCenter
-						leftPadding:			3 * preferencesModel.uiScale
 						color:					jaspTheme.textEnabled
-						elide:					Text.ElideRight;
-						width:					parent.width
 						height:					parent.height
 						font:					jaspTheme.font
-						anchors.right:			parent.right
-						anchors.bottom:			parent.bottom
+						anchors.centerIn:		parent
 					}
 				}
 
@@ -222,6 +220,8 @@ JASPControl
 		{
 			id:				vertiScroller;
 			flickable:		myFlickable
+			manualAnchor:	true
+			visible:		myFlickable.visible && tableView.height < theView.height
 			anchors
 			{
 				top:			parent.top
@@ -238,12 +238,14 @@ JASPControl
 			id:				horiScroller;
 			flickable:		myFlickable
 			vertical:		false
+			manualAnchor:	true
+			visible:		myFlickable.visible && tableView.width < theView.width
 			anchors
 			{
 				left:			parent.left
 				right:			vertiScroller.left
 				bottom:			parent.bottom
-				leftMargin:	1
+				leftMargin:		1
 				bottomMargin:	1
 			}
 			bigBar:			false

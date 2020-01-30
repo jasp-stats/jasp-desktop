@@ -26,6 +26,8 @@ then
 
 	echo "Make sure all directories necessary have been created"
 	mkdir ../flatpak-builder-folder
+
+	echo "Create an empty jasp-repo folder"
 	mkdir ../flatpak-builder-folder/jasp-repo
 	rm -rf ../flatpak-builder-folder/jasp-repo
 	mkdir ../flatpak-builder-folder/jasp-repo

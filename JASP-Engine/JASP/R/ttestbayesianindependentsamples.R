@@ -107,14 +107,14 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
 
           if (!is.null(error) && is.na(error) && grepl("approximation", r[["method"]])) {
             error <- NaN
-            message <- "t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given."
+            message <- gettext("t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given.")
             ttestTable$addFootnote(message = message, symbol = "", rowNames = var, colNames = "error")
             ttestResults[["footnotes"]][[var]] <- c(ttestResults[["footnotes"]][[var]], message)
           }
           if (is.null(error) && options[["effectSizeStandardized"]] == "informative" && 
               options[["informativeStandardizedEffectSize"]] == "normal") {
             error <- NA_real_
-            message <- "No error estimate is available for normal priors."
+            message <- gettext("No error estimate is available for normal priors.")
             ttestTable$addFootnote(message = message)
             ttestResults[["globalFootnotes"]] <- c(ttestResults[["globalFootnotes"]], message)
           }
@@ -195,8 +195,12 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
   jaspTable <- createJaspTable()
 	jaspTable$dependOn(c("bayesFactorType", "variables"))
 
-  jaspTable$title <- if (derivedOptions[["wilcoxTest"]]) "Bayesian Mann-Whitney U Test" else "Bayesian Independent Samples T-Test"
-
+  jaspTable$title <- if (derivedOptions[["wilcoxTest"]]) {
+    gettext("Bayesian Mann-Whitney U Test")
+  } else {
+    gettext("Bayesian Independent Samples T-Test")
+  }
+    
   if (options[["effectSizeStandardized"]] == "default" && !derivedOptions[["wilcoxTest"]]) {
     citations <- .ttestBayesianCitations[c("MoreyEtal2015", "RouderEtal2009")]
   } else if (derivedOptions[["wilcoxTest"]]) {
@@ -222,24 +226,22 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
   if (derivedOptions[["wilcoxTest"]]) {
     jaspTable$addColumnInfo(name = "error", type = "number", title = "W")
     jaspTable$addColumnInfo(name = "rHat", type = "number", title = "R<sup>2</sup>")
-    jaspTable$addFootnote(paste("Result based on data augmentation algorithm with 5 chains of",
-                                options[["wilcoxonSamplesNumber"]], "iterations."))
+    jaspTable$addFootnote(gettextf("Result based on data augmentation algorithm with 5 chains of %.0f iterations.", options[["wilcoxonSamplesNumber"]]))
   } else {
     if (options[["hypothesis"]] == "groupsNotEqual") {
       fmt <- "sf:4;dp:3"
     } else {
       fmt <- "sf:4;dp:3;~"
     }
-    jaspTable$addColumnInfo(name = "error", type = "number", format = fmt, title = "error %")
+    jaspTable$addColumnInfo(name = "error", type = "number", format = fmt, title = gettext("error %"))
   }
 
   if (!(is.null(g1) || is.null(g2))) {
     message <- NULL
-    m0 <- "For all tests, the alternative hypothesis specifies that group <em>"
     if (options$hypothesis == "groupOneGreater") {
-      message <- paste0(m0, g1, "</em> is greater than group <em>", g2, "</em>.")
+      message <- gettextf("For all tests, the alternative hypothesis specifies that group <em>%1$s</em> is greater than group <em>%2$s</em>.", g1, g2)
     } else if (options$hypothesis == "groupTwoGreater") {
-      message <- paste0(m0, g1, "</em> is less than group <em>", g2, "</em>.")
+      message <- gettextf("For all tests, the alternative hypothesis specifies that group <em>%1$s</em> is less than group <em>%2$s</em>.", g1, g2)
     }
     if (!is.null(message))
       jaspTable$addFootnote(message)

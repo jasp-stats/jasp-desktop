@@ -38,6 +38,7 @@ public:
 	virtual void				resetQMLItem(JASPControlBase* item);
 
 	const QString			&	name()					const;
+	bool						isBound()				const;
 	AnalysisForm			*	form()					const;
 	JASPControlBase			*	item()					const	{ return _item; }
 	const QVector<JASPControlWrapper*>	&	depends()	const	{ return _depends; }
@@ -48,6 +49,8 @@ public:
 	void						setItemProperty(const QString& name, const QVariant& value);
 	JASPControlWrapper		*	parentListControl();
 	QString						parentListControlKey();
+	virtual JASPControlWrapper*	getChildControl(QString key, QString name)	{ return nullptr; }
+
 
 	static JASPControlWrapper*	buildJASPControlWrapper(JASPControlBase* control);
 	

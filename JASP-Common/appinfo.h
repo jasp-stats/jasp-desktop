@@ -18,7 +18,7 @@
 #ifndef APPINFO_H
 #define APPINFO_H
 
-#include "version.h"
+#include "../JASP-Common/version.h"
 
 class AppInfo
 {

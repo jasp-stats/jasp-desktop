@@ -28,7 +28,7 @@
 #include "libzip/archive_entry.h"
 #include "jsonredirect.h"
 #include "filereader.h"
-#include "version.h"
+#include "../JASP-Common/version.h"
 #include "tempfiles.h"
 #include "appinfo.h"
 #include "log.h"

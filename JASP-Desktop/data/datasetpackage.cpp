@@ -300,6 +300,7 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 
 		return dummyText;
 	}
+	case int(specialRoles::maxRowHeaderString):				return QString::number(_dataSet->maxRowCount()) + "XXX";
 	case int(specialRoles::filter):							return getColumnHasFilter(section) || isColumnUsedInEasyFilter(section);
 	case Qt::DisplayRole:									return orientation == Qt::Horizontal ? tq(_dataSet->column(section).name()) : QVariant(section);
 	case Qt::TextAlignmentRole:								return QVariant(Qt::AlignCenter);
@@ -485,6 +486,7 @@ QHash<int, QByteArray> DataSetPackage::roleNames() const
 		roles[int(specialRoles::maxColString)]					= QString("maxColString").toUtf8();
 		roles[int(specialRoles::labelsHasFilter)]				= QString("labelsHasFilter").toUtf8();
 		roles[int(specialRoles::columnIsComputed)]				= QString("columnIsComputed").toUtf8();
+		roles[int(specialRoles::maxRowHeaderString)]			= QString("maxRowHeaderString").toUtf8();
 		roles[int(specialRoles::computedColumnError)]			= QString("computedColumnError").toUtf8();
 		roles[int(specialRoles::computedColumnIsInvalidated)]	= QString("computedColumnIsInvalidated").toUtf8();
 
@@ -684,6 +686,7 @@ bool DataSetPackage::setColumnType(int columnIndex, columnType newColumnType)
 	{
 		emit headerDataChanged(Qt::Orientation::Horizontal, columnIndex, columnIndex);
 		emit columnDataTypeChanged(_dataSet->column(columnIndex).name());
+		emit refreshAnalysesWithColumn(tq(_dataSet->column(columnIndex).name()));
 	}
 
 	return changed;
@@ -1267,6 +1270,8 @@ void DataSetPackage::labelMoveRows(size_t column, std::vector<size_t> rows, bool
 
 	for(size_t row: rowsChanged)
 		emit dataChanged(index(row, 0, p), index(row, columnCount(p), p));
+
+	emit refreshAnalysesWithColumn(tq(getColumnName(column)));
 }
 
 void DataSetPackage::labelReverse(size_t column)
@@ -1280,6 +1285,7 @@ void DataSetPackage::labelReverse(size_t column)
 	QModelIndex p = parentModelForType(parIdxType::label, column);
 
 	emit dataChanged(index(0, 0, p), index(rowCount(p), columnCount(p), p));
+	emit refreshAnalysesWithColumn(tq(getColumnName(column)));
 }
 
 void DataSetPackage::columnSetDefaultValues(std::string columnName, columnType columnType)

@@ -65,6 +65,7 @@ void AnalysisMenuModel::setAnalysisEntries(const std::vector<Modules::AnalysisEn
 	_analysisEntries.clear();
 	_hasIcons = false;
 
+	//This code must be moved to the actual initialization of the entries in dynamic module. It introduces an unnecessary (little) memory leak
 	Modules::AnalysisEntry* previousEntry = nullptr;
 	for (Modules::AnalysisEntry* entry: analysisEntries)
 	{

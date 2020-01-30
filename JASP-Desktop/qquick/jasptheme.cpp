@@ -107,7 +107,7 @@ void JaspTheme::setCurrentThemeFromName(QString name)
 	if(name == "")
 		return;
 
-	Log::log() << "void JaspTheme::setCurrentThemeFromName( "<< name << " )" << std::endl;
+	//Log::log() << "void JaspTheme::setCurrentThemeFromName( "<< name << " )" << std::endl;
 
 	if(_themes.count(name) == 0)
 	{
@@ -568,6 +568,24 @@ void JaspTheme::setControlErrorTextColor(QColor controlErrorTextColor)
 
 	_controlErrorTextColor = controlErrorTextColor;
 	emit controlErrorTextColorChanged(_controlErrorTextColor);
+}
+
+void JaspTheme::setControlWarningBackgroundColor(QColor controlWarningBackgroundColor)
+{
+	if (_controlWarningBackgroundColor == controlWarningBackgroundColor)
+		return;
+
+	_controlWarningBackgroundColor = controlWarningBackgroundColor;
+	emit controlWarningBackgroundColorChanged(_controlWarningBackgroundColor);
+}
+
+void JaspTheme::setControlWarningTextColor(QColor controlWarningTextColor)
+{
+	if (_controlWarningTextColor == controlWarningTextColor)
+		return;
+
+	_controlWarningTextColor = controlWarningTextColor;
+	emit controlWarningTextColorChanged(_controlWarningTextColor);
 }
 
 void JaspTheme::setButtonBackgroundColor(QColor buttonBackgroundColor)
@@ -1180,7 +1198,7 @@ void JaspTheme::setThemeName(QString themeName)
 
 	if(themeName != "")
 	{
-		Log::log() << "Inserting theme with name " << themeName << " into _themes" << std::endl;
+		//Log::log() << "Inserting theme with name " << themeName << " into _themes" << std::endl;
 
 		if(_themes.count(_themeName) > 0 && _themes[_themeName] == this)
 			_themes.erase(_themeName);

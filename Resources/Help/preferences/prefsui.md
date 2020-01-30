@@ -27,3 +27,8 @@ Should you find that scrolling in the options goes too fast, or too slow, you ca
 
 ### Safe Graphics
 If this is enabled JASP will run in software rendering mode, which means your interface is slower but weird glitches or other problems might disappear. You will need to restart JASP for this option to take effect though!
+
+### Use Native File Dialogs
+Some users on certain systems (Windows) can run into trouble with the default native (or system) file dialogs.
+When they try to open or save a file in JASP by clicking "Browse" in one of the file menus JASP crashes.
+If you disable this option we use Qt file dialogs and they might not crash. Most users will not need this option disabled though.

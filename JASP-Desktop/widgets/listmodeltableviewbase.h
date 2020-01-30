@@ -34,7 +34,7 @@ class ListModelTableViewBase : public ListModel
 	Q_PROPERTY(int rowCount		READ rowCount		NOTIFY rowCountChanged)
 
 public:
-	enum class	specialRoles		{ active = Qt::UserRole, lines, maxColString };
+	enum class	specialRoles		{ active = Qt::UserRole, lines, maxColString, maxRowHeaderString };
 
 	explicit						ListModelTableViewBase(BoundQMLTableView * tableView, QString tableType = "");
 
@@ -58,8 +58,8 @@ public:
 	virtual		void				itemChanged(int column, int row, QVariant value);
 	virtual		void				refreshModel()							{ return ListModel::refresh(); }
 	virtual		void				initValues(OptionsTable * bindHere);
-	virtual		QString				getColName(size_t index)		const	{ return "Col " + QString::fromStdString(std::to_string(index)); }
-	virtual		QString				getRowName(size_t index)		const	{ return "Row " + QString::fromStdString(std::to_string(index)); }
+	virtual		QString				getColName(size_t index)		const	{ return tr("Col %1").arg(index); }
+	virtual		QString				getRowName(size_t index)		const	{ return tr("Row %1").arg(index); }
 	virtual		OptionsTable *		createOption();
 	virtual		void				modelChangedSlot();
 
@@ -73,6 +73,9 @@ public:
 	virtual		void rScriptDoneHandler(const QString & result) { throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler and usesRScript\nResult was: "+result.toStdString()); }
 
 				bool valueOk(QVariant value);
+
+	JASPControlWrapper*	getRowControl(const QString& key, const QString& name)			const	override;
+				bool addRowControl(const QString& key, JASPControlWrapper* control)				override;
 
 signals:
 	void columnCountChanged();
@@ -98,6 +101,8 @@ protected:
 	QVariant					_defaultCellVal;
 	bool						_keepRowsOnReset = false,
 								_keepColsOnReset = false;
+
+	QMap<QString, QMap<QString, JASPControlWrapper*> >	_itemControls;
 };
 
 #endif // LISTMODELTABLEVIEWBASE_H

@@ -119,12 +119,9 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 		QStringList composedName = controlName.split(".");
 		if (composedName.length() == 3)
 		{
-			QMLListView* listView = dynamic_cast<QMLListView*>(getControl(composedName[0]));
-			if (listView)
-			{
-				JASPControlWrapper* control = listView->getRowControl(composedName[1], composedName[2]);
-				item = dynamic_cast<BoundQMLItem*>(control);
-			}
+			JASPControlWrapper* parentControl = getControl(composedName[0]);
+			if (parentControl)
+				item = dynamic_cast<BoundQMLItem*>(parentControl->getChildControl(composedName[1], composedName[2]));
 		}
 	}
 
@@ -527,6 +524,22 @@ void AnalysisForm::bindTo()
 	_addLoadingError();
 
 	_options->blockSignals(false, false);
+
+	//Ok we can only set the warnings on the components now, because otherwise _addLoadingError() will add a big fat red warning on top of the analysisform without reason...
+	for (JASPControlWrapper* control : _orderedControls)
+	{
+		QString upgradeMsg(tq(_analysis->upgradeMsgsForOption(fq(control->name()))));
+
+		if(upgradeMsg != "")
+			control->item()->addControlWarning(upgradeMsg);
+	}
+
+	//Also check for a warning to show above the analysis:
+	QString upgradeMsg(tq(_analysis->upgradeMsgsForOption("")));
+
+	if(upgradeMsg != "")
+		addFormError(upgradeMsg);
+
 }
 
 void AnalysisForm::unbind()
@@ -575,7 +588,8 @@ void AnalysisForm::addControlError(JASPControlBase* control, QString message, bo
 
 		for (QQuickItem* item : _controlErrorMessageCache)
 		{
-			if (item->parentItem() == control || !item->parentItem())
+			JASPControlBase* errorControl = item->property("control").value<JASPControlBase*>();
+			if (errorControl == control || !errorControl)
 			{
 				controlErrorMessageItem = item;
 				break;
@@ -584,7 +598,9 @@ void AnalysisForm::addControlError(JASPControlBase* control, QString message, bo
 
 		if (!controlErrorMessageItem)
 		{
-			if (!_controlErrorMessageComponent) //Cannot instantiate in the constructor (it crashes), and it might be too late in the formCompletedHandler since error can be generated earlier
+			// Cannot instantiate _controlErrorMessageComponent in the constructor (it crashes), and it might be too late in the formCompletedHandler since error can be generated earlier
+			// So create it when it is needed for the first time.
+			if (!_controlErrorMessageComponent)
 				_controlErrorMessageComponent = new QQmlComponent(qmlEngine(this), "qrc:///components/JASP/Widgets/ControlErrorMessage.qml");
 
 			controlErrorMessageItem = qobject_cast<QQuickItem*>(_controlErrorMessageComponent->create());
@@ -605,10 +621,10 @@ void AnalysisForm::addControlError(JASPControlBase* control, QString message, bo
 				container = control->parentListView();
 		}
 
-		controlErrorMessageItem->setProperty("container", QVariant::fromValue(container));
+		controlErrorMessageItem->setProperty("control", QVariant::fromValue(control));
 		controlErrorMessageItem->setProperty("warning", warning);
-		controlErrorMessageItem->setParentItem(control);
-		QMetaObject::invokeMethod(controlErrorMessageItem, "showMessage", Qt::DirectConnection, Q_ARG(QVariant, message), Q_ARG(QVariant, temporary));
+		controlErrorMessageItem->setParentItem(container);
+		QMetaObject::invokeMethod(controlErrorMessageItem, "showMessage", Qt::QueuedConnection, Q_ARG(QVariant, message), Q_ARG(QVariant, temporary));
 	}
 
 	if (warning)
@@ -639,8 +655,9 @@ void AnalysisForm::clearControlError(JASPControlBase* control)
 
 	for (QQuickItem* errorItem : _controlErrorMessageCache)
 	{
-		if (errorItem->parentItem() == control)
-			errorItem->setParentItem(nullptr);
+		JASPControlBase* errorControl = errorItem->property("control").value<JASPControlBase*>();
+		if (errorControl == control)
+			errorItem->setProperty("control", QVariant());
 	}
 
 	control->setHasError(false);

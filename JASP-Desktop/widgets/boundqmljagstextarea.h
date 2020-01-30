@@ -39,7 +39,8 @@ public slots:
 
 private:
 	Options*					_options = nullptr;
-	QSet<QString>				_usedColumnNames;
+	QSet<QString>				_usedColumnNames,
+								_usedParameters;
 };
 
 #endif // BOUNDQMLJAGSTEXTAREA_H

@@ -97,7 +97,7 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 					_logWriteFunction
 	);
 	JASPTIMER_STOP(jaspRCPP_init);
-
+	
 	Log::log() << "jaspRCPP_init was run and R_HOME: "<< jaspRCPP_runScriptReturnString("R.home('')") << std::endl;
 }
 

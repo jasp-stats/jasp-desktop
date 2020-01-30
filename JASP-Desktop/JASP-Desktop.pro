@@ -17,11 +17,11 @@ CONFIG -= app_bundle
 
 DESTDIR = ..
 
-linux { 
-	exists(/app/lib/*) {
-			TARGET = org.jaspstats.JASP 
-	} else { 
-			TARGET = jasp 
+linux {
+  exists(/app/lib/*) {
+      TARGET = org.jaspstats.JASP
+  } else {
+      TARGET = jasp
 }} else { #not linux
       TARGET = JASP
 }
@@ -62,35 +62,35 @@ QML_IMPORT_PATH = $$PWD/imports
 QML_IMPORT_PATH += $$PWD/components
 
 exists(/app/lib/*) {
-	flatpak_desktop.files = ../Tools/flatpak/org.jaspstats.JASP.desktop
-	flatpak_desktop.path = /app/share/applications
-	INSTALLS += flatpak_desktop
+  flatpak_desktop.files = ../Tools/flatpak/org.jaspstats.JASP.desktop
+  flatpak_desktop.path = /app/share/applications
+  INSTALLS += flatpak_desktop
 
-	flatpak_icon.files = ../Tools/flatpak/org.jaspstats.JASP.svg
-	flatpak_icon.path = /app/share/icons/hicolor/scalable/apps
-	INSTALLS += flatpak_icon
+  flatpak_icon.files = ../Tools/flatpak/org.jaspstats.JASP.svg
+  flatpak_icon.path = /app/share/icons/hicolor/scalable/apps
+  INSTALLS += flatpak_icon
 
-	#flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/app-info/xmls && gzip -c > /app/share/app-info/xmls/org.jaspstats.JASP.xml.gz < org.jaspstats.JASP.appdata.xml"
-	flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/metainfo/ && cp org.jaspstats.JASP.appdata.xml /app/share/metainfo/"
-	QMAKE_EXTRA_TARGETS += flatpak_appinfo
-	PRE_TARGETDEPS      += flatpak_appinfo
+  #flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/app-info/xmls && gzip -c > /app/share/app-info/xmls/org.jaspstats.JASP.xml.gz < org.jaspstats.JASP.appdata.xml"
+  flatpak_appinfo.commands = "cd $$PWD/../Tools/flatpak && mkdir -p /app/share/metainfo/ && cp org.jaspstats.JASP.appdata.xml /app/share/metainfo/"
+  QMAKE_EXTRA_TARGETS += flatpak_appinfo
+  PRE_TARGETDEPS      += flatpak_appinfo
 
-	#flatpak_appinfo_xml.files = ../Tools/flatpak.org.jaspstats.JASP.appdata.xml
-	#flatpak_appinfo_xml.path = /app/share/appdata
-	#INSTALLS += flatpak_appinfo_xml
+  #flatpak_appinfo_xml.files = ../Tools/flatpak.org.jaspstats.JASP.appdata.xml
+  #flatpak_appinfo_xml.path = /app/share/appdata
+  #INSTALLS += flatpak_appinfo_xml
 
 
-	flatpak_appinfo_icon.files = ../Tools/flatpak/org.jaspstats.JASP.svg
-	flatpak_appinfo_icon.path = /app/share/icons/hicolor/scalable/apps/
-	INSTALLS += flatpak_appinfo_icon
+  flatpak_appinfo_icon.files = ../Tools/flatpak/org.jaspstats.JASP.svg
+  flatpak_appinfo_icon.path = /app/share/icons/hicolor/scalable/apps/
+  INSTALLS += flatpak_appinfo_icon
 
-	flatpak_appinfo_icon64.files = ../Tools/flatpak/64/org.jaspstats.JASP.png
-	flatpak_appinfo_icon64.path = /app/share/icons/hicolor/64x64/apps/
-	INSTALLS += flatpak_appinfo_icon64
+  flatpak_appinfo_icon64.files = ../Tools/flatpak/64/org.jaspstats.JASP.png
+  flatpak_appinfo_icon64.path = /app/share/icons/hicolor/64x64/apps/
+  INSTALLS += flatpak_appinfo_icon64
 
-	flatpak_appinfo_icon128.files = ../Tools/flatpak/128/org.jaspstats.JASP.png
-	flatpak_appinfo_icon128.path = /app/share/icons/hicolor/128x128/apps/
-	INSTALLS += flatpak_appinfo_icon128
+  flatpak_appinfo_icon128.files = ../Tools/flatpak/128/org.jaspstats.JASP.png
+  flatpak_appinfo_icon128.path = /app/share/icons/hicolor/128x128/apps/
+  INSTALLS += flatpak_appinfo_icon128
 }
 
 #Lets create a nice shellscript that tells us which version of JASP and R we are building/using!
@@ -139,52 +139,52 @@ win32 {
 
   RESOURCES_PATH ~= s,/,\\,g
   RESOURCES_PATH_DEST ~= s,/,\\,g
-	QTBIN=$$QMAKE_QMAKE
-	QTBIN ~= s,qmake.exe,,g
-	QTBIN ~= s,/,\\,g
-	EXTENSIONS=cpp,qml
-	WINPWD=$$PWD/..
-	WINPWD ~= s,/,\\,g
+  QTBIN=$$QMAKE_QMAKE
+  QTBIN ~= s,qmake.exe,,g
+  QTBIN ~= s,/,\\,g
+  EXTENSIONS=cpp,qml
+  WINPWD=$$PWD/..
+  WINPWD ~= s,/,\\,g
 
-  copyres.commands  += $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
+  copyres.commands  += $$quote(IF exist \"$$RESOURCES_PATH_DEST\" (rd /s /q \"$$RESOURCES_PATH_DEST\";) ) &&
+  copyres.commands  +=  $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
 
-	equals(GENERATE_LANGUAGE_FILES,1) {
-	maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${WINPWD}\jasp.po) &&
-	maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -source-language dutch -recursive $${WINPWD} -ts $${WINPWD}\jasp_nl.po) &&
-	maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${WINPWD}\jasp_nl.po -qm $${WINPWD}\Resources\Translations\jasp_nl.qm) &&
-	maketranslations.commands += $$quote(copy $${RESOURCES_PATH}\Translations\*.qm $${RESOURCES_PATH_DEST}\Translations\ )
-	}
+  equals(GENERATE_LANGUAGE_FILES,1) {
+  maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${WINPWD}\jasp.po) &&
+  maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -source-language dutch -recursive $${WINPWD} -ts $${WINPWD}\jasp_nl.po) &&
+  maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${WINPWD}\jasp_nl.po -qm $${WINPWD}\Resources\Translations\jasp_nl.qm) &&
+  maketranslations.commands += $$quote(del $${RESOURCES_PATH_DEST}\Translations\*.qm ) &&
+  maketranslations.commands += $$quote(copy $${RESOURCES_PATH}\Translations\*.qm $${RESOURCES_PATH_DEST}\Translations\ )
+
+  maketranslations.depends  = copyres
+  }
 }
 
-macx {
-    RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
-    message(" huidige pwd is: $$PWD")
+unix {
+  RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
-	equals(GENERATE_LANGUAGE_FILES,1) {
-	maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$PWD/../jasp.po ;
-	maketranslations.commands += lupdate -locations none -extensions cpp,qml -target-language Dutch -recursive $$PWD/.. -ts $$PWD/../jasp_nl.po ;
-	#maketranslations.commands += lupdate -extensions h,cpp,qml -target-language japanese -recursive $$PWD/.. -ts $$PWD/../jasp_ja.po ;
-	maketranslations.commands += lrelease $$PWD/../jasp_nl.po -qm $$PWD/../Resources/Translations/jasp_nl.qm ;
-	#maketranslations.commands += lrelease $$PWD/../jasp_ja.po -qm $$PWD/../Resources/Translations/jasp_ja.qm ;
-	maketranslations.commands += cp $$RESOURCES_PATH/Translations/*.qm $$RESOURCES_PATH_DEST/Translations/ ;
-	}
+  copyres.commands += rm -rf $$RESOURCES_PATH_DEST;
+  copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
+  copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
 
-	copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
-	copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
+
+  equals(GENERATE_LANGUAGE_FILES,1) {
+  maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$PWD/../jasp.po ;
+  maketranslations.commands += lupdate -locations none -extensions cpp,qml -target-language Dutch -recursive $$PWD/.. -ts $$PWD/../jasp_nl.po ;
+  maketranslations.commands += lrelease $$PWD/../jasp_nl.po -qm $$PWD/../Resources/Translations/jasp_nl.qm ;
+  maketranslations.commands += rm $$RESOURCES_PATH_DEST/Translations/*.qm ;
+  maketranslations.commands += cp $$RESOURCES_PATH/Translations/*.qm $$RESOURCES_PATH_DEST/Translations/ ;
+
+  maketranslations.depends  = copyres
+  }
 }
 
-linux {
-    RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
-
-    copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
-    copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
-}
 
 ! equals(PWD, $${OUT_PWD}) {
-	QMAKE_EXTRA_TARGETS += copyres
-	QMAKE_EXTRA_TARGETS += maketranslations
-    POST_TARGETDEPS     += copyres
-	POST_TARGETDEPS     += maketranslations
+  QMAKE_EXTRA_TARGETS += copyres
+  QMAKE_EXTRA_TARGETS += maketranslations
+  POST_TARGETDEPS     += copyres
+  POST_TARGETDEPS     += maketranslations
 }
 
 INCLUDEPATH += $$PWD/
@@ -262,6 +262,10 @@ HEADERS += \
     engine/enginesync.h \
     engine/rscriptstore.h \
     gui/columntypesmodel.h \
+    modules/upgrader/upgradechange.h \
+    modules/upgrader/upgrader.h \
+    modules/upgrader/upgradestep.h \
+    modules/upgrader/version.h \
     qquick/datasetview.h \
     modules/analysisentry.h \
     modules/dynamicmodule.h \
@@ -444,6 +448,10 @@ SOURCES += \
     engine/enginerepresentation.cpp \
     engine/enginesync.cpp \
     gui/columntypesmodel.cpp \
+    modules/upgrader/upgradechange.cpp \
+    modules/upgrader/upgrader.cpp \
+    modules/upgrader/upgradestep.cpp \
+    modules/upgrader/version.cpp \
     qquick/datasetview.cpp \
     modules/analysisentry.cpp \
     modules/dynamicmodule.cpp \
@@ -573,4 +581,6 @@ RESOURCES += \
 windows:OTHER_FILES += icon.rc
 
 DISTFILES += \
+    modules/upgrader/upgrades.json \
+    modules/upgrader/upgrades_template.json \
     resources/CC-Attributions.txt

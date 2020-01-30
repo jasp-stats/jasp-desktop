@@ -30,8 +30,8 @@
 #include "tempfiles.h"
 #include "log.h"
 
-
 using namespace std;
+using Modules::Upgrader;
 
 Analyses * Analyses::_singleton = nullptr;
 
@@ -47,28 +47,6 @@ Analyses::Analyses()
 	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this,	&Analyses::dataSetColumnsChanged							);
 }
 
-void Analyses::_makeBackwardCompatible(RibbonModel* ribbonModel, Version &version, Json::Value &analysisData)
-{
-	Version			V0_9_3('0', '9', '3', '0');
-
-	if (version <= V0_9_3)
-	{
-		std::string module = analysisData["module"].asString();
-		if (module.empty())
-			module = "Common";
-
-		// An old JASP file may still have references to the old Common module.
-		if (module == "Common")
-		{
-			QString	name = QString::fromStdString(analysisData["name"].asString());
-			module = ribbonModel->getModuleNameFromAnalysisName(name).toStdString();
-		}
-		else if (module == "MetaAnalysis")		module = "Meta Analysis";
-		else if (module == "SummaryStats")		module = "Summary Statistics";
-
-		analysisData["module"] = module;
-	}
-}
 
 
 Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
@@ -78,7 +56,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	if(_nextId <= id) _nextId = id + 1;
 
-	Analysis *analysis;
+	Analysis * analysis = nullptr;
+
+	Modules::UpgradeMsgs msgs = Upgrader::upgrader()->upgradeAnalysisData(analysisData);
 
 	Json::Value &	optionsJson	= analysisData["options"];
 
@@ -86,21 +66,18 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	{
 		Json::Value	&	versionJson		= analysisData["version"];
 		Version			version			= versionJson.isNull() ? AppInfo::version : Version(versionJson.asString());
-		_makeBackwardCompatible(ribbonModel, version, analysisData);
 
-
-		QString			name				= QString::fromStdString(analysisData["name"].asString()),
-						module				= analysisData["module"].asString() != "" ? QString::fromStdString(analysisData["module"].asString()) : "Common",
-						title				= QString::fromStdString(analysisData.get("title", "").asString());
-
-
-
+		QString			name			= tq(analysisData["name"].asString()),
+						module			= analysisData["module"].asString() != "" ? tq(analysisData["module"].asString()) : "Common",
+						title			= tq(analysisData.get("title", "").asString());
 		auto		*	analysisEntry	= ribbonModel->getAnalysis(module.toStdString(), name.toStdString());
+		QString			qml				= analysisEntry ? tq(analysisEntry->qml()) : name + ".qml";
+
 
 		if(title == "")
-			title = analysisEntry ? QString::fromStdString(analysisEntry->title()) : name;
+			title = analysisEntry ? tq(analysisEntry->title()) : name;
 		
-		analysis = create(module, name, title, id, version, &optionsJson, status, false);
+		analysis = create(module, name, qml, title, id, version, &optionsJson, status, false);
 
 		analysis->loadExtraFromJSON(analysisData);
 	}
@@ -119,12 +96,14 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	analysis->setUserData(analysisData["userdata"]);
 	analysis->setResults(analysisData["results"]);
 
+	analysis->setUpgradeMsgs(msgs);
+
 	return analysis;
 }
 
-Analysis* Analyses::create(const QString &module, const QString &name, const QString &title, size_t id, const Version &version, Json::Value *options, Analysis::Status status, bool notifyAll)
+Analysis* Analyses::create(const QString &module, const QString &name, const QString& qml, const QString &title, size_t id, const Version &version, Json::Value *options, Analysis::Status status, bool notifyAll)
 {
-	Analysis *analysis = new Analysis(id, module.toStdString(), name.toStdString(), title.toStdString(), version, options);
+	Analysis *analysis = new Analysis(id, module.toStdString(), name.toStdString(), qml.toStdString(), title.toStdString(), version, options);
 	analysis->setStatus(status);
 	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
@@ -190,7 +169,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	
 	if (Settings::value(Settings::DEVELOPER_MODE).toBool())
 	{
-		QString filePath = QString::fromStdString(analysis->qmlFormPath());
+		QString filePath = tq(analysis->qmlFormPath());
 		
 		if (filePath.startsWith("file:"))
 			filePath.remove(0,5);
@@ -247,10 +226,10 @@ void Analyses::reload(Analysis *analysis, bool logProblem)
 }
 
 
-bool Analyses::allCreatedInCurrentVersion() const
+bool Analyses::allFresh() const
 {
 	for (auto idAnalysis : _analysisMap)
-		if (idAnalysis.second->version() != AppInfo::version)
+		if (idAnalysis.second->needsRefresh())
 			return false;
 
 	return true;
@@ -464,10 +443,10 @@ QVariant Analyses::data(const QModelIndex &index, int role)	const
 
 	switch(role)
 	{
-	case formPathRole:		return QString::fromStdString(analysis->qmlFormPath());
+	case formPathRole:		return tq(analysis->qmlFormPath());
 	case Qt::DisplayRole:
-	case titleRole:			return QString::fromStdString(analysis->title());
-	case nameRole:			return QString::fromStdString(analysis->name());
+	case titleRole:			return tq(analysis->title());
+	case nameRole:			return tq(analysis->name());
 	case analysisRole:		return QVariant::fromValue(analysis);
 	case idRole:			return int(analysis->id());
 	default:				return QVariant();
@@ -511,12 +490,12 @@ void Analyses::move(int fromIndex, int toIndex)
 	}
 }
 
-void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisTitle, QString module)
+void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module)
 {
 	Modules::DynamicModule * dynamicModule = DynamicModules::dynMods()->dynamicModule(module.toStdString());
 
-	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry((analysisTitle + "~" + analysisFunction).toStdString()));
-	else							create(module, analysisFunction, analysisTitle);
+	if(dynamicModule != nullptr)	create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysisFunction)));
+	else							create(module, analysisFunction, analysisQML, analysisTitle);
 }
 
 
@@ -698,4 +677,14 @@ void Analyses::showDependenciesInAnalysis(size_t analysis_id, QString optionName
 	if(!get(analysis_id)) return;
 
 	get(analysis_id)->showDependenciesOnQMLForObject(optionName);
+}
+
+void Analyses::analysisTitleChangedHandler(string moduleName, string oldTitle, string newTitle)
+{
+	applyToAll([&](Analysis * a)
+	{
+		if (a->module() == moduleName && a->title() == oldTitle)
+			a->setTitle(newTitle);
+
+	});
 }

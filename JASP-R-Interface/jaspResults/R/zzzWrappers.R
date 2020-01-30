@@ -536,19 +536,22 @@ jaspTableR <- R6Class(
         stop("jaspTable$addFootnote expects \"message\" to be a string!")
       }
 
+		  # if the developer doesn't want a footnote pointing to a specific cell/col/row and doesn't specify "Note.",
+		  # then we add this to ensure footnotes look consistent across analyses
       if (is.null(symbol)	&& is.null(colNames) && is.null(rowNames))
-      { #If the symbol, colNames and rowNames aren't filled we do this for some reason?
-        if(!grepl("^<.*?>note\\.?</.*?>", message, ignore.case=TRUE))
-          symbol <- "<em>Note.</em>"
+      { 
+        if (!grepl(paste0("^<.*?>", gettext("Note"), "\\.?</.*?>"), message, ignore.case=TRUE)) # ensure it's not included in the msg rather than separately in the symbol
+          symbol <- paste0("<em>", gettext("Note"), ".</em>")
       }
 			private$jaspObject$addFootnoteHelper(message, symbol, colNames, rowNames)
 		},
 
     addColumnInfo = function(name = NULL, title = NULL, overtitle = NULL, type = NULL, format = NULL, combine = NULL) {
 			if (!is.null(type)) {
-				permittedTypes <- c("integer", "number", "pvalue", "string")
+				permittedTypes <- c("integer", "number", "pvalue", "string", "separator")
 				if (!type %in% permittedTypes)
 					stop("type must be ", paste0("`", permittedTypes, "`", collapse=", "), " (provided type: `", type, "`)")
+
 				if (is.null(format) && type == "number")
 					format <- "sf:4;dp:3"
 				else if (type == "pvalue")

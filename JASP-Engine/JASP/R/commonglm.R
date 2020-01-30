@@ -124,8 +124,8 @@
 }
 
 .confusionMatAddColInfo <- function(table, levs, type) {
-  table$addColumnInfo(name = "pred0", title = paste0(levs[1]), type = type, overtitle = "Predicted")
-  table$addColumnInfo(name = "pred1", title = paste0(levs[2]), type = type, overtitle = "Predicted")
+  table$addColumnInfo(name = "pred0", title = paste0(levs[1]), type = type, overtitle = gettext("Predicted"))
+  table$addColumnInfo(name = "pred1", title = paste0(levs[2]), type = type, overtitle = gettext("Predicted"))
 }
 
 # Helper functions for the above.
@@ -432,11 +432,11 @@
 }
 
 .reglogisticVovkSellke <- function(table, options) {
-  table$addColumnInfo(name = "vsmpr",   title = "VS-MPR\u002A", type = "number")
-  message <- "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, 
-  the maximum possible odds in favor of H\u2081 over H\u2080 equals
-  1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 
-  (Sellke, Bayarri, & Berger, 2001)."
+  table$addColumnInfo(name = "vsmpr",   title = gettextf("VS-MPR%s", "\u002A"), type = "number")
+  message <- gettextf("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value,
+  the maximum possible odds in favor of H%1$s over H%2$s equals
+  1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37
+  (Sellke, Bayarri, & Berger, 2001).", "\u2081", "\u2080", "\u2264")
   table$addFootnote(message, symbol = "\u002A")
 }
 

@@ -4,7 +4,7 @@
 JASP_R_INTERFACE_TARGET = JASP-R-Interface
 
 JASP_R_INTERFACE_MAJOR_VERSION =  9  # Interface changes
-JASP_R_INTERFACE_MINOR_VERSION =  3  # Code changes
+JASP_R_INTERFACE_MINOR_VERSION =  4  # Code changes
 
 JASP_R_INTERFACE_NAME = $$JASP_R_INTERFACE_TARGET$$JASP_R_INTERFACE_MAJOR_VERSION'.'$$JASP_R_INTERFACE_MINOR_VERSION
 
@@ -107,6 +107,8 @@ DEFINES += QT_NO_FOREACH #Come on Qt we can just use the nice new ranged for fro
 macx {
   QMAKE_CXXFLAGS_WARN_ON  += -Wno-unused-parameter -Wno-unused-local-typedef
   QMAKE_CXXFLAGS          += -Wno-c++11-extensions -Wno-c++11-long-long -Wno-c++11-extra-semi -stdlib=libc++ -Wno-deprecated-declarations
+
+  CONFIG(debug): QMAKE_CXXFLAGS +=  -fstandalone-debug
 }
 
 #uncomment the following line to enable automatic encoding and decoding of columnNames. Be sure to recompile all necessary objects

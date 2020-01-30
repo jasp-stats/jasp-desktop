@@ -51,6 +51,7 @@ JASPListControl
 	property bool	interactionContainLowerTerms	: true
 	property var	interactionHighOrderCheckBox
 	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
+	property bool	allowAnalysisOwnComputedColumns	: true
 	
 	property var	interactionControl
 	property bool	addInteractionOptions			:false
@@ -193,7 +194,7 @@ JASPListControl
 
 		onPositionChanged:
 		{
-			if (variablesList.maxRows === 1 || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
+			if (!listRectangle.enabled || variablesList.maxRows === 1 || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
 
 			var onTop = true;
 			var item = listGridView.itemAt(drag.x, drag.y + listGridView.contentY)

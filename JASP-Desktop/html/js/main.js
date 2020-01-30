@@ -35,12 +35,12 @@ $(document).ready(function () {
 	window.reRenderAnalyses = function ()				{ analyses.reRender();											}
 	window.moveAnalyses		= function (fromId, toId)	{ analyses.move(fromId, toId);									}
 
-	window.refreshEditedImage = function(id, results) {
+	window.refreshEditedImage = function(id, imageEditResults) {
 		var analysis = analyses.getAnalysis(id);
 		if (analysis === undefined) return;
 
-		if (results.error && results.resized)	analysis.undoImageResize();
-		else									analysis.insertNewImage();
+		if (imageEditResults.error && imageEditResults.resized)	analysis.undoImageResize();
+		else													analysis.insertNewImage(imageEditResults);
 	}
 
 	window.cancelImageEdit = function(id) {
@@ -154,6 +154,7 @@ $(document).ready(function () {
 		if (filename === "%PREVIEW%") { exportParams.htmlImageFormat = JASPWidgets.ExportProperties.htmlImageFormat.resource; }
 
 		analyses.exportBegin(exportParams, function (exportParams, exportContent) {
+
 			if (exportParams.process === JASPWidgets.ExportProperties.process.save)
 				jasp.saveTextToFile(filename, wrapHTML(exportContent.html, exportParams));
 		})
@@ -380,6 +381,7 @@ $(document).ready(function () {
 		if (showInstructions)
 			$instructions.fadeIn(400, "easeOutCubic")
 
+		// probably change something here
 		var id = "id-" + analysis.id
 
 		var spacer = $("#spacer")

@@ -697,7 +697,7 @@ function swapRowsAndColumns (columnHeaders, columns, optOvertitle) {
 	let newColumns = Array(newColumnCount);
     let cornerCell = columnHeaders.shift();
     newColumnHeaders.unshift(cornerCell);
-    newColumns[0] = columnHeaders;
+    newColumns[0] = headerCellsToDataCells(columnHeaders);
 
     for (let colNo = 1; colNo < newColumnCount; colNo++) {
 		newColumns[colNo] = Array(newRowCount);
@@ -733,11 +733,11 @@ function swapRowsAndColumns (columnHeaders, columns, optOvertitle) {
 		{
 			var curOvertitle = "";
 
-			if(rowNo < originalOvertitles.length)
+			if (rowNo < originalOvertitles.length)
 			{
 				curOvertitle = originalOvertitles[rowNo];
 
-				if(curOvertitle === lastOvertitle)
+				if (curOvertitle === lastOvertitle)
 					curOvertitle = "";
 
 				lastOvertitle		 = originalOvertitles[rowNo]
@@ -745,10 +745,11 @@ function swapRowsAndColumns (columnHeaders, columns, optOvertitle) {
 
 			newColumns[0][rowNo] = {
 				content:	curOvertitle,
-				header:		true,
-				type:		newColumns[1][rowNo].type
+				class:		"text"
 			}
 		}
+
+		newColumns = addGroupsToTransposedTableWithOverTitles(newColumns);
 	}
 
 	return {
@@ -757,6 +758,58 @@ function swapRowsAndColumns (columnHeaders, columns, optOvertitle) {
 		rowCount:		newRowCount,
 		columnCount:	newColumnCount
     }
+}
+
+function addGroupsToTransposedTableWithOverTitles(columns) {
+	var rowNameCol = columns[0];
+	if (rowNameCol.length == 0)
+		return columns;
+
+	var uniqueRowNames = Array();
+	for (var rowNo = 0; rowNo < rowNameCol.length; rowNo++) {
+		var rowName = rowNameCol[rowNo].content;
+		if (uniqueRowNames.indexOf(rowName) === -1)
+			uniqueRowNames.push(rowName);
+	}
+
+	// we have groupings if there are more rows than unique row names
+	if (uniqueRowNames.length < rowNameCol.length) {
+		var startOfGroupIndices = Array();
+		var endOfGroupIndices = Array();
+
+		for (var rowNo = 0; rowNo < rowNameCol.length; rowNo++) {
+			var curGroupName = rowNameCol[rowNo].content;
+			if (curGroupName !== "")
+				startOfGroupIndices.push(rowNo);
+				
+			if (rowNo + 1 < rowNameCol.length) {
+				var nextGroupName = rowNameCol[rowNo + 1].content;
+				if (curGroupName === "" && nextGroupName !== "")
+					endOfGroupIndices.push(rowNo);
+			} else { // the last row always closes a group
+				endOfGroupIndices.push(rowNo);
+			}
+		}
+
+		for (var colNo = 0; colNo < columns.length; colNo++) {
+			for (var startOfGroupIndex of startOfGroupIndices)
+				columns[colNo][startOfGroupIndex].isStartOfGroup = true;
+			
+			for (var endOfGroupIndex of endOfGroupIndices)
+				columns[colNo][endOfGroupIndex].isEndOfGroup = true;
+		}
+	}
+	return(columns)
+}
+
+function headerCellsToDataCells(cells) {
+	for (var i = 0; i < cells.length; i++) {
+		cells[i].class		= "text";
+		cells[i].header		= undefined;
+		cells[i].type		= undefined;
+		cells[i].overTitle	= undefined;
+	}
+	return cells;
 }
 
 function formatCellforLaTeX (toFormat) {

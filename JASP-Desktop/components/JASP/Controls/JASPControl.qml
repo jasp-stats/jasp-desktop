@@ -35,7 +35,7 @@ JASPControlBase
 	property bool	childControlHasFocus	: false
 	property bool	isDependency			: false
 	property var	dependencyMustContain	: [] //Will be filled with QStringList when necessary
-	property bool	shouldShowFocus			: activeFocus && focusOnTab && !childControlHasFocus
+	property bool	shouldShowFocus			: activeFocus && focusOnTab && !childControlHasFocus && !hasError && !hasWarning
 	property bool	shouldStealHover		: toolTip !== ""
 	property string	toolTip					: ""
 
@@ -97,22 +97,22 @@ JASPControlBase
 		State
 		{
 			name: "hasError"
-			when: jaspControl.hasError
+			when: focusIndicator && jaspControl.hasError
 			PropertyChanges
 			{
 				target:			focusIndicator
-				border.color:	jaspTheme.red
+				border.color:	jaspTheme.controlErrorTextColor
 				border.width:	jaspTheme.jaspControlHighlightWidth
 			}
 		},
 		State
 		{
 			name: "hasWarning"
-			when: jaspControl.hasWarning
+			when: focusIndicator && jaspControl.hasWarning && !jaspControl.hasError
 			PropertyChanges
 			{
 				target:			focusIndicator
-				border.color:	jaspTheme.rose
+				border.color:	jaspTheme.controlWarningTextColor
 				border.width:	jaspTheme.jaspControlHighlightWidth
 			}
 		},

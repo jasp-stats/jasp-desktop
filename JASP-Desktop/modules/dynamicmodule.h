@@ -123,8 +123,9 @@ public:
 
 	const AnalysisEntries menu()		const	{ return _menuEntries; }
 
-	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)								const;
-	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & codedReference)									const;
+	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const Json::Value & jsonFromJaspFile)	const;
+	AnalysisEntry*		retrieveCorrespondingAnalysisEntry(const std::string & codedReference)		const;
+	Json::Value			asJsonForJaspFile(const std::string & function)								const;
 
 	static std::string	succesResultString() { return "succes!"; }
 

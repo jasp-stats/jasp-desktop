@@ -62,6 +62,7 @@ JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
+		'click': '_mouseClicked',
 	},
 
 	notePositionBottom: true,
@@ -73,6 +74,8 @@ JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
 	_hoveringEnd: function (e) {
 		this.toolbar.setVisibility(false);
 	},
+
+	_mouseClicked: function (e) {},
 
 	hasCollapse: function () {
 		return false;

@@ -43,6 +43,7 @@ JASPControl
 
 	property alias	listGridView		: listGridView
 	property alias	cellHeight			: listGridView.cellHeight
+	property alias	cellWidth			: listGridView.cellWidth
 	property alias	listRectangle		: listRectangle
 	property alias	scrollBar			: scrollBar
 	property alias	listTitle			: listTitle

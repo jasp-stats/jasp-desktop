@@ -778,14 +778,18 @@ RBridgeColumnType* jaspRCPP_marshallSEXPs(SEXP columns, SEXP columnsAsNumeric, S
 		{
 			std::vector<std::string> tmps = Rcpp::as<std::vector<std::string>>(cols);
 			for (const std::string & tmp : tmps)
-			{
-				columnsRequested[tmp] = SetThis;
+				if(columnsOrder.count(tmp) == 0)
+				{
+					columnsRequested[tmp]	= SetThis;
+					columnsOrder[tmp]		= (*colMax)++;
+				}
 
-				if(columnsOrder.count(tmp) > 0)
-					Rf_error(("You've specified column '" + tmp + "' more than once!").c_str());
+				else if(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == columnType::unknown)
+					columnsRequested[tmp] = SetThis; //If type is unknown then we simply overwrite it with a manually specified type of analysis
 
-				columnsOrder[tmp] = (*colMax)++;
-			}
+				else if( !(columnsOrder.count(tmp) > 0 && columnsRequested[tmp] == SetThis) ) //Only give an error if the type is different from what is requested
+					Rf_error(("You've specified column '" + tmp + "' for more than one columntype!!!\nNo clue which one we should give back...").c_str());
+
 		}
 	};
 

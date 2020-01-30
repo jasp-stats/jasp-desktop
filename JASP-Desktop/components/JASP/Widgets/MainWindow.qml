@@ -220,10 +220,7 @@ Window
 		}*/
 	}
 
-	UIScaleNotifier
-	{
-		anchors.centerIn:	parent
-	}
+	UIScaleNotifier { anchors.centerIn:	parent }
 
 	ProgressBarHolder
 	{

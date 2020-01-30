@@ -37,6 +37,7 @@ Json::Value jaspPlot::dataEntry(std::string & errorMessage) const
 	data["width"]		= _width;
 	data["aspectRatio"]	= _aspectRatio;
 	data["status"]		= _error ? "error" : _status;
+	data["revision"]	= _revision;
 	data["name"]		= getUniqueNestedName();
 	data["editOptions"]	= _editOptions;
 	data["editable"]	= !_editOptions.isNull();
@@ -53,7 +54,7 @@ void jaspPlot::initEnvName()
 
 void jaspPlot::setPlotObject(Rcpp::RObject obj)
 {
-	Rcpp::List plotInfo = Rcpp::List::create(Rcpp::_["obj"] = obj, Rcpp::_["width"] = _width, Rcpp::_["height"] = _height);
+	Rcpp::List plotInfo = Rcpp::List::create(Rcpp::_["obj"] = obj, Rcpp::_["width"] = _width, Rcpp::_["height"] = _height, Rcpp::_["revision"] = _revision);
 	_filePathPng = "";
 
 	if(!obj.isNULL())
@@ -108,7 +109,7 @@ Rcpp::RObject jaspPlot::getPlotObject()
 	return R_NilValue;
 }
 
-void jaspPlot::setChangedDimensionsFromStateObject()
+void jaspPlot::setUserPlotChangesFromRStateObject()
 {
 	Rcpp::RObject plotInfo = jaspResults::getObjectFromEnv(_envName);
 	if (plotInfo.isNULL() || !Rcpp::is<Rcpp::List>(plotInfo))
@@ -121,6 +122,9 @@ void jaspPlot::setChangedDimensionsFromStateObject()
 	
 	if (plotInfoList.containsElementNamed("height"))
 		_height = Rcpp::as<int>(plotInfoList["height"]);
+	
+	if (plotInfoList.containsElementNamed("revision"))
+		_revision = Rcpp::as<int>(plotInfoList["revision"]);
 }
 
 Json::Value jaspPlot::convertToJSON() const
@@ -132,6 +136,7 @@ Json::Value jaspPlot::convertToJSON() const
 	obj["height"]				= _height;
 	obj["status"]				= _status;
 	obj["filePathPng"]			= _filePathPng;
+	obj["revision"]				= _revision;
 	obj["environmentName"]		= _envName;
 	obj["editOptions"]			= _editOptions;
 
@@ -145,12 +150,13 @@ void jaspPlot::convertFromJSON_SetFields(Json::Value in)
 	_aspectRatio	= in.get("aspectRatio",		0.0f).asDouble();
 	_width			= in.get("width",			-1).asInt();
 	_height			= in.get("height",			-1).asInt();
+	_revision		= in.get("revision", 		0).asInt();
 	_status			= in.get("status",			"complete").asString();
 	_filePathPng	= in.get("filePathPng",		"null").asString();
 	_envName		= in.get("environmentName",	_envName).asString();
 	_editOptions	= in.get("editOptions",		Json::nullValue);
 	
-	setChangedDimensionsFromStateObject();
+	setUserPlotChangesFromRStateObject();
 	
 	/*JASP_OBJECT_TIMERBEGIN
 	std::string jsonPlotObjStr = in.get("plotObjSerialized", "").asString();

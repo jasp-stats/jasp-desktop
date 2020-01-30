@@ -130,6 +130,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
+		'click': '_mouseClicked',
 	},
 
 	undoImageResize: function() {
@@ -137,9 +138,13 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			this.imageBeingEdited.restoreSize();
 	},
 	
-	insertNewImage: function() {
-		if (this.imageBeingEdited !== null)
+	insertNewImage: function(imageEditResults) {
+		if (this.imageBeingEdited !== null) {
+			if ("revision" in imageEditResults)
+				this.imageBeingEdited.setRevision(imageEditResults["revision"]);
+
 			this.imageBeingEdited.reRender();
+		}
 	},
 
 	detachNotes: function() {
@@ -303,8 +308,12 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			if (this.viewNotes.firstNoteNoteBox.isTextboxEmpty())
 				firstNoteData.text = '';
 			else
-				firstNoteData.text = Mrkdwn.fromHtmlText(this.viewNotes.firstNoteNoteBox.model.get('text'));
-			firstNoteData.format = 'markdown';
+				firstNoteData.text = this.viewNotes.firstNoteNoteBox.model.get('text');
+
+			firstNoteData.format = 'html';
+			firstNoteData.deltaAvailable = this.viewNotes.firstNoteNoteBox.model.get('deltaAvailable');
+			firstNoteData.delta = this.viewNotes.firstNoteNoteBox.model.get('delta');
+
 			firstNoteData.visible = this.viewNotes.firstNoteNoteBox.visible;
 
 			userData.firstNote = firstNoteData;
@@ -319,9 +328,13 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			if (this.viewNotes.lastNoteNoteBox.isTextboxEmpty())
 				lastNoteData.text = '';
 			else
-				lastNoteData.text = Mrkdwn.fromHtmlText(this.viewNotes.lastNoteNoteBox.model.get('text'));
-			lastNoteData.format = 'markdown';
+				lastNoteData.text = this.viewNotes.lastNoteNoteBox.model.get('text');
+				// lastNoteData.text = Mrkdwn.fromHtmlText(this.viewNotes.lastNoteNoteBox.model.get('text'));
+
+				lastNoteData.format = 'html';
 			lastNoteData.visible = this.viewNotes.lastNoteNoteBox.visible;
+			lastNoteData.deltaAvailable = this.viewNotes.lastNoteNoteBox.model.get('deltaAvailable');
+			lastNoteData.delta = this.viewNotes.lastNoteNoteBox.model.get('delta');
 
 			userData.lastNote = lastNoteData;
 
@@ -418,11 +431,26 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.toolbar.setVisibility(false);
 	},
 
+	_mouseClicked: function (e) {
+
+		/*for (var i = 0; i < this.viewNotes.list.length; i++) {
+			var noteBoxData = this.viewNotes.list[i];
+
+			if (noteBoxData.noteDetails.level === 0) {
+				var noteBox = noteBoxData.widget;
+				if (!noteBox.$quill.hasFocus()) {
+					// noteBox.setQuillToolbarVisibility('none');
+				}
+			}
+		}*/
+	},
+
 	notesMenuClicked: function (noteType, visibility) {
 
 		var scrollIntoView = true;
 		for (var i = 0; i < this.viewNotes.list.length; i++) {
 			var noteBoxData = this.viewNotes.list[i];
+
 			if (noteBoxData.noteDetails.level === 0) {
 				var noteBox = noteBoxData.widget;
 				if (noteBox.visible !== visibility) {
@@ -531,6 +559,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		errorMessage = errorMessage.replace(/\n/g, '<br>');
 		errorMessage = errorMessage.replace(/  /g, '&nbsp;&nbsp;');
+
+		$lastResult.removeClass("unselected selected");
 
 		if ($lastResult.hasClass("error-state"))
 			$result.append($lastResult.find(".jasp-analysis").not(".error-state").clone())
@@ -669,7 +699,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		$tempClone.replaceWith($innerElement);
 		$tempClone.empty();
-		
+
 		if (results.error)
 			this.setHeightErroredAnalysis($innerElement);
 

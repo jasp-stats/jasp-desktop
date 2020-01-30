@@ -10,7 +10,8 @@ public:
 
 	float		_aspectRatio;
 	int			_width,
-				_height;
+				_height,
+				_revision = 0;
 	std::string	_filePathPng,
 				_status = "waiting",
 				_envName;
@@ -36,7 +37,7 @@ public:
 
 private:
 	void initEnvName();
-	void setChangedDimensionsFromStateObject();
+	void setUserPlotChangesFromRStateObject();
 
 	//Rcpp::Vector<RAWSXP> _plotObjSerialized;
 };

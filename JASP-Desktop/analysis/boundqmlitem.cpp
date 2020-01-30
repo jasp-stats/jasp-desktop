@@ -26,7 +26,7 @@ void BoundQMLItem::runRScript(const QString &script, bool whiteListedVersion)
 	form()->runRScript(script, id, whiteListedVersion);
 }
 
-void BoundQMLItem::rScriptDoneHandler(const QString & result)
+void BoundQMLItem::rScriptDoneHandler(const QString &)
 {
 	throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler\n");
 }

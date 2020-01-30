@@ -23,8 +23,6 @@ import JASP				1.0
 
 Form
 {
-	usesJaspResults: false
-
 	VariablesForm
 	{
 		preferredHeight: 400
@@ -46,23 +44,28 @@ Form
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["covariates","factors"]}
 			AssignedVariablesList  { name: "modelTerms"; title: qsTr("Model Terms"); listViewType: JASP.Interaction }
 		}
+        CheckBox { name: "includeConstant"; label: qsTr("Include intercept"); checked: true }
+    }
 
-		CheckBox { name: "includeConstant"; text: qsTr("Include intercept"); checked: true }
-	}
-
-	Section
+    Section
 	{
 		title: qsTr("Statistics")
 		Group
 		{
 			title: qsTr("Regression Coefficients")
-			CheckBox { name: "regressionCoefficientsEstimates"; text: qsTr("Estimates"); checked: true }
-			CheckBox
-			{
-				name: "regressionCoefficientsConfidenceIntervals"; text: qsTr("Confidence intervals")
-				CIField { name: "regressionCoefficientsConfidenceIntervalsInterval"; label: qsTr("Interval") }
-				DropDown { name: "test"; label: qsTr("Test"); values: [ "z", "knha"]; }
-			}
+            CheckBox
+            {   name: "regressionCoefficientsEstimates";
+                text: qsTr("Estimates");
+                checked: true
+                onClicked: { if (!checked && estimatesConfInt.checked) estimatesConfInt.click() }
+                CheckBox
+                {
+                    id: estimatesConfInt
+                    name: "regressionCoefficientsConfidenceIntervals"; text: qsTr("Confidence intervals")
+                    CIField { name: "regressionCoefficientsConfidenceIntervalsInterval"; label: qsTr("Interval") }
+                    DropDown { name: "test"; label: qsTr("Test"); values: [ "z", "knha"]; }
+                }
+            }
 			CheckBox { name: "regressionCoefficientsCovarianceMatrix"; text: qsTr("Covariance matrix") }
 
 		}
@@ -89,7 +92,7 @@ Form
 		Group
 		{
 			title: qsTr("Plots")
-			CheckBox { name: "trimfillPlot";			text: qsTr("Trim-fill analysis")	}
+            CheckBox { name: "trimFillPlot";			text: qsTr("Trim-fill analysis")	}
 			CheckBox { name: "plotResidualsPredicted";	text: qsTr("Profile plot")			}
 			CheckBox
 			{

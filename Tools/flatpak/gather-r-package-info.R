@@ -135,7 +135,9 @@ giveOrderedDependencies <- function()
 }
 
 specials <- new.env(hash = TRUE, parent = parent.frame())
-specials[['BAS']]          <- list(type='github', commit='cc28ab75e4276eb0b13f4ae89a9fa88216581ed0', repo='vandenman/BAS')
+specials[['abtest']]       <- list(type='github', commit='503c50e96768a0134b755747e0421d820cc1a115', repo='quentingronau/abtest')
+specials[['BAS']]          <- list(type='github', commit='daba70f5a5d60bfa63386d4e6a6522f86a04946c', repo='merliseclyde/BAS')
+specials[['bstats']]       <- list(type='github', commit='a6fdbea42078b8d275a98dd1e37c113118555b6f', repo='AlexanderLyNL/bstats')
 #specials[['Bain']]         <- list(type='github', commit='1b03f71204839da29a4219e8bba99b8ec8479612', repo='jasp-stats/BAIN-for-JASP')
 #specials[['KneeArrower']]  <- list(type='github', commit='cdb14e574e00914e4e7019a4cf3c5fcda7426466', repo='agentlans/KneeArrower')
 

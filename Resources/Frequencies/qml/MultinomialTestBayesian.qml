@@ -30,8 +30,8 @@ Form
 		preferredHeight: 190 * preferencesModel.uiScale
 		marginBetweenVariablesLists	: 15
 		AvailableVariablesList {				name: "allVariablesList" }
-		AssignedVariablesList {					name: "factor";		title: qsTr("Factor");			singleVariable: true; suggestedColumns: ["ordinal", "nominal"]	}
-        AssignedVariablesList {					name: "counts";		title: qsTr("Counts");			singleVariable: true; suggestedColumns: ["scale", "ordinal"]	}
+		AssignedVariablesList {	id: factors;	name: "factor";		title: qsTr("Factor");			singleVariable: true; suggestedColumns: ["ordinal", "nominal"]	}
+		AssignedVariablesList {					name: "counts";		title: qsTr("Counts");			singleVariable: true; suggestedColumns: ["scale", "ordinal"]	}
         AssignedVariablesList {	id: exProbVar;	name: "exProbVar";	title: qsTr("Expected Counts"); singleVariable: true; suggestedColumns: ["scale", "ordinal"]	}
 	}
 
@@ -49,11 +49,11 @@ Form
 
 		Chi2TestTableView
 		{
-			name	: "tableWidget"
-			width	: form.availableWidth - hypothesisGroup.leftPadding
-			visible	: expectedProbs.checked
-			source	: "factor"
-			maxNumHypotheses	: 5
+			name			: "tableWidget"
+			preferredWidth	: form.availableWidth - hypothesisGroup.leftPadding
+			visible			: expectedProbs.checked && factors.count > 0
+			source			: "factor"
+			maxNumHypotheses: 5
 		}
 	}
 
@@ -107,11 +107,18 @@ Form
 	{
 		title	: qsTr("Prior")
 
+		Text
+		{
+			visible: factors.count == 0
+			text: qsTr("No factor specified")
+		}
+
 		Chi2TestTableView
 		{
-			name	: "priorCounts"
-			width	: form.availableWidth - hypothesisGroup.leftPadding
-			source	: "factor"
+			name			: "priorCounts"
+			preferredWidth	: form.availableWidth - hypothesisGroup.leftPadding
+			source			: "factor"
+			visible			: factors.count > 0
 
 			showAddButton		: false
 			showDeleteButton	: false

@@ -4,20 +4,17 @@
 }
 
 body {
-        font-family:      sans-serif ;
+        font-family:      "Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;
         margin:           0;
         cursor:           default;
         color:            #EEE;
-        background-color: #404040 ; /*grayLighter*/
+        background-color: #222 ; /*grayLighter*/
         font-size:        12px;
-}
-
-body.selected {
-        background-color: #212121 ; /*grayMuchLighter*/
 }
 
 body.selected .jasp-analysis:not(.selected){
     filter: opacity(0.5);
+    background-color: #333 ;
 }
 
 h1, .h1-toolbar .jasp-menu {
@@ -53,9 +50,7 @@ h6, .h6-toolbar .jasp-menu {
 }
 
 .jasp-display-item {
-        background-color: #333 ;
-        border:           1px solid #747677 ; /*grayDarker but not really because this is #696969 */
-        border-radius :   6px ;
+
         margin-top:       0.1em ;
         margin-bottom:    0.6em ;
         /*margin-left:    0.6em ;*/
@@ -209,19 +204,16 @@ tbody tr:nth-last-child(2) th {
   margin-bottom: .8em ;
 }
 
-.jasp-analysis tbody tr:nth-child(even) th:not(.row-span),
-.jasp-analysis tbody tr:nth-child(even) td:not(.row-span) {
-  background: #212121 ;
+tr:nth-child(odd) th,
+tr:nth-child(odd) td {
+
 }
 
-.jasp-analysis.selected tbody tr:nth-child(odd) th,
-.jasp-analysis.selected tbody tr:nth-child(odd) td {
-        background: #333
+
+tr:nth-child(even) th,
+tr:nth-child(even) td {
+        background: #555
 }
-/*
-.jasp-analysis:not(.selected) {
-        color: #AAA;
-}*/
 
 .jasp-analysis.selected {
         color: #EEE;
@@ -250,9 +242,9 @@ tfoot td {
 
 svg > text
 {
-  font-family: sans-serif ;
-  font-weight: bold;
-  font-size: 120% ;
+  font-family:  sans-serif ;
+  font-weight:  bold;
+  font-size:    120% ;
 }
 
 .jasp-collection-image {
@@ -261,8 +253,9 @@ svg > text
 }
 
 .jasp-image {
-  position: relative ;
+  position:           relative ;
   background-color:   #000;
+  border-radius:      2px;
 }
 
 .jasp-image-image {
@@ -273,18 +266,18 @@ svg > text
 }
 
 .etch-editor-panel {
-  position:fixed;
-    top:0;
-    width:100%;
-    z-index:100;
+  position:   fixed;
+    top:      0;
+    width:    100%;
+    z-index:  100;
 }
 
 .jasp-image-resizer {
 
-  background-color : #5F89A7 ;
-  border: 1px solid #7C95CB ;
-  border-radius : 3px ;
-  margin: 0px ;
+  background-color :  #5F89A7 ;
+  border:             1px solid #7C95CB ;
+  border-radius :     3px ;
+  margin:             0px ;
 }
 
 .jasp-image-resizable {
@@ -383,7 +376,7 @@ div.jasp-image-image.no-data.error {
   opacity: 0.33
 }
 
-.error-state {
+.error-state:not(.jasp-analysis), .jasp-analysis.error-state>.jasp-analysis {
   color: darkgray;
 }
 
@@ -393,8 +386,9 @@ div.jasp-image-image.no-data.error {
 }
 
 .fatalError.error-message-box {
-  border-width: 3px;
-  border-style: double;
+  border: 3px double  #faa;
+  color:              #faa;
+  background:         #400;
 }
 
 .analysis-error-message {
@@ -562,15 +556,16 @@ td.squash-left
 
 
 .jasp-notes {
-  border-top: 1px solid #5c5c5c;
-  border-bottom: 1px solid #5c5c5c;
-  border-radius : 0 ;
-  color: #4784B2 ; /*blue*/
-  max-width: 70em;
-  min-width: 40em;
-  position: relative ;
-  margin-top: 0.6em ;
-  margin-bottom: 0.6em ;
+  border-top:     1px solid #5c5c5c;
+  border-bottom:  1px solid #5c5c5c;
+  border-radius:  0;
+  color:          #000;
+  max-width:      70em;
+  min-width:      40em;
+  position:       relative ;
+  margin-top:     0.6em ;
+  margin-bottom:  0.6em ;
+  filter:         invert(1);
 }
 
 .jasp-firstNote-note {

@@ -32,14 +32,14 @@ class BoundQMLTableView : public QMLListView, public BoundQMLItem
 public:
 	BoundQMLTableView(JASPControlBase* item);
 
-	void		bindTo(Option *option)							override;
-	ListModel*	model()									const	override { return _tableModel; }
-	Option*		createOption()									override;
-	bool		isOptionValid(Option * option)					override;
-	bool		isJsonValid(const Json::Value & optionValue)	override;
-	Option*		boundTo()										override { return _boundTo; }
-	void		setUp()											override;
-	void		rScriptDoneHandler(const QString & result)		override;
+	void				bindTo(Option *option)							override;
+	ListModel*			model()									const	override { return _tableModel; }
+	Option*				createOption()									override;
+	bool				isOptionValid(Option * option)					override;
+	bool				isJsonValid(const Json::Value & optionValue)	override;
+	Option*				boundTo()										override { return _boundTo; }
+	void				setUp()											override;
+	void				rScriptDoneHandler(const QString & result)		override;
 
 public slots:
 	void		refreshMe();

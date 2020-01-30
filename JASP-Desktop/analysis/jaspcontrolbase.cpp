@@ -37,7 +37,7 @@ void JASPControlBase::setHasError(bool hasError)
 void JASPControlBase::setHasWarning(bool hasWarning)
 {
 	if (section())
-		QMetaObject::invokeMethod(section(), "addControlWithError", Qt::DirectConnection, Q_ARG(QVariant, name()), Q_ARG(QVariant, hasWarning));
+		QMetaObject::invokeMethod(section(), "addControlWithWarning", Qt::DirectConnection, Q_ARG(QVariant, name()), Q_ARG(QVariant, hasWarning));
 
 	if (form())
 		form()->addControlWarningSet(this, hasWarning);
@@ -73,8 +73,8 @@ void JASPControlBase::componentComplete()
 
 	if (!hasContextForm)
 	{
-		if (_form)
-			_form->addControl(this);
+		if (_form)	_form->addControl(this);
+		else		_wrapper->setUp();
 	}
 	else
 	{
@@ -82,11 +82,26 @@ void JASPControlBase::componentComplete()
 		if (!noDirectSetup)
 			_wrapper->setUp();
 
-		QMLListView* listView = dynamic_cast<QMLListView*>(context->contextProperty("listView").value<QObject*>());
-		if (listView && isBound())
+		QMLListView* listView = nullptr;
+
+		QVariant listViewVar = context->contextProperty("listView");
+		if (!listViewVar.isNull())
+			listView = dynamic_cast<QMLListView*>(listViewVar.value<QObject*>());
+		else
+		{
+			QVariant tableViewVar = context->contextProperty("tableView");
+			if (!tableViewVar.isNull())
+			{
+				JASPControlBase* tableViewControl = dynamic_cast<JASPControlBase*>(tableViewVar.value<QObject*>());
+				if (tableViewControl)
+					listView = dynamic_cast<QMLListView*>(tableViewControl->getWrapper());
+			}
+		}
+
+		if (listView)
 		{
 			_parentListView = listView->item();
-			_parentListViewKey = context->contextProperty("rowValue").toString();
+			_parentListViewKey = context->contextProperty(!listViewVar.isNull() ? "rowValue" : "rowIndex").toString();
 
 			listView->addRowControl(_parentListViewKey, _wrapper);
 

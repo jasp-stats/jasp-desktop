@@ -44,8 +44,8 @@ class DataSetView : public QQuickItem
 	Q_PROPERTY( QFont font								READ font					WRITE setFont					NOTIFY fontChanged					)
 	Q_PROPERTY( double headerHeight						READ headerHeight											NOTIFY headerHeightChanged			)
 	Q_PROPERTY( double rowNumberWidth					READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
-	Q_PROPERTY( double rowNumberWidth					READ rowNumberWidth			WRITE setRowNumberWidth			NOTIFY rowNumberWidthChanged		)
 	Q_PROPERTY( bool cacheItems							READ cacheItems				WRITE setCacheItems				NOTIFY cacheItemsChanged			)
+	Q_PROPERTY( QQuickItem * tableViewItem				READ tableViewItem			WRITE setTableViewItem												)
 
 public:
 	DataSetView(QQuickItem *parent = nullptr);
@@ -70,6 +70,8 @@ public:
 	QQuickItem * leftTopCornerItem()		{ return _leftTopItem; }
 	QQuickItem * extraColumnItem()			{ return _extraColumnItem; }
 
+	QQuickItem * tableViewItem()			{ return _tableViewItem; }
+
 	bool cacheItems()						{ return _cacheItems; }
 	QFont font()							{ return _font; }
 
@@ -90,10 +92,13 @@ public:
 	void setLeftTopCornerItem(		QQuickItem * newItem);
 	void setExtraColumnItem(		QQuickItem * newItem);
 
+	void setTableViewItem(			QQuickItem * tableViewItem) { _tableViewItem = tableViewItem; }
+
 	void setFont(const QFont& font);
 
 	int headerHeight()			{ return _dataRowsMaxHeight; }
 	int rowNumberWidth()		{ return _rowNumberMaxWidth; }
+
 
 	GENERIC_SET_FUNCTION(HeaderHeight,		_dataRowsMaxHeight, headerHeightChanged,		double)
 	GENERIC_SET_FUNCTION(RowNumberWidth,	_rowNumberMaxWidth, rowNumberWidthChanged,		double)
@@ -171,6 +176,7 @@ protected:
 
 	QSizeF getTextSize(const QString& text)	const		{ 	return _metricsFont.size(Qt::TextSingleLine, text); }
 	QSizeF getColumnSize(int col);
+	QSizeF getRowHeaderSize();
 
 protected:
 	QAbstractItemModel *									_model = nullptr;
@@ -187,7 +193,8 @@ protected:
 	std::map<int, std::map<int, ItemContextualized *>>		_cellTextItems;			//[col][row]
 	std::vector<float>										_lines;
 	QQuickItem											*	_leftTopItem		= nullptr,
-														*	_extraColumnItem	= nullptr;
+														*	_extraColumnItem	= nullptr,
+														*	_tableViewItem			= nullptr;
 
 	bool		_recalculateCellSizes	= false,
 				_ignoreViewpoint		= true;

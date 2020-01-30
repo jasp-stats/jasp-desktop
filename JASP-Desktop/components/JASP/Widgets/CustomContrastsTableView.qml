@@ -27,8 +27,9 @@ BasicThreeButtonTableView
 
 	itemType		: "double"
 	modelType		: "CustomContrasts"
-	cornerText		: qsTr("Contrast #")
+	cornerText		: ""
 	minimum			: -Infinity
+	decimals		: 3
 
 
 	buttonAddText		: qsTr("Add Contrast")
@@ -41,6 +42,4 @@ BasicThreeButtonTableView
 	buttonResetText		: qsTr("Reset")
 	onResetClicked		: tableView.reset()
 	buttonResetEnabled	: tableView.rowCount > 0
-
-	onTableViewCompleted:  tableView.rowNumberWidth = 80 * preferencesModel.uiScale //Is this really necessary? Possibly for rowComponents
 }

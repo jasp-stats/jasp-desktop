@@ -15,12 +15,14 @@ SET ARCH=64
 FOR /F "tokens=*" %%g IN ('git rev-parse --abbrev-ref HEAD') do (SET GIT_BRANCH=%%g)
 FOR /F "tokens=*" %%h IN ('git rev-parse --verify HEAD')     do (SET GIT_COMMIT=%%h)
 
-SET DEST_FILE=JASP-nightly-%GIT_BRANCH%-%GIT_COMMIT%.msi
-echo "Copying MSI to jasp-static with filename : %DEST_FILE%"
+SET DEST_FILE=JASP-nightly-%GIT_BRANCH%-%GIT_COMMIT%
+echo "Copying MSI & ZIP to jasp-static with filename : %DEST_FILE%"
 
 if "%ARCH%"=="32" (
-	scp ..\..\jasp-wix-installer-%ARCH%\JASP.msi nachtjapon@static.jasp-stats.org:~/Nightlies/Windows32/%DEST_FILE%
+	scp ..\..\jasp-wix-installer-%ARCH%\JASP.msi nachtjapon@static.jasp-stats.org:~/Nightlies/Windows32/%DEST_FILE%.msi
+	scp ..\..\jasp-wix-installer-%ARCH%\JASP.zip nachtjapon@static.jasp-stats.org:~/Nightlies/Windows32Zip/%DEST_FILE%.zip
 ) else (
-	scp ..\..\jasp-wix-installer-%ARCH%\JASP.msi nachtjapon@static.jasp-stats.org:~/Nightlies/Windows/%DEST_FILE%
+	scp ..\..\jasp-wix-installer-%ARCH%\JASP.msi nachtjapon@static.jasp-stats.org:~/Nightlies/Windows/%DEST_FILE%.msi
+	scp ..\..\jasp-wix-installer-%ARCH%\JASP.zip nachtjapon@static.jasp-stats.org:~/Nightlies/WindowsZip/%DEST_FILE%.zip
 )
 endlocal

@@ -77,7 +77,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # sofacwoindicators   <- sapply(options$secondOrder, function(f) length(f$indicators)) == 0
   # options$secondOrder <- options$secondOrder[!sofacwoindicators]
   if (length(options$secondOrder) > 0) {
-    options$secondOrder <- list(list(indicators = options$secondOrder, name = "SecondOrder", title = "Second-Order"))
+    options$secondOrder <- list(list(indicators = options$secondOrder, name = "SecondOrder", title = gettext("Second-Order")))
   }
   return(options)
 }
@@ -89,13 +89,13 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   nVarsPerFactor <- unlist(lapply(options$factors, function(x) setNames(length(x$indicators), x$title)))
   if (all(nVarsPerFactor == 0)) return("No variables")
-  if (any(nVarsPerFactor == 1)) .quitAnalysis("The model could not be estimated. Ensure that factors have at least 2 observed variables.")
+  if (any(nVarsPerFactor == 1)) .quitAnalysis(gettext("The model could not be estimated. Ensure that factors have at least 2 observed variables."))
 
   # TODO (tj), call error handling before all the options get screwed around so we can simply do `for (factor in options[["secondOrder"]])`
   if (length(options[["secondOrder"]]) > 0)
     for (factor in options[["secondOrder"]][[1]][["indicators"]])
       if (!factor %in% names(nVarsPerFactor) || nVarsPerFactor[factor] <= 0)
-       .quitAnalysis("The model could not be estimated. A factor with less than 2 variables was added in Second-Order.")
+       .quitAnalysis(gettext("The model could not be estimated. A factor with less than 2 variables was added in Second-Order."))
 
   vars <- unique(unlist(lapply(options$factors, function(x) x$indicators)))
 
@@ -181,22 +181,22 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Quit analysis on error
   if (inherits(cfaResult[["lav"]], "try-error")) {
-    .quitAnalysis(paste("The model could not be estimated. Error message:\n\n",
+    .quitAnalysis(paste(gettext("The model could not be estimated. Error message:"), "\n\n",
                          attr(cfaResult[["lav"]], "condition")$message))
   }
 
   admissible <- .withWarnings(lavaan:::lav_object_post_check(cfaResult[["lav"]]))
 
   if (!admissible$value) {
-    .quitAnalysis(paste("The model is not admissible:", admissible$warnings[[1]]$message))
+    .quitAnalysis(paste(gettext("The model is not admissible:"), admissible$warnings[[1]]$message))
   }
 
   if (!cfaResult[["lav"]]@optim$converged) {
-    .quitAnalysis("The model could not be estimated due to nonconvergence.")
+    .quitAnalysis(gettext("The model could not be estimated due to nonconvergence."))
   }
 
   if (cfaResult[["lav"]]@test[[1]]$df < 0) {
-    .quitAnalysis("The model could not be estimated: No degrees of freedom left.")
+    .quitAnalysis(gettext("The model could not be estimated: No degrees of freedom left."))
   }
 
 
@@ -343,7 +343,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 # Output functions ----
 .cfaContainerMain <- function(jaspResults, options, cfaResult) {
   # Create main container
-  jaspResults[["maincontainer"]] <- createJaspContainer("Model fit", position = 1)
+  jaspResults[["maincontainer"]] <- createJaspContainer(gettext("Model fit"), position = 1)
   jaspResults[["maincontainer"]]$dependOn(c(
     "factors", "secondOrder", "rescov", "includemeanstructure", "identify",
     "uncorrelatedFactors", "mimic", "estimator", "se", "bootstrapNumber",
@@ -354,23 +354,23 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 .cfaTableMain <- function(jaspResults, options, cfaResult) {
   # Main table
   # prepare table
-  jaspResults[["maincontainer"]][["cfatab"]] <- maintab <- createJaspTable("Chi-square test")
+  jaspResults[["maincontainer"]][["cfatab"]] <- maintab <- createJaspTable(gettext("Chi-square test"))
   maintab$dependOn(optionsFromObject = jaspResults[["maincontainer"]])
 
-  maintab$addColumnInfo(name = "mod",    title = "Model",        type = "string")
-  maintab$addColumnInfo(name = "chisq",  title = "\u03a7\u00b2", type = "number", format = "dp:3")
-  maintab$addColumnInfo(name = "df",     title = "df",           type = "integer")
-  maintab$addColumnInfo(name = "pvalue", title = "p",            type = "number", format = "dp:3;p:.001")
+  maintab$addColumnInfo(name = "mod",    title = gettext("Model"), type = "string")
+  maintab$addColumnInfo(name = "chisq",  title = "\u03a7\u00b2",   type = "number", format = "dp:3")
+  maintab$addColumnInfo(name = "df",     title = gettext("df"),    type = "integer")
+  maintab$addColumnInfo(name = "pvalue", title = gettext("p"),     type = "number", format = "dp:3;p:.001")
 
   # add data
   if (is.null(cfaResult)) {
-    maintab[["mod"]]    <- c("Baseline model", "Factor model")
-    maintab[["chisq"]]  <- c(      "."       ,      "."      )
-    maintab[["df"]]     <- c(      "."       ,      "."      )
-    maintab[["pvalue"]] <- c(      "."       ,      "."      )
+    maintab[["mod"]]    <- c(gettext("Baseline model"), gettext("Factor model"))
+    maintab[["chisq"]]  <- c(           "."           ,           "."          )
+    maintab[["df"]]     <- c(           "."           ,           "."          )
+    maintab[["pvalue"]] <- c(           "."           ,           "."          )
   } else {
     fm <- lavaan::fitMeasures(cfaResult[["lav"]])
-    maintab[["mod"]]    <- c("Baseline model", "Factor model")
+    maintab[["mod"]]    <- c(gettext("Baseline model"), gettext("Factor model"))
     maintab[["chisq"]]  <- fm[c("baseline.chisq", "chisq")]
     maintab[["df"]]     <- fm[c("baseline.df", "df")]
     maintab[["pvalue"]] <- c(NA, fm["pvalue"])
@@ -415,26 +415,26 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
 .cfaTableFitMeasures <- function(jaspResults, options, cfaResult) {
   if (!options$additionalfits || !is.null(jaspResults[["maincontainer"]][["fits"]])) return()
-  jaspResults[["maincontainer"]][["fits"]] <- fitms <- createJaspContainer("Additional fit measures")
+  jaspResults[["maincontainer"]][["fits"]] <- fitms <- createJaspContainer(gettext("Additional fit measures"))
   fitms$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors",
                    "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "additionalfits"))
 
   # Fit indices
-  fitms[["indices"]] <- fitin <- createJaspTable("Fit indices")
-  fitin$addColumnInfo(name = "index", title = "Index", type = "string")
-  fitin$addColumnInfo(name = "value", title = "Value", type = "number", format = "sf:4;dp:3")
+  fitms[["indices"]] <- fitin <- createJaspTable(gettext("Fit indices"))
+  fitin$addColumnInfo(name = "index", title = gettext("Index"), type = "string")
+  fitin$addColumnInfo(name = "value", title = gettext("Value"), type = "number", format = "sf:4;dp:3")
   fitin$setExpectedSize(rows = 1, cols = 2)
 
   # information criteria
-  fitms[["incrits"]] <- fitic <- createJaspTable("Information criteria")
-  fitic$addColumnInfo(name = "index", title = "",      type = "string")
-  fitic$addColumnInfo(name = "value", title = "Value", type = "number", format = "sf:4;dp:3")
+  fitms[["incrits"]] <- fitic <- createJaspTable(gettext("Information criteria"))
+  fitic$addColumnInfo(name = "index", title = "",               type = "string")
+  fitic$addColumnInfo(name = "value", title = gettext("Value"), type = "number", format = "sf:4;dp:3")
   fitic$setExpectedSize(rows = 1, cols = 2)
 
   # other fit measures
-  fitms[["others"]] <- fitot <- createJaspTable("Other fit measures")
-  fitot$addColumnInfo(name = "index", title = "Metric", type = "string")
-  fitot$addColumnInfo(name = "value", title = "Value",  type = "number", format = "sf:4;dp:3")
+  fitms[["others"]] <- fitot <- createJaspTable(gettext("Other fit measures"))
+  fitot$addColumnInfo(name = "index", title = gettext("Metric"), type = "string")
+  fitot$addColumnInfo(name = "value", title = gettext("Value"),  type = "number", format = "sf:4;dp:3")
   fitot$setExpectedSize(rows = 1, cols = 2)
 
   if (is.null(cfaResult)) return()
@@ -444,39 +444,39 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Fit indices
   fitin[["index"]] <- c(
-    "Comparative Fit Index (CFI)",
-    "Tucker-Lewis Index (TLI)",
-    "Bentler-Bonett Non-normed Fit Index (NNFI)",
-    "Bentler-Bonett Normed Fit Index (NFI)",
-    "Parsimony Normed Fit Index (PNFI)",
-    "Bollen's Relative Fit Index (RFI)",
-    "Bollen's Incremental Fit Index (IFI)",
-    "Relative Noncentrality Index (RNI)"
+    gettext("Comparative Fit Index (CFI)"),
+    gettext("Tucker-Lewis Index (TLI)"),
+    gettext("Bentler-Bonett Non-normed Fit Index (NNFI)"),
+    gettext("Bentler-Bonett Normed Fit Index (NFI)"),
+    gettext("Parsimony Normed Fit Index (PNFI)"),
+    gettext("Bollen's Relative Fit Index (RFI)"),
+    gettext("Bollen's Incremental Fit Index (IFI)"),
+    gettext("Relative Noncentrality Index (RNI)")
   )
   fitin[["value"]] <- fm[c("cfi", "tli", "nnfi", "nfi", "pnfi", "rfi", "ifi", "rni")]
 
   # information criteria
   fitic[["index"]] <- c(
-    "Log-likelihood",
-    "Number of free parameters",
-    "Akaike (AIC)",
-    "Bayesian (BIC)",
-    "Sample-size adjusted Bayesian (SSABIC)"
+    gettext("Log-likelihood"),
+    gettext("Number of free parameters"),
+    gettext("Akaike (AIC)"),
+    gettext("Bayesian (BIC)"),
+    gettext("Sample-size adjusted Bayesian (SSABIC)")
   )
   fitic[["value"]] <- fm[c("logl", "npar", "aic", "bic", "bic2")]
 
   # other fitmeasures
   fitot[["index"]] <- c(
-    "Root mean square error of approximation (RMSEA)",
-    "RMSEA 90% CI lower bound",
-    "RMSEA 90% CI upper bound",
-    "RMSEA p-value",
-    "Standardized root mean square residual (SRMR)",
-    "Hoelter's critical N (\u03B1 = .05)",
-    "Hoelter's critical N (\u03B1 = .01)",
-    "Goodness of fit index (GFI)",
-    "McDonald fit index (MFI)",
-    "Expected cross validation index (ECVI)"
+    gettext("Root mean square error of approximation (RMSEA)"),
+    gettext("RMSEA 90% CI lower bound"),
+    gettext("RMSEA 90% CI upper bound"),
+    gettext("RMSEA p-value"),
+    gettext("Standardized root mean square residual (SRMR)"),
+    gettextf("Hoelter's critical N (%s = .05)","\u03B1"),
+    gettextf("Hoelter's critical N (%s = .01)","\u03B1"),
+    gettext("Goodness of fit index (GFI)"),
+    gettext("McDonald fit index (MFI)"),
+    gettext("Expected cross validation index (ECVI)")
   )
   fitot[["value"]] <- fm[c("rmsea", "rmsea.ci.lower", "rmsea.ci.upper", "rmsea.pvalue",
                            "srmr", "cn_05", "cn_01", "gfi", "mfi", "ecvi")]
@@ -520,22 +520,22 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # Set up table
   jrobject[["fl1"]] <- fl1 <- createJaspTable(title = "Factor loadings")
 
-  fl1$addColumnInfo(name = "lhs",   title = "Factor",    type = "string", combine = TRUE)
-  fl1$addColumnInfo(name = "rhs",   title = "Indicator", type = "string")
-  fl1$addColumnInfo(name = "label", title = "Symbol",    type = "string")
+  fl1$addColumnInfo(name = "lhs",   title = gettext("Factor"),    type = "string", combine = TRUE)
+  fl1$addColumnInfo(name = "rhs",   title = gettext("Indicator"), type = "string")
+  fl1$addColumnInfo(name = "label", title = gettext("Symbol"),    type = "string")
 
-  fl1$addColumnInfo(name = "est",    title  = "Estimate",   type = "number", format = "sf:4;dp:3")
-  fl1$addColumnInfo(name = "se",     title  = "Std. Error", type = "number", format = "sf:4;dp:3")
-  fl1$addColumnInfo(name = "z",      title  = "z-value",    type = "number", format = "sf:4;dp:3")
-  fl1$addColumnInfo(name = "pvalue", title  = "p",          type = "number", format = "dp:3;p:.001")
+  fl1$addColumnInfo(name = "est",    title  = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
+  fl1$addColumnInfo(name = "se",     title  = gettext("Std. Error"), type = "number", format = "sf:4;dp:3")
+  fl1$addColumnInfo(name = "z",      title  = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
+  fl1$addColumnInfo(name = "pvalue", title  = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
-  fl1$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                    overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  fl1$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                    overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  fl1$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
+                    overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+  fl1$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
+                    overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
 
   if (options$std != "none")
-    fl1$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
+    fl1$addColumnInfo(name = paste0("std.", options$std), title = gettextf("Std. Est. (%s)", options$std),
                       type = "number", format = "sf:4;dp:3")
 
   # add data
@@ -549,24 +549,24 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # Second-order factor loadings ----
   if (length(options$secondOrder) > 0) {
     # Set up table
-    jrobject[["fl2"]] <- fl2 <- createJaspTable(title = "Second-order factor loadings")
+    jrobject[["fl2"]] <- fl2 <- createJaspTable(title = gettext("Second-order factor loadings"))
 
-    fl2$addColumnInfo(name = "lhs",   title = "Factor",    type = "string", combine = TRUE)
-    fl2$addColumnInfo(name = "rhs",   title = "Indicator", type = "string")
-    fl2$addColumnInfo(name = "label", title = "Symbol",    type = "string")
+    fl2$addColumnInfo(name = "lhs",   title = gettext("Factor"),    type = "string", combine = TRUE)
+    fl2$addColumnInfo(name = "rhs",   title = gettext("Indicator"), type = "string")
+    fl2$addColumnInfo(name = "label", title = gettext("Symbol"),    type = "string")
 
-    fl2$addColumnInfo(name = "est",    title  = "Estimate",   type = "number", format = "sf:4;dp:3")
-    fl2$addColumnInfo(name = "se",     title  = "Std. Error", type = "number", format = "sf:4;dp:3")
-    fl2$addColumnInfo(name = "z",      title  = "z-value",    type = "number", format = "sf:4;dp:3")
-    fl2$addColumnInfo(name = "pvalue", title  = "p",          type = "number", format = "dp:3;p:.001")
+    fl2$addColumnInfo(name = "est",    title  = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
+    fl2$addColumnInfo(name = "se",     title  = gettext("Std. Error"), type = "number", format = "sf:4;dp:3")
+    fl2$addColumnInfo(name = "z",      title  = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
+    fl2$addColumnInfo(name = "pvalue", title  = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
-    fl2$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                      overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    fl2$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                      overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+    fl2$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
+                      overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+    fl2$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
+                      overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
 
     if (options$std != "none")
-      fl2$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
+      fl2$addColumnInfo(name = paste0("std.", options$std), title = gettextf("Std. Est. (%s)", options$std),
                         type = "number", format = "sf:4;dp:3")
 
     # add data
@@ -580,21 +580,21 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Factor variances ----
   # Set up table
-  jrobject[["fv"]] <- fv <- createJaspTable("Factor variances")
+  jrobject[["fv"]] <- fv <- createJaspTable(gettext("Factor variances"))
 
-  fv$addColumnInfo(name = "lhs",    title = "Factor",     type = "string", combine = TRUE)
-  fv$addColumnInfo(name = "est",    title = "Estimate",   type = "number", format  = "sf:4;dp:3")
-  fv$addColumnInfo(name = "se",     title = "Std. Error", type = "number", format  = "sf:4;dp:3")
-  fv$addColumnInfo(name = "z",      title = "z-value",    type = "number", format  = "sf:4;dp:3")
-  fv$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
+  fv$addColumnInfo(name = "lhs",    title = gettext("Factor"),     type = "string", combine = TRUE)
+  fv$addColumnInfo(name = "est",    title = gettext("Estimate"),   type = "number", format  = "sf:4;dp:3")
+  fv$addColumnInfo(name = "se",     title = gettext("Std. Error"), type = "number", format  = "sf:4;dp:3")
+  fv$addColumnInfo(name = "z",      title = gettext("z-value"),    type = "number", format  = "sf:4;dp:3")
+  fv$addColumnInfo(name = "pvalue", title = gettext("p"),          type = "number", format  = "dp:3;p:.001")
 
-  fv$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                   overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  fv$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                   overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  fv$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
+                   overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+  fv$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
+                   overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
 
   if (options$std != "none")
-    fv$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
+    fv$addColumnInfo(name = paste0("std.", options$std), title = gettextf("Std. Est. (%s)", options$std),
                      type = "number", format = "sf:4;dp:3")
 
   # Add data
@@ -608,24 +608,24 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     length(options$secondOrder) > 1 || (length(options$secondOrder) == 0 & length(options$factors) > 1)
 
   if (!options$uncorrelatedFactors & hasMultipleFactorsAtTopLevel) {
-    jrobject[["fc"]] <- fc <- createJaspTable("Factor Covariances")
+    jrobject[["fc"]] <- fc <- createJaspTable(gettext("Factor Covariances"))
 
-    fc$addColumnInfo(name = "lhs",    title  = "",          type = "string")
-    fc$addColumnInfo(name = "op",     title  = "",          type = "string")
-    fc$addColumnInfo(name = "rhs",    title  = "",          type = "string")
-    fc$addColumnInfo(name = "est",    title = "Estimate",   type = "number", format  = "sf:4;dp:3")
-    fc$addColumnInfo(name = "se",     title = "Std. Error", type = "number", format  = "sf:4;dp:3")
-    fc$addColumnInfo(name = "z",      title = "z-value",    type = "number", format  = "sf:4;dp:3")
-    fc$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
+    fc$addColumnInfo(name = "lhs",    title = "",                    type = "string")
+    fc$addColumnInfo(name = "op",     title = "",                    type = "string")
+    fc$addColumnInfo(name = "rhs",    title = "",                    type = "string")
+    fc$addColumnInfo(name = "est",    title = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
+    fc$addColumnInfo(name = "se",     title = gettext("Std. Error"), type = "number", format = "sf:4;dp:3")
+    fc$addColumnInfo(name = "z",      title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
+    fc$addColumnInfo(name = "pvalue", title = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
     fc$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                     overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+                     overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
     fc$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                     overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+                     overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
 
     if (options$std != "none")
       fc$addColumnInfo(name   = paste0("std.", options$std),
-                       title  = paste0("Std. Est. (", options$std, ")"),
+                       title  = gettextf("Std. Est. (%s)", options$std),
                        type   = "number",
                        format = "sf:4;dp:3")
 
@@ -640,22 +640,22 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Residual variances ----
   # Set up table
-  jrobject[["rv"]] <- rv <- createJaspTable("Residual variances")
+  jrobject[["rv"]] <- rv <- createJaspTable(gettext("Residual variances"))
 
-  rv$addColumnInfo(name = "lhs",    title = "Indicator",  type = "string", combine = TRUE)
-  rv$addColumnInfo(name = "est",    title = "Estimate",   type = "number", format  = "sf:4;dp:3")
-  rv$addColumnInfo(name = "se",     title = "Std. Error", type = "number", format  = "sf:4;dp:3")
-  rv$addColumnInfo(name = "z",      title = "z-value",    type = "number", format  = "sf:4;dp:3")
-  rv$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
+  rv$addColumnInfo(name = "lhs",    title = gettext("Indicator"),  type = "string", combine = TRUE)
+  rv$addColumnInfo(name = "est",    title = gettext("Estimate"),   type = "number", format  = "sf:4;dp:3")
+  rv$addColumnInfo(name = "se",     title = gettext("Std. Error"), type = "number", format  = "sf:4;dp:3")
+  rv$addColumnInfo(name = "z",      title = gettext("z-value"),    type = "number", format  = "sf:4;dp:3")
+  rv$addColumnInfo(name = "pvalue", title = gettext("p"),          type = "number", format  = "dp:3;p:.001")
 
-  rv$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                   overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-  rv$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                   overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+  rv$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
+                   overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+  rv$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
+                   overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
 
   if (options$std != "none")
     rv$addColumnInfo(name   = paste0("std.", options$std),
-                     title  = paste0("Std. Est. (", options$std, ")"),
+                     title  = gettextf("Std. Est. (%s)", options$std),
                      type   = "number",
                      format = "sf:4;dp:3")
 
@@ -669,21 +669,21 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # Residual covariances ----
   if (length(options$rescov) > 0) {
     rc <- pei[pei$op == "~~" & !pei$lhs %in% facNames & pei$lhs != pei$rhs, colSel[-3]]
-    rescov <- createJaspTable("Residual covariances")
+    rescov <- createJaspTable(gettext("Residual covariances"))
     rescov$dependOn(optionsFromObject = jrobject)
 
-    rescov$addColumnInfo(name = "lhs",    title  = "",          type = "string")
-    rescov$addColumnInfo(name = "op",     title  = "",          type = "string")
-    rescov$addColumnInfo(name = "rhs",    title  = "",          type = "string")
-    rescov$addColumnInfo(name = "est",    title = "Estimate",   type = "number", format  = "sf:4;dp:3")
-    rescov$addColumnInfo(name = "se",     title = "Std. Error", type = "number", format  = "sf:4;dp:3")
-    rescov$addColumnInfo(name = "z",      title = "z-value",    type = "number", format  = "sf:4;dp:3")
-    rescov$addColumnInfo(name = "pvalue", title = "p",          type = "number", format  = "dp:3;p:.001")
+    rescov$addColumnInfo(name = "lhs",    title = "",                    type = "string")
+    rescov$addColumnInfo(name = "op",     title = "",                    type = "string")
+    rescov$addColumnInfo(name = "rhs",    title = "",                    type = "string")
+    rescov$addColumnInfo(name = "est",    title = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
+    rescov$addColumnInfo(name = "se",     title = gettext("Std. Error"), type = "number", format = "sf:4;dp:3")
+    rescov$addColumnInfo(name = "z",      title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
+    rescov$addColumnInfo(name = "pvalue", title = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
-    rescov$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    rescov$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+    rescov$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
+                         overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+    rescov$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
+                         overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
 
     rescov[["lhs"]]      <- .unv(rc$lhs)
     rescov[["op"]]       <- rep("\u2194", nrow(rc))
@@ -703,21 +703,21 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (options$includemeanstructure) {
 
     if (options$groupvar != "") {
-      jrobject[["Factor Intercepts"]] <- fi <- createJaspTable(title = "Factor Intercepts")
+      jrobject[["Factor Intercepts"]] <- fi <- createJaspTable(title = gettext("Factor Intercepts"))
 
-      fi$addColumnInfo(name = "lhs",    title = "Factor",     type = "string", combine = TRUE)
-      fi$addColumnInfo(name = "est",    title = "Estimate",   type = "number", format = "sf:4;dp:3")
-      fi$addColumnInfo(name = "se",     title = "Std. Error", type = "number", format = "sf:4;dp:3")
-      fi$addColumnInfo(name = "z",      title = "z-value",    type = "number", format = "sf:4;dp:3")
-      fi$addColumnInfo(name = "pvalue", title = "p",          type = "number", format = "dp:3;p:.001")
+      fi$addColumnInfo(name = "lhs",    title = gettext("Factor"),     type = "string", combine = TRUE)
+      fi$addColumnInfo(name = "est",    title = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
+      fi$addColumnInfo(name = "se",     title = gettext("Std. Error"), type = "number", format = "sf:4;dp:3")
+      fi$addColumnInfo(name = "z",      title = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
+      fi$addColumnInfo(name = "pvalue", title = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
-      fi$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-      fi$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                        overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+      fi$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
+                        overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+      fi$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
+                        overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
 
       if (options$std != "none")
-        fi$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
+        fi$addColumnInfo(name = paste0("std.", options$std), title = gettextf("Std. Est. (%s)", options$std),
                           type = "number", format = "sf:4;dp:3")
 
       # add data
@@ -728,21 +728,21 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     }
 
     # Manifest variable intercepts
-    jrobject[["Intercepts"]] <- vi <- createJaspTable(title = "Intercepts")
+    jrobject[["Intercepts"]] <- vi <- createJaspTable(title = gettext("Intercepts"))
 
-    vi$addColumnInfo(name = "lhs",    title  = "Indicator",  type = "string", combine = TRUE)
-    vi$addColumnInfo(name = "est",    title  = "Estimate",   type = "number", format = "sf:4;dp:3")
-    vi$addColumnInfo(name = "se",     title  = "Std. Error", type = "number", format = "sf:4;dp:3")
-    vi$addColumnInfo(name = "z",      title  = "z-value",    type = "number", format = "sf:4;dp:3")
-    vi$addColumnInfo(name = "pvalue", title  = "p",          type = "number", format = "dp:3;p:.001")
+    vi$addColumnInfo(name = "lhs",    title  = gettext("Indicator"),  type = "string", combine = TRUE)
+    vi$addColumnInfo(name = "est",    title  = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
+    vi$addColumnInfo(name = "se",     title  = gettext("Std. Error"), type = "number", format = "sf:4;dp:3")
+    vi$addColumnInfo(name = "z",      title  = gettext("z-value"),    type = "number", format = "sf:4;dp:3")
+    vi$addColumnInfo(name = "pvalue", title  = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
-    vi$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                     overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
-    vi$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                     overtitle = paste0(options$ciWidth * 100, "% Confidence Interval"))
+    vi$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
+                     overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+    vi$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
+                     overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
 
     if (options$std != "none")
-      vi$addColumnInfo(name = paste0("std.", options$std), title = paste0("Std. Est. (", options$std, ")"),
+      vi$addColumnInfo(name = paste0("std.", options$std), title = gettextf("Std. Est. (%s)", options$std),
                         type = "number", format = "sf:4;dp:3")
 
     # add data
@@ -757,7 +757,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (is.null(cfaResult) || !options$modIndices || !is.null(jaspResults[["modind"]])) return()
 
   mi <- lavaan::modindices(cfaResult[["lav"]])
-  jaspResults[["modind"]] <- mic <- createJaspContainer("Modification Indices", position = 5)
+  jaspResults[["modind"]] <- mic <- createJaspContainer(gettext("Modification Indices"), position = 5)
   mic$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors",
                         "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "modIndices",
                         "miCutoff"))
@@ -783,14 +783,14 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (nrow(foc) > 0) {
     foc <- as.data.frame(foc)
     foc <- foc[order(foc$mi, decreasing = TRUE), ]
-    jrobject[["Cross-Loadings"]] <- focro <- createJaspTable("Cross-loadings")
+    jrobject[["Cross-Loadings"]] <- focro <- createJaspTable(gettext("Cross-loadings"))
     focro$dependOn(optionsFromObject = jrobject)
 
-    focro$addColumnInfo(name = "lhs", title = "",          type = "string")
-    focro$addColumnInfo(name = "op",  title = "",          type = "string")
-    focro$addColumnInfo(name = "rhs", title = "",          type = "string")
-    focro$addColumnInfo(name = "mi",  title = "Mod. Ind.", type = "number", format = "sf:4;dp:3")
-    focro$addColumnInfo(name = "epc", title  = "EPC",      type = "number", format = "sf:4;dp:3")
+    focro$addColumnInfo(name = "lhs", title = "",                   type = "string")
+    focro$addColumnInfo(name = "op",  title = "",                   type = "string")
+    focro$addColumnInfo(name = "rhs", title = "",                   type = "string")
+    focro$addColumnInfo(name = "mi",  title = gettext("Mod. Ind."), type = "number", format = "sf:4;dp:3")
+    focro$addColumnInfo(name = "epc", title = gettext("EPC"),       type = "number", format = "sf:4;dp:3")
 
     focro[["lhs"]] <- .translateFactorNames(foc$lhs, options)
     focro[["op"]]  <- rep("\u2192", nrow(foc))
@@ -809,14 +809,14 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     if (nrow(soc) > 0) {
       soc <- as.data.frame(soc)
       soc <- soc[order(soc$mi, decreasing = TRUE), ]
-      jrobject[["Second-Order Cross-Loadings"]] <- socro <- createJaspTable("Second-order cross-loadings")
+      jrobject[["Second-Order Cross-Loadings"]] <- socro <- createJaspTable(gettext("Second-order cross-loadings"))
       socro$dependOn(optionsFromObject = jrobject)
 
-      socro$addColumnInfo(name = "lhs", title  = "",          type = "string")
-      socro$addColumnInfo(name = "op",  title  = "",          type = "string")
-      socro$addColumnInfo(name = "rhs", title  = "",          type = "string")
-      socro$addColumnInfo(name = "mi",  title  = "Mod. Ind.", type = "number", format = "sf:4;dp:3")
-      socro$addColumnInfo(name = "epc", title  = "EPC",       type = "number", format = "sf:4;dp:3")
+      socro$addColumnInfo(name = "lhs", title  = "",                   type = "string")
+      socro$addColumnInfo(name = "op",  title  = "",                   type = "string")
+      socro$addColumnInfo(name = "rhs", title  = "",                   type = "string")
+      socro$addColumnInfo(name = "mi",  title  = gettext("Mod. Ind."), type = "number", format = "sf:4;dp:3")
+      socro$addColumnInfo(name = "epc", title  = gettext("EPC"),       type = "number", format = "sf:4;dp:3")
 
 
       socro[["lhs"]] <- soc$lhs
@@ -834,14 +834,14 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   rec <- rec[rec$mi > options$miCutoff, ]
 
   if (nrow(rec) > 0) {
-    jrobject[["Residual Covariances"]] <- rescov <- createJaspTable("Residual covariances")
+    jrobject[["Residual Covariances"]] <- rescov <- createJaspTable(gettext("Residual covariances"))
     rescov$dependOn(optionsFromObject = jrobject)
 
-    rescov$addColumnInfo(name = "lhs", title  = "", type = "string")
-    rescov$addColumnInfo(name = "op",  title  = "", type = "string")
-    rescov$addColumnInfo(name = "rhs", title  = "", type = "string")
-    rescov$addColumnInfo(name = "mi",  title  = "Mod. Ind.", type = "number", format = "sf:4;dp:3")
-    rescov$addColumnInfo(name = "epc", title  = "EPC",       type = "number", format = "sf:4;dp:3")
+    rescov$addColumnInfo(name = "lhs", title  = "",                   type = "string")
+    rescov$addColumnInfo(name = "op",  title  = "",                   type = "string")
+    rescov$addColumnInfo(name = "rhs", title  = "",                   type = "string")
+    rescov$addColumnInfo(name = "mi",  title  = gettext("Mod. Ind."), type = "number", format = "sf:4;dp:3")
+    rescov$addColumnInfo(name = "epc", title  = gettext("EPC"),       type = "number", format = "sf:4;dp:3")
 
     rec <- as.data.frame(rec)
     rec <- rec[order(rec$mi, decreasing = TRUE), ]
@@ -859,7 +859,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   fv <- lavaan::fitted.values(cfaResult[["lav"]])
 
   if (options$groupvar != "") {
-    jaspResults[["impcov"]] <- icc <- createJaspContainer("Implied covariance matrices", position = 3)
+    jaspResults[["impcov"]] <- icc <- createJaspContainer(gettext("Implied covariance matrices"), position = 3)
     groupLabs <- cfaResult[["lav"]]@Data@group.label
     for (l in groupLabs) {
       ic <- fv[[l]]$cov
@@ -875,7 +875,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   } else {
     ic <- fv$cov
     ic[upper.tri(ic)] <- NA
-    icc <- createJaspTable("Implied covariance matrix", position = 3)
+    icc <- createJaspTable(gettext("Implied covariance matrix"), position = 3)
     for (i in 1:ncol(ic)) {
       nm <- colnames(ic)[i]
       icc$addColumnInfo(nm, title = .unv(nm), type = "number", format = "sf:4;dp:3")
@@ -885,8 +885,8 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   }
 
   icc$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify",
-                        "uncorrelatedFactors", "mimic", "estimator", "se", "bootstrapNumber",
-                        "groupvar", "invariance", "impliedCov"))
+                 "uncorrelatedFactors", "mimic", "estimator", "se", "bootstrapNumber",
+                 "groupvar", "invariance", "impliedCov"))
 }
 
 .cfaTableResCov <- function(jaspResults, options, cfaResult) {
@@ -894,7 +894,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   rv <- lavaan::residuals(cfaResult[["lav"]])
 
   if (options$groupvar != "") {
-    jaspResults[["rescov"]] <- rcc <- createJaspContainer("Residual covariance matrices", position = 4)
+    jaspResults[["rescov"]] <- rcc <- createJaspContainer(gettext("Residual covariance matrices"), position = 4)
     groupLabs <- cfaResult[["lav"]]@Data@group.label
     for (l in groupLabs) {
       rc <- rv[[l]]$cov
@@ -910,7 +910,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   } else {
     rc <- rv$cov
     rc[upper.tri(rc)] <- NA
-    rcc <- createJaspTable("Residual covariance matrix", position = 4)
+    rcc <- createJaspTable(gettext("Residual covariance matrix"), position = 4)
     for (i in 1:ncol(rc)) {
       nm <- colnames(rc)[i]
       rcc$addColumnInfo(nm, title = .unv(nm), type = "number", format = "sf:4;dp:3;p:.001")
@@ -920,13 +920,13 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   }
 
   rcc$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors",
-                        "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "residCov"))
+                 "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "residCov"))
 }
 
 .cfaInitPlots <- function(jaspResults, options, cfaResult) {
   if (is.null(cfaResult) || !(options$pathplot || options$misfitplot) || !is.null(jaspResults[["plots"]])) return()
 
-  jaspResults[["plots"]] <- createJaspContainer("Plots", position = 6)
+  jaspResults[["plots"]] <- createJaspContainer(gettext("Plots"), position = 6)
   jaspResults[["plots"]]$dependOn(c(
     "factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors", "mimic",
     "estimator", "se", "bootstrapNumber", "groupvar", "invariance"
@@ -959,7 +959,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (length(cfaResult[["spec"]][["soLatents"]]) > 0) plotheight <- 500
 
   if (options$groupvar != "") {
-    jaspResults[["plots"]][["pathplot"]] <- createJaspContainer("Model plots", position = 1)
+    jaspResults[["plots"]][["pathplot"]] <- createJaspContainer(gettext("Model plots"), position = 1)
     groupLabs <- cfaResult[["lav"]]@Data@group.label
     for (i in 1:length(groupLabs)) {
       jaspResults[["plots"]][["pathplot"]][[groupLabs[i]]] <-
@@ -967,7 +967,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
       jaspResults[["plots"]][["pathplot"]][[groupLabs[i]]]$dependOn(c("pathplot", "plotmeans", "plotpars"))
     }
   } else {
-    jaspResults[["plots"]][["pathplot"]] <- createJaspPlot(pathplot, title = "Model plot", height = plotheight,
+    jaspResults[["plots"]][["pathplot"]] <- createJaspPlot(pathplot, title = gettext("Model plot"), height = plotheight,
                                                            width = plotwidth)
   }
 
@@ -1007,7 +1007,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   if (options$groupvar != "") {
     groupLabs <- cfaResult[["lav"]]@Data@group.label
-    jaspResults[["plots"]][["misfitplot"]] <- createJaspContainer("Misfit plots", position = 2)
+    jaspResults[["plots"]][["misfitplot"]] <- createJaspContainer(gettext("Misfit plots"), position = 2)
     for (i in 1:length(groupLabs)) {
       cc <- rescor[[i]]$cov
       cc[upper.tri(cc)] <- NA
@@ -1020,7 +1020,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     cc <- rescor$cov
     cc[upper.tri(cc)] <- NA
     gg <- .resCorToMisFitPlot(cc)
-    jaspResults[["plots"]][["misfitplot"]] <- createJaspPlot(gg, title = "Misfit plot", width = wh, height = wh)
+    jaspResults[["plots"]][["misfitplot"]] <- createJaspPlot(gg, title = gettext("Misfit plot"), width = wh, height = wh)
   }
 
   jaspResults[["plots"]][["misfitplot"]]$dependOn("misfitplot")
@@ -1061,7 +1061,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   mod <- .optionsToCFAMod(options, dataset, cfaResult, FALSE)
 
-  jaspResults[["syntax"]] <- createJaspHtml(mod, class = "jasp-code", position = 7, title = "Model syntax")
+  jaspResults[["syntax"]] <- createJaspHtml(mod, class = "jasp-code", position = 7, title = gettext("Model syntax"))
   jaspResults[["syntax"]]$dependOn(optionsFromObject = jaspResults[["maincontainer"]][["cfatab"]])
   jaspResults[["syntax"]]$dependOn("showSyntax")
 }

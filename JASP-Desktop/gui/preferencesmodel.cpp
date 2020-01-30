@@ -100,6 +100,7 @@ GET_PREF_FUNC_BOOL(	modulesRemember,			Settings::MODULES_REMEMBER							)
 GET_PREF_FUNC_BOOL(	safeGraphics,				Settings::SAFE_GRAPHICS_MODE						)
 GET_PREF_FUNC_STR(	cranRepoURL,				Settings::CRAN_REPO_URL								)
 GET_PREF_FUNC_STR(	currentThemeName,			Settings::THEME_NAME								)
+GET_PREF_FUNC_BOOL(	useNativeFileDialog,		Settings::USE_NATIVE_FILE_DIALOG					)
 
 double PreferencesModel::uiScale()
 {
@@ -216,6 +217,7 @@ SET_PREF_FUNCTION(bool,		setModulesRemember,			modulesRemember,			modulesRemembe
 SET_PREF_FUNCTION(QString,	setCranRepoURL,				cranRepoURL,				cranRepoURLChanged,				Settings::CRAN_REPO_URL								)
 SET_PREF_FUNCTION(QString,	setCurrentThemeName,		currentThemeName,			currentThemeNameChanged,		Settings::THEME_NAME								)
 SET_PREF_FUNCTION(QString,	setPlotBackground,			plotBackground,				plotBackgroundChanged,			Settings::IMAGE_BACKGROUND							)
+SET_PREF_FUNCTION(bool,		setUseNativeFileDialog,		useNativeFileDialog,		useNativeFileDialogChanged,		Settings::USE_NATIVE_FILE_DIALOG					)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {

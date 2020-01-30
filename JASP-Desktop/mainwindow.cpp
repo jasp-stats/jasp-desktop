@@ -111,11 +111,12 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_preferences			= new PreferencesModel(this);
 	_package				= new DataSetPackage(this);
 	_dynamicModules			= new DynamicModules(this);
+	_upgrader				= new Upgrader(this);
 	_analyses				= new Analyses();
 	_engineSync				= new EngineSync(this);
 	_datasetTableModel		= new DataSetTableModel();
 	_labelModel				= new LabelModel();
-
+	
 	initLog(); //initLog needs _preferences and _engineSync!
 
 	Log::log() << "JASP " << AppInfo::version.asString() << " is initializing." << std::endl;
@@ -127,7 +128,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_computedColumnsModel	= new ComputedColumnsModel();
 	_filterModel			= new FilterModel(_labelFilterGenerator);
 	_ribbonModel			= new RibbonModel(	{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
-												{ "Audit", "BAIN", "Network", "Machine Learning", "Meta Analysis", "SEM", "Summary Statistics", "JAGS"});
+												{ "Audit", "BAIN", "Discover Distributions", "JAGS", "Machine Learning", "Meta Analysis", "Network", "SEM", "Summary Statistics", "Visual Modeling"});
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 
 	_fileMenu				= new FileMenu(this);
@@ -226,6 +227,7 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
 	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
 
+	connect(_package,				&DataSetPackage::refreshAnalysesWithColumn,			this,					&MainWindow::refreshAnalysesUsingColumn,					Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::dataSynched,						this,					&MainWindow::refreshAnalysesUsingColumns,					Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
@@ -315,6 +317,7 @@ void MainWindow::makeConnections()
 	connect(_labelFilterGenerator,	&labelFilterGenerator::setGeneratedFilter,			_filterModel,			&FilterModel::setGeneratedFilter							);
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
+	connect(_ribbonModel,			&RibbonModel::analysisTitleChanged,					_analyses,				&Analyses::analysisTitleChangedHandler						);
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule					);
@@ -322,7 +325,12 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::reloadHelpPage,					_helpModel,				&HelpModel::reloadPage										);
 	connect(_dynamicModules,		&DynamicModules::moduleEnabledChanged,				_preferences,			&PreferencesModel::moduleEnabledChanged						);
 	connect(_dynamicModules,		&DynamicModules::loadModuleTranslationFile,			_languageModel,			&LanguageModel::loadModuleTranslationFile					);
-	connect(_languageModel,			&LanguageModel::languageChanged,					this,					&MainWindow::refreshFilemenu								);
+
+	connect(_languageModel,			&LanguageModel::languageChanged,					_fileMenu,				&FileMenu::refresh											);
+	connect(_languageModel,			&LanguageModel::languageChanged,					_ribbonModel,			&RibbonModel::refresh										);
+	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
+	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
+
 
 	// Temporary to facilitate plot editing
 	_plotEditingFilePath = QString::fromStdString(Dirs::resourcesDir()) + "PlotEditor.qml";
@@ -382,8 +390,9 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("columnTypeNominal",		int(columnType::nominal)		);
 	_qml->rootContext()->setContextProperty("columnTypeNominalText",	int(columnType::nominalText)	);
 
-	bool	debug = false,
-			isMac = false;
+	bool	debug	= false,
+			isMac	= false,
+			isLinux = false;
 
 #ifdef JASP_DEBUG
 	debug = true;
@@ -393,8 +402,16 @@ void MainWindow::loadQML()
 	isMac = true;
 #endif
 
+#ifdef __linux__
+	isLinux = true;
+#endif
+
+	bool isWindows = !isMac && !isLinux;
+
 	_qml->rootContext()->setContextProperty("DEBUG_MODE",			debug);
 	_qml->rootContext()->setContextProperty("MACOS",				isMac);
+	_qml->rootContext()->setContextProperty("LINUX",				isLinux);
+	_qml->rootContext()->setContextProperty("WINDOWS",				isWindows);
 	_qml->rootContext()->setContextProperty("iconFiles",			_iconFiles);
 	_qml->rootContext()->setContextProperty("iconInactiveFiles",	_iconInactiveFiles);
 	_qml->rootContext()->setContextProperty("iconDisabledFiles",	_iconDisabledFiles);
@@ -422,17 +439,13 @@ void MainWindow::loadQML()
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
 	connect(_preferences, &PreferencesModel::uiScaleChanged, DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
+
+	_upgrader->loadOldSchoolUpgrades();
 }
 
 void MainWindow::jaspThemeChanged(JaspTheme * newTheme)
 {
 	_qml->rootContext()->setContextProperty("jaspTheme",				newTheme);
-}
-
-void MainWindow::refreshFilemenu()
-{
-	_fileMenu->refresh();
-	_ribbonModel->refresh();
 }
 
 void MainWindow::initLog()
@@ -606,6 +619,11 @@ void MainWindow::packageChanged()
 	setWindowTitle(title);
 }
 
+void MainWindow::refreshAnalysesUsingColumn(QString columnName)
+{
+	refreshAnalysesUsingColumns({columnName}, {}, {}, false, false);
+}
+
 
 void MainWindow::refreshAnalysesUsingColumns(	QStringList				changedColumns,
 												QStringList				missingColumns,
@@ -649,7 +667,7 @@ void MainWindow::plotPPIChangedHandler(int, bool wasUserAction)
 
 void MainWindow::refreshPlotsHandler(bool askUserForRefresh)
 {
-	if (_analyses->allCreatedInCurrentVersion())
+	if (_analyses->allFresh())
 		_engineSync->refreshAllPlots();
 	else if (askUserForRefresh && MessageForwarder::showYesNo("Version incompatibility", "Your analyses were created in an older version of JASP, to change the PPI of the images they must be refreshed first.\n\nRefresh all analyses?"))
 		_analyses->refreshAllAnalyses();
@@ -684,7 +702,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	if (analysis == nullptr)
 		return;
 
-	if (analysis->version() != AppInfo::version)
+	if (analysis->needsRefresh())
 	{
 		if(MessageForwarder::showYesNo("Version incompatibility", "This analysis was created in an older version of JASP, to save the image it must be refreshed first.\n\nRefresh the analysis?"))
 			analysis->refresh();
@@ -701,18 +719,17 @@ void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 	parser.parse(utf8, root);
 
 	QString selectedFilter;
-	QString finalPath = MessageForwarder::browseSaveFile("Save JASP Image", "", "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;Scalable Vector Graphics (*.svg)", &selectedFilter);
+	QString finalPath = MessageForwarder::browseSaveFile("Save JASP Image", "", "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)", &selectedFilter);
 
 	if (!finalPath.isEmpty())
 	{
-		root["type"] = "svg";
+		root["type"] = "png";
 
 		if		(selectedFilter == "Encapsulated PostScript (*.eps)")		root["type"] = "eps";
 		else if (selectedFilter == "Portable Document Format (*.pdf)")		root["type"] = "pdf";
 		else if (selectedFilter == "300 dpi Tagged Image File (*.tiff)")	root["type"] = "tiff";
-		else if (selectedFilter == "Portable Network Graphics (*.png)")		root["type"] = "png";
 
-		if(root["type"].asString() != "svg")
+		if(root["type"].asString() != "png")
 		{
 			root["finalPath"] = finalPath.toStdString();
 			analysis->saveImage(root);
@@ -757,7 +774,7 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
     if (analysis == nullptr)
         return;
 
-	if (analysis->version() != AppInfo::version)
+	if (analysis->needsRefresh())
 	{
 		if (MessageForwarder::showYesNo("Version incompatibility", "This analysis was created in an older version of JASP, to resize the image it must be refreshed first.\n\nRefresh the analysis?"))
 			analysis->refresh();
@@ -1392,6 +1409,10 @@ void MainWindow::startDataEditor(QString path)
 {
 	QFileInfo fileInfo(path);
 
+#ifdef __linux__
+	//Linux means flatpak, which doesn't support launching a random binary
+#else
+
 	bool useDefaultSpreadsheetEditor = Settings::value(Settings::USE_DEFAULT_SPREADSHEET_EDITOR).toBool();
 	QString appname = Settings::value(Settings::SPREADSHEET_EDITOR_NAME).toString();
 
@@ -1417,6 +1438,7 @@ void MainWindow::startDataEditor(QString path)
 			MessageForwarder::showWarning("Start Editor", "Unable to start the editor : " + appname + ". Please check your editor settings in the preference menu.");
 	}
 	else
+#endif
 		if (!QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode)))
 			MessageForwarder::showWarning("Start Spreadsheet Editor", "No default spreadsheet editor for file " + fileInfo.completeBaseName() + ". Use Preferences to set the right editor.");
 

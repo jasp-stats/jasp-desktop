@@ -4,9 +4,18 @@
 \alias{drawSmooth}
 \title{Deprecated: use \code{ggplot2::geom_smooth} instead.}
 \usage{
-drawSmooth(graph = NULL, dat = NULL, mapping = NULL, size = 2,
-  method = "auto", color = "gray", show.legend = FALSE, se = FALSE,
-  alpha = 1, ...)
+drawSmooth(
+  graph = NULL,
+  dat = NULL,
+  mapping = NULL,
+  size = 2,
+  method = "auto",
+  color = "gray",
+  show.legend = FALSE,
+  se = FALSE,
+  alpha = 1,
+  ...
+)
 }
 \arguments{
 \item{graph}{ggplot2 object}

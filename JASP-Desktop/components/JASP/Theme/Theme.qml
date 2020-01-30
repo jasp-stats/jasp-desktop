@@ -101,9 +101,9 @@ JaspTheme
 	buttonColorPressed:					gray
 	buttonColorDisabled:				grayLighter
 	buttonBorderColor:					gray
-	buttonBorderColorHovered:			black
+	buttonBorderColorHovered:			grayDarker
 
-	itemHighlight:						blueMuchLighter
+	itemHighlight:						focusBorderColor
 	itemHoverColor:						blueMuchLighter
 	itemSelectedColor:					blueDarker
 	itemSelectedNoFocusColor:			grayLighter
@@ -122,6 +122,8 @@ JaspTheme
 	rowOnevenColor:						whiteBroken
 	controlErrorBackgroundColor:		roseLight
 	controlErrorTextColor:				redDarker
+	controlWarningBackgroundColor:		"#FD0"
+	controlWarningTextColor:			"#B70"
 
 	buttonBackgroundColor:				blue
 	tooltipBackgroundColor:				yellowLight

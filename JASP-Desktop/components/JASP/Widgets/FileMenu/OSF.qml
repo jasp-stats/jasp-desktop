@@ -318,29 +318,19 @@ Item
 			anchors.right		: parent.right
 			anchors.top			: parent.top
 			KeyNavigation.tab	: osfList
-
-			onClicked	:
-			{
-				fileMenuModel.osf.saveFile(filenameText.text)
-			}
+			onClicked			: fileMenuModel.osf.saveFile(filenameText.text)
 		}
 	}
 
 
-	Item
+	LoadingIndicator
 	{
 		visible	: processing
-		width	: animation.width;
-		height	: animation.height + 8 * preferencesModel.uiScale
 
 		anchors.horizontalCenter	: osfList.horizontalCenter
 		anchors.verticalCenter		: osfList.verticalCenter
-
-		AnimatedImage
-		{
-			id		: animation
-			source	: jaspTheme.iconPath + "/loading.gif"
-		}
+		width						: parent.width  / 2
+		height						: parent.height / 2
 	}
 
 	FileList

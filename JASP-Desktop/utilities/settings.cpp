@@ -38,8 +38,8 @@ const Settings::Setting Settings::Values[] = {
 	{"cranRepositoryURL",			"https://cloud.r-project.org"},
 	{"userHasGitHubAccount",		false},
 	{"preferredLanguage",			QLocale::English},
-	{"themeName",					"lightTheme"}
-
+	{"themeName",					"lightTheme"},
+	{"useNativeFileDialog",			true}
 };
 
 QVariant Settings::value(Settings::Type key)

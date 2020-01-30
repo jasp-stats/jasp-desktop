@@ -21,6 +21,8 @@
 #include "boundqmllistviewterms.h"
 #include "rowcontrols.h"
 #include "../analysis/jaspcontrolbase.h"
+#include <QJSEngine>
+#include <boost/bind.hpp>
 
 ListModel::ListModel(QMLListView* listView) 
 	: QAbstractTableModel(listView)
@@ -63,10 +65,45 @@ void ListModel::addControlError(const QString &error) const
 
 void ListModel::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)
 {
+	_initTerms(terms, allOptionsMap, true);
+}
+
+void ListModel::_initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap, bool setupControlConnections)
+{
 	beginResetModel();
 	_terms.set(terms);
 	_rowControlsOptions = allOptionsMap;
 	endResetModel();
+
+	if (setupControlConnections && listView()->sourceModels().size() > 0)
+	{
+		QMap<ListModel*, Terms> map = getSourceTermsPerModel();
+		QMapIterator<ListModel*, Terms> it(map);
+
+		while (it.hasNext())
+		{
+			it.next();
+			ListModel* sourceModel = it.key();
+			const Terms& terms = it.value();
+			QMLListView::SourceType* sourceType = listView()->getSourceTypeFromModel(sourceModel);
+			if (sourceType)
+			{
+				for (const QMLListView::SourceType::ConditionVariable& conditionVariable : sourceType->conditionVariables)
+					for (const Term& term : terms)
+						_connectControl(sourceModel->getRowControl(term.asQString(), conditionVariable.controlName));
+			}
+		}
+	}
+}
+
+void ListModel::_connectControl(JASPControlWrapper* control)
+{
+	BoundQMLItem* boundControl = dynamic_cast<BoundQMLItem*>(control);
+	if (boundControl && !_rowControlsConnected.contains(boundControl))
+	{
+		boundControl->boundTo()->changed.connect(boost::bind(&ListModel::_rowControlOptionChangedHandler, this, _1));
+		_rowControlsConnected.push_back(boundControl);
+	}
 }
 
 Terms ListModel::getSourceTerms()
@@ -82,12 +119,51 @@ Terms ListModel::getSourceTerms()
 		ListModel* sourceModel = sourceItem->model;
 		if (sourceModel)
 		{
-			Terms terms = sourceModel->terms(sourceItem->modelUse);
+			Terms sourceTerms = sourceModel->terms(sourceItem->modelUse);
 
 			for (const QMLListView::SourceType& discardModel : sourceItem->discardModels)
-				terms.discardWhatDoesContainTheseComponents(discardModel.model->terms(discardModel.modelUse));
+				sourceTerms.discardWhatDoesContainTheseComponents(discardModel.model->terms(discardModel.modelUse));
 
-			termsAvailable.add(terms);
+			if (!sourceItem->conditionExpression.isEmpty())
+			{
+				Terms filteredTerms;
+				QJSEngine jsEngine;
+
+				for (const Term& term : sourceTerms)
+				{
+					for (const QMLListView::SourceType::ConditionVariable& conditionVariable : sourceItem->conditionVariables)
+					{
+						JASPControlWrapper* control = sourceModel->getRowControl(term.asQString(), conditionVariable.controlName);
+						if (control)
+						{
+							QJSValue value;
+							QVariant valueVar = control->getItemProperty(conditionVariable.propertyName);
+
+							switch (valueVar.type())
+							{
+							case QVariant::Type::Int:
+							case QVariant::Type::UInt:		value = valueVar.toInt();		break;
+							case QVariant::Type::Double:	value = valueVar.toDouble();	break;
+							case QVariant::Type::Bool:		value = valueVar.toBool();		break;
+							default:						value = valueVar.toString();	break;
+							}
+
+							jsEngine.globalObject().setProperty(conditionVariable.name, value);
+							_connectControl(control);
+						}
+					}
+
+					QJSValue result = jsEngine.evaluate(sourceItem->conditionExpression);
+					if (result.isError())
+							addControlError("Error when evaluating : " + sourceItem->conditionExpression + ": " + result.toString());
+					else if (result.toBool())
+						filteredTerms.add(term);
+				}
+
+				sourceTerms = filteredTerms;
+			}
+
+			termsAvailable.add(sourceTerms);
 		}
 	}
 	
@@ -116,6 +192,20 @@ QMap<ListModel*, Terms> ListModel::getSourceTermsPerModel()
 		}
 	}
 
+	return result;
+}
+
+ListModel *ListModel::getSourceModelOfTerm(const Term &term)
+{
+	ListModel* result = nullptr;
+	QMap<ListModel*, Terms> map = getSourceTermsPerModel();
+	QMapIterator<ListModel*, Terms> it(map);
+	while (it.hasNext())
+	{
+		it.next();
+		if (it.value().contains(term))
+			result = it.key();
+	}
 	return result;
 }
 
@@ -213,6 +303,11 @@ void ListModel::_addSelectedItemType(int _index)
 		_selectedItemsTypes.insert(type);
 }
 
+void ListModel::_rowControlOptionChangedHandler(Option *)
+{
+	sourceTermsChanged(nullptr, nullptr);
+}
+
 void ListModel::selectItem(int _index, bool _select)
 {
 	bool changed = false;
@@ -307,7 +402,7 @@ void ListModel::selectAllItems()
 
 void ListModel::sourceTermsChanged(const Terms *termsAdded, const Terms *termsRemoved)
 {
-	initTerms(getSourceTerms());
+	_initTerms(getSourceTerms(), RowControlsOptions(), false);
 	
 	emit modelChanged(termsAdded, termsRemoved);
 }

@@ -21,7 +21,7 @@
 #include <boost/uuid/uuid.hpp>
 
 #include "common.h"
-#include "version.h"
+#include "../JASP-Common/version.h"
 
 #include "options/options.h"
 #include "enginedefinitions.h"
@@ -31,6 +31,7 @@
 #include "modules/dynamicmodules.h"
 #include "data/datasetpackage.h"
 #include "utilities/qutils.h"
+#include "modules/upgrader/upgradechange.h"
 
 class ComputedColumn;
 class Analyses;
@@ -53,7 +54,7 @@ public:
 	static std::string statusToString(Status status);
 
 	Analysis(size_t id, Analysis * duplicateMe);
-	Analysis(size_t id, std::string module, std::string name, std::string title, const Version &version, Json::Value *data);
+	Analysis(size_t id, std::string module, std::string name, std::string qml, std::string title, const Version &version, Json::Value *data);
 	Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", Json::Value *data = nullptr);
 
 	virtual ~Analysis();
@@ -66,8 +67,9 @@ public:
 	Q_INVOKABLE	QString	fullHelpPath(QString helpFileName);
 	Q_INVOKABLE void	duplicateMe();
 
-	bool isWaitingForModule()	{ return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
-	bool isDynamicModule()		{ return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
+	bool needsRefresh()			const;
+	bool isWaitingForModule()	const { return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
+	bool isDynamicModule()		const { return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
 	void setResults(	const Json::Value & results, const Json::Value & progress = Json::nullValue);
 	void imageSaved(	const Json::Value & results);
 	void saveImage(		const Json::Value & options);
@@ -94,6 +96,7 @@ public:
 	const	Json::Value		&	userData()			const	{ return _userData;							}
 	const	std::string		&	name()				const	{ return _name;								}
 	const	QString				nameQ()				const	{ return tq(_name);							}
+	const	std::string		&	qml()				const	{ return _qml;								}
 	const	Version			&	version()			const	{ return _version;							}
 	const	std::string		&	title()				const	{ return _title;							}
 			QString				titleQ()			const	{ return tq(_title);						}
@@ -144,6 +147,9 @@ public:
 	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}
 	void					runScriptRequestDone(const QString& result, const QString& controlName);
 
+	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs) { _msgs = msgs; _wasUpgraded = true; }
+	std::string				upgradeMsgsForOption(const std::string & name) const;
+
 
 signals:
 	void				nameChanged();
@@ -183,9 +189,9 @@ protected:
 
 private:
 	void					optionsChangedHandler(Option *option = nullptr);
-	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName)		{ return requestComputedColumnCreation(tq(columnName), this); }
-	void					requestColumnCreationHandler(std::string columnName, int colType)	{ return requestColumnCreation(tq(columnName), this, colType); }
-	void					requestComputedColumnDestructionHandler(std::string columnName)		{ requestComputedColumnDestruction(tq(columnName)); }
+	ComputedColumn *		requestComputedColumnCreationHandler(std::string columnName);
+	void					requestColumnCreationHandler(std::string columnName, int colType)	{ requestColumnCreation(tq(columnName), this, colType); }
+	void					requestComputedColumnDestructionHandler(std::string columnName);
 	void					processResultsForDependenciesToBeShown();
 	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
 	bool					_editOptionsOfPlot(const Json::Value & results, const std::string & uniqueName, Json::Value & editOptions);
@@ -210,12 +216,14 @@ private:
 							_counter		= 0;
 	std::string				_module			= "dynamic",
 							_name,
+							_qml,
 							_titleDefault,
 							_title,
 							_rfile,
 							_showDepsName	= "";
 	bool					_useJaspResults = false,
-							_isDuplicate	= false;
+							_isDuplicate	= false,
+							_wasUpgraded	= false;
 	Version					_version;
 	int						_revision		= 0;
 
@@ -225,6 +233,8 @@ private:
 
 	std::string				_codedReferenceToAnalysisEntry = "";
 	QString					_helpFile;
+
+	Modules::UpgradeMsgs	_msgs;
 };
 
 #endif // ANALYSIS_H

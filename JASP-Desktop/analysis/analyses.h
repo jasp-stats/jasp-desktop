@@ -22,6 +22,7 @@
 #include "analysis.h"
 #include "appinfo.h"
 #include "data/datasetpackage.h"
+#include "modules/upgrader/upgrader.h"
 
 #include <QString>
 #include <QMap>
@@ -57,17 +58,17 @@ public:
 	static Analyses *	analyses() { return _singleton; }
 
 	Analysis*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
-	Analysis*	create(const QString &module, const QString &name, const QString &title, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
+	Analysis*	create(const QString &module, const QString &name, const QString& qml, const QString &title, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
 	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true, std::string title = "", Json::Value *options = nullptr);
 
-	Analysis*	create(const QString &module, const QString &name, const QString &title)	{ return create(module, name, title, _nextId++, AppInfo::version);		}
+	Analysis*	create(const QString &module, const QString &name, const QString& qml, const QString &title)	{ return create(module, name, qml, title, _nextId++, AppInfo::version);		}
 	Analysis*	create(Modules::AnalysisEntry * analysisEntry)								{ return create(analysisEntry, _nextId++);						}
 
 	Analysis*	get(size_t id) const { return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
 	void		clear();
 	void		reload(Analysis* analysis, bool logProblem);
 	
-	bool		allCreatedInCurrentVersion() const;
+	bool		allFresh() const;
 
 	void		setAnalysesUserData(Json::Value userData);
 	void		refreshAnalysesUsingColumns(std::vector<std::string> changedColumns,	 std::vector<std::string> missingColumns,	 std::map<std::string, std::string> changeNameColumns,	 std::vector<std::string> oldColumnNames, bool hasNewColumns = false);
@@ -100,7 +101,7 @@ public slots:
 	void refreshAllAnalyses();
 	void refreshAllPlots(std::set<Analysis*> exceptThese = {});
 	void refreshAnalysesUsingColumn(QString col);
-	void analysisClickedHandler(QString analysisFunction, QString analysisTitle, QString module);
+	void analysisClickedHandler(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 	void setCurrentAnalysisIndex(int currentAnalysisIndex);
 	void analysisIdSelectedInResults(int id);
 	void analysesUnselectedInResults();
@@ -120,6 +121,7 @@ public slots:
 	void move(int fromIndex, int toIndex);
 	void duplicateAnalysis(size_t id);
 	void showDependenciesInAnalysis(size_t analysis_id, QString optionName);
+	void analysisTitleChangedHandler(std::string moduleName, std::string oldTitle, std::string newTitle);
 
 signals:
 	void analysesUnselected();
@@ -170,6 +172,7 @@ private:
 
 private:
 	static Analyses				*	_singleton;
+
 	std::map<size_t, Analysis*>		_analysisMap;
 	std::vector<size_t>				_orderedIds;
 	std::vector<size_t>				_orderedIdsBeforeMoving;

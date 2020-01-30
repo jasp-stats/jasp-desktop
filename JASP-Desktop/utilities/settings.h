@@ -42,7 +42,8 @@ public:
 		CRAN_REPO_URL,
 		USER_HAS_GITHUB_ACCOUNT,
 		PREFERRED_LANGUAGE,
-		THEME_NAME
+		THEME_NAME,
+		USE_NATIVE_FILE_DIALOG
 	};
 
 	static QVariant value(Settings::Type key);

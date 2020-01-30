@@ -381,6 +381,7 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
+		'click': '_mouseClicked',
 	},
 
 	notePositionBottom: true,
@@ -392,6 +393,8 @@ JASPWidgets.tableView = JASPWidgets.objectView.extend({
 	_hoveringEnd: function (e) {
 		this.toolbar.setVisibility(false);
 	},
+
+	_mouseClicked: function (e) {	},
 
 	hasCollapse: function () {
 		return false;
@@ -578,10 +581,10 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 		}
 
 		if (columnHeaders.length > 0) {
-			
+
 			var hasOvertitles = false;
 			var hasAdjacentOvertitles = false;
-			
+
 			// If we have multiple adjacent overtitles, we should make small
 			// breaks in the line under the overTitle to indicate end of old and
 			// start of new overTitle. NB: with this option, the line is not copied
