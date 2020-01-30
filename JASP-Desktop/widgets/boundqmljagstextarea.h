@@ -41,6 +41,7 @@ private:
 	Options*					_options = nullptr;
 	QSet<QString>				_usedColumnNames,
 								_usedParameters;
+	QString						_textEncoded;
 };
 
 #endif // BOUNDQMLJAGSTEXTAREA_H
