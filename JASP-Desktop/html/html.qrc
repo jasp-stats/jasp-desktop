@@ -73,10 +73,5 @@
         <file>css/images/lightTheme/closer.png</file>
         <file>css/images/lightTheme/expand.png</file>
         <file>css/images/lightTheme/collapse.png</file>
-        <file>help/index.html</file>
-        <file>help/index.md</file>
-        <file>help/marked.js</file>
-        <file>help/lightTheme.css</file>
-        <file>help/darkTheme.css</file>
     </qresource>
 </RCC>

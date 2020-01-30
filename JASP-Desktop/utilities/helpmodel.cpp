@@ -40,7 +40,7 @@ void HelpModel::setPagePath(QString pagePath)
 
 QString	HelpModel::indexURL()
 {
-	return "qrc:///html/help/index.html";
+	return "file:" + AppDirs::help() + "/index.html";
 }
 
 void HelpModel::generateJavascript()
