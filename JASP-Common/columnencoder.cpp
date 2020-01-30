@@ -260,9 +260,9 @@ std::string ColumnEncoder::encodeRScript(std::string text, std::set<std::string>
 	static std::regex nonNameChar("[^\\.A-Za-z0-9_]");
 
 	//for now we simply replace any found columnname by its Base64 variant if found
-	for(const std::string & oldCol : _originalNames)
+	for(const std::string & oldCol : originalNames())
 	{
-		std::string	newCol	= _encodingMap.at(oldCol);
+		std::string	newCol	= encodingMap().at(oldCol);
 
 		std::vector<size_t> foundColPositions = getPositionsColumnNameMatches(text, oldCol);
 		std::reverse(foundColPositions.begin(), foundColPositions.end());
@@ -273,7 +273,16 @@ std::string ColumnEncoder::encodeRScript(std::string text, std::set<std::string>
 
 			//First check if it is a "free columnname" aka is there some space or a kind in front of it. We would not want to replace a part of another term (Imagine what happens when you use a columname such as "E" and a filter that includes the term TRUE, it does not end well..)
 			bool startIsFree	= foundPos == 0					|| std::regex_match(text.substr(foundPos - 1, 1),	nonNameChar);
-			bool endIsFree		= foundPosEnd == text.length()	|| (std::regex_match(text.substr(foundPosEnd, 1),	nonNameChar) && text[foundPosEnd] != '('); //Check for "(" as well because maybe someone has a columnname such as rep or if or something weird like that
+			bool endIsFree		= foundPosEnd == text.length()	|| std::regex_match(text.substr(foundPosEnd, 1),	nonNameChar);
+
+			//Check for "(" as well because maybe someone has a columnname such as rep or if or something weird like that. This might however have some whitespace in between...
+			bool keepGoing = true;
+
+			for(size_t bracePos = foundPosEnd; bracePos < text.size() && endIsFree && keepGoing; bracePos++)
+				if(text[bracePos] == '(')
+					endIsFree = false;
+				else if(text[bracePos] != '\t' && text[bracePos] != ' ')
+					keepGoing = false; //Aka something else than whitespace or a brace and that means that we can replace it!
 
 			if(startIsFree && endIsFree)
 			{

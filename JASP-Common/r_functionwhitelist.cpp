@@ -224,7 +224,7 @@ std::string R_FunctionWhiteList::returnOrderedWhiteList()
 const std::string	R_FunctionWhiteList::functionStartDelimit("(?:[;\\s\\(\"\\[\\+\\-\\=\\*\\%\\/\\{\\|&!]|^)"); //These should be all possible non-funtion-name-characters that could be right in front of any function-name in R.
 const std::string	R_FunctionWhiteList::functionNameStart("(?:\\.?[[:alpha:]])");
 const std::string	R_FunctionWhiteList::functionNameBody("(?:\\w|\\.|::)+");
-const std::regex	R_FunctionWhiteList::functionNameMatcher(functionStartDelimit + "(" + functionNameStart + functionNameBody + ")(?=\\s*\\()");
+const std::regex	R_FunctionWhiteList::functionNameMatcher(functionStartDelimit + "(" + functionNameStart + functionNameBody + ")(?=[\\t \\r]*\\()");
 
 std::set<std::string> R_FunctionWhiteList::findIllegalFunctions(std::string const & script)
 {

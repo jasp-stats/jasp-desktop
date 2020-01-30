@@ -53,7 +53,7 @@ public:
 
 
 			///Replace all occurences of columnNames in a string by their encoded versions, taking into account the presence of word boundaries and parentheses.
-			std::string			encodeRScript(std::string text, std::set<std::string> * columnNamesFound);
+			std::string			encodeRScript(std::string text, std::set<std::string> * columnNamesFound = nullptr);
 
 			///Replace all occurences of columnNames in a string by their encoded versions, regardless of word boundaries or parentheses.
 	static	std::string			encodeAll(const std::string & text) { return replaceAll(text, encodingMap(), originalNames()); }

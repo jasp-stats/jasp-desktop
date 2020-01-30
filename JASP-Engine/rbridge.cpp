@@ -144,14 +144,14 @@ extern "C" const char * STDCALL rbridge_decodeColumnName(const char * in)
 extern "C" const char * STDCALL rbridge_encodeAllColumnNames(const char * in)
 {
 	static std::string out;
-	out = ColumnEncoder::columnEncoder()->encodeAll(extraEncodings.encodeAll(in));
+	out = ColumnEncoder::columnEncoder()->encodeAll(in);
 	return out.c_str();
 }
 
 extern "C" const char * STDCALL rbridge_decodeAllColumnNames(const char * in)
 {
 	static std::string out;
-	out = ColumnEncoder::columnEncoder()->decodeAll(extraEncodings.decodeAll(in));
+	out = ColumnEncoder::columnEncoder()->decodeAll(in);
 	return out.c_str();
 }
 
@@ -820,6 +820,10 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 	if(arrayLength < 0)
 	{
 		errorMsg = ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg());
+
+		if(errorMsg == "")
+			errorMsg = "Filter returned something incomprehensible, make sure you entered all columnnames *exactly* right.";
+
 		throw filterException(errorMsg.c_str());
 	}
 
