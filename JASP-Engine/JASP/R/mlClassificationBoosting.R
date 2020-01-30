@@ -68,7 +68,7 @@ mlClassificationBoosting <- function(jaspResults, dataset, options, ...) {
   
 }
 
-.boostingClassification <- function(dataset, options, jaspResults){
+.boostingClassification <- function(dataset, options, jaspResults) {
 
   assignFunctionInPackage(fakeGbmCrossValModelBuild, "gbmCrossValModelBuild", "gbm")
   assignFunctionInPackage(fakeGbmCrossValErr,        "gbmCrossValErr",        "gbm")

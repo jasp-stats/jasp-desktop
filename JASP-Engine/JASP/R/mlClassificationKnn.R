@@ -59,7 +59,7 @@ mlClassificationKnn <- function(jaspResults, dataset, options, ...) {
     
 }
 
-.knnClassification <- function(dataset, options, jaspResults){
+.knnClassification <- function(dataset, options, jaspResults) {
 
   # Import model formula from jaspResults
 	formula <- jaspResults[["formula"]]$object
