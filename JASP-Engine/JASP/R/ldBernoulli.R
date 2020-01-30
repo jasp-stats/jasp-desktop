@@ -98,7 +98,7 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
     pbinom(q = q, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
     }
   options[['qFun']]   <- function(p, size = 1, prob, lower.tail = TRUE, log.p = FALSE){ 
-    pbinom(p = p, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
+    qbinom(p = p, size = size, prob = prob, lower.tail = lower.tail, log.p = log.p)
   }
   options[['rFun']]   <- function(n, size = 1, prob) { rbinom(n = n, size = 1, prob = prob)}
   options[['distNameInR']] <- "binom"
