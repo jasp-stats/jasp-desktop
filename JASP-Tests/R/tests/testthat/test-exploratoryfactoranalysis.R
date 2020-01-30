@@ -34,8 +34,8 @@ test_that("Factor Correlations table results match", {
 test_that("Factor Characteristics table results match", {
   table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_eigtab"]][["data"]]
   expect_equal_tables(table,
-                      list("Factor 1", 0.587827483020803, 1.50642707924338, 0.587827483020803,
-                           "Factor 2", 1.00236603636832, 1.06233907088515, 0.414538553347517
+                      list("Factor 1", 0.211560139236826, 1.48092097465778, 0.211560139236826,
+                           "Factor 2", 0.36610038604766, 1.08178172767584, 0.154540246810834
                       ))
 })
 

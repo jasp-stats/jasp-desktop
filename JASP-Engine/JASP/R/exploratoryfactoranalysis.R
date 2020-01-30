@@ -306,7 +306,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   eigtab <- createJaspTable(gettext("Factor Characteristics"))
   eigtab$addColumnInfo(name = "comp", title = "",                         type = "string")
-  eigtab$addColumnInfo(name = "eigv", title = gettext("Eigenvalue"),      type = "number", format = "sf:4;dp:3")
+  eigtab$addColumnInfo(name = "eigv", title = gettext("SumSq. Loadings"), type = "number", format = "sf:4;dp:3")
   eigtab$addColumnInfo(name = "prop", title = gettext("Proportion var."), type = "number", format = "sf:4;dp:3")
   eigtab$addColumnInfo(name = "cump", title = gettext("Cumulative"),      type = "number", format = "sf:4;dp:3")
 
@@ -318,11 +318,10 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   efaResults <- modelContainer[["model"]][["object"]]
 
-  eigv <- efaResults$values
   eigtab[["comp"]] <- paste("Factor", 1:efaResults$factors)
-  eigtab[["eigv"]] <- eigv[1:efaResults$factors]
-  eigtab[["prop"]] <- eigv[1:efaResults$factors] / sum(eigv)
-  eigtab[["cump"]] <- cumsum(eigv)[1:efaResults$factors] / sum(eigv)
+  eigtab[["eigv"]] <- efaResults$Vaccounted[1,]
+  eigtab[["prop"]] <- efaResults$Vaccounted[2,]
+  eigtab[["cump"]] <- cumsum(efaResults$Vaccounted[2,])
 }
 
 .efaCorrTable <- function(modelContainer, dataset, options, ready) {
@@ -379,7 +378,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 .efaScreePlot <- function(modelContainer, dataset, options, ready) {
   if (!options[["incl_screePlot"]] || !is.null(modelContainer[["scree"]])) return()
 
-  scree <- createJaspPlot(title = "Scree plot", width = 300, height = 300)
+  scree <- createJaspPlot(title = "Scree plot", width = 480, height = 320)
   scree$dependOn("incl_screePlot")
   scree$position <- 8
   modelContainer[["scree"]] <- scree
@@ -403,9 +402,19 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # basic scree plot
   plt <-
     ggplot2::ggplot(df, ggplot2::aes(x = id, y = ev, linetype = type, shape = type)) +
-    ggplot2::geom_point(na.rm = TRUE, size = 3) +
     ggplot2::geom_line(na.rm = TRUE) +
-    ggplot2::labs(x = gettext("Component"), y = gettext("Eigenvalue"))
+    ggplot2::labs(x = gettext("Factor"), y = gettext("Eigenvalue"))
+  
+  
+  # dynamic function for point size:
+  # the plot looks good with size 3 when there are 10 points (3 + log(10) - log(10) = 3)
+  # with more points, the size will become logarithmically smaller until a minimum of 
+  # 3 + log(10) - log(200) = 0.004267726
+  # with fewer points, they become bigger to a maximum of 3 + log(10) - log(2) = 4.609438
+  pointsize <- 3 + log(10) - log(n_col)
+  if (pointsize > 0) {
+    plt <- plt + ggplot2::geom_point(na.rm = TRUE, size = max(0, 3 + log(10) - log(n_col)))
+  }
 
   # optionally add an eigenvalue cutoff line
   if (options$factorMethod == "eigenValues") {
