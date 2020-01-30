@@ -63,6 +63,8 @@ void DataSetPackage::resumeEngines()
 {
 	if(isThisTheSameThreadAsEngineSync())	_engineSync->resume();
 	else									emit resumeEnginesSignal();
+
+	ColumnEncoder::setCurrentColumnNames(getColumnNames()); //Same place as in engine, should be fine right?
 }
 
 void DataSetPackage::reset()
