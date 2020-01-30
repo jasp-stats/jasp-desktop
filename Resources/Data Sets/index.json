@@ -718,8 +718,23 @@
       "debug": false
     },
     {
-      "name": "13. Miscellaneous",
-      "path": "13. Miscellaneous",
+      "name": "13. Discover Distributions",
+      "path": "13. Discover Distributions",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Distributions",
+          "path": "Normal distribution.jasp",
+          "description": "Synthetic data set of variables generated from various probability distributions. <br><br> The example JASP file demonstrates the Normal distribution. <br><br> <i>Fictional data created by JASP Team.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Distributions.csv"
+        }
+      ]
+    },
+    {
+      "name": "14. Miscellaneous",
+      "path": "14. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
