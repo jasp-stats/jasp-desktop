@@ -301,6 +301,9 @@ XCOPY %JASP_REQUIRED_FILES_DIR%\%ARCH%\JAGS /E /I %JASP_BASE_DIR%\%JASP_WIX_DIR%
 
 :skipbuilding
 
+echo Making zip-version of installer
+powershell Compress-Archive "%JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%" "%JASP_BASE_DIR%\%JASP_WIX_DIR%\JASP.zip"
+
 echo Melting and Coalescing MSI
 
 cd %JASP_BASE_DIR%\%JASP_WIX_DIR%
