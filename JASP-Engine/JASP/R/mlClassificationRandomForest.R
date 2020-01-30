@@ -68,7 +68,7 @@ mlClassificationRandomForest <- function(jaspResults, dataset, options, ...) {
   
 }
 
-.randomForestClassification <- function(dataset, options, jaspResults){
+.randomForestClassification <- function(dataset, options, jaspResults) {
   
   # Set model-specific parameters
   noOfPredictors <- base::switch(options[["noOfPredictors"]], "manual" = options[["numberOfPredictors"]], "auto" = floor(sqrt(length(options[["predictors"]]))))
