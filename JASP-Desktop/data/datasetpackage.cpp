@@ -300,6 +300,7 @@ QVariant DataSetPackage::headerData(int section, Qt::Orientation orientation, in
 
 		return dummyText;
 	}
+	case int(specialRoles::maxRowHeaderString):				return QString::number(_dataSet->maxRowCount()) + "XXX";
 	case int(specialRoles::filter):							return getColumnHasFilter(section) || isColumnUsedInEasyFilter(section);
 	case Qt::DisplayRole:									return orientation == Qt::Horizontal ? tq(_dataSet->column(section).name()) : QVariant(section);
 	case Qt::TextAlignmentRole:								return QVariant(Qt::AlignCenter);
@@ -485,6 +486,7 @@ QHash<int, QByteArray> DataSetPackage::roleNames() const
 		roles[int(specialRoles::maxColString)]					= QString("maxColString").toUtf8();
 		roles[int(specialRoles::labelsHasFilter)]				= QString("labelsHasFilter").toUtf8();
 		roles[int(specialRoles::columnIsComputed)]				= QString("columnIsComputed").toUtf8();
+		roles[int(specialRoles::maxRowHeaderString)]			= QString("maxRowHeaderString").toUtf8();
 		roles[int(specialRoles::computedColumnError)]			= QString("computedColumnError").toUtf8();
 		roles[int(specialRoles::computedColumnIsInvalidated)]	= QString("computedColumnIsInvalidated").toUtf8();
 

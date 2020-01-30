@@ -176,6 +176,7 @@ protected:
 
 	QSizeF getTextSize(const QString& text)	const		{ 	return _metricsFont.size(Qt::TextSingleLine, text); }
 	QSizeF getColumnSize(int col);
+	QSizeF getRowHeaderSize();
 
 protected:
 	QAbstractItemModel *									_model = nullptr;

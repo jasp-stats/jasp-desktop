@@ -31,7 +31,6 @@ class ListModelANOVACustomContrasts : public ListModelTableViewBase
 public:
 	explicit ListModelANOVACustomContrasts(BoundQMLTableView * parent);
 
-	QString			getColName(size_t index)								const	override;
 	int				getMaximumColumnWidthInCharacters(size_t columnIndex)	const	override;
 	void			loadColumnInfo();
 	void			modelChangedSlot()												override;
@@ -40,7 +39,8 @@ public:
 	void			reset()															override;
 
 	QString			colName()												const				{ return _colName;	}
-	virtual	QString	getRowName(size_t index)								const	override	{ return tr("Level %1").arg(index + 1); }
+	QString			getColName(size_t index)								const	override;
+	QString			getRowName(size_t index)								const	override	{ return tr("Contrast %1").arg(index + 1); }
 
 	void			setFactorsSource(ListModelRepeatedMeasuresFactors* factorsSourceModel);
 
