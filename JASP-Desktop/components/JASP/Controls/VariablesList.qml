@@ -194,7 +194,7 @@ JASPListControl
 
 		onPositionChanged:
 		{
-			if (variablesList.maxRows === 1 || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
+			if (!listRectangle.enabled || variablesList.maxRows === 1 || (!variablesList.dropModeInsert && !variablesList.dropModeReplace)) return;
 
 			var onTop = true;
 			var item = listGridView.itemAt(drag.x, drag.y + listGridView.contentY)
