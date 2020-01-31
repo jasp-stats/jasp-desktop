@@ -261,6 +261,9 @@ initEnvironment <- function() {
   Sys.setlocale("LC_CTYPE", "UTF-8")
   packages <- c("BayesFactor") # Add any package that needs pre-loading
 
+  if (identical(.Platform$OS.type, "windows"))
+    assignFunctionInPackage(fakeGrDevicesPdf, "pdf", "grDevices") # this fixes the problem that grDevices::pdf() does not work within JASP (https://github.com/jasp-stats/INTERNAL-jasp/issues/682)
+  
   for (package in packages)
     if (base::isNamespaceLoaded(package) == FALSE)
       try(base::loadNamespace(package), silent=TRUE)

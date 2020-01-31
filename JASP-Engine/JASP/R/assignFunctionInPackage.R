@@ -63,3 +63,18 @@ fakeGbmCrossValErr <- function(cv.models, cv.folds, cv.group, nTrain, n.trees) {
   }, double(n.trees))
   return(rowSums(as.matrix(cv.error))/nTrain)
 }
+
+# cowplot, used in flexplot (and other analyses that open pdf devices on Windows) ----
+fakeGrDevicesPdf <- function(file = if(onefile) "Rplots.pdf" else "Rplot%03d.pdf",
+                             width, height, onefile, family, title, fonts, version,
+                             paper, encoding, bg, fg, pointsize, pagecentre, colormodel,
+                             useDingbats, useKerning, fillOddEven, compress) { 
+  args <- as.list(match.call())
+  matchedIdx <- which(names(args) %in% c("file", "width", "height", "oneFile", "family", "bg", "pointsize"))
+  matchedArgs <- args[matchedIdx]
+  
+  matchedArgs[["filename"]] <- matchedArgs[["file"]]
+  matchedArgs[["file"]] <- NULL
+  
+  do.call(grDevices::cairo_pdf, matchedArgs, envir = parent.frame())
+}
