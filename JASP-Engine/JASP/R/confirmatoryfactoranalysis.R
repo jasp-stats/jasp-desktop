@@ -468,8 +468,8 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # other fitmeasures
   fitot[["index"]] <- c(
     gettext("Root mean square error of approximation (RMSEA)"),
-    gettext("RMSEA 90% CI lower bound"),
-    gettext("RMSEA 90% CI upper bound"),
+    gettextf("RMSEA 90%% CI lower bound"),
+    gettextf("RMSEA 90%% CI upper bound"),
     gettext("RMSEA p-value"),
     gettext("Standardized root mean square residual (SRMR)"),
     gettextf("Hoelter's critical N (%s = .05)","\u03B1"),
@@ -530,9 +530,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   fl1$addColumnInfo(name = "pvalue", title  = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
   fl1$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
-                    overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                    overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   fl1$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
-                    overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                    overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
 
   if (options$std != "none")
     fl1$addColumnInfo(name = paste0("std.", options$std), title = gettextf("Std. Est. (%s)", options$std),
@@ -561,9 +561,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     fl2$addColumnInfo(name = "pvalue", title  = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
     fl2$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
-                      overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                      overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
     fl2$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
-                      overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                      overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
 
     if (options$std != "none")
       fl2$addColumnInfo(name = paste0("std.", options$std), title = gettextf("Std. Est. (%s)", options$std),
@@ -589,9 +589,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   fv$addColumnInfo(name = "pvalue", title = gettext("p"),          type = "number", format  = "dp:3;p:.001")
 
   fv$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
-                   overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                   overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   fv$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
-                   overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                   overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
 
   if (options$std != "none")
     fv$addColumnInfo(name = paste0("std.", options$std), title = gettextf("Std. Est. (%s)", options$std),
@@ -619,9 +619,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     fc$addColumnInfo(name = "pvalue", title = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
     fc$addColumnInfo(name = "ci.lower", title = "Lower", type = "number", format = "sf:4;dp:3",
-                     overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                     overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
     fc$addColumnInfo(name = "ci.upper", title = "Upper", type = "number", format = "sf:4;dp:3",
-                     overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                     overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
 
     if (options$std != "none")
       fc$addColumnInfo(name   = paste0("std.", options$std),
@@ -649,9 +649,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   rv$addColumnInfo(name = "pvalue", title = gettext("p"),          type = "number", format  = "dp:3;p:.001")
 
   rv$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
-                   overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                   overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
   rv$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
-                   overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                   overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
 
   if (options$std != "none")
     rv$addColumnInfo(name   = paste0("std.", options$std),
@@ -681,9 +681,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     rescov$addColumnInfo(name = "pvalue", title = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
     rescov$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                         overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
     rescov$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
-                         overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                         overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
 
     rescov[["lhs"]]      <- .unv(rc$lhs)
     rescov[["op"]]       <- rep("\u2194", nrow(rc))
@@ -712,9 +712,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
       fi$addColumnInfo(name = "pvalue", title = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
       fi$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
-                        overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                        overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
       fi$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
-                        overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                        overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
 
       if (options$std != "none")
         fi$addColumnInfo(name = paste0("std.", options$std), title = gettextf("Std. Est. (%s)", options$std),
@@ -737,9 +737,9 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     vi$addColumnInfo(name = "pvalue", title  = gettext("p"),          type = "number", format = "dp:3;p:.001")
 
     vi$addColumnInfo(name = "ci.lower", title = gettext("Lower"), type = "number", format = "sf:4;dp:3",
-                     overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                     overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
     vi$addColumnInfo(name = "ci.upper", title = gettext("Upper"), type = "number", format = "sf:4;dp:3",
-                     overtitle = paste0(options$ciWidth * 100, gettext("% Confidence Interval")))
+                     overtitle = gettextf("%s%% Confidence Interval", options$ciWidth * 100))
 
     if (options$std != "none")
       vi$addColumnInfo(name = paste0("std.", options$std), title = gettextf("Std. Est. (%s)", options$std),

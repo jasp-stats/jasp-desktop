@@ -139,7 +139,7 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
 .ldGaussianParsSupportMoments <- function(jaspResults, options){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
-    pars[[1]] <- gettext("mean: &mu; \u2208 \u211D")
+    pars[[1]] <- gettextf("mean: &mu; %s","\u2208 \u211D")
     pars[[2]] <- switch(options[['parametrization']],
                         sigma2 = gettextf("variance: %s",                 "&sigma;<sup>2</sup> \u2208 \u211D<sup>+</sup>"),
                         sigma  = gettextf("standard deviation: %s",       "&sigma; \u2208 \u211D<sup>+</sup>"),

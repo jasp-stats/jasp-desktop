@@ -1372,7 +1372,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   if (makeBootstrapTable) {
     thisOverTitle <- gettextf("95%% bca%s CI", "\u002A")
   } else {
-    thisOverTitle <- gettext("95% CI for Mean Difference")
+    thisOverTitle <- gettextf("95%% CI for Mean Difference")
   }
   
   marginalMeansTable$addColumnInfo(name="lower.CL", type = "number", title = gettext("Lower"), overtitle = thisOverTitle, )
