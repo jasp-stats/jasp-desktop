@@ -15,7 +15,7 @@
 	"menu":
 	[
 		{
-			"title":	"Correlation Matrix",
+			"title":	"Correlation",
 			"function":	"Correlation"
 		},
 		{
@@ -30,7 +30,7 @@
 			"title":	"-"
 		},
 		{
-			"title":	"Bayesian Correlation Matrix",
+			"title":	"Bayesian Correlation",
 			"function":	"CorrelationBayesian"
 		},
 		{

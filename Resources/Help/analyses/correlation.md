@@ -1,7 +1,7 @@
-Correlation Matrix
+Correlation
 ===
 
-The Correlation Matrix allows estimation of the population correlation, as well as testing the null hypothesis that the population correlation between pairs of variables equals 0. All possible pairs of the specified variables are analyzed.
+The Correlation analysis allows estimation of the population correlation, as well as testing the null hypothesis that the population correlation between pairs of variables equals 0. All possible pairs of the specified variables are analyzed.
 
 
 ### Assumptions (Pearson's rho)
