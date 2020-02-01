@@ -768,9 +768,10 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     return(jaspResults[[indexName]]$object)
 
   results <- list()
-  .setSeedJASP(options)
-  for (method in names(bfObject))
+  for (method in names(bfObject)){
+    .setSeedJASP(options)
     results[[method]] <- bstats::computeCorPosteriorLine(bfObject = bfObject[[method]], method = method, alternative = options[["alternative"]])
+  }
   
   jaspResults[[indexName]] <- createJaspState(results)
   jaspResults[[indexName]]$dependOn(c("missingValues", "alternative", "kappa", "setSeed", "seed"))
