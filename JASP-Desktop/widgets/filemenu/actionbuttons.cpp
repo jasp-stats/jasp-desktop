@@ -127,7 +127,7 @@ std::set<ResourceButtons::ButtonType> ActionButtons::resourceButtonsForButton(Fi
 
 void ActionButtons::selectButtonUp()
 {
-	int idx = _selected == None ? 0 : _opToIndex[_selected];
+	int idx = _selected == None ? 1 : _opToIndex[_selected];
 
 	for(int move = 1; move < _data.size(); move++)
 	{

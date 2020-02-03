@@ -52,6 +52,7 @@ Item
 		id:						datalibrarylist
 		cppModel:				fileMenuModel.datalibrary.listModel
 		breadCrumbs:			datalibrarybreadcrumbs
+		keyNavigationWraps:		true
 
 		anchors
 		{

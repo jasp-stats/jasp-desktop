@@ -19,13 +19,17 @@ Item
 
 	RectangularButton
 	{
-		id:					browseButton
-		text:				qsTr("Browse")
-		anchors.left:		menuHeader.left
-		anchors.top:		menuHeader.bottom
-		onClicked:			fileMenuModel.computer.browseMostRecent();
-		KeyNavigation.down:	computerList
-		KeyNavigation.tab:	computerList
+		id:						browseButton
+		text:					qsTr("Browse")
+		anchors.left:			menuHeader.left
+		anchors.top:			menuHeader.bottom
+		onClicked:				fileMenuModel.computer.browseMostRecent();
+
+		Keys.onBacktabPressed:	computerList.selectLast()
+		Keys.onUpPressed:		computerList.selectLast()
+		Keys.onTabPressed:		computerList.selectFirst()
+		Keys.onDownPressed:		computerList.selectFirst()
+
 	}
 
 	ToolSeparator
@@ -56,6 +60,10 @@ Item
 			bottomMargin:	jaspTheme.generalMenuMargin
 		}
 
+		KeyNavigation.down:		browseButton
+		KeyNavigation.tab:		browseButton
+		KeyNavigation.up:		browseButton
+		KeyNavigation.backtab:	browseButton
 	}
 
 }

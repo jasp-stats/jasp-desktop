@@ -10,11 +10,25 @@ ListView
 
 	id:						listView
 	maximumFlickVelocity:	jaspTheme.maximumFlickVelocity
+	highlightMoveVelocity:	jaspTheme.maximumFlickVelocity
+	highlightMoveDuration:	-1
 	clip:					true
 	boundsBehavior:			Flickable.StopAtBounds
 
 	spacing:				10
 	model:					cppModel
+
+	function selectLast()
+	{
+		forceActiveFocus();
+		currentIndex = count - 1;
+	}
+
+	function selectFirst()
+	{
+		forceActiveFocus();
+		currentIndex = 0;
+	}
 
 
 	Keys.onLeftPressed:

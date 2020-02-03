@@ -20,6 +20,7 @@ Item
 	{
 		id:					recentFilesList
 		cppModel:			fileMenuModel.recentFiles.listModel
+		keyNavigationWraps:	true
 
 		anchors
 		{

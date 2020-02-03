@@ -161,6 +161,9 @@ ScrollView
 				checked:			preferencesModel.useNativeFileDialog
 				onCheckedChanged:	preferencesModel.useNativeFileDialog = checked
 				toolTip:			qsTr("If disabled it will not use your operating system's file dialogs but those made by Qt. This might solve some problems on Windows where JASP crashes on pressing \"Browse\".")
+
+				KeyNavigation.tab:		lightThemeButton
+				KeyNavigation.down:		lightThemeButton
 			}
 		}
 	}

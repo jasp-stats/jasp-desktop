@@ -48,17 +48,16 @@ Item
 
 	RectangularButton
 	{
-		id					: logoutButton
-		text				: qsTr("Logout")
-		visible				: loggedin
-
-		anchors.right		: parent.right
-		anchors.top			: parent.top
-		anchors.rightMargin	: jaspTheme.generalMenuMargin
-		anchors.topMargin	: jaspTheme.generalMenuMargin
-
-		onClicked			: fileMenuModel.osf.logoutClicked()
-		KeyNavigation.tab	: newDirectoryButton
+		id						: logoutButton
+		text					: qsTr("Logout")
+		visible					: loggedin
+		anchors.right			: parent.right
+		anchors.top				: parent.top
+		anchors.rightMargin		: jaspTheme.generalMenuMargin
+		anchors.topMargin		: jaspTheme.generalMenuMargin
+		onClicked				: fileMenuModel.osf.logoutClicked()
+		KeyNavigation.tab		: newDirectoryButton
+		KeyNavigation.backtab	: osfList
 
 	}
 
@@ -318,6 +317,7 @@ Item
 			anchors.right		: parent.right
 			anchors.top			: parent.top
 			KeyNavigation.tab	: osfList
+			KeyNavigation.down	: osfList
 			onClicked			: fileMenuModel.osf.saveFile(filenameText.text)
 		}
 	}
@@ -340,7 +340,7 @@ Item
 		focus				: visible
 		cppModel			: fileMenuModel.osf.listModel
 		breadCrumbs			: osfbreadcrumbs
-		KeyNavigation.tab	: logoutButton
+		keyNavigationWraps	: true
 
 		anchors
 		{

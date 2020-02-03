@@ -257,6 +257,10 @@ ScrollView
 						margins:	jaspTheme.generalAnchorMargin
 						left:		maxLogFilesSpinBox.right
 					}
+
+
+					KeyNavigation.tab:	rememberModulesSelected
+					KeyNavigation.down:	rememberModulesSelected
 				}
 			}
 		}

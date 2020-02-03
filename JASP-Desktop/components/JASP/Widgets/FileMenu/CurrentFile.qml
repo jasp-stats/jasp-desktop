@@ -47,8 +47,9 @@ Item
 	 
 	FileList
 	{
-		id:				currentFileList
-		cppModel:		fileMenuModel.currentFile.listModel
+		id:					currentFileList
+		cppModel:			fileMenuModel.currentFile.listModel
+		keyNavigationWraps:	true
 
 		anchors
 		{
