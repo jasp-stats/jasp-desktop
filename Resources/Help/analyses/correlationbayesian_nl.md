@@ -1,7 +1,7 @@
-Bayesiaanse Correlatie Matrix
+Bayesiaanse Correlatie
 ===
 
-De Bayesiaanse Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de nulhypothese dat de populatiecorrelatie tussen paren van variabelen gelijk is aan 0, te toetsen. Alle mogelijke paren van de gespecificeerde variabelen worden geanalyseerd.
+De Bayesiaanse Correlatie analyse maakt het mogelijk om de populatiecorrelatie te schatten en om hypothesen te vergelijken. De drie hypothesevergelijkingen zijn: (i) tussen de nulhypothese (H0) dat de populatiecorrelatie tussen paren van variabelen gelijk is aan 0 en de alternatieve hypothese (H1) dat de populatiecorrelatie een (onbekende) waarde aanneemt tussen -1 en 1, (ii) tussen H0 en de alternatieve hypothese (H+) dat de populatiecorrelatie positief is, en (iii) tussen H0 en de alternatieve hypothese (H-) dat de populatie correlatie negatief is. Alle mogelijke paren van de gespecificeerde variabelen worden geanalyseerd.
 
 ### Assumpties (Pearson's rho)
 - Continue variabelen.
@@ -32,8 +32,10 @@ De Bayesiaanse Correlatie Matrix maakt het mogelijk de populatiecorrelatie te sc
 - Log(BF<sub>10</sub>) : Als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusion</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
 
 #### Aanvullende Opties
+- Geef paarsgewijs weer: Geef een tabel weer waarin op elke rij één paar variabelen staat. Indien onaangevinkt, dan zijn de resultaten weergegeven als matrix, met de namen van variabelen in zowel de kolommen als de rijen.
 - Rapporteer Bayes factoren: Geeft de Bayes factor voor iedere toets.
 - Markeer ondersteunende correlaties: Markeer correlatiecoëfficenten met een Bayes factor groter dan 10, 30, en 100.
+- Steekproefgrootte: Geeft de grootte van de steekproef voor iedere toets.
 - Geloofwaardigheidsintervallen: Geeft geloofwaardigheidsintervallen weer voor de correlatiecoëfficient.
 
 #### Grafieken

@@ -30,7 +30,7 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 - Negatieve correlatie: Eénzijdige alternatieve hypothese dat de populatiecorrelatie lager is dan 0.
 
 #### Aanvullende Opties
-- Geef paarsgewijs weer: Geef een tabel weer waarin een rij overeenkomt met een paar van de gespecificeerde variabelen, en de spreidingsdiagrammen worden individueel voor ieder paar weergegeven. Indien onaangevinkt, dan zijn de resultaten weergegeven in matrix formaat, met e namen van variabelen in de kolommen en rijen.
+- Geef paarsgewijs weer: Geef een tabel weer waarin op elke rij één paar variabelen staat, en de spreidingsdiagrammen worden individueel voor ieder paar weergegeven. Indien onaangevinkt, dan zijn de resultaten weergegeven als matrix, met de namen van variabelen in zowel de kolommen als de rijen.
 - Rapporteer significantie: Geef de p-waarde weer, overeenkomend met de geobserveerde correlatie.
 - Markeer significante correlaties: Markeer statistisch significante correlaties.
 - Betrouwbaarheidsintervallen: Betrouwbaarheidsintervallen voor de populatiecorrelatie (enkel beschikbaar voor de Pearson correlatie).

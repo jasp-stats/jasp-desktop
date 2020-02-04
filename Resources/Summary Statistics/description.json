@@ -39,8 +39,8 @@
 			"icon"    : "analysis-bayesian-regression.svg"
 		},
 		{
-			"menu"    : "Bayesian Correlation Pairs",
-			"title"   : "S.S. Bayesian Correlation Pairs",
+			"menu"    : "Bayesian Correlation",
+			"title"   : "S.S. Bayesian Correlation",
 			"function": "SummaryStatsCorrelationBayesianPairs"
 		},
 		{

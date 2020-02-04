@@ -115,7 +115,7 @@ value errors for *BF*
 * Bayes factor could not be computed
 * *Note.* All models include *X, Y, Z*
 
-#### Bayesian Correlation Matrix
+#### Bayesian Correlation
 value errors for *r* 
 
 * Sample correlation coefficient r is undefined -- too few observations
