@@ -55,9 +55,9 @@ The Bayesian Correlation analysis allows estimation of the population correlatio
   
 - Prior and posterior: Displays the prior and posterior distribution of the correlation under the alternative hypothesis for each specified pair of variables.
   - Estimation info: Adds the median and the 95% credible interval of the posterior distribution of the effect size.
-  - Testing info: Adds the Bayes factor computed with the user-defined prior; adds a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; adds indicators representing the prior and posterior at the test point (e.g., rho=0), the ratio between these two values equals the Bayes factor.
+  - Testing info: Adds the Bayes factor computed with the user-defined prior; adds a probability wheel depicting the odds of the data under the null vs. alternative hypothesis (under the assumption that the null and alternative hypotheses were equal probable a priori, i.e., P(H0)=P(H1)=1/2); adds indicators representing the prior and posterior at the test point (e.g., rho=0), the ratio between these two values equals the Bayes factor.
   
-- Bayes factor robustness check: Displays the Bayes factor as a function of the width of the stretched beta prior on the correlation for each specified pair of variables. The width of the beta prior is varied between 0 and 2.
+- Bayes factor robustness check: Displays the Bayes factor as a function of the width of the stretched beta prior on the correlation for each specified pair of variables. The width of the kappa prior is varied between 0 and 2.
   - Additional info: Adds the Bayes factor computed with the user-defined prior and the maximum obtainable Bayes factor. 
   
 - Sequential analysis: Displays the development of the Bayes factor as the data come in using the user-defined prior for each specified pair of variables.
@@ -99,7 +99,7 @@ The Bayesian Correlation analysis allows estimation of the population correlatio
 - Prior and Posterior:
   - Displays the prior (dashed line) and posterior (solid line) distribution of the correlation under the alternative hypothesis; The horizontal solid line represents the width of the 95% credible interval of the posterior distribution.
     - Estimation info: Displays the median and the 95% credible interval of the posterior distribution of the effect size.
-    - Testing info: Displays the Bayes factor computed with the user-defined prior; displays a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; displays two gray circles representing the prior and posterior at correlation = 0.
+    - Testing info: Displays the Bayes factor computed with the user-defined prior; displays a probability wheel depicting the odds of the data under the null vs. alternative hypothesis (under the assumption that the null and alternative hypotheses were equal probable a priori, i.e., P(H0)=P(H1)=1/2); displays indicators (gray circles) representing the prior and posterior at the test point (e.g., rho=0), the ratio between these two values equals the Bayes factor.
 
 - Bayes factor robustness check: 
   - Displays the Bayes factor as a function of the width of the beta prior on the correlation. 
@@ -116,7 +116,7 @@ The Bayesian Correlation analysis allows estimation of the population correlatio
 - Ly, A., Marsman, M., & Wagenmakers, E.-J. (2018).  Analytic Posteriors for Pearson’s Correlation Coefficient. *Statistica Neerlandica, 72*(1), 4-13
 - Rouder, J. N., & Morey R. D. (2012). Default Bayes factors for model selection in regression. *Multivariate Behavioral Research, 47*, 877-903.
 - van Doorn, J.B., Ly, A., Marsman, M. & Wagenmakers, E.-J. (2018). Bayesian Inference for Kendall’s Rank Correlation Coefficient. *The American Statistician*,  72, 303-308.
-- Wagenmakers, E.-J., Lodewyckx, T., Kuriyal, H., and Grasman, R. (2010). Bayesian hypothesis testing for psychologists: A tutorial on the Savage-Dickey method. Cognitive Psychology, 60, 158-189.
+- Wagenmakers, E.-J., Lodewyckx, T., Kuriyal, H., and Grasman, R. (2010). Bayesian hypothesis testing for psychologists: A tutorial on the Savage-Dickey method. *Cognitive Psychology, 60*, 158-189.
 - Wetzels, R., & Wagenmakers, E.-J. (2012). A default Bayesian hypothesis test for correlations and partial correlations. *Psychonomic Bulletin & Review, 19*, 1057-1064.
 
 ### R Packages

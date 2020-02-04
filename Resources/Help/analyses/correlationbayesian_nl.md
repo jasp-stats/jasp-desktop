@@ -1,7 +1,7 @@
 Bayesiaanse Correlatie
 ===
 
-De Bayesiaanse Correlatie analyse maakt het mogelijk de populatiecorrelatie te schatten en de nulhypothese dat de populatiecorrelatie tussen paren van variabelen gelijk is aan 0, te toetsen. Alle mogelijke paren van de gespecificeerde variabelen worden geanalyseerd.
+De Bayesiaanse Correlatie analyse maakt het mogelijk om de populatiecorrelatie te schatten en om hypothesen te vergelijken. De drie hypothesevergelijkingen zijn: (i) tussen de nulhypothese (H0) dat de populatiecorrelatie tussen paren van variabelen gelijk is aan 0 en de alternatieve hypothese (H1) dat de populatiecorrelatie een (onbekende) waarde aanneemt tussen -1 en 1, (ii) tussen H0 en de alternatieve hypothese (H+) dat de populatiecorrelatie positief is, en (iii) tussen H0 en de alternatieve hypothese (H-) dat de populatie correlatie negatief is. Alle mogelijke paren van de gespecificeerde variabelen worden geanalyseerd.
 
 ### Assumpties (Pearson's rho)
 - Continue variabelen.
