@@ -20,7 +20,6 @@ options$priorSE <- "inverseGamma"
 options$forestPlot <- "plotForestObserved"
 options$orderForest <- "ascendingForest"
 options$BFComputation <- "integration"
-options$setSeed <- TRUE
 options$.meta <- list(confidenceInterval = list(containsColumn = TRUE), effectSize = list(
   containsColumn = TRUE), standardError = list(containsColumn = TRUE), 
   studyLabels = list(containsColumn = TRUE))
