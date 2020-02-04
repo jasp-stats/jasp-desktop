@@ -47,6 +47,9 @@ The independent samples t-test allows the user to estimate the effect size and t
  - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the tests. This options is selected by default.
  - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all dependent variables. Sample size is therefore constant across the tests.
 
+#### Repeatability
+- Set seed: Value used to set the random number generator for exact reproducibility.
+
 ### Output
 -------
 

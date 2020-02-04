@@ -166,6 +166,9 @@ Descriptives - dependent variable:
 #### Descriptives Plots
 - Descriptives plot: Repeated measures factor on the x-axis and dependent variable on the y-axis. If other repeated measures factors are included, either different lines representing different values of the other repeated measures factor are displayed in the same plot, or different plots representing different values of the other repeated measures factor are displayed.
 
+#### Repeatability
+- Set seed: Value used to set the random number generator for exact reproducibility.
+
 ### References
 ---
 - Rouder, J. N., Engelhardt C. R., McCabe S., & Morey R. D. (2016). Model comparison in ANOVA. *Psychonomic Bulletin and Review, 23*, 1779-1786.
