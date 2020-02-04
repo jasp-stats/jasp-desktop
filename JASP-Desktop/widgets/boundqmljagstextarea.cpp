@@ -55,7 +55,7 @@ void BoundQMLJAGSTextArea::bindTo(Option *option)
 		{
 			std::vector<std::string> variables = columnsOption->variables();
 			for (const std::string& variable : variables)
-				_usedColumnNames.insert(QString::fromStdString(variable));
+				_usedColumnNames.insert(variable);
 		}
 		OptionVariables* parametersOption = dynamic_cast<OptionVariables*>(_options->get("parameters"));
 		if (parametersOption)
@@ -100,11 +100,8 @@ void BoundQMLJAGSTextArea::checkSyntax()
 	// google: jags_user_manual (4.3.0) for documentation on JAGS symbols
 
 	// get the column names of the data set
-	std::set<std::string> columnNames;
-	_textEncoded = tq(ColumnEncoder::columnEncoder()->encodeRScript(stringUtils::stripRComments(fq(_text)), &columnNames));
 	_usedColumnNames.clear();
-	for (const std::string& columnName : columnNames)
-		_usedColumnNames.insert(tq(columnName));
+	_textEncoded = tq(ColumnEncoder::columnEncoder()->encodeRScript(stringUtils::stripRComments(fq(_text)), &_usedColumnNames));
 
 	QRegularExpression relationSymbol = QRegularExpression("<-|=|~");
 	QStringList textByLine = _textEncoded.split(QRegularExpression(";|\n"));
@@ -130,7 +127,7 @@ void BoundQMLJAGSTextArea::checkSyntax()
 			if (paramName.contains("["))
 				paramName = paramName.leftRef(paramName.indexOf("[")).toString();
 
-			if (paramName != "" && !_usedColumnNames.contains(paramName) && !ColumnEncoder::columnEncoder()->shouldDecode(fq(paramName)))
+			if (paramName != "" && !ColumnEncoder::columnEncoder()->shouldDecode(fq(paramName)))
 				_usedParameters.insert(paramName);
 
 		}
@@ -160,8 +157,8 @@ void BoundQMLJAGSTextArea::checkSyntax()
 			_options->add("columns", columns);
 		}
 		std::vector<std::string> columnsVec;
-		for (const QString& col : _usedColumnNames)
-			columnsVec.push_back(col.toStdString());
+		for (const std::string& col : _usedColumnNames)
+			columnsVec.push_back(col);
 		columns->setValue(columnsVec);
 
 		OptionVariables* parameters = dynamic_cast<OptionVariables*>(_options->get("parameters"));

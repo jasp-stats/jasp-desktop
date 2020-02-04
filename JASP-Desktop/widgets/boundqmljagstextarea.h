@@ -39,8 +39,8 @@ public slots:
 
 private:
 	Options*					_options = nullptr;
-	QSet<QString>				_usedColumnNames,
-								_usedParameters;
+	std::set<std::string>		_usedColumnNames;
+	QSet<QString>				_usedParameters;
 	QString						_textEncoded;
 };
 

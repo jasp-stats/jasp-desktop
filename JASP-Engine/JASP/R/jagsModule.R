@@ -674,7 +674,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   )
 
   if (length(toAdd) > 0L)
-    errorMessage <- paste0(errorMessage, "\n\n", gettext("In addition:"), "\n", toAdd)
+    errorMessage <- gettextf("%1$s%2$sIn addition:%3$s%4$s", errorMessage, "\n\n", "\n", toAdd)
 
   # return error message
   return(errorMessage)
