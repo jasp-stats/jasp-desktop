@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-01-31 12:20\n"
+"POT-Creation-Date: 2020-02-04 21:07\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1936,15 +1936,6 @@ msgstr ""
 msgid "Cancelled by callback"
 msgstr ""
 
-msgid ".setSeedJASP was called with an incorrect argument."
-msgstr ""
-
-msgid "The argument options should be the options list from QML."
-msgstr ""
-
-msgid "Ensure that the SetSeed{} QML component is present in the QML file for this analysis."
-msgstr ""
-
 msgid "Bayes factor is undefined -- all effects are specified as nuisance."
 msgstr ""
 
@@ -2104,10 +2095,10 @@ msgstr ""
 msgid "n"
 msgstr ""
 
-msgid "25% Quantile"
+msgid "25%% Quantile"
 msgstr ""
 
-msgid "75% Quantile"
+msgid "75%% Quantile"
 msgstr ""
 
 msgid "Rel. Frequency"
@@ -3319,9 +3310,6 @@ msgstr ""
 msgid "Stretched beta prior width"
 msgstr ""
 
-msgid "One or more Bayes factors are infinity"
-msgstr ""
-
 msgid "Frequency Tables"
 msgstr ""
 
@@ -3604,6 +3592,9 @@ msgstr ""
 msgid "No data was supplied, everything was sampled from the priors!"
 msgstr ""
 
+msgid "Failed to compute the Rhat statistic. This is expected if the model contains discrete parameters."
+msgstr ""
+
 msgid "The multivariate potential scale reduction factor is estimated at %.3f."
 msgstr ""
 
@@ -3640,22 +3631,22 @@ msgstr ""
 msgid "At least two parameters need to be monitored and shown to make a bivariate scatter plot!"
 msgstr ""
 
-msgid "%s\n\nPossible typos detected:\n\n%s"
+msgid "%1$s%2$sIn addition:%3$s%4$s"
 msgstr ""
 
-msgid "The model contains more '%s' than '%s' (%d vs %d)"
+msgid "The model contains more '%1$s' than '%2$s' (%3$d vs %4$d)"
 msgstr ""
 
-msgid "There was a problem loading JAGS, JAGS_HOME is: '%s'.\nPlease contact the JASP team for support.\nError was: %s."
+msgid "There was a problem loading JAGS, JAGS_HOME is: '%1$s'.\nPlease contact the JASP team for support.\nError was: %2$s."
 msgstr ""
 
 msgid "Expected JAGS version 4.3.0 but found %s"
 msgstr ""
 
-msgid "The R code for %s crashed with error:\n%s"
+msgid "The R code for %1$s crashed with error:\n%2$s"
 msgstr ""
 
-msgid "The result of %s R code should be numeric but it was of mode %s and class %s"
+msgid "The result of %1$s R code should be numeric but it was of mode %2$s and class %3$s"
 msgstr ""
 
 msgid "probability of success: p %s %s: 0 %s p %s 1"
