@@ -48,26 +48,13 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   model <- options[["model"]][["model"]]
 
-  if (.JAGShasData(options)) {
-    pattern <- colnames(dataset)
-    names(pattern) <- paste0("\\b", .unv(pattern), "\\b")
-
-    modelb64 <- stringr::str_replace_all(
-      string  = model,
-      pattern = pattern
-    )
-  } else {
-    modelb64 <- model
-    pattern <- NULL
-  }
-
   # TODO: uncomment these before merge in JASP!
   location <- .fromRCPP(".requestTempFileNameNative", ".txt")
   modelFile <- file.path(location$root, location$relativePath)
   # modelFile <- tempfile(pattern = "jagsModel", fileext = ".txt")
   print(modelFile)
   fileConn <- file(modelFile)
-  writeLines(modelb64, fileConn)
+  writeLines(model, fileConn)
   close(fileConn)
 
   noSamples        <- options[["noSamples"]]
@@ -183,7 +170,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   # if something went wrong, present useful error message
   if (isTryError(e)) {
-    jaspResults[["mainContainer"]]$setError(.JAGSmodelError(e, pattern, model, options))
+    jaspResults[["mainContainer"]]$setError(.JAGSmodelError(e, model, options))
     return(NULL)
   }
 
@@ -219,12 +206,12 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
 .JAGSInit <- function(jaspResults, options) {
 
+  jaspResults$addCitation(.JAGSCitations)
   if (is.null(jaspResults[["mainContainer"]])) {
     # setup outer container with all common dependencies
     mainContainer <- createJaspContainer(dependencies = c("model", "noSamples", "noBurnin", "noThinning", "noChains",
                                                           "parametersMonitored", "parametersShown", "initialValues", "userData",
-                                                          "setSeed", "seed"))
-    mainContainer$addCitation(.JAGSCitations)
+                                                          "setSeed", "seed", "showDeviance"))
     jaspResults[["mainContainer"]] <- mainContainer
   }
 
@@ -300,7 +287,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
       tb$addFootnote(message = gettext("No data was supplied, everything was sampled from the priors!"), symbol = .JAGSWarningSymbol)
 
     parametersToShow <- options[["parametersShown"]]
-    if (mcmcResult[["DIC"]])
+    if (mcmcResult[["DIC"]] && options[["showDeviance"]])
       parametersToShow <- c("deviance", parametersToShow)
     sum <- mcmcResult[["BUGSoutput"]][["summary"]]
     nms <- rownames(sum)
@@ -312,15 +299,20 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
     if (options[["noChains"]] > 1L) {
 
-      rhat <- coda::gelman.diag(mcmcResult[["samples"]])
+      rhat <- try(coda::gelman.diag(mcmcResult[["samples"]]))
+      if (isTryError(rhat)) {
+        tb$addFootnote(message = gettext("Failed to compute the Rhat statistic. This is expected if the model contains discrete parameters."), 
+                       colNames = c("rhatPoint", "rhatCI"))
+      } else {
 
-      tbR[["rhatPoint"]] <- rhat[["psrf"]][idx, 1L]
-      tbR[["rhatCI"]]    <- rhat[["psrf"]][idx, 2L]
-      if (!is.null(rhat[["mpsrf"]])) {
-        tb$addFootnote(message = gettextf(
-          "The multivariate potential scale reduction factor is estimated at %.3f.",
-          rhat[["mpsrf"]]
-        ))
+        tbR[["rhatPoint"]] <- rhat[["psrf"]][idx, 1L]
+        tbR[["rhatCI"]]    <- rhat[["psrf"]][idx, 2L]
+        if (!is.null(rhat[["mpsrf"]])) {
+          tb$addFootnote(message = gettextf(
+            "The multivariate potential scale reduction factor is estimated at %.3f.",
+            rhat[["mpsrf"]]
+          ))
+        }
       }
     } else {
       tb$addFootnote(message = gettext("Rhat statistic cannot be computed for only one chain. It is strongly recommoned to run more than one chain to assess MCMC convergence!"))
@@ -341,7 +333,6 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   if (is.null(jaspResults[["mainContainer"]][["plotContainer"]])) {
     plotContainer <- createJaspContainer(dependencies = c("parametersShown", "colorScheme"))
-    # jaspResults[["mainContainer"]][["plotContainer"]] <- plotContainer
   } else {
     plotContainer <- jaspResults[["mainContainer"]][["plotContainer"]]
   }
@@ -363,7 +354,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   if (!(is.null(mcmcResult) || jaspResults[["mainContainer"]][["plotContainer"]]$getError()))
     .JAGSFillPlotContainers(containerObj, options, mcmcResult)
 
-  .JAGSPlotBivariateScatter(plotContainer, options, mcmcResult)
+  .JAGSPlotBivariateScatter(plotContainer, options, mcmcResult, params)
 
 }
 
@@ -554,7 +545,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
       ggplot2::geom_line(show.legend = FALSE) +
       ggplot2::labs(x = gettext("Iteration"), y = param) +
       JASPgraphs::scale_JASPcolor_discrete()
-  )
+  ) + ggplot2::theme(plot.margin = ggplot2::margin(0, 10, 0, 0))
   return(g)
 }
 
@@ -590,7 +581,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   return(g)
 }
 
-.JAGSPlotBivariateScatter <- function(plotContainer, options, mcmcResult) {
+.JAGSPlotBivariateScatter <- function(plotContainer, options, mcmcResult, params) {
 
   if (is.null(plotContainer[["plotBivarHex"]]) || !is.null(plotContainer[["plotBivarHex"]]$plotObject))
     return()
@@ -599,17 +590,16 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   if (length(options[["parametersShown"]]) >= 2L) {
     jaspPlot$width  <- sum(lengths(mcmcResult[["params"]])) * 320L
     jaspPlot$height <- sum(lengths(mcmcResult[["params"]])) * 320L
-    jaspPlot$plotObject <- .JAGSPlotBivariateMatrix(options, mcmcResult)
+    jaspPlot$plotObject <- .JAGSPlotBivariateMatrix(options, mcmcResult, unlist(params))
   } else if (length(options[["parametersShown"]]) == 1L) {
     # only show an error when some variables are selected to avoid error messages when users set the options
     jaspPlot$setError(gettext("At least two parameters need to be monitored and shown to make a bivariate scatter plot!"))
   }
 }
 
-.JAGSPlotBivariateMatrix <- function(options, mcmcResult) {
+.JAGSPlotBivariateMatrix <- function(options, mcmcResult, allParams) {
 
   samples <- mcmcResult[["samples"]]
-  allParams <- unlist(mcmcResult[["params"]])
   nParams <- length(allParams)
   plotMatrix <- matrix(list(), nParams, nParams, dimnames = list(allParams, allParams))
 
@@ -670,45 +660,9 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   return(trimws(paste(split[-1L], collapse = "\n")))
 }
 
-.JAGSmodelError <- function(error, pattern, model, options) {
+.JAGSmodelError <- function(error, model, options) {
 
-  if (.JAGShasData(options)) {
-    revPattern <- names(pattern)
-    names(revPattern) <- pattern
-
-    # change base64 to normal variable names
-    errorMessage <- stringr::str_replace_all(
-      string  = .extractJAGSErrorMessage(error),
-      pattern = revPattern
-    )
-  } else {
-    errorMessage <- .extractJAGSErrorMessage(error)
-  }
-
-  if (!is.null(unlist(options[["possibleTypos"]]))) {
-
-    toAdd <- NULL
-    idx <- stringr::str_detect(errorMessage, paste0("\\b", options[["possibleParams"]], "\\b"))
-    nmax <- max(nchar(options[["possibleParams"]][idx]))
-    if (any(idx)) {
-
-      toAdd <- paste0("Model", strrep(" ", nmax - 5L), " | Data\n")
-      toAdd <- paste0(toAdd, strrep("-", nchar(toAdd)), "\n")
-
-      for (i in which(idx)) {
-        toAdd <- paste0(toAdd,
-                        options[["possibleParams"]][[i]],
-                        " | ",
-                        paste(options[["possibleTypos"]][[i]], collapse = ", "),
-                        "\n"
-        )
-      }
-    }
-
-    if (!is.null(toAdd))
-      errorMessage <- gettextf("%s\n\nPossible typos detected:\n\n%s", errorMessage, toAdd)
-
-  }
+  errorMessage <- .extractJAGSErrorMessage(error)
 
   # perhaps some helpfull checks...
   chars <- stringr::fixed(c("[", "]", "{", "}", "(", ")"))
@@ -720,7 +674,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   )
 
   if (length(toAdd) > 0L)
-    errorMessage <- paste0(errorMessage, "\n\nIn addition:\n", toAdd)
+    errorMessage <- gettextf("%1$s%2$sIn addition:%3$s%4$s", errorMessage, "\n\n", "\n", toAdd)
 
   # return error message
   return(errorMessage)
@@ -734,7 +688,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
     chars <- chars[2:1]
   }
   return(gettextf(
-    "The model contains more '%s' than '%s' (%d vs %d)",
+    "The model contains more '%1$s' than '%2$s' (%3$d vs %4$d)",
     chars[1L], chars[2L], counts[1L], counts[2L]
   ))
 }
@@ -745,7 +699,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   e <- try(loadNamespace("rjags"), silent = TRUE)
   if (isTryError(e)) {
     # Sys.getenv() returns "" if nothing was found
-    jaspContainer$setError(gettextf("There was a problem loading JAGS, JAGS_HOME is: '%s'.\nPlease contact the JASP team for support.\nError was: %s.",
+    jaspContainer$setError(gettextf("There was a problem loading JAGS, JAGS_HOME is: '%1$s'.\nPlease contact the JASP team for support.\nError was: %2$s.",
                                     Sys.getenv("JAGS_HOME"), e))
   } else if (isTRUE(rjags::jags.version() < "4.3.0")) {
     jaspContainer$setError(gettextf("Expected JAGS version 4.3.0 but found %s", as.character(rjags::jags.version())))
@@ -757,8 +711,13 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 # Helper functions ----
 .JAGSGetParams <- function(options, mcmcResult) {
 
-  if (!is.null(mcmcResult))
-    return(mcmcResult[["params"]])
+  if (!is.null(mcmcResult)) {
+    params <- mcmcResult[["params"]]
+    if (!options[["showDeviance"]]) {
+      params <- params[names(params) != "deviance"]
+    }
+    return(params)
+  }
 
   params <- unlist(options[["parametersShown"]])
   if (is.null(params))
@@ -786,11 +745,11 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
       }
       obj <- try(eval(parse(text = string)))
       if (isTryError(obj)) {
-        jaspResults[["mainContainer"]]$setError(gettextf("The R code for %s crashed with error:\n%s",
+        jaspResults[["mainContainer"]]$setError(gettextf("The R code for %1$s crashed with error:\n%2$s",
                                                         type, .extractErrorMessage(obj)))
         return()
       } else if (!is.numeric(obj)) {
-        jaspResults[["mainContainer"]]$setError(gettextf("The result of %s R code should be numeric but it was of mode %s and class %s",
+        jaspResults[["mainContainer"]]$setError(gettextf("The result of %1$s R code should be numeric but it was of mode %2$s and class %3$s",
                                                 type, mode(obj), paste(class(obj), collapse = ",")))
         return()
       } else {

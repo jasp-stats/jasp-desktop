@@ -198,5 +198,7 @@ Form
 		}
 
 		SetSeed{}
+
+		CheckBox {	name: "showDeviance";	label: qsTr("Show Deviance");	checked: false	}
 	}
 }

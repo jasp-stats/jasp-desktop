@@ -19,6 +19,8 @@
 #include "boundqmljagstextarea.h"
 #include "analysis/analysisform.h"
 #include "gui/preferencesmodel.h"
+#include "columnencoder.h"
+#include "stringutils.h"
 
 BoundQMLJAGSTextArea::BoundQMLJAGSTextArea(JASPControlBase* item)
 	: JASPControlWrapper(item)
@@ -40,15 +42,20 @@ void BoundQMLJAGSTextArea::bindTo(Option *option)
 	_options = dynamic_cast<Options *>(option);
 	if (_options != nullptr)
 	{
-		OptionString* modelOption = dynamic_cast<OptionString*>(_options->get("model"));
+		OptionString* modelOption = dynamic_cast<OptionString*>(_options->get("modelOriginal"));
 		if (modelOption)
 			_text = QString::fromStdString(modelOption->value());
+
+		OptionString* modelEncodedOption = dynamic_cast<OptionString*>(_options->get("model"));
+		if (modelEncodedOption)
+			_textEncoded = QString::fromStdString(modelEncodedOption->value());
+
 		OptionVariables* columnsOption = dynamic_cast<OptionVariables*>(_options->get("columns"));
 		if (columnsOption)
 		{
 			std::vector<std::string> variables = columnsOption->variables();
 			for (const std::string& variable : variables)
-				_usedColumnNames.insert(QString::fromStdString(variable));
+				_usedColumnNames.insert(variable);
 		}
 		OptionVariables* parametersOption = dynamic_cast<OptionVariables*>(_options->get("parameters"));
 		if (parametersOption)
@@ -68,9 +75,10 @@ Option *BoundQMLJAGSTextArea::createOption()
 	Options* result = new Options();
 	std::string text = getItemProperty("text").toString().toStdString();
 
-	result->add("model",		new OptionString(text));
-	result->add("columns",		new OptionVariables());
-	result->add("parameters",	new OptionVariables());
+	result->add("modelOriginal",	new OptionString(text));
+	result->add("model",			new OptionString(text));
+	result->add("columns",			new OptionVariables());
+	result->add("parameters",		new OptionVariables());
 
 	return result;
 }
@@ -92,17 +100,17 @@ void BoundQMLJAGSTextArea::checkSyntax()
 	// google: jags_user_manual (4.3.0) for documentation on JAGS symbols
 
 	// get the column names of the data set
-	std::vector<std::string> colnms = DataSetPackage::pkg()->getColumnNames();
-	std::set<std::string> columnNames(std::make_move_iterator(colnms.begin()), std::make_move_iterator(colnms.end()));
+	_usedColumnNames.clear();
+	_textEncoded = tq(ColumnEncoder::columnEncoder()->encodeRScript(stringUtils::stripRComments(fq(_text)), &_usedColumnNames));
 
 	QRegularExpression relationSymbol = QRegularExpression("<-|=|~");
-	QStringList textByLine = _text.split(QRegularExpression(";|\n"));
+	QStringList textByLine = _textEncoded.split(QRegularExpression(";|\n"));
 	_usedParameters.clear();
-	_usedColumnNames.clear();
 
 	for (QString & line : textByLine)
 	{
-		if (!line.trimmed().startsWith("#") && line.contains(relationSymbol))
+		// comments were already removed by stringUtils::stripRComments
+		if (line.contains(relationSymbol))
 		{
 			// extract parameter and remove whitespace
 			QString paramName = line.split(relationSymbol).first().trimmed();
@@ -115,28 +123,33 @@ void BoundQMLJAGSTextArea::checkSyntax()
 				paramName = paramName.midRef(idxStart, idxEnd).toString();
 			}
 
+			// get rid of any indexing
 			if (paramName.contains("["))
 				paramName = paramName.leftRef(paramName.indexOf("[")).toString();
 
-			if (paramName != "")
-			{
-				if (columnNames.find(paramName.toUtf8().constData()) == columnNames.end())
-					_usedParameters << paramName;
-				else
-					_usedColumnNames << paramName;
-			}
+			if (paramName != "" && !ColumnEncoder::columnEncoder()->shouldDecode(fq(paramName)))
+				_usedParameters.insert(paramName);
+
 		}
 	}
 
 	if (_options != nullptr)
 	{
-		OptionString* modelOption = dynamic_cast<OptionString*>(_options->get("model"));
+		OptionString* modelOption = dynamic_cast<OptionString*>(_options->get("modelOriginal"));
 		if (!modelOption)
 		{
 			modelOption = new OptionString();
-			_options->add("model", modelOption);
+			_options->add("modelOriginal", modelOption);
 		}
 		modelOption->setValue(_text.toStdString());
+
+		OptionString* modelEncodedOption = dynamic_cast<OptionString*>(_options->get("model"));
+		if (!modelEncodedOption)
+		{
+			modelEncodedOption = new OptionString();
+			_options->add("model", modelEncodedOption);
+		}
+		modelEncodedOption->setValue(_textEncoded.toStdString());
 		OptionVariables* columns = dynamic_cast<OptionVariables*>(_options->get("columns"));
 		if (!columns)
 		{
@@ -144,8 +157,8 @@ void BoundQMLJAGSTextArea::checkSyntax()
 			_options->add("columns", columns);
 		}
 		std::vector<std::string> columnsVec;
-		for (const QString& col : _usedColumnNames)
-			columnsVec.push_back(col.toStdString());
+		for (const std::string& col : _usedColumnNames)
+			columnsVec.push_back(col);
 		columns->setValue(columnsVec);
 
 		OptionVariables* parameters = dynamic_cast<OptionVariables*>(_options->get("parameters"));
