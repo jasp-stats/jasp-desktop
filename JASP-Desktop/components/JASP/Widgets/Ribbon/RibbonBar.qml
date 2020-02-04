@@ -115,7 +115,7 @@ FocusScope
 		y		: ribbonMenu.height
 		z		: 1
 		height	: jaspTheme.shadowRadius
-		width   : customMenu.visible && customMenu.sourceItem.objectName === "ribbonButton" ? customMenu.x : ribbonBar.width
+		width   : customMenu.visible && customMenu.sourceItem !== null && customMenu.sourceItem.objectName === "ribbonButton" ? customMenu.x : ribbonBar.width
 
 		anchors
 		{
@@ -134,7 +134,7 @@ FocusScope
 		y		: ribbonMenu.height
 		z		: 1
 		height	: jaspTheme.shadowRadius
-		width	: customMenu.visible  && customMenu.sourceItem.objectName === "ribbonButton" ? (ribbonBar.width - (customMenu.x + customMenu.width)) : 0
+		width	: customMenu.visible  && customMenu.sourceItem !== null && customMenu.sourceItem.objectName === "ribbonButton" ? (ribbonBar.width - (customMenu.x + customMenu.width)) : 0
 
 		anchors
 		{

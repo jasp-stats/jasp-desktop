@@ -30,6 +30,7 @@ Rectangle
 	z				: 1
     objectName      : "ribbonButton"
 	//radius			: 4
+	//opacity			: x < ListView.contentX || ( x - ListView.contentX + width > ListView.contentWidth ) ? 0.5 : 1
 
 	property alias	text		: innerText.text
 	property alias	source		: backgroundImage.source

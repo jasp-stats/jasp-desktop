@@ -16,6 +16,10 @@
 	"menu":
 	[
 		{
+			"title":	"Klassiek",
+			"icon":		"analysis-classical-crosstabs.svg"
+		},
+		{
 			"title":	"Binomiaal Toets",
 			"function":	"BinomialTest"
 		},
@@ -33,6 +37,10 @@
 		},
 		{
 			"title":	"-"
+		},
+		{
+			"title":	"Bayesiaans",
+			"icon":		"analysis-bayesian-crosstabs.svg"
 		},
 		{
 			"title":	"Bayesiaanse Binomiaal Toets",

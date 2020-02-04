@@ -16,6 +16,10 @@
 	"menu":
 	[
 		{
+			"title":    "Klassiek",
+			"icon":		"analysis-classical-anova.svg"
+		},
+		{
 			"title":	"ANOVA",
 			"function":	"Anova"
 		},
@@ -33,6 +37,10 @@
 		},
 		{
 			"title":	"-"
+		},
+		{
+			"title":    "Bayesiaans",
+			"icon":		"analysis-bayesian-anova.svg"
 		},
 		{
 			"title":	"Bayesiaanse ANOVA",

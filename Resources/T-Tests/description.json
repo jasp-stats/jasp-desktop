@@ -15,6 +15,10 @@
 	"menu":
 	[
 		{
+			"title":	"Classical",
+			"icon":		"analysis-classical-ttest.svg"
+		},
+		{
 			"title":	"Independent Samples T-Test",
 			"function":	"TTestIndependentSamples"
 		},
@@ -28,6 +32,10 @@
 		},
 		{
 			"title":	"-"
+		},
+		{
+			"title":	"Bayesian",
+			"icon":		"analysis-bayesian-ttest.svg"
 		},
 		{
 			"title":	"Bayesian Independent Samples T-Test",

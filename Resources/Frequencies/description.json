@@ -15,6 +15,10 @@
 	"menu":
 	[
 		{
+			"title":	"Classical",
+			"icon":		"analysis-classical-crosstabs.svg"
+		},
+		{
 			"title":	"Binomial Test",
 			"function":	"BinomialTest"
 		},
@@ -32,6 +36,10 @@
 		},
 		{
 			"title":	"-"
+		},
+		{
+			"title":	"Bayesian",
+			"icon":		"analysis-bayesian-crosstabs.svg"
 		},
 		{
 			"title":	"Bayesian Binomial Test",

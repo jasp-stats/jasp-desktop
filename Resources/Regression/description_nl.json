@@ -16,6 +16,10 @@
 	"menu":
 	[
 		{
+			"title":	"Klassiek",
+			"icon":		"analysis-classical-regression.svg"
+		},
+		{
 			"title":	"Correlatie Matrix",
 			"function":	"Correlation"
 		},
@@ -29,6 +33,10 @@
 		},
 		{
 			"title":	"-"
+		},
+		{
+			"title":	"Bayesiaans",
+			"icon":		"analysis-bayesian-regression.svg"
 		},
 		{
 			"title":	"Bayesiaanse Correlatie Matrix",

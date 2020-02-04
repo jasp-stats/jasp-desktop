@@ -15,6 +15,10 @@
 	"menu":
 	[
 		{
+			"title":	"Classical",
+			"icon":		"analysis-classical-regression.svg"
+		},
+		{
 			"title":	"Correlation",
 			"function":	"Correlation"
 		},
@@ -28,6 +32,10 @@
 		},
 		{
 			"title":	"-"
+		},
+		{
+			"title":	"Bayesian",
+			"icon":		"analysis-bayesian-regression.svg"
 		},
 		{
 			"title":	"Bayesian Correlation",

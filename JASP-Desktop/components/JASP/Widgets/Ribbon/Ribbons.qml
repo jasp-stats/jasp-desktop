@@ -55,6 +55,7 @@ Item
 		highlightMoveDuration:			20
 
 		onDragStarted:					customMenu.hide()
+		onMovementStarted:				customMenu.hide()
 
 		anchors
 		{
