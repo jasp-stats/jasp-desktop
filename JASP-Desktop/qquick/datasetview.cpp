@@ -97,11 +97,8 @@ void DataSetView::modelDataChanged(const QModelIndex &index, const QModelIndex &
 	int col = index.column();
 	QSizeF calcSize = getColumnSize(col);
 
-	if (int(_cellSizes[size_t(col)].width() * 10) != int(calcSize.width() * 10))
-	{
-		modelAboutToBeReset();
+	if (_cacheItems || int(_cellSizes[size_t(col)].width() * 10) != int(calcSize.width() * 10)) //If we cache items we are not expecting the user to make regular manual changes to the data, so if something changes we can do a reset. Otherwise we are in TableView and we do it only when the column size changes.
 		calculateCellSizes();
-	}
 }
 
 void DataSetView::modelHeaderDataChanged(Qt::Orientation, int, int)

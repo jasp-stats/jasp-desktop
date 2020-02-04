@@ -29,9 +29,9 @@ ListModelJAGSDataInput::ListModelJAGSDataInput(BoundQMLTableView *parent, QStrin
 	_defaultCellVal = "...";
 	_colNames.clear();
 	_values.clear();
-	_colNames.push_back(getColName(0));
+	_colNames.push_back(getDefaultColName(0));
 	_values.push_back({});
-	_colNames.push_back(getColName(1));
+	_colNames.push_back(getDefaultColName(1));
 	_values.push_back({});
 }
 
@@ -55,7 +55,7 @@ void ListModelJAGSDataInput::sourceTermsChanged(const Terms *, const Terms *)
 		_rowNames.clear();
 		_rowCount = sourceTerms.size();
 		for (size_t colNb = 1; colNb <= _rowCount; colNb++)
-			_rowNames.push_back(getRowName(colNb));
+			_rowNames.push_back(getDefaultRowName(colNb));
 		QList<QString> firstColumnValues = sourceTerms.asQList();
 		QVector<QVariant> firstColumn;
 		QVector<QVariant> secondColumn;
@@ -77,7 +77,7 @@ void ListModelJAGSDataInput::sourceTermsChanged(const Terms *, const Terms *)
 }
 
 
-QString ListModelJAGSDataInput::getColName(size_t index) const
+QString ListModelJAGSDataInput::getDefaultColName(size_t index) const
 {
 	if(index == 0)
 		return "Parameter";
@@ -111,14 +111,14 @@ OptionsTable *ListModelJAGSDataInput::createOption()
 	{
 		std::vector<std::string> stdlevels;
 		for (int row=0; row<_initialRowCnt; row++)
-			stdlevels.push_back(fq(getRowName(row)));
+			stdlevels.push_back(fq(getDefaultRowName(row)));
 
 		std::vector<Options*> allOptions;
 
 		for (int colIndex = 0; colIndex < _initialColCnt; colIndex++)
 		{
 			Options* options =		new Options();
-			options->add("name",	new OptionString(fq(getColName(colIndex))));
+			options->add("name",	new OptionString(fq(getDefaultColName(colIndex))));
 			options->add("levels",	new OptionVariables(stdlevels));
 
 			std::vector<std::string> tempValues;

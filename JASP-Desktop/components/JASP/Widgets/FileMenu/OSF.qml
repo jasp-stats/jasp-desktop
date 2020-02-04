@@ -183,11 +183,13 @@ Item
 			{
 				id					: foldernameText
 				selectByMouse		: true
-				selectedTextColor	: jaspTheme.white
+				selectedTextColor	: jaspTheme.textDisabled
 				selectionColor		: jaspTheme.itemSelectedColor
+				color				: jaspTheme.textEnabled
 
 				text				: fileMenuModel.osf.savefoldername
 				font				: jaspTheme.fontRibbon
+
 
 				anchors.fill		: parent
 				anchors.leftMargin	: jaspTheme.itemPadding
@@ -289,8 +291,9 @@ Item
 			{
 				id					: filenameText
 				selectByMouse		: true
-				selectedTextColor	: jaspTheme.white
+				selectedTextColor	: jaspTheme.textDisabled
 				selectionColor		: jaspTheme.itemSelectedColor
+				color				: jaspTheme.textEnabled
 
 				text				: fileMenuModel.osf.savefilename
 				font				: jaspTheme.fontRibbon

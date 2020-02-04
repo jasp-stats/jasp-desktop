@@ -77,8 +77,8 @@ FocusScope
 	{
 		id: labelExplain
 
-		text : qsTr("Sign in with your OSF account to continue")
-		color:jaspTheme.black
+		text :	qsTr("Sign in with your OSF account to continue")
+		color:	jaspTheme.textEnabled
 		font.pointSize: 11 * preferencesModel.uiScale
 		font.family:	jaspTheme.font.family
 
@@ -133,8 +133,9 @@ FocusScope
 				anchors.fill		: parent
 				anchors.leftMargin	: 10 * preferencesModel.uiScale
 				selectByMouse		: true
-				selectedTextColor	: jaspTheme.white
+				selectedTextColor	: jaspTheme.textDisabled
 				selectionColor		: jaspTheme.itemSelectedColor
+				color				: jaspTheme.textEnabled
 
 
 				verticalAlignment	: Text.AlignVCenter
@@ -180,8 +181,9 @@ FocusScope
 				verticalAlignment	: Text.AlignVCenter
 				echoMode			: TextInput.Password
 				selectByMouse		: true
-				selectedTextColor	: jaspTheme.white
+				selectedTextColor	: jaspTheme.textDisabled
 				selectionColor		: jaspTheme.itemSelectedColor
+				color				: jaspTheme.textEnabled
 
 				font.pixelSize    : 14 * preferencesModel.uiScale
 

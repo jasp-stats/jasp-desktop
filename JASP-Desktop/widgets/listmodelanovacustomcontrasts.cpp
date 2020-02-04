@@ -61,7 +61,7 @@ void ListModelANOVACustomContrasts::setFactorsSource(ListModelRepeatedMeasuresFa
 	setFactors();
 }
 
-QString ListModelANOVACustomContrasts::getColName(size_t index) const
+QString ListModelANOVACustomContrasts::getDefaultColName(size_t index) const
 {
 	if(index > _colNames.size()) return "?";
 
@@ -102,7 +102,7 @@ void ListModelANOVACustomContrasts::setColLabels()
 
 int ListModelANOVACustomContrasts::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 {
-	return std::max(ListModelTableViewBase::getMaximumColumnWidthInCharacters(columnIndex), getColName(columnIndex).size());
+	return std::max(ListModelTableViewBase::getMaximumColumnWidthInCharacters(columnIndex), getDefaultColName(columnIndex).size());
 }
 
 
@@ -145,7 +145,7 @@ void ListModelANOVACustomContrasts::modifyValuesNamesEtcetera()
 	_rowNames.clear();
 
 	for(int i=0; i<_rowCount; i++)
-		_rowNames.push_back(getRowName(i));
+		_rowNames.push_back(getDefaultRowName(i));
 
 	beginResetModel();
 

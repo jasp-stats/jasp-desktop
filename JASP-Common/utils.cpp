@@ -411,3 +411,10 @@ bool Utils::convertValueToDoubleForImport(const std::string &strValue, double &d
 
 	return true;
 }
+
+std::string Utils::doubleToString(double dbl)
+{
+	std::stringstream conv; //Use this instead of std::to_string to make sure there are no trailing zeroes (and to get full precision)
+	conv << dbl;
+	return conv.str();
+}

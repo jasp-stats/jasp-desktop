@@ -62,8 +62,9 @@ public:
 	static bool isEmptyValue(const std::string& val);
 	static bool isEmptyValue(const double& val);
 
-	static bool		convertValueToIntForImport(		const std::string &strValue, int &intValue);
-	static bool		convertValueToDoubleForImport(	const std::string &strValue, double &doubleValue);
+	static bool			convertValueToIntForImport(		const std::string &strValue, int &intValue);
+	static bool			convertValueToDoubleForImport(	const std::string &strValue, double &doubleValue);
+	static std::string	doubleToString(double dbl);
 
 private:
 	static std::string _deEuropeaniseForImport(		const std::string &value);
