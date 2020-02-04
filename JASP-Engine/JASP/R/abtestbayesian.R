@@ -201,7 +201,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   # we copy dependencies from this state object in a few places, so it must always exist
   jaspResults[["model"]] <- createJaspState()
   jaspResults[["model"]]$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "orEqualTo1Prob",
-                                    "orLessThan1Prob", "orGreaterThan1Prob", "orNotEqualTo1Prob", "numSamples"))
+                                    "orLessThan1Prob", "orGreaterThan1Prob", "orNotEqualTo1Prob", "numSamples", "setSeed", "seed"))
   
   if (!ready)
     return(NULL)
@@ -218,6 +218,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   prior_prob <- c(orNotEqualTo1Prob, orGreaterThan1Prob, orLessThan1Prob, orEqualTo1Prob)
   names(prior_prob) <- c("H1", "H+", "H-", "H0")
 
+  .setSeedJASP(options)
   ab <- try(abtest::ab_test(data = dataset, prior_par = prior_par, prior_prob = prior_prob,
                             posterior = TRUE, nsamples = options$numSamples))
 
@@ -273,7 +274,8 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 .abTestPlotPriorPosterior <- function(jaspResults, ab_obj, options, ready, position) {
 
   abTestPriorAndPosteriorPlot <- createJaspPlot(title = gettext("Prior and Posterior"),  width = 530, height = 400)
-  abTestPriorAndPosteriorPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "numSamples", "plotPosteriorType", "plotPriorAndPosterior"))
+  abTestPriorAndPosteriorPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "numSamples", "plotPosteriorType", "plotPriorAndPosterior",
+                                         "setSeed", "seed"))
   abTestPriorAndPosteriorPlot$position <- position
   
   jaspResults[["abTestPriorAndPosteriorPlot"]] <- abTestPriorAndPosteriorPlot
@@ -337,7 +339,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 .abTestPlotRobustness <- function(jaspResults, ab_obj, ready, position) {
 
   abTestRobustnessPlot <- createJaspPlot(title = gettext("Bayes Factor Robustness Check"),  width = 530, height = 400)
-  abTestRobustnessPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "numSamples", "plotRobustness"))
+  abTestRobustnessPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "numSamples", "plotRobustness", "setSeed", "seed"))
   abTestRobustnessPlot$position <- position
   
   jaspResults[["abTestRobustnessPlot"]] <- abTestRobustnessPlot

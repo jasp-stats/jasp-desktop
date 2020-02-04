@@ -68,6 +68,8 @@ Specify the prior probabilities for the four hypotheses:
 #### Sampling
 Determines the number of importance samples for obtaining log marginal likelihood for (H+) and (H-) and the number of posterior samples.
 
+#### Repeatability
+- Set seed: Value used to set the random number generator for exact reproducibility.
 
 ### Output
 ----------

@@ -48,7 +48,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
     
     # Create table
     contTabBasBF <- createJaspTable(title = gettext("Bayesian Contingency Tables Tests"))
-    dependList <- c("samplingModel", "hypothesis", "bayesFactorType", "priorConcentration")
+    dependList <- c("samplingModel", "hypothesis", "bayesFactorType", "priorConcentration", "setSeed", "seed")
     contTabBasBF$dependOn(dependList)
     contTabBasBF$showSpecifiedColumnsOnly <- TRUE
     contTabBasBF$position <- 2
@@ -83,7 +83,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
     
     # Create table
     contTabBasLogOdds <- createJaspTable(title = gettext("Log Odds Ratio"))
-    dependList <- c("oddsRatio", "oddsRatioCredibleIntervalInterval", "hypothesis", "samplingModel", "priorConcentration")
+    dependList <- c("oddsRatio", "oddsRatioCredibleIntervalInterval", "hypothesis", "samplingModel", "priorConcentration", "setSeed", "seed")
     contTabBasLogOdds$dependOn(dependList)
     contTabBasLogOdds$showSpecifiedColumnsOnly <- TRUE
     contTabBasLogOdds$position <- 3
@@ -152,7 +152,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
   oddsRatioPlotContainer <- createJaspContainer(gettext("Log Odds Ratio Plots"))
   dependList <- c("plotPosteriorOddsRatio", "hypothesis", "samplingModel",
                   "plotPosteriorOddsRatioAdditionalInfo", "priorConcentration",
-                  "counts", "layers")
+                  "counts", "layers", "setSeed", "seed")
   oddsRatioPlotContainer$dependOn(dependList)
   oddsRatioPlotContainer$position <- 2
   .contTablesBayesianCitations(oddsRatioPlotContainer)
@@ -302,7 +302,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
     bfList[[g]]   <- .contTabBasComputeBF(options, grp.mat[[g]], ready)
   analysisContainer[["bfList"]] <- createJaspState(bfList)
   analysisContainer[["bfList"]]$dependOn(c("samplingModel", "priorConcentration", 
-                                           "hypothesis", "bayesFactorType"))
+                                           "hypothesis", "bayesFactorType", "setSeed", "seed"))
   return(bfList)
 }
 
@@ -344,8 +344,11 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
 
   rowsOrCols <- c("independentMultinomialRowsFixed", "independentMultinomialColumnsFixed")
 
-  if(options$samplingModel != "hypergeometric")
+  if(options$samplingModel != "hypergeometric"){
+    .setSeedJASP(options)
     ch.result <- BayesFactor::posterior(BF, iterations = 10000)
+  }
+
 
   if(options$hypothesis %in% c("groupOneGreater", "groupTwoGreater")){
     if(options$samplingModel %in% c("poisson", "jointMultinomial")){

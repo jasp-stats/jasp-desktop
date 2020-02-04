@@ -136,5 +136,7 @@ Form
             RadioButton { value: "excludePairwise"; label: qsTr("Exclude cases pairwise"); checked: true	}
             RadioButton { value: "excludeListwise"; label: qsTr("Exclude cases listwise")                   }
         }
+
+		SetSeed{}
     }
 }

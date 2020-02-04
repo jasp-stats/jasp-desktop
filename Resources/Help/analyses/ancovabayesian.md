@@ -102,7 +102,9 @@ The Bayesian ANCOVA allows the user to analyze the difference between multiple g
 - Posterior Samples: It is possible to set the he number of Markov Chain Monte Carlo samples, used to approximate the posterior distribution and error %.  
     - Auto: If this option is selected, 10000 samples will be used. This option is selected by default.
     - Manual: If this option is selected, the number of samples can be specified manually. When selecting this option a sample size of 1000 is used by default.
-
+- Repeatability
+  - Set seed: Value used to set the random number generator for exact reproducibility.
+  
 ### Output
 ---
 #### Bayesian ANCOVA 
