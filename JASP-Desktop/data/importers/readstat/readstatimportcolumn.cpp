@@ -23,13 +23,6 @@ size_t ReadStatImportColumn::size() const
 	}
 }
 
-std::string ReadStatImportColumn::doubleAsString(double dbl)	const
-{
-	std::stringstream conv; //Use this instead of std::to_string to make sure there are no trailing zeroes
-	conv << dbl;
-	return conv.str();
-}
-
 std::string ReadStatImportColumn::valueAsString(size_t row) const
 {
 	if(row >= size())	return Utils::emptyValue;
@@ -37,7 +30,7 @@ std::string ReadStatImportColumn::valueAsString(size_t row) const
 	switch(_type)
 	{
 	default:						return Utils::emptyValue;
-	case columnType::scale:			return doubleAsString(_doubles[row]);
+	case columnType::scale:			return Utils::doubleToString(_doubles[row]);
 	case columnType::ordinal:		[[clang::fallthrough]];
 	case columnType::nominal:		return std::to_string(_ints[row]);
 	case columnType::nominalText:	return _strings[row];
@@ -85,14 +78,14 @@ void ReadStatImportColumn::setType(columnType newType)
 		case columnType::nominal:
 			for(double d : _doubles)
 				if(isMissingValue(d))			_ints.push_back(missingValueInt());
-				else if(d != double(int(d)))	conversionFailed("Double '" + doubleAsString(d) + "' cannot be converted to int.");
+				else if(d != double(int(d)))	conversionFailed("Double '" + Utils::doubleToString(d) + "' cannot be converted to int.");
 				else							_ints.push_back(int(d));
 
 			break;
 
 		case columnType::nominalText:
 			for(double d : _doubles)
-				_strings.push_back(isMissingValue(d) ? missingValueString() : doubleAsString(d));
+				_strings.push_back(isMissingValue(d) ? missingValueString() : Utils::doubleToString(d));
 			_doubles.clear();
 			break;
 		}
@@ -235,7 +228,7 @@ void ReadStatImportColumn::addValue(const double & val)
 		[[clang::fallthrough]];
 
 	case columnType::nominalText:
-		addValue(doubleAsString(val));
+		addValue(Utils::doubleToString(val));
 		break;
 	}
 }
@@ -293,7 +286,7 @@ void ReadStatImportColumn::addLabel(const double & val, const std::string & labe
 		setType(columnType::nominalText); //Because we do not support having doubles as values for labels
 	}
 
-	addLabel(doubleAsString(val), label);
+	addLabel(Utils::doubleToString(val), label);
 }
 
 void ReadStatImportColumn::addLabel(const std::string & val, const std::string & label)

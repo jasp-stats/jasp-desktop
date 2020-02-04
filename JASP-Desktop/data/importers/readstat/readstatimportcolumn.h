@@ -40,7 +40,6 @@ public:
 	void						setType(columnType newType);
 
 	std::string					valueAsString(size_t row)	const;
-	std::string					doubleAsString(double dbl)	const;
 
 	const std::vector<int>					&	ints()			const { return _ints;		}
 	const std::vector<double>				&	doubles()		const { return _doubles;	}

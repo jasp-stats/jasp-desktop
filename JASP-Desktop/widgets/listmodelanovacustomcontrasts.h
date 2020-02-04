@@ -39,8 +39,8 @@ public:
 	void			reset()															override;
 
 	QString			colName()												const				{ return _colName;	}
-	QString			getColName(size_t index)								const	override;
-	QString			getRowName(size_t index)								const	override	{ return tr("Contrast %1").arg(index + 1); }
+	QString			getDefaultColName(size_t index)								const	override;
+	QString			getDefaultRowName(size_t index)								const	override	{ return tr("Contrast %1").arg(index + 1); }
 
 	void			setFactorsSource(ListModelRepeatedMeasuresFactors* factorsSourceModel);
 

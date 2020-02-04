@@ -112,6 +112,7 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
 
 	\<JASP\>\build-release-64\R  
 	\<JASP\>\build-release-64\*.lib and *.dll  
+	\<JASP\>\build-release-64\JAGS\*
    
 6.	**Install Qt 5.13.1**  
 	Go to https://www.qt.io/download  
@@ -232,6 +233,7 @@ In both case, I've added the flag "-j4" to make use of all my four cores on my m
  ![Image of folder structure](https://static.jasp-stats.org/images/jasp5.FolderStructure.png)
 
 where the blue files are the binaries that are added manually. The process will be smoothened out in the near future.
+You should also make sure to copy the `JAGS` folder together with the binaries.
 
 4. Make a symbolic link to Frameworks
 If you've paid an exceptional amount of attention to the above folder-structure you will notice that there is a folder **Frameworks** next to **jasp-required-files** and the others. With even more attention it will be noticed that **jasp-required-files** also contains a folder called **Frameworks**. These are in fact one and the same!

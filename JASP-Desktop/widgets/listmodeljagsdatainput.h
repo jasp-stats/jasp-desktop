@@ -33,7 +33,7 @@ public:
 
 	int getMaximumColumnWidthInCharacters(size_t columnIndex)	const	override;
 
-	QString			getColName(size_t index)					const	override;
+	QString			getDefaultColName(size_t index)					const	override;
 	OptionsTable *	createOption()										override;
 	void			initValues(OptionsTable * bindHere)					override;
 

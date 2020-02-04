@@ -23,6 +23,18 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optiondoublearray.h"
 
+ListModelMultinomialChi2Test::ListModelMultinomialChi2Test(BoundQMLTableView * parent, QString tableType)
+	: ListModelTableViewBase(parent, tableType)
+{
+	_defaultCellVal		= 1;
+	_initialColCnt		= 1;
+	_keepRowsOnReset	= true;
+
+	connect(DataSetPackage::pkg(), &DataSetPackage::labelChanged,		this, &ListModelMultinomialChi2Test::labelChanged);
+	connect(DataSetPackage::pkg(), &DataSetPackage::labelsReordered,	this, &ListModelMultinomialChi2Test::labelsReordered);
+
+}
+
 void ListModelMultinomialChi2Test::sourceTermsChanged(const Terms *termsAdded, const Terms *)
 {
 	beginResetModel();
@@ -31,17 +43,17 @@ void ListModelMultinomialChi2Test::sourceTermsChanged(const Terms *termsAdded, c
 	_colNames.clear();
 	_values.clear();
 	_columnCount = 0;
+	_rowCount    = 0;
 
 	if (termsAdded && termsAdded->size() > 0)
 	{
-		const std::string	& colName	= termsAdded->at(0).asString();
-		QStringList			  labels	= DataSetPackage::pkg()->getColumnLabelsAsStringList(colName);
-
-		_rowNames = labels.toVector();
+		_columnBeingTracked	= tq(termsAdded->at(0).asString());
+		_rowNames			= DataSetPackage::pkg()->getColumnLabelsAsStringList(fq(_columnBeingTracked)).toVector();
+		_rowCount			= _rowNames.size();
 
 		QVector<QVariant> newValues(_rowNames.length(), 1.0);
 		_values.push_back(newValues);
-		_colNames.push_back(getColName(0));
+		_colNames.push_back(getDefaultColName(0));
 		_columnCount = 1;
 
 	}
@@ -53,8 +65,53 @@ void ListModelMultinomialChi2Test::sourceTermsChanged(const Terms *termsAdded, c
 	emit modelChanged();
 }
 
+void ListModelMultinomialChi2Test::labelChanged(QString columnName, QString originalLabel, QString newLabel)
+{
+	if(columnName != _columnBeingTracked)
+		return;
 
-QString ListModelMultinomialChi2Test::getColName(size_t index) const
+	beginResetModel();
+
+	for(int row=0; row<_rowNames.size(); row++)
+		if(_rowNames[row] == originalLabel)
+		{
+			_rowNames[row] = newLabel;
+			break;
+		}
+
+	endResetModel();
+
+	emit modelChanged();
+}
+
+void ListModelMultinomialChi2Test::labelsReordered(QString columnName)
+{
+	if(columnName != _columnBeingTracked)
+		return;
+
+	std::map<QString, std::vector<QVariant>> tempStore;
+
+	//because everything is stored in columns we first need to map all the rows, to well rows (with the name being key)
+	for(int row=0; row<_rowCount; row++)
+		for(int col=0; col<_columnCount; col++)
+			tempStore[_rowNames[row]].push_back(_values[col][row]);
+
+	beginResetModel();
+	_rowNames			= DataSetPackage::pkg()->getColumnLabelsAsStringList(fq(_columnBeingTracked)).toVector();
+	_values.clear();
+	_values.resize(_columnCount);
+
+	for(int row=0; row<_rowCount; row++)
+		for(int col=0; col<_columnCount; col++)
+			_values[col].push_back(tempStore[_rowNames[row]][col]);
+
+	endResetModel();
+
+	emit modelChanged();
+}
+
+
+QString ListModelMultinomialChi2Test::getDefaultColName(size_t index) const
 {
 	if (_tableType == "PriorCounts")
 		return "Counts";

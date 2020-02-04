@@ -218,10 +218,11 @@ signals:
 				void				badDataEntered(const QModelIndex index);
 				void				allFiltersReset();
 				void				labelFilterChanged();
-				void				labelChanged(int column);
+				void				labelChanged(QString columnName, QString originalLabel, QString newLabel);
 				void				dataSetChanged();
 				void				columnDataTypeChanged(std::string columnName);
 				void				refreshAnalysesWithColumn(QString columnName);
+				void				labelsReordered(		  QString columnName);
 				void				isModifiedChanged();
 				void				pauseEnginesSignal();
 				void				resumeEnginesSignal();

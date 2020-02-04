@@ -406,9 +406,9 @@ bool Column::resetEmptyValues(std::map<int, string> &emptyValuesMap)
 	switch(_columnType)
 	{
 	case columnType::ordinal:
-	case columnType::nominal:		return _resetEmptyValuesForNominal(emptyValuesMap);
+	case columnType::nominal:	return _resetEmptyValuesForNominal(emptyValuesMap);
 	case columnType::scale:		return _resetEmptyValuesForScale(emptyValuesMap);
-	default:							return _resetEmptyValuesForNominalText(emptyValuesMap);
+	default:					return _resetEmptyValuesForNominalText(emptyValuesMap);
 	}
 }
 
@@ -449,6 +449,7 @@ bool Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
 			}
 
 			values.push_back(intValue);
+
 			if (intValue != INT_MIN)
 			{
 				if (uniqueIntValues.find(intValue) != uniqueIntValues.end())
@@ -496,7 +497,7 @@ bool Column::_changeColumnToNominalOrOrdinal(enum columnType newColumnType)
 
 			for (double doubleValue : AsDoubles)
 				if (std::isnan(doubleValue))	values.push_back(Utils::emptyValue);
-				else							values.push_back(std::to_string(doubleValue));
+				else							values.push_back(Utils::doubleToString(doubleValue));
 
 			setColumnAsNominalText(values);
 			return true;
@@ -538,6 +539,8 @@ bool Column::_changeColumnToScale()
 				if (!Utils::isEmptyValue(value))
 					converted = Utils::getDoubleValue(value, doubleValue);
 			}
+			else
+				converted = true; //Because if key == INT_MIN then it is missing value
 
 			if (converted)	values.push_back(doubleValue);
 			else			return false;

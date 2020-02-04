@@ -366,6 +366,8 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 			return false;
 
 		default:
+		{
+			QString originalLabel = tq(labels.getLabelFromRow(index.row()));
 			if(labels.setLabelFromRow(index.row(), value.toString().toStdString()))
 			{
 				QModelIndex parent	= index.parent();
@@ -377,10 +379,12 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 				parent = parentModelForType(parIdxType::data);
 				emit dataChanged(DataSetPackage::index(0, col, parent), DataSetPackage::index(rowCount(), col, parent), { Qt::DisplayRole });
 
-				emit labelChanged(columnIndex);
+				emit labelChanged(tq(getColumnName(col)), originalLabel, tq(labels.getLabelFromRow(index.row())));
+				emit refreshAnalysesWithColumn(tq(getColumnName(columnIndex)));
 				return true;
 			}
 			break;
+		}
 		}
 	}
 	}
@@ -1273,6 +1277,7 @@ void DataSetPackage::labelMoveRows(size_t column, std::vector<size_t> rows, bool
 	for(size_t row: rowsChanged)
 		emit dataChanged(index(row, 0, p), index(row, columnCount(p), p));
 
+	emit labelsReordered(tq(getColumnName(column)));
 	emit refreshAnalysesWithColumn(tq(getColumnName(column)));
 }
 
@@ -1287,6 +1292,7 @@ void DataSetPackage::labelReverse(size_t column)
 	QModelIndex p = parentModelForType(parIdxType::label, column);
 
 	emit dataChanged(index(0, 0, p), index(rowCount(p), columnCount(p), p));
+	emit labelsReordered(tq(getColumnName(column)));
 	emit refreshAnalysesWithColumn(tq(getColumnName(column)));
 }
 

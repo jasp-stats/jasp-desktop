@@ -65,16 +65,16 @@ Window
 		anchors.fill:	parent
 		focus:			true
 
-		Shortcut { onActivated: mainWindow.saveKeyPressed();					sequences: ["Ctrl+S"];											}
+		Shortcut { onActivated: mainWindow.saveKeyPressed();					sequences: ["Ctrl+S", Qt.Key_Save];								}
 		Shortcut { onActivated: mainWindow.openKeyPressed();					sequences: ["Ctrl+O"];											}
-		Shortcut { onActivated: mainWindow.syncKeyPressed();					sequences: ["Ctrl+Y"];											}
+		Shortcut { onActivated: mainWindow.syncKeyPressed();					sequences: ["Ctrl+Y", Qt.Key_Reload];							}
 		Shortcut { onActivated: mainWindow.zoomInKeyPressed();					sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="];	}
 		Shortcut { onActivated: mainWindow.zoomOutKeyPressed();					sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"];			}
-		Shortcut { onActivated: mainWindow.refreshKeyPressed();					sequences: ["Ctrl+R"];											}
-		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();				sequences: ["Ctrl+0"];											}
+		Shortcut { onActivated: mainWindow.refreshKeyPressed();					sequences: ["Ctrl+R", Qt.Key_Refresh];							}
+		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();				sequences: ["Ctrl+0", Qt.Key_Zoom];								}
 		Shortcut { onActivated: mainWindowRoot.close();							sequences: ["Ctrl+Q", Qt.Key_Close];							}
-		Shortcut { onActivated: mainWindowRoot.toggleFullScreen();				sequences: ["Ctrl+M"];											}
-		Shortcut { onActivated: fileMenuModel.visible = !fileMenuModel.visible; sequences: ["Home"];											}
+		Shortcut { onActivated: mainWindowRoot.toggleFullScreen();				sequences: ["Ctrl+M", Qt.Key_F11];								}
+		Shortcut { onActivated: fileMenuModel.visible = !fileMenuModel.visible; sequences: ["Home",   Qt.Key_Home, Qt.Key_Menu];				}
 
 		RibbonBar
 		{

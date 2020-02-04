@@ -47,6 +47,7 @@ public:
 				QVariant			headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
 
 	virtual		int					getMaximumColumnWidthInCharacters(size_t columnIndex)								const;
+				QString				getMaximumRowHeaderString()															const;
 
 				void				addColumn(					bool emitStuff = true);
 				void				removeColumn(size_t index,	bool emitStuff = true);
@@ -58,8 +59,8 @@ public:
 	virtual		void				itemChanged(int column, int row, QVariant value);
 	virtual		void				refreshModel()							{ return ListModel::refresh(); }
 	virtual		void				initValues(OptionsTable * bindHere);
-	virtual		QString				getColName(size_t index)		const	{ return tr("Col %1").arg(index); }
-	virtual		QString				getRowName(size_t index)		const	{ return tr("Row %1").arg(index); }
+	virtual		QString				getDefaultColName(size_t index)		const	{ return tr("Col %1").arg(index); }
+	virtual		QString				getDefaultRowName(size_t index)		const	{ return tr("Row %1").arg(index); }
 	virtual		OptionsTable *		createOption();
 	virtual		void				modelChangedSlot();
 

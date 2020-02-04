@@ -77,6 +77,21 @@ int ListModelTableViewBase::getMaximumColumnWidthInCharacters(size_t columnIndex
 	return maxL + 3;
 }
 
+
+QString ListModelTableViewBase::getMaximumRowHeaderString() const
+{
+	int maxL = 6;
+
+	for(QString val : _rowNames)
+			maxL = std::max(val.size(), maxL);
+
+	QString dummyText;
+	while(maxL > dummyText.length())
+		dummyText += "X";
+
+	return dummyText;
+}
+
 void ListModelTableViewBase::addColumn(bool emitStuff)
 {
 	if(emitStuff)
@@ -84,7 +99,7 @@ void ListModelTableViewBase::addColumn(bool emitStuff)
 
 	if (columnCount() < _maxColumn)
 	{
-		_colNames.push_back(getColName(columnCount()));
+		_colNames.push_back(getDefaultColName(columnCount()));
 		_values.push_back(QVector<QVariant>(_rowNames.length(), _defaultCellVal));
 		_columnCount++;
 	}
@@ -126,7 +141,7 @@ void ListModelTableViewBase::addRow(bool emitStuff)
 
 	if (rowCount() < _maxRow)
 	{
-		_rowNames.push_back(getRowName(rowCount()));
+		_rowNames.push_back(getDefaultRowName(rowCount()));
 		_rowCount++;
 
 		for (QVector<QVariant> & value : _values)
@@ -285,7 +300,7 @@ QVariant ListModelTableViewBase::headerData( int section, Qt::Orientation orient
 
 		return dummyText;
 	}
-	case int(specialRoles::maxRowHeaderString):	return getRowName(size_t(rowCount())) + "XXX";
+	case int(specialRoles::maxRowHeaderString):	return getMaximumRowHeaderString();
 	case Qt::DisplayRole:						return QVariant(orientation == Qt::Horizontal ? _colNames[section] : _rowNames[section]);
 	case Qt::TextAlignmentRole:					return QVariant(Qt::AlignCenter);
 	default:									return QVariant();

@@ -264,7 +264,7 @@ FocusScope
 					{
 						visible:			styleData.column === 1
 						
-						color:				jaspTheme.textDisabled
+						color:				jaspTheme.grayDarker
 						text:				styleData.value
 						elide:				Text.ElideMiddle
 						font:				jaspTheme.font

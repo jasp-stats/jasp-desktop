@@ -21,6 +21,7 @@ Item
 		anchors.verticalCenter:		parent.verticalCenter
 
 		font.pixelSize: filterConstructor.fontPixelSize
+		color:			jaspTheme.textEnabled
 
 		onAccepted: focus = false
 		onActiveFocusChanged:	if(!activeFocus) { if(text === "") destroyMe(); else filterConstructor.somethingChanged = true; }
