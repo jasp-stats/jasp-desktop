@@ -1,7 +1,7 @@
 Bayesian Correlation
 ===
 
-The Bayesian Correlation analysis allows estimation of the population correlation, as well as testing the null hypothesis that the population correlation between pairs of variables equals 0. All possible pairs of the specified variables are analyzed.
+The Bayesian Correlation analysis allows for the estimation of the population correlation, as well as the comparison of hypotheses. The three comparisons are (i) between the null hypothesis (H0) that the correlation between pairs of variables equal 0, and the alternative hypothesis (H1) that the population correlation takes its value between -1 and 1; (ii) between H0 and the alternative hypothesis (H+) that the population correlation is positive; and (iii) between H0 and the alternative hypothesis (H-) that the population correlation is negative. All possible pairs of the specified variables are analyzed.
 
 ### Assumptions (Pearson's rho)
 - Continuous variables
