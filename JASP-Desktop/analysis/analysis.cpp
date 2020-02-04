@@ -65,7 +65,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 		_optionsDotJASP = *data; //Same story as other constructor
 
 	_codedReferenceToAnalysisEntry = analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries)
-	setHelpFile(dynamicModule()->helpFolderPath() + nameQ());
+	setHelpFile(dynamicModule()->helpFolderPath() + tq(analysisEntry->function()));
 	bindOptionHandlers();
 }
 
