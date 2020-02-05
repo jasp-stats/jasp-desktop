@@ -140,6 +140,7 @@ specials[['abtest']]       <- list(type='github', commit='503c50e96768a0134b7557
 specials[['bstats']]       <- list(type='github', commit='a6fdbea42078b8d275a98dd1e37c113118555b6f', repo='AlexanderLyNL/bstats')
 #specials[['Bain']]         <- list(type='github', commit='1b03f71204839da29a4219e8bba99b8ec8479612', repo='jasp-stats/BAIN-for-JASP')
 #specials[['KneeArrower']]  <- list(type='github', commit='cdb14e574e00914e4e7019a4cf3c5fcda7426466', repo='agentlans/KneeArrower')
+specials[['flexplot']]     <- list(type='github', commit='46adae504c83b6dbd7baf7ba679cc95d0fb5c1a9', repo='dustinfife/flexplot')
 
 
 createFlatpakJson <- function()
