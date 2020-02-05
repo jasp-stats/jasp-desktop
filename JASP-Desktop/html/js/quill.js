@@ -9079,7 +9079,7 @@ function isLine(node) {
 
   // This is a fix. window.getComputedStyle(node) returns a CSSStyleDeclaration
   // but all the properties are empty. This causes newline characters to be missed
-  if (node.nodeName === 'P') {
+  if (node.nodeName === 'P' || node.nodeName === 'LI' || node.nodeName === 'UL') {
     return true;
   }
 
