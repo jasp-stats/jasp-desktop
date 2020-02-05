@@ -128,9 +128,9 @@ JASPControl
 			}
 		}
 
-		contentItem: Item
+		contentItem: Rectangle
 		{
-			height:						jaspTheme.comboBoxHeight
+			color:	jaspTheme.controlBackgroundColor
 			Image
 			{
 				id:						contentIcon

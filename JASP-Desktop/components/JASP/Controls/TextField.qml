@@ -164,9 +164,15 @@ JASPControl
 			{
 				if (!hasScriptError)
 					clearControlError();
+
+				var nextItem = nextItemInFocusChain();
+				if (nextItem)
+					nextItem.forceActiveFocus();
+
 				event.accepted = false;
 			}
 		}
+
 	}
 
 	Binding
