@@ -21,7 +21,7 @@
 
 //the window.blabla() functions are defined main.js and the hasBlabla are defined jaspwidgets.js
 std::map<QString, ResultMenuEntry> ResultMenuEntry::AllResultEntries = {
-	{	"hasCollapse",				ResultMenuEntry("",						"hasCollapse",				"",							"window.collapseMenuClicked();")	},
+	{	"hasCollapse",				ResultMenuEntry("Collapse",				"hasCollapse",				"collapse.png",				"window.collapseMenuClicked();")	},
 	{	"hasEditTitle",				ResultMenuEntry("Edit Title",			"hasEditTitle",				"edit-pencil.png",			"window.editTitleMenuClicked();")	},
 	{	"hasCopy",					ResultMenuEntry("Copy",					"hasCopy",					"copy.png",					"window.copyMenuClicked();")		},
 	{	"hasLaTeXCode",				ResultMenuEntry("Copy LaTeX",			"hasLaTeXCode",				"code-icon.png",			"window.latexCodeMenuClicked();")	},
