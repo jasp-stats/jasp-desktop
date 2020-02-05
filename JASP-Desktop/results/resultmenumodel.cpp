@@ -78,17 +78,7 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 
 		ResultMenuEntry entry = ResultMenuEntry::AllResultEntries.find(key)->second;
 
-		if (key == "hasCollapse")
-		{
-			Json::Value collapseOptions = menuOptions["collapseOptions"];
-
-			QString iconPath = collapseOptions["collapsed"].asBool() ? "expand" : "collapse";
-			entry.setImageSource(JaspTheme::currentIconPath() + iconPath + ".png");
-
-			QString displayText = QString::fromStdString(collapseOptions["menuText"].asString());
-			entry.setDisplayText(displayText);
-		}
-		else if (key == "hasNotes")
+		if (key == "hasNotes")
 		{
 			entries.push_back(separator);
 			Json::Value noteOptions = menuOptions["noteOptions"];
