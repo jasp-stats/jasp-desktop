@@ -1650,8 +1650,9 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                                                  pizzaTxt = pizzaTxt,
                                                  hasRightAxis = TRUE,
                                                  yName = yName,
-                                                 evidenceTxt  = paste('Evidence for r', H[1], ':'),
-                                                 arrowLabel  = c("Evidence~'for f'~H[1]", "Evidence~'for r'~H[1]")
+                                                 evidenceTxt  = bquote(paste(.(gettext("Evidence for r H"))[1], ":")),
+                                                 arrowLabel  = c(bquote(.(gettext("Evidence~'for f'~H"))[1]),
+                                                                 bquote(.(gettext("Evidence~'for r'~H"))[1])
     )
   }
   
