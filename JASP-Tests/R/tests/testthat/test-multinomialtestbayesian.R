@@ -38,7 +38,7 @@ test_that("Descriptives plots match", {
   options$countProp <- "descProps"
   options$credibleInterval <- TRUE
   options$descriptivesPlot <- TRUE
-  options$priorCounts <- list(list(levels = paste0('level', 1:2),
+  options$priorCounts <- list(list(levels = c("0", "1"),
                                    name   = c('Counts'),
                                    values = rep(1, 2)))
   results <- jasptools::run("MultinomialTestBayesian", "test.csv", options)
@@ -57,6 +57,6 @@ test_that("Bayesian Multinomial Test table results match in short data format", 
   results <- jasptools::run("MultinomialTestBayesian", "Memory of Life Stresses.csv", options)
   table <- results[["results"]][["multinomialTable"]][["data"]]
   expect_equal_tables(table,
-                      list(27.1062505863656, "Multinomial", 18))
+                      list(1.49242615869171e-11, "Multinomial", 18))
 })
 
