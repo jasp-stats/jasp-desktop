@@ -511,10 +511,17 @@ void DataSetPackage::setModified(bool value)
 	}
 }
 
+size_t DataSetPackage::findIndexByName(std::string name) const
+{
+	if(!_dataSet)
+		throw columnNotFound(name);
+
+	return _dataSet->columns().findIndexByName(name);
+}
 
 bool DataSetPackage::isColumnNameFree(std::string name) const
 {
-	try			{ _dataSet->columns().findIndexByName(name); return false;}
+	try			{ findIndexByName(name); return false;}
 	catch(...)	{ }
 
 	return true;
@@ -588,8 +595,9 @@ void DataSetPackage::setColumnsUsedInEasyFilter(std::set<std::string> usedColumn
 	for(const std::string & col : usedColumns)
 		_columnNameUsedInEasyFilter[col] = true;
 
-	for(const std::string & col: toUpdate)
-		try { notifyColumnFilterStatusChanged(_dataSet->columns().findIndexByName(col)); } catch(columnNotFound &) {}
+	if(_dataSet)
+		for(const std::string & col: toUpdate)
+			try { notifyColumnFilterStatusChanged(findIndexByName(col)); } catch(columnNotFound &) {}
 }
 
 
@@ -1355,9 +1363,4 @@ std::vector<bool> DataSetPackage::filterVector()
 	}
 
 	return out;
-}
-
-void DataSetPackage::rescanColumnNamesForEncoder()
-{
-
 }

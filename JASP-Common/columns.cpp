@@ -95,9 +95,9 @@ void Columns::setSharedMemory(boost::interprocess::managed_shared_memory *mem)
 
 size_t Columns::findIndexByName(std::string name) const
 {
-	for(size_t i=0; i<_columnStore.size(); i++)
-		if(_columnStore[i].name() == name)
-			return i;
+		for(size_t i=0; i<_columnStore.size(); i++)
+			if(_columnStore[i].name() == name)
+				return i;
 
 	throw columnNotFound(name);
 }

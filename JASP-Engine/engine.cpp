@@ -732,7 +732,7 @@ std::string Engine::callback(const std::string &results, int progress)
 
 bool Engine::isColumnNameOk(std::string columnName)
 {
-	if(columnName == "")
+	if(columnName == "" || !provideDataSet())
 		return false;
 
 	try

@@ -5,7 +5,7 @@ FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)
 	: QObject(DataSetPackage::pkg()), _labelFilterGenerator(labelFilterGenerator)
 {
 	reset();
-	connect(this,		&FilterModel::rFilterChanged,	this, &FilterModel::rescanRFilterForColumns	);
+	connect(this,					&FilterModel::rFilterChanged,	this, &FilterModel::rescanRFilterForColumns	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::modelReset,	this, &FilterModel::dataSetPackageResetDone	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::modelInit,		this, &FilterModel::modelInit				);
 }
@@ -23,10 +23,8 @@ void FilterModel::reset()
 void FilterModel::dataSetPackageResetDone()
 {
 	_setGeneratedFilter(tq(_labelFilterGenerator->generateFilter())			);
-	setConstructedJSON(	tq(DataSetPackage::pkg()				->filterConstructorJson())	);
-	_setRFilter(		tq(DataSetPackage::pkg()				->dataFilter())				);
-
-
+	setConstructedJSON(	tq(DataSetPackage::pkg()->filterConstructorJson())	);
+	_setRFilter(		tq(DataSetPackage::pkg()->dataFilter())				);
 }
 
 void FilterModel::modelInit()
