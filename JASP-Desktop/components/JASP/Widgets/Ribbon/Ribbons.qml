@@ -48,7 +48,6 @@ Item
 		orientation:					ListView.Horizontal
 		currentIndex:					ribbonModelFiltered.highlightedModuleIndex
 		height:							parent.height
-		width:          				Math.min(contentWidth, fadeOutRight.x - fadeOutLeft.width)
 		boundsBehavior:					Flickable.StopAtBounds
 
 		highlightFollowsCurrentItem:	true
@@ -59,7 +58,8 @@ Item
 
 		anchors
 		{
-			left:			fadeOutLeft.right
+			left:			parent.left
+			right:			parent.right
 			verticalCenter:	parent.verticalCenter
 		}
 
@@ -75,16 +75,20 @@ Item
 		}
 	}
 
+	property real fadeOutMultiplier: 1.5
+
 	Item
 	{
-		id:		fadeOutLeft
-		width:	height * 0.2
-		z:		1
+		id:			fadeOutLeft
+		width:		height * Math.min(fadeOutMultiplier, ((buttonList.contentX - buttonList.originX) / height))
+		visible:	width > 0
+		z:			1
 		anchors
 		{
-			top:	parent.top
-			bottom:	parent.bottom
-			left:	parent.left
+			top:		parent.top
+			bottom:		parent.bottom
+			left:		parent.left
+			leftMargin:	-2
 		}
 
 		Rectangle
@@ -103,14 +107,16 @@ Item
 
 	Item
 	{
-		id:		fadeOutRight
-		width:	height * 0.2
-		z:		1
+		id:			fadeOutRight
+		width:		height * Math.min(fadeOutMultiplier, (((buttonList.originX + buttonList.contentWidth) - (buttonList.contentX + buttonList.width)) / height))
+		visible:	width > 0
+		z:			1
 		anchors
 		{
-			top:	parent.top
-			bottom:	parent.bottom
-			right:	parent.right
+			top:			parent.top
+			bottom:			parent.bottom
+			right:			parent.right
+			rightMargin:	-2
 		}
 
 		Rectangle

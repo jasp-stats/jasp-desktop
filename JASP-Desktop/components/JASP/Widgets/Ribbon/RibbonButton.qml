@@ -28,9 +28,7 @@ Rectangle
 	height			: jaspTheme.ribbonButtonHeight
 	color			: showPressed ? jaspTheme.grayLighter : "transparent"
 	z				: 1
-    objectName      : "ribbonButton"
-	//radius			: 4
-	//opacity			: x < ListView.contentX || ( x - ListView.contentX + width > ListView.contentWidth ) ? 0.5 : 1
+	objectName      : "ribbonButton"
 
 	property alias	text		: innerText.text
 	property alias	source		: backgroundImage.source
