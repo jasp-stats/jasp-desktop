@@ -64,12 +64,17 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   prior          <- options$priorCounts[[1]]
   a              <- setNames(prior$values, prior$levels)
 
+  # we want to reorder levels in the tables and plots if the user does that, so here we compute
+  # how to reorder the counts.
+  factNms        <- options$priorCounts[[1]]$levels
+  ord            <- match(factNms, as.character(fact))
+
   if (options$counts != "") {
-    counts <- dataset[[.v(options$counts)]]
+    counts <- dataset[[.v(options$counts)]][ord]
     # omit count entries for which factor variable is NA
     counts <- counts[!is.na(fact)]
     dataTable        <- counts
-    names(dataTable) <- levels(fact)
+    names(dataTable) <- factNms
   } else {
     dataTable <- table(fact)
   }
@@ -90,7 +95,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   }
 
   multinomialResults$mainTable[["prior"]]   <- a
-  multinomialResults$mainTable[["levels"]]  <- levels(fact)
+  multinomialResults$mainTable[["levels"]]  <- factNms
   multinomialResults$mainTable[["nlevels"]] <- nlev
   multinomialResults$mainTable[["hypNames"]]<- nms
   multinomialResults$mainTable[["nhyps"]]   <- nhyps
@@ -100,12 +105,12 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   multinomialResults$descriptivesPlot[["descCounts"]] <- multinomialResults$descriptivesPlot[["descProps"]] * N
   multinomialResults$descriptivesPlot[["descProps"]][["observed"]]  <- as.numeric(dataTable)/N
   multinomialResults$descriptivesPlot[["descCounts"]][["observed"]] <- as.numeric(dataTable)
-  multinomialResults$descriptivesPlot[["descProps"]][["fact"]]  <- levels(fact)
-  multinomialResults$descriptivesPlot[["descCounts"]][["fact"]] <- levels(fact)
+  multinomialResults$descriptivesPlot[["descProps"]][["fact"]]  <- factNms
+  multinomialResults$descriptivesPlot[["descCounts"]][["fact"]] <- factNms
 
   # Results for descriptives table
-  multinomialResults$descriptivesTable[["descProps"]][["fact"]]      <- levels(fact)
-  multinomialResults$descriptivesTable[["descCounts"]][["fact"]]     <- levels(fact)
+  multinomialResults$descriptivesTable[["descProps"]][["fact"]]      <- factNms
+  multinomialResults$descriptivesTable[["descCounts"]][["fact"]]     <- factNms
   multinomialResults$descriptivesTable[["descProps"]][["observed"]]  <- as.numeric(dataTable)/N
   multinomialResults$descriptivesTable[["descCounts"]][["observed"]] <- as.numeric(dataTable)
 
