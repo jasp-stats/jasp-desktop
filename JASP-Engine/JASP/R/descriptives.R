@@ -21,8 +21,6 @@ Descriptives <- function(jaspResults, dataset, options) {
   makeSplit <- splitName != ""
   numberMissingSplitBy <- 0
 
-  print(variables)
-
   if (is.null(dataset)) {
     if (makeSplit) {
       dataset         <- .readDataSetToEnd(columns.as.numeric = variables, columns.as.factor = splitName)
