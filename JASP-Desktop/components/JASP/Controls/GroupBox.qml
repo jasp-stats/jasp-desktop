@@ -45,7 +45,6 @@ Rectangle
 
 			property var	_allTextFields:		[]
 
-
 	Label
 	{
 		id:				label
@@ -75,10 +74,8 @@ Rectangle
 
 	Connections
 	{
-		id: alignTextFieldSignal
-		target: null
-		enabled: false
-		onXChanged: alignTextFieldTimer.restart()
+		target:				preferencesModel
+		onUiScaleChanged:	alignTextFieldTimer.restart()
 	}
 
 	Timer
@@ -100,7 +97,7 @@ Rectangle
 				_allTextFields.push(child)
 		}
 
-		_alignTextField()
+		alignTextFieldTimer.start()
 	}
 
 	function _alignTextField()
@@ -108,6 +105,7 @@ Rectangle
 		if (alignTextFields && _allTextFields.length > 1)
 		{
 			var i;
+			_allTextFields[0].controlXOffset = 0;
 			var xMax = _allTextFields[0].control.x;
 			var longestControl = _allTextFields[0].control;
 			for (i = 1; i < _allTextFields.length; i++)
@@ -120,8 +118,6 @@ Rectangle
 				}
             }
             
-			if (!alignTextFieldSignal.target)
-				alignTextFieldSignal.target = longestControl;
 			for (i = 0; i < _allTextFields.length; i++)
 			{
 				if (_allTextFields[i].control !== longestControl)
@@ -130,7 +126,6 @@ Rectangle
 					_allTextFields[i].controlXOffset = (xMax - _allTextFields[i].control.x);
 
 			}
-			alignTextFieldSignal.enabled = true;
 		}
     }
 }
