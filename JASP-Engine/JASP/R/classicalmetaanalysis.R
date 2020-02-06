@@ -734,7 +734,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   b.pred   <- predict(rma.fit)
   b.ci.lb  <- round(b.pred$ci.lb, 2)
   b.ci.ub  <- round(b.pred$ci.ub, 2)
-  b.ci.int <- paste0(round(b.pred$pred, 2), "[", b.ci.lb, ", ", b.ci.ub, "]")
+  b.ci.int <- sprintf("%.2f [%.2f, %.2f]", b.pred$pred, b.ci.lb, b.ci.ub)
 
   cols <- c("black", "grey")
 
@@ -811,9 +811,9 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
   p <- p +
     ggplot2::geom_hline(ggplot2::aes(yintercept = 0),   lty = "dotted", size = 0.5, colour = cols[1]) +
-    ggplot2::geom_vline(ggplot2::aes(xintercept = k+1), lty = "solid",  size = 0.5, colour = cols[1])
+    ggplot2::annotate("segment", x = k + 1, xend = k + 1, y = -Inf, yend = Inf)
   if(rma.fit$int.only)
-    p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = 0), lty = "solid",  size = 0.5, colour = cols[2])
+    p <- p + ggplot2::annotate("segment", x = 0, xend = 0, y = -Inf, yend = Inf)
 
   p <- p + ggplot2::coord_flip() +
     ggplot2::xlab(NULL) + ggplot2::ylab(gettext("Observed Outcome")) +
@@ -827,18 +827,12 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
                                        sec.axis = ggplot2::dup_axis(trans = ~., labels = dat$ci.int),
                                        expand   = ggplot2::expand_scale(mult = c(0.1,0), add = 0))
 
-  fontsize <- JASPgraphs::getGraphOption("fontsize")
-  p <- p + ggplot2::theme(text              = ggplot2::element_text(size = fontsize, colour = "black"),
-                          axis.text.y.left  = ggplot2::element_text(hjust = 0),
-                          axis.text.y.right = ggplot2::element_text(hjust = 1),
-                          axis.line.x.bottom= ggplot2::element_blank(),
-                          panel.background  = ggplot2::element_blank(),
-                          panel.grid        = ggplot2::element_blank(),
-                          axis.ticks.y      = ggplot2::element_blank(),
-                          axis.ticks.x      = ggplot2::element_line(size = JASPgraphs::getGraphOption("axisTickWidth")),
-                          legend.position   = "none")
+  fontsize <- 0.85 * JASPgraphs::getGraphOption("fontsize")
+  p <- p + JASPgraphs::geom_rangeframe(sides = "b") + JASPgraphs::themeJaspRaw() +
+    ggplot2::theme(axis.ticks.y      = ggplot2::element_blank(),
+                   axis.text.y.left  = ggplot2::element_text(hjust = 0, size = fontsize),
+                   axis.text.y.right = ggplot2::element_text(hjust = 1, size = fontsize))
 
-  p <- p + JASPgraphs::geom_rangeframe(sides = "b")
   return(p)
 }
 
@@ -1234,7 +1228,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   temp.ub <- supsmu(temp.ub$x, temp.ub$y)
 
   xBreaks <- JASPgraphs::getPrettyAxisBreaks(pos.x)
-  yBreaks <- JASPgraphs::getPrettyAxisBreaks(pos.y)
+  yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(pos.y, temp.lb$y, temp.ub$y))
   xLimits <- range(xBreaks)
   yLimits <- range(yBreaks)
 
