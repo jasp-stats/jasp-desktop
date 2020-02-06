@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: bugs.r-project.org\n"
-"POT-Creation-Date: 2020-01-31 12:20\n"
+"POT-Creation-Date: 2020-02-04 21:07\n"
 "PO-Revision-Date: 2020-01-29 14:35\n"
 "Last-Translator: Frans Meerhoff<f.a.m.meerhoff@uva.nl>\n"
 "Language-Team: Dutch <f.a.m.meerhoff@uva.nl>\n"
@@ -2082,15 +2082,11 @@ msgstr "Eén of meer Bayes-factoren zijn oneindig"
 msgid "Undefined hypothesis"
 msgstr "Ongedefinieerde hypothese"
 
-#, fuzzy
 msgid "The metafor package crashed with the following error: %s"
-msgstr ""
-"bootnet gecrashed met de volgende foutmelding:\n"
-"%s"
+msgstr "Het metafor package is gecrashed met de volgende foutmelding: %s"
 
-#, fuzzy
 msgid "Fixed and Random Effects"
-msgstr "Willekeurige effecten"
+msgstr "Vaste en Willekeurige Effecten"
 
 msgid "Q"
 msgstr ""
@@ -2104,32 +2100,26 @@ msgstr "Standaard fout"
 msgid "z"
 msgstr "z"
 
-#, fuzzy
 msgid "Wald test."
-msgstr "Z toets"
+msgstr "Wald toets"
 
-#, fuzzy
 msgid "Wald tests."
-msgstr "Z toets"
+msgstr "Wald toetsen"
 
-#, fuzzy
 msgid "Fit measures"
-msgstr "Andere pasmaten"
+msgstr "Passende metingen"
 
-#, fuzzy
 msgid "Residual Heterogeneity Estimates"
-msgstr "Residue covariantie matricen"
+msgstr "Residu Heterogeniteit Schattingen"
 
-#, fuzzy
 msgid "Parameter Covariances"
-msgstr "Factorcovarianties"
+msgstr "Parameter Covarianties"
 
 msgid "Rank correlation test for Funnel plot asymmetry"
 msgstr ""
 
-#, fuzzy
 msgid "Kendall's %s"
-msgstr "Kendall's W"
+msgstr "Kendall's %s"
 
 msgid "Regression test for Funnel plot asymmetry (\"Egger's test\")"
 msgstr ""
@@ -2146,24 +2136,20 @@ msgstr ""
 msgid "Cook's Distance"
 msgstr "Cook's Afstand"
 
-#, fuzzy
 msgid "Cov. Ratio"
-msgstr "Odds Ratio"
+msgstr "Cov. Ratio"
 
-#, fuzzy
 msgid "%s%s<sub>(-i)</sub>"
-msgstr "%s<sub>G</sub>"
+msgstr "%s%s<sub>(-i)</sub>"
 
-#, fuzzy
 msgid "Q<sub>E(-i)</sub>"
-msgstr "W<sub>i</sub>"
+msgstr "Q<sub>E(-i)</sub>"
 
 msgid "Hat"
 msgstr ""
 
-#, fuzzy
 msgid "Weight"
-msgstr "Gewichten"
+msgstr "Gewicht"
 
 msgid "Cases marked with %s are influential."
 msgstr ""
@@ -2177,16 +2163,14 @@ msgstr ""
 msgid "Target Significance"
 msgstr ""
 
-#, fuzzy
 msgid "Observed Significance"
-msgstr "Geobserveerde aantallen"
+msgstr "Waargenomen Significantie"
 
 msgid "Omnibus test of Model Coefficients"
 msgstr ""
 
-#, fuzzy
 msgid "Test of Residual Heterogeneity"
-msgstr "Bayes-factoren heterogeniteit"
+msgstr "Toets Residuen Heterogeniteit"
 
 msgid "Log-likelihood"
 msgstr "Log-likelihood"
@@ -2209,44 +2193,35 @@ msgstr ""
 msgid "H%s"
 msgstr "H%s"
 
-#, fuzzy
 msgid "Rank test"
-msgstr "Z toets"
+msgstr "Rang toets"
 
-#, fuzzy
 msgid "Forest plot"
 msgstr "Forest Plot"
 
-#, fuzzy
 msgid "Funnel Plot"
-msgstr "Forest Plot"
+msgstr "Funnel Plot"
 
-#, fuzzy
 msgid "Log-likelihood for %s%s"
-msgstr "Log-likelihood"
+msgstr "Log-likelihood voor %s%s"
 
 msgid "Trim-fill Analysis"
 msgstr ""
 
-#, fuzzy
 msgid "Diagnostic Plots"
-msgstr "Deviatie Grafiek"
+msgstr "Diagnostische Grafieken"
 
-#, fuzzy
 msgid "Study %s"
-msgstr "Studie"
+msgstr "Studie %s"
 
-#, fuzzy
 msgid "FE Model"
-msgstr "Model"
+msgstr "FE Model"
 
-#, fuzzy
 msgid "RE Model"
-msgstr "Model"
+msgstr "RE Model"
 
-#, fuzzy
 msgid "Observed Outcome"
-msgstr "Geobserveerde aantallen"
+msgstr "Geobserveerde Uitkomst"
 
 msgid "Cannot set 'xlim' automatically. Please set this argument manually."
 msgstr ""
@@ -2254,13 +2229,11 @@ msgstr ""
 msgid "Profile Plot for"
 msgstr ""
 
-#, fuzzy
 msgid "Restricted Log-Likelihood"
-msgstr "Log-likelihood"
+msgstr "Beperkte Log-likelihood"
 
-#, fuzzy
 msgid "Residual Value"
-msgstr "Residu"
+msgstr "Residuen Waarde"
 
 msgid "Argument 'x' must be an object of class \"rma\"."
 msgstr ""
@@ -2276,42 +2249,33 @@ msgid ""
 "manually)."
 msgstr ""
 
-#, fuzzy
 msgid "Radial Plot"
-msgstr "Variabele Trace Plots"
+msgstr "Radiaal Grafiek"
 
 msgid "Stopped because k = 1."
 msgstr ""
 
-#, fuzzy
 msgid "Normal Q-Q Plot"
-msgstr "Q-Q Grafiek"
+msgstr "Normale Q-Q Grafiek"
 
-#, fuzzy
 msgid "Sample Quantiles"
-msgstr "Steekproefgrootte"
+msgstr "Steekproef Kwantielen"
 
-#, fuzzy
 msgid "Fitted vs. Standardized Residuals"
-msgstr "Gestandaardiseerde Residuen"
+msgstr "Passend vs. Gestandaardiseerde Residuen"
 
-#, fuzzy
 msgid "Fitted Value"
-msgstr "Voorspelde Waarde"
+msgstr "Passende Waarde"
 
-#, fuzzy
 msgid "Standardized Residual"
 msgstr "Gestandaardiseerde Residuen"
 
-#, fuzzy
 msgid "The model should contain at least one predictor or an intercept."
 msgstr ""
-"We hebben op zijn minst één predictor, of een intercept nodig om een formule "
-"te maken"
+"Het model moet op zijn minst één predictor bevatten of een interceptie."
 
-#, fuzzy
 msgid "FE"
-msgstr "F"
+msgstr "FE"
 
 msgid "ML"
 msgstr ""
@@ -2322,13 +2286,11 @@ msgstr ""
 msgid "DL"
 msgstr ""
 
-#, fuzzy
 msgid "HE"
-msgstr "H"
+msgstr "HE"
 
-#, fuzzy
 msgid "HS"
-msgstr "H"
+msgstr "HS"
 
 msgid "SJ"
 msgstr ""
@@ -2336,13 +2298,11 @@ msgstr ""
 msgid "EB"
 msgstr ""
 
-#, fuzzy
 msgid "PM"
-msgstr "P(M)"
+msgstr "PM"
 
-#, fuzzy
 msgid "%g%% Confidence Interval"
-msgstr "%s%% Betrouwbaarheidsinterval"
+msgstr "%g%% Betrouwbaarheidsinterval"
 
 msgid "No items to show, please add a results description or set init to true"
 msgstr ""
@@ -2505,19 +2465,6 @@ msgstr "Het object gegeven in 'cluster' is niet van de klasse cluster"
 
 msgid "Cancelled by callback"
 msgstr "Geannuleerd door callback"
-
-msgid ".setSeedJASP was called with an incorrect argument."
-msgstr ".setSeedJASP is geroepen met een incorrect argument."
-
-msgid "The argument options should be the options list from QML."
-msgstr "De argument opties moeten een optie lijst van QML zijn."
-
-msgid ""
-"Ensure that the SetSeed{} QML component is present in the QML file for this "
-"analysis."
-msgstr ""
-"Zorg dat het SetSeed() QML component aanwezig is in het QML bestand voor "
-"deze analyse."
 
 msgid "Bayes factor is undefined -- all effects are specified as nuisance."
 msgstr ""
@@ -2722,37 +2669,33 @@ msgstr "Posterior R%s"
 msgid "Single Model R%s"
 msgstr "Enkel Model R%s"
 
-#, fuzzy
 msgid ""
 "The following problem(s) occurred while running the analysis:"
 "<ul><li>Variable has to be discrete (i.e., integer)</li></ul>"
-msgstr "De volgende problemen deden zich voor tijdens de analyse:"
+msgstr ""
+"De volgende problemen deden zich voor tijdens uitvoeren van de analyse;"
+"<ul><li>Variable moet geheel zijn (d.w.z., integer)</li></ul>"
 
 msgid "<ul><li>Variable has to be discrete (i.e., integer)</li></ul>"
 msgstr ""
 
-#, fuzzy
 msgid "Overview - %s"
-msgstr "Beschrijvingen - %s"
+msgstr "Overzicht - %s"
 
 msgid "n"
 msgstr "n"
 
-#, fuzzy
-msgid "25% Quantile"
-msgstr "Kwartiel"
+msgid "25%% Quantile"
+msgstr "25%% Kwartiel"
 
-#, fuzzy
-msgid "75% Quantile"
-msgstr "Kwartiel"
+msgid "75%% Quantile"
+msgstr "75%% Kwartiel"
 
-#, fuzzy
 msgid "Rel. Frequency"
-msgstr "Frequentie"
+msgstr "Rel. Frequentie"
 
-#, fuzzy
 msgid "Observed Moments"
-msgstr "Geobserveerde aantallen"
+msgstr "Geobserveerde momenten"
 
 msgid "Moment"
 msgstr ""
@@ -2760,13 +2703,11 @@ msgstr ""
 msgid "Raw"
 msgstr ""
 
-#, fuzzy
 msgid "Central"
-msgstr "Centraliteitsgrafiek"
+msgstr "Centraal"
 
-#, fuzzy
 msgid "Estimated Parameters"
-msgstr "Plaatsparameter"
+msgstr "Geschatte Parameters"
 
 msgid "Parameter"
 msgstr "Parameter"
@@ -2774,18 +2715,15 @@ msgstr "Parameter"
 msgid "Standard errors are unavailable with this method"
 msgstr ""
 
-#, fuzzy
 msgid "%s%% CI"
-msgstr "%i%% BI:"
+msgstr "%s%% BI:"
 
 msgid "Confidence intervals are unavailable with this method."
 msgstr ""
 
-#, fuzzy
 msgid "Confidence intervals were calculated using the delta method."
 msgstr ""
-"Betrouwbaarheidsintervallen zijn gebaseerd op onafhankelijke binomiale "
-"verdelingen."
+"Betrouwbaarheidsintervallen zijn berekend met behulp van de delta methode."
 
 msgid "Standard errors were calculated using the delta method."
 msgstr ""
@@ -2800,9 +2738,8 @@ msgid ""
 "feasibility of the distribution fitting the data."
 msgstr ""
 
-#, fuzzy
 msgid "Fit Statistics"
-msgstr "Statistiek"
+msgstr "Passende Statistiek"
 
 msgid "Test"
 msgstr "Toets"
@@ -2825,67 +2762,54 @@ msgstr ""
 msgid "Histogram vs. Theoretical PMF"
 msgstr ""
 
-#, fuzzy
 msgid "Q-Q plot"
 msgstr "Q-Q Grafiek"
 
 msgid "Empirical vs. Theoretical CDF"
 msgstr ""
 
-#, fuzzy
 msgid "P-P plot"
-msgstr "Path plot"
+msgstr "P-P grafiek"
 
-#, fuzzy
 msgid "Theoretical"
-msgstr "Theoretische Kwantielen"
+msgstr "Theoretisch"
 
-#, fuzzy
 msgid "Sample"
-msgstr "Steekproefgrootte"
+msgstr "Steekproef"
 
-#, fuzzy
 msgid "Probability Mass"
-msgstr "Waarschijlijkheid"
+msgstr "Waarschijlijkheids Massa"
 
 msgid "Formula"
 msgstr ""
 
-#, fuzzy
 msgid "Density Plot"
-msgstr "Centraliteitsgrafiek"
+msgstr "Dichtheid Grafiek"
 
-#, fuzzy
 msgid "Cumulative Probability Plot"
-msgstr "Cumulatieve kans"
+msgstr "Cumulatieve Waarschijnlijkheids Grafiek"
 
 msgid "Slope"
 msgstr ""
 
-#, fuzzy
 msgid "Quantile Plot"
-msgstr "Kwartiel"
+msgstr "Kwantiel Grafiek"
 
-#, fuzzy
 msgid "Probability Mass Plot"
-msgstr "Waarschijlijkheid"
+msgstr "Waarschijlijkheid Massa Grafiek"
 
-#, fuzzy
 msgid "Histogram"
-msgstr "Marginale Histogram"
+msgstr "Histogram"
 
-#, fuzzy
 msgid "Bar plot"
-msgstr "Path plot"
+msgstr "Staafdiagram"
 
 msgid "Rel. Freq (%s in bin)"
 msgstr ""
 
-#, fuzzy
 msgid "Empirical Cumulative Distribution"
-msgstr "Marginale Posterior verdelingen"
+msgstr "Empirische Cumulatieve Verdeling"
 
-#, fuzzy
 msgid "Freq"
 msgstr "Frequentie"
 
@@ -2974,20 +2898,17 @@ msgid ""
 "test set) and 0 (excluded from test set)."
 msgstr ""
 
-#, fuzzy
 msgid "K-Nearest Neighbors Classification"
-msgstr "K-Dichtstbijzijnde-buur Regressie"
+msgstr "K-Dichtstbijzijnde-buur Classificatie"
 
 msgid "Linear Discriminant Classification"
 msgstr ""
 
-#, fuzzy
 msgid "Random Forest Classification"
-msgstr "Random Forest Regressie"
+msgstr "Random Forest Classificatie"
 
-#, fuzzy
 msgid "Boosting Classification"
-msgstr "Boosting Regressie"
+msgstr "Boosting Classificatie"
 
 msgid "Nearest neighbors"
 msgstr "Dichtbijzijnde buren"
@@ -3022,9 +2943,8 @@ msgstr ""
 msgid "n(Test)"
 msgstr "n(Toets)"
 
-#, fuzzy
 msgid "Validation Accuracy"
-msgstr "Validatie Verzameling"
+msgstr "Validatie Nauwkeurigheid"
 
 msgid "Test Accuracy"
 msgstr ""
@@ -3056,7 +2976,6 @@ msgstr ""
 msgid "The model is optimized with respect to the <i>out-of-bag accuracy</i>."
 msgstr ""
 
-#, fuzzy
 msgid "Confusion Matrix"
 msgstr "Confusie matrix"
 
@@ -3071,9 +2990,8 @@ msgid ""
 "factor variables. You need at least 2 numeric variables."
 msgstr ""
 
-#, fuzzy
 msgid "ROC Curves Plot"
-msgstr "Forest Plot"
+msgstr "ROC Kurven Grafiek"
 
 msgid "False positive rate"
 msgstr ""
@@ -3084,16 +3002,14 @@ msgstr ""
 msgid "Perfect separation"
 msgstr ""
 
-#, fuzzy
 msgid "Andrews Curves Plot"
-msgstr "Beschrijvende grafiek"
+msgstr "Andrews Kurven Grafiek"
 
 msgid "Box's M-test for Homogeneity of Covariance Matrices"
 msgstr ""
 
-#, fuzzy
 msgid "Evaluation Metrics"
-msgstr "Evaluatie informatie"
+msgstr "Evaluatie Metriek"
 
 msgid "Precision"
 msgstr ""
@@ -3104,7 +3020,6 @@ msgstr ""
 msgid "F1 Score"
 msgstr ""
 
-#, fuzzy
 msgid "AUC"
 msgstr "AIC"
 
@@ -3113,32 +3028,26 @@ msgid ""
 "classes."
 msgstr ""
 
-#, fuzzy
 msgid "Average / Total"
-msgstr "Gemiddelde H"
+msgstr "Gemiddelde / Totaal"
 
-#, fuzzy
 msgid "Class Proportions"
-msgstr "Proportie"
+msgstr "Klasse Verhoudingen"
 
-#, fuzzy
 msgid "Data Set"
-msgstr "Data"
+msgstr "Data Set"
 
 msgid "Training Set"
 msgstr ""
 
-#, fuzzy
 msgid "Validation Set"
 msgstr "Validatie Verzameling"
 
-#, fuzzy
 msgid "Training and Validation Set"
-msgstr "Validatie Verzameling"
+msgstr "Training en Validatie Verzameling"
 
-#, fuzzy
 msgid "Test Set"
-msgstr "Toets MSE"
+msgstr "Toets Verzameling"
 
 msgid ""
 "You have specified more clusters than distinct data points. Please choose a "
@@ -3151,9 +3060,8 @@ msgid ""
 "for this problem. Please try another algorithm in the meantime."
 msgstr ""
 
-#, fuzzy
 msgid "K-Means Clustering"
-msgstr "Clusteringsgrafiek"
+msgstr "K-Means Klustering"
 
 msgid "Fuzzy C-Means Clustering"
 msgstr ""
@@ -3164,20 +3072,17 @@ msgstr ""
 msgid "Density-Based Clustering"
 msgstr ""
 
-#, fuzzy
 msgid "Random Forest Clustering"
-msgstr "Random Forest Regressie"
+msgstr "Random Forest Klustering"
 
-#, fuzzy
 msgid "Clusters"
-msgstr "Clusteringsgrafiek"
+msgstr "Klusters"
 
 msgid "R%s"
 msgstr "R%s"
 
-#, fuzzy
 msgid "Please provide at least 2 variables."
-msgstr "Geef a.u.b. een andere variabele."
+msgstr "Geef a.u.b. ten minste 2 variabelen."
 
 msgid "silhouette"
 msgstr ""
@@ -3203,13 +3108,11 @@ msgstr ""
 msgid "The variables in the model are <b>unstandardized</b>."
 msgstr ""
 
-#, fuzzy
 msgid "Cluster Information"
-msgstr "Evaluatie informatie"
+msgstr "Kluster informatie"
 
-#, fuzzy
 msgid "Cluster"
-msgstr "Clusteringsgrafiek"
+msgstr "Kluster"
 
 msgid "Size"
 msgstr ""
@@ -3217,9 +3120,8 @@ msgstr ""
 msgid "Explained proportion within-cluster heterogeneity"
 msgstr ""
 
-#, fuzzy
 msgid "Within sum of squares"
-msgstr "Kwadratensom"
+msgstr "Binnen Kwadratensom"
 
 msgid "Silhouette score"
 msgstr ""
@@ -3236,16 +3138,14 @@ msgstr ""
 msgid "The Total Sum of Squares of the %1$s cluster model is %2$s"
 msgstr ""
 
-#, fuzzy
 msgid "Maximum diameter"
-msgstr "Maximale fout"
+msgstr "Maximale diameter"
 
 msgid "Minimum separation"
 msgstr ""
 
-#, fuzzy
 msgid "Pearson's %s"
-msgstr "Pearson's r"
+msgstr "Pearson's %s"
 
 msgid "Dunn index"
 msgstr ""
@@ -3262,9 +3162,8 @@ msgstr ""
 msgid "Evaluation metrics cannot be computed when there is only 1 cluster."
 msgstr ""
 
-#, fuzzy
 msgid "t-SNE Cluster Plot"
-msgstr "Clusteringsgrafiek"
+msgstr "t-SNE Kluster Grafiek"
 
 msgid "Noisepoint"
 msgstr ""
@@ -3272,28 +3171,23 @@ msgstr ""
 msgid "Elbow Method Plot"
 msgstr ""
 
-#, fuzzy
 msgid "Within Sum of Squares"
-msgstr "Kwadratensom"
+msgstr "Binnen Kwadratensom"
 
-#, fuzzy
 msgid "Number of Clusters"
-msgstr "Aantal bootstraps"
+msgstr "Aantal Klusters"
 
 msgid "Cluster Means"
 msgstr ""
 
-#, fuzzy
 msgid "Cluster %s"
-msgstr "Clusteringsgrafiek"
+msgstr "Kluster %s"
 
-#, fuzzy
 msgid "Cluster Density Plots"
-msgstr "Clusteringsgrafiek"
+msgstr "Kluster Dichtheid Grafiek"
 
-#, fuzzy
 msgid "Cluster Mean Plots"
-msgstr "Clusteringsgrafiek"
+msgstr "Kluster Gemiddelde Grafieken"
 
 msgid "All predictors"
 msgstr ""
@@ -4226,9 +4120,6 @@ msgstr ""
 msgid "Stretched beta prior width"
 msgstr "Stretched beta prior width"
 
-msgid "One or more Bayes factors are infinity"
-msgstr "Een of meer Bayes factor(s) zijn oneindig"
-
 msgid "Frequency Tables"
 msgstr "Frequentietabellen"
 
@@ -4446,9 +4337,8 @@ msgstr "Factorladingen (Structuurmatrix)"
 msgid "Factor Characteristics"
 msgstr "Factorkarakteristieken"
 
-#, fuzzy
 msgid "SumSq. Loadings"
-msgstr "Componentladingen"
+msgstr "Kwadratensom Belastingen"
 
 msgid "Proportion var."
 msgstr "Proportievar."
@@ -4529,6 +4419,11 @@ msgstr "Effectieve Steekproefgrootte"
 msgid "No data was supplied, everything was sampled from the priors!"
 msgstr "Geen data gegeven, alles gesampled van de priors!"
 
+msgid ""
+"Failed to compute the Rhat statistic. This is expected if the model contains "
+"discrete parameters."
+msgstr ""
+
 msgid "The multivariate potential scale reduction factor is estimated at %.3f."
 msgstr "De multivariaat potentieelschaal reductiefactor is geschat op %.3f."
 
@@ -4573,46 +4468,37 @@ msgstr ""
 "Op zijn minst twee parameters moeten worden gemonitord en weergegeven om een "
 "bivariate spreidingsgrafiek te maken!"
 
-msgid ""
-"%s\n"
-"\n"
-"Possible typos detected:\n"
-"\n"
-"%s"
+msgid "%1$s%2$sIn addition:%3$s%4$s"
 msgstr ""
-"%s\n"
-"\n"
-"Mogelijke typfouten gedetecteerd:\n"
-"\n"
-"%s"
 
-msgid "The model contains more '%s' than '%s' (%d vs %d)"
-msgstr "Het model bevat meer '%s' dan '%s' (%d vs %d)"
+msgid "The model contains more '%1$s' than '%2$s' (%3$d vs %4$d)"
+msgstr "Het model bevat meer '%1$s' dan '%2$s' (%3$d vs %4$d)"
 
 msgid ""
-"There was a problem loading JAGS, JAGS_HOME is: '%s'.\n"
+"There was a problem loading JAGS, JAGS_HOME is: '%1$s'.\n"
 "Please contact the JASP team for support.\n"
-"Error was: %s."
+"Error was: %2$s."
 msgstr ""
-"JAGS, JAGS_HOME konden niet worden geladen: '%s'.\n"
+"JAGS, JAGS_HOME kon niet worden geladen: '%1$s'.\n"
 "Neem contact op met het JASP team voor ondersteuning.\n"
-"Fout: %s."
+"Fout: %2$s."
 
 msgid "Expected JAGS version 4.3.0 but found %s"
 msgstr "Verwachtte JAGS versie 4.3.0 maar vond %s"
 
 msgid ""
-"The R code for %s crashed with error:\n"
-"%s"
+"The R code for %1$s crashed with error:\n"
+"%2$s"
 msgstr ""
-"De R code voor %s gecrashet met fout:\n"
-"%s"
+"De R code voor %s is gecrashed met fout:\n"
+"%2$s"
 
 msgid ""
-"The result of %s R code should be numeric but it was of mode %s and class %s"
+"The result of %1$s R code should be numeric but it was of mode %2$s and "
+"class %3$s"
 msgstr ""
-"Het resultaat van %s R code moet numeriek zijn maar was van de modus %s en "
-"klasse %s"
+"Het resultaat van %1$s R code moet numeriek zijn maar was van het type %2$s en "
+"klasse %3$s"
 
 msgid "probability of success: p %s %s: 0 %s p %s 1"
 msgstr ""
@@ -4626,9 +4512,8 @@ msgstr ""
 msgid "The optimization did not converge, try adjusting the parameter values."
 msgstr ""
 
-#, fuzzy
 msgid "<i>Warning.</i>"
-msgstr "<b>Waarschuwing.</b>"
+msgstr "<i>Waarschuwing.</i>"
 
 msgid "shape: %s"
 msgstr ""
@@ -4636,43 +4521,36 @@ msgstr ""
 msgid "probability of success: %s"
 msgstr ""
 
-#, fuzzy
 msgid "number of trials: %s"
-msgstr "Aantal bootstraps"
+msgstr "Aantal pogingen: %s"
 
-#, fuzzy
 msgid "Parameter n was fixed at value %s."
-msgstr "Parameterschattingen"
+msgstr "Parameter n wat bepaald op waarde %s"
 
-#, fuzzy
 msgid "degree of freedom: %s"
-msgstr "Vrijheidsgraden"
+msgstr "Vrijheidsgraden: %s"
 
-#, fuzzy
 msgid "non-centrality: %s"
-msgstr "Centraliteitsgrafiek"
+msgstr "niet-centraal: %s"
 
-#, fuzzy
+
 msgid "scale: %s"
-msgstr "r schaal"
+msgstr "schaal: %s"
 
 msgid "rate: %s"
 msgstr ""
 
-#, fuzzy
 msgid "mean: %s"
-msgstr "Gemiddelde"
+msgstr "gemiddelde: %s"
 
 msgid "mean: &mu; %s"
 msgstr ""
 
-#, fuzzy
 msgid "variance: %s"
-msgstr "Variantie"
+msgstr "Variantie: %s"
 
-#, fuzzy
 msgid "standard deviation: %s"
-msgstr "Standaardafwijking"
+msgstr "Standaardafwijking: %s"
 
 msgid "precision: %s"
 msgstr ""
@@ -4683,9 +4561,8 @@ msgstr ""
 msgid "&mu;"
 msgstr ""
 
-#, fuzzy
 msgid "number of successes: %s"
-msgstr "Aantal Bomen"
+msgstr "Aantal keren succes: %s"
 
 msgid "dispersion: %s"
 msgstr ""
@@ -4811,16 +4688,14 @@ msgstr "Path plot"
 msgid "The target variable should have at least 2 classes."
 msgstr ""
 
-#, fuzzy
 msgid "Linear Discriminant Coefficients"
-msgstr "Regressie Coëfficiënten"
+msgstr "Lineaire Discriminant Coëfficiënten"
 
 msgid "(Constant)"
 msgstr ""
 
-#, fuzzy
 msgid "Prior and Posterior Class Probabilities"
-msgstr "Posterior kansen"
+msgstr "Prior and Posterior Klasse Waarschijnlijkheden"
 
 msgid "Class Means in Training Data"
 msgstr ""
@@ -4828,37 +4703,32 @@ msgstr ""
 msgid "Linear Discriminant Matrix"
 msgstr ""
 
-#, fuzzy
 msgid "Tests of Equality of Class Means"
-msgstr "Toets van gelijkheid van varianties (Levene's)"
+msgstr "Toets gelijkheid van Klasse Gemiddeldes"
 
-#, fuzzy
 msgid "The null hypothesis specifies equal class means."
-msgstr "De nulhypothese H0 met toetswaarde"
+msgstr "De nulhypothese specificeert gelijke klasse gemiddeldes"
 
-#, fuzzy
 msgid "Tests of Equality of Covariance Matrices"
-msgstr "Toets van gelijkheid van varianties (Levene's)"
+msgstr "Toets van gelijkheid van Covariante Matrices"
 
-#, fuzzy
 msgid "The null hypothesis specifies equal covariance matrices."
-msgstr "Residue covariantie matricen"
+msgstr "De nul hypothese specificeert gelijke covariante matrices."
 
 msgid "Pooled Within-Class Matrices Correlations"
 msgstr ""
 
-#, fuzzy
 msgid "K-Distance Plot"
-msgstr "Deviatie Grafiek"
+msgstr "K-Afstands Grafiek"
 
 msgid "Points sorted by distance"
 msgstr ""
 
-#, fuzzy
 msgid ""
 "%s-nearest neighbors \n"
 "distance"
-msgstr "Dichtbijzijnde buren"
+msgstr "%s-Dichtbijzijnde buren \n"
+"afstand"
 
 msgid "Maximum curvature = %s"
 msgstr ""
@@ -6441,6 +6311,35 @@ msgid "using the %d/%d row from a combined fit"
 msgid_plural "using the %d/%d rows from a combined fit"
 msgstr[0] "gebruikt de %d/%d rij van de gecombineerde fit"
 msgstr[1] "gebruikt de %d/%d rijen van de gecombineerde fit"
+
+#~ msgid ".setSeedJASP was called with an incorrect argument."
+#~ msgstr ".setSeedJASP is geroepen met een incorrect argument."
+
+#~ msgid "The argument options should be the options list from QML."
+#~ msgstr "De argument opties moeten een optie lijst van QML zijn."
+
+#~ msgid ""
+#~ "Ensure that the SetSeed{} QML component is present in the QML file for "
+#~ "this analysis."
+#~ msgstr ""
+#~ "Zorg dat het SetSeed() QML component aanwezig is in het QML bestand voor "
+#~ "deze analyse."
+
+#~ msgid "One or more Bayes factors are infinity"
+#~ msgstr "Een of meer Bayes factor(s) zijn oneindig"
+
+#~ msgid ""
+#~ "%s\n"
+#~ "\n"
+#~ "Possible typos detected:\n"
+#~ "\n"
+#~ "%s"
+#~ msgstr ""
+#~ "%s\n"
+#~ "\n"
+#~ "Mogelijke typfouten gedetecteerd:\n"
+#~ "\n"
+#~ "%s"
 
 #~ msgid "Confidence intervals computed 95%% Confidence Intervals."
 #~ msgstr ""
