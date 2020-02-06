@@ -1186,10 +1186,16 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     ggplot2::scale_y_continuous(breaks = yBreaks, limits = yLimits)
 
   p <- p + JASPgraphs::geom_rangeframe() + JASPgraphs::themeJaspRaw()
+
+  # we want to show the axis titles in the middle of the breaks, not the middle of the limits (the default)
+  # so we adjust the vjust and hjust accordingly
+  vjustY <- (mean(yBreaks) - yLimits[1L]) / (yLimits[2L] - yLimits[1L])
+  hjustX <- (mean(xBreaks) - xLimits[1L]) / (xLimits[2L] - xLimits[1L])
+
   p <- p + ggplot2::theme(axis.line.x       = ggplot2::element_blank(),
                           axis.line.y       = ggplot2::element_blank(),
-                          axis.title.y      = ggplot2::element_text(size = 12, angle = 0, vjust = 0.5),
-                          axis.title.x      = ggplot2::element_text(size = 12), #, hjust = 0.5),
+                          axis.title.y      = ggplot2::element_text(size = 12, angle = 0, vjust = vjustY),
+                          axis.title.x      = ggplot2::element_text(size = 12, hjust = hjustX),
                           panel.background  = ggplot2::element_blank(),
                           panel.grid.major  = ggplot2::element_blank(),
                           panel.grid.minor  = ggplot2::element_blank(),
