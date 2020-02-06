@@ -827,9 +827,10 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
                                        sec.axis = ggplot2::dup_axis(trans = ~., labels = dat$ci.int),
                                        expand   = ggplot2::expand_scale(mult = c(0.1,0), add = 0))
 
-  fontsize <- 0.8*JASPgraphs::getGraphOption("fontsize")
-  p <- p + ggplot2::theme(axis.text.y.left  = ggplot2::element_text(hjust = 0, size = fontsize, colour = "black"),
-                          axis.text.y.right = ggplot2::element_text(hjust = 1, size = fontsize, colour = "black"),
+  fontsize <- JASPgraphs::getGraphOption("fontsize")
+  p <- p + ggplot2::theme(text              = ggplot2::element_text(size = fontsize, colour = "black"),
+                          axis.text.y.left  = ggplot2::element_text(hjust = 0),
+                          axis.text.y.right = ggplot2::element_text(hjust = 1),
                           axis.line.x.bottom= ggplot2::element_blank(),
                           panel.background  = ggplot2::element_blank(),
                           panel.grid        = ggplot2::element_blank(),
@@ -1147,7 +1148,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
   len   <- ya.xpos + 0.02 * (xlims[2] - xlims[1])
   atyis <- seq(min(yi), max(yi), length = 7)
-  x.margin.right <- max(sqrt(len^2/(1 + (atyis)/asp.rat)^2))
+  x.margin.right <- 1.2 * max(arc.text$data$x)#max(sqrt(len^2/(1 + (atyis)/asp.rat)^2))
 
   radial.data    <- data.frame(x = xi, y = zi, slab = x$slab[x$not.na])
   rectangle.data <- data.frame(x = c(0, xaxismax, xaxismax, 0),
@@ -1166,10 +1167,25 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
                                  linetype  = "dotted", colour = "black")
   p <- p + ggplot2::geom_segment(ggplot2::aes(x = 0, y = 0, xend = xlims[2], yend = xaxismax * beta),
                                  linetype  = "solid", colour = "black")
+
+  valsForBreaks <- c(-zcrit, zcrit, min(-zcrit +xaxismax * beta), max(zcrit + xaxismax * beta))
+  yBreaks <- JASPgraphs::getPrettyAxisBreaks(valsForBreaks)
+  # do it again to get something symmetric around 0
+  temp <- max(abs(yBreaks))
+  yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(-temp, temp))
+  # add the data from the right axis to stop ggplot2 from deleting these values
+  yLimits <- range(JASPgraphs::getPrettyAxisBreaks(c(
+    yBreaks, valsForBreaks, arc.text$data$y, arc.line$data$y, arc.line$data$yend)
+  ))
+
+  yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(-temp, temp))
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, radial.data$x))
+  xLimits <- c(0, x.margin.right)
   p <- p + ggplot2::xlab(xlabExpression) + ggplot2::ylab(ylabExpression) +
-    ggplot2::xlim(xlims[1], x.margin.right) +
-    ggplot2::ylim(zlims[1], zlims[2])
-  p <- JASPgraphs::themeJasp(p)
+    ggplot2::scale_x_continuous(breaks = xBreaks, limits = xLimits) +
+    ggplot2::scale_y_continuous(breaks = yBreaks, limits = yLimits)
+
+  p <- p + JASPgraphs::geom_rangeframe() + JASPgraphs::themeJaspRaw()
   p <- p + ggplot2::theme(axis.line.x       = ggplot2::element_blank(),
                           axis.line.y       = ggplot2::element_blank(),
                           axis.title.y      = ggplot2::element_text(size = 12, angle = 0, vjust = 0.5),
