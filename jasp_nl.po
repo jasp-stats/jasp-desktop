@@ -2144,7 +2144,7 @@ msgstr "Welkom bij JASP"
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
 msgstr ""
-"Een nieuwe manier om statistiek te bedrijven. Gratis, Eenvoudig, en Flexibel"
+"Een nieuwe manier om statistiek te bedrijven. Gratis, Eenvoudig en Flexibel"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:149
 msgctxt "WelcomePage|"
@@ -2189,7 +2189,7 @@ msgstr ""
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:245
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
-msgstr "Dus open een databestand en neem een JASP tourtje!"
+msgstr "Dus open een databestand en ontdek de voordelen van JASP!"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/JASP-Desktop/components/JASP/Widgets/WelcomePage.qml:289
 msgctxt "WelcomePage|"
@@ -2205,11 +2205,11 @@ msgid ""
 "If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
 "being developed at break-neck speed!"
 msgstr ""
-"Onthoudt a.u.b. dat dit een preview release is en dat een aantal features "
-"nog missen. \n"
+"Onthoud a.u.b. dat dit een preview release is en dat een aantal features "
+"nog ontbreekt. \n"
 "\n"
-"Als JASP vandaag nog niet alles kan wat je wilt, probeer het dan morgen "
-"opnieuw: Jasp wordt op rap tempo verder ontwikkeld"
+"Als JASP vandaag nog niet alles kan wat u wilt, probeer het dan morgen "
+"opnieuw: JASP wordt in hoog tempo verder ontwikkeld!"
 
 #: /Users/fransmeerhoff/JASP/Develop/jasp-desktop/Resources/ANOVA/qml/Ancova.qml:40
 msgctxt "Ancova|"
