@@ -117,6 +117,7 @@ public:
 
 			void		refresh();
 			void		reload();
+			void		rebind();
 			void        exportResults();
 	virtual void		abort();
 			void		remove();
@@ -144,7 +145,7 @@ public:
 	std::set<std::string>	usedVariables()													{ return _options->usedVariables();					}
 	std::set<std::string>	columnsCreated()												{ return _options->columnsCreated();				}
 	void					removeUsedVariable(std::string var)								{ _options->removeUsedVariable(var);				}
-	void					replaceVariableName(std::string oldName, std::string newName)	{ _options->replaceVariableName(oldName, newName);	}
+	void					replaceVariableName(std::string oldName, std::string newName);
 	void					runScriptRequestDone(const QString& result, const QString& controlName);
 
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs) { _msgs = msgs; _wasUpgraded = true; }
