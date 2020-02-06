@@ -129,8 +129,10 @@
   html <- readChar(file.path(.getPkgOption("html.dir"), "index.html"), 1000000)
   insertedJS <- paste0(
     "<script>
-      $(document).ready(function() {
-        window.analysisChanged(", json, ")
+      jQuery(function($) {
+        $(document).ready(function() {
+          window.analysisChanged(", json, ")
+        })
       })
     </script></body>")
   html <- gsub("</body>", insertedJS, html)
