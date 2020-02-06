@@ -166,8 +166,10 @@ Window
 				anchors.top:	parent.top
 				height:			25
 
-				text:			"<a href=\"" + aboutModel.commitUrl + "\">" + qsTr("Access the sources here") + "</a>"
+
+				text:			qsTr("Access the sources here")
 				color:			jaspTheme.blue
+				font.underline:	true
 
 				MouseArea
 				{
@@ -198,9 +200,9 @@ Window
 				anchors.top:	parent.top
 				height:			25
 
-				text:			"<a href=\"" + aboutModel.downloadUrl +"\">"+ aboutModel.downloadUrl + "</a>"
-				textFormat:		Text.StyledText
+				text:			aboutModel.downloadUrl
 				color:			jaspTheme.blue
+				font.underline:	true
 
 				MouseArea
 				{
@@ -208,6 +210,7 @@ Window
 					anchors.fill:	parent
 					onClicked:		Qt.openUrlExternally(aboutModel.downloadUrl)
 					cursorShape:	Qt.PointingHandCursor
+
 				}
 			}
 		}
@@ -261,9 +264,9 @@ Window
 				anchors.top:	citationText.bottom
 				height:			15
 
-				text:			"<a href=\"" + aboutModel.citationUrl + "\">(" + qsTr("BibTex") + ")</a>"
-				textFormat:		Text.StyledText
+				text:			qsTr("BibTex")
 				color:			jaspTheme.blue
+				font.underline:	true
 
 				MouseArea
 				{
