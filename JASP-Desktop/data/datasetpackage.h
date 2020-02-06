@@ -158,6 +158,7 @@ public:
 
 				std::vector<std::string>	getColumnNames(bool includeComputed = true);
 				bool						isColumnDifferentFromStringValues(std::string columnName, std::vector<std::string> strVals);
+				size_t						findIndexByName(std::string name)		const;
 
 				bool						getRowFilter(int row)					const;
 				QVariant					getColumnTitle(int column)				const;
@@ -241,9 +242,6 @@ public slots:
 				void				notifyColumnFilterStatusChanged(int columnIndex);
 				void				setColumnsUsedInEasyFilter(std::set<std::string> usedColumns);
 				void				emptyValuesChangedHandler();
-
-private slots:
-				void				rescanColumnNamesForEncoder();
 
 private:
 				///This function allows you to run some code that changes something in the _dataSet and will try to enlarge it if it fails with an allocation error. Otherwise it might keep going for ever?
