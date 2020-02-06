@@ -730,9 +730,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   ci.ub    <- rma.fit$yi + qnorm(rma.fit$level/2, lower.tail = FALSE) * sqrt(rma.fit$vi)
   xlims    <- c(-1, rma.fit$k+1)
   ylims    <- c(min(ci.lb), max(ci.ub))
-  ci.lb    <- round(ci.lb, digits = 2)
-  ci.ub    <- round(ci.ub, digits = 2)
-  ci.int   <- paste0(round(rma.fit$yi, 2), "[", ci.lb, ", ", ci.ub, "]")
+  ci.int   <- sprintf("%.2f [%.2f, %.2f]", rma.fit$yi, ci.lb, ci.ub)
   b.pred   <- predict(rma.fit)
   b.ci.lb  <- round(b.pred$ci.lb, 2)
   b.ci.ub  <- round(b.pred$ci.ub, 2)
@@ -768,7 +766,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   #grey polygons when not intercept only
   if(!rma.fit$int.only){
     pred   <- fitted(rma.fit)
-    height <- (ylims[2] - ylims[1])/100
+    height <- (xlims[2] - xlims[1])/50
     alim   <- range(k + 1 - rma.fit$ids[rma.fit$not.na])
     add.data <- data.frame()
     for(study in 1:studies.not.na) {
@@ -804,11 +802,13 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
   p <- ggplot2::ggplot(data = dat, ggplot2::aes(x = StudyNo, y = ES))
   if(!rma.fit$int.only)
-    p <- p + ggplot2::geom_polygon(data = add.data, fill = "lightgrey", ggplot2::aes(group = group))
+    p <- p + ggplot2::geom_polygon(data = add.data, fill = "grey75", ggplot2::aes(group = group))
 
   p <- p + ggplot2::geom_point(data = dat, ggplot2::aes(size = size, shape = factor(shape)), colour = cols[1]) +
     ggplot2::geom_errorbar(ggplot2::aes(x = StudyNo, ymax = ci.ub, ymin = ci.lb),
-                           width = 0.5, colour = cols[1])
+                           width = 0.5, colour = cols[1]) +
+    ggplot2::scale_shape_manual(values = c(15, 18))
+
   p <- p +
     ggplot2::geom_hline(ggplot2::aes(yintercept = 0),   lty = "dotted", size = 0.5, colour = cols[1]) +
     ggplot2::geom_vline(ggplot2::aes(xintercept = k+1), lty = "solid",  size = 0.5, colour = cols[1])
@@ -816,7 +816,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = 0), lty = "solid",  size = 0.5, colour = cols[2])
 
   p <- p + ggplot2::coord_flip() +
-    ggplot2::xlab("") + ggplot2::ylab(gettext("Observed Outcome")) +
+    ggplot2::xlab(NULL) + ggplot2::ylab(gettext("Observed Outcome")) +
     ggplot2::scale_y_continuous(limits = ylims,
                                 breaks = JASPgraphs::getPrettyAxisBreaks(ylims),
                                 expand = ggplot2::expand_scale(mult = c(0.3,0.3), add = 0))
@@ -827,14 +827,16 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
                                        sec.axis = ggplot2::dup_axis(trans = ~., labels = dat$ci.int),
                                        expand   = ggplot2::expand_scale(mult = c(0.1,0), add = 0))
   #p <- JASPgraphs::themeJasp(p)
-  p <- p + ggplot2::theme(axis.text.y.left  = ggplot2::element_text(hjust = 0, size = 10),
-                          axis.text.y.right = ggplot2::element_text(hjust = 1, size = 10),
-                          axis.line.x.bottom= ggplot2::element_line(),
+  p <- p + ggplot2::theme(axis.text.y.left  = ggplot2::element_text(hjust = 0, size = 10, colour = "black"),
+                          axis.text.y.right = ggplot2::element_text(hjust = 1, size = 10, colour = "black"),
+                          axis.line.x.bottom= ggplot2::element_blank(),
                           panel.background  = ggplot2::element_blank(),
                           panel.grid        = ggplot2::element_blank(),
                           axis.ticks.y      = ggplot2::element_blank(),
-                          axis.ticks.x      = ggplot2::element_line(size = 0.8),
+                          axis.ticks.x      = ggplot2::element_line(size = JASPgraphs::getGraphOption("axisTickWidth")),
                           legend.position   = "none")
+
+  p <- p + JASPgraphs::geom_rangeframe(sides = "b")
   return(p)
 }
 
