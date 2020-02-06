@@ -38,6 +38,7 @@ public:
 	void						addMissingValue();
 	void						addLeadingMissingValues();
 	void						setType(columnType newType);
+	bool						canConvertToType(columnType newType);
 
 	std::string					valueAsString(size_t row)	const;
 

@@ -49,7 +49,81 @@ std::vector<std::string> ReadStatImportColumn::allValuesAsStrings() const
 	return strs;
 }
 
-//This code could perhaps be split up into canConvertToType that checks if the conversion would work, and this one. That way recovering from errors could be done a bit more gracefully and the code in tryNominalMinusText() could be a lot more succint.
+bool ReadStatImportColumn::canConvertToType(columnType newType)
+{
+	if(_type == newType || _type == columnType::unknown)
+		return true;
+
+	if(newType == columnType::unknown)
+		return false;
+
+	switch(_type)
+	{
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	case columnType::scale:
+		switch(newType)
+		{
+		case columnType::nominalText:	return true;
+		case columnType::ordinal:		[[clang::fallthrough]];
+		case columnType::nominal:
+			for(double d : _doubles)
+				if(!isMissingValue(d) && d != double(int(d)))
+					return false;
+			return true;
+		}
+		break;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	case columnType::ordinal:			[[clang::fallthrough]];
+	case columnType::nominal:
+		switch(newType)
+		{
+		case columnType::ordinal:		[[clang::fallthrough]];
+		case columnType::nominalText:	[[clang::fallthrough]];
+		case columnType::nominal:		return true;
+		case columnType::scale:			return _intLabels.size() == 0;
+		}
+		break;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	case columnType::nominalText:
+		switch(newType)
+		{
+
+		case columnType::scale:
+			if(_strLabels.size() > 0)
+				return false;
+
+			for(const std::string & str : _strings)
+			{
+				double dblVal;
+				if(!isMissingValue(str) && !Utils::convertValueToDoubleForImport(str, dblVal))
+					return false;
+			}
+
+			return true;
+
+		case columnType::ordinal:	[[clang::fallthrough]];
+		case columnType::nominal:
+		{
+			int val;
+
+			for(const std::string & str : _strings)
+				if(!isMissingValue(str) && !Utils::convertValueToIntForImport(str, val))
+					return false;
+
+			for(const auto & strLabel : _strLabels)
+				if(!Utils::convertValueToIntForImport(strLabel.first, val))
+					return false;
+			return true;
+		}
+		}
+		break;
+	}
+
+	return false;
+}
+
 void ReadStatImportColumn::setType(columnType newType)
 {
 	if(_type == newType)
@@ -129,11 +203,11 @@ void ReadStatImportColumn::setType(columnType newType)
 		{
 		case columnType::unknown:		throw std::runtime_error("Changing the importcolumns type back to unknown from " + columnTypeToString(_type) + " is not allowed!");
 		case columnType::scale:
+			if(_strLabels.size() > 0)
+				conversionFailed("Because we would have to drop some labels.");
+
 			for(const std::string & str : _strings)
 			{
-				if(_strLabels.size() > 0)
-					conversionFailed("Because we would have to drop some labels.");
-
 				double dblVal;
 				if(isMissingValue(str))										_doubles.push_back(missingValueDouble());
 				else if(Utils::convertValueToDoubleForImport(str, dblVal))	_doubles.push_back(dblVal);
@@ -143,23 +217,20 @@ void ReadStatImportColumn::setType(columnType newType)
 
 		case columnType::ordinal:	[[clang::fallthrough]];
 		case columnType::nominal:
+		{
+			int val;
 			for(const std::string & str : _strings)
-			{
-				int intVal;
 				if(isMissingValue(str))									_ints.push_back(missingValueInt());
-				else if(Utils::convertValueToIntForImport(str, intVal))	_ints.push_back(intVal);
+				else if(Utils::convertValueToIntForImport(str, val))	_ints.push_back(val);
 				else													conversionFailed("String '" + str + "' cannot be converted to int.");
-			}
 
 			for(const auto & strLabel : _strLabels)
-			{
-				int val;
 				if(Utils::convertValueToIntForImport(strLabel.first, val))	_intLabels[val] = strLabel.second;
 				else														conversionFailed("String key '" + strLabel.first + "' (for label '" + strLabel.second + "') cannot be converted to int.");
-			}
 			_strLabels.clear();
 
 			break;
+		}
 		}
 		break;
 	}
@@ -194,8 +265,15 @@ void ReadStatImportColumn::addValue(const string & val)
 	case columnType::scale:
 	{
 		double dblVal;
-		if(Utils::convertValueToDoubleForImport(val, dblVal))	addValue(dblVal);
-		else													addMissingValue();
+		if(Utils::convertValueToDoubleForImport(val, dblVal))
+			addValue(dblVal);
+		else
+		{
+			Log::log() << "Column '" << name() << "' being imported through readstat is of type " << _type << " but receives an string (" << val << ") as value. Converting type to nominaltext!" << std::endl;
+			setType(columnType::nominalText);
+			addValue(val);
+			return;
+		}
 		break;
 	}
 
@@ -203,8 +281,15 @@ void ReadStatImportColumn::addValue(const string & val)
 	case columnType::nominal:
 	{
 		int intVal;
-		if(Utils::convertValueToIntForImport(val, intVal))	addValue(intVal);
-		else												addMissingValue();
+		if(Utils::convertValueToIntForImport(val, intVal))
+			addValue(intVal);
+		else
+		{
+			Log::log() << "Column '" << name() << "' being imported through readstat is of type " << _type << " but receives an string (" << val << ") as value. Converting type to nominaltext!" << std::endl;
+			setType(columnType::nominalText);
+			addValue(val);
+			return;
+		}
 		break;
 	}
 	}
@@ -214,7 +299,15 @@ void ReadStatImportColumn::addValue(const double & val)
 {
 	switch(_type)
 	{
-	case columnType::ordinal:		[[clang::fallthrough]]; //How does ordinal with doubles make sense? Well, it doesn't!
+	case columnType::ordinal:
+		if(double(int(val)) == val)
+		{
+			addValue(int(val));
+			return;
+		}
+		//Else if not integer val then:
+		[[clang::fallthrough]];
+
 	case columnType::unknown:
 		setType(columnType::scale);
 		[[clang::fallthrough]];
@@ -224,7 +317,13 @@ void ReadStatImportColumn::addValue(const double & val)
 		break;
 
 	case columnType::nominal:
-		setType(columnType::nominalText); //Nominal with float also doesn't work.. Lets make sure any previous ints are converted to string
+		if(double(int(val)) == val)
+		{
+			addValue(int(val));
+			return;
+		}
+		//else not integral
+		setType(columnType::nominalText);
 		[[clang::fallthrough]];
 
 	case columnType::nominalText:
@@ -258,6 +357,9 @@ void ReadStatImportColumn::addValue(const int & val)
 
 void ReadStatImportColumn::addLabel(const int & val, const std::string & label)
 {
+	if(_type == columnType::unknown)
+		setType(columnType::nominal);
+
 	if(_type == columnType::nominalText)
 	{
 		Log::log() << "Column '" << name() << "' being imported through readstat is of type nominaltext but receives an int (" << val << ") as value for label '" << label << "'. Converting it to string!" << std::endl;
@@ -265,14 +367,19 @@ void ReadStatImportColumn::addLabel(const int & val, const std::string & label)
 		return;
 	}
 
-	if(_type == columnType::unknown)
-		setType(columnType::nominal);
-
-
 	if(_type == columnType::scale)
 	{
-		Log::log() << "Column '" << name() << "' being imported through readstat was of type scale but receives an int (" << val << ") as value for label '" << label << "'. Converting it's type to ordinal!" << std::endl;
-		setType(columnType::ordinal);
+		if(!canConvertToType(columnType::ordinal)) // then there might be some doubles already and then this wont work
+		{
+			Log::log() << "Column '" << name() << "' being imported through readstat was of type scale but receives an int (" << val << ") as value for label '" << label << "'. Converting it's type to nominal text because there are some doubles which we cannot convert to int!" << std::endl;
+			addLabel(std::to_string(val), label);
+			return;
+		}
+		else
+		{
+			Log::log() << "Column '" << name() << "' being imported through readstat was of type scale but receives an int (" << val << ") as value for label '" << label << "'. Converting it's type to ordinal!" << std::endl;
+			setType(columnType::ordinal);
+		}
 	}
 
 	_intLabels[val] = label;
@@ -282,6 +389,12 @@ void ReadStatImportColumn::addLabel(const double & val, const std::string & labe
 {
 	if(_type != columnType::nominalText)
 	{
+		if(double(int(val)) == val)
+		{
+			addLabel(int(val), label);
+			return;
+		}
+
 		Log::log() << "Column '" << name() << "' being imported through readstat was of type " << _type << " but receives a double (" << val << ") as value for label '" << label << "'. Converting it's type to nominalText!" << std::endl;
 		setType(columnType::nominalText); //Because we do not support having doubles as values for labels
 	}
@@ -346,14 +459,8 @@ void ReadStatImportColumn::tryNominalMinusText()
 	if(_type != columnType::nominalText)
 		return;
 
-	int val;
-	for(const std::string & str : _strings)
-		if(!Utils::convertValueToIntForImport(str, val) && str != Utils::emptyValue)
-			return;
-
-	for(const auto & strLabel : _strLabels)
-		if(!Utils::convertValueToIntForImport(strLabel.first, val))
-			return;
+	if(!canConvertToType(columnType::nominal))
+		return;
 
 	Log::log() << "Converting column '" << _name << "' from nominalText to nominal because all values can be converted to int without losing information." << std::endl;
 
