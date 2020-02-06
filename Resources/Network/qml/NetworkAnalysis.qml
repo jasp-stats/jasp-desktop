@@ -366,7 +366,7 @@ Form
 			{
 				name: "abbreviateLabels"; label: qsTr("Abbreviate labels to ")
 				childrenOnSameRow: true
-				IntegerField { name: "abbreviateNoChars"; defaultValue: 4; max: 100000 }
+				IntegerField { name: "abbreviateNoChars"; defaultValue: 4; min: 1; max: 100000 }
 			}
 		}
 
