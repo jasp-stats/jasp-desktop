@@ -180,6 +180,12 @@ void Analysis::reload()
 	Analyses::analyses()->reload(this, true);
 }
 
+void Analysis::rebind()
+{
+	if (_analysisForm)
+		_analysisForm->bindTo();
+}
+
 void Analysis::exportResults()
 {
 	emit Analyses::analyses()->analysesExportResults();
@@ -398,6 +404,12 @@ std::string Analysis::qmlFormPath() const
 	return "file:" + (_moduleData != nullptr	?
 				_moduleData->qmlFilePath()	:
 				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
+}
+
+void Analysis::replaceVariableName(std::string oldName, std::string newName)
+{
+	if (_options)
+		_options->replaceVariableName(oldName, newName);
 }
 
 void Analysis::runScriptRequestDone(const QString& result, const QString& controlName)

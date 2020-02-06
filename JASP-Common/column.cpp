@@ -1343,8 +1343,11 @@ bool Column::isColumnDifferentFromStringValues(std::vector<std::string> strVals)
 		}
 
 		case columnType::nominalText:
+		{
 			if(!isValueEqual(row, strVals[row]))
 				return true;
+			break;
+		}
 
 		default:
 			return true;
