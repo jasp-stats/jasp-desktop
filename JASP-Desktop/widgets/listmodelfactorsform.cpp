@@ -117,14 +117,16 @@ vector<tuple<string, string, vector<string> > > ListModelFactorsForm::getFactors
 
 void ListModelFactorsForm::addFactor()
 {
-	beginResetModel();
+	beginInsertRows(QModelIndex(), _factors.size(), _factors.size());
+
 	QString index = QString::number(_factors.size() + 1);
 	QString name = tq("Factor") + index;
 	QString title = tq("Factor ") + index;
 	Factor* factor = new Factor(name, title);
 	_factors.push_back(factor);
     _titles.add(title);
-	endResetModel();
+
+	endInsertRows();
 	
 	emit modelChanged();
 }
@@ -132,22 +134,26 @@ void ListModelFactorsForm::addFactor()
 void ListModelFactorsForm::removeFactor()
 {
 	if (_factors.size() > 1)
-	{
-		beginResetModel();
+	{		
 		BoundQMLListViewTerms* listView = _factors[_factors.size() - 1]->listView;
+
 		if (listView)
 		{
+			beginRemoveRows(QModelIndex(), _factors.size() - 1, _factors.size() - 1);
+
 			const Terms& lastTerms = listView->model()->terms();
 			_terms.remove(lastTerms);
 			_titles.remove(_titles.size() - 1);
 			_factors.removeLast();
+
+			endRemoveRows();
 		}
 		else
 			Log::log() << "No list View found when removing factor" << std::endl;
-		endResetModel();
+
+		emit modelChanged();
 	}
 	
-	emit modelChanged();
 }
 
 void ListModelFactorsForm::titleChangedSlot(int index, QString title)
