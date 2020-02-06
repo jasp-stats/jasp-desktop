@@ -439,10 +439,22 @@ Form
 			text: qsTr("Save the layout in the data set")
 			name: "addLayoutToData"
 			Layout.columnSpan: 2
-			ComputedColumnField { name: "computedLayoutX"; text: qsTr("name for x-coordinates") }
-			ComputedColumnField { name: "computedLayoutY"; text: qsTr("name for y-coordinates") }
+			ComputedColumnField { name: "computedLayoutX"; text: qsTr("name for x-coordinates"); id: layoutX }
+			ComputedColumnField { name: "computedLayoutY"; text: qsTr("name for y-coordinates"); id: layoutY }
 			enabled: !dataRatioButton.checked
 			visible: !dataRatioButton.checked
+			id: layoutCheckbox
+			onCheckedChanged:
+			{
+				if (!layoutCheckbox.checked)
+				{
+//					The user no longer wants to add the layout to the dataset so we remove it from the dataset if it was there.
+					layoutX.value = ""
+					layoutY.value = ""
+					layoutX.doEditingFinished()
+					layoutY.doEditingFinished()
+				}
+			}
 		}
 	}
 }
