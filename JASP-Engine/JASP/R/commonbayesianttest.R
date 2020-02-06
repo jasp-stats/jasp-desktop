@@ -1271,14 +1271,18 @@
   )
   label2[1L] <- gsub(pattern = "\\s+", "~", label2[1])
 
-  dfPoints <- data.frame(
-    x = c(maxBFrVal, r, 1, sqrt(2)),
-    y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
-    g = label1,
-    label1 = JASPgraphs::parseThis(label1),
-    label2 = JASPgraphs::parseThis(label2),
-    stringsAsFactors = FALSE
-  )
+  if (additionalInformation) {
+    dfPoints <- data.frame(
+      x = c(maxBFrVal, r, 1, sqrt(2)),
+      y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
+      g = label1,
+      label1 = JASPgraphs::parseThis(label1),
+      label2 = JASPgraphs::parseThis(label2),
+      stringsAsFactors = FALSE
+    )
+  } else {
+    dfPoints <- NULL
+  }
   
   hypothesis <- switch(oneSided,
     "right" = "greater",

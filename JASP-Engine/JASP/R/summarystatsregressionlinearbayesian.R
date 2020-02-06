@@ -288,6 +288,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   )
   label2[1L] <- gsub(pattern = "\\s+", "~", label2[1])
   
+  if (additionalInfo) {
   dfPoints <- data.frame(
     x = c(maxBFrVal, rscale, 1, sqrt(2)),
     y = log(c(maxBF10, BF10user, BF10w, BF10ultra)),
@@ -296,6 +297,9 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
     label2 = JASPgraphs::parseThis(label2),
     stringsAsFactors = FALSE
   )
+  } else {
+    dfPoints <- NULL
+  }
   
   plot <- JASPgraphs::PlotRobustnessSequential(
     dfLines      = dfLines,
