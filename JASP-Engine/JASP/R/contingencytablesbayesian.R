@@ -228,17 +228,17 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
   }
 
   switch(options$hypothesis,
-    groupTwoGreater= {
+    groupTwoGreater = {
       oneSided     <- "left"
-      bfSubscripts <- "BF[1][0]"
+      bfSubscripts <- c("BF['-'][0]", "BF[0]['-']")
     },
-    groupOneGreater= {
+    groupOneGreater = {
       oneSided     <- "right"
-      bfSubscripts <- "BF['+'][0]"
+      bfSubscripts <- c("BF['+'][0]", "BF[0]['+']")
     },
-    groupsNotEqual= {
+    groupsNotEqual = {
       oneSided     <- "notABoolean"
-      bfSubscripts <- "BF['-'][0]"
+      bfSubscripts <- c("BF[1][0]", "BF[0][1]")
     }
   )
 
@@ -272,7 +272,7 @@ ContingencyTablesBayesian <- function(jaspResults, dataset = NULL, options, ...)
   xName       <- gettext("Log Odds Ratio")
 
   if(options$plotPosteriorOddsRatioAdditionalInfo)
-    p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLines, xName = xName, BF = 1/BF10,
+    p <- JASPgraphs::PlotPriorAndPosterior(dfLines = dfLines, xName = xName, BF = BF10, bfType = "BF10",
                                            CRI = ppCri, median = median, bfSubscripts = bfSubscripts,
                                            CRItxt = CRItxt, medianTxt = medianTxt)
   else 
