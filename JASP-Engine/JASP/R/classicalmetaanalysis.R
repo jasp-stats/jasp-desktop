@@ -342,8 +342,6 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   res <- try(.metaAnalysisCasewiseFill(jaspResults, dataset, options))
 
   .metaAnalysisSetError(res, casewiseTable)
-
-  casewiseTable$addFootnote(gettextf("Cases marked with %s are influential.", "\u002A"))
 }
 
 .metaAnalysisFailSafeTable <- function(jaspResults, dataset, options, ready) {
@@ -524,6 +522,9 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   influ <- influence(rma.fit)
   influenceVals <- influ$inf
   isInfluential <- influ$is.infl
+  
+  if (sum(isInfluential) > 0)
+    jaspResults[["casewiseTable"]]$addFootnote(gettextf("Cases marked with %s are influential.", "\u002A"))
 
   for (i in 1:length(influenceVals$rstudent)) {
     name <- influenceVals$slab[i]
@@ -1229,36 +1230,27 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   return(p)
 }
 
-.metaAnalysisStandResidPlotFill <- function(rma.fit){
+.metaAnalysisStandResidPlotFill <- function(rma.fit) {
   res        <- rstandard(rma.fit)
-  not.na     <- !is.na(res$z)
-  zi         <- res$z[not.na]
-  slab       <- res$slab[not.na]
+  zi         <- res$z[!is.na(res$z)]
   title      <- gettext("Standardized Residuals")
-  stand.data <-  data.frame(study = slab, resid = zi)
+  study      <- seq_along(zi)
+  stand.data <- data.frame(study = factor(study, levels = study), resid = zi)
   hlines     <- qnorm(c(0.025, 0.5, 0.975))
   linetypes  <- c("dotted", "dashed", "dotted")
-  maxStudy   <- rma.fit$k
-  xbreaks    <- 1:maxStudy
-  xlabels    <- as.character(xbreaks)
-  xlabels[xbreaks%%7 != 0] <- " "
-  xlabels[1] <- "1"
-  xlims      <- c(1, maxStudy)
-  ylims      <- range(zi)
+  ylims      <- range(c(zi, hlines))
 
-  p <- ggplot2::ggplot(data = stand.data, ggplot2::aes(x = study, y = resid)) +
+  p <- ggplot2::ggplot(data = stand.data, ggplot2::aes(x = study, y = resid, group = 1)) +
     ggplot2::geom_point(shape = 19, colour = "black") + ggplot2::geom_line() +
     ggplot2::geom_hline(yintercept = hlines, linetype  = linetypes, colour = "black") +
     ggplot2::xlab(gettext("Study")) + ggplot2::ylab(" ") + ggplot2::ggtitle(title)
-  p <- p + ggplot2::scale_x_discrete(labels = xlabels) +
-    ggplot2::scale_y_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(ylims),
+  p <- p + ggplot2::scale_y_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(ylims),
                                 limits = ylims) +
-    ggplot2::scale_X_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(xlims),
-                                limits = xlims) +
     ggplot2::theme(axis.line.x         = ggplot2::element_line(),
                    axis.line.y         = ggplot2::element_line(),
                    axis.ticks.x.bottom = ggplot2::element_line())
   p <- JASPgraphs::themeJasp(p, legend.position = "none")
+
   return(p)
 }
 
