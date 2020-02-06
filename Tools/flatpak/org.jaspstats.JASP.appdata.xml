@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2019 University of Amsterdam -->
+<!-- Copyright 2020 University of Amsterdam -->
 <component type="desktop">
 	<id>org.jaspstats.JASP</id>
 	<launchable type="desktop-id">org.jaspstats.JASP.desktop</launchable>
@@ -35,6 +35,14 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+	<release version="0.12" date="2020-03-1">
+			<description>
+				Updated R to 3.6.1 and rewrote (almost) all analyses to make use of new internal API (jaspResults).
+				Added a dark theme and support for dutch language.
+				Modules added: Bayesian meta-analysis, JAGS, Discover Distributions, Visual Modeling and Equivalence Testing.
+				And much more, see our homepage for more information!
+			</description>
+		</release>
 		<release version="0.11.1" date="2019-10-11">
 			<description>
 				This version fixes a bug with certain systems having trouble running certain analyses when the path contains non-latin characters.

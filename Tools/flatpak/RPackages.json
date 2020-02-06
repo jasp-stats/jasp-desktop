@@ -125,18 +125,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "bstats",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "git",
-					"url": "https://github.com/AlexanderLyNL/bstats",
-					"commit": "a6fdbea42078b8d275a98dd1e37c113118555b6f"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "ca",
 			"buildsystem": "simple",
 			"sources": [
@@ -2604,6 +2592,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/bridgesampling_0.8-1.tar.gz",
 					"sha256": "90c2ae55d4f24c6ea8cb21881c7b3b12fa5cdb02e254d722e0dd448f90a353be"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "bstats",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "git",
+					"url": "https://github.com/AlexanderLyNL/bstats",
+					"commit": "a6fdbea42078b8d275a98dd1e37c113118555b6f"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]

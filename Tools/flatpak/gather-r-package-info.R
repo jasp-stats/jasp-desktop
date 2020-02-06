@@ -57,6 +57,7 @@ giveOrderedDependencies <- function()
       deps              <- deps[!(deps %in% base_pkgs)] #remove base pkgs
 
       if(curPkg == "KneeArrower") deps <- append(deps, "signal") #workaround... Becacuse KneeArrower is taken from github apparently the dependencies aren't taken into account properly.
+      if(curPkg == "bstats")      deps <- append(deps, c("hypergeo", "purrr", "SuppDists"))
 
       pkgDeps[[curPkg]] <- deps
       pkgs              <- append(pkgs, deps, i)
