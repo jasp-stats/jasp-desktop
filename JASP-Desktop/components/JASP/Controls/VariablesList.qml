@@ -111,6 +111,7 @@ JASPListControl
 
 		var assignOption = (target && target.interactionControl) ? JASP.AssignCross: JASP.AssignDefault
 		itemsDropped(selectedItems, target, -1, assignOption);
+		variablesList.clearSelectedItems();
 	}
 
 
