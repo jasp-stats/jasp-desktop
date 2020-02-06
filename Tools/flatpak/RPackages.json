@@ -485,18 +485,6 @@
 			"build-commands": [ "R CMD INSTALL ." ]
 		},
 		{
-			"name": "flexplot",
-			"buildsystem": "simple",
-			"sources": [
-				{
-					"type": "git",
-					"url": "https://github.com/dustinfife/flexplot",
-					"commit": "46adae504c83b6dbd7baf7ba679cc95d0fb5c1a9"
-				}
-			],
-			"build-commands": [ "R CMD INSTALL ." ]
-		},
-		{
 			"name": "Formula",
 			"buildsystem": "simple",
 			"sources": [
@@ -3264,6 +3252,18 @@
 					"type": "archive",
 					"url": "http://static.jasp-stats.org/RPkgs/cowplot_1.0.0.tar.gz",
 					"sha256": "70f9a7c46d10f409d1599f1afc9fd3c947051cf2b430f01d903c64ef1e6c98a5"
+				}
+			],
+			"build-commands": [ "R CMD INSTALL ." ]
+		},
+		{
+			"name": "flexplot",
+			"buildsystem": "simple",
+			"sources": [
+				{
+					"type": "git",
+					"url": "https://github.com/dustinfife/flexplot",
+					"commit": "46adae504c83b6dbd7baf7ba679cc95d0fb5c1a9"
 				}
 			],
 			"build-commands": [ "R CMD INSTALL ." ]

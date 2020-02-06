@@ -56,8 +56,9 @@ giveOrderedDependencies <- function()
 
       deps              <- deps[!(deps %in% base_pkgs)] #remove base pkgs
 
-      if(curPkg == "KneeArrower") deps <- append(deps, "signal") #workaround... Becacuse KneeArrower is taken from github apparently the dependencies aren't taken into account properly.
+      #if(curPkg == "KneeArrower") deps <- append(deps, "signal") #workaround... Becacuse KneeArrower is taken from github apparently the dependencies aren't taken into account properly.
       if(curPkg == "bstats")      deps <- append(deps, c("hypergeo", "purrr", "SuppDists"))
+      if(curPkg == "flexplot")    deps <- append(deps, c("ggplot2", "cowplot", "tibble", "withr", "dplyr", "magrittr", "forcats", "purrr", "plyr", "R6"))
 
       pkgDeps[[curPkg]] <- deps
       pkgs              <- append(pkgs, deps, i)
@@ -135,6 +136,7 @@ giveOrderedDependencies <- function()
   return(orderedPkgs);
 }
 
+#Dont forget to add the dependencies up top
 specials <- new.env(hash = TRUE, parent = parent.frame())
 specials[['abtest']]       <- list(type='github', commit='503c50e96768a0134b755747e0421d820cc1a115', repo='quentingronau/abtest')
 #specials[['BAS']]          <- list(type='github', commit='daba70f5a5d60bfa63386d4e6a6522f86a04946c', repo='merliseclyde/BAS')
