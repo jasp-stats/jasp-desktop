@@ -388,14 +388,14 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   corrections <- summaryResult$pval.adjustments
   sphericityTests <- as.data.frame(unclass(summaryResult$sphericity.tests))
 
-  if (!is.null(rownames(corrections))) {
+  if (!is.null(rownames(corrections)) & length(rownames(corrections)) > 0) {
     corrections <- as.data.frame(corrections)
     corrections <- corrections[.mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections)), ]
     sphericityTests <- sphericityTests[.mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections)), ]
     rownames(corrections) <- rownames(sphericityTests) <- 
       rownames(withinAnovaTable)[.mapAnovaTermsToTerms(rownames(corrections), rownames(withinAnovaTable))]
-  }
-  
+  } 
+
   # Add NA rows to corrections and sphericity tests for within factors with 2 levels
   if (nrow(sphericityTests) != nrow(withinAnovaTable)) {
     
@@ -413,6 +413,11 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     sphericityTests <- as.data.frame(rbind(sphericityTests, emptyTests))
     
   } 
+  
+  # If corrections could not be run, create data frame with NA's
+  if (length(rownames(corrections)) == 0 )
+    corrections <- matrix(ncol = 4, nrow = nrow(withinAnovaTable), NA, 
+                          dimnames = list(rownames(withinAnovaTable), c("GG eps", "Pr(>F[GG])", "HF eps", "Pr(>F[HF])")))
   
   withinIndices <- .mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections))
 
@@ -1198,19 +1203,19 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       names(contrCoef)  <- .anovaContrastCases(column, contrast$contrast, customContrastSetup)
       contrastResult    <- try(emmeans::contrast(referenceGrid[[.v(contrast$variable)]], contrCoef),
                                silent = TRUE)
-      # browser()
+
       if (contrast$contrast == "custom")
         # Check whether the custom contrast matrix works
         .hasErrors(dataset = NULL,
                    allowEmptyDataset = FALSE,
                    exitAnalysisIfErrors = TRUE,
                    custom = function() {
-                     if (isTryError(tryContrMat)) {
+                     if (isTryError(contrastResult)) {
                        if (grepl(contrastResult[1], pattern = "Nonconforming number")) {
                          return("Nonconforming number of contrast coefficients.")
                        } else if (grepl(contrastResult[1], pattern = "number of contrast matrix rows")) {
                          return("Wrong number of custom contrast matrix rows.")
-                       }
+                       } 
                      } else if (any(apply(contrastMatrix, 2, function(x) all(x == 0) ))) {
                        return("Please specify non-zero contrast weights.")
                      # } else  if (ncol(contrastMatrix) >= nlevels(column)) {
@@ -1219,7 +1224,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
                        # return("Some contrasts do not sum to 0.")
                      } 
                    })
-      
+
       if (length(contrastResult@misc$avgd.over) != 0)
         contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$addFootnote(
           message = gettextf("Results are averaged over the levels of: %s", paste(.unv(contrastResult@misc$avgd.over), collapse = ", ")),

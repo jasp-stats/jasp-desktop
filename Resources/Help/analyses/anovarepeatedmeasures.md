@@ -47,7 +47,7 @@ The repeated Measures ANOVA allows the user to analyze the differences between m
 - Homogeneity tests: By selecting this option, it will be checked whether the variance of the dependent variable is equal between the groups by performing Levene's test of equal variances.  
 
 ### Contrasts
-For each repeated measures factor, a specific contrast can be selected by clicking on `none` in the right column.
+For each repeated measures factor, a specific contrast can be selected by clicking on `none` in the right column. Contrasts specified here only apply to the contrast table, not to the main analysis.  
 - Factors: These are the repeated measures factors included in the analysis.  
 - Contrasts: Contrasts enable the analysis of planned comparisons. There are different contrasts that enable different types of comparisons:
     - none: By selecting this option, no contrasts are calculated. This option is selected by default.
@@ -57,6 +57,7 @@ For each repeated measures factor, a specific contrast can be selected by clicki
     - Helmert: When this contrast is selected, the mean of each level is compared to the mean of the subsequent levels. This is the reverse of the difference contrast.
     - repeated: By selecting this contrast, the mean of each level is compared to the mean of the following level.
     - polynomial: This contrast tests polynomial trends in the data. The specific polynomial that will be used for the analysis depends on the number of levels of the repeated measures factor. The degree of the trend used for the analysis is the number of levels minus 1. Therefore, if the repeated measures factor consist of 2 levels, a linear trend is analysed. If the repeated measures factor consists of three levels, a quadratic trend is analysed in addition to the linear trend.
+    - custom: Here, the contrast weights can be specified manually. Some weights need to be non-zero.
 - Assume equal variances: This option can be selected when the variances of the levels of the independent variable are assumed to be equal. 
   - Confidence interval: Confidence interval for the location parameter. By default, the confidence interval is set to 95%. This can be changed into the desired percentage.
 
