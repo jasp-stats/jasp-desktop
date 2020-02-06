@@ -303,8 +303,6 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     title <- gettext("z")
   regTestTable$addColumnInfo(name = "test", type = "number", title = title)
   regTestTable$addColumnInfo(name = "pval", type = "pvalue", title = gettext("p"))
-  ##TODO: Should I add confidence intervals, and intercept values?
-  #.metaAnalysisConfidenceInterval(options, regTestTable)
 
   jaspResults[["regTestTable"]] <- regTestTable
 
@@ -341,10 +339,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   if(!ready)
     return()
 
-  # Compute/get model
-  rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
-
-  res <- try(.metaAnalysisCasewiseFill(jaspResults, dataset, options, rma.fit))
+  res <- try(.metaAnalysisCasewiseFill(jaspResults, dataset, options))
 
   .metaAnalysisSetError(res, casewiseTable)
 
@@ -519,46 +514,32 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 }
 
 .metaAnalysisRegTestFill <- function(jaspResults, dataset, options) {
-  # Compute/get model
   rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready = TRUE)
   egger   <- metafor::regtest(rma.fit)
-  coef    <- metafor::coef.summary.rma(summary(egger$fit))
-  #if(options$includeConstant)
-  #  jaspResults[["regTestTable"]]$addRows(list(name  = .unv(rownames(coef)[[1]]),
-  #                                             pval  = coef[1,4],
-  #                                             lower = coef[1,5],
-  #                                             upper = coef[1,6],
-  #                                             test  = coef[1,3]))
-  jaspResults[["regTestTable"]]$addRows(list(name  = .unv(rownames(coef)[[2]]),
-                                             pval  = coef[2,4],
-                                             lower = coef[2,5],
-                                             upper = coef[2,6],
-                                             test  = coef[2,3]))
+  jaspResults[["regTestTable"]]$setData(list(name = egger$predictor, test = egger$zval, pval = egger$pval))
 }
 
-.metaAnalysisCasewiseFill <- function(jaspResults, dataset, options, rma.fit) {
+.metaAnalysisCasewiseFill <- function(jaspResults, dataset, options) {
+  rma.fit       <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready = TRUE)
+  influ <- influence(rma.fit)
+  influenceVals <- influ$inf
+  isInfluential <- influ$is.infl
 
-  # Compute/get model
-  rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready = TRUE)
-  influ         <- influence(rma.fit)
-  influ.inf     <- influ$inf
-  influ.is.infl <- influ$is.infl
-  for(i in 1:length(influ.inf$rstudent)) {
-    if(influ.is.infl[i])
-      name <- paste0(i, "\u002A")
-    else
-      name <- paste0(i)
+  for (i in 1:length(influenceVals$rstudent)) {
+    name <- influenceVals$slab[i]
+    if (!is.na(isInfluential[i]) && isInfluential[i])
+      name <- paste0(name, "\u002A")
 
     jaspResults[["casewiseTable"]]$addRows(list(
       name   = name,
-      sdRes  = influ.inf$rstudent[i],
-      dfFits = influ.inf$dffits[i],
-      cook   = influ.inf$cook.d[i],
-      cov    = influ.inf$cov.r[i],
-      tau2   = influ.inf$tau2.del[i],
-      QE     = influ.inf$QE.del[i],
-      hat    = influ.inf$hat[i],
-      weight = influ.inf$weight[i]
+      sdRes  = influenceVals$rstudent[i],
+      dfFits = influenceVals$dffits[i],
+      cook   = influenceVals$cook.d[i],
+      cov    = influenceVals$cov.r[i],
+      tau2   = influenceVals$tau2.del[i],
+      QE     = influenceVals$QE.del[i],
+      hat    = influenceVals$hat[i],
+      weight = influenceVals$weight[i]
     ))
   }
 }
@@ -665,16 +646,17 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   .metaAnalysisPlotsContainer(jaspResults, options, ready)
   container <- jaspResults[["plots"]]
   # Compute/get model
-  rma.fit      <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
-  trimfill.fit <- metafor::trimfill(update(rma.fit, mods = ~1))
   trimFillPlot <- createJaspPlot(title = gettext("Trim-fill Analysis"), width = 820, height = 820)
   trimFillPlot$position <- 5
   trimFillPlot$dependOn(c("trimFillPlot"))
   container[["trimFill"]] <- trimFillPlot
 
-  if(ready){
+  if (ready) {
+    rma.fit      <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+    trimfill.fit <- metafor::trimfill(update(rma.fit, mods = ~1))
+    
     p <- try(.metaAnalysisTrimFillPlotFill(trimfill.fit))
-    if(isTryError(p))
+    if (isTryError(p))
       trimFillPlot$setError(.extractErrorMessage(p))
     else
       trimFillPlot$plotObject <- p
