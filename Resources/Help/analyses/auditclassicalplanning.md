@@ -1,7 +1,7 @@
 Planning
 ==========================
 
-An auditor's job is to make a jugement regarding the fairness of the presented 
+An auditor's job is to make a judgement regarding the fairness of the presented
 transactions in a population, and judge if the population contains errors that 
 are material (lower than materiality). Sometimes, an auditor needs to calculate 
 the required sample size beforehand without having access to the raw population 
@@ -9,7 +9,7 @@ data. In this case, the auditor can use the *planning* analysis together with
 the population's summary statistics (total size and value) to calculate how 
 many samples need to be evaluated in order to meet a certain confidence in their 
 judgement. The frequentist *planning* analysis may use the risk assessments from 
-the *audit risk model* to adjust the required riks of finding material errors.
+the *audit risk model* to adjust the required risks of finding material errors.
 
 *Note:* When you have access to the raw population data you may want to use the 
 *audit workflow*, an analysis that guides you through the audit process.
