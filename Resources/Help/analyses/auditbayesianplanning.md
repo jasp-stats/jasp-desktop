@@ -1,7 +1,7 @@
 Bayesian Planning
 ==========================
 
-An auditor's job is to make a jugement regarding the fairness of the presented 
+An auditor's job is to make a judgement regarding the fairness of the presented
 transactions in a population, and judge if the population contains errors that 
 are material (lower than materiality). Sometimes, an auditor needs to calculate 
 the required sample size beforehand without having access to the raw population 
