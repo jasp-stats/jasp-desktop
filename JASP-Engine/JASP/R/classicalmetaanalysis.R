@@ -826,9 +826,10 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
                                        labels   = dat$labs,
                                        sec.axis = ggplot2::dup_axis(trans = ~., labels = dat$ci.int),
                                        expand   = ggplot2::expand_scale(mult = c(0.1,0), add = 0))
-  #p <- JASPgraphs::themeJasp(p)
-  p <- p + ggplot2::theme(axis.text.y.left  = ggplot2::element_text(hjust = 0, size = 10, colour = "black"),
-                          axis.text.y.right = ggplot2::element_text(hjust = 1, size = 10, colour = "black"),
+
+  fontsize <- 0.8*JASPgraphs::getGraphOption("fontsize")
+  p <- p + ggplot2::theme(axis.text.y.left  = ggplot2::element_text(hjust = 0, size = fontsize, colour = "black"),
+                          axis.text.y.right = ggplot2::element_text(hjust = 1, size = fontsize, colour = "black"),
                           axis.line.x.bottom= ggplot2::element_blank(),
                           panel.background  = ggplot2::element_blank(),
                           panel.grid        = ggplot2::element_blank(),
@@ -1210,8 +1211,10 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   temp.ub <- qqnorm(ub, plot.it = FALSE)
   temp.ub <- supsmu(temp.ub$x, temp.ub$y)
 
-  xlims <- range(pos.x)
-  ylims <- range(pos.y)
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(pos.x)
+  yBreaks <- JASPgraphs::getPrettyAxisBreaks(pos.y)
+  xLimits <- range(xBreaks)
+  yLimits <- range(yBreaks)
 
   qq.data <- data.frame(x = pos.x, y = pos.y, ci.lb = temp.lb$y, ci.ub = temp.ub$y)
   p <- ggplot2::ggplot(data = qq.data) +
@@ -1220,13 +1223,8 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
                          fill = "gray", alpha = 0.5, stat = "identity") +
     ggplot2::geom_point(ggplot2::aes(x = x, y = y), shape = 19, colour = "black") +
     ggplot2::geom_abline(slope = 1, intercept = 0) +
-    ggplot2::ylim(min(pretty(pos.y)), max(pretty(pos.y))) +
-    ggplot2::xlab(gettext("Theoretical Quantiles")) +
-    ggplot2::ylab(gettext("Sample Quantiles")) +
-    ggplot2::scale_x_continuous(limits = xlims,
-                                breaks = JASPgraphs::getPrettyAxisBreaks(xlims)) +
-    ggplot2::scale_x_continuous(limits = ylims,
-                                breaks = JASPgraphs::getPrettyAxisBreaks(ylims))
+    ggplot2::scale_x_continuous(name = gettext("Theoretical Quantiles"), limits = xLimits, breaks = xBreaks) +
+    ggplot2::scale_y_continuous(name = gettext("Sample Quantiles"),      limits = yLimits, breaks = yBreaks)
   p <- JASPgraphs::themeJasp(p)
   return(p)
 }
