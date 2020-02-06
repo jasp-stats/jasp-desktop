@@ -131,10 +131,8 @@ void QMLListViewDraggable::moveItems(QList<int> &indexes, ListModelDraggable* ta
 			{
 				Terms terms = sourceModel->termsFromIndexes(indexes);
 				if (terms.size() == 0)
-				{
-					Log::log() << "No terms found when trying to moving them" << std::endl;
-					return;
-				}
+					Log::log() << "No terms found when trying to move them" << std::endl;
+
 				termsAdded = targetModel->canAddTerms(terms);
 
 				if (termsAdded.size() > 0)
