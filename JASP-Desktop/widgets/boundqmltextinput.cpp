@@ -57,7 +57,8 @@ QString BoundQMLTextInput::_getPercentValue()
 	double doubleValue = _number->value() * 100; // The value is stored as a double from 0...1, but is displayed as a percent number
 	doubleValue = std::max(0., std::min(100., doubleValue));
 
-	return QString::number(doubleValue);
+	int decimals = getItemProperty("decimals").toInt();
+	return QString::number(doubleValue, 'g', decimals);
 }
 
 QString BoundQMLTextInput::_getIntegerArrayValue()
@@ -105,12 +106,17 @@ void BoundQMLTextInput::bindTo(Option *option)
 		break;
 
 	case TextInputType::NumberInputType:
+	{
 		_number = dynamic_cast<OptionNumber *>(option);
 		if (!_number)
 			_number = new OptionNumber();
 		_option = _number;
-		_value = QString::number(_number->value());
+
+		int decimals = getItemProperty("decimals").toInt();
+		_value = QString::number(_number->value(), 'g', decimals);
+
 		break;
+	}
 
 	case TextInputType::PercentIntputType:
 		_number = dynamic_cast<OptionNumber *>(option);
