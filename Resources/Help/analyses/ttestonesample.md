@@ -75,7 +75,7 @@ Test of Normality (Shapiro-Wilk)
 - SD: Standard deviation of the mean. 
 - SE: Standard error of the mean. 
 
-####E Descriptive Plots 
+#### Descriptive Plots
 - Displays the sample mean (black bullet), the % confidence interval (whiskers), and the value of the test statistic (dashed line). 
 
 ### References
