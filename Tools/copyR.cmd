@@ -45,7 +45,7 @@ XCOPY %SOURCEDIR%\share /E /I share
 mkdir library
 cd library
 
-Echo Copying neccessary parts of R-libraries
+Echo Copying necessary parts of R-libraries
 cd %SOURCEDIR%\library
 FOR /D %%G in ("*") DO (
     cd %SOURCEDIR%\library
@@ -56,6 +56,7 @@ FOR /D %%G in ("*") DO (
     COPY %SOURCEDIR%\library\%%G\INDEX INDEX /Y >nul
     COPY %SOURCEDIR%\library\%%G\NAMESPACE NAMESPACE /Y >nul
     COPY %SOURCEDIR%\library\%%G\DESCRIPTION DESCRIPTION /Y >nul
+    COPY %SOURCEDIR%\library\%%G\*.R . /Y >nul
     
     if exist %SOURCEDIR%\library\%%G\R    ( XCOPY %SOURCEDIR%\library\%%G\R    /Q /E /I R >nul )
     if exist %SOURCEDIR%\library\%%G\Meta ( XCOPY %SOURCEDIR%\library\%%G\Meta /Q /E /I Meta >nul )
