@@ -3,6 +3,9 @@
 #include <stack>
 #include <iostream>
 #include "log.h"
+#include <QFile>
+#include <QTextStream>
+#include <QFileInfo>
 
 namespace resultXmlCompare
 {
@@ -26,6 +29,8 @@ void compareResults::sanitizeHtml(QString & result)
 			std::make_pair("&nbsp;",	" "),
 			std::make_pair("&tau;",		"tau"),
 			std::make_pair("<br>",		"\n"),
+			std::make_pair("\"Segoe UI\"", ""),
+			std::make_pair("\"Helvetica Neue\"", "")
 		});
 
 	for(auto & p : replacers)
@@ -263,15 +268,26 @@ bool compareResults::compare(const QString & resultOld, const QString & resultNe
 {
 	ranCompare = true;
 
-	//std::cout << "Old result:\n" << resultOld.toStdString() << "\n" << std::endl;
 	std::cout << "Old result conversion:" << std::endl;
+	/*QFile file("out.txt");
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+		return false;
+	QFileInfo fileInfo(file);
+	QString path = fileInfo.absolutePath();
+
+	QTextStream out(&file);
+	out << "hallo";
+	out << "Old result:\n" << resultOld << "\n";
+	out << "Old result conversion:" << "\n"; */
 	result oldRes = convertXmltoResultStruct(resultOld);
 	std::cout << "\nConverted to:\n" << oldRes.toString() << "" << std::endl;
 
-	//std::cout << "New result\n" << resultNew.toStdString() << "\n" << std::endl;
 	std::cout << "New result conversion:" << std::endl;
+	//out << "New result\n" << resultNew << "\n" << "\n";
+	//out << "New result conversion:" << "\n";
 	result newRes = convertXmltoResultStruct(resultNew);
 	std::cout << "\nConverted to:\n" << newRes.toString() << "" << std::endl;
+	//file.close():
 
 	succes = oldRes == newRes;
 
