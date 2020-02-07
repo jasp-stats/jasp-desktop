@@ -388,7 +388,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   corrections <- summaryResult$pval.adjustments
   sphericityTests <- as.data.frame(unclass(summaryResult$sphericity.tests))
 
-  if (!is.null(rownames(corrections)) & length(rownames(corrections)) > 0) {
+  if (!is.null(rownames(corrections)) && length(rownames(corrections)) > 0) {
     corrections <- as.data.frame(corrections)
     corrections <- corrections[.mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections)), ]
     sphericityTests <- sphericityTests[.mapAnovaTermsToTerms(rownames(withinAnovaTable), rownames(corrections)), ]
@@ -1023,7 +1023,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   postHocTable$addColumnInfo(name="t.ratio", title=gettext("t"), type="number")
   
-  if (options$postHocTestEffectSize & !interactionTerm) {
+  if (options$postHocTestEffectSize && !interactionTerm) {
     postHocTable$addColumnInfo(name="cohenD", title=gettext("Cohen's d"), type="number")
     postHocTable$addFootnote(gettext("Cohen's d does not correct for multiple comparisons."))
   }
@@ -1111,7 +1111,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       customContrMat <- sapply(customContrast$values, function(x) x$values)
       desiredRows <- nrow(contr.helmert(levels) * -1)
 
-      if (desiredRows == 2 & length(customContrMat) == 2 ) {
+      if (desiredRows == 2 && length(customContrMat) == 2 ) {
         contr <- as.matrix(customContrMat)
       } else {
         contr <- t(customContrMat)
@@ -1151,7 +1151,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     
     contrastTable$addColumnInfo(name = "SE", title=gettext("SE"), type = "number")
     
-    dfType <- if (options$contrastAssumeEqualVariance & contrastType != "custom") "integer" else "number"
+    dfType <- if (options$contrastAssumeEqualVariance && contrastType != "custom") "integer" else "number"
 
     contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = dfType)
     contrastTable$addColumnInfo(name = "t.ratio", title = gettext("t"),  type = "number")
@@ -1493,7 +1493,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     r <- unique(table(groups))
     k <- unique(table(blocks))
     
-    if (length(r) == 1 & length(k) == 1) {
+    if (length(r) == 1 && length(k) == 1) {
       rankPerBlock <- unlist(tapply(y, blocks, rank))
       rankPerGroup <- unlist(tapply(y, groups, rank))    
       
@@ -1737,7 +1737,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   isModeratorTwoWithin <- !moderatorTerms[2] %in% unlist(options[['betweenModelTerms']] )
 
   
-  if (isMixedAnova & !isSimpleFactorWithin) {
+  if (isMixedAnova && !isSimpleFactorWithin) {
     
     fullAnovaMS <- fullResidualTable["BetweenResidualResults", "Mean Sq"]
     fullAnovaDf <- fullResidualTable["BetweenResidualResults", "num Df"]
@@ -1848,12 +1848,12 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   # This does the summary. For each group's data frame, return a vector with
   # N, mean, and sd
   # First aggregate over unused RM factors, if desired:
-  if (usePooledSE & measurevar == "dependent") {
+  if (usePooledSE && measurevar == "dependent") {
 
     data <- plyr::ddply(data, c("subject", groupvars), plyr::summarise, dependent = mean(dependent))
     names(data)[which(names(data) == "dependent")] <- measurevar
 
-  } else if (usePooledSE & measurevar == "dependent_norm") {
+  } else if (usePooledSE && measurevar == "dependent_norm") {
 
     data <- plyr::ddply(data, c("subject", groupvars), plyr::summarise, dependent = mean(dependent_norm))
     names(data)[which(names(data) == "dependent")] <- measurevar

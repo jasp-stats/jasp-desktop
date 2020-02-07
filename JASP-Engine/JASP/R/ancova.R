@@ -136,7 +136,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
         contrMatrix <- (as.matrix(sapply(customContrast$values, function(x) x$value)))
         levelNames <- as.matrix(sapply(customContrast$values, function(x) x$colLabel))
         
-        if (length(levelNames) > 2 | ncol(contrMatrix) > 1) contrMatrix <- t(contrMatrix)
+        if (length(levelNames) > 2 || ncol(contrMatrix) > 1) contrMatrix <- t(contrMatrix)
 
         for (i in 1:ncol(contrMatrix)) {
           
@@ -228,7 +228,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
       desiredRows <- nrow(MASS::contr.sdif(levels) * -1)
 
-      if (desiredRows == 2 & length(sapply(customContrast$values, function(x) x$values)) == 2 ) {
+      if (desiredRows == 2 && length(sapply(customContrast$values, function(x) x$values)) == 2 ) {
         contr <- MASS::ginv(t(sapply(customContrast$values, function(x) x$values)))
       } else {
         contr <- MASS::ginv(sapply(customContrast$values, function(x) x$values))
@@ -314,7 +314,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                      } else if (grepl(tryContrMat[1], pattern = "number of contrast matrix rows")) {
                        return("Wrong number of custom contrast matrix rows.")
                      } 
-                   } else if (is.matrix(tryContrMat) & any(apply(tryContrMat, 2, function(x) all(x == 0) ))) {
+                   } else if (is.matrix(tryContrMat) && any(apply(tryContrMat, 2, function(x) all(x == 0) ))) {
                      return("Please specify non-zero contrast weights.")
                    } else if (ncol(tryContrMat) >= nlevels(dataset[[v]])) {
                      return("Please specify fewer contrasts. (Maximum #contrasts = #levels - 1)")
@@ -660,7 +660,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     contrastTable$addColumnInfo(name="Estimate", type="number")
     contrastTable$addColumnInfo(name="SE", type="number")
     
-    dfType <- if (options$contrastAssumeEqualVariance & contrastType != "custom") "integer" else "number"
+    dfType <- if (options$contrastAssumeEqualVariance && contrastType != "custom") "integer" else "number"
     contrastTable$addColumnInfo(name="df", type=dfType)
     contrastTable$addColumnInfo(name="t", type="number")
     contrastTable$addColumnInfo(name="p", type="pvalue")
@@ -892,7 +892,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     }
     
     # Calculate effect sizes
-    if (options$postHocTestEffectSize & nrow(dataset) > 0 & !interactionTerm) {
+    if (options$postHocTestEffectSize && nrow(dataset) > 0 && !interactionTerm) {
       
       den <- numeric(length(allContrasts))
       

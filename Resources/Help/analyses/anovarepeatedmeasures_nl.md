@@ -50,7 +50,7 @@ Voor elke binnen-subject factor kan een specifiek contrast worden geselecteerd d
     - Helmert: Als je dit contrast selecteert wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het volgende niveau. Dit is het omgekeerde van het "verschil" contrast.
     - Herhaald: Als je dit contrast selecteert wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het volgende niveau. 
     - Polynoom: Dit contrast test polynome trends in de data. Welk specifieke polynoom wordt gebruikt is afhankelijk van het aantal niveaus van de onafhnakelijke variabele. De graad van de trend die wordt gebruikt is het aantal niveaus min 1. Als de onafhankelijke variabele dus bestaat uit twee niveaus wordt een lineaire trend geanalyseerd. Als de onafhankelijke variabele bestaat uit drie niveaus worden een kwadratische trend en een lineaire trend geanalyseerd. 
-      - custom: Hier kunnen de contrast gewichten handmatig ingevoerd worden. Van de gewichten dient minstens 1 gewicht dient niet gelijk aan 0 te zijn.
+      - custom: Hier kunnen de contrast gewichten handmatig ingevoerd worden. Van de gewichten dient minstens 1 gewicht niet gelijk aan 0 te zijn.
    
    
 
@@ -139,7 +139,7 @@ Toets van sphericiteit:
 
 #### Contrasten
 Afwijking/Simpel/Verschil/Helmert/Repeated/Polynoom/Custom Contrast:
-- Vergelijking: De niveaus van de onafhankelijke variabele die worden vergeleken. Voor de custom contrasten wordt het gewicht getoond voor elk nivea van de factor.
+- Vergelijking: De niveaus van de onafhankelijke variabele die worden vergeleken. Voor de custom contrasten wordt het gewicht getoond voor elk niveau van de factor.
 - Schatting: Het geschatte gemiddelde verschil tussen de vergeleken niveaus.
 - SE: De standaardfout van het geschatte gemiddelde.
 - df: De vrijheidsgraden van het model.
