@@ -29,7 +29,7 @@ Group
 		text: qsTr("Set seed:")
 		childrenOnSameRow: true
 
-		DoubleField {
+		IntegerField {
 			name: "seed"
 			defaultValue: 1
 			min: -999999
