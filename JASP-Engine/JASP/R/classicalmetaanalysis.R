@@ -811,12 +811,12 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
   p <- p +
     ggplot2::geom_hline(ggplot2::aes(yintercept = 0),   lty = "dotted", size = 0.5, colour = cols[1]) +
-    ggplot2::annotate("segment", x = k + 1, xend = k + 1, y = 10 * ylims[1], yend = 10 * ylims[2])
+    ggplot2::annotate("segment", x = k + .95, xend = k + .95, y = 10 * ylims[1], yend = 10 * ylims[2])
   if(rma.fit$int.only)
     p <- p + ggplot2::annotate("segment", x = 0, xend = 0, y = 10 * ylims[1], yend = 10 * ylims[2])
 
   # clip = "off" allows us to draw outside of the margins using the annotate("segment", ...) above.
-  p <- p + ggplot2::coord_flip(ylim = ylims, clip = "off") +
+  p <- p + ggplot2::coord_flip(ylim = ylims, clip = "on") +
     ggplot2::xlab(NULL) + ggplot2::ylab(gettext("Observed Outcome")) +
     ggplot2::scale_y_continuous(breaks = JASPgraphs::getPrettyAxisBreaks(ylims),
                                 expand = ggplot2::expand_scale(mult = c(0.3,0.3), add = 0))
