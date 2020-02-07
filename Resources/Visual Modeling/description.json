@@ -1,8 +1,9 @@
 {
   "moduleDescription" :
   {
-    "title" :         "Visual Modeling",
-    "description":    "Graphically-Based Data Analysis",
+	"title" :         "Visual Modeling (Beta)",
+	"name" :          "Visual Modeling",
+	"description":    "Graphically-Based Data Analysis",
     "version":        "0.0.1",
     "author":         "Dustin Fife",
     "icon":           "FlexplotLogo.svg",
