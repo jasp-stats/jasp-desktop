@@ -32,7 +32,7 @@ Form
 	
 	VariablesForm
 	{
-		preferredHeight: 400
+		preferredHeight: 400 * preferencesModel.uiScale
 		AvailableVariablesList { name: "allVariablesList" }
 		AssignedVariablesList
 		{
@@ -90,7 +90,7 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors", "covariates"] }
 			AssignedVariablesList  { name: "modelTerms"; title: qsTr("Model Terms"); listViewType: JASP.Interaction }
 		}
@@ -142,7 +142,7 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: [{ name: "modelTerms", discard: "covariates" }]}
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 
@@ -208,7 +208,7 @@ Form
 		title: qsTr("Descriptives Plots")
 		
 		VariablesForm {
-			preferredHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList { name: "descriptivePlotsVariables"; source: ["fixedFactors", "covariates"]	}
 			AssignedVariablesList {	name: "plotHorizontalAxis";			title: qsTr("Horizontal Axis"); singleVariable: true}
 			AssignedVariablesList {	name: "plotSeparateLines";			title: qsTr("Separate Lines");  singleVariable: true; suggestedColumns: ["ordinal", "nominal"]		}
@@ -243,7 +243,7 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList { name: "marginalMeansTermsAvailable"; source: [{ name: "modelTerms", discard: "covariates" }] }
 			AssignedVariablesList {	 name: "marginalMeansTerms"  }
 		}
@@ -285,7 +285,7 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 160
+			preferredHeight: 160 * preferencesModel.uiScale
 			AvailableVariablesList { name: "effectsVariables";	title: qsTr("Factors");	source: "fixedFactors" }
 			AssignedVariablesList {	name: "simpleFactor";		title: qsTr("Simple Effect Factor"); singleVariable: true }
 			AssignedVariablesList {	name: "moderatorFactorOne";	title: qsTr("Moderator Factor 1"); singleVariable: true }
@@ -302,7 +302,7 @@ Form
 		{
 			VariablesForm
 			{
-				preferredHeight: 200
+				preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 				AvailableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Kruskal-Wallis Test"); source: "fixedFactors" }
 				AssignedVariablesList {	name: "kruskalVariablesAssigned"; title: qsTr(" ") }
 			}

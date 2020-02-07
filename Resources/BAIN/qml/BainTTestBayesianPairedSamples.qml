@@ -23,7 +23,7 @@ Form
 {
 	VariablesForm
 	{
-		preferredHeight: 200
+		preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 		AvailableVariablesList { name: "allVariablesList" }
 		AssignedPairsVariablesList { name: "pairs"; title: qsTr("Pairs"); suggestedColumns: ["scale"] }
 	}

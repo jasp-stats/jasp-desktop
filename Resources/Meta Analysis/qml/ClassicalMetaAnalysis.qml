@@ -25,7 +25,7 @@ Form
 {
 	VariablesForm
 	{
-		preferredHeight: 400
+		preferredHeight: 400 * preferencesModel.uiScale
 		AvailableVariablesList { name: "allVariables" }
 		AssignedVariablesList { name: "dependent";	title: qsTr("Effect Size"); singleVariable: true; suggestedColumns: ["scale"] }
 		AssignedVariablesList { name: "wlsWeights";	title: qsTr("Effect Size Standard Error"); singleVariable: true; suggestedColumns: ["scale"] }
@@ -40,7 +40,7 @@ Form
 		title: qsTr("Model")
 		VariablesForm
 		{
-			preferredHeight: 150
+			preferredHeight: 150 * preferencesModel.uiScale
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["covariates","factors"]}
 			AssignedVariablesList  { name: "modelTerms"; title: qsTr("Model Terms"); listViewType: JASP.Interaction }
 		}

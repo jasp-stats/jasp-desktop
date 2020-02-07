@@ -31,7 +31,7 @@ Form
 	
 	VariablesForm
 	{
-		preferredHeight: 520
+		preferredHeight: 520 * preferencesModel.uiScale
 		AvailableVariablesList		{ name: "allVariablesList" }
 		RepeatedMeasuresFactorsList { name: "repeatedMeasuresFactors"; title: qsTr("Repeated Measures Factors"); height: 180 }
 		AssignedRepeatedMeasuresCells
@@ -77,14 +77,14 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 150
+			preferredHeight: 150 * preferencesModel.uiScale
 			AvailableVariablesList	{ name: "withinComponents"; title: qsTr("Repeated Measures Components"); source: ["repeatedMeasuresFactors"] }
 			AssignedVariablesList	{ name: "withinModelTerms"; title: qsTr("Model Terms");	listViewType: JASP.Interaction	}
 		}
 		
 		VariablesForm
 		{
-			preferredHeight: 150
+			preferredHeight: 150 * preferencesModel.uiScale
 			AvailableVariablesList	{ name: "betweenComponents"; title: qsTr("Between Subjects Components"); source: ["betweenSubjectFactors", "covariates"] }
 			AssignedVariablesList	{ name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: JASP.Interaction }
 		}
@@ -143,7 +143,7 @@ Form
 
 		VariablesForm
 		{
-			preferredHeight: 150
+			preferredHeight: 150 * preferencesModel.uiScale
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }]; mixedModelTerms: true }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
@@ -185,7 +185,7 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 150
+			preferredHeight: 150 * preferencesModel.uiScale
 			AvailableVariablesList { name: "descriptivePlotsVariables"; title: qsTr("Factors");			source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal Axis"); singleVariable: true }
 			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate Lines");	singleVariable: true }
@@ -228,7 +228,7 @@ Form
 			
 			VariablesForm
 			{
-				preferredHeight: 150
+				preferredHeight: 150 * preferencesModel.uiScale
 				AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }] }
 				AssignedVariablesList {  name: "marginalMeansTerms" }
 			}
@@ -271,7 +271,7 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 150
+			preferredHeight: 150 * preferencesModel.uiScale
 			AvailableVariablesList { name: "effectsVariables";	title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "simpleFactor";		title: qsTr("Simple Effect Factor");	singleVariable: true }
 			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator Factor 1");		singleVariable: true }
@@ -287,7 +287,7 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 150
+			preferredHeight: 150 * preferencesModel.uiScale
 			AvailableVariablesList { name: "kruskalVariablesAvailable"; title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "friedmanWithinFactor";		title: qsTr("RM Factor") }
 			AssignedVariablesList {  name: "friedmanBetweenFactor";		title: qsTr("Optional Grouping Factor"); singleVariable: true }

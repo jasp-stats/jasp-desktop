@@ -28,7 +28,7 @@ Form
 
 	VariablesForm
 	{
-		preferredHeight: 400
+		preferredHeight: 400 * preferencesModel.uiScale
 		AvailableVariablesList { name: "allVariables" }
 		AssignedVariablesList { name: "ES_name";	title: qsTr("Effect Size"); singleVariable: true; suggestedColumns: ["scale"] }
 		AssignedVariablesList { name: "SE_name";	title: qsTr("Effect Size Variance"); singleVariable: true; suggestedColumns: ["scale"] }
@@ -57,7 +57,7 @@ Form
 			columns: 2
 			VariablesForm
 			{
-				preferredHeight: 100
+				preferredHeight: 100 * preferencesModel.uiScale
 				AvailableVariablesList { name: "predictors"; title: qsTr("Predictors"); source: "fixedEffects"}
 				AssignedVariablesList  { name: "fixed_predictor_terms"; title: qsTr("Model Terms"); listViewType: JASP.Interaction }
 			}

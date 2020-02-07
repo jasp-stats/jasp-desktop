@@ -560,7 +560,7 @@ Form
 			{
 				name: 			"additionalVariables"
 				title: 			qsTr("Additional Variables <i>(optional)</i>")
-				Layout.preferredHeight: 		140
+				Layout.preferredHeight: 		140 * preferencesModel.uiScale
 				allowedColumns: ["scale", "ordinal", "nominal"]
 			}
 		}

@@ -101,7 +101,7 @@ Form
 			VariablesForm
 			{
 				id: rescov
-				preferredHeight: 120
+				preferredHeight: 120 * preferencesModel.uiScale
 				AvailableVariablesList {name: "observedvars";	syncModels: factors.name	}
 				AssignedPairsVariablesList { name: "rescov" }
 			}

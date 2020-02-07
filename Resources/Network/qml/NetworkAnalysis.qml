@@ -428,7 +428,7 @@ Form
 		VariablesForm
 		{
 			visible: dataRatioButton.checked
-			preferredHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList	{ name: "allXYVariables" }
 			AssignedVariablesList	{ name: "layoutX"; title: qsTr("x"); singleVariable: true; suggestedColumns: "nominalText"}
 			AssignedVariablesList	{ name: "layoutY"; title: qsTr("y"); singleVariable: true; suggestedColumns: "nominalText"}
