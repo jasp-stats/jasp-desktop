@@ -1146,6 +1146,11 @@
 
     if(isTryError(result)){
 
+      if(JASP:::.extractErrorMessage(result) == "Sample size could not be calculated, please increase the maxSize argument"){
+        planningContainer$setError(gettext("The resulting sample size exceeds 5000."))
+        return()
+      }
+
       planningContainer$setError(gettextf("An error occurred: %1$s", 
                                           JASP:::.extractErrorMessage(result)))
       return()
