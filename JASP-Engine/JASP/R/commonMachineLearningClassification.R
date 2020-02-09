@@ -613,6 +613,11 @@
 
   if(!ready) return()
 
+  if(length(options[["predictors"]]) < 2){
+    andrewsCurve$setError("Andrews curves require a minimum of 2 predictor variables.")
+    return()
+  }
+
   if(nrow(dataset)> 500){
     sample <- sample(1:nrow(dataset), size = 500, replace = FALSE) # Sample to prevent crazy long loading times with big data
   } else {
