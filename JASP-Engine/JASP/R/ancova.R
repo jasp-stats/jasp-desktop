@@ -1139,7 +1139,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   if (!is.null(postHocContainer[["postHocGamesContainer"]]))
     return()
   
-  postHocGamesContainer <- createJaspContainer(title = gettext("Games"))
+  postHocGamesContainer <- createJaspContainer(title = gettext("Games-Howell"))
   postHocGamesContainer$dependOn(c("postHocTestsTypeGames", "confidenceIntervalIntervalPostHoc",
                                    "confidenceIntervalsPostHoc", "postHocFlagSignificant"))
   postHocContainer[["postHocGamesContainer"]] <- postHocGamesContainer
