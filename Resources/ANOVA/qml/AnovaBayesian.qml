@@ -83,7 +83,7 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"]}
 			ModelTermsList {}
@@ -96,7 +96,7 @@ Form
 
 		VariablesForm
 		{
-				preferredHeight: 200
+				preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 				AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"]}
 				AssignedVariablesList
 				{
@@ -140,7 +140,7 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: "fixedFactors" }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}

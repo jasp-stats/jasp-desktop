@@ -25,13 +25,13 @@ Form
 
 	VariablesForm
 	{
-		preferredHeight: 520
+		preferredHeight: 520 * preferencesModel.uiScale
 		AvailableVariablesList { name: "allVariablesList" }		
 		RepeatedMeasuresFactorsList
 		{
 			name: "repeatedMeasuresFactors"
 			title: qsTr("Repeated Measures Factors")
-			preferredHeight: 180
+			preferredHeight: 180 * preferencesModel.uiScale
 		}
 		AssignedRepeatedMeasuresCells
 		{
@@ -104,7 +104,7 @@ Form
 
 		VariablesForm
 		{
-			preferredHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 
 			AvailableVariablesList
 			{
@@ -124,7 +124,7 @@ Form
 
 		VariablesForm
 		{
-			preferredHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList { name: "components2"; title: qsTr("Components"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors", "covariates"]}
 			AssignedVariablesList
 			{
@@ -169,7 +169,7 @@ Form
 
 		VariablesForm
 		{
-			preferredHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "postHocTestsVariables"}
 		}
@@ -188,7 +188,7 @@ Form
 
 		VariablesForm
 		{
-			preferredHeight: 150
+			preferredHeight: 150 * preferencesModel.uiScale
 			AvailableVariablesList { name: "descriptivePlotsVariables";	title: qsTr("Factors"); source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
 			AssignedVariablesList {  name: "plotHorizontalAxis";		title: qsTr("Horizontal Axis");	singleVariable: true }
 			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate Lines");	singleVariable: true }

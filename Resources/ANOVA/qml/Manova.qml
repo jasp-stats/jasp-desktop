@@ -46,7 +46,7 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList { name: "components"; title: qsTr("Components"); source: ["fixedFactors", "randomFactors"] }
 			AssignedVariablesList {  name: "modelTerms"; title: qsTr("Model Terms"); listViewType: JASP.Interaction }
 		}

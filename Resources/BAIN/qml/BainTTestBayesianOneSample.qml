@@ -23,7 +23,7 @@ Form
 {
 	VariablesForm
 	{
-		preferredHeight: 200
+		preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 		AvailableVariablesList { name: "variablesList" }
 		AssignedVariablesList {
 			name: "variables"
