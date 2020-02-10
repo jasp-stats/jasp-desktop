@@ -188,10 +188,11 @@ for sparse regression when there are more covariates than observations (Castillo
     
     if (options$shownModels == "limited" && options$numShownModels < length(basregModel$which)) {
       if (is.null(generalNote)) {
-        generalNote <- gettext("Table displays only a subset of models; to see all models, select \"No\" under \"Limit No. Models Shown\".")
+        s1 <- ""
       } else {
-        generalNote <- gettextf("%s Table displays only a subset of models; to see all models, select \"No\" under \"Limit No. Models Shown\".", generalNote)
+        s1 <- paste0(generalNote, " ") # hopefully all languages want a " " after a full stop.
       }
+      generalNote <- gettextf("%sTable displays only a subset of models; to see all models, select \"No\" under \"Limit No. Models Shown\".", s1)
     }
     
     if (!is.null(generalNote))
