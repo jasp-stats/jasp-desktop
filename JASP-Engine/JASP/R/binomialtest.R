@@ -17,7 +17,10 @@
 
 BinomialTest <- function(jaspResults, dataset = NULL, options, ...) {
   ready <- length(options$variables) > 0
-  
+
+  # testValue is a formulaField: parse it and save the result in the state
+  options <- .parseAndStoreFormulaOptions(jaspResults, options, "testValue")
+
   if (ready) {
     dataset <- .binomReadData(dataset, options)
 
@@ -39,6 +42,7 @@ BinomialTest <- function(jaspResults, dataset = NULL, options, ...) {
 
 .binomCheckErrors <- function(dataset, options) {
   # perform a check on the hypothesis
+
   custom <- function() {
     if (options$testValue == 1 && options$hypothesis == "greaterThanTestValue")
       return(gettext("Cannot test the hypothesis that the test value is greater than 1."))
@@ -187,13 +191,13 @@ BinomialTest <- function(jaspResults, dataset = NULL, options, ...) {
     
   # Add footnote: Alternative hypothesis
   if (options$hypothesis == "lessThanTestValue")
-    note <- gettext("For all tests, the alternative hypothesis specifies that the proportion is less than ")
+    note <- gettextf("For all tests, the alternative hypothesis specifies that the proportion is less than %s.", options$testValueUnparsed)
   else if (options$hypothesis == "greaterThanTestValue")
-    note <- gettext("For all tests, the alternative hypothesis specifies that the proportion is greater than ")
+    note <- gettextf("For all tests, the alternative hypothesis specifies that the proportion is greater than %s.", options$testValueUnparsed)
   else
-    note <- gettext("Proportions tested against value: ")
+    note <- gettextf("Proportions tested against value: %s.", options$testValueUnparsed)
   
-  binomialTable$addFootnote(message = paste0(note, options$testValue, "."))
+  binomialTable$addFootnote(message = note)
   
   jaspResults[["binomialTable"]] <- binomialTable
 
