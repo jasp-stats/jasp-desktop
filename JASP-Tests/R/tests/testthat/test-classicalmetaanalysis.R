@@ -839,3 +839,26 @@ test_that("Residual Heterogeneity Estimates table results match - model interact
 			 18.8710710587465, 1.51911341947623, 1, "H<unicode><unicode>",
 			 1.23260594346576))
 })
+
+
+# test the diagnostic plot without the Q-Q plot
+options <- jasptools::analysisOptions("ClassicalMetaAnalysis")
+options$.meta <- list(covariates = list(containsColumn = TRUE), dependent = list(
+  containsColumn = TRUE), factors = list(containsColumn = TRUE), 
+  studyLabels = list(containsColumn = TRUE), wlsWeights = list(
+    containsColumn = TRUE))
+options$dependent <- "ES"
+options$method <- "Fixed Effects"
+options$plotResidualsDependent <- TRUE
+options$plotResidualsQQ <- FALSE
+options$regressionCoefficientsEstimates <- FALSE
+options$residualsParameters <- FALSE
+options$wlsWeights <- "SE"
+set.seed(1)
+results <- jasptools::run("ClassicalMetaAnalysis", "BCG Vaccine", options)
+
+test_that("Diagnostic Plots matches without Q-Q plot", {
+  plotName <- results[["results"]][["plots"]][["collection"]][["plots_diagnosticPlot"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "diagnostic-plots-no-qq", dir="ClassicalMetaAnalysis")
+})
