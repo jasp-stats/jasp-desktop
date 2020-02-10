@@ -6,6 +6,7 @@
 #include <queue>
 #include "timers.h"
 #include "log.h"
+#include "gui/preferencesmodel.h"
 
 DataSetView * DataSetView::_lastInstancedDataSetView = nullptr;
 
@@ -35,6 +36,8 @@ DataSetView::DataSetView(QQuickItem *parent) : QQuickItem (parent), _metricsFont
 	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadTextItems);
 	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadRowNumbers);
 	connect(this, &DataSetView::itemSizeChanged, this, &DataSetView::reloadColumnHeaders);
+
+	connect(PreferencesModel::prefs(), &PreferencesModel::uiScaleChanged, this, &DataSetView::resetItems);
 
 	setZ(10);
 
@@ -116,6 +119,37 @@ void DataSetView::modelWasReset()
 {
 	setRolenames();
 	calculateCellSizes();
+}
+
+void DataSetView::resetItems()
+{
+	_storedLineFlags.clear();
+	_storedDisplayText.clear();
+
+	for(auto col : _cellTextItems)
+	{
+		for(auto row : col.second)
+			storeTextItem(row.first, col.first, false);
+		col.second.clear();
+	}
+
+	std::list<int> cols, rows;
+
+	for(auto col : _columnHeaderItems)
+		cols.push_back(col.first);
+
+	for(auto col : cols)
+		storeColumnHeader(col);
+
+	for(auto row : _rowNumberItems)
+		rows.push_back(row.first);
+
+	for(auto row : rows)
+		storeRowNumber(row);
+
+	_rowNumberStorage		= {};
+	_columnHeaderStorage	= {};
+	_textItemStorage		= {};
 }
 
 void DataSetView::calculateCellSizes()

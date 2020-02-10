@@ -99,6 +99,8 @@ public:
 	int headerHeight()			{ return _dataRowsMaxHeight; }
 	int rowNumberWidth()		{ return _rowNumberMaxWidth; }
 
+	void resetItems();
+
 
 	GENERIC_SET_FUNCTION(HeaderHeight,		_dataRowsMaxHeight, headerHeightChanged,		double)
 	GENERIC_SET_FUNCTION(RowNumberWidth,	_rowNumberMaxWidth, rowNumberWidthChanged,		double)
