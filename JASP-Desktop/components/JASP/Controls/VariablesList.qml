@@ -178,6 +178,8 @@ JASPListControl
 			height: 16 * preferencesModel.uiScale
 			width:	16 * preferencesModel.uiScale
 			z:		2
+			mipmap:	true
+			smooth:	true
 			anchors
 			{
 				bottom:			listRectangle.bottom;
@@ -449,12 +451,14 @@ JASPListControl
 				Image
 				{
 					id:						icon
-					height:					15 * preferencesModel.uiScale
-					width:					source === "" ? 0 : 15 * preferencesModel.uiScale
+					height:					16 * preferencesModel.uiScale
+					width:					source === "" ? 0 : 16 * preferencesModel.uiScale
 					x:						jaspTheme.borderRadius
 					anchors.verticalCenter:	parent.verticalCenter
 					source:					(!(variablesList.showVariableTypeIcon && itemRectangle.isVariable) || !model.columnType) ? "" : jaspTheme.iconPath + (enabled ? iconFiles[model.columnType] : iconDisabledFiles[model.columnType])
 					visible:				variablesList.showVariableTypeIcon && itemRectangle.isVariable && source !== ""
+					mipmap:	true
+					smooth:	true
 				}
 
 				Text
