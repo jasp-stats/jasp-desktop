@@ -286,7 +286,7 @@ PlotRobustnessSequential <- function(
       idx <- findInterval(val, c(1, 3, 10, 30, 100), rightmost.closed = FALSE)
       evidenceLevel <- c("Anecdotal", "Moderate", "Strong", "Very~Strong", "Extreme")[idx]
       
-      BF01 <- 1 / BF
+      BF01 <- if (bfType == "BF01") BF else if (bfType == "LogBF10") exp(BF) else 1 / BF
       if (BF01 > 1)
         evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[0], ':')"))
       else if (hypothesis == "greater")

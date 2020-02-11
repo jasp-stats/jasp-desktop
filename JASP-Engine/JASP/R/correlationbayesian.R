@@ -757,7 +757,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
                        "less"="smaller"
   )
   plotResult <- try(JASPgraphs::PlotPriorAndPosterior(
-    dfLines, dfPoints, BF10, "CRI"=CRI, "CRItxt"=CRItxt, "median"=medianPoint, "xName"=xName, "hypothesis"=hypothesis)
+    dfLines, dfPoints, BF10, "CRI"=CRI, "CRItxt"=CRItxt, "median"=medianPoint, "xName"=xName, "hypothesis"=hypothesis, bfType = "BF10")
   )
   return(plotResult)
 }

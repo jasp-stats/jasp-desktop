@@ -283,14 +283,15 @@ getBFSubscripts <- function(bfType = c("BF01", "BF10", "LogBF10"), hypothesis = 
 makeBFwheelAndText <- function(BF, bfSubscripts, pizzaTxt, drawPizzaTxt = is.null(pizzaTxt), bfType) {
 
   # drawBFpizza uses BF01
-  bfSubscripts <- rev(bfSubscripts)
   if (bfType == "BF10") {
+    bfSubscripts <- rev(bfSubscripts)
     BF01 <- 1 / BF
     BFvalues <- c(1 / BF, BF)
   } else if (bfType == "BF01") {
-    BF01 <- 1 / BF
+    BF01 <- BF
     BFvalues <- c(1 / BF, BF)
   } else { # LogBF10
+    bfSubscripts <- rev(bfSubscripts)
     BF01 <- exp(-BF)
     BFvalues <- c(-BF, BF)
   }
