@@ -294,8 +294,8 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   
   # can only be computed if there are at least 3 variables.
   if (options$mcDonaldItem && length(options$variables) < 3) {
-    message <- gettextf("McDonald's %s if item dropped can only be calculated for three or more variables.", "\u03C9")
-    itemTable$addFootnote(message, symbol = gettextf("%s Warning: ", "\u1D43"))
+    message <- gettextf("Warning: McDonald's %s if item dropped can only be calculated for three or more variables.", "\u03C9")
+    itemTable$addFootnote(message, colName = "omega")
   }
   
   jaspResults[["itemTable"]] <- itemTable 
