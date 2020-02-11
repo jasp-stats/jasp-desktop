@@ -9,17 +9,17 @@ For those unfamiliar with using Qt Creator for development, there is some excell
 Alternatively, those that are more comfortable using command line tools can use *QMake*, the manual for which is available [here](http://doc.qt.io/qt-5/qmake-manual.html). *QMake* projects (like JASP) are typically built in two steps; first *QMake* is called, which generates a Makefile for *Make*re, and then *Make* is called with this generated Makefile.
 
 We recommend building JASP in a separate directory to its source directory. This can be achieved by calling *QMake* in a separate directory to the source, for example we might create a separate directory beside the *jasp-desktop* directory (perhaps called *jasp-build*), and then from this directory call:
-
+```
     qmake ../jasp-desktop/JASP.pro
     make # -j8 # <- to gain a considerable speedup on a typical quadcore system
-
+```
 This generates the Makefile in the *jasp-build* directory, and all resulting object files and executables will be output to this directory.
 
 JASP requires several dependencies which are documented below.
 
 JASP depends on:
 
- - [Qt (5.13.1 + QtWebEngine)](http://qt-project.org)
+ - [Qt (5.12.6 + QtWebEngine)](http://qt-project.org)
  - [R](http://cran.r-project.org)
  - [boost](http://boost.org)
  - [libarchive](http://libarchive.org/)
@@ -50,7 +50,7 @@ To build JASP follow the next steps:
 1. Clone JASP sources from the **jasp-desktop** GitHub repository.  
 	From the \<JASP\> root folder in a terminal, type:
 
-	\> git clone https://github.com/jasp-stats/jasp-desktop.git
+	`git clone https://github.com/jasp-stats/jasp-desktop.git`
 
 	Or from a browser go to https://github.com/jasp-stats/jasp-desktop and choose the Clone or Download option.
 
@@ -62,7 +62,7 @@ To build JASP follow the next steps:
 2. Clone some third party binaries, boost and used R-packages  from **jasp-required-files** repository on GitHub.  
 	From the \<JASP\> root folder in a terminal, type:
 
-	\> git clone https://github.com/jasp-stats/jasp-required-files.git
+	`git clone https://github.com/jasp-stats/jasp-required-files.git`
 
 	Or from a browser go to https://github.com/jasp-stats/jasp-required-files and choose the Clone or Download option.
 
@@ -75,21 +75,21 @@ To build JASP follow the next steps:
 
 	Warning in advance:  
 Because the **jasp-required-files** folder contains binary files as well as R packages with text files it is necessary that git performs a checkout or commit without changing the line endings. Some packages might generate MD5 checksum errors if line endings are changed. It is possible to change this behavior of git configuration per repository. For more information on this subject see https://help.github.com/articles/dealing-with-line-endings/  
-(To use a repostory specific setting for this: in the **jasp-required-files** folder, type: \>git config core.autocrlf false)  
+(To use a repository specific setting for this: in the **jasp-required-files** folder, type: `git config core.autocrlf false`)  
         From the \<JASP\> root folder in a terminal, type:
-
-	\> cd \<JASP\>\jasp-required-files  
-	\> git checkout Windows  
-	\> git branch  
-	
+```
+	cd <JASP>\jasp-required-files  
+	git checkout Windows  
+	git branch  
+```
 	Should confirm that you are on the Windows branch now.
 	
 	
 4.	Create a build folder(s). From the \<JASP\> root folder for a 64-bit version e.g.:
-
-	\> mkdir build-release-64  
-	\> mkdir build-debug-64  
-
+```
+	mkdir build-release-64  
+	mkdir build-debug-64  
+```
 	Later you may want to build a debug version.
 	In the description it is assumed that you are now only building a release version.  
 	You should now have:  
@@ -105,20 +105,21 @@ Because the **jasp-required-files** folder contains binary files as well as R pa
   
 	P.S. Instead of copying the files it is preferred to generate a symbolic link to the R and boost folder.  
 	From the build folder or Jasp root folder in a cmd-prompt, type:  
-	\> cd \<JASP\>\build-release-64  
-	\> mklink /D R ..\jasp-required-files\R  
-	
+```	
+	cd \<JASP\>\build-release-64  
+	mklink /D R ..\jasp-required-files\R  
+```	
 	You should now have :  
 
 	\<JASP\>\build-release-64\R  
 	\<JASP\>\build-release-64\*.lib and *.dll  
 	\<JASP\>\build-release-64\JAGS\*
    
-6.	**Install Qt 5.13.1**  
+6.	**Install Qt 5.12.6**  
 	Go to https://www.qt.io/download  
 	Choose Open Source and Download.  
-	Start qt-unified-windows-x86-3.0.6-online.exe from your download folder.  
-	(Skip some forms if you do not have a Qt account)  
+	Start qt-unified-windows-x86-?.?.?-online.exe from your download folder.  
+	Having a Qt account is now mandatory because [their sales-team wants to know us to harass us](https://www.qt.io/blog/qt-offering-changes-2020).
 	Use the default options but select the following components to install:
 
 ![Image of Qt Installer](https://static.jasp-stats.org/images/QtCreator-Components.png)  
