@@ -132,12 +132,12 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
         }
       },
       custom = {
-        
+
         contrMatrix <- (as.matrix(sapply(customContrast$values, function(x) x$value)))
         levelNames <- as.matrix(sapply(customContrast$values, function(x) x$colLabel))
         
-        if (length(levelNames) > 2) contrMatrix <- t(contrMatrix)
-        
+        if (length(levelNames) > 2 || ncol(contrMatrix) > 1) contrMatrix <- t(contrMatrix)
+
         for (i in 1:ncol(contrMatrix)) {
           
           curContr <- contrMatrix[,i]
@@ -228,7 +228,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
       desiredRows <- nrow(MASS::contr.sdif(levels) * -1)
 
-      if (desiredRows == 2) {
+      if (desiredRows == 2 && length(sapply(customContrast$values, function(x) x$values)) == 2 ) {
         contr <- MASS::ginv(t(sapply(customContrast$values, function(x) x$values)))
       } else {
         contr <- MASS::ginv(sapply(customContrast$values, function(x) x$values))
@@ -308,14 +308,18 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                  allowEmptyDataset = FALSE,
                  exitAnalysisIfErrors = TRUE,
                  custom = function() {
-                   if (grepl(tryContrMat[1], pattern = "singular contrast matrix")) {
-                     return("Singular custom contrast matrix.")
-                   } else if (grepl(tryContrMat[1], pattern = "number of contrast matrix rows")) {
-                     return("Wrong number of custom contrast matrix rows.")
+                   if (isTryError(tryContrMat)) {
+                     if (grepl(tryContrMat[1], pattern = "singular contrast matrix")) {
+                       return("Singular custom contrast matrix.")
+                     } else if (grepl(tryContrMat[1], pattern = "number of contrast matrix rows")) {
+                       return("Wrong number of custom contrast matrix rows.")
+                     } 
+                   } else if (is.matrix(tryContrMat) && any(apply(tryContrMat, 2, function(x) all(x == 0) ))) {
+                     return("Please specify non-zero contrast weights.")
                    } else if (ncol(tryContrMat) >= nlevels(dataset[[v]])) {
                      return("Please specify fewer contrasts. (Maximum #contrasts = #levels - 1)")
-                   } else if (any(round(colSums(tryContrMat), 15) != 0)) {
-                     return("Some contrasts do not sum to 0.")
+                   # } else if (any(round(colSums(tryContrMat), 15) != 0)) {
+                     # return("Some contrasts do not sum to 0.")
                    }
                  })
       
@@ -576,7 +580,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   if ((length(corrections) > 1 || any(!"None" %in% corrections)) && is.null(options$covariates)) {
     anovaTable$addColumnInfo(title = gettext("Homogeneity Correction"), name = "correction", type = "string")
     dfType <- "number"
-  }
+  } 
   
   anovaTable$addColumnInfo(title = gettext("Cases"),          name = "cases",   type = "string" )
   anovaTable$addColumnInfo(title = gettext("Sum of Squares"), name = "Sum Sq",  type = "number")
@@ -649,14 +653,14 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   contrastContainer$dependOn(c("contrasts", "contrastAssumeEqualVariance", "confidenceIntervalIntervalContrast", 
                                "confidenceIntervalsContrast", "customContrasts"))
 
-  createContrastTable <- function(myTitle, options) {
+  createContrastTable <- function(myTitle, options, contrastType) {
     
     contrastTable <- createJaspTable(title = myTitle)
     contrastTable$addColumnInfo(name="Comparison", type="string")
     contrastTable$addColumnInfo(name="Estimate", type="number")
     contrastTable$addColumnInfo(name="SE", type="number")
     
-    dfType <- if (options$contrastAssumeEqualVariance) "integer" else "number"
+    dfType <- if (options$contrastAssumeEqualVariance && contrastType != "custom") "integer" else "number"
     contrastTable$addColumnInfo(name="df", type=dfType)
     contrastTable$addColumnInfo(name="t", type="number")
     contrastTable$addColumnInfo(name="p", type="pvalue")
@@ -681,7 +685,9 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       contrastType <- paste0(contrastType, collapse = "")
       
       myTitle <- gettextf("%1$s Contrast - %2$s", contrastType,  contrast$variable)
-      contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]] <- createContrastTable(myTitle, options)
+      contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]] <- createContrastTable(myTitle, 
+                                                                                                             options,
+                                                                                                             contrast$contrast)
     }
       
   }
@@ -886,7 +892,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     }
     
     # Calculate effect sizes
-    if (options$postHocTestEffectSize & nrow(dataset) > 0 & !interactionTerm) {
+    if (options$postHocTestEffectSize && nrow(dataset) > 0 && !interactionTerm) {
       
       den <- numeric(length(allContrasts))
       
@@ -1133,7 +1139,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   if (!is.null(postHocContainer[["postHocGamesContainer"]]))
     return()
   
-  postHocGamesContainer <- createJaspContainer(title = gettext("Games"))
+  postHocGamesContainer <- createJaspContainer(title = gettext("Games-Howell"))
   postHocGamesContainer$dependOn(c("postHocTestsTypeGames", "confidenceIntervalIntervalPostHoc",
                                    "confidenceIntervalsPostHoc", "postHocFlagSignificant"))
   postHocContainer[["postHocGamesContainer"]] <- postHocGamesContainer
