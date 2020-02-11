@@ -942,9 +942,3 @@
 .ql-snow a {
   color: #06c;
 }
-
-/* Custom values */
-.ql-container.ql-snow {
-  /* border: 1px solid #ccc; */
-  background-color: #f5f6f6
-}
