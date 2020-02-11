@@ -121,7 +121,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     )
   }
 
-  .hasErrors(dataset, type = c("infinity", "variance", "observations", "modelInteractions", "varCovData"), allowEmptyDataset = FALSE,
+  .hasErrors(dataset, type = c("infinity", "variance", "observations", "modelInteractions", "varCovData"),
              custom = stepwiseProcedureChecks, all.target = c(options$dependent, unlist(options$covariates)),
              observations.amount = "< 2", modelInteractions.modelTerms = options$modelTerms, varCovData.corFun = stats::cov,
              exitAnalysisIfErrors = TRUE)

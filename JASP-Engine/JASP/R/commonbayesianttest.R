@@ -164,7 +164,7 @@
 
     for (var in dependents) {
 
-      errors[[var]] <- .hasErrors(dataset, perform = "run", message = 'short',
+      errors[[var]] <- .hasErrors(dataset, message = 'short',
                                   type = c('infinity','observations','variance'),
                                   all.target = var, observations.amount = "< 2",
                                   all.grouping = grouping)
@@ -176,7 +176,7 @@
 
     dependents <- unlist(options[["variables"]])
     for (var in dependents) {
-      errors[[var]] <- .hasErrors(dataset, perform = "run", message = 'short',
+      errors[[var]] <- .hasErrors(dataset, message = 'short',
                                   type = c('infinity','observations','variance'),
                                   all.target = var, observations.amount = "< 2")
     }
@@ -199,7 +199,7 @@
 
       } else {
 
-        errors[[var]] <- .hasErrors(dataset, perform = "run", message = 'short',
+        errors[[var]] <- .hasErrors(dataset, message = 'short',
                                     type = c('infinity','observations','variance'),
                                     all.target = c(pair[[1L]],pair[[2L]]), observations.amount = "< 2")
       }

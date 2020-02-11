@@ -101,18 +101,18 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   if (options$groupvar == "") {
 
-    .hasErrors(dataset[, .v(vars)], perform = "run", type = 'varCovData', exitAnalysisIfErrors = TRUE,
+    .hasErrors(dataset[, .v(vars)], type = 'varCovData', exitAnalysisIfErrors = TRUE,
                varCovData.corFun = stats::cov)
 
   } else {
 
-    .hasErrors(dataset, perform, type = "factorLevels", factorLevels.target = options$groupvar,
+    .hasErrors(dataset, type = "factorLevels", factorLevels.target = options$groupvar,
                factorLevels.amount = '< 2', exitAnalysisIfErrors = TRUE)
 
     for (group in levels(dataset[[.v(options$groupvar)]])) {
 
       idx <- dataset[[.v(options$groupvar)]] == group
-      .hasErrors(dataset[idx, .v(vars)], perform = "run", type = 'varCovData', exitAnalysisIfErrors = TRUE,
+      .hasErrors(dataset[idx, .v(vars)], type = 'varCovData', exitAnalysisIfErrors = TRUE,
                  varCovData.corFun = stats::cov)
 
     }

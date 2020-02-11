@@ -110,7 +110,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
     if (options[["groupingVariable"]] != "") {
       # these cannot be chained unfortunately
-      .hasErrors(dataset = groupingVariable, perform = perform,
+      .hasErrors(dataset = groupingVariable,
                  type = c("factorLevels", "observations"),
                  factorLevels.target = groupingVariable,
                  factorLevels.amount = "< 2",
@@ -133,7 +133,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     if (options[["correlationMethod"]] == "cov")
       fun <- cov
 
-    .hasErrors(dataset = dataset, perform = perform,
+    .hasErrors(dataset = dataset,
                type = checks,
                variance.target = options[["variables"]], # otherwise the grouping variable always has variance == 0
                variance.grouping = groupingVariable,

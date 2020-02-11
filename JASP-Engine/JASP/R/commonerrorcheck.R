@@ -115,11 +115,10 @@
 }
 
 
-.hasErrors <- function(dataset, perform="run", type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, allowEmptyDataset = TRUE, ...) {
+.hasErrors <- function(dataset=NULL, type=NULL, custom=NULL, message='default', exitAnalysisIfErrors=FALSE, ...) {
   # Generic error checking function.
   # Args:
   #   dataset: Normal JASP dataset.
-  #   perform: 'run' or 'init'.
   #   type: List/vector of strings containing check types.
   #   message: 'short' or 'default' should only the first failure of a check be reported in footnote style ('short'), or should every check failure be mentioned in multi-line form.
   #   exitAnalysisIfErrors: Boolean, should the function simply return its results (FALSE), or abort the entire analysis when a failing check is encountered (TRUE).
@@ -129,13 +128,11 @@
   # Returns:
   #   FALSE if no errors were found or a named list specifying for each check which variables violated it as well as a general error message.
   
-  if ((allowEmptyDataset && !isTRUE(nrow(dataset) > 0)) || perform != 'run' || (length(type) == 0 && length(custom) == 0)) {
+  if (length(type) == 0 && length(custom) == 0)
     return(FALSE)
-  }
   
-  if (exitAnalysisIfErrors && message == 'short') {
+  if (exitAnalysisIfErrors && message == 'short')
     message <- 'default'
-  }
   
   # Error checks definition.
   checks <- list()
@@ -182,9 +179,8 @@
   for (i in 1:length(type)) {
     
     check <- checks[[ type[[i]] ]]
-    if (is.null(check)) {
+    if (is.null(check))
       stop('Unknown check type provided: "', type[[i]], '"')
-    }
     
     isCustom <- ! is.null(check[['isCustom']]) # Is it an analysis-specific check?
     hasNamespace <- ! isCustom || check[['hasNamespace']] == TRUE # Is it a named check?
@@ -196,7 +192,8 @@
       funcArgs['...'] <- NULL
       if (length(funcArgs) > 0) {
         # Attach the check specific prefix, except for the dataset arg.
-        names(funcArgs)[names(funcArgs) != 'dataset'] <- paste0(type[[i]], '.', names(funcArgs)[names(funcArgs) != 'dataset'])
+        argsExceptDataset <- names(funcArgs) != 'dataset'
+        names(funcArgs)[argsExceptDataset] <- paste0(type[[i]], '.', names(funcArgs)[argsExceptDataset])
         
         # Fill in the 'all.*' arguments for this check
         argsAllPrefix <- args[startsWith(names(args), 'all.')]
@@ -210,24 +207,18 @@
         }
         
         # See if this check expects target variables and if they were provided, if not add all variables.
-        if (paste0(type[[i]], '.target') %in% names(funcArgs) && ! paste0(type[[i]], '.target') %in% names(args)) {
-          args[[ paste0(type[[i]], '.target') ]] <- .unv(names(dataset))
-        } 
-        
-        # See if this check expects options and if they were provided
-        if (paste0(type[[i]], '.options') %in% names(funcArgs) && ! paste0(type[[i]], '.options') %in% names(args)) {
-          args[[ paste0(type[[i]], '.options') ]] <- options
-        }
+        funcTargetVars <- paste0(type[[i]], '.target')
+        if (funcTargetVars %in% names(funcArgs) && !funcTargetVars %in% names(args))
+          args[[funcTargetVars]] <- .unv(names(dataset))
         
         # Obtain an overview of required and optional check arguments.
         optArgs <- list()
         reqArgs <- list()
         for (a in 1:length(funcArgs)) {
-          if (is.symbol(funcArgs[[a]])) { # Required args' value is symbol.
+          if (is.symbol(funcArgs[[a]])) # Required args' value is symbol.
             reqArgs <- c(reqArgs, funcArgs[a])
-          } else {
+          else
             optArgs <- c(optArgs, funcArgs[a])
-          }
         }
         
         if (length(reqArgs) > 0 && all(names(reqArgs) %in% names(args)) == FALSE) {
@@ -235,13 +226,17 @@
           stop('Missing required argument(s): "', paste(names(missingArgs), collapse=','), '"')
         }
         
-        if (length(optArgs) > 0 && all(names(optArgs) %in% names(args)) == FALSE) {
+        # If .hasErrors() was called when the analysis is not ready, don't perform this error check.
+        # Not ready is defined as the dataset being NULL, or being an unnamed data.frame (.readDatasetToEnd() returns this when no variables are specified).
+        if (length(reqArgs) > 0 && ("dataset" %in% names(reqArgs) && is.null(dataset) || length(names(dataset)) == 0))
+          next 
+        
+        if (length(optArgs) > 0 && all(names(optArgs) %in% names(args)) == FALSE)
           args <- c(args, optArgs[! names(optArgs) %in% names(args)])
-        }
       }
       
     }
-    
+
     # Perform the actual error check.
     if (hasNamespace && length(funcArgs) > 0) {
       callingArgs <- args[names(funcArgs)]
@@ -252,37 +247,31 @@
     }
     
     # See if the check itself terminated with an exception (oh dear).
-    if (isTryError(checkResult)) {
+    if (isTryError(checkResult))
       next
-    }
     
     # If we don't have an error we can go to the next check.
-    if ((! isCustom && checkResult[['error']] != TRUE) || (isCustom && (! is.character(checkResult) || checkResult == ''))) {
+    if ((! isCustom && checkResult[['error']] != TRUE) || (isCustom && (! is.character(checkResult) || checkResult == '')))
       next
-    }
     
     # Create the error message.
     if (! (message == 'short' && ! is.null(errors[['message']]))) {
       opening <- FALSE
-      if (is.null(errors[['message']]) && message != 'short') {
+      if (is.null(errors[['message']]) && message != 'short')
         opening <- TRUE
-      }
       
       varsToAdd <- NULL
-      if (! isCustom) {
+      if (! isCustom)
         varsToAdd <- checkResult[['errorVars']]
-      }
       
       grouping <- NULL
       if (! is.null(check[['addGroupingMsg']]) && check[['addGroupingMsg']] == TRUE && 
-          ! is.null(args[[ paste0(type[[i]], '.grouping') ]]) ) {
+          ! is.null(args[[ paste0(type[[i]], '.grouping') ]]) )
         grouping <- args[[ paste0(type[[i]], '.grouping') ]]
-      }
       
       msgType <- type[[i]]
-      if (isCustom) {
+      if (isCustom)
         msgType <- checkResult
-      }
       
       errors[['message']] <- base::do.call(.generateErrorMessage, c(list(type=msgType, 
         opening=opening, concatenate=errors[['message']], variables=varsToAdd, grouping=grouping), 
@@ -294,21 +283,18 @@
     }
     
     # Add the error (with any offending variables, or TRUE if there were no variables) to the list.
-    if (is.list(checkResult) && ! is.null(checkResult[['errorVars']])) {
+    if (is.list(checkResult) && ! is.null(checkResult[['errorVars']]))
       errors[[ type[[i]] ]] <- checkResult[['errorVars']]
-    } else {
+    else
       errors[[ type[[i]] ]] <- TRUE
-    }
     
   } # End for-loop.
   
-  if (is.null(errors[['message']]))  {
+  if (is.null(errors[['message']]))
     return(FALSE)
-  } 
   
-  if (exitAnalysisIfErrors == TRUE) {
+  if (exitAnalysisIfErrors == TRUE)
     .quitAnalysis(errors[['message']])
-  }
   
   return(errors) 
 }
@@ -478,7 +464,7 @@
   getObservations <- function(x) {
     return(length(na.omit(x)))
   }
-  
+
   for (v in target) {
     
     if (length(grouping) > 0) {

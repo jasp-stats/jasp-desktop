@@ -51,7 +51,6 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     for (level in levels) {
       .hasErrors(
         dataset              = data[data == level],
-        perform              = "run",
         type                 = "observations",
         observations.amount  = "< 3",
         exitAnalysisIfErrors = TRUE
@@ -61,7 +60,6 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
   # Error check 2: One or more variables has infinity
   .hasErrors(dataset = dataset, 
-             perform = perform,
              type    = "infinity",
              infinity.target = options$variables,
              exitAnalysisIfErrors = TRUE)

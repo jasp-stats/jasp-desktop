@@ -304,9 +304,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
     if (contrast$contrast == "custom")
       # Check whether the custom contrast matrix works
-      .hasErrors(dataset = NULL,
-                 allowEmptyDataset = FALSE,
-                 exitAnalysisIfErrors = TRUE,
+      .hasErrors(exitAnalysisIfErrors = TRUE,
                  custom = function() {
                    if (grepl(tryContrMat[1], pattern = "singular contrast matrix")) {
                      return("Singular custom contrast matrix.")
