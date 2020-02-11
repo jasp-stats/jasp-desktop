@@ -153,7 +153,7 @@ Q-Q Grafiek:
 
 #### Contrasten
 Afwijking/Simpel/Verschil/Helmert/Repeated/Polynoom/Custom Contrast:
-- Vergelijking: De niveaus van de onafhankelijke variabele die worden vergeleken. Voor de custom contrasten wordt het gewicht getoond voor elk nivea van de factor.
+- Vergelijking: De niveaus van de onafhankelijke variabele die worden vergeleken. Voor de custom contrasten wordt het gewicht getoond voor elk niveau van de factor.
 - Schatting: Het geschatte gemiddelde verschil tussen de vergelen niveaus.
 - SE: De standaardfout van het geschatte gemiddelde.
 - df: De vrijheidsgraden van het model.
