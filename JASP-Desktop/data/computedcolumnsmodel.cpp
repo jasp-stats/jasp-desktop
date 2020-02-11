@@ -301,6 +301,8 @@ void ComputedColumnsModel::removeColumn()
 	requestComputedColumnDestruction(_currentlySelectedName);
 
 	setComputeColumnNameSelected("");
+
+	emit refreshData();
 }
 
 void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & changedColumns, const std::vector<std::string> & missingColumns, const std::map<std::string, std::string> & changeNameColumns, bool rowCountChanged)
