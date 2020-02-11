@@ -382,6 +382,9 @@
 
   if(options[["monetaryVariable"]] != "")
     variables <- c(variables, options[["monetaryVariable"]])
+  
+  if (length(variables) == 0)
+    return()
 
   N <- nrow(dataset)
 

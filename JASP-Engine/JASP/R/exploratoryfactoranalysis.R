@@ -26,7 +26,9 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # Read dataset
   dataset <- .efaReadData(dataset, options)
   ready   <- length(options$variables) > 1
-  .efaCheckErrors(dataset, options)
+  
+  if (ready)
+    .efaCheckErrors(dataset, options)
 
   modelContainer <- .efaModelContainer(jaspResults)
 

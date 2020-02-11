@@ -80,7 +80,7 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
 # Error handling 
 .classLdaErrorHandling <- function(dataset, options){
   # Error Check 1: There should be at least 5 observations in the target variable
-  .hasErrors(dataset = dataset, perform = "run", type = c('observations', 'variance', 'infinity'),
+  .hasErrors(dataset = dataset, type = c('observations', 'variance', 'infinity'),
              all.target = options$target, observations.amount = '< 5', exitAnalysisIfErrors = TRUE)
   
   # Error Check 2: The target variable should have at least 2 classes

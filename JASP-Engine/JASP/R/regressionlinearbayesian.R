@@ -98,7 +98,7 @@ RegressionLinearBayesian <- function(jaspResults, dataset = NULL, options) {
       }
     })
   
-  .hasErrors(dataset = dataset, perform = perform,
+  .hasErrors(dataset = dataset,
              type = c("infinity", "observations", "variance", "modelInteractions"), custom = customChecks,
              infinity.target = c(options$covariates, options$dependent, options$wlsWeight),
              observations.target = options$dependent, observations.amount = paste("<", length(options$modelTerms) + 1),

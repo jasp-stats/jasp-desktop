@@ -21,7 +21,9 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   # Read dataset
   dataset <- .pcaReadData(dataset, options)
   ready   <- length(options$variables) > 1
-  .pcaCheckErrors(dataset, options)
+  
+  if (ready)
+    .pcaCheckErrors(dataset, options)
 
   modelContainer <- .pcaModelContainer(jaspResults)
 
