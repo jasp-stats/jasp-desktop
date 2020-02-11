@@ -933,6 +933,7 @@
     group2 <- NULL
   }
 
+  currentPlot <- 1L
   for (var in dependents) {
     if (is.null(collection[[var]][["plotRobustness"]]$plotObject)) {
       plot <- collection[[var]][["plotRobustness"]]
@@ -970,7 +971,8 @@
           rscale                = rscale,
           BFH1H0                = BFH1H0,
           additionalInformation = additionalInformation,
-          var                   = var,
+          currentPlot           = currentPlot,
+          totalPlots            = length(dependents),
           ...
         ))
         if (isTryError(obj)) {
@@ -987,6 +989,7 @@
         plot$setError(err)
       }
     }
+    currentPlot <- currentPlot + 1L
   }
 }
 
@@ -1013,6 +1016,7 @@
     subDataSet <- NULL
   }
 
+  currentPlot <- 1L
   for (var in dependents) {
     if (is.null(collection[[var]][["plotSequential"]]$plotObject)) {
       plot <- collection[[var]][["plotSequential"]]
@@ -1056,7 +1060,8 @@
           level2              = g2,
           nullInterval        = nullInterval,
           options             = options,
-          var                 = var,
+          currentPlot         = currentPlot,
+          totalPlots          = length(dependents),
           ...
         ))
         if (isTryError(obj)) {
@@ -1073,6 +1078,7 @@
         plot$setError(err)
       }
     }
+    currentPlot <- currentPlot + 1L
   }
 }
 
@@ -1180,7 +1186,7 @@
 
 .plotBF.robustnessCheck.ttest2 <- function(
   x = NULL, y = NULL, paired = FALSE, BF10post, nullInterval, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
-  BFH1H0 = TRUE, additionalInformation = FALSE, var = "") {
+  BFH1H0 = TRUE, additionalInformation = FALSE, currentPlot = 1L, totalPlots = 1L) {
 
   r <- .ttestBayesianGetRScale(rscale)
 
@@ -1190,7 +1196,10 @@
     rValues <- seq(0.0005, 1.5, length.out = 400)
   }
 
-  startProgressbar(length(rValues), gettextf("Robustness check %s", var))
+  startProgressbar(length(rValues), sprintf(ngettext(totalPlots,
+                                                     "Robustness check",
+                                                     "Robustness check %d / %d"),
+                                            currentPlot, totalPlots))
   # BF10
   BF10 <- vector("numeric", length(rValues))
   if (!isFALSE(oneSided)) {
@@ -1310,7 +1319,7 @@
 .plotSequentialBF.ttest2 <- function(
   x = NULL, y = NULL, paired = FALSE, BF10post, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
   plotDifferentPriors = FALSE, BFH1H0 = TRUE, dontPlotData = FALSE, level1 = NULL, level2 = NULL,
-  subDataSet = NULL, nullInterval = c(-Inf, Inf), options, var = "") {
+  subDataSet = NULL, nullInterval = c(-Inf, Inf), options, currentPlot = 1L, totalPlots = 1L) {
 
   r <- .ttestBayesianGetRScale(rscale)
   evidenceText <- !plotDifferentPriors
@@ -1383,7 +1392,10 @@
     nTicks <- length(BF10) - i
     if (plotDifferentPriors)
       nTicks <- 3L * nTicks
-    startProgressbar(nTicks, gettextf("Sequential analysis %s", var))
+    startProgressbar(nTicks, sprintf(ngettext(totalPlots,
+                                              "Sequential analysis",
+                                              "Sequential analysis %d / %d"),
+                                     currentPlot, totalPlots))
 
     while ((i <= length(x) || j <= length(y)) && k <= length(BF10)) {
 
@@ -1587,7 +1599,10 @@
     nTicks <- nrow(subDataSet)
     if (plotDifferentPriors)
       nTicks <- 3L * nTicks
-    startProgressbar(nTicks, gettextf("Sequential analysis %s", var))
+    startProgressbar(nTicks, sprintf(ngettext(totalPlots,
+                                              "Sequential analysis",
+                                              "Sequential analysis %d / %d"),
+                                     currentPlot, totalPlots))
 
     for (i in seq_len(nrow(subDataSet))) {
 
