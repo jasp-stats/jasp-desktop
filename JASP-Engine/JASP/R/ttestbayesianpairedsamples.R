@@ -60,8 +60,8 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
 
         # these objects are made here so they don't need to be created every time a try fails,
         # which means they could be forgotten and not created
-        bf.raw <- NA_real_
-        error  <- NA_real_
+        bf.raw <- NaN
+        error  <- NaN
 
         subDataSet <- dataset[, .v(c(pair[[1L]], pair[[2L]]))]
         subDataSet <- subDataSet[complete.cases(subDataSet), ]

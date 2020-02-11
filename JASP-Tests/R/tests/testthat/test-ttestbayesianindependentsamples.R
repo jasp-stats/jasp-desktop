@@ -110,19 +110,13 @@ test_that("Inferential plots with additional info match", {
 test_that("Analysis handles errors", {
   options <- jasptools::analysisOptions("TTestBayesianIndependentSamples")
 
-  options$variables <- "debInf"
+  options$variables <- c("debInf", "debSame")
   options$groupingVariable <- "contBinom"
   results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
   notes <- unlist(getTtestTable(results)[["footnotes"]])
   expect_true(any(grepl("infinity", notes, ignore.case=TRUE)), label = "Inf check")
-
-  options$variables <- "debSame"
-  options$groupingVariable <- "contBinom"
-  results <- jasptools::run("TTestBayesianIndependentSamples", "test.csv", options)
-  expect_equal(object = results[["status"]], expected = "validationError",
-  	label = "Variance check"
-  )
-  expect_false(startsWith(results[["results"]][["errorMessage"]], "This analysis terminated unexpectedly."))
+  expect_true(any(grepl("variance", notes, ignore.case=TRUE)), label = "variance check")
+  expect_null(results[["results"]][["errorMessage"]])
 
   options$variables <- "debMiss99"
   options$groupingVariable <- "contBinom"

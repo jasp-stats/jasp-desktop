@@ -75,8 +75,8 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
 
       # these objects are made here so they don't need to be created every time a try fails,
       # which means they could be forgotten and not created
-      bf.raw <- NA_real_
-      error  <- NA_real_
+      bf.raw <- NaN
+      error  <- NaN
 
       # BayesFactor package doesn't handle NAs, so it is necessary to exclude them
       idxNA <- is.na(dataset[[.v(var)]]) | idxNAg

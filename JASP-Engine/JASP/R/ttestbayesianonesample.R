@@ -57,8 +57,8 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
       # these objects are made here so they don't need to be created every time a try fails,
       # which means they could be forgotten and not created
-      bf.raw <- NA_real_
-      error  <- NA_real_
+      bf.raw <- NaN
+      error  <- NaN
 
       x <- dataset[[.v(var)]]
       x <- x[!is.na(x)]  - options[["testValue"]]
