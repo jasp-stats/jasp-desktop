@@ -5363,8 +5363,8 @@ var Link = function (_Inline) {
       var node = _get(Link.__proto__ || Object.getPrototypeOf(Link), 'create', this).call(this, value);
       value = this.sanitize(value);
       node.setAttribute('href', value);
-      node.setAttribute('rel', 'noopener noreferrer');
-      node.setAttribute('target', '_blank');
+      // node.setAttribute('rel', 'noopener noreferrer');
+      // node.setAttribute('target', '_blank');
       return node;
     }
   }, {
@@ -9974,7 +9974,7 @@ var SnowTooltip = function (_BaseTooltip) {
 
     var _this2 = _possibleConstructorReturn(this, (SnowTooltip.__proto__ || Object.getPrototypeOf(SnowTooltip)).call(this, quill, bounds));
 
-    _this2.preview = _this2.root.querySelector('a.ql-preview');
+    _this2.preview = _this2.root.querySelector('a');
     return _this2;
   }
 
@@ -10036,7 +10036,7 @@ var SnowTooltip = function (_BaseTooltip) {
   return SnowTooltip;
 }(_base.BaseTooltip);
 
-SnowTooltip.TEMPLATE = ['<a class="ql-preview" rel="noopener noreferrer" target="_blank" href="about:blank"></a>', '<input type="text" data-formula="e=mc^2" data-link="https://quilljs.com" data-video="Embed URL">', '<a class="ql-action"></a>', '<a class="ql-remove"></a>'].join('');
+SnowTooltip.TEMPLATE = ['<a href="about:blank"></a>', '<input type="text" data-formula="e=mc^2" data-link="https://quilljs.com" data-video="Embed URL">', '<a class="ql-action"></a>', '<a class="ql-remove"></a>'].join('');
 
 exports.default = SnowTheme;
 
