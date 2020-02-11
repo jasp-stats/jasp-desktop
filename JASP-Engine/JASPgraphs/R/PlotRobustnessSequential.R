@@ -335,8 +335,18 @@ PlotRobustnessSequential <- function(
       label = arrowLabel, 
       stringsAsFactors = FALSE
     )
+
+    # remove one arrow and text if y axis is entirely above or entirely below 0 = log(1)
+    if (0 < min(yBreaksL)) {
+      dfArrow    <- dfArrow[-1L, ]
+      dfArrowTxt <- dfArrowTxt[-1L, ]
+    } else if (0 > max(yBreaksL)) {
+      dfArrow    <- dfArrow[-2L, ]
+      dfArrowTxt <- dfArrowTxt[-2L, ]
+    }
+
     if (bfType == "BF01")
-      dfArrowTxt[["label"]] <- dfArrowTxt[["label"]][2:1]
+      dfArrowTxt[["label"]] <- rev(dfArrowTxt[["label"]])
 
     g <- g + ggplot2::geom_segment(
       data    = dfArrow, aes(x = .data$x, y = .data$y, xend = .data$xend, yend = .data$yend),
