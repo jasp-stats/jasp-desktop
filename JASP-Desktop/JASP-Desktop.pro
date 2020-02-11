@@ -37,7 +37,7 @@ INSTALLS += target
 
 LIBS += -L.. -lJASP-Common
 
-windows:	LIBS += -llibboost_filesystem$$BOOST_POSTFIX -llibboost_system$$BOOST_POSTFIX -larchive.dll -llibreadstat -lole32 -loleaut32
+windows:	LIBS += -llibboost_filesystem$$BOOST_POSTFIX -llibboost_system$$BOOST_POSTFIX -llibboost_date_time$$BOOST_POSTFIX -larchive.dll -llibreadstat -lole32 -loleaut32
 macx:   	LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz -lreadstat -liconv
 
 
@@ -146,8 +146,8 @@ win32 {
   WINPWD=$$PWD/..
   WINPWD ~= s,/,\\,g
 
-  copyres.commands  += $$quote(IF exist \"$$RESOURCES_PATH_DEST\" (rd /s /q \"$$RESOURCES_PATH_DEST\";) ) &&
-  copyres.commands  +=  $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
+  delres.commands	= $$quote(IF exist \"$$RESOURCES_PATH_DEST\" (rd /s /q \"$$RESOURCES_PATH_DEST\";); )
+  copyres.commands	= $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
 
   equals(GENERATE_LANGUAGE_FILES,1) {
   maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${WINPWD}\jasp.po) &&
@@ -163,7 +163,7 @@ win32 {
 unix {
   RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
-  copyres.commands += rm -rf $$RESOURCES_PATH_DEST;
+  delres.commands   = rm -rf $$RESOURCES_PATH_DEST;
   copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
   copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
 
@@ -179,12 +179,11 @@ unix {
   }
 }
 
+copyres.depends = delres
 
 ! equals(PWD, $${OUT_PWD}) {
-  QMAKE_EXTRA_TARGETS += copyres
-  QMAKE_EXTRA_TARGETS += maketranslations
-  POST_TARGETDEPS     += copyres
-  POST_TARGETDEPS     += maketranslations
+  QMAKE_EXTRA_TARGETS += delres copyres maketranslations
+  POST_TARGETDEPS     += delres copyres maketranslations
 }
 
 INCLUDEPATH += $$PWD/

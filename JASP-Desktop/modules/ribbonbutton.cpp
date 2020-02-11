@@ -227,7 +227,7 @@ void RibbonButton::reloadMenuFromDescriptionJson()
 	}
 
 	//Check existence of the description.json
-	QFile descriptionFile(modulepath.absoluteFilePath() + "/" + Modules::DynamicModule::getJsonDesriptionFileName());
+	QFile descriptionFile(modulepath.absoluteFilePath() + "/" + Modules::DynamicModule::getJsonDescriptionFilename());
 	if(!descriptionFile.exists())
 	{
 		Log::log() << "Could not find the json description file : " << descriptionFile.fileName().toStdString() << std::endl;

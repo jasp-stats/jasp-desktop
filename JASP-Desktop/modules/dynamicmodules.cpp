@@ -443,7 +443,7 @@ void DynamicModules::startWatchingDevelopersModule()
 		{
 			QDir instDir(entry.absoluteFilePath());
 			for(const QFileInfo & entryinst : instDir.entryInfoList(QDir::Filter::Dirs | QDir::Filter::Files | QDir::Filter::NoDotAndDotDot))
-				if(entryinst.isFile() && entryinst.fileName().toLower() == Modules::DynamicModule::getJsonDesriptionFileName())
+				if(entryinst.isFile() && entryinst.fileName().toLower() == Modules::DynamicModule::getJsonDescriptionFilename())
 					descriptionFound = true;
 				else if(entryinst.isDir())
 				{
@@ -473,7 +473,7 @@ void DynamicModules::startWatchingDevelopersModule()
 
 void DynamicModules::devModCopyDescription()
 {
-	const QString descJson = "inst/" + Modules::DynamicModule::getJsonDesriptionFileName();
+	const QString descJson = "inst/" + Modules::DynamicModule::getJsonDescriptionFilename();
 	QFileInfo src(_devModSourceDirectory.filePath(descJson));
 	QFileInfo dst(QString::fromStdString(moduleDirectory(developmentModuleName()) + developmentModuleName() + "/")  + descJson);
 

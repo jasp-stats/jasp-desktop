@@ -64,10 +64,10 @@ void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool 
 		return;
 	}
 
-	QFile descriptionFile(modulePath.absoluteFilePath() + "/" + Modules::DynamicModule::getJsonDesriptionFileName());
+	QFile descriptionFile(modulePath.absoluteFilePath() + "/" + Modules::DynamicModule::getJsonDescriptionFilename());
 	if(!descriptionFile.exists())
 	{
-		Log::log() << "Could not find "  << Modules::DynamicModule::getJsonDesriptionFileName() << " file in " << modulePath.absoluteFilePath().toStdString() << std::endl << std::flush;
+		Log::log() << "Could not find "  << Modules::DynamicModule::getJsonDescriptionFilename() << " file in " << modulePath.absoluteFilePath().toStdString() << std::endl << std::flush;
 		Log::log() << "Try to fall back to original description.json. " << std::endl << std::flush;
 		descriptionFile.setFileName(modulePath.absoluteFilePath() + "/" + "description.json");
 		if(!descriptionFile.exists())

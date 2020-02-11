@@ -70,7 +70,7 @@ void DynamicModule::developmentModuleFolderCreate()
 	QDir(AppDirs::modulesDir()).mkdir(QString::fromStdString(defaultDevelopmentModuleName()));
 }
 
-QString DynamicModule::getJsonDesriptionFileName()
+QString DynamicModule::getJsonDescriptionFilename()
 {
 	LanguageInfo li = LanguageModel::CurrentLanguageInfo;
 
@@ -126,7 +126,7 @@ void DynamicModule::initialize()
 		return checkInfo;
 	};
 
-	QFileInfo descriptionInfo = checkForExistence(getJsonDesriptionFileName().toStdString(), true);
+	QFileInfo descriptionInfo = checkForExistence(getJsonDescriptionFilename().toStdString(), true);
 								checkForExistence("icons");
 								checkForExistence("qml");
 								//checkForExistence("R"); The module is now a package so there is no point in checking for R code because what kind of R package has *no* r-code?
@@ -655,7 +655,7 @@ void  DynamicModule::setRequiredPackages(Json::Value requiredPackages)
 
 void DynamicModule::reloadDescription()
 {
-	QFile descriptionFile(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/" + getJsonDesriptionFileName());
+	QFile descriptionFile(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/" + getJsonDescriptionFilename());
 
 	descriptionFile.open(QIODevice::ReadOnly);
 
@@ -690,7 +690,7 @@ std::string DynamicModule::getDESCRIPTIONFromFolder(const std::string & filepath
 std::string DynamicModule::getDescriptionJsonFromArchive(const std::string &  filepath)
 {
 	try {
-		return ExtractArchive::extractSingleTextFileFromArchive(filepath, getJsonDesriptionFileName().toStdString());
+		return ExtractArchive::extractSingleTextFileFromArchive(filepath, getJsonDescriptionFilename().toStdString());
 	} catch (...) {
 		return "";
 	}
@@ -698,7 +698,7 @@ std::string DynamicModule::getDescriptionJsonFromArchive(const std::string &  fi
 
 std::string DynamicModule::getDescriptionJsonFromFolder(const std::string &  filepath)
 {
-	return getFileFromFolder(QString::fromStdString(filepath), getJsonDesriptionFileName()).toStdString();
+	return getFileFromFolder(QString::fromStdString(filepath), getJsonDescriptionFilename()).toStdString();
 }
 
 QString DynamicModule::getFileFromFolder(const QString &  filepath, const QString & searchMe)

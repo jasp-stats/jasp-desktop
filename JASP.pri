@@ -29,6 +29,8 @@ windows { #Windows is not so sure
 	isEmpty(_GIT_LOCATION): _GIT_LOCATION="C:\Program Files\Git" #default assumption, if you want to change it then set the GIT_LOCATION environment variable (For instance under Projects->Run)
 
 	GIT_EXEC = $${_GIT_LOCATION}\bin\git.exe
+
+        DEFINES += WIN32_LEAN_AND_MEAN
 }
 
 GIT_BRANCH=$$system(\"$$GIT_EXEC\" rev-parse --abbrev-ref HEAD)
