@@ -326,6 +326,7 @@ test_that("Field - Chapter 6 results match", {
   )
   options$plotHorizontalAxis <- "Puppy_love"
   options$plotSeparatePlots <- "Dose"
+  options$plotErrorBars <- TRUE
   results <- jasptools::run("Ancova", "Puppy Love.csv", options)
   
   # Replaced this with error check, because sum squares type 3 is not appropriate for empty cells

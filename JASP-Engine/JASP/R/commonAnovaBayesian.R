@@ -1333,7 +1333,7 @@
     splitScatterOptions[["colorPalette"]] <- "ggplot2" 
     splitScatterOptions[["showLegend"]] <- TRUE
     splitScatterOptions[["addSmooth"]] <- TRUE
-    splitScatterOptions[["addSmoothCI"]] <- TRUE
+    splitScatterOptions[["addSmoothCI"]] <- plotErrorBars
     splitScatterOptions[["addSmoothCIValue"]] <- TRUE
     splitScatterOptions[["regressionType"]] <- "linear"
     splitScatterOptions[["graphTypeAbove"]] <- "none"
