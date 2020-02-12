@@ -1016,7 +1016,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     legendText1 <- paste0("paste(", legendText1, ", ':')")
     
     # TODO(Alexander): Try and think of how to default
-    logYPoint <- log(yPoint)
+    logYPoint <- log(.recodeBFtype(yPoint, newBFtype = bfPlotType, oldBFtype = "BF10"))
     
     dfPoints <- data.frame(
       x = xPoint,
@@ -1069,15 +1069,17 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
                          "less"="smaller"
     )
     
-    if (options[["plotBfSequentialAddInfo"]])
-      BF <- bfObject[[options[["alternative"]]]][["bf"]]
-    
     bfType <- switch(options[["bayesFactorType"]],
                      "LogBF10"="BF10",
                      "BF10"="BF10",
                      "BF01"="BF01"
     )
     
+    if (options[["plotBfSequentialAddInfo"]]) {
+      BF <- bfObject[[options[["alternative"]]]][["bf"]]
+      BF <- .recodeBFtype(BF, newBFtype = bfType, oldBFtype = "BF10")
+    }
+
     plotResult <- try(JASPgraphs::PlotRobustnessSequential(
       dfLines      = dfLines,
       xName        = gettext("n"),
