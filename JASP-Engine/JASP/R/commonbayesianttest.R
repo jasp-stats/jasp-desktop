@@ -1726,6 +1726,7 @@
     bftype <- "BF10"
   } else {
     dfLines$y <- 1 / dfLines$y
+    BF <- 1 / BF
     bftype <- "BF01"
   }
   dfLines$y <- log(dfLines$y)
@@ -2043,8 +2044,8 @@
   
   if (BFH1H0) {
     bfType <- "BF10"
-  } else {
     BF <- 1 / BF01
+  } else {
     bfType <- "BF01"
   }
   hypothesis <- switch(oneSided,
