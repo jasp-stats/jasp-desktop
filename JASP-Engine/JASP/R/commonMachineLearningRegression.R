@@ -154,6 +154,7 @@
 
   if(ready){
     .regressionFormula(options, jaspResults)
+    
   p <- try({  
     if(type == "knn"){
       regressionResult <- .knnRegression(dataset, options, jaspResults)

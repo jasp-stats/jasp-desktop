@@ -388,12 +388,6 @@
                                       title = gettextf("%1$s%% Credible bound", options[["confidence"]]*100) , 
                                       type = 'string')
 
-    priorStatisticsTable$addFootnote(message = gettextf("%1$s: The population misstatement is lower than materiality (%2$s %3$s). 
-                                                      %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s).", 
-                                                      "H\u208B", "\u03B8 <", round(planningState[["materiality"]], 4), 
-                                                      "H\u208A", "\u03B8 \u2265", round(planningState[["materiality"]], 4)), 
-                                    symbol = gettext("<i>Note.</i>"))
-
     planningContainer[["priorStatistics"]] <- priorStatisticsTable
 
     if(!ready || planningContainer$getError()) {
@@ -403,6 +397,12 @@
         return()
 
     }
+
+    priorStatisticsTable$addFootnote(message = gettextf("%1$s: The population misstatement is lower than materiality (%2$s %3$s). 
+                                                  %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s).", 
+                                                  "H\u208B", "\u03B8 <", round(planningState[["materiality"]], 4), 
+                                                  "H\u208A", "\u03B8 \u2265", round(planningState[["materiality"]], 4)), 
+                                symbol = gettext("<i>Note.</i>"))
 
     if(planningState[["likelihood"]] == "poisson"){
 
