@@ -18,6 +18,9 @@
 BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   ready <- length(options$variables) > 0 && .RCodeInOptionsIsOk(options[c("testValue", "priorA", "priorB")])
 
+  # testValue, priorA & priorB are formulaFields: parse them and save the results in the state
+  options <- .parseAndStoreFormulaOptions(jaspResults, options, c("testValue", "priorA", "priorB"))
+
   if (ready) {
     dataset <- .binomReadData(dataset, options)
 
@@ -38,9 +41,6 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   # This will be the object that we fill with results
   results <- list()
   hyp <- .binomTransformHypothesis(options$hypothesis)
-  testValue <- .parseRCodeInOptions(options$testValue)
-  a         <- .parseRCodeInOptions(options$priorA)
-  b         <- .parseRCodeInOptions(options$priorB)
   
   for (variable in options$variables) {
     
@@ -51,7 +51,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
     for (level in levels(data)) {
       
       counts <- sum(data == level)
-      BF10  <- .bayesBinomialTest(counts, length(data), theta0=testValue, hypothesis = hyp, a = a, b = b)
+      BF10  <- .bayesBinomialTest(counts, length(data), theta0=options$testValue, hypothesis = hyp, a = options$priorA, b = options$priorB)
       
       # Add results for each level of each variable to results object
       results[[variable]][[level]] <- list(
@@ -118,20 +118,14 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   binomTable$addColumnInfo(name = "proportion", title = gettext("Proportion"), type = "number")
   binomTable$addColumnInfo(name = bfType,       title = bfTitle,               type = "number")
   
-  if (.RCodeInOptionsIsOk(options$testValue)) {
+  if (options$hypothesis == "lessThanTestValue")
+    note <- gettextf("For all tests, the alternative hypothesis specifies that the proportion is less than %s.", options$testValueUnparsed)
+  else if (options$hypothesis == "greaterThanTestValue")
+    note <- gettextf("For all tests, the alternative hypothesis specifies that the proportion is greater than %s.", options$testValueUnparsed)
+  else
+    note <- gettextf("Proportions tested against value: %s.", options$testValueUnparsed)
 
-    if (options$hypothesis == "notEqualToTestValue")
-      note <- "Proportions tested against value: "
-    else if (options$hypothesis == "greaterThanTestValue")
-      note <- gettext("For all tests, the alternative hypothesis specifies that the proportion is greater than ")
-    else
-      note <- gettext("For all tests, the alternative hypothesis specifies that the proportion is less than ")
-
-    testValue <- .parseRCodeInOptions(options$testValue)
-    binomTable$addFootnote(paste0(note, round(testValue, 3), "."))
-  } else {
-    binomTable$addFootnote(gettext("Expression for 'Test value' could not be parsed."))
-  }
+  binomTable$addFootnote(message = note)
 
   jaspResults[["binomTable"]] <- binomTable
 
@@ -266,9 +260,6 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   }
   
   hyp <- .binomTransformHypothesis(options$hypothesis)
-  testValue <- .parseRCodeInOptions(options$testValue)
-  a         <- .parseRCodeInOptions(options$priorA)
-  b         <- .parseRCodeInOptions(options$priorB)
   
   for (var in options$variables) {
     
@@ -288,7 +279,7 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
       }
       
       counts <- sum(data == level)
-      BF10   <- .bayesBinomialTest(counts, length(data), testValue, hypothesis = hyp, a = a, b = b)
+      BF10   <- .bayesBinomialTest(counts, length(data), options$testValue, hypothesis = hyp, a = options$priorA, b = options$priorB)
 
       plotName <- paste0(var, level, "priorposterior")
       .bayesBinomPriorPosteriorPlot(levelPlotContainer, plotName, options, BF10, counts, length(data), hyp)
@@ -308,15 +299,12 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   plot$dependOn(c("plotPriorAndPosterior", "plotPriorAndPosteriorAdditionalInfo"))
   
   container[[plotName]] <- plot 
-  testValue <- .parseRCodeInOptions(options$testValue)
-  a         <- .parseRCodeInOptions(options$priorA)
-  b         <- .parseRCodeInOptions(options$priorB)
 
   bfSubscripts <- .bayesBinomGetSubscript(options$hypothesis)
-  quantiles <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, a, b, counts, n, hypothesis=hyp, theta0 = testValue)
-  dfLinesPP <- .dfLinesPP(a=a, b=b, hyp = hyp, theta0 = testValue, counts = counts, n = n)
-  dfPointsPP <- .dfPointsPP(a=a, b=b, hyp = hyp, theta0 = testValue, counts = counts, n = n)
-  xName <- bquote(paste(.(gettext("Population proportion")), theta))
+  quantiles <- .credibleIntervalPlusMedian(credibleIntervalInterval = .95, options$priorA, options$priorB, counts, n, hypothesis=hyp, theta0 = options$testValue)
+  dfLinesPP <- .dfLinesPP(a=options$priorA, b=options$priorB, hyp = hyp, theta0 = options$testValue, counts = counts, n = n)
+  dfPointsPP <- .dfPointsPP(a=options$priorA, b=options$priorB, hyp = hyp, theta0 = options$testValue, counts = counts, n = n)
+  xName <- bquote(paste(.(gettext("Population proportion ")), theta))
   
   hypForPlots <- .binomHypothesisForPlots(hyp)
   
@@ -339,13 +327,10 @@ BinomialTestBayesian <- function(jaspResults, dataset = NULL, options, ...) {
   container[[plotName]] <- plot
   
   hypForPlots <- .binomHypothesisForPlots(hyp)
-  testValue <- .parseRCodeInOptions(options$testValue)
-  a         <- .parseRCodeInOptions(options$priorA)
-  b         <- .parseRCodeInOptions(options$priorB)
 
   p <- try({
     bfSubscripts <- .bayesBinomGetSubscript(options$hypothesis)
-    dfLinesSR   <- .dfLinesSR(d = data, var = var, split = level, a = a, b = b, hyp = hyp, theta0 = testValue)
+    dfLinesSR   <- .dfLinesSR(d = data, var = var, split = level, a = options$priorA, b = options$priorB, hyp = hyp, theta0 = options$testValue)
     JASPgraphs::PlotRobustnessSequential(dfLines = dfLinesSR, xName = "n", BF = BF10, bfType = "BF10", hypothesis = hypForPlots)
   })
   

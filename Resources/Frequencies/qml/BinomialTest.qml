@@ -31,7 +31,7 @@ Form
 		AssignedVariablesList { name: "variables"; title: qsTr("Variables"); suggestedColumns: ["ordinal", "nominal"] }
 	}
 
-	DoubleField { name: "testValue"; label: qsTr("Test value: "); defaultValue: 0.5 ; max: 1; decimals: 2; Layout.columnSpan: 2 }
+	FormulaField { name: "testValue"; label: qsTr("Test value: "); value: "0.5" ; min: 0; max: 1; Layout.columnSpan: 2 }
 
 	RadioButtonGroup
 	{

@@ -22,6 +22,7 @@
 #include "../analysis/options/optiondoublearray.h"
 #include <QQmlProperty>
 #include <QQuickItem>
+#include "utils.h"
 
 using namespace std;
 
@@ -58,7 +59,7 @@ QString BoundQMLTextInput::_getPercentValue()
 	doubleValue = std::max(0., std::min(100., doubleValue));
 
 	int decimals = getItemProperty("decimals").toInt();
-	return QString::number(doubleValue, 'g', decimals);
+	return QString::number(doubleValue, 'f', decimals);
 }
 
 QString BoundQMLTextInput::_getIntegerArrayValue()
@@ -112,8 +113,14 @@ void BoundQMLTextInput::bindTo(Option *option)
 			_number = new OptionNumber();
 		_option = _number;
 
+		// Ensure the the option does not have more decimals than authorized for backwards compatibility
 		int decimals = getItemProperty("decimals").toInt();
-		_value = QString::number(_number->value(), 'g', decimals);
+		double val = _number->value();
+		int pow = 1;
+		for (int i = 0; i < decimals; i++) pow = pow * 10;
+		val = (round(val * pow))/pow;
+
+		_value = QString::fromStdString(Utils::doubleToString(val));
 
 		break;
 	}
@@ -262,7 +269,7 @@ bool BoundQMLTextInput::isJsonValid(const Json::Value &optionValue)
 	case TextInputType::DoubleArrayInputType:	valid = (optionValue.type() == Json::arrayValue);			break;
 	case TextInputType::FormulaType:
 	case TextInputType::StringInputType:
-	default:									valid = (optionValue.type() == Json::stringValue);			break;
+	default:									valid = (optionValue.type() == Json::stringValue || optionValue.type() == Json::intValue || optionValue.type() == Json::realValue); break;
 	}
 	return valid;
 }

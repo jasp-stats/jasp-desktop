@@ -16,6 +16,7 @@
 //
 
 #include "optionstring.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -33,7 +34,11 @@ Json::Value OptionString::asJSON() const
 
 void OptionString::set(const Json::Value &value)
 {
-	setValue(value.asString());
+	if (value.isInt() || value.isUInt() || value.isDouble())
+		// Why the json library cannot convert it to string???
+		setValue(Utils::doubleToString(value.asDouble()));
+	else
+		setValue(value.asString());
 }
 
 Option *OptionString::clone() const

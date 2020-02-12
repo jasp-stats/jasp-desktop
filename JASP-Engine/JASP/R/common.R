@@ -2998,6 +2998,22 @@ postProcessModuleInstall <- function(moduleLibraryPath)
   }
 }
 
+.parseAndStoreFormulaOptions <- function(jaspResults, options, names) {
+  for (i in seq_along(names)) {
+    name <- names[[i]]
+    options[[paste0(name, "Unparsed")]] = options[[name]]
+
+    if (is.null(jaspResults[[name]])) {
+      parsedOption <- .parseRCodeInOptions(options[[name]])
+      jaspResults[[name]] <- createJaspState(parsedOption, name)
+    }
+
+    options[[name]] <- jaspResults[[name]]$object
+  }
+
+  return(options)
+}
+
 .parseRCodeInOptions <- function(option) {
   if (.RCodeInOptionsIsOk(option)) {
      if (length(option) > 1L)
