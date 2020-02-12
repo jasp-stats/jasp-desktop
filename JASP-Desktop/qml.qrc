@@ -115,7 +115,6 @@
         <file>components/JASP/Widgets/SaveDiscardCancelDialog.qml</file>
         <file>components/JASP/Widgets/JagsTableView.qml</file>
         <file>components/JASP/Widgets/CustomContrastsTableView.qml</file>
-        <file>translations/jasp_nl.qm</file>
         <file>translations/images/flag_en.png</file>
         <file>translations/images/flag_fr.png</file>
         <file>translations/images/flag_ge.png</file>
