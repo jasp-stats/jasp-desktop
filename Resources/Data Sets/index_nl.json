@@ -31,7 +31,7 @@
               "associated_datafile": "../../../Data Library/3. ANOVA/Alcohol Attitudes.csv"
             },
             {
-              "name": "Beerbril",
+              "name": "Bierbril",
               "path": "../../../Data Library/3. ANOVA/Beer Goggles.jasp",
               "description": "Mediaan aantrekkelijkheidsbeoordelingen van 50 aantrekkelijke of onaantrekkelijke gezichten na het drinken van verschillende hoeveelheden alcohol. <br><br> <i>Fictieve data van Andy Field.<\/i>",
               "kind": "file",
@@ -271,7 +271,7 @@
       "kind": "folder",
       "children": [
         {
-          "name": "Alcohol Attitudes",
+          "name": "Alcohol Gedrag",
           "path": "Alcohol Attitudes.jasp",
           "description": "Attitudes naar water, wijn, en bier na het bekijken van positieve, neutrale, of negatieve beelden van het drinken - iedere participant komt terug in iedere cel van het 3x3 design. <br><br> Het voorbeeldbestand in JASP laat zien hoe een herhaalde metingen ANOVA kan worden toegepast. <br><br> <i>Fictieve data van Andy Field.<\/i>",
           "kind": "file",
@@ -618,6 +618,13 @@
           "description": "BuildIt's monetaire audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe monetaire audit workflow kan worden toegepast. <br><br> <i>Dataset gebruikt in Derks, de Swart, Wagenmakers, Wille & Wetzels (under review)<\/i>",
           "kind": "file",
           "associated_datafile": "BuildIt_Monetary.csv"
+        },
+        {
+          "name": "Sino Forest",
+          "path": "sinoForest.jasp",
+          "description": "Jaarrekening van het rapport van Sino Forest Corporation uit 2010. <br> <br> Het voorbeeldbestand in JASP toont het gebruik van een analyse met behulp van de wet van Benford. <br> <br> <i> Gegevensset gebruikt in R-package benford.analysis <\ / i>",
+          "kind": "file",
+          "associated_datafile": "sinoForest.csv"
         }
       ],
       "debug": false
@@ -631,7 +638,7 @@
         {
 		  "name": "Iris Bloemen",
           "path": "iris.jasp",
-          "description": "Dit beroemde iris dataset (door Fisher of Anderson) geeft de maten (in centimeters) van de variabelen kelkbladlengte en breedte, en bloembladlengte en breedte respectievelijk, voor 50 bloemen van alle 3 soorten irissen. Deze soorten zijn Iris setosa, Iris versicolor, en Iris virginica. <br><br> <i>Dataset in R.<\/i>",
+          "description": "Dit beroemde iris gegevensbestand (door Fisher of Anderson) geeft de maten (in centimeters) van de variabelen kelkbladlengte en breedte, en bloembladlengte en breedte respectievelijk, voor 50 bloemen van alle 3 soorten irissen. Deze soorten zijn Iris setosa, Iris versicolor, en Iris virginica. <br><br> <i>Dataset in R.<\/i>",
           "kind": "file",
           "associated_datafile": "iris.csv"
         },
@@ -665,19 +672,69 @@
       "description": "",
       "kind": "folder",
       "children": [
-        {
-            "name": "Sesamstraat",
-          "path": "sesame.csv",
-          "description": "Dit is het gesimuleerde deel van een deel van de Sesamstraat-data gepresenteerd door Stevens (1996, Appendix A) over het effect van Sesamstraat kijken tijdens het eerste jaar op de kennis van 240 kinderen van 34 tot 69 maanden. <br><br> <i>Dataset inbegrepen in het bain R package.<\/i>",
-          "kind": "file",
-          "associated_datafile": ""
-        }
-      ],
+      {
+          "name": "One Sample T-Test",
+        "path": "bainOneSample.jasp",
+        "description":"Dit JASP-bestand toont een Bain One Sample T-Toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+         "kind": "file",
+        "associated_datafile": "sesame.csv"
+      },
+      {
+          "name": "Welch's T-Test",
+        "path": "bainIndependentSamples.jasp",
+        "description":"Dit JASP-bestand toont een Bain Welch's T-Toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+        "kind": "file",
+        "associated_datafile": "sesame.csv"
+      },
+      {
+          "name": "Paired Samples T-Test",
+        "path": "bainPairedSamples.jasp",
+        "description":"Dit JASP-bestand toont een Bain Gepaarde T-Toets toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+         "kind": "file",
+        "associated_datafile": "sesame.csv"
+      },
+      {
+          "name": "ANOVA",
+        "path": "bainAnova.jasp",
+        "description":"Dit JASP-bestand toont een Bain ANOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+        "kind": "file",
+        "associated_datafile": "sesame.csv"
+      },
+      {
+          "name": "ANCOVA",
+        "path": "bainAncova.jasp",
+        "description":"Dit JASP-bestand toont een Bain ANCOVA toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+        "kind": "file",
+        "associated_datafile": "sesame.csv"
+      },
+      {
+          "name": "Regressie",
+        "path": "bainRegression.jasp",
+        "description": "Dit JASP-bestand toont een Bain regressie met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+        "kind": "file",
+        "associated_datafile": "sesame.csv"
+      }
+    ],
       "debug": false
     },
     {
-	  "name": "13. Overig",
-      "path": "13. Miscellaneous",
+      "name": "13. Ontdek Verdelingen",
+      "path": "13. Discover Distributions",
+      "description": "",
+      "kind": "folder",
+      "children": [
+        {
+          "name": "Distributions",
+          "path": "Normal distribution.jasp",
+          "description": "Synthetische gegevensset van variabelen gegenereerd uit verschillende waarschijnlijkheidsverdelingen. <br> <br> Het voorbeeld JASP-bestand toont de normale verdeling. <br> <br> <i> Fictieve gegevens gecreëerd door JASP Team. <\ / I>",
+          "kind": "file",
+          "associated_datafile": "Distributions.csv"
+        }
+      ]
+    },
+    {
+      "name": "14. Overig",
+      "path": "14. Miscellaneous",
       "description": "",
       "kind": "folder",
       "children": [
