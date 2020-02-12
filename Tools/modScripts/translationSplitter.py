@@ -10,6 +10,8 @@ if len(sys.argv) < 4:
 	print("Usage: python translationSplitter.py toBeTranslated.po alreadyTranslated.po { po-file-folder | po-file+ }")
 	exit(1)
 
+keepTalking = False
+
 toBeTranslatedFilename		= sys.argv[1]
 alreadyTranslatedFilename	= sys.argv[2]
 
@@ -51,8 +53,9 @@ class parseState(Enum):
 	MSGID			= 2
 	MSGID_PLURAL	= 3
 	MSGSTRS			= 4
+	MSGCTXT			= 5
 
-msgFactory	= namedtuple('msg', ['msgid', 'msgid_plural', 'msgstrs'])
+msgFactory	= namedtuple('msg', ['msgid', 'msgid_plural', 'msgstrs', 'msgctxt', 'comments'])
 msgsToDo	= dict()
 msgsDone	= dict()
 
@@ -60,13 +63,19 @@ msgid			= ""
 msgid_plural	= ""
 msgstrs			= []
 msgstate		= parseState.LIMBO
+msgctxt			= ""
+comments		= []
 
 def resetMsgVars():
+	if keepTalking:
+		print("Looking for new msg")
 	global msgid
 	global msgid_plural
 	global msgstrs
 	global msgstate
+	global msgctxt
 
+	msgctxt			= ""
 	msgid			= ""
 	msgid_plural	= ""
 	msgstrs			= []
@@ -74,7 +83,7 @@ def resetMsgVars():
 
 parseMsgstr = regex.compile(r"""\s*
 	msgstr(\[\d+\])? 	#msgstr possibly with [#] behind it
-	\s+\"				#we capture till the first quote
+	\s+(\"[^\"]*\")			
 	""", regex.VERBOSE | regex.MULTILINE)
 
 toDoDone = 0
@@ -82,19 +91,28 @@ def storeMsg():
 	global msgsDone
 	global msgsToDo
 	global toDoDone
-	translatorFilledAll	= True
-	curMsg 				= msgFactory(msgid = msgid, msgid_plural=msgid_plural, msgstrs=msgstrs)
+	global msgid
+	global msgid_plural
+	global msgstrs
+	global msgctxt
+	global comments
 
-	print("---------------------------------------------------\nStore msg: " + str(curMsg) + "---------------------------------------------------")
+	translatorFilledAll	= True
+	curMsg 				= msgFactory(msgid = msgid, msgid_plural=msgid_plural, msgstrs=msgstrs, msgctxt=msgctxt, comments=comments)
+
+	comments = [] #This is cleared here to make sure we get any comments leading up to the next one
+
+	if keepTalking:
+		print("---------------------------------------------------\nStore msg: " + str(curMsg) + "---------------------------------------------------")
 
 	for msgstr in msgstrs:
 		m = parseMsgstr.match(msgstr)
 		if m:
-			cap = m.captures(0)[0]
+			cap = m.captures(2)[0]
+			if keepTalking:
+				print("For msgstr '" + msgstr + "' I find cap: '" + str(cap) + "' and length = " + str(len(cap)))
 
-			print("For msgstr '" + msgstr + "' I find cap: '" + str(cap) + "' and diff in lengths = " + str(len(msgstr) - len(cap)))
-
-			if len(msgstr) - len(cap) == 1: #apparently someone filled it in ^^
+			if len(cap) == 2: #apparently this one is empty
 				translatorFilledAll = False
 		else:
 			print("Couldnt parse msgstr '" + msgstr + "' for msgid '" + msgid + "' aborting!")
@@ -102,36 +120,82 @@ def storeMsg():
 
 	if translatorFilledAll:
 		if msgid in msgsDone:
-			print("msg was filled in twice!\nmsgid doubled:" + msgid + " overwriting it and keeping the last one")
+			print("msg was filled in twice, msgid doubled:" + msgid + " overwriting it (ctxt:"+msgsDone[msgid].msgctxt+" and msgstrs:" + str(msgsDone[msgid].msgstrs) + ") and keeping the last one (ctxt:" + msgctxt + " and msgstrs: " + str(msgstrs) + ").")
+			oldComments = msgsDone[msgid].comments
+			for comment in comments:
+				oldComments.append(comment)
+			comments = oldComments
 
-		if msgid in msgsToDo: #Ok, it is also in the ToDo list, so we can remove it from there now
+		if msgid in msgsToDo: #Ok, it is also in the ToDo list, so we can remove it from there now, but keep the comments
+			oldComments = msgsToDo[msgid].comments
+			for comment in comments:
+				oldComments.append(comment)
+			comments = oldComments
+
+			#We should keep the context for the one that is not filled in, because it probably is better!
+			if msgsToDo[msgid].msgctxt != "":
+				if msgctxt == "":
+					comments.append("#Context for translated wasn't present")
+				else:
+					comments.append("#Context for translated: " + msgctxt)
+				msgctxt = msgsToDo[msgid].msgctxt
+				print("Using context from empty one (" + msgctxt + ")")
+			
 			del msgsToDo[msgid]
 			toDoDone = toDoDone + 1
 			
 		msgsDone[msgid] = curMsg
 	else:
+		if keepTalking:
+			print("Not filled in...")
+
 		if msgid in msgsDone:
 			toDoDone = toDoDone + 1
 		else:
 			msgsToDo[msgid] = curMsg
 
 def printParseLine(line):
-	print("State: " + str(msgstate) + " and line: " + line)
+	if keepTalking:
+		print("State: " + str(msgstate) + " and line: " + line)
 
 def parseLineLimbo(line):
 	global msgid
 	global msgstate
+	global msgctxt
+
 	printParseLine(line)
 
 	if line == "": #Boring but fine I guess?
 		return
 
-	if line.startswith("msgid"): #Great!
+	if line.startswith("msgctxt"): #Great!
+		resetMsgVars()
+		msgctxt 	= line
+		msgstate	= parseState.MSGCTXT
+
+	elif line.startswith("msgid"): #Also great!
 		resetMsgVars()
 		msgid 		= line
 		msgstate	= parseState.MSGID
 		
 	
+def parseLineMsgCtxt(line):
+	global msgstate
+	global msgid
+	global msgctxt
+
+	printParseLine(line)
+
+	if line.startswith('"'):
+		msgctxt += "\n"
+		msgctxt += line
+	elif line.startswith("msgid"): #Great!
+		msgid 		= line
+		msgstate	= parseState.MSGID
+	else:
+		print("Expected a msgid after msgctxt, but didn't get it!")
+		exit(5)
+			
 def parseLineMsgid(line):
 	global msgstate
 	global msgid
@@ -175,10 +239,10 @@ def parseLineMsgStrs(line):
 	elif line.startswith("msgstr"):
 		msgstrs.append(line)
 	
-	elif line.startswith("msgid"):
+	elif line.startswith("msgid") or line.startswith("msgctxt"):
 		msgstate = parseState.LIMBO
 		storeMsg()
-		parseLineMsgid(line)
+		parseLineLimbo(line)
 
 	elif line == "": #I guess empty line means we are done with this msg?
 		msgstate = parseState.LIMBO
@@ -193,7 +257,8 @@ parseSwitch = {
 	parseState.LIMBO		: parseLineLimbo,
 	parseState.MSGID		: parseLineMsgid,
 	parseState.MSGID_PLURAL	: parseLineMsgidPlural,
-	parseState.MSGSTRS		: parseLineMsgStrs
+	parseState.MSGSTRS		: parseLineMsgStrs,
+	parseState.MSGCTXT		: parseLineMsgCtxt
 }
 
 def parsePoFile(poFilename):
@@ -201,8 +266,12 @@ def parsePoFile(poFilename):
 	poLines = poFile.readlines()
 
 	for poLine in poLines:
-		parseSwitch[msgstate](poLine.strip())
-		#print("After parseSwitch msgstate: " + str(msgstate))
+		stripped = poLine.strip()
+		if  poLine.startswith("#"): 
+			comments.append(poLine)
+		else:
+			parseSwitch[msgstate](poLine.strip())
+		
 
 print("Start parsing")
 for poFileName in poFiles:
@@ -218,9 +287,16 @@ def writeMsgsToFile(msgs, fileName):
 		msgid 			= msg.msgid
 		msgid_plural	= msg.msgid_plural
 		msgstrs			= msg.msgstrs
+		msgctxt			= msg.msgctxt
+		comments		= msg.comments
 
-		outFile.write(msgid)
-		outFile.write("\n")
+		for comment in comments:
+			outFile.write(comment + "\n")
+
+		if msgctxt != "":
+			outFile.write(msgctxt + "\n")
+
+		outFile.write(msgid + "\n")
 
 		if msgid_plural != "":
 			outFile.write(msgid_plural)
