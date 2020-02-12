@@ -53,7 +53,7 @@ Test value specified in the null hypothesis.
   - Credible interval: Default is 95%.
 
 #### Missing Values
- - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test.
+ - Exclude cases per dependent variable: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test.
  Sample sizes may therefore vary across the multiple t-tests.
  - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all dependent variables. Sample size is therefore constant across the multiple t-tests.
 

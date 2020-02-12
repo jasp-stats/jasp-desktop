@@ -16,10 +16,31 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "results/resultmenumodel.h"
+#include "resultmenumodel.h"
 #include "utilities/qutils.h"
 #include "utilities/settings.h"
 #include "qquick/jasptheme.h"
+
+ResultMenuModel::ResultMenuModel(QObject *parent) : QAbstractListModel(parent),
+	_allResultEntries({
+			   {	"hasCollapse",				ResultMenuEntry(tr("Collapse"),				"hasCollapse",				"collapse.png",				"window.collapseMenuClicked();")	},
+			   {	"hasEditTitle",				ResultMenuEntry(tr("Edit Title"),			"hasEditTitle",				"edit-pencil.png",			"window.editTitleMenuClicked();")	},
+			   {	"hasCopy",					ResultMenuEntry(tr("Copy"),					"hasCopy",					"copy.png",					"window.copyMenuClicked();")		},
+			   {	"hasLaTeXCode",				ResultMenuEntry(tr("Copy LaTeX"),			"hasLaTeXCode",				"code-icon.png",			"window.latexCodeMenuClicked();")	},
+			   {	"hasCite",					ResultMenuEntry(tr("Copy Citations"),		"hasCite",					"cite.png",					"window.citeMenuClicked();")		},
+			   {	"hasSaveImg",				ResultMenuEntry(tr("Save Image As"),		"hasSaveImg",				"document-save-as.png",		"window.saveImageClicked();")		},
+			   {	"hasEditImg",				ResultMenuEntry(tr("Edit Image"),			"hasEditImage",				"editImage.png",			"window.editImageClicked();")		},
+			   {	"hasNotes",					ResultMenuEntry(tr("Add Note"),				"hasNotes",					"",							"")									},
+			   {	"hasDuplicate",				ResultMenuEntry(tr("Duplicate"),			"hasDuplicate",				"duplicate.png",			"window.duplicateMenuClicked();")	},
+			   {	"hasRemove",				ResultMenuEntry(tr("Remove"),				"hasRemove",				"close-button.png",			"window.removeMenuClicked();")		},
+			   {	"hasRemoveAllAnalyses",		ResultMenuEntry(tr("Remove All"),			"hasRemoveAllAnalyses",		"close-button.png",			"")									},
+			   {	"hasRefreshAllAnalyses",	ResultMenuEntry(tr("Refresh All"),			"hasRefreshAllAnalyses",	"",							"")									},
+			   {	"hasShowDeps",				ResultMenuEntry(tr("Show Dependencies"),	"hasShowDeps",				"",							"window.showDependenciesClicked()")	}
+		   }),
+	_entriesOrder({"hasCollapse", "hasEditTitle", "hasCopy", "hasLaTeXCode", "hasCite", "hasSaveImg",
+				"hasEditImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses", "hasShowDeps"})
+{
+}
 
 QVariant ResultMenuModel::data(const QModelIndex &index, int role) const
 {
@@ -44,6 +65,7 @@ QVariant ResultMenuModel::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> ResultMenuModel::roleNames() const
 {
+
 	static const auto roles = QHash<int, QByteArray> {
 		{	DisplayRole,			"displayText"		},
 		{	NameRole,				"name"				},
@@ -67,16 +89,16 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 	std::vector<ResultMenuEntry> entries;
 
 	ResultMenuEntry separator;
-	int numEntries = ResultMenuEntry::EntriesOrder.size();
+	int numEntries = _entriesOrder.size();
 
 	for (int i = 0; i < numEntries; ++i)
 	{
-		QString key = ResultMenuEntry::EntriesOrder.at(i);
+		QString key = _entriesOrder.at(i);
 
 		if (!selected.contains(key))
 			continue;
 
-		ResultMenuEntry entry = ResultMenuEntry::AllResultEntries.find(key)->second;
+		ResultMenuEntry entry = _allResultEntries.find(key)->second;
 
 		if (key == "hasNotes")
 		{

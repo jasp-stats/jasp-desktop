@@ -34,7 +34,7 @@ Statistics for individual items.
 
 ### Advanced Options
 - Missing Values:
-  - Exclude cases analysis by analysis: In case of multiple correlations tests within a single analysis, each test will be conducted using all cases with valid data for the variables for the particular test.
+  - Exclude cases per dependent variable: In case of multiple correlations tests within a single analysis, each test will be conducted using all cases with valid data for the variables for the particular test.
  Sample sizes may therefore vary across the tests.
   - Exclude cases listwise: In case of multiple correlation tests within a single analysis, each test will be conducted using only cases with valid data for all variables. Sample size is therefore constant across the tests.
 - Confidence Interval: 

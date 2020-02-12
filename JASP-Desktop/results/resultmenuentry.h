@@ -28,9 +28,6 @@
 class ResultMenuEntry
 {
 public:
-	static std::map<QString, ResultMenuEntry> AllResultEntries;
-	static QStringList EntriesOrder;
-
 	ResultMenuEntry(QString displayText,
 					QString name,
 					QString menuImageSource,

@@ -818,10 +818,10 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   esTable$addRows(row)
   
   if(options$modelSpecification != "FE"){
-    esTable$addFootnote(gettext("Posterior mean and 95% credible interval estimates from the random effects model."),
+    esTable$addFootnote(gettextf("Posterior mean and 95%% credible interval estimates from the random effects model."),
                         colNames = c("estimatedES", "estimatedLower", "estimatedUpper"))
   } else if(options$modelSpecification == "CRE"){
-    esTable$addFootnote(gettext("Posterior mean and 95% credible interval estimates from the constrained random effects model."),
+    esTable$addFootnote(gettextf("Posterior mean and 95%% credible interval estimates from the constrained random effects model."),
                         colNames = c("estimatedES", "estimatedLower", "estimatedUpper"))
   }
 }
