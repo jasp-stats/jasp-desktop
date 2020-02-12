@@ -40,7 +40,7 @@ public:
 		IsEnabledRole
 	};
 
-	ResultMenuModel(QObject *parent) : QAbstractListModel(parent) {}
+	ResultMenuModel(QObject *parent);
 
 	int										rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _resultMenuEntries.size();	}
 	QVariant								data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
@@ -52,6 +52,10 @@ public:
 
 private:
 	std::vector<ResultMenuEntry>			_resultMenuEntries;
+
+	std::map<QString, ResultMenuEntry>		_allResultEntries;
+	QStringList								_entriesOrder;
+
 };
 
 #endif  // RESULTMENUMODEL_H

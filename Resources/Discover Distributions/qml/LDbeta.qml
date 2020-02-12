@@ -28,7 +28,7 @@ Form {
 	Section
 	{
 		expanded: true
-		title: "Show Distribution"
+		title: qsTr("Show Distribution")
 		Group
 		{
 			Layout.columnSpan: 2

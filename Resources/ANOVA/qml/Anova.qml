@@ -245,7 +245,7 @@ Form
 				name: "marginalMeansCIAdjustment"
 				label: qsTr("Confidence interval adjustment")
 				values: [
-					{ label: "None",		value: "none"},
+					{ label: qsTr("None"),		value: "none"},
 					{ label: "Bonferroni",	value: "bonferroni"},
 					{ label: "Šidák",		value: "sidak"}
 				]

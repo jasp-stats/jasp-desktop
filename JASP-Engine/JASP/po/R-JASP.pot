@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-02-04 21:07\n"
+"POT-Creation-Date: 2020-02-13 16:27\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -184,7 +184,7 @@ msgstr ""
 msgid "p<sub>holm</sub>"
 msgstr ""
 
-msgid "Games"
+msgid "Games-Howell"
 msgstr ""
 
 msgid "Games-Howell Post Hoc Comparisons - %s"
@@ -742,7 +742,7 @@ msgstr ""
 msgid "<b>amount</b>"
 msgstr ""
 
-msgid "The detection risk is higher than 100%. Please \n                                        re-specify your custom values for the Inherent \n                                        risk and/or Control risk."
+msgid "The detection risk is higher than 100%%. Please\n                                        re-specify your custom values for the Inherent \n                                        risk and/or Control risk."
 msgstr ""
 
 msgid "An error occurred: %1$s"
@@ -754,7 +754,7 @@ msgstr ""
 msgid "The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required to for a materiality of <b>%2$s</b>, assuming\n                                                                        the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the\n                                                                        control risk <b>(%7$s)</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>%8$s</b>, the\n                                                                        maximum misstatement is estimated to be below materiality."
 msgstr ""
 
-msgid "The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required to for a materiality of <b>%2$s</b>, assuming\n                                                                          the sample contains <b>%2$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the \n                                                                          control risk <b>(%7$s)</b> and the expected errors. The information in this prior distribution states that there is a <b>%8$s%%</b> prior probability that \n                                                                          the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains \n                                                                          below <b>%9$s</b> the maximum misstatement is estimated to be below materiality."
+msgid "The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required to for a materiality of <b>%2$s</b>, assuming\n                                                                          the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the\n                                                                          control risk <b>(%7$s)</b> and the expected errors. The information in this prior distribution states that there is a <b>%8$s%%</b> prior probability that \n                                                                          the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains \n                                                                          below <b>%9$s</b> the maximum misstatement is estimated to be below materiality."
 msgstr ""
 
 msgid "<b>Table %1$i.</b> Planning Summary"
@@ -883,7 +883,7 @@ msgstr ""
 msgid "Selection value"
 msgstr ""
 
-msgid "% of population value"
+msgid "%% of population value"
 msgstr ""
 
 msgid "%% of total observations"
@@ -1450,10 +1450,10 @@ msgstr ""
 msgid "Study"
 msgstr ""
 
-msgid "Posterior mean and 95% credible interval estimates from the random effects model."
+msgid "Posterior mean and 95%% credible interval estimates from the random effects model."
 msgstr ""
 
-msgid "Posterior mean and 95% credible interval estimates from the constrained random effects model."
+msgid "Posterior mean and 95%% credible interval estimates from the constrained random effects model."
 msgstr ""
 
 msgid "Effect Size"
@@ -1513,6 +1513,15 @@ msgstr ""
 msgid "Plotting failed: The Bayes factors contain infinity."
 msgstr ""
 
+msgid "Evidence for r H"
+msgstr ""
+
+msgid "Evidence~'for f'~H"
+msgstr ""
+
+msgid "Evidence~'for r'~H"
+msgstr ""
+
 msgid "Studies"
 msgstr ""
 
@@ -1549,22 +1558,19 @@ msgstr ""
 msgid "%s%% CI for Proportion"
 msgstr ""
 
-msgid "For all tests, the alternative hypothesis specifies that the proportion is less than"
+msgid "For all tests, the alternative hypothesis specifies that the proportion is less than %s."
 msgstr ""
 
-msgid "For all tests, the alternative hypothesis specifies that the proportion is greater than"
+msgid "For all tests, the alternative hypothesis specifies that the proportion is greater than %s."
 msgstr ""
 
-msgid "Proportions tested against value:"
+msgid "Proportions tested against value: %s."
 msgstr ""
 
 msgid "Descriptives Plots"
 msgstr ""
 
 msgid "Bayesian Binomial Test"
-msgstr ""
-
-msgid "Expression for 'Test value' could not be parsed."
 msgstr ""
 
 msgid "Inferential Plots"
@@ -1651,9 +1657,6 @@ msgstr ""
 msgid "Weight"
 msgstr ""
 
-msgid "Cases marked with %s are influential."
-msgstr ""
-
 msgid "File Drawer Analysis"
 msgstr ""
 
@@ -1694,6 +1697,9 @@ msgid "H%s"
 msgstr ""
 
 msgid "Rank test"
+msgstr ""
+
+msgid "Cases marked with %s are influential."
 msgstr ""
 
 msgid "Forest plot"
@@ -2725,6 +2731,12 @@ msgstr ""
 msgid "Lower %i%% CI"
 msgstr ""
 
+msgid "Equivalence Prior and Posterior"
+msgstr ""
+
+msgid "Equivalence Sequential Analysis"
+msgstr ""
+
 msgid "Non-valid type argument provided"
 msgstr ""
 
@@ -3464,6 +3476,57 @@ msgid "."
 msgstr ""
 
 msgid "is small than 2."
+msgstr ""
+
+msgid "Equivalence Bayesian Independent Samples T-Test"
+msgstr ""
+
+msgid "I ranges from %1$s to %2$s"
+msgstr ""
+
+msgid "95% Credible Interval"
+msgstr ""
+
+msgid "Equivalence Bayesian One Sample T-Test"
+msgstr ""
+
+msgid "Equivalence Bayesian Paired Samples T-Test"
+msgstr ""
+
+msgid "Equivalence Independent Samples T-Test"
+msgstr ""
+
+msgid "T-Test"
+msgstr ""
+
+msgid "Upper bound"
+msgstr ""
+
+msgid "Lower bound"
+msgstr ""
+
+msgid "Equivalence Bounds"
+msgstr ""
+
+msgid "Bounds type"
+msgstr ""
+
+msgid "Low"
+msgstr ""
+
+msgid "High"
+msgstr ""
+
+msgid "%i%% Confidence Interval"
+msgstr ""
+
+msgid "Equivalence Bounds Plots"
+msgstr ""
+
+msgid "Equivalence One Sample T-Test"
+msgstr ""
+
+msgid "Equivalence Paired Samples T-Test"
 msgstr ""
 
 msgid "Too many factors requested (%i) for the amount of included variables"
@@ -4486,7 +4549,7 @@ msgstr ""
 msgid "All models include %s."
 msgstr ""
 
-msgid "%s Table displays only a subset of models; to see all models, select \"No\" under \"Limit No. Models Shown\"."
+msgid "%sTable displays only a subset of models; to see all models, select \"No\" under \"Limit No. Models Shown\"."
 msgstr ""
 
 msgid "Posterior Summaries of Coefficients"
@@ -4577,12 +4640,6 @@ msgid "Odds Ratio"
 msgstr ""
 
 msgid "Wald Statistic"
-msgstr ""
-
-msgid "Lower bound"
-msgstr ""
-
-msgid "Upper bound"
 msgstr ""
 
 msgid "Standardized estimates represent estimates  where the continuous predictors are standardized (X-standardization)."
@@ -4702,10 +4759,7 @@ msgstr ""
 msgid "item-rest correlation"
 msgstr ""
 
-msgid "McDonald's %s if item dropped can only be calculated for three or more variables."
-msgstr ""
-
-msgid "%s Warning:"
+msgid "Warning: McDonald's %s if item dropped can only be calculated for three or more variables."
 msgstr ""
 
 msgid "reverse-scaled item"
@@ -4856,15 +4910,6 @@ msgid "Plotting not possible: Cannot evaluate prior or posterior density!"
 msgstr ""
 
 msgid "Plotting not possible: Bayes factor should be numeric!"
-msgstr ""
-
-msgid "Proportions tested against value: %s."
-msgstr ""
-
-msgid "For all tests, the alternative hypothesis specifies that the proportion is greater than %s."
-msgstr ""
-
-msgid "For all tests, the alternative hypothesis specifies that the proportion is less than %s."
 msgstr ""
 
 msgid "<i>Note</i>."
