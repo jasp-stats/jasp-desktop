@@ -96,6 +96,8 @@
   if(options[["seedBox"]]) set.seed(options[["seed"]])
 
   if(ready){
+
+  p <- try({    
     if(type == "kmeans"){
       clusterResult <- .kMeansClustering(dataset, options, jaspResults)
     } else if(type == "cmeans"){
@@ -107,9 +109,14 @@
     } else if(type == "randomForest"){
       clusterResult <- .randomForestClustering(dataset, options, jaspResults)
     }
-    jaspResults[["clusterResult"]] <- createJaspState(clusterResult)
-    jaspResults[["clusterResult"]]$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed",
-                                                      "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "maxTrees", "optimizationCriterion"))
+  })
+
+  if(isTryError(p))
+   JASP:::.quitAnalysis(gettextf("An error occurred in the analysis: %s", .extractErrorMessage(p))) 
+
+  jaspResults[["clusterResult"]] <- createJaspState(clusterResult)
+  jaspResults[["clusterResult"]]$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed",
+                                                    "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "maxTrees", "optimizationCriterion"))
   }
 }
 

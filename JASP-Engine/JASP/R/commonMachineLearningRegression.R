@@ -154,7 +154,7 @@
 
   if(ready){
     .regressionFormula(options, jaspResults)
-    
+  p <- try({  
     if(type == "knn"){
       regressionResult <- .knnRegression(dataset, options, jaspResults)
     } else if(type == "regularized"){
@@ -164,12 +164,17 @@
     } else if(type == "boosting"){
       regressionResult <- .boostingRegression(dataset, options, jaspResults)
     }
-    jaspResults[["regressionResult"]] <- createJaspState(regressionResult)
-    jaspResults[["regressionResult"]]$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "maxTrees",
-                                                              "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "confusionProportions", "maxK", "noOfFolds", "modelValid",
-                                                              "penalty", "alpha", "thresh", "intercept", "shrinkage", "lambda", "noOfTrees", "noOfPredictors", "numberOfPredictors", "bagFrac",
-                                                              "intDepth", "nNode", "distance", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual",
-                                                              "holdoutData", "testDataManual"))
+  })
+
+  if(isTryError(p))
+   JASP:::.quitAnalysis(gettextf("An error occurred in the analysis: %s", .extractErrorMessage(p))) 
+
+  jaspResults[["regressionResult"]] <- createJaspState(regressionResult)
+  jaspResults[["regressionResult"]]$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "maxTrees",
+                                                            "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "confusionProportions", "maxK", "noOfFolds", "modelValid",
+                                                            "penalty", "alpha", "thresh", "intercept", "shrinkage", "lambda", "noOfTrees", "noOfPredictors", "numberOfPredictors", "bagFrac",
+                                                            "intDepth", "nNode", "distance", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual",
+                                                            "holdoutData", "testDataManual"))
   }
 }
 

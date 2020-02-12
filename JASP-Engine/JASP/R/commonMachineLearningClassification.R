@@ -84,6 +84,7 @@
   if(ready){
     .classificationFormula(options, jaspResults)
     
+  p <- try({  
     if(type == "knn"){
       classificationResult <- .knnClassification(dataset, options, jaspResults)
     } else if(type == "lda"){
@@ -93,11 +94,16 @@
     } else if(type == "boosting"){
       classificationResult <- .boostingClassification(dataset, options, jaspResults)
     }
-    jaspResults[["classificationResult"]] <- createJaspState(classificationResult)
-    jaspResults[["classificationResult"]]$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "validationDataManual",
-                                                              "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "maxK", "noOfFolds", "modelValid",
-                                                              "estimationMethod", "noOfTrees", "maxTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode",
-                                                              "testSetIndicatorVariable", "testSetIndicator", "holdoutData", "testDataManual"))
+  })
+
+  if(isTryError(p))
+   JASP:::.quitAnalysis(gettextf("An error occurred in the analysis: %s", .extractErrorMessage(p))) 
+
+  jaspResults[["classificationResult"]] <- createJaspState(classificationResult)
+  jaspResults[["classificationResult"]]$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "validationDataManual",
+                                                            "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "maxK", "noOfFolds", "modelValid",
+                                                            "estimationMethod", "noOfTrees", "maxTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode",
+                                                            "testSetIndicatorVariable", "testSetIndicator", "holdoutData", "testDataManual"))
   }
 }
 
