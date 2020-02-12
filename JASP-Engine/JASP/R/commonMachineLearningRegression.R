@@ -61,9 +61,12 @@
                        observations.amount = "< 2",
                        exitAnalysisIfErrors = TRUE)
 
-  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && nlevels(factor(dataset[,.v(options[["testSetIndicatorVariable"]])])) != 2){
+  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && nlevels(factor(dataset[,.v(options[["testSetIndicatorVariable"]])])) != 2)
     JASP:::.quitAnalysis(gettext("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."))
-  }
+
+  if(!is.numeric(dataset[,.v(options[["testSetIndicatorVariable"]])]))
+    JASP:::.quitAnalysis(gettext("Your test set indicator should contain numeric values, containing only 1 (included in test set) and 0 (excluded from test set)."))
+
 }
 
 .getCustomErrorChecksKnnBoosting <- function(dataset, options, type) {
