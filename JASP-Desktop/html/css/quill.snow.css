@@ -898,7 +898,7 @@
   padding: 3px 5px;
   width: 170px;
 }
-.ql-snow .ql-tooltip a.ql-preview {
+.ql-snow .ql-tooltip a {
   display: inline-block;
   max-width: 200px;
   overflow-x: hidden;

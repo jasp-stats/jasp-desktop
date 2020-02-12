@@ -459,15 +459,14 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$el.append("<div id=\"editor\"></div>");
 
 		var toolbarOptions = [
-			['bold', 'italic', 'underline'],
+			['bold', 'italic', 'underline', 'link'],
 			// [{ 'size': ['small', false, 'large', 'huge'] }],
-			[{ 'header': [1, 2, 3, 4, false] }],
-			[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+			[{ 'header': [1, 2, 3, 4, false] }, { 'list': 'ordered'}, { 'list': 'bullet' }],
 			[{ 'color': [] }, { 'background': [] }],
 			[{ 'script': 'sub'}, { 'script': 'super' }],
 			['blockquote', { 'indent': '-1'}, { 'indent': '+1' }],
 			// [{ 'font': [] }, { 'align': [] }],
-			[{ size: [ 'small', false, 'large' ]}],
+			[{ 'size': [ 'small', false, 'large' ]}],
 			['clean']
 		];
 
