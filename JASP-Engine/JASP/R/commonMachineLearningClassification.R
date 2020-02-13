@@ -623,7 +623,7 @@
   if(!ready) return()
 
   if(length(options[["predictors"]]) < 2){
-    andrewsCurve$setError("Andrews curves require a minimum of 2 predictor variables.")
+    andrewsCurve$setError(gettext("Andrews curves require a minimum of 2 predictor variables."))
     return()
   }
 

@@ -133,7 +133,7 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
                             "equalNotEqual"     = paste0(note, options[["testValue"]], ".", gettext(" The posterior probabilities are based on equal prior probabilities.")),
                             "equalBigger"       = paste0(note, options[["testValue"]], ".", gettext(" The posterior probabilities are based on equal prior probabilities.")),
                             "equalSmaller"      = paste0(note, options[["testValue"]], ".", gettext(" The posterior probabilities are based on equal prior probabilities.")),
-                            "biggerSmaller"     = gettextf("The hypothesis H1 specifies that the mean is bigger than %1$s and the hypothesis H2 specifies that the mean is smaller than %2$s. The posterior probabilities are based on equal prior probabilities.", options[["testValue"]], options[["testValue"]]),
+                            "biggerSmaller"     = gettextf("The hypothesis H1 specifies that the mean is bigger than %1$s and the hypothesis H2 specifies that the mean is smaller than %1$s. The posterior probabilities are based on equal prior probabilities.", options[["testValue"]]),
                             "equalBiggerSmaller"= gettextf("%1$s %2$s is tested against the other hypotheses. H1 states that the mean is bigger than %2$s and H2 states that the mean is smaller than %2$s. The posterior probabilities are based on equal prior probabilities.", note, options[["testValue"]]))
   bainTable$addFootnote(message=message)
 
