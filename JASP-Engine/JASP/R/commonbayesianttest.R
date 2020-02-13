@@ -417,7 +417,7 @@
     ttestRows[, "variable1"] <- nms[seq(1, length(nms), 2)]
     ttestRows[, "variable2"] <- nms[seq(2, length(nms), 2)]
   }
-  ttestRows[,  c("BF", "error")] <- NaN
+  ttestRows[,  c("BF", "error")] <- NA_real_
   if (isTRUE(derivedOptions[["wilcoxTest"]]))
     ttestRows[, "rHat"] <- NA_real_
 
@@ -1197,8 +1197,8 @@
   }
 
   startProgressbar(length(rValues), sprintf(ngettext(totalPlots,
-                                                     "Robustness check",
-                                                     "Robustness check %d / %d"),
+                                                     "Running robustness check",
+                                                     "Running robustness check %d / %d"),
                                             currentPlot, totalPlots))
   # BF10
   BF10 <- vector("numeric", length(rValues))
@@ -1238,7 +1238,6 @@
     BF10w     <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = "wide")
     BF10ultra <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = "ultrawide")
 
-    BF10post  <-  1 / BF10post
   }
 
   # BF10 user prior
@@ -1393,8 +1392,8 @@
     if (plotDifferentPriors)
       nTicks <- 3L * nTicks
     startProgressbar(nTicks, sprintf(ngettext(totalPlots,
-                                              "Sequential analysis",
-                                              "Sequential analysis %d / %d"),
+                                              "Running sequential analysis",
+                                              "Running sequential analysis %d / %d"),
                                      currentPlot, totalPlots))
 
     while ((i <= length(x) || j <= length(y)) && k <= length(BF10)) {
@@ -1772,13 +1771,8 @@
 
   r <- .ttestBayesianGetRScale(rscale)
 
-  if (BFH1H0) {
-    BF10 <- BF
-    BF01 <- 1 / BF10
-  } else {
-    BF01 <- BF
-    BF10 <- 1 / BF01
-  }
+  BF10 <- BF
+  BF01 <- 1 / BF10
 
   if (options[["effectSizeStandardized"]] == "informative" && !wilcoxTest) {
     # informative prior
@@ -2065,8 +2059,9 @@
   
   if (BFH1H0) {
     bfType <- "BF10"
-    BF <- 1 / BF01
+    BF <- BF10
   } else {
+    BF <- BF01
     bfType <- "BF01"
   }
   hypothesis <- switch(oneSided,

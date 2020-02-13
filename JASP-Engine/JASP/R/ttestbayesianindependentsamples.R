@@ -70,6 +70,7 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
       ttestTable$addFootnote(errorMessage, rowNames = var)
       ttestResults[["status"]][var] <- "error"
       ttestResults[["errorFootnotes"]][[var]] <- errorMessage
+      ttestRows[var, -1L] <- NaN # everything except the first because the length and names differ for student vs wilcoxon
 
     } else {
 
@@ -166,12 +167,12 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
 
       }
 
+      ttestResults[["BF10post"]][var] <- bf.raw
       BF <- .recodeBFtype(bfOld     = bf.raw,
                           newBFtype = options[["bayesFactorType"]],
                           oldBFtype = "BF10"
       )
 
-      ttestResults[["BF10post"]][var] <- BF
       msg <- .ttestBayesianCheckBFPlot(BF)
       if (!is.null(msg)) {
         ttestResults[["plottingError"]][[var]] <- msg

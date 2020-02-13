@@ -55,6 +55,7 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
         ttestTable$addFootnote(errorMessage, rowNames = var)
         ttestResults[["status"]][var] <- "error"
         ttestResults[["errorFootnotes"]][[var]] <- errorMessage
+        ttestRows[var, c("BF", "error")] <- NaN
 
       } else {
 
@@ -99,11 +100,11 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
             ttestTable$addFootnote(message = gettext("No error estimate is available for normal priors."))
           }
         }
+        ttestResults[["BF10post"]][var] <- bf.raw
         BF <- .recodeBFtype(bfOld     = bf.raw,
                             newBFtype = bf.type,
                             oldBFtype = "BF10")
 
-        ttestResults[["BF10post"]][var] <- BF
         msg <- .ttestBayesianCheckBFPlot(BF)
         if (!is.null(msg)) {
           ttestResults[["plottingError"]][[var]] <- msg
