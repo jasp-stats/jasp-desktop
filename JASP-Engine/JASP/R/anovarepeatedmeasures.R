@@ -837,7 +837,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   for (var in variables) {
     formula <- as.formula(paste("~", var))
-    referenceGrid <- emmeans::emmeans(fullModel, formula)
+    referenceGrid <- emmeans::emmeans(fullModel, formula, model = "multivariate")
     
     referenceGridList[[var]] <- referenceGrid
     
