@@ -67,6 +67,12 @@ void BoundQMLListViewTerms::bindTo(Option *option)
 			Log::log()  << "Options for list view " << name().toStdString() << " is not of type Table!" << std::endl;
 			return;
 		}
+
+		if (!_tempOptionKey.empty() &&_tempOptionKey != _optionKeyName)
+		{
+			// Backward compatibility: the key in the JASP file does not correspond to the current key. This must be replacec
+			_optionsTable->replaceKey(_tempOptionKey, _optionKeyName);
+		}
 		
 		Terms terms;
 		QMap<QString, QMap<QString, Option*> > allOptionsMap;
@@ -136,10 +142,13 @@ Option* BoundQMLListViewTerms::createOption()
 	else if (_hasRowComponents || _termsModel->areTermsInteractions())
 	{
 		Options* templote = new Options();
+		if (_tempOptionKey.empty())
+			_tempOptionKey = _optionKeyName;
+
 		if (_termsModel->areTermsInteractions())
-			templote->add(_optionKeyName, new OptionTerm());
+			templote->add(_tempOptionKey, new OptionTerm());
 		else
-			templote->add(_optionKeyName, new OptionVariable());
+			templote->add(_tempOptionKey, new OptionVariable());
 		if (_hasRowComponents)
 			addRowComponentsDefaultOptions(templote);
 		result = new OptionsTable(templote);
@@ -178,7 +187,13 @@ bool BoundQMLListViewTerms::isJsonValid(const Json::Value &optionValue)
 				valid = value.type() == Json::objectValue;
 				if (valid)
 				{
-					const Json::Value& components = value[_optionKeyName];
+					_tempOptionKey = _optionKeyName;
+					if (value[_tempOptionKey].isNull() && value.size() > 0)
+					{
+						_tempOptionKey = value.begin().memberName();
+						Log::log() << "JASP file has options for " << name() << " without '" << _optionKeyName << "' key. Per default, first key '" << _tempOptionKey << "' is used. Probably the file comes from an older version of JASP." << std::endl;
+					}
+					const Json::Value& components = value[_tempOptionKey];
 					if (_termsModel->areTermsInteractions())
 						valid = components.type() == Json::arrayValue;
 					else

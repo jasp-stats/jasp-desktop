@@ -48,13 +48,14 @@ public:
 	size_t		size()									const				{ return _options.size(); }
 
 	Option*		get(std::string name)					const;
-	Option*		get(int index)												{ return _options.at(index).second; }
+	Option*		get(int index)							const				{ return _options.at(size_t(index)).second; }
 	void		get(int index, std::string &name, Option *&option);	
 
 	std::set<std::string>	usedVariables()													const	override;
 	void					removeUsedVariable(std::string var)										override;
 	void					replaceVariableName(std::string oldName, std::string newName)			override;
 	std::set<std::string>	columnsCreated()														override;
+	void					replaceKey(const std::string& oldKey, const std::string& newKey);
 
 	class Names
 	{

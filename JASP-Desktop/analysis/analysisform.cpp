@@ -476,20 +476,26 @@ void AnalysisForm::bindTo()
 				boundControl->item()->setHasWarning(true);
 			}
 
+			if (!option && optionsFromJASPFile != Json::nullValue)
+			{
+				const Json::Value& optionValue = optionsFromJASPFile[name];
+				if (optionValue != Json::nullValue)
+				{
+					if (!boundControl->isJsonValid(optionValue))
+						boundControl->item()->setHasWarning(true);
+					else
+					{
+						// call createOption after checking Json options in isJsonValid: if Json comes from an older version of JASP, createOption can take care of backward compatibility issues.
+						option = boundControl->createOption();
+						option->set(optionValue);
+						_options->add(name, option);
+					}
+				}
+			}
+
 			if (!option)
 			{
 				option = boundControl->createOption();
-				if (optionsFromJASPFile != Json::nullValue)
-				{
-					const Json::Value& optionValue = optionsFromJASPFile[name];
-					if (optionValue != Json::nullValue)
-					{
-						if (!boundControl->isJsonValid(optionValue))
-							boundControl->item()->setHasWarning(true);
-						else
-							option->set(optionValue);
-					}
-				}
 				_options->add(name, option);
 			}
 
