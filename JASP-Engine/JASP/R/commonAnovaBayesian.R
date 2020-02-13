@@ -1327,17 +1327,19 @@
                             conf.interval = conf.interval, na.rm = TRUE, .drop = FALSE,
                             errorBarType = errorBarType)
 
-  if (options[["plotHorizontalAxis"]] %in% options[["covariates"]] && !is.null(options$confidenceIntervalInterval)) {
+  if (options[["plotHorizontalAxis"]] %in% options[["covariates"]]) {
     splitScatterOptions <- options
     splitScatterOptions[["colorPalette"]] <- "ggplot2" 
     splitScatterOptions[["showLegend"]] <- TRUE
     splitScatterOptions[["addSmooth"]] <- TRUE
-    splitScatterOptions[["addSmoothCI"]] <- TRUE
+    splitScatterOptions[["addSmoothCI"]] <- plotErrorBars
     splitScatterOptions[["addSmoothCIValue"]] <- TRUE
     splitScatterOptions[["regressionType"]] <- "linear"
     splitScatterOptions[["graphTypeAbove"]] <- "none"
     splitScatterOptions[["graphTypeRight"]] <- "none"
-    splitScatterOptions[["addSmoothCIValue"]] <- options[["confidenceIntervalInterval"]]
+    splitScatterOptions[["addSmoothCIValue"]] <- if (is.null(options[["confidenceIntervalInterval"]]))
+      options[["plotCredibleIntervalInterval"]]
+    else options[["confidenceIntervalInterval"]]
     
     if (options$plotSeparatePlots != "") {
       
@@ -1357,8 +1359,6 @@
    
     return()
     
-  } else if (options[["plotHorizontalAxis"]] %in% options[["covariates"]]) {
-    summaryStat <- dataset
   }
   
   colnames(summaryStat)[colnames(summaryStat) == dependentV] <- "dependent"

@@ -128,3 +128,34 @@ test_that("Analysis handles errors", {
   results <- jasptools::run("AnovaBayesian", "test.csv", options)
   expect_true(results[["results"]][["error"]], label = "Identical covariates check")
 })
+
+
+options <- initOpts()
+options$covariates <- "contcor1"
+options$dependent <- "contNormal"
+options$fixedFactors <- "facGender"
+options$modelTerms <- list(list(components = "facGender", isNuisance = FALSE), list(components = "contcor1", isNuisance = FALSE))
+options$plotCredibleInterval <- TRUE
+options$plotHorizontalAxis <- "contcor1"
+options$plotSeparateLines <- "facGender"
+options$singleModelTerms <- list(list(components = "facGender"), list(components = "contcor1"))
+set.seed(1)
+results <- jasptools::run("AncovaBayesian", "debug.csv", options)
+
+
+test_that("contcor1 - contNormal plot matches", {
+  plotName <- results[["results"]][["descriptivesContainer"]][["collection"]][["descriptivesContainer_containerDescriptivesPlots"]][["collection"]][["descriptivesContainer_containerDescriptivesPlots_contcor1 - contNormal"]][["data"]]
+  testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
+  expect_equal_plots(testPlot, "contcor1-contnormal", dir="AncovaBayesian")
+})
+
+test_that("Model Comparison table results match", {
+  table <- results[["results"]][["tableModelComparison"]][["data"]]
+  expect_equal_tables(table,
+                      list(1, 1.79472415330685, "facGender", 0.25, 0.374312284903617, "",
+                           0.798367847232719, 1.27861723994693, "facGender + contcor1",
+                           0.25, 0.298838893091261, 12.1608691349882, 0.523794362714111,
+                           0.731634131635191, "Null model", 0.25, 0.196062664727153, 2.03265957838496e-05,
+                           0.349403860233028, 0.451394642548716, "contcor1", 0.25, 0.130786157277969,
+                           0.0026137271628805))
+})
