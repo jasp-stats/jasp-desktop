@@ -22,7 +22,8 @@
     "BayesFactorType",
     "SubjectivePriors",
     "ContrastsList",
-    "SetSeed"
+    "SetSeed",
+    "LD.LDOptions"
   )
 
   fileSize <- file.info(file)$size 
@@ -104,7 +105,58 @@
     result <- c(result, subjectivePriors)
   }
   
+  regMatch <- "LD.LDOptions\\{"
+  if (grepl(regMatch, fileContents)) {
+    LDoption <- .parseLDOption(fileContents)
+    result <- c(result, LDoption)
+  }
+  
   return(result)
+}
+
+.makeExprForOptionParam <- function(param) {
+  return(paste0("[\\{;]", param, ":(.*?)[;\\}]"))
+}
+
+.optionHasParam <- function(option, param) {
+  expr <- .makeExprForOptionParam(param)
+  return(grepl(expr, option))
+}
+
+.getOptionParamValue <- function(option, param, default = NULL) {
+  value <- default
+  if (.optionHasParam(option, param)) {
+    match <- stringr::str_match(option, .makeExprForOptionParam(param))[2]
+    if (tolower(match) == "true")
+      value <- TRUE
+    else if (tolower(match) == "false")
+      value <- FALSE
+    else if (!is.na(suppressWarnings(as.numeric(match))))
+      value <- as.numeric(match)
+    else
+      value <- match
+  }
+  return(value)
+}
+
+.parseLDOption <- function(fileContents) {
+  LDOption <- stringr::str_extract(fileContents, "LDOptions\\{.*?\\}")
+  
+  negativeValues <- .getOptionParamValue(LDOption, "negativeValues", default = TRUE)
+  min            <- .getOptionParamValue(LDOption, "min",            default = ifelse(negativeValues, -Inf, 0))
+  max            <- .getOptionParamValue(LDOption, "max",            default = Inf)
+  
+  return(list(
+    min_x                = .getOptionParamValue(LDOption, "rangeMinX",         default = ifelse(min == -Inf, -3, min)),
+    max_x                = .getOptionParamValue(LDOption, "rangeMaxX",         default = ifelse(max == Inf, 3, max)),
+    min                  = .getOptionParamValue(LDOption, "intervalMinmaxMin", default = 0),
+    max                  = .getOptionParamValue(LDOption, "intervalMinmaxMax", default = 1),
+    lower_max            = .getOptionParamValue(LDOption, "intervalLowerMax",  default = 0),
+    upper_min            = .getOptionParamValue(LDOption, "intervalUpperMin",  default = 0),
+    highlightDensity     = FALSE,
+    highlightProbability = FALSE,
+    highlightType        = "minmax"
+  ))
 }
 
 
