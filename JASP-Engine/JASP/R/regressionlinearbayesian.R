@@ -186,8 +186,14 @@ for sparse regression when there are more covariates than observations (Castillo
     if (sum(basregModel$nuisanceTerms) > 0)
       generalNote <- gettextf("All models include %s.", paste(names(which(basregModel$nuisanceTerms)), collapse = ", "))
     
-    if (options$shownModels == "limited" && options$numShownModels < length(basregModel$which))
-      generalNote <- gettextf("%s Table displays only a subset of models; to see all models, select \"No\" under \"Limit No. Models Shown\".", generalNote)
+    if (options$shownModels == "limited" && options$numShownModels < length(basregModel$which)) {
+      if (is.null(generalNote)) {
+        s1 <- ""
+      } else {
+        s1 <- paste0(generalNote, " ") # hopefully all languages want a " " after a full stop.
+      }
+      generalNote <- gettextf("%sTable displays only a subset of models; to see all models, select \"No\" under \"Limit No. Models Shown\".", s1)
+    }
     
     if (!is.null(generalNote))
       modelComparisonTable$addFootnote(message = generalNote)
