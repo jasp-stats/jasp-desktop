@@ -75,13 +75,21 @@
   if (is.null(jaspResults[["ttestContainer"]])) {
     ttestContainer <- createJaspContainer("")
     jaspResults[["ttestContainer"]] <- ttestContainer
+    
+    # add seed dependency only for Mann-Whitney independent samples t-test (which is named Wilcoxon in options!)
+    depends_seed <- NULL
+    if(analysis == "independent"){
+      if(options$testStatistic == "Wilcoxon"){
+        depends_seed <- c("seed", "setSeed")
+      }
+    }
     ttestContainer$dependOn(c(
       "effectSizeStandardized", "groupingVariable", "hypothesis",
       "informativeCauchyLocation", "informativeCauchyScale", "informativeNormalMean",
       "informativeNormalStd", "informativeStandardizedEffectSize",
       "informativeTDf", "informativeTLocation", "informativeTScale",
       "missingValues", "priorWidth", "testStatistic", "wilcoxonSamplesNumber",
-      "testValue","seed", "setSeed"
+      "testValue",depends_seed
     ))
     ttestContainer$position <- 1L
   } else {
@@ -1774,10 +1782,32 @@
   BF10 <- BF
   BF01 <- 1 / BF10
 
-  if (options[["effectSizeStandardized"]] == "informative" && !wilcoxTest) {
+  if (!wilcoxTest) {
     # informative prior
     xlim <- vector("numeric", 2)
-    if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
+
+    if(options[["effectSize"]] == "standardized"){
+      
+      ci99PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                        prior.location = 0,
+                                        prior.scale = options[["priorWidth"]],
+                                        prior.df = 1, ci = .99, oneSided = oneSided)
+      priorLower <- .qShiftedT(.15, parameters = c(0,
+                                                   options[["priorWidth"]],
+                                                   1), oneSided = oneSided)
+      priorUpper <- .qShiftedT(.85, parameters = c(0,
+                                                   options[["priorWidth"]],
+                                                   1), oneSided = oneSided)
+      # compute 95% credible interval & median:
+      ci95PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
+                                        prior.location = 0,
+                                        prior.scale = options[["priorWidth"]],
+                                        prior.df = 1, ci = .95, oneSided = oneSided)
+      CIlow <- ci95PlusMedian[["ciLower"]]
+      CIhigh <- ci95PlusMedian[["ciUpper"]]
+      medianPosterior <- ci95PlusMedian[["median"]]
+      
+    }else if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
       ci99PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
                                         prior.location = options[["informativeCauchyLocation"]],
                                         prior.scale = options[["informativeCauchyScale"]],
@@ -1883,18 +1913,6 @@
     xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
 
   } else {
-    # sample from delta posterior
-    if (!wilcoxTest) {
-      # remove, once setSeedJASP() function is added to summary stats t-test
-      if(c("setSeed", "seed") %in% names(options))
-        .setSeedJASP(options)
-      bfObject <- BayesFactor::meta.ttestBF(t = t, n1 = n1, n2 = n2, rscale = r)
-      # library(BayesFactor)
-      samples <- BayesFactor::posterior(model = bfObject, iterations = iterations,
-                                        index = 1)
-      delta <- samples[,"delta"]
-    }
-
     # fit shifted t distribution
     if (is.null(n2) || paired) {
       deltaHat <- t * sqrt(1 / n1)
@@ -2018,14 +2036,13 @@
     # xlim <- c(min(CIlow,range(xticks)[1]), max(range(xticks)[2], CIhigh))
 
   }
-
-  if ("effectSizeStandardized" %in% names(options) && options$effectSizeStandardized == "informative") {
+  
+  if (!wilcoxTest) {
     heightPriorAtZero <- .dprior_informative(0, oneSided = oneSided, options = options)
     heightPosteriorAtZero <- .dposterior_informative(0, t = t, n1 = n1, n2 = n2, paired = paired,
                                                      oneSided = oneSided, options = options)
   } else {
     heightPriorAtZero <- .dprior(0, r, oneSided = oneSided)
-
     if (oneSided == FALSE) {
       heightPosteriorAtZero <- .dposteriorShiftedT(0, parameters=parameters, oneSided=oneSided)
     } else if (oneSided == "right") {
