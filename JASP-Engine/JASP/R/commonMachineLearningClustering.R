@@ -389,7 +389,7 @@
 
 if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options[["modelOpt"]] == "validationManual") return()
 
-  optimPlot <- createJaspPlot(plot = NULL, title = gettext("Elbow Method Plot"), width = 500, height = 300)
+  optimPlot <- createJaspPlot(plot = NULL, title = gettext("Elbow Method Plot"), width = 600, height = 400)
   optimPlot$position <- position
   optimPlot$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "algorithm", "eps", "minPts", "distance",
                                           "noOfIterations", "modelOpt", "ready", "seed", "plot2dCluster", "maxClusters", "scaleEqualSD", "seedBox",
