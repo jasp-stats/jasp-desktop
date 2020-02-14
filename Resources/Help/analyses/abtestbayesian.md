@@ -38,6 +38,7 @@ The input data needs to contain the following elements:
     (In addition, posterior median and central credible interval are also displayed in the plot)
   - Sequential analysis: Displays the development of posterior probabilities as the data come in. The probability wheels visualize prior and posterior probabilities of the hypotheses.
   - Bayes factor robustness check: Displays the prior sensitivity analysis.
+     - Bayes factor type: Specifies which Bayes factor is plotted. Options include - ["BF10", "BF01", "BF+0", "BF0+", "BF-0", "BF-0"]
   - Prior: Plot parameter prior distributions. Available quantities are the same as mentioned for Prior and posterior plot.
 
 
@@ -70,6 +71,15 @@ Determines the number of importance samples for obtaining log marginal likelihoo
 
 #### Repeatability
 - Set seed: Value used to set the random number generator for exact reproducibility.
+
+#### Robustness Plot, Step Range
+- mu_range: Specifies the range of mu_psi values to consider
+- sigma_range: Specifies the range of sigma_psi values to consider
+
+#### Robustness Plot, Step Size
+- mu: Specifies how many discrete steps the interval mu_range is partitioned
+- sigma: Specifies how many discrete steps the interval sigma_range is partitioned
+
 
 ### Output
 ----------
