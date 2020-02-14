@@ -919,18 +919,17 @@ Correlation <- function(jaspResults, dataset, options){
   
   hw <- 30 + 80*length(options$variables)
   
-  #The following looks rather familiar and all these defines should, I think, all be put together in one place instead of scattered throughout this file...
-  #Also, how do I put gettext in the name part? Im guessing c(`gettext("Pearson's r")`= is not going to work :p
-  tests <- c(`Pearson's r` = "pearson",
-             `Spearman's rho` = "spearman",
-             `Kendall's tau B` = "kendall")[c(options$pearson, options$spearman, options$kendallsTauB)]
+  #TODO: The following looks rather familiar and all these defines should, I think, all be put together in one place instead of scattered throughout this file...
+  tests <- c("pearson", "spearman", "kendall")
+  names(tests) <- c(gettext("Pearson's r"), gettext("Spearman's rho"), gettext("Kendall's tau B"))
+  tests <- tests[c(options$pearson, options$spearman, options$kendallsTauB)]
   
   if(length(tests) == 0){
     return()
   } else if(length(tests) == 1){
     plot <- createJaspPlot(title = gettextf("%s heatmap", names(tests)), width = hw, height = hw)
     plot$dependOn(c("variables", "conditioningVariables", "missingValues", "pearson", "spearman", "kendallsTauB", 
-                    "flagSignificant"))
+                    "flagSignificant", "plotHeatmap"))
     plot$position <- 4
     jaspResults[['heatmaps']] <- plot
     
@@ -938,7 +937,7 @@ Correlation <- function(jaspResults, dataset, options){
   } else{
     heatmaps <- createJaspContainer(title = gettext("Heatmaps"))
     heatmaps$dependOn(c("variables", "conditioningVariables", "missingValues", "pearson", "spearman", "kendallsTauB",
-                        "flagSignificant"))
+                        "flagSignificant", "plotHeatmap"))
     heatmaps$position <- 4
     jaspResults[['heatmaps']] <- heatmaps
     
