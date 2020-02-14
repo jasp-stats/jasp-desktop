@@ -12,7 +12,7 @@ Form
 		AvailableVariablesList	{ name: "allVariables" }
 		AssignedVariablesList	{ name: "dependent"		; title: qsTr("Dependent Variable")	; singleVariable: true	}
 		AssignedVariablesList	{ name: "variables"		; title: qsTr("Independent Variable(s)") ; id: varlist		}
-		AssignedVariablesList	{ name: "paneledVars"	; title: qsTr("Panelled Variable(s)")	 ; id: paneledVars	}
+		AssignedVariablesList	{ name: "paneledVars"	; title: qsTr("Paneled Variable(s)")	 ; id: paneledVars	}
 	}
 
 	Section

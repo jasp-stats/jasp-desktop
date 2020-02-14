@@ -3,7 +3,7 @@ import JASP.Controls	1.0
 import JASP.Widgets		1.0
 import JASP				1.0
 
-Form 
+Form
 {
 	VariablesForm
 	{
@@ -15,13 +15,13 @@ Form
 	Section
 	{
 		title: qsTr("Model Terms");
-		enabled: varlist.count > 1
+		enabled: varlist.count > 0 ;
 
 		VariablesForm
 		{
 			height: 150
 			AvailableVariablesList	{ name: "components"	; title: qsTr("Components")	; source: ["variables"] }
-			AssignedVariablesList	{ name: "interactions"	; title: qsTr("Model terms"); listViewType: JASP.Interaction
+			AssignedVariablesList	{ name: "interactions"	; id: "interactions" ; title: qsTr("Model terms"); listViewType: JASP.Interaction
 				rowComponentsTitles: ["Add as a polynomial"]
 				rowComponents: [ Component { CheckBox { name: "polynoms" } } ]
 			}
@@ -39,11 +39,13 @@ Form
 			enabled: varlist.count > 0
 		}
 
+
 	}
 
 	Section
 	{
-		title: qsTr("Results Displays")
+		title: qsTr("Results Displays");
+
 
 		Group
 		{
@@ -51,7 +53,7 @@ Form
 			CheckBox { name:"model"			; label: qsTr("Model plot")	; checked: true							}
 			CheckBox { name:"univariate"	; label: qsTr("Univariate")											}
 			CheckBox { name:"residuals"		; label: qsTr("Diagnostics")										}
-			CheckBox { name:"avp"			; label: qsTr("Added variable plot")	; enabled: varlist.count > 1	}
+			CheckBox { name:"avp"			; label: qsTr("Added variable plot")	; enabled: interactions.count > 1	}
 		}
 
 
