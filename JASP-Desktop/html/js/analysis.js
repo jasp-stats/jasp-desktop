@@ -130,14 +130,13 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
-		'click': '_mouseClicked',
 	},
 
 	undoImageResize: function() {
 		if (this.imageBeingEdited !== null)
 			this.imageBeingEdited.restoreSize();
 	},
-	
+
 	insertNewImage: function(imageEditResults) {
 		if (this.imageBeingEdited !== null) {
 			if ("revision" in imageEditResults)
@@ -431,20 +430,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.toolbar.setVisibility(false);
 	},
 
-	_mouseClicked: function (e) {
-
-		/*for (var i = 0; i < this.viewNotes.list.length; i++) {
-			var noteBoxData = this.viewNotes.list[i];
-
-			if (noteBoxData.noteDetails.level === 0) {
-				var noteBox = noteBoxData.widget;
-				if (!noteBox.$quill.hasFocus()) {
-					// noteBox.setQuillToolbarVisibility('none');
-				}
-			}
-		}*/
-	},
-
 	notesMenuClicked: function (noteType, visibility) {
 
 		var scrollIntoView = true;
@@ -552,7 +537,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		}
 	},
-	
+
 	setErrorOnPreviousResults: function (errorMessage, status, $lastResult, $result) {
 		if (errorMessage == null) // parser.parse() in the engine was unable to parse the R error message
 			errorMessage = "An unknown error occurred.";
@@ -573,15 +558,15 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 		$result.append('<div class="' + status + ' analysis-error-message error-message-box ui-state-error"><span class="ui-icon ui-icon-' + (status === "fatalError" ? 'alert' : 'info') + '" style="float: left; margin-right: .3em;"></span>' + errorMessage + '</div>');
 	},
-	
+
 	setHeightErroredAnalysis: function ($result) {
 		// the error box has an absolute position and unknown height, we need to manually verify the container height
 		var $selectedAnalysis = $result.find(".jasp-analysis");
-		var errorBoxHeight = $result.find(".analysis-error-message").outerHeight();	
+		var errorBoxHeight = $result.find(".analysis-error-message").outerHeight();
 		if ($selectedAnalysis.height() < errorBoxHeight)
 			$selectedAnalysis.height(errorBoxHeight);
 	},
-	
+
 	updateProgressbarInResults: function() {
 		this.progressbar.render();
 		this.$el.find(".jasp-progressbar-container").replaceWith(this.progressbar.$el);
@@ -633,7 +618,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	render: function () {
 
 		var results = this.model.get("results");
-		
+
 		// once everything becomes jaspResults this is always an object and the following can be removed
 		var progress = this.model.get("progress")
 		if (typeof progress == "number")
@@ -641,9 +626,9 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		else if (!progress)
 			this.model.set("progress", { value: -1, label: "" })
 		// up to here
-		
+
 		if (results == "" || results == null) {
-			progress = this.model.get("progress"); 
+			progress = this.model.get("progress");
 			if (progress.value > -1)
 				this.updateProgressbarInResults();
 			return this;

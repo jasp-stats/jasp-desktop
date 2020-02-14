@@ -364,9 +364,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		this.ghostTextDefault = 'Click here to add text...';
 
-		if (JASPWidgets.NoteBox.activeNoteBox === undefined)
-			JASPWidgets.NoteBox.activeNoteBox = null;
-
 		this.editing = false;
 		this.ghostTextVisible = true;
 
@@ -406,18 +403,10 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 	_hoveringStart: function (e) {
 		this.closeButton.setVisibility(true);
-
-		if (!this.$quill.hasFocus()) {
-			this.setQuillToolbarVisibility('none');
-		}
 	},
 
 	_hoveringEnd: function (e) {
 		this.closeButton.setVisibility(false);
-
-		if (!this.$quill.hasFocus()) {
-			this.setQuillToolbarVisibility('none');
-		}
 	},
 
 	_mouseClicked: function (e) {
@@ -470,7 +459,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			['clean']
 		];
 
-		let targetDiv = this.$el.find("#editor").get(0)
+		let targetDiv = this.$el.find("#editor").get(0);
 		this.$quill = new Quill(targetDiv, {
 			modules: {
 				toolbar: toolbarOptions
@@ -480,6 +469,17 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		var self = this;
 		var delt;
+
+		this.$quillToolbar     = this.$el.find(".ql-toolbar").get(0);
+		let quillEditorElement = this.$el.find(".ql-editor").get(0);
+
+		this.$quillToolbar.addEventListener('mousedown', (event) => {
+			event.preventDefault();
+		});
+
+		quillEditorElement.addEventListener('focusout', (event) => {
+			self.setQuillToolbarVisibility('none');
+		});
 
 		if (this.model.get('deltaAvailable')) {
 			delt = this.model.get('delta');
@@ -491,19 +491,13 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 			delt = this.$quill.clipboard.convert(html);
 		}
+
 		this.$quill.setContents(delt);
 		self.onNoteChanged(self.$quill.root.innerHTML, self.$quill.getContents());
 
 		this.$quill.on('text-change', function(delta, oldDelta, source) {
 			self.onNoteChanged(self.$quill.root.innerHTML, self.$quill.getContents());
 		});
-
-		this.$quillToolbar = this.$el.find(".ql-toolbar").get(0)
-
-		this.quillToolbarClicked = false;
-		this.$quillToolbar.addEventListener('click', function() {
-			this.quillToolbarClicked = true;
-		}, false);
 
 		this.setQuillToolbarVisibility('none');
 
@@ -615,8 +609,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			return;
 
 		this.editingSetup = true;
-
-		JASPWidgets.NoteBox.activeNoteBox = this;
 
 		etch.config.selector = '.jasp-editable'
 
