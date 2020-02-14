@@ -1599,8 +1599,8 @@
     if (plotDifferentPriors)
       nTicks <- 3L * nTicks
     startProgressbar(nTicks, sprintf(ngettext(totalPlots,
-                                              "Sequential analysis",
-                                              "Sequential analysis %d / %d"),
+                                              "Running sequential analysis",
+                                              "Running sequential analysis %d / %d"),
                                      currentPlot, totalPlots))
 
     for (i in seq_len(nrow(subDataSet))) {
