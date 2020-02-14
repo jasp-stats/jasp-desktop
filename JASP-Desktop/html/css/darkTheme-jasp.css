@@ -613,6 +613,10 @@ pre {
   color: #5c5c5c;
 }
 
+.jasp-progressbar-label-sep {
+    font-style: italic;
+}
+
 /*.jasp-indent {
   margin-left: .5em ;
   padding-left: 0.8em ;

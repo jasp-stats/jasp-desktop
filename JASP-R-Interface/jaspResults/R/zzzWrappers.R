@@ -31,8 +31,8 @@ signalAnalysisAbort <- function(message = "", call = NULL) {
 startProgressbar <- function(expectedTicks, label="") {
 	if (!is.numeric(expectedTicks) || !is.character(label))
 		stop("`expectedTicks` must be numeric and `label` a character")
-	if (nchar(label) > 40)
-		stop("The label must be 40 characters at most")
+	if (nchar(label) > 80) # if you update this value, also update it in the progressbar in jaspwidgets.js
+		warning("The progressbar label is more than 80 characters, label will be truncated")
 		
 	if (jaspResultsCalledFromJasp())
 		jaspResultsModule$cpp_startProgressbar(expectedTicks, label)
