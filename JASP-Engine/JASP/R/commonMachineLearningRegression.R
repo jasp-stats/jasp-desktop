@@ -157,20 +157,15 @@
   if(ready){
     .regressionFormula(options, jaspResults)
     
-  p <- try({  
-    if(type == "knn"){
-      regressionResult <- .knnRegression(dataset, options, jaspResults)
-    } else if(type == "regularized"){
-      regressionResult <- .regularizedRegression(dataset, options, jaspResults)
-    } else if(type == "randomForest"){
-      regressionResult <- .randomForestRegression(dataset, options, jaspResults)
-    } else if(type == "boosting"){
-      regressionResult <- .boostingRegression(dataset, options, jaspResults)
-    }
-  })
-
-  if(isTryError(p))
-   JASP:::.quitAnalysis(gettextf("An error occurred in the analysis: %s", .extractErrorMessage(p))) 
+  if(type == "knn"){
+    regressionResult <- .knnRegression(dataset, options, jaspResults)
+  } else if(type == "regularized"){
+    regressionResult <- .regularizedRegression(dataset, options, jaspResults)
+  } else if(type == "randomForest"){
+    regressionResult <- .randomForestRegression(dataset, options, jaspResults)
+  } else if(type == "boosting"){
+    regressionResult <- .boostingRegression(dataset, options, jaspResults)
+  }
 
   jaspResults[["regressionResult"]] <- createJaspState(regressionResult)
   jaspResults[["regressionResult"]]$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "maxTrees",

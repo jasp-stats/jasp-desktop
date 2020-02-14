@@ -87,20 +87,15 @@
   if(ready){
     .classificationFormula(options, jaspResults)
     
-  p <- try({  
-    if(type == "knn"){
-      classificationResult <- .knnClassification(dataset, options, jaspResults)
-    } else if(type == "lda"){
-      classificationResult <- .ldaClassification(dataset, options, jaspResults)
-    } else if(type == "randomForest"){
-      classificationResult <- .randomForestClassification(dataset, options, jaspResults)
-    } else if(type == "boosting"){
-      classificationResult <- .boostingClassification(dataset, options, jaspResults)
-    }
-  })
-
-  if(isTryError(p))
-   JASP:::.quitAnalysis(gettextf("An error occurred in the analysis: %s", .extractErrorMessage(p))) 
+  if(type == "knn"){
+    classificationResult <- .knnClassification(dataset, options, jaspResults)
+  } else if(type == "lda"){
+    classificationResult <- .ldaClassification(dataset, options, jaspResults)
+  } else if(type == "randomForest"){
+    classificationResult <- .randomForestClassification(dataset, options, jaspResults)
+  } else if(type == "boosting"){
+    classificationResult <- .boostingClassification(dataset, options, jaspResults)
+  }
 
   jaspResults[["classificationResult"]] <- createJaspState(classificationResult)
   jaspResults[["classificationResult"]]$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "validationDataManual",
