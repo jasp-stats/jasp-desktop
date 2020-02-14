@@ -96,8 +96,16 @@ Form
 			}
 			CheckBox
 			{
-				name	: "plotRobustness"
-				label	: qsTr("Bayes factor robustness check")
+				name				: "plotRobustness"
+				label				: qsTr("Bayes factor robustness check")
+				childrenOnSameRow	: true
+
+				DropDown
+				{
+					id		: plotRobustnessBFType
+					name	: "plotRobustnessBFType"
+					values	: ['BF10', 'BF+0', 'BF-0']
+				}
 			}
 		}
 
@@ -124,6 +132,38 @@ Form
 				DoubleField { name: "orGreaterThan1Prob";	label: qsTr("Log odds ratio > 0"); defaultValue: 0.25; max: 1; min: 0; decimals: 3 }
 				DoubleField { name: "orLessThan1Prob";		label: qsTr("Log odds ratio < 0"); defaultValue: 0.25; max: 1; min: 0; decimals: 3 }
 				DoubleField { name: "orNotEqualTo1Prob";	label: qsTr("Log odds ratio \u2260 0"); defaultValue: 0;    max: 1; min: 0; decimals: 3 }
+			}
+
+			Group
+			{
+				title	: qsTr("Robustness Plot Step Size")
+				IntegerField { label: qsTr("\u03bc:"); name: "mu_stepsize";	defaultValue: 5; min: 3 }
+				IntegerField { label: qsTr("\u03c3:"); name: "sigma_stepsize";	defaultValue: 5; min: 3 }
+			}
+
+			Group
+			{
+				title	: qsTr("Robustness Plot Range")
+
+				Row
+				{
+					anchors.right	: parent.right
+					spacing			: 10
+
+					Label { text: qsTr("\u03bc:") }
+					DoubleField { label: qsTr("lower:"); name: "mu_stepsize_low";	defaultValue: -0.5; negativeValues: true }
+					DoubleField { label: qsTr("upper:"); name: "mu_stepsize_hi";	defaultValue: 0.5 }
+				}
+
+				Row
+				{
+					anchors.right	: parent.right
+					spacing			: 10
+
+					Label { text: qsTr("\u03c3:") }
+					DoubleField { label: qsTr("lower:"); name: "sigma_stepsize_low"; defaultValue: 0.1; min: 0.0 }
+					DoubleField { label: qsTr("upper:"); name: "sigma_stepsize_hi";	 defaultValue: 1.0; min: 0.0 }
+				}
 			}
 		}
 
