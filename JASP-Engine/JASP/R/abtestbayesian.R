@@ -340,7 +340,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 .abTestPlotRobustness <- function(jaspResults, ab_obj, options, ready, position) {
 
   abTestRobustnessPlot <- createJaspPlot(title = gettext("Bayes Factor Robustness Check"),  width = 530, height = 400)
-  abTestRobustnessPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "mu_stepsize", "sigma_stepsize", "numSamples", "plotRobustness", "setSeed", "seed"))
+  abTestRobustnessPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "mu_stepsize", "sigma_stepsize", "mu_stepsize_lower", "mu_stepsize_upper", "sigma_stepsize_lower", "sigma_stepsize_upper", "plotRobustnessBFType", "numSamples", "plotRobustness", "setSeed", "seed"))
   abTestRobustnessPlot$position <- position
 
   jaspResults[["abTestRobustnessPlot"]] <- abTestRobustnessPlot
@@ -348,16 +348,27 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   if (!ready)
     return()
 
-  abTestRobustnessPlot$plotObject <- .plotRobustness.abTest(ab_obj, options$mu_stepsize, options$sigma_stepsize)
+  abTestRobustnessPlot$plotObject <- .plotRobustness.abTest(ab_obj, options)
 }
 
 
-.plotRobustness.abTest <- function(ab_obj, mu_steps, sigma_steps) {
+.plotRobustness.abTest <- function(ab_obj, options) {
   # Args:
   #   ab_obj: ab test object
 
+  mu_range    = c(options$mu_stepsize_lower,    options$mu_stepsize_upper)
+  sigma_range = c(options$sigma_stepsize_lower, options$sigma_stepsize_upper)
+
   plotFunc <- function() {
-      abtest::plot_robustness(x = ab_obj, mu_steps = mu_steps, sigma_steps = sigma_steps)
+
+    abtest::plot_robustness(
+      x           = ab_obj,
+      mu_steps    = options$mu_stepsize,
+      sigma_steps = options$sigma_stepsize,
+      mu_range    = mu_range,
+      sigma_range = sigma_range,
+      bftype      = options$plotRobustnessBFType
+    )
   }
 
   return (plotFunc)
