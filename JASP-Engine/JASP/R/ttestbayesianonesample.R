@@ -52,13 +52,14 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
       ttestTable$addFootnote(errorMessage, rowNames = var)
       ttestResults[["status"]][var] <- "error"
       ttestResults[["errorFootnotes"]][[var]] <- errorMessage
+      ttestRows[var, c("BF", "error")] <- NaN
 
     } else {
 
       # these objects are made here so they don't need to be created every time a try fails,
       # which means they could be forgotten and not created
-      bf.raw <- NA_real_
-      error  <- NA_real_
+      bf.raw <- NaN
+      error  <- NaN
 
       x <- dataset[[.v(var)]]
       x <- x[!is.na(x)]  - options[["testValue"]]
@@ -96,11 +97,11 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
         }
       }
 
+      ttestResults[["BF10post"]][var] <- bf.raw
       BF <- .recodeBFtype(bfOld     = bf.raw,
                           newBFtype = bf.type,
                           oldBFtype = "BF10")
 
-      ttestResults[["BF10post"]][var] <- BF
       msg <- .ttestBayesianCheckBFPlot(BF)
       if (!is.null(msg)) {
         ttestResults[["plottingError"]][[var]] <- msg

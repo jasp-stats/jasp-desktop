@@ -154,9 +154,8 @@
 
     # analysis breaking errors
     if (grouping != "") {
-      .hasErrors(dataset, "run", type = c('factorLevels', 'variance'),
+      .hasErrors(dataset, "run", type = 'factorLevels',
                  factorLevels.target = grouping, factorLevels.amount = '!= 2',
-                 variance.target = dependents, variance.grouping = grouping,
                  exitAnalysisIfErrors = TRUE)
     } else {
       grouping <- NULL
@@ -547,7 +546,7 @@
   descriptives$addColumnInfo(name = "variable", title = "", type = "string", combine = TRUE)
   if (hasGrouping)
     descriptives$addColumnInfo(name = "group", title = gettext("Group"), type = "string")
-  descriptives$addColumnInfo  (name = "N",     title = gettext("N"),     type = "number")
+  descriptives$addColumnInfo  (name = "N",     title = gettext("N"),     type = "integer")
   descriptives$addColumnInfo  (name = "mean",  title = gettext("Mean"),  type = "number")
   descriptives$addColumnInfo  (name = "sd",    title = gettext("SD"),    type = "number")
   descriptives$addColumnInfo  (name = "se",    title = gettext("SE"),    type = "number")
@@ -555,8 +554,8 @@
   if (hasCRI) {
     interval <- 100 * CRI
     title <- gettextf("%.0f%% Credible Interval", interval)
-    descriptives$addColumnInfo(name = "lowerCI", type = "number", format = "sf:4;dp:3", title = gettext("Lower"), overtitle = title)
-    descriptives$addColumnInfo(name = "upperCI", type = "number", format = "sf:4;dp:3", title = gettext("Upper"), overtitle = title)
+    descriptives$addColumnInfo(name = "lowerCI", type = "number", title = gettext("Lower"), overtitle = title)
+    descriptives$addColumnInfo(name = "upperCI", type = "number", title = gettext("Upper"), overtitle = title)
   }
 
   nvar <- length(dependents)
@@ -934,6 +933,7 @@
     group2 <- NULL
   }
 
+  currentPlot <- 1L
   for (var in dependents) {
     if (is.null(collection[[var]][["plotRobustness"]]$plotObject)) {
       plot <- collection[[var]][["plotRobustness"]]
@@ -971,6 +971,8 @@
           rscale                = rscale,
           BFH1H0                = BFH1H0,
           additionalInformation = additionalInformation,
+          currentPlot           = currentPlot,
+          totalPlots            = length(dependents),
           ...
         ))
         if (isTryError(obj)) {
@@ -987,6 +989,7 @@
         plot$setError(err)
       }
     }
+    currentPlot <- currentPlot + 1L
   }
 }
 
@@ -1013,6 +1016,7 @@
     subDataSet <- NULL
   }
 
+  currentPlot <- 1L
   for (var in dependents) {
     if (is.null(collection[[var]][["plotSequential"]]$plotObject)) {
       plot <- collection[[var]][["plotSequential"]]
@@ -1056,6 +1060,8 @@
           level2              = g2,
           nullInterval        = nullInterval,
           options             = options,
+          currentPlot         = currentPlot,
+          totalPlots          = length(dependents),
           ...
         ))
         if (isTryError(obj)) {
@@ -1072,6 +1078,7 @@
         plot$setError(err)
       }
     }
+    currentPlot <- currentPlot + 1L
   }
 }
 
@@ -1179,7 +1186,7 @@
 
 .plotBF.robustnessCheck.ttest2 <- function(
   x = NULL, y = NULL, paired = FALSE, BF10post, nullInterval, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
-  BFH1H0 = TRUE, additionalInformation = FALSE) {
+  BFH1H0 = TRUE, additionalInformation = FALSE, currentPlot = 1L, totalPlots = 1L) {
 
   r <- .ttestBayesianGetRScale(rscale)
 
@@ -1189,16 +1196,22 @@
     rValues <- seq(0.0005, 1.5, length.out = 400)
   }
 
+  startProgressbar(length(rValues), sprintf(ngettext(totalPlots,
+                                                     "Running robustness check",
+                                                     "Running robustness check %d / %d"),
+                                            currentPlot, totalPlots))
   # BF10
   BF10 <- vector("numeric", length(rValues))
   if (!isFALSE(oneSided)) {
     for (i in seq_along(rValues)) {
       BF10[i] <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = rValues[i])
+      progressbarTick()
     }
   } else {
     for (i in seq_along(rValues)) {
       BF <- BayesFactor::ttestBF(x = x, y = y, paired = paired, nullInterval = nullInterval, rscale = rValues[i])
       BF10[i] <- BayesFactor::extractBF(BF, logbf = FALSE, onlybf = FALSE)[1, "bf"]
+      progressbarTick()
     }
   }
 
@@ -1225,7 +1238,6 @@
     BF10w     <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = "wide")
     BF10ultra <- .oneSidedTtestBFRichard(x = x, y = y, paired = paired, oneSided = oneSided, r = "ultrawide")
 
-    BF10post  <-  1 / BF10post
   }
 
   # BF10 user prior
@@ -1306,7 +1318,7 @@
 .plotSequentialBF.ttest2 <- function(
   x = NULL, y = NULL, paired = FALSE, BF10post, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
   plotDifferentPriors = FALSE, BFH1H0 = TRUE, dontPlotData = FALSE, level1 = NULL, level2 = NULL,
-  subDataSet = NULL, nullInterval = c(-Inf, Inf), options) {
+  subDataSet = NULL, nullInterval = c(-Inf, Inf), options, currentPlot = 1L, totalPlots = 1L) {
 
   r <- .ttestBayesianGetRScale(rscale)
   evidenceText <- !plotDifferentPriors
@@ -1376,7 +1388,15 @@
     k <- idData + 1
 
 
-    while ((i <= length(x) | j <= length(y)) & k <= length(BF10)) {
+    nTicks <- length(BF10) - i
+    if (plotDifferentPriors)
+      nTicks <- 3L * nTicks
+    startProgressbar(nTicks, sprintf(ngettext(totalPlots,
+                                              "Running sequential analysis",
+                                              "Running sequential analysis %d / %d"),
+                                     currentPlot, totalPlots))
+
+    while ((i <= length(x) || j <= length(y)) && k <= length(BF10)) {
 
       bfObject <- .generalTtestBF(x = x[1:i], y = y[1:j], paired = paired, oneSided = oneSided, options = options)
       BF10[k] <- bfObject[["bf"]]
@@ -1401,15 +1421,12 @@
         j <- j + 1
       }
 
-      if ( ! .shouldContinue(callback()))
-        return()
+      progressbarTick()
     }
 
 
     BF10 <- BF10[is.finite(BF10)]
 
-    if ( ! .shouldContinue(callback()))
-      return()
 
     if (plotDifferentPriors) {
 
@@ -1436,7 +1453,7 @@
       k <- idData + 1
 
 
-      while ((i <= length(x) | j <= length(y)) & k <= length(BF10u)) {
+      while ((i <= length(x) || j <= length(y)) && k <= length(BF10u)) {
 
         if (oneSided == FALSE) {
 
@@ -1459,16 +1476,11 @@
           j <- j + 1
         }
 
-        if ( ! .shouldContinue(callback()))
-          return()
+        progressbarTick()
       }
 
 
       BF10u <- BF10u[is.finite(BF10u)]
-
-      if ( ! .shouldContinue(callback()))
-        return()
-
 
       if (idData < length(x)) {
 
@@ -1493,7 +1505,7 @@
       k <- idData + 1
 
 
-      while ((i <= length(x) | j <= length(y)) & k <= length(BF10w)) {
+      while ((i <= length(x) || j <= length(y)) && k <= length(BF10w)) {
 
         if (oneSided == FALSE) {
 
@@ -1516,14 +1528,11 @@
           j <- j + 1
         }
 
-        if ( ! .shouldContinue(callback()))
-          return()
+        progressbarTick()
       }
 
       BF10w <- BF10w[is.finite(BF10w)]
 
-      if ( ! .shouldContinue(callback()))
-        return()
 
     }
 
@@ -1586,6 +1595,14 @@
     #   }
     # }
 
+    nTicks <- nrow(subDataSet)
+    if (plotDifferentPriors)
+      nTicks <- 3L * nTicks
+    startProgressbar(nTicks, sprintf(ngettext(totalPlots,
+                                              "Running sequential analysis",
+                                              "Running sequential analysis %d / %d"),
+                                     currentPlot, totalPlots))
+
     for (i in seq_len(nrow(subDataSet))) {
 
       if (subDataSet[i, 2] == level1) {
@@ -1620,6 +1637,7 @@
 
         BF10[i] <- 1
       }
+      progressbarTick()
     }
 
     if (plotDifferentPriors) {
@@ -1659,6 +1677,7 @@
 
           BF10u[i] <- 1
         }
+        progressbarTick()
       }
 
       xx <- numeric()
@@ -1697,6 +1716,7 @@
           BF10w[i] <- 1
         }
       }
+      progressbarTick()
     }
 
   }
@@ -1751,13 +1771,8 @@
 
   r <- .ttestBayesianGetRScale(rscale)
 
-  if (BFH1H0) {
-    BF10 <- BF
-    BF01 <- 1 / BF10
-  } else {
-    BF01 <- BF
-    BF10 <- 1 / BF01
-  }
+  BF10 <- BF
+  BF01 <- 1 / BF10
 
   if (options[["effectSizeStandardized"]] == "informative" && !wilcoxTest) {
     # informative prior
@@ -2044,8 +2059,9 @@
   
   if (BFH1H0) {
     bfType <- "BF10"
-    BF <- 1 / BF01
+    BF <- BF10
   } else {
+    BF <- BF01
     bfType <- "BF01"
   }
   hypothesis <- switch(oneSided,

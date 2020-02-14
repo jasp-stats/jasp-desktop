@@ -70,13 +70,14 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
       ttestTable$addFootnote(errorMessage, rowNames = var)
       ttestResults[["status"]][var] <- "error"
       ttestResults[["errorFootnotes"]][[var]] <- errorMessage
+      ttestRows[var, -1L] <- NaN # everything except the first because the length and names differ for student vs wilcoxon
 
     } else {
 
       # these objects are made here so they don't need to be created every time a try fails,
       # which means they could be forgotten and not created
-      bf.raw <- NA_real_
-      error  <- NA_real_
+      bf.raw <- NaN
+      error  <- NaN
 
       # BayesFactor package doesn't handle NAs, so it is necessary to exclude them
       idxNA <- is.na(dataset[[.v(var)]]) | idxNAg
@@ -166,12 +167,12 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
 
       }
 
+      ttestResults[["BF10post"]][var] <- bf.raw
       BF <- .recodeBFtype(bfOld     = bf.raw,
                           newBFtype = options[["bayesFactorType"]],
                           oldBFtype = "BF10"
       )
 
-      ttestResults[["BF10post"]][var] <- BF
       msg <- .ttestBayesianCheckBFPlot(BF)
       if (!is.null(msg)) {
         ttestResults[["plottingError"]][[var]] <- msg
