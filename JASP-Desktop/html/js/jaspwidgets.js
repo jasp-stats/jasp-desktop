@@ -963,7 +963,7 @@ JASPWidgets.ProgressbarView = JASPWidgets.View.extend({
 			label = this.model.get("label");
 			value = this.model.get("maxValue");
 		} else {
-			label = this._ellipsify(label);
+			label = this._makePrettyLabel(label);
 			value = Math.min(this.model.get("maxValue"), value)
 		}
 
@@ -1041,7 +1041,21 @@ JASPWidgets.ProgressbarView = JASPWidgets.View.extend({
 		this.$el.append($container);
 	},
 
-	_ellipsify: function(label) {
+	_makePrettyLabel: function(label) {
+		return this._addTrailingEllipsis(this._truncate(label));
+	},
+
+	_truncate: function(label) {
+		var maxChars = 80;
+		var sep = "...";
+		if (maxChars < label.length) {
+			var nCharsPerChunk = Math.floor((maxChars - sep.length) / 2);
+			label = label.substring(0, nCharsPerChunk) + '<span class="jasp-progressbar-label-sep">' + sep + '</span>' + label.substring(label.length - nCharsPerChunk);
+		}
+		return label;
+	},
+
+	_addTrailingEllipsis: function(label) {
 		if (label.length == 0)
 			return label;
 
