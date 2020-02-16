@@ -1,8 +1,8 @@
 {
 	"moduleDescription" :
 	{
-		"title" : 		"Meta Analysis",
-		"description" : "Meta Analysis module.",
+		"title" : 		"Meta-Analysis",
+		"description" : "Meta-Analysis module.",
 		"icon":			"meta-analysis.svg",
 		"version":		1,
 		"author":		"JASP Team",
@@ -16,14 +16,14 @@
 
 	"menu":  [
 		{
-			"title":	"Classical Meta Analysis",
+			"title":	"Classical Meta-Analysis",
 			"function":	"ClassicalMetaAnalysis"
 		},
 		{
 			"title":	"-"
 		},
 		{
-			"title": 	"Bayesian Meta Analysis",
+			"title": 	"Bayesian Meta-Analysis",
 			"function":	"BayesianMetaAnalysis"
 		}
 	]
