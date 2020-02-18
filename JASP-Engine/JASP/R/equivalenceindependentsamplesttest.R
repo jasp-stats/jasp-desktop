@@ -191,7 +191,7 @@ EquivalenceIndependentSamplesTTest <- function(jaspResults, dataset, options) {
   equivalenceBoundsTable$addColumnInfo(name = "low",        title = gettext("Low"),                 type = "number")
   equivalenceBoundsTable$addColumnInfo(name = "high",       title = gettext("High"),                type = "number")
 
-  title <- gettextf("%i%% Confidence Interval", 100 - options$alpha * 100 * 2)
+  title <- gettextf("%s%% Confidence Interval", 100 - options$alpha * 100 * 2)
   equivalenceBoundsTable$addColumnInfo(name = "lower", type = "number", format = "sf:4;dp:3", title = gettext("Lower"), overtitle = title)
   equivalenceBoundsTable$addColumnInfo(name = "upper", type = "number", format = "sf:4;dp:3", title = gettext("Upper"), overtitle = title)
 

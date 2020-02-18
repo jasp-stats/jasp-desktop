@@ -154,25 +154,25 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
   
   
   ### check the directionality
-  
   if (options$hypothesis == "greaterThanTestValue") {
+    directionFootnote <- gettext("greater than")
     direction <- "greater"
-    tMessage <- gettext("For the Student t-test, the alternative hypothesis specifies that the mean is greater than ")
-    wMessage <- gettext("For the Wilcoxon test, the alternative hypothesis specifies that the median is greater than ")
   } else if (options$hypothesis == "lessThanTestValue") {
+    directionFootnote <- gettext("less than")
     direction <- "less"
-    tMessage <- gettext("For the Student t-test, the alternative hypothesis specifies that the mean is less than ")
-    wMessage <- gettext("For the Wilcoxon test, the alternative hypothesis specifies that the median is less than ")
   } else {
+    directionFootnote <- gettext("different from")
     direction <- "two.sided"
-    tMessage <- gettext("For the Student t-test, the alternative hypothesis specifies that the mean is different from ")
-    wMessage <- gettext("For the Wilcoxon test, the alternative hypothesis specifies that the median is different from ")
   }
   
-  if (options$testValue != 0) {
-    tMessage <- paste0(tMessage, options$testValue, ".")
-    wMessage <- paste0(wMessage, options$testValue, ".")
-    ttest$addFootnote(paste0(tMessage, "; ", wilcoxMessage))
+  if (options$testValue != 0 && (optionsList$wantsStudents || optionsList$wantsWilcox)) {
+    tMessage <- wMessage <- NULL
+    if (optionsList$wantsStudents)
+      tMessage <- gettextf("For the Student t-test, the alternative hypothesis specifies that the mean is %1$s %2$s%3$s", directionFootnote, options$testValue, ngettext(1 + optionsList$wantsWilcox, ".", ";"))
+    if (optionsList$wantsWilcox)
+      wMessage <- gettextf("For the Wilcoxon test, the alternative hypothesis specifies that the median is %1$s %2$s.", directionFootnote, options$testValue)
+    
+    ttest$addFootnote(paste(tMessage, wMessage))
   }
   
   jaspResults[["ttest"]] <- ttest

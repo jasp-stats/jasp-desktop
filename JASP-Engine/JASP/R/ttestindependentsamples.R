@@ -68,13 +68,14 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     testStat     <- "Statistic"
     testStatName <- gettext("Statistic")
   }
-    
+  
+  dfType <- ifelse(optionsList$wantsWelchs, "number", "integer")
   
   ttest$addColumnInfo(name = "v", title = " ", type = "string", combine = TRUE)
   if (sum(optionsList$allTests) >= 2) 
     ttest$addColumnInfo(name = "test", type = "string",  title = gettext("Test"))
   ttest$addColumnInfo(name = testStat, type = "number",  title = testStatName)
-  ttest$addColumnInfo(name = "df",     type = "integer", title = gettext("df"))
+  ttest$addColumnInfo(name = "df",     type = dfType,    title = gettext("df"))
   ttest$addColumnInfo(name = "p",      type = "pvalue",  title = gettext("p"))
   .ttestVovkSellke(ttest, options)
   
@@ -142,8 +143,8 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     ttest$addColumnInfo(name = "d", title = nameOfEffectSize, type = "number")
     if (optionsList$wantsWilcox) {
       if (optionsList$wantsStudents || optionsList$wantsWelchs) 
-        message <- paste0(gettext("For the Mann-Whitney test, effect size is given by the rank biserial correlation. 
-                         For the other test(s), by "), nameOfEffectSizeParametric, ".")
+        message <- gettextf("For the Mann-Whitney test, effect size is given by the rank biserial correlation. 
+                         For the other test(s), by %s.", nameOfEffectSizeParametric)
       else
         message <- gettext("For the Mann-Whitney test, effect size is given by the rank biserial correlation.")
       ttest$addFootnote(message)
