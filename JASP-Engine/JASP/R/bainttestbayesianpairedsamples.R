@@ -82,7 +82,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
                     "biggerSmaller"       = 4,
                     "equalBiggerSmaller"  = 5)
     
-  if (pair[[2]] != "" && pair[[1]] != pair[[2]]) {
+  if (pair[[2]] != "" && pair[[1]] != pair[[2]] && pair[[1]] != "") {
 
     subDataSet <- subset(dataset, select=c(.v(pair[[1]]), .v(pair[[2]])) )
     c1 <- subDataSet[[ .v(pair[[1]]) ]]
@@ -162,7 +162,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
 
       currentPair <- paste(pair, collapse=" - ")
 
-      if(pair[[2]] != ""){
+      if(pair[[1]] != "" || pair[[2]] != ""){
         
         bainAnalysis <- .bainPairedSampleState(pair, options, dataset, bainContainer)
 
@@ -300,7 +300,7 @@ BainTTestBayesianPairedSamples <- function(jaspResults, dataset, options, ...) {
     if(pair[[1]] == pair[[2]]){
       bainTable$addFootnote(message=gettext("Results not computed: The variables in this pair are the same."), colNames="Variable", rowNames=currentPair)
     }
-    if(pair[[2]] == ""){
+    if(pair[[1]] == "" || pair[[2]] == ""){
       bainTable$addFootnote(message=gettext("Results not computed: The pair is incomplete."), colNames="Variable", rowNames=currentPair)
     }
 

@@ -52,9 +52,12 @@
                        observations.amount = "< 2",
                        exitAnalysisIfErrors = TRUE)
 
-  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && nlevels(factor(dataset[,.v(options[["testSetIndicatorVariable"]])])) != 2){
+  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && !is.numeric(dataset[,.v(options[["testSetIndicatorVariable"]])]))
+    JASP:::.quitAnalysis(gettext("Your test set indicator should contain numeric values, containing only 1 (included in test set) and 0 (excluded from test set)."))
+
+  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && nlevels(factor(dataset[,.v(options[["testSetIndicatorVariable"]])])) != 2)
     JASP:::.quitAnalysis(gettext("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."))
-  }
+
 }
 
 .classificationAnalysesReady <- function(options, type){
@@ -84,20 +87,21 @@
   if(ready){
     .classificationFormula(options, jaspResults)
     
-    if(type == "knn"){
-      classificationResult <- .knnClassification(dataset, options, jaspResults)
-    } else if(type == "lda"){
-      classificationResult <- .ldaClassification(dataset, options, jaspResults)
-    } else if(type == "randomForest"){
-      classificationResult <- .randomForestClassification(dataset, options, jaspResults)
-    } else if(type == "boosting"){
-      classificationResult <- .boostingClassification(dataset, options, jaspResults)
-    }
-    jaspResults[["classificationResult"]] <- createJaspState(classificationResult)
-    jaspResults[["classificationResult"]]$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "validationDataManual",
-                                                              "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "maxK", "noOfFolds", "modelValid",
-                                                              "estimationMethod", "noOfTrees", "maxTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode",
-                                                              "testSetIndicatorVariable", "testSetIndicator", "holdoutData", "testDataManual"))
+  if(type == "knn"){
+    classificationResult <- .knnClassification(dataset, options, jaspResults)
+  } else if(type == "lda"){
+    classificationResult <- .ldaClassification(dataset, options, jaspResults)
+  } else if(type == "randomForest"){
+    classificationResult <- .randomForestClassification(dataset, options, jaspResults)
+  } else if(type == "boosting"){
+    classificationResult <- .boostingClassification(dataset, options, jaspResults)
+  }
+
+  jaspResults[["classificationResult"]] <- createJaspState(classificationResult)
+  jaspResults[["classificationResult"]]$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "validationDataManual",
+                                                            "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "maxK", "noOfFolds", "modelValid",
+                                                            "estimationMethod", "noOfTrees", "maxTrees", "bagFrac", "noOfPredictors", "numberOfPredictors", "shrinkage", "intDepth", "nNode",
+                                                            "testSetIndicatorVariable", "testSetIndicator", "holdoutData", "testDataManual"))
   }
 }
 
@@ -612,6 +616,11 @@
   jaspResults[["andrewsCurve"]] <- andrewsCurve
 
   if(!ready) return()
+
+  if(length(options[["predictors"]]) < 2){
+    andrewsCurve$setError(gettext("Andrews curves require a minimum of 2 predictor variables."))
+    return()
+  }
 
   if(nrow(dataset)> 500){
     sample <- sample(1:nrow(dataset), size = 500, replace = FALSE) # Sample to prevent crazy long loading times with big data

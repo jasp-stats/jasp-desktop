@@ -61,9 +61,11 @@
                        observations.amount = "< 2",
                        exitAnalysisIfErrors = TRUE)
 
-  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && nlevels(factor(dataset[,.v(options[["testSetIndicatorVariable"]])])) != 2){
+  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && !is.numeric(dataset[,.v(options[["testSetIndicatorVariable"]])]))
+    JASP:::.quitAnalysis(gettext("Your test set indicator should contain numeric values, containing only 1 (included in test set) and 0 (excluded from test set)."))
+
+  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && nlevels(factor(dataset[,.v(options[["testSetIndicatorVariable"]])])) != 2)
     JASP:::.quitAnalysis(gettext("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."))
-  }
 }
 
 .getCustomErrorChecksKnnBoosting <- function(dataset, options, type) {
@@ -155,21 +157,22 @@
   if(ready){
     .regressionFormula(options, jaspResults)
     
-    if(type == "knn"){
-      regressionResult <- .knnRegression(dataset, options, jaspResults)
-    } else if(type == "regularized"){
-      regressionResult <- .regularizedRegression(dataset, options, jaspResults)
-    } else if(type == "randomForest"){
-      regressionResult <- .randomForestRegression(dataset, options, jaspResults)
-    } else if(type == "boosting"){
-      regressionResult <- .boostingRegression(dataset, options, jaspResults)
-    }
-    jaspResults[["regressionResult"]] <- createJaspState(regressionResult)
-    jaspResults[["regressionResult"]]$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "maxTrees",
-                                                              "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "confusionProportions", "maxK", "noOfFolds", "modelValid",
-                                                              "penalty", "alpha", "thresh", "intercept", "shrinkage", "lambda", "noOfTrees", "noOfPredictors", "numberOfPredictors", "bagFrac",
-                                                              "intDepth", "nNode", "distance", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual",
-                                                              "holdoutData", "testDataManual"))
+  if(type == "knn"){
+    regressionResult <- .knnRegression(dataset, options, jaspResults)
+  } else if(type == "regularized"){
+    regressionResult <- .regularizedRegression(dataset, options, jaspResults)
+  } else if(type == "randomForest"){
+    regressionResult <- .randomForestRegression(dataset, options, jaspResults)
+  } else if(type == "boosting"){
+    regressionResult <- .boostingRegression(dataset, options, jaspResults)
+  }
+
+  jaspResults[["regressionResult"]] <- createJaspState(regressionResult)
+  jaspResults[["regressionResult"]]$dependOn(options = c("noOfNearestNeighbours", "trainingDataManual", "distanceParameterManual", "weights", "scaleEqualSD", "modelOpt", "maxTrees",
+                                                            "target", "predictors", "seed", "seedBox", "validationLeaveOneOut", "confusionProportions", "maxK", "noOfFolds", "modelValid",
+                                                            "penalty", "alpha", "thresh", "intercept", "shrinkage", "lambda", "noOfTrees", "noOfPredictors", "numberOfPredictors", "bagFrac",
+                                                            "intDepth", "nNode", "distance", "testSetIndicatorVariable", "testSetIndicator", "validationDataManual",
+                                                            "holdoutData", "testDataManual"))
   }
 }
 

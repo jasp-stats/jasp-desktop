@@ -1146,6 +1146,11 @@
 
     if(isTryError(result)){
 
+      if(JASP:::.extractErrorMessage(result) == "Sample size could not be calculated, please increase the maxSize argument"){
+        planningContainer$setError(gettext("The resulting sample size exceeds 5000."))
+        return()
+      }
+
       planningContainer$setError(gettextf("An error occurred: %1$s", 
                                           JASP:::.extractErrorMessage(result)))
       return()
@@ -1196,7 +1201,7 @@
 
     if(type == "frequentist"){
 
-      planningContainer[["planningParagraph"]] <- createJaspHtml(gettextf("The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required to for a materiality of <b>%2$s</b>, assuming
+      planningContainer[["planningParagraph"]] <- createJaspHtml(gettextf("The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming
                                                                         the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the
                                                                         control risk <b>(%7$s)</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>%8$s</b>, the
                                                                         maximum misstatement is estimated to be below materiality.",
@@ -1216,7 +1221,7 @@
                                   "binomial" = "beta", 
                                   "hypergeometric" = "beta-binomial")
 
-      planningContainer[["planningParagraph"]] <- createJaspHtml(gettextf("The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required to for a materiality of <b>%2$s</b>, assuming
+      planningContainer[["planningParagraph"]] <- createJaspHtml(gettextf("The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming
                                                                           the sample contains <b>%2$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the 
                                                                           control risk <b>(%7$s)</b> and the expected errors. The information in this prior distribution states that there is a <b>%8$s%%</b> prior probability that 
                                                                           the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains 

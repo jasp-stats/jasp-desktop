@@ -107,9 +107,10 @@
     } else if(type == "randomForest"){
       clusterResult <- .randomForestClustering(dataset, options, jaspResults)
     }
-    jaspResults[["clusterResult"]] <- createJaspState(clusterResult)
-    jaspResults[["clusterResult"]]$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed",
-                                                      "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "maxTrees", "optimizationCriterion"))
+
+  jaspResults[["clusterResult"]] <- createJaspState(clusterResult)
+  jaspResults[["clusterResult"]]$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "noOfIterations", "algorithm", "modelOpt", "seed",
+                                                    "maxClusters", "seedBox", "scaleEqualSD", "m", "distance", "linkage", "eps", "minPts", "noOfTrees", "maxTrees", "optimizationCriterion"))
   }
 }
 
@@ -382,7 +383,7 @@
 
 if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options[["modelOpt"]] == "validationManual") return()
 
-  optimPlot <- createJaspPlot(plot = NULL, title = gettext("Elbow Method Plot"), width = 500, height = 300)
+  optimPlot <- createJaspPlot(plot = NULL, title = gettext("Elbow Method Plot"), width = 600, height = 400)
   optimPlot$position <- position
   optimPlot$dependOn(options = c("predictors", "noOfClusters","noOfRandomSets", "algorithm", "eps", "minPts", "distance",
                                           "noOfIterations", "modelOpt", "ready", "seed", "plot2dCluster", "maxClusters", "scaleEqualSD", "seedBox",
@@ -398,12 +399,12 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
   bic <- clusterResult[['bicStore']]
 
   values <- c(wss, aic, bic)
-  type <- rep(c(gettext("Within Sum of Squares"), gettext("AIC"), gettext("BIC")), each = length(wss))
+  type <- rep(c(gettext("WSS"), gettext("AIC"), gettext("BIC")), each = length(wss))
 
   requiredPoint <- base::switch(options[["optimizationCriterion"]],
                                   "validationAIC" = gettext("AIC"),
                                   "validationBIC" = gettext("BIC"),
-                                  "validationSilh" = gettext("Within Sum of Squares"))
+                                  "validationSilh" = "")
 
   d <- data.frame(x = rep(2:options[["maxClusters"]], 3), y = values, type = type)
 
@@ -419,9 +420,15 @@ if(!is.null(jaspResults[["optimPlot"]]) || !options[["withinssPlot"]] || options
         JASPgraphs::geom_line() +
         ggplot2::scale_x_continuous(name = gettext("Number of Clusters"), breaks = xBreaks, labels = xBreaks) +
         ggplot2::scale_y_continuous(name = "", breaks = yBreaks, labels = yBreaks) +
-        ggplot2::labs(linetype = "") +
         ggplot2::scale_linetype_manual(values = c(3, 2, 1)) +
-        JASPgraphs::geom_point(data = pointData, ggplot2::aes(x = x, y = y, linetype = type), fill = "red")
+        ggplot2::labs(linetype = "")
+  
+  if(options[["optimizationCriterion"]] != "validationSilh"){
+    p <- p + JASPgraphs::geom_point(data = pointData, ggplot2::aes(x = x, y = y, linetype = type, fill = "red")) +
+              ggplot2::scale_fill_manual(labels = gettextf("Lowest %s value", requiredPoint), values = "red") +
+              ggplot2::labs(fill = "") 
+  }
+  
   p <- JASPgraphs::themeJasp(p, legend.position = "top")
 
   optimPlot$plotObject <- p

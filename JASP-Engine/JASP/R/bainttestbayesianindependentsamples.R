@@ -368,7 +368,7 @@ BainTTestBayesianIndependentSamples <- function(jaspResults, dataset, options, .
 
 				descriptivesPlots[[variable]] <- createJaspPlot(plot=NULL, title = variable)
 				descriptivesPlots[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
-				descriptivesPlots[[variable]]$setError(.extractErrorMessage(bainAnalysis))
+				descriptivesPlots[[variable]]$setError(gettextf("Results not computed: %s", .extractErrorMessage(bainAnalysis)))
 
 			} else {
 
