@@ -1265,7 +1265,7 @@
   nPossible <- prod(sapply(dataset2[, fixedB64, drop = FALSE], nlevels))
   if (nObserved != nPossible) {
     descriptivesTable$addFootnote(
-      symbol = "<em>Note.</em>", 
+      symbol = gettext("<em>Note.</em>"), 
       message = gettextf(
         "Some combinations of factors are not observed and hence omitted (%g out of %g combinations are unobserved).",
         nPossible - nObserved, nPossible

@@ -957,7 +957,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
                                  ", ")[[1]])
       postHocContainer[[var]]$addFootnote(
         message = gettextf("Results are averaged over the levels of: %s", paste(avTerms, collapse = ", ")),
-        symbol = "<i>Note.</i>")
+        symbol = gettext("<i>Note.</i>"))
     }
     
     
