@@ -319,7 +319,7 @@ COPY %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_BUILD_DIR%\jasp.wxi /Y
 COPY %JASP_DESKTOP%\Tools\wix\jasp.wxs /Y
 "%WIX%\bin\candle" -dRedistMergeModule=%MERGEMODULENAME% -arch %WIXARCH% -dJASP_DESKTOP_DIR=%JASP_DESKTOP% -ext WixUIExtension -ext WixUtilExtension jasp.wxs || exit /B 9
 
-"%WIX%\bin\light" -dRedistMergeModule=%MERGEMODULENAME% -ext WixUIExtension -ext WixUtilExtension -out JASP.msi JASPFilesFragment.wixobj jasp.wixobj || exit /B 10
+"%WIX%\bin\light" -sval -dRedistMergeModule=%MERGEMODULENAME% -ext WixUIExtension -ext WixUtilExtension -out JASP.msi JASPFilesFragment.wixobj jasp.wixobj || exit /B 10
 
 cd %STARTDIR%
 
