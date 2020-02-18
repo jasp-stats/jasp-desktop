@@ -42,3 +42,4 @@ RowComponents         1.0 RowComponents.qml
 ComputedColumnField  1.0 ComputedColumnField.qml
 AddColumnField      1.0 AddColumnField.qml
 HelpButton         1.0 HelpButton.qml
+Text              1.0 Text.qml
