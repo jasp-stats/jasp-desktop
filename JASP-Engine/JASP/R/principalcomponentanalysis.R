@@ -188,7 +188,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
 
   coltitle <- ifelse(options$rotationMethod == "orthogonal", "PC", "RC")
   if (options$rotationMethod == "orthogonal" && options$orthogonalSelector == "none") {
-    loatab$addFootnote(message = gettext("No rotation method applied."), symbol = "<em>Note.</em>")
+    loatab$addFootnote(message = gettext("No rotation method applied."), symbol = gettext("<em>Note.</em>"))
   } else {
     loatab$addFootnote(
       message = gettextf("Applied rotation method is %s.", ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector))
