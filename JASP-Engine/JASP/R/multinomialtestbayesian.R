@@ -199,13 +199,13 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   if(bayesianAnalysis){
     ciRequested   <- options$credibleInterval
     ciInterval    <- options$credibleIntervalInterval
-    ciColumnName  <- gettext("Credible Interval")
+    ciType  <- gettext("Credible")
     tableFootnote <- gettext("Credible intervals are based on independent binomial distributions with flat priors.")
     descriptivesTable$dependOn(c("countProp", "descriptives", "credibleIntervalInterval"))
   } else {
     ciRequested   <- options$confidenceInterval
     ciInterval    <- options$confidenceIntervalInterval 
-    ciColumnName  <- gettext("Confidence Interval")
+    ciType  <- gettext("Confidence")
     tableFootnote <- gettext("Confidence intervals are based on independent binomial distributions.")
     descriptivesTable$dependOn(c("countProp", "descriptives", "confidenceIntervalInterval"))
   }
@@ -231,7 +231,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   if(is.null(nhyps)){
     descriptivesTable$addColumnInfo(name = "expected", title = gettext("Expected"), type = numberType)
   } else if(nhyps == 1) {
-      descriptivesTable$addColumnInfo(name = nms, title = paste0(gettext("Expected: "), nms), type = numberType)
+      descriptivesTable$addColumnInfo(name = nms, title = gettextf("Expected: %s", nms), type = numberType)
   } else if(nhyps > 1) {
     for(h in 1:nhyps){
       descriptivesTable$addColumnInfo(name = nms[h], title = nms[h], type = numberType, overtitle = gettext("Expected"))
@@ -239,10 +239,11 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   }
 
   if (ciRequested) {
+      overTitle <- gettextf("%1$s%% %2$s Interval", paste0(100 * ciInterval), ciType)
       descriptivesTable$addColumnInfo(name = "lowerCI", title = gettext("Lower"), type = "number",
-                                      overtitle = paste0(100 * ciInterval, "% ", ciColumnName))
+                                      overtitle = overTitle)
       descriptivesTable$addColumnInfo(name = "upperCI", title = gettext("Upper"), type = "number",
-                                      overtitle = paste0(100 * ciInterval, "% ", ciColumnName))
+                                      overtitle = overTitle)
     } 
 
   jaspResults[["multinomialDescriptivesTable"]] <- descriptivesTable
@@ -262,8 +263,8 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
     descDF <- cbind(descDF, ciInfo)
     descriptivesTable$addFootnote(message = tableFootnote, symbol = gettext("<em>Note.</em>"))
     
-    if (any(is.nan(unlist(descDF[, c('lowerCI', 'upperCI')])))){
-      descriptivesTable$addFootnote(message = paste0(gettext("Could not compute "), tolower(ciColumnName), 's.'))
+    if (any(is.nan(unlist(descDF[, c('lowerCI', 'upperCI')])))) {
+      descriptivesTable$addFootnote(message = gettextf("Could not compute %s Intervals.", tolower(ciType)))
     }
   } 
   

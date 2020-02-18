@@ -133,7 +133,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   )
 
   if (inherits(efaResult, "try-error")) {
-    errmsg <- paste(gettext("Estimation failed. \n Internal error message:"), attr(efaResult, "condition")$message)
+    errmsg <- gettextf("Estimation failed. \nInternal error message: %s", attr(efaResult, "condition")$message)
     modelContainer$setError(.decodeVarsInMessage(names(dataset), errmsg))
   }
 
@@ -238,14 +238,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (options$rotationMethod == "orthogonal" && options$orthogonalSelector == "none") {
     loatab$addFootnote(message = gettext("No rotation method applied."), symbol = gettext("<em>Note.</em>"))
   } else {
-    loatab$addFootnote(
-      message = paste0(
-        gettext("Applied rotation method is "),
-        ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector),
-        "."
-      ),
-      symbol = gettext("<em>Note.</em>")
-    )
+    loatab$addFootnote(message = gettextf("Applied rotation method is %s.", ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector)))
   }
 
   loads <- loadings(efaResults)
@@ -254,10 +247,10 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   for (i in 1:ncol(loads)) {
     # fix weird "all true" issue
     if (all(abs(loads[, i]) < options$highlightText)) {
-      loatab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "string")
+      loatab$addColumnInfo(name = paste0("c", i), title = gettextf("Factor %i", i), type = "string")
       loatab[[paste0("c", i)]] <- rep("", nrow(loads))
     } else {
-      loatab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "number", format = "dp:3")
+      loatab$addColumnInfo(name = paste0("c", i), title = gettextf("Factor %i", i), type = "number", format = "dp:3")
       loatab[[paste0("c", i)]] <- ifelse(abs(loads[, i]) < options$highlightText, NA, loads[ ,i])
     }
   }
@@ -282,12 +275,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     strtab$addFootnote(message = gettext("No rotation method applied."), symbol = gettext("<em>Note.</em>"))
   } else {
     strtab$addFootnote(
-      message = paste0(
-        gettext("Applied rotation method is "),
-        ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector),
-        "."
-      ),
-      symbol = gettext("<em>Note.</em>")
+      message = gettextf("Applied rotation method is %s.", ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector))
     )
   }
 
@@ -297,10 +285,10 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   for (i in 1:ncol(loads)) {
     # fix weird "all true" issue
     if (all(abs(loads[, i]) < options$highlightText)) {
-      strtab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "string")
+      strtab$addColumnInfo(name = paste0("c", i), title = gettextf("Factor %i", i), type = "string")
       strtab[[paste0("c", i)]] <- rep("", nrow(loads))
     } else {
-      strtab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "number", format = "dp:3")
+      strtab$addColumnInfo(name = paste0("c", i), title = gettextf("Factor %i", i), type = "number", format = "dp:3")
       strtab[[paste0("c", i)]] <- ifelse(abs(loads[, i]) < options$highlightText, NA, loads[ ,i])
     }
   }
@@ -392,7 +380,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   pa <- try(psych::fa.parallel(dataset, plot = FALSE))
   if (inherits(pa, "try-error")) {
-    errmsg <- paste(gettext("Screeplot not available.\n Internal error message:"), attr(pa, "condition")$message)
+    errmsg <- gettextf("Screeplot not available. \nInternal error message: %s", attr(pa, "condition")$message)
     scree$setError(.decodeVarsInMessage(names(dataset), errmsg))
     return()
   }
