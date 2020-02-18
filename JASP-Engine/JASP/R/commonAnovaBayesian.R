@@ -1349,12 +1349,13 @@
         thisPlotName <- paste0(options[["plotHorizontalAxis"]], " - ", options[["dependent"]], ": ", 
                                options[["plotSeparatePlots"]], " = ", thisLevel)
         .descriptivesScatterPlots(descriptivesPlotContainer, subData, c(options[["plotHorizontalAxis"]], options[["dependent"]]), 
-                                  split = options[["plotSeparateLines"]], options = splitScatterOptions, name = thisPlotName)
+                                  split = options[["plotSeparateLines"]], options = splitScatterOptions, name = thisPlotName,
+                                  dependOnVariables = FALSE)
       }
 
     } else {
       .descriptivesScatterPlots(descriptivesPlotContainer, dataset, c(options[["plotHorizontalAxis"]], options[["dependent"]]), 
-                                split = options[["plotSeparateLines"]], options = splitScatterOptions, name = NULL)
+                                split = options[["plotSeparateLines"]], options = splitScatterOptions, dependOnVariables = FALSE)
     }
    
     return()
