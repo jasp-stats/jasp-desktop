@@ -147,3 +147,12 @@ Displays the prior (dashed line) and posterior (solid line) distribution of the 
   - Heterogeneity: Displays a probability wheel depicting the odds of the data under random effects H<sub>1</sub> (& H<sub>0</sub> for model averaging) vs. fixed effects H<sub>1</sub> (& H<sub>0</sub> for model averaging).
 - Posterior model probabilities: Displays the development of posterior model probabilities as a function of the number of studies using the user-defined prior model probabilities.
 
+### References
+---
+- Heck, D. W., Gronau, Q. F., & Wagenmakers, E.-J. (2019). metaBMA: Bayesian model averaging for random and fixed effects meta-analysis. Retrieved from https://CRAN.R-project.org/package=metaBMA
+- Gronau, Q. F., Van Erp, S., Heck, D. W., Cesario, J., Jonas, K. J., & Wagenmakers, E. J. (2017). A Bayesian model-averaged meta-analysis of the power pose effect with informed and default priors: The case of felt power. *Comprehensive Results in Social Psychology, 2*(1), 123-138.
+- Rouder, J. N., Haaf, J. M., Davis-Stober, C. P., & Hilgard, J. (2019). Beyond overall effects: A Bayesian approach to finding constraints in meta-analysis. *Psychological methods.*
+
+### R-packages
+---
+- metaBMA
