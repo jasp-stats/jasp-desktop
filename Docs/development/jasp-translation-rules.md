@@ -33,6 +33,8 @@ Rules for the translation of JASP source files
        strings:
        e.g. title="McDonald's \u03C9" must become gettextf(“McDonald's
        %s”,” \u03C9") instead of title=gettext("McDonald's \u03C9")
+	   The same is true for a single % character in a gettext. It must be transformed 
+	   to a gettextf with a double %%. Please report if you know a better solution.
     c. All paste and paste0 functions must be replaced by the gettext or the
        gettextf functions. For example:
        overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for
