@@ -83,20 +83,20 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
     
     if (options$counts != "") {
       counts   <- na.omit(dataset[[.v(options$counts)]])
-      variable <- gettext("Invalid counts: ")
-     if(options$exProbVar != "") {
-        variable <- gettext("Invalid expected counts: ")
+      countType <- ""
+     if (options$exProbVar != "") {
+        countType <- "expected"
         counts   <- na.omit(dataset[.v(options$exProbVar)])
       } 
       # discard missing values
       counts <- counts[!is.na(counts)]
       
       if (nlevels != length(counts)) 
-        .quitAnalysis(paste0(variable, gettext("variable does not match the number of levels of factor.")))
+        .quitAnalysis(gettextf("Invalid %s counts: variable does not match the number of levels of factor.", countType))
       
       # only applies for observed counts, expected counts can be proportions
       if (options$exProbVar == "" && !all(counts == round(counts)))
-        .quitAnalysis(paste0(variable, gettext("variable must contain only integer values.")))
+        .quitAnalysis(gettextf("Invalid %s counts: variable must contain only integer values.", countType))
     }
   }
 }
@@ -335,10 +335,10 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
     
     if (length(nms) == 1) {
       if (options$countProp == "descCounts")
-        descriptivesTable$addColumnInfo(name = "expected", title = paste0(gettext("Expected: "), nms), 
+        descriptivesTable$addColumnInfo(name = "expected", title = gettextf("Expected: %s", nms), 
                                         type = "integer")
       else
-        descriptivesTable$addColumnInfo(name = "expected", title = paste0(gettext("Expected: "), nms), 
+        descriptivesTable$addColumnInfo(name = "expected", title = gettextf("Expected: %s", nms), 
                                         type = "number")
     } else {
       for (i in 1:length(nms)) {

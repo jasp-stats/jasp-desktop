@@ -120,7 +120,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   )
 
   if (inherits(pcaResult, "try-error")) {
-    errmsg <- paste(gettext("Estimation failed. Message:"), attr(pcaResult, "condition")$message)
+    errmsg <- gettextf("Estimation failed. Message: %s", attr(pcaResult, "condition")$message)
     modelContainer$setError(.decodeVarsInMessage(names(dataset), errmsg))
   }
 
@@ -191,12 +191,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
     loatab$addFootnote(message = gettext("No rotation method applied."), symbol = "<em>Note.</em>")
   } else {
     loatab$addFootnote(
-      message = paste0(
-        gettext("Applied rotation method is "),
-        ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector),
-        "."
-      ),
-      symbol = "<em>Note.</em>"
+      message = gettextf("Applied rotation method is %s.", ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector))
     )
   }
 
@@ -279,7 +274,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
 
   fa <- try(psych::fa.parallel(dataset, plot = FALSE))
   if (inherits(fa, "try-error")) {
-    errmsg <- paste(gettext("Screeplot not available. Message: "), attr(pcaResult, "condition")$message)
+    errmsg <- gettextf("Screeplot not available. Message: %s", attr(pcaResult, "condition")$message)
     scree$setError(.decodeVarsInMessage(names(dataset), errmsg))
     return()
   }
