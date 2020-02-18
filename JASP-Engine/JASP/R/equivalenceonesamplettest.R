@@ -189,7 +189,7 @@ EquivalenceOneSampleTTest <- function(jaspResults, dataset, options) {
   equivalenceOneBoundsTable$addColumnInfo(name = "low",        title = gettext("Low"),          type = "number")
   equivalenceOneBoundsTable$addColumnInfo(name = "high",       title = gettext("High"),         type = "number")
   
-  title <- gettextf("%i%% Confidence Interval", 100 - options$alpha * 100 * 2)
+  title <- gettextf("%s%% Confidence Interval", 100 - options$alpha * 100 * 2)
   equivalenceOneBoundsTable$addColumnInfo(name = "lower", type = "number", format = "sf:4;dp:3", title = gettext("Lower"), overtitle = title)
   equivalenceOneBoundsTable$addColumnInfo(name = "upper", type = "number", format = "sf:4;dp:3", title = gettext("Upper"), overtitle = title)
   

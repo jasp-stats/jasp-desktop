@@ -171,8 +171,8 @@
   bfTitle <- .getBfTitle("bfType"=options[["bayesFactorType"]], "alternative"=options[["alternative"]])
 
   allRowNames <- list(n = gettext("n"), bf = bfTitle, 
-                      upperCi = gettextf("Upper %i%% CI", options[["ciValue"]] * 100),
-                      lowerCi = gettextf("Lower %i%% CI", options[["ciValue"]] * 100))
+                      upperCi = gettextf("Upper %s%% CI", options[["ciValue"]] * 100),
+                      lowerCi = gettextf("Lower %s%% CI", options[["ciValue"]] * 100))
   
   if (!is.null(method))
     allRowNames[["stat"]] <- rowStatName[[method[1]]]

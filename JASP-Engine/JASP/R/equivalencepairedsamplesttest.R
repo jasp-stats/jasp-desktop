@@ -207,7 +207,7 @@ EquivalencePairedSamplesTTest <- function(jaspResults, dataset, options) {
   equivalencePairedBoundsTable$addColumnInfo(name = "high",        title = gettext("High"),       type = "number")
   
   # alpha of 0.05 gives a 90% confidence interval
-  title <- gettextf("%i%% Confidence Interval", 100 - options$alpha * 100 * 2)
+  title <- gettextf("%s%% Confidence Interval", 100 - options$alpha * 100 * 2)
   equivalencePairedBoundsTable$addColumnInfo(name = "lower", type = "number", format = "sf:4;dp:3", title = gettext("Lower"), overtitle = title)
   equivalencePairedBoundsTable$addColumnInfo(name = "upper", type = "number", format = "sf:4;dp:3", title = gettext("Upper"), overtitle = title)
   

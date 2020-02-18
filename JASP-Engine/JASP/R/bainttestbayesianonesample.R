@@ -123,18 +123,12 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
                         "equalSmaller"        = 3,
                         "biggerSmaller"       = 4,
                         "equalBiggerSmaller"  = 5)
-  note <- base::switch(options[["hypothesis"]],
-                        "equalNotEqual"       = gettext("The alternative hypothesis H1 specifies that the mean is unequal to "),
-                        "equalBigger"         = gettext("The alternative hypothesis H1 specifies that the mean is bigger than "),
-                        "equalSmaller"        = gettext("The alternative hypothesis H1 specifies that the mean is smaller than "),
-                        "biggerSmaller"       = NULL,
-                        "equalBiggerSmaller"  = gettext("The null hypothesis H0 with test value "))
   message <- base::switch(options[["hypothesis"]],
-                            "equalNotEqual"     = paste0(note, options[["testValue"]], ".", gettext(" The posterior probabilities are based on equal prior probabilities.")),
-                            "equalBigger"       = paste0(note, options[["testValue"]], ".", gettext(" The posterior probabilities are based on equal prior probabilities.")),
-                            "equalSmaller"      = paste0(note, options[["testValue"]], ".", gettext(" The posterior probabilities are based on equal prior probabilities.")),
+                            "equalNotEqual"     = gettextf("The alternative hypothesis H1 specifies that the mean is unequal to %s. The posterior probabilities are based on equal prior probabilities.", options[["testValue"]]),
+                            "equalBigger"       = gettextf("The alternative hypothesis H1 specifies that the mean is bigger than %s. The posterior probabilities are based on equal prior probabilities.", options[["testValue"]]),
+                            "equalSmaller"      = gettextf("The alternative hypothesis H1 specifies that the mean is smaller than %s. The posterior probabilities are based on equal prior probabilities.", options[["testValue"]]),
                             "biggerSmaller"     = gettextf("The hypothesis H1 specifies that the mean is bigger than %1$s and the hypothesis H2 specifies that the mean is smaller than %1$s. The posterior probabilities are based on equal prior probabilities.", options[["testValue"]]),
-                            "equalBiggerSmaller"= gettextf("%1$s %2$s is tested against the other hypotheses. H1 states that the mean is bigger than %2$s and H2 states that the mean is smaller than %2$s. The posterior probabilities are based on equal prior probabilities.", note, options[["testValue"]]))
+                            "equalBiggerSmaller"= gettextf("The null hypothesis H0 with test value %1$s is tested against the other hypotheses. H1 states that the mean is bigger than %1$s and H2 states that the mean is smaller than %1$s. The posterior probabilities are based on equal prior probabilities.", options[["testValue"]]))
   bainTable$addFootnote(message=message)
 
   bainTable$addCitation(.bainGetCitations())
