@@ -57,7 +57,7 @@ Rules for the translation of JASP source files
        Becomes:
        message <- gettextf("Some entries of %1$s were not understood.
        These are now grouped under '%2$s'.", options[["colorNodesBy"]],undefGroup)
-    f. Be careful with expressions. Must be considered one byone:
+    f. Be careful with expressions. Must be considered one by one:
        E.g.
        xName<- expression(paste("Population proportion", ~theta))
        Becomes:
