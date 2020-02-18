@@ -1,4 +1,4 @@
-@echo off
+rem @echo off
 REM autorun
 SETLOCAL EnableDelayedExpansion
 
