@@ -68,13 +68,14 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     testStat     <- "Statistic"
     testStatName <- gettext("Statistic")
   }
-    
+  
+  dfType <- ifelse(optionsList$wantsWelchs, "number", "integer")
   
   ttest$addColumnInfo(name = "v", title = " ", type = "string", combine = TRUE)
   if (sum(optionsList$allTests) >= 2) 
     ttest$addColumnInfo(name = "test", type = "string",  title = gettext("Test"))
   ttest$addColumnInfo(name = testStat, type = "number",  title = testStatName)
-  ttest$addColumnInfo(name = "df",     type = "integer", title = gettext("df"))
+  ttest$addColumnInfo(name = "df",     type = dfType,    title = gettext("df"))
   ttest$addColumnInfo(name = "p",      type = "pvalue",  title = gettext("p"))
   .ttestVovkSellke(ttest, options)
   
