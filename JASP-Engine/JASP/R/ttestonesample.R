@@ -154,33 +154,26 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
   
   
   ### check the directionality
-  tMessage <- NULL
-  wMessage <- NULL
-  sep <- "."
-  if (optionsList$wantsStudents && optionsList$wantsWilcox)
-    sep <- ";"
   if (options$hypothesis == "greaterThanTestValue") {
+    directionFootnote <- gettext("greater than")
     direction <- "greater"
-    if (optionsList$wantsStudents)
-      tMessage <- gettextf("For the Student t-test, the alternative hypothesis specifies that the mean is greater than %1$s%2$s", options$testValue, sep)
-    if (optionsList$wantsWilcox)
-      wMessage <- gettextf("For the Wilcoxon test, the alternative hypothesis specifies that the median is greater than %s.", options$testValue)
   } else if (options$hypothesis == "lessThanTestValue") {
+    directionFootnote <- gettext("less than")
     direction <- "less"
-    if (optionsList$wantsStudents)
-      tMessage <- gettextf("For the Student t-test, the alternative hypothesis specifies that the mean is less than %1$s%2$s", options$testValue, sep)
-    if (optionsList$wantsWilcox)
-      wMessage <- gettextf("For the Wilcoxon test, the alternative hypothesis specifies that the median is less than %s.", options$testValue)
   } else {
+    directionFootnote <- gettext("different from")
     direction <- "two.sided"
-    if (optionsList$wantsStudents)
-      tMessage <- gettextf("For the Student t-test, the alternative hypothesis specifies that the mean is different from %1$s%2$s", options$testValue, sep)
-    if (optionsList$wantsWilcox)
-      wMessage <- gettextf("For the Wilcoxon test, the alternative hypothesis specifies that the median is different from %s.", options$testValue)
   }
   
-  if (options$testValue != 0 && (optionsList$wantsStudents || optionsList$wantsWilcox))
+  if (options$testValue != 0 && (optionsList$wantsStudents || optionsList$wantsWilcox)) {
+    tMessage <- wMessage <- NULL
+    if (optionsList$wantsStudents)
+      tMessage <- gettextf("For the Student t-test, the alternative hypothesis specifies that the mean is %1$s %2$s%3$s", directionFootnote, options$testValue, ngettext(1 + optionsList$wantsWilcox, ".", ";"))
+    if (optionsList$wantsWilcox)
+      wMessage <- gettextf("For the Wilcoxon test, the alternative hypothesis specifies that the median is %1$s %2$s.", directionFootnote, options$testValue)
+    
     ttest$addFootnote(paste(tMessage, wMessage))
+  }
   
   jaspResults[["ttest"]] <- ttest
   res <- try(.ttestOneSampleMainFill(jaspResults, dataset, options, ready, testStat, optionsList))

@@ -143,8 +143,8 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     ttest$addColumnInfo(name = "d", title = nameOfEffectSize, type = "number")
     if (optionsList$wantsWilcox) {
       if (optionsList$wantsStudents || optionsList$wantsWelchs) 
-        message <- paste0(gettext("For the Mann-Whitney test, effect size is given by the rank biserial correlation. 
-                         For the other test(s), by "), nameOfEffectSizeParametric, ".")
+        message <- gettextf("For the Mann-Whitney test, effect size is given by the rank biserial correlation. 
+                         For the other test(s), by %s.", nameOfEffectSizeParametric)
       else
         message <- gettext("For the Mann-Whitney test, effect size is given by the rank biserial correlation.")
       ttest$addFootnote(message)
