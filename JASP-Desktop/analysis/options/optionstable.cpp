@@ -146,3 +146,12 @@ std::set<std::string> OptionsTable::usedVariables() const
 
 	return combined;
 }
+
+void OptionsTable::replaceKey(const std::string& oldKey, const std::string& newKey)
+{
+	if (_template)
+		_template->replaceKey(oldKey, newKey);
+
+	for (Options* options : _value)
+		options->replaceKey(oldKey, newKey);
+}

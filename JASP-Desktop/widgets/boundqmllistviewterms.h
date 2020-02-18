@@ -62,6 +62,7 @@ private:
 	int								_maxRows				= -1;
 	int								_columns				= 1;
 	QString							_interactionHighOrderCheckBoxName;
+	std::string						_tempOptionKey;
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H

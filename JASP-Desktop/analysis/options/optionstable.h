@@ -43,6 +43,7 @@ public:
 	void					connectOptions(const std::vector<Options *> &value);
 
 	Options*				rowTemplate()									const				{ return _template;	}
+	void					replaceKey(const std::string& oldKey, const std::string& newKey);
 
 private:
 	void					optionsChanged(Option *) { notifyChanged(); }

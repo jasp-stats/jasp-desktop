@@ -230,6 +230,13 @@ std::set<std::string> Options::columnsCreated()
 	return combined;
 }
 
+void Options::replaceKey(const string &oldKey, const string &newKey)
+{
+	for (OptionNamed& option : _options)
+		if (option.first == oldKey)
+			option.first = newKey;
+}
+
 void Options::removeUsedVariable(std::string var)
 {
 	for (const OptionNamed& option : _options)
