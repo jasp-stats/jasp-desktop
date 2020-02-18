@@ -1,10 +1,10 @@
 {
 	"moduleDescription" :
 	{
-        "title" :       "Distributions",
+        "title" :       "Verdelingen",
         "name":         "Discover Distributions",
         "icon":         "discoverdistributions-distributions.svg",
-        "description": 	"Discover distributions with JASP",
+        "description": 	"Ontdek verdelingen met JASP",
         "version":	"0.1",
         "author":		"JASP Team",
         "maintainer":	"JASP Team <info@jasp-stats.org>",
@@ -17,11 +17,11 @@
 	"menu":
 	[
 		{
-            "title": 	"Continuous",
+            "title": 	"Uniform",
             "icon": 	"discoverdistributions-continuousDist.svg"
 		},
 		{
-            "title":	"Normal",
+            "title":	"Normaal",
             "qml":	"LDgaussianunivariate.qml",
             "function":	"LDgaussianunivariate"
 		},
@@ -31,12 +31,12 @@
           "function":   "LDt"
 		},
 		{
-          "title":      "F-distribution",
+          "title":      "F-verdeling",
           "qml":        "LDf.qml",
           "function":   "LDf"
 		},
 		{
-            "title":    "Chi-squared",
+            "title":    "Chi-kwadraat",
             "qml":      "LDchisq.qml",
             "function": "LDchisq"
 		},
@@ -56,12 +56,12 @@
             "function": "LDgammaInverse"
 		},
 		{
-            "title":    "Exponential",
+            "title":    "Exponentieel",
             "qml":      "LDexponential.qml",
             "function": "LDexponential"
 		},
 		{
-            "title": 	"Discrete",
+            "title": 	"Discreet",
             "icon": 	"discoverdistributions-discreteDist.svg"
 		},
 		{
@@ -70,12 +70,12 @@
             "function": "LDbernoulli"
 		},
 		{
-            "title":    "Binomial",
+            "title":    "Binomiaal",
             "qml":      "LDbinomial.qml",
             "function": "LDbinomial"
 		},
 		{
-            "title":    "Negative binomial",
+            "title":    "Negatieve binomiaal",
             "qml":      "LDnegbinomial.qml",
             "function": "LDnegbinomial"
 		},
