@@ -135,9 +135,9 @@
         createTable("MacOS", "./MacOS");
 
         createTable("Windows ZIP 64bit", "./WindowsZip");
-        createTable("Windows ZIP 32bit", "./Windows32Zip");
-
         createTable("Windows MSI 64bit", "./Windows");
+
+	createTable("Windows ZIP 32bit", "./Windows32Zip");
         createTable("Windows MSI 32bit", "./Windows32");       
         
       ?>
