@@ -997,8 +997,6 @@
   }
   dfLines$y <- log(dfLines$y)
   
-  plotLineOrPoint <- if (length(BF10) <= 60) "point" else "line"
-
   plot <- JASPgraphs::PlotRobustnessSequential(
     dfLines         = dfLines,
     xName           = gettext("n"),
@@ -1006,7 +1004,6 @@
     BF              = BF,
     bfType          = bftype,
     hypothesis      = "equal",
-    plotLineOrPoint = plotLineOrPoint, 
     evidenceLeveltxt = FALSE,
    # evidenceTxt     = JASPgraphs::parseThis("H[phantom()%in%phantom()]"),
     arrowLabel      = JASPgraphs::parseThis(c("H[phantom()%notin%phantom()]", "H[phantom()%in%phantom()]")),

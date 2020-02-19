@@ -1751,15 +1751,12 @@
   }
   dfLines$y <- log(dfLines$y)
   
-  plotLineOrPoint <- if (length(BF10) <= 60) "point" else "line"
-
   plot <- JASPgraphs::PlotRobustnessSequential(
     dfLines         = dfLines,
     xName           = gettext("n"),
     BF              = BF,
     bfType          = bftype,
-    hypothesis      = hypothesis,
-    plotLineOrPoint = plotLineOrPoint
+    hypothesis      = hypothesis
   )
   return(plot)
 }
