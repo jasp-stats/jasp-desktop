@@ -286,10 +286,27 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     coeffTable$addColumnInfo(name = "VIF",        title = gettext("VIF"),        type = "number", overtitle = overtitle)
   }
 
-  if (!is.null(model))
+  if (!is.null(model)) {
+    .linregAddFootnotePredictorsNeverIncluded(coeffTable, model, options)
     .linregFillCoefficientsTable(coeffTable, model, dataset, options)
+  }
 
   modelContainer[["coeffTable"]] <- coeffTable
+}
+
+.linregAddFootnotePredictorsNeverIncluded <- function(coeffTable, model, options) {
+  if (options$method %in% c("forward", "stepwise")) {
+    includedPredictors <- unlist(lapply(model, "[[", "predictors"))
+    neverIncludedPredictors <- setdiff(unlist(options$covariates), .unv(includedPredictors))
+    
+    if (length(neverIncludedPredictors) > 0) {
+      message <- sprintf(ngettext(length(neverIncludedPredictors), 
+                                  "The following covariate was considered but not included: %s.", 
+                                  "The following covariates were considered but not included: %s."),
+                         paste(neverIncludedPredictors, collapse=", "))
+      coeffTable$addFootnote(message)
+    }
+  }
 }
 
 .linregFillCoefficientsTable <- function(coeffTable, model, dataset, options) {
