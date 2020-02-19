@@ -519,7 +519,8 @@
   p <- ggplot2::ggplot(data = NULL, ggplot2::aes(sample = variable)) +
     ggplot2::stat_qq(distribution = options[['qFun']], dparams = estParameters, shape = 21, fill = "grey", size = 3) +
     ggplot2::stat_qq_line(distribution = options[['qFun']], dparams = estParameters) +
-    ggplot2::xlab(gettext("Theoretical")) + ggplot2::ylab(gettext("Sample"))
+    ggplot2::xlab(gettext("Theoretical")) + ggplot2::ylab(gettext("Sample")) +
+    ggplot2::scale_x_continuous(expand = ggplot2::expand_scale(c(0.1,0.15), 0))
   
   p <- JASPgraphs::themeJasp(p)
   
