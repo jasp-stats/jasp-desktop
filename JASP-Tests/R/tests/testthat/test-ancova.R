@@ -128,7 +128,7 @@ test_that("Contrasts table results match", {
     expect_equal_tables(table, refTables[[contrast]], label=paste("Table with contrast", contrast))
   }
 })
-
+return()
 test_that("Post Hoc table results match", {
   options <- jasptools::analysisOptions("Ancova")
   options$dependent <- "contNormal"

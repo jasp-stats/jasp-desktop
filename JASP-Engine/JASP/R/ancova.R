@@ -21,8 +21,9 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   numericVariables <- numericVariables[numericVariables != ""]
   factorVariables <- c(unlist(options$fixedFactors),unlist(options$randomFactors))
   factorVariables <- factorVariables[factorVariables != ""]
-  
-  ready <- options$dependent != "" && length(options$fixedFactors) > 0 && length(options$modelTerms) > 0
+  nFactorModelTerms <- sum(unlist(options$modelTerms) %in% factorVariables)
+
+  ready <- options$dependent != "" && length(options$fixedFactors) > 0 && nFactorModelTerms > 0
   
   # Set corrections to FALSE when performing ANCOVA
   if (is.null(options$homogeneityBrown)) {
@@ -47,7 +48,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
   .anovaTable(anovaContainer, options, ready)
 
-  browser()
   .BANOVAdescriptives(anovaContainer, dataset, options, list(noVariables=FALSE), "ANCOVA", ready)
   
   .anovaAssumptionsContainer(anovaContainer, dataset, options, ready)
@@ -71,7 +71,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   } else {
     anovaContainer <- createJaspContainer()
     # we set the dependencies on the container, this means that all items inside the container automatically have these dependencies
-    anovaContainer$dependOn(c("dependent", "modelTerms", "contrasts", "covariates", "sumOfSquares", "wlsWeights", "customContrasts"))
+    anovaContainer$dependOn(c("dependent", "modelTerms", "covariates", "sumOfSquares", "wlsWeights", "customContrasts"))
     jaspResults[["anovaContainer"]] <- anovaContainer
   }
   return(anovaContainer)
@@ -248,7 +248,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
   modelTerms <- unlist(options$modelTerms, recursive = FALSE)
   factorModelTerms <- options$modelTerms[sapply(modelTerms, function(x) !any(x %in% options$covariates))]
-  
+
   for(i in length(factorModelTerms):1) {
     .hasErrors(
       dataset = dataset, 
@@ -315,8 +315,8 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                      } 
                    } else if (is.matrix(tryContrMat) && any(apply(tryContrMat, 2, function(x) all(x == 0) ))) {
                      return("Please specify non-zero contrast weights.")
-                   } else if (ncol(tryContrMat) >= nlevels(dataset[[v]])) {
-                     return("Please specify fewer contrasts. (Maximum #contrasts = #levels - 1)")
+                   # } else if (ncol(tryContrMat) >= nlevels(dataset[[v]])) {
+                     # return("Please specify fewer contrasts. (Maximum #contrasts = #levels - 1)")
                    # } else if (any(round(colSums(tryContrMat), 15) != 0)) {
                    #   return("Some contrasts do not sum to 0.")
                    }
@@ -407,15 +407,21 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   WLS <- NULL
   if ( ! is.null(options$wlsWeights))
     WLS <- dataset[[ .v(options$wlsWeights) ]]
-  
+
   model <- aov(model.formula, dataset, weights=WLS)
 
-  afexFormula <- as.formula(paste0(modelDef$model.def, "+Error(ID)"))
-  afexData <- dataset
-  afexData[["ID"]] <- as.factor(1:nrow(dataset))
-  afexModel <- afex::aov_car(afexFormula, data=afexData, type= 3, factorize = FALSE, include_aov = TRUE)
-  
   modelError <- try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE))
+
+  # Make afex model for later use in contrasts
+  if (!isTryError(modelError)) {
+    afexFormula <- as.formula(paste0(modelDef$model.def, "+Error(ID)"))
+    afexData <- dataset
+    afexData[["ID"]] <- as.factor(1:nrow(dataset))
+    afexModel <- afex::aov_car(afexFormula, data=afexData, type= 3, factorize = FALSE, include_aov = TRUE)
+  } else {
+    afexModel <- NULL
+  }
+  
   
   return(list(model = model, modelError = modelError, afexModel = afexModel))
 }
@@ -474,12 +480,14 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     
   } else if (options$sumOfSquares == "type3") {
 
+    modelTerms <- unlist(options$modelTerms, recursive = FALSE)
+    factorModelTerms <- options$modelTerms[sapply(modelTerms, function(x) !any(x %in% options$covariates))]
     # For each model term, including all interactions, check if there are empty cells
-    if (any(sapply(options$modelTerms, function(x) any(table(model$model[, .v(x$components)]) == 0)))) {
+    if (any(sapply(factorModelTerms, function(x) any(table(model$model[, .v(x$components)]) == 0)))) {
       anovaContainer$setError(gettext("Your design contains empty cells. Please try a different type of sum of squares."))
       return()
     }
-    
+
     result <- car::Anova(model, type=3, singular.ok=FALSE)
     result <- result[-1, ]
     result['Mean Sq'] <- result[['Sum Sq']] / result[['Df']]
@@ -487,7 +495,9 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     
   }
 
-  result['cases'] <- c(termsNormal, "Residuals")
+  # Make sure that the order of the result is same order as reordered modelterms
+  result <- result[.mapAnovaTermsToTerms(rownames(result), c(termsBase64, "Residuals")), ]
+  result[['cases']] <- c(termsNormal, "Residuals")
   result <- as.data.frame(result)
   result[['.isNewGroup']] <- c(TRUE, rep(FALSE, nrow(result)-2), TRUE)
   if (length(options$covariates) > 0)
@@ -717,17 +727,15 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   
   afexModel <- anovaContainer[["afexModel"]]$object
 
-  referenceGridList <- list()
-  variables <- sapply(options$contrasts, function(x) x$variable)
+  # referenceGridList <- list()
+  # variables <- sapply(options$contrasts, function(x) x$variable)
   
-  for (var in variables) {
-    formula <- as.formula(paste("~", var))
-    referenceGrid <- emmeans::emmeans(afexModel, formula, model = "multivariate")
-    
-    referenceGridList[[var]] <- referenceGrid
-    
-  }
-  
+  # for (var in variables) {
+  #   # formula <- as.formula(paste("~", var))
+  #   
+  #   referenceGridList[[var]] <- referenceGrid
+  # }
+  # 
   
   
   ## Computation
@@ -762,25 +770,49 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       contrCoef         <- lapply(as.data.frame(contrastMatrix), as.vector)
       names(contrCoef)  <- .anovaContrastCases(column, contrast$contrast, customContrastSetup)
       
-      contrastResult    <- try(emmeans::contrast(referenceGridList[[.v(contrast$variable)]], contrCoef),
-                               silent = TRUE)
-      # browser()
+      referenceGrid <- emmeans::emmeans(afexModel, v, model = "multivariate")
+      
+      contrastResult    <- try(emmeans::contrast(referenceGrid, contrCoef), silent = TRUE)
+
+      if (contrast$contrast == "custom") {
+        if (isTryError(contrastResult)) {
+          if (grepl(contrastResult[1], pattern = "Nonconforming number")) {
+            contrastContainer$setError(gettextf("Nonconforming number of contrast coefficients."))
+          } else if (grepl(contrastResult[1], pattern = "number of contrast matrix rows")) {
+            contrastContainer$setError(gettextf("Wrong number of custom contrast matrix rows."))
+          }
+          return()
+        } else if (any(apply(contrastMatrix, 2, function(x) all(x == 0) ))) {
+          contrastContainer$setError(gettextf("Please specify non-zero contrast weights."))
+          return()
+        } 
+      }
+      
       contrastResult <- cbind(contrastResult, confint(contrastResult, level = options$confidenceIntervalIntervalContrast)[,5:6])
       
-      
-
       contrastResult[["Comparison"]] <- .unv(contrastResult[["contrast"]])
       
-
       contrastResult[[".isNewGroup"]] <- c(TRUE, rep(FALSE, nrow(contrastResult)-1))
       contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setData(contrastResult)
       
+      # browser()
+
       # nLevelsFac <-  nlevels(dataset[,v])
-      
 
       # if (!options$contrastAssumeEqualVariance) {
       #   
-      #   dv <- dataset[[ .v(options$dependent) ]]
+        # dv <- dataset[[ .v(options$dependent) ]]
+        # newDF <- tapply(dv, dataset[[.v(contrast$variable)]], cbind)
+
+        allTestResults <- list()
+        
+        # x <- newDF[bla > 0]
+        # y <- newDF[bla < 0]
+        
+        # for (coefIndex in 1:length(contrCoef)) {
+          # allTestResults[[coefIndex]] <- t.test(as.matrix(newDF) %*% contrCoef[[coefIndex]])
+        # }
+        
       # 
       #   contrastMat <- (model[['contrasts']][[v]])[,1:nrow(thisContrastResult)]
       #   contrastMat <- MASS::ginv(contrastMat)
