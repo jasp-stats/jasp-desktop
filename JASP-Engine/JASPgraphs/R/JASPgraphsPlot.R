@@ -36,7 +36,7 @@ JASPgraphsPlot <- R6::R6Class(
 }
 
 
-reDrawJASPgraphsPlot <- function(subplots, args, grob = FALSE, newpage = !currentDevIsSvg(),
+reDrawJASPgraphsPlot <- function(subplots, args, grob = FALSE, newpage = FALSE,
                                  decodeplotFun = get0("decodeplot"), ...) {
   # redraws plots from PlotPriorAndPosterior, PlotRobustnessSequential, and ggMatrixplot
   g <- gridExtra::arrangeGrob(
@@ -55,7 +55,7 @@ reDrawJASPgraphsPlot <- function(subplots, args, grob = FALSE, newpage = !curren
     return(gridExtra::grid.arrange(g, ..., newpage = newpage))
 }
 
-reDrawAlignedPlot <- function(subplots, args, grob = FALSE, newpage = !currentDevIsSvg(), 
+reDrawAlignedPlot <- function(subplots, args, grob = FALSE, newpage = FALSE,
                               decodeplotFun = get0("decodeplot"), ...) {
   # redraws plots from JASPScatterPlot
   g <- makeGrobAlignedPlots(
