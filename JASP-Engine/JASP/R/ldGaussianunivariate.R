@@ -68,8 +68,7 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
     
     # parameter estimates
     mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
-    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR,
-                                  .ldGaussianMethodMLEStructureResults)
+    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR)
     .ldFillGaussianEstimatesTable(mleEstimatesTable, mleResults, options, readyFit)
     
     
@@ -131,6 +130,8 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
   options$support <- list(min = -Inf, max = Inf)
   options$lowerBound <- c(-Inf, 0)
   options$upperBound <- c(Inf, Inf)
+  
+  options$transformations <- c(mu = "mean", sigma2 = "sd^2", sigma = "sd", tau2 = "1/sd^2", tau = "1/sd")
   
   options
 }
@@ -257,20 +258,6 @@ exp[-(x-<span style='color:red'>&mu;</span>)&sup2; &frasl; 2<span style='color:b
   table$setData(res)
   
   return()
-}
-
-.ldGaussianMethodMLEStructureResults <- function(fit, options){
-  if(is.null(fit)) return()
-  
-  transformations <- c(mu = "mean", sigma2 = "sd^2", sigma = "sd", tau2 = "1/sd^2", tau = "1/sd")
-  
-  res <- sapply(transformations, function(tr) car::deltaMethod(fit$estimate, tr, fit$vcov, level = options$ciIntervalInterval))
-  rownames(res) <- c("estimate", "se", "lower", "upper")
-  res <- t(res)
-  res <- cbind(par = rownames(res), res)
-  res <- as.data.frame(res)
-  
-  return(res)
 }
 
 # old ----

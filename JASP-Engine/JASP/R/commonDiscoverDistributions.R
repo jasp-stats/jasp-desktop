@@ -327,10 +327,10 @@
 
 ### Fit distributions ----
 ### MLE stuff ----
-.ldMLEResults <- function(mleContainer, variable, options, ready, distName, structureFun){
+.ldMLEResults <- function(mleContainer, variable, options, ready, distName){
   if(!ready) return()
   if(!is.null(mleContainer[['mleResults']])) return(mleContainer[['mleResults']]$object)
-  
+  browser()
   starts <- options$pars
   if(!is.null(options$fix.pars)){
     starts[names(options$fix.pars)] <- NULL 
@@ -342,12 +342,12 @@
                                                keepdata = FALSE, optim.method = "L-BFGS-B",
                                                lower = options$lowerBound, upper = options$upperBound), silent = TRUE)
   
-  if(inherits(results$fitdist, "try-error")){
+  if(isTryError(results)){
     results$fitdist <- try(MASS::fitdistr(x = variable, densfun = options$pdfFun, start = starts, 
                                           lower = options$lowerBound, upper = options$upperBound), silent = TRUE)
   }
   
-  if(inherits(results$fitdist, "try-error")){
+  if(isTryError(results)){
     results$fitdist <- try(fitdistrplus::fitdist(data = variable, distr = distName, method = "mle", 
                                                  start = starts, fix.arg = options$fix.pars,
                                                  keepdata = FALSE), silent = TRUE)
@@ -355,18 +355,42 @@
     results$fitdist$convergence <- 0
   }
   
-  if(inherits(results$fitdist, "try-error")){
-    mleContainer$setError(gettext("Estimation failed: try adjusting parameter values, check outliers, or feasibility of the distribution fitting the data."))
+  if(isTryError(results)){
+    mleContainer$setError(.ldAllTextsList()$feedback$fitdistrError)
     return()
   } 
   
-  results$structured <- structureFun(results$fitdist, options)
+  if(is.na(results$fitdist$vcov)){
+    mleContainer[['estParametersTable']]$addFootnote(.ldAllTextsList()$feedback$vcovNA)
+    results$fitdist$vcov <- diag(length(results$fitdist$estimate))
+    
+    include.se <- FALSE
+  } else{
+    include.se <- TRUE
+  }
+  
+  results$structured <- .ldStructureResults(results$fitdist, options, include.se)
   
   mleContainer[['mleResults']] <- createJaspState(object = results, dependencies = c(options$parValNames, "ciIntervalInterval", "parametrization"))
   
   return(results)
 }
 
+.ldStructureResults <- function(fit, options, include.se){
+  if(is.null(fit)) return()
+  
+  res <- sapply(options$transformations,
+                function(tr) car::deltaMethod(fit$estimate, tr, fit$vcov, level = options$ciIntervalInterval))
+  rownames(res) <- c("estimate", "se", "lower", "upper")
+  res <- t(res)
+  res <- cbind(par = rownames(res), res)
+  res <- as.data.frame(res)
+  
+  if(include.se){
+    res$se <- res$lower <- res$upper <- NA
+  }
+  return(res)
+}
 #### Fit assessment ----
 .ldFitStatisticsTable <- function(fitContainer, options, method){
   if(!is.null(fitContainer[['fitStatisticsTable']])) return()
@@ -1398,7 +1422,8 @@
       car = "John Fox and Sanford Weisberg (2011). An R Companion to Applied Regression, Second Edition. Thousand Oaks CA: Sage. URL: http://socserv.socsci.mcmaster.ca/jfox/Books/Companion."
     ),
     feedback = list(
-      fitdistrError = gettext("Estimation failed: try adjusting parameter values, check outliers, or feasibility of the distribution fitting the data.")
+      fitdistrError = gettext("Estimation failed: try adjusting parameter values, check outliers, or feasibility of the distribution fitting the data."),
+      vcovNA = gettext("Variance-covariance matrix of parameters (hence, standard errors and confidence intervals) is not numerically computable. Point estimates are not to be trusted.")
     )
   )
 }
