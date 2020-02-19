@@ -1423,8 +1423,8 @@
       car = "John Fox and Sanford Weisberg (2011). An R Companion to Applied Regression, Second Edition. Thousand Oaks CA: Sage. URL: http://socserv.socsci.mcmaster.ca/jfox/Books/Companion."
     ),
     feedback = list(
-      fitdistrError = gettext("Estimation failed: try adjusting parameter values, check outliers, or feasibility of the distribution fitting the data."),
-      vcovNA = gettext("Hessian matrix is not numerically computable. Point estimates cannot to be trusted. Try adjusting parameter values, check outliers, or feasibility of the distribution fitting the data.")
+      fitdistrError = gettext("Estimation failed: Optimization did not converge. <ul><li>Try adjusting parameter values, check outliers or feasibility of the distribution fitting the data.</li></ul>"),
+      vcovNA = gettext("Estimation failed: Hessian matrix is not numerically computable. <ul><li>Check outliers or feasibility of the distribution fitting the data.</li></ul>")
     )
   )
 }
