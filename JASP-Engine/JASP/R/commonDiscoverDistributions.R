@@ -330,7 +330,7 @@
 .ldMLEResults <- function(mleContainer, variable, options, ready, distName){
   if(!ready) return()
   if(!is.null(mleContainer[['mleResults']])) return(mleContainer[['mleResults']]$object)
-  browser()
+  
   starts <- options$pars
   if(!is.null(options$fix.pars)){
     starts[names(options$fix.pars)] <- NULL 
@@ -361,7 +361,8 @@
   } 
   
   if(is.na(results$fitdist$vcov)){
-    mleContainer[['estParametersTable']]$addFootnote(.ldAllTextsList()$feedback$vcovNA)
+    mleContainer$setError(.ldAllTextsList()$feedback$vcovNA)
+    #mleContainer[['estParametersTable']]$addFootnote(.ldAllTextsList()$feedback$vcovNA)
     results$fitdist$vcov <- diag(length(results$fitdist$estimate))
     
     include.se <- FALSE
@@ -386,7 +387,7 @@
   res <- cbind(par = rownames(res), res)
   res <- as.data.frame(res)
   
-  if(include.se){
+  if(!include.se){
     res$se <- res$lower <- res$upper <- NA
   }
   return(res)
@@ -1423,7 +1424,7 @@
     ),
     feedback = list(
       fitdistrError = gettext("Estimation failed: try adjusting parameter values, check outliers, or feasibility of the distribution fitting the data."),
-      vcovNA = gettext("Variance-covariance matrix of parameters (hence, standard errors and confidence intervals) is not numerically computable. Point estimates are not to be trusted.")
+      vcovNA = gettext("Hessian matrix is not numerically computable. Point estimates cannot to be trusted. Try adjusting parameter values, check outliers, or feasibility of the distribution fitting the data.")
     )
   )
 }
