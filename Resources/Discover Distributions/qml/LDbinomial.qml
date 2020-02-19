@@ -120,7 +120,7 @@ Form {
 		Group
 		{
 			title: qsTr("Statistics")
-			CheckBox{ name: "summary"; label: qsTr("Descriptives") }
+			CheckBox{ name: "summary"; label: qsTr("Descriptives"); checked: true  }
 			CheckBox
 			{
 				name: "moments"; label: qsTr("First"); childrenOnSameRow: true

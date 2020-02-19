@@ -101,7 +101,7 @@ Form {
 		Group
 		{
 			title: qsTr("Statistics")
-			CheckBox{ name: "summary"; label: qsTr("Descriptives") }
+			CheckBox{ name: "summary"; label: qsTr("Descriptives"); checked: true }
 		}
 
 		Group

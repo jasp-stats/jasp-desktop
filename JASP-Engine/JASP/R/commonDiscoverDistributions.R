@@ -78,6 +78,7 @@
 .ldSummaryContinuousTableMain <- function(dataContainer, variable, options, ready) {
   if(!options$summary) return()
   if(!is.null(dataContainer[['summary']])) return()
+  if(!ready) return()
   
   summaryTable <- createJaspTable(title = gettext("Descriptives"))
   summaryTable$position <- 1
@@ -97,9 +98,6 @@
   #summaryTable$addColumnInfo(name = "kurt",       title = gettext("Kurtosis"),       type = "number", format = "sf:4")
   
   dataContainer[['summary']] <- summaryTable
-  
-  if(!ready) 
-    return()
   
   .ldFillSummaryContinuousTableMain(summaryTable, variable, options)
   
@@ -128,6 +126,7 @@
 .ldSummaryFactorTableMain <- function(dataContainer, variable, options, ready) {
   if(!options$summary) return()
   if(!is.null(dataContainer[['summary']])) return()
+  if(!ready) return()
   
   summaryTable <- createJaspTable(title = gettext("Descriptives"))
   summaryTable$position <- 1
@@ -141,9 +140,6 @@
   summaryTable$setExpectedSize(rows = length(levels(variable)) + 1)
   
   dataContainer[['summary']] <- summaryTable
-  
-  if(!ready) 
-    return()
   
   .ldFillSummaryFactorTableMain(summaryTable, variable, options)
   
