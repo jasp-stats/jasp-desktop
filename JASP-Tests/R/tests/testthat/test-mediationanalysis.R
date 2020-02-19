@@ -7,7 +7,7 @@ test_that("Simple mediation analysis works", {
   options$dependent <- "contNormal"
   options$mimic     <- "lavaan"
   options$estimator <- "ML"
-  options$se        <- "default"
+  options$se        <- "standard"
   options$missing   <- "FIML"
   results <- jasptools::run("MediationAnalysis","test.csv", options)
   
@@ -42,7 +42,7 @@ test_that("Categorical confounders work", {
   options$confounds <- c("facGender", "facExperim")
   options$mimic     <- "lavaan"
   options$estimator <- "ML"
-  options$se        <- "default"
+  options$se        <- "standard"
   options$missing   <- "FIML"
   results <- jasptools::run("MediationAnalysis","test.csv", options)
   
@@ -63,7 +63,7 @@ test_that("Multiple mediation with missing values works", {
   options$dependent <- c("contNormal", "debMiss30")
   options$mimic     <- "lavaan"
   options$estimator <- "ML"
-  options$se        <- "default"
+  options$se        <- "standard"
   options$missing   <- "FIML"
   results <- jasptools::run("MediationAnalysis","test.csv", options)
   
