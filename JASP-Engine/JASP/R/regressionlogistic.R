@@ -202,13 +202,16 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   estimatesTableBootstrap$addColumnInfo(name = "est",     title = gettext("Estimate"),       type = "number", format="dp:3")
   estimatesTableBootstrap$addColumnInfo(name = "bias",    title = gettext("Bias"),           type = "number", format="dp:3")
   estimatesTableBootstrap$addColumnInfo(name = "se",      title = seTitle,                   type = "number", format="dp:3")
-  if(options$stdCoeff)
+  if(options$stdCoeff) {
     estimatesTableBootstrap$addColumnInfo(name = "std",   title = gettextf("Standardized%s", "\u207A"), type = "number", format="dp:3")
+    estimatesTableBootstrap$addFootnote(gettext("Standardized estimates represent estimates  where the continuous predictors are standardized (X-standardization)."), symbol = "\u207A")
+  }
   if(options$oddsRatios)
     estimatesTableBootstrap$addColumnInfo(name = "or",    title = gettext("Odds Ratio"), type = "number")
   if (options$coeffCI) {
     estimatesTableBootstrap$addColumnInfo(name = "cilo",    title = gettext("Lower bound"),    type = "number", format="dp:3", overtitle = ciTitle)
     estimatesTableBootstrap$addColumnInfo(name = "ciup",    title = gettext("Upper bound"),    type = "number", format="dp:3", overtitle = ciTitle)
+    estimatesTableBootstrap$addFootnote(gettext("Bias corrected accelerated."), symbol = "\u002A")
   }
   
   jaspResults[["estimatesTableBootstrapping"]] <- estimatesTableBootstrap
@@ -219,12 +222,10 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   .reglogisticSetError(res, estimatesTableBootstrap)
   
   estimatesTableBootstrap$addFootnote(gettextf("Bootstrapping based on %i replicates.", options$coeffEstimatesBootstrappingReplicates))
-  estimatesTableBootstrap$addFootnote(ngettext(1 * options$robustSEOpt,
-                                               "Coefficient estimate and robust standard error are based on the median of the bootstrap distribution.",
-                                               "Coefficient estimate is based on the median of the bootstrap distribution."
-                                               ))
-  if (options$coeffCI)
-    estimatesTableBootstrap$addFootnote(gettext("Bias corrected accelerated."), symbol = "\u002A")
+  if (options$robustSEOpt)
+    estimatesTableBootstrap$addFootnote("Coefficient estimate and robust standard error are based on the median of the bootstrap distribution.")
+  else
+    estimatesTableBootstrap$addFootnote("Coefficient estimate is based on the median of the bootstrap distribution.")
 }
 
 .reglogisticCasewiseDiagnosticsTable <- function(jaspResults, dataset, options, ready){
@@ -689,7 +690,8 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
           result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type = "bca", conf = options$coeffCIInterval, index=j))
           if(!isTryError(result.bootstrap.ci))
             bootstrap.ci <- result.bootstrap.ci
-          else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){ #Does this still work if we turn on translations? I'm gonna guess not...
+          else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
+            # NOTE: the if statement above doesn't work if the package uses gettext and translates error messages.
             ci.fails <- TRUE
             bootstrap.ci <- list(bca = rep(NA, 5))
           } else
