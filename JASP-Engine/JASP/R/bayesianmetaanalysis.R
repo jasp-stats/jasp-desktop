@@ -1627,22 +1627,17 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     return()
   }
   
-  if(nrow(dataset) < 40) plotLineOrPoint <- "point" else plotLineOrPoint <- "line"
-  
   df <- data.frame(x = 1:nrow(dataset), y = log(BFs))
-  
   
   if(type == "ES"){
     
     plot <- JASPgraphs::PlotRobustnessSequential(dfLines = df,
-                                                 plotLineOrPoint = plotLineOrPoint,
                                                  xName = "Studies",
                                                  BF = BFs[nrow(dataset)],
                                                  bfType = bfType,
                                                  hasRightAxis = TRUE)
   } else if(type == "SE"){
     plot <- JASPgraphs::PlotRobustnessSequential(dfLines = df,
-                                                 plotLineOrPoint = plotLineOrPoint,
                                                  xName = "Studies",
                                                  BF = BFs[nrow(dataset)],
                                                  bfType = bfType,

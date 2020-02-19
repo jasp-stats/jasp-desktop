@@ -1030,13 +1030,14 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     
   
   plotResult <- try(JASPgraphs::PlotRobustnessSequential(
-    dfLines      = dfLines,
-    xName        = bquote(paste(.(gettext("Stretched beta prior width")), ~kappa)),
-    dfPoints     = dfPoints,
-    bfType       = bfPlotType,
-    pointColors  = pointColors,
-    pointFill    = pointFill, 
-    hypothesis   = hypothesisJASPgraphsName
+    dfLines         = dfLines,
+    xName           = bquote(paste(.(gettext("Stretched beta prior width")), ~kappa)),
+    dfPoints        = dfPoints,
+    bfType          = bfPlotType,
+    pointColors     = pointColors,
+    pointFill       = pointFill,
+    hypothesis      = hypothesisJASPgraphsName,
+    plotLineOrPoint = "line"
   ))
   
   return(plotResult)

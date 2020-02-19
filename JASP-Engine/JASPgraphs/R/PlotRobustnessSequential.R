@@ -21,7 +21,7 @@
 #' @param lineTypes String vector, line types if \code{dfLines$g} is not \code{NULL}.
 #' @param addLineAtOne Logical, should a black line be draw at BF = 1?
 #' @param bty List of three elements. Type specifies the box type, ldwX the width of the x-axis, lwdY the width of the y-axis.
-#' @param plotLineOrPoint String, should the main geom in the plot be a line or a point?
+#' @param plotLineOrPoint String, should the main geom in the plot be a line or a point? If set to auto, points are shown whenevever \code{nrow(dfLines) <= 60}.
 #' @param pointShape String, if \code{plotLineOrPoint == "point"} then this controls the shape aesthetic.
 #' @param pointFill String, if \code{plotLineOrPoint == "point"} then this controls the fill aesthetic.
 #' @param pointColor String, if \code{plotLineOrPoint == "point"} then this controls the color aesthetic.
@@ -44,7 +44,7 @@ PlotRobustnessSequential <- function(
   lineColors = c("black", "grey", "black"),
   lineTypes = c("solid", "solid", "dotted"),
   addLineAtOne = TRUE, bty = list(type = "n", ldwX = .5, lwdY = .5),
-  plotLineOrPoint = c("line", "point"),
+  plotLineOrPoint = c("auto", "line", "point"),
   pointShape = rep(21, 3),
   pointFill  = c("grey", "black", "white"),
   pointColor = rep("black", 3),
@@ -56,6 +56,7 @@ PlotRobustnessSequential <- function(
   errCheckPlots(dfLines = dfLines, dfPoints = dfPoints, BF = BF)
   bfType <- match.arg(bfType)
   plotLineOrPoint <- match.arg(plotLineOrPoint)
+  if (plotLineOrPoint == "auto") plotLineOrPoint <- if (nrow(dfLines) <= 60) "point" else "line"
   hypothesis <- match.arg(hypothesis)
   emptyPlot <- list()
   
