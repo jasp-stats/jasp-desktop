@@ -357,7 +357,7 @@ void MainWindow::loadDefaultFont()
 
 void MainWindow::loadQML()
 {
-
+	Log::log() << "Initializing QML" << std::endl;
 
 	_qml->rootContext()->setContextProperty("mainWindow",				this					);
 	_qml->rootContext()->setContextProperty("labelModel",				_labelModel				);
@@ -421,6 +421,8 @@ void MainWindow::loadQML()
 
 	connect(_qml, &QQmlApplicationEngine::objectCreated, [&](QObject * obj, QUrl url) { if(obj == nullptr) { std::cerr << "Could not load QML: " + url.toString().toStdString() << std::endl; exit(10); }});
 
+	Log::log() << "Loading Themes" << std::endl;
+
 	// load chosen theme first
 	if(_preferences->currentThemeName() == "lightTheme")
 	{
@@ -433,12 +435,15 @@ void MainWindow::loadQML()
 		_qml->load(QUrl("qrc:///components/JASP/Theme/Theme.qml"));
 	}
 
-	_qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
-	_qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
-	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
+	Log::log() << "Loading HelpWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
+	Log::log() << "Loading AboutWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
+	Log::log() << "Loading MainWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
 	connect(_preferences, &PreferencesModel::uiScaleChanged, DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
 
+	Log::log() << "QML Initialized!"  << std::endl;
+
+	Log::log() << "Loading upgrades definitions"  << std::endl;
 	_upgrader->loadOldSchoolUpgrades();
 }
 
