@@ -557,7 +557,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
         } else {
           subData <- dataset[, .v(c(var1, var2)), drop=FALSE]
           subData <- subData[complete.cases(subData), , drop=FALSE]
-          scatterPlot <- .bCorScatter(x=subData[, 1, drop=TRUE], y=subData[, 2, drop=TRUE], options)
+          scatterPlot <- .bCorScatter(x=subData[[.v(var2)]], y=subData[[.v(var1)]], options)
         }
         
         plotMat[[row, col]] <- scatterPlot
@@ -906,7 +906,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
         if (item == "plotScatter") {
           subData <- dataset[, .v(c(var1, var2)), drop=FALSE]
           subData <- subData[complete.cases(subData), , drop=FALSE]
-          plot <- try(.bCorScatter(x=subData[, 1, drop=TRUE], y=subData[, 2, drop=TRUE], xName=var1, yName=var2, options))
+          plot <- try(.bCorScatter(x=subData[[.v(var1)]], y=subData[[.v(var2)]], xName=var1, yName=var2, options))
         } else if (item == "plotPriorPosterior") {
           plot <- .drawPosteriorPlotCorBayes(jaspResults, corModel, options, thisMethod, purpose="pairs", pairName)
         } else if (item == "plotBfRobustness") {
