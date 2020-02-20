@@ -40,8 +40,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   } 
   anovaContainer <- .getAnovaContainer(jaspResults)
   
-  dataset <- .anovaSetupContrasts(dataset, options, ready)
-  
   .anovaCheckErrors(dataset, options, ready)
 
   .anovaModelContainer(anovaContainer, dataset, options, ready)
@@ -168,80 +166,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   cases
 }
 
-.anovaCreateContrast <- function (column, contrastType, customContrast) {
-  
-  levels <- levels(column)
-  nLevels <- length(levels)
-  
-  contr <- NULL
-
-  switch(contrastType,
-    none = {
-      options(contrasts = c("contr.sum","contr.poly"))
-      contr <- NULL
-    },
-
-    deviation = {
-      contr <- matrix(0,nrow = nLevels, ncol = nLevels - 1)
-
-      for (i in 1:nLevels-1) {
-        contr[c(1,i+1),i]<- c(1,-1)
-      }
-
-      contr <- contr * -1
-    },
-
-    simple = {
-      contr <- contr.treatment(levels) - 1/nLevels
-    },
-
-    Helmert = {
-      contr <- matrix(0,nrow = nLevels, ncol = nLevels - 1)
-
-      for (i in 1:(nLevels - 1)) {
-
-        k <- 1 / (nLevels - (i - 1))
-        contr[i:nLevels,i] <- c(k * (nLevels - i), rep(-k, nLevels - i))
-      }
-    },
-
-    repeated = {
-      contr <- MASS::contr.sdif(levels) * -1
-    },
-
-    difference = {
-      contr <- matrix(0,nrow = nLevels, ncol = nLevels - 1)
-
-      for (i in 1:(nLevels - 1)) {
-
-        k <- 1 / (i +1)
-        contr[1:(i+1),i] <- c( rep(-k, i), k * i)
-      }
-    },
-
-    polynomial = {
-      contr <- contr.poly(levels)
-    },
-    
-    custom = {
-
-      desiredRows <- nrow(MASS::contr.sdif(levels))
-
-      if (desiredRows == 2 && length(sapply(customContrast$values, function(x) x$values)) == 2 ) {
-        contr <- MASS::ginv(t(sapply(customContrast$values, function(x) x$values)))
-      } else {
-        contr <- MASS::ginv(sapply(customContrast$values, function(x) x$values))
-      }
-
-    }
-  )
-  
-  if ( ! is.null(contr))
-    dimnames(contr) <- list(NULL, 1:dim(contr)[2])
-  
-  return(contr)
-}
-
 .anovaCheckErrors <- function(dataset, options, ready) {
   if (!ready) 
     return()
@@ -281,51 +205,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                  return(gettext("The WLS weights contain negative and/or zero values.<br><br>(only positive WLS weights allowed)."))
              },
              exitAnalysisIfErrors = TRUE)
-}
-
-.anovaSetupContrasts <- function(dataset, options, ready) {
-  if (!ready) 
-    return()
-  
-  for (contrast in options$contrasts) {
-    
-    v <- .v(contrast$variable)
-    column <- dataset[[v]]
-
-    if (contrast$contrast == "custom") {
-      customContrastSetup <- options$customContrasts[[which(sapply(options$customContrasts, function(x) x$value == contrast$variable))]]
-    } else {
-      customContrastSetup <- NULL
-    }
-
-    tryContrMat <- try(silent = TRUE, 
-                       expr =  contrasts(column) <- .anovaCreateContrast(column, "none", customContrastSetup))
-
-    if (contrast$contrast == "custom")
-      # Check whether the custom contrast matrix works
-      .hasErrors(dataset = NULL,
-                 allowEmptyDataset = FALSE,
-                 exitAnalysisIfErrors = TRUE,
-                 custom = function() {
-                   if (isTryError(tryContrMat)) {
-                     if (grepl(tryContrMat[1], pattern = "singular contrast matrix")) {
-                       return("Singular custom contrast matrix.")
-                     } else if (grepl(tryContrMat[1], pattern = "number of contrast matrix rows")) {
-                       return("Wrong number of custom contrast matrix rows.")
-                     } 
-                   } else if (is.matrix(tryContrMat) && any(apply(tryContrMat, 2, function(x) all(x == 0) ))) {
-                     return("Please specify non-zero contrast weights.")
-                   # } else if (ncol(tryContrMat) >= nlevels(dataset[[v]])) {
-                     # return("Please specify fewer contrasts. (Maximum #contrasts = #levels - 1)")
-                   # } else if (any(round(colSums(tryContrMat), 15) != 0)) {
-                   #   return("Some contrasts do not sum to 0.")
-                   }
-                 })
-      
-    dataset[[v]] <- column
-  }
-  
-  return(dataset)
 }
 
 .reorderModelTerms <- function(options) {
@@ -748,7 +627,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       
       contrastMatrix    <- .rmAnovaCreateContrast(column, contrast$contrast, customContrastSetup)
       contrCoef         <- lapply(as.data.frame(contrastMatrix), as.vector)
-      names(contrCoef)  <- .anovaContrastCases(column, contrast$contrast, customContrastSetup)
+      names(contrCoef)  <- cases
       
       referenceGrid <- emmeans::emmeans(afexModel, v, model = "multivariate")
       
