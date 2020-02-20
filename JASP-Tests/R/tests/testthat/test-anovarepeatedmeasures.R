@@ -266,7 +266,6 @@ test_that("Descriptives Match", {
   expect_equal_tables(table, refTable)
 })
 
-
 test_that("Field - Chapter 8 marginal means match", {
 
   # compared to SPSS, we pool the standard errors in marginal means

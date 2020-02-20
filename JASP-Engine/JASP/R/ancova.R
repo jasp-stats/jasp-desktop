@@ -24,6 +24,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   nFactorModelTerms <- sum(unlist(options$modelTerms) %in% factorVariables)
 
   ready <- options$dependent != "" && length(options$fixedFactors) > 0 && nFactorModelTerms > 0
+  options(contrasts = c("contr.sum","contr.poly"))
   
   # Set corrections to FALSE when performing ANCOVA
   if (is.null(options$homogeneityBrown)) {
@@ -38,6 +39,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                                  exclude.na.listwise = c(numericVariables, factorVariables))
     dataset <- droplevels(dataset)
   } 
+  
   anovaContainer <- .getAnovaContainer(jaspResults)
   
   .anovaCheckErrors(dataset, options, ready)

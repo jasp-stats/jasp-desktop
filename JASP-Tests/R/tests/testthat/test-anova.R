@@ -324,7 +324,6 @@ test_that("Analysis handles errors", {
                   label="Negative WLS weights check")
 })
 
-return()
 #### Andy Field Tests ----
 
 #### Chapter 4 -----
