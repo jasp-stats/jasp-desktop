@@ -65,7 +65,6 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
       - repeated: By selecting this contrast, the mean of each level is compared to the mean of the following level. 
       - polynomial: This contrast tests polynomial trends in the data. The specific polynomial that will be used for the analysis depends on the number of levels of the independent variable. The degree of the trend used for the analysis is the number of levels minus 1. Therefore, if the independent variable consist of 2 levels, a linear trend is analysed. If the independent variable consists of three levels, a quadratic trend is analysed in addition to the linear trend. 
       - custom: Here, the contrast weights can be specified manually. Some restrictions apply here: (1) some weights need to be non-zero (2) The maximum number of contrasts is the number of factor levels - 1 (3) for factors with more than 2 levels, at least 2 contrasts need to be specified.
-- Assume equal variances: This option can be selected when the variances of the levels of the independent variable are assumed to be equal. This option is selected by default. 
 - Confidence Intervals: By selecting this option, confidence intervals for the estimated mean difference will be included. By default the confidence level is set to 95%. This can be changed into the desired percentage. 
 
 ### Post Hoc Tests
