@@ -223,9 +223,9 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   
   estimatesTableBootstrap$addFootnote(gettextf("Bootstrapping based on %i replicates.", options$coeffEstimatesBootstrappingReplicates))
   if (options$robustSEOpt)
-    estimatesTableBootstrap$addFootnote("Coefficient estimate and robust standard error are based on the median of the bootstrap distribution.")
+    estimatesTableBootstrap$addFootnote(gettext("Coefficient estimate and robust standard error are based on the median of the bootstrap distribution."))
   else
-    estimatesTableBootstrap$addFootnote("Coefficient estimate is based on the median of the bootstrap distribution.")
+    estimatesTableBootstrap$addFootnote(gettext("Coefficient estimate is based on the median of the bootstrap distribution."))
 }
 
 .reglogisticCasewiseDiagnosticsTable <- function(jaspResults, dataset, options, ready){
@@ -1169,11 +1169,11 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
 
 .reglogisticEstimatesInfo <- function(options, addBCA = FALSE) {
   # so we only translate this once
-  ciTitle <- sprintf(ngettext(1*addBCA,
-                              "%1$s%% bca%2$s Confidence interval",
-                              "%1$s%% Confidence interval"),
-                     100 * options$coeffCIInterval, "\u002A"
-  )
+  ciTitle <- if (addBCA)
+    gettextf("%1$s%% bca%2$s Confidence interval", 100 * options$coeffCIInterval, "\u002A")
+  else
+    gettextf("%s%% Confidence interval", 100 * options$coeffCIInterval)
+
   if(options$coeffCIOR)
     ciTitle <- gettextf("%s <br> (odds ratio scale)", ciTitle)
 
