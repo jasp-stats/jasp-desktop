@@ -95,8 +95,6 @@ Form
 	}
 	
 
-	SetSeed{}
-
 	SubjectivePriors { }
 	
 }

@@ -43,9 +43,6 @@ Test value specified in the null hypothesis.
 #### Additional Statistics
 - Descriptives: Sample size, sample mean, sample standard deviation, and standard error of the mean.
 
-#### Repeatability
-- Set seed: Value used to set the random number generator for exact reproducibility.
-
 #### Plots
 - Prior and posterior: Displays the prior and posterior distribution of the effect size under the alternative hypothesis.
   - Additional info: Adds the Bayes factor computed with the user-defined prior; adds a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; adds the median and the 95% credible interval of the posterior distribution of the effect size

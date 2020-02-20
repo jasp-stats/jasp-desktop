@@ -79,6 +79,7 @@ Form {
 	RadioButtonGroup
 	{
 		name: "testStatistic"
+		id: testStatistic
 		title: qsTr("Tests")
 		RadioButton
 		{
@@ -105,7 +106,7 @@ Form {
 		CheckBox { name: "descriptives"; label: qsTr("Descriptives") }
 	}
 
-	SetSeed{}
+	SetSeed{enabled: testWilcoxon.checked}
 
 	SubjectivePriors { informedPriorsEnabled: student.checked }
 }
