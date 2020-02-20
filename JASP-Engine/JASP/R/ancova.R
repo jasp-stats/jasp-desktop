@@ -674,7 +674,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     return()
   
   contrastContainer <- createJaspContainer(title = gettext("Contrast Tables"))
-  contrastContainer$dependOn(c("contrasts", "contrastAssumeEqualVariance", "confidenceIntervalIntervalContrast", 
+  contrastContainer$dependOn(c("contrasts", "confidenceIntervalIntervalContrast", 
                                "confidenceIntervalsContrast", "customContrasts"))
 
   createContrastTable <- function(myTitle, options, contrastType) {
@@ -693,9 +693,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     
     contrastTable$addColumnInfo(name = "SE", title=gettext("SE"), type = "number")
     
-    dfType <- if (options$contrastAssumeEqualVariance && contrastType != "custom") "integer" else "number"
-    
-    contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = dfType)
+    contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = "integer")
     contrastTable$addColumnInfo(name = "t.ratio", title = gettext("t"),  type = "number")
     contrastTable$addColumnInfo(name = "p.value", title = gettext("p"),  type = "pvalue")
     
@@ -726,29 +724,11 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     return()
   
   afexModel <- anovaContainer[["afexModel"]]$object
-
-  # referenceGridList <- list()
-  # variables <- sapply(options$contrasts, function(x) x$variable)
-  
-  # for (var in variables) {
-  #   # formula <- as.formula(paste("~", var))
-  #   
-  #   referenceGridList[[var]] <- referenceGrid
-  # }
-  # 
-  
   
   ## Computation
   model <- anovaContainer[["model"]]$object
   contrastSummary <- summary.lm(model)[["coefficients"]]
   
-  if (!options$contrastAssumeEqualVariance) {
-    model$rse <- sandwich::vcovHC(model, type="HC2") # HC2 yields same result as SPSS
-    contrastSummary <- lmtest::coeftest(model, model$rse)
-  }
-    
-  # contrastConfidenceIntervals <- confint(model, level = options$confidenceIntervalIntervalContrast)
-
   for (contrast in options$contrasts) {
 
     if (contrast$contrast != "none") {
@@ -794,51 +774,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       
       contrastResult[[".isNewGroup"]] <- c(TRUE, rep(FALSE, nrow(contrastResult)-1))
       contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setData(contrastResult)
-      
-      # browser()
-
-      # nLevelsFac <-  nlevels(dataset[,v])
-
-      # if (!options$contrastAssumeEqualVariance) {
-      #   
-        # dv <- dataset[[ .v(options$dependent) ]]
-        # newDF <- tapply(dv, dataset[[.v(contrast$variable)]], cbind)
-
-        allTestResults <- list()
-        
-        # x <- newDF[bla > 0]
-        # y <- newDF[bla < 0]
-        
-        # for (coefIndex in 1:length(contrCoef)) {
-          # allTestResults[[coefIndex]] <- t.test(as.matrix(newDF) %*% contrCoef[[coefIndex]])
-        # }
-        
-      # 
-      #   contrastMat <- (model[['contrasts']][[v]])[,1:nrow(thisContrastResult)]
-      #   contrastMat <- MASS::ginv(contrastMat)
-      #   # contrastMat <- matrix((solve(cbind((contrastMat), 1/nLevelsFac))[-nLevelsFac,]), ncol = nLevelsFac)
-      #   sds <- tapply(dv, column, sd)
-      #   ns <- tapply(dv, column, length)
-      # 
-      #   df <- apply(contrastMat, 1, function(x) {
-      #     ((sum((x)^2 * sds^2 / ns))^2) /
-      #       sum(((x)^4 * sds^4) / (ns^2 * (ns - 1)))
-      #   })
-      #   
-      #   p <- pt(abs(thisContrastResult[["t"]]), df, lower.tail = FALSE) * 2
-      #   
-      #   thisContrastResult[["df"]] <- df
-      #   thisContrastResult[["p"]] <- p
-      #   
-      # }
-
-      # For grouping by letters
-      # p <- thisContrastResult[["p"]]
-      # names(p) <- thisContrastResult[["Comparison"]]
-      # multcompView::multcompLetters(p)
-      
-      # Todo: add stars/filter significance
-
     }
     
   }
