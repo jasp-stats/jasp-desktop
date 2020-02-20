@@ -1152,9 +1152,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     
     contrastTable$addColumnInfo(name = "SE", title=gettext("SE"), type = "number")
     
-    dfType <- if (options$contrastAssumeEqualVariance && contrastType != "custom") "integer" else "number"
-
-    contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = dfType)
+    contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = "integer")
     contrastTable$addColumnInfo(name = "t.ratio", title = gettext("t"),  type = "number")
     contrastTable$addColumnInfo(name = "p.value", title = gettext("p"),  type = "pvalue")
     
@@ -1250,7 +1248,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
         
       } else if (options$contrastAssumeEqualVariance == FALSE) {
         
-        contrastContainer$setError(gettextf("Unequal variances only available for within subjects factors"))
+        contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setError(gettextf("Unequal variances only available for within subjects factors"))
         return()
         
       }
