@@ -101,7 +101,6 @@ Form
 		
 		ContrastsList { source: ["fixedFactors", "randomFactors"] }
 		
-		CheckBox { name: "contrastAssumeEqualVariance"; label: qsTr("Assume equal variances"); checked: true }
 		CheckBox
 		{
 			name: "confidenceIntervalsContrast"; label: qsTr("Confidence intervals")
