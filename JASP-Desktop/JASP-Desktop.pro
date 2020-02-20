@@ -128,7 +128,7 @@ windows {
 }
 
 
-   macx:ICON = icon.icns
+   macx:ICON = macOS/icon.icns
 windows:RC_FILE = icon.rc
 
 HELP_PATH = $${PWD}/../Docs/help
@@ -576,7 +576,7 @@ RESOURCES += \
     resources/resources.qrc \
     qml.qrc
 
-   unix:OTHER_FILES += icon.icns
+   unix:OTHER_FILES += macOS/icon.icns
 windows:OTHER_FILES += icon.rc
 
 DISTFILES += \

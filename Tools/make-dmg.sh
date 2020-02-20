@@ -103,9 +103,11 @@ echo "Copy the Openssl from Qt to our Framework because OSF no longer supports t
 cp libcrypto.1.0.0.dylib app/JASP.app/Contents/Libraries/
 cp libssl.1.0.0.dylib app/JASP.app/Contents/Libraries/
 
-cp $JASP_DESKTOP/Tools/icon.icns app/JASP.app/Contents/Resources
-cp $JASP_DESKTOP/Tools/Info.plist.template app/JASP.app/Contents/Info.plist
+cp $JASP_DESKTOP/Tools/macOS/icon.icns app/JASP.app/Contents/Resources
+cp $JASP_DESKTOP/Tools/macOS/entitlements.plist app/JASP.app/Contents/
 
+#copy template for Info.plist and replace JASP_VERSION with the actual version
+cp $JASP_DESKTOP/Tools/macOS/Info.plist.template app/JASP.app/Contents/Info.plist
 sed -ie s/JASP_VERSION/$JASP_VERSION/g app/JASP.app/Contents/Info.plist
 
 echo "Create the .dmg"
