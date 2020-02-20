@@ -261,8 +261,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   modelDef <- .rmModelFormula(options)
   model.formula <- as.formula(modelDef$model.def)
 
-  # variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
-
   options(contrasts=c("contr.sum","contr.poly"))
   
   # set these options once for all afex::aov_car calls,
@@ -1206,9 +1204,9 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       if (contrast$contrast == "custom") {
         if (isTryError(contrastResult)) {
           if (grepl(contrastResult[1], pattern = "Nonconforming number")) {
-            contrastContainer$setError(gettextf("Nonconforming number of contrast coefficients."))
+            contrastContainer$setError(gettext("Nonconforming number of contrast coefficients."))
           } else if (grepl(contrastResult[1], pattern = "number of contrast matrix rows")) {
-            contrastContainer$setError(gettextf("Wrong number of custom contrast matrix rows."))
+            contrastContainer$setError(gettext("Wrong number of custom contrast matrix rows."))
           } 
           return()
         } else if (any(apply(contrastMatrix, 2, function(x) all(x == 0) ))) {
@@ -1248,7 +1246,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
         
       } else if (options$contrastAssumeEqualVariance == FALSE) {
         
-        contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setError(gettextf("Unequal variances only available for within subjects factors"))
+        contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setError(gettext("Unequal variances only available for within subjects factors"))
         return()
         
       }
@@ -1379,6 +1377,11 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   if (makeBootstrapTable) {
     thisOverTitle <- gettextf("95%% bca%s CI", "\u002A")
+    marginalMeansTable$addColumnInfo(name="bias", title=gettext("bias"), type="number")
+    
+    marginalMeansTable$addFootnote(message = gettext("Marginal Means estimate is based on the median of the bootstrap distribution."))
+    marginalMeansTable$addFootnote(symbol = "\u2020", message = gettext("Bias corrected accelerated."))
+    
   } else {
     thisOverTitle <- gettextf("95%% CI for Mean Difference")
   }
@@ -1387,15 +1390,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   marginalMeansTable$addColumnInfo(name="upper.CL", type = "number", title = gettext("Upper"), overtitle = thisOverTitle)
   
   marginalMeansTable$addColumnInfo(name="SE", title=gettext("SE"), type="number")
-  
-  if (makeBootstrapTable) {
-    
-    marginalMeansTable$addColumnInfo(name="bias", title=gettext("bias"), type="number")
-    
-    marginalMeansTable$addFootnote(message = gettext("Marginal Means estimate is based on the median of the bootstrap distribution."))
-    marginalMeansTable$addFootnote(symbol = "\u2020", message = gettext("Bias corrected accelerated."))
-    
-  }
   
   if (options$marginalMeansCompareMainEffects) {
     marginalMeansTable$addColumnInfo(name="t.ratio", title=gettext("t"),  type="number")
