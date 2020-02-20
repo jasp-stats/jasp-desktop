@@ -226,7 +226,6 @@ test_that("Descriptives plots match", {
   options$plotSeparateLines <- "facFive"
   options$plotErrorBars <- TRUE
   options$confidenceIntervalInterval <- 0.90
-# browser()
   options$errorBarType <- "confidenceInterval"
   results <- jasptools::run("Anova", "test.csv", options)
   testPlot <- results$state$figures[[1]]$obj
