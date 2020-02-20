@@ -68,7 +68,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
                exitAnalysisIfErrors = TRUE)
   if (length(options$covariates) != 0)
     .hasErrors(dataset,
-               type = c("observations", "infinity", "variance"),
+               type = c("observations", "infinity", "variance", "varCovData"),
                all.target = options$covariates,
                observations.amount  = "< 2",
                exitAnalysisIfErrors = TRUE)
@@ -136,23 +136,12 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   estimatesTable$position <- 2
   estimatesTable$showSpecifiedColumnsOnly <- TRUE
   
+  tmp <- .reglogisticEstimatesInfo(options)
+  ciTitle    <- tmp[["ciTitle"]]
+  seTitle    <- tmp[["seTitle"]]
+  multimod   <- tmp[["multimod"]]
+  paramtitle <- tmp[["paramtitle"]]
 
-  ciTitle <- gettextf("%.0f%% Confidence interval", options$coeffCIInterval * 100)
-  if(options$coeffCIOR)
-    ciTitle <- gettextf("%s <br> (odds ratio scale)", ciTitle)
-  
-  seTitle <- gettext("Standard Error")
-  if (options$robustSEOpt)
-    seTitle <- gettextf("Robust <br> %s", seTitle)
-  
-  if (options$method == "enter") {
-    multimod   <- FALSE
-    paramtitle <- ""
-  } else {
-    multimod   <- TRUE
-    paramtitle <- gettext("Parameter")
-  }
-  
   if(options$method != "enter")
     estimatesTable$addColumnInfo(name = "model", title = gettext("Model"), type = "string", combine = TRUE)
   estimatesTable$addColumnInfo(name = "param",   title = paramtitle, type = "string")
@@ -195,28 +184,35 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   estimatesTableBootstrap <- createJaspTable(gettext("Bootstrap Coefficients"))
   estimatesTableBootstrap$dependOn(optionsFromObject   = jaspResults[["modelSummary"]],
                                    options             = c("coeffEstimatesBootstrapping",
-                                                           "coeffEstimatesBootstrappingReplicates"))
+                                                           "coeffEstimatesBootstrappingReplicates",
+                                                           "coeffCI", "coeffCIOR", "stdCoeff", "oddsRatios", "coeffCIInterval",
+                                                           "robustSEOpt"))
   estimatesTableBootstrap$position <- 3
   estimatesTableBootstrap$showSpecifiedColumnsOnly <- TRUE
   
-  if (options$method == "enter") {
-    multimod   <- FALSE
-    paramtitle <- ""
-  } else {
-    multimod   <- TRUE
-    paramtitle <- gettext("Parameter")
-  }
-  
-  ciTitle <- gettextf("95%% bca%s Confidence interval", "\u002A")
-  
+  tmp <- .reglogisticEstimatesInfo(options, addBCA = TRUE)
+  ciTitle    <- tmp[["ciTitle"]]
+  seTitle    <- tmp[["seTitle"]]
+  multimod   <- tmp[["multimod"]]
+  paramtitle <- tmp[["paramtitle"]]
+
   if(options$method != "enter")
     estimatesTableBootstrap$addColumnInfo(name = "model", title = gettext("Model"),          type = "string", combine = TRUE)
   estimatesTableBootstrap$addColumnInfo(name = "param",   title = paramtitle,                type = "string")
   estimatesTableBootstrap$addColumnInfo(name = "est",     title = gettext("Estimate"),       type = "number", format="dp:3")
   estimatesTableBootstrap$addColumnInfo(name = "bias",    title = gettext("Bias"),           type = "number", format="dp:3")
-  estimatesTableBootstrap$addColumnInfo(name = "se",      title = gettext("Standard Error"), type = "number", format="dp:3")
-  estimatesTableBootstrap$addColumnInfo(name = "cilo",    title = gettext("Lower bound"),    type = "number", format="dp:3", overtitle = ciTitle)
-  estimatesTableBootstrap$addColumnInfo(name = "ciup",    title = gettext("Upper bound"),    type = "number", format="dp:3", overtitle = ciTitle)
+  estimatesTableBootstrap$addColumnInfo(name = "se",      title = seTitle,                   type = "number", format="dp:3")
+  if(options$stdCoeff) {
+    estimatesTableBootstrap$addColumnInfo(name = "std",   title = gettextf("Standardized%s", "\u207A"), type = "number", format="dp:3")
+    estimatesTableBootstrap$addFootnote(gettext("Standardized estimates represent estimates  where the continuous predictors are standardized (X-standardization)."), symbol = "\u207A")
+  }
+  if(options$oddsRatios)
+    estimatesTableBootstrap$addColumnInfo(name = "or",    title = gettext("Odds Ratio"), type = "number")
+  if (options$coeffCI) {
+    estimatesTableBootstrap$addColumnInfo(name = "cilo",    title = gettext("Lower bound"),    type = "number", format="dp:3", overtitle = ciTitle)
+    estimatesTableBootstrap$addColumnInfo(name = "ciup",    title = gettext("Upper bound"),    type = "number", format="dp:3", overtitle = ciTitle)
+    estimatesTableBootstrap$addFootnote(gettext("Bias corrected accelerated."), symbol = "\u002A")
+  }
   
   jaspResults[["estimatesTableBootstrapping"]] <- estimatesTableBootstrap
   
@@ -226,8 +222,10 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   .reglogisticSetError(res, estimatesTableBootstrap)
   
   estimatesTableBootstrap$addFootnote(gettextf("Bootstrapping based on %i replicates.", options$coeffEstimatesBootstrappingReplicates))
-  estimatesTableBootstrap$addFootnote(gettext("Coefficient estimate is based on the median of the bootstrap distribution."))
-  estimatesTableBootstrap$addFootnote(gettext("Bias corrected accelerated."), symbol = "\u002A")
+  if (options$robustSEOpt)
+    estimatesTableBootstrap$addFootnote(gettext("Coefficient estimate and robust standard error are based on the median of the bootstrap distribution."))
+  else
+    estimatesTableBootstrap$addFootnote(gettext("Coefficient estimate is based on the median of the bootstrap distribution."))
 }
 
 .reglogisticCasewiseDiagnosticsTable <- function(jaspResults, dataset, options, ready){
@@ -599,60 +597,123 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   glmObj     <- .reglogisticComputeModel(jaspResults, dataset, options)
   ci.fails   <- FALSE
 
+  if (is.null(jaspResults[["bootstrapResults"]])) {
+    bootstrapResults <- list()
+  } else {
+    bootstrapResults <- jaspResults[["bootstrapResults"]]$object
+  }
   if (!is.null(glmObj)) {
-    startProgressbar(options$coeffEstimatesBootstrappingReplicates)
+
+    expon <- if (options$coeffCIOR) function(x) exp(x) else identity
+
+    startProgressbar(options$coeffEstimatesBootstrappingReplicates *
+                     if (multimod) length(glmObj) else 1)
     
     for (i in 1:length(glmObj)) {
       if (!multimod && i != 2)
         next
-      rn <- rownames(summary(glmObj[[i]])[["coefficients"]])
-      rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
-      .bootstrapping    <- function(data, indices, model.formula, options) {
-        progressbarTick()
-        
-        d <- data[indices, , drop = FALSE] # allows boot to select sample
-        result <- glm(model.formula, family = "binomial", data = d)
-        
-        return(coef(result))
-      }
-      bootstrap.summary <- try(boot::boot(data = dataset, 
-                                          statistic = .bootstrapping,
-                                          R = options$coeffEstimatesBootstrappingReplicates,
-                                          model.formula = formula(glmObj[[i]]),
-                                          options = options),
-                                          silent = TRUE)
       
+        rn <- rownames(summary(glmObj[[i]])[["coefficients"]])
+        rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
+        bootname <- paste(rn, collapse = "-")
+
+        if (is.null(bootstrapResults[[bootname]])) {
+
+          # we compute additional statistics while bootstrapping, but we can't do this using boot
+          # so we hack it in there using an environment
+          envir <- new.env()
+          envir$idx <- envir$idx_rse <- 0L
+          envir$stdEst <- envir$robustSE <-
+            matrix(NA, options$coeffEstimatesBootstrappingReplicates, length(coef(glmObj[[i]])))
+
+          .bootstrapping    <- function(data, indices, model.formula, options, envir) {
+            progressbarTick()
+
+            d <- data[indices, , drop = FALSE] # allows boot to select sample
+            result <- glm(model.formula, family = "binomial", data = d)
+            if (envir$idx == 0L) {
+              # boot::boot does one test run before doing all runs (which it ignores in the results)
+              envir$idx     <- 1L
+              envir$idx_rse <- 1L
+            } else {
+              resultStd <- try(.stdEst(result, type = "X"))
+              if (!isTryError(resultStd)) {
+                envir$stdEst[envir$idx, ] <- resultStd
+                envir$idx <- envir$idx + 1L
+              }
+              robustSE <- try(unname(.glmRobustSE(result)))
+              if (!isTryError(resultStd)) {
+                envir$robustSE[envir$idx_rse, ] <- robustSE
+                envir$idx_rse <- envir$idx_rse + 1L
+              }
+            }
+            return(coef(result))
+          }
+
+          bootstrap.summary <- try(boot::boot(data = dataset,
+                                              statistic = .bootstrapping,
+                                              R = options$coeffEstimatesBootstrappingReplicates,
+                                              model.formula = formula(glmObj[[i]]),
+                                              options = options,
+                                              envir = envir),
+                                   silent = TRUE)
+          bootstrap.summary$stdEst   <- envir$stdEst
+          bootstrap.summary$robustSE <- envir$robustSE
+          bootstrapResults[[bootname]] <- bootstrap.summary
+          try(rm(envir, envir = parent.env(envir)), silent = TRUE)
+
+        } else {
+          bootstrap.summary <- bootstrapResults[[bootname]]
+        }
+
       bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
+      bootstrap.std  <- matrixStats::colMedians(bootstrap.summary$stdEst, na.rm = TRUE)
       bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
-      bootstrap.se   <- matrixStats::colSds(as.matrix(bootstrap.summary$t), na.rm = TRUE)
+      bootstrap.or   <- matrixStats::colMedians(exp(bootstrap.summary$t), na.rm = TRUE)
+      if (options$robustSEOpt)
+        bootstrap.se <- matrixStats::colMedians(bootstrap.summary$robustSE)
+      else
+        bootstrap.se <- matrixStats::colSds(as.matrix(bootstrap.summary$t), na.rm = TRUE)
       
       for (j in seq_along(rn)) {
-        result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type = "bca", conf = 0.95, index=j))
-        if(!isTryError(result.bootstrap.ci))
-          bootstrap.ci <- result.bootstrap.ci
-        else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){ #Does this still work if we turn on translations? I'm gonna guess not...
-          ci.fails <- TRUE
-          bootstrap.ci <- list(bca = rep(NA, 5))
-        } else
-          bootstrap.ci <- result.bootstrap.ci
         
-        if(ci.fails)
-          estimatesTableBootstrap$addFootnote(gettext("Some confidence intervals could not be computed.\nPossibly too few bootstrap replicates."), symbol = gettext("<i>Note.</i>"))
-
         row <- list(
           model = as.character(i),
           param = .formatTerm(rn[j], glmObj[[i]]),
           est   = as.numeric(bootstrap.coef[j]),
           bias  = as.numeric(bootstrap.bias[j]),
           se    = as.numeric(bootstrap.se[j]),
-          cilo  = as.numeric(bootstrap.ci$bca[4]),
-          ciup  = as.numeric(bootstrap.ci$bca[5]),
           .isNewGroup = as.logical(j == 1)
         )
+
+        if (options$coeffCI) {
+          result.bootstrap.ci <- try(boot::boot.ci(bootstrap.summary, type = "bca", conf = options$coeffCIInterval, index=j))
+          if(!isTryError(result.bootstrap.ci))
+            bootstrap.ci <- result.bootstrap.ci
+          else if(identical(attr(result.bootstrap.ci, "condition")$message, "estimated adjustment 'a' is NA")){
+            # NOTE: the if statement above doesn't work if the package uses gettext and translates error messages.
+            ci.fails <- TRUE
+            bootstrap.ci <- list(bca = rep(NA, 5))
+          } else
+            bootstrap.ci <- result.bootstrap.ci
+
+          if(ci.fails)
+            estimatesTableBootstrap$addFootnote(gettext("Some confidence intervals could not be computed.\nPossibly too few bootstrap replicates."), symbol = gettext("<i>Note.</i>"))
+
+          row[["cilo"]] <- expon(as.numeric(bootstrap.ci$bca[4]))
+          row[["ciup"]] <- expon(as.numeric(bootstrap.ci$bca[5]))
+        }
+
+        row[["or"]]  <- bootstrap.or[j]
+        row[["std"]] <- bootstrap.std[j]
 
         jaspResults[["estimatesTableBootstrapping"]]$addRows(row)
       }
     }
+    bootstrapResultsState <- createJaspState(bootstrapResults)
+    bootstrapResultsState$dependOn(optionsFromObject   = jaspResults[["modelSummary"]],
+                                   options             = c("coeffEstimatesBootstrapping", "coeffEstimatesBootstrappingReplicates"))
+    jaspResults[["bootstrapResults"]] <- bootstrapResultsState
   } else {
     return()
   }
@@ -925,7 +986,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
     ggdat <- data.frame(x = vd, y = mObj$y)
   }
   # Calculate ribbon & main line
-  ribdat <- .glmLogRegRibbon(mObj, .v(pred))
+  ribdat <- .glmLogRegRibbon(mObj, .v(pred), options$estimatesPlotsCI)
   # Find predicted level
   predVar   <- as.character(mObj[["terms"]])[2]
   predLevel <- levels(mObj[["data"]][[predVar]])[2]
@@ -1104,4 +1165,28 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   p <- JASPgraphs::themeJasp(p, legend.position = "none")
   
   return(p)
+}
+
+.reglogisticEstimatesInfo <- function(options, addBCA = FALSE) {
+  # so we only translate this once
+  ciTitle <- if (addBCA)
+    gettextf("%1$s%% bca%2$s Confidence interval", 100 * options$coeffCIInterval, "\u002A")
+  else
+    gettextf("%s%% Confidence interval", 100 * options$coeffCIInterval)
+
+  if(options$coeffCIOR)
+    ciTitle <- gettextf("%s <br> (odds ratio scale)", ciTitle)
+
+  seTitle <- gettext("Standard Error")
+  if (options$robustSEOpt)
+    seTitle <- gettextf("Robust <br> %s", seTitle)
+
+  if (options$method == "enter") {
+    multimod   <- FALSE
+    paramtitle <- ""
+  } else {
+    multimod   <- TRUE
+    paramtitle <- gettext("Parameter")
+  }
+  return(list(ciTitle = ciTitle, seTitle = seTitle, multimod = multimod, paramtitle = paramtitle))
 }
