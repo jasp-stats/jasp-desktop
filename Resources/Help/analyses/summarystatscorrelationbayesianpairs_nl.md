@@ -1,7 +1,7 @@
-Samenvatting statistiek Bayesiaanse Correlatie Paren
+Samenvatting statistiek Bayesiaanse Correlatie
 ==========
 
-Met Bayesiaanse correlatie paren kan men de nulhypothese testen dat de populatiecorrelatie (Pearson product-moment correlatie) tussen paren van variabelen 0 is. 
+Met Bayesiaanse correlatie analyse kan men de nulhypothese testen dat de populatiecorrelatie (Pearson product-moment correlatie) tussen twee variabelen 0 is. 
 
 ### Invoer
 ---

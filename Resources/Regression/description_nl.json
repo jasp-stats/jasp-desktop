@@ -39,12 +39,8 @@
 			"icon":		"analysis-bayesian-regression.svg"
 		},
 		{
-			"title":	"Bayesiaanse Correlatie Matrix",
+			"title":	"Bayesiaanse Correlatie",
 			"function":	"CorrelationBayesian"
-		},
-		{
-			"title":	"Bayesiaanse Correlatie Paren",
-			"function":	"CorrelationBayesianPairs"
 		},
 		{
 			"title":	"Bayesiaanse Lineaire Regressie",
