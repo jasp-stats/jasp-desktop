@@ -327,7 +327,7 @@ void MainWindow::makeConnections()
 
 	connect(_languageModel,			&LanguageModel::languageChanged,					_fileMenu,				&FileMenu::refresh											);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_ribbonModel,			&RibbonModel::refresh										);
-	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
+	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::languageChangedHandler,							Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
 
 
@@ -603,6 +603,11 @@ void MainWindow::zoomOutKeyPressed()
 void MainWindow::zoomResetKeyPressed()
 {
 	_preferences->zoomReset();
+}
+
+void MainWindow::setLanguage(int languageIndex)
+{
+	_languageModel->changeLanguage(languageIndex);
 }
 
 void MainWindow::syncKeyPressed()
