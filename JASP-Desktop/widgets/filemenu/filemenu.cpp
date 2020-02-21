@@ -117,8 +117,8 @@ FileEvent *FileMenu::save()
 		event = new FileEvent(this, FileEvent::FileSave);
 		if (!event->setPath(_currentFilePath))
 		{
-			MessageForwarder::showWarning("File Types", event->getLastError());
-			event->setComplete(false, "Failed to open file from OSF");
+			MessageForwarder::showWarning(tr("File Types"), event->getLastError());
+			event->setComplete(false, tr("Failed to open file from OSF"));
 			return event;
 		}
 	}
@@ -134,12 +134,11 @@ void FileMenu::sync()
 
 	if (path.isEmpty())
 	{
-		if(!MessageForwarder::showYesNo("No associated data file",
-					"JASP has no associated data file to be synchronized with. "
-					"Do you want to search for such a data file on your computer?\nNB: You can also set this data file via menu File/Sync Data."))
+		if(!MessageForwarder::showYesNo(tr("No associated data file"),
+					tr("JASP has no associated data file to be synchronized with.\nDo you want to search for such a data file on your computer?\nNB: You can also set this data file via menu File/Sync Data.")))
 			return;
 
-		path =  MessageForwarder::browseOpenFile("Find Data File", "", "Data File (*.csv *.txt *.tsv *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt");
+		path =  MessageForwarder::browseOpenFile(tr("Find Data File"), "", tr("Data File").arg("*.csv *.txt *.tsv *.sav *.ods *.dta *.por *.sas7bdat *.sas7bcat *.xpt"));
 	}
 
 	_mainWindow->setCheckAutomaticSync(false);

@@ -45,7 +45,7 @@ void PreferencesModel::browseSpreadsheetEditor()
 	applicationfolder = "/usr/bin";
 #endif
 
-	QString filename = MessageForwarder::browseOpenFile("Select a file...", applicationfolder, filter);
+	QString filename = MessageForwarder::browseOpenFile(tr("Select a file..."), applicationfolder, filter);
 
 	if (filename != "")
 		setCustomEditor(filename);
@@ -64,7 +64,7 @@ void PreferencesModel::browseDeveloperFolder()
 #endif
 	}
 
-	QString folder = MessageForwarder::browseOpenFolder("Select a folder...", defaultfolder);
+	QString folder = MessageForwarder::browseOpenFolder(tr("Select a folder..."), defaultfolder);
 
 	if (!folder.isEmpty())
 		setDeveloperFolder(folder);
@@ -266,7 +266,7 @@ void PreferencesModel::setSafeGraphics(bool newSafeGraphics)
 	Settings::setValue(Settings::SAFE_GRAPHICS_MODE, newSafeGraphics);
 	emit modulesRememberChanged(newSafeGraphics);
 
-	MessageForwarder::showWarning("Safe Graphics mode changed", "You've changed the Safe Graphics mode of JASP, for this option to take effect you need to restart JASP");
+	MessageForwarder::showWarning(tr("Safe Graphics mode changed"), tr("You've changed the Safe Graphics mode of JASP, for this option to take effect you need to restart JASP"));
 }
 
 void PreferencesModel::zoomIn()
