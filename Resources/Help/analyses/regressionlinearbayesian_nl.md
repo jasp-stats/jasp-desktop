@@ -68,6 +68,8 @@ Vergelijkt elk model met het geselecteerde model.
 - Steekproef methode: Geeft aan welke steekproef methode wordt gebruikt. Het wordt aangeraden om *BAS* te gebruiken wanneer de model space kan worden opgeteld.
   - BAS: Gebruikt Bayesiaanse adaptieve steekproeven (zonder vervanging). Deze kan worden geüpdatet gebaseerd op schattingen van de marginale inclusie. *N. modellen* geeft het aantal modellen aan om steekproeven van te nemen zonder vervanging. Als je de waarde op 0 zet betekent dit dat de analyse zal proberen alle modellen op te tellen.
   - MCMC: Steekproeven met vervanging door middel van een MCMC algoritme dat een birth/death random walk combineert met een random swap move om variabiliteit in het model uit te wisselen. *n. samples* geeft het aantal MCMC steekproeven aan. Als je de waarde op 0 zet is het aantal interacties 10 keer het aantal modellen. Het nemen van steekproeven stopt wanneer min(aantal modellen, MCMC iteraties) wordt bereikt. 
+- Reproduceerbaarheid:
+  - Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 ### Uitvoer
 ---

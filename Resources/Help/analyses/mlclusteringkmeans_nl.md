@@ -32,7 +32,7 @@ K-means clustering is een hard clusteringsalgoritme dat data opdeelt in meerdere
 - Willekeurige sets: Bepaalt het maximale aantal mogelijke willekeurige sets om te gebruiken. Het aantal willekeurige sets is de hoeveelheid willekeurige gekozen initiële cluster toewijzigen. De standaardoptie is 25.
 - Algoritme: Kies het algoritme wat je wilt gebruiken. De standaardoptie is het 'Hartigan-Wong' algoritme. Diverse algoritmes benadrukken verschillende parameters die de clustering output anders beïnvloeden.
 - Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
-- Set seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
+- Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
 
 #### Clusterings Parameters
 - Fixed: Laat je een eigen gespecificeerd aantal clusters gebruiken. Hiermee kan je handmatig optimaliseren.

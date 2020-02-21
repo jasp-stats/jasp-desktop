@@ -18,6 +18,8 @@ Met Bayesiaanse correlatie paren kan men de nulhypothese testen dat de populatie
 - *positief gecorreleerd*: Eenzijdige alternatieve hypothese dat de populatiecorrelatie hoger is dan 0.
 - *negatief gecorreleerd*: Eenzijdige alternatieve hypothese dat de populatiecorrelatie lager is dan 0.
 
+- *Geloofwaardigheidsinterval*: Geeft het geloofwaardigheidsinterval weer voor de correlatiecoëfficient.
+- 
 #### Bayes Factor
 - BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
 - BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
@@ -25,12 +27,13 @@ Met Bayesiaanse correlatie paren kan men de nulhypothese testen dat de populatie
 
 #### Grafieken
 - *Prior en posterior*: Geeft de dichtheid van de prior (stippellijn) en de posterior (lijn) van de effectgrootte onder de alternatieve hypothese; de grijze cirkels representeren de hoogte van de prior en de posterior bij een effectgrootte delta = 0. De horizontale lijn representeert de breedte van een 95% geloofwaardigheidsinterval van de posterior.
-  - Aanvullende info: Geeft de Bayes factor weer; geeft een kanswiel weer met de kans kl de data onder de nul- en alternatieve hypothese; geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior weer.
+  - *Schattingsinformatie*: Geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior weer.
+  - *Toetsingsinformatie*: Voegt de Bayes factor berekend met de door de gebruiker gedefinieerde prior toe; voegt een kanswiel toe die de kans van de data onder de nulhypothese vs. de alternatieve hypothese laat zien; voegt twee cirkels toe voor de prior en posterior op het toetsingspunt (rho=0), de ratio van de twee punten is gelijk aan de Bayes factor.
 - *Bayes factor rubuustheids grafiek*: Geeft de Bayes factor weer als een functie van de breedte van de Cauchy prior voor effectgrootte. De schaal van de Cauchy prior varieert tussen 0 en 1.5 (tussen 0 en 2 als de prior van de gebruiker hoger is dan 1.5), op zo'n manier dat de priors steeds minder informatief worden.
 
 #### Prior
 
-*Stretched Beta prior breedte*: Standaardoptie is 1.
+*Gerekte beta prior breedte*: Standaardoptie is 1.
 
 ### Uitvoer
 ---

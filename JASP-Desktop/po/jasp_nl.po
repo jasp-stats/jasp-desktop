@@ -1121,7 +1121,7 @@ msgstr "Resultaat voorkeuren"
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr "Tabel Opties"
+msgstr "Tabel opties"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
@@ -1133,7 +1133,7 @@ msgstr "Vast aantal decimalen"
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
-msgstr "Plot opties"
+msgstr "Grafiek opties"
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
@@ -4710,7 +4710,7 @@ msgstr "Prior"
 
 msgctxt "ABTestBayesian|"
 msgid "Bayes factor robustness check"
-msgstr "Bayes factor robuustheidsevaluate"
+msgstr "Bayes factor robuustheidsevaluatie"
 
 msgctxt "ABTestBayesian|"
 msgid "Order"
@@ -10427,7 +10427,7 @@ msgstr "Reproduceerbaarheid"
 
 msgctxt "SetSeed|"
 msgid "Set seed:"
-msgstr "Stel seed in:"
+msgstr "Gebruik seed:"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
@@ -10845,11 +10845,11 @@ msgstr "Posterior mediaan"
 
 msgctxt "CorrelationBayesian|"
 msgid "Plot Individual Pairs"
-msgstr "Plot induviduele paren"
+msgstr "Grafieken Van Losse Paren"
 
 msgctxt "CorrelationBayesian|"
 msgid "Correlation coefficient to plot"
-msgstr "Correlatie "
+msgstr "Correlatiecoëfficient in grafieken"
 
 msgctxt "CorrelationBayesian|"
 msgid "Spearman's rho"
@@ -10877,11 +10877,11 @@ msgstr "Schattingsinformatie"
 
 msgctxt "CorrelationBayesian|"
 msgid "Testing info"
-msgstr "Testinformatie"
+msgstr "Toetsingsinformatie"
 
 msgctxt "CorrelationBayesian|"
 msgid "Bayes factor robustness check"
-msgstr "Bayes factor robuustheidsevaluate"
+msgstr "Bayes factor robuustheidsevaluatie"
 
 msgctxt "CorrelationBayesian|"
 msgid "Additional info"
@@ -10913,7 +10913,7 @@ msgstr "Schattingsinformatie"
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Testing info"
-msgstr "Testinformatie"
+msgstr "Toetsingsinformatie"
 
 msgctxt "PrefsUI|"
 msgid "Use Native File Dialogs"

@@ -65,6 +65,8 @@ Specificeert de prior kansen voor de vier hypothesen:
 #### Steekproefen nemen 
 Bepaalt het aantal "importance samples" om de log marginale likelihood voor (H+) en (H-) te verkrijgen. Het bepaalt ook het aantal steekproeven van de posterior.
 
+#### Reproduceerbaarheid
+- Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 ### Uitvoer
 ----------
