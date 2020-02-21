@@ -449,6 +449,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   se_type <- switch(options$se,
     "bootstrap" = gettext("Delta method"),
     "standard"  = gettext("Delta method"),
+    "default"   = gettext("Delta method"),
     "robust"    = gettext("Robust")
   )
   ci_type <- switch(options$se,
@@ -458,6 +459,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
       "bca.simple" = gettext("bias-corrected percentile bootstrap")
     ),
     "standard"  = gettext("normal theory"),
+    "default"   = gettext("normal theory"),
     "robust"    = gettext("robust")
   )
   
