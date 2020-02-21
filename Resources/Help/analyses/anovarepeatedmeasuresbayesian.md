@@ -86,6 +86,8 @@ To create a descriptive plot, place the independent variable on the horizontal a
 - Posterior Samples: It is possible to set the he number of Markov Chain Monte Carlo samples, used to calculate the posterior and error %. 
     - Auto: If this option is selected, 10000 samples will be used. This option is selected by default.
     - Manual: If this option is selected, the number of samples can be specified manually. When selecting this option a sample size of 1000 is used by default.
+- Repeatability:
+  - Set seed: Gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
 
 ### Output
 ---
@@ -165,9 +167,6 @@ Descriptives - dependent variable:
 
 #### Descriptives Plots
 - Descriptives plot: Repeated measures factor on the x-axis and dependent variable on the y-axis. If other repeated measures factors are included, either different lines representing different values of the other repeated measures factor are displayed in the same plot, or different plots representing different values of the other repeated measures factor are displayed.
-
-#### Repeatability
-- Set seed: Value used to set the random number generator for exact reproducibility.
 
 ### References
 ---

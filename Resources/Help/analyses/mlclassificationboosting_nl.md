@@ -46,7 +46,7 @@ Boosting werkt door opeenvolgende voorspellers toe te voegen aan een beslisboom 
 - Min. observatie in knoop: Geheel getal dat het minimum aantal observaties in de eindknopen van de bomen specificeert. Let op dat dit het daadwerkelijk aantal observaties is, niet het totale gewicht.
 - Gebruikte trainingdata per beslisboom: Selecteert het percentage trainingsdata dat is gebruikt om elk individuele beslisboom te trainen.
 - Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
-- Set seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
+- Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
 
 #### Aantal Beslisbomen
 - Vast: Laat je een eigen gespecificeerd aantal bomen gebruiken. 

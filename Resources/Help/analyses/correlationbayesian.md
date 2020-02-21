@@ -67,8 +67,8 @@ The Bayesian Correlation analysis allows for the estimation of the population co
 - Missing values: 
   - Exclude cases pairwise
   - Exclude cases listwise 
-- Repeatability
-  - Set seed: Value used to set the random number generator for exact reproducibility.
+- Repeatability:
+  - Set seed: Gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
 
 
 ### Output

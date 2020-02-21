@@ -89,7 +89,7 @@ De bayesiaanse ANOVA laat de gebruiker verschillende tussen meerdere groepsgemid
 - Weergeven:
 	  -  Geloofwaardigheidsinterval: Als je deze optie selecteert, bevat de grafiek de geloofwaardigheidsinterval. De standaardoptie is 95%. Dit kan worden aangepast tot het gewenste percentage. 
 
-### Geavanceerde opties 
+### Aanvullende opties 
 - Prior: Hier kan je de prior verdelingen voor de willekeurige en vaste effectgroottes bepalen.
 	- r schaal vaste effecten: De vorm parameter van de prior verdeling voor vaste effecten. De standaardwaarde is .5, maar je kan het naar behoeven aanpassen,
 	- r schaal willekeurige effecten: De vorm parameter van de prior verdeling voor de willekeurige effecten. De standaardwaarde is 1, maar je kan het naar behoeven aanpassen. 
@@ -99,6 +99,8 @@ De bayesiaanse ANOVA laat de gebruiker verschillende tussen meerdere groepsgemid
 - Posterior steekproeven: Het is mogelijk om het aantal Markov Chain Monte Carlo steekproeven in te stellen. Dit wordt gebruikt om de posterior verdeling en het fout % te benaderen. 
 	- Auto: Als deze optie is geselecteerd, worden er 10000 steekproeven gebruikt. Dit is de standaardoptie.
     - Handmatig: Als je deze optie selecteert, kan je handmatig het aantal steekproeven instellen. Als je deze optie kiest, is de standaardwaarde 1000.
+- Reproduceerbaarheid:
+  - Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 ### Output
 ---
