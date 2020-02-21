@@ -76,12 +76,11 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
     # Check for correlation anomalies
     function() {
       P <- ncol(dataset)
+      
+      # check whether a variable has too many missing values to compute the correlations
       Np <- colSums(!is.na(dataset))
       error_variables <- .unv(names(Np)[Np < P])
-      
-      # check whether a variable has too many missing values to compute a 
-      # correlation
-      if (any(is.na(S))) {
+      if (length(error_variables) > 0) {
         return(gettextf("Data not valid: too many missing values in variable(s) %s.",
                         paste(error_variables, collapse = ", ")))
       }
