@@ -61,7 +61,7 @@ Popup
 			Text
 			{
 				id:					title
-				text:				"Create Computed Column"
+				text:				qsTr("Create Computed Column")
 				font:				jaspTheme.fontGroupTitle
 				color:				jaspTheme.textEnabled
 				verticalAlignment:	Text.AlignVCenter
@@ -134,7 +134,7 @@ Popup
 						ToolTip.delay:			0
 						ToolTip.timeout:		10000
 						ToolTip.visible:		columnNameInUse
-						ToolTip.text:			"Column name is already used, please choose a different one."
+						ToolTip.text:			qsTr("Column name is already used, please choose a different one.")
 
 						Keys.onReturnPressed:	rootCreateComputedColumn.createComputedColumn()
 
@@ -190,7 +190,7 @@ Popup
 
 					width:					height
 
-					toolTip:				"Define column through R code"
+					toolTip:				qsTr("Define column through R code")
 				}
 
 				RectangularButton
@@ -209,7 +209,7 @@ Popup
 
 					width:				height
 
-					toolTip:			"Define column through drag and drop formulas"
+					toolTip:			qsTr("Define column through drag and drop formulas")
 				}
 
 			}
@@ -303,7 +303,7 @@ Popup
 				width:			height
 				height:			createButton.height
 				onClicked:		helpModel.showOrTogglePage("other/ComputedColumns");
-				toolTip:		"Open Documentation"
+				toolTip:		qsTr("Open Documentation")
 				anchors
 				{
 					left:		parent.left
@@ -317,7 +317,7 @@ Popup
 				id:			createButton
 				text:		"Create Column"
 				enabled:	nameEdit.validEntry
-				toolTip:	nameEdit.validEntry ? "Click here to create your new computed column '" + nameEdit.text + "'" : "Enter a valid (unused) name for computed column"
+				toolTip:	nameEdit.validEntry ? qsTr("Click here to create your new computed column '%1'").arg(nameEdit.text) : qsTr("Enter a valid (unused) name for computed column")
 				onClicked:	rootCreateComputedColumn.createComputedColumn()
 				anchors
 				{
@@ -335,7 +335,7 @@ Popup
 				width:			height
 				height:			createButton.height
 				onClicked:		popupCreateComputedColumn.close()
-				toolTip:		"Close without creating a computed column"
+				toolTip:		qsTr("Close without creating a computed column")
 				anchors
 				{
 					right:		parent.right

@@ -47,7 +47,7 @@ FocusScope
 				{
 					id:				filterToggleButton
 					width:			dataTableView.rowNumberWidth
-					toolTip:		filterWindow.opened ? "Hide filter" : "Show filter"
+					toolTip:		filterWindow.opened ? qsTr("Hide filter") : qsTr("Show filter")
 					iconSource:		jaspTheme.iconPath + "filter.png"
 					onClicked:		filterWindow.toggle()
 					border.width:	0
@@ -58,7 +58,7 @@ FocusScope
 				{
 					id:				addColumnButton
 					width:			height
-					toolTip:		"Add computed column"
+					toolTip:		qsTr("Add computed column")
 					iconSource:		jaspTheme.iconPath + "/addition-sign.svg"
 					onClicked:		createComputeDialog.open()
 					border.width:	0
@@ -146,7 +146,7 @@ FocusScope
 
 						hoverEnabled:		true
 						ToolTip.visible:	containsMouse
-						ToolTip.text:		"Click here to change column type"
+						ToolTip.text:		qsTr("Click here to change column type")
 						ToolTip.timeout:	3000
 						ToolTip.delay:		500
 						cursorShape:		Qt.PointingHandCursor
@@ -176,7 +176,7 @@ FocusScope
 
 						hoverEnabled:		true
 						ToolTip.visible:	containsMouse
-						ToolTip.text:		"Click here to change the columns formulas"
+						ToolTip.text:		qsTr("Click here to change the columns formulas")
 						ToolTip.timeout:	3000
 						ToolTip.delay:		500
 
@@ -286,7 +286,7 @@ FocusScope
 
 					hoverEnabled:		true
 					ToolTip.visible:	containsMouse && dataSetModel.columnIcon(columnIndex)  !== columnTypeScale
-					ToolTip.text:		"Click here to change labels" + (columnIsFiltered ? " or inspect filter" : "" )
+					ToolTip.text:		qsTr("Click here to change labels") + (columnIsFiltered ? qsTr(" or inspect filter") : "" )
 					ToolTip.timeout:	3000
 					ToolTip.delay:		500
 					cursorShape:		dataSetModel.columnIcon(columnIndex)  !== columnTypeScale || dataSetModel.columnUsedInEasyFilter(columnIndex) ? Qt.PointingHandCursor : Qt.ArrowCursor

@@ -35,7 +35,7 @@ DropArea
 		onDoubleClicked:	parent.destroyAll()
 		ToolTip.delay:		500
 		ToolTip.visible:	containsMouse
-		ToolTip.text:		"Dump unwanted snippets here; double-click to erase the entire slate"
+		ToolTip.text:		qsTr("Dump unwanted snippets here; double-click to erase the entire slate")
 		hoverEnabled:		true
 		cursorShape:		Qt.PointingHandCursor
 	}
