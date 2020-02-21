@@ -73,18 +73,24 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
         return(gettext("Data not valid: variance is zero in each row"))
       }
     },
-    # check whether all variables correlate with each other
+    # Check for correlation anomalies
     function() {
-      allCorr <- 0
-      nVar <- ncol(dataset)
-      for (i in 1:(nVar-1)) {
-        for (j in (i+1):nVar) {
-          thisCor <- cor(dataset[,i],dataset[,j])
-          if(!is.na(thisCor) && thisCor == 1) allCorr <- allCorr + 1
-        }
+      P <- ncol(dataset)
+      
+      # check whether a variable has too many missing values to compute a 
+      # correlation
+      if (any(is.na(S))) {
+        Np <- colSums(!is.na(dataset))
+        error_variables <- .unv(names(Np)[Np < P])
+        return(gettextf("Data not valid: too many missing values in variable(s) %s.",
+                        paste(error_variables, collapse = ", ")))
       }
-      if(allCorr == nVar*(nVar-1)/2){
-        return(gettext("Data not valid: all variables correlate with each other"))
+      
+      
+      S <- cor(dataset)
+      
+      if (all(S == 1)) {
+        return(gettext("Data not valid: all variables are collinear"))
       }
     }
   )
@@ -120,7 +126,8 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   )
 
   if (inherits(pcaResult, "try-error")) {
-    errmsg <- paste(gettext("Estimation failed. Message:"), attr(pcaResult, "condition")$message)
+    errmsg <- paste(gettext("Estimation failed\n Internal error message:"), 
+                    attr(pcaResult, "condition")$message)
     modelContainer$setError(.decodeVarsInMessage(names(dataset), errmsg))
   }
 
@@ -279,7 +286,8 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
 
   fa <- try(psych::fa.parallel(dataset, plot = FALSE))
   if (inherits(fa, "try-error")) {
-    errmsg <- paste(gettext("Screeplot not available. Message: "), attr(pcaResult, "condition")$message)
+    errmsg <- paste(gettext("Screeplot not available. \n Internal error message:"), 
+                    attr(pcaResult, "condition")$message)
     scree$setError(.decodeVarsInMessage(names(dataset), errmsg))
     return()
   }
