@@ -85,17 +85,17 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     # Check for correlation anomalies
     function() {
       P <- ncol(dataset)
-      S <- cor(dataset)
+      Np <- colSums(!is.na(dataset))
+      error_variables <- .unv(names(Np)[Np < P])
       
       # check whether a variable has too many missing values to compute a 
       # correlation
       if (any(is.na(S))) {
-        Np <- colSums(!is.na(dataset))
-        error_variables <- .unv(names(Np)[Np < P])
         return(gettextf("Data not valid: too many missing values in variable(s) %s.",
                         paste(error_variables, collapse = ", ")))
       }
       
+      S <- cor(dataset)
       if (all(S == 1)) {
         return(gettext("Data not valid: all variables are collinear"))
       }
