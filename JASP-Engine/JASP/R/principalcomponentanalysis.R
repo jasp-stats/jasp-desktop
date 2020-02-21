@@ -76,6 +76,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
     # Check for correlation anomalies
     function() {
       P <- ncol(dataset)
+      S <- cor(dataset)
       
       # check whether a variable has too many missing values to compute a 
       # correlation
@@ -85,9 +86,6 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
         return(gettextf("Data not valid: too many missing values in variable(s) %s.",
                         paste(error_variables, collapse = ", ")))
       }
-      
-      
-      S <- cor(dataset)
       
       if (all(S == 1)) {
         return(gettext("Data not valid: all variables are collinear"))
