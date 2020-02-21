@@ -243,7 +243,7 @@ Form {
 					HelpButton
 					{
 						helpPage:			"Audit/explanatoryText"
-						toolTip: 			"Show explanatory text at each step of the analysis"
+						toolTip: 			qsTr("Show explanatory text at each step of the analysis")
 					}
 				}
 

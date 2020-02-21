@@ -249,7 +249,7 @@ Form
 						HelpButton
 						{
 							helpPage:			"Audit/explanatoryText"
-							toolTip: 			"Show explanatory text at each step of the analysis"
+							toolTip: 			qsTr("Show explanatory text at each step of the analysis")
 						}
 					}
 
@@ -510,7 +510,7 @@ Form
 						HelpButton
 						{
 							helpPage:			"Audit/monetaryUnitSampling"
-							toolTip: 			"Select observations with probability proportional to their value"
+							toolTip: 			qsTr("Select observations with probability proportional to their value")
 						}
 					}
 
@@ -525,7 +525,7 @@ Form
 
 						HelpButton
 						{
-							toolTip: 			"Select observations with equal probability"
+							toolTip: 			qsTr("Select observations with equal probability")
 							helpPage:			"Audit/recordSampling"
 						}
 					}
@@ -548,7 +548,7 @@ Form
 
 						HelpButton
 						{
-							toolTip: 			"Select observations by random sampling"
+							toolTip: 			qsTr("Select observations by random sampling")
 							helpPage:			"Audit/randomSampling"
 						}
 					}
@@ -564,7 +564,7 @@ Form
 
 						HelpButton
 						{
-							toolTip: 	"Select observations by cell sampling"
+							toolTip: 	qsTr("Select observations by cell sampling")
 							helpPage:	"Audit/cellSampling"
 						}
 					}
@@ -581,7 +581,7 @@ Form
 
 						HelpButton
 						{
-							toolTip: 	"Select observations by fixed interval sampling"
+							toolTip: 	qsTr("Select observations by fixed interval sampling")
 							helpPage:	"Audit/fixedIntervalSampling"
 						}
 					}
@@ -745,7 +745,7 @@ Form
 							enabled: 	monetaryVariable.count > 0
 						}
 
-						HelpButton { toolTip: "Adds a column to specify the audit value of the observations"; helpPage: "?" }
+						HelpButton { toolTip: qsTr("Adds a column to specify the audit value of the observations"); helpPage: "?" }
 					}
 
 					RowLayout
@@ -759,7 +759,7 @@ Form
 							enabled: 	true
 						}
 
-						HelpButton { toolTip:	"Adds a column to specify the observations as correct (0) or incorrect (1)"; helpPage: "?" }
+						HelpButton { toolTip:	qsTr("Adds a column to specify the observations as correct (0) or incorrect (1)"); helpPage: "?" }
 					}
 				}
 			}

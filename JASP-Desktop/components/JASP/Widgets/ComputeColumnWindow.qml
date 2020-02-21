@@ -193,53 +193,53 @@ FocusScope
 				functionModel: ListModel
 				{
 
-					ListElement	{ type: "function";	functionName: "abs";	functionParameters: "values";	functionParamTypes: "number";	toolTip: "absolute value" }
-					ListElement	{ type: "function";	functionName: "sd";		functionParameters: "values";	functionParamTypes: "number";	toolTip: "standard deviation" }
-					ListElement	{ type: "function";	functionName: "var";	functionParameters: "values";	functionParamTypes: "number";	toolTip: "variance" }
-					ListElement	{ type: "function";	functionName: "sum";	functionParameters: "values";	functionParamTypes: "number";	toolTip: "summation" }
-					ListElement	{ type: "function";	functionName: "prod";	functionParameters: "values";	functionParamTypes: "number";	toolTip: "product of values" }
+					ListElement	{ type: "function";	functionName: "abs";	functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("absolute value") }
+					ListElement	{ type: "function";	functionName: "sd";		functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("standard deviation") }
+					ListElement	{ type: "function";	functionName: "var";	functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("variance") }
+					ListElement	{ type: "function";	functionName: "sum";	functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("summation") }
+					ListElement	{ type: "function";	functionName: "prod";	functionParameters: "values";	functionParamTypes: "number";	toolTip: qsTr("product of values") }
 
-					ListElement	{ type: "function";	functionName: "min";	functionParameters: "values";	functionParamTypes: "number";					toolTip: "returns minimum of values" }
-					ListElement	{ type: "function";	functionName: "max";	functionParameters: "values";	functionParamTypes: "number";					toolTip: "returns maximum of values" }
-					ListElement	{ type: "function";	functionName: "mean";	functionParameters: "values";	functionParamTypes: "number";					toolTip: "mean" }
-					ListElement	{ type: "function";	functionName: "round";	functionParameters: "y,n";		functionParamTypes: "number,number";			toolTip: "rounds y to n decimals" }
-					ListElement	{ type: "function";	functionName: "length";	functionParameters: "y";		functionParamTypes: "string:number:boolean";	toolTip: "returns number of elements in y" }
-					ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";	functionParamTypes: "number";					toolTip: "median" }
-
-					ListElement	{ type: "separator" }
-					ListElement	{ type: "function";	functionName: "log";        functionParameters: "y";		functionParamTypes: "number";			toolTip: "natural logarithm" }
-					ListElement	{ type: "function";	functionName: "log2";       functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 2 logarithm" }
-					ListElement	{ type: "function";	functionName: "log10";      functionParameters: "y";		functionParamTypes: "number";			toolTip: "base 10 logarithm" }
-					ListElement	{ type: "function";	functionName: "logb";       functionParameters: "y,base";	functionParamTypes: "number";			toolTip: "logarithm of y in 'base'" }
-					ListElement	{ type: "function";	functionName: "exp";        functionParameters: "y";		functionParamTypes: "number";			toolTip: "exponential" }
-					ListElement	{ type: "function";	functionName: "fishZ";      functionParameters: "y";		functionParamTypes: "number";			toolTip: "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform correlations, numbers between -1 and 1 to the real line" }
-					ListElement	{ type: "function";	functionName: "invFishZ";	functionParameters: "y";		functionParamTypes: "number";			toolTip: "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform real numbers to numbers between -1 and 1" }
+					ListElement	{ type: "function";	functionName: "min";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns minimum of values") }
+					ListElement	{ type: "function";	functionName: "max";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("returns maximum of values") }
+					ListElement	{ type: "function";	functionName: "mean";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("mean") }
+					ListElement	{ type: "function";	functionName: "round";	functionParameters: "y,n";		functionParamTypes: "number,number";			toolTip: qsTr("rounds y to n decimals") }
+					ListElement	{ type: "function";	functionName: "length";	functionParameters: "y";		functionParamTypes: "string:number:boolean";	toolTip: qsTr("returns number of elements in y") }
+					ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";	functionParamTypes: "number";					toolTip: qsTr("median") }
 
 					ListElement	{ type: "separator" }
-					ListElement	{ type: "function";	functionName: "cut";		functionParameters: "values,numBreaks";		functionParamTypes: "number,number";                                            toolTip: "break your data up in numBreaks levels" }
-					ListElement	{ type: "function";	functionName: "replaceNA";	functionParameters: "column,replaceWith";	functionParamTypes: "string:boolean:number,string:boolean:number";                            toolTip: "replace any missing values (NA) in column by the value in replaceWith" }
-					ListElement	{ type: "function";	functionName: "ifElse";		functionParameters: "test,then,else";		functionParamTypes: "boolean,boolean:string:number,boolean:string:number";      toolTip: "if-else statement" }
+					ListElement	{ type: "function";	functionName: "log";        functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("natural logarithm") }
+					ListElement	{ type: "function";	functionName: "log2";       functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("base 2 logarithm") }
+					ListElement	{ type: "function";	functionName: "log10";      functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("base 10 logarithm") }
+					ListElement	{ type: "function";	functionName: "logb";       functionParameters: "y,base";	functionParamTypes: "number";			toolTip: qsTr("logarithm of y in 'base'") }
+					ListElement	{ type: "function";	functionName: "exp";        functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("exponential") }
+					ListElement	{ type: "function";	functionName: "fishZ";      functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform correlations, numbers between -1 and 1 to the real line") }
+					ListElement	{ type: "function";	functionName: "invFishZ";	functionParameters: "y";		functionParamTypes: "number";			toolTip: qsTr("Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform real numbers to numbers between -1 and 1") }
 
 					ListElement	{ type: "separator" }
-					ListElement	{ type: "function";	functionName: "normalDist";     functionParameters: "mean,sd";                  functionParamTypes: "number,number";            toolTip: "generates data from a Gaussian distribution with specified mean and standard deviation sd" }
-					ListElement	{ type: "function";	functionName: "tDist";          functionParameters: "df,ncp";                   functionParamTypes: "number,number";            toolTip: "generates data from t distribution with degrees of freedom df and non-centrality parameter ncp" }
+					ListElement	{ type: "function";	functionName: "cut";		functionParameters: "values,numBreaks";		functionParamTypes: "number,number";                                            toolTip: qsTr("break your data up in numBreaks levels") }
+					ListElement	{ type: "function";	functionName: "replaceNA";	functionParameters: "column,replaceWith";	functionParamTypes: "string:boolean:number,string:boolean:number";                            toolTip: qsTr("replace any missing values (NA) in column by the value in replaceWith") }
+					ListElement	{ type: "function";	functionName: "ifElse";		functionParameters: "test,then,else";		functionParamTypes: "boolean,boolean:string:number,boolean:string:number";      toolTip: qsTr("if-else statement") }
 
-					ListElement	{ type: "function";	functionName: "chiSqDist";      functionParameters: "df,ncp";                   functionParamTypes: "number,number";            toolTip: "generates data from a chi-squared distribution with degrees of freedom df and non-centrality parameter ncp" }
-					ListElement	{ type: "function";	functionName: "fDist";          functionParameters: "df1,df2,ncp";              functionParamTypes: "number,number,number";     toolTip: "generates data from an F distribution with specified degrees of freedoms df1, df2 and non-centrality parameter ncp" }
+					ListElement	{ type: "separator" }
+					ListElement	{ type: "function";	functionName: "normalDist";     functionParameters: "mean,sd";                  functionParamTypes: "number,number";            toolTip: qsTr("generates data from a Gaussian distribution with specified mean and standard deviation sd") }
+					ListElement	{ type: "function";	functionName: "tDist";          functionParameters: "df,ncp";                   functionParamTypes: "number,number";            toolTip: qsTr("generates data from t distribution with degrees of freedom df and non-centrality parameter ncp") }
 
-					ListElement	{ type: "function";	functionName: "binomDist";      functionParameters: "trials,prob";              functionParamTypes: "number,number";            toolTip: "generates data from a binomial distribution with specified trials and probability prob" }
-					ListElement	{ type: "function";	functionName: "negBinomDist";	functionParameters: "targetTrial,prob";         functionParamTypes: "number,number";            toolTip: "generates data from a negative binomial distribution with specified trials and probability prob" }
-					ListElement	{ type: "function";	functionName: "geomDist";		functionParameters: "prob";                     functionParamTypes: "number";                   toolTip: "generates data from a geometric distribution with specified probability prob" }
-					ListElement	{ type: "function";	functionName: "poisDist";		functionParameters: "lambda";                   functionParamTypes: "number";                   toolTip: "generates data from a Poisson distribution with specified rate lambda" }
-					//ListElement	{ type: "function";	functionName: "integerDist";	functionParameters: "categories,replace,prob";  functionParamTypes: "number,bool,number";       toolTip: "generates data between 1 and the specified number of categories either with replacement or without and a vector of specified probabilities prob" }
+					ListElement	{ type: "function";	functionName: "chiSqDist";      functionParameters: "df,ncp";                   functionParamTypes: "number,number";            toolTip: qsTr("generates data from a chi-squared distribution with degrees of freedom df and non-centrality parameter ncp") }
+					ListElement	{ type: "function";	functionName: "fDist";          functionParameters: "df1,df2,ncp";              functionParamTypes: "number,number,number";     toolTip: qsTr("generates data from an F distribution with specified degrees of freedoms df1, df2 and non-centrality parameter ncp") }
 
-					ListElement	{ type: "function";	functionName: "betaDist";       functionParameters: "alpha,beta";               functionParamTypes: "number,number";            toolTip: "generates data from a beta distribution with specified shapes alpha and beta" }
-					ListElement	{ type: "function";	functionName: "unifDist";       functionParameters: "min,max";                  functionParamTypes: "number,number";            toolTip: "generates data from a uniform distribution between min and max" }
+					ListElement	{ type: "function";	functionName: "binomDist";      functionParameters: "trials,prob";              functionParamTypes: "number,number";            toolTip: qsTr("generates data from a binomial distribution with specified trials and probability prob") }
+					ListElement	{ type: "function";	functionName: "negBinomDist";	functionParameters: "targetTrial,prob";         functionParamTypes: "number,number";            toolTip: qsTr("generates data from a negative binomial distribution with specified trials and probability prob") }
+					ListElement	{ type: "function";	functionName: "geomDist";		functionParameters: "prob";                     functionParamTypes: "number";                   toolTip: qsTr("generates data from a geometric distribution with specified probability prob") }
+					ListElement	{ type: "function";	functionName: "poisDist";		functionParameters: "lambda";                   functionParamTypes: "number";                   toolTip: qsTr("generates data from a Poisson distribution with specified rate lambda") }
+					//ListElement	{ type: "function";	functionName: "integerDist";	functionParameters: "categories,replace,prob";  functionParamTypes: "number,bool,number";       toolTip: qsTr("generates data between 1 and the specified number of categories either with replacement or without and a vector of specified probabilities prob") }
 
-					ListElement	{ type: "function";	functionName: "gammaDist";      functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: "generates data from a gamma distribution with specified shape and scale" }
-					ListElement	{ type: "function";	functionName: "expDist";		functionParameters: "rate";                     functionParamTypes: "number";                   toolTip: "generates data from an exponential distribution with specified rate" }
-					ListElement	{ type: "function";	functionName: "logNormDist";    functionParameters: "meanLog,sdLog";            functionParamTypes: "number,number";            toolTip: "generates data from a log-normal distribution with specified logarithmic mean meanLog and standard deviation sdLog" }
-					ListElement	{ type: "function";	functionName: "weibullDist";    functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: "generates data from a Weibull distribution with specified shape and scale" }
+					ListElement	{ type: "function";	functionName: "betaDist";       functionParameters: "alpha,beta";               functionParamTypes: "number,number";            toolTip: qsTr("generates data from a beta distribution with specified shapes alpha and beta") }
+					ListElement	{ type: "function";	functionName: "unifDist";       functionParameters: "min,max";                  functionParamTypes: "number,number";            toolTip: qsTr("generates data from a uniform distribution between min and max") }
+
+					ListElement	{ type: "function";	functionName: "gammaDist";      functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: qsTr("generates data from a gamma distribution with specified shape and scale") }
+					ListElement	{ type: "function";	functionName: "expDist";		functionParameters: "rate";                     functionParamTypes: "number";                   toolTip: qsTr("generates data from an exponential distribution with specified rate") }
+					ListElement	{ type: "function";	functionName: "logNormDist";    functionParameters: "meanLog,sdLog";            functionParamTypes: "number,number";            toolTip: qsTr("generates data from a log-normal distribution with specified logarithmic mean meanLog and standard deviation sdLog") }
+					ListElement	{ type: "function";	functionName: "weibullDist";    functionParameters: "shape,scale";              functionParamTypes: "number,number";            toolTip: qsTr("generates data from a Weibull distribution with specified shape and scale") }
 
 					//cut?
 					//match?
@@ -291,7 +291,7 @@ FocusScope
 			{
 				id:				removeColumnButton
 				iconSource:		jaspTheme.iconPath + "square_trashcan.png"
-				toolTip:		"Remove computed column"
+				toolTip:		qsTr("Remove computed column")
 				onClicked:		computedColumnsInterface.removeColumn()
 
 				anchors
@@ -308,7 +308,7 @@ FocusScope
 				visible:	!computedColumnsInterface.computeColumnUsesRCode
 				width:		visible ? implicitWidth : 0
 
-				toolTip:	"Show generated R code"
+				toolTip:	qsTr("Show generated R code")
 				iconSource: jaspTheme.iconPath + "/R.png"
 
 				anchors.left:	removeColumnButton.right
@@ -330,7 +330,7 @@ FocusScope
 				anchors.bottom:	parent.bottom
 				anchors.top:	closeColumnEditorButton.top
 				onClicked:		computedColumnContainer.applyComputedColumn()
-				toolTip:		computeColumnEdit.changedSinceLastApply ? "Click to compute column" : "Column (in line to be) computed"
+				toolTip:		computeColumnEdit.changedSinceLastApply ? qsTr("Click to compute column") : qsTr("Column (in line to be) computed")
 			}
 
 			RectangularButton
@@ -341,7 +341,7 @@ FocusScope
 				anchors.bottom: parent.bottom
 				anchors.top:	closeColumnEditorButton.top
 				onClicked:		helpModel.showOrTogglePage("other/ComputedColumns");
-				toolTip:		"Open Documentation"
+				toolTip:		qsTr("Open Documentation")
 			}
 
 
@@ -352,15 +352,15 @@ FocusScope
 				anchors.right:	parent.right
 				anchors.bottom: parent.bottom
 				onClicked:		computedColumnContainer.askIfChangedOrClose()
-				toolTip:		"Close computed column window"
+				toolTip:		qsTr("Close computed column window")
 			}
 		}
 
 		SaveDiscardCancelDialog
 		{
 			id:			saveDialog
-			title:		"Computed Column Changed"
-			text:		"There are unapplied changes to your computed column; what would you like to do?"
+			title:		qsTr("Computed Column Changed")
+			text:		qsTr("There are unapplied changes to your computed column; what would you like to do?")
 			onDiscard:	computedColumnContainer.close()
 			onSave:
 			{
