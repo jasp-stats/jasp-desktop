@@ -601,7 +601,8 @@
     ggplot2::geom_abline(slope = 1, intercept = 0) +
     JASPgraphs::geom_point(ggplot2::aes(x = TheoreticalProp, y = ObservedProp)) +
     ggplot2::xlab(gettext("Theoretical")) + ggplot2::ylab(gettext("Sample")) +
-    ggplot2::scale_x_continuous(limits = 0:1) + ggplot2::scale_y_continuous(limits = 0:1)
+    ggplot2::scale_x_continuous(limits = 0:1, expand = ggplot2::expand_scale(mult = 0, add = c(0.05, 0.1))) + 
+    ggplot2::scale_y_continuous(limits = 0:1, expand = ggplot2::expand_scale(mult = 0, add = c(0.05, 0.1)))
   
   p <- JASPgraphs::themeJasp(p)
   
