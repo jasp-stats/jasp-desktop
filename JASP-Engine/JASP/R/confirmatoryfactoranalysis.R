@@ -202,18 +202,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Bootstrapping with interruptible progress bar
   if (cfaResult[["spec"]]$bootstrap) {
-    startProgressbar(options$bootstrapNumber)
-
-    boot_1      <- lavaan::bootstrapLavaan(cfaResult[["lav"]], R = 1)
-    bootres     <- matrix(0, options$bootstrapNumber, length(boot_1))
-    bootres[1,] <- boot_1
-    for (i in 2:options$bootstrapNumber) {
-      bootres[i,] <- lavaan::bootstrapLavaan(cfaResult[["lav"]], 1)
-      progressbarTick()
-    }
-
-    cfaResult[["lav"]]@boot       <- list(coef = bootres)
-    cfaResult[["lav"]]@Options$se <- "bootstrap"
+    cfaResult[["lav"]] <- lavBootstrap(cfaResult[["lav"]], options$bootstrapNumber)
   }
 
   # Save cfaResult as state so it's available even when opts don't change
@@ -491,6 +480,11 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   ests$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors",
                   "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "std", "ciWidth"))
 
+  footnote <- NULL
+  if (options[["se"]] == "bootstrap" && nrow(cfaResult[["lav"]]@boot[["coef"]]) < options[["bootstrapNumber"]]) {
+    footnote <- gettextf("Not all bootstrap samples were successful: CI based on %.0f samples.", 
+                         nrow(cfaResult[["lav"]]@boot[["coef"]]))
+  }
 
   pe <- lavaan::parameterEstimates(cfaResult[["lav"]], standardized = TRUE, remove.eq = FALSE, remove.system.eq = TRUE,
                                    remove.ineq = FALSE, remove.def = FALSE, add.attributes = TRUE, boot.ci.type = "perc",
@@ -502,14 +496,14 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
       pei <- pe[pe$group == i, ]
       ests[[groupLabs[i]]] <- createJaspContainer(groupLabs[i])
       ests[[groupLabs[i]]]$dependOn(optionsFromObject = ests)
-      .cfaParEstToTablesHelper(pei, options, cfaResult[["spec"]], ests[[groupLabs[i]]])
+      .cfaParEstToTablesHelper(pei, options, cfaResult[["spec"]], ests[[groupLabs[i]]], footnote)
     }
   } else {
-    .cfaParEstToTablesHelper(pe, options, cfaResult[["spec"]], ests)
+    .cfaParEstToTablesHelper(pe, options, cfaResult[["spec"]], ests, footnote)
   }
 }
 
-.cfaParEstToTablesHelper <- function(pei, options, spec, jrobject) {
+.cfaParEstToTablesHelper <- function(pei, options, spec, jrobject, footnote) {
   pei <- as.data.frame(pei)
   facNames <- c(spec$latents)
 
@@ -519,6 +513,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # First-order factor loadings ----
   # Set up table
   jrobject[["fl1"]] <- fl1 <- createJaspTable(title = "Factor loadings")
+  if (!is.null(footnote)) fl1$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
 
   fl1$addColumnInfo(name = "lhs",   title = gettext("Factor"),    type = "string", combine = TRUE)
   fl1$addColumnInfo(name = "rhs",   title = gettext("Indicator"), type = "string")
@@ -550,6 +545,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (length(options$secondOrder) > 0) {
     # Set up table
     jrobject[["fl2"]] <- fl2 <- createJaspTable(title = gettext("Second-order factor loadings"))
+    if (!is.null(footnote)) fl2$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
 
     fl2$addColumnInfo(name = "lhs",   title = gettext("Factor"),    type = "string", combine = TRUE)
     fl2$addColumnInfo(name = "rhs",   title = gettext("Indicator"), type = "string")
@@ -581,6 +577,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # Factor variances ----
   # Set up table
   jrobject[["fv"]] <- fv <- createJaspTable(gettext("Factor variances"))
+  if (!is.null(footnote)) fv$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
 
   fv$addColumnInfo(name = "lhs",    title = gettext("Factor"),     type = "string", combine = TRUE)
   fv$addColumnInfo(name = "est",    title = gettext("Estimate"),   type = "number", format  = "sf:4;dp:3")
@@ -609,6 +606,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   if (!options$uncorrelatedFactors & hasMultipleFactorsAtTopLevel) {
     jrobject[["fc"]] <- fc <- createJaspTable(gettext("Factor Covariances"))
+    if (!is.null(footnote)) fc$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
 
     fc$addColumnInfo(name = "lhs",    title = "",                    type = "string")
     fc$addColumnInfo(name = "op",     title = "",                    type = "string")
@@ -641,6 +639,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # Residual variances ----
   # Set up table
   jrobject[["rv"]] <- rv <- createJaspTable(gettext("Residual variances"))
+  if (!is.null(footnote)) rv$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
 
   rv$addColumnInfo(name = "lhs",    title = gettext("Indicator"),  type = "string", combine = TRUE)
   rv$addColumnInfo(name = "est",    title = gettext("Estimate"),   type = "number", format  = "sf:4;dp:3")
@@ -670,6 +669,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (length(options$rescov) > 0) {
     rc <- pei[pei$op == "~~" & !pei$lhs %in% facNames & pei$lhs != pei$rhs, colSel[-3]]
     rescov <- createJaspTable(gettext("Residual covariances"))
+    if (!is.null(footnote)) rescov$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
     rescov$dependOn(optionsFromObject = jrobject)
 
     rescov$addColumnInfo(name = "lhs",    title = "",                    type = "string")
@@ -704,6 +704,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
     if (options$groupvar != "") {
       jrobject[["Factor Intercepts"]] <- fi <- createJaspTable(title = gettext("Factor Intercepts"))
+      if (!is.null(footnote)) fi$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
 
       fi$addColumnInfo(name = "lhs",    title = gettext("Factor"),     type = "string", combine = TRUE)
       fi$addColumnInfo(name = "est",    title = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
@@ -729,6 +730,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
     # Manifest variable intercepts
     jrobject[["Intercepts"]] <- vi <- createJaspTable(title = gettext("Intercepts"))
+    if (!is.null(footnote)) vi$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
 
     vi$addColumnInfo(name = "lhs",    title  = gettext("Indicator"),  type = "string", combine = TRUE)
     vi$addColumnInfo(name = "est",    title  = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")

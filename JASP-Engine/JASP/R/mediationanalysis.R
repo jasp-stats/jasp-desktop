@@ -113,22 +113,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   }
 
   if (options$se == "bootstrap") {
-    startProgressbar(options$bootstrapNumber)
-    
-    boot_1      <- lavaan::bootstrapLavaan(medResult, R = 1)
-    bootres     <- matrix(0, options$bootstrapNumber, length(boot_1))
-    bootres[1,] <- boot_1
-    i <- 2L
-    while (i <= options$bootstrapNumber) {
-      boot_i      <- lavaan::bootstrapLavaan(medResult, 1)
-      if (length(boot_i) == 0) next # try again upon failure
-      bootres[i,] <- boot_i
-      progressbarTick()
-      i <- i + 1L
-    }
-    
-    medResult@boot       <- list(coef = bootres)
-    medResult@Options$se <- "bootstrap"
+    medResult <- lavBootstrap(medResult, options$bootstrapNumber)
   }
   
   modelContainer[["model"]] <- createJaspState(medResult)
@@ -477,16 +462,21 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   )
   
   if (is.null(modelContainer[["model"]][["object"]])) {
-    return(paste0(
-      se_type, gettext(" standard errors, "), ci_type, gettext(" confidence intervals.")
-    ))
+    return(gettextf("%1$s standard errors, %2$s confidence intervals.", se_type, ci_type))
   } else {
-    return(paste0(
-      se_type, gettext(" standard errors, "), ci_type, gettext(" confidence intervals, "), 
-      modelContainer[["model"]][["object"]]@Options$estimator, gettext(" estimator.")
-    ))
+    fit <- modelContainer[["model"]][["object"]]
+    if (options$se == "bootstrap" && nrow(fit@boot[["coef"]]) < options$bootstrapNumber) {
+      return(gettextf(
+        "%1$s standard errors, %2$s confidence intervals, %3$s estimator. NB: Not all bootstrap samples were successful: CI based on %4$.0f samples.",
+        se_type, ci_type, fit@Options$estimator, nrow(fit@boot[["coef"]])
+      ))
+    } else {
+      return(gettextf(
+        "%1$s standard errors, %2$s confidence intervals, %3$s estimator.",
+        se_type, ci_type, fit@Options$estimator
+      ))
+    }
   }
-  
 }
 
 .medRsquared <- function(modelContainer, options, ready) {
