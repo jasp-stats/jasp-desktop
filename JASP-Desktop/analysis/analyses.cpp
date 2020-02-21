@@ -21,6 +21,7 @@
 #include "utilities/settings.h"
 #include "processinfo.h"
 #include "modules/ribbonmodel.h"
+#include "analysisform.h"
 
 #include <QFile>
 #include <QTimer>
@@ -703,5 +704,14 @@ void Analyses::analysisTitleChangedHandler(string moduleName, string oldTitle, s
 		if (a->module() == moduleName && a->title() == oldTitle)
 			a->setTitle(newTitle);
 
+	});
+}
+
+void Analyses::languageChangedHandler()
+{
+	refreshAllAnalyses();
+	applyToAll([&](Analysis * a)
+	{
+		emit a->form()->languageChanged();
 	});
 }

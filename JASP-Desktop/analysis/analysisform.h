@@ -75,6 +75,7 @@ signals:
 				void			dataSetChanged();
 				void			refreshTableViewModels();
 				void			errorMessagesItemChanged();
+				void			languageChanged();
 
 
 protected:
