@@ -416,7 +416,7 @@
 }
 
 .ldFitStatisticsResults <- function(fitContainer, fit, variable, options, ready){
-  if(!ready) return()
+  if(!ready || fitContainer$getError()) return()
   if(is.null(fit)) return()
   if(!is.null(fitContainer[['fitStatisticsResults']])) return(fitContainer[['fitStatisticsResults']]$object)
   
@@ -489,7 +489,7 @@
     pdfplot$position <- 2
     fitContainer[['estPDF']] <- pdfplot
     
-    if(ready)
+    if(ready && !fitContainer$getError())
       .ldFillEstPDFPlot(pdfplot, estimates, options, variable)
   }
   
@@ -499,7 +499,7 @@
     pmfplot$position <- 2
     fitContainer[['estPMF']] <- pmfplot
     
-    if(ready)
+    if(ready && !fitContainer$getError())
       .ldFillEstPMFPlot(pmfplot, estimates, options, variable)
   }
   
@@ -509,7 +509,7 @@
     qqplot$position <- 3
     fitContainer[['qqplot']] <- qqplot
     
-    if(ready)
+    if(ready && !fitContainer$getError())
       .ldFillQQPlot(qqplot, estimates, options, variable)
   }
   
@@ -519,7 +519,7 @@
     cdfplot$position <- 4
     fitContainer[['estCDF']] <- cdfplot
     
-    if(ready)
+    if(ready && !fitContainer$getError())
       .ldFillEstCDFPlot(cdfplot, estimates, options, variable)
   }
   
@@ -529,7 +529,7 @@
     ppplot$position <-5
     fitContainer[['ppplot']] <- ppplot
     
-    if(ready)
+    if(ready && !fitContainer$getError())
       .ldFillPPPlot(ppplot, estimates, options, variable)
   }
   
