@@ -239,7 +239,7 @@ OnlineDataNode *OnlineDataManager::uploadFileAsync(QString nodePath, QString id,
 bool OnlineDataManager::md5UploadFilter(OnlineDataNode *dataNode, OnlineDataNode::ActionFilter *filter)
 {
 	if (dataNode->exists() && dataNode->nodeId() == filter->arg1.toString() && dataNode->md5() != filter->arg2.toString())
-		return MessageForwarder::showYesNo("File Changed", "The online copy of this file has changed since it was opened.\n\nWould you like to override the online file?");
+		return MessageForwarder::showYesNo(tr("File Changed"), tr("The online copy of this file has changed since it was opened.\n\nWould you like to override the online file?"));
 	return true;
 }
 

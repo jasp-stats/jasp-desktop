@@ -208,7 +208,7 @@ void ResultsJsInterface::pushImageToClipboard(const QByteArray &base64, const QS
 
 void ResultsJsInterface::displayMessageFromResults(QString msg)
 {
-	MessageForwarder::showWarning("Results Warning", msg);
+	MessageForwarder::showWarning(tr("Results Warning"), msg);
 }
 
 void ResultsJsInterface::setStatus(Analysis *analysis)

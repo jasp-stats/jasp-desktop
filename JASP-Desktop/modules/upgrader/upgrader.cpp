@@ -66,7 +66,7 @@ void Upgrader::processUpgradeJson(const std::string & module, const Json::Value 
 	catch(UpgradeStep::upgradeLoadError & e)
 	{
 		Log::log() << "Loading upgrades of '" << module << "'" << (dynMod ? " (dynamic mod: " + dynMod->name() + ")" : "") << " failed with error:\n" << e.what() << std::endl;
-		MessageForwarder::showWarning("Error Loading Upgrades", "While loading upgrades for " + (dynMod ? "module '" + dynMod->name() + "'" : "JASP") + " an error was encountered: " + e.what());
+		MessageForwarder::showWarning(tr("Error Loading Upgrades"), tr("While loading upgrades for %1 an error was encountered: %2").arg(tq(dynMod ? "module '" + dynMod->name() + "'" : "JASP")).arg(e.what()));
 	}
 }
 
@@ -111,7 +111,7 @@ UpgradeMsgs Upgrader::upgradeAnalysisData(Json::Value & analysis) const
 		Log::log() << "Applying upgrades to analysis failed with error:\n" << e.what() << std::endl;
 		msgs[""].push_back(std::string("Failed to apply analysis upgrade with error: ") + e.what());
 
-		MessageForwarder::showWarning("Analysis Upgrade Failed", std::string("Upgrading analysis failed with error: ") + e.what());
+		MessageForwarder::showWarning(tq("Analysis Upgrade Failed"), tq("Upgrading analysis failed with error: %1").arg(e.what()));
 	}
 
 	return msgs;
@@ -203,9 +203,8 @@ void Upgrader::loadOldSchoolUpgrades()
 		}
 	}
 
-	MessageForwarder::showWarning("Upgrades couldn't be read",
-		"The necessary upgrades for reading older (<0.12) JASP-files could not be read...\n"
-		"You can still use JASP and even read (some) older files but some options might not be understood properly and some analyses might fail to load entirely.");
+	MessageForwarder::showWarning(tr("Upgrades couldn't be read"),
+		tr("The necessary upgrades for reading older (<0.12) JASP-files could not be read...\nYou can still use JASP and even read (some) older files but some options might not be understood properly and some analyses might fail to load entirely."));
 }
 
 }
