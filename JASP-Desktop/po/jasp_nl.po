@@ -10693,16 +10693,16 @@ msgid ""
 "These components were loaded with a wrong kind of value and are set with "
 "their default values:%1"
 msgstr ""
-"Deze componenten werden geladen met een verkeerd soort waarde en is kregen hun "
-"standaard waarden."
+"Deze componenten werden geladen met een verkeerd soort waarde en is kregen "
+"hun standaard waarden."
 
 msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with a wrong kind of value and are set with "
 "their default values.<br>"
 msgstr ""
-"Veel Componenten werden geladen met een verkeerd soort waarde en is kregen hun "
-"standaard waarden.<br>"
+"Veel Componenten werden geladen met een verkeerd soort waarde en is kregen "
+"hun standaard waarden.<br>"
 
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
@@ -10749,9 +10749,10 @@ msgctxt "mlClusteringDensityBased|"
 msgid "Cluster means"
 msgstr "Culster gemiddelden"
 
+#, fuzzy
 msgctxt "mlClusteringDensityBased|"
 msgid "Display barplot"
-msgstr ""
+msgstr "Toon staafdiagram"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Group into one figure"
@@ -10765,9 +10766,10 @@ msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Cluster means"
 msgstr "Culster gemiddelden"
 
+#, fuzzy
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Display barplot"
-msgstr ""
+msgstr "Toon staafdiagram"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Group into one figure"
@@ -10923,10 +10925,10 @@ msgid ""
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
-"Als deze optie uitgevinkt is dan wordt niet het bestandsdialoogvenster van het "
-"besturingssysteem gebruikt maar die van Qt zelf. "
-"Dit zou enkele problemen op Windows kunnen oplossen waar JASP crasht wanneer op de "
-"\"Blader\" knop gedrukt wordt"
+"Als deze optie uitgevinkt is dan wordt niet het bestandsdialoogvenster van "
+"het besturingssysteem gebruikt maar die van Qt zelf. Dit zou enkele "
+"problemen op Windows kunnen oplossen waar JASP crasht wanneer op de \"Blader"
+"\" knop gedrukt wordt"
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
@@ -10986,9 +10988,10 @@ msgctxt "auditBayesianWorkflow|"
 msgid "Custom"
 msgstr "Aangepast"
 
+#, fuzzy
 msgctxt "auditBayesianWorkflow|"
 msgid "Report badges"
-msgstr ""
+msgstr "Meld badges"
 
 #, fuzzy
 msgctxt "auditBayesianWorkflow|"
@@ -11064,9 +11067,10 @@ msgctxt "auditClassicalBenfordsLaw|"
 msgid "Enable"
 msgstr ""
 
+#, fuzzy
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Report badges"
-msgstr ""
+msgstr "Meld badges"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Tables and Plots"
@@ -11096,17 +11100,19 @@ msgctxt "auditClassicalBenfordsLaw|"
 msgid "<b>Download Report</b>"
 msgstr "<b>Download Verslag</b>"
 
+#, fuzzy
 msgctxt "auditClassicalEstimation|"
 msgid "Report badges"
-msgstr ""
+msgstr "Meld badges"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Custom"
 msgstr "Aangepast"
 
+#, fuzzy
 msgctxt "auditClassicalPlanning|"
 msgid "Report badges"
-msgstr ""
+msgstr "Meld badges"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Sample size comparison"
@@ -11120,9 +11126,10 @@ msgctxt "auditClassicalWorkflow|"
 msgid "Custom"
 msgstr "Aangepast"
 
+#, fuzzy
 msgctxt "auditClassicalWorkflow|"
 msgid "Report badges"
-msgstr ""
+msgstr "Meld badges"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Sample size comparison"
@@ -12113,9 +12120,10 @@ msgctxt "LDgamma|"
 msgid "Statistics"
 msgstr "Statistieken"
 
+#, fuzzy
 msgctxt "LDgamma|"
 msgid "Descriptives"
-msgstr ""
+msgstr "Samenvatting"
 
 msgctxt "LDgamma|"
 msgid "First"
@@ -12263,9 +12271,10 @@ msgctxt "LDgammaInverse|"
 msgid "Statistics"
 msgstr "Statistieken"
 
+#, fuzzy
 msgctxt "LDgammaInverse|"
 msgid "Descriptives"
-msgstr ""
+msgstr "Samenvatting"
 
 msgctxt "LDgammaInverse|"
 msgid "First"
@@ -12416,9 +12425,10 @@ msgctxt "LDgaussianunivariate|"
 msgid "Statistics"
 msgstr "Statistieken"
 
+#, fuzzy
 msgctxt "LDgaussianunivariate|"
 msgid "Descriptives"
-msgstr ""
+msgstr "Samenvatting"
 
 msgctxt "LDgaussianunivariate|"
 msgid "First"
@@ -12607,9 +12617,10 @@ msgctxt "LDnegbinomial|"
 msgid "Statistics"
 msgstr "Statistieken"
 
+#, fuzzy
 msgctxt "LDnegbinomial|"
 msgid "Descriptives"
-msgstr ""
+msgstr "Samenvatting"
 
 msgctxt "LDnegbinomial|"
 msgid "First"
@@ -12781,9 +12792,10 @@ msgctxt "LDpoisson|"
 msgid "Statistics"
 msgstr "Statistieken"
 
+#, fuzzy
 msgctxt "LDpoisson|"
 msgid "Descriptives"
-msgstr ""
+msgstr "Samenvatting"
 
 msgctxt "LDpoisson|"
 msgid "First"
@@ -13022,13 +13034,15 @@ msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Equivalence Region"
 msgstr ""
 
+#, fuzzy
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Lower bound"
-msgstr ""
+msgstr "Ondergrens"
 
+#, fuzzy
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Upper bound"
-msgstr ""
+msgstr "Bovengrens"
 
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Additional Statistics"
@@ -13079,13 +13093,15 @@ msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Equivalence Region"
 msgstr ""
 
+#, fuzzy
 msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Lower bound"
-msgstr ""
+msgstr "Ondergrens"
 
+#, fuzzy
 msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Upper bound"
-msgstr ""
+msgstr "Bovengrens"
 
 msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Additional Statistics"
@@ -13128,13 +13144,15 @@ msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Equivalence Region"
 msgstr ""
 
+#, fuzzy
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Lower bound"
-msgstr ""
+msgstr "Ondergrens"
 
+#, fuzzy
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Upper bound"
-msgstr ""
+msgstr "Bovengrens"
 
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Additional Statistics"
@@ -13196,9 +13214,10 @@ msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Additional Statistics"
 msgstr ""
 
+#, fuzzy
 msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Descriptives"
-msgstr ""
+msgstr "Samenvatting"
 
 msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Equivalence bounds plot"
@@ -13248,13 +13267,15 @@ msgctxt "EquivalenceOneSampleTTest|"
 msgid "Equivalence Region"
 msgstr ""
 
+#, fuzzy
 msgctxt "EquivalenceOneSampleTTest|"
 msgid "Lower bound"
-msgstr ""
+msgstr "Ondergrens"
 
+#, fuzzy
 msgctxt "EquivalenceOneSampleTTest|"
 msgid "Upper bound"
-msgstr ""
+msgstr "Bovengrens"
 
 msgctxt "EquivalenceOneSampleTTest|"
 msgid "Alpha level"
@@ -13273,13 +13294,15 @@ msgctxt "EquivalencePairedSamplesTTest|"
 msgid "Equivalence Region"
 msgstr ""
 
+#, fuzzy
 msgctxt "EquivalencePairedSamplesTTest|"
 msgid "Lower bound"
-msgstr ""
+msgstr "Ondergrens"
 
+#, fuzzy
 msgctxt "EquivalencePairedSamplesTTest|"
 msgid "Upper bound"
-msgstr ""
+msgstr "Bovengrens"
 
 msgctxt "EquivalencePairedSamplesTTest|"
 msgid "Alpha level"
@@ -13549,9 +13572,10 @@ msgctxt "Flexplot|"
 msgid "Dependent Variable"
 msgstr ""
 
+#, fuzzy
 msgctxt "Flexplot|"
 msgid "Independent Variable(s)"
-msgstr ""
+msgstr "Onafhankelijke variable(n)"
 
 msgctxt "Flexplot|"
 msgid "Panelled Variable(s)"
@@ -13609,9 +13633,10 @@ msgctxt "glinmod|"
 msgid "Dependent Variable"
 msgstr ""
 
+#, fuzzy
 msgctxt "glinmod|"
 msgid "Independent Variable(s)"
-msgstr ""
+msgstr "Onafhankelijke variable(n)"
 
 msgctxt "glinmod|"
 msgid "Distribution family"
@@ -13800,9 +13825,10 @@ msgctxt "mixedmod|"
 msgid "Dependent Variable"
 msgstr ""
 
+#, fuzzy
 msgctxt "mixedmod|"
 msgid "Independent Variable(s)"
-msgstr ""
+msgstr "Onafhankelijke variable(n)"
 
 msgctxt "mixedmod|"
 msgid "Random"
@@ -14303,14 +14329,6 @@ msgctxt "ResultMenuModel|"
 msgid "Collapse"
 msgstr "Inklappen"
 
-msgctxt "auditBayesianWorkflow|"
-msgid ""
-msgstr ""
-
-msgctxt "auditClassicalWorkflow|"
-msgid ""
-msgstr ""
-
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
 msgstr "Bewerk titel"
@@ -14358,3 +14376,248 @@ msgstr "Herstel alles"
 msgctxt "ResultMenuModel|"
 msgid "Show Dependencies"
 msgstr "Toon afhanhelijkheden"
+
+msgctxt "auditBayesianWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid ""
+msgstr ""
+
+msgctxt "BainAncovaBayesian|"
+msgid ""
+"Place each hypothesis on a new line. For example:\n"
+"\n"
+"factorLow = factorMed = factorHigh\n"
+"factorLow < factorMed < factorHigh\n"
+"\n"
+"where factor is the factor name and Low/Med/High are the factor level "
+"names.\n"
+"Read the help file for further instructions."
+msgstr ""
+
+msgctxt "BainAnovaBayesian|"
+msgid ""
+"Place each hypothesis on a new line. For example:\n"
+"\n"
+"factorLow = factorMed = factorHigh\n"
+"factorLow < factorMed < factorHigh\n"
+"\n"
+"where factor is the factor name and Low/Med/High are the factor level "
+"names.\n"
+"Read the help file for further instructions."
+msgstr ""
+
+msgctxt "BainRegressionLinearBayesian|"
+msgid ""
+"Place each hypothesis on a new line. For example:\n"
+"\n"
+"age = length = weight\n"
+"age < length < weight,\n"
+"\n"
+"where age, length and weight are the names of the predictors.\n"
+"Read the help file for further instructions."
+msgstr ""
+
+msgctxt "LDbernoulli|"
+msgid "e.g., random bernoulli"
+msgstr ""
+
+msgctxt "LDbeta|"
+msgid "Parameters"
+msgstr ""
+
+msgctxt "LDbeta|"
+msgid "e.g., random beta"
+msgstr ""
+
+msgctxt "LDchisq|"
+msgid "Parameters"
+msgstr ""
+
+msgctxt "LDchisq|"
+msgid "e.g., random chisq"
+msgstr ""
+
+msgctxt "LDexponential|"
+msgid "e.g., random exponential"
+msgstr ""
+
+msgctxt "LDf|"
+msgid "Parameters"
+msgstr ""
+
+msgctxt "LDf|"
+msgid "e.g., random F"
+msgstr ""
+
+msgctxt "LDgamma|"
+msgid "e.g., random gamma"
+msgstr ""
+
+msgctxt "LDgammaInverse|"
+msgid "e.g., random invgamma"
+msgstr ""
+
+msgctxt "LDgaussianunivariate|"
+msgid "e.g., random normal"
+msgstr ""
+
+msgctxt "LDt|"
+msgid "Parameters"
+msgstr ""
+
+msgctxt "LDt|"
+msgid "e.g., random t"
+msgstr ""
+
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "Bounds specification in"
+msgstr ""
+
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "cohensd"
+msgstr ""
+
+#, fuzzy
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "raw"
+msgstr "ruw"
+
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "Bounds specification in"
+msgstr ""
+
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "cohensd"
+msgstr ""
+
+#, fuzzy
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "raw"
+msgstr "ruw"
+
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "Bounds specification in"
+msgstr ""
+
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "cohensd"
+msgstr ""
+
+#, fuzzy
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "raw"
+msgstr "ruw"
+
+msgctxt "ConfirmatoryFactorAnalysis|"
+msgid "Second-Order"
+msgstr ""
+
+#, fuzzy
+msgctxt "mlRegressionKnn|"
+msgid "Rectangular"
+msgstr "Rechthoekig"
+
+#, fuzzy
+msgctxt "mlRegressionKnn|"
+msgid "Epanechnikov"
+msgstr "Epanechnikov"
+
+#, fuzzy
+msgctxt "mlRegressionKnn|"
+msgid "Biweight"
+msgstr "Twee-gewicht"
+
+#, fuzzy
+msgctxt "mlRegressionKnn|"
+msgid "Triweight"
+msgstr "Drie-gewicht"
+
+#, fuzzy
+msgctxt "mlRegressionKnn|"
+msgid "Cosine"
+msgstr "Cosinus"
+
+#, fuzzy
+msgctxt "mlRegressionKnn|"
+msgid "Inverse"
+msgstr "Inverse"
+
+#, fuzzy
+msgctxt "mlRegressionKnn|"
+msgid "Gaussian"
+msgstr "Gaussiaans"
+
+#, fuzzy
+msgctxt "mlRegressionKnn|"
+msgid "Rank"
+msgstr "Rang"
+
+#, fuzzy
+msgctxt "mlRegressionKnn|"
+msgid "Optimal"
+msgstr "Optimaal"
+
+msgctxt "mlRegressionRegularized|"
+msgid "Elastic net"
+msgstr ""
+
+#, fuzzy
+msgctxt "BayesianMetaAnalysis|"
+msgid "Additional info"
+msgstr "Aanvullende info"
+
+msgctxt "NetworkAnalysis|"
+msgid "Correlation"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "Partial Correlation"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "huge"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "Significant"
+msgstr ""
+
+#, fuzzy
+msgctxt "RegressionLinear|"
+msgid "Enter"
+msgstr "Voer in"
+
+#, fuzzy
+msgctxt "RegressionLinear|"
+msgid "Backward"
+msgstr "Achterwaarts"
+
+#, fuzzy
+msgctxt "RegressionLinear|"
+msgid "Forward"
+msgstr "Voorwaarts"
+
+#, fuzzy
+msgctxt "RegressionLinear|"
+msgid "Stepwise"
+msgstr "Stapsgewijs"
+
+#, fuzzy
+msgctxt "MediationAnalysis|"
+msgid "Predictors"
+msgstr "Voorspellers"
+
+msgctxt "MediationAnalysis|"
+msgid "Mediators"
+msgstr ""
+
+msgctxt "MediationAnalysis|"
+msgid "Outcome"
+msgstr ""
+
+msgctxt "MediationAnalysis|"
+msgid "Background confounders"
+msgstr ""

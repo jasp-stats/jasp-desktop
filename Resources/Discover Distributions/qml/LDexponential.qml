@@ -81,7 +81,7 @@ Form {
 		Group
 		{
 			title: qsTr("Generate new variable from Exponential") + " (" + ["λ = ", "β = "][parametrization.currentIndex] + par.value + ")"
-			AddColumnField{ name: "newVariableName"; text: qsTr("Variable name: "); fieldWidth: 120; placeholderText: "e.g., random exponential" }
+			AddColumnField{ name: "newVariableName"; text: qsTr("Variable name: "); fieldWidth: 120; placeholderText: qsTr("e.g., random exponential") }
 			IntegerField{   name: "sampleSize"; label: qsTr("Number of samples: "); min: 1; defaultValue: dataSetModel.rowCount(); max: dataSetModel.rowCount()}
 			Button{name: "simulateNowButton"; label: qsTr("Draw samples"); id: simulateNowButton; onClicked:{
 					if (simulateNow.checked) simulateNow.checked = false; else simulateNow.checked = true

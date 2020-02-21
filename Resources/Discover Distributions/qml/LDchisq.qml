@@ -71,7 +71,7 @@ Form {
 		Group
 		{
 			title: qsTr("Generate new variable from χ²") + " (k = " + df.value + ", λ = " + ncp.value + ")"
-			AddColumnField{ name: "newVariableName"; text: qsTr("Variable name: "); fieldWidth: 120; placeholderText: "e.g., random chisq" }
+			AddColumnField{ name: "newVariableName"; text: qsTr("Variable name: "); fieldWidth: 120; placeholderText: qsTr("e.g., random chisq") }
 			IntegerField{   name: "sampleSize"; label: qsTr("Number of samples: "); min: 1; defaultValue: dataSetModel.rowCount(); max: dataSetModel.rowCount()}
 			Button{name: "simulateNowButton"; label: qsTr("Draw samples"); id: simulateNowButton; onClicked:{
 					if (simulateNow.checked) simulateNow.checked = false; else simulateNow.checked = true

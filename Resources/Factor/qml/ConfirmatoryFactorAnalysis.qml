@@ -48,7 +48,7 @@ Form
 			}
 			AssignedVariablesList
 			{
-				title: "Second-Order"
+				title: qsTr("Second-Order")
 				name:  "secondOrder"
 				suggestedColumns: []
 			}
@@ -162,7 +162,7 @@ Form
 		text: qsTr("Plots")
 		GroupBox
 		{
-			title: "Plots"
+			title: qsTr("Plots")
 			CheckBox { text: qsTr("Misfit plot")     ; name: "misfitplot" }
 			CheckBox
 			{
