@@ -131,7 +131,7 @@ Form {
                 [
                     { label: "Lasso", value: "lasso"},
                     { label: "Ridge", value: "ridge"},
-                    { label: "Elastic net", value: "elasticNet"}
+					{ label: qsTr("Elastic net"), value: "elasticNet"}
                 ]
             }
 

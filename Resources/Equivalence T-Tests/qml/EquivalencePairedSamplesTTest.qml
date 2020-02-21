@@ -47,12 +47,12 @@ Form
         {
             L.Layout.columnSpan: 2
             name: "boundstype"
-            label: "Bounds specification in"
+			label: qsTr("Bounds specification in")
             indexDefaultValue: 1
             model: ListModel
             {
-                ListElement { title: "cohensd"; value: "Cohen's d"}
-                ListElement { title: "raw";     value: "Raw"}
+				ListElement { title: qsTr("cohensd"); value: "Cohen's d"}
+				ListElement { title: qsTr("raw");     value: "Raw"}
             }
         }
 
