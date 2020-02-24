@@ -532,6 +532,12 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		// display: ['block', 'none']
 
 		this.$quillToolbar.style.display = display;
+
+		if (display === 'block') {
+			this.$el.removeClass('jasp-notes-border')
+		} else {
+			this.$el.addClass('jasp-notes-border')
+		}
 	},
 
 	setVisibility: function(value) {
