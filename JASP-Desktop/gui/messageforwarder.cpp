@@ -24,6 +24,8 @@ void MessageForwarder::showWarning(QString title, QString message)
 
 bool MessageForwarder::showYesNo(QString title, QString message, QString YesButtonText, QString NoButtonText)
 {
+	if(YesButtonText == "")		YesButtonText	= tr("Yes");
+	if(NoButtonText == "")		NoButtonText	= tr("No");
 	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Yes | QMessageBox::No);
 
 	box.setButtonText(QMessageBox::Yes,		YesButtonText);
@@ -34,6 +36,10 @@ bool MessageForwarder::showYesNo(QString title, QString message, QString YesButt
 
 MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title, QString message, QString YesButtonText, QString NoButtonText, QString CancelButtonText)
 {
+	if(YesButtonText == "")		YesButtonText		= tr("Yes");
+	if(NoButtonText == "")		NoButtonText		= tr("No");
+	if(CancelButtonText == "")	CancelButtonText	= tr("Cancel");
+
 	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
 	box.setButtonText(QMessageBox::Yes,		YesButtonText);
@@ -50,7 +56,13 @@ MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title
 
 MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString title, QString message)
 {
-	switch(QMessageBox::question(nullptr, title, message, QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel))
+	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+	box.setButtonText(QMessageBox::Save,		tr("Save"));
+	box.setButtonText(QMessageBox::Discard,		tr("Discard"));
+	box.setButtonText(QMessageBox::Cancel,		tr("Cancel"));
+
+	switch(box.exec())
 	{
 	case QMessageBox::Save:			return DialogResponse::Save;
 	case QMessageBox::Discard:		return DialogResponse::Discard;
