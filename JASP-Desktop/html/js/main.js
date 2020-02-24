@@ -82,6 +82,10 @@ $(document).ready(function () {
 		analysis.toolbar.render();
 	}
 
+	window.setAnalysesTitle = function(newTitle) { analyses.setTitle(newTitle); }
+
+
+
 	window.setAppVersion	= function(version) { $(".app-version").text("Version " + version);	}
 	window.noInstructions	= function()		{ $('#instructions').text("");					}
 	window.noPatchinfo		= function()		{ $('#patchinfo').text("");						}
@@ -398,6 +402,7 @@ $(document).ready(function () {
 			});
 
 			analyses.on("analyses:userDataChanged", function () {
+				window.getResultsMeta()
 				jasp.updateUserData();
 			});
 
@@ -435,7 +440,7 @@ $(document).ready(function () {
 			jaspWidget.on("showDependencies",			function (id, optName)	{ jasp.showDependenciesInAnalysis(id, optName);					});
 			jaspWidget.on("analysis:remove",			function (id)			{ jasp.removeAnalysisRequest(id);								});
 			jaspWidget.on("analysis:duplicate",			function (id)			{ jasp.duplicateAnalysis(id);									});
-			jaspWidget.on("analysis:userDataChanged",	function ()				{ jasp.updateUserData();										});
+			jaspWidget.on("analysis:userDataChanged",	function ()				{ jasp.updateUserData(); window.getAllUserData();				});
 
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 

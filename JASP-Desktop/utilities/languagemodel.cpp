@@ -149,8 +149,16 @@ void LanguageModel::changeLanguage(int index)
 	_qml->retranslate();
 	Settings::setValue(Settings::PREFERRED_LANGUAGE, cl);
 	setCurrentIndex(index);
-	emit languageChanged();
+	_shouldEmitLanguageChanged = true;
+}
 
+void LanguageModel::resultsPageLoaded()
+{
+	if(!_shouldEmitLanguageChanged)
+		return;
+
+	_shouldEmitLanguageChanged = false;
+	emit languageChanged();
 }
 
 QString LanguageModel::getLocalName(QLocale::Language cl) const

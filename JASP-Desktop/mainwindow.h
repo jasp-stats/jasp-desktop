@@ -163,7 +163,6 @@ private:
 	void saveTextToFileHandler(const QString &filename, const QString &data);
 
 	void		removeAnalysis(Analysis *analysis);
-	void		getAnalysesUserData();
 	void		analysesCountChangedHandler();
 	void		analysisChangedDownstreamHandler(int id, QString options);
 	void		analysisSaveImageHandler(int id, QString options);

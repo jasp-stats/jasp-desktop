@@ -9,8 +9,9 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		this.toolbar = new JASPWidgets.Toolbar({ className: "jasp-toolbar jasp-title-toolbar jasp_top_level" })
 		this.toolbar.setParent(this);
 
-		this.toolbar.title = 'Results';
-		this.toolbar.titleTag = "h1";
+		this.toolbar.titleDefault	= "Results";
+		this.toolbar.title			= this.toolbar.titleDefault;
+		this.toolbar.titleTag		= "h1";
 
 		this.note = new JASPWidgets.Note();
 		this.noteBox = new JASPWidgets.NoteBox({ className: "jasp-notes jasp-main-note jasp_top_level", model: this.note });
@@ -20,6 +21,15 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 		});
 
 		this.views.push(this.noteBox);
+	},
+
+	setTitle: function(newTitle) {
+		console.log("analyses.setTiltle("+newTitle+") was called and default title= " +this.toolbar.titleDefault + " while the old title is: " + this.toolbar.title);
+		var wasDefault = this.toolbar.title === this.toolbar.titleDefault;
+		this.toolbar.titleDefault = newTitle;
+
+		if(wasDefault)
+			this.toolbar.title = this.toolbar.titleDefault
 	},
 
 	menuName: 'All',
@@ -56,7 +66,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 	},
 
 	editTitleClicked: function () {
-		this.toolbar.startEdit();
+		this.toolbar.startEdit(function(){ window.getResultsMeta(); });
 	},
 
 	events: {
@@ -152,13 +162,13 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
         // format: 'markdown',
 
 		return {
-			title: this.toolbar.title,
+			title:	this.toolbar.title,
 			notes: {
 				first: {
-                    text: this.note.get('text'),
-                    format: this.note.get('format'),
-					visible: this.noteBox.visible,
-					delta: this.note.get('delta'),
+					text:			this.note.get('text'),
+					format:			this.note.get('format'),
+					visible:		this.noteBox.visible,
+					delta:			this.note.get('delta'),
 					deltaAvailable: this.note.get('deltaAvailable'),
 				}
 			}
@@ -196,7 +206,10 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 	},
 
 
-	setResultsMeta: function (resultsNotes) {
+	setResultsMeta: function (resultsNotes)
+	{
+		if(resultsNotes === null)
+			return; //null is default value in Analyses class
 
 		var notes = resultsNotes['notes'];
 		var title = resultsNotes['title'];

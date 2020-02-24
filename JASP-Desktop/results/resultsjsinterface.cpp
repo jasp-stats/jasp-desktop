@@ -58,10 +58,15 @@ void ResultsJsInterface::setZoomInWebEngine()
 	emit runJavaScript("window.setZoom(" + QString::number(_webEngineZoom) + ")");
 }
 
-
-void ResultsJsInterface::resultsPageLoaded(bool succes)
+void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 {
-	if (succes)
+	if (_resultsLoaded == resultsLoaded)
+		return;
+
+	_resultsLoaded = resultsLoaded;
+	emit resultsLoadedChanged(_resultsLoaded);
+
+	if (resultsLoaded)
 	{
 		QString version = AboutModel::version();
 
@@ -70,13 +75,11 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 		setGlobalJsValues();
 
 		emit resultsPageLoadedSignal();
-
 		emit zoomChanged();
 
 		setThemeCss(Settings::value(Settings::THEME_NAME).toString());
 	}
 }
-
 
 void ResultsJsInterface::purgeClipboard()
 {
@@ -279,28 +282,6 @@ void ResultsJsInterface::moveAnalyses(size_t fromId, size_t toId)
 	emit runJavaScript("window.moveAnalyses(" % QString::number(fromId) % "," % QString::number(toId) % ")");
 }
 
-Json::Value &ResultsJsInterface::getResultsMeta()
-{
-	QEventLoop loop;
-
-	runJavaScript("window.getResultsMeta()");
-	connect(this, &ResultsJsInterface::getResultsMetaCompleted, &loop, &QEventLoop::quit);
-	loop.exec();
-
-	return _resultsMeta;
-}
-
-QVariant &ResultsJsInterface::getAllUserData()
-{
-	QEventLoop loop;
-
-	runJavaScript("window.getAllUserData()");
-	connect(this, &ResultsJsInterface::getAllUserDataCompleted, &loop, &QEventLoop::quit);
-	loop.exec();
-
-	return _allUserData;
-}
-
 void ResultsJsInterface::showInstruction()
 {
 	emit runJavaScript("window.showInstructions()");
@@ -354,14 +335,12 @@ QString ResultsJsInterface::escapeJavascriptString(const QString &str)
 
 void ResultsJsInterface::setResultsMetaFromJavascript(QString json)
 {
-	Json::Reader().parse(json.toStdString(), _resultsMeta);
-	emit getResultsMetaCompleted();
+	emit resultsMetaChanged(json);
 }
 
 void ResultsJsInterface::setAllUserDataFromJavascript(QString json)
 {
-	_allUserData = json;
-	emit getAllUserDataCompleted();
+	emit allUserDataChanged(json);
 }
 
 void ResultsJsInterface::setResultsPageUrl(QString resultsPageUrl)
@@ -388,5 +367,6 @@ void ResultsJsInterface::analysisEditImage(int id, QString options)
 
 void ResultsJsInterface::setThemeCss(QString themeName)
 {
-	runJavaScript("window.setTheme(\"" + themeName + "\");");
+	if(_resultsLoaded)
+		runJavaScript("window.setTheme(\"" + themeName + "\");");
 }
