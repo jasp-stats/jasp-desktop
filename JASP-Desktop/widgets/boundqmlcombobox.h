@@ -44,6 +44,7 @@ public:
 protected slots:
 	void modelChangedHandler() override;
 	void comboBoxChangeValueSlot(int index);
+	void resetValues();
 
 protected:
 	OptionList*					_boundTo				= nullptr;

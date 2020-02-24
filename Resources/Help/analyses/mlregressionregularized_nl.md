@@ -39,7 +39,7 @@ Geregulariseerde lineaire regressie is een aanpassing van de lineaire regressie 
 - Fit intercept: Specificeer of de regressiefunctie een intercepot heeft.
 - Lambda (\u03BB): Specificeer de shrinkage parameter. Het kan vastgezet worden op een specifieke waarde, geoptimaliseerd worden door het een waarde te geven met de laagste MSE in kruis-validatie, of het wordt de hoogste waarde die binnen 1 standaardfout (SE) van de minimum MSE in kruis-validatie is.
 - Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
-- Set seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
+- Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
 
 #### Voeg Voorspelde Klassen toe aan Data
 Genereert een nieuwe kolom in je dataset met de klasselabels van je classificatie resultaat. Dit geeft je de mogelijkheid de gegenereerde klasselabels te inspecteren, classificeren, of voorspellen.

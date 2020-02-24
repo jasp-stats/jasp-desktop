@@ -71,7 +71,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     anovaContainer <- createJaspContainer()
     # we set the dependencies on the container, this means that all items inside the container automatically have these dependencies
     anovaContainer$dependOn(c("withinModelTerms", "betweenModelTerms", "repeatedMeasuresCells", "betweenSubjectFactors",
-                              "repeatedMeasuresFactors", "covariates", "sumOfSquares"))
+                              "repeatedMeasuresFactors", "covariates", "sumOfSquares", "useMultivariateModelFollowup"))
     jaspResults[["rmAnovaContainer"]] <- anovaContainer
   }
   
@@ -257,40 +257,38 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 }
 
 .rmAnovaComputeResults <- function(dataset, options, returnResultsEarly = FALSE) {
-  
+
   modelDef <- .rmModelFormula(options)
   model.formula <- as.formula(modelDef$model.def)
-
-  variables <- unlist(c(options$betweenSubjectFactors, lapply(options$repeatedMeasuresFactors, function(x) x$name)))
-
-  for (variable in variables)
 
   options(contrasts=c("contr.sum","contr.poly"))
   
   # set these options once for all afex::aov_car calls,
   # this ensures for instance that afex::aov_car always returns objects of class afex_aov.
+  if (options$useMultivariateModelFollowup)   followupModelType <- "multivariate" else followupModelType <- "univariate"
   afex::afex_options(
     check_contrasts = TRUE, correction_aov = "GG", 
-    emmeans_model = "univariate", es_aov = "ges", factorize = TRUE, 
+    emmeans_model = followupModelType, es_aov = "ges", factorize = TRUE, 
     lmer_function = "lmerTest", method_mixed = "KR", return_aov = "afex_aov", 
     set_data_arg = FALSE, sig_symbols = c(" +", " *", " **", " ***"), type = 3
   )
 
   # Computations:
   if (options$sumOfSquares == "type1") {
-    
     tryResult <- try({
+
       result <- stats::aov(model.formula, data=dataset)
       summaryResultOne <- summary(result, expand.split = FALSE)
     
-      result <- afex::aov_car(model.formula, data=dataset, type= 3, factorize = FALSE)
+      result <- afex::aov_car(model.formula, data=dataset, type= 3, factorize = FALSE, include_aov = TRUE)
       summaryResult <- summary(result)
 
       # Reformat the results to make it consistent with types 2 and 3
       model <- as.data.frame(unclass(summaryResult$univariate.tests))
 
       for (mySub in unlist(summaryResultOne, recursive = FALSE)) {
-        for(term in trimws(rownames(mySub)[-nrow(mySub)])) {
+        rownames(mySub) <- trimws(rownames(mySub))
+        for(term in rownames(mySub)[-nrow(mySub)]) {
           model[term, "Sum Sq"]   <- mySub[term,        "Sum Sq"]
           model[term, "num Df"]   <- mySub[term,        "Df"]
           model[term, "F value"]  <- mySub[term,        "F value"]
@@ -300,8 +298,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
         }
       }
     })
-    
-  } else if (options$sumOfSquares == "type2") {
+
+    } else if (options$sumOfSquares == "type2") {
     
     tryResult <- try({
       result <- afex::aov_car(model.formula, data=dataset, type= 2, factorize = FALSE, include_aov = TRUE)
@@ -334,10 +332,9 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 
   sortedModel <- model
   cases <- unlist(sapply(modelDef$terms.base64, function(x) x[[1]]))
-  residualResults <- sortedModel[cases, ]
+  residualResults <- sortedModel[.mapAnovaTermsToTerms(cases, rownames(model)), ]
 
   nextNewGroup <- 0
-  counter <- 1
   for (modelTerm in modelDef$terms.base64) {
 
     if (!is.null(modelTerm)) {
@@ -346,14 +343,17 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       nextNewGroup <- c(TRUE, rep(FALSE, length(indices) - 1))
       sortedModel[indices, ] <- model[indices, ]
       sortedModel[indices, c(".isNewGroup", "isWithinTerm")] <- c(nextNewGroup, rep(isWithin, length(indices)))
-  
-      residualResults[modelTerm[[1]], ] <- c(model[indices[1],  c("Error SS", "den Df")], rep(NA, 4), 0, isWithin) 
+      
+      residualRow <- c(model[indices[1],  c("Error SS", "den Df")], rep(NA, 4), 0, isWithin)
+      residualResults[.mapAnovaTermsToTerms(modelTerm[[1]], rownames(residualResults)), ] <-  residualRow
     }
 
   }
 
-  rownames(sortedModel) <- unlist(modelDef$terms.base64)
-  sortedModel[["case"]] <- unlist(modelDef$terms.normal)
+  # Make sure that order of anova result corresponds to order of specified model terms
+  mappedRownamesCases <- .mapAnovaTermsToTerms(rownames(sortedModel), unlist(modelDef$terms.base64))
+
+  sortedModel[["case"]] <- unlist(modelDef$terms.normal)[mappedRownamesCases]
   sortedModel[["Mean Sq"]] <- sortedModel[["Sum Sq"]] / sortedModel[["num Df"]]
   sortedModel[["VovkSellkeMPR"]] <- .VovkSellkeMPR(sortedModel[["Pr(>F)"]])
 
@@ -829,7 +829,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
                                             }
                                           })
   ))
-  
+
   postHocVariables <- unlist(options$postHocTestsVariables, recursive = FALSE)
   variablesPost <- unname(sapply(postHocVariables, function(x) paste(.v(x), collapse = ":")))
   
@@ -838,9 +838,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   for (var in variables) {
     formula <- as.formula(paste("~", var))
     referenceGrid <- emmeans::emmeans(fullModel, formula)
-    
     referenceGridList[[var]] <- referenceGrid
-    
   }
   
   rmAnovaContainer[["referenceGrid"]] <- createJaspState(object = referenceGridList, 
@@ -1006,7 +1004,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   if (options$confidenceIntervalsPostHoc || makeBootstrapTable) {
     
     if (makeBootstrapTable) {
-      thisOverTitle <- gettextf("%1$s%% bca%2$s CI", options$confidenceIntervalIntervalPostHoc * 100, "\u002A")
+      thisOverTitle <- gettextf("%1$s%% bca%2$s CI", options$confidenceIntervalIntervalPostHoc * 100, "\u2020")
     } else {
       thisOverTitle <- gettextf("%s%% CI for Mean Difference", options$confidenceIntervalIntervalPostHoc * 100)
     }
@@ -1151,9 +1149,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     
     contrastTable$addColumnInfo(name = "SE", title=gettext("SE"), type = "number")
     
-    dfType <- if (options$contrastAssumeEqualVariance && contrastType != "custom") "integer" else "number"
-
-    contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = dfType)
+    contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = "integer")
     contrastTable$addColumnInfo(name = "t.ratio", title = gettext("t"),  type = "number")
     contrastTable$addColumnInfo(name = "p.value", title = gettext("p"),  type = "pvalue")
     
@@ -1204,26 +1200,19 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       contrastResult    <- try(emmeans::contrast(referenceGrid[[.v(contrast$variable)]], contrCoef),
                                silent = TRUE)
 
-      if (contrast$contrast == "custom")
-        # Check whether the custom contrast matrix works
-        .hasErrors(dataset = NULL,
-                   allowEmptyDataset = FALSE,
-                   exitAnalysisIfErrors = TRUE,
-                   custom = function() {
-                     if (isTryError(contrastResult)) {
-                       if (grepl(contrastResult[1], pattern = "Nonconforming number")) {
-                         return("Nonconforming number of contrast coefficients.")
-                       } else if (grepl(contrastResult[1], pattern = "number of contrast matrix rows")) {
-                         return("Wrong number of custom contrast matrix rows.")
-                       } 
-                     } else if (any(apply(contrastMatrix, 2, function(x) all(x == 0) ))) {
-                       return("Please specify non-zero contrast weights.")
-                     # } else  if (ncol(contrastMatrix) >= nlevels(column)) {
-                     #   return("Please specify fewer contrasts. (Maximum #contrasts = #levels - 1)")
-                     # } else if (any(round(colSums(contrastMatrix), 15) != 0)) {
-                       # return("Some contrasts do not sum to 0.")
-                     } 
-                   })
+      if (contrast$contrast == "custom") {
+        if (isTryError(contrastResult)) {
+          if (grepl(contrastResult[1], pattern = "Nonconforming number")) {
+            contrastContainer$setError(gettext("Nonconforming number of contrast coefficients."))
+          } else if (grepl(contrastResult[1], pattern = "number of contrast matrix rows")) {
+            contrastContainer$setError(gettext("Wrong number of custom contrast matrix rows."))
+          } 
+          return()
+        } else if (any(apply(contrastMatrix, 2, function(x) all(x == 0) ))) {
+          contrastContainer$setError(gettextf("Please specify non-zero contrast weights."))
+          return()
+        }
+      }
 
       if (length(contrastResult@misc$avgd.over) != 0)
         contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$addFootnote(
@@ -1233,7 +1222,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       contrastResult <- cbind(contrastResult, confint(contrastResult, level = options$confidenceIntervalIntervalContrast)[,5:6])
       contrastResult[["Comparison"]] <- .unv(contrastResult[["contrast"]])
       
-      if (options$contrastAssumeEqualVariance == FALSE) {
+      if (options$contrastAssumeEqualVariance == FALSE && contrast$variable %in% unlist(options$withinModelTerms) ) {
+
         newDF <- do.call(data.frame, tapply(longData[[.v("dependent")]], longData[[.v(contrast$variable)]], cbind))
         ssNr <- tapply(longData[[.v("subject")]], longData[[.v(contrast$variable)]], cbind)
         
@@ -1252,6 +1242,12 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
         contrastResult[["df"]]      <- sapply(allTestResults, function(x) x[["parameter"]])
         contrastResult[["SE"]]      <- sapply(allTestResults, function(x) x[["estimate"]] /  x[["statistic"]])
         contrastResult[["p.value"]] <- sapply(allTestResults, function(x) x[["p.value"]])
+        
+      } else if (options$contrastAssumeEqualVariance == FALSE) {
+        
+        contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setError(gettext("Unequal variances only available for within subjects factors"))
+        return()
+        
       }
       
       contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setData(contrastResult)
@@ -1380,6 +1376,11 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   if (makeBootstrapTable) {
     thisOverTitle <- gettextf("95%% bca%s CI", "\u002A")
+    marginalMeansTable$addColumnInfo(name="bias", title=gettext("bias"), type="number")
+    
+    marginalMeansTable$addFootnote(message = gettext("Marginal Means estimate is based on the median of the bootstrap distribution."))
+    marginalMeansTable$addFootnote(symbol = "\u2020", message = gettext("Bias corrected accelerated."))
+    
   } else {
     thisOverTitle <- gettextf("95%% CI for Mean Difference")
   }
@@ -1388,15 +1389,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   marginalMeansTable$addColumnInfo(name="upper.CL", type = "number", title = gettext("Upper"), overtitle = thisOverTitle)
   
   marginalMeansTable$addColumnInfo(name="SE", title=gettext("SE"), type="number")
-  
-  if (makeBootstrapTable) {
-    
-    marginalMeansTable$addColumnInfo(name="bias", title=gettext("bias"), type="number")
-    
-    marginalMeansTable$addFootnote(message = gettext("Marginal Means estimate is based on the median of the bootstrap distribution."))
-    marginalMeansTable$addFootnote(symbol = "\u2020", message = gettext("Bias corrected accelerated."))
-    
-  }
   
   if (options$marginalMeansCompareMainEffects) {
     marginalMeansTable$addColumnInfo(name="t.ratio", title=gettext("t"),  type="number")
@@ -1720,7 +1712,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     lvls[[variable]] <- levels(factor)
     
   }
-  
+
   simpleEffectResult <- rev(expand.grid(rev(lvls), stringsAsFactors = FALSE))
   colnames(simpleEffectResult) <- c("modOne", "modTwo")[1:nMods]
   
@@ -1776,7 +1768,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
                                               simpleEffectResult[i, 1:nMods], 
                                               "\"", sep = "", collapse = " & ")))
     simpleDataset <- base::subset(longData, subsetStatement)
-    
+
     if (simpleEffectResult[i, nMods] == lvls[[ nMods ]][1])
       simpleEffectResult[[i, ".isNewGroup"]] <- TRUE
     
@@ -1799,7 +1791,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
         fullAnovaMS <-  anovaResult["Residuals", "Mean Sq"]
         fullAnovaDf <-  anovaResult["Residuals", "Df"]
       }
-      
+
       anovaResult <- anovaResult[simpleFactorBase64, ]
       df <- anovaResult[["Df"]]
       
@@ -1816,11 +1808,10 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       
     }
 
-    MS <- anovaResult[["Mean Sq"]] <- anovaResult[["Sum Sq"]] /  anovaResult[["num Df"]]
+    MS <- anovaResult[["Mean Sq"]] <- anovaResult[["Sum Sq"]] /  df
     F <- MS / fullAnovaMS
     p <- pf(F, df, fullAnovaDf, lower.tail = FALSE)
     simpleEffectResult[i, c("SumSq", "MeanSq", "Df", "F", "p")] <- c(anovaResult[["Sum Sq"]], MS, df, F, p)
-    
   }
   
   if (!is.null(emptyCaseIndices)) {

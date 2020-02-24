@@ -146,12 +146,36 @@ void BoundQMLComboBox::setUp()
 {
 	QMLListView::setUp();
 
+	if (form())
+		connect(form(), &AnalysisForm::languageChanged, this, &BoundQMLComboBox::resetValues);
+
 	if (hasSource())
 	{
 		_model->resetTermsFromSourceModels(false);
 		_resetItemWidth();
 	}
 	
+	_setCurrentValue(_currentIndex, true, false);
+}
+
+void BoundQMLComboBox::resetValues()
+{
+	_keyToValueMap.clear();
+	_valueToKeyMap.clear();
+
+	readModelProperty(&_keyToValueMap);
+	QMapIterator<QString, QString> it(_keyToValueMap);
+	while (it.hasNext())
+	{
+		it.next();
+		_valueToKeyMap[it.value()] = it.key();
+	}
+
+	// In case of retranslation, QML sets back its original model, so we have to set it again to our own model.
+	setItemProperty("model", QVariant::fromValue(_model));
+
+	_resetItemWidth();
+
 	_setCurrentValue(_currentIndex, true, false);
 }
 

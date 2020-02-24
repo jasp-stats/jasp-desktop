@@ -1104,7 +1104,7 @@
   detectionRisk <- auditRisk / inherentRisk / controlRisk
 
   if(detectionRisk >= 1){
-    planningContainer$setError(gettext("The detection risk is higher than 100%. Please 
+    planningContainer$setError(gettextf("The detection risk is higher than 100%%. Please
                                         re-specify your custom values for the Inherent 
                                         risk and/or Control risk."))  
     return()
@@ -1221,8 +1221,9 @@
                                   "binomial" = "beta", 
                                   "hypergeometric" = "beta-binomial")
 
+
       planningContainer[["planningParagraph"]] <- createJaspHtml(gettextf("The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming
-                                                                          the sample contains <b>%2$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the 
+                                                                          the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the
                                                                           control risk <b>(%7$s)</b> and the expected errors. The information in this prior distribution states that there is a <b>%8$s%%</b> prior probability that 
                                                                           the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains 
                                                                           below <b>%9$s</b> the maximum misstatement is estimated to be below materiality.",
@@ -2145,7 +2146,7 @@
                                             title = gettext("Selection value"), 
                                             type = "string")
     selectionInformationTable$addColumnInfo(name = "percentage", 
-                                            title = gettext("% of population value"), 
+                                            title = gettextf("%% of population value"),
                                             type = "string")  
   } else {
 

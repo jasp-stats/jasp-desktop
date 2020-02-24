@@ -67,8 +67,7 @@ LDbinomial <- function(jaspResults, dataset, options, state=NULL){
     
     # parameter estimates
     mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
-    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR,
-                                  .ldBinomialMethodMLEStructureResults)
+    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR)
     .ldFillBinomialEstimatesTable(mleEstimatesTable, mleResults, options, readyFit)
     
     # fit assessment
@@ -113,6 +112,8 @@ LDbinomial <- function(jaspResults, dataset, options, state=NULL){
   options$support <- list(min = 0, max = options[['size']])
   options$lowerBound <- c(0)
   options$upperBound <- c(1)
+  
+  options$transformations <- c(prob = "prob")
   
   options
 }
@@ -179,18 +180,4 @@ LDbinomial <- function(jaspResults, dataset, options, state=NULL){
   table$setData(res)
   
   return()
-}
-
-.ldBinomialMethodMLEStructureResults <- function(fit, options){
-  if(is.null(fit)) return()
-  
-  transformations <- c(prob = "prob")
-  
-  res <- sapply(transformations, function(tr) car::deltaMethod(fit$estimate, tr, fit$vcov, level = options$ciIntervalInterval))
-  rownames(res) <- c("estimate", "se", "lower", "upper")
-  res <- t(res)
-  res <- cbind(par = rownames(res), res)
-  res <- as.data.frame(res)
-  
-  return(res)
 }

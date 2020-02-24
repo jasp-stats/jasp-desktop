@@ -339,7 +339,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   params <- .JAGSGetParams(options, mcmcResult)
   containerObj <- .JAGSInitPlotsContainers(plotContainer, options, params)
-  if (is.null(containerObj))
+  if (is.null(containerObj) && is.null(plotContainer[["plotBivarHex"]]))
     return()
 
   # put the container in jaspResults only now so that all empty plots appear at once
@@ -540,12 +540,13 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
     g = factor(rep(seq_along(samples), each = n))
   )
 
-  g <- JASPgraphs::themeJasp(
-    ggplot2::ggplot(df, ggplot2::aes(x = x, y = y, color = g)) +
-      ggplot2::geom_line(show.legend = FALSE) +
-      ggplot2::labs(x = gettext("Iteration"), y = param) +
-      JASPgraphs::scale_JASPcolor_discrete()
-  ) + ggplot2::theme(plot.margin = ggplot2::margin(0, 10, 0, 0))
+  g <- ggplot2::ggplot(df, ggplot2::aes(x = x, y = y, color = g)) +
+    ggplot2::geom_line() +
+    ggplot2::labs(x = gettext("Iteration"), y = param) +
+    JASPgraphs::scale_JASPcolor_discrete(name = gettext("Chain")) +
+    JASPgraphs::geom_rangeframe() +
+    JASPgraphs::themeJaspRaw(legend.position = if (options[["showLegend"]]) "right" else "none") +
+    ggplot2::theme(plot.margin = ggplot2::margin(0, 10, 0, 0))
   return(g)
 }
 
@@ -553,16 +554,17 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   # TODO: x coordinates should be based on acf()#n.used!
   nchains  <- length(samples)
-  nlags    <- options[["noLags"]] + 1L
-  acfs <- numeric(nchains * nlags)
+  nlags    <- options[["noLags"]]
+  nvals    <- nlags + 1L # we're getting one more value than nlags since the 0th lag counts.
+  acfs <- numeric(nchains * nvals)
   for (i in seq_len(nchains))
-    acfs[(1 + (i-1) * nlags):(i * nlags)] <- c(stats::acf(x = samples[[i]][, param], type = "correlation",
-                                                          lag.max = nlags - 1L, plot = FALSE)$acf)
+    acfs[(1 + (i-1) * nvals):(i * nvals)] <- c(stats::acf(x = samples[[i]][, param], type = "correlation",
+                                                          lag.max = nlags, plot = FALSE)$acf)
 
   df <- data.frame(
-    x = seq(0:(nlags - 1L)),
+    x = 0:nlags,
     y = acfs,
-    g = factor(rep(seq_len(nchains), each = nlags))
+    g = factor(rep(seq_len(nchains), each = nvals))
   )
 
   if (options[["acfType"]] == "acfLines") {
@@ -573,11 +575,17 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   colorScale <- JASPgraphs::scale_JASPcolor_discrete(name = gettext("Chain"))
   fillScale  <- JASPgraphs::scale_JASPfill_discrete(name = gettext("Chain"))
 
-  g <- JASPgraphs::themeJasp(
-    ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = x, y = y, color = g, group = g, fill = g)) +
-      geom + colorScale + fillScale + ggplot2::labs(x = gettext("Lag"), y = gettext("Autocorrelation")),
-    legend.position = if (options[["showLegend"]]) "right" else "none"
-  )
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, nlags))
+  xBreaks <- xBreaks[xBreaks <= nlags]
+  xLimits <- c(0L, nlags)
+
+  g <- ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = x, y = y, color = g, group = g, fill = g)) +
+    geom + colorScale + fillScale +
+    ggplot2::ylab(gettext("Autocorrelation")) +
+    ggplot2::scale_x_continuous(name = gettext("Lag"), breaks = xBreaks, limits = xLimits) +
+    JASPgraphs::geom_rangeframe() +
+    JASPgraphs::themeJaspRaw(legend.position = if (options[["showLegend"]]) "right" else "none")
+
   return(g)
 }
 

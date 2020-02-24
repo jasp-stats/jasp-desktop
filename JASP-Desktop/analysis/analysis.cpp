@@ -556,7 +556,7 @@ bool Analysis::processResultsForDependenciesToBeShownMetaTraverser(const Json::V
 void Analysis::processResultsForDependenciesToBeShown()
 {
 	if(!_useJaspResults && _showDepsName != "")
-		MessageForwarder::showWarning("Old-school analysis doesn't use dependencies", "You have tried to show the dependencies of an analysis that has not been rewritten to jaspResults, and seeing as how these older analyses do use dependencies there is nothing to show you...");
+		MessageForwarder::showWarning(tr("Old-school analysis doesn't use dependencies"), tr("You have tried to show the dependencies of an analysis that has not been rewritten to jaspResults, and seeing as how these older analyses do use dependencies there is nothing to show you..."));
 
 	if(!_results.isMember(".meta") || !_analysisForm)
 		return;
@@ -576,7 +576,7 @@ Json::Value Analysis::editOptionsOfPlot(const std::string & uniqueName)
 	Json::Value editOptions = Json::nullValue;
 
 	if(!_editOptionsOfPlot(_results, uniqueName, editOptions))
-		MessageForwarder::showWarning("Could not find edit options of plot " + uniqueName + " so plot editing will not work...");
+		MessageForwarder::showWarning(tr("Could not find edit options of plot %1 so plot editing will not work...").arg(tq(uniqueName)));
 
 	return editOptions;
 }
@@ -610,7 +610,7 @@ bool Analysis::_editOptionsOfPlot(const Json::Value & results, const std::string
 void Analysis::setEditOptionsOfPlot(const std::string & uniqueName, const Json::Value & editOptions)
 {
 	if(!_setEditOptionsOfPlot(_results, uniqueName, editOptions))
-		MessageForwarder::showWarning("Could not find set edit options of plot " + uniqueName + " so plot editing will not remember anything (if it evens works)...");
+		MessageForwarder::showWarning(tr("Could not find set edit options of plot %1 so plot editing will not remember anything (if it evens works)...").arg(tq(uniqueName)));
 }
 
 bool Analysis::_setEditOptionsOfPlot(Json::Value & results, const std::string & uniqueName, const Json::Value & editOptions)

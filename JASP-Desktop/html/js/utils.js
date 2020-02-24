@@ -74,7 +74,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
     for (let i = 0; i < formats.length; i++) {
 
         let f = formats[i];
-        if (f.indexOf("p:") != -1) {
+        if (f.match(/^p:/) !== null) {
             // override APA style if exact p-values wanted
             if (window.globSet.pExact) {
                 sf = 4;

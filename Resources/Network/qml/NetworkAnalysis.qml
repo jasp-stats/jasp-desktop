@@ -39,11 +39,11 @@ Form
 		Layout.columnSpan: 2
 		values: [
 			{ value: "EBICglasso",		label: "EBICglasso"			},
-			{ value: "cor",				label: "Correlation"		},
-			{ value: "pcor",			label: "Partial Correlation"},
+			{ value: "cor",				label: qsTr("Correlation")		},
+			{ value: "pcor",			label: qsTr("Partial Correlation")},
 			{ value: "IsingFit",		label: "IsingFit"			},
 			{ value: "IsingSampler",	label: "IsingSampler"		},
-			{ value: "huge",			label: "huge"				},
+			{ value: "huge",			label: qsTr("huge")			},
 			{ value: "adalasso",		label: "adalasso"			},
 			{ value: "mgm",				label: "mgm"				}
 		]
@@ -182,7 +182,7 @@ Form
 				{
 					name: "thresholdMethod"
 					values: [
-						{ label: "Significant",	value: "sig"		},
+						{ label: qsTr("Significant"),	value: "sig"		},
 						{ label: "Bonferroni",	value: "bonferroni"	},
 						{ label: "Locfdr",		value: "locfdr"		},
 						{ label: "Holm",		value: "holm"		},

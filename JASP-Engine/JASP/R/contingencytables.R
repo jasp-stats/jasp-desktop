@@ -185,6 +185,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     if (options$chiSquaredContinuityCorrection)   .crossTabChisqAddColInfo(fold = "chiSquared-cc",  crossTabChisq, options)
     if (options$likelihoodRatio)                  .crossTabChisqAddColInfo(fold = "likelihood",     crossTabChisq, options)
                                                   .crossTabChisqAddColInfo(fold = "N",              crossTabChisq, options, counts.fp)
+
     if(options$VovkSellkeMPR){
       message <- gettextf("Vovk-Sellke Maximum  <em>p</em>-Ratio: Based the <em>p</em>-value, 
       the maximum possible odds in favor of H%1$s over H%2$s equals %3$s
@@ -498,7 +499,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 
 .crossTabCountsMatrixToRow <- function(matrix, counts.matrix, type) {
   if (is.character(matrix[1,1]))
-    rowname <- matrix[1,]
+    return(NULL)
   else {
     if(type %in% c("expected", "col.proportions", "proportions"))
       row <- colSums(matrix)
@@ -545,7 +546,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   })
 
   if (ready) {
-    chi.result <- try({ chi.result <- vcd::assocstats(counts.matrix) }) #Should chi.result be assigned to twice here?
+    chi.result <- try(vcd::assocstats(counts.matrix))
 
     if (isTryError(chi.result)) 
       row[[paste0("value[", type, "]")]] <- NaN
@@ -553,7 +554,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       row[[paste0("value[", type, "]")]] <- NaN
       message                            <- gettext("Value could not be calculated - At least one row or column contains all zeros")
       
-      analysisContainer[["crossTabNominal"]]$addFootnote(message, symbol = "\u207A", rowNames = rowname)
+      analysisContainer[["crossTabNominal"]]$addFootnote(message, rowNames = rowname, colNames = paste0("value[", type, "]"))
     } else
       row[[paste0("value[", type, "]")]] <- chi.result[[val]]
   } 
@@ -564,9 +565,10 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 }
 
 .crossTabCountsFp <- function(dataset, options) {
+  # check if the counts column has floating point numbers
   if (options$counts != "") {
     counts <- dataset[[ .v(options$counts) ]]
-    return(!(counts == as.integer(counts)))     
+    return(!all((counts %% 1) == 0))
   }
   return(FALSE)
 }
@@ -588,9 +590,9 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   }
 }
 
-.crossTabRowName <- function(row.rownames, groupNum, countsMatNum = "", fold) {
-  row.rownames <- c(row.rownames, paste0(fold, groupNum, countsMatNum))
-  return(row.rownames)
+.crossTabRowName <- function(groups) {
+  rowNames <- lapply(groups, function(x) paste(c("row", unlist(x)), collapse="-"))
+  return(unlist(rowNames))
 }
 
 # Group matrix
@@ -684,7 +686,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   counts.rows    <- list()
   group.matrices <- groupList$group.matrices
   groups         <- groupList$groups
-  row.rownames   <- c()
+  row.rownames   <- .crossTabRowName(groups)
+  
   for (g in seq_along(group.matrices)) {
     counts.matrix <- group.matrices[[g]]
     if (!is.null(groups))
@@ -707,7 +710,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       })
       if (isTryError(expected.matrix)) {
         expected.matrix    <- counts.matrix
-        expected.matrix[,] <- "&nbsp;"
+        expected.matrix[,] <- ""
       }
       
       row.proportions.matrix <- try({
@@ -715,7 +718,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       })
       if (isTryError(row.proportions.matrix)) {
         row.proportions.matrix    <- counts.matrix
-        row.proportions.matrix[,] <- "&nbsp;"
+        row.proportions.matrix[,] <- ""
       }
       
       col.proportions.matrix <- try({
@@ -723,7 +726,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       })
       if (isTryError(col.proportions.matrix)) {
         col.proportions.matrix    <- counts.matrix
-        col.proportions.matrix[,] <- "&nbsp;"
+        col.proportions.matrix[,] <- ""
       }
       
       proportions.matrix <- try({
@@ -731,7 +734,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       })
       if (isTryError(proportions.matrix)) {
         proportions.matrix    <- counts.matrix
-        proportions.matrix[,] <- "&nbsp;"
+        proportions.matrix[,] <- ""
       }
       
     } else {
@@ -754,7 +757,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
         else  row[["total[counts]"]] <- as.integer(sum)
 
         row          <- c(row.count, row)
-        row.rownames <- .crossTabRowName(row.rownames, g, j, "count")
         
         if (options$countsExpected) {
           
@@ -767,7 +769,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 
           expected      <- c(row.expected, expected)
           row           <- c(row, expected)
-          row.rownames  <- .crossTabRowName(row.rownames, g, j, "expected")
         }
         
         if (options$percentagesRow) {
@@ -777,11 +778,11 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           
           if (is.character(row.proportions.matrix[1,1])) row.prop <- ""
           else                                           row.prop <- sum(row.proportions.matrix[j,])
+
           row.proportions[["total[row.proportions]"]] <- row.prop
           
           row.proportions <- c(row.row.proportions, row.proportions)
           row             <- c(row, row.proportions)
-          row.rownames    <- .crossTabRowName(row.rownames, g, j, "row.prop")
         }
         
         if (options$percentagesColumn) {
@@ -800,7 +801,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           
           col.proportions <- c(row.col.proportions, col.proportions)
           row             <- c(row, col.proportions)
-          row.rownames    <- .crossTabRowName(row.rownames, g, j, "col.prop")
         }
         
         if (options$percentagesTotal) {
@@ -814,7 +814,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           
           total.proportions <- c(row.total.proportions, total.proportions)
           row               <- c(row, total.proportions)
-          row.rownames      <- .crossTabRowName(row.rownames, g, j, "total.prop")
         }
         
       } else 
@@ -891,20 +890,20 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   tests.rows     <- list()
   group.matrices <- groupList$group.matrices
   groups         <- groupList$groups
-  row.rownames   <- c()
+  row.rownames   <- .crossTabRowName(groups)
 
   for (g in seq_along(group.matrices)) {
+    
     counts.matrix <- group.matrices[[g]]
     if (!is.null(groups)) group <- groups[[g]]
     else                  group <- NULL
-    
+
     row <- list()
     row[["type[N]"]] <- gettext("N")
     row[["df[N]"]]   <- ""
     row[["p[N]"]]    <- ""
     row[["MPR[N]"]]  <- ""
     
-    row.rownames <- .crossTabRowName(row.rownames, g, fold = "N")
     if (ready){
       sum <- sum(counts.matrix)
       if(counts.fp)
@@ -917,7 +916,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     if (options$chiSquared) {
       
-      row.rownames <- .crossTabRowName(row.rownames, g, fold = "chiSquared")
       row[["type[chiSquared]"]] <- "\u03A7\u00B2"
       
       if (ready) {
@@ -931,9 +929,9 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           row[["df[chiSquared]"]]    <- " "
           row[["p[chiSquared]"]]     <- " "
           row[["MPR[chiSquared]"]]   <- " "
-          rowname <- paste0("chiSquared", g)
+
           message <- gettextf("%s could not be calculated - At least one row or column contains all zeros", "\u03A7\u00B2")
-          analysisContainer[["crossTabChisq"]]$addFootnote(message, symbol = "\u207B", rowNames = rowname)
+          analysisContainer[["crossTabChisq"]]$addFootnote(message, rowNames = row.rownames[g], colNames = "value[chiSquared]")
         } else {
           row[["value[chiSquared]"]] <- unname(chi.result$statistic)
           row[["df[chiSquared]"]]    <- unname(chi.result$parameter)
@@ -946,7 +944,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     if (options$chiSquaredContinuityCorrection) {
       
-      row.rownames <- .crossTabRowName(row.rownames, g, fold = "chiSquared-cc")
       row[["type[chiSquared-cc]"]] <- gettextf("%s continuity correction", "\u03A7\u00B2")
       
       if (ready) {
@@ -964,9 +961,9 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
           row[["df[chiSquared-cc]"]]    <- " "
           row[["p[chiSquared-cc]"]]     <- " "
           row[["MPR[chiSquared-cc]"]]   <- " "
-          rowname <- paste0("chiSquared-cc", g)
+
           message <- gettextf("%s could not be calculated - At least one row or column contains all zeros", "\u03A7\u00B2")
-          analysisContainer[["crossTabChisq"]]$addFootnote(message, symbol = "\u1D43", rowNames = rowname)
+          analysisContainer[["crossTabChisq"]]$addFootnote(message, rowNames = row.rownames[g], colNames = "value[chiSquared-cc]")
         } else {
           row[["value[chiSquared-cc]"]] <- unname(chi.result$statistic)
           row[["df[chiSquared-cc]"]]    <- unname(chi.result$parameter)
@@ -981,12 +978,11 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     
     if (options$likelihoodRatio) {
       
-      row.rownames              <- .crossTabRowName(row.rownames, g, fold = "likelihood")
       row[["type[likelihood]"]] <- gettext("Likelihood ratio")
       
       if (ready) {
         
-        chi.result <- try({ chi.result <- vcd::assocstats(counts.matrix) }) #Again the weird double assign to chi.result...
+        chi.result <- try(vcd::assocstats(counts.matrix))
         
         if (isTryError(chi.result)) {
           row[["value[likelihood]"]] <- NaN
@@ -1015,7 +1011,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   odds.ratio.rows <- list()
   group.matrices  <- groupList$group.matrices
   groups          <- groupList$groups
-  row.rownames    <- c()
+  row.rownames    <- .crossTabRowName(groups)
+  
   for (g in seq_along(group.matrices)) {
     counts.matrix <- group.matrices[[g]]
     if (!is.null(groups))
@@ -1024,7 +1021,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       group <- NULL
     
     row <- list()
-    row.rownames <- .crossTabRowName(row.rownames, g, fold = "oddsRatio")
     row[["type[oddsRatio]"]] <- "Odds ratio"
     if (ready) {
       if ( ! identical(dim(counts.matrix),as.integer(c(2,2)))) {
@@ -1060,7 +1056,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
       }
     }
 
-    row.rownames <- .crossTabRowName(row.rownames, g, fold = "FisherTest")
     row[["type[FisherTest]"]] <- gettext("Fisher's exact test ")
     if (ready) {
       
@@ -1108,7 +1103,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   nominal.rows   <- list()
   group.matrices <- groupList$group.matrices
   groups         <- groupList$groups
-  row.rownames   <- c()
+  row.rownames   <- .crossTabRowName(groups)
+  
   for (g in seq_along(group.matrices)) {
     counts.matrix <- group.matrices[[g]]
     
@@ -1118,23 +1114,15 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     row <- list()
 
     if (options$contingencyCoefficient) {
-      rowname      <- paste0("ContCoef", g)
-      row          <- .crossTabNominalMatrixToRow(analysisContainer, row, counts.matrix, type = "ContCoef", ready, rowname)
-      row.rownames <- .crossTabRowName(row.rownames, g, fold = "ContCoef")
+      row          <- .crossTabNominalMatrixToRow(analysisContainer, row, counts.matrix, type = "ContCoef", ready, row.rownames[g])
     }
 
     if (options$phiAndCramersV) {
-      row.rownames <- .crossTabRowName(row.rownames, g, fold = "PhiCoef")
-      row.rownames <- .crossTabRowName(row.rownames, g, fold = "CramerV")
-      rowname      <- paste0("PhiCoef", g)
-      row          <- .crossTabNominalMatrixToRow(analysisContainer, row, counts.matrix, type = "PhiCoef", ready, rowname)
-      rowname      <- paste0("CramerV", g)
-      row          <- .crossTabNominalMatrixToRow(analysisContainer, row, counts.matrix, type = "CramerV", ready, rowname)
+      row          <- .crossTabNominalMatrixToRow(analysisContainer, row, counts.matrix, type = "PhiCoef", ready, row.rownames[g])
+      row          <- .crossTabNominalMatrixToRow(analysisContainer, row, counts.matrix, type = "CramerV", ready, row.rownames[g])
     }
 
     if (options$lambda) {
-      row.rownames           <- .crossTabRowName(row.rownames, g, "LambdaR")
-      row.rownames           <- .crossTabRowName(row.rownames, g, "LambdaC")
       row[["type[LambdaR]"]] <- gettextf("Lambda ( %i dependent)", options$rows)
       row[["type[LambdaC]"]] <- gettextf("Lambda ( %i dependent)", options$columns)
       
@@ -1170,14 +1158,14 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   ordinal.rows   <- list()
   group.matrices <- groupList$group.matrices
   groups         <- groupList$groups
-  row.rownames   <- c()
+  row.rownames   <- .crossTabRowName(groups)
+  
   for (g in seq_along(group.matrices)) {
     counts.matrix <- group.matrices[[g]]
     if (!is.null(groups))  group <- groups[[g]]
     else                   group <- NULL
     
     row <- list()
-    row.rownames <- .crossTabRowName(row.rownames, g, fold = "gammaCoef")
     if(ready) {
       chi.result <- try({ chi.result <- vcdExtra::GKgamma(counts.matrix) }) # in for a penny in for a dime I guess
       if (isTryError(chi.result)) {
@@ -1205,7 +1193,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
   kendalls.rows  <- list()
   group.matrices <- groupList$group.matrices
   groups         <- groupList$groups
-  row.rownames   <- c()
+  row.rownames   <- .crossTabRowName(groups)
 
   for (g in seq_along(group.matrices)) {
     counts.matrix <- group.matrices[[g]]
@@ -1214,7 +1202,6 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
     else                  group <- NULL
     
     row <- list()
-    row.rownames <- .crossTabRowName(row.rownames, g, fold = "kTauB")
     if (ready) {
       chi.result <- try({
         count.dat  <- stats::ftable(counts.matrix)

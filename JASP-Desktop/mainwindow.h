@@ -121,6 +121,7 @@ public slots:
 	void zoomInKeyPressed();
 	void zoomOutKeyPressed();
 	void zoomResetKeyPressed();
+	void setLanguage(int languageIndex);
 
 	//For qml:
 	void	showWarning(QString title, QString msg)								{ MessageForwarder::showWarning(title, msg); }

@@ -58,8 +58,8 @@ EngineSync::EngineSync(QObject *parent)
 	connect(PreferencesModel::prefs(),	&PreferencesModel::languageCodeChanged,				this,						&EngineSync::settingsChanged					);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::developerModeChanged,			this,						&EngineSync::settingsChanged					);
 
-	// delay start so as not to increase program start up time
-	QTimer::singleShot(100, this, &EngineSync::deleteOrphanedTempFiles);
+    // delay start so as not to increase program start up time 10sec is better than 100ms, because they are orphaned anyway
+    QTimer::singleShot(10000, this, &EngineSync::deleteOrphanedTempFiles);
 
 	DataSetPackage::pkg()->setEngineSync(this);
 }

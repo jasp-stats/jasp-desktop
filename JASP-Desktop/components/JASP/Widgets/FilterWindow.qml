@@ -105,19 +105,19 @@ FocusScope
 				functionModel: ListModel
 				{
 
-					ListElement	{ type: "function";	functionName: "abs";	functionParameters: "values";			functionParamTypes: "number";						toolTip: "absolute value" }
-					ListElement	{ type: "function";	functionName: "sd";		functionParameters: "values";			functionParamTypes: "number";						toolTip: "standard deviation" }
-					ListElement	{ type: "function";	functionName: "var";	functionParameters: "values";			functionParamTypes: "number";						toolTip: "variance" }
-					ListElement	{ type: "function";	functionName: "sum";	functionParameters: "values";			functionParamTypes: "number";						toolTip: "summation" }
-					ListElement	{ type: "function";	functionName: "prod";	functionParameters: "values";			functionParamTypes: "number";						toolTip: "product of values" }
+					ListElement	{ type: "function";	functionName: "abs";	functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("absolute value") }
+					ListElement	{ type: "function";	functionName: "sd";		functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("standard deviation") }
+					ListElement	{ type: "function";	functionName: "var";	functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("variance") }
+					ListElement	{ type: "function";	functionName: "sum";	functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("summation") }
+					ListElement	{ type: "function";	functionName: "prod";	functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("product of values") }
 
-					ListElement	{ type: "function";	functionName: "min";	functionParameters: "values";			functionParamTypes: "number";							toolTip: "returns minimum of values" }
-					ListElement	{ type: "function";	functionName: "max";	functionParameters: "values";			functionParamTypes: "number";								toolTip: "returns maximum of values" }
-					ListElement	{ type: "function";	functionName: "mean";	functionParameters: "values";			functionParamTypes: "number";									toolTip: "mean" }
-					ListElement	{ type: "function";	functionName: "round";	functionParameters: "y,n";				functionParamTypes: "number,number";								toolTip: "rounds y to n decimals" }
-					ListElement	{ type: "function";	functionName: "length";	functionParameters: "y";				functionParamTypes: "string:number";									toolTip: "returns number of elements in y" }
-					ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";			functionParamTypes: "number";												toolTip: "median" }
-					ListElement	{ type: "function";	functionName: "ifelse";	functionParameters: "test,then,else";	functionParamTypes: "boolean,boolean:string:number,boolean:string:number";		toolTip: "if-else statement" }
+					ListElement	{ type: "function";	functionName: "min";	functionParameters: "values";			functionParamTypes: "number";							toolTip: qsTr("returns minimum of values") }
+					ListElement	{ type: "function";	functionName: "max";	functionParameters: "values";			functionParamTypes: "number";								toolTip: qsTr("returns maximum of values") }
+					ListElement	{ type: "function";	functionName: "mean";	functionParameters: "values";			functionParamTypes: "number";									toolTip: qsTr("mean") }
+					ListElement	{ type: "function";	functionName: "round";	functionParameters: "y,n";				functionParamTypes: "number,number";								toolTip: qsTr("rounds y to n decimals") }
+					ListElement	{ type: "function";	functionName: "length";	functionParameters: "y";				functionParamTypes: "string:number";									toolTip: qsTr("returns number of elements in y") }
+					ListElement	{ type: "function";	functionName: "median";	functionParameters: "values";			functionParamTypes: "number";												toolTip: qsTr("median") }
+					ListElement	{ type: "function";	functionName: "ifelse";	functionParameters: "test,then,else";	functionParamTypes: "boolean,boolean:string:number,boolean:string:number";		toolTip: qsTr("if-else statement") }
 				}
 
 				function askIfChanged(closeFunc)

@@ -67,8 +67,7 @@ LDpoisson <- function(jaspResults, dataset, options, state=NULL){
     
     # parameter estimates
     mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
-    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR,
-                                  .ldPoissonMethodMLEStructureResults)
+    mleResults   <- .ldMLEResults(mleContainer, variable, options, readyFit, options$distNameInR)
     .ldFillPoissonEstimatesTable(mleEstimatesTable, mleResults, options, readyFit)
     
     # fit assessment
@@ -112,6 +111,8 @@ LDpoisson <- function(jaspResults, dataset, options, state=NULL){
   options$support <- list(min = 0, max = Inf)
   options$lowerBound <- c(0)
   options$upperBound <- c(Inf)
+  
+  options$transformations <- c(lambda = "lambda")
   
   options
 }
@@ -176,18 +177,4 @@ LDpoisson <- function(jaspResults, dataset, options, state=NULL){
   table$setData(res)
   
   return()
-}
-
-.ldPoissonMethodMLEStructureResults <- function(fit, options){
-  if(is.null(fit)) return()
-  
-  transformations <- c(lambda = "lambda")
-  
-  res <- sapply(transformations, function(tr) car::deltaMethod(fit$estimate, tr, fit$vcov, level = options$ciIntervalInterval))
-  rownames(res) <- c("estimate", "se", "lower", "upper")
-  res <- t(res)
-  res <- cbind(par = rownames(res), res)
-  res <- as.data.frame(res)
-  
-  return(res)
 }

@@ -818,10 +818,10 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   esTable$addRows(row)
   
   if(options$modelSpecification != "FE"){
-    esTable$addFootnote(gettext("Posterior mean and 95% credible interval estimates from the random effects model."),
+    esTable$addFootnote(gettextf("Posterior mean and 95%% credible interval estimates from the random effects model."),
                         colNames = c("estimatedES", "estimatedLower", "estimatedUpper"))
   } else if(options$modelSpecification == "CRE"){
-    esTable$addFootnote(gettext("Posterior mean and 95% credible interval estimates from the constrained random effects model."),
+    esTable$addFootnote(gettextf("Posterior mean and 95%% credible interval estimates from the constrained random effects model."),
                         colNames = c("estimatedES", "estimatedLower", "estimatedUpper"))
   }
 }
@@ -1627,22 +1627,17 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     return()
   }
   
-  if(nrow(dataset) < 40) plotLineOrPoint <- "point" else plotLineOrPoint <- "line"
-  
   df <- data.frame(x = 1:nrow(dataset), y = log(BFs))
-  
   
   if(type == "ES"){
     
     plot <- JASPgraphs::PlotRobustnessSequential(dfLines = df,
-                                                 plotLineOrPoint = plotLineOrPoint,
                                                  xName = "Studies",
                                                  BF = BFs[nrow(dataset)],
                                                  bfType = bfType,
                                                  hasRightAxis = TRUE)
   } else if(type == "SE"){
     plot <- JASPgraphs::PlotRobustnessSequential(dfLines = df,
-                                                 plotLineOrPoint = plotLineOrPoint,
                                                  xName = "Studies",
                                                  BF = BFs[nrow(dataset)],
                                                  bfType = bfType,

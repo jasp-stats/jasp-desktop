@@ -647,6 +647,12 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     return()
   
   varNames <- lavaan::lavaanNames(semContainer[["semResultsList"]]$object$semResults, type="ov")
+  
+  if (!all(sapply(dataset[, varNames, drop = FALSE], is.numeric))) {
+    semMardiasTable$setError(gettext("Not all used variables are numeric. Mardia's coefficients not available."))
+    return()
+  }
+  
   mardiaSkew <- unname(semTools:::mardiaSkew(dataset[, varNames]))
   mardiaKurtosis <- unname(semTools:::mardiaKurtosis(dataset[, varNames]))
   semMardiasTable$addRows(data.frame(Type=gettext("Skewness"), Coefficient=mardiaSkew[1], z=NA, Chisq=mardiaSkew[2], 

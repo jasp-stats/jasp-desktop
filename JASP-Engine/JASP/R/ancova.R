@@ -21,8 +21,10 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   numericVariables <- numericVariables[numericVariables != ""]
   factorVariables <- c(unlist(options$fixedFactors),unlist(options$randomFactors))
   factorVariables <- factorVariables[factorVariables != ""]
-  
-  ready <- options$dependent != "" && length(options$fixedFactors) > 0 && length(options$modelTerms) > 0
+  nFactorModelTerms <- sum(unlist(options$modelTerms) %in% factorVariables)
+
+  ready <- options$dependent != "" && length(options$fixedFactors) > 0 && nFactorModelTerms > 0
+  options(contrasts = c("contr.sum","contr.poly"))
   
   # Set corrections to FALSE when performing ANCOVA
   if (is.null(options$homogeneityBrown)) {
@@ -40,10 +42,8 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   
   anovaContainer <- .getAnovaContainer(jaspResults)
   
-  dataset <- .anovaSetupContrasts(dataset, options, ready)
-  
   .anovaCheckErrors(dataset, options, ready)
-  
+
   .anovaModelContainer(anovaContainer, dataset, options, ready)
 
   .anovaTable(anovaContainer, options, ready)
@@ -71,7 +71,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   } else {
     anovaContainer <- createJaspContainer()
     # we set the dependencies on the container, this means that all items inside the container automatically have these dependencies
-    anovaContainer$dependOn(c("dependent", "modelTerms", "contrasts", "covariates", "sumOfSquares", "wlsWeights", "customContrasts"))
+    anovaContainer$dependOn(c("dependent", "modelTerms", "covariates", "sumOfSquares", "wlsWeights", "customContrasts"))
     jaspResults[["anovaContainer"]] <- anovaContainer
   }
   return(anovaContainer)
@@ -168,88 +168,13 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   cases
 }
 
-.anovaCreateContrast <- function (column, contrastType, customContrast) {
-  
-  levels <- levels(column)
-  nLevels <- length(levels)
-  
-  contr <- NULL
-  
-
-  switch(contrastType,
-    none = {
-      options(contrasts = c("contr.sum","contr.poly"))
-      contr <- NULL
-    },
-
-    deviation = {
-      contr <- matrix(0,nrow = nLevels, ncol = nLevels - 1)
-
-      for (i in 1:nLevels-1) {
-        contr[c(1,i+1),i]<- c(1,-1)
-      }
-
-      contr <- contr * -1
-    },
-
-    simple = {
-      contr <- contr.treatment(levels) - 1/nLevels
-    },
-
-    Helmert = {
-      contr <- matrix(0,nrow = nLevels, ncol = nLevels - 1)
-
-      for (i in 1:(nLevels - 1)) {
-
-        k <- 1 / (nLevels - (i - 1))
-        contr[i:nLevels,i] <- c(k * (nLevels - i), rep(-k, nLevels - i))
-      }
-    },
-
-    repeated = {
-      contr <- MASS::contr.sdif(levels) * -1
-    },
-
-    difference = {
-      contr <- matrix(0,nrow = nLevels, ncol = nLevels - 1)
-
-      for (i in 1:(nLevels - 1)) {
-
-        k <- 1 / (i +1)
-        contr[1:(i+1),i] <- c( rep(-k, i), k * i)
-      }
-    },
-
-    polynomial = {
-      contr <- contr.poly(levels)
-    },
-    
-    custom = {
-
-      desiredRows <- nrow(MASS::contr.sdif(levels) * -1)
-
-      if (desiredRows == 2 && length(sapply(customContrast$values, function(x) x$values)) == 2 ) {
-        contr <- MASS::ginv(t(sapply(customContrast$values, function(x) x$values)))
-      } else {
-        contr <- MASS::ginv(sapply(customContrast$values, function(x) x$values))
-      }
-
-    }
-  )
-  
-  if ( ! is.null(contr))
-    dimnames(contr) <- list(NULL, 1:dim(contr)[2])
-  
-  return(contr)
-}
-
 .anovaCheckErrors <- function(dataset, options, ready) {
   if (!ready) 
     return()
 
   modelTerms <- unlist(options$modelTerms, recursive = FALSE)
   factorModelTerms <- options$modelTerms[sapply(modelTerms, function(x) !any(x %in% options$covariates))]
-  
+
   for(i in length(factorModelTerms):1) {
     .hasErrors(
       dataset = dataset, 
@@ -282,49 +207,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                  return(gettext("The WLS weights contain negative and/or zero values.<br><br>(only positive WLS weights allowed)."))
              },
              exitAnalysisIfErrors = TRUE)
-}
-
-.anovaSetupContrasts <- function(dataset, options, ready) {
-  if (!ready) 
-    return()
-  
-  for (contrast in options$contrasts) {
-    
-    v <- .v(contrast$variable)
-    column <- dataset[[v]]
-
-    if (contrast$contrast == "custom") {
-      customContrastSetup <- options$customContrasts[[which(sapply(options$customContrasts, function(x) x$value == contrast$variable))]]
-    } else {
-      customContrastSetup <- NULL
-    }
-
-    tryContrMat <- try(silent = TRUE, 
-                       expr =  contrasts(column) <- .anovaCreateContrast(column, contrast$contrast, customContrastSetup))
-
-    if (contrast$contrast == "custom")
-      # Check whether the custom contrast matrix works
-      .hasErrors(exitAnalysisIfErrors = TRUE,
-                 custom = function() {
-                   if (isTryError(tryContrMat)) {
-                     if (grepl(tryContrMat[1], pattern = "singular contrast matrix")) {
-                       return("Singular custom contrast matrix.")
-                     } else if (grepl(tryContrMat[1], pattern = "number of contrast matrix rows")) {
-                       return("Wrong number of custom contrast matrix rows.")
-                     } 
-                   } else if (is.matrix(tryContrMat) && any(apply(tryContrMat, 2, function(x) all(x == 0) ))) {
-                     return("Please specify non-zero contrast weights.")
-                   } else if (ncol(tryContrMat) >= nlevels(dataset[[v]])) {
-                     return("Please specify fewer contrasts. (Maximum #contrasts = #levels - 1)")
-                   # } else if (any(round(colSums(tryContrMat), 15) != 0)) {
-                     # return("Some contrasts do not sum to 0.")
-                   }
-                 })
-      
-    dataset[[v]] <- column
-  }
-  
-  return(dataset)
 }
 
 .reorderModelTerms <- function(options) {
@@ -389,6 +271,14 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 }
 
 .anovaModel <- function(dataset, options) {
+  
+  afex::afex_options(
+    check_contrasts = TRUE, correction_aov = "GG", 
+    emmeans_model = "univariate", es_aov = "ges", factorize = TRUE, 
+    lmer_function = "lmerTest", method_mixed = "KR", return_aov = "afex_aov", 
+    set_data_arg = FALSE, sig_symbols = c(" +", " *", " **", " ***"), type = 3
+  )
+  
   reorderModelTerms <-  .reorderModelTerms(options)
   modelTerms <- reorderModelTerms$modelTerms
   
@@ -398,11 +288,23 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   WLS <- NULL
   if ( ! is.null(options$wlsWeights))
     WLS <- dataset[[ .v(options$wlsWeights) ]]
-  
+
   model <- aov(model.formula, dataset, weights=WLS)
+
   modelError <- try(silent = TRUE, lm(model.formula, dataset, weights=WLS, singular.ok = FALSE))
+
+  # Make afex model for later use in contrasts
+  if (!isTryError(modelError)) {
+    afexFormula <- as.formula(paste0(modelDef$model.def, "+Error(ID)"))
+    afexData <- dataset
+    afexData[["ID"]] <- as.factor(1:nrow(dataset))
+    afexModel <- afex::aov_car(afexFormula, data=afexData, type= 3, factorize = FALSE, include_aov = TRUE)
+  } else {
+    afexModel <- NULL
+  }
   
-  return(list(model = model, modelError = modelError))
+  
+  return(list(model = model, modelError = modelError, afexModel = afexModel))
 }
 
 .anovaModelContainer <- function(anovaContainer, dataset, options, ready) {
@@ -422,6 +324,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   
   # Save model to state
   anovaContainer[["model"]] <- createJaspState(object = model$model)
+  anovaContainer[["afexModel"]] <- createJaspState(object = model$afexModel)
 }
 
 .anovaResult <- function(anovaContainer, options) {
@@ -458,12 +361,14 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     
   } else if (options$sumOfSquares == "type3") {
 
+    modelTerms <- unlist(options$modelTerms, recursive = FALSE)
+    factorModelTerms <- options$modelTerms[sapply(modelTerms, function(x) !any(x %in% options$covariates))]
     # For each model term, including all interactions, check if there are empty cells
-    if (any(sapply(options$modelTerms, function(x) any(table(model$model[, .v(x$components)]) == 0)))) {
+    if (any(sapply(factorModelTerms, function(x) any(table(model$model[, .v(x$components)]) == 0)))) {
       anovaContainer$setError(gettext("Your design contains empty cells. Please try a different type of sum of squares."))
       return()
     }
-    
+
     result <- car::Anova(model, type=3, singular.ok=FALSE)
     result <- result[-1, ]
     result['Mean Sq'] <- result[['Sum Sq']] / result[['Df']]
@@ -471,7 +376,9 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     
   }
 
-  result['cases'] <- c(termsNormal, "Residuals")
+  # Make sure that the order of the result is same order as reordered modelterms
+  result <- result[.mapAnovaTermsToTerms(rownames(result), c(termsBase64, "Residuals")), ]
+  result[['cases']] <- c(termsNormal, "Residuals")
   result <- as.data.frame(result)
   result[['.isNewGroup']] <- c(TRUE, rep(FALSE, nrow(result)-2), TRUE)
   if (length(options$covariates) > 0)
@@ -648,33 +555,35 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     return()
   
   contrastContainer <- createJaspContainer(title = gettext("Contrast Tables"))
-  contrastContainer$dependOn(c("contrasts", "contrastAssumeEqualVariance", "confidenceIntervalIntervalContrast", 
+  contrastContainer$dependOn(c("contrasts", "confidenceIntervalIntervalContrast", 
                                "confidenceIntervalsContrast", "customContrasts"))
 
   createContrastTable <- function(myTitle, options, contrastType) {
     
     contrastTable <- createJaspTable(title = myTitle)
-    contrastTable$addColumnInfo(name="Comparison", type="string")
-    contrastTable$addColumnInfo(name="Estimate", type="number")
-    contrastTable$addColumnInfo(name="SE", type="number")
-    
-    dfType <- if (options$contrastAssumeEqualVariance && contrastType != "custom") "integer" else "number"
-    contrastTable$addColumnInfo(name="df", type=dfType)
-    contrastTable$addColumnInfo(name="t", type="number")
-    contrastTable$addColumnInfo(name="p", type="pvalue")
-    
-    contrastTable$showSpecifiedColumnsOnly <- TRUE
+    contrastTable$addColumnInfo(name = "Comparison", type = "string")
+    contrastTable$addColumnInfo(name = "estimate", title=gettext("Estimate"), type = "number")
     
     if (options$confidenceIntervalsContrast) {
       
-      thisOverTitle <- gettextf("%.0f%% CI for Mean Difference", options$confidenceIntervalIntervalContrast * 100)
-      contrastTable$addColumnInfo(name="lwrBound", type = "number", title = gettext("Lower"), overtitle = thisOverTitle, )
-      contrastTable$addColumnInfo(name="uprBound", type = "number", title = gettext("Upper"), overtitle = thisOverTitle)
+      thisOverTitle <- gettextf("%s%% CI for Mean Difference", options$confidenceIntervalIntervalContrast * 100)
+      contrastTable$addColumnInfo(name="lower.CL", type = "number", title = gettext("Lower"), overtitle = thisOverTitle)
+      contrastTable$addColumnInfo(name="upper.CL", type = "number", title = gettext("Upper"), overtitle = thisOverTitle)
       
     } 
     
+    contrastTable$addColumnInfo(name = "SE", title=gettext("SE"), type = "number")
+    
+    contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = "integer")
+    contrastTable$addColumnInfo(name = "t.ratio", title = gettext("t"),  type = "number")
+    contrastTable$addColumnInfo(name = "p.value", title = gettext("p"),  type = "pvalue")
+    
+    contrastTable$showSpecifiedColumnsOnly <- TRUE
+    
     return(contrastTable)
   }
+  
+  
   for (contrast in options$contrasts) {
     
     if (contrast$contrast != "none") {
@@ -695,17 +604,12 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   if (!ready || anovaContainer$getError()) 
     return()
   
+  afexModel <- anovaContainer[["afexModel"]]$object
+  
   ## Computation
   model <- anovaContainer[["model"]]$object
   contrastSummary <- summary.lm(model)[["coefficients"]]
-    
-  if (!options$contrastAssumeEqualVariance) {
-    model$rse <- sandwich::vcovHC(model, type="HC2") # HC2 yields same result as SPSS
-    contrastSummary <- lmtest::coeftest(model, model$rse)
-  }
-    
-  contrastConfidenceIntervals <- confint(model, level = options$confidenceIntervalIntervalContrast)
-
+  
   for (contrast in options$contrasts) {
 
     if (contrast$contrast != "none") {
@@ -719,59 +623,38 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
         customContrastSetup <- NULL
       }
       
+    
       column <- dataset[[ v ]]
       cases <- .anovaContrastCases(column, contrast$contrast, customContrastSetup)
       
-      thisContrastResult <- data.frame(Comparison = do.call(rbind, cases))
+      contrastMatrix    <- .rmAnovaCreateContrast(column, contrast$contrast, customContrastSetup)
+      contrCoef         <- lapply(as.data.frame(contrastMatrix), as.vector)
+      names(contrCoef)  <- cases
       
-      if (contrast == "polynomial" && length(cases) > 5)
-        cases <- cases[1:5]
+      referenceGrid <- emmeans::emmeans(afexModel, v, model = "multivariate")
+      
+      contrastResult    <- try(emmeans::contrast(referenceGrid, contrCoef), silent = TRUE)
 
-      nams <- paste(v, .indices(cases), sep="")
-
-      thisContrastResult[["Estimate"]] <- contrastSummary[nams, "Estimate"]
-      thisContrastResult[["SE"]]       <- contrastSummary[nams, "Std. Error"]
-      thisContrastResult[["t"]]        <- contrastSummary[nams, "t value"]
-      thisContrastResult[["p"]]        <- contrastSummary[nams, "Pr(>|t|)"]
-      
-      thisContrastResult[["lwrBound"]] <- contrastConfidenceIntervals[nams, 1]
-      thisContrastResult[["uprBound"]] <- contrastConfidenceIntervals[nams, 2]
-      
-      nLevelsFac <-  nlevels(dataset[,v])
-      
-      thisContrastResult[["df"]] <- nrow(dataset) - nLevelsFac
-      
-      if (!options$contrastAssumeEqualVariance) {
-        
-        dv <- dataset[[ .v(options$dependent) ]]
-
-        contrastMat <- (model[['contrasts']][[v]])[,1:nrow(thisContrastResult)]
-        contrastMat <- MASS::ginv(contrastMat)
-        # contrastMat <- matrix((solve(cbind((contrastMat), 1/nLevelsFac))[-nLevelsFac,]), ncol = nLevelsFac)
-        sds <- tapply(dv, column, sd)
-        ns <- tapply(dv, column, length)
-
-        df <- apply(contrastMat, 1, function(x) {
-          ((sum((x)^2 * sds^2 / ns))^2) /
-            sum(((x)^4 * sds^4) / (ns^2 * (ns - 1)))
-        })
-        
-        p <- pt(abs(thisContrastResult[["t"]]), df, lower.tail = FALSE) * 2
-        
-        thisContrastResult[["df"]] <- df
-        thisContrastResult[["p"]] <- p
-        
+      if (contrast$contrast == "custom") {
+        if (isTryError(contrastResult)) {
+          if (grepl(contrastResult[1], pattern = "Nonconforming number")) {
+            contrastContainer$setError(gettext("Nonconforming number of contrast coefficients."))
+          } else if (grepl(contrastResult[1], pattern = "number of contrast matrix rows")) {
+            contrastContainer$setError(gettext("Wrong number of custom contrast matrix rows."))
+          }
+          return()
+        } else if (any(colSums(contrastMatrix) == 0)) {
+          contrastContainer$setError(gettext("Please specify non-zero contrast weights."))
+          return()
+        } 
       }
-
-      # For grouping by letters
-      # p <- thisContrastResult[["p"]]
-      # names(p) <- thisContrastResult[["Comparison"]]
-      # multcompView::multcompLetters(p)
       
-      # Todo: add stars/filter significance
-      thisContrastResult[[".isNewGroup"]] <- c(TRUE, rep(FALSE, nrow(thisContrastResult)-1))
-      contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setData(thisContrastResult)
+      contrastResult <- cbind(contrastResult, confint(contrastResult, level = options$confidenceIntervalIntervalContrast)[,5:6])
       
+      contrastResult[["Comparison"]] <- .unv(contrastResult[["contrast"]])
+      
+      contrastResult[[".isNewGroup"]] <- c(TRUE, rep(FALSE, nrow(contrastResult)-1))
+      contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setData(contrastResult)
     }
     
   }
@@ -1162,6 +1045,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     
     postHocTable$addColumnInfo(name="SE",                                         type="number")
     postHocTable$addColumnInfo(name="t",                                          type="number")
+    postHocTable$addColumnInfo(name="df",                                         type="number")
     postHocTable$addColumnInfo(name="pTukey", title=gettext("p<sub>tukey</sub>"), type="pvalue")
     
     postHocTable$showSpecifiedColumnsOnly <- TRUE
@@ -1185,6 +1069,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                               upperCI = numeric(),
                               SE = numeric(),
                               t = numeric(),
+                              df = numeric(),
                               pTukey = numeric())
     
     for (i in 1:nLevels) {
@@ -1204,13 +1089,14 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
         
         upperConf <- meanDiff + qtukey(p = postHocInterval, nmeans = nLevels, df = df) * se * sqrt(0.5)
         lowerConf <- meanDiff - qtukey(p = postHocInterval, nmeans = nLevels, df = df) * se * sqrt(0.5)
-        
+
         gamesResult <- rbind(gamesResult, data.frame(contrast = contrast,
                                                      meanDiff = meanDiff,
                                                      lowerCI = lowerConf,
                                                      upperCI = upperConf,
                                                      SE = se,
-                                                     t = t,
+                                                     t = t*sign(meanDiff),
+                                                     df = df,
                                                      pTukey = pVal))
       }
     }
@@ -1241,13 +1127,13 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   
   .createPostHocDunnettTable <- function(myTitle) {
     
-    postHocTable <- createJaspTable(title = gettextf("Dunnett Post Hoc Comparisons - %1", myTitle))
+    postHocTable <- createJaspTable(title = gettextf("Dunnett Post Hoc Comparisons - %s", myTitle))
     
     postHocTable$addColumnInfo(name="contrast",title=gettext("Comparison"),      type="string")
     postHocTable$addColumnInfo(name="meanDiff",title=gettext("Mean Difference"), type="number")
     
     if (options$confidenceIntervalsPostHoc) {
-      thisOverTitle <- gettextf("%g%% CI for Mean Difference", options$confidenceIntervalIntervalPostHoc * 100)
+      thisOverTitle <- gettextf("%s%% CI for Mean Difference", options$confidenceIntervalIntervalPostHoc * 100)
       postHocTable$addColumnInfo(name="lowerCI", type = "number", title = gettext("Lower"), overtitle = thisOverTitle)
       postHocTable$addColumnInfo(name="upperCI", type = "number", title = gettext("Upper"), overtitle = thisOverTitle)
     }

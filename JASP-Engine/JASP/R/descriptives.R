@@ -66,7 +66,7 @@ Descriptives <- function(jaspResults, dataset, options) {
       if (makeSplit) {
         jaspResults[["matrixPlot"]] <- createJaspContainer(title=gettext("Correlation plots"))
         corrPlot <- jaspResults[["matrixPlot"]]
-        corrPlot$dependOn(c("plotCorrelationMatrix", "splitby"))
+        corrPlot$dependOn(c("plotCorrelationMatrix", "splitby", "variables"))
 
         for (i in 1:length(splitLevels))
           corrPlot[[splitLevels[i]]] <- .descriptivesMatrixPlot(splitDat.factors[[i]], options, splitLevels[i])
@@ -111,7 +111,7 @@ Descriptives <- function(jaspResults, dataset, options) {
     splitPlots <- jaspResults[["splitPlots"]]
 
     for (var in variables) {
-      if(is.null(splitPlots[[var]])) {
+      if(is.null(splitPlots[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)) {
         splitPlots[[var]] <- .descriptivesSplitPlot(dataset = dataset, options = options, variable = var)
         splitPlots[[var]]$dependOn(optionContainsValue=list(variables=var))
       }
@@ -138,7 +138,7 @@ Descriptives <- function(jaspResults, dataset, options) {
       # remove missing values from the grouping variable
       dataset           <- dataset[!is.na(qqSplitFactor), ]
       for(var in variables){
-        if(!is.null(QQPlots[[var]]))
+        if(!is.null(QQPlots[[var]]) || !.descriptivesIsNumericColumn(dataset.factors, var))
           next
         deeperQQPlots <- createJaspContainer(paste0(var))
         deeperQQPlots$dependOn(optionContainsValue=list(variables=var))
@@ -152,7 +152,7 @@ Descriptives <- function(jaspResults, dataset, options) {
     }
     else { #no split
       for(var in variables){
-        if(is.null(QQPlots[[var]])) {
+        if(is.null(QQPlots[[var]]) && .descriptivesIsNumericColumn(dataset.factors, var)) {
           QQPlots[[var]] <- .descriptivesQQPlot(dataset=dataset, options=options, qqvar=var)
         }
       }
@@ -566,76 +566,69 @@ Descriptives <- function(jaspResults, dataset, options) {
 }
 
 .descriptivesMatrixPlot <- function(dataset, options, name) {
-  variables <- .v(unlist(options$variables))
+  variables <- unlist(options$variables)
+
   l         <- length(variables)
   depends   <- c("plotCorrelationMatrix", "variables", "splitby")
 
   if (l == 0) #Nothing to plot
     return(NULL)
 
-  if (nrow(dataset) < 3)
-    return(createJaspPlot(error=gettext("Plotting is not possible: Too few rows"), dependencies=depends))
-
-  # check variables
-  numericCheck <- vector("logical", length(variables))
-  sdCheck      <- vector("logical", length(variables))
-  infCheck     <- vector("logical", length(variables))
-
-  for (i in seq_along(variables)) {
-    variable2check  <- na.omit(dataset[[variables[i]]])
-    numericCheck[i] <- inherits(variable2check, c("numeric", "integer"))
-    sdCheck[i]      <- if (numericCheck[i]) sd(variable2check) > 0 else FALSE
-    infCheck[i]     <- all(is.finite(variable2check))
-  }
-  
   variable.statuses <- vector("list", length(variables))
 
   for (i in seq_along(variables)) {
-    variable.statuses[[i]]$unplotable     <- FALSE
-    variable.statuses[[i]]$plottingError  <- NULL
-
-    if (!numericCheck[i])                       variable.statuses[[i]]$plottingError <- gettext("Variable is not continuous")
-    else if (!infCheck[i])                      variable.statuses[[i]]$plottingError <- gettext("Variable contains infinity")
-    else if (!is.na(sdCheck[i]) & !sdCheck[i])  variable.statuses[[i]]$plottingError <- gettext("Variable has zero variance")
-
-    variable.statuses[[i]]$unplotable <- !is.null(variable.statuses[[i]]$plottingError)
+    errorMessage <- .descriptivesCheckPlotErrors(dataset, variables[i], obsAmount = "< 3")
+    if (!is.null(errorMessage))
+      variable.statuses[[i]]$error <- errorMessage
+    else
+      variable.statuses[[i]]$error <- ""
   }
 
   plotMat <- matrix(list(), l, l)
-	axisBreaks <- vector("list", l)
+  axisBreaks <- vector("list", l)
 
-	# minor adjustments to plot margin to avoid cutting off the x-axis labels
-	adjMargin <- ggplot2::theme(plot.margin = ggplot2::unit(c(.25, .40, .25, .25), "cm"))
+  # minor adjustments to plot margin to avoid cutting off the x-axis labels
+  adjMargin <- ggplot2::theme(plot.margin = ggplot2::unit(c(.25, .40, .25, .25), "cm"))
 
   oldFontSize <- JASPgraphs::getGraphOption("fontsize")
   JASPgraphs::setGraphOption("fontsize", .85 * oldFontSize)
 
   # first do the diagonal and store breaks
   for (row in seq_along(variables)) {
-  	plotMat[[row, row]] <- .plotMarginalCorDescriptives(dataset[[variables[[row]]]]) + adjMargin
-  	axisBreaks[[row]] <- JASPgraphs::getAxisBreaks(plotMat[[row, row]])
+    if (variable.statuses[[row]]$error != "") {
+      plotMat[[row, row]] <- .displayError(errorMessage=variable.statuses[[row]]$error)
+    } else {
+      plotMat[[row, row]] <- .plotMarginalCorDescriptives(dataset[[.v(variables[[row]])]]) + adjMargin
+      axisBreaks[[row]] <- JASPgraphs::getAxisBreaks(plotMat[[row, row]])
+    }
   }
 
   # now do off-diagonal and use the same breaks
   for (row in seq_len(l-1)) {
-  	for (col in seq(row+1, l)) {
-  		plotMat[[row, col]] <- .plotScatterDescriptives(
-  			xVar    = dataset[[variables[[col]]]],
-  			yVar    = dataset[[variables[[row]]]],
-  			xBreaks = axisBreaks[[col]]$x,
-  			yBreaks = axisBreaks[[row]]$x
-  		) + adjMargin
-  	}
+    for (col in seq(row+1, l)) {
+      if (variable.statuses[[row]]$error != "") {
+        plotMat[[row, col]] <- .displayError(errorMessage=variable.statuses[[row]]$error)
+      } else if (variable.statuses[[col]]$error != "") {
+        plotMat[[row, col]] <- .displayError(errorMessage=variable.statuses[[col]]$error)
+      } else {
+        plotMat[[row, col]] <- .plotScatterDescriptives(
+          xVar    = dataset[[.v(variables[[col]])]],
+          yVar    = dataset[[.v(variables[[row]])]],
+          xBreaks = axisBreaks[[col]]$x,
+          yBreaks = axisBreaks[[row]]$x
+        ) + adjMargin
+      }
+    }
   }
 
   JASPgraphs::setGraphOption("fontsize", oldFontSize)
 
-	# slightly adjust the positions of the labels left and above the plots.
+  # slightly adjust the positions of the labels left and above the plots.
   labelPos <- matrix(.5, 4, 2)
   labelPos[1, 1] <- .55
   labelPos[4, 2] <- .65
-  p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = options[["variables"]], topLabels = options[["variables"]],
-  															scaleXYlabels = NULL, labelPos = labelPos)
+  p <- JASPgraphs::ggMatrixPlot(plotList = plotMat, leftLabels = variables, topLabels = variables,
+                                scaleXYlabels = NULL, labelPos = labelPos)
 
   return(createJaspPlot(plot=p, width=250 * l + 20, aspectRatio=1, title=name, dependencies=depends))
 }
@@ -644,58 +637,58 @@ Descriptives <- function(jaspResults, dataset, options) {
 #### histogram with density estimator ####
 .plotMarginalCorDescriptives <- function(variable, xName = NULL, yName = gettext("Density")) {
   variable <- na.omit(variable)
-	isNumeric <- !(is.factor(variable) || (is.integer(variable) && length(unique(variable)) <= 10))
-
-	if (isNumeric) {
-		p <- ggplot2::ggplot(data = data.frame(x = variable))
-		h <- hist(variable, plot = FALSE)
-  	hdiff <- h$breaks[2L] - h$breaks[1L]
-		xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(variable, h$breaks), min.n = 3)
-		dens <- h$density
-  	yBreaks <- c(0, 1.2*max(h$density))
-
-  	p <- p + ggplot2::geom_histogram(
-  		mapping  = ggplot2::aes(x = x, y = ..density..),
-  		binwidth = hdiff,
-  		fill     = "grey",
-  		col      = "black",
-  		size     = .3,
-  		center   = hdiff / 2,
-  		stat     = "bin"
-  	) +
-  		ggplot2::scale_x_continuous(name = xName, breaks = xBreaks, limits = range(xBreaks))
-	} else {
-
-		p <- ggplot2::ggplot(data = data.frame(x = factor(variable)))
-		hdiff <- 1L
-		xBreaks <- unique(variable)
-		yBreaks <- c(0, max(table(variable)))
-
-		p <- p + ggplot2::geom_bar(
-			mapping  = ggplot2::aes(x = x),
-			fill     = "grey",
-			col      = "black",
-			size     = .3,
-			stat     = "count"
-		) +
-			ggplot2::scale_x_discrete(name = xName, breaks = xBreaks)
-	}
-
-	yLim <- range(yBreaks)
+  isNumeric <- !(is.factor(variable) || (is.integer(variable) && length(unique(variable)) <= 10))
 
   if (isNumeric) {
-  	density <- density(variable)
-  	p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y),
-  															mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
+    p <- ggplot2::ggplot(data = data.frame(x = variable))
+    h <- hist(variable, plot = FALSE)
+    hdiff <- h$breaks[2L] - h$breaks[1L]
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(variable, h$breaks), min.n = 3)
+    dens <- h$density
+    yBreaks <- c(0, 1.2*max(h$density))
+
+    p <- p + ggplot2::geom_histogram(
+      mapping  = ggplot2::aes(x = x, y = ..density..),
+      binwidth = hdiff,
+      fill     = "grey",
+      col      = "black",
+      size     = .3,
+      center   = hdiff / 2,
+      stat     = "bin"
+    ) +
+      ggplot2::scale_x_continuous(name = xName, breaks = xBreaks, limits = range(xBreaks))
+  } else {
+
+    p <- ggplot2::ggplot(data = data.frame(x = factor(variable)))
+    hdiff <- 1L
+    xBreaks <- unique(variable)
+    yBreaks <- c(0, max(table(variable)))
+
+    p <- p + ggplot2::geom_bar(
+      mapping  = ggplot2::aes(x = x),
+      fill     = "grey",
+      col      = "black",
+      size     = .3,
+      stat     = "count"
+    ) +
+      ggplot2::scale_x_discrete(name = xName, breaks = xBreaks)
   }
 
-	thm <- ggplot2::theme(
-		axis.ticks.y = ggplot2::element_blank(),
-		axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0))
-	)
+  yLim <- range(yBreaks)
+
+  if (isNumeric) {
+    density <- density(variable)
+    p <- p + ggplot2::geom_line(data = data.frame(x = density$x, y = density$y),
+                                mapping = ggplot2::aes(x = x, y = y), lwd = .7, col = "black")
+  }
+
+  thm <- ggplot2::theme(
+    axis.ticks.y = ggplot2::element_blank(),
+    axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = -5, b = 0, l = 0))
+  )
   p <- p +
-  	ggplot2::scale_y_continuous(name = yName, breaks = yBreaks, labels = c("", ""), limits = yLim) +
-  	ggplot2::theme()
+    ggplot2::scale_y_continuous(name = yName, breaks = yBreaks, labels = c("", ""), limits = yLim) +
+    ggplot2::theme()
   return(JASPgraphs::themeJasp(p) + thm)
 }
 
@@ -731,17 +724,17 @@ Descriptives <- function(jaspResults, dataset, options) {
 
 .plotScatterDescriptives <- function(xVar, yVar, xBreaks = NULL, yBreaks = NULL, xName = NULL, yName = NULL) {
   
-	isNumericX <- !(is.factor(xVar) || (is.integer(xVar) && length(unique(xVar)) <= 10))
-	isNumericY <- !(is.factor(yVar) || (is.integer(yVar) && length(unique(yVar)) <= 10))
-	bothNumeric <- isNumericX && isNumericY
+  isNumericX <- !(is.factor(xVar) || (is.integer(xVar) && length(unique(xVar)) <= 10))
+  isNumericY <- !(is.factor(yVar) || (is.integer(yVar) && length(unique(yVar)) <= 10))
+  bothNumeric <- isNumericX && isNumericY
   d <- data.frame(x = xVar, y = yVar)
   d <- na.omit(d)
 
   if (!isNumericX)
-  	d$x <- as.factor(d$x)
+    d$x <- as.factor(d$x)
 
   if (!isNumericY)
-  	d$y <- as.factor(d$y)
+    d$y <- as.factor(d$y)
 
   if (is.null(xBreaks))
     xBreaks <- JASPgraphs::getPrettyAxisBreaks(d$x)
@@ -749,35 +742,37 @@ Descriptives <- function(jaspResults, dataset, options) {
   fit <- NULL
   
   if (bothNumeric) {
-  	fit <- lm(y ~ poly(x, 1, raw = TRUE), d)
-  	lineObj <- .poly.predDescriptives(fit, line = FALSE, xMin= xBreaks[1], xMax = xBreaks[length(xBreaks)], lwd = lwd)
-  	rangeLineObj <- c(lineObj[1], lineObj[length(lineObj)])
-  	yLimits <- range(c(pretty(yVar)), rangeLineObj)
+    fit <- lm(y ~ poly(x, 1, raw = TRUE), d)
+    lineObj <- .poly.predDescriptives(fit, line = FALSE, xMin= xBreaks[1], xMax = xBreaks[length(xBreaks)], lwd = lwd)
+    rangeLineObj <- c(lineObj[1], lineObj[length(lineObj)])
+    yLimits <- range(c(pretty(yVar)), rangeLineObj)
 
-  	if (is.null(yBreaks) || yLimits[1L] <= yBreaks[1L] || yLimits[2L] >= yBreaks[length(yBreaks)])
-  		yBreaks <- JASPgraphs::getPrettyAxisBreaks(yLimits)
+    if (!all(is.na(yLimits))) { # this is NA in case both x and y only contain a single unique value
+      if (is.null(yBreaks) || yLimits[1L] <= yBreaks[1L] || yLimits[2L] >= yBreaks[length(yBreaks)])
+        yBreaks <- JASPgraphs::getPrettyAxisBreaks(yLimits)
+    }
   } else if (is.null(yBreaks)) {
-  	yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y)
+    yBreaks <- JASPgraphs::getPrettyAxisBreaks(d$y)
   }
 
   p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y)) +
     JASPgraphs::geom_point()
 
   if (bothNumeric) {
-  	xr <- range(xBreaks)
-  	dfLine <- data.frame(x = xr, y = rangeLineObj)
+    xr <- range(xBreaks)
+    dfLine <- data.frame(x = xr, y = rangeLineObj)
     p <- p + ggplot2::geom_line(data = dfLine, ggplot2::aes(x = x, y = y), size = .7, inherit.aes = FALSE)
   }
 
   if (isNumericX) {
-  	p <- p + ggplot2::scale_x_continuous(name = xName, breaks = xBreaks, limits = range(xBreaks))
+    p <- p + ggplot2::scale_x_continuous(name = xName, breaks = xBreaks, limits = range(xBreaks))
   } else {
-  	p <- p + ggplot2::scale_x_discrete(name = xName)
+    p <- p + ggplot2::scale_x_discrete(name = xName)
   }
   if (isNumericY) {
-  	p <- p + ggplot2::scale_y_continuous(name = yName, breaks = yBreaks, limits = range(yBreaks))
+    p <- p + ggplot2::scale_y_continuous(name = yName, breaks = yBreaks, limits = range(yBreaks))
   } else {
-  	p <- p + ggplot2::scale_y_discrete(name = yName)
+    p <- p + ggplot2::scale_y_discrete(name = yName)
   }
 
   return(JASPgraphs::themeJasp(p))
@@ -807,39 +802,34 @@ Descriptives <- function(jaspResults, dataset, options) {
     plotResult$dependOn(options="splitby", optionContainsValue=list(variables=variable))
 
     for (l in split) {
-      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = l)
+      plotResult[[l]] <- .descriptivesFrequencyPlots_SubFunc(dataset=dataset[[l]], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = l)
       plotResult[[l]]$dependOn(optionsFromObject=plotResult)
     }
 
     return(plotResult)
   } else {
     column <- dataset[[.v(variable)]]
-    aPlot <- .descriptivesFrequencyPlots_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = variable)
+    aPlot <- .descriptivesFrequencyPlots_SubFunc(dataset=dataset, variable=variable, width=options$plotWidth, height=options$plotHeight, displayDensity = options$distPlotDensity, title = variable)
     aPlot$dependOn(options="splitby", optionContainsValue=list(variables=variable))
 
     return(aPlot)
   }
 }
 
-.descriptivesFrequencyPlots_SubFunc <- function(column, variable, width, height, displayDensity, title) {
-  plotObj <- createJaspPlot(title=title, width=width, height=height)
-
-  if (any(is.infinite(column))) {
-    plotObj$setError(gettext("Plotting is not possible: Variable contains infinity"))
-    plotObj$plotObject    <- .barplotJASP(variable=variable, dontPlotData=TRUE)
-  } 
-  else if (length(column) < 3) {
-    plotObj$setError(gettext("Plotting is not possible: Too few rows (left)"))
-    plotObj$plotObject    <- .barplotJASP(variable=variable, dontPlotData=TRUE)
-  } 
-  else if (length(column) > 0 && is.factor(column)) {
-    plotObj$plotObject <- .barplotJASP(column, variable)
-  } 
-  else if (length(column) > 0 && !is.factor(column)) {
-    plotObj$plotObject <- .plotMarginal(column, variableName=variable, displayDensity = displayDensity )
-  }
+.descriptivesFrequencyPlots_SubFunc <- function(dataset, variable, width, height, displayDensity, title) {
+  freqPlot <- createJaspPlot(title=title, width=width, height=height)
   
-  return(plotObj)
+  errorMessage <- .descriptivesCheckPlotErrors(dataset, variable, obsAmount = "< 3")
+  column <- dataset[[.v(variable)]]
+  column <- column[!is.na(column)]
+  if (!is.null(errorMessage))
+    freqPlot$setError(gettextf("Plotting not possible: %s", errorMessage))
+  else if (length(column) > 0 && is.factor(column))
+    freqPlot$plotObject <- .barplotJASP(column, variable)
+  else if (length(column) > 0 && !is.factor(column))
+    freqPlot$plotObject <- .plotMarginal(column, variableName=variable, displayDensity = displayDensity)
+  
+  return(freqPlot)
 }
 
 .descriptivesSplitPlot <- function(dataset, options,  variable) {
@@ -859,36 +849,33 @@ Descriptives <- function(jaspResults, dataset, options) {
     d <- data.frame(x=-Inf, xend=-Inf, y=min(b), yend=max(b))
     list(ggplot2::geom_segment(data=d, ggplot2::aes(x=x, y=y, xend=xend, yend=yend), size = 0.75, inherit.aes=FALSE), ggplot2::scale_y_continuous(breaks=b))
   }
-
-  # Plot
-
-  # we need to know which index in y is related to which index in the actual data, so we should not forget the NAs somehow, lets make a list of indices.
-  yWithNA         <- dataset[[.v(variable)]]
-  y               <- na.omit(dataset[[.v(variable)]])
-  yIndexToActual  <- y
-  yWithNAIndex    <- 1
-  yNoNAIndex      <- 1
-
-  while(yWithNAIndex <= length(yWithNA)) {
-
-    if(!is.na(yWithNA[[yWithNAIndex]])) {
-
-      yIndexToActual[[yNoNAIndex]] <- row.names(dataset)[[yWithNAIndex]]
-      yNoNAIndex                   <- yNoNAIndex + 1
-    }
-
-    yWithNAIndex <- yWithNAIndex + 1
-  }
-
+  
   thePlot <- createJaspPlot(title=variable, width=options$plotWidth, height=options$plotHeight, dependencies=depends)
 
-  if (!is.numeric(y)) {
-    thePlot$setError(gettext("Plotting is not possible: Variable is not numeric!"))
-  } else if (length(y) == 0) {
-    thePlot$setError(gettext("Plotting is not possible: Variable only contains NA!"))
+  errorMessage <- .descriptivesCheckPlotErrors(dataset, variable, obsAmount = "< 1")
+  if (!is.null(errorMessage)) {
+    thePlot$setError(gettextf("Plotting not possible: %s", errorMessage))
   } else if (!(options$splitPlotViolin || options$splitPlotBoxplot || options$splitPlotJitter)) {
     thePlot$setError(gettext("Plotting is not possible: No plot type selected!"))
   } else {
+    # we need to know which index in y is related to which index in the actual data, so we should not forget the NAs somehow, lets make a list of indices.
+    yWithNA         <- dataset[[.v(variable)]]
+    y               <- na.omit(dataset[[.v(variable)]])
+    yIndexToActual  <- y
+    yWithNAIndex    <- 1
+    yNoNAIndex      <- 1
+    
+    while(yWithNAIndex <= length(yWithNA)) {
+      
+      if(!is.na(yWithNA[[yWithNAIndex]])) {
+        
+        yIndexToActual[[yNoNAIndex]] <- row.names(dataset)[[yWithNAIndex]]
+        yNoNAIndex                   <- yNoNAIndex + 1
+      }
+      
+      yWithNAIndex <- yWithNAIndex + 1
+    }
+    
     if (is.null(dataset[[.v(options$splitby)]])){
       group     <- factor(rep("",length(y)))
       xlab      <- "Total"
@@ -1237,51 +1224,53 @@ Descriptives <- function(jaspResults, dataset, options) {
 }
 
 .descriptivesQQPlot <- function(dataset, options,  qqvar, levelName=NULL) {
-
   #to put a subtitle if there is a split
   title <- qqvar
   if(!is.null(levelName))
     title <- levelName
   
+  descriptivesQQPlot <- createJaspPlot(width=400, aspectRatio=1, title=title)
+  
   if (!is.null(qqvar)) {
-
-    varCol<-dataset[[.v(qqvar)]]
-    varCol<-varCol[!is.na(varCol)]
-
-    standResid <- as.data.frame(stats::qqnorm(varCol, plot.it=FALSE))
-
-    standResid <- na.omit(standResid)
-    xVar <- standResid$x
-    yVar <- standResid$y
-    yVar<-yVar-mean(yVar)
-    yVar<-yVar/(sd(yVar))
-
-    # Format x ticks
-    xlow   <- min(pretty(xVar))
-    xhigh  <- max(pretty(xVar))
-    xticks <- pretty(c(xlow, xhigh))
-
-    # Format y ticks
-    ylow   <- min(pretty(yVar))
-    yhigh  <- max(pretty(yVar))
-    yticks <- pretty(c(ylow, yhigh))
-
-    # format axes labels
-    xLabs <- JASPgraphs::axesLabeller(xticks)
-    yLabs <- JASPgraphs::axesLabeller(yticks)
     
-    p <- JASPgraphs::drawAxis(xName = gettext("Theoretical Quantiles"), yName = gettext("Standardised Residuals"), xBreaks = xticks, yBreaks = xticks, yLabels = xLabs, xLabels = xLabs, force = TRUE)
-    p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
-    p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
-
-    # JASP theme
-    p <- JASPgraphs::themeJasp(p)
-
-  } else {
-
-    p<-NULL
+    errorMessage <- .descriptivesCheckPlotErrors(dataset, qqvar, obsAmount = "< 1")
+    if (!is.null(errorMessage)) {
+      descriptivesQQPlot$setError(gettextf("Plotting not possible: %s", errorMessage))
+    } else {
+      varCol<-dataset[[.v(qqvar)]]
+      varCol<-varCol[!is.na(varCol)]
+  
+      standResid <- as.data.frame(stats::qqnorm(varCol, plot.it=FALSE))
+  
+      standResid <- na.omit(standResid)
+      xVar <- standResid$x
+      yVar <- standResid$y
+      yVar<-yVar-mean(yVar)
+      yVar<-yVar/(sd(yVar))
+  
+      # Format x ticks
+      xlow   <- min(pretty(xVar))
+      xhigh  <- max(pretty(xVar))
+      xticks <- pretty(c(xlow, xhigh))
+  
+      # Format y ticks
+      ylow   <- min(pretty(yVar))
+      yhigh  <- max(pretty(yVar))
+      yticks <- pretty(c(ylow, yhigh))
+  
+      # format axes labels
+      xLabs <- JASPgraphs::axesLabeller(xticks)
+      yLabs <- JASPgraphs::axesLabeller(yticks)
+      
+      p <- JASPgraphs::drawAxis(xName = gettext("Theoretical Quantiles"), yName = gettext("Standardised Residuals"), xBreaks = xticks, yBreaks = xticks, yLabels = xLabs, xLabels = xLabs, force = TRUE)
+      p <- p + ggplot2::geom_line(data = data.frame(x = c(min(xticks), max(xticks)), y = c(min(xticks), max(xticks))), mapping = ggplot2::aes(x = x, y = y), col = "darkred", size = 1)
+      p <- JASPgraphs::drawPoints(p, dat = data.frame(xVar, yVar), size = 3)
+  
+      # JASP theme
+      descriptivesQQPlot$plotObject <- JASPgraphs::themeJasp(p)
+    }
   }
-  descriptivesQQPlot <- createJaspPlot(plot=p, width=400, aspectRatio=1, title=title)
+  
   if (is.null(levelName))
     descriptivesQQPlot$dependOn(optionContainsValue=list(variables=qqvar))
   return(descriptivesQQPlot)
@@ -1296,15 +1285,14 @@ Descriptives <- function(jaspResults, dataset, options) {
     plotResult$dependOn(optionContainsValue=list(variables=variable))
 
     for (l in split) {
-      plotResult[[l]] <- .descriptivesPieChart_SubFunc(column=dataset[[l]][[.v(variable)]], variable=variable, width=options$plotWidth, height=options$plotHeight, title = l,
+      plotResult[[l]] <- .descriptivesPieChart_SubFunc(dataset=dataset[[l]], variable=variable, width=options$plotWidth, height=options$plotHeight, title = l,
                                                        palette = options[["colorPalette"]])
       plotResult[[l]]$dependOn(optionsFromObject=plotResult)
     }
 
     return(plotResult)
   } else {
-    column <- dataset[[.v(variable)]]
-    aPlot <- .descriptivesPieChart_SubFunc(column=column[!is.na(column)], variable=variable, width=options$plotWidth, height=options$plotHeight, title = variable,
+    aPlot <- .descriptivesPieChart_SubFunc(dataset=dataset, variable=variable, width=options$plotWidth, height=options$plotHeight, title = variable,
                                            palette = options[["colorPalette"]])
     aPlot$dependOn(options="splitby", optionContainsValue=list(variables=variable))
 
@@ -1312,25 +1300,24 @@ Descriptives <- function(jaspResults, dataset, options) {
   }
 }
 
-.descriptivesPieChart_SubFunc <- function(column, variable, width, height, title, palette) {
-  plotObj <- createJaspPlot(title=title, width=width, height=height)
+.descriptivesPieChart_SubFunc <- function(dataset, variable, width, height, title, palette) {
+  pieChart <- createJaspPlot(title=title, width=width, height=height)
 
-  if (any(is.infinite(column))) {
-    plotObj$setError(gettext("Plotting is not possible: Variable contains infinity"))
-  }
-  else if (length(column) < 3) {
-    plotObj$setError(gettext("Plotting is not possible: Too few rows (left)"))
-  }
-  else if (length(column) > 0) {
+  errorMessage <- .descriptivesCheckPlotErrors(dataset, variable, obsAmount = "< 3")
+  column <- dataset[[.v(variable)]]
+  column <- column[!is.na(column)]
+  if (!is.null(errorMessage)) {
+    pieChart$setError(gettextf("Plotting not possible: %s", errorMessage))
+  } else if (length(column) > 0) {
     tb  <- as.data.frame(table(column))
-    plotObj$plotObject <- JASPgraphs::plotPieChart(tb[,2],tb[,1], legendName = variable,
+    pieChart$plotObject <- JASPgraphs::plotPieChart(tb[,2],tb[,1], legendName = variable,
                                                    palette = palette)
   }
 
-  return(plotObj)
+  return(pieChart)
 }
 
-.descriptivesScatterPlots <- function(jaspContainer, dataset, variables, split, options, name = NULL) {
+.descriptivesScatterPlots <- function(jaspContainer, dataset, variables, split, options, name = NULL, dependOnVariables = TRUE) {
 
   JASPgraphs::setGraphOption("palette", options[["colorPalette"]])
   if (!is.null(split) && split != "") {
@@ -1342,11 +1329,11 @@ Descriptives <- function(jaspResults, dataset, options) {
     legendTitle <- NULL
   }
 
-  variablesB64 <- .v(variables)
   # remove non-numeric variables
-  numerics <- sapply(dataset[variablesB64], is.double)
-  variables    <- variables[numerics]
+  numerics <- sapply(variables, .descriptivesIsNumericColumn, dataset=dataset)
+  variablesB64 <- .v(variables)
   variablesB64 <- variablesB64[numerics]
+  variables    <- variables[numerics]
 
   nvar <- length(variables)
   # Set's a message with instruction for user using jaspHtml
@@ -1363,33 +1350,67 @@ Descriptives <- function(jaspResults, dataset, options) {
   for (i in 1:(nvar - 1L)) for (j in (i + 1L):nvar) {
     v1 <- variables[i]
     v2 <- variables[j]
-    if (is.null(name)) name <- paste(v1, "-", v2)
-    if (is.null(jaspContainer[[name]])) {
-      scatterPlot <- createJaspPlot(title = name)
-      scatterPlot$dependOn(optionContainsValue = list(variables = c(v1, v2)))
-      p <- try(JASPgraphs::JASPScatterPlot(
-        x                 = dataset[, variablesB64[i]],
-        y                 = dataset[, variablesB64[j]],
-        group             = group,
-        xName             = v1,
-        yName             = v2,
-        showLegend        = options[["showLegend"]],
-        addSmooth         = options[["addSmooth"]],
-        addSmoothCI       = options[["addSmoothCI"]],
-        smoothCIValue     = options[["addSmoothCIValue"]],
-        forceLinearSmooth = options[["regressionType"]] == "linear",
-        plotAbove         = options[["graphTypeAbove"]],
-        plotRight         = options[["graphTypeRight"]],
-        legendTitle       = legendTitle
-      ))
-      if (isTryError(p)) {
-        errorMessage <- gettextf("Plotting not possible: %s", .extractErrorMessage(p))
-        scatterPlot$setError(errorMessage)
-      } else {
-        scatterPlot$plotObject <- p
+    
+    if (!is.null(name))
+      plotName <- name
+    else
+      plotName <- paste(v1, "-", v2)
+    
+    if (is.null(jaspContainer[[plotName]])) {
+      scatterPlot <- createJaspPlot(title = plotName)
+      if (dependOnVariables)
+        scatterPlot$dependOn(optionContainsValue = list(variables = c(v1, v2)))
+      
+      scatterData <- dataset[, c(variablesB64[i], variablesB64[j])]
+      errorMessage <- .descriptivesCheckPlotErrors(scatterData, c(v1, v2), obsAmount = "< 2")
+      if (is.null(errorMessage)) {
+        scatterData <- na.omit(scatterData)
+        scatterData <- apply(scatterData, 2, as.numeric) # ensure nominal ints are numeric
+        
+        p <- try(JASPgraphs::JASPScatterPlot(
+          x                 = scatterData[, variablesB64[i]],
+          y                 = scatterData[, variablesB64[j]],
+          group             = group,
+          xName             = v1,
+          yName             = v2,
+          showLegend        = options[["showLegend"]],
+          addSmooth         = options[["addSmooth"]],
+          addSmoothCI       = options[["addSmoothCI"]],
+          smoothCIValue     = options[["addSmoothCIValue"]],
+          forceLinearSmooth = options[["regressionType"]] == "linear",
+          plotAbove         = options[["graphTypeAbove"]],
+          plotRight         = options[["graphTypeRight"]],
+          legendTitle       = legendTitle
+        ))
+        
+        if (isTryError(p))
+          errorMessage <- .extractErrorMessage(p)
       }
-      jaspContainer[[name]] <- scatterPlot
+
+      if (!is.null(errorMessage))
+        scatterPlot$setError(gettextf("Plotting not possible: %s", errorMessage))
+      else
+        scatterPlot$plotObject <- p
+
+      jaspContainer[[plotName]] <- scatterPlot
     }
   }
 }
-# </editor-fold> HELPER FUNCTIONS BLOCK
+
+.descriptivesCheckPlotErrors <- function(dataset, vars, obsAmount) {
+  errors <- .hasErrors(dataset, all.target=vars, message="short", type=c("infinity", "observations"), observations.amount = obsAmount)
+  if (!isFALSE(errors))
+    return(errors$message)
+  
+  return(NULL)
+}
+
+.descriptivesIsNumericColumn <- function(dataset, colName) {
+  column <- na.omit(dataset[[.v(colName)]])
+  if (is.factor(column) && !anyNA(suppressWarnings(as.numeric(levels(column)))))
+    return(TRUE)
+  else if (is.numeric(column))
+    return(TRUE)
+  else
+    return(FALSE)
+}

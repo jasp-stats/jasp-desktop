@@ -101,7 +101,6 @@ Form
 		
 		ContrastsList { source: ["fixedFactors", "randomFactors"] }
 		
-		CheckBox { name: "contrastAssumeEqualVariance"; label: qsTr("Assume equal variances"); checked: true }
 		CheckBox
 		{
 			name: "confidenceIntervalsContrast"; label: qsTr("Confidence intervals")
@@ -245,7 +244,7 @@ Form
 				name: "marginalMeansCIAdjustment"
 				label: qsTr("Confidence interval adjustment")
 				values: [
-					{ label: "None",		value: "none"},
+					{ label: qsTr("None"),		value: "none"},
 					{ label: "Bonferroni",	value: "bonferroni"},
 					{ label: "Šidák",		value: "sidak"}
 				]

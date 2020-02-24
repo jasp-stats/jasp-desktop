@@ -93,7 +93,7 @@ Met de Bayesiaanse ANCOVA kan men het verschil tussen meerdere groepsgemiddelden
 - Weergeven:
 	  -  Geloofwaardigheidsinterval: Wanneer deze optie is geselecteerd, bevat de grafiek centrale geloofwaardigheidsintervallen. De standaardoptie is 95%. Dit kan worden aangepast tot het gewenste percentage. 
 
-### Geavanceerde opties 
+### Aanvullende opties 
 - Prior: Hier kunnen de prior verdelingen worden ingesteld voor de willekeurige en vaste effectgroottes.
 	- r schaal vaste effecten: De vorm parameter van de prior verdeling voor vaste effecten. De standaardwaarde is 0.5, maar dit kan naar wens worden aangepast.
 	- r schaal willekeurige effecten: De vorm parameter van de prior verdeling voor de willekeurige effecten. De standaardwaarde is 1, maar dit kan naar wens worden aangepast. 
@@ -103,6 +103,8 @@ Met de Bayesiaanse ANCOVA kan men het verschil tussen meerdere groepsgemiddelden
 - Posterior Steekproeven: Het is mogelijk om het aantal Markov Chain Monte Carlo steekproeven in te stellen. Dit wordt gebruikt om de posterior verdeling en het fout % te benaderen. 
 	- Auto: Als deze optie is geselecteerd, worden er 10000 steekproeven gebruikt. Dit is de standaardoptie.
     - Handmatig: Als deze optie is geselecteerd, kan het aantal steekproeven handmatig worden ingesteld. Bij deze optie is de standaardwaarde 1000.
+- Reproduceerbaarheid:
+  - Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 ### Uitvoer
 ---

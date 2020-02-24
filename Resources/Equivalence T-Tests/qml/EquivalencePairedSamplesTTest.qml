@@ -47,12 +47,12 @@ Form
         {
             L.Layout.columnSpan: 2
             name: "boundstype"
-            label: "Bounds specification in"
+			label: qsTr("Bounds specification in")
             indexDefaultValue: 1
             model: ListModel
             {
-                ListElement { title: "cohensd"; value: "Cohen's d"}
-                ListElement { title: "raw";     value: "Raw"}
+				ListElement { title: qsTr("cohensd"); value: "Cohen's d"}
+				ListElement { title: qsTr("raw");     value: "Raw"}
             }
         }
 
@@ -71,7 +71,7 @@ Form
     {
         name: "missingValues"
         title: qsTr("Missing Values")
-        RadioButton { value: "excludeAnalysisByAnalysis";	label: qsTr("Exclude cases analysis by analysis"); checked: true	}
+		RadioButton { value: "excludeAnalysisByAnalysis";	label: qsTr("Exclude cases per dependent variable"); checked: true	}
         RadioButton { value: "excludeListwise";				label: qsTr("Exclude cases listwise")							}
     }
 }

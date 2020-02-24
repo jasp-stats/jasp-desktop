@@ -1,6 +1,6 @@
 QT += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 DEFINES += JASP_USES_QT_HERE
-GENERATE_LANGUAGE_FILES = 0
+GENERATE_LANGUAGE_FILES = false
 
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
 
@@ -128,17 +128,30 @@ windows {
 }
 
 
-   macx:ICON = icon.icns
+   macx:ICON = macOS/icon.icns
 windows:RC_FILE = icon.rc
 
 HELP_PATH = $${PWD}/../Docs/help
+
+
+SOURCES_TRANSLATIONS = $${PWD}/po
+
 RESOURCES_PATH = $${PWD}/../Resources
+RESOURCES_TRANSLATIONS = $${RESOURCES_PATH}/Translations
+
+RESOURCES_DESTINATION = $${OUT_PWD}/../Resources
+RESOURCES_DESTINATION_TRANSLATIONS = $$RESOURCES_DESTINATION/Translations
 
 win32 {
-  RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
+
+  SOURCES_TRANSLATIONS = ~= s,/,\\,g
 
   RESOURCES_PATH ~= s,/,\\,g
-  RESOURCES_PATH_DEST ~= s,/,\\,g
+  RESOURCES_TRANSLATIONS ~= s,/,\\,g
+
+  RESOURCES_DESTINATION ~= s,/,\\,g
+  RESOURCES_DESTINATION_TRANSLATIONS ~= s,/,\\,g
+
   QTBIN=$$QMAKE_QMAKE
   QTBIN ~= s,qmake.exe,,g
   QTBIN ~= s,/,\\,g
@@ -146,36 +159,47 @@ win32 {
   WINPWD=$$PWD/..
   WINPWD ~= s,/,\\,g
 
-  delres.commands	= $$quote(IF exist \"$$RESOURCES_PATH_DEST\" (rd /s /q \"$$RESOURCES_PATH_DEST\";); )
-  copyres.commands	= $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_PATH_DEST})
+  GETTEXT_LOCATION = $$(GETTEXT_PATH)
+  isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
 
-  equals(GENERATE_LANGUAGE_FILES,1) {
-  maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${WINPWD}\jasp.po) &&
-  maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -source-language dutch -recursive $${WINPWD} -ts $${WINPWD}\jasp_nl.po) &&
-  maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${WINPWD}\jasp_nl.po -qm $${WINPWD}\Resources\Translations\jasp_nl.qm) &&
-  maketranslations.commands += $$quote(del $${RESOURCES_PATH_DEST}\Translations\*.qm ) &&
-  maketranslations.commands += $$quote(copy $${RESOURCES_PATH}\Translations\*.qm $${RESOURCES_PATH_DEST}\Translations\ )
+  delres.commands  += $$quote(IF exist \"$$RESOURCES_DESTINATION\" (rd /s /q \"$$RESOURCES_DESTINATION\";) ) &&
+  copyres.commands  +=  $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_DESTINATION})
 
-  maketranslations.depends  = copyres
+  $$GENERATE_LANGUAGE_FILES {
+    maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${SOURCES_TRANSLATIONS}\jasp.po) &&
+    maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -source-language dutch -recursive $${WINPWD} -ts $${RESOURCES_TRANSLATIONS}\jasp_nl.po) &&
+
+    #cleanup po files
+    maketranslations.commands += $$quote($${GETTEXT_LOCATION}\msgattrib --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp.po -o $${SOURCES_TRANSLATIONS}\jasp.po) &&
+    maketranslations.commands += $$quote($${GETTEXT_LOCATION}\msgattrib --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp_nl.po -o $${SOURCES_TRANSLATIONS}\jasp_nl.po) &&
+
+    maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${RESOURCES_TRANSLATIONS}\jasp_nl.po -qm $${RESOURCES_TRANSLATIONS}\jasp_nl.qm) &&
+    maketranslations.commands += $$quote(copy $${RESOURCES_TRANSLATIONS}\*.qm $${RESOURCES_DESTINATION_TRANSLATIONS}\ )
+
+    maketranslations.depends  = copyres
   }
 }
 
 unix {
-  RESOURCES_PATH_DEST = $${OUT_PWD}/../Resources/
 
-  delres.commands   = rm -rf $$RESOURCES_PATH_DEST;
-  copyres.commands += $(MKDIR) $$RESOURCES_PATH_DEST ;
-  copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_PATH_DEST ;
+  GETTEXT_LOCATION = $$(GETTEXT_PATH)
+  isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
 
+  delres.commands += rm -rf $$RESOURCES_DESTINATION;
+  copyres.commands += $(MKDIR) $$RESOURCES_DESTINATION ;
+  copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_DESTINATION ;
 
-  equals(GENERATE_LANGUAGE_FILES,1) {
-  maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$PWD/../jasp.po ;
-  maketranslations.commands += lupdate -locations none -extensions cpp,qml -target-language Dutch -recursive $$PWD/.. -ts $$PWD/../jasp_nl.po ;
-  maketranslations.commands += lrelease $$PWD/../jasp_nl.po -qm $$PWD/../Resources/Translations/jasp_nl.qm ;
-  maketranslations.commands += rm $$RESOURCES_PATH_DEST/Translations/*.qm ;
-  maketranslations.commands += cp $$RESOURCES_PATH/Translations/*.qm $$RESOURCES_PATH_DEST/Translations/ ;
+  $$GENERATE_LANGUAGE_FILES {
+    maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp.po ;
+    maketranslations.commands += lupdate -locations none -extensions cpp,qml -target-language Dutch -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp_nl.po ;
 
-  maketranslations.depends  = copyres
+    #cleanup po files
+    maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp.po -o $$SOURCES_TRANSLATIONS/jasp.po ;
+    maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp_nl.po -o $$SOURCES_TRANSLATIONS/jasp_nl.po ;
+
+    maketranslations.commands += lrelease $$SOURCES_TRANSLATIONS/jasp_nl.po -qm $$RESOURCES_TRANSLATIONS/jasp_nl.qm ;
+    maketranslations.commands += cp $$RESOURCES_TRANSLATIONS/*.qm $$RESOURCES_DESTINATION_TRANSLATIONS/ ;
+    maketranslations.depends  = copyres
   }
 }
 
@@ -576,7 +600,7 @@ RESOURCES += \
     resources/resources.qrc \
     qml.qrc
 
-   unix:OTHER_FILES += icon.icns
+   unix:OTHER_FILES += macOS/icon.icns
 windows:OTHER_FILES += icon.rc
 
 DISTFILES += \

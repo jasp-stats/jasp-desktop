@@ -29,7 +29,7 @@ Fuzzy c-means clustering is een soft clusteringsmethode die een output geeft met
 #### Algoritme Instellingen
 - Fuzziness parameter: Is een scalar en controleert de fuzziness van de clustering output. Dat betekent dat als de waarde stijgt (> 1), de onzekerheid van de lidmaatschappen aan diverse clusters ook stijgt. Ofwel, als de fuzziness parameter nadert naar 1, dan is het resultaat van fuzzy clustering gelijk aan de hard-clustering methode, en als de parameter stijgt, wordt het clusteringsresultaat meer fuzzier.
 - Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
-- Set seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
+- Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
 
 #### Bepalings parameters 
 - Vast: Laat je een eigen gespecificeerd aantal clusters gebruiken. Hiermee kan je handmatig optimaliseren.

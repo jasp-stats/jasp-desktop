@@ -33,13 +33,60 @@ void ListModelMultiTermsAssigned::initTerms(const Terms &terms, const RowControl
 {
 	beginResetModel();
 
-	_tuples.clear();
-	for (const Term& term : terms)
+	// The terms are sent either in groups (terms has multiple components) or one by one (no multiple components)
+	if (terms.size() > 0)
 	{
-		Terms row;
-		for (const QString& comp : term.components())
-			row.add(comp, false);
-		_tuples.push_back(row);
+		if (terms[0].components().size() > 1)
+		{
+			_tuples.clear();
+
+			for (const Term& term : terms)
+			{
+				Terms row;
+
+				for (const QString& comp : term.components())
+					row.add(comp, false);
+				_tuples.push_back(row);
+			}
+		}
+		else
+		{
+			// In this case discard elements in tuples that are not in terms.
+			// And then add the terms that were not in the tuples
+			QList<Terms> newTuples;
+			for (int i = 0; i < _tuples.size(); i++)
+			{
+				Terms row = _tuples[i];
+				row.discardWhatIsntTheseTerms(terms);
+				if (row.size() > 0)
+				{
+					for (int j = int(row.size()); j < _columns; j++)
+						row.add(QString(), false);
+					newTuples.push_back(row);
+				}
+			}
+
+			_tuples = newTuples;
+			Terms unusedTerms = terms;
+
+			for (const Terms& tuple : _tuples)
+				unusedTerms.discardWhatDoesContainTheseTerms(tuple);
+
+			size_t index = 0;
+			while (unusedTerms.size() > index)
+			{
+				Terms row;
+				for (int i = 0; i < _columns; i++)
+				{
+					if (unusedTerms.size() > index)
+						row.add(unusedTerms.at(index), false);
+					else
+						row.add(QString(), false);
+					index++;
+				}
+				_tuples.push_back(row);
+			}
+		}
 	}
 
 	_setTerms();

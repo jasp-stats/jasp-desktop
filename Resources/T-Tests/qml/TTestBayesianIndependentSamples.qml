@@ -79,6 +79,7 @@ Form {
 	RadioButtonGroup
 	{
 		name: "testStatistic"
+		id: testStatistic
 		title: qsTr("Tests")
 		RadioButton
 		{
@@ -95,7 +96,7 @@ Form {
 	{
 		name: "missingValues"
 		title: qsTr("Missing Values")
-		RadioButton { value: "excludeAnalysisByAnalysis";	label: qsTr("Exclude cases analysis by analysis"); checked: true }
+		RadioButton { value: "excludeAnalysisByAnalysis";	label: qsTr("Exclude cases per dependent variable"); checked: true }
 		RadioButton { value: "excludeListwise";				label: qsTr("Exclude cases listwise")							}
 	}
 
@@ -105,7 +106,7 @@ Form {
 		CheckBox { name: "descriptives"; label: qsTr("Descriptives") }
 	}
 
-	SetSeed{}
+	SetSeed{enabled: testWilcoxon.checked}
 
 	SubjectivePriors { informedPriorsEnabled: student.checked }
 }

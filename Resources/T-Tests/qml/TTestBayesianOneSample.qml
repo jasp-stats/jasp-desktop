@@ -90,12 +90,10 @@ Form
 	{
 		name: "missingValues"
 		title: qsTr("Missing Values")
-		RadioButton { value: "excludeAnalysisByAnalysis";	label: qsTr("Exclude cases analysis by analysis"); checked: true	}
+		RadioButton { value: "excludeAnalysisByAnalysis";	label: qsTr("Exclude cases per dependent variable"); checked: true	}
 		RadioButton { value: "excludeListwise";				label: qsTr("Exclude cases listwise")							}
 	}
 	
-
-	SetSeed{}
 
 	SubjectivePriors { }
 	

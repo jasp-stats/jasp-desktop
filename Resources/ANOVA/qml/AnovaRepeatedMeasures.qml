@@ -100,6 +100,8 @@ Form
 				{ label: "Type \u2162", value: "type3"}
 			]
 		}
+		CheckBox { name: "useMultivariateModelFollowup";				label: qsTr("Use multivariate model for follow-up tests");					checked: false }
+
 		
 	}
 	

@@ -327,7 +327,7 @@ void MainWindow::makeConnections()
 
 	connect(_languageModel,			&LanguageModel::languageChanged,					_fileMenu,				&FileMenu::refresh											);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_ribbonModel,			&RibbonModel::refresh										);
-	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
+	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::languageChangedHandler,							Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
 
 
@@ -357,7 +357,7 @@ void MainWindow::loadDefaultFont()
 
 void MainWindow::loadQML()
 {
-
+	Log::log() << "Initializing QML" << std::endl;
 
 	_qml->rootContext()->setContextProperty("mainWindow",				this					);
 	_qml->rootContext()->setContextProperty("labelModel",				_labelModel				);
@@ -421,6 +421,8 @@ void MainWindow::loadQML()
 
 	connect(_qml, &QQmlApplicationEngine::objectCreated, [&](QObject * obj, QUrl url) { if(obj == nullptr) { std::cerr << "Could not load QML: " + url.toString().toStdString() << std::endl; exit(10); }});
 
+	Log::log() << "Loading Themes" << std::endl;
+
 	// load chosen theme first
 	if(_preferences->currentThemeName() == "lightTheme")
 	{
@@ -433,12 +435,15 @@ void MainWindow::loadQML()
 		_qml->load(QUrl("qrc:///components/JASP/Theme/Theme.qml"));
 	}
 
-	_qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
-	_qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
-	_qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
+	Log::log() << "Loading HelpWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
+	Log::log() << "Loading AboutWindow" << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
+	Log::log() << "Loading MainWindow"  << std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
 	connect(_preferences, &PreferencesModel::uiScaleChanged, DataSetView::lastInstancedDataSetView(), &DataSetView::viewportChanged, Qt::QueuedConnection);
 
+	Log::log() << "QML Initialized!"  << std::endl;
+
+	Log::log() << "Loading upgrades definitions"  << std::endl;
 	_upgrader->loadOldSchoolUpgrades();
 }
 
@@ -600,6 +605,11 @@ void MainWindow::zoomResetKeyPressed()
 	_preferences->zoomReset();
 }
 
+void MainWindow::setLanguage(int languageIndex)
+{
+	_languageModel->changeLanguage(languageIndex);
+}
+
 void MainWindow::syncKeyPressed()
 {
 	_fileMenu->sync();
@@ -668,7 +678,7 @@ void MainWindow::refreshPlotsHandler(bool askUserForRefresh)
 {
 	if (_analyses->allFresh())
 		_engineSync->refreshAllPlots();
-	else if (askUserForRefresh && MessageForwarder::showYesNo("Version incompatibility", "Your analyses were created in an older version of JASP, to change the PPI of the images they must be refreshed first.\n\nRefresh all analyses?"))
+	else if (askUserForRefresh && MessageForwarder::showYesNo(tr("Version incompatibility"), tr("Your analyses were created in an older version of JASP, to change the PPI of the images they must be refreshed first.\n\nRefresh all analyses?")))
 		_analyses->refreshAllAnalyses();
 }
 
@@ -703,7 +713,7 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 
 	if (analysis->needsRefresh())
 	{
-		if(MessageForwarder::showYesNo("Version incompatibility", "This analysis was created in an older version of JASP, to save the image it must be refreshed first.\n\nRefresh the analysis?"))
+		if(MessageForwarder::showYesNo(tr("Version incompatibility"), tr("This analysis was created in an older version of JASP, to save the image it must be refreshed first.\n\nRefresh the analysis?")))
 			analysis->refresh();
 	}
 	else
@@ -718,7 +728,7 @@ void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 	parser.parse(utf8, root);
 
 	QString selectedFilter;
-	QString finalPath = MessageForwarder::browseSaveFile("Save JASP Image", "", "Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)", &selectedFilter);
+	QString finalPath = MessageForwarder::browseSaveFile(tr("Save JASP Image"), "", tr("Portable Network Graphics (*.png);;Portable Document Format (*.pdf);;Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff)"), &selectedFilter);
 
 	if (!finalPath.isEmpty())
 	{
@@ -775,7 +785,7 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 
 	if (analysis->needsRefresh())
 	{
-		if (MessageForwarder::showYesNo("Version incompatibility", "This analysis was created in an older version of JASP, to resize the image it must be refreshed first.\n\nRefresh the analysis?"))
+		if (MessageForwarder::showYesNo(tr("Version incompatibility"), tr("This analysis was created in an older version of JASP, to resize the image it must be refreshed first.\n\nRefresh the analysis?")))
 			analysis->refresh();
 		else
 			emit editImageCancelled(id);
@@ -866,7 +876,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			QString title = windowTitle();
 			title.chop(1);
 
-			switch(MessageForwarder::showSaveDiscardCancel("Save Workspace?", "Save changes to workspace " + title + " before closing?\n\nYour changes will be lost if you don't save them."))
+			switch(MessageForwarder::showSaveDiscardCancel(tr("Save File?"), tr("Save changes to the file %1 before closing?\n\nYour changes will be lost if you don't save them.").arg(title)))
 			{
 			default:
 			case MessageForwarder::DialogResponse::Cancel:
@@ -913,7 +923,7 @@ bool MainWindow::checkPackageModifiedBeforeClosing()
 	QString title = windowTitle();
 	title.chop(1);
 
-	switch(MessageForwarder::showSaveDiscardCancel("Workspace has changes", "Save changes to workspace " + title + " before closing?\n\nYour changes will be lost if you don't save them."))
+	switch(MessageForwarder::showSaveDiscardCancel(tr("File has changed"), tr("Save changes to the file %1 before closing?\n\nYour changes will be lost if you don't save them.").arg(title)))
 	{
 	case MessageForwarder::DialogResponse::Save:
 	{
@@ -981,7 +991,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_package->reset();
 			setWelcomePageVisible(true);
 
-			MessageForwarder::showWarning("Unable to open file because:\n" + event->message());
+			MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
 
 			if (_openedUsingArgs)	exit(3);
 
@@ -1007,7 +1017,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		}
 		else
 		{
-			MessageForwarder::showWarning("Save failed", "Unable to save file.\n\n" + event->message());
+			MessageForwarder::showWarning(tr("Save failed"), tr("Unable to save file.\n\n%1").arg(event->message()));
 
 			if(testingAndSaving)
 				std::cerr << "Tested " << event->path().toStdString() << " but saving failed because of: " << event->message().toStdString() << std::endl;
@@ -1174,17 +1184,17 @@ void MainWindow::openGitHubBugReport() const
 
 	if(!Settings::value(Settings::USER_HAS_GITHUB_ACCOUNT).toBool())
 	{
-		if(MessageForwarder::showYesNo("Do you have a GitHub account?", "To be able to report the bug you need to have a GitHub account, do you have such an account?"))
+		if(MessageForwarder::showYesNo(tr("Do you have a GitHub account?"), tr("To be able to report the bug you need to have a GitHub account, do you have such an account?")))
 			Settings::setValue(Settings::USER_HAS_GITHUB_ACCOUNT, true);
 		else
 		{
 			openGitHubUserRegistration = true;
-			MessageForwarder::showWarning("Join GitHub",
-				"We will open two pages for you in your webbrowser.\n"
+			MessageForwarder::showWarning(tr("Join GitHub"),
+				tr("We will open two pages for you in your webbrowser.\n"
 				"The second will be the 'Join GitHub' page where you can register for an account with GitHub."
 				"\n"
 				"The first will be a login page that leads to a partly filled bug report after you sign in with your new GitHub account.\n\n"
-				"Please fill in all missing information there.");
+				"Please fill in all missing information there."));
 		}
 	}
 
@@ -1238,7 +1248,7 @@ void MainWindow::openGitHubBugReport() const
 	}
 	catch(...)
 	{
-		MessageForwarder::showWarning("GitHub couldn't be openend for you", "Something went wrong with leading you to GitHub..\nYou can still report the bug by going to https://github.com/jasp-stats/jasp-issues/issues ");
+		MessageForwarder::showWarning(tr("GitHub couldn't be openend for you"), tr("Something went wrong with leading you to GitHub..\nYou can still report the bug by going to https://github.com/jasp-stats/jasp-issues/issues"));
 		exit(1);
 	}
 }
@@ -1250,8 +1260,8 @@ void MainWindow::fatalError()
 	if (exiting == false)
 	{
 		exiting = true;
-		if(MessageForwarder::showYesNo("Error", "JASP has experienced an unexpected internal error:\n" + _fatalError.toStdString() + "\n\n"
-			"JASP cannot continue and will close.\n\nWe would be grateful if you could report this error to the JASP team.", "Report", "Exit"))
+		if(MessageForwarder::showYesNo(tr("Error"), tr("JASP has experienced an unexpected internal error:\n%1").arg(_fatalError) + "\n\n" +
+			tr("JASP cannot continue and will close.\n\nWe would be grateful if you could report this error to the JASP team."), tr("Report"), tr("Exit")))
 		{
 			//QDesktopServices::openUrl(QUrl("https://jasp-stats.org/bug-reports/"));
 			openGitHubBugReport();
@@ -1315,11 +1325,11 @@ void MainWindow::startDataEditorHandler()
 	QString path = QString::fromStdString(_package->dataFilePath());
 	if (path.isEmpty() || path.startsWith("http") || !QFileInfo::exists(path) || Utils::getFileSize(path.toStdString()) == 0 || _package->dataFileReadOnly())
 	{
-		QString									message = "JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?";
-		if (path.startsWith("http"))			message = "JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?";
-		else if (_package->dataFileReadOnly())	message = "JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?";
+		QString									message = tr("JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?");
+		if (path.startsWith("http"))			message = tr("JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?");
+		else if (_package->dataFileReadOnly())	message = tr("JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?");
 
-		MessageForwarder::DialogResponse choice = MessageForwarder::showYesNoCancel("Start Spreadsheet Editor", message, "Generate Data File", "Find Data File");
+		MessageForwarder::DialogResponse choice = MessageForwarder::showYesNoCancel(tr("Start Spreadsheet Editor"), message, tr("Generate Data File"), tr("Find Data File"));
 
 		FileEvent *event = nullptr;
 
@@ -1434,12 +1444,12 @@ void MainWindow::startDataEditor(QString path)
 		startProcess = "\"" + appname + "\" \"" + path + "\"";
 #endif
 		if (!QProcess::startDetached(startProcess))
-			MessageForwarder::showWarning("Start Editor", "Unable to start the editor : " + appname + ". Please check your editor settings in the preference menu.");
+			MessageForwarder::showWarning(tr("Start Editor"), tr("Unable to start the editor : %1. Please check your editor settings in the preference menu.").arg(appname));
 	}
 	else
 #endif
 		if (!QDesktopServices::openUrl(QUrl("file:///" + path, QUrl::TolerantMode)))
-			MessageForwarder::showWarning("Start Spreadsheet Editor", "No default spreadsheet editor for file " + fileInfo.completeBaseName() + ". Use Preferences to set the right editor.");
+			MessageForwarder::showWarning(tr("Start Spreadsheet Editor"), tr("No default spreadsheet editor for file %1. Use Preferences to set the right editor.").arg(fileInfo.completeBaseName()));
 
 }
 
@@ -1606,7 +1616,7 @@ void MainWindow::removeAnalysis(Analysis *analysis)
 
 void MainWindow::removeAllAnalyses()
 {
-	if (MessageForwarder::showYesNo("Remove All Analyses", "Do you really want to remove all analyses?"))
+	if (MessageForwarder::showYesNo(tr("Remove All Analyses"), tr("Do you really want to remove all analyses?")))
 	{
 		_resultsJsInterface->removeAnalyses();
 		_analyses->clear();

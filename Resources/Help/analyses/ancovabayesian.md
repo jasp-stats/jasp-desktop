@@ -92,7 +92,7 @@ The Bayesian ANCOVA allows the user to analyze the difference between multiple g
   - Display:
       - Credible interval: When this option is selected, the plot will contain central credible intervals. By default this is set to 95%. This can be changed into the desired percentage.
 
-### Advanced Options
+### Additional Options
 - Prior: Here it is possible to set the prior distributions for the fixed and random effect sizes.
     - r scale fixed effects: The shape parameter of the prior distribution for the fixed effects. This is set to 0.5 by default, but this can be changed into the desired value.  
     - r scale random effects: The shape parameter of the prior distribution for the random effects. This is set to 1 by default, but this can be changed into the desired value.
@@ -102,8 +102,8 @@ The Bayesian ANCOVA allows the user to analyze the difference between multiple g
 - Posterior Samples: It is possible to set the he number of Markov Chain Monte Carlo samples, used to approximate the posterior distribution and error %.  
     - Auto: If this option is selected, 10000 samples will be used. This option is selected by default.
     - Manual: If this option is selected, the number of samples can be specified manually. When selecting this option a sample size of 1000 is used by default.
-- Repeatability
-  - Set seed: Value used to set the random number generator for exact reproducibility.
+- Repeatability:
+  - Set seed: Gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
   
 ### Output
 ---

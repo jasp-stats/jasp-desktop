@@ -31,30 +31,29 @@ Form
         }
         AssignedVariablesList
         {
-            title: "Predictors"
+			title: qsTr("Predictors")
             name:  "predictor"
             allowedColumns: []
         }
         AssignedVariablesList
         {
-            title: "Mediators"
+			title: qsTr("Mediators")
             name:  "mediators"
             allowedColumns: ["scale", "ordinal"]
         }
         AssignedVariablesList
         {
-            title: "Outcome"
+			title: qsTr("Outcome")
             name:  "dependent"
             allowedColumns: ["scale", "ordinal"]
         }
         AssignedVariablesList
         {
-            title: "Background confounders"
+			title: qsTr("Background confounders")
             name:  "confounds"
             allowedColumns: []
         }
     }
-
 
 	Section
 	{

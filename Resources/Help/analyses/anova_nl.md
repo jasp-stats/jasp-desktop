@@ -58,7 +58,6 @@ Met een ANOVA berekent men het verschil tussen meerdere groepsgemiddelden.
       - herhaald: Als je dit contrast selecteert, wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het volgende niveau. 
       - Polynoom: Dit contrast test polynome trends in de data. Welke specifieke polynoom wordt gebruikt, is afhankelijk van het aantal niveaus van de onafhankelijke variabele. De graad van de trend die wordt gebruikt, is het aantal niveaus min 1. Als de onafhankelijke variabele dus bestaat uit twee niveaus, wordt een lineaire trend geanalyseerd. Als de onafhankelijke variabele bestaat uit drie niveaus, wordt een kwadratrische trend en een lineaire trend geanalyseerd. 
       - custom: Hier kunnen de contrast gewichten handmatig ingevoerd worden. De gewichten hebben 3 vereisten: (1) minstens 1 gewicht dient niet gelijk aan 0 te zijn (2) Het maximum aantal contrasten is gelijk aan het aantal niveaus van de factor - 1 (3) voor factoren met meer dan 2 niveaus, dienen er minstens 2 contrasten ingevoerd te worden.
-- Neem gelijke varianties aan: Deze optie kan worden geselecteerd wanneer je aanneemt dat de variantie gelijk is tussen de niveaus van de onafhankelijke variabele. Dit is de standaardoptie.
 - Betrouwbaarheidsintervallen: Als je deze optie selecteert, worden er betrouwbaarheidsintervallen voor het geschatte verschil in gemiddelden gemaakt. De standaardoptie is een interval van 95%. Dit kan tot het gewenste percentage worden aangepast.
 
 ### Post Hoc Tests 

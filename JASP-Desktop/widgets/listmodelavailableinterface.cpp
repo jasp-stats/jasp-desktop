@@ -138,7 +138,10 @@ void ListModelAvailableInterface::removeTermsInAssignedList()
 		{
 			Terms assignedTerms = modelAssign->terms();
 			if (assignedTerms.discardWhatIsntTheseTerms(_allSortedTerms))
+			{
 				modelAssign->initTerms(assignedTerms); // initTerms call removeTermsInAssignedList
+				emit modelAssign->modelChanged();
+			}
 			else if (!modelAssign->copyTermsWhenDropped())
 				_terms.remove(assignedTerms);
 		}

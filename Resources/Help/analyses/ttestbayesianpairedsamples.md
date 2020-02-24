@@ -29,9 +29,6 @@ The paired samples t-test allows you to estimate the effect size  and test the n
 #### Additional Statistics
 - Descriptives: Sample size, sample mean, sample standard deviation, standard error of the mean for each measure.
 
-#### Repeatability
-- Set seed: Value used to set the random number generator for exact reproducibility.
-
 ### Plots
 - Prior and posterior: Displays the prior and posterior distribution of the effect size under the alternative hypothesis.
   - Additional info: Adds the Bayes factor computed with the user-defined prior; adds a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; adds the median and the 95% credible interval of the posterior distribution of the effect size
@@ -42,7 +39,7 @@ The paired samples t-test allows you to estimate the effect size  and test the n
   - Credible interval: Default is 95%.
 
 #### Missing Values
-- Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the difference score for the particular t-test. Sample sizes may therefore vary across the multiple t-tests.
+- Exclude cases per dependent variable: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the difference score for the particular t-test. Sample sizes may therefore vary across the multiple t-tests.
 - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all difference scores. Sample size is therefore constant across the multiple t-tests.
 
 ### Prior

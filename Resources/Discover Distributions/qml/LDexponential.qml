@@ -28,7 +28,7 @@ Form {
 	Section
 	{
 		expanded: true
-		title: "Show Distribution"
+		title: qsTr("Show Distribution")
 		Group
 		{
 			Layout.columnSpan: 2
@@ -81,9 +81,9 @@ Form {
 		Group
 		{
 			title: qsTr("Generate new variable from Exponential") + " (" + ["λ = ", "β = "][parametrization.currentIndex] + par.value + ")"
-			AddColumnField{ name: "newVariableName"; text: "Variable name: "; fieldWidth: 120; placeholderText: "e.g., random exponential" }
-			IntegerField{   name: "sampleSize"; label: "Number of samples: "; min: 1; defaultValue: 100 }
-			Button{name: "simulateNowButton"; label: "Draw samples"; id: simulateNowButton; onClicked:{
+			AddColumnField{ name: "newVariableName"; text: qsTr("Variable name: "); fieldWidth: 120; placeholderText: qsTr("e.g., random exponential") }
+			IntegerField{   name: "sampleSize"; label: qsTr("Number of samples: "); min: 1; defaultValue: dataSetModel.rowCount(); max: dataSetModel.rowCount()}
+			Button{name: "simulateNowButton"; label: qsTr("Draw samples"); id: simulateNowButton; onClicked:{
 					if (simulateNow.checked) simulateNow.checked = false; else simulateNow.checked = true
 				}}
 			CheckBox{name: "simulateNow"; visible: false; id: simulateNow}
@@ -99,7 +99,7 @@ Form {
 		Group
 		{
 			title: qsTr("Statistics")
-			CheckBox{ name: "summary"; label: qsTr("Descriptives") }
+			CheckBox{ name: "summary"; label: qsTr("Descriptives"); checked: true  }
 			CheckBox
 			{
 				name: "moments"; label: qsTr("First"); childrenOnSameRow: true
