@@ -393,7 +393,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
-		'click'     : '_mouseClicked',
+		'mousedown' : '_handleMouseDown',
 	},
 
 	detach: function() {
@@ -409,7 +409,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.closeButton.setVisibility(false);
 	},
 
-	_mouseClicked: function (e) {
+	_handleMouseDown: function (e) {
 		this.setQuillToolbarVisibility('block');
 	},
 
