@@ -14654,7 +14654,6 @@ msgctxt "ComputeColumnWindow|"
 msgid "Column (in line to be) computed"
 msgstr "Kolom (in regel die wordt) berekend"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
 msgstr "Open Documentatie"
@@ -14691,7 +14690,6 @@ msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
 msgstr "Definieer kolom met sleep en plaats formules"
 
-#, fuzzy
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
 msgstr "Open Documentatie"
@@ -14709,7 +14707,6 @@ msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
 msgstr "Sluit zonder een berekende kolom te maken"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Hide filter"
 msgstr "Verberg filter"
@@ -14749,62 +14746,50 @@ msgstr ""
 "Dump ongewenste snippets hier; dubbel-klik om de volledige slate te "
 "verwijderen"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "absolute value"
 msgstr "absolute waarde"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "standard deviation"
 msgstr "standaard afwijking"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "variance"
 msgstr "variantie"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "summation"
 msgstr "sommering"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "product of values"
 msgstr "product van waarden"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
 msgstr "retourneert minimum van waarden"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
 msgstr "retourneert maximum van waarden"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "mean"
 msgstr "gemiddelde"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
 msgstr "rond y af tot n decimalen"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
 msgstr "retourneert aantal elementen in y"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "median"
 msgstr "mediaan"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "if-else statement"
 msgstr "if-else statement"
@@ -15146,6 +15131,10 @@ msgid ""
 "edit the data, JASP needs this file on your computer. Does this data file "
 "also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASP is gestart met een online gegevensbestand (csv, sav of ods bestand). "
+"Maar om de gegevens te kunnen bewerken, moet dit bestand op uw computer "
+"staan. Staat dit bestand ook op uw computer of moet JASP het bestand "
+"genereren?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -15153,23 +15142,26 @@ msgid ""
 "But to edit the data, JASP needs to write to the data file. Does the same "
 "file also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASP is gestart met een alleen-lezen gegevensbestand (waarschijnlijk uit de "
+"voorbeelden). Maar om de gegevens te bewerken, moet het mogelijk zijn voor "
+"JASP om in het bestand te schrijven. Bestaat het bestand ook op uw computer "
+"of moet JASP het bestand genereren?"
 
 msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
-msgstr ""
+msgstr "Start Spreadsheet Gegevensbewerker"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File"
-msgstr ""
+msgstr "Genereer gegevensbestand"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Find Data File"
 msgstr "Zoek gegevensbestand"
 
 msgctxt "MainWindow|"
 msgid "Start Editor"
-msgstr ""
+msgstr "Start Gegevensverwerker"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -15177,6 +15169,8 @@ msgid ""
 "Unable to start the editor : %1. Please check your editor settings in the "
 "preference menu."
 msgstr ""
+"Niet mogelijk om de gegevensverwerker %1 te starten. Controleer de "
+"gegevensverwerker instellingen in het voorkeursmenu."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -15184,6 +15178,9 @@ msgid ""
 "No default spreadsheet editor for file %1. Use Preferences to set the right "
 "editor."
 msgstr ""
+"Er is geen standaard spreadsheet gegevensverwerker voor bestand %1. Gebruik "
+"de Voorkeuren->Data bij de Instellingen om de juiste gegevensverwerker te "
+"kiezen."
 
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
@@ -15198,11 +15195,13 @@ msgctxt "DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
 msgstr ""
+"Een trad een fout op bij het initialiseren van een module in %1, de fout "
+"was: %2"
 
 #, qt-format
 msgctxt "DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr ""
+msgstr "Er trad een fout op bij het laden van module %1, de fout was: '%2'"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -15210,6 +15209,8 @@ msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
 "was: %3"
 msgstr ""
+"Er ging iets fout bij het verwijderen van bestanden voor module %1 in '%2' "
+"en de fout was: %3"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -15217,11 +15218,13 @@ msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
+"De installatie van Module %1 is mislukt met de volgende foutmelding:\n"
+"%2"
 
 #, qt-format
 msgctxt "DynamicModules|"
 msgid "Loading packages for Module %1 failed"
-msgstr ""
+msgstr "Het laden van packages voor Module %1 is mislukt."
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -15229,6 +15232,9 @@ msgid ""
 "Loading the packages of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
+"Het laden van de packages van Module %1 is mislukt met de volgende "
+"foutmelding:\n"
+"%2"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -15244,6 +15250,10 @@ msgid ""
 "you are not the author of this module and do not know how to do this, "
 "contact: %2"
 msgstr ""
+"Kan module met naam '%1' niet installeren omdat die naam geresveerd is voor "
+"het installeren van een ontwikkelaars module.\n"
+"Verander de naam (in DESCRIPTION en description.json) en probeer het opnieuw."
+"Als u de auteur van deze module bent en niet weet hoe dit moet contact: %2"
 
 msgctxt "DynamicModules|"
 msgid "Select a folder"
@@ -15254,6 +15264,9 @@ msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
 msgstr ""
+"Om een ontwikkel module te installeren moet u de map selecteren waar u de "
+"module kunt zien en laden, u kunt dit van uit het bestandsmenu doen, "
+"Voorkeuren->Geavanceerd."
 
 msgctxt "DynamicModules|"
 msgid "Missing files or folders"
@@ -15264,6 +15277,8 @@ msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
 msgstr ""
+"De geselecteerde map kan niet als ontwikkelaars module geinstalleerd worden "
+"omdat het niet alle benodigde bestanden en mappen bevat."
 
 msgctxt "DynamicModules|"
 msgid "Create a inst/description.json file."
@@ -15296,6 +15311,9 @@ msgid ""
 "it your module cannot work, make sure to put it back. For now your old %2 "
 "file will be kept."
 msgstr ""
+"Het lijkt erop dat u %1 van uw module ontwikkel omgeving verwijderd hebt. "
+"Zonder dit kan uw module niet werken, zorg ervoor dat deze teruggeplaatst "
+"wordt. Voor nu wordt het oude bestand %2 bewaard."
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -15305,6 +15323,9 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
+"Het lijkt erop dat u nooit een %1 in uw module ontwikkel omgeving had. "
+"Zonder dit kan uw module niet werken, zorg ervoor een te maken. Hoe u de "
+"module geinstalleerd hebt is onduidelijk en de module wordt nu verwijderd."
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -15317,6 +15338,8 @@ msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
 msgstr ""
+"Het lijkt erop dat u %1 verwijderd heeft maar dit bestand is nodig om uw "
+"module te laten werken. Het ontwikkel module wordt nu verwijderd."
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -15477,7 +15500,7 @@ msgstr ""
 
 msgctxt "OSF|"
 msgid "File Types"
-msgstr "Bestand types"
+msgstr "Bestand Types"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
@@ -15493,7 +15516,7 @@ msgid ""
 "\n"
 "To add a new project please use the online OSF services."
 msgstr ""
-"Een nieuwe map kan niet toegevoegd worden aan de lijst met projecten.\n"
+"Een nieuwe map kan niet worden toegevoegd aan de lijst met projecten.\n"
 "\n"
 "Gebruik de online OSF om een nieuw project toe te voegen."
 
