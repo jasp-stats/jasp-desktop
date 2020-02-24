@@ -1,6 +1,6 @@
 QT += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 DEFINES += JASP_USES_QT_HERE
-GENERATE_LANGUAGE_FILES = 0
+GENERATE_LANGUAGE_FILES = false
 
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
 
@@ -165,18 +165,18 @@ win32 {
   delres.commands  += $$quote(IF exist \"$$RESOURCES_DESTINATION\" (rd /s /q \"$$RESOURCES_DESTINATION\";) ) &&
   copyres.commands  +=  $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_DESTINATION})
 
-  equals(GENERATE_LANGUAGE_FILES,1) {
-  maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${SOURCES_TRANSLATIONS}\jasp.po) &&
-  maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -source-language dutch -recursive $${WINPWD} -ts $${RESOURCES_TRANSLATIONS}\jasp_nl.po) &&
+  $$GENERATE_LANGUAGE_FILES {
+    maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${SOURCES_TRANSLATIONS}\jasp.po) &&
+    maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -source-language dutch -recursive $${WINPWD} -ts $${RESOURCES_TRANSLATIONS}\jasp_nl.po) &&
 
-  #cleanup po files
-  maketranslations.commands += $$quote($${GETTEXT_LOCATION}\msgattrib --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp.po -o $${SOURCES_TRANSLATIONS}\jasp.po) &&
-  maketranslations.commands += $$quote($${GETTEXT_LOCATION}\msgattrib --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp_nl.po -o $${SOURCES_TRANSLATIONS}\jasp_nl.po) &&
+    #cleanup po files
+    maketranslations.commands += $$quote($${GETTEXT_LOCATION}\msgattrib --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp.po -o $${SOURCES_TRANSLATIONS}\jasp.po) &&
+    maketranslations.commands += $$quote($${GETTEXT_LOCATION}\msgattrib --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp_nl.po -o $${SOURCES_TRANSLATIONS}\jasp_nl.po) &&
 
-  maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${RESOURCES_TRANSLATIONS}\jasp_nl.po -qm $${RESOURCES_TRANSLATIONS}\jasp_nl.qm) &&
-  maketranslations.commands += $$quote(copy $${RESOURCES_TRANSLATIONS}\*.qm $${RESOURCES_DESTINATION_TRANSLATIONS}\ )
+    maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${RESOURCES_TRANSLATIONS}\jasp_nl.po -qm $${RESOURCES_TRANSLATIONS}\jasp_nl.qm) &&
+    maketranslations.commands += $$quote(copy $${RESOURCES_TRANSLATIONS}\*.qm $${RESOURCES_DESTINATION_TRANSLATIONS}\ )
 
-  maketranslations.depends  = copyres
+    maketranslations.depends  = copyres
   }
 }
 
@@ -189,17 +189,17 @@ unix {
   copyres.commands += $(MKDIR) $$RESOURCES_DESTINATION ;
   copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_DESTINATION ;
 
-  equals(GENERATE_LANGUAGE_FILES,1) {
-  maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp.po ;
-  maketranslations.commands += lupdate -locations none -extensions cpp,qml -target-language Dutch -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp_nl.po ;
+  $$GENERATE_LANGUAGE_FILES {
+    maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp.po ;
+    maketranslations.commands += lupdate -locations none -extensions cpp,qml -target-language Dutch -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp_nl.po ;
 
-  #cleanup po files
-  maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp.po -o $$SOURCES_TRANSLATIONS/jasp.po ;
-  maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp_nl.po -o $$SOURCES_TRANSLATIONS/jasp_nl.po ;
+    #cleanup po files
+    maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp.po -o $$SOURCES_TRANSLATIONS/jasp.po ;
+    maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp_nl.po -o $$SOURCES_TRANSLATIONS/jasp_nl.po ;
 
-  maketranslations.commands += lrelease $$SOURCES_TRANSLATIONS/jasp_nl.po -qm $$RESOURCES_TRANSLATIONS/jasp_nl.qm ;
-  maketranslations.commands += cp $$RESOURCES_TRANSLATIONS/*.qm $$RESOURCES_DESTINATION_TRANSLATIONS/ ;
-  maketranslations.depends  = copyres
+    maketranslations.commands += lrelease $$SOURCES_TRANSLATIONS/jasp_nl.po -qm $$RESOURCES_TRANSLATIONS/jasp_nl.qm ;
+    maketranslations.commands += cp $$RESOURCES_TRANSLATIONS/*.qm $$RESOURCES_DESTINATION_TRANSLATIONS/ ;
+    maketranslations.depends  = copyres
   }
 }
 
