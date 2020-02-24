@@ -37,6 +37,7 @@ The repeated Measures ANOVA allows the user to analyze the differences between m
     - Type I: Sequential sum of squares. It is the reduction of error when each factor of the model is added to the factors already included, preserving the order of factors in the model. The results depend on the order in which the factors are added to the model. This is important to consider when the model contains more than one factor.
     - Type II: Hierarchical/partially sequential sum of squares. It is the reduction of error when each factor is added to the model that includes all the other factors, except the factors where the added factor is a part of, such as interactions containing that factor. Langsrud (2003) advises to apply this type for an ANOVA with unbalanced data.
     - Type III: Partial sum of squares. It is the reduction of error when each factor is added to the model that includes all the other factors, including interactions with this factor. This type is often selected, because it takes interactions into account (Langsrud, 2003). This type is selected by default.
+- Use multivariate model for follow-up tests:  By selecting this option, the multivariate linear model, rather than the aov model, will be used for follow-up tests (contrasts, post-hoc tests, marginal means). Multivariate tests likely provide a better correction for violations of sphericity.
 
 ### Assumption checks
 - Sphericity tests: Sphericity entails that the variances of the differences of the repeated measures conditions all have the same variance.
