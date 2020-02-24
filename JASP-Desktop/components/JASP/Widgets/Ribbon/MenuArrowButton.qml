@@ -58,7 +58,7 @@ Rectangle
 		property real	barThickness:	8 //(jaspTheme.ribbonButtonHeight (2 * jaspTheme.ribbonButtonPadding)) / 7
 		property real	barRadius:		barThickness
 		property real	barWidth:		baseHeight / 2
-		property color	barColor:		jaspTheme.grayDarker
+		property color	barColor:		jaspTheme.jaspBlue
 
 		Item
 		{

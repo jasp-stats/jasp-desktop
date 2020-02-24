@@ -66,7 +66,7 @@ JaspTheme
 	grayVeryMuchLighter:				"#F4F6F7"
 
 	blueDarker:							"#0069D9"
-	blue:								"#419BF9"
+	blue:								jaspBlue//"#419BF9"
 	blueLighter:						"#97C4F2"
 	blueMuchLighter:					"#DCF1FB"
 
