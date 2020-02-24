@@ -329,20 +329,14 @@ test_that("Field - Chapter 6 results match", {
   options$plotErrorBars <- TRUE
   results <- jasptools::run("Ancova", "Puppy Love.csv", options)
   
-  # Replaced this with error check, because sum squares type 3 is not appropriate for empty cells
-  # table <- results$result$anovaContainer$collection$anovaContainer_anovaTable$data
-  # expect_equal_tables(table,
-  #                     list("Dose", 36.5575599693692, 2, 18.2787799846846, 7.483568988423,
-  #                          0.00297956448464929, "TRUE", "Puppy_love", 17.1822242014479,
-  #                          1, 17.1822242014479, 7.03462486521667, 0.0139474621264158, "FALSE",
-  #                          "Dose <unicode> Puppy_love", 20.4265936571326, 2, 10.2132968285663,
-  #                          4.18145584551367, 0.0276671129121842, "FALSE", "Residual", 58.6205218808138,
-  #                          24, 2.44252174503391, "", "", "TRUE"))
-  
-  expect_identical(  results$results$anovaContainer$collection$anovaContainer_anovaTable$error$errorMessage, 
-                   "Your design contains empty cells. Please try a different type of sum of squares.",
-                   label="Inf covariate check")
-  
+  table <- results$result$anovaContainer$collection$anovaContainer_anovaTable$data
+  expect_equal_tables(table,
+                      list("Dose", 36.5575599693692, 2, 18.2787799846846, 7.483568988423,
+                           0.00297956448464929, "TRUE", "Puppy_love", 17.1822242014479,
+                           1, 17.1822242014479, 7.03462486521667, 0.0139474621264158, "TRUE",
+                           "Dose <unicode> Puppy_love", 20.4265936571326, 2, 10.2132968285663,
+                           4.18145584551367, 0.0276671129121842, "FALSE", "Residuals", 58.6205218808138,
+                           24, 2.44252174503391, "", "", "TRUE"))
   
   # descriptive plots
   plot1 <-  results$state$figures[[1]]$obj$subplots$mainPlot

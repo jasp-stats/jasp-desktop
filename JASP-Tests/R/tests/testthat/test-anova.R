@@ -339,18 +339,17 @@ test_that("Field - Chapter 4 results match", {
   
   results <- jasptools::run("Anova", "Puppies Dummy.csv", options)
   table <- results[["results"]][["anovaContainer"]][["collection"]][["anovaContainer_anovaTable"]][["data"]]
-  
+
   # this table is also in the chapter 5
   expect_equal_tables(table,
-                      list("Dose", 20.1333333333334, 2, 10.0666666666667, 5.11864406779661,
-                           0.0246942895382225, "TRUE", "None", "Dose", 20.1333333333334,
-                           2, 10.0666666666667, 5.11864406779661, 0.0255514729692058, "FALSE",
-                           "Brown-Forsythe", "Dose", 20.1333333333334, 2, 10.0666666666667,
-                           4.32045117281357, 0.0537384707116728, "FALSE", "Welch", "Residual",
-                           23.6, 12, 1.96666666666667, "", "", "TRUE", "None", "Residual",
-                           23.6, 11.5743973399834, 2.03898305084746, "", "", "FALSE", "Brown-Forsythe",
-                           "Residual", 23.6, 7.94337535943375, 2.97102918244598, "", "",
-                           "FALSE", "Welch"))
+                      list("TRUE", 2, 5.11864406779661, 10.0666666666667, 0.0246942895382225,
+                           20.1333333333333, "Dose", "None", "TRUE", 12, "", 1.96666666666667,
+                           "", 23.6, "Residuals", "", "TRUE", 2, 5.11864406779661, 10.0666666666667,
+                           0.0255514729692058, 20.1333333333333, "Dose", "Brown-Forsythe",
+                           "FALSE", 11.5743973399834, "", 2.03898305084746, "", 23.6, "Residuals",
+                           "", "TRUE", 2, 4.32045117281357, 10.0666666666667, 0.0537384707116728,
+                           20.1333333333333, "Dose", "Welch", "FALSE", 7.94337535943375,
+                           "", 2.97102918244598, "", 23.6, "Residuals", ""))
 })
 
 #### Chapter 5 ----
@@ -363,7 +362,8 @@ test_that("Field - Chapter 5 results match", {
   
   options$contrasts <- list(
     list(contrast = "Helmert", variable = "Dose")
-  )
+  )  
+  options$confidenceIntervalsContrast <- TRUE
   
   options$postHocTestsVariables <- "Dose"
   options$postHocTestsTypeGames <- TRUE
@@ -382,20 +382,20 @@ test_that("Field - Chapter 5 results match", {
   # standard post hoc (tukey)
   table <- results[["results"]]$anovaContainer$collection$anovaContainer_postHocContainer$collection$anovaContainer_postHocContainer_postHocStandardContainer$collection$anovaContainer_postHocContainer_postHocStandardContainer_Dose$data
   expect_equal_tables(table,
-                      list(1, 2, -1, 0.886942313043338, -1.12746904200424, ".", 0.516276123508473,
-                           ".", ".", ".", ".", -3.36624115850686, 1.36624115850686, "TRUE",
-                           1, 3, -2.8, 0.886942313043338, -3.15691331761188, ".", 0.020924399492241,
-                           ".", ".", ".", ".", -5.16624115850686, -0.433758841493135, "FALSE",
-                           2, 3, -1.8, 0.886942313043338, -2.02944427560764, ".", 0.147457622995377,
-                           ".", ".", ".", ".", -4.16624115850686, 0.566241158506865, "FALSE"))
+                      list(1, 2, -1, 0.886942313043338, -1.12746904200424, 0.516276123508473,
+                           -3.36624115850686, 1.36624115850686, "TRUE",
+                           1, 3, -2.8, 0.886942313043338, -3.15691331761188, 0.020924399492241,
+                           -5.16624115850686, -0.433758841493135, "FALSE",
+                           2, 3, -1.8, 0.886942313043338, -2.02944427560764, 0.147457622995377,
+                           -4.16624115850686, 0.566241158506865, "FALSE"))
   
   # games-howell post hoc
   table <- results[["results"]]$anovaContainer$collection$anovaContainer_postHocContainer$collection$anovaContainer_postHocContainer_postHocGamesContainer$collection$anovaContainer_postHocContainer_postHocGamesContainer_Dose$data
   expect_equal_tables(table,
-                     list(1, 2, -1, -1.21267812518166, 0.824621125123532, -3.3563089273419,
-                          1.3563089273419, 0.47896489393065, 8, 1, 3, -2.8, -3.05505046330389,
+                     list("1 - 2", -1, -1.21267812518166, 0.824621125123532, -3.3563089273419,
+                          1.3563089273419, 0.47896489393065, 8, "1 - 3", -2.8, -3.05505046330389,
                           0.916515138991168, -5.43893919399355, -0.161060806006447, 0.0388414107946456,
-                          7.7199124726477, 2, 3, -1.8, -1.96396101212393, 0.916515138991168,
+                          7.7199124726477, "2 - 3", -1.8, -1.96396101212393, 0.916515138991168,
                           -4.43893919399355, 0.838939193993553, 0.185393344481167, 7.7199124726477))
   
   # dunnet post hoc
@@ -436,7 +436,7 @@ test_that("Field - Chapter 7 results match", {
   )
   options$marginalMeansBootstrapping <- TRUE
   options$marginalMeansBootstrappingReplicates <- 500
-  
+  options$marginalMeansCompareMainEffects <- FALSE 
   set.seed(1)
   results <- jasptools::run("Anova", "Beer Goggles.csv", options)
    
@@ -446,35 +446,38 @@ test_that("Field - Chapter 7 results match", {
                            0.000295223592290028, "TRUE", "Alcohol", 16.5416666666666, 2,
                            8.27083333333331, 6.04130434782607, 0.00494338949698304, "FALSE",
                            "FaceType <unicode> Alcohol", 23.2916666666667, 2, 11.6458333333333,
-                           8.50652173913045, 0.000791273868880283, "FALSE", "Residual",
+                           8.50652173913045, 0.000791273868880283, "FALSE", "Residuals",
                            57.5, 42, 1.36904761904762, "", "", "TRUE"))
   
   table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$data
   expect_equal_tables(table,
                       list("0 - 1, 2", -1.09375, 0.358257190138194, -3.05297431596026, 0.003921402019941,
-                           45, -1.81674228032104, -0.37075771967896, "TRUE", "1 - 2", -0.6875,
-                           0.413679770330811, -1.66191351211161, 0.103977316507, 45, -1.52233957533075,
+                           42, -1.81674228032104, -0.37075771967896, "TRUE", "1 - 2", -0.6875,
+                           0.413679770330811, -1.66191351211161, 0.103977316507, 42, -1.52233957533075,
                            0.147339575330745, "FALSE"))
   
   # removed both post hoc table and contrast table because bootstrap results are now in same table 
   table <- results[["results"]]$anovaContainer$collection$anovaContainer_postHocContainer$collection[[1]]$collection$anovaContainer_postHocContainer_postHocStandardContainer_Alcohol$data
   expect_equal_tables(table,
                       list(0, 1, -0.769579725829725, -0.00376914898826841, 0.392000159227314,
-                           -1.48733254329573, 0.0548973391001531, "TRUE", 0, 2, -1.43536324786325,
-                           0.0142934574412497, 0.435378856593833, -2.31465226049576, -0.602581004497448,
-                           "FALSE", 1, 2, -0.690674603174602, 0.018062606429518, 0.407611902363181,
-                           -1.43846891737073, 0.214248742598683, "FALSE"))
+                           -1.48733254329573, 0.0548973391001531, 0.230950085511107, -1.8129965586672, 
+                           0.177726007657148, "TRUE", 0, 2, -1.43536324786325,
+                           0.0142934574412497, 0.435378856593833, -2.31465226049576, -0.602581004497448, -3.47491007077881,
+                           0.00359956767679779, 0.00337043014651417, "FALSE", 1, 2, -0.690674603174602, 
+                           0.018062606429518, 0.407611902363181, -1.43846891737073, 0.214248742598683, -1.66191351211161,
+                           0.311931949521, 0.231712504393661, "FALSE"))
   
 
-  
   table <- results[["results"]]$anovaContainer$collection$anovaContainer_marginalMeansContainer$collection[[1]]$data
   expect_equal_tables(table, 
-                      list(0, 0, 3.5, -0.000576109837874483, 0.609481794897967, 2.17405680747747,
-                           4.66824003252126, "TRUE", 0, 1, 4.83974358974359, -0.0233288832082952,
-                           0.449084420277268, 4.00000000000001, 6, "FALSE", 0, 2, 6.57142857142858,
-                           -0.0390126855170969, 0.388994937578588, 6, 7.50000000000001,
-                           "FALSE", 1, 0, 6.33333333333334, -0.0167382728382766, 0.319660323889613,
-                           5.88388102664993, 7.17856492366397, "TRUE", 1, 1, 6.5, -0.0138867382617391,
-                           0.320922728447883, 5.875, 7.2, "FALSE", 1, 2, 6.14285714285714,
-                           0.0118089133089123, 0.395829403830131, 5.4, 7, "FALSE"))
+                      list("TRUE", 0, 0, 0.609481794897967, -0.000576109837874483, 2.18310354552326,
+                           3.5, 4.69446190218147, "FALSE", 0, 1, 0.319660323889613, -0.0167382728382766,
+                           5.87621516465174, 6.33333333333334, 7.1687561775422, "TRUE",
+                           1, 0, 0.449084420277268, -0.0233288832082961, 4.0377465550776,
+                           4.83974358974359, 6, "FALSE", 1, 1, 0.320922728447883, -0.0138867382617391,
+                           5.8674346198034, 6.5, 7.14559278996064, "TRUE", 2, 0, 0.388994937578588,
+                           -0.0390126855170978, 6, 6.57142857142858, 7.5, "FALSE", 2, 1,
+                           0.395829403830131, 0.0118089133089123, 5.4, 6.14285714285714,
+                           7))
+  
 })

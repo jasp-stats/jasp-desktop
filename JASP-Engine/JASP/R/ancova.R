@@ -644,7 +644,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
           }
           return()
         } else if (any(colSums(contrastMatrix) == 0)) {
-          contrastContainer$setError(gettextf("Please specify non-zero contrast weights."))
+          contrastContainer$setError(gettext("Please specify non-zero contrast weights."))
           return()
         } 
       }
@@ -1045,6 +1045,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     
     postHocTable$addColumnInfo(name="SE",                                         type="number")
     postHocTable$addColumnInfo(name="t",                                          type="number")
+    postHocTable$addColumnInfo(name="df",                                         type="number")
     postHocTable$addColumnInfo(name="pTukey", title=gettext("p<sub>tukey</sub>"), type="pvalue")
     
     postHocTable$showSpecifiedColumnsOnly <- TRUE
@@ -1068,6 +1069,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                               upperCI = numeric(),
                               SE = numeric(),
                               t = numeric(),
+                              df = numeric(),
                               pTukey = numeric())
     
     for (i in 1:nLevels) {
@@ -1087,13 +1089,14 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
         
         upperConf <- meanDiff + qtukey(p = postHocInterval, nmeans = nLevels, df = df) * se * sqrt(0.5)
         lowerConf <- meanDiff - qtukey(p = postHocInterval, nmeans = nLevels, df = df) * se * sqrt(0.5)
-        
+
         gamesResult <- rbind(gamesResult, data.frame(contrast = contrast,
                                                      meanDiff = meanDiff,
                                                      lowerCI = lowerConf,
                                                      upperCI = upperConf,
                                                      SE = se,
-                                                     t = t,
+                                                     t = t*sign(meanDiff),
+                                                     df = df,
                                                      pTukey = pVal))
       }
     }
@@ -1124,7 +1127,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   
   .createPostHocDunnettTable <- function(myTitle) {
     
-    postHocTable <- createJaspTable(title = gettextf("Dunnett Post Hoc Comparisons - %1", myTitle))
+    postHocTable <- createJaspTable(title = gettextf("Dunnett Post Hoc Comparisons - %s", myTitle))
     
     postHocTable$addColumnInfo(name="contrast",title=gettext("Comparison"),      type="string")
     postHocTable$addColumnInfo(name="meanDiff",title=gettext("Mean Difference"), type="number")

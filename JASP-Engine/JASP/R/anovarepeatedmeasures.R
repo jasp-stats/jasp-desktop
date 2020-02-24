@@ -71,7 +71,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     anovaContainer <- createJaspContainer()
     # we set the dependencies on the container, this means that all items inside the container automatically have these dependencies
     anovaContainer$dependOn(c("withinModelTerms", "betweenModelTerms", "repeatedMeasuresCells", "betweenSubjectFactors",
-                              "repeatedMeasuresFactors", "covariates", "sumOfSquares"))
+                              "repeatedMeasuresFactors", "covariates", "sumOfSquares", "useMultivariateModelFollowup"))
     jaspResults[["rmAnovaContainer"]] <- anovaContainer
   }
   
@@ -265,9 +265,10 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   # set these options once for all afex::aov_car calls,
   # this ensures for instance that afex::aov_car always returns objects of class afex_aov.
+  if (options$useMultivariateModelFollowup)   followupModelType <- "multivariate" else followupModelType <- "univariate"
   afex::afex_options(
     check_contrasts = TRUE, correction_aov = "GG", 
-    emmeans_model = "univariate", es_aov = "ges", factorize = TRUE, 
+    emmeans_model = followupModelType, es_aov = "ges", factorize = TRUE, 
     lmer_function = "lmerTest", method_mixed = "KR", return_aov = "afex_aov", 
     set_data_arg = FALSE, sig_symbols = c(" +", " *", " **", " ***"), type = 3
   )
@@ -339,7 +340,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     if (!is.null(modelTerm)) {
       isWithin <- any(modelTerm %in% modelDef$termsRM.base64)
       indices <- .mapAnovaTermsToTerms(modelTerm, rownames(model))
-      nextNewGroup <- c(isWithin, rep(FALSE, length(indices) - 1))
+      nextNewGroup <- c(TRUE, rep(FALSE, length(indices) - 1))
       sortedModel[indices, ] <- model[indices, ]
       sortedModel[indices, c(".isNewGroup", "isWithinTerm")] <- c(nextNewGroup, rep(isWithin, length(indices)))
       
@@ -836,10 +837,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   for (var in variables) {
     formula <- as.formula(paste("~", var))
-    referenceGrid <- emmeans::emmeans(fullModel, formula, model = "multivariate")
-    
+    referenceGrid <- emmeans::emmeans(fullModel, formula)
     referenceGridList[[var]] <- referenceGrid
-    
   }
   
   rmAnovaContainer[["referenceGrid"]] <- createJaspState(object = referenceGridList, 
