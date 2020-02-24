@@ -269,6 +269,11 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::duplicateAnalysis,				_analyses,				&Analyses::duplicateAnalysis								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::showDependenciesInAnalysis,	_analyses,				&Analyses::showDependenciesInAnalysis						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::showPlotEditor,				_plotEditorModel,		&PlotEditorModel::showPlotEditor							);
+	connect(_resultsJsInterface,	&ResultsJsInterface::resultsMetaChanged,			_analyses,				&Analyses::resultsMetaChanged								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::allUserDataChanged,			_analyses,				&Analyses::allUserDataChanged								);
+	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedSignal,		_languageModel,			&LanguageModel::resultsPageLoaded							);
+
+
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
@@ -283,6 +288,7 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::unselectAnalysisInResults,				_resultsJsInterface,	&ResultsJsInterface::unselect								);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 	connect(_analyses,				&Analyses::analysisRemoved,							_resultsJsInterface,	&ResultsJsInterface::removeAnalysis							);
+	connect(_analyses,				&Analyses::setResultsMeta,							_resultsJsInterface,	&ResultsJsInterface::setResultsMeta,						Qt::QueuedConnection);
 	connect(_analyses,				&Analyses::developerMode,							_preferences,			&PreferencesModel::developerMode							);
 	connect(_analyses,				&Analyses::somethingModified,						[&](){					if(_package) _package->setModified(true); }					);
 
@@ -830,15 +836,9 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	{
 		_package->setWaitingForReady();
 
-		getAnalysesUserData();
 		_resultsJsInterface->exportPreviewHTML();
 
-		Json::Value analysesData(Json::objectValue);
-
-		analysesData["analyses"]	= _analyses->asJson();
-		analysesData["meta"]		= _resultsJsInterface->getResultsMeta();
-
-		_package->setAnalysesData(analysesData);
+		_package->setAnalysesData(_analyses->asJson());
 
 		connectFileEventCompleted(event);
 
@@ -1068,6 +1068,8 @@ void MainWindow::populateUIfromDataSet()
 		stringstream corruptionStrings;
 		Analysis* currentAnalysis = nullptr;
 
+		//This really should all be moved to Analyses!
+
 		Json::Value analysesData = _package->analysesData();
 		if (analysesData.isNull())
 		{
@@ -1085,6 +1087,7 @@ void MainWindow::populateUIfromDataSet()
 				if (!meta.isNull())
 				{
 					QString results = tq(analysesData["meta"].toStyledString());
+					_analyses->resultsMetaChanged(results);
 					_resultsJsInterface->setResultsMeta(results);
 				}
 			}
@@ -1628,17 +1631,6 @@ void MainWindow::analysisAdded(Analysis *)
 	if (!_package->isLoaded())
 		_package->setHasAnalysesWithoutData();
 	setWelcomePageVisible(false);
-}
-
-void MainWindow::getAnalysesUserData()
-{
-	QVariant userData = _resultsJsInterface->getAllUserData();
-
-	Json::Value data;
-	Json::Reader parser;
-	parser.parse(fq(userData.toString()), data);
-
-	_analyses->setAnalysesUserData(data);
 }
 
 void MainWindow::setScreenPPI(int screenPPI)

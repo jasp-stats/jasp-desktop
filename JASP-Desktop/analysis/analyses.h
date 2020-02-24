@@ -93,6 +93,8 @@ public:
 	bool					visible()													const			{ return _visible;				}
 	bool					moving()													const			{ return _moving;				}
 	double					currentFormPrevH()											const			{ return _currentFormPrevH;		}
+	Json::Value				resultsMeta()												const			{ return _resultsMeta;			}
+	Json::Value				allUserData()												const			{ return _allUserData;			}
 	Analysis*				getAnalysisBeforeMoving(size_t index);
 
 public slots:
@@ -123,6 +125,8 @@ public slots:
 	void showDependenciesInAnalysis(size_t analysis_id, QString optionName);
 	void analysisTitleChangedHandler(std::string moduleName, std::string oldTitle, std::string newTitle);
 	void languageChangedHandler();
+	void resultsMetaChanged(QString json);
+	void allUserDataChanged(QString json);
 
 signals:
 	void analysesUnselected();
@@ -153,6 +157,7 @@ signals:
 	void somethingModified();
     void analysesExportResults();
 	bool developerMode();
+	void setResultsMeta(QString json);
 
 	ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis *source);
 	void				requestColumnCreation(QString columnName, Analysis *source, int columnType);
@@ -174,6 +179,9 @@ private:
 private:
 	static Analyses				*	_singleton;
 
+	Json::Value						_resultsMeta, //Stored Notes and custom title
+									_allUserData; //Notes and stuff?
+
 	std::map<size_t, Analysis*>		_analysisMap;
 	std::vector<size_t>				_orderedIds;
 	std::vector<size_t>				_orderedIdsBeforeMoving;
@@ -188,7 +196,6 @@ private:
 
 	static int								_scriptRequestID;
 	QMap<int, QPair<Analysis*, QString> >	_scriptIDMap;
-
 
 };
 

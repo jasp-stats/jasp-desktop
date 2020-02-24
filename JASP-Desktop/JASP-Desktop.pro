@@ -1,12 +1,13 @@
-QT += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
+QT      += webengine webchannel svg network printsupport xml qml quick quickwidgets quickcontrols2
 DEFINES += JASP_USES_QT_HERE
+
 GENERATE_LANGUAGE_FILES = false
 
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
 
 include(../JASP.pri)
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets #We need this for the native dialogs
 
 include(../R_HOME.pri)
 

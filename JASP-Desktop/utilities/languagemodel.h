@@ -81,7 +81,8 @@ public:
 public slots:
 	void changeLanguage(int index);
 	void setCurrentIndex(int currentIndex);
-	void loadModuleTranslationFile(Modules::DynamicModule *dyn);	
+	void loadModuleTranslationFile(Modules::DynamicModule *dyn);
+	void resultsPageLoaded();
 
 signals:
 	void currentIndexChanged();
@@ -103,20 +104,20 @@ private:
 	bool isValidLocalName(QString filename, QLocale & loc);
 	bool isJaspSupportedLanguage(QLocale::Language lang);
 
-	static LanguageModel * _singleton;
+	static LanguageModel	* _singleton;
+	QApplication			* _mApp = nullptr;
+	QTranslator				* _mTransLator = nullptr;
+	QQmlApplicationEngine	* _qml = nullptr;
+	QObject					* _parent = nullptr;
 
-	QApplication *_mApp = nullptr;
-	QTranslator *_mTransLator = nullptr;
-	QQmlApplicationEngine *_qml = nullptr;
-	QObject *_parent = nullptr;
+	QMap<QLocale::Language, LanguageInfo>	_languagesInfo;
+	QVector<QLocale::Language>				_languages;
+	QVector<QTranslator *>					_translators;
 
-	QMap<QLocale::Language, LanguageInfo> _languagesInfo;
-	QVector<QLocale::Language> _languages;
-	QVector<QTranslator *> _translators;
+	QString		_qmlocation;
 
-	QString _qmlocation;
-
-	int _currentIndex;
+	int			_currentIndex;
+	bool		_shouldEmitLanguageChanged = false;
 };
 
 

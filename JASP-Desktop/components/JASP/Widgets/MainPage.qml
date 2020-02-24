@@ -161,9 +161,9 @@ Item
 				width:					giveResultsSomeSpace.width - panelSplit.hackySplitHandlerHideWidth
 
 				url:					resultsJsInterface.resultsPageUrl
-				onLoadingChanged:		resultsJsInterface.resultsPageLoaded(loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus);
 				onContextMenuRequested: request.accepted = true
 				backgroundColor:		jaspTheme.uiBackground
+
 				onNavigationRequested:
 					if(request.navigationType === WebEngineNavigationRequest.ReloadNavigation || request.url == resultsJsInterface.resultsPageUrl)
 						request.action = WebEngineNavigationRequest.AcceptRequest
@@ -174,13 +174,28 @@ Item
 						request.action = WebEngineNavigationRequest.IgnoreRequest;
 					}
 
+				onLoadingChanged:
+				{
+					resultsJsInterface.resultsLoaded = loadRequest.status === WebEngineLoadRequest.LoadSucceededStatus;
+					setTranslatedResultsString();
+				}
+
 				Connections
 				{
 					target:					resultsJsInterface
 					onRunJavaScript:		resultsView.runJavaScript(js)
 				}
 
-				webChannel.registeredObjects: [ resultsJsInterfaceInterface ]
+				webChannel.registeredObjects:	[ resultsJsInterfaceInterface ]
+
+				property string resultsString:	qsTr("Results")
+				onResultsStringChanged:			setTranslatedResultsString();
+
+				function setTranslatedResultsString()
+				{
+					if(resultsJsInterface.resultsLoaded)
+						runJavaScript("window.setAnalysesTitle(\"" + resultsString + "\");");
+				}
 
 				Item
 				{
