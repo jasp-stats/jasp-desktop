@@ -61,6 +61,12 @@
                        observations.amount = "< 2",
                        exitAnalysisIfErrors = TRUE)
 
+  if (type == "regularized" &&
+      "weights" %in% names(options) && !is.null(options[["weights"]]) && options[["weights"]] != "")
+    .hasErrors(dataset, type = c("infinity", "limits", "observations"),
+              all.target = options[["weights"]], limits.min = 0, observations.amount = "< 2",
+              exitAnalysisIfErrors = TRUE)
+
   if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && !is.numeric(dataset[,.v(options[["testSetIndicatorVariable"]])]))
     JASP:::.quitAnalysis(gettext("Your test set indicator should contain numeric values, containing only 1 (included in test set) and 0 (excluded from test set)."))
 
