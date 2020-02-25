@@ -242,19 +242,12 @@ void ResultsJsInterface::exportSelected(const QString &filename)
 
 void ResultsJsInterface::analysisChanged(Analysis *analysis)
 {
-	Json::Value analysisJson	= analysis->asJSON();
-	analysisJson["userdata"]	= analysis->userData();
-	QString results				= tq(analysisJson.toStyledString());
-	results						= "window.analysisChanged(JSON.parse('" + escapeJavascriptString(results) + "'));";
-
-	emit runJavaScript(results);
+	emit runJavaScript("window.analysisChanged(JSON.parse('" + escapeJavascriptString(tq(analysis->asJSON().toStyledString())) + "'));");
 }
 
 void ResultsJsInterface::setResultsMeta(QString str)
 {
-	QString results = escapeJavascriptString(str);
-	results = "window.setResultsMeta(JSON.parse('" + results + "'));";
-	emit runJavaScript(results);
+	emit runJavaScript("window.setResultsMeta(JSON.parse('" + escapeJavascriptString(str) + "'));");
 }
 
 void ResultsJsInterface::resetResults()
@@ -336,11 +329,13 @@ QString ResultsJsInterface::escapeJavascriptString(const QString &str)
 void ResultsJsInterface::setResultsMetaFromJavascript(QString json)
 {
 	emit resultsMetaChanged(json);
+	emit packageModified();
 }
 
 void ResultsJsInterface::setAllUserDataFromJavascript(QString json)
 {
 	emit allUserDataChanged(json);
+	emit packageModified();
 }
 
 void ResultsJsInterface::setResultsPageUrl(QString resultsPageUrl)

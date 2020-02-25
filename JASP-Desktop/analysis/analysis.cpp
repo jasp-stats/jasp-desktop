@@ -151,10 +151,12 @@ void Analysis::remove()
 
 void Analysis::setResults(const Json::Value & results, const Json::Value & progress)
 {
-	_results = results;
-	_progress = progress;
+	_results	= results;
+	_progress	= progress;
+
 	if (_analysisForm)
 		_analysisForm->clearFormErrors();
+
 	emit resultsChangedSignal(this);
 
 	processResultsForDependenciesToBeShown();
@@ -246,7 +248,7 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 						_analysisForm	= form;
 	if(!_isDuplicate)	_status			= isNewAnalysis ? Empty : Complete;
 	
-	connect(Analyses::analyses(), &Analyses::dataSetChanged,			_analysisForm, &AnalysisForm::dataSetChangedHandler);
+	connect(Analyses::analyses(), &Analyses::dataSetChanged,		_analysisForm, &AnalysisForm::dataSetChangedHandler);
 	connect(Analyses::analyses(), &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
 }
 
@@ -310,6 +312,8 @@ Json::Value Analysis::asJSON() const
 	if(_moduleData != nullptr)
 		analysisAsJson["dynamicModule"] = _moduleData->asJsonForJaspFile();
 
+	//Log::log() << "Analysis::asJSON():\n" << analysisAsJson.toStyledString() << std::endl;
+
 	return analysisAsJson;
 }
 
@@ -365,24 +369,6 @@ void Analysis::requestComputedColumnDestructionHandler(std::string columnName)
 
 	if (form())
 		form()->removeOwnComputedColumn(tq(columnName));
-}
-
-
-int Analysis::callback(Json::Value results)
-{
-	if (_status != Empty && _status != Aborted)
-	{
-		if (results != Json::nullValue)
-		{
-			_results = results;
-			resultsChangedSignal(this);
-		}
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
 }
 
 performType Analysis::desiredPerformTypeFromAnalysisStatus() const

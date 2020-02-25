@@ -185,7 +185,6 @@ public slots:
 	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
 
 protected:
-	int						callback(Json::Value results);
 	void					bindOptionHandlers();
 
 private:

@@ -80,7 +80,6 @@ signals:
 public slots:
 	void setZoom(double zoom);
 	void resultsDocumentChanged()				{ emit packageModified(); }
-	void updateUserData()						{ emit packageModified(); }
 	void saveTempImage(int id, QString path, QByteArray data);
 	void pushImageToClipboard(const QByteArray &base64, const QString &html);
 	void pushToClipboard(const QString &mimeType, const QString &data, const QString &html);
