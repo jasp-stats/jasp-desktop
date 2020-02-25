@@ -32,7 +32,7 @@ signRecursively () {
 		fi
 	done
 
-	#Descend depth-first the go deeper into each folder here
+	#Descend into each folder here
 	for d in "$1"/*/; do
 		if [ -d "$d" ]; then
 			signRecursively "$d" $2
