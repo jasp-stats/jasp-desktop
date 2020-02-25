@@ -170,7 +170,7 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 
 	noteOptions: function () {
 		if (this.noteBox) {
-			var options = { key: this.noteBoxKey, menuText: 'Add Note', visible: this.noteBox.visible };
+			var options = { key: this.noteBoxKey, visible: this.noteBox.visible };
 
 			return [options];
 		}

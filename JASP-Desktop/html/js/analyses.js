@@ -33,7 +33,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 
 	noteOptions: function () {
 		var visible = this.noteBox.visible;
-		var options = { key: 'main', menuText: 'Add Note', visible: visible };
+		var options = { key: 'main', visible: visible };
 
 		return [options];
 	},

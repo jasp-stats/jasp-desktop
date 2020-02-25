@@ -116,8 +116,6 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 
 			for (const Json::Value & noteOption : noteOptions)
 			{
-				entry.setDisplayText(QString::fromStdString(noteOption["menuText"].asString()));
-
 				QString jsFunction = QString("window.notesMenuClicked('%1', %2);").arg(tq(noteOption["key"].asString())).arg(noteOption["visible"].asBool() ? "false" : "true");
 				entry.setJSFunction(jsFunction);
 				entry.setEnabled(!noteOption["visible"].asBool());
