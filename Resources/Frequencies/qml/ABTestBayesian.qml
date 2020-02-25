@@ -40,7 +40,7 @@ Form
 
 	ColumnLayout
 	{
-		BayesFactorType { }
+		BayesFactorType { id: bayesFactorType }
 
 		Group
 		{
@@ -74,13 +74,14 @@ Form
 					name: "plotPosteriorType"
 					values: [ "LogOddsRatio", "OddsRatio", "RelativeRisk", "AbsoluteRisk", "p1&p2" ]
 				}
-
 			}
+
 			CheckBox
 			{
 				name	: "plotSequentialAnalysis"
 				label	: qsTr("Sequential analysis")
 			}
+
 			CheckBox
 			{
 				name	: "plotPriorOnly"
@@ -94,10 +95,19 @@ Form
 					values: [ "LogOddsRatio", "OddsRatio", "RelativeRisk", "AbsoluteRisk", "p1&p2", "p1", "p2" ]
 				}
 			}
+
 			CheckBox
 			{
-				name	: "plotRobustness"
-				label	: qsTr("Bayes factor robustness check")
+				name				: "plotRobustness"
+				label				: qsTr("Bayes factor robustness check")
+				childrenOnSameRow	: true
+
+				DropDown
+				{
+					id		: plotRobustnessBFType
+					name	: "plotRobustnessBFType"
+					values	: ['BF10', 'BF+0', 'BF-0']
+				}
 			}
 		}
 
@@ -125,17 +135,48 @@ Form
 				DoubleField { name: "orLessThan1Prob";		label: qsTr("Log odds ratio < 0"); defaultValue: 0.25; max: 1; min: 0; decimals: 3 }
 				DoubleField { name: "orNotEqualTo1Prob";	label: qsTr("Log odds ratio \u2260 0"); defaultValue: 0;    max: 1; min: 0; decimals: 3 }
 			}
-		}
 
-		ColumnLayout
-		{
 			Group
 			{
 				title: qsTr("Sampling")
 				IntegerField { name: "numSamples"; label: qsTr("No. samples"); defaultValue: 10000; min: 100; fieldWidth: 50; }
 			}
 
-			SetSeed{}
+			SetSeed {}
+		}
+
+		ColumnLayout
+		{
+			Group
+			{
+				title	: qsTr("Robustness Plot")
+
+				Group
+				{
+					title	: qsTr("Step Size")
+					IntegerField { label: qsTr("\u03bc:"); name: "mu_stepsize";	defaultValue: 5; min: 3 }
+					IntegerField { label: qsTr("\u03c3:"); name: "sigma_stepsize";	defaultValue: 5; min: 3 }
+				}
+
+				Group
+				{
+					title	: qsTr("Step Range")
+
+					Row
+					{
+						Label { text: qsTr("\u03bc:") }
+						DoubleField { label: qsTr("lower:"); name: "mu_stepsize_lower";	defaultValue: -0.5; negativeValues: true }
+						DoubleField { label: qsTr("upper:"); name: "mu_stepsize_upper";	defaultValue: 0.5 }
+					}
+
+					Row
+					{
+						Label { text: qsTr("\u03c3:") }
+						DoubleField { label: qsTr("lower:"); name: "sigma_stepsize_lower"; defaultValue: 0.1; min: 0.0 }
+						DoubleField { label: qsTr("upper:"); name: "sigma_stepsize_upper";	 defaultValue: 1.0; min: 0.0 }
+					}
+				}
+			}
 		}
 	}
 }
