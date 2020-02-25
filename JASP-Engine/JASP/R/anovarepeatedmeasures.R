@@ -882,7 +882,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   allNames <- unlist(lapply(options$repeatedMeasuresFactors, function(x) x$name)) # Factornames 
 
   for (var in variables) {
-    
+
     resultPostHoc <- summary(pairs(referenceGrid[[var]], adjust="bonferroni"), 
                           infer = TRUE, level = options$confidenceIntervalIntervalPostHoc)
     
@@ -910,12 +910,13 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
         
         for (compIndex in .indices(comparisons)) {
           
-          levelA <- comparisons[[compIndex]][1]
-          levelB <- comparisons[[compIndex]][2]
+          levelANoDots <- gsub(.unv(comparisons[[compIndex]][1]), pattern = "\\.", replacement = " ")
+          levelBNoDots <- gsub(.unv(comparisons[[compIndex]][2]), pattern = "\\.", replacement = " ")
+          facLevelNoDots <- gsub(longData[[var]], pattern = "\\.", replacement = " ")
 
-          x <- subset(longData, longData[[var]] == .unv(levelA))
+          x <- subset(longData, facLevelNoDots == levelANoDots)
           x <- tapply(x[[.v("dependent")]], x[[.v("subject")]], mean)
-          y <- subset(longData, longData[[var]] == .unv(levelB))
+          y <- subset(longData, facLevelNoDots == levelBNoDots)
           y <- tapply(y[[.v("dependent")]], y[[.v("subject")]], mean)
           
           tResult <- t.test(x, y, paired= TRUE, var.equal = FALSE, conf.level = bonfAdjustCIlevel)
