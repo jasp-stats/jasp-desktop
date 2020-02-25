@@ -14,7 +14,7 @@ msgstr "Een leuke groep elementen"
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
-msgstr "Voer een geheel getal in:"
+msgstr "Voer een geheel getal in: "
 
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
@@ -46,7 +46,7 @@ msgstr "Tweede-orde factor"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Model Options"
-msgstr "Model opties"
+msgstr "Modelopties"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Additional Fit Measures"
@@ -90,11 +90,11 @@ msgstr "Fix exogene covariaten"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Factor scaling"
-msgstr "Factor schaling"
+msgstr "Factorschaling"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Residual Covariances"
-msgstr "Residuele Covarianties"
+msgstr "Residuele covarianties"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Additional Output"
@@ -110,7 +110,7 @@ msgstr "Residuele covariantiematrix"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Modification indices"
-msgstr "Modificatie indexen"
+msgstr "Modificatie-indices"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Cutoff"
@@ -118,7 +118,7 @@ msgstr "Grens"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Show lavaan syntax"
-msgstr "Laat lavaan syntax zien"
+msgstr "Laat lavaansyntax zien"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Multigroup CFA"
@@ -158,7 +158,7 @@ msgstr "Niet passende grafiek"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Model plot"
-msgstr "Model grafiek"
+msgstr "Modelgrafiek"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Show parameters"
@@ -178,7 +178,7 @@ msgstr "Opties"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Fix manifest intercepts to zero"
-msgstr "Zet gemanifesteerde intercepten vast op 0"
+msgstr "Zet manifeste intercepten vast op 0"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Fix latent intercepts to zero"
@@ -202,11 +202,11 @@ msgstr "Voeg drempelwaarden toe"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Add scalings parameters"
-msgstr "Voeg schaal parameters toe"
+msgstr "Voeg schaalparameters toe"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Correlate dependent variables"
-msgstr "Correlatie afhankelijke variabelen"
+msgstr "Correleer afhankelijke variabelen"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Emulation"
@@ -226,7 +226,7 @@ msgstr "EQS"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Error Calculation"
-msgstr "Fout berekening"
+msgstr "Foutberekening"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Standard"
@@ -322,7 +322,7 @@ msgstr "WLS gewichten (optioneel)"
 
 msgctxt "LatentRegression|"
 msgid "Model options"
-msgstr "Model opties"
+msgstr "Modelopties"
 
 msgctxt "LatentRegression|"
 msgid "Additional Fit Measures"
@@ -354,7 +354,7 @@ msgstr "RMSEA"
 
 msgctxt "LatentRegression|"
 msgid "Model Options"
-msgstr "Model opties"
+msgstr "Modelopties"
 
 msgctxt "LatentRegression|"
 msgid "Include mean structure"
@@ -370,7 +370,7 @@ msgstr "Zet exogene covariaten vast"
 
 msgctxt "LatentRegression|"
 msgid "Factor scaling"
-msgstr "Factor schaling"
+msgstr "Factorschaling"
 
 msgctxt "LatentRegression|"
 msgid "Residual Covariances"
@@ -382,15 +382,15 @@ msgstr "Aanvullende uitvoer"
 
 msgctxt "LatentRegression|"
 msgid "Implied covariance matrix"
-msgstr "Impliciete covariantie matrix"
+msgstr "Impliciete covariantiematrix"
 
 msgctxt "LatentRegression|"
 msgid "Residual covariance matrix"
-msgstr "Resterende covariantie matrix"
+msgstr "Resterende covariantiematrix"
 
 msgctxt "LatentRegression|"
 msgid "Modification indices"
-msgstr "Modificatie indices"
+msgstr "Modificatie-indices"
 
 msgctxt "LatentRegression|"
 msgid "Cutoff"
@@ -398,7 +398,7 @@ msgstr "Grens"
 
 msgctxt "LatentRegression|"
 msgid "Show lavaan syntax"
-msgstr "Laat lavaan syntax zien"
+msgstr "Laat lavaansyntax zien"
 
 msgctxt "LatentRegression|"
 msgid "Multigroup CFA"
@@ -438,7 +438,7 @@ msgstr "Niet passende grafiek"
 
 msgctxt "LatentRegression|"
 msgid "Model plot"
-msgstr "Model grafiek"
+msgstr "Modelgrafiek"
 
 msgctxt "LatentRegression|"
 msgid "Show parameters"
@@ -478,11 +478,11 @@ msgstr "Gecorreleerde exogene latenten"
 
 msgctxt "LatentRegression|"
 msgid "Add scalings parameters"
-msgstr "Voeg schaal parameter toe"
+msgstr "Voeg schaalparameter toe"
 
 msgctxt "LatentRegression|"
 msgid "Correlate dependent variables"
-msgstr "Correlatie afhankelijke variablelen"
+msgstr "Correleer afhankelijke variablelen"
 
 msgctxt "LatentRegression|"
 msgid "Emulation"
@@ -502,7 +502,7 @@ msgstr "EQS"
 
 msgctxt "LatentRegression|"
 msgid "Error Calculation"
-msgstr "Fout Berekening"
+msgstr "Foutberekening"
 
 msgctxt "LatentRegression|"
 msgid "Standard"
@@ -586,7 +586,7 @@ msgstr "Statistieken"
 
 msgctxt "SEMSimple|"
 msgid "Error Calculation"
-msgstr "Fout berekening"
+msgstr "Foutberekening"
 
 msgctxt "SEMSimple|"
 msgid "Standard"
@@ -626,11 +626,11 @@ msgstr "Mardia's coëfficiënt"
 
 msgctxt "SEMSimple|"
 msgid "Modification indices"
-msgstr "Modificatie indices"
+msgstr "Modificatie-indices"
 
 msgctxt "SEMSimple|"
 msgid "Hide low indices"
-msgstr "Verberg lage indexen"
+msgstr "Verberg lage indices"
 
 msgctxt "SEMSimple|"
 msgid "Threshold"
@@ -645,7 +645,7 @@ msgid "Grouping Variable"
 msgstr "Groeperingsvariabele"
 
 msgctxt "SEMSimple|"
-msgid "Equality Constraits"
+msgid "Equality Constraints"
 msgstr "Gelijkheidsbeperkingen"
 
 msgctxt "SEMSimple|"
@@ -710,7 +710,7 @@ msgstr "DWLS"
 
 msgctxt "SEMSimple|"
 msgid "Model Options"
-msgstr "Model opties"
+msgstr "Modelopties"
 
 msgctxt "SEMSimple|"
 msgid "Include mean structure"
@@ -722,7 +722,7 @@ msgstr "Neem aan dat factoren niet gecorreleerd zijn"
 
 msgctxt "SEMSimple|"
 msgid "Fix exogenous covariates"
-msgstr "Zet exogene covariaten vast "
+msgstr "Zet exogene covariaten vast"
 
 msgctxt "SEMSimple|"
 msgid "Factor scaling"
@@ -734,11 +734,11 @@ msgstr "Geavanceerd"
 
 msgctxt "SEMSimple|"
 msgid "Fix manifest intercepts to zero"
-msgstr "Zet maniveste intercepten vast op 0"
+msgstr "Zet manifeste intercepten vast op 0"
 
 msgctxt "SEMSimple|"
 msgid "Fix latent intercepts to zero"
-msgstr "Zet latente intecepten vast op 0"
+msgstr "Zet latente intercepten vast op 0"
 
 msgctxt "SEMSimple|"
 msgid "Omit residual single indicator"
@@ -758,7 +758,7 @@ msgstr "Voer dremplelwaarden toe"
 
 msgctxt "SEMSimple|"
 msgid "Add scalings parameters"
-msgstr "Voer schaal parameters toe"
+msgstr "Voer schaalparameters toe"
 
 msgctxt "SEMSimple|"
 msgid "Correlate dependent variables"
@@ -782,7 +782,7 @@ msgstr "EQS"
 
 msgctxt "SEMSimple|"
 msgid "Model Name"
-msgstr "Model naam"
+msgstr "Modelnaam"
 
 msgctxt "ComboBox|"
 msgid "<no choice>"
@@ -823,15 +823,15 @@ msgstr "Citatie:"
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr "Selecteer alle:"
+msgstr "Selecteer alle"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
 msgstr "Kopieer selectie"
 
 msgctxt "AboutWindow|"
-msgid "BibTex"
-msgstr "BibTex"
+msgid "BibTeX"
+msgstr "BibTeX"
 
 msgctxt "AboutWindow|"
 msgid "Close"
@@ -867,15 +867,15 @@ msgstr "Sleep om data te zien"
 
 msgctxt "AnalysisForms|"
 msgid "Hide input options"
-msgstr "Verberg invoer opties"
+msgstr "Verberg invoeropties"
 
 msgctxt "AnalysisForms|"
 msgid "Show input options"
-msgstr "Geef invoer opties weer"
+msgstr "Toon invoeropties"
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
-msgstr "Bayes Factor"
+msgstr "Bayes factor"
 
 msgctxt "BayesFactorType|"
 msgid "BF₁₀"
@@ -908,7 +908,7 @@ msgstr "Factoren"
 #, qt-format
 msgctxt "ContrastsList|"
 msgid "Custom contrast for %1"
-msgstr "Aangepast contrast voor %l"
+msgstr "Aangepast contrast voor %1"
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
@@ -924,7 +924,7 @@ msgstr "Blader"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
-msgstr "Huidig data bestand voor synchronisatie"
+msgstr "Huidig databestand voor synchronisatie"
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
@@ -932,7 +932,7 @@ msgstr "Databibliotheek"
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
-msgstr "Synchroniseer met dit data bestand"
+msgstr "Synchroniseer met dit databestand"
 
 msgctxt "ListItem|"
 msgid "Navigate to folder"
@@ -940,7 +940,7 @@ msgstr "Navigeer naar map"
 
 msgctxt "ListItem|"
 msgid "Open JASP file"
-msgstr "Open JASP bestand"
+msgstr "Open JASP-bestand"
 
 msgctxt "ListItem|"
 msgid "Open data file"
@@ -992,7 +992,7 @@ msgstr "Onthoud gegevens"
 
 msgctxt "OSFLogin|"
 msgid "About the OSF"
-msgstr "Over de OSF"
+msgstr "Over het OSF"
 
 msgctxt "OSFLogin|"
 msgid "Register"
@@ -1000,7 +1000,7 @@ msgstr "Registreer"
 
 msgctxt "PrefsAdvanced|"
 msgid "Advanced Preferences"
-msgstr "Geavanceerde Voorkeuren"
+msgstr "Geavanceerde voorkeuren"
 
 msgctxt "PrefsAdvanced|"
 msgid "Remember Enabled Modules"
@@ -1012,27 +1012,27 @@ msgid ""
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
 "Ga de volgende keer dat JASP start verder waar je was gebleven. \n"
-"Als je deze optie aanzet, onthoudt JASP welke modulen je aan heb gezet."
+"Als je deze optie aanzet, onthoudt JASP welke modules je aan hebt gezet."
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
-msgstr "Module opties"
+msgstr "Module-opties"
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode (Beta version)"
-msgstr "Ontwikkelaars mode (Beta versie)"
+msgstr "Ontwikkelaarsmodus (betaversie)"
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
-msgstr "Schakel deze optie in om JASP modules te gebruiken."
+msgstr "Schakel deze optie in om JASP-modules te gebruiken."
 
 msgctxt "PrefsAdvanced|"
 msgid "Select developer folder"
-msgstr "Selecteert developer map"
+msgstr "Selecteer ontwikkelaarsmap"
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr "Navigeer naar je JASP module map"
+msgstr "Navigeer naar je JASP-modulemap"
 
 msgctxt "PrefsAdvanced|"
 msgid "Regenerate package metadata every time (DESCRIPTION & NAMESPACE)"
@@ -1044,7 +1044,7 @@ msgid ""
 "or simply want to keep manual changes to DESCRIPTION and NAMESPACE."
 msgstr ""
 "Schakel deze optie uit als je je R-package transformeert tot een JASP Module "
-"of simpelweg handmatige veranderingen wil maken aan DECRIPTION and NAMESPACE."
+"of simpelweg handmatige veranderingen wilt maken aan DESCRIPTION and NAMESPACE."
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
@@ -1052,7 +1052,7 @@ msgstr "Verander de CRAN locatie: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
-msgstr "Log opties"
+msgstr "Logopties"
 
 msgctxt "PrefsAdvanced|"
 msgid "Log to file"
@@ -1060,11 +1060,11 @@ msgstr "Log naar een bestand"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr "Om debug-logbestanden op te slaan, activeer deze box"
+msgstr "Om debug-logbestanden op te slaan, activeer deze box."
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr "Maximum aantal logbestanden:"
+msgstr "Maximum aantal logbestanden: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
@@ -1072,15 +1072,15 @@ msgstr "Toon logfiles"
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
-msgstr "Data Voorkeuren"
+msgstr "Datavoorkeuren"
 
 msgctxt "PrefsData|"
 msgid "Synchronize automatically on data file save"
-msgstr "Synchroniseer automatisch bij wegschrijven bestand"
+msgstr "Synchroniseer automatisch bij opslaan bestand"
 
 msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
-msgstr "Gebruik standaard spreadsheet editor"
+msgstr "Gebruik standaard spreadsheeteditor"
 
 msgctxt "PrefsData|"
 msgid "Select custom editor"
@@ -1097,11 +1097,11 @@ msgid ""
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
 "Drempelwaarde aantal unieke gehele getallen voor het classificeren van een "
-"variabeleals 'schaal'. \n"
+"variabele als 'schaal'. \n"
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr "Lijst met ontbrekende waardes"
+msgstr "Lijst met ontbrekende waarden"
 
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
@@ -1113,11 +1113,11 @@ msgstr "Herstel"
 
 msgctxt "PrefsResults|"
 msgid "Results Preferences"
-msgstr "Resultaat voorkeuren"
+msgstr "Resultaatvoorkeuren"
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr "Tabel opties"
+msgstr "Tabelopties"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
@@ -1129,7 +1129,7 @@ msgstr "Vast aantal decimalen"
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
-msgstr "Grafiek opties"
+msgstr "Grafiekopties"
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
@@ -1137,11 +1137,11 @@ msgstr "Gebruik PPI van het scherm in grafieken: "
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
-msgstr "Gebruik PPI van het scherm in grafieken..."
+msgstr "Gebruik PPI van het scherm in grafieken."
 
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
-msgstr "Aangepaste PPI:  "
+msgstr "Aangepaste PPI: "
 
 msgctxt "PrefsResults|"
 msgid "Image background color"
@@ -1156,7 +1156,7 @@ msgid ""
 "This makes the background of all plots white, quite useful if you want to "
 "use it in LaTeX or submit it to a journal."
 msgstr ""
-"Dit maakt de achtergrond van alle grafieken wit. Handig voor het gebruik het "
+"Dit maakt de achtergrond van alle grafieken wit. Handig voor het gebruik "
 "in LaTeX of voor publicatie."
 
 msgctxt "PrefsResults|"
@@ -1168,7 +1168,7 @@ msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
 msgstr ""
-"Dit maakt de achtergrond van alle grafieken transparant.Vooral zinvol om te "
+"Dit maakt de achtergrond van alle grafieken transparant. Vooral zinvol om te "
 "gebruiken bij een achtergrond die niet wit is."
 
 msgctxt "RecentFiles|"
@@ -1181,7 +1181,7 @@ msgstr "Verberg data"
 
 msgctxt "MainPage|"
 msgid "Show data"
-msgstr "Geef data weer"
+msgstr "Toon data"
 
 msgctxt "MainPage|"
 msgid "Resize data/results"
@@ -1189,19 +1189,19 @@ msgstr "Pas grootte data/resultaten aan"
 
 msgctxt "MainPage|"
 msgid "Drag to show data"
-msgstr "Sleep om data weer te geven"
+msgstr "Sleep om data te tonen"
 
 msgctxt "ModuleInstaller|"
 msgid "Browse for JASP Module"
-msgstr "Navigeer voor JASP Module"
+msgstr "Navigeer voor JASP-module"
 
 msgctxt "ModuleInstaller|"
 msgid "Select a JASP Module"
-msgstr "Selecteer een JASP Module"
+msgstr "Selecteer een JASP-module"
 
 msgctxt "ModulesMenu|"
 msgid "Install Module"
-msgstr "Intalleer Module"
+msgstr "Intalleer module"
 
 msgctxt "ModulesMenu|"
 msgid "Install a module"
@@ -1209,19 +1209,19 @@ msgstr "Installeer een module"
 
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
-msgstr "Installeer Ontwikkelaarsmodule"
+msgstr "Installeer ontwikkelaarsmodule"
 
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
-msgstr "Instaleren Ontwikkelaarsmodule"
+msgstr "Installeren ontwikkelaarsmodule"
 
 msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
-msgstr "Selecteer een Ontwikkelaarsmodule"
+msgstr "Selecteer een ontwikkelaarsmodule"
 
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
-msgstr "Installeer geselecteerde Ontwikkelaarsmodule"
+msgstr "Installeer geselecteerde ontwikkelaarsmodule"
 
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
@@ -1259,7 +1259,7 @@ msgstr "Deïnstalleer module"
 
 msgctxt "RibbonBar|"
 msgid "Show Modules Menu"
-msgstr "Geef Module menu weer"
+msgstr "Geef modulemenu weer"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
@@ -1295,7 +1295,7 @@ msgstr "locatie:"
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr "Schaal:"
+msgstr "schaal:"
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
@@ -1303,7 +1303,7 @@ msgstr "Normaal"
 
 msgctxt "SubjectivePriors|"
 msgid "mean:"
-msgstr "Gemiddelde:"
+msgstr "gemiddelde:"
 
 msgctxt "SubjectivePriors|"
 msgid "std:"
@@ -1315,7 +1315,7 @@ msgstr "t"
 
 msgctxt "SubjectivePriors|"
 msgid "df:"
-msgstr "vg"
+msgstr "vg:"
 
 msgctxt "SubjectivePriors|"
 msgid "Raw effect size (Dienes)"
@@ -1327,11 +1327,11 @@ msgstr "Uniform"
 
 msgctxt "SubjectivePriors|"
 msgid "lower bound:"
-msgstr "linkergrens:"
+msgstr "ondergrens:"
 
 msgctxt "SubjectivePriors|"
 msgid "upper bound:"
-msgstr "rechtergrens:"
+msgstr "bovengrens:"
 
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
@@ -1351,11 +1351,11 @@ msgstr "Label"
 
 msgctxt "VariablesWindow|"
 msgid "Move selected labels up"
-msgstr "Verplaats geselecteerde labels naar boven"
+msgstr "Verplaats geselecteerde labels omhoog"
 
 msgctxt "VariablesWindow|"
 msgid "Move selected labels down"
-msgstr "Verplaats geselecteerde labels naar onder"
+msgstr "Verplaats geselecteerde labels omlaag"
 
 msgctxt "VariablesWindow|"
 msgid "Reverse order of all labels"
@@ -1363,11 +1363,11 @@ msgstr "Draai volgorde alle labels om"
 
 msgctxt "VariablesWindow|"
 msgid "Reset all filter checkmarks for this column"
-msgstr "Reset alle filter vinkjes voor deze kolom"
+msgstr "Reset alle filtervinkjes voor deze kolom"
 
 msgctxt "VariablesWindow|"
 msgid "Reset all filter checkmarks for all columns"
-msgstr "Reset alle filter vinkjes voor alle kolommen"
+msgstr "Reset alle filtervinkjes voor alle kolommen"
 
 msgctxt "VariablesWindow|"
 msgid "Close this view"
@@ -1380,7 +1380,7 @@ msgstr "Welkom bij JASP"
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
 msgstr ""
-"Een nieuwe manier om statistiek te bedrijven. Gratis, Eenvoudig en Flexibel"
+"Een nieuwe manier om statistiek te bedrijven. Gratis, eenvoudig en flexibel"
 
 msgctxt "WelcomePage|"
 msgid "Free:"
@@ -1391,7 +1391,7 @@ msgid ""
 "JASP is an open-source project with structural support from the University "
 "of Amsterdam."
 msgstr ""
-"JASP is een open-source project in voortdurende ontwikkeling en met "
+"JASP is een open-sourceproject in voortdurende ontwikkeling en met "
 "structurele ondersteuning door de Universiteit van Amsterdam."
 
 msgctxt "WelcomePage|"
@@ -1412,7 +1412,7 @@ msgid ""
 "JASP offers standard analysis procedures in both their classical and "
 "Bayesian manifestations."
 msgstr ""
-"JASP biedt standaard analyse procedures in zowel hun klassieke als "
+"JASP biedt standaard analyseprocedures in zowel hun klassieke als "
 "Bayesiaanse manifestaties."
 
 msgctxt "WelcomePage|"
@@ -1431,7 +1431,7 @@ msgid ""
 "If JASP doesn’t do all you want today, then check back tomorrow: JASP is "
 "being developed at break-neck speed!"
 msgstr ""
-"Onthoud a.u.b. dat dit een preview release is en dat een aantal features nog "
+"Onthoud a.u.b. dat dit een preview-release is en dat een aantal features nog "
 "ontbreekt. \n"
 "\n"
 "Als JASP vandaag nog niet alles kan wat u wilt, probeer het dan morgen "
@@ -1443,11 +1443,11 @@ msgstr "Afhankelijke variabele"
 
 msgctxt "Ancova|"
 msgid "Fixed Factors"
-msgstr "Vaste Factoren"
+msgstr "Vaste factoren"
 
 msgctxt "Ancova|"
 msgid "Random Factors"
-msgstr "Aselecte Factoren"
+msgstr "Aselecte factoren"
 
 msgctxt "Ancova|"
 msgid "Covariates"
@@ -1455,7 +1455,7 @@ msgstr "Covariaten"
 
 msgctxt "Ancova|"
 msgid "WLS Weights"
-msgstr "WLS Gewichten"
+msgstr "WLS gewichten"
 
 msgctxt "Ancova|"
 msgid "Model"
@@ -1483,7 +1483,7 @@ msgstr "Toets voor homogeniteit"
 
 msgctxt "Ancova|"
 msgid "Q-Q plot of residuals"
-msgstr "Q-Q plot voor residuen"
+msgstr "Q-Q plot van residuen"
 
 msgctxt "Ancova|"
 msgid "Factor covariate independence check"
@@ -1503,7 +1503,7 @@ msgstr "Betrouwbaarheidsintervallen"
 
 msgctxt "Ancova|"
 msgid "Post Hoc Tests"
-msgstr "Post Hoc Toetsen"
+msgstr "Post-hoc toetsen"
 
 msgctxt "Ancova|"
 msgid "From"
@@ -1555,7 +1555,7 @@ msgstr "Games-Howell"
 
 msgctxt "Ancova|"
 msgid "Dunnett"
-msgstr "Dunett"
+msgstr "Dunnett"
 
 msgctxt "Ancova|"
 msgid "Dunn"
@@ -1591,11 +1591,11 @@ msgstr "Standaardfout"
 
 msgctxt "Ancova|"
 msgid "Marginal Means"
-msgstr "Marginale Gemiddelden"
+msgstr "Marginale gemiddelden"
 
 msgctxt "Ancova|"
 msgid "Compare marginal means to 0"
-msgstr "Vergelijk marinale gemiddelden met 0"
+msgstr "Vergelijk marginale gemiddelden met 0"
 
 msgctxt "Ancova|"
 msgid "Confidence interval adjustment"
@@ -1627,7 +1627,7 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "Ancova|"
 msgid "Simple Main Effects"
-msgstr "Simpele Hoofdeffecten"
+msgstr "Simpele hoofdeffecten"
 
 msgctxt "Ancova|"
 msgid "Factors"
@@ -1639,31 +1639,31 @@ msgstr "Simpele effect factor"
 
 msgctxt "Ancova|"
 msgid "Moderator Factor 1"
-msgstr "Moderator Facor 1"
+msgstr "Moderator factor 1"
 
 msgctxt "Ancova|"
 msgid "Moderator Factor 2"
-msgstr "Moderator Factor 2"
+msgstr "Moderator factor 2"
 
 msgctxt "Ancova|"
 msgid "Nonparametrics"
-msgstr "Non-parametrische statistieken"
+msgstr "Niet-parametrische statistieken"
 
 msgctxt "Ancova|"
 msgid "Kruskal-Wallis Test"
-msgstr "Kruskal-Wallis Toets"
+msgstr "Kruskal-Wallis toets"
 
 msgctxt "AncovaBayesian|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke Variabele"
+msgstr "Afhankelijke variabele"
 
 msgctxt "AncovaBayesian|"
 msgid "Fixed Factors"
-msgstr "Vaste Factoren"
+msgstr "Vaste factoren"
 
 msgctxt "AncovaBayesian|"
 msgid "Random Factors"
-msgstr "Aselecte Factoren"
+msgstr "Aselecte factoren"
 
 msgctxt "AncovaBayesian|"
 msgid "Covariates"
@@ -1731,7 +1731,7 @@ msgstr "Individuele grafiek per niveau"
 
 msgctxt "AncovaBayesian|"
 msgid "Q-Q plot of residuals"
-msgstr "Q-Q plot voor residuen"
+msgstr "Q-Q plot van residuen"
 
 msgctxt "AncovaBayesian|"
 msgid "Posterior R²"
@@ -1747,11 +1747,11 @@ msgstr "Componenten"
 
 msgctxt "AncovaBayesian|"
 msgid "Single Model Inference"
-msgstr "Enkel Model Inferentie"
+msgstr "Enkel model inferentie"
 
 msgctxt "AncovaBayesian|"
 msgid "Specific Model Terms"
-msgstr "Specifieke Modeltermen"
+msgstr "Specifieke modeltermen"
 
 msgctxt "AncovaBayesian|"
 msgid "R²"
@@ -1763,7 +1763,7 @@ msgstr "Marginale posteriors"
 
 msgctxt "AncovaBayesian|"
 msgid "Post Hoc Tests"
-msgstr "Post Hoc Toetsen"
+msgstr "Post-hoc toetsen"
 
 msgctxt "AncovaBayesian|"
 msgid "Correction"
@@ -1827,27 +1827,27 @@ msgstr "Handmatig"
 
 msgctxt "AncovaBayesian|"
 msgid "No. samples"
-msgstr "Aantal Steekproeven"
+msgstr "Aantal steekproeven"
 
 msgctxt "AncovaBayesian|"
 msgid "Posterior Samples"
-msgstr "Posterior Streekproeven"
+msgstr "Posterior streekproeven"
 
 msgctxt "Anova|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke Veraibele"
+msgstr "Afhankelijke variabele"
 
 msgctxt "Anova|"
 msgid "Fixed Factors"
-msgstr "Vaste Factoren"
+msgstr "Vaste factoren"
 
 msgctxt "Anova|"
 msgid "Random Factors"
-msgstr "Aselecte Factoren"
+msgstr "Aselecte factoren"
 
 msgctxt "Anova|"
 msgid "WLS Weights"
-msgstr "WLS Gewichten"
+msgstr "WLS gewichten"
 
 msgctxt "Anova|"
 msgid "Model"
@@ -1907,7 +1907,7 @@ msgstr "Betrouwbaarheidsintervallen"
 
 msgctxt "Anova|"
 msgid "Post Hoc Tests"
-msgstr "Post Hoc Toetsen"
+msgstr "Post-hoc toetsen"
 
 msgctxt "Anova|"
 msgid "From"
@@ -1963,7 +1963,7 @@ msgstr "Dunn"
 
 msgctxt "Anova|"
 msgid "Descriptives Plots"
-msgstr "Beschijvende Grafieken"
+msgstr "Beschijvende grafieken"
 
 msgctxt "Anova|"
 msgid "Factors"
@@ -2003,7 +2003,7 @@ msgstr "Marginale gemiddelden"
 
 msgctxt "Anova|"
 msgid "Compare marginal means to 0"
-msgstr "Vergelijk marinale gemiddelden met 0"
+msgstr "Vergelijk marginale gemiddelden met 0"
 
 msgctxt "Anova|"
 msgid "Confidence interval adjustment"
@@ -2035,23 +2035,23 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "Anova|"
 msgid "Simple Main Effects"
-msgstr "Simpele Hoofdeffecten"
+msgstr "Simpele hoofdeffecten"
 
 msgctxt "Anova|"
 msgid "Simple Effect Factor"
-msgstr "Simpele Effect Factor"
+msgstr "Simpele effect factor"
 
 msgctxt "Anova|"
 msgid "Moderator Factor 1"
-msgstr "Moderator Factor 1"
+msgstr "Moderator factor 1"
 
 msgctxt "Anova|"
 msgid "Moderator Factor 2"
-msgstr "Moderator Factor 2"
+msgstr "Moderator factor 2"
 
 msgctxt "Anova|"
 msgid "Nonparametrics"
-msgstr "Non-parametrische statistieken"
+msgstr "Niet-parametrische statistieken"
 
 msgctxt "Anova|"
 msgid "Kruskal-Wallis Test"
@@ -2059,15 +2059,15 @@ msgstr "Kruskal-Wallis toets"
 
 msgctxt "AnovaBayesian|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke Varibabele"
+msgstr "Afhankelijke variabele"
 
 msgctxt "AnovaBayesian|"
 msgid "Fixed Factors"
-msgstr "Vaste Factoren"
+msgstr "Vaste factoren"
 
 msgctxt "AnovaBayesian|"
 msgid "Random Factors"
-msgstr "Aslecte Factoren"
+msgstr "Aselecte factoren"
 
 msgctxt "AnovaBayesian|"
 msgid "Tables"
@@ -2127,11 +2127,11 @@ msgstr "Groepniveaus in enkele grafiek"
 
 msgctxt "AnovaBayesian|"
 msgid "Individual plot per level"
-msgstr "Individuele grafiek per niveau "
+msgstr "Individuele grafiek per niveau"
 
 msgctxt "AnovaBayesian|"
 msgid "Q-Q plot of residuals"
-msgstr "Q-Q plot voor residuen"
+msgstr "Q-Q plot van residuen"
 
 msgctxt "AnovaBayesian|"
 msgid "Posterior R²"
@@ -2147,11 +2147,11 @@ msgstr "Componenten"
 
 msgctxt "AnovaBayesian|"
 msgid "Single Model Inference"
-msgstr "Enkel Model Inferentie"
+msgstr "Enkel model inferentie"
 
 msgctxt "AnovaBayesian|"
 msgid "Specific Model Terms"
-msgstr "Specifieke Modeltermen"
+msgstr "Specifieke modeltermen"
 
 msgctxt "AnovaBayesian|"
 msgid "R²"
@@ -2163,7 +2163,7 @@ msgstr "Marginale posteriors"
 
 msgctxt "AnovaBayesian|"
 msgid "Post Hoc Tests"
-msgstr "Post Hoc Toetsen"
+msgstr "Post-hoc toetsen"
 
 msgctxt "AnovaBayesian|"
 msgid "Correction"
@@ -2183,7 +2183,7 @@ msgstr "Factoren"
 
 msgctxt "AnovaBayesian|"
 msgid "Horizontal Axis"
-msgstr "Horizontale As"
+msgstr "Horizontale as"
 
 msgctxt "AnovaBayesian|"
 msgid "Separate Lines"
@@ -2191,7 +2191,7 @@ msgstr "Aparte lijnen"
 
 msgctxt "AnovaBayesian|"
 msgid "Separate Plots"
-msgstr "Aparte Grafieken"
+msgstr "Aparte grafieken"
 
 msgctxt "AnovaBayesian|"
 msgid "Display"
@@ -2199,7 +2199,7 @@ msgstr "Weergeven"
 
 msgctxt "AnovaBayesian|"
 msgid "Additional Options"
-msgstr "Aanvullende Opties"
+msgstr "Aanvullende opties"
 
 msgctxt "AnovaBayesian|"
 msgid "Prior"
@@ -2207,7 +2207,7 @@ msgstr "Prior"
 
 msgctxt "AnovaBayesian|"
 msgid "r scale fixed effects"
-msgstr "r schaal vaste effecten "
+msgstr "r schaal vaste effecten"
 
 msgctxt "AnovaBayesian|"
 msgid "r scale random effects"
@@ -2215,7 +2215,7 @@ msgstr "r schaal aselecte effecten"
 
 msgctxt "AnovaBayesian|"
 msgid "Numerical Accuracy"
-msgstr "Numerieke Precisie"
+msgstr "Numerieke precisie"
 
 msgctxt "AnovaBayesian|"
 msgid "Auto"
@@ -2227,7 +2227,7 @@ msgstr "Handmatig"
 
 msgctxt "AnovaBayesian|"
 msgid "No. samples"
-msgstr "Aantal Steekproeven"
+msgstr "Aantal steekproeven"
 
 msgctxt "AnovaBayesian|"
 msgid "Posterior Samples"
@@ -2235,15 +2235,15 @@ msgstr "Posterior steekproeven"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Factors"
-msgstr "Repeated Measures Factoren"
+msgstr "Repeated measures factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Cells"
-msgstr "Repeated Measures Cellen"
+msgstr "Repeated measures cellen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Between Subject Factors"
-msgstr "Tussen Subject Factoren"
+msgstr "Tussen subject factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Covariates"
@@ -2255,7 +2255,7 @@ msgstr "Model"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Components"
-msgstr "Repeated Measures Componenten"
+msgstr "Repeated measures componenten"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Model Terms"
@@ -2263,7 +2263,7 @@ msgstr "Modeltermen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Between Subjects Components"
-msgstr "Tussen Subject Componenten"
+msgstr "Tussen subject componenten"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Model terms"
@@ -2279,11 +2279,11 @@ msgstr "Verificatie van aannames"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Sphericity tests"
-msgstr "Sphericiteitstoets"
+msgstr "Sfericiteitstoetsen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Sphericity corrections"
-msgstr "Sphericiteitscorrecties"
+msgstr "Sfericiteitscorrecties"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "None"
@@ -2299,7 +2299,7 @@ msgstr "Huynh-Feldt"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Homogeneity tests"
-msgstr "Toets voor homogeniteit"
+msgstr "Homogeniteitstoetsen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Contrasts"
@@ -2307,7 +2307,7 @@ msgstr "Contrasten"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Post Hoc Tests"
-msgstr "Post Hoc Toetsen"
+msgstr "Post-hoc toetsen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Confidence intervals"
@@ -2319,7 +2319,7 @@ msgstr "Effectgrootte"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Pool error term for RM factors"
-msgstr "Samengevoegde fout term voor RM factoren"
+msgstr "Samengevoegde foutterm voor RM-factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Correction"
@@ -2351,7 +2351,7 @@ msgstr "Factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Horizontal Axis"
-msgstr "Horizontale As"
+msgstr "Horizontale as"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Separate Lines"
@@ -2359,7 +2359,7 @@ msgstr "Aparte lijnen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Separate Plots"
-msgstr "Aparte Grafieken"
+msgstr "Aparte grafieken"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Label y-axis"
@@ -2383,7 +2383,7 @@ msgstr "Standaardfout"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Average across unused RM factors"
-msgstr "Gemiddelde over ongebruikte R factoren"
+msgstr "Gemiddelde over ongebruikte RM-factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Marginal Means"
@@ -2439,19 +2439,19 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Simple Main Effects"
-msgstr "Simpele Hoofdeffecten"
+msgstr "Simpele hoofdeffecten"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Simple Effect Factor"
-msgstr "Simpele Effect Factor"
+msgstr "Simpele effect factor"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Moderator Factor 1"
-msgstr "Moderator Factor 1"
+msgstr "Moderator factor 1"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Moderator Factor 2"
-msgstr "Moderator Factor 2"
+msgstr "Moderator factor 2"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Pool error terms"
@@ -2459,7 +2459,7 @@ msgstr "Voeg fouttermen samen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Nonparametrics"
-msgstr "Non-parametrische statistieken"
+msgstr "Niet-parametrische statistieken"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "RM Factor"
@@ -2467,23 +2467,23 @@ msgstr "RM factor"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Optional Grouping Factor"
-msgstr "Optionele Groeperingsfactor"
+msgstr "Optionele groeperingsfactor"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Conover's post hoc tests"
-msgstr "Conover's post hoc toetsen"
+msgstr "Conover's post-hoc toetsen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Repeated Measures Factors"
-msgstr "Repeated Measures Factoren"
+msgstr "Repeated measures factoren"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Repeated Measures Cells"
-msgstr "Repeated Measures Cellen"
+msgstr "Repeated measures cellen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Between Subject Factors"
-msgstr "Tussen subject Factoren"
+msgstr "Tussen subject factoren"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Covariates"
@@ -2551,7 +2551,7 @@ msgstr "Individuele grafiek per niveau"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Q-Q plot of residuals"
-msgstr "Q-Q plot voor residuen"
+msgstr "Q-Q plot van residuen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Posterior R²"
@@ -2567,11 +2567,11 @@ msgstr "Componenten"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Single Model Inference"
-msgstr "Enkel Model Inferentie"
+msgstr "Enkel model inferentie"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Specific Model Terms"
-msgstr "Specifieke Modeltermen"
+msgstr "Specifieke modeltermen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "R²"
@@ -2583,7 +2583,7 @@ msgstr "Marginale posteriors"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Post Hoc Tests"
-msgstr "Post Hoc Toetsen"
+msgstr "Post-hoc toetsen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Correction"
@@ -2603,15 +2603,15 @@ msgstr "Factoren"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Horizontal Axis"
-msgstr "Horizontale As"
+msgstr "Horizontale as"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Separate Lines"
-msgstr "Aparte Lijnen"
+msgstr "Aparte lijnen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Separate Plots"
-msgstr "Aparte Grafieken"
+msgstr "Aparte grafieken"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Label y-axis"
@@ -2619,7 +2619,7 @@ msgstr "Label y-as"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Additional Options"
-msgstr "Aanvullende Opties"
+msgstr "Aanvullende opties"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Prior"
@@ -2639,7 +2639,7 @@ msgstr "r schaal covariaten"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Numerical Accuracy"
-msgstr "Numerieke Precisie"
+msgstr "Numerieke precisie"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Auto"
@@ -2651,7 +2651,7 @@ msgstr "Handmatig"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "No. samples"
-msgstr "Aantal Steekproeven"
+msgstr "Aantal steekproeven"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Posterior Samples"
@@ -2663,11 +2663,11 @@ msgstr "Afhankelijke variabelen"
 
 msgctxt "Manova|"
 msgid "Fixed Factors"
-msgstr "Vaste Factoren"
+msgstr "Vaste factoren"
 
 msgctxt "Manova|"
 msgid "Random Factors"
-msgstr "Aselecte Factoren"
+msgstr "Aselecte factoren"
 
 msgctxt "Manova|"
 msgid "Model"
@@ -2687,7 +2687,7 @@ msgstr "Neem intercept mee"
 
 msgctxt "Manova|"
 msgid "Additional Options"
-msgstr "Aanvullende Opties"
+msgstr "Aanvullende opties"
 
 msgctxt "Manova|"
 msgid "Test"
@@ -2715,7 +2715,7 @@ msgstr "Verificatie van aannames"
 
 msgctxt "Manova|"
 msgid "Homogeneity of covariance matrices"
-msgstr "Homogeniteit van covariantiematrixen"
+msgstr "Homogeniteit van covariantiematrices"
 
 msgctxt "Manova|"
 msgid "Multivariate normality"
@@ -2743,7 +2743,7 @@ msgstr "1. Planning"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Population Materiality"
-msgstr "Populatie Materialiteit"
+msgstr "Populatiematerialiteit"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Absolute"
@@ -2755,7 +2755,7 @@ msgstr "Relatief"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Audit Risk"
-msgstr "Audit Risico"
+msgstr "Auditrisico"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Confidence"
@@ -2779,11 +2779,11 @@ msgstr "Boekwaarden <i>(optioneel)</i>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Advanced Options"
-msgstr "Geavanceerde Opties"
+msgstr "Geavanceerde opties"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Inherent Risk"
-msgstr "Inherent Risico"
+msgstr "Inherent risico"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "High"
@@ -2791,7 +2791,7 @@ msgstr "Hoog"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Medium"
-msgstr "Medium"
+msgstr "Middel"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Low"
@@ -2804,7 +2804,7 @@ msgstr "Verwachte Fouten"
 #| msgid "Explanator Text"
 msgctxt "auditBayesianWorkflow|"
 msgid "Explanatory Text"
-msgstr "Uitleg tekst"
+msgstr "Toelichtende tekst"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Enable"
@@ -2812,11 +2812,11 @@ msgstr "Activeer"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Control Risk"
-msgstr "Controle Risico"
+msgstr "Controle risico"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Planning Distribution"
-msgstr "Planning Verdeling"
+msgstr "Planning verdeling"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Beta"
@@ -2824,7 +2824,7 @@ msgstr "Beta"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Beta-binomial"
-msgstr "Beta-Binomiaal"
+msgstr "Beta-binomiaal"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Currency"
@@ -2844,7 +2844,7 @@ msgstr "Anders"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Tables and Plots"
-msgstr "Tabellen en Grafieken"
+msgstr "Tabellen en grafieken"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Statistics"
@@ -2872,7 +2872,7 @@ msgstr "Verdeling van boekwaarden"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Implied prior from risk assessments"
-msgstr "Geïmpliceerde prior door risico beoordelingen"
+msgstr "Geïmpliceerde prior door risicobeoordelingen"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "x-axis limit"
@@ -2888,11 +2888,11 @@ msgstr "Verwachte posterior"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Download Report</b>"
-msgstr "<b>Download Verslag</b>"
+msgstr "<b>Download verslag</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>To Selection</b>"
-msgstr "<b>Naar Selectie </b>"
+msgstr "<b>Naar selectie </b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>2. Selection</b>"
@@ -2904,15 +2904,15 @@ msgstr "2. Selectie"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Ranking Variable <i>(optional)</i>"
-msgstr "Rang Variabele <i>(optioneel)</i> "
+msgstr "Rangvariabele <i>(optioneel)</i> "
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Additional Variables <i>(optional)</i>"
-msgstr "Aanvullende Variabelen <i>(optioneel)</i>"
+msgstr "Aanvullende variabelen <i>(optioneel)</i>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Sampling Units"
-msgstr "Steekproef Eenheden"
+msgstr "Steekproefeenheden"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Monetary unit sampling"
@@ -2932,7 +2932,7 @@ msgstr "Aselecte steekproeven"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Cell sampling"
-msgstr "Cell Steekproeven"
+msgstr "Cel steekproeven"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Fixed interval sampling"
@@ -2960,7 +2960,7 @@ msgstr "Mediaan"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Std. deviation"
-msgstr "Std. Afwijking"
+msgstr "Std. afwijking"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Variance"
@@ -2980,11 +2980,11 @@ msgstr "Bereik"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Reset Workflow</b>"
-msgstr "<b>Reset Werkflow</b>"
+msgstr "<b>Reset werkflow</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>To Execution</b>"
-msgstr "<b>Naar Uitvoering</b>"
+msgstr "<b>Naar uitvoering</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>3. Execution</b>"
@@ -3000,11 +3000,11 @@ msgstr "<b>Hoe wil je je observaties evalueren?</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Audit values"
-msgstr "Audit waarden"
+msgstr "Auditwaarden"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Correct / Incorrect"
-msgstr "Correct / Incorrect"
+msgstr "Correct / incorrect"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Fill Variables</b>"
@@ -3012,7 +3012,7 @@ msgstr "<b>Vul variabelen in</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Annotate your observations with their audit values.</b>"
-msgstr "<b>Annoteer je observaties met hun audit waarden. </b>"
+msgstr "<b>Annoteer je observaties met hun auditwaarden. </b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Annotate your observations with 0 (correct) or 1 (incorrect).</b>"
@@ -3020,7 +3020,7 @@ msgstr "<b>Annoteer je observaties met 0 (correct) of 1 (incorrect).</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>To Evaluation</b>"
-msgstr "<b>Naar Evaluatie</b>"
+msgstr "<b>Naar evaluatie</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>4. Evaluation</b>"
@@ -3032,7 +3032,7 @@ msgstr "4. Evaluatie"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Audit Result"
-msgstr "Audit resultaat"
+msgstr "Auditresultaat"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Estimation Method"
@@ -3048,7 +3048,7 @@ msgstr "Regressie"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Area Under Posterior"
-msgstr "Gebied onder Posterior"
+msgstr "Gebied onder posterior"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Credible bound"
@@ -3072,11 +3072,11 @@ msgstr "Prior en posterior"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Correlation plot"
-msgstr "Correlatie Grafiek"
+msgstr "Correlatiegrafiek"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Population Materiality"
-msgstr "Populatie Materialiteit"
+msgstr "Populatiematerialiteit"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Absolute"
@@ -3100,7 +3100,7 @@ msgstr "Waarde"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Audit Risk"
-msgstr "Adit Risico"
+msgstr "Auditrisico"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Confidence"
@@ -3112,7 +3112,7 @@ msgstr "Geavanceerde opties"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Inherent Risk"
-msgstr "Inherent Risico"
+msgstr "Inherent risico"
 
 msgctxt "auditBayesianPlanning|"
 msgid "High"
@@ -3120,7 +3120,7 @@ msgstr "Hoog"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Medium"
-msgstr "Medium"
+msgstr "Middel"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Low"
@@ -3128,12 +3128,12 @@ msgstr "Laag"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Expected Errors"
-msgstr "Verwachtte Fouten "
+msgstr "Verwachte fouten "
 
 #| msgid "Explanator4 Text"
 msgctxt "auditBayesianPlanning|"
 msgid "Explanatory Text"
-msgstr "Uitleg Teskt"
+msgstr "Toelichtende tekst"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Enable"
@@ -3141,11 +3141,11 @@ msgstr "Activeer"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Control Risk"
-msgstr "Controleer Risico"
+msgstr "Controleer risico"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Planning Distribution"
-msgstr "Planning Verdeling"
+msgstr "Planning verdeling"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Beta"
@@ -3173,7 +3173,7 @@ msgstr "Anders"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Tables and Plots"
-msgstr "Tabellen en Grafieken"
+msgstr "Tabellen en grafieken"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Statistics"
@@ -3193,7 +3193,7 @@ msgstr "Grafieken"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Implied prior from risk assessments"
-msgstr "Geïmpliceerde prior door risico oordelen"
+msgstr "Geïmpliceerde prior door risicobeoordelingen"
 
 msgctxt "auditBayesianPlanning|"
 msgid "x-axis limit"
@@ -3209,7 +3209,7 @@ msgstr "Verwachte posterior"
 
 msgctxt "auditBayesianPlanning|"
 msgid "<b>Download Report</b>"
-msgstr "<b>Download Verslag</b>"
+msgstr "<b>Download verslag</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>1. Planning</b>"
@@ -3221,7 +3221,7 @@ msgstr "1. Planning"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Population Materiality"
-msgstr "Populatie Materialiteit"
+msgstr "Populatiematerialiteit"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Absolute"
@@ -3233,7 +3233,7 @@ msgstr "Relatief"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Audit Risk"
-msgstr "Audit Risico"
+msgstr "Auditrisico"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Confidence"
@@ -3257,11 +3257,11 @@ msgstr "Boekwaarden <i>(optioneel)</i>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Advanced Options"
-msgstr "Geavanceerde Opties"
+msgstr "Geavanceerde opties"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Inherent Risk"
-msgstr "Inherent Risico"
+msgstr "Inherent risico"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "High"
@@ -3269,7 +3269,7 @@ msgstr "Hoog"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Medium"
-msgstr "Gemiddeld"
+msgstr "Middel"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Low"
@@ -3277,7 +3277,7 @@ msgstr "Laag"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Expected Errors"
-msgstr "Verwachte Fouten"
+msgstr "Verwachte fouten"
 
 #| msgid "Explanatory1 Text"
 msgctxt "auditClassicalWorkflow|"
@@ -3290,7 +3290,7 @@ msgstr "Activeer"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Control Risk"
-msgstr "Controle Risico"
+msgstr "Controle risico"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Planning Distribution"
@@ -3326,7 +3326,7 @@ msgstr "Anders"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Tables and Plots"
-msgstr "Tabellen en Grafieken"
+msgstr "Tabellen en grafieken"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Tables"
@@ -3346,7 +3346,7 @@ msgstr "Verdeling boekwaarden"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Download Report</b>"
-msgstr "<b>Download Verslag</b>"
+msgstr "<b>Download verslag</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>To Selection</b>"
@@ -3362,11 +3362,11 @@ msgstr "2. Selectie"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Ranking Variable <i>(optional)</i>"
-msgstr "Rang Variabele <i>(optioneel)</i>"
+msgstr "Rangvariabele <i>(optioneel)</i>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Additional Variables <i>(optional)</i>"
-msgstr "Aanvullende Variabelen <i>(optioneel)</i>"
+msgstr "Aanvullende variabelen <i>(optioneel)</i>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Sampling Units"
@@ -3382,11 +3382,11 @@ msgstr "Record steekproeven"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Selection Method"
-msgstr "Selectie Methode"
+msgstr "Selectiemethode"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Random sampling"
-msgstr "Aslecte steekproeven"
+msgstr "Aselecte steekproeven"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Cell sampling"
@@ -3406,7 +3406,7 @@ msgstr "Geef geselecteerde observaties weer"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Selection descriptives"
-msgstr "Selectie beschijvende statistieken"
+msgstr "Selectie beschrijvende statistieken"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Mean"
@@ -3418,7 +3418,7 @@ msgstr "Mediaan"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Std. deviation"
-msgstr "Std Afwijking"
+msgstr "Std. afwijking"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Variance"
@@ -3438,7 +3438,7 @@ msgstr "Bereik"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Reset Workflow</b>"
-msgstr "<b>Reset Werkflow</b>"
+msgstr "<b>Reset werkflow</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>To Execution</b>"
@@ -3446,7 +3446,7 @@ msgstr "<b>Naar uitvoering</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>3. Execution</b>"
-msgstr "<b>3. uitvoering</b>"
+msgstr "<b>3. Uitvoering</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "3. Execution"
@@ -3458,27 +3458,27 @@ msgstr "<b>Hoe wil je je observaties evalueren?</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Audit values"
-msgstr "Audit waarden"
+msgstr "Auditwaarden"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Correct / Incorrect"
-msgstr "Correct / Incorrect"
+msgstr "Correct / incorrect"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Fill Variables</b>"
-msgstr "<b>Vul Variabelen in</b>"
+msgstr "<b>Vul variabelen in</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Annotate your observations with their audit values.</b>"
-msgstr "<b>Annoteer je observaties met hun audit waarden</b>"
+msgstr "<b>Annoteer je observaties met hun auditwaarden.</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Annotate your observations with 0 (correct) or 1 (incorrect).</b>"
-msgstr "<b>Annoteer je observaties met 0 (correct) of 1 (incorrect) w</b>"
+msgstr "<b>Annoteer je observaties met 0 (correct) of 1 (incorrect).</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>To Evaluation</b>"
-msgstr "<b>Naar Evaluatie</b>"
+msgstr "<b>Naar evaluatie</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>4. Evaluation</b>"
@@ -3490,11 +3490,11 @@ msgstr "4. Evaluatie"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Audit Result"
-msgstr "Audit resultaat"
+msgstr "Auditresultaat"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Estimation Method"
-msgstr "Schattings methode"
+msgstr "Schattingsmethode"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Stringer"
@@ -3534,11 +3534,11 @@ msgstr "Evaluatie informatie"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Correlation plot"
-msgstr "Correlatie grafiek"
+msgstr "Correlatiegrafiek"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Population Materiality"
-msgstr "Populatie Materialiteit"
+msgstr "Populatiematerialiteit"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Absolute"
@@ -3562,7 +3562,7 @@ msgstr "Waarde"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Audit Risk"
-msgstr "Audit Risico"
+msgstr "Auditrisico"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Confidence"
@@ -3574,7 +3574,7 @@ msgstr "Geavanceerde opties"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Inherent Risk"
-msgstr "Inherent Risico"
+msgstr "Inherent risico"
 
 msgctxt "auditClassicalPlanning|"
 msgid "High"
@@ -3582,7 +3582,7 @@ msgstr "Hoog"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Medium"
-msgstr "Gemiddeld"
+msgstr "Middel"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Low"
@@ -3599,7 +3599,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Enable"
-msgstr "Activeer"
+msgstr "Schakel in"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Control Risk"
@@ -3643,15 +3643,15 @@ msgstr "Grafieken"
 
 msgctxt "auditClassicalPlanning|"
 msgid "<b>Download Report</b>"
-msgstr "<b>Download Verslag</b>"
+msgstr "<b>Download verslag</b>"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke Variabele"
+msgstr "Afhankelijke variabele"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Fixed Factors"
-msgstr "Vaste Factoren"
+msgstr "Vaste factoren"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Covariates"
@@ -3663,7 +3663,7 @@ msgstr "Tabellen"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Bayes factor matrix"
-msgstr "Bayes factor matrix"
+msgstr "Bayes factormatrix"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Coefficients"
@@ -3687,7 +3687,7 @@ msgstr "Bijgestelde gemiddelden"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Additional Options"
-msgstr "Aanvullende Opties"
+msgstr "Aanvullende opties"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Seed"
@@ -3695,15 +3695,15 @@ msgstr "Seed"
 
 msgctxt "BainAncovaBayesian|"
 msgid "Model Constraints"
-msgstr "Model beperkingen"
+msgstr "Modelbeperkingen"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke Variabele"
+msgstr "Afhankelijke variabele"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Fixed Factors"
-msgstr "Vaste Factoren"
+msgstr "Vaste factoren"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Tables"
@@ -3731,11 +3731,11 @@ msgstr "Posterior kansen"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Model Constraints"
-msgstr "Model Beperkingen"
+msgstr "Modelbeperkingen"
 
 msgctxt "BainRegressionLinearBayesian|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke Variabele"
+msgstr "Afhankelijke variabele"
 
 msgctxt "BainRegressionLinearBayesian|"
 msgid "Covariates"
@@ -3747,7 +3747,7 @@ msgstr "Tabellen"
 
 msgctxt "BainRegressionLinearBayesian|"
 msgid "Bayes factor matrix"
-msgstr "Bayes factor matrix"
+msgstr "Bayes factormatrix"
 
 msgctxt "BainRegressionLinearBayesian|"
 msgid "Coefficients"
@@ -3779,7 +3779,7 @@ msgstr "Standaardiseer"
 
 msgctxt "BainRegressionLinearBayesian|"
 msgid "Model Constraints"
-msgstr "Model Beperkingen"
+msgstr "Modelbeperkingen"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Dependent Variables"
@@ -3791,31 +3791,31 @@ msgstr "Groeperingsvariabele"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Hypothesis Test"
-msgstr "Hypothese Toets"
+msgstr "Hypothesetoets"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Equal vs. not equal"
-msgstr "Gelijk vs. Ongelijk"
+msgstr "Gelijk vs. ongelijk"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Equal vs. bigger"
-msgstr "Gelijk vs. hoger"
+msgstr "Gelijk vs. groter"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Equal vs. smaller"
-msgstr "Gelijk vs. lager"
+msgstr "Gelijk vs. kleiner"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Bigger vs. smaller"
-msgstr "Hoger vs. lager"
+msgstr "Groter vs. kleiner"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Equal vs. bigger vs. smaller"
-msgstr "Gelijk vs. hoger vs. lager"
+msgstr "Gelijk vs. groter vs. kleiner"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Bayes Factor"
-msgstr "Bayes Factor"
+msgstr "Bayes factor"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "BF₀₁: Equal vs. other"
@@ -3827,7 +3827,7 @@ msgstr "BF₁₀: Ander vs. gelijk"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Additional Options"
-msgstr "Aanvullende Opties"
+msgstr "Aanvullende opties"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Seed"
@@ -3867,7 +3867,7 @@ msgstr "Toetswaarde"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Hypothesis Test"
-msgstr "Hypothese Toets"
+msgstr "Hypothesetoets"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Equal vs. not equal"
@@ -3875,23 +3875,23 @@ msgstr "Gelijk vs. ongelijk"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Equal vs. bigger"
-msgstr "Gelijk vs. hoger"
+msgstr "Gelijk vs. groter"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Equal vs. smaller"
-msgstr "Gelijk vs. lager"
+msgstr "Gelijk vs. kleiner"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Bigger vs. smaller"
-msgstr "Hoger vs. lager"
+msgstr "Groter vs. kleiner"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Equal vs. bigger vs. smaller"
-msgstr "Gelijk vs. hoger vs. lager"
+msgstr "Gelijk vs. groter vs. kleiner"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Bayes Factor"
-msgstr "Bayes Factor"
+msgstr "Bayes factor"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "BF₀₁: Equal vs. other"
@@ -3939,7 +3939,7 @@ msgstr "Paren"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Hypothesis Test"
-msgstr "Hypothese Toets"
+msgstr "Hypothesetoets"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Equal vs. not equal"
@@ -3951,19 +3951,19 @@ msgstr "Gelijk vs. groter"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Equal vs. smaller"
-msgstr "Gelijk vs. lager"
+msgstr "Gelijk vs. kleiner"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Bigger vs. smaller"
-msgstr "Hoger vs. lager"
+msgstr "Groter vs. kleiner"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Equal vs. bigger vs. smaller"
-msgstr "Gelijk vs. hoger vs. lager"
+msgstr "Gelijk vs. groter vs. kleiner"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Bayes Factor"
-msgstr "Bayes Factor"
+msgstr "Bayes factor"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "BF₀₁: Equal vs. other"
@@ -3975,7 +3975,7 @@ msgstr "BF₁₀: Ander vs. gelijk"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Additional Options"
-msgstr "Aanvullende Opties"
+msgstr "Aanvullende opties"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Seed"
@@ -4039,7 +4039,7 @@ msgstr "Boxplots"
 
 msgctxt "Descriptives|"
 msgid "Label Outliers"
-msgstr "Label Uitschieters"
+msgstr "Label uitschieters"
 
 msgctxt "Descriptives|"
 msgid "Color"
@@ -4051,7 +4051,7 @@ msgstr "Boxplot element"
 
 msgctxt "Descriptives|"
 msgid "Violin element"
-msgstr "Viool element"
+msgstr "Vioolelement"
 
 msgctxt "Descriptives|"
 msgid "Jitter element"
@@ -4067,7 +4067,7 @@ msgstr "Statistieken"
 
 msgctxt "Descriptives|"
 msgid "Percentile Values"
-msgstr "Percentielwaardes "
+msgstr "Percentielwaarden"
 
 msgctxt "Descriptives|"
 msgid "Quartiles"
@@ -4087,7 +4087,7 @@ msgstr "Percentielen:"
 
 msgctxt "Descriptives|"
 msgid "Central Tendency"
-msgstr "Centrale Tendens"
+msgstr "Centrale tendens"
 
 msgctxt "Descriptives|"
 msgid "Mean"
@@ -4115,7 +4115,7 @@ msgstr "S. E. gemiddelde"
 
 msgctxt "Descriptives|"
 msgid "Std.deviation"
-msgstr "Std.afwijking"
+msgstr "Std. afwijking"
 
 msgctxt "Descriptives|"
 msgid "MAD"
@@ -4123,11 +4123,11 @@ msgstr "MAD"
 
 msgctxt "Descriptives|"
 msgid "Scatter Plots"
-msgstr "Puntgrafiek"
+msgstr "Spreidingsdiagram"
 
 msgctxt "Descriptives|"
 msgid "Graph above scatter plot"
-msgstr "Grafiek boven puntgrafiek"
+msgstr "Grafiek boven spreidingsdiagram"
 
 msgctxt "Descriptives|"
 msgid "Density"
@@ -4139,7 +4139,7 @@ msgstr "Histogram"
 
 msgctxt "Descriptives|"
 msgid "Graph right of scatter plot"
-msgstr "Grafiek rechts van puntgrafiek"
+msgstr "Grafiek rechts van spreidingsdiagram"
 
 msgctxt "Descriptives|"
 msgid "Add regression line"
@@ -4151,7 +4151,7 @@ msgstr "Egaal"
 
 msgctxt "Descriptives|"
 msgid "Linear"
-msgstr "Lineaire"
+msgstr "Lineair"
 
 msgctxt "Descriptives|"
 msgid "Show confidence interval"
@@ -4163,7 +4163,7 @@ msgstr "Toon legenda"
 
 msgctxt "Descriptives|"
 msgid "Color palette"
-msgstr "Kleuren palet"
+msgstr "Kleurenpalet"
 
 msgctxt "Descriptives|"
 msgid "Customizable plots"
@@ -4175,7 +4175,7 @@ msgstr "Kleurenblind"
 
 msgctxt "Descriptives|"
 msgid "Colorblind Alt."
-msgstr "Kleurenblind Alt."
+msgstr "Kleurenblind alt."
 
 msgctxt "Descriptives|"
 msgid "Viridis"
@@ -4195,11 +4195,11 @@ msgstr "Gebruik kleurenpalet"
 
 msgctxt "Descriptives|"
 msgid "Basic plots"
-msgstr "Basis grafieken"
+msgstr "Basisgrafieken"
 
 msgctxt "Descriptives|"
 msgid "MAD Robust"
-msgstr "MAD Robuust"
+msgstr "MAD robuust"
 
 msgctxt "Descriptives|"
 msgid "IQR"
@@ -4223,7 +4223,7 @@ msgstr "Maximum"
 
 msgctxt "Descriptives|"
 msgid "Distribution"
-msgstr "Distributie"
+msgstr "Verdeling"
 
 msgctxt "Descriptives|"
 msgid "Skewness"
@@ -4239,7 +4239,7 @@ msgstr "Shapiro-Wilk toets"
 
 msgctxt "Descriptives|"
 msgid "Values are group midpoints"
-msgstr "Waardes zijn middelpunten van groep"
+msgstr "Waarden zijn middelpunten van groep"
 
 msgctxt "Descriptives|"
 msgid "Charts"
@@ -4247,7 +4247,7 @@ msgstr "Grafieken"
 
 msgctxt "Descriptives|"
 msgid "Chart Type"
-msgstr "Type Grafiek"
+msgstr "Type grafiek"
 
 msgctxt "Descriptives|"
 msgid "None"
@@ -4263,11 +4263,11 @@ msgstr "Taartdiagrammen"
 
 msgctxt "Descriptives|"
 msgid "Histograms"
-msgstr "Histograms"
+msgstr "Histogrammen"
 
 msgctxt "Descriptives|"
 msgid "Chart Values"
-msgstr "Grafiekwaardes"
+msgstr "Grafiekwaarden"
 
 msgctxt "Descriptives|"
 msgid "Frequencies"
@@ -4283,7 +4283,7 @@ msgstr "Variabelen"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Scale Statistics"
-msgstr "Schaal Statistieken"
+msgstr "Schaalstatistieken"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "McDonald's ω"
@@ -4323,7 +4323,7 @@ msgstr "Standaardafwijking"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Individual Item Statistics"
-msgstr "Individuele Item Statistieken"
+msgstr "Individuele itemstatistieken"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "McDonald's ω  (if item dropped)"
@@ -4343,19 +4343,19 @@ msgstr "Item-rest correlatie"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Reverse-Scaled Items"
-msgstr "Omgekeerd-Geschaalde Items"
+msgstr "Omgekeerd geschaalde items"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Normal-Scaled Items"
-msgstr "Normaal-Geschaalde Items"
+msgstr "Normaal geschaalde items"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Advanced Options"
-msgstr "Geavanceerde Opties"
+msgstr "Geavanceerde opties"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Missing Values"
-msgstr "Ontbrekende Waardes"
+msgstr "Ontbrekende waarden"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Exclude cases pairwise"
@@ -4375,11 +4375,11 @@ msgstr "Betrouwbaarheid"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Second-Order Factor"
-msgstr "Tweede-Orde Factor"
+msgstr "Tweede-orde factor"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Factor Scaling"
-msgstr "Factor Schalen"
+msgstr "Factor schalen"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Factor variances"
@@ -4395,7 +4395,7 @@ msgstr "Effecten coderen"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "R-Squared"
-msgstr "R-Kwadraat"
+msgstr "R-kwadraat"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Error calculation"
@@ -4419,7 +4419,7 @@ msgstr "Variabelen"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Number of Factors"
-msgstr "Aantal Factoren"
+msgstr "Aantal factoren"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Parallel analysis"
@@ -4427,11 +4427,11 @@ msgstr "Parallel analyse"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Eigenvalues"
-msgstr "Eigenwaardes"
+msgstr "Eigenwaarden"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Eigenvalues above"
-msgstr "Eigenwaardes boven"
+msgstr "Eigenwaarden boven"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Manual"
@@ -4467,11 +4467,11 @@ msgstr "Gewogen kleinste-kwadraten"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Generalized least squares"
-msgstr "Gegeneraliseerde kleine-kwadraten"
+msgstr "Gegeneraliseerde kleinste-kwadraten"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Minimum chi-square"
-msgstr "Minimum chi-square"
+msgstr "Minimum chi-kwadraat"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Minimum rank"
@@ -4519,11 +4519,11 @@ msgstr "Structuurmatrix"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Factor correlations"
-msgstr "Factor correlaties"
+msgstr "Factorcorrelaties"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Additional fit indices"
-msgstr "Aanvullende pas indexen"
+msgstr "Aanvullende pas indices"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Plots"
@@ -4539,7 +4539,7 @@ msgstr "Screeplot"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Assumption checks"
-msgstr "Verificatie van aannamess"
+msgstr "Verificatie van aannames"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "KMO test"
@@ -4551,7 +4551,7 @@ msgstr "Bartlett's toets"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Missing Values"
-msgstr "Ontbrekende Waardes"
+msgstr "Ontbrekende waarden"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Exclude cases pairwise"
@@ -4571,11 +4571,11 @@ msgstr "Parallel analyse"
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Eigenvalues"
-msgstr "Eigenwaardes"
+msgstr "Eigenwaarden"
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Eigenvalues above"
-msgstr "Eigenwaardes boven"
+msgstr "Eigenwaarden boven"
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Manual"
@@ -4631,7 +4631,7 @@ msgstr "Screeplot"
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Missing Values"
-msgstr "Ontbrekende waardes"
+msgstr "Ontbrekende waarden"
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Exclude cases pairwise"
@@ -4643,23 +4643,23 @@ msgstr "Voeg PC scores toe aan data"
 
 msgctxt "ABTestBayesian|"
 msgid "Successes Group 1"
-msgstr "Successen Groep 1"
+msgstr "Successen groep 1"
 
 msgctxt "ABTestBayesian|"
 msgid "Sample Size Group 1"
-msgstr "Steekproefgrootte Groep 1"
+msgstr "Steekproefgrootte groep 1"
 
 msgctxt "ABTestBayesian|"
 msgid "Successes Group 2"
-msgstr "Successen Groep 2"
+msgstr "Successen groep 2"
 
 msgctxt "ABTestBayesian|"
 msgid "Sample Size Group 2"
-msgstr "Steekproefgrootte Groep 2"
+msgstr "Steekproefgrootte groep 2"
 
 msgctxt "ABTestBayesian|"
 msgid "Normal Prior on Log Odds Ratio"
-msgstr "Normale Prior over Log Odds Ratio"
+msgstr "Normale prior over log odds ratio"
 
 msgctxt "ABTestBayesian|"
 msgid "μ:"
@@ -4707,11 +4707,11 @@ msgstr "Vergelijk met nulmodel"
 
 msgctxt "ABTestBayesian|"
 msgid "Advanced Options"
-msgstr "Geavanceerde Opties"
+msgstr "Geavanceerde opties"
 
 msgctxt "ABTestBayesian|"
 msgid "Prior Model Probability"
-msgstr "Prior Model Kans"
+msgstr "Prior model kans"
 
 msgctxt "ABTestBayesian|"
 msgid "Log odds ratio = 0"
@@ -4747,23 +4747,23 @@ msgstr "Toetswaarde: "
 
 msgctxt "BinomialTest|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "BinomialTest|"
 msgid "≠ Test value"
-msgstr "≠ Toetswaarde"
+msgstr "≠ toetswaarde"
 
 msgctxt "BinomialTest|"
 msgid "> Test value"
-msgstr "> Toetswaarde"
+msgstr "> toetswaarde"
 
 msgctxt "BinomialTest|"
 msgid "< Test value"
-msgstr "< Toetswaarde"
+msgstr "< toetswaarde"
 
 msgctxt "BinomialTest|"
 msgid "Additional Statisics"
-msgstr "Aanvullende Statistieken"
+msgstr "Aanvullende statistieken"
 
 msgctxt "BinomialTest|"
 msgid "Confidence interval"
@@ -4791,19 +4791,19 @@ msgstr "Toetswaarde: "
 
 msgctxt "BinomialTestBayesian|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "BinomialTestBayesian|"
 msgid "≠ Test value"
-msgstr "≠ Toetswaarde"
+msgstr "≠ toetswaarde"
 
 msgctxt "BinomialTestBayesian|"
 msgid "> Test value"
-msgstr "> Toetswaarde"
+msgstr "> toetswaarde"
 
 msgctxt "BinomialTestBayesian|"
 msgid "< Test value"
-msgstr "< Toetswaarde"
+msgstr "< toetswaarde"
 
 msgctxt "BinomialTestBayesian|"
 msgid "Plots"
@@ -4887,19 +4887,19 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "ContingencyTables|"
 msgid "Alt. Hypothesis (Fisher's exact test)"
-msgstr "Alt. Hypothese (Fisher's exacte toets)"
+msgstr "Alt. hypothese (Fisher's exacte toets)"
 
 msgctxt "ContingencyTables|"
 msgid "Group one ≠ Group two"
-msgstr "Groep één ≠ Groep twee"
+msgstr "Groep één ≠ groep twee"
 
 msgctxt "ContingencyTables|"
 msgid "Group one > Group two"
-msgstr "Groep één > Groep twee"
+msgstr "Groep één > groep twee"
 
 msgctxt "ContingencyTables|"
 msgid "Group one < Group two"
-msgstr "Groep één < Groep twee"
+msgstr "Groep één < groep twee"
 
 msgctxt "ContingencyTables|"
 msgid "Nominal"
@@ -4943,7 +4943,7 @@ msgstr "Kendall's tau-c"
 
 msgctxt "ContingencyTables|"
 msgid "Nominal By Interval"
-msgstr "Nominaal Voor Interval"
+msgstr "Nominaal voor interval"
 
 msgctxt "ContingencyTables|"
 msgid "Eta"
@@ -4967,7 +4967,7 @@ msgstr "Verwachte"
 
 msgctxt "ContingencyTables|"
 msgid "Hide small counts"
-msgstr "Verstop kleine aantallen"
+msgstr "Verberg kleine aantallen"
 
 msgctxt "ContingencyTables|"
 msgid "Less than"
@@ -4975,7 +4975,7 @@ msgstr "Lager dan"
 
 msgctxt "ContingencyTables|"
 msgid "Z-Test"
-msgstr "Z-Toets"
+msgstr "Z-toets"
 
 msgctxt "ContingencyTables|"
 msgid "Compare column proportions"
@@ -4983,7 +4983,7 @@ msgstr "Vergelijk kolomproporties"
 
 msgctxt "ContingencyTables|"
 msgid "Adjust p-values"
-msgstr "Wijzig p-waardes"
+msgstr "Wijzig p-waarden"
 
 msgctxt "ContingencyTables|"
 msgid "Percentages"
@@ -5035,7 +5035,7 @@ msgstr "Afnemende"
 
 msgctxt "ContingencyTables|"
 msgid "Column Order"
-msgstr "Volgorde Kolom"
+msgstr "Volgorde kolom"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Rows"
@@ -5083,7 +5083,7 @@ msgstr "Hypergeometrisch (enkel 2x2)"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Additional Statistics"
-msgstr "Aanvullende Statistieken"
+msgstr "Aanvullende statistieken"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Log odds ratio (2x2 only)"
@@ -5099,19 +5099,19 @@ msgstr "Cramer's V"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Group one ≠ Group two"
-msgstr "Groep één ≠ Groep twee"
+msgstr "Groep één ≠ groep twee"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Group one > Group two"
-msgstr "Groep één > Groep twee"
+msgstr "Groep één > groep twee"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Group one < Group two"
-msgstr "Groep één < Groep twee"
+msgstr "Groep één < groep twee"
 
 msgctxt "ContingencyTablesBayesian|"
 msgid "Plots"
@@ -5163,7 +5163,7 @@ msgstr "Verwachte aantallen"
 
 msgctxt "MultinomialTest|"
 msgid "Test Values"
-msgstr "Toetswaardes"
+msgstr "Toetswaarden"
 
 msgctxt "MultinomialTest|"
 msgid "Equal proportions (multinomial test)"
@@ -5175,7 +5175,7 @@ msgstr "Verwachte proporties (χ² toets)"
 
 msgctxt "MultinomialTest|"
 msgid "Additional Statistics"
-msgstr "Aanvullende Statistieken"
+msgstr "Aanvullende statistieken"
 
 msgctxt "MultinomialTest|"
 msgid "Descriptives"
@@ -5215,11 +5215,11 @@ msgstr "Aantallen"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Expected Counts"
-msgstr "Verwachten Aantallen"
+msgstr "Verwachte aantallen"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Test Values"
-msgstr "Toetswaardes"
+msgstr "Toetswaarden"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Equal proportions"
@@ -5363,11 +5363,11 @@ msgstr "Regressiecoëfficiënten"
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "Estimates"
-msgstr "Schattigen"
+msgstr "Schattingen"
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "Credible intervals"
-msgstr "Geloofwaardigheidsinterval"
+msgstr "Geloofwaardigheidsintervallen"
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "Interval"
@@ -5395,7 +5395,7 @@ msgstr "Handmatig"
 
 msgctxt "RegressionLogLinearBayesian|"
 msgid "No. samples"
-msgstr "Nr. steekproeven"
+msgstr "Aantal steekproeven"
 
 msgctxt "DataSplit|"
 msgid "Data Split Preferences"
@@ -5403,7 +5403,7 @@ msgstr "Data splits voorkeuren"
 
 msgctxt "DataSplit|"
 msgid "Holdout Test Data"
-msgstr "Buiten houden Testdata"
+msgstr "Buiten houden testdata"
 
 msgctxt "DataSplit|"
 msgid "Sample"
@@ -5427,7 +5427,7 @@ msgstr "Geen"
 
 msgctxt "DataSplit|"
 msgid "Training and Validation Data"
-msgstr "Trainings- en Validatiedata"
+msgstr "Trainings- en validatiedata"
 
 msgctxt "DataSplit|"
 msgid "% for validation data"
@@ -5467,7 +5467,7 @@ msgstr "Toon proporties"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Class proportions"
-msgstr "Klasse proporties"
+msgstr "Klasseproporties"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Evaluation metrics"
@@ -5519,7 +5519,7 @@ msgstr "Parameters trainen"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Algorithmic Settings"
-msgstr "Algoritme Instellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Shrinkage:"
@@ -5527,7 +5527,7 @@ msgstr "Shrinkage:"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Interaction depth:"
-msgstr "Interactie diepte:"
+msgstr "Interactiediepte:"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Min. observations in node:"
@@ -5571,7 +5571,7 @@ msgstr "Voeg voorspelde klassen toe aan data"
 
 msgctxt "mlClassificationBoosting|"
 msgid "<b>Save Model</b>"
-msgstr "<b> Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlClassificationKnn|"
 msgid "Target"
@@ -5595,7 +5595,7 @@ msgstr "Toon proporties"
 
 msgctxt "mlClassificationKnn|"
 msgid "Class proportions"
-msgstr "Klasse proporties"
+msgstr "Klasseproporties"
 
 msgctxt "mlClassificationKnn|"
 msgid "Evaluation metrics"
@@ -5635,11 +5635,11 @@ msgstr "Punten"
 
 msgctxt "mlClassificationKnn|"
 msgid "Training Parameters"
-msgstr "Parameters Trainen"
+msgstr "Parameters trainen"
 
 msgctxt "mlClassificationKnn|"
 msgid "Algorithmic Settings"
-msgstr "Algoritme Instellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlClassificationKnn|"
 msgid "Weights:"
@@ -5651,7 +5651,7 @@ msgstr "Afstand:"
 
 msgctxt "mlClassificationKnn|"
 msgid "Scale predictors"
-msgstr "Schaal voorspellers"
+msgstr "Schaalvoorspellers"
 
 msgctxt "mlClassificationKnn|"
 msgid "Set seed:"
@@ -5659,7 +5659,7 @@ msgstr "Gebruik seed:"
 
 msgctxt "mlClassificationKnn|"
 msgid "Number of Nearest Neighbors"
-msgstr "Aantal Naaste Buren"
+msgstr "Aantal naaste buren"
 
 msgctxt "mlClassificationKnn|"
 msgid "Fixed"
@@ -5683,7 +5683,7 @@ msgstr "Voeg voorspelde klassen toe aan data"
 
 msgctxt "mlClassificationKnn|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlClassificationLda|"
 msgid "Target"
@@ -5731,7 +5731,7 @@ msgstr "Verificatie van aannames"
 
 msgctxt "mlClassificationLda|"
 msgid "Equality of class means"
-msgstr "Gelijkheid van klasse gemiddeldes"
+msgstr "Gelijkheid van klassengemiddeldes"
 
 msgctxt "mlClassificationLda|"
 msgid "Equality of covariance matrices"
@@ -5759,7 +5759,7 @@ msgstr "Andrews curves"
 
 msgctxt "mlClassificationLda|"
 msgid "Linear discriminant matrix"
-msgstr "Lineaire discriminantie matrix"
+msgstr "Lineaire discriminantiematrix"
 
 msgctxt "mlClassificationLda|"
 msgid "Densities"
@@ -5783,11 +5783,11 @@ msgstr "Punten"
 
 msgctxt "mlClassificationLda|"
 msgid "Training Parameters"
-msgstr "Parameters Trainen"
+msgstr "Parameters trainen"
 
 msgctxt "mlClassificationLda|"
 msgid "Algorithmic Settings"
-msgstr "Algoritme Instellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlClassificationLda|"
 msgid "Estimation method:"
@@ -5795,7 +5795,7 @@ msgstr "Schattingsmethode:"
 
 msgctxt "mlClassificationLda|"
 msgid "Scale predictors"
-msgstr "Schaal voorspellers"
+msgstr "Schaalvoorspellers"
 
 msgctxt "mlClassificationLda|"
 msgid "Set seed: "
@@ -5807,7 +5807,7 @@ msgstr "Voeg voorspelde klassen toe aan data"
 
 msgctxt "mlClassificationLda|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Target"
@@ -5831,7 +5831,7 @@ msgstr "Toon proporties"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Class proportions"
-msgstr "Klasse proporties"
+msgstr "Klassenproporties"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Evaluation metrics"
@@ -5883,11 +5883,11 @@ msgstr "Punten"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Training Parameters"
-msgstr "Parameters Trainen"
+msgstr "Parameters trainen"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Algorithmic Settings"
-msgstr "Algoritme Instellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Training data used per tree:"
@@ -5899,7 +5899,7 @@ msgstr "Voorspeller per splits:"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Scale predictors"
-msgstr "Schaal voorspellers"
+msgstr "Schaalvoorspellers"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Set seed:"
@@ -5931,7 +5931,7 @@ msgstr "Voeg voorspelde klassen toe aan data"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Variables"
@@ -5971,7 +5971,7 @@ msgstr "Grafieken"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "K-distance plot"
-msgstr "K-aftandsgrafiek"
+msgstr "K-afstandsgrafiek"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "t-SNE cluster plot"
@@ -5987,15 +5987,15 @@ msgstr "Labels"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Training Parameters"
-msgstr "Parameters Trainen"
+msgstr "Parameters trainen"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Algorithmic Settings"
-msgstr "Algoritme Instellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Epsilon neighborhood size:"
-msgstr "Epsilon neigborhood grootte:"
+msgstr "Epsilon neighborhood grootte:"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Min. core points:"
@@ -6015,7 +6015,7 @@ msgstr "Gebruik seed:"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Model Optimization"
-msgstr "Model Optimalisatie"
+msgstr "Modeloptimalisatie"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Fixed"
@@ -6027,7 +6027,7 @@ msgstr "Voeg voorspelde clusters toe aan data"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Variables"
@@ -6039,7 +6039,7 @@ msgstr "Tabellen"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Cluster information"
-msgstr "Cluster informatie"
+msgstr "Clusterinformatie"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Within sum of squares"
@@ -6087,11 +6087,11 @@ msgstr "Labellen"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Training Parameters"
-msgstr "Parameters Trainen"
+msgstr "Parameters trainen"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Algorithmic Settings"
-msgstr "Algoritme Instellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Max. iterations:"
@@ -6103,7 +6103,7 @@ msgstr "Fuzziness parameter:"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Scale variables"
-msgstr "Schaal variabelen"
+msgstr "Schaalvariabelen"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Set seed:"
@@ -6111,7 +6111,7 @@ msgstr "Gebruik seed:"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Cluster Determination"
-msgstr "Cluster Bepaling"
+msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "Fixed"
@@ -6135,7 +6135,7 @@ msgstr "Voeg voorspelde voorspellers toe"
 
 msgctxt "mlClusteringFuzzyCMeans|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Variables"
@@ -6147,7 +6147,7 @@ msgstr "Tabellen"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Cluster information"
-msgstr "Cluster informatie"
+msgstr "Clusterinformatie"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Within sum of squares"
@@ -6195,11 +6195,11 @@ msgstr "Labels"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Training Parameters"
-msgstr "Parameters Trainen"
+msgstr "Parameters trainen"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Algorithmic Settings"
-msgstr "Algoritme Instellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Distance:"
@@ -6211,7 +6211,7 @@ msgstr "Binding:"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Scale variables"
-msgstr "Schaal variabelen"
+msgstr "Schaalvariabelen"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Set seed:"
@@ -6219,7 +6219,7 @@ msgstr "Gebruik seed:"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Cluster Determination"
-msgstr "Cluster Bepaling"
+msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Fixed"
@@ -6243,7 +6243,7 @@ msgstr "Voeg voorspelde clusters toe aan data"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Variables"
@@ -6255,7 +6255,7 @@ msgstr "Tabellen"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Cluster information"
-msgstr "Cluster informatie"
+msgstr "Clusterinformatie"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Within sum of squares"
@@ -6303,15 +6303,15 @@ msgstr "Labels"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Training Parameters"
-msgstr "Parameters Trainen"
+msgstr "Parameters trainen"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Algorithmic Settings"
-msgstr "Algoritme Instellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Max. iterations:"
-msgstr "Max. Iteraties:"
+msgstr "Max. iteraties:"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Random sets:"
@@ -6323,7 +6323,7 @@ msgstr "Algoritme:"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Scale variables"
-msgstr "Schaal variabelen"
+msgstr "Schaalvariabelen"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Set seed:"
@@ -6331,7 +6331,7 @@ msgstr "Gebruik seed:"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Cluster Determination"
-msgstr "Cluster Bepaling"
+msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Fixed"
@@ -6355,7 +6355,7 @@ msgstr "Voeg voorspelde clusters toe aan data"
 
 msgctxt "mlClusteringKMeans|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Variables"
@@ -6367,7 +6367,7 @@ msgstr "Tabellen"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster information"
-msgstr "Cluster informatie"
+msgstr "Clusterinformatie"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Within sum of squares"
@@ -6435,7 +6435,7 @@ msgstr "Gebruik seed:"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster Determination"
-msgstr "Cluster Bepaling"
+msgstr "Clusterbepaling"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Fixed"
@@ -6459,7 +6459,7 @@ msgstr "Voeg voorspelde clusters toe aan data"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Target"
@@ -6503,11 +6503,11 @@ msgstr "Afwijking"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Training Parameters"
-msgstr "Parameters Trainen"
+msgstr "Parameters trainen"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Algorithmic Settings"
-msgstr "Algoritme Instellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Shrinkage:"
@@ -6515,7 +6515,7 @@ msgstr "Shrinkage:"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Interaction depth:"
-msgstr "Interactie diepte:"
+msgstr "Interactiediepte:"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Min. observations in node:"
@@ -6531,7 +6531,7 @@ msgstr "Verliesfunctie:"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Scale variables"
-msgstr "Schaal variabelen"
+msgstr "Schaalvariabelen"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Set seed:"
@@ -6539,7 +6539,7 @@ msgstr "Gebruik seed:"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Number of Trees"
-msgstr "Aantal Bomen"
+msgstr "Aantal bomen"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Fixed"
@@ -6563,7 +6563,7 @@ msgstr "Voeg voorspelde waarden toe aan data"
 
 msgctxt "mlRegressionBoosting|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlRegressionKnn|"
 msgid "Target"
@@ -6599,11 +6599,11 @@ msgstr "Voorspellingsvermogen"
 
 msgctxt "mlRegressionKnn|"
 msgid "Training Parameters"
-msgstr "Parameters Trainen"
+msgstr "Parameters trainen"
 
 msgctxt "mlRegressionKnn|"
 msgid "Algorithmic Settings"
-msgstr "Algoritme Instellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlRegressionKnn|"
 msgid "Weights:"
@@ -6615,7 +6615,7 @@ msgstr "Afstand:"
 
 msgctxt "mlRegressionKnn|"
 msgid "Scale variables"
-msgstr "Schaal variabelen"
+msgstr "Schaalvariabelen"
 
 msgctxt "mlRegressionKnn|"
 msgid "Set seed:"
@@ -6623,7 +6623,7 @@ msgstr "Gebruik seed:"
 
 msgctxt "mlRegressionKnn|"
 msgid "Number of Nearest Neighbors"
-msgstr "Aantal Naaste Buren"
+msgstr "Aantal naaste buren"
 
 msgctxt "mlRegressionKnn|"
 msgid "Fixed"
@@ -6631,7 +6631,7 @@ msgstr "Vast"
 
 msgctxt "mlRegressionKnn|"
 msgid "Nearest neighbors:"
-msgstr "Naaste Buren:"
+msgstr "Naaste buren:"
 
 msgctxt "mlRegressionKnn|"
 msgid "Optimized"
@@ -6643,11 +6643,11 @@ msgstr "Max. naaste buren:"
 
 msgctxt "mlRegressionKnn|"
 msgid "Add predicted values to data"
-msgstr "Voeg voorspelde waardes toe aan data"
+msgstr "Voeg voorspelde waarden toe aan data"
 
 msgctxt "mlRegressionKnn|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Target"
@@ -6695,11 +6695,11 @@ msgstr "Total stijging in knoop purity"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Training Parameters"
-msgstr "Parameters Trainen"
+msgstr "Parameters trainen"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Algorithmic Settings"
-msgstr "Algoritmeinstellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Training data used per tree:"
@@ -6719,7 +6719,7 @@ msgstr "Gebruik seed:"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Number of Trees"
-msgstr "Aantal Bomen"
+msgstr "Aantal bomen"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Fixed"
@@ -6739,11 +6739,11 @@ msgstr "Max. bomen:"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Add predicted values to data"
-msgstr "Voeg voorspelde waardes toe aan data"
+msgstr "Voeg voorspelde waarden toe aan data"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Target"
@@ -6795,11 +6795,11 @@ msgstr "λ evaluatie"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Training Parameters"
-msgstr "Parameters Trainen"
+msgstr "Parameters trainen"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Algorithmic Settings"
-msgstr "Algoritmeinstellingen"
+msgstr "Algoritme-instellingen"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Convergence threshold:"
@@ -6819,7 +6819,7 @@ msgstr "Fit intercept"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Scale variables"
-msgstr "Schaal variabelen"
+msgstr "Schaalvariabelen"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Set seed:"
@@ -6839,15 +6839,15 @@ msgstr "Geoptimaliseerd"
 
 msgctxt "mlRegressionRegularized|"
 msgid "Largest λ within 1 SE of min."
-msgstr "Grootste λ binnen 1 Std. Fout van min."
+msgstr "Grootste λ binnen 1 std. fout van min."
 
 msgctxt "mlRegressionRegularized|"
 msgid "Add predicted values to data"
-msgstr "Voeg voorspelde waardes toe aan data"
+msgstr "Voeg voorspelde waarden toe aan data"
 
 msgctxt "mlRegressionRegularized|"
 msgid "<b>Save Model</b>"
-msgstr "<b>Bewaar Model</b>"
+msgstr "<b>Bewaar model</b>"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Effect Size"
@@ -6855,7 +6855,7 @@ msgstr "Effectgrootte"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Effect Size Standard Error"
-msgstr "Effectgrootte Standaardfout"
+msgstr "Effectgrootte standaardfout"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Method"
@@ -6943,11 +6943,11 @@ msgstr "Regressietoets voor funnelgrafiek asymmetrisch"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Residuals Model"
-msgstr "Residuen Model"
+msgstr "Residuenmodel"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Residuals parameters"
-msgstr "Residuen parameters"
+msgstr "Residuenparameters"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Diagnostics"
@@ -6979,7 +6979,7 @@ msgstr "Robuustheid"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Fail-safe N"
-msgstr "Faal-red N"
+msgstr "Fail-safe N"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Casewise diagnostics"
@@ -6991,19 +6991,19 @@ msgstr "Effectgrootte"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Effect Size Variance"
-msgstr "Effectgrootte Variantie"
+msgstr "Effectgrootte variantie"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Fixed Effects"
-msgstr "Fixed Effecten"
+msgstr "Fixed effecten"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Inner Grouping (Multivariate Structure)"
-msgstr "Binnen Groepering (Multivariate Structuur)"
+msgstr "Binnengroepering (multivariate structuur)"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Outer Grouping (Grouping Structure)"
-msgstr "Buiten Groepering (Groeperingsstructuur)"
+msgstr "Buitengroepering (groeperingsstructuur)"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Case labels"
@@ -7011,7 +7011,7 @@ msgstr "Case labels"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Fixed Effects Model"
-msgstr "Fixed Effecten Model"
+msgstr "Fixed effecten model"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Predictors"
@@ -7027,7 +7027,7 @@ msgstr "Gebruik intercept"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Random Effects Model"
-msgstr "Aselecte Effecten Model"
+msgstr "Aselecte effecten model"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Multivariate Covariance Model"
@@ -7039,15 +7039,15 @@ msgstr "Statistieken"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Omnibus Statistics"
-msgstr "Omnibus Statistieken"
+msgstr "Omnibusstatistieken"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Anova Table"
-msgstr "Anova Tabel"
+msgstr "ANOVA-tabel"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Fit Indices"
-msgstr "Fit Indexen"
+msgstr "Fit-indices"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Coefficients"
@@ -7055,19 +7055,19 @@ msgstr "Coëfficiënten"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Fixed Effects Coefficients Table"
-msgstr "Fixed Effecten Coëfficiëntentabel"
+msgstr "Fixed effecten coëfficiëntentabel"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Random Effects Coefficients Table"
-msgstr "Aselecte Effecten Coëfficiëntentabel"
+msgstr "Aselecte effecten coëfficiëntentabel"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Model Derived Statistics"
-msgstr "Model Verkregen Statistieken"
+msgstr "Model afgeleide statistieken"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Estimated Marginal Means"
-msgstr "Geschatte Marginale Gemiddeldes"
+msgstr "Geschatte marginale gemiddeldes"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Plots"
@@ -7091,7 +7091,7 @@ msgstr "Methode"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Fixed Effects Covariance Matrix"
-msgstr "Fixed Effecten Covariantiematrix"
+msgstr "Fixed effecten covariantiematrix"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Diagnostics"
@@ -7099,7 +7099,7 @@ msgstr "Diagnostieken"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Test for Funnel Plot Asymmetry"
-msgstr "Toets voor Funnelgrafiek Asymmetrie"
+msgstr "Toets voor funnelgrafiek asymmetrie"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Rank correlation test"
@@ -7107,7 +7107,7 @@ msgstr "Rangschik-correlatietoets"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Egger's Regression test"
-msgstr "Egger's Regressietoets"
+msgstr "Egger's regressietoets"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Fail-safe-N analysis (controversial)"
@@ -7115,7 +7115,7 @@ msgstr "Fail-safe-N analyse (controversieel)"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Diagnostics Table"
-msgstr "Diagnostische Tabel"
+msgstr "Diagnostische tabel"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Diagnostic plots"
@@ -7123,27 +7123,27 @@ msgstr "Diagnostische grafieken"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Residual vs Dependent"
-msgstr "Residueel vs Afhankelijk"
+msgstr "Residueel vs. afhankelijk"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Profile Random Effects Parameters (takes time)"
-msgstr "Portreer Aselecte Effecten Parameters (kost tijd)"
+msgstr "Portretteer aselecte-effectenparameters (kost tijd)"
 
 msgctxt "LinearMixedModels|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke Variabele"
+msgstr "Afhankelijke variabele"
 
 msgctxt "LinearMixedModels|"
 msgid "Fixed Factors"
-msgstr "Fixed Factoren"
+msgstr "Fixed factoren"
 
 msgctxt "LinearMixedModels|"
 msgid "Fixed Covariates"
-msgstr "Fixed Covariaten"
+msgstr "Fixed covariaten"
 
 msgctxt "LinearMixedModels|"
 msgid "Random Effects Grouping Factors"
-msgstr "Aselecte Effecten Groeperingsfactoren"
+msgstr "Aselecte effecten groeperingsfactoren"
 
 msgctxt "LinearMixedModels|"
 msgid "Estimation method"
@@ -7151,7 +7151,7 @@ msgstr "Schattingsmethode"
 
 msgctxt "LinearMixedModels|"
 msgid "Fixed Effects"
-msgstr "Fixed Effecten"
+msgstr "Fixed effecten"
 
 msgctxt "LinearMixedModels|"
 msgid "Components"
@@ -7167,11 +7167,11 @@ msgstr "Toets intercept"
 
 msgctxt "LinearMixedModels|"
 msgid "Random Effects"
-msgstr "Aselecte Effecten"
+msgstr "Aselecte effecten"
 
 msgctxt "LinearMixedModels|"
 msgid "Post Hoc Tests"
-msgstr "Post Hoc Toets"
+msgstr "Post-hoc toets"
 
 msgctxt "LinearMixedModels|"
 msgid "Correction"
@@ -7219,7 +7219,7 @@ msgstr "Toets voor homogeniteit"
 
 msgctxt "LinearMixedModels|"
 msgid "Homogeneity corrections"
-msgstr "Homogeneiteitscorrecties"
+msgstr "Homogeniteitscorrecties"
 
 msgctxt "LinearMixedModels|"
 msgid "None"
@@ -7251,7 +7251,7 @@ msgstr "Betrouwbaarheidsintervallen"
 
 msgctxt "LinearMixedModels|"
 msgid "Additional Options"
-msgstr "Aanvullende Opties"
+msgstr "Aanvullende opties"
 
 msgctxt "LinearMixedModels|"
 msgid "Marginal means"
@@ -7295,27 +7295,27 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "LinearMixedModels|"
 msgid "Simple Main Effects"
-msgstr "Simpele Hoofdeffecten"
+msgstr "Simpele hoofdeffecten"
 
 msgctxt "LinearMixedModels|"
 msgid "Simple Effect Factor"
-msgstr "Simpele Effectfactor"
+msgstr "Simpele effectfactor"
 
 msgctxt "LinearMixedModels|"
 msgid "Moderator Factor 1"
-msgstr "Moderator Factor 1"
+msgstr "Moderator factor 1"
 
 msgctxt "LinearMixedModels|"
 msgid "Moderator Factor 2"
-msgstr "Moderator Factor 2"
+msgstr "Moderator factor 2"
 
 msgctxt "LinearMixedModels|"
 msgid "Non Parametrics"
-msgstr "Non-parametrisch"
+msgstr "Niet-parametrisch"
 
 msgctxt "LinearMixedModels|"
 msgid "Kruskal-Wallis Test"
-msgstr "Kruskal-Wallis Toets"
+msgstr "Kruskal-Wallis toets"
 
 msgctxt "NetworkAnalysis|"
 msgid "Dependent Variables"
@@ -7359,11 +7359,11 @@ msgstr "Clustertabel"
 
 msgctxt "NetworkAnalysis|"
 msgid "Weights matrix"
-msgstr "Gewichten matrix"
+msgstr "Gewichtenmatrix"
 
 msgctxt "NetworkAnalysis|"
 msgid "Analysis Options - "
-msgstr "Analyse Opties - "
+msgstr "Analyse-opties - "
 
 msgctxt "NetworkAnalysis|"
 msgid "Correlation Method"
@@ -7439,7 +7439,7 @@ msgstr "Minimum"
 
 msgctxt "NetworkAnalysis|"
 msgid "Ising Estimator"
-msgstr "Ising Schatter"
+msgstr "Ising schatter"
 
 msgctxt "NetworkAnalysis|"
 msgid "Pseudo-likelihood"
@@ -7519,7 +7519,7 @@ msgstr "nFolds"
 
 msgctxt "NetworkAnalysis|"
 msgid "Bootstrap Options"
-msgstr "Bootstrap Opties"
+msgstr "Bootstrap opties"
 
 msgctxt "NetworkAnalysis|"
 msgid "Settings"
@@ -7535,11 +7535,11 @@ msgstr "Aantal bootstraps"
 
 msgctxt "NetworkAnalysis|"
 msgid "Bootstrap Type"
-msgstr "Bootstrap Type"
+msgstr "Bootstrap type"
 
 msgctxt "NetworkAnalysis|"
 msgid "Nonparametic"
-msgstr "Non-parametrisch"
+msgstr "Niet-parametrisch"
 
 msgctxt "NetworkAnalysis|"
 msgid "Case"
@@ -7575,7 +7575,7 @@ msgstr "Centraliteit"
 
 msgctxt "NetworkAnalysis|"
 msgid "Graphical Options"
-msgstr "Grafische Opties"
+msgstr "Grafische opties"
 
 msgctxt "NetworkAnalysis|"
 msgid "Node size"
@@ -7583,7 +7583,7 @@ msgstr "Knoopgrootte"
 
 msgctxt "NetworkAnalysis|"
 msgid "Node palette"
-msgstr "Knooppalette"
+msgstr "Knooppalet"
 
 msgctxt "NetworkAnalysis|"
 msgid "Variables in network"
@@ -7591,19 +7591,19 @@ msgstr "Variabelen in netwerk"
 
 msgctxt "NetworkAnalysis|"
 msgid "Continuous Variables"
-msgstr "Continue Variabelen"
+msgstr "Continue variabelen"
 
 msgctxt "NetworkAnalysis|"
 msgid "Categorical Variables"
-msgstr "Categorische Variabelen"
+msgstr "Categorische variabelen"
 
 msgctxt "NetworkAnalysis|"
 msgid "Count Variables"
-msgstr "Tel Variabelen"
+msgstr "Telvariabelen"
 
 msgctxt "NetworkAnalysis|"
 msgid "Parallel Bootstrap"
-msgstr "Parallele Bootstrap"
+msgstr "Parallele bootstrap"
 
 msgctxt "NetworkAnalysis|"
 msgid "Group name"
@@ -7611,7 +7611,7 @@ msgstr "Groepsnaam"
 
 msgctxt "NetworkAnalysis|"
 msgid "New Group"
-msgstr "Nieuwe Groep"
+msgstr "Nieuwe groep"
 
 msgctxt "NetworkAnalysis|"
 msgid "Group color"
@@ -7655,11 +7655,11 @@ msgstr "Padgrootte"
 
 msgctxt "NetworkAnalysis|"
 msgid "Max edge strength"
-msgstr "Max padsterkte"
+msgstr "Max. padsterkte"
 
 msgctxt "NetworkAnalysis|"
 msgid "Min edge strength"
-msgstr "Min padsterkte"
+msgstr "Min. padsterkte"
 
 msgctxt "NetworkAnalysis|"
 msgid "Cut"
@@ -7671,7 +7671,7 @@ msgstr "Toon details"
 
 msgctxt "NetworkAnalysis|"
 msgid "Edge palette"
-msgstr "Padpalette"
+msgstr "Padpalet"
 
 msgctxt "NetworkAnalysis|"
 msgid "Classic"
@@ -7711,7 +7711,7 @@ msgstr "Schaallabelgrootte"
 
 msgctxt "NetworkAnalysis|"
 msgid "Abbreviate labels to "
-msgstr "Kort labels af naar "
+msgstr "Kort labels af tot "
 
 msgctxt "NetworkAnalysis|"
 msgid "Network Size"
@@ -7739,7 +7739,7 @@ msgstr "In legenda"
 
 msgctxt "NetworkAnalysis|"
 msgid "Show Variable Type"
-msgstr "Toon Variabeltype"
+msgstr "Toon type variabele"
 
 msgctxt "NetworkAnalysis|"
 msgid "Don't show"
@@ -7775,7 +7775,7 @@ msgstr "Opmaak"
 
 msgctxt "NetworkAnalysis|"
 msgid "Do not update layout"
-msgstr "Update opmaak niet"
+msgstr "Opmaak niet updaten"
 
 msgctxt "NetworkAnalysis|"
 msgid "Spring"
@@ -7807,11 +7807,11 @@ msgstr "Sla de opmaak op in de dataset"
 
 msgctxt "NetworkAnalysis|"
 msgid "name for x-coordinates"
-msgstr "naam voor x-coordinaten"
+msgstr "naam voor x-coördinaten"
 
 msgctxt "NetworkAnalysis|"
 msgid "name for y-coordinates"
-msgstr "naam voor y-coordinaten"
+msgstr "naam voor y-coördinaten"
 
 msgctxt "Correlation|"
 msgid "Variables"
@@ -7839,7 +7839,7 @@ msgstr "Kendall's tau-b"
 
 msgctxt "Correlation|"
 msgid "Additional Options"
-msgstr "Aanvullende Opties"
+msgstr "Aanvullende opties"
 
 #| msgid "Display pairwise table"
 msgctxt "Correlation|"
@@ -7872,7 +7872,7 @@ msgstr "Steekproefgrootte"
 
 msgctxt "Correlation|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "Correlation|"
 msgid "Correlated"
@@ -7912,7 +7912,7 @@ msgstr "Verificatie van aannames"
 
 msgctxt "Correlation|"
 msgid "Multivariate Normality"
-msgstr "Multivariate Normaliteit"
+msgstr "Multivariate normaliteit"
 
 msgctxt "Correlation|"
 msgid "Shapiro"
@@ -7932,7 +7932,7 @@ msgstr "Energie"
 
 msgctxt "Correlation|"
 msgid "Pairwise Normality"
-msgstr "Paarsgewijze Normaliteit"
+msgstr "Paarsgewijze normaliteit"
 
 msgctxt "Correlation|"
 msgid "Options"
@@ -7968,11 +7968,11 @@ msgstr "Kendall's tau-b"
 
 msgctxt "CorrelationBayesian|"
 msgid "Additional Options"
-msgstr "Aanvullende Opties"
+msgstr "Aanvullende opties"
 
 msgctxt "CorrelationBayesian|"
 msgid "Report Bayes factors"
-msgstr "Rapporteer Bayes factors"
+msgstr "Rapporteer Bayes factoren"
 
 msgctxt "CorrelationBayesian|"
 msgid "Flag supported correlations"
@@ -7988,7 +7988,7 @@ msgstr "Interval"
 
 msgctxt "CorrelationBayesian|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "CorrelationBayesian|"
 msgid "Correlated"
@@ -8040,7 +8040,7 @@ msgstr "Sluit waarnemingen paarsgewijs uit"
 
 msgctxt "RegressionLinear|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke Variabele"
+msgstr "Afhankelijke variabele"
 
 msgctxt "RegressionLinear|"
 msgid "Method"
@@ -8056,7 +8056,7 @@ msgstr "Factoren"
 
 msgctxt "RegressionLinear|"
 msgid "WLS Weights (optional)"
-msgstr "WLS Gewichten (optioneel)"
+msgstr "WLS gewichten (optioneel)"
 
 msgctxt "RegressionLinear|"
 msgid "Model"
@@ -8144,11 +8144,11 @@ msgstr "Alle"
 
 msgctxt "RegressionLinear|"
 msgid "Stepping Method Criteria"
-msgstr "Stapsmethode Criteria"
+msgstr "Stapsmethode criteria"
 
 msgctxt "RegressionLinear|"
 msgid "Use p value"
-msgstr "Gebruik p waarde"
+msgstr "Gebruik p-waarde"
 
 msgctxt "RegressionLinear|"
 msgid "Entry"
@@ -8168,7 +8168,7 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "RegressionLinear|"
 msgid "Method Specification"
-msgstr "Methode Specificatie"
+msgstr "Methodespecificatie"
 
 msgctxt "RegressionLinear|"
 msgid "Missing Values"
@@ -8216,7 +8216,7 @@ msgstr "Gedeeltelijke grafieken"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke Variabele"
+msgstr "Afhankelijke variabele"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Covariates"
@@ -8224,7 +8224,7 @@ msgstr "Covariaten"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "WLS Weights (optional)"
-msgstr "WLS Gewichten (optioneel)"
+msgstr "WLS gewichten (optioneel)"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Output"
@@ -8264,7 +8264,7 @@ msgstr "Grafiek van coëfficiënten"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Omit intercept"
-msgstr "Vermijd intercept"
+msgstr "Laat intercept weg"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Credible interval"
@@ -8284,7 +8284,7 @@ msgstr "Vergelijk met nulmodel"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Limit No. Models Shown"
-msgstr "Limiteer getoond aantal modellen"
+msgstr "Beperk aantal getoonde modellen"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "No"
@@ -8292,7 +8292,7 @@ msgstr "Nee"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Yes, show best"
-msgstr "Ja, laat beste zien"
+msgstr "Ja, toon beste"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Data"
@@ -8324,7 +8324,7 @@ msgstr "Inclusiekansen"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Marginal posterior distributions"
-msgstr "Marginale posterior distributie"
+msgstr "Marginale posterior verdelingen"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Models"
@@ -8356,7 +8356,7 @@ msgstr "Q-Q plot van gemiddeld model residuen"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Advanced Options"
-msgstr "Geavanceerde Opties"
+msgstr "Geavanceerde opties"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Prior"
@@ -8408,7 +8408,7 @@ msgstr "r schaal"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Model Prior"
-msgstr "Model Prior"
+msgstr "Model prior"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Beta binomial"
@@ -8480,7 +8480,7 @@ msgstr "Aantal steekproeven voor geloofwaardigheidsinterval"
 
 msgctxt "RegressionLogistic|"
 msgid "Dependent Variable"
-msgstr "Afankelijke Variabele"
+msgstr "Afhankelijke variabele"
 
 msgctxt "RegressionLogistic|"
 msgid "Method"
@@ -8492,11 +8492,11 @@ msgstr "Voer in"
 
 msgctxt "RegressionLogistic|"
 msgid "Backward"
-msgstr "Achterwaarts"
+msgstr "Achteruit"
 
 msgctxt "RegressionLogistic|"
 msgid "Forward"
-msgstr "Voorwaarts"
+msgstr "Vooruit"
 
 msgctxt "RegressionLogistic|"
 msgid "Stepwise"
@@ -8512,7 +8512,7 @@ msgstr "Factoren"
 
 msgctxt "RegressionLogistic|"
 msgid "WLS Weights (optional)"
-msgstr "WLS Gewichten (optioneel)"
+msgstr "WLS gewichten (optioneel)"
 
 msgctxt "RegressionLogistic|"
 msgid "Model"
@@ -8540,7 +8540,7 @@ msgstr "Factor beschrijvingen"
 
 msgctxt "RegressionLogistic|"
 msgid "Performance Diagnostics"
-msgstr "Prestatie Diagnostiek"
+msgstr "Prestatie diagnostiek"
 
 msgctxt "RegressionLogistic|"
 msgid "Confusion matrix"
@@ -8592,7 +8592,7 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "RegressionLogistic|"
 msgid "Performance Metrics"
-msgstr "Prestatie Metrieken"
+msgstr "Prestatie metrieken"
 
 msgctxt "RegressionLogistic|"
 msgid "AUC"
@@ -8636,7 +8636,7 @@ msgstr "Standaardresidu >"
 
 msgctxt "RegressionLogistic|"
 msgid "Cook's distance >"
-msgstr "Cook's afstand"
+msgstr "Cook's afstand >"
 
 msgctxt "RegressionLogistic|"
 msgid "All"
@@ -8648,7 +8648,7 @@ msgstr "Grafieken"
 
 msgctxt "RegressionLogistic|"
 msgid "Inferential Plots"
-msgstr "Inferentiële Grafieken"
+msgstr "Inferentiële grafieken"
 
 msgctxt "RegressionLogistic|"
 msgid "Display conditional estimates plots"
@@ -8664,11 +8664,11 @@ msgstr "Toon datapunten"
 
 msgctxt "RegressionLogistic|"
 msgid "Residual Plots"
-msgstr "Residu Grafieken"
+msgstr "Residu grafieken"
 
 msgctxt "RegressionLogistic|"
 msgid "Predicted - residual plot"
-msgstr "Voorspeld - residuengrafiek"
+msgstr "Voorspeld - residugrafiek"
 
 msgctxt "RegressionLogistic|"
 msgid "Predictor - residual plots"
@@ -8784,7 +8784,7 @@ msgstr "Behandeling ontbrekende waarden"
 
 msgctxt "MediationAnalysis|"
 msgid "Full Information Maximum Likelihood"
-msgstr "Maximale Waarschijnlijkheid Complete Informatie"
+msgstr "Maximale waarschijnlijkheid complete informatie"
 
 msgctxt "MediationAnalysis|"
 msgid "Emulation"
@@ -8832,7 +8832,7 @@ msgstr "DWLS"
 
 msgctxt "SEMSimple|"
 msgid "Enter lavaan syntax below"
-msgstr "Voer lavaan syntax hier beneden in"
+msgstr "Voer lavaan syntax hieronder in"
 
 msgctxt "SEMSimple|"
 msgid "Raw"
@@ -8852,7 +8852,7 @@ msgstr "Factorladingen"
 
 msgctxt "SEMSimple|"
 msgid "Residual variance"
-msgstr "Variantie van Residuen"
+msgstr "Variantie van residuen"
 
 msgctxt "SEMSimple|"
 msgid "Path diagram"
@@ -8876,19 +8876,19 @@ msgstr "Toetswaarde"
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid "≠ Test value"
-msgstr "≠ Toetswaarde"
+msgstr "≠ toetswaarde"
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid "> Test value"
-msgstr "> Toetswaarde"
+msgstr "> toetswaarde"
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid "< Test value"
-msgstr "< Toetswaarde"
+msgstr "< toetswaarde"
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid "Plots"
@@ -8932,7 +8932,7 @@ msgstr "Kendall's tau-b"
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Correlated"
@@ -8988,7 +8988,7 @@ msgstr "R-kwadraat"
 
 msgctxt "SummaryStatsRegressionLinearBayesian|"
 msgid "Alternative Model"
-msgstr "Alternatief Model"
+msgstr "Alternatief model"
 
 msgctxt "SummaryStatsRegressionLinearBayesian|"
 msgid "Plots"
@@ -9004,7 +9004,7 @@ msgstr "Aanvullende info"
 
 msgctxt "SummaryStatsRegressionLinearBayesian|"
 msgid "Advanced Options"
-msgstr "Geavanceerde Opties"
+msgstr "Geavanceerde opties"
 
 msgctxt "SummaryStatsRegressionLinearBayesian|"
 msgid "Prior"
@@ -9028,19 +9028,19 @@ msgstr "Groep 2 grootte"
 
 msgctxt "SummaryStatsTTestBayesianIndependentSamples|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "SummaryStatsTTestBayesianIndependentSamples|"
 msgid "Group 1 ≠ Group 2"
-msgstr "Groep 1 ≠ Groep 2"
+msgstr "Groep 1 ≠ groep 2"
 
 msgctxt "SummaryStatsTTestBayesianIndependentSamples|"
 msgid "Group 1 > Group 2"
-msgstr "Groep 1 > Groep 2"
+msgstr "Groep 1 > groep 2"
 
 msgctxt "SummaryStatsTTestBayesianIndependentSamples|"
 msgid "Group 1 < Group 2"
-msgstr "Groep 1 < Groep 2"
+msgstr "Groep 1 < groep 2"
 
 msgctxt "SummaryStatsTTestBayesianIndependentSamples|"
 msgid "Plots"
@@ -9068,19 +9068,19 @@ msgstr "Groepsgrootte"
 
 msgctxt "SummaryStatsTTestBayesianOneSample|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "SummaryStatsTTestBayesianOneSample|"
 msgid "≠ Test value"
-msgstr "≠ Toetswaarde"
+msgstr "≠ toetswaarde"
 
 msgctxt "SummaryStatsTTestBayesianOneSample|"
 msgid "> Test value"
-msgstr "> Toetswaarde"
+msgstr "> toetswaarde"
 
 msgctxt "SummaryStatsTTestBayesianOneSample|"
 msgid "< Test value"
-msgstr "< Toetswaarde"
+msgstr "< toetswaarde"
 
 msgctxt "SummaryStatsTTestBayesianOneSample|"
 msgid "Plots"
@@ -9108,19 +9108,19 @@ msgstr "Groepsgrootte"
 
 msgctxt "SummaryStatsTTestBayesianPairedSamples|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "SummaryStatsTTestBayesianPairedSamples|"
 msgid "Measure 1 ≠ Measure 2"
-msgstr "Maat 1 ≠ Maat 2"
+msgstr "Maat 1 ≠ maat 2"
 
 msgctxt "SummaryStatsTTestBayesianPairedSamples|"
 msgid "Measure 1 > Measure 2"
-msgstr "Maat 1 > Maat 2"
+msgstr "Maat 1 > maat 2"
 
 msgctxt "SummaryStatsTTestBayesianPairedSamples|"
 msgid "Measure 1 < Measure 2"
-msgstr "Maat 1 < Maat 2"
+msgstr "Maat 1 < maat 2"
 
 msgctxt "SummaryStatsTTestBayesianPairedSamples|"
 msgid "Plots"
@@ -9148,19 +9148,19 @@ msgstr "Groeperingsvariabele"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Group 1 ≠ Group 2"
-msgstr "Groep 1 ≠ Groep 2"
+msgstr "Groep 1 ≠ groep 2"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Group 1 > Group 2"
-msgstr "Groep 1 > Groep 2"
+msgstr "Groep 1 > groep 2"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Group 1 < Group 2"
-msgstr "Groep 1 < Groep 2"
+msgstr "Groep 1 < groep 2"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Plots"
@@ -9184,7 +9184,7 @@ msgstr "Sequentiële analyse"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Robustness check"
-msgstr "Robuustheidsevaluatue"
+msgstr "Robuustheidsevaluatie"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Descriptives"
@@ -9216,7 +9216,7 @@ msgstr "Ontbrekende waarden"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Additional Statistics"
-msgstr "Aanvullende Statistieken"
+msgstr "Aanvullende statistieken"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Variables"
@@ -9248,7 +9248,7 @@ msgstr "Sequentiële analyse"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Robustness check"
-msgstr "Robuustheidsevaluatue"
+msgstr "Robuustheidsevaluatie"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Descriptives"
@@ -9260,23 +9260,23 @@ msgstr "Geloofwaardigheidsinterval"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "≠ Test value"
-msgstr "≠ Toetswaarde"
+msgstr "≠ toetswaarde"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "> Test value"
-msgstr "> Toetswaarde"
+msgstr "> toetswaarde"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "< Test value"
-msgstr "< Toetswaarde"
+msgstr "< toetswaarde"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Additional Statistics"
-msgstr "Aanvullende Statistieken"
+msgstr "Aanvullende statistieken"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Missing Values"
@@ -9288,19 +9288,19 @@ msgstr "Variabele paren"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Measure 1 ≠ Measure 2"
-msgstr "Maat 1 ≠ Maat 2"
+msgstr "Maat 1 ≠ maat 2"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Measure 1 > Measure 2"
-msgstr "Maat 1 > Maat 2"
+msgstr "Maat 1 > maat 2"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Measure 1 < Measure 2"
-msgstr "Maat 1 < Maat 2"
+msgstr "Maat 1 < maat 2"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Plots"
@@ -9324,7 +9324,7 @@ msgstr "Sequentiële analyse"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Robustness check"
-msgstr "Robuustheidsevaluatue"
+msgstr "Robuustheidsevaluatie"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Descriptives"
@@ -9336,7 +9336,7 @@ msgstr "Geloofwaardigheidsinterval"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Additional Statistics"
-msgstr "Aanvullende Statistieken"
+msgstr "Aanvullende statistieken"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Missing Values"
@@ -9368,7 +9368,7 @@ msgstr "Mann-Whitney"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Additional Statistics"
-msgstr "Aanvullende Statistieken"
+msgstr "Aanvullende statistieken"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Location parameter"
@@ -9408,19 +9408,19 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Group 1 ≠ Group 2"
-msgstr "Groep 1 ≠ Groep 2"
+msgstr "Groep 1 ≠ groep 2"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Group 1 > Group 2"
-msgstr "Groep 1 > Groep 2"
+msgstr "Groep 1 > groep 2"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Group 1 < Group 2"
-msgstr "Groep 1 < Groep 2"
+msgstr "Groep 1 < groep 2"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Assumption Checks"
@@ -9464,7 +9464,7 @@ msgstr "Toetswaarde:"
 
 msgctxt "TTestOneSample|"
 msgid "Std. deviation:"
-msgstr "Std. Afwijking:"
+msgstr "Std. afwijking:"
 
 msgctxt "TTestOneSample|"
 msgid "Additional Statistics"
@@ -9496,19 +9496,19 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "TTestOneSample|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "TTestOneSample|"
 msgid "≠ Test value"
-msgstr "≠ Toetswaarde"
+msgstr "≠ toetswaarde"
 
 msgctxt "TTestOneSample|"
 msgid "> Test value"
-msgstr "> Toetswaarde"
+msgstr "> toetswaarde"
 
 msgctxt "TTestOneSample|"
 msgid "< Test value"
-msgstr "< Toetswaarde"
+msgstr "< toetswaarde"
 
 msgctxt "TTestOneSample|"
 msgid "Assumption checks"
@@ -9540,7 +9540,7 @@ msgstr "Wilcoxon signed-rank"
 
 msgctxt "TTestPairedSamples|"
 msgid "Additional Statistics"
-msgstr "Aanvullende Statistieken"
+msgstr "Aanvullende statistieken"
 
 msgctxt "TTestPairedSamples|"
 msgid "Location parameter"
@@ -9568,19 +9568,19 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "TTestPairedSamples|"
 msgid "Alt. Hypothesis"
-msgstr "Alt. Hypothese"
+msgstr "Alt. hypothese"
 
 msgctxt "TTestPairedSamples|"
 msgid "Measure 1 ≠ Measure 2"
-msgstr "Maat 1 ≠ Maat 2"
+msgstr "Maat 1 ≠ maat 2"
 
 msgctxt "TTestPairedSamples|"
 msgid "Measure 1 > Measure 2"
-msgstr "Maat 1 > Maat 2"
+msgstr "Maat 1 > maat 2"
 
 msgctxt "TTestPairedSamples|"
 msgid "Measure 1 < Measure 2"
-msgstr "Maat 1 < Maat 2"
+msgstr "Maat 1 < maat 2"
 
 msgctxt "TTestPairedSamples|"
 msgid "Assumption Checks"
@@ -9596,7 +9596,7 @@ msgstr "Ontbrekende waarden"
 
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
-msgstr "De waarde moet zijn"
+msgstr "De waarde moet zijn "
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
@@ -9632,23 +9632,23 @@ msgstr "Open"
 
 msgctxt "ActionButtons|"
 msgid "Save"
-msgstr "Bewaar"
+msgstr "Opslaan"
 
 msgctxt "ActionButtons|"
 msgid "Save As"
-msgstr "Bewaar als"
+msgstr "Opslaan als"
 
 msgctxt "ActionButtons|"
 msgid "Export Results"
-msgstr "Exporteer Resultaten"
+msgstr "Exporteer resultaten"
 
 msgctxt "ActionButtons|"
 msgid "Export Data"
-msgstr "Exporteer Data"
+msgstr "Exporteer data"
 
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr "Sync Data"
+msgstr "Sync data"
 
 msgctxt "ActionButtons|"
 msgid "Close"
@@ -9660,7 +9660,7 @@ msgstr "Voorkeuren"
 
 msgctxt "ActionButtons|"
 msgid "About"
-msgstr "Versie info"
+msgstr "Over"
 
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
@@ -9688,7 +9688,7 @@ msgstr "Data"
 
 msgctxt "ResourceButtons|"
 msgid "Results"
-msgstr "Resultaat"
+msgstr "Resultaten"
 
 msgctxt "ResourceButtons|"
 msgid "Interface"
@@ -9744,7 +9744,7 @@ msgstr "Waarde"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Audit Risk"
-msgstr "Audit Risico"
+msgstr "Audit risico"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Confidence"
@@ -9752,15 +9752,15 @@ msgstr "Betrouwbaarheid"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Book values"
-msgstr "Boekwaardes"
+msgstr "Boekwaarden"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Audit values"
-msgstr "Auditwaardes"
+msgstr "Auditwaarden"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Advanced Options"
-msgstr "Geavanceerde Opties"
+msgstr "Geavanceerde opties"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Estimator"
@@ -9792,7 +9792,7 @@ msgstr "Activeer"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Tables and Plots"
-msgstr "Tabellen en Grafieken"
+msgstr "Tabellen en grafieken"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Tables"
@@ -9816,7 +9816,7 @@ msgstr "Spreidingsdiagram"
 
 msgctxt "auditClassicalEstimation|"
 msgid "<b>Download Report</b>"
-msgstr "<b>Download Verslag</b>"
+msgstr "<b>Download verslag</b>"
 
 msgctxt "MainWindow|"
 msgid "Datafile changed"
@@ -9827,8 +9827,8 @@ msgid ""
 "The datafile that was used by this JASP file was modified. Do you want to "
 "reload the analyses with this new data?"
 msgstr ""
-"Het databestand dat was gebruikt door dit JASP bestand is bewerkt. Wil je de "
-"analyses opnieuw laden met de nieuwe data?"
+"Het databestand dat werd gebruikt door dit JASP-bestand werd bewerkt. Wil je de "
+"analyses opnieuw laden met deze nieuwe data?"
 
 msgctxt "customContrasts|"
 msgid "Selected"
@@ -9836,11 +9836,11 @@ msgstr "Geselecteerd"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
-msgstr "Voeg Contrast Toe"
+msgstr "Voeg contrast toe"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
-msgstr "Verwijder Contrast"
+msgstr "Verwijder contrast"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
@@ -9853,7 +9853,7 @@ msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
-msgstr "Wissel naar de R filter"
+msgstr "Wissel naar het R filter"
 
 msgctxt "FilterWindow|"
 msgid "Hide rows that were filtered out."
@@ -9881,7 +9881,7 @@ msgstr "Filter is al toegepast"
 
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
-msgstr "Open Documentatie"
+msgstr "Open documentatie"
 
 msgctxt "FilterWindow|"
 msgid "Hide filter"
@@ -9893,7 +9893,7 @@ msgstr "Herstel alle vinkjes op alle labels"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the drag and drop filter"
-msgstr "Wissel naar de drag en drop filter"
+msgstr "Wissel naar het drag en drop filter"
 
 msgctxt "FilterWindow|"
 msgid "Reset to default filter"
@@ -9909,7 +9909,7 @@ msgstr "Filter is onveranderd van standaard"
 
 msgctxt "JagsTableView|"
 msgid "Add Data"
-msgstr "Voeg Data Toe"
+msgstr "Voeg data toe"
 
 msgctxt "JagsTableView|"
 msgid "Delete Data"
@@ -9929,19 +9929,19 @@ msgstr "Er zijn niet-toegepaste veranderingen; wat zou je willen doen?"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
-msgstr "Pas Toe"
+msgstr "Toepassen"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Cancel"
-msgstr "Annuleer"
+msgstr "Annuleren"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Discard"
-msgstr "Gooi weg"
+msgstr "Verwerpen"
 
 msgctxt "JAGS|"
 msgid "Enter JAGS model below"
-msgstr "Voer JAGS model beneden in"
+msgstr "Voer JAGS-model hieronder in"
 
 msgctxt "JAGS|"
 msgid "Parameters in model"
@@ -9973,7 +9973,7 @@ msgstr "Kleurenblind"
 
 msgctxt "JAGS|"
 msgid "Colorblind Alt."
-msgstr "Kleurenblind Alt."
+msgstr "Kleurenblind alt."
 
 msgctxt "JAGS|"
 msgid "Viridis"
@@ -9993,7 +9993,7 @@ msgstr "Aggregeer ketens voor verdelingen en histogrammen"
 
 msgctxt "JAGS|"
 msgid "Show legends"
-msgstr "Toon legendas"
+msgstr "Toon legenda's"
 
 msgctxt "JAGS|"
 msgid "Density"
@@ -10033,11 +10033,11 @@ msgstr "Bivariate spreiding"
 
 msgctxt "JAGS|"
 msgid "Diagonal plot type"
-msgstr "Diagonaal grafiekstype"
+msgstr "Diagonaal grafiektype"
 
 msgctxt "JAGS|"
 msgid "Off-diagonal plot type"
-msgstr "Off-diagonaal grafiekstype"
+msgstr "Off-diagonaal grafiektype"
 
 msgctxt "JAGS|"
 msgid "Hexagonal"
@@ -10049,11 +10049,11 @@ msgstr "Contour"
 
 msgctxt "JAGS|"
 msgid "Initial Values"
-msgstr "Beginwaardes"
+msgstr "Beginwaarden"
 
 msgctxt "JAGS|"
 msgid "Observed Values"
-msgstr "Geobserveerde Waardes"
+msgstr "Geobserveerde waarden"
 
 msgctxt "JAGS|"
 msgid "Advanced"
@@ -10104,7 +10104,7 @@ msgstr "Geen kolom gespecificeerd in de bron van %1"
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Unknown column specified (%1) in TableView source %2"
-msgstr "De bron specificeert geen valide kolom in 1%"
+msgstr "Onbekende kolom gespecificeerd (%1) in bron %2"
 
 #, qt-format
 msgctxt "QMLListView|"
@@ -10129,12 +10129,12 @@ msgstr "Bron model nodig voor VariabeleLijst %1"
 #, qt-format
 msgctxt "QMLListView|"
 msgid "Unknown discard model %1 for VariableList %2"
-msgstr "Onbekend weggegooide model %1 voor VariabeleLijst %2"
+msgstr "Onbekend weggegooid model %1 voor VariabeleLijst %2"
 
 #, qt-format
 msgctxt "QMLListView|"
 msgid "Cannot find source %1 for VariablesList %2"
-msgstr "Kan bron %1 vinden voor VariabeleLijst %2"
+msgstr "Kan bron %1 niet vinden voor VariabeleLijst %2"
 
 #, qt-format
 msgctxt "QMLListView|"
@@ -10149,7 +10149,7 @@ msgid ""
 msgstr ""
 "\n"
 ".\n"
-"Deze documentatie zal beschikbaar zijn in een van de volgende releases van "
+"Meer documentatie zal beschikbaar zijn in een volgende release van "
 
 msgctxt "HelpModel|"
 msgid "the module."
@@ -10165,25 +10165,25 @@ msgstr "Thema's"
 
 msgctxt "PrefsUI|"
 msgid "Light Theme"
-msgstr "Licht Thema"
+msgstr "Licht thema"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
 msgstr ""
-"Verandert naar een licht thema, dit is de standaard en originele smaak van "
+"Schakelt naar een licht thema, dit is de standaard en originele smaak van "
 "JASP."
 
 msgctxt "PrefsUI|"
 msgid "Dark Theme"
-msgstr "Donker Thema"
+msgstr "Donker thema"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
 msgstr ""
-"Schakelt om naar een donker thema, maak JASP een stuk makkelijker voor de "
+"Schakelt naar een donker thema, maakt JASP een stuk makkelijker voor de "
 "ogen van nachtbrakers."
 
 msgctxt "PrefsUI|"
@@ -10192,7 +10192,7 @@ msgstr "Voorkeurstaal"
 
 msgctxt "PrefsUI|"
 msgid "Choose Language  "
-msgstr "Kies Taal  "
+msgstr "Kies taal  "
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
@@ -10200,18 +10200,18 @@ msgstr "Overige opties"
 
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
-msgstr "Zoom (%):"
+msgstr "Zoom (%): "
 
 msgctxt "PrefsUI|"
 msgid ""
 "Increase or decrease the size of the interface elements (text, buttons, etc)."
 msgstr ""
-"Vergroot of verklein de grootte van de interface elementen (tekst, knoppen, "
+"Vergroot of verklein de grootte van de interface-elementen (tekst, knoppen, "
 "etc.)."
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr "Scroll snelheid (pix/s)"
+msgstr "Scroll snelheid (pix/s): "
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -10223,7 +10223,7 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Safe Graphics Mode"
-msgstr "Veilige Grafische Mode"
+msgstr "Veilige grafische modus"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -10232,7 +10232,7 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
-"Switch naar een \"veiligere\" modus voor grafisch/ software rendering.\n"
+"Schakelt naar een \"veiligere\" modus voor grafisch/ software rendering.\n"
 "Hierdoor wordt de interface langzamer, maar als zich problemen voordoen "
 "(vreemde glitches, onzichtbare resultaten, etc.) worden deze misschien "
 "opgelost. \n"
@@ -10240,7 +10240,7 @@ msgstr ""
 
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr "Nieuwe Waarde"
+msgstr "Nieuwe waarde"
 
 msgctxt "DataLibraryBreadCrumbsListModel|"
 msgid "Categories"
@@ -10289,18 +10289,18 @@ msgstr "Ctrl + Enter om toe te passen"
 msgctxt "VariablesForm|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
 msgstr ""
-"Er kan maar 1 Beschikbare Variabele lijst worden toegepast in een "
+"Er kan maar één beschikbare variabelelijst worden toegepast in een "
 "VariablesForm"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
-msgstr "2 controles hebben dezelfde naam: %1"
+msgstr "Twee controles hebben dezelfde naam: %1"
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "Cannot find a source %1 for VariableList %2"
-msgstr "Kan geen bron %1 vinden voor VariabeleLijst %2"
+msgstr "Kan geen bron %1 vinden voor variabelelijst %2"
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -10310,7 +10310,7 @@ msgstr "Geen drop key gevonden voor %1"
 #, qt-format
 msgctxt "BoundQMLComboBox|"
 msgid "Unknown option %1 in ComboBox %2"
-msgstr "Onbekende optie %1 in Combobox %2"
+msgstr "Onbekende optie %1 in ComboBox %2"
 
 #, qt-format
 msgctxt "BoundQMLComboBox|"
@@ -10320,17 +10320,17 @@ msgstr "Onbekende fout in ComboBox %1"
 #, qt-format
 msgctxt "BoundQMLListViewDraggable|"
 msgid "Cannot find source for VariableList %1"
-msgstr "Kan geen bron vinden voor VariabeleLijst %1"
+msgstr "Kan geen bron vinden voor variabelelijst %1"
 
 #, qt-format
 msgctxt "BoundQMLListViewDraggable|"
 msgid "Wrong kind of source for VariableList %1"
-msgstr "Verkeerde soort bron voor VariabeleLijst %1"
+msgstr "Verkeerde soort bron voor variabelelijst %1"
 
 #, qt-format
 msgctxt "BoundQMLListViewMeasuresCells|"
 msgid "Source model of %1 must be from a Factor List"
-msgstr "Bron model van %1 moet uit een Factor Lijst komen"
+msgstr "Bronmodel van %1 moet uit een factorlijst komen"
 
 #, qt-format
 msgctxt "BoundQMLRadioButtons|"
@@ -10338,17 +10338,17 @@ msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
 "name"
 msgstr ""
-"Een Radiobutton in het RadioButtonGroup element (naam: %1) heeft geen naam"
+"Een radiobutton in het RadioButtonGroup element (naam: %1) heeft geen naam"
 
 #, qt-format
 msgctxt "BoundQMLRadioButtons|"
 msgid "No radio button corresponding to name %1"
-msgstr "Geen radio button die overeenkomt met naam %1"
+msgstr "Geen radiobutton die overeenkomt met naam %1"
 
 #, qt-format
 msgctxt "BoundQMLRadioButtons|"
 msgid "Radio button clicked is unknown: %1"
-msgstr "Geklikte radio button is onbekend: %1 "
+msgstr "Geklikte radio button is onbekend: %1"
 
 msgctxt "BoundQMLTableView|"
 msgid "No model specified for TableView!"
@@ -10356,7 +10356,7 @@ msgstr "Geen model gespecificeerd voor TableView!"
 
 msgctxt "BoundQMLTextArea|"
 msgid "valid R code"
-msgstr "valide R code"
+msgstr "geldige R code"
 
 msgctxt "BoundQMLTextArea|"
 msgid "Model applied"
@@ -10372,7 +10372,7 @@ msgid ""
 "number of rows in values!"
 msgstr ""
 "Aantal rijen gespecificeerd in Opties voor ListModelJAGSDataInput komt niet "
-"overeen met aantal rijen in waardes!"
+"overeen met aantal rijen in waarden!"
 
 #, qt-format
 msgctxt "ListModelLayersAssigned|"
@@ -10393,12 +10393,12 @@ msgstr ""
 #, qt-format
 msgctxt "RowControls|"
 msgid "A row component in %1 does not have a name"
-msgstr "Een onderdeel van rij in %1 heeft geen naam"
+msgstr "Een rij-onderdeel in %1 heeft geen naam"
 
 #, qt-format
 msgctxt "RowControls|"
 msgid "2 row components in %1 have the same name"
-msgstr "Twee onderdelen in %1 hebben dezelfde naam "
+msgstr "Twee rij-onderdelen in %1 hebben dezelfde naam"
 
 msgctxt "SetSeed|"
 msgid "Repeatability"
@@ -10448,25 +10448,25 @@ msgid ""
 msgstr ""
 "Dit voorbeeld toont twee strategieën voor het schrijven van een jaspResults-"
 "analyse.\n"
-"Strategie één  gebruikt een klassieke R-benadering: bereken een model en "
-"geef het doornaar elke functie.\n"
-"Strateqy twee gebruikt een onorthodoxe benadering: bereken het model wanneer "
-"het vereist is.\n"
-"en vertrouwen op pass-by-reference mechanisme om alle functies te krijgen "
-"dienodig zijn.\n"
-"Dit wordt bereikt door containers te gebruiken \n"
+"Strategie 1 gebruikt een klassieke R-benadering: bereken een model en "
+"geef het door naar elke functie.\n"
+"Strategie 2 gebruikt een onorthodoxe benadering: bereken het model wanneer "
+"het vereist is\n"
+"en vertrouw op pass-by-reference mechanisme om het bij alle functies te krijgen "
+"die het nodig hebben.\n"
+"Dit wordt bereikt door containers te gebruiken.\n"
 "\n"
 "De tweede benadering heeft het voordeel dat het doorgeven van fouten "
-"eenvoudiger is,afhankelijkheden worden gedeeld (en \n"
+"eenvoudiger is, afhankelijkheden worden gedeeld (en \n"
 "er wordt altijd een lege tabel getoond terwijl het model bezig is met "
 "rekenen). \n"
 "\n"
-"Het aanvinken van 'We zijn klaar' emuleert de analyse die gereed is om te "
-"berekenen enresultaten weergeven. nHet aanvinken van 'Gebruik de "
-"containercode' dwingt de analyse om strategie twee te gebruiken(anders wordt "
-"er een gebruikt).\n"
+"Het aanvinken van 'Wij zijn klaar' emuleert de analyse die gereed is om "
+"resultaten te berekenen en weer te geven. Het aanvinken van 'Gebruik de\n"
+"containercode' dwingt de analyse om strategie 2 te gebruiken (anders wordt "
+"strategie 1 gebruikt).\n"
 "Door het aanvinken van 'Optionele tabel' wordt een optionele tabel gemaakt "
-"(zoals analyses vaak hebben optionele elementen).\n"
+"(aangezien analyses vaak optionele elementen hebben).\n"
 "Het aanvinken van 'Een willekeurige afhankelijkheid' emuleert een "
 "afhankelijkheidsverandering die een nieuwe berekening forceert.\n"
 "Het aanvinken van 'Genereer berekeningsfout' dwingt een fout op te treden in "
@@ -10482,19 +10482,19 @@ msgstr "Hoofdeffecten"
 
 msgctxt "VariablesForm|"
 msgid "Only 2 way"
-msgstr "Slechts 2 weg"
+msgstr "Slechts 2-weg"
 
 msgctxt "VariablesForm|"
 msgid "Only 3 way"
-msgstr "Slechts 3 weg"
+msgstr "Slechts 3-weg"
 
 msgctxt "VariablesForm|"
 msgid "Only 4 way"
-msgstr "Slechts 4 weg"
+msgstr "Slechts 4-weg"
 
 msgctxt "VariablesForm|"
 msgid "Only 5 way"
-msgstr "Slechts 5 weg"
+msgstr "Slechts 5-weg"
 
 msgctxt "VariablesForm|"
 msgid "All"
@@ -10510,7 +10510,7 @@ msgstr "Filter is gewijzigd"
 
 msgctxt "Ancova|"
 msgid "Flag Significant Comparisons"
-msgstr "Vlag Significante Vergelijkingen"
+msgstr "Vlag significante vergelijkingen"
 
 msgctxt "Ancova|"
 msgid " "
@@ -10522,7 +10522,7 @@ msgstr "Effectgrootte"
 
 msgctxt "Anova|"
 msgid "Flag Significant Comparisons"
-msgstr "Vlag Significante Vergelijkingen"
+msgstr "Vlag significante vergelijkingen"
 
 msgctxt "Anova|"
 msgid " "
@@ -10534,7 +10534,7 @@ msgstr "Aanname: gelijke varianties"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Flag Significant Comparisons"
-msgstr "Vlag Significante Vergelijkingen"
+msgstr "Vlag significante vergelijkingen"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Descriptives plot"
@@ -10610,7 +10610,7 @@ msgstr "Normaal"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Correlated"
-msgstr "Gecooreleerd"
+msgstr "Gecorreleerd"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Euclidean"
@@ -10663,7 +10663,7 @@ msgid ""
 "Component %1 was loaded with a wrong kind of value and is set with its "
 "default value.<br>"
 msgstr ""
-"Component %1 werd geladen met een verkeerd soort waarde en is kreeg zijn "
+"Component %1 werd geladen met een verkeerd soort waarde en kreeg zijn "
 "standaard waarde.<br>"
 
 #, qt-format
@@ -10672,7 +10672,7 @@ msgid ""
 "These components were loaded with a wrong kind of value and are set with "
 "their default values:%1"
 msgstr ""
-"Deze componenten werden geladen met een verkeerd soort waarde en is kregen "
+"Deze componenten werden geladen met een verkeerd soort waarde en kregen "
 "hun standaard waarden."
 
 msgctxt "AnalysisForm|"
@@ -10680,19 +10680,19 @@ msgid ""
 "Many components were loaded with a wrong kind of value and are set with "
 "their default values.<br>"
 msgstr ""
-"Veel Componenten werden geladen met een verkeerd soort waarde en is kregen "
+"Veel componenten werden geladen met een verkeerd soort waarde en kregen "
 "hun standaard waarden.<br>"
 
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
-msgstr "`Dit bestand komt waarschijnlijk van een oudere versie van JASP."
+msgstr "Dit bestand komt waarschijnlijk van een oudere versie van JASP."
 
 msgctxt "AnalysisForm|"
 msgid ""
 "That means that the results currently displayed do not correspond to the "
 "options selected."
 msgstr ""
-"Dat betekent dat de huidig getoonde resultaten niet overeenkoment met de "
+"Dat betekent dat de huidige getoonde resultaten niet overeenkomen met de "
 "geselecteerde opties."
 
 #| msgid "Het vernieuwen van de analyse kan de resultaten wijzigen."
@@ -10711,7 +10711,7 @@ msgstr "Het resultaat (%1) moet %2 zijn."
 
 msgctxt "SEMSimple|"
 msgid "Thresholds"
-msgstr "Drempelwaardes"
+msgstr "Drempelwaarden"
 
 msgctxt "HelpModel|"
 msgid ""
@@ -10722,67 +10722,67 @@ msgid ""
 msgstr ""
 "Komt spoedig!\n"
 "========\n"
-"Er is op dit met geen help aanwezig voor dezze analyse"
+"Er is op dit moment geen hulp aanwezig voor deze analyse"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Cluster means"
-msgstr "Culster gemiddelden"
+msgstr "Cluster gemiddelden"
 
 msgctxt "mlClusteringDensityBased|"
 msgid "Display barplot"
 msgstr "Toon staafdiagram"
 
 msgctxt "mlClusteringDensityBased|"
+msgid "Group into one figure"
+msgstr "Groepeer in één figuur"
+
+msgctxt "mlClusteringDensityBased|"
+msgid "Cluster densities"
+msgstr "Cluster dichtheden"
+
+msgctxt "mlClusteringFuzzyCMeans|"
+msgid "Cluster means"
+msgstr "Cluster gemiddelden"
+
+msgctxt "mlClusteringFuzzyCMeans|"
+msgid "Display barplot"
+msgstr "Toon staafdiagram"
+
+msgctxt "mlClusteringFuzzyCMeans|"
+msgid "Group into one figure"
+msgstr "Groepeer in één figuur"
+
+msgctxt "mlClusteringFuzzyCMeans|"
+msgid "Cluster densities"
+msgstr "Cluster dichtheden"
+
+msgctxt "mlClusteringHierarchical|"
+msgid "Cluster means"
+msgstr "Cluster gemiddelden"
+
+msgctxt "mlClusteringHierarchical|"
+msgid "Display barplot"
+msgstr "Toon staafdiagram"
+
+msgctxt "mlClusteringHierarchical|"
 msgid "Group into one figure"
 msgstr "Groepeer tot één figuur"
 
-msgctxt "mlClusteringDensityBased|"
+msgctxt "mlClusteringHierarchical|"
 msgid "Cluster densities"
 msgstr "Cluster dichtheden"
 
-msgctxt "mlClusteringFuzzyCMeans|"
+msgctxt "mlClusteringKMeans|"
 msgid "Cluster means"
-msgstr "Culster gemiddelden"
+msgstr "Cluster gemiddelden"
 
-msgctxt "mlClusteringFuzzyCMeans|"
+msgctxt "mlClusteringKMeans|"
 msgid "Display barplot"
 msgstr "Toon staafdiagram"
 
-msgctxt "mlClusteringFuzzyCMeans|"
+msgctxt "mlClusteringKMeans|"
 msgid "Group into one figure"
 msgstr "Groepeer tot één figuur"
-
-msgctxt "mlClusteringFuzzyCMeans|"
-msgid "Cluster densities"
-msgstr "Cluster dichtheden"
-
-msgctxt "mlClusteringHierarchical|"
-msgid "Cluster means"
-msgstr "Culster gemiddelden"
-
-msgctxt "mlClusteringHierarchical|"
-msgid "Display barplot"
-msgstr "Toon staafdiagram"
-
-msgctxt "mlClusteringHierarchical|"
-msgid "Group into one figure"
-msgstr "Groeper tot één figuur"
-
-msgctxt "mlClusteringHierarchical|"
-msgid "Cluster densities"
-msgstr "Cluster dichtheden"
-
-msgctxt "mlClusteringKMeans|"
-msgid "Cluster means"
-msgstr "Culster gemiddelden"
-
-msgctxt "mlClusteringKMeans|"
-msgid "Display barplot"
-msgstr "Toon staafdiagram"
-
-msgctxt "mlClusteringKMeans|"
-msgid "Group into one figure"
-msgstr "Groeper tot één figuur"
 
 msgctxt "mlClusteringKMeans|"
 msgid "Cluster densities"
@@ -10790,7 +10790,7 @@ msgstr "Cluster dichtheden"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster means"
-msgstr "Culster gemiddelden"
+msgstr "Cluster gemiddelden"
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Display barplot"
@@ -10822,7 +10822,7 @@ msgstr "Posterior mediaan"
 
 msgctxt "CorrelationBayesian|"
 msgid "Plot Individual Pairs"
-msgstr "Grafieken Van Losse Paren"
+msgstr "Grafieken van losse paren"
 
 msgctxt "CorrelationBayesian|"
 msgid "Correlation coefficient to plot"
@@ -10830,7 +10830,7 @@ msgstr "Correlatiecoëfficient in grafieken"
 
 msgctxt "CorrelationBayesian|"
 msgid "Spearman's rho"
-msgstr "pearman's rho"
+msgstr "Spearman's rho"
 
 msgctxt "CorrelationBayesian|"
 msgid "Kendall's tau"
@@ -10838,11 +10838,11 @@ msgstr "Kendall's tau"
 
 msgctxt "CorrelationBayesian|"
 msgid "Scatterplot"
-msgstr "puntdiagram"
+msgstr "Spreidingsdiagram"
 
 msgctxt "CorrelationBayesian|"
 msgid "Robustness check"
-msgstr "Robuustheidsevaluatue"
+msgstr "Robuustheidsevaluatie"
 
 msgctxt "CorrelationBayesian|"
 msgid "Prior and posterior"
@@ -10905,7 +10905,7 @@ msgstr ""
 "Als deze optie uitgevinkt is dan wordt niet het bestandsdialoogvenster van "
 "het besturingssysteem gebruikt maar die van Qt zelf. Dit zou enkele "
 "problemen op Windows kunnen oplossen waar JASP crasht wanneer op de \"Blader"
-"\" knop gedrukt wordt"
+"\" knop gedrukt wordt."
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
@@ -10913,7 +10913,7 @@ msgstr "Zoek naar:"
 
 msgctxt "JASPDataView|"
 msgid "Double click to edit data"
-msgstr "Klik bubbel om gegevens te wijzigen"
+msgstr "Klik dubbel om gegevens te wijzigen"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Custom"
@@ -11025,7 +11025,7 @@ msgstr "Controleer getallen:"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Advanced Options"
-msgstr "Geavanceerde Opties"
+msgstr "Geavanceerde opties"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Confidence"
@@ -11045,7 +11045,7 @@ msgstr "Meld badges"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Tables and Plots"
-msgstr "Tabellen en Grafieken"
+msgstr "Tabellen en grafieken"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Tables"
@@ -11065,7 +11065,7 @@ msgstr "Vergelijk met de wet van Benford"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "<b>Download Report</b>"
-msgstr "<b>Download Verslag</b>"
+msgstr "<b>Download verslag</b>"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Report badges"
@@ -11105,7 +11105,7 @@ msgstr "Impliciete steekproefverdeling"
 
 msgctxt "LDbernoulli|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "LDbernoulli|"
 msgid "Parameter"
@@ -11245,7 +11245,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDbernoulli|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelings functie)"
+msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
 
 msgctxt "LDbernoulli|"
 msgid "P-P plot"
@@ -11381,7 +11381,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDbeta|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelings functie)"
+msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
 
 msgctxt "LDbeta|"
 msgid "P-P plot"
@@ -11401,7 +11401,7 @@ msgstr "Anderson-Darling"
 
 msgctxt "LDbinomial|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "LDbinomial|"
 msgid "Free parameter"
@@ -11565,7 +11565,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDbinomial|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelings functie)"
+msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
 
 msgctxt "LDbinomial|"
 msgid "P-P plot"
@@ -11697,7 +11697,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDchisq|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelings functie)"
+msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
 
 msgctxt "LDchisq|"
 msgid "P-P plot"
@@ -11841,7 +11841,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDexponential|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelings functie)"
+msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
 
 msgctxt "LDexponential|"
 msgid "P-P plot"
@@ -11985,7 +11985,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDf|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelings functie)"
+msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
 
 msgctxt "LDf|"
 msgid "P-P plot"
@@ -12133,7 +12133,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDgamma|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelings functie)"
+msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
 
 msgctxt "LDgamma|"
 msgid "P-P plot"
@@ -12277,7 +12277,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDgammaInverse|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelings functie)"
+msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
 
 msgctxt "LDgammaInverse|"
 msgid "P-P plot"
@@ -12425,7 +12425,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelings functie)"
+msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
 
 msgctxt "LDgaussianunivariate|"
 msgid "P-P plot"
@@ -12449,7 +12449,7 @@ msgstr "Shapiro-Wilk"
 
 msgctxt "LDnegbinomial|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "LDnegbinomial|"
 msgid "Parameter"
@@ -12617,7 +12617,7 @@ msgstr "Chi-kwadraat"
 
 msgctxt "LDpoisson|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "LDpoisson|"
 msgid "Parameter"
@@ -12889,7 +12889,7 @@ msgstr "Taxeer Passing"
 
 msgctxt "LDt|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfuntie)"
+msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
 
 msgctxt "LDt|"
 msgid "Q-Q plot"
@@ -12897,7 +12897,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDt|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelings functie)"
+msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
 
 msgctxt "LDt|"
 msgid "P-P plot"
@@ -12961,7 +12961,7 @@ msgstr "Sequentiële analyse"
 
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Robustness check"
-msgstr "Robuustheidsevaluatue"
+msgstr "Robuustheidsevaluatie"
 
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Missing Values"
@@ -13013,7 +13013,7 @@ msgstr "Sequentiële analyse"
 
 msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Robustness check"
-msgstr "Robuustheidsevaluatue"
+msgstr "Robuustheidsevaluatie"
 
 msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Missing Values"
@@ -13061,7 +13061,7 @@ msgstr "Sequentiële analyse"
 
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Robustness check"
-msgstr "Robuustheidsevaluatue"
+msgstr "Robuustheidsevaluatie"
 
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Missing Values"
@@ -13213,7 +13213,7 @@ msgstr "Effectgrootte Standaardfout"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "95% CI Lower and Upper Bound"
-msgstr "95% betrouwbaarheidsinterval onder en boven grens"
+msgstr "95% betrouwbaarheidsinterval onder- en bovengrens"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Study Labels"
@@ -13257,7 +13257,7 @@ msgstr "Model kansen"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Effect sizes per study"
-msgstr "Effect groottes per onderzoek"
+msgstr "Effectgroottes per onderzoek"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Prior"
@@ -13365,7 +13365,7 @@ msgstr "Afnemend"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Row order"
-msgstr "Rij volgorde"
+msgstr "Rijvolgorde"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Cumulative forest plot"
@@ -13381,7 +13381,7 @@ msgstr "Voeg vaste en willekeurige effecten posterior toe"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Shade 95% CI"
-msgstr "Shaduw 95% betrouwbaarheidsinterval"
+msgstr "Schaduw 95% betrouwbaarheidsinterval"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Sequential plot"
@@ -13429,15 +13429,15 @@ msgstr "Brugbemonstering"
 
 msgctxt "Flexplot|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke varariabele"
+msgstr "Afhankelijke variabele"
 
 msgctxt "Flexplot|"
 msgid "Independent Variable(s)"
-msgstr "Onafhankelijke variable(n)"
+msgstr "Onafhankelijke variabele(n)"
 
 msgctxt "Flexplot|"
 msgid "Panelled Variable(s)"
-msgstr "Paneel variable(n)"
+msgstr "Paneel variabele(n)"
 
 msgctxt "Flexplot|"
 msgid "Options"
@@ -13461,7 +13461,7 @@ msgstr "Jitter in Y"
 
 msgctxt "Flexplot|"
 msgid "Visual Statistics"
-msgstr "Visuale statistieken"
+msgstr "Visuele statistieken"
 
 msgctxt "Flexplot|"
 msgid "Plot confidence bands"
@@ -13469,7 +13469,7 @@ msgstr "Plot betrouwbaarheidsgebied"
 
 msgctxt "Flexplot|"
 msgid "Fitted line (scatterplots)"
-msgstr "Passesnde lijn (puntdiagrammen)"
+msgstr "Passende lijn (puntdiagrammen)"
 
 msgctxt "Flexplot|"
 msgid "Intervals (categorical predictors)"
@@ -13485,15 +13485,15 @@ msgstr "GGplot thema"
 
 msgctxt "Flexplot|"
 msgid "Ghost lines"
-msgstr "Spook lijnen"
+msgstr "Spooklijnen"
 
 msgctxt "glinmod|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke variable"
+msgstr "Afhankelijke variabele"
 
 msgctxt "glinmod|"
 msgid "Independent Variable(s)"
-msgstr "Onafhankelijke variable(n)"
+msgstr "Onafhankelijke variabele(n)"
 
 msgctxt "glinmod|"
 msgid "Distribution family"
@@ -13513,7 +13513,7 @@ msgstr "Modeltermen"
 
 msgctxt "glinmod|"
 msgid "Results Displays"
-msgstr "Resultaat schermen"
+msgstr "Resultaatschermen"
 
 msgctxt "glinmod|"
 msgid "Plots"
@@ -13533,7 +13533,7 @@ msgstr "Schatting"
 
 msgctxt "glinmod|"
 msgid "Show parameter Estimates"
-msgstr "Toon parameter schattingen"
+msgstr "Toon parameterschattingen"
 
 msgctxt "glinmod|"
 msgid "Plot Controls"
@@ -13557,7 +13557,7 @@ msgstr "Jitter in Y"
 
 msgctxt "glinmod|"
 msgid "Aesthetics"
-msgstr "Aesthetica"
+msgstr "Esthetica"
 
 msgctxt "glinmod|"
 msgid "GGplot theme"
@@ -13565,7 +13565,7 @@ msgstr "GGplot thema"
 
 msgctxt "glinmod|"
 msgid "Ghost lines"
-msgstr "Spook lijnen"
+msgstr "Spooklijnen"
 
 msgctxt "linmod|"
 msgid "Dependent Variable"
@@ -13573,7 +13573,7 @@ msgstr "Afhankelijke variabele"
 
 msgctxt "linmod|"
 msgid "Independent Variable(s)"
-msgstr "Onafhankelijke variable(n)"
+msgstr "Onafhankelijke variabele(n)"
 
 msgctxt "linmod|"
 msgid "Model Terms"
@@ -13597,7 +13597,7 @@ msgstr "Passende lijn (puntdiagrammen)"
 
 msgctxt "linmod|"
 msgid "Results Displays"
-msgstr "Resultaat schermen"
+msgstr "Resultaatschermen"
 
 msgctxt "linmod|"
 msgid "Plots"
@@ -13641,7 +13641,7 @@ msgstr "Toon hellingen/onderbrekingen"
 
 msgctxt "linmod|"
 msgid "Show 95% intervals"
-msgstr "Geeft 95% intervalllen weer"
+msgstr "Toon 95% intervalllen"
 
 msgctxt "linmod|"
 msgid "Plot Controls"
@@ -13673,15 +13673,15 @@ msgstr "GGplot thema"
 
 msgctxt "linmod|"
 msgid "Ghost lines"
-msgstr "Spook lijnen"
+msgstr "Spooklijnen"
 
 msgctxt "mixedmod|"
 msgid "Dependent Variable"
-msgstr "Afhankelijke variable"
+msgstr "Afhankelijke variabele"
 
 msgctxt "mixedmod|"
 msgid "Independent Variable(s)"
-msgstr "Onafhankelijke variable(n)"
+msgstr "Onafhankelijke variabele(n)"
 
 msgctxt "mixedmod|"
 msgid "Random"
@@ -13689,7 +13689,7 @@ msgstr "Willekeurig"
 
 msgctxt "mixedmod|"
 msgid "Model Builder"
-msgstr "Model bouwer"
+msgstr "Modelbouwer"
 
 msgctxt "mixedmod|"
 msgid "Components"
@@ -13701,7 +13701,7 @@ msgstr "Vaste termen"
 
 msgctxt "mixedmod|"
 msgid "Results Displays"
-msgstr "Resultaat schermen"
+msgstr "Resultaatschermen"
 
 msgctxt "mixedmod|"
 msgid "Plots"
@@ -13713,7 +13713,7 @@ msgstr "Model grafiek"
 
 msgctxt "mixedmod|"
 msgid "Univariate plots"
-msgstr "Univariante grafieken"
+msgstr "Univariate grafieken"
 
 msgctxt "mixedmod|"
 msgid "Diagnostics"
@@ -13807,11 +13807,11 @@ msgstr "naar %1"
 
 msgctxt "LDbernoulli|"
 msgid "Generate new variable from Bernoulli"
-msgstr "Genereer nieuwe variable m.b.v. Bernoulli"
+msgstr "Genereer nieuwe variabele m.b.v. Bernoulli"
 
 msgctxt "LDbernoulli|"
 msgid "Variable name: "
-msgstr "Naam variable: "
+msgstr "Naam variabele: "
 
 msgctxt "LDbernoulli|"
 msgid "Number of samples: "
@@ -13823,11 +13823,11 @@ msgstr "Teken steekproef"
 
 msgctxt "LDbeta|"
 msgid "Generate new variable from Beta"
-msgstr "Genereer nieuwe variale m.b.v. Beta"
+msgstr "Genereer nieuwe variabele m.b.v. Beta"
 
 msgctxt "LDbeta|"
 msgid "Variable name: "
-msgstr "Naam variable: "
+msgstr "Naam variabele: "
 
 msgctxt "LDbeta|"
 msgid "Number of samples: "
@@ -13839,11 +13839,11 @@ msgstr "Teken steekproef"
 
 msgctxt "LDbinomial|"
 msgid "Generate new variable from Binomial"
-msgstr "Genereer nieuwe variale m.b.v. Binomiaal"
+msgstr "Genereer nieuwe variabele m.b.v. Binomiaal"
 
 msgctxt "LDbinomial|"
 msgid "Variable name: "
-msgstr "Naam variable: "
+msgstr "Naam variabele: "
 
 msgctxt "LDbinomial|"
 msgid "e.g., random binomial"
@@ -13859,11 +13859,11 @@ msgstr "Teken steekproef"
 
 msgctxt "LDchisq|"
 msgid "Generate new variable from χ²"
-msgstr "Genereer nieuwe variable m.b.v. χ²"
+msgstr "Genereer nieuwe variabele m.b.v. χ²"
 
 msgctxt "LDchisq|"
 msgid "Variable name: "
-msgstr "Naam variable: "
+msgstr "Naam variabele: "
 
 msgctxt "LDchisq|"
 msgid "Number of samples: "
@@ -14051,7 +14051,7 @@ msgstr "Sluit waarnemingen uit per afhankelijke variable"
 
 msgctxt "LDnegbinomial|"
 msgid "e.g., random nbinomial"
-msgstr "bijv., wiilekeurig nbinomiaal"
+msgstr "bijv., willekeurig nbinomiaal"
 
 msgctxt "LDpoisson|"
 msgid "e.g., random poisson"
@@ -14131,35 +14131,35 @@ msgstr "Steekproefgrootte: "
 
 msgctxt "LDbeta|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "LDchisq|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "LDexponential|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "LDf|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "LDgamma|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "LDgammaInverse|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "LDt|"
 msgid "Show Distribution"
-msgstr "Toon Verdeling"
+msgstr "Toon verdeling"
 
 msgctxt "NetworkAnalysis|"
 msgid "Tuning Parameter"
@@ -14256,7 +14256,7 @@ msgstr ""
 "factorLaag = factorMidden = factorHoog\n"
 "factorLaag < factorMidden < factorHoog\n"
 "\n"
-"waar factor de factor naam is en Laag/Midden/Hoog het niveau van de factor.\n"
+"waar factor de factornaam is en Laag/Midden/Hoog het niveau van de factor.\n"
 "Lees het help bestand voor verdere instructies."
 
 msgctxt "BainRegressionLinearBayesian|"
@@ -14335,7 +14335,7 @@ msgstr "Specificatie grenzen in"
 
 msgctxt "EquivalenceOneSampleTTest|"
 msgid "cohensd"
-msgstr "Cohen's D"
+msgstr "Cohen's d"
 
 msgctxt "EquivalenceOneSampleTTest|"
 msgid "raw"
@@ -14621,7 +14621,7 @@ msgstr ""
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
 msgstr ""
-"genereert data met een exponentiele verdeling met een gespecificeerde "
+"genereert data met een exponentiële verdeling met een gespecificeerde "
 "snelheid/ intensiteit"
 
 msgctxt "ComputeColumnWindow|"
@@ -14644,7 +14644,7 @@ msgstr "Verwijder berekende kolom"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
-msgstr "Geef gegenereerde R code weer"
+msgstr "Toon gegenereerde R code"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
@@ -14701,7 +14701,7 @@ msgstr "Klik hier om de nieuwe berekende kolom '%1' te maken"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr "Voer een valide (ongebruikte) naam in voor de berekende kolom"
+msgstr "Voer een geldige (ongebruikte) naam in voor de berekende kolom"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
@@ -14713,7 +14713,7 @@ msgstr "Verberg filter"
 
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr "Geeft filter weer"
+msgstr "Toon filter"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
@@ -14760,7 +14760,7 @@ msgstr "variantie"
 
 msgctxt "FilterWindow|"
 msgid "summation"
-msgstr "sommering"
+msgstr "optelling"
 
 msgctxt "FilterWindow|"
 msgid "product of values"
@@ -15017,12 +15017,12 @@ msgid ""
 "Unable to open file because:\n"
 "%1"
 msgstr ""
-"Niet mogelijk bestand te openen:\n"
+"Kan bestand niet openen omdat:\n"
 "%1"
 
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr "Opslaan gefaald."
+msgstr "Opslaan mislukt."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -15063,7 +15063,7 @@ msgstr ""
 "We openen twee pagina's voor u in uw webbrowser.\n"
 "De tweede pagina is de 'Join GitHub' pagina waar u zich kunt registreren "
 "voor een nieuw account bij GitHub.\n"
-"De eerste pagina leidt u naar een gedeelteljk ingevuld fouten formulier  "
+"De eerste pagina leidt u naar een gedeelteljk ingevuld foutenformulier  "
 "nadat u zich hebt aangemeld bij GitHub met uw nieuwe GitHub account.\n"
 "Vult u a.u.b daar alle ontbrekende informatie in."
 
@@ -15121,7 +15121,7 @@ msgid ""
 msgstr ""
 "JASP is gestart zonder een bijbehorend gegevensbestand (csv, sav of ods "
 "bstand). Maar om de gegevens te bewerken, start JASP  een "
-"tekstverwerkingsprogramma (spreadsheet) gebaseerd op dit bestand en "
+"gegevensverwerkingsprogramma (spreadsheet) gebaseerd op dit bestand en "
 "synchroniseert de gegevens wanneer het bestand wordt opgeslagen. Bestaat dit "
 "bestand al, of wilt u dat dit nu wordt aangemaakt?"
 
@@ -15250,10 +15250,10 @@ msgid ""
 "you are not the author of this module and do not know how to do this, "
 "contact: %2"
 msgstr ""
-"Kan module met naam '%1' niet installeren omdat die naam geresveerd is voor "
-"het installeren van een ontwikkelaars module.\n"
+"Kan module met naam '%1' niet installeren omdat die naam gereserveerd is voor "
+"het installeren van een ontwikkelaarsmodule.\n"
 "Verander de naam (in DESCRIPTION en description.json) en probeer het opnieuw."
-"Als u de auteur van deze module bent en niet weet hoe dit moet contact: %2"
+"Als u de auteur van deze module bent en niet weet hoe dit moet, contact: %2"
 
 msgctxt "DynamicModules|"
 msgid "Select a folder"
@@ -15264,7 +15264,7 @@ msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
 msgstr ""
-"Om een ontwikkel module te installeren moet u de map selecteren waar u de "
+"Om een ontwikkelmodule te installeren moet u de map selecteren waar u de "
 "module kunt zien en laden, u kunt dit van uit het bestandsmenu doen, "
 "Voorkeuren->Geavanceerd."
 
@@ -15286,11 +15286,11 @@ msgstr "Maak een inst/description.json bestand."
 
 msgctxt "DynamicModules|"
 msgid "Create a R directory containing your analysis code."
-msgstr "Maak een R map voor de R-code van de analyses"
+msgstr "Maak een R map voor de R-code van de analyses."
 
 msgctxt "DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr "Maak een inst/qml map voor opslaan van de analyse schermen"
+msgstr "Maak een inst/qml map voor opslaan van de analyseschermen"
 
 msgctxt "DynamicModules|"
 msgid ""
@@ -15311,7 +15311,7 @@ msgid ""
 "it your module cannot work, make sure to put it back. For now your old %2 "
 "file will be kept."
 msgstr ""
-"Het lijkt erop dat u %1 van uw module ontwikkel omgeving verwijderd hebt. "
+"Het lijkt erop dat u %1 van uw module ontwikkelomgeving verwijderd hebt. "
 "Zonder dit kan uw module niet werken, zorg ervoor dat deze teruggeplaatst "
 "wordt. Voor nu wordt het oude bestand %2 bewaard."
 
@@ -15323,9 +15323,9 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"Het lijkt erop dat u nooit een %1 in uw module ontwikkel omgeving had. "
+"Het lijkt erop dat u nooit een %1 in uw module ontwikkelomgeving had. "
 "Zonder dit kan uw module niet werken, zorg ervoor een te maken. Hoe u de "
-"module geinstalleerd hebt is onduidelijk en de module wordt nu verwijderd."
+"module geïnstalleerd hebt is onduidelijk en de module wordt nu verwijderd."
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -15338,8 +15338,8 @@ msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
 msgstr ""
-"Het lijkt erop dat u %1 verwijderd heeft maar dit bestand is nodig om uw "
-"module te laten werken. Het ontwikkel module wordt nu verwijderd."
+"Het lijkt erop dat u %1 verwijderd heeft, maar dit bestand is nodig om uw "
+"module te laten werken. De ontwikkelmodule wordt nu verwijderd."
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -15353,7 +15353,7 @@ msgid ""
 "directory. Without it your module cannot work, make sure to put it back. For "
 "now your old folder will be kept."
 msgstr ""
-"Het lijkt erop dat u de map %1 van uw module ontwikkel omgeving verwijderd "
+"Het lijkt erop dat u de map %1 van uw module ontwikkelomgeving verwijderd "
 "hebt. Zonder deze map kan de module niet werken, zorg ervoor dat deze terug "
 "geplaatst wordt. Voor nu wordt de oude bewaard."
 
@@ -15365,9 +15365,9 @@ msgid ""
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"Het lijkt erop dat map %1 nooit bestaan heeft in uw module ontwikkel "
-"omgeving.Zoder deze map kan uw module niet werken, zorg dat deze aanwezig is."
-"Hoe de module ooit geinstalleerd werd is onduidelijk, en de ontwikkel module "
+"Het lijkt erop dat map %1 nooit bestaan heeft in uw module ontwikkel-"
+"omgeving. Zonder deze map kan uw module niet werken, zorg dat deze aanwezig is."
+"Hoe de module ooit geïnstalleerd werd is onduidelijk, en de ontwikkelmodule "
 "zal nu verwijderd worden."
 
 msgctxt "Modules::Upgrader|"
@@ -15392,10 +15392,10 @@ msgid ""
 "entirely."
 msgstr ""
 "De benodigde upgrades voor het lezen van oudere (<0.12) JASP-bestanden "
-"konden niet worden gelezen..\n"
+"konden niet worden gelezen...\n"
 "U kunt nog steeds JASP gebruiken en zelfs oudere bestanden inlezen, maar "
-"zommige opties kunnen misschien niet goed geinterpreteerd worden en sommige "
-"analyses kunnen dan niet in zijn geheel geladen worden."
+"sommige opties kunnen misschien niet goed geïnterpreteerd worden en sommige "
+"analyses kunnen dan niet in hun geheel geladen worden."
 
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
@@ -15434,7 +15434,7 @@ msgid ""
 "Do you want to search for such a data file on your computer?\n"
 "NB: You can also set this data file via menu File/Sync Data."
 msgstr ""
-"JASP heeft geen bijbehorend gegevens bestand om mee te synchroniseren.\n"
+"JASP heeft geen bijbehorend gegevensbestand om mee te synchroniseren.\n"
 "Wilt u dat bestand selecteren op uw computer?\n"
 "NB: U kunt dit gegevensbestand ook selecteren via het menu Bestand/Sync Data."
 
@@ -15496,7 +15496,7 @@ msgstr ""
 msgctxt "OSF|"
 msgid "Files cannot be added to '%1' for an unknown reason."
 msgstr ""
-"Bestanden konden niet toegevoegd worden aan '%1' om onduidelijke reden."
+"Bestanden konden niet toegevoegd worden aan '%1' om onbekende reden."
 
 msgctxt "OSF|"
 msgid "File Types"
@@ -15536,7 +15536,7 @@ msgstr ""
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
 msgstr ""
-"Een nieuw map kan niet toegevoegd worden aan '%1' om onduidelijke reden."
+"Een nieuwe map kan niet toegevoegd worden aan '%1' om onbekende reden."
 
 msgctxt "OSF|"
 msgid "Folder"

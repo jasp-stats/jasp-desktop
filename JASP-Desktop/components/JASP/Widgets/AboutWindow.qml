@@ -264,7 +264,7 @@ Window
 				anchors.top:	citationText.bottom
 				height:			15
 
-				text:			qsTr("BibTex")
+				text:			qsTr("BibTeX")
 				color:			jaspTheme.blue
 				font.underline:	true
 
