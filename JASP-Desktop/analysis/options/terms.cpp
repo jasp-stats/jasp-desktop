@@ -481,7 +481,7 @@ void Terms::remove(size_t pos, size_t n)
 {
 	vector<Term>::iterator itr = _terms.begin();
 
-	for (int i = 0; i < pos && itr != _terms.end(); i++)
+	for (size_t i = 0; i < pos && itr != _terms.end(); i++)
 		itr++;
 
 	for (; n > 0 && itr != _terms.end(); n--)
@@ -586,7 +586,7 @@ bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 			_terms.end(),
 			[&](Term& term)
 			{
-				if ( ! terms.contains(term))
+				if (!term.asString().empty() && !terms.contains(term))
 				{
 					if (discarded != nullptr)
 						discarded->add(term);
