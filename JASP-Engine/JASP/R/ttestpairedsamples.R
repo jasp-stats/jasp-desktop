@@ -36,22 +36,23 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
 .ttestPairedMainTable <- function(jaspResults, dataset, options, ready, type) {
   if (!is.null(jaspResults[["ttest"]])) 
     return()
+  
   optionsList <- .ttestOptionsList(options, type)
+  
   # Create table
   ttest <- createJaspTable(title = gettext("Paired Samples T-Test"))
-  dependList <- c("effectSize", "effSizeConfidenceIntervalCheckbox", "variables",
-                  "effSizeConfidenceIntervalPercent", "students", "mannWhitneyU",
-                  "meanDifference", "meanDiffConfidenceIntervalCheckbox", "stddev",
-                  "meanDiffConfidenceIntervalPercent", "hypothesis", 
-                  "VovkSellkeMPR", "missingValues")
-  pairList        <- c("pairs", "wilcoxonSignedRank")
-  ttest$dependOn(c(dependList, pairList))
+  ttest$dependOn(c("effectSize", "effSizeConfidenceIntervalCheckbox", "variables",
+                   "effSizeConfidenceIntervalPercent", "students", "mannWhitneyU",
+                   "meanDifference", "meanDiffConfidenceIntervalCheckbox", "stddev",
+                   "meanDiffConfidenceIntervalPercent", "hypothesis", 
+                   "VovkSellkeMPR", "missingValues", "pairs", "wilcoxonSignedRank"))
   ttest$showSpecifiedColumnsOnly <- TRUE
   ttest$position <- 1
   
   ttest$addColumnInfo(name = "v1", type = "string", title = "")
   ttest$addColumnInfo(name = "sep",  type = "separator", title = "")
   ttest$addColumnInfo(name = "v2", type = "string", title = "")
+  
   if (optionsList$wantsWilcox && optionsList$onlyTest) {
     ttest$addFootnote(gettext("Wilcoxon signed-rank test."))
     testStat                <- "W"
@@ -74,57 +75,46 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   ## if the user wants all tests, add a column called "Test"
   if (sum(optionsList$allTests) == 2)
     ttest$addColumnInfo(name = "test", title = gettext("Test"), type = "string")
+
   ttest$addColumnInfo(name = testStat, title = testStatName,    type = "number")
   ttest$addColumnInfo(name = "df",     title = gettext("df"),   type = "integer")
   ttest$addColumnInfo(name = "p",      title = gettext("p"),    type = "pvalue")
+  
   .ttestVovkSellke(ttest, options)
   
   if (optionsList$wantsDifference) {
     ttest$addColumnInfo(name = "md", title = nameOfLocationParameter, type = "number")
-    if(optionsList$wantsStudents)
+    
+    if (optionsList$wantsStudents)
       ttest$addColumnInfo(name = "sed", title = gettext("SE Difference"), type = "number")
-    if (optionsList$wantsWilcox && optionsList$wantsStudents) {
-      message <- gettext("For the Student t-test, location parameter is given by mean 
-      difference <em>d</em>; for the Wilcoxon test, effect size is given by the 
-      Hodges-Lehmann estimate.")
-      ttest$addFootnote(message)
-    } 
+    
+    if (optionsList$wantsWilcox && optionsList$wantsStudents)
+      ttest$addFootnote(gettext("For the Student t-test, location parameter is given by mean difference <em>d</em>. For the Wilcoxon test, effect size is given by the Hodges-Lehmann estimate."))
   }
   
   if (optionsList$wantsConfidenceMeanDiff) {
-    interval <- 100 * optionsList$percentConfidenceMeanDiff
-    title <- gettextf("%1$s%% CI for %2$s", interval, nameOfLocationParameter)
-    ttest$addColumnInfo(name = "lowerCIlocationParameter", type = "number",
-                        title = gettext("Lower"), overtitle = title)
-    ttest$addColumnInfo(name = "upperCIlocationParameter", type = "number",
-                        title = gettext("Upper"), overtitle = title)
+    title <- gettextf("%1$s%% CI for %2$s", 100 * optionsList$percentConfidenceMeanDiff, nameOfLocationParameter)
+    ttest$addColumnInfo(name = "lowerCIlocationParameter", type = "number", title = gettext("Lower"), overtitle = title)
+    ttest$addColumnInfo(name = "upperCIlocationParameter", type = "number", title = gettext("Upper"), overtitle = title)
   }
   
   if (optionsList$wantsEffect) {
     ttest$addColumnInfo(name = "d", title = nameOfEffectSize, type = "number")
-    if (optionsList$wantsWilcox && optionsList$wantsStudents) {
-      message <- gettext("For the Student t-test, 
-    effect size is given by Cohen's <em>d</em>; for the Wilcoxon test, 
-    effect size is given by the matched rank biserial correlation.")
-      ttest$addFootnote(message)
-    } 
+    
+    if (optionsList$wantsWilcox && optionsList$wantsStudents)
+      ttest$addFootnote(gettext("For the Student t-test, effect size is given by Cohen's <em>d</em>. For the Wilcoxon test, effect size is given by the matched rank biserial correlation."))
   }
   
   if (optionsList$wantsConfidenceEffSize) {
-    interval <- 100 * optionsList$percentConfidenceEffSize
-    title <- gettextf("%1$s%% CI for %2$s", interval, nameOfEffectSize)
-    ttest$addColumnInfo(name = "lowerCIeffectSize", type = "number",
-                        title = gettext("Lower"), overtitle = title)
-    ttest$addColumnInfo(name = "upperCIeffectSize", type = "number",
-                        title = gettext("Upper"), overtitle = title)
+    title <- gettextf("%1$s%% CI for %2$s", 100 * optionsList$percentConfidenceEffSize, nameOfEffectSize)
+    ttest$addColumnInfo(name = "lowerCIeffectSize", type = "number", title = gettext("Lower"), overtitle = title)
+    ttest$addColumnInfo(name = "upperCIeffectSize", type = "number", title = gettext("Upper"), overtitle = title)
   }
   
-  if (options$hypothesis == "groupOneGreater") {
-    message   <- gettext("All tests, hypothesis is measurement one greater than measurement two.")
-    ttest$addFootnote(message)
-  } else if (options$hypothesis == "groupTwoGreater") {
-    message   <- gettext("All tests, hypothesis is measurement one less than measurement two.")
-    ttest$addFootnote(message)
+  
+  if (options$hypothesis == "groupOneGreater" || options$hypothesis == "groupTwoGreater") {
+    directionNote <- ifelse(options$hypothesis == "groupTwoGreater", gettext("less"), gettext("greater"))
+    ttest$addFootnote(gettextf("For all tests, the alternative hypothesis specifies that measurement one is %s than measurement two.", directionNote))
   }
   
   jaspResults[["ttest"]] <- ttest

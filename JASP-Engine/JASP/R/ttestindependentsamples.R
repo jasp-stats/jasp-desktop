@@ -37,18 +37,17 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
 .ttestIndependentMainTable <- function(jaspResults, dataset, options, ready, type) {
   if (!is.null(jaspResults[["ttest"]])) 
     return()
+  
   optionsList <- .ttestOptionsList(options, type)
+  
   # Create table
   ttest <- createJaspTable(title = gettext("Independent Samples T-Test"))
-  dependList <- c("effectSize", "effSizeConfidenceIntervalCheckbox", "variables",
-                  "descriptivesEffectSizeConfidenceIntervalPercent", "students", "mannWhitneyU",
-                  "meanDifference", "meanDiffConfidenceIntervalCheckbox", "stddev",
-                  "meanDiffConfidenceIntervalPercent", "hypothesis", 
-                  "VovkSellkeMPR", "missingValues")
-  independentList <- c("groupingVariable", "effectSizesType", 
-                       "welchs", "mannWhitneyU",
-                       "descriptivesMeanDiffConfidenceIntervalPercent")
-  ttest$dependOn(c(dependList, independentList))
+  ttest$dependOn(c("effectSize", "effSizeConfidenceIntervalCheckbox", "variables",
+                   "descriptivesEffectSizeConfidenceIntervalPercent", "students", "mannWhitneyU",
+                   "meanDifference", "meanDiffConfidenceIntervalCheckbox", "stddev",
+                   "meanDiffConfidenceIntervalPercent", "hypothesis", 
+                   "VovkSellkeMPR", "missingValues", "groupingVariable", "effectSizesType", 
+                   "welchs", "mannWhitneyU", "descriptivesMeanDiffConfidenceIntervalPercent"))
   ttest$showSpecifiedColumnsOnly <- TRUE
   ttest$position <- 1
   
@@ -72,11 +71,14 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   dfType <- ifelse(optionsList$wantsWelchs, "number", "integer")
   
   ttest$addColumnInfo(name = "v", title = " ", type = "string", combine = TRUE)
+  
   if (sum(optionsList$allTests) >= 2) 
     ttest$addColumnInfo(name = "test", type = "string",  title = gettext("Test"))
+  
   ttest$addColumnInfo(name = testStat, type = "number",  title = testStatName)
   ttest$addColumnInfo(name = "df",     type = dfType,    title = gettext("df"))
   ttest$addColumnInfo(name = "p",      type = "pvalue",  title = gettext("p"))
+  
   .ttestVovkSellke(ttest, options)
   
   if (options$effectSizesType == "cohensD")
@@ -102,62 +104,49 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     nameOfEffectSize        <-  gettext("Effect Size")
   }
   
+  if (optionsList$wantsStudents && optionsList$wantsWelchs)
+    testInNote <- gettext("Student t-test and Welch t-test")
+  else if (optionsList$wantsStudents)
+    testInNote <- gettext("Student t-test")
+  else if (optionsList$wantsWelchs)
+    testInNote <- gettext("Welch t-test")
+  
   ## add mean difference and standard error difference
   if (optionsList$wantsDifference) {
     ttest$addColumnInfo(name = "md", title = nameOfLocationParameter, type = "number")
+    
     if (!(optionsList$wantsWilcox && optionsList$onlyTest))  # Only add SE Difference if not only MannWhitney is requested
       ttest$addColumnInfo(name = "sed", title = gettext("SE Difference"), type = "number")
-  }
-  
-  if (optionsList$wantsDifference && optionsList$wantsWilcox && 
-      optionsList$wantsStudents && optionsList$wantsWelchs) {
-    message <- gettext("For the Student t-test and Welch t-test, 
-              location parameter is given by mean difference; for the Mann-Whitney test, 
-              location parameter is given by the Hodges-Lehmann estimate.")
-    ttest$addFootnote(message)
-  } else if (optionsList$wantsDifference && 
-             optionsList$wantsWilcox && optionsList$wantsStudents) {
-    message <- gettext("For the Student t-test, 
-              location parameter is given by mean difference; for the Mann-Whitney test, 
-              location parameter is given by Hodges-Lehmann estimate.")
-    ttest$addFootnote(message)
-  } else if (optionsList$wantsDifference &&
-             optionsList$wantsWilcox && optionsList$wantsWelchs) {
-    message <- gettext("For the Welch t-test, 
-              location parameter is given by mean difference; for the Mann-Whitney test,
-              location parameter is given by Hodges-Lehmann estimate.")
-    ttest$addFootnote(message)
+    
+    if (optionsList$wantsWilcox && (optionsList$wantsStudents || optionsList$wantsWelchs))
+      ttest$addFootnote(gettextf("For the %s, location parameter is given by mean difference. For the Mann-Whitney test, location parameter is given by the Hodges-Lehmann estimate.", testInNote))
   }
   
   if (optionsList$wantsConfidenceMeanDiff) {
-    interval <- 100 * optionsList$percentConfidenceMeanDiff
-    title <- gettextf("%1$s%% CI for %2$s", interval, nameOfLocationParameter)
-    ttest$addColumnInfo(name = "lowerCIlocationParameter", type = "number",
-                        title = gettext("Lower"), overtitle = title)
-    ttest$addColumnInfo(name = "upperCIlocationParameter", type = "number",
-                        title = gettext("Upper"), overtitle = title)
+    title <- gettextf("%1$s%% CI for %2$s", 100 * optionsList$percentConfidenceMeanDiff, nameOfLocationParameter)
+    ttest$addColumnInfo(name = "lowerCIlocationParameter", type = "number", title = gettext("Lower"), overtitle = title)
+    ttest$addColumnInfo(name = "upperCIlocationParameter", type = "number", title = gettext("Upper"), overtitle = title)
   }
   
   ## add Cohen's d
   if (optionsList$wantsEffect) {
     ttest$addColumnInfo(name = "d", title = nameOfEffectSize, type = "number")
+
     if (optionsList$wantsWilcox) {
+      wNote <- gettext("For the Mann-Whitney test, effect size is given by the rank biserial correlation.")
+      
+      twNote <- NULL
       if (optionsList$wantsStudents || optionsList$wantsWelchs) 
-        message <- gettextf("For the Mann-Whitney test, effect size is given by the rank biserial correlation. 
-                         For the other test(s), by %s.", nameOfEffectSizeParametric)
-      else
-        message <- gettext("For the Mann-Whitney test, effect size is given by the rank biserial correlation.")
-      ttest$addFootnote(message)
+        twNote <- gettextf("For the %1$s, effect size is given by %2$s.", testInNote, nameOfEffectSizeParametric)
+      
+      ttest$addFootnote(paste(twNote, wNote))
     }
   }
   
   if (optionsList$wantsConfidenceEffSize) {
-    interval <- 100 * optionsList$percentConfidenceEffSize
-    title <- gettextf("%1$s%% CI for %2$s", interval, nameOfEffectSize)
-    ttest$addColumnInfo(name = "lowerCIeffectSize", type = "number",
-                        title = gettext("Lower"), overtitle = title)
-    ttest$addColumnInfo(name = "upperCIeffectSize", type = "number",
-                        title = gettext("Upper"), overtitle = title)
+    title <- gettextf("%1$s%% CI for %2$s", 100 * optionsList$percentConfidenceEffSize, nameOfEffectSize)
+    ttest$addColumnInfo(name = "lowerCIeffectSize", type = "number", title = gettext("Lower"), overtitle = title)
+    ttest$addColumnInfo(name = "upperCIeffectSize", type = "number", title = gettext("Upper"), overtitle = title)
   }
   
   jaspResults[["ttest"]] <- ttest
@@ -236,17 +225,11 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   } else {
     levels <- levels(dataset[[ .v(options$groupingVariable) ]])
     
-    if (options$hypothesis == "groupOneGreater")
-      message <- gettextf("For all tests, the alternative hypothesis specifies that group %1$s is greater than group %2$s.",
-                          paste("<em>", levels[1], "</em>"), paste("<em>", levels[2], "</em>"))
-    else if (options$hypothesis == "groupTwoGreater")
-      message <- gettextf("For all tests, the alternative hypothesis specifies that group %1$s is less than group %2$s.",
-                          paste("<em>", levels[1], "</em>"), paste("<em>", levels[2], "</em>"))
-    else
-      message <- gettextf("For all tests, the alternative hypothesis specifies that group %1$s is not equal to group %2$s.",
-                          paste("<em>", levels[1], "</em>"), paste("<em>", levels[2], "</em>"))
-    
-    jaspResults[["ttest"]]$addFootnote(message)
+    if (options$hypothesis == "groupOneGreater" || options$hypothesis == "groupTwoGreater") {
+      directionNote <- ifelse(options$hypothesis == "groupOneGreater", gettext("greater"), gettext("less"))
+      jaspResults[["ttest"]]$addFootnote(gettextf("For all tests, the alternative hypothesis specifies that group %1$s is %2$s than group %3$s.",
+                                                  paste("<em>", levels[1], "</em>"), directionNote, paste("<em>", levels[2], "</em>")))
+    }
     
     groupingData <- dataset[[ .v(options$groupingVariable) ]]
     ## for each variable specified, run each test that the user wants
