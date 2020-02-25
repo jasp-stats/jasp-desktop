@@ -113,7 +113,7 @@ unix {
 #And of course also a version description to include in the Windows installer
 windows {
         WIXFILENAME=$${OUT_PWD}/../jasp.wxi
-        createVersionWix.commands += $$quote(echo ^<?xml version=\"1.0\" encoding=\"utf-8\"?^>^<Include^>          >  $${WIXFILENAME})  &&
+        createVersionWix.commands += $$quote(echo ^<?xml version=\"1.0\" encoding=\"utf-8\"?^>^<Include^>          >   $${WIXFILENAME}) &&
         createVersionWix.commands += $$quote(echo ^<?define MajorVersion=\"$${JASP_VERSION_MAJOR}\" ?^>            >>  $${WIXFILENAME}) &&
         createVersionWix.commands += $$quote(echo ^<?define MinorVersion=\"$${JASP_VERSION_MINOR}\" ?^>            >>  $${WIXFILENAME}) &&
         createVersionWix.commands += $$quote(echo ^<?define BuildVersion=\"$${JASP_VERSION_BUILD}\" ?^>            >>  $${WIXFILENAME}) &&
@@ -163,7 +163,7 @@ win32 {
   GETTEXT_LOCATION = $$(GETTEXT_PATH)
   isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
 
-  delres.commands  += $$quote(IF exist \"$$RESOURCES_DESTINATION\" (rd /s /q \"$$RESOURCES_DESTINATION\";) ) &&
+  delres.commands  += $$quote(IF exist \"$$RESOURCES_DESTINATION\" (rd /s /q \"$$RESOURCES_DESTINATION\";) );
   copyres.commands  +=  $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_DESTINATION})
 
   $$GENERATE_LANGUAGE_FILES {

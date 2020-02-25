@@ -134,8 +134,6 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(theme_sizeType     formExpanderHeaderHeight        READ formExpanderHeaderHeight        WRITE setFormExpanderHeaderHeight        NOTIFY formExpanderHeaderHeightChanged        )
 	Q_PROPERTY(theme_sizeType     jaspControlHighlightWidth       READ jaspControlHighlightWidth       WRITE setJaspControlHighlightWidth       NOTIFY jaspControlHighlightWidthChanged       )
 	Q_PROPERTY(theme_sizeType     defaultVariablesFormHeight      READ defaultVariablesFormHeight      WRITE setDefaultVariablesFormHeight      NOTIFY defaultVariablesFormHeightChanged      )
-	Q_PROPERTY(theme_sizeType     jaspControlHighlightWidth       READ jaspControlHighlightWidth       WRITE setJaspControlHighlightWidth       NOTIFY jaspControlHighlightWidthChanged       )
-	Q_PROPERTY(theme_sizeType     defaultVariablesFormHeight      READ defaultVariablesFormHeight      WRITE setDefaultVariablesFormHeight      NOTIFY defaultVariablesFormHeightChanged      )
 	Q_PROPERTY(theme_sizeType     defaultSingleItemListHeight     READ defaultSingleItemListHeight     WRITE setDefaultSingleItemListHeight     NOTIFY defaultSingleItemListHeightChanged     )
 	Q_PROPERTY(theme_sizeType     defaultRectangularButtonHeight  READ defaultRectangularButtonHeight  WRITE setDefaultRectangularButtonHeight  NOTIFY defaultRectangularButtonHeightChanged  )
 	Q_PROPERTY(theme_sizeType     smallDefaultVariablesFormHeight READ smallDefaultVariablesFormHeight WRITE setSmallDefaultVariablesFormHeight NOTIFY smallDefaultVariablesFormHeightChanged )
