@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-02-24 10:05\n"
+"POT-Creation-Date: 2020-02-27 14:21\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -124,7 +124,10 @@ msgstr ""
 msgid "Contrast Tables"
 msgstr ""
 
-msgid "%.0f%% CI for Mean Difference"
+msgid "Estimate"
+msgstr ""
+
+msgid "%s%% CI for Mean Difference"
 msgstr ""
 
 msgid "Lower"
@@ -133,7 +136,22 @@ msgstr ""
 msgid "Upper"
 msgstr ""
 
+msgid "SE"
+msgstr ""
+
+msgid "t"
+msgstr ""
+
 msgid "%1$s Contrast - %2$s"
+msgstr ""
+
+msgid "Nonconforming number of contrast coefficients."
+msgstr ""
+
+msgid "Wrong number of custom contrast matrix rows."
+msgstr ""
+
+msgid "Please specify non-zero contrast weights."
 msgstr ""
 
 msgid "Post Hoc Tests"
@@ -193,16 +211,16 @@ msgstr ""
 msgid "Mean Difference"
 msgstr ""
 
+msgid "%.0f%% CI for Mean Difference"
+msgstr ""
+
 msgid "p<sub>tukey</sub>"
 msgstr ""
 
 msgid "Dunnett"
 msgstr ""
 
-msgid "Dunnett Post Hoc Comparisons - %1"
-msgstr ""
-
-msgid "%g%% CI for Mean Difference"
+msgid "Dunnett Post Hoc Comparisons - %s"
 msgstr ""
 
 msgid "p<sub>dunnett</sub>"
@@ -272,6 +290,9 @@ msgid "Theoretical Quantiles"
 msgstr ""
 
 msgid "Standardized Residuals"
+msgstr ""
+
+msgid "Error while loading data. Please verify your repeated measures observations."
 msgstr ""
 
 msgid "Factor: <em>%s</em>, contains fewer than two levels."
@@ -373,16 +394,7 @@ msgstr ""
 msgid "%1$s%% bca%2$s CI"
 msgstr ""
 
-msgid "%s%% CI for Mean Difference"
-msgstr ""
-
-msgid "SE"
-msgstr ""
-
 msgid "bias"
-msgstr ""
-
-msgid "t"
 msgstr ""
 
 msgid "Cohen's d"
@@ -394,7 +406,7 @@ msgstr ""
 msgid "p<sub>sidak</sub>"
 msgstr ""
 
-msgid "Estimate"
+msgid "Unequal variances only available for within subjects factors"
 msgstr ""
 
 msgid "Marginal Means"
@@ -412,10 +424,10 @@ msgstr ""
 msgid "95%% bca%s CI"
 msgstr ""
 
-msgid "95%% CI for Mean Difference"
+msgid "Marginal Means estimate is based on the median of the bootstrap distribution."
 msgstr ""
 
-msgid "Marginal Means estimate is based on the median of the bootstrap distribution."
+msgid "95%% CI for Mean Difference"
 msgstr ""
 
 msgid "Bonferroni CI adjustment"
@@ -754,10 +766,10 @@ msgstr ""
 msgid "The resulting sample size is larger than the population size."
 msgstr ""
 
-msgid "The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming\n                                                                        the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the\n                                                                        control risk <b>(%7$s)</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>%8$s</b>, the\n                                                                        maximum misstatement is estimated to be below materiality."
+msgid "The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the control risk <b>(%7$s)</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>%8$s</b>, the maximum misstatement is estimated to be below materiality."
 msgstr ""
 
-msgid "The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming\n                                                                          the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the\n                                                                          control risk <b>(%7$s)</b> and the expected errors. The information in this prior distribution states that there is a <b>%8$s%%</b> prior probability that \n                                                                          the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains \n                                                                          below <b>%9$s</b> the maximum misstatement is estimated to be below materiality."
+msgid "The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the control risk <b>(%7$s)</b> and the expected errors. The information in this prior distribution states that there is a <b>%8$s%%</b> prior probability that the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains below <b>%9$s</b> the maximum misstatement is estimated to be below materiality."
 msgstr ""
 
 msgid "<b>Table %1$i.</b> Planning Summary"
@@ -928,13 +940,13 @@ msgstr ""
 msgid "<u>Evaluation</u>"
 msgstr ""
 
-msgid "probability that, when one would repeatedly sample from this population, the maximum misstatement is calculated to be lower\n                            than"
+msgid "probability that, when one would repeatedly sample from this population, the maximum misstatement is calculated to be lower than"
 msgstr ""
 
 msgid "probability that the maximum misstatement is lower than"
 msgstr ""
 
-msgid "The selection consisted of <b>%1$s</b> observations, of which <b>%2$s</b> were found to contain an error. The knowledge from these data, com-\n                        bined with the risk assessments results in an <b>%3$s</b> upper confidence bound of <b>%4$s</b>. The cumulative knowledge states that there\n                        is a <b>%5$s</b> %6$s <b>%7$s</b>."
+msgid "The selection consisted of <b>%1$s</b> observations, of which <b>%2$s</b> were found to contain an error. The knowledge from these data, combined with the risk assessments results in an <b>%3$s</b> upper confidence bound of <b>%4$s</b>. The cumulative knowledge states that there is a <b>%5$s</b> %6$s <b>%7$s</b>."
 msgstr ""
 
 msgid "<b>Table %1$i.</b> Evaluation Summary"
@@ -1009,7 +1021,7 @@ msgstr ""
 msgid "Most likely error"
 msgstr ""
 
-msgid "<b>Figure %1$i.</b> Evaluation information for the current annotated selection. The materiality is compared with the \n                                                          maximum misstatement and the most likely error. The most likely error (MLE) is an estimate of the true misstatement \n                                                          in the population. The maximum error is an estimate of the maximum error in the population."
+msgid "<b>Figure %1$i.</b> Evaluation information for the current annotated selection. The materiality is compared with the maximum misstatement and the most likely error. The most likely error (MLE) is an estimate of the true misstatement in the population. The maximum error is an estimate of the maximum error in the population."
 msgstr ""
 
 msgid "Audit values (%1$s)"
@@ -1054,7 +1066,7 @@ msgstr ""
 msgid "Implicit errors"
 msgstr ""
 
-msgid "Sample sizes shown are implicit sample sizes derived from the ARM risk assessments: \n                        IR = <b>%1$s</b> and CR = <b>%2$s</b>."
+msgid "Sample sizes shown are implicit sample sizes derived from the ARM risk assessments: IR = <b>%1$s</b> and CR = <b>%2$s</b>."
 msgstr ""
 
 msgid "<b>Table %i.</b> Prior and Expected Posterior Descriptive Statistics"
@@ -1078,7 +1090,7 @@ msgstr ""
 msgid "Expected shift"
 msgstr ""
 
-msgid "%1$s: The population misstatement is lower than materiality (%2$s %3$s). \n                                                  %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s)."
+msgid "%1$s: The population misstatement is lower than materiality (%2$s %3$s). %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s)."
 msgstr ""
 
 msgid "Implied Prior from Risk Assessments"
@@ -1105,7 +1117,7 @@ msgstr ""
 msgid "Support"
 msgstr ""
 
-msgid "<b>Figure %1$i.</b> The prior probability distribution <b>(%2$s)</b> on the misstatement in the population. The prior parameters \n                                           <i>%3$s = %4$s, %5$s = %6$s</i> are derived from the assessments of the inherent and control risk, along with the expected errors. %7$s %8$s"
+msgid "<b>Figure %1$i.</b> The prior probability distribution <b>(%2$s)</b> on the misstatement in the population. The prior parameters <i>%3$s = %4$s, %5$s = %6$s</i> are derived from the assessments of the inherent and control risk, along with the expected errors. %7$s %8$s"
 msgstr ""
 
 msgid "Prior and Posterior Distribution"
@@ -1133,9 +1145,6 @@ msgid "<b>Figure %1$i.</b> The prior and posterior probability distribution <b>(
 msgstr ""
 
 msgid "<b>Table %i.</b> Prior and Posterior Descriptive Statistics"
-msgstr ""
-
-msgid "%1$s: The population misstatement is lower than materiality (%2$s %3$s). \n                                                                    %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s)."
 msgstr ""
 
 msgid "Shift"
@@ -2881,10 +2890,10 @@ msgstr ""
 msgid "The model could not be estimated. A factor with less than 2 variables was added in Second-Order."
 msgstr ""
 
-msgid "The model could not be estimated. Error message:"
+msgid "The model could not be estimated. Error message: \n\n %s"
 msgstr ""
 
-msgid "The model is not admissible:"
+msgid "The model is not admissible: %s"
 msgstr ""
 
 msgid "The model could not be estimated due to nonconvergence."
@@ -2990,6 +2999,9 @@ msgid "McDonald fit index (MFI)"
 msgstr ""
 
 msgid "Expected cross validation index (ECVI)"
+msgstr ""
+
+msgid "Not all bootstrap samples were successful: CI based on %.0f samples."
 msgstr ""
 
 msgid "Indicator"
@@ -3466,9 +3478,6 @@ msgstr ""
 msgid "I ranges from %1$s to %2$s"
 msgstr ""
 
-msgid "95% Credible Interval"
-msgstr ""
-
 msgid "Equivalence Bayesian One Sample T-Test"
 msgstr ""
 
@@ -3523,7 +3532,7 @@ msgstr ""
 msgid "Data not valid: all variables are collinear"
 msgstr ""
 
-msgid "Estimation failed. \n Internal error message:"
+msgid "Estimation failed. \nInternal error message: %s"
 msgstr ""
 
 msgid "No components with an eigenvalue >"
@@ -3550,7 +3559,10 @@ msgstr ""
 msgid "No rotation method applied."
 msgstr ""
 
-msgid "Applied rotation method is"
+msgid "Applied rotation method is %s."
+msgstr ""
+
+msgid "Factor %i"
 msgstr ""
 
 msgid "Uniqueness"
@@ -3586,7 +3598,7 @@ msgstr ""
 msgid "TLI"
 msgstr ""
 
-msgid "Screeplot not available.\n Internal error message:"
+msgid "Screeplot not available. \nInternal error message: %s"
 msgstr ""
 
 msgid "Data"
@@ -3799,25 +3811,13 @@ msgstr ""
 msgid "FIML only available with ML-type estimators."
 msgstr ""
 
-msgid "Not all exogenous variables are admissible."
+msgid "Not all exogenous variables are admissible. Inadmissible exogenous variables: %s. Only binary or continuous exogenous variables allowed."
 msgstr ""
 
-msgid "Inadmissible exogenous variables:"
+msgid "Not all endogenous variables are admissible. Inadmissible endogenous variables: %s. Only scale or ordinal endogenous variables allowed."
 msgstr ""
 
-msgid ". Only binary or continuous exogenous variables allowed."
-msgstr ""
-
-msgid "Not all endogenous variables are admissible."
-msgstr ""
-
-msgid "Inadmissible endogenous variables:"
-msgstr ""
-
-msgid ". Only scale or ordinal endogenous variables allowed."
-msgstr ""
-
-msgid "Estimation failed\nMessage:"
+msgid "Estimation failed\nMessage:\n%s"
 msgstr ""
 
 msgid "Parameter estimates"
@@ -3853,16 +3853,13 @@ msgstr ""
 msgid "robust"
 msgstr ""
 
-msgid "standard errors,"
+msgid "%1$s standard errors, %2$s confidence intervals."
 msgstr ""
 
-msgid "confidence intervals."
+msgid "%1$s standard errors, %2$s confidence intervals, %3$s estimator. NB: Not all bootstrap samples were successful: CI based on %4$.0f samples."
 msgstr ""
 
-msgid "confidence intervals,"
-msgstr ""
-
-msgid "estimator."
+msgid "%1$s standard errors, %2$s confidence intervals, %3$s estimator."
 msgstr ""
 
 msgid "R-Squared"
@@ -4057,16 +4054,10 @@ msgstr ""
 msgid "No expected counts entered!"
 msgstr ""
 
-msgid "Invalid counts:"
+msgid "Invalid %s counts: variable does not match the number of levels of factor."
 msgstr ""
 
-msgid "Invalid expected counts:"
-msgstr ""
-
-msgid "variable does not match the number of levels of factor."
-msgstr ""
-
-msgid "variable must contain only integer values."
+msgid "Invalid %s counts: variable must contain only integer values."
 msgstr ""
 
 msgid "Confidence intervals are based on independent binomial distributions."
@@ -4075,7 +4066,7 @@ msgstr ""
 msgid "Could not compute confidence intervals."
 msgstr ""
 
-msgid "Expected:"
+msgid "Expected: %s"
 msgstr ""
 
 msgid "Expected"
@@ -4093,16 +4084,19 @@ msgstr ""
 msgid "Levels"
 msgstr ""
 
-msgid "Credible Interval"
+msgid "Credible"
 msgstr ""
 
 msgid "Credible intervals are based on independent binomial distributions with flat priors."
 msgstr ""
 
-msgid "Confidence Interval"
+msgid "Confidence"
 msgstr ""
 
-msgid "Could not compute"
+msgid "%1$s%% %2$s Interval"
+msgstr ""
+
+msgid "Could not compute %s Intervals."
 msgstr ""
 
 msgid "Descriptives plot"
@@ -4225,7 +4219,7 @@ msgstr ""
 msgid "<ul><li>start with the column name of the variable.</ul></li>"
 msgstr ""
 
-msgid "<ul><li>contain an '=' to distinghuish betweem column name and data type.</ul></li>"
+msgid "<ul><li>contain an '=' to distinguish between column name and data type.</ul></li>"
 msgstr ""
 
 msgid "<ul><li>end with either 'g' for Gaussian, 'c' for categorical, or 'p' for Poisson.</ul></li>"
@@ -4240,19 +4234,7 @@ msgstr ""
 msgid "Data supplied in %s could not be used to determine node locations."
 msgstr ""
 
-msgid "%1$s %2$sData should only contain numeric:\n                 -start with the column name of the variable.\n                 -contain an '=' to distinghuish betweem column name and coordinate."
-msgstr ""
-
-msgid "X-Coordinates for variables %s were not understood."
-msgstr ""
-
-msgid "X-Coordinates for variable %s was not understood."
-msgstr ""
-
-msgid "Y-Coordinates for variables %s were not understood."
-msgstr ""
-
-msgid "Y-Coordinates for variable %s was not understood."
+msgid "%1$s %2$s Data should only contain numeric:\n                 -start with the column name of the variable.\n                 -contain an '=' to distinguish between column name and coordinate."
 msgstr ""
 
 msgid "Data supplied in %s could not be used to determine variables types. Data should:\n                 Start with the column name of the variable.\n                 Contain an '=' to distinghuish betweem column name and group."
@@ -4315,9 +4297,6 @@ msgstr ""
 msgid "Computing statistics..."
 msgstr ""
 
-msgid "Estimation failed\n Internal error message:"
-msgstr ""
-
 msgid "Component Loadings"
 msgstr ""
 
@@ -4325,9 +4304,6 @@ msgid "Component Correlations"
 msgstr ""
 
 msgid "Scree plot"
-msgstr ""
-
-msgid "Screeplot not available. \n Internal error message:"
 msgstr ""
 
 msgid "Component"
@@ -4396,7 +4372,7 @@ msgstr ""
 msgid "Bias"
 msgstr ""
 
-msgid "%f%% bca* CI"
+msgid "%s%% bca* CI"
 msgstr ""
 
 msgid "Bootstrapping based on %i replicates."
@@ -4861,6 +4837,9 @@ msgstr ""
 msgid "R&sup2;"
 msgstr ""
 
+msgid "Group %i"
+msgstr ""
+
 msgid "mi"
 msgstr ""
 
@@ -4993,25 +4972,28 @@ msgstr ""
 msgid "Location Parameter"
 msgstr ""
 
+msgid "Student t-test and Welch t-test"
+msgstr ""
+
+msgid "Student t-test"
+msgstr ""
+
+msgid "Welch t-test"
+msgstr ""
+
 msgid "SE Difference"
 msgstr ""
 
-msgid "For the Student t-test and Welch t-test, \n              location parameter is given by mean difference; for the Mann-Whitney test, \n              location parameter is given by the Hodges-Lehmann estimate."
-msgstr ""
-
-msgid "For the Student t-test, \n              location parameter is given by mean difference; for the Mann-Whitney test, \n              location parameter is given by Hodges-Lehmann estimate."
-msgstr ""
-
-msgid "For the Welch t-test, \n              location parameter is given by mean difference; for the Mann-Whitney test,\n              location parameter is given by Hodges-Lehmann estimate."
+msgid "For the %s, location parameter is given by mean difference. For the Mann-Whitney test, location parameter is given by the Hodges-Lehmann estimate."
 msgstr ""
 
 msgid "%1$s%% CI for %2$s"
 msgstr ""
 
-msgid "For the Mann-Whitney test, effect size is given by the rank biserial correlation. \n                         For the other test(s), by %s."
+msgid "For the Mann-Whitney test, effect size is given by the rank biserial correlation."
 msgstr ""
 
-msgid "For the Mann-Whitney test, effect size is given by the rank biserial correlation."
+msgid "For the %1$s, effect size is given by %2$s."
 msgstr ""
 
 msgid "Test of Normality (Shapiro-Wilk)"
@@ -5023,13 +5005,13 @@ msgstr ""
 msgid "Test of Equality of Variances (Levene's)"
 msgstr ""
 
-msgid "For all tests, the alternative hypothesis specifies that group %1$s is greater than group %2$s."
+msgid "greater"
 msgstr ""
 
-msgid "For all tests, the alternative hypothesis specifies that group %1$s is less than group %2$s."
+msgid "less"
 msgstr ""
 
-msgid "For all tests, the alternative hypothesis specifies that group %1$s is not equal to group %2$s."
+msgid "For all tests, the alternative hypothesis specifies that group %1$s is %2$s than group %3$s."
 msgstr ""
 
 msgid "Levene's test is significant (p < .05), \n\t\t\t\t\t  suggesting a violation of the equal variance assumption"
@@ -5053,34 +5035,25 @@ msgstr ""
 msgid "Z test."
 msgstr ""
 
-msgid "For the Student t-test, location parameter is given by mean difference <em>d</em>"
+msgid "Student t-test and Z-test"
 msgstr ""
 
-msgid "; for the Wilcoxon test, location parameter is given by the Hodges-Lehmann estimate"
+msgid "Z-test"
 msgstr ""
 
-msgid "For the Wilcoxon test, location parameter is given by the Hodges-Lehmann estimate"
+msgid "For the %s, location parameter is given by mean difference <em>d</em>."
 msgstr ""
 
-msgid "For the Z-test, location parameter is given by mean difference <em>d</em>"
+msgid "For the Wilcoxon test, location parameter is given by the Hodges-Lehmann estimate."
 msgstr ""
 
-msgid "; for the Z-test, location parameter is given by mean difference <em>d</em>"
+msgid "For the Student t-test, effect size is given by Cohen's <em>d</em>."
 msgstr ""
 
-msgid "For the Student t-test, effect size is given by Cohen's <em>d</em>"
+msgid "For the Wilcoxon test, effect size is given by the matched rank biserial correlation."
 msgstr ""
 
-msgid "; for the Wilcoxon test, effect size is given by the matched rank biserial correlation"
-msgstr ""
-
-msgid "For the Wilcoxon test, effect size is given by the matched rank biserial correlation"
-msgstr ""
-
-msgid "For the Z test, effect size is given by Cohen's <em>d</em> (based on the provided population standard deviation)"
-msgstr ""
-
-msgid "; for the Z test, effect size is given by Cohen's <em>d</em> (based on the provided population standard deviation)"
+msgid "For the Z test, effect size is given by Cohen's <em>d</em> (based on the provided population standard deviation)."
 msgstr ""
 
 msgid "greater than"
@@ -5092,7 +5065,7 @@ msgstr ""
 msgid "different from"
 msgstr ""
 
-msgid "For the Student t-test, the alternative hypothesis specifies that the mean is %1$s %2$s%3$s"
+msgid "For the %1$s, the alternative hypothesis specifies that the mean is %2$s %3$s."
 msgstr ""
 
 msgid "For the Wilcoxon test, the alternative hypothesis specifies that the median is %1$s %2$s."
@@ -5104,16 +5077,13 @@ msgstr ""
 msgid "Paired Samples T-Test"
 msgstr ""
 
-msgid "For the Student t-test, location parameter is given by mean \n      difference <em>d</em>; for the Wilcoxon test, effect size is given by the \n      Hodges-Lehmann estimate."
+msgid "For the Student t-test, location parameter is given by mean difference <em>d</em>. For the Wilcoxon test, effect size is given by the Hodges-Lehmann estimate."
 msgstr ""
 
-msgid "For the Student t-test, \n    effect size is given by Cohen's <em>d</em>; for the Wilcoxon test, \n    effect size is given by the matched rank biserial correlation."
+msgid "For the Student t-test, effect size is given by Cohen's <em>d</em>. For the Wilcoxon test, effect size is given by the matched rank biserial correlation."
 msgstr ""
 
-msgid "All tests, hypothesis is measurement one greater than measurement two."
-msgstr ""
-
-msgid "All tests, hypothesis is measurement one less than measurement two."
+msgid "For all tests, the alternative hypothesis specifies that measurement one is %s than measurement two."
 msgstr ""
 
 msgid "could not calculate enough valid Bayes Factors for different values of the prior"
@@ -5131,6 +5101,16 @@ msgstr[1]    ""
 
 msgid        "using the %d/%d row from a combined fit"
 msgid_plural "using the %d/%d rows from a combined fit"
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "%1$s X-Coordinates for variable %2$s was not understood."
+msgid_plural "%1$s X-Coordinates for variables %2$s were not understood."
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "%1$s Y-Coordinates for variable %2$s was not understood."
+msgid_plural "%1$s Y-Coordinates for variables %2$s were not understood."
 msgstr[0]    ""
 msgstr[1]    ""
 

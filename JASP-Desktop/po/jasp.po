@@ -1466,10 +1466,6 @@ msgid "Contrasts"
 msgstr ""
 
 msgctxt "Ancova|"
-msgid "Assume equal variances"
-msgstr ""
-
-msgctxt "Ancova|"
 msgid "Confidence intervals"
 msgstr ""
 
@@ -1867,10 +1863,6 @@ msgstr ""
 
 msgctxt "Anova|"
 msgid "Contrasts"
-msgstr ""
-
-msgctxt "Anova|"
-msgid "Assume equal variances"
 msgstr ""
 
 msgctxt "Anova|"
@@ -15300,6 +15292,130 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "File has changed"
+msgstr ""
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Welcome to the drag and drop computed column constructor!"
+msgstr ""
+
+msgctxt "AnovaRepeatedMeasures|"
+msgid "Use multivariate model for follow-up tests"
+msgstr ""
+
+msgctxt "MessageForwarder|"
+msgid "Yes"
+msgstr ""
+
+msgctxt "MessageForwarder|"
+msgid "No"
+msgstr ""
+
+msgctxt "MessageForwarder|"
+msgid "Cancel"
+msgstr ""
+
+msgctxt "MessageForwarder|"
+msgid "Save"
+msgstr ""
+
+msgctxt "MessageForwarder|"
+msgid "Discard"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Filter applied<br>"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid ""
+"Formula does not return a set of logical values, and therefore cannot be "
+"used in the filter.<br>"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Welcome to the drag and drop filter!<br>"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Filter cleared<br>"
+msgstr ""
+
+msgctxt "FilterConstructor|"
+msgid "Please enter all arguments - see fields marked in red.<br>"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Scale"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Ordinal"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Nominal"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Text"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Create Column"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Computed Column: "
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Select a column"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Compute column"
+msgstr ""
+
+msgctxt "ComputeColumnWindow|"
+msgid "Column computed"
+msgstr ""
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Computed columns code clear(ed)"
+msgstr ""
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Computed columns code applied"
+msgstr ""
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Please enter all arguments - see fields marked in red."
+msgstr ""
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Only one formula per computed column allowed."
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid "which can be used in numerical comparisons"
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence, greater and lesser than "
+"comparisons"
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid "which can only be used in (in)equivalence comparisons"
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid "The '"
+msgstr ""
+
+msgctxt "ColumnsModel|"
+msgid "'-column "
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

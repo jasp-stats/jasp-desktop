@@ -55,18 +55,18 @@ Item
 		if(allCorrect && allBoolean)
 		{
 			if(noFormulas)
-				hints.filterText += "Filter cleared<br>"
+				hints.filterText += qsTr("Filter cleared<br>")
 			else
-				hints.filterText += "Filter applied<br>"
+				hints.filterText += qsTr("Filter applied<br>")
 
 			filterModel.constructedJSON = JSON.stringify(filterConstructor.returnFilterJSON())
 		}
 
 		if(!allCorrect)
-			hints.filterText += "Please enter all arguments - see fields marked in red.<br>"
+			hints.filterText += qsTr("Please enter all arguments - see fields marked in red.<br>")
 
 		if(!allBoolean)
-			hints.filterText += (!allCorrect ? "<br>" : "" ) + "Formula does not return a set of logical values, and therefore cannot be used in the filter.<br>"
+			hints.filterText += (!allCorrect ? "<br>" : "" ) + qsTr("Formula does not return a set of logical values, and therefore cannot be used in the filter.<br>")
 
 		lastCheckPassed = allCorrect &&  allBoolean
 		return lastCheckPassed
@@ -259,7 +259,7 @@ Item
 
 			Text
 			{
-				property string filterText: "Welcome to the drag and drop filter!<br>"
+				property string filterText: qsTr("Welcome to the drag and drop filter!<br>")
 
 				id:						hints
 				text:					filterText + (filterModel.filterErrorMsg !== "" ? "<br><i><font color=\"red\">"+filterModel.filterErrorMsg+"</font></i>" : "")
