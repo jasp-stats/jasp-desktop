@@ -1201,18 +1201,16 @@
 
     if(type == "frequentist"){
 
-      planningContainer[["planningParagraph"]] <- createJaspHtml(gettextf("The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming
-                                                                        the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the
-                                                                        control risk <b>(%7$s)</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>%8$s</b>, the
-                                                                        maximum misstatement is estimated to be below materiality.",
-                                                                        planningOptions[["expectedErrorsLabel"]],
-                                                                        planningOptions[["materialityLabel"]],
-                                                                        planningState[["expectedSampleError"]],
-                                                                        planningState[["sampleSize"]],
-                                                                        options[["planningModel"]],
-                                                                        options[["IR"]],
-                                                                        options[["CR"]],
-                                                                        planningOptions[["expectedErrorsLabel"]]), "p")
+      planningContainer[["planningParagraph"]] <- createJaspHtml(
+      gettextf("The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the control risk <b>(%7$s)</b> and the expected errors. Consequently, if the sum of errors from the audited observations remains below <b>%8$s</b>, the maximum misstatement is estimated to be below materiality.",
+      planningOptions[["expectedErrorsLabel"]],
+      planningOptions[["materialityLabel"]],
+      planningState[["expectedSampleError"]],
+      planningState[["sampleSize"]],
+      options[["planningModel"]],
+      options[["IR"]],
+      options[["CR"]],
+      planningOptions[["expectedErrorsLabel"]]), "p")
     
     } else if(type == "bayesian"){
 
@@ -1222,20 +1220,16 @@
                                   "hypergeometric" = "beta-binomial")
 
 
-      planningContainer[["planningParagraph"]] <- createJaspHtml(gettextf("The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming
-                                                                          the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the
-                                                                          control risk <b>(%7$s)</b> and the expected errors. The information in this prior distribution states that there is a <b>%8$s%%</b> prior probability that 
-                                                                          the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains 
-                                                                          below <b>%9$s</b> the maximum misstatement is estimated to be below materiality.",
-                                                                          planningOptions[["expectedErrorsLabel"]],
-                                                                          planningOptions[["materialityLabel"]],
-                                                                          planningState[["expectedSampleError"]],
-                                                                          planningState[["sampleSize"]],
-                                                                          distribution,
-                                                                          options[["IR"]],
-                                                                          options[["CR"]],
-                                                                          round(pbeta(planningState[["materiality"]], planningState[["prior"]]$aPrior, planningState[["prior"]]$bPrior) * 100, 2),
-                                                                          planningOptions[["expectedErrorsLabel"]]), "p")
+      planningContainer[["planningParagraph"]] <- createJaspHtml(gettextf("The most likely error in the data was expected to be <b>%1$s</b>. The sample size that is required for a materiality of <b>%2$s</b>, assuming the sample contains <b>%3$s</b> full errors, is <b>%4$s</b>. This sample size is based on the <b>%5$s</b> distribution, the inherent risk <b>(%6$s)</b>, the control risk <b>(%7$s)</b> and the expected errors. The information in this prior distribution states that there is a <b>%8$s%%</b> prior probability that the population misstatement is lower than materiality. Consequently, if the sum of errors from the audited observations remains below <b>%9$s</b> the maximum misstatement is estimated to be below materiality.",
+      planningOptions[["expectedErrorsLabel"]],
+      planningOptions[["materialityLabel"]],
+      planningState[["expectedSampleError"]],
+      planningState[["sampleSize"]],
+      distribution,
+      options[["IR"]],
+      options[["CR"]],
+      round(pbeta(planningState[["materiality"]], planningState[["prior"]]$aPrior, planningState[["prior"]]$bPrior) * 100, 2),
+      planningOptions[["expectedErrorsLabel"]]), "p")
     }
 
     planningContainer[["planningParagraph"]]$position <- positionInContainer
@@ -2823,15 +2817,12 @@
     }
 
     if(type == "frequentist"){
-      additionalMessage <- gettext("probability that, when one would repeatedly sample from this population, the maximum misstatement is calculated to be lower
-                            than")
+      additionalMessage <- gettext("probability that, when one would repeatedly sample from this population, the maximum misstatement is calculated to be lower than")
     } else if(type == "bayesian"){
       additionalMessage <- gettext("probability that the maximum misstatement is lower than")
     }
 
-    message <- gettextf("The selection consisted of <b>%1$s</b> observations, of which <b>%2$s</b> were found to contain an error. The knowledge from these data, com-
-                        bined with the risk assessments results in an <b>%3$s</b> upper confidence bound of <b>%4$s</b>. The cumulative knowledge states that there
-                        is a <b>%5$s</b> %6$s <b>%7$s</b>.",
+    message <- gettextf("The selection consisted of <b>%1$s</b> observations, of which <b>%2$s</b> were found to contain an error. The knowledge from these data, combined with the risk assessments results in an <b>%3$s</b> upper confidence bound of <b>%4$s</b>. The cumulative knowledge states that there is a <b>%5$s</b> %6$s <b>%7$s</b>.",
                         sampleSizeMessage,
                         errorLabel,
                         planningOptions[["confidenceLabel"]],
@@ -3309,9 +3300,7 @@
 
   if(options[["explanatoryText"]]){
 
-    evaluationInformationText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> Evaluation information for the current annotated selection. The materiality is compared with the 
-                                                          maximum misstatement and the most likely error. The most likely error (MLE) is an estimate of the true misstatement 
-                                                          in the population. The maximum error is an estimate of the maximum error in the population.",
+    evaluationInformationText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> Evaluation information for the current annotated selection. The materiality is compared with the maximum misstatement and the most likely error. The most likely error (MLE) is an estimate of the true misstatement in the population. The maximum error is an estimate of the maximum error in the population.",
                                                           jaspResults[["figNumber"]]$object), "p")
     
     evaluationInformationText$position <- positionInContainer + 1

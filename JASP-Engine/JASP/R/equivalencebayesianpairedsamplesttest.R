@@ -211,7 +211,7 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   equivalenceBayesianDescriptivesTable$addColumnInfo(name = "sd",         title = gettext("SD"),        type = "number")
   equivalenceBayesianDescriptivesTable$addColumnInfo(name = "se",         title = gettext("SE"),        type = "number")
 
-  title    <- gettext("95% Credible Interval")
+  title    <- gettextf("95%% Credible Interval")
   equivalenceBayesianDescriptivesTable$addColumnInfo(name = "lowerCI", type = "number", format = "sf:4;dp:3", title = gettext("Lower"), overtitle = title)
   equivalenceBayesianDescriptivesTable$addColumnInfo(name = "upperCI", type = "number", format = "sf:4;dp:3", title = gettext("Upper"), overtitle = title)
   

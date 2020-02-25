@@ -268,7 +268,7 @@ Popup
 							Text
 							{
 								id:						popupText
-								text:					iconRepeater.model[index] === columnTypeScale ? "Scale" : ( iconRepeater.model[index] === columnTypeOrdinal ? "Ordinal" :  iconRepeater.model[index] === columnTypeNominal ? "Nominal" : "Text")
+								text:					iconRepeater.model[index] === columnTypeScale ? qsTr("Scale") : ( iconRepeater.model[index] === columnTypeOrdinal ? qsTr("Ordinal") :  iconRepeater.model[index] === columnTypeNominal ? qsTr("Nominal") : qsTr("Text"))
 								font:					jaspTheme.font
 								color:					jaspTheme.textEnabled
 								anchors.left:			popupIconComputeImage.right
@@ -315,7 +315,7 @@ Popup
 			RectangularButton
 			{
 				id:			createButton
-				text:		"Create Column"
+				text:		qsTr("Create Column")
 				enabled:	nameEdit.validEntry
 				toolTip:	nameEdit.validEntry ? qsTr("Click here to create your new computed column '%1'").arg(nameEdit.text) : qsTr("Enter a valid (unused) name for computed column")
 				onClicked:	rootCreateComputedColumn.createComputedColumn()

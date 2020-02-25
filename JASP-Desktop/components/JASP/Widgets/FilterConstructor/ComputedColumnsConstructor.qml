@@ -52,9 +52,9 @@ Item
 		if(allCorrect )
 		{
 			if(noFormulas)
-				hints.filterText += "Computed columns code clear(ed)"
+				hints.filterText += qsTr("Computed columns code clear(ed)")
 			else
-				hints.filterText += "Computed columns code applied"
+				hints.filterText += qsTr("Computed columns code applied")
 
 			filterConstructor.rCode = scriptColumn.convertToR()
 
@@ -62,10 +62,10 @@ Item
 		}
 
 		if(!allCorrect)
-			hints.filterText += "Please enter all arguments - see fields marked in red."
+			hints.filterText += qsTr("Please enter all arguments - see fields marked in red.")
 
 		if(!onlyOneFormula && !noFormulas)
-			hints.filterText += (!allCorrect ? "<br>" : "" ) + "Only one formula per computed column allowed."
+			hints.filterText += (!allCorrect ? "<br>" : "" ) + qsTr("Only one formula per computed column allowed.")
 
 		lastCheckPassed = allCorrect && onlyOneFormula
 		return lastCheckPassed
@@ -243,7 +243,7 @@ Item
 
 		Text
 		{
-			property string filterText: "Welcome to the drag and drop computed column constructor!"
+			property string filterText: qsTr("Welcome to the drag and drop computed column constructor!")
 
 			id:						hints
 			text:					filterText

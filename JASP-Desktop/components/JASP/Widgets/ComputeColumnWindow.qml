@@ -103,7 +103,7 @@ FocusScope
 		Text
 		{
 			id:							computeColumnTitle
-			text:						computedColumnsInterface.computeColumnNameSelected !== "" ? "Computed Column: " + computedColumnsInterface.computeColumnNameSelected : "Select a column"
+			text:						computedColumnsInterface.computeColumnNameSelected !== "" ? qsTr("Computed Column: ") + computedColumnsInterface.computeColumnNameSelected : qsTr("Select a column")
 			color:						jaspTheme.textEnabled
 			anchors.top:				parent.top
 			anchors.horizontalCenter:	parent.horizontalCenter
@@ -323,7 +323,7 @@ FocusScope
 			{
 				id:				applycomputeColumn
 
-				text:			computeColumnEdit.changedSinceLastApply ? "Compute column" : "Column computed"
+				text:			computeColumnEdit.changedSinceLastApply ? qsTr("Compute column") : qsTr("Column computed")
 				enabled:		computeColumnEdit.changedSinceLastApply
 				anchors.left:	showGeneratedRCode.right
 				anchors.right:	helpButton.left
