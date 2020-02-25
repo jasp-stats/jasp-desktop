@@ -27,7 +27,7 @@ sign () {
 signRecursively () {
 	#make sure all executable files, or those with dylib or so as extension are signed
 	for f in "$1"/*; do
-		if [[  -f "$f" && ( "$2" == "Aggressive" || -x "$f" || $f =~ [[:\<:]].+\.(dylib|so|plist)[[:\>:]] ) ]]; then
+		if [[ -f "$f" && ( "$2" == "Aggressive" || -x "$f" || $f =~ [[:\<:]].+\.(dylib|so|plist)[[:\>:]] ) ]]; then
 			sign "$f"
 		fi
 	done
@@ -74,10 +74,14 @@ echo "clean up .dmg file"
 chflags nouchg $1
 xattr -rc $1
 
+
+
 # Extracting app from dmg file
+#We should actually check if the dmg was already mounted or not though...
 echo "attaching image file"
 hdiutil attach $1
 
+#How do we know the name of the volume?
 echo "copying application to temp directory"
 cp -a /Volumes/JASP/JASP.app "${STAGING_DIR}/"
 
@@ -126,6 +130,7 @@ hdiutil create -srcfolder "${STAGING_DIR}" -volname "${VOL_NAME}" -fs HFS+ -fsar
 echo "Created DMG: ${DMG_TMP}"
 
 # mount it and save the device
+#We should actually check if the dmg was already mounted or not though... Otherwise you can get some weird errors...
 DEVICE=$(hdiutil attach -readwrite -noverify "${DMG_TMP}" | egrep '^/dev/' | sed 1q | awk '{print $1}')
 sleep 2
 
