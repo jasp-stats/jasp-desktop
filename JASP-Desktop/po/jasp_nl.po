@@ -1494,10 +1494,6 @@ msgid "Contrasts"
 msgstr "Contrasten"
 
 msgctxt "Ancova|"
-msgid "Assume equal variances"
-msgstr "Neem gelijke varianties aan"
-
-msgctxt "Ancova|"
 msgid "Confidence intervals"
 msgstr "Betrouwbaarheidsintervallen"
 
@@ -1898,10 +1894,6 @@ msgid "Contrasts"
 msgstr "Contrasten"
 
 msgctxt "Anova|"
-msgid "Assume equal variances"
-msgstr "Neem gelijke varianties aan"
-
-msgctxt "Anova|"
 msgid "Confidence intervals"
 msgstr "Betrouwbaarheidsintervallen"
 
@@ -1963,7 +1955,7 @@ msgstr "Dunn"
 
 msgctxt "Anova|"
 msgid "Descriptives Plots"
-msgstr "Beschijvende grafieken"
+msgstr "Beschrijvende Grafieken"
 
 msgctxt "Anova|"
 msgid "Factors"
@@ -2235,11 +2227,11 @@ msgstr "Posterior steekproeven"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Factors"
-msgstr "Repeated measures factoren"
+msgstr "Herhaalde Metingen Factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Cells"
-msgstr "Repeated measures cellen"
+msgstr "Herhaalde Metingen Cellen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Between Subject Factors"
@@ -2475,11 +2467,11 @@ msgstr "Conover's post-hoc toetsen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Repeated Measures Factors"
-msgstr "Repeated measures factoren"
+msgstr "Herhaalde Metingen Factoren"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Repeated Measures Cells"
-msgstr "Repeated measures cellen"
+msgstr "Herhaalde Metingen Cellen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Between Subject Factors"
@@ -3052,7 +3044,7 @@ msgstr "Gebied onder posterior"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Credible bound"
-msgstr "Geloofwaardigheidsgrens "
+msgstr "Geloofwaardigheidsgrens"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Credible interval"
@@ -8476,7 +8468,7 @@ msgstr "Numerieke Precisie"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "No. samples for credible interval"
-msgstr "Aantal steekproeven voor geloofwaardigheidsinterval"
+msgstr "Steekproeven geloofwaardigheidsinterval"
 
 msgctxt "RegressionLogistic|"
 msgid "Dependent Variable"
@@ -10913,7 +10905,7 @@ msgstr "Zoek naar:"
 
 msgctxt "JASPDataView|"
 msgid "Double click to edit data"
-msgstr "Klik dubbel om gegevens te wijzigen"
+msgstr "Dubbel-klik om gegevens te wijzigen"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Custom"
@@ -15577,6 +15569,135 @@ msgstr ""
 msgctxt "MainWindow|"
 msgid "File has changed"
 msgstr "Bestand is gewijzigd"
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Welcome to the drag and drop computed column constructor!"
+msgstr ""
+"Welkom bij de constructor van een berekende kolom (d.m.v. sleep en plaats)!"
+
+msgctxt "AnovaRepeatedMeasures|"
+msgid "Use multivariate model for follow-up tests"
+msgstr "Gebruik multivariate model voor opvolgende toetsen"
+
+msgctxt "MessageForwarder|"
+msgid "Yes"
+msgstr "Ja"
+
+msgctxt "MessageForwarder|"
+msgid "No"
+msgstr "Nee"
+
+msgctxt "MessageForwarder|"
+msgid "Cancel"
+msgstr "Annuleer"
+
+msgctxt "MessageForwarder|"
+msgid "Save"
+msgstr "Bewaar"
+
+msgctxt "MessageForwarder|"
+msgid "Discard"
+msgstr "Gooi weg"
+
+msgctxt "FilterConstructor|"
+msgid "Filter applied<br>"
+msgstr "Filter toegepast<br>"
+
+msgctxt "FilterConstructor|"
+msgid ""
+"Formula does not return a set of logical values, and therefore cannot be "
+"used in the filter.<br>"
+msgstr ""
+"Formule retourneert geen verzameling logische waarden, en kan daarom niet "
+"gebruikt worden in het filter.<br>"
+
+msgctxt "FilterConstructor|"
+msgid "Welcome to the drag and drop filter!<br>"
+msgstr "Welkom bij het gegevensfilter (dmv sleep en plaats)!<br>"
+
+msgctxt "FilterConstructor|"
+msgid "Filter cleared<br>"
+msgstr "Filter leggemaakt<br>"
+
+msgctxt "FilterConstructor|"
+msgid "Please enter all arguments - see fields marked in red.<br>"
+msgstr "Vul alle argumenten in aub - zie de velden in rood gemarkeerd.<br>"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Scale"
+msgstr "Schaal"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Ordinal"
+msgstr "Ordinaal"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Nominal"
+msgstr "Nominaal"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Text"
+msgstr "Tekst"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Create Column"
+msgstr "Maak Kolom"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Computed Column: "
+msgstr "Berekende Kolom: "
+
+msgctxt "ComputeColumnWindow|"
+msgid "Select a column"
+msgstr "Selecteer een kolom"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Compute column"
+msgstr "Bereken kolom"
+
+msgctxt "ComputeColumnWindow|"
+msgid "Column computed"
+msgstr "Kolom berekend"
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Computed columns code clear(ed)"
+msgstr "Code berekende kolommen leeg(gemaakt)"
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Computed columns code applied"
+msgstr "Code berekende kolommen toegepast"
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Please enter all arguments - see fields marked in red."
+msgstr "Vul alle argumenten in aub - zie de velden in rood gemarkeerd."
+
+msgctxt "ComputedColumnsConstructor|"
+msgid "Only one formula per computed column allowed."
+msgstr "Slechts één formule per berekende kolom toegestaan."
+
+msgctxt "ColumnsModel|"
+msgid "which can be used in numerical comparisons"
+msgstr "die gebruikt kunnen worden in numerieke vergelijkingen"
+
+msgctxt "ColumnsModel|"
+msgid ""
+"which can only be used in (in)equivalence, greater and lesser than "
+"comparisons"
+msgstr ""
+"die slechts gebruikt kunnen worden in (on)gelijk, groter en kleiner dan "
+"vergelijkingen"
+
+msgctxt "ColumnsModel|"
+msgid "which can only be used in (in)equivalence comparisons"
+msgstr "die slechts gebruikt kunnen worden in (on)gelijk vergelijkingen"
+
+msgctxt "ColumnsModel|"
+msgid "The '"
+msgstr "De '"
+
+msgctxt "ColumnsModel|"
+msgid "'-column "
+msgstr "'-kolom "
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""

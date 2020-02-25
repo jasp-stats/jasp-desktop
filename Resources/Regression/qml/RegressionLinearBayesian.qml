@@ -37,7 +37,7 @@ Form {
 	Group
 	{
 		title: qsTr("Output")
-		columns: 2
+		columns: 1
 
 		CheckBox{ name: "postSummaryTable"; label: qsTr("Posterior summary"); id: postSummaryTable
 			RadioButtonGroup
@@ -46,6 +46,15 @@ Form {
 				RadioButton { value: "allModels";		label: qsTr("Across all models");   checked: true	}
 				RadioButton { value: "matchedModels";	label: qsTr("Across matched models")				}
 			}
+		}
+
+		CheckBox
+		{
+			name: "postSummaryPlot"
+			label: qsTr("Plot of coefficients")
+			id: postSummaryPlot
+			CheckBox { name: "omitIntercept"; label: qsTr("Omit intercept") }
+
 		}
 
 		DropDown
@@ -61,14 +70,7 @@ Form {
 			]
 		}
 
-		CheckBox
-		{
-			name: "postSummaryPlot"
-			label: qsTr("Plot of coefficients")
-			id: postSummaryPlot
-			CheckBox { name: "omitIntercept"; label: qsTr("Omit intercept") }
 
-		}
 
 		CIField
 		{
