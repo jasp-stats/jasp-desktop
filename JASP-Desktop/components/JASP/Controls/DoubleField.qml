@@ -24,6 +24,7 @@ TextField
 {
 	id:									doubleField
 	property double defaultValue:		0
+	property double _prevDefaultValue:	0
 	property alias	doubleValidator:	doubleValidator
 	property bool	negativeValues:		false
 	property double	min:				negativeValues ? -Infinity : 0
@@ -36,4 +37,12 @@ TextField
 					lastValidValue:		defaultValue
 					value:				defaultValue
 					fieldWidth:			jaspTheme.numericFieldWidth
+
+	onDefaultValueChanged:
+	{
+		if (_prevDefaultValue == value)
+			value = defaultValue;
+
+		_prevDefaultValue = defaultValue;
+	}
 }

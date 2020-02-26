@@ -22,18 +22,27 @@ import JASP				1.0
 
 TextField
 {
-					id:				textField
-	property int	defaultValue:	0
-	property bool	negativeValues:	false
-	property int	min:			negativeValues ? -2147483647 : 0 // 2^32 - 1
-	property int	max:			2147483647
-	property alias	inclusive:		intValidator.inclusive
-	property alias	intValidator:	intValidator
+					id:					textField
+	property int	defaultValue:		0
+	property int	_prevDefaultValue:	0
+	property bool	negativeValues:		false
+	property int	min:				negativeValues ? -2147483647 : 0 // 2^32 - 1
+	property int	max:				2147483647
+	property alias	inclusive:			intValidator.inclusive
+	property alias	intValidator:		intValidator
     
-					inputType:		"integer"
-					validator:		JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0 }
-					lastValidValue:	defaultValue;
-					value:			defaultValue
-					cursorShape:	Qt.IBeamCursor
-					fieldWidth:		jaspTheme.numericFieldWidth
+					inputType:			"integer"
+					validator:			JASPDoubleValidator { id: intValidator; bottom: min; top: max; decimals: 0 }
+					lastValidValue:		defaultValue;
+					value:				defaultValue
+					cursorShape:		Qt.IBeamCursor
+					fieldWidth:			jaspTheme.numericFieldWidth
+
+	onDefaultValueChanged:
+	{
+		if (_prevDefaultValue == value)
+			value = defaultValue;
+
+		_prevDefaultValue = defaultValue;
+	}
 }
