@@ -107,22 +107,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   }
 
   if (options$se == "bootstrap") {
-    startProgressbar(options$bootstrapNumber)
-    
-    boot_1      <- lavaan::bootstrapLavaan(medResult, R = 1)
-    bootres     <- matrix(0, options$bootstrapNumber, length(boot_1))
-    bootres[1,] <- boot_1
-    i <- 2L
-    while (i <= options$bootstrapNumber) {
-      boot_i      <- lavaan::bootstrapLavaan(medResult, 1)
-      if (length(boot_i) == 0) next # try again upon failure
-      bootres[i,] <- boot_i
-      progressbarTick()
-      i <- i + 1L
-    }
-    
-    medResult@boot       <- list(coef = bootres)
-    medResult@Options$se <- "bootstrap"
+    medResult <- lavBootstrap(medResult, options$bootstrapNumber)
   }
   
   modelContainer[["model"]] <- createJaspState(medResult)
@@ -458,6 +443,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   se_type <- switch(options$se,
     "bootstrap" = gettext("Delta method"),
     "standard"  = gettext("Delta method"),
+    "default"   = gettext("Delta method"),
     "robust"    = gettext("Robust")
   )
   ci_type <- switch(options$se,
@@ -467,13 +453,26 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
       "bca.simple" = gettext("bias-corrected percentile bootstrap")
     ),
     "standard"  = gettext("normal theory"),
+    "default"   = gettext("normal theory"),
     "robust"    = gettext("robust")
   )
   
-  if (is.null(modelContainer[["model"]][["object"]]))
+  if (is.null(modelContainer[["model"]][["object"]])) {
     return(gettextf("%1$s standard errors, %2$s confidence intervals.", se_type, ci_type))
-  else
-    return(gettextf("%1$s standard errors, %2$s confidence intervals, %3$s estimator.", se_type, ci_type, modelContainer[["model"]][["object"]]@Options$estimator))
+  } else {
+    fit <- modelContainer[["model"]][["object"]]
+    if (options$se == "bootstrap" && nrow(fit@boot[["coef"]]) < options$bootstrapNumber) {
+      return(gettextf(
+        "%1$s standard errors, %2$s confidence intervals, %3$s estimator. NB: Not all bootstrap samples were successful: CI based on %4$.0f samples.",
+        se_type, ci_type, fit@Options$estimator, nrow(fit@boot[["coef"]])
+      ))
+    } else {
+      return(gettextf(
+        "%1$s standard errors, %2$s confidence intervals, %3$s estimator.",
+        se_type, ci_type, fit@Options$estimator
+      ))
+    }
+  }
 }
 
 .medRsquared <- function(modelContainer, options, ready) {
