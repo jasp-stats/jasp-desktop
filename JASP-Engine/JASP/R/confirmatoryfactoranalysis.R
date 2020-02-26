@@ -512,7 +512,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # First-order factor loadings ----
   # Set up table
   jrobject[["fl1"]] <- fl1 <- createJaspTable(title = "Factor loadings")
-  if (!is.null(footnote)) fl1$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
+  if (!is.null(footnote)) fl1$addFootnote(footnote)
 
   fl1$addColumnInfo(name = "lhs",   title = gettext("Factor"),    type = "string", combine = TRUE)
   fl1$addColumnInfo(name = "rhs",   title = gettext("Indicator"), type = "string")
@@ -544,7 +544,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (length(options$secondOrder) > 0) {
     # Set up table
     jrobject[["fl2"]] <- fl2 <- createJaspTable(title = gettext("Second-order factor loadings"))
-    if (!is.null(footnote)) fl2$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
+    if (!is.null(footnote)) fl2$addFootnote(footnote)
 
     fl2$addColumnInfo(name = "lhs",   title = gettext("Factor"),    type = "string", combine = TRUE)
     fl2$addColumnInfo(name = "rhs",   title = gettext("Indicator"), type = "string")
@@ -576,7 +576,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # Factor variances ----
   # Set up table
   jrobject[["fv"]] <- fv <- createJaspTable(gettext("Factor variances"))
-  if (!is.null(footnote)) fv$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
+  if (!is.null(footnote)) fv$addFootnote(footnote)
 
   fv$addColumnInfo(name = "lhs",    title = gettext("Factor"),     type = "string", combine = TRUE)
   fv$addColumnInfo(name = "est",    title = gettext("Estimate"),   type = "number", format  = "sf:4;dp:3")
@@ -605,7 +605,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   if (!options$uncorrelatedFactors & hasMultipleFactorsAtTopLevel) {
     jrobject[["fc"]] <- fc <- createJaspTable(gettext("Factor Covariances"))
-    if (!is.null(footnote)) fc$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
+    if (!is.null(footnote)) fc$addFootnote(footnote)
 
     fc$addColumnInfo(name = "lhs",    title = "",                    type = "string")
     fc$addColumnInfo(name = "op",     title = "",                    type = "string")
@@ -638,7 +638,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # Residual variances ----
   # Set up table
   jrobject[["rv"]] <- rv <- createJaspTable(gettext("Residual variances"))
-  if (!is.null(footnote)) rv$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
+  if (!is.null(footnote)) rv$addFootnote(footnote)
 
   rv$addColumnInfo(name = "lhs",    title = gettext("Indicator"),  type = "string", combine = TRUE)
   rv$addColumnInfo(name = "est",    title = gettext("Estimate"),   type = "number", format  = "sf:4;dp:3")
@@ -668,7 +668,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (length(options$rescov) > 0) {
     rc <- pei[pei$op == "~~" & !pei$lhs %in% facNames & pei$lhs != pei$rhs, colSel[-3]]
     rescov <- createJaspTable(gettext("Residual covariances"))
-    if (!is.null(footnote)) rescov$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
+    if (!is.null(footnote)) rescov$addFootnote(footnote)
     rescov$dependOn(optionsFromObject = jrobject)
 
     rescov$addColumnInfo(name = "lhs",    title = "",                    type = "string")
@@ -703,7 +703,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
     if (options$groupvar != "") {
       jrobject[["Factor Intercepts"]] <- fi <- createJaspTable(title = gettext("Factor Intercepts"))
-      if (!is.null(footnote)) fi$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
+      if (!is.null(footnote)) fi$addFootnote(footnote)
 
       fi$addColumnInfo(name = "lhs",    title = gettext("Factor"),     type = "string", combine = TRUE)
       fi$addColumnInfo(name = "est",    title = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
@@ -729,7 +729,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
     # Manifest variable intercepts
     jrobject[["Intercepts"]] <- vi <- createJaspTable(title = gettext("Intercepts"))
-    if (!is.null(footnote)) vi$addFootnote(footnote, symbol = gettext("<em>Note</em>"))
+    if (!is.null(footnote)) vi$addFootnote(footnote)
 
     vi$addColumnInfo(name = "lhs",    title  = gettext("Indicator"),  type = "string", combine = TRUE)
     vi$addColumnInfo(name = "est",    title  = gettext("Estimate"),   type = "number", format = "sf:4;dp:3")
