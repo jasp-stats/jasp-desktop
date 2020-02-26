@@ -29,6 +29,7 @@ Met de herhaalde metingen ANOVA kan men verschillen tussen gemiddelden analysere
     - Type I: Sequentiele kwadratensom. Het verminderen van fouten wanneer elke factor van het model wordt toegevoegd aan de factoren die al mee worden genomen, hiermee wordt de volgorde van factoren in het model behouden. Het resultaat hangt af van de volgorde waarin de factoren aan het model worden toegevoegd. Wanneer het model meer dan een factor bevat is het belangrijk hierover na te denken. 
     - Type II: Hierarchische/gedeeltelijke sequentiele kwadratensom. Het verminderen van fouten wanneer elke factor wordt toegevoegd aan het model dat alle andere factoren bevat, behalve de factoren waar de factor deel van uitmaakt, bijvoorbeeld interacties die deze factor bevatten. Langsrud (2003) adviseert dit type bij een ANOVA met on gebalanceerde data. 
     - Type III: Gedeeltelijke kwadratensom. Het verminderen van fouten wanneer elke factor wordt toegevoegd aan het model dat alle andere factoren bevat, inclusief interacties met deze factor. Dit type wordt vaak geselecteerd, omdat het rekening houdt met interacties (Langsrud, 2003). Dit is de standaardoptie. 
+- Gebruik multivariaat model voor vervolgtoetsen: Als je deze optie selecteert wordt het multivariate lineaire model gebruikt in plaats van het aov model voor vervolgtoetsen (contrasten, post-hoc toetsen, marginale gemiddelden). Multivariate toetsen passen waarschijnlijk een betere correctie toe voor schendingen van de sphericiteit assumptie. 
 
 ### Assumptie checks
 - Sphericiteit toetsen: Sphericiteit houdt in dat de varianties van de verschillen tussen condities van de herhaalde meting gelijk zijn.
@@ -54,7 +55,7 @@ Voor elke binnen-subject factor kan een specifiek contrast worden geselecteerd d
    
    
 
-### post-hoc Toetsen
+### Post-hoc Toetsen
 Sleep een of meer namen van factoren naar de rechter kolom om een post-hoc test uit te voeren. Er zijn verschillende opties: 
 - effectgrootte: Als je deze optie selecteert wordt de effectgrootte weergegeven (i.e., de grootte van het geobserveerde effect). De gebruikte maat voor de effectgrootte is Cohen's d. De effectgrootte wordt alleen weergegeven voor het post-hoc type `Standaard`.
 - betrouwbaarheidsintervallen: Als je deze optie selecteert wordt er een betrouwbaarheidsinterval voor het gemiddelde verschil berekend. Dit wordt voor welke post-hoc methode gedaan, behalve voor Dunn.  De standaardoptie is een interval van 95%. Dit kan tot het gewenste percentage worden aangepast.

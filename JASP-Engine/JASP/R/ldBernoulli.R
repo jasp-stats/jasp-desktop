@@ -64,8 +64,7 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
     
     # parameter estimates
     mleEstimatesTable  <- .ldEstimatesTable(mleContainer, options, TRUE, TRUE, "methodMLE")
-    mleResults   <- .ldMLEResults(mleContainer, as.numeric(variable) - 1, options, readyFit, options$distNameInR,
-                                  .ldBernoulliMethodMLEStructureResults)
+    mleResults   <- .ldMLEResults(mleContainer, as.numeric(variable) - 1, options, readyFit, options$distNameInR)
     .ldFillBernoulliEstimatesTable(mleEstimatesTable, mleResults, options, readyFit, levels(variable))
     
     # fit assessment
@@ -111,6 +110,8 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
   options$support <- list(min = 0, max = 1)
   options$lowerBound <- c(0)
   options$upperBound <- c(1)
+  
+  options$transformations <- c(prob0 = "1-prob", prob1 = "prob")
   
   options
 }
@@ -174,18 +175,4 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
   table$setData(res)
   
   return()
-}
-
-.ldBernoulliMethodMLEStructureResults <- function(fit, options){
-  if(is.null(fit)) return()
-  
-  transformations <- c(prob0 = "1-prob", prob1 = "prob")
-  
-  res <- sapply(transformations, function(tr) car::deltaMethod(fit$estimate, tr, fit$vcov, level = options$ciIntervalInterval))
-  rownames(res) <- c("estimate", "se", "lower", "upper")
-  res <- t(res)
-  res <- cbind(par = rownames(res), res)
-  res <- as.data.frame(res)
-  
-  return(res)
 }

@@ -181,14 +181,13 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   # Quit analysis on error
   if (inherits(cfaResult[["lav"]], "try-error")) {
-    .quitAnalysis(paste(gettext("The model could not be estimated. Error message:"), "\n\n",
-                         attr(cfaResult[["lav"]], "condition")$message))
+    .quitAnalysis(gettextf("The model could not be estimated. Error message: \n\n %s", attr(cfaResult[["lav"]], "condition")$message))
   }
 
   admissible <- .withWarnings(lavaan:::lav_object_post_check(cfaResult[["lav"]]))
 
   if (!admissible$value) {
-    .quitAnalysis(paste(gettext("The model is not admissible:"), admissible$warnings[[1]]$message))
+    .quitAnalysis(gettextf("The model is not admissible: %s", admissible$warnings[[1]]$message))
   }
 
   if (!cfaResult[["lav"]]@optim$converged) {

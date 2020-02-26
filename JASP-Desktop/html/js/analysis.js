@@ -464,7 +464,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 	},
 
 	noteOptions: function () {
-		var firstOpt = { key: 'all', menuText: 'Add Notes', visible: this.viewNotes.firstNoteNoteBox.visible && this.viewNotes.lastNoteNoteBox.visible };
+		var firstOpt = { key: 'all', visible: this.viewNotes.firstNoteNoteBox.visible && this.viewNotes.lastNoteNoteBox.visible };
 
 		return [firstOpt];
 	},

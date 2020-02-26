@@ -32,11 +32,11 @@ The independent samples t-test allows the user to estimate the effect size and t
 -  Descriptives : Sample size, sample mean, sample standard deviation, standard error of the mean for each group.
 
 #### Missing Values
-- Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the multiple t-tests.
+- Exclude cases per dependent variable: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the multiple t-tests.
 - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all dependent variables. Sample size is therefore constant across the multiple t-tests.
 
 #### Repeatability
-- Set seed: Value used to set the random number generator for exact reproducibility.
+- Set seed: Gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
 
 #### Plots
 - Prior and posterior: Displays the prior and posterior distribution of the effect size under the alternative hypothesis.

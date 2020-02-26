@@ -207,12 +207,12 @@ void OSF::checkErrorMessageOSF(QNetworkReply *reply)
 
 		switch(error)
 		{
-		case QNetworkReply::AuthenticationRequiredError:	err = "Username and/or password are not correct. Please try again.";		break;
-		case QNetworkReply::HostNotFoundError:				err = "OSF service not available. Please check your internet connection.";	break;
-		case QNetworkReply::TimeoutError:					err = "Connection Timeout error. Please check your internet connection.";	break;
+		case QNetworkReply::AuthenticationRequiredError:	err = tr("Username and/or password are not correct. Please try again.");		break;
+		case QNetworkReply::HostNotFoundError:				err = tr("OSF service not available. Please check your internet connection.");	break;
+		case QNetworkReply::TimeoutError:					err = tr("Connection Timeout error. Please check your internet connection.");	break;
 		}
 
-		MessageForwarder::showWarning("OSF Error", err);
+		MessageForwarder::showWarning(tr("OSF Error"), err);
 	}
 }
 
@@ -278,9 +278,9 @@ void OSF::saveClicked()
 
 	if (currentNodeData.canCreateFiles == false)
 	{
-		if (currentNodeData.level == 0)			MessageForwarder::showWarning("Projects",			"Files cannot be added to the projects list.\n\nTo add a new project please use the online OSF services.");
-		else if (currentNodeData.level == 1)	MessageForwarder::showWarning("Data Providers",		"Files cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services.");
-		else									MessageForwarder::showWarning(currentNodeData.name, "Files cannot be added to '" + currentNodeData.name + "' for an unknown reason.");
+		if (currentNodeData.level == 0)			MessageForwarder::showWarning(tr("Projects"),			tr("Files cannot be added to the projects list.\n\nTo add a new project please use the online OSF services."));
+		else if (currentNodeData.level == 1)	MessageForwarder::showWarning(tr("Data Providers"),		tr("Files cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services."));
+		else									MessageForwarder::showWarning(currentNodeData.name,		tr("Files cannot be added to '%1' for an unknown reason.").arg(currentNodeData.name));
 		return;
 	}
 
@@ -316,8 +316,8 @@ void OSF::openSaveFile(const QString &nodePath, const QString &filename)
 	}
 	else
 	{
-		MessageForwarder::showWarning("File Types", event->getLastError());
-		event->setComplete(false, "Failed to open file from OSF");
+		MessageForwarder::showWarning(tr("File Types"), event->getLastError());
+		event->setComplete(false, tr("Failed to open file from OSF"));
 		return;
 	}
 
@@ -367,7 +367,7 @@ void OSF::newFolderCreated()
 	OnlineDataNode *node = qobject_cast<OnlineDataNode *>(sender());
 
 	if (node->error())
-		MessageForwarder::showWarning("", "An error occured and the folder could not be created.");
+		MessageForwarder::showWarning("", tr("An error occured and the folder could not be created."));
 	else
 		_osfFileSystem->refresh();
 
@@ -381,15 +381,15 @@ void OSF::newFolderClicked()
 
 	if (currentNodeData.canCreateFolders == false)
 	{
-		if (currentNodeData.level == 0)			MessageForwarder::showWarning("Projects",			"A new folder cannot be added to the projects list.\n\nTo add a new project please use the online OSF services.");
-		else if (currentNodeData.level == 1)	MessageForwarder::showWarning("Data Providers",		"A new folder cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services.");
-		else									MessageForwarder::showWarning(currentNodeData.name, "A new folder cannot be added to '" + currentNodeData.name + "' for an unknown reason.");
+		if (currentNodeData.level == 0)			MessageForwarder::showWarning(tr("Projects"),			tr("A new folder cannot be added to the projects list.\n\nTo add a new project please use the online OSF services."));
+		else if (currentNodeData.level == 1)	MessageForwarder::showWarning(tr("Data Providers"),		tr("A new folder cannot be added to a projects data providers list.\n\nTo add a new data provider (eg. google drive) please use the online OSF services."));
+		else									MessageForwarder::showWarning(currentNodeData.name,		tr("A new folder cannot be added to '%1' for an unknown reason.").arg(currentNodeData.name));
 
 		return;
 	}
 
 	QString name = savefoldername();
-	bool ok = checkEntryName(name, "Folder", false);
+	bool ok = checkEntryName(name, tr("Folder"), false);
 
 	if (ok)
 	{
@@ -454,7 +454,7 @@ void OSF::loginRequested(const QString &username, const QString &password)
 
 	if  (password == "" || username =="" )
 	{
-		MessageForwarder::showWarning("Login", "User or password cannot be empty.");
+		MessageForwarder::showWarning(tr("Login"), tr("User or password cannot be empty."));
 		return;
 	}
 
@@ -504,7 +504,7 @@ bool OSF::checkEntryName(QString name, QString entryTitle, bool allowFullStop)
 {
 	if (name.trimmed() == "")
 	{
-		MessageForwarder::showWarning("Entry name cannot be empty.");
+		MessageForwarder::showWarning(tr("Entry name cannot be empty."));
 		return false;
 	}
 	else
@@ -512,7 +512,7 @@ bool OSF::checkEntryName(QString name, QString entryTitle, bool allowFullStop)
 		QRegularExpression r("[^\\w\\s" + (QString)(allowFullStop ? "\\.-" : "-") + "]");
 		if (r.match(name).hasMatch())
 		{
-			MessageForwarder::showWarning(entryTitle + " name can only contain the following characters A-Z a-z 0-9 _ " + (allowFullStop ? ". -" : "-"));
+			MessageForwarder::showWarning(tr("%1 name can only contain the following characters A-Z a-z 0-9 _ %2").arg(entryTitle).arg((allowFullStop ? ". -" : "-")));
 			return false;
 		}
 	}

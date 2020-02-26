@@ -67,8 +67,8 @@ Compares each model against the model selected.
 - Sampling method: Indicates the sampling method to be used. It is recommended to use *BAS* when the model space can be enumerated.
   - BAS: Uses Bayesian Adaptive Sampling (without replacement). These can be updated based on estimates of the marginal inclusion. *No. models* indicates the number of models to sample without replacement. Setting the value to 0 implies the analysis will attempt to enumerate all models.
   - MCMC: Samples with replacement via a MCMC algorithm that combines the birth/death random walk with a random swap move to interchange a variable in the model. *No. samples* indicates the number of MCMC samples to draw. Setting the value to 0 implies the number of MCMC iterations is equal to 10 times the number of models. Sampling stops when min(number of models, MCMC iterations) is reached.
-- Repeatability
-  - Set seed: Value used to set the random number generator for exact reproducibility.
+- Repeatability:
+  - Set seed: Gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
 
 ### Output
 ---

@@ -63,10 +63,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
         return(TRUE)
       }, TRUE)
       if (!all(admissible))
-        paste(gettext("Not all exogenous variables are admissible."),
-              gettext("Inadmissible exogenous variables:"),
-              paste(exo[!admissible], collapse = ","),
-              gettext(". Only binary or continuous exogenous variables allowed."))
+        gettextf("Not all exogenous variables are admissible. Inadmissible exogenous variables: %s. Only binary or continuous exogenous variables allowed.", paste(exo[!admissible], collapse = ", "))
     },
     
     checkEndogenous = function() {
@@ -79,10 +76,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
         return(TRUE)
       }, TRUE)
       if (!all(admissible))
-        paste(gettext("Not all endogenous variables are admissible."),
-              gettext("Inadmissible endogenous variables:"),
-              paste(endo[!admissible], collapse = ","),
-              gettext(". Only scale or ordinal endogenous variables allowed."))
+        gettextf("Not all endogenous variables are admissible. Inadmissible endogenous variables: %s. Only scale or ordinal endogenous variables allowed.", paste(endo[!admissible], collapse = ", "))
     }
     
   )
@@ -108,7 +102,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   ))
   
   if (inherits(medResult, "try-error")) {
-    errmsg <- paste(gettext("Estimation failed\nMessage:\n"), attr(medResult, "condition")$message)
+    errmsg <- gettextf("Estimation failed\nMessage:\n%s", attr(medResult, "condition")$message)
     modelContainer$setError(.decodeVarsInMessage(names(dataset), errmsg))
   }
 

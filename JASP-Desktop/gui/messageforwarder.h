@@ -22,13 +22,13 @@ public:
 	static void showWarning(std::string message)						{ showWarning(QString::fromStdString(message));								}
 	static void showWarning(const char * message)						{ showWarning(QString(message));											}
 
-	static bool showYesNo(QString title,		QString message,		QString YesButtonText = "Yes",		QString NoButtonText = "No");
-	static bool showYesNo(std::string title,	std::string message,	std::string YesButtonText = "Yes",	std::string NoButtonText = "No")	{ return showYesNo(QString::fromStdString(title), QString::fromStdString(message), QString::fromStdString(YesButtonText), QString::fromStdString(NoButtonText)); }
-	static bool showYesNo(const char * title,	const char * message,	const char * YesButtonText = "Yes",	const char * NoButtonText = "No")	{ return showYesNo(QString(title), QString(message), QString(YesButtonText), QString(NoButtonText)); }
+	static bool showYesNo(QString title,		QString message,		QString YesButtonText		= "",	QString NoButtonText = "");
+	static bool showYesNo(std::string title,	std::string message,	std::string YesButtonText	= "",	std::string NoButtonText = "")	{ return showYesNo(QString::fromStdString(title), QString::fromStdString(message), QString::fromStdString(YesButtonText), QString::fromStdString(NoButtonText)); }
+	static bool showYesNo(const char * title,	const char * message,	const char * YesButtonText	= "",	const char * NoButtonText = "")	{ return showYesNo(QString(title), QString(message), QString(YesButtonText), QString(NoButtonText)); }
 
 
 	static DialogResponse showSaveDiscardCancel(QString title, QString message);
-	static DialogResponse showYesNoCancel(QString title, QString message, QString YesButtonText = "Yes", QString NoButtonText = "No", QString CancelButtonText = "Cancel");
+	static DialogResponse showYesNoCancel(QString title, QString message, QString YesButtonText = "", QString NoButtonText = "", QString CancelButtonText = "");
 
 	static QString browseOpenFile(QString caption, QString browsePath, QString filter);
 	static QString browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedFilter = nullptr);

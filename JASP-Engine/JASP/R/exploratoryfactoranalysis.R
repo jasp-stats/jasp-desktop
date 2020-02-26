@@ -82,18 +82,21 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
         return(gettext("Data not valid: variance is zero in each row"))
       }
     },
-    # check whether all variables correlate with each other
+    # Check for correlation anomalies
     function() {
-      allCorr <- 0
-      nVar <- ncol(dataset)
-      for (i in 1:(nVar-1)) {
-        for (j in (i+1):nVar) {
-          thisCor <- cor(dataset[,i],dataset[,j])
-          if(!is.na(thisCor) && thisCor == 1) allCorr <- allCorr + 1
-        }
+      P <- ncol(dataset)
+      
+      # check whether a variable has too many missing values to compute the correlations
+      Np <- colSums(!is.na(dataset))
+      error_variables <- .unv(names(Np)[Np < P])
+      if (length(error_variables) > 0) {
+        return(gettextf("Data not valid: too many missing values in variable(s) %s.",
+                        paste(error_variables, collapse = ", ")))
       }
-      if(allCorr == nVar*(nVar-1)/2){
-        return(gettext("Data not valid: all variables correlate with each other"))
+      
+      S <- cor(dataset)
+      if (all(S == 1)) {
+        return(gettext("Data not valid: all variables are collinear"))
       }
     }
   )
@@ -130,7 +133,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   )
 
   if (inherits(efaResult, "try-error")) {
-    errmsg <- paste(gettext("Estimation failed. Message:"), attr(efaResult, "condition")$message)
+    errmsg <- gettextf("Estimation failed. \nInternal error message: %s", attr(efaResult, "condition")$message)
     modelContainer$setError(.decodeVarsInMessage(names(dataset), errmsg))
   }
 
@@ -235,14 +238,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   if (options$rotationMethod == "orthogonal" && options$orthogonalSelector == "none") {
     loatab$addFootnote(message = gettext("No rotation method applied."), symbol = gettext("<em>Note.</em>"))
   } else {
-    loatab$addFootnote(
-      message = paste0(
-        gettext("Applied rotation method is "),
-        ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector),
-        "."
-      ),
-      symbol = gettext("<em>Note.</em>")
-    )
+    loatab$addFootnote(message = gettextf("Applied rotation method is %s.", ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector)))
   }
 
   loads <- loadings(efaResults)
@@ -251,10 +247,10 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   for (i in 1:ncol(loads)) {
     # fix weird "all true" issue
     if (all(abs(loads[, i]) < options$highlightText)) {
-      loatab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "string")
+      loatab$addColumnInfo(name = paste0("c", i), title = gettextf("Factor %i", i), type = "string")
       loatab[[paste0("c", i)]] <- rep("", nrow(loads))
     } else {
-      loatab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "number", format = "dp:3")
+      loatab$addColumnInfo(name = paste0("c", i), title = gettextf("Factor %i", i), type = "number", format = "dp:3")
       loatab[[paste0("c", i)]] <- ifelse(abs(loads[, i]) < options$highlightText, NA, loads[ ,i])
     }
   }
@@ -279,12 +275,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
     strtab$addFootnote(message = gettext("No rotation method applied."), symbol = gettext("<em>Note.</em>"))
   } else {
     strtab$addFootnote(
-      message = paste0(
-        gettext("Applied rotation method is "),
-        ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector),
-        "."
-      ),
-      symbol = gettext("<em>Note.</em>")
+      message = gettextf("Applied rotation method is %s.", ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector))
     )
   }
 
@@ -294,10 +285,10 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   for (i in 1:ncol(loads)) {
     # fix weird "all true" issue
     if (all(abs(loads[, i]) < options$highlightText)) {
-      strtab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "string")
+      strtab$addColumnInfo(name = paste0("c", i), title = gettextf("Factor %i", i), type = "string")
       strtab[[paste0("c", i)]] <- rep("", nrow(loads))
     } else {
-      strtab$addColumnInfo(name = paste0("c", i), title = paste(gettext("Factor"), i), type = "number", format = "dp:3")
+      strtab$addColumnInfo(name = paste0("c", i), title = gettextf("Factor %i", i), type = "number", format = "dp:3")
       strtab[[paste0("c", i)]] <- ifelse(abs(loads[, i]) < options$highlightText, NA, loads[ ,i])
     }
   }
@@ -389,7 +380,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 
   pa <- try(psych::fa.parallel(dataset, plot = FALSE))
   if (inherits(pa, "try-error")) {
-    errmsg <- paste(gettext("Screeplot not available. Message:"), attr(pa, "condition")$message)
+    errmsg <- gettextf("Screeplot not available. \nInternal error message: %s", attr(pa, "condition")$message)
     scree$setError(.decodeVarsInMessage(names(dataset), errmsg))
     return()
   }

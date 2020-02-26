@@ -36,16 +36,16 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
 .ttestOneSampleMainTable <- function(jaspResults, dataset, options, ready, type) {
   if (!is.null(jaspResults[["ttest"]])) 
     return()
+  
   optionsList <- .ttestOptionsList(options, type)
+  
   # Create table
   ttest <- createJaspTable(title = gettext("One Sample T-Test"))
-  dependList <- c("effectSize", "effSizeConfidenceIntervalCheckbox", "variables",
-                  "effSizeConfidenceIntervalPercent", "students", "mannWhitneyU",
-                  "meanDifference", "meanDiffConfidenceIntervalCheckbox", "stddev",
-                  "meanDiffConfidenceIntervalPercent", "hypothesis", 
-                  "VovkSellkeMPR", "missingValues")
-  oneSampleList   <- c("zTest", "testValue")
-  ttest$dependOn(c(dependList, oneSampleList))
+  ttest$dependOn(c("effectSize", "effSizeConfidenceIntervalCheckbox", "variables",
+                   "effSizeConfidenceIntervalPercent", "students", "mannWhitneyU",
+                   "meanDifference", "meanDiffConfidenceIntervalCheckbox", "stddev",
+                   "meanDiffConfidenceIntervalPercent", "hypothesis", 
+                   "VovkSellkeMPR", "missingValues", "zTest", "testValue"))
   ttest$showSpecifiedColumnsOnly <- TRUE
   ttest$position <- 1
   
@@ -75,83 +75,73 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
   }
   
   ttest$addColumnInfo(name = "v",     type = "string", title = "")
+  
   ## if the user wants more than one test, add a column called "Test"
   if (sum(optionsList$allTests) > 1) 
     ttest$addColumnInfo(name = "test", type = "string", title = gettext("Test"))
+  
   ttest$addColumnInfo(name = testStat, type = "number", title = testStatName)
-  if(optionsList$wantsStudents)
+  
+  if (optionsList$wantsStudents)
     ttest$addColumnInfo(name = "df", type = "integer", title = gettext("df"))
+  
   ttest$addColumnInfo(name = "p", type = "pvalue", title = gettext("p"))
   
   .ttestVovkSellke(ttest, options)
   
+  if (optionsList$wantsStudents && optionsList$wantsZtest)
+    testInNote <- gettext("Student t-test and Z-test")
+  else if (optionsList$wantsStudents)
+    testInNote <- gettext("Student t-test")
+  else if (optionsList$wantsZtest)
+    testInNote <- gettext("Z-test")
+  
   if (optionsList$wantsDifference) {
     ttest$addColumnInfo(name = "m", title = nameOfLocationParameter, type = "number")
     
-    # preparing footnote - paste if selected
-    textDifference <- ""
-    if(optionsList$wantsStudents)
-      textDifference <- gettext("For the Student t-test, location parameter is given by mean difference <em>d</em>")
-    if(optionsList$wantsWilcox){
-      if(optionsList$wantsStudents)
-        textDifference <- paste0(textDifference, gettext("; for the Wilcoxon test, location parameter is given by the Hodges-Lehmann estimate"))
-      else
-        textDifference <- gettext("For the Wilcoxon test, location parameter is given by the Hodges-Lehmann estimate")
+    if (optionsList$wantsStudents || optionsList$wantsZtest || optionsList$wantsWilcox) {
+      tzNote <- wNote <- NULL
+      
+      if (optionsList$wantsStudents || optionsList$wantsZtest)
+        tzNote <- gettextf("For the %s, location parameter is given by mean difference <em>d</em>.", testInNote)
+      
+      if (optionsList$wantsWilcox)
+        wNote <- gettext("For the Wilcoxon test, location parameter is given by the Hodges-Lehmann estimate.")
+      
+      ttest$addFootnote(paste(tzNote, wNote))
     }
-    if(optionsList$wantsZtest){
-      if(optionsList$onlyTest)
-        textDifference <- gettext("For the Z-test, location parameter is given by mean difference <em>d</em>")
-      else
-        textDifference <- paste0(textDifference,  gettext("; for the Z-test, location parameter is given by mean difference <em>d</em>"))
-    }
-    textDifference <- paste0(textDifference, ".")
-    ttest$addFootnote(textDifference)
   }
   
   if (optionsList$wantsConfidenceMeanDiff) {
-    interval <- 100 * optionsList$percentConfidenceMeanDiff
-    title <- gettextf("%1$s%% CI for %2$s", interval, nameOfLocationParameter)
-    ttest$addColumnInfo(name = "lowerCIlocationParameter", type = "number",
-                        title = gettext("Lower"), overtitle = title)
-    ttest$addColumnInfo(name = "upperCIlocationParameter", type = "number",
-                        title = gettext("Upper"), overtitle = title)
+    title <- gettextf("%1$s%% CI for %2$s", 100 * optionsList$percentConfidenceMeanDiff, nameOfLocationParameter)
+    ttest$addColumnInfo(name = "lowerCIlocationParameter", type = "number", title = gettext("Lower"), overtitle = title)
+    ttest$addColumnInfo(name = "upperCIlocationParameter", type = "number", title = gettext("Upper"), overtitle = title)
   }
   
   if (optionsList$wantsEffect) {
     ttest$addColumnInfo(name = "d", title = nameOfEffectSize, type = "number")
     
-    # preparing footnote - paste if selected
-    textEffect <- ""
-    if(optionsList$wantsStudents)
-      textEffect <- gettext("For the Student t-test, effect size is given by Cohen's <em>d</em>")
-    
-    if(optionsList$wantsWilcox){
-      if(optionsList$wantsStudents)
-        textEffect <- paste0(textEffect, gettext("; for the Wilcoxon test, effect size is given by the matched rank biserial correlation"))
-      else
-        textEffect <- gettext("For the Wilcoxon test, effect size is given by the matched rank biserial correlation")
+    if (optionsList$wantsStudents || optionsList$wantsWilcox || optionsList$wantsZtest) {
+      tNote <- wNote <- zNote <- NULL
+      
+      if (optionsList$wantsStudents)
+        tNote <- gettext("For the Student t-test, effect size is given by Cohen's <em>d</em>.")
+      
+      if (optionsList$wantsWilcox)
+        wNote <- gettext("For the Wilcoxon test, effect size is given by the matched rank biserial correlation.")
+      
+      if (optionsList$wantsZtest)
+        zNote <- gettext("For the Z test, effect size is given by Cohen's <em>d</em> (based on the provided population standard deviation).")
+      
+      ttest$addFootnote(paste(tNote, wNote, zNote))
     }
-    
-    if(optionsList$wantsZtest){
-      if(optionsList$onlyTest)
-        textEffect <- gettext("For the Z test, effect size is given by Cohen's <em>d</em> (based on the provided population standard deviation)")
-      else
-        textEffect <- paste0(textEffect, gettext("; for the Z test, effect size is given by Cohen's <em>d</em> (based on the provided population standard deviation)"))
-    }
-    
-    textEffect <- paste0(textEffect, ".")
-    ttest$addFootnote(textEffect)
   }
   
   if (optionsList$wantsConfidenceEffSize) {
-    interval <- 100 * optionsList$percentConfidenceEffSize
-    title <- gettextf("%1$s%% CI for %2$s", interval, nameOfEffectSize)
-    ttest$addColumnInfo(name = "lowerCIeffectSize", type = "number",
-                        title = gettext("Lower"), overtitle = title)
-    ttest$addColumnInfo(name = "upperCIeffectSize", type = "number",
-                        title = gettext("Upper"), overtitle = title)
+    title <- gettextf("%1$s%% CI for %2$s", 100 * optionsList$percentConfidenceEffSize, nameOfEffectSize)
+    ttest$addColumnInfo(name = "lowerCIeffectSize", type = "number", title = gettext("Lower"), overtitle = title)
+    ttest$addColumnInfo(name = "upperCIeffectSize", type = "number", title = gettext("Upper"), overtitle = title)
   }
-  
   
   ### check the directionality
   if (options$hypothesis == "greaterThanTestValue") {
@@ -165,10 +155,12 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
     direction <- "two.sided"
   }
   
-  if (options$testValue != 0 && (optionsList$wantsStudents || optionsList$wantsWilcox)) {
+  if ((options$testValue != 0 || options$hypothesis != "notEqualToTestValue") && (optionsList$wantsStudents || optionsList$wantsWilcox || optionsList$wantsZtest)) {
     tMessage <- wMessage <- NULL
-    if (optionsList$wantsStudents)
-      tMessage <- gettextf("For the Student t-test, the alternative hypothesis specifies that the mean is %1$s %2$s%3$s", directionFootnote, options$testValue, ngettext(1 + optionsList$wantsWilcox, ".", ";"))
+
+    if (optionsList$wantsStudents || optionsList$wantsZtest)
+      tMessage <- gettextf("For the %1$s, the alternative hypothesis specifies that the mean is %2$s %3$s.", testInNote, directionFootnote, options$testValue)
+    
     if (optionsList$wantsWilcox)
       wMessage <- gettextf("For the Wilcoxon test, the alternative hypothesis specifies that the median is %1$s %2$s.", directionFootnote, options$testValue)
     
@@ -176,8 +168,11 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
   }
   
   jaspResults[["ttest"]] <- ttest
-  res <- try(.ttestOneSampleMainFill(jaspResults, dataset, options, ready, testStat, optionsList))
-  .ttestSetError(res, ttest)
+  
+  if (ready) {
+    res <- try(.ttestOneSampleMainFill(jaspResults, dataset, options, testStat, optionsList))
+    .ttestSetError(res, ttest)
+  }
 }
 
 .ttestOneSampleNormalTable <- function(jaspResults, dataset, options, ready, type) {
@@ -205,14 +200,12 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
   .ttestSetError(res, ttestNormalTable)
 }
 
-.ttestOneSampleMainFill <-function(jaspResults, dataset, options, ready, testStat, optionsList) {
+.ttestOneSampleMainFill <-function(jaspResults, dataset, options, testStat, optionsList) {
   direction <- switch(options$hypothesis,
                    "notEqualToTestValue"  ="two.sided",
                    "greaterThanTestValue" ="greater",
                    "lessThanTestValue"    ="less")
-  
-  if(!ready)
-    return()
+
   variables <- options$variables
   if (length(variables) == 0)  
     variables = "."

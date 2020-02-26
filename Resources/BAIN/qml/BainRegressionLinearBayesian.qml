@@ -80,7 +80,7 @@ Form
 		text: qsTr("Model Constraints")
 		columns: 1
 
-		Text { text: "Place each hypothesis on a new line. For example:\n\nage = length = weight\nage < length < weight,\n\nwhere age, length and weight are the names of the predictors.\nRead the help file for further instructions." }
+		Text { text: qsTr("Place each hypothesis on a new line. For example:\n\nage = length = weight\nage < length < weight,\n\nwhere age, length and weight are the names of the predictors.\nRead the help file for further instructions.") }
 
 		TextArea
 		{

@@ -44,7 +44,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 
   ### ROBUSTNESS PLOT          ###
   if (options$plotRobustness)
-    .abTestPlotRobustness(jaspResults, ab_obj, ready, position = 5)
+    .abTestPlotRobustness(jaspResults, ab_obj, options, ready, position = 5)
 
   ### PRIOR PLOT               ###
   if (options$plotPriorOnly)
@@ -194,18 +194,18 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
 
 
 .calcModel.abTest <- function(jaspResults, dataset, options, ready) {
-  
+
   if (!is.null(jaspResults[["model"]]))
     return(jaspResults[["model"]]$object)
-  
+
   # we copy dependencies from this state object in a few places, so it must always exist
   jaspResults[["model"]] <- createJaspState()
   jaspResults[["model"]]$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "orEqualTo1Prob",
                                     "orLessThan1Prob", "orGreaterThan1Prob", "orNotEqualTo1Prob", "numSamples", "setSeed", "seed"))
-  
+
   if (!ready)
     return(NULL)
-  
+
   prior_par <- list(mu_psi = options$normal_mu, sigma_psi = options$normal_sigma, mu_beta = 0, sigma_beta = 1)
 
   # Normalize prior probabilities
@@ -277,7 +277,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   abTestPriorAndPosteriorPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "numSamples", "plotPosteriorType", "plotPriorAndPosterior",
                                          "setSeed", "seed"))
   abTestPriorAndPosteriorPlot$position <- position
-  
+
   jaspResults[["abTestPriorAndPosteriorPlot"]] <- abTestPriorAndPosteriorPlot
 
   if (!ready)
@@ -315,7 +315,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   abTestSequentialPlot <- createJaspPlot(title = gettext("Sequential Analysis"),  width = 530, height = 400)
   abTestSequentialPlot$dependOn(options = "plotSequentialAnalysis", optionsFromObject = jaspResults[["model"]])
   abTestSequentialPlot$position <- position
-  
+
   jaspResults[["abTestSequentialPlot"]] <- abTestSequentialPlot
 
   if (!ready)
@@ -336,27 +336,39 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   return (plotFunc)
 }
 
-.abTestPlotRobustness <- function(jaspResults, ab_obj, ready, position) {
+
+.abTestPlotRobustness <- function(jaspResults, ab_obj, options, ready, position) {
 
   abTestRobustnessPlot <- createJaspPlot(title = gettext("Bayes Factor Robustness Check"),  width = 530, height = 400)
-  abTestRobustnessPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "numSamples", "plotRobustness", "setSeed", "seed"))
+  abTestRobustnessPlot$dependOn(c("n1", "y1", "n2", "y2", "normal_mu", "normal_sigma", "mu_stepsize", "sigma_stepsize", "mu_stepsize_lower", "mu_stepsize_upper", "sigma_stepsize_lower", "sigma_stepsize_upper", "plotRobustnessBFType", "numSamples", "plotRobustness", "setSeed", "seed"))
   abTestRobustnessPlot$position <- position
-  
+
   jaspResults[["abTestRobustnessPlot"]] <- abTestRobustnessPlot
 
   if (!ready)
     return()
 
-  abTestRobustnessPlot$plotObject <- .plotRobustness.abTest(ab_obj)
+  abTestRobustnessPlot$plotObject <- .plotRobustness.abTest(ab_obj, options)
 }
 
 
-.plotRobustness.abTest <- function(ab_obj) {
+.plotRobustness.abTest <- function(ab_obj, options) {
   # Args:
   #   ab_obj: ab test object
 
+  mu_range    = c(options$mu_stepsize_lower,    options$mu_stepsize_upper)
+  sigma_range = c(options$sigma_stepsize_lower, options$sigma_stepsize_upper)
+
   plotFunc <- function() {
-      abtest::plot_robustness(x = ab_obj, mu_steps = 5, sigma_steps = 5)
+
+    abtest::plot_robustness(
+      x           = ab_obj,
+      mu_steps    = options$mu_stepsize,
+      sigma_steps = options$sigma_stepsize,
+      mu_range    = mu_range,
+      sigma_range = sigma_range,
+      bftype      = options$plotRobustnessBFType
+    )
   }
 
   return (plotFunc)
@@ -368,7 +380,7 @@ ABTestBayesian <- function(jaspResults, dataset, options, ...) {
   abTestPriorPlot <- createJaspPlot(title = gettext("Prior"),  width = 530, height = 400)
   abTestPriorPlot$dependOn(c("normal_mu", "normal_sigma", "plotPriorType", "plotPriorOnly"))
   abTestPriorPlot$position <- position
-  
+
   jaspResults[["abTestPriorPlot"]] <- abTestPriorPlot
 
   abTestPriorPlot$plotObject <- .plotPrior.abTest(options)

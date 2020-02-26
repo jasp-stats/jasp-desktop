@@ -21,6 +21,7 @@
 #include "utilities/settings.h"
 #include "processinfo.h"
 #include "modules/ribbonmodel.h"
+#include "analysisform.h"
 
 #include <QFile>
 #include <QTimer>
@@ -186,6 +187,9 @@ void Analyses::clear()
 {
 	setCurrentAnalysisIndex(-1);
 	beginResetModel();
+	_resultsMeta = Json::nullValue;
+	_allUserData = Json::nullValue;
+
 	for (auto & idAnalysis : _analysisMap)
 	{
 		Analysis* analysis = idAnalysis.second;
@@ -243,12 +247,16 @@ void Analyses::_analysisQMLFileChanged(Analysis *analysis)
 
 Json::Value Analyses::asJson() const
 {
-	Json::Value analysesDataList = Json::arrayValue;
+	Json::Value analysesJson		= Json::objectValue,
+				analysesDataList	= Json::arrayValue;;
 
 	for(auto idAnalysis : _analysisMap)
 			analysesDataList.append(idAnalysis.second->asJSON());
 
-	return analysesDataList;
+	analysesJson["analyses"]	= analysesDataList;
+	analysesJson["meta"]		= resultsMeta();
+
+	return analysesJson;
 }
 
 
@@ -702,6 +710,27 @@ void Analyses::analysisTitleChangedHandler(string moduleName, string oldTitle, s
 	{
 		if (a->module() == moduleName && a->title() == oldTitle)
 			a->setTitle(newTitle);
-
 	});
+}
+
+void Analyses::languageChangedHandler()
+{
+	refreshAllAnalyses();
+	applyToAll([&](Analysis * a)
+	{
+		emit a->form()->languageChanged();
+	});
+
+	emit setResultsMeta(tq(_resultsMeta.toStyledString()));
+}
+
+void Analyses::resultsMetaChanged(QString json)
+{
+	Json::Reader().parse(fq(json), _resultsMeta);
+}
+
+void Analyses::allUserDataChanged(QString json)
+{
+	Json::Reader().parse(fq(json), _allUserData);
+	setAnalysesUserData(_allUserData);
 }

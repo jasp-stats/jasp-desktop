@@ -37,7 +37,7 @@ K-naaste buren is een regressiemethode die lijkt op het *k* aantal voorspellende
 - Gewichten: Stel het gewichtsschema voor de naaste buren in. De standaardoptie, rectangular,  geeft de standaard knn, terwijl de andere opties het algoritme uitbreiden door de naaste buren af te wegen. Zie ook het kknn package.
 - Afstand: De afstandsmetriek om de gelijkheid tussen naaste buren te bepalen. Kan met de Euclidean- of Manhattan afstand.
 - Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
-- Set seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
+- Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
 
 #### Aantal Naaste Buren
 - Vast: Laat je een eigen gespecificeerd aantal naaste buren gebruiken. 

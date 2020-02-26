@@ -93,11 +93,8 @@ void BoundQMLListViewMeasuresCells::setUp()
 
 void BoundQMLListViewMeasuresCells::modelChangedHandler()
 {
-	const QList<QString>& variables = _measuresCellsModel->variables();
-	vector<string> terms;
-	for (const QString& variable : variables)
-		terms.push_back(variable.toStdString());
+	const Terms& terms = _measuresCellsModel->terms();
 	
 	if (_boundTo)
-		_boundTo->setValue(terms);
+		_boundTo->setValue(terms.asVector());
 }

@@ -151,10 +151,12 @@ void Analysis::remove()
 
 void Analysis::setResults(const Json::Value & results, const Json::Value & progress)
 {
-	_results = results;
-	_progress = progress;
+	_results	= results;
+	_progress	= progress;
+
 	if (_analysisForm)
 		_analysisForm->clearFormErrors();
+
 	emit resultsChangedSignal(this);
 
 	processResultsForDependenciesToBeShown();
@@ -246,7 +248,7 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 						_analysisForm	= form;
 	if(!_isDuplicate)	_status			= isNewAnalysis ? Empty : Complete;
 	
-	connect(Analyses::analyses(), &Analyses::dataSetChanged,			_analysisForm, &AnalysisForm::dataSetChangedHandler);
+	connect(Analyses::analyses(), &Analyses::dataSetChanged,		_analysisForm, &AnalysisForm::dataSetChangedHandler);
 	connect(Analyses::analyses(), &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
 }
 
@@ -310,6 +312,8 @@ Json::Value Analysis::asJSON() const
 	if(_moduleData != nullptr)
 		analysisAsJson["dynamicModule"] = _moduleData->asJsonForJaspFile();
 
+	//Log::log() << "Analysis::asJSON():\n" << analysisAsJson.toStyledString() << std::endl;
+
 	return analysisAsJson;
 }
 
@@ -365,24 +369,6 @@ void Analysis::requestComputedColumnDestructionHandler(std::string columnName)
 
 	if (form())
 		form()->removeOwnComputedColumn(tq(columnName));
-}
-
-
-int Analysis::callback(Json::Value results)
-{
-	if (_status != Empty && _status != Aborted)
-	{
-		if (results != Json::nullValue)
-		{
-			_results = results;
-			resultsChangedSignal(this);
-		}
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
 }
 
 performType Analysis::desiredPerformTypeFromAnalysisStatus() const
@@ -556,7 +542,7 @@ bool Analysis::processResultsForDependenciesToBeShownMetaTraverser(const Json::V
 void Analysis::processResultsForDependenciesToBeShown()
 {
 	if(!_useJaspResults && _showDepsName != "")
-		MessageForwarder::showWarning("Old-school analysis doesn't use dependencies", "You have tried to show the dependencies of an analysis that has not been rewritten to jaspResults, and seeing as how these older analyses do use dependencies there is nothing to show you...");
+		MessageForwarder::showWarning(tr("Old-school analysis doesn't use dependencies"), tr("You have tried to show the dependencies of an analysis that has not been rewritten to jaspResults, and seeing as how these older analyses do use dependencies there is nothing to show you..."));
 
 	if(!_results.isMember(".meta") || !_analysisForm)
 		return;
@@ -576,7 +562,7 @@ Json::Value Analysis::editOptionsOfPlot(const std::string & uniqueName)
 	Json::Value editOptions = Json::nullValue;
 
 	if(!_editOptionsOfPlot(_results, uniqueName, editOptions))
-		MessageForwarder::showWarning("Could not find edit options of plot " + uniqueName + " so plot editing will not work...");
+		MessageForwarder::showWarning(tr("Could not find edit options of plot %1 so plot editing will not work...").arg(tq(uniqueName)));
 
 	return editOptions;
 }
@@ -610,7 +596,7 @@ bool Analysis::_editOptionsOfPlot(const Json::Value & results, const std::string
 void Analysis::setEditOptionsOfPlot(const std::string & uniqueName, const Json::Value & editOptions)
 {
 	if(!_setEditOptionsOfPlot(_results, uniqueName, editOptions))
-		MessageForwarder::showWarning("Could not find set edit options of plot " + uniqueName + " so plot editing will not remember anything (if it evens works)...");
+		MessageForwarder::showWarning(tr("Could not find set edit options of plot %1 so plot editing will not remember anything (if it evens works)...").arg(tq(uniqueName)));
 }
 
 bool Analysis::_setEditOptionsOfPlot(Json::Value & results, const std::string & uniqueName, const Json::Value & editOptions)

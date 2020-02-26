@@ -113,7 +113,7 @@ bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 	}
 	catch(std::runtime_error & e)
 	{
-		MessageForwarder::showWarning("An error occured trying to initialize a module from dir " + module->moduleRLibrary().toStdString() + ", the error was: " + e.what());
+		MessageForwarder::showWarning(tr("An error occured trying to initialize a module from dir %1, the error was: %2").arg(module->moduleRLibrary()).arg(e.what()));
 		return false;
 	}
 
@@ -135,7 +135,7 @@ std::string DynamicModules::loadModule(const std::string & moduleName)
 	}
 	catch(std::runtime_error & e)
 	{
-		MessageForwarder::showWarning("An error occured trying to load module " + moduleName + ", the error was: '" + e.what() + "'");
+		MessageForwarder::showWarning(tr("An error occured trying to load module %1, the error was: '%2'").arg(tq(moduleName)).arg(e.what()));
 		return "";
 	}
 }
@@ -234,7 +234,7 @@ void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleNam
 	catch (boost::filesystem::filesystem_error & e)
 	{
 		if(enginesStopped)
-			MessageForwarder::showWarning("Something went wrong removing files for module " + moduleName + " at path '" + moduleDirectory(moduleName) + "' and the error was: " + e.what());
+			MessageForwarder::showWarning(tr("Something went wrong removing files for module %1 at path '%2' and the error was: %3").arg(tq(moduleName)).arg(tq(moduleDirectory(moduleName))).arg(e.what()));
 		else
 		{
 			Log::log() << "Probably some library was still loaded in R... Let's stop the engines!" << std::endl;
@@ -290,7 +290,7 @@ void DynamicModules::installationPackagesFailed(const QString & moduleName, cons
 	if(_modules.count(moduleName.toStdString()) > 0)
 		_modules[moduleName.toStdString()]->setInstallingSucces(false);
 
-	MessageForwarder::showWarning("Installation of Module " + moduleName + " failed", "The installation of Module "+ moduleName+ " failed with the following errormessage:\n"+errorMessage);
+	MessageForwarder::showWarning(tq("Installation of Module %1 failed").arg(moduleName), tr("The installation of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));
 
 	uninstallModule(moduleName.toStdString());
 
@@ -329,7 +329,7 @@ void DynamicModules::loadingFailed(const QString & moduleName, const QString & e
 	{
 		_modules[moduleName.toStdString()]->setLoadingSucces(false);
 
-		MessageForwarder::showWarning("Loading packages for Module " + moduleName + " failed", "Loading the packages of Module "+ moduleName+ " failed with the following errormessage:\n"+errorMessage);
+		MessageForwarder::showWarning(tr("Loading packages for Module %1 failed").arg(moduleName), tr("Loading the packages of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));
 	}
 }
 
@@ -365,7 +365,7 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 {
 	if(!QFile(moduleZipFilename).exists())
 	{
-		MessageForwarder::showWarning("Cannot install module because " + moduleZipFilename + " does not exist.");
+		MessageForwarder::showWarning(tr("Cannot install module because %1 does not exist.").arg(moduleZipFilename));
 		return;
 	}
 
@@ -375,7 +375,7 @@ void DynamicModules::installJASPModule(const QString & moduleZipFilename)
 
 	if(moduleName == defaultDevelopmentModuleName())
 	{
-		MessageForwarder::showWarning("Cannot install module because it is named '" + defaultDevelopmentModuleName() + "' and that name is reserved for installing the development module.\nChange the name (in DESCRIPTION and description.json) and try it again. If you are not the author of this module and do not know how to do this, contact: " + dynMod->author());
+		MessageForwarder::showWarning(tr("Cannot install module because it is named '%1' and that name is reserved for installing the development module.\nChange the name (in DESCRIPTION and description.json) and try it again. If you are not the author of this module and do not know how to do this, contact: %2").arg(tq(defaultDevelopmentModuleName())).arg(tq(dynMod->author())));
 		delete dynMod;
 		return;
 	}
@@ -397,7 +397,7 @@ void DynamicModules::installJASPDeveloperModule()
 {
 	if(Settings::value(Settings::DEVELOPER_FOLDER).toString() == "")
 	{
-		MessageForwarder::showWarning("Select a folder", "To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced.");
+		MessageForwarder::showWarning(tr("Select a folder"), tr("To install a development module you need to select the folder you want to watch and load, you can do this under the filemenu, Preferences->Advanced."));
 		return;
 	}
 
@@ -458,11 +458,11 @@ void DynamicModules::startWatchingDevelopersModule()
 
 	if(!(descriptionFound && rFound && qmlFound && iconsFound))
 	{
-		MessageForwarder::showWarning("Missing files or folders", "The selected folder cannot be installed as a developer module because it does not contain all the necessary files and folders.\n" +
-			std::string(descriptionFound	? "" : "Create a inst/description.json file.\n") +
-			std::string(rFound				? "" : "Create a R directory containing your analysis code.\n") +
-			std::string(qmlFound			? "" : "Create a inst/qml directory containing your optionsforms.\n") +
-			std::string(iconsFound			? "" : "Create a inst/icons directory containing the icons for your ribbonbuttons.\n"));
+		MessageForwarder::showWarning(tr("Missing files or folders"), tr("The selected folder cannot be installed as a developer module because it does not contain all the necessary files and folders.") + "\n" +
+			(descriptionFound	? "" : (tr("Create a inst/description.json file.") + "\n")) +
+			(rFound				? "" : (tr("Create a R directory containing your analysis code.") + "\n")) +
+			(qmlFound			? "" : (tr("Create a inst/qml directory containing your optionsforms.") + "\n")) +
+			(iconsFound			? "" : (tr("Create a inst/icons directory containing the icons for your ribbonbuttons.") + "\n")));
 		return;
 	}
 
@@ -480,10 +480,10 @@ void DynamicModules::devModCopyDescription()
 	if(!src.exists())
 	{
 		if(dst.exists())
-			MessageForwarder::showWarning("Missing "+descJson.toStdString(), "You seem to have removed "+descJson.toStdString()+" from your development module directory. Without it your module cannot work, make sure to put it back. For now your old "+descJson.toStdString()+" file will be kept.");
+			MessageForwarder::showWarning(tr("Missing %1").arg(descJson), tr("You seem to have removed %1 from your development module directory. Without it your module cannot work, make sure to put it back. For now your old %2 file will be kept.").arg(descJson).arg(descJson));
 		else
 		{
-			MessageForwarder::showWarning("Missing "+descJson.toStdString(), "You seem to have never had a "+descJson.toStdString()+" in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now");
+			MessageForwarder::showWarning(tr("Missing %1").arg(descJson), tr("You seem to have never had a %1 in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now").arg(descJson));
 			uninstallModule(developmentModuleName());
 		}
 		return;
@@ -513,7 +513,7 @@ void DynamicModules::devModCopyDescription()
 		}
 		else
 		{
-			MessageForwarder::showWarning(descJson.toStdString() + " was removed!", "You seem to have removed "+descJson.toStdString()+" but this file is required for your module to work. The development module is going to be uninstalled now.");
+			MessageForwarder::showWarning(tr("%1 was removed!").arg(descJson), tr("You seem to have removed %1 but this file is required for your module to work. The development module is going to be uninstalled now.").arg(descJson));
 			uninstallModule(developmentModuleName());
 		}
 	});
@@ -532,10 +532,10 @@ void DynamicModules::devModWatchFolder(QString folder, QFileSystemWatcher * & wa
 		if(folder != "help") //help is not really necessary
 		{
 			if(dst.exists())
-				MessageForwarder::showWarning("Missing folder " + folder.toStdString(), "You seem to have removed the folder " + folder.toStdString() + " from your development module directory. Without it your module cannot work, make sure to put it back. For now your old folder will be kept.");
+				MessageForwarder::showWarning(tr("Missing folder %1").arg(folder), tr("You seem to have removed the folder %1 from your development module directory. Without it your module cannot work, make sure to put it back. For now your old folder will be kept.").arg(folder));
 			else
 			{
-				MessageForwarder::showWarning("Missing folder " + folder.toStdString(), "You seem to have never had the folder " + folder.toStdString() + " in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now");
+				MessageForwarder::showWarning(tr("Missing folder %1").arg(folder), tr("You seem to have never had the folder %1 in your development module directory. Without it your module cannot work, make sure to create one. How you installed is a bit of a mystery and thus the development module shall be uninstalled now").arg(folder));
 				uninstallModule(developmentModuleName());
 			}
 		}

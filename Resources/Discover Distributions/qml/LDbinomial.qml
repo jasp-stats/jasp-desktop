@@ -103,7 +103,7 @@ Form {
 		{
 			title: qsTr("Generate new variable from Binomial") + " (p = " + prob.value + ", n = " + size.value + ")"
 			AddColumnField{ name: "newVariableName"; text: qsTr("Variable name: "); fieldWidth: 120; placeholderText: qsTr("e.g., random binomial") }
-			IntegerField{   name: "sampleSize"; label: qsTr("Number of samples: "); min: 1; defaultValue: 100 }
+			IntegerField{   name: "sampleSize"; label: qsTr("Number of samples: "); min: 1; defaultValue: dataSetModel.rowCount(); max: dataSetModel.rowCount()}
 			Button{name: "simulateNowButton"; label: qsTr("Draw samples"); id: simulateNowButton; onClicked:{
 					if (simulateNow.checked) simulateNow.checked = false; else simulateNow.checked = true
 				}}
@@ -120,7 +120,7 @@ Form {
 		Group
 		{
 			title: qsTr("Statistics")
-			CheckBox{ name: "summary"; label: qsTr("Descriptives") }
+			CheckBox{ name: "summary"; label: qsTr("Descriptives"); checked: true  }
 			CheckBox
 			{
 				name: "moments"; label: qsTr("First"); childrenOnSameRow: true

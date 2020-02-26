@@ -40,7 +40,7 @@ public:
 		IsEnabledRole
 	};
 
-	ResultMenuModel(QObject *parent) : QAbstractListModel(parent) {}
+	ResultMenuModel(QObject *parent);
 
 	int										rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return _resultMenuEntries.size();	}
 	QVariant								data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
@@ -50,8 +50,14 @@ public:
 	Q_INVOKABLE QString						getJSFunction(int index)									const			{	return _resultMenuEntries.at(index).jsFunction();	}
 	Q_INVOKABLE QString						getName(int index)											const			{	return _resultMenuEntries.at(index).name();			}
 
+private slots:
+	void									_generateCorrectlyTranslatedResultEntries();
+
 private:
 	std::vector<ResultMenuEntry>			_resultMenuEntries;
+	std::map<QString, ResultMenuEntry>		_allResultEntries;
+	QStringList								_entriesOrder;
+
 };
 
 #endif  // RESULTMENUMODEL_H

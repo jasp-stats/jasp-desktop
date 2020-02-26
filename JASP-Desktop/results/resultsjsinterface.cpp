@@ -58,10 +58,15 @@ void ResultsJsInterface::setZoomInWebEngine()
 	emit runJavaScript("window.setZoom(" + QString::number(_webEngineZoom) + ")");
 }
 
-
-void ResultsJsInterface::resultsPageLoaded(bool succes)
+void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 {
-	if (succes)
+	if (_resultsLoaded == resultsLoaded)
+		return;
+
+	_resultsLoaded = resultsLoaded;
+	emit resultsLoadedChanged(_resultsLoaded);
+
+	if (resultsLoaded)
 	{
 		QString version = AboutModel::version();
 
@@ -70,13 +75,11 @@ void ResultsJsInterface::resultsPageLoaded(bool succes)
 		setGlobalJsValues();
 
 		emit resultsPageLoadedSignal();
-
 		emit zoomChanged();
 
 		setThemeCss(Settings::value(Settings::THEME_NAME).toString());
 	}
 }
-
 
 void ResultsJsInterface::purgeClipboard()
 {
@@ -208,7 +211,7 @@ void ResultsJsInterface::pushImageToClipboard(const QByteArray &base64, const QS
 
 void ResultsJsInterface::displayMessageFromResults(QString msg)
 {
-	MessageForwarder::showWarning("Results Warning", msg);
+	MessageForwarder::showWarning(tr("Results Warning"), msg);
 }
 
 void ResultsJsInterface::setStatus(Analysis *analysis)
@@ -239,19 +242,12 @@ void ResultsJsInterface::exportSelected(const QString &filename)
 
 void ResultsJsInterface::analysisChanged(Analysis *analysis)
 {
-	Json::Value analysisJson	= analysis->asJSON();
-	analysisJson["userdata"]	= analysis->userData();
-	QString results				= tq(analysisJson.toStyledString());
-	results						= "window.analysisChanged(JSON.parse('" + escapeJavascriptString(results) + "'));";
-
-	emit runJavaScript(results);
+	emit runJavaScript("window.analysisChanged(JSON.parse('" + escapeJavascriptString(tq(analysis->asJSON().toStyledString())) + "'));");
 }
 
 void ResultsJsInterface::setResultsMeta(QString str)
 {
-	QString results = escapeJavascriptString(str);
-	results = "window.setResultsMeta(JSON.parse('" + results + "'));";
-	emit runJavaScript(results);
+	emit runJavaScript("window.setResultsMeta(JSON.parse('" + escapeJavascriptString(str) + "'));");
 }
 
 void ResultsJsInterface::resetResults()
@@ -277,28 +273,6 @@ void ResultsJsInterface::removeAnalyses()
 void ResultsJsInterface::moveAnalyses(size_t fromId, size_t toId)
 {
 	emit runJavaScript("window.moveAnalyses(" % QString::number(fromId) % "," % QString::number(toId) % ")");
-}
-
-Json::Value &ResultsJsInterface::getResultsMeta()
-{
-	QEventLoop loop;
-
-	runJavaScript("window.getResultsMeta()");
-	connect(this, &ResultsJsInterface::getResultsMetaCompleted, &loop, &QEventLoop::quit);
-	loop.exec();
-
-	return _resultsMeta;
-}
-
-QVariant &ResultsJsInterface::getAllUserData()
-{
-	QEventLoop loop;
-
-	runJavaScript("window.getAllUserData()");
-	connect(this, &ResultsJsInterface::getAllUserDataCompleted, &loop, &QEventLoop::quit);
-	loop.exec();
-
-	return _allUserData;
 }
 
 void ResultsJsInterface::showInstruction()
@@ -354,14 +328,14 @@ QString ResultsJsInterface::escapeJavascriptString(const QString &str)
 
 void ResultsJsInterface::setResultsMetaFromJavascript(QString json)
 {
-	Json::Reader().parse(json.toStdString(), _resultsMeta);
-	emit getResultsMetaCompleted();
+	emit resultsMetaChanged(json);
+	emit packageModified();
 }
 
 void ResultsJsInterface::setAllUserDataFromJavascript(QString json)
 {
-	_allUserData = json;
-	emit getAllUserDataCompleted();
+	emit allUserDataChanged(json);
+	emit packageModified();
 }
 
 void ResultsJsInterface::setResultsPageUrl(QString resultsPageUrl)
@@ -388,5 +362,6 @@ void ResultsJsInterface::analysisEditImage(int id, QString options)
 
 void ResultsJsInterface::setThemeCss(QString themeName)
 {
-	runJavaScript("window.setTheme(\"" + themeName + "\");");
+	if(_resultsLoaded)
+		runJavaScript("window.setTheme(\"" + themeName + "\");");
 }

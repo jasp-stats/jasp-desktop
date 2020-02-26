@@ -78,6 +78,7 @@
 .ldSummaryContinuousTableMain <- function(dataContainer, variable, options, ready) {
   if(!options$summary) return()
   if(!is.null(dataContainer[['summary']])) return()
+  if(!ready) return()
   
   summaryTable <- createJaspTable(title = gettext("Descriptives"))
   summaryTable$position <- 1
@@ -97,9 +98,6 @@
   #summaryTable$addColumnInfo(name = "kurt",       title = gettext("Kurtosis"),       type = "number", format = "sf:4")
   
   dataContainer[['summary']] <- summaryTable
-  
-  if(!ready) 
-    return()
   
   .ldFillSummaryContinuousTableMain(summaryTable, variable, options)
   
@@ -128,6 +126,7 @@
 .ldSummaryFactorTableMain <- function(dataContainer, variable, options, ready) {
   if(!options$summary) return()
   if(!is.null(dataContainer[['summary']])) return()
+  if(!ready) return()
   
   summaryTable <- createJaspTable(title = gettext("Descriptives"))
   summaryTable$position <- 1
@@ -141,9 +140,6 @@
   summaryTable$setExpectedSize(rows = length(levels(variable)) + 1)
   
   dataContainer[['summary']] <- summaryTable
-  
-  if(!ready) 
-    return()
   
   .ldFillSummaryFactorTableMain(summaryTable, variable, options)
   
@@ -327,7 +323,7 @@
 
 ### Fit distributions ----
 ### MLE stuff ----
-.ldMLEResults <- function(mleContainer, variable, options, ready, distName, structureFun){
+.ldMLEResults <- function(mleContainer, variable, options, ready, distName){
   if(!ready) return()
   if(!is.null(mleContainer[['mleResults']])) return(mleContainer[['mleResults']]$object)
   
@@ -342,12 +338,12 @@
                                                keepdata = FALSE, optim.method = "L-BFGS-B",
                                                lower = options$lowerBound, upper = options$upperBound), silent = TRUE)
   
-  if(inherits(results$fitdist, "try-error")){
+  if(isTryError(results)){
     results$fitdist <- try(MASS::fitdistr(x = variable, densfun = options$pdfFun, start = starts, 
                                           lower = options$lowerBound, upper = options$upperBound), silent = TRUE)
   }
   
-  if(inherits(results$fitdist, "try-error")){
+  if(isTryError(results)){
     results$fitdist <- try(fitdistrplus::fitdist(data = variable, distr = distName, method = "mle", 
                                                  start = starts, fix.arg = options$fix.pars,
                                                  keepdata = FALSE), silent = TRUE)
@@ -355,18 +351,43 @@
     results$fitdist$convergence <- 0
   }
   
-  if(inherits(results$fitdist, "try-error")){
-    mleContainer$setError(gettext("Estimation failed: try adjusting parameter values, check outliers, or feasibility of the distribution fitting the data."))
+  if(isTryError(results)){
+    mleContainer$setError(.ldAllTextsList()$feedback$fitdistrError)
     return()
   } 
   
-  results$structured <- structureFun(results$fitdist, options)
+  if(is.na(results$fitdist$vcov)){
+    mleContainer$setError(.ldAllTextsList()$feedback$vcovNA)
+    #mleContainer[['estParametersTable']]$addFootnote(.ldAllTextsList()$feedback$vcovNA)
+    results$fitdist$vcov <- diag(length(results$fitdist$estimate))
+    
+    include.se <- FALSE
+  } else{
+    include.se <- TRUE
+  }
+  
+  results$structured <- .ldStructureResults(results$fitdist, options, include.se)
   
   mleContainer[['mleResults']] <- createJaspState(object = results, dependencies = c(options$parValNames, "ciIntervalInterval", "parametrization"))
   
   return(results)
 }
 
+.ldStructureResults <- function(fit, options, include.se){
+  if(is.null(fit)) return()
+  
+  res <- sapply(options$transformations,
+                function(tr) car::deltaMethod(fit$estimate, tr, fit$vcov, level = options$ciIntervalInterval))
+  rownames(res) <- c("estimate", "se", "lower", "upper")
+  res <- t(res)
+  res <- cbind(par = rownames(res), res)
+  res <- as.data.frame(res)
+  
+  if(!include.se){
+    res$se <- res$lower <- res$upper <- NA
+  }
+  return(res)
+}
 #### Fit assessment ----
 .ldFitStatisticsTable <- function(fitContainer, options, method){
   if(!is.null(fitContainer[['fitStatisticsTable']])) return()
@@ -395,7 +416,7 @@
 }
 
 .ldFitStatisticsResults <- function(fitContainer, fit, variable, options, ready){
-  if(!ready) return()
+  if(!ready || fitContainer$getError()) return()
   if(is.null(fit)) return()
   if(!is.null(fitContainer[['fitStatisticsResults']])) return(fitContainer[['fitStatisticsResults']]$object)
   
@@ -468,7 +489,7 @@
     pdfplot$position <- 2
     fitContainer[['estPDF']] <- pdfplot
     
-    if(ready)
+    if(ready && !fitContainer$getError())
       .ldFillEstPDFPlot(pdfplot, estimates, options, variable)
   }
   
@@ -478,7 +499,7 @@
     pmfplot$position <- 2
     fitContainer[['estPMF']] <- pmfplot
     
-    if(ready)
+    if(ready && !fitContainer$getError())
       .ldFillEstPMFPlot(pmfplot, estimates, options, variable)
   }
   
@@ -488,7 +509,7 @@
     qqplot$position <- 3
     fitContainer[['qqplot']] <- qqplot
     
-    if(ready)
+    if(ready && !fitContainer$getError())
       .ldFillQQPlot(qqplot, estimates, options, variable)
   }
   
@@ -498,7 +519,7 @@
     cdfplot$position <- 4
     fitContainer[['estCDF']] <- cdfplot
     
-    if(ready)
+    if(ready && !fitContainer$getError())
       .ldFillEstCDFPlot(cdfplot, estimates, options, variable)
   }
   
@@ -508,7 +529,7 @@
     ppplot$position <-5
     fitContainer[['ppplot']] <- ppplot
     
-    if(ready)
+    if(ready && !fitContainer$getError())
       .ldFillPPPlot(ppplot, estimates, options, variable)
   }
   
@@ -519,7 +540,8 @@
   p <- ggplot2::ggplot(data = NULL, ggplot2::aes(sample = variable)) +
     ggplot2::stat_qq(distribution = options[['qFun']], dparams = estParameters, shape = 21, fill = "grey", size = 3) +
     ggplot2::stat_qq_line(distribution = options[['qFun']], dparams = estParameters) +
-    ggplot2::xlab(gettext("Theoretical")) + ggplot2::ylab(gettext("Sample"))
+    ggplot2::xlab(gettext("Theoretical")) + ggplot2::ylab(gettext("Sample")) +
+    ggplot2::scale_x_continuous(expand = ggplot2::expand_scale(c(0.1,0.15), 0))
   
   p <- JASPgraphs::themeJasp(p)
   
@@ -579,7 +601,8 @@
     ggplot2::geom_abline(slope = 1, intercept = 0) +
     JASPgraphs::geom_point(ggplot2::aes(x = TheoreticalProp, y = ObservedProp)) +
     ggplot2::xlab(gettext("Theoretical")) + ggplot2::ylab(gettext("Sample")) +
-    ggplot2::scale_x_continuous(limits = 0:1) + ggplot2::scale_y_continuous(limits = 0:1)
+    ggplot2::scale_x_continuous(limits = 0:1, expand = ggplot2::expand_scale(mult = 0, add = c(0.05, 0.1))) + 
+    ggplot2::scale_y_continuous(limits = 0:1, expand = ggplot2::expand_scale(mult = 0, add = c(0.05, 0.1)))
   
   p <- JASPgraphs::themeJasp(p)
   
@@ -1353,38 +1376,38 @@
     More formally, the PDF is defined as a derivative of a cumulative distribution function (CDF).
     
     The density plot displays the probability density function of a random variable.
-    The y-axis displays the value of the density function for a particular value of the random variable (displayed on the x-axis)."),
+    The <i>y</i>-axis displays the value of the density function for a particular value of the random variable (displayed on the <i>x</i>-axis)."),
       
       pmf = gettext("The probability mass function (PMF), usually denoted as f(x), is a function of a random variable X.
     The value of f(x) provides the probability that a realization of the random variable X yields a value equal to x.
     
     The probability mass plot displays the probability mass function of a random variable.
-    The y-axis displays the value of the probability mass function for a particular value of the random variable (displayed on the x-axis)."),
+    The <i>y</i>-axis displays the value of the probability mass function for a particular value of the random variable (displayed on the <i>x</i>-axis)."),
       
       cdf = gettext("The cumulative distribution function (CDF), usually denoted as F(x), is a function of a random variable X.
     The value of F(x) provides the probability that a realization of the random variable X yields a value that is equal to or smaller than x.
     
     The cumulative probability plot displays the cumulative distribution of a random variable.
-    The y-axis displays the value of the cumulative distribution function for a particular value of the random variable (displayed on the x-axis)."),
+    The <i>y</i>-axis displays the value of the cumulative distribution function for a particular value of the random variable (displayed on the <i>x</i>-axis)."),
       
       qf  = gettext("The quantile function, usually denoted as Q(p), is the inverse of the cumulative distribution function.
     The function gives the quantile such that the probability of the random variable being less than or equal to that value equals the given probability p.   
     
     The quantile plot displays the quantile function.
-    The y-axis displays the quantile of which the probability that the random variable is less or equal to that value is equal to p (displayed on the x-axis)."),
+    The <i>y</i>-axis displays the quantile of which the probability that the random variable is less or equal to that value is equal to p (displayed on the <i>x</i>-axis)."),
       
       intro = "<h3> Demonstration of the %s </h3>
-    This demonstration is divided into four parts. 
+    This demonstration is divided in four parts. 
     The first part displays the %s, its probability density function, cumulative distribution function, and quantile function. 
-    The second part allows to generate data from the %s, compute descriptive statistics and display descriptive plots.
-    In the third part, the parameters of the %s can be estimated.
-    The fourth part allows to check the fit of the %s to the data.
+    The second part allows you to generate data from the %s, compute descriptive statistics, and display descriptive plots.
+    The third part allows you to estimate the parameters of the %s.
+    The fourth part allows you to check the fit of the %s to the data.
     
     <b>References</b>
     
     Blitzstein, J. K., & Hwang, J. (2014). <i>Introduction to probability.</i> Chapman and Hall/CRC.
     
-    Leemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance</i>.
+    Leemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, 16</i>(4), 8–9.
     
     For relationships with other distributions, visit www.math.wm.edu/~leemis/chart/UDR/UDR.html.
     
@@ -1397,7 +1420,8 @@
       car = "John Fox and Sanford Weisberg (2011). An R Companion to Applied Regression, Second Edition. Thousand Oaks CA: Sage. URL: http://socserv.socsci.mcmaster.ca/jfox/Books/Companion."
     ),
     feedback = list(
-      fitdistrError = gettext("Estimation failed: try adjusting parameter values, check outliers, or feasibility of the distribution fitting the data.")
+      fitdistrError = gettext("Estimation failed: Optimization did not converge. <ul><li>Try adjusting parameter values, check outliers or feasibility of the distribution fitting the data.</li></ul>"),
+      vcovNA = gettext("Estimation failed: Hessian matrix is not numerically computable. <ul><li>Check outliers or feasibility of the distribution fitting the data.</li></ul>")
     )
   )
 }

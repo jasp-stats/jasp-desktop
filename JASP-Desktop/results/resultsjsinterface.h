@@ -34,6 +34,7 @@ class ResultsJsInterface : public QObject
 	Q_OBJECT
 	Q_PROPERTY(QString			resultsPageUrl	READ resultsPageUrl	WRITE setResultsPageUrl	NOTIFY resultsPageUrlChanged	)
 	Q_PROPERTY(double			zoom			READ zoom			WRITE setZoom			NOTIFY zoomChanged				)
+	Q_PROPERTY(bool				resultsLoaded	READ resultsLoaded	WRITE setResultsLoaded	NOTIFY resultsLoadedChanged		)
 
 public:
 	explicit ResultsJsInterface(QObject *parent = 0);
@@ -49,16 +50,15 @@ public:
 	void exportHTML();
 	void resetResults();
 
-	Json::Value &getResultsMeta();
-	QVariant	&getAllUserData();
-
 	QString			resultsPageUrl()	const { return _resultsPageUrl;	}
 	double			zoom()				const { return _webEngineZoom;	}
+	bool			resultsLoaded()		const { return _resultsLoaded;	}
 
 	Q_INVOKABLE void purgeClipboard();
 	Q_INVOKABLE void analysisEditImage(int id, QString options);
 
 	//Callable from javascript through resultsJsInterfaceInterface...
+
 
 signals:
 	Q_INVOKABLE void openFileTab();
@@ -80,7 +80,6 @@ signals:
 public slots:
 	void setZoom(double zoom);
 	void resultsDocumentChanged()				{ emit packageModified(); }
-	void updateUserData()						{ emit packageModified(); }
 	void saveTempImage(int id, QString path, QByteArray data);
 	void pushImageToClipboard(const QByteArray &base64, const QString &html);
 	void pushToClipboard(const QString &mimeType, const QString &data, const QString &html);
@@ -97,12 +96,14 @@ public slots:
 
 
 signals:
-	void getResultsMetaCompleted();
-	void getAllUserDataCompleted();
+	void resultsMetaChanged(QString resultsMeta);
+	void allUserDataChanged(QString userData);
 	void resultsPageUrlChanged(QUrl resultsPageUrl);
 	void runJavaScript(QString js);
 	void zoomChanged();
 	void resultsPageLoadedSignal();
+
+	void resultsLoadedChanged(bool resultsLoaded);
 
 public slots:
 	void setExactPValuesHandler(bool exact);
@@ -111,8 +112,8 @@ public slots:
 	void cancelImageEdit(int id);
 	void exportSelected(const QString &filename);
 	void setResultsPageUrl(QString resultsPageUrl);
-	void resultsPageLoaded(bool success);
 	void setZoomInWebEngine();
+	void setResultsLoaded(bool resultsLoaded);
 
 private:
 	void	setGlobalJsValues();
@@ -123,9 +124,8 @@ private slots:
 
 private:
 	double			_webEngineZoom = 1.0;
-	Json::Value		_resultsMeta;
-	QVariant		_allUserData;
 	QString			_resultsPageUrl = "qrc:///html/index.html";
+	bool			_resultsLoaded = false;
 };
 
 

@@ -490,7 +490,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     semRSquaredTable$addColumns(data.frame(var = .unv(names(r2[[1]]))))
                                 
     for (i in 1:length(r2)) {
-      semRSquaredTable$addColumnInfo(name = paste0("R2", i), title = paste0(gettext("Group "), nm[i]), 
+      semRSquaredTable$addColumnInfo(name = paste0("R2", i), title = gettextf("Group %i", nm[i]), 
                                      overtitle = gettext("R&sup2;"), type = "number")
       thisCol <- data.frame(rr = r2[[i]])
       names(thisCol) <- paste0("R2", i)
@@ -647,6 +647,12 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
     return()
   
   varNames <- lavaan::lavaanNames(semContainer[["semResultsList"]]$object$semResults, type="ov")
+  
+  if (!all(sapply(dataset[, varNames, drop = FALSE], is.numeric))) {
+    semMardiasTable$setError(gettext("Not all used variables are numeric. Mardia's coefficients not available."))
+    return()
+  }
+  
   mardiaSkew <- unname(semTools:::mardiaSkew(dataset[, varNames]))
   mardiaKurtosis <- unname(semTools:::mardiaKurtosis(dataset[, varNames]))
   semMardiasTable$addRows(data.frame(Type=gettext("Skewness"), Coefficient=mardiaSkew[1], z=NA, Chisq=mardiaSkew[2], 

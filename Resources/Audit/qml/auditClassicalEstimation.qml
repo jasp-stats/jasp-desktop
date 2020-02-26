@@ -158,7 +158,7 @@ Form {
 					HelpButton
 					{
 						helpPage:			"Audit/explanatoryText"
-						toolTip: 			"Show explanatory text and formulas"
+						toolTip: 			qsTr("Show explanatory text and formulas")
 					}
 				}
 

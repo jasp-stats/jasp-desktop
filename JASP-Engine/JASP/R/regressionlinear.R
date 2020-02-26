@@ -286,10 +286,27 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     coeffTable$addColumnInfo(name = "VIF",        title = gettext("VIF"),        type = "number", overtitle = overtitle)
   }
 
-  if (!is.null(model))
+  if (!is.null(model)) {
+    .linregAddFootnotePredictorsNeverIncluded(coeffTable, model, options)
     .linregFillCoefficientsTable(coeffTable, model, dataset, options)
+  }
 
   modelContainer[["coeffTable"]] <- coeffTable
+}
+
+.linregAddFootnotePredictorsNeverIncluded <- function(coeffTable, model, options) {
+  if (options$method %in% c("forward", "stepwise")) {
+    includedPredictors <- unlist(lapply(model, "[[", "predictors"))
+    neverIncludedPredictors <- setdiff(unlist(options$covariates), .unv(includedPredictors))
+    
+    if (length(neverIncludedPredictors) > 0) {
+      message <- sprintf(ngettext(length(neverIncludedPredictors), 
+                                  "The following covariate was considered but not included: %s.", 
+                                  "The following covariates were considered but not included: %s."),
+                         paste(neverIncludedPredictors, collapse=", "))
+      coeffTable$addFootnote(message)
+    }
+  }
 }
 
 .linregFillCoefficientsTable <- function(coeffTable, model, dataset, options) {
@@ -319,7 +336,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   bootstrapCoeffTable$addColumnInfo(name = "SE",           title = gettext("Standard Error"), type = "number")
 
   if (options$regressionCoefficientsConfidenceIntervals) {
-    overtitle <- gettextf("%f%% bca\u002A CI", 100 * options$regressionCoefficientsConfidenceIntervalsInterval)
+    overtitle <- gettextf("%s%% bca\u002A CI", 100 * options$regressionCoefficientsConfidenceIntervalsInterval)
     bootstrapCoeffTable$addColumnInfo(name = "lower", title = gettext("Lower"), type = "number", overtitle = overtitle)
     bootstrapCoeffTable$addColumnInfo(name = "upper", title = gettext("Upper"), type = "number", overtitle = overtitle)
   }

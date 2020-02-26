@@ -463,7 +463,7 @@ Form
 				CheckBox
 				{
 					name: "addInfo"
-					label: "Additional info"
+					label: qsTr("Additional info")
 				}
 
 				CheckBox

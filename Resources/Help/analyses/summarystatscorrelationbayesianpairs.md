@@ -1,7 +1,7 @@
 Summary Statistics Bayesian Correlation
 ==========
 
-The Bayesian Correlation analysis allows you to test the null hypothesis that the population (Pearson product-moment correlation) between pairs of variables equals 0.
+The Bayesian Correlation analysis allows you to test the null hypothesis that the population (Pearson product-moment correlation) between two variables equals 0.
 
 ### Input
 ---

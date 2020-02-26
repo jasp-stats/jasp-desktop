@@ -37,7 +37,7 @@
 			"icon"    : "analysis-bayesian-regression.svg"
 		},
 		{
-			"title"   : "S.S. Bayesiaanse Correlatie Paren",
+			"title"   : "S.S. Bayesiaanse Correlatie",
 			"function": "SummaryStatsCorrelationBayesianPairs"
 		},
 		{

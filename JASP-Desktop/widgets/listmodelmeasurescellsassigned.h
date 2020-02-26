@@ -29,23 +29,23 @@ class ListModelMeasuresCellsAssigned : public ListModelAssignedInterface
 public:
 	ListModelMeasuresCellsAssigned(QMLListView* listView);
 
-	QVariant		data(const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
-	Terms			termsFromIndexes(const QList<int> &indexes)									const	override;
+	int				rowCount(const QModelIndex &parent = QModelIndex())												const	override { return _levels.size() * 2; }
+	QVariant		data(const QModelIndex &index, int role = Qt::DisplayRole)										const	override;
+	Terms			termsFromIndexes(const QList<int> &indexes)														const	override;
+	void			initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap = RowControlsOptions())			override;
 	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, JASPControlBase::AssignType assignOption = JASPControlBase::AssignType::AssignDefault)	override;
-	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;
+	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)											override;
 	void			removeTerms(const QList<int>& indexes) override;
 
 	void			initLevels(const Terms& levels, const Terms &variables = Terms(), bool initVariables = false);
-	
-
-	const QList<QString>& variables() const { return _variables; }	
 
 public slots:	
-	void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved) override;
+	void			sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved) override;
 	
 private:
+	void			_fitTermsWithLevels();
+
 	QList<QString> _levels;
-	QList<QString> _variables;	
 };
 
 #endif // LISTMODELMEASURESCELLSASSIGNED_H
