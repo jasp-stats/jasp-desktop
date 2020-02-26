@@ -60,7 +60,7 @@ Factor Correlaties:
 - De correlaties tussen de factoren. 
 
 Chi-squared Toets: 
-De fit van het model is getoetst. Als de toets significant is, dan wordt het model verworpen. Onthoud dat een chi-squared schatting onbetrouwbaar is voor kleine steekproeven. In het geval van een kleine steekproef, aanvullende informatie over de fit van het model kan verkregen worden door de optie `Aanvullende fit indices` in het `Uitvoeropties` te selecteren. 
+De fit van het model wordt getoetst. Als de toets significant is, dan wordt het model verworpen. Onthoud dat een chi-kwadraat schatting onbetrouwbaar kan zijn voor kleine steekproeven, en bij hele grote steekproeven kan de chi-kwadraattoets het model te snel verwerpen. Aanvullende informatie over de fit van het model kan verkregen worden door de optie `Aanvullende pas indexen` onder `Uitvoeropties` te selecteren. Voor een verdere discussie over fit indices kan bijvoorbeeld Saris, Satorra, & van der Veld (2009) geraadpleegd worden. 
 - Model: Het verkregen model van de exploratieve factoranalyse. 
 - Value: De chi-squared toetsstatistiek.  
 - df: Vrijheidsgraden. 
@@ -97,6 +97,7 @@ De screeplot geeft informatie over hoeveel variantie in de data, aangegeven door
     of personality inventories be evaluated? *Personality and Social Psychology Review, 14*, 332–346. 
 - Osborne, J. W., Costello, A. B., & Kellow, J. T. (2008). Best practices in 
     exploratory factor analysis. *Best practices in quantitative methods*, 86-99.
+- Saris, W. E., Satorra, A., & Van der Veld, W. M. (2009). Testing structural equation models or detection of misspecifications?. Structural Equation Modeling, 16(4), 561-582.
 - Yong, A. G., & Pearce, S. (2013). A beginner’s guide to factor analysis: Focusing on exploratory factor analysis. *Tutorials in quantitative methods for psychology, 9*(2), 79-94.
 
 ### R Packages 

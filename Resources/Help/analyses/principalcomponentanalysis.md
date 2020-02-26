@@ -49,7 +49,7 @@ Principcal Component Analysis is used to represent the data in smaller component
 --- 
 #### Principal Component Analysis 
 Chi-squared Test: 
-The fit of the model is tested. When the test is significant, the model is rejected. Bear in mind that a chi-squared approximation is unreliable for small sample sizes. REFERENCE (also for EFA)
+The fit of the model is tested. When the test is significant, the model is rejected. Bear in mind that a chi-squared approximation may be unreliable for small sample sizes, and the chi-squared test may too readily reject the model with very large sample sizes. See, for example, Saris, Satorra, & van der Veld (2009) for more discussions on overall fit metrics.
 - Model: The model obtained from the principal component analysis. 
 - Value: The chi-squared test statistic.  
 - df: Degrees of freedom. 
@@ -86,6 +86,7 @@ The scree plot provides information on how much variance in the data, indicated 
 - Hayton, J. C., Allen, D. G., & Scarpello, V. (2004). Factor retention decisions in exploratory factor analysis: A tutorial on parallel analysis. *Organizational research methods, 7*(2), 191-205.
 - James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). *An introduction to statistical learning* (Vol. 112, p. 18). New York: springer.
 - Osborne, J. W., Costello, A. B., & Kellow, J. T. (2008). Best practices in exploratory factor analysis. *Best practices in quantitative methods*, 86-99.
+- Saris, W. E., Satorra, A., & Van der Veld, W. M. (2009). Testing structural equation models or detection of misspecifications?. Structural Equation Modeling, 16(4), 561-582.
 - Shlens, J. (2014). A tutorial on principal component analysis. *arXiv preprint arXiv:1404.1100*.
 
 ### R Packages 
