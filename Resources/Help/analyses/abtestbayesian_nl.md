@@ -35,12 +35,12 @@ De ingevoerde data moet de volgende elementen bevatten:
 
 	(Aanvullend aan deze opties worden de mediaan en het centrale geloofwaardigheidsinterval van de posterior ook weergegeven in de grafiek.)
   - Sequentiële analyse: Geeft de ontwikkeling van de posterior terwijl de data binnenkomt. De kanswielen geven de prior en posterior kansen op de hypothese weer.
-  - Bayes Factor robuustheid check: Geeft een analyse van de gevoeligheid voor de prior.  
+  - Bayes Factor robuustheidscheck: Geeft een analyse van de gevoeligheid voor de prior.
+    - Bayes factor type: Bepaal het type Bayes factor dat weergegeven wordt in de grafiek. De mogelijkheden zijn "BF10", "BF+0" en "BF-0".
   - Prior: Maakt een grafiek van de prior verdelingen van de parameters. Beschikbare grootheden zijn hetzelfde als voor de prior en posterior grafiek.
 
-
 #### Normale prior op Log Odds Ratio
-Staat toe dat een gemiddelde an standaardafwijking van de normale prior voor test-relevante log odds ratio wordt gespecificeerd. 
+Staat toe dat een gemiddelde an standaardafwijking van de normale prior voor test-relevante log odds ratio wordt gespecificeerd.
 
 
 #### Beschrijvende statistieken
@@ -62,11 +62,19 @@ Specificeert de prior kansen voor de vier hypothesen:
   - Log odds ratio < 0 (H-): Zegt dat de succeskans groter is in de controle dan in de experimentele conditie.
   - Log odds ratio < 0 (H1): Zegt dat de succeskans verschilt tussen condities, maar zegt niet in welke conditie deze groter is.
 
-#### Steekproefen nemen 
+#### Steekproeven nemen 
 Bepaalt het aantal "importance samples" om de log marginale likelihood voor (H+) en (H-) te verkrijgen. Het bepaalt ook het aantal steekproeven van de posterior.
 
 #### Reproduceerbaarheid
 - Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+
+#### Bayes Factor robuustheidscheck, Aantal Stappen
+- mu: Bepaal het aantal discrete stappen in de stappenreeks van mu 
+- sigma: Bepaal het aantal discrete stappen in de stappenreeks van sigma
+
+#### Bayes Factor robuustheidscheck, Stappenreeks
+- mu: Bepaal de stappenreeks van waarden van mu
+- sigma: Bepaal de stappenreeks van waarden van sigma
 
 ### Uitvoer
 ----------
