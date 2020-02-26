@@ -27,19 +27,7 @@ Form
 	plotWidth: 320
 	plotHeight: 240
 	
-	CheckBox { visible: false ; name: "bfIndependence"; checked: false }
 	CheckBox { visible: false ; name: "countsExpected"; checked: false }
-	CheckBox { visible: false ; name: "countsObserved"; checked: false }
-	CheckBox { visible: false ; name: "hideSmallCounts"; checked: false }
-	IntegerField { visible: false ; name: "hideSmallCountsLessThan" ; defaultValue: 5 }
-	CheckBox { visible: false ; name: "percentagesColumn"; checked: false }
-	CheckBox { visible: false ; name: "percentagesRow"; checked: false }
-	CheckBox { visible: false ; name: "percentagesTotal"; checked: false }
-	CheckBox { visible: false ; name: "residualsAdjustedStandardized"; checked: false }
-	CheckBox { visible: false ; name: "residualsStandardized"; checked: false }
-	CheckBox { visible: false ; name: "residualsUnstandardized"; checked: false }
-	CheckBox { visible: false ; name: "zTestAdjustPValues"; checked: false }
-	CheckBox { visible: false ; name: "zTestCompareColumns"; checked: false }
 	
 	VariablesForm
 	{
@@ -107,6 +95,19 @@ Form
 		{
 			title: qsTr("Prior")
 			DoubleField { name: "priorConcentration"; label: qsTr("Prior concentration"); defaultValue: 1; min: 1; decimals: 1 }
+		}
+	}
+	
+	Section
+	{
+		title: qsTr("Cells")
+	
+		Group
+		{
+			title: qsTr("Percentages")
+			CheckBox { name: "percentagesRow";		label: qsTr("Row")		}
+			CheckBox { name: "percentagesColumn";	label: qsTr("Column")	}
+			CheckBox { name: "percentagesTotal";	label: qsTr("Total")	}
 		}
 	}
 	

@@ -12,7 +12,6 @@ test_that("Main table results match", {
     name = "Layer 1",
     variables = "facGender"
   ))
-  options$countsObserved <- TRUE
   options$countsExpected <- TRUE
   options$percentagesRow <- TRUE
   options$percentagesColumn <- TRUE
