@@ -5074,7 +5074,7 @@ msgid "Indep. multinomial, columns fixed"
 msgstr ""
 
 msgctxt "ContingencyTablesBayesian|"
-msgid "Hypergeometrics (2x2 only)"
+msgid "Hypergeometric (2x2 only)"
 msgstr ""
 
 msgctxt "ContingencyTablesBayesian|"
