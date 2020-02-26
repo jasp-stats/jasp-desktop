@@ -26,7 +26,9 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
                                  exclude.na.listwise=c(numericVariables, factorVariables))
   
   longData <- .BANOVAreadRManovaData(dataset, options)
-
+  if (isTryError(longData)) 
+    .quitAnalysis(gettext("Error while loading data. Please verify your repeated measures observations."))
+  
   ready <- all(options$repeatedMeasuresCells != "") &&  length(options$withinModelTerms) > 0
 
   rmAnovaContainer <- .getRMAnovaContainer(jaspResults)

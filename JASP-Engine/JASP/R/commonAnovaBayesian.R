@@ -24,6 +24,9 @@
 
   analysisType <- match.arg(analysisType)
   dataset  <- .BANOVAreadData(dataset, options, analysisType)
+  if (isTryError(dataset)) 
+    .quitAnalysis(gettext("Error while loading data. Please verify your repeated measures observations."))
+  
   dataInfo <- .BANOVAerrorhandling(dataset, options, analysisType)
 
   model <- .BANOVAestimateModels(jaspResults, dataset, options, dataInfo, analysisType)
@@ -1137,8 +1140,8 @@
       columns.as.factor   = bs.factors,
       exclude.na.listwise = all.variables
     )
-    dataset <- .shortToLong(dataset, rm.factors, rm.vars, c(bs.factors, bs.covariates))
-
+    dataset <- try(.shortToLong(dataset, rm.factors, rm.vars, c(bs.factors, bs.covariates)), silent = TRUE)
+    
     idx <- match(c("dependent", "subject"), colnames(dataset))
     colnames(dataset)[idx] <- .v(colnames(dataset)[idx])
 
