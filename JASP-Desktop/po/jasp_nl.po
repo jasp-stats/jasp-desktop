@@ -482,7 +482,7 @@ msgstr "Voeg schaalparameter toe"
 
 msgctxt "LatentRegression|"
 msgid "Correlate dependent variables"
-msgstr "Correleer afhankelijke variablelen"
+msgstr "Correleer afhankelijke variabelen"
 
 msgctxt "LatentRegression|"
 msgid "Emulation"
@@ -754,7 +754,7 @@ msgstr "Correleer exogene latenten"
 
 msgctxt "SEMSimple|"
 msgid "Add thresholds"
-msgstr "Voer dremplelwaarden toe"
+msgstr "Voer drempelwaarden toe"
 
 msgctxt "SEMSimple|"
 msgid "Add scalings parameters"
@@ -762,7 +762,7 @@ msgstr "Voer schaalparameters toe"
 
 msgctxt "SEMSimple|"
 msgid "Correlate dependent variables"
-msgstr "Correleer afhankelijke variablen"
+msgstr "Correleer afhankelijke variabelen"
 
 msgctxt "SEMSimple|"
 msgid "Emulation"
@@ -1963,7 +1963,7 @@ msgstr "Dunn"
 
 msgctxt "Anova|"
 msgid "Descriptives Plots"
-msgstr "Beschijvende grafieken"
+msgstr "Beschrijvende grafieken"
 
 msgctxt "Anova|"
 msgid "Factors"
@@ -2747,7 +2747,7 @@ msgstr "Populatiematerialiteit"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Absolute"
-msgstr "Absouut"
+msgstr "Absoluut"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Relative"
@@ -3056,7 +3056,7 @@ msgstr "Geloofwaardigheidsgrens "
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Credible interval"
-msgstr "Geloofwaardiheidsinterval"
+msgstr "Geloofwaardigheidsinterval"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Most likely error (MLE)"
@@ -3783,7 +3783,7 @@ msgstr "Modelbeperkingen"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Dependent Variables"
-msgstr "Afhankelijke variablelen"
+msgstr "Afhankelijke variabelen"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Grouping Variable"
@@ -4007,7 +4007,7 @@ msgstr "Geloofwaardigheidsinterval"
 
 msgctxt "Descriptives|"
 msgid "Variables"
-msgstr "Variablelen"
+msgstr "variabelen"
 
 msgctxt "Descriptives|"
 msgid "Split"
@@ -7211,7 +7211,7 @@ msgstr "Gescheiden grafieken"
 
 msgctxt "LinearMixedModels|"
 msgid "Assumption Checks"
-msgstr "Verificatie van aannamess"
+msgstr "Verificatie van aannames"
 
 msgctxt "LinearMixedModels|"
 msgid "Homogeneity tests"
@@ -7319,7 +7319,7 @@ msgstr "Kruskal-Wallis toets"
 
 msgctxt "NetworkAnalysis|"
 msgid "Dependent Variables"
-msgstr "Afhankelijke variablelen"
+msgstr "Afhankelijke variabelen"
 
 msgctxt "NetworkAnalysis|"
 msgid "Split"
@@ -7459,7 +7459,7 @@ msgstr "Loglineair"
 
 msgctxt "NetworkAnalysis|"
 msgid "Criterion"
-msgstr "Criterion"
+msgstr "Criterium"
 
 msgctxt "NetworkAnalysis|"
 msgid "EBIC"
@@ -7603,7 +7603,7 @@ msgstr "Telvariabelen"
 
 msgctxt "NetworkAnalysis|"
 msgid "Parallel Bootstrap"
-msgstr "Parallele bootstrap"
+msgstr "Parallelle bootstrap"
 
 msgctxt "NetworkAnalysis|"
 msgid "Group name"
@@ -10211,14 +10211,14 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr "Scroll snelheid (pix/s): "
+msgstr "Scrol snelheid (pix/s): "
 
 msgctxt "PrefsUI|"
 msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
 "places."
 msgstr ""
-"Stel de snelheid in waarmee je scrollt in de opties, dataviewer en andere "
+"Stel de snelheid in waarmee je scrolt in de opties, dataviewer en andere "
 "plekken."
 
 msgctxt "PrefsUI|"
@@ -10894,7 +10894,7 @@ msgstr "Toetsingsinformatie"
 
 msgctxt "PrefsUI|"
 msgid "Use Native File Dialogs"
-msgstr "Gebuik oorspronkelijke bestandsdialoogvensters"
+msgstr "Gebruik oorspronkelijke bestandsdialoogvensters"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -11277,7 +11277,7 @@ msgstr "Formules"
 
 msgctxt "LDbeta|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfuntie"
+msgstr "Kansdichtheidsfunctie"
 
 msgctxt "LDbeta|"
 msgid "Cumulative distribution function"
@@ -11373,7 +11373,7 @@ msgstr "Taxeer Passing"
 
 msgctxt "LDbeta|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfuntie)"
+msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
 
 msgctxt "LDbeta|"
 msgid "Q-Q plot"
@@ -11601,7 +11601,7 @@ msgstr "Formules"
 
 msgctxt "LDchisq|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfuntie"
+msgstr "Kansdichtheidsfunctie"
 
 msgctxt "LDchisq|"
 msgid "Cumulative distribution function"
@@ -11689,7 +11689,7 @@ msgstr "Taxeer Passing"
 
 msgctxt "LDchisq|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfuntie)"
+msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
 
 msgctxt "LDchisq|"
 msgid "Q-Q plot"
@@ -11737,7 +11737,7 @@ msgstr "Formules"
 
 msgctxt "LDexponential|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfuntie"
+msgstr "Kansdichtheidsfunctie"
 
 msgctxt "LDexponential|"
 msgid "Cumulative distribution function"
@@ -11833,7 +11833,7 @@ msgstr "Taxeer Passing"
 
 msgctxt "LDexponential|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfuntie)"
+msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
 
 msgctxt "LDexponential|"
 msgid "Q-Q plot"
@@ -11889,7 +11889,7 @@ msgstr "Formules"
 
 msgctxt "LDf|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfuntie"
+msgstr "Kansdichtheidsfunctie"
 
 msgctxt "LDf|"
 msgid "Cumulative distribution function"
@@ -11897,7 +11897,7 @@ msgstr "Cumulatieve verdelingsfunctie"
 
 msgctxt "LDf|"
 msgid "Quantile function"
-msgstr "Kwantielfuntie"
+msgstr "Kwantielfunctie"
 
 msgctxt "LDf|"
 msgid "Generate and Display Data"
@@ -11977,7 +11977,7 @@ msgstr "Taxeer Passing"
 
 msgctxt "LDf|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfuntie)"
+msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
 
 msgctxt "LDf|"
 msgid "Q-Q plot"
@@ -12025,7 +12025,7 @@ msgstr "Formules"
 
 msgctxt "LDgamma|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfuntie"
+msgstr "Kansdichtheidsfunctie"
 
 msgctxt "LDgamma|"
 msgid "Cumulative distribution function"
@@ -12125,7 +12125,7 @@ msgstr "Taxeer Passing"
 
 msgctxt "LDgamma|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfuntie)"
+msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
 
 msgctxt "LDgamma|"
 msgid "Q-Q plot"
@@ -12173,7 +12173,7 @@ msgstr "Formules"
 
 msgctxt "LDgammaInverse|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfuntie"
+msgstr "Kansdichtheidsfunctie"
 
 msgctxt "LDgammaInverse|"
 msgid "Cumulative distribution function"
@@ -12269,7 +12269,7 @@ msgstr "Taxeer Passing"
 
 msgctxt "LDgammaInverse|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfuntie)"
+msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
 
 msgctxt "LDgammaInverse|"
 msgid "Q-Q plot"
@@ -12321,7 +12321,7 @@ msgstr "Formules"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfuntie"
+msgstr "Kansdichtheidsfunctie"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Cumulative distribution function"
@@ -12417,7 +12417,7 @@ msgstr "Taxeer Passing"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfuntie)"
+msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Q-Q plot"
@@ -12809,7 +12809,7 @@ msgstr "Formules"
 
 msgctxt "LDt|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfuntie"
+msgstr "Kansdichtheidsfunctie"
 
 msgctxt "LDt|"
 msgid "Cumulative distribution function"
@@ -12817,7 +12817,7 @@ msgstr "Cumulatieve verdelingsfunctie"
 
 msgctxt "LDt|"
 msgid "Quantile function"
-msgstr "Kwantielfuntie"
+msgstr "Kwantielfunctie"
 
 msgctxt "LDt|"
 msgid "Generate and Display Data"
@@ -12969,7 +12969,7 @@ msgstr "Ontbrekende waarden"
 
 msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Variables"
-msgstr "Variablelen"
+msgstr "variabelen"
 
 msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Test value"
@@ -13113,7 +13113,7 @@ msgstr "Bovengrens"
 
 msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Alpha level"
-msgstr "Alpha neiveau"
+msgstr "Alpha niveau"
 
 msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Missing Values"
@@ -13641,7 +13641,7 @@ msgstr "Toon hellingen/onderbrekingen"
 
 msgctxt "linmod|"
 msgid "Show 95% intervals"
-msgstr "Toon 95% intervalllen"
+msgstr "Toon 95% intervallen"
 
 msgctxt "linmod|"
 msgid "Plot Controls"
@@ -14215,11 +14215,11 @@ msgstr "Verwijder alles"
 
 msgctxt "ResultMenuModel|"
 msgid "Refresh All"
-msgstr "Herstel alles"
+msgstr "Ververs alles"
 
 msgctxt "ResultMenuModel|"
 msgid "Show Dependencies"
-msgstr "Toon afhanhelijkheden"
+msgstr "Toon afhankelijkheden"
 
 msgctxt "BainAncovaBayesian|"
 msgid ""
@@ -15277,7 +15277,7 @@ msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
 msgstr ""
-"De geselecteerde map kan niet als ontwikkelaars module geinstalleerd worden "
+"De geselecteerde map kan niet als ontwikkelaars module geïnstalleerd worden "
 "omdat het niet alle benodigde bestanden en mappen bevat."
 
 msgctxt "DynamicModules|"
