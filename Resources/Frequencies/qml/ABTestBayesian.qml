@@ -20,6 +20,7 @@ import QtQuick 2.8
 import QtQuick.Layouts 1.3
 import JASP.Controls 1.0
 import JASP.Widgets 1.0
+import JASP 1.0
 
 
 Form
@@ -32,10 +33,10 @@ Form
 		marginBetweenVariablesLists	: 15
 
 		AvailableVariablesList	{ name: "allVariablesList" }
-        AssignedVariablesList	{ name: "y1";	title: qsTr("Successes Group 1");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
-        AssignedVariablesList	{ name: "n1";	title: qsTr("Sample Size Group 1");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
-        AssignedVariablesList	{ name: "y2";	title: qsTr("Successes Group 2");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
-        AssignedVariablesList	{ name: "n2";	title: qsTr("Sample Size Group 2");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
+		AssignedVariablesList	{ name: "y1";	title: qsTr("Successes Group 1");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
+		AssignedVariablesList	{ name: "n1";	title: qsTr("Sample Size Group 1");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
+		AssignedVariablesList	{ name: "y2";	title: qsTr("Successes Group 2");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
+		AssignedVariablesList	{ name: "n2";	title: qsTr("Sample Size Group 2");	singleVariable: true;	suggestedColumns: ["scale", "ordinal"] }
 	}
 
 	ColumnLayout
@@ -153,7 +154,7 @@ Form
 
 				Group
 				{
-					title	: qsTr("Step Size")
+					title	: qsTr("No. Steps")
 					IntegerField { label: qsTr("\u03bc:"); name: "mu_stepsize";	defaultValue: 5; min: 3 }
 					IntegerField { label: qsTr("\u03c3:"); name: "sigma_stepsize";	defaultValue: 5; min: 3 }
 				}
@@ -161,19 +162,51 @@ Form
 				Group
 				{
 					title	: qsTr("Step Range")
+					columns : 3
 
-					Row
+					Label { text: "\u03bc:"; Layout.fillHeight: true; verticalAlignment: Text.AlignVCenter }
+					DoubleField
 					{
-						Label { text: qsTr("\u03bc:") }
-						DoubleField { label: qsTr("lower:"); name: "mu_stepsize_lower";	defaultValue: -0.5; negativeValues: true }
-						DoubleField { label: qsTr("upper:"); name: "mu_stepsize_upper";	defaultValue: 0.5 }
+						id				: muLower
+						label			: qsTr("lower:")
+						name			: "mu_stepsize_lower"
+						defaultValue	: plotRobustnessBFType.currentText == "BF+0" ? 0 : -0.5
+						max				: muUpper.value
+						negativeValues	: true
+						inclusive		: JASP.None
+
+					}
+					DoubleField
+					{
+						id				: muUpper
+						label			: qsTr("upper:")
+						name			: "mu_stepsize_upper"
+						defaultValue	: plotRobustnessBFType.currentText == "BF-0" ? 0 : 0.5
+						min				: muLower.value
+						negativeValues	: true
+						inclusive		: JASP.None
 					}
 
-					Row
+					Label { text: "\u03c3:"; Layout.fillHeight: true; verticalAlignment: Text.AlignVCenter }
+					DoubleField
 					{
-						Label { text: qsTr("\u03c3:") }
-						DoubleField { label: qsTr("lower:"); name: "sigma_stepsize_lower"; defaultValue: 0.1; min: 0.0 }
-						DoubleField { label: qsTr("upper:"); name: "sigma_stepsize_upper";	 defaultValue: 1.0; min: 0.0 }
+						id				: sigmaLower
+						label			: qsTr("lower:")
+						name			: "sigma_stepsize_lower"
+						defaultValue	: 0.1
+						max				: sigmaUpper.value
+						negativeValues	: false
+						inclusive		: JASP.None
+					}
+					DoubleField
+					{
+						id				: sigmaUpper
+						label			: qsTr("upper:")
+						name			: "sigma_stepsize_upper"
+						defaultValue	: 1.0
+						min				: sigmaLower.value
+						negativeValues	: false
+						inclusive		: JASP.None
 					}
 				}
 			}
