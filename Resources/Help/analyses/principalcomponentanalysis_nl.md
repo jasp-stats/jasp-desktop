@@ -49,7 +49,7 @@ Principiële componentenanalyse wordt gerbuikt om data weer te geven in minder c
 --- 
 #### Principiële Componenten Analyse
 Chi-kwadraat toets: 
-De fit van het model wordt getoetst. Wanneer de toets significant is wordt het model verworpen. Houd in gedachten dat een chi-kwadraat benadering onbetrouwbaar is voor kleine steekproefen REFERENTIE (ook voor EFA).
+De fit van het model wordt getoetst. Wanneer de toets significant is wordt het model verworpen. Houd in gedachten dat een chi-kwadraat benadering onbetrouwbaar kan zijn voor kleine steekproeven, en bij hele grote steekproeven kan de chi-kwadraattoets het model te snel verwerpen. Voor een verdere discussie over fit indices kan bijvoorbeeld Saris, Satorra, & van der Veld (2009) geraadpleegd worden. 
 - Model: Het model dat uit de principiële componentenanalyse is gekomen.
 - Waarde: De chi-kwadraat toetsstatistiek.
 - df: Vrijheidsgraden.
@@ -86,6 +86,7 @@ De scree-grafiek geeft informatie over hoeveel variantie in de data wordt verkla
 - Hayton, J. C., Allen, D. G., & Scarpello, V. (2004). Factor retention decisions in exploratory factor analysis: A tutorial on parallel analysis. *Organizational research methods, 7*(2), 191-205.
 - James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). *An introduction to statistical learning* (Vol. 112, p. 18). New York: springer.
 - Osborne, J. W., Costello, A. B., & Kellow, J. T. (2008). Best practices in exploratory factor analysis. *Best practices in quantitative methods*, 86-99.
+- Saris, W. E., Satorra, A., & Van der Veld, W. M. (2009). Testing structural equation models or detection of misspecifications?. Structural Equation Modeling, 16(4), 561-582.
 - Shlens, J. (2014). A tutorial on principal component analysis. *arXiv preprint arXiv:1404.1100*.
 
 ### R Packages 

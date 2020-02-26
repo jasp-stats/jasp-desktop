@@ -49,7 +49,7 @@ Principcal Component Analysis is used to represent the data in smaller component
 --- 
 #### Principal Component Analysis 
 Chi-squared Test: 
-The fit of the model is tested. When the test is significant, the model is rejected. Bear in mind that a chi-squared approximation may be unreliable for small sample sizes. In the case of a small sample size, additional information about the fit of the model can be obtained by selecting the option `Additional fit indices` in the `Output options`. For more discussions on overall fit metrics, see, for example, Saris, Satorra, & van der Veld (2009).
+The fit of the model is tested. When the test is significant, the model is rejected. Bear in mind that a chi-squared approximation may be unreliable for small sample sizes, and the chi-squared test may too readily reject the model with very large sample sizes. See, for example, Saris, Satorra, & van der Veld (2009) for more discussions on overall fit metrics.
 - Model: The model obtained from the principal component analysis. 
 - Value: The chi-squared test statistic.  
 - df: Degrees of freedom. 
