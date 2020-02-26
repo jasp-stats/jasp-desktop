@@ -15,49 +15,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-.readDataClassificationAnalyses <- function(dataset, options){
-  target                    <- NULL
-  testSetIndicator          <- NULL 
-  if(options[["target"]] != "")
-    target                  <- options[["target"]]
-  predictors                <- unlist(options[["predictors"]])
-  predictors                <- predictors[predictors != ""]
-  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator")
-    testSetIndicator                  <- options[["testSetIndicatorVariable"]]
-  variables.to.read         <- c(target, predictors, testSetIndicator)
-  if (is.null(dataset)){
-    dataset <- .readAndAddCompleteRowIndices(dataset, variables.to.read)
-  }
-  if(length(unlist(options[["predictors"]])) > 0 && options[["scaleEqualSD"]])
+.readDataClassificationAnalyses <- function(dataset, options) {
+  if (is.null(dataset))
+    dataset <- .readDataClassificationRegressionAnalyses(dataset, options)
+  
+  if (length(unlist(options[["predictors"]])) > 0 && options[["scaleEqualSD"]])
     dataset[,.v(options[["predictors"]])] <- .scaleNumericData(dataset[,.v(options[["predictors"]]), drop = FALSE])
-  if(options[["target"]] != "")
+  
+  if (options[["target"]] != "")
     dataset[, .v(options[["target"]])] <- factor(dataset[, .v(options[["target"]])])
+  
   return(dataset)
 }
 
-.errorHandlingClassificationAnalyses <- function(dataset, options, type){
-  predictors                <- unlist(options['predictors'])
-  predictors                <- predictors[predictors != ""]
-  target                    <- NULL
-  if(options[["target"]] != "")
-    target                  <- options[["target"]]
-  variables.to.read         <- c(predictors, target)
-
-  if (length(variables.to.read) == 0)
-    return()
+.errorHandlingClassificationAnalyses <- function(dataset, options, type) {
+  .errorHandlingClassificationRegressionAnalyses(dataset, options, type)
   
-  customChecks <- .getCustomErrorChecksKnnBoosting(dataset, options, type)
-  errors <- .hasErrors(dataset, type = c('infinity', 'observations'), custom = customChecks,
-                       all.target = variables.to.read,
-                       observations.amount = "< 2",
-                       exitAnalysisIfErrors = TRUE)
-
-  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && !is.numeric(dataset[,.v(options[["testSetIndicatorVariable"]])]))
-    JASP:::.quitAnalysis(gettext("Your test set indicator should contain numeric values, containing only 1 (included in test set) and 0 (excluded from test set)."))
-
-  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && nlevels(factor(dataset[,.v(options[["testSetIndicatorVariable"]])])) != 2)
-    JASP:::.quitAnalysis(gettext("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."))
-
+  # add checks specifically for classification analyses here
 }
 
 .classificationAnalysesReady <- function(options, type){

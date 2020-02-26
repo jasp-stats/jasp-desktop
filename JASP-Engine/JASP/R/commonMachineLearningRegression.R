@@ -16,62 +16,73 @@
 #
 
 .readDataRegressionAnalyses <- function(dataset, options, jaspResults){
-  target                    <- NULL
-  testSetIndicator          <- NULL 
-  if(options[["target"]] != "")
-    target                  <- options[["target"]]
-  predictors                <- unlist(options[["predictors"]])
-  predictors                <- predictors[predictors != ""]
-  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator")
-    testSetIndicator                  <- options[["testSetIndicatorVariable"]]
-  variables.to.read         <- c(target, predictors, testSetIndicator)
-  if (is.null(dataset)){
-    dataset <- .readAndAddCompleteRowIndices(dataset, variables.to.read)
-  }
-  if(length(unlist(options[["predictors"]])) > 0 && options[["target"]] != "" && options[["scaleEqualSD"]])
+  if (is.null(dataset))
+    dataset <- .readDataClassificationRegressionAnalyses(dataset, options)
+  
+  if (length(unlist(options[["predictors"]])) > 0 && options[["target"]] != "" && options[["scaleEqualSD"]])
     dataset[,.v(c(options[["predictors"]], options[["target"]]))] <- .scaleNumericData(dataset[,.v(c(options[["predictors"]], options[["target"]])), drop = FALSE])
+  
   return(dataset)
 }
 
-.readAndAddCompleteRowIndices <- function(dataset, variables.to.read, allAsNumeric = FALSE){
-    if (allAsNumeric)
-      dataset             <- .readDataSetToEnd(columns.as.numeric = variables.to.read)
-    else
-      dataset             <- .readDataSetToEnd(columns = variables.to.read)
+.readDataClassificationRegressionAnalyses <- function(dataset, options) {
+  target <- NULL
+  if (options[["target"]] != "")
+    target <- options[["target"]]
+  
+  predictors <- NULL
+  if (length(options[["predictors"]]) > 0)
+    predictors <- unlist(options[["predictors"]])
+  
+  testSetIndicator <- NULL 
+  if (options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator")
+    testSetIndicator <- options[["testSetIndicatorVariable"]]
+  
+  return(.readAndAddCompleteRowIndices(dataset, columns = c(target, predictors), columnsAsNumeric = testSetIndicator))
+}
+
+.readAndAddCompleteRowIndices <- function(dataset, columns = NULL, columnsAsNumeric = NULL){
+    dataset <- .readDataSetToEnd(columns = columns, columns.as.numeric = columnsAsNumeric)
+    
     complete.index      <- which(complete.cases(dataset))
     dataset             <- na.omit(dataset)
     rownames(dataset)   <- as.character(complete.index)
+    
     return(dataset)
 }
 
 .errorHandlingRegressionAnalyses <- function(dataset, options, type){
-  predictors                <- unlist(options['predictors'])
-  predictors                <- predictors[predictors != ""]
-  target                    <- NULL
-  if(options[["target"]] != "")
-    target                  <- options[["target"]]
-  variables.to.read         <- c(predictors, target)
-  
-  if (length(variables.to.read) == 0)
-    return()
-
-  customChecks <- .getCustomErrorChecksKnnBoosting(dataset, options, type)
-  errors <- .hasErrors(dataset, type = c('infinity', 'observations'),
-                       all.target = variables.to.read, custom = customChecks,
-                       observations.amount = "< 2",
-                       exitAnalysisIfErrors = TRUE)
+  .errorHandlingClassificationRegressionAnalyses(dataset, options, type)
 
   if (type == "regularized" &&
       "weights" %in% names(options) && !is.null(options[["weights"]]) && options[["weights"]] != "")
     .hasErrors(dataset, type = c("infinity", "limits", "observations"),
               all.target = options[["weights"]], limits.min = 0, observations.amount = "< 2",
               exitAnalysisIfErrors = TRUE)
+}
 
-  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && !is.numeric(dataset[,.v(options[["testSetIndicatorVariable"]])]))
-    JASP:::.quitAnalysis(gettext("Your test set indicator should contain numeric values, containing only 1 (included in test set) and 0 (excluded from test set)."))
-
-  if(options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator" && nlevels(factor(dataset[,.v(options[["testSetIndicatorVariable"]])])) != 2)
-    JASP:::.quitAnalysis(gettext("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."))
+.errorHandlingClassificationRegressionAnalyses <- function(dataset, options, type) {
+  predictors                <- unlist(options['predictors'])
+  predictors                <- predictors[predictors != ""]
+  target                    <- NULL
+  if (options[["target"]] != "")
+    target                  <- options[["target"]]
+  variables.to.read         <- c(predictors, target)
+  
+  if (length(variables.to.read) == 0)
+    return()
+  
+  if (options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator") {
+    indicatorVals <- unique(dataset[,.v(options[["testSetIndicatorVariable"]])])
+    if (length(indicatorVals) != 2 || !all(0:1 %in% indicatorVals))
+      JASP:::.quitAnalysis(gettext("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."))
+  }
+  
+  customChecks <- .getCustomErrorChecksKnnBoosting(dataset, options, type)
+  errors <- .hasErrors(dataset, type = c('infinity', 'observations'), custom = customChecks,
+                       all.target = variables.to.read,
+                       observations.amount = "< 2",
+                       exitAnalysisIfErrors = TRUE)
 }
 
 .getCustomErrorChecksKnnBoosting <- function(dataset, options, type) {

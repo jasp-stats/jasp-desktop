@@ -70,7 +70,7 @@ mlRegressionRegularized <- function(jaspResults, dataset, options, ...) {
   variables.to.read         <- c(target, predictors, weights, testSetIndicator)
 
   if (is.null(dataset)){
-    dataset <- .readAndAddCompleteRowIndices(dataset, variables.to.read, TRUE)
+    dataset <- .readAndAddCompleteRowIndices(dataset, columnsAsNumeric = variables.to.read)
   }
   
   if(length(unlist(options[["predictors"]])) > 0 && options[["target"]] != "" && options[["scaleEqualSD"]])
