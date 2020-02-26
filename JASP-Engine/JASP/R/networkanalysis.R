@@ -1394,7 +1394,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (checks[["errors"]][["fatal"]]) {
     message <- paste0(gettextf("Data supplied in %s cannot be used to determine variables types. Data should: ", options[["mgmVariableType"]]),
                        gettext("<ul><li>start with the column name of the variable.</ul></li>"),
-                       gettext("<ul><li>contain an '=' to distinghuish betweem column name and data type.</ul></li>"),
+                       gettext("<ul><li>contain an '=' to distinguish between column name and data type.</ul></li>"),
                        gettext("<ul><li>end with either 'g' for Gaussian, 'c' for categorical, or 'p' for Poisson.</ul></li>")
     )
     .quitAnalysis(message)
@@ -1428,29 +1428,20 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     } else {
       firstLine <- gettextf("Data supplied in %s could not be used to determine node locations.", nameY)
     }
-    message <- gettextf("%1$s %2$sData should only contain numeric:
+    message <- gettextf("%1$s %2$s Data should only contain numeric:
                  -start with the column name of the variable.
-                 -contain an '=' to distinghuish betweem column name and coordinate.",
+                 -contain an '=' to distinguish between column name and coordinate.",
                        defMsg, firstLine)
   } else if (length(checksX[["unmatched"]]) > 0 || length(checksY[["unmatched"]]) > 0) {
 
     unmatchedX <- paste(checksX[["unmatched"]], collapse = ", ")
     unmatchedY <- paste(checksY[["unmatched"]], collapse = ", ")
     message <- defMsg
-    if (unmatchedX != "") {
-      if (length(checksX[["unmatched"]]) > 1) {
-        message <- paste(message, gettextf("X-Coordinates for variables %s were not understood.", unmatchedX))
-      } else {
-        message <- paste(message, gettextf("X-Coordinates for variable %s was not understood.", unmatchedX))
-      }
-    }
-    if (unmatchedY != "") {
-      if (length(checksY[["unmatched"]]) > 1) {
-        message <- paste(message, gettextf("Y-Coordinates for variables %s were not understood.", unmatchedY))
-      } else {
-        message <- paste(message, gettextf("Y-Coordinates for variable %s was not understood.", unmatchedY))
-      }
-    }
+    if (unmatchedX != "")
+      message <- sprintf(ngettext(length(checksX[["unmatched"]]), "%1$s X-Coordinates for variable %2$s was not understood.", "%1$s X-Coordinates for variables %2$s were not understood."), message, unmatchedX)
+    
+    if (unmatchedY != "")
+      message <- sprintf(ngettext(length(checksY[["unmatched"]]), "%1$s Y-Coordinates for variable %2$s was not understood.", "%1$s Y-Coordinates for variables %2$s were not understood."), message, unmatchedY)
   }
 
   matchX <- checksX[["matches"]]
@@ -1576,7 +1567,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
                                 is.ordered(x) | is.integer(x))
         if (!all(goodColumns)) {
           if (verbose) {
-            warning(paste0(gettext("Removing non-numeric columns: "),
+            warning(paste0("Removing non-numeric columns: ",
                            paste(which(!goodColumns), collapse = "; ")))
           }
           data <- data[, goodColumns, drop = FALSE]

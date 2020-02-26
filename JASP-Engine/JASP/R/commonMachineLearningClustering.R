@@ -156,7 +156,7 @@
 
   if(clusterResult[["clusters"]] == options[["maxClusters"]] && options[["modelOpt"]] != "validationManual"){
     message <- gettext("The optimum number of clusters is the maximum number of clusters. You might want to adjust the range of optimization.")
-    clusteringTable$addFootnote(message=message, symbol="<i>Note.</i>")
+    clusteringTable$addFootnote(message=message, symbol=gettext("<i>Note.</i>"))
   }
 
   if(type=="densitybased"){

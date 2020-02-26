@@ -63,10 +63,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
         return(TRUE)
       }, TRUE)
       if (!all(admissible))
-        paste(gettext("Not all exogenous variables are admissible."),
-              gettext("Inadmissible exogenous variables:"),
-              paste(exo[!admissible], collapse = ","),
-              gettext(". Only binary or continuous exogenous variables allowed."))
+        gettextf("Not all exogenous variables are admissible. Inadmissible exogenous variables: %s. Only binary or continuous exogenous variables allowed.", paste(exo[!admissible], collapse = ", "))
     },
     
     checkEndogenous = function() {
@@ -79,10 +76,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
         return(TRUE)
       }, TRUE)
       if (!all(admissible))
-        paste(gettext("Not all endogenous variables are admissible."),
-              gettext("Inadmissible endogenous variables:"),
-              paste(endo[!admissible], collapse = ","),
-              gettext(". Only scale or ordinal endogenous variables allowed."))
+        gettextf("Not all endogenous variables are admissible. Inadmissible endogenous variables: %s. Only scale or ordinal endogenous variables allowed.", paste(endo[!admissible], collapse = ", "))
     }
     
   )
@@ -108,7 +102,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   ))
   
   if (inherits(medResult, "try-error")) {
-    errmsg <- paste(gettext("Estimation failed\nMessage:\n"), attr(medResult, "condition")$message)
+    errmsg <- gettextf("Estimation failed\nMessage:\n%s", attr(medResult, "condition")$message)
     modelContainer$setError(.decodeVarsInMessage(names(dataset), errmsg))
   }
 
@@ -476,17 +470,10 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     "robust"    = gettext("robust")
   )
   
-  if (is.null(modelContainer[["model"]][["object"]])) {
-    return(paste0(
-      se_type, gettext(" standard errors, "), ci_type, gettext(" confidence intervals.")
-    ))
-  } else {
-    return(paste0(
-      se_type, gettext(" standard errors, "), ci_type, gettext(" confidence intervals, "), 
-      modelContainer[["model"]][["object"]]@Options$estimator, gettext(" estimator.")
-    ))
-  }
-  
+  if (is.null(modelContainer[["model"]][["object"]]))
+    return(gettextf("%1$s standard errors, %2$s confidence intervals.", se_type, ci_type))
+  else
+    return(gettextf("%1$s standard errors, %2$s confidence intervals, %3$s estimator.", se_type, ci_type, modelContainer[["model"]][["object"]]@Options$estimator))
 }
 
 .medRsquared <- function(modelContainer, options, ready) {

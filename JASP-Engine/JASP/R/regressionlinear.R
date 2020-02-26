@@ -336,7 +336,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   bootstrapCoeffTable$addColumnInfo(name = "SE",           title = gettext("Standard Error"), type = "number")
 
   if (options$regressionCoefficientsConfidenceIntervals) {
-    overtitle <- gettextf("%f%% bca\u002A CI", 100 * options$regressionCoefficientsConfidenceIntervalsInterval)
+    overtitle <- gettextf("%s%% bca\u002A CI", 100 * options$regressionCoefficientsConfidenceIntervalsInterval)
     bootstrapCoeffTable$addColumnInfo(name = "lower", title = gettext("Lower"), type = "number", overtitle = overtitle)
     bootstrapCoeffTable$addColumnInfo(name = "upper", title = gettext("Upper"), type = "number", overtitle = overtitle)
   }
