@@ -5078,7 +5078,7 @@ msgid "Indep. multinomial, columns fixed"
 msgstr "Onafh. multinomiaal, kolommen vastgezet"
 
 msgctxt "ContingencyTablesBayesian|"
-msgid "Hypergeometrics (2x2 only)"
+msgid "Hypergeometric (2x2 only)"
 msgstr "Hypergeometrisch (enkel 2x2)"
 
 msgctxt "ContingencyTablesBayesian|"

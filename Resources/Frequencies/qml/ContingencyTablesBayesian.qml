@@ -62,7 +62,7 @@ Form
 			RadioButton { value: "jointMultinomial";				label: qsTr("Joint multinomial")								}
 			RadioButton { value: "independentMultinomialRowsFixed";	label: qsTr("Indep. multinomial, rows fixed"); checked: true	}
 			RadioButton { value: "independentMultinomialColumnsFixed"; label: qsTr("Indep. multinomial, columns fixed")				}
-			RadioButton { value: "hypergeometric";					label: qsTr("Hypergeometrics (2x2 only)"); id: hypergeometric	}
+			RadioButton { value: "hypergeometric";					label: qsTr("Hypergeometric (2x2 only)"); id: hypergeometric	}
 		}
 
 		Group
