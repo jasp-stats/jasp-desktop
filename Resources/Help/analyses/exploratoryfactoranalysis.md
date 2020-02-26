@@ -60,7 +60,7 @@ Factor Correlations:
 - The correlations between the factors. 
 
 Chi-squared Test: 
-The fit of the model is tested. When the test is significant, the model is rejected. Bear in mind that a chi-squared approximation is unreliable for small sample sizes. In the case of a small sample size, additional information about the fit of the model can be obtained by selecting the option `Additional fit indices` in the `Output options`. 
+The fit of the model is tested. When the test is significant, the model is rejected. Bear in mind that a chi-squared approximation may be unreliable for small sample sizes. In the case of a small sample size, additional information about the fit of the model can be obtained by selecting the option `Additional fit indices` in the `Output options`. For more discussions on overall fit metrics, see, for example, Saris, Satorra, & van der Veld (2009).
 - Model: The model obtained from the exploratory factor analysis. 
 - Value: The chi-squared test statistic.  
 - df: Degrees of freedom. 
@@ -97,6 +97,7 @@ The scree plot provides information on how much variance in the data, indicated 
     of personality inventories be evaluated? *Personality and Social Psychology Review, 14*, 332–346. 
 - Osborne, J. W., Costello, A. B., & Kellow, J. T. (2008). Best practices in 
     exploratory factor analysis. *Best practices in quantitative methods*, 86-99.
+- Saris, W. E., Satorra, A., & Van der Veld, W. M. (2009). Testing structural equation models or detection of misspecifications?. Structural Equation Modeling, 16(4), 561-582.
 - Yong, A. G., & Pearce, S. (2013). A beginner’s guide to factor analysis: Focusing on exploratory factor analysis. *Tutorials in quantitative methods for psychology, 9*(2), 79-94.
 
 ### R Packages 
