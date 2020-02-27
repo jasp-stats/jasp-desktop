@@ -202,7 +202,7 @@
   if (is.null(container)) {
     container <- createJaspContainer()
     # add dependencies for main table (i.e., when does it have to recompute values for the main table)
-    container$dependOn(c("tStatistic", "n1Size", "n2Size", "hypothesis", "bayesFactorType",            # standard entries
+    container$dependOn(c("tStatistic", "n1Size", "n2Size", "hypothesis",                               # standard entries
                          "defaultStandardizedEffectSize" , "informativeStandardizedEffectSize",        # informative or default
                          "priorWidth"                    , "effectSizeStandardized",                   # default prior
                          "informativeCauchyLocation"     , "informativeCauchyScale",                   # informed cauchy priors
@@ -232,6 +232,7 @@
       container[["ttestTable"]]$setError(results[["errorMessageTable"]])
   }
 
+  results[["ttestTableData"]][["BF"]] <- results[["BFlist"]][options$bayesFactorType]
   #  fill table if ready
   if (results[["ready"]])
     container[["ttestTable"]]$setData(results[["ttestTableData"]])
