@@ -73,10 +73,11 @@ BainTTestBayesianOneSample <- function(jaspResults, dataset, options, ...) {
                     "equalBiggerSmaller"  = 5)
     
   variableData <- dataset[[ .v(variable) ]]
+  testValue <- format(options[["testValue"]], scientific = FALSE)
 
   p <- try({
     # Call bain from package
-    bain:::bain_ttest_cran(x = variableData, nu = options[["testValue"]], type = type, seed = options[["seed"]])
+    bain:::bain_ttest_cran(x = variableData, nu = testValue, type = type, seed = options[["seed"]])
   })
   bainContainer[[variable]] <- createJaspState(p, dependencies = c("testValue", "hypothesis", "seed"))
   bainContainer[[variable]]$dependOn(optionContainsValue=list("variables" = variable))
