@@ -559,7 +559,6 @@ td.squash-left
 
 
 .jasp-notes {
-  border-top:     1px solid #5c5c5c;
   border-bottom:  1px solid #5c5c5c;
   border-radius:  0;
   color:          #000;
@@ -570,6 +569,11 @@ td.squash-left
   margin-bottom:  0.6em ;
   filter:         invert(1);
 }
+
+.jasp-notes-border {
+  border-top:     1px solid #5c5c5c;
+}
+
 
 .jasp-firstNote-note {
   margin-bottom: 0.5em;
@@ -652,4 +656,11 @@ pre {
 
 ::-webkit-scrollbar-thumb:hover {
  box-shadow: inset 0 0 0 10px #4784B2;
+}
+
+
+/* Custom values */
+.ql-toolbar.ql-snow {
+  /* light theme uses the default value */
+  border: 1px solid #5c5c5c;
 }

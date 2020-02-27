@@ -561,7 +561,6 @@ td.squash-left
 
 
 .jasp-notes {
-  border-top:       1px solid rgb(205, 205, 205);
   border-bottom:    1px solid rgb(205, 205, 205) ;
   border-radius :   0 ;
   color:            #000;
@@ -570,6 +569,10 @@ td.squash-left
   position:         relative ;
   margin-top:       0.6em ;
   margin-bottom:    0.6em ;
+}
+
+.jasp-notes-border {
+	border-top:       1px solid rgb(205, 205, 205);
 }
 
 .jasp-firstNote-note {
