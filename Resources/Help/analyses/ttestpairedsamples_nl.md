@@ -10,7 +10,7 @@ Met de gepaarde t-toets kan de gebruiker de effectgrootte schatten en de nulhypo
 
 ### Invoer
 -------
-#### Invoer veld
+#### Invoerveld
 - Variabelen: In deze box zijn de variabelen geselecteerd waarvoor het verschil is berekend. Meerdere verschillen kunnen tegelijkertijd worden geanalyseerd door het specificeren van verschillende rijen met twee variabelen waarvoor het verschil is berekend. Met andere woorden, iedere rij geeft andere verschilscores weer.  
 
 #### Toetsen  
@@ -29,7 +29,7 @@ Met de gepaarde t-toets kan de gebruiker de effectgrootte schatten en de nulhypo
 - Plaatsparameter: Voor de Student's t-toets wordt de plaatsparameter gegeven met het gemiddelde verschil; voor de Wilcoxon signed-rank test wordt de plaatsparameter gegeven met de Hodges-Lehmann schatting. 
   - Betrouwbaarheidsinterval: Betrouwbaarheidsinterval voor de plaatsparameter. De standaardoptie is 95%. Dit kan naar het gewenste percentage worden aangepast.
 - Effectgrootte: Bij de Student t-toets wordt de effectgrootte gegeven met Cohen's d; voor de Wilcoxon test wordt de effectgrootte gegeven met de rank biserial correlatie. 
-  - Betrouwbaarheidsinterval: Betrouwbaarheidsinterval voor de effectgrootte gebaseerd op een niet-centrale t-verdeling voor Cohen's d, Glass' delta en Hedges' g, en de normaal benadering van de Fisher transformed rank biserial correlation. 
+  - Betrouwbaarheidsinterval: Betrouwbaarheidsinterval voor de effectgrootte gebaseerd op een niet-centrale t-verdeling voor Cohen's d, Glass' delta en Hedges' g, en de normaal benadering van de Fisher getransformeerde rank biseriële correlatie. 
 - Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaarddeviatie, standaard fout van het gemiddelde voor iedere maat.
 - Beschrijvende grafieken: Geeft het steekproefgemiddelde en de betrouwbaarheidsinterval weer voor iedere maat (zie Morey [2008] voor de berekening van de standaardfout van het gemiddelde in gepaarde designs). 
   - Betrouwbaarheidsinterval: De betrouwbaarheidsintervallen worden weergegeven in percentages. De standaardoptie is 95%. Dit kan naar het gewenste percentage worden aangepast.
@@ -54,7 +54,7 @@ Met de gepaarde t-toets kan de gebruiker de effectgrootte schatten en de nulhypo
 - % BI voor gemiddelde verschil/plaatsparameter: Het betrouwbaarheidsinterval voor het gemiddelde verschil/de plaatsparameter van de verschilscores. De standaardoptie is 95%. 
   - Linker: De linkergrens van het betrouwbaarheidsinterval. 
   - Rechter: De rechtergrens van het betrouwbaarheidsinterval.  
-- Effectgrootte: Voor de Student t-toets wordt de effectgrootte gegeven met Cohen's d; Voor de Wilcoxon test wordt de effectgrootte gegeven met de matched rank biserial correlation. 
+- Effectgrootte: Voor de Student t-toets wordt de effectgrootte gegeven met Cohen's d; Voor de Wilcoxon test wordt de effectgrootte gegeven met de gematchte rank biseriële correlatie. 
 - % BI voor effectgrootte: Het betrouwbaarheidsinterval voor de effectgrootte. De standaardoptie is 95%. 
   - Linker: De linkergrens van het betrouwbaarheidsinterval. 
   - Rechter: De rechtergrens van het betrouwbaarheidsinterval.
@@ -89,4 +89,4 @@ Normaliteit toets (Shapiro-Wilk)
 
 ### Voorbeeld
 --- 
-- Voor een voorbeeld ga naar `Open` --> `Data Library` --> `T-Tests` --> `Moon and Agression` 
+- Voor een voorbeeld ga naar `Open` --> `Bibliotheek` --> `T-Tests` --> `Moon and Agression` 

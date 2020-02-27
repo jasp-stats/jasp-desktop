@@ -1,25 +1,25 @@
 Lineaire Regressie
 ==========================
 
-Met een lineaire regressie kan een lineaire relatie tussen een of meer verklarende pariabele(n) (predictoren) en een continue afhankelijke (respons) variabele worden geevalueerd.
+Met een lineaire regressie kan een lineaire relatie tussen een of meer verklarende pariabele(n) (predictoren) en een continue afhankelijke (respons) variabele worden geëvalueerd.
 
 ### Assumpties
 ---
 - Continue response variabele.
 - Lineariteit en additiviteit: De responsvariabele is lineair gerelateerd aan alle predictoren en de effecten van de predictoren zijn additief.
-- Onafhankelijkheid van de residuen: De residuen zijn niet gecorrelleerd met elkaar
+- Onafhankelijkheid van de residuen: De residuen zijn niet gecorreleerd met elkaar
 - Homoskedastischiteit: De fout variantie van elke predictor is constant over alle waarden van de predictor. 
 - Normaliteit van residuen: De residuen zijn normaal verdeeld met een gemiddelde van 0.
 
 ### Invoer
 ---
 
-#### Toekennningsveld
+#### Invoerveld
 - Afhankelijk: Afhankelijke (respons) variabele.
-- Methode: Specificeer de volgorde waarin de predictoren aan het model worden toegevoegd (i.e., hierarchische regressie analyse). Een blok van een of meer predictor(en) representeert een stap in de hierarchie. 
+- Methode: Specificeer de volgorde waarin de predictoren aan het model worden toegevoegd (i.e., hiërarchische regressie analyse). Een blok van een of meer predictor(en) representeert een stap in de hiërarchie. 
 		*Let op*: De huidige versie an JASP staat niet meer dan een blok toe.
     - Toevoegen: Alle predictoren worden tegelijk toegevoegd aan het model (forced entry).
-	- Achterwaards: Alle predictoren worden tegelijk toegevoegd, en daarna sequuentieel verwijderd gebaseerd op het criterium in "criterium stapsgewijze methode".
+	- Achterwaarts: Alle predictoren worden tegelijk toegevoegd, en daarna sequentieel verwijderd gebaseerd op het criterium in "criterium stapsgewijze methode".
 	- Voorwaarts: Predictoren worden sequentieel toegevoegd op basis van het criterium gespecificeerd in "criterium stapsgewijze methode". 
 	- Stapsgewijs: Predictoren worden sequentieel toegevoegd op basis van het criterium gespecificeerd in "criterium stapsgewijze methode"; na elke stap wordt de minst nuttige predictor verwijderd. 
 - Covariaten: Predictor variabele(n).
@@ -34,7 +34,7 @@ Met een lineaire regressie kan een lineaire relatie tussen een of meer verklaren
 	- Voeg toe aan nul model: De onafhankelijke variabelen in het model kunnen ook aan het nulmodel worden toegevoegd. 
 
 ### Statistieken
-- Regressiecoefficiënten:
+- Regressiecoëfficiënten:
 	- Schattingen: Ongestandaardiseerde en gestandaardiseerde schattingen van de coëfficiënten, standaardafwijkingen, t-waarden en de corresponderende p-waarden. 
 	- Fan `...` bootstraps: Als je deze optie selecteert wordt ge-bootsttrapte schatting toegepast. De standaardoptie voor het aantal replicaties is 1000. Dit kan tot behoeven worden aangepast.
   - Betrouwbaarheidsintervallen: Door deze optie te selecteren worden betrouwbaarheidsintervallen voor het geschatte gemiddelde verschil toegevoegd. De standaardoptie is 95%. Dit kan naar behoeven worden aangepast. 
@@ -51,7 +51,7 @@ Met een lineaire regressie kan een lineaire relatie tussen een of meer verklaren
   - Durbin-Watson: Durbin-Watson statistiek om autocorrelatie van de residuen te toetsen.
   - Gevalsgewijze diagnostiek: Gevalsgewijze en samengevatte diagnostieken voor de residuen.
 	- Gestandaardiseerd residu > 3: Uitschieters buiten x standaardafwijkingen: Geef diagnostieken weer voor gevallen waar de absolute waarde voor het gestandaardiseerde residu groter is dan x; de standaardoptie is x=3.
-    - Cook's afstand > 1: Geef diagnostieken weer voor gevallen waar de waarde van Cook's afstand groter is dan x; de standaardotie is x=1.
+    - Cook's afstand > 1: Geef diagnostieken weer voor gevallen waar de waarde van Cook's afstand groter is dan x; de standaardoptie is x=1.
     - Alle gevallen: Geef diagnostieken voor alle gevallen weer.
 
 
@@ -67,12 +67,12 @@ Met een lineaire regressie kan een lineaire relatie tussen een of meer verklaren
 ### Grafieken
 
 - Residu grafieken: Als de assumpties van het lineaire regressiemodel houdbaar zijn moeten de residuen aselect rond een horizontale lijn liggen. Elk systematisch patroon of clustering van residuen wijst op een schending.
-  - Residuen vs afhankelijk: Scatterplot van de waarden van de residuen tegen de afhankelijke variabele.
-  - Residuen vs covariaten: Scatterplot van de waarden van de residuen tegen de predictor variabele(n).  
+  - Residuen vs afhankelijk: Spreidingsdiagrammen van de waarden van de residuen tegen de afhankelijke variabele.
+  - Residuen vs covariaten: Spreidingsdiagram van de waarden van de residuen tegen de predictor variabele(n).  
   - Residuen vs histogram: Histogram van de waarden van de residuen.
     - Gestandaardiseerde residuen: Gebruikt de gestandaardiseerde in plaats van de absolute residuen. 
   - Q-Q grafiek: Gestandaardiseerde residuen: Checkt de validiteit van de verdelingsassumpties. Om precies te zijn laat de plot zien of de residuen normaal zijn verdeeld.
-  - Partiële grafieken: Deze grafieken zijn scatterplots van dde residuen van 2 regressies - regressie van de afhankelijke variabele op alle predictoren, en regressie van een predictor (als afhankelijke variabele) op alle andere predictoren -- daarna worden de residuen tegen elkaar afgezet. 
+  - Partiële grafieken: Deze grafieken zijn spreidingsdiagrammen van dde residuen van 2 regressies - regressie van de afhankelijke variabele op alle predictoren, en regressie van een predictor (als afhankelijke variabele) op alle andere predictoren -- daarna worden de residuen tegen elkaar afgezet. 
 
 
 
@@ -82,7 +82,7 @@ Met een lineaire regressie kan een lineaire relatie tussen een of meer verklaren
 #### Lineaire regressie
 
 Samenvatting van het model:
-- Model: Regressie model (een voor elke stap in achterwaartse, voorwaartse en stapsgewijze regressie).
+- Model: Regressie model (één voor elke stap in achterwaartse, voorwaartse en stapsgewijze regressie).
 - R: Meerdere correlatie coëfficiënten R.
 - R kwadraat: R kwadraat waarde. De proportie van variantie dee wordt verklaard door het regressiemodel.
 - Bijgestelde R kwadraat: Bijgestelde R kwadraat waarde.
@@ -95,7 +95,7 @@ Samenvatting van het model:
 - Durbin-Watson: Durbin-Watson statistiek.
 
 ANOVA:
-- Model: Regressie model (een voor elke stap in achterwaartse, voorwaartse en stapsgewijze regressie.
+- Model: Regressie model (één voor elke stap in achterwaartse, voorwaartse en stapsgewijze regressie.
 - Kwadratensom: De kwadratensom voor het regressiemodel (regressie) en het residu (Residu), en de totale kwadratensom (totaal).
 - df: De vrijheidsgraden voor het regressiemodel (regressie) en het residu (Residu), en de totale vrijheidsgraden (totaal).
 - Mean square: Gekwadrateerde gemiddelde voor het regressiemodel (regressie) en het residu (residu). 
@@ -103,13 +103,13 @@ ANOVA:
 - p: p-waarde.
 
 Coëfficiënten
-- Model: Regressiemodel (een voor elke stap in achterwaartse, voorwaarte en stapsgewijze regressie).
-- Ongestandaardiseerd: Ongestandaardiseerde coefficiënten.
-- Standdaardfout: De standaardfout van de regressiecoëfficiënten.
-- Gestandaardiseerd: Gestandaardiseerde coefficiënten.
-- T-waarde: T-waarde voor het toetsen van de nulhypothese dat de poopulatei regressiecoëfficiënt 0 is. 
+- Model: Regressiemodel (één voor elke stap in achterwaartse, voorwaartse en stapsgewijze regressie).
+- Ongestandaardiseerd: Ongestandaardiseerde coëfficiënten.
+- Standaardfout: De standaardfout van de regressiecoëfficiënten.
+- Gestandaardiseerd: Gestandaardiseerde coëfficiënten.
+- T-waarde: T-waarde voor het toetsen van de nulhypothese dat de populatie regressiecoëfficiënt 0 is. 
 - P: P-waarde.
-- % BI: Het betouwbaarheidsinterval voor de ongestandaardiseerde coefficiënten. Standaard is 95%. 
+- % BI: Het betrouwbaarheidsinterval voor de ongestandaardiseerde coëfficiënten. Standaard is 95%. 
   - Linker: De linkergrens van het betrouwbaarheidsinterval.
   - Rechter: De rechtergrens van het betrouwbaarheidsinterval.
 - Collineariteit statistieken:
@@ -117,11 +117,11 @@ Coëfficiënten
   - VIF: Variantie Inflatie Factor; grote waarden wijzen op multicollineariteit. 
   
 Ge-bootstrapte Coëfficiënten.
-- Model: Regressiemodel (een voor elke stap in achterwaartse, voorwaartse en stapsgewijze regressie).
-- Ongestandaardiseerd: Ongestandaardiseerde coefficiënten.
-- Bias: Gestadaardiseerde coëfficiënten.
-- Standdardfout: De standaardfout van de regressiecoëfficiënten.
-- % BI: Het ge-bootstrapte betouwbaarheidsinterval voor de ongestandaardiseerde coefficiënten. Standaard is 95%. 
+- Model: Regressiemodel (één voor elke stap in achterwaartse, voorwaartse en stapsgewijze regressie).
+- Ongestandaardiseerd: Ongestandaardiseerde coëfficiënten.
+- Bias: Gestandaardiseerde coëfficiënten.
+- Standaardfout: De standaardfout van de regressiecoëfficiënten.
+- % BI: Het ge-bootstrapte betrouwbaarheidsinterval voor de ongestandaardiseerde coëfficiënten. Standaard is 95%. 
   - Linker: De linkergrens van het betrouwbaarheidsinterval.
   - Rechter: De rechtergrens van het betrouwbaarheidsinterval.
 
@@ -132,21 +132,21 @@ Beschrijvende statistieken.
 - SE: Standaardfout van het gemiddelde.
 
 Part en Partiële correlaties: 
-- Model: Regressie model (een voor elke stap in achterwaardse, voorwaardse en stapsgewijze regressie).
+- Model: Regressie model (één voor elke stap in achterwaartse, voorwaartse en stapsgewijze regressie).
 - Partieel: Partiële correlaties tussen de predictor variabelen en de afhankelijke variabele.
 - Part: Semipartiële correlates tussen de predictor variabelen en de afhankelijke variabele. 
 
 
-Coefficiënten
+Coëfficiënten
 - [linker]%: Linkergrens van het gespecificeerde x% betrouwbaarheidsinterval voor de regressiecoëfficiënten. 
 - [rechter]%: Rechtergrens van het gespecificeerde x% betrouwbaarheidsinterval voor de regressiecoëfficiënten. 
 
 
-Coefficiënten Covariantie Matrix:
-- Geeft de covariantie matrix van de coefficiënten van de predictoren voor elk regressiemodel weer (Model). 
+Coëfficiënten Covariantie Matrix:
+- Geeft de covariantie matrix van de coëfficiënten van de predictoren voor elk regressiemodel weer (Model). 
 
 Collineariteit Diagnostieken: 
-- Geeft voor elk  regressiemodel (model) en voor elk element van de geschaalde ongecentreerde kruisproduct matrix het volgende weer:
+- Geeft voor elk regressiemodel (model) en voor elk element van de geschaalde, niet gecentreerde kruisproduct matrix het volgende weer:
   - Eigenwaarde.
   - Conditie index.
   - Proportie variantie voor elke term in de regressie formule.
@@ -163,7 +163,7 @@ Residu statistieken:
 - Geeft het minimum, maximum, gemiddelde, standaardafwijking en de steekproefgrootte voor:
  - De voorspelde waarde.
  - Het residu. 
- - Gestadaardiseerde voorspelde waarde.
+ - Gestandaardiseerde voorspelde waarde.
  - Gestandaardiseerde residu.
 
 

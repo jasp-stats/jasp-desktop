@@ -25,8 +25,8 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
 -  Group 1 &lt; Group 2: Eenzijdige alternatieve hypothese dat het populatiegemiddelde van groep een lager is dan het populatiegemiddelde van groep twee. 
 
 #### Bayes Factor
--  BF10: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de null hypothese.
--  BF01: Als je deze optie selecteert geeft de Bayes factor bewijs voor de null hypothese ten opzichte van de alternatieve hypothese. 
+-  BF10: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nul hypothese.
+-  BF01: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nul hypothese ten opzichte van de alternatieve hypothese. 
 -  Log(BF10): Natuurlijk logaritme van BF10. 
 
 #### Aanvullende statistieken
@@ -42,16 +42,16 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
 #### Grafieken
 - Prior en posterior: Geeft de verdeling van de prior en posterior van de effectgrootte onder de alternatieve hypothese.
   - Aanvullende informatie: Voegt de Bayes Factor berekend met de door de gebruiker gedefinieerde prior toe; voegt een kanswiel toe die de kans van de data onder de nulhypothese vs. de alternatieve hypothese laat zien; voegt de mediaan en de 95% geloofwaardigheidsinterval van de verdeling van de posterior van de effectgrootte toe.
-- Bayes factor robuustheidscheck: Geeft de Bayes factor weer als een functie van de breedte van de Cauchy prior voor de effectgrootte. De schaal van de Cauchy prior varieert tussen 0 en 1.5, zodat de priors steeds uninformatiever worden.
+- Bayes factor robuustheidscheck: Geeft de Bayes factor weer als een functie van de breedte van de Cauchy prior voor de effectgrootte. De schaal van de Cauchy prior varieert tussen 0 en 1.5, zodat de priors steeds minder informatief worden.
   - Aanvullende informatie: Voegt de Bayes factor berekend met de door de gebruiker gedefinieerde prior toe; voegt een kanswiel toe die de kans van de data onder de nulhypothese vs. de alternatieve hypothese laat zien; voegt de mediaan en de 95% geloofwaardigheidsinterval van de verdeling van de posterior van de effectgrootte toe.
-- Sequentiele analyse: Geeft de ontwikkeling van de Bayes factor weer terwijl de data binnenkomen, gebruik makende van de door de gebruiker gedefinieerde prior.
-  - Robuustheidscheck: Voegt de resultaten van de sequentiele analyse toe, gebruik makende van de brede (scale=1) en ultrabrede prior (scale=sqrt(2)).
+- Sequentiële analyse: Geeft de ontwikkeling van de Bayes factor weer terwijl de data binnenkomen, gebruik makende van de door de gebruiker gedefinieerde prior.
+  - Robuustheidscheck: Voegt de resultaten van de sequentiële analyse toe, gebruik makende van de brede (scale=1) en ultrabrede prior (scale=sqrt(2)).
 - Beschrijvende grafieken
   - Geloofwaardigheidsinterval: Geeft de centrale geloofwaardigheidsintervallen weer. De standaardoptie is 95%.
  
 ### Prior
 - Standaard:
-   - Cauchy: Schaal van de Cauchy prior voor de effecctgrootte onder de alternatieve hypothese; de standaardoptie is .707.
+   - Cauchy: Schaal van de Cauchy prior voor de effectgrootte onder de alternatieve hypothese; de standaardoptie is .707.
 - Geinformeerd:
    - Cauchy: Schaal en locatie.
    - Normaal: Gemiddelde en standaardafwijking.
@@ -75,10 +75,10 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
 - SE: Standaardfout van het gemiddelde.
 
 #### Grafieken
-- Prior en posterior: Geeft de prior (stippellijn) en posterior (lijn) verdeling van de effecctgrootte onder de alternatieve hypothese; de grijze cirkels geven de hoogte van de dichtheid van de prior en de posterior bij een effectgrootte delta = 0 weer. De horizontale lijn geeft de breedte van een 95% geloofwaardigheidsinterval van de posterior verdeling weer.
+- Prior en posterior: Geeft de prior (stippellijn) en posterior (lijn) verdeling van de effectgrootte onder de alternatieve hypothese; de grijze cirkels geven de hoogte van de dichtheid van de prior en de posterior bij een effectgrootte delta = 0 weer. De horizontale lijn geeft de breedte van een 95% geloofwaardigheidsinterval van de posterior verdeling weer.
   - Aanvullende info: Geeft de Bayes factor berekend met de door de gebruiker gedefinieerde prior weer; geeft een kanswiel weer met de kans van de data onder de nulhypothese en alternatieve hypothese; geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior verdeling weer.
-- Bayes factor rubuustheidsgrafiek: Geeft de Bayes factor weer als een functie van de breedte van de Cauchy prior voor effectgrootte. De zwarte cirkel geeft de Bayes factor berekend met een brede prior weer; de witte cirkel geeft de Bayes factor berekend met een ultrabrede prior weer; de grijze cirkel geeft de Bayes factor berekend met de door de gebruiker gedefinieerde prior verdeling weer.
-- Sequentiele analyse: Geeft de ontwikkeling van de Bayes factor weer, als een functie van het aantal datapunten (n), gebruik makenende van de door de gebruiker gedefinieerde prior; geeft de Bayes factor berekend met de door de gebruiker gedefinieerde prior weer; geeft een kanswiel weer die de kans van de data onder de nulhypothese vs. de alternatieve hypothese weergeeft; geeft de mediaan en de 95% geloofwaardigheidsinterval van de verdeling van de posterior weer; laat zien hoe besluitvaardig het bewijs is met Jeffreys' (1961) bewijscategorieen. 
+- Bayes factor robuustheidsgrafiek: Geeft de Bayes factor weer als een functie van de breedte van de Cauchy prior voor effectgrootte. De zwarte cirkel geeft de Bayes factor berekend met een brede prior weer; de witte cirkel geeft de Bayes factor berekend met een ultrabrede prior weer; de grijze cirkel geeft de Bayes factor berekend met de door de gebruiker gedefinieerde prior verdeling weer.
+- Sequentiële analyse: Geeft de ontwikkeling van de Bayes factor weer, als een functie van het aantal datapunten (n), gebruik makenende van de door de gebruiker gedefinieerde prior; geeft de Bayes factor berekend met de door de gebruiker gedefinieerde prior weer; geeft een kanswiel weer die de kans van de data onder de nulhypothese vs. de alternatieve hypothese weergeeft; geeft de mediaan en de 95% geloofwaardigheidsinterval van de verdeling van de posterior weer; laat zien hoe besluitvaardig het bewijs is met Jeffreys' (1961) bewijscategorieën. 
   - Robuustheidscheck: Geeft de ontwikkeling van de Bayes factor als een functie van het aantal datapunten (n), met de brede en ultrabrede verdeling van de prior. De zwarte cirkel geeft de Bayes factor berekend met een brede prior verdeling weer; de witte cirkel geeft de Bayes factor berekend met een ultrabrede prior verdeling weer; de grijze cirkel geeft de Bayes factor berekend met de door de gebruiker gedefinieerde prior verdeling weer.
 - Beschrijvende grafieken:
   - Geloofwaardigheidsinterval: Centrale geloofwaardigheidsinterval. De standaardoptie is 95%.

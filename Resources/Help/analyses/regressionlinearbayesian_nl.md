@@ -14,8 +14,8 @@ Met de bayesiaanse Lineaire regressie kan men een lineaire relatie tussen een of
 ---
 
 #### Bayes Factor
-- BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de null hypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de null hypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nul hypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nul hypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
 - Log(BF<sub>10</sub>) : Natuurlijk logaritme van BF10.
 
 #### Volgorde
@@ -49,9 +49,9 @@ Vergelijkt elk model met het geselecteerde model.
 
 
 ### Geavanceerde opties
-- Prior: Prior verdelingen voor regresiecoëfficiënten. Er zijn verschillende opties beschikbaar:
+- Prior: Prior verdelingen voor regressiecoëfficiënten. Er zijn verschillende opties beschikbaar:
   - AIC: Vergelijk modellen met het Akaike Informatie Criterium.
-  - BIC: Vergelijk modellen met het Bayesiaandse Informatie Criterium.
+  - BIC: Vergelijk modellen met het Bayesiaanse Informatie Criterium.
   - EB-globaal: Globale empirische Bayesiaanse schattingen van g in de Zellner-Siow g-prior en model kansen. Gebruikt een EM algoritme om een gemeenschappelijke of globale schatting van g te vinden, gemiddeld over alle modellen. Als het niet mogelijk is om alle modellen op te sommen worden alleen de modellen die onder de EB-lokaal zijn gesampled gebruikt.
   - EB-lokaal: Gebruikt MLE van g van de marginale likelihood in elk model.
   - g-prior: Zellner's g-prior.
@@ -65,7 +65,7 @@ Vergelijkt elk model met het geselecteerde model.
   - Castillo: Standaard u = 1. Gelijk aan een beta binomiaal met a = 1 en b = p^u, waar p staat voor het aantal predictoren. 
   - Beta binomiaal: Standaard Beta(a=1, b-1).
   - Bernoulli: Standaard p = 0.5.
-- Steekproef methode: Geeft aan welke steekproef methode wordt gebruikt. Het wordt aangeraden om *BAS* te gebruiken wanneer de model space kan worden opgeteld.
+- Steekproef methode: Geeft aan welke steekproef methode wordt gebruikt. Het wordt aangeraden om *BAS* te gebruiken wanneer de model ruimte kan worden opgeteld.
   - BAS: Gebruikt Bayesiaanse adaptieve steekproeven (zonder vervanging). Deze kan worden geüpdatet gebaseerd op schattingen van de marginale inclusie. *N. modellen* geeft het aantal modellen aan om steekproeven van te nemen zonder vervanging. Als je de waarde op 0 zet betekent dit dat de analyse zal proberen alle modellen op te tellen.
   - MCMC: Steekproeven met vervanging door middel van een MCMC algoritme dat een birth/death random walk combineert met een random swap move om variabiliteit in het model uit te wisselen. *n. samples* geeft het aantal MCMC steekproeven aan. Als je de waarde op 0 zet is het aantal interacties 10 keer het aantal modellen. Het nemen van steekproeven stopt wanneer min(aantal modellen, MCMC iteraties) wordt bereikt. 
 - Reproduceerbaarheid:

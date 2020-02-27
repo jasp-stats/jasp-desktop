@@ -22,9 +22,9 @@ Random Forest is een classificatiemethode die beslisbomen maakt die bestaan uit 
 
 #### Grafieken
 - Datasplit: Laat zien hoe de data is gesplitst in trainings- (en validatie-) en testset.
-- Out-of-bag verbetering: Plot het aantal beslisbomen tegen de out-of-bag classificatie Precisiesverbetering van het model. Precisie is bepaald voor de trainingsset.
+- Out-of-bag verbetering: Plot het aantal beslisbomen tegen de out-of-bag classificatie Precisieverbetering van het model. Precisie is bepaald voor de trainingsset.
 - ROC curves: Toont ROC curves voor elke klasse voorspelt tegenover alle andere klassen.
-- Andrews curves: Een manier om de structuur in hoger dimensionele data te visualizeren. Lijnen die clusteren, zijn observaties die meer overeenkomen. 
+- Andrews curves: Een manier om de structuur in hoger dimensionele data te visualiseren. Lijnen die clusteren, zijn observaties die meer overeenkomen. 
 - Gemiddelde daling van de Precisie: Toont de variabele gemiddelde daling van de Precisie van het model.
 - Totale stijging van de node purity: Toont de variabele totale stijging van node purity van het model.
 - Decision boundary matrix: Maakt een *n* x *n* grafiek die visualiseert hoe elke observatie zou zijn geclassificeerd zoals het huidige model voorspelt. Grenzen tussen klassen zijn gevisualiseerd. Kan enkel gemaakt worden voor numerieke voorspellers.
@@ -58,7 +58,7 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 ### Uitvoer
 -------
 
-#### Random Forest Classification Model Table
+#### Random Forest Classification Model Tabel
 - De eerste kolom laat het aantal beslisbomen zien.
 - Voorspellers per splitsing: Geef het aantal voorspellervariabelen die gebruikt worden binnen elke splitsing in de beslisboom. 
 - n(Train): Het aantal observaties in de trainingsset.
@@ -87,5 +87,5 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 
 ### Voorbeeld 
 --- 
-- Voor een dataset als voorbeeld ga naar `Open` --> `Data Library` --> `Machine Learning` --> `Telco Customer Churn`.  
+- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Telco Customer Churn`.  
 

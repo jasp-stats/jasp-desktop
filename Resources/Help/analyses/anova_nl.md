@@ -37,7 +37,7 @@ Met een ANOVA berekent men het verschil tussen meerdere groepsgemiddelden.
 - Homogeniteitscorrecties: Als de assumptie van homogeniteit is geschonden, kunnen er correcties worden geselecteerd. 
 	- Geen: Geen homogeniteitscorrectie. 
     - Brown-Forsythe: Als de assumptie van homogeniteit is geschonden, kan deze correctie worden gebruikt. Deze correctie is alleen beschikbaar voor een one-way ANOVA. 
-	- Welch: Als de assumtie van homogeniteit is geschonden, kan deze correctie worden gebruikt. Deze correctie is alleen beschikbaar voor een one-way ANOVA.
+	- Welch: Als de assumptie van homogeniteit is geschonden, kan deze correctie worden gebruikt. Deze correctie is alleen beschikbaar voor een one-way ANOVA.
 - Q-Q grafiek van residuen: Controleert de validiteit van assumpties over de verdeling van de dataset. Om precies te zijn, geeft de grafiek aan of residuen normaal verdeeld zijn. 
 
 
@@ -56,7 +56,7 @@ Met een ANOVA berekent men het verschil tussen meerdere groepsgemiddelden.
       - verschil: Dit contrast wordt ook wel "reverse Helmert" genoemd. Als je dit contrast selecteert, wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het vorige niveau.
       - Helmert: Als je dit contrast selecteert, wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van de volgende niveaus. Dit is het omgekeerde van het "verschil" contrast.
       - herhaald: Als je dit contrast selecteert, wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het volgende niveau. 
-      - Polynoom: Dit contrast test polynome trends in de data. Welke specifieke polynoom wordt gebruikt, is afhankelijk van het aantal niveaus van de onafhankelijke variabele. De graad van de trend die wordt gebruikt, is het aantal niveaus min 1. Als de onafhankelijke variabele dus bestaat uit twee niveaus, wordt een lineaire trend geanalyseerd. Als de onafhankelijke variabele bestaat uit drie niveaus, wordt een kwadratrische trend en een lineaire trend geanalyseerd. 
+      - Polynoom: Dit contrast test polynome trends in de data. Welke specifieke polynoom wordt gebruikt, is afhankelijk van het aantal niveaus van de onafhankelijke variabele. De graad van de trend die wordt gebruikt, is het aantal niveaus min 1. Als de onafhankelijke variabele dus bestaat uit twee niveaus, wordt een lineaire trend geanalyseerd. Als de onafhankelijke variabele bestaat uit drie niveaus, wordt een kwadratische trend en een lineaire trend geanalyseerd. 
       - custom: Hier kunnen de contrast gewichten handmatig ingevoerd worden. De gewichten hebben 3 vereisten: (1) minstens 1 gewicht dient niet gelijk aan 0 te zijn (2) Het maximum aantal contrasten is gelijk aan het aantal niveaus van de factor - 1 (3) voor factoren met meer dan 2 niveaus, dienen er minstens 2 contrasten ingevoerd te worden.
 - Betrouwbaarheidsintervallen: Als je deze optie selecteert, worden er betrouwbaarheidsintervallen voor het geschatte verschil in gemiddelden gemaakt. De standaardoptie is een interval van 95%. Dit kan tot het gewenste percentage worden aangepast.
 
@@ -70,7 +70,7 @@ Met een ANOVA berekent men het verschil tussen meerdere groepsgemiddelden.
       - Scheffe: Het aanpassen van significatieniveaus in een lineaire regressie om rekening te houden met meerdere vergelijkingen. Deze methode is vrij conservatief.
       - Bonferroni: Deze correctie wordt gezien als vrij conservatief. Het risico op een type 1 fout wordt verminderd, maar statistische kracht (power) wordt ook lager.
       - Holm: Deze methode wordt ook wel sequentiële Bonferroni genoemd, en wordt gezien als minder conservatief dan de Bonferroni methode.
-  - Type: Er kunnen verschillende typen post-hoc toetss worden geselecteerd. 
+  - Type: Er kunnen verschillende typen post-hoc toets worden geselecteerd. 
 	  -  Standaard: Paarsgewijze t-toetsen worden uitgevoerd. Alle correcties kunnen op deze methode worden toegepast. Dit is de standaardoptie.
       -  Games-Howell: Deze methode kan worden gebruikt wanneer groeps-/niveauvarianties niet gelijk zijn. De p-waarden worden gecorrigeerd met de Tukey methode.
       -  Dunett: Als je deze methode selecteert, worden alle niveaus vergeleken met een specifiek niveau, bijvoorbeeld met de controlegroep. Momenteel is het nog niet mogelijk om handmatig te specificeren met welk niveau de andere niveaus worden vergeleken, maar dit is gebaseerd op de volgorde van de niveaus. Om de volgorde aan te passen, kunnen de niveaulabels worden veranderd.
@@ -82,7 +82,7 @@ Met een ANOVA berekent men het verschil tussen meerdere groepsgemiddelden.
 	  -  Dunn: Dit is een niet-parametrische toets die kan worden gebruikt om kleine subsets van paren te testen. Deze post-hoc toets is een opvolger voor de Kruskal-Wallis toets. De p-waardes worden gecorrigeerd met de Bonferroni en de Holm methode.
 
 ### Beschrijvende grafieken
-- Selecteer De onafhankelijke variabele op de horizontale as om een beschrijvende grafiek te maken. Als er meerdere onafhankelijke variabelen zijn, kunnen de variabelen in één grafiek worden weergegeven door de andere variabele in het veld Aparte Lijnen te zetten. De variabelen kunnnen ook in aparte grafieken worden weergegeven door de andere variabele in het veld Aparte Grafieken te zetten.
+- Selecteer De onafhankelijke variabele op de horizontale as om een beschrijvende grafiek te maken. Als er meerdere onafhankelijke variabelen zijn, kunnen de variabelen in één grafiek worden weergegeven door de andere variabele in het veld Aparte Lijnen te zetten. De variabelen kunnen ook in aparte grafieken worden weergegeven door de andere variabele in het veld Aparte Grafieken te zetten.
   - Factoren: De onafhankelijke variabelen die mee worden genomen in de analyse.
   - Horizontale as: Selecteer de onafhankelijke variabele die op de horizontale as wordt weergegeven.
   - Aparte lijnen: Door een onafhankelijke variabele in deze box te plaatsen, corresponderen verschillende lijnen met verschillende niveaus van de geselecteerde variabele.
@@ -116,7 +116,7 @@ Met een ANOVA berekent men het verschil tussen meerdere groepsgemiddelden.
   </details>
 
   - Factoren: Dit veld bevat alle onafhankelijke variabelen die worden meegenomen in de analyse.
-  - Simpel effect factor: In dit veld selecteer je de onafhankelijke variabele om het effect van deze variabele ceconditoneerd op de niveaus van de moderator te berekenen. 
+  - Simpel effect factor: In dit veld selecteer je de onafhankelijke variabele om het effect van deze variabele geconditioneerd op de niveaus van de moderator te berekenen. 
   - Moderator factor 1: In dit veld selecteer je de onafhankelijke variabele die de verschillende niveaus weergeeft. 
   - Moderator factor 2: in dit veld kan je optioneel een aanvullende onafhankelijke variabele toevoegen.
 
@@ -148,7 +148,7 @@ Test voor gelijkheid van varianties (Levene's):
 - VS-MPR: Vovk-Sellke Maximum *p*-ratio.  
 
 Q-Q Grafiek: 
-- Met een Q-Q grafiek kan de normaliteit van de residuen visueel worden geïnspecteerd. De theoretische kwantielen staan op de x-as en de gestandaardiserde residuen op de y-as. Hoe meer de punten op de diagonale lijn staan, hoe meer de data normaal verdeeld is. 
+- Met een Q-Q grafiek kan de normaliteit van de residuen visueel worden geïnspecteerd. De theoretische kwantielen staan op de x-as en de gestandaardiseerde residuen op de y-as. Hoe meer de punten op de diagonale lijn staan, hoe meer de data normaal verdeeld is. 
 
 #### Contrasten
 Afwijking/Simpel/Verschil/Helmert/Repeated/Polynoom/Custom Contrast:
@@ -214,7 +214,7 @@ Ge-bootstrapte Post Hoc Vergelijkingen - Onafhankelijke variabele:
 - Gemiddelde verschil: het gemiddelde verschil tussen de niveaus. Deze schatting wordt gebaseerd op de mediaan van de bootstrap verdeling. 
 - Bias: Het gemiddelde verschil tussen de gebootstrapte gemiddelde verschillen en het geschatte gemiddelde verschil. 
 - SE: De standaardfout van de gebootstrapte geschatte gemiddelden.
-- 95% betrouwbaarheidsinterval voor het gemiddelde veschil: Het voor bias-gecorrigeerde betrouwbaarheidsinterval van het gemiddelde verschil tussen vergeleken niveaus. De standaardoptie is 95%.
+- 95% betrouwbaarheidsinterval voor het gemiddelde verschil: Het voor bias-gecorrigeerde betrouwbaarheidsinterval van het gemiddelde verschil tussen vergeleken niveaus. De standaardoptie is 95%.
   - Linker: De linkergrens van het betrouwbaarheidsinterval.
   - Rechter: De rechtergrens van het betrouwbaarheidsinterval.
   
@@ -234,7 +234,7 @@ Ge-bootstrapte marginale gemiddelden - Onafhankelijke variabele:
 - Marginale gemiddelde: Schatting van het marginale gemiddelde voor elk niveau van de onafhankelijke variabele.  Dit gemiddelde is gecorrigeerd voor alle andere variabelen in het model. De schatting is gebaseerd op de bootstrap verdeling.
 - Bias: Bias: Het gemiddelde verschil tussen het gebootstrapte marginale gemiddelde en het geschatte marginale gemiddelde.
 - SE: De standaardfout van de gebootstrapte marginale gemiddelden. 
-- 95% BI voor gemiddelde verschil: de voor bias-gecorrigeerde betrouwbaarheidsinterval van het gemiddelde veschil tussen de vergeken niveaus. De standaardoptie is 95%.
+- 95% BI voor gemiddelde verschil: de voor bias-gecorrigeerde betrouwbaarheidsinterval van het gemiddelde verschil tussen de vergeken niveaus. De standaardoptie is 95%.
   - Linker: De linkergrens van het betrouwbaarheidsinterval.
   - Rechter: De rechtergrens van het betrouwbaarheidsinterval.
 
@@ -261,7 +261,7 @@ Beschrijvende statisteken - afhankelijke variabele:
 - SD: De standaardafwijking.
 - N: De steekproefgrootte.
 
-#### Beschijvende Statistieken Grafiek 
+#### Beschrijvende Statistieken Grafiek 
 Onafhankelijke variabele op de x-as en afhankelijke variabele op de y-as. Als er meerdere onafhankelijke variabelen mee worden genomen, worden deze weergegeven door verschillende lijnen of verschillende grafieken.
 
 

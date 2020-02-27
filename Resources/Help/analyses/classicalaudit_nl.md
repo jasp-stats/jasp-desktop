@@ -1,7 +1,7 @@
 Audit Werkflow
 ==========================
 
-De taak van een Auditor is om tot oordeel te komen over de eerlijkheid van gepresenteerde transacties in een populatie, en te bepalen of er fouten in de populatie zitten die materieel zijn. Als de auditor toegang heeft tot de populatiedata kan kan hij/zij gebruik maken van de *audit werkflow* om te berekenen hoeveel steekproeven er moeten worden geëvalueerd om tot een bepaald niveau van zekerheid in het oordeel te komen. Er worden dan steekproeven uit de data getrokken, deze worden geïnspecteerd en er wordt een oordeel gemaakt over het aantal fouten in de populatie. De workflow leidt de auditor om de correcte beslissingen te maken in dit proces. De frequentistische *audit werkflow* kan de risico oordelen van het *audit risico model* gebruiken om de benodigde riscos op het vinden van materiele fouten bij te stellen.
+De taak van een Auditor is om tot oordeel te komen over de eerlijkheid van gepresenteerde transacties in een populatie, en te bepalen of er fouten in de populatie zitten die materieel zijn. Als de auditor toegang heeft tot de populatiedata kan kan hij/zij gebruik maken van de *audit werkflow* om te berekenen hoeveel steekproeven er moeten worden geëvalueerd om tot een bepaald niveau van zekerheid in het oordeel te komen. Er worden dan steekproeven uit de data getrokken, deze worden geïnspecteerd en er wordt een oordeel gemaakt over het aantal fouten in de populatie. De workflow leidt de auditor om de correcte beslissingen te maken in dit proces. De frequentistische *audit werkflow* kan de risico oordelen van het *audit risico model* gebruiken om de benodigde risico's op het vinden van materiele fouten bij te stellen.
 
 ----
 
@@ -48,7 +48,7 @@ Als beide risico beoordelingen op Hoog (100%) worden gezet wordt het audit risic
 
 ### Planning verdeling:
 - Possion: de poisson verdeling voor broken taints (AICPA, 2017).
-- Binomiaal: De oneindige populatie binomiaal verdeling coor complete taints. 
+- Binomiaal: De oneindige populatie binomiaal verdeling voor complete taints. 
 - Hypergeometrisch: De eindige populatie hypergeometrische verdeling voor complete taints. 
 
 ### Type selectie:

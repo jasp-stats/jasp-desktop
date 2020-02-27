@@ -19,7 +19,7 @@ De bayesiaanse ANOVA laat de gebruiker verschillende tussen meerdere groepsgemid
 #### Bayes Factor  
 - BF<sub>10</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
 - BF<sub>01</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
-- Log(BF<sub>10</sub>) : als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusion</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
+- Log(BF<sub>10</sub>) : als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
 
 #### Uitvoer
 - Effecten: Als je deze optie selecteert, wordt de kans op inclusie van elke component (i.e., model term) in de modellen berekend. 
@@ -72,7 +72,7 @@ De bayesiaanse ANOVA laat de gebruiker verschillende tussen meerdere groepsgemid
 ### Post Hoc Toetsen
 - Sleep de naam van een factor naar de rechterkolom om een post-hoc toets uit te voeren. 
   <details>
-    <summary><b>GIF demonstration: Post-hoc toets </b></summary>
+    <summary><b>GIF demonstratie: Post-hoc toets </b></summary>
     <img src="analyses/gif/bayes_posthoc_anova.gif"/>
   </details>
 
@@ -93,7 +93,7 @@ De bayesiaanse ANOVA laat de gebruiker verschillende tussen meerdere groepsgemid
 - Prior: Hier kan je de prior verdelingen voor de willekeurige en vaste effectgroottes bepalen.
 	- r schaal vaste effecten: De vorm parameter van de prior verdeling voor vaste effecten. De standaardwaarde is .5, maar je kan het naar behoeven aanpassen,
 	- r schaal willekeurige effecten: De vorm parameter van de prior verdeling voor de willekeurige effecten. De standaardwaarde is 1, maar je kan het naar behoeven aanpassen. 
-- Numerische precisie: Het aantal stappen dat wordt genomen om de integraal voor de Bayes factor te berekenen.
+- Numerieke precisie: Het aantal stappen dat wordt genomen om de integraal voor de Bayes factor te berekenen.
   - Auto: Als je deze optie selecteert, worden er 10000 stappen gezet. Dit is de standaardoptie.
   - Handmatig: Als je deze optie selecteert, kan je handmatig het aantal stappen selecteren. De standaardwaarde is 10000.
 - Posterior steekproeven: Het is mogelijk om het aantal Markov Chain Monte Carlo steekproeven in te stellen. Dit wordt gebruikt om de posterior verdeling en het fout % te benaderen. 
@@ -110,7 +110,7 @@ Model vergelijking - Afhankelijke variabele:
 	- Nulmodel: Dit model bevat het totale gemiddelde en de willekeurige factoren.
     - Onafhankelijke variabele model: Dit model voegt het effect van de onafhankelijke variabele toe.
 - P(M): Deze kolom bevat de prior kans van het model. 
-- P(M|data): Deze kolom bevat de geüpdatete kans op het model gegeven de data. Dit heet de posterior kans. 
+- P(M|data): Deze kolom bevat de geüpdatet kans op het model gegeven de data. Dit heet de posterior kans. 
 - BF<sub>M</sub> : Deze kolom bevat de posterior model odds. Dit is de verandering van de prior odds naar de posterior odds van het model. 
 - BF<sub>10</sub> : Deze kolom bevat de Bayes factor die het bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese geeft. Echter, als de optie 'vergelijk met het beste model' is geselecteerd, bevat de kolom de Bayes factor het bewijs voor dit model ten opzichte van het beste model geeft. 
 - BF<sub>01</sub> : Deze kolom bevat de Bayes factor die het bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese geeft. Echter, als de optie 'vergelijk met het beste model' is geselecteerd, bevat de kolom de Bayes factor het bewijs voor het beste model ten opzichte van dit model geeft. 
@@ -120,7 +120,7 @@ Analyse van effecten - Afhankelijke variabele:
 - Effecten: Deze kolom bevat de componenten meegenomen in de modellen, zoals de onafhankelijke variabelen en hun interacties.
 - P(incl): Deze kolom bevat de prior inclusie kans. Dit is de opgetelde prior kans over alle modellen die de component bevatten.
 - P(incl|data): Deze kolom bevat de posterior inclusiekant. Dit is de opgetelde posterior kans over alle modellen die de component bevatten.
-- BF<sub>inclusion</sub> : Deze kolom bevat de verandering van prior inclusie odds tot posterior inclusie odds voor elke component gemiddeld over alle modellen die de component bevatten.
+- BF<sub>inclusie</sub> : Deze kolom bevat de verandering van prior inclusie odds tot posterior inclusie odds voor elke component gemiddeld over alle modellen die de component bevatten.
 
 Model Gemiddelde samenvatting van de posterior:
 - Variabele: Deze kolom bevat alle vaste factoren en hun interacties. De eerste rij geeft informatie over het intercept. 
@@ -169,7 +169,7 @@ Met de Q-Q grafiek kan de normaliteit van residuen visueel worden geïnspecteerd
 Posterior R<sup>2</sup>: 
 - De dichtheid van R<sup>2</sup> (verklaarde variantie) voor een enkel model, met R<sup>2</sup> op de x-as en dichtheid op de y-as.
 
-#### Beschijvende statistieken
+#### Beschrijvende statistieken
 Beschrijvende statistieken - afhankelijke variabele:
 - Onafhankelijke variabele: De niveaus van de onafhankelijke variabele(n) die worden meegenomen in de analyse. Als het er meer dan één zijn, worden de beschrijvende statistieken weergegeven voor elke combinatie van niveaus van de onafhankelijke variabelen.
 - Gemiddelde: Het gemiddelde per niveau, of, als er meerdere onafhankelijke variabelen zijn, het gemiddelde per combinatie van niveaus. 

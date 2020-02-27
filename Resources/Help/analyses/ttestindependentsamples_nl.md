@@ -12,7 +12,7 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
 ### Invoer
 -------
 
-#### Invoer veld
+#### Invoerveld
 - Variabelen: In deze box wordt de afhankelijke variabele geselecteerd.  
 - Groeperende Variabele: In deze box wordt de variabele die de groepen definieert geselecteerd. 
 
@@ -28,7 +28,7 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
 
 #### Assumptie Checks 
 - Normaliteit testen: Shapiro-Wilk toets voor normaliteit. 
-- Gelijkheid van varianties: Leven's test voor homogeneiteit van varianties. 
+- Gelijkheid van varianties: Levene's test voor homogeniteit van varianties. 
 
 #### Aanvullende Statistieken
 - Plaatsparameter: Voor de Student's t-toets en Welch's T-toets wordt de plaatsparameter gegeven met het gemiddelde verschil; voor de Mann-Whitney test wordt de plaatsparameter gegeven met de Hodges-Lehmann schatting. 
@@ -37,7 +37,7 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
   - Cohen's d: Bij de Student t-toets gebruikt deze de samengenomen standaarddeviatie om het gemiddelde verschil de standaardiseren. Voor de Welch's t-toets wordt de vierkantswortel van de gemiddelde variantie gebruikt om het gemiddelde verschil te standaardiseren.
   - Glass's delta: Gebruikt de standaarddeviatie van groep 2 om het gemiddelde verschil te standaardiseren. Om aan te passen welke groep wordt gebruikt als groep 2, kun je de volgorde van de niveaus aanpassen door op de naam van de groeperende variabele te klikken in het data scherm. Klik op een van de niveaus en klik dan op de pijltjes om de volgorde aan te passen.
   - Hedges' g: Past een corrigerende factor toe op Cohen's d tegen bias. 
-  - Betrouwbaarheidsinterval: Betrouwbaarheidsinterval voor de effectgrootte gebaseerd op een niet-centrale t-verdeling voor Cohen's d, Glass' delta en Hedges' g, en de normaal benadering van de Fisher getransformeerde rank biserial correlation. 
+  - Betrouwbaarheidsinterval: Betrouwbaarheidsinterval voor de effectgrootte gebaseerd op een niet-centrale t-verdeling voor Cohen's d, Glass' delta en Hedges' g, en de normaal benadering van de Fisher getransformeerde rank biseriële correlatie. 
 - Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaarddeviatie, standaard fout van het gemiddelde voor iedere groep.
 - Beschrijvende grafieken: Geeft het steekproefgemiddelde en de betrouwbaarheidsinterval weer voor iedere groep. 
   - Betrouwbaarheidsinterval: De betrouwbaarheidsintervallen worden weergegeven in percentages. De standaardoptie is 95%. Dit kan naar het gewenste percentage worden aangepast.
@@ -62,7 +62,7 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
 - % BI voor gemiddeld verschil/plaatsparameter: Het betrouwbaarheidsinterval voor het gemiddeld verschil/de plaatsparameter van de verschilscores. De standaardoptie is 95%. 
   - Linker: De linkergrens van het betrouwbaarheidsinterval. 
   - Rechter: De rechtergrens van het betrouwbaarheidsinterval.  
-- Effectgrootte: Voor de Student t-toets en de Welch t-toets wordt de effectgrootte gegeven met Cohen's d/Glass' delta/Hedges' g; Voor de Mann-Whitney test wordt de effectgrootte gegeven met de matched rank biserial correlation. 
+- Effectgrootte: Voor de Student t-toets en de Welch t-toets wordt de effectgrootte gegeven met Cohen's d/Glass' delta/Hedges' g; Voor de Mann-Whitney test wordt de effectgrootte gegeven met de gematchte rank biseriële correlatie. 
 - % BI voor effectgrootte: Het betrouwbaarheidsinterval voor de effectgrootte. De standaardoptie is 95%. 
   - Linker: De linkergrens van het betrouwbaarheidsinterval. 
   - Rechter: De rechtergrens van het betrouwbaarheidsinterval.

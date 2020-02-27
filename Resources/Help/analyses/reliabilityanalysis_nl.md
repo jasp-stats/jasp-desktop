@@ -23,7 +23,7 @@ Met een betrouwbaarheidsanalyse kan men de vaardigheid van een test om consisten
 #### Statistieken voor individuele items
 Statistieken voor individuele items. 
 - McDonald's w.
-- Cronbach's alpha: De meests populaire maat van de betrouwbaarheid van een test.
+- Cronbach's alpha: De meest populaire maat van de betrouwbaarheid van een test.
 - Gutmann's lambda 6.
 - Gemiddelde: Rekenkundig gemiddelde van de datapunten.
 - Standaard deviatie: Standaard deviatie van de data punten.
@@ -35,7 +35,7 @@ Statistieken voor individuele items.
 ### Geavanceerde opties
 - Missende waardes:
   - Sluit gevallen analyse voor analyse uit: Als er meerdere correlatietoetsen in een enkele analyse zijn zal elke toets worden uitgevoerd met alle gevallen waar data is op de relevante variabelen voor de uitgevoerde toets. Steekproefgrootte kan daardoor varieren tussen toetsen.
-  - Sluit gevallen uit op lijstwijze: als er meerdere correlatietoetsen in een enkele analyse zijn wordt elke test aleen uitgevoerd op gevaleen waar data is voor alle variabelen. Steekproefgrootte is daardoor gelijk tussen de toeten.
+  - Sluit gevallen uit op lijstwijze: als er meerdere correlatietoetsen in een enkele analyse zijn wordt elke test alleen uitgevoerd op gevaleen waar data is voor alle variabelen. Steekproefgrootte is daardoor gelijk tussen de toeten.
 - Betrouwbaarheidsinterval
   - Cronbach's alpha  (analytisch)
     - Betouwbaarheid: Standaardoptie is 95%.
@@ -70,4 +70,4 @@ Item Betrouwbaarheidsstatistieken:
 - Psych
 
 ### Voorbeeld
-- Ga voor een voorbeeld naar `Open` --> `Data Library` --> `Descriptives` --> `Fear of Statistics`. 
+- Ga voor een voorbeeld naar `Open` --> `Bibliotheek` --> `Descriptives` --> `Fear of Statistics`. 

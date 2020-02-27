@@ -24,8 +24,8 @@ Met Exploratieve Factoranalyse kan je één of meer onderliggende factoren van d
 - De rotatiemethode die wordt toegepast op de factoren, kan hier gespecificeerd worden.
   - Orthogonaal: Deze methode produceert ongecorreleerde factoren. Diverse mogelijkheden zijn beschikbaar: 
       - Geen: Geen rotatiemethode wordt geselecteerd. 
-      - varimax: Orthogonale rotatiemethode varimax. Deze rotatie is gebaseerd op het mazimaliseren van de variantie van de ladingen. 
-      - quartimax: Orthogonale rotatiemethod quartimax. Voor deze methode worden het aantal factoren die nodig zijn om iedere variabele te verklaren geminimaliseerd.
+      - varimax: Orthogonale rotatiemethode varimax. Deze rotatie is gebaseerd op het maximaliseren van de variantie van de ladingen. 
+      - quartimax: Orthogonale rotatiemethode quartimax. Voor deze methode worden het aantal factoren die nodig zijn om iedere variabele te verklaren geminimaliseerd.
       - bentlerT: Orthogonale rotatiemethode bentlerT. 
       - equamax: Orthogonale rotatiemethode equamax. Dit is een combinatie van varimax en quartimax. 
       - varimin: Orthogonale rotatiemethode varimin. 
@@ -69,8 +69,8 @@ De fit van het model wordt getoetst. Als de toets significant is, dan wordt het 
 Aanvullende Fit Indices: 
 Deze fit indices geven informatie over de fit van het model. 
 - Model: Het verkregen model van de exploratieve factoranalyse. 
-- RMSEA: De wortel van de kwadratisch gemiddelde fout van de schatting (RMSEA). Corrigeert voor spaarzaamheid. Wanneer een model hetzelfde presteert, maar het model 1 vrijheidsgraad dan model 2, wordt model 1 aangeraden. Browne and Cudeck (1993) benoemt een waarde kleiner dan 0.08 als acceptabele model fit, kleiner dan 0.05 een goede model fit, en adviseert om modellen met een waarde van 0.1 of hoger te verwerpen. Er is echter geen overeenstemming over deze grenss. 
-- RMSEA 90% confidence interval: Het 90% betrouwbaarheidsinterval van de wortel van de kwadratisch gemiddelde fout van de schatting. 
+- RMSEA: De wortel van de kwadratisch gemiddelde fout van de schatting (RMSEA). Corrigeert voor spaarzaamheid. Wanneer een model hetzelfde presteert, maar het model 1 vrijheidsgraad dan model 2, wordt model 1 aangeraden. Browne and Cudeck (1993) benoemt een waarde kleiner dan 0.08 als acceptabele model fit, kleiner dan 0.05 een goede model fit, en adviseert om modellen met een waarde van 0.1 of hoger te verwerpen. Er is echter geen overeenstemming over deze grens. 
+- RMSEA 90% betrouwbaarheidsinterval: Het 90% betrouwbaarheidsinterval van de wortel van de kwadratisch gemiddelde fout van de schatting. 
 - TLI: Tucker-Lewis Index. Evalueert de fit vergeleken met een striktere, genestelde baseline model. Hopwood and Donnallan (2010) suggereerde dat een waarde hoger dan .9 een goede fit aangeeft. Er is echter geen consensus over deze grens. 
 - BIC: Bayesian Information Criterion. Deze maat is nuttig voor het vergelijken van de prestatie van verschillende modellen op dezelfde data. Een lage waarde impliceert een betere fit. 
 
@@ -85,7 +85,7 @@ De screeplot geeft informatie over hoeveel variantie in de data, aangegeven door
 - Eigenvalue: Op de y-as, de eigenwaarde die de verklaarde variantie van elke factor aangeeft. 
 - Data: De gestippelde lijn staat voor de data. 
 - Gesimuleerd: De driehoekslijn staat voor de gesimuleerde data. Deze lijn is indicatief voor de parallel analyse. Als de punten van de gestippelde lijn (werkelijke data) boven deze lijn zijn, worden deze factoren meegenomen in het model door parallel analyse. 
-- Kaiser criterium: De horizontale lijn op de eigenwaarde van 1 staat voor het Kaiser criterium. Volgens dit criterium dienen enkel factoren met waardes boven deze lijn (eigenwaarde van 1) mee te worden genoemen in het model. 
+- Kaiser criterium: De horizontale lijn op de eigenwaarde van 1 staat voor het Kaiser criterium. Volgens dit criterium dienen enkel factoren met waardes boven deze lijn (eigenwaarde van 1) mee te worden genomen in het model. 
 
 ### Referenties 
 ---

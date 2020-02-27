@@ -14,7 +14,7 @@ Met een ANCOVA kan men het verschil tussen meerdere groepsgemiddelden analyseren
 ### Invoer 
 --- 
 #### Invoerveld 
-- Afhankelijke Variabele: De variabele waarin we het meest geïnteresserd zijn. Deze wordt ook wel de uitkomstvariabele genoemd. 
+- Afhankelijke Variabele: De variabele waarin we het meest geïnteresseerd zijn. Deze wordt ook wel de uitkomstvariabele genoemd. 
 - Vaste Factoren: De variabelen die zijn gemanipuleerd/die de verschillende groepen definiëren. Deze worden ook wel de onafhankelijke variabelen genoemd.  
 - Covariaten: In deze box kan de variabele die de covariaat is, worden geselecteerd. Covariaten zijn continue variabelen die een invloed uitoefenen op de afhankelijke variabele, maar geen deel uitmaken van de experimentele manipulatie.  
 - WLS gewichten: Gewogen kleinste kwadraten, hier kan de variabele worden geselecteerd die meer gewicht heeft en daarom als informatiever wordt gezien. Voor deze laatste optie is het belangrijk om de gewichten a priori te weten. Deze optie wordt vooral gebruikt als de fouten heteroskedastisch zijn. 
@@ -65,12 +65,12 @@ Met een ANCOVA kan men het verschil tussen meerdere groepsgemiddelden analyseren
   - Correctie: Om te corrigeren bij meerdere vergelijkingen en om type 1 fouten te voorkomen, bestaan er verschillende methoden om de p-waarde te corrigeren: 
 	  - Tukey: Vergelijk alle mogelijke paren van groepsgemiddelden. Deze correctie kan worden gebruikt wanneer de groepen op de onafhankelijke variabele een gelijke steekproefgrootte en variantie hebben. Deze methode wordt veel gerbuikt en is de standaardoptie.
       - Scheffe: Het aanpassen van significatieniveaus in een lineaire regressie om rekening te houden met meerdere vergelijkingen. Deze methode is vrij conservatief.
-      - Bonferroni: Deze correctie wordt gezien als vrij conservatief. Het risico op een type 1 fout wordt verminderd, maar de statistiche kracht (power) wordt ook lager.
+      - Bonferroni: Deze correctie wordt gezien als vrij conservatief. Het risico op een type 1 fout wordt verminderd, maar de statistische kracht (power) wordt ook lager.
       - Holm: Deze methode wordt ook wel sequentiële Bonferroni genoemd, en wordt gezien als minder conservatief dan de Bonferroni methode.
   - Type: Er kunnen verschillende typen post-hoc toetsen worden geselecteerd. 
 	  -  Standaard: Paarsgewijze t-toetsen worden uitgevoerd. Alle correcties kunnen op deze methode worden toegepast. Dit is de standaardoptie.
       -  Games-Howell: Deze methode kan worden gebruikt wanneer groeps-/niveauvarianties niet gelijk zijn. De p-waarden worden gecorrigeerd met de Tukey methode.
-      -  Dunett: Als je deze methode selecteert, worden alle niveaus vergeleken met een specifiek niveau, bijvoorbeeld met de controlegroup. Momenteel is het nog niet mogelijk om handmatig te specificeren met welk niveau de andere niveaus worden vergeleken, maar dit is gebaseerd op de volgorde van de niveaus. Om de volgorde aan te passen kunnen de niveaulabels worden veranderd.
+      -  Dunett: Als je deze methode selecteert, worden alle niveaus vergeleken met een specifiek niveau, bijvoorbeeld met de controlegroep. Momenteel is het nog niet mogelijk om handmatig te specificeren met welk niveau de andere niveaus worden vergeleken, maar dit is gebaseerd op de volgorde van de niveaus. Om de volgorde aan te passen kunnen de niveaulabels worden veranderd.
         <details>
 	        <summary><b>GIF demonstratie: Pas niveaulabels aan</b></summary>
 	        <img src="analyses/gif/labelediting.gif"/>
@@ -79,9 +79,9 @@ Met een ANCOVA kan men het verschil tussen meerdere groepsgemiddelden analyseren
       -  Dunn: Dit is een non-parametrische toets die kan worden gebruikt om kleine subsets van paren te testen. Deze post-hoc toets is een opvolger van de Kruskal-Wallis toets. De p-waardes worden gecorrigeerd met de Bonferroni en de Holm methode.
 
 ### Beschrijvende Grafieken
-- Selecteer de onafhankelijke variabele op de horizontale as om een beschrijvende grafiek te maken. Als er meerdere onafhankelijke variabelen zijn, kunnen deze in een grafiek worden weergegeven door de andere variabele in het veld Aparte lijnen te zetten. De variabelen kunnnen ook in aparte grafieken worden weergegeven door de andere variabele in het veld Aparte grafieken te zetten.
+- Selecteer de onafhankelijke variabele op de horizontale as om een beschrijvende grafiek te maken. Als er meerdere onafhankelijke variabelen zijn, kunnen deze in een grafiek worden weergegeven door de andere variabele in het veld Aparte lijnen te zetten. De variabelen kunnen ook in aparte grafieken worden weergegeven door de andere variabele in het veld Aparte grafieken te zetten.
   - Factoren: De onafhankelijke variabelen die mee worden genomen in de analyse.
-  - Horizontale as: Selecteer de onafhankeijke variabele die op de horizontale as moet worden weergegeven.
+  - Horizontale as: Selecteer de onafhankelijke variabele die op de horizontale as moet worden weergegeven.
   - Aparte lijnen: Door een onafhankelijke variabele in deze box te plaatsen, worden verschillende lijnen overeenkomend met verschillende niveaus van de geselecteerde variabele weergegeven.
   - Aparte grafieken: Door een onafhankelijke variabele in deze box te plaatsen, worden verschillende grafieken overeenkomend met verschillende niveaus van de geselecteerde variabele weergegeven.
 - Weergave: 
@@ -208,8 +208,8 @@ Ge-bootstrapte Post-Hoc Vergelijkingen - Onafhankelijke variabele:
 - De eerste twee kolommen geven de niveaus/groepen van de onafhankelijke variabele die met elkaar worden vergeleken weer. 
 - Gemiddelde Verschil: Het gemiddelde verschil tussen de niveaus. Deze schatting wordt gebaseerd op de mediaan van de bootstrap verdeling. 
 - Bias: Het gemiddelde verschil tussen de gebootstrapte gemiddelde verschillen en het geschatte gemiddelde verschil. 
-- SE: De standaardfout van de ge-bootstrappte geschatte gemiddelden.
-- 95% betrouwbaarheidsinterval voor het gemiddelde veschil: Het voor bias-gecorrigeerde betrouwbaarheidsinterval van het gemiddelde verschil tussen vergeleken niveaus. De stadaardoptie is 95%.
+- SE: De standaardfout van de ge-bootstrapte geschatte gemiddelden.
+- 95% betrouwbaarheidsinterval voor het gemiddelde verschil: Het voor bias-gecorrigeerde betrouwbaarheidsinterval van het gemiddelde verschil tussen vergeleken niveaus. De stadaardoptie is 95%.
   - Linker: De linkergrens van het betrouwbaarheidsinterval.
   - Rechter: De rechtergrens van het betrouwbaarheidsinterval.  
 
@@ -229,16 +229,16 @@ Ge-bootstrapte marginale gemiddelden - Onafhankelijke variabele:
 - Marginale gemiddelde: Schatting van het marginale gemiddelde voor elk niveau van de onafhankelijke variabele. Dit gemiddelde is gecorrigeerd voor alle andere variabelen in het model. De schatting is gebaseerd op de mediaan van de bootstrap verdeling.
 - Bias: Het gemiddelde verschil tussen het gebootstrapte marginale gemiddelde en het geschatte marginale gemiddelde.
 - SE: De standaardfout van de gebootstrapte marginale gemiddelden. 
-- 95% BI voor gemiddelde verschil: het voor bias-gecorrigeerde betrouwbaarheidsinterval voor het gemiddelde veschil tussen de vergelen niveaus. De standaardoptie is 95%.
+- 95% BI voor gemiddelde verschil: het voor bias-gecorrigeerde betrouwbaarheidsinterval voor het gemiddelde verschil tussen de vergelen niveaus. De standaardoptie is 95%.
   - Linker: De linkergrens van het betrouwbaarheidsinterval.
   - Rechter: De rechtergrens van het betrouwbaarheidsinterval. 
 
-Simpele Hoofdeffecten - onafhankeijke variabele: 
+Simpele Hoofdeffecten - onafhankelijke variabele: 
 - De eerste kolom bevat de niveaus van de andere onafhankelijke variabele (als die er zijn). 
 - Kwadratensom: De som van de gekwadrateerde verschillen van de groepsgemiddelden.
 - df: De vrijheidsgraden.
 - Mean Square: Schatting van de populatievariantie (de kwadratensom gedeeld door de vrijheidsgraden).
-- F: De waarde van de F-statistek.
+- F: De waarde van de F-statistiek.
 - p: De p-waarde. 
 
 Kruskal-Wallis Test: 
@@ -247,14 +247,14 @@ Kruskal-Wallis Test:
 - df: De vrijheidsgraden.
 - p: De p-waarde.
 
-#### Beschijvende Statistieken
+#### Beschrijvende Statistieken
 Beschrijvende statisteken - afhankelijke variabele:
 - Onafhankelijke variabelen: De niveaus van de onafhankelijke variabele(n) die worden meegenomen in de analyse. Als het er meer dan één zijn, worden de beschrijvende statistieken weergegeven voor elke combinatie van niveaus van de onafhankelijke variabelen.
-- Gemiddelde: Het gemiddelde per niveau, of, als er meerdere onafhankeijke variabelen zijn, het gemiddelde per combinatie van niveaus. 
+- Gemiddelde: Het gemiddelde per niveau, of, als er meerdere onafhankelijke variabelen zijn, het gemiddelde per combinatie van niveaus. 
 - SD: De standaardafwijking. 
 - N: De steekproefgrootte. 
 
-#### Grafiek van Beschijvende Statistieken
+#### Grafiek van Beschrijvende Statistieken
 Onafhankelijke variabele op de x-as en afhankelijke variabele op de y-as. Als andere onafhankelijke variabelen mee worden genomen, worden deze weergegeven door verschillende lijnen die de verschillende waarden weergeven in dezelfde grafiek, of de verschillende waarden van de andere onafhankelijke variabele staan in verschillende grafieken.
 
 ### Referenties

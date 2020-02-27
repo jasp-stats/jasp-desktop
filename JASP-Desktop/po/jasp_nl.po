@@ -10826,7 +10826,7 @@ msgstr "Grafieken van losse paren"
 
 msgctxt "CorrelationBayesian|"
 msgid "Correlation coefficient to plot"
-msgstr "Correlatiecoëfficient in grafieken"
+msgstr "Correlatiecoëfficiënt in grafieken"
 
 msgctxt "CorrelationBayesian|"
 msgid "Spearman's rho"

@@ -66,7 +66,7 @@ Tabellen en grafieken
 - Voegt de verwachte posterior toe aan de prior grafiek. De verwachte posterior heeft zijn bovengrens van de geloofwaardigheid net onder de materialiteit. 
 
 ### verwachte Bayes factor
-- Laat de verwachtte toename in bewijs zien wanneer de geformuleerde planning wordt gevolgt. 
+- Laat de verwachtte toename in bewijs zien wanneer de geformuleerde planning wordt gevolgd. 
 
 ### Impliciete steekproef
 - Produceert een tabel die de impliciete steekproef laat zien waar de prior verdeling op is gebaseerd. 

@@ -26,7 +26,7 @@ Deze analyse laat je niet één, maar meerdere type netwerken schatten. De onder
 - Correlatie netwerken. 
 - Partiële correlatie netwerken.
 - EBICglasso Netwerken(Foygel & Drton, 2010; Friedman, Hastie, & Tibshirani, 2008; Friedman, Hastie, & Tibshirani, 2014).
-- Veel-dimenionale ongerichte grafiek schatting (HUGE; Zhao et a., 2015).
+- Veel-dimensionale ongerichte grafiek schatting (HUGE; Zhao et a., 2015).
 - Ising netwerken (door middel van IsingFit, van Borkulo et al., 2014; or IsingSampler, Epskamp, 2014; Epskamp, Borsboom & Maris, in drukking).
 - Adaptieve lasso (Schaeafer & Boulesteix, 2009).
 - Gemixte Grafische Modellen (Haslbeck & Waldorp, 2015).
@@ -94,7 +94,7 @@ Drempelwaarden die worden gebruikt in correlatie of partiële correlatie netwerk
 - `Holm`: Net als `Significant`, maar dan met Holm correctie.
 - `Hochberg`: Net als `Significant`, maar dan met Hochberg correctie. Neemt aan dat hypothesetoetsen onafhankelijk of non-negatief geassocieerd zijn. 
 - `Hommel`: Net als `Significant`, maar dan met Hommel correctie. Neemt aan dat hypothesetoetsen onafhankelijk of non-negatief geassocieerd zijn. 
-- `BH`: Net als `Significant`, maar controleert voor de false ontdekkingsrate. 
+- `BH`: Net als `Significant`, maar controleert voor de valse ontdekking rate. 
 
 In de meeste scenario's is de `Bonferroni` methode nogal beperkend en heeft de `Holm` methode de voorkeur.
 
@@ -108,7 +108,7 @@ Welk criterium moet gebruikt worden om het netwerk te fitten? Beschikbare opties
 #### Steekproef grootte 
 
 #### Netwerk 
-Als je `gewogen` ontvinkt, bestaat het geschatte netwerk alleen uit positieve (1), negatieve (-1) en afwezige (0) paden. Als je `Gesigneerd` ontvinkt, bestaat het netwerk alleen uit positieve paden. Let op: de absolute waarde wordt genomen van de negatieve paden om ze positef te maken. Als je zowel `Gewogen` als `Gesigneerd` ontvinkt, zegt het netwerk of er een pad (1) is of niet (0).
+Als je `gewogen` ontvinkt, bestaat het geschatte netwerk alleen uit positieve (1), negatieve (-1) en afwezige (0) paden. Als je `Gesigneerd` ontvinkt, bestaat het netwerk alleen uit positieve paden. Let op: de absolute waarde wordt genomen van de negatieve paden om ze positief te maken. Als je zowel `Gewogen` als `Gesigneerd` ontvinkt, zegt het netwerk of er een pad (1) is of niet (0).
 
 
 #### Centraliteitsmaten 
@@ -152,7 +152,7 @@ Er zijn drie opties:
 
 #### Knopen 
 - `Knoop grootte`: Een vermenigvuldiger voor de grootte van knopen (bijv., 2 is twee keer zo groot).
-- `Kleur knopen op`: Een categorische variabele dit aangeeft tot welke groep iedere variabele behoort. De data moet van het `variabeleNaam` = `groep` formaat zijn net als `type variabele` en `kleur knopen per`. Als een variabele bijvoorbeeld "A1" heet en moet worden geplot op x-coordinaat 1, wordt dit "A1 = 1".
+- `Kleur knopen op`: Een categorische variabele dit aangeeft tot welke groep iedere variabele behoort. De data moet van het `variabeleNaam` = `groep` formaat zijn net als `type variabele` en `kleur knopen per`. Als een variabele bijvoorbeeld "A1" heet en moet worden geplot op x-coördinaat 1, wordt dit "A1 = 1".
 - `kleuren pallet`: welke kleuren moeten worden gebruikt voor het kleuren?
 
 #### Geef namen van variabelen weer 

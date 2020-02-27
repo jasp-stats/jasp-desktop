@@ -20,7 +20,7 @@ Met de bayesiaanse binomiaaltoets kan worden getoetst of de proportie van een di
 #### Bayes factor
 - BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nul hypothese. Dit is de standaardoptie. 
 - BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nul hypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
-- Log(BF<sub>10</sub>) : als je deze optie selecteert wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusion</sub>, BF<sub>10, U</sub> weergegeven in de output .
+- Log(BF<sub>10</sub>) : als je deze optie selecteert wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de output .
 
 #### Grafieken
 - Prior en posterior: Geeft de dichtheid van de prior en posterior voor de proportie onder de alternatieve hypothese weer. 
@@ -41,7 +41,7 @@ Met de bayesiaanse binomiaaltoets kan worden getoetst of de proportie van een di
 - Proportie: berekend door aantallen/totaal 
 - BF10 (of BF01): Bayes factor. Als een eenzijdige toets word gedaan: 
   - BF+0: Bayes factor die bewijs voor de eenzijdige alternatieve hypothese geeft dat het populatiegemiddelde hoger is dan de toetswaarde, ten opzichte van de nulhypothese.
-  - BF-0: Bayes factor die bewijs voor de eenzijdige aternatieve hypothese geeft dat het populatiegemiddelde lager is dan de toetswaarde, ten opzichte van de nulhypothese.
+  - BF-0: Bayes factor die bewijs voor de eenzijdige alternatieve hypothese geeft dat het populatiegemiddelde lager is dan de toetswaarde, ten opzichte van de nulhypothese.
   - BF0+: Bayes factor die bewijs voor de nulhypothese geeft ten opzichte van de eenzijdige hypothese dat het populatiegemiddelde hoger is dan de toetswaarde. 
   - BF0-: Bayes factor die bewijs voor de nulhypothese geeft ten opzichte van de eenzijdige hypothese dat het populatiegemiddelde lager is dan de toetswaarde. 
 
@@ -49,7 +49,7 @@ Met de bayesiaanse binomiaaltoets kan worden getoetst of de proportie van een di
 - Prior en Posterior: 
   - Geeft de dichtheid van de prior (onderbroken lijn) en de posterior (lijn) voor de populatieproportie onder de alternatieve hypothese weer; de grijze cirkels representeren de hoogte van de prior en posterior bij de toetswaarde. De horizontale lijn representeert de breedte van een 95% geloofwaardigheidsinterval van de posterior.
   - Aanvullende info: Geeft de Bayes factor weer gebaseerd op de gedefinieerde prior; geeft kanswiel weer die de odds van de data onder de nul- vs de alternatieve hypothese weer; geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior weer. 
-- Sequentiele analyse: 
+- Sequentiële analyse: 
   - Geeft de ontwikkeling van de Bayes factor weer als een functie van het aantal observaties (n) op basis van de gedefinieerde prior; geeft een kanswiel weer die de kans op de data onder de nul- vs de alternatieve hypothese weer; geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior weer; geeft de interpretatie van het bewijs in termen van Jeffreys' (1961) bewijscategorieën.
 
 

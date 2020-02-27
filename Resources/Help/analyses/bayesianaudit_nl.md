@@ -136,7 +136,7 @@ Tabellen en grafieken
 - Produceert een figuur met de prior verdeling in relatie tot de posterior verdeling. 
 
 ### Correlatie grafiek
-- Produceert een scatterplot die de boekwaarden van de selectie afzet tegen hun audit waarden. Observaties die fout zijn worden rood gekleurd. 
+- Produceert een spreidingsdiagram die de boekwaarden van de selectie afzet tegen hun audit waarden. Observaties die fout zijn worden rood gekleurd. 
 
 ----
 

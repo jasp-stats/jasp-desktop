@@ -6,10 +6,10 @@ Met de bain (Bayesian informative hypotheses evaluation) One Sample T-Toets kan 
 ### Specificatie van de bain One Sample T-Toets
 
 - Kies variabelen uit de lijst met variabelen en zet ze in het veld aan de rechterkant. 
-- Stel de seed in gelijk aan een geheel (integer) nummer om een herhaalbare, willekeurige nummerreeks te creeren. Om stabiliteit van de resultaten te verzekeren wordt aangeraden de analyses met twee verschillende seeds uit te voeren.
+- Stel de seed in gelijk aan een geheel (integer) nummer om een herhaalbare, willekeurige nummerreeks te creëren. Om stabiliteit van de resultaten te verzekeren wordt aangeraden de analyses met twee verschillende seeds uit te voeren.
 - Wanneer de bain One Sample T-Toets voor het eerst wordt uitgevoerd, vink dan de aanvullende statistieken en beide grafieken aan. Wanneer de gebruiker dan terug gaat naar de bain One Sample t-toets is het duidelijk wat deze drie opties inhouden, en kunnen de benodigde opties worden geselecteerd. 
 - In de resultaten worden standaard de 95% geloofwaardigheidsintervallen weergegeven. Dit percentage kan naar wens worden aangepast. 
-- De gebruiker kan uit vijf verschillende toetssituaties kiezen (let op: de reference value "ref" kan in het vak "toetswaarde" worden ingevuld): 
+- De gebruiker kan uit vijf verschillende toetssituaties kiezen (let op: de referentie waarde "ref" kan in het vak "toetswaarde" worden ingevuld): 
 
 1. H0: m = ref versus H1: m (geen beperking rondom het gemiddelde)
 2. H0: m = ref versus H1: m > ref

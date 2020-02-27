@@ -9,8 +9,8 @@ Met Bayesiaanse correlatie analyse kan men de nulhypothese testen dat de populat
 #### Invoerveld
 - *n*: Steekproefgrootte (minimaal 2).
 
-#### Correlatiecoëfficient
-  - *Pearson's r*: Pearson's product-moment correlatie coëfficient.
+#### Correlatiecoëfficiënt
+  - *Pearson's r*: Pearson's product-moment correlatie coëfficiënt.
   - *Kendall's tau-b*
 
 #### Alt. Hypothese
@@ -18,7 +18,7 @@ Met Bayesiaanse correlatie analyse kan men de nulhypothese testen dat de populat
 - *positief gecorreleerd*: Eenzijdige alternatieve hypothese dat de populatiecorrelatie hoger is dan 0.
 - *negatief gecorreleerd*: Eenzijdige alternatieve hypothese dat de populatiecorrelatie lager is dan 0.
 
-- *Geloofwaardigheidsinterval*: Geeft het geloofwaardigheidsinterval weer voor de correlatiecoëfficient.
+- *Geloofwaardigheidsinterval*: Geeft het geloofwaardigheidsinterval weer voor de correlatiecoëfficiënt.
 - 
 #### Bayes Factor
 - BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
@@ -29,7 +29,7 @@ Met Bayesiaanse correlatie analyse kan men de nulhypothese testen dat de populat
 - *Prior en posterior*: Geeft de dichtheid van de prior (stippellijn) en de posterior (lijn) van de effectgrootte onder de alternatieve hypothese; de grijze cirkels representeren de hoogte van de prior en de posterior bij een effectgrootte delta = 0. De horizontale lijn representeert de breedte van een 95% geloofwaardigheidsinterval van de posterior.
   - *Schattingsinformatie*: Geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior weer.
   - *Toetsingsinformatie*: Voegt de Bayes factor berekend met de door de gebruiker gedefinieerde prior toe; voegt een kanswiel toe die de kans van de data onder de nulhypothese vs. de alternatieve hypothese laat zien; voegt twee cirkels toe voor de prior en posterior op het toetsingspunt (rho=0), de ratio van de twee punten is gelijk aan de Bayes factor.
-- *Bayes factor rubuustheids grafiek*: Geeft de Bayes factor weer als een functie van de breedte van de Cauchy prior voor effectgrootte. De schaal van de Cauchy prior varieert tussen 0 en 1.5 (tussen 0 en 2 als de prior van de gebruiker hoger is dan 1.5), op zo'n manier dat de priors steeds minder informatief worden.
+- *Bayes factor robuustheidsgrafiek*: Geeft de Bayes factor weer als een functie van de breedte van de Cauchy prior voor effectgrootte. De schaal van de Cauchy prior varieert tussen 0 en 1.5 (tussen 0 en 2 als de prior van de gebruiker hoger is dan 1.5), op zo'n manier dat de priors steeds minder informatief worden.
 
 #### Prior
 
@@ -38,7 +38,7 @@ Met Bayesiaanse correlatie analyse kan men de nulhypothese testen dat de populat
 ### Uitvoer
 ---
 #### Bayesiaanse Pearson Correlaties
-- **Bayes factor**: Als er een eenzijdige toets is gelecteerd: 
+- **Bayes factor**: Als er een eenzijdige toets is geselecteerd: 
   - BF+0: De Bayes factor die bewijs geeft voor de eenzijdige hypothese dat de populatiecorrelatie hoger is dan 0.
   - BF-0: De Bayes factor die bewijs geeft voor de eenzijdige hypothese dat de populatiecorrelatie lager is dan 0.
   - BF0+: De Bayes factor de bewijs geeft voor de nulhypothese ten opzichte van de eenzijdige hypothese dat de populatiecorrelatie hoger is dan 0.

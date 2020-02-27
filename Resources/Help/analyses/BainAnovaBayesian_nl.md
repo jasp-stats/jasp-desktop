@@ -7,7 +7,7 @@ Met de bain (Bayesian informative hypotheses evaluation) ANOVA kan de gebruiker 
 
 - Kies de afhankelijke variabele uit de lijst met variabelen en sleep deze naar het Afhankelijke Variabele veld. Let op: de naam van de afhankelijke variabele moet met een letter beginnen, en mag verder bestaan uit letters, cijfers en _. 
 - Kies de factor uit de lijst met variabelen en sleep deze naar het veld Vaste Factoren. Let op: de naam van de factor moet met een letter beginnen, en mag verder bestaan uit letters, cijfers en _. Let daarnaast op dat alle groepen moeten worden verzameld in EEN factor. Als de gebruiker gebruik maakt van, bijvoorbeeld, een factor met de niveaus jong-oud en een factor met de niveaus vrouw-man, moet er EEN nieuwe factor worden gemaakt met de niveaus jongvrouw, oudvrouw, jongman, oudman. De niveaus worden aangegeven met cijfers, of beginnen met een letter. Verder mogen ze bestaan uit letters, cijfers en _.
-- Stel de seed in gelijk aan een geheel (integer) nummer om een herhaalbare, willekeurige nummerreeks te creeren. Om stabiliteit van de resultaten te verzekeren wordt aangeraden de analyses met twee verschillende seeds uit te voeren.
+- Stel de seed in gelijk aan een geheel (integer) nummer om een herhaalbare, willekeurige nummerreeks te creëren. Om stabiliteit van de resultaten te verzekeren wordt aangeraden de analyses met twee verschillende seeds uit te voeren.
 - Wanneer de bain ANOVA voor het eerst wordt uitgevoerd, vink dan de beide aanvullende statistieken en beide grafieken aan. Wanneer de gebruiker dan terug gaat naar de bain ANOVA is het duidelijk wat deze vier opties inhouden, en kunnen de benodigde opties worden geselecteerd. 
 - In de resultaten worden standaard de 95% geloofwaardigheidsintervallen weergegeven. Dit (standaard 95%) kan naar wens worden aangepast. 
 - Wanneer de gebruiker model beperkingen aanvinkt, zal een veld openen waarin gespecificeerd kan worden welke hypotheses de gebruiker wil evalueren. Het is belangrijk dat aan de volgende regels voor specificatie wordt voldaan:
@@ -20,7 +20,7 @@ Met de bain (Bayesian informative hypotheses evaluation) ANOVA kan de gebruiker 
 - Een constante kan worden toegevoegd of verwijderd van elke parameter naam. 
 - Een lineaire combinatie kan ook een enkel cijfer zijn. 
 
-     Examples are: `3 * agey + 5`; `agey + 2 * agem + 3 * ageo - 2`; `agey - ageo`; and `5`.
+     Voorbeelden zijn: `3 * agey + 5`; `agey + 2 * agem + 3 * ageo - 2`; `agey - ageo`; en `5`.
 
 4. (Lineaire combinaties van) parameters kunnen worden beperkt met <, >, en =. Bijvoorbeeld: `agey > 0` of `agey > agem = 0` of `2 * agey < agem + ageo > 5`.
 5. Met het en-teken '&' kunnen verschillende delen van een hypothese gecombineerd worden. Bijvoorbeeld: `agey > agem & agem > ageo` wat gelijk staat aan `agey > agem > ageo` of `agey > 0 & agem > 0 & ageo > 0`.

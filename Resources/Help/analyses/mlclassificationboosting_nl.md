@@ -22,12 +22,12 @@ Boosting werkt door opeenvolgende voorspellers toe te voegen aan een beslisboom 
 
 #### Grafieken
 - Datasplit: Laat zien hoe de data is gesplitst in trainings- (en validatie-) en testset.
-- Out-of-bag verbetering: Plot het aantal bomen tegen de out-of-bag classificatie Precisiesverbetering van het model. Precisie is bepaald voor de trainingsset.
+- Out-of-bag verbetering: Plot het aantal bomen tegen de out-of-bag classificatie Precisieverbetering van het model. Precisie is bepaald voor de trainingsset.
 - ROC curves: Toont ROC curves voor elke klasse voorspelt tegenover alle andere klassen.
-- Andrews curves: Een manier om de structuur in hoger dimensionele data te visualizeren. Lijnen die clusteren, zijn observaties die meer overeenkomen. 
+- Andrews curves: Een manier om de structuur in hoger dimensionele data te visualiseren. Lijnen die clusteren, zijn observaties die meer overeenkomen. 
 - Afwijking: Laat de voorspellingsfout zien geplot tegen het aantal bomen.
 - Relatieve invloed: Laat de relatieve invloed van de voorspellers zien.
-- Decision boundary matrix: Maakt een *n* x *n* grafiek die visualiseert hoe elke observatie zou zijn geclassificeerd zoals het huidige model voorspelt. Grenzen tussen klassen zijn gevisualiseert. Kan enkel gemaakt worden voor numerieke voorspellers.
+- Decision boundary matrix: Maakt een *n* x *n* grafiek die visualiseert hoe elke observatie zou zijn geclassificeerd zoals het huidige model voorspelt. Grenzen tussen klassen zijn gevisualiseerd. Kan enkel gemaakt worden voor numerieke voorspellers.
 
 ### Datasplit Voorkeuren
 #### Holdout Testdata
@@ -86,5 +86,5 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 
 ### Voorbeeld 
 --- 
-- Voor een dataset als voorbeeld ga naar `Open` --> `Data Library` --> `Machine Learning` --> `Telco Customer Churn`.  
+- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Telco Customer Churn`.  
 

@@ -20,15 +20,15 @@ Density-based clustering is een soft clusteringsmethode waarbij clusters worden 
 
 #### Grafieken
 - K-afstandsgrafiek: Genereer een grafiek met de naaste buren afstand (het aantal naaste buren is bepaald met de Min. kernpunten parameter) op de y-as en de punten gesorteerd op afstand op de x-as. Deze plot kan gebruikt worden om de optimale Epsilon waarde te bepalen. De waarde waar de grafiek een kink heeft, is de optimale Epsilon waarde (de waarde op de y-as).
-- t-SNE clustergrafiek: Genereert een t-SNE grafiek van de clustering output. t-SNE grafieken worden gebruikt voor het visualizeren van hoog-dimensionale data in een laag-dimensionale ruimte van twee dimensies om de relatieve afstand tussen observaties te laten zien. De t-SNE twee-dimensionale ruimte maakt de assen oninterpreteerbaar. Een t-SNE grafiek geeft een indruk van de relatieve afstanden tussen observaties en clusters. Om dezelfde t-SNE grafiek nog een keer te maken voor meerdere clusteringanalyses, kan je een seed gebruiken, aangezien het t-SNE algoritme willekeurige startpunten gebruikt.
+- t-SNE clustergrafiek: Genereert een t-SNE grafiek van de clustering output. t-SNE grafieken worden gebruikt voor het visualiseren van hoog-dimensionale data in een laag-dimensionale ruimte van twee dimensies om de relatieve afstand tussen observaties te laten zien. De t-SNE twee-dimensionale ruimte maakt de assen oninterpreteerbaar. Een t-SNE grafiek geeft een indruk van de relatieve afstanden tussen observaties en clusters. Om dezelfde t-SNE grafiek nog een keer te maken voor meerdere clusteringanalyses, kan je een seed gebruiken, aangezien het t-SNE algoritme willekeurige startpunten gebruikt.
 - Legenda: Geeft een legenda met het clusternummer voor elke observatie. Dit is de standaardoptie.
 - Labels: Geeft de clusteringlabels van de verschillende observaties.
 
 #### Parameters Trainen 
 #### Algoritme Instellingen
 - Epsilon neighborhood grootte: Dit is de grootte van de radius waarin een minimum hoeveelheid kernpunten is die resulteren in de dichtheid van die neighborhood om een drempelwaarde te overtreffen. Door de drempelwaarde te overtreffen, kunnen punten (i.e., observaties) een cluster genereren.
-- Min. kernpunten: Reflecteert de minimale hoeveelheid punten die nodig zijn in de Epsilon neighborhood om de punten een cluster te laten vormen. De Eps en MinPts parameters bepalen het dichtsheidsniveau en reguleren hoeveel punten nodig zijn in een gegegeven radius om een bepaalde drempelwaarde te overtreffen voor het vormen van een cluster.
-- Afstand: Specifeer de ongelijkheidsmeting. Normale dichtheid gebruikt de geometrische afstand tussen twee punten en is volledig gebaseerd op de magnitude van de afstand. Gecorreleerde dichtheid is daarentegen een correlatie-gebaseerde ongelijkheidsmeting, welke kijkt naar de lineaire associatie van observaties en als deze correlaties hoog zijn, deze observaties worden als gelijk gezien. Normale dichtheid is de standaardoptie.
+- Min. kernpunten: Reflecteert de minimale hoeveelheid punten die nodig zijn in de Epsilon neighborhood om de punten een cluster te laten vormen. De Eps en MinPts parameters bepalen het dichtsheidsniveau en reguleren hoeveel punten nodig zijn in een gegeven radius om een bepaalde drempelwaarde te overtreffen voor het vormen van een cluster.
+- Afstand: Specificeer de ongelijkheidsmeting. Normale dichtheid gebruikt de geometrische afstand tussen twee punten en is volledig gebaseerd op de magnitude van de afstand. Gecorreleerde dichtheid is daarentegen een correlatie-gebaseerde ongelijkheidsmeting, welke kijkt naar de lineaire associatie van observaties en als deze correlaties hoog zijn, deze observaties worden als gelijk gezien. Normale dichtheid is de standaardoptie.
 - Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
 - Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
 
@@ -78,5 +78,5 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 
 ### Voorbeeld 
 --- 
-- Voor een dataset als voorbeeld ga naar `Open` --> `Data Library` --> `Machine Learning` --> `Iris`.  
+- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Iris`.  
 
