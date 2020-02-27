@@ -54,14 +54,14 @@ Met logistische regressie kan men een lineaire relatie tussen een of meer verkla
     - Alle gevallen: Geef diagnostieken voor alle gevallen weer.
  
 - Prestatie statistieken:
-- De confusion matrix geeft aan hoe goed het model de uitkomsten voorspelt. In de diagonaal staan de gevallen die het model correct indentificeerde. Daarbuiten de gevallen waar het model een verkeerde uitkomst voorspelde.
+- De confusion matrix geeft aan hoe goed het model de uitkomsten voorspelt. In de diagonaal staan de gevallen die het model correct identificeerde. Daarbuiten de gevallen waar het model een verkeerde uitkomst voorspelde.
  - Proporties: De tabel geeft de proporties voor de echte versus de voorspelde uitkomsten.
  
 - Prestatiestatistieken:
   - AUC: Gebied onder de curve. 
-  - Sensitiviteit: Sensitiviteit beschrijft de proportie ware positieven (true positives).
-  - Specificiteit: Specificiteit beschrijft het aantal ware negatieven (true negatives). 
-  - Precisie: Precisie beschrijft de proportie van ware positieve ten opzichte van alle positieven. Wordt ook wel de positive prediction value genoemd.
+  - Sensitiviteit: Sensitiviteit beschrijft de proportie ware positieven ("true positives").
+  - Specificiteit: Specificiteit beschrijft het aantal ware negatieven ("true negatives"). 
+  - Precisie: Precisie beschrijft de proportie van ware positieve ten opzichte van alle positieven. Wordt ook wel de "positive prediction value" genoemd.
   - F-maat: Dit is gebaseerd op de hoeveelheid systematische variantie gedeeld door de hoeveelheid onsystematische variantie (i.e., de mean squares van het model / de mean squares van de residuen). 
   - Brier score: Nog een maat voor de precisie van de predicties. 
   - H-maat: Een andere maat voor de precisie van predicties. De standaard implementatie in de package hmeasure op CRAN. 
@@ -120,14 +120,14 @@ Bootstrap Coëfficiënten.
 - Standaard fout: Standaardfout van de ge-bootstrapte regressiecoëfficiënten.
 
 Stapsgewijze Diagnostieken: 
-  - Gevals nummer: Identificatie van het geval.
+  - Gevalsnummer: Identificatie van het geval.
   - Geobserveerd: De geobserveerde waarde van de uitkomst.
   - Voorspeld: De voorspelde waarde. 
   - Voorspelde groep: De voorspelde afhankelijke waarde van de uitkomst. 
   - Residu: Het verschil tussen de geobserveerde en voorspelde waarde. 
   - Gestandaardiseerd residu. 
   - Cook's afstand: De waarde van Cook's afstand. 
-  - % BI: Het ge-bootsttrapte betouwbaarheid interval voor de ongestandaardiseerde coëfficiënten. Standaard is 95%. 
+  - % BI: Het ge-bootsttrapte betrouwbaarheid interval voor de ongestandaardiseerde coëfficiënten. Standaard is 95%. 
     - Linker: De linkergrens van het betrouwbaarheid interval.
     - Rechter: De rechtergrens van het betrouwbaarheid interval.
 
@@ -138,7 +138,7 @@ Factor beschrijvingende statistieken:
    
 #### Prestatie statistieken
 Confusion Matrix:
-- De confusion matrix geeft aan hoe goed het model de uitkomsten voorspelt. In de diagonaal staan de gevallen die het model correct indentificeerde. Daarbuiten de gevallen waar het model een verkeerde uitkomst voorspelde.
+- De confusion matrix geeft aan hoe goed het model de uitkomsten voorspelt. In de diagonaal staan de gevallen die het model correct identificeerde. Daarbuiten de gevallen waar het model een verkeerde uitkomst voorspelde.
  
 Prestatie Matrix:
 - Alle geselecteerde prestatiestatistieken en hun waarden staan in deze tabel.
@@ -152,7 +152,7 @@ Voorspeld - residu grafiek.
 Voorspeller - residu grafiek voor predictor.
 
 Gekwadrateerde Pearson residuen grafiek.
-- De verwachte waarde van de gekwadrateerde residuen in 1, aangegeven met een stippellijn. De rode lijn geeft smoother aan door de residuen (= bewegend gemiddelde). Als de rode lijn vooral dichtbij de 1 is kan het worden geconcludeerd dat het model niet aan overdispersie leidt. Enige afwijking rond de staarten valt te verwachten.
+- De verwachte waarde van de gekwadrateerde residuen in 1, aangegeven met een stippellijn. De rode lijn geeft de smoother aan door de residuen (= bewegend gemiddelde). Als de rode lijn vooral dichtbij de 1 is kan het worden geconcludeerd dat het model niet aan overdispersie leidt. Enige afwijking rond de staarten valt te verwachten.
 
 ### Referenties
 -------

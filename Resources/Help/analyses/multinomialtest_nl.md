@@ -8,10 +8,10 @@ Met de multinomiale toets kan de gebruiker toetsen of een geobserveerde verdelin
 ### Invoer
 ---
 
-#### Invoer veld
-- Factor: De categorische variabele waarin we geinteresseerd zijn. 
+#### Invoerveld
+- Factor: De categorische variabele waarin we geïnteresseerd zijn. 
 - Tellingen (optioneel): De variabele die de tellingdata bevat. 
-- Verwachte Tellingen (optioneel): Wanneer de data set een variabele bevat die de verwachtingen van celtellingen reflecteerd, kan die kolom hier ingevoerd worden. De waarden in deze variabele zullen worden geinterpreteerd als de nulhypothese.  
+- Verwachte Tellingen (optioneel): Wanneer de data set een variabele bevat die de verwachtingen van celtellingen reflecteert, kan die kolom hier ingevoerd worden. De waarden in deze variabele zullen worden geinterpreteerd als de nulhypothese.  
 
 #### Alt. Hypothese
 - Multinomiale toets: De multinomiale toets controleert of de geobserveerde celtellingen uniform verdeeld zijn. De nulhypothese wordt getoetst met de Pearson's chi-kwadraat toets statistieken. Deze meet de afwijking van het geobserveerde van de verwachte celtellingen onder de nulhypothese. De nulhypothese wordt getoetst tegenover de alternatieve hypothese dat de proporties van de categorie verschillen van de uniforme verdeling.

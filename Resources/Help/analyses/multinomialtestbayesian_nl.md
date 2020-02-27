@@ -9,10 +9,10 @@ Met de Bayesiaanse multinomiale toets kan de gebruiker toetsen of een geobservee
 ### Invoer 
 ---
 
-#### Invoer veld
-- Factor: De categorische variabele waarin we geinteresseerd zijn. 
+#### Invoerveld
+- Factor: De categorische variabele waarin we geïnteresseerd zijn. 
 - Tellingen (optioneel): De variabele die de tellingdata bevat. 
-- Verwachte Tellingen (optioneel): Wanneer de data set een variabele bevat die de verwachtingen van celtellingen reflecteerd, kan die kolom hier ingevoerd worden. De waarden in deze variabele zullen worden geïnterpreteerd als de nulhypothese.  
+- Verwachte Tellingen (optioneel): Wanneer de data set een variabele bevat die de verwachtingen van celtellingen reflecteert, kan die kolom hier ingevoerd worden. De waarden in deze variabele zullen worden geïnterpreteerd als de nulhypothese.  
 
 #### Toetswaarden
 - Gelijke proporties: Met de Bayesiaanse multinomiale toets, toetsen we de nulhypothese dat de celkansen uniform verdeeld zijn. De nulhypothese wordt getoetst tegenover de alternatieve hypothese die inhoudt dat alle categorie proporties vrij afwijken. 

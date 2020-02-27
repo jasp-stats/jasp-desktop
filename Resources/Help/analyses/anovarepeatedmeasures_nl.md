@@ -13,7 +13,7 @@ Met de herhaalde metingen ANOVA kan men verschillen tussen gemiddelden analysere
 
 #### Invoerveld 
 - Herhaaldelijke meting factoren: De binnen-subject variabele. Hier kan je de binnen-subject factoren en de verschillende niveaus die daartoe behoren labellen. 
-- Herhaaldelijke meting cellen: De aparte kolommen in de data die de niveaus van de binnen-subect factor(en) weergeven. 
+- Herhaaldelijke meting cellen: De aparte kolommen in de data die de niveaus van de binnen-subject factor(en) weergeven. 
 - Tussen subject factoren: Deze variabele kan worden geselecteerd als de participanten in twee of meer groepen zijn ingedeeld. 
 - Covariaten: In dit veld kan je een covariaat selecteren. Covariaten zijn continue variabelen die een invloed op de afhankelijke variabele hebben maar geen deel zijn van de manipulatie.
 
@@ -26,8 +26,8 @@ Met de herhaalde metingen ANOVA kan men verschillen tussen gemiddelden analysere
 	  - model termen: De tussen-subject factoren die kunnen worden meegenomen in het model.
 
 - Kwadratensom: Er zijn verschillende soorten de kwadratensom. De keuze van het type is belangrijk als er meerdere factoren zijn en de data ongebalanceerd is. In een ongebalanceerd design hebben de verschillende niveaus van de onafhankelijke variabele niet evenveel observaties (bijv. als een groep meer observaties heeft dan de ander). In dit scenario kan het type kwadratensom de resultaten beïnvloeden.   
-    - Type I: Sequentiele kwadratensom. Het verminderen van fouten wanneer elke factor van het model wordt toegevoegd aan de factoren die al mee worden genomen, hiermee wordt de volgorde van factoren in het model behouden. Het resultaat hangt af van de volgorde waarin de factoren aan het model worden toegevoegd. Wanneer het model meer dan een factor bevat is het belangrijk hierover na te denken. 
-    - Type II: Hierarchische/gedeeltelijke sequentiele kwadratensom. Het verminderen van fouten wanneer elke factor wordt toegevoegd aan het model dat alle andere factoren bevat, behalve de factoren waar de factor deel van uitmaakt, bijvoorbeeld interacties die deze factor bevatten. Langsrud (2003) adviseert dit type bij een ANOVA met on gebalanceerde data. 
+    - Type I: Sequentiële kwadratensom. Het verminderen van fouten wanneer elke factor van het model wordt toegevoegd aan de factoren die al mee worden genomen, hiermee wordt de volgorde van factoren in het model behouden. Het resultaat hangt af van de volgorde waarin de factoren aan het model worden toegevoegd. Wanneer het model meer dan een factor bevat is het belangrijk hierover na te denken. 
+    - Type II: Hiërarchisch/gedeeltelijke sequentiële kwadratensom. Het verminderen van fouten wanneer elke factor wordt toegevoegd aan het model dat alle andere factoren bevat, behalve de factoren waar de factor deel van uitmaakt, bijvoorbeeld interacties die deze factor bevatten. Langsrud (2003) adviseert dit type bij een ANOVA met on gebalanceerde data. 
     - Type III: Gedeeltelijke kwadratensom. Het verminderen van fouten wanneer elke factor wordt toegevoegd aan het model dat alle andere factoren bevat, inclusief interacties met deze factor. Dit type wordt vaak geselecteerd, omdat het rekening houdt met interacties (Langsrud, 2003). Dit is de standaardoptie. 
 - Gebruik multivariaat model voor vervolgtoetsen: Als je deze optie selecteert wordt het multivariate lineaire model gebruikt in plaats van het aov model voor vervolgtoetsen (contrasten, post-hoc toetsen, marginale gemiddelden). Multivariate toetsen passen waarschijnlijk een betere correctie toe voor schendingen van de sphericiteit assumptie. 
 
@@ -41,7 +41,7 @@ Met de herhaalde metingen ANOVA kan men verschillen tussen gemiddelden analysere
 - Homogeniteits toets: Als je deze optie selecteert zal worden geanalyseerd of de variantie van de afhankelijke variabele gelijk is tussen groepen door middel van Levene's toets. 
 
 ### Contrasten
-Voor elke binnen-subject factor kan een specifiek contrast worden geselecteerd door op "geen" teklikken in de rechter kolom.
+Voor elke binnen-subject factor kan een specifiek contrast worden geselecteerd door op "geen" te klikken in de rechter kolom.
 - Factoren: Dit zijn de binnen-subject factoren in de analyse. 
 - Contrasten: Contrasten maken geplande vergelijkingen mogelijk. Er zijn verschillende contrasten die verschillende soorten vergelijkingen mogelijk maken.  
 - Geen: Als je deze optie selecteert worden er geen contrasten uitgerekend. Dit is de standaardoptie. 
@@ -50,7 +50,7 @@ Voor elke binnen-subject factor kan een specifiek contrast worden geselecteerd d
     - Verschil: Dit contrast wordt ook wel "reverse Helmert" genoemd. Als je dit contrast selecteert wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het vorige niveau.
     - Helmert: Als je dit contrast selecteert wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het volgende niveau. Dit is het omgekeerde van het "verschil" contrast.
     - Herhaald: Als je dit contrast selecteert wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het volgende niveau. 
-    - Polynoom: Dit contrast test polynome trends in de data. Welk specifieke polynoom wordt gebruikt is afhankelijk van het aantal niveaus van de onafhnakelijke variabele. De graad van de trend die wordt gebruikt is het aantal niveaus min 1. Als de onafhankelijke variabele dus bestaat uit twee niveaus wordt een lineaire trend geanalyseerd. Als de onafhankelijke variabele bestaat uit drie niveaus worden een kwadratische trend en een lineaire trend geanalyseerd. 
+    - Polynoom: Dit contrast test polynome trends in de data. Welk specifieke polynoom wordt gebruikt is afhankelijk van het aantal niveaus van de onafhankelijke variabele. De graad van de trend die wordt gebruikt is het aantal niveaus min 1. Als de onafhankelijke variabele dus bestaat uit twee niveaus wordt een lineaire trend geanalyseerd. Als de onafhankelijke variabele bestaat uit drie niveaus worden een kwadratische trend en een lineaire trend geanalyseerd. 
       - custom: Hier kunnen de contrast gewichten handmatig ingevoerd worden. Van de gewichten dient minstens 1 gewicht niet gelijk aan 0 te zijn.
    
    
@@ -89,7 +89,7 @@ Sleep een of meer namen van factoren naar de rechter kolom om een post-hoc test 
         - Sidak: Sidak correctie voor de betrouwbaarheidsintervallen.
 - Van `...` bootstraps: Als je deze optie selecteert worden de ge-bootstrapte marginale gemiddelde berekend. De standaard hoeveelheid iteraties is 1000. Je kan dit aanpassen tot het gewenste aantal.
 - Weergeven:
-	- Beschrijvende statistieken: Als je deze optie wordt geselecteert worden het gemiddelde, de standaardafwijking en de steekproefgrootte weergegeven voor iedere combinatie van niveaus van de onafhankelijke variabele.
+	- Beschrijvende statistieken: Als je deze optie wordt geselecteerd, worden het gemiddelde, de standaardafwijking en de steekproefgrootte weergegeven voor iedere combinatie van niveaus van de onafhankelijke variabele.
     - Schattingen van effectgrootte: Als je deze optie selecteert kan je de specifieke type berekening van de effectgrootte selecteren. 
 		- &eta;<sup>2</sup> : Als je deze optie selecteert wordt de eta-kwadraat berekend als schatting van de effectgrootte. Deze methode overschat echter de populatie variantie, wat het moeilijk maakt om het effect van dezelfde variabele te vergelijken tussen verschillende onderzoeken (Goss-Sampson, 2018).       
 		- partial &eta;<sup>2</sup> : Als je deze optie selecteert wordt de gedeeltelijke eta-kwadraat berekend als schatting van de effectgrootte. Deze methode lost het probleem van overschatting van populatievariantie op, wat het makkelijker maakt om het effect van dezelfde variabele te vergelijken tussen verschillende onderzoeken (Goss-Sampson, 2018).
@@ -103,13 +103,13 @@ De simpele hoofd effecten geven het effect van een binnen-subject factor voor el
   - Moderator factor 1: In dit veld selecteer je de binnen subject variabele die de verschillende niveaus weergeeft. 
   - Moderator factor 2: in dit veld kan je optioneel een aanvullende binnen-subject variabele toevoegen.
 
-- Samengevoegde error term: Een samengevoegde error term maakt de assumtie dat de varianties van de contrastscores ongeveer gelijk zijn (i.e., assumptie sphericiteit).
+- Samengevoegde error term: Een samengevoegde error term maakt de assumptie dat de varianties van de contrastscores ongeveer gelijk zijn (i.e., assumptie sphericiteit).
 
 #### Non-parametrische toetsen 
 De Friedman toets is een non-parametrisch alternatief voor de repeated-measures ANOVA wanneer er een compleet blok design is. The Durbin toets wordt automatisch geselecteerd wanneer er een incompleet blok design is. 
 - Factoren: Dit veld bevat alle binnen-subject factoren uit de analyse.
 - RM factor: De binnen-subject factor waarin je geïnteresseerd bent.
-- Optionele groeperings factor: Het is mogelijk om hier een tussen-persoon factor toe te voegen.
+- Optionele groeperingsfactor: Het is mogelijk om hier een tussen-persoon factor toe te voegen.
 - Conover's post-hoc toetsen: Conover's post-hoc toets voor paar wijze vergelijkingen, wanneer de non-parametrische toets statistiek significant is.
 
 
@@ -117,7 +117,7 @@ De Friedman toets is een non-parametrisch alternatief voor de repeated-measures 
 ---
 #### Herhaalde Metingen ANOVA
 Binnen-Subject Effecten:
-- Spericiteit correctie: De geselecteeerde correcties wanneer de assumptie van sphericiteit is geschonden.
+- Spericiteit correctie: De geselecteerde correcties wanneer de assumptie van sphericiteit is geschonden.
 - kwadratensom: De opgetelde kwadraten van binnen groep-gemiddelden verschillen. 
 - df: vrijheidsgraden.
 - Mean square: Schatting van de populatie variantie (de dum of squares gedeeld door de vrijheidsgraden).
@@ -135,7 +135,7 @@ Tussen-Subject Effecten:
 Toets van sphericiteit:
 - Mauchly's W: Mauchly's W toets statistiek 
 - p: p-waarde.
-- Greenhouse-Geisser &epsilon;: De Greenhouse-Geisser correctie. Een waarde van 1 geeft aan dat er aan de assumptie sphericiteit is voldaan en een waarde < 1 geeft aan dat sphericiteits geschonden.
+- Greenhouse-Geisser &epsilon;: De Greenhouse-Geisser correctie. Een waarde van 1 geeft aan dat er aan de assumptie sphericiteit is voldaan en een waarde < 1 geeft aan dat sphericiteit geschonden.
 - Huynh-Feldt &epsilon;: De Huynh-Feldt correctie.
 
 #### Contrasten
@@ -158,7 +158,7 @@ Post-Hoc Vergelijkingen:
 
 - SE: De standaardfout van het gemiddelde verschil.	
 - t: De waarde van de t statistiek.
-- Cohen's D: De effectgrootte Cohen's d. Deze corrigeert niet voor meerdere vergelijkingen.
+- Cohen's d: De effectgrootte Cohen's d. Deze corrigeert niet voor meerdere vergelijkingen.
 - p<sub>tukey</sub>: Tukey's gecorrigeerde p-waarde voor meerdere vergelijkingen.
 - p<sub>scheffe</sub>:  Scheffe's gecorrigeerde p-waarde voor meerdere vergelijkingen.
 - p<sub>bonf</sub>: Bonferroni's gecorrigeerde p-waarde voor meerdere vergelijkingen.
@@ -168,7 +168,7 @@ Simpele Hoofdeffecten:
 - Niveau: De niveaus op de onafhankelijke variabele die worden vergeleken. 
 - kwadratensom: De som van kwadraten tussen niveau-gemiddelden verschil.
 - df: De vrijheidsgraden van het model.
-- Mean Square: Schatting van de populatievatiantie (de sum of squares gedeeld door de vrijheidsgraden).
+- Mean Square: Schatting van de populatievariantie (de sum of squares gedeeld door de vrijheidsgraden).
 - F: De waarde van de F statistiek.
 - P: De p-waarde.
 

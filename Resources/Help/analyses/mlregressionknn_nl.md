@@ -34,7 +34,7 @@ K-naaste buren is een regressiemethode die lijkt op het *k* aantal voorspellende
 
 ### Parameters Trainen
 #### Algoritme Instellingen
-- Gewichten: Stel het gewichtsschema voor de naaste buren in. De standaardoptie, rectangular,  geeft de standaard knn, terwijl de andere opties het algoritme uitbreiden door de naaste buren af te wegen. Zie ook het kknn package.
+- Gewichten: Stel het gewichtsschema voor de naaste buren in. De standaardoptie, rectangular, geeft de standaard knn, terwijl de andere opties het algoritme uitbreiden door de naaste buren af te wegen. Zie ook het kknn package.
 - Afstand: De afstandsmetriek om de gelijkheid tussen naaste buren te bepalen. Kan met de Euclidean- of Manhattan afstand.
 - Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
 - Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
@@ -60,7 +60,7 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 - Validation MSE: De MSE van de validatieset (mogelijk wanneer model is geoptimaliseerd).
 - Testset MSE: De MSE van de testset.
 
-#### Evaluationmetrieken
+#### Evaluatiemetrieken
 - MSE: De kwadratisch gemiddelde fout van het model.
 - RMSE: De wortel van de kwadratische gemiddelde fout van het model.
 - MAE: De gemiddelde absolute fout van het model.
@@ -77,5 +77,5 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 
 ### Voorbeeld 
 --- 
-- Voor een dataset als voorbeeld ga naar `Open` --> `Data Library` --> `Machine Learning` --> `Student Grades`.  
+- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Student Grades`.  
 

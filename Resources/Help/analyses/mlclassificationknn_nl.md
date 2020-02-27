@@ -20,10 +20,10 @@ K-naaste buren is een classificatiemethode die kijkt naar het aantal, *k*, voors
 
 #### Grafieken
 - Datasplit: Laat zien hoe de data is gesplitst in trainings- (en validatie-) en testset.
-- Classificatie Precisie: Plot het aantal naaste buren tegen de classificatie Precisie van het model. Precisie is verkregen met de traingsset (en validatieset).
+- Classificatie Precisie: Plot het aantal naaste buren tegen de classificatie Precisie van het model. Precisie is verkregen met de trainingsset (en validatieset).
 - ROC curves: Toont ROC curves voor elke klasse voorspelt tegenover alle andere klassen.
-- Andrews curves: Een manier om de structuur in hoger dimensionele data te visualizeren. Lijnen die clusteren, zijn observaties die meer overeenkomen. 
-- Decision boundary matrix: Maakt een *n* x *n* grafiek die visualiseert hoe elke observatie zou zijn geclassificeerd zoals het huidige model voorspelt. Grenzen tussen klassen zijn gevisualiseert. Kan enkel gemaakt worden voor numerieke voorspellers.
+- Andrews curves: Een manier om de structuur in hoger dimensionele data te visualiseren. Lijnen die clusteren, zijn observaties die meer overeenkomen. 
+- Decision boundary matrix: Maakt een *n* x *n* grafiek die visualiseert hoe elke observatie zou zijn geclassificeerd zoals het huidige model voorspelt. Grenzen tussen klassen zijn gevisualiseerd. Kan enkel gemaakt worden voor numerieke voorspellers.
 
 ### Datasplit Voorkeuren
 #### Holdout Testdata
@@ -82,5 +82,5 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 
 ### Voorbeeld 
 --- 
-- Voor een dataset als voorbeeld ga naar `Open` --> `Data Library` --> `Machine Learning` --> `Telco Customer Churn`.  
+- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Telco Customer Churn`.  
 

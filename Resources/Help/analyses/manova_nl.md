@@ -42,7 +42,7 @@ Met een MANOVA kan men het verschil tussen twee of meer groepsgemiddelden bereke
 MANOVA - toets: 
 - Cases: Deze kolom bevat de onafhankelijke variabelen, hun interacties en het residu. 
 - df: Vrijheidsgraden van het model.
-- Benad. F: Benadering van de F-ratie. De verschillende toetsen kunnen verschillende benaderingen opleveren.
+- Benad. F: Benadering van de F-ratio. De verschillende toetsen kunnen verschillende benaderingen opleveren.
 - Test statistiek: De waarde van de test statistiek, afhankelijk van welke test is geselecteerd. 
 - Num df: Vrijheidsgraden voor het bepalen van p-waardes van de F-statistieken.
 - Den df: Vrijheidsgraden voor het bepalen van p-waardes van de F-statistieken.
@@ -71,6 +71,6 @@ ANOVA - afhankelijke variabele:
 - stats
 
 
-### Example 
+### Voorbeeld 
 --- 
 TBA

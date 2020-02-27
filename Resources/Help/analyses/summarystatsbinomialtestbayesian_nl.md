@@ -9,7 +9,7 @@ Deze functie berekent de Bayes factor voor een observatie van een binomiaalverde
 #### Invoerveld
 - Nul model: *p = p0*
 - Alt  model: *p ~ Beta(a,b)*
-*p0* is de voorgestelde waarde voor de "rate parameter" van de binomiaalverdeling onder de nulhypothese. Geobserveerde data: *s* successen,*f* mislukkingen en het toaal aantal trials *n = s + f*. In Theory on Probability neemt Jeffreys een uniforme priorverdeling voor de rate parameter aan onder de alternatieve hypothese. De Bayes Factor die hier wordt gebruikt is gebaseerd op een meer algemeen geval, namelijk een beta prior. *Let op* beta(1,1) is een uniforme prior.
+*p0* is de voorgestelde waarde voor de "rate parameter" van de binomiaalverdeling onder de nulhypothese. Geobserveerde data: *s* successen,*f* mislukkingen en het totaal aantal trials *n = s + f*. In Theory on Probability neemt Jeffreys een uniforme priorverdeling voor de rate parameter aan onder de alternatieve hypothese. De Bayes Factor die hier wordt gebruikt is gebaseerd op een meer algemeen geval, namelijk een beta prior. *Let op* beta(1,1) is een uniforme prior.
 
 #### Alt. Hypothese
 - *&ne; Test value*: De tweezijdige alternative hypothese dat het populatiegemiddelde niet gelijk aan de toetswaarde is.

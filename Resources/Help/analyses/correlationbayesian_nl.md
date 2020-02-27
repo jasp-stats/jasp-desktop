@@ -17,9 +17,9 @@ De Bayesiaanse Correlatie analyse maakt het mogelijk om de populatiecorrelatie t
 ### Invoer
 ---
 
-#### Correlatiecoëfficient
-- Pearson's rho: Pearson's productmoment correlatiecoëfficient. 
-- Kendall's tau-b: Kendall's tau-b rangorde correlatiecoëfficient om de monotone associatie tussen twee variabelen te kwantificeren.
+#### Correlatiecoëfficiënt
+- Pearson's rho: Pearson's productmoment correlatiecoëfficiënt. 
+- Kendall's tau-b: Kendall's tau-b rangorde correlatiecoëfficiënt om de monotone associatie tussen twee variabelen te kwantificeren.
 
 #### Alt. Hypotheses
 - Correlatie: Tweezijdige alternatieve hypothese dat de populatiecorrelatie niet gelijk is aan 0.
@@ -29,37 +29,37 @@ De Bayesiaanse Correlatie analyse maakt het mogelijk om de populatiecorrelatie t
 #### Bayes Factor  
 - BF<sub>10</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
 - BF<sub>01</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
-- Log(BF<sub>10</sub>) : Als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusion</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
+- Log(BF<sub>10</sub>) : Als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
 
 #### Aanvullende Opties
-- Toon paarsgewijze tabel: Geef een tabel weer waarin op elke rij één paar variabelen staat. Indien onaangevinkt, dan zijn de resultaten weergegeven als matrix, met de namen van variabelen in zowel de kolommen als de rijen.
+- Geef tabel paarsgewijs weer: Geef een tabel weer waarin op elke rij één paar variabelen staat. Indien onaangevinkt, dan zijn de resultaten weergegeven als matrix, met de namen van variabelen in zowel de kolommen als de rijen.
 - Rapporteer Bayes factoren: Geeft de Bayes factor voor iedere toets.
-- Markeer ondersteunende correlaties: Markeer correlatiecoëfficenten met een Bayes factor groter dan 10, 30, en 100.
+- Markeer ondersteunende correlaties: Markeer correlatiecoëfficiënten met een Bayes factor groter dan 10, 30, en 100.
 - Steekproefgrootte: Geeft de grootte van de steekproef voor iedere toets.
-- Geloofwaardigheidsintervallen: Geeft geloofwaardigheidsintervallen weer voor de correlatiecoëfficient.
+- Geloofwaardigheidsinterval: Geeft het geloofwaardigheidsinterval weer voor de correlatiecoëfficiënt.
 
 #### Grafieken
 - Correlatie matrix: Geeft correlatiematrices weer voor iedere mogelijke combinatie van de geselecteerde variabelen. Deze staan boven de diagonaal. 
   - Verdelingen van variabelen: Geeft een histogram en de overeenkomende verdelingsgrafieken weer voor elke variabele. Deze staan op de diagonaal. 
-  - Posteriors onder H<sub>1</sub>: Geeft posterior vergelijkingen van de correlatiecoefficent weer voor iedere mogelijke combinatie van de geselecteerde variabelen. Deze staan onder de diagonaal. 
+  - Posteriors onder H<sub>1</sub>: Geeft posterior vergelijkingen van de correlatiecoëfficiënt weer voor iedere mogelijke combinatie van de geselecteerde variabelen. Deze staan onder de diagonaal. 
   
 #### Prior
 - Gespreide beta prior breedte: Breedte van de geschaalde beta verdeling op de correlatie onder de alternatieve hypothese; de standaardwaarde is 1. Hoe lager deze waarde, hoe meer de prior verdeling is geconcentreerd rond 0. De waarde moet tussen de 0 en de 2 liggen. 
 
-### Grafieken Van Losse Paren
-- Correlatiecoëfficient in grafieken
-  - Pearson's rho: Pearson's productmoment correlatiecoëfficient. 
-  - Kendall's tau-b: Kendall's tau-b rangorde correlatiecoëfficient om de monotone associatie tussen twee variabelen te kwantificeren.
+### Maak Grafieken Van Losse Paren
+- Correlatiecoëfficiënt in grafieken
+  - Pearson's rho: Pearson's productmoment correlatiecoëfficiënt. 
+  - Kendall's tau-b: Kendall's tau-b rangorde correlatiecoëfficiënt om de monotone associatie tussen twee variabelen te kwantificeren.
   
 - Spreidingsdiagram: Geef een spreidingsdiagram weer voor elk paar geselecteerde variabelen.
   
 - Prior en posterior: Geeft de dichtheid van de prior en de posterior van de effectgrootte onder de alternatieve hypothese.
-  - Schattingsinformatie: Geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior weer.
-  - Toetsingsinformatie: Voegt de Bayes factor berekend met de door de gebruiker gedefinieerde prior toe; voegt een kanswiel toe die de kans van de data onder de nulhypothese vs. de alternatieve hypothese laat zien; voegt twee cirkels toe voor de prior en posterior op het toetsingspunt (rho=0), de ratio van de twee punten is gelijk aan de Bayes factor.
-- Bayes factor rubuustheidsgrafiek: Geeft de Bayes factor weer als een functie van de gerekte beta prior breedte voor de correlatie tussen de paren. De schaal van kappa varieert tussen 0 en 2.
+  - Schatting info: Geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior weer.
+  - Toetsing info: Voegt de Bayes factor berekend met de door de gebruiker gedefinieerde prior toe; voegt een kanswiel toe die de kans van de data onder de nulhypothese vs. de alternatieve hypothese laat zien; voegt twee cirkels toe voor de prior en posterior op het toetsingspunt (rho=0), de ratio van de twee punten is gelijk aan de Bayes factor.
+- Bayes factor robuustheidsgrafiek: Geeft de Bayes factor weer als een functie van de gerekte beta prior breedte voor de correlatie tussen de paren. De schaal van kappa varieert tussen 0 en 2.
   - Aanvullende informatie: Voegt de Bayes factor berekend met de door de gebruiker gedefinieerde prior toe en de maximaal haalbare Bayes factor.
   
-- Sequentiele analyse: Geeft de ontwikkeling van de Bayes factor weer terwijl de data binnenkomen, gebruik makende van de door de gebruiker gedefinieerde prior.
+- Sequentiële analyse: Geeft de ontwikkeling van de Bayes factor weer terwijl de data binnenkomen, gebruik makende van de door de gebruiker gedefinieerde prior.
   - Aanvullende info: Voegt de Bayes factor berekend met de door de gebruiker gedefinieerde prior toe; voegt een kanswiel toe die de kans van de data onder de nulhypothese vs. de alternatieve hypothese laat zien; geeft de interpretatie van het bewijs in termen van Jeffreys' (1961) bewijscategorieën.
 
 ### Opties
@@ -74,14 +74,14 @@ De Bayesiaanse Correlatie analyse maakt het mogelijk om de populatiecorrelatie t
 
 #### Bayesiaanse Correlatie Tabel
 - n: steekproefgrootte.
-- Pearson r: Pearson's product-moment correlatiecoëfficient.
-- Kendall tau:  Kendall's tau b rank correlatiecoëfficient.
+- Pearson r: Pearson's product-moment correlatiecoëfficiënt.
+- Kendall tau:  Kendall's tau b rank correlatiecoëfficiënt.
 - BF10 (of BF01): Bayes factor. Als een eenzijdige toets wordt opgevraagd:
   - BF+0: Bayes factor die bewijs geeft voor de eenzijdige alternatieve hypothese dat de populatiecorrelatie hoger is dan 0. 
   - BF-0: Bayes factor die bewijs geeft voor de eenzijdige alternatieve hypothese dat de populatiecorrelatie lager is dan 0. 
   - BF0+: Bayes factor die bewijs geeft voor de nulhypothese ten opzichte van de eenzijdige alternatieve hypothese dat de populatiecorrelatie hoger is dan 0. 
   - BF0-: Bayes factor die bewijs geeft voor de nulhypothese ten opzichte van de eenzijdige alternatieve hypothese dat de populatiecorrelatie lager is dan 0. 
-- Geloofwaardigheidsinterval: Centrale geloofwaardigheidsinterval voor de correlatiecoefficent. 
+- Geloofwaardigheidsinterval: Centrale geloofwaardigheidsinterval voor de correlatiecoëfficiënt. 
 
 - Markeer ondersteunde correlaties: Correlaties die worden ondersteund door de Bayes factor zijn gemarkeerd met (zie Jeffreys (1961) voor bewijscategorieën):
 	- *BF < 10 als de data minimaal 10 keer aannemelijker zijn onder de gekozen hypothese (zie Hypothese). 
@@ -99,15 +99,15 @@ De Bayesiaanse Correlatie analyse maakt het mogelijk om de populatiecorrelatie t
 
 - Prior en posterior:
   - Geeft de dichtheid van de prior (stippellijn) en de posterior (lijn) van de effectgrootte onder de alternatieve hypothese; de horizontale lijn representeert de breedte van een 95% geloofwaardigheidsinterval van de posterior.
-    - Schattingsinformatie: Geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior weer.
-    - Toetsingsinformatie: Voegt de Bayes factor berekend met de door de gebruiker gedefinieerde prior toe; voegt een kanswiel toe die de kans van de data onder de nulhypothese vs. de alternatieve hypothese laat zien; voegt twee cirkels toe voor de prior en posterior op het toetsingspunt (rho=0), de ratio van de twee punten is gelijk aan de Bayes factor.
+    - Schatting info: Geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior weer.
+    - Toetsing info: Voegt de Bayes factor berekend met de door de gebruiker gedefinieerde prior toe; voegt een kanswiel toe die de kans van de data onder de nulhypothese vs. de alternatieve hypothese laat zien; voegt twee cirkels toe voor de prior en posterior op het toetsingspunt (rho=0), de ratio van de twee punten is gelijk aan de Bayes factor.
 
 
-- Bayes factor rubuustheidsgrafiek:
+- Bayes factor robuustheidsgrafiek:
   - Geeft de Bayes factor weer als een functie van de beta prior breedte voor de correlatie tussen de paren.
     - Aanvullende informatie: De rode cirkel is de maximaal haalbare Bayes factor; de grijze cirkel is de Bayes factor berekend met de door de gebruiker gedefinieerde prior.
 
-- Sequentiele analyse: 
+- Sequentiële analyse: 
   - Geeft de ontwikkeling van de Bayes factor weer als een functie van het aantal observaties (n) op basis van de door de gebruiker gedefinieerde prior.
     - Aanvullende info: Voegt de Bayes factor berekend met de door de gebruiker gedefinieerde prior toe; voegt een kanswiel toe die de kans van de data onder de nulhypothese vs. de alternatieve hypothese laat zien; geeft de interpretatie van het bewijs in termen van Jeffreys' (1961) bewijscategorieën.
 

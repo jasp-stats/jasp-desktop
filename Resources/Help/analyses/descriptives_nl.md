@@ -14,7 +14,7 @@ Met beschrijvende statistieken kan je basis beschrijvende statistieken verkrijge
 ### Grafieken 
 - Verdelingsgrafieken: Voor een continue variabele wordt een histogram weergegeven. Voor nominale en ordinale variabelen wordt een frequentie verdeling weergegeven.
   - Geef dichtheid weer (alleen continue variabelen): Geeft dichtheid weer op basis van een nonparametrische dichtheidschatter. 
-- Correlatie grafiek: Geeft voor een continue variabele histogrammen, dichtheidsgrafieken en scatterplots weer. 
+- Correlatie grafiek: Geeft voor een continue variabele histogrammen, dichtheidsgrafieken en spreidingsdiagrammen weer. 
 - Boxplots: Geeft voor continue variabelen een boxplot weer.
   - Label Uitschieters: De uitschieters worden gelabeld. Uitschieters worden gebaseerd op de interkwartielafstand (IQR). Bijv., [25e percentiel] - 1.5 × IQR en [75e percentiel] +  1.5 × IQR.
   - Kleur: Geeft weer in kleur.
@@ -62,8 +62,8 @@ Met beschrijvende statistieken kan je basis beschrijvende statistieken verkrijge
 - Std. afw. Scheefheid. De standaardfout van de scheefheid. 
 - Kurtose : De kurtose van de verdeling van de datapunten. 
 - Std. afw. Kurtose. De standaardfout van de kurtose. 
-- Shapiro-Wilk: waarde van de shapiro-wilk statistiek.
-- P Shapiro-Wilk: p-waarde van de shapiro-wilk statistiek.
+- Shapiro-Wilk: waarde van de Shapiro-Wilk statistiek.
+- P Shapiro-Wilk: p-waarde van de Shapiro-Wilk statistiek.
 - Range: De range van de datapunten; maximum - mimimum. 
 - Minimum: Minimale waarde van de data punten. 
 - Maximum: Maximale waarde van de data punten.
@@ -77,7 +77,7 @@ Met beschrijvende statistieken kan je basis beschrijvende statistieken verkrijge
 - Geeft voor nominale en ordinale variabelen een frequentieverdeling weer. 
 
 #### Correlatie grafiek
-- Geeft een matrix van grafieken weer tussen continue variabelen met scatterplots tussen de variabelen in de niet-diagonaal-cellen, en histogrammen en dichtheidsplots in de cellen op de diagonaal. De lijn representeert de fit van een 1e, 2e, 3e of 4e orde polynomiaal (de selectie is gebaseerd op het Bayesiaanse informatie criterium ; Schwarz, 1978).
+- Geeft een matrix van grafieken weer tussen continue variabelen met spreidingsdiagrammen tussen de variabelen in de niet-diagonaal-cellen, en histogrammen en dichtheidsplots in de cellen op de diagonaal. De lijn representeert de fit van een 1e, 2e, 3e of 4e orde polynomiaal (de selectie is gebaseerd op het Bayesiaanse informatie criterium ; Schwarz, 1978).
 
 #### Boxplots
 - Geeft voor continue variabelen een boxplot weer. De uitschieters kunnen gelabeld worden op basis van de interkwartiel afstand (IQR), bijv., [25e percentiel] - 1.5 × IQR en [75e percentiel] + 1.5 × IQR. Kan ook in kleur worden weergegeven en heeft een selecteerbare boxplot, viool en jitter elementen voor het weergeven van de verdeling van de data. Dit kan worden opgedeeld op basis van een categorische variabele zoals een experimentele conditie. 

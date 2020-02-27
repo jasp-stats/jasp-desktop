@@ -14,7 +14,7 @@ Met de Bayesiaanse ANCOVA kan men het verschil tussen meerdere groepsgemiddelden
 ### Invoer
 ---
 #### Invoerveld
-- Afhankelijke Variabele: De variabele waarin we het meest geïnteresserd zijn. Deze wordt ook wel de uitkomstvariabele genoemd. 
+- Afhankelijke Variabele: De variabele waarin we het meest geïnteresseerd zijn. Deze wordt ook wel de uitkomstvariabele genoemd. 
 - Vaste Factoren: De variabelen die zijn gemanipuleerd/die de verschillende groepen definiëren. Deze worden ook wel de onafhankelijke variabelen genoemd.  
 - Aselecte Factoren: In dit veld kan de gebruiker de variabele selecteren die moet worden meegenomen in alle modellen, inclusief het nulmodel.
 - Covariaten: In dit veld kan de variabele die de covariaat is worden geselecteerd. Covariaten zijn continue variabelen die een invloed uitoefenen op de afhankelijke variabele, maar geen deel uitmaken van de experimentele manipulatie.  
@@ -22,7 +22,7 @@ Met de Bayesiaanse ANCOVA kan men het verschil tussen meerdere groepsgemiddelden
 #### Bayes Factor  
 - BF<sub>10</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
 - BF<sub>01</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
-- Log(BF<sub>10</sub>) : Als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusion</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
+- Log(BF<sub>10</sub>) : Als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
 
 #### Uitvoer 
  - Effecten: Als deze optie wordt geselecteerd, wordt de kans op inclusie van elke component (i.e., modelterm) in de modellen berekend. 
@@ -35,7 +35,7 @@ Met de Bayesiaanse ANCOVA kan men het verschil tussen meerdere groepsgemiddelden
 
 - Schattingen: Als deze optie is geselecteerd, wordt een tabel weergegeven met een samenvatting van de model gemiddelde posterior. Deze tabel bevat informatie over het model gemiddelde posterior, de standaardafwijking, en de geloofwaardigheidsinterval voor elk niveau van de vaste factoren, hun interacties en de covariaten.
 - Beschrijvende statistieken: Als deze optie is geselecteerd, worden het gemiddelde, de standaardafwijking en de steekproefgrootte weergegeven voor elke combinatie van de onafhankelijke variabelen. 
-  - Geloofwaardigheidsinerval: Het centrale geloofwaardigheidsinterval. De standaardoptie is 95%.
+  - Geloofwaardigheidsinterval: Het centrale geloofwaardigheidsinterval. De standaardoptie is 95%.
  
 #### Volgorde
 - Vergelijk met nulmodel: De modellen die gebruikt worden in de analyse onder de optie 'model', zullen worden vergeleken met het model dat het totale gemiddelde en de willekeurige factoren bevat (het nulmodel). Dit is de standaardoptie.
@@ -97,7 +97,7 @@ Met de Bayesiaanse ANCOVA kan men het verschil tussen meerdere groepsgemiddelden
 - Prior: Hier kunnen de prior verdelingen worden ingesteld voor de willekeurige en vaste effectgroottes.
 	- r schaal vaste effecten: De vorm parameter van de prior verdeling voor vaste effecten. De standaardwaarde is 0.5, maar dit kan naar wens worden aangepast.
 	- r schaal willekeurige effecten: De vorm parameter van de prior verdeling voor de willekeurige effecten. De standaardwaarde is 1, maar dit kan naar wens worden aangepast. 
-- Numerische precisie: Het aantal stappen dat wordt genomen om de integraal voor de Bayes factor te berekenen.
+- Numerieke precisie: Het aantal stappen dat wordt genomen om de integraal voor de Bayes factor te berekenen.
   - Auto: Als deze optie is geselecteerd, worden er 10000 stappen gezet. Dit is de standaardoptie.
   - Handmatig: Als deze optie is geselecteerd, kan het aantal stappen handmatig worden ingesteld. De standaardwaarde is 10000.
 - Posterior Steekproeven: Het is mogelijk om het aantal Markov Chain Monte Carlo steekproeven in te stellen. Dit wordt gebruikt om de posterior verdeling en het fout % te benaderen. 
@@ -124,7 +124,7 @@ Analyse van Effecten - Afhankelijke Variabele:
 - Effecten: Deze kolom bevat de componenten meegenomen in de modellen, zoals de onafhankelijke variabelen en hun interacties.
 - P(incl): Deze kolom bevat de prior inclusiekans. Dit is de opgetelde prior kans over alle modellen die de component bevatten.
 - P(incl|data): Deze kolom bevat de posterior inclusiekans. Dit is de opgetelde posterior kans over alle modellen die de component bevatten.
-- BF<sub>inclusion</sub>: Deze kolom bevat de verandering van prior inclusie odds tot posterior inclusie odds voor elke component gemiddeld over alle modellen die de component bevatten.
+- BF<sub>inclusie</sub>: Deze kolom bevat de verandering van prior inclusie odds tot posterior inclusie odds voor elke component gemiddeld over alle modellen die de component bevatten.
 
 Samenvatting van Model Gemiddelde van de Posterior:
 - Variabele: Deze kolom bevat alle vaste factoren, hun interacties, en covariaten die zijn meegenomen in de modellen. De eerste rij geeft informatie over de intercept. 
@@ -173,7 +173,7 @@ Q-Q Grafiek:
 Posterior R<sup>2</sup>: 
 - De dichtheid van R<sup>2</sup> (verklaarde variantie) voor een enkel model, met R<sup>2</sup> op de x-as en dichtheid op de y-as.
 
-#### Beschijvende Statistieken
+#### Beschrijvende Statistieken
 Beschrijvende Statistieken - afhankelijke variabele:
 - Onafhankelijke variabelen: De niveaus van de onafhankelijke variabele(n) die zijn meegenomen in de analyse. Als het er meer dan een zijn worden de beschrijvende statistieken weergegeven voor elke combinatie van niveaus van de onafhankelijke variabelen.
 - Gemiddelde: Het gemiddelde per niveau, of, als er meer dan 1 onafhankelijke variabele is, het gemiddelde per combinatie van niveaus. 

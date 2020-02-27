@@ -7,7 +7,7 @@ Met de bain (Bayesian informative hypothese evaluation) ANCOVA kan de gebruiker 
 
 - Kies de afhankelijke variabele uit de lijst met variabelen en sleep deze naar het Afhankelijke Variabele veld. Let op: de naam van de afhankelijke variabele moet met een letter beginnen, en mag verder bestaan uit letters, cijfers en _. 
 - Kies de factor uit de lijst met variabelen en sleep deze naar het veld Vaste Factoren. Let op: de naam van de factor moet met een letter beginnen, en mag verder bestaan uit letters, cijfers en _. Let daarnaast op dat alle groepen moeten worden verzameld in EEN factor. Als de gebruiker gebruik maakt van, bijvoorbeeld, een factor met de niveaus jong-oud en een factor met de niveaus vrouw-man, moet er EEN nieuwe factor worden gemaakt met de niveaus jongvrouw, oudvrouw, jongman, oudman. De niveaus worden aangegeven met cijfers, of beginnen met een letter. Verder mogen ze bestaan uit letters, cijfers en _.
-- Stel de seed in gelijk aan een geheel getal om een herhaalbare, willekeurige nummerreeks te creeren. Om stabiliteit van de resultaten te verzekeren wordt aangeraden de analyses met twee verschillende seeds uit te voeren.
+- Stel de seed in gelijk aan een geheel getal om een herhaalbare, willekeurige nummerreeks te creëren. Om stabiliteit van de resultaten te verzekeren wordt aangeraden de analyses met twee verschillende seeds uit te voeren.
 - Kies de covariaat of covariaten uit de lijst met variabelen en sleep deze naar het Covariaten veld. Let op: de naam van de covariaat of covariaten moet met een letter beginnen, en mag verder bestaan uit letters, cijfers en _. 
 - Wanneer de bain ANCOVA voor het eerst wordt uitgevoerd, vink dan de beide aanvullende statistieken en beide grafieken aan. Wanneer de gebruiker dan terug gaat naar de bain ANCOVA is het duidelijk wat deze vier opties inhouden, en kunnen de benodigde opties worden geselecteerd. 
 - In de resultaten worden standaard de 95% geloofwaardigheidsintervallen weergegeven. Dit percentage kan naar wens worden aangepast. 
@@ -46,7 +46,7 @@ Hypotheses moeten compatibel, niet-overbodig en mogelijk zijn. Wat dit precies i
 
 1. De tabel waarin de Bayes factor voor elke hypothese is gespecificeerd tegenover zijn ontkenning wordt weergegeven. Deze tabel bevat ook de posterior model kans van iedere hypothese. Dit zowel voor een set zonder en een set met de niet beperkte hypothese. 
 2. De Bayes factor matrix waarin de wederzijdse Bayes factors van de hypotheses gespecificeerd in het vak Model Beperkingen worden weergegeven. 
-3. Een tabel met coefficienten die voor iedere groep in de ANCOVA steekproefgrootte, het aangepaste gemiddelde, de standaardfout (se) en de 95% geloofwaardigheidsinterval weergeeft. Daarnaast bevat deze tabel dezelfde informatie voor de covariaat of covariaten.
+3. Een tabel met coëfficiënten die voor iedere groep in de ANCOVA steekproefgrootte, het aangepaste gemiddelde, de standaardfout (se) en de 95% geloofwaardigheidsinterval weergeeft. Daarnaast bevat deze tabel dezelfde informatie voor de covariaat of covariaten.
 4. Een grafiek van de pmp's (met en zonder niet beperkte hypotheses) die het bewijs gevonden in de data voor iedere hypothese visueel benadrukken. 
 5. Een grafiek met steekproefgemiddelden en hun bijbehorende geloofwaardigheidsinterval.
 

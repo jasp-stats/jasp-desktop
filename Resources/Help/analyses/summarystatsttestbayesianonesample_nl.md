@@ -1,4 +1,4 @@
-Samenvatting Statistieken Bayesiaans One Sample T-toets
+Samenvatting Statistieken Bayesiaanse One Sample T-toets
 ==================
 
 Met deze functie kan men de Bayes factor berekenen die correspondeert met een t-toets voor één steekproef door middel van de *t* statistiek. De nulhypothese is dat het populatiegemiddelde gelijk is aan een bepaalde constante (i.e., de toetswaarde). Deze Bayesiaanse analyse kan zonder de pure data worden uitgevoerd.
@@ -13,22 +13,22 @@ Met deze functie kan men de Bayes factor berekenen die correspondeert met een t-
 #### Alt. Hypothesis
 - *&ne; Toetswaarde*: Tweezijdige hypothese dat het populatiegemiddelde niet gelijk is aan de toetswaarde.
 - *&gt; Toetswaarde*: Eenzijdige hypothese dat het populatiegemiddelde groter is dan de toetswaarde.
-- *&lt; Toetswaarde*: Eenzijdige hypothese dat het populatiegemiddelde keiner is dan de toetswaarde.
+- *&lt; Toetswaarde*: Eenzijdige hypothese dat het populatiegemiddelde kleiner is dan de toetswaarde.
 
 #### Bayes Factor
-- BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de null hypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de null hypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nul hypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nul hypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
 - Log(BF<sub>10</sub>) : Natuurlijk logaritme van BF10 
 
 #### Grafieken
-- *Prior en posterior*: Geeft de dichtheid van de prior (stippellijn) en de posterior (lijn) van de effectgrootte onder de alternatieve hypothese; de grijze cirkels representeren de hoogte van de prior en de posterior bij een effecctgrootte delta = 0. De horizontale lijn representeert de breedte van een 95% geloofwaardigheidsinterval van de posterior.
+- *Prior en posterior*: Geeft de dichtheid van de prior (stippellijn) en de posterior (lijn) van de effectgrootte onder de alternatieve hypothese; de grijze cirkels representeren de hoogte van de prior en de posterior bij een effectgrootte delta = 0. De horizontale lijn representeert de breedte van een 95% geloofwaardigheidsinterval van de posterior.
   - Aanvullende info: Geeft de Bayes factor weer; geeft een kanswiel weer met de kans kl de data onder de nul- en alternatieve hypothese; geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior weer.
-- *Bayes factor rubuustheids grafiek*: Geeft de Bayes factor weer als een functie van de breedte van de Cauchy prior voor effectgrootte. De schaal van de Cauchy prior varieert tussen 0 en 1.5 (tussen 0 en 2 als de prior van de gebruiker groter is dan 1.5), op zo'n manier dat de priors steeds minder informatief worden.
+- *Bayes factor robuustheidsgrafiek*: Geeft de Bayes factor weer als een functie van de breedte van de Cauchy prior voor effectgrootte. De schaal van de Cauchy prior varieert tussen 0 en 1.5 (tussen 0 en 2 als de prior van de gebruiker groter is dan 1.5), op zo'n manier dat de priors steeds minder informatief worden.
 
 ### Prior
 - **Gestandaardiseerde effectgrootte**
   - Standaard 
-    - *Cauchy* : Schaal van de Cauchy prior voor de effecctgrootte onder de alternatieve hypothese; de standaardoptie is .707.
+    - *Cauchy* : Schaal van de Cauchy prior voor de effectgrootte onder de alternatieve hypothese; de standaardoptie is .707.
   - Geinformeerd
 	- *Cauchy*: Schaal en locatie
 	- *Normaal*: Gemiddelde en standaardafwijking

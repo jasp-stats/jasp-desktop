@@ -91,5 +91,5 @@ Normaliteit toets (Shapiro-Wilk)
 
 ### Voorbeeld 
 --- 
-- Voor een voorbeeld, ga naar `Open` --> `Data Library` --> `T-Tests` --> `Weight Gain`.  
+- Voor een voorbeeld, ga naar `Open` --> `Bibliotheek` --> `T-Tests` --> `Weight Gain`.  
 

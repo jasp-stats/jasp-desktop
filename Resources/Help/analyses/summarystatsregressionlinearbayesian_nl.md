@@ -4,7 +4,7 @@ Samenvatting Statistiek Bayesiaanse Lineaire Regressie
 Met Bayesiaanse Lineaire Regressie kan men een lineaire relatie tussen een of meer verklarende variabele(n) (predictoren) en een continue afhankelijke (respons) variabele modelleren. Met deze analyse, gebaseerd op de klassieke (niet-bijgestelde) R^2 statistiek, kan met de Bayes factor de relatie toetsen. De Bayes factor wordt uitgerekend door middel van Gaussiaanse kwadratuur.
 
 ### Invoeropties en restricties
-- Als er alleen alternatieve model waarden worden gespecificeerd gebruikt de analyse het standaard nulmodel om de bayesfactor te berekenen.
+- Als er alleen alternatieve model waarden worden gespecificeerd gebruikt de analyse het standaard nulmodel om de Bayes factor te berekenen.
 - Model vergelijking: Beide modellen zijn gespecificeerd.
 	- Als het aantal covariaten voor het alternatieve model hoger is dan het aantal covariaten voor het nulmodel moet de R^2 waarde voor het nulmodel lager zijn dan die van het alternatieve model. 
 - Als alleen waarden voor het nulmodel worden gespecificeerd wordt de analyse niet uitgevoerd.
@@ -15,7 +15,7 @@ Met Bayesiaanse Lineaire Regressie kan men een lineaire relatie tussen een of me
 - Steekproefgrootte.
 - Nulmodel.
 	- *Covariaten*: Het aantal predictoren in het model (zonder het intercept).
-	- *Onnijgestelde R-kwadraat*: Proportie van de variantei die wordt verklaard door de predictoren.
+	- *Onaangepaste R-kwadraat*: Proportie van de variantie die wordt verklaard door de predictoren.
 - Alternatief model 
     - *Covariaten*
     - *R-kwadraat*
@@ -30,7 +30,7 @@ Met Bayesiaanse Lineaire Regressie kan men een lineaire relatie tussen een of me
 
 ### Geavanceerde opties
 - Prior
-  - *Cauchy prior breedte*: Schaal van de dichtheid an de Cauchy prior voor effectgrootte under de alternatieve hypothese. De standaardoptie is 0.5. 
+  - *Cauchy prior breedte*: Schaal van de dichtheid van de Cauchy prior voor effectgrootte onder de alternatieve hypothese. De standaardoptie is 0.5. 
 
 ### Uitvoer
 --- 

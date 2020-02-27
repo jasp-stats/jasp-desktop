@@ -11,7 +11,7 @@ Met deze functie kan met Bayes factor berekenen voor een onafhankelijke t-toets 
 ### Invoer
 ---
 #### Invoerveld
-- *t*: t-Statisstiek
+- *t*: t-Statistiek
 - *Groep 1 grootte*
 - *Groep 2 grootte*
 
@@ -28,12 +28,12 @@ Met deze functie kan met Bayes factor berekenen voor een onafhankelijke t-toets 
 #### Plots
 - *Prior en posterior*: Geeft de dichtheid van de prior (stippellijn) en de posterior (lijn) van de effectgrootte onder de alternatieve hypothese; de grijze cirkels representeren de hoogte van de prior en de posterior bij een effectgrootte delta = 0. De horizontale lijn representeert de breedte van een 95% geloofwaardigheidsinterval van de posterior.
   - Aanvullende info: Geeft de Bayes factor weer; geeft een kanswiel weer met de kans op de data onder de nul- en alternatieve hypothese; geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior weer.
-- *Bayes factor rubuustheids grafiek*: Geeft de Bayes factor weer als een functie van de breedte van de Cauchy prior voor effectgrootte. De schaal van de Cauchy prior varieert tussen 0 en 1.5 (tussen 0 en 2 als de prior van de gebruiker hoger is dan 1.5), op zo'n manier dat de priors steeds minder informatief worden.
+- *Bayes factor robuustheidsgrafiek*: Geeft de Bayes factor weer als een functie van de breedte van de Cauchy prior voor effectgrootte. De schaal van de Cauchy prior varieert tussen 0 en 1.5 (tussen 0 en 2 als de prior van de gebruiker hoger is dan 1.5), op zo'n manier dat de priors steeds minder informatief worden.
 
 ### Prior
 - **Gestandaardiseerde effectgrootte**
   - Standaard 
-    - *Cauchy* : Schaal van de Cauchy prior voor de effecctgrootte onder de alternatieve hypothese; de standaardoptie is .707.
+    - *Cauchy* : Schaal van de Cauchy prior voor de effectgrootte onder de alternatieve hypothese; de standaardoptie is .707.
   - Geinformeerd
 	- *Cauchy*: Schaal en locatie
 	- *Normaal*: Gemiddelde en standaardafwijking

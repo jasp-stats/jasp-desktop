@@ -13,14 +13,14 @@ Met de Bayesiaanse Herhaalde Metingen ANOVA kan men verschillen tussen gemiddeld
 
 #### Invoerveld
 - Herhaaldelijke meting factoren: De binnen-subject variabele. Hier kan je de binnen-subject factoren en de verschillende niveaus die daartoe behoren labellen. 
-- Herhaaldelijke meting cellen: De aparte kolommen in de data die de niveaus van de binnen-subect factor(en) weergeven. 
+- Herhaaldelijke meting cellen: De aparte kolommen in de data die de niveaus van de binnen-subject factor(en) weergeven. 
 - Tussen subject factoren: Deze variabele kan worden geselecteerd als de participanten in twee of meer groepen zijn ingedeeld. 
 - Covariaten: In dit veld kan je een covariaat selecteren. Covariaten zijn continue variabelen die een invloed op de afhankelijke variabele hebben maar geen deel zijn van de manipulatie.
 
 #### Bayes Factor
 - BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nul hypothese. Dit is de standaardoptie. 
 - BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nul hypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
-- Log(BF<sub>10</sub>): Als je deze optie selecteert wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusion</sub>, BF<sub>10, U</sub> weergegeven in de output.
+- Log(BF<sub>10</sub>): Als je deze optie selecteert wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de output.
 
 #### Volgorde:
 - Vergelijk met het nulmodel: Do modellen gemaakt onder de optie `Model` worden vergeleken met het model dat het totale gemiddelde en de aselecte factoren bevatten, het nulmodel genoemd. Dit is de standaardoptie. 
@@ -35,7 +35,7 @@ Met de Bayesiaanse Herhaalde Metingen ANOVA kan men verschillen tussen gemiddeld
   - Geloofwaardigheidsinterval: De standaardoptie is 95%.
 
 #### Grafieken
-- Model gemiddelde posteriors: Als je deze optie selecteert worden er grafieks weergegeven die de model gemiddelde posterior van elke vaste factor en interactie illustreren. 
+- Model gemiddelde posteriors: Als je deze optie selecteert worden er grafieken weergegeven die de model gemiddelde posterior van elke vaste factor en interactie illustreren. 
   - Groep niveaus in één grafiek: Als je deze optie selecteert wordt er voor elke factor een grafiek weergegeven. De posterior verdelingen van elk niveau van de factor zullen dus in dezelfde grafiek worden weergegeven.
   - Een grafiek per niveau : Als je deze optie selecteert wordt een aparte grafiek voor elk niveau van de factor weergegeven. De posterior verdeling van elke factor zal dus in een eigen grafiek weer worden gegeven.
 - Q-Q grafiek van residuen: Controleert de validiteit van de verdelingsassumpties van de dataset. Om precies te zijn geeft de grafiek weer of de residuen normaal zijn verdeelt. 
@@ -49,7 +49,7 @@ Met de Bayesiaanse Herhaalde Metingen ANOVA kan men verschillen tussen gemiddeld
 ### Enkel Model Inferentie
 - Hier kan een enkel model worden gespecificeerd om informatie van de posterior van dit model te verkrijgen, inclusief een tabel met een samenvatting van de posterior en grafieken van de marginale posterior.
 - Tabellen:
-  - Schatting: Een tabel met een samenvatting van de posterior voor het enkele model dat is gespecificeerd in het toekennignsveld. Deze tabel geeft informatie over het gemiddelde, de standaardafwijking en het betrouwbaarheidsinterval van elk niveau van de vaste factoren van het model. Dit is anders dan de "schatten" optie in Output, omdat de "estimate" functie een samenvatting geeft van de posterior gemiddeld over alle modellen in de analyse, terwijl deze optie de posterior geeft voor het enkele model. 
+  - Schatting: Een tabel met een samenvatting van de posterior voor het enkele model dat is gespecificeerd. Deze tabel geeft informatie over het gemiddelde, de standaardafwijking en het betrouwbaarheidsinterval van elk niveau van de vaste factoren van het model. Dit is anders dan de "schatten" optie in Output, omdat de "estimate" functie een samenvatting geeft van de posterior gemiddeld over alle modellen in de analyse, terwijl deze optie de posterior geeft voor het enkele model. 
  
 - Grafieken
   - Marginale posteriors: Als je deze optie selecteert worden er grafieken gegenereerd die de posterior verdeling van elke vaste factor van het model en hun interactie weergeven. 
@@ -82,7 +82,7 @@ Met de Bayesiaanse Herhaalde Metingen ANOVA kan men verschillen tussen gemiddeld
 - Prior: Hier kan je de prior verdelingen voor de aselecte en vaste effectgroottes bepalen.
 	- r schaal vaste effecten: De vorm parameter van de prior verdeling voor vaste effecten. De standaardwaarde is .5, maar je kan dit naar behoeven aanpassen.
 	- r schaal aselecte effecten: De vorm parameter van de prior verdeling voor de aselecte effecten. De standaardwaarde is 1, maar je kan dit naar behoeven aanpassen. 
-- Numerische precisie: Het aantal stappen dat wordt genomen om de integraal voor de Bayes factor te berekenen.
+- Numerieke precisie: Het aantal stappen dat wordt genomen om de integraal voor de Bayes factor te berekenen.
   - Auto: Als je deze optie selecteert worden er 10000 stappen gezet. Dit is de standaardoptie.
   - Handmatig: Als je deze optie selecteert kan je handmatig het aantal stappen selecteren. De standaardwaarde is 10000.
 - Posterior steekproeven: Het is mogelijk om het aantal Markov Chain Monte Carlo steekproeven in te stellen. Dit wordt gebruikt om de posterior verdeling en het fout % te benaderen. 
@@ -98,7 +98,7 @@ Model vergelijking - Afhankelijke variabele:
 	- Nulmodel: Dit model bevat het totale gemiddelde en de willekeurige factoren.
     - Onafhankelijke variabele model: Dit model voegt het effect van de onafhankelijke variabele toe.
 - P(M): Deze kolom bevat de prior kans van het model. 
-- P(M|data): Deze kolom bevat de geüpdate kans op het model gegeven de data. Dit heet de posterior kans. 
+- P(M|data): Deze kolom bevat de geüpdatet kans op het model gegeven de data. Dit heet de posterior kans. 
 - BF<sub>M</sub> : Deze kolom bevat de posterior model odds. Dit is de verandering van de prior odds naar de posterior odds van het model. 
 - BF<sub>10</sub> : Deze kolom bevat de Bayes factor die het bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese geeft. Echter, als de optie "vergelijk met het beste model" is geselecteerd bevat de kolom de Bayes factor die bewijs voor dit model ten opzichte van het beste model geeft. 
 - BF<sub>01</sub> : Deze kolom bevat de Bayes factor die het bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese geeft. Echter, als de optie "vergelijk met het beste model" is geselecteerd bevat de kolom de Bayes factor die bewijs voor het beste model ten opzichte van dit model geeft. 
@@ -108,7 +108,7 @@ Analyse van effecten - Afhankelijke variabele:
 - Effecten: Deze kolom bevat de componenten meegenomen in de modellen, zoals de onafhankelijke variabelen en hun interacties.
 - P(incl): Deze kolom bevat de prior inclusie kans. Dit is de opgetelde prior kans over alle modellen die de component bevatten.
 - P(incl|data): Deze kolom bevat de posterior inclusiekant. Dit is de opgetelde posterior kans over alle modellen die de component bevatten.
-- BF<sub>inclusion</sub> : Deze kolom bevat de verandering van prior inclusie odds tot posterior inclusie odds voor elke component gemiddeld over alle modellen die de component bevatten.
+- BF<sub>inclusie</sub> : Deze kolom bevat de verandering van prior inclusie odds tot posterior inclusie odds voor elke component gemiddeld over alle modellen die de component bevatten.
 
 Model Gemiddelde samenvatting van de posterior:
 - Variabele: Deze kolom bevat alle vaste factoren en hun interacties. De eerste rij geeft informatie over het intercept. 
@@ -159,7 +159,7 @@ Posterior R<sup>2</sup>:
 
 #### Beschrijvende statistieken: 
 Afhankelijke variabele: 
-  - Herhaaldelijk meten factor: De niveaus van het binnen-subect factor(en) van het model. Als het er meerdere zijn worden de beschijvende statistieken voor elke combinatie van niveaus van de factor weergegeven.
+  - Herhaaldelijk meten factor: De niveaus van het binnen-subject factor(en) van het model. Als het er meerdere zijn worden de beschrijvende statistieken voor elke combinatie van niveaus van de factor weergegeven.
   - Gemiddelde: Het gemiddelde niveau, of, als er meerdere binnen-subject factoren zijn, het gemiddelde niveau per combinatie van niveaus.
   - SD: De standaardafwijking. 
   - N: De steekproefgrootte.
@@ -167,7 +167,7 @@ Afhankelijke variabele:
     - Linker: De linkergrens van het geloofwaardigheidsinterval van het gemiddelde.
     - Rechter: De rechtergrens van het geloofwaardigheidsinterval van het gemiddelde. 
 
-#### Beschijvende grafieken
+#### Beschrijvende grafieken
 Beschrijvende grafiek: 
 - Onafhankelijke variabele op de x-as en afhankelijke variabele op de y-as. Als andere onafhankelijke variabelen worden meegenomen kunnen verschillende lijnen in dezelfde grafiek de andere onafhankelijke variabele weergeven, of kunnen er verschillende grafieken worden gemaakt voor verschillende onafhankelijke variabelen. 
 

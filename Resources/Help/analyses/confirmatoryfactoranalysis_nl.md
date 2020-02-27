@@ -16,7 +16,7 @@ Model opties
 - Voeg gemiddelde structuur toe: Toon gemiddeldes van de indicatoren en, in the geval van multi-groep CFA, de gemiddeldes van de latente variabelen.
 - Neem ongecorreleerde factoren aan: Zet de correlatie tussen verschillende latente variabelen op 0.
 - Factor schalen: Factoren kunnen op drie manier geschaald zijn:
-  - Factor varianties (standaardoptie): De factor heeft een vastie variantie van 1.
+  - Factor varianties (standaardoptie): De factor heeft een vaste variantie van 1.
   - Marker variabele: De factor heeft dezelfde schaal als zijn eerste indicator aangezien zijn factorlading 1 is.
   - Effecten coderen: Het gemiddelde van de factorlading is vastgezet op 1. Voor meer informatie over de interpretatie van effecten coderen, zie Veen (2018).
 - Residu covarianties: Om ook covariantie toe te staan tussen indicatoren die niet verklaard worden door hun respectieve factor, bijvoorbeeld omdat vragen in een vergelijkbare manier verwoord zijn, sleep twee variabelen naar het rechter invoerveld. 
@@ -24,14 +24,14 @@ Model opties
 Aanvullende uitvoer
 -------
 - Aanvullende model fit metingen: Kies deze om de waarde van verschillende model fit indices te weergeven in de uitvoerpaneel.
-- Geimpliceerde covariantiematrix: Toon de covariantiematrix die het model impliceert.
+- Geïmpliceerde covariantiematrix: Toon de covariantiematrix die het model impliceert.
 - Residu covariantiematrix: Toon de covarianties tussen indicatoren die behouden blijft met het model. Een perfect model toont enkel 0-en hier. 
 - Modificatie indices: Toont MIs met een minimum grens. Een MI toont hoeveel de chi-square waarde van overall fit zou veranderen als de gespecificeerde parameter vrij zou zijn. EPC toont de verwachten verandering van de parameter zelf.
 - Toon lavaan syntax: Toon de lavaan modeleer syntax dat nodig zou zijn om het model in R te weergeven.
 
 Multigroep CFA
 ------
-- Groeperingsvariabele: Selecteer hier een categorische variabele om CFA modellen voor iedere groep te creeeren. 
+- Groeperingsvariabele: Selecteer hier een categorische variabele om CFA modellen voor iedere groep te creëren. 
 - Invariantie testen: Selecteer een niveau van beperkende parameters over de verschillende groepen. 
   - Configureel: De verschilllende groepen hebben dezelfde CFA structuur.
   - Metrisch: De factorladingen van de groepen zijn gelijk.

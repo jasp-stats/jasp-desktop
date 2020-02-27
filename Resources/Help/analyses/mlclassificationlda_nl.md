@@ -22,14 +22,14 @@ Linear Discriminant Analysis (LDA) is een classificatiemethode die doelt op het 
 - Evaluatiemetrieken: Toont regelmatig gebruikte classificatie evaluatiemetrieken zoals precision, recall, de F1-score, support en AUC (gebied onder de ROC curve).
 - Coëfficiënten: Laat de coëfficiënten voor de lineaire discriminanten zien. 
 - Prior en posterior kansen: Laat de prior en posterior groepskansen zien. Prior kansen zijn de proporties in de trainingsset.
-- Klassegemiddelds trainingsdata: Laat de gemiddeldes van elke variabele in elke klasse in de trainingsdata zien.
+- Klassegemiddelde trainingsdata: Laat de gemiddeldes van elke variabele in elke klasse in de trainingsdata zien.
 
 #### Grafieken
 - Datasplit: Laat zien hoe de data is gesplitst in trainings- (en validatie-) en testset.
 - ROC curves: Toont ROC curves voor elke klasse voorspelt tegenover alle andere klassen.
-- Andrews curves: Een manier om de structuur in hoger dimensionele data te visualizeren. Lijnen die clusteren, zijn observaties die meer overeenkomen. 
+- Andrews curves: Een manier om de structuur in hoger dimensionele data te visualiseren. Lijnen die clusteren, zijn observaties die meer overeenkomen. 
 - Lineaire discriminant matrix: Maakt een matrixgrafiek die de verdelingen op de lineaire discriminanten visualiseert samen met een spreidingsdiagram van variabelen op deze discriminanten.
-- Decision boundary matrix: Maakt een *n* x *n* grafiek die visualiseert hoe elke observatie zou zijn geclassificeerd zoals het huidige model voorspelt. Grenzen tussen klassen zijn gevisualiseert. Kan enkel gemaakt worden voor numerieke voorspellers.
+- Decision boundary matrix: Maakt een *n* x *n* grafiek die visualiseert hoe elke observatie zou zijn geclassificeerd zoals het huidige model voorspelt. Grenzen tussen klassen zijn gevisualiseerd. Kan enkel gemaakt worden voor numerieke voorspellers.
 
 ### Datasplit Voorkeuren
 #### Holdout Testdata
@@ -49,7 +49,7 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 ### Uitvoer
 -------
 
-#### Linear Discirminant Classificatie Model Tabel
+#### Linear Discriminant Classificatie Model Tabel
 - De eerste kolom laat het aantal lineaire discriminanten.
 - Methode: De schattingsmethode.
 - n(Train): Het aantal observaties in de trainingsset.
@@ -75,6 +75,6 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 
 ### Voorbeeld 
 --- 
-- Voor een dataset als voorbeeld ga naar `Open` --> `Data Library` --> `Machine Learning` --> `Wine Types`.  
+- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Wine Types`.  
 
 

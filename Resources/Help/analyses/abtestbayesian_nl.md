@@ -20,7 +20,7 @@ De ingevoerde data moet de volgende elementen bevatten:
 #### Bayes Factor
 - BF<sub>10</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
 - BF<sub>01</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
-- Log(BF<sub>10</sub>) : Als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusion</sub>, BF<sub>10, U</sub> weergegeven in de output.
+- Log(BF<sub>10</sub>) : Als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de output.
 
 
 #### Grafieken
@@ -28,7 +28,7 @@ De ingevoerde data moet de volgende elementen bevatten:
     - Log odds Ratio
     - Odds Ratio
     - Relatief risico: de ratio van de onderliggende succeskansen in de experimentele- en controleconditie.
-	- Absoluut risico: het verchil tussen de succeskansen in de experimentele- en controleconditie. 
+	- Absoluut risico: het verschil tussen de succeskansen in de experimentele- en controleconditie. 
     - p1&p2: de marginale posteriors van de latente succeskansen in de experimentele- en controleconditie.
     - p1
     - p2

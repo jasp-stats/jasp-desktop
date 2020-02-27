@@ -19,10 +19,10 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 ### Invoer
 ---
 
-#### Correlatiecoëfficient
-- Pearson's rho: Pearson's productmoment correlatiecoëfficient. 
-- Spearman: Spearman's rangorde correlatiecoëfficient om de monotone associatie tussen twee variabelen te kwantificeren.
-- Kendall's tau-b: Kendall's tau-b rangorde correlatiecoëfficient om de monotone associatie tussen twee variabelen te kwantificeren.
+#### Correlatiecoëfficiënt
+- Pearson's rho: Pearson's productmoment correlatiecoëfficiënt. 
+- Spearman: Spearman's rangorde correlatiecoëfficiënt om de monotone associatie tussen twee variabelen te kwantificeren.
+- Kendall's tau-b: Kendall's tau-b rangorde correlatiecoëfficiënt om de monotone associatie tussen twee variabelen te kwantificeren.
 
 #### Alt. Hypotheses
 - Correlatie: Tweezijdige alternatieve hypothese dat de populatiecorrelatie niet gelijk is aan 0.
@@ -34,15 +34,15 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 - Rapporteer significantie: Geef de p-waarde weer, overeenkomend met de geobserveerde correlatie.
 - Markeer significante correlaties: Markeer statistisch significante correlaties.
 - Betrouwbaarheidsintervallen: Betrouwbaarheidsintervallen voor de populatiecorrelatie (enkel beschikbaar voor de Pearson correlatie).
-  - Interval: Dekking van het betrouwbhaarheidsinterval in percentages.
+  - Interval: Dekking van het betrouwbaarheidsinterval in percentages.
 - Vovk-Selke maximum p-ratio: De grens 1/(-e p log(p)) is berekend aan de hand van de p-waarde verdeling. Onder de nullhypothese (H<sub>0</sub>) is het uniform (0,1), en onder de alternatieve (H<sub>1</sub>) verlaagt de p-waarde, e.g., een beta (α, 1) verdeling, met 0 < α < 1. De Vovk-Sellke MPR is verkregen door de vorm α van de verdeling te kiezen onder H1 zodat de behaalde p-waarde diagnostisch gemaximaliseerd is. De waarde is dan de ratio van de verdelingen op punt p onder H<sub>0</sub> en H<sub>1</sub>. Bijvoorbeeld, als de tweezijdige p-waarde gelijk is aan .05, de Vovk-Sellke MPR gelijk is aam 2.46, dit geeft aan dat deze p-waarde is hoogstens 2.46 keer meer aannemelijk is voor H<sub>1</sub> dan voor H<sub>0</sub>. 
 - Steekproefgrootte: Het aantal volledige observaties voor een gegeven paar variabelen.
 
 #### Grafieken
 - Spreidingsdiagram: Geef een spreidingsdiagram weer voor elke mogelijke combinatie van de geselecteerde variabelen. Deze worden in matrix formaat weergegeven boven het diagonaal.
-  - Verdelingen van variabelen: Weergreef histogram en de overeenkomende verdelingsplot voor elke variabele. In a matrix format, these are placed on the diagonal.
-  - Statistieken: Geef de correlatiecoëfficient(en) weer in de grafiek. Deze optie voegt ook de x% betrouwbaarheidsinterval(len) toe zoals gespecificeerd in de "Betrouwbaarheidsintervallen" optie.
-- Heatmap: Geef een correlatie heatmap weer voor Pearson, Spearman, and Kendall's tau B coefficiënten gescheiden.
+  - Verdelingen van variabelen: Toon histogram en de overeenkomende verdelingsplot voor elke variabele. Deze worden in matrix formaat weergegeven op de diagonaal.
+  - Statistieken: Geef de correlatiecoëfficiënt(en) weer in de grafiek. Deze optie voegt ook de x% betrouwbaarheidsinterval(len) toe zoals gespecificeerd in de "Betrouwbaarheidsintervallen" optie.
+- Heatmap: Geef een correlatie heatmap weer voor Pearson, Spearman, and Kendall's tau B coëfficiënten gescheiden.
 
 #### Assumptie checks
 
@@ -61,17 +61,17 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 ### Uitvoer
 ---
 #### Correlatietabel 
-- Pearson r: Pearson's product-moment correlatiecoëfficient.
-- Spearman rho: Spearman's rank correlatiecoëfficient.
-- Kendall tau:  Kendall's tau b rank correlatiecoëfficient.
+- Pearson r: Pearson's product-moment correlatiecoëfficiënt.
+- Spearman rho: Spearman's rank correlatiecoëfficiënt.
+- Kendall tau:  Kendall's tau b rank correlatiecoëfficiënt.
 - p: De p-waarde.
   - Significante correlaties indien gemarkeerd met:
 	- *p < 0.05 als de correlatie significant is op het alfa=.05 niveau.
 	- **p < .01 als de correlatie significant is op het alfa=.01 niveau.
 	- ***p < .001 als de correlatie significant is op het alfa=.001 niveau.
 - Vovk-Sellke Maximum *p*-Ratio: Voor een uitleg, zie Vovk-Sellke onder `Opties`. 
-- Upper x% BI: Bovenste grens van de x% betrouwbaarheidsinterval voor de populatiecorrelatie.
-- Lower x% BI: Onderste grens of the x% betrouwbaarheidsinterval voor de populatiecorrelatie.
+- Boven x% BI: Bovenste grens van de x% betrouwbaarheidsinterval voor de populatiecorrelatie.
+- Onder x% BI: Onderste grens of the x% betrouwbaarheidsinterval voor de populatiecorrelatie.
 - n: Steekproefgrootte.
 
 #### Assumptie checks
@@ -82,13 +82,13 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 #### Correlatie Grafiek
 - Spreidingsdiagram: Geeft een (matrix van) spreidingsdiagram(men) weer tussen de variabelen (in de bovenste niet-diagonale vakken van de matrix). De zwarte lijn is de kleinste-kwadraten regressielijn.
     - Verdelingen van variabelen: Geeft een histogram en de bijbehorende verdelingsgrafiek weer voor elke variabele.
-    - Statistieken: Geeft de correlatiecoëfficient(en) weer en, indien gevraagd, ook de overeenkomende x% betrouwbaarheidsinterval(len).
-      - r: Pearson's product-moment correlatiecoëfficient
-      - rho: Spearman's order correlatiecoëfficient
-      - tau: Kendall's tau b order correlatiecoëfficient
+    - Statistieken: Geeft de correlatiecoëfficiënt(en) weer en, indien gevraagd, ook de overeenkomende x% betrouwbaarheidsinterval(len).
+      - r: Pearson's product-moment correlatiecoëfficiënt
+      - rho: Spearman's order correlatiecoëfficiënt
+      - tau: Kendall's tau b order correlatiecoëfficiënt
 
 #### Heatmap
-- Geef de correlatie heatmap weer voor Pearson, Spearman, and Kendall's tau gescheiden. De heatmap is symmetrisch ten opzichte van het diagonaal. Blauwe kleuren komen overeen met de positieve correlatiecoëfficienten, rode kleuren komen overeen met negatieve correlatiecoëfficienten. De kleurverzadiging weerspiegelt de absolute waarde van de correlatiecoëfficient. Als "Markeer significante correlaties" geselecteerd is, dan zijn de significante correlaties gemarkeerd met:
+- Geef de correlatie heatmap weer voor Pearson, Spearman, and Kendall's tau gescheiden. De heatmap is symmetrisch ten opzichte van het diagonaal. Blauwe kleuren komen overeen met de positieve correlatiecoëfficiënten, rode kleuren komen overeen met negatieve correlatiecoëfficiënten. De kleurverzadiging weerspiegelt de absolute waarde van de correlatiecoëfficiënt. Als "Markeer significante correlaties" geselecteerd is, dan zijn de significante correlaties gemarkeerd met:
   - *p < 0.05 als de correlatie significant is op het alpha=.05 niveau.
   - **p < .01 als de correlatie significant is op het alpha=.01 niveau.
   - ***p < .001 als de correlatie significant is op het alpha=.001 niveau.

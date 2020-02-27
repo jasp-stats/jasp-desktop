@@ -22,7 +22,7 @@ Random Forest clustering is een hard clusteringsalgoritme dat data opdeelt in me
 
 #### Grafieken
 - Elleboogmethode: Genereert een grafiek met de totale within kwadratensom op de y-as en het aantal clusters op de x-as. De grafiek kan gebruikt worden om het optimale aantal clusters te bepalen. De grafiek laat 3 curven zien door AIC, BIC, en 'elleboogmethode' te optimaliseren.
-- t-SNE clustergrafiek: Genereert een t-SNE grafiek van de clustering output. t-SNE grafieken worden gebruikt voor het visualizeren van hoog-dimensionale data in een laag-dimensionale ruimte van twee dimensies om de relatieve afstand tussen observaties te laten zien. De t-SNE twee-dimensionale ruimte maakt de assen oninterpreteerbaar. Een t-SNE grafiek geeft een indruk van de relatieve afstanden tussen observaties en clusters. Om dezelfde t-SNE grafiek nog een keer te maken voor meerdere clusteringanalyses, kan je een seed gebruiken, aangezien het t-SNE algoritme willekeurige startpunten gebruikt.
+- t-SNE clustergrafiek: Genereert een t-SNE grafiek van de clustering output. t-SNE grafieken worden gebruikt voor het visualiseren van hoog-dimensionale data in een laag-dimensionale ruimte van twee dimensies om de relatieve afstand tussen observaties te laten zien. De t-SNE twee-dimensionale ruimte maakt de assen oninterpreteerbaar. Een t-SNE grafiek geeft een indruk van de relatieve afstanden tussen observaties en clusters. Om dezelfde t-SNE grafiek nog een keer te maken voor meerdere clusteringanalyses, kan je een seed gebruiken, aangezien het t-SNE algoritme willekeurige startpunten gebruikt.
 - Legenda: Geeft een legenda met het clusternummer voor elke observatie. Dit is de standaardoptie.
 - Labels: Geeft de clusteringlabels van de verschillende observaties.
 
@@ -83,5 +83,5 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 
 ### Voorbeeld 
 --- 
-- Voor een dataset als voorbeeld ga naar `Open` --> `Data Library` --> `Machine Learning` --> `Iris`.  
+- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Iris`.  
 

@@ -19,7 +19,7 @@ Random Forest is een regressiemethode die een set beslisbomen maakt, bestaande u
 
 #### Plots
 - Datasplit: Laat zien hoe de data is gesplitst in trainings- (en validatie-) en testset.
-- Out-of-bag verbetering: Plot het aantal beslisbomen tegen de out-of-bag classificatie Precisiesverbetering van het model. Precisie is bepaald voor de trainingsset.
+- Out-of-bag verbetering: Plot het aantal beslisbomen tegen de out-of-bag classificatie Precisieverbetering van het model. Precisie is bepaald voor de trainingsset.
 - Voorspellingsvermogen: Laat de observaties van de geselecteerde testset tegen de voorspelde waardes zien.
 - Gemiddelde daling van de Precisie: Toont de variabele gemiddelde daling van de Precisie van het model.
 - Totale stijging van de node purity: Toont de variabele totale stijging van node purity van het model.
@@ -34,8 +34,8 @@ Random Forest is een regressiemethode die een set beslisbomen maakt, bestaande u
 - Steekproef *x*% van validatiedata: Selecteer aselect een percentage als steekproef van de overgebleven data (na het selecteren van de testset).
 
 ### Parameters Trainen
-#### Algorithme Instellingen
-- Trainingsdata per boom: Selecteer het percentage traingsdata dat wordt gebruikt om elke individuele boom te trainen.
+#### Algoritme Instellingen
+- Trainingsdata per boom: Selecteer het percentage trainingsdata dat wordt gebruikt om elke individuele boom te trainen.
 - Voorspellers per splitsing: Geef het aantal voorspellervariabelen die gebruikt worden binnen elke splitsing in de beslisboom.   
 - Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
 - Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
@@ -79,6 +79,6 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 
 ### Voorbeeld 
 --- 
-- Voor een dataset als voorbeeld ga naar `Open` --> `Data Library` --> `Machine Learning` --> `Student Grades`.  
+- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Student Grades`.  
 
 
