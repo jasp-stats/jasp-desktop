@@ -56,7 +56,7 @@ public:
 	virtual		void				reset();
 				void				setInitialColumnCount(	size_t initialColumnCount)	{ _initialColCnt = initialColumnCount;	}
 				void				setInitialRowCount(		size_t initialRowCount)		{ _initialRowCnt = initialRowCount;		}
-	virtual		void				itemChanged(int column, int row, QVariant value);
+	virtual		void				itemChanged(int column, int row, QVariant value, QString type);
 	virtual		void				refreshModel()							{ return ListModel::refresh(); }
 	virtual		void				initValues(OptionsTable * bindHere);
 	virtual		QString				getDefaultColName(size_t index)		const	{ return tr("Col %1").arg(index); }
@@ -83,8 +83,10 @@ signals:
 	void rowCountChanged();
 	void itemChangedSignal(int column, int row, double value);
 
-protected:
+protected slots:
+	void formulaCheckSucceededSlot();
 
+protected:
 	BoundQMLTableView		*	_tableView		= nullptr;
 	OptionsTable			*	_boundTo		= nullptr;
 

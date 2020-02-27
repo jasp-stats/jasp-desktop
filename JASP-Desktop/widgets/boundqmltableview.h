@@ -54,7 +54,7 @@ private slots:
 	void addRowSlot();
 	void removeRowSlot(int row);
 	void resetSlot();
-	void itemChangedSlot(int col, int row, QString value);
+	void itemChangedSlot(int col, int row, QString value, QString type);
 };
 
 #endif // BOUNDQMLTABLEVIEW_H
