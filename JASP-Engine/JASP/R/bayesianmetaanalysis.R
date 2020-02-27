@@ -386,7 +386,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   }
   
   if(isTryError(p)){
-    .quitAnalysis(gettextf("The model could not be fit. Please try different settings.")) 
+    .quitAnalysis(gettextf("The model could not be fit. Please check the following: Do you have at least n=2 studies? If the prior is truncated, is it consistent with the data (when most effect sizes are negative, the analysis may not work when the prior is constrained to be postive)?")) 
   }
   
   return(results)
