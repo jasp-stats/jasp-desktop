@@ -3447,7 +3447,7 @@
     correLationPlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> Scatterplot of the book values in the selection and their audit values. Red dots indicate observations that 
                                           did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. 
                                           If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient 
-                                          of the book values and the audit values, an indicator of the strengh of the linear relationship between the two variables.",
+                                          of the book values and the audit values, an indicator of the strength of the linear relationship between the two variables.",
                                           jaspResults[["figNumber"]]$object), "p")
     
     correLationPlotText$position <- positionInContainer + 1
