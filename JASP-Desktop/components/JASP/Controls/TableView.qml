@@ -68,7 +68,7 @@ JASPControl
 	signal addColumn()
 	signal removeRow(int row)
 	signal removeColumn(int col)
-	signal itemChanged(int col, int row, string value)
+	signal itemChanged(int col, int row, string value, string type)
 
 	//These signals are added because I had some trouble connecting the filterChanged from C++ (in constructor of ListModelFilteredDataEntry)
 	signal filterSignal(string filter)
@@ -193,7 +193,7 @@ JASPControl
 						selectValueOnFocus:		true
 						validator:				tableView.validator
 						onPressed:				tableView.colSelected = columnIndex
-						onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value)
+						onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value, inputType)
 					}
 				}
 

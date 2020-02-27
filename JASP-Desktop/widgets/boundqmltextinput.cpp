@@ -296,7 +296,8 @@ void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 	else
 	{
 		setItemProperty("realValue", val);
-		_formulaResultInBounds(val);
+		if (_formulaResultInBounds(val))
+			emit formulaCheckSucceeded();
 	}
 
 	if (_formula)

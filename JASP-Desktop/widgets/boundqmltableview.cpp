@@ -53,7 +53,7 @@ BoundQMLTableView::BoundQMLTableView(JASPControlBase* item)
 	QQuickItem::connect(item, SIGNAL(addRow()),							this, SLOT(addRowSlot()));
 	QQuickItem::connect(item, SIGNAL(removeRow(int)),					this, SLOT(removeRowSlot(int)));
 	QQuickItem::connect(item, SIGNAL(reset()),							this, SLOT(resetSlot()));
-	QQuickItem::connect(item, SIGNAL(itemChanged(int, int, QString)),	this, SLOT(itemChangedSlot(int, int, QString)));
+	QQuickItem::connect(item, SIGNAL(itemChanged(int, int, QString, QString)),	this, SLOT(itemChangedSlot(int, int, QString, QString)));
 
 	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	[&](){ setItemProperty("columnCount",	_tableModel->colNames().size()); }); //Possibly the best way to connect the signals of the listmodel to the slots of the qml item?
 	connect(_tableModel, &ListModelTableViewBase::rowCountChanged,		[&](){ setItemProperty("rowCount",		_tableModel->rowNames().size()); });
@@ -145,11 +145,11 @@ void BoundQMLTableView::resetSlot()
 		_tableModel->reset();
 }
 
-void BoundQMLTableView::itemChangedSlot(int col, int row, QString value)
+void BoundQMLTableView::itemChangedSlot(int col, int row, QString value, QString type)
 {
 	if (_tableModel)
 	{
-		if (_tableModel->valueOk(value))	_tableModel->itemChanged(col, row, value);
+		if (_tableModel->valueOk(value))	_tableModel->itemChanged(col, row, value, type);
 		else								QTimer::singleShot(0, _tableModel, &ListModelTableViewBase::refreshModel);
 	}
 }

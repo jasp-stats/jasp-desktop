@@ -115,7 +115,7 @@ void ListModelFilteredDataEntry::setAcceptedRows(std::vector<bool> newRows)
 	}
 }
 
-void ListModelFilteredDataEntry::itemChanged(int column, int row, QVariant value)
+void ListModelFilteredDataEntry::itemChanged(int column, int row, QVariant value, QString)
 {
 	if(column != _editableColumn)
 		return;

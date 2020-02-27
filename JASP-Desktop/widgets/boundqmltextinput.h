@@ -48,17 +48,22 @@ public:
 	void		resetQMLItem(JASPControlBase *item)			override;
 	void		rScriptDoneHandler(const QString& result)	override;
 
+	TextInputType	inputType()	{ return _inputType; }
+
+signals:
+	void		formulaCheckSucceeded();
+
 private slots:
-	void textChangedSlot();
+	void		textChangedSlot();
 
 private:
-	void _setOptionValue(Option* option, QString& text);
-	void _setFormulaOptions(std::string formula, bool valid = false);
-	bool _formulaResultInBounds(double result);
+	void		_setOptionValue(Option* option, QString& text);
+	void		_setFormulaOptions(std::string formula, bool valid = false);
+	bool		_formulaResultInBounds(double result);
 
-	QString					  _getPercentValue();
-	QString					  _getIntegerArrayValue();
-	QString					  _getDoubleArrayValue();
+	QString		_getPercentValue();
+	QString		_getIntegerArrayValue();
+	QString		_getDoubleArrayValue();
 
 	TextInputType			  _inputType;
 	OptionInteger			* _integer			= nullptr;

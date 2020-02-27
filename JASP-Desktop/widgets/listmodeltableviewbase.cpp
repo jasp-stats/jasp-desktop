@@ -23,6 +23,7 @@
 #include "../analysis/analysisform.h"
 #include "utilities/qutils.h"
 #include "boundqmltableview.h"
+#include "boundqmltextinput.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optiondoublearray.h"
 
@@ -215,7 +216,7 @@ void ListModelTableViewBase::reset()
 	endResetModel();
 }
 
-void ListModelTableViewBase::itemChanged(int column, int row, QVariant value)
+void ListModelTableViewBase::itemChanged(int column, int row, QVariant value, QString type)
 {
 	//If you change this function, also take a look at ListModelFilteredDataEntry::itemChanged
 	if (column > -1 && column < columnCount() && row > -1 && row < _rowNames.length())
@@ -226,7 +227,8 @@ void ListModelTableViewBase::itemChanged(int column, int row, QVariant value)
 
 			// the following triggers a reset of the view if the colwidth changes, but that is wrong. actually it should just change the cell-value.
 			emit dataChanged(index(row, column), index(row, column), { Qt::DisplayRole });
-			emit modelChanged();
+			if (type != "formula") // For formula type, wait for the formulaCheckSucceeded signal before emitting modelChanged
+				emit modelChanged();
 
 			// Here we should *actually* check if specialRoles::maxColString changes and in that case: (so that the view can recalculate stuff)
 			//	emit headerDataChanged(Qt::Orientation::Horizontal, column, column);
@@ -355,7 +357,19 @@ bool ListModelTableViewBase::addRowControl(const QString &key, JASPControlWrappe
 {
 	_itemControls[key][control->name()] = control;
 
+	if (control->item()->controlType() == JASPControlBase::ControlType::TextField)
+	{
+		BoundQMLTextInput* textInput = dynamic_cast<BoundQMLTextInput*>(control);
+		if (textInput && textInput->inputType() == BoundQMLTextInput::TextInputType::FormulaType)
+			connect(textInput, &BoundQMLTextInput::formulaCheckSucceeded, this, &ListModelTableViewBase::formulaCheckSucceededSlot);
+	}
+
 	return true;
+}
+
+void ListModelTableViewBase::formulaCheckSucceededSlot()
+{
+	emit modelChanged();
 }
 
 void ListModelTableViewBase::modelChangedSlot()
