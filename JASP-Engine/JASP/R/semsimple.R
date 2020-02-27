@@ -374,6 +374,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semModelTestTable$addColumnInfo(name = "df",     title = gettext("Degrees of freedom"),              type = "number")
   semModelTestTable$addColumnInfo(name = "pvalue", title = gettext("p"),                               type = "pvalue")
   
+  semModelTestTable$transpose <- TRUE
   semModelTestTable$dependOn("outputAdditionalFitMeasures")
   fitMeasures[["fitMeasuresModelTest"]] <- semModelTestTable
   
@@ -390,6 +391,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semBaselineTable$addColumnInfo(name = "ifi",   title = gettext("Bollen's Incremental Fit Index (IFI)"),       type = "number")
   semBaselineTable$addColumnInfo(name = "rni",   title = gettext("Relative Noncentrality Index (RNI)"),         type = "number")
   
+  semBaselineTable$transpose <- TRUE
   semBaselineTable$dependOn("outputAdditionalFitMeasures")
   fitMeasures[["fitMeasuresBaseline"]] <- semBaselineTable
   
@@ -404,6 +406,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semLoglikTable$addColumnInfo(name="bic",               title = gettext("Bayesian (BIC)"),                        type = "number")
   semLoglikTable$addColumnInfo(name="bic2",              title = gettext("Sample-size adjusted Bayesian (BIC)"),   type = "number")
   
+  semLoglikTable$transpose <- TRUE
   semLoglikTable$dependOn("outputAdditionalFitMeasures")
   fitMeasures[["fitMeasuresLikelihood"]] <- semLoglikTable
   
@@ -411,13 +414,13 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   ### RMSEA measures
   semRMSEATable <- createJaspTable(title = gettext("Root Mean Square Error of Approximation"))
   
-  thisOverTitle <- gettext("90% CI")
   semRMSEATable$addColumnInfo(name = "model",          title = "",                                type = "string")
   semRMSEATable$addColumnInfo(name = "rmsea",          title = gettext("RMSEA"),                  type = "number")
-  semRMSEATable$addColumnInfo(name = "rmsea.ci.lower", title = gettext("Lower"),                  type = "number", overtitle = thisOverTitle)
-  semRMSEATable$addColumnInfo(name = "rmsea.ci.upper", title = gettext("Upper"),                  type = "number", overtitle = thisOverTitle)
+  semRMSEATable$addColumnInfo(name = "rmsea.ci.upper", title = gettext("Upper 90% CI"),           type = "number")
+  semRMSEATable$addColumnInfo(name = "rmsea.ci.lower", title = gettext("Lower 90% CI"),           type = "number")
   semRMSEATable$addColumnInfo(name = "rmsea.pvalue",   title = gettext("p-value RMSEA <= 0.05 "), type = "pvalue")  
   
+  semRMSEATable$transpose <- TRUE
   semRMSEATable$dependOn("outputAdditionalFitMeasures")
   fitMeasures[["fitMeasuresRMSEA"]] <- semRMSEATable
   
@@ -430,6 +433,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semRMRTable$addColumnInfo(name = "rmr_nomean", title = gettext("RMR (No Mean)"), type = "number")
   semRMRTable$addColumnInfo(name = "srmr",       title = gettext("SRMR"),          type = "number")
   
+  semRMRTable$transpose <- TRUE
   semRMRTable$dependOn("outputAdditionalFitMeasures")
   fitMeasures[["fitMeasuresRMR"]] <- semRMRTable
   
@@ -444,6 +448,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semOtherFitTable$addColumnInfo(name = "mfi",   title = gettext("McDonald Fit Index (MFI)"),              type = "number")
   # semOtherFitTable$addColumnInfo(name="ecvi", title="Expected Cross-Validation Index (ECVI)", type="number")
   
+  semOtherFitTable$transpose <- TRUE
   semOtherFitTable$dependOn("outputAdditionalFitMeasures")
   fitMeasures[["fitMeasuresOther"]] <- semOtherFitTable
   
