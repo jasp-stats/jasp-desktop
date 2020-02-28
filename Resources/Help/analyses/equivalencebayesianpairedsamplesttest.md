@@ -1,7 +1,7 @@
 Equivalence Bayesian Paired Samples T-Test
 ==========================
 
-The equivalence paired samples t-test allows you to estimate the effect size and test the null hypothesis that the population mean of the difference between paired observations equals 0. The difference with a standard null hypothesis significance test is that in equivalence testing, the null hypothesis covers a small interval around 0 (i.e., equivalence region) instead of a point-null.
+The equivalence paired samples t-test allows you to estimate the effect size and test the null hypothesis that the population mean of the difference between paired observations falls inside an interval (i.e., equivalence region). The difference with a standard null hypothesis significance test is that in equivalence testing, the null hypothesis covers a small interval around 0 instead of a point-null.
 
 ### Assumptions
 - Continuous difference score.
@@ -28,7 +28,7 @@ The equivalence paired samples t-test allows you to estimate the effect size and
 - Descriptives: Sample size, sample mean, sample standard deviation, standard error of the mean for each measure.
 
 ### Missing Values
- - Exclude cases per dependent variable: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the tests. This options is selected by default.
+ - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the tests. This options is selected by default.
  - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all dependent variables. Sample size is therefore constant across the tests.
 
 ### Prior
@@ -45,18 +45,17 @@ The equivalence paired samples t-test allows you to estimate the effect size and
 #### Equivalence Bayesian Paired Samples T-Test
 - The first column contains the two variables for which the difference is calculated.
 - Model Comparison:
-  - $\delta$ $\in$ I vs. H1: This analysis pits the interval-null hypothesis to the unconstrained alternative hypothesis.
-  - $\delta$ $\notin$ I vs. H1: This analysis pits the outside the interval-null hypothesis to the unconstrained alternative hypothesis.
-  - $\delta$ $\in$ I vs. $\delta$ $\notin$ I: This analysis pits the interval-null hypothesis to the outside the interval-null hypothesis.
-  - $\delta$ $\notin$ I vs. $\delta$ $\in$ I: This analysis pits the outside the interval-null hypothesis to the interval-null hypothesis.
+  - $\delta$ $\in$ I vs. H1: Bayes factor to quantify evidence for the interval-null hypothesis to the unconstrained alternative hypothesis.
+  - $\delta$ $\notin$ I vs. H1: Bayes factor to quantify evidence for the hypothesis that the effect size is outside the interval-null to the unconstrained alternative hypothesis.
+  - $\delta$ $\in$ I vs. $\delta$ $\notin$ I: Bayes factor to quantify evidence for the interval-null hypothesis to the hypothesis that the effect size falls outside the interval-null.
+  - $\delta$ $\notin$ I vs. $\delta$ $\in$ I: Bayes factor to quantify evidence for the hypothesis that the effect size falls outside the interval-null to the interval-null hypothesis.
 - BF: The Bayes factor.
 - error %: The error of the numerical integration used for the computation of the Bayes factor.
 
 #### Descriptives
 - The first column contains the dependent variable.
-- Group: The levels of the grouping variable.
-- N: The sample size per group.
-- Mean: The mean of the dependent variable per group.
+- N: The sample size.
+- Mean: The mean of the dependent variable.
 - SD: Standard deviation of the mean.
 - SE: Standard error of the mean.
 - Credible interval: Central credible interval. Default is 95%.

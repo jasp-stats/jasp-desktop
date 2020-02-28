@@ -1,7 +1,7 @@
 Bayesian Equivalence Independent Samples T-Test
 ===
 
-The equivalence independent samples t-test allows the user to estimate the effect size and test the null hypothesis that the population means of two independent groups are equal (i.e., the difference between the groups is 0). The difference with a standard null hypothesis significance test is that in equivalence testing, the null hypothesis covers a small interval around 0 difference (i.e., equivalence region) instead of a point-null.
+The equivalence independent samples t-test allows the user to estimate the effect size and test the null hypothesis that the population means of two independent groups fall inside an interval (i.e., equivalence region). The difference with a standard null hypothesis significance test is that in equivalence testing, the null hypothesis covers a small interval around 0 difference instead of a point-null.
 
 ### Assumptions
 ---
@@ -31,7 +31,7 @@ The equivalence independent samples t-test allows the user to estimate the effec
 - Descriptives: Sample size, sample mean, sample standard deviation, standard error of the mean for each group.
 
 #### Missing Values
-- Exclude cases per dependent variable: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the multiple t-tests.
+- Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the multiple t-tests.
 - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all dependent variables. Sample size is therefore constant across the multiple t-tests.
 
 ### Prior
@@ -48,10 +48,10 @@ The equivalence independent samples t-test allows the user to estimate the effec
 #### Equivalence Bayesian Independent Samples T-Test
 - The first column contains the dependent variable.
 - Model Comparison:
-  - $\delta$ $\in$ I vs. H1: This analysis pits the interval-null hypothesis to the unconstrained alternative hypothesis.
-  - $\delta$ $\notin$ I vs. H1: This analysis pits the outside the interval-null hypothesis to the unconstrained alternative hypothesis.
-  - $\delta$ $\in$ I vs. $\delta$ $\notin$ I: This analysis pits the interval-null hypothesis to the outside the interval-null hypothesis.
-  - $\delta$ $\notin$ I vs. $\delta$ $\in$ I: This analysis pits the outside the interval-null hypothesis to the interval-null hypothesis.
+  - $\delta$ $\in$ I vs. H1: Bayes factor to quantify evidence for the interval-null hypothesis to the unconstrained alternative hypothesis.
+  - $\delta$ $\notin$ I vs. H1: Bayes factor to quantify evidence for the hypothesis that the effect size is outside the interval-null to the unconstrained alternative hypothesis.
+  - $\delta$ $\in$ I vs. $\delta$ $\notin$ I: Bayes factor to quantify evidence for the interval-null hypothesis to the hypothesis that the effect size falls outside the interval-null.
+  - $\delta$ $\notin$ I vs. $\delta$ $\in$ I: Bayes factor to quantify evidence for the hypothesis that the effect size falls outside the interval-null to the interval-null hypothesis.
 - BF: The Bayes factor.
 - error %: The error of the numerical integration used for the computation of the Bayes factor.
 

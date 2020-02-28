@@ -1,7 +1,7 @@
 Equivalence Independent Samples T-Test
 ==========================
 
-The equivalence independent samples t-test allows the user to estimate the effect size and test the null hypothesis that the population means of two independent groups are equal (i.e., the difference between the groups is 0). The difference with a standard null hypothesis significance test is that in equivalence testing, the null hypothesis covers a small interval around 0 difference (i.e., equivalence region) instead of a point-null. This is done according to the two-one-sided test (TOST). 
+The equivalence independent samples t-test allows the user to estimate the effect size and test the null hypothesis that the population means of two independent groups are fall inside an interval (i.e., equivalence region). The difference with a standard null hypothesis significance test is that in equivalence testing, the null hypothesis covers a small interval around 0 difference instead of a point-null. This is done according to the two-one-sided test (TOST).
 
 ### Assumptions
 - The dependent variable is continuous.
@@ -33,7 +33,7 @@ The equivalence independent samples t-test allows the user to estimate the effec
 - Equivalence bounds plot: The TOST procedure is the same as visually inspecting if the 100 - (2*alpha)% confidence interval falls within the set equivalence bounds.
 
 ### Missing Values
- - Exclude cases per dependent variable: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the tests. This options is selected by default.
+ - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the tests. This options is selected by default.
  - Exclude cases listwise: In case of multiple t-tests within a single analysis, each t-test will be conducted using only cases with valid data for all dependent variables. Sample size is therefore constant across the tests.
 
 ### Output
@@ -69,11 +69,9 @@ The equivalence independent samples t-test allows the user to estimate the effec
 #### Equivalence Bounds Plots
 Displays the sample mean difference and the 90% confidence interval. The grey area is the set equivalence region.
 
-
 ### References
 -------
 - Lakens, D., Scheel, A. M., & Isager, P. M. (2018). Equivalence testing for psychological research: A tutorial. *Advances in Methods and Practices in Psychological Science*, 1(2), 259-269. <a href="https://journals.sagepub.com/doi/abs/10.1177/2515245918770963">https://journals.sagepub.com/doi/abs/10.1177/2515245918770963</a>
-
 
 ### R-packages
 ---
