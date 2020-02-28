@@ -94,7 +94,7 @@ Popup
 				Text
 				{
 					id:						nameLabel
-					text:					"Name:"
+					text:					qsTr("Name:")
 					font:					jaspTheme.font
 					color:					jaspTheme.textEnabled
 					anchors.left:			parent.left
