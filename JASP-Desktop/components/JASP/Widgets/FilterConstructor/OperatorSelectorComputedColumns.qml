@@ -14,25 +14,25 @@ Item
 		x: parent.horizontalCenterX - (width / 2)
 		y: parent.verticalCenterY - (height / 2)
 
-		OperatorDrag			{ operator: "+";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Addition" }
-		OperatorDrag			{ operator: "-";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Subtraction" }
-		OperatorDrag			{ operator: "*";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Multiplication" }
-		OperatorVerticalDrag	{ operator: "/";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Division" }
-		OperatorDrag			{ operator: "/";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Division" }
-		OperatorDrag			{ operator: "^";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Power (2^3 returns 8)" }
-		FunctionDrag			{ functionName: "sqrt";	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; parameterNames: []; parameterDropKeys: []; toolTipText: "Square root" }
-		OperatorDrag			{ operator: "%%";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Modulo: returns the remainder of a division. 3%2 returns 1" }
-		property string logicalnessText: ": returns logicals"
-		OperatorDrag			{ operator: "==";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Equality" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: "!=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Inequality" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: "<";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Less than" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: "<=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Less than or equal to" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: ">";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Greater than" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: ">=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Greater than or equal to" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: "&";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "And" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: "|";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Or" + operatorRow.logicalnessText }
-		OperatorDrag			{ operator: "%|%";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: "Split: applies filter separately to each subgroup" }
-		FunctionDrag			{ functionName: "!";	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; parameterNames: []; parameterDropKeys: []; toolTipText: "not" + operatorRow.logicalnessText }
+		OperatorDrag			{ operator: "+";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Addition") }
+		OperatorDrag			{ operator: "-";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Subtraction") }
+		OperatorDrag			{ operator: "*";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Multiplication") }
+		OperatorVerticalDrag	{ operator: "/";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Division") }
+		OperatorDrag			{ operator: "/";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Division") }
+		OperatorDrag			{ operator: "^";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Power (2^3 returns 8)") }
+		FunctionDrag			{ functionName: "sqrt";	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; parameterNames: []; parameterDropKeys: []; toolTipText: qsTr("Square root") }
+		OperatorDrag			{ operator: "%%";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Modulo: returns the remainder of a division. 3%2 returns 1") }
+		property string logicalnessText: qsTr("returns logicals")
+		OperatorDrag			{ operator: "==";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Equality: %1").arg(operatorRow.logicalnessText) }
+		OperatorDrag			{ operator: "!=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Inequality: %1").arg(operatorRow.logicalnessText) }
+		OperatorDrag			{ operator: "<";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Less than: %1").arg(operatorRow.logicalnessText) }
+		OperatorDrag			{ operator: "<=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Less than or equal to: %1").arg(operatorRow.logicalnessText) }
+		OperatorDrag			{ operator: ">";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Greater than: %1").arg(operatorRow.logicalnessText) }
+		OperatorDrag			{ operator: ">=";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Greater than or equal to: %1").arg(operatorRow.logicalnessText) }
+		OperatorDrag			{ operator: "&";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("And: %1").arg(operatorRow.logicalnessText) }
+		OperatorDrag			{ operator: "|";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Or: %1").arg(operatorRow.logicalnessText) }
+		OperatorDrag			{ operator: "%|%";		acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; toolTipText: qsTr("Split: applies filter separately to each subgroup") }
+		FunctionDrag			{ functionName: "!";	acceptsDrops: false;	alternativeDropFunction: alternativeDropFunctionDef; parameterNames: []; parameterDropKeys: []; toolTipText: qsTr("Not: %1").arg(operatorRow.logicalnessText) }
 
 	}
 
