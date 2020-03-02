@@ -53,7 +53,7 @@ public:
 	void setSharedMemory(boost::interprocess::managed_shared_memory *mem);
 
 	std::string toString();
-	std::vector<std::string> resetEmptyValues(emptyValsType emptyValuesMap);
+	std::map<std::string, std::map<int, std::string> > resetEmptyValues(const emptyValsType& emptyValuesMap);
 
 	bool				setFilterVector(std::vector<bool> filterResult);
 	BoolVector	&		filterVector()				{ return _filterVector; }
