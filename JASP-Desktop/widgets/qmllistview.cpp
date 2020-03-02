@@ -238,7 +238,7 @@ void QMLListView::readModelProperty(QMap<QString, QString>* keyValueMap)
 		}
 		else
 		{
-			QAbstractListModel *srcModel = qobject_cast<QAbstractListModel *>(modelVar.value<QObject *>());
+			QAbstractItemModel *srcModel = qobject_cast<QAbstractItemModel *>(modelVar.value<QObject *>());
 			if (srcModel)
 			{
 				QMap<QString, int> roleMap;
@@ -252,7 +252,7 @@ void QMLListView::readModelProperty(QMap<QString, QString>* keyValueMap)
 				}
 				for (int i = 0; i < srcModel->rowCount(); i++)
 				{
-					QModelIndex ind(srcModel->index(i));
+					QModelIndex ind(srcModel->index(i, 0));
 					QString key = srcModel->data(ind, roleMap[textRole]).toString();
 					QString value = srcModel->data(ind, roleMap[valueRole]).toString();
 					terms.add(key);
@@ -262,9 +262,7 @@ void QMLListView::readModelProperty(QMap<QString, QString>* keyValueMap)
 				model()->initTerms(terms);
 			}
 			else
-			{
 				model()->initTerms(Terms());
-			}
 		}
 	}
 }
