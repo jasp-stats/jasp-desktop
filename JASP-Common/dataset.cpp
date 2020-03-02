@@ -76,21 +76,19 @@ string DataSet::toString()
 	return ss.str();
 }
 
-vector<string> DataSet::resetEmptyValues(std::map<std::string, std::map<int, std::string> > emptyValuesPerColumnMap)
+std::map<string, std::map<int, string> > DataSet::resetEmptyValues(const std::map<std::string, std::map<int, std::string> >& emptyValuesPerColumnMap)
 {
-	std::vector<std::string> colChanged;
+	std::map<string, std::map<int, string> > colChanged;
 
 	for (Column& col : _columns)
 	{
-		std::map<int, std::string> emptyValuesMap;
+		std::map<int, string> emptyValuesMap;
 
 		if (emptyValuesPerColumnMap.count(col.name()))
-			emptyValuesMap = emptyValuesPerColumnMap[col.name()];
+			emptyValuesMap = emptyValuesPerColumnMap.at(col.name());
 
 		if (col.resetEmptyValues(emptyValuesMap))
-			colChanged.push_back(col.name());
-
-		emptyValuesPerColumnMap[col.name()] = emptyValuesMap;
+			colChanged[col.name()] = emptyValuesMap;
 	}
 
 	return colChanged;

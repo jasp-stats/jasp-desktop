@@ -1209,9 +1209,16 @@ void DataSetPackage::emptyValuesChangedHandler()
 	if (isLoaded())
 	{
 		beginSynchingData();
+		std::map<std::string, std::map<int, std::string> > emptyValuesChanged;
 		std::vector<std::string> colChanged;
 
-		enlargeDataSetIfNecessary([&](){ colChanged = _dataSet->resetEmptyValues(emptyValuesMap()); }, "emptyValuesChangedHandler");
+		enlargeDataSetIfNecessary([&](){ emptyValuesChanged = _dataSet->resetEmptyValues(emptyValuesMap()); }, "emptyValuesChangedHandler");
+
+		for (auto it : emptyValuesChanged)
+		{
+			colChanged.push_back(it.first);
+			storeInEmptyValues(it.first, it.second);
+		}
 
 		endSynchingDataChangedColumns(colChanged);
 	}
