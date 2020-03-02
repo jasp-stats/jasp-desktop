@@ -31,6 +31,7 @@
 #include <QFileInfo>
 
 #include "timers.h"
+#include "utils.h"
 
 using namespace std;
 using namespace ods;
@@ -77,6 +78,8 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 
 void DataSetLoader::syncPackage(const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
 {
+	Utils::sleep(100);
+
 	Importer* importer = getImporter(locator, extension);
 
 	if (importer)

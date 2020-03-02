@@ -104,6 +104,8 @@ ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::fun
 	if (error != READSTAT_OK)
 		throw std::runtime_error("Error processing " + locator + " " + readstat_error_message(error));
 
+	data->buildDictionary(); //Not necessary for opening this file but synching will break otherwise...
+
 	return data;
 }
 

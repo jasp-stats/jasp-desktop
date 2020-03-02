@@ -26,13 +26,13 @@ bool operator<(const readstat_value_t & l, const readstat_value_t & r)
 
 	switch(ltype)
 	{
-	case READSTAT_TYPE_STRING:		return std::string(readstat_string_value(l)).compare(readstat_string_value(r));
+	case READSTAT_TYPE_STRING:		return std::string(readstat_string_value(l)) < std::string(readstat_string_value(r));
 	case READSTAT_TYPE_INT8:		return readstat_int8_value(l)	< readstat_int8_value(r);
 	case READSTAT_TYPE_INT16:		return readstat_int16_value(l)	< readstat_int16_value(r);
 	case READSTAT_TYPE_INT32:		return readstat_int32_value(l)	< readstat_int32_value(r);
 	case READSTAT_TYPE_FLOAT:		return readstat_float_value(l)	< readstat_float_value(r);
 	case READSTAT_TYPE_DOUBLE:		return readstat_double_value(l)	< readstat_double_value(r);
-	default:						 return 0;
+	default:						return &l < &r; //If we cannot do anything else just order them based on their pointer to make sure < is well-ordered
 	}
 }
 
