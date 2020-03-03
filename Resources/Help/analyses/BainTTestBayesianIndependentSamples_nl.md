@@ -7,7 +7,7 @@ Met de bain (Bayesian informative hypotheses evaluation) Welch toets kan de gebr
 
 - Kies de afhankelijke variabele(n) uit de lijst met variabelen en sleep deze naar het Afhankelijke Variabele veld.
 - Kies de factor uit de lijst met variabelen en sleep deze naar het Groeperende Variabele veld. 
-- Stel de seed in gelijk aan een geheel getal om een herhaalbare, willekeurige nummerreeks te creëren. Om stabiliteit van de resultaten te verzekeren wordt aangeraden de analyses met twee verschillende seeds uit te voeren.
+- Stel de toevalsgenerator beginwaarde in gelijk aan een geheel getal om een herhaalbare, willekeurige nummerreeks te creëren. Om stabiliteit van de resultaten te verzekeren wordt aangeraden de analyses met twee verschillende seeds uit te voeren.
 - Wanneer de bain Welch Toets voor het eerst wordt uitgevoerd, vink dan de aanvullende statistieken en beide grafieken aan. Wanneer de gebruiker dan terug gaat naar de Welch toets is het duidelijk wat deze drie opties inhouden, en kunnen de benodigde opties worden geselecteerd. 
 - In de resultaten worden standaard de 95% geloofwaardigheidsintervallen weergegeven. Dit percentage kan naar behoeven worden aangepast. 
 - De gebruiker kan uit vijf verschillende toetssituaties kiezen: 

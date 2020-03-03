@@ -26,8 +26,8 @@ Random Forest is een classificatiemethode die beslisbomen maakt die bestaan uit 
 - ROC curves: Toont ROC curves voor elke klasse voorspelt tegenover alle andere klassen.
 - Andrews curves: Een manier om de structuur in hoger dimensionele data te visualiseren. Lijnen die clusteren, zijn observaties die meer overeenkomen. 
 - Gemiddelde daling van de Precisie: Toont de variabele gemiddelde daling van de Precisie van het model.
-- Totale stijging van de node purity: Toont de variabele totale stijging van node purity van het model.
-- Decision boundary matrix: Maakt een *n* x *n* grafiek die visualiseert hoe elke observatie zou zijn geclassificeerd zoals het huidige model voorspelt. Grenzen tussen klassen zijn gevisualiseerd. Kan enkel gemaakt worden voor numerieke voorspellers.
+- Totale toename in knotzuiverheid: Toont de variabele totale toename van knotzuiverheid van het model.
+- Beslissingsseparatrix: Maakt een *n* x *n* grafiek die visualiseert hoe elke observatie zou zijn geclassificeerd zoals het huidige model voorspelt. Grenzen tussen klassen zijn gevisualiseerd. Kan enkel gemaakt worden voor numerieke voorspellers.
 
 
 ### Datasplit Voorkeuren
@@ -44,7 +44,7 @@ Random Forest is een classificatiemethode die beslisbomen maakt die bestaan uit 
 - Schattingsmethode: Zet de estimator voor het algoritme. Is één van de moments voor standaard estimators van het gemiddelde en de variantie: "mle", "mve", of "t" voor robuuste schattingen gebaseerd op een t-distributie. Zie ook de MASS package.
 - Voorspellers per splitsing: Geef het aantal voorspellervariabelen die gebruikt worden binnen elke splitsing in de beslisboom. 
 - Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
-- Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Een seed maakt het bijvoorbeeld mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
+- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een oevalsgenerator beginwaarde maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
 
 
 ##### Aantal Beslisbomen

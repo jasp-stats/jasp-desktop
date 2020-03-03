@@ -40,7 +40,7 @@ Principiële componentenanalyse wordt gebruikt om data weer te geven in minder c
 - Neem tabellen mee:
 	- Component correlaties: Als je deze optie selecteert wordt er een tabel met de correlates tussen componenten weergegeven.
 	- Pad diagram: Als je deze optie selecteert wordt er een visuele representatie van de richting en sterkte van de relatie tussen variabelen en componenten weergegeven. 
-    - Scree grafiek: Als je deze optie selecteert wordt er een scree-grafiek weergegeven. Deze grafiek geeft informatie over de variantie in de data die wordt verklaard door elke component, door middel van de eigenwaarde. Een scree-grafiek kan je gebruiken om het aantal componenten te selecteren.
+    - Screeplot: Als je deze optie selecteert wordt er een screeplot weergegeven. Deze grafiek geeft informatie over de variantie in de data die wordt verklaard door elke component, door middel van de eigenwaarde. Een scree-grafiek kan je gebruiken om het aantal componenten te selecteren.
 - Missende waarden:
 	- Sluit gevallen paarwijs uit: Als een observatie van een variabele mist worden de andere observaties op andere variabelen van hetzelfde geval nog steeds gebruikt voor de analyse. In dit scenario is het niet nodig om een observatie voor alle variabelen te hebben om een geval mee te nemen in de analyse. Dit is de standaardoptie.
 	- Sluit gevallen op lijstwijze uit: Als een observatie van een variabele mist wordt het hele geval, dus alle verbonden observaties op andere variabelen, uitgesloten van de analyse. In dit scenario moet een geval observaties op elke variabele hebben om meegenomen te worden in de analyse.
@@ -73,8 +73,8 @@ Component correlaties:
 - Variabelen: De variabelen worden weergegeven als rechthoeken.
 - Pijlen: Gaan van de variabelen naar de componenten en representeren de lading van een variabele op een component. Rood is een negatieve lading, groen een positieve. Hoe breder de strepen, hoe sterker de lading. Deze markering kan worden aangepast  bij `markeren` in de `uitvoer opties`.
 
-#### Scree-grafiek 
-De scree-grafiek geeft informatie over hoeveel variantie in de data wordt verklaard door elke component, door middel van de eigenwaarde. De scree-grafiek kan worden gebruikt om over het aantal componenten in het model te beslissen.
+#### Screeplot
+De screeplot geeft informatie over hoeveel variantie in de data wordt verklaard door elke component, door middel van de eigenwaarde. De screeplot kan worden gebruikt om over het aantal componenten in het model te beslissen.
 - Componenten: De componenten staan op de x-as.
 - Eigenwaarde: De eigenwaarden staan op de y-as, en geven aan hoeveel variantie door elke component wordt verklaard. 
 - Data: De stippellijn representeert de data.

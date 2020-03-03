@@ -173,7 +173,7 @@ Post Hoc Vergelijkingen (standaard) - onafhankelijke variabele:
 
 - SE: De standaardfout van het gemiddelde verschil .	
 - t: De waarde van de t-statistiek. 
-- Cohen's D: de effectgrootte Cohen's d. Deze corrigeert niet voor meerdere vergelijkingen.
+- Cohen's d: de effectgrootte Cohen's d. Deze corrigeert niet voor meerdere vergelijkingen.
 - p<sub>tukey</sub>: Tukey's gecorrigeerde p-waarde voor meerdere vergelijkingen. 
 - p<sub>scheffe</sub>:  Scheffe's gecorrigeerde p-waarde voor meerdere vergelijkingen. 
 - p<sub>bonf</sub>: Bonferroni's gecorrigeerde p-waarde voor meerdere vergelijkingen.  

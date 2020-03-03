@@ -63,11 +63,11 @@ Form
             name: "boundstype"
 			label: qsTr("Bounds specification in")
             indexDefaultValue: 1
-            model: ListModel
-            {
-				ListElement { title: qsTr("cohensd"); value: "Cohen's d"}
-				ListElement { title: qsTr("raw");     value: "Raw"}
-            }
+			values:
+			[
+				{ value: "cohensD", label: qsTr("Cohen's d")	},
+				{ value: "raw",     label: qsTr("Raw")			}
+			]
         }
 
         DoubleField { name: "alpha";        text: qsTr("Alpha level");                  defaultValue: 0.05; max: 0.49; min: 0}

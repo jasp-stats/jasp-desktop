@@ -67,7 +67,7 @@ De Bayesiaanse Correlatie analyse maakt het mogelijk om de populatiecorrelatie t
   - Sluit paarsgewijs gevallen uit.
   - Sluit lijstgewijs gevallen uit.
 - Reproduceerbaarheid:
-  - Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+  - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 ### Uitvoer
 ---

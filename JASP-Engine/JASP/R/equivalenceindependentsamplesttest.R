@@ -70,7 +70,7 @@ EquivalenceIndependentSamplesTTest <- function(jaspResults, dataset, options) {
                                               var_equal    = ifelse(options$tests == "students", TRUE, FALSE), 
                                               low_eqbound  = options$lowerbound,
                                               high_eqbound = options$upperbound,
-                                              eqbound_type = ifelse(options$boundstype == "Raw", "raw", "d"),  # bounds type is raw or cohen's d
+                                              eqbound_type = ifelse(options$boundstype == "raw", "raw", "d"),  # bounds type is raw or cohen's d
                                               alpha        = options$alpha,
                                               desc         = TRUE))
       

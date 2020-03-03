@@ -643,10 +643,6 @@ msgid "Grouping Variable"
 msgstr ""
 
 msgctxt "SEMSimple|"
-msgid "Equality Constraits"
-msgstr ""
-
-msgctxt "SEMSimple|"
 msgid "Loadings"
 msgstr ""
 
@@ -821,10 +817,6 @@ msgstr ""
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr ""
-
-msgctxt "AboutWindow|"
-msgid "BibTex"
 msgstr ""
 
 msgctxt "AboutWindow|"
@@ -13425,10 +13417,6 @@ msgid "Independent Variable(s)"
 msgstr ""
 
 msgctxt "Flexplot|"
-msgid "Panelled Variable(s)"
-msgstr ""
-
-msgctxt "Flexplot|"
 msgid "Options"
 msgstr ""
 
@@ -14209,36 +14197,12 @@ msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Bounds specification in"
 msgstr ""
 
-msgctxt "EquivalenceIndependentSamplesTTest|"
-msgid "cohensd"
-msgstr ""
-
-msgctxt "EquivalenceIndependentSamplesTTest|"
-msgid "raw"
-msgstr ""
-
 msgctxt "EquivalenceOneSampleTTest|"
 msgid "Bounds specification in"
 msgstr ""
 
-msgctxt "EquivalenceOneSampleTTest|"
-msgid "cohensd"
-msgstr ""
-
-msgctxt "EquivalenceOneSampleTTest|"
-msgid "raw"
-msgstr ""
-
 msgctxt "EquivalencePairedSamplesTTest|"
 msgid "Bounds specification in"
-msgstr ""
-
-msgctxt "EquivalencePairedSamplesTTest|"
-msgid "cohensd"
-msgstr ""
-
-msgctxt "EquivalencePairedSamplesTTest|"
-msgid "raw"
 msgstr ""
 
 msgctxt "ConfirmatoryFactorAnalysis|"
@@ -15416,6 +15380,66 @@ msgstr ""
 
 msgctxt "ColumnsModel|"
 msgid "'-column "
+msgstr ""
+
+msgctxt "AboutWindow|"
+msgid "BibTeX"
+msgstr ""
+
+msgctxt "MainPage|"
+msgid "Results"
+msgstr ""
+
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "Cohen's d"
+msgstr ""
+
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "Raw"
+msgstr ""
+
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "Cohen's d"
+msgstr ""
+
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "Raw"
+msgstr ""
+
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "Cohen's d"
+msgstr ""
+
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "Raw"
+msgstr ""
+
+msgctxt "ConfirmatoryFactorAnalysis|"
+msgid "Additional fit measures"
+msgstr ""
+
+msgctxt "ABTestBayesian|"
+msgid "Robustness Plot"
+msgstr ""
+
+msgctxt "ABTestBayesian|"
+msgid "No. Steps"
+msgstr ""
+
+msgctxt "ABTestBayesian|"
+msgid "Step Range"
+msgstr ""
+
+msgctxt "ABTestBayesian|"
+msgid "lower:"
+msgstr ""
+
+msgctxt "ABTestBayesian|"
+msgid "upper:"
+msgstr ""
+
+msgctxt "Flexplot|"
+msgid "Paneled Variable(s)"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

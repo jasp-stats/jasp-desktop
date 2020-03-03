@@ -38,7 +38,7 @@ Met Exploratieve Factoranalyse kan je één of meer onderliggende factoren van d
       - cluster: Oblique rotatiemethode cluster. 
 
 ### Uitvoeropties 
-- Markeren: Deze optie past de breedte van de pijlen in het paddiagram aan. Als standaardoptie worden de pijlen wijder wanneer hun waarde 0.4 of hoger is. 
+- Markeer: Deze optie past de breedte van de pijlen in het paddiagram aan. Als standaardoptie worden de pijlen wijder wanneer hun waarde 0.4 of hoger is.
 - Voeg Tabellen Toe: 
     - Factorcorrelaties: Bij het selecteren van deze optie, wordt een tabel met de correlaties tussen factoren weergegeven. 
     - Aanvullende fit indices: Deze optie toont de wortel van de kwadratisch gemiddelde fout (RMSEA) met 90% betrouwbaarheidsinterval, de Tucker Lewis Index (TLI), en de Bayesian Information Criterion (BIC) om de model fit te testen. 

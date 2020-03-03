@@ -27,7 +27,7 @@ Boosting werkt door opeenvolgende voorspellers toe te voegen aan een beslisboom 
 - Andrews curves: Een manier om de structuur in hoger dimensionele data te visualiseren. Lijnen die clusteren, zijn observaties die meer overeenkomen. 
 - Afwijking: Laat de voorspellingsfout zien geplot tegen het aantal bomen.
 - Relatieve invloed: Laat de relatieve invloed van de voorspellers zien.
-- Decision boundary matrix: Maakt een *n* x *n* grafiek die visualiseert hoe elke observatie zou zijn geclassificeerd zoals het huidige model voorspelt. Grenzen tussen klassen zijn gevisualiseerd. Kan enkel gemaakt worden voor numerieke voorspellers.
+- Beslissingsseparatrix: Maakt een *n* x *n* grafiek die visualiseert hoe elke observatie zou zijn geclassificeerd zoals het huidige model voorspelt. Grenzen tussen klassen zijn gevisualiseerd. Kan enkel gemaakt worden voor numerieke voorspellers.
 
 ### Datasplit Voorkeuren
 #### Holdout Testdata
@@ -46,7 +46,7 @@ Boosting werkt door opeenvolgende voorspellers toe te voegen aan een beslisboom 
 - Min. observatie in knoop: Geheel getal dat het minimum aantal observaties in de eindknopen van de bomen specificeert. Let op dat dit het daadwerkelijk aantal observaties is, niet het totale gewicht.
 - Gebruikte trainingdata per beslisboom: Selecteert het percentage trainingsdata dat is gebruikt om elk individuele beslisboom te trainen.
 - Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
-- Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een seed maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
+- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een toevalsgenerator beginwaarde maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
 
 #### Aantal Beslisbomen
 - Vast: Laat je een eigen gespecificeerd aantal bomen gebruiken. 

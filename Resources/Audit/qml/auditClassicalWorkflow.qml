@@ -487,7 +487,7 @@ Form
 
 			GridLayout
 			{
-				columns:	3
+				columns:	2
 				enabled:	!pasteVariables.checked
 
 				RadioButtonGroup
