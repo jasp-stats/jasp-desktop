@@ -39,7 +39,7 @@ De ingevoerde data moet de volgende elementen bevatten:
     - Bayes factor type: Bepaal het type Bayes factor dat weergegeven wordt in de grafiek. De mogelijkheden zijn "BF10", "BF+0" en "BF-0".
   - Prior: Maakt een grafiek van de prior verdelingen van de parameters. Beschikbare grootheden zijn hetzelfde als voor de prior en posterior grafiek.
 
-#### Normale prior op Log Odds Ratio
+#### Normale a priori verdeling voor de log odds ratio
 Staat toe dat een gemiddelde an standaardafwijking van de normale prior voor test-relevante log odds ratio wordt gespecificeerd.
 
 
@@ -66,7 +66,7 @@ Specificeert de prior kansen voor de vier hypothesen:
 Bepaalt het aantal "importance samples" om de log marginale likelihood voor (H+) en (H-) te verkrijgen. Het bepaalt ook het aantal steekproeven van de posterior.
 
 #### Reproduceerbaarheid
-- Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 #### Bayes Factor robuustheidscheck, Aantal Stappen
 - mu: Bepaal het aantal discrete stappen in de stappenreeks van mu 

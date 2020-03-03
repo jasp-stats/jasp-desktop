@@ -70,7 +70,7 @@ EquivalenceOneSampleTTest <- function(jaspResults, dataset, options) {
                                               mu           = options$mu,
                                               low_eqbound  = options$lowerbound,
                                               high_eqbound = options$upperbound,
-                                              eqbound_type = ifelse(options$boundstype == "Raw", "raw", "d"),  # bounds type is raw or cohen's d
+                                              eqbound_type = ifelse(options$boundstype == "raw", "raw", "d"),  # bounds type is raw or cohen's d
                                               alpha        = options$alpha,                                    # default = 0.05
                                               desc         = TRUE))
       

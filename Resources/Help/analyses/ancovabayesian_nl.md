@@ -104,7 +104,7 @@ Met de Bayesiaanse ANCOVA kan men het verschil tussen meerdere groepsgemiddelden
 	- Auto: Als deze optie is geselecteerd, worden er 10000 steekproeven gebruikt. Dit is de standaardoptie.
     - Handmatig: Als deze optie is geselecteerd, kan het aantal steekproeven handmatig worden ingesteld. Bij deze optie is de standaardwaarde 1000.
 - Reproduceerbaarheid:
-  - Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+  - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Dit zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 ### Uitvoer
 ---

@@ -89,7 +89,7 @@ Met de Bayesiaanse Herhaalde Metingen ANOVA kan men verschillen tussen gemiddeld
 	- Auto: Als deze optie is geselecteerd worden er 10000 steekproeven gebruikt. dit is de standaardoptie.
     - Handmatig: Als je deze optie selecteert kan je handmatig het aantal steekproeven instellen. Als je deze optie kiest is de standaardwaarde 1000.
 - Reproduceerbaarheid:
-  - Gebruik seed: Geeft de mogelijkheid een seed te gebruiken voor je analyse. Een seed gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+  - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 ### Uitvoer
 ---

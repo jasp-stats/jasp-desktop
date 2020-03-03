@@ -113,8 +113,8 @@ Form
 		title: qsTr("Additional Output")
 		GroupBox
 		{
-			CheckBox { label: qsTr("Additional Fit Measures")   ; name: "additionalfits"   }
-      CheckBox { label: qsTr("R-Squared")                 ; name: "rsquared"         }
+			CheckBox { label: qsTr("Additional fit measures")   ; name: "additionalfits"   }
+			CheckBox { label: qsTr("R-Squared")                 ; name: "rsquared"         }
 		}
 		GroupBox
 		{

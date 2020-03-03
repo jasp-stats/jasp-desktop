@@ -184,7 +184,7 @@ Post Hoc Comparisons (Standard)- independent variable:
     - Upper: The upper bound of the confidence interval. 
 - SE: The standard error of the mean difference. 
 - t: The value of the t-statistic. 
-- Cohen's D: The effect size Cohen's d. Cohen's d does not correct for multiple comparisons. 
+- Cohen's d: The effect size Cohen's d. Cohen's d does not correct for multiple comparisons.
 - p<sub>tukey</sub>: Tukey's corrected p-value for multiple comparisons. 
 - p<sub>scheffe</sub>: Scheffe's corrected p-value for multiple comparisons. 
 - p<sub>bonf</sub>: Bonferroni's corrected p-value for multiple comparisons.  

@@ -23,11 +23,11 @@ Model opties
 
 Aanvullende uitvoer
 -------
-- Aanvullende model fit metingen: Kies deze om de waarde van verschillende model fit indices te weergeven in de uitvoerpaneel.
+- Extra pasmaten: Kies deze om de waarde van verschillende model pasmaten te tonen in de resultaten.
 - Geïmpliceerde covariantiematrix: Toon de covariantiematrix die het model impliceert.
 - Residu covariantiematrix: Toon de covarianties tussen indicatoren die behouden blijft met het model. Een perfect model toont enkel 0-en hier. 
 - Modificatie indices: Toont MIs met een minimum grens. Een MI toont hoeveel de chi-square waarde van overall fit zou veranderen als de gespecificeerde parameter vrij zou zijn. EPC toont de verwachten verandering van de parameter zelf.
-- Toon lavaan syntax: Toon de lavaan modeleer syntax dat nodig zou zijn om het model in R te weergeven.
+- Laat lavaan syntax zien: Toon de lavaan modeleer syntax die nodig zou zijn om het model in R weer te geven.
 
 Multigroep CFA
 ------

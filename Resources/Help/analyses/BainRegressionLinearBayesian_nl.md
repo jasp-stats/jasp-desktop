@@ -6,7 +6,7 @@ Met de bain (Bayesian informative hypotheses evaluation) lineaire regressie kan 
 ### Specificatie van de bain Lineaire Regressie
 
 - Kies de afhankelijke variabele uit de lijst met variabelen en sleep deze naar het Afhankelijke Variabele veld. Let op: de naam van de afhankelijke variabele moet met een letter beginnen, en mag verder bestaan uit letters, cijfers en _. 
-- Stel de seed in gelijk aan een geheel (integer) nummer om een herhaalbare, willekeurige nummerreeks te creëren. Om stabiliteit van de resultaten te verzekeren wordt aangeraden de analyses met twee verschillende seeds uit te voeren.
+- Stel de toevalsgenerator beginwaarde in gelijk aan een geheel (integer) nummer om een herhaalbare, willekeurige nummerreeks te creëren. Om stabiliteit van de resultaten te verzekeren wordt aangeraden de analyses met twee verschillende seeds uit te voeren.
 - Wanneer de bain Lineaire Regressie voor het eerst wordt uitgevoerd, vink dan de beide aanvullende statistieken en de grafiek aan. Wanneer de gebruiker dan terug gaat naar de bain Lineaire Regressie is het duidelijk wat deze vier opties inhouden, en kunnen de benodigde opties worden geselecteerd. 
 - Als de hypotheses vergelijkingen van regressie coëfficiënten bevatten, bijvoorbeeld b1 = b2 = b3, dan moeten de regressie coëfficiënten op dezelfde schaal liggen. Dit kan worden gedaan door onder aanvullende opties het veld Standardiseer aan te vinken. Dit geeft aan dat de hypotheses en resultaten in termen van gestandaardiseerde regressie coëfficiënten zijn. 
 - Wanneer de gebruiker 'model beperkingen' aanvinkt, zal een veld openen waarin gespecificeerd kan worden welke hypotheses de gebruiker wil evalueren. Het is belangrijk dat aan de volgende regels voor specificatie wordt voldaan:

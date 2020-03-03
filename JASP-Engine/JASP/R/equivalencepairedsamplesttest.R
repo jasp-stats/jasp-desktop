@@ -78,7 +78,7 @@ EquivalencePairedSamplesTTest <- function(jaspResults, dataset, options) {
                                                  pairs        = list(list(i1 = p1, i2 = p2)),
                                                  low_eqbound  = options$lowerbound,
                                                  high_eqbound = options$upperbound,
-                                                 eqbound_type = ifelse(options$boundstype == "Raw", "raw", "d"),  # bounds type is raw or cohen's d 
+                                                 eqbound_type = ifelse(options$boundstype == "raw", "raw", "d"),  # bounds type is raw or cohen's d
                                                  alpha        = options$alpha,                                    # default = 0.05
                                                  desc         = TRUE))
       

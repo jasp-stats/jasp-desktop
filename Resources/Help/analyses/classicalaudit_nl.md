@@ -60,8 +60,8 @@ Als beide risico beoordelingen op Hoog (100%) worden gezet wordt het audit risic
 - Celsteekproeven: Voert interval selectie uit met willekeurigheid. Elke observatie die meer dan twee keer groter is dan het interval wordt meerdere keren geselecteerd.
 - Systematische steekproeven: Voert interval selectie uit. Elke observatie die groter is dan het interval wordt meerdere keren geselecteerd. 
 
-### Seed:
-- Seed voor de willekeurige nummer generator om resultaten reproduceerbaar te maken. Dit beïnvloedt welke steekproeven er uit de populatie worden genomen.
+### Toevalsgenerator beginwaarde:
+- Toevalsgenerator beginwaarde voor de willekeurige nummer generator om resultaten reproduceerbaar te maken. Dit beïnvloedt welke steekproeven er uit de populatie worden genomen.
 
 ### Schattings methode:
 - Stringer: De Stringer grens (Stringer, 1963).

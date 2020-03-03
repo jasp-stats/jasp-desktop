@@ -98,7 +98,7 @@ Form
 			DropDown { name: "groupingVariable"; showVariableTypeIcon: true; addEmptyValue: true} // No model or source: it takes all variables per default
 			Group
 			{
-				title: qsTr("Equality Constraits")
+				title: qsTr("Equality Constraints")
 				CheckBox { name: "eq_loadings";				label: qsTr("Loadings")				}
 				CheckBox { name: "eq_intercepts";			label: qsTr("Intercepts")			}
 				CheckBox { name: "eq_residuals";			label: qsTr("Residuals")			}
