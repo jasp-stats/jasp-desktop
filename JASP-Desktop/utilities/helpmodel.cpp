@@ -45,55 +45,21 @@ QString	HelpModel::indexURL()
 
 void HelpModel::generateJavascript()
 {
-	QString content, renderFunc = "window.render";
+	QString renderFunc = "";
+	QString content = "";
 
-	LanguageInfo li = LanguageModel::CurrentLanguageInfo;
-
-	//Leave help filenames from JASP native language - English - with localname en_US unchanged
-	QString _localname = li.language  == QLocale::English ? "" : ("_" + li.localName);
-
-	QFile fileMD, fileHTML;
-	QFileInfo pathMd(_pagePath + _localname + ".md");
-
-	bool relative = pathMd.isRelative();
-
-
-	if(relative) //This is probably a file in resources then
+	//Try to load laguage specific translated help file first.
+	if (!loadHelpContent(_pagePath, false, renderFunc, content))
 	{
-		fileMD.setFileName(AppDirs::help() + "/" + _pagePath + _localname + ".md");
-		fileHTML.setFileName(AppDirs::help() + "/" + _pagePath + _localname + ".html");
-	}
-	else
-	{
-		//We got an absolute path, this probably means it comes from a (dynamic) module.
-
-		fileMD.setFileName(_pagePath + _localname + ".md");
-		fileHTML.setFileName(_pagePath + _localname + ".html");
-	}
-
-	if (fileHTML.exists())
-	{
-		fileHTML.open(QFile::ReadOnly);
-		content = QString::fromUtf8(fileHTML.readAll());
-		fileHTML.close();
-
-		renderFunc = "window.renderHtml";
-
-	}
-	else if (fileMD.exists())
-	{
-		fileMD.open(QFile::ReadOnly);
-		content = QString::fromUtf8(fileMD.readAll());
-		fileMD.close();
-	}
-	else
-	{
-		content = tr("Coming Soon!\n========\n\nThere is currently no help available for this analysis");
+		//Fall back to English
+		if (!loadHelpContent(_pagePath, true, renderFunc, content))
+		{
+			content = tr("Coming Soon!\n========\n\nThere is currently no help available for this analysis");
 #ifdef JASP_DEBUG
-		content += 	 " (" + _pagePath + ")";
+			content += 	 " (" + _pagePath + ")";
 #endif
-		content += tr(".\n\nAdditional documentation will be available in future releases of ");
-		content += relative ? "JASP." : tr("the module.");
+			content += tr(".\n\nAdditional documentation will be available in future releases of JASP.");
+		}
 	}
 
 	content.replace("\"", "\\\"");
@@ -148,4 +114,60 @@ void HelpModel::reloadPage()
 void HelpModel::setThemeCss(QString themeName)
 {
 	runJavaScript("window.setTheme(\"" + themeName + "\");");
+}
+
+bool HelpModel::loadHelpContent(const QString &pagePath, bool ignorelanguage, QString &renderFunc, QString &content)
+{
+
+	QString _localname = "";
+	bool found = false;
+
+	renderFunc = "window.render";
+	content = "";
+
+	//Leave help filenames from JASP native language - English - with localname en_US unchanged
+	if (!ignorelanguage)
+	{
+		LanguageInfo li = LanguageModel::CurrentLanguageInfo;
+		_localname = li.language  == QLocale::English ? "" : ("_" + li.localName);
+	}
+
+	QFile fileMD, fileHTML;
+	QFileInfo pathMd(_pagePath + _localname + ".md");
+
+	bool relative = pathMd.isRelative();
+
+	if(relative) //This is probably a file in resources then
+	{
+		fileMD.setFileName(AppDirs::help() + "/" + _pagePath + _localname + ".md");
+		fileHTML.setFileName(AppDirs::help() + "/" + _pagePath + _localname + ".html");
+	}
+	else
+	{
+		//We got an absolute path, this probably means it comes from a (dynamic) module.
+
+		fileMD.setFileName(_pagePath + _localname + ".md");
+		fileHTML.setFileName(_pagePath + _localname + ".html");
+	}
+
+	if (fileHTML.exists())
+	{
+
+		fileHTML.open(QFile::ReadOnly);
+		content = QString::fromUtf8(fileHTML.readAll());
+		fileHTML.close();
+
+		renderFunc = "window.renderHtml";
+		found = true;
+
+	}
+	else if (fileMD.exists())
+	{
+		fileMD.open(QFile::ReadOnly);
+		content = QString::fromUtf8(fileMD.readAll());
+		fileMD.close();
+		found = true;
+	}
+
+	return found;
 }
