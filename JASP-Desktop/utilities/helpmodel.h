@@ -35,6 +35,7 @@ signals:
 
 private:
 	QString convertPagePathToLower(const QString & pagePath);
+	bool loadHelpContent(const QString & pagePath, bool ignorelanguage, QString &renderFunc, QString &content);
 
 private:
 	bool	_visible	= false;
