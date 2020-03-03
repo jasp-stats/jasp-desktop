@@ -15710,15 +15710,15 @@ msgstr "Stappenreeks"
 
 msgctxt "ABTestBayesian|"
 msgid "lower:"
-msgstr "Onder:"
+msgstr "onder:"
 
 msgctxt "ABTestBayesian|"
 msgid "upper:"
-msgstr "Boven:"
+msgstr "boven:"
 
 msgctxt "Flexplot|"
 msgid "Paneled Variable(s)"
-msgstr ""
+msgstr "Paneel variabele(n)"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""
