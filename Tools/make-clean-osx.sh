@@ -19,8 +19,6 @@ then
 fi
 cd ..
 
-CRYPTKEY=$SIMPLECRYPTKEY
-
 JASP_ROOT_DIR=$STARTDIR/../..
 JASP_REQUIRED_FILES_DIR=jasp-required-files
 JASP_BUILD_DIR=jasp-build
@@ -49,19 +47,28 @@ cp $JASP_REQUIRED_FILES_DIR/* $JASP_BUILD_DIR/
 echo "Get the latest version of development from github!"
 cd $JASP_GIT_DIR
 
-echo "Running qmake!"
-if [ "$CRYPTKEY" == "" ]
+CRYPTKEY=$SIMPLECRYPTKEY
+if [ "$CRYPTKEY" != "" ]
 then
-  $QT_KIT_FULL/bin/qmake -set ENVIRONMENT_CRYPTKEY \$CRYPTKEY\ || exit 1
+  echo "CRYPTKEY $CRYPTKEY is available in environment, setting it"
+  $QT_KIT_FULL/bin/qmake -set ENVIRONMENT_CRYPTKEY "$CRYPTKEY" || exit 1
 fi
+
+echo "Making sure QM files are generated"
+$QT_KIT_FULL/bin/qmake -set AM_I_BUILDBOT "I_AM_BUILDBOT" || exit 1
+
+echo "Running qmake!"
 $QT_KIT_FULL/bin/qmake -makefile -nocache -o ../$JASP_BUILD_DIR/Makefile JASP.pro || exit 1
-$QT_KIT_FULL/bin/qmake -set ENVIRONMENT_CRYPTKEY \"\" || exit 1
 
 echo "Compiling JASP!"
 cd ../$JASP_BUILD_DIR
 make -j`sysctl -n hw.ncpu` || exit 1
 #make || exit 1 #multiple processes can fill up memory apparently?
 echo "Compiling finished succesfully!"
+
+echo "Reseting qmake vars"
+$QT_KIT_FULL/bin/qmake -set ENVIRONMENT_CRYPTKEY "" || exit 1
+$QT_KIT_FULL/bin/qmake -set AM_I_BUILDBOT "" || exit 1
 
 echo "Now making DMG"
 cd $STARTDIR

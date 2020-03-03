@@ -3,6 +3,15 @@ DEFINES += JASP_USES_QT_HERE
 
 GENERATE_LANGUAGE_FILES = false
 
+#AM_I_BUILDBOT is set as a "qmake internal var" in the command line
+message("AM_I_BUILDBOT: '$$[AM_I_BUILDBOT]'")
+COPY_BUILDBOTNESS = $$[AM_I_BUILDBOT] # We need to copy it to make sure the equals function below actually works...
+!equals(COPY_BUILDBOTNESS, "") {
+  unix{  #Todo for Frans, make sure generating language files works on Windows
+    GENERATE_LANGUAGE_FILES = true
+  }
+}
+
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
 
 include(../JASP.pri)
@@ -122,10 +131,13 @@ windows {
         QMAKE_EXTRA_TARGETS += createVersionWix
         POST_TARGETDEPS     += createVersionWix
 }
-#ENVIRONMENT_CRYPTKEY="$(SIMPLECRYPTKEY)"
-#message("ENVIRONMENT_CRYPTKEY: '$$[ENVIRONMENT_CRYPTKEY]'")
-!equals($$[ENVIRONMENT_CRYPTKEY], "") {
-    DEFINES+="ENVIRONMENT_CRYPTKEY=$$[ENVIRONMENT_CRYPTKEY]"
+
+#ENVIRONMENT_CRYPTKEY is set as a "qmake internal var" in the command line
+message("ENVIRONMENT_CRYPTKEY: '$$[ENVIRONMENT_CRYPTKEY]'")
+COPY_CRYPT = $$[ENVIRONMENT_CRYPTKEY] # We need to copy it to make sure the equals function below actually works...
+!equals(COPY_CRYPT, "") {
+  DEFINES+="ENVIRONMENT_CRYPTKEY=$$[ENVIRONMENT_CRYPTKEY]"
+  message("Key now set!")
 }
 
 
@@ -164,11 +176,12 @@ win32 {
   isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=$${_GIT_LOCATION}\usr\bin
 
   delres.commands  += $$quote(IF exist \"$$RESOURCES_DESTINATION\" (rd /s /q \"$$RESOURCES_DESTINATION\";) );
-  copyres.commands  +=  $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_DESTINATION})
+  copyres.commands +=  $$quote(cmd /c xcopy /S /I /Y $${RESOURCES_PATH} $${RESOURCES_DESTINATION})
 
   $$GENERATE_LANGUAGE_FILES {
-    maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${SOURCES_TRANSLATIONS}\jasp.po) &&
+    maketranslations.commands += $$quote(echo "Generating language Files") &&
     maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -source-language dutch -recursive $${WINPWD} -ts $${RESOURCES_TRANSLATIONS}\jasp_nl.po) &&
+    maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${SOURCES_TRANSLATIONS}\jasp.po) &&
 
     #cleanup po files
     maketranslations.commands += $$quote($${GETTEXT_LOCATION}\msgattrib --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp.po -o $${SOURCES_TRANSLATIONS}\jasp.po) &&
@@ -191,6 +204,7 @@ unix {
   copyres.commands += cp -R $$RESOURCES_PATH/* $$RESOURCES_DESTINATION ;
 
   $$GENERATE_LANGUAGE_FILES {
+    maketranslations.commands += $$quote(echo "Generating language Files");
     maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp.po ;
     maketranslations.commands += lupdate -locations none -extensions cpp,qml -target-language Dutch -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp_nl.po ;
 

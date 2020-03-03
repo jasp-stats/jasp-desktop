@@ -234,10 +234,12 @@ if "%BUILDSTYLE%"=="full" (
 
 echo Check for the existence of CRYPTKEY in the local environment and set it as a property in qmake if so.
 if not "%CRYPTKEY%"=="" (
-    %QTVCDIR%\qmake -set ENVIRONMENT_CRYPTKEY %CRYPTKEY%
+    %QTVCDIR%\qmake -set ENVIRONMENT_CRYPTKEY "%CRYPTKEY%"
     echo Using custom cryptkey (%CRYPTKEY%)
 )
 
+echo "Making sure QM files are generated"
+%QTVCDIR%\qmake -set AM_I_BUILDBOT "I_AM_BUILDBOT" || exit 1
 
 if "%BUILDSTYLE%"=="full" (
     echo Creating directory for JASP-R-Interface "%JASP_R_INTERFACE%"
@@ -259,6 +261,7 @@ if "%BUILDSTYLE%"=="full" (
 %JOM% -j%CPUS%  || exit /B 6
 
 %QTVCDIR%\qmake -set ENVIRONMENT_CRYPTKEY ""
+%QTVCDIR%\qmake -set AM_I_BUILDBOT "" || exit 1
 
 :setup
 
