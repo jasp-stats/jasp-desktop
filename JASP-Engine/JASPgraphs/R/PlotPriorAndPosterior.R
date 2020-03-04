@@ -224,20 +224,21 @@ makeBFlabels <- function(bfSubscripts, BFvalues, subs = NULL, bfTxt = NULL) {
 hypothesis2BFtxt <- function(hypothesis = c("equal", "smaller", "greater")) {
 
   hypothesis <- match.arg(hypothesis)
+  pizzaTxt <- gettext("data | H0")
   return(
     switch(
       hypothesis,
       "equal" = list(
         bfSubscripts = 0:1,
-        pizzaTxt = c("data | H0", "data | H1")
+        pizzaTxt = c(pizzaTxt, gettext("data | H1"))
       ),
       "smaller" = list(
         bfSubscripts = c(0, "\'-\'"),
-        pizzaTxt = c("data | H0", "data | H-")
+        pizzaTxt = c(pizzaTxt, gettext("data | H-"))
       ),
       "greater" = list(
         bfSubscripts = c(0, "\'+\'"),
-        pizzaTxt = c("data | H0", "data | H+")
+        pizzaTxt = c(pizzaTxt, gettext("data | H+"))
       )
     )
   )
@@ -253,31 +254,21 @@ getBFSubscripts <- function(bfType = c("BF01", "BF10", "LogBF10"), hypothesis = 
   bfType <- match.arg(bfType)
   hypothesis <- match.arg(hypothesis)
 
-  if (bfType == "BF01") {
-    subscripts <- switch (hypothesis,
-                          "equal"   = c("BF[1][0]",   "BF[0][1]"),
-                          "smaller" = c("BF['-'][0]", "BF[0]['-']"),
-                          "greater" = c("BF['+'][0]", "BF[0]['+']")
-    )
-    # subscripts <- switch (hypothesis,
-    #   "equal"   = c("BF[0][1]",   "BF[1][0]"),
-    #   "smaller" = c("BF[0]['-']", "BF['-'][0]"),
-    #   "greater" = c("BF[0]['+']", "BF['+'][0]")
-    # )
-  } else if (bfType == "BF10") {
-    subscripts <- switch (hypothesis,
-                          "equal"   = c("BF[1][0]",   "BF[0][1]"),
-                          "smaller" = c("BF['-'][0]", "BF[0]['-']"),
-                          "greater" = c("BF['+'][0]", "BF[0]['+']")
-    )
-  } else {
-    subscripts <- switch (hypothesis,
-                          "equal"   = c("log(BF[0][1])",   "log(BF[1][0])"    ),
-                          "smaller" = c("log(BF[0]['-'])", "log(BF['-'][0])"),
-                          "greater" = c("log(BF[0]['+'])", "log(BF['+'][0])")
-    )
-  }
-  return(parseThis(subscripts))
+  base <-
+    if (bfType != "LogBF10") gettext("BF%s")
+    else                     gettext("log(BF%s)")
+  base <- fixTranslationForExpression(base)
+
+  subscripts <- switch (hypothesis,
+                        "equal"   = c("[1][0]",   "[0][1]"),
+                        "smaller" = c("['-'][0]", "[0]['-']"),
+                        "greater" = c("['+'][0]", "[0]['+']"))
+  if (bfType == "LogBF10")
+    subscripts <- rev(subscripts)
+
+  ans <- c(sprintf(base, subscripts[1L]), sprintf(base, subscripts[2L]))
+  return(parseThis(ans))
+
 }
 
 makeBFwheelAndText <- function(BF, bfSubscripts, pizzaTxt, drawPizzaTxt = is.null(pizzaTxt), bfType) {

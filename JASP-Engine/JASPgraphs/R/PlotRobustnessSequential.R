@@ -137,10 +137,12 @@ PlotRobustnessSequential <- function(
     }
   }
 
+  allEvidenceLabels <- c(gettext("Anecdotal"), gettext("Moderate"), gettext("Strong"), gettext("Very Strong"), gettext("Extreme"))
+
   if (hasRightAxis) {
 
     yBreaksR  <- log(c(1 / 100, 1 / 30, 1 / 10, 1 / 3, 1, 3, 10, 30, 100))
-    allYlabelR <- c("Anecdotal", "Moderate", "Strong", "Very Strong", "Extreme")
+    allYlabelR <- allEvidenceLabels
     allYlabelR <- c(rev(allYlabelR), allYlabelR)
 
     nr <- 2*length(yBreaksL) - 1
@@ -285,17 +287,22 @@ PlotRobustnessSequential <- function(
         val <- 1 / val
       # returns 1 if val in [1, 3], 2 if val in [3, 10], ...
       idx <- findInterval(val, c(1, 3, 10, 30, 100), rightmost.closed = FALSE)
-      evidenceLevel <- c("Anecdotal", "Moderate", "Strong", "Very~Strong", "Extreme")[idx]
+      evidenceLevel <- fixTranslationForExpression(allEvidenceLabels[idx])
       
       BF01 <- if (bfType == "BF01") BF else if (bfType == "LogBF10") exp(BF) else 1 / BF
       if (BF01 > 1)
-        evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[0], ':')"))
+        hypothesisSymbol <- "[0]"
       else if (hypothesis == "greater")
-        evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H['+'], ':')"))
+        hypothesisSymbol <- "['+']"
       else if (hypothesis == "smaller")
-        evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H['-'], ':')"))
+        hypothesisSymbol <- "['-']"
       else 
-        evidenceTxt <- parseThis(c(evidenceLevel, "paste('Evidence for ', H[1], ':')"))
+        hypothesisSymbol <- '[1]'
+
+      evidenceFor <- gettextf("Evidence for H%s:", hypothesisSymbol)
+      evidenceFor <- fixTranslationForExpression(evidenceFor)
+      evidenceTxt <- parseThis(c(evidenceLevel, evidenceFor))
+
     }
     gTextEvidence <- draw2Lines(evidenceTxt, x = 0.75, align = "right")
 
@@ -319,12 +326,18 @@ PlotRobustnessSequential <- function(
     )
     
     if (is.null(arrowLabel)) {
-      if(hypothesis == "greater")
-        arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H['+']")
-      else if (hypothesis == "smaller")
-        arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H['-']")
-      else
-        arrowLabel <- c("Evidence~'for'~H[0]", "Evidence~'for'~H[1]")
+      # only translate this once
+      evidenceBase <- fixTranslationForExpression(gettext("Evidence for H%s"))
+      evidenceH0 <- sprintf(evidenceBase, "[0]")
+
+      hypothesisSymbol <- switch(hypothesis,
+        "greater" = "['+']",
+        "smaller" = "['-']",
+        "equal"   = "[1]"
+      )
+      evidenceH1 <- sprintf(evidenceBase, hypothesisSymbol)
+
+      arrowLabel <- c(evidenceH0, evidenceH1)
       parseArrowLabel <- TRUE
     } else {
       parseArrowLabel <- needsParsing(arrowLabel)
@@ -411,7 +424,17 @@ PlotRobustnessSequential <- function(
   return(plot)
 }
 
-
+fixTranslationForExpression <- function(text) {
+  # we should really switch to unicode...
+  text <- gsub("\\s+", "~", trimws(text))
+  idx <- endsWith(text, ":")
+  text[idx] <- paste0("paste(", substring(text[idx], 1, nchar(text[idx]) - 1L), ", ':')")
+  idx <- startsWith(text, ":")
+  text[idx] <- paste0("paste(", "':'", substring(text[idx], 1, nchar(text[idx]) - 1L), ")")
+  text <- gsub("~for", "~'for'", text, fixed = TRUE)
+  text <- gsub("for~", "'for'~", text, fixed = TRUE)
+  text
+}
 
 # Nobody uses this in JASP so let's not export it
 # custom Gridlines for ggplot objects
