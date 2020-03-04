@@ -1204,10 +1204,8 @@
     rValues <- seq(0.0005, 1.5, length.out = 400)
   }
 
-  startProgressbar(length(rValues), sprintf(ngettext(totalPlots,
-                                                     "Running robustness check",
-                                                     "Running robustness check %d / %d"),
-                                            currentPlot, totalPlots))
+  startProgressbar(length(rValues), gettextf("Running robustness check %d / %d",currentPlot, totalPlots))
+
   # BF10
   BF10 <- vector("numeric", length(rValues))
   if (!isFALSE(oneSided)) {
@@ -1399,10 +1397,7 @@
     nTicks <- length(BF10) - i
     if (plotDifferentPriors)
       nTicks <- 3L * nTicks
-    startProgressbar(nTicks, sprintf(ngettext(totalPlots,
-                                              "Running sequential analysis",
-                                              "Running sequential analysis %d / %d"),
-                                     currentPlot, totalPlots))
+    startProgressbar(nTicks, gettextf(totalPlots,"Running sequential analysis  %d / %d", currentPlot, totalPlots))
 
     while ((i <= length(x) || j <= length(y)) && k <= length(BF10)) {
 
@@ -1606,10 +1601,7 @@
     nTicks <- nrow(subDataSet)
     if (plotDifferentPriors)
       nTicks <- 3L * nTicks
-    startProgressbar(nTicks, sprintf(ngettext(totalPlots,
-                                              "Running sequential analysis",
-                                              "Running sequential analysis %d / %d"),
-                                     currentPlot, totalPlots))
+    startProgressbar(nTicks, gettextf("Running sequential analysis %d / %d", currentPlot, totalPlots))
 
     for (i in seq_len(nrow(subDataSet))) {
 

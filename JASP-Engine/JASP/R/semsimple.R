@@ -416,8 +416,8 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   
   semRMSEATable$addColumnInfo(name = "model",          title = "",                                type = "string")
   semRMSEATable$addColumnInfo(name = "rmsea",          title = gettext("RMSEA"),                  type = "number")
-  semRMSEATable$addColumnInfo(name = "rmsea.ci.upper", title = gettext("Upper 90% CI"),           type = "number")
-  semRMSEATable$addColumnInfo(name = "rmsea.ci.lower", title = gettext("Lower 90% CI"),           type = "number")
+  semRMSEATable$addColumnInfo(name = "rmsea.ci.upper", title = gettextf("Upper 90%% CI"),           type = "number")
+  semRMSEATable$addColumnInfo(name = "rmsea.ci.lower", title = gettextf("Lower 90%% CI"),           type = "number")
   semRMSEATable$addColumnInfo(name = "rmsea.pvalue",   title = gettext("p-value RMSEA <= 0.05 "), type = "pvalue")  
   
   semRMSEATable$transpose <- TRUE
