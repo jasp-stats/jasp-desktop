@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-02-27 14:21\n"
+"POT-Creation-Date: 2020-03-04 09:27\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1375,7 +1375,7 @@ msgstr ""
 msgid "You cannot set all the prior model probabilties to zero."
 msgstr ""
 
-msgid "The model could not fit. Error while running R code from the metaBMA package: %s"
+msgid "The model could not be fit. Please check the following: Do you have at least n=2 studies? If the prior is truncated, is it consistent with the data (when most effect sizes are negative, the analysis may not work when the prior is constrained to be postive)?"
 msgstr ""
 
 msgid "Posterior Estimates per Model"
@@ -1411,7 +1411,10 @@ msgstr ""
 msgid "Bayes factor of the random effects H%1$s over the fixed effects H%1$s."
 msgstr ""
 
-msgid "Posterior estimates are based on the models that assume an effect to be present. The Bayes factor is based on all four models: random effects H%1$s & H%2$s over the fixed effects H%1$s & H%2$s."
+msgid "Posterior estimates are based on the models that assume an effect to be present. The Bayes factor is based on all four models: fixed effects H%2$s & random effects H%2$s over the fixed effects H%1$s & random effects H%1$s."
+msgstr ""
+
+msgid "Model averaged posterior estimates for %3$s are not yet available, but will be added in the future. The Bayes factor is based on all four models: random effects H%1$s & H%2$s over the fixed effects H%1$s & H%2$s."
 msgstr ""
 
 msgid "Bayes factor of the (unconstrained/constrained) random effects H%1$s over the fixed effects H%1$s."
@@ -1420,13 +1423,13 @@ msgstr ""
 msgid "Bayes factor of the fixed effects H%1$s over the random effects H%1$s."
 msgstr ""
 
-msgid "Model averaged posterior estimates are based on the models that assume an effect to be present. The Bayes factor is based on all four models: fixed effects H%1$s & H%2$s over the random effects H%1$s & H%2$s."
+msgid "Model averaged posterior estimates are based on the models that assume an effect to be present. The Bayes factor is based on all four models: fixed effects H%1$s & random effects H%1$s over the fixed effects H%2$s & random effects H%2$s."
+msgstr ""
+
+msgid "Model averaged posterior estimates for %3$s are not yet available, but will be added in the future. The Bayes factor is based on all four models: fixed effects H%1$s & H%2$s over the random effects H%1$s & H%2$s."
 msgstr ""
 
 msgid "Bayes factor of the fixed effects H%1$s over the (unconstrained/constrained) random effects H%1$s."
-msgstr ""
-
-msgid "Model averaged posterior estimates for %s are not yet available, but will be added in the future."
 msgstr ""
 
 msgid "Bayes factor of the ordered effects H%1$s over the fixed effects H%1$s. The Bayes factor for the ordered effects H%1$s versus the unconstrained (random) effects H%1$s model is %2$.3f."
@@ -2257,12 +2260,6 @@ msgstr ""
 msgid "This function should not be used. In for reference."
 msgstr ""
 
-msgid "Your test set indicator should contain numeric values, containing only 1 (included in test set) and 0 (excluded from test set)."
-msgstr ""
-
-msgid "Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."
-msgstr ""
-
 msgid "K-Nearest Neighbors Classification"
 msgstr ""
 
@@ -2545,6 +2542,9 @@ msgstr ""
 msgid "All predictors"
 msgstr ""
 
+msgid "Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."
+msgstr ""
+
 msgid "You have specified more nearest neighbors than there are observations in the training set. Please choose a number lower than %d."
 msgstr ""
 
@@ -2644,6 +2644,9 @@ msgstr ""
 msgid "Expected numeric or character rscale but got %s."
 msgstr ""
 
+msgid "Running robustness check %d / %d"
+msgstr ""
+
 msgid "max BF%s"
 msgstr ""
 
@@ -2663,6 +2666,9 @@ msgid "%s at r==%s"
 msgstr ""
 
 msgid "Cauchy prior width"
+msgstr ""
+
+msgid "Running sequential analysis %d / %d"
 msgstr ""
 
 msgid "Bayes factor could not be calculated"
@@ -4801,7 +4807,10 @@ msgstr ""
 msgid "Root Mean Square Error of Approximation"
 msgstr ""
 
-msgid "90% CI"
+msgid "Upper 90%% CI"
+msgstr ""
+
+msgid "Lower 90%% CI"
 msgstr ""
 
 msgid "p-value RMSEA <= 0.05"
@@ -5088,16 +5097,6 @@ msgstr ""
 
 msgid "could not calculate enough valid Bayes Factors for different values of the prior"
 msgstr ""
-
-msgid        "Running robustness check"
-msgid_plural "Running robustness check %d / %d"
-msgstr[0]    ""
-msgstr[1]    ""
-
-msgid        "Running sequential analysis"
-msgid_plural "Running sequential analysis %d / %d"
-msgstr[0]    ""
-msgstr[1]    ""
 
 msgid        "using the %d/%d row from a combined fit"
 msgid_plural "using the %d/%d rows from a combined fit"
