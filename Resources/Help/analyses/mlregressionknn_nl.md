@@ -10,22 +10,22 @@ K-naaste buren is een regressiemethode die lijkt op het *k* aantal voorspellende
 ### Invoer 
 -------
 #### Invoerveld 
-- Target: In dit veld vul je de variabele in die voorspeld wordt. 
-- Voorspellers: In dit veld vul je de variabelen in die informatie geven over de target. 
+- Target: In dit veld vult u de variabele in die voorspeld wordt. 
+- Voorspellers: In dit veld vult u de variabelen in die informatie geven over de target. 
 
 #### Tabellen  
-- Evaluatiemetrieken: Toon regelmatig gebruikte classificatie evaluatiemetrieken zoals kwadratisch gemiddelde fout (MSE), wortel kwadratisch gemiddelde fout (RMSE) en R<sup>2</sup>.
+- Evaluatiemetrieken: Toon regelmatig gebruikte classificatie evaluatiemetrieken zoals gemiddelde kwadraatsom fout (MSE), wortel gemiddelde kwadraatsom fout (RMSE) en R<sup>2</sup>.
 
 #### Grafieken
 - Datasplit: Laat zien hoe de data is gesplitst in trainings- (en validatie-) en testset.
-- Kwadratisch gemiddelde fout: Plot het aantal naaste buren tegen de MSE van het model. Precisie is bepaald voor de trainingsset (en validatieset).
-- Voorspellingsvermogen: Laat de observaties van de geselecteerde testset tegen de voorspelde waardes zien.
+- Gemiddelde kwadraatsom fout: Plot het aantal naaste buren tegen de MSE van het model. Precisie is bepaald voor de trainingsset (en validatieset).
+- Voorspellingsvermogen: Laat de observaties van de geselecteerde testset tegen de voorspelde waarden zien.
 
 ### Datasplit Voorkeuren
 #### Holdout Testdata
-- Steekproef *x*% van alle data: Kies een percentage om aselect een steekproef van je data te nemen zodat de voorspellingsfout berekend kan worden. Genereert een interne indicator-variabele die aangeeft of de observatie is meegenomen (1) of uitgesloten (0) van de testset.
-- Voegt gegenereerde indicator toe aan de data: Voeg de gegenereerde testset indicator van bovenstaande optie toe aan je dataset. Vereist een kolomnaam.
-- Testset indicator: Gebruik een indicator-variabele om data te selecteren voor de testset. Deze indicator dient een kolom in je data te zijn die enkel bestaat uit 0 (uitgesloten van de testset) en 1 (meegenomen in de testset). De data zal dan gesplitst worden in een trainingsset (en validatie- indien aangevraagd)(0), en een testset (1) volgens je indicator.
+- Steekproef *x*% van alle data: Kies een percentage om aselect een steekproef van uw data te nemen zodat de voorspellingsfout berekend kan worden. Genereert een interne indicator-variabele die aangeeft of de observatie is meegenomen (1) of uitgesloten (0) van de testset.
+- Voegt gegenereerde indicator toe aan de data: Voeg de gegenereerde testset indicator van bovenstaande optie toe aan uw dataset. Vereist een kolomnaam.
+- Testset indicator: Gebruik een indicator-variabele om data te selecteren voor de testset. Deze indicator dient een kolom in uw data te zijn die enkel bestaat uit 0 (uitgesloten van de testset) en 1 (meegenomen in de testset). De data zal dan gesplitst worden in een trainingsset (en validatie- indien aangevraagd)(0), en een testset (1) volgens uw indicator.
 
 #### Trainings- and Validatiedata
 - Steekproef *x*% van validatiedata: Selecteer aselect een percentage als steekproef van de overgebleven data (na het selecteren van de testset).
@@ -36,16 +36,16 @@ K-naaste buren is een regressiemethode die lijkt op het *k* aantal voorspellende
 #### Algoritme Instellingen
 - Gewichten: Stel het gewichtsschema voor de naaste buren in. De standaardoptie, rectangular, geeft de standaard knn, terwijl de andere opties het algoritme uitbreiden door de naaste buren af te wegen. Zie ook het kknn package.
 - Afstand: De afstandsmetriek om de gelijkheid tussen naaste buren te bepalen. Kan met de Euclidean- of Manhattan afstand.
-- Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
-- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een oevalsgenerator beginwaarde maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
+- Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waarden van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
+- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor uw analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een toevalsgenerator beginwaarde maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
 
 #### Aantal Naaste Buren
-- Vast: Laat je een eigen gespecificeerd aantal naaste buren gebruiken. 
-- Optimalisatie: Laat je de voorspellingsfout te optimaliseren van een validatie dataset met betrekking tot het aantal naaste buren. 
+- Vast: Stelt u in staat om een eigen gespecificeerd aantal naaste buren te gebruiken. 
+- Optimalisatie: Stelt u in staat om de voorspellingsfout te optimaliseren van een validatie dataset met betrekking tot het aantal naaste buren. 
 - Max. aantal naaste buren: Het maximum aantal mogelijke naaste buren. Als standaardoptie staat dit op 10.
 
 #### Voeg Voorspelde Klassen toe aan Data
-Genereert een nieuwe kolom in je dataset met de klasselabels van je classificatie resultaat. Dit geeft je de mogelijkheid de gegenereerde klasselabels te inspecteren, classificeren, of voorspellen.
+Genereert een nieuwe kolom in uw dataset met de klasselabels van uw classificatie resultaat. Dit geeft u de mogelijkheid de gegenereerde klasselabels te inspecteren, classificeren, of voorspellen.
 
 ### Uitvoer
 -------
@@ -61,7 +61,7 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 - Testset MSE: De MSE van de testset.
 
 #### Evaluatiemetrieken
-- MSE: De kwadratisch gemiddelde fout van het model.
+- MSE: De gemiddelde kwadraatsom fout van het model.
 - RMSE: De wortel van de kwadratische gemiddelde fout van het model.
 - MAE: De gemiddelde absolute fout van het model.
 - MAPE: De gemiddelde absolute percentagefout van het model.
@@ -77,5 +77,5 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 
 ### Voorbeeld 
 --- 
-- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Student Grades`.  
+- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Studentcijfers`.  
 

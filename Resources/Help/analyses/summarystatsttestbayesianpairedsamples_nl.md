@@ -16,8 +16,8 @@ Met deze functie kan men de Bayes factor uitrekenen voor een gepaarde T-toets me
 - *Meting 1 &lt; Meting 2*: Eenzijdige hypothese dat het populatiegemiddelde van de verschillen kleiner is dan de 0.
 
 #### Bayes Factor
-- BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- BF<sub>10</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
 - Log(BF<sub>10</sub>) : Natuurlijk logaritme van BF10.
 
 #### Grafieken
@@ -32,13 +32,13 @@ Met deze functie kan men de Bayes factor uitrekenen voor een gepaarde T-toets me
   - Geinformeerd
 	- *Cauchy*: Schaal en locatie
 	- *Normaal*: Gemiddelde en standaardafwijking
-	- *Studenten t*: Schaal, locatie en vrijheidsgraden (df) 
+	- *Studenten t*: Schaal, locatie en vrijheidsgraden (vg) 
 
 
 [comment]: # (- **Pure effectgrootte (Dienes)**)
 [comment]: # (  - *Half-Normaal*: Standaardafwijking)
 [comment]: # (  - *Normaal*: Gemiddelde en standaardafwijking)
-[comment]: # (  - *Uniform*: Linker- en rechtergrens)
+[comment]: # (  - *Uniform*: Onder- en bovengrens)
 
 
 ### Uitvoer

@@ -16,7 +16,7 @@
 	"menu":
 	[
 		{
-			"title":	"Principiële Componentenanalyse",
+			"title":	"Principale Componentenanalyse",
 			"function":	"PrincipalComponentAnalysis"
 		},
 		{
@@ -24,7 +24,7 @@
 			"function":	"ExploratoryFactorAnalysis"
 		},
 		{
-			"title":	"Bevestigende Factoranalyse",
+			"title":	"Confirmatieve Factoranalyse",
 			"function":	"ConfirmatoryFactorAnalysis"
 		}
 	]

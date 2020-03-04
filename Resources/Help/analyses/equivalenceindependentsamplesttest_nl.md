@@ -34,8 +34,8 @@ De analyse volgt de twee eenzijdige toets (TOST) procedure.
 - Gelijkwaardigheidsgrenzen grafiek: De TOST-procedure is hetzelfde als visueel inspecteren of het 100 - (2 * alfa)% betrouwbaarheidsinterval binnen de ingestelde gelijkwaardigheidsgrenzen valt.
 
 #### Ontbrekende Waarden
- - Het uitsluiten van gevallen, analyse voor analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle gevallen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets. Dit is de standaardoptie.
- - Het lijstgewijze uitsluiten van gevallen: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de gevallen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde over alle toetsen.
+ - Het uitsluiten van waarnemingen, analyse voor analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets. Dit is de standaardoptie.
+ - Het lijstgewijze uitsluiten van waarnemingen: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de waarnemingen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde over alle toetsen.
 
 ### Uitvoer
 -------
@@ -47,7 +47,7 @@ De analyse volgt de twee eenzijdige toets (TOST) procedure.
   - Bovengrens: Toetst de nulhypothese of het effect groter is dan of gelijk is aan de bovengrens vergeleken met de alternatieve hypothese dat het effect kleiner is dan de bovengrens.
   - Ondergrens: Toets de nulhypothese of het effect kleiner is dan of gelijk is aan de ondergrens vergeleken met de alternatieve hypothese dat het effect groter is dan de ondergrens.
 - t: De waarde van de t-statistiek.
-- df: Vrijheidsgraden.
+- vg: Vrijheidsgraden.
 - p: De p-waarde.
 
 #### Gelijkwaardigheidsgrenzen
@@ -55,7 +55,7 @@ De analyse volgt de twee eenzijdige toets (TOST) procedure.
 - De tweede kolom bevat de informatie of the gelijkwaardigheidsgrenzen zijn uitegdruk in gestandaardiseerde gemiddeld verschil of in ruwe eenheden.
 - Laag: Gelijkhwaardigheids ondergrens uitgedrukt in gestandaardiseerd gemiddeld verschil wanneer Cohen's d is geselecteerd en in ruwe eenheden wanneer Raw is geselecteerd.
 - Hoog: Gelijkhwaardigheids bovengrens uitgedrukt in gestandaardiseerd gemiddeld verschil wanneer Cohen's d is geselecteerd en in ruwe eenheden wanneer Raw is geselecteerd.
-- 90% betrouwbaarheidsinterval voor gemiddelde verschillen/locatie parameter: Het betrouwbaarheidsinterval voor het gemiddelde verschil / de locatie-parameter van de verschilscores.
+- 90% betrouwbaarheidsinterval voor gemiddelde verschillen/locatieparameter: Het betrouwbaarheidsinterval voor het gemiddelde verschil / de locatie-parameter van de verschilscores.
    - Onder: De ondergrens van het betrouwbaarheidsinterval.
    - Boven: De bovengrens van het betrouwbaarheidsinterval.
 
@@ -65,7 +65,7 @@ De analyse volgt de twee eenzijdige toets (TOST) procedure.
 - N: De steekproefgrootte per groep.
 - Gemiddelde: Het gemiddelde van de afhankelijke variabele per groep.
 - SD: Standaarddeviatie van het gemiddelde.
-- SE: Standaardfout van het gemiddelde.
+- Std. Fout: Standaardfout van het gemiddelde.
 
 #### Gelijkwaardigheidsgrenzen Grafieken
 Toont het gemiddelde steekproefverschil en het 90% betrouwbaarheidsinterval. Het grijze gebied is het ingestelde gelijkwaardigheids regio.

@@ -14,24 +14,24 @@ De bayesiaanse ANOVA laat de gebruiker verschillende tussen meerdere groepsgemid
 #### Invoerveld
 - Afhankelijke Variabele: De variabele waarin we het meest geïnteresseerd zijn. Deze wordt ook wel de uitkomst variabele genoemd. 
 - Vaste Factoren: De variabelen die zijn gemanipuleerd/die de verschillende groepen definiëren. Deze worden ook wel de onafhankelijke variabelen genoemd.  
-- Willekeurige Factoren: In dit veld kan je de variabele selecteren die in alle modellen moet worden meegenomen, inclusief het nulmodel.
+- Willekeurige Factoren: In dit veld kunt u de variabele selecteren die in alle modellen moet worden meegenomen, inclusief het nulmodel.
 
 #### Bayes Factor  
-- BF<sub>10</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
-- Log(BF<sub>10</sub>) : als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
+- BF<sub>10</sub>: Als u deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als u deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- Log(BF<sub>10</sub>) : Als u deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
 
 #### Uitvoer
-- Effecten: Als je deze optie selecteert, wordt de kans op inclusie van elke component (i.e., model term) in de modellen berekend. 
-	- Over alle modellen: Als je deze optie selecteert, wordt elk model waar de component in wordt meegenomen gebruikt om het effect te berekenen (i.e., inclusie kans) van de component. Wanneer de optie `Effecten` is geselecteerd is dit de standaardoptie.
-    - Over alle gematchte modellen:  Als je deze optie selecteert, worden alleen modellen met precies die component meegenomen in de analyse. Zodanig worden interacties met de component uitgesloten. Vergelijkt modellen die de component meenemen met modellen die hem niet meenemen, hogere orde interacties worden uitgesloten. Analyse voorgesteld door Sebastiaan Mathot.
+- Effecten: Als u deze optie selecteert, wordt de kans op inclusie van elke component (i.e., model term) in de modellen berekend. 
+	- Over alle modellen: Als u deze optie selecteert, wordt elk model waar de component in wordt meegenomen gebruikt om het effect te berekenen (i.e., inclusie kans) van de component. Wanneer de optie `Effecten` is geselecteerd is dit de standaardoptie.
+    - Over alle gematchte modellen:  Als u deze optie selecteert, worden alleen modellen met precies die component meegenomen in de analyse. Zodanig worden interacties met de component uitgesloten. Vergelijkt modellen die de component meenemen met modellen die hem niet meenemen, hogere orde interacties worden uitgesloten. Analyse voorgesteld door Sebastiaan Mathot.
       <details>
         <summary><b>GIF demonstration: Geselecteerde effecten </b></summary>
         <img src="analyses/gif/inclusion_bayes_anova.gif"/>
       </details>
 
-- Schattingen: Als je deze optie selecteert, wordt een tabel weergegeven met een samenvatting van de model gemiddelde posterior. Deze tabel bevat informatie over de model gemiddelde standaardafwijking, gemiddelde, en betrouwbaarheidsinterval voor elk niveau van de vaste factoren en hun interacties.
-- Beschrijvende statistieken: Als je deze optie selecteert, worden het gemiddelde, de standaardafwijking en de steekproefgrootte weergegeven voor elke combinatie van de onafhankelijke variabele. 
+- Schattingen: Als u deze optie selecteert, wordt een tabel weergegeven met een samenvatting van de model gemiddelde posterior. Deze tabel bevat informatie over de model gemiddelde standaardafwijking, gemiddelde, en betrouwbaarheidsinterval voor elk niveau van de vaste factoren en hun interacties.
+- Beschrijvende statistieken: Als u deze optie selecteert, worden het gemiddelde, de standaardafwijking en de steekproefgrootte weergegeven voor elke combinatie van de onafhankelijke variabele. 
   - Betrouwbaarheidsinterval: Het centrale betrouwbaarheidsinterval. De standaardoptie is 95%.
  
 #### Volgorde
@@ -43,11 +43,11 @@ De bayesiaanse ANOVA laat de gebruiker verschillende tussen meerdere groepsgemid
   </details>
 
 #### Grafieken
-- Modelgemiddelde posteriors: Als je deze optie selecteert, worden er grafieken weergegeven die de model gemiddelde posterior van elke vaste factor en interactie illustreren. 
-  - Groepsniveaus in één grafiek: Als je deze optie selecteert, wordt er voor elke factor een grafiek weergegeven. De posterior verdelingen van elk niveau van de factor zullen dus in dezelfde grafiek worden weergegeven.
-  - Een grafiek per niveau : Als je deze optie selecteert, wordt een aparte grafiek voor elk niveau van de factor weergegeven. De posterior verdeling van elke factor zal dus in een eigen grafiek weer worden gegeven.
+- Modelgemiddelde posteriors: Als u deze optie selecteert, worden er grafieken weergegeven die de model gemiddelde posterior van elke vaste factor en interactie illustreren. 
+  - Groepsniveaus in één grafiek: Als u deze optie selecteert, wordt er voor elke factor een grafiek weergegeven. De posterior verdelingen van elk niveau van de factor zullen dus in dezelfde grafiek worden weergegeven.
+  - Een grafiek per niveau : Als u deze optie selecteert, wordt een aparte grafiek voor elk niveau van de factor weergegeven. De posterior verdeling van elke factor zal dus in een eigen grafiek weer worden gegeven.
 - Q-Q grafiek van residuen: Controleert de validiteit van de verdelingsassumpties van de dataset. Om precies te zijn geeft de grafiek weer of de residuen normaal zijn verdeeld. 
-- Posterior R<sup>2</sup>: Als je deze optie selecteert, wordt een grafiek weergegeven van de posterior verdeling van R<sup>2</sup> (i.e., de verklaarde variantie).
+- Posterior R<sup>2</sup>: Als u deze optie selecteert, wordt een grafiek weergegeven van de posterior verdeling van R<sup>2</sup> (i.e., de verklaarde variantie).
 
 ### Model
 - Componenten: Alle onafhankelijke variabelen die worden meegenomen in het model 
@@ -62,11 +62,11 @@ De bayesiaanse ANOVA laat de gebruiker verschillende tussen meerdere groepsgemid
   - Tabellen:
 	- Schatting: Een tabel met de samenvatting van de posterior voor het model dat is gespecificeerd in het invulveld. Deze tabel geeft informatie over het gemiddelde, de standaardafwijking en het betrouwbaarheidsinterval van elk niveau van de vaste factoren van het model. Dit is anders dan de "schatten" optie in Uitvoer, omdat de "estimate" functie een samenvatting geeft van de posterior gemiddelde over alle modellen in de analyse, terwijl deze optie de posterior geeft voor het enkele model. 
   - Grafieken
-	- Marginale posteriors: Als je deze optie selecteert, worden er grafieken gegenereerd die de posterior verdeling van elke vaste factor van het model en hun interactie weergeven. 
-		- Groepniveaus in één grafiek: Als je deze optie selecteert, wordt er voor elke factor een grafiek weergegeven. De posterior verdelingen van elk niveau van de factor zullen dus in dezelfde grafiek worden weergegeven.
-		- Een grafiek per niveau : Als je deze optie selecteert, wordt een aparte grafiek voor elk niveau van de factor weergegeven. De posterior verdeling van elke factor zal dus in een eigen grafiek weer worden gegeven.
+	- Marginale posteriors: Als u deze optie selecteert, worden er grafieken gegenereerd die de posterior verdeling van elke vaste factor van het model en hun interactie weergeven. 
+		- Groepniveaus in één grafiek: Als u deze optie selecteert, wordt er voor elke factor een grafiek weergegeven. De posterior verdelingen van elk niveau van de factor zullen dus in dezelfde grafiek worden weergegeven.
+		- Een grafiek per niveau : Als u deze optie selecteert, wordt een aparte grafiek voor elk niveau van de factor weergegeven. De posterior verdeling van elke factor zal dus in een eigen grafiek weer worden gegeven.
     - Q-Q grafiek van residuen: Controleert de validiteit van de verdelingsassumpties van de dataset. Om precies te zijn geeft de grafiek weer of de residuen normaal zijn verdeeld. 
-	- Posterior R<sup>2</sup>: Als je deze optie selecteert, wordt een grafiek weergegeven van de posterior verdeling van R<sup>2</sup> (i.e., de verklaarde variantie).
+	- Posterior R<sup>2</sup>: Als u deze optie selecteert, wordt een grafiek weergegeven van de posterior verdeling van R<sup>2</sup> (i.e., de verklaarde variantie).
 
 
 ### Post Hoc Toetsen
@@ -78,7 +78,7 @@ De bayesiaanse ANOVA laat de gebruiker verschillende tussen meerdere groepsgemid
 
   Dan is het mogelijk om het volgende te selecteren:
 	- Correctie:
-	  - Nulcontrole: Als je deze optie selecteert, worden de prior odds gecorrigeerd voor meervoudig toetsen. Dit is de standaardoptie. Momenteel wordt er geen output voor de post-hoc toetsen gegenereerd, als je deze optie niet selecteert. 
+	  - Nulcontrole: Als u deze optie selecteert, worden de prior odds gecorrigeerd voor meervoudig toetsen. Dit is de standaardoptie. Momenteel wordt er geen output voor de post-hoc toetsen gegenereerd, als u deze optie niet selecteert. 
 
 ### Beschrijvende grafieken
 - Selecteer de onafhankelijke variabele op de horizontale as om een beschrijvende grafiek te maken. Als er meerdere onafhankelijke variabelen zijn, kunnen de variabelen in een grafiek worden weergegeven door de andere variabele in het veld Aparte lijnen te zetten. De variabelen kunnen ook in diverse grafieken worden weergegeven door de andere variabele in het veld Aparte grafieken te zetten.
@@ -87,20 +87,20 @@ De bayesiaanse ANOVA laat de gebruiker verschillende tussen meerdere groepsgemid
   - Aparte lijnen: Door een onafhankelijke variabele in dit veld te plaatsen, corresponderen verschillende lijnen met verschillende niveaus van de geselecteerde variabele.
   - Aparte grafieken: Door een onafhankelijke variabele in dit veld te plaatsen, corresponderen verschillende grafieken met verschillende niveaus van de geselecteerde variabele.
 - Weergeven:
-	  -  Geloofwaardigheidsinterval: Als je deze optie selecteert, bevat de grafiek de geloofwaardigheidsinterval. De standaardoptie is 95%. Dit kan worden aangepast tot het gewenste percentage. 
+	  -  Geloofwaardigheidsinterval: Als u deze optie selecteert, bevat de grafiek de geloofwaardigheidsinterval. De standaardoptie is 95%. Dit kan worden aangepast tot het gewenste percentage. 
 
 ### Aanvullende opties 
-- Prior: Hier kan je de prior verdelingen voor de willekeurige en vaste effectgroottes bepalen.
-	- r schaal vaste effecten: De vorm parameter van de prior verdeling voor vaste effecten. De standaardwaarde is .5, maar je kan het naar behoeven aanpassen,
-	- r schaal willekeurige effecten: De vorm parameter van de prior verdeling voor de willekeurige effecten. De standaardwaarde is 1, maar je kan het naar behoeven aanpassen. 
+- Prior: Hier kunt u de prior verdelingen voor de willekeurige en vaste effectgroottes bepalen.
+	- r schaal gefixeerde effecten: De vorm parameter van de prior verdeling voor gefixeerde effecten. De standaardwaarde is .5, maar u kunt het naar behoeven aanpassen,
+	- r schaal willekeurige effecten: De vorm parameter van de prior verdeling voor de willekeurige effecten. De standaardwaarde is 1, maar u kunt het naar behoeven aanpassen. 
 - Numerieke precisie: Het aantal stappen dat wordt genomen om de integraal voor de Bayes factor te berekenen.
-  - Auto: Als je deze optie selecteert, worden er 10000 stappen gezet. Dit is de standaardoptie.
-  - Handmatig: Als je deze optie selecteert, kan je handmatig het aantal stappen selecteren. De standaardwaarde is 10000.
+  - Auto: Als u deze optie selecteert, worden er 10000 stappen gezet. Dit is de standaardoptie.
+  - Handmatig: Als u deze optie selecteert, kunt u handmatig het aantal stappen selecteren. De standaardwaarde is 10000.
 - Posterior steekproeven: Het is mogelijk om het aantal Markov Chain Monte Carlo steekproeven in te stellen. Dit wordt gebruikt om de posterior verdeling en het fout % te benaderen. 
 	- Auto: Als deze optie is geselecteerd, worden er 10000 steekproeven gebruikt. Dit is de standaardoptie.
-    - Handmatig: Als je deze optie selecteert, kan je handmatig het aantal steekproeven instellen. Als je deze optie kiest, is de standaardwaarde 1000.
+    - Handmatig: Als u deze optie selecteert, kunt u handmatig het aantal steekproeven instellen. Als u deze optie kiest, is de standaardwaarde 1000.
 - Reproduceerbaarheid:
-  - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+  - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor uw analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 ### Output
 ---
@@ -128,8 +128,8 @@ Model Gemiddelde samenvatting van de posterior:
 - Gemiddelde: Het gemiddelde van het modelgemiddelde. Voor de factoren is dit de afwijking van het intercept voor elk niveau van de factor. De niveau gemiddelden voor een factoren tellen op tot 0. 
 - SD: De standaardafwijking van het modelgemiddelde gemiddelde. 
 - % geloofwaardigheidsinterval: Het geloofwaardigheidsinterval van het gemiddelde. De standaardoptie is 95%.
-  - Linker: De linkergrens van het geloofwaardigheidsinterval van het gemiddelde.
-  - rechter: De rechtergrens van het geloofwaardigheidsinterval van het gemiddelde.
+  - Onder: De ondergrens van het geloofwaardigheidsinterval van het gemiddelde.
+  - Boven: De bovengrens van het geloofwaardigheidsinterval van het gemiddelde.
   
 #### Modelgemiddelde posterior verdeling 
 Voor elke factor en interactie worden de modelgemiddelde posterior verdelingen per niveau weergegeven met de factor op de x-as en dichtheid op de y-as. De posterior verdeling van elk niveau kan in dezelfde grafiek of in een andere grafiek worden weergegeven. 
@@ -156,8 +156,8 @@ Enkel model samenvatting van de posterior:
   - Gemiddelde: Het model gemiddelde gemiddelde. Voor de factoren is dit de afwijking van het intercept voor elk niveau van de factor. De niveau gemiddelden voor een factoren tellen op tot 0. 
   - SD: De standaardafwijking van het modelgemiddelde gemiddelde. 
   - % geloofwaardigheidsinterval: het geloofwaardigheidsinterval van het gemiddelde. De standaardoptie is 95%.
-    - Linker: De linkergrens van het geloofwaardigheidsinterval van het gemiddelde.
-    - rechter: De rechtergrens van het geloofwaardigheidsinterval van het gemiddelde. 
+    - Onder: De ondergrens van het geloofwaardigheidsinterval van het gemiddelde.
+    - Boven: De bovengrens van het geloofwaardigheidsinterval van het gemiddelde. 
 
 
 Posterior Verdelingen: 
@@ -176,8 +176,8 @@ Beschrijvende statistieken - afhankelijke variabele:
 - SD: De standaardafwijking.
 - N: De steekproefgrootte.
   - % geloofwaardigheidsinterval: Het geloofwaardigheidsinterval van het gemiddelde. DE standaardwaarde is 95%
-    - Linker: De linkergrens van het geloofwaardigheidsinterval van het gemiddelde.
-    - rechter: De rechtergrens van het geloofwaardigheidsinterval van het gemiddelde.
+    - Onder: De ondergrens van het geloofwaardigheidsinterval van het gemiddelde.
+    - Boven: De bovengrens van het geloofwaardigheidsinterval van het gemiddelde.
 
 Beschrijvende grafiek: 
 - Onafhankelijke variabele op de x-as en afhankelijke variabele op de y-as. ALs andere onafhankelijke variabelen worden meegenomen, kunnen verschillende lijnen in dezelfde grafiek de andere onafhankelijke variabele weergeven, of kunnen er verschillende grafieken worden gemaakt voor verschillende onafhankelijke variabelen. 

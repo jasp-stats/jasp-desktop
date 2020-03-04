@@ -25,7 +25,7 @@ Met de Bayesiaanse multinomiale toets kan de gebruiker toetsen of een geobservee
 
 #### Aanvullende Statistieken
 - Beschrijvende statistieken: De optie om beschrijvende statistieken van de data weer te geven; de geobserveerde tellingen, de verwachte tellingen en de geloofwaardigheidsintervallen van de geobserveerde waarden.
-- Geloofwaardigheidsinterval: Standaard 95%. Let op dat de geloofwaardigheidsintervallen zijn gebaseerd op onafhankelijke binomiale verdelingen met 'flat priors'. De berekening van de geloofwaardigheidsintervallen zijn gebaseerd op de procedure van Clopper en Pearson (1934). Deze procedure gaat uit van een Beta(0,1) prior verdeling wanneer de linkergrens van het geloofwaardigheidsinterval wordt berekend. Wanneer de rechtergrens wordt berekend, gebruiken ze een Beta(1,0) verdeling. 
+- Geloofwaardigheidsinterval: Standaard 95%. Let op dat de geloofwaardigheidsintervallen zijn gebaseerd op onafhankelijke binomiale verdelingen met 'flat priors'. De berekening van de geloofwaardigheidsintervallen zijn gebaseerd op de procedure van Clopper en Pearson (1934). Deze procedure gaat uit van een Beta(0,1) prior verdeling wanneer de ondergrens van het geloofwaardigheidsinterval wordt berekend. Wanneer de bovengrens wordt berekend, gebruiken ze een Beta(1,0) verdeling. 
 
 #### Weergave
 - Tellingen: Met deze optie worden de beschrijvende statistieken weergegeven als absolute tellingen. 
@@ -35,7 +35,7 @@ Met de Bayesiaanse multinomiale toets kan de gebruiker toetsen of een geobservee
 
 ### Prior
 De optie om de prior verdeling aan te passen voor de vector van celkansen. 
-- *Dirichlet*: Voor *K* categorien is de standaard prior Dirichlet(alpha_*1*, alpha_*2*, ..., alpha_*K*), met alle alfa parameters op 1. Let op dat de parameters van de *Dirichlet verdeling* prior tellingen weergeven. Dit wijst erop dat alle waardes niet-negatief moeten zijn.
+- *Dirichlet*: Voor *K* categorien is de standaard prior Dirichlet(alpha_*1*, alpha_*2*, ..., alpha_*K*), met alle alfa parameters op 1. Let op dat de parameters van de *Dirichlet verdeling* prior tellingen weergeven. Dit wijst erop dat alle waarden niet-negatief moeten zijn.
 
 ### Uitvoer
 ---

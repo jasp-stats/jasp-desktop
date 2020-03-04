@@ -21,14 +21,14 @@ De binomiaal toets laat de gebruiker testen of een proportie van een dichotome v
 Bijvoorbeeld, als de tweezijdige *p*-waarde gelijk is aan .05, dan is de Vovk-Sellke MPR gelijk aan 2.46, wat betekent dat deze *p*-waarde hoogstens 2.46 keer meer waarschijnlijk is onder H<sub>1</sub> dan onder H<sub>0</sub>.
 
 #### Plots
-- Beschrijvende plots: de proportie en betrouwbaarheidsinterval van de twee verschillende waardes van je dichotome variabele.
+- Beschrijvende plots: de proportie en betrouwbaarheidsinterval van de twee verschillende waarden van uw dichotome variabele.
 - Betrouwbaarheidsinterval: Dekking van de betrouwbaarheidsinterval in percentages. De standaardwaarde is 95.
  
 ### Uitvoer
 -----------
 #### Binomiaal toets
 - Niveau: De twee opties van de dichotome variabele
-- Telling: Het aantal gevallen op een bepaalde level van de dichotome variabele. De telling van alle mogelijke levels geeft het totaal.
+- Telling: Het aantal waarnemingen op een bepaald level van de dichotome variabele. De telling van alle mogelijke levels geeft het totaal.
 - Totaal: Het totaal aantal observaties.
 - Proportie: Berekend met telling/totaal.
 - p: P-waarde.

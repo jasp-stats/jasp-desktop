@@ -15282,10 +15282,6 @@ msgctxt "MessageForwarder|"
 msgid "Save"
 msgstr ""
 
-msgctxt "MessageForwarder|"
-msgid "Discard"
-msgstr ""
-
 msgctxt "FilterConstructor|"
 msgid "Filter applied<br>"
 msgstr ""
@@ -15440,6 +15436,29 @@ msgstr ""
 
 msgctxt "Flexplot|"
 msgid "Paneled Variable(s)"
+msgstr ""
+
+msgctxt "MessageForwarder|"
+msgid "Don't Save"
+msgstr ""
+
+msgctxt "Form|"
+msgid ""
+"This analysis was created with an older version of JASP (or a dynamic module)"
+msgstr ""
+
+msgctxt "Form|"
+msgid ", refreshing could give a slightly different result."
+msgstr ""
+
+msgctxt "Form|"
+msgid ""
+", to keep your notes where they are it is highly recommended to first "
+"refresh your analyses!"
+msgstr ""
+
+msgctxt "HelpWindow|"
+msgid "JASP Help"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

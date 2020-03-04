@@ -1,12 +1,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-03-04 09:27\n"
+"POT-Creation-Date: 2020-03-04 16:59\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 
@@ -496,7 +496,7 @@ msgstr ""
 msgid "(10 - 99)"
 msgstr ""
 
-msgid "The null hypothesis specifies that the distribution of \n                      first numbers %1$s in the population conforms to \n                      Benford\342\200\231s law."
+msgid "The null hypothesis specifies that the distribution of \n                      first numbers %1$s in the population conforms to \n                      Benford’s law."
 msgstr ""
 
 msgid "Chi-square"
@@ -1993,7 +1993,7 @@ msgstr ""
 msgid "P(incl|data)"
 msgstr ""
 
-msgid "Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Math\303\264t."
+msgid "Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt."
 msgstr ""
 
 msgid "Some Bayes factors could not be calculated. Inclusion probabilities and Bayes factors are calculated while excluding these models. The results may be uninterpretable!"

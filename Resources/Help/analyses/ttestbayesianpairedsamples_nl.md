@@ -20,8 +20,8 @@ Met de paired samples t-toets kan de gebruiker de effectgrootte schatten en de n
 - Maat 1 &lt; Maat 2: Eenzijdige alternatieve hypothese dat het populatiegemiddelde kleiner is dan 0. 
 
 #### Bayes Factor
--  BF10: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese.
--  BF01: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. 
+-  BF10: Als u deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese.
+-  BF01: Als u deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. 
 -  Log(BF10): Natuurlijk logaritme van BF10. 
 
 #### Aanvullende Statistieken
@@ -37,8 +37,8 @@ Met de paired samples t-toets kan de gebruiker de effectgrootte schatten en de n
   - Geloofwaardigheidsinterval: De standaardoptie is 95%.
  
  #### Ontbrekende Waarden
- - Het uitsluiten van gevallen, analyse voor analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle gevallen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets. 
- - Het uitsluiten van gevallen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de gevallen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde over alle toetsen. 
+ - Het uitsluiten van waarnemingen, analyse voor analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets. 
+ - Het uitsluiten van waarnemingen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de waarnemingen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde over alle toetsen. 
 
 ### Prior
 - Standaard:
@@ -46,7 +46,7 @@ Met de paired samples t-toets kan de gebruiker de effectgrootte schatten en de n
 - Geinformeerd:
    - Cauchy: Schaal en locatie.
    - Normaal: Gemiddelde en standaardafwijking.
-   - Student's t: Schaal, locatie en vrijheidsgraden (df). 
+   - Student's t: Schaal, locatie en vrijheidsgraden (vg). 
 
 ### Uitvoer
 ---
@@ -62,7 +62,7 @@ Met de paired samples t-toets kan de gebruiker de effectgrootte schatten en de n
 - N: De steekproefgrootte.
 - Gemiddelde: Het steekproefgemiddelde.
 - SD: Standaarddeviatie van het gemiddelde. 
-- SE: Standaardfout van het gemiddelde.
+- Std. Fout: Standaardfout van het gemiddelde.
 
 #### Grafieken
 - Prior en posterior: Geeft de prior (stippellijn) en posterior (lijn) verdeling van de effectgrootte onder de alternatieve hypothese; de grijze cirkels geven de hoogte van de dichtheid van de prior en de posterior bij een effectgrootte delta = 0 weer. De horizontale lijn geeft de breedte van een 95% geloofwaardigheidsinterval van de posterior verdeling weer.

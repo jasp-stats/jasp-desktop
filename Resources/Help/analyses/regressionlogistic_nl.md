@@ -15,7 +15,7 @@ Met logistische regressie kan men een lineaire relatie tussen een of meer verkla
 ---
  
 #### Invoerveld: 
-- Afhankelijke variabele: De variabele waarin je geïnteresseerd bent. Dit wordt ook wel de uitkomstvariabele genoemd. Als er meerdere afhankelijke variabelen zijn specificeer je de volgorde waarin de predictoren in het model worden gevoegd. i.e., hiërarchische regressie analyse). Een blok van een of meer predictor(en) representeert een stap in de hiërarchie. 
+- Afhankelijke variabele: De variabele waarin u geïnteresseerd bent. Dit wordt ook wel de uitkomstvariabele genoemd. Als er meerdere afhankelijke variabelen zijn specificeert u de volgorde waarin de predictoren in het model worden gevoegd. i.e., hiërarchische regressie analyse). Een blok van een of meer predictor(en) representeert een stap in de hiërarchie. 
     - Toevoegen: Alle predictoren worden tegelijk toegevoegd aan het model (forced entry).
 	- Achterwaarts: Alle predictoren worden tegelijk toegevoegd, en daarna sequentieel verwijderd gebaseerd op het criterium in "criterium stapsgewijze methode".
 	- Voorwaarts: Predictoren worden sequentieel toegevoegd op basis van het criterium gespecificeerd in "criterium stapsgewijze methode". 
@@ -39,26 +39,26 @@ Met logistische regressie kan men een lineaire relatie tussen een of meer verkla
  
 - Regressiecoëfficiënten:
   - Schattingen: Ongestandaardiseerde en gestandaardiseerde schattingen van de coëfficiënten, standaardafwijkingen, t-waarden en de corresponderende p-waarden. 
-  - Van `...` bootstraps: Als je deze optie selecteert wordt ge-bootstrapte schatting toegepast. De standaardoptie voor het aantal replicaties is 1000. Dit kan naar behoeven worden aangepast.
+  - Van `...` bootstraps: Als u deze optie selecteert wordt ge-bootstrapte schatting toegepast. De standaardoptie voor het aantal replicaties is 1000. Dit kan naar behoeven worden aangepast.
   - Gestandaardiseerde coëfficiënten: Gestandaardiseerde schattingen zijn schattingen waar de predictoren zijn gestandaardiseerd (X-standaardisatie). 
   - Odds ratio: De odds ratio is een indicatie van de verandering in odds als gevolg van een verandering binnen een predictor (Field).
   - Betrouwbaarheid intervals: De standaardwaarde is 95%. 
 	- Odds ratio schaal: Proportionele verandering in odds door het delen van de odds na een verandering in de predictor door de odds voor die verandering (Field).
   - Robuuste standaard fouten: Deze optie controleert voor fouten die niet onafhankelijk en gelijk zijn verdeeld. Het gebruik van robuuste standaard fouten zal de schattingen van coëfficiënten niet aantasten. Als deze optie niet wordt geselecteerd wordt de normale standaard fout berekend.
-  - Vovk-Selke maximum p-ratio: De grens 1/(-e p log(p)) wordt afgeleid van de vorm van de verdeling van de p-waardes. Onder de nulhypothese (H<sub>0</sub>) is het uniform (0,1) en onder de alternatieve hypothese (H<sub>1</sub>) neemt hij af in p, bijv. een beta (α, 1) verdeling waar 0 < α < 1. De Vovk-Selke MPR wordt verkregen door het vorm van α onder de alternative hypothese te kiezen zodat de p-waarde maximaal diagnostisch is. De waarde is dan de ratio van de dichtheid op punt p onder H<sub>0</sub> en H<sub>1</sub>. Als de tweezijdige p-waarde bijvoorbeeld .05 is is de Vovk-Sellke MPR 2.46. Dit geeft aan dat deze p-waarde maximaal 2.46 zo waarschijnlijk is onder H1 dan onder H<sub>0</sub>. Meer informatie via href="https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/">blogpost</a>.
+  - Vovk-Selke maximum p-ratio: De grens 1/(-e p log(p)) wordt afgeleid van de vorm van de verdeling van de p-waarden. Onder de nulhypothese (H<sub>0</sub>) is het uniform (0,1) en onder de alternatieve hypothese (H<sub>1</sub>) neemt hij af in p, bijv. een beta (α, 1) verdeling waar 0 < α < 1. De Vovk-Selke MPR wordt verkregen door het vorm van α onder de alternative hypothese te kiezen zodat de p-waarde maximaal diagnostisch is. De waarde is dan de ratio van de dichtheid op punt p onder H<sub>0</sub> en H<sub>1</sub>. Als de tweezijdige p-waarde bijvoorbeeld .05 is is de Vovk-Sellke MPR 2.46. Dit geeft aan dat deze p-waarde maximaal 2.46 zo waarschijnlijk is onder H1 dan onder H<sub>0</sub>. Meer informatie via href="https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/">blogpost</a>.
 
 - Residuen: 
-  - Gevalsgewijze diagnostiek: Gevalsgewijze en samengevatte diagnostieken voor de residuen.
-	- Gestandaardiseerd residu > 3: Uitschieters buiten x standaardafwijkingen: Geef diagnostieken weer voor gevallen waar de absolute waarde voor het gestandaardiseerde residu groter is dan x; de standaardoptie is x=3.
-    - Cook's afstand > 1: Geef diagnostieken weer voor gevallen waar de waarde van Cook's afstand groter is dan x; de standaardoptie is x=1.
-    - Alle gevallen: Geef diagnostieken voor alle gevallen weer.
+  - Diagnostieken per observatie: Gevalsgewijze en samengevatte diagnostieken voor de residuen.
+	- Gestandaardiseerd residu > 3: Uitschieters buiten x standaardafwijkingen: Geef diagnostieken weer voor waarnemingen waar de absolute waarde voor het gestandaardiseerde residu groter is dan x; de standaardoptie is x=3.
+    - Cook's afstand > 1: Geef diagnostieken weer voor waarnemingen waar de waarde van Cook's afstand groter is dan x; de standaardoptie is x=1.
+    - Alle waarnemingen: Geef diagnostieken voor alle waarnemingen weer.
  
 - Prestatie statistieken:
-- De confusion matrix geeft aan hoe goed het model de uitkomsten voorspelt. In de diagonaal staan de gevallen die het model correct identificeerde. Daarbuiten de gevallen waar het model een verkeerde uitkomst voorspelde.
+- De confusion matrix geeft aan hoe goed het model de uitkomsten voorspelt. In de diagonaal staan de waarnemingen die het model correct identificeerde. Daarbuiten de waarnemingen waar het model een verkeerde uitkomst voorspelde.
  - Proporties: De tabel geeft de proporties voor de echte versus de voorspelde uitkomsten.
  
 - Prestatiestatistieken:
-  - AUC: Gebied onder de curve. 
+  - AUC: Gebied onder de kromme. 
   - Sensitiviteit: Sensitiviteit beschrijft de proportie ware positieven ("true positives").
   - Specificiteit: Specificiteit beschrijft het aantal ware negatieven ("true negatives"). 
   - Precisie: Precisie beschrijft de proportie van ware positieve ten opzichte van alle positieven. Wordt ook wel de "positive prediction value" genoemd.
@@ -68,13 +68,13 @@ Met logistische regressie kan men een lineaire relatie tussen een of meer verkla
  
 ### Grafieken
 - Inferentiële grafieken:
-  - Geef grafieken van de conditionele schattingen: De grafieken zijn conditioneel in de zin dat je de kans op de categorische variabele geven voor alle niveaus van de predictor variabele gegeven het referentieniveau van alle andere factoren.
+  - Geef grafieken van de conditionele schattingen: De grafieken zijn conditioneel in de zin dat u de kans op de categorische variabele geeft voor alle niveaus van de predictor variabele gegeven het referentieniveau van alle andere factoren.
 	- Laat data punten zien.
 
 - Residu grafieken: Als de assumpties van het lineaire regressiemodel houdbaar zijn moeten de residuen aselect rond een horizontale lijn liggen. Elk systematisch patroon of clustering van residuen wijst op een schending.
   - Voorspeld - residu grafiek: Spreidingsdiagram van de waarden van de residuen tegen de voorspelde waarden.
-  - Predictor - residu grafiek: Spreidingsdiagram voor elke onafhankelijke variabele en covariaat van de residuen en de niveaus van de variabele waarin je geïnteresseerd bent.
-  - Gekwadrateerde Pearson residuen: Met de Gekwadrateerde Pearson residuen grafiek kan je voor overdispersie van het model checken. Overdispersie betekent dat de data grotere variabiliteit heeft dan het model voorspelt.
+  - Predictor - residu grafiek: Spreidingsdiagram voor elke onafhankelijke variabele en covariaat van de residuen en de niveaus van de variabele waarin u geïnteresseerd bent.
+  - Gekwadrateerde Pearson residuen: Met de Gekwadrateerde Pearson residuen grafiek kunt u voor overdispersie van het model checken. Overdispersie betekent dat de data grotere variabiliteit heeft dan het model voorspelt.
 
 - Type Residu:
   - Afwijking: De gestandaardiseerde afwijkingsresiduen.
@@ -90,10 +90,10 @@ Samenvatting model:
 - afwijking: -2 x log-likelihood.
 - AIC: Vergelijk modellen met het Akaike Informatie Criterium.
 - BIC: vergelijk modellen met het Bayesiaanse Informatie Criterium.
-- df: Vrijheidsgraden.
+- vg: Vrijheidsgraden.
 - X2: Chi-kwadraat.
 - p: De p-waarde.
-- R kwadraat waarde (de proportie van de variantie die wordt verklaard door het model). Er zijn drie pseudo R^2 waarden beschikbaar in JASP: 
+- Determinatiecoëfficient waarde (de proportie van de variantie die wordt verklaard door het model). Er zijn drie pseudo R^2 waarden beschikbaar in JASP: 
   - McFadden.
   - Nagelkerke.
   - Tjur.
@@ -107,12 +107,12 @@ Coëfficiënten
 - z: De z-waarde. 
 - Wald toets: De Wald toets wordt gebruikt om de statistische significantie van elk coëfficiënt te evalueren.
   - Wald statistiek: z^2.
-  - df: Vrijheidsgraden.
+  - vg: Vrijheidsgraden.
   - p: De p-waarde.
 - VS-MPR: Vovk-Sellke maximum p-ratio.
 - % BI: Het betrouwbaarheidsinterval (odds-ratio schaal). Standaard is 95%. 
-  - Linker: De linkergrens van het betrouwbaarheidsinterval.
-  - Rechter: De rechtergrens van het betrouwbaarheidsinterval.
+  - Onder: De ondergrens van het betrouwbaarheidsinterval.
+  - Boven: De bovengrens van het betrouwbaarheidsinterval.
    
 Bootstrap Coëfficiënten.
 - Schatting: ge-bootstrapte regressiecoëfficiënten.
@@ -128,8 +128,8 @@ Stapsgewijze Diagnostieken:
   - Gestandaardiseerd residu. 
   - Cook's afstand: De waarde van Cook's afstand. 
   - % BI: Het ge-bootsttrapte betrouwbaarheid interval voor de ongestandaardiseerde coëfficiënten. Standaard is 95%. 
-    - Linker: De linkergrens van het betrouwbaarheid interval.
-    - Rechter: De rechtergrens van het betrouwbaarheid interval.
+    - Onder: De ondergrens van het betrouwbaarheid interval.
+    - Boven: De bovengrens van het betrouwbaarheid interval.
 
 Factor beschrijvingende statistieken:
   - De eerste kolom geeft alle niveaus van de factor.
@@ -138,7 +138,7 @@ Factor beschrijvingende statistieken:
    
 #### Prestatie statistieken
 Confusion Matrix:
-- De confusion matrix geeft aan hoe goed het model de uitkomsten voorspelt. In de diagonaal staan de gevallen die het model correct identificeerde. Daarbuiten de gevallen waar het model een verkeerde uitkomst voorspelde.
+- De confusion matrix geeft aan hoe goed het model de uitkomsten voorspelt. In de diagonaal staan de waarnemingen die het model correct identificeerde. Daarbuiten de waarnemingen waar het model een verkeerde uitkomst voorspelde.
  
 Prestatie Matrix:
 - Alle geselecteerde prestatiestatistieken en hun waarden staan in deze tabel.

@@ -28,5 +28,5 @@ Als dit aanstaat, zal JASP in een software rendering modus werken, wat betekent 
 
 ### Gebruik Ingebouwde Bestandsdialogen
 Sommige gebruikers op bepaalde systemen (Windows) kunnen problemen hebben met de ingebouwde systeem bestandsdialogen.
-In die gevallen crasht JASP zodra je op "Bladeren" drukt en om dat te voorkomen kan deze optie uitgezet worden.
+In die gevallen crasht JASP zodra u op "Bladeren" drukt en om dat te voorkomen kan deze optie uitgezet worden.
 Voor veruit de meeste gebruikers zal het niet nodig zijn om dit uit te zetten.

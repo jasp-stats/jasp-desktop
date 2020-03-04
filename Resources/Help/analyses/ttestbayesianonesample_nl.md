@@ -1,4 +1,4 @@
-Bayesiaanse One Sample T-Toets
+Bayesiaanse T-Toets voor één gemiddelde
 ===
 
 Met de one sample t-test kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde gelijk is aan een specifieke constante, bijvoorbeeld de toetswaarde.
@@ -34,18 +34,18 @@ De toetswaarde gespecificeerd in de nulhypothese.
   - Geinformeerd
     - Cauchy: Schaal en locatie.
     - Normal: Gemiddelde en standaarddeviatie.
-    - Student's t: Schaal, locatie en vrijheidsgraden (df).
+    - Student's t: Schaal, locatie en vrijheidsgraden (vg).
 
 [comment]: # (- Pure effectgrootte (Dienes))
 [comment]: # (  - Half-Normaal: Standaardafwijking)
 [comment]: # (  - Normaal: gemiddelde en standaardafwijking)
-[comment]: # (  - Uniform: Linker en rechtergrens)
+[comment]: # (  - Uniform: Onder en bovengrens)
 
 #### Aanvullende statistieken
 - Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaarddeviatie, standaard fout van het gemiddelde.
 
 #### Reproduceerbaarheid
-- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor uw analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 #### Grafieken
 - Prior en posterior: Geeft de verdeling van de prior en posterior van de effectgrootte onder de alternatieve hypothese.
@@ -57,13 +57,13 @@ De toetswaarde gespecificeerd in de nulhypothese.
   - Geloofwaardigheidsinterval: Standaardoptie is 95%.
 
 #### Ontbrekende waarden
- - Het uitsluiten van gevallen, analyse bij analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle gevallen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets.
- - Het uitsluiten van gevallen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de gevallen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde voor alle toetsen. 
+ - Het uitsluiten van waarnemingen, analyse bij analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets.
+ - Het uitsluiten van waarnemingen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de waarnemingen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde voor alle toetsen. 
 
 ### Uitvoer
 ---
 
-#### Bayesiaanse One Sample T-Toets
+#### Bayesiaanse T-Toets voor één gemiddelde
 - Bayes factor: Als een eenzijdige toets wordt gevraagd:
   - BF+0: De Bayes factor die bewijs geeft voor de eenzijdige hypothese dat het populatiegemiddelde hoger is dan de toetswaarde.
   - BF-0: De Bayes factor die bewijs geeft voor de eenzijdige hypothese dat het populatiegemiddelde lager is dan de toetswaarde.
@@ -75,7 +75,7 @@ De toetswaarde gespecificeerd in de nulhypothese.
 - N: De steekproefgrootte.
 - Gemiddelde: Het steekproefgemiddelde.
 - SD: Standaarddeviatie van het gemiddelde. 
-- SE: Standaardfout van het gemiddelde. 
+- Std. Fout: Standaardfout van het gemiddelde. 
 
 #### Grafieken
 - Prior en posterior: Geeft de prior (stippellijn) en posterior (lijn) verdeling van de effectgrootte onder de alternatieve hypothese; de grijze cirkels geven de hoogte van de dichtheid van de prior en de posterior bij een effectgrootte delta = 0 weer. De horizontale lijn geeft de breedte van een 95% geloofwaardigheidsinterval van de posterior verdeling weer.

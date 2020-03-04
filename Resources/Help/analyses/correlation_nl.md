@@ -44,7 +44,7 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
   - Statistieken: Geef de correlatiecoëfficiënt(en) weer in de grafiek. Deze optie voegt ook de x% betrouwbaarheidsinterval(len) toe zoals gespecificeerd in de "Betrouwbaarheidsintervallen" optie.
 - Heatmap: Geef een correlatie heatmap weer voor Pearson, Spearman, and Kendall's tau B coëfficiënten gescheiden.
 
-#### Assumptie checks
+#### Verificatie van aannames
 
 - Multivariate normaliteit
   - Shapiro: Berekend de Shapiro-Wilk statistiek om de nulhypothese dat de geselecteerde variabelen een multivariate normale verdeling hebben, te toetsen.
@@ -54,9 +54,9 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
   
 #### Opties
 
-- Missende waardes
-  - Sluit paarsgewijs gevallen uit: Gebruik alle complete observaties for elk individuele paar van variabelen.
-  - Sluit lijstgewijs gevallen uit: Gebruik enkel volledige gevallen van alle variabelen.
+- Ontbrekende waarden
+  - Sluit paarsgewijs waarnemingen uit: Gebruik alle complete observaties for elk individuele paar van variabelen.
+  - Sluit lijstgewijs waarnemingen uit: Gebruik enkel volledige waarnemingen van alle variabelen.
   
 ### Uitvoer
 ---
@@ -74,7 +74,7 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 - Onder x% BI: Onderste grens of the x% betrouwbaarheidsinterval voor de populatiecorrelatie.
 - n: Steekproefgrootte.
 
-#### Assumptie checks
+#### Verificatie van aannames
 
 - Shapiro-Wilk: De Shapiro-Wilk statistiek
 - p: De p-waarde van de assumptiecheck

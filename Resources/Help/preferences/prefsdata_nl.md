@@ -23,8 +23,8 @@ Het importeren van data in JASP heeft een drempelwaarde die vaststelt of een kol
 Dit betekent dat wanneer er minder dan(of precies)  10 verschilende gehele getallen in de data zijn, de kolom het type Ordinaal krijgt (Nominaal type alleen wanneer er twee verschillende gehele getallen worden gevonden), anders krijgt de kolom het Schaaltype toegekend. 
 Let op dat deze waarde wordt gebruikt wanneer de data wordt geïmporteerd, de data moet dus worden herladen (of gesynchroniseerd) om in werking te treden. 
 
-### Missende waardenlijst
+### Ontbrekende waardenlijst
 
-In deze lijst kan worden gespecificeerd wanneer observaties in de dataset moeten worden behandeld als missend (dat wil zeggen, als missende waarden als 420 worden gecodeerd, kan deze waarde hier toegevoegd worden en dan zal JASP alle cellen met de waarde 420 behandelen als missende waarde). 
-Waardes kunnen van deze lijst worden gehaald door ze te selecteren en vervolgens op de minusknop te drukken.
+In deze lijst kan worden gespecificeerd wanneer observaties in de dataset moeten worden behandeld als ontbrekend (dat wil zeggen, als ontbrekende waarden als 420 worden gecodeerd, kan deze waarde hier toegevoegd worden en dan zal JASP alle cellen met de waarde 420 behandelen als ontbrekende waarde). 
+Waarden kunnen van deze lijst worden gehaald door ze te selecteren en vervolgens op de minusknop te drukken.
 Door op "Reset" te klikken, worden alle standaardwaarden hersteld. 

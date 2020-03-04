@@ -3,7 +3,7 @@ Planning
 
 De taak van een auditor is om te beoordelen hoe eerlijk de gepresenteerde transacties in een populatie zijn, en inschatten of de populatie fouten bevat die materieel zijn (lager dan materialiteit). Soms moet een auditor van tevoren de benodigde steekproefgrootte berekenen zonder dat hij toegang heeft tot de ruwe populatiedata. In dit geval kan de auditor gebruik maken van de *planning* analyse, samen met de populatie's samengevatte statistieken (totale grootte en waarde), om te berekenen hoeveel steekproeven moeten worden geëvalueerd om een bepaalde zekerheid in de beoordeling te behalen. De frequentistische *planning* analyse kan gebruik maken van risico schattingen van de *audit risico model* om de benodigde risico's op het vinden van materialiteitsfouten aan te passen.
 
-*Let op:* Wanneer de gebruiker wel toegang heeft tot de ruwe populatie data, is het aan te raden gebruik te maken van de *audit werkflow*, een analyse die je door het audit proces heen leidt. 
+*Let op:* Wanneer de gebruiker wel toegang heeft tot de ruwe populatie data, is het aan te raden gebruik te maken van de *audit werkflow*, een analyse die u door het audit proces heen leidt. 
 
 ----
 

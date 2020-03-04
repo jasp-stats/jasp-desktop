@@ -1,4 +1,4 @@
-Samenvatting Statistieken Bayesiaanse One Sample T-toets
+Samenvatting Statistieken Bayesiaanse T-Toets voor één gemiddelde
 ==================
 
 Met deze functie kan men de Bayes factor berekenen die correspondeert met een t-toets voor één steekproef door middel van de *t* statistiek. De nulhypothese is dat het populatiegemiddelde gelijk is aan een bepaalde constante (i.e., de toetswaarde). Deze Bayesiaanse analyse kan zonder de pure data worden uitgevoerd.
@@ -16,8 +16,8 @@ Met deze functie kan men de Bayes factor berekenen die correspondeert met een t-
 - *&lt; Toetswaarde*: Eenzijdige hypothese dat het populatiegemiddelde kleiner is dan de toetswaarde.
 
 #### Bayes Factor
-- BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nul hypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nul hypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- BF<sub>10</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nul hypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de nul hypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
 - Log(BF<sub>10</sub>) : Natuurlijk logaritme van BF10 
 
 #### Grafieken
@@ -32,13 +32,13 @@ Met deze functie kan men de Bayes factor berekenen die correspondeert met een t-
   - Geinformeerd
 	- *Cauchy*: Schaal en locatie
 	- *Normaal*: Gemiddelde en standaardafwijking
-	- *Studenten t*: Schaal, locatie en vrijheidsgraden (df) 
+	- *Studenten t*: Schaal, locatie en vrijheidsgraden (vg) 
 
 
 [comment]: # (- **Pure effectgrootte (Dienes)**)
 [comment]: # (  - *Half-Normaal*: Standaardafwijking)
 [comment]: # (  - *Normaal*: Gemiddelde en standaardafwijking)
-[comment]: # (  - *Uniform*: Linker- en rechtergrens)
+[comment]: # (  - *Uniform*: Onder- en bovengrens)
 
 
 ### Uitvoer

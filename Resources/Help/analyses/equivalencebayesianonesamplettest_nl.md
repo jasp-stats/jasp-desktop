@@ -1,7 +1,7 @@
-Gelijkwaardigheids One Sample T-Toets
+Gelijkwaardigheids T-Toets voor één gemiddelde
 ==========================
 
-Met de gelijkwaardigheids one sample t-toets kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde binnen een interval valt, de zogenaamde gelijkwaardigheids regio.Het verschil met de klassieke nul hypothese significantie toets is dat in gelijkwaardigheids toetsen, de nul hypothese een interval rond de test waarde beslaat in plaats van een punt-nul.
+Met de gelijkwaardigheids t-toets voor één gemiddelde kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde binnen een interval valt, de zogenaamde gelijkwaardigheids regio.Het verschil met de klassieke nul hypothese significantie toets is dat in gelijkwaardigheids toetsen, de nul hypothese een interval rond de test waarde beslaat in plaats van een punt-nul.
 
 ### Assumpties
 - De afhankelijke variabele is continu.
@@ -31,8 +31,8 @@ The nul hypothese dat het populatiegemiddelde gelijk is aan de toetswaarde.
 - Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaarddeviatie, standaard fout van het gemiddelde.
 
 #### Ontbrekende waarden
- - Het uitsluiten van gevallen, analyse bij analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle gevallen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets.
- - Het uitsluiten van gevallen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de gevallen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde voor alle toetsen.
+ - Het uitsluiten van waarnemingen, analyse bij analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets.
+ - Het uitsluiten van waarnemingen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de waarnemingen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde voor alle toetsen.
 
 #### Prior
 - Gestandaardiseerde effectgrootte
@@ -41,12 +41,12 @@ The nul hypothese dat het populatiegemiddelde gelijk is aan de toetswaarde.
   - Geinformeerd
     - Cauchy: Schaal en locatie.
     - Normal: Gemiddelde en standaarddeviatie.
-    - Student's t: Schaal, locatie en vrijheidsgraden (df).
+    - Student's t: Schaal, locatie en vrijheidsgraden (vg).
 
 ### Uitvoer
 ---
 
-#### Gelijkwaardigheids Bayesiaanse One Sample T-Toets
+#### Gelijkwaardigheids Bayesiaanse T-Toets voor één gemiddelde
 - De eerste kolom bevat the afhankelijke variabele.
 - Model Vergelijking:
    - $\delta$ $\in$ I vs. H1: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsinterval hypothese ten opzichte van de ongelimiteerde alternative hypothese.
@@ -61,7 +61,7 @@ The nul hypothese dat het populatiegemiddelde gelijk is aan de toetswaarde.
 - N: De steekproefgrootte.
 - Gemiddelde: Het steekproefgemiddelde.
 - SD: Standaarddeviatie van het gemiddelde.
-- SE: Standaardfout van het gemiddelde.
+- Std. Fout: Standaardfout van het gemiddelde.
 - Geloofwaardigheidsinterval: Standaardoptie is 95%.
 
 #### Grafieken

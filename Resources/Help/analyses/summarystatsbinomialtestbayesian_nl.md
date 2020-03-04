@@ -1,7 +1,7 @@
 Samenvatting Statistiek Bayesiaanse Binomiaal toets 
 ===
 
-Deze functie berekent de Bayes factor voor een observatie van een binomiaalverdeling. De bayesiaanse binomiaaltoets wordt beschreven in Jeffreys (1961, p 256). Deze toets vertelt je of de data een bepaalde waarde voor de parameter ondersteunt of juist niet.
+Deze functie berekent de Bayes factor voor een observatie van een binomiaalverdeling. De bayesiaanse binomiaaltoets wordt beschreven in Jeffreys (1961, p 256). Deze toets vertelt u of de data een bepaalde waarde voor de parameter ondersteunt of juist niet.
 
 ### Invoer
 ---
@@ -18,8 +18,8 @@ Deze functie berekent de Bayes factor voor een observatie van een binomiaalverde
 
 
 #### Bayes Factor
-- BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- BF<sub>10</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
 - Log(BF<sub>10</sub>) : Natuurlijk logaritme van BF10.
 
 #### Prior

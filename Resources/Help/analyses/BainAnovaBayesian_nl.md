@@ -35,12 +35,12 @@ Hypotheses moeten compatibel, niet-overbodig en mogelijk zijn. Wat dit precies i
 
 *Elke hypothese in een set van hypotheses moet niet-overbodig zijn.* Een hypothese is overbodig wanneer hij ook kan worden gespecificeerd met minder beperkingen. Bijvoorbeeld: `agey = agem & agey > 0 & agem > 0` is overbodig, omdat deze ook gespecificeerd kan worden als `agey = agem & agey > 0`. Bain werkt correct wanneer alleen hypotheses met < en > overbodig zijn. Bain geeft een foutmelding wanneer een hypothese gespecificeerd met op zijn minst een = overbodig is. 
 
-*Elke hypothese in een hypothese set moet mogelijk zijn.* Een hypothese is onmogelijk wanneer schattingen die overeenkomen met de hypothese niet bestaan. Bijvoorbeeld: waardes voor `agey` die overeenkomen met `agey = 0 & agey > 2` bestaan niet. Het is de verantwoordelijkheid van de gebruiker dat de gespecificeerde hypotheses mogelijk zijn. Zo niet, dan geeft bain een foutmelding, of een uitvoer tabel met `inf`'s. 
+*Elke hypothese in een hypothese set moet mogelijk zijn.* Een hypothese is onmogelijk wanneer schattingen die overeenkomen met de hypothese niet bestaan. Bijvoorbeeld: waarden voor `agey` die overeenkomen met `agey = 0 & agey > 2` bestaan niet. Het is de verantwoordelijkheid van de gebruiker dat de gespecificeerde hypotheses mogelijk zijn. Zo niet, dan geeft bain een foutmelding, of een uitvoer tabel met `inf`'s. 
 
 ### Verkregen resultaten na het uitvoeren van de bain ANOVA
 
-- Om de resultaten van de bain ANOVA goed te kunnen interpreteren, kan je de TUTORIAL van Hoijtink, Mulder, van Lissa, and Gu (2018) lezen. Deze kan worden gevonden op de Psychological Methods website, of op de bain website via https://informative-hypotheses.sites.uu.nl/software/bain/
-- Om de technische achtergrond van bain te begrijpen, kan je Gu, Mulder, en Hoijtink (2017) en Hoijtink, Gu, en Mulder (2018) lezen. Dit kan worden gevonden op de website van the British Journal of Mathematical and Statistical Psychology, of op de bain website via https://informative-hypotheses.sites.uu.nl/software/bain/
+- Om de resultaten van de bain ANOVA goed te kunnen interpreteren, kunt u de TUTORIAL van Hoijtink, Mulder, van Lissa, and Gu (2018) lezen. Deze kan worden gevonden op de Psychological Methods website, of op de bain website via https://informative-hypotheses.sites.uu.nl/software/bain/
+- Om de technische achtergrond van bain te begrijpen, kunt u Gu, Mulder, en Hoijtink (2017) en Hoijtink, Gu, en Mulder (2018) lezen. Dit kan worden gevonden op de website van the British Journal of Mathematical and Statistical Psychology, of op de bain website via https://informative-hypotheses.sites.uu.nl/software/bain/
 - Na het uitvoeren van de bain ANOVA worden vijf resultaten verkregen:
 
 1. De tabel waarin de Bayes factor voor elke hypothese is gespecificeerd tegenover zijnontkenning wordt weergegeven. Deze tabel bevat ook de posterior model kans van iedere hypothese. Dit zowel voor een set zonder als een set met de niet beperkte hypothese. 

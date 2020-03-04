@@ -21,8 +21,8 @@ Met deze functie kan met Bayes factor berekenen voor een onafhankelijke t-toets 
 - *Groep 1 &lt; Groep 2*: Eenzijdige alternatieve hypothese dat het populatiegemiddelde in groep 1 lager is dan in groep 2.
 
 #### Bayes Factor
-- BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- BF<sub>10</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
 - Log(BF<sub>10</sub>) : Natuurlijk logaritme van BF10 
 
 #### Plots
@@ -37,13 +37,13 @@ Met deze functie kan met Bayes factor berekenen voor een onafhankelijke t-toets 
   - Geinformeerd
 	- *Cauchy*: Schaal en locatie
 	- *Normaal*: Gemiddelde en standaardafwijking
-	- *Studenten t*: Schaal, locatie en vrijheidsgraden (df) 
+	- *Studenten t*: Schaal, locatie en vrijheidsgraden (vg) 
 
 
 [comment]: # (- **Pure effectgrootte (Dienes)**)
 [comment]: # (  - *Half-Normaal*: Standaardafwijking)
 [comment]: # (  - *Normaal*: gemiddelde en standaardafwijking)
-[comment]: # (  - *Uniform*: Linker en rechtergrens)
+[comment]: # (  - *Uniform*: Onder en bovengrens)
 
 ### Uitvoer
 ---

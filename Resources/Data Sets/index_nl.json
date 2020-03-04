@@ -544,7 +544,7 @@
         {
           "name": "G Factor",
           "path": "G Factor.jasp",
-          "description": "Charles Spearman's data van leerlingen hun schoolcijfers en sensorisch onderscheidingsvermogen. <br><br> Het voorbeeldbestand in JASP laat zien hoe een exploratorische factor analyse kan worden toegepast. <br><br> <i>Data gerapporteerd in Spearman (1904).<\/i>",
+          "description": "Charles Spearman's data van leerlingen hun schoolcijfers en sensorisch onderscheidingsvermogen. <br><br> Het voorbeeldbestand in JASP laat zien hoe een exploratorische factoranalyse kan worden toegepast. <br><br> <i>Data gerapporteerd in Spearman (1904).<\/i>",
           "kind": "file",
           "associated_datafile": "G Factor.csv"
         }
