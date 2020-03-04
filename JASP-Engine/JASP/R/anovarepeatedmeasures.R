@@ -45,8 +45,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   .rmAnovaAssumptionsContainer(rmAnovaContainer, dataset, options, ready)
   
-  .BANOVAdescriptives(rmAnovaContainer, longData, options, list(noVariables=FALSE), "RM-ANOVA", ready)
-  
   .rmAnovaPostHocTable(rmAnovaContainer, dataset, longData, options, ready)
 
   .rmAnovaContrastTable(rmAnovaContainer, longData, options, ready)
@@ -58,6 +56,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   .rmAnovaConoverTable(rmAnovaContainer, longData, options, ready)
   
   .rmAnovaSimpleEffects(rmAnovaContainer, dataset, longData, options, ready) 
+  
+  .BANOVAdescriptives(rmAnovaContainer, longData, options, list(noVariables=FALSE), "RM-ANOVA", ready)
   
   return()
 }
