@@ -48,6 +48,7 @@ cd library
 Echo Copying necessary parts of R-libraries
 cd %SOURCEDIR%\library
 FOR /D %%G in ("*") DO (
+    echo %%G
     cd %SOURCEDIR%\library
 
     mkdir %DESTDIR%\library\%%G
@@ -67,7 +68,7 @@ FOR /D %%G in ("*") DO (
     if exist %SOURCEDIR%\library\%%G\po   ( XCOPY %SOURCEDIR%\library\%%G\po   /Q /E /I R >nul )
 
     rem for issue https://github.com/jasp-stats/jasp-test-release/issues/416#issuecomment-591899068
-    if "%%G"=="viridisLite" ( XCOPY %SOURCEDIR%\library\%%G\data   /Q /E /I R >nul )
+    if "%%G"=="viridisLite"               ( XCOPY %SOURCEDIR%\library\%%G\data /Q /E /I data >nul )
 
     if exist %SOURCEDIR%\library\%%G\libs (
         mkdir %DESTDIR%\library\%%G\libs
