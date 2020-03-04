@@ -1159,7 +1159,10 @@
   if (is.null(descriptivesContainer)) {
     descriptivesContainer <- createJaspContainer(title = gettext("Descriptives"))
     descriptivesContainer$dependOn(c("dependent", "repeatedMeasuresCells"))
-    # descriptivesContainer$position <- 9001 # always last
+    
+    if (is.null(options$confidenceIntervalInterval)) # TRUE implies Bayesian
+      descriptivesContainer$position <- 9001 # always last
+    
     jaspResults[["descriptivesContainer"]] <- descriptivesContainer
   }
 
