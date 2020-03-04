@@ -13,7 +13,7 @@ Window
 	minimumHeight:		minimumWidth
 	visible:			helpModel.visible
 	onVisibleChanged:	helpModel.visible = visible
-	title:				"JASP Help"
+	title:				qsTr("JASP Help")
 	color:				jaspTheme.uiBackground
 
 	Shortcut { onActivated: mainWindow.zoomInKeyPressed();		sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="];	}

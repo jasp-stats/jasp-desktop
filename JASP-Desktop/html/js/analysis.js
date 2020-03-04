@@ -411,8 +411,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			return;
 
 		var noteKeys = ['note'];
-		if (itemView.avaliableNoteKeys)
-			noteKeys = itemView.avaliableNoteKeys();
+		//if (itemView.avaliableNoteKeys) //Commented out because it wasn't defined anywhere so it probably isn't functional...
+		//	noteKeys = itemView.avaliableNoteKeys();
 
 		for (var i = 0; i < noteKeys.length; i++) {
 			var noteKey = noteKeys[i];
@@ -515,13 +515,13 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				continue
 			let data = results[name];
 
-			if (meta.type == 'collection' && data.title == "") {  // remove collections without a title from view
+			/*if (meta.type == 'collection' && data.title == "") {  // remove collections without a title from view
 				let collectionMeta = meta.meta;
 				if (Array.isArray(collectionMeta)) { // the meta comes from a jaspResult analysis
 					this.createResultsViewFromMeta(data["collection"], collectionMeta, $result);
 					continue;
 				}
-			}
+			}*/
 
 			let itemView = this.createChild(data, this.model.get("status"), meta);
 			if (itemView === null)
@@ -633,6 +633,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				this.updateProgressbarInResults();
 			return this;
 		}
+
+		var userdataCPP = this.model.get("userdata"); //This might have been changed by Analysis::fitOldUserDataEtc to accomodate loading old files. And otherwise should be the same as local stored userdata
+		if (userdataCPP !== undefined && userdataCPP !== null)
+			this.userdata = userdataCPP;
 
 		this.imageBeingEdited = null;
 

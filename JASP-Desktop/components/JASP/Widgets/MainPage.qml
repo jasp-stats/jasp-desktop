@@ -212,7 +212,6 @@ Item
 					function analysisSelected(id)						{ resultsJsInterface.analysisSelected(id)                       }
 					function analysisChangedDownstream(id, model)		{ resultsJsInterface.analysisChangedDownstream(id, model)       }
 					function analysisTitleChangedInResults(id, title)	{ resultsJsInterface.analysisTitleChangedInResults(id, title)	}
-					function updateUserData()							{ resultsJsInterface.updateUserData()							}
 					function analysisSaveImage(id, options)				{ resultsJsInterface.analysisSaveImage(id, options)				}
 					function analysisEditImage(id, options)				{ resultsJsInterface.analysisEditImage(id, options)				}
 					function removeAnalysisRequest(id)					{ resultsJsInterface.removeAnalysisRequest(id)					}

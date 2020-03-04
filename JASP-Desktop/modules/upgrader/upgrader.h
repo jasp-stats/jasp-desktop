@@ -40,7 +40,7 @@ public:
 	void removeStepsOfModule(const std::string & module);
 	void loadOldSchoolUpgrades();
 
-	UpgradeMsgs upgradeAnalysisData(Json::Value & analysisData) const;
+	bool upgradeAnalysisData(Json::Value & analysisData, UpgradeMsgs & msgs) const;
 
 private:
 	static Upgrader * _singleton;

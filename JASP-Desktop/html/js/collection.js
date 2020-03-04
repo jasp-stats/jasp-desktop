@@ -137,17 +137,17 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 	constructChildren: function (constructor, data) {
 		if (Array.isArray(data.meta)) { // the meta comes from a jaspResult analysis
 			_.each(data.meta, function (meta) {
-				if (meta.type == "collection" && data.collection[meta.name].title == "") { // remove collections without a title from view
+				/*if (meta.type == "collection" && data.collection[meta.name].title == "") { // remove collections without a title from view
 					var dataWithSkip = jQuery.extend(true, {}, data);
 					dataWithSkip.collection = dataWithSkip.collection[meta.name]["collection"];
 					dataWithSkip.meta = meta.meta;
 					this.constructChildren(constructor, dataWithSkip);
-				} else {
+				} else {*/
 					var itemResults = data.collection[meta.name];
 					data.meta = meta;
 					let itemView = constructor.call(this, itemResults, data, true);
 					this.pushViews(itemView);
-				}
+				//}
 			}, this);
 		} else {
 			_.each(data.collection, function (itemResults) {
@@ -230,13 +230,18 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 
 		var title = this.model.get("title")
 		var titleFormat = this.model.get("titleFormat")
-		if (title) {
-			this.toolbar.title = title;
-			this.toolbar.titleTag = titleFormat;
-		}
 
-		this.toolbar.render();
-		this.$el.append(this.toolbar.$el);
+
+		if (title) {
+			this.toolbar.title		= title;
+			this.toolbar.titleTag	= titleFormat;
+
+			if(title !== "")
+			{
+				this.toolbar.render();
+				this.$el.append(this.toolbar.$el);
+			}
+		}
 
 		var styleAttr = '';
 		var collapsed = this.model.get("collapsed");

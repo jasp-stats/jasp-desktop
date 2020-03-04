@@ -89,11 +89,36 @@ AnalysisForm
 	{
 		id:				formContent
 		width:			parent.width
-		height:			errorMessagesBox.height + contentArea.implicitHeight
+		height:			oldFileMessagesBox.height + errorMessagesBox.height + contentArea.implicitHeight
 		anchors
 		{
 			top:		form.top
 			left:		form.left
+		}
+
+		Rectangle
+		{
+			id:				oldFileMessagesBox
+			visible:		myAnalysis !== null && myAnalysis.needsRefresh
+			color:			jaspTheme.controlWarningBackgroundColor
+			width:			parent.width
+			height:			visible ? oldAnalysisText.height : 0
+			anchors.top:	parent.top
+
+			Text
+			{
+				id:					oldAnalysisText
+				color:				jaspTheme.controlWarningTextColor
+				anchors.centerIn:	parent
+				padding:			5 * jaspTheme.uiScale
+				wrapMode:			Text.Wrap
+				width:				parent.width - 10 * jaspTheme.uiScale
+				verticalAlignment:	Text.AlignVCenter
+				text:				qsTr("This analysis was created with an older version of JASP (or a dynamic module)") + //I do not want to bother with formatting strings here to be honest
+									( myAnalysis !== null && !myAnalysis.hasVolatileNotes ? qsTr(", refreshing could give a slightly different result.") :
+																	 qsTr(", to keep your notes where they are it is highly recommended to first refresh your analyses!"))
+
+			}
 		}
 				
 		Rectangle
@@ -106,15 +131,17 @@ AnalysisForm
 			color:			jaspTheme.errorMessagesBackgroundColor
 			width:			parent.width
 			height:			visible ? errorMessagesText.height : 0
+			anchors.top:	oldFileMessagesBox.bottom
 
 			Text
 			{
 				id:					errorMessagesText
 				anchors.centerIn:	parent
-				padding:			5
+				padding:			5 * jaspTheme.uiScale
 				wrapMode:			Text.Wrap
-				width:				parent.width - 10
+				width:				parent.width - 10 * jaspTheme.uiScale
 				verticalAlignment:	Text.AlignVCenter
+				//Should we maybe set a color here?
 			}
 		}
 		

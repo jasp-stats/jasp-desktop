@@ -403,7 +403,6 @@ $(document).ready(function () {
 
 			analyses.on("analyses:userDataChanged", function () {
 				window.getResultsMeta()
-				jasp.updateUserData();
 			});
 
 			analyses.render();
@@ -440,7 +439,7 @@ $(document).ready(function () {
 			jaspWidget.on("showDependencies",			function (id, optName)	{ jasp.showDependenciesInAnalysis(id, optName);					});
 			jaspWidget.on("analysis:remove",			function (id)			{ jasp.removeAnalysisRequest(id);								});
 			jaspWidget.on("analysis:duplicate",			function (id)			{ jasp.duplicateAnalysis(id);									});
-			jaspWidget.on("analysis:userDataChanged",	function ()				{ jasp.updateUserData(); window.getAllUserData();				});
+			jaspWidget.on("analysis:userDataChanged",	function ()				{ window.getAllUserData();										});
 
 			jaspWidget.on("toolbar:showMenu", function (obj, options) {
 

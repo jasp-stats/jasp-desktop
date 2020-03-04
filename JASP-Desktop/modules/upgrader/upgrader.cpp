@@ -97,9 +97,8 @@ void Upgrader::removeStepsOfModule(const std::string & module)
 	_allSteps.erase(module);
 }
 
-UpgradeMsgs Upgrader::upgradeAnalysisData(Json::Value & analysis) const
+bool Upgrader::upgradeAnalysisData(Json::Value & analysis, UpgradeMsgs & msgs) const
 {
-	UpgradeMsgs msgs;
 	StepsTaken	stepsTaken;
 
 	try
@@ -114,7 +113,7 @@ UpgradeMsgs Upgrader::upgradeAnalysisData(Json::Value & analysis) const
 		MessageForwarder::showWarning(tq("Analysis Upgrade Failed"), tq("Upgrading analysis failed with error: %1").arg(e.what()));
 	}
 
-	return msgs;
+	return stepsTaken.size() > 0;
 }
 
 void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs & msgs, StepsTaken & stepsTaken) const

@@ -80,7 +80,7 @@ QVariant AnalysisForm::requestInfo(const Term &term, VariableInfo::InfoType info
 
 void AnalysisForm::runRScript(QString script, QString controlName, bool whiteListedVersion)
 {
-	if(_analysis != nullptr && !_removed)
+	if(_analysis && !_removed)
 		emit _analysis->sendRScript(_analysis, script, controlName, whiteListedVersion);
 }
 
@@ -700,6 +700,9 @@ void AnalysisForm::_formCompletedHandler()
 	{
 		_analysis	= qobject_cast<Analysis *>(analysisVariant.value<QObject *>());
 
+		connect(_analysis, &Analysis::hasVolatileNotesChanged,	this, &AnalysisForm::hasVolatileNotesChanged);
+		connect(_analysis, &Analysis::needsRefreshChanged,		this, &AnalysisForm::needsRefreshChanged	);
+
 		_setUpControls();
 
 		bool isNewAnalysis = _analysis->options()->size() == 0 && _analysis->optionsFromJASPFile().size() == 0;
@@ -755,4 +758,15 @@ void AnalysisForm::setMustContain(std::map<std::string,std::set<std::string>> mu
 	for(const auto & nameContainsPair : _mustContain)
 		setControlMustContain(nameContainsPair.first, nameContainsPair.second); //Its ok if it does it twice, others will only be notified on change
 
+}
+
+
+bool AnalysisForm::needsRefresh() const
+{
+	return _analysis ? _analysis->needsRefresh() : false;
+}
+
+bool AnalysisForm::hasVolatileNotes() const
+{
+	return _analysis ? _analysis->hasVolatileNotes() : false;
 }

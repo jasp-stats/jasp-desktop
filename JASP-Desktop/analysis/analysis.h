@@ -41,9 +41,12 @@ class AnalysisForm;
 class Analysis : public QObject
 {
 	Q_OBJECT
-	Q_PROPERTY(QString name		READ nameQ						NOTIFY nameChanged		)
-	Q_PROPERTY(QString helpFile	READ helpFile					NOTIFY helpFileChanged	)
-	Q_PROPERTY(QString title	READ titleQ		WRITE setTitleQ	NOTIFY titleChanged		)
+	Q_PROPERTY(QString	name				READ nameQ											NOTIFY nameChanged				)
+	Q_PROPERTY(QString	helpFile			READ helpFile										NOTIFY helpFileChanged			)
+	Q_PROPERTY(QString	title				READ titleQ				WRITE setTitleQ				NOTIFY titleChanged				)
+	Q_PROPERTY(bool		needsRefresh		READ needsRefresh									NOTIFY needsRefreshChanged		)
+	///Volatile notes are coupled with results elements and might disappear when the name changes. Some attempt is made to salvage them on a refresh when needsRefresh is true!
+	Q_PROPERTY(bool		hasVolatileNotes	READ hasVolatileNotes	WRITE setHasVolatileNotes	NOTIFY hasVolatileNotesChanged	)
 
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
 
@@ -52,10 +55,11 @@ public:
 	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing };
 	void setStatus(Status status);
 	static std::string statusToString(Status status);
+	static Analysis::Status analysisResultsStatusToAnalysisStatus(analysisResultStatus result);
 
 	Analysis(size_t id, Analysis * duplicateMe);
 	Analysis(size_t id, std::string module, std::string name, std::string qml, std::string title, const Version &version, Json::Value *data);
-	Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", Json::Value *data = nullptr);
+	Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", std::string moduleVersion = "", Json::Value *data = nullptr);
 
 	virtual ~Analysis();
 
@@ -70,7 +74,8 @@ public:
 	bool needsRefresh()			const;
 	bool isWaitingForModule()	const { return _moduleData == nullptr ? false : !_moduleData->dynamicModule()->readyForUse(); }
 	bool isDynamicModule()		const { return _moduleData == nullptr ? false : _moduleData->dynamicModule() != nullptr; }
-	void setResults(	const Json::Value & results, const Json::Value & progress = Json::nullValue);
+	void setResults(	const Json::Value & results, analysisResultStatus	status, const Json::Value & progress = Json::nullValue) { setResults(results, analysisResultsStatusToAnalysisStatus(status), progress); }
+	void setResults(	const Json::Value & results, Status					status, const Json::Value & progress = Json::nullValue);
 	void imageSaved(	const Json::Value & results);
 	void saveImage(		const Json::Value & options);
 	void editImage(		const Json::Value & options);
@@ -79,7 +84,8 @@ public:
 	void imagesRewritten();
 
 	void setRFile(const std::string &file)				{ _rfile = file;								}
-	void setUserData(Json::Value userData)				{ _userData = userData;							}
+	void setUserData(Json::Value userData);
+	void setVersion(Version version, bool resetWasUpgraded = false);
 	void setRefreshBlocked(bool block)					{ _refreshBlocked = block;						}
 	void setUsesJaspResults(bool usesJaspResults)		{ _useJaspResults = usesJaspResults;			}
 	void incrementRevision()							{ _revision++;									}
@@ -114,6 +120,7 @@ public:
 	Modules::DynamicModule	*	dynamicModule()		const	{ return _dynamicModule;					}
 			AnalysisForm	*	form()				const	{ return _analysisForm;						}
 			bool				isDuplicate()		const	{ return _isDuplicate;						}
+			bool				hasVolatileNotes()			const	{ return _hasVolatileNotes;							}
 
 			void		refresh();
 			void		reload();
@@ -148,9 +155,8 @@ public:
 	void					replaceVariableName(std::string oldName, std::string newName);
 	void					runScriptRequestDone(const QString& result, const QString& controlName);
 
-	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs) { _msgs = msgs; _wasUpgraded = true; }
+	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
 	std::string				upgradeMsgsForOption(const std::string & name) const;
-
 
 signals:
 	void				nameChanged();
@@ -171,8 +177,12 @@ signals:
 
 	void				helpFileChanged(QString helpFile);
 	void				titleChanged();
+	void				needsRefreshChanged();
+	void				hasVolatileNotesChanged(bool hasVolatileNotes);
 
 	Q_INVOKABLE void	expandAnalysis();
+
+
 
 public slots:
 	void					setName(std::string name);
@@ -180,6 +190,7 @@ public slots:
 	void					setHelpFile(QString helpFile);
 	void					setTitleQ(QString title);
 	void					setTitle(std::string title) { setTitleQ(tq(title)); }
+	void					setHasVolatileNotes(bool hasVolatileNotes);
 	void					refreshAvailableVariablesModels();
 	void					emitDuplicationSignals();
 	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
@@ -196,6 +207,8 @@ private:
 	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
 	bool					_editOptionsOfPlot(const Json::Value & results, const std::string & uniqueName, Json::Value & editOptions);
 	bool					_setEditOptionsOfPlot(Json::Value & results, const std::string & uniqueName, const Json::Value & editOptions);
+	void					storeUserDataEtc();
+	void					fitOldUserDataEtc();
 
 protected:
 	Status					_status			= Initializing;
@@ -203,13 +216,15 @@ protected:
 
 	Options*				_options;
 
-	///For backward compatibility: options coming from old JASP file.
-	Json::Value				_optionsDotJASP = Json::nullValue, ///
+	///For backward compatibility: _optionsDotJASP = options from (old) JASP file.
+	Json::Value				_optionsDotJASP = Json::nullValue,
 							_results		= Json::nullValue,
 							_imgResults		= Json::nullValue,
 							_userData		= Json::nullValue,
 							_imgOptions		= Json::nullValue,
-							_progress		= Json::nullValue;
+							_progress		= Json::nullValue,
+							_oldUserData	= Json::nullValue,
+							_oldMetaData	= Json::nullValue;
 
 private:
 	size_t					_id,
@@ -220,10 +235,13 @@ private:
 							_titleDefault,
 							_title,
 							_rfile,
-							_showDepsName	= "";
-	bool					_useJaspResults = false,
-							_isDuplicate	= false,
-							_wasUpgraded	= false;
+							_showDepsName		= "",
+							_moduleVersion		= "";
+	bool					_useJaspResults		= false,
+							_isDuplicate		= false,
+							_wasUpgraded		= false,
+							_hasVolatileNotes	= false,
+							_tryToFixNotes		= false;
 	Version					_version;
 	int						_revision		= 0;
 
