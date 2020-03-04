@@ -7,9 +7,7 @@ GENERATE_LANGUAGE_FILES = false
 message("AM_I_BUILDBOT: '$$[AM_I_BUILDBOT]'")
 COPY_BUILDBOTNESS = $$[AM_I_BUILDBOT] # We need to copy it to make sure the equals function below actually works...
 !equals(COPY_BUILDBOTNESS, "") {
-  unix{  #Todo for Frans, make sure generating language files works on Windows
-    GENERATE_LANGUAGE_FILES = true
-  }
+     GENERATE_LANGUAGE_FILES = true
 }
 
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
@@ -157,7 +155,7 @@ RESOURCES_DESTINATION_TRANSLATIONS = $$RESOURCES_DESTINATION/Translations
 
 win32 {
 
-  SOURCES_TRANSLATIONS = ~= s,/,\\,g
+  SOURCES_TRANSLATIONS ~= s,/,\\,g
 
   RESOURCES_PATH ~= s,/,\\,g
   RESOURCES_TRANSLATIONS ~= s,/,\\,g
@@ -180,15 +178,15 @@ win32 {
 
   $$GENERATE_LANGUAGE_FILES {
     maketranslations.commands += $$quote(echo "Generating language Files") &&
-    maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -source-language dutch -recursive $${WINPWD} -ts $${RESOURCES_TRANSLATIONS}\jasp_nl.po) &&
-    maketranslations.commands += $$quote($${QTBIN}lupdate.exe -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${SOURCES_TRANSLATIONS}\jasp.po) &&
+	maketranslations.commands += $$quote($${QTBIN}lupdate.exe -locations none -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${SOURCES_TRANSLATIONS}\jasp.po) &&
+	maketranslations.commands += $$quote($${QTBIN}lupdate.exe -locations none -extensions $${EXTENSIONS} -target-language dutch -recursive $${WINPWD} -ts $${SOURCES_TRANSLATIONS}\jasp_nl.po) &&
 
-    #cleanup po files
-    maketranslations.commands += $$quote($${GETTEXT_LOCATION}\msgattrib --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp.po -o $${SOURCES_TRANSLATIONS}\jasp.po) &&
-    maketranslations.commands += $$quote($${GETTEXT_LOCATION}\msgattrib --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp_nl.po -o $${SOURCES_TRANSLATIONS}\jasp_nl.po) &&
+	#cleanup po files
+	maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp.po -o $${SOURCES_TRANSLATIONS}\jasp.po) &&
+	maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp_nl.po -o $${SOURCES_TRANSLATIONS}\jasp_nl.po)  &&
 
-    maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${RESOURCES_TRANSLATIONS}\jasp_nl.po -qm $${RESOURCES_TRANSLATIONS}\jasp_nl.qm) &&
-    maketranslations.commands += $$quote(copy $${RESOURCES_TRANSLATIONS}\*.qm $${RESOURCES_DESTINATION_TRANSLATIONS}\ )
+	maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${SOURCES_TRANSLATIONS}\jasp_nl.po -qm $${RESOURCES_TRANSLATIONS}\jasp_nl.qm) &&
+	maketranslations.commands += $$quote(copy $${RESOURCES_TRANSLATIONS}\*.qm $${RESOURCES_DESTINATION_TRANSLATIONS}\ )
 
     maketranslations.depends  = copyres
   }
