@@ -280,7 +280,7 @@ void TempFiles::create(const string &extension, int id, string &root, string &re
 
 	do
 	{
-		relativePath	= "resources/" + (id >= 0 ? std::to_string(id) + "/" : "") + "_" + std::to_string(_nextFileId++) + suffix;
+		relativePath	= "resources/" + (id >= 0 ? std::to_string(id) + "/" : "") + "_" + std::to_string(_nextFileId++) + "_t" + std::to_string(Utils::currentMillis()) + suffix;
 		path			= Utils::osPath(root + "/" + relativePath);
 	}
 	while (filesystem::exists(path));
