@@ -41,6 +41,11 @@
 			"function":							"testHtmlFunc"
 		},
 		{
+			"title":							"Test jaspContainer",
+			"qml":								"test.qml",
+			"function":							"testContainerFunc"
+		},
+		{
 			"title": "-"
 		},
 		{ 

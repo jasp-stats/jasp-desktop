@@ -109,7 +109,7 @@ private:
 	void abortAnalysisInProgress();
 
 private:
-	Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis);
+	static Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result);
 
 	QProcess	*	_slaveProcess		= nullptr;
 	IPCChannel	*	_channel			= nullptr;

@@ -63,7 +63,6 @@ void EngineRepresentation::handleEngineCrash()
 	case engineState::analysis:
 		if(_analysisInProgress)
 		{
-			_analysisInProgress->setStatus(Analysis::Status::FatalError);
 			_analysisInProgress->setErrorInResults("The engine crashed while trying to run this analysis...");
 			clearAnalysisInProgress();
 		}
@@ -306,22 +305,6 @@ void EngineRepresentation::runAnalysisOnProcess(Analysis *analysis)
 
 }
 
-Analysis::Status EngineRepresentation::analysisResultStatusToAnalysStatus(analysisResultStatus result, Analysis * analysis)
-{
-	switch(result)
-	{
-	case analysisResultStatus::validationError:	return Analysis::ValidationError;
-	case analysisResultStatus::fatalError:		return Analysis::FatalError;
-	case analysisResultStatus::imageSaved:
-	case analysisResultStatus::imageEdited:
-	case analysisResultStatus::imagesRewritten:
-	case analysisResultStatus::complete:		return Analysis::Complete;
-	case analysisResultStatus::inited:			return Analysis::Inited;
-	case analysisResultStatus::running:			return Analysis::Running;
-	default:									throw std::logic_error("When you define new analysisResultStatuses you should add them to EngineRepresentation::analysisResultStatusToAnalysStatus!");
-	}
-}
-
 void EngineRepresentation::analysisRemoved(Analysis * analysis)
 {
 	if(_engineState != engineState::analysis || _analysisInProgress != analysis)
@@ -399,7 +382,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		return;
 	}
 
-	analysis->setStatus(analysisResultStatusToAnalysStatus(status, analysis));
+
 
 	Log::log() << "Resultstatus of analysis was " << analysisResultStatusToString(status) << " and it will now be processed." << std::endl;
 
@@ -407,7 +390,10 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	{
 	case analysisResultStatus::imageSaved:
 		if (results.get("error", false).asBool())
+		{
 			MessageForwarder::showWarning(tr("Error saving plot"), tr("Unfortunately the plot could not be saved.\n\nError message:\n%1\n\nIf the problem persists, please report the message above at: https://jasp-stats.org/bug-reports").arg(tq(results.get("errorMessage", "").asString())));
+			analysis->setStatus(Analysis::Complete);
+		}
 		else
 			analysis->imageSaved(results);
 		clearAnalysisInProgress();
@@ -433,7 +419,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 	case analysisResultStatus::fatalError:
 	case analysisResultStatus::complete:
 	case analysisResultStatus::inited:
-		analysis->setResults(results);
+		analysis->setResults(results, status);
 		clearAnalysisInProgress();
 
 		if(analysis->columnsCreated().size() > 0)
@@ -442,9 +428,10 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 	case analysisResultStatus::running:
 	default:
-		analysis->setResults(results, progress);
+		analysis->setResults(results, status, progress);
 		break;
 	}
+
 }
 
 void EngineRepresentation::checkForComputedColumns(const Json::Value & results)

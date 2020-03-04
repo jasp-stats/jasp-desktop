@@ -18,6 +18,9 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 	if (metaData.type)
 		type = metaData.type;
 
+	if(_.has(results, "title") && results.title === "" && type === "collection")
+		embeddedLevel--; //to make sure title of whatever inside "hidden-collection"'s aren't shrunk unnecessarily
+
 	if (!_.has(results, "titleFormat"))
 		results.titleFormat = 'h' + (embeddedLevel + 2);
 
@@ -56,6 +59,9 @@ JASPWidgets.objectConstructor = function (results, params, ignoreEvents) {
 
 	if (childOfCollection)
 		otherClasses += ' jasp-collection-item jasp-collection-' + type;
+
+	if (type === "collection" && _.has(results, "title") && results.title === "")
+		otherClasses += ' hidden-collection';
 
 	var itemModel = new JASPWidgets[type](results);
 	var itemView = new JASPWidgets[type + "View"]({ className: "jasp-display-item " + includeNamespace + "jasp-" + type + " jasp-view" + otherClasses, model: itemModel });

@@ -49,7 +49,9 @@ class QMLExpander;
 class AnalysisForm : public QQuickItem, public VariableInfoProvider
 {
 	Q_OBJECT
-	Q_PROPERTY( QQuickItem * errorMessagesItem	READ errorMessagesItem	WRITE setErrorMessagesItem	NOTIFY errorMessagesItemChanged	)
+	Q_PROPERTY(QQuickItem * errorMessagesItem	READ errorMessagesItem	WRITE setErrorMessagesItem	NOTIFY errorMessagesItemChanged	)
+	Q_PROPERTY(bool			needsRefresh		READ needsRefresh									NOTIFY needsRefreshChanged		)
+	Q_PROPERTY(bool			hasVolatileNotes	READ hasVolatileNotes								NOTIFY hasVolatileNotesChanged	)
 
 public:
 	explicit					AnalysisForm(QQuickItem * = nullptr);
@@ -76,19 +78,20 @@ signals:
 				void			refreshTableViewModels();
 				void			errorMessagesItemChanged();
 				void			languageChanged();
-
+				void			needsRefreshChanged();
+				void			hasVolatileNotesChanged();
 
 protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;
 
 public:
-	ListModel*	getRelatedModel(QMLListView* listView)	{ return _relatedModelMap[listView]; }
-	ListModel*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
-	Options*	getAnalysisOptions()					{ return _analysis->options(); }
-	JASPControlWrapper*	getControl(const QString& name)			{ return _controls[name]; }
-	void		addListView(QMLListView* listView, QMLListView* sourceListView);
-	void		clearFormErrors();
-	QMLExpander* nextExpander(QMLExpander* expander)	{ return _nextExpanderMap[expander]; }
+	ListModel			*	getRelatedModel(QMLListView* listView)	{ return _relatedModelMap[listView]; }
+	ListModel			*	getModel(const QString& modelName)		{ return _modelMap[modelName]; }
+	Options				*	getAnalysisOptions()					{ return _analysis->options(); }
+	JASPControlWrapper	*	getControl(const QString& name)			{ return _controls[name]; }
+	void					addListView(QMLListView* listView, QMLListView* sourceListView);
+	void					clearFormErrors();
+	QMLExpander			*	nextExpander(QMLExpander* expander)		{ return _nextExpanderMap[expander]; }
 
 	Options*	options() { return _options; }
 	void		addControl(JASPControlBase* control);
@@ -112,6 +115,9 @@ public:
 	bool		isOwnComputedColumn(const QString& col)			const	{ return _computedColumns.contains(col); }
 	void		addOwnComputedColumn(const QString& col)				{ _computedColumns.push_back(col); }
 	void		removeOwnComputedColumn(const QString& col)				{ _computedColumns.removeAll(col); }
+
+	bool		needsRefresh()		const;
+	bool		hasVolatileNotes()	const;
 
 protected:
 	void		_setAllAvailableVariablesModel(bool refreshAssigned = false);
@@ -162,7 +168,6 @@ private:
 	QSet<JASPControlBase*>						_jaspControlsWithErrorSet;
 	QSet<JASPControlBase*>						_jaspControlsWithWarningSet;
 	QList<QString>								_computedColumns;
-
 };
 
 #endif // ANALYSISFORM_H

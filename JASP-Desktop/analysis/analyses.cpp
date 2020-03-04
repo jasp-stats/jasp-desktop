@@ -57,11 +57,10 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	if(_nextId <= id) _nextId = id + 1;
 
-	Analysis * analysis = nullptr;
-
-	Modules::UpgradeMsgs msgs = Upgrader::upgrader()->upgradeAnalysisData(analysisData);
-
-	Json::Value &	optionsJson	= analysisData["options"];
+	Analysis				*	analysis = nullptr;
+	Modules::UpgradeMsgs		msgs;
+	bool						wasUpgraded = Upgrader::upgrader()->upgradeAnalysisData(analysisData, msgs);
+	Json::Value				&	optionsJson	= analysisData["options"];
 
 	if(analysisData.get("dynamicModule", Json::nullValue).isNull())
 	{
@@ -86,7 +85,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	{
 		std::string title			= analysisData.get("title", "").asString();
 		auto *	analysisEntry		= DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
-				analysis			= create(analysisEntry, id, status, false, title, &optionsJson);
+				analysis			= create(analysisEntry, id, status, false, title, analysisData["version"].asString(), &optionsJson);
 		auto *	dynMod				= analysisEntry->dynamicModule();
 
 		if(!dynMod->loaded())
@@ -95,9 +94,10 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	}
 
 	analysis->setUserData(analysisData["userdata"]);
-	analysis->setResults(analysisData["results"]);
+	analysis->setResults(analysisData["results"], status);
 
-	analysis->setUpgradeMsgs(msgs);
+	if(wasUpgraded)
+		analysis->setUpgradeMsgs(msgs);
 
 	return analysis;
 }
@@ -105,19 +105,17 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 Analysis* Analyses::create(const QString &module, const QString &name, const QString& qml, const QString &title, size_t id, const Version &version, Json::Value *options, Analysis::Status status, bool notifyAll)
 {
 	Analysis *analysis = new Analysis(id, module.toStdString(), name.toStdString(), qml.toStdString(), title.toStdString(), version, options);
-	analysis->setStatus(status);
 	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
 
 	return analysis;
 }
 
-Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title, Json::Value *options)
+Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title, std::string moduleVersion, Json::Value *options)
 {
-	Analysis *analysis = new Analysis(id, analysisEntry, title, options);
+	Analysis *analysis = new Analysis(id, analysisEntry, title, moduleVersion, options);
 
-	analysis->setStatus(status);
-	analysis->setResults(analysisEntry->getDefaultResults());
+	analysis->setResults(analysisEntry->getDefaultResults(), status);
 	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
 

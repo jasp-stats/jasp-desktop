@@ -426,6 +426,11 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	},
 
 	isTextboxEmpty: function () {
+
+		//We should probably only be here if we have $quill right?
+		if(this.$quill === undefined)
+			return undefined;
+
 		return this.$quill.getLength() === 0;
 	},
 
@@ -953,27 +958,40 @@ JASPWidgets.ProgressbarView = JASPWidgets.View.extend({
 	},
 
 	render: function() {
-		var label = this.model.getFromAnalysis("progress").label;
-		var value = this.model.getFromAnalysis("progress").value;
-		if (this._blockRequest(value)) {
-			return this;
-		} else if (this._needsToComplete(value)) {
-			label = this.model.get("label");
-			value = this.model.get("maxValue");
-		} else {
-			label = this._makePrettyLabel(label);
-			value = Math.min(this.model.get("maxValue"), value)
-		}
-
-		this.model.set("value", value);
-		this.model.set("label", label);
-
-		this.clear();
-		this._insertBar();
-
-		if (this.isComplete()) {
+		if(this.model.getFromAnalysis("progress") === null)
+		{
 			this._resetModel();
 			this._fadeOut();
+		}
+		else if(this.model.getFromAnalysis("progress") !== undefined)
+		{
+			var label = this.model.getFromAnalysis("progress").label;
+			var value = this.model.getFromAnalysis("progress").value;
+
+			if(label !== undefined && value !== undefined)
+			{
+
+				if (this._blockRequest(value)) {
+					return this;
+				} else if (this._needsToComplete(value)) {
+					label = this.model.get("label");
+					value = this.model.get("maxValue");
+				} else {
+					label = this._makePrettyLabel(label);
+					value = Math.min(this.model.get("maxValue"), value)
+				}
+
+				this.model.set("value", value);
+				this.model.set("label", label);
+			}
+
+			this.clear();
+			this._insertBar();
+
+			if (this.isComplete()) {
+				this._resetModel();
+				this._fadeOut();
+			}
 		}
 
 		return this;

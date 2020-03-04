@@ -49,7 +49,7 @@ Analysis::Analysis(size_t id, std::string module, std::string name, std::string 
 	bindOptionHandlers();
 }
 
-Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, Json::Value *data) :
+Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title, std::string moduleVersion, Json::Value *data) :
 	  QObject(Analyses::analyses()),
 	  _options(new Options()),
 	  _id(id),
@@ -57,10 +57,14 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::strin
 	  _qml(analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
 	  _titleDefault(analysisEntry->title()),
 	  _title(title == "" ? _titleDefault : title),
+	  _moduleVersion(moduleVersion),
 	  _version(AppInfo::version),
 	  _moduleData(analysisEntry),
 	  _dynamicModule(_moduleData->dynamicModule())
 {
+	if(_moduleVersion == "" && _dynamicModule)
+		_moduleVersion = _dynamicModule->version();
+
 	if (data)
 		_optionsDotJASP = *data; //Same story as other constructor
 
@@ -149,10 +153,12 @@ void Analysis::remove()
 }
 
 
-void Analysis::setResults(const Json::Value & results, const Json::Value & progress)
+void Analysis::setResults(const Json::Value & results, Status status, const Json::Value & progress)
 {
 	_results	= results;
 	_progress	= progress;
+
+	setStatus(status);
 
 	if (_analysisForm)
 		_analysisForm->clearFormErrors();
@@ -167,12 +173,18 @@ void Analysis::setResults(const Json::Value & results, const Json::Value & progr
 void Analysis::imageSaved(const Json::Value & results)
 {
 	_imgResults = results;
+
+	setStatus(Analysis::Complete);
+
 	emit imageSavedSignal(this);
 }
 
 void Analysis::imageEdited(const Json::Value & results)
 {
     _imgResults = results;
+
+	setStatus(Analysis::Complete);
+
 	emit imageEditedSignal(this);
 }
 
@@ -225,6 +237,7 @@ void Analysis::rewriteImages()
 
 void Analysis::imagesRewritten()
 {
+	setStatus(Analysis::Complete);
 	emit resultsChangedSignal(this);
 }
 
@@ -250,6 +263,22 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 	
 	connect(Analyses::analyses(), &Analyses::dataSetChanged,		_analysisForm, &AnalysisForm::dataSetChangedHandler);
 	connect(Analyses::analyses(), &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
+}
+
+Analysis::Status Analysis::analysisResultsStatusToAnalysisStatus(analysisResultStatus result)
+{
+	switch(result)
+	{
+	case analysisResultStatus::validationError:	return Analysis::ValidationError;
+	case analysisResultStatus::fatalError:		return Analysis::FatalError;
+	case analysisResultStatus::imageSaved:
+	case analysisResultStatus::imageEdited:
+	case analysisResultStatus::imagesRewritten:
+	case analysisResultStatus::complete:		return Analysis::Complete;
+	case analysisResultStatus::inited:			return Analysis::Inited;
+	case analysisResultStatus::running:			return Analysis::Running;
+	default:									throw std::logic_error("When you define new analysisResultStatuses you should add them to EngineRepresentation::analysisResultStatusToAnalysStatus!");
+	}
 }
 
 std::string Analysis::statusToString(Status status)
@@ -328,10 +357,15 @@ void Analysis::setStatus(Analysis::Status status)
 	if(_status == status)
 		return;
 
-	if ((status == Analysis::Running || status == Analysis::Initing) && _version != AppInfo::version)
+	//Make sure old notes etc aren't lost on table/plot-renames, see: https://github.com/jasp-stats/jasp-test-release/issues/469
+	if(_status == Analysis::Complete)									storeUserDataEtc();
+	if( status == Analysis::Complete && _status == Analysis::Running)	fitOldUserDataEtc();
+
+	if ((status == Analysis::Running || status == Analysis::Initing) && needsRefresh())
 	{
 		TempFiles::deleteList(TempFiles::retrieveList(_id));
-		_version = AppInfo::version;
+		setVersion(AppInfo::version, true);
+
 	}
 
 	_status = status;
@@ -630,7 +664,7 @@ void Analysis::setErrorInResults(const std::string & msg)
 	errorResults["errorMessage"]	= msg;
 	errorResults["title"]			= title();
 
-	setResults(errorResults);
+	setResults(errorResults, Status::FatalError);
 }
 
 std::string Analysis::upgradeMsgsForOption(const std::string & name) const
@@ -647,7 +681,188 @@ std::string Analysis::upgradeMsgsForOption(const std::string & name) const
 	return out.str();
 }
 
+void Analysis::storeUserDataEtc()
+{
+	if(!needsRefresh())
+			return;
+
+	_oldUserData = _userData,
+	_oldMetaData = _results.get(".meta", Json::arrayValue);
+
+	_tryToFixNotes = !_userData.isNull();
+}
+
+void Analysis::fitOldUserDataEtc()
+{
+	if(!_tryToFixNotes)
+		return;
+
+	_tryToFixNotes = false;
+
+	try {
+
+		const Json::Value & currMetaData = _results.get(".meta", Json::arrayValue);
+
+		std::vector<std::string> oldTables, newTables, oldPlots, newPlots, oldCollections, newCollections;
+
+		std::function<void					(const std::set<std::string> & elementTypes, std::vector<std::string> & elements, const Json::Value & meta)  > extractAndFlattenElements
+			= [&extractAndFlattenElements]	(const std::set<std::string> & elementTypes, std::vector<std::string> & elements, const Json::Value & meta) -> void
+		{
+			//Log::log() << "Meta to flatten: " << meta.toStyledString() << std::endl;
+
+			for(const Json::Value & entry : meta)
+				if(entry.isArray()) // Sometimes some old files follow a non-monotonous pattern of meta-nesting :s
+					extractAndFlattenElements(elementTypes, elements, entry);
+				else if(entry.isObject())
+				{
+					if(elementTypes.count(entry.get("type", "").asString()) > 0)		elements.push_back(entry["name"].asString());
+					if(entry.isMember("meta"))											extractAndFlattenElements(elementTypes, elements, entry["meta"]);
+				}
+		};
+
+		extractAndFlattenElements({"image"},				oldPlots,		_oldMetaData);
+		extractAndFlattenElements({"image"},				newPlots,		currMetaData);
+		extractAndFlattenElements({"table"},				oldTables,		_oldMetaData);
+		extractAndFlattenElements({"table"},				newTables,		currMetaData);
+		extractAndFlattenElements({"collection", "object"},	oldCollections, _oldMetaData);
+		extractAndFlattenElements({"collection", "object"},	newCollections, currMetaData);
+
+		std::map<std::string, std::string> oldToNew;
+
+		for(size_t i=0; i<oldPlots.size()		&& i<newPlots.size();		i++)	oldToNew[ oldPlots[i]		] = newPlots[i];
+		for(size_t i=0; i<oldTables.size()		&& i<newTables.size();		i++)	oldToNew[ oldTables[i]		] = newTables[i];
+		for(size_t i=0; i<oldCollections.size() && i<newCollections.size();	i++)	oldToNew[ oldCollections[i]	] = newCollections[i];
+
+		std::map<std::string, Json::Value>	nameToNote, orphanedNotes;
+
+
+		std::function<void	(const Json::Value & userData, const std::function<std::string(const std::string &)> & nameConvertor)  > extractVolatileNotes
+			= [&]			(const Json::Value & userData, const std::function<std::string(const std::string &)> & nameConvertor) -> void
+		{
+			if(userData.isNull())
+				return;
+
+			if(userData.isObject() && userData.isMember("children"))
+				for(const std::string & childName : userData["children"].getMemberNames())
+				{
+					const Json::Value & child = userData["children"][childName];
+
+					if(child.isMember("note"))
+					{
+						const std::string convertedName = nameConvertor(childName);
+
+						if(nameToNote.count(convertedName) == 0)	nameToNote[convertedName] = child["note"];
+						else if(convertedName != childName)			orphanedNotes[childName]  = child["note"]; //Only if converted name is different. Because otherwise it totally makes sense that the note is already filled, javascript will have done that.
+					}
+
+					extractVolatileNotes(child, nameConvertor);
+				}
+		};
+
+		extractVolatileNotes(_userData,		[](const std::string & in) { return in; });
+		extractVolatileNotes(_oldUserData, [&](const std::string & in) { return oldToNew.count(in) > 0 ? oldToNew[in] : "???"; });
+
+		//Now we just need to convert these notes back to proper userData...
+		std::function<Json::Value						(const Json::Value & meta)  > createNewUserDataChildren =
+			[&createNewUserDataChildren, &nameToNote]	(const Json::Value & meta) -> Json::Value
+		{
+			Json::Value out(Json::objectValue);
+
+			for(const Json::Value & entry : meta)
+			{
+				const std::string	name		= entry["name"].asString();
+				Json::Value			children	= !entry.isMember("meta") ? Json::nullValue : createNewUserDataChildren(entry["meta"]);
+
+				if(!children.isNull() || nameToNote.count(name) > 0)	out[name]				= Json::objectValue;
+				if(!children.isNull())									out[name]["children"]	= children;
+				if(nameToNote.count(name) > 0)							out[name]["note"]		= nameToNote[name];
+			}
+
+			if(out.size() == 0)	return Json::nullValue;
+			else				return out;
+		};
+
+		Json::Value newUserdataChildren = createNewUserDataChildren(currMetaData);
+
+		if(!newUserdataChildren.isNull())	_userData["children"]	= newUserdataChildren;
+		else								_userData.removeMember("children");
+
+
+		Json::Value orphans = Json::objectValue;
+		for(const auto & nameNote : orphanedNotes)
+		{
+			Json::Value orphan					= Json::objectValue;
+						orphan["note"]			= nameNote.second;
+						orphans[nameNote.first]	= orphan;
+		}
+
+		if(orphans.size() > 0)
+			_userData["orphanedNotes"] = orphans;
+
+		//Log::log() << "New userData after attempt to fix is: " << _userData.toStyledString() << std::endl;
+
+	} catch (...) {
+		//It's ok if this fails, we are just trying to fix the notes, no guarantees.
+		Log::log() << "Trying to fix the notes for analysis (" << name() << " # " << id() << ") had an error, maybe something changed in the meta or the userdata? Or this is a very old jasp-file?" << std::endl;
+	}
+}
+
+void Analysis::setUpgradeMsgs(const Modules::UpgradeMsgs &msgs)
+{
+	bool wasRefreshNeeded = needsRefresh();
+
+	_msgs = msgs;
+	_wasUpgraded = true;
+
+	if(!wasRefreshNeeded)
+		emit needsRefreshChanged();
+}
+
+void Analysis::setVersion(Version version, bool resetWasUpgraded)
+{
+	bool oldNeedsRefresh = needsRefresh();
+
+	if(resetWasUpgraded)
+		_wasUpgraded = false;
+
+	_version = version;
+
+	if(needsRefresh() != oldNeedsRefresh)
+		emit needsRefreshChanged();
+}
+
 bool Analysis::needsRefresh() const
 {
-	return version() != AppInfo::version || _wasUpgraded;
+	bool differentVersion = _dynamicModule ? version() != _dynamicModule->version() : version() != AppInfo::version;
+	return _wasUpgraded || differentVersion;
+}
+
+
+void Analysis::setHasVolatileNotes(bool hasVolatileNotes)
+{
+	if (_hasVolatileNotes == hasVolatileNotes)
+		return;
+
+	_hasVolatileNotes = hasVolatileNotes;
+	emit hasVolatileNotesChanged(_hasVolatileNotes);
+}
+
+
+void Analysis::setUserData(Json::Value userData)
+{
+	_userData = userData;
+
+	std::function<bool(const Json::Value & userData)> checkForVolatileNotes = [&checkForVolatileNotes](const Json::Value & userData) -> bool
+	{
+		if(!userData.isMember("children"))
+			return false;
+
+		for(const Json::Value & child : userData["children"])
+			if(child.isMember("note") || checkForVolatileNotes(child))
+				return true;
+
+		return false;
+	};
+
+	setHasVolatileNotes(checkForVolatileNotes(_userData));
 }
