@@ -66,6 +66,9 @@ FOR /D %%G in ("*") DO (
     if exist %SOURCEDIR%\library\%%G\icc  ( XCOPY %SOURCEDIR%\library\%%G\icc  /Q /E /I R >nul )
     if exist %SOURCEDIR%\library\%%G\po   ( XCOPY %SOURCEDIR%\library\%%G\po   /Q /E /I R >nul )
 
+    rem for issue https://github.com/jasp-stats/jasp-test-release/issues/416#issuecomment-591899068
+    if "%%G"=="viridisLite" ( XCOPY %SOURCEDIR%\library\%%G\data   /Q /E /I R >nul )
+
     if exist %SOURCEDIR%\library\%%G\libs (
         mkdir %DESTDIR%\library\%%G\libs
         cd %DESTDIR%\library\%%G\libs
