@@ -1184,6 +1184,69 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   return()
 }
 
+.anovaDescriptivesTable <- function(anovaContainer, dataset, options, ready) {
+  if (options$descriptives == FALSE || !is.null(anovaContainer[["descriptivesTable"]]) || !ready)
+    return()
+
+  descriptivesTable <- createJaspTable(title = paste0("Descriptives - ", options$dependent))
+  anovaContainer[["descriptivesTable"]] <- descriptivesTable
+
+  for (variable in options$fixedFactors) {
+    
+    name <- paste0(variable, "_DescriptivesVar")  # in case variable is "Mean", "SD" or "N"
+    descriptivesTable$addColumnInfo(title = variable, name = name, type = "string", combine = TRUE)
+    
+  }
+  
+  descriptivesTable$addColumnInfo(name = "Mean", title=gettext("Mean"), type = "number")
+  descriptivesTable$addColumnInfo(name = "SD",   title=gettext("SD"),   type = "number")
+  descriptivesTable$addColumnInfo(name = "N",    title=gettext("N"),    type = "integer")
+  
+  lvls <- list()
+  factors <- list()
+  
+  for (variable in options$fixedFactors) {
+    
+    factor <- dataset[[ .v(variable) ]]
+    factors[[length(factors)+1]] <- factor
+    lvls[[ variable ]] <- levels(factor)
+    
+  }
+  
+  descriptiveResult <- rev(expand.grid(rev(lvls), stringsAsFactors = FALSE))
+  descriptiveResult[[".isNewGroup"]] <- FALSE
+  
+  columnNames <- paste0(unlist(options$fixedFactors), "_DescriptivesVar")
+  nSubsetVars <- length(columnNames)
+  
+  allSubsets <- list()
+  
+  for (i in 1:nrow(descriptiveResult)) {
+    # Here we generate a logical statement to make of a subset of all relevant variables
+    subsetStatement  <- eval(parse(text=paste("dataset$", .v(unlist(options$fixedFactors)), " == \"", 
+                                              descriptiveResult[i, 1:nSubsetVars], 
+                                              "\"", sep = "", collapse = " & ")))
+    
+    # Now we use that statement to make a subset and store in the list of all subsets
+    allSubsets[[i]] <- base::subset(dataset, subsetStatement, select = .v(options$dependent))[[1]]
+    
+    if (descriptiveResult[i, nSubsetVars] == lvls[[ nSubsetVars ]][1]) {
+      descriptiveResult[[i, ".isNewGroup"]] <- TRUE
+    }
+  }
+  
+  allMeans <- sapply(allSubsets, mean)
+  descriptiveResult[["Mean"]] <- ifelse(is.nan(allMeans), NA, allMeans)
+  descriptiveResult[["N"]]    <- sapply(allSubsets, length)
+  descriptiveResult[["SD"]]   <- sapply(allSubsets, sd)
+  
+  colnames(descriptiveResult)[1:nSubsetVars] <- columnNames
+  
+  descriptivesTable$setData(descriptiveResult)
+  
+  return()
+}
+
 .anovaAssumptionsContainer <- function(anovaContainer, dataset, options, ready) {
   if (!is.null(anovaContainer[["assumptionsContainer"]]))
     return()
