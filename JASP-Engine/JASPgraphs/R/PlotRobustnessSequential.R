@@ -137,7 +137,7 @@ PlotRobustnessSequential <- function(
     }
   }
 
-  allEvidenceLabels <- c(gettext("Anecdotal"), gettext("Moderate"), gettext("Strong"), gettext("Very Strong"), gettext("Extreme"))
+  allEvidenceLabels <- c(gettext("Anecdotal",domain="R-JASPgraphs"), gettext("Moderate",domain="R-JASPgraphs"), gettext("Strong",domain="R-JASPgraphs"), gettext("Very Strong",domain="R-JASPgraphs"), gettext("Extreme",domain="R-JASPgraphs"))
 
   if (hasRightAxis) {
 
@@ -327,7 +327,7 @@ PlotRobustnessSequential <- function(
     
     if (is.null(arrowLabel)) {
       # only translate this once
-      evidenceBase <- fixTranslationForExpression(gettext("Evidence for H%s"))
+      evidenceBase <- fixTranslationForExpression(gettext("Evidence for H%s",domain="R-JASPgraphs"))
       evidenceH0 <- sprintf(evidenceBase, "[0]")
 
       hypothesisSymbol <- switch(hypothesis,
