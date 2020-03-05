@@ -425,14 +425,25 @@ PlotRobustnessSequential <- function(
 }
 
 fixTranslationForExpression <- function(text) {
-  # we should really switch to unicode...
-  text <- gsub("\\s+", "~", trimws(text))
+  # Transforms a translated vector of strings into one that a vector that
+  # can safely be parsed as expression.
+  #
+  # Changes:
+  # - the word "for" is escaped to "'for'".
+  # - whitespace becomes ~
+  # - If a line ends or starts with :, the : is pasted to the string.
+  #
+  # NOTE: this is 100% safe, words like: "if", "while", "next", "repeat",
+  # will still crash when parsed.
+  #
+  # none of this would be necesary if we switch to unicode...
+
+  text <- gsub("\\bfor\\b", "'for'", trimws(text))
+  text <- gsub("\\s+", "~", text)
   idx <- endsWith(text, ":")
   text[idx] <- paste0("paste(", substring(text[idx], 1, nchar(text[idx]) - 1L), ", ':')")
   idx <- startsWith(text, ":")
   text[idx] <- paste0("paste(", "':'", substring(text[idx], 1, nchar(text[idx]) - 1L), ")")
-  text <- gsub("~for", "~'for'", text, fixed = TRUE)
-  text <- gsub("for~", "'for'~", text, fixed = TRUE)
   text
 }
 
