@@ -433,7 +433,7 @@ fixTranslationForExpression <- function(text) {
   # - whitespace becomes ~
   # - If a line ends or starts with :, the : is pasted to the string.
   #
-  # NOTE: this is 100% safe, words like: "if", "while", "next", "repeat",
+  # NOTE: this is not 100% safe, words like: "if", "while", "next", "repeat",
   # will still crash when parsed.
   #
   # none of this would be necesary if we switch to unicode...
