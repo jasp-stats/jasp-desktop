@@ -4,7 +4,7 @@
 }
 
 body {
-        font-family:      sans-serif,"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans;
+        font-family:      Helvetica,Arial,sans-serif,"Helvetica Neue",freesans,"Segoe UI";
         margin:           0 ;
         cursor:           default;
         color:            #000;
