@@ -108,7 +108,7 @@ Welk criterium moet gebruikt worden om het netwerk te fitten? Beschikbare opties
 #### Steekproef grootte 
 
 #### Netwerk 
-Als u `gewogen` ontvinkt, bestaat het geschatte netwerk alleen uit positieve (1), negatieve (-1) en afwezige (0) paden. Als u `Gesigneerd` ontvinkt, bestaat het netwerk alleen uit positieve paden. Let op: de absolute waarde wordt genomen van de negatieve paden om ze positief te maken. Als u zowel `Gewogen` als `Gesigneerd` ontvinkt, zegt het netwerk of er een pad (1) is of niet (0).
+Als u `gewogen` uitvinkt, bestaat het geschatte netwerk alleen uit positieve (1), negatieve (-1) en afwezige (0) paden. Als u `Gesigneerd` uitvinkt, bestaat het netwerk alleen uit positieve paden. Let op: de absolute waarde wordt genomen van de negatieve paden om ze positief te maken. Als u zowel `Gewogen` als `Gesigneerd` uitvinkt, zegt het netwerk of er een pad (1) is of niet (0).
 
 
 #### Centraliteitsmaten 
