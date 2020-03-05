@@ -143,7 +143,7 @@
 		[	{	"conditional":	{ "_args": [ { 	"planningModel": "beta" 			} ] },
 				"changes":		{ 				"planningModel": "binomial" 			}	},
 			{	"conditional":	{ "_args": [ { 	"planningModel": "beta-binomial" 	} ] },
-				"changes":		{ 				"planningModel": "Poisson" 				}	}	]
+				"changes":		{ 				"planningModel": "hypergeometric" 		}	}	]
 	},
 	{	"from": { "module": "Audit",			"version": "0.11.1", 	"function": "bayesianPlanning"			},
 		"to":	{ "module": "Audit",			"version": "0.12", 		"function": "auditBayesianPlanning"		},
@@ -151,7 +151,7 @@
 		[	{	"conditional":	{ "_args": [ { 	"planningModel": "beta" 			} ] },
 				"changes":		{ 				"planningModel": "binomial" 			}	},
 			{	"conditional":	{ "_args": [ { 	"planningModel": "beta-binomial" 	} ] },
-				"changes":		{ 				"planningModel": "Poisson" 				}	}	]
+				"changes":		{ 				"planningModel": "hypergeometric" 		}	}	]
 	},
 	{	"from": { "module": "Audit",			"version": "0.11.1", 	"function": "classicalAudit"			},
 		"to":	{ "module": "Audit",			"version": "0.12", 		"function": "auditClassicalWorkflow"	}},
