@@ -12,18 +12,18 @@ Met de herhaalde metingen ANOVA kan men verschillen tussen gemiddelden analysere
 ---
 
 #### Invoerveld 
-- Binnen proefpersoon factoren: De binnen proefpersoon variabele. Hier kunt u de binnen proefpersoon factoren en de verschillende niveaus die daartoe behoren labellen. 
-- Binnen proefpersoon cellen: De aparte kolommen in de data die de niveaus van de binnen proefpersoon factor(en) weergeven. 
-- Tussen proefpersoon factoren: Deze variabele kan worden geselecteerd als de participanten in twee of meer groepen zijn ingedeeld. 
+- binnen-proefpersoon factoren: De binnen-proefpersoon variabele. Hier kunt u de binnen-proefpersoon factoren en de verschillende niveaus die daartoe behoren labellen. 
+- binnen-proefpersoon cellen: De aparte kolommen in de data die de niveaus van de binnen-proefpersoon factor(en) weergeven. 
+- tussen-proefpersoon factoren: Deze variabele kan worden geselecteerd als de participanten in twee of meer groepen zijn ingedeeld. 
 - Covariaten: In dit veld kunt u een covariaat selecteren. Covariaten zijn continue variabelen die een invloed op de afhankelijke variabele hebben maar geen deel zijn van de manipulatie.
 
 
 ### Model
 - Componenten en model termen:
-  - Binnen proefpersoon-componenten: Alle binnen proefpersoon factoren en covariaten die kunne worden meegenomen in het model. 
-	  - model termen: De binnen proefpersoon factoren en covariaten die meegenomen kunnen worden.
-  - Tussen proefpersoon-componenten: Alle tussen proefpersoon factoren die kunnen worden meegenomen in het model.
-	  - model termen: De tussen proefpersoon factoren die kunnen worden meegenomen in het model.
+  - binnen-proefpersoon componenten: Alle binnen-proefpersoon factoren en covariaten die kunne worden meegenomen in het model. 
+	  - model termen: De binnen-proefpersoon factoren en covariaten die meegenomen kunnen worden.
+  - tussen-proefpersoon componenten: Alle tussen-proefpersoon factoren die kunnen worden meegenomen in het model.
+	  - model termen: De tussen-proefpersoon factoren die kunnen worden meegenomen in het model.
 
 - Kwadratensom: Er zijn verschillende soorten de kwadratensom. De keuze van het type is belangrijk als er meerdere factoren zijn en de data ongebalanceerd is. In een ongebalanceerd design hebben de verschillende niveaus van de onafhankelijke variabele niet evenveel observaties (bijv. als een groep meer observaties heeft dan de ander). In dit scenario kan het type kwadratensom de resultaten beïnvloeden.   
     - Type I: Sequentiële kwadratensom. Het verminderen van fouten wanneer elke factor van het model wordt toegevoegd aan de factoren die al mee worden genomen, hiermee wordt de volgorde van factoren in het model behouden. Het resultaat hangt af van de volgorde waarin de factoren aan het model worden toegevoegd. Wanneer het model meer dan een factor bevat is het belangrijk hierover na te denken. 
@@ -41,8 +41,8 @@ Met de herhaalde metingen ANOVA kan men verschillen tussen gemiddelden analysere
 - Homogeniteits toets: Als u deze optie selecteert zal worden geanalyseerd of de variantie van de afhankelijke variabele gelijk is tussen groepen door middel van Levene's toets. 
 
 ### Contrasten
-Voor elke binnen proefpersoon factor kan een specifiek contrast worden geselecteerd door op "geen" te klikken in de rechter kolom.
-- Factoren: Dit zijn de binnen proefpersoon factoren in de analyse. 
+Voor elke binnen-proefpersoon factor kan een specifiek contrast worden geselecteerd door op "geen" te klikken in de rechter kolom.
+- Factoren: Dit zijn de binnen-proefpersoon factoren in de analyse. 
 - Contrasten: Contrasten maken geplande vergelijkingen mogelijk. Er zijn verschillende contrasten die verschillende soorten vergelijkingen mogelijk maken.  
 - Geen: Als u deze optie selecteert worden er geen contrasten uitgerekend. Dit is de standaardoptie. 
     - Afwijking: Als u dit contrast selecteert wordt het gemiddelde van elk niveau van de onafhankelijke variabele vergeleken met het totale gemiddelde (het gemiddelde wanneer alle niveaus samen worden genomen). 
@@ -59,7 +59,7 @@ Voor elke binnen proefpersoon factor kan een specifiek contrast worden geselecte
 Sleep een of meer namen van factoren naar de rechter kolom om een post-hoc test uit te voeren. Er zijn verschillende opties: 
 - effectgrootte: Als u deze optie selecteert wordt de effectgrootte weergegeven (i.e., de grootte van het geobserveerde effect). De gebruikte maat voor de effectgrootte is Cohen's d. De effectgrootte wordt alleen weergegeven voor het post-hoc type `Standaard`.
 - betrouwbaarheidsintervallen: Als u deze optie selecteert wordt er een betrouwbaarheidsinterval voor het gemiddelde verschil berekend. Dit wordt voor welke post-hoc methode gedaan, behalve voor Dunn.  De standaardoptie is een interval van 95%. Dit kan tot het gewenste percentage worden aangepast.
-- samengevoegde foutterm voor binnen proefpersoon factoren: een samengevoegde foutterm die aanneemt dat de varianties van de contrast scores ongeveer gelijk zijn (i.e., assumptie van sphericiteit) zie Morey (2008) voor details. 
+- samengevoegde foutterm voor binnen-proefpersoon factoren: een samengevoegde foutterm die aanneemt dat de varianties van de contrast scores ongeveer gelijk zijn (i.e., assumptie van sphericiteit) zie Morey (2008) voor details. 
   - Correctie: Om te corrigeren voor meerdere vergelijkingen en type 1 fouten te voorkomen bestaan er verschillende methoden om de p waarde te corrigeren: 
 	  - Tukey: Vergelijk alle mogelijke paren van groepsgemiddelden. Deze correctie kan worden gebruikt wanneer de niveaus op de onafhankelijke variabele een gelijke steekproefgrootte en variantie hebben. Deze methode wordt veel gebruikt en is de standaardoptie.
       - Scheffe: Het aanpassen van significatieniveaus in een lineare regressie om rekening te houden met meerdere vergelijkingen. Deze methode is vrij conservatief.
@@ -78,7 +78,7 @@ Sleep een of meer namen van factoren naar de rechter kolom om een post-hoc test 
 	- Geef foutmarges weer: Als u deze optie selecteert worden er foutmarges weergegeven in de grafiek. De foutmarges kunnen ofwel betrouwbaarheidsintervallen ofwel standaardfouten weergeven. Om precieze intervallen of standaard fouten te krijgen wordt de data genormaliseerd door de gemiddelde van elke observatie af te trekken en dan het totale gemiddelde aan elke observatie op te tellen. De varianties van de resulterende genormaliseerde waarden in elke conditie, en daardoor de grootte van de foutmarges, hangt niet langer af van de participant effecten en zijn zo een meer accurate representatie van de experimentele manipulatie. Zie Morw (2008) voor meer detail. 
 		- betrouwbaarheidsinterval: Dit is de standaardoptie. Met deze optie geven de foutmarges betrouwbaarheidsintervallen van het gemiddelde van elke combinatie van onafhankelijke variabelen weer. De standaardoptie is een interval van 95%. Dit kan tot het gewenste percentage worden aangepast.
         - Standaardfout: Als u deze optie selecteert geven de foutmarges de standaardfouten van de gemiddelden van elke combinatie van niveaus van de onafhankelijke variabele weer. 
-    - Gemiddelde over ongebruikte binnen proefpersoon factoren: Wanneer er meerdere binnen proefpersoon factoren in het model zijn maar u slechts één van de factoren plot wordt het gemiddelde over de ongebruikte binnen proefpersoon factoren genomen. Als er bijvoorbeeld twee binnen proefpersoon factoren zijn met twee niveaus, A(1&2) en B (1&2), en alleen A geselecteerd wordt voor de grafiek wordt het gemiddelde van B over de niveaus genomen. Dit betekent dat wanneer het gemiddelde van A1 wordt geplot, het eigenlijk het gemiddelde is van A1B1 en A1B2. Deze procedure wordt beschreven in Loftus & Masson (1994). Wanneer dit veld niet is aangevinkt worden de gemiddelden niet genomen en worden de kolommen A1B1 en A1B2 simpelweg geconcateneerd.
+    - Gemiddelde over ongebruikte binnen-proefpersoon factoren: Wanneer er meerdere binnen-proefpersoon factoren in het model zijn maar u slechts één van de factoren plot wordt het gemiddelde over de ongebruikte binnen-proefpersoon factoren genomen. Als er bijvoorbeeld twee binnen-proefpersoon factoren zijn met twee niveaus, A(1&2) en B (1&2), en alleen A geselecteerd wordt voor de grafiek wordt het gemiddelde van B over de niveaus genomen. Dit betekent dat wanneer het gemiddelde van A1 wordt geplot, het eigenlijk het gemiddelde is van A1B1 en A1B2. Deze procedure wordt beschreven in Loftus & Masson (1994). Wanneer dit veld niet is aangevinkt worden de gemiddelden niet genomen en worden de kolommen A1B1 en A1B2 simpelweg geconcateneerd.
   
 ### Additionele Opties:
 - Marginale gemiddelden: Als u deze optie selecteert wordt het gemiddelde van elk niveau van de onafhankelijke variabele gecorrigeerd voor alle andere variabelen in het model. 
@@ -97,18 +97,18 @@ Sleep een of meer namen van factoren naar de rechter kolom om een post-hoc test 
     - Vovk-Selke maximum p-ratio: De grens 1/(-e p log(p)) wordt afgeleid van de vorm van de verdeling van de p-waarden. Onder de nul hypotheses (H<sub>0</sub>)  is het uniform (0,1) en onder de alternatieve hypothese (H<sub>1</sub>) neemt hij af in p, bijv. een beta (α, 1) verdeling waar 0 < α < 1. De Vovk-Selke MPR wordt verkregen door het vorm van α onder de alternatieve hypothese te kiezen zodat de p-waarde maximaal diagnostisch is. De waarde is dat de ratio van de dichtheid op punt p onder H<sub>0</sub> en H<sub>1</sub>. Als de tweezijdige p-waarde bijvoorbeeld .05 is is de Vovk-Sellke MPR 2.46. Dit geeft aan dat deze p-waarde maximaal 2.46 zo waarschijnlijk is onder H1 dan onder H<sub>0</sub>. Meer informatie vind u in deze <a href="https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/">blogpost</a>.
 
 ### Hoofdeffecten:
-De hoofdeffecten geven het effect van een binnen proefpersoon factor voor elk niveau van de andere binnen proefpersoon factor door een ANOVA uit te voeren voor elke subset van de data zoals gespecificeerd door de moderator variabele.
-  - Factoren: Dit veld bevat alle binnen proefpersoon variabelen die worden meegenomen in de analyse.
-  - Simpel effect factor: In dit veld selecteert u de binnen proefpersoon variabelen om het effect van deze variabele geconditioneerd op de niveaus van de moderator te berekenen. 
-  - Moderator factor 1: In dit veld selecteert u de binnen proefpersoon variabele die de verschillende niveaus weergeeft. 
-  - Moderator factor 2: In dit veld kunt u optioneel een aanvullende binnen proefpersoon variabele toevoegen.
+De hoofdeffecten geven het effect van een binnen-proefpersoon factor voor elk niveau van de andere binnen-proefpersoon factor door een ANOVA uit te voeren voor elke subset van de data zoals gespecificeerd door de moderator variabele.
+  - Factoren: Dit veld bevat alle binnen-proefpersoon variabelen die worden meegenomen in de analyse.
+  - Simpel effect factor: In dit veld selecteert u de binnen-proefpersoon variabelen om het effect van deze variabele geconditioneerd op de niveaus van de moderator te berekenen. 
+  - Moderator factor 1: In dit veld selecteert u de binnen-proefpersoon variabele die de verschillende niveaus weergeeft. 
+  - Moderator factor 2: In dit veld kunt u optioneel een aanvullende binnen-proefpersoon variabele toevoegen.
 
 - Samengevoegde error term: Een samengevoegde error term maakt de assumptie dat de varianties van de contrastscores ongeveer gelijk zijn (i.e., assumptie sphericiteit).
 
 #### Verdelingsvrije toetsen
 De Friedman toets is een niet parametrisch alternatief voor de herhaalde metingen ANOVA wanneer er een compleet blok design is. The Durbin toets wordt automatisch geselecteerd wanneer er een incompleet blok design is. 
-- Factoren: Dit veld bevat alle binnen proefpersoon factoren uit de analyse.
-- RM factor: De binnen proefpersoon factor waarin u geïnteresseerd bent.
+- Factoren: Dit veld bevat alle binnen-proefpersoon factoren uit de analyse.
+- BP factor: De binnen-proefpersoon factor waarin u geïnteresseerd bent.
 - Tussen factor (optioneel): Het is mogelijk om hier een tussen-persoon factor toe te voegen.
 - Conover's post-hoc toetsen: Conover's post-hoc toets voor paar wijze vergelijkingen, wanneer de verdelingsvrije toets statistiek significant is.
 
@@ -116,7 +116,7 @@ De Friedman toets is een niet parametrisch alternatief voor de herhaalde metinge
 ### Uitvoer
 ---
 #### Herhaalde Metingen ANOVA
-Binnen Proefpersoon Effecten:
+binnen-proefpersoon Effecten:
 - Spericiteit correctie: De geselecteerde correcties wanneer de assumptie van sphericiteit is geschonden.
 - kwadratensom: De opgetelde kwadraten van binnen groep-gemiddelden verschillen. 
 - vg: vrijheidsgraden.
@@ -124,7 +124,7 @@ Binnen Proefpersoon Effecten:
 - F: De waarde van de F statistiek.
 - P: De p-waarde.
 
-Tussen Proefpersoon Effecten:
+tussen-proefpersoon Effecten:
 - kwadratensom: De opgetelde kwadraten van tussen groep-gemiddelden verschillen. 
 - vg: Vrijheidsgraden.
 - Mean Square: Schatting van de populatievariantie (de sum of squares gedeeld door de vrijheidsgraden).
@@ -184,9 +184,9 @@ Marginale gemiddelden - onafhankelijke variabele:
 
 
 #### Marginale gemiddelde door middel van Bootstrapping
-Ge-bootstrapte marginale gemiddelden - Binnen proefpersoon variabele: 
-- Binnen proefpersoon variabele: Deze kolom bevat alle niveaus van de binnen proefpersoon variabele.
-- Marginale gemiddelde: Schatting van het marginale gemiddelde voor elk niveau van de binnen proefpersoon variabele. Dit gemiddelde is gecorrigeerd voor alle andere variabelen in het model. De schatting is gebaseerd op de bootstrap verdeling.
+Ge-bootstrapte marginale gemiddelden - binnen-proefpersoon variabele: 
+- binnen-proefpersoon variabele: Deze kolom bevat alle niveaus van de binnen-proefpersoon variabele.
+- Marginale gemiddelde: Schatting van het marginale gemiddelde voor elk niveau van de binnen-proefpersoon variabele. Dit gemiddelde is gecorrigeerd voor alle andere variabelen in het model. De schatting is gebaseerd op de bootstrap verdeling.
 - Bias: Bias: Het gemiddelde verschil tussen het ge-bootstrapte marginale gemiddelde en het geschatte marginale gemiddelde.
 - Std. Fout: De standaardfout van de ge-Bootstrapte marginale gemiddelden. 
 - 95% BI voor gemiddelde verschil: De voor bias-gecorrigeerde betrouwbaarheidsinterval voor het gemiddelde verschil tussen de vergeleken niveaus. De standaardoptie is 95%.
@@ -195,7 +195,7 @@ Ge-bootstrapte marginale gemiddelden - Binnen proefpersoon variabele:
 
 #### Verdelingsvrije toetsen
 Friedman Toets / Durbin Toets:
-- Factor: The binnen proefpersoon factor van de analyse.
+- Factor: The binnen-proefpersoon factor van de analyse.
 - Chi-kwadraat: De chi-squared toets statistiek.
 - vg: vrijheidsgraden.
 - p: De p-waarde.
@@ -206,7 +206,7 @@ Friedman Toets / Durbin Toets:
 - p<sub>f</sub>: De p-waarde van de F-statistiek.
 
 Conover's post-hoc Vergelijkingen:
-- De eerste twee kolommen representeren de niveaus van de binnen proefpersoon factor die worden vergeleken.
+- De eerste twee kolommen representeren de niveaus van de binnen-proefpersoon factor die worden vergeleken.
   - T-stat: De toets statistiek die de t-verdeling volgt.
 - vg: Vrijheidsgraden.
 - W<sub>i</sub>: Som van de opgetelde rangen van niveau 1.
@@ -216,7 +216,7 @@ Conover's post-hoc Vergelijkingen:
 - p<sub>holm</sub>: Holm's Gecorrigeerde p-waarde voor meerdere vergelijkingen. 
 
 #### Beschrijvende grafieken 
-De onafhankelijke variabele op de x-as en afhankelijke variabele op de y-as. Als er meerdere binnen proefpersoon factoren worden meegenomen in de analyse kunnen deze ofwel met verschillende lijnen, ofwel in verschillende grafieken worden weergegeven.
+De onafhankelijke variabele op de x-as en afhankelijke variabele op de y-as. Als er meerdere binnen-proefpersoon factoren worden meegenomen in de analyse kunnen deze ofwel met verschillende lijnen, ofwel in verschillende grafieken worden weergegeven.
 
 ### Referenties
 ---

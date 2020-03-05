@@ -12,9 +12,9 @@ Met de Bayesiaanse Herhaalde Metingen ANOVA kan men verschillen tussen gemiddeld
 ---
 
 #### Invoerveld
-- Binnen proefpersoon factoren: De binnen proefpersoon variabele. Hier kunt u de binnen proefpersoon factoren en de verschillende niveaus die daartoe behoren labellen. 
-- Binnen proefpersoon cellen: De aparte kolommen in de data die de niveaus van de binnen proefpersoon factor(en) weergeven. 
-- Tussen proefpersoon factoren: Deze variabele kan worden geselecteerd als de participanten in twee of meer groepen zijn ingedeeld. 
+- binnen-proefpersoon factoren: De binnen-proefpersoon variabele. Hier kunt u de binnen-proefpersoon factoren en de verschillende niveaus die daartoe behoren labellen. 
+- binnen-proefpersoon cellen: De aparte kolommen in de data die de niveaus van de binnen-proefpersoon factor(en) weergeven. 
+- tussen-proefpersoon factoren: Deze variabele kan worden geselecteerd als de participanten in twee of meer groepen zijn ingedeeld. 
 - Covariaten: In dit veld kunt u een covariaat selecteren. Covariaten zijn continue variabelen die een invloed op de afhankelijke variabele hebben maar geen deel zijn van de manipulatie.
 
 #### Bayes Factor
@@ -159,8 +159,8 @@ Posterior R<sup>2</sup>:
 
 #### Beschrijvende statistieken: 
 Afhankelijke variabele: 
-  - Binnen proefpersoon factor: De niveaus van het binnen proefpersoon factor(en) van het model. Als het er meerdere zijn worden de beschrijvende statistieken voor elke combinatie van niveaus van de factor weergegeven.
-  - Gemiddelde: Het gemiddelde niveau, of, als er meerdere binnen proefpersoon factoren zijn, het gemiddelde niveau per combinatie van niveaus.
+  - binnen-proefpersoon factor: De niveaus van het binnen-proefpersoon factor(en) van het model. Als het er meerdere zijn worden de beschrijvende statistieken voor elke combinatie van niveaus van de factor weergegeven.
+  - Gemiddelde: Het gemiddelde niveau, of, als er meerdere binnen-proefpersoon factoren zijn, het gemiddelde niveau per combinatie van niveaus.
   - SD: De standaardafwijking. 
   - N: De steekproefgrootte.
   - % geloofwaardigheidsinterval: het geloofwaardigheidsinterval van het gemiddelde. De standaardoptie is 95%.

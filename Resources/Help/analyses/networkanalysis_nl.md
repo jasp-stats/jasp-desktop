@@ -92,8 +92,8 @@ Drempelwaarden die worden gebruikt in correlatie of partiële correlatie netwerk
 - `Significant`: Laat de paden zijn die significant zijn bij het 0.05 niveau.
 - `Bonferroni`: Net als `Significant`, maar dan met Bonferroni correctie.
 - `Holm`: Net als `Significant`, maar dan met Holm correctie.
-- `Hochberg`: Net als `Significant`, maar dan met Hochberg correctie. Neemt aan dat hypothesetoetsen onafhankelijk of niet negatief geassocieerd zijn. 
-- `Hommel`: Net als `Significant`, maar dan met Hommel correctie. Neemt aan dat hypothesetoetsen onafhankelijk of niet negatief geassocieerd zijn. 
+- `Hochberg`: Net als `Significant`, maar dan met Hochberg correctie. Neemt aan dat hypothesetoetsen onafhankelijk of niet-negatief geassocieerd zijn. 
+- `Hommel`: Net als `Significant`, maar dan met Hommel correctie. Neemt aan dat hypothesetoetsen onafhankelijk of niet-negatief geassocieerd zijn. 
 - `BH`: Net als `Significant`, maar controleert voor de valse ontdekking rate. 
 
 In de meeste scenario's is de `Bonferroni` methode nogal beperkend en heeft de `Holm` methode de voorkeur.

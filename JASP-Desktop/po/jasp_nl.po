@@ -1012,7 +1012,7 @@ msgid ""
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
 "Ga de volgende keer dat JASP start verder waar u was gebleven. \n"
-"Als u deze optie aanzet, onthoudt JASP welke modules u aan hebt gezet."
+"Als u deze optie aanzet, onthoudt JASP welke modules u aan heeft gezet."
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
@@ -1231,7 +1231,7 @@ msgstr "Ontwikkelaarsmodule aan het installeren"
 msgctxt "ModulesMenu|"
 msgid "Select a developer module under Left menu->Preference->Advanced"
 msgstr ""
-"Selecteer een ontwikkelaarsmodule onder Onder menu -> Voorkeuren -> "
+"Selecteer een ontwikkelaarsmodule onder Linker menu -> Voorkeuren -> "
 "Geavanceerd"
 
 msgctxt "ModulesMenu|"
@@ -2228,15 +2228,15 @@ msgstr "Posterior steekproeven"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Factors"
-msgstr "Binnen proefpersoon factoren"
+msgstr "binnen-proefpersoon factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Cells"
-msgstr "Binnen proefpersoon cellen"
+msgstr "binnen-proefpersoon cellen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Between Subject Factors"
-msgstr "Tussen proefpersoon factoren"
+msgstr "tussen-proefpersoon factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Covariates"
@@ -2248,7 +2248,7 @@ msgstr "Model"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Components"
-msgstr "Binnen proefpersoon-componenten"
+msgstr "binnen-proefpersoon componenten"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Model Terms"
@@ -2256,7 +2256,7 @@ msgstr "Modeltermen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Between Subjects Components"
-msgstr "Tussen proefpersoon-componenten"
+msgstr "tussen-proefpersoon componenten"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Model terms"
@@ -2312,7 +2312,7 @@ msgstr "Effectgrootte"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Pool error term for RM factors"
-msgstr "Samengevoegde foutterm voor RM-factoren"
+msgstr "Samengevoegde foutterm voor BP-factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Correction"
@@ -2376,7 +2376,7 @@ msgstr "Standaardfout"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Average across unused RM factors"
-msgstr "Gemiddelde over ongebruikte RM-factoren"
+msgstr "Gemiddelde over ongebruikte BP-factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Marginal Means"
@@ -2456,7 +2456,7 @@ msgstr "Verdelingsvrije toetsen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "RM Factor"
-msgstr "RM factor"
+msgstr "BP factor"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Optional Grouping Factor"
@@ -2468,15 +2468,15 @@ msgstr "Conover's post-hoc toetsen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Repeated Measures Factors"
-msgstr "Binnen proefpersoon factoren"
+msgstr "binnen-proefpersoon factoren"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Repeated Measures Cells"
-msgstr "Binnen proefpersoon cellen"
+msgstr "binnen-proefpersoon cellen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Between Subject Factors"
-msgstr "Tussen proefpersoon factoren"
+msgstr "tussen-proefpersoon factoren"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Covariates"
@@ -10211,7 +10211,7 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Safe Graphics Mode"
-msgstr "Veilige Grafische modus"
+msgstr "Veilige Grafische Modus"
 
 msgctxt "PrefsUI|"
 msgid ""

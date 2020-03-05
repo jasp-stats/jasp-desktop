@@ -219,7 +219,7 @@ Marginale gemiddelden - onafhankelijke variabele:
 - Marginale gemiddelde: Het marginale gemiddelde voor elk niveau van de onafhankelijke variabele. Dit gemiddelde is gecorrigeerd voor alle andere variabelen in het model. 
 - Std. Fout: De standaardfout van het marginale gemiddelde. 
 - Onder BI: De ondergrens van het betrouwbaarheidsinterval.
-- rechte BI: De bovengrens van het betrouwbaarheidsinterval.
+- Boven BI: De bovengrens van het betrouwbaarheidsinterval.
 - t: De waarde van de t-statistiek.
 - p: De p-waarde. 
 
