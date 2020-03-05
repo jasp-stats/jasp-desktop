@@ -19,7 +19,7 @@
 #'
 #' @export
 plotQQnorm <- function(residuals, lower = NULL, upper = NULL, abline = TRUE, ablineColor = "red",
-                       xName = gettext("Theoretical quantiles"), yName = gettext("Observed quantiles")) {
+                       xName = gettext("Theoretical quantiles",domain="R-JASPgraphs"), yName = gettext("Observed quantiles",domain="R-JASPgraphs")) {
 
   n <- length(residuals)
   hasErrorbars <- !is.null(lower) && !is.null(upper)
