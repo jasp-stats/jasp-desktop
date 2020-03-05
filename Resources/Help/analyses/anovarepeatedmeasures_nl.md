@@ -45,13 +45,13 @@ Voor elke binnen-proefpersoon factor kan een specifiek contrast worden geselecte
 - Factoren: Dit zijn de binnen-proefpersoon factoren in de analyse. 
 - Contrasten: Contrasten maken geplande vergelijkingen mogelijk. Er zijn verschillende contrasten die verschillende soorten vergelijkingen mogelijk maken.  
 - Geen: Als u deze optie selecteert worden er geen contrasten uitgerekend. Dit is de standaardoptie. 
-    - Afwijking: Als u dit contrast selecteert wordt het gemiddelde van elk niveau van de onafhankelijke variabele vergeleken met het totale gemiddelde (het gemiddelde wanneer alle niveaus samen worden genomen). 
-    - Enkelvoudig: Als u dit contrast selecteert wordt het gemiddelde van ieder niveau vergeleken met het gemiddelde van een gespecificeerd niveau, bijvoorbeeld met het gemiddelde van de controlegroep. 
-    - Verschil: Dit contrast wordt ook wel "reverse Helmert" genoemd. Als u dit contrast selecteert wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het vorige niveau.
+    - afwijking: Als u dit contrast selecteert wordt het gemiddelde van elk niveau van de onafhankelijke variabele vergeleken met het totale gemiddelde (het gemiddelde wanneer alle niveaus samen worden genomen).
+    - enkelvoudig: Als u dit contrast selecteert wordt het gemiddelde van ieder niveau vergeleken met het gemiddelde van een gespecificeerd niveau, bijvoorbeeld met het gemiddelde van de controlegroep.
+    - verschil: Dit contrast wordt ook wel "reverse Helmert" genoemd. Als u dit contrast selecteert wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het vorige niveau.
     - Helmert: Als u dit contrast selecteert wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het volgende niveau. Dit is het omgekeerde van het "verschil" contrast.
-    - Herhaald: Als u dit contrast selecteert wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het volgende niveau. 
-    - Polynoom: Dit contrast test polynome trends in de data. Welk specifieke polynoom wordt gebruikt is afhankelijk van het aantal niveaus van de onafhankelijke variabele. De graad van de trend die wordt gebruikt is het aantal niveaus min 1. Als de onafhankelijke variabele dus bestaat uit twee niveaus wordt een lineaire trend geanalyseerd. Als de onafhankelijke variabele bestaat uit drie niveaus worden een kwadratische trend en een lineaire trend geanalyseerd. 
-      - custom: Hier kunnen de contrast gewichten handmatig ingevoerd worden. Van de gewichten dient minstens 1 gewicht niet gelijk aan 0 te zijn.
+    - herhaald: Als u dit contrast selecteert wordt het gemiddelde van elk niveau vergeleken met het gemiddelde van het volgende niveau.
+    - polynoom: Dit contrast test polynome trends in de data. Welk specifieke polynoom wordt gebruikt is afhankelijk van het aantal niveaus van de onafhankelijke variabele. De graad van de trend die wordt gebruikt is het aantal niveaus min 1. Als de onafhankelijke variabele dus bestaat uit twee niveaus wordt een lineaire trend geanalyseerd. Als de onafhankelijke variabele bestaat uit drie niveaus worden een kwadratische trend en een lineaire trend geanalyseerd.
+    - handmatig: Hier kunnen de contrast gewichten handmatig ingevoerd worden. Van de gewichten dient minstens 1 gewicht niet gelijk aan 0 te zijn.
    
    
 
@@ -139,7 +139,7 @@ Toets van sphericiteit:
 - Huynh-Feldt &epsilon;: De Huynh-Feldt correctie.
 
 #### Contrasten
-Afwijking/Enkelvoudig/Verschil/Helmert/Repeated/Polynoom/Custom Contrast:
+Afwijking/Enkelvoudig/Verschil/Helmert/Herhaald/Polynoom/Handmatig Contrast:
 - Vergelijking: De niveaus van de onafhankelijke variabele die worden vergeleken. Voor de custom contrasten wordt het gewicht getoond voor elk niveau van de factor.
 - Schatting: Het geschatte gemiddelde verschil tussen de vergeleken niveaus.
 - Std. Fout: De standaardfout van het geschatte gemiddelde.

@@ -78,7 +78,18 @@ Form
             {
                 value	: "orthogonal"
                 label	: qsTr("Orthogonal")
-                DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax", "bentlerT", "equamax", "varimin", "geominT"] }
+				DropDown
+				{
+					name: "orthogonalSelector"
+					values: [
+						{ label: qsTr("none")	, value: "none"			},
+						{ label: "varimax"		, value: "varimax"		},
+						{ label: "quartimax"	, value: "quartimax"	},
+						{ label: "bentlerT"		, value: "bentlerT"		},
+						{ label: "equamax"		, value: "equamax"		},
+						{ label: "geominT"		, value: "geominT"		}
+					]
+				}
             }
             RadioButton
             {
@@ -120,10 +131,17 @@ Form
 
 		Group
 		{
-			title: qsTr("Includes Tables")
-			CheckBox { name: "incl_correlations";	label: qsTr("Component correlations")	}
-			CheckBox { name: "incl_pathDiagram";	label: qsTr("Path diagram")				}
-			CheckBox { name: "incl_screePlot";		label: qsTr("Scree plot")				}
+			Group
+			{
+				title: qsTr("Table")
+				CheckBox { name: "incl_correlations";	label: qsTr("Factor correlations")		}
+			}
+			Group
+			{
+				title: qsTr("Plots")
+				CheckBox { name: "incl_pathDiagram";	label: qsTr("Path diagram")				}
+				CheckBox { name: "incl_screePlot";		label: qsTr("Scree plot")				}
+			}
 		}
 
 		RadioButtonGroup

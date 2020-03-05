@@ -100,12 +100,12 @@ void ListModelRepeatedMeasuresFactors::initFactors(const vector<pair<string, vec
 			levelIndex++;
 		}
 		
-		Factor extraLevel(tq("Level %1").arg(levelIndex), true, true, &factorHeaderRef);
+		Factor extraLevel(tr("Level %1").arg(levelIndex), true, true, &factorHeaderRef);
 		_factors.append(extraLevel);
 		factorIndex++;
 	}
 	
-	Factor extraFactor(tq("RM Factor %1").arg(factorIndex), true, false);
+	Factor extraFactor(tr("RM Factor %1").arg(factorIndex), true, false);
 	_factors.append(extraFactor);
 
 	endResetModel();
@@ -155,7 +155,7 @@ void ListModelRepeatedMeasuresFactors::_updateVirtualLevelIndex(Factor* headFact
 			break;
 		if (factor.isVirtual)
 		{
-			factor.value = tq("Level %1").arg(levelIndex);
+			factor.value = tr("Level %1").arg(levelIndex);
 			QModelIndex modelIndex = index(i, 0);
 			emit dataChanged(modelIndex, modelIndex);
 		}
@@ -172,7 +172,7 @@ void ListModelRepeatedMeasuresFactors::_updateVirtualFactorIndex()
 			if (factor.isVirtual)
 			{
 				int row = _factors.indexOf(factor);
-				factor.value = tq("RM Factor %1").arg(factorIndex);
+				factor.value = tr("RM Factor %1").arg(factorIndex);
 				QModelIndex modelIndex = index(row, 0);
 				emit dataChanged(modelIndex, modelIndex);
 			}
@@ -279,20 +279,20 @@ void ListModelRepeatedMeasuresFactors::itemChanged(int row, QVariant value)
 			if (factor.isLevel)
 			{
 				beginInsertRows(QModelIndex(), row+1, row+1);
-				Factor newLevel(tq("Level ") + QString::number(factorIndex + 1), true, true, factor.headFactor);
+				Factor newLevel(tr("Level %1").arg(factorIndex + 1), true, true, factor.headFactor);
 				_factors.insert(row + 1, newLevel);
 				endInsertRows();
 			}
 			else
 			{
 				beginInsertRows(QModelIndex(), _factors.length(), _factors.length() + 3);
-				Factor newLevel1(tq("Level 1"), false, true, &factor);
+				Factor newLevel1(tr("Level %1").arg(1), false, true, &factor);
 				_factors.push_back(newLevel1);
-				Factor newLevel2(tq("Level 2"), false, true, &factor);
+				Factor newLevel2(tr("Level %1").arg(2), false, true, &factor);
 				_factors.push_back(newLevel2);
-				Factor newVirtualLevel(tq("Level 3"), true, true, &factor);
+				Factor newVirtualLevel(tr("Level %1").arg(3), true, true, &factor);
 				_factors.push_back(newVirtualLevel);
-				Factor newVirtualFactor(tq("RM Factor ") + QString::number(factorIndex + 1), true, false);
+				Factor newVirtualFactor(tr("RM Factor %1").arg(factorIndex + 1), true, false);
 				_factors.push_back(newVirtualFactor);
 				endInsertRows();
 			}
@@ -326,7 +326,7 @@ QString ListModelRepeatedMeasuresFactors::_removeFactor(int row)
 			_updateVirtualLevelIndex(factor.headFactor);
 		}
 		else
-			value = tq("Level %1").arg(factorIndex);
+			value = tr("Level %1").arg(factorIndex);
 	}
 	else
 	{
@@ -350,7 +350,7 @@ QString ListModelRepeatedMeasuresFactors::_removeFactor(int row)
 			_updateVirtualFactorIndex();
 		}
 		else
-			value = tq("RM Factor %1").arg(factorIndex);
+			value = tr("RM Factor %1").arg(factorIndex);
 	}
 
 	return value;

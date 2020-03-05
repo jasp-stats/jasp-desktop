@@ -1600,7 +1600,7 @@ msgstr "Betrouwbaarheidsinterval bijstelling"
 
 msgctxt "Ancova|"
 msgid "Descriptive statistics"
-msgstr "Kengetallen"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "Ancova|"
 msgid "Estimates of effect size"
@@ -2004,7 +2004,7 @@ msgstr "Betrouwbaarheidsinterval bijstelling"
 
 msgctxt "Anova|"
 msgid "Descriptive statistics"
-msgstr "Kengetallen"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "Anova|"
 msgid "Estimates of effect size"
@@ -2404,7 +2404,7 @@ msgstr "Šidák"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Descriptive statistics"
-msgstr "Kengetallen"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Estimates of effect size"
@@ -4605,14 +4605,6 @@ msgstr "Covariantiematrix"
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Output Options"
 msgstr "Uitvoeropties"
-
-msgctxt "PrincipalComponentAnalysis|"
-msgid "Includes Tables"
-msgstr "Neem tabellen mee"
-
-msgctxt "PrincipalComponentAnalysis|"
-msgid "Component correlations"
-msgstr "Componentcorrelaties"
 
 msgctxt "PrincipalComponentAnalysis|"
 msgid "Path diagram"
@@ -7264,7 +7256,7 @@ msgstr "Weergeven"
 
 msgctxt "LinearMixedModels|"
 msgid "Descriptive statistics"
-msgstr "Kengetallen"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "LinearMixedModels|"
 msgid "Estimates of effect size"
@@ -10129,20 +10121,6 @@ msgctxt "QMLListView|"
 msgid "Wrong column type: %1 for ListView %2"
 msgstr "Verkeerd kolomtype: %1 voor ListView %2"
 
-msgctxt "HelpModel|"
-msgid ""
-".\n"
-"\n"
-"Additional documentation will be available in future releases of "
-msgstr ""
-"\n"
-".\n"
-"Meer documentatie zal beschikbaar zijn in een volgende release van "
-
-msgctxt "HelpModel|"
-msgid "the module."
-msgstr "de module."
-
 msgctxt "PrefsUI|"
 msgid "User Interface options"
 msgstr "Gebruikersinterface opties"
@@ -10701,17 +10679,6 @@ msgctxt "SEMSimple|"
 msgid "Thresholds"
 msgstr "Drempelwaarden"
 
-msgctxt "HelpModel|"
-msgid ""
-"Coming Soon!\n"
-"========\n"
-"\n"
-"There is currently no help available for this analysis"
-msgstr ""
-"Komt spoedig!\n"
-"========\n"
-"Er is op dit moment geen hulp aanwezig voor deze analyse"
-
 msgctxt "mlClusteringDensityBased|"
 msgid "Cluster means"
 msgstr "Cluster gemiddelden"
@@ -11041,7 +11008,7 @@ msgstr "Tabellen"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Descriptive statistics"
-msgstr "Kengetallen"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "auditClassicalBenfordsLaw|"
 msgid "Plots"
@@ -15741,6 +15708,326 @@ msgstr ""
 msgctxt "HelpWindow|"
 msgid "JASP Help"
 msgstr "JASP Documentatie"
+
+msgctxt "ContrastsList|"
+msgid "none"
+msgstr "geen"
+
+msgctxt "ContrastsList|"
+msgid "deviation"
+msgstr "afwijking"
+
+msgctxt "ContrastsList|"
+msgid "simple"
+msgstr "enkelvoudig"
+
+msgctxt "ContrastsList|"
+msgid "difference"
+msgstr "verschil"
+
+msgctxt "ContrastsList|"
+msgid "Helmert"
+msgstr "Helmert"
+
+msgctxt "ContrastsList|"
+msgid "repeated"
+msgstr "herhaald"
+
+msgctxt "ContrastsList|"
+msgid "polynomial"
+msgstr "polynoom"
+
+msgctxt "ContrastsList|"
+msgid "custom"
+msgstr "handmatig"
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Name:"
+msgstr "Naam:"
+
+msgctxt "OperatorSelector|"
+msgid "Addition"
+msgstr "Optellen"
+
+msgctxt "OperatorSelector|"
+msgid "Subtraction"
+msgstr "Aftrekken"
+
+msgctxt "OperatorSelector|"
+msgid "Multiplication"
+msgstr "Vermenigvuldigen"
+
+msgctxt "OperatorSelector|"
+msgid "Division"
+msgstr "Delen door"
+
+msgctxt "OperatorSelector|"
+msgid "Power (2^3 returns 8)"
+msgstr "Macht (2^3 is 8)"
+
+msgctxt "OperatorSelector|"
+msgid "Square root"
+msgstr "Wortel"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
+msgstr "Modulo: geeft het restant van een deling. 3%2 is 1"
+
+msgctxt "OperatorSelector|"
+msgid "returns logicals and can be the root of a filter formula"
+msgstr "geeft logicals en kan de basis zijn van een formule voor een filter"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Equality: %1"
+msgstr "Gelijkheid: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Inequality: %1"
+msgstr "Ongelijkheid: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Less than: %1"
+msgstr "Kleiner dan: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Less than or equal to: %1"
+msgstr "Kleiner dan of gelijk aan: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Greater than: %1"
+msgstr "Groter dan: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Greater than or equal to: %1"
+msgstr "Groter dan of gelijk aan: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "And: %1"
+msgstr "En: %1"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Or: %1"
+msgstr "Of: %1"
+
+msgctxt "OperatorSelector|"
+msgid "Split: applies filter separately to each subgroup"
+msgstr "Splits: voert een filter uit op elke groep"
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "not: %1"
+msgstr "niet: %1"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Addition"
+msgstr "Optellen"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Subtraction"
+msgstr "Aftrekken"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Multiplication"
+msgstr "Vermenigvuldigen"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Division"
+msgstr "Delen door"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Power (2^3 returns 8)"
+msgstr "Macht (2^3 is 8)"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Square root"
+msgstr "Wortel"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
+msgstr "Modulo: geeft het restant van een deling. 3%2 is 1"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "returns logicals"
+msgstr "geeft logicals"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Equality: %1"
+msgstr "Gelijkheid: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Inequality: %1"
+msgstr "Ongelijkheid: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Less than: %1"
+msgstr "Kleiner dan: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Less than or equal to: %1"
+msgstr "Kleiner dan of gelijk aan: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Greater than: %1"
+msgstr "Groter dan: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Greater than or equal to: %1"
+msgstr "Groter dan of gelijk aan: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "And: %1"
+msgstr "En: %1"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Or: %1"
+msgstr "Of: %1"
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Split: applies filter separately to each subgroup"
+msgstr "Splits: voert een filter uit op elke groep"
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Not: %1"
+msgstr "Niet: %1"
+
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "none"
+msgstr "geen"
+
+msgctxt "PrincipalComponentAnalysis|"
+msgid "none"
+msgstr "geen"
+
+msgctxt "PrincipalComponentAnalysis|"
+msgid "Table"
+msgstr "Tabel"
+
+msgctxt "PrincipalComponentAnalysis|"
+msgid "Factor correlations"
+msgstr "Factorcorrelaties"
+
+msgctxt "PrincipalComponentAnalysis|"
+msgid "Plots"
+msgstr "Grafieken"
+
+msgctxt "ContingencyTablesBayesian|"
+msgid "Cells"
+msgstr "Cellen"
+
+msgctxt "ContingencyTablesBayesian|"
+msgid "Percentages"
+msgstr "Percentages"
+
+msgctxt "ContingencyTablesBayesian|"
+msgid "Row"
+msgstr "Rij"
+
+msgctxt "ContingencyTablesBayesian|"
+msgid "Column"
+msgstr "Kolom"
+
+msgctxt "ContingencyTablesBayesian|"
+msgid "Total"
+msgstr "Totaal"
+
+msgctxt "ClassicalMetaAnalysis|"
+msgid "Fixed Effects"
+msgstr "Gefixeerde effecten"
+
+msgctxt "ClassicalMetaAnalysis|"
+msgid "Likelihood"
+msgstr "Likelihood"
+
+msgctxt "ClassicalMetaAnalysis|"
+msgid "Restricted ML"
+msgstr "Restricted ML"
+
+msgctxt "ClassicalMetaAnalysis|"
+msgid "Hedges"
+msgstr "Hedges"
+
+msgctxt "ClassicalMetaAnalysis|"
+msgid "Empirical Bayes"
+msgstr "Empirische Bayes"
+
+msgctxt "NetworkAnalysis|"
+msgid "red"
+msgstr "rood"
+
+msgctxt "NetworkAnalysis|"
+msgid "blue"
+msgstr "blauw"
+
+msgctxt "NetworkAnalysis|"
+msgid "yellow"
+msgstr "geel"
+
+msgctxt "NetworkAnalysis|"
+msgid "green"
+msgstr "groen"
+
+msgctxt "NetworkAnalysis|"
+msgid "purple"
+msgstr "paars"
+
+msgctxt "NetworkAnalysis|"
+msgid "orange"
+msgstr "oranje"
+
+#, qt-format
+msgctxt "BoundQMLRepeatedMeasuresFactors|"
+msgid "Level %1"
+msgstr "Level %1"
+
+#, qt-format
+msgctxt "BoundQMLRepeatedMeasuresFactors|"
+msgid "RM Factor %1"
+msgstr "BP Factor %1"
+
+#, qt-format
+msgctxt "ListModelRepeatedMeasuresFactors|"
+msgid "Level %1"
+msgstr "Level %1"
+
+#, qt-format
+msgctxt "ListModelRepeatedMeasuresFactors|"
+msgid "RM Factor %1"
+msgstr "BP Factor %1"
+
+msgctxt "HelpModel|"
+msgid ""
+"Coming Soon!\n"
+"========\n"
+"\n"
+"There is currently no help available for this analysis.\n"
+"\n"
+"Additional documentation will be available in future releases of JASP."
+msgstr ""
+"Binnenkort beschikbaar!\n"
+"========\n"
+"\n"
+"Er is momenteel geen hulp beschikbaar voor deze analysis.\n"
+"\n"
+"Er zal documentatie worden toegevoegd in een toekomstige versie van JASP."
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""

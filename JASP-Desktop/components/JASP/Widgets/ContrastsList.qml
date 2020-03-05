@@ -52,9 +52,25 @@ Item
 				{
 					name		: "contrast"
 					values		: addCustom
-								  ? ["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial", "custom"]
-								  :	["none", "deviation", "simple", "difference", "Helmert", "repeated", "polynomial"]
-
+								  ? [
+										{ label: qsTr("none"), value: "none" },
+										{ label: qsTr("deviation"), value: "deviation" },
+										{ label: qsTr("simple"), value: "simple" },
+										{ label: qsTr("difference"), value: "difference" },
+										{ label: qsTr("Helmert"), value: "Helmert" },
+										{ label: qsTr("repeated"), value: "repeated" },
+										{ label: qsTr("polynomial"), value: "polynomial" },
+										{ label: qsTr("custom"), value: "custom" }
+									]
+								  :	[
+										{ label: qsTr("none"), value: "none" },
+										{ label: qsTr("deviation"), value: "deviation" },
+										{ label: qsTr("simple"), value: "simple" },
+										{ label: qsTr("difference"), value: "difference" },
+										{ label: qsTr("Helmert"), value: "Helmert" },
+										{ label: qsTr("repeated"), value: "repeated" },
+										{ label: qsTr("polynomial"), value: "polynomial" }
+									]
 				}
 			}
 		]

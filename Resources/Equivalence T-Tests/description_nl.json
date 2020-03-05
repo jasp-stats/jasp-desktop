@@ -31,8 +31,8 @@
           "function": "EquivalencePairedSamplesTTest"
         },
         {
-          "title":    "Gelijkwaardigheids One Sample T-Toets",
-          "menu":     "One Sample T-Toets",
+		  "title":    "Gelijkwaardigheids T-Toets voor Eén Gemiddelde",
+		  "menu":     "T-Toets voor Eén Gemiddelde",
           "qml":      "EquivalenceOneSampleTTest.qml",
           "function": "EquivalenceOneSampleTTest"
         },
@@ -52,8 +52,8 @@
           "function": "EquivalenceBayesianPairedSamplesTTest"
         },
         {
-          "title":    "Gelijkwaardigheids Bayesiaanse One Sample T-Toets",
-          "menu":     "Bayesiaanse One Sample T-Toets",
+		  "title":    "Gelijkwaardigheids Bayesiaanse T-Toets voor Eén Gemiddelde",
+		  "menu":     "Bayesiaanse T-Toets voor Eén Gemiddelde",
           "qml":      "EquivalenceBayesianOneSampleTTest.qml",
           "function": "EquivalenceBayesianOneSampleTTest"
         }

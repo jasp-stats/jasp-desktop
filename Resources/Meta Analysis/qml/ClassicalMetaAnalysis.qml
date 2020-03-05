@@ -29,7 +29,21 @@ Form
 		AvailableVariablesList { name: "allVariables" }
 		AssignedVariablesList { name: "dependent";	title: qsTr("Effect Size"); singleVariable: true; suggestedColumns: ["scale"] }
 		AssignedVariablesList { name: "wlsWeights";	title: qsTr("Effect Size Standard Error"); singleVariable: true; suggestedColumns: ["scale"] }
-		DropDown { name: "method"; label: qsTr("Method"); currentIndex: 2; values: [ "Fixed Effects", "Maximum Likelihood", "Restricted ML", "DerSimonian-Laird", "Hedges", "Hunter-Schmidt", "Sidik-Jonkman", "Empirical Bayes", "Paule-Mandel"]; }
+		DropDown
+		{
+			name: "method"; label: qsTr("Method"); currentIndex: 2
+			values: [
+				{ label: qsTr("Fixed Effects")	, value: "Fixed Effects"		},
+				{ label: qsTr("Likelihood")		, value: "Likelihood"			},
+				{ label: qsTr("Restricted ML")	, value: "Restricted ML"		},
+				{ label: "DerSimonian-Laird"	, value: "DerSimonian-Laird"	},
+				{ label: qsTr("Hedges")			, value: "Hedges"				},
+				{ label: "Hunter-Schmidt"		, value: "Hunter-Schmidt"		},
+				{ label: "Sidik-Jonkman"		, value: "Sidik-Jonkman"		},
+				{ label: qsTr("Empirical Bayes"), value: "Empirical Bayes"		},
+				{ label: "Paule-Mandel"			, value: "Paule-Mandel"			}
+			]
+		}
         AssignedVariablesList { name: "studyLabels";	title: qsTr("Study Labels"); singleVariable: true; suggestedColumns: ["ordinal", "nominal"] }
 		AssignedVariablesList { name: "covariates";	title: qsTr("Covariates"); suggestedColumns: ["scale"] }
 		AssignedVariablesList { name: "factors";	title: qsTr("Factors"); suggestedColumns: ["ordinal", "nominal"] }

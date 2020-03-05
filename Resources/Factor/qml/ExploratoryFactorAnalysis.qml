@@ -99,8 +99,19 @@ Form
             {
                 value	: "orthogonal"
                 label	: qsTr("Orthogonal")
-                DropDown { name: "orthogonalSelector"; values: ["none", "varimax", "quartimax", "bentlerT", "equamax", "geominT"] }
-            }
+				DropDown
+				{
+					name: "orthogonalSelector"
+					values: [
+						{ label: qsTr("none")	, value: "none"			},
+						{ label: "varimax"		, value: "varimax"		},
+						{ label: "quartimax"	, value: "quartimax"	},
+						{ label: "bentlerT"		, value: "bentlerT"		},
+						{ label: "equamax"		, value: "equamax"		},
+						{ label: "geominT"		, value: "geominT"		}
+					]
+				}
+			}
             RadioButton
             {
                 value	: "oblique"

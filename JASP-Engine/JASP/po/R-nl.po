@@ -1349,7 +1349,7 @@ msgid "<b>Table %1$i.</b> Selected Observations"
 msgstr "<b>Tabel %1$i.</b> Geselecteerde Observaties"
 
 msgid "<b>Table %1$i.</b> Selection Descriptive Statistics"
-msgstr "<b>Tabel %1$i.</b> Selectie Kengetallen"
+msgstr "<b>Tabel %1$i.</b> Selectie Beschrijvende statistiek"
 
 msgid "Valid cases"
 msgstr "Geldige waarnemingen"
@@ -1604,7 +1604,7 @@ msgstr ""
 "b>."
 
 msgid "<b>Table %i.</b> Prior and Expected Posterior Descriptive Statistics"
-msgstr "<b>Tabel %i.</b> Prior en verwachte posterior kengetallen"
+msgstr "<b>Tabel %i.</b> Prior en Verwachte Posterior Beschrijvende Statistiek"
 
 msgid "Functional form"
 msgstr "Functionele vorm"
@@ -1708,7 +1708,7 @@ msgstr ""
 "de misstatement in de populatie. %3$s"
 
 msgid "<b>Table %i.</b> Prior and Posterior Descriptive Statistics"
-msgstr "<b>Tabel %i.</b> Prior en Posterior Kengetallen"
+msgstr "<b>Tabel %i.</b> Prior en Posterior Beschrijvende statistiek"
 
 msgid "Shift"
 msgstr "Shift"
@@ -1800,7 +1800,7 @@ msgstr ""
 "waarden bevatten, zijn niet meegenomen in de analyse."
 
 msgid "Descriptive Statistics"
-msgstr "Kengetallen"
+msgstr "Beschrijvende statistiek"
 
 msgid "Coefficients for Groups plus Covariates"
 msgstr "Coëfficiënten voor Groepen plus Covariaten"

@@ -54,11 +54,10 @@ void HelpModel::generateJavascript()
 		//Fall back to English
 		if (!loadHelpContent(_pagePath, true, renderFunc, content))
 		{
-			content = tr("Coming Soon!\n========\n\nThere is currently no help available for this analysis");
+			content = tr("Coming Soon!\n========\n\nThere is currently no help available for this analysis.\n\nAdditional documentation will be available in future releases of JASP.");
 #ifdef JASP_DEBUG
-			content += 	 " (" + _pagePath + ")";
+			content += " (" + _pagePath + ")";
 #endif
-			content += tr(".\n\nAdditional documentation will be available in future releases of JASP.");
 		}
 	}
 
