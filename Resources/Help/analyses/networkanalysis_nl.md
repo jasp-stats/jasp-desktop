@@ -1,7 +1,7 @@
 Netwerkanalyse
 ===
 
-Met netwerkanalyse kan de gebruiker de netwerkstructuur van variabelen analyseren. Laad de data in het veld `Variabelen`. Om netwerken van verschillende groepen te vergelijken, kan je een groeperingsvariabele toevoegen in `Opdelen`. In netwerken worden 'knopen' geobserveerde variabelen genoemd en worden geschatte relaties 'paden' genoemd.
+Met netwerkanalyse kan de gebruiker de netwerkstructuur van variabelen analyseren. Laad de data in het veld `Variabelen`. Om netwerken van verschillende groepen te vergelijken, kunt u een groepen toevoegen in `Opdelen`. In netwerken worden 'knopen' geobserveerde variabelen genoemd en worden geschatte relaties 'paden' genoemd.
 
 
 ### Assumpties
@@ -9,20 +9,20 @@ Met netwerkanalyse kan de gebruiker de netwerkstructuur van variabelen analysere
 Assumpties kunnen variëren per netwerkanalyse methode. In het algemeen wordt aangenomen dat relaties tussen variabelen *lineair* zijn. 
 
 Aanvullende assumpties voor sommige netwerken:
-- Correlatie $ partiële correlatie netwerken: Als je de paden wil interpreteren met enkel significante (partiële) correlaties, moet je data normaal zijn verdeeld. Deze assumptie maakt alleen uit voor de significantie toets.
-- EBICglasso: Je data is normaal verdeeld.
-- Gemixte grafische modellen: Je variabelen zijn normaal verdeeld, categorisch, of komen van een Poissonverdeling.
+- Correlatie $ partiële correlatie netwerken: Als u de paden wilt interpreteren met enkel significante (partiële) correlaties, moet uw data normaal zijn verdeeld. Deze assumptie maakt alleen uit voor de significantie toets.
+- EBICglasso: Uw data is normaal verdeeld.
+- Gemixte grafische modellen: uw variabelen zijn normaal verdeeld, categorisch, of komen van een Poissonverdeling.
 
 
 ### Invoer
 ---
 
 #### Invoerveld 
-- Variabelen: In dit veld selecteer je alle afhankelijke variabelen.
+- Variabelen: In dit veld selecteert u alle afhankelijke variabelen.
 - Opdelen: Deel de data op aan de hand van een categorische variabele, zoals een experimentele conditie. 
 
 #### Schatter 
-Deze analyse laat je niet één, maar meerdere type netwerken schatten. De ondersteunde netwerken zijn:
+Deze analyse laat u niet één, maar meerdere type netwerken schatten. De ondersteunde netwerken zijn:
 - Correlatie netwerken. 
 - Partiële correlatie netwerken.
 - EBICglasso Netwerken(Foygel & Drton, 2010; Friedman, Hastie, & Tibshirani, 2008; Friedman, Hastie, & Tibshirani, 2014).
@@ -59,17 +59,17 @@ Welke regel moet er worden gebruikt om te bepalen of er een pad is tussen twee k
 - `OF`: Een van de schatters moet niet 0 zijn.
 
 #### Opdelen 
-Wanneer je een Ising model schat (met de IsingFit of de IsingSampler), worden niet-binaire variabelen gebinariseerd door middel van: 
+Wanneer u een Ising model schat (met de IsingFit of de IsingSampler), worden niet-binaire variabelen gebinariseerd door middel van: 
 - `Mediaan`: De mediaan van de observaties. 
 - `Gemiddelde`: Het gemiddelde van de observaties.
 
 #### Type Variabele 
-Wanneer je het gemixte grafische model gebruikt, kan je hier een variabele invoeren om het type variabele te specificeren. Toegestane invoer bestaat uit:
+Wanneer u het gemixte grafische model gebruikt, kunt u hier een variabele invoeren om het type variabele te specificeren. Toegestane invoer bestaat uit:
 - `g`: Voor normaal verdeelde / Gaussiaanse variabelen.
 - `c`: Voor categorische variabelen.
 - `p`: Voor Poisson variabelen.
 
-De data moet van het formaat `variabeleNaam` = `groep` zijn. Als een variabele bijvoorbeeld "aantal voertuigen" heet en het een Poissonverdeling volgt, noem je hem `aantal voertuigen = p`.
+De data moet van het formaat `variabeleNaam` = `groep` zijn. Als een variabele bijvoorbeeld "aantal voertuigen" heet en het een Poissonverdeling volgt, noemt u hem `aantal voertuigen = p`.
 
 #### Ising Schatter 
 Er bestaan vele methoden om Ising modellen te schatten. De ondersteunde methoden zijn:
@@ -78,11 +78,11 @@ Er bestaan vele methoden om Ising modellen te schatten. De ondersteunde methoden
 - `Bivariate regressies`: Berekenen bivariate logistische regressies van elke knoop naar elke andere knoop. Dit geeft twee schattingen voor elke pad welke dan worden gecombineerd door de methode gespecificeerd onder *regel*.
 - `Loglineair`: Schat het Ising model alsof het een loglineair model is dat hoogstens paarsgewijze interacties heeft.
 
-#### Missende Waarden 
-Hoe moet met missende waarden worden omgegaan? Sommige analyses staan paarsgewijze uitsluiting toe, maar niet allemaal.
+#### Ontbrekende Waarden 
+Hoe moet met ontbrekende waarden worden omgegaan? Sommige analyses staan paarsgewijze uitsluiting toe, maar niet allemaal.
 
 #### Afstel Parameters
-Deze parameter is de &gamma; hyperparameter van de EBIC schattingsprocedure. Het bepaalt de schaarsheid van het geschatte netwerk. Als je het op 0 zet, wordt de gewone BIC gebruikt. 
+Deze parameter is de &gamma; hyperparameter van de EBIC schattingsprocedure. Het bepaalt de schaarsheid van het geschatte netwerk. Als u het op 0 zet, wordt de gewone BIC gebruikt. 
 
 #### Kruisvalidatie
 Hoeveel kruisvalidatie steekproeven moeten er genomen worden. Deze methode wordt alleen gebruikt door de adaptieve lasso en de gemixte grafische modellen (als het criterium op kruisvalidatie wordt gezet). 
@@ -92,8 +92,8 @@ Drempelwaarden die worden gebruikt in correlatie of partiële correlatie netwerk
 - `Significant`: Laat de paden zijn die significant zijn bij het 0.05 niveau.
 - `Bonferroni`: Net als `Significant`, maar dan met Bonferroni correctie.
 - `Holm`: Net als `Significant`, maar dan met Holm correctie.
-- `Hochberg`: Net als `Significant`, maar dan met Hochberg correctie. Neemt aan dat hypothesetoetsen onafhankelijk of non-negatief geassocieerd zijn. 
-- `Hommel`: Net als `Significant`, maar dan met Hommel correctie. Neemt aan dat hypothesetoetsen onafhankelijk of non-negatief geassocieerd zijn. 
+- `Hochberg`: Net als `Significant`, maar dan met Hochberg correctie. Neemt aan dat hypothesetoetsen onafhankelijk of niet-negatief geassocieerd zijn. 
+- `Hommel`: Net als `Significant`, maar dan met Hommel correctie. Neemt aan dat hypothesetoetsen onafhankelijk of niet-negatief geassocieerd zijn. 
 - `BH`: Net als `Significant`, maar controleert voor de valse ontdekking rate. 
 
 In de meeste scenario's is de `Bonferroni` methode nogal beperkend en heeft de `Holm` methode de voorkeur.
@@ -108,22 +108,22 @@ Welk criterium moet gebruikt worden om het netwerk te fitten? Beschikbare opties
 #### Steekproef grootte 
 
 #### Netwerk 
-Als je `gewogen` ontvinkt, bestaat het geschatte netwerk alleen uit positieve (1), negatieve (-1) en afwezige (0) paden. Als je `Gesigneerd` ontvinkt, bestaat het netwerk alleen uit positieve paden. Let op: de absolute waarde wordt genomen van de negatieve paden om ze positief te maken. Als je zowel `Gewogen` als `Gesigneerd` ontvinkt, zegt het netwerk of er een pad (1) is of niet (0).
+Als u `gewogen` uitvinkt, bestaat het geschatte netwerk alleen uit positieve (1), negatieve (-1) en afwezige (0) paden. Als u `Gesigneerd` uitvinkt, bestaat het netwerk alleen uit positieve paden. Let op: de absolute waarde wordt genomen van de negatieve paden om ze positief te maken. Als u zowel `Gewogen` als `Gesigneerd` uitvinkt, zegt het netwerk of er een pad (1) is of niet (0).
 
 
 #### Centraliteitsmaten 
-Centraliteitsmaten van een netwerk kunnen moeilijk zijn om te vergelijken. Om dit de faciliteren kan je `Genormaliseerd` selecteren om te zorgen dat alle centraliteitsmaten een gemiddelde van 0 en variantie van 1 hebben. Je kan ook `relatief` selecteren om elke centraliteitsmaat te delen door zijn maximaal geobserveerde waarde.
+Centraliteitsmaten van een netwerk kunnen moeilijk zijn om te vergelijken. Om dit de faciliteren kunt u `Genormaliseerd` selecteren om te zorgen dat alle centraliteitsmaten een gemiddelde van 0 en variantie van 1 hebben. U kunt ook `relatief` selecteren om elke centraliteitsmaat te delen door zijn maximaal geobserveerde waarde.
 
 
 ### Bootstrap opties
-Om de stabiliteit van een geschat netwerk te onderzoeken, kan je `Bootstrap Network` aanvinken onder `Schatter`. Zo worden de paden van het geschatte netwerk en hun centraliteit automatisch gebootstrapt. Aanvullende opties kunnen worden gespecificeerd, zoals het aantal bootstraps en het type bootstrap.
+Om de stabiliteit van een geschat netwerk te onderzoeken, kunt u `Bootstrap Network` aanvinken onder `Schatter`. Zo worden de paden van het geschatte netwerk en hun centraliteit automatisch gebootstrapt. Aanvullende opties kunnen worden gespecificeerd, zoals het aantal bootstraps en het type bootstrap.
 
 
 ### Grafische opties 
 Alle onderstaande opties passen de uitvoer van de netwerkgrafiek aan. Andere figuren en tabellen worden niet veranderd. Om netwerkgrafieken mooier te maken, bestaan vele opties. 
 
 #### Lay-out
-De lay-out van een netwerk bepaalt waar de knopen worden geplaatst. De standaardoptie is `spring`, wat betekent dat de lay-out wordt gegenereerd door het krachtgedreven Fruchterman-Reingold algoritme (TODO: ref). Dit algoritme kan worden aangepast met de `repulsie` parameter; een grotere repulsie verhoogt de afstand tussen nabije knopen. Je kan ook alle knopen weergeven in een cirkel door de `cirkel` lay-out te selecteren. Een derde optie is `data`. Hier kunnen coördinaten voor de netwerken worden gegeven. De data moet van het `variabeleNaam` = `groep` formaat zijn net als `type variabele` en `kleur knopen per` . Als een variabele bijvoorbeeld "A1" heet en moet worden geplot op x-coördinaat 1, wordt dit "A1 = 1".
+De lay-out van een netwerk bepaalt waar de knopen worden geplaatst. De standaardoptie is `spring`, wat betekent dat de lay-out wordt gegenereerd door het krachtgedreven Fruchterman-Reingold algoritme (TODO: ref). Dit algoritme kan worden aangepast met de `repulsie` parameter; een grotere repulsie verhoogt de afstand tussen nabije knopen. U kunt ook alle knopen weergeven in een cirkel door de `cirkel` lay-out te selecteren. Een derde optie is `data`. Hier kunnen coördinaten voor de netwerken worden gegeven. De data moet van het `variabeleNaam` = `groep` formaat zijn net als `type variabele` en `kleur knopen per` . Als een variabele bijvoorbeeld "A1" heet en moet worden geplot op x-coördinaat 1, wordt dit "A1 = 1".
 
 #### Paden
 - `Padgrootte`: Een vermenigvuldiger voor de grootte van paden (bijv., 2 is twee keer zo groot).
@@ -134,7 +134,7 @@ De lay-out van een netwerk bepaalt waar de knopen worden geplaatst. De standaard
 - `kleuren pallet`: Welke kleuren moeten gebruikt worden voor positieve en negatieve paden?
 
 #### Netwerkgrootte
-Wanneer je het netwerk exporteert, kan het handig zijn om bepaalde breedtes of hoogtes te forceren. Je kan de grootte van een netwerkgrafiek altijd aanpassen door op de rechter onderkant van de grafiek te klikken en je muis te slepen. Er kunnen echter beperkingen voor de breedte of hoogte zijn op basis van de optie die je heb geselecteerd:
+Wanneer u het netwerk exporteert, kan het handig zijn om bepaalde breedtes of hoogtes te forceren. U kunt de grootte van een netwerkgrafiek altijd aanpassen door op de rechter onderkant van de grafiek te klikken en uw muis te slepen. Er kunnen echter beperkingen voor de breedte of hoogte zijn op basis van de optie die u heeft geselecteerd:
 - `Vaste ratio`: Zet de breedte/hoogte ratio vast. Zorgt dat de grafiek vierkant is. Als er een legenda is, wordt de breedte vastgezet op 1.4 keer de hoogte van de grafiek.
 - `Free`: Maak geen beperkingen voor de breedte en hoogte van de grafiek.
 
@@ -159,7 +159,7 @@ Er zijn drie opties:
 Een alternatief voor het verkorten van knoop labels is om ze te laten zien in de legenda. Dit kan door `In legenda` aan te klikken, of kan ongedaan worden door op `In knopen` te klikken.
 
 #### Geef type variabele weer
-Wanneer je een gemixt grafisch model schat, kan de aangenomen verdeling van een variabele worden weergegeven op verschillende manieren:
+Wanneer u een gemixt grafisch model schat, kan de aangenomen verdeling van een variabele worden weergegeven op verschillende manieren:
 - `Laat niet zien`: Laat de aangenomen verdeling niet zien.
 - `Met de knoop kleuren`: Pas de kleur van de knopen aan op basis van hun aangenomen verdeling. Wordt gegenereerd als `kleur knopen op` aanstaat.
 - `Met de knoop vorm`: Verander de vorm van de knopen op basis van hun aangenomen verdeling. Gaussiaanse knopen zijn cirkels, categorische knopen zijn vierkanten en Poisson knopen zijn driehoeken.

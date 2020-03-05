@@ -6,14 +6,14 @@ Met betrekking tot alle analyse resultaten in JASP kan er uit de volgende opties
 
 ## Tabel Opties
 
-### Geef exacte p-waardes weer 
+### Geef exacte p-waarden weer 
 
-Hier kan worden gespecificeerd of p-waardes worden getoond als "< .001" of dat er een exacte waarde moet worden gegeven. 
+Hier kan worden gespecificeerd of p-waarden worden getoond als "< .001" of dat er een exacte waarde moet worden gegeven. 
 
 
 ### zet het aantal decimalen vast
 
-Deze instelling heeft betrekking op het aantal decimalen dat JASP laat zien voor numerieke waardes. 
+Deze instelling heeft betrekking op het aantal decimalen dat JASP laat zien voor numerieke waarden. 
 
 ## Grafiek Opties
 

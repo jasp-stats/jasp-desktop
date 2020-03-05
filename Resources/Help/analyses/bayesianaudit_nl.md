@@ -9,24 +9,24 @@ Werkflow
 -----------
 De Bayesiaanse audit werkflow bestaat uit vier aparte stadia, elk met een eigen doel:
 - Planning: Bereken de steekproefgrootte die nodig is voor het gewenste oordeel over de populatie. 
-- Selectie: Selecteer de benodigde observaties uit je populatie.
-- Uitvoering: Annoteer je data met je oordeel over de eerlijkheid van de geselecteerde observaties.
-- Evaluatie: Maak een oordeel over de populatie op basis van je geannoteerde selectie.
+- Selectie: Selecteer de benodigde observaties uit uw populatie.
+- Uitvoering: Annoteer uw data met uw oordeel over de eerlijkheid van de geselecteerde observaties.
+- Evaluatie: Maak een oordeel over de populatie op basis van uw geannoteerde selectie.
 
 ----
 
 Standaard opties
 -------
 ### Materialiteit van de populatie:
-- Absoluut: Voer de materialiteit van je populatie in als geldwaarde.
-- Relatief: Voer de materialiteit van je populatie in als percentage van de totaalwaarde.
+- Absoluut: Voer de materialiteit van uw populatie in als geldwaarde.
+- Relatief: Voer de materialiteit van uw populatie in als percentage van de totaalwaarde.
 
 ### Audit Risico
 - Zekerheid: Het niveau van zekerheid van de analyse. Het zekerheidsniveau is het audit risico van de audit.
 
-### Hoe wil je je variabelen evalueren? 
-- Audit waarden: Als je deze optie selecteert moet je de selectie annoteren met de echte waarden van de observaties. Wanneer deze correct is, vul dan precies dezelfde waarde als de boekwaarde van de transactie in.
-- Correct / Incorrect: Als je deze optie selecteert moet je de selectie annoteren met een indicator over of observaties correct (0) of incorrect (1) zijn.
+### Hoe wilt u uw variabelen evalueren? 
+- Audit waarden: Als u deze optie selecteert moet u de selectie annoteren met de echte waarden van de observaties. Wanneer deze correct is, vul dan precies dezelfde waarde als de boekwaarde van de transactie in.
+- Correct / Incorrect: Als u deze optie selecteert moet u de selectie annoteren met een indicator over of observaties correct (0) of incorrect (1) zijn.
 
 ----
 
@@ -40,11 +40,11 @@ Geavanceerde opties.
 Als beide risicobeoordelingen op Hoog (100%) worden gezet, wordt het audit risico model niet gebruikt om het detectierisico bij te stellen. 
 
 ### Verwachte fouten:
-- Absoluut: Voer je verwachte fouten in als geldwaarde (bijv., $1000 in een totale balans van $1000000).
-- Relatief: Voel je verwachte fouten in als percentage van de totale grootte van de selectie.
+- Absoluut: Voer uw verwachte fouten in als geldwaarde (bijv., $1000 in een totale balans van $1000000).
+- Relatief: Voel uw verwachte fouten in als percentage van de totale grootte van de selectie.
 
 ### Toelichtende tekst:
-- Schakelt toelichtende tekst in door de werkflow om je te helpen de statistische resultaten en procedure te interpreteren. 
+- Schakelt toelichtende tekst in door de werkflow om u te helpen de statistische resultaten en procedure te interpreteren. 
 
 ### Planning verdeling:
 - Beta: De beta verdeling voor broken taints (de Swart, Wille & Majoor, 2013).

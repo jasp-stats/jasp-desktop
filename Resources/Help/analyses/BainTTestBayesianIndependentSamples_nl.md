@@ -18,12 +18,12 @@ Met de bain (Bayesian informative hypotheses evaluation) Welch toets kan de gebr
 4. H1: m1 > m2 versus H2: m1 < m2
 5. H0: m1 = m2 versus H1: m1 > m2 versus H2: m1 < m2
 
-- Als onder de Bayes Factor label wordt gekozen voor BF01, dan geven Bayes factor waardes groter dan 1 bewijs voor H0. Als wordt gekozen voor BF10, dan geven Bayes factor waardes groter dan 1 bewijs voor H1 (of H2). 
+- Als onder de Bayes Factor label wordt gekozen voor BF01, dan geven Bayes factor waarden groter dan 1 bewijs voor H0. Als wordt gekozen voor BF10, dan geven Bayes factor waarden groter dan 1 bewijs voor H1 (of H2). 
 
 ### Verkregen resultaten na het uitvoeren van de bain Welch toets
 
-- Om de resultaten van de bain Welch toets goed te kunnen interpreteren, kan je de TUTORIAL van Hoijtink, Mulder, van Lissa, and Gu (2018) lezen. Deze kan worden gevonden op de Psychological Methods website, of op de bain website via https://informative-hypotheses.sites.uu.nl/software/bain/
-- Om de technische achtergrond van bain te begrijpen, kan je Gu, Mulder, en Hoijtink (2017) en Hoijtink, Gu, en Mulder (2018) lezen. Deze kunnen worden gevonden op de website van the British Journal of Mathematical and Statistical Psychology, of op de bain website via https://informative-hypotheses.sites.uu.nl/software/bain/
+- Om de resultaten van de bain Welch toets goed te kunnen interpreteren, kunt u de TUTORIAL van Hoijtink, Mulder, van Lissa, and Gu (2018) lezen. Deze kan worden gevonden op de Psychological Methods website, of op de bain website via https://informative-hypotheses.sites.uu.nl/software/bain/
+- Om de technische achtergrond van bain te begrijpen, kunt u Gu, Mulder, en Hoijtink (2017) en Hoijtink, Gu, en Mulder (2018) lezen. Deze kunnen worden gevonden op de website van the British Journal of Mathematical and Statistical Psychology, of op de bain website via https://informative-hypotheses.sites.uu.nl/software/bain/
 - Na het uitvoeren van de Bayesiaanse Welch toets worden voor iedere afhankelijke variabele vier resultaten verkregen:
 
 1. De tabel waarin de Bayes factor van H0 versus de alternatieve hypothese wordt weergegeven. Deze tabel bevat ook de posterior model kans van iedere hypothese. 

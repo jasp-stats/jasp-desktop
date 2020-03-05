@@ -3,7 +3,7 @@ Mediatie Analyse
 
 Mediatie analyse met mogelijk meerdere predictoren, meerdere mediatoren, meerdere uitkomsten, en een optionele correctie voor meerdere achtergrond confounds. Mediatie analyse in JASP is gebaseerd op de uitstekende `lavaan` software (Rosseel, 2012). Er is meer informatie te vinden over `lavaan` op [lavaan.org](http://lavaan.org). 
 
-Mediatie analyse in JASP is mogelijk voor continue en ordinale variabelen en voor binaire en continue exogene variabelen. Voor binaire endogene variabelen kan je je variabelen hercoderen in een "dummy" continue variabele met 0 als de eerste categorie en 1 voor de tweede. De lineariteitsassumptie geldt nog steeds, maar SEM doet bijvoorbeeld geen logistische regressies.
+Mediatie analyse in JASP is mogelijk voor continue en ordinale variabelen en voor binaire en continue exogene variabelen. Voor binaire endogene variabelen kunt u uw variabelen hercoderen in een "dummy" continue variabele met 0 als de eerste categorie en 1 voor de tweede. De lineariteitsassumptie geldt nog steeds, maar SEM doet bijvoorbeeld geen logistische regressies.
 
 
 Voor meer informatie over de toegestane datatypen, zie [de lavaan website](http://lavaan.ugent.be/tutorial/cat.html).
@@ -35,10 +35,10 @@ Laat de syntax zien die nodig is om dit model te schatten met `lavaan` in `R` of
 Een tabel met de proportie van de variantie die wordt verklaard voor elk van de endogene variabelen in het mediatie model.
 
 #### Parameter schattingen
-Onder deze optie kan je verschillende parameter schattingstabellen aanvinken om weer te geven in de uitvoer van de analyse.
+Onder deze optie kunt u verschillende parameter schattingstabellen aanvinken om weer te geven in de uitvoer van de analyse.
 
 #### Betrouwbaarheidsintervallen 
-Hier kan je verschillende manieren om de onzekerheid rond de parameter schattingen schatten. Een notitie onder de hoofdtabellen zal de methode weergeven waarmee de standaardafwijking en betrouwbaarheidsintervallen zijn berekend. Zie ook de __details over het testen van indirecte effecten__ 
+Hier kunt u verschillende manieren om de onzekerheid rond de parameter schattingen schatten. Een notitie onder de hoofdtabellen zal de methode weergeven waarmee de standaardafwijking en betrouwbaarheidsintervallen zijn berekend. Zie ook de __details over het testen van indirecte effecten__ 
 
 #### Grafieken
 Deze optie laat gebruikers het padmodel dat is geschat door de mediatie analyse grafisch weergeven. De parameters kunnen worden weergegeven in deze grafiek. Als de labels overlappen kan de grafiek worden opgeslagen als een EPS en worden bewerkt in een vector bewerkingsprogramma.

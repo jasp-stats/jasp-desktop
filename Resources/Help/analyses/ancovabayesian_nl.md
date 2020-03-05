@@ -20,9 +20,9 @@ Met de Bayesiaanse ANCOVA kan men het verschil tussen meerdere groepsgemiddelden
 - Covariaten: In dit veld kan de variabele die de covariaat is worden geselecteerd. Covariaten zijn continue variabelen die een invloed uitoefenen op de afhankelijke variabele, maar geen deel uitmaken van de experimentele manipulatie.  
 
 #### Bayes Factor  
-- BF<sub>10</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
-- Log(BF<sub>10</sub>) : Als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
+- BF<sub>10</sub>: Als u deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als u deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- Log(BF<sub>10</sub>) : Als u deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
 
 #### Uitvoer 
  - Effecten: Als deze optie wordt geselecteerd, wordt de kans op inclusie van elke component (i.e., modelterm) in de modellen berekend. 
@@ -81,7 +81,7 @@ Met de Bayesiaanse ANCOVA kan men het verschil tussen meerdere groepsgemiddelden
 
   Dan is het mogelijk om het volgende te selecteren:
 	- Correctie
-	  - Nulcontrole: Wanneer deze optie is geselecteerd, worden de prior odds gecorrigeerd voor meervoudig toetsen. Dit is de standaardoptie. Momenteel wordt er geen uitvoer voor de post-hoc toetsen gegenereerd als je deze optie niet selecteert. 
+	  - Nulcontrole: Wanneer deze optie is geselecteerd, worden de prior odds gecorrigeerd voor meervoudig toetsen. Dit is de standaardoptie. Momenteel wordt er geen uitvoer voor de post-hoc toetsen gegenereerd als u deze optie niet selecteert. 
 
 
 ### Beschrijvende grafieken
@@ -95,7 +95,7 @@ Met de Bayesiaanse ANCOVA kan men het verschil tussen meerdere groepsgemiddelden
 
 ### Aanvullende opties 
 - Prior: Hier kunnen de prior verdelingen worden ingesteld voor de willekeurige en vaste effectgroottes.
-	- r schaal vaste effecten: De vorm parameter van de prior verdeling voor vaste effecten. De standaardwaarde is 0.5, maar dit kan naar wens worden aangepast.
+	- r schaal gefixeerde effecten: De vorm parameter van de prior verdeling voor gefixeerde effecten. De standaardwaarde is 0.5, maar dit kan naar wens worden aangepast.
 	- r schaal willekeurige effecten: De vorm parameter van de prior verdeling voor de willekeurige effecten. De standaardwaarde is 1, maar dit kan naar wens worden aangepast. 
 - Numerieke precisie: Het aantal stappen dat wordt genomen om de integraal voor de Bayes factor te berekenen.
   - Auto: Als deze optie is geselecteerd, worden er 10000 stappen gezet. Dit is de standaardoptie.
@@ -104,7 +104,7 @@ Met de Bayesiaanse ANCOVA kan men het verschil tussen meerdere groepsgemiddelden
 	- Auto: Als deze optie is geselecteerd, worden er 10000 steekproeven gebruikt. Dit is de standaardoptie.
     - Handmatig: Als deze optie is geselecteerd, kan het aantal steekproeven handmatig worden ingesteld. Bij deze optie is de standaardwaarde 1000.
 - Reproduceerbaarheid:
-  - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Dit zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+  - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor uw analyse. Dit zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 ### Uitvoer
 ---
@@ -132,8 +132,8 @@ Samenvatting van Model Gemiddelde van de Posterior:
 - Gemiddelde: Het gemiddelde van het modelgemiddelde. Voor de factoren is dit de afwijking van de intercept voor elk niveau van de factor. De niveau gemiddelden voor een factoren tellen op tot 0. 
 - SD: De standaardafwijking van het modelgemiddelde. 
 - % Geloofwaardigheidsinterval: Het geloofwaardigheidsinterval van het gemiddelde. De standaardoptie is 95%.
-  - Linker: De linkergrens van het geloofwaardigheidsinterval van het gemiddelde.
-  - rechter: De rechtergrens van het geloofwaardigheidsinterval van het gemiddelde.
+  - Onder: De ondergrens van het geloofwaardigheidsinterval van het gemiddelde.
+  - Boven: De bovengrens van het geloofwaardigheidsinterval van het gemiddelde.
 
 #### Modelgemiddelde Posterior Verdelingen 
 Voor elke factor, interactie, en covariaat worden de modelgemiddelde posterior verdelingen per niveau weergegeven, met de factor op de x-as en dichtheid op de y-as. De posterior verdeling van elk niveau kan in dezelfde grafiek of in een andere grafiek worden weergegeven. 
@@ -160,8 +160,8 @@ Enkel model Samenvatting van de Posterior:
   - Gemiddelde: Het enkele model gemiddelde. Voor de factoren is dit de afwijking van de intercept voor elk niveau van de factor. De niveau gemiddelden voor een factor tellen op tot nul. 
   - SD: De standaardafwijking van van het enkele model gemiddelde. 
   - % Geloofwaardigheidsinterval: Het geloofwaardigheidsinterval van het gemiddelde. De standaardoptie is 95%.
-    - Linker: De linkergrens van het geloofwaardigheidsinterval van het gemiddelde.
-    - Rechter: De rechtergrens van het geloofwaardigheidsinterval van het gemiddelde. 
+    - Onder: De ondergrens van het geloofwaardigheidsinterval van het gemiddelde.
+    - Boven: De bovengrens van het geloofwaardigheidsinterval van het gemiddelde. 
 
 
 Posterior Verdelingen: 
@@ -180,8 +180,8 @@ Beschrijvende Statistieken - afhankelijke variabele:
 - SD: De standaardafwijking.
 - N: De steekproefgrootte.
   - % geloofwaardigheidsinterval: Het geloofwaardigheidsinterval van het gemiddelde. De standaardwaarde is 95%.
-    - Linker: De linkergrens van het geloofwaardigheidsinterval van het gemiddelde.
-    - rechter: De rechtergrens van het geloofwaardigheidsinterval van het gemiddelde.
+    - Onder: De ondergrens van het geloofwaardigheidsinterval van het gemiddelde.
+    - Boven: De bovengrens van het geloofwaardigheidsinterval van het gemiddelde.
 
 Beschrijvende Grafiek: 
 - Onafhankelijke variabele op de x-as en afhankelijke variabele op de y-as. Als andere onafhankelijke variabelen worden meegenomen, kunnen verschillende lijnen in dezelfde grafiek de andere onafhankelijke variabele weergeven, of kunnen er verschillende grafieken worden gemaakt voor verschillende onafhankelijke variabelen. 

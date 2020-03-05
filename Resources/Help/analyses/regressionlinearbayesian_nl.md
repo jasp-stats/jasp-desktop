@@ -14,8 +14,8 @@ Met de bayesiaanse Lineaire regressie kan men een lineaire relatie tussen een of
 ---
 
 #### Bayes Factor
-- BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nul hypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nul hypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- BF<sub>10</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nul hypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de nul hypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
 - Log(BF<sub>10</sub>) : Natuurlijk logaritme van BF10.
 
 #### Volgorde
@@ -34,7 +34,7 @@ Vergelijkt elk model met het geselecteerde model.
 ### Model
 - Componenten en model termen:
 	- Componenten: Alle onafhankelijke variabelen die in het model worden meegenomen.
-	- Model termen: De onafhankelijke variabelen in het model. De standaardoptie is om de hoofdeffecten van de gespecificeerde onafhankelijke variabelen in het model te betrekken. Vink meerdere variabelen aan om interacties mee te nemen (bijv., door de cntl/cmd knop op je toetsenbord ingedrukt te houden terwijl je klikt, en sleep de variabelen naar het `Model Termen` veld.
+	- Model termen: De onafhankelijke variabelen in het model. De standaardoptie is om de hoofdeffecten van de gespecificeerde onafhankelijke variabelen in het model te betrekken. Vink meerdere variabelen aan om interacties mee te nemen (bijv., door de ctrl/cmd knop op uw toetsenbord ingedrukt te houden terwijl u klikt, en sleep de variabelen naar het `Model Termen` veld.
 	
 ### Grafieken
 - Coëfficiënten
@@ -44,7 +44,7 @@ Vergelijkt elk model met het geselecteerde model.
   - Residuen vs gefit: Geeft een grafiek van de model gemiddelde predicties (BMA) tegen de residuen.
 - Modellen 
   - Posterior log odds: Geeft een heatmap van de log posterior odds tegen de model rang.
-  - Log(P(data|M)) vs model grootte: Geeft de relatie tussen de fit van een model en zijn complexiteit.
+  - Log(P(data|M)) vs model grootte: Geeft de relatie tussen de passing van een model en zijn complexiteit.
   - Model kansen: Geeft de cumulatieve verdeling functie van elk model.
 
 
@@ -66,10 +66,10 @@ Vergelijkt elk model met het geselecteerde model.
   - Beta binomiaal: Standaard Beta(a=1, b-1).
   - Bernoulli: Standaard p = 0.5.
 - Steekproef methode: Geeft aan welke steekproef methode wordt gebruikt. Het wordt aangeraden om *BAS* te gebruiken wanneer de model ruimte kan worden opgeteld.
-  - BAS: Gebruikt Bayesiaanse adaptieve steekproeven (zonder vervanging). Deze kan worden geüpdatet gebaseerd op schattingen van de marginale inclusie. *N. modellen* geeft het aantal modellen aan om steekproeven van te nemen zonder vervanging. Als je de waarde op 0 zet betekent dit dat de analyse zal proberen alle modellen op te tellen.
-  - MCMC: Steekproeven met vervanging door middel van een MCMC algoritme dat een birth/death random walk combineert met een random swap move om variabiliteit in het model uit te wisselen. *n. samples* geeft het aantal MCMC steekproeven aan. Als je de waarde op 0 zet is het aantal interacties 10 keer het aantal modellen. Het nemen van steekproeven stopt wanneer min(aantal modellen, MCMC iteraties) wordt bereikt. 
+  - BAS: Gebruikt Bayesiaanse adaptieve steekproeven (zonder vervanging). Deze kan worden geüpdatet gebaseerd op schattingen van de marginale inclusie. *N. modellen* geeft het aantal modellen aan om steekproeven van te nemen zonder vervanging. Als u de waarde op 0 zet betekent dit dat de analyse zal proberen alle modellen op te tellen.
+  - MCMC: Steekproeven met vervanging door middel van een MCMC algoritme dat een birth/death random walk combineert met een random swap move om variabiliteit in het model uit te wisselen. *n. samples* geeft het aantal MCMC steekproeven aan. Als u de waarde op 0 zet is het aantal interacties 10 keer het aantal modellen. Het nemen van steekproeven stopt wanneer min(aantal modellen, MCMC iteraties) wordt bereikt. 
 - Reproduceerbaarheid:
-  - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+  - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor uw analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 ### Uitvoer
 ---

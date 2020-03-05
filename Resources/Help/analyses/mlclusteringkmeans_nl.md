@@ -10,7 +10,7 @@ K-means clustering is een hard clusteringsalgoritme dat data opdeelt in meerdere
 ### Invoer 
 -------
 #### Invoerveld 
-- Variabelen: In dit veld vul je de variabelen in die meegenomen dienen te worden in het clusteringsalgoritme. 
+- Variabelen: In dit veld vult u de variabelen in die meegenomen dienen te worden in het clusteringsalgoritme. 
 
 #### Tabellen  
 - Clusterinformatie: Toont de grootte van elke cluster. Dit is de standaardoptie. 
@@ -21,8 +21,8 @@ K-means clustering is een hard clusteringsalgoritme dat data opdeelt in meerdere
 - Totale kwadratensom: Geeft de totale kwadratensom van het clustermodel onder de clusterinformatie tabel.
 
 #### Grafieken
-- Elleboogmethode: Genereert een grafiek met de totale binnen kwadratensom op de y-as en het aantal clusters op de x-as. De grafiek kan gebruikt worden om het optimale aantal clusters te bepalen. De grafiek laat 3 curven zien door AIC, BIC, en 'elleboogmethode' te optimaliseren.
-- t-SNE clustergrafiek: Genereert een t-SNE grafiek van de clustering output. t-SNE grafieken worden gebruikt voor het visualiseren van hoog-dimensionale data in een laag-dimensionale ruimte van twee dimensies om de relatieve afstand tussen observaties te laten zien. De t-SNE twee-dimensionale ruimte maakt de assen oninterpreteerbaar. Een t-SNE grafiek geeft een indruk van de relatieve afstanden tussen observaties en clusters. Om dezelfde t-SNE grafiek nog een keer te maken voor meerdere clusteringanalyses, kan je een toevalsgenerator beginwaarde gebruiken, aangezien het t-SNE algoritme willekeurige startpunten gebruikt.
+- Elleboogmethode: Genereert een grafiek met de totale binnen kwadratensom op de y-as en het aantal clusters op de x-as. De grafiek kan gebruikt worden om het optimale aantal clusters te bepalen. De grafiek laat 3 lijnen zien door AIC, BIC, en 'elleboogmethode' te optimaliseren.
+- t-SNE clustergrafiek: Genereert een t-SNE grafiek van de clustering output. t-SNE grafieken worden gebruikt voor het visualiseren van hoog-dimensionale data in een laag-dimensionale ruimte van twee dimensies om de relatieve afstand tussen observaties te laten zien. De t-SNE twee-dimensionale ruimte maakt de assen oninterpreteerbaar. Een t-SNE grafiek geeft een indruk van de relatieve afstanden tussen observaties en clusters. Om dezelfde t-SNE grafiek nog een keer te maken voor meerdere clusteringanalyses, kunt u een toevalsgenerator beginwaarde gebruiken, aangezien het t-SNE algoritme willekeurige startpunten gebruikt.
 - Legenda: Geeft een legenda met het clusternummer voor elke observatie. Dit is de standaardoptie.
 - Labels: Geeft de clusteringlabels van de verschillende observaties.
 
@@ -30,17 +30,17 @@ K-means clustering is een hard clusteringsalgoritme dat data opdeelt in meerdere
 #### Algoritme Instellingen
 - Max. iteraties: Bepaal het maximale aantal iteraties. Het maximale aantal iteraties geeft het aantal mogelijke keren dat het algoritme iterateert om de optimale clusteroplossing te vinden. De standaardoptie is 25.
 - Willekeurige sets: Bepaalt het maximale aantal mogelijke willekeurige sets om te gebruiken. Het aantal willekeurige sets is de hoeveelheid willekeurige gekozen initiële cluster toewijzigen. De standaardoptie is 25.
-- Algoritme: Kies het algoritme wat je wilt gebruiken. De standaardoptie is het 'Hartigan-Wong' algoritme. Diverse algoritmes benadrukken verschillende parameters die de clustering output anders beïnvloeden.
-- Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waardes van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
-- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een oevalsgenerator beginwaarde maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
+- Algoritme: Kies het algoritme wat u wilt gebruiken. De standaardoptie is het 'Hartigan-Wong' algoritme. Diverse algoritmes benadrukken verschillende parameters die de clustering output anders beïnvloeden.
+- Schaal variabelen: Schaalt de continue variabelen. Standaardiseren zorgt dat waarden van variabelen met verschillende schalen, worden geschaald in een specifieke gelijke schaal. Hierdoor geeft standaardiseren numerieke stabiliteit, wat de uitvoer van het clusteren verbetert. JASP gebruikt de Z-score standaardisatie met een gemiddelde, 0, en een standaardafwijking van 1. Dit is de standaardoptie.
+- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor uw analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse. Bijvoorbeeld, een toevalsgenerator beginwaarde maakt het mogelijk de analyse opnieuw te doen met dezelfde gesplitste data.
 
 #### Clusteringsparameters
-- Fixed: Laat je een eigen gespecificeerd aantal clusters gebruiken. Hiermee kan je handmatig optimaliseren.
-- Optimalisatie: Laat je een optimalisatiemethode kiezen. De opties zijn AIC, BIC, en silhouette. De AIC gebruikt de binnen kwadratensom (within-cluster variatie), het aantal gegenereerde clusters en het aantal dimensies voor het optimaliseren van de clustering output. De BIC gebruikt de binnen kwadratensom (within-cluster variatie), het aantal gegenereerde clusters, het aantal dimensies, en de steekproefgrootte voor het optimaliseren van de clustering output. De silhouette waarde gebruikt de gelijkheid van de observaties binnen een cluster en de ongelijkheid aan andere clusters voor het optimaliseren van de clustering output. BIC optimalisatie is de standaardoptie.
+- Fixed: Stelt u in staat om een eigen gespecificeerd aantal clusters te gebruiken. Hiermee kunt u handmatig optimaliseren.
+- Optimalisatie: Stelt u in staat om een optimalisatiemethode kiezen. De opties zijn AIC, BIC, en silhouette. De AIC gebruikt de binnen kwadratensom (within-cluster variatie), het aantal gegenereerde clusters en het aantal dimensies voor het optimaliseren van de clustering output. De BIC gebruikt de binnen kwadratensom (within-cluster variatie), het aantal gegenereerde clusters, het aantal dimensies, en de steekproefgrootte voor het optimaliseren van de clustering output. De silhouette waarde gebruikt de gelijkheid van de observaties binnen een cluster en de ongelijkheid aan andere clusters voor het optimaliseren van de clustering output. BIC optimalisatie is de standaardoptie.
 - Max. clusters: Bepaalt het maximum aantal mogelijke clusters om te genereren. De standaardoptie is 10.
 
 #### Voeg Voorspelde Klassen toe aan Data
-Genereert een nieuwe kolom in je dataset met de klasselabels van je classificatie resultaat. Dit geeft je de mogelijkheid de gegenereerde klasselabels te inspecteren, classificeren, of voorspellen.
+Genereert een nieuwe kolom in uw dataset met de klasselabels van uw classificatie resultaat. Dit geeft u de mogelijkheid de gegenereerde klasselabels te inspecteren, classificeren, of voorspellen.
 
 ### Uitvoer
 -------
@@ -49,8 +49,8 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 - De eerste kolom geeft het aantal gegenereerde clusters.
 - N: De steekproefgrootte.
 - R<sup>2</sup>: Geeft de hoeveelheid verklaarde variantie door het model.
-- AIC: De AIC waarde van het model. Lage waardes betekenen beter clusterende output.
-- BIC: De BIC waarde van het model. Lage waardes betekenen beter clusterende output.
+- AIC: De AIC waarde van het model. Lage waarden betekenen beter clusterende output.
+- BIC: De BIC waarde van het model. Lage waarden betekenen beter clusterende output.
 - Silhouette: De Silhouette waarde van het model. De Silhouette waarde spreiden van -1 tot 1, waar 1 een perfecte score is.
 
 #### K-means Cluster Informatie
@@ -85,5 +85,5 @@ Genereert een nieuwe kolom in je dataset met de klasselabels van je classificati
 
 ### Voorbeeld 
 --- 
-- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Iris`.  
+- Voor een dataset als voorbeeld ga naar `Open` --> `Bibliotheek` --> `Machine Learning` --> `Iris Bloemen`.  
 

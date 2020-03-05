@@ -21,8 +21,8 @@ Met Bayesiaanse Lineaire Regressie kan men een lineaire relatie tussen een of me
     - *R-kwadraat*
 
 #### Bayes Factor
-- BF<sub>10</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- BF<sub>10</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
 - Log(BF<sub>10</sub>) : Natuurlijk logaritme van BF10.
 
 #### Grafieken.

@@ -30,12 +30,12 @@ Statistieken voor individuele items.
 - Item-rest correlatie: De correlatie tussen een item en de som van de rest van de items. 
 
 ### Omgekeerd geschaalde items 
-- Hier kan je items selecteren die omgekeerd gecodeerd zijn en dus moeten worden omgedraaid. 
+- Hier kunt u items selecteren die omgekeerd gecodeerd zijn en dus moeten worden omgedraaid. 
 
 ### Geavanceerde opties
-- Missende waardes:
-  - Sluit gevallen analyse voor analyse uit: Als er meerdere correlatietoetsen in een enkele analyse zijn zal elke toets worden uitgevoerd met alle gevallen waar data is op de relevante variabelen voor de uitgevoerde toets. Steekproefgrootte kan daardoor varieren tussen toetsen.
-  - Sluit gevallen uit op lijstwijze: als er meerdere correlatietoetsen in een enkele analyse zijn wordt elke test alleen uitgevoerd op gevaleen waar data is voor alle variabelen. Steekproefgrootte is daardoor gelijk tussen de toeten.
+- Ontbrekende waarden:
+  - Sluit waarnemingen analyse voor analyse uit: Als er meerdere correlatietoetsen in een enkele analyse zijn zal elke toets worden uitgevoerd met alle waarnemingen waar data is op de relevante variabelen voor de uitgevoerde toets. Steekproefgrootte kan daardoor varieren tussen toetsen.
+  - Sluit waarnemingen uit op lijstwijze: als er meerdere correlatietoetsen in een enkele analyse zijn wordt elke test alleen uitgevoerd op waarnemingen waar data is voor alle variabelen. Steekproefgrootte is daardoor gelijk tussen de toeten.
 - Betrouwbaarheidsinterval
   - Cronbach's alpha  (analytisch)
     - Betouwbaarheid: Standaardoptie is 95%.
@@ -51,8 +51,8 @@ Test betrouwbaarheids statistieken:
 - Gutmann's lambda 6.
 - Gemiddelde inter-item correlatie. 
 - `...`% Betrouwbaarheids interval: Een betrouwbaarheidsinterval voor Cronbach's alpha. 
-  - Linker: De linkergrens van het betrouwbaarheidsinterval. 
-  - Rechter: De rechtergrens van het betrouwbaarheidsinterval. 
+  - Onder: De ondergrens van het betrouwbaarheidsinterval. 
+  - Boven: De bovengrens van het betrouwbaarheidsinterval. 
 
 #### Item Statistieken 
 Item Betrouwbaarheidsstatistieken:
@@ -70,4 +70,4 @@ Item Betrouwbaarheidsstatistieken:
 - Psych
 
 ### Voorbeeld
-- Ga voor een voorbeeld naar `Open` --> `Bibliotheek` --> `Descriptives` --> `Fear of Statistics`. 
+- Ga voor een voorbeeld naar `Open` --> `Bibliotheek` --> `Beschrijvingen` --> `Angst voor Statistiek`. 

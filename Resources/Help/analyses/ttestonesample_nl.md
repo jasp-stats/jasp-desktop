@@ -1,7 +1,7 @@
-One Sample T-Toets
+T-Toets voor één gemiddelde
 ==========================
 
-Met de one sample t-toets kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde gelijk is aan een specifieke constante, bijvoorbeeld de toetswaarde.
+Met de t-toets voor één gemiddelde kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde gelijk is aan een specifieke constante, bijvoorbeeld de toetswaarde.
 
 ### Assumpties
 - De afhankelijke variabele is continu. 
@@ -15,7 +15,7 @@ Met de one sample t-toets kan de gebruiker de effectgrootte schatten en de nulhy
 
 #### Toetsen  
 - Student: De student's t-toets. Dit is de standaardoptie. 
-- Wilcoxon signed-rank: Wilcoxon signed-rank toets. 
+- Wilcoxon rangtekentoets: Wilcoxon rangtekentoets. 
 - Z-toets: De Z-toets. 
   - Toetswaarde: De toetswaarde bij de Z-toets. Deze staat standaard op 0. 
   - Std.afwijking: De standaardafwijking die is toegepast in de Z-toets. Deze staat standaard op 1. 
@@ -25,12 +25,12 @@ Met de one sample t-toets kan de gebruiker de effectgrootte schatten en de nulhy
 - &gt; Toetswaarde: Eénzijdige alternatieve hypothese dat het populatiegemiddelde groter is dan de toetswaarde. 
 - &lt; Toetswaarde: Eénzijdige alternatieve hypothese dat het populatiegemiddelde kleiner is dan de toetswaarde. 
 
-#### Assumptie Checks 
-- Normaliteitstoetsen: Shapiro-Wilk toets voor normaliteit. 
+#### Verificatie van aannames
+- Normaliteit: Shapiro-Wilk toets voor normaliteit. 
 
 #### Aanvullende Statistieken
-- Plaatsparameter: Gemiddelde verschil tussen data punten en de toetswaarde. Voor de Student's t-toets en de Z-toets wordt de plaatsparameter gegeven als gemiddeld verschil; voor de Wilcoxon signed-rank test wordt de plaatsparameter gegeven met de Hodges-Lehmann schatting. 
-  - Betrouwbaarheidsinterval: Betrouwbaarheidsinterval voor de plaatsparameter. De standaardoptie is 95%. Dit kan naar het gewenste percentage worden aangepast.
+- Locatieparameter: Gemiddelde verschil tussen data punten en de toetswaarde. Voor de Student's t-toets en de Z-toets wordt de locatieparameter gegeven als gemiddeld verschil; voor de Wilcoxon rangtekentoets test wordt de locatieparameter gegeven met de Hodges-Lehmann schatting. 
+  - Betrouwbaarheidsinterval: Betrouwbaarheidsinterval voor de locatieparameter. De standaardoptie is 95%. Dit kan naar het gewenste percentage worden aangepast.
 - Effectgrootte: Bij de Student t-toets wordt de effectgrootte gegeven met Cohen's d; bij de Wilcoxon toets wordt de effectgrootte gegeven met de gematchte rank biseriële correlatie; voor de Z-toets wordt de effectgrootte gegeven met Cohen's d (gebaseerd op de gegeven standaardafwijking van de populatie). 
   - Betrouwbaarheidsinterval: Betrouwbaarheidsinterval voor de effectgrootte. 
 - Beschrijvend: Steekproefgrootte, steekproefgemiddelde, steekproefstandaarddeviatie, standaardfout van het gemiddelde voor elke maat.
@@ -39,31 +39,31 @@ Met de one sample t-toets kan de gebruiker de effectgrootte schatten en de nulhy
 - Vovk-Sellke Maximum *p*-Ratio: De grens 1/(-e *p* log(*p*)) wordt afgeleid van de vorm van de verdeling van de *p*-waarde. Onder de nulhypothese (H<sub>0</sub>) is het uniform (0,1), en onder de alternatieve (H<sub>1</sub>) neemt hij af in *p*, bijv., een beta(&#945;, 1) vergelijking, waarin 0 < &#945; < 1. De Vovk-Sellke MPR wordt verkregen door de vorm van &#945; van de verdeling onder H<sub>1</sub> zodat de verkregen *p*-waarde *maximaal diagnostisch* is. De waarde is dan de ratio van de dichtheid op punt *p* onder H<sub>0</sub> en H<sub>1</sub>. Bijvoorbeeld, als de tweezijdige *p*-waarde gelijk is aan .05, dan is de Vovk-Sellke MPR gelijk aan 2.46, wat aangeeft dat deze *p*-waarde hoogstens 2.46 keer meer kans heeft om voor te komen onder H<sub>1</sub> dan onder H<sub>0</sub>.
 
 #### Ontbrekende Waarden
- - Het uitsluiten van gevallen, analyse bij analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met alle gevallen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets. Dit is de standaardoptie. 
- - Het uitsluiten van gevallen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de gevallen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde over alle toetsen. 
+ - Het uitsluiten van waarnemingen, analyse bij analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets. Dit is de standaardoptie. 
+ - Het uitsluiten van waarnemingen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de waarnemingen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde over alle toetsen. 
 
 ### Uitvoer
 -------
 
-#### One Sample T-Toets
+#### T-Toets voor één gemiddelde
 - De eerste kolom bevat de variabelen waarvoor de analyse is uitgevoerd.
 - Toets: Het type toets dat is geselecteerd. Als er maar een toets is geselecteerd, wordt deze kolom niet weergegeven. In dit geval geeft de tabel alleen de resultaten van de geselecteerde toets weer. 
-- Statistiek: De teststatistiek. Voor de Student's t-toets is dit de waarde van de t-statistiek. Voor de Wilcoxon signed-rank toets is dit de waarde van de W-statistiek. Voor de Z-toets is dit de waarde van de Z-statistiek. 
-- df: Vrijheidsgraden.
+- Statistiek: De teststatistiek. Voor de Student's t-toets is dit de waarde van de t-statistiek. Voor de Wilcoxon rangtekentoets is dit de waarde van de W-statistiek. Voor de Z-toets is dit de waarde van de Z-statistiek. 
+- vg: Vrijheidsgraden.
 - p: De p-waarde.
-- Gemiddelde verschil: Gemiddelde verschil tussen de data punten en de toetswaarde. Deze kolom heet alleen 'Gemiddelde verschil' wanneer de toets `Student` is geselecteerd. Wanneer de toets `Wilcoxon signed-rank` en/of de Z-toets is geselecteerd, heet deze kolom 'Plaatsparameter'. 
-- Plaatsparameter: Voor de Student's t-toets en de Z toets, de plaatsparameter is gegeven in verschil in gemiddelde; voor de Wilcoxon signed-rank toets wordt de plaatsparameter gegeven met de Hodges-Lehmann schatting. Deze kolom heet alleen 'Plaatsparameter' wanneer de `Wilcoxon signed-rank` toets en/of de Z-toets geselecteerd is. Deze kolom heet in alle andere gevallen 'Gemiddeld verschil'. 
-- SE Verschil: De standaardfout van het gemiddelde van de verschilscores.  
-- % BI voor gemiddelde verschil/plaatsparameter: Het betrouwbaarheidsinterval voor het gemiddelde verschil/de plaatsparameter van de verschilscores. De standaardoptie is 95%. 
-  - Linker: De linkergrens van het betrouwbaarheidsinterval. 
-  - Rechter: De rechtergrens van het betrouwbaarheidsinterval.  
+- Gemiddelde verschil: Gemiddelde verschil tussen de data punten en de toetswaarde. Deze kolom heet alleen 'Gemiddelde verschil' wanneer de toets `Student` is geselecteerd. Wanneer de toets `Wilcoxon rangtekentoets` en/of de Z-toets is geselecteerd, heet deze kolom 'Locatieparameter'. 
+- Locatieparameter: Voor de Student's t-toets en de Z toets, de locatieparameter is gegeven in verschil in gemiddelde; voor de Wilcoxon rangtekentoets toets wordt de locatieparameter gegeven met de Hodges-Lehmann schatting. Deze kolom heet alleen 'Locatieparameter' wanneer de `WWilcoxon rangtekentoets` toets en/of de Z-toets geselecteerd is. Deze kolom heet in alle andere gevallen 'Gemiddeld verschil'. 
+- Std. Fout Verschil: De standaardfout van het gemiddelde van de verschilscores.  
+- % BI voor gemiddelde verschil/locatieparameter: Het betrouwbaarheidsinterval voor het gemiddelde verschil/de locatieparameter van de verschilscores. De standaardoptie is 95%. 
+  - Onder: De ondergrens van het betrouwbaarheidsinterval. 
+  - Boven: De bovengrens van het betrouwbaarheidsinterval.  
 - Effectgrootte: Voor de Student t-toets wordt de effectgrootte gegeven met Cohen's d; voor de Wilcoxon toets wordt de effectgrootte gegeven met de gematchte rank biseriële correlatie; voor de Z-toets wordt de effectgrootte gegeven met Cohen's d (gebaseerd op de gegeven standaardafwijking van de populatie). 
 - % BI voor effectgrootte: Het betrouwbaarheidsinterval voor de effectgrootte. De standaardoptie is 95%. 
-  - Linker: De linkergrens van het betrouwbaarheidsinterval. 
-  - Rechter: De rechtergrens van het betrouwbaarheidsinterval.
+  - Onder: De ondergrens van het betrouwbaarheidsinterval. 
+  - Boven: De bovengrens van het betrouwbaarheidsinterval.
 
-#### Assumptie Checks 
-Normaliteit toets (Shapiro-Wilk)
+#### Verificatie van aannames
+Toets voor normaliteit (Shapiro-Wilk)
 - De eerste kolom bevat de variabelen waarvoor de analyse is uitgevoerd.
 - W: De waarde van de W-toetsstatistiek. 
 - p: De p-waarde.
@@ -73,7 +73,7 @@ Normaliteit toets (Shapiro-Wilk)
 - N: De steekproefgrootte per variabele. 
 - Gemiddelde: Het gemiddelde van de variabele. 
 - SD: Standaarddeviatie van het gemiddelde. 
-- SE: Standaardfout van het gemiddelde. 
+- Std. Fout: Standaardfout van het gemiddelde. 
 
 #### Beschrijvende Grafieken 
 - Geeft het steekproefgemiddelde weer (black bullet), de % betrouwbaarheidsinterval (whiskers), en de waarde van de teststatistiek (onderbroken lijn). 
@@ -91,5 +91,5 @@ Normaliteit toets (Shapiro-Wilk)
 
 ### Voorbeeld 
 --- 
-- Voor een voorbeeld, ga naar `Open` --> `Bibliotheek` --> `T-Tests` --> `Weight Gain`.  
+- Voor een voorbeeld, ga naar `Open` --> `Bibliotheek` --> `T-Toetsen` --> `Gewichtstoename`.  
 

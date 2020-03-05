@@ -18,9 +18,9 @@ De ingevoerde data moet de volgende elementen bevatten:
 2. Er kan ook een cumulatieve reeks van successen/trials worden ingevoerd. 
 
 #### Bayes Factor
-- BF<sub>10</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
-- Log(BF<sub>10</sub>) : Als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de output.
+- BF<sub>10</sub>: Als u deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als u deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- Log(BF<sub>10</sub>) : Als u deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de output.
 
 
 #### Grafieken
@@ -66,7 +66,7 @@ Specificeert de prior kansen voor de vier hypothesen:
 Bepaalt het aantal "importance samples" om de log marginale likelihood voor (H+) en (H-) te verkrijgen. Het bepaalt ook het aantal steekproeven van de posterior.
 
 #### Reproduceerbaarheid
-- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor uw analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 #### Bayes Factor robuustheidscheck, Aantal Stappen
 - mu: Bepaal het aantal discrete stappen in de stappenreeks van mu 

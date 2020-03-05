@@ -1,11 +1,11 @@
-Bevestigende Factoranalyse
+Confirmatieve Factoranalyse
 ==========================
 
-Bevestigende Factoranalyse (CFA) modelleert geobserveerde variabelen (indicatoren) als rumoerige manifestaties van onderliggende latente variabelen (factoren). JASP's CFA is gemaakt met `lavaan` (lavaan.org; Rosseel, 2012), een `R` package voor structural equation modeling. Zie Brown (2014) of Kline (2015) voor boeken over het onderwerp, CFA.
+Confirmatieve Factoranalyse (CFA) modelleert geobserveerde variabelen (indicatoren) als rumoerige manifestaties van onderliggende latente variabelen (factoren). JASP's CFA is gemaakt met `lavaan` (lavaan.org; Rosseel, 2012), een `R` package voor structural equation modeling. Zie Brown (2014) of Kline (2015) voor boeken over het onderwerp, CFA.
 
 Invoerveld
 -------
-In het invoerveld kan je continue variabelen van je dataset toewijzen aan verschillende factoren. Er is een minimum van één factor, en elke factor heeft minstens twee indicatoren. Je kan factoren toevoegen door te drukken op de (+) knop en verwijderen door te drukken op de (-) knop. Je kan de factoren hernoemen door de namen boven de invoervelden te wijzigen.
+In het invoerveld kunt u continue variabelen van uw dataset toewijzen aan verschillende factoren. Er is een minimum van één factor, en elke factor heeft minstens twee indicatoren. U kunt factoren toevoegen door te drukken op de (+) knop en verwijderen door te drukken op de (-) knop. U kunt de factoren hernoemen door de namen boven de invoervelden te wijzigen.
 
 Tweede-orde factor
 -------
@@ -26,12 +26,12 @@ Aanvullende uitvoer
 - Extra pasmaten: Kies deze om de waarde van verschillende model pasmaten te tonen in de resultaten.
 - Geïmpliceerde covariantiematrix: Toon de covariantiematrix die het model impliceert.
 - Residu covariantiematrix: Toon de covarianties tussen indicatoren die behouden blijft met het model. Een perfect model toont enkel 0-en hier. 
-- Modificatie indices: Toont MIs met een minimum grens. Een MI toont hoeveel de chi-square waarde van overall fit zou veranderen als de gespecificeerde parameter vrij zou zijn. EPC toont de verwachten verandering van de parameter zelf.
+- Modificatie indices: Toont MIs met een minimum grens. Een MI toont hoeveel de chi-square waarde van de passing zou veranderen als de gespecificeerde parameter vrij zou zijn. EPC toont de verwachten verandering van de parameter zelf.
 - Laat lavaan syntax zien: Toon de lavaan modeleer syntax die nodig zou zijn om het model in R weer te geven.
 
 Multigroep CFA
 ------
-- Groeperingsvariabele: Selecteer hier een categorische variabele om CFA modellen voor iedere groep te creëren. 
+- Groepen: Selecteer hier een categorische variabele om CFA modellen voor iedere groep te creëren. 
 - Invariantie testen: Selecteer een niveau van beperkende parameters over de verschillende groepen. 
   - Configureel: De verschilllende groepen hebben dezelfde CFA structuur.
   - Metrisch: De factorladingen van de groepen zijn gelijk.

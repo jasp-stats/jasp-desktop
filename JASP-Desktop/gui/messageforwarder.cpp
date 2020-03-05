@@ -59,7 +59,7 @@ MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString
 	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
 	box.setButtonText(QMessageBox::Save,		tr("Save"));
-	box.setButtonText(QMessageBox::Discard,		tr("Discard"));
+	box.setButtonText(QMessageBox::Discard,		tr("Don't Save"));
 	box.setButtonText(QMessageBox::Cancel,		tr("Cancel"));
 
 	switch(box.exec())

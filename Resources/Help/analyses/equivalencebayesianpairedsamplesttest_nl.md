@@ -29,8 +29,8 @@ Het verschil met de klassieke nul hypothese significantie toets is dat in gelijk
   - Beschrijvend: Steekproefgrootte, steekproefgemiddelde, steekproefstandaarddeviatie, standaardfout van het gemiddelde voor elke maat.
 
 #### Ontbrekende Waarden
-- Het uitsluiten van gevallen, analyse voor analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle gevallen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets.
-- Het uitsluiten van gevallen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de gevallen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde over alle toetsen.
+- Het uitsluiten van waarnemingen, analyse voor analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets.
+- Het uitsluiten van waarnemingen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de waarnemingen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde over alle toetsen.
 
 ### Prior
 - Standaard:
@@ -38,7 +38,7 @@ Het verschil met de klassieke nul hypothese significantie toets is dat in gelijk
 - Geinformeerd:
   - Cauchy: Schaal en locatie.
   - Normaal: Gemiddelde en standaardafwijking.
-  - Student's t: Schaal, locatie en vrijheidsgraden (df).
+  - Student's t: Schaal, locatie en vrijheidsgraden (vg).
 
 ### Uitvoer
 ---
@@ -57,13 +57,13 @@ Het verschil met de klassieke nul hypothese significantie toets is dat in gelijk
 - N: De steekproefgrootte.
 - Gemiddelde: Het steekproefgemiddelde.
 - SD: Standaarddeviatie van het gemiddelde.
-- SE: Standaardfout van het gemiddelde.
+- Std. Fout: Standaardfout van het gemiddelde.
 - Geloofwaardigheidsinterval: Standaardoptie is 95%.
 
 #### Grafieken
 - Prior en posterior: Geeft de prior (stippellijn) en posterior (lijn) verdeling van de effectgrootte onder de alternatieve hypothese; het grijze gebied geeft de gelijkwaardigheids regio van de dichtheid van de prior en de posterior weer. De horizontale lijn geeft de breedte van een 95% geloofwaardigheidsinterval van de posterior verdeling weer.
-  - Aanvullende info: Geeft de Bayes factor berekend met de door de gebruiker gedefinieerde prior weer; geeft een kanswiel weer met de kans van de data onder de gelijkwaardigheidsinterval hypothese ten opzichte van de non-gelijkwaardigheidsinterval hypothese; geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior verdeling weergeeft.
-- Sequentiële analyse: Geeft de ontwikkeling van de Bayes factor weer, als een functie van het aantal datapunten (n), gebruik makenende van de door de gebruiker gedefinieerde prior; geeft de Bayes factor berekend met de door de gebruiker gedefinieerde prior weer; geeft een kanswiel weer die de kans van de data onder de gelijkwaardigheidsinterval hypothese ten opzichte van de non-gelijkwaardigheidsinterval hypothese weergeeft; geeft de mediaan en de 95% geloofwaardigheidsinterval van de verdeling van de posterior weer; laat zien hoe besluitvaardig het bewijs is met Jeffreys' (1961) bewijscategorieën.
+  - Aanvullende info: Geeft de Bayes factor berekend met de door de gebruiker gedefinieerde prior weer; geeft een kanswiel weer met de kans van de data onder de gelijkwaardigheidsinterval hypothese ten opzichte van de niet-gelijkwaardigheidsinterval hypothese; geeft de mediaan en het 95% geloofwaardigheidsinterval van de posterior verdeling weergeeft.
+- Sequentiële analyse: Geeft de ontwikkeling van de Bayes factor weer, als een functie van het aantal datapunten (n), gebruik makenende van de door de gebruiker gedefinieerde prior; geeft de Bayes factor berekend met de door de gebruiker gedefinieerde prior weer; geeft een kanswiel weer die de kans van de data onder de gelijkwaardigheidsinterval hypothese ten opzichte van de niet-gelijkwaardigheidsinterval hypothese weergeeft; geeft de mediaan en de 95% geloofwaardigheidsinterval van de verdeling van de posterior weer; laat zien hoe besluitvaardig het bewijs is met Jeffreys' (1961) bewijscategorieën.
   - Robuustheidscheck: Geeft de ontwikkeling van de Bayes factor als een functie van het aantal datapunten (n), met de brede en ultrabrede verdeling van de prior. De zwarte cirkel geeft de Bayes factor berekend met een brede prior verdeling weer; de witte cirkel geeft de Bayes factor berekend met een ultrabrede prior verdeling weer; de grijze cirkel geeft de Bayes factor berekend met de door de gebruiker gedefinieerde prior verdeling weer.
 
 ### Referenties

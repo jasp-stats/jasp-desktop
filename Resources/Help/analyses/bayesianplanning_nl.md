@@ -3,15 +3,15 @@ Bayesiaanse Planning
 
 De taak van een Auditor is om een oordeel te maken over de eerlijkheid van gepresenteerde transacties in een populatie, en te bepalen of er fouten in de populatie zitten die materieel zijn. Soms moet een auditor de benodigde steekproefgrootte van te voren berekenen zonder toegang tot de populatie data te hebben. In dit geval kan de auditor de *Bayesiaanse planning* analyse gebruiken in combinatie met samenvattende statistieken over de populatie (de totale grootte en waarde) om te berekenen hoeveel steekproeven moeten worden geëvalueerd om tot een bepaald niveau van zekerheid in hun oordeel te komen. De *Bayesiaanse planning* analyse kan risicoschattingen van het *audit risico model* gebruiken om deze informatie in een prior kansverdeling te integreren. Deze wordt geüpdatet met informatie om tot een posterior kansverdeling te komen. Inferenties over de fouten in de populatie worden op basis van de posterior verdeling gemaakt. 
 
-*Let op:* Wanneer je toegang heb tot de populatie data kan de *Bayesiaanse audit werkflow* gebruikt worden, een analyse die je door het audit proces leidt. 
+*Let op:* Wanneer u toegang heeft tot de populatie data kan de *Bayesiaanse audit werkflow* gebruikt worden, een analyse die u door het audit proces leidt. 
 
 ----
 
 Standaard opties
 -------
 ### Materialiteit van de populatie:
-- Absoluut: Voer de materialiteit van je populatie in als geldwaarde.
-- Relatief: Voer de materialiteit van je populatie in als percentage van de totaalwaarde.
+- Absoluut: Voer de materialiteit van uw populatie in als geldwaarde.
+- Relatief: Voer de materialiteit van uw populatie in als percentage van de totaalwaarde.
 
 ### Populatie
 - Grootte: Het totale aantal observaties in de populatie. 
@@ -32,11 +32,11 @@ Geavanceerde opties.
 Als beide risico beoordelingen op Hoog (100%) worden gezet, wordt het audit risico model niet gebruikt om het detectie risico bij te stellen. 
 
 ### Verwachte fouten:
-- Absoluut: Voer je verwachte fouten in als geldwaarde (bijv., $1000 in een totale balans van $1000000).
-- Relatief: Voel je verwachte fouten in als percentage van de totale grootte van de selectie.
+- Absoluut: Voer uw verwachte fouten in als geldwaarde (bijv., $1000 in een totale balans van $1000000).
+- Relatief: Voel uw verwachte fouten in als percentage van de totale grootte van de selectie.
 
 ### Toelichtende tekst:
-- Schakelt de toelichtende tekst in tijdens het gebruik van de werkflow om je te helpen de statistische resultaten en procedure te interpreteren. 
+- Schakelt de toelichtende tekst in tijdens het gebruik van de werkflow om u te helpen de statistische resultaten en procedure te interpreteren. 
 
 ### Planning verdeling:
 - Beta: De beta verdeling voor broken taints (de Swart, Wille & Majoor, 2013).

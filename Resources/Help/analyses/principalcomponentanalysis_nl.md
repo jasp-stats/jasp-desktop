@@ -1,7 +1,7 @@
-Principiële Componentenanalyse 
+Principale Componentenanalyse 
 ===
 
-Principiële componentenanalyse wordt gebruikt om data weer te geven in minder componenten dan waaruit de dataset oorspronkelijk bestaat. De componenten worden zo gekozen dat ze zoveel mogelijk variantie in de originele dataset verklaren.
+Principale componentenanalyse wordt gebruikt om data weer te geven in minder componenten dan waaruit de dataset oorspronkelijk bestaat. De componenten worden zo gekozen dat ze zoveel mogelijk variantie in de originele dataset verklaren.
 
 ### Assumpties
 - De variabelen die worden meegenomen in de analyse zijn gecorreleerd (Shlens, 2014).
@@ -10,7 +10,7 @@ Principiële componentenanalyse wordt gebruikt om data weer te geven in minder c
 ### Invoer
 ---
 #### Invoerveld
-- Meegenomen variabelen: In dit veld kunnen de variabelen worden ingevuld om een principiële componentenanalyse op uit te voeren. 
+- Meegenomen variabelen: In dit veld kunnen de variabelen worden ingevuld om een principale componentenanalyse op uit te voeren. 
 
 #### Aantal Componenten 
 - Hier wordt het aantal componenten gespecificeerd waarop de rotatie wordt toegepast. Er kunnen verschillende modellen worden gekozen om dit kunnen te bepalen:
@@ -38,21 +38,21 @@ Principiële componentenanalyse wordt gebruikt om data weer te geven in minder c
 ### Uitvoeropties 
 - Markeren: Deze optie past de breedte van de pijlen in het pad diagram aan. De standaardoptie is dat de pijlen breder worden als hun waarde 0.4 of hoger is.
 - Neem tabellen mee:
-	- Component correlaties: Als je deze optie selecteert wordt er een tabel met de correlates tussen componenten weergegeven.
-	- Pad diagram: Als je deze optie selecteert wordt er een visuele representatie van de richting en sterkte van de relatie tussen variabelen en componenten weergegeven. 
-    - Screeplot: Als je deze optie selecteert wordt er een screeplot weergegeven. Deze grafiek geeft informatie over de variantie in de data die wordt verklaard door elke component, door middel van de eigenwaarde. Een scree-grafiek kan je gebruiken om het aantal componenten te selecteren.
-- Missende waarden:
-	- Sluit gevallen paarwijs uit: Als een observatie van een variabele mist worden de andere observaties op andere variabelen van hetzelfde geval nog steeds gebruikt voor de analyse. In dit scenario is het niet nodig om een observatie voor alle variabelen te hebben om een geval mee te nemen in de analyse. Dit is de standaardoptie.
-	- Sluit gevallen op lijstwijze uit: Als een observatie van een variabele mist wordt het hele geval, dus alle verbonden observaties op andere variabelen, uitgesloten van de analyse. In dit scenario moet een geval observaties op elke variabele hebben om meegenomen te worden in de analyse.
+	- Component correlaties: Als u deze optie selecteert wordt er een tabel met de correlates tussen componenten weergegeven.
+	- Pad diagram: Als u deze optie selecteert wordt er een visuele representatie van de richting en sterkte van de relatie tussen variabelen en componenten weergegeven. 
+    - Screeplot: Als u deze optie selecteert wordt er een screeplot weergegeven. Deze grafiek geeft informatie over de variantie in de data die wordt verklaard door elke component, door middel van de eigenwaarde. Een scree-grafiek kunt u gebruiken om het aantal componenten te selecteren.
+- Ontbrekende waarden:
+	- Sluit waarnemingen paarwijs uit: Als een observatie van een variabele mist worden de andere observaties op andere variabelen van hetzelfde geval nog steeds gebruikt voor de analyse. In dit scenario is het niet nodig om een observatie voor alle variabelen te hebben om een geval mee te nemen in de analyse. Dit is de standaardoptie.
+	- Sluit waarnemingen op lijstwijze uit: Als een observatie van een variabele mist wordt het hele geval, dus alle verbonden observaties op andere variabelen, uitgesloten van de analyse. In dit scenario moet een geval observaties op elke variabele hebben om meegenomen te worden in de analyse.
 
 ### Uitvoer
 --- 
-#### Principiële Componenten Analyse
+#### Principale Componentenanalyse
 Chi-kwadraat toets: 
-De fit van het model wordt getoetst. Wanneer de toets significant is wordt het model verworpen. Houd in gedachten dat een chi-kwadraat benadering onbetrouwbaar kan zijn voor kleine steekproeven, en bij hele grote steekproeven kan de chi-kwadraattoets het model te snel verwerpen. Voor een verdere discussie over fit indices kan bijvoorbeeld Saris, Satorra, & van der Veld (2009) geraadpleegd worden. 
-- Model: Het model dat uit de principiële componentenanalyse is gekomen.
+De passing van het model wordt getoetst. Wanneer de toets significant is wordt het model verworpen. Houd in gedachten dat een chi-kwadraat benadering onbetrouwbaar kan zijn voor kleine steekproeven, en bij hele grote steekproeven kan de chi-kwadraattoets het model te snel verwerpen. Voor een verdere discussie over pas indices kan bijvoorbeeld Saris, Satorra, & van der Veld (2009) geraadpleegd worden. 
+- Model: Het model dat uit de principale componentenanalyse is gekomen.
 - Waarde: De chi-kwadraat toetsstatistiek.
-- df: Vrijheidsgraden.
+- vg: Vrijheidsgraden.
 - P: De p-waarde.
 
 Componentladingen:
@@ -66,10 +66,10 @@ Component karakteristieken:
 - Cumulatief: De proportie van variantie in de dataset die wordt verklaard door de componenten tot en met deze component.
 
 Component correlaties:
-- De correlatie tussen de principiële componenten.
+- De correlatie tussen de principale componenten.
 
 #### Pad Diagram
-- PC: De principiële componenten worden weergegeven in de cirkels. 
+- PC: De principale componenten worden weergegeven in de cirkels. 
 - Variabelen: De variabelen worden weergegeven als rechthoeken.
 - Pijlen: Gaan van de variabelen naar de componenten en representeren de lading van een variabele op een component. Rood is een negatieve lading, groen een positieve. Hoe breder de strepen, hoe sterker de lading. Deze markering kan worden aangepast  bij `markeren` in de `uitvoer opties`.
 

@@ -1,13 +1,13 @@
 Beschrijvende statistieken
 ===
 
-Met beschrijvende statistieken kan je basis beschrijvende statistieken verkrijgen zoals histogrammen, dichtheidsgrafieken, correlatiegrafieken, boxplots en frequentietabellen. 
+Met beschrijvende statistieken kunt u basis beschrijvende statistieken verkrijgen zoals histogrammen, dichtheidsgrafieken, correlatiegrafieken, boxplots en frequentietabellen. 
 
 ### Invoer
 -------
 
 #### Invoerveld 
-- Variabelen: Alle variabelen waarin je geïnteresseerd bent. 
+- Variabelen: Alle variabelen waarin u geïnteresseerd bent. 
 - Opgedeeld: Kan worden opgedeeld aan de hand van een categorische variabele zoals een experimentele conditie. 
 - Frequentietabel: Geeft een frequentie tabel weer voor elke variabele.
 
@@ -48,8 +48,8 @@ Met beschrijvende statistieken kan je basis beschrijvende statistieken verkrijge
 ### Uitvoer
 -------
 #### Beschrijvende statistieken
-- Valide: Het aantal valide gevallen. 
-- Missend: Het aantal missende waarden. 
+- Valide: Het aantal valide waarnemingen. 
+- Ontbrekend: Het aantal ontbrekende waarden. 
 - Gemiddelde: Rekenkundig gemiddelde van de datapunten.
 - Mediaan: Mediaan van de datapunten.
 - Modus: Modus van de datapunten; als er meerdere modi zijn wordt slechts de eerste gerapporteerd. 
@@ -73,11 +73,11 @@ Met beschrijvende statistieken kan je basis beschrijvende statistieken verkrijge
 - Percentielen: Geeft het xde percentiel aan; percentielwaarden moeten met komma's worden gescheiden. 
 
 #### Verdelingsgrafieken
-- Geeft voor continue variabelen een histogram en de fit van een nonparametrische dichtheids schatting weer. 
+- Geeft voor continue variabelen een histogram en de passing van een niet parametrische dichtheidsschatting weer. 
 - Geeft voor nominale en ordinale variabelen een frequentieverdeling weer. 
 
 #### Correlatie grafiek
-- Geeft een matrix van grafieken weer tussen continue variabelen met spreidingsdiagrammen tussen de variabelen in de niet-diagonaal-cellen, en histogrammen en dichtheidsplots in de cellen op de diagonaal. De lijn representeert de fit van een 1e, 2e, 3e of 4e orde polynomiaal (de selectie is gebaseerd op het Bayesiaanse informatie criterium ; Schwarz, 1978).
+- Geeft een matrix van grafieken weer tussen continue variabelen met spreidingsdiagrammen tussen de variabelen in de niet-diagonaal-cellen, en histogrammen en dichtheidsplots in de cellen op de diagonaal. De lijn representeert de passing van een 1e, 2e, 3e of 4e orde polynomiaal (de selectie is gebaseerd op het Bayesiaanse informatie criterium ; Schwarz, 1978).
 
 #### Boxplots
 - Geeft voor continue variabelen een boxplot weer. De uitschieters kunnen gelabeld worden op basis van de interkwartiel afstand (IQR), bijv., [25e percentiel] - 1.5 × IQR en [75e percentiel] + 1.5 × IQR. Kan ook in kleur worden weergegeven en heeft een selecteerbare boxplot, viool en jitter elementen voor het weergeven van de verdeling van de data. Dit kan worden opgedeeld op basis van een categorische variabele zoals een experimentele conditie. 

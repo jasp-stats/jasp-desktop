@@ -154,7 +154,7 @@ msgstr "Grafieken"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Misfit plot"
-msgstr "Niet passende grafiek"
+msgstr "Niet-passings grafiek"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Model plot"
@@ -434,7 +434,7 @@ msgstr "Grafieken"
 
 msgctxt "LatentRegression|"
 msgid "Misfit plot"
-msgstr "Niet passende grafiek"
+msgstr "Niet-passings grafiek"
 
 msgctxt "LatentRegression|"
 msgid "Model plot"
@@ -606,7 +606,7 @@ msgstr "Bootstrap steekproeven"
 
 msgctxt "SEMSimple|"
 msgid "Additional fit measures"
-msgstr "Extra metingen"
+msgstr "Extra pasmaten"
 
 msgctxt "SEMSimple|"
 msgid "Fitted covariances / correlations"
@@ -642,7 +642,7 @@ msgstr "Opties"
 
 msgctxt "SEMSimple|"
 msgid "Grouping Variable"
-msgstr "Groeperingsvariabele"
+msgstr "Groepen"
 
 msgctxt "SEMSimple|"
 msgid "Equality Constraints"
@@ -912,7 +912,7 @@ msgstr "Aangepast contrast voor %1"
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
-msgstr "Je bent hier"
+msgstr "U bent hier"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
@@ -1011,8 +1011,8 @@ msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
-"Ga de volgende keer dat JASP start verder waar je was gebleven. \n"
-"Als je deze optie aanzet, onthoudt JASP welke modules je aan hebt gezet."
+"Ga de volgende keer dat JASP start verder waar u was gebleven. \n"
+"Als u deze optie aanzet, onthoudt JASP welke modules u aan heeft gezet."
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
@@ -1032,7 +1032,7 @@ msgstr "Selecteer ontwikkelaarsmap"
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr "Navigeer naar je JASP-modulemap"
+msgstr "Navigeer naar uw JASP-modulemap"
 
 msgctxt "PrefsAdvanced|"
 msgid "Regenerate package metadata every time (DESCRIPTION & NAMESPACE)"
@@ -1043,7 +1043,7 @@ msgid ""
 "Disable this option if you are transforming your R-package to a JASP Module "
 "or simply want to keep manual changes to DESCRIPTION and NAMESPACE."
 msgstr ""
-"Schakel deze optie uit als je je R-package transformeert tot een JASP Module "
+"Schakel deze optie uit als u uw R-package transformeert tot een JASP Module "
 "of simpelweg handmatige veranderingen wilt maken aan DESCRIPTION and "
 "NAMESPACE."
 
@@ -1580,7 +1580,7 @@ msgstr "Weergeven"
 
 msgctxt "Ancova|"
 msgid "Display error bars"
-msgstr "Geef foutbalken weer"
+msgstr "Geef foutmarges weer"
 
 msgctxt "Ancova|"
 msgid "Standard error"
@@ -1624,7 +1624,7 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "Ancova|"
 msgid "Simple Main Effects"
-msgstr "Simpele hoofdeffecten"
+msgstr "Hoofdeffecten"
 
 msgctxt "Ancova|"
 msgid "Factors"
@@ -1644,7 +1644,7 @@ msgstr "Moderator factor 2"
 
 msgctxt "Ancova|"
 msgid "Nonparametrics"
-msgstr "Niet-parametrische statistieken"
+msgstr "Verdelingsvrije toetsen"
 
 msgctxt "Ancova|"
 msgid "Kruskal-Wallis Test"
@@ -1800,7 +1800,7 @@ msgstr "Prior"
 
 msgctxt "AncovaBayesian|"
 msgid "r scale fixed effects"
-msgstr "r schaal vaste effecten"
+msgstr "r schaal gefixeerde effecten"
 
 msgctxt "AncovaBayesian|"
 msgid "r scale random effects"
@@ -1980,7 +1980,7 @@ msgstr "Weergeven"
 
 msgctxt "Anova|"
 msgid "Display error bars"
-msgstr "Geef foutbalken weer"
+msgstr "Geef foutmarges weer"
 
 msgctxt "Anova|"
 msgid "Confidence interval"
@@ -2028,7 +2028,7 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "Anova|"
 msgid "Simple Main Effects"
-msgstr "Simpele hoofdeffecten"
+msgstr "Hoofdeffecten"
 
 msgctxt "Anova|"
 msgid "Simple Effect Factor"
@@ -2044,7 +2044,7 @@ msgstr "Moderator factor 2"
 
 msgctxt "Anova|"
 msgid "Nonparametrics"
-msgstr "Niet-parametrische statistieken"
+msgstr "Verdelingsvrije toetsen"
 
 msgctxt "Anova|"
 msgid "Kruskal-Wallis Test"
@@ -2200,7 +2200,7 @@ msgstr "Prior"
 
 msgctxt "AnovaBayesian|"
 msgid "r scale fixed effects"
-msgstr "r schaal vaste effecten"
+msgstr "r schaal gefixeerde effecten"
 
 msgctxt "AnovaBayesian|"
 msgid "r scale random effects"
@@ -2228,15 +2228,15 @@ msgstr "Posterior steekproeven"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Factors"
-msgstr "Herhaalde Metingen Factoren"
+msgstr "binnen-proefpersoon factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Cells"
-msgstr "Herhaalde Metingen Cellen"
+msgstr "binnen-proefpersoon cellen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Between Subject Factors"
-msgstr "Tussen subject factoren"
+msgstr "tussen-proefpersoon factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Covariates"
@@ -2248,7 +2248,7 @@ msgstr "Model"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Components"
-msgstr "Herhaalde metingen componenten"
+msgstr "binnen-proefpersoon componenten"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Model Terms"
@@ -2256,7 +2256,7 @@ msgstr "Modeltermen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Between Subjects Components"
-msgstr "Tussen subject componenten"
+msgstr "tussen-proefpersoon componenten"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Model terms"
@@ -2292,7 +2292,7 @@ msgstr "Huynh-Feldt"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Homogeneity tests"
-msgstr "Homogeniteitstoetsen"
+msgstr "Toets voor homogeniteit"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Contrasts"
@@ -2312,7 +2312,7 @@ msgstr "Effectgrootte"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Pool error term for RM factors"
-msgstr "Samengevoegde foutterm voor RM-factoren"
+msgstr "Samengevoegde foutterm voor BP-factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Correction"
@@ -2364,7 +2364,7 @@ msgstr "Weergeven"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Display error bars"
-msgstr "Geef foutbalken weer"
+msgstr "Geef foutmarges weer"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Confidence interval"
@@ -2376,7 +2376,7 @@ msgstr "Standaardfout"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Average across unused RM factors"
-msgstr "Gemiddelde over ongebruikte RM-factoren"
+msgstr "Gemiddelde over ongebruikte BP-factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Marginal Means"
@@ -2432,7 +2432,7 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Simple Main Effects"
-msgstr "Simpele hoofdeffecten"
+msgstr "Hoofdeffecten"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Simple Effect Factor"
@@ -2452,15 +2452,15 @@ msgstr "Voeg fouttermen samen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Nonparametrics"
-msgstr "Niet-parametrische statistieken"
+msgstr "Verdelingsvrije toetsen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "RM Factor"
-msgstr "RM factor"
+msgstr "BP factor"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Optional Grouping Factor"
-msgstr "Optionele groeperingsfactor"
+msgstr "Tussen factor (optioneel)"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Conover's post hoc tests"
@@ -2468,15 +2468,15 @@ msgstr "Conover's post-hoc toetsen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Repeated Measures Factors"
-msgstr "Herhaalde Metingen Factoren"
+msgstr "binnen-proefpersoon factoren"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Repeated Measures Cells"
-msgstr "Herhaalde Metingen Cellen"
+msgstr "binnen-proefpersoon cellen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Between Subject Factors"
-msgstr "Tussen subject factoren"
+msgstr "tussen-proefpersoon factoren"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Covariates"
@@ -2620,7 +2620,7 @@ msgstr "Prior"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "r scale fixed effects"
-msgstr "r schaal vaste effecten"
+msgstr "r schaal gefixeerde effecten"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "r scale random effects"
@@ -2989,7 +2989,7 @@ msgstr "3. Uitvoering"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>How would you like to evaluate your observations?</b>"
-msgstr "<b>Hoe wil je je observaties evalueren?</b>"
+msgstr "<b>Hoe wil u uw observaties evalueren?</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Audit values"
@@ -3005,11 +3005,11 @@ msgstr "<b>Vul variabelen in</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Annotate your observations with their audit values.</b>"
-msgstr "<b>Annoteer je observaties met hun auditwaarden. </b>"
+msgstr "<b>Annoteer uw observaties met de bijbehorende auditwaarden. </b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Annotate your observations with 0 (correct) or 1 (incorrect).</b>"
-msgstr "<b>Annoteer je observaties met 0 (correct) of 1 (incorrect).</b>"
+msgstr "<b>Annoteer uw observaties met 0 (correct) of 1 (incorrect).</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>To Evaluation</b>"
@@ -3447,7 +3447,7 @@ msgstr "3. Uitvoering"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>How would you like to evaluate your observations?</b>"
-msgstr "<b>Hoe wil je je observaties evalueren?</b>"
+msgstr "<b>Hoe wilt u uw observaties evalueren?</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Audit values"
@@ -3463,11 +3463,11 @@ msgstr "<b>Vul variabelen in</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Annotate your observations with their audit values.</b>"
-msgstr "<b>Annoteer je observaties met hun auditwaarden.</b>"
+msgstr "<b>Annoteer uw observaties met de bijbehorende auditwaarden.</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Annotate your observations with 0 (correct) or 1 (incorrect).</b>"
-msgstr "<b>Annoteer je observaties met 0 (correct) of 1 (incorrect).</b>"
+msgstr "<b>Annoteer uw observaties met 0 (correct) of 1 (incorrect).</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>To Evaluation</b>"
@@ -3780,7 +3780,7 @@ msgstr "Afhankelijke variabelen"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Grouping Variable"
-msgstr "Groeperingsvariabele"
+msgstr "Groepen"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Hypothesis Test"
@@ -4104,7 +4104,7 @@ msgstr "Spreiding"
 
 msgctxt "Descriptives|"
 msgid "S. E. mean"
-msgstr "S. E. gemiddelde"
+msgstr "Std. fout gemiddelde"
 
 msgctxt "Descriptives|"
 msgid "Std.deviation"
@@ -4224,7 +4224,7 @@ msgstr "Scheefheid"
 
 msgctxt "Descriptives|"
 msgid "Kurtosis"
-msgstr "Platheid"
+msgstr "Gepiektheid"
 
 msgctxt "Descriptives|"
 msgid "Shapiro-Wilk test"
@@ -4516,7 +4516,7 @@ msgstr "Factorcorrelaties"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Additional fit indices"
-msgstr "Aanvullende pas indices"
+msgstr "Extra pas indices"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Plots"
@@ -5484,11 +5484,11 @@ msgstr "Out-of-bag verbetering"
 
 msgctxt "mlClassificationBoosting|"
 msgid "ROC curves"
-msgstr "ROC curves"
+msgstr "ROC kromme"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Andrews curves"
-msgstr "Andrews curves"
+msgstr "Andrews kromme"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Deviance"
@@ -5608,11 +5608,11 @@ msgstr "Classificatie precisie"
 
 msgctxt "mlClassificationKnn|"
 msgid "ROC curves"
-msgstr "ROC curves"
+msgstr "ROC kromme"
 
 msgctxt "mlClassificationKnn|"
 msgid "Andrews curves"
-msgstr "Andrews curves"
+msgstr "Andrews kromme"
 
 msgctxt "mlClassificationKnn|"
 msgid "Decision boundary matrix"
@@ -5744,11 +5744,11 @@ msgstr "Data splits"
 
 msgctxt "mlClassificationLda|"
 msgid "ROC curves"
-msgstr "ROC curves"
+msgstr "ROC kromme"
 
 msgctxt "mlClassificationLda|"
 msgid "Andrews curves"
-msgstr "Andrews curves"
+msgstr "Andrews kromme"
 
 msgctxt "mlClassificationLda|"
 msgid "Linear discriminant matrix"
@@ -5848,11 +5848,11 @@ msgstr "Out-of-bag precisie"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "ROC curves"
-msgstr "ROC curves"
+msgstr "ROC kromme"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Andrews curves"
-msgstr "Andrews curves"
+msgstr "Andrews kromme"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Mean decrease in accuracy"
@@ -6912,7 +6912,7 @@ msgstr "Covariantiematrix"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Model Fit"
-msgstr "Model Fit"
+msgstr "Model passing"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Fit measures"
@@ -6976,7 +6976,7 @@ msgstr "Fail-safe N"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Casewise diagnostics"
-msgstr "Gevalsgewijze diagnostieken"
+msgstr "Diagnostieken per observatie"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Effect Size"
@@ -7040,7 +7040,7 @@ msgstr "ANOVA-tabel"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Fit Indices"
-msgstr "Fit-indices"
+msgstr "Pas indices"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Coefficients"
@@ -7288,7 +7288,7 @@ msgstr "Vovk-Sellke maximum p-ratio"
 
 msgctxt "LinearMixedModels|"
 msgid "Simple Main Effects"
-msgstr "Simpele hoofdeffecten"
+msgstr "Hoofdeffecten"
 
 msgctxt "LinearMixedModels|"
 msgid "Simple Effect Factor"
@@ -7304,7 +7304,7 @@ msgstr "Moderator factor 2"
 
 msgctxt "LinearMixedModels|"
 msgid "Non Parametrics"
-msgstr "Niet-parametrisch"
+msgstr "Niet parametrisch"
 
 msgctxt "LinearMixedModels|"
 msgid "Kruskal-Wallis Test"
@@ -7532,7 +7532,7 @@ msgstr "Bootstrap type"
 
 msgctxt "NetworkAnalysis|"
 msgid "Nonparametic"
-msgstr "Niet-parametrisch"
+msgstr "Niet parametrisch"
 
 msgctxt "NetworkAnalysis|"
 msgid "Case"
@@ -8093,11 +8093,11 @@ msgstr "Covariantiematrix"
 
 msgctxt "RegressionLinear|"
 msgid "Model fit"
-msgstr "Model fit"
+msgstr "Model passing"
 
 msgctxt "RegressionLinear|"
 msgid "R squared change"
-msgstr "R kwadraat verandering"
+msgstr "Verandering determinatiecoëfficient"
 
 msgctxt "RegressionLinear|"
 msgid "Descriptives"
@@ -8121,7 +8121,7 @@ msgstr "Durbin-Watson"
 
 msgctxt "RegressionLinear|"
 msgid "Casewise diagnostics"
-msgstr "Gevalsgewijze diagnostieken"
+msgstr "Diagnostieken per observatie"
 
 msgctxt "RegressionLinear|"
 msgid "Standard residual >"
@@ -9133,7 +9133,7 @@ msgstr "Afhankelijke variabelen"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Grouping Variable"
-msgstr "Groeperingsvariabele"
+msgstr "Groepen"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Alt. Hypothesis"
@@ -9337,7 +9337,7 @@ msgstr "Variabelen"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Grouping Variable"
-msgstr "Groeperingsvariabele"
+msgstr "Groepen"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Tests"
@@ -9361,7 +9361,7 @@ msgstr "Aanvullende statistieken"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Location parameter"
-msgstr "Plaatsparameter"
+msgstr "Locatieparameter"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Confidence interval"
@@ -9441,7 +9441,7 @@ msgstr "Student"
 
 msgctxt "TTestOneSample|"
 msgid "Wilcoxon signed-rank"
-msgstr "Wilcoxon signed-rank"
+msgstr "Wilcoxon rangtekentoets"
 
 msgctxt "TTestOneSample|"
 msgid "Z Test"
@@ -9461,7 +9461,7 @@ msgstr "Aanvullende statistieken"
 
 msgctxt "TTestOneSample|"
 msgid "Location parameter"
-msgstr "Plaatsparameter"
+msgstr "Locatieparameter"
 
 msgctxt "TTestOneSample|"
 msgid "Confidence interval"
@@ -9525,7 +9525,7 @@ msgstr "Student"
 
 msgctxt "TTestPairedSamples|"
 msgid "Wilcoxon signed-rank"
-msgstr "Wilcoxon signed-rank"
+msgstr "Wilcoxon rangtekentoets"
 
 msgctxt "TTestPairedSamples|"
 msgid "Additional Statistics"
@@ -9533,7 +9533,7 @@ msgstr "Aanvullende statistieken"
 
 msgctxt "TTestPairedSamples|"
 msgid "Location parameter"
-msgstr "Plaatsparameter"
+msgstr "Locatieparameter"
 
 msgctxt "TTestPairedSamples|"
 msgid "Confidence interval"
@@ -9816,7 +9816,7 @@ msgid ""
 "The datafile that was used by this JASP file was modified. Do you want to "
 "reload the analyses with this new data?"
 msgstr ""
-"Het databestand dat werd gebruikt door dit JASP-bestand werd bewerkt. Wil je "
+"Het databestand dat werd gebruikt door dit JASP-bestand is bewerkt. Wilt u "
 "de analyses opnieuw laden met deze nieuwe data?"
 
 msgctxt "customContrasts|"
@@ -9837,8 +9837,7 @@ msgstr "Herstel"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
-msgstr ""
-"Er zijn niet-toegepaste veranderingen aan je filter; wat zou je willen doen?"
+msgstr "Er zijn niet-toegepaste veranderingen aan uw filter; wat wilt u doen?"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
@@ -9910,11 +9909,11 @@ msgstr "Herstel"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
-msgstr "Veranderingen zijn toegepast"
+msgstr "Er zijn wijzigingen gedaan"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "There are unapplied changes; what would you like to do?"
-msgstr "Er zijn niet-toegepaste veranderingen; wat zou je willen doen?"
+msgstr "Er zijn niet-toegepaste wijzigingen; wat wilt u doen?"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
@@ -10207,12 +10206,12 @@ msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
 "places."
 msgstr ""
-"Stel de snelheid in waarmee je scrolt in de opties, dataviewer en andere "
+"Stel de snelheid in waarmee u scrolt in de opties, dataviewer en andere "
 "plekken."
 
 msgctxt "PrefsUI|"
 msgid "Safe Graphics Mode"
-msgstr "Veilige grafische modus"
+msgstr "Veilige Grafische Modus"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -10499,7 +10498,7 @@ msgstr "Filter is gewijzigd"
 
 msgctxt "Ancova|"
 msgid "Flag Significant Comparisons"
-msgstr "Vlag significante vergelijkingen"
+msgstr "Markeer significante contrasten"
 
 msgctxt "Ancova|"
 msgid " "
@@ -10511,7 +10510,7 @@ msgstr "Effectgrootte"
 
 msgctxt "Anova|"
 msgid "Flag Significant Comparisons"
-msgstr "Vlag significante vergelijkingen"
+msgstr "Markeer significante contrasten"
 
 msgctxt "Anova|"
 msgid " "
@@ -10523,7 +10522,7 @@ msgstr "Aanname: gelijke varianties"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Flag Significant Comparisons"
-msgstr "Vlag significante vergelijkingen"
+msgstr "Markeer significante contrasten"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Descriptives plot"
@@ -11850,11 +11849,11 @@ msgstr "Anderson-Darling"
 
 msgctxt "LDf|"
 msgid "df 1"
-msgstr "df 1"
+msgstr "vg 1"
 
 msgctxt "LDf|"
 msgid "df 2"
-msgstr "df 2"
+msgstr "vg 2"
 
 msgctxt "LDf|"
 msgid "ncp"
@@ -12774,7 +12773,7 @@ msgstr "Chi-kwadraat"
 
 msgctxt "LDt|"
 msgid "df"
-msgstr "df"
+msgstr "vg"
 
 msgctxt "LDt|"
 msgid "ncp"
@@ -12910,7 +12909,7 @@ msgstr "Variabelen"
 
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Grouping Variable"
-msgstr "Groeperingsvariabele"
+msgstr "Groepen"
 
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Equivalence Region"
@@ -13062,7 +13061,7 @@ msgstr "Variabelen"
 
 msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Grouping Variable"
-msgstr "Groeperingsvariabele"
+msgstr "Groepen"
 
 msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Tests"
@@ -13214,7 +13213,7 @@ msgstr "Model"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Fixed effects"
-msgstr "Vaste effecten"
+msgstr "Gefixeerde effecten"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Random effects"
@@ -13286,7 +13285,7 @@ msgstr "t"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "df:"
-msgstr "df:"
+msgstr "vg:"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Truncation"
@@ -13710,7 +13709,7 @@ msgstr "Schatting"
 
 msgctxt "mixedmod|"
 msgid "Report fixed effects"
-msgstr "Rapporteer vaste effecten"
+msgstr "Rapporteer gefixeerde effecten"
 
 msgctxt "mixedmod|"
 msgid "Report random effects"
@@ -14518,14 +14517,14 @@ msgid ""
 "centrality parameter ncp"
 msgstr ""
 "genereert gegevens van een t-verdeling met gespecificeerd aantal "
-"vrijheidsgraden df en niet-centrale parameter ncp"
+"vrijheidsgraden vg en niet-centrale parameter ncp"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
 "and non-centrality parameter ncp"
 msgstr ""
-"genereert data met een chi-kwadraat verdeling met vrijheidsgraden df en niet-"
+"genereert data met een chi-kwadraat verdeling met vrijheidsgraden vg en niet-"
 "centraliteitsparameter ncp"
 
 msgctxt "ComputeColumnWindow|"
@@ -14534,7 +14533,7 @@ msgid ""
 "df1, df2 and non-centrality parameter ncp"
 msgstr ""
 "genereert data met een F verdeling met een gespecificeerd aantal "
-"vrijheidsgraden df1, df2 en niet-centraliteitsparameter ncp"
+"vrijheidsgraden vg 1, vg 2 en niet-centraliteitsparameter ncp"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -14632,7 +14631,7 @@ msgid ""
 "There are unapplied changes to your computed column; what would you like to "
 "do?"
 msgstr ""
-"Er zijn niet toegepaste veranderingen in de berekende kolom; wat wil je "
+"Er zijn niet toegepaste veranderingen in de berekende kolom; wat wil u "
 "hiermee doen?"
 
 msgctxt "CreateComputeColumnDialog|"
@@ -14851,9 +14850,9 @@ msgid ""
 "rewritten to jaspResults, and seeing as how these older analyses do use "
 "dependencies there is nothing to show you..."
 msgstr ""
-"Je hebt geprobeerd de afhankelijkheden van een analyse te weergeven, terwijl "
+"U heeft geprobeerd de afhankelijkheden van een analyse te weergeven, terwijl "
 "deze analyse niet is herschreven naar jaspResultaten, en doordat deze oudere "
-"analyses wel afhankelijkheden gebruiken kunnen we je niets laten zien..."
+"analyses wel afhankelijkheden gebruiken kunnen we u niets laten zien..."
 
 #, qt-format
 msgctxt "Analysis|"
@@ -14908,14 +14907,14 @@ msgstr "Selecteer een map..."
 
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
-msgstr "Veilige grafische modus is veranderd "
+msgstr "Veilige Grafische modus is veranderd"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
 "effect you need to restart JASP"
 msgstr ""
-"Je hebt de veilige Graphics modus van JASP veranderd, voordat dit kan worden "
+"U hebt de Veilige Grafische modus van JASP veranderd, voordat dit kan worden "
 "geactiveerd moet JASP herstart worden"
 
 msgctxt "MainWindow|"
@@ -14929,7 +14928,7 @@ msgid ""
 "\n"
 "Refresh all analyses?"
 msgstr ""
-"Je analyses zijn gemaakt in een oudere versie van JASP, om de PPI van de "
+"Uw analyses zijn gemaakt in een oudere versie van JASP, om de PPI van de "
 "afbeeldingen te veranderen moeten ze eerst worden vernieuwd.\n"
 "\n"
 "Vernieuw alle analyses?"
@@ -15554,15 +15553,15 @@ msgstr "Nee"
 
 msgctxt "MessageForwarder|"
 msgid "Cancel"
-msgstr "Annuleer"
+msgstr "Annuleren"
 
 msgctxt "MessageForwarder|"
 msgid "Save"
-msgstr "Bewaar"
+msgstr "Opslaan"
 
 msgctxt "MessageForwarder|"
-msgid "Discard"
-msgstr "Gooi weg"
+msgid "Don't Save"
+msgstr "Niet opslaan"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied<br>"
@@ -15719,6 +15718,29 @@ msgstr "boven:"
 msgctxt "Flexplot|"
 msgid "Paneled Variable(s)"
 msgstr "Paneel variabele(n)"
+
+msgctxt "Form|"
+msgid ""
+"This analysis was created with an older version of JASP (or a dynamic module)"
+msgstr ""
+"Deze analyse is gemaakt met een oudere versie van JASP (of met een "
+"dynamische module)"
+
+msgctxt "Form|"
+msgid ", refreshing could give a slightly different result."
+msgstr ", wanneer u de resultaten ververst kunnen deze iets afwijken."
+
+msgctxt "Form|"
+msgid ""
+", to keep your notes where they are it is highly recommended to first "
+"refresh your analyses!"
+msgstr ""
+", om de juiste plaats van uw aantekeningen in de resultaten te behouden "
+"raden we u aan om eerst uw analyses te verversen"
+
+msgctxt "HelpWindow|"
+msgid "JASP Help"
+msgstr "JASP Documentatie"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""

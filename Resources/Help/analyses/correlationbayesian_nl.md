@@ -27,9 +27,9 @@ De Bayesiaanse Correlatie analyse maakt het mogelijk om de populatiecorrelatie t
 - Negatieve correlatie: Eénzijdige alternatieve hypothese dat de populatiecorrelatie lager is dan 0.
 
 #### Bayes Factor  
-- BF<sub>10</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
-- BF<sub>01</sub>: Als je deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
-- Log(BF<sub>10</sub>) : Als je deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
+- BF<sub>10</sub>: Als u deze optie selecteert, geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
+- BF<sub>01</sub>: Als u deze optie selecteert, geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
+- Log(BF<sub>10</sub>) : Als u deze optie selecteert, wordt het natuurlijke logaritme <sub>10</sub>, BF<sub>m</sub>, BF<sub>Inclusie</sub>, BF<sub>10, U</sub> weergegeven in de uitvoer.
 
 #### Aanvullende Opties
 - Geef tabel paarsgewijs weer: Geef een tabel weer waarin op elke rij één paar variabelen staat. Indien onaangevinkt, dan zijn de resultaten weergegeven als matrix, met de namen van variabelen in zowel de kolommen als de rijen.
@@ -63,11 +63,11 @@ De Bayesiaanse Correlatie analyse maakt het mogelijk om de populatiecorrelatie t
   - Aanvullende info: Voegt de Bayes factor berekend met de door de gebruiker gedefinieerde prior toe; voegt een kanswiel toe die de kans van de data onder de nulhypothese vs. de alternatieve hypothese laat zien; geeft de interpretatie van het bewijs in termen van Jeffreys' (1961) bewijscategorieën.
 
 ### Opties
-- Missende waardes:
-  - Sluit paarsgewijs gevallen uit.
-  - Sluit lijstgewijs gevallen uit.
+- Ontbrekende waarden:
+  - Sluit paarsgewijs waarnemingen uit.
+  - Sluit lijstgewijs waarnemingen uit.
 - Reproduceerbaarheid:
-  - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+  - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor uw analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 ### Uitvoer
 ---

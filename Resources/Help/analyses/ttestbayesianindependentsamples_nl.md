@@ -25,19 +25,19 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
 -  Group 1 &lt; Group 2: Eenzijdige alternatieve hypothese dat het populatiegemiddelde van groep een lager is dan het populatiegemiddelde van groep twee. 
 
 #### Bayes Factor
--  BF10: Als je deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nul hypothese.
--  BF01: Als je deze optie selecteert geeft de Bayes factor bewijs voor de nul hypothese ten opzichte van de alternatieve hypothese. 
+-  BF10: Als u deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nul hypothese.
+-  BF01: Als u deze optie selecteert geeft de Bayes factor bewijs voor de nul hypothese ten opzichte van de alternatieve hypothese. 
 -  Log(BF10): Natuurlijk logaritme van BF10. 
 
 #### Aanvullende statistieken
 -  Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaardafwijking, standaard fout van het gemiddelde voor iedere groep.
 
 #### Ontbrekende Waarden
- - Het uitsluiten van gevallen, analyse voor analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle gevallen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets. 
- - Het uitsluiten van gevallen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de gevallen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde over alle toetsen.
+ - Het uitsluiten van waarnemingen, analyse voor analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets. 
+ - Het uitsluiten van waarnemingen, lijstgewijs: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met enkel de waarnemingen die valide data voor alle afhankelijke variabelen bevatten. De steekproefgrootte is daardoor hetzelfde over alle toetsen.
 
 #### Reproduceerbaarheid
-- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor je analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
+- Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor uw analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.
 
 #### Grafieken
 - Prior en posterior: Geeft de verdeling van de prior en posterior van de effectgrootte onder de alternatieve hypothese.
@@ -55,7 +55,7 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
 - Geinformeerd:
    - Cauchy: Schaal en locatie.
    - Normaal: Gemiddelde en standaardafwijking.
-   - Student's t: Schaal, locatie en vrijheidsgraden (df). 
+   - Student's t: Schaal, locatie en vrijheidsgraden (vg). 
 
 ### Uitvoer
 ---
@@ -72,7 +72,7 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
 - N: De steekproefgrootte.
 - Gemiddelde: Het steekproefgemiddelde.
 - SD: Standaarddeviatie van het gemiddelde. 
-- SE: Standaardfout van het gemiddelde.
+- Std. Fout: Standaardfout van het gemiddelde.
 
 #### Grafieken
 - Prior en posterior: Geeft de prior (stippellijn) en posterior (lijn) verdeling van de effectgrootte onder de alternatieve hypothese; de grijze cirkels geven de hoogte van de dichtheid van de prior en de posterior bij een effectgrootte delta = 0 weer. De horizontale lijn geeft de breedte van een 95% geloofwaardigheidsinterval van de posterior verdeling weer.
