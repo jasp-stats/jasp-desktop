@@ -278,7 +278,14 @@ Form
 					DropDown
 					{
 						name: "groupColors"
-						values: ["red", "blue", "yellow", "green", "purple", "orange"]
+						values: [
+							{ label: qsTr("red")	, value: "red"		},
+							{ label: qsTr("blue")	, value: "blue"		},
+							{ label: qsTr("yellow")	, value: "yellow"	},
+							{ label: qsTr("green")	, value: "green"	},
+							{ label: qsTr("purple")	, value: "purple"	},
+							{ label: qsTr("orange") , value: "orange"	}
+						]
 					}
 				}
 			]

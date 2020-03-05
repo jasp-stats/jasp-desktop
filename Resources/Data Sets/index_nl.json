@@ -675,7 +675,7 @@
       {
           "name": "One Sample T-Test",
         "path": "bainOneSample.jasp",
-        "description":"Dit JASP-bestand toont een Bain One Sample T-Toets met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
+		"description":"Dit JASP-bestand toont een Bain T-Toets voor Eén Gemiddelde met behulp van de Sesamstraat gegevens. <br> <br> <i> Gegevensset opgenomen in het bain R-pakket. <\ / I>",
          "kind": "file",
         "associated_datafile": "sesame.csv"
       },

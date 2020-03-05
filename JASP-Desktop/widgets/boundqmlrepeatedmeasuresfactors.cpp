@@ -64,12 +64,12 @@ Option* BoundQMLRepeatedMeasuresFactors::createOption()
 
 	OptionVariables* levels = new OptionVariables(true);
 	std::vector<std::string> firstLevels;
-	firstLevels.push_back("Level 1");
-	firstLevels.push_back("Level 2");
+	firstLevels.push_back(tr("Level %1").arg(1).toStdString());
+	firstLevels.push_back(tr("Level %1").arg(2).toStdString());
 	levels->setValue(firstLevels);
 
 	Options* options = new Options();
-	options->add("name", new OptionEncodableString("RM Factor 1"));
+	options->add("name", new OptionEncodableString(tr("RM Factor %1").arg(1).toStdString()));
 	options->add("levels", levels);
 	
 	std::vector<Options*> allOptions;

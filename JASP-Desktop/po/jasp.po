@@ -4590,14 +4590,6 @@ msgid "Output Options"
 msgstr ""
 
 msgctxt "PrincipalComponentAnalysis|"
-msgid "Includes Tables"
-msgstr ""
-
-msgctxt "PrincipalComponentAnalysis|"
-msgid "Component correlations"
-msgstr ""
-
-msgctxt "PrincipalComponentAnalysis|"
 msgid "Path diagram"
 msgstr ""
 
@@ -10173,25 +10165,6 @@ msgctxt "QMLListView|"
 msgid "Wrong column type: %1 for ListView %2"
 msgstr ""
 
-msgctxt "HelpModel|"
-msgid ""
-"Coming Soon!\n"
-"========\n"
-"\n"
-"There is currently no help available for this analysis"
-msgstr ""
-
-msgctxt "HelpModel|"
-msgid ""
-".\n"
-"\n"
-"Additional documentation will be available in future releases of "
-msgstr ""
-
-msgctxt "HelpModel|"
-msgid "the module."
-msgstr ""
-
 msgctxt "PrefsUI|"
 msgid "User Interface options"
 msgstr ""
@@ -15459,6 +15432,320 @@ msgstr ""
 
 msgctxt "HelpWindow|"
 msgid "JASP Help"
+msgstr ""
+
+msgctxt "ContrastsList|"
+msgid "none"
+msgstr ""
+
+msgctxt "ContrastsList|"
+msgid "deviation"
+msgstr ""
+
+msgctxt "ContrastsList|"
+msgid "simple"
+msgstr ""
+
+msgctxt "ContrastsList|"
+msgid "difference"
+msgstr ""
+
+msgctxt "ContrastsList|"
+msgid "Helmert"
+msgstr ""
+
+msgctxt "ContrastsList|"
+msgid "repeated"
+msgstr ""
+
+msgctxt "ContrastsList|"
+msgid "polynomial"
+msgstr ""
+
+msgctxt "ContrastsList|"
+msgid "custom"
+msgstr ""
+
+msgctxt "CreateComputeColumnDialog|"
+msgid "Name:"
+msgstr ""
+
+msgctxt "OperatorSelector|"
+msgid "Addition"
+msgstr ""
+
+msgctxt "OperatorSelector|"
+msgid "Subtraction"
+msgstr ""
+
+msgctxt "OperatorSelector|"
+msgid "Multiplication"
+msgstr ""
+
+msgctxt "OperatorSelector|"
+msgid "Division"
+msgstr ""
+
+msgctxt "OperatorSelector|"
+msgid "Power (2^3 returns 8)"
+msgstr ""
+
+msgctxt "OperatorSelector|"
+msgid "Square root"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
+msgstr ""
+
+msgctxt "OperatorSelector|"
+msgid "returns logicals and can be the root of a filter formula"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Equality: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Inequality: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Less than: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Less than or equal to: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Greater than: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Greater than or equal to: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "And: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "Or: %1"
+msgstr ""
+
+msgctxt "OperatorSelector|"
+msgid "Split: applies filter separately to each subgroup"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelector|"
+msgid "not: %1"
+msgstr ""
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Addition"
+msgstr ""
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Subtraction"
+msgstr ""
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Multiplication"
+msgstr ""
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Division"
+msgstr ""
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Power (2^3 returns 8)"
+msgstr ""
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Square root"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
+msgstr ""
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "returns logicals"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Equality: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Inequality: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Less than: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Less than or equal to: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Greater than: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Greater than or equal to: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "And: %1"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Or: %1"
+msgstr ""
+
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Split: applies filter separately to each subgroup"
+msgstr ""
+
+#, qt-format
+msgctxt "OperatorSelectorComputedColumns|"
+msgid "Not: %1"
+msgstr ""
+
+msgctxt "ExploratoryFactorAnalysis|"
+msgid "none"
+msgstr ""
+
+msgctxt "PrincipalComponentAnalysis|"
+msgid "none"
+msgstr ""
+
+msgctxt "PrincipalComponentAnalysis|"
+msgid "Table"
+msgstr ""
+
+msgctxt "PrincipalComponentAnalysis|"
+msgid "Factor correlations"
+msgstr ""
+
+msgctxt "PrincipalComponentAnalysis|"
+msgid "Plots"
+msgstr ""
+
+msgctxt "ContingencyTablesBayesian|"
+msgid "Cells"
+msgstr ""
+
+msgctxt "ContingencyTablesBayesian|"
+msgid "Percentages"
+msgstr ""
+
+msgctxt "ContingencyTablesBayesian|"
+msgid "Row"
+msgstr ""
+
+msgctxt "ContingencyTablesBayesian|"
+msgid "Column"
+msgstr ""
+
+msgctxt "ContingencyTablesBayesian|"
+msgid "Total"
+msgstr ""
+
+msgctxt "ClassicalMetaAnalysis|"
+msgid "Fixed Effects"
+msgstr ""
+
+msgctxt "ClassicalMetaAnalysis|"
+msgid "Likelihood"
+msgstr ""
+
+msgctxt "ClassicalMetaAnalysis|"
+msgid "Restricted ML"
+msgstr ""
+
+msgctxt "ClassicalMetaAnalysis|"
+msgid "Hedges"
+msgstr ""
+
+msgctxt "ClassicalMetaAnalysis|"
+msgid "Empirical Bayes"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "red"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "blue"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "yellow"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "green"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "purple"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "orange"
+msgstr ""
+
+#, qt-format
+msgctxt "BoundQMLRepeatedMeasuresFactors|"
+msgid "Level %1"
+msgstr ""
+
+#, qt-format
+msgctxt "BoundQMLRepeatedMeasuresFactors|"
+msgid "RM Factor %1"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelRepeatedMeasuresFactors|"
+msgid "Level %1"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelRepeatedMeasuresFactors|"
+msgid "RM Factor %1"
+msgstr ""
+
+msgctxt "HelpModel|"
+msgid ""
+"Coming Soon!\n"
+"========\n"
+"\n"
+"There is currently no help available for this analysis.\n"
+"\n"
+"Additional documentation will be available in future releases of JASP."
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

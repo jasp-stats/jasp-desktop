@@ -29,7 +29,7 @@
 				"function":							"BainTTestBayesianPairedSamples"
 			},
 			{
-				"title":							"One Sample T-Toets",
+				"title":							"T-Toets voor Eén Gemiddelde",
 				"function":							"BainTTestBayesianOneSample"
 			},
 			{

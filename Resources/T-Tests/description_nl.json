@@ -28,7 +28,7 @@
 			"function":	"TTestPairedSamples"
 		},
 		{
-			"title":	"One Sample T-Toets",
+			"title":	"T-Toets voor Eén Gemiddelde",
 			"function":	"TTestOneSample"
 		},
 		{
@@ -47,7 +47,7 @@
 			"function":	"TTestBayesianPairedSamples"
 		},
 		{
-			"title":	"Bayesiaanse One Sample T-Toets",
+			"title":	"Bayesiaanse T-Toets voor Eén Gemiddelde",
 			"function":	"TTestBayesianOneSample"
 		}
 	]
