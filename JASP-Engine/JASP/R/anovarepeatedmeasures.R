@@ -1152,7 +1152,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     
     contrastTable$addColumnInfo(name = "SE", title=gettext("SE"), type = "number")
     
-    contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = "integer")
+    dfType <- if (contrastType == "custom") "number" else "integer"
+    contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = dfType)
     contrastTable$addColumnInfo(name = "t.ratio", title = gettext("t"),  type = "number")
     contrastTable$addColumnInfo(name = "p.value", title = gettext("p"),  type = "pvalue")
     
