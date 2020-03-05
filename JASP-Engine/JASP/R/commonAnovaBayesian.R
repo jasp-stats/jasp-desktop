@@ -1150,7 +1150,7 @@
 }
 
 # Descriptives ----
-.BANOVAdescriptives <- function(jaspResults, dataset, options, errors, analysisType, ready = TRUE) {
+.BANOVAdescriptives <- function(jaspResults, dataset, options, errors, analysisType, ready = TRUE, position = 9001) {
   if (!ready)
     return()
   # the main use of this function is that descriptives can now be reused for the frequentist ANOVAs
@@ -1159,7 +1159,8 @@
   if (is.null(descriptivesContainer)) {
     descriptivesContainer <- createJaspContainer(title = gettext("Descriptives"))
     descriptivesContainer$dependOn(c("dependent", "repeatedMeasuresCells"))
-    descriptivesContainer$position <- 9001 # always last
+    descriptivesContainer$position <- position 
+    
     jaspResults[["descriptivesContainer"]] <- descriptivesContainer
   }
 

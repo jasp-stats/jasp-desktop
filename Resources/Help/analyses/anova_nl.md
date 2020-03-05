@@ -18,6 +18,16 @@ Met een ANOVA berekent men het verschil tussen meerdere groepsgemiddelden.
 - WLS gewichten: Gewogen kleinste kwadraten, hier kunnen de variabelen worden geselecteerd die meer gewicht hebben en daarom als informatiever worden gezien. Voor deze laatste optie is het belangrijk om de gewichten a priori te weten. Deze optie wordt vooral gebruikt als de meetfouten heteroskedastisch zijn.
 
 
+
+#### Weergave
+- Beschrijvende statistieken: Als u deze optie selecteert, worden het gemiddelde, de standaardafwijking en de steekproefgrootte weergegeven voor iedere combinatie van niveaus van de onafhankelijke variabele.
+- Schattingen van de effectgrootte: Als u deze optie selecteert, kunt u de specifieke type berekening van de effectgrootte selecteren. 
+		- &eta;<sup>2</sup> : Als u deze optie selecteert, wordt het eta-kwadraat berekend als schatting van de effectgrootte. Deze methode overschat echter de populatievariantie, wat het moeilijk maakt om het effect van dezelfde variabele te vergelijken tussen verschillende onderzoeken (Goss-Sampson, 2018).       
+		- partial &eta;<sup>2</sup> : Als u deze optie selecteert, wordt het gedeeltelijke eta-kwadraat berekend als schatting van de effectgrootte. Deze methode lost het probleem van overschatting van populatievariantie op, wat het makkelijker maakt om het effect van dezelfde variabele te vergelijken tussen verschillende onderzoeken (Goss-Sampson, 2018).
+    - &omega;<sup>2</sup> : Als u deze optie selecteert, wordt het omega-kwadraat uitgerekend als schatting van de effectgrootte. Dit wordt gezien als een goede schatter bij een kleine steekproefgrootte (Goss-Sampson, 2018).
+- Vovk-Selke maximum p-ratio: De grens 1/(-e p log(p)) wordt afgeleid van de vorm van de verdeling van de p-waarden. Onder de nulhypothese (H<sub>0</sub>) is het uniform (0,1) en onder de alternatieve hypothese (H<sub>1</sub>) neemt hij af in p, bijv. een beta (α, 1) verdeling waarin 0 < α < 1. De Vovk-Selke MPR wordt verkregen door de vorm van α onder de alternatieve hypothese te kiezen zodat de p-waarde maximaal diagnostisch is. De waarde is dan de ratio van de dichtheid op punt p onder H<sub>0</sub> en H<sub>1</sub>. Als de tweezijdige p-waarde bijvoorbeeld .05 is, is de Vovk-Sellke MPR 2.46. Dit geeft aan dat deze p-waarde maximaal 2.46 keer zo waarschijnlijk is onder H1 dan onder H<sub>0</sub>. Meer informatie vind u in deze <a href="https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/">blogpost</a>.
+
+
 ### Model 
 - Componenten en model termen: 
     - Componenten:  Alle onafhankelijke variabelen die in het model kunnen worden meegenomen. 
@@ -92,7 +102,7 @@ Met een ANOVA berekent men het verschil tussen meerdere groepsgemiddelden.
 		- Betrouwbaarheidsinterval: Dit is de standaardoptie. Met deze optie geven de foutmarges betrouwbaarheidsintervallen van het gemiddelde van elke combinatie van onafhankelijke variabelen weer. De standaardoptie is een interval van 95%. Dit kan tot het gewenste percentage worden aangepast.
         - Stanaardfout: Als u deze optie selecteert, geven de foutmarges de standaardfouten van de gemiddelden van elke combinatie van niveaus van de onafhankelijke variabele weer. 
 
-### Aanvullende opties 
+### Marginale Gemiddelden 
 - Marginale gemiddelden: Als u deze optie selecteert, wordt het gemiddelde van elk niveau van de onafhankelijke variabele gecorrigeerd voor alle andere variabelen in het model. 
 - Vergelijk marginale gemiddelden met 0: Als u deze optie selecteert, worden de gecorrigeerde gemiddelden vergeleken met 0 en worden de betrouwbaarheidsintervallen voor de gecorrigeerde gemiddelden berekend.  
 	- Betrouwbaarheids interval correctie: De betrouwbaarheidsinterval kunnen op verschillende manieren worden aangepast.
@@ -100,13 +110,6 @@ Met een ANOVA berekent men het verschil tussen meerdere groepsgemiddelden.
         - Bonferroni: Bonferroni correctie voor de betrouwbaarheidsintervallen. 
         - Sidak: Sidak correctie voor de betrouwbaarheidsintervallen.
 - Van `...` bootstraps: Als u deze optie selecteert, worden de gebootstrapte marginale gemiddelde berekend. De standaardhoeveelheid iteraties is 1000. U kunt dit aanpassen tot het gewenste aantal. 
-- Weergeven:
-	- Beschrijvende statistieken: Als u deze optie selecteert, worden de gemiddelde, de standaardafwijking en de steekproefgrootte weergegeven voor iedere combinatie van niveaus van de onafhankelijke variabele.
-    - Schattingen van effectgrootte: Als u deze optie selecteert, kunt u de specifieke type berekening van de effectgrootte selecteren. 
-		- &eta;<sup>2</sup> : Als u deze optie selecteert, wordt de eta-kwadraat berekend als schatting van de effectgrootte. Deze methode overschat echter de populatievariantie, wat het moeilijk maakt om het effect van dezelfde variabele te vergelijken tussen verschillende onderzoeken (Goss-Sampson, 2018).       
-		- partial &eta;<sup>2</sup> : Als u deze optie selecteert, wordt de gedeeltelijke eta-kwadraat berekend als schatting van de effectgrootte. Deze methode lost het probleem van overschatting van populatievariantie op, wat het makkelijker maakt om het effect van dezelfde variabele te vergelijken tussen verschillende onderzoeken (Goss-Sampson, 2018).
-        - &omega;<sup>2</sup> : Als u deze optie selecteert, wordt de omega-kwadraat uitgerekend als schatting van de effectgrootte. Dit wordt gezien als een goede schatter bij een kleine steekproefgrootte (Goss-Sampson, 2018).
-    - Vovk-Selke maximum p-ratio: De grens 1/(-e p log(p)) wordt afgeleid van de vorm van de verdeling van de p-waarden. Onder de nulhypotheses (H<sub>0</sub>) is het uniform (0,1) en onder de alternatieve hypothese (H<sub>1</sub>) neemt hij af in p, bijv. een beta (α, 1) verdeling waar 0 < α < 1. De Vovk-Selke MPR wordt verkregen door de vorm van α onder de alternatieve hypothese te kiezen zodat de p-waarde maximaal diagnostisch is. De waarde is dan de ratio van de dichtheid op punt p onder H<sub>0</sub> en H<sub>1</sub>. Als de tweezijdige p-waarde bijvoorbeeld .05 is, is de Vovk-Sellke MPR 2.46. Dit geeft aan dat deze p-waarde maximaal 2.46 keer zo waarschijnlijk is onder H1 dan onder H<sub>0</sub>. Meer informatie vind u in deze <a href="https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/">blogpost</a>.
 
 ### Hoofdeffecten
 - Het hoofdeffect geeft het effect van een onafhankelijke variabele voor elk niveau van de andere onafhankelijke variabele door een ANOVA te doen voor elke subset van de data zoals die wordt gespecificeerd door de moderator variabelen. 
