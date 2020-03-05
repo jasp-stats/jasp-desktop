@@ -1800,7 +1800,7 @@ msgstr ""
 "waarden bevatten, zijn niet meegenomen in de analyse."
 
 msgid "Descriptive Statistics"
-msgstr "Beschrijvende statistiek"
+msgstr "Beschrijvende Statistiek"
 
 msgid "Coefficients for Groups plus Covariates"
 msgstr "Coëfficiënten voor Groepen plus Covariaten"

@@ -151,8 +151,8 @@ Q-Q Grafiek:
 - Met een Q-Q grafiek kan de normaliteit van de residuen visueel worden geïnspecteerd. De theoretische kwantielen staan op de x-as en de gestandaardiseerde residuen op de y-as. Hoe meer de punten op de diagonale lijn staan, hoe meer de data normaal verdeeld is. 
 
 #### Contrasten
-Afwijking/Enkelvoudig/Verschil/Helmert/Herhaald/Polynoom/Op maat Contrast:
-- Vergelijking: De niveaus van de onafhankelijke variabele die worden vergeleken. Voor de custom contrasten wordt het gewicht getoond voor elk niveau van de factor.
+Afwijking/Enkelvoudig/Verschil/Helmert/Herhaald/Polynoom/Handmatig Contrast:
+- Vergelijking: De niveaus van de onafhankelijke variabele die worden vergeleken. Voor de handmatige contrasten wordt het gewicht getoond voor elk niveau van de factor.
 - Schatting: Het geschatte gemiddelde verschil tussen de vergelen niveaus.
 - Std. Fout: De standaardfout van het geschatte gemiddelde.
 - vg: De vrijheidsgraden van het model.

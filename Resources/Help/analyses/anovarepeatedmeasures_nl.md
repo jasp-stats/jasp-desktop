@@ -140,7 +140,7 @@ Toets van sphericiteit:
 
 #### Contrasten
 Afwijking/Enkelvoudig/Verschil/Helmert/Herhaald/Polynoom/Handmatig Contrast:
-- Vergelijking: De niveaus van de onafhankelijke variabele die worden vergeleken. Voor de custom contrasten wordt het gewicht getoond voor elk niveau van de factor.
+- Vergelijking: De niveaus van de onafhankelijke variabele die worden vergeleken. Voor de handmatige contrasten wordt het gewicht getoond voor elk niveau van de factor.
 - Schatting: Het geschatte gemiddelde verschil tussen de vergeleken niveaus.
 - Std. Fout: De standaardfout van het geschatte gemiddelde.
 - vg: De vrijheidsgraden van het model.
