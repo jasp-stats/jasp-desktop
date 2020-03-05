@@ -341,7 +341,7 @@ Json::Value Analysis::asJSON() const
 	if(_moduleData != nullptr)
 		analysisAsJson["dynamicModule"] = _moduleData->asJsonForJaspFile();
 
-	//Log::log() << "Analysis::asJSON():\n" << analysisAsJson.toStyledString() << std::endl;
+	Log::log() << "Analysis::asJSON():\n" << analysisAsJson.toStyledString() << std::endl;
 
 	return analysisAsJson;
 }
@@ -703,35 +703,93 @@ void Analysis::fitOldUserDataEtc()
 
 		const Json::Value & currMetaData = _results.get(".meta", Json::arrayValue);
 
-		std::vector<std::string> oldTables, newTables, oldPlots, newPlots, oldCollections, newCollections;
-
-		std::function<void					(const std::set<std::string> & elementTypes, std::vector<std::string> & elements, const Json::Value & meta)  > extractAndFlattenElements
-			= [&extractAndFlattenElements]	(const std::set<std::string> & elementTypes, std::vector<std::string> & elements, const Json::Value & meta) -> void
-		{
-			//Log::log() << "Meta to flatten: " << meta.toStyledString() << std::endl;
-
-			for(const Json::Value & entry : meta)
-				if(entry.isArray()) // Sometimes some old files follow a non-monotonous pattern of meta-nesting :s
-					extractAndFlattenElements(elementTypes, elements, entry);
-				else if(entry.isObject())
-				{
-					if(elementTypes.count(entry.get("type", "").asString()) > 0)		elements.push_back(entry["name"].asString());
-					if(entry.isMember("meta"))											extractAndFlattenElements(elementTypes, elements, entry["meta"]);
-				}
-		};
-
-		extractAndFlattenElements({"image"},				oldPlots,		_oldMetaData);
-		extractAndFlattenElements({"image"},				newPlots,		currMetaData);
-		extractAndFlattenElements({"table"},				oldTables,		_oldMetaData);
-		extractAndFlattenElements({"table"},				newTables,		currMetaData);
-		extractAndFlattenElements({"collection", "object"},	oldCollections, _oldMetaData);
-		extractAndFlattenElements({"collection", "object"},	newCollections, currMetaData);
-
 		std::map<std::string, std::string> oldToNew;
 
-		for(size_t i=0; i<oldPlots.size()		&& i<newPlots.size();		i++)	oldToNew[ oldPlots[i]		] = newPlots[i];
-		for(size_t i=0; i<oldTables.size()		&& i<newTables.size();		i++)	oldToNew[ oldTables[i]		] = newTables[i];
-		for(size_t i=0; i<oldCollections.size() && i<newCollections.size();	i++)	oldToNew[ oldCollections[i]	] = newCollections[i];
+		if(module() == "ANOVA")
+		{
+			//Gotta do some manual repairing for https://github.com/jasp-stats/jasp-test-release/issues/649
+			//All of these replacements are based on the unittests.
+
+			if(name() == "AnovaRepeatedMeasures")
+			{
+				oldToNew =
+				{
+					{ "assumptionsObj",			"rmAnovaContainer_assumptionsContainer"						},
+					{ "sphericity",				"rmAnovaContainer_assumptionsContainer_sphericityTable"		},
+					{ "levene",					"rmAnovaContainer_assumptionsContainer_rmAnovaLevenesTable"	},
+					{ "posthoc",				"rmAnovaContainer_postHocStandardContainer"					},
+					{ "withinSubjectsEffects",	"rmAnovaContainer_withinAnovaTable"							},
+					{ "betweenSubjectsEffects",	"rmAnovaContainer_betweenTable"								},
+					{ "simpleEffects",			"rmAnovaContainer_simpleEffectsContainer_simpleEffectsTable"},
+					{ "descriptivesTable",		"rmAnovaContainer_descriptivesContainer_tableDescriptives"	},
+					{ "descriptivesObj",		"rmAnovaContainer_descriptivesContainer"					},
+					{ "marginalMeans",			"rmAnovaContainer_marginalMeansContainer"					},
+					{ "contrasts",				"rmAnovaContainer_contrastContainer"						},
+					{ "friedman",				"rmAnovaContainer_nonparametricContainer_friedmanTable"		},
+					{ "conover",				"rmAnovaContainer_nonparametricContainer_conoverContainer"	}
+				};
+			}
+			else if(name() == "Ancova" || name() == "Anova")
+			{
+				oldToNew =
+				{
+					{ "anova",					"anovaContainer_anovaTable"									},
+					{ "assumptionsObj",			"anovaContainer_assumptionsContainer"						},
+					{ "sphericity",				"anovaContainer_assumptionsContainer_sphericityTable"		},
+					{ "levene",					"anovaContainer_assumptionsContainer_rmAnovaLevenesTable"	},
+					{ "posthoc",				"anovaContainer_postHocStandardContainer"					},
+					{ "withinSubjectsEffects",	"anovaContainer_withinAnovaTable"							},
+					{ "betweenSubjectsEffects",	"anovaContainer_betweenTable"								},
+					{ "simpleEffects",			"anovaContainer_simpleEffectsContainer_simpleEffectsTable"	},
+					{ "descriptivesTable",		"anovaContainer_descriptivesContainer_tableDescriptives"	},
+					{ "descriptivesObj",		"anovaContainer_descriptivesContainer"						},
+					{ "marginalMeans",			"anovaContainer_marginalMeansContainer"						},
+					{ "contrasts",				"anovaContainer_contrastContainer"							},
+					{ "friedman",				"anovaContainer_nonparametricContainer_friedmanTable"		},
+					{ "conover",				"anovaContainer_nonparametricContainer_conoverContainer"	}
+				};
+			}
+
+			/*else if(name() == "")
+			{
+				oldToNew =
+				{
+
+				};
+			}*/
+		}
+
+		if(oldToNew.size() == 0) //little algorithm to fix misplaced notes for https://github.com/jasp-stats/jasp-test-release/issues/469
+		{
+			std::vector<std::string> oldTables, newTables, oldPlots, newPlots, oldCollections, newCollections;
+
+			std::function<void					(const std::set<std::string> & elementTypes, std::vector<std::string> & elements, const Json::Value & meta)  > extractAndFlattenElements
+				= [&extractAndFlattenElements]	(const std::set<std::string> & elementTypes, std::vector<std::string> & elements, const Json::Value & meta) -> void
+			{
+				//Log::log() << "Meta to flatten: " << meta.toStyledString() << std::endl;
+
+				for(const Json::Value & entry : meta)
+					if(entry.isArray()) // Sometimes some old files follow a non-monotonous pattern of meta-nesting :s
+						extractAndFlattenElements(elementTypes, elements, entry);
+					else if(entry.isObject())
+					{
+						if(elementTypes.count(entry.get("type", "").asString()) > 0)		elements.push_back(entry["name"].asString());
+						if(entry.isMember("meta"))											extractAndFlattenElements(elementTypes, elements, entry["meta"]);
+					}
+			};
+
+			extractAndFlattenElements({"image"},				oldPlots,		_oldMetaData);
+			extractAndFlattenElements({"image"},				newPlots,		currMetaData);
+			extractAndFlattenElements({"table"},				oldTables,		_oldMetaData);
+			extractAndFlattenElements({"table"},				newTables,		currMetaData);
+			extractAndFlattenElements({"collection", "object"},	oldCollections, _oldMetaData);
+			extractAndFlattenElements({"collection", "object"},	newCollections, currMetaData);
+
+
+			for(size_t i=0; i<oldPlots.size()		&& i<newPlots.size();		i++)	oldToNew[ oldPlots[i]		] = newPlots[i];
+			for(size_t i=0; i<oldTables.size()		&& i<newTables.size();		i++)	oldToNew[ oldTables[i]		] = newTables[i];
+			for(size_t i=0; i<oldCollections.size() && i<newCollections.size();	i++)	oldToNew[ oldCollections[i]	] = newCollections[i];
+		}
 
 		std::map<std::string, Json::Value>	nameToNote, orphanedNotes;
 
@@ -799,7 +857,7 @@ void Analysis::fitOldUserDataEtc()
 		if(orphans.size() > 0)
 			_userData["orphanedNotes"] = orphans;
 
-		//Log::log() << "New userData after attempt to fix is: " << _userData.toStyledString() << std::endl;
+		Log::log() << "New userData after attempt to fix is: " << _userData.toStyledString() << std::endl;
 
 	} catch (...) {
 		//It's ok if this fails, we are just trying to fix the notes, no guarantees.
