@@ -4472,7 +4472,7 @@ msgid "Scatter plots"
 msgstr "Spreidingsdiagrammen"
 
 msgid "Correlation plot"
-msgstr "Correlatiegrafiek"
+msgstr "Correlatiediagram"
 
 msgid "Correlation undefined: %s"
 msgstr "Correlatie niet gedefinieerd: %s"
