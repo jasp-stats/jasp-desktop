@@ -15,7 +15,7 @@ msgid "all subplots should be of class ggplot!"
 msgstr "alle sub-grafieken moeten van de klasse ggplot zijn!"
 
 msgid "plotFunction should be a function!"
-msgstr "plotFunction moet een funtie zijn!"
+msgstr "plotFunction moet een functie zijn!"
 
 msgid "all arguments in ... should be named."
 msgstr "alle argumenten in ... moeten een naam hebben."
@@ -42,7 +42,7 @@ msgid "incorrect class for align. Expected character of numeric."
 msgstr "onjuiste klasse voor align. Een karakter of getal verwacht."
 
 msgid "dfLines should be a data.frame with $x, $y, and $g!"
-msgstr "dfLInes moet een data.frame zijn met $x, $y en $g!"
+msgstr "dfLines moet een data.frame zijn met $x, $y en $g!"
 
 msgid "dfPoints should be a data.frame with $x, $y, and $g!"
 msgstr "dfPoints moet een data.frame zijn met $x, $y en $g!"
@@ -70,7 +70,7 @@ msgid "data | H-"
 msgstr "data | H-"
 
 msgid "data | H+"
-msgstr "data | H0"
+msgstr "data | H+"
 
 msgid "BF%s"
 msgstr "BF%s"
@@ -85,7 +85,7 @@ msgid "Median:"
 msgstr "Mediaan:"
 
 msgid "Cannot provide both a BF pizzaplot and a points legend!"
-msgstr "Kan niet zowel een BF taartdiagram als een punten legenda leveren!"
+msgstr "Kan niet zowel een BF taartdiagram als een puntenlegenda leveren!"
 
 msgid "Anecdotal"
 msgstr "Anekdotisch"
@@ -128,19 +128,19 @@ msgid "This function will be deprecated."
 msgstr "Deze functie zal niet meer gebruikt worden."
 
 msgid "Argument dat and graph cannot both be NULL."
-msgstr "Argumenten dat en graph kunnen niet beiden NULL zijn."
+msgstr "Argumenten dat en graph kunnen niet allebei NULL zijn."
 
 msgid "You must specify either `position` or `nudge_x`/`nudge_y`."
 msgstr "U moet ofwel `position` specificeren of `nudge_x`/`nudge_y`."
 
 msgid "Argument %s should either have length 1 or length %d."
-msgstr "Argument %s moet of lengte 1 hebben of or lengte %d."
+msgstr "Argument %s moet of lengte 1 hebben of lengte %d."
 
 msgid ""
 "removeXYlabels must be a character and contain either 'x', 'y', 'xy', or "
 "'none'"
 msgstr ""
-"removeXYlabels moet een karakter type zijn en ofwel 'x', 'y', 'xy', of "
+"removeXYlabels moet een karakter zijn en ofwel 'x', 'y', 'xy', of "
 "'none' bevatten"
 
 msgid ""
@@ -148,23 +148,23 @@ msgid ""
 "expected: (%d, %d)."
 msgstr ""
 "Dim(removeXYlabels) stemt niet overeen met dim(plotList) / layout. Kreeg "
-"(%d, %d) en verwacht: (%d, %d)."
+"(%d, %d) en verwachtte: (%d, %d)."
 
 msgid "removeXYlabels should either have length 1 or length(plotList)."
 msgstr "removeXYlabels moet of lengte 1 hebben of length(plotList)."
 
 msgid "JASPgraphs could not obtain axes labels from graph"
-msgstr "JASPgraphs kon geen assen labels van de grafiek verkrijgen"
+msgstr "JASPgraphs kon geen assenlabels van de grafiek verkrijgen"
 
 msgid "removeXYlabels must be numeric, larger than 0 and smaller than 1"
 msgstr ""
-"removeXYlabels moet numeriek zijn, en groter dan 0 en kleiner dan 1 zijn"
+"removeXYlabels moet numeriek zijn, groter dan 0 en kleiner dan 1"
 
 msgid ""
 "dim(removeXYlabels)[1] does not match prod(dim(plotList)) / layout. Got (%d, "
 "%d) and expected: prod(%d, %d)."
 msgstr ""
-"dim(removeXYlabels)[1] stemt niet overeen metprod(dim(plotList)) / layout. "
+"dim(removeXYlabels)[1] stemt niet overeen met prod(dim(plotList)) / layout. "
 "Kreeg (%d, %d) en verwachtte: prod(%d, %d)."
 
 msgid "removeXYlabels should either have length 2 or length(plotList)."
@@ -176,7 +176,7 @@ msgstr ""
 
 msgid "layout must be a matrix but instead was of mode %s and class %s"
 msgstr ""
-"layout moet ofwel een matrix zijn maar was daarentegen van mode %s en klasse "
+"layout moet een matrix zijn maar was daarentegen van mode %s en klasse "
 "%s"
 
 msgid ""
@@ -187,20 +187,20 @@ msgstr ""
 "argumenten in plotList om lege grafieken te specificeren."
 
 msgid "Layout must consist of unique integers starting from 1."
-msgstr "Layout moet bestaan uit unieke gehele getallen beginnend vanaf 1."
+msgstr "Layout moet bestaan uit unieke gehele getallen beginnend bij 1."
 
 msgid "x must be length 1 or 2"
 msgstr "x moet van lengte 1 of 2 zijn"
 
 msgid "Secondary axes must be specified using 'sec_axis()'"
-msgstr "Tweede as moet gedefinieerd worden met 'sec_axis()'"
+msgstr "Tweede assen moeten gedefinieerd worden met 'sec_axis()'"
 
 msgid "options should be an R list or a json string!"
 msgstr "opties moeten een R list zijn of een json string!"
 
 msgid "The axis type in the new options list does not match the graph!"
 msgstr ""
-"Het as type in de nieuwe optie-lijst stemmen niet overeen met de grafiek!"
+"Het astype in de nieuwe optielijst stemt niet overeen met de grafiek!"
 
 msgid "graph should be a ggplot2"
 msgstr "grafiek moet een ggplot2 zijn"
