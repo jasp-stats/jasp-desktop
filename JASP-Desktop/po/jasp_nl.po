@@ -1644,7 +1644,7 @@ msgstr "Moderator factor 2"
 
 msgctxt "Ancova|"
 msgid "Nonparametrics"
-msgstr "Niet-parametrische toetsen"
+msgstr "Verdelingsvrije toetsen"
 
 msgctxt "Ancova|"
 msgid "Kruskal-Wallis Test"
@@ -2044,7 +2044,7 @@ msgstr "Moderator factor 2"
 
 msgctxt "Anova|"
 msgid "Nonparametrics"
-msgstr "Niet-parametrische toetsen"
+msgstr "Verdelingsvrije toetsen"
 
 msgctxt "Anova|"
 msgid "Kruskal-Wallis Test"
@@ -2452,7 +2452,7 @@ msgstr "Voeg fouttermen samen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Nonparametrics"
-msgstr "Niet-parametrische toetsen"
+msgstr "Verdelingsvrije toetsen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "RM Factor"
