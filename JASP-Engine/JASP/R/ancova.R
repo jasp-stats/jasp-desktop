@@ -638,12 +638,12 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       if (contrast$contrast == "custom") {
         if (isTryError(contrastResult)) {
           if (grepl(contrastResult[1], pattern = "Nonconforming number")) {
-            contrastContainer$setError(gettext("Nonconforming number of contrast coefficients."))
+            contrastContainer$setError(gettext("Please specify an additional contrast."))
           } else if (grepl(contrastResult[1], pattern = "number of contrast matrix rows")) {
             contrastContainer$setError(gettext("Wrong number of custom contrast matrix rows."))
           }
           return()
-        } else if (any(colSums(contrastMatrix) == 0)) {
+        } else if (any(apply(contrastMatrix, 2, function(x) all(x == 0) ))) {
           contrastContainer$setError(gettext("Please specify non-zero contrast weights."))
           return()
         } 
