@@ -6626,7 +6626,7 @@ msgid ""
 "For the %1$s, the alternative hypothesis specifies that the mean is %2$s "
 "%3$s."
 msgstr ""
-"Voor de %1$ specificeert de alternatieve hypothese dat het gemiddelde "
+"Voor de %1$s specificeert de alternatieve hypothese dat het gemiddelde "
 "%2$s %3$s is."
 
 msgid ""
