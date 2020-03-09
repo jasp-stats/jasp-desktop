@@ -11119,32 +11119,8 @@ msgid "≤ X ≤"
 msgstr "≤ X ≤"
 
 msgctxt "LDbernoulli|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDbernoulli|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDbernoulli|"
-msgid "Statistics"
-msgstr "Statistieken"
-
-msgctxt "LDbernoulli|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDbernoulli|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDbernoulli|"
-msgid "Bar plot"
-msgstr "Staafdiagram"
-
-msgctxt "LDbernoulli|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDbernoulli|"
 msgid "Estimate Parameters"
@@ -11243,44 +11219,12 @@ msgid "Quantile function"
 msgstr "Kwantielfunctie"
 
 msgctxt "LDbeta|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDbeta|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDbeta|"
 msgid "Statistics"
 msgstr "Statistieken"
 
 msgctxt "LDbeta|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDbeta|"
-msgid "First"
-msgstr "Eerste"
-
-msgctxt "LDbeta|"
-msgid "observed moments"
-msgstr "waargenomen momenten"
-
-msgctxt "LDbeta|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDbeta|"
-msgid "Histogram with"
-msgstr "Histogram met"
-
-msgctxt "LDbeta|"
-msgid "bins"
-msgstr "klassen"
-
-msgctxt "LDbeta|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDbeta|"
 msgid "Estimate Parameters"
@@ -11431,40 +11375,12 @@ msgid "≤ X ≤"
 msgstr "≤ X ≤"
 
 msgctxt "LDbinomial|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDbinomial|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDbinomial|"
 msgid "Statistics"
 msgstr "Statistieken"
 
 msgctxt "LDbinomial|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDbinomial|"
-msgid "First"
-msgstr "Eerste"
-
-msgctxt "LDbinomial|"
-msgid "observed moments"
-msgstr "waargenomen momenten"
-
-msgctxt "LDbinomial|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDbinomial|"
-msgid "Bar plot"
-msgstr "Staafdiagram"
-
-msgctxt "LDbinomial|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDbinomial|"
 msgid "Estimate Parameters"
@@ -11567,44 +11483,12 @@ msgid "Quantile function"
 msgstr "Kwantielfunctie"
 
 msgctxt "LDchisq|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDchisq|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDchisq|"
 msgid "Statistics"
 msgstr "Statistieken"
 
 msgctxt "LDchisq|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDchisq|"
-msgid "First"
-msgstr "Eerste"
-
-msgctxt "LDchisq|"
-msgid "observed moments"
-msgstr "waargenomen momenten"
-
-msgctxt "LDchisq|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDchisq|"
-msgid "Histogram with"
-msgstr "Histogram met"
-
-msgctxt "LDchisq|"
-msgid "bins"
-msgstr "klassen"
-
-msgctxt "LDchisq|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDchisq|"
 msgid "Estimate Parameters"
@@ -11703,44 +11587,12 @@ msgid "Quantile function"
 msgstr "Kwantielfunctie"
 
 msgctxt "LDexponential|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDexponential|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDexponential|"
 msgid "Statistics"
 msgstr "Statistieken"
 
 msgctxt "LDexponential|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDexponential|"
-msgid "First"
-msgstr "Eerste"
-
-msgctxt "LDexponential|"
-msgid "observed moments"
-msgstr "waargenomen momenten"
-
-msgctxt "LDexponential|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDexponential|"
-msgid "Histogram with"
-msgstr "Histogram met"
-
-msgctxt "LDexponential|"
-msgid "bins"
-msgstr "klassen"
-
-msgctxt "LDexponential|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDexponential|"
 msgid "Estimate Parameters"
@@ -11855,44 +11707,12 @@ msgid "Quantile function"
 msgstr "Kwantielfunctie"
 
 msgctxt "LDf|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDf|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDf|"
 msgid "Statistics"
 msgstr "Statistieken"
 
 msgctxt "LDf|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDf|"
-msgid "First"
-msgstr "Eerste"
-
-msgctxt "LDf|"
-msgid "observed moments"
-msgstr "waargenomen momenten"
-
-msgctxt "LDf|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDf|"
-msgid "Histogram with"
-msgstr "Histogram met"
-
-msgctxt "LDf|"
-msgid "bins"
-msgstr "klassen"
-
-msgctxt "LDf|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDf|"
 msgid "Estimate Parameters"
@@ -11991,48 +11811,12 @@ msgid "Quantile function"
 msgstr "Kwantielfunctie"
 
 msgctxt "LDgamma|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDgamma|"
-msgid "Generate new variable from gamma"
-msgstr "Genereer waarde m.b.v. gamma"
-
-msgctxt "LDgamma|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDgamma|"
 msgid "Statistics"
 msgstr "Statistieken"
 
 msgctxt "LDgamma|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDgamma|"
-msgid "First"
-msgstr "Eerste"
-
-msgctxt "LDgamma|"
-msgid "observed moments"
-msgstr "waargenomen momenten"
-
-msgctxt "LDgamma|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDgamma|"
-msgid "Histogram with"
-msgstr "Histogram met"
-
-msgctxt "LDgamma|"
-msgid "bins"
-msgstr "klassen"
-
-msgctxt "LDgamma|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDgamma|"
 msgid "Estimate Parameters"
@@ -12139,44 +11923,12 @@ msgid "Quantile function"
 msgstr "Kwantielfunctie"
 
 msgctxt "LDgammaInverse|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDgammaInverse|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDgammaInverse|"
 msgid "Statistics"
 msgstr "Statistieken"
 
 msgctxt "LDgammaInverse|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDgammaInverse|"
-msgid "First"
-msgstr "Eerste"
-
-msgctxt "LDgammaInverse|"
-msgid "observed moments"
-msgstr "waargenomen momenten"
-
-msgctxt "LDgammaInverse|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDgammaInverse|"
-msgid "Histogram with"
-msgstr "Histogram met"
-
-msgctxt "LDgammaInverse|"
-msgid "bins"
-msgstr "klassen"
-
-msgctxt "LDgammaInverse|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDgammaInverse|"
 msgid "Estimate Parameters"
@@ -12287,44 +12039,12 @@ msgid "Quantile function"
 msgstr "Kwantielfunctie"
 
 msgctxt "LDgaussianunivariate|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDgaussianunivariate|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDgaussianunivariate|"
 msgid "Statistics"
 msgstr "Statistieken"
 
 msgctxt "LDgaussianunivariate|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDgaussianunivariate|"
-msgid "First"
-msgstr "Eerste"
-
-msgctxt "LDgaussianunivariate|"
-msgid "observed moments"
-msgstr "waargenomen momenten"
-
-msgctxt "LDgaussianunivariate|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDgaussianunivariate|"
-msgid "Histogram with"
-msgstr "Histogram met"
-
-msgctxt "LDgaussianunivariate|"
-msgid "bins"
-msgstr "klassen"
-
-msgctxt "LDgaussianunivariate|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Estimate Parameters"
@@ -12471,40 +12191,12 @@ msgid "≤ X ≤"
 msgstr "≤ X ≤"
 
 msgctxt "LDnegbinomial|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDnegbinomial|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDnegbinomial|"
 msgid "Statistics"
 msgstr "Statistieken"
 
 msgctxt "LDnegbinomial|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDnegbinomial|"
-msgid "First"
-msgstr "Eerste"
-
-msgctxt "LDnegbinomial|"
-msgid "observed moments"
-msgstr "waargenomen momenten"
-
-msgctxt "LDnegbinomial|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDnegbinomial|"
-msgid "Bar plot"
-msgstr "Staafdiagram"
-
-msgctxt "LDnegbinomial|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDnegbinomial|"
 msgid "Estimate Parameters"
@@ -12639,40 +12331,12 @@ msgid "≤ X ≤"
 msgstr "≤ X ≤"
 
 msgctxt "LDpoisson|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDpoisson|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDpoisson|"
 msgid "Statistics"
 msgstr "Statistieken"
 
 msgctxt "LDpoisson|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDpoisson|"
-msgid "First"
-msgstr "Eerste"
-
-msgctxt "LDpoisson|"
-msgid "observed moments"
-msgstr "waargenomen momenten"
-
-msgctxt "LDpoisson|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDpoisson|"
-msgid "Bar plot"
-msgstr "Staafdiagram"
-
-msgctxt "LDpoisson|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDpoisson|"
 msgid "Estimate Parameters"
@@ -12775,44 +12439,12 @@ msgid "Quantile function"
 msgstr "Kwantielfunctie"
 
 msgctxt "LDt|"
-msgid "Generate and Display Data"
-msgstr "Genereer en toon gegevens"
-
-msgctxt "LDt|"
-msgid "Get variable from data set"
-msgstr "Selecteer variabele uit dataset"
-
-msgctxt "LDt|"
 msgid "Statistics"
 msgstr "Statistieken"
 
 msgctxt "LDt|"
-msgid "Descriptives"
-msgstr "Samenvatting"
-
-msgctxt "LDt|"
-msgid "First"
-msgstr "Eerste"
-
-msgctxt "LDt|"
-msgid "observed moments"
-msgstr "waargenomen momenten"
-
-msgctxt "LDt|"
 msgid "Plots"
 msgstr "Grafieken"
-
-msgctxt "LDt|"
-msgid "Histogram with"
-msgstr "Histogram met"
-
-msgctxt "LDt|"
-msgid "bins"
-msgstr "klassen"
-
-msgctxt "LDt|"
-msgid "Empirical cumulative distribution"
-msgstr "Empirische cumulatieve verdeling"
 
 msgctxt "LDt|"
 msgid "Estimate Parameters"
@@ -13756,126 +13388,6 @@ msgctxt "LDOptions|"
 msgid "to %1"
 msgstr "naar %1"
 
-msgctxt "LDbernoulli|"
-msgid "Generate new variable from Bernoulli"
-msgstr "Genereer nieuwe variabele m.b.v. Bernoulli"
-
-msgctxt "LDbernoulli|"
-msgid "Variable name: "
-msgstr "Naam variabele: "
-
-msgctxt "LDbernoulli|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
-
-msgctxt "LDbernoulli|"
-msgid "Draw samples"
-msgstr "Sample"
-
-msgctxt "LDbeta|"
-msgid "Generate new variable from Beta"
-msgstr "Genereer nieuwe variabele m.b.v. Beta"
-
-msgctxt "LDbeta|"
-msgid "Variable name: "
-msgstr "Naam variabele: "
-
-msgctxt "LDbeta|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
-
-msgctxt "LDbeta|"
-msgid "Draw samples"
-msgstr "Teken steekproef"
-
-msgctxt "LDbinomial|"
-msgid "Generate new variable from Binomial"
-msgstr "Genereer nieuwe variabele m.b.v. Binomiaal"
-
-msgctxt "LDbinomial|"
-msgid "Variable name: "
-msgstr "Naam variabele: "
-
-msgctxt "LDbinomial|"
-msgid "e.g., random binomial"
-msgstr "bijv., willekeurig binomiaal"
-
-msgctxt "LDbinomial|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
-
-msgctxt "LDbinomial|"
-msgid "Draw samples"
-msgstr "Teken steekproef"
-
-msgctxt "LDchisq|"
-msgid "Generate new variable from χ²"
-msgstr "Genereer nieuwe variabele m.b.v. χ²"
-
-msgctxt "LDchisq|"
-msgid "Variable name: "
-msgstr "Naam variabele: "
-
-msgctxt "LDchisq|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
-
-msgctxt "LDchisq|"
-msgid "Draw samples"
-msgstr "Teken steekproef "
-
-msgctxt "LDexponential|"
-msgid "Generate new variable from Exponential"
-msgstr "Genereer nieuwe variable m.b.v. Exponentieel"
-
-msgctxt "LDf|"
-msgid "Generate new variable from F"
-msgstr "Genereer nieuwe variable m.b.v. F"
-
-msgctxt "LDgammaInverse|"
-msgid "Generate new variable from InvGamma"
-msgstr "Genereer nieuwe variable m.b.v. InvGamma"
-
-msgctxt "LDgaussianunivariate|"
-msgid "Generate new variable from Normal"
-msgstr "Genereer nieuwe variable m.b.v. Normaal"
-
-msgctxt "LDnegbinomial|"
-msgid "Generate new variable from NBinomial"
-msgstr "Genereer nieuwe variable m.b.v. NBinomiaal"
-
-msgctxt "LDnegbinomial|"
-msgid "Variable name: "
-msgstr "Naam variable: "
-
-msgctxt "LDnegbinomial|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
-
-msgctxt "LDnegbinomial|"
-msgid "Draw samples"
-msgstr "Teken steekproef"
-
-msgctxt "LDpoisson|"
-msgid "Generate new variable from Poisson"
-msgstr "Genereer waarde m.b.v. Poisson"
-
-msgctxt "LDpoisson|"
-msgid "Variable name: "
-msgstr "Naam variable: "
-
-msgctxt "LDpoisson|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
-
-msgctxt "LDpoisson|"
-msgid "Draw samples"
-msgstr "Teken steekproef"
-
-msgctxt "LDt|"
-msgid "Generate new variable from t"
-msgstr "Genereer nieuwe variable m.b.v. t"
-
 msgctxt "ReliabilityAnalysis|"
 msgid "Exclude cases listwise"
 msgstr "Sluit waarnemingen uit per rij"
@@ -13999,86 +13511,6 @@ msgstr "Sluit waarnemingen uit per rij"
 msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Exclude cases per dependent variable"
 msgstr "Sluit waarnemingen uit per afhankelijke variable"
-
-msgctxt "LDnegbinomial|"
-msgid "e.g., random nbinomial"
-msgstr "bijv., willekeurig nbinomiaal"
-
-msgctxt "LDpoisson|"
-msgid "e.g., random poisson"
-msgstr "bijv., willekeurig poisson"
-
-msgctxt "LDexponential|"
-msgid "Variable name: "
-msgstr "Naam variable: "
-
-msgctxt "LDexponential|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
-
-msgctxt "LDexponential|"
-msgid "Draw samples"
-msgstr "Teken steekproef"
-
-msgctxt "LDf|"
-msgid "Variable name: "
-msgstr "Naam variable: "
-
-msgctxt "LDf|"
-msgid "Draw samples"
-msgstr "Teken steekproef"
-
-msgctxt "LDgamma|"
-msgid "Variable name: "
-msgstr "Naam variable: "
-
-msgctxt "LDgamma|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
-
-msgctxt "LDgamma|"
-msgid "Draw samples"
-msgstr "Sample"
-
-msgctxt "LDgammaInverse|"
-msgid "Variable name: "
-msgstr "Naam variable: "
-
-msgctxt "LDgammaInverse|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
-
-msgctxt "LDgammaInverse|"
-msgid "Draw samples"
-msgstr "Sample"
-
-msgctxt "LDgaussianunivariate|"
-msgid "Variable name: "
-msgstr "Naam variable: "
-
-msgctxt "LDgaussianunivariate|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
-
-msgctxt "LDgaussianunivariate|"
-msgid "Draw samples"
-msgstr "Teken steekproef"
-
-msgctxt "LDt|"
-msgid "Variable name: "
-msgstr "Naam variable: "
-
-msgctxt "LDt|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
-
-msgctxt "LDt|"
-msgid "Draw samples"
-msgstr "Teken steekproef"
-
-msgctxt "LDf|"
-msgid "Number of samples: "
-msgstr "Steekproefgrootte: "
 
 msgctxt "LDbeta|"
 msgid "Show Distribution"
@@ -14228,45 +13660,9 @@ msgstr ""
 "waar leeftijd, lengte en gewicht de namen van de voorspellers zijn.\n"
 "Lees het help bestand voor verdere instructies."
 
-msgctxt "LDbernoulli|"
-msgid "e.g., random bernoulli"
-msgstr "bijv., willekeurig bernoulli"
-
-msgctxt "LDbeta|"
-msgid "e.g., random beta"
-msgstr "bijv., willekeurig beta"
-
-msgctxt "LDchisq|"
-msgid "e.g., random chisq"
-msgstr "bijv., willekeurig Chi kwadraat"
-
-msgctxt "LDexponential|"
-msgid "e.g., random exponential"
-msgstr "bijv., willekeurig exponentieel"
-
-msgctxt "LDf|"
-msgid "e.g., random F"
-msgstr "bijv., willekeurig F"
-
-msgctxt "LDgamma|"
-msgid "e.g., random gamma"
-msgstr "bijv., willekeurig gamma"
-
-msgctxt "LDgammaInverse|"
-msgid "e.g., random invgamma"
-msgstr "bijv., willkeurig Inv. gamma"
-
-msgctxt "LDgaussianunivariate|"
-msgid "e.g., random normal"
-msgstr "bijv., willekeuring normaal"
-
 msgctxt "LDt|"
 msgid "Parameters"
 msgstr "Parameters"
-
-msgctxt "LDt|"
-msgid "e.g., random t"
-msgstr "bijv., willekeurige t"
 
 msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Bounds specification in"
@@ -16028,6 +15424,72 @@ msgstr ""
 "Er is momenteel geen hulp beschikbaar voor deze analysis.\n"
 "\n"
 "Er zal documentatie worden toegevoegd in een toekomstige versie van JASP."
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Generate and Display Data"
+msgstr "Genereer en toon gegevens"
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Variable name: "
+msgstr "Naam variabele: "
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Number of samples: "
+msgstr "Steekproefgrootte: "
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Draw samples"
+msgstr "Teken steekproef"
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Get variable from data set"
+msgstr "Selecteer variabele uit dataset"
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Statistics"
+msgstr "Statistieken"
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Descriptives"
+msgstr "Samenvatting"
+
+msgctxt "LDGenerateDisplayData|"
+msgid "First"
+msgstr "Eerste"
+
+msgctxt "LDGenerateDisplayData|"
+msgid "observed moments"
+msgstr "waargenomen momenten"
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Plots"
+msgstr "Grafieken"
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Histogram with"
+msgstr "Histogram met"
+
+msgctxt "LDGenerateDisplayData|"
+msgid "bins"
+msgstr "klassen"
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Empirical cumulative distribution"
+msgstr "Empirische cumulatieve verdeling"
+
+#, qt-format
+msgctxt "LDGenerateDisplayData|"
+msgid "Generate new variable from %1"
+msgstr "Genereer nieuwe variabele m.b.v. %1"
+
+#, qt-format
+msgctxt "LDGenerateDisplayData|"
+msgid "e.g., random %1"
+msgstr "bijv., willekeurig %1"
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Bar plot"
+msgstr "Staafdiagram"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""
