@@ -15,16 +15,15 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import QtQuick			2.8
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP.Widgets		1.0
 
 import "./common" as LD
 
-Form {
-	id: form
-
+Form
+{
 	Section
 	{
 		expanded: true
@@ -57,49 +56,10 @@ Form {
 
 	}
 
-	Section
+	LD.LDGenerateDisplayData
 	{
-		title: qsTr("Generate and Display Data")
-		Group
-		{
-			title: qsTr("Generate new variable from t") + " (df = " + df.value + ", ncp = " + ncp.value + ")"
-			AddColumnField{ name: "newVariableName"; text: qsTr("Variable name: "); fieldWidth: 120; placeholderText: qsTr("e.g., random t") }
-			IntegerField{   name: "sampleSize"; label: qsTr("Number of samples: "); min: 1; defaultValue: dataSetModel.rowCount(); max: dataSetModel.rowCount() }
-
-			Button{name: "simulateNowButton"; label: qsTr("Draw samples"); id: simulateNowButton; onClicked:{
-					if (simulateNow.checked) simulateNow.checked = false; else simulateNow.checked = true
-				}}
-			CheckBox{name: "simulateNow"; visible: false; id: simulateNow}
-		}
-		VariablesForm
-		{
-			height: 100
-			visible: true
-			AvailableVariablesList { name: "allVariables" }
-			AssignedVariablesList  { name: "variable"; label: qsTr("Get variable from data set"); allowedColumns: ["scale"]; singleVariable: true }
-		}
-
-		Group
-		{
-			title: qsTr("Statistics")
-			CheckBox{ name: "summary"; label: qsTr("Descriptives"); checked: true  }
-			CheckBox
-			{
-				name: "moments"; label: qsTr("First"); childrenOnSameRow: true
-				IntegerField{name: "momentsUpTo"; afterLabel: qsTr("observed moments"); defaultValue: 2; min: 1; max: 10}
-			}
-		}
-
-		Group
-		{
-			title: qsTr("Plots")
-			CheckBox
-			{
-				name: "histogram";  label: qsTr("Histogram with"); childrenOnSameRow: true
-				IntegerField{ name: "histogramBins"; afterLabel: qsTr("bins"); defaultValue: 30 }
-			}
-			CheckBox{ name: "ecdf"; label: qsTr("Empirical cumulative distribution") }
-		}
+		distributionName		: "t"
+		formula					: "df = " + df.value + ", ncp = " + ncp.value
 	}
 
 	Section

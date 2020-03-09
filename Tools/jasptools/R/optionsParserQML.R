@@ -23,7 +23,8 @@
     "SubjectivePriors",
     "ContrastsList",
     "SetSeed",
-    "LD.LDOptions"
+    "LD.LDOptions",
+    "LD.LDGenerateDisplayData"
   )
 
   fileSize <- file.info(file)$size 
@@ -109,6 +110,22 @@
   if (grepl(regMatch, fileContents)) {
     LDoption <- .parseLDOption(fileContents)
     result <- c(result, LDoption)
+  }
+  
+  regMatch <- "LD.LDGenerateDisplayData\\{"
+  if (grepl(regMatch, fileContents)) {
+    LDGenerateDisplayData <- list(
+      sampleSize = 1,
+      simulateNow = FALSE,
+      variable = c(),
+      summary = TRUE,
+      moments = FALSE,
+      momentsUpTo = 2,
+      histogram = TRUE,
+      histogramBins = 30,
+      ecdf = FALSE
+    )
+    result <- c(result, LDGenerateDisplayData)
   }
   
   return(result)
