@@ -11094,31 +11094,7 @@ msgid "≤ X ≤"
 msgstr ""
 
 msgctxt "LDbernoulli|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Statistics"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDbernoulli|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Bar plot"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDbernoulli|"
@@ -11218,43 +11194,11 @@ msgid "Quantile function"
 msgstr ""
 
 msgctxt "LDbeta|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDbeta|"
 msgid "Statistics"
 msgstr ""
 
 msgctxt "LDbeta|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "First"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "observed moments"
-msgstr ""
-
-msgctxt "LDbeta|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Histogram with"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "bins"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDbeta|"
@@ -11406,39 +11350,11 @@ msgid "≤ X ≤"
 msgstr ""
 
 msgctxt "LDbinomial|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDbinomial|"
 msgid "Statistics"
 msgstr ""
 
 msgctxt "LDbinomial|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "First"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "observed moments"
-msgstr ""
-
-msgctxt "LDbinomial|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Bar plot"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDbinomial|"
@@ -11542,43 +11458,11 @@ msgid "Quantile function"
 msgstr ""
 
 msgctxt "LDchisq|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDchisq|"
 msgid "Statistics"
 msgstr ""
 
 msgctxt "LDchisq|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "First"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "observed moments"
-msgstr ""
-
-msgctxt "LDchisq|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Histogram with"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "bins"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDchisq|"
@@ -11678,43 +11562,11 @@ msgid "Quantile function"
 msgstr ""
 
 msgctxt "LDexponential|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDexponential|"
 msgid "Statistics"
 msgstr ""
 
 msgctxt "LDexponential|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "First"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "observed moments"
-msgstr ""
-
-msgctxt "LDexponential|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Histogram with"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "bins"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDexponential|"
@@ -11830,43 +11682,11 @@ msgid "Quantile function"
 msgstr ""
 
 msgctxt "LDf|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDf|"
 msgid "Statistics"
 msgstr ""
 
 msgctxt "LDf|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "First"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "observed moments"
-msgstr ""
-
-msgctxt "LDf|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Histogram with"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "bins"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDf|"
@@ -11966,47 +11786,11 @@ msgid "Quantile function"
 msgstr ""
 
 msgctxt "LDgamma|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Generate new variable from gamma"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDgamma|"
 msgid "Statistics"
 msgstr ""
 
 msgctxt "LDgamma|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "First"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "observed moments"
-msgstr ""
-
-msgctxt "LDgamma|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Histogram with"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "bins"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDgamma|"
@@ -12114,43 +11898,11 @@ msgid "Quantile function"
 msgstr ""
 
 msgctxt "LDgammaInverse|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
 msgid "Statistics"
 msgstr ""
 
 msgctxt "LDgammaInverse|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "First"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "observed moments"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Histogram with"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "bins"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDgammaInverse|"
@@ -12262,43 +12014,11 @@ msgid "Quantile function"
 msgstr ""
 
 msgctxt "LDgaussianunivariate|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
 msgid "Statistics"
 msgstr ""
 
 msgctxt "LDgaussianunivariate|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "First"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "observed moments"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Histogram with"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "bins"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDgaussianunivariate|"
@@ -12446,39 +12166,11 @@ msgid "≤ X ≤"
 msgstr ""
 
 msgctxt "LDnegbinomial|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
 msgid "Statistics"
 msgstr ""
 
 msgctxt "LDnegbinomial|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "First"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "observed moments"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Bar plot"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDnegbinomial|"
@@ -12614,39 +12306,11 @@ msgid "≤ X ≤"
 msgstr ""
 
 msgctxt "LDpoisson|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDpoisson|"
 msgid "Statistics"
 msgstr ""
 
 msgctxt "LDpoisson|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "First"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "observed moments"
-msgstr ""
-
-msgctxt "LDpoisson|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Bar plot"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDpoisson|"
@@ -12750,43 +12414,11 @@ msgid "Quantile function"
 msgstr ""
 
 msgctxt "LDt|"
-msgid "Generate and Display Data"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Get variable from data set"
-msgstr ""
-
-msgctxt "LDt|"
 msgid "Statistics"
 msgstr ""
 
 msgctxt "LDt|"
-msgid "Descriptives"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "First"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "observed moments"
-msgstr ""
-
-msgctxt "LDt|"
 msgid "Plots"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Histogram with"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "bins"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Empirical cumulative distribution"
 msgstr ""
 
 msgctxt "LDt|"
@@ -13755,134 +13387,6 @@ msgctxt "LDOptions|"
 msgid "to %1"
 msgstr ""
 
-msgctxt "LDbernoulli|"
-msgid "Generate new variable from Bernoulli"
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDbernoulli|"
-msgid "Draw samples"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Generate new variable from Beta"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "Draw samples"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Generate new variable from Binomial"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "e.g., random binomial"
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDbinomial|"
-msgid "Draw samples"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Generate new variable from χ²"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "Draw samples"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Generate new variable from Exponential"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Generate new variable from F"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Generate new variable from InvGamma"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Generate new variable from Normal"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Generate new variable from NBinomial"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "e.g., random nbinomial"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDnegbinomial|"
-msgid "Draw samples"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Generate new variable from Poisson"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "e.g., random poisson"
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDpoisson|"
-msgid "Draw samples"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Generate new variable from t"
-msgstr ""
-
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Exclude cases per dependent variable"
 msgstr ""
@@ -13929,78 +13433,6 @@ msgstr ""
 
 msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Exclude cases per dependent variable"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "Draw samples"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDf|"
-msgid "Draw samples"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "Draw samples"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "Draw samples"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "Draw samples"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Variable name: "
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Number of samples: "
-msgstr ""
-
-msgctxt "LDt|"
-msgid "Draw samples"
 msgstr ""
 
 msgctxt "LDbeta|"
@@ -14126,44 +13558,8 @@ msgid ""
 "Read the help file for further instructions."
 msgstr ""
 
-msgctxt "LDbernoulli|"
-msgid "e.g., random bernoulli"
-msgstr ""
-
-msgctxt "LDbeta|"
-msgid "e.g., random beta"
-msgstr ""
-
-msgctxt "LDchisq|"
-msgid "e.g., random chisq"
-msgstr ""
-
-msgctxt "LDexponential|"
-msgid "e.g., random exponential"
-msgstr ""
-
-msgctxt "LDf|"
-msgid "e.g., random F"
-msgstr ""
-
-msgctxt "LDgamma|"
-msgid "e.g., random gamma"
-msgstr ""
-
-msgctxt "LDgammaInverse|"
-msgid "e.g., random invgamma"
-msgstr ""
-
-msgctxt "LDgaussianunivariate|"
-msgid "e.g., random normal"
-msgstr ""
-
 msgctxt "LDt|"
 msgid "Parameters"
-msgstr ""
-
-msgctxt "LDt|"
-msgid "e.g., random t"
 msgstr ""
 
 msgctxt "EquivalenceIndependentSamplesTTest|"
@@ -15746,6 +15142,72 @@ msgid ""
 "There is currently no help available for this analysis.\n"
 "\n"
 "Additional documentation will be available in future releases of JASP."
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Generate and Display Data"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Variable name: "
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Number of samples: "
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Draw samples"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Get variable from data set"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Statistics"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Descriptives"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "First"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "observed moments"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Plots"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Histogram with"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "bins"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Empirical cumulative distribution"
+msgstr ""
+
+#, qt-format
+msgctxt "LDGenerateDisplayData|"
+msgid "Generate new variable from %1"
+msgstr ""
+
+#, qt-format
+msgctxt "LDGenerateDisplayData|"
+msgid "e.g., random %1"
+msgstr ""
+
+msgctxt "LDGenerateDisplayData|"
+msgid "Bar plot"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

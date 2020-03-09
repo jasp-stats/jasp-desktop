@@ -15,12 +15,15 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-import QtQuick 2.8
-import QtQuick.Layouts 1.3
-import JASP.Controls 1.0
-import JASP.Widgets 1.0
+import QtQuick			2.8
+import QtQuick.Layouts	1.3
+import JASP.Controls	1.0
+import JASP.Widgets		1.0
 
-Form {
+import "./common" as LD
+
+Form
+{
 	id: form
 
 	Section
@@ -77,42 +80,14 @@ Form {
 		}
 	}
 
-	Section
+	LD.LDGenerateDisplayData
 	{
-		title: qsTr("Generate and Display Data")
-		Group
-		{
-			title: qsTr("Generate new variable from Bernoulli") + " (p = " + prob.value + ")"
-			AddColumnField{ name: "newVariableName"; text: qsTr("Variable name: "); fieldWidth: 120; placeholderText: qsTr("e.g., random bernoulli") }
-			IntegerField{   name: "sampleSize"; label: qsTr("Number of samples: "); min: 1; defaultValue: dataSetModel.rowCount(); max: dataSetModel.rowCount()}
-			Button{name: "simulateNowButton"; label: qsTr("Draw samples"); id: simulateNowButton; onClicked:{
-					if (simulateNow.checked) simulateNow.checked = false; else simulateNow.checked = true
-				}}
-			CheckBox{name: "simulateNow"; visible: false; id: simulateNow}
-		}
-		VariablesForm
-		{
-			height: 100
-			visible: true
-			AvailableVariablesList { name: "allVariables" }
-			AssignedVariablesList  { name: "variable"; label: qsTr("Get variable from data set"); singleVariable: true }
-		}
-
-		Group
-		{
-			title: qsTr("Statistics")
-			CheckBox{ name: "summary"; label: qsTr("Descriptives"); checked: true }
-		}
-
-		Group
-		{
-			title: qsTr("Plots")
-			CheckBox
-			{
-				name: "histogram";  label: qsTr("Bar plot"); childrenOnSameRow: true
-			}
-			CheckBox{ name: "ecdf"; label: qsTr("Empirical cumulative distribution"); visible: false }
-		}
+		distributionName			: "Bernoulli"
+		formula						: "p = " + prob.value
+		showStatisticsMoment		: false
+		showCumulativeDistribution	: false
+		histogramIsBarPlot			: true
+		allowOnlyScaleColumns		: false
 	}
 
 	Section
