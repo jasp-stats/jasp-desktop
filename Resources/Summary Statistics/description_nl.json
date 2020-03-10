@@ -21,15 +21,15 @@
 			"icon"	  : "analysis-bayesian-ttest.svg"
 		},
 		{
-			"title"   : "S.S. Bayesiaanse Onafhankelijke T-toets",
+			"title"   : "S.S. Bayesiaanse Onafhankelijke Steekproeven T-toets",
 			"function": "SummaryStatsTTestBayesianIndependentSamples"
 		},
 		{
-			"title"   : "S.S. Bayesiaanse Paired Samples T-toets",
+			"title"   : "S.S. Bayesiaanse Gepaarde T-Toets",
 			"function": "SummaryStatsTTestBayesianPairedSamples"
 		},
 		{
-			"title"   : "S.S. Bayesiaans One Sample T-toets",
+			"title"   : "S.S. Bayesiaanse T-Toets voor Eén Gemiddelde",
 			"function": "SummaryStatsTTestBayesianOneSample"
 		},
 		{

@@ -100,7 +100,7 @@ contr.all_pairs <- function(n) {
     n = nlevels(n)
   }
   if (length(n) > 1) {n = n[1]; warning("Only using first element of", deparse(substitute(n)),".")}
-  if (n < 2) stop(deparse(substitute(n)), "is small than 2.")
+  if (n < 2) stop(deparse(substitute(n)), "is smaller than 2.")
   N = n-1
   C = sapply(1:n, function(i) cbind(-1, diag(N))[,(0:N+i) %% n + 1, drop=FALSE])
   C = C[!duplicated(abs(C)),, drop = FALSE]

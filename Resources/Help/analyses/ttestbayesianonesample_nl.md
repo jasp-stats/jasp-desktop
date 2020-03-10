@@ -1,4 +1,4 @@
-Bayesiaanse T-Toets voor één gemiddelde
+Bayesiaanse T-Toets voor Eén Gemiddelde
 ===
 
 Met de one sample t-test kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde gelijk is aan een specifieke constante, bijvoorbeeld de toetswaarde.

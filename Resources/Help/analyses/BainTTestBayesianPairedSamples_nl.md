@@ -1,13 +1,13 @@
-bain Gepaarde t-toets
+bain Gepaarde T-Toets
 ==============================
 
-Met de bain (Bayesian informative hypothese evaluation) Paired Samples t-toets kan de gebruiker de nulhypothese dat de gemiddelden van twee herhaalde metingen gelijk zijn testen tegenover eenzijdige en tweezijdige alternatieve hypotheses. 
+Met de bain (Bayesian informative hypothese evaluation) gepaarde t-toets kan de gebruiker de nulhypothese dat de gemiddelden van twee herhaalde metingen gelijk zijn testen tegenover eenzijdige en tweezijdige alternatieve hypotheses. 
 
-### Specificatie van de bain Paired Samples t-toets
+### Specificatie van de bain gepaarde t-toets
 
 - Kies paren van variabelen uit de lijst met variabelen en zet ze in het veld aan de rechterkant. 
 - Stel de toevalsgenerator beginwaarde in gelijk aan een geheel (integer) nummer om een herhaalbare, willekeurige nummerreeks te creëren. Om stabiliteit van de resultaten te verzekeren wordt aangeraden de analyses met twee verschillende seeds uit te voeren.
-- Wanneer de bain Paired Samples T-Toets voor het eerst wordt uitgevoerd, vink dan de aanvullende statistieken en beide grafieken aan. Wanneer de gebruiker dan terug gaat naar de bain Paired Samples t-toets is het duidelijk wat deze drie opties inhouden, en kunnen de benodigde opties worden geselecteerd. 
+- Wanneer de bain gepaarde t-toets voor het eerst wordt uitgevoerd, vink dan de aanvullende statistieken en beide grafieken aan. Wanneer de gebruiker dan terug gaat naar de bain gepaarde t-toets is het duidelijk wat deze drie opties inhouden, en kunnen de benodigde opties worden geselecteerd. 
 - In de resultaten worden standaard de 95% geloofwaardigheidsintervallen weergegeven. Dit percentage kan naar wens worden aangepast. 
 - De gebruiker kan uit vijf verschillende toetssituaties kiezen: 
 
@@ -19,7 +19,7 @@ Met de bain (Bayesian informative hypothese evaluation) Paired Samples t-toets k
 
 - Als onder de Bayes Factor label wordt gekozen voor BF01, dan geven Bayes factor waarden groter dan 1 bewijs voor H0. Als wordt gekozen voor BF10, dan geven Bayes factor waarden groter dan 1 bewijs voor H1 (of H2). 
 
-### Verkregen resultaten na het uitvoeren van de bain Paired Samples t-toets
+### Verkregen resultaten na het uitvoeren van de bain gepaarde t-toets
 
 - Om de resultaten van de bain gepaarde t-toets goed te kunnen interpreteren, kunt u de TUTORIAL van Hoijtink, Mulder, van Lissa, and Gu (2018) lezen. Deze kan worden gevonden op de Psychological Methods website, of op de bain website via https://informative-hypotheses.sites.uu.nl/software/bain/
 - Om de technische achtergrond van bain te begrijpen, kunt u Gu, Mulder, en Hoijtink (2017) en Hoijtink, Gu, en Mulder (2018) lezen. Deze kunnen worden gevonden op de website van the British Journal of Mathematical and Statistical Psychology, of op de bain website via https://informative-hypotheses.sites.uu.nl/software/bain/

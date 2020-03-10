@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-03-05 11:04\n"
+"POT-Creation-Date: 2020-03-10 12:47\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3475,7 +3475,7 @@ msgstr ""
 msgid "."
 msgstr ""
 
-msgid "is small than 2."
+msgid "is smaller than 2."
 msgstr ""
 
 msgid "Equivalence Bayesian Independent Samples T-Test"
@@ -4243,7 +4243,7 @@ msgstr ""
 msgid "%1$s %2$s Data should only contain numeric:\n                 -start with the column name of the variable.\n                 -contain an '=' to distinguish between column name and coordinate."
 msgstr ""
 
-msgid "Data supplied in %s could not be used to determine variables types. Data should:\n                 Start with the column name of the variable.\n                 Contain an '=' to distinghuish betweem column name and group."
+msgid "Data supplied in %s could not be used to determine variables types. Data should: \n- Start with the column name of the variable. \n- Contain an '=' to distinghuish betweem column name and group."
 msgstr ""
 
 msgid "Some entries of %1$s were not understood. These are now grouped under '%2$s'."
@@ -4603,7 +4603,7 @@ msgstr ""
 msgid "Wald Statistic"
 msgstr ""
 
-msgid "Standardized estimates represent estimates  where the continuous predictors are standardized (X-standardization)."
+msgid "Standardized estimates represent estimates where the continuous predictors are standardized (X-standardization)."
 msgstr ""
 
 msgid "Coefficient estimate and robust standard error are based on the median of the bootstrap distribution."

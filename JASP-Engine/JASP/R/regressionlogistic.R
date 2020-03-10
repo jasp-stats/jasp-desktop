@@ -165,7 +165,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   }
   
   if (options$stdCoeff)
-    estimatesTable$addFootnote(gettext("Standardized estimates represent estimates  where the continuous predictors are standardized (X-standardization)."), symbol = "\u207A")
+    estimatesTable$addFootnote(gettext("Standardized estimates represent estimates where the continuous predictors are standardized (X-standardization)."), symbol = "\u207A")
 
   jaspResults[["estimatesTable"]] <- estimatesTable
   
@@ -204,7 +204,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   estimatesTableBootstrap$addColumnInfo(name = "se",      title = seTitle,                   type = "number", format="dp:3")
   if(options$stdCoeff) {
     estimatesTableBootstrap$addColumnInfo(name = "std",   title = gettextf("Standardized%s", "\u207A"), type = "number", format="dp:3")
-    estimatesTableBootstrap$addFootnote(gettext("Standardized estimates represent estimates  where the continuous predictors are standardized (X-standardization)."), symbol = "\u207A")
+    estimatesTableBootstrap$addFootnote(gettext("Standardized estimates represent estimates where the continuous predictors are standardized (X-standardization)."), symbol = "\u207A")
   }
   if(options$oddsRatios)
     estimatesTableBootstrap$addColumnInfo(name = "or",    title = gettext("Odds Ratio"), type = "number")

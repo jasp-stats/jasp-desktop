@@ -1,4 +1,4 @@
-Gelijkwaardigheids T-Toets voor één gemiddelde
+Gelijkwaardigheids T-Toets voor Eén Gemiddelde
 ==========================
 
 Met de gelijkwaardigheids t-toets voor één gemiddelde kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde binnen een interval valt, de zogenaamde gelijkwaardigheids regio.Het verschil met de klassieke nul hypothese significantie toets is dat in gelijkwaardigheids toetsen, de nul hypothese een interval rond de test waarde beslaat in plaats van een punt-nul.

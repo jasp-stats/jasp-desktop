@@ -4294,10 +4294,6 @@ msgid "Individual Item Statistics"
 msgstr ""
 
 msgctxt "ReliabilityAnalysis|"
-msgid "McDonald's ω  (if item dropped)"
-msgstr ""
-
-msgctxt "ReliabilityAnalysis|"
 msgid "Cronbach's α (if item dropped)"
 msgstr ""
 
@@ -15208,6 +15204,10 @@ msgstr ""
 
 msgctxt "LDGenerateDisplayData|"
 msgid "Bar plot"
+msgstr ""
+
+msgctxt "ReliabilityAnalysis|"
+msgid "McDonald's ω (if item dropped)"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

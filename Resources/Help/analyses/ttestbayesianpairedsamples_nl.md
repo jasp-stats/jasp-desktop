@@ -1,7 +1,7 @@
-Bayesiaanse Paired Samples T-Toets
+Bayesiaanse Gepaarde T-Toets
 ===
 
-Met de paired samples t-toets kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde van het verschil tussen gepaarde observaties gelijk is aan 0.
+Met de gepaarde t-toets kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde van het verschil tussen gepaarde observaties gelijk is aan 0.
 
 ### Assumpties
 - De verschilscore is continu. 

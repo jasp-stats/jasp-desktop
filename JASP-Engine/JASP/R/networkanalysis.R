@@ -1466,9 +1466,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
                                          inputCheck = Negate(is.na))
   message <- NULL
   if (checks[["errors"]][["fatal"]]) {
-    message <- gettextf("Data supplied in %s could not be used to determine variables types. Data should:
-                 Start with the column name of the variable.
-                 Contain an '=' to distinghuish betweem column name and group.",
+    message <- gettextf("Data supplied in %s could not be used to determine variables types. Data should: \n- Start with the column name of the variable. \n- Contain an '=' to distinghuish betweem column name and group.",
                        options[["colorNodesBy"]])
     return(list(newData = NULL, message = message))
   }
