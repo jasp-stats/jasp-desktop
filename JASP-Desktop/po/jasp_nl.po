@@ -1435,7 +1435,8 @@ msgstr ""
 "Onthoud a.u.b. dat dit een preview-release is en dat een aantal features nog "
 "ontbreekt. \n"
 "\n"
-"Als JASP vandaag nog niet alles kan wat u wilt, probeer het dan morgen opnieuw:\n"
+"Als JASP vandaag nog niet alles kan wat u wilt, probeer het dan morgen "
+"opnieuw:\n"
 "JASP wordt in hoog tempo verder ontwikkeld!"
 
 msgctxt "Ancova|"
@@ -10098,23 +10099,8 @@ msgstr "Geen naam gegeven aan weggegooide bron-attribuut van VariableList %1"
 
 #, qt-format
 msgctxt "QMLListView|"
-msgid "Wrong parameter discard in VariableList %1"
-msgstr "Verkeerde parameter weggegooid in VariableList %1"
-
-#, qt-format
-msgctxt "QMLListView|"
-msgid "Needs source model for VariableList %1"
-msgstr "Bronmodel nodig voor VariableList %1"
-
-#, qt-format
-msgctxt "QMLListView|"
 msgid "Unknown discard model %1 for VariableList %2"
 msgstr "Onbekend weggegooid model %1 voor VariableList %2"
-
-#, qt-format
-msgctxt "QMLListView|"
-msgid "Cannot find source %1 for VariableList %2"
-msgstr "Kan bron %1 niet vinden voor VariableList %2"
 
 #, qt-format
 msgctxt "QMLListView|"
@@ -15490,6 +15476,21 @@ msgstr "bijv., willekeurig %1"
 msgctxt "LDGenerateDisplayData|"
 msgid "Bar plot"
 msgstr "Staafdiagram"
+
+#, qt-format
+msgctxt "QMLListView|"
+msgid "Wrong parameter discard in VariablesList %1"
+msgstr "Verkeerde parameter weggegooid in VariablesList %1"
+
+#, qt-format
+msgctxt "QMLListView|"
+msgid "Needs source model for VariablesList %1"
+msgstr "Bronmodel nodig voor VariablesList %1"
+
+#, qt-format
+msgctxt "QMLListView|"
+msgid "Cannot find source %1 for VariablesList %2"
+msgstr "Kan bron %1 niet vinden voor VariablesList %2"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""

@@ -1,4 +1,4 @@
-T-Toets voor één gemiddelde
+T-Toets voor Eén Gemiddelde
 ==========================
 
 Met de t-toets voor één gemiddelde kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde gelijk is aan een specifieke constante, bijvoorbeeld de toetswaarde.

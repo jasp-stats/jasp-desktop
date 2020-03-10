@@ -243,7 +243,7 @@
         {
           "name": "Maan en Agressie",
           "path": "Moon and Aggression.jasp",
-          "description": "Het aantal disruptieve gedragingen door dementiepatienten tijdens twee verschillende fases van de maancyclus. <br><br> Het voorbeeldbestand in JASP laat zien hoe een paired samples t-toets kan worden toegepast. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
+          "description": "Het aantal disruptieve gedragingen door dementiepatienten tijdens twee verschillende fases van de maancyclus. <br><br> Het voorbeeldbestand in JASP laat zien hoe een gepaarde t-toets kan worden toegepast. <br><br> <i>Data van Moore, McCabe, & Craig.<\/i>",
           "kind": "file",
           "associated_datafile": "Moon and Aggression.csv"
         },

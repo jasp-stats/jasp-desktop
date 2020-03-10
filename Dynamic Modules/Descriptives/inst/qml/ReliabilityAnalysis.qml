@@ -56,7 +56,7 @@ Form
 	Group
 	{
 		title: qsTr("Individual Item Statistics")
-		CheckBox { name: "mcDonaldItem";					label: qsTr("McDonald's ω  (if item dropped)")	}
+		CheckBox { name: "mcDonaldItem";					label: qsTr("McDonald's ω (if item dropped)")	}
 		CheckBox { name: "alphaItem";						label: qsTr("Cronbach's α (if item dropped)")	}
 		CheckBox { name: "gutmannItem";						label: qsTr("Gutmann's λ6 (if item dropped)")	}
 		CheckBox { name: "meanItem";						label: qsTr("Mean")								}
