@@ -1381,7 +1381,7 @@ msgstr "Welkom bij JASP"
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
 msgstr ""
-"Een nieuwe manier om statistiek te bedrijven. Gratis, eenvoudig en flexibel"
+"Een nieuwe manier om statistiek te bedrijven. Gratis, vriendelijk en flexibel"
 
 msgctxt "WelcomePage|"
 msgid "Free:"
@@ -1435,8 +1435,8 @@ msgstr ""
 "Onthoud a.u.b. dat dit een preview-release is en dat een aantal features nog "
 "ontbreekt. \n"
 "\n"
-"Als JASP vandaag nog niet alles kan wat u wilt, probeer het dan morgen "
-"opnieuw: JASP wordt in hoog tempo verder ontwikkeld!"
+"Als JASP vandaag nog niet alles kan wat u wilt, probeer het dan morgen opnieuw:\n"
+"JASP wordt in hoog tempo verder ontwikkeld!"
 
 msgctxt "Ancova|"
 msgid "Dependent Variable"
@@ -1956,7 +1956,7 @@ msgstr "Dunn"
 
 msgctxt "Anova|"
 msgid "Descriptives Plots"
-msgstr "Beschrijvende Grafieken"
+msgstr "Beschrijvende grafieken"
 
 msgctxt "Anova|"
 msgid "Factors"
@@ -3065,7 +3065,7 @@ msgstr "Prior en posterior"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Correlation plot"
-msgstr "Correlatiegrafiek"
+msgstr "Correlatiediagram"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Population Materiality"
@@ -3527,7 +3527,7 @@ msgstr "Evaluatie informatie"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Correlation plot"
-msgstr "Correlatiegrafiek"
+msgstr "Correlatiediagram"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Population Materiality"
@@ -4000,7 +4000,7 @@ msgstr "Geloofwaardigheidsinterval"
 
 msgctxt "Descriptives|"
 msgid "Variables"
-msgstr "variabelen"
+msgstr "Variabelen"
 
 msgctxt "Descriptives|"
 msgid "Split"
@@ -4024,7 +4024,7 @@ msgstr "Toon verdeling"
 
 msgctxt "Descriptives|"
 msgid "Correlation plots"
-msgstr "Spreidingsdiagrammen"
+msgstr "Correlatiediagrammen"
 
 msgctxt "Descriptives|"
 msgid "Boxplots"
@@ -4319,8 +4319,8 @@ msgid "Individual Item Statistics"
 msgstr "Individuele itemstatistieken"
 
 msgctxt "ReliabilityAnalysis|"
-msgid "McDonald's ω  (if item dropped)"
-msgstr "McDonald's ω  (als item is verwijderd)"
+msgid "McDonald's ω (if item dropped)"
+msgstr "McDonald's ω (als item is verwijderd)"
 
 msgctxt "ReliabilityAnalysis|"
 msgid "Cronbach's α (if item dropped)"
@@ -4372,11 +4372,11 @@ msgstr "Tweede-orde factor"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Factor Scaling"
-msgstr "Factor schalen"
+msgstr "Factorschalen"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Factor variances"
-msgstr "Factor varianties"
+msgstr "Factorvarianties"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Marker variable"
@@ -4392,7 +4392,7 @@ msgstr "R-kwadraat"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Error calculation"
-msgstr "Fout berekening"
+msgstr "Foutberekening"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "CI width"
@@ -9793,7 +9793,7 @@ msgstr "Grafieken"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Correlation plot"
-msgstr "Spreidingsdiagram"
+msgstr "Correlatiediagram"
 
 msgctxt "auditClassicalEstimation|"
 msgid "<b>Download Report</b>"
@@ -10065,7 +10065,7 @@ msgstr "Toon resultaten voor"
 
 msgctxt "JAGS|"
 msgid "all monitored parameters"
-msgstr "Alle gecontroleerde parameters"
+msgstr "alle gecontroleerde parameters"
 
 msgctxt "JAGS|"
 msgid "selected parameters"
@@ -10079,42 +10079,42 @@ msgstr "Kolomnummer in bron is groter dan het aantal kolommen van %1"
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "No column in TableView source %1"
-msgstr "Geen kolom gespecificeerd in de bron van %1"
+msgstr "Geen kolom gespecificeerd in TableView bron %1"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Unknown column specified (%1) in TableView source %2"
-msgstr "Onbekende kolom gespecificeerd (%1) in bron %2"
+msgstr "Onbekende kolom gespecificeerd (%1) in TableView bron %2"
 
 #, qt-format
 msgctxt "QMLListView|"
 msgid "No name given in source attribute of VariableList %1"
-msgstr "Geen naam gegeven in bron-attribuut van VariabeleLijst %1"
+msgstr "Geen naam gegeven in bron-attribuut van VariableList %1"
 
 #, qt-format
 msgctxt "QMLListView|"
 msgid "No name given in discard source attribute of VariableList %1"
-msgstr "Geen naam gegeven aan weggegooide bron-attribuut van VariabeleLijst %1"
+msgstr "Geen naam gegeven aan weggegooide bron-attribuut van VariableList %1"
 
 #, qt-format
 msgctxt "QMLListView|"
-msgid "Wrong parameter discard in VariablesList %1"
-msgstr "Verkeerde parameter weggegooid in VariabeleLijst %1"
+msgid "Wrong parameter discard in VariableList %1"
+msgstr "Verkeerde parameter weggegooid in VariableList %1"
 
 #, qt-format
 msgctxt "QMLListView|"
-msgid "Needs source model for VariablesList %1"
-msgstr "Bron model nodig voor VariabeleLijst %1"
+msgid "Needs source model for VariableList %1"
+msgstr "Bronmodel nodig voor VariableList %1"
 
 #, qt-format
 msgctxt "QMLListView|"
 msgid "Unknown discard model %1 for VariableList %2"
-msgstr "Onbekend weggegooid model %1 voor VariabeleLijst %2"
+msgstr "Onbekend weggegooid model %1 voor VariableList %2"
 
 #, qt-format
 msgctxt "QMLListView|"
-msgid "Cannot find source %1 for VariablesList %2"
-msgstr "Kan bron %1 niet vinden voor VariabeleLijst %2"
+msgid "Cannot find source %1 for VariableList %2"
+msgstr "Kan bron %1 niet vinden voor VariableList %2"
 
 #, qt-format
 msgctxt "QMLListView|"
@@ -10177,7 +10177,7 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr "Scrol snelheid (pix/s): "
+msgstr "Scrollsnelheid (pix/s): "
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -10198,10 +10198,10 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
-"Schakelt naar een \"veiligere\" modus voor grafisch/ software rendering.\n"
+"Schakelt naar een \"veiligere\" modus voor grafische/software rendering.\n"
 "Hierdoor wordt de interface langzamer, maar als zich problemen voordoen "
 "(vreemde glitches, onzichtbare resultaten, etc.) worden deze misschien "
-"opgelost. \n"
+"opgelost.\n"
 "Analyses zijn echter even snel."
 
 msgctxt "InputListView|"
@@ -10266,7 +10266,7 @@ msgstr "Twee controles hebben dezelfde naam: %1"
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "Cannot find a source %1 for VariableList %2"
-msgstr "Kan geen bron %1 vinden voor variabelelijst %2"
+msgstr "Kan geen bron %1 vinden voor VariableList %2"
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -10286,12 +10286,12 @@ msgstr "Onbekende fout in ComboBox %1"
 #, qt-format
 msgctxt "BoundQMLListViewDraggable|"
 msgid "Cannot find source for VariableList %1"
-msgstr "Kan geen bron vinden voor variabelelijst %1"
+msgstr "Kan geen bron vinden voor VariableList %1"
 
 #, qt-format
 msgctxt "BoundQMLListViewDraggable|"
 msgid "Wrong kind of source for VariableList %1"
-msgstr "Verkeerde soort bron voor variabelelijst %1"
+msgstr "Verkeerde soort bron voor VariableList %1"
 
 #, qt-format
 msgctxt "BoundQMLListViewMeasuresCells|"
@@ -10304,17 +10304,17 @@ msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
 "name"
 msgstr ""
-"Een radiobutton in het RadioButtonGroup element (naam: %1) heeft geen naam"
+"Een RadioButton in het RadioButtonGroup element (naam: %1) heeft geen naam"
 
 #, qt-format
 msgctxt "BoundQMLRadioButtons|"
 msgid "No radio button corresponding to name %1"
-msgstr "Geen radiobutton die overeenkomt met naam %1"
+msgstr "Geen radiobutton komt overeen met naam %1"
 
 #, qt-format
 msgctxt "BoundQMLRadioButtons|"
 msgid "Radio button clicked is unknown: %1"
-msgstr "Geklikte radio button is onbekend: %1"
+msgstr "Geklikte radiobutton is onbekend: %1"
 
 msgctxt "BoundQMLTableView|"
 msgid "No model specified for TableView!"
@@ -10472,7 +10472,7 @@ msgstr "Er is geen beschikbare lijst in het Variabelen Scherm "
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
-msgstr "Filter is gewijzigd"
+msgstr "Filter gewijzigd"
 
 msgctxt "Ancova|"
 msgid "Flag Significant Comparisons"
