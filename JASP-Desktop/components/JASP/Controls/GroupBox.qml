@@ -78,6 +78,12 @@ Rectangle
 		onUiScaleChanged:	alignTextFieldTimer.restart()
 	}
 
+	Connections
+	{
+		target:					preferencesModel
+		onLanguageCodeChanged:	alignTextFieldTimer.restart()
+	}
+
 	Timer
 	{
 		// The alignment should be done when the scaling of the TextField's are done

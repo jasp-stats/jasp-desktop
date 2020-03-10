@@ -45,6 +45,7 @@ public:
 	bool		isOptionValid(Option* option)				override;
 	bool		isJsonValid(const Json::Value& optionValue) override;
 	Option*		boundTo()									override { return _option; }
+	void		setUp()										override;
 	void		resetQMLItem(JASPControlBase *item)			override;
 	void		rScriptDoneHandler(const QString& result)	override;
 
@@ -55,6 +56,7 @@ signals:
 
 private slots:
 	void		textChangedSlot();
+	void		resetValue();
 
 private:
 	void		_setOptionValue(Option* option, QString& text);
