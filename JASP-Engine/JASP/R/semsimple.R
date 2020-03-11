@@ -168,9 +168,12 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
                         group = groupVar, group.equal = groupEqual)
       )
     } else {
-      # Var-cov matrix
+      # Var-cov matrix 
+      S <- as.matrix(dataset)
+      rownames(S) <- colnames(S)
+
       semResults <- try(
-        lavaan:::lavaan(model=semContainer[["model"]]$object, sample.cov=as.matrix(dataset),
+        lavaan:::lavaan(model=semContainer[["model"]]$object, sample.cov=S,
                         sample.nobs=as.numeric(options$SampleSize),
                         auto.delta=options$addScalingParameters,
                         auto.th=options$addThresholds,
