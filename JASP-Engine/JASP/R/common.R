@@ -280,6 +280,13 @@ initEnvironment <- function() {
 }
 
 
+jaspResultsStrings <- function() {
+  # jaspResults does not exist as an R package within JASP, so we cannot use its po folder
+  # and we add the strings that need to be translated here.
+  gettext("<em>Note.</em>")
+}
+
+
 checkPackages <- function() {
   toJSON(.checkPackages())
 }

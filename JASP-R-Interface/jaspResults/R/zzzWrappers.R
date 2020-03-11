@@ -30,9 +30,9 @@ signalAnalysisAbort <- function(message = "", call = NULL) {
 
 startProgressbar <- function(expectedTicks, label="") {
 	if (!is.numeric(expectedTicks) || !is.character(label))
-		stop("`expectedTicks` must be numeric and `label` a character")
+		stop("`expectedTicks` must be numeric and `label` a character", domain = NA)
 	if (nchar(label) > 80) # if you update this value, also update it in the progressbar in jaspwidgets.js
-		warning("The progressbar label is more than 80 characters, label will be truncated")
+		warning("The progressbar label is more than 80 characters, label will be truncated", domain = NA)
 		
 	if (jaspResultsCalledFromJasp())
 		jaspResultsModule$cpp_startProgressbar(expectedTicks, label)
@@ -135,12 +135,12 @@ jaspResultsR <- R6Class(
       else if (inherits(x, "jaspResultsR")) # this if is needed because JASP and R call jasprResults in different ways
 				private$jaspObject = private$getJaspObject(x)
 			else
-			  stop("You should not create a new jaspResultsR object!")
+			  stop("You should not create a new jaspResultsR object!", domain = NA)
 		},
 
 		addCitation = function(x) {
 			if (!is.character(x)) 
-				stop("Citation must be a character (vector)")
+				stop("Citation must be a character (vector)", domain = NA)
 			for (i in seq_along(x))
 				private$jaspObject$addCitation(x[i])
 		},
@@ -161,7 +161,7 @@ jaspResultsR <- R6Class(
         "Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
         "Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
 				"Rcpp_jaspHtml"      = jaspHtmlR$new(jaspObject = cppObj),
-				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)))
+				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)), domain = NA)
 			))
 		},
 		setField	= function(field, value) {
@@ -209,12 +209,12 @@ jaspObjR <- R6Class(
 	classname = "jaspObjR", 
 	cloneable = FALSE,
 	public    = list(
-		initialize = function()	stop("You should not create a new jaspObject!"),
+		initialize = function()	stop("You should not create a new jaspObject!", domain = NA),
 		print      = function()	private$jaspObject$print(),
 		dependOn   = function(options=NULL, optionsFromObject=NULL, optionContainsValue=NULL) {
 			if (!is.null(options)) {
 				if (!is.character(options))
-					stop("please provide a character vector in `options`")
+					stop("please provide a character vector in `options`", domain = NA)
 				private$jaspObject$dependOnOptions(options)
 			}
 			
@@ -226,13 +226,13 @@ jaspObjR <- R6Class(
 						if (is.JaspResultsObj(object))
 							private$jaspObject$copyDependenciesFromJaspObject(private$getJaspObject(object))
 				} else {
-					stop("please provide a (list of) jasp object(s) in `optionsFromObject`")
+					stop("please provide a (list of) jasp object(s) in `optionsFromObject`", domain = NA)
 				}
 			}
 				
 			if (!is.null(optionContainsValue)) {
 				if (!is.list(optionContainsValue) || is.null(names(optionContainsValue)))
-					stop("please provide a named list in `optionContainsValue`")
+					stop("please provide a named list in `optionContainsValue`", domain = NA)
 				for (i in seq_along(optionContainsValue)) {
 					name <- names(optionContainsValue)[i]
 					value <- optionContainsValue[[i]]
@@ -285,13 +285,13 @@ jaspOutputObjR <- R6Class(
 	inherit   = jaspObjR,
 	cloneable = FALSE,
 	public    = list(
-		initialize  = function()	stop("You should not create a new jaspOutputObject!"),
+		initialize  = function()	stop("You should not create a new jaspOutputObject!", domain = NA),
 		printHtml   = function()	private$jaspObject$printHtml(),
 		setError    = function(x)	private$jaspObject$setError(x),
 		getError    = function()	private$jaspObject$getError(),
 		addCitation = function(x) {
 			if (!is.character(x)) 
-				stop("Citation must be a character (vector)")
+				stop("Citation must be a character (vector)", domain = NA)
 			for (i in seq_along(x))
 				private$jaspObject$addCitation(x[i])
 		}
@@ -378,7 +378,7 @@ jaspContainerR <- R6Class(
         "Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
 				"Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
 				"Rcpp_jaspHtml"      = jaspHtmlR$new(jaspObject = cppObj),
-				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)))
+				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)), domain = NA)
 			))
 		},
 		setField   = function(field, value) {
@@ -460,16 +460,16 @@ jaspPlotR <- R6Class(
 .jaspTableSetExpectedSize <- function(table=NULL, rows=NULL, cols=NULL) {
 
   if(is.null(table))
-    stop(".jaspTableSetExpectedSize expects a table!")
+    stop(".jaspTableSetExpectedSize expects a table!", domain = NA)
 
   inputTypes <- c(mode(rows), mode(cols))
 
-  if (!all(inputTypes %in% c("numeric", "NULL")))	stop("Please use numeric values to set the expected size")
+  if (!all(inputTypes %in% c("numeric", "NULL")))	stop("Please use numeric values to set the expected size", domain = NA)
 
   if (!is.null(rows) && !is.null(cols))		table$setExpectedSize(cols, rows)
   else if (!is.null(rows))        				table$setExpectedRows(rows)
   else if(!is.null(cols))         				table$setExpectedColumns(cols)
-  else                                    stop("Enter cols, rows or both in setExpectedSize!")
+  else                                    stop("Enter cols, rows or both in setExpectedSize!", domain = NA)
 }
 
 
@@ -533,16 +533,14 @@ jaspTableR <- R6Class(
       {
         print("addFootnote got a strange message:")
         print(message)
-        stop("jaspTable$addFootnote expects \"message\" to be a string!")
+        stop("jaspTable$addFootnote expects \"message\" to be a string!", domain = NA)
       }
 
 		  # if the developer doesn't want a footnote pointing to a specific cell/col/row and doesn't specify "Note.",
 		  # then we add this to ensure footnotes look consistent across analyses
       if (is.null(symbol)	&& is.null(colNames) && is.null(rowNames))
-      { 
-        if (!grepl(paste0("^<.*?>", gettext("Note"), "\\.?</.*?>"), message, ignore.case=TRUE)) # ensure it's not included in the msg rather than separately in the symbol
-          symbol <- paste0("<em>", gettext("Note"), ".</em>")
-      }
+        symbol <- gettext("<em>Note.</em>", domain = "R-JASP")
+        
 			private$jaspObject$addFootnoteHelper(message, symbol, colNames, rowNames)
 		},
 
@@ -550,7 +548,7 @@ jaspTableR <- R6Class(
 			if (!is.null(type)) {
 				permittedTypes <- c("integer", "number", "pvalue", "string", "separator")
 				if (!type %in% permittedTypes)
-					stop("type must be ", paste0("`", permittedTypes, "`", collapse=", "), " (provided type: `", type, "`)")
+					stop("type must be ", paste0("`", permittedTypes, "`", collapse=", "), " (provided type: `", type, "`)", domain = NA)
 
 				if (is.null(format) && type == "number")
 					format <- "sf:4;dp:3"
@@ -628,7 +626,7 @@ jaspColumnR <- R6Class(
       }
 
       if (columnName == "")
-        stop("You MUST specify a name for the column you want to change the data of")
+        stop("You MUST specify a name for the column you want to change the data of", domain = NA)
 
       if (jaspResultsCalledFromJasp()) {
         columnObj <- jaspResultsModule$create_cpp_jaspColumn(columnName)

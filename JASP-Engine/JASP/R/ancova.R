@@ -522,7 +522,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
                          type1 = gettext("Type I Sum of Squares"),
                          type2 = gettext("Type II Sum of Squares"),
                          type3 = gettext("Type III Sum of Squares"))
-  anovaTable$addFootnote(message = typeFootnote, symbol = gettext("<em>Note.</em>"))
+  anovaTable$addFootnote(typeFootnote)
   
   anovaContainer[["anovaTable"]] <- anovaTable
   
@@ -767,9 +767,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     if (length(avFootnote) != 0) {
       avTerms <- .unv(strsplit(gsub(avFootnote, pattern = "Results are averaged over the levels of: ", replacement = ""), 
                                ", ")[[1]])
-      postHocStandardContainer[[thisVarName]]$addFootnote(
-        message = gettextf("Results are averaged over the levels of: %s", paste(avTerms, collapse = ", ")),
-        symbol = gettext("<i>Note.</i>"))
+      postHocStandardContainer[[thisVarName]]$addFootnote(gettextf("Results are averaged over the levels of: %s", paste(avTerms, collapse = ", ")))
     }
     
     # Calculate effect sizes
@@ -929,7 +927,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   if (!is.null(postHocContainer[["postHocDunnContainer"]]))
     return()
   
-  postHocDunnContainer <- createJaspContainer(title = "Dunn")
+  postHocDunnContainer <- createJaspContainer(title = gettext("Dunn"))
   postHocDunnContainer$dependOn(c("postHocTestsTypeDunn", "postHocFlagSignificant"))
   postHocContainer[["postHocDunnContainer"]] <- postHocDunnContainer
   
@@ -1313,7 +1311,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   if (!is.null(anovaContainer[["marginalMeansContainer"]]) || length(options$marginalMeansTerms) == 0 || !ready)
     return()
 
-  marginalMeansContainer <- createJaspContainer(title = "Marginal Means")
+  marginalMeansContainer <- createJaspContainer(title = gettext("Marginal Means"))
   marginalMeansContainer$dependOn(c("marginalMeansTerms",  "marginalMeansCompareMainEffects", "marginalMeansCIAdjustment",
                                     "marginalMeansBootstrapping", "marginalMeansBootstrappingReplicates"))
   

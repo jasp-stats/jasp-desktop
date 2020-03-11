@@ -158,7 +158,7 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
         testValueFormatted
       )
     )
-    jaspTable$addFootnote(message = message, symbol = gettext("<em>Note.</em>"))
+    jaspTable$addFootnote(message)
   }
 
   jaspTable$addColumnInfo(name = "variable", title = "",      type = "string")

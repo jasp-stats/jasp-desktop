@@ -116,7 +116,7 @@
     if(!options$normalityTests)
       return()
   if (is.null(jaspResults[["AssumptionChecks"]])) {
-    container <- createJaspContainer("Assumption Checks")
+    container <- createJaspContainer(gettext("Assumption Checks"))
     dependList <- c("variables", "groupingVariable", "pairs", "missingValues",
                     "normalityTests", "equalityOfVariancesTests")
     container$dependOn(dependList)
@@ -128,7 +128,7 @@
 .ttestDescriptivesContainer <- function(jaspResults, options) {
   if(!options$descriptives && !options$descriptivesPlots) return()
   if (is.null(jaspResults[["ttestDescriptives"]])) {
-    container <- createJaspContainer("Descriptives")
+    container <- createJaspContainer(gettext("Descriptives"))
     container$dependOn(c("descriptives", "descriptivesPlots", 
                          "descriptivesPlotsConfidenceInterval", "missingValues",
                          "variables", "pairs", "groupingVariable"))

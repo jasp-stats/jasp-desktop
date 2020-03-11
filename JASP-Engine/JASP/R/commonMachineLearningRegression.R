@@ -259,7 +259,7 @@
 # If no analysis is run, specify the required variables in a footnote
   requiredVars <- if(type == "knn") 1L else 2L
   if(!ready)
-    regressionTable$addFootnote(message = gettextf("Please provide a target variable and at least %d predictor variable(s).", requiredVars), symbol = gettext("<i>Note.</i>"))
+    regressionTable$addFootnote(gettextf("Please provide a target variable and at least %d predictor variable(s).", requiredVars))
 
   jaspResults[["regressionTable"]] <- regressionTable
   
@@ -288,10 +288,10 @@
   if(type == "knn"){
 
     if(options[["modelOpt"]] == "optimizationError")
-      regressionTable$addFootnote(message=gettext("The model is optimized with respect to the <i>validation set mean squared error</i>."), symbol=gettext("<i>Note.</i>"))
+      regressionTable$addFootnote(gettext("The model is optimized with respect to the <i>validation set mean squared error</i>."))
 
     if(regressionResult[["nn"]] == options[["maxK"]] && options[["modelOpt"]] != "validationManual"){
-      regressionTable$addFootnote(message=gettext("The optimum number of nearest neighbors is the maximum number. You might want to adjust the range of optimization."), symbol=gettext("<i>Note.</i>"))
+      regressionTable$addFootnote(gettext("The optimum number of nearest neighbors is the maximum number. You might want to adjust the range of optimization."))
     }
 
     distance  <- ifelse(regressionResult[["distance"]] == 1, yes = "Manhattan", no = "Euclidean")    
@@ -308,10 +308,10 @@
   } else if(type == "regularized"){
 
     if(options[["modelOpt"]] != "optimizationManual")
-      regressionTable$addFootnote(message=gettext("The model is optimized with respect to the <i>validation set mean squared error</i>."), symbol=gettext("<i>Note.</i>"))
+      regressionTable$addFootnote(gettext("The model is optimized with respect to the <i>validation set mean squared error</i>."))
 
     if (regressionResult[["lambda"]] == 0)
-      regressionTable$addFootnote(gettextf("When %s is set to 0 linear regression is performed.", "\u03BB"), symbol=gettext("<i>Note.</i>")) 
+      regressionTable$addFootnote(gettextf("When %s is set to 0 linear regression is performed.", "\u03BB"))
 
     row <- data.frame(penalty = regressionResult[["penalty"]], 
                       lambda = regressionResult[["lambda"]], 
@@ -327,7 +327,7 @@
   } else if(type == "randomForest"){
 
     if(options[["modelOpt"]] == "optimizationError")
-      regressionTable$addFootnote(message=gettext("The model is optimized with respect to the <i>out-of-bag mean squared error</i>."), symbol=gettext("<i>Note.</i>"))
+      regressionTable$addFootnote(gettext("The model is optimized with respect to the <i>out-of-bag mean squared error</i>."))
 
     row <- data.frame(trees = regressionResult[["noOfTrees"]], 
                       preds = regressionResult[["predPerSplit"]], 
@@ -342,7 +342,7 @@
   } else if(type == "boosting"){
 
     if(options[["modelOpt"]] == "optimizationOOB")
-      regressionTable$addFootnote(message=gettext("The model is optimized with respect to the <i>out-of-bag mean squared error</i>."), symbol=gettext("<i>Note.</i>"))
+      regressionTable$addFootnote(gettext("The model is optimized with respect to the <i>out-of-bag mean squared error</i>."))
 
     distribution <- .regressionGetDistributionFromDistance(options[["distance"]])
     row <- data.frame(trees = regressionResult[["noOfTrees"]], 
@@ -407,7 +407,7 @@
   validationMeasures[["values"]] <- values
 
   if(is.na(r_squared))
-    validationMeasures$addFootnote(message=gettextf("R%s cannot be computed due to lack of variance in the predictions.</i>", "\u00B2"), symbol=gettext("<i>Note.</i>"))
+    validationMeasures$addFootnote(gettextf("R%s cannot be computed due to lack of variance in the predictions.</i>", "\u00B2"))
   
 }
 

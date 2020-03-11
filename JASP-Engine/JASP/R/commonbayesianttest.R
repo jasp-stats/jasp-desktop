@@ -747,7 +747,7 @@
   }
 
   if (is.null(jaspResults[["ttestContainer"]][["inferentialPlots"]])) {
-    inferentialPlotsCollection <- createJaspContainer("Inferential Plots")
+    inferentialPlotsCollection <- createJaspContainer(gettext("Inferential Plots"))
     inferentialPlotsCollection$dependOn(c("hypothesis", "testStatistic"))
     jaspResults[["ttestContainer"]][["inferentialPlots"]] <- inferentialPlotsCollection
   } else {

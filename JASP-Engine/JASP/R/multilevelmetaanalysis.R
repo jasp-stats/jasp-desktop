@@ -368,7 +368,7 @@ multi_meta_analysis <-
               gsub("factor", "Factor", .)
           
             vctmp = varComp
-            tmp = createJaspContainer("Variance Components")
+            tmp = createJaspContainer(gettext("Variance Components"))
             tmp[['structure']] = createJaspHtml(text = 
                 paste("<ul style=list-style:initial;>", 
                       paste("<li>", 
@@ -554,7 +554,7 @@ multi_meta_analysis <-
   ### Prepare Plot Output ####
 
     if (is.null(jaspResults[['plots']])) {
-      jaspResults[['plots']] <- createJaspContainer("Plots", position = 100)
+      jaspResults[['plots']] <- createJaspContainer(gettext("Plots"), position = 100)
       jaspResults[['plots']]$copyDependenciesFromJaspObject(jaspResults[['res']])
       jaspResults[['plots']]$dependOnOptions(c("forest_plot","funnel_plot","residual_dependent_plot","profile_plot"))
     }

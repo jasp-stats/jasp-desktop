@@ -475,7 +475,7 @@ ConfirmatoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
 .cfaTableParEst <- function(jaspResults, options, cfaResult) {
   if (is.null(cfaResult) || !is.null(jaspResults[["estimates"]])) return()
 
-  jaspResults[["estimates"]] <- ests <- createJaspContainer("Parameter estimates", position = 2)
+  jaspResults[["estimates"]] <- ests <- createJaspContainer(gettext("Parameter estimates"), position = 2)
   ests$dependOn(c("factors", "secondOrder", "rescov", "includemeanstructure", "identify", "uncorrelatedFactors",
                   "mimic", "estimator", "se", "bootstrapNumber", "groupvar", "invariance", "std", "ciWidth"))
 

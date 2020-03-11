@@ -128,7 +128,7 @@ Manova <- function(jaspResults, dataset = NULL, options) {
   
   if (!is.null(jaspResults[["manovaContainer"]])) return()
   
-  manovaContainer <- createJaspContainer(title = "MANOVA")
+  manovaContainer <- createJaspContainer(title = gettext("MANOVA"))
   jaspResults[["manovaContainer"]] <- manovaContainer
   
   manovaContainer$dependOn(c("dependent", "fixedFactors", "testPillai", "testWilks",
@@ -189,7 +189,7 @@ Manova <- function(jaspResults, dataset = NULL, options) {
   
   if (!is.null(jaspResults[["anovaContainer"]]) || !options$includeAnovaTables) return()
   
-  anovaContainer <- createJaspContainer(title = "ANOVA")
+  anovaContainer <- createJaspContainer(title = gettext("ANOVA"))
   jaspResults[["anovaContainer"]] <- anovaContainer
   
   anovaContainer$dependOn(c("dependent", "fixedFactors", "testPillai", "testWilks",
@@ -313,7 +313,7 @@ Manova <- function(jaspResults, dataset = NULL, options) {
   
   if (!is.null(jaspResults[["assumptionsContainer"]]) || (!options$boxMTest && !options$shapiroTest)) return()
   
-  assumptionsContainer <- createJaspContainer(title = "Assumption Checks")
+  assumptionsContainer <- createJaspContainer(title = gettext("Assumption Checks"))
   jaspResults[["assumptionsContainer"]] <- assumptionsContainer
   
   assumptionsContainer$dependOn(c("dependent", "fixedFactors", "modelTerms", "boxMTest", "shapiroTest"))

@@ -286,7 +286,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
   message <- gettextf("The null hypothesis specifies that the distribution of 
                       first numbers %1$s in the population conforms to 
                       Benford’s law.", digits)
-  benfordsLawTestTable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
+  benfordsLawTestTable$addFootnote(message)
 
   benfordsLawContainer[["benfordsLawTestTable"]] <- benfordsLawTestTable
 

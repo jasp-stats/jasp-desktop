@@ -311,7 +311,7 @@
 
   if (anyNuisance) {
     message <- gettextf("All models include %s", paste0(.unvf(nuisance), collapse = ", "))
-    modelTable$addFootnote(message = message, symbol = gettext("<em>Note.</em>"))
+    modelTable$addFootnote(message = message)
   }
 
   model <- list(
@@ -374,8 +374,7 @@
   effectsTable$addColumnInfo(name = "BFInclusion",  title = inclusion.title,         type = "number")
 
   if (options$effectsType == "matchedModels") {
-    effectsTable$addFootnote(message = gettext("Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt."),
-                             symbol = gettext("<em>Note.</em>"))
+    effectsTable$addFootnote(gettext("Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt."))
   }
   
   if (is.null(model$models)) {
@@ -957,7 +956,7 @@
 
   postHocCollection <- jaspResults[["collectionPosthoc"]]
   if (is.null(postHocCollection)) {
-    postHocCollection <- createJaspContainer(title = "Post Hoc Tests")
+    postHocCollection <- createJaspContainer(title = gettext("Post Hoc Tests"))
     postHocCollection$position <- 7
     postHocCollection$addCitation(.BANOVAcitations[3:4])
     postHocCollection$dependOn(c("dependent", "repeatedMeasuresCells", "postHocTestsNullControl", "bayesFactorType"))
@@ -1006,7 +1005,7 @@
     postHocTable$dependOn(optionContainsValue = list("postHocTestsVariables" = posthoc.var))
 
     if (options[["postHocTestsNullControl"]])
-      postHocTable$addFootnote(symbol = gettext("<em>Note.</em>"), message = footnote)
+      postHocTable$addFootnote(footnote)
       
     if (is.null(model$models)) { # only show empty table
       postHocCollection[[paste0("postHoc_", posthoc.var)]] <- postHocTable
@@ -1092,8 +1091,7 @@
 
     if (!is.null(errMessages)) {
       for (i in seq_along(errMessages))
-        postHocTable$addFootnote(symbol    = gettext("<em>Note.</em>"),
-                                 message   = errMessages[[i]][["message"]], 
+        postHocTable$addFootnote(message  = errMessages[[i]][["message"]], 
                                  rowNames = paste0("row", errMessages[[i]][["row_names"]]))
       
     }
@@ -1269,7 +1267,6 @@
   nPossible <- prod(sapply(dataset2[, fixedB64, drop = FALSE], nlevels))
   if (nObserved != nPossible) {
     descriptivesTable$addFootnote(
-      symbol = gettext("<em>Note.</em>"), 
       message = gettextf(
         "Some combinations of factors are not observed and hence omitted (%g out of %g combinations are unobserved).",
         nPossible - nObserved, nPossible

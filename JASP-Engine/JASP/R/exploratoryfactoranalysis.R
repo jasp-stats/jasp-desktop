@@ -236,7 +236,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   efaResults <- modelContainer[["model"]][["object"]]
 
   if (options$rotationMethod == "orthogonal" && options$orthogonalSelector == "none") {
-    loatab$addFootnote(message = gettext("No rotation method applied."), symbol = gettext("<em>Note.</em>"))
+    loatab$addFootnote(message = gettext("No rotation method applied."))
   } else {
     loatab$addFootnote(message = gettextf("Applied rotation method is %s.", ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector)))
   }
@@ -272,7 +272,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   efaResults <- modelContainer[["model"]][["object"]]
 
   if (options$rotationMethod == "orthogonal" && options$orthogonalSelector == "none") {
-    strtab$addFootnote(message = gettext("No rotation method applied."), symbol = gettext("<em>Note.</em>"))
+    strtab$addFootnote(message = gettext("No rotation method applied."))
   } else {
     strtab$addFootnote(
       message = gettextf("Applied rotation method is %s.", ifelse(options$rotationMethod == "orthogonal", options$orthogonalSelector, options$obliqueSelector))
