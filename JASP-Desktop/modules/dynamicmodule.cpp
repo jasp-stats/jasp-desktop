@@ -70,16 +70,6 @@ void DynamicModule::developmentModuleFolderCreate()
 	QDir(AppDirs::modulesDir()).mkdir(QString::fromStdString(defaultDevelopmentModuleName()));
 }
 
-QString DynamicModule::getJsonDescriptionFilename()
-{
-	LanguageInfo li = LanguageModel::CurrentLanguageInfo;
-
-	//Leave help filenames from JASP native language - English - with localname en_US unchanged
-	QString _localname = li.language  == QLocale::English ? "" : ("_" + li.localName);
-
-	return "description" + _localname + ".json";
-}
-
 ///This constructor is meant specifically for the development module and only *it*!
 DynamicModule::DynamicModule(QObject * parent) : QObject(parent), _isDeveloperMod(true)
 {

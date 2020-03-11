@@ -26,8 +26,8 @@ QVariant ColumnTypesModel::data(const QModelIndex &index, int role) const
 	if (index.row() >= rowCount())
 		return QVariant();
 
-	static QStringList displayTexts		= { "Scale",				"Ordinal",				"Nominal"				};
-	static QStringList menuImageSources = { "variable-scale.png",	"variable-ordinal.png", "variable-nominal.png"	};
+			QStringList displayTexts		= { tr("Scale"),			tr("Ordinal"),			tr("Nominal")			};
+	static	QStringList menuImageSources	= { "variable-scale.png",	"variable-ordinal.png", "variable-nominal.png"	};
 
 	switch(role)
 	{

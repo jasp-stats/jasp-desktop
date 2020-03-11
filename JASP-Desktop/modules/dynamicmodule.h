@@ -70,12 +70,12 @@ public:
 	}
 
 
-	static std::string  developmentModuleName()			{ return _developmentModuleName; }
-	static std::string  defaultDevelopmentModuleName()  { return "DevelopmentModule"; }
-	static std::wstring defaultDevelopmentModuleNameW() { return L"DevelopmentModule"; }
+	static std::string  developmentModuleName()			{ return _developmentModuleName;	}
+	static std::string  defaultDevelopmentModuleName()  { return "DevelopmentModule";		}
+	static std::wstring defaultDevelopmentModuleNameW() { return L"DevelopmentModule";		}
+	static QString		getJsonDescriptionFilename()	{ return "description.json";		}
 	static QFileInfo	developmentModuleFolder();
 	static void			developmentModuleFolderCreate();
-	static QString		getJsonDescriptionFilename();
 
 	std::string			name()				const { return _name;									}
 	QString				nameQ()				const { return QString::fromStdString(_name);			}
@@ -143,7 +143,7 @@ public:
 	void initialize(); //returns true if install of package(s) should be done
 	void parseDescriptionFile(std::string descriptionTxt);
 
-	static QString		getFileFromFolder(const QString &  filepath, const QString & searchMe);
+	static QString		getFileFromFolder(				const QString &  filepath,		const QString & searchMe);
 	static std::string	getFileFromFolder(				const std::string & folderPath, const std::string & searchMe);
 	static std::string	getDESCRIPTIONFromArchive(		const std::string & archivePath);
 	static std::string	getDescriptionJsonFromArchive(	const std::string & archivePath);
