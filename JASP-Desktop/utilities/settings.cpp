@@ -30,7 +30,7 @@ const Settings::Setting Settings::Values[] = {
 	{"ThresholdScale",				10},
 	{"devModeRegenDescEtc",			true},
 	{"logToFile",					false}, //By default do not log to file and when running debug-mode log to stdout and in release to nowhere.
-	{"logFilesMax",					50},
+	{"logFilesMax",					15},
 	{"maxFlickVelocity",			800},
 	{"modulesRemember",				true},
 	{"modulesRemembered",			""},

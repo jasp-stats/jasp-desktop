@@ -889,5 +889,5 @@ bool rbridge_rCodeSafe(const char * rCode)
 
 void rbridge_setLANG(const std::string & lang)
 {
-	jaspRCPP_evalRCode(("Sys.setenv(LANG='" + lang + "')").c_str());
+	jaspRCPP_evalRCode(("Sys.setenv(LANG='" + lang + "');\nSys.setenv(LANGUAGE='" + lang + "');\nprint(Sys.getlocale());").c_str());
 }

@@ -406,7 +406,6 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	env.insert("PATH",				programDir.absoluteFilePath("R\\library\\RInside\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\library\\Rcpp\\libs\\" ARCH_SUBPATH) + ";" + programDir.absoluteFilePath("R\\bin\\" ARCH_SUBPATH));
 	env.insert("R_HOME",			rHomeWin);
 	env.insert("JAGS_HOME",			programDir.absoluteFilePath("JAGS/"));
-	env.insert("LC_CTYPE",			"C"); //To force utf-8 output from gettext et al.
 
 #undef ARCH_SUBPATH
 
@@ -436,6 +435,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 
 #endif
 
+	env.insert("LC_CTYPE",			"C"); //To force utf-8 output from gettext et al. This is most likely only necessary on Windows but it can't hurt right?
 	env.insert("R_LIBS_SITE",		"");
 	env.insert("R_LIBS_USER",		AppDirs::userRLibrary().toStdString().c_str());
 
