@@ -752,15 +752,11 @@
 
   detectionRisk <- auditRisk / inherentRisk / controlRisk
 
-  textARM <- paste0("Audit risk (", 
-                    round(auditRisk * 100, 2),
-                    "%) = Inherent risk (", 
-                    irLabel, 
-                    "%) x Control risk (", 
-                    crLabel, 
-                    "%) x Detection risk (", 
-                    round(detectionRisk * 100, 2), 
-                    "%)")
+  textARM <- gettextf("Audit risk (%1$s%%) = Inherent risk (%2$s%%) x Control risk (%3$s%%) x Detection risk (%4$s%%)",
+                      round(auditRisk * 100, 2),
+                      irLabel,
+                      crLabel,
+                      round(detectionRisk * 100, 2))
   
   ARMcontainer[["ARMformula"]] <- createJaspHtml(textARM, "h3")
   ARMcontainer[["ARMformula"]]$position <- 2
