@@ -146,7 +146,7 @@ redrawPlotJaspResults <- function(rec_plot)
     }
 
   if (is.null(attr(rec_plot, 'pid')) || attr(rec_plot, 'pid') != Sys.getpid()) {
-    warning('Loading plot snapshot from a different session with possible side effects or errors.')
+    warning('Loading plot snapshot from a different session with possible side effects or errors.', domain = NA)
     attr(rec_plot, 'pid') <- Sys.getpid()
   }
 
@@ -253,7 +253,7 @@ decodeColNames <- function(x, strict = FALSE, fun = NULL, ...) {
   fun <- .findFun(defaults[[type]][[method]])
   
   if (!is.function(fun))
-    stop(paste("Could not locate", type, "function; an analysis won't work correctly unless run inside JASP or jasptools"))
+    stop(paste("Could not locate", type, "function; an analysis won't work correctly unless run inside JASP or jasptools"), domain = NA)
   
   return(fun)
 }

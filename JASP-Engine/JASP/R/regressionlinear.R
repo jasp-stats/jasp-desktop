@@ -632,9 +632,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 .linregCreatePartialPlots <- function(modelContainer, dataset, options, position) {
   predictors <- .linregGetPredictors(options$modelTerms, encoded = TRUE)
 
-  title <- gettext("Partial Regression Plot")
-  if (length(predictors) > 1)
-    title <- gettextf("%ss", title)
+  title <- ngettext(length(predictors), "Partial Regression Plot", "Partial Regression Plots")
 
   partialPlotContainer <- createJaspContainer(title)
   partialPlotContainer$dependOn("plotsPartialRegression")

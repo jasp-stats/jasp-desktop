@@ -139,7 +139,7 @@
 
   clusteringTable$addCitation("Hartigan, J. A., & Wong, M. A. (1979). Algorithm AS 136: A k-means clustering algorithm. Journal of the Royal Statistical Society. Series C (Applied Statistics), 28(1), 100-108.")
 
-  if(!ready) clusteringTable$addFootnote(message = gettext("Please provide at least 2 variables."), symbol = gettext("<i>Note.</i>"))
+  if(!ready) clusteringTable$addFootnote(gettext("Please provide at least 2 variables."))
 
   jaspResults[["clusteringTable"]]      <- clusteringTable
 
@@ -151,23 +151,23 @@
 
   if(options[["modelOpt"]] != "validationManual"){
     criterion <- base::switch(options[["optimizationCriterion"]], "validationAIC" = gettext("AIC"), "validationBIC" = gettext("BIC"), "validationSilh" = gettext("silhouette"))
-    clusteringTable$addFootnote(message = gettextf("The model is optimized with respect to the <i>%s</i> value.", criterion), symbol = gettext("<i>Note.</i>"))
+    clusteringTable$addFootnote(gettextf("The model is optimized with respect to the <i>%s</i> value.", criterion))
   }
 
   if(clusterResult[["clusters"]] == options[["maxClusters"]] && options[["modelOpt"]] != "validationManual"){
     message <- gettext("The optimum number of clusters is the maximum number of clusters. You might want to adjust the range of optimization.")
-    clusteringTable$addFootnote(message=message, symbol=gettext("<i>Note.</i>"))
+    clusteringTable$addFootnote(message)
   }
 
   if(type=="densitybased"){
     if(clusterResult[["zeroMark"]] == 1)
-      clusteringTable$addFootnote(message = gettext("Your cluster model contains 0 clusters and only Noisepoints, we advise to change the Eps and MinPts parameters."), symbol = gettext("<i>Note.</i>"))
+      clusteringTable$addFootnote(gettext("Your cluster model contains 0 clusters and only Noisepoints, we advise to change the Eps and MinPts parameters."))
     if(clusterResult[["oneMark"]] == 1)
-      clusteringTable$addFootnote(message = gettext("Your cluster model contains 1 cluster and 0 Noisepoints. You could change the Eps and MinPts parameters."), symbol = gettext("<i>Note.</i>"))
+      clusteringTable$addFootnote(gettext("Your cluster model contains 1 cluster and 0 Noisepoints. You could change the Eps and MinPts parameters."))
   }
 
   if(!options[["scaleEqualSD"]])
-    clusteringTable$addFootnote(message = gettext("The variables in the model are <b>unstandardized</b>."), symbol = gettext("<i>Note.</i>"))
+    clusteringTable$addFootnote(gettext("The variables in the model are <b>unstandardized</b>."))
 
   row <- data.frame(clusters = clusterResult[['clusters']], measure = clusterResult[['BSS']]/clusterResult[['TSS']], aic = round(clusterResult[['AIC']], 2),
                     bic = round(clusterResult[['BIC']], 2), Silh = round(clusterResult[['Silh_score']], 2), n = clusterResult[["N"]])
@@ -246,11 +246,11 @@
 
   if(options[['tableClusterInfoBetweenSumSquares']]){
       message <- gettextf('The Between Sum of Squares of the %1$s cluster model is %2$s', clusterResult[["clusters"]], round(clusterResult[['BSS']], 2))
-      clusterInfoTable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
+      clusterInfoTable$addFootnote(message)
   }
   if(options[['tableClusterInfoTotalSumSquares']]){
       message <- gettextf('The Total Sum of Squares of the %1$s cluster model is %2$s', clusterResult[["clusters"]], round(clusterResult[['TSS']], 2))
-      clusterInfoTable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
+      clusterInfoTable$addFootnote(message)
   }
 }
 
@@ -287,11 +287,11 @@
   if(length(unique(clustering)) != 1){
 
     clusterEvaluationMetrics[["value"]] <- c(metrics[["max.diameter"]], metrics[["min.separation"]], metrics[["pearsongamma"]], metrics[["dunn"]], metrics[["entropy"]], metrics[["ch"]])
-    clusterEvaluationMetrics$addFootnote(message = gettext("All metrics are based on the <i>euclidean</i> distance."), symbol = gettext("<i>Note.</i>"))
+    clusterEvaluationMetrics$addFootnote(gettext("All metrics are based on the <i>euclidean</i> distance."))
 
   } else {
 
-    clusterEvaluationMetrics$addFootnote(message = gettext("Evaluation metrics cannot be computed when there is only 1 cluster."), symbol = gettext("<i>Note.</i>"))
+    clusterEvaluationMetrics$addFootnote(gettext("Evaluation metrics cannot be computed when there is only 1 cluster."))
 
   }
 

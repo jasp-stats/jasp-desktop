@@ -959,9 +959,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     if (length(avFootnote) != 0) {
       avTerms <- .unv(strsplit(gsub(avFootnote, pattern = "Results are averaged over the levels of: ", replacement = ""), 
                                  ", ")[[1]])
-      postHocContainer[[var]]$addFootnote(
-        message = gettextf("Results are averaged over the levels of: %s", paste(avTerms, collapse = ", ")),
-        symbol = gettext("<i>Note.</i>"))
+      postHocContainer[[var]]$addFootnote(gettextf("Results are averaged over the levels of: %s", paste(avTerms, collapse = ", ")))
     }
     
     
@@ -1221,8 +1219,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 
       if (length(contrastResult@misc$avgd.over) != 0)
         contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$addFootnote(
-          message = gettextf("Results are averaged over the levels of: %s", paste(.unv(contrastResult@misc$avgd.over), collapse = ", ")),
-          symbol = gettext("<i>Note.</i>"))
+          message = gettextf("Results are averaged over the levels of: %s", paste(.unv(contrastResult@misc$avgd.over), collapse = ", ")))
       
       contrastResult <- cbind(contrastResult, confint(contrastResult, level = options$confidenceIntervalIntervalContrast)[,5:6])
       contrastResult[["Comparison"]] <- .unv(contrastResult[["contrast"]])
@@ -1564,7 +1561,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   if (!is.null(rmAnovaContainer[["nonparametricContainer"]][["conoverContainer"]]) || options$conoverTest == FALSE)
     return ()
 
-  conoverContainer <- createJaspContainer("Conover Test")
+  conoverContainer <- createJaspContainer(gettext("Conover Test"))
   rmAnovaContainer[["nonparametricContainer"]][["conoverContainer"]] <- conoverContainer
   conoverContainer$dependOn("conoverTest") 
   
@@ -1973,5 +1970,5 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
                          type1 = gettext("Type I Sum of Squares"),
                          type2 = gettext("Type II Sum of Squares"),
                          type3 = gettext("Type III Sum of Squares"))
-  table$addFootnote(message = typeFootnote, symbol = gettext("<em>Note.</em>"))
+  table$addFootnote(message = typeFootnote)
 }

@@ -698,7 +698,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
             bootstrap.ci <- result.bootstrap.ci
 
           if(ci.fails)
-            estimatesTableBootstrap$addFootnote(gettext("Some confidence intervals could not be computed.\nPossibly too few bootstrap replicates."), symbol = gettext("<i>Note.</i>"))
+            estimatesTableBootstrap$addFootnote(gettext("Some confidence intervals could not be computed.\nPossibly too few bootstrap replicates."))
 
           row[["cilo"]] <- expon(as.numeric(bootstrap.ci$bca[4]))
           row[["ciup"]] <- expon(as.numeric(bootstrap.ci$bca[5]))
@@ -841,7 +841,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
      !options$squaredPearsonPlotOpt)
     return()
   if (is.null(jaspResults[["residualPlots"]])) {
-    container <- createJaspContainer("Residual plots")
+    container <- createJaspContainer(gettext("Residual plots"))
     container$dependOn(optionsFromObject = jaspResults[["modelSummary"]],
                        options           = c("residualType"))
     jaspResults[["residualPlots"]] <- container
@@ -851,7 +851,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
 .reglogisticEstimatesPlot <- function(jaspResults, dataset, options, ready){
   if(!options$estimatesPlotsOpt)
     return()
-  jaspResults[["estimatesPlot"]] <- createJaspContainer("Estimates plots")
+  jaspResults[["estimatesPlot"]] <- createJaspContainer(gettext("Estimates plots"))
   jaspResults[["estimatesPlot"]]$dependOn(optionsFromObject = jaspResults[["modelSummary"]])
   container <- jaspResults[["estimatesPlot"]]
   

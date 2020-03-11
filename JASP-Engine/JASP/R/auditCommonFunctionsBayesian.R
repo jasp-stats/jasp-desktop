@@ -330,7 +330,7 @@
 
     message <- gettextf("Sample sizes shown are implicit sample sizes derived from the ARM risk assessments: IR = <b>%1$s</b> and CR = <b>%2$s</b>.", options[["IR"]], options[["CR"]])
 
-    sampletable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
+    sampletable$addFootnote(message)
 
     planningContainer[["sampletable"]] <- sampletable
 
@@ -397,14 +397,13 @@
 
     }
 
-    priorStatisticsTable$addFootnote(message = gettextf("%1$s: The population misstatement is lower than materiality (%2$s %3$s). %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s)."
+    priorStatisticsTable$addFootnote(gettextf("%1$s: The population misstatement is lower than materiality (%2$s %3$s). %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s)."
     , "H\u208B"
     , "\u03B8 <"
     , round(planningState[["materiality"]], 4)
     , "H\u208A"
     , "\u03B8 \u2265"
-    ,round(planningState[["materiality"]], 4))
-    , symbol = gettext("<i>Note.</i>"))
+    , round(planningState[["materiality"]], 4)))
 
     if(planningState[["likelihood"]] == "poisson"){
 
@@ -1605,8 +1604,7 @@
                                                                     round(evaluationState[["materiality"]], 3),
                                                                     "H\u208A",
                                                                     "\u03B8 \u2265",
-                                                                    round(evaluationState[["materiality"]], 3)),
-                                                                    symbol = gettext("<i>Note.</i>"))
+                                                                    round(evaluationState[["materiality"]], 3)))
 
     evaluationContainer[["priorAndPosteriorStatistics"]] <- priorAndPosteriorStatisticsTable
 

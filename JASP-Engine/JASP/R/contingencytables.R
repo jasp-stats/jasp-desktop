@@ -585,7 +585,7 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 
       message <- gettextf("For all tests, the alternative hypothesis specifies that group <em>%1$s</em> %2$s <em>%3$s</em>.", gp1, lessIsMore, gp2)
       
-      crossTabLogOdds$addFootnote(symbol=gettext("<em>Note.</em>"), message=message)
+      crossTabLogOdds$addFootnote(message)
     }
   }
 }

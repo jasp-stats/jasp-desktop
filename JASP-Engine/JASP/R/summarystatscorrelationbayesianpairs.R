@@ -126,12 +126,10 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   # Add sided footnote
   #
   if (options[["alternative"]]=="greater")
-    corBayesTable$addFootnote(message=.getBfTableSidedFootnote(alternative="greater", analysis="correlation"),
-                              symbol=gettext("<i>Note</i>."))
+    corBayesTable$addFootnote(.getBfTableSidedFootnote(alternative="greater", analysis="correlation"))
   
   if (options[["alternative"]]=="less")
-    corBayesTable$addFootnote(message=.getBfTableSidedFootnote(alternative="less", analysis="correlation"),
-                              symbol=gettext("<i>Note</i>."))
+    corBayesTable$addFootnote(.getBfTableSidedFootnote(alternative="less", analysis="correlation"))
   
   bfTitle <- .getBfTitle(options[["bayesFactorType"]], options[["alternative"]])
   statName <- switch(options[["method"]],

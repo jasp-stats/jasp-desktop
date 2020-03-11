@@ -429,7 +429,7 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   manovaTable$addColumnInfo(name = "df2", title = "df2", type = "integer")
   manovaTable$addColumnInfo(name = "p", title = "p", type = "pvalue")
 
-  manovaTable$addFootnote(message= gettext("The null hypothesis specifies equal class means.") , symbol=gettext("<i>Note.</i>"))
+  manovaTable$addFootnote(gettext("The null hypothesis specifies equal class means."))
   
   jaspResults[["manovaTable"]] <- manovaTable
 
@@ -471,7 +471,7 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   boxTest$addColumnInfo(name = "df",   title = gettext("df"),  type = "integer")
   boxTest$addColumnInfo(name = "p",    title = gettext("p"),   type = "pvalue")
 
-  boxTest$addFootnote(message= gettext("The null hypothesis specifies equal covariance matrices.") , symbol=gettext("<i>Note.</i>"))
+  boxTest$addFootnote(gettext("The null hypothesis specifies equal covariance matrices."))
   
   jaspResults[["boxTest"]] <- boxTest
 

@@ -1,12 +1,12 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-03-10 12:47\n"
+"POT-Creation-Date: 2020-03-11 13:31\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 
@@ -115,9 +115,6 @@ msgstr ""
 msgid "Type III Sum of Squares"
 msgstr ""
 
-msgid "<em>Note.</em>"
-msgstr ""
-
 msgid "The Brown-Forsythe and Welch corrections are only available for one-way ANOVA"
 msgstr ""
 
@@ -163,9 +160,6 @@ msgstr ""
 msgid "Results are averaged over the levels of: %s"
 msgstr ""
 
-msgid "<i>Note.</i>"
-msgstr ""
-
 msgid "Cohen's d does not correct for multiple comparisons."
 msgstr ""
 
@@ -182,6 +176,9 @@ msgid "Bootstrapping Post Hoc Test"
 msgstr ""
 
 msgid "Some confidence intervals could not be computed.\nPossibly too few bootstrap replicates."
+msgstr ""
+
+msgid "Dunn"
 msgstr ""
 
 msgid "Dunn's Post Hoc Comparisons - %s"
@@ -251,6 +248,9 @@ msgid "df2"
 msgstr ""
 
 msgid "F-value equal to zero indicating perfect fit.<br><br>(Levene's tests on an essentially perfect fit are unreliable)"
+msgstr ""
+
+msgid "Marginal Means"
 msgstr ""
 
 msgid "Bootstrapping Marginal Means"
@@ -409,9 +409,6 @@ msgstr ""
 msgid "Unequal variances only available for within subjects factors"
 msgstr ""
 
-msgid "Marginal Means"
-msgstr ""
-
 msgid "Marginal Means -"
 msgstr ""
 
@@ -461,6 +458,9 @@ msgid "df den"
 msgstr ""
 
 msgid "p<sub>F</sub>"
+msgstr ""
+
+msgid "Conover Test"
 msgstr ""
 
 msgid "Conover's Post Hoc Comparisons - %s"
@@ -550,13 +550,13 @@ msgstr ""
 msgid "%1$s%% Confidence interval"
 msgstr ""
 
-msgid "Please specify the population size \n                                                    and your audit values."
+msgid "Please specify the population size and your audit values."
 msgstr ""
 
-msgid "Please specify the population size, \n                                                    population value, \n                                                    and your sample variables."
+msgid "Please specify the population size, population value and your sample variables."
 msgstr ""
 
-msgid "Displayed numbers may differ from exact \n                                                outcomes due to rounding in the \n                                                calculations."
+msgid "Displayed numbers may differ from exact outcomes due to rounding in the calculations."
 msgstr ""
 
 msgid "<u>Calculations</u>"
@@ -1711,6 +1711,9 @@ msgstr ""
 msgid "Cases marked with %s are influential."
 msgstr ""
 
+msgid "Plot"
+msgstr ""
+
 msgid "Forest plot"
 msgstr ""
 
@@ -1814,6 +1817,9 @@ msgid "PM"
 msgstr ""
 
 msgid "%g%% Confidence Interval"
+msgstr ""
+
+msgid "<em>Note.</em>"
 msgstr ""
 
 msgid "No items to show, please add a results description or set init to true"
@@ -3007,6 +3013,9 @@ msgstr ""
 msgid "Expected cross validation index (ECVI)"
 msgstr ""
 
+msgid "Parameter estimates"
+msgstr ""
+
 msgid "Not all bootstrap samples were successful: CI based on %.0f samples."
 msgstr ""
 
@@ -3784,6 +3793,9 @@ msgstr ""
 msgid "does not exist unless df > 2"
 msgstr ""
 
+msgid "MANOVA"
+msgstr ""
+
 msgid "no terms in scope"
 msgstr ""
 
@@ -3824,9 +3836,6 @@ msgid "Not all endogenous variables are admissible. Inadmissible endogenous vari
 msgstr ""
 
 msgid "Estimation failed\nMessage:\n%s"
-msgstr ""
-
-msgid "Parameter estimates"
 msgstr ""
 
 msgid "Direct effects"
@@ -4052,6 +4061,9 @@ msgid "Min. CV MSE"
 msgstr ""
 
 msgid "%s 1 SE"
+msgstr ""
+
+msgid "Variance Components"
 msgstr ""
 
 msgid "Expected counts not supported without observed counts!"
@@ -4459,12 +4471,6 @@ msgstr ""
 msgid "Q-Q Plot Standardized Residuals"
 msgstr ""
 
-msgid "Partial Regression Plot"
-msgstr ""
-
-msgid "%ss"
-msgstr ""
-
 msgid "Partial plots are not supported for models containing interaction terms"
 msgstr ""
 
@@ -4628,6 +4634,12 @@ msgid "Null model contains nuisance parameters: %s"
 msgstr ""
 
 msgid "%1$s level '%2$s' coded as class 1."
+msgstr ""
+
+msgid "Residual plots"
+msgstr ""
+
+msgid "Estimates plots"
 msgstr ""
 
 msgid "Predicted - residuals plot"
@@ -4894,9 +4906,6 @@ msgstr ""
 msgid "Plotting not possible: Bayes factor should be numeric!"
 msgstr ""
 
-msgid "<i>Note</i>."
-msgstr ""
-
 msgid "%s%% Credible interval"
 msgstr ""
 
@@ -5115,5 +5124,10 @@ msgstr[1]    ""
 
 msgid        "The following covariate was considered but not included: %s."
 msgid_plural "The following covariates were considered but not included: %s."
+msgstr[0]    ""
+msgstr[1]    ""
+
+msgid        "Partial Regression Plot"
+msgid_plural "Partial Regression Plots"
 msgstr[0]    ""
 msgstr[1]    ""

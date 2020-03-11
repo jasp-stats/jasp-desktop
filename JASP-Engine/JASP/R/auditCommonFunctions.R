@@ -1342,7 +1342,7 @@
     
     }
 
-    summaryTable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
+    summaryTable$addFootnote(message)
 
     row <- data.frame(materiality = planningOptions[["materialityLabel"]], 
                       IR = paste0(round(inherentRisk * 100, 2), "%"), 
@@ -1406,7 +1406,7 @@
   
   }
 
-  summaryTable$addFootnote(message = message, symbol = gettext("<i>Note.</i>"))
+  summaryTable$addFootnote(message)
 
   k <- base::switch(options[["expectedErrors"]], 
                     "expectedRelative" = planningState[["expectedSampleError"]], 
@@ -2158,8 +2158,7 @@
     message <- gettext("The first unit from every interval is selected.")
   }
 
-  selectionInformationTable$addFootnote(message = message, 
-                                        symbol = gettext("<i>Note.</i>"))
+  selectionInformationTable$addFootnote(message)
 
   selectionContainer[["selectionInformationTable"]] <- selectionInformationTable
 
@@ -2990,8 +2989,7 @@
       options[["stringerBoundLtaAdjustment"]])
   message <- gettext("The confidence bound is calculated according to the <b>Stringer</b> method with <b>LTA adjustment</b>.")
 
-  evaluationTable$addFootnote(message = message, 
-                              symbol = gettext("<i>Note.</i>"))
+  evaluationTable$addFootnote(message)
 
   evaluationContainer[["evaluationTable"]] <- evaluationTable
 

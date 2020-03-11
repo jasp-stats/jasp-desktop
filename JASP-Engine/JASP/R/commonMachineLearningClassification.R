@@ -138,8 +138,7 @@
 # If no analysis is run, specify the required variables in a footnote
   requiredVars <- ifelse(type == "knn", yes = 1L, no = 2L)
   if(!ready)
-    classificationTable$addFootnote(message = gettextf("Please provide a target variable and at least %i predictor variable(s).", requiredVars), 
-                                    symbol  = gettext("<i>Note.</i>"))
+    classificationTable$addFootnote(gettextf("Please provide a target variable and at least %i predictor variable(s).", requiredVars))
 
   jaspResults[["classificationTable"]] <- classificationTable
   
@@ -168,10 +167,10 @@
   if(type == "knn"){
 
     if(options[["modelOpt"]] == "optimizationError")
-      classificationTable$addFootnote(message = gettext("The model is optimized with respect to the <i>validation set accuracy</i>."), symbol = gettext("<i>Note.</i>"))
+      classificationTable$addFootnote(gettext("The model is optimized with respect to the <i>validation set accuracy</i>."))
 
     if(classificationResult[["nn"]] == options[["maxK"]] && options[["modelOpt"]] != "validationManual"){
-      classificationTable$addFootnote(message=gettext("The optimum number of nearest neighbors is the maximum number. You might want to adjust the range of optimization."), symbol=gettext("<i>Note.</i>"))
+      classificationTable$addFootnote(gettext("The optimum number of nearest neighbors is the maximum number. You might want to adjust the range of optimization."))
     }
 
     distance  <- ifelse(classificationResult[["distance"]] == 1, yes = gettext("Manhattan"), no = gettext("Euclidean"))
@@ -203,7 +202,7 @@
   } else if(type == "randomForest"){
 
     if(options[["modelOpt"]] == "optimizationError")
-      classificationTable$addFootnote(message=gettext("The model is optimized with respect to the <i>out-of-bag accuracy</i>."), symbol=gettext("<i>Note.</i>"))
+      classificationTable$addFootnote(gettext("The model is optimized with respect to the <i>out-of-bag accuracy</i>."))
 
     row <- data.frame(trees = classificationResult[["noOfTrees"]], 
                       preds = classificationResult[["predPerSplit"]], 
@@ -218,7 +217,7 @@
   } else if(type == "boosting"){
 
     if(options[["modelOpt"]] == "optimizationOOB")
-      classificationTable$addFootnote(message=gettext("The model is optimized with respect to the <i>out-of-bag accuracy</i>."), symbol=gettext("<i>Note.</i>"))
+      classificationTable$addFootnote(gettext("The model is optimized with respect to the <i>out-of-bag accuracy</i>."))
 
     row <- data.frame(trees = classificationResult[["noOfTrees"]], 
                       shrinkage = options[["shrinkage"]], 
@@ -707,7 +706,7 @@
   validationMeasures$addColumnInfo(name = "support",   title = gettext("Support"),   type = "integer")
   validationMeasures$addColumnInfo(name = "auc",       title = gettext("AUC"),       type = "number")
 
-  validationMeasures$addFootnote(message= gettext("Area Under Curve (AUC) is calculated for every class against all other classes."), symbol=gettext("<i>Note.</i>"))
+  validationMeasures$addFootnote(gettext("Area Under Curve (AUC) is calculated for every class against all other classes."))
 
   if(options[["target"]] != "")
     validationMeasures[["group"]] <- c(levels(factor(dataset[, .v(options[["target"]])])), gettext("Average / Total"))

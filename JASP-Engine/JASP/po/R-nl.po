@@ -1,11 +1,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: R 3.6.1\n"
-"Report-Msgid-Bugs-To: bugs.r-project.org\n"
-"POT-Creation-Date: 2020-03-10 11:36\n"
+"Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
+"POT-Creation-Date: 2020-03-11 12:57\n"
 "PO-Revision-Date: 2020-01-29 14:35\n"
-"Last-Translator: Frans Meerhoff<f.a.m.meerhoff@uva.nl>\n"
-"Language-Team: Dutch <f.a.m.meerhoff@uva.nl>\n"
+"Last-Translator: JASP <info@jasp-stats.org>\n"
+"Language-Team: JASP <info@jasp-stats.org>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -132,9 +132,6 @@ msgstr "Type II Kwadratensom"
 msgid "Type III Sum of Squares"
 msgstr "Type III Kwadratensom"
 
-msgid "<em>Note.</em>"
-msgstr "<em>Opmerking.</em>"
-
 msgid ""
 "The Brown-Forsythe and Welch corrections are only available for one-way ANOVA"
 msgstr ""
@@ -183,9 +180,6 @@ msgstr "Standaard"
 msgid "Results are averaged over the levels of: %s"
 msgstr "Resultaten zijn gemiddeld over de levels van: %s"
 
-msgid "<i>Note.</i>"
-msgstr "<i>Opmerking.</i>"
-
 msgid "Cohen's d does not correct for multiple comparisons."
 msgstr "Cohen's d corrigeert niet voor meerdere vergelijkingen."
 
@@ -211,6 +205,9 @@ msgid ""
 msgstr ""
 "Sommige betrouwbaarheidsintervallen konden niet worden berekend. \n"
 "Er zijn mogelijk te weinig bootstrap replicaties."
+
+msgid "Dunn"
+msgstr "Dunn"
 
 msgid "Dunn's Post Hoc Comparisons - %s"
 msgstr "Dunn's Post-Hoc vergelijkingen - %s"
@@ -287,6 +284,9 @@ msgid ""
 msgstr ""
 "F-waarde gelijk aan nul geeft een perfecte passing aan.<br><br>(Levene's "
 "toets bij een vrijwel perfecte passing is onbetrouwbaar)"
+
+msgid "Marginal Means"
+msgstr "Marginale Gemiddeldes"
 
 msgid "Bootstrapping Marginal Means"
 msgstr "Bootstrapping Marginale Gemiddelden"
@@ -482,9 +482,6 @@ msgid "Unequal variances only available for within subjects factors"
 msgstr ""
 "Ongelijke varianties alleen beschikbaar voor binnen-proefpersoon factoren"
 
-msgid "Marginal Means"
-msgstr "Marginale Gemiddeldes"
-
 msgid "Marginal Means -"
 msgstr "Marginale Gemiddeldes -"
 
@@ -538,6 +535,9 @@ msgstr "vg noemer"
 
 msgid "p<sub>F</sub>"
 msgstr "p<sub>F</sub>"
+
+msgid "Conover Test"
+msgstr "Conover Toets"
 
 msgid "Conover's Post Hoc Comparisons - %s"
 msgstr "Conover's Post-Hoc Vergelijkingen - %s"
@@ -670,34 +670,21 @@ msgstr "Onzekerheid"
 msgid "%1$s%% Confidence interval"
 msgstr "%1$s%% Betrouwbaarheidinterval"
 
-msgid ""
-"Please specify the population size \n"
-"                                                    and your audit values."
-msgstr ""
-"Specificeer a.u.b. de populatiegrootte \n"
-"                                                    en de auditwaarden."
+msgid "Please specify the population size and your audit values."
+msgstr "Specificeer a.u.b. de populatiegrootte en uw auditwaarden."
 
 msgid ""
-"Please specify the population size, \n"
-"                                                    population value, \n"
-"                                                    and your sample "
+"Please specify the population size, population value and your sample "
 "variables."
 msgstr ""
-"Specificeer a.u.b. de populatiegrootte, \n"
-"                                                    populatiewaarde, \n"
-"                                                    en de "
-"steekproefvariabelen."
+"Specificeer a.u.b. de populatiegrootte, de populatiewaarde en uw variabelen."
 
 msgid ""
-"Displayed numbers may differ from exact \n"
-"                                                outcomes due to rounding in "
-"the \n"
-"                                                calculations."
+"Displayed numbers may differ from exact outcomes due to rounding in the "
+"calculations."
 msgstr ""
-"Weergegeven nummers kunnen afwijken van exacte \n"
-"                                                uitkomsten door het afronden "
-"van de \n"
-"                                                berekeningen."
+"Weergegeven nummers kunnen afwijken van exacte uitkomsten door het afronden "
+"van de berekeningen."
 
 msgid "<u>Calculations</u>"
 msgstr "<u>Berekeningen</u>"
@@ -2495,6 +2482,9 @@ msgstr "Rang toets"
 msgid "Cases marked with %s are influential."
 msgstr "Waarnemingen gemarkeerd met %s zijn invloedrijk."
 
+msgid "Plot"
+msgstr "Grafiek"
+
 msgid "Forest plot"
 msgstr "Forest Plot"
 
@@ -2601,6 +2591,9 @@ msgstr "PM"
 
 msgid "%g%% Confidence Interval"
 msgstr "%g%% Betrouwbaarheidsinterval"
+
+msgid "<em>Note.</em>"
+msgstr "<em>Opmerking.</em>"
 
 msgid "No items to show, please add a results description or set init to true"
 msgstr ""
@@ -4178,6 +4171,9 @@ msgstr "McDonald fit index (MFI)"
 msgid "Expected cross validation index (ECVI)"
 msgstr "Verwachte kruisvalidatie index (ECVI)"
 
+msgid "Parameter estimates"
+msgstr "Parameterschattingen"
+
 msgid "Not all bootstrap samples were successful: CI based on %.0f samples."
 msgstr ""
 "Niet alle bootstrap steekproeven waren succesvol. Betrouwbaarheidinterval is "
@@ -5040,6 +5036,9 @@ msgstr "bestaat niet tenzij vg > 1"
 msgid "does not exist unless df > 2"
 msgstr "bestaat niet tenzij vg > 2"
 
+msgid "MANOVA"
+msgstr "MANOVA"
+
 msgid "no terms in scope"
 msgstr "geen termen in scope"
 
@@ -5098,9 +5097,6 @@ msgstr ""
 "Schatting mislukt\n"
 "Melding:\n"
 "%s"
-
-msgid "Parameter estimates"
-msgstr "Parameterschattingen"
 
 msgid "Direct effects"
 msgstr "Directe effecten"
@@ -5339,6 +5335,9 @@ msgstr "Min. CV MSE"
 
 msgid "%s 1 SE"
 msgstr "%s 1 Std. Fout"
+
+msgid "Variance Components"
+msgstr "Variantie Componenten"
 
 msgid "Expected counts not supported without observed counts!"
 msgstr "Verwachte aantallen niet ondersteund zonder geobserveerde aantallen!"
@@ -5841,12 +5840,6 @@ msgstr "Gestandaardiseerde %s"
 msgid "Q-Q Plot Standardized Residuals"
 msgstr "Q-Q Plot Gestandaardiseerde Residuen"
 
-msgid "Partial Regression Plot"
-msgstr "Partial Regressiegrafiek"
-
-msgid "%ss"
-msgstr "%ss"
-
 msgid "Partial plots are not supported for models containing interaction terms"
 msgstr ""
 "Partial plots worden niet ondersteund voor modellen die interactietermen "
@@ -6071,6 +6064,12 @@ msgstr "Nulmodel bevat nuisance parameters: %s"
 
 msgid "%1$s level '%2$s' coded as class 1."
 msgstr "%1$s niveau '%2$s' gecodeerd als klasse 1."
+
+msgid "Residual plots"
+msgstr "Residu grafieken"
+
+msgid "Estimates plots"
+msgstr "Grafieken van schattingen"
 
 msgid "Predicted - residuals plot"
 msgstr "Voorspeld - residuengrafiek"
@@ -6371,9 +6370,6 @@ msgstr ""
 
 msgid "Plotting not possible: Bayes factor should be numeric!"
 msgstr "Grafiek maken niet mogelijk: Bayes factor moet numeriek zijn!"
-
-msgid "<i>Note</i>."
-msgstr "<i>Opmerking</i>."
 
 msgid "%s%% Credible interval"
 msgstr "%s%% Geloofwaardigheidsinterval"
@@ -6692,12 +6688,13 @@ msgid_plural "The following covariates were considered but not included: %s."
 msgstr[0] "De volgende covariaat werd overwogen, maar niet meegenomen: %s."
 msgstr[1] "De volgende covariaten werden overwogen, maar niet meegenomen: %s."
 
-#~ msgid ""
-#~ "The model could not fit. Error while running R code from the metaBMA "
-#~ "package: %s"
-#~ msgstr ""
-#~ "je model paste niet. Fout bij het uitvoeren van de R-code van de metaBMA "
-#~ "package: %s"
+msgid "Partial Regression Plot"
+msgid_plural "Partial Regression Plots"
+msgstr[0] "Partiële Regressiegrafiek"
+msgstr[1] "Partiële Regressiegrafieken"
+
+#~ msgid "<i>Note.</i>"
+#~ msgstr "<i>Opmerking.</i>"
 
 #~ msgid ""
 #~ "Model averaged posterior estimates for %s are not yet available, but will "

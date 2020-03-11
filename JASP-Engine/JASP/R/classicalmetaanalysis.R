@@ -565,7 +565,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
      !options$plotResidualsPredicted && !options$trimFillPlot)
     return()
   if (is.null(jaspResults[["plots"]])) {
-    container <- createJaspContainer("Plot")
+    container <- createJaspContainer(gettext("Plot"))
     container$dependOn(c("dependent", "wlsWeights", "method",
                          "studyLabels", "covariates", "modelTerms"))
     jaspResults[["plots"]] <- container

@@ -179,25 +179,18 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
 
     if(options[["estimator"]] == "mpu"){
 
-      regressionTable$addFootnote(message = gettext("Please specify the population size 
-                                                    and your audit values."), 
-                                  symbol = gettext("<i>Note.</i>"))
+      regressionTable$addFootnote(gettext("Please specify the population size and your audit values."))
+
     } else {
 
-      regressionTable$addFootnote(message = gettext("Please specify the population size, 
-                                                    population value, 
-                                                    and your sample variables."), 
-                                  symbol = gettext("<i>Note.</i>"))
+      regressionTable$addFootnote(gettext("Please specify the population size, population value and your sample variables."))
     
     }
 
     return()
   }
 
-  regressionTable$addFootnote(message = gettext("Displayed numbers may differ from exact 
-                                                outcomes due to rounding in the 
-                                                calculations."), 
-                              symbol = gettext("<i>Note.</i>"))
+  regressionTable$addFootnote(gettext("Displayed numbers may differ from exact outcomes due to rounding in the calculations."))
 
   dataset           <- na.omit(dataset)
 

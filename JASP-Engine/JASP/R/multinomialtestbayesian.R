@@ -261,7 +261,7 @@ MultinomialTestBayesian <- function(jaspResults, dataset, options, ...) {
   if(ciRequested){
     ciInfo <- multinomialResults[["descriptivesTable"]][[paste0(options$countProp, "CI")]]
     descDF <- cbind(descDF, ciInfo)
-    descriptivesTable$addFootnote(message = tableFootnote, symbol = gettext("<em>Note.</em>"))
+    descriptivesTable$addFootnote(tableFootnote)
     
     if (any(is.nan(unlist(descDF[, c('lowerCI', 'upperCI')])))) {
       descriptivesTable$addFootnote(message = gettextf("Could not compute %s Intervals.", tolower(ciType)))

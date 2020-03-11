@@ -136,12 +136,10 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   corBayesTable$addCitation(.getCorCitations(methodItems, bayes=TRUE))
 
   if (alternative=="greater")
-    corBayesTable$addFootnote(message=.getBfTableSidedFootnote(alternative="greater", analysis="correlation"),
-                              symbol="<i>Note</i>.")
+    corBayesTable$addFootnote(.getBfTableSidedFootnote(alternative="greater", analysis="correlation"))
 
   if (alternative=="less")
-    corBayesTable$addFootnote(message=.getBfTableSidedFootnote(alternative="less", analysis="correlation"),
-                              symbol="<i>Note</i>.")
+    corBayesTable$addFootnote(.getBfTableSidedFootnote(alternative="less", analysis="correlation"))
 
   # Add legend footnote of BFs
   if (options[["flagSupported"]]) {
