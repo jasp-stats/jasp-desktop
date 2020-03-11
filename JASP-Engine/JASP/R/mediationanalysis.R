@@ -77,6 +77,21 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
       }, TRUE)
       if (!all(admissible))
         gettextf("Not all endogenous variables are admissible. Inadmissible endogenous variables: %s. Only scale or ordinal endogenous variables allowed.", paste(endo[!admissible], collapse = ", "))
+    },
+    
+    checkCategoricalEndo = function() {
+      if (length(options$confounds) > 0) endo <- c(endo, options$predictor)
+      
+      admissible <- vapply(endo, function(endo_var) {
+        var <- na.omit(dataset[[.v(endo_var)]])
+        if (is.ordered(var) && options$missing == "fiml") {
+          return(FALSE)
+        }
+        return(TRUE)
+      }, TRUE)
+      
+      if (!all(admissible))
+        gettextf("FIML missing value handling only available when all endogenous variables are of scale type. Ordinal endogenous variables in the model: %s", paste(endo[!admissible], collapse = ", "))
     }
     
   )
