@@ -187,7 +187,7 @@ QJsonDocument *DataLibraryFileSystem::getJsonDocument()
 
 	QString filename = "index";
 
-	LanguageInfo li = LanguageModel::CurrentLanguageInfo;
+  LanguageInfo li = LanguageModel::CurrentLanguageInfo();
 
 	//Leave help filenames from JASP native language - English - with localname en_US unchanged
 	QString translation_suffix = li.language  == QLocale::English ? "" : ("_" + li.localName);

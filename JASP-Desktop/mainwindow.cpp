@@ -130,12 +130,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_ribbonModel			= new RibbonModel(	{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
 												{ "Audit", "BAIN", "Discover Distributions", "Equivalence T-Tests", "JAGS", "Machine Learning", "Meta Analysis", "Network", "SEM", "Summary Statistics", "Visual Modeling"});
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
-
 	_fileMenu				= new FileMenu(this);
-
-	// No good to create Language model here after FileMenu..
-	//_languageModel = new LanguageModel("Resources/Translations", application, _qml, this);
-
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);

@@ -127,7 +127,7 @@ bool HelpModel::loadHelpContent(const QString &pagePath, bool ignorelanguage, QS
 	//Leave help filenames from JASP native language - English - with localname en_US unchanged
 	if (!ignorelanguage)
 	{
-		LanguageInfo li = LanguageModel::CurrentLanguageInfo;
+    LanguageInfo li = LanguageModel::CurrentLanguageInfo();
 		_localname = li.language  == QLocale::English ? "" : ("_" + li.localName);
 	}
 

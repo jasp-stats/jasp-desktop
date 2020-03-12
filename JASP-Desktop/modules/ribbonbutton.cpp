@@ -20,6 +20,7 @@
 #include "enginedefinitions.h"
 #include "modules/dynamicmodule.h"
 #include "modules/analysisentry.h"
+#include "utilities/languagemodel.h"
 
 RibbonButton::RibbonButton(QObject *parent, Json::Value descriptionJson, bool isCommon)  : QObject(parent)
 {
@@ -227,7 +228,7 @@ void RibbonButton::reloadMenuFromDescriptionJson()
 	}
 
 	//Check existence of the description.json
-	QFile descriptionFile(modulepath.absoluteFilePath() + "/" + Modules::DynamicModule::getJsonDescriptionFilename());
+	QFile descriptionFile(modulepath.absoluteFilePath() + "/" + getJsonDescriptionFilename());
 	if(!descriptionFile.exists())
 	{
 		Log::log() << "Could not find the json description file : " << descriptionFile.fileName().toStdString() << std::endl;
@@ -283,3 +284,9 @@ void RibbonButton::reloadMenuFromDescriptionJson()
 
 }
 
+QString RibbonButton::getJsonDescriptionFilename()
+{
+	LanguageInfo li = LanguageModel::CurrentLanguageInfo();
+
+	return "description" + (li.language  == QLocale::English ? "" : ("_" + li.localName)) + ".json";
+}

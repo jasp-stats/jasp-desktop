@@ -12,34 +12,21 @@
 
 struct LanguageInfo {
 
-	LanguageInfo(QLocale::Language lang, QString name, QString nativeName, QString local, QString qmfile, QString qmfolder)
+
+	LanguageInfo() {}
+
+	LanguageInfo(QLocale::Language language, QString languageName, QString nativeLanguageName, QString localName, QString qmFilename, QString qmFolder)
+		: language(language), languageName(languageName), nativeLanguageName(nativeLanguageName), localName(localName), qmFolder(qmFolder), qmFilenames({qmFilename})
 	{
-		language = lang;
-		languageName = name; //Language Name
-		nativeLanguageName = nativeName; //Name of the language in native language
-		localName = local; //QLocale::system().name(); // e.g. "nl_NL" then truncated to "nl"
-		qmFilenames.push_back(qmfile) ;		
-		qmFolder = qmfolder; //QTranslator::load(const QString &filename, const QString &directory = QString()
 	}
 
-	LanguageInfo()
-	{
-		language = QLocale::English;
-		languageName = ""; //Language Name
-		nativeLanguageName = ""; //Name of the language in native language
-		localName = ""; //QLocale::system().name(); // e.g. "nl_NL" then truncated to "nl"
-		qmFilenames.clear();
-		qmFolder = ""; //QTranslator::load(const QString &filename, const QString &directory = QString()
 
-	}
-
-	QLocale::Language language; //e.g. QLocale::English
-	QString languageName;
-	QString nativeLanguageName; //e.g. English
-	QString localName; //e.g. en_US
-	QVector<QString> qmFilenames; //e.g. jasp_en.qm	
-	QString qmFolder;
-
+	QLocale::Language	language			= QLocale::English; //e.g. QLocale::English
+	QString				languageName		= "",
+						nativeLanguageName	= "",	//e.g. English
+						localName			= "",
+						qmFolder			= "";	//e.g. en_US
+	QVector<QString>	qmFilenames;				//e.g. jasp_en.qm
 };
 
 class LanguageModel : public QAbstractListModel
@@ -61,22 +48,20 @@ public:
 
 	explicit LanguageModel(QString qsources, QApplication *app = nullptr, QQmlApplicationEngine *qml = nullptr, QObject *parent = nullptr) ;
 
-	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-	int	columnCount(const QModelIndex &parent = QModelIndex())		const override { return 1; }
+	int						rowCount(const QModelIndex &parent = QModelIndex())			const override;
+	int						columnCount(const QModelIndex & = QModelIndex())			const override { return 1; }
+	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 
-	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+	QHash<int, QByteArray>	roleNames() const override;
 
-	QHash<int, QByteArray>			roleNames() const override;	
+	int		currentIndex()			const { return _currentIndex; }
+	QString currentLanguageCode()	const { return getLocalName(_languages[currentIndex()]); } //Here we use currentIndex instead of CurrentLanguageInfo? Why not everywhere else?
 
-	int currentIndex() const;
+	static const LanguageInfo & CurrentLanguageInfo() { return _singleton->_currentLanguageInfo; } //A function so that we know for sure noone can edit it outside this class, OO-style. Sort of. Better would be to use _currentIndex and the list directly.
 
-	static LanguageInfo CurrentLanguageInfo;
-	static QString getCurrentLanguageFileExtension();
-
-	void setApplicationEngine(QQmlApplicationEngine	 * ae);	
+	void setApplicationEngine(QQmlApplicationEngine	 * ae) { _qml = ae; }
 	void initialize();
 
-	QString currentLanguageCode() const;
 
 public slots:
 	void changeLanguage(int index);
@@ -105,11 +90,12 @@ private:
 	bool isJaspSupportedLanguage(QLocale::Language lang);
 
 	static LanguageModel	* _singleton;
-	QApplication			* _mApp = nullptr;
-	QTranslator				* _mTransLator = nullptr;
-	QQmlApplicationEngine	* _qml = nullptr;
-	QObject					* _parent = nullptr;
+	QApplication			* _mApp			= nullptr;
+	QTranslator				* _mTransLator	= nullptr;
+	QQmlApplicationEngine	* _qml			= nullptr;
+	QObject					* _parent		= nullptr;
 
+	LanguageInfo							_currentLanguageInfo; //I am quite unhappy with the fact that we store this info twice, is there a scenario where they need to be different or are in fact allowed to be? Why does it need to be inside this (previously static, publicyly accessible) copy of the info and *also* store the _currentIndex in a list... But I won't change it now as we are about to release.
 	QMap<QLocale::Language, LanguageInfo>	_languagesInfo;
 	QVector<QLocale::Language>				_languages;
 	QVector<QTranslator *>					_translators;

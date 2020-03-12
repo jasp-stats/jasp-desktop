@@ -60,19 +60,19 @@ void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool 
 {
 	if(!modulePath.exists())
 	{
-		Log::log() << "Path " << modulePath.absoluteFilePath().toStdString() << " does not exist!" << std::flush;
+		Log::log() << "Path " << modulePath.absoluteFilePath().toStdString() << " does not exist!" << std::endl;
 		return;
 	}
 
-	QFile descriptionFile(modulePath.absoluteFilePath() + "/" + Modules::DynamicModule::getJsonDescriptionFilename());
+	QFile descriptionFile(modulePath.absoluteFilePath() + "/" + RibbonButton::getJsonDescriptionFilename());
 	if(!descriptionFile.exists())
 	{
-		Log::log() << "Could not find "  << Modules::DynamicModule::getJsonDescriptionFilename() << " file in " << modulePath.absoluteFilePath().toStdString() << std::endl << std::flush;
-		Log::log() << "Try to fall back to original description.json. " << std::endl << std::flush;
+		Log::log()	<< "Could not find "  << RibbonButton::getJsonDescriptionFilename() << " file in " << modulePath.absoluteFilePath().toStdString()
+					<< "\nTry to fall back to original description.json. " << std::endl;
 		descriptionFile.setFileName(modulePath.absoluteFilePath() + "/" + "description.json");
 		if(!descriptionFile.exists())
 		{
-			Log::log() << "No description.json file found for this module." << std::endl << std::flush;
+			Log::log() << "No description.json file found for this module." << std::endl; //Shouldn't this give an error?
 			return;
 		}
 	}
@@ -87,11 +87,11 @@ void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool 
 		if(Json::Reader().parse(descriptionTxt, descriptionJson))
 			addRibbonButtonModel(new RibbonButton(this, descriptionJson, isCommon));
 		else
-			Log::log() << "Error when reading description.json of " << modulePath.filePath().toStdString() << std::flush;
+			Log::log() << "Error while reading description.json of " << modulePath.filePath().toStdString() << std::endl;
 	}
 	catch(std::runtime_error e)
 	{
-		Log::log() << e.what() << std::flush;
+		Log::log() << e.what() << std::endl;
 	}
 }
 

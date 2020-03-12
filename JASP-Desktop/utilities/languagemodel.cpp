@@ -19,7 +19,6 @@
 
 using namespace std;
 
-LanguageInfo  LanguageModel::CurrentLanguageInfo;
 LanguageModel * LanguageModel::_singleton = nullptr;
 
 LanguageModel::LanguageModel(QString qmresourcepath, QApplication *app, QQmlApplicationEngine *qml, QObject *parent)
@@ -60,7 +59,7 @@ void LanguageModel::initialize()
 
 	QLocale::Language prefLanguage = static_cast<QLocale::Language>(Settings::value(Settings::PREFERRED_LANGUAGE).toInt());
 	LanguageInfo & li = _languagesInfo[prefLanguage];
-	CurrentLanguageInfo = li;
+	_currentLanguageInfo = li;
 
 	if (prefLanguage == 0 || prefLanguage == QLocale::English) // No preferred language yet set or native JASP language English
 	{
@@ -77,11 +76,6 @@ void LanguageModel::initialize()
 		_qml->retranslate();
 	}
 
-}
-
-QString LanguageModel::currentLanguageCode() const
-{
-	return getLocalName(_languages[currentIndex()]);
 }
 
 int LanguageModel::rowCount(const QModelIndex &parent) const
@@ -137,13 +131,13 @@ void LanguageModel::changeLanguage(int index)
 	// Called from PrefsUI.qml
 
 	QLocale::Language cl = _languages[index];
-	if (CurrentLanguageInfo.language == cl)
+	if (CurrentLanguageInfo().language == cl) //We could have just checked against _currentIndex right?
 		return; //No change of language
 
-	CurrentLanguageInfo = _languagesInfo[cl];
+	_currentLanguageInfo = _languagesInfo[cl];
 
 	if (cl == QLocale::English)	removeTranslators();
-	else						loadQmFilesForLanguage(CurrentLanguageInfo.language);
+	else						loadQmFilesForLanguage(CurrentLanguageInfo().language);
 
 
 	_qml->retranslate();
@@ -292,10 +286,10 @@ void LanguageModel::loadModuleTranslationFile(Modules::DynamicModule *dyn)
 		li.qmFilenames.push_back(addFile);
 		//li.qmFilenames.push_front(addFile);
 
-		if (cl != CurrentLanguageInfo.language)
+		if (cl != CurrentLanguageInfo().language)
 		{
 			//Module language differs from Jasp language. Just add to qmFiles for further use.			
-			Log::log() << "This module translation" << dyn->name() << " with " << fi.fileName().toStdString() << "does not support the current language "<<  CurrentLanguageInfo.languageName << std::endl ;
+			Log::log() << "This module translation" << dyn->name() << " with " << fi.fileName().toStdString() << "does not support the current language "<<  CurrentLanguageInfo().languageName << std::endl ;
 		}
 		else
 		{
@@ -394,24 +388,5 @@ void LanguageModel::removeTranslators()
 	_translators.clear();
 
 }
-
-int LanguageModel::currentIndex() const
-{
-	return _currentIndex;
-
-}
-
-QString LanguageModel::getCurrentLanguageFileExtension()
-{
-	return CurrentLanguageInfo.localName;
-}
-
-void LanguageModel::setApplicationEngine(QQmlApplicationEngine * ae)
-{
-	_qml = ae;
-
-}
-
-
 
 

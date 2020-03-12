@@ -68,6 +68,8 @@ public:
 	bool							active()													const			{ return _enabled && (!requiresData() || dataLoaded());	}
 	void							reloadMenuFromDescriptionJson();
 
+	static QString					getJsonDescriptionFilename();
+
 public slots:
 	void setRequiresData(bool requiresData);
 	void setIsDynamic(bool isDynamicModule);
@@ -98,6 +100,7 @@ signals:
 
 private:
 	void bindYourself();
+
 
 private:
 	AnalysisMenuModel*				_analysisMenuModel;
