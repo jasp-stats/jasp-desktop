@@ -294,6 +294,11 @@ Descriptives <- function(jaspResults, dataset, options) {
           stats$addFootnote(message = gettext("All values are identical"),
                             colNames = c("Skewness", "Kurtosis", "Shapiro-Wilk", "P-value of Shapiro-Wilk"),
                             rowNames = paste0(variable, l))
+        
+        if (subReturn$shouldAddExplainEmptySet)
+          stats$addFootnote(message  = gettextf("Infimum (minimum) of an empty set is %s, supremum (maximum) of an empty set is %s.", "\u221E", "-\u221E"),
+                            colNames = c("Minimum", "Maximum"),
+                            rowNames = paste0(variable, l))
       }
     }
   } else { #we dont want to split
@@ -309,6 +314,11 @@ Descriptives <- function(jaspResults, dataset, options) {
       if (subReturn$shouldAddIdenticalFootnote)
         stats$addFootnote(message = gettext("All values are identical"),
                           colNames = c("Skewness", "Kurtosis", "Shapiro-Wilk", "P-value of Shapiro-Wilk"),
+                          rowNames = variable)
+      
+      if (subReturn$shouldAddExplainEmptySet)
+        stats$addFootnote(message  = gettextf("Infimum (minimum) of an empty set is %s, supremum (maximum) of an empty set is %s.", "\u221E", "-\u221E"),
+                          colNames = c("Minimum", "Maximum"),
                           rowNames = variable)
     }
   }
@@ -358,6 +368,9 @@ Descriptives <- function(jaspResults, dataset, options) {
   resultsCol[["Maximum"]]                 <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$maximum,           na.omitted, max)
   resultsCol[["Sum"]]                     <- .descriptivesDescriptivesTable_subFunction_OptionChecker(options$sum,               na.omitted, sum)
 
+  # should explain supremum and infimum of an empty set?
+  if((options$minimum || options$maximum) && resultsCol[['Valid']] == 0) shouldAddExplainEmptySet <- TRUE else shouldAddExplainEmptySet <- FALSE
+  
   if (options$mode) {
     if (base::is.factor(na.omitted) == FALSE) {
       mode <- as.numeric(names(table(na.omitted)[table(na.omitted)==max(table(na.omitted))]))
@@ -442,7 +455,8 @@ Descriptives <- function(jaspResults, dataset, options) {
   return(list(resultsCol=resultsCol, 
               shouldAddNominalTextFootnote=shouldAddNominalTextFootnote,
               shouldAddModeMoreThanOnceFootnote=shouldAddModeMoreThanOnceFootnote,
-              shouldAddIdenticalFootnote=shouldAddIdenticalFootnote))
+              shouldAddIdenticalFootnote=shouldAddIdenticalFootnote,
+              shouldAddExplainEmptySet=shouldAddExplainEmptySet))
 }
 
 
