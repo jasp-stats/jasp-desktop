@@ -610,7 +610,7 @@
           "path": "BuildIt_Binary.jasp",
           "description": "BuildIt's niet-monetaire audit populatie bestaande uit 3500 gegevens. <br><br> Het voorbeeldbestand in JASP laat zien hoe binaire audit workflow kan worden toegepast. <br><br> <i>Dataset gebruikt in Derks, de Swart, Wagenmakers, Wille & Wetzels (under review)<\/i>",
           "kind": "file",
-          "associated_datafile": "BuildIt_Binary.csv"
+          "associated_datafile": "BuildIt_Monetary.csv"
         },
         {
 		  "name": "BuildIt Monetair",
