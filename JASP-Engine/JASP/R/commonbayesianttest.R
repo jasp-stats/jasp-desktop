@@ -2057,12 +2057,7 @@
   median <- medianPosterior
 
   BFsubscript <- .ttestBayesianGetBFnamePlots(BFH1H0, nullInterval)
-  if (!addInformation) {
-    BF <- NULL
-    median <- NULL
-    CRI <- NULL
-  }
-  
+
   if (BFH1H0) {
     bfType <- "BF10"
     BF <- BF10
@@ -2070,6 +2065,13 @@
     BF <- BF01
     bfType <- "BF01"
   }
+
+  if (!addInformation) {
+    BF <- NULL
+    median <- NULL
+    CRI <- NULL
+  }
+
   hypothesis <- switch(oneSided,
     "right" = "greater",
     "left"  = "smaller",
