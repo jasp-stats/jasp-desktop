@@ -92,13 +92,11 @@ Posterior model probabilities (a: excluding the unconstrained hypothesis, b: inc
 	if (options[["model"]] == "") {
 		rest.string <- NULL
 	} else {
-		rest.string <- .bainCleanModelInput(options[["model"]])
+		rest.string <- .v(.bainCleanModelInput(options[["model"]]))
 	}
-			
-	names(dataset) <- .unv(names(dataset))
 
 	p <- try({
-		bainResult <- bain:::bain_ancova_cran(X = dataset, dep = options[["dependent"]], cov = paste(options[["covariates"]], collapse = " "), group = options[["fixedFactors"]], hyp = rest.string, seed = options[["seed"]])
+		bainResult <- bain:::bain_ancova_cran(X = dataset, dep = .v(options[["dependent"]]), cov = paste(.v(options[["covariates"]]), collapse = " "), group = .v(options[["fixedFactors"]]), hyp = rest.string, seed = options[["seed"]])
 		bainContainer[["bainResult"]] <- createJaspState(bainResult)
 	})
 
@@ -167,6 +165,12 @@ Posterior model probabilities (a: excluding the unconstrained hypothesis, b: inc
 		trydata									<- .readDataSetToEnd(columns.as.numeric=all.variables)
 		missingValuesIndicator	<- .unv(names(which(apply(trydata, 2, function(x) { any(is.na(x))} ))))
 		dataset									<- .readDataSetToEnd(columns.as.numeric=numeric.variables, columns.as.factor=factor.variables, exclude.na.listwise=all.variables)
+
+		if(options[["fixedFactors"]] != ""){
+			if(any(grepl(pattern = " ", x = levels(dataset[, .v(options[["fixedFactors"]])])))){
+				JASP:::.quitAnalysis("Bain does not accept factor levels that contain spaces. Please remove the spaces from your factor levels to continue.")
+			}
+		}
 	} else {
 		dataset									<- .vdf(dataset, columns.as.numeric=numeric.variables, columns.as.factor=factor.variables)
 	}
