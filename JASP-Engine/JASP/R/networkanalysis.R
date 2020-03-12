@@ -114,6 +114,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
                  type = c("factorLevels", "observations"),
                  factorLevels.target = groupingVariable,
                  factorLevels.amount = "< 2",
+                 observations.target = groupingVariable,
                  observations.amount = "< 10",
                  observations.grouping = groupingVariable,
                  exitAnalysisIfErrors = TRUE)
