@@ -287,6 +287,7 @@ Independent variable on the x-axis and dependent variable on the y-axis. If othe
 
 ### R Packages
 ---
+- afex
 - boot
 - car
 - emmeans
