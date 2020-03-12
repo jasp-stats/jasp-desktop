@@ -57,8 +57,7 @@ public:
 	int		currentIndex()			const { return _currentIndex; }
 	QString currentLanguageCode()	const { return getLocalName(_languages[currentIndex()]); } //Here we use currentIndex instead of CurrentLanguageInfo? Why not everywhere else?
 
-	static LanguageInfo CurrentLanguageInfo() { return _singleton->_currentLanguageInfo; } //A function so that we know for sure noone can edit it outside this class, OO-style. Sort of. Better would be to use _currentIndex and the list directly.
-	static QString		getCurrentLanguageFileExtension();
+	static const LanguageInfo & CurrentLanguageInfo() { return _singleton->_currentLanguageInfo; } //A function so that we know for sure noone can edit it outside this class, OO-style. Sort of. Better would be to use _currentIndex and the list directly.
 
 	void setApplicationEngine(QQmlApplicationEngine	 * ae) { _qml = ae; }
 	void initialize();
