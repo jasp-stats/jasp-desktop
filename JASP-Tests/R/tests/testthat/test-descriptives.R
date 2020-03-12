@@ -190,3 +190,16 @@ test_that("Analysis handles identical variables", {
                       list("Kurtosis", "P-value of Shapiro-Wilk", "Shapiro-Wilk", "Skewness",
                            174, "debSame1", 0, "All values are identical"))
 })
+
+test_that("Analysis explains supremum and infimum of empty sets", {
+  options <- analysisOptions("descriptives")
+  options$variables <- "debMiss99"
+  options$splitby <- "contBinom"
+  
+  results <- jasptools::run("descriptives", "test.csv", options)
+  
+  expect_equal_tables(results[['results']][['stats']][['footnotes']],
+                      list("Maximum", "Minimum", 22, "debMiss991", 0, 
+                           "Infimum (minimum) of an empty set is <unicode>, supremum (maximum) of an empty set is -<unicode>.")
+                      )
+})
