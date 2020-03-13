@@ -61,7 +61,7 @@ Descriptives <- function(jaspResults, dataset, options) {
   }
 
   # Correlation plot
-  if (options$plotCorrelationMatrix) {
+  if (options$plotCorrelationMatrix && length(variables) > 1) {
     if(is.null(jaspResults[["matrixPlot"]])) {
       if (makeSplit) {
         jaspResults[["matrixPlot"]] <- createJaspContainer(title=gettext("Correlation plots"))
