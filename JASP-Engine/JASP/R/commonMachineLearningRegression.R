@@ -139,7 +139,7 @@
     n.minobsinnode <- options[["nNode"]]
     if (nTrain * bag.fraction <= 2 * n.minobsinnode + 1)
       return(gettextf(
-        "The minimum number of observations per node is too large. Ensure that `2 * Min. observations in node + 1` > `Training data used per tree * available training data` (in this case the minimum can be %.3f at most",
+        "The minimum number of observations per node is too large. Ensure that `2 * Min. observations in node + 1` > `Training data used per tree * available training data` (in this case the minimum can be %.3f at most).",
         nTrain * bag.fraction / 2 - 1
       ))
   }

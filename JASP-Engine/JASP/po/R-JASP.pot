@@ -2557,7 +2557,7 @@ msgstr ""
 msgid "You have specified more folds than there are observations in the training and validation set. Please choose a number lower than %d."
 msgstr ""
 
-msgid "The minimum number of observations per node is too large. Ensure that `2 * Min. observations in node + 1` > `Training data used per tree * available training data` (in this case the minimum can be %.3f at most"
+msgid "The minimum number of observations per node is too large. Ensure that `2 * Min. observations in node + 1` > `Training data used per tree * available training data` (in this case the minimum can be %.3f at most)."
 msgstr ""
 
 msgid "K-Nearest Neighbors Regression"
