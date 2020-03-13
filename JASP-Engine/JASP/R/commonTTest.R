@@ -147,11 +147,6 @@
   }
 }
 
-.ttestSetError <- function(res, table){
-  if(isTryError(res))
-    table$setError(.extractErrorMessage(res))
-}
-
 .ttestMainGetDirection <- function(hypothesis) {
   if (hypothesis == "groupOneGreater")
     return("greater")

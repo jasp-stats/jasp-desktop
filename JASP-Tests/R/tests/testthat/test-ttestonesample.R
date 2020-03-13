@@ -13,8 +13,8 @@ test_that("Main table results match for t-test", {
   results <- jasptools::run("TTestOneSample", "test.csv", options)
   table <- results[["results"]][["ttest"]][["data"]]
   expect_equal_tables(table,
-    list("contGamma", 99, 1.08315413981152e-23, 2.03296079621, 1.32664189226908,
-         13.2664189226908, 6.42284229078859e+20)
+    list("FALSE", 6.42284229078859e+20, 1.32664189226908, 99, 2.03296079621,
+	       1.08315413981152e-23, 13.2664189226908, "contGamma")
   )
 })
 
@@ -31,8 +31,8 @@ test_that("Main table results match for Wilcoxon signed rank", {
   table <- results[["results"]][["ttest"]][["data"]]
 
   expect_equal_tables(table,
-                      list("contNormal", 0.0114424559827519, -0.225731139327267, -0.291485148514852,
-                           -0.482275183604466, -0.0742951335226289, 1789))
+                      list("FALSE", 1789, -0.291485148514852, -0.482275183604466, -0.225731139327267,
+	                         0.0114424559827519, -0.0742951335226289, "contNormal"))
 })
 
 test_that("Main table results match for Z-test", {
@@ -46,8 +46,8 @@ test_that("Main table results match for Z-test", {
   results <- jasptools::run("TTestOneSample", "test.csv", options)
   table <- results[["results"]][["ttest"]][["data"]]
   expect_equal_tables(table,
-                      list("contNormal", 0.208274634966236, -0.125832391693333,
-                          -0.321828790147339, 0.070164006760672, -1.25832391693333)
+                      list("FALSE", -1.25832391693333, -0.125832391693333, -0.321828790147339,
+	                         0.208274634966236, 0.070164006760672, "contNormal")
                       )
 })
 
@@ -57,7 +57,7 @@ test_that("Normality table matches", {
   options$normalityTests <- TRUE
   results <- jasptools::run("TTestOneSample", "test.csv", options)
   table <- results[["results"]][["AssumptionChecks"]][["collection"]][["AssumptionChecks_ttestNormalTable"]][["data"]]
-  expect_equal_tables(table, list("contGamma", 0.876749741598208, 1.32551553117109e-07, "TRUE"))
+  expect_equal_tables(table, list(0.876749741598208, 1.32551553117109e-07, "contGamma"))
 })
 
 test_that("Descriptives table matches", {
