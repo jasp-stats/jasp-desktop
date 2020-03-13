@@ -61,14 +61,14 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 	if (value >= 0)
 	{
 		if (value > top() || (isMaxExclusive && value == top()))
-			return QValidator::Invalid;
+			return QValidator::Intermediate;
 		else if (value < bottom() || (isMinExclusive && value == bottom()))
 			return QValidator::Intermediate;
 	}
 	else
 	{
 		if (value < bottom() || (isMinExclusive && value == bottom()))
-			return QValidator::Invalid;
+			return QValidator::Intermediate;
 		else if (value > top() || (isMaxExclusive && value == top()))
 			return QValidator::Intermediate;
 	}
