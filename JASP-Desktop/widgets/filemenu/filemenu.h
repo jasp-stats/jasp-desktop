@@ -123,7 +123,7 @@ private slots:
 	void dataSetIORequestHandler(FileEvent *event);
 
 private:
-			bool checkSyncFileExists(const QString &path);
+			bool checkSyncFileExists(const QString &path, bool waitForExistence = false);
 			void clearSyncData();
 			void setSyncRequest(const QString& path);
 
