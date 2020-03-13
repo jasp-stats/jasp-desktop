@@ -29,7 +29,7 @@ Form {
 	VariablesForm
 	{
 		id: 						variablesFormBenfordsLaw
-		implicitHeight:	200
+		preferredHeight:			jaspTheme.smallDefaultVariablesFormHeight
 
 		AvailableVariablesList	
 		{ 

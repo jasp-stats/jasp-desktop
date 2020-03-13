@@ -23,15 +23,15 @@ import JASP				1.0
 Item
 {
 	id					: variablesForm
-	implicitWidth		: form.width
 	implicitHeight		: jaspTheme.defaultVariablesFormHeight
+	implicitWidth		: form.width
 	height				: implicitHeight
 	width				: implicitWidth
 	Layout.columnSpan	: parent.columns
 	visible				: !debug || DEBUG_MODE
 
 	default property alias	content:						items.children
-			property int	listWidth:						implicitWidth * 2 / 5
+			property int	listWidth:						width * 2 / 5
 			property var	availableVariablesList
 			property var	allAssignedVariablesList:		[]
 			property var	allJASPControls:				[]
@@ -58,7 +58,7 @@ Item
 			setControlsSize();
 		}
 	}
-	
+
 	Repeater
 	{
 		id: assignButtonRepeater
@@ -252,11 +252,11 @@ Item
 	
 	function setControlsSize()
 	{
-		availableVariablesList.height = variablesForm.height
+		availableVariablesList.height = Qt.binding(function() { return variablesForm.height; })
 		// Set the width of the VariablesList to listWidth only if it is not set explicitely
 		// Implicitely, the width is set to the parent width.
 		if (availableVariablesList.setWidthInForm) 
-			availableVariablesList.width = variablesForm.listWidth
+			availableVariablesList.width = Qt.binding(function() { return variablesForm.listWidth; })
 		
 		var firstControl				= true;
 		var minHeightOfAssignedControls = 0;
@@ -270,7 +270,7 @@ Item
 
 			if (isControlList && control.setWidthInForm)
 				// Change the width of the VariablesList only if was not set explicitely
-				control.width = variablesForm.listWidth
+				control.width = Qt.binding(function() {return variablesForm.listWidth; })
 			else if (isControlComboBox && control.setWidthInForm)
 			{
 				control.setLabelAbove	= true

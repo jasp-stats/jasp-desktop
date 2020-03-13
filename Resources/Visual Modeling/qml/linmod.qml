@@ -19,7 +19,7 @@ Form
 
 		VariablesForm
 		{
-			height: 150
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList	{ name: "components"	; title: qsTr("Components")	; source: ["variables"] }
 			AssignedVariablesList	{ name: "interactions"	; id: "interactions" ; title: qsTr("Model terms"); listViewType: JASP.Interaction
 				rowComponentsTitles: ["Add as a polynomial"]

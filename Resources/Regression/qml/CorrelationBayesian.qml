@@ -26,7 +26,7 @@ Form
 
     VariablesForm
     {
-        height: jaspTheme.smallDefaultVariablesFormHeight
+		preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
         AvailableVariablesList { name: "allVariablesList" }
         AssignedVariablesList { name: "variables"; suggestedColumns: ["ordinal", "scale"] }
     }
@@ -87,7 +87,7 @@ Form
         title: qsTr("Plot Individual Pairs")
         VariablesForm
         {
-            height: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
             AvailableVariablesList      { name: "allVariablesList2";     source:"variables" }
             AssignedPairsVariablesList  { name:  "pairs";                suggestedColumns: ["ordinal", "scale"] }
         }
