@@ -435,7 +435,7 @@ ExploratoryFactorAnalysis <- function(jaspResults, dataset, options, ...) {
   # Create plot object
   n_var <- length(options$variables)
   path <- createJaspPlot(title = gettext("Path Diagram"), width = 480, height = ifelse(n_var < 2, 300, 1 + 299 * (n_var / 5)))
-  path$dependOn("incl_pathDiagram")
+  path$dependOn(c("incl_pathDiagram", "highlightText"))
   path$position <- 7
   modelContainer[["path"]] <- path
   if (!ready || modelContainer$getError()) return()
