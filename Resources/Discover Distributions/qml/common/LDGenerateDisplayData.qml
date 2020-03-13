@@ -50,7 +50,7 @@ Section
 
 	VariablesForm
 	{
-		height: 100
+		preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 		visible: true
 		AvailableVariablesList { name: "allVariables" }
 		AssignedVariablesList

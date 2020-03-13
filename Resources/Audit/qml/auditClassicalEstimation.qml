@@ -76,7 +76,7 @@ Form {
 	VariablesForm
 	{
 		id: 			variablesFormEstimation
-		implicitHeight:	200
+		preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 
 		AvailableVariablesList	{ name: "variablesFormEstimation" }
 

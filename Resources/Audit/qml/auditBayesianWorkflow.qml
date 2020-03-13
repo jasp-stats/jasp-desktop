@@ -128,9 +128,9 @@ Form
 
 		VariablesForm
 		{
-			id: 			variablesFormPlanning
-			implicitHeight:	110
-			enabled:		!pasteVariables.checked
+			id: 			 variablesFormPlanning
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
+			enabled:		 !pasteVariables.checked
 
 			AvailableVariablesList { name: "variablesFormPlanning" }
 
@@ -539,7 +539,7 @@ Form
 		VariablesForm
 		{
 			id: 			variablesFormSampling
-			implicitHeight: 200
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			enabled:		!pasteVariables.checked
 
 			AvailableVariablesList
@@ -1000,7 +1000,7 @@ Form
 
 		VariablesForm
 		{
-			implicitHeight: 150
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 
 			AvailableVariablesList
 			{

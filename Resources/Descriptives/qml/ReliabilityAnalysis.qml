@@ -68,7 +68,7 @@ Form
 		
 		VariablesForm
 		{
-			preferredHeight: 150 * preferencesModel.uiScale
+			preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 			AvailableVariablesList { name: "normalScaledItems";	 title: qsTr("Normal-Scaled Items"); source: "variables" }
 			AssignedVariablesList {  name: "reverseScaledItems"; title: qsTr("Reverse-Scaled Items") }
 		}

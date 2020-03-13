@@ -101,7 +101,7 @@ Form
 			VariablesForm
 			{
 				id: rescov
-				preferredHeight: 120 * preferencesModel.uiScale
+				preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 				AvailableVariablesList {name: "observedvars";	syncModels: factors.name	}
 				AssignedPairsVariablesList { name: "rescov" }
 			}

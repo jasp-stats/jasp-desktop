@@ -37,7 +37,7 @@ Form
 	VariablesForm
 	{
 		visible: !monitorAllParameters.checked
-		height: 200
+		preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 		AvailableVariablesList
 		{
 			name: "parametersList";
@@ -49,7 +49,7 @@ Form
 
 	VariablesForm
 	{
-		height: 200
+		preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
 		AvailableVariablesList
 		{
 			id:		monitoredParametersList2
