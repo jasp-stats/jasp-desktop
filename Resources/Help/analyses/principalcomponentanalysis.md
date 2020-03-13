@@ -36,7 +36,7 @@ Principcal Component Analysis is used to represent the data in smaller component
       - cluster: Oblique rotation method cluster. 
 
 ### Output Options 
-- Highlight: This option adjusts the width of the arrows in the path diagram. By default, arrows become wider when their value is 0.4 or higher. 
+- Highlight: This option cuts the scaling of paths in width and color saturation. Paths with absolute weights over this value will have the strongest color intensity and become wider the stronger they are, and paths with absolute weights under this value will have the smallest width and become vaguer the weaker the weight. If set to 0, no cutoff is used and all paths vary in width and color.
 - Include Tables: 
     - Component correlations: When selecting this option, a table with the correlations between the components will be displayed. 
     - Path diagram: By selecting this option, a visual representation of the direction and strength of the relation between the variable and component will be displayed. 
