@@ -73,7 +73,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   }
   
   ## if the user wants all tests, add a column called "Test"
-  if (sum(optionsList$allTests) == 2)
+  if (sum(optionsList$allTests) > 1)
     ttest$addColumnInfo(name = "test", title = gettext("Test"), type = "string")
 
   ttest$addColumnInfo(name = testStat, title = testStatName,    type = "number")
@@ -119,9 +119,9 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   jaspResults[["ttest"]] <- ttest
   
-  if(!ready) return()
-  res <- try(.ttestPairedMainFill(jaspResults, dataset, options, testStat, optionsList))
-  .ttestSetError(res, ttest)
+  if (ready) 
+    .ttestPairedMainFill(ttest, dataset, options, testStat, optionsList)
+
 }
 
 .ttestPairedNormalTable <- function(jaspResults, dataset, options, ready, type) {
@@ -130,6 +130,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   container <- jaspResults[["AssumptionChecks"]]
   if (!options$normalityTests || !is.null(container[["ttestNormalTable"]])) 
     return()
+  
   container <- jaspResults[["AssumptionChecks"]]
   # Create table
   ttestNormalTable <- createJaspTable(title = gettext("Test of Normality (Shapiro-Wilk)"))
@@ -148,24 +149,11 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   container[["ttestNormalTable"]] <- ttestNormalTable
   
-  if(!ready) return()
-  
-  res <- try(.ttestPairedNormalFill(container, dataset, options, ready))
-  .ttestSetError(res, ttestNormalTable)
+  if (ready)
+    .ttestPairedNormalFill(ttestNormalTable, dataset, options)
 }
 
-.ttestPairedMainFill <-function(jaspResults, dataset, options, testStat, optionsList) {
-  direction <- .ttestMainGetDirection(options$hypothesis)
-  
-  ttest.rows <- list() # for each pair and each test, save stuff in there
-  whichTests <- list("1" = optionsList$wantsStudents, "2" = optionsList$wantsWilcox)
-  numTests <- sum(optionsList$allTests)
-  
-  ## add a row for each variable, even before we are conducting tests
-  
-  #for (pair in options$pairs)
-  #  ttest.rows[[length(ttest.rows) + 1]] <- list(v1 = pair[[1]], sep = '-', v2 = pair[[2]])
-  
+.ttestPairedMainFill <-function(table, dataset, options, testStat, optionsList) {
   ## for each pair, run the checked tests and update the table
   for (pair in options$pairs) {
     p1 <- pair[[1]]
@@ -177,172 +165,172 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
                          all.target = c(p1, p2), 
                          observations.amount  = c('< 2'))
     
-    ## test is a number, indicating which tests should be run
-    for (test in seq_len(length(optionsList$whichTests))) {
-      row <- list()
+    for (test in optionsList$whichTests) {
       
-      currentTest <- optionsList$whichTests[[test]]
-      ## don't run a test the user doesn't want
-      if (!currentTest)
-        next
+      row     <- list(test = test, .isNewGroup = .ttestRowIsNewGroup(test, optionsList$whichTests))
+      rowName <- paste(test, p1, p2, sep = "-")
       
       ## hide the name of the variable pair for the second statistic
-      isSecondStatisticOfPair <- numTests > 1 && test == 2
+      numTests <- length(optionsList$whichTests)
+      isSecondStatisticOfPair <- numTests > 1 && test == optionsList$whichTests[numTests]
       row[["v1"]]  <- ifelse(isSecondStatisticOfPair, "", p1)
       row[["sep"]] <- ifelse(isSecondStatisticOfPair, "", "-")
       row[["v2"]]  <- ifelse(isSecondStatisticOfPair, "", p2)
       
-      if (numTests > 1) {
-        if (test == 1)
-          row[["test"]] <- "Student"
-        else if (test == 2)
-          row[["test"]] <- "Wilcoxon"
-      }
-      
-      if (!identical(errors, FALSE) && length(pair[pair != ""]) == 2){
-        jaspResults[["ttest"]]$addFootnote(errors$message, colNames = testStat, rowNames = paste(p1, p2, sep = "-"))
-        row[[testStat]] <- NaN
-        jaspResults[["ttest"]]$addRows(row, rowNames = paste(p1, p2, sep = "-"))
-        next
-      }
-      
-      row.footnotes <- NULL
-      
       if (p1 != "" && p2 != "") {
-        
-        c1 <- dataset[[ .v(p1) ]]
-        c2 <- dataset[[ .v(p2) ]]
-        df <- na.omit(data.frame(c1 = c1, c2 = c2))
-        c1 <- df$c1
-        c2 <- df$c2
-        n  <- length(c1)
-        
-        result <- try(silent = FALSE, expr = {
-          ## if Wilcox box is ticked, run a paired wilcoxon signed rank test
-          if (test == 2) {
-            res <- stats::wilcox.test(c1, c2, paired = TRUE,
-                                      conf.level = optionsList$percentConfidenceMeanDiff, 
-                                      conf.int = TRUE,
-                                      alternative = direction)
-            # only count the difference scores that are not 0.
-            nd   <- sum(c1 - c2 != 0)
-            maxw <- (nd * (nd + 1))/2
-            d    <- as.numeric((res$statistic / maxw) * 2 - 1)
-            wSE  <- sqrt((nd * (nd + 1) * (2 * nd + 1)) / 6) / 2
-            mrSE <- sqrt(wSE^2  * 4 * (1 / maxw^2)) 
-            # zSign <- (ww$statistic - ((n*(n+1))/4))/wSE
-            zmbiss <- atanh(d)
-            if(direction == "two.sided")
-              confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize)/2)*mrSE), tanh(zmbiss + qnorm((1+optionsList$percentConfidenceEffSize)/2)*mrSE)))
-            else if (direction == "less")
-              confIntEffSize <- sort(c(-Inf, tanh(zmbiss + qnorm(optionsList$percentConfidenceEffSize)*mrSE)))
-            else if (direction == "greater")
-              confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize))*mrSE), Inf))
-            ## else run a simple paired t-test
-          } else {
-            res <- stats::t.test(c1, c2, paired = TRUE, conf.level = optionsList$percentConfidenceMeanDiff,
-                                 alternative = direction)
-            df  <- ifelse(is.null(res$parameter), "", as.numeric(res$parameter))
-            d   <- mean(c1 - c2) / sd(c1 - c2)
-            t   <- as.numeric(res$statistic)
-            confIntEffSize <- c(0,0)
-            
-            if (optionsList$wantsConfidenceEffSize) {
-              
-              ciEffSize  <- options$effSizeConfidenceIntervalPercent
-              alphaLevel <- ifelse(direction == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
-              
-              confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt(n), df = df, 
-                                                             alpha.lower = alphaLevel,
-                                                             alpha.upper = alphaLevel)[c(1, 3)]
-              confIntEffSize <- unlist(confIntEffSize) / sqrt(n)
-              
-              if (direction == "greater")
-                confIntEffSize[2] <- Inf
-              else if (direction == "less")
-                confIntEffSize[1] <- -Inf
-              
-              confIntEffSize <- sort(confIntEffSize)
-            }
-          }
+        errorMessage <- NULL
+        if (identical(errors, FALSE)) {
+          rowResults <- try(.ttestPairedComputeMainTableRow(p1, p2, dataset, test, testStat, optionsList, options))
           
-          ## don't use a return statement in expressions
-          ## ... it will take ages to debug :)
-          res
-        })
+          if (!isTryError(rowResults))
+            row <- c(row, rowResults)
+          else
+            errorMessage <- .extractErrorMessage(rowResults)
+          
+        } else {
+          errorMessage <- errors$message
+        }
         
-        ## same for all tests
-        p    <- as.numeric(result$p.value)
-        stat <- as.numeric(result$statistic)
-        sed  <- sd(c1 - c2) / sqrt(length(c1))
-        # num <- sqrt(sd(c1)^2 + sd(c2)^2 -  2 * cov(c1, c2))
-        # d   <- mean(c1) - mean(c2) / num
-        
-        m <- as.numeric(result$estimate)
-        ciLow <- ifelse(direction == "less", -Inf,
-                        as.numeric(result$conf.int[1]))
-        ciUp  <- ifelse(direction == "greater", Inf,
-                        as.numeric(result$conf.int[2]))
-        ciLowEffSize <- as.numeric(confIntEffSize[1])
-        ciUpEffSize  <- as.numeric(confIntEffSize[2])
-        
-        ## paired t-test has it, wilcox doesn't!
-        df  <- ifelse(is.null(result$parameter), "", as.numeric(result$parameter))
-        sed <- ifelse(is.null(result$parameter), "", sed)
-        
-        # add things to the intermediate results object
-        row <- c(row, list(df = df, p = p, md = m, d = d,
-                    lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp, 
-                    lowerCIeffectSize = ciLowEffSize, upperCIeffectSize = ciUpEffSize,
-                    sed = sed))
-        
-        if (options$VovkSellkeMPR)
-          row[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
-        row[[testStat]] <- stat
+        if (!is.null(errorMessage)) {
+          row[[testStat]] <- NaN
+          table$addFootnote(errorMessage, colNames = testStat, rowNames = rowName)
+        }
       } else {
         row <- c(row, list(df = "", p = "", md = "", d = "", lowerCI = "", upperCI = "", sed = ""))
         row[[testStat]] <- ""
       }
       
-      jaspResults[["ttest"]]$addRows(row)
+      table$addRows(row, rowNames = rowName)
     }
   }
   
-  #jaspResults[["ttest"]]$addRows(ttest.rows)
 }
 
-.ttestPairedNormalFill <- function(container, dataset, options, ready) {
+.ttestPairedComputeMainTableRow <- function(p1, p2, dataset, test, testStat, optionsList, options) {
+  c1 <- dataset[[ .v(p1) ]]
+  c2 <- dataset[[ .v(p2) ]]
+  df <- na.omit(data.frame(c1 = c1, c2 = c2))
+  c1 <- df$c1
+  c2 <- df$c2
+  n  <- length(c1)
+
+  direction <- .ttestMainGetDirection(options$hypothesis)
+  
+  ## if Wilcox box is ticked, run a paired wilcoxon signed rank test
+  if (test == "Wilcoxon") {
+    res <- stats::wilcox.test(c1, c2, paired = TRUE,
+                              conf.level = optionsList$percentConfidenceMeanDiff, 
+                              conf.int = TRUE,
+                              alternative = direction)
+    # only count the difference scores that are not 0.
+    nd   <- sum(c1 - c2 != 0)
+    maxw <- (nd * (nd + 1))/2
+    d    <- as.numeric((res$statistic / maxw) * 2 - 1)
+    wSE  <- sqrt((nd * (nd + 1) * (2 * nd + 1)) / 6) / 2
+    mrSE <- sqrt(wSE^2  * 4 * (1 / maxw^2)) 
+    # zSign <- (ww$statistic - ((n*(n+1))/4))/wSE
+    zmbiss <- atanh(d)
+    if(direction == "two.sided")
+      confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize)/2)*mrSE), tanh(zmbiss + qnorm((1+optionsList$percentConfidenceEffSize)/2)*mrSE)))
+    else if (direction == "less")
+      confIntEffSize <- sort(c(-Inf, tanh(zmbiss + qnorm(optionsList$percentConfidenceEffSize)*mrSE)))
+    else if (direction == "greater")
+      confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize))*mrSE), Inf))
+    ## else run a simple paired t-test
+  } else {
+    res <- stats::t.test(c1, c2, paired = TRUE, conf.level = optionsList$percentConfidenceMeanDiff,
+                         alternative = direction)
+    df  <- ifelse(is.null(res$parameter), "", as.numeric(res$parameter))
+    d   <- mean(c1 - c2) / sd(c1 - c2)
+    confIntEffSize <- c(0,0)
+    
+    if (optionsList$wantsConfidenceEffSize) {
+      
+      ciEffSize  <- options$effSizeConfidenceIntervalPercent
+      alphaLevel <- ifelse(direction == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
+      
+      confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt(n), df = df, 
+                                                     alpha.lower = alphaLevel,
+                                                     alpha.upper = alphaLevel)[c(1, 3)]
+      confIntEffSize <- unlist(confIntEffSize) / sqrt(n)
+      
+      if (direction == "greater")
+        confIntEffSize[2] <- Inf
+      else if (direction == "less")
+        confIntEffSize[1] <- -Inf
+      
+      confIntEffSize <- sort(confIntEffSize)
+    }
+  }
+
+  ## same for all tests
+  p    <- as.numeric(res$p.value)
+  stat <- as.numeric(res$statistic)
+  sed  <- sd(c1 - c2) / sqrt(length(c1))
+  # num <- sqrt(sd(c1)^2 + sd(c2)^2 -  2 * cov(c1, c2))
+  # d   <- mean(c1) - mean(c2) / num
+  
+  m <- as.numeric(res$estimate)
+  ciLow <- ifelse(direction == "less", -Inf,
+                  as.numeric(res$conf.int[1]))
+  ciUp  <- ifelse(direction == "greater", Inf,
+                  as.numeric(res$conf.int[2]))
+  ciLowEffSize <- as.numeric(confIntEffSize[1])
+  ciUpEffSize  <- as.numeric(confIntEffSize[2])
+  
+  ## paired t-test has it, wilcox doesn't!
+  df  <- ifelse(is.null(res$parameter), "", as.numeric(res$parameter))
+  sed <- ifelse(is.null(res$parameter), "", sed)
+  
+  # add things to the intermediate results object
+  result <- list(df = df, p = p, md = m, d = d,
+                     lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp, 
+                     lowerCIeffectSize = ciLowEffSize, upperCIeffectSize = ciUpEffSize,
+                     sed = sed)
+  
+  result[testStat] <- stat
+  
+  if (options$VovkSellkeMPR)
+    result[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
+  
+  return(result)
+}
+
+.ttestPairedNormalFill <- function(table, dataset, options) {
   pairs <- options$pairs
-  if (!ready)
-    pairs[[1]] <- list(".", ".")
   for (pair in pairs) {
-    if(length(pair) < 2) next
+
+    if (length(pair) < 2 || pair[[1]] == pair[[2]])
+      next
+    
     p1 <- pair[[1]]
     p2 <- pair[[2]]
+  
+    row     <- list(v1 = p1, sep = "-", v2 = p2)
+    rowName <- paste(p1, p2, sep = "-")
     
-    errors <- .hasErrors(dataset,
-                         message = 'short',
-                         type = c('observations', 'variance', 'infinity'),
-                         all.target = c(p1, p2), 
-                         observations.amount  = c('< 2', '>5000'))
-    if(!identical(errors, FALSE)) {
-      container[["ttestNormalTable"]]$addFootnote(errors$message, colNames = c("W", "p"), rowNames = paste(p1, p2, sep = "-"))
-      container[["ttestNormalTable"]]$addRows(list(v1 = p1, sep = "-", v2 = p2, W = "NaN", p = "NaN"), rowNames = paste(p1, p2, sep = "-"))
-      next
-    }
-    if (ready && p1 != p2) {
-      c1   <- dataset[[ .v(p1) ]]
-      c2   <- dataset[[ .v(p2) ]]
-      data <- na.omit(c1 - c2)
+    if (p1 != "" && p2 != "") {
+      errors <- .hasErrors(dataset,
+                           message = 'short',
+                           type = c('observations', 'variance', 'infinity'),
+                           all.target = c(p1, p2), 
+                           observations.amount  = c('< 3', '> 5000'))
       
-      r <- stats::shapiro.test(data)
-      W <- as.numeric(r$statistic)
-      p <- r$p.value
-      row <- list(v1 = p1, sep = "-", v2 = p2, W = W,    p = p)
-    } else 
-      row <- list(v1 = p1, sep = "-", v2 = p2, W = ".",  p = ".")
-
-    container[["ttestNormalTable"]]$addRows(row)
+      if (!identical(errors, FALSE)) {
+        row[["W"]] <- NaN
+        table$addFootnote(errors$message, colNames = "W", rowNames = rowName)
+      } else {
+        c1   <- dataset[[ .v(p1) ]]
+        c2   <- dataset[[ .v(p2) ]]
+        data <- na.omit(c1 - c2)
+        
+        r <- stats::shapiro.test(data)
+        row[["W"]] <- as.numeric(r$statistic)
+        row[["p"]] <- r$p.value
+      }
+    }
+    
+    table$addRows(row, rowNames = rowName)
   }
 }
 
@@ -364,16 +352,14 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   container[["table"]] <- ttestDescriptivesTable
   
-  if(!ready) 
-    return()
-  res <- try(.ttestDescriptivesFill(container, dataset, options, desc.vars = vars))
-  .ttestSetError(res, ttestDescriptivesTable)
+  if (ready) 
+    .ttestDescriptivesFill(ttestDescriptivesTable, dataset, options, desc.vars = vars)
 }
 
-.ttestDescriptivesFill <- function(container, dataset, options, desc.vars) {
+.ttestDescriptivesFill <- function(table, dataset, options, desc.vars) {
   desc.vars <- desc.vars[desc.vars != ""]
   
-  if(length(desc.vars) == 0)
+  if (length(desc.vars) == 0)
     return()
 
   for (var in desc.vars) {
@@ -394,7 +380,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
     row[["sd"]]   <- std
     row[["se"]]   <- se
 
-    container[["table"]]$addRows(row)
+    table$addRows(row)
   }
 }
 

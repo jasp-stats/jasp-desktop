@@ -150,8 +150,9 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   }
   
   jaspResults[["ttest"]] <- ttest
-  res <- try(.ttestIndependentMainFill(jaspResults, dataset, options, ready, testStat, optionsList))
-  .ttestSetError(res, ttest)
+  
+  if (ready)
+    .ttestIndependentMainFill(ttest, dataset, options, testStat, optionsList)
 }
 
 .ttestIndependentNormalTable <- function(jaspResults, dataset, options, ready, type) {
@@ -176,16 +177,18 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   container[["ttestNormalTable"]] <- ttestNormalTable
   
-  res <- try(.ttestIndependentNormalFill(container, dataset, options, ready))
-  .ttestSetError(res, ttestNormalTable)
+  if (ready)
+    .ttestIndependentNormalFill(ttestNormalTable, dataset, options)
 }
 
 .ttestIndependentEqVarTable <- function(jaspResults, dataset, options, ready, type){
   # Container
   .ttestAssumptionCheckContainer(jaspResults, options, type)
   container <- jaspResults[["AssumptionChecks"]]
+  
   if (!options$equalityOfVariancesTests || !is.null(container[["equalityVariance"]])) 
     return()
+  
   # Create table
   equalityVariance <- createJaspTable(title = gettext("Test of Equality of Variances (Levene's)"))
   equalityVariance$showSpecifiedColumnsOnly <- TRUE
@@ -196,12 +199,12 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   equalityVariance$addColumnInfo(name = "p",        type = "pvalue",  title = gettext("p"))
   
   container[["equalityVariance"]] <- equalityVariance
-  res <- try(.ttestIndependentEqVarFill(container, dataset, options, ready))
-  .ttestSetError(res, equalityVariance)
+  
+  if (ready)
+    .ttestIndependentEqVarFill(equalityVariance, dataset, options)
 }
 
-.ttestIndependentMainFill <- function(jaspResults, dataset, options, ready, testStat, optionsList){
-  direction <- .ttestMainGetDirection(options$hypothesis)
+.ttestIndependentMainFill <- function(table, dataset, options, testStat, optionsList) {
   
   if (options$effectSizesType == "cohensD")
     effSize <- "cohen"
@@ -209,281 +212,268 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
     effSize <- "glass"
   else if (options$effectSizesType == "hedgesG")
     effSize <- "hedges"
+
+  levels <- levels(dataset[[ .v(options$groupingVariable) ]])
   
-  nameOfEffectSizeParametric <- switch(effSize, 
-                                       cohen  = gettext("Cohen's d"), 
-                                       glass  = gettext("Glass' delta"),
-                                       hedges = gettext("Hedges' g"))
+  if (options$hypothesis == "groupOneGreater" || options$hypothesis == "groupTwoGreater") {
+    directionNote <- ifelse(options$hypothesis == "groupOneGreater", gettext("greater"), gettext("less"))
+    table$addFootnote(gettextf("For all tests, the alternative hypothesis specifies that group %1$s is %2$s than group %3$s.",
+                                                paste("<em>", levels[1], "</em>"), directionNote, paste("<em>", levels[2], "</em>")))
+  }
   
-  variables  <- options$variables
-  if (length(variables) == 0) 
-    variables <- "."
-  
-  if(!ready) {
-    for (variable in variables) 
-      jaspResults[["ttest"]]$addRows(list(v = variable))
-  } else {
-    levels <- levels(dataset[[ .v(options$groupingVariable) ]])
+  ## for each variable specified, run each test that the user wants
+  for (variable in options$variables) {
+    errors <- .hasErrors(dataset, 
+                         message = 'short', 
+                         type = c('observations', 'variance', 'infinity'),
+                         all.target = variable, 
+                         all.grouping = options$groupingVariable,
+                         observations.amount = '< 2')
     
-    if (options$hypothesis == "groupOneGreater" || options$hypothesis == "groupTwoGreater") {
-      directionNote <- ifelse(options$hypothesis == "groupOneGreater", gettext("greater"), gettext("less"))
-      jaspResults[["ttest"]]$addFootnote(gettextf("For all tests, the alternative hypothesis specifies that group %1$s is %2$s than group %3$s.",
-                                                  paste("<em>", levels[1], "</em>"), directionNote, paste("<em>", levels[2], "</em>")))
-    }
-    
-    groupingData <- dataset[[ .v(options$groupingVariable) ]]
-    ## for each variable specified, run each test that the user wants
-    for (variable in options$variables) {
-      errors <- .hasErrors(dataset, 
-                           message = 'short', 
-                           type = c('observations', 'variance', 'infinity'),
-                           all.target = variable, 
-                           all.grouping = options$groupingVariable,
-                           observations.amount = '< 2')
-      variableData <- dataset[[ .v(variable) ]]
+    for (test in optionsList$whichTests) {
       
-      ## test is a number, indicating which tests should be run
-      for (test in seq_len(length(optionsList$whichTests))) {
+      row     <- list(v = variable, test = test, .isNewGroup = .ttestRowIsNewGroup(test, optionsList$whichTests))
+      rowName <- paste(test, variable, sep = "-")
+      
+      errorMessage <- NULL
+      if (identical(errors, FALSE)) {
+        result <- try(ttestIndependentMainTableRow(variable, dataset, test, testStat, effSize, optionsList, options))
         
-        ## don't run a test the user doesn't want
-        currentTest <- optionsList$whichTests[[test]]
-        if (!currentTest)
-          next
-        
-        if (test == 1)
-          whatTest <- "Student"
-        else if (test == 2)
-          whatTest <- "Welch"
+        if (!isTryError(result))
+          row <- c(row, result[["row"]])
         else
-          whatTest <- "Mann-Whitney"
+          errorMessage <- .extractErrorMessage(result)
         
-        if (!identical(errors, FALSE)) {
-          jaspResults[["ttest"]]$addFootnote(errors$message, colNames = testStat, rowNames = variable)
-          row <- list(v = variable, test = whatTest)
-          row[[testStat]] <- NaN
-          jaspResults[["ttest"]]$addRows(row, rowNames = variable)
-          next
-        }
-        
-        ## try to run the test, catching eventual errors
-        row <- try(silent = FALSE, expr = {
-          ciEffSize  <- optionsList$percentConfidenceEffSize
-          ciMeanDiff <- optionsList$percentConfidenceMeanDiff
-          f <- as.formula(paste(.v(variable), "~",
-                                .v(options$groupingVariable)))
-          
-          y <- dataset[[ .v(variable) ]]
-          groups <- dataset[[ .v(options$groupingVariable) ]]
-          
-          sds <- tapply(y, groups, sd, na.rm = TRUE)
-          ms  <- tapply(y, groups, mean, na.rm = TRUE)
-          ns  <- tapply(y, groups, function(x) length(na.omit(x)))
-          
-          
-          if (test == 3) {
-            r <- stats::wilcox.test(f, data = dataset,
-                                    alternative = direction,
-                                    conf.int = TRUE, conf.level = ciMeanDiff, paired = FALSE)
-            df   <- ""
-            sed  <- ""
-            stat <- as.numeric(r$statistic)
-            m    <- as.numeric(r$estimate)
-            d    <- abs(as.numeric(1-(2*stat)/(ns[1]*ns[2]))) * sign(m)
-            # rankBis <- 1 - (2*stat)/(ns[1]*ns[2])
-            wSE <- sqrt((ns[1]*ns[2] * (ns[1]+ns[2] + 1))/12)
-            rankBisSE <- sqrt(4 * 1/(ns[1]*ns[2])^2 * wSE^2)
-            zRankBis  <- atanh(d)
-            if(direction == "two.sided")
-              confIntEffSize <- sort(c(tanh(zRankBis + qnorm((1-ciEffSize)/2)*rankBisSE), 
-                                       tanh(zRankBis + qnorm((1+ciEffSize)/2)*rankBisSE)))
-            else if (direction == "less")
-              confIntEffSize <- sort(c(-Inf, tanh(zRankBis + qnorm(ciEffSize)*rankBisSE)))
-            else if (direction == "greater")
-              confIntEffSize <- sort(c(tanh(zRankBis + qnorm((1-ciEffSize))*rankBisSE), Inf))
-          } else {
-            whatTest <- ifelse(test == 2, "Welch", "Student")
-            r <- stats::t.test(f, data = dataset, alternative = direction,
-                               var.equal = test != 2, conf.level = ciMeanDiff, paired = FALSE)
-            
-            df   <- as.numeric(r$parameter)
-            m    <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
-            stat <- as.numeric(r$statistic)
-            
-            num <-  (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
-            sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
-            if (test == 2)  # Use different SE when using Welch T test!
-              sdPooled <- sqrt(((sds[1]^2) + (sds[2]^2)) / 2)
-            
-            d <- "."
-            if (optionsList$wantsEffect) {
-              # Sources are https://en.wikipedia.org/wiki/Effect_size for now.
-              if (options$effectSizesType == "cohensD")
-                d <- as.numeric((ms[1] - ms[2]) / sdPooled)
-              else if (options$effectSizesType == "glassD")
-                d <- as.numeric((ms[1] - ms[2]) / sds[2])
-              # Should give feedback on which data is considered 2.
-              else if (options$effectSizesType == "hedgesG") {
-                a <- sum(ns) - 2
-                logCorrection <- lgamma(a / 2) - (log(sqrt(a / 2)) + lgamma((a - 1) / 2))
-                d <- as.numeric((ms[1] - ms[2]) / sdPooled) * exp(logCorrection) # less biased / corrected version
-              }
-            }
-            sed <- (as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])) / stat
-            confIntEffSize <- c(0,0)
-            
-            if (optionsList$wantsConfidenceEffSize){
-              # From MBESS package by Ken Kelley, v4.6
-              dfEffSize  <-  ifelse(effSize == "glass", ns[2] - 1, df)
-              alphaLevel <- ifelse(direction == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
-              confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt((prod(ns)) / (sum(ns))), 
-                                                             df = dfEffSize, alpha.lower = alphaLevel, 
-                                                             alpha.upper = alphaLevel)[c(1, 3)]
-              confIntEffSize <- unlist(confIntEffSize) * sqrt((sum(ns)) / (prod(ns)))
-              
-              if (direction == "greater")
-                confIntEffSize[2] <- Inf
-              else if (direction == "less")
-                confIntEffSize[1] <- -Inf
-              
-              confIntEffSize <- sort(confIntEffSize)
-            }
-          }
-          ## if the user doesn't want a Welch's t-test,
-          ## give a footnote indicating if the equality of variance
-          ## assumption is met; seems like in this setting there is no
-          ## sampling plan, thus the p-value is not defined. haha!
-          if (!optionsList$wantsWelchs && optionsList$wantsStudents) {
-            levene <- car::leveneTest(variableData, groupingData, "mean")
-            
-            ## arbitrary cut-offs are arbitrary
-            if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05) {
-              msg <- gettext("Levene's test is significant (p < .05), 
-					  suggesting a violation of the equal variance assumption")
-              jaspResults[["ttest"]]$addFootnote(msg)
-            }
-          }
-          
-          ## same for all t-tests
-          p     <- as.numeric(r$p.value)
-          ciLow <- r$conf.int[1]
-          ciUp  <- r$conf.int[2]
-          lowerCIeffectSize <- as.numeric(confIntEffSize[1])
-          upperCIeffectSize <- as.numeric(confIntEffSize[2])
-          # this will be the results object
-          res <- list(v = variable, test = whatTest, df = df, p = p, md = m, d = d, 
-                      lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp,
-                      lowerCIeffectSize = lowerCIeffectSize, upperCIeffectSize = upperCIeffectSize,
-                      sed = sed)
-          res[[testStat]] <- stat
-          if (options$VovkSellkeMPR)
-            res[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
-          res
-        })
-        jaspResults[["ttest"]]$addRows(row)
+      } else {
+        errorMessage <- errors$message
       }
+      
+      if (!is.null(errorMessage)) {
+        row[[testStat]] <- NaN
+        table$addFootnote(errorMessage, colNames = testStat, rowNames = rowName)
+      }
+      
+      if (result[["leveneViolated"]])
+        table$addFootnote(gettext("Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"), colNames = "p", rowNames = rowName)
+      
+      table$addRows(row, rowNames = rowName)
     }
     
     if (effSize == "glass") {
+      ns  <- tapply(dataset[[.v(variable)]], dataset[[.v(options$groupingVariable)]], function(x) length(na.omit(x)))
       sdMessage <- gettextf("Glass' delta uses the standard deviation of group %1$s of variable %2$s.", names(ns[2]), options$groupingVariable)
-      jaspResults[["ttest"]]$addFootnote(sdMessage)
+      table$addFootnote(sdMessage)
     }
   }
 }
 
-.ttestIndependentEqVarFill <- function(container, dataset, options, ready){
+ttestIndependentMainTableRow <- function(variable, dataset, test, testStat, effSize, optionsList, options) {
+  ciEffSize  <- optionsList$percentConfidenceEffSize
+  ciMeanDiff <- optionsList$percentConfidenceMeanDiff
+  f <- as.formula(paste(.v(variable), "~",
+                        .v(options$groupingVariable)))
   
-  data      <- list()
+  variableData <- dataset[[ .v(variable) ]]
+  groupingData <- dataset[[ .v(options$groupingVariable) ]]
+  
+  sds <- tapply(variableData, groupingData, sd, na.rm = TRUE)
+  ms  <- tapply(variableData, groupingData, mean, na.rm = TRUE)
+  ns  <- tapply(variableData, groupingData, function(x) length(na.omit(x)))
+  
+  direction <- .ttestMainGetDirection(options$hypothesis)
+  
+  if (test == "Mann-Whitney") {
+    r <- stats::wilcox.test(f, data = dataset,
+                            alternative = direction,
+                            conf.int = TRUE, conf.level = ciMeanDiff, paired = FALSE)
+    df   <- ""
+    sed  <- ""
+    stat <- as.numeric(r$statistic)
+    m    <- as.numeric(r$estimate)
+    d    <- abs(as.numeric(1-(2*stat)/(ns[1]*ns[2]))) * sign(m)
+    # rankBis <- 1 - (2*stat)/(ns[1]*ns[2])
+    wSE <- sqrt((ns[1]*ns[2] * (ns[1]+ns[2] + 1))/12)
+    rankBisSE <- sqrt(4 * 1/(ns[1]*ns[2])^2 * wSE^2)
+    zRankBis  <- atanh(d)
+    if(direction == "two.sided")
+      confIntEffSize <- sort(c(tanh(zRankBis + qnorm((1-ciEffSize)/2)*rankBisSE), 
+                               tanh(zRankBis + qnorm((1+ciEffSize)/2)*rankBisSE)))
+    else if (direction == "less")
+      confIntEffSize <- sort(c(-Inf, tanh(zRankBis + qnorm(ciEffSize)*rankBisSE)))
+    else if (direction == "greater")
+      confIntEffSize <- sort(c(tanh(zRankBis + qnorm((1-ciEffSize))*rankBisSE), Inf))
+  } else {
+    r <- stats::t.test(f, data = dataset, alternative = direction,
+                       var.equal = test != "Welch", conf.level = ciMeanDiff, paired = FALSE)
+    
+    df   <- as.numeric(r$parameter)
+    m    <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
+    stat <- as.numeric(r$statistic)
+    
+    num <-  (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
+    sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
+    if (test == "Welch")  # Use different SE when using Welch T test!
+      sdPooled <- sqrt(((sds[1]^2) + (sds[2]^2)) / 2)
+    
+    d <- "."
+    if (optionsList$wantsEffect) {
+      # Sources are https://en.wikipedia.org/wiki/Effect_size for now.
+      if (options$effectSizesType == "cohensD")
+        d <- as.numeric((ms[1] - ms[2]) / sdPooled)
+      else if (options$effectSizesType == "glassD")
+        d <- as.numeric((ms[1] - ms[2]) / sds[2])
+      # Should give feedback on which data is considered 2.
+      else if (options$effectSizesType == "hedgesG") {
+        a <- sum(ns) - 2
+        logCorrection <- lgamma(a / 2) - (log(sqrt(a / 2)) + lgamma((a - 1) / 2))
+        d <- as.numeric((ms[1] - ms[2]) / sdPooled) * exp(logCorrection) # less biased / corrected version
+      }
+    }
+    sed <- (as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])) / stat
+    confIntEffSize <- c(0,0)
+    
+    if (optionsList$wantsConfidenceEffSize){
+      # From MBESS package by Ken Kelley, v4.6
+      dfEffSize  <-  ifelse(effSize == "glass", ns[2] - 1, df)
+      alphaLevel <- ifelse(direction == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
+      confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt((prod(ns)) / (sum(ns))), 
+                                                     df = dfEffSize, alpha.lower = alphaLevel, 
+                                                     alpha.upper = alphaLevel)[c(1, 3)]
+      confIntEffSize <- unlist(confIntEffSize) * sqrt((sum(ns)) / (prod(ns)))
+      
+      if (direction == "greater")
+        confIntEffSize[2] <- Inf
+      else if (direction == "less")
+        confIntEffSize[1] <- -Inf
+      
+      confIntEffSize <- sort(confIntEffSize)
+    }
+  }
+  ## if the user doesn't want a Welch's t-test or Mann-Whitney,
+  ## give a footnote indicating if the equality of variance
+  ## assumption is met; seems like in this setting there is no
+  ## sampling plan, thus the p-value is not defined. haha!
+  leveneViolated <- FALSE
+  if (!optionsList$wantsWelchs && !optionsList$wantsWilcox && optionsList$wantsStudents) {
+    levene <- car::leveneTest(variableData, groupingData, "mean")
+    
+    ## arbitrary cut-offs are arbitrary
+    if (!is.na(levene[1, 3]) && levene[1, 3] < 0.05)
+      leveneViolated <- TRUE
+  }
+  
+  ## same for all t-tests
+  p     <- as.numeric(r$p.value)
+  ciLow <- r$conf.int[1]
+  ciUp  <- r$conf.int[2]
+  lowerCIeffectSize <- as.numeric(confIntEffSize[1])
+  upperCIeffectSize <- as.numeric(confIntEffSize[2])
+  
+  # this will be the results object
+  row <- list(df = df, p = p, md = m, d = d, 
+              lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp,
+              lowerCIeffectSize = lowerCIeffectSize, upperCIeffectSize = upperCIeffectSize,
+              sed = sed)
+  
+  row[[testStat]] <- stat
+  
+  if (options$VovkSellkeMPR)
+    row[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
+  
+  return(list(row = row, leveneViolated = leveneViolated))
+}
+
+.ttestIndependentEqVarFill <- function(table, dataset, options) {
   variables <- options$variables
   groups    <- options$groupingVariable
-  if (length(variables) == 0) variables <- "."
   
-  for (variable in variables)
-    data[[length(data) + 1]] <- list(variable = variable)
+  levels <- levels(dataset[[ .v(groups) ]])
   
-  if (groups != "") {
+  for (variable in variables) {
     
-    levels <- levels(dataset[[ .v(groups) ]])
+    row <- list(variable = variable)
     
-    for (variable in variables) {
-      errors <- .hasErrors(dataset, 
-                          message = 'short', 
-                          type = c('observations', 'variance', 'infinity'),
-                          all.target = variable,
-                          observations.amount = c('< 3'),
-                          all.grouping = groups)
-      if (!identical(errors, FALSE)) {
-        container[["equalityVariance"]]$addFootnote(errors$message, colNames = c("F", "p"), rowNames = variable)
-        row <- list(variable = variable, F = NaN, df = "", p = NaN)
-        container[["equalityVariance"]]$addRows(row, rowNames = variable)
-        next
-      }
+    errors <- .hasErrors(dataset, 
+                        message = 'short', 
+                        type = c('observations', 'variance', 'infinity'),
+                        all.target = variable,
+                        observations.amount = c('< 3'),
+                        all.grouping = groups)
+    
+    errorMessage <- NULL
+    if (identical(errors, FALSE)) {
+      result <- try(.ttestIndependentEqVarRow(table, variable, groups, dataset))
       
-      result <- try(silent = TRUE, expr = {
-        
-        levene <- car::leveneTest(dataset[[ .v(variable) ]],
-                                  dataset[[ .v(groups) ]], "mean")
-        
-        F  <- levene[1, "F value"]
-        df <- levene[1, "Df"]
-        p  <- levene[1, "Pr(>F)"]
-        
-        row <- list(variable = variable, F = F, df = df, p = p)
-        
-        if (is.na(levene[1, "F value"])) {
-          note <- gettext("F-statistic could not be calculated")
-          container[["equalityVariance"]]$addFootnote(note)
-        }
-        row
-      })
+      if (!isTryError(result))
+        row <- c(row, result[["row"]])
+      else
+        errorMessage <- .extractErrorMessage(result)
       
-      if (isTryError(result))
-        result <- list(variable = variable, F = "", df = "", p = "")
-      
-      container[["equalityVariance"]]$addRows(result)
+    } else {
+      errorMessage <- errors$message
     }
+    
+    if (!is.null(errorMessage)) {
+      row[["F"]] <- NaN
+      table$addFootnote(errors$message, colNames = "F", rowNames = variable)
+    }
+    
+    if (!result[["LeveneComputed"]])
+      table$addFootnote(gettext("F-statistic could not be calculated"), colNames = "F", rowNames = variable)
+    
+    table$addRows(row, rowNames = variable)
   }
 }
 
-.ttestIndependentNormalFill <- function(container, dataset, options, ready) {
+.ttestIndependentEqVarRow <- function(table, variable, groups, dataset) {
+  levene <- car::leveneTest(dataset[[ .v(variable) ]], dataset[[ .v(groups) ]], "mean")
+  
+  F  <- levene[1, "F value"]
+  df <- levene[1, "Df"]
+  p  <- levene[1, "Pr(>F)"]
+  
+  row <- list(F = F, df = df, p = p)
+  
+  LeveneComputed <- TRUE
+  if (is.na(levene[1, "F value"]))
+    LeveneComputed <- FALSE
+  
+  return(list(row = row, LeveneComputed = LeveneComputed))
+}
+
+.ttestIndependentNormalFill <- function(table, dataset, options) {
   ## for a independent t-test, we need to check both group vectors for normality
   variables <- options$variables
   factor    <- options$groupingVariable
   levels    <- levels(dataset[[.v(factor)]])
   
-  if (length(variables) == 0) 
-    variables = "."
-  if (length(levels) == 0) 
-    levels = c(".", ".")
-  
   for (variable in variables) {
     ## there will be two levels, otherwise .hasErrors will quit
     for (level in levels) {
-      if (ready) {
-        errors <- .hasErrors(dataset, 
-                             message = 'short', 
-                             type = c('observations', 'variance', 'infinity'),
-                             all.target = variable,
-                             observations.amount = c('< 3', '> 5000'),
-                             all.grouping = factor,
-                             all.groupingLevel = level)
-        if (!identical(errors, FALSE)) {
-          container[["ttestNormalTable"]]$addFootnote(errors$message, colNames = c("W", "p"), rowNames = paste0(variable, level))
-          row <- list(dep = variable, lev = level, W = NaN, p = NaN)
-          container[["ttestNormalTable"]]$addRows(row, rowNames = paste0(variable, level))
-          next
-        }
-        
+
+      row     <- list(dep = variable, lev = level, .isNewGroup = (level == levels[1]))
+      rowName <- paste(variable, level, sep = "-")
+      
+      errors <- .hasErrors(dataset, 
+                           message = 'short', 
+                           type = c('observations', 'variance', 'infinity'),
+                           all.target = variable,
+                           observations.amount = c('< 3', '> 5000'),
+                           all.grouping = factor,
+                           all.groupingLevel = level)
+      
+      if (!identical(errors, FALSE)) {
+        row[["W"]] <- NaN
+        table$addFootnote(errors$message, colNames = "W", rowNames = rowName)
+      } else {
         ## get the dependent variable at a certain factor level
         data <- na.omit(dataset[[.v(variable)]][dataset[[.v(factor)]] == level])
-        r    <- stats::shapiro.test(data)
-        W    <- as.numeric(r$statistic)
-        p    <- r$p.value
-        
-        result <- list(dep = variable, lev = level, W = W, p = p)
-      } else 
-        result <- list(dep = variable, lev = level, W = ".", p = ".")
-      result[[".isNewGroup"]] <- level == levels[1]
-      container[["ttestNormalTable"]]$addRows(result)
+        r <- stats::shapiro.test(data)
+        row[["W"]] <- as.numeric(r$statistic)
+        row[["p"]] <- r$p.value
+      }
+
+      table$addRows(row, rowNames = rowName)
     }
   }
 }
@@ -507,60 +497,43 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   container[["table"]] <- ttestDescriptivesTable
   
-  if(!ready) 
-    return()
-  res <- try(.ttestIndependentDescriptivesFill(container, dataset, options))
-  .ttestSetError(res, ttestDescriptivesTable)
+  if(ready)
+    .ttestIndependentDescriptivesFill(ttestDescriptivesTable, dataset, options)
 }
 
-.ttestIndependentDescriptivesFill <- function(container, dataset, options) {
-data <- list()
-  
+.ttestIndependentDescriptivesFill <- function(table, dataset, options) {
   variables <- options$variables
-  if (length(variables) == 0) variables <- "."
-  
   groups <- options$groupingVariable
+  levels <- base::levels(dataset[[ .v(groups) ]])
+  groupingData <- dataset[[.v(groups)]]
   
-  ## if we actually have to do the test, and we have a grouping variable
-  if (groups != "") {
-    levels <- base::levels(dataset[[ .v(groups) ]])
+  for (variable in variables) {
     
-    groupingData <- dataset[[.v(groups)]]
-    
-    ## do the whole loop as above again
-    for (variable in variables) {
+    for (level in levels) {
       
-      for (i in 1:2) { #only 2 levels thanks to error check
+      row <- list(variable = variable, group = level, .isNewGroup = (level == levels[1]))
+      
+      variableData <- dataset[[.v(variable)]]
+      groupData   <- variableData[groupingData == level]
+      groupDataOm <- na.omit(groupData)
+      
+      if (class(groupDataOm) != "factor") {
         
-        level <- levels[i]
-        variableData <- dataset[[.v(variable)]]
+        n    <- length(groupDataOm)
+        mean <- mean(groupDataOm)
+        std  <- sd(groupDataOm)
+        sem  <- std / sqrt(n)
         
-        groupData   <- variableData[groupingData == level]
-        groupDataOm <- na.omit(groupData)
+        row <- c(row, list(N = n, mean = mean, sd = std, se = sem))
         
-        if (class(groupDataOm) != "factor") {
-          
-          n    <- length(groupDataOm)
-          mean <- mean(groupDataOm)
-          std  <- sd(groupDataOm)
-          sem  <- std / sqrt(n)
-          
-          result <- list(variable = variable, group = level,
-                         N = n, mean = mean, sd = std, se = sem)
-          
-        } else {
-          n      <- length(groupDataOm)
-          result <- list(variable = variable, group = "",
-                         N = n, mean = "", sd = "", se = "")
-        }
-        if (i == 1)
-          result[[".isNewGroup"]] <- TRUE
-        
-        data[[length(data) + 1]] <- result
+      } else {
+        n   <- length(groupDataOm)
+        row <- c(row, list(n = n))
       }
+      
+      table$addRows(row)
     }
   }
-  container[["table"]]$addRows(data)
 }
 
 .ttestIndependentDescriptivesPlot <- function(jaspResults, dataset, options, ready) {
@@ -619,7 +592,7 @@ data <- list()
          ggplot2::scale_y_continuous(breaks = c(min(b), max(b))))
   }
   
-  dataset <- na.omit(dataset)
+  dataset <- na.omit(dataset[, c(.v(groups), .v(variable))])
   ci <- options$descriptivesPlotsConfidenceInterval
   summaryStat <- .summarySE(as.data.frame(dataset), 
                             measurevar = .v(variable),

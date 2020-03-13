@@ -75,15 +75,12 @@
   
   if(type == "paired") {
     optionsList$wantsWilcox <- options$wilcoxonSignedRank
-    optionsList$whichTests  <- list("1" = optionsList$wantsStudents, 
-                                    "2" = optionsList$wantsWilcox)
+    optionsList$whichTests  <- c("Student", "Wilcoxon")[c(optionsList$wantsStudents, optionsList$wantsWilcox)]
   }
   else if(type == "one-sample"){
     optionsList$wantsZtest  <- options$zTest
     optionsList$wantsWilcox <- options$mannWhitneyU
-    optionsList$whichTests  <- list("1" = optionsList$wantsStudents, 
-                                    "2" = optionsList$wantsWilcox, 
-                                    "3" = optionsList$wantsZtest)
+    optionsList$whichTests  <- c("Student", "Wilcoxon", "Z")[c(optionsList$wantsStudents, optionsList$wantsWilcox, optionsList$wantsZtest)]
   }
   optionsList$wantsConfidenceEffSize    <- (options$effSizeConfidenceIntervalCheckbox && options$effectSize)
   if(type %in% c("paired", "one-sample")) {
@@ -92,9 +89,7 @@
   } else if(type == "independent") {
     optionsList$wantsWelchs <- options$welchs
     optionsList$wantsWilcox <- options$mannWhitneyU
-    optionsList$whichTests  <- list("1" = optionsList$wantsStudents, 
-                                    "2" = optionsList$wantsWelchs, 
-                                    "3" = optionsList$wantsWilcox)
+    optionsList$whichTests  <- c("Student", "Welch", "Mann-Whitney")[c(optionsList$wantsStudents, optionsList$wantsWelchs, optionsList$wantsWilcox)]
     optionsList$percentConfidenceEffSize  <- options$descriptivesEffectSizeConfidenceIntervalPercent
     optionsList$percentConfidenceMeanDiff <- options$descriptivesMeanDiffConfidenceIntervalPercent
   }
@@ -106,6 +101,10 @@
   optionsList$onlyTest <- sum(optionsList$allTests) == 1  
   
   return(optionsList)
+}
+
+.ttestRowIsNewGroup <- function(test, tests) {
+  return(length(tests) > 1 && test == tests[1])
 }
 
 .ttestAssumptionCheckContainer <- function(jaspResults, options, type) {
@@ -145,11 +144,6 @@
     table$addFootnote(message, symbol = "\u002A")
     table$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", type = "number")
   }
-}
-
-.ttestSetError <- function(res, table){
-  if(isTryError(res))
-    table$setError(.extractErrorMessage(res))
 }
 
 .ttestMainGetDirection <- function(hypothesis) {

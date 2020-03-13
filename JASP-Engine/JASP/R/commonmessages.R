@@ -57,7 +57,7 @@
   m$footnote$leveneSign <- 
     gettext("Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption")
   m$footnote$VovkSellkeMPR <-
-    gettextf("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001).","\u2081","u2080","\u2264")
+    gettextf("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001).","\u2081","\u2080","\u2264")
   m$footnote$binomNeq <- 
     gettextf("Proportions tested against value: %s", "{{value}}.")
   m$footnote$binomLess <- 

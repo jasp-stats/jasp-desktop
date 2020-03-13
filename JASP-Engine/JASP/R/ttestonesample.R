@@ -74,7 +74,7 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
     nameOfEffectSize        <- gettext("Effect Size")
   }
   
-  ttest$addColumnInfo(name = "v",     type = "string", title = "")
+  ttest$addColumnInfo(name = "v",     type = "string", title = "", combine = TRUE)
   
   ## if the user wants more than one test, add a column called "Test"
   if (sum(optionsList$allTests) > 1) 
@@ -169,10 +169,8 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
   
   jaspResults[["ttest"]] <- ttest
   
-  if (ready) {
-    res <- try(.ttestOneSampleMainFill(jaspResults, dataset, options, testStat, optionsList))
-    .ttestSetError(res, ttest)
-  }
+  if (ready) 
+    .ttestOneSampleMainFill(ttest, dataset, options, testStat, optionsList)
 }
 
 .ttestOneSampleNormalTable <- function(jaspResults, dataset, options, ready, type) {
@@ -196,184 +194,161 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
   
   container[["ttestNormalTable"]] <- ttestNormalTable
   
-  res <- try(.ttestOneSampleNormalFill(container, dataset, options, ready))
-  .ttestSetError(res, ttestNormalTable)
+  if (ready)
+    .ttestOneSampleNormalFill(ttestNormalTable, dataset, options)
 }
 
-.ttestOneSampleMainFill <-function(jaspResults, dataset, options, testStat, optionsList) {
-  direction <- switch(options$hypothesis,
-                   "notEqualToTestValue"  ="two.sided",
-                   "greaterThanTestValue" ="greater",
-                   "lessThanTestValue"    ="less")
-
+.ttestOneSampleMainFill <-function(table, dataset, options, testStat, optionsList) {
   variables <- options$variables
-  if (length(variables) == 0)  
-    variables = "."
-  
-  rowNo      <- 1
-  ttest.rows <- list() # for each variable and each test, save stuff in there
-  
-  ## add a row for each variable, even before we are conducting tests
-  for (variable in variables)
-    ttest.rows[[length(ttest.rows) + 1]] <- list(v = variable)
-  
   for (variable in variables) {
+    
     errors <- .hasErrors(dataset, 
                          message = 'short', 
                          type = c('observations', 'variance', 'infinity'),
                          all.target = variable,
                          observations.amount = '< 2')
-    for (test in seq_len(length(optionsList$whichTests))) {
-      currentTest <- optionsList$whichTests[[test]]
+    
+    for (test in optionsList$whichTests) {
+
+      row     <- list(v = variable, test = test, .isNewGroup = .ttestRowIsNewGroup(test, optionsList$whichTests))
+      rowName <- paste(test, variable, sep = "-")
       
-      ## don't run a test the user doesn't want
-      if (!currentTest) 
-        next
-      if (!identical(errors, FALSE)){
-        jaspResults[["ttest"]]$addFootnote(errors$message, colNames = testStat, rowNames = variables)
-        row <- list(v = variable, p = "NaN", m = "NaN", lowerCI = "", upperCI = "")
-        row[[testStat]] <- NaN
-        jaspResults[["ttest"]]$addRows(row, rowNames = variables)
-        next
+      errorMessage <- NULL
+      if (identical(errors, FALSE)) {
+        rowResults <- try(.ttestOneSampleComputeMainTableRow(variable, dataset, test, testStat, optionsList, options))
+        
+          if (!isTryError(rowResults))
+            row <- c(row, rowResults)
+          else
+            errorMessage <- .extractErrorMessage(rowResults)
+          
+      } else {
+        errorMessage <- errors$message
       }
       
-      row <- try(silent = TRUE, expr = {
-        
-        dat <- na.omit(dataset[[ .v(variable) ]])
-        n   <- length(dat)
-        if (test == 2) {
-          r <- stats::wilcox.test(dat, alternative = direction, mu = options$testValue,
-                                  conf.level = optionsList$percentConfidenceMeanDiff, conf.int = TRUE)
-          df   <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-          nd   <- sum(dat != 0)
-          maxw <- (nd * (nd + 1)) / 2
-          d    <- as.numeric((r$statistic / maxw) * 2 - 1)
-          wSE  <- sqrt((nd * (nd + 1) * (2 * nd + 1)) / 6) /2
-          mrSE <- sqrt(wSE^2  * 4 * (1 / maxw^2)) 
-          # zSign <- (ww$statistic - ((n*(n+1))/4))/wSE
-          zmbiss <- atanh(d)
-          if(direction == "two.sided")
-            confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize)/2)*mrSE), 
-                                     tanh(zmbiss + qnorm((1+optionsList$percentConfidenceEffSize)/2)*mrSE)))
-          else if (direction == "less") 
-            confIntEffSize <- sort(c(-Inf, tanh(zmbiss + qnorm(optionsList$percentConfidenceEffSize)*mrSE)))
-          else if (direction == "greater")
-            confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize))*mrSE), Inf))
-        } else if(test == 3){
-          r <- BSDA::z.test(dat, alternative = direction, mu = options$testValue, 
-                            sigma.x = options$stddev, 
-                            conf.level = optionsList$percentConfidenceMeanDiff)
-          df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-          d  <- (mean(dat) - options$testValue) / options$stddev
-          
-          if(direction == "less")
-            r$conf.int[1] <- -Inf
-          else if(direction == "greater")
-            r$conf.int[2] <- Inf
-          
-          Z <- as.numeric(r$statistic)
-          confIntEffSize <- c(0,0)
-          if(optionsList$wantsConfidenceEffSize)
-            confIntEffSize <- r$conf.int/options$stddev
-        } else {
-          r <- stats::t.test(dat, alternative = direction, mu = options$testValue, 
-                             conf.level = optionsList$percentConfidenceMeanDiff)
-          df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
-          d  <- (mean(dat) - options$testValue) / sd(dat)
-          t  <- as.numeric(r$statistic)
-          
-          confIntEffSize <- c(0,0)
-          
-          if (optionsList$wantsConfidenceEffSize) {
-            
-            ciEffSize  <- options$effSizeConfidenceIntervalPercent
-            alphaLevel <- ifelse(direction == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
-            
-            confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt(n), df = df, alpha.lower = alphaLevel,
-                                                           alpha.upper = alphaLevel)[c(1, 3)]
-            confIntEffSize <- unlist(confIntEffSize) / sqrt(n)
-            
-            if (direction == "greater")
-              confIntEffSize[2] <- Inf
-            else if (direction == "less")
-              confIntEffSize[1] <- -Inf
-            
-            confIntEffSize <- sort(confIntEffSize)
-          }
-        }
-        
-        ## same for all tests
-        p     <- as.numeric(r$p.value)
-        stat  <- as.numeric(r$statistic)
-        m     <- as.numeric(r$estimate - r$null.value)
-        ciLow <- as.numeric(r$conf.int[1] - r$null.value)
-        ciUp  <- as.numeric(r$conf.int[2] - r$null.value)
-        ciLowEffSize <- as.numeric(confIntEffSize[1])
-        ciUpEffSize  <- as.numeric(confIntEffSize[2])
-        if (suppressWarnings(is.na(t)))  # do not throw warning when test stat is not 't' 
-          stop("data are essentially constant")
-        
-        res <- list(v = variable, df = df, p = p, m = m, d = d, 
-                    lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp, 
-                    lowerCIeffectSize = ciLowEffSize, upperCIeffectSize = ciUpEffSize)
-        res[[testStat]] <- stat
-        if (options$VovkSellkeMPR)
-          res[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
-        res
-      })
+      if (!is.null(errorMessage)) {
+        row[[testStat]] <- NaN
+        table$addFootnote(errorMessage, colNames = testStat, rowNames = rowName)
+      }
       
-      ## if we are not yet ready to perform, just create an empty table
-      
-      # if we have multiple tests, we want only variable name at the first row;
-      # and having additional column indicating the name of the tests
-      allTestNames <- c("Student", "Wilcoxon", "Z")
-      testName <- allTestNames[test]
-      row[["test"]] <- testName
-      
-      firstSelectedTest <- allTestNames[unlist(optionsList$whichTests)][1]
-      #if(rowNo %% 2 == 0 || rowNo %% 3 == 0){
-      if(testName != firstSelectedTest)
-        row[["v"]] <- ""
-      
-      jaspResults[["ttest"]]$addRows(row)
-      rowNo <- rowNo + 1
+      table$addRows(row, rowNames = rowName)
     }
   }
 }
-
-.ttestOneSampleNormalFill <- function(container, dataset, options, ready) {
-  variables <- options$variables
-  rowNo <- 1
-  if (!ready) 
-    variables = "."
   
-  for (variable in variables) {
+.ttestOneSampleComputeMainTableRow <- function(variable, dataset, test, testStat, optionsList, options) {
+  direction <- switch(options$hypothesis,
+                      "notEqualToTestValue"  ="two.sided",
+                      "greaterThanTestValue" ="greater",
+                      "lessThanTestValue"    ="less")
+  dat <- na.omit(dataset[[ .v(variable) ]])
+  n   <- length(dat)
+  if (test == "Wilcoxon") {
+    r <- stats::wilcox.test(dat, alternative = direction, mu = options$testValue,
+                            conf.level = optionsList$percentConfidenceMeanDiff, conf.int = TRUE)
+    df   <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
+    nd   <- sum(dat != 0)
+    maxw <- (nd * (nd + 1)) / 2
+    d    <- as.numeric((r$statistic / maxw) * 2 - 1)
+    wSE  <- sqrt((nd * (nd + 1) * (2 * nd + 1)) / 6) /2
+    mrSE <- sqrt(wSE^2  * 4 * (1 / maxw^2)) 
+    # zSign <- (ww$statistic - ((n*(n+1))/4))/wSE
+    zmbiss <- atanh(d)
+    if(direction == "two.sided")
+      confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize)/2)*mrSE), 
+                               tanh(zmbiss + qnorm((1+optionsList$percentConfidenceEffSize)/2)*mrSE)))
+    else if (direction == "less") 
+      confIntEffSize <- sort(c(-Inf, tanh(zmbiss + qnorm(optionsList$percentConfidenceEffSize)*mrSE)))
+    else if (direction == "greater")
+      confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize))*mrSE), Inf))
+  } else if (test == "Z"){
+    r <- BSDA::z.test(dat, alternative = direction, mu = options$testValue, 
+                      sigma.x = options$stddev, 
+                      conf.level = optionsList$percentConfidenceMeanDiff)
+    df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
+    d  <- (mean(dat) - options$testValue) / options$stddev
     
-    if (ready) {
-      errors <- .hasErrors(dataset, 
-                           message = 'short', 
-                           type = c('observations', 'variance', 'infinity'),
-                           all.target = variable,
-                           observations.amount = c('< 3', '> 5000'))
-      if(!identical(errors, FALSE)) {
-        container[["ttestNormalTable"]]$addFootnote(errors$message, colNames = c("W", "p"), rowNames = variable)
-        container[["ttestNormalTable"]]$addRows(list(v = variable, W = "NaN", p = "NaN", 
-                                                     .isNewGroup = rowNo==1), rowNames = variable)
-        next
-      }
+    if(direction == "less")
+      r$conf.int[1] <- -Inf
+    else if(direction == "greater")
+      r$conf.int[2] <- Inf
+    
+    confIntEffSize <- c(0,0)
+    if(optionsList$wantsConfidenceEffSize)
+      confIntEffSize <- r$conf.int/options$stddev
+  } else {
+    r <- stats::t.test(dat, alternative = direction, mu = options$testValue, 
+                       conf.level = optionsList$percentConfidenceMeanDiff)
+    df <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
+    d  <- (mean(dat) - options$testValue) / sd(dat)
+    t  <- as.numeric(r$statistic)
+    
+    confIntEffSize <- c(0,0)
+    
+    if (optionsList$wantsConfidenceEffSize) {
       
+      ciEffSize  <- options$effSizeConfidenceIntervalPercent
+      alphaLevel <- ifelse(direction == "two.sided", 1 - (ciEffSize + 1) / 2, 1 - ciEffSize)
+      
+      confIntEffSize <- .confidenceLimitsEffectSizes(ncp = d * sqrt(n), df = df, alpha.lower = alphaLevel,
+                                                     alpha.upper = alphaLevel)[c(1, 3)]
+      confIntEffSize <- unlist(confIntEffSize) / sqrt(n)
+      
+      if (direction == "greater")
+        confIntEffSize[2] <- Inf
+      else if (direction == "less")
+        confIntEffSize[1] <- -Inf
+      
+      confIntEffSize <- sort(confIntEffSize)
+    }
+  }
+  
+  ## same for all tests
+  p     <- as.numeric(r$p.value)
+  stat  <- as.numeric(r$statistic)
+  m     <- as.numeric(r$estimate - r$null.value)
+  ciLow <- as.numeric(r$conf.int[1] - r$null.value)
+  ciUp  <- as.numeric(r$conf.int[2] - r$null.value)
+  ciLowEffSize <- as.numeric(confIntEffSize[1])
+  ciUpEffSize  <- as.numeric(confIntEffSize[2])
+  
+  if (suppressWarnings(is.na(t)))  # do not throw warning when test stat is not 't' 
+    stop("data are essentially constant")
+  
+  result <- list(df = df, p = p, m = m, d = d, 
+              lowerCIlocationParameter = ciLow, upperCIlocationParameter = ciUp, 
+              lowerCIeffectSize = ciLowEffSize, upperCIeffectSize = ciUpEffSize)
+  result[[testStat]] <- stat
+  
+  if (options$VovkSellkeMPR)
+    result[["VovkSellkeMPR"]] <- .VovkSellkeMPR(p)
+  
+  return(result)
+}
+
+.ttestOneSampleNormalFill <- function(table, dataset, options) {
+  variables <- options$variables
+  for (variable in variables) {
+    row <- list(v = variable)
+    
+    errors <- .hasErrors(dataset, 
+                         message = 'short', 
+                         type = c('observations', 'variance', 'infinity'),
+                         all.target = variable,
+                         observations.amount = c('< 3', '> 5000'))
+    
+    if (!identical(errors, FALSE)) {
+      row[["W"]] <- NaN
+      table$addFootnote(errors$message, colNames = "W", rowNames = variable)
+    } else {
       data <- na.omit(dataset[[.v(variable)]])
       
       r <- stats::shapiro.test(data)
-      W <- as.numeric(r$statistic)
-      p <- r$p.value
-      
-      row <- list(v = variable, W = W, p = p)
-      
-    } else 
-      row <- list(v = variable, W = ".", p = ".")
-    row[[".isNewGroup"]] <- rowNo == 1
-    container[["ttestNormalTable"]]$addRows(row, rowNames = variable)
+      row[["W"]] <- as.numeric(r$statistic)
+      row[["p"]] <- r$p.value
+    }
+    
+    table$addRows(row, rowNames = variable)
   }
 }
 

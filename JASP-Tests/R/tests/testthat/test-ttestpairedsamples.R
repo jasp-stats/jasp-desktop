@@ -16,11 +16,11 @@ test_that("Main table results match for one pair * multiple tests", {
   results <- jasptools::run("TTestPairedSamples", "test.csv", options)
   table <- results[["results"]][["ttest"]][["data"]]
   expect_equal_tables(table,
-    list(99, 1, -2.22170938375, -1.16121720596087, "<unicode>",
-         -1.37211873031366, 0.191325909773409, 1, -11.6121720596087, "contNormal",
-         "-", "contGamma", "Student", "", 0.999999999999999, -2.1796113893332,
-         -0.921188118811881, -0.94536640190499,
-         "<unicode>", "", 1, 199, "", "", "", "Wilcoxon")
+    list("TRUE", -11.6121720596087, 1, -1.16121720596087, 99, -1.37211873031366,
+	       -2.22170938375, 1, 0.191325909773409, "-", "Student", "<unicode><unicode><unicode>",
+	       "contNormal", "contGamma", "FALSE", 199, 1, -0.921188118811881,
+	       "", -0.94536640190499, -2.1796113893332, 0.999999999999999,
+	       "", "", "Wilcoxon", "<unicode><unicode><unicode>", "", "")
   )
 })
 
@@ -30,9 +30,9 @@ test_that("Main table results match for multiple pairs * one test", {
   results <- jasptools::run("TTestPairedSamples", "test.csv", options)
   table <- results[["results"]][["ttest"]][["data"]]
   expect_equal_tables(table,
-                      list(99, 3.4809614504484e-20, "-", -11.6121720596087, "contNormal",
-                           "contGamma", 99, 0.0750733655901379, "-", -1.79895113042557,
-                           "contNormal", "contcor1")
+                      list("FALSE", 99, 3.4809614504484e-20, "-", -11.6121720596087, "contNormal",
+	                         "contGamma", "FALSE", 99, 0.0750733655901379, "-", -1.79895113042557,
+	                         "contNormal", "contcor1")
   )
 })
 
