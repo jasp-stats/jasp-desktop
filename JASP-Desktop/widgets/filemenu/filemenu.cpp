@@ -399,7 +399,7 @@ void FileMenu::setSyncRequest(const QString& path)
 	if (path.isEmpty())
 		return;
 
-	if (checkSyncFileExists(path))
+	if (checkSyncFileExists(path, true))
 	{
 		FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
 		event->setPath(path);
@@ -408,12 +408,22 @@ void FileMenu::setSyncRequest(const QString& path)
 	}
 }
 
-bool FileMenu::checkSyncFileExists(const QString &path)
+bool FileMenu::checkSyncFileExists(const QString &path, bool waitForExistence)
 {
 	if (path.startsWith("http"))
 		return true;
 
 	bool exist = false;
+	int maxExistTrials = waitForExistence ? 5 : 1;
+	int existTrials = 1;
+
+	while (!QFileInfo::exists(path) && existTrials < maxExistTrials)
+	{
+		// sometimes the file does not exist temporarily (when using Excel especially)
+		Log::log() << "Could not find sync file" << std::endl;
+		existTrials++;
+		Utils::sleep(100);
+	}
 
 	if (QFileInfo::exists(path))
 	{
