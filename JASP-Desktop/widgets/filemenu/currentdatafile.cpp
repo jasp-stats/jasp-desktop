@@ -4,6 +4,7 @@
 #include <QQmlEngine>
 #include <QFileInfo>
 #include <QDir>
+#include "log.h"
 
 CurrentDataFile::CurrentDataFile(QObject *parent): FileMenuObject(parent)
 {	
@@ -19,6 +20,7 @@ CurrentDataFile::~CurrentDataFile()
 
 void CurrentDataFile::setCurrentFilePath(const QString &path)
 {
+	Log::log() << "setCurrentFilePath " << path << std::endl;
 	_currentFilePath = path;
 	_currentFileListModel->setCurrentFilePath(_currentFilePath);
 	

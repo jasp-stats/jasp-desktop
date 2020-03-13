@@ -2,6 +2,7 @@
 #include "filesystementry.h"
 #include <QFileInfo>
 #include <QDir>
+#include "log.h"
 
 CurrentFileListModel::CurrentFileListModel(QObject *parent)
 	: FileMenuBasicListModel(parent, new CurrentFileFileSystem(parent))
@@ -18,6 +19,7 @@ CurrentFileFileSystem *CurrentFileListModel::getCurrentFileFSBModel()
 
 void CurrentFileListModel::setCurrentFilePath(const QString &newcurrent)
 {
+	Log::log() << "CurrentFileListModel::setCurrentFilePath " << newcurrent.toStdString() << std::endl;
 	beginResetModel();
 	
 	_fsbmCurrentFile->setCurrent(newcurrent);

@@ -156,6 +156,7 @@ FileEvent *FileMenu::close()
 
 void FileMenu::setCurrentDataFile(const QString &path)
 {
+	Log::log() << "setCurrentDataFile " << path << std::endl;
 	QString currentPath = _currentDataFile->getCurrentFilePath();
 	if (!currentPath.isEmpty())
 		_watcher.removePath(currentPath);
@@ -182,6 +183,8 @@ void FileMenu::setDataFileWatcher(bool watch)
 	QString path = _currentDataFile->getCurrentFilePath();
 	if (path.isEmpty())
 		return;
+
+	Log::log() << "setDataFileWatcher: " << path << " watch : " << watch << std::endl;
 
 	if (watch && !_currentDataFile->isOnlineFile(path))	_watcher.addPath(path);
 	else												_watcher.removePath(path);
@@ -229,6 +232,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 				QString datafile = event->dataFilePath();
 				if (datafile.isEmpty())
 					datafile = QString::fromStdString(DataSetPackage::pkg()->dataFilePath());
+				Log::log() << "dataSetIOCompleted save or open" << std::endl;
 				setCurrentDataFile(datafile);
 			}
 
@@ -244,6 +248,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
+		Log::log() << "dataSetIOCompleted sync " << (event->isSuccessful() ? "succeed" : "failed") << std::endl;
 		if (event->isSuccessful())		setCurrentDataFile(event->dataFilePath());
 		else
 			Log::log() << "Sync failed: " << event->getLastError().toStdString() << std::endl;
@@ -328,6 +333,7 @@ void FileMenu::analysisAdded(Analysis *analysis)
 
 void FileMenu::setSyncFile(FileEvent *event)
 {
+	Log::log() << "setSyncFile" << std::endl;
 	if (event->isSuccessful())
 		setCurrentDataFile(event->path());
 }
@@ -399,7 +405,7 @@ void FileMenu::setSyncRequest(const QString& path)
 	if (path.isEmpty())
 		return;
 
-	if (checkSyncFileExists(path))
+	if (checkSyncFileExists(path, true))
 	{
 		FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
 		event->setPath(path);
@@ -408,12 +414,21 @@ void FileMenu::setSyncRequest(const QString& path)
 	}
 }
 
-bool FileMenu::checkSyncFileExists(const QString &path)
+bool FileMenu::checkSyncFileExists(const QString &path, bool waitExist)
 {
 	if (path.startsWith("http"))
 		return true;
 
 	bool exist = false;
+	int maxExistTrials = waitExist ? 5 : 1;
+	int existTrials = 1;
+
+	while (!QFileInfo::exists(path) && existTrials < maxExistTrials)
+	{
+		Log::log() << "Could not find sync file" << std::endl;
+		existTrials++;
+		Utils::sleep(100);
+	}
 
 	if (QFileInfo::exists(path))
 	{
@@ -441,6 +456,7 @@ bool FileMenu::checkSyncFileExists(const QString &path)
 
 void FileMenu::clearSyncData()
 {
+	Log::log() << "clearSyncData" << std::endl;
 	setDataFileWatcher(false); // must be done before setting the current to empty.
 	_currentDataFile->setCurrentFilePath(QString());
 }
