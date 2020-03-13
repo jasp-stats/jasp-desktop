@@ -74,7 +74,7 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
     nameOfEffectSize        <- gettext("Effect Size")
   }
   
-  ttest$addColumnInfo(name = "v",     type = "string", title = "")
+  ttest$addColumnInfo(name = "v",     type = "string", title = "", combine = TRUE)
   
   ## if the user wants more than one test, add a column called "Test"
   if (sum(optionsList$allTests) > 1) 
@@ -200,23 +200,17 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
 
 .ttestOneSampleMainFill <-function(table, dataset, options, testStat, optionsList) {
   variables <- options$variables
-  if (length(variables) == 0)  
-    variables = "."
-  
   for (variable in variables) {
+    
     errors <- .hasErrors(dataset, 
                          message = 'short', 
                          type = c('observations', 'variance', 'infinity'),
                          all.target = variable,
                          observations.amount = '< 2')
-    for (test in seq_len(length(optionsList$whichTests))) {
-      currentTest <- optionsList$whichTests[[test]]
-      
-      ## don't run a test the user doesn't want
-      if (!currentTest) 
-        next
+    
+    for (test in optionsList$whichTests) {
 
-      row     <- list(v = variable, .isNewGroup = (sum(unlist(optionsList$whichTests)) > 1 && test == 1))
+      row     <- list(v = variable, test = test, .isNewGroup = .ttestRowIsNewGroup(test, optionsList$whichTests))
       rowName <- paste(test, variable, sep = "-")
       
       errorMessage <- NULL
@@ -237,16 +231,6 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
         table$addFootnote(errorMessage, colNames = testStat, rowNames = rowName)
       }
       
-      # if we have multiple tests, we want only variable name at the first row;
-      # and having additional column indicating the name of the tests
-      allTestNames <- c("Student", "Wilcoxon", "Z")
-      testName <- allTestNames[test]
-      row[["test"]] <- testName
-      
-      firstSelectedTest <- allTestNames[unlist(optionsList$whichTests)][1]
-      if (testName != firstSelectedTest)
-        row[["v"]] <- ""
-      
       table$addRows(row, rowNames = rowName)
     }
   }
@@ -259,7 +243,7 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
                       "lessThanTestValue"    ="less")
   dat <- na.omit(dataset[[ .v(variable) ]])
   n   <- length(dat)
-  if (test == 2) {
+  if (test == "Wilcoxon") {
     r <- stats::wilcox.test(dat, alternative = direction, mu = options$testValue,
                             conf.level = optionsList$percentConfidenceMeanDiff, conf.int = TRUE)
     df   <- ifelse(is.null(r$parameter), "", as.numeric(r$parameter))
@@ -277,7 +261,7 @@ TTestOneSample <- function(jaspResults, dataset = NULL, options, ...) {
       confIntEffSize <- sort(c(-Inf, tanh(zmbiss + qnorm(optionsList$percentConfidenceEffSize)*mrSE)))
     else if (direction == "greater")
       confIntEffSize <- sort(c(tanh(zmbiss + qnorm((1-optionsList$percentConfidenceEffSize))*mrSE), Inf))
-  } else if(test == 3){
+  } else if (test == "Z"){
     r <- BSDA::z.test(dat, alternative = direction, mu = options$testValue, 
                       sigma.x = options$stddev, 
                       conf.level = optionsList$percentConfidenceMeanDiff)

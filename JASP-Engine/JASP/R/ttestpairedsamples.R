@@ -73,7 +73,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   }
   
   ## if the user wants all tests, add a column called "Test"
-  if (sum(optionsList$allTests) == 2)
+  if (sum(optionsList$allTests) > 1)
     ttest$addColumnInfo(name = "test", title = gettext("Test"), type = "string")
 
   ttest$addColumnInfo(name = testStat, title = testStatName,    type = "number")
@@ -165,31 +165,17 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
                          all.target = c(p1, p2), 
                          observations.amount  = c('< 2'))
     
-    ## test is a number, indicating which tests should be run
-    ## "1" = optionsList$wantsStudents, "2" = optionsList$wantsWilcox
-    for (test in seq_len(length(optionsList$whichTests))) {
-
-      currentTest <- optionsList$whichTests[[test]]
-      ## don't run a test the user doesn't want
-      if (!currentTest)
-        next
+    for (test in optionsList$whichTests) {
       
-      row     <- list(.isNewGroup = (sum(unlist(optionsList$whichTests)) > 1 && test == 1))
+      row     <- list(test = test, .isNewGroup = .ttestRowIsNewGroup(test, optionsList$whichTests))
       rowName <- paste(test, p1, p2, sep = "-")
       
       ## hide the name of the variable pair for the second statistic
-      numTests <- sum(optionsList$allTests)
-      isSecondStatisticOfPair <- numTests > 1 && test == 2
+      numTests <- length(optionsList$whichTests)
+      isSecondStatisticOfPair <- numTests > 1 && test == optionsList$whichTests[numTests]
       row[["v1"]]  <- ifelse(isSecondStatisticOfPair, "", p1)
       row[["sep"]] <- ifelse(isSecondStatisticOfPair, "", "-")
       row[["v2"]]  <- ifelse(isSecondStatisticOfPair, "", p2)
-      
-      if (numTests > 1) {
-        if (test == 1)
-          row[["test"]] <- "Student"
-        else if (test == 2)
-          row[["test"]] <- "Wilcoxon"
-      }
       
       if (p1 != "" && p2 != "") {
         errorMessage <- NULL
@@ -231,7 +217,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   direction <- .ttestMainGetDirection(options$hypothesis)
   
   ## if Wilcox box is ticked, run a paired wilcoxon signed rank test
-  if (test == 2) {
+  if (test == "Wilcoxon") {
     res <- stats::wilcox.test(c1, c2, paired = TRUE,
                               conf.level = optionsList$percentConfidenceMeanDiff, 
                               conf.int = TRUE,
@@ -328,7 +314,7 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
                            message = 'short',
                            type = c('observations', 'variance', 'infinity'),
                            all.target = c(p1, p2), 
-                           observations.amount  = c('< 2', '> 5000'))
+                           observations.amount  = c('< 3', '> 5000'))
       
       if (!identical(errors, FALSE)) {
         row[["W"]] <- NaN

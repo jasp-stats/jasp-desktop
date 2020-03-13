@@ -230,23 +230,9 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
                          all.grouping = options$groupingVariable,
                          observations.amount = '< 2')
     
-    ## test is a number, indicating which tests should be run
-    for (test in seq_len(length(optionsList$whichTests))) {
+    for (test in optionsList$whichTests) {
       
-      # TODO Tim: whichTests should just be a character vector of test names requested. Then you lose the confusion of figuring out which test is which int and you don't need this check
-      ## don't run a test the user doesn't want
-      currentTest <- optionsList$whichTests[[test]]
-      if (!currentTest)
-        next
-      
-      if (test == 1)
-        whatTest <- "Student"
-      else if (test == 2)
-        whatTest <- "Welch"
-      else
-        whatTest <- "Mann-Whitney"
-      
-      row     <- list(v = variable, test = whatTest, .isNewGroup = (sum(unlist(optionsList$whichTests)) > 1 && test == 1))
+      row     <- list(v = variable, test = test, .isNewGroup = .ttestRowIsNewGroup(test, optionsList$whichTests))
       rowName <- paste(test, variable, sep = "-")
       
       errorMessage <- NULL
@@ -296,7 +282,7 @@ ttestIndependentMainTableRow <- function(variable, dataset, test, testStat, effS
   
   direction <- .ttestMainGetDirection(options$hypothesis)
   
-  if (test == 3) {
+  if (test == "Mann-Whitney") {
     r <- stats::wilcox.test(f, data = dataset,
                             alternative = direction,
                             conf.int = TRUE, conf.level = ciMeanDiff, paired = FALSE)
@@ -318,7 +304,7 @@ ttestIndependentMainTableRow <- function(variable, dataset, test, testStat, effS
       confIntEffSize <- sort(c(tanh(zRankBis + qnorm((1-ciEffSize))*rankBisSE), Inf))
   } else {
     r <- stats::t.test(f, data = dataset, alternative = direction,
-                       var.equal = test != 2, conf.level = ciMeanDiff, paired = FALSE)
+                       var.equal = test != "Welch", conf.level = ciMeanDiff, paired = FALSE)
     
     df   <- as.numeric(r$parameter)
     m    <- as.numeric(r$estimate[1]) - as.numeric(r$estimate[2])
@@ -326,7 +312,7 @@ ttestIndependentMainTableRow <- function(variable, dataset, test, testStat, effS
     
     num <-  (ns[1] - 1) * sds[1]^2 + (ns[2] - 1) * sds[2]^2
     sdPooled <- sqrt(num / (ns[1] + ns[2] - 2))
-    if (test == 2)  # Use different SE when using Welch T test!
+    if (test == "Welch")  # Use different SE when using Welch T test!
       sdPooled <- sqrt(((sds[1]^2) + (sds[2]^2)) / 2)
     
     d <- "."
