@@ -73,16 +73,21 @@
     return()
   
   if (options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator") {
+    
+    if (options[["testSetIndicatorVariable"]] %in% predictors)
+      JASP:::.quitAnalysis(gettextf("The variable '%s' can't be both a predictor and a test set indicator.", options[["testSetIndicatorVariable"]]))
+  
     indicatorVals <- unique(dataset[,.v(options[["testSetIndicatorVariable"]])])
     if (length(indicatorVals) != 2 || !all(0:1 %in% indicatorVals))
       JASP:::.quitAnalysis(gettext("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."))
+    
   }
   
   customChecks <- .getCustomErrorChecksKnnBoosting(dataset, options, type)
-  errors <- .hasErrors(dataset, type = c('infinity', 'observations'), custom = customChecks,
-                       all.target = variables.to.read,
-                       observations.amount = "< 2",
-                       exitAnalysisIfErrors = TRUE)
+  .hasErrors(dataset, type = c('infinity', 'observations'), custom = customChecks,
+             all.target = variables.to.read,
+             observations.amount = "< 2",
+             exitAnalysisIfErrors = TRUE)
 }
 
 .getCustomErrorChecksKnnBoosting <- function(dataset, options, type) {
