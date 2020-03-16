@@ -89,7 +89,7 @@ Form
 		Group
 		{
 			title: qsTr("Regression Coefficients")
-            CheckBox { name: "coeffEstimates";	label: qsTr("Estimates"); checked: true
+			CheckBox { name: "coeffEstimates";	label: qsTr("Estimates"); checked: true; id: coeffEstimates
                 onClicked: { if (!checked && bootstrapping.checked) bootstrapping.click() }
                 CheckBox
                 {
@@ -107,16 +107,16 @@ Form
                 }
 
             }
-			CheckBox { name: "stdCoeff";		label: qsTr("Standardized coefficients")	}
-			CheckBox { name: "oddsRatios";		label: qsTr("Odds ratios")					}
+			CheckBox { name: "stdCoeff";		label: qsTr("Standardized coefficients"); enabled: coeffEstimates.checked	}
+			CheckBox { name: "oddsRatios";		label: qsTr("Odds ratios")				; enabled: coeffEstimates.checked	}
 			CheckBox
 			{
-							name: "coeffCI";			label: qsTr("Confidence intervals")
+							name: "coeffCI";			label: qsTr("Confidence intervals"); enabled: coeffEstimates.checked
 				CIField {	name: "coeffCIInterval";	label: qsTr("Interval")				}
 				CheckBox {	name: "coeffCIOR";			label: qsTr("Odds ratio scale")		}
 			}
-			CheckBox { name: "robustSEOpt";		label: qsTr("Robust standard errors")		}
-			CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio")	}
+			CheckBox { name: "robustSEOpt";		label: qsTr("Robust standard errors");		enabled: coeffEstimates.checked	}
+			CheckBox { name: "VovkSellkeMPR";	label: qsTr("Vovk-Sellke maximum p-ratio"); enabled: coeffEstimates.checked	}
 		}
 
         Group
