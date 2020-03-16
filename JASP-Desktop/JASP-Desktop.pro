@@ -48,7 +48,6 @@ LIBS += -L.. -lJASP-Common
 windows:	LIBS += -llibboost_filesystem$$BOOST_POSTFIX -llibboost_system$$BOOST_POSTFIX -llibboost_date_time$$BOOST_POSTFIX -larchive.dll -llibreadstat -lole32 -loleaut32
 macx:   	LIBS += -lboost_filesystem-mt -lboost_system-mt -larchive -lz -lreadstat -liconv
 
-
 linux {
     LIBS += -larchive
     exists(/app/lib/*)	{ LIBS += -L/app/lib }
@@ -60,8 +59,6 @@ $$JASPTIMER_USED {
   linux:    LIBS += -lboost_timer -lboost_chrono
   macx:     LIBS += -lboost_timer-mt -lboost_chrono-mt
 }
-
-
 
 INCLUDEPATH += $$PWD/../JASP-Common/
 
@@ -86,7 +83,6 @@ exists(/app/lib/*) {
   #flatpak_appinfo_xml.files = ../Tools/flatpak.org.jaspstats.JASP.appdata.xml
   #flatpak_appinfo_xml.path = /app/share/appdata
   #INSTALLS += flatpak_appinfo_xml
-
 
   flatpak_appinfo_icon.files = ../Tools/flatpak/org.jaspstats.JASP.svg
   flatpak_appinfo_icon.path = /app/share/icons/hicolor/scalable/apps/
@@ -138,12 +134,10 @@ COPY_CRYPT = $$[ENVIRONMENT_CRYPTKEY] # We need to copy it to make sure the equa
   message("Key now set!")
 }
 
-
    macx:ICON = macOS/icon.icns
 windows:RC_FILE = icon.rc
 
 HELP_PATH = $${PWD}/../Docs/help
-
 
 SOURCES_TRANSLATIONS = $${PWD}/po
 
@@ -185,8 +179,15 @@ win32 {
 	maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp.po -o $${SOURCES_TRANSLATIONS}\jasp.po) &&
 	maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp_nl.po -o $${SOURCES_TRANSLATIONS}\jasp_nl.po)  &&
 
+	#Create jasp_nl.qm
 	maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${SOURCES_TRANSLATIONS}\jasp_nl.po -qm $${RESOURCES_TRANSLATIONS}\jasp_nl.qm) &&
-	maketranslations.commands += $$quote(copy $${RESOURCES_TRANSLATIONS}\*.qm $${RESOURCES_DESTINATION_TRANSLATIONS}\ )
+	maketranslations.commands += $$quote(copy $${RESOURCES_TRANSLATIONS}\*.qm $${RESOURCES_DESTINATION_TRANSLATIONS}\ ) &&
+
+    #Create R-JASP.mo translation file. (Need to add GETTEXT location to PATH environment.)
+    maketranslations.commands += $$quote($$PWD/../Tools/translate.cmd $$_R_HOME/bin \"$${GETTEXT_LOCATION}\" $$PWD/../Tools $$PWD/../JASP-Engine/JASP ) &&
+
+    #Create R-JASPgraphs.mo translation file. (Need to add GETTEXT location to PATH environment.)
+    maketranslations.commands += $$quote($$PWD/../Tools/translate.cmd $$_R_HOME/bin \"$${GETTEXT_LOCATION}\" $$PWD/../Tools $$PWD/../JASP-Engine/JASPgraphs )
 
     maketranslations.depends  = copyres
   }
@@ -196,6 +197,7 @@ unix {
 
   GETTEXT_LOCATION = $$(GETTEXT_PATH)
   isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
+  EXTENDED_PATH = $PATH:$$GETTEXT_LOCATION
 
   delres.commands += rm -rf $$RESOURCES_DESTINATION;
   copyres.commands += $(MKDIR) $$RESOURCES_DESTINATION ;
@@ -210,8 +212,17 @@ unix {
     maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp.po -o $$SOURCES_TRANSLATIONS/jasp.po ;
     maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp_nl.po -o $$SOURCES_TRANSLATIONS/jasp_nl.po ;
 
+    #Create jasp_nl.qm
     maketranslations.commands += lrelease $$SOURCES_TRANSLATIONS/jasp_nl.po -qm $$RESOURCES_TRANSLATIONS/jasp_nl.qm ;
     maketranslations.commands += cp $$RESOURCES_TRANSLATIONS/*.qm $$RESOURCES_DESTINATION_TRANSLATIONS/ ;
+
+    #Create R-JASP.mo translation file. (Need to add GETTEXT location to PATH environment.)
+    maketranslations.commands +=  PATH=$$EXTENDED_PATH; $$_R_HOME/Rscript $$PWD/../Tools/translate.R $$PWD/../JASP-Engine/JASP ;
+
+    #Create R-JASPgraphs.mo translation file. (Need to add GETTEXT location to PATH environment.)
+    maketranslations.commands +=  PATH=$$EXTENDED_PATH; $$_R_HOME/Rscript $$PWD/../Tools/translate.R $$PWD/../JASP-Engine/JASPgraphs ;
+
+
     maketranslations.depends  = copyres
   }
 }
@@ -605,7 +616,6 @@ SOURCES += \
     widgets/boundqmllavaantextarea.cpp \
     widgets/boundqmljagstextarea.cpp \
     widgets/boundqmlcomponentslist.cpp
-
 
 RESOURCES += \
     html/html.qrc \
