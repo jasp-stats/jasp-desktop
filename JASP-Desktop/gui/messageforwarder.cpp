@@ -3,22 +3,22 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include "utilities/settings.h"
+#include "utilities/appdirs.h"
 
-MessageForwarder::MessageForwarder(MainWindow *main) : QObject(main), _main(main)
+MessageForwarder::MessageForwarder(MainWindow *main) : QQuickItem(nullptr), _main(main)
 {
-	if(singleton != nullptr)
+	if(_singleton != nullptr)
 		throw std::runtime_error("There can be only ONE MessageForwarder!");
 
-	singleton = this;
+	_singleton = this;
 
-	connect(this, &MessageForwarder::showWarningSignal, main, &MainWindow::showWarning);
+	setParent(main);
 }
 
-MessageForwarder * MessageForwarder::singleton = nullptr;
+MessageForwarder * MessageForwarder::_singleton = nullptr;
 
 void MessageForwarder::showWarning(QString title, QString message)
 {
-	//emit singleton->showWarningSignal(title, message);
 	QMessageBox::warning(nullptr, title, message);
 }
 
@@ -54,13 +54,17 @@ MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title
 	}
 }
 
-MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString title, QString message)
+MessageForwarder::DialogResponse MessageForwarder::showSaveDiscardCancel(QString title, QString message, QString saveTxt, QString discardText, QString cancelText)
 {
 	QMessageBox box(QMessageBox::Question, title, message,  QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
-	box.setButtonText(QMessageBox::Save,		tr("Save"));
-	box.setButtonText(QMessageBox::Discard,		tr("Don't Save"));
-	box.setButtonText(QMessageBox::Cancel,		tr("Cancel"));
+	if(saveTxt == "")		saveTxt		= tr("Save");
+	if(discardText == "")	discardText = tr("Don't Save");
+	if(cancelText == "")	cancelText	= tr("Cancel");
+
+	box.setButtonText(QMessageBox::Save,		saveTxt);
+	box.setButtonText(QMessageBox::Discard,		discardText);
+	box.setButtonText(QMessageBox::Cancel,		cancelText);
 
 	switch(box.exec())
 	{
@@ -75,6 +79,12 @@ QString MessageForwarder::browseOpenFile(QString caption, QString browsePath, QS
 	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter);
 	else															return 	QFileDialog::getOpenFileName(nullptr, caption, browsePath, filter, nullptr, QFileDialog::DontUseNativeDialog);
 }
+
+QString MessageForwarder::browseOpenFileDocuments(QString caption, QString filter)
+{
+	return browseOpenFile(caption, AppDirs::documents(), filter);
+}
+
 
 QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedFilter)
 {
