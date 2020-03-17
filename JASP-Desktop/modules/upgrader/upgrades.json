@@ -175,8 +175,48 @@
 				"homogeneityBrown":	false,
 				"homogeneityWelch":	false
 			}
+		},
+		{
+			"comment": 		"If marginalMeansCIAdjustment was set to None, it must be set in 0.12 to none",
+			"conditional": 	{ "_args": [ { "marginalMeansCIAdjustment": "None" }] },
+			"changes":
+			{
+				"marginalMeansCIAdjustment" : "none"
+			}
 		}
-	]
+		]
+	},
+	{
+		"comment": "For version 0.12 we changed a lot of analyses and this also simplified some forms a bit.",
+		"from": { "module": "ANOVA",			"version": "0.11.1", "function": "AnovaRepeatedMeasures" 	},
+		"to":	{ "module": "ANOVA",			"version": "0.12"							},
+		"options":
+		[
+		{
+			"comment": 		"If marginalMeansCIAdjustment was set to None, it must be set in 0.12 to none",
+			"conditional": 	{ "_args": [ { "marginalMeansCIAdjustment": "None" }] },
+			"changes":
+			{
+				"marginalMeansCIAdjustment" : "none"
+			}
+		}
+		]
+	},
+	{
+		"comment": "For version 0.12 we changed a lot of analyses and this also simplified some forms a bit.",
+		"from": { "module": "ANOVA",			"version": "0.11.1", "function": "Ancova" 	},
+		"to":	{ "module": "ANOVA",			"version": "0.12"							},
+		"options":
+		[
+		{
+			"comment": 		"If marginalMeansCIAdjustment was set to None, it must be set in 0.12 to none",
+			"conditional": 	{ "_args": [ { "marginalMeansCIAdjustment": "None" }] },
+			"changes":
+			{
+				"marginalMeansCIAdjustment" : "none"
+			}
+		}
+		]
 	},
 
 	{

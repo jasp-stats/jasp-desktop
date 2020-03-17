@@ -203,7 +203,7 @@ void QMLListView::addRowComponentsDefaultOptions(Options *options)
 	}
 }
 
-void QMLListView::readModelProperty(QMap<QString, QString>* keyValueMap)
+void QMLListView::readModelProperty(QMap<QString, QString>* labelToValueMap)
 {
 	QVariant modelVar = getItemProperty("values");
 
@@ -222,16 +222,16 @@ void QMLListView::readModelProperty(QMap<QString, QString>* keyValueMap)
 		{
 			for (const QVariant& itemVariant : list)
 			{
-				QMap<QString, QVariant> labelValueMap = itemVariant.toMap();
-				if (labelValueMap.isEmpty())
+				QMap<QString, QVariant> labelValuePair = itemVariant.toMap();
+				if (labelValuePair.isEmpty())
 					terms.add(itemVariant.toString());
 				else
 				{
-					QString key = labelValueMap[textRole].toString();
-					QString value = labelValueMap[valueRole].toString();
-					terms.add(key);
-					if (keyValueMap)
-						(*keyValueMap)[key] = value;
+					QString label = labelValuePair[textRole].toString();
+					QString value = labelValuePair[valueRole].toString();
+					terms.add(label);
+					if (labelToValueMap)
+						(*labelToValueMap)[label] = value;
 				}
 			}
 			model()->initTerms(terms);
@@ -253,11 +253,11 @@ void QMLListView::readModelProperty(QMap<QString, QString>* keyValueMap)
 				for (int i = 0; i < srcModel->rowCount(); i++)
 				{
 					QModelIndex ind(srcModel->index(i, 0));
-					QString key = srcModel->data(ind, roleMap[textRole]).toString();
+					QString label = srcModel->data(ind, roleMap[textRole]).toString();
 					QString value = srcModel->data(ind, roleMap[valueRole]).toString();
-					terms.add(key);
-					if (keyValueMap)
-						(*keyValueMap)[key] = value;
+					terms.add(label);
+					if (labelToValueMap)
+						(*labelToValueMap)[label] = value;
 				}
 				model()->initTerms(terms);
 			}
