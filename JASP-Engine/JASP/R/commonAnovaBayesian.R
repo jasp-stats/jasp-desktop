@@ -1529,11 +1529,28 @@
       oldLevelInfo <- state[["levelInfo"]]$levelNames
       newLevelInfo <- levelInfo$levelNames
 
+      sortTerms <- function(x) {
+        # split b:a to c("b", "a"), sort it, and then paste it back
+        # otherwise posteriors samples between different runs are not correctly retrieved from the state.
+        sapply(strsplit(names(oldLevelInfo), ":", fixed = TRUE), function(x) paste(sort(x), collapse = ":"))
+      }
+
+      tmp_old <- sortTerms(names(oldLevelInfo))
+      tmp_new <- sortTerms(names(newLevelInfo))
+      oldNames <- names(oldLevelInfo)
+      newNames <- names(newLevelInfo)
+      names(oldNames) <- tmp_old
+      names(newNames) <- tmp_new
+
       if (!identical(newLevelInfo, oldLevelInfo)) {
-        for (nm in intersect(names(oldLevelInfo), names(newLevelInfo))) {
-          idx <- !(oldLevelInfo[[nm]] %in% newLevelInfo[[nm]])
-          renameFrom <- c(renameFrom, oldLevelInfo[[nm]][idx])
-          renameTo   <- c(renameTo,   newLevelInfo[[nm]][idx])
+        for (nm in intersect(names(oldNames), names(newNames))) {
+
+          nm_old <- oldNames[nm]
+          nm_new <- newNames[nm]
+
+          idx <- !(oldLevelInfo[[nm_old]] %in% newLevelInfo[[nm_new]])
+          renameFrom <- c(renameFrom, oldLevelInfo[[nm_old]][idx])
+          renameTo   <- c(renameTo,   newLevelInfo[[nm_new]][idx])
         }
       }
     }
