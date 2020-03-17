@@ -160,7 +160,7 @@ PlotRobustnessSequential <- function(
 
     sexAcis <- ggplot2::sec_axis(
       trans  = ~.,
-      name   = "Evidence",
+      name   = gettext("Evidence",domain="R-JASPgraphs"),
       breaks = yBreaksR,
       labels = yLabelsR
     )

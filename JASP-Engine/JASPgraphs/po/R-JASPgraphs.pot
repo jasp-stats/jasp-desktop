@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASPgraphs 0.4.11\n"
-"POT-Creation-Date: 2020-03-05 13:15\n"
+"POT-Creation-Date: 2020-03-17 09:02\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -98,6 +98,9 @@ msgid "Very Strong"
 msgstr ""
 
 msgid "Extreme"
+msgstr ""
+
+msgid "Evidence"
 msgstr ""
 
 msgid "lineColors and lineTypes must have the same length as the number of groups in dfLines."
