@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-03-11 13:31\n"
+"POT-Creation-Date: 2020-03-18 14:49\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -142,7 +142,7 @@ msgstr ""
 msgid "%1$s Contrast - %2$s"
 msgstr ""
 
-msgid "Nonconforming number of contrast coefficients."
+msgid "Please specify an additional contrast."
 msgstr ""
 
 msgid "Wrong number of custom contrast matrix rows."
@@ -496,7 +496,7 @@ msgstr ""
 msgid "(10 - 99)"
 msgstr ""
 
-msgid "The null hypothesis specifies that the distribution of \n                      first numbers %1$s in the population conforms to \n                      Benford’s law."
+msgid "The null hypothesis specifies that the distribution of \n                      first numbers %1$s in the population conforms to \n                      Benford\342\200\231s law."
 msgstr ""
 
 msgid "Chi-square"
@@ -728,6 +728,9 @@ msgid "<b>Figure %1$i.</b> The distribution of book values in the population. Th
 msgstr ""
 
 msgid "<u>Audit Risk Model</u>"
+msgstr ""
+
+msgid "Audit risk (%1$s%%) = Inherent risk (%2$s%%) x Control risk (%3$s%%) x Detection risk (%4$s%%)"
 msgstr ""
 
 msgid "Prior to the substantive testing phase, the inherent risk was determined to be <b>%1$s</b>. The internal control risk was determined\n                        to be <b>%2$s</b>. According to the Audit Risk Model, the required detection risk to maintain an audit risk of <b>%3$s</b> should be <b>%4$s</b>."
@@ -1999,7 +2002,7 @@ msgstr ""
 msgid "P(incl|data)"
 msgstr ""
 
-msgid "Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Mathôt."
+msgid "Compares models that contain the effect to equivalent models stripped of the effect. Higher-order interactions are excluded. Analysis suggested by Sebastiaan Math\303\264t."
 msgstr ""
 
 msgid "Some Bayes factors could not be calculated. Inclusion probabilities and Bayes factors are calculated while excluding these models. The results may be uninterpretable!"
@@ -2633,6 +2636,9 @@ msgid "Train and validation: %d"
 msgstr ""
 
 msgid "Object passed to .scaleNumericData.matrix was not numeric!"
+msgstr ""
+
+msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value,the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
 
 msgid "Please provide another variable."
@@ -3835,6 +3841,9 @@ msgstr ""
 msgid "Not all endogenous variables are admissible. Inadmissible endogenous variables: %s. Only scale or ordinal endogenous variables allowed."
 msgstr ""
 
+msgid "FIML missing value handling only available when all endogenous variables are of scale type. Ordinal endogenous variables in the model: %s"
+msgstr ""
+
 msgid "Estimation failed\nMessage:\n%s"
 msgstr ""
 
@@ -5030,9 +5039,6 @@ msgid "less"
 msgstr ""
 
 msgid "For all tests, the alternative hypothesis specifies that group %1$s is %2$s than group %3$s."
-msgstr ""
-
-msgid "Levene's test is significant (p < .05), \n\t\t\t\t\t  suggesting a violation of the equal variance assumption"
 msgstr ""
 
 msgid "Glass' delta uses the standard deviation of group %1$s of variable %2$s."
