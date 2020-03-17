@@ -52,8 +52,8 @@ protected:
 	QString						_currentText;
 	QString						_currentColumnType;
 	ListModelTermsAvailable*	_model					= nullptr;
-	QMap<QString, QString>		_keyToValueMap;
-	QMap<QString, QString>		_valueToKeyMap;
+	QMap<QString, QString>		_valueToLabelMap;
+	QMap<QString, QString>		_labelToValueMap;
 
 
 	void _resetItemWidth();

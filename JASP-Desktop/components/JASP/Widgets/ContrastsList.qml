@@ -86,7 +86,7 @@ Item
 		cellHeight			: 160 * preferencesModel.uiScale
 		height				: count * cellHeight + 10
 		visible				: count > 0
-		source				: [ { name: "contrasts", condition: "contrastValue == 'custom'", conditionVariables: [{ name: "contrastValue", component: "contrast", property: "currentText"}] }]
+		source				: [ { name: "contrasts", condition: "contrastValue == 'custom'", conditionVariables: [{ name: "contrastValue", component: "contrast", property: "currentValue"}] }]
 
 		rowComponents:
 		[
