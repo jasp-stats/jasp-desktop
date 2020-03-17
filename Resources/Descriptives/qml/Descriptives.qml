@@ -27,7 +27,7 @@ Form
 	VariablesForm
 	{
 		AvailableVariablesList	{ name: "allVariablesList"								}
-		AssignedVariablesList	{ name: "variables";		title: qsTr("Variables");	id: assignedVariables}
+		AssignedVariablesList	{ name: "variables";		title: qsTr("Variables")	}
 		AssignedVariablesList	{ name: "splitby";			title: qsTr("Split");		singleVariable: true; suggestedColumns: ["ordinal", "nominal"];	id: splitBy }
 	}
 
@@ -78,7 +78,7 @@ Form
             {
                 CheckBox
                 {
-                    name: "scatterPlot";	label: qsTr("Scatter Plots"); enabled: assignedVariables.count > 1
+                    name: "scatterPlot";	label: qsTr("Scatter Plots")
                     RadioButtonGroup
                     {
                         name:	"graphTypeAbove";
@@ -133,12 +133,12 @@ Form
             CheckBox
             {
                                     name: "plotVariables";			label: qsTr("Distribution plots")
-                CheckBox {			name: "distPlotDensity";		label: qsTr("Display density") 											}
+                CheckBox {			name: "distPlotDensity";		label: qsTr("Display density")					}
             }
 
-            CheckBox {				name: "plotCorrelationMatrix";	label: qsTr("Correlation plots"); enabled: assignedVariables.count > 1	}
-            CheckBox {				name: "descriptivesQQPlot";		label: qsTr("Q-Q plots")												}
-            CheckBox {				name: "descriptivesPiechart";	label: qsTr("Pie charts")												}
+            CheckBox {				name: "plotCorrelationMatrix";	label: qsTr("Correlation plots")				}
+            CheckBox {				name: "descriptivesQQPlot";		label: qsTr("Q-Q plots")						}
+            CheckBox {				name: "descriptivesPiechart";	label: qsTr("Pie charts")						}
         }
 	}
 

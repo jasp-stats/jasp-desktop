@@ -2055,7 +2055,7 @@ callback <- function(results=NULL, progress=NULL) {
   }
 
   # Find all values we do not want in the output, e.g. we do not want to show !=
-  replaceInMessage <- list('!=' = '≠', '==' = '=')
+  replaceInMessage <- list('!=' = '\u2260', '==' = '=')
   for (i in 1:length(replaceInMessage)) {
     if (grepl(names(replaceInMessage)[i], message)) {
       message <- gsub(names(replaceInMessage)[i], replaceInMessage[[i]], message)
