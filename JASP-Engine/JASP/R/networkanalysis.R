@@ -729,8 +729,12 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
   names(allLegends) <- names(allNetworks) # allows indexing by name
 
+  basePlotSize <- 320
+  legendMultiplier <- 0.4 * basePlotSize
+  width <- height <- basePlotSize + allLegends * legendMultiplier
+
   for (v in names(allNetworks))
-    networkPlotContainer[[v]] <- createJaspPlot(title = v, aspectRatio = aspectRatio)
+    networkPlotContainer[[v]] <- createJaspPlot(title = v, aspectRatio = aspectRatio, width = width[v], height = height[v])
 
   .suppressGrDevice({
 
