@@ -21,6 +21,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     dataset <- .metaAnalysisReadData(dataset, options)
     .metaAnalysisCheckErrors(dataset, options)
   }
+  
   # Output tables
   .metaAnalysisFixRandTable(jaspResults, dataset, options, ready)
   .metaAnalysisCoeffTable(jaspResults, dataset, options, ready)
@@ -248,13 +249,13 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   covMatTable$addColumnInfo(name = "name",  type = "string",  title = "")
   if(!ready) {
     coeffVcov <- NULL
-    covMatTable$addColumnInfo(name = "intrcpt", type = "number", title = "...")
+    covMatTable$addColumnInfo(name = "intercept", type = "number", title = "...")
   } else {
     rma.fit   <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
     coeffVcov <- try(vcov(rma.fit))
-    cov       <- colnames(coeffVcov)
-    for(i in 1:length(cov))
-      covMatTable$addColumnInfo(name = cov[[i]], type = "number")
+    colnames(coeffVcov) <- .metaAnalysisMakePrettyCoeffNames(colnames(coeffVcov), dataset)
+    for (i in seq_along(colnames(coeffVcov)))
+      covMatTable$addColumnInfo(name = colnames(coeffVcov)[i], type = "number")
   }
 
   jaspResults[["covMatTable"]] <- covMatTable
@@ -393,7 +394,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   # Compute/get model
   rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready = TRUE)
   coeff   <- coef(summary(rma.fit))
-  cov     <- rownames(coeff)
+  cov     <-.metaAnalysisMakePrettyCoeffNames(rownames(coeff), dataset)
   if (options$includeConstant) {
     start <- 1
   } else {
@@ -496,7 +497,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
       jaspResults[["covMatTable"]]$addRows(row)
     }
   } else
-    jaspResults[["covMatTable"]]$addRows(list(name = "...", intrcpt = "."))
+    jaspResults[["covMatTable"]]$addRows(list(name = "...", intercept = "."))
 }
 
 .metaAnalysisRankTestFill <- function(jaspResults, dataset, options, ready) {
@@ -1353,4 +1354,54 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 .metaAnalysisSetError <- function(res, table) {
   if(isTryError(res))
     table$setError(.extractErrorMessage(res))
+}
+
+# Replaces "intrcpt" with "intercept" and concated "factorNamelevelName" with "factorName (levelName)"
+.metaAnalysisMakePrettyCoeffNames <- function(coeffNames, dataset, concatFactorNames = NULL) {
+  newNames <- coeffNames
+  
+  if (is.null(concatFactorNames))
+    concatFactorNames <- .metaAnalysisMapConcatFactorNames(dataset)
+  
+  for (i in seq_along(coeffNames)) {
+    coeffName <- coeffNames[i]
+    
+    if (coeffName == "intrcpt") {
+      newNames[i] <- "intercept"
+    } else if (!is.null(concatFactorNames)) {
+      coeffNameEnc <- .v(coeffName)
+      if (grepl(":", coeffNameEnc, fixed = TRUE)) { # it's an interaction term
+        terms <- unlist(strsplit(coeffNameEnc, ":", fixed = TRUE))
+        replaced <- .metaAnalysisMakePrettyCoeffNames(.unv(terms), dataset, concatFactorNames)
+        newNames[i] <- paste(replaced, collapse = "\u2009\u273b\u2009")
+      } else { # it's a regular term
+        match <- which(concatFactorNames == coeffName)
+        if (length(match) == 1)
+          newNames[i] <- names(concatFactorNames)[match]
+      }
+    }
+  }
+  
+  return(newNames)
+}
+
+# Creates a named character vector with values = "factorNameLevelName" and names = "factorName (levelName)"
+.metaAnalysisMapConcatFactorNames <- function(dataset) {
+  factorCols <- unlist(lapply(dataset, is.factor))
+  if (length(factorCols) == 0)
+    return(NULL)
+  
+  dataset <- dataset[factorCols]
+  
+  mapping <- levelsPerFactor <- lapply(dataset, levels)
+  names(levelsPerFactor) <- .unv(names(levelsPerFactor))
+  names(mapping) <- NULL
+  
+  for (i in seq_along(levelsPerFactor)) {
+    values <- paste0(names(levelsPerFactor)[i], levelsPerFactor[[i]])
+    values <- setNames(values, paste0(names(levelsPerFactor)[i], " (", levelsPerFactor[[i]], ")"))
+    mapping[[i]] <- values
+  }
+  
+  return(unlist(mapping))
 }
