@@ -70,7 +70,7 @@ Popup
 					margins:	jaspTheme.generalAnchorMargin
 				}
 
-				function browse() { return mainWindow.browseOpenFileDocuments(qsTr("Select a JASP Module"), "*.tar.gz"); }
+				function browse() { return messages.browseOpenFileDocumentsQML(qsTr("Select a JASP Module"), "*.tar.gz"); }
 
 
 				onClicked:		descriptionViewer.currentlySelectedFilePath = browse();

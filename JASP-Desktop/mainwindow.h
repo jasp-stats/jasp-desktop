@@ -123,11 +123,8 @@ public slots:
 	void zoomResetKeyPressed();
 	void setLanguage(int languageIndex);
 
-	//For qml:
-	void	showWarning(QString title, QString msg)								{ MessageForwarder::showWarning(title, msg); }
-	QString browseOpenFile(QString caption, QString browsePath, QString filter) { return MessageForwarder::browseOpenFile(caption, browsePath, filter); }
-	QString browseOpenFileDocuments(QString caption, QString filter);
-	QString versionString()														{ return "JASP " + QString::fromStdString(AppInfo::version.asString(true)); }
+
+	QString	versionString()	{ return "JASP " + QString::fromStdString(AppInfo::version.asString(true)); }
 
 	void	openFolderExternally(QDir folder);
 	void	showLogFolder();

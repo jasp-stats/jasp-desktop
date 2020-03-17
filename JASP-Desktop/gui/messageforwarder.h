@@ -1,18 +1,23 @@
 #ifndef MESSAGEFORWARDER_H
 #define MESSAGEFORWARDER_H
 
-#include <QObject>
+#include <QQuickItem>
 #include <string>
 
 class MainWindow;
 
-class MessageForwarder : public QObject
+class MessageForwarder : public QQuickItem
 {
 	Q_OBJECT
 public:
+	enum class DialogResponse { Cancel, Yes, No, Save, Discard };
+	Q_ENUM(DialogResponse)
+
+
 	explicit MessageForwarder(MainWindow *main);
 
-	enum class DialogResponse { Cancel, Yes, No, Save, Discard };
+	static MessageForwarder * msgForwarder() { return _singleton; }
+
 
 	static void showWarning(QString title, QString message);
 	static void showWarning(std::string title, std::string message)		{ showWarning(QString::fromStdString(title),	QString::fromStdString(message));	}
@@ -27,21 +32,23 @@ public:
 	static bool showYesNo(const char * title,	const char * message,	const char * YesButtonText	= "",	const char * NoButtonText = "")	{ return showYesNo(QString(title), QString(message), QString(YesButtonText), QString(NoButtonText)); }
 
 
-	static DialogResponse showSaveDiscardCancel(QString title, QString message);
-	static DialogResponse showYesNoCancel(QString title, QString message, QString YesButtonText = "", QString NoButtonText = "", QString CancelButtonText = "");
+	static DialogResponse showSaveDiscardCancel(QString title, QString message, QString saveTxt = "",		QString discardText = "",	QString cancelText = "");
+	static DialogResponse showYesNoCancel(		QString title, QString message, QString YesButtonText = "", QString NoButtonText = "",	QString CancelButtonText = "");
 
 	static QString browseOpenFile(QString caption, QString browsePath, QString filter);
+	static QString browseOpenFileDocuments(QString caption, QString filter);
 	static QString browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedFilter = nullptr);
 	static QString browseOpenFolder(QString caption, QString browsePath);
 
-
-signals:
-	void showWarningSignal(QString title, QString message);
-
+	//Some non-static links to have QML handle it. Without figuring out how qmlRegisterSingletonType() works :p
 public slots:
+	DialogResponse	showSaveDiscardCancelQML(QString title, QString message, QString saveTxt = "", QString discardText = "",	QString cancelText = "")	{ return showSaveDiscardCancel(title, message, saveTxt, discardText, cancelText); }
+	void			showWarningQML(QString title, QString message)																							{ showWarning(title, message); }
+	QString			browseOpenFileQML(QString caption, QString browsePath, QString filter)																	{ return browseOpenFile(caption, browsePath, filter); }
+	QString			browseOpenFileDocumentsQML(QString caption, QString filter)																				{ return browseOpenFileDocuments(caption, filter); }
 
 private:
-	static		MessageForwarder	*singleton;
+	static		MessageForwarder	*_singleton;
 				MainWindow			*_main;
 };
 

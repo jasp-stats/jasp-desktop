@@ -145,13 +145,14 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	//loadDefaultFont(); //Maybe later?
 
-	qmlRegisterType<DataSetView>			("JASP", 1, 0, "DataSetView");
-	qmlRegisterType<JaspTheme>				("JASP", 1, 0, "JaspTheme");
-	qmlRegisterType<AnalysisForm>			("JASP", 1, 0, "AnalysisForm");
-	qmlRegisterType<JASPControlBase>		("JASP", 1, 0, "JASPControlBase");
-	qmlRegisterUncreatableType<JASPControlBase>("JASP", 1,0,"JASP","Impossible to create JASP Object");
-	qmlRegisterType<JASPDoubleValidator>	("JASP", 1, 0, "JASPDoubleValidator");
-	qmlRegisterType<ResultsJsInterface>		("JASP", 1, 0, "ResultsJsInterface");
+	qmlRegisterType<DataSetView>				("JASP", 1, 0, "DataSetView");
+	qmlRegisterType<JaspTheme>					("JASP", 1, 0, "JaspTheme");
+	qmlRegisterType<AnalysisForm>				("JASP", 1, 0, "AnalysisForm");
+	qmlRegisterType<JASPControlBase>			("JASP", 1, 0, "JASPControlBase");
+	qmlRegisterUncreatableType<JASPControlBase>	("JASP", 1, 0 ,"JASP", "Impossible to create JASP Object"); //This is here to keep JASP.enum short I guess?
+	qmlRegisterType<JASPDoubleValidator>		("JASP", 1, 0, "JASPDoubleValidator");
+	qmlRegisterType<ResultsJsInterface>			("JASP", 1, 0, "ResultsJsInterface");
+	qmlRegisterUncreatableType<MessageForwarder>("JASP", 1, 0, "MessageForwarder", "You can't touch this");
 
 
 	QTimer::singleShot(0, [&](){ loadQML(); });
@@ -380,6 +381,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("engineSync",				_engineSync				);
 	_qml->rootContext()->setContextProperty("helpModel",				_helpModel				);
 	_qml->rootContext()->setContextProperty("jaspTheme",				nullptr					); //Will be set from jaspThemeChanged()!
+	_qml->rootContext()->setContextProperty("messages",					MessageForwarder::msgForwarder());
 
 	_qml->rootContext()->setContextProperty("baseBlockDim",				20); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",				16);
@@ -929,10 +931,10 @@ bool MainWindow::checkPackageModifiedBeforeClosing()
 	}
 	[[clang::fallthrough]];
 
-	case MessageForwarder::DialogResponse::Cancel:		return false;
+	case MessageForwarder::DialogResponse::Cancel:			return false;
 
-	default:											[[clang::fallthrough]];
-	case MessageForwarder::DialogResponse::Discard:		return true;
+	default:												[[clang::fallthrough]];
+	case MessageForwarder::DialogResponse::Discard:			return true;
 	}
 }
 
@@ -1672,11 +1674,6 @@ void MainWindow::setAnalysesAvailable(bool analysesAvailable)
 void MainWindow::resetQmlCache()
 {
 	_qml->clearComponentCache();
-}
-
-QString MainWindow::browseOpenFileDocuments(QString caption, QString filter)
-{
-	return MessageForwarder::browseOpenFile(caption, AppDirs::documents(), filter);
 }
 
 void MainWindow::makeAppleMenu()
