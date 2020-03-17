@@ -30,6 +30,10 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
   dependents <- derivedOptions[["variables"]]
   ttestRows <- .ttestBayesianCreateTtestRows(dependents, options, derivedOptions, ttestState)
   ttestTable$setData(ttestRows)
+
+  if (!is.null(derivedOptions[["footnotes"]]))
+    ttestTable$addFootnote(derivedOptions[["footnotes"]])
+
   ttestContainer[["ttestTable"]] <- ttestTable
   if (!derivedOptions[["ready"]])
     return(ttestResults)
