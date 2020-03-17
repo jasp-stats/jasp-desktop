@@ -288,6 +288,21 @@
     derivedOptions[["wilcoxTest"]] <- FALSE
 
     dependents <- sapply(options[["pairs"]], paste, collapse = " - ")
+    duplicatedDependents <- duplicated(dependents)
+    if (any(duplicatedDependents)) {
+
+      derivedOptions[["footnotes"]] <- sprintf(
+        ngettext(sum(duplicatedDependents),
+                 "The following pair is duplicated: %s",
+                 "The following pairs are duplicated: %s"
+        ),
+        paste(dependents[duplicatedDependents], collapse = ", ")
+      )
+      dependents <- unique(dependents)
+
+    }
+
+    derivedOptions[["duplicatedDependents"]] <- duplicatedDependents
     derivedOptions[["variables"]]    <- dependents
     derivedOptions[["pairs"]]        <- options[["pairs"]]
     names(derivedOptions[["pairs"]]) <- dependents
@@ -421,7 +436,7 @@
       ttestRows[, "variable"] <- dependents
   } else {
     ttestRows[, "separator"] <- "-"
-    nms <- unlist(options[["pairs"]])
+    nms <- unlist(options[["pairs"]][!derivedOptions[["duplicatedDependents"]]])
     ttestRows[, "variable1"] <- nms[seq(1, length(nms), 2)]
     ttestRows[, "variable2"] <- nms[seq(2, length(nms), 2)]
   }
