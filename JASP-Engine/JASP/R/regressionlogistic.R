@@ -618,9 +618,10 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
         
         if (is.null(bootstrapResults[[bootname]])) {
 
-          # we compute additional statistics while bootstrapping, but we can't do this using boot
-          # (this is not true, you can boot whatever statistics you want, but ok... the bootstrapping should get some review anyway at some point)
+          # vandenman: we compute additional statistics while bootstrapping, but we can't do this using boot
           # so we hack it in there using an environment
+          # kucharssim: this is not true, you can boot whatever statistics you want, but ok... the bootstrapping should get some review anyway at some point
+          # discussion here: https://github.com/jasp-stats/jasp-desktop/pull/3962#discussion_r394348052
           envir <- new.env()
           envir$idx <- envir$idx_rse <- 0L
           envir$stdEst <- envir$robustSE <-
