@@ -161,7 +161,7 @@ Form
 		{
 			columns: 2
 			CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect size")						}
-			CheckBox { name: "postHocTestPooledError";	label: qsTr("Pool error term for RM factors")	}
+			CheckBox { name: "postHocTestPooledError";	label: qsTr("Pool error term for RM factors");			checked: true	}
 		}
 		
 		Group

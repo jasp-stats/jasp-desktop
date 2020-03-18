@@ -917,9 +917,9 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
           levelBNoDots <- gsub(.unv(comparisons[[compIndex]][2]), pattern = "\\.", replacement = " ")
           facLevelNoDots <- gsub(longData[[var]], pattern = "\\.", replacement = " ")
 
-          x <- subset(longData, facLevelNoDots == levelANoDots)
+          x <- subset(longData, gsub("X", "", facLevelNoDots) == gsub("X", "", levelANoDots))
           x <- tapply(x[[.v("dependent")]], x[[.v("subject")]], mean)
-          y <- subset(longData, facLevelNoDots == levelBNoDots)
+          y <- subset(longData, gsub("X", "", facLevelNoDots) == gsub("X", "", levelBNoDots))
           y <- tapply(y[[.v("dependent")]], y[[.v("subject")]], mean)
           
           tResult <- t.test(x, y, paired= TRUE, var.equal = FALSE, conf.level = bonfAdjustCIlevel)
@@ -1240,6 +1240,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
           allTestResults[[coefIndex]] <- t.test(as.matrix(newDF) %*% contrCoef[[coefIndex]])
         }
         
+        contrastResult[["estimate"]]<- sapply(allTestResults, function(x) x[["estimate"]])
         contrastResult[["t.ratio"]] <- sapply(allTestResults, function(x) x[["statistic"]])
         contrastResult[["df"]]      <- sapply(allTestResults, function(x) x[["parameter"]])
         contrastResult[["SE"]]      <- sapply(allTestResults, function(x) x[["estimate"]] /  x[["statistic"]])
