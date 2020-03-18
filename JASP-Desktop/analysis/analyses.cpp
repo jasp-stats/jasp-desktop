@@ -85,7 +85,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	{
 		std::string title			= analysisData.get("title", "").asString();
 		auto *	analysisEntry		= DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
-				analysis			= create(analysisEntry, id, status, false, title, analysisData["version"].asString(), &optionsJson);
+				analysis			= create(analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), &optionsJson);
 		auto *	dynMod				= analysisEntry->dynamicModule();
 
 		if(!dynMod->loaded())

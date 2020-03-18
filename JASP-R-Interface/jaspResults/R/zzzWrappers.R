@@ -98,7 +98,7 @@ createJaspPlot <- function( plot = NULL, title = "",    width = 320,   height = 
 createJaspContainer <- function(  title = "",     dependencies = NULL,          position = NULL)
   return(jaspContainerR$new(      title = title,  dependencies = dependencies,  position = position))
 
- createJaspTable <- function( title="",       data = NULL, colNames = NULL,     colTitles = NULL,       overtitles = NULL,       colFormats = NULL,       rowNames = NULL,     rowTitles = NULL,      dependencies = NULL,         position = NULL,     expectedRows = NULL,          expectedColumns = NULL)
+createJaspTable <- function( title="",       data = NULL, colNames = NULL,     colTitles = NULL,       overtitles = NULL,       colFormats = NULL,       rowNames = NULL,     rowTitles = NULL,      dependencies = NULL,         position = NULL,     expectedRows = NULL,          expectedColumns = NULL)
   return(jaspTableR$new(      title = title,  data = data, colNames = colNames, colTitles = colTitles,  overtitles = overtitles, colFormats = colFormats, rowNames = rowNames, rowTitles = rowTitles, dependencies = dependencies, position = position, expectedRows = expectedRows,  expectedColumns = expectedColumns))
 
 # if you change "hide me" here then also change it in Common.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
@@ -158,8 +158,8 @@ jaspResultsR <- R6Class(
 				"Rcpp_jaspPlot"      = jaspPlotR$new(jaspObject = cppObj),
 				"Rcpp_jaspTable"     = jaspTableR$new(jaspObject = cppObj),
 				"Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
-        "Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
-        "Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
+        		"Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
+        		"Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
 				"Rcpp_jaspHtml"      = jaspHtmlR$new(jaspObject = cppObj),
 				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)), domain = NA)
 			))
@@ -525,10 +525,10 @@ jaspTableR <- R6Class(
 			return()
 		},
 
-		addColumns  = function(cols) private$jaspObject$addColumns(cols),
-    setData     = function(data) private$jaspObject$setData(data),
+	addColumns  = function(cols) private$jaspObject$addColumns(cols),
+   	setData     = function(data) private$jaspObject$setData(data),
 
-		addFootnote = function(message = "", symbol = NULL, colNames = NULL, rowNames = NULL) {
+	addFootnote = function(message = "", symbol = NULL, colNames = NULL, rowNames = NULL) {
       if (is.null(message) || !is.character(message) || length(message) == 0)
       {
         print("addFootnote got a strange message:")

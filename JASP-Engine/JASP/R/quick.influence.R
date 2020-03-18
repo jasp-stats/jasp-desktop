@@ -46,9 +46,9 @@ quick.influence <- function(x, ...) {
 }
 
 print.quick.influence <- function(x, ...) {
-  marks = c('***  ⎹ ','**  ⎹ ','*  ⎹ ','.  ⎹ ','  ⎹ ')
+  marks = c('***  \u23B9 ','**  \u23B9 ','*  \u23B9 ','.  \u23B9 ','  \u23B9 ')
   cutof = c(0,.001,.01,.05,.1,1)
-  M = with(x, data.frame(` ` = "⎸", 
+  M = with(x, data.frame(` ` = "\u23B8", 
             studentized = studentized, `p-value` = stud.pval, ` ` = marks[findInterval(stud.pval, cutof)],
             hatvalues = hatvalues, `p-value` = hat.pval, ` ` = marks[findInterval(hat.pval, cutof)],
             mahalanobis = mahalanobis, `p-value` = manh.pval, ` ` = marks[findInterval(manh.pval, cutof)],

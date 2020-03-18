@@ -366,7 +366,6 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	args << QString::number(no) << QString::number(ProcessInfo::currentPID()) << QString::fromStdString(Log::logFileNameBase) << QString::fromStdString(Log::whereStr());
 
 	env.insert("TMPDIR", tq(TempFiles::createTmpFolder()));
-	//env.insert("LANG", "nl"); //This works to change language from engine start
 
 #ifdef _WIN32
 	QString rHomePath = programDir.absoluteFilePath("R");
@@ -378,7 +377,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	QString rHomePath = programDir.absoluteFilePath("R/lib/libR.so");
 	if (QFileInfo(rHomePath).exists() == false)
 #ifdef FLATPAK_USED
-		rHomePath = "/app/lib64/R/";
+		rHomePath = "/app/lib64/R/"; //Tools/flatpak/org.jaspstats.JASP.json also sets R_HOME to /app/lib64 for 32bits...
 #else
 		rHomePath = "/usr/lib/R/";
 #endif

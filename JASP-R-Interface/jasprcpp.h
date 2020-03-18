@@ -91,4 +91,7 @@ columnType jaspRCPP_getColumnType(std::string columnName);
 void jaspRCPP_crashPlease();
 void jaspRCPP_checkForCrashRequest();
 
+
+std::string __sinkMe(const std::string code);
+
 #endif // JASPRCPP_H

@@ -7,7 +7,9 @@ GENERATE_LANGUAGE_FILES = false
 message("AM_I_BUILDBOT: '$$[AM_I_BUILDBOT]'")
 COPY_BUILDBOTNESS = $$[AM_I_BUILDBOT] # We need to copy it to make sure the equals function below actually works...
 !equals(COPY_BUILDBOTNESS, "") {
+!equals(COPY_BUILDBOTNESS, "\"\"") { #this should be done less stupidly but I do not want to waste my time on that now
      GENERATE_LANGUAGE_FILES = true
+}
 }
 
 QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
@@ -130,8 +132,10 @@ windows {
 message("ENVIRONMENT_CRYPTKEY: '$$[ENVIRONMENT_CRYPTKEY]'")
 COPY_CRYPT = $$[ENVIRONMENT_CRYPTKEY] # We need to copy it to make sure the equals function below actually works...
 !equals(COPY_CRYPT, "") {
-  DEFINES+="ENVIRONMENT_CRYPTKEY=$$[ENVIRONMENT_CRYPTKEY]"
-  message("Key now set!")
+  !equals(COPY_CRYPT, "\"\"") { #this should be done less stupidly but I do not want to waste my time on that now
+    DEFINES+="ENVIRONMENT_CRYPTKEY=$$[ENVIRONMENT_CRYPTKEY]"
+    message("Key now set to: '$$COPY_CRYPT'!")
+  }
 }
 
    macx:ICON = macOS/icon.icns
