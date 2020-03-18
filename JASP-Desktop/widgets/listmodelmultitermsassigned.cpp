@@ -27,6 +27,7 @@ ListModelMultiTermsAssigned::ListModelMultiTermsAssigned(QMLListView* listView, 
 	, _columns(columns)
 {
 	_copyTermsWhenDropped = true;
+	_allowDuplicatesInMultipleColumns = listView->getItemProperty("allowDuplicatesInMultipleColumns").toBool();
 }
 
 void ListModelMultiTermsAssigned::initTerms(const Terms &terms, const RowControlsOptions& allOptionsMap)
@@ -150,30 +151,42 @@ void ListModelMultiTermsAssigned::_setTerms()
 Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, JASPControlBase::AssignType)
 {
 	beginResetModel();
-	Terms removedTerms;
+	Terms termsToReturn;
 	
 	if (termsToAdd.size() == 0)
-		return removedTerms;
+		return termsToReturn;
 	
 	bool done = false;
 	if (termsToAdd.size() == 1 && dropItemIndex >= 0)
 	{
+		// Case when only 1 term is added on one particular place
+		// . Check first if it is possible to the term at this place.
+		// . Then set the term at this place.
+		// . It there was already a term at that place, return it.
 		int realRow = dropItemIndex / _columns;
 		int realCol = dropItemIndex % _columns;
 		if (realRow < _tuples.size())
 		{
 			Terms row = _tuples[realRow];
-			const Term& term = row[size_t(realCol)];
-			if (!term.asQString().isEmpty())
-				removedTerms.add(term);
-			row.replace(realCol, termsToAdd.at(0));
-			_tuples[realRow] = row;
+			const Term& termToAdd = termsToAdd.at(0);
+
+			if (row.contains(termToAdd) && !_allowDuplicatesInMultipleColumns)
+				termsToReturn.add(termToAdd);
+			else
+			{
+				const Term& term = row[size_t(realCol)];
+				if (!term.asQString().isEmpty())
+					termsToReturn.add(term);
+				row.replace(realCol, termToAdd);
+				_tuples[realRow] = row;
+			}
 			done = true;
 		}
 	}
 	
 	if (!done)
 	{
+		// First try to set the terms to the empty places
 		size_t index = 0;
 		for (int row = 0; row < _tuples.length() && index < termsToAdd.size(); row++)
 		{
@@ -183,8 +196,14 @@ Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropIte
 			{
 				if (tuple[size_t(col)].asQString().isEmpty())
 				{
-					tuple.replace(col, termsToAdd.at(index));
-					changed = true;
+					const Term& termToAdd = termsToAdd.at(index);
+					if (tuple.contains(termToAdd) && !_allowDuplicatesInMultipleColumns)
+						termsToReturn.add(termsToAdd);
+					else
+					{
+						tuple.replace(col, termsToAdd.at(index));
+						changed = true;
+					}
 					index++;
 				}
 			}
@@ -192,6 +211,7 @@ Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropIte
 				_tuples[row] = tuple;
 		}
 		
+		// If there still some terms to add, add them at the end of the list
 		while (index < termsToAdd.size())
 		{
 			Terms newTuple;
@@ -214,7 +234,7 @@ Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropIte
 
 	emit modelChanged();
 
-	return removedTerms;
+	return termsToReturn;
 }
 
 void ListModelMultiTermsAssigned::moveTerms(const QList<int> &indexes, int dropItemIndex)
@@ -235,7 +255,7 @@ void ListModelMultiTermsAssigned::moveTerms(const QList<int> &indexes, int dropI
 	Terms fromTuple = _tuples[fromRow];
 	Terms dropTuple;
 	int dropRow = -1;
-	bool isChanged = false;
+	bool addNewRow = false;
 	Term fromValue = fromTuple[size_t(fromCol)];
 
 	if (fromValue.asQString().isEmpty())
@@ -245,43 +265,70 @@ void ListModelMultiTermsAssigned::moveTerms(const QList<int> &indexes, int dropI
 
 	if (dropItemIndex >= 0)
 	{
+		// First handle the case when the term is dropped on one particular place
 		dropRow = dropItemIndex / _columns;
 		int dropCol = dropItemIndex % _columns;
+
 		if (dropRow < _tuples.size())
 		{
 			dropTuple = _tuples[dropRow];
 			Term dropValue = dropTuple[size_t(dropCol)];
-			dropTuple.replace(dropCol, fromValue);
+
 			if (dropRow == fromRow)
 			{
-				dropTuple.replace(fromCol, dropValue);
-				fromTuple = dropTuple;
+				if (fromCol != dropCol)
+				{
+					dropTuple.replace(dropCol, fromValue);
+					dropTuple.replace(fromCol, dropValue);
+					_tuples[dropRow] = dropTuple;
+				}
 			}
 			else
-				fromTuple.replace(fromCol, dropValue);
-			isChanged = true;
+			{
+				// If it does not allow duplicates, and the dropTuple contains the fromValue or the fromTuple contains the dropValue (if not empty), then do not exchange the values.
+				if (!(!_allowDuplicatesInMultipleColumns && (dropTuple.contains(fromValue) || (!dropValue.asQString().isEmpty() && fromTuple.contains(dropValue)))))
+				{
+					dropTuple.replace(dropCol, fromValue);
+					fromTuple.replace(fromCol, dropValue);
+					_tuples[dropRow] = dropTuple;
+					_tuples[fromRow] = fromTuple;
+				}
+			}
+		}
+		else
+		{
+			fromTuple.replace(fromCol, QString());
+			_tuples[fromRow] = fromTuple;
+			addNewRow = true;
 		}
 	}
 	else
 	{
+		// The term is dropped at the end of the list.
+		// Check whether the last row has still some place
 		fromTuple.replace(fromCol, QString());
+		_tuples[fromRow] = fromTuple;
+
 		dropRow = _tuples.size() - 1;
 		dropTuple = _tuples[dropRow];
-		for (int i = 0; i < _columns && !isChanged; i++)
+		addNewRow = true;
+
+		// It it does not allow duplicates, and the last row contains the fromValue, then do not try to add the fromValue to the last row
+		if (!(!_allowDuplicatesInMultipleColumns && dropTuple.contains(fromValue)))
 		{
-			if (dropTuple[size_t(i)].asQString().isEmpty())
+			for (int i = 0; i < _columns && !addNewRow; i++)
 			{
-				dropTuple.replace(i, fromValue);
-				isChanged = true;
+				if (dropTuple[size_t(i)].asQString().isEmpty())
+				{
+					dropTuple.replace(i, fromValue);
+					_tuples[dropRow] = dropTuple;
+					addNewRow = false;
+				}
 			}
 		}
 	}
 
-	_tuples[fromRow] = fromTuple;
-
-	if (isChanged)
-		_tuples[dropRow] = dropTuple;
-	else
+	if (addNewRow)
 	{
 		Terms newRow;
 		newRow.add(fromValue);
