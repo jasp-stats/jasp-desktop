@@ -52,6 +52,7 @@ JASPListControl
 	property var	interactionHighOrderCheckBox
 	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
 	property bool	allowAnalysisOwnComputedColumns	: true
+	property bool	allowDuplicatesInMultipleColumns: false // This property is used in the constructor and is not updatable afterwards.
 	
 	property var	interactionControl
 	property bool	addInteractionOptions			:false

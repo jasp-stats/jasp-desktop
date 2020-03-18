@@ -39,6 +39,7 @@ private:
 protected:
 	int				_columns = 2;
 	QList<Terms>	_tuples;
+	bool			_allowDuplicatesInMultipleColumns = false;
 };
 
 #endif // LISTMODELMULTITERMSASSIGNED_H
