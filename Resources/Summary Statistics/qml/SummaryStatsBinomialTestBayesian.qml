@@ -30,7 +30,7 @@ Form
 	{
 		IntegerField { name: "successes";	label: qsTr("Successes")	}
 		IntegerField { name: "failures";	label: qsTr("Failures")		}
-		DoubleField  { name: "testValue";	label: qsTr("Test value"); defaultValue: 0.5 ; max: 1 }
+		FormulaField { name: "testValue";	label: qsTr("Test value"); defaultValue: "0.5" ; max: 1 }
     }
 
     Divider { }

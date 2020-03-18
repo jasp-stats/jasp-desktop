@@ -21,6 +21,9 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   # Check for possible errors
   .checkErrorsSummaryStatsBinomial(options)
   
+  # testValue is a formulaField: parse it and save the result in the state
+  options <- .parseAndStoreFormulaOptions(jaspResults, options, c("testValue"))
+
   # Compute the results and create main results table
   summaryStatsBinomialResults <- .summaryStatsBinomialMainFunction(jaspResults, options)
   
@@ -46,7 +49,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
     return(container[["stateSummaryStatsBinomialResults"]]$object)
   
   # Otherwise: create the empty table before executing the analysis
-  hypothesisList        <- .hypothesisTypeSummaryStatsBinomial(options$hypothesis, options$testValue, options$bayesFactorType)
+  hypothesisList        <- .hypothesisTypeSummaryStatsBinomial(options$hypothesis, options$testValueUnparsed, options$bayesFactorType)
   container[["bayesianBinomialTable"]] <- .summaryStatsBinomialTableMain(options, hypothesisList)
   
   if (!is.null(container[["stateSummaryStatsBinomialResults"]])) {
