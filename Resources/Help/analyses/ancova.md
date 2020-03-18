@@ -70,24 +70,25 @@ ANCOVA allows the user to analyze the difference between multiple group means, w
 ### Post Hoc Tests
 - To perform a post hoc test, drag one or more factor names to the right column. Several options are available:    
 - Type: Different types of post hoc tests can be selected. 
-      -  Standard: Pairwise t-tests are performed. All the corrections can be applied to this method. This option is selected by default. 
-        - Confidence intervals: When this option is selected, the confidence interval for the mean difference is calculated. This is done for every post hoc method except for Dunn. By default this is set to 95% but this can be adjusted into the desired percentage.  
-        - From `...` bootstraps: By selecting this option, the bootstrapped post hoc test is applied. By default, the number of replications is set to 1000. This can be changed into the desired number. 
-        - Effect size: By selecting this option, the effect size (i.e., the magnitude of the observed effect) will be displayed. The used measure for the effect size is Cohen's d. The effect size will only be displayed for the post hoc type `Standard`. 
-
-      -  Games-Howell: This method can be used when equal group/level variances are not assumed. The p-values are corrected with the Tukey method.
-      -  Dunnett: When selecting this method, all the levels are compared to one specific level, for example to the control group. At the moment, it is not possible to manually specify to which level the others levels are compared, but it is based on the order of the levels. To change the order of the levels, the level labels can be adjusted. 
-        <details>
-	        <summary><b>GIF demonstration: Adjust level labels </b></summary>
-	        <img src="analyses/gif/labelediting.gif"/>
-      </details> 
+-  Standard: Pairwise t-tests are performed. All the corrections can be applied to this method. This option is selected by default. 
+    - Confidence intervals: When this option is selected, the confidence interval for the mean difference is calculated. This is done for every post hoc method except for Dunn. By default this is set to 95% but this can be adjusted into the desired percentage.  
+    - From `...` bootstraps: By selecting this option, the bootstrapped post hoc test is applied. By default, the number of replications is set to 1000. This can be changed into the desired number. 
+    - Effect size: By selecting this option, the effect size (i.e., the magnitude of the observed effect) will be displayed. The used measure for the effect size is Cohen's d. The effect size will only be displayed for the post hoc type `Standard`. 
     
-      -  Dunn: This is a non-parametric test that can be used for testing small subsets of pairs. This post hoc test is a follow up for the Kruskal-Wallis test. The p-values are corrected with the Bonferroni and Holm methods.
-  - Correction: To correct for multiple comparison testing and avoid Type I errors, different methods for correcting the p-value are available:  
-      - Tukey: Compare all possible pairs of group means. This correction can be used when the groups of the independent variable have an equal sample size and variance. This method is commonly used and is selected by default. 
-      - Scheffe: Adjusting significance levels in a linear regression, to account for multiple comparisons. This method is considered to be quite conservative. 
-      - Bonferroni: This correction is considered conservative. The risk of Type I error is reduced, however the statistical power decreases as well. 
-      - Holm: This method is also called sequential Bonferroni, and considered less conservative than the Bonferroni method. 
+    -  Games-Howell: This method can be used when equal group/level variances are not assumed. The p-values are corrected with the Tukey method.
+    -  Dunnett: When selecting this method, all the levels are compared to one specific level, for example to the control group. At the moment, it is not possible to manually specify to which level the others levels are compared, but it is based on the order of the levels. To change the order of the levels, the level labels can be adjusted. 
+    <details>
+      <summary><b>GIF demonstration: Adjust level labels </b></summary>
+      <img src="analyses/gif/labelediting.gif"/>
+    </details> 
+
+    -  Dunn: This is a non-parametric test that can be used for testing small subsets of pairs. This post hoc test is a follow up for the Kruskal-Wallis test. The p-values are corrected with the Bonferroni and Holm methods.
+    
+- Correction: To correct for multiple comparison testing and avoid Type I errors, different methods for correcting the p-value are available:  
+    - Tukey: Compare all possible pairs of group means. This correction can be used when the groups of the independent variable have an equal sample size and variance. This method is commonly used and is selected by default. 
+    - Scheffe: Adjusting significance levels in a linear regression, to account for multiple comparisons. This method is considered to be quite conservative. 
+    - Bonferroni: This correction is considered conservative. The risk of Type I error is reduced, however the statistical power decreases as well. 
+    - Holm: This method is also called sequential Bonferroni, and considered less conservative than the Bonferroni method. 
 - Flag Significant Comparisons: Add asterisks to the table to indicate 3 levels of significance.
 
 ### Descriptive Plots
@@ -276,6 +277,7 @@ Independent variable on the x-axis and dependent variable on the y-axis. If othe
 
 ### R Packages
 ---
+- afex
 - boot
 - car
 - emmeans

@@ -271,6 +271,7 @@ Onafhankelijke variabele op de x-as en afhankelijke variabele op de y-as. Als an
 
 ### R Packages
 ---
+- afex
 - boot
 - car
 - emmeans
