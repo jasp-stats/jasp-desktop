@@ -891,7 +891,7 @@ void Analysis::setVersion(Version version, bool resetWasUpgraded)
 
 bool Analysis::needsRefresh() const
 {
-	bool differentVersion = _dynamicModule ? version() != _dynamicModule->version() : version() != AppInfo::version;
+	bool differentVersion = _dynamicModule ? _moduleVersion != _dynamicModule->version() : version() != AppInfo::version;
 	return _wasUpgraded || differentVersion;
 }
 

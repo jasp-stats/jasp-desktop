@@ -206,7 +206,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"normalDist", "tDist", "chiSqDist", "fDist", "binomDist", "negBinomDist", "geomDist", "poisDist", "integerDist", "betaDist", "unifDist", "gammaDist", "expDist", "logNormDist", "weibullDist",
 	"replaceNA"
 #ifdef JASP_DEBUG
-	,"Sys.sleep", ".crashPlease"
+	,"Sys.sleep", ".crashPlease", "stringi::stri_enc_mark", "stringi::stri_enc_toutf8", "Encoding"
 #endif
 	};
 

@@ -24,7 +24,7 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 	},
 
 	setTitle: function(newTitle) {
-		console.log("analyses.setTiltle("+newTitle+") was called and default title= " +this.toolbar.titleDefault + " while the old title is: " + this.toolbar.title);
+		//console.log("analyses.setTitle("+newTitle+") was called and default title= " +this.toolbar.titleDefault + " while the old title is: " + this.toolbar.title);
 		var wasDefault = this.toolbar.title === this.toolbar.titleDefault;
 		this.toolbar.titleDefault = newTitle;
 

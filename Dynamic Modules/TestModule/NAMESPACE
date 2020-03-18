@@ -3,5 +3,7 @@ export(testFootnotesTableFunc)
 export(testStateFunc)
 export(testHtmlFunc)
 export(testContainerFunc)
+export(testEncodingFunc)
 export(customContrasts)
   import('svglite');
+  import('stringi');

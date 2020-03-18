@@ -23,7 +23,11 @@
 
 static const	std::string NullString			= "null";
 static			std::string lastErrorMessage	= "";
-static			cetype_t	Encoding			= CE_UTF8;
+static			cetype_t	Encoding			= CE_NATIVE;// CE_UTF8;
+
+//Ok so CSTRING_TO_R could actually be replaced by std::string and everything would keep functioning regardless as far as I can see. But, in case later we want to change the encoding more drastically this gives an issue startpoint. In that case one should also do something about jaspRCPP_parseEval & jaspRCPP_parseEvalQNT (which will lead to horrible looking code ;) )
+#define CSTRING_TO_R_CHARSXP(constchar) Rf_mkCharCE(constchar, Encoding)
+#define CSTRING_TO_R(constchar) Rf_ScalarString(CSTRING_TO_R_CHARSXP(constchar))
 
 RInside						*rinside;
 ReadDataSetCB				readDataSetCB;
@@ -131,7 +135,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	static const char *baseCitationFormat	= "JASP Team (%s). JASP (Version %s) [Computer software].";
 	char baseCitation[200];
 	sprintf(baseCitation, baseCitationFormat, buildYear, version);
-	rInside[".baseCitation"]		= baseCitation;
+	rInside[".baseCitation"]		= CSTRING_TO_R(baseCitation);
 
 	jaspResults::setSendFunc(sendToDesktopFunction);
 	jaspResults::setPollMessagesFunc(pollMessagesFunction);
@@ -141,6 +145,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside["jaspResultsModule"]			= givejaspResultsModule();
 
 	//Adding some functions in R to the RefClass (generator) in the module
+	//To do: move this entirely to zzzWrapper if this wasn't done yet.
 	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addColumnInfo = function(name=NULL, title=NULL, overtitle=NULL, type=NULL, format=NULL, combine=NULL) { addColumnInfoHelper(name, title, type, format, combine, overtitle) })");
 	jaspRCPP_parseEvalQNT("jaspResultsModule$jaspTable$methods(addFootnote =   function(message='', symbol=NULL, col_names=NULL, row_names=NULL) { addFootnoteHelper(message, symbol, col_names, row_names) })");
 
@@ -177,19 +182,14 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 	SEXP results;
 
 	RInside &		rInside			= rinside->instance();
-	Rcpp::String	jsonOptions		= options;
-	Rcpp::String	jsonResultsMeta	= resultsMeta;
 
-	jsonOptions.set_encoding(Encoding);
-	jsonResultsMeta.set_encoding(Encoding);
-
-	rInside["name"]				= name;
-	rInside["title"]			= title;
+	rInside["name"]				= CSTRING_TO_R(name);
+	rInside["title"]			= CSTRING_TO_R(title);
+	rInside["options"]			= CSTRING_TO_R(options);
+	rInside["resultsMeta"]		= CSTRING_TO_R(resultsMeta);
 	rInside["dataKey"]			= dataKey;
-	rInside["options"]			= jsonOptions;
 	rInside["requiresInit"]		= requiresInit;
 	rInside[".imageBackground"]	= imageBackground;
-	rInside["resultsMeta"]		= jsonResultsMeta;
 	rInside["stateKey"]			= stateKey;
 	rInside["perform"]			= perform;
 	rInside[".ppi"]				= ppi;
@@ -236,15 +236,12 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, const char* imageBackground, bool developerMode)
 {
 	RInside &rInside				= rinside->instance();
-	Rcpp::String jsonOptions		= options;
-	jsonOptions.set_encoding(Encoding);
 
-
+	rInside["name"]				= CSTRING_TO_R(name);
+	rInside["title"]			= CSTRING_TO_R(title);
+	rInside["options"]			= CSTRING_TO_R(options);
 	rInside[".ppi"]				= ppi;
-	rInside["name"]				= name;
-	rInside["title"]			= title;
 	rInside["dataKey"]			= dataKey;
-	rInside["options"]			= jsonOptions;
 	rInside["perform"]			= perform;
 	rInside["stateKey"]			= stateKey;
 	rInside["moduleCall"]		= moduleCall;
@@ -298,29 +295,31 @@ void STDCALL jaspRCPP_runScript(const char * scriptCode)
 const char * STDCALL jaspRCPP_runScriptReturnString(const char * scriptCode)
 {
 	static std::string returnStr;
-	returnStr = Rcpp::as<std::string>(jaspRCPP_parseEval(scriptCode));
+	std::string script(scriptCode);
+	returnStr = Rcpp::as<std::string>(jaspRCPP_parseEval(script));
 
 	jaspRCPP_checkForCrashRequest();
 
 	return returnStr.c_str();
 }
 
-
-
 int STDCALL jaspRCPP_runFilter(const char * filterCode, bool ** arrayPointer)
 {
-	jaspRCPP_logString(std::string("jaspRCPP_runFilter runs: \n\"") + filterCode + "\"\n" );
+	jaspRCPP_logString("jaspRCPP_runFilter runs: \n\"" + std::string(filterCode) + "\"\n" );
 
 	lastErrorMessage = "";
-	rinside->instance()[".filterCode"] = filterCode;
-	const std::string filterTryCatch("\
-		returnVal = 'null'; \
-		tryCatch(\
-			{ returnVal <- eval(parse(text=.filterCode)) }, \
-			warning	= function(w) { .setRWarning(toString(w$message))	}, \
-			error	= function(e) { .setRError(toString(e$message))	}\
-		); \
-		returnVal");
+	rinside->instance()[".filterCode"] = CSTRING_TO_R(filterCode);
+
+	const std::string filterTryCatch(
+		"returnVal = 'null'; \n"
+		"print(paste0('Running filtercode: ', .filterCode)); \n"
+		"tryCatch(\n"
+		"	{ returnVal <- eval(parse(text=.filterCode)) }, \n"
+		"	warning	= function(w) { .setRWarning(toString(w$message))	}, \n"
+		"	error	= function(e) { .setRError(toString(e$message))	}\n"
+		"); \n"
+		"returnVal");
+
 	SEXP result = jaspRCPP_parseEval(filterTryCatch);
 
 	jaspRCPP_checkForCrashRequest();
@@ -360,7 +359,7 @@ const char*	STDCALL jaspRCPP_getLastErrorMsg()
 
 void STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer)
 {
-    free(*arrayPointer);
+	free(*arrayPointer);
 }
 
 const char* STDCALL jaspRCPP_saveImage(const char * data, const char *type, const int height, const int width, const int ppi, const char* imageBackground)
@@ -368,7 +367,7 @@ const char* STDCALL jaspRCPP_saveImage(const char * data, const char *type, cons
 	RInside &rInside = rinside->instance();
 
 	rInside[".imageBackground"] = imageBackground;
-	rInside["plotName"]			= data;
+	rInside["plotName"]			= CSTRING_TO_R(data);
 	rInside["format"]			= type;
 	rInside["height"]			= height;
 	rInside["width"]			= width;
@@ -386,7 +385,7 @@ const char* STDCALL jaspRCPP_editImage(const char * optionsJson, const int ppi, 
 	RInside &rInside = rinside->instance();
 
 	rInside[".imageBackground"] = imageBackground;
-	rInside["editImgOptions"]	= optionsJson;
+	rInside["editImgOptions"]	= CSTRING_TO_R(optionsJson);
 	rInside[".ppi"]				= ppi;
 
 	SEXP result = jaspRCPP_parseEval("editImage(editImgOptions)");
@@ -417,7 +416,7 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	jaspRCPP_logString(std::string("jaspRCPP_evalRCode runs: \n\"") + rCode + "\"\n" );
 
 	lastErrorMessage = "";
-	rinside->instance()[".rCode"] = rCode;
+	rinside->instance()[".rCode"] = CSTRING_TO_R(rCode);
 	const std::string rCodeTryCatch(""
 		"returnVal = 'null';	"
 		"tryCatch(				"
@@ -862,10 +861,8 @@ Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn*
 		for (int i = 0; i < colMax; i++)
 		{
 			const RBridgeColumn &	colResult	= colResults[i];
-			Rcpp::String			colName		= colResult.name;
 
-			colName.set_encoding(Encoding);
-			columnNames[i] = colName;
+			columnNames[i] = CSTRING_TO_R_CHARSXP(colResult.name);
 
 			if (colResult.isScale)			list[i] = Rcpp::NumericVector(colResult.doubles, colResult.doubles + colResult.nbRows);
 			else if(!colResult.hasLabels)	list[i] = Rcpp::IntegerVector(colResult.ints, colResult.ints + colResult.nbRows);
@@ -899,16 +896,12 @@ Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumer
 		for (size_t i = 0; i < colMax; i++)
 		{
 			RBridgeColumnDescription& colDescription = columnsDescription[i];
-			Rcpp::String colName = colDescription.name;
-			colName.set_encoding(Encoding);
-			columnNames[i] = colName;
 
-			if (colDescription.isScale)
-				list(i) = Rcpp::NumericVector(0);
-			else if (!colDescription.hasLabels)
-				list(i) = Rcpp::IntegerVector(0);
-			else
-				list(i) = jaspRCPP_makeFactor(Rcpp::IntegerVector(0), colDescription.labels, colDescription.nbLabels, colDescription.isOrdinal);
+			columnNames[i] = CSTRING_TO_R(colDescription.name);
+
+			if (colDescription.isScale)				list(i) = Rcpp::NumericVector(0);
+			else if (!colDescription.hasLabels)		list(i) = Rcpp::IntegerVector(0);
+			else									list(i) = jaspRCPP_makeFactor(Rcpp::IntegerVector(0), colDescription.labels, colDescription.nbLabels, colDescription.isOrdinal);
 		}
 
 		list.attr("names") = columnNames;
@@ -934,11 +927,8 @@ Rcpp::IntegerVector jaspRCPP_makeFactor(Rcpp::IntegerVector v, char** levels, in
 
 	Rcpp::CharacterVector labels(nbLevels);
 	for (int i = 0; i < nbLevels; i++)
-	{
-		Rcpp::String s = levels[i];
-		s.set_encoding(Encoding);
-		labels[i] = s;
-	}
+		labels[i] = CSTRING_TO_R_CHARSXP(levels[i]);
+
 
 
 	v.attr("levels") = labels;
@@ -1002,7 +992,7 @@ void jaspRCPP_parseEvalPreface(const std::string & code)
 	jaspRCPP_logString("\nOutput:\n");
 }
 
-std::string __sinkMe(const std::string & code)
+std::string __sinkMe(const std::string code)
 {
 	return "sink(.outputSink, type='output');\nsink(.outputSink, type='message');\n" + code;
 }
@@ -1027,7 +1017,7 @@ std::string _jaspRCPP_System(std::string cmd)
 	const char *root, *relativePath;
 
 	if (!requestTempFileNameCB("log", &root, &relativePath))
-		Rf_error("Cannot open output file for separate R!");
+		Rf_error("Cannot open output file for separate R/System cmd!");
 
 	std::string path = std::string(root) + "/" + relativePath;
 
