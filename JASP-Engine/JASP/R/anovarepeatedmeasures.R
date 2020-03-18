@@ -884,6 +884,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   fullModel <- rmAnovaContainer[["anovaResult"]]$object$fullModel
   allNames <- unlist(lapply(options$repeatedMeasuresFactors, function(x) x$name)) # Factornames 
 
+  balancedDesign <-   all(sapply(unlist(options$betweenModelTerms), function(x) length(unique(table(dataset[[.v(x)]]))) == 1))
+  
   for (var in variables) {
 
     resultPostHoc <- summary(pairs(referenceGrid[[var]], adjust="bonferroni"), 
@@ -904,7 +906,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 
     if (any(var == .v(allNames))) {     ## If the variable is a repeated measures factor
 
-      if (!options$postHocTestPooledError) {
+      if (!options$postHocTestPooledError && balancedDesign) {
 
         numberOfLevels <- length(levels(longData[[var]]))
         
@@ -921,8 +923,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
           x <- tapply(x[[.v("dependent")]], x[[.v("subject")]], mean)
           y <- subset(longData, gsub("X", "", facLevelNoDots) == gsub("X", "", levelBNoDots))
           y <- tapply(y[[.v("dependent")]], y[[.v("subject")]], mean)
-          
-          tResult <- t.test(x, y, paired= TRUE, var.equal = FALSE, conf.level = bonfAdjustCIlevel)
+
+          tResult <- t.test(x, y, paired = TRUE, var.equal = FALSE, conf.level = bonfAdjustCIlevel)
           tResult <- unname(unlist(tResult[c("estimate", "statistic", "p.value", "conf.int")]))
           resultPostHoc[compIndex, c("estimate", "t.ratio", "p.value", "lower.CL", "upper.CL")] <- tResult
           
@@ -932,6 +934,9 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
         resultPostHoc[["bonferroni"]] <- p.adjust(resultPostHoc[["p.value"]], method = "bonferroni")
         resultPostHoc[["holm"]] <- p.adjust(resultPostHoc[["p.value"]], method = "holm")
         
+      } else if (!options$postHocTestPooledError) {
+        postHocContainer$setError(gettext("Unpooled error term only allowed in balanced designs."))
+        return()
       }
       
       resultPostHoc[["scheffe"]] <- "."
