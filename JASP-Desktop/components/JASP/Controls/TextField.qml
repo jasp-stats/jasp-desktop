@@ -49,6 +49,7 @@ JASPControl
 	property string	inputType:			"string"
 	property bool	useLastValidValue:	true
 	property bool	hasScriptError:		false
+	property bool	editable:			true
 
 	property double controlXOffset:		0
 
@@ -97,15 +98,16 @@ JASPControl
 		anchors.leftMargin:		controlXOffset + (beforeLabelRect.visible ? jaspTheme.labelSpacing : 0)
 		width:					textField.fieldWidth //+ (textField.useExternalBorder ? 2 * jaspTheme.jaspControlHighlightWidth : 0)
 		font:					jaspTheme.font
-		activeFocusOnPress:		true
-		color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
+		activeFocusOnPress:		textField.editable
+		color:					enabled || !textField.editable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 
 		padding:				jaspTheme.jaspControlPadding
 		leftPadding:			jaspTheme.labelSpacing
 		selectByMouse:			true
-		focus:					true
+		focus:					textField.editable
 		selectedTextColor:		jaspTheme.white
 		selectionColor:			jaspTheme.itemSelectedColor
+		enabled:				textField.editable
 
 		background: Rectangle
 		{
