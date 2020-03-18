@@ -7,7 +7,7 @@ test_that("Main table results match", {
   options$failures                            <- 42
   options$betaPriorParamA                     <- 4
   options$betaPriorParamB                     <- 2
-  options$testValue                           <- 0.2
+  options$testValue                           <- "0.2"
   options$bayesFactorType                     <- "BF01"
   options$plotPriorAndPosterior               <- FALSE
   options$plotPriorAndPosteriorAdditionalInfo <- FALSE
@@ -22,6 +22,7 @@ test_that("Main table results match", {
 test_that("Prior posterior plots match", {
   options <- jasptools::analysisOptions("SummaryStatsBinomialTestBayesian")
   # without additional information
+  options$testValue                           <- "0.5"
   options$successes                           <- 58
   options$failures                            <- 42
   options$plotPriorAndPosterior               <- TRUE
@@ -57,7 +58,7 @@ test_that("Error message is validation", {
   options$failures                            <- 0
   options$betaPriorParamA                     <- 0.001
   options$betaPriorParamB                     <- 9999
-  options$testValue                           <- 0.5
+  options$testValue                           <- "0.5"
   options$hypothesis                          <- "greaterThanTestValue"
   options$plotPriorAndPosterior               <- TRUE
   options$plotPriorAndPosteriorAdditionalInfo <- TRUE

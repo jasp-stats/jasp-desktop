@@ -28,6 +28,7 @@ TextField
 	property double	min:				-Infinity
 	property double	max:				Infinity
 	property int	inclusive:			JASP.MinMax
+	property alias	defaultValue:		formulaField.value
 					inputType:			"formula"
 					fieldWidth:			jaspTheme.textFieldWidth / 2
 }
