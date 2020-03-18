@@ -328,7 +328,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
     anovaContainer$setError(gettext("Residual sum of squares is 0; this might be due to extremely low variance of your dependent variable"))
     return()
   } else if (isTryError(model$modelError)) {
-    anovaContainer$setError(gettext("An error occurred while computing the ANOVA. Please report on GitHub."))
+    anovaContainer$setError(gettextf("An error occurred while computing the ANOVA: %s", .extractErrorMessage(model$modelError)))
     return()
   }
   
