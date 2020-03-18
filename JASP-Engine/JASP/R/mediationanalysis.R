@@ -592,6 +592,12 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   predictor_idx <- which(node_names %in% options$predictor)
   dependent_idx <- which(node_names %in% options$dependent)
   
+  if (options$plotpars) {
+    # change big numbers to scientific notation
+    labs <- vapply(plt$graphAttributes$Edges$labels, function(lab) format(as.numeric(lab), digits = 2), "")
+    plt$graphAttributes$Edges$labels <- labs
+  }
+  
   # remove focus from confounder edges
   confound_edges <- plt$Edgelist$from %in% confounds_idx
   plt$graphAttributes$Edges$labels[confound_edges] <- ""
@@ -602,11 +608,6 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   uni_edges <- !plt$Edgelist$bidirectional
   plt$graphAttributes$Edges$edge.label.position[uni_edges] <- 1/3
   
-  if (options$plotpars) {
-    # change big numbers to scientific notation
-    labs <- vapply(plt$graphAttributes$Edges$labels, function(lab) format(as.numeric(lab), digits = 2), "")
-    plt$graphAttributes$Edges$labels <- labs
-  }
   
   return(plt)
 }
