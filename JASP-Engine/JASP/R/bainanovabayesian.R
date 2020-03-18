@@ -103,7 +103,7 @@ Posterior model probabilities (a: excluding the unconstrained hypothesis, b: inc
 	})
 
 	if (isTryError(p)) {
-    bainContainer$setError(gettextf("An error occurred in the analysis:<br>%s<br><br>Please double check your variables and model constraints.", .extractErrorMessage(p)))
+    bainContainer$setError(gettextf("An error occurred in the analysis:<br>%s<br><br>Please double check your variables and model constraints.", .unv(.extractErrorMessage(p))))
 		return()
 	}
 
@@ -267,7 +267,7 @@ Posterior model probabilities (a: excluding the unconstrained hypothesis, b: inc
 
 		if(options[["fixedFactors"]] != ""){
 			if(any(grepl(pattern = " ", x = levels(dataset[, .v(options[["fixedFactors"]])])))){
-				JASP:::.quitAnalysis("Bain does not accept factor levels that contain spaces. Please remove the spaces from your factor levels to continue.")
+				JASP:::.quitAnalysis(gettext("Bain does not accept factor levels that contain spaces. Please remove the spaces from your factor levels to continue."))
 			}
 		}
 	} else {
