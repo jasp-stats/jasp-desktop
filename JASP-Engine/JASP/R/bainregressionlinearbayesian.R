@@ -81,18 +81,16 @@ Posterior model probabilities (a: excluding the unconstrained hypothesis, b: inc
 	if (options$model == "") {
 		rest.string <- NULL
 	} else {
-		rest.string <- .bainCleanModelInput(options$model)
+		rest.string <- .v(.bainCleanModelInput(options[["model"]]))
 	}
 
-	names(dataset) <- .unv(names(dataset))
-
 	p <- try({
-		bainResult <- bain:::bain_regression_cran(X = dataset, dep = options[["dependent"]], pred = paste(options[["covariates"]], collapse = " "), hyp = rest.string, std = options[["standardized"]], seed = options[["seed"]])
+		bainResult <- bain:::bain_regression_cran(X = dataset, dep = .v(options[["dependent"]]), pred = paste(.v(options[["covariates"]]), collapse = " "), hyp = rest.string, std = options[["standardized"]], seed = options[["seed"]])
 		bainContainer[["bainResult"]] <- createJaspState(bainResult)
 	})
 
 	if (isTryError(p)) {
-    bainContainer$setError(gettextf("An error occurred in the analysis:<br>%s<br><br>Please double check your variables and model constraints.", .extractErrorMessage(p)))
+    bainContainer$setError(gettextf("An error occurred in the analysis:<br>%s<br><br>Please double check your variables and model constraints.", .unv(.extractErrorMessage(p))))
 		return()
 	}
 
@@ -158,7 +156,7 @@ Posterior model probabilities (a: excluding the unconstrained hypothesis, b: inc
 	bainSummary <- summary(bainResult, ci = options[["CredibleInterval"]])
 	
 	# Extract names, mean and n from bain result
-	groups <- bainSummary[["Parameter"]]
+	groups <- .unv(bainSummary[["Parameter"]])
 	N <- bainSummary[["n"]]
 	mu <- bainSummary[["Estimate"]]
 	CiLower <- bainSummary[["lb"]]

@@ -225,7 +225,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 
     pointData <- data.frame(x = result[["nn"]], 
                             y = yvalues1[result[["nn"]]],
-                            type = "Validation set")
+                            type = gettext("Validation set"))
 
     p <- ggplot2::ggplot(data = d, ggplot2::aes(x = x, y = y, linetype = type)) + 
 			JASPgraphs::geom_line() +
@@ -250,7 +250,7 @@ mlRegressionKnn <- function(jaspResults, dataset, options, state=NULL) {
 			JASPgraphs::geom_line() +
 			ggplot2::scale_x_continuous(name = gettext("Number of Nearest Neighbors"), breaks = xBreaks, labels = xBreaks, limits = c(0, max(xBreaks))) + 
 			ggplot2::scale_y_continuous(name = ylabel, breaks = yBreaks, labels = yBreaks) + 
-			JASPgraphs::geom_point(ggplot2::aes(x = x, y = y, linetype = type), data = data.frame(x = result[["nn"]], y = yvalues[result[["nn"]]], type = "Training and validation set"), fill = "red") +
+			JASPgraphs::geom_point(ggplot2::aes(x = x, y = y, linetype = type), data = data.frame(x = result[["nn"]], y = yvalues[result[["nn"]]], type = gettext("Training and validation set")), fill = "red") +
 			ggplot2::labs(linetype = "")
     p <- JASPgraphs::themeJasp(p, legend.position = "top")
 
