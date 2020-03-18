@@ -221,7 +221,6 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   
   .reglogisticSetError(res, estimatesTableBootstrap)
   
-  # estimatesTableBootstrap$addFootnote(gettextf("Bootstrapping based on %i replicates.", options$coeffEstimatesBootstrappingReplicates))
   if (options$robustSEOpt)
     estimatesTableBootstrap$addFootnote(gettext("Coefficient estimate and robust standard error are based on the median of the bootstrap distribution."))
   else
