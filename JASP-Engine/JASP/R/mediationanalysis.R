@@ -541,6 +541,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   
   # create a qgraph object using semplot
   po <- .medLavToPlotObj(modelContainer[["model"]][["object"]])
+
   pp <- .suppressGrDevice(semPlot::semPaths(
     object         = po,
     layout         = rbind(deps_l, medi_l, pred_l, conf_l),
@@ -555,8 +556,10 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
     title          = FALSE,
     sizeMan        = round(8*exp(-n_totl/80)+1),
     legend         = options$plotlegend,
-    legend.mode    = ifelse(options$plotlegend, "names", "style1"),
-    nodeLabels     = decodeColNames(po@Vars$name)
+    legend.mode    = "names",
+    legend.cex     = 0.6,
+    nodeNames      = decodeColNames(po@Vars$name),
+    nCharNodes     = 3
   ))
   
   # post-process plot
@@ -589,6 +592,12 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   predictor_idx <- which(node_names %in% options$predictor)
   dependent_idx <- which(node_names %in% options$dependent)
   
+  if (options$plotpars) {
+    # change big numbers to scientific notation
+    labs <- vapply(plt$graphAttributes$Edges$labels, function(lab) format(as.numeric(lab), digits = 2), "")
+    plt$graphAttributes$Edges$labels <- labs
+  }
+  
   # remove focus from confounder edges
   confound_edges <- plt$Edgelist$from %in% confounds_idx
   plt$graphAttributes$Edges$labels[confound_edges] <- ""
@@ -599,9 +608,7 @@ MediationAnalysis <- function(jaspResults, dataset, options, ...) {
   uni_edges <- !plt$Edgelist$bidirectional
   plt$graphAttributes$Edges$edge.label.position[uni_edges] <- 1/3
   
-  # change big numbers to scientific notation
-  labs <- vapply(plt$graphAttributes$Edges$labels, function(lab) format(as.numeric(lab), digits = 2), "")
-  plt$graphAttributes$Edges$labels <- labs
+  
   return(plt)
 }
 
