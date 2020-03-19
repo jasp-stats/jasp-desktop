@@ -161,9 +161,9 @@
 
   if(type=="densitybased"){
     if(clusterResult[["zeroMark"]] == 1)
-      clusteringTable$addFootnote(gettext("Your cluster model contains 0 clusters and only Noisepoints, we advise to change the Eps and MinPts parameters."))
+      clusteringTable$addFootnote(gettext("Your cluster model contains 0 clusters and only Noisepoints, we advise to change the Eps and MinPts parameters."), colNames = "clusters")
     if(clusterResult[["oneMark"]] == 1)
-      clusteringTable$addFootnote(gettext("Your cluster model contains 1 cluster and 0 Noisepoints. You could change the Eps and MinPts parameters."))
+      clusteringTable$addFootnote(gettext("Your cluster model contains 1 cluster and 0 Noisepoints. You could change the Eps and MinPts parameters."), colNames = "clusters")
   }
 
   if(!options[["scaleEqualSD"]])

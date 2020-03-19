@@ -73,16 +73,21 @@
     return()
   
   if (options[["testSetIndicatorVariable"]] != "" && options[["holdoutData"]] == "testSetIndicator") {
+    
+    if (options[["testSetIndicatorVariable"]] %in% predictors)
+      JASP:::.quitAnalysis(gettextf("The variable '%s' can't be both a predictor and a test set indicator.", options[["testSetIndicatorVariable"]]))
+  
     indicatorVals <- unique(dataset[,.v(options[["testSetIndicatorVariable"]])])
     if (length(indicatorVals) != 2 || !all(0:1 %in% indicatorVals))
       JASP:::.quitAnalysis(gettext("Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."))
+    
   }
   
   customChecks <- .getCustomErrorChecksKnnBoosting(dataset, options, type)
-  errors <- .hasErrors(dataset, type = c('infinity', 'observations'), custom = customChecks,
-                       all.target = variables.to.read,
-                       observations.amount = "< 2",
-                       exitAnalysisIfErrors = TRUE)
+  .hasErrors(dataset, type = c('infinity', 'observations'), custom = customChecks,
+             all.target = variables.to.read,
+             observations.amount = "< 2",
+             exitAnalysisIfErrors = TRUE)
 }
 
 .getCustomErrorChecksKnnBoosting <- function(dataset, options, type) {
@@ -139,7 +144,7 @@
     n.minobsinnode <- options[["nNode"]]
     if (nTrain * bag.fraction <= 2 * n.minobsinnode + 1)
       return(gettextf(
-        "The minimum number of observations per node is too large. Ensure that `2 * Min. observations in node + 1` > `Training data used per tree * available training data` (in this case the minimum can be %.3f at most",
+        "The minimum number of observations per node is too large. Ensure that `2 * Min. observations in node + 1` > `Training data used per tree * available training data` (in this case the minimum can be %.3f at most).",
         nTrain * bag.fraction / 2 - 1
       ))
   }
