@@ -80,10 +80,10 @@ JASPControl
 					dropMode:			JASP.DropReplace
 					suggestedColumns:	allowAll ? [] : ["scale"]
                     allowedColumns:     ["scale"]
-                    implicitWidth:      listWidth
-					preferredHeight:             factorsForm.factorListHeight
+					implicitHeight:		factorsForm.factorListHeight // preferredHeight does not work when changing the language: the height is set to the implicitHeight
+					implicitWidth:		listWidth
 
-					onTitleIsChanged: factorsForm.titleChanged(index, editableTitle)
+					onTitleIsChanged:	factorsForm.titleChanged(index, editableTitle)
 				}
 			}
 			onItemAdded:
