@@ -149,15 +149,10 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 
 void Analyses::bindAnalysisHandler(Analysis* analysis)
 {
-	connect(analysis, &Analysis::optionsChanged,					this, &Analyses::analysisOptionsChanged				);
 	connect(analysis, &Analysis::statusChanged,						this, &Analyses::analysisStatusChanged				);
 	connect(analysis, &Analysis::sendRScript,						this, &Analyses::sendRScriptHandler					);
-	connect(analysis, &Analysis::toRefreshSignal,					this, &Analyses::analysisToRefresh					);
 	connect(analysis, &Analysis::titleChanged,						this, &Analyses::setChangedAnalysisTitle			);
-	connect(analysis, &Analysis::saveImageSignal,					this, &Analyses::analysisSaveImage					);
-	connect(analysis, &Analysis::editImageSignal,					this, &Analyses::analysisEditImage					);
 	connect(analysis, &Analysis::imageSavedSignal,					this, &Analyses::analysisImageSaved					);
-	connect(analysis, &Analysis::rewriteImagesSignal,				this, &Analyses::analysisRewriteImages				);
 	connect(analysis, &Analysis::imageEditedSignal,					this, &Analyses::analysisImageEdited				);
 	connect(analysis, &Analysis::requestColumnCreation,				this, &Analyses::requestColumnCreation				);
 	connect(analysis, &Analysis::resultsChangedSignal,				this, &Analyses::analysisResultsChanged				);

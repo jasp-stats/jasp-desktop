@@ -134,15 +134,10 @@ signals:
 	void countChanged();
 	void analysisAdded(					Analysis *	source);
 	void analysisRemoved(				Analysis *	source);
-	void analysisEditImage(				Analysis *	source);
-	void analysisSaveImage(				Analysis *	source);
-	void analysisToRefresh(				Analysis *	source);
 	void analysisImageSaved(			Analysis *	source);
 	void analysisImageEdited(			Analysis *	source);
-	void analysisRewriteImages(			Analysis *	source);
 	void analysisResultsChanged(		Analysis *	source);
 	void analysisTitleChanged(			Analysis *  source);
-	void analysisOptionsChanged(		Analysis *	source);
 	void analysisStatusChanged(			Analysis *	source);
 	void sendRScript(					QString		script, int requestID, bool whiteListedVersion);
 	void analysisSelectedIndexResults(	int			row);

@@ -113,7 +113,6 @@ void EngineRepresentation::clearAnalysisInProgress()
 
 void EngineRepresentation::setAnalysisInProgress(Analysis* analysis)
 {
-	analysis->incrementRevision(); // Increment revision only when the analysis request is about to be sent
 	if(_engineState == engineState::analysis)
 	{
 		if(_analysisInProgress == analysis)	return; //we are already busy with this analysis so everything is fine
