@@ -38,7 +38,7 @@ With Exploratory Factor Analysis it is possible to identify one or more factors 
       - cluster: Oblique rotation method cluster. 
 
 ### Output Options 
-- Highlight: This option adjusts the width of the arrows in the path diagram. By default, arrows become wider when their value is 0.4 or higher. 
+- Highlight: This option cuts the scaling of paths in width and color saturation. Paths with absolute weights over this value will have the strongest color intensity and become wider the stronger they are, and paths with absolute weights under this value will have the smallest width and become vaguer the weaker the weight. If set to 0, no cutoff is used and all paths vary in width and color.
 - Include Tables: 
     - Factor correlations: When selecting this option, a table with the correlations between the factors will be displayed. 
     - Additional fit indices: This option displays the Root Mean Squared Error of Approximation (RMSEA) with 90% confidence interval, the Tucker Lewis Index (TLI), and the Bayesian Information Criterion (BIC) to test the fit of the model. 
