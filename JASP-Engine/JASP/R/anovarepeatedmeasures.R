@@ -919,6 +919,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
           levelBNoDots <- gsub(.unv(comparisons[[compIndex]][2]), pattern = "\\.", replacement = " ")
           facLevelNoDots <- gsub(longData[[var]], pattern = "\\.", replacement = " ")
 
+          # gsubs necessary to deal with X and "." introduced to level names by emmeans
           x <- subset(longData, gsub("X", "", facLevelNoDots) == gsub("X", "", levelANoDots))
           x <- tapply(x[[.v("dependent")]], x[[.v("subject")]], mean)
           y <- subset(longData, gsub("X", "", facLevelNoDots) == gsub("X", "", levelBNoDots))
