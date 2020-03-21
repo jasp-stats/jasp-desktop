@@ -17,7 +17,7 @@
 
 NetworkAnalysis <- function(jaspResults, dataset, options) {
 
-  dataset <- .networkAnalysisReadData      (dataset, options)
+  dataset <- .networkAnalysisReadData(dataset, options)
 
   mainContainer <- .networkAnalysisSetupMainContainerAndTable(jaspResults, dataset, options)
   .networkAnalysisErrorCheck(mainContainer, dataset, options)
@@ -110,13 +110,14 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
     if (options[["groupingVariable"]] != "") {
       # these cannot be chained unfortunately
-      .hasErrors(dataset = groupingVariable,
-                 type = c("factorLevels", "observations"),
-                 factorLevels.target = groupingVariable,
+      groupingVariableName <- options[["groupingVariable"]]
+      dfGroup <- data.frame(groupingVariable)
+      colnames(dfGroup) <- .v(groupingVariableName)
+      .hasErrors(dataset = dfGroup,
+                 type = c("missingValues", "factorLevels"),
+                 missingValues.target = groupingVariableName,
+                 factorLevels.target = groupingVariableName,
                  factorLevels.amount = "< 2",
-                 observations.target = groupingVariable,
-                 observations.amount = "< 10",
-                 observations.grouping = groupingVariable,
                  exitAnalysisIfErrors = TRUE)
       dataset[[.v(options[["groupingVariable"]])]] <- groupingVariable
       groupingVariable <- options[["groupingVariable"]]
