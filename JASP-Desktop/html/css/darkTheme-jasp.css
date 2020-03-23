@@ -670,3 +670,12 @@ pre {
   /* light theme uses the default value */
   border: 1px solid #5c5c5c;
 }
+
+.ql-editor p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.ql-editor p:first-child {
+  margin-top: 0
+}
