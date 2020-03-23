@@ -10300,11 +10300,6 @@ msgstr ""
 
 #, qt-format
 msgctxt "BoundQMLComboBox|"
-msgid "Unknown option %1 in ComboBox %2"
-msgstr ""
-
-#, qt-format
-msgctxt "BoundQMLComboBox|"
 msgid "Unknown error in ComboBox %1"
 msgstr ""
 
@@ -15208,6 +15203,27 @@ msgstr ""
 
 msgctxt "ReliabilityAnalysis|"
 msgid "McDonald's ω (if item dropped)"
+msgstr ""
+
+msgctxt "testEncoding|"
+msgid "Selected"
+msgstr ""
+
+msgctxt "ColumnTypesModel|"
+msgid "Scale"
+msgstr ""
+
+msgctxt "ColumnTypesModel|"
+msgid "Ordinal"
+msgstr ""
+
+msgctxt "ColumnTypesModel|"
+msgid "Nominal"
+msgstr ""
+
+#, qt-format
+msgctxt "BoundQMLComboBox|"
+msgid "Unknown option %1 in DropDown %2"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"
