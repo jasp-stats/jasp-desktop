@@ -1032,7 +1032,7 @@ msgstr "Selecteer ontwikkelaarsmap"
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr "Navigeer naar uw JASP-modulemap"
+msgstr "Navigeer naar uw JASP-modulemap."
 
 msgctxt "PrefsAdvanced|"
 msgid "Regenerate package metadata every time (DESCRIPTION & NAMESPACE)"
@@ -1098,7 +1098,9 @@ msgid ""
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
 "Drempelwaarde aantal unieke gehele getallen voor het classificeren van een "
-"variabele als 'schaal'. \n"
+"variabele als 'schaal'.\n"
+"U moet uw gegevens opnieuw laden om effect te hebben! Controleer de help "
+"voor meer informatie."
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
@@ -1256,7 +1258,7 @@ msgstr "Nier klaar voor gebruik?"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr "Deïnstalleer module"
+msgstr "Deïnstalleer module "
 
 msgctxt "RibbonBar|"
 msgid "Show Modules Menu"
@@ -2761,7 +2763,7 @@ msgstr "<b>Variabele definitie</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Record ID's"
-msgstr "Boeking ID's "
+msgstr "Boeking ID's"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Book Values <i>(required)</i>"
@@ -2898,7 +2900,7 @@ msgstr "2. Selectie"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Ranking Variable <i>(optional)</i>"
-msgstr "Rangvariabele <i>(optioneel)</i> "
+msgstr "Rangvariabele <i>(optioneel)</i>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Additional Variables <i>(optional)</i>"
@@ -3122,7 +3124,7 @@ msgstr "Laag"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Expected Errors"
-msgstr "Verwachte fouten "
+msgstr "Verwachte fouten"
 
 #| msgid "Explanator4 Text"
 msgctxt "auditBayesianPlanning|"
@@ -4069,7 +4071,7 @@ msgstr "Kwartielen"
 
 msgctxt "Descriptives|"
 msgid "Cut points for: "
-msgstr "Snij punten af voor:"
+msgstr "Snij punten af voor: "
 
 msgctxt "Descriptives|"
 msgid " equal groups"
@@ -5785,7 +5787,7 @@ msgstr "Schaalvoorspellers"
 
 msgctxt "mlClassificationLda|"
 msgid "Set seed: "
-msgstr "Gebruik toevalsgenerator beginwaarde:"
+msgstr "Gebruik toevalsgenerator beginwaarde: "
 
 msgctxt "mlClassificationLda|"
 msgid "Add predicted classes to data"
@@ -10261,11 +10263,6 @@ msgstr "Geen drop key gevonden voor %1"
 
 #, qt-format
 msgctxt "BoundQMLComboBox|"
-msgid "Unknown option %1 in ComboBox %2"
-msgstr "Onbekende optie %1 in ComboBox %2"
-
-#, qt-format
-msgctxt "BoundQMLComboBox|"
 msgid "Unknown error in ComboBox %1"
 msgstr "Onbekende fout in ComboBox %1"
 
@@ -10454,7 +10451,7 @@ msgstr "Alle"
 
 msgctxt "VariablesForm|"
 msgid "There is no Available List in the Variables Form"
-msgstr "Er is geen beschikbare lijst in het Variabelen Scherm "
+msgstr "Er is geen beschikbare lijst in het Variabelen Scherm"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -10625,7 +10622,7 @@ msgid ""
 "their default values:%1"
 msgstr ""
 "Deze componenten werden geladen met een verkeerd soort waarde en kregen hun "
-"standaard waarden."
+"standaard waarden:%1"
 
 msgctxt "AnalysisForm|"
 msgid ""
@@ -10659,7 +10656,7 @@ msgstr "De uitdrukking heeft geen getal geretourneerd."
 #, qt-format
 msgctxt "BoundQMLTextInput|"
 msgid "The result (%1) must be %2"
-msgstr "Het resultaat (%1) moet %2 zijn."
+msgstr "Het resultaat (%1) moet %2 zijn"
 
 msgctxt "SEMSimple|"
 msgid "Thresholds"
@@ -12878,11 +12875,11 @@ msgstr "Afkapping"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Lower bound:"
-msgstr "Ondergrens"
+msgstr "Ondergrens:"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Upper bound:"
-msgstr "Bovengrens"
+msgstr "Bovengrens:"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Heterogeneity (Between study SD)"
@@ -14329,7 +14326,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr "Opslaan mislukt."
+msgstr "Opslaan mislukt"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -14376,7 +14373,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
-msgstr "GitHub kan niet geopend worden voor u."
+msgstr "GitHub kan niet geopend worden voor u"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -14491,7 +14488,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
-msgstr "Verwijder alle analyses."
+msgstr "Verwijder alle analyses"
 
 msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
@@ -14531,7 +14528,7 @@ msgstr ""
 #, qt-format
 msgctxt "DynamicModules|"
 msgid "Loading packages for Module %1 failed"
-msgstr "Het laden van packages voor Module %1 is mislukt."
+msgstr "Het laden van packages voor Module %1 is mislukt"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14597,7 +14594,7 @@ msgstr "Maak een R map voor de R-code van de analyses."
 
 msgctxt "DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr "Maak een inst/qml map voor opslaan van de analyseschermen"
+msgstr "Maak een inst/qml map voor opslaan van de analyseschermen."
 
 msgctxt "DynamicModules|"
 msgid ""
@@ -14632,7 +14629,7 @@ msgid ""
 msgstr ""
 "Het lijkt erop dat u nooit een %1 in uw module ontwikkelomgeving had. Zonder "
 "dit kan uw module niet werken, zorg ervoor een te maken. Hoe u de module "
-"geïnstalleerd hebt is onduidelijk en de module wordt nu verwijderd."
+"geïnstalleerd hebt is onduidelijk en de ontwikkelmodule wordt nu verwijderd"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14674,8 +14671,8 @@ msgid ""
 msgstr ""
 "Het lijkt erop dat map %1 nooit bestaan heeft in uw module ontwikkel-"
 "omgeving. Zonder deze map kan uw module niet werken, zorg dat deze aanwezig "
-"is.Hoe de module ooit geïnstalleerd werd is onduidelijk, en de "
-"ontwikkelmodule zal nu verwijderd worden."
+"is. Hoe de module ooit geïnstalleerd werd is onduidelijk, en de "
+"ontwikkelmodule zal nu verwijderd worden"
 
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
@@ -14688,7 +14685,7 @@ msgstr "Gedurende het laden van upgrades voor %1 is een fout opgetreden: %2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
-msgstr "Upgrades konden niet worden gelezen."
+msgstr "Upgrades konden niet worden gelezen"
 
 msgctxt "Modules::Upgrader|"
 msgid ""
@@ -14729,7 +14726,7 @@ msgstr "Bestand Types"
 
 msgctxt "FileMenu|"
 msgid "Failed to open file from OSF"
-msgstr "Kon bestand vanuit de OSF niet openen."
+msgstr "Kon bestand vanuit de OSF niet openen"
 
 msgctxt "FileMenu|"
 msgid "No associated data file"
@@ -14810,7 +14807,7 @@ msgstr "Bestand Types"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
-msgstr "Kon bestand van de OSF niet openen."
+msgstr "Kon bestand van de OSF niet openen"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
@@ -15085,7 +15082,7 @@ msgid ""
 "refresh your analyses!"
 msgstr ""
 ", om de juiste plaats van uw aantekeningen in de resultaten te behouden "
-"raden we u aan om eerst uw analyses te verversen"
+"raden we u aan om eerst uw analyses te verversen!"
 
 msgctxt "HelpWindow|"
 msgid "JASP Help"
@@ -15491,6 +15488,27 @@ msgstr "Bronmodel nodig voor VariablesList %1"
 msgctxt "QMLListView|"
 msgid "Cannot find source %1 for VariablesList %2"
 msgstr "Kan bron %1 niet vinden voor VariablesList %2"
+
+msgctxt "testEncoding|"
+msgid "Selected"
+msgstr "Geselecteerd"
+
+msgctxt "ColumnTypesModel|"
+msgid "Scale"
+msgstr "Schaal"
+
+msgctxt "ColumnTypesModel|"
+msgid "Ordinal"
+msgstr "Ordinaal"
+
+msgctxt "ColumnTypesModel|"
+msgid "Nominal"
+msgstr "Nominaal"
+
+#, qt-format
+msgctxt "BoundQMLComboBox|"
+msgid "Unknown option %1 in DropDown %2"
+msgstr "Onbekende optie %1 in Dropdown %2"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""
