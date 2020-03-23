@@ -63,6 +63,8 @@ JASPControl
 	readonly property int tableWidth:  theView.width  + 2
 	readonly property int tableHeight: theView.height + 2
 
+	readonly property int editableColumnStartIndex: tableView.modelType === "FilteredDataEntryModel" ? 3 : 0
+
 	signal reset()
 	signal addRow()
 	signal addColumn()
@@ -194,6 +196,7 @@ JASPControl
 						validator:				tableView.validator
 						onPressed:				tableView.colSelected = columnIndex
 						onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value, inputType)
+						editable:				columnIndex >= tableView.editableColumnStartIndex
 					}
 				}
 
