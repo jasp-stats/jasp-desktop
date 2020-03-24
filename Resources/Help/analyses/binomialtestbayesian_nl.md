@@ -34,7 +34,7 @@ Met de bayesiaanse binomiaaltoets kan worden getoetst of de proportie van een di
 ### Uitvoer
 ---
 
-#### Bayesiaanse binomiaal toets
+#### Bayesiaanse Binomiaal Toets
 - Niveau: de twee waarden van de dichotome variabele
 - Aantallen: Het aantal keer dan een bepaald niveau van de variabele voorkomt. 
 - Totaal: Het totale aantal observaties.

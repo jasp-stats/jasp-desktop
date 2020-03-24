@@ -2,7 +2,7 @@
 	"moduleDescription" :
 	{
 		"name"           : "Summary Statistics",
-		"title"          : "Samenvatting Statistieken" ,
+		"title"          : "Samenvattende Statistieken" ,
 		"description"    : "Summary Statistics module",
 		"icon"			 : "analysis-bayesian-ttest.svg",
 		"requiresData"	 : false,
@@ -21,7 +21,7 @@
 			"icon"	  : "analysis-bayesian-ttest.svg"
 		},
 		{
-			"title"   : "S.S. Bayesiaanse Onafhankelijke Steekproeven T-toets",
+			"title"   : "S.S. Bayesiaanse T-toets Onafhankelijke Steekproeven",
 			"function": "SummaryStatsTTestBayesianIndependentSamples"
 		},
 		{
@@ -49,7 +49,7 @@
 			"icon"    : "analysis-bayesian-crosstabs.svg"
 		},
 		{
-			"title"   : "S.S. Bayesiaanse Binomiaal toets",
+			"title"   : "S.S. Bayesiaanse Binomiaal Toets",
 			"function": "SummaryStatsBinomialTestBayesian"
 		}
 	]

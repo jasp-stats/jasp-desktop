@@ -1,4 +1,4 @@
-Samenvatting Statistieken Bayesiaanse Gepaarde T-toets
+Samenvattende Statistieken Bayesiaanse Gepaarde T-toets
 ==================
 
 Met deze functie kan men de Bayes factor uitrekenen voor een gepaarde T-toets met de klassieke T-statistiek. De nulhypothese is dat het populatiegemiddelde van het verschil tussen gepaarde condities 0 is. Deze Bayesiaanse analyse kan zonder pure data worden uitgevoerd.

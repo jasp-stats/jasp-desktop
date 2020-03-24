@@ -26,7 +26,7 @@ Bijvoorbeeld, als de tweezijdige *p*-waarde gelijk is aan .05, dan is de Vovk-Se
  
 ### Uitvoer
 -----------
-#### Binomiaal toets
+#### Binomiaal Toets
 - Niveau: De twee opties van de dichotome variabele
 - Telling: Het aantal waarnemingen op een bepaald level van de dichotome variabele. De telling van alle mogelijke levels geeft het totaal.
 - Totaal: Het totaal aantal observaties.

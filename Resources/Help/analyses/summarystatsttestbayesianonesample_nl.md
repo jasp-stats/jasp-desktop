@@ -1,4 +1,4 @@
-Samenvatting Statistieken Bayesiaanse T-Toets voor Eén Gemiddelde
+Samenvattende Statistieken Bayesiaanse T-Toets voor Eén Gemiddelde
 ==================
 
 Met deze functie kan men de Bayes factor berekenen die correspondeert met een t-toets voor één steekproef door middel van de *t* statistiek. De nulhypothese is dat het populatiegemiddelde gelijk is aan een bepaalde constante (i.e., de toetswaarde). Deze Bayesiaanse analyse kan zonder de pure data worden uitgevoerd.

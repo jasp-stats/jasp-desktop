@@ -1,7 +1,7 @@
-Linear Discriminant Classificatie
+Lineaire Discriminant Classificatie
 ==========================
 
-Linear Discriminant Analysis (LDA) is een classificatiemethode die doelt op het vinden van *p - 1* componenten die het beste discrimineren tussen de klassen van the target variabele. LDA is een lineaire classifier, wat betekent dat de decision boundaries tussen klassen lineair zijn.
+Lineaire Discriminant Analysis (LDA) is een classificatiemethode die doelt op het vinden van *p - 1* componenten die het beste discrimineren tussen de klassen van the target variabele. LDA is een lineaire classifier, wat betekent dat de decision boundaries tussen klassen lineair zijn.
 
 ### Assumpties
 - De target variabele is een nominale of ordinale variabele.

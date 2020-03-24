@@ -1,7 +1,7 @@
-Samenvatting Statistieken Bayesiaanse Onafhankelijke Steekproeven T-toets
+Samenvattende Statistieken Bayesiaanse T-toets Onafhankelijke Steekproeven
 ===
 
-Met deze functie kan met Bayes factor berekenen voor een onafhankelijke steekproeven t-toets met de klassieke t-statistiek. De nulhypothese is dat de populatiegemiddelden van twee groepen gelijk zijn. Deze bayesiaanse analyse kan zonder de pure data worden uitgevoerd.
+Met deze functie kan men de Bayes factor berekenen voor een onafhankelijke steekproeven t-toets met de klassieke t-statistiek. De nulhypothese is dat de populatiegemiddelden van twee groepen gelijk zijn. Deze bayesiaanse analyse kan zonder de pure data worden uitgevoerd.
 
 ### Assumpties 
 - De observaties in beide groepen komen voort uit een willekeurige steekproef uit de populatie.
