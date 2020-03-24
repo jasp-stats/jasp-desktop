@@ -33,11 +33,11 @@ Form
 	RadioButtonGroup
 	{
         name: "correlationCoefficient"
-		title: qsTr("Correlation Coefficient")
+        title: qsTr("Sample Correlation Coefficient")
 		Layout.columnSpan: 2
 		RadioButton
 		{
-            value: "pearsonRho"; label: qsTr("Pearson's rho"); checked: true; childrenOnSameRow: true
+            value: "pearsonRho"; label: qsTr("Pearson's r"); checked: true; childrenOnSameRow: true
             DoubleField { name: "pearsonRhoValue"; defaultValue: 0; min: -1; max: 1 }
 		}
 		RadioButton

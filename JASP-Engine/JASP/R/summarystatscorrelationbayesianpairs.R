@@ -48,7 +48,8 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
                     spearman = options[["rhoSObs"]])
   
   corResults <- bstats::bcor.testSumStat(n=options[["n"]], stat=statObs, alternative=options[["alternative"]],
-                                       method=options[["method"]], ciValue=options[["ciValue"]], kappa=options[["kappa"]])
+                                         method=options[["method"]], ciValue=options[["ciValue"]], 
+                                         kappa=options[["kappa"]])
   pValue <- bstats::pValueFromCor(n=options[["n"]], stat=statObs, method=options[["method"]])
   results <- modifyList(corResults, pValue)
   

@@ -34,9 +34,9 @@ Form
 
 	Group
 	{
-		title: qsTr("Correlation Coefficient")
-		CheckBox { name: "pearson";			label: qsTr("Pearson"); checked: true	}
-		CheckBox { name: "spearman";		label: qsTr("Spearman")					}
+        title: qsTr("Sample Correlation Coefficient")
+        CheckBox { name: "pearson";			label: qsTr("Pearson's r"); checked: true	}
+        CheckBox { name: "spearman";		label: qsTr("Spearman's rho")					}
 		CheckBox { name: "kendallsTauB";	label: qsTr("Kendall's tau-b")			}
 	}
 
