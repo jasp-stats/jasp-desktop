@@ -49,7 +49,7 @@ Form
 			CheckBox
 			{
 									name: "splitPlots";				label: qsTr("Boxplots")
-				CheckBox {			name: "splitPlotOutlierLabel";	label: qsTr("Label Outliers")					}
+				CheckBox {			name: "splitPlotOutlierLabel";	label: qsTr("Label outliers")					}
 				CheckBox
 				{
 									name: "splitPlotColour";		label: qsTr("Color");			enableChildrenOnChecked: false

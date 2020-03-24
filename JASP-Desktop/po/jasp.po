@@ -4006,10 +4006,6 @@ msgid "Boxplots"
 msgstr ""
 
 msgctxt "Descriptives|"
-msgid "Label Outliers"
-msgstr ""
-
-msgctxt "Descriptives|"
 msgid "Color"
 msgstr ""
 
@@ -15224,6 +15220,10 @@ msgstr ""
 #, qt-format
 msgctxt "BoundQMLComboBox|"
 msgid "Unknown option %1 in DropDown %2"
+msgstr ""
+
+msgctxt "Descriptives|"
+msgid "Label outliers"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"
