@@ -1,4 +1,4 @@
-Samenvatting Statistiek Bayesiaanse Binomiaal toets 
+Samenvattende Statistiek Bayesiaanse Binomiaal Toets
 ===
 
 Deze functie berekent de Bayes factor voor een observatie van een binomiaalverdeling. De bayesiaanse binomiaaltoets wordt beschreven in Jeffreys (1961, p 256). Deze toets vertelt u of de data een bepaalde waarde voor de parameter ondersteunt of juist niet.

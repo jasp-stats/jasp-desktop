@@ -1,4 +1,4 @@
-Samenvatting statistiek Bayesiaanse Correlatie
+Samenvattende Statistiek Bayesiaanse Correlatie
 ==========
 
 Met Bayesiaanse correlatie analyse kan men de nulhypothese testen dat de populatiecorrelatie (Pearson product-moment correlatie) tussen twee variabelen 0 is. 
