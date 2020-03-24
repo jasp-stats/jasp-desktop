@@ -221,7 +221,6 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   
   .reglogisticSetError(res, estimatesTableBootstrap)
   
-  estimatesTableBootstrap$addFootnote(gettextf("Bootstrapping based on %i replicates.", options$coeffEstimatesBootstrappingReplicates))
   if (options$robustSEOpt)
     estimatesTableBootstrap$addFootnote(gettext("Coefficient estimate and robust standard error are based on the median of the bootstrap distribution."))
   else
@@ -616,27 +615,31 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
         rn <- rownames(summary(glmObj[[i]])[["coefficients"]])
         rn[which(rn == "(Intercept)")] <- .v("(Intercept)")
         bootname <- paste(rn, collapse = "-")
-
+        
         if (is.null(bootstrapResults[[bootname]])) {
 
-          # we compute additional statistics while bootstrapping, but we can't do this using boot
+          # vandenman: we compute additional statistics while bootstrapping, but we can't do this using boot
           # so we hack it in there using an environment
+          # kucharssim: this is not true, you can boot whatever statistics you want, but ok... the bootstrapping should get some review anyway at some point
+          # discussion here: https://github.com/jasp-stats/jasp-desktop/pull/3962#discussion_r394348052
           envir <- new.env()
           envir$idx <- envir$idx_rse <- 0L
           envir$stdEst <- envir$robustSE <-
             matrix(NA, options$coeffEstimatesBootstrappingReplicates, length(coef(glmObj[[i]])))
-
+          
           .bootstrapping    <- function(data, indices, model.formula, options, envir) {
             progressbarTick()
-
+            
             d <- data[indices, , drop = FALSE] # allows boot to select sample
             result <- glm(model.formula, family = "binomial", data = d)
+            
+            if(length(coef(result)) != length(coef(glmObj[[i]]))) return(rep(NA, length(coef(glmObj[[i]]))))
             if (envir$idx == 0L) {
               # boot::boot does one test run before doing all runs (which it ignores in the results)
               envir$idx     <- 1L
               envir$idx_rse <- 1L
             } else {
-              resultStd <- try(.stdEst(result, type = "X"))
+              resultStd <- try(unname(.stdEst(result, type = "X")))
               if (!isTryError(resultStd)) {
                 envir$stdEst[envir$idx, ] <- resultStd
                 envir$idx <- envir$idx + 1L
@@ -649,7 +652,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
             }
             return(coef(result))
           }
-
+          
           bootstrap.summary <- try(boot::boot(data = dataset,
                                               statistic = .bootstrapping,
                                               R = options$coeffEstimatesBootstrappingReplicates,
@@ -657,6 +660,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
                                               options = options,
                                               envir = envir),
                                    silent = TRUE)
+          
           bootstrap.summary$stdEst   <- envir$stdEst
           bootstrap.summary$robustSE <- envir$robustSE
           bootstrapResults[[bootname]] <- bootstrap.summary
@@ -665,16 +669,17 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
         } else {
           bootstrap.summary <- bootstrapResults[[bootname]]
         }
-
+        
       bootstrap.coef <- matrixStats::colMedians(bootstrap.summary$t, na.rm = TRUE)
       bootstrap.std  <- matrixStats::colMedians(bootstrap.summary$stdEst, na.rm = TRUE)
       bootstrap.bias <- colMeans(bootstrap.summary$t, na.rm = TRUE) - bootstrap.summary$t0
       bootstrap.or   <- matrixStats::colMedians(exp(bootstrap.summary$t), na.rm = TRUE)
       if (options$robustSEOpt)
-        bootstrap.se <- matrixStats::colMedians(bootstrap.summary$robustSE)
+        bootstrap.se <- matrixStats::colMedians(bootstrap.summary$robustSE, na.rm = TRUE)
       else
         bootstrap.se <- matrixStats::colSds(as.matrix(bootstrap.summary$t), na.rm = TRUE)
       
+      jaspResults[['estimatesTableBootstrapping']]$addFootnote(gettextf("Bootstrapping based on %i successful replicates.", sum(complete.cases(bootstrap.summary$t))))
       for (j in seq_along(rn)) {
         
         row <- list(
@@ -696,9 +701,9 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
             bootstrap.ci <- list(bca = rep(NA, 5))
           } else
             bootstrap.ci <- result.bootstrap.ci
-
+          
           if(ci.fails)
-            estimatesTableBootstrap$addFootnote(gettext("Some confidence intervals could not be computed.\nPossibly too few bootstrap replicates."))
+            jaspResults[['estimatesTableBootstrapping']]$addFootnote(gettext("Some confidence intervals could not be computed.\nPossibly too few bootstrap replicates."))
 
           row[["cilo"]] <- expon(as.numeric(bootstrap.ci$bca[4]))
           row[["ciup"]] <- expon(as.numeric(bootstrap.ci$bca[5]))
