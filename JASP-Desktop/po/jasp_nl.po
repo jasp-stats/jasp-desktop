@@ -4034,10 +4034,6 @@ msgid "Boxplots"
 msgstr "Boxplots"
 
 msgctxt "Descriptives|"
-msgid "Label Outliers"
-msgstr "Label uitschieters"
-
-msgctxt "Descriptives|"
 msgid "Color"
 msgstr "Kleur"
 
@@ -15509,6 +15505,10 @@ msgstr "Nominaal"
 msgctxt "BoundQMLComboBox|"
 msgid "Unknown option %1 in DropDown %2"
 msgstr "Onbekende optie %1 in Dropdown %2"
+
+msgctxt "Descriptives|"
+msgid "Label outliers"
+msgstr "Label uitschieters"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""
