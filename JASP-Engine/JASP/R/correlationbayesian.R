@@ -783,17 +783,16 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
         }
         # Note(Alexander): Not stored
         # 
-        ciValue <- options[["ciValue"]]
         lowerCi <- sidedBfWithoutPost[["lowerCi"]]
         upperCi <- sidedBfWithoutPost[["upperCi"]]
         medianPoint <- sidedBfWithoutPost[["posteriorMedian"]]
       }  else {
-        ciValue <- postPlotValues[["ciValue"]]
         lowerCi <- postPlotValues[["lowerCi"]]
         upperCi <- postPlotValues[["upperCi"]]
         medianPoint <- postPlotValues[["posteriorMedian"]]
       }
       
+      ciValue <- options[["ciValue"]]
       CRI <- c(lowerCi, upperCi)
       CRItxt <- gettextf("%s%% CI:", ciValue * 100)
     }
