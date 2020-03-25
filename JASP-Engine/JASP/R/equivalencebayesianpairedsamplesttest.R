@@ -47,6 +47,9 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   if (options$plotSequentialAnalysis)
      .equivalencePlotSequentialAnalysis(jaspResults, dataset, options, equivalenceBayesianPairedTTestResults, ready, paired = TRUE)
   
+  if (options$densityPriorPosterior && is.null(jaspResults[["equivalenceDensityPairedTTestTable"]])) 
+    .densityPriorPosteriorPairedTTestTable(jaspResults, dataset, options, equivalenceBayesianPairedTTestResults, ready)
+  
   return()
 }
 
@@ -90,18 +93,22 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
         
       } else if (r[["bfEquivalence"]] < 0 || r[["bfNonequivalence"]] < 0) {
         
-        results[[variable]][["status"]] <- "error"
-        results[[variable]][["errorFootnotes"]] <- "Not able to calculate Bayes factor while the integration was too unstable"
+        results[[namePair]][["status"]] <- "error"
+        results[[namePair]][["errorFootnotes"]] <- "Not able to calculate Bayes factor while the integration was too unstable"
         
       } else {
         
-        results[[namePair]][["bfEquivalence"]]    <- r[["bfEquivalence"]]
-        results[[namePair]][["bfNonequivalence"]] <- r[["bfNonequivalence"]]
-        results[[namePair]][["errorPrior"]]       <- r[["errorPrior"]]
-        results[[namePair]][["errorPosterior"]]   <- r[["errorPosterior"]]
-        results[[namePair]][["tValue"]]           <- r[["tValue"]]
-        results[[namePair]][["n1"]]               <- r[["n1"]]
-        results[[namePair]][["n2"]]               <- r[["n2"]]
+        results[[namePair]][["bfEquivalence"]]                   <- r[["bfEquivalence"]]
+        results[[namePair]][["bfNonequivalence"]]                <- r[["bfNonequivalence"]]
+        results[[namePair]][["errorPrior"]]                      <- r[["errorPrior"]]
+        results[[namePair]][["errorPosterior"]]                  <- r[["errorPosterior"]]
+        results[[namePair]][["tValue"]]                          <- r[["tValue"]]
+        results[[namePair]][["n1"]]                              <- r[["n1"]]
+        results[[namePair]][["n2"]]                              <- r[["n2"]]
+        results[[namePair]][["integralEquivalencePosterior"]]    <- r[["integralEquivalencePosterior"]]
+        results[[namePair]][["integralEquivalencePrior"]]        <- r[["integralEquivalencePrior"]]
+        results[[namePair]][["integralNonequivalencePosterior"]] <- r[["integralNonequivalencePosterior"]]
+        results[[namePair]][["integralNonequivalencePrior"]]     <- r[["integralNonequivalencePrior"]]
       }
     }
   }
@@ -243,3 +250,72 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   
   return()
 }
+
+.densityPriorPosteriorPairedTTestTable <- function(jaspResults, dataset, options, equivalenceBayesianPairedTTestResults, ready) {
+  
+  # Create table
+  equivalenceDensityPairedTTestTable <- createJaspTable(title = gettext("Equivalence Density Table"))
+  equivalenceDensityPairedTTestTable$dependOn(c("pairs", "lowerbound", "upperbound", "priorWidth", "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
+                                                 "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
+                                                 "informativeTScale", "informativeTDf"))
+  equivalenceDensityPairedTTestTable$showSpecifiedColumnsOnly <- TRUE
+  
+  # Add Columns to table
+  equivalenceDensityPairedTTestTable$addColumnInfo(name = "variable1",   title = " ",                         type = "string")
+  equivalenceDensityPairedTTestTable$addColumnInfo(name = "separator",   title = " ",                         type = "separator")
+  equivalenceDensityPairedTTestTable$addColumnInfo(name = "variable2",   title = " ",                         type = "string")
+  equivalenceDensityPairedTTestTable$addColumnInfo(name = "section",     title = "Section",                   type = "string")
+  equivalenceDensityPairedTTestTable$addColumnInfo(name = "density",     title = "Density",                   type = "number")
+  
+  if (ready)
+    equivalenceDensityPairedTTestTable$setExpectedSize(length(options$pairs))
+  
+  jaspResults[["equivalenceDensityPairedTTestTable"]] <- equivalenceDensityPairedTTestTable
+  
+  if (!ready)
+    return()
+  
+  .equivalenceDensityFillPairedTableMain(equivalenceDensityPairedTTestTable, dataset, options, equivalenceBayesianPairedTTestResults)
+  
+  return()
+}
+
+.equivalenceDensityFillPairedTableMain <- function(equivalenceDensityPairedTTestTable, dataset, options, equivalenceBayesianPairedTTestResults) {
+  
+  for (pair in options$pairs) {
+    
+    namePair <- paste(pair[[1L]], " - ",  pair[[2L]], sep = "")
+    results <- equivalenceBayesianPairedTTestResults[[namePair]]
+    
+    if (!is.null(results$status)) {
+      equivalenceDensityPairedTTestTable$addFootnote(message = results$errorFootnotes, rowNames = namePair, colNames = "density")
+      equivalenceDensityPairedTTestTable$addRows(list(variable1 = pair[[1L]], separator = "-", variable2 = pair[[2L]], density = NaN), rowNames = namePair)
+    } else {
+      equivalenceDensityPairedTTestTable$addRows(list(variable1     = pair[[1L]], 
+                                                      separator     = "-",
+                                                      variable2     = pair[[2L]],
+                                                      section       = "p(\U003B4 \U02208 I | H1)",
+                                                      density       = results$integralEquivalencePrior))
+      
+      equivalenceDensityPairedTTestTable$addRows(list(variable1     = " ", 
+                                                      separator     = " ",
+                                                      variable2     = " ",
+                                                      section       = "p(\U003B4 \U02208 I | H1, y)",
+                                                      density       = results$integralEquivalencePosterior)) 
+      
+      equivalenceDensityPairedTTestTable$addRows(list(variable1     = " ", 
+                                                      separator     = " ",
+                                                      variable2     = " ",
+                                                      section       = "p(\U003B4 \U02209 I | H1)",
+                                                      density       = results$integralNonequivalencePrior)) 
+      
+      equivalenceDensityPairedTTestTable$addRows(list(variable1     = " ", 
+                                                      separator     = " ",
+                                                      variable2     = " ",
+                                                      section       = "p(\U003B4 \U02209 I | H1, y)",
+                                                      density       = results$integralNonequivalencePosterior)) 
+    }
+  }
+}
+
+

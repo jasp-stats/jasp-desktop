@@ -39,6 +39,9 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
   if (options$plotSequentialAnalysis)
       .equivalencePlotSequentialAnalysis(jaspResults, dataset, options, equivalenceBayesianIndTTestResults, ready)
   
+  if (options$densityPriorPosterior && is.null(jaspResults[["equivalenceDensityTable"]])) 
+    .densityPriorPosteriorIndpTTestTable(jaspResults, dataset, options, equivalenceBayesianIndTTestResults, ready)
+  
   return()
 }
 
@@ -99,11 +102,15 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
         results[[variable]][["errorFootnotes"]] <- "Not able to calculate Bayes factor while the integration was too unstable"
         
       } else {
-        results[[variable]][["bfEquivalence"]]    <- r[["bfEquivalence"]]
-        results[[variable]][["bfNonequivalence"]] <- r[["bfNonequivalence"]]
-        results[[variable]][["errorPrior"]]       <- r[["errorPrior"]]
-        results[[variable]][["errorPosterior"]]   <- r[["errorPosterior"]]
-        results[[variable]][["tValue"]]           <- r[["tValue"]]
+        results[[variable]][["bfEquivalence"]]                   <- r[["bfEquivalence"]]
+        results[[variable]][["bfNonequivalence"]]                <- r[["bfNonequivalence"]]
+        results[[variable]][["errorPrior"]]                      <- r[["errorPrior"]]
+        results[[variable]][["errorPosterior"]]                  <- r[["errorPosterior"]]
+        results[[variable]][["tValue"]]                          <- r[["tValue"]]
+        results[[variable]][["integralEquivalencePosterior"]]    <- r[["integralEquivalencePosterior"]]
+        results[[variable]][["integralEquivalencePrior"]]        <- r[["integralEquivalencePrior"]]
+        results[[variable]][["integralNonequivalencePosterior"]] <- r[["integralNonequivalencePosterior"]]
+        results[[variable]][["integralNonequivalencePrior"]]     <- r[["integralNonequivalencePrior"]]
       }
     }
     
@@ -262,5 +269,65 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
     }
   }
   
+  return()
+}
+
+.densityPriorPosteriorIndpTTestTable <- function(jaspResults, dataset, options, equivalenceBayesianIndTTestResults, ready) {
+  
+  equivalenceDensityTable <- createJaspTable(title = "Prior and Posterior Density Table")
+  equivalenceDensityTable$dependOn(c("variables", "groupingVariable", "priorWidth",
+                                  "effectSizeStandardized", "lowerbound", "upperbound", 
+                                  "informative", "informativeCauchyLocation", "informativeCauchyScale",
+                                  "informativeNormalMean", "informativeNormalStd", "informativeTLocation", 
+                                  "informativeTScale", "informativeTDf"))
+  
+  equivalenceDensityTable$addColumnInfo(name = "variable",         title = "Variable",        type = "string", combine = TRUE)
+  equivalenceDensityTable$addColumnInfo(name = "section",          title = "Section",         type = "string")
+  equivalenceDensityTable$addColumnInfo(name = "density",             title = "Density",      type = "number")
+  
+  equivalenceDensityTable$showSpecifiedColumnsOnly <- TRUE
+  
+  if (ready)
+    equivalenceDensityTable$setExpectedSize(length(options$variables))
+  
+  jaspResults[["equivalenceDensityTable"]] <- equivalenceDensityTable
+  
+  if (!ready)
+    return()
+  
+  .equivalenceDensityFillTableMain(equivalenceDensityTable, dataset, options, equivalenceBayesianIndTTestResults)
+  
+  return()
+
+}
+
+.equivalenceDensityFillTableMain <- function(equivalenceDensityTable, dataset, options, equivalenceBayesianIndTTestResults) {
+  
+  for (variable in options$variables) {
+    
+    results <- equivalenceBayesianIndTTestResults[[variable]]
+    
+    if (!is.null(results$status)) {
+      equivalenceDensityTable$addFootnote(message = results$errorFootnotes, rowNames = variable, colNames = "density")
+      equivalenceDensityTable$addRows(list(variable = variable, density = NaN), rowNames = variable)
+    } else {
+    
+      equivalenceDensityTable$addRows(list(variable   = variable,
+                                        section       = "p(\U003B4 \U02208 I | H1)",
+                                        density       = results$integralEquivalencePrior))
+      
+      equivalenceDensityTable$addRows(list(variable   = variable,
+                                        section       = "p(\U003B4 \U02208 I | H1, y)",
+                                        density       = results$integralEquivalencePosterior)) 
+      
+      equivalenceDensityTable$addRows(list(variable   = variable,
+                                        section       = "p(\U003B4 \U02209 I | H1)",
+                                        density       = results$integralNonequivalencePrior)) 
+      
+      equivalenceDensityTable$addRows(list(variable   = variable,
+                                        section       = "p(\U003B4 \U02209 I | H1, y)",
+                                        density       = results$integralNonequivalencePosterior)) 
+    }
+  }
   return()
 }

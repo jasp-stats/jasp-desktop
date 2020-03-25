@@ -46,6 +46,7 @@ Form
     {
         title: qsTr("Additional Statistics")
         CheckBox { name: "descriptives";					text: qsTr("Descriptives")	}
+        CheckBox { name: "densityPriorPosterior";              text: qsTr("Prior and Posterior density") }
     }
 
     Group

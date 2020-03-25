@@ -433,7 +433,7 @@
   errorEquivalencePrior <- integralEquivalencePrior$abs.error
   
   integralEquivalencePrior <- integralEquivalencePrior$value
-  intergralNonequivalencePrior <- 1 - integralEquivalencePrior 
+  integralNonequivalencePrior <- 1 - integralEquivalencePrior 
   
   # Step 2: Density in the equivalence range of the posterior
   upperbound <- .equivalence_cdf_t(x                  = options$upperbound, 
@@ -461,16 +461,20 @@
   if (integralEquivalencePosterior < 0) 
     integralEquivalencePosterior = 0     
   
-  intergralNonequivalencePosterior <- 1 - integralEquivalencePosterior
+  integralNonequivalencePosterior <- 1 - integralEquivalencePosterior
   
   # Step 3: Calculate BF
   bfEquivalence <- integralEquivalencePosterior / integralEquivalencePrior
-  bfNonequivalence <- intergralNonequivalencePosterior / intergralNonequivalencePrior 
+  bfNonequivalence <- integralNonequivalencePosterior / integralNonequivalencePrior
   
-  return(list(bfEquivalence    = bfEquivalence, 
-              bfNonequivalence = bfNonequivalence, 
-              errorPrior       = errorEquivalencePrior, 
-              errorPosterior   = errorEquivalencePosterior))
+  return(list(bfEquivalence                   = bfEquivalence, 
+              bfNonequivalence                = bfNonequivalence, 
+              errorPrior                      = errorEquivalencePrior, 
+              errorPosterior                  = errorEquivalencePosterior, 
+              integralEquivalencePosterior    = integralEquivalencePosterior,
+              integralEquivalencePrior        = integralEquivalencePrior,
+              integralNonequivalencePosterior = integralNonequivalencePosterior,
+              integralNonequivalencePrior     = integralNonequivalencePrior))
 }
 
 .equivalence_bf_normal <- function(t, n1, n2, independentSamples, prior.mean, prior.variance, options) {
@@ -482,7 +486,7 @@
   errorEquivalencePrior <- integralEquivalencePrior$abs.error
   integralEquivalencePrior <- integralEquivalencePrior$value
   
-  intergralNonequivalencePrior <- 1 - integralEquivalencePrior 
+  integralNonequivalencePrior <- 1 - integralEquivalencePrior 
   
   # Step 2: Density in the equivalence range of the posterior
   upperbound <- .equivalence_cdf_normal(x = options$upperbound, t, n1, n2, independentSamples, 
@@ -498,16 +502,20 @@
   if (integralEquivalencePosterior < 0) 
     integralEquivalencePosterior = 0
   
-  intergralNonequivalencePosterior <- 1 - integralEquivalencePosterior
+  integralNonequivalencePosterior <- 1 - integralEquivalencePosterior
   
   # Step 3: Calculate BF
   bfEquivalence <- integralEquivalencePosterior / integralEquivalencePrior
-  bfNonequivalence <- intergralNonequivalencePosterior / intergralNonequivalencePrior 
+  bfNonequivalence <- integralNonequivalencePosterior / integralNonequivalencePrior 
   
-  return(list(bfEquivalence    = bfEquivalence, 
-              bfNonequivalence = bfNonequivalence, 
-              errorPrior       = errorEquivalencePrior, 
-              errorPosterior   = errorEquivalencePosterior))
+  return(list(bfEquivalence                   = bfEquivalence, 
+              bfNonequivalence                = bfNonequivalence, 
+              errorPrior                      = errorEquivalencePrior, 
+              errorPosterior                  = errorEquivalencePosterior,
+              integralEquivalencePosterior    = integralEquivalencePosterior,
+              integralEquivalencePrior        = integralEquivalencePrior,
+              integralNonequivalencePosterior = integralNonequivalencePosterior,
+              integralNonequivalencePrior     = integralNonequivalencePrior))
 }
 
 .equivalence_cdf_normal <- function(x, t, n1, n2 = NULL, independentSamples = FALSE, prior.mean, prior.variance) {
@@ -633,17 +641,21 @@
   }
   
   # if no error  else error
-  return(list(bfEquivalence     = bfObject$bfEquivalence, 
-              bfNonequivalence  = bfObject$bfNonequivalence, 
-              errorPrior        = bfObject$errorPrior, 
-              errorPosterior    = bfObject$errorPosterior, 
-              tValue            = tValue, 
-              n1                = n1, 
-              n2                = n2,
-              errorBfI1         = bfObject$errorBfI1, 
-              errorBfnI1        = bfObject$errorBfnI1, 
-              errorBfnII        = bfObject$errorBfInI,
-              errorBfInI        = bfObject$errorBfInI))
+  return(list(bfEquivalence                   = bfObject$bfEquivalence, 
+              bfNonequivalence                = bfObject$bfNonequivalence, 
+              errorPrior                      = bfObject$errorPrior, 
+              errorPosterior                  = bfObject$errorPosterior, 
+              tValue                          = tValue, 
+              n1                              = n1, 
+              n2                              = n2,
+              errorBfI1                       = bfObject$errorBfI1, 
+              errorBfnI1                      = bfObject$errorBfnI1, 
+              errorBfnII                      = bfObject$errorBfInI,
+              errorBfInI                      = bfObject$errorBfInI,
+              integralEquivalencePrior        = bfObject$integralEquivalencePrior,
+              integralEquivalencePosterior    = bfObject$integralEquivalencePosterior,
+              integralNonequivalencePrior     = bfObject$integralNonequivalencePrior,
+              integralNonequivalencePosterior = bfObject$integralNonequivalencePosterior))
 }
 
 .equivalencePlotSequentialAnalysis <- function(jaspResults, dataset, options, equivalenceBayesianTTestResults, ready, paired = FALSE) {

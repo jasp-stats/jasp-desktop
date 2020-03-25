@@ -25,12 +25,13 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
   }
   
   # Compute the results
-  equivalenceBayesianOneTTestResults <- .equivalenceBayesianOneTTestComputeResults(jaspResults, dataset, options, ready, errors)
+  if (is.null(jaspResults[["equivalenceBayesianOneTTestTable"]]))
+    equivalenceBayesianOneTTestResults <- .equivalenceBayesianOneTTestComputeResults(jaspResults, dataset, options, ready, errors)
   
   # Output tables and plots
   .equivalenceBayesianOneTTestTableMain(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready)
   
-  if(options$descriptives)
+  if(options$descriptives && is.null(jaspResults[["equivalenceBayesianDescriptivesTable"]]))
     .equivalenceBayesianOneTTestTableDescriptives(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready)
   
   if (options$priorandposterior)
@@ -38,6 +39,9 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
   
   if (options$plotSequentialAnalysis)
     .equivalencePlotSequentialAnalysis(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready)
+  
+  if (options$densityPriorPosterior && is.null(jaspResults[["equivalenceDensityTable"]])) 
+    .densityPriorPosteriorOneTTestTable(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready)
   
   return()
 }
@@ -86,11 +90,15 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
       
       } else {
         
-        results[[variable]][["bfEquivalence"]]     <- r[["bfEquivalence"]]
-        results[[variable]][["bfNonequivalence"]]  <- r[["bfNonequivalence"]]
-        results[[variable]][["errorPrior"]]        <- r[["errorPrior"]]
-        results[[variable]][["errorPosterior"]]    <- r[["errorPosterior"]]
-        results[[variable]][["tValue"]]            <- r[["tValue"]]
+        results[[variable]][["bfEquivalence"]]                   <- r[["bfEquivalence"]]
+        results[[variable]][["bfNonequivalence"]]                <- r[["bfNonequivalence"]]
+        results[[variable]][["errorPrior"]]                      <- r[["errorPrior"]]
+        results[[variable]][["errorPosterior"]]                  <- r[["errorPosterior"]]
+        results[[variable]][["tValue"]]                          <- r[["tValue"]]
+        results[[variable]][["integralEquivalencePosterior"]]    <- r[["integralEquivalencePosterior"]]
+        results[[variable]][["integralEquivalencePrior"]]        <- r[["integralEquivalencePrior"]]
+        results[[variable]][["integralNonequivalencePosterior"]] <- r[["integralNonequivalencePosterior"]]
+        results[[variable]][["integralNonequivalencePrior"]]     <- r[["integralNonequivalencePrior"]]
       }
     }
   }
@@ -214,4 +222,64 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
                                                       lowerCI       = ciLower,
                                                       upperCI       = ciUpper))
   }
+}
+
+.densityPriorPosteriorOneTTestTable <- function(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready) {
+  
+  equivalenceDensityTable <- createJaspTable(title = "Prior and Posterior Density Table")
+  equivalenceDensityTable$dependOn(c("variables", "priorWidth", "mu",
+                                     "effectSizeStandardized", "lowerbound", "upperbound", 
+                                     "informative", "informativeCauchyLocation", "informativeCauchyScale",
+                                     "informativeNormalMean", "informativeNormalStd", "informativeTLocation", 
+                                     "informativeTScale", "informativeTDf"))
+  
+  equivalenceDensityTable$addColumnInfo(name = "variable",         title = "Variable",        type = "string", combine = TRUE)
+  equivalenceDensityTable$addColumnInfo(name = "section",          title = "Section",         type = "string")
+  equivalenceDensityTable$addColumnInfo(name = "density",          title = "Density",         type = "number")
+  
+  equivalenceDensityTable$showSpecifiedColumnsOnly <- TRUE
+  
+  if (ready)
+    equivalenceDensityTable$setExpectedSize(length(options$variables))
+  
+  jaspResults[["equivalenceDensityTable"]] <- equivalenceDensityTable
+  
+  if (!ready)
+    return()
+  
+  .equivalenceDensityFillTableMain(equivalenceDensityTable, dataset, options, equivalenceBayesianOneTTestResults)
+  
+  return()
+  
+}
+
+.equivalenceDensityFillTableMain <- function(equivalenceDensityTable, dataset, options, equivalenceBayesianOneTTestResults) {
+  
+  for (variable in options$variables) {
+    
+    results <- equivalenceBayesianOneTTestResults[[variable]]
+    
+    if (!is.null(results$status)) {
+      equivalenceDensityTable$addFootnote(message = results$errorFootnotes, rowNames = variable, colNames = "density")
+      equivalenceDensityTable$addRows(list(variable = variable, density = NaN), rowNames = variable)
+    } else {
+      
+      equivalenceDensityTable$addRows(list(variable   = variable,
+                                           section       = "p(\U003B4 \U02208 I | H1)",
+                                           density       = results$integralEquivalencePrior))
+      
+      equivalenceDensityTable$addRows(list(variable   = variable,
+                                           section       = "p(\U003B4 \U02208 I | H1, y)",
+                                           density       = results$integralEquivalencePosterior)) 
+      
+      equivalenceDensityTable$addRows(list(variable   = variable,
+                                           section       = "p(\U003B4 \U02209 I | H1)",
+                                           density       = results$integralNonequivalencePrior)) 
+      
+      equivalenceDensityTable$addRows(list(variable   = variable,
+                                           section       = "p(\U003B4 \U02209 I | H1, y)",
+                                           density       = results$integralNonequivalencePosterior)) 
+    }
+  }
+  return()
 }
