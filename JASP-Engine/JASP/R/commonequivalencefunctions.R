@@ -381,6 +381,7 @@
                                                               CRI          = CRI,
                                                               median       = median,
                                                               bfType       = "BF10", 
+                                                              xName = bquote(paste(.(gettext("Effect size")), ~delta)),
                                                               bfSubscripts = JASPgraphs::parseThis(c("BF[phantom()%in%phantom()%notin%phantom()]",
                                                                                                      "BF[phantom()%notin%phantom()%in%phantom()]")),
                                                               pizzaTxt     = JASPgraphs::parseThis(c("data~'|'~H[phantom()%notin%phantom()]", "data~'|'~H[phantom()%in%phantom()]")))
