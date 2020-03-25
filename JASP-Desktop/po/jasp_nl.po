@@ -6847,7 +6847,7 @@ msgstr "Methode"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Study Labels"
-msgstr "Bestudeer Labels"
+msgstr "Studienamen"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Covariates"
@@ -6903,7 +6903,7 @@ msgstr "Covariantiematrix"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Model Fit"
-msgstr "Model passing"
+msgstr "Model Passing"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Fit measures"
@@ -6911,7 +6911,7 @@ msgstr "Pasmaten"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Forest plot"
-msgstr "Forest diagram"
+msgstr "Forestgrafiek"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Funnel plot"
@@ -6919,19 +6919,19 @@ msgstr "Funnelgrafiek"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Rank test for funnel plot asymmetry"
-msgstr "Rangschik toets voor funnelgrafiek asymmetrisch"
+msgstr "Rangordetoets voor funnelgrafiek asymmetrisch"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Regression test for funnel plot asymmetry"
-msgstr "Regressietoets voor funnelgrafiek asymmetrisch"
+msgstr "Regressietoets voor funnelgrafiek-asymmetrie"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Residuals Model"
-msgstr "Residuenmodel"
+msgstr "Residuen Model"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Residuals parameters"
-msgstr "Residuenparameters"
+msgstr "Residuen Parameters"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Diagnostics"
@@ -7063,7 +7063,7 @@ msgstr "Funnelgrafiek"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Forest plot"
-msgstr "Forest diagram"
+msgstr "Forestgrafiek"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Advanced"
@@ -12783,7 +12783,7 @@ msgstr "95% betrouwbaarheidsinterval onder- en bovengrens"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Study Labels"
-msgstr "Bestudeer Labels"
+msgstr "Studienamen"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Model"
@@ -12903,7 +12903,7 @@ msgstr "Grafieken"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Forest plot"
-msgstr "Forest diagram"
+msgstr "Forestgrafiek"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Observed"
@@ -12935,7 +12935,7 @@ msgstr "Rijvolgorde"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Cumulative forest plot"
-msgstr "Cumulatief forest diagram"
+msgstr "Cumulatieve forestgrafiek"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Prior and posterior"

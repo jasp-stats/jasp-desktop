@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-03-23 14:15\n"
+"POT-Creation-Date: 2020-03-25 15:42\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4658,6 +4658,9 @@ msgid "Null model contains nuisance parameters: %s"
 msgstr ""
 
 msgid "%1$s level '%2$s' coded as class 1."
+msgstr ""
+
+msgid "Bootstrapping based on %i successful replicates."
 msgstr ""
 
 msgid "Residual plots"
