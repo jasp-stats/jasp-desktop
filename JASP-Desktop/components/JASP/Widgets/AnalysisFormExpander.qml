@@ -121,7 +121,7 @@ DropArea
 				else
 				{
 					analysesModel.moving = false
-					mainWindow.moveAnalysesResults(loader.myAnalysis, draggableItem.droppedIndex)
+					analysesModel.moveAnalysesResults(loader.myAnalysis, draggableItem.droppedIndex)
 				}
 			}
 

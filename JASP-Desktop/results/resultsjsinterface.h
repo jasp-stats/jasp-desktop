@@ -89,7 +89,7 @@ public slots:
 	void setResultsMetaFromJavascript(QString json);
 	void removeAnalysis(Analysis *analysis);
 	void removeAnalyses();
-	void moveAnalyses(size_t fromId, size_t toId);
+	void moveAnalyses(quint64 fromId, quint64 toId);
 	void setThemeCss(QString themeName);
 
 //end callables
