@@ -19,8 +19,8 @@ The Correlation analysis allows estimation of the population correlation, as wel
 ### Input
 ---
 
-#### Correlation Coefficient
-- Pearson's rho: Pearson's product moment correlation coefficient. 
+#### Sample Correlation Coefficient
+- Pearson's r: Pearson's product moment correlation coefficient.
 - Spearman: Spearman's rank-order correlation coefficient to quantify the monotonic association between two variables.
 - Kendall's tau-b: Kendall's tau-b rank-order correlation coefficient to quantify the monotonic association between two variables.
 
@@ -35,7 +35,7 @@ The Correlation analysis allows estimation of the population correlation, as wel
 - Flag significant correlations: Mark statistically significant correlations.
 - Confidence Intervals: Confidence intervals for the population correlation (only available for the Pearson correlation).
   - Interval: Coverage of the confidence interval in percentages.
-- Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>. 
+- Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>.
 - Sample size: The number of complete observations for a given pair of variables.
 
 #### Plots
@@ -48,16 +48,16 @@ The Correlation analysis allows estimation of the population correlation, as wel
 
 - Multivariate normality
   - Shapiro: Computes the Shapiro-Wilk statistic to test the null hypothesis that the selected variables have multivariate normal distribution.
-  
+
 - Pairwise normality
   - Shapiro: For each possible combination of the selected variables, computes the Shapiro-Wilk statistic to test the null hypothesis that the variable pair has a bivariate normal distribution.
-  
+
 #### Options
 
 - Missing values
   - Exclude cases pairwise: Uses all complete observations for each individual pair of variables.
   - Exclude cases listwise: Uses only complete cases across all variables.
-  
+
 ### Output
 ---
 #### Correlation Table
@@ -69,7 +69,7 @@ The Correlation analysis allows estimation of the population correlation, as wel
     - *p < .05 if the correlation is significant at alpha=.05 level.
     - **p < .01 if the correlation is significant at alpha=.01 level.
     - ***p < .001 if the correlation is significant at alpha=.001 level.
-- Vovk-Sellke Maximum *p*-Ratio: For an explanation, see Vovk-Sellke under `Options`. 
+- Vovk-Sellke Maximum *p*-Ratio: For an explanation, see Vovk-Sellke under `Options`.
 - Upper x% CI: Upper bound of the x% confidence interval for the population correlation.
 - Lower x% CI: Lower bound of the x% confidence interval for the population correlation.
 - n: Sample size.

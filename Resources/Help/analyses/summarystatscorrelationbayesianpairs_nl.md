@@ -1,7 +1,7 @@
 Samenvatting statistiek Bayesiaanse Correlatie
 ==========
 
-Met Bayesiaanse correlatie analyse kan men de nulhypothese testen dat de populatiecorrelatie (Pearson product-moment correlatie) tussen twee variabelen 0 is. 
+Met Bayesiaanse correlatie analyse kan men de nulhypothese testen dat de populatiecorrelatie (Pearson product-moment correlatie) tussen twee variabelen 0 is.
 
 ### Invoer
 ---
@@ -10,18 +10,18 @@ Met Bayesiaanse correlatie analyse kan men de nulhypothese testen dat de populat
 - *n*: Steekproefgrootte (minimaal 2).
 
 #### Correlatiecoëfficiënt
-  - *Pearson's r*: Pearson's product-moment correlatie coëfficiënt.
-  - *Kendall's tau-b*
+  - *Pearson's r*: De geobserveerde Pearson's product-moment correlatie coëfficiënt.
+  - *Kendall's tau-b*: De geobserveerde Kendall's tau-b rangorde correlatiecoëfficiënt.
 
 #### Alt. Hypothese
-- *gecorreleerd*: Tweezijdige alternatieve hypothese dat de populatiecorrelatie niet 0 is. 
+- *gecorreleerd*: Tweezijdige alternatieve hypothese dat de populatiecorrelatie niet 0 is.
 - *positief gecorreleerd*: Eenzijdige alternatieve hypothese dat de populatiecorrelatie hoger is dan 0.
 - *negatief gecorreleerd*: Eenzijdige alternatieve hypothese dat de populatiecorrelatie lager is dan 0.
 
 - *Geloofwaardigheidsinterval*: Geeft het geloofwaardigheidsinterval weer voor de correlatiecoëfficiënt.
-- 
+-
 #### Bayes Factor
-- BF<sub>10</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie. 
+- BF<sub>10</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de alternatieve hypothese ten opzichte van de nulhypothese. Dit is de standaardoptie.
 - BF<sub>01</sub>: Als u deze optie selecteert geeft de Bayes factor bewijs voor de nulhypothese ten opzichte van de alternatieve hypothese. Dit is gelijk aan 1/BF<sub>10</sub>.
 - Log(BF<sub>10</sub>) : Natuurlijk logaritme van BF10.
 
@@ -38,7 +38,7 @@ Met Bayesiaanse correlatie analyse kan men de nulhypothese testen dat de populat
 ### Uitvoer
 ---
 #### Bayesiaanse Pearson Correlaties
-- **Bayes factor**: Als er een eenzijdige toets is geselecteerd: 
+- **Bayes factor**: Als er een eenzijdige toets is geselecteerd:
   - BF+0: De Bayes factor die bewijs geeft voor de eenzijdige hypothese dat de populatiecorrelatie hoger is dan 0.
   - BF-0: De Bayes factor die bewijs geeft voor de eenzijdige hypothese dat de populatiecorrelatie lager is dan 0.
   - BF0+: De Bayes factor de bewijs geeft voor de nulhypothese ten opzichte van de eenzijdige hypothese dat de populatiecorrelatie hoger is dan 0.
