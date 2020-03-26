@@ -90,7 +90,7 @@ public:
 			int					variableTypesAllowed()		const	{ return _variableTypesAllowed; }
 
 	const QList<SourceType*>&	sourceModels()				const	{ return _sourceModels; }
-			bool				hasSource()					const	{ return _sourceModels.length() > 0; }
+			bool				hasSource()					const	{ return _hasSource; }
 			bool				modelHasAllVariables()		const	{ return _modelHasAllVariables; }
 
 			JASPControlWrapper*	getRowControl(const QString& key, const QString& name)		const;
@@ -113,6 +113,7 @@ protected:
 
 protected:
 	QList<SourceType*>	_sourceModels;
+	bool				_hasSource				= false;
 	bool				_needsSourceModels;
 	int					_variableTypesAllowed;
 	bool				_hasRowComponents		= false;
