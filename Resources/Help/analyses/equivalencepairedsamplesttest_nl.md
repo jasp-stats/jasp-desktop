@@ -48,7 +48,7 @@ De analyse volgt de twee eenzijdige toets (TOST) procedure.
 - De tweede kolom bevat de informatie of the gelijkwaardigheidsgrenzen zijn uitegdruk in gestandaardiseerde gemiddeld verschil of in ruwe eenheden.
 - Laag: Gelijkhwaardigheids ondergrens uitgedrukt in gestandaardiseerd gemiddeld verschil wanneer Cohen's d is geselecteerd en in ruwe eenheden wanneer Raw is geselecteerd.
 - Hoog: Gelijkhwaardigheids bovengrens uitgedrukt in gestandaardiseerd gemiddeld verschil wanneer Cohen's d is geselecteerd en in ruwe eenheden wanneer Raw is geselecteerd.
-- 90% betrouwbaarheidsinterval voor gemiddelde verschillen/locatieparameter: Het betrouwbaarheidsinterval voor het gemiddelde verschil / de locatie-parameter van de verschilscores.
+- 100-(2*alpha)% betrouwbaarheidsinterval voor gemiddelde verschillen/locatieparameter: Het betrouwbaarheidsinterval voor het gemiddelde verschil / de locatie-parameter van de verschilscores.
    - Onder: De ondergrens van het betrouwbaarheidsinterval.
    - Boven: De bovengrens van het betrouwbaarheidsinterval.
 
@@ -60,7 +60,7 @@ De analyse volgt de twee eenzijdige toets (TOST) procedure.
 - Std. Fout: Standaardfout van het gemiddelde.
 
 #### Gelijkwaardigheidsgrenzen Grafieken
-Toont het gemiddelde steekproefverschil en het 90% betrouwbaarheidsinterval. Het grijze gebied is het ingestelde gelijkwaardigheids regio.
+Toont het gemiddelde steekproefverschil en het 100-(2*alpha)% betrouwbaarheidsinterval. Het grijze gebied is het ingestelde gelijkwaardigheids regio.
 
 ### Referenties
 -------

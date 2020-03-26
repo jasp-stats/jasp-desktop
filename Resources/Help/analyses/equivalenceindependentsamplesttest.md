@@ -54,7 +54,7 @@ The equivalence independent samples t-test allows the user to estimate the effec
 - The second column contains the information if the equivalence bounds are expressed in standardized mean differences (Cohen's d) or in raw units.
 - Low: low equivalence bound expressed in standardized mean difference for Cohen's d and in raw units for Raw
 - High: high equivalence bound equivalence bound expressed in standardized mean difference for Cohen's d and in raw units for Raw
-- 90% Confidence Interval for Mean difference/location parameter: The condfidence interval for the mean difference/location parameter of the difference scores.
+- 100-(2*alpha)% Confidence Interval for Mean difference/location parameter: The condfidence interval for the mean difference/location parameter of the difference scores.
   - Lower: The lower bound of the confidence interval.
   - Upper: The upper bound of the confidence interval.
 
@@ -67,7 +67,7 @@ The equivalence independent samples t-test allows the user to estimate the effec
 - SE: Standard error of the mean.
 
 #### Equivalence Bounds Plots
-Displays the sample mean difference and the 90% confidence interval. The grey area is the set equivalence region.
+Displays the sample mean difference and the 100-(2*alpha)% confidence interval. The grey area is the set equivalence region.
 
 ### References
 -------
