@@ -9,9 +9,9 @@ The Bayesian Correlation analysis allows you to test the null hypothesis that th
 #### Assignment Box
 - *n*: Sample size (minimum: 2)
 
-#### Correlation coefficient
-  - *Pearson's r*:  Pearson product-moment correlation coefficient
-  - *Kendall's tau-b*
+#### Sample Correlation coefficient
+  - *Pearson's r*: The observed Pearson product-moment correlation coefficient
+  - *Kendall's tau-b*: The observed Kendall's tau-b rank-order correlation coefficient.
 
 #### Alt. Hypothesis
 - *Correlated*: Two-sided alternative hypothesis that the population correlation does not equal 0.
