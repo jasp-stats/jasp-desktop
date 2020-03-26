@@ -377,12 +377,13 @@ Form
 			}
 		}
 
-		RadioButtonGroup
+		DoubleField
 		{
-			name: "graphSize";
-			title: qsTr("Network Size")
-			RadioButton { value: "graphSizeFixed";	label: qsTr("Fixed ratio"); checked: true	}
-			RadioButton { value: "graphSizeFree";	label: qsTr("Free")							}
+			name: "legendToPlotRatio"
+			label: qsTr("Legend to plot ratio")
+			defaultValue: 0.4
+			min: 0.001
+			max: 1000 // not strictly necessary but let's not take any chances
 		}
 
 		RadioButtonGroup

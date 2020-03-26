@@ -604,7 +604,8 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
       edge.color  = edgeColor,
       nodeNames   = nodeNames,
       label.scale = options[["scaleLabels"]],
-      label.cex   = options[["labelSize"]]
+      label.cex   = options[["labelSize"]],
+      GLratio     = 1 / options[["legendToPlotRatio"]]
     ))
 }
 
@@ -624,9 +625,10 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
     "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodePalette",
     "showLegend", "legendNumber", "showMgmVariableType", "showVariableNames",
-    "graphSize", "scaleLabels", "labelSize", "abbreviateLabels", "abbreviateNoChars",
+    "scaleLabels", "labelSize", "abbreviateLabels", "abbreviateNoChars",
     "keepLayoutTheSame", "layoutX", "layoutY", "plotNetwork",
-    "groupNames", "groupColors", "variablesForColor", "groupAssigned", "manualColors"
+    "groupNames", "groupColors", "variablesForColor", "groupAssigned", "manualColors",
+    "legendToPlotRatio"
   ))
   plotContainer[["networkPlotContainer"]] <- networkPlotContainer
 
@@ -634,8 +636,6 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     networkPlotContainer[["dummyPlot"]] <- createJaspPlot(title = gettext("Network Plot"))
     return()
   }
-
-  aspectRatio <- if (options[["graphSize"]] == "graphSizeFree") 0 else 1
 
   layout <- network[["layout"]] # calculated in .networkAnalysisRun()
 
@@ -731,11 +731,11 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   names(allLegends) <- names(allNetworks) # allows indexing by name
 
   basePlotSize <- 320
-  legendMultiplier <- 0.4 * basePlotSize
-  width <- height <- basePlotSize + allLegends * legendMultiplier
-
+  legendMultiplier <- options[["legendToPlotRatio"]] * basePlotSize
+  height <- setNames(rep(basePlotSize, nGraphs), names(allLegends))
+  width  <- basePlotSize + allLegends * legendMultiplier
   for (v in names(allNetworks))
-    networkPlotContainer[[v]] <- createJaspPlot(title = v, aspectRatio = aspectRatio, width = width[v], height = height[v])
+      networkPlotContainer[[v]] <- createJaspPlot(title = v, width = width[v], height = height[v])
 
   .suppressGrDevice({
 
