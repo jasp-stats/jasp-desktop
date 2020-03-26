@@ -10,8 +10,8 @@ Met Bayesiaanse correlatie analyse kan men de nulhypothese testen dat de populat
 - *n*: Steekproefgrootte (minimaal 2).
 
 #### Correlatiecoëfficiënt
-  - *Pearson's r*: De geöbserveerde Pearson's product-moment correlatie coëfficiënt.
-  - *Kendall's tau-b*: De geöbserveerde Kendall's tau-b rangorde correlatiecoëfficiënt.
+  - *Pearson's r*: De geobserveerde Pearson's product-moment correlatie coëfficiënt.
+  - *Kendall's tau-b*: De geobserveerde Kendall's tau-b rangorde correlatiecoëfficiënt.
 
 #### Alt. Hypothese
 - *gecorreleerd*: Tweezijdige alternatieve hypothese dat de populatiecorrelatie niet 0 is.
