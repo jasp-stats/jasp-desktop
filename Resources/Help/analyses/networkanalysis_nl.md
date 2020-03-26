@@ -133,17 +133,13 @@ De lay-out van een netwerk bepaalt waar de knopen worden geplaatst. De standaard
 - `details`: Als deze optie wordt aangevinkt, worden `minimum`, `maximum`, en `cut` weergegeven op de netwerkgrafiek (als ze zijn aangepast).
 - `kleuren pallet`: Welke kleuren moeten gebruikt worden voor positieve en negatieve paden?
 
-#### Netwerkgrootte
-Wanneer u het netwerk exporteert, kan het handig zijn om bepaalde breedtes of hoogtes te forceren. U kunt de grootte van een netwerkgrafiek altijd aanpassen door op de rechter onderkant van de grafiek te klikken en uw muis te slepen. Er kunnen echter beperkingen voor de breedte of hoogte zijn op basis van de optie die u heeft geselecteerd:
-- `Vaste ratio`: Zet de breedte/hoogte ratio vast. Zorgt dat de grafiek vierkant is. Als er een legenda is, wordt de breedte vastgezet op 1.4 keer de hoogte van de grafiek.
-- `Free`: Maak geen beperkingen voor de breedte en hoogte van de grafiek.
-
-
 #### Legenda
 Er zijn drie opties:
 - Laat geen legenda zien.
 - Laat de legenda in alle netwerken zien.
 - Laat de legenda in een specifieke grafiek zien.
+
+- `Ratio legenda tot plot`: Specificeert de breedte van de legenda relatief aan het figuur.
 
 #### Labels
 - `Labelgrootte`: Een vermenigvuldiger voor de grootte van labels (bijv., 2 is twee keer zo groot).
