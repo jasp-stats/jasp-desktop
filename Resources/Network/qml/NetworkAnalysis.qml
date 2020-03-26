@@ -377,15 +377,6 @@ Form
 			}
 		}
 
-		DoubleField
-		{
-			name: "legendToPlotRatio"
-			label: qsTr("Legend to plot ratio")
-			defaultValue: 0.4
-			min: 0.001
-			max: 1000 // not strictly necessary but let's not take any chances
-		}
-
 		RadioButtonGroup
 		{
 			name: "showVariableNames";
@@ -415,6 +406,14 @@ Form
 				value: "In plot number: "; label: qsTr("In plot number: ")
 				childrenOnSameRow: true
 				IntegerField { name: "legendNumber"; defaultValue: 1 }
+			}
+			DoubleField
+			{
+				name: "legendToPlotRatio"
+				label: qsTr("Legend to plot ratio")
+				defaultValue: 0.4
+				min: 0.001
+				max: 4 // not strictly necessary but png crashes if it gets too big
 			}
 		}
 
