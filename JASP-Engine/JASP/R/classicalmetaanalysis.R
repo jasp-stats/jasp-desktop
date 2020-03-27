@@ -16,7 +16,7 @@
 #
 
 ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
-  ready <- options$dependent != "" && options$wlsWeights != ""
+  ready <- options$dependent != "" && options$wlsWeights != "" && (options$includeConstant || length(options$modelTerms) > 0)
   if(ready) {
     dataset <- .metaAnalysisReadData(dataset, options)
     .metaAnalysisCheckErrors(dataset, options)
@@ -583,13 +583,13 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   # Compute/get model
   rma.fit    <- .metaAnalysisComputeModel(container, dataset, options, ready)
   img.height <- 400
-  if(!is.null(rma.fit))
+  if (ready)
     img.height <- max(520, nobs(rma.fit) * 20)
   forestPlot   <- createJaspPlot(title = gettext("Forest plot"), width = 520, height = img.height)
   forestPlot$position <- 1
   forestPlot$dependOn(c("forestPlot"))
   plotContainer[["forest"]] <- forestPlot
-  if(ready){
+  if (ready){
     p <- try(.metaAnalysisForestPlotFill(rma.fit))
     if(isTryError(p))
       forestPlot$setError(.extractErrorMessage(p))
