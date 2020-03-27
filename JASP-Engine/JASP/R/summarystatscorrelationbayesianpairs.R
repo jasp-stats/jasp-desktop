@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013-2019 University of Amsterdam
+# Copyright (C) 2013-2020 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
 .createTableCorSumStats <- function(correlationContainer, corModel, options) {
   if (!is.null(correlationContainer[["corBayesTable"]]))
     return()
-
+  
   corBayesTable <- .createTableMarkupCorSumStats(options)
   
   errorMessage <- corModel[["error"]]
@@ -158,6 +158,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   # a. Get plot container ----- 
   #
   plotContainer <- correlationContainer[["plotContainer"]]
+  
   if (is.null(plotContainer)) {
     plotContainer <- createJaspContainer(title=gettext("Inferential Plots"))
     plotContainer$dependOn("hypothesis")
@@ -212,7 +213,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
         plot <- .drawPosteriorPlotCorBayes(correlationContainer, corModel, options, methodItems=options[["method"]], purpose="sumStat")
       else if (item == "plotBfRobustness")
         plot <- .drawBfRobustnessPlotCorBayes(corModel, options, options[["method"]])
-
+      
       .checkAndSetPlotCorBayes(plot, jaspPlotResult)
     } 
   }
@@ -252,25 +253,18 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
         options[["plotPriorPosterior"]] <- options[[currentName]]
       }
       
-      
-      if (currentName=="plotPriorAndPosteriorAdditionalInfo") {
+      if (currentName=="plotPriorAndPosteriorAdditionalInfo") 
         options[["plotPriorPosteriorAddTestingInfo"]] <- options[[currentName]]
-      }
       
-      
-      if (currentName=="plotBayesFactorRobustness") {
+      if (currentName=="plotBayesFactorRobustness") 
         options[["plotBfRobustness"]] <- options[[currentName]]
-      }
       
-      
-      if (currentName=="plotBayesFactorRobustnessAdditionalInfo") {
+      if (currentName=="plotBayesFactorRobustnessAdditionalInfo") 
         options[["plotBfRobustnessAddInfo"]] <- options[[currentName]]
-      }
       
-      
-      if (currentName=="priorWidth") {
+      if (currentName=="priorWidth") 
         options[["kappa"]] <- options[[currentName]]
-      }
+      
     }
   }
   
