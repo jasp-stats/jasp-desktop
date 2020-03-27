@@ -137,58 +137,54 @@
 		"to":	{ "module": "Summary Statistics",	"version": "0.10"																}
 	},
 
-	{	"from": { "module": "SummaryStats",			"version": "0.11.1", 	"function": "bayesianAudit"				},
-		"to":	{ "module": "SummaryStats",			"version": "0.12", 		"function": "auditBayesianWorkflow"		},
+	{	"from": { "module": "Summary Statistics",			"version": "0.11.1", 	"function": "SummaryStatsCorrelationBayesianPairs"				},
+	  "to":	{ "module": "Summary Statistics",			"version": "0.12", 		"function": "SummaryStatsCorrelationBayesianPairs"		},
+	  "options":
+	  [
+	    {
+	      "changes":
+	      {
+	        "n":																{ "_renamed":	"sampleSize"			},
+	        "rObs":															{ "_renamed":	"pearsonRhoValue" 	},
+	        "tauObs":														{ "_renamed":	"kendallTauValue" 	},
+	        "plotPriorPosterior":								{ "_renamed":	"plotPriorAndPosterior" 			},
+	        "plotPriorPosteriorAddTestingInfo":	{ "_renamed":	"plotPriorAndPosteriorAdditionalInfo" 			},
+	        "plotBfRobustness":									{ "_renamed":	"plotBayesFactorRobustness" 			},
+	        "plotBfRobustnessAddInfo":					{ "_renamed":	"plotBayesFactorRobustnessAdditionalInfo" 			},
+	        "kappa":														{ "_renamed":	"priorWidth" 			}
+	      }
+	    },
+			{
+				"conditional": 	{ "_args": [ { 			"hypothesis": "correlated" } ] },
+				"changes": 		{ "hypothesis":	null,	"alternative": "two.sided"	 }
+			},
+			{
+				"conditional": 	{ "_args": [ { 			"hypothesis": "correlatedPositively" } ] },
+				"changes": 		{ "hypothesis":	null,	"alternative": "greater"	 }
+			},
+			{
+				"conditional": 	{ "_args": [ { 			"hypothesis": "correlatedNegatively" } ] },
+				"changes": 		{ "hypothesis":	null,	"alternative": "less"	 }
+			},
+	    {
+	      "conditional": 	{ "_args": [ { "correlationCoefficient": "pearsonRho" } ] },
+	      "changes": 			{ "correlationCoefficient":	null,	"method": "pearson"	 }
+	    },
+	    {
+	      "conditional": 	{ "_args": [ { 			"correlationCoefficient": "kendallTau" } ] },
+	      "changes": 			{ "correlationCoefficient":	null,	"method": "kendall"	 }
+	    }
+	  ]
+	},
+
+	{	"from": { "module": "Audit",			"version": "0.11.1", 	"function": "bayesianAudit"				},
+		"to":	{ "module": "Audit",			"version": "0.12", 		"function": "auditBayesianWorkflow"		},
 		"options":
 		[	{	"conditional":	{ "_args": [ { 	"planningModel": "beta" 			} ] },
 				"changes":		{ 				"planningModel": "binomial" 			}	},
 			{	"conditional":	{ "_args": [ { 	"planningModel": "beta-binomial" 	} ] },
 				"changes":		{ 				"planningModel": "hypergeometric" 		}	}	]
 	},
-
-	{	"from": { "module": "SummaryStats",			"version": "0.11.1", 	"function": "SummaryStatsCorrelationBayesianPairs"				},
-		"to":	{ "module": "SummaryStats",			"version": "0.12", 		"function": "SummaryStatsCorrelationBayesianPairs"		},
-		"options":
-	  [
-			{
-	    	"changes":
-	    	{
-	      	"n":																{ "_renamed":	"sampleSize"			},
-	      	"method":														{ "_renamed":	"correlationCoefficient" 	},
-	      	"rObs":															{ "_renamed":	"pearsonRhoValue" 	},
-	      	"tauObs":														{ "_renamed":	"kendallTauValue" 	},
-	      	"alternative":											{ "_renamed":	"hypothesis" 		},
-	      	"plotPriorPosterior":								{ "_renamed":	"plotPriorAndPosterior" 			},
-					"plotPriorPosteriorAddTestingInfo":	{ "_renamed":	"plotPriorAndPosteriorAdditionalInfo" 			},
-					"plotBfRobustness":									{ "_renamed":	"plotBayesFactorRobustness" 			},
-					"plotBfRobustnessAddInfo":					{ "_renamed":	"plotBayesFactorRobustnessAdditionalInfo" 			},
-					"kappa":														{ "_renamed":	"priorWidth" 			}
-	    	}
-	  	},
-
-	  	{
-	    	"conditional": 	{ "_args": 		[ { "hypothesis": "correlated" } ] },
-				"changes": 			{ "hypothesis":	null,	"alternative": "two.sided"	 }
-	  	},
-	  	{
-	    	"conditional": 	{ "_args": [ { "hypothesis": "correlatedPositively" } ] },
-				"changes": 			{ "hypothesis":	null,	"alternative": "greater"	 }
-	  	},
-	  	{
-	    	"conditional": 	{ "_args": [ { "hypothesis": "correlatedNegatively" } ] },
-	    	"changes": 			{ "hypothesis":	null,	"alternative": "less"	 }
-	  	},
-			{
-	    	"conditional": 	{ "_args": [ { "correlationCoefficient": "pearsonRho" } ] },
-	    	"changes": 			{ "correlationCoefficient":	null,	"method": "pearson"	 }
-	  	},
-	  	{
-	    	"conditional": 	{ "_args": [ { 			"correlationCoefficient": "kendallTau" } ] },
-	    	"changes": 			{ "correlationCoefficient":	null,	"method": "kendall"	 }
-	  	}
-		]
-	},
-
 	{	"from": { "module": "Audit",			"version": "0.11.1", 	"function": "bayesianPlanning"			},
 		"to":	{ "module": "Audit",			"version": "0.12", 		"function": "auditBayesianPlanning"		},
 		"options":
@@ -197,7 +193,6 @@
 			{	"conditional":	{ "_args": [ { 	"planningModel": "beta-binomial" 	} ] },
 				"changes":		{ 				"planningModel": "hypergeometric" 		}	}	]
 	},
-
 	{	"from": { "module": "Audit",			"version": "0.11.1", 	"function": "classicalAudit"			},
 		"to":	{ "module": "Audit",			"version": "0.12", 		"function": "auditClassicalWorkflow"	}},
 	{	"from": { "module": "Audit",			"version": "0.11.1", 	"function": "classicalEstimation"		},
