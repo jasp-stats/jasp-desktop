@@ -4,147 +4,191 @@
 
 		"from": { "module": "Common",			"version": "0.9.3", "function": "Descriptives"							},
 		"to":	{ "module": "Descriptives",		"version": "0.10"														}
-	},{	
+	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "ReliabilityAnalysis" 					},
-		"to":	{ "module": "Descriptives",		"version": "0.10"														} 
+		"to":	{ "module": "Descriptives",		"version": "0.10"														}
 	},
 
-	{	
+	{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "TTestIndependentSamples" 				},
-		"to":	{ "module": "T-Tests",			"version": "0.10"														} 
-	},{	
+		"to":	{ "module": "T-Tests",			"version": "0.10"														}
+	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "TTestPairedSamples" 					},
-		"to":	{ "module": "T-Tests",			"version": "0.10"														} 
-	},{	
+		"to":	{ "module": "T-Tests",			"version": "0.10"														}
+	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "TTestOneSample" 						},
-		"to":	{ "module": "T-Tests",			"version": "0.10"														} 
-	},{	
+		"to":	{ "module": "T-Tests",			"version": "0.10"														}
+	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "TTestBayesianIndependentSamples" 		},
-		"to":	{ "module": "T-Tests",			"version": "0.10"														} 
-	},{	
+		"to":	{ "module": "T-Tests",			"version": "0.10"														}
+	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "TTestBayesianPairedSamples" 			},
-		"to":	{ "module": "T-Tests",			"version": "0.10"														} 
-	},{	
+		"to":	{ "module": "T-Tests",			"version": "0.10"														}
+	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "TTestBayesianOneSample" 				},
-		"to":	{ "module": "T-Tests",			"version": "0.10"														} 
+		"to":	{ "module": "T-Tests",			"version": "0.10"														}
 	},
 
 	{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "Anova" 							},
-		"to":	{ "module": "ANOVA",			"version": "0.10"													} 
+		"to":	{ "module": "ANOVA",			"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "AnovaRepeatedMeasures" 			},
-		"to":	{ "module": "ANOVA",			"version": "0.10"													} 
+		"to":	{ "module": "ANOVA",			"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "Ancova" 							},
-		"to":	{ "module": "ANOVA",			"version": "0.10"													} 
+		"to":	{ "module": "ANOVA",			"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "Manova" 							},
-		"to":	{ "module": "ANOVA",			"version": "0.10"													} 
+		"to":	{ "module": "ANOVA",			"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "AnovaBayesian" 					},
-		"to":	{ "module": "ANOVA",			"version": "0.10"													} 
+		"to":	{ "module": "ANOVA",			"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "AnovaRepeatedMeasuresBayesian"		},
-		"to":	{ "module": "ANOVA",			"version": "0.10"													} 
+		"to":	{ "module": "ANOVA",			"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "AncovaBayesian"			 		},
-		"to":	{ "module": "ANOVA",			"version": "0.10"													} 
+		"to":	{ "module": "ANOVA",			"version": "0.10"													}
 	},
 
 	{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "Correlation" 						},
-		"to":	{ "module": "Regression",		"version": "0.10"													} 
+		"to":	{ "module": "Regression",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "RegressionLinear" 					},
-		"to":	{ "module": "Regression",		"version": "0.10"													} 
+		"to":	{ "module": "Regression",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "RegressionLogistic"				},
-		"to":	{ "module": "Regression",		"version": "0.10"													} 
+		"to":	{ "module": "Regression",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "CorrelationBayesian"				},
-		"to":	{ "module": "Regression",		"version": "0.10"													} 
+		"to":	{ "module": "Regression",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "CorrelationBayesianPairs" 			},
-		"to":	{ "module": "Regression",		"version": "0.10"													} 
+		"to":	{ "module": "Regression",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "RegressionLinearBayesian"	 		},
-		"to":	{ "module": "Regression",		"version": "0.10"													} 
+		"to":	{ "module": "Regression",		"version": "0.10"													}
 	},
 
 	{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "BinomialTest" 						},
-		"to":	{ "module": "Frequencies",		"version": "0.10"													} 
+		"to":	{ "module": "Frequencies",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "MultinomialTest" 					},
-		"to":	{ "module": "Frequencies",		"version": "0.10"													} 
+		"to":	{ "module": "Frequencies",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "ContingencyTables"		 			},
-		"to":	{ "module": "Frequencies",		"version": "0.10"													} 
+		"to":	{ "module": "Frequencies",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "RegressionLogLinear" 				},
-		"to":	{ "module": "Frequencies",		"version": "0.10"													} 
+		"to":	{ "module": "Frequencies",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "BinomialTestBayesian" 				},
-		"to":	{ "module": "Frequencies",		"version": "0.10"													} 
+		"to":	{ "module": "Frequencies",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "ABTestBayesian" 					},
-		"to":	{ "module": "Frequencies",		"version": "0.10"													} 
+		"to":	{ "module": "Frequencies",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "MultinomialTestBayesian" 			},
-		"to":	{ "module": "Frequencies",		"version": "0.10"													} 
+		"to":	{ "module": "Frequencies",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "ContingencyTablesBayesian" 		},
-		"to":	{ "module": "Frequencies",		"version": "0.10"													} 
+		"to":	{ "module": "Frequencies",		"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "RegressionLogLinearBayesian" 		},
-		"to":	{ "module": "Frequencies",		"version": "0.10"													} 
+		"to":	{ "module": "Frequencies",		"version": "0.10"													}
 	},
 
 	{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "PrincipalComponentAnalysis" 		},
-		"to":	{ "module": "Factor",			"version": "0.10"													} 
+		"to":	{ "module": "Factor",			"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "ExploratoryFactorAnalysis"	 		},
-		"to":	{ "module": "Factor",			"version": "0.10"													} 
+		"to":	{ "module": "Factor",			"version": "0.10"													}
 	},{
 		"from": { "module": "Common",			"version": "0.9.3", "function": "ConfirmatoryFactorAnalysis" 		},
-		"to":	{ "module": "Factor",			"version": "0.10"													} 
+		"to":	{ "module": "Factor",			"version": "0.10"													}
 	},
 
 	{
 		"from": { "module": "MetaAnalysis",		"version": "0.9.3", "function": "ClassicalMetaAnalysis" 			},
-		"to":	{ "module": "Meta Analysis",	"version": "0.10"													} 
+		"to":	{ "module": "Meta Analysis",	"version": "0.10"													}
 	},
 
 	{
 		"from": { "module": "SummaryStats",			"version": "0.9.3", "function": "SummaryStatsTTestBayesianIndependentSamples" 	},
-		"to":	{ "module": "Summary Statistics",	"version": "0.10"																} 
+		"to":	{ "module": "Summary Statistics",	"version": "0.10"																}
 	},{
 		"from": { "module": "SummaryStats",			"version": "0.9.3", "function": "SummaryStatsTTestBayesianPairedSamples" 		},
-		"to":	{ "module": "Summary Statistics",	"version": "0.10"																} 
+		"to":	{ "module": "Summary Statistics",	"version": "0.10"																}
 	},{
 		"from": { "module": "SummaryStats",			"version": "0.9.3", "function": "SummaryStatsTTestBayesianOneSample" 			},
-		"to":	{ "module": "Summary Statistics",	"version": "0.10"																} 
+		"to":	{ "module": "Summary Statistics",	"version": "0.10"																}
 	},{
 		"from": { "module": "SummaryStats",			"version": "0.9.3", "function": "SummaryStatsCorrelationBayesianPairs" 			},
-		"to":	{ "module": "Summary Statistics",	"version": "0.10"																} 
+		"to":	{ "module": "Summary Statistics",	"version": "0.10"																}
 	},{
 		"from": { "module": "SummaryStats",			"version": "0.9.3", "function": "SummaryStatsRegressionLinearBayesian" 			},
-		"to":	{ "module": "Summary Statistics",	"version": "0.10"																} 
+		"to":	{ "module": "Summary Statistics",	"version": "0.10"																}
 	},{
 		"from": { "module": "SummaryStats",			"version": "0.9.3", "function": "SummaryStatsBinomialTestBayesian" 				},
-		"to":	{ "module": "Summary Statistics",	"version": "0.10"																} 
+		"to":	{ "module": "Summary Statistics",	"version": "0.10"																}
 	},
 
-	{	"from": { "module": "Audit",			"version": "0.11.1", 	"function": "bayesianAudit"				},
-		"to":	{ "module": "Audit",			"version": "0.12", 		"function": "auditBayesianWorkflow"		},
+	{	"from": { "module": "SummaryStats",			"version": "0.11.1", 	"function": "bayesianAudit"				},
+		"to":	{ "module": "SummaryStats",			"version": "0.12", 		"function": "auditBayesianWorkflow"		},
 		"options":
 		[	{	"conditional":	{ "_args": [ { 	"planningModel": "beta" 			} ] },
 				"changes":		{ 				"planningModel": "binomial" 			}	},
 			{	"conditional":	{ "_args": [ { 	"planningModel": "beta-binomial" 	} ] },
 				"changes":		{ 				"planningModel": "hypergeometric" 		}	}	]
 	},
+
+	{	"from": { "module": "SummaryStats",			"version": "0.11.1", 	"function": "SummaryStatsCorrelationBayesianPairs"				},
+		"to":	{ "module": "SummaryStats",			"version": "0.12", 		"function": "SummaryStatsCorrelationBayesianPairs"		},
+		"options":
+	  [
+			{
+	    	"changes":
+	    	{
+	      	"n":																{ "_renamed":	"sampleSize"			},
+	      	"method":														{ "_renamed":	"correlationCoefficient" 	},
+	      	"rObs":															{ "_renamed":	"pearsonRhoValue" 	},
+	      	"tauObs":														{ "_renamed":	"kendallTauValue" 	},
+	      	"alternative":											{ "_renamed":	"hypothesis" 		},
+	      	"plotPriorPosterior":								{ "_renamed":	"plotPriorAndPosterior" 			},
+					"plotPriorPosteriorAddTestingInfo":	{ "_renamed":	"plotPriorAndPosteriorAdditionalInfo" 			},
+					"plotBfRobustness":									{ "_renamed":	"plotBayesFactorRobustness" 			},
+					"plotBfRobustnessAddInfo":					{ "_renamed":	"plotBayesFactorRobustnessAdditionalInfo" 			},
+					"kappa":														{ "_renamed":	"priorWidth" 			}
+	    	}
+	  	},
+
+	  	{
+	    	"conditional": 	{ "_args": 		[ { "hypothesis": "correlated" } ] },
+				"changes": 			{ "hypothesis":	null,	"alternative": "two.sided"	 }
+	  	},
+	  	{
+	    	"conditional": 	{ "_args": [ { "hypothesis": "correlatedPositively" } ] },
+				"changes": 			{ "hypothesis":	null,	"alternative": "greater"	 }
+	  	},
+	  	{
+	    	"conditional": 	{ "_args": [ { "hypothesis": "correlatedNegatively" } ] },
+	    	"changes": 			{ "hypothesis":	null,	"alternative": "less"	 }
+	  	},
+			{
+	    	"conditional": 	{ "_args": [ { "correlationCoefficient": "pearsonRho" } ] },
+	    	"changes": 			{ "correlationCoefficient":	null,	"method": "pearson"	 }
+	  	},
+	  	{
+	    	"conditional": 	{ "_args": [ { 			"correlationCoefficient": "kendallTau" } ] },
+	    	"changes": 			{ "correlationCoefficient":	null,	"method": "kendall"	 }
+	  	}
+		]
+	},
+
 	{	"from": { "module": "Audit",			"version": "0.11.1", 	"function": "bayesianPlanning"			},
 		"to":	{ "module": "Audit",			"version": "0.12", 		"function": "auditBayesianPlanning"		},
 		"options":
@@ -153,6 +197,7 @@
 			{	"conditional":	{ "_args": [ { 	"planningModel": "beta-binomial" 	} ] },
 				"changes":		{ 				"planningModel": "hypergeometric" 		}	}	]
 	},
+
 	{	"from": { "module": "Audit",			"version": "0.11.1", 	"function": "classicalAudit"			},
 		"to":	{ "module": "Audit",			"version": "0.12", 		"function": "auditClassicalWorkflow"	}},
 	{	"from": { "module": "Audit",			"version": "0.11.1", 	"function": "classicalEstimation"		},
@@ -170,7 +215,7 @@
 			"comment": 		"If homogeneityTests was set false then that meant that some other options were ignored, from 0.12 this option was removed and those three checkboxes are used directly.",
 			"conditional": 	{ "_args": [ { "homogeneityCorrections": false }] },
 			"changes":
-			{ 
+			{
 				"homogeneityNone":	true,
 				"homogeneityBrown":	false,
 				"homogeneityWelch":	false
@@ -223,11 +268,11 @@
 		"from": { "module": "Common",		"version": "0.8.2", 	"function": "CorrelationBayesianPairs"	},
 		"to":	{ "module": "Common",		"version": "0.8.3.1"											},
 
-		"options":	
+		"options":
 		[
 			{
 				"changes":
-				{ 
+				{
 					"plotBayesFactorRobustnessAdditionalInfo":	true
 				}
 			}
@@ -242,7 +287,7 @@
 		"options":
 		[
 			{
-				"changes": 
+				"changes":
 				{
 					"pearson": 			{ "_boolOp": "NOT", "_args": [ { "corcoefficient": "Kendall" } ], "comment": "This can really only be Pearson but we do it as a NOT-kendall to make sure pearson also gets set as default == true in case something weird happened to the options in the file." },
 					"spearman":			false,
@@ -251,7 +296,7 @@
 			},
 			{
 			"changes":
-			{ 
+			{
 				"ci":						{ "_renamed":	"credibleInterval" 	},
 				"kappa":					{ "_renamed":	"priorWidth" 			},
 				"variables":				{ "_copied":	"pairs" 				},
@@ -266,7 +311,7 @@
 		},
 		{
 			"changes": {
-				"variables": { "_modified": "Flatten", "comment": "We've copied pairs to here, but because it expects columns instead of pairs we 'Flatten' it." } 
+				"variables": { "_modified": "Flatten", "comment": "We've copied pairs to here, but because it expects columns instead of pairs we 'Flatten' it." }
 			}
 		},
 		{
@@ -294,7 +339,7 @@
 			}
 		},
 		{
-			"comment": "The previous change that needed info from plotPriorAndPosteriorAdditionalInfo is now processed so we can remove it from the options", 
+			"comment": "The previous change that needed info from plotPriorAndPosteriorAdditionalInfo is now processed so we can remove it from the options",
 			"changes": { "plotPriorAndPosteriorAdditionalInfo": null }
 		}
 	]
@@ -308,7 +353,7 @@
 		[
 		{
 			"changes":
-			{ 
+			{
 				"ci":						{ "_renamed":	"credibleInterval" 	},
 				"plotMatrix":				{ "_renamed":	"plotCorrelationMatrix" 	},
 				"plotMatrixDensities":		{ "_renamed":	"plotDensitiesForVariables" 	},
@@ -332,4 +377,3 @@
 	]
 	}
 ]
-

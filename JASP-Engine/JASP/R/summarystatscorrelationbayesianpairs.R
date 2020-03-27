@@ -15,9 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, options, ...) {
-  # Note(Alexander): Rename the ridiculous old option names to new names 
-  options <- .renameCorOptions(options)
-  
   # TODO(Alexander): When we allow for other test points, add a check like this
   #
   # .checkErrors.summarystats.binomial(options)
@@ -30,7 +27,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   
   .createTableCorSumStats(correlationContainer, corModel, options)
   
-  if (options[["plotPriorAndPosterior"]] || options[["plotBayesFactorRobustness"]])
+  if (options[["plotPriorPosterior"]] || options[["plotBfRobustness"]])
     .createPlotsCorSumStats(correlationContainer, corModel, options)
 }
 
@@ -67,8 +64,8 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   
   if (is.null(correlationContainer)) {
     correlationContainer <- createJaspContainer()
-    correlationContainer$dependOn(c("sampleSize", "correlationCoefficient", "pearsonRhoValue", "kendallTauValue", 
-                                    "rhoSObs", "priorWidth"))
+    correlationContainer$dependOn(c("n", "method", "rObs", "tauObs", 
+                                    "rhoSObs", "kappa"))
     jaspResults[["correlationContainer"]] <- correlationContainer
   }
   return(correlationContainer)
@@ -120,7 +117,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   corBayesTable <- createJaspTable(title=.getCorTableTitle(options[["test"]], bayes=TRUE))
   corBayesTable$showSpecifiedColumnsOnly <- TRUE
   corBayesTable$position <- 1
-  corBayesTable$dependOn(c("bayesFactorType", "ci", "ciValue", "hypothesis"))
+  corBayesTable$dependOn(c("bayesFactorType", "ci", "ciValue", "alternative"))
   
   corBayesTable$addCitation(.getCorCitations(options[["method"]], bayes=TRUE))
   
@@ -161,7 +158,7 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   
   if (is.null(plotContainer)) {
     plotContainer <- createJaspContainer(title=gettext("Inferential Plots"))
-    plotContainer$dependOn("hypothesis")
+    plotContainer$dependOn("alternative")
     plotContainer$position <- 2
     correlationContainer[["plotContainer"]] <- plotContainer
   }
@@ -169,16 +166,16 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
   # b. Define dependencies for the plots ----- 
   # For plotPriorPosterior
   # 
-  bfPlotPriorPosteriorDependencies <- c("plotPriorAndPosteriorAdditionalInfo", "plotPriorPosteriorAddEstimationInfo", "plotPriorAndPosterior")
+  bfPlotPriorPosteriorDependencies <- c("plotPriorPosteriorAddTestingInfo", "plotPriorPosteriorAddEstimationInfo", "plotPriorPosterior")
   
   if (options[["plotPriorPosteriorAddEstimationInfo"]]) 
     bfPlotPriorPosteriorDependencies <- c(bfPlotPriorPosteriorDependencies, "ciValue")
   
   # For plotBfRobustness
   # 
-  bfPlotRobustnessDependencies <- c("plotBayesFactorRobustnessAdditionalInfo", "plotBayesFactorRobustness")
+  bfPlotRobustnessDependencies <- c("plotBfRobustnessAddInfo", "plotBfRobustness")
   
-  if (options[["plotBayesFactorRobustnessAdditionalInfo"]]) 
+  if (options[["plotBfRobustnessAddInfo"]]) 
     bfPlotRobustnessDependencies <- c(bfPlotRobustnessDependencies, "bayesFactorType")
   
   plotItemDependencies <- list(
@@ -217,37 +214,4 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
       .checkAndSetPlotCorBayes(plot, jaspPlotResult)
     } 
   }
-}
-
-.oldSumStatsOptionsNames <- c("sampleSize", "correlationCoefficient", 
-                              "pearsonRhoValue", "kendallTauValue", "hypothesis", "plotPriorAndPosterior",
-                              "plotPriorAndPosteriorAdditionalInfo", "plotBayesFactorRobustness", 
-                              "plotBayesFactorRobustnessAdditionalInfo", "priorWidth")
-
-.oldOptionsToNewNames <- list("sampleSize"="n", "correlationCoefficient"="method", 
-                             "pearsonRhoValue"="rObs", "kendallTauValue"="tauObs", 
-                             "hypothesis"="alternative", 
-                             "plotPriorAndPosterior"="plotPriorPosterior",
-                             "plotPriorAndPosteriorAdditionalInfo"="plotPriorPosteriorAddTestingInfo", 
-                             "plotBayesFactorRobustness"="plotBfRobustness", 
-                             "plotBayesFactorRobustnessAdditionalInfo"="plotBfRobustnessAddInfo", 
-                             "priorWidth"="kappa")
-
-
-.renameCorOptions <- function(options) {
-  for (currentName in .oldSumStatsOptionsNames) {
-    options[[.oldOptionsToNewNames[[currentName]]]] <- 
-      switch(currentName, 
-             "correlationCoefficient"=switch(options[["correlationCoefficient"]], 
-                                             "pearsonRho"="pearson", 
-                                             "kendallTau"="kendall", 
-                                             "spearman"="spearman"),
-             "hypothesis"=switch(options[["hypothesis"]], 
-                                 "correlated"="two.sided",
-                                 "correlatedPositively"="greater",
-                                 "correlatedNegatively"="less"),
-             options[[currentName]]
-      )
-  }
-  return(options)
 }
