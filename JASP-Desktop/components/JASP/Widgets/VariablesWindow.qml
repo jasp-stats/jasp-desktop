@@ -27,6 +27,7 @@ FocusScope
 	visible:						labelModel.visible
 
 	property real calculatedMinimumHeight:	buttonColumnVariablesWindow.minimumHeight + columnNameVariablesWindow.height + 6 + (jaspTheme.generalAnchorMargin * 2)
+	property bool blockEditing:				false
 
 	Connections
 	{
@@ -34,6 +35,7 @@ FocusScope
 		
 		onChosenColumnChanged:
 		{
+			blockEditing = true;
 			if(labelModel.chosenColumn > -1 && labelModel.chosenColumn < dataSetModel.columnCount())
 			{
 				//to prevent the editText in the labelcolumn to get stuck and overwrite the next columns data... We have to remove activeFocus from it
@@ -41,6 +43,7 @@ FocusScope
 				columnNameVariablesWindow.text = labelModel.columnName
 				levelsTableView.selection.clear()
 			}
+			blockEditing = false;
 		}
 	}
 	
@@ -289,7 +292,7 @@ FocusScope
 						
 						function acceptChanges()
 						{
-							if(styleData.row >= 0 && styleData.column >= 0)
+							if(!blockEditing && styleData.row >= 0 && styleData.column >= 0)
 								labelModel.setData(labelModel.index(styleData.row, styleData.column), text)
 						}
 						onEditingFinished: focus = false
