@@ -286,10 +286,12 @@ FocusScope
 						
 						anchors.fill:	parent
 						verticalAlignment: Text.AlignVCenter
+
+						property int chosenColumnWas: -1
 						
 						function acceptChanges()
 						{
-							if(styleData.row >= 0 && styleData.column >= 0)
+							if(chosenColumnWas === labelModel.chosenColumn && styleData.row >= 0 && styleData.column >= 0)
 								labelModel.setData(labelModel.index(styleData.row, styleData.column), text)
 						}
 						onEditingFinished: focus = false
@@ -297,6 +299,7 @@ FocusScope
 						onActiveFocusChanged:
 							if(activeFocus)
 							{
+								chosenColumnWas = labelModel.chosenColumn
 								levelsTableView.selection.clear()
 								levelsTableView.selection.select(styleData.row, styleData.row)
 							}
