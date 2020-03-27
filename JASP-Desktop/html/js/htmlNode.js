@@ -6,6 +6,7 @@ JASPWidgets.htmlNode = Backbone.Model.extend({
         rawtext: "",
 		text: "",
 		class: "",
+		maxWidth: "10cm",
 		elementType: "p"
 	}
 });
@@ -15,6 +16,7 @@ convertModelToHtml = function(model)
 {
 	var optText			= model.get("text");
 	var optClass		= model.get("class");
+	var optMaxWidth		= model.get("maxWidth");
 	var optElementType	= model.get("elementType");
 
 	if(optElementType === undefined || optElementType === null)
@@ -26,11 +28,11 @@ convertModelToHtml = function(model)
 	if(optText === undefined || optText === null)
 		optText = "";
 
-	var html;
+	var html = '<span style="max-width:'+optMaxWidth+'; display:block;">';
 	if(optElementType === "errorMsg")	html = '<div class="fatalError analysis-error-message error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"/>' + optText + '</div>'
-	else if(optElementType === "")		html =														optText;
-	else if(optClass === "")			html = '<'+ optElementType +'>' +							optText + '</'+ optElementType +'>';
-	else								html = '<'+ optElementType +' class="'+ optClass +'">' +	optText + '</'+ optElementType +'>';
+	else if(optElementType === "")		html +=														optText + "</span>";
+	else if(optClass === "")			html += '<'+ optElementType +' >' +							optText + '</'+ optElementType +'></span>';
+	else								html += '<'+ optElementType +' class="'+ optClass +'">' +	optText + '</'+ optElementType +'></span>';
 
 	return html;
 }
@@ -53,7 +55,7 @@ JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
 		 exportParams.process = JASPWidgets.ExportProperties.process.copy;
 		 exportParams.includeNotes = false;
 
-          pushTextToClipboard({raw: this.model.get("rawtext"), html: convertModelToHtml(this.model) } , exportParams)
+		 pushTextToClipboard({raw: this.model.get("rawtext"), html: convertModelToHtml(this.model) } , exportParams)
 		 return true;
 	 },
 
@@ -116,6 +118,7 @@ JASPWidgets.htmlNodePrimitive = JASPWidgets.View.extend({
 
 			if ($elObj.prop("rowspan") && $elObj.prop("rowspan") != 1)
 				attrs += 'rowspan="' + $elObj.prop("rowspan") + '" '
+
 			if ($elObj.prop("colspan") && $elObj.prop("colspan") != 1)
 				attrs += 'colspan="' + $elObj.prop("colspan") + '" '
 		}

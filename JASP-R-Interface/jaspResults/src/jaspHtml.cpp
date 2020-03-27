@@ -35,7 +35,8 @@ std::string jaspHtml::convertTextToHtml(std::string text) const
 
 std::string jaspHtml::toHtml()
 {
-	return (_elementType != "errorMsg" ? "<div class=\"jaspHtml\">\n" : "<div class=\"analysis-error-message error-message-box ui-state-error\"><span class=\"ui-icon ui-icon-alert\" style=\"float: left; margin-right: .3em;\"/>\n" )
+
+	return (_elementType != "errorMsg" ? "<div class=\"jaspHtml\" style=\"max-width:" + _maxWidth + ";\">\n" : "<div class=\"analysis-error-message error-message-box ui-state-error\"><span class=\"ui-icon ui-icon-alert\" style=\"float: left; margin-right: .3em;\"/>\n" )
 			+ htmlTitle() + "\n" + dataToString() + "</div>" "\n";
 
 }
@@ -48,6 +49,7 @@ Json::Value jaspHtml::dataEntry(std::string & errorMessage) const
     data["text"]		= convertTextToHtml(_rawText);
 	data["title"]		= _title;
 	data["class"]		= _class;
+	data["maxWidth"]	= _maxWidth;
 	data["elementType"]	= _elementType;
 	data["name"]		= getUniqueNestedName();
 
@@ -61,6 +63,7 @@ Json::Value jaspHtml::convertToJSON() const
     obj["rawtext"]		= _rawText;
     obj["text"]			= convertTextToHtml(_rawText);
 	obj["class"]		= _class;
+	obj["maxWidth"]		= _maxWidth;
 	obj["elementType"]	= _elementType;
 
 	return obj;
@@ -72,6 +75,7 @@ void jaspHtml::convertFromJSON_SetFields(Json::Value in)
 
     _rawText		= in.get("rawtext",		"null").asString();
 	_class			= in.get("class",		"null").asString();
+	_maxWidth		= in.get("maxWidth",	"10cm").asString();
 	_elementType	= in.get("elementType", "null").asString();
 }
 

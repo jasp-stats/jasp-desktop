@@ -103,6 +103,14 @@ DISTFILES += \
     JASP/R/anovarepeatedmeasures.R \
     JASP/R/anovarepeatedmeasuresbayesian.R \
     JASP/R/assignFunctionInPackage.R \
+  JASP/R/auditBayesianPlanning.R \
+  JASP/R/auditBayesianWorkflow.R \
+  JASP/R/auditClassicalBenfordsLaw.R \
+  JASP/R/auditClassicalEstimation.R \
+  JASP/R/auditClassicalPlanning.R \
+  JASP/R/auditClassicalWorkflow.R \
+  JASP/R/auditCommonFunctions.R \
+  JASP/R/auditCommonFunctionsBayesian.R \
     JASP/R/bainancovabayesian.R \
     JASP/R/bainanovabayesian.R \
     JASP/R/bainregressionlinearbayesian.R \
