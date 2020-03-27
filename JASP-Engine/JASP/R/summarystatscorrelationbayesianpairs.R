@@ -224,67 +224,30 @@ SummaryStatsCorrelationBayesianPairs <- function(jaspResults, dataset=NULL, opti
                               "plotPriorAndPosteriorAdditionalInfo", "plotBayesFactorRobustness", 
                               "plotBayesFactorRobustnessAdditionalInfo", "priorWidth")
 
+.oldOptionsToNewNames <- list("sampleSize"="n", "correlationCoefficient"="method", 
+                             "pearsonRhoValue"="rObs", "kendallTauValue"="tauObs", 
+                             "hypothesis"="alternative", 
+                             "plotPriorAndPosterior"="plotPriorPosterior",
+                             "plotPriorAndPosteriorAdditionalInfo"="plotPriorPosteriorAddTestingInfo", 
+                             "plotBayesFactorRobustness"="plotBfRobustness", 
+                             "plotBayesFactorRobustnessAdditionalInfo"="plotBfRobustnessAddInfo", 
+                             "priorWidth"="kappa")
+
+
 .renameCorOptions <- function(options) {
-  allOptionsNames <- names(options)
-  
-  for (i in seq_along(allOptionsNames)) {
-    currentName <- allOptionsNames[i]
-    
-    if (currentName %in% .oldSumStatsOptionsNames) {
-      if (currentName=="sampleSize")  {
-        options[["n"]] <- options[[currentName]]
-      } else if (currentName=="correlationCoefficient") {
-        options[["method"]] <- options[[currentName]]
-        options[["method"]] <- switch(options[["method"]],
-                                      "pearsonRho"="pearson",
-                                      "kendallTau"="kendall",
-                                      "spearman"="spearman")
-      } else if (currentName=="pearsonRhoValue") {
-        options[["rObs"]] <- options[[currentName]]
-      } else if (currentName=="kendallTauValue") {
-        options[["tauObs"]] <- options[[currentName]]
-      } else if  (currentName=="hypothesis") {
-        options[["alternative"]] <- options[[currentName]]
-        options[["alternative"]] <- switch(options[["alternative"]],
-                                           "correlated"="two.sided",
-                                           "correlatedPositively"="greater",
-                                           "correlatedNegatively"="less")
-      } else if (currentName=="plotPriorAndPosterior") {
-        options[["plotPriorPosterior"]] <- options[[currentName]]
-      }
-      
-      if (currentName=="plotPriorAndPosteriorAdditionalInfo") 
-        options[["plotPriorPosteriorAddTestingInfo"]] <- options[[currentName]]
-      
-      if (currentName=="plotBayesFactorRobustness") 
-        options[["plotBfRobustness"]] <- options[[currentName]]
-      
-      if (currentName=="plotBayesFactorRobustnessAdditionalInfo") 
-        options[["plotBfRobustnessAddInfo"]] <- options[[currentName]]
-      
-      if (currentName=="priorWidth") 
-        options[["kappa"]] <- options[[currentName]]
-      
-    }
+  for (currentName in .oldSumStatsOptionsNames) {
+    options[[.oldOptionsToNewNames[[currentName]]]] <- 
+      switch(currentName, 
+             "correlationCoefficient"=switch(options[["correlationCoefficient"]], 
+                                             "pearsonRho"="pearson", 
+                                             "kendallTau"="kendall", 
+                                             "spearman"="spearman"),
+             "hypothesis"=switch(options[["hypothesis"]], 
+                                 "correlated"="two.sided",
+                                 "correlatedPositively"="greater",
+                                 "correlatedNegatively"="less"),
+             options[[currentName]]
+      )
   }
-  
-  # tempList <- options[[.oldSumStatsOptionsNames]]
-  # names(tempList) <- c("n", "method", "rObs", "tauObs", "method", "plotPriorPosterior", 
-  #                      "plotPriorPosteriorAddTestingInfo", "plotBfRobustness", 
-  #                      "plotBfRobustnessAddInfo", "kappa")
-  # 
-  # tempList[["method"]] <- switch(tempList[["method"]], 
-  #                                "pearsonRho"="pearson", 
-  #                                "kendallTau"="kendall",
-  #                                "spearman"="spearman")
-  # 
-  # tempList[["alternative"]] <- switch(tempList[["alternative"]], 
-  #                                    "correlated"="two.sided",
-  #                                    "correlatedPositively"="greater",
-  #                                    "correlatedNegatively"="less")
-  # 
-  # options <- modifyList(options, tempList)
-  # return(options)
-  
   return(options)
 }
