@@ -6,7 +6,7 @@ JASPWidgets.htmlNode = Backbone.Model.extend({
         rawtext: "",
 		text: "",
 		class: "",
-		maxWidth: "10cm",
+		maxWidth: "15cm",
 		elementType: "p"
 	}
 });

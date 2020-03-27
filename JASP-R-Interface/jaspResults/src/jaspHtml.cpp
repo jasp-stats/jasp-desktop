@@ -75,7 +75,7 @@ void jaspHtml::convertFromJSON_SetFields(Json::Value in)
 
     _rawText		= in.get("rawtext",		"null").asString();
 	_class			= in.get("class",		"null").asString();
-	_maxWidth		= in.get("maxWidth",	"10cm").asString();
+	_maxWidth		= in.get("maxWidth",	"15cm").asString();
 	_elementType	= in.get("elementType", "null").asString();
 }
 
