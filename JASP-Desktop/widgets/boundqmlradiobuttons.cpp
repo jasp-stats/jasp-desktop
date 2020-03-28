@@ -96,7 +96,10 @@ void BoundQMLRadioButtons::bindTo(Option *option)
 			Log::log()  << "Known button: " << names.join(',').toStdString() << std::endl;
 		}
 		else
+		{
 			button->setItemProperty("checked", true);
+			_checkedButton = button;
+		}
 	}
 }
 

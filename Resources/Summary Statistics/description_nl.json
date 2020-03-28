@@ -21,14 +21,17 @@
 			"icon"	  : "analysis-bayesian-ttest.svg"
 		},
 		{
+			"menu"    : "Bayesiaanse T-toets Onafhankelijke Steekproeven",
 			"title"   : "S.S. Bayesiaanse T-toets Onafhankelijke Steekproeven",
 			"function": "SummaryStatsTTestBayesianIndependentSamples"
 		},
 		{
+			"menu"    : "Bayesiaanse Gepaarde T-Toets",
 			"title"   : "S.S. Bayesiaanse Gepaarde T-Toets",
 			"function": "SummaryStatsTTestBayesianPairedSamples"
 		},
 		{
+			"menu"    : "Bayesiaanse T-Toets voor Eén Gemiddelde",
 			"title"   : "S.S. Bayesiaanse T-Toets voor Eén Gemiddelde",
 			"function": "SummaryStatsTTestBayesianOneSample"
 		},
@@ -37,10 +40,12 @@
 			"icon"    : "analysis-bayesian-regression.svg"
 		},
 		{
+			"menu"    : "Bayesiaanse Correlatie",
 			"title"   : "S.S. Bayesiaanse Correlatie",
 			"function": "SummaryStatsCorrelationBayesianPairs"
 		},
 		{
+			"menu"    : "Bayesiaanse Lineaire Regressie",
 			"title"   : "S.S. Bayesiaanse Lineaire Regressie",
 			"function": "SummaryStatsRegressionLinearBayesian"
 		},
@@ -49,6 +54,7 @@
 			"icon"    : "analysis-bayesian-crosstabs.svg"
 		},
 		{
+			"menu"    : "Bayesiaanse Binomiaal Toets",
 			"title"   : "S.S. Bayesiaanse Binomiaal Toets",
 			"function": "SummaryStatsBinomialTestBayesian"
 		}
