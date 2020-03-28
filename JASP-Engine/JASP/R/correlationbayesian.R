@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013-2019 University of Amsterdam
+# Copyright (C) 2013-2020 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,14 +18,14 @@
 CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   ready <- length(options[["variables"]]) >= 2
   pairs <- unique(options[["pairs"]])
-
+  
   # 2. Data retrieval  --------
   #
   if (ready && is.null(dataset))
-      dataset <- .corBayesReadData(dataset, options)
+    dataset <- .corBayesReadData(dataset, options)
   
   corModel <- .computeCorBayes(jaspResults = jaspResults, dataset = dataset, options = options, ready = ready)
-
+  
   # 3. Table: Get, compute and fill -----------
   #
   .createTableCorBayes(jaspResults = jaspResults, corModel = corModel,
@@ -36,7 +36,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   if (options[["plotMatrix"]])
     .createMatrixPlotCorBayes(jaspResults = jaspResults, corModel = corModel,
                               dataset = dataset, options = options)
-
+  
   # 5. PairsPlot Container: (Optional) ------
   #
   if (options[["plotScatter"]] || options[["plotPriorPosterior"]] || options[["plotBfRobustness"]] || 
@@ -45,7 +45,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     
     if (!is.null(pairsPlotCollection)) {
       pairsPlotCollection <- .initPlotContainerSubStructureCorBayes(pairsPlotCollection, options)
-  
+      
       .fillPairsPlotsCorBayes(jaspResults, pairsPlotCollection, corModel, dataset, options)
     }
   }
@@ -121,49 +121,48 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 .createTableCorBayes <- function(jaspResults, corModel, dataset, options) {
   if (!is.null(jaspResults[["corBayesTable"]]))
     return()
-
+  
   methodItems <- .getCorMethods(options)
   corBayesTable <- createJaspTable(title=.getCorTableTitle(methodItems, bayes=TRUE))
   corBayesTable$position <- 1
-
+  
   alternative <- options[["alternative"]]
-
+  
   corBayesTable$dependOn(c("pearson", "kendall", "spearman", "alternative", "kappa", "variables",
                            "displayPairwise","reportBayesFactors", "missingValues",
                            "flagSupported", "ci", "ciValue",
                            "reportN", "posteriorMedian", "bayesFactorType",
                            "setSeed", "seed"))
-
+  
   corBayesTable$showSpecifiedColumnsOnly <- TRUE
   corBayesTable$position <- 1
-
+  
   corBayesTable$addCitation(.getCorCitations(methodItems, bayes=TRUE))
-
+  
   if (alternative=="greater")
     corBayesTable$addFootnote(.getBfTableSidedFootnote(alternative="greater", analysis="correlation"))
-
+  
   if (alternative=="less")
     corBayesTable$addFootnote(.getBfTableSidedFootnote(alternative="less", analysis="correlation"))
-
+  
   # Add legend footnote of BFs
   if (options[["flagSupported"]]) {
     tempNote <- .bfFlagTableFootnote(options)
     corBayesTable$addFootnote(message=tempNote, symbol="*")
   }
-
+  
   .addTableColumnMarkupCorBayes(corBayesTable, methodItems, options)
-
+  
   .fillTableCorBayes(corBayesTable, options, corModel)
   
   jaspResults[["corBayesTable"]] <- corBayesTable
 }
 
 .addTableColumnMarkupCorBayes <- function(table, methodItems, options) {
-  if (options[["displayPairwise"]]) {
+  if (options[["displayPairwise"]]) 
     .addPairwiseTableColumnMarkupCorBayes(table, methodItems, options)
-  } else {
+  else 
     .addMatrixTableColumnMarkupCorBayes(table, methodItems, options)
-  }
 }
 
 .addPairwiseTableColumnMarkupCorBayes <- function(table, methodItems, options) {
@@ -189,7 +188,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
     
     # Add's "r", "rho", "tau B"
     table$addColumnInfo(name=paste0(methodName, "stat"), title=.corMethodNamesList[[methodName]],
-                                overtitle=overTitle, type="number")
+                        overtitle=overTitle, type="number")
     
     if (options[["reportBayesFactors"]])
       table$addColumnInfo(name=paste0(methodName, "bf"), title=.getBfTitle(options[["bayesFactorType"]], options[["alternative"]]), overtitle=overTitle, type="number")
@@ -242,18 +241,16 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   
   if (nVariables < 2) {
     
-    if (nVariables == 0) {
+    if (nVariables == 0) 
       title <- "..."
-    } else {
+    else 
       title <- options[["variables"]][1]
-    }
     
     table$addColumnInfo(name="firstPlaceholder", type="number", title=title)
     table$addColumnInfo(name="secondPlaceholder", type="number", title="...")
   } else {
-    for (variable in options[["variables"]]) {
+    for (variable in options[["variables"]]) 
       table$addColumnInfo(name=variable, type="number",title=variable)
-    }
   }
   
   if (length(methodItems)==0) {
@@ -284,29 +281,26 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 
 .fillTableCorBayes <- function(table, options, corModel) {
   if (is.null(corModel)) {
-    if (options[["displayPairwise"]]) {
+    if (options[["displayPairwise"]]) 
       .insertPairwiseDefaultEmptyTableCellsCorBayes(table, options)
-    } else {
+    else 
       .insertMatrixDefaultEmptyTableCellsCorBayes(table, options)
-    }
   } else {
-    if (options[["displayPairwise"]]) {
+    if (options[["displayPairwise"]]) 
       .fillPairwiseTableCorBayes(table, options, corModel)
-    } else {
+    else 
       .fillMatrixTableCorBayes(table, options, corModel)
-    }
   }
 }
 
 .insertPairwiseDefaultEmptyTableCellsCorBayes <- function(table, options) {
   nVariables <- length(options[["variables"]])
   if (nVariables < 2) {
-    if (nVariables == 0) {
+    if (nVariables == 0) 
       var1 <- "..."
-    } else {
+    else 
       var1 <- options[["variables"]][1]
-    }
-      
+    
     var2 <- "..."
     table$addRows(list(variable1=var1, separator="\u2014", variable2=var2))
   }
@@ -315,12 +309,11 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 .insertMatrixDefaultEmptyTableCellsCorBayes <- function(table, options) {
   variables <- unlist(options[["variables"]])
   
-  if (length(variables) == 1) {
+  if (length(variables) == 1) 
     variables <- c(paste("1.", variables), "2. ...")
-  } else {
+  else 
     variables <- c("1. ...", "2. ...")
-  }
-    
+  
   methodItems <- .getCorMethods(options)
   itemNames <- .bSelectItems(options)
   
@@ -372,11 +365,10 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       reportBf <- rowObject[["bf"]]
       
       if (options[["reportBayesFactors"]]) {
-        if (options[["bayesFactorType"]] == "BF01") {
+        if (options[["bayesFactorType"]] == "BF01") 
           rowObject[["bf"]] <- 1/reportBf
-        } else if (options[["bayesFactorType"]] == "LogBF10") {
+        else if (options[["bayesFactorType"]] == "LogBF10") 
           rowObject[["bf"]] <- log(reportBf)
-        }
       }
       
       names(rowObject) <- paste0(method, itemNames)
@@ -386,11 +378,10 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       
       errorMessage <- bfObject[["error"]]
       
-      if (!is.null(errorMessage)) {
+      if (!is.null(errorMessage)) 
         table$addFootnote(errorMessage, rowNames = pairName, colNames = paste0(method, "stat"))
-      } else if (options[["reportBayesFactors"]] && options[["flagSupported"]] && !is.na(reportBf)) {
+      else if (options[["reportBayesFactors"]] && options[["flagSupported"]] && !is.na(reportBf)) 
         .addSupportedBfIndicators(table, reportBf, rowNames = pairName, colNames = paste0(method, "stat"))
-      }
       
       tempRow <- modifyList(tempRow, rowObject)
     }
@@ -403,7 +394,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   
   for (i in 1:nVariables) {
     emptyCellInfo <- vector("list", length=i)
-
+    
     var1 <- options[["variables"]][i]
     var2Names <- options[["variables"]][1:i]
     
@@ -439,12 +430,12 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
                                                 itemNames=itemNames)
           reportBf <- sidedObject[["bf"]]
           
-          if (options[["bayesFactorType"]] == "BF01") {
+          if (options[["bayesFactorType"]] == "BF01") 
             sidedObject[["bf"]] <- 1/reportBf
-          } else if (options[["bayesFactorType"]] == "LogBF10") {
+          else if (options[["bayesFactorType"]] == "LogBF10") 
             sidedObject[["bf"]] <- log(reportBf)
-          }
-            
+          
+          
           # Here add to info to the collection
           # 
           for (item in itemNames) 
@@ -453,11 +444,12 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
           errorMessage <- bfObject[["error"]]
           rowName <- paste0(var1, methodName, "stat")
           
-          if (!is.null(errorMessage)) {
+          if (!is.null(errorMessage)) 
             table$addFootnote(errorMessage, rowNames = rowName, colNames = var2)
-          } else if (options[["reportBayesFactors"]] && options[["flagSupported"]] && !is.na(reportBf)) {
+          else if (options[["reportBayesFactors"]] && options[["flagSupported"]] && !is.na(reportBf)) 
             .addSupportedBfIndicators(table, reportBf, rowNames = rowName, colNames = var2)
-          }
+          
+          
         }
       }
       
@@ -474,7 +466,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       #
       if (m > 1 && options[["reportN"]]) {
         allItemInfo[["n"]] <- NULL
-
+        
         # Note(Alexander): After the first time we added "n", remove it from the other
         # 
         itemNames <- setdiff(itemNames, "n")
@@ -483,14 +475,13 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       rowItemNames <- .bCorRowNames(options, itemNames, method = methodName)
       
       for (k in seq_along(itemNames)) {
-        if (k == 1 && m == 1) {
+        if (k == 1 && m == 1) 
           tempRow <- list(variable = paste0(i, ". ", var1), itemColumn = rowItemNames[[k]], .isNewGroup = TRUE) # First item gets the variable name
-        } else {
+        else 
           tempRow <- list(variable = "", itemColumn = rowItemNames[[k]], .isNewGroup = FALSE)
-        }
         
         itemInfo <- as.list(allItemInfo[[k]])
-
+        
         names(itemInfo) <- var2Names
         tempRow <- modifyList(tempRow, itemInfo)
         table$addRows(tempRow, rowNames = paste0(var1, methodName, itemNames[k]))
@@ -502,13 +493,12 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 .addSupportedBfIndicators <- function(table, bf, rowNames, colNames) {
   symbol <- NULL
   
-  if (bf >= 100) {
+  if (bf >= 100) 
     symbol <- "***"
-  } else if (bf >= 30) {
+  else if (bf >= 30) 
     symbol <- "**"
-  } else if (bf >= 10) {
+  else if (bf >= 10) 
     symbol <- "*"
-  }
   
   if (!is.null(symbol))
     table$addFootnote(symbol = symbol, rowNames=rowNames, colNames=colNames)
@@ -649,11 +639,11 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 .drawPosteriorPlotCorBayes <- function(jaspResults, corModel, options, methodItems,
                                        purpose=c("matrix", "pairs", "sumStat"), pairName = NULL) {
   purpose <- match.arg(purpose)
-
+  
   plotResult <- ""
   
   # TODO(Alexander): Check whether we can do .setErrorMessages() to plots in correlation matrix plot
-
+  
   if (purpose=="matrix") {
     if (!options[["plotMatrixPosteriors"]]) {
       # Note(Alexander): This should never happen as, this shouldn't be called with plotMatrixPosteriors <- TRUE
@@ -669,29 +659,29 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       return(plotResult)
     }
   }
-
+  
   if (purpose == "sumStat") {
     pairStats <- list()
     pairStats[[options[["method"]]]] <- corModel
   } else {
     pairStats <- corModel[[pairName]]
   }
-
-  if (purpose %in% c("matrix", "pairs")) {
+  
+  if (purpose %in% c("matrix", "pairs")) 
     dataError <- pairStats[[1]][["error"]]
-  } else if (purpose=="sumStat") {
+  else if (purpose=="sumStat") 
     dataError <- pairStats[["error"]]
-  }
-
+  
   if (!is.null(dataError)) {
-    if (purpose=="matrix") {
+    
+    if (purpose=="matrix") 
       plotResult <- .displayError(errorMessage=dataError)
-    } else {
+    else 
       plotResult <- dataError
-    }
+    
     return(plotResult)
   }
-
+  
   # a. No data errors, try to plot ----
   #
   postPlotValuesPerMethod <- .getPosteriorPlotValuesCorBayes(jaspResults, pairStats, options, pairName)
@@ -712,34 +702,36 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       error <- gettext("Could not compute the posteriors")
       break()
     }
-
+    
   }
-
+  
   # b. Check for error ----
   #
   if (!is.null(error)) {
-    if (purpose=="matrix") {
+    
+    if (purpose=="matrix") 
       plotResult <- .displayError(errorMessage=error)
-    } else {
+    else 
       plotResult <- error
-    }
+    
     return(plotResult)
   }
   
   # c. No errors, combine plot info ------
   #
-
+  
   xDomain <- postPlotValuesPerMethod[[1]][["xDomain"]] # these values are the same for all methods
   domainLength <- length(xDomain) 
-
+  
   dfPoints <- NULL
   BF10 <- NULL
   CRI <- NULL
   medianPoint <- NULL
   CRItxt <- NULL
-
+  
   if (purpose == "matrix") {
     xName <- NULL
+    
     if (length(methodItems) == 1)  {
       # xName <- unlist(.corXNames[methodItems], recursive = FALSE)
       # 
@@ -758,11 +750,11 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       )
     }
   } else if (purpose %in% c("pairs", "sumStat")) {
-    if (purpose=="sumStat") {
+    if (purpose=="sumStat") 
       postPlotValues <- postPlotValuesPerMethod[[1]]
-    } else if (purpose=="pairs") {
+    else if (purpose=="pairs") 
       postPlotValues <- postPlotValuesPerMethod[[options[["pairsMethod"]]]]
-    }
+    
     
     xName <- unlist(.corXNames[[methodItems]], recursive = FALSE)
     gLegend <- c(gettext("Prior"), gettext("Posterior"))
@@ -796,7 +788,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       CRI <- c(lowerCi, upperCi)
       CRItxt <- gettextf("%s%% CI:", ciValue * 100)
     }
-
+    
     if (isTRUE(options[["plotPriorPosteriorAddTestingInfo"]])) {
       dfPoints <- data.frame(
         x = c(postPlotValues[["h0"]], postPlotValues[["h0"]]),
@@ -824,7 +816,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   
   if (!is.null(jaspResults[[indexName]]))
     return(jaspResults[[indexName]]$object)
-
+  
   results <- list()
   
   for (method in names(bfObject)){
@@ -835,13 +827,10 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   
   jaspResults[[indexName]] <- createJaspState(results)
   
-  if (is.null(pair)) {
-    # sumStats
+  if (is.null(pair)) # sumStats
     qmlInputElements <- c("hypothesis", "priorWidth", "setSeed", "seed")
-  } else {
-    # pairs
+  else # pairs
     qmlInputElements <- c("missingValues", "alternative", "kappa", "setSeed", "seed")
-  }
   
   jaspResults[[indexName]]$dependOn(qmlInputElements)
   
@@ -946,7 +935,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   pairsIndeces <- .getPairsIndeces(options)
   alternative <- options[["alternative"]]
   thisMethod <- options[["pairsMethod"]]
-
+  
   for (i in pairsIndeces) {
     currentPair <- pairs[[i]]
     var1 <- currentPair[1]
@@ -995,9 +984,9 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   .setSeedJASP(options)
   robustnessValuesPerHypothesis <- bstats::computeCorRobustnessLine(bfObject)
   robustnessValues <- bstats::getSidedObject(robustnessValuesPerHypothesis, alternative=options[["alternative"]], 
-                                        itemNames=c("kappaDomain", "kappa"))
+                                             itemNames=c("kappaDomain", "kappa"))
   robustnessLine <- robustnessValues[["robustnessLine"]]
-
+  
   if (is.character(robustnessLine)) {
     plotResult <- robustnessLine
   } else {
@@ -1011,14 +1000,14 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       kappaOfMaxBf <- robustnessValues[["robustnessKappaOfMaxBf"]]
       userBf <- bfObject[[options[["alternative"]]]][["bf"]]
       userKappa <- bfObject[["kappa"]]
-
+      
       xPoint <- c(kappaOfMaxBf, userKappa)
       yPoint <- c(maxBf, userBf)
     }
     
     plotResult <- .plotRobustnessCor(xLine=xLine, yLine=yLine, xPoint=xPoint, yPoint=yPoint, 
-                                    bfType=options[["bayesFactorType"]], alternative=options[["alternative"]], 
-                                    nDigits=4)
+                                     bfType=options[["bayesFactorType"]], alternative=options[["alternative"]], 
+                                     nDigits=4)
   }
   return(plotResult)
 }
@@ -1093,7 +1082,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       stringsAsFactors = FALSE
     )
   }
-    
+  
   
   plotResult <- try(JASPgraphs::PlotRobustnessSequential(
     dfLines         = dfLines,
@@ -1114,9 +1103,9 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
   sequentialValuesPerHyp <- bstats::computeCorSequentialLine(x=v1, y=v2, bfObject=bfObject)
   sequentialValues <- bstats::getSidedObject(sequentialValuesPerHyp, alternative=options[["alternative"]], 
                                              itemNames="nDomain")
-
+  
   sequentialLine <- sequentialValues[["sequentialLine"]]
-
+  
   if (is.character(sequentialLine)) {
     return(sequentialLine)
   } else {
@@ -1147,7 +1136,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
       BF <- bfObject[[options[["alternative"]]]][["bf"]]
       BF <- .recodeBFtype(BF, newBFtype = bfType, oldBFtype = "BF10")
     }
-
+    
     plotResult <- try(JASPgraphs::PlotRobustnessSequential(
       dfLines      = dfLines,
       xName        = gettext("n"),
@@ -1172,15 +1161,15 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
 .computeCorCredibleInterval <- function(bfObject, ciValue, method) {
   if (method == "pearson") {
     return(bstats::computePearsonCredibleInterval("betaA"=bfObject[["betaA"]], "betaB"=bfObject[["betaB"]],
-                                                "ciValue"=ciValue))
+                                                  "ciValue"=ciValue))
   } else if (method == "kendall") {
     return(bstats::computeKendallCredibleInterval("n"=bfObject[["two.sided"]][["n"]], "tauObs"=bfObject[["two.sided"]][["stat"]], 
-                                    "kappa"=bfObject[["kappa"]], "var"=1, "ciValue"=ciValue, 
-                                    "h0"=bfObject[["h0"]]))
+                                                  "kappa"=bfObject[["kappa"]], "var"=1, "ciValue"=ciValue, 
+                                                  "h0"=bfObject[["h0"]]))
   } else if (method == "spearman") {
     # TODO(Johnny):
     print("NO THIS IS NOT IT, STILL NEED TO MAKE THIS, THIS IS JUST A PLACEHOLDER")
     return(bstats::computePearsonCredibleInterval("betaA"=bfObject[["betaA"]], "betaB"=bfObject[["betaB"]],
-                                                "ciValue"=ciValue))
+                                                  "ciValue"=ciValue))
   }
 }
