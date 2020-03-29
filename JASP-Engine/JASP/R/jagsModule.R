@@ -267,24 +267,28 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 # Tables ----
 .JAGSoutputTable <- function(jaspResults, options, mcmcResult) {
 
-  tb <- createJaspTable("MCMC summary")
+  tb <- createJaspTable("MCMC Summary")
   tb$position <- 1L
-  ovt  <- gettextf("95%% Credible Interval")
+  ovt0 <- gettext("Posterior")
+  ovt1 <- gettextf("95%% Credible Interval")
   ovt2 <- gettext("Rhat")
   tb$addColumnInfo(name = "parameter", title = gettext("Parameter"),            type = "string")
-  tb$addColumnInfo(name = "Mean",      title = gettext("mean"),                 type = "number")
-  tb$addColumnInfo(name = "SD",        title = gettext("sd"),                   type = "number")
-  tb$addColumnInfo(name = "50%",       title = gettext("median"),               type = "number")
-  tb$addColumnInfo(name = "2.5%",      title = gettext("Lower"),                type = "number", overtitle = ovt)
-  tb$addColumnInfo(name = "97.5%",     title = gettext("Upper"),                type = "number", overtitle = ovt)
+  tb$addColumnInfo(name = "Mean",      title = gettext("Mean"),                 type = "number", overtitle = ovt0)
+  tb$addColumnInfo(name = "50%",       title = gettext("Median"),               type = "number", overtitle = ovt0)
+  tb$addColumnInfo(name = "SD",        title = gettext("SD"),                   type = "number", overtitle = ovt0)
+  tb$addColumnInfo(name = "2.5%",      title = gettext("Lower"),                type = "number", overtitle = ovt1)
+  tb$addColumnInfo(name = "97.5%",     title = gettext("Upper"),                type = "number", overtitle = ovt1)
   tb$addColumnInfo(name = "rhatPoint", title = gettext("Point est."),           type = "number", overtitle = ovt2)
   tb$addColumnInfo(name = "rhatCI",    title = gettext("Upper CI"),             type = "number", overtitle = ovt2)
   tb$addColumnInfo(name = "neff",      title = gettext("Effecive Sample Size"), type = "number")
 
   if (!is.null(mcmcResult) && !jaspResults[["mainContainer"]]$getError()) {
 
-    if (!.JAGShasData(options) && !mcmcResult[["hasUserData"]])
+    if (!.JAGShasData(options) && !mcmcResult[["hasUserData"]]) {
       tb$addFootnote(message = gettext("No data was supplied, everything was sampled from the priors!"), symbol = .JAGSWarningSymbol)
+      if (options[["showDeviance"]])
+        tb$addFootnote(message = gettext("Deviance cannot be computed without data."), symbol = .JAGSWarningSymbol)
+    }
 
     parametersToShow <- options[["parametersShown"]]
     if (mcmcResult[["DIC"]] && options[["showDeviance"]])
@@ -406,7 +410,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
     add <- list("function" = ".JAGSPlotAutoCor")
     if (is.null(plotContainer[["plotAutoCor"]])) {
       add[["container"]] <- createJaspContainer(title = gettext("Autocorrelation Plots"),  position = 4,
-                                                dependencies = c("plotAutoCor", "noLags", "acfType"))
+                                                dependencies = c("plotAutoCor", "noLags", "acfType", "showLegend"))
       plotContainer[["plotAutoCor"]] <- add[["container"]]
     } else {
       add[["container"]] <- plotContainer[["plotAutoCor"]]
@@ -497,35 +501,75 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   return(g)
 }
 
+.JAGSIsParameterDiscrete <- function(samples, param) {
+  
+  u <- c()
+  for (i in seq_along(samples))
+    u <- c(u, unique(samples[[i]][, param]))
+  
+  # if a parameter has 25 unique values or less, we assume the parameter is discrete
+  return(length(u) > 25L)
+}
+
+.JAGSGetHistogramBreaks <- function(samples, param) {
+
+  n <- nrow(samples[[1L]])
+  u <- sort(unique(unlist(lapply(samples, `[`, i = 1:n, j = param), use.names = FALSE)))
+
+  # if a parameter has 25 unique values or less, we assume the parameter is discrete
+  isDiscrete <- length(u) <= 25L
+
+  if (isDiscrete) {
+    # this works because by default, hist makes the first category using e.g., [0, 1], but the next using (1, 2]. 
+    # the resulting histogram may be heavily misleading. Hist only does this for particular frequencies, but unfortunately,
+    # the default number of samples can lead to this when sampling from the prior predictive of binomial(theta) with theta ~ dbeta(1, 1).
+    return(list(breaks = c(u[1L], 0.999 + u), unique = u))
+  } else {
+    return(list(breaks = "Sturges")) # the default of hist
+  }
+}
+
 .JAGSPlotHistogram <- function(samples, param, options, removeAxisLabels = FALSE) {
 
   # TODO: get parameter bounds and respect these, e.g., truncate [0, 1] (probably pretty hard though)
   npoints <- 2^10 # precision for density estimation
+
+  tmpBreaks  <- .JAGSGetHistogramBreaks(samples, param)
+  breaksType <- tmpBreaks$breaks
+  isDiscrete <- !is.character(breaksType)
+
   if (options[["aggregateChains"]]) {
     df <- do.call(rbind.data.frame, lapply(seq_along(samples), function(i) {
-      d <- hist(samples[[i]][, param], plot = FALSE)
-      return(data.frame(x = d[["mids"]], y = d[["counts"]], g = factor(i)))
+      d <- graphics::hist(samples[[i]][, param], breaks = breaksType, plot = FALSE)
+      return(data.frame(x = if (isDiscrete) tmpBreaks$unique else d[["mids"]], y = d[["counts"]], g = factor(i)))
     }))
     mapping <- ggplot2::aes(x = x, y = y, color = g, fill = g)
     colorScale <- JASPgraphs::scale_JASPcolor_discrete(name = gettext("Chain"))
     fillScale  <- JASPgraphs::scale_JASPfill_discrete(name = gettext("Chain"))
   } else {
     n <- nrow(samples[[1L]])
-    d <- hist(unlist(lapply(samples, `[`, i = 1:n, j = param), use.names = FALSE), plot = FALSE)
-    df <- data.frame(x = d[["mids"]], y = d[["counts"]])
+    d <- graphics::hist(unlist(lapply(samples, `[`, i = 1:n, j = param), use.names = FALSE), breaks = breaksType, plot = FALSE)
+    df <- data.frame(x = if (isDiscrete) tmpBreaks$unique else d[["mids"]], y = d[["counts"]])
     mapping <- ggplot2::aes(x = x, y = y)
     fillScale <- colorScale <- NULL
   }
+
+  xAxis <- NULL
+  # prevent non-discrete axis labels
+  if (isDiscrete)
+    xAxis <- ggplot2::scale_x_continuous(breaks = round(JASPgraphs::getPrettyAxisBreaks(tmpBreaks$unique)))
 
   if (removeAxisLabels)
     labs <- ggplot2::labs(x = NULL, y = NULL)
   else
     labs <- ggplot2::labs(x = param, y = gettext("Counts"))
 
+  # TODO: (vandenman - 29/03) from ggplot2 version 3.3.0 onwards we need to uncomment the 'orientation = "x"'
   g <- JASPgraphs::themeJasp(
     ggplot2::ggplot(df, mapping) +
-      ggplot2::geom_col(show.legend = options[["aggregateChains"]], position = ggplot2::position_dodge()) +
-      labs + colorScale + fillScale,
+      ggplot2::geom_bar(show.legend = options[["aggregateChains"]], position = ggplot2::position_dodge(),
+                        stat = "identity") + #, orientation = "x") +
+      labs + colorScale + fillScale + xAxis,
     legend.position = if (options[["showLegend"]]) "right" else "none"
   )
   return(g)
@@ -581,6 +625,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 
   g <- ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = x, y = y, color = g, group = g, fill = g)) +
     geom + colorScale + fillScale +
+    ggplot2::geom_hline(yintercept = 0, color = "grey", linetype = "dashed", size = 1.05) +
     ggplot2::ylab(gettext("Autocorrelation")) +
     ggplot2::scale_x_continuous(name = gettext("Lag"), breaks = xBreaks, limits = xLimits) +
     JASPgraphs::geom_rangeframe() +
