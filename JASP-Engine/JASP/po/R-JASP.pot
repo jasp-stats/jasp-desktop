@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-03-25 15:42\n"
+"POT-Creation-Date: 2020-03-29 21:10\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -380,6 +380,9 @@ msgid "Lower Bound %s"
 msgstr ""
 
 msgid "Cannot perform sphericity tests because there only two levels of the RM factor."
+msgstr ""
+
+msgid "Unpooled error term only allowed in balanced designs."
 msgstr ""
 
 msgid "%s corrected p-values are not appropriate for repeated measures post-hoc tests (Maxwell, 1980; Field, 2012)."

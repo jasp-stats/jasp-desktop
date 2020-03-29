@@ -6919,7 +6919,7 @@ msgstr "Funnelgrafiek"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Rank test for funnel plot asymmetry"
-msgstr "Rangordetoets voor funnelgrafiek asymmetrisch"
+msgstr "Rangordetoets voor funnelgrafiek-asymmetrie"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Regression test for funnel plot asymmetry"
@@ -7698,18 +7698,6 @@ msgid "Abbreviate labels to "
 msgstr "Kort labels af tot "
 
 msgctxt "NetworkAnalysis|"
-msgid "Network Size"
-msgstr "Netwerkgrootte"
-
-msgctxt "NetworkAnalysis|"
-msgid "Fixed ratio"
-msgstr "Vaste ratio"
-
-msgctxt "NetworkAnalysis|"
-msgid "Free"
-msgstr "Vrij"
-
-msgctxt "NetworkAnalysis|"
 msgid "Show Variable Names"
 msgstr "Toon Variabelnamen"
 
@@ -7804,18 +7792,6 @@ msgstr "Variabelen"
 msgctxt "Correlation|"
 msgid "Condition on"
 msgstr "Conditie op"
-
-msgctxt "Correlation|"
-msgid "Correlation Coefficient"
-msgstr "Correlatiecoëfficiënt"
-
-msgctxt "Correlation|"
-msgid "Pearson"
-msgstr "Pearson"
-
-msgctxt "Correlation|"
-msgid "Spearman"
-msgstr "Spearman"
 
 msgctxt "Correlation|"
 msgid "Kendall's tau-b"
@@ -7937,14 +7913,6 @@ msgstr "Ontbrekende waarden"
 msgctxt "Correlation|"
 msgid "Exclude cases pairwise"
 msgstr "Sluit waarnemingen paarsgewijs uit"
-
-msgctxt "CorrelationBayesian|"
-msgid "Correlation Coefficient"
-msgstr "Correlatiecoëfficiënt"
-
-msgctxt "CorrelationBayesian|"
-msgid "Spearman"
-msgstr "Spearman"
 
 msgctxt "CorrelationBayesian|"
 msgid "Kendall's tau-b"
@@ -8897,14 +8865,6 @@ msgstr "Beta prior: parameter b"
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Sample size"
 msgstr "Steekproefgrootte"
-
-msgctxt "SummaryStatsCorrelationBayesianPairs|"
-msgid "Correlation Coefficient"
-msgstr "Correlatiecoëfficiënt"
-
-msgctxt "SummaryStatsCorrelationBayesianPairs|"
-msgid "Pearson's rho"
-msgstr "Pearson's rho"
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Kendall's tau-b"
@@ -10737,10 +10697,6 @@ msgstr "Groepeer tot één figuur"
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster densities"
 msgstr "Cluster dichtheden"
-
-msgctxt "CorrelationBayesian|"
-msgid "Pearson"
-msgstr "Pearson"
 
 msgctxt "CorrelationBayesian|"
 msgid "Display pairwise table"
@@ -14369,7 +14325,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
-msgstr "GitHub kan niet geopend worden voor u"
+msgstr "GitHub kon niet voor u geopend worden"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -14623,9 +14579,9 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"Het lijkt erop dat u nooit een %1 in uw module ontwikkelomgeving had. Zonder "
-"dit kan uw module niet werken, zorg ervoor een te maken. Hoe u de module "
-"geïnstalleerd hebt is onduidelijk en de ontwikkelmodule wordt nu verwijderd"
+"Het lijkt erop dat u nooit een %1 in uw ontwikkelmodulemap had. Bij gebrek "
+"hieraan kan uw module niet werken en hoe u het heeft weten te installeren is "
+"onduidelijk. De module zal nu worden verwijderd"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14722,7 +14678,7 @@ msgstr "Bestand Types"
 
 msgctxt "FileMenu|"
 msgid "Failed to open file from OSF"
-msgstr "Kon bestand vanuit de OSF niet openen"
+msgstr "Kon bestand op OSF niet openen"
 
 msgctxt "FileMenu|"
 msgid "No associated data file"
@@ -14803,7 +14759,7 @@ msgstr "Bestand Types"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
-msgstr "Kon bestand van de OSF niet openen"
+msgstr "Kon bestand op OSF niet openen"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
@@ -15509,6 +15465,38 @@ msgstr "Onbekende optie %1 in Dropdown %2"
 msgctxt "Descriptives|"
 msgid "Label outliers"
 msgstr "Label uitschieters"
+
+msgctxt "NetworkAnalysis|"
+msgid "Legend to plot ratio"
+msgstr "Ratio legenda tot plot"
+
+msgctxt "Correlation|"
+msgid "Sample Correlation Coefficient"
+msgstr "Steekproef Correlatiecoëfficiënt"
+
+msgctxt "Correlation|"
+msgid "Pearson's r"
+msgstr "Pearson's r"
+
+msgctxt "Correlation|"
+msgid "Spearman's rho"
+msgstr "Spearman's rho"
+
+msgctxt "CorrelationBayesian|"
+msgid "Population Correlation Coefficient"
+msgstr "Populatie Correlatiecoëfficiënt"
+
+msgctxt "CorrelationBayesian|"
+msgid "Pearson's rho"
+msgstr "Pearson's rho"
+
+msgctxt "SummaryStatsCorrelationBayesianPairs|"
+msgid "Sample Correlation Coefficient"
+msgstr "Steekproef Correlatiecoëfficiënt"
+
+msgctxt "SummaryStatsCorrelationBayesianPairs|"
+msgid "Pearson's r"
+msgstr "Pearson's r"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""

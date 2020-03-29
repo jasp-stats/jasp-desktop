@@ -7683,18 +7683,6 @@ msgid "Abbreviate labels to "
 msgstr ""
 
 msgctxt "NetworkAnalysis|"
-msgid "Network Size"
-msgstr ""
-
-msgctxt "NetworkAnalysis|"
-msgid "Fixed ratio"
-msgstr ""
-
-msgctxt "NetworkAnalysis|"
-msgid "Free"
-msgstr ""
-
-msgctxt "NetworkAnalysis|"
 msgid "Show Variable Names"
 msgstr ""
 
@@ -7788,18 +7776,6 @@ msgstr ""
 
 msgctxt "Correlation|"
 msgid "Condition on"
-msgstr ""
-
-msgctxt "Correlation|"
-msgid "Correlation Coefficient"
-msgstr ""
-
-msgctxt "Correlation|"
-msgid "Pearson"
-msgstr ""
-
-msgctxt "Correlation|"
-msgid "Spearman"
 msgstr ""
 
 msgctxt "Correlation|"
@@ -7925,14 +7901,6 @@ msgstr ""
 
 msgctxt "Correlation|"
 msgid "Exclude cases listwise"
-msgstr ""
-
-msgctxt "CorrelationBayesian|"
-msgid "Correlation Coefficient"
-msgstr ""
-
-msgctxt "CorrelationBayesian|"
-msgid "Spearman"
 msgstr ""
 
 msgctxt "CorrelationBayesian|"
@@ -8907,14 +8875,6 @@ msgstr ""
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Sample size"
-msgstr ""
-
-msgctxt "SummaryStatsCorrelationBayesianPairs|"
-msgid "Correlation Coefficient"
-msgstr ""
-
-msgctxt "SummaryStatsCorrelationBayesianPairs|"
-msgid "Pearson's rho"
 msgstr ""
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
@@ -10723,10 +10683,6 @@ msgstr ""
 
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster densities"
-msgstr ""
-
-msgctxt "CorrelationBayesian|"
-msgid "Pearson"
 msgstr ""
 
 msgctxt "CorrelationBayesian|"
@@ -15224,6 +15180,38 @@ msgstr ""
 
 msgctxt "Descriptives|"
 msgid "Label outliers"
+msgstr ""
+
+msgctxt "NetworkAnalysis|"
+msgid "Legend to plot ratio"
+msgstr ""
+
+msgctxt "Correlation|"
+msgid "Sample Correlation Coefficient"
+msgstr ""
+
+msgctxt "Correlation|"
+msgid "Pearson's r"
+msgstr ""
+
+msgctxt "Correlation|"
+msgid "Spearman's rho"
+msgstr ""
+
+msgctxt "CorrelationBayesian|"
+msgid "Population Correlation Coefficient"
+msgstr ""
+
+msgctxt "CorrelationBayesian|"
+msgid "Pearson's rho"
+msgstr ""
+
+msgctxt "SummaryStatsCorrelationBayesianPairs|"
+msgid "Sample Correlation Coefficient"
+msgstr ""
+
+msgctxt "SummaryStatsCorrelationBayesianPairs|"
+msgid "Pearson's r"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"
