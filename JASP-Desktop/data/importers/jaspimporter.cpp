@@ -238,7 +238,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 	std::vector<bool> filterVector;
 	for(const Json::Value & filteredRow : dataSetDesc.get("filterVector", Json::arrayValue))
 		filterVector.push_back(filteredRow.asBool());
-	packageData->setFilterVector(filterVector);
+	packageData->setFilterVectorWithoutModelUpdate(filterVector);
 
 	//Filter should be run if filterVector was not filled and either of the filters was different from default.
 	bool filterShouldBeRun =

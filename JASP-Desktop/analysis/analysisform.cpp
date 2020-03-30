@@ -461,6 +461,7 @@ void AnalysisForm::bindTo()
 
 	_options->blockSignals(true);
 	
+	The assigned list must be updated to reflect the changed columnnames before:
 	_setAllAvailableVariablesModel();	
 	
 	for (JASPControlWrapper* control : _orderedControls)

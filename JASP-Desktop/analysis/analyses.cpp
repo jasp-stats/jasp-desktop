@@ -333,16 +333,6 @@ void Analyses::refreshAllPlots(std::set<Analysis*> exceptThese)
 			idAnalysis.second->rewriteImages();
 }
 
-
-void Analyses::refreshAnalysesUsingColumn(QString col)
-{
-	std::vector<std::string> changedColumns, missingColumns, oldNames;
-	std::map<std::string, std::string> changeNameColumns;
-	changedColumns.push_back(col.toStdString());
-
-	refreshAnalysesUsingColumns(changedColumns, missingColumns, changeNameColumns, oldNames);
-}
-
 void Analyses::removeAnalysisById(size_t id)
 {
 	Analysis *analysis = get(id);
@@ -363,14 +353,27 @@ void Analyses::setAnalysesUserData(Json::Value userData)
 	}
 }
 
-
-void Analyses::refreshAnalysesUsingColumns(
-		std::vector<std::string>			changedColumns,
-		std::vector<std::string>			missingColumns,
-		std::map<std::string, std::string>	changeNameColumns,
-		std::vector<std::string>			oldColumnNames,
-		bool								hasNewColumns)
+void Analyses::refreshAnalysesUsingColumns(	QStringList				changedColumnsQ,
+											QStringList				missingColumnsQ,
+											QMap<QString, QString>	changeNameColumnsQ,
+											bool					rowCountChanged,
+											bool					hasNewColumns)
 {
+	std::map<std::string, std::string> changeNameColumns = fq(changeNameColumnsQ);
+
+	std::vector<std::string> oldColumnNames;
+
+	for (auto & keyval : changeNameColumns)
+		oldColumnNames.push_back(keyval.first);
+
+	std::sort(changedColumnsQ.begin(), changedColumnsQ.end()); //Why are we sorting here?
+	std::sort(missingColumnsQ.begin(), missingColumnsQ.end());
+	std::sort(oldColumnNames.begin(),  oldColumnNames.end());
+
+	std::vector<std::string> changedColumns(fq(changedColumnsQ));
+	std::vector<std::string> missingColumns(fq(missingColumnsQ));
+
+
 	std::set<Analysis *> analysesToRefresh;
 	std::set<Analysis *> analysesToRebind;
 
@@ -433,6 +436,9 @@ void Analyses::refreshAnalysesUsingColumns(
 				a->refreshAvailableVariablesModels();
 		});
 
+
+	if(rowCountChanged)
+		QTimer::singleShot(0, this, &Analyses::refreshAllAnalyses);
 }
 
 

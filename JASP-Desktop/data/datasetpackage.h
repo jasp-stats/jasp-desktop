@@ -206,10 +206,10 @@ public:
 				void						labelReverse(size_t column);
 
 				std::vector<bool>			filterVector();
-				void						setFilterVector(std::vector<bool> newFilterVector) { if(_dataSet) _dataSet->setFilterVector(newFilterVector); }
+				void						setFilterVectorWithoutModelUpdate(std::vector<bool> newFilterVector) { if(_dataSet) _dataSet->setFilterVector(newFilterVector); }
 
 signals:
-				void				dataSynched(	QStringList				changedColumns,
+				void				datasetChanged(	QStringList				changedColumns,
 													QStringList				missingColumns,
 													QMap<QString, QString>	changeNameColumns,
 													bool					rowCountChanged,

@@ -16,6 +16,13 @@ FocusScope
 	onShowEasyFilterChanged:	if(!showEasyFilter) absorbModelRFilter()
 	onVisibleChanged:			if(!visible) filterWindow.close()
 
+	Connections
+	{
+		target:						filterModel
+		onFilterErrorMsgChanged:	if(filterModel.filterErrorMsg.length > 0) open();
+		onRFilterChanged:			absorbModelRFilter();
+	}
+
     function toggle()
     {
         opened = !opened
@@ -340,8 +347,8 @@ FocusScope
 							font.pixelSize:			baseFontSize * preferencesModel.uiScale
 							wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
 							color:					jaspTheme.textEnabled
-							property bool changedSinceLastApply: text !== filterModel.rFilter
 
+							property bool changedSinceLastApply: text !== filterModel.rFilter
 
 							anchors
 							{

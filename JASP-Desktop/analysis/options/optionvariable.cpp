@@ -61,7 +61,7 @@ string OptionVariable::variable() const
 		return "";
 }
 
-void  OptionVariable::removeUsedVariable(std::string var)
+void  OptionVariable::removeUsedVariable(const std::string & var)
 {
 	bool iContainVar = false;
 	for(std::string v : variables())

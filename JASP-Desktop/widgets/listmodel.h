@@ -101,13 +101,13 @@ private:
 			void	_connectControl(JASPControlWrapper* control);
 
 protected:
-	QMLListView*	_listView = nullptr;
-	QString			_itemType;
-	Terms			_terms;
-	QList<int>		_selectedItems;
-	QSet<QString>	_selectedItemsTypes;
-	bool			_areTermsVariables;
-	bool			_areTermsInteractions = false;
+	QMLListView*					_listView = nullptr;
+	QString							_itemType;
+	Terms							_terms;
+	QList<int>						_selectedItems;
+	QSet<QString>					_selectedItemsTypes;
+	bool							_areTermsVariables;
+	bool							_areTermsInteractions = false;
 	QMap<QString, RowControls* >	_rowControlsMap;
 	QList<QQmlComponent *>			_rowComponents;
 	RowControlsOptions				_rowControlsOptions;

@@ -1,5 +1,6 @@
 #include "filtermodel.h"
 #include "utilities/jsonutilities.h"
+#include "columnencoder.h"
 
 FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)
 	: QObject(DataSetPackage::pkg()), _labelFilterGenerator(labelFilterGenerator)
@@ -149,8 +150,8 @@ void FilterModel::updateStatusBar()
 		return;
 	}
 
-	int		TotalCount			= DataSetPackage::pkg()->rowCount(),
-			TotalThroughFilter	= DataSetPackage::pkg()->filteredRowCount();
+	int     TotalCount			= DataSetPackage::pkg()->rowCount(),
+	        TotalThroughFilter	= DataSetPackage::pkg()->filteredRowCount();
 	double	PercentageThrough	= 100.0 * ((double)TotalThroughFilter) / ((double)TotalCount);
 
 	std::stringstream ss;
@@ -167,5 +168,60 @@ void FilterModel::rescanRFilterForColumns()
 void FilterModel::computeColumnSucceeded(QString columnName, QString, bool dataChanged)
 {
 	if(dataChanged && (_columnsUsedInConstructedFilter.count(columnName.toStdString()) > 0 || _columnsUsedInRFilter.count(columnName.toStdString()) > 0))
+		sendGeneratedAndRFilter();
+}
+
+void FilterModel::datasetChanged(	QStringList             changedColumns,
+                                    QStringList             missingColumns,
+                                    QMap<QString, QString>	changeNameColumns,
+                                    bool                    rowCountChanged,
+                                    bool                  /*hasNewColumns*/)
+{
+	bool invalidateMe = rowCountChanged;
+
+	if(!invalidateMe)
+		for(const QString & changed : changedColumns)
+			if(_columnsUsedInRFilter.count(fq(changed)) > 0 || _columnsUsedInConstructedFilter.count(fq(changed)) > 0)
+			{
+				invalidateMe = true;
+				break;
+			}
+
+	auto iUseOneOfTheseColumns = [&](std::vector<std::string> cols) -> bool
+	{
+		for(const std::string & col : cols)
+			if(_columnsUsedInRFilter.count(col) > 0 || _columnsUsedInConstructedFilter.count(col) > 0)
+				return true;
+
+		return false;
+	};
+
+	if(iUseOneOfTheseColumns(fq(changeNameColumns.keys())))
+	{
+		std::map<std::string, std::string> stdChangeNameCols(fq(changeNameColumns));
+
+		invalidateMe = true;
+
+		setRFilter(        tq(ColumnEncoder::replaceColumnNamesInRScript(fq(rFilter()),                     stdChangeNameCols)));
+		setConstructedJSON( tq(JsonUtilities::replaceColumnNamesInDragNDropFilterJSON(fq(constructedJSON()), stdChangeNameCols)));
+	}
+
+	auto missingStd = fq(missingColumns);
+	if(iUseOneOfTheseColumns(missingStd))
+	{
+		setRFilter(tq(ColumnEncoder::removeColumnNamesFromRScript(fq(rFilter()), missingStd)));
+
+		setConstructedJSON( tq(JsonUtilities::removeColumnsFromDragNDropFilterJSON( fq(constructedJSON()), missingStd)));
+
+		invalidateMe = false; //Actually, if stuff is removed from the filter it won't work will it now?
+
+		processFilterResult(std::vector<bool>(DataSetPackage::pkg()->rowCount(), true), -1); //Just reset the filter result to everything true while the user gets the change to fix there now broken filter
+
+		//The following errormsg is overwritten immediately but that is because constructedJson changed triggers qml which triggers (some vents later) a send event. So yeah...
+		//Ill leave it here though because it would be nice to show this friendlier msg then "null not found"
+		setFilterErrorMsg("Some columns were removed from the data and your filter(s)!");
+	}
+
+	if(invalidateMe)
 		sendGeneratedAndRFilter();
 }

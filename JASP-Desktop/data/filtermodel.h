@@ -58,6 +58,11 @@ public slots:
 	void computeColumnSucceeded(QString columnName, QString warning, bool dataChanged);
 
 	void dataSetPackageResetDone();
+	void datasetChanged(	QStringList				changedColumns,
+						QStringList				missingColumns,
+						QMap<QString, QString>	changeNameColumns,
+						bool					rowCountChanged,
+						bool					hasNewColumns);
 
 signals:
 	void rFilterChanged();
@@ -94,7 +99,7 @@ private:
 	std::set<std::string>		_columnsUsedInConstructedFilter,
 								_columnsUsedInRFilter;
 
-	int							_lastSentRequestId	= 0;
+	int							_lastSentRequestId		= 0;
 };
 
 #endif // FILTERMODEL_H

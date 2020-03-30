@@ -237,7 +237,7 @@ void Options::replaceKey(const string &oldKey, const string &newKey)
 			option.first = newKey;
 }
 
-void Options::removeUsedVariable(std::string var)
+void Options::removeUsedVariable(const std::string & var)
 {
 	for (const OptionNamed& option : _options)
 		option.second->removeUsedVariable(var);
@@ -245,7 +245,7 @@ void Options::removeUsedVariable(std::string var)
 	notifyChanged();
 }
 
-void Options::replaceVariableName(std::string oldName, std::string newName)
+void Options::replaceVariableName(const std::string & oldName, const std::string & newName)
 {
 	for (const OptionNamed& option : _options)
 		option.second->replaceVariableName(oldName, newName);

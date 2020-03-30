@@ -36,12 +36,16 @@ class ColumnEncoder
 private:						ColumnEncoder() { invalidateAll(); }
 public:
 								ColumnEncoder(std::string prefix, std::string postfix = "._Encoded");
+								ColumnEncoder(const std::map<std::string, std::string> & decodeDifferently);
 								~ColumnEncoder();
 	static ColumnEncoder	*	columnEncoder();
 
 	static	bool				isColumnName(const std::string & in)							{ return columnEncoder()->shouldEncode(in); }
 	static	bool				isEncodedColumnName(const std::string & in)						{ return columnEncoder()->shouldDecode(in); }
 	static	void				setCurrentColumnNames(const std::vector<std::string> & names)	{ columnEncoder()->setCurrentNames(names);	}
+
+	static	std::string			replaceColumnNamesInRScript(const std::string & rCode, const std::map<std::string, std::string> & changedNames);
+	static	std::string			removeColumnNamesFromRScript(const std::string & rCode, const std::vector<std::string> & colsToRemove);
 
 			bool				shouldEncode(const std::string & in);
 			bool				shouldDecode(const std::string & in);
@@ -54,6 +58,7 @@ public:
 
 			///Replace all occurences of columnNames in a string by their encoded versions, taking into account the presence of word boundaries and parentheses.
 			std::string			encodeRScript(std::string text, std::set<std::string> * columnNamesFound = nullptr);
+			std::string			encodeRScript(std::string text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, std::set<std::string> * columnNamesFound = nullptr);
 
 			///Replace all occurences of columnNames in a string by their encoded versions, regardless of word boundaries or parentheses.
 	static	std::string			encodeAll(const std::string & text) { return replaceAll(text, encodingMap(), originalNames()); }

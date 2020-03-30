@@ -197,7 +197,10 @@ void Analysis::reload()
 void Analysis::rebind()
 {
 	if (_analysisForm)
+	{
+
 		_analysisForm->bindTo();
+	}
 }
 
 void Analysis::exportResults()
@@ -425,7 +428,7 @@ std::string Analysis::qmlFormPath() const
 				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
 }
 
-void Analysis::replaceVariableName(std::string oldName, std::string newName)
+void Analysis::replaceVariableName(const std::string & oldName, const std::string & newName)
 {
 	if (_options)
 		_options->replaceVariableName(oldName, newName);
