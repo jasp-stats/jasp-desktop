@@ -1359,8 +1359,8 @@
   if(is.function(introText)){
     intro[['text']] <- gettext(introText())
   } else if(is.character(introText)){
-    intro[['text']] <- gettextf(.ldAllTextsList()$explanations$intro,
-                                gettext(introText), gettext(introText), gettext(introText), gettext(introText), gettext(introText))
+    intro[['text']] <- gettextf(.ldAllTextsList(distributionName=introText)$explanations$intro,
+                                introText, introText, introText, introText, introText)
   }
   
   jaspResults[['introText']] <- intro
@@ -1368,7 +1368,7 @@
   return()  
 }
 
-.ldAllTextsList <- function(){
+.ldAllTextsList <- function(distributionName="..."){
   list(
     explanations = list(
       pdf = gettext("The probability density function (PDF), usually denoted as f(x), is a function of a random variable X.
@@ -1395,23 +1395,23 @@
     
     The quantile plot displays the quantile function.
     The <i>y</i>-axis displays the quantile of which the probability that the random variable is less or equal to that value is equal to p (displayed on the <i>x</i>-axis)."),
-      
-      intro = "<h3> Demonstration of the %s </h3>
-    This demonstration is divided in four parts. 
-    The first part displays the %s, its probability density function, cumulative distribution function, and quantile function. 
-    The second part allows you to generate data from the %s, compute descriptive statistics, and display descriptive plots.
-    The third part allows you to estimate the parameters of the %s.
-    The fourth part allows you to check the fit of the %s to the data.
-    
-    <b>References</b>
-    
-    Blitzstein, J. K., & Hwang, J. (2014). <i>Introduction to probability.</i> Chapman and Hall/CRC.
-    
-    Leemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, 16</i>(4), 8–9.
-    
-    For relationships with other distributions, visit www.math.wm.edu/~leemis/chart/UDR/UDR.html.
-    
-    https://en.wikipedia.org/wiki/List_of_probability_distributions"
+
+      intro = gettextf("<h3> Demonstration of the %1$s </h3>
+This demonstration is divided in four parts.
+The first part displays the %2$s, its probability density function, cumulative distribution function, and quantile function.
+The second part allows you to generate data from the %3$s, compute descriptive statistics, and display descriptive plots.
+The third part allows you to estimate the parameters of the %4$s.
+The fourth part allows you to check the fit of the %5$s to the data.
+
+<b>References</b>
+
+Blitzstein, J. K., & Hwang, J. (2014). <i>Introduction to probability.</i> Chapman and Hall/CRC.
+
+Leemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, 16</i>(4), 8–9.
+
+For relationships with other distributions, visit www.math.wm.edu/~leemis/chart/UDR/UDR.html.
+
+https://en.wikipedia.org/wiki/List_of_probability_distributions", distributionName, distributionName, distributionName, distributionName, distributionName)
     ),
     references   = list(
       jasp = "JASP Team (2020). JASP (Version 0.11.1) [Computer software].",

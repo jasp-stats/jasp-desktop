@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-03-29 21:10\n"
+"POT-Creation-Date: 2020-03-31 09:55\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2272,6 +2272,9 @@ msgstr ""
 msgid "The quantile function, usually denoted as Q(p), is the inverse of the cumulative distribution function.\n    The function gives the quantile such that the probability of the random variable being less than or equal to that value equals the given probability p.   \n    \n    The quantile plot displays the quantile function.\n    The <i>y</i>-axis displays the quantile of which the probability that the random variable is less or equal to that value is equal to p (displayed on the <i>x</i>-axis)."
 msgstr ""
 
+msgid "<h3> Demonstration of the %1$s </h3>\nThis demonstration is divided in four parts.\nThe first part displays the %2$s, its probability density function, cumulative distribution function, and quantile function.\nThe second part allows you to generate data from the %3$s, compute descriptive statistics, and display descriptive plots.\nThe third part allows you to estimate the parameters of the %4$s.\nThe fourth part allows you to check the fit of the %5$s to the data.\n\n<b>References</b>\n\nBlitzstein, J. K., & Hwang, J. (2014). <i>Introduction to probability.</i> Chapman and Hall/CRC.\n\nLeemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, 16</i>(4), 8\342\200\2239.\n\nFor relationships with other distributions, visit www.math.wm.edu/~leemis/chart/UDR/UDR.html.\n\nhttps://en.wikipedia.org/wiki/List_of_probability_distributions"
+msgstr ""
+
 msgid "Estimation failed: Optimization did not converge. <ul><li>Try adjusting parameter values, check outliers or feasibility of the distribution fitting the data.</li></ul>"
 msgstr ""
 
@@ -3745,6 +3748,15 @@ msgstr ""
 msgid "The result of %1$s R code should be numeric but it was of mode %2$s and class %3$s"
 msgstr ""
 
+msgid "bernoulli distribution"
+msgstr ""
+
+msgid "Probability Mass Function"
+msgstr ""
+
+msgid "Cumulative Distribution Function"
+msgstr ""
+
 msgid "probability of success: p %s %s: 0 %s p %s 1"
 msgstr ""
 
@@ -3760,7 +3772,22 @@ msgstr ""
 msgid "<i>Warning.</i>"
 msgstr ""
 
+msgid "beta distribution"
+msgstr ""
+
+msgid "Probability Density Function"
+msgstr ""
+
+msgid "Cumulative Beta Function"
+msgstr ""
+
+msgid "Quantile Function"
+msgstr ""
+
 msgid "shape: %s"
+msgstr ""
+
+msgid "binomial distribution"
 msgstr ""
 
 msgid "probability of success: %s"
@@ -3772,10 +3799,22 @@ msgstr ""
 msgid "Parameter n was fixed at value %s."
 msgstr ""
 
+msgid "%s<sup>2</sup> distribution"
+msgstr ""
+
+msgid "Cumulative Chisq Function"
+msgstr ""
+
 msgid "degree of freedom: %s"
 msgstr ""
 
 msgid "non-centrality: %s"
+msgstr ""
+
+msgid "Exponential distribution"
+msgstr ""
+
+msgid "Cumulative Exponential Function"
 msgstr ""
 
 msgid "scale: %s"
@@ -3784,7 +3823,25 @@ msgstr ""
 msgid "rate: %s"
 msgstr ""
 
+msgid "F-distribution"
+msgstr ""
+
+msgid "gamma distribution"
+msgstr ""
+
+msgid "Cumulative Gamma Function"
+msgstr ""
+
 msgid "mean: %s"
+msgstr ""
+
+msgid "inverse gamma distribution"
+msgstr ""
+
+msgid "Cumulative GammaInverse Function"
+msgstr ""
+
+msgid "Normal distribution"
 msgstr ""
 
 msgid "mean: &mu; %s"
@@ -3805,10 +3862,19 @@ msgstr ""
 msgid "&mu;"
 msgstr ""
 
+msgid "Negative binomial distribution"
+msgstr ""
+
 msgid "number of successes: %s"
 msgstr ""
 
 msgid "dispersion: %s"
+msgstr ""
+
+msgid "Poisson distribution"
+msgstr ""
+
+msgid "t-distribution"
 msgstr ""
 
 msgid "does not exist unless df > 1"
