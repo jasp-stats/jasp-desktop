@@ -501,28 +501,20 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
   return(g)
 }
 
-.JAGSIsParameterDiscrete <- function(samples, param) {
-  
-  u <- c()
-  for (i in seq_along(samples))
-    u <- c(u, unique(samples[[i]][, param]))
-  
-  # if a parameter has 25 unique values or less, we assume the parameter is discrete
-  return(length(u) > 25L)
-}
-
 .JAGSGetHistogramBreaks <- function(samples, param) {
 
   n <- nrow(samples[[1L]])
+  # all unique values for this paramer
   u <- sort(unique(unlist(lapply(samples, `[`, i = 1:n, j = param), use.names = FALSE)))
 
   # if a parameter has 25 unique values or less, we assume the parameter is discrete
   isDiscrete <- length(u) <= 25L
 
   if (isDiscrete) {
-    # this works because by default, hist makes the first category using e.g., [0, 1], but the next using (1, 2]. 
-    # the resulting histogram may be heavily misleading. Hist only does this for particular frequencies, but unfortunately,
-    # the default number of samples can lead to this when sampling from the prior predictive of binomial(theta) with theta ~ dbeta(1, 1).
+    # This works because by default, graphics::hist makes the first category using e.g., [0, 1], but the next
+    # using (1, 2]. The resulting histogram may be heavily misleading, as the first bar can lump two categories 
+    # together. This only for particular frequencies, but unfortunately, the default number of samples can lead
+    # to this when sampling from the prior predictive of binomial(theta) with theta ~ dbeta(1, 1).
     return(list(breaks = c(u[1L], 0.999 + u), unique = u))
   } else {
     return(list(breaks = "Sturges")) # the default of hist
