@@ -58,7 +58,7 @@ De passing van het model wordt getoetst. Wanneer de toets significant is wordt h
 Componentladingen:
 - Variabelen: De eerste kolom geeft alle variabelen die zijn meegenomen.
 - PC (1, 2, 3, ...): Deze kolom geeft de ladingen van de variabelen op de componenten.
-- Uniekheid: Het percentage van de variantie van iedere variabele die wordt verklaard door de component.
+- Uniciteit: Het percentage van de variantie van iedere variabele die wordt verklaard door de component.
 
 Component karakteristieken:
 - Eigenwaardes: De eigenwaarde van elk geselecteerd component.

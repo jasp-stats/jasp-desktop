@@ -42,7 +42,7 @@ De toetswaarde gespecificeerd in de nulhypothese.
 [comment]: # (  - Uniform: Onder en bovengrens)
 
 #### Aanvullende statistieken
-- Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaarddeviatie, standaard fout van het gemiddelde.
+- Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaarddeviatie, standaardfout van het gemiddelde.
 
 #### Reproduceerbaarheid
 - Gebruik toevalsgenerator beginwaarde: Geeft de mogelijkheid een toevalsgenerator beginwaarde te gebruiken voor uw analyse. Een toevalsgenerator beginwaarde gebruiken, zorgt ervoor dat willekeurige processen geen invloed hebben op een analyse.

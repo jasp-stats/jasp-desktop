@@ -25,7 +25,7 @@ Met de gepaarde t-toets kan de gebruiker de effectgrootte schatten en de nulhypo
 -  Log(BF10): Natuurlijk logaritme van BF10. 
 
 #### Aanvullende Statistieken
--  Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaardafwijking, standaard fout van het gemiddelde voor iedere maat.
+-  Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaardafwijking, standaardfout van het gemiddelde voor iedere maat.
 
 #### Grafieken
 - Prior en posterior: Geeft de verdeling van de prior en posterior van de effectgrootte onder de alternatieve hypothese.

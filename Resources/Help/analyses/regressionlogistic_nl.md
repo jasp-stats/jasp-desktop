@@ -44,7 +44,7 @@ Met logistische regressie kan men een lineaire relatie tussen een of meer verkla
   - Odds ratio: De odds ratio is een indicatie van de verandering in odds als gevolg van een verandering binnen een predictor (Field).
   - Betrouwbaarheid intervals: De standaardwaarde is 95%. 
 	- Odds ratio schaal: Proportionele verandering in odds door het delen van de odds na een verandering in de predictor door de odds voor die verandering (Field).
-  - Robuuste standaard fouten: Deze optie controleert voor fouten die niet onafhankelijk en gelijk zijn verdeeld. Het gebruik van robuuste standaard fouten zal de schattingen van coëfficiënten niet aantasten. Als deze optie niet wordt geselecteerd wordt de normale standaard fout berekend.
+  - Robuuste standaardfouten: Deze optie controleert voor fouten die niet onafhankelijk en gelijk zijn verdeeld. Het gebruik van robuuste standaardfouten zal de schattingen van coëfficiënten niet aantasten. Als deze optie niet wordt geselecteerd wordt de normale standaardfout berekend.
   - Vovk-Selke maximum p-ratio: De grens 1/(-e p log(p)) wordt afgeleid van de vorm van de verdeling van de p-waarden. Onder de nulhypothese (H<sub>0</sub>) is het uniform (0,1) en onder de alternatieve hypothese (H<sub>1</sub>) neemt hij af in p, bijv. een beta (α, 1) verdeling waar 0 < α < 1. De Vovk-Selke MPR wordt verkregen door het vorm van α onder de alternative hypothese te kiezen zodat de p-waarde maximaal diagnostisch is. De waarde is dan de ratio van de dichtheid op punt p onder H<sub>0</sub> en H<sub>1</sub>. Als de tweezijdige p-waarde bijvoorbeeld .05 is is de Vovk-Sellke MPR 2.46. Dit geeft aan dat deze p-waarde maximaal 2.46 zo waarschijnlijk is onder H1 dan onder H<sub>0</sub>. Meer informatie via href="https://jasp-stats.org/2017/06/12/mysterious-vs-mpr/">blogpost</a>.
 
 - Residuen: 
@@ -117,7 +117,7 @@ Coëfficiënten
 Bootstrap Coëfficiënten.
 - Schatting: ge-bootstrapte regressiecoëfficiënten.
 - Bias: Schatting van de bias.
-- Standaard fout: Standaardfout van de ge-bootstrapte regressiecoëfficiënten.
+- Standaardfout: Standaardfout van de ge-bootstrapte regressiecoëfficiënten.
 
 Stapsgewijze Diagnostieken: 
   - Gevalsnummer: Identificatie van het geval.

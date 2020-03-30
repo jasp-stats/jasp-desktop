@@ -174,7 +174,7 @@ PrincipalComponentAnalysis <- function(jaspResults, dataset, options, ...) {
   goftab[["p"]]     <- pcaResults$PVAL
 
   if (pcaResults$dof < 0)
-    goftab$addFootnote(message = gettext("Degrees of freedom below 0, model is unidentified."), symbol = "<em>Warning:</em>")
+    goftab$addFootnote(message = gettext("Degrees of freedom below 0, model is unidentified."), symbol = gettext("<em>Warning:</em>"))
 }
 
 .pcaLoadingsTable <- function(modelContainer, dataset, options, ready) {

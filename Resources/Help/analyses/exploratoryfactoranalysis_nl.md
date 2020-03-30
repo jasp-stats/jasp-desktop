@@ -54,7 +54,7 @@ Met Exploratieve Factoranalyse kunt u één of meer onderliggende factoren van d
 Factorladingen:  
 - Variabelen: De eerste kolom toont alle variabelen die zijn meegenomen in de analyse. 
 - PC (1, 2, 3, etc.): Deze kolom toont de factorladingen op de variabele. 
-- Uniqueness: Het percentage van de variantie van elke variabele dat niet verklaard wordt door de factor. 
+- Uniciteit: Het percentage van de variantie van elke variabele dat niet verklaard wordt door de factor.
 
 Factor Correlaties:  
 - De correlaties tussen de factoren. 
