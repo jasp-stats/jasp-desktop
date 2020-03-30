@@ -60,7 +60,6 @@ private slots:
 
 private:
 	void		_setOptionValue(Option* option, QString& text);
-	void		_setFormulaOptions(std::string formula, bool valid = false);
 	bool		_formulaResultInBounds(double result);
 
 	QString		_getPercentValue();
@@ -77,6 +76,9 @@ private:
 	OptionComputedColumn	* _computedColumn	= nullptr;
 	Option					* _option			= nullptr;
 	QString					  _value;
+
+	bool					_parseDefaultValue	= true;
+	QString					_defaultValue		= "";
 
 };
 
