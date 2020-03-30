@@ -201,7 +201,7 @@ Produces a plot that shows the prior distribution alongside the posterior distri
 - x-axis limit: Change the limit for the x-axis in the plot.
 - Expected posterior: Adds the expected posterior to the prior graph. The expected posterior has its upper credible bound just below the materiality.
 - Additional info: Adds a red dot for the materiality, and a gray dot for the expected errors to the graph.
-- Shade: Select which area under the prior distribution to shade. 
+- Shade: Select which area under the posterior distribution to shade. 
 
 ----
 
