@@ -78,6 +78,7 @@ public:
 
 	///Applies function to all analyses.
 	void		applyToAll(std::function<void(Analysis *analysis)> applyThis);
+	void		applyToAll(std::function<void(Analysis *analysis)> applyThis) const;
 
 	int			count() const	{ assert(_analysisMap.size() == _orderedIds.size()); return _analysisMap.size(); }
 
@@ -127,6 +128,7 @@ public slots:
 	void languageChangedHandler();
 	void resultsMetaChanged(QString json);
 	void allUserDataChanged(QString json);
+	void moveAnalysesResults(Analysis* fromAnalysis, int index);
 
 signals:
 	void analysesUnselected();
@@ -153,6 +155,7 @@ signals:
     void analysesExportResults();
 	bool developerMode();
 	void setResultsMeta(QString json);
+	void moveAnalyses(quint64 fromId, quint64 toId);
 
 	ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis *source);
 	void				requestColumnCreation(QString columnName, Analysis *source, int columnType);

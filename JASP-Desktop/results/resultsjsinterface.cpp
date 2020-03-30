@@ -270,7 +270,7 @@ void ResultsJsInterface::removeAnalyses()
 	emit runJavaScript("window.removeAllAnalyses()");
 }
 
-void ResultsJsInterface::moveAnalyses(size_t fromId, size_t toId)
+void ResultsJsInterface::moveAnalyses(quint64 fromId, quint64 toId)
 {
 	emit runJavaScript("window.moveAnalyses(" % QString::number(fromId) % "," % QString::number(toId) % ")");
 }
