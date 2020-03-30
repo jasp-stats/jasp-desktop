@@ -23,6 +23,7 @@
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionterm.h"
 #include "r_functionwhitelist.h"
+#include "boundqmltableview.h"
 
 ListModelJAGSDataInput::ListModelJAGSDataInput(BoundQMLTableView *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
 {
@@ -33,6 +34,9 @@ ListModelJAGSDataInput::ListModelJAGSDataInput(BoundQMLTableView *parent, QStrin
 	_values.push_back({});
 	_colNames.push_back(getDefaultColName(1));
 	_values.push_back({});
+
+	parent->setItemProperty("parseDefaultValue", false);
+	parent->setItemProperty("defaultEmptyValue", _defaultCellVal);
 }
 
 void ListModelJAGSDataInput::sourceTermsChanged(const Terms *, const Terms *)
@@ -123,7 +127,7 @@ OptionsTable *ListModelJAGSDataInput::createOption()
 
 			std::vector<std::string> tempValues;
 			for (const auto & level: stdlevels)
-				tempValues.push_back("...");
+				tempValues.push_back(_defaultCellVal.toString().toStdString());
 			options->add("values",	new OptionTerm(tempValues));
 
 			allOptions.push_back(options);

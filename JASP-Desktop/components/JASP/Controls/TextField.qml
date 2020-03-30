@@ -42,6 +42,7 @@ JASPControl
 	property bool	showBorder:			true
 	property alias	placeholderText:	control.placeholderText
 	property bool	selectValueOnFocus:	false
+	property string defaultEmptyValue:	""
 	
 	property alias	validator:			control.validator
 	property alias	controlLabel:		beforeLabel
@@ -60,6 +61,8 @@ JASPControl
 
 	function doEditingFinished()
 	{
+		if (control.text === "" && defaultEmptyValue !== "")
+			control.text = defaultEmptyValue;
 		lastValidValue = control.text
 		editingFinished();
 	}
