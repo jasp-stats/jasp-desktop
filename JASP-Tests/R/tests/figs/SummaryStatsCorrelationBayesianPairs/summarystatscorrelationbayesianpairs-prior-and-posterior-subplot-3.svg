@@ -19,8 +19,8 @@
   </clipPath>
 </defs>
 <rect x='0.00' y='17.29' width='720.00' height='558.71' style='stroke-width: 10.67; stroke: none;' clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDE3LjI5)' />
-<g clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDE3LjI5)'><text x='524.87' y='378.65' style='font-size: 16.93px; font-family: Liberation Sans;' textLength='162.41px' lengthAdjust='spacingAndGlyphs'>95% CI:[0.511, 0.813]</text></g>
-<g clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDE3LjI5)'><text x='580.05' y='226.28' style='font-size: 16.93px; font-family: Liberation Sans;' textLength='107.22px' lengthAdjust='spacingAndGlyphs'>Median: 0.682</text></g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDE3LjI5)'><text x='523.62' y='378.65' style='font-size: 16.93px; font-family: Liberation Sans;' textLength='163.66px' lengthAdjust='spacingAndGlyphs'>69% CI:[0.005, 0.050]</text></g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8NTc2LjAwfDE3LjI5)'><text x='580.05' y='226.28' style='font-size: 16.93px; font-family: Liberation Sans;' textLength='107.22px' lengthAdjust='spacingAndGlyphs'>Median: 0.019</text></g>
 <defs>
   <clipPath id='cpMC4wMHw3MjAuMDB8NTc2LjAwfDAuMDA='>
     <rect x='0.00' y='0.00' width='720.00' height='576.00' />
