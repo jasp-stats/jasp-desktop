@@ -574,7 +574,7 @@ CorrelationBayesian <- function(jaspResults, dataset=NULL, options, ...) {
         dataError <- corModel[[pairName]][[1]][["dataError"]]
         
         if (!is.null(dataError)) {
-          # TODO(Alexander): This is probably not run here anyways, but try avoid displayerror
+          # TODO(Alexander): This is probably not run here anyways, but try avoid  displayerror
           scatterPlot <- .displayError(errorMessage=dataError)
         } else {
           subData <- dataset[, .v(c(var1, var2)), drop=FALSE]
