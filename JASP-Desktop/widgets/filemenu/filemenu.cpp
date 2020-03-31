@@ -146,12 +146,13 @@ void FileMenu::sync()
 	
 }
 
-FileEvent *FileMenu::close()
+void FileMenu::close()
 {
 	FileEvent *event = new FileEvent(this, FileEvent::FileClose);
 	dataSetIORequestHandler(event);
 
-	return event;
+	setSaveMode(FileEvent::FileOpen);
+	_actionButtons->setSelectedAction(ActionButtons::FileOperation::Open);
 }
 
 void FileMenu::setCurrentDataFile(const QString &path)
@@ -370,8 +371,6 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 
 	case ActionButtons::FileOperation::Close:
 		close();
-		setSaveMode(FileEvent::FileOpen);
-		_actionButtons->setSelectedAction(ActionButtons::FileOperation::Open);
 		break;
 
 	case ActionButtons::FileOperation::About:

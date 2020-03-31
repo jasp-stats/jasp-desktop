@@ -27,6 +27,8 @@ Window
 
 	color:			jaspTheme.white
 
+	Shortcut { onActivated: aboutModel.visible = false;	sequences: ["Ctrl+Q", "Ctrl+W", Qt.Key_Close]; }
+
 
 	Image
 	{

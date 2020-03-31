@@ -19,7 +19,7 @@ Window
 	Shortcut { onActivated: mainWindow.zoomInKeyPressed();		sequences: [Qt.Key_ZoomIn, "Ctrl+Plus", "Ctrl+\+", "Ctrl+\="];	}
 	Shortcut { onActivated: mainWindow.zoomOutKeyPressed();		sequences: [Qt.Key_ZoomOut, "Ctrl+Minus", "Ctrl+\-"];			}
 	Shortcut { onActivated: mainWindow.zoomResetKeyPressed();	sequences: ["Ctrl+0"];											}
-	Shortcut { onActivated: helpWindowRoot.close();				sequences: ["Ctrl+Q", Qt.Key_Close];							}
+	Shortcut { onActivated: helpWindowRoot.close();				sequences: ["Ctrl+Q", "Ctrl+W", Qt.Key_Close];					}
 	Shortcut { onActivated: helpWindowRoot.toggleFullScreen();	sequences: ["Ctrl+M"];											}
 	Shortcut { onActivated: searchBar.startSearching();			sequences: ["Ctrl+F", Qt.Key_Search];							}
 

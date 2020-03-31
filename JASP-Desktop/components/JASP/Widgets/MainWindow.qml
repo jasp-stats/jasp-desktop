@@ -73,10 +73,11 @@ Window
 		Shortcut { onActivated: mainWindow.refreshKeyPressed();					sequences: ["Ctrl+R", Qt.Key_Refresh];							}
 		Shortcut { onActivated: mainWindow.zoomResetKeyPressed();				sequences: ["Ctrl+0", Qt.Key_Zoom];								}
 		Shortcut { onActivated: mainWindowRoot.close();							sequences: ["Ctrl+Q", Qt.Key_Close];							}
+		Shortcut { onActivated: fileMenuModel.close();							sequences: ["Ctrl+W"];											}
 		Shortcut { onActivated: mainWindowRoot.toggleFullScreen();				sequences: ["Ctrl+M", Qt.Key_F11];								}
 		Shortcut { onActivated: fileMenuModel.visible = !fileMenuModel.visible; sequences: ["Home",   Qt.Key_Home, Qt.Key_Menu];				}
-		Shortcut { onActivated: mainWindow.setLanguage(0);							sequences: ["Ctrl+1"];							}
-		Shortcut { onActivated: mainWindow.setLanguage(1);							sequences: ["Ctrl+2"];							}
+		Shortcut { onActivated: mainWindow.setLanguage(0);						sequences: ["Ctrl+1"];											}
+		Shortcut { onActivated: mainWindow.setLanguage(1);						sequences: ["Ctrl+2"];											}
 
 		RibbonBar
 		{
