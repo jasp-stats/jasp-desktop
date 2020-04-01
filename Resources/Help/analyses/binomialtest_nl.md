@@ -28,9 +28,9 @@ Bijvoorbeeld, als de tweezijdige *p*-waarde gelijk is aan .05, dan is de Vovk-Se
 -----------
 #### Binomiaal Toets
 - Niveau: De twee opties van de dichotome variabele
-- Telling: Het aantal waarnemingen op een bepaald level van de dichotome variabele. De telling van alle mogelijke levels geeft het totaal.
+- Aantallen: Het aantal waarnemingen op een bepaald level van de dichotome variabele. Het aantal van alle mogelijke levels geeft het totaal.
 - Totaal: Het totaal aantal observaties.
-- Proportie: Berekend met telling/totaal.
+- Proportie: Berekend met aantallen/totaal.
 - p: P-waarde.
 - VS-MPR: Vovk-Sellke maximum p-ratio.
 
