@@ -225,7 +225,7 @@ Item
 				color:			clicker.pressed || clicker.containsMouse	? pressedColor	: fgColor
 				anchors.fill:	parent
 				
-				Behavior on opacity { enabled: !preferencesModel.safeGraphics; NumberAnimation { duration: 150; } }
+				Behavior on opacity { enabled: preferencesModel.animationsOn; NumberAnimation { duration: 150; } }
 			}
 		}
 	}

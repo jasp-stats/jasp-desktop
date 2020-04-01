@@ -163,7 +163,7 @@ Window
 
 				Behavior on opacity
 				{
-					enabled:		!preferencesModel.safeGraphics
+					enabled:		preferencesModel.animationsOn
 
 					PropertyAnimation
 					{

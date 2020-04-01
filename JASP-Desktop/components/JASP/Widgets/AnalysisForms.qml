@@ -12,7 +12,7 @@ FocusScope
 
 	property int	extraSpace:	analysesModel.count > 0 ? openCloseButton.width : 0
 
-	Behavior on width { enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+	Behavior on width { enabled: preferencesModel.animationsOn; PropertyAnimation { duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
 
 	Rectangle
@@ -130,7 +130,7 @@ FocusScope
 				Behavior on contentY
 				{
 					id:			contentYBehaviour
-					enabled:	!(analysesFlickable.flicking || analysesFlickable.moving) && !preferencesModel.safeGraphics;
+					enabled:	!(analysesFlickable.flicking || analysesFlickable.moving) && preferencesModel.animationsOn;
 					PropertyAnimation { duration: 200; easing.type: Easing.OutQuad;   }
 				}
 
@@ -170,7 +170,7 @@ FocusScope
 					{
 						// This animation may interfere during the Analysis expanding animation.
 						// So ensure that it is enabled only when an analysis is dragging
-						enabled:	analysesModel.moving && !preferencesModel.safeGraphics
+						enabled:	analysesModel.moving && preferencesModel.animationsOn
 						NumberAnimation { properties: "y"; easing.type: Easing.OutQuad }
 					}
 

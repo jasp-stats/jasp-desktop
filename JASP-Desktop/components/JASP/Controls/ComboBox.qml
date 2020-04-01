@@ -196,7 +196,7 @@ JASPControl
 			width:			comboBoxBackground.width
 			padding:		1
 
-			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } enabled: !preferencesModel.safeGraphics }
+			enter: Transition { NumberAnimation { property: "opacity"; from: 0.0; to: 1.0 } enabled: preferencesModel.animationsOn }
 			contentItem: ListView
 			{
 				id: popupView

@@ -16,19 +16,23 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	if(_singleton) throw std::runtime_error("PreferencesModel can only be instantiated once!");
 	_singleton = this;
 
-	connect(this, &PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues		);
-	connect(this, &PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged			);
-	connect(this, &PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::onDefaultPPIChanged			);
-	connect(this, &PreferencesModel::customPPIChanged,			this, &PreferencesModel::onCustomPPIChanged				);
+	connect(this,					&PreferencesModel::missingValuesChanged,		this, &PreferencesModel::updateUtilsMissingValues		);
 
-	connect(this, &PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::plotPPIPropChanged				);
-	connect(this, &PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
-	connect(this, &PreferencesModel::customPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
-	connect(this, &PreferencesModel::jaspThemeChanged,			this, &PreferencesModel::setCurrentThemeNameFromClass,	Qt::QueuedConnection);
-	connect(this, &PreferencesModel::currentThemeNameChanged,	this, &PreferencesModel::onCurrentThemeNameChanged		);
-	connect(this, &PreferencesModel::plotBackgroundChanged,		this, &PreferencesModel::whiteBackgroundChanged			);
+	connect(this,					&PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged			);
+	connect(this,					&PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::onDefaultPPIChanged			);
+	connect(this,					&PreferencesModel::customPPIChanged,			this, &PreferencesModel::onCustomPPIChanged				);
+	connect(this,					&PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::plotPPIPropChanged				);
+	connect(this,					&PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
+	connect(this,					&PreferencesModel::customPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
+	connect(this,					&PreferencesModel::plotBackgroundChanged,		this, &PreferencesModel::whiteBackgroundChanged			);
 
-	connect(LanguageModel::lang(), &LanguageModel::currentIndexChanged, this, &PreferencesModel::languageCodeChanged);
+	connect(this,					&PreferencesModel::jaspThemeChanged,			this, &PreferencesModel::setCurrentThemeNameFromClass,	Qt::QueuedConnection);
+	connect(this,					&PreferencesModel::currentThemeNameChanged,		this, &PreferencesModel::onCurrentThemeNameChanged		);
+
+	connect(this,					&PreferencesModel::safeGraphicsChanged,			this, &PreferencesModel::animationsOnChanged			); // So animationsOn *might* not be changed, but it  doesnt matter
+	connect(this,					&PreferencesModel::disableAnimationsChanged,	this, &PreferencesModel::animationsOnChanged			);
+
+	connect(LanguageModel::lang(),	&LanguageModel::currentIndexChanged,			this, &PreferencesModel::languageCodeChanged);
 }
 
 void PreferencesModel::browseSpreadsheetEditor()
@@ -101,6 +105,7 @@ GET_PREF_FUNC_BOOL(	safeGraphics,				Settings::SAFE_GRAPHICS_MODE						)
 GET_PREF_FUNC_STR(	cranRepoURL,				Settings::CRAN_REPO_URL								)
 GET_PREF_FUNC_STR(	currentThemeName,			Settings::THEME_NAME								)
 GET_PREF_FUNC_BOOL(	useNativeFileDialog,		Settings::USE_NATIVE_FILE_DIALOG					)
+GET_PREF_FUNC_BOOL(	disableAnimations,			Settings::DISABLE_ANIMATIONS						)
 
 double PreferencesModel::uiScale()
 {
@@ -218,6 +223,7 @@ SET_PREF_FUNCTION(QString,	setCranRepoURL,				cranRepoURL,				cranRepoURLChanged
 SET_PREF_FUNCTION(QString,	setCurrentThemeName,		currentThemeName,			currentThemeNameChanged,		Settings::THEME_NAME								)
 SET_PREF_FUNCTION(QString,	setPlotBackground,			plotBackground,				plotBackgroundChanged,			Settings::IMAGE_BACKGROUND							)
 SET_PREF_FUNCTION(bool,		setUseNativeFileDialog,		useNativeFileDialog,		useNativeFileDialogChanged,		Settings::USE_NATIVE_FILE_DIALOG					)
+SET_PREF_FUNCTION(bool,		setDisableAnimations,		disableAnimations,			disableAnimationsChanged,		Settings::DISABLE_ANIMATIONS						)
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {
@@ -267,6 +273,8 @@ void PreferencesModel::setSafeGraphics(bool newSafeGraphics)
 	emit modulesRememberChanged(newSafeGraphics);
 
 	MessageForwarder::showWarning(tr("Safe Graphics mode changed"), tr("You've changed the Safe Graphics mode of JASP, for this option to take effect you need to restart JASP"));
+
+	emit safeGraphicsChanged(newSafeGraphics);
 }
 
 void PreferencesModel::zoomIn()
@@ -374,4 +382,3 @@ void PreferencesModel::onCurrentThemeNameChanged(QString newThemeName)
 {
 	JaspTheme::setCurrentThemeFromName(currentThemeName());
 }
-

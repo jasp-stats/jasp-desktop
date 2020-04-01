@@ -39,7 +39,8 @@ const Settings::Setting Settings::Values[] = {
 	{"userHasGitHubAccount",		false},
 	{"preferredLanguage",			QLocale::English},
 	{"themeName",					"lightTheme"},
-	{"useNativeFileDialog",			true}
+	{"useNativeFileDialog",			true},
+	{"disableAnimations",			false}
 };
 
 QVariant Settings::value(Settings::Type key)
