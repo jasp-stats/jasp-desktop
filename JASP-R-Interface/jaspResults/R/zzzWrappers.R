@@ -147,7 +147,8 @@ jaspResultsR <- R6Class(
 		print           = function()	private$jaspObject$print(),
 		printHtml       = function()	private$jaspObject$printHtml(),
 		setError        = function(x)	private$jaspObject$setError(x),
-		getError        = function()	private$jaspObject$getError()
+		getError        = function()	private$jaspObject$getError(),
+		length          = function()    private$jaspObject$length
 	),
 	private = list(
 		children    = list(),
@@ -364,7 +365,8 @@ jaspContainerR <- R6Class(
 			
 			private$jaspObject <- container
 			return()
-		}
+		},
+		length = function() private$jaspObject$length
 	),
 	private	= list(
 		children    = list(),
@@ -375,7 +377,7 @@ jaspContainerR <- R6Class(
 				"Rcpp_jaspPlot"      = jaspPlotR$new(jaspObject = cppObj),
 				"Rcpp_jaspTable"     = jaspTableR$new(jaspObject = cppObj),
 				"Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
-        "Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
+				"Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
 				"Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
 				"Rcpp_jaspHtml"      = jaspHtmlR$new(jaspObject = cppObj),
 				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)), domain = NA)
