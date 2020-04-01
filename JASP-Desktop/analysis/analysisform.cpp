@@ -389,6 +389,7 @@ void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 
 		if (refreshAssigned)
 		{
+			emit model->allAvailableTermsChanged(nullptr, nullptr);
 			QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(model->listView());
 			if (qmlAvailableListView)
 			{
