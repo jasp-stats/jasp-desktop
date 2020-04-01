@@ -299,7 +299,7 @@ PlotRobustnessSequential <- function(
       else 
         hypothesisSymbol <- '[1]'
 
-      evidenceFor <- gettextf("Evidence for H%s:", hypothesisSymbol)
+      evidenceFor <- gettextf("Evidence for H%s:", hypothesisSymbol, domain="R-JASPgraphs")
       evidenceFor <- fixTranslationForExpression(evidenceFor)
       evidenceTxt <- parseThis(c(evidenceLevel, evidenceFor))
 

@@ -187,7 +187,7 @@ Produceert een grafiek die de prior kansverdeling laat zien op basis van het inh
 - x-as limiet: Wijzig de limiet voor de x-as in de grafiek.
 - Verwachte posterior: Voegt het verwachte posterior kansverdeling toe aan de grafiek. De verwachte posterior kansverdeling heeft zijn bovenste geloofwaardigheidsgrens onder de materialiteit.
 - Aanvullende info: Voegt een rode stip toe in de grafiek voor de materialiteit en een grijze stip voor de verwachte fouten.
-- Schaduw: Selecteer welk gebied onder de prior kansverdeling wordt weergegeven in kleur.
+- Markeer: Selecteer welk gebied onder de prior kansverdeling wordt weergegeven in kleur.
 
 #### Evaluatie informatie
 Produceert een staafdiagram waarin de materialiteit, maximale afwijking en meest waarschijnlijke fout (MLE) worden vergeleken.
@@ -201,7 +201,7 @@ Produceert een plot die de prior kansverdeling distributie toont naast de poster
  x-as limiet: Wijzig de limiet voor de x-as in de grafiek.
 - Verwachte posterior: Voegt het verwachte posterior kansverdeling toe aan de grafiek. De verwachte posterior kansverdeling heeft zijn bovenste geloofwaardigheidsgrens onder de materialiteit.
 - Aanvullende info: Voegt een rode stip toe in de grafiek voor de materialiteit en een grijze stip voor de verwachte fouten.
-- Schaduw: Selecteer welk gebied onder de posterior kansverdeling wordt weergegeven in kleur.
+- Markeer: Selecteer welk gebied onder de posterior kansverdeling wordt weergegeven in kleur.
 
 ----
 

@@ -118,7 +118,7 @@ msgstr "Grens"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Show lavaan syntax"
-msgstr "Laat lavaansyntax zien"
+msgstr "Toon lavaan syntax"
 
 msgctxt "ConfirmatoryFactorAnalysis|"
 msgid "Multigroup CFA"
@@ -398,7 +398,7 @@ msgstr "Grens"
 
 msgctxt "LatentRegression|"
 msgid "Show lavaan syntax"
-msgstr "Laat lavaansyntax zien"
+msgstr "Toon lavaan syntax"
 
 msgctxt "LatentRegression|"
 msgid "Multigroup CFA"
@@ -1024,7 +1024,7 @@ msgstr "Selecteer ontwikkelaarsmap"
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr "Navigeer naar uw JASP-modulemap."
+msgstr "Blader naar uw JASP-modulemap."
 
 msgctxt "PrefsAdvanced|"
 msgid "Regenerate package metadata every time (DESCRIPTION & NAMESPACE)"
@@ -1061,7 +1061,7 @@ msgstr "Maximum aantal logbestanden: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr "Toon logfiles"
+msgstr "Toon logs"
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
@@ -1188,7 +1188,7 @@ msgstr "Sleep om data te tonen"
 
 msgctxt "ModuleInstaller|"
 msgid "Browse for JASP Module"
-msgstr "Navigeer voor JASP-module"
+msgstr "Blader naar JASP Module"
 
 msgctxt "ModuleInstaller|"
 msgid "Select a JASP Module"
@@ -1555,7 +1555,7 @@ msgstr "Dunn"
 
 msgctxt "Ancova|"
 msgid "Descriptives Plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende Diagrammen"
 
 msgctxt "Ancova|"
 msgid "Horizontal Axis"
@@ -1687,7 +1687,7 @@ msgstr "Model gemiddelde R²"
 
 msgctxt "AncovaBayesian|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "AncovaBayesian|"
 msgid "Credible interval"
@@ -1767,7 +1767,7 @@ msgstr "Nulcontrole"
 
 msgctxt "AncovaBayesian|"
 msgid "Descriptives Plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende Diagrammen"
 
 msgctxt "AncovaBayesian|"
 msgid "Horizontal Axis"
@@ -1951,7 +1951,7 @@ msgstr "Dunn"
 
 msgctxt "Anova|"
 msgid "Descriptives Plots"
-msgstr "Beschrijvende grafieken"
+msgstr "Beschrijvende Diagrammen"
 
 msgctxt "Anova|"
 msgid "Factors"
@@ -2083,7 +2083,7 @@ msgstr "Model gemiddelde R²"
 
 msgctxt "AnovaBayesian|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "AnovaBayesian|"
 msgid "Credible interval"
@@ -2163,7 +2163,7 @@ msgstr "Nulcontrole"
 
 msgctxt "AnovaBayesian|"
 msgid "Descriptives Plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende Diagrammen"
 
 msgctxt "AnovaBayesian|"
 msgid "Factors"
@@ -2223,7 +2223,7 @@ msgstr "Posterior steekproeven"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Factors"
-msgstr "binnen-proefpersoon factoren"
+msgstr "Herhaalde Meting Factoren"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Repeated Measures Cells"
@@ -2331,7 +2331,7 @@ msgstr "Scheffe"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Descriptives Plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende Diagrammen"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Factors"
@@ -2463,7 +2463,7 @@ msgstr "Conover's post-hoc toetsen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Repeated Measures Factors"
-msgstr "binnen-proefpersoon factoren"
+msgstr "Herhaalde Meting Factoren"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Repeated Measures Cells"
@@ -2503,7 +2503,7 @@ msgstr "Model gemiddelde R²"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Credible interval"
@@ -2583,7 +2583,7 @@ msgstr "Nulcontrole"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Descriptives Plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende Diagrammen"
 
 msgctxt "AnovaRepeatedMeasuresBayesian|"
 msgid "Factors"
@@ -2671,7 +2671,7 @@ msgstr "Modeltermen"
 
 msgctxt "Manova|"
 msgid "Include intercept"
-msgstr "Neem intercept mee"
+msgstr "Voeg intercept toe"
 
 msgctxt "Manova|"
 msgid "Additional Options"
@@ -2743,7 +2743,7 @@ msgstr "Relatief"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Audit Risk"
-msgstr "Auditrisico"
+msgstr "Audit Risico"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Confidence"
@@ -2968,7 +2968,7 @@ msgstr "Bereik"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Reset Workflow</b>"
-msgstr "<b>Reset werkflow</b>"
+msgstr "<b>Reset Workflow</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>To Execution</b>"
@@ -2988,7 +2988,7 @@ msgstr "<b>Hoe wil u uw observaties evalueren?</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Audit values"
-msgstr "Auditwaarden"
+msgstr "Audit waarden"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Correct / Incorrect"
@@ -3000,7 +3000,7 @@ msgstr "<b>Vul variabelen in</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Annotate your observations with their audit values.</b>"
-msgstr "<b>Annoteer uw observaties met de bijbehorende auditwaarden. </b>"
+msgstr "<b>Annoteer uw observaties met de bijbehorende audit waarden. </b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "<b>Annotate your observations with 0 (correct) or 1 (incorrect).</b>"
@@ -3088,7 +3088,7 @@ msgstr "Waarde"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Audit Risk"
-msgstr "Auditrisico"
+msgstr "Audit Risicoo"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Confidence"
@@ -3221,7 +3221,7 @@ msgstr "Relatief"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Audit Risk"
-msgstr "Auditrisico"
+msgstr "Audit Risico"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Confidence"
@@ -3446,7 +3446,7 @@ msgstr "<b>Hoe wilt u uw observaties evalueren?</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Audit values"
-msgstr "Auditwaarden"
+msgstr "Audit waarden"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "Correct / Incorrect"
@@ -3458,7 +3458,7 @@ msgstr "<b>Vul variabelen in</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Annotate your observations with their audit values.</b>"
-msgstr "<b>Annoteer uw observaties met de bijbehorende auditwaarden.</b>"
+msgstr "<b>Annoteer uw observaties met de bijbehorende audit waarden.</b>"
 
 msgctxt "auditClassicalWorkflow|"
 msgid "<b>Annotate your observations with 0 (correct) or 1 (incorrect).</b>"
@@ -3550,7 +3550,7 @@ msgstr "Waarde"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Audit Risk"
-msgstr "Auditrisico"
+msgstr "Audit Risico"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Confidence"
@@ -3587,7 +3587,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Enable"
-msgstr "Schakel in"
+msgstr "Activeer"
 
 msgctxt "auditClassicalPlanning|"
 msgid "Control Risk"
@@ -3699,11 +3699,11 @@ msgstr "Tabellen"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Bayes factor matrix"
-msgstr "Bayes factor matrix"
+msgstr "Bayes factormatrix"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Credible interval"
@@ -3807,11 +3807,11 @@ msgstr "Bayes factor"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "BF₀₁: Equal vs. other"
-msgstr "BF₀₁: Gelijk vs. ander"
+msgstr "BF₀₁: Gelijk vs. anders"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "BF₁₀: Other vs. equal"
-msgstr "BF₁₀: Ander vs. gelijk"
+msgstr "BF₁₀: Anders vs. gelijk"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Additional Options"
@@ -3827,7 +3827,7 @@ msgstr "Tabellen"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Plots"
@@ -3839,7 +3839,7 @@ msgstr "Posterior kansen"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Descriptives plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende diagrammen"
 
 msgctxt "BainTTestBayesianIndependentSamples|"
 msgid "Credible interval"
@@ -3883,11 +3883,11 @@ msgstr "Bayes factor"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "BF₀₁: Equal vs. other"
-msgstr "BF₀₁: Gelijk vs. ander"
+msgstr "BF₀₁: Gelijk vs. anders"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "BF₁₀: Other vs. equal"
-msgstr "BF₁₀: Ander vs. gelijk"
+msgstr "BF₁₀: Anders vs. gelijk"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Additional Options"
@@ -3903,7 +3903,7 @@ msgstr "Tabellen"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Plots"
@@ -3915,7 +3915,7 @@ msgstr "Posterior kansen"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Descriptives plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende diagrammen"
 
 msgctxt "BainTTestBayesianOneSample|"
 msgid "Credible interval"
@@ -3955,11 +3955,11 @@ msgstr "Bayes factor"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "BF₀₁: Equal vs. other"
-msgstr "BF₀₁: Gelijk vs. ander"
+msgstr "BF₀₁: Gelijk vs. anders"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "BF₁₀: Other vs. equal"
-msgstr "BF₁₀: Ander vs. gelijk"
+msgstr "BF₁₀: Anders vs. gelijk"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Additional Options"
@@ -3975,7 +3975,7 @@ msgstr "Tabellen"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Plots"
@@ -3987,7 +3987,7 @@ msgstr "Posterior kansen"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Descriptives plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende diagrammen"
 
 msgctxt "BainTTestBayesianPairedSamples|"
 msgid "Credible interval"
@@ -4435,7 +4435,7 @@ msgstr "Minimum residu"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "ExploratoryFactorAnalysis|"
 msgid "Principal axis factoring"
@@ -4647,7 +4647,7 @@ msgstr "σ:"
 
 msgctxt "ABTestBayesian|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "ABTestBayesian|"
 msgid "Plots"
@@ -4727,15 +4727,15 @@ msgstr "Alt. hypothese"
 
 msgctxt "BinomialTest|"
 msgid "≠ Test value"
-msgstr "≠ toetswaarde"
+msgstr "≠ Toetswaarde"
 
 msgctxt "BinomialTest|"
 msgid "> Test value"
-msgstr "> toetswaarde"
+msgstr "> Toetswaarde"
 
 msgctxt "BinomialTest|"
 msgid "< Test value"
-msgstr "< toetswaarde"
+msgstr "< Toetswaarde"
 
 msgctxt "BinomialTest|"
 msgid "Additional Statisics"
@@ -4759,7 +4759,7 @@ msgstr "Grafieken"
 
 msgctxt "BinomialTest|"
 msgid "Descriptive plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende diagrammen"
 
 msgctxt "BinomialTestBayesian|"
 msgid "Test value: "
@@ -4771,15 +4771,15 @@ msgstr "Alt. hypothese"
 
 msgctxt "BinomialTestBayesian|"
 msgid "≠ Test value"
-msgstr "≠ toetswaarde"
+msgstr "≠ Toetswaarde"
 
 msgctxt "BinomialTestBayesian|"
 msgid "> Test value"
-msgstr "> toetswaarde"
+msgstr "> Toetswaarde"
 
 msgctxt "BinomialTestBayesian|"
 msgid "< Test value"
-msgstr "< toetswaarde"
+msgstr "< Toetswaarde"
 
 msgctxt "BinomialTestBayesian|"
 msgid "Plots"
@@ -4799,7 +4799,7 @@ msgstr "Sequentiële analyse"
 
 msgctxt "BinomialTestBayesian|"
 msgid "Descriptive plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende diagrammen"
 
 msgctxt "BinomialTestBayesian|"
 msgid "Credible interval"
@@ -5155,7 +5155,7 @@ msgstr "Aanvullende statistieken"
 
 msgctxt "MultinomialTest|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "MultinomialTest|"
 msgid "Confidence interval"
@@ -5179,7 +5179,7 @@ msgstr "Grafieken"
 
 msgctxt "MultinomialTest|"
 msgid "Descriptives plot"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvend diagram"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Factor"
@@ -5211,7 +5211,7 @@ msgstr "Aanvullende statistieken"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Credible interval"
@@ -5231,7 +5231,7 @@ msgstr "Grafieken"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Descriptives plot"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvend diagram"
 
 msgctxt "MultinomialTestBayesian|"
 msgid "Prior"
@@ -5379,7 +5379,7 @@ msgstr "Data splits voorkeuren"
 
 msgctxt "DataSplit|"
 msgid "Holdout Test Data"
-msgstr "Buiten houden testdata"
+msgstr "Opzijgezette Toetsdata"
 
 msgctxt "DataSplit|"
 msgid "Sample"
@@ -5435,7 +5435,7 @@ msgstr "Tabellen"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Confusion matrix"
-msgstr "Confusion matrix"
+msgstr "Verwarringsmatrix"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Display proportions"
@@ -5499,7 +5499,7 @@ msgstr "Algoritme-instellingen"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Shrinkage:"
-msgstr "Shrinkage:"
+msgstr "Krimping:"
 
 msgctxt "mlClassificationBoosting|"
 msgid "Interaction depth:"
@@ -5563,7 +5563,7 @@ msgstr "Tabellen"
 
 msgctxt "mlClassificationKnn|"
 msgid "Confusion matrix"
-msgstr "Confusion matrix"
+msgstr "Verwarringsmatrix"
 
 msgctxt "mlClassificationKnn|"
 msgid "Display proportions"
@@ -5675,7 +5675,7 @@ msgstr "Tabellen"
 
 msgctxt "mlClassificationLda|"
 msgid "Confusion matrix"
-msgstr "Confusion matrix"
+msgstr "Verwarringsmatrix"
 
 msgctxt "mlClassificationLda|"
 msgid "Display proportions"
@@ -5799,7 +5799,7 @@ msgstr "Tabellen"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Confusion matrix"
-msgstr "Confusion matrix"
+msgstr "Verwarringsmatrix"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Display proportions"
@@ -5815,7 +5815,7 @@ msgstr "Evaluatiemetrieken"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Variable importance"
-msgstr "Belang variabele"
+msgstr "Belang van variabele"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Plots"
@@ -5839,7 +5839,7 @@ msgstr "Andrews kromme"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Mean decrease in accuracy"
-msgstr "Gemiddelde daling in precisie"
+msgstr "Gemiddelde afname in precisie"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Total increase in node purity"
@@ -5871,7 +5871,7 @@ msgstr "Gebruikte trainingsdata per boom:"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Predictors per split:"
-msgstr "Voorspeller per splits:"
+msgstr "Voorspellers per splits:"
 
 msgctxt "mlClassificationRandomForest|"
 msgid "Scale predictors"
@@ -6487,7 +6487,7 @@ msgstr "Algoritme-instellingen"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Shrinkage:"
-msgstr "Shrinkage:"
+msgstr "Krimping:"
 
 msgctxt "mlRegressionBoosting|"
 msgid "Interaction depth:"
@@ -6663,11 +6663,11 @@ msgstr "Voorspellingsvermogen"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Mean decrease in accuracy"
-msgstr "Gemiddelde daling in precisie"
+msgstr "Gemiddelde afname in precisie"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Total increase in node purity"
-msgstr "Total stijging in knoop purity"
+msgstr "Totale toename in knoop puurheid"
 
 msgctxt "mlRegressionRandomForest|"
 msgid "Training Parameters"
@@ -6839,7 +6839,7 @@ msgstr "Methode"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Study Labels"
-msgstr "Studienamen"
+msgstr "Onderzoek Labels"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Covariates"
@@ -6863,7 +6863,7 @@ msgstr "Modeltermen"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Include intercept"
-msgstr "Neem intercept mee"
+msgstr "Voeg intercept toe"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Statistics"
@@ -7167,7 +7167,7 @@ msgstr "Holm"
 
 msgctxt "LinearMixedModels|"
 msgid "Descriptives Plots"
-msgstr "Beschrijvingsgrafieken"
+msgstr "Beschrijvende Diagrammen"
 
 msgctxt "LinearMixedModels|"
 msgid "Factors"
@@ -7259,7 +7259,7 @@ msgstr "η²"
 
 msgctxt "LinearMixedModels|"
 msgid "partial η²"
-msgstr "Gedeeltelijke η²"
+msgstr "partiële η²"
 
 msgctxt "LinearMixedModels|"
 msgid "ω²"
@@ -7387,7 +7387,7 @@ msgstr "Gewogen"
 
 msgctxt "NetworkAnalysis|"
 msgid "Signed"
-msgstr "Gesigneerd"
+msgstr "Positief/negatief"
 
 msgctxt "NetworkAnalysis|"
 msgid "Missing Values"
@@ -7627,15 +7627,15 @@ msgstr "ggplot2"
 
 msgctxt "NetworkAnalysis|"
 msgid "Edge size"
-msgstr "Padgrootte"
+msgstr "Verbindingsgrootte"
 
 msgctxt "NetworkAnalysis|"
 msgid "Max edge strength"
-msgstr "Max. padsterkte"
+msgstr "Max. verbindingssterkte"
 
 msgctxt "NetworkAnalysis|"
 msgid "Min edge strength"
-msgstr "Min. padsterkte"
+msgstr "Min. verbindingssterkte"
 
 msgctxt "NetworkAnalysis|"
 msgid "Cut"
@@ -7683,7 +7683,7 @@ msgstr "Labelgrootte"
 
 msgctxt "NetworkAnalysis|"
 msgid "Scale label size"
-msgstr "Schaallabelgrootte"
+msgstr "Schaal labelgrootte mee"
 
 msgctxt "NetworkAnalysis|"
 msgid "Abbreviate labels to "
@@ -7856,7 +7856,7 @@ msgstr "Statistieken"
 
 msgctxt "Correlation|"
 msgid "Heatmap"
-msgstr "Heatmap"
+msgstr "Warmtekaart"
 
 msgctxt "Correlation|"
 msgid "Assumption Checks"
@@ -8052,11 +8052,11 @@ msgstr "Verandering determinatiecoëfficient"
 
 msgctxt "RegressionLinear|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "RegressionLinear|"
 msgid "Part and partial correlations"
-msgstr "Deel en gedeeltelijke correlaties"
+msgstr "Deel en artiële correlaties"
 
 msgctxt "RegressionLinear|"
 msgid "Collinearity diagnostics"
@@ -8156,7 +8156,7 @@ msgstr "Q-Q plot van gestandaardiseerde residuen"
 
 msgctxt "RegressionLinear|"
 msgid "Partial plots"
-msgstr "Gedeeltelijke grafieken"
+msgstr "Partiële grafieken"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Dependent Variable"
@@ -8244,7 +8244,7 @@ msgstr "Data"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "RegressionLinearBayesian|"
 msgid "Model"
@@ -8432,7 +8432,7 @@ msgstr "Methode"
 
 msgctxt "RegressionLogistic|"
 msgid "Enter"
-msgstr "Voer in"
+msgstr "Invoer"
 
 msgctxt "RegressionLogistic|"
 msgid "Backward"
@@ -8476,7 +8476,7 @@ msgstr "Statistieken"
 
 msgctxt "RegressionLogistic|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "RegressionLogistic|"
 msgid "Factor descriptives"
@@ -8484,11 +8484,11 @@ msgstr "Factor beschrijvingen"
 
 msgctxt "RegressionLogistic|"
 msgid "Performance Diagnostics"
-msgstr "Prestatie diagnostiek"
+msgstr "Prestatie Diagnostieken"
 
 msgctxt "RegressionLogistic|"
 msgid "Confusion matrix"
-msgstr "Confusion matrix"
+msgstr "Verwarringsmatrix"
 
 msgctxt "RegressionLogistic|"
 msgid "Proportions"
@@ -8544,7 +8544,7 @@ msgstr "AUC"
 
 msgctxt "RegressionLogistic|"
 msgid "Sensitivity / Recall"
-msgstr "Sensitiviteit / Specificiteit"
+msgstr "Gevoeligheid / Specificiteit"
 
 msgctxt "RegressionLogistic|"
 msgid "Specificity"
@@ -8552,7 +8552,7 @@ msgstr "Specificiteit"
 
 msgctxt "RegressionLogistic|"
 msgid "Precision"
-msgstr "Precisie"
+msgstr "Nauwkeurigheid"
 
 msgctxt "RegressionLogistic|"
 msgid "F-measure"
@@ -8592,11 +8592,11 @@ msgstr "Grafieken"
 
 msgctxt "RegressionLogistic|"
 msgid "Inferential Plots"
-msgstr "Inferentiële grafieken"
+msgstr "Inferentiële Grafieken"
 
 msgctxt "RegressionLogistic|"
 msgid "Display conditional estimates plots"
-msgstr "Toon conditionele geschatte grafieken"
+msgstr "Toon conditionele benaderingsgrafieken"
 
 msgctxt "RegressionLogistic|"
 msgid "Confidence interval"
@@ -8608,7 +8608,7 @@ msgstr "Toon datapunten"
 
 msgctxt "RegressionLogistic|"
 msgid "Residual Plots"
-msgstr "Residu grafieken"
+msgstr "Residugrafieken"
 
 msgctxt "RegressionLogistic|"
 msgid "Predicted - residual plot"
@@ -8728,7 +8728,7 @@ msgstr "Behandeling ontbrekende waarden"
 
 msgctxt "MediationAnalysis|"
 msgid "Full Information Maximum Likelihood"
-msgstr "Maximale waarschijnlijkheid complete informatie"
+msgstr "Complete informatie meest aannemelijke schatter"
 
 msgctxt "MediationAnalysis|"
 msgid "Emulation"
@@ -8820,15 +8820,15 @@ msgstr "Alt. hypothese"
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid "≠ Test value"
-msgstr "≠ toetswaarde"
+msgstr "≠ Toetswaarde"
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid "> Test value"
-msgstr "> toetswaarde"
+msgstr "> Toetswaarde"
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid "< Test value"
-msgstr "< toetswaarde"
+msgstr "< Toetswaarde"
 
 msgctxt "SummaryStatsBinomialTestBayesian|"
 msgid "Plots"
@@ -9004,15 +9004,15 @@ msgstr "Alt. hypothese"
 
 msgctxt "SummaryStatsTTestBayesianOneSample|"
 msgid "≠ Test value"
-msgstr "≠ toetswaarde"
+msgstr "≠ Toetswaarde"
 
 msgctxt "SummaryStatsTTestBayesianOneSample|"
 msgid "> Test value"
-msgstr "> toetswaarde"
+msgstr "> Toetswaarde"
 
 msgctxt "SummaryStatsTTestBayesianOneSample|"
 msgid "< Test value"
-msgstr "< toetswaarde"
+msgstr "< Toetswaarde"
 
 msgctxt "SummaryStatsTTestBayesianOneSample|"
 msgid "Plots"
@@ -9120,7 +9120,7 @@ msgstr "Robuustheidsevaluatie"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "TTestBayesianIndependentSamples|"
 msgid "Credible interval"
@@ -9184,7 +9184,7 @@ msgstr "Robuustheidsevaluatie"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Credible interval"
@@ -9196,15 +9196,15 @@ msgstr "Alt. hypothese"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "≠ Test value"
-msgstr "≠ toetswaarde"
+msgstr "≠ Toetswaarde"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "> Test value"
-msgstr "> toetswaarde"
+msgstr "> Toetswaarde"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "< Test value"
-msgstr "< toetswaarde"
+msgstr "< Toetswaarde"
 
 msgctxt "TTestBayesianOneSample|"
 msgid "Additional Statistics"
@@ -9260,7 +9260,7 @@ msgstr "Robuustheidsevaluatie"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "TTestBayesianPairedSamples|"
 msgid "Credible interval"
@@ -9328,11 +9328,11 @@ msgstr "Hedges' g"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Descriptives plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende diagrammen"
 
 msgctxt "TTestIndependentSamples|"
 msgid "Vovk-Sellke maximum p-ratio"
@@ -9416,11 +9416,11 @@ msgstr "Effectgrootte"
 
 msgctxt "TTestOneSample|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "TTestOneSample|"
 msgid "Descriptives plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende diagrammen"
 
 msgctxt "TTestOneSample|"
 msgid "Vovk-Sellke maximum p-ratio"
@@ -9432,15 +9432,15 @@ msgstr "Alt. hypothese"
 
 msgctxt "TTestOneSample|"
 msgid "≠ Test value"
-msgstr "≠ toetswaarde"
+msgstr "≠ Toetswaarde"
 
 msgctxt "TTestOneSample|"
 msgid "> Test value"
-msgstr "> toetswaarde"
+msgstr "> Toetswaarde"
 
 msgctxt "TTestOneSample|"
 msgid "< Test value"
-msgstr "< toetswaarde"
+msgstr "< Toetswaarde"
 
 msgctxt "TTestOneSample|"
 msgid "Assumption checks"
@@ -9488,11 +9488,11 @@ msgstr "Effectgrootte"
 
 msgctxt "TTestPairedSamples|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "TTestPairedSamples|"
 msgid "Descriptives plots"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvende diagrammen"
 
 msgctxt "TTestPairedSamples|"
 msgid "Vovk-Sellke maximum p-ratio"
@@ -9688,7 +9688,7 @@ msgstr "Boekwaarden"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Audit values"
-msgstr "Auditwaarden"
+msgstr "Audit waarden"
 
 msgctxt "auditClassicalEstimation|"
 msgid "Advanced Options"
@@ -10435,7 +10435,7 @@ msgstr "Markeer significante contrasten"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Descriptives plot"
-msgstr "Samenvatting (diagram)"
+msgstr "Beschrijvend diagram"
 
 msgctxt "BainAnovaBayesian|"
 msgid "Additional Options"
@@ -10531,7 +10531,7 @@ msgstr "Centroid"
 
 msgctxt "mlClusteringHierarchical|"
 msgid "Column name: "
-msgstr "Kolom naam: "
+msgstr "Kolomnaam: "
 
 msgctxt "mlRegressionKnn|"
 msgid "Euclidian"
@@ -10827,7 +10827,7 @@ msgstr "Steekproefgrootte vergelijking"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Shade"
-msgstr "Schaduw"
+msgstr "Markeer"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Credible region"
@@ -10835,7 +10835,7 @@ msgstr "Geloofwaardigheidsgebied"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Support regions"
-msgstr "Toepassingsgebieden"
+msgstr "Ondersteuningsgebieden"
 
 msgctxt "auditBayesianPlanning|"
 msgid "None"
@@ -10871,7 +10871,7 @@ msgstr "Steekproefgrootte vergelijking"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Shade"
-msgstr "Schaduw"
+msgstr "Markeer"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Credible region"
@@ -10879,7 +10879,7 @@ msgstr "Geloofwaardigheidsgebied"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Support regions"
-msgstr "Toepassingsgebieden"
+msgstr "Ondersteuningsgebieden"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "None"
@@ -11007,7 +11007,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDbernoulli|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning, en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDbernoulli|"
 msgid "Formulas"
@@ -11015,7 +11015,7 @@ msgstr "Formules"
 
 msgctxt "LDbernoulli|"
 msgid "Probability mass function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDbernoulli|"
 msgid "Cumulative distribution function"
@@ -11035,7 +11035,7 @@ msgstr "Massa"
 
 msgctxt "LDbernoulli|"
 msgid "Cumulative Probability"
-msgstr "Cumulatieve Waarschijnlijkheid"
+msgstr "Cumulatieve Kansverdeling"
 
 msgctxt "LDbernoulli|"
 msgid "Limits"
@@ -11055,7 +11055,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDbernoulli|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDbernoulli|"
 msgid "Method of moments"
@@ -11103,7 +11103,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDbernoulli|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
+msgstr "Empirisch vs. theoretische cdf"
 
 msgctxt "LDbernoulli|"
 msgid "P-P plot"
@@ -11127,7 +11127,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDbeta|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning, en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDbeta|"
 msgid "Formulas"
@@ -11135,7 +11135,7 @@ msgstr "Formules"
 
 msgctxt "LDbeta|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDbeta|"
 msgid "Cumulative distribution function"
@@ -11159,7 +11159,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDbeta|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDbeta|"
 msgid "Method of moments"
@@ -11199,7 +11199,7 @@ msgstr "Evalueer Passing"
 
 msgctxt "LDbeta|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
+msgstr "Histogram vs. theoretische pdf"
 
 msgctxt "LDbeta|"
 msgid "Q-Q plot"
@@ -11207,7 +11207,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDbeta|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
+msgstr "Empirisch vs. theoretische cdf"
 
 msgctxt "LDbeta|"
 msgid "P-P plot"
@@ -11255,7 +11255,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDbinomial|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning, en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDbinomial|"
 msgid "Formulas"
@@ -11263,7 +11263,7 @@ msgstr "Formules"
 
 msgctxt "LDbinomial|"
 msgid "Probability mass function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDbinomial|"
 msgid "Cumulative distribution function"
@@ -11291,7 +11291,7 @@ msgstr "Massa"
 
 msgctxt "LDbinomial|"
 msgid "Cumulative Probability"
-msgstr "Cumulatieve Waarschijnlijkheid"
+msgstr "Cumulatieve Kansverdeling"
 
 msgctxt "LDbinomial|"
 msgid "Interval"
@@ -11315,7 +11315,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDbinomial|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDbinomial|"
 msgid "Method of moments"
@@ -11363,7 +11363,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDbinomial|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
+msgstr "Empirisch vs. theoretische cdf"
 
 msgctxt "LDbinomial|"
 msgid "P-P plot"
@@ -11391,7 +11391,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDchisq|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning, en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDchisq|"
 msgid "Formulas"
@@ -11399,7 +11399,7 @@ msgstr "Formules"
 
 msgctxt "LDchisq|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDchisq|"
 msgid "Cumulative distribution function"
@@ -11423,7 +11423,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDchisq|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDchisq|"
 msgid "Output"
@@ -11455,7 +11455,7 @@ msgstr "Evalueer Passing"
 
 msgctxt "LDchisq|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
+msgstr "Histogram vs. theoretische pdf"
 
 msgctxt "LDchisq|"
 msgid "Q-Q plot"
@@ -11463,7 +11463,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDchisq|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
+msgstr "Empirisch vs. theoretische cdf"
 
 msgctxt "LDchisq|"
 msgid "P-P plot"
@@ -11495,7 +11495,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDexponential|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning, en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDexponential|"
 msgid "Formulas"
@@ -11503,7 +11503,7 @@ msgstr "Formules"
 
 msgctxt "LDexponential|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDexponential|"
 msgid "Cumulative distribution function"
@@ -11527,7 +11527,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDexponential|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDexponential|"
 msgid "Method of moments"
@@ -11567,7 +11567,7 @@ msgstr "Evalueer Passing"
 
 msgctxt "LDexponential|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
+msgstr "Histogram vs. theoretische pdf"
 
 msgctxt "LDexponential|"
 msgid "Q-Q plot"
@@ -11575,7 +11575,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDexponential|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
+msgstr "Empirisch vs. theoretische cdf"
 
 msgctxt "LDexponential|"
 msgid "P-P plot"
@@ -11615,7 +11615,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDf|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning, en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDf|"
 msgid "Formulas"
@@ -11623,7 +11623,7 @@ msgstr "Formules"
 
 msgctxt "LDf|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDf|"
 msgid "Cumulative distribution function"
@@ -11647,7 +11647,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDf|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDf|"
 msgid "Output"
@@ -11679,7 +11679,7 @@ msgstr "Evalueer Passing"
 
 msgctxt "LDf|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
+msgstr "Histogram vs. theoretische pdf"
 
 msgctxt "LDf|"
 msgid "Q-Q plot"
@@ -11687,7 +11687,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDf|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
+msgstr "Empirisch vs. theoretische cdf"
 
 msgctxt "LDf|"
 msgid "P-P plot"
@@ -11719,7 +11719,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDgamma|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning, en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDgamma|"
 msgid "Formulas"
@@ -11727,7 +11727,7 @@ msgstr "Formules"
 
 msgctxt "LDgamma|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDgamma|"
 msgid "Cumulative distribution function"
@@ -11751,7 +11751,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDgamma|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDgamma|"
 msgid "Method of moments"
@@ -11791,7 +11791,7 @@ msgstr "Evalueer Passing"
 
 msgctxt "LDgamma|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
+msgstr "Histogram vs. theoretische pdf"
 
 msgctxt "LDgamma|"
 msgid "Q-Q plot"
@@ -11799,7 +11799,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDgamma|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
+msgstr "Empirisch vs. theoretische cdf"
 
 msgctxt "LDgamma|"
 msgid "P-P plot"
@@ -11831,7 +11831,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDgammaInverse|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning, en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDgammaInverse|"
 msgid "Formulas"
@@ -11839,7 +11839,7 @@ msgstr "Formules"
 
 msgctxt "LDgammaInverse|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDgammaInverse|"
 msgid "Cumulative distribution function"
@@ -11863,7 +11863,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDgammaInverse|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDgammaInverse|"
 msgid "Method of moments"
@@ -11903,7 +11903,7 @@ msgstr "Evalueer Passing"
 
 msgctxt "LDgammaInverse|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
+msgstr "Histogram vs. theoretische pdf"
 
 msgctxt "LDgammaInverse|"
 msgid "Q-Q plot"
@@ -11911,7 +11911,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDgammaInverse|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
+msgstr "Empirisch vs. theoretische cdf"
 
 msgctxt "LDgammaInverse|"
 msgid "P-P plot"
@@ -11947,7 +11947,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning, en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Formulas"
@@ -11955,11 +11955,11 @@ msgstr "Formules"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Cumulative distribution function"
-msgstr "Cumulatieve dichtheidsverdeling"
+msgstr "Cumulatieve verdelingsfunctie"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Quantile function"
@@ -11979,7 +11979,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Method of moments"
@@ -12019,7 +12019,7 @@ msgstr "Evalueer Passing"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
+msgstr "Histogram vs. theoretische pdf"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Q-Q plot"
@@ -12027,7 +12027,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
+msgstr "Empirisch vs. theoretische cdf"
 
 msgctxt "LDgaussianunivariate|"
 msgid "P-P plot"
@@ -12054,10 +12054,6 @@ msgid "Show Distribution"
 msgstr "Toon verdeling"
 
 msgctxt "LDnegbinomial|"
-msgid "Parameter"
-msgstr "Parameter"
-
-msgctxt "LDnegbinomial|"
 msgid "φ"
 msgstr "φ"
 
@@ -12071,7 +12067,7 @@ msgstr "Toelichtende tekst"
 
 msgctxt "LDnegbinomial|"
 msgid "Parameters, support, and moments"
-msgstr "Parameters, ondersteuning, en momenten"
+msgstr "Parameters, drager en momenten"
 
 msgctxt "LDnegbinomial|"
 msgid "Formulas"
@@ -12079,7 +12075,7 @@ msgstr "Formules"
 
 msgctxt "LDnegbinomial|"
 msgid "Probability mass function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDnegbinomial|"
 msgid "Cumulative distribution function"
@@ -12107,7 +12103,7 @@ msgstr "Massa"
 
 msgctxt "LDnegbinomial|"
 msgid "Cumulative Probability"
-msgstr "Cumulatieve Waarschijnlijkheid"
+msgstr "Cumulatieve Kansverdeling"
 
 msgctxt "LDnegbinomial|"
 msgid "Interval"
@@ -12131,7 +12127,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDnegbinomial|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDnegbinomial|"
 msgid "Method of moments"
@@ -12179,7 +12175,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDnegbinomial|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
+msgstr "Empirische vs. theoretisch cdf"
 
 msgctxt "LDnegbinomial|"
 msgid "P-P plot"
@@ -12219,7 +12215,7 @@ msgstr "Formules"
 
 msgctxt "LDpoisson|"
 msgid "Probability mass function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDpoisson|"
 msgid "Cumulative distribution function"
@@ -12247,7 +12243,7 @@ msgstr "Massa"
 
 msgctxt "LDpoisson|"
 msgid "Cumulative Probability"
-msgstr "Cumulatieve Waarschijnlijkheid"
+msgstr "Cumulatieve Kansverdeling"
 
 msgctxt "LDpoisson|"
 msgid "Interval"
@@ -12271,7 +12267,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDpoisson|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDpoisson|"
 msgid "Method of moments"
@@ -12319,7 +12315,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDpoisson|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empiriche vs. theoretische cfd (cumulatieve verdelingsfunctie)"
+msgstr "Empiriche vs. theoretische cfd"
 
 msgctxt "LDpoisson|"
 msgid "P-P plot"
@@ -12355,7 +12351,7 @@ msgstr "Formules"
 
 msgctxt "LDt|"
 msgid "Probability density function"
-msgstr "Kansdichtheidsfunctie"
+msgstr "Kansfunctie"
 
 msgctxt "LDt|"
 msgid "Cumulative distribution function"
@@ -12379,7 +12375,7 @@ msgstr "Schat parameters"
 
 msgctxt "LDt|"
 msgid "Maximum likelihood"
-msgstr "Maximum likelihood"
+msgstr "Meest aannemelijke schatter"
 
 msgctxt "LDt|"
 msgid "Output"
@@ -12403,7 +12399,7 @@ msgstr "Evalueer Passing"
 
 msgctxt "LDt|"
 msgid "Histogram vs. theoretical pdf"
-msgstr "Histogram vs. theoretische pdf (kansverdelingsfunctie)"
+msgstr "Histogram vs. theoretische pdf"
 
 msgctxt "LDt|"
 msgid "Q-Q plot"
@@ -12411,7 +12407,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDt|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretisch cdf (cumulatieve verdelingsfunctie)"
+msgstr "Empirisch vs. theoretische cdf"
 
 msgctxt "LDt|"
 msgid "P-P plot"
@@ -12442,20 +12438,12 @@ msgid "Equivalence Region"
 msgstr "Gelijkwaardigheidsgebied"
 
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
-msgid "Lower bound"
-msgstr "Ondergrens"
-
-msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
-msgid "Upper bound"
-msgstr "Bovengrens"
-
-msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Additional Statistics"
 msgstr "Aanvullende statistieken"
 
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Plots"
@@ -12494,20 +12482,12 @@ msgid "Equivalence Region"
 msgstr "Gelijkwaardigheidsgebied"
 
 msgctxt "EquivalenceBayesianOneSampleTTest|"
-msgid "Lower bound"
-msgstr "Ondergrens"
-
-msgctxt "EquivalenceBayesianOneSampleTTest|"
-msgid "Upper bound"
-msgstr "Bovengrens"
-
-msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Additional Statistics"
 msgstr "Aanvullende statistieken"
 
 msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Plots"
@@ -12542,20 +12522,12 @@ msgid "Equivalence Region"
 msgstr "Gelijkwaardigheidsgebied"
 
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
-msgid "Lower bound"
-msgstr "Ondergrens"
-
-msgctxt "EquivalenceBayesianPairedSamplesTTest|"
-msgid "Upper bound"
-msgstr "Bovengrens"
-
-msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Additional Statistics"
 msgstr "Aanvullende statistieken"
 
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Plots"
@@ -12607,7 +12579,7 @@ msgstr "Aanvullende statistieken"
 
 msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Equivalence bounds plot"
@@ -12647,7 +12619,7 @@ msgstr "Aanvullende Statistieken"
 
 msgctxt "EquivalenceOneSampleTTest|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "EquivalenceOneSampleTTest|"
 msgid "Equivalence bounds plot"
@@ -12699,7 +12671,7 @@ msgstr "Aanvullende statistieken"
 
 msgctxt "EquivalencePairedSamplesTTest|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "EquivalencePairedSamplesTTest|"
 msgid "Equivalence bounds plot"
@@ -12727,11 +12699,11 @@ msgstr "Effectgrootte Standaardfout"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "95% CI Lower and Upper Bound"
-msgstr "95% betrouwbaarheidsinterval onder- en bovengrens"
+msgstr "95% Geloofwaardigheidsinterval"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Study Labels"
-msgstr "Studienamen"
+msgstr "Onderzoek Labels"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Model"
@@ -12895,7 +12867,7 @@ msgstr "Voeg vaste en willekeurige effecten posterior toe"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Shade 95% CI"
-msgstr "Schaduw 95% betrouwbaarheidsinterval"
+msgstr "Markeer 95% Geloofwaardigheidsinterval"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Sequential plot"
@@ -12919,7 +12891,7 @@ msgstr "Prior model waarschijnlijkheid"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Estimation settings (MCMC)"
-msgstr "Schattings instellingen (MCM)"
+msgstr "Schattings instellingen (MCMC)"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "iterations:"
@@ -13295,7 +13267,7 @@ msgstr "Dichtheid"
 
 msgctxt "LDOptions|"
 msgid "Probability"
-msgstr "Waarschijnlijkheid"
+msgstr "Kansverdeling"
 
 msgctxt "LDOptions|"
 msgid "Interval"
@@ -13473,7 +13445,7 @@ msgstr "Toon verdeling"
 
 msgctxt "NetworkAnalysis|"
 msgid "Tuning Parameter"
-msgstr "Instelling Parameter"
+msgstr "Afstel Parameter"
 
 msgctxt "Ancova|"
 msgid "None"
@@ -13509,7 +13481,7 @@ msgstr "Bewerk afbeelding"
 
 msgctxt "ResultMenuModel|"
 msgid "Add Note"
-msgstr "Voeg opmerking toe"
+msgstr "Opmerking toevoegen"
 
 msgctxt "ResultMenuModel|"
 msgid "Duplicate"
@@ -13657,7 +13629,7 @@ msgstr "Correlatie"
 
 msgctxt "NetworkAnalysis|"
 msgid "Partial Correlation"
-msgstr "Gedeeltelijke Correlatie"
+msgstr "Partiële Correlatie"
 
 msgctxt "NetworkAnalysis|"
 msgid "huge"
@@ -13669,7 +13641,7 @@ msgstr "Significant"
 
 msgctxt "RegressionLinear|"
 msgid "Enter"
-msgstr "Voer in"
+msgstr "Invoer"
 
 msgctxt "RegressionLinear|"
 msgid "Backward"
@@ -13689,7 +13661,7 @@ msgstr "Voorspellers"
 
 msgctxt "MediationAnalysis|"
 msgid "Mediators"
-msgstr "Bemiddelaars"
+msgstr "Mediatoren"
 
 msgctxt "MediationAnalysis|"
 msgid "Outcome"
@@ -13697,7 +13669,7 @@ msgstr "Uitkomst"
 
 msgctxt "MediationAnalysis|"
 msgid "Background confounders"
-msgstr "Achtergrond mede-oprichters"
+msgstr "Achtergrond verstoringsvariabelen"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
@@ -15366,7 +15338,7 @@ msgstr "Steekproefgrootte: "
 
 msgctxt "LDGenerateDisplayData|"
 msgid "Draw samples"
-msgstr "Teken steekproef"
+msgstr "Trek steekproef"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "Get variable from data set"
@@ -15378,7 +15350,7 @@ msgstr "Statistieken"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "Descriptives"
-msgstr "Samenvatting"
+msgstr "Beschrijvende statistiek"
 
 msgctxt "LDGenerateDisplayData|"
 msgid "First"
@@ -15497,6 +15469,175 @@ msgstr "Toon informatie over deze analyse"
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
 msgstr "Verwijder deze analyse"
+
+msgctxt "PrefsUI|"
+msgid "Disable Animations"
+msgstr "Schakel Animaties uit"
+
+msgctxt "PrefsUI|"
+msgid ""
+"Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
+msgstr ""
+"Schakelt alle animaties uit, dit is impliciet wanneer \"Veilige Grafische "
+"Mode\" aan staat."
+
+msgctxt "PrefsUI|"
+msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
+msgstr "Animaties al uitgezet omdat de \"Veilige Grafische Mode\" aan staat"
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to run the filter..."
+msgstr "De engine is gecrashed tijdens het pogen een filter te draaien..."
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to compute this column..."
+msgstr "De engine is gecrashed tijdens het berekenen van deze kolom..."
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to run rscript..."
+msgstr "De engine is gecrashed tijdens het uitvoeren van dit script..."
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to run this analysis..."
+msgstr "De engine is gecrashed tijdens het uitvoeren van deze analyse..."
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Column name selection result: "
+msgstr "Kolomnaam selectie resultaat: "
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Column name audit result: "
+msgstr "Kolomnaam auditresultaat: "
+
+msgctxt "auditClassicalWorkflow|"
+msgid "Column name selection result: "
+msgstr "Kolomnaam selectie resultaat: "
+
+msgctxt "auditClassicalWorkflow|"
+msgid "Column name audit result: "
+msgstr "Kolomnaam auditresultaat: "
+
+msgctxt "mlRegressionBoosting|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "mlClassificationBoosting|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "mlClassificationKnn|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "mlClassificationRandomForest|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "mlClusteringDensityBased|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "mlClusteringFuzzyCMeans|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "mlClusteringKMeans|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "mlClusteringRandomForest|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "mlRegressionKnn|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "mlRegressionRandomForest|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "mlRegressionRegularized|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "mlClassificationLda|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "DataSplit|"
+msgid "Column name: "
+msgstr "Kolomnaam: "
+
+msgctxt "LDnegbinomial|"
+msgid "Parameters"
+msgstr "Parameters"
+
+msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
+msgid "from"
+msgstr "van"
+
+msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
+msgid "to"
+msgstr "naar"
+
+#, qt-format
+msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
+msgid "from %1"
+msgstr "van %1"
+
+#, qt-format
+msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
+msgid "to %1"
+msgstr "naar %1"
+
+msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
+msgid "Prior and posterior mass"
+msgstr "Prior en posterior massa"
+
+msgctxt "EquivalenceBayesianOneSampleTTest|"
+msgid "from"
+msgstr "van"
+
+msgctxt "EquivalenceBayesianOneSampleTTest|"
+msgid "to"
+msgstr "naar"
+
+#, qt-format
+msgctxt "EquivalenceBayesianOneSampleTTest|"
+msgid "from %1"
+msgstr "van %1"
+
+#, qt-format
+msgctxt "EquivalenceBayesianOneSampleTTest|"
+msgid "to %1"
+msgstr "naar %1"
+
+msgctxt "EquivalenceBayesianOneSampleTTest|"
+msgid "Prior and posterior mass"
+msgstr "Prior en posterior massa"
+
+msgctxt "EquivalenceBayesianPairedSamplesTTest|"
+msgid "from"
+msgstr "van"
+
+msgctxt "EquivalenceBayesianPairedSamplesTTest|"
+msgid "to"
+msgstr "naar"
+
+#, qt-format
+msgctxt "EquivalenceBayesianPairedSamplesTTest|"
+msgid "from %1"
+msgstr "van %1"
+
+#, qt-format
+msgctxt "EquivalenceBayesianPairedSamplesTTest|"
+msgid "to %1"
+msgstr "naar %1"
+
+msgctxt "EquivalenceBayesianPairedSamplesTTest|"
+msgid "Prior and posterior mass"
+msgstr "Prior en posterior massa"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""

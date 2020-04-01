@@ -184,11 +184,11 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
       "computedLayoutX", "computedLayoutY", "bootstrapOnOff", "numberOfBootstraps", "minEdgeStrength"
     ))
     if (length(dataset) > 1L)
-      tb$addColumnInfo(name = "info", title = "Network", type = "string")
+      tb$addColumnInfo(name = "info", title = gettext("Network"), type = "string")
 
-    tb$addColumnInfo(name = "nodes",    title = "Number of nodes",          type = "integer")
-    tb$addColumnInfo(name = "nonZero",  title = "Number of non-zero edges", type = "string")
-    tb$addColumnInfo(name = "Sparsity", title = "Sparsity",                 type = "number")
+    tb$addColumnInfo(name = "nodes",    title = gettext("Number of nodes"),          type = "integer")
+    tb$addColumnInfo(name = "nonZero",  title = gettext("Number of non-zero edges"), type = "string")
+    tb$addColumnInfo(name = "Sparsity", title = gettext("Sparsity"),                 type = "number")
 
     mainContainer[["generalTable"]] <- tb
   }
@@ -277,7 +277,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   # shared titles
   overTitles <- names(network[["network"]])
   if (is.null(overTitles))
-    overTitles <- "Network" # paste0("Network", 1:nGraphs)
+    overTitles <- gettext("Network") # paste0("Network", 1:nGraphs)
 
   nameCol3 <- if ("Degree" %in% colnames(network[["centrality"]][[1]])[3]) "Degree" else "Strength"
   for (i in seq_len(nGraphs)) { # three centrality columns per network
@@ -384,7 +384,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
   overTitles <- names(network[["network"]])
   if (is.null(overTitles))
-    overTitles <- "Network"
+    overTitles <- gettext("Network")
 
   for (i in seq_len(nGraphs))
     for (v in seq_len(nVar))

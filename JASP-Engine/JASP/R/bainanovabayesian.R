@@ -198,7 +198,7 @@ Posterior model probabilities (a: excluding the unconstrained hypothesis, b: inc
 	
 	if (!is.null(bainContainer[["descriptivesPlot"]]) || !options[["descriptivesPlot"]]) return()
 	
-  plotTitle <- ifelse(type == "anova", yes = gettext("Descriptives Plot"), no = ("Adjusted Means"))
+  plotTitle <- ifelse(type == "anova", yes = gettext("Descriptives Plot"), no = gettext("Adjusted Means"))
 
 	descriptivesPlot <- createJaspPlot(plot = NULL, title = plotTitle)
 	descriptivesPlot$dependOn(options=c("descriptivesPlot", "CredibleInterval"))

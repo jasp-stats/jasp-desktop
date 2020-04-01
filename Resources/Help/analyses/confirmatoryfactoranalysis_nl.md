@@ -27,7 +27,7 @@ Aanvullende uitvoer
 - Geïmpliceerde covariantiematrix: Toon de covariantiematrix die het model impliceert.
 - Residu covariantiematrix: Toon de covarianties tussen indicatoren die behouden blijft met het model. Een perfect model toont enkel 0-en hier. 
 - Modificatie indices: Toont MIs met een minimum grens. Een MI toont hoeveel de chi-square waarde van de passing zou veranderen als de gespecificeerde parameter vrij zou zijn. EPC toont de verwachten verandering van de parameter zelf.
-- Laat lavaan syntax zien: Toon de lavaan modeleer syntax die nodig zou zijn om het model in R weer te geven.
+- Toon lavaan syntax: Toon de lavaan modeleer syntax die nodig zou zijn om het model in R weer te geven.
 
 Multigroep CFA
 ------

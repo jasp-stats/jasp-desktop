@@ -239,7 +239,7 @@ Form {
             ComputedColumnField { 
                 id: 		classColumn
                 name: 		"classColumn"
-                text: 		"Column name: "
+				text: 		qsTr("Column name: ")
                 fieldWidth: 120
                 visible:    addClasses.checked
             }

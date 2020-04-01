@@ -143,10 +143,10 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
     return() #The options for this table didn't change so we don't need to rebuild it
 
   title <- base::switch(options[["estimator"]],
-                        "mpu"         = "Direct estimator",
-                        "difference"  = "Difference estimator",
-                        "ratio"       = "Ratio estimator",
-                        "regression"  = "Regression estimator")
+                        "mpu"         = gettext("Direct estimator"),
+                        "difference"  = gettext("Difference estimator"),
+                        "ratio"       = gettext("Ratio estimator"),
+                        "regression"  = gettext("Regression estimator"))
 
   regressionTable <- createJaspTable(title)
   regressionTable$position <- position

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-04-06 15:34\n"
+"POT-Creation-Date: 2020-04-07 11:09\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -548,6 +548,18 @@ msgid "can not be rejected"
 msgstr ""
 
 msgid "The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of first numbers in the \n                            population conforms to Benford's law <b>%2$s</b> with <b>%3$s</b> confidence."
+msgstr ""
+
+msgid "Direct estimator"
+msgstr ""
+
+msgid "Difference estimator"
+msgstr ""
+
+msgid "Ratio estimator"
+msgstr ""
+
+msgid "Regression estimator"
 msgstr ""
 
 msgid "Estimate %1$s"
@@ -1129,6 +1141,12 @@ msgstr ""
 msgid "Support"
 msgstr ""
 
+msgid "The expected errors (grey dot) receive the highest probability. The red dot represents the materiality."
+msgstr ""
+
+msgid "The expected posterior has its upper confidence bound below materiality."
+msgstr ""
+
 msgid "<b>Figure %1$i.</b> The prior probability distribution <b>(%2$s)</b> on the misstatement in the population. The prior parameters <i>%3$s = %4$s, %5$s = %6$s</i> are derived from the assessments of the inherent and control risk, along with the expected errors. %7$s %8$s"
 msgstr ""
 
@@ -1151,6 +1169,9 @@ msgid "beta-binomial"
 msgstr ""
 
 msgid "Cox and Snell"
+msgstr ""
+
+msgid "The red dot represents the specified materiality. If the credible area under the distribution surpasses this point, the estimate of the maximum misstatement exceeds the materiality."
 msgstr ""
 
 msgid "<b>Figure %1$i.</b> The prior and posterior probability distribution <b>(%2$s)</b> on the misstatement in the population. %3$s"
@@ -1241,6 +1262,9 @@ msgid "Posterior Probabilities"
 msgstr ""
 
 msgid "Descriptives Plot"
+msgstr ""
+
+msgid "Adjusted Means"
 msgstr ""
 
 msgid "Bain Linear Regression"
@@ -2629,6 +2653,9 @@ msgstr ""
 msgid "R%s cannot be computed due to lack of variance in the predictions.</i>"
 msgstr ""
 
+msgid "Predictive Performance Plot"
+msgstr ""
+
 msgid "Observed test values"
 msgstr ""
 
@@ -3520,10 +3547,22 @@ msgstr ""
 msgid "I ranges from %1$s to %2$s"
 msgstr ""
 
+msgid "Prior and Posterior Mass Table"
+msgstr ""
+
+msgid "Section"
+msgstr ""
+
+msgid "Mass"
+msgstr ""
+
 msgid "Equivalence Bayesian One Sample T-Test"
 msgstr ""
 
 msgid "Equivalence Bayesian Paired Samples T-Test"
+msgstr ""
+
+msgid "Equivalence Mass Table"
 msgstr ""
 
 msgid "Equivalence Independent Samples T-Test"
@@ -3871,6 +3910,9 @@ msgstr ""
 msgid "MANOVA"
 msgstr ""
 
+msgid "The design matrix is not invertible. This might be due to collinear dependent variables."
+msgstr ""
+
 msgid "no terms in scope"
 msgstr ""
 
@@ -4210,6 +4252,18 @@ msgstr ""
 msgid "Summary of Network"
 msgstr ""
 
+msgid "Network"
+msgstr ""
+
+msgid "Number of nodes"
+msgstr ""
+
+msgid "Number of non-zero edges"
+msgstr ""
+
+msgid "Sparsity"
+msgstr ""
+
 msgid "Data was binarized using %s."
 msgstr ""
 
@@ -4253,9 +4307,6 @@ msgid "Zhang"
 msgstr ""
 
 msgid "Clustering measures per variable"
-msgstr ""
-
-msgid "Network"
 msgstr ""
 
 msgid "Clustering measures could not be computed for network%1$s: %2$s"
@@ -4444,6 +4495,12 @@ msgstr ""
 msgid "No covariate could be entered in the model"
 msgstr ""
 
+msgid "Regression"
+msgstr ""
+
+msgid "Residual"
+msgstr ""
+
 msgid "Unstandardized"
 msgstr ""
 
@@ -4514,9 +4571,6 @@ msgid "Case Number"
 msgstr ""
 
 msgid "Predicted Value"
-msgstr ""
-
-msgid "Residual"
 msgstr ""
 
 msgid "Residuals Statistics"
@@ -4754,6 +4808,9 @@ msgid "Residual df"
 msgstr ""
 
 msgid "Residual Deviance"
+msgstr ""
+
+msgid "%s%% Confidence Intervals"
 msgstr ""
 
 msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based the <em>p</em>-value, \nthe maximum possible odds in favor of H%1$s over H%2$s equals \n1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 \n(Sellke, Bayarri, & Berger, 2001)."
@@ -5180,6 +5237,27 @@ msgid "For the Student t-test, effect size is given by Cohen's <em>d</em>. For t
 msgstr ""
 
 msgid "For all tests, the alternative hypothesis specifies that measurement one is %s than measurement two."
+msgstr ""
+
+msgid "Evidence for H1"
+msgstr ""
+
+msgid "Evidence for H0"
+msgstr ""
+
+msgid "Evidence for H+"
+msgstr ""
+
+msgid "Evidence for H-"
+msgstr ""
+
+msgid "Evidence for H1:"
+msgstr ""
+
+msgid "Evidence for H+:"
+msgstr ""
+
+msgid "Evidence for H-:"
 msgstr ""
 
 msgid "could not calculate enough valid Bayes Factors for different values of the prior"

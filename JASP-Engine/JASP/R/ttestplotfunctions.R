@@ -999,10 +999,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H1", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H1"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     }
   }
 
@@ -1010,10 +1010,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H+"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     }
   }
 
@@ -1021,10 +1021,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H-", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H-"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     }
   }
 
@@ -1040,10 +1040,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H1", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H1"), cex= cexText)
     }
   }
 
@@ -1051,10 +1051,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H+"), cex= cexText)
     }
   }
 
@@ -1062,10 +1062,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H-", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H-"), cex= cexText)
     }
   }
 
@@ -1246,13 +1246,13 @@
     if (BF10e >= 1) {
 
       if (oneSided == FALSE) {
-        text(xxT, yyT, paste("Evidence for H1:\n", lab), cex= 1.4, pos= 2, offset= -.2)
+        text(xxT, yyT, paste(gettext("Evidence for H1:\n"), lab), cex= 1.4, pos= 2, offset= -.2)
       }
       if (oneSided == "right") {
-        text(xxT, yyT, paste("Evidence for H+:\n", lab), cex= 1.4, pos= 2, offset= -.2)
+        text(xxT, yyT, paste(gettext("Evidence for H+:\n"), lab), cex= 1.4, pos= 2, offset= -.2)
       }
       if (oneSided == "left") {
-        text(xxT, yyT, paste("Evidence for H-:\n", lab), cex= 1.4, pos= 2, offset= -.2)
+        text(xxT, yyT, paste(gettext("Evidence for H-:\n"), lab), cex= 1.4, pos= 2, offset= -.2)
       }
     }
 
@@ -2016,10 +2016,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H1", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H1"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     }
   }
 
@@ -2027,10 +2027,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H+"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     }
   }
 
@@ -2038,10 +2038,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H-", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H-"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     }
   }
 
@@ -2056,10 +2056,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H1", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H1"), cex= cexText)
     }
   }
 
@@ -2067,10 +2067,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H+", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H+"), cex= cexText)
     }
   }
 
@@ -2078,10 +2078,10 @@
 
     if (BFH1H0) {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H0", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H0"), cex= cexText)
     } else {
 
-      text(xxt, mean(c(yya1, yya2)), labels = "Evidence for H-", cex= cexText)
+      text(xxt, mean(c(yya1, yya2)), labels = gettext("Evidence for H-"), cex= cexText)
     }
   }
 
