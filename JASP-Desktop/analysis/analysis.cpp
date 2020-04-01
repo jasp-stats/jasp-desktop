@@ -856,6 +856,7 @@ void Analysis::fitOldUserDataEtc()
 		if(orphans.size() > 0)
 			_userData["orphanedNotes"] = orphans;
 
+		emit userDataChangedSignal(this);
 		Log::log() << "New userData after attempt to fix is: " << _userData.toStyledString() << std::endl;
 
 	} catch (...) {

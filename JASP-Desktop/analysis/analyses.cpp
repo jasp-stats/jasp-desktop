@@ -159,6 +159,7 @@ void Analyses::bindAnalysisHandler(Analysis* analysis)
 	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation,		Qt::DirectConnection);
 	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction,	Qt::DirectConnection);
 	connect(analysis, &Analysis::titleChanged,						this, &Analyses::somethingModified					);
+	connect(analysis, &Analysis::userDataChangedSignal,				this, &Analyses::analysisOverwriteUserdata			);
 
 	
 	if (Settings::value(Settings::DEVELOPER_MODE).toBool())

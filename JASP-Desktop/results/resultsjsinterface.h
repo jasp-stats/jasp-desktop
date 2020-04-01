@@ -49,6 +49,7 @@ public:
 	void exportPreviewHTML();
 	void exportHTML();
 	void resetResults();
+	void overwriteUserdata(Analysis *analysis);
 
 	QString			resultsPageUrl()	const { return _resultsPageUrl;	}
 	double			zoom()				const { return _webEngineZoom;	}
