@@ -3154,7 +3154,7 @@ var Selection = function () {
 
         last = _scroll$line4[0];
       }
-      if (first == null || last == null) return;
+	  if (first == null || last == null || scrollingContainer == null) return;
       var scrollBounds = scrollingContainer.getBoundingClientRect();
       if (bounds.top < scrollBounds.top) {
         scrollingContainer.scrollTop -= scrollBounds.top - bounds.top;

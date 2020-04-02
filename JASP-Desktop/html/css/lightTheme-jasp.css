@@ -675,12 +675,3 @@ pre {
   /* border: 1px solid #ccc; */
   background-color: #f5f6f6
 }
-
-.ql-editor p {
-  margin-top: 1em;
-  margin-bottom: 1em;
-}
-
-.ql-editor p:first-child {
-  margin-top: 0
-}
