@@ -4,7 +4,7 @@
 class jaspHtml : public jaspObject
 {
 public:
-  jaspHtml(std::string text = "", std::string elementType = "p", std::string Class = "") : jaspObject(jaspObjectType::html, ""), _rawText(text), _elementType(elementType), _class(Class) {}
+  jaspHtml(std::string text = "", std::string elementType = "p", std::string maxWidth="15cm", std::string Class = "") : jaspObject(jaspObjectType::html, ""), _rawText(text), _elementType(elementType), _class(Class), _maxWidth(maxWidth) {}
 
 	~jaspHtml() {}
 
@@ -14,7 +14,7 @@ public:
 	Json::Value	metaEntry()									const	override { return constructMetaEntry("htmlNode"); }
 	Json::Value	dataEntry(std::string & errorMessage)		const	override;
 
-    std::string _rawText, _elementType, _class;
+	std::string _rawText, _elementType, _class, _maxWidth;
 
 	Json::Value convertToJSON()								const	override;
 	void		convertFromJSON_SetFields(Json::Value in)			override;
@@ -39,6 +39,7 @@ public:
 
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspHtml, std::string,	_elementType,	ElementType)
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspHtml, std::string,	_class,			Class)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspHtml, std::string,	_maxWidth,		MaxWidth)
 
 };
 
