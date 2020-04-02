@@ -49,7 +49,19 @@ Item
 	Layout.preferredHeight:	preferredHeight
 
 	Item { id: items }
-	
+
+	Connections
+	{
+		target:					preferencesModel
+		onLanguageCodeChanged:
+		{
+			// Apparently a Qt bug: the height is not always recalculated by the GridLayout when the language is changed.
+			// Force this by changing temporarily the Layout.preferredHeight
+			variablesForm.Layout.preferredHeight = 0
+			variablesForm.Layout.preferredHeight = Qt.binding(function() { return variablesForm.preferredHeight; })
+		}
+	}
+
 	onListWidthChanged:
 	{
 		if (formInitialized && listWidth > 0 && listWidth != _lastListWidth)
