@@ -36,7 +36,7 @@ Principale componentenanalyse wordt gebruikt om data weer te geven in minder com
       - Cluster: De cluster oblique rotatiemethode.
 
 ### Uitvoeropties 
-- Markeren: Deze optie past de breedte van de pijlen in het pad diagram aan. De standaardoptie is dat de pijlen breder worden als hun waarde 0.4 of hoger is.
+- Markeer: Deze optie zet de waarde vanaf waar de paden schalen in breedte. Paden met absolute gewichten hoger dan deze waarde zullen steeds breder worden terwijl waardes eronder een vaste dunne breedte hebben. Alle paden krijgen een sterkere of zwakkere kleurintensiteit naarmate ze een sterker gewicht hebben. Als de waarde op 0 gezet wordt zullen alle paden een verschillende breedte krijgen.
 - Neem tabellen mee:
 	- Component correlaties: Als u deze optie selecteert wordt er een tabel met de correlates tussen componenten weergegeven.
 	- Pad diagram: Als u deze optie selecteert wordt er een visuele representatie van de richting en sterkte van de relatie tussen variabelen en componenten weergegeven. 
