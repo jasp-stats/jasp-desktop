@@ -375,6 +375,23 @@ void AnalysisForm::_setErrorMessages()
 	}
 }
 
+void AnalysisForm::replaceVariableNameInListModels(const std::string & oldName, const std::string & newName)
+{
+	for (ListModelTermsAvailable * model : _allAvailableVariablesModels)
+	{
+		model->replaceVariableName(oldName, newName);
+
+		QMLListViewTermsAvailable* qmlAvailableListView = dynamic_cast<QMLListViewTermsAvailable*>(model->listView());
+		if (qmlAvailableListView)
+		{
+			const QList<ListModelAssignedInterface*>& assignedModels = qmlAvailableListView->assignedModel();
+			for (ListModelAssignedInterface* modelAssign : assignedModels)
+				    modelAssign->replaceVariableName(oldName, newName);
+		}
+	}
+}
+
+
 void AnalysisForm::_setAllAvailableVariablesModel(bool refreshAssigned)
 {
 	if (_allAvailableVariablesModels.size() == 0)
@@ -461,7 +478,6 @@ void AnalysisForm::bindTo()
 
 	_options->blockSignals(true);
 	
-	The assigned list must be updated to reflect the changed columnnames before:
 	_setAllAvailableVariablesModel();	
 	
 	for (JASPControlWrapper* control : _orderedControls)

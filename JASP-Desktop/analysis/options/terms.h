@@ -32,21 +32,21 @@
 class Terms
 {
 public:
-	Terms(const QList<QList<QString> > &terms, Terms *parent = nullptr);
-	Terms(const QList<QString> &terms, Terms *parent = nullptr);
-	Terms(const std::vector<std::vector<std::string> > &terms, Terms *parent = nullptr);
-	Terms(const std::vector<std::string> &terms, Terms *parent = nullptr);
-	Terms(const QList<Term> &terms, Terms *parent = nullptr);
-	Terms(Terms *parent = nullptr);
+	Terms(const QList<QList<QString> >						& terms,	Terms *parent = nullptr);
+	Terms(const QList<QString>								& terms,	Terms *parent = nullptr);
+	Terms(const std::vector<std::vector<std::string> >		& terms,	Terms *parent = nullptr);
+	Terms(const std::vector<std::string>					& terms,	Terms *parent = nullptr);
+	Terms(const QList<Term>									& terms,	Terms *parent = nullptr);
+	Terms(																Terms *parent = nullptr);
 
-	void set(const QList<QList<QString> > &terms);
-	void set(const QList<QString> &terms);
-	void set(const std::vector<Term> &terms);
-	void set(const std::vector<std::string> &terms);
-	void set(const std::vector<std::vector<std::string> > &terms);
-	void set(const QList<Term> &terms);
-	void set(const Terms &terms);
-	void set(QByteArray &array);
+	void set(const QList<QList<QString> >					& terms);
+	void set(const QList<QString>							& terms);
+	void set(const std::vector<Term>						& terms);
+	void set(const std::vector<std::string>					& terms);
+	void set(const std::vector<std::vector<std::string> >	& terms);
+	void set(const QList<Term>								& terms);
+	void set(const Terms									& terms);
+	void set(const QByteArray								& array);
 
 	void removeParent();
 	void setSortParent(const Terms &parent);
@@ -70,16 +70,19 @@ public:
 	void remove(const Terms &terms);
 	void remove(size_t pos, size_t n = 1);
 	void replace(int pos, const Term& term);
-	bool discardWhatDoesntContainTheseComponents(const Terms &terms);
-	bool discardWhatDoesContainTheseComponents(const Terms &terms);
-	bool discardWhatDoesContainTheseTerms(const Terms &terms);
-	bool discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded = nullptr);
+	bool discardWhatDoesntContainTheseComponents(	const Terms &terms);
+	bool discardWhatDoesContainTheseComponents(		const Terms &terms);
+	bool discardWhatDoesContainTheseTerms(			const Terms &terms);
+	bool discardWhatIsntTheseTerms(					const Terms &terms, Terms *discarded = nullptr);
+
+	void replaceVariableName(const std::string & oldName, const std::string & newName);
 
 	void clear();
 
 	const Term &at(size_t index) const;
-	bool contains(const Term &term) const;
-	bool contains(const std::string component);
+	bool contains(const Term		&	term) const;
+	bool contains(const QString		&	component);
+	bool contains(const std::string &	component);
 
 	std::vector<std::string>				asVector()			const;
 	std::set<std::string>					asSet()				const;
@@ -107,10 +110,8 @@ private:
 	bool	termLessThan(const Term &t1, const Term &t2)			const;
 	bool	componentLessThan(const QString &c1, const QString &c2)	const;
 
-	const Terms *_parent;
-	std::vector<Term> _terms;
-
-
+	const Terms			*	_parent;
+	std::vector<Term>		_terms;
 };
 
 #endif // TERMS_H

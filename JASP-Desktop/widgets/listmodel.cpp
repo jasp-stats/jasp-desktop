@@ -463,3 +463,12 @@ const QString &ListModel::name() const
 {
 	return _listView->name();
 }
+
+void ListModel::replaceVariableName(const std::string & oldName, const std::string & newName)
+{
+	_terms.replaceVariableName(oldName, newName);
+
+	for(const QString & key : _rowControlsOptions.keys())
+		for(const QString & key2 : _rowControlsOptions[key].keys())
+			_rowControlsOptions[key][key2]->replaceVariableName(oldName, newName);
+}

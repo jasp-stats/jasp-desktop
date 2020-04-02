@@ -197,10 +197,7 @@ void Analysis::reload()
 void Analysis::rebind()
 {
 	if (_analysisForm)
-	{
-
 		_analysisForm->bindTo();
-	}
 }
 
 void Analysis::exportResults()
@@ -432,6 +429,9 @@ void Analysis::replaceVariableName(const std::string & oldName, const std::strin
 {
 	if (_options)
 		_options->replaceVariableName(oldName, newName);
+
+	if (_analysisForm)
+		_analysisForm->replaceVariableNameInListModels(oldName, newName);
 }
 
 void Analysis::runScriptRequestDone(const QString& result, const QString& controlName)
