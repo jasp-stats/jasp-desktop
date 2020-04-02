@@ -1,7 +1,7 @@
 Negative binomial Distribution
 ==========================
 
-Demonstration of the Negative binomial distribution. 
+Demonstration of the Negative binomial distribution.
 
 ## Show Distribution
 
@@ -9,8 +9,8 @@ Displays theoretical Negative binomial distribution, given specified parameter v
 
 ### Parameters
 
-- &phi;, p: The Negative binomial distribution is specified using the number of successes and probability of success parameters
-- &phi;, &mu;: The Negative binomial distribution is specified using the dispersion and mean parameters
+- &phi;, p: The negative binomial distribution is parametrized with the number of successes and chance of success parameters.
+- &phi;, &mu;: The negative binomial distribution is parametrized using the dispersion and mean parameters.
 
 ### Display
 
@@ -20,14 +20,13 @@ Displays theoretical Negative binomial distribution, given specified parameter v
 - Cumulative distribution function: Displays the cumulative distribution plot
 
 ### Options
-
-- Range of x from ... to ... : Defines the limits of the x-axis of the probability density plot and cumulative distribution plot, and the limits of the y-axis of the quantile plot.
-- Highlight density: Highlights the probability density on the probability density plot and cumulative distribution plot at specified values of x
-- Highlight probability: Highlights the probability in between the specified values of x in the density plot (area under the curve), and highlights the cumulative probability at the specified values in the cumulative distribution plot
-- Interval: Select the bounds of the interval to display: Density is highlighted at the lower and upper bounds, the probability is displayed for the specified interval.
+- Range of x from ... to ... : Defines the limits of the *x*-axis of the probability density plot and cumulative distribution plot.
+- Highlight mass: Highlights the probability density on the probability density plot and cumulative distribution plot at specified values of x
+- Highlight cumulative probability: Highlights the probability in between the specified values of x in the density plot (area under the curve), and highlights the cumulative probability at the specified values in the cumulative distribution plot
+- Interval: Select the bounds of the ordered set to display: Density is highlighted at the lower and upper bounds, the probability is displayed for the specified interval.
 
 ## Generate and Display Data
-- Variable name: Specify the name of the variable. Once filled, creates an empty column in the current data set.
+- Variable name: Specify the name of the variable. Once filled, creates a column with samples drawn from the specified distribution in the current data set.
 - Number of samples: Specify the number of samples.
 - Draw samples: Sample from the theoretical distribution.
 
@@ -42,7 +41,7 @@ Displays theoretical Negative binomial distribution, given specified parameter v
 - Empirical cumulative distribution: Displays an empirical cumulative distribution plot of the selected variable.
 
 ## Estimate Parameters
-- Maximum likelihood: Fit the theoretical distribution to the selected variable by maximizing the likelihood function. The parameter values specified in Show distribution section serve as starting points for the procedure.
+- Maximum likelihood: Estimates the parameters by the values in the domain at which the likelihood function is maximized. The likelihood function fixes the data argument (based on the selected variable) in the theoretical density function and views it as a function of the parameters. The optimization procedure is initialized with the values for the parameters entered under "Show Distribution".
 
 ### Output
 - Estimates: Displays a table with the parameter estimates. Changing parametrization changes which parameters are displayed.
