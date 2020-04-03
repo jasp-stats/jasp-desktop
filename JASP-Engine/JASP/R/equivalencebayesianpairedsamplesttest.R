@@ -288,7 +288,6 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
 }
 
 .equivalenceMassFillPairedTableMain <- function(equivalenceMassPairedTTestTable, dataset, options, equivalenceBayesianPairedTTestResults) {
-
   for (pair in options$pairs) {
 
     namePair <- paste(pair[[1L]], " - ",  pair[[2L]], sep = "")

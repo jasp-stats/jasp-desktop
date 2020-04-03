@@ -136,7 +136,7 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
   # Create table
   equivalenceBayesianIndTTestTable <- createJaspTable(title = gettext("Equivalence Bayesian Independent Samples T-Test"))
   equivalenceBayesianIndTTestTable$dependOn(c("variables", "groupingVariable", "priorWidth",
-                                            "effectSizeStandardized", "equivalenceRegion", "lower", "upper", "region", "lowerbound", "upperbound", 
+                                            "effectSizeStandardized", "equivalenceRegion", "lower", "upper", "region", "lowerbound", "upperbound",
                                             "lower_max", "upper_min", "informative", "informativeCauchyLocation", "informativeCauchyScale",
                                             "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                             "informativeTScale", "informativeTDf"))
@@ -280,7 +280,6 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
 }
 
 .massPriorPosteriorIndpTTestTable <- function(jaspResults, dataset, options, equivalenceBayesianIndTTestResults, ready) {
-
   equivalenceMassTable <- createJaspTable(title = gettext("Prior and Posterior Mass Table"))
   equivalenceMassTable$dependOn(c("variables", "groupingVariable", "priorWidth", "lower", "upper", "region",
                                   "effectSizeStandardized", "equivalenceRegion", "lowerbound", "upperbound", "lower_max", "upper_min",
@@ -309,7 +308,6 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
 }
 
 .equivalenceMassFillTableMain <- function(equivalenceMassTable, dataset, options, equivalenceBayesianIndTTestResults) {
-
   for (variable in options$variables) {
 
     results <- equivalenceBayesianIndTTestResults[[variable]]
