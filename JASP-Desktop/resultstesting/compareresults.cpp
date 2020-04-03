@@ -29,8 +29,9 @@ void compareResults::sanitizeHtml(QString & result)
 			std::make_pair("&nbsp;",	" "),
 			std::make_pair("&tau;",		"tau"),
 			std::make_pair("<br>",		"\n"),
-			std::make_pair("\"Segoe UI\"", ""),
-			std::make_pair("\"Helvetica Neue\"", "")
+			std::make_pair("\"Segoe UI\"", ""), //Why are we replacing these fonts anyway?
+			std::make_pair("\"Helvetica Neue\"", ""),
+			std::make_pair("\"Lucida Grande\"", "")
 		});
 
 	for(auto & p : replacers)
