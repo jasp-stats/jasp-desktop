@@ -17,10 +17,8 @@
 
 EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options) {
   
-  #browser()
   ready <- (length(options$pairs) > 0)
   
-  # does this work? 
   for (pair in options$pairs) {
     if (pair[[1L]] == "" || pair[[2L]] == "")
       ready <- FALSE
@@ -33,6 +31,13 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   }
   
   # Compute the results
+  if(options[['equivalenceRegion']] == "lower"){
+    options$lowerbound <- -Inf
+    options$upperbound <- options$lower_max
+  } else if(options[['equivalenceRegion']] == "upper"){
+    options$lowerbound <- options$upper_min
+    options$upperbound <- Inf
+  }
   equivalenceBayesianPairedTTestResults <- .equivalenceBayesianPairedTTestComputeResults(jaspResults, dataset, options, ready, errors)
   
   # Output tables and plots
@@ -47,8 +52,8 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   if (options$plotSequentialAnalysis)
      .equivalencePlotSequentialAnalysis(jaspResults, dataset, options, equivalenceBayesianPairedTTestResults, ready, paired = TRUE)
   
-  if (options$densityPriorPosterior && is.null(jaspResults[["equivalenceDensityPairedTTestTable"]])) 
-    .densityPriorPosteriorPairedTTestTable(jaspResults, dataset, options, equivalenceBayesianPairedTTestResults, ready)
+  if (options$massPriorPosterior && is.null(jaspResults[["equivalenceMassPairedTTestTable"]])) 
+    .massPriorPosteriorPairedTTestTable(jaspResults, dataset, options, equivalenceBayesianPairedTTestResults, ready)
   
   return()
 }
@@ -115,7 +120,7 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   
   # Save results to state
   jaspResults[["stateEquivalenceBayesianPairedTTestResults"]] <- createJaspState(results)
-  jaspResults[["stateEquivalenceBayesianPairedTTestResults"]]$dependOn(c("pairs", "lowerbound", "upperbound", "missingValues",
+  jaspResults[["stateEquivalenceBayesianPairedTTestResults"]]$dependOn(c("pairs", "equivalenceRegion", "missingValues",
                                                                          "priorWidth", "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
                                                                          "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                                                          "informativeTScale", "informativeTDf")) 
@@ -128,7 +133,7 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   
   # Create table
   equivalenceBayesianPairedTTestTable <- createJaspTable(title = gettext("Equivalence Bayesian Paired Samples T-Test"))
-  equivalenceBayesianPairedTTestTable$dependOn(c("pairs", "lowerbound", "upperbound", "priorWidth", "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
+  equivalenceBayesianPairedTTestTable$dependOn(c("pairs", "equivalenceRegion", "priorWidth", "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
                                                  "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                                  "informativeTScale", "informativeTDf"))
   equivalenceBayesianPairedTTestTable$showSpecifiedColumnsOnly <- TRUE
@@ -251,36 +256,36 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   return()
 }
 
-.densityPriorPosteriorPairedTTestTable <- function(jaspResults, dataset, options, equivalenceBayesianPairedTTestResults, ready) {
+.massPriorPosteriorPairedTTestTable <- function(jaspResults, dataset, options, equivalenceBayesianPairedTTestResults, ready) {
   
   # Create table
-  equivalenceDensityPairedTTestTable <- createJaspTable(title = gettext("Equivalence Density Table"))
-  equivalenceDensityPairedTTestTable$dependOn(c("pairs", "lowerbound", "upperbound", "priorWidth", "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
+  equivalenceMassPairedTTestTable <- createJaspTable(title = gettext("Equivalence Mass Table"))
+  equivalenceMassPairedTTestTable$dependOn(c("pairs", "equivalenceRegion", "priorWidth", "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
                                                  "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                                  "informativeTScale", "informativeTDf"))
-  equivalenceDensityPairedTTestTable$showSpecifiedColumnsOnly <- TRUE
+  equivalenceMassPairedTTestTable$showSpecifiedColumnsOnly <- TRUE
   
   # Add Columns to table
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "variable1",   title = " ",                         type = "string")
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "separator",   title = " ",                         type = "separator")
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "variable2",   title = " ",                         type = "string")
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "section",     title = "Section",                   type = "string")
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "density",     title = "Density",                   type = "number")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "variable1",   title = " ",                         type = "string")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "separator",   title = " ",                         type = "separator")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "variable2",   title = " ",                         type = "string")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "section",     title = "Section",                   type = "string")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "mass",        title = "Mass",                      type = "number")
   
   if (ready)
-    equivalenceDensityPairedTTestTable$setExpectedSize(length(options$pairs))
+    equivalenceMassPairedTTestTable$setExpectedSize(length(options$pairs))
   
-  jaspResults[["equivalenceDensityPairedTTestTable"]] <- equivalenceDensityPairedTTestTable
+  jaspResults[["equivalenceMassPairedTTestTable"]] <- equivalenceMassPairedTTestTable
   
   if (!ready)
     return()
   
-  .equivalenceDensityFillPairedTableMain(equivalenceDensityPairedTTestTable, dataset, options, equivalenceBayesianPairedTTestResults)
+  .equivalenceMassFillPairedTableMain(equivalenceMassPairedTTestTable, dataset, options, equivalenceBayesianPairedTTestResults)
   
   return()
 }
 
-.equivalenceDensityFillPairedTableMain <- function(equivalenceDensityPairedTTestTable, dataset, options, equivalenceBayesianPairedTTestResults) {
+.equivalenceMassFillPairedTableMain <- function(equivalenceMassPairedTTestTable, dataset, options, equivalenceBayesianPairedTTestResults) {
   
   for (pair in options$pairs) {
     
@@ -288,32 +293,32 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
     results <- equivalenceBayesianPairedTTestResults[[namePair]]
     
     if (!is.null(results$status)) {
-      equivalenceDensityPairedTTestTable$addFootnote(message = results$errorFootnotes, rowNames = namePair, colNames = "density")
-      equivalenceDensityPairedTTestTable$addRows(list(variable1 = pair[[1L]], separator = "-", variable2 = pair[[2L]], density = NaN), rowNames = namePair)
+      equivalenceMassPairedTTestTable$addFootnote(message = results$errorFootnotes, rowNames = namePair, colNames = "mass")
+      equivalenceMassPairedTTestTable$addRows(list(variable1 = pair[[1L]], separator = "-", variable2 = pair[[2L]], mass = NaN), rowNames = namePair)
     } else {
-      equivalenceDensityPairedTTestTable$addRows(list(variable1     = pair[[1L]], 
-                                                      separator     = "-",
-                                                      variable2     = pair[[2L]],
-                                                      section       = "p(\U003B4 \U02208 I | H1)",
-                                                      density       = results$integralEquivalencePrior))
+      equivalenceMassPairedTTestTable$addRows(list(variable1     = pair[[1L]], 
+                                                   separator     = "-",
+                                                   variable2     = pair[[2L]],
+                                                   section       = "p(\U003B4 \U02208 I | H1)",
+                                                   mass          = results$integralEquivalencePrior))
       
-      equivalenceDensityPairedTTestTable$addRows(list(variable1     = " ", 
-                                                      separator     = " ",
-                                                      variable2     = " ",
-                                                      section       = "p(\U003B4 \U02208 I | H1, y)",
-                                                      density       = results$integralEquivalencePosterior)) 
+      equivalenceMassPairedTTestTable$addRows(list(variable1     = " ", 
+                                                   separator     = " ",
+                                                   variable2     = " ",
+                                                   section       = "p(\U003B4 \U02208 I | H1, y)",
+                                                   mass       = results$integralEquivalencePosterior)) 
       
-      equivalenceDensityPairedTTestTable$addRows(list(variable1     = " ", 
-                                                      separator     = " ",
-                                                      variable2     = " ",
-                                                      section       = "p(\U003B4 \U02209 I | H1)",
-                                                      density       = results$integralNonequivalencePrior)) 
+      equivalenceMassPairedTTestTable$addRows(list(variable1     = " ", 
+                                                   separator     = " ",
+                                                   variable2     = " ",
+                                                   section       = "p(\U003B4 \U02209 I | H1)",
+                                                   mass       = results$integralNonequivalencePrior)) 
       
-      equivalenceDensityPairedTTestTable$addRows(list(variable1     = " ", 
-                                                      separator     = " ",
-                                                      variable2     = " ",
-                                                      section       = "p(\U003B4 \U02209 I | H1, y)",
-                                                      density       = results$integralNonequivalencePosterior)) 
+      equivalenceMassPairedTTestTable$addRows(list(variable1     = " ", 
+                                                   separator     = " ",
+                                                   variable2     = " ",
+                                                   section       = "p(\U003B4 \U02209 I | H1, y)",
+                                                   mass       = results$integralNonequivalencePosterior)) 
     }
   }
 }

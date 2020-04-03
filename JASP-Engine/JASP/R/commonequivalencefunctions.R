@@ -23,7 +23,7 @@
   jaspResults[["equivalencePriorPosteriorContainer"]] <- equivalencePriorPosteriorContainer
   
   equivalencePriorPosteriorContainer$dependOn(c("priorandposterior", "missingValues", "priorWidth",
-                                                "effectSizeStandardized", "lowerbound", "upperbound", 
+                                                "effectSizeStandardized", "equivalenceRegion", 
                                                 "informative", "informativeCauchyLocation", "informativeCauchyScale",
                                                 "informativeNormalMean", "informativeNormalStd", "informativeTLocation", 
                                                 "informativeTScale", "informativeTDf", "priorandposteriorAdditionalInfo"))
@@ -38,9 +38,6 @@
   }
   
   for (variable in variables) {
-  
-    # Equivalence bounds
-    xx <- seq(min(options$lowerbound), max(options$upperbound), length.out = 1000)
     
     if (paired) {
       variable <- paste(variable[[1L]], variable[[2L]], sep = " - ")
@@ -74,7 +71,7 @@
       n1             <- results[["n1"]]
       n2             <- if (paired) NULL else results[["n2"]]
       r              <- options[["priorWidth"]]
-      BF <- results$bfEquivalence / results$bfNonequivalence
+      BF             <- results$bfEquivalence / results$bfNonequivalence
       
       # Make an error when BF is either 0 or inf., then no plot possible 
       if (BF == 0 || BF == Inf) {
@@ -234,6 +231,16 @@
                                                  options  = options)
         
         # Calculate prior and posterior over the interval range
+        
+        # Equivalence bounds
+        if (options$lowerbound == -Inf) {
+          xx <- seq(min(xticks), max(options$upperbound), length.out = 1000) 
+        } else if (options$upperbound == Inf) {
+          xx <- seq(min(options$lowerbound), max(xticks), length.out = 1000)
+        } else {
+          xx <- seq(min(options$lowerbound), max(options$upperbound), length.out = 1000)
+        }
+        
         priorInterval <- .dprior_informative(xx, 
                                              oneSided = oneSided, 
                                              options  = options)
@@ -294,11 +301,8 @@
         
         # Set limits plot
         xlim <- vector("numeric", 2)
-        
-        if (oneSided == FALSE) {
-          xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
-          xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
-        }
+        xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
+        xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
         
         xticks <- pretty(xlim)
         ylim <- vector("numeric", 2)
@@ -329,6 +333,15 @@
                                              oneSided = oneSided)
         
         # Calculate prior and posterior over the interval range
+        # Equivalence bounds
+        if (options$lowerbound == -Inf) {
+          xx <- seq(min(xticks), max(options$upperbound), length.out = 1000) 
+        } else if (options$upperbound == Inf) {
+          xx <- seq(min(options$lowerbound), max(xticks), length.out = 1000)
+        } else {
+          xx <- seq(min(options$lowerbound), max(options$upperbound), length.out = 1000)
+        }
+        
         priorInterval <- .dprior(x        = xx, 
                                  r        = r, 
                                  oneSided = oneSided)
@@ -664,7 +677,7 @@
   equivalenceSequentialContainer <- createJaspContainer(title = gettext("Equivalence Sequential Analysis"))
   
   equivalenceSequentialContainer$dependOn(c("missingValues", "priorWidth",
-                                            "effectSizeStandardized", "lowerbound", "upperbound",
+                                            "effectSizeStandardized", "equivalenceRegion",
                                             "informative", "informativeCauchyLocation", "informativeCauchyScale",
                                             "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                             "informativeTScale", "informativeTDf", "plotSequentialAnalysisRobustness"))
@@ -709,9 +722,6 @@
       group1 <- subDataSet[[1L]]
       group2 <- subDataSet[[2L]]
       
-      #p1 <- .v(variable[[1L]])
-      #p2 <- .v(variable[[2L]])
-      
       var <- variable
       variable <- title
     } else {
@@ -754,7 +764,7 @@
       # Make an error when BF is either 0 or inf., then no plot possible
       BF <- results$bfEquivalence / results$bfNonequivalence
       if (BF == 0 || BF == Inf) {
-        equivalenceTTestPriorPosterior$setError("Currently a plot with a Bayes factor of Inf or 0 is not supported")
+        equivalenceTTestSequential$setError("Currently a plot with a Bayes factor of Inf or 0 is not supported")
         return()
       }
       
@@ -1018,7 +1028,6 @@
     bfType          = bftype,
     hypothesis      = "equal",
     evidenceLeveltxt = FALSE,
-   # evidenceTxt     = JASPgraphs::parseThis("H[phantom()%in%phantom()]"),
     arrowLabel      = JASPgraphs::parseThis(c("H[phantom()%notin%phantom()]", "H[phantom()%in%phantom()]")),
     bfSubscripts    = JASPgraphs::parseThis(c("BF[phantom()%in%phantom()%notin%phantom()]",
                                               "BF[phantom()%notin%phantom()%in%phantom()]")),
