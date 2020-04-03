@@ -288,9 +288,9 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
                                   "informativeTScale", "informativeTDf"))
 
 
-  equivalenceDensityTable$addColumnInfo(name = "variable",         title = gettext("Variable"),        type = "string", combine = TRUE)
-  equivalenceDensityTable$addColumnInfo(name = "section",          title = gettext("Section"),         type = "string")
-  equivalenceDensityTable$addColumnInfo(name = "density",          title = gettext("Density"),      type = "number")
+  equivalenceMassTable$addColumnInfo(name = "variable",         title = gettext("Variable"),        type = "string", combine = TRUE)
+  equivalenceMassTable$addColumnInfo(name = "section",          title = gettext("Section"),         type = "string")
+  equivalenceMassTable$addColumnInfo(name = "mass",             title = gettext("Mass"),            type = "number")
 
   equivalenceMassTable$showSpecifiedColumnsOnly <- TRUE
 

@@ -266,11 +266,11 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   equivalenceMassPairedTTestTable$showSpecifiedColumnsOnly <- TRUE
 
   # Add Columns to table
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "variable1",   title = " ",                         type = "string")
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "separator",   title = " ",                         type = "separator")
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "variable2",   title = " ",                         type = "string")
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "section",     title = gettext("Section"),                   type = "string")
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "density",     title = gettext("Density"),                   type = "number")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "variable1",   title = " ",                         type = "string")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "separator",   title = " ",                         type = "separator")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "variable2",   title = " ",                         type = "string")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "section",     title = gettext("Section"),                   type = "string")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "mass",     title = gettext("Mass"),                   type = "number")
 
   if (ready)
     equivalenceMassPairedTTestTable$setExpectedSize(length(options$pairs))
