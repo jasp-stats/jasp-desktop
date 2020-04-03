@@ -54,8 +54,13 @@ then
   $QT_KIT_FULL/bin/qmake -set ENVIRONMENT_CRYPTKEY "$CRYPTKEY" || exit 1
 fi
 
-echo "Making sure QM files are generated"
-$QT_KIT_FULL/bin/qmake -set AM_I_BUILDBOT "I_AM_BUILDBOT" || exit 1
+if [ "$2" == "" ]
+then
+  echo "Making sure QM files are generated"
+  $QT_KIT_FULL/bin/qmake -set AM_I_BUILDBOT "I_AM_BUILDBOT" || exit 1
+else
+  echo "Not telling it we are buildbot because you gave a second argument to the script" 
+fi
 
 echo "Running qmake!"
 $QT_KIT_FULL/bin/qmake -makefile -nocache -o ../$JASP_BUILD_DIR/Makefile JASP.pro || exit 1
