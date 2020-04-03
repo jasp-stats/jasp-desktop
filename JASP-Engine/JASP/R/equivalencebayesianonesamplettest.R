@@ -233,9 +233,9 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
                                      "informativeNormalMean", "informativeNormalStd", "informativeTLocation", 
                                      "informativeTScale", "informativeTDf"))
   
-  equivalenceDensityTable$addColumnInfo(name = "variable",         title = "Variable",        type = "string", combine = TRUE)
-  equivalenceDensityTable$addColumnInfo(name = "section",          title = "Section",         type = "string")
-  equivalenceDensityTable$addColumnInfo(name = "density",          title = "Density",         type = "number")
+  equivalenceDensityTable$addColumnInfo(name = "variable",         title = gettext("Variable"),        type = "string", combine = TRUE)
+  equivalenceDensityTable$addColumnInfo(name = "section",          title = gettext("Section"),         type = "string")
+  equivalenceDensityTable$addColumnInfo(name = "density",          title = gettext("Density"),         type = "number")
   
   equivalenceDensityTable$showSpecifiedColumnsOnly <- TRUE
   
