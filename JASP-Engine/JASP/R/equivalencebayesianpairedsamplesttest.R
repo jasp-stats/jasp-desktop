@@ -264,8 +264,8 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   equivalenceDensityPairedTTestTable$addColumnInfo(name = "variable1",   title = " ",                         type = "string")
   equivalenceDensityPairedTTestTable$addColumnInfo(name = "separator",   title = " ",                         type = "separator")
   equivalenceDensityPairedTTestTable$addColumnInfo(name = "variable2",   title = " ",                         type = "string")
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "section",     title = "Section",                   type = "string")
-  equivalenceDensityPairedTTestTable$addColumnInfo(name = "density",     title = "Density",                   type = "number")
+  equivalenceDensityPairedTTestTable$addColumnInfo(name = "section",     title = gettext("Section"),                   type = "string")
+  equivalenceDensityPairedTTestTable$addColumnInfo(name = "density",     title = gettext("Density"),                   type = "number")
   
   if (ready)
     equivalenceDensityPairedTTestTable$setExpectedSize(length(options$pairs))
@@ -317,5 +317,4 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
     }
   }
 }
-
 
