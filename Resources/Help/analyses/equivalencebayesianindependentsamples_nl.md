@@ -1,7 +1,7 @@
 Gelijkwaardigheids Bayesiaanse T-Toets voor Onafhankelijke Steekproeven
 ===
 
-Met de gelijkwaardigheids t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgrootte schatten en de nulhypothese dat steekproefgemiddelden van twee onafhankelijke steekproeven binnen een interval vallen, de zogenaamde gelijkwaardigheids regio. Het verschil met de klassieke nul hypothese significantie toets is dat in gelijkwaardigheids toetsen, de nul hypothese een interval rond de test waarde beslaat in plaats van een punt nul.
+Met de gelijkwaardigheids t-toets voor onafhankelijke steekproeven kan de gebruiker de nulhypothese toetsen dat de effectgrootte van het steekproefgemiddelden van twee onafhankelijke steekproeven binnen een door de gebruiker gedefinieerd interval valt, d.w.z. de gelijkwaardigheids regio.
 
 ### Assumpties
 ---
@@ -18,8 +18,7 @@ Met de gelijkwaardigheids t-toets voor onafhankelijke steekproeven kan de gebrui
 - Groeperende Variabele: In deze box wordt de variabele die de groepen definieert geselecteerd.
 
 #### Gelijkwaardigheids regio
-- Bovengrens: De bovengrens van de gelijkswaardigheids regio.
-- Ondergrens: De ondergrens van de gelijkswaardigheids regio.
+- van ... tot ... : Bepaalt de gelijkwaardigheids regio door de boven- en ondergrens te specificeren.
 
 #### Grafieken
 - Prior en posterior: Geeft de verdeling van de prior en posterior van de effectgrootte onder de alternatieve hypothese.
@@ -29,6 +28,7 @@ Met de gelijkwaardigheids t-toets voor onafhankelijke steekproeven kan de gebrui
 
 #### Aanvullende statistieken
 - Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaarddeviatie, standaard fout van het gemiddelde voor elke groep.
+- Prior en posterior massa: Geeft de prior en posterior massa binnen en buiten de ingestelde gelijkswaardigheids regio weer.
 
 #### Ontbrekende Waarden
  - Het uitsluiten van waarnemingen, analyse voor analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets.
@@ -48,10 +48,10 @@ Met de gelijkwaardigheids t-toets voor onafhankelijke steekproeven kan de gebrui
 #### Gelijkwaardigheids Bayesiaanse T-Toets voor Onafhankelijke Steekproeven
 - De eerste kolom bevat the afhankelijke variabele.
 - Model Vergelijking:
-   - $\delta$ $\in$ I vs. H1: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsinterval hypothese ten opzichte van de ongelimiteerde alternative hypothese.
-   - $\delta$ $\notin$ I vs. H1: De Bayes factor die bewijs geeft voor de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt ten opzichte van de ongelimiteerde alternative hypothese.
-   - $\delta$ $\in$ I vs. $\delta$ $\notin$ I: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsinterval hypothese ten opzichte van de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt.
-   - $\delta$ $\notin$ I vs. $\delta$ $\in$ I: De Bayes factor die bewijs geeft voor de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt ten opzichte van de gelijkwaardigheidsinterval hypothese.
+   - &delta; &in; I vs. H<sub>1</sub>: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsinterval hypothese ten opzichte van de ongelimiteerde alternative hypothese.
+   - &delta; &notin; I vs. H<sub>1</sub>: De Bayes factor die bewijs geeft voor de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt ten opzichte van de ongelimiteerde alternative hypothese.
+   - &delta; &in; I vs. &delta; &notin; I: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsinterval hypothese ten opzichte van de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt.
+   - &delta; &notin; I vs. &delta; &in; I: De Bayes factor die bewijs geeft voor de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt ten opzichte van de gelijkwaardigheidsinterval hypothese.
 - BF: De Bayes factor.
 - fout %: De fout van de Gaussiaanse kwadratuur intergratie methode die wordt gebruikt op de Bayes factor te berekenen.
 
@@ -62,6 +62,11 @@ Met de gelijkwaardigheids t-toets voor onafhankelijke steekproeven kan de gebrui
 - Gemiddelde: Het gemiddelde van de afhankelijke variabele per groep.
 - SD: Standaarddeviatie van het gemiddelde.
 - Std. Fout: Standaardfout van het gemiddelde.
+
+#### Prior en Posterior Massa Tabel
+- De eerste kolom bevat de afhankelijke variabele.
+- Sectie: Het gedeelte waaronder de massa wordt berekend.
+- Massa: Geeft de massa onder de sectie weer.
 
 #### Grafieken
 - Prior en posterior: Geeft de prior (stippellijn) en posterior (lijn) verdeling van de effectgrootte onder de alternatieve hypothese; het grijze gebied geeft de gelijkwaardigheids regio van de dichtheid van de prior en de posterior weer. De horizontale lijn geeft de breedte van een 95% geloofwaardigheidsinterval van de posterior verdeling weer.

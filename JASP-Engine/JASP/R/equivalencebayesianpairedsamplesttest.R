@@ -270,7 +270,7 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   equivalenceMassPairedTTestTable$addColumnInfo(name = "separator",   title = " ",                         type = "separator")
   equivalenceMassPairedTTestTable$addColumnInfo(name = "variable2",   title = " ",                         type = "string")
   equivalenceMassPairedTTestTable$addColumnInfo(name = "section",     title = gettext("Section"),                   type = "string")
-  equivalenceMassPairedTTestTable$addColumnInfo(name = "mass",     title = gettext("Mass"),                   type = "number")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "mass",        title = gettext("Mass"),                   type = "number")
 
   if (ready)
     equivalenceMassPairedTTestTable$setExpectedSize(length(options$pairs))
@@ -306,19 +306,19 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
                                                    separator     = " ",
                                                    variable2     = " ",
                                                    section       = "p(\U003B4 \U02208 I | H1, y)",
-                                                   mass       = results$integralEquivalencePosterior))
+                                                   mass          = results$integralEquivalencePosterior))
 
       equivalenceMassPairedTTestTable$addRows(list(variable1     = " ",
                                                    separator     = " ",
                                                    variable2     = " ",
                                                    section       = "p(\U003B4 \U02209 I | H1)",
-                                                   mass       = results$integralNonequivalencePrior))
+                                                   mass          = results$integralNonequivalencePrior))
 
       equivalenceMassPairedTTestTable$addRows(list(variable1     = " ",
                                                    separator     = " ",
                                                    variable2     = " ",
                                                    section       = "p(\U003B4 \U02209 I | H1, y)",
-                                                   mass       = results$integralNonequivalencePosterior))
+                                                   mass          = results$integralNonequivalencePosterior))
     }
   }
 }

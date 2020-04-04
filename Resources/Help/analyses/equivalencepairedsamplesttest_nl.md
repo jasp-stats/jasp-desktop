@@ -1,9 +1,7 @@
 Gelijkwaardigheids Gepaarde T-Toets
 ==========================
 
-Met de gelijkwaardigheids gepaarde t-toets kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde van het verschil tussen gepaarde waarnemingen binnen een interval valt, de zogenaamde gelijkwaardigheids regio.
-Het verschil met de klassieke nul hypothese significantie toets is dat in gelijkwaardigheids toetsen, de nul hypothese een interval rond de test waarde beslaat in plaats van een punt-nul.
-De analyse volgt de twee eenzijdige toets (TOST) procedure.
+Met de gelijkwaardigheids gepaarde t-toets kan de gebruiker de nul hypothese toetsen dat het populatiegemiddelde van het verschil tussen gepaarde waarnemingen binnen een door de gebruiker gedefinieerd interval valt, d.w.z. de gelijkwaardigheids regio. De analyse volgt de twee eenzijdige toetsen (TOST).
 
 ### Assumpties
 - De verschilscore is continu.
@@ -25,7 +23,7 @@ De analyse volgt de twee eenzijdige toets (TOST) procedure.
 
 #### Aanvullende Statistieken
 - Beschrijvend: Steekproefgrootte, steekproefgemiddelde, steekproefstandaarddeviatie, standaardfout van het gemiddelde voor elke maat.
-- Gelijkwaardigheidsgrenzen grafiek: De TOST-procedure is hetzelfde als visueel inspecteren of het 100 - (2 * alfa)% betrouwbaarheidsinterval binnen de ingestelde gelijkwaardigheidsgrenzen valt.
+- Gelijkwaardigheidsgrenzen grafiek: Geeft aan of het 100-(2*alfa)% betrouwbaarheidsinterval binnen de ingestelde gelijkwaardigheidsgrenzen valt.
 
 #### Ontbrekende Waarden
  - Het uitsluiten van waarnemingen, analyse bij analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke t-toets uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets. Dit is de standaardoptie.

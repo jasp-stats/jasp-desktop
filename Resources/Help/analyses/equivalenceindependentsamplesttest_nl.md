@@ -1,9 +1,7 @@
 Gelijkwaardigheids T-Toets voor Onafhankelijke Steekproeven
 ==========================
 
-Met de gelijkwaardigheids t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgrootte schatten en de nulhypothese dat steekproefgemiddelden van twee onafhankelijke steekproeven binnen een interval vallen, de zogenaamde gelijkwaardigheids regio.
-Het verschil met de klassieke nul hypothese significantie toets is dat in gelijkwaardigheids toetsen, de nul hypothese een interval rond de test waarde beslaat in plaats van een punt-nul.
-De analyse volgt de twee eenzijdige toets (TOST) procedure.
+Met de gelijkwaardigheids t-toets voor onafhankelijke steekproeven kan de gebruiker de nulhypothese toetsen dat de steekproefgemiddelden van twee onafhankelijke steekproeven binnen een door de gebruiker gedefinieerd interval vallen, d.w.z. de gelijkwaardigheids regio. De analyse volgt de twee eenzijdige toetsen (TOST).
 
 ### Assumpties
 - De afhankelijke variabele is continu.
@@ -31,7 +29,7 @@ De analyse volgt de twee eenzijdige toets (TOST) procedure.
 
 #### Aanvullende Statistieken
 - Beschrijvend: Steekproefgrootte, steekproefgemiddelde, steekproefstandaarddeviatie, standaardfout van het gemiddelde voor elke maat.
-- Gelijkwaardigheidsgrenzen grafiek: De TOST-procedure is hetzelfde als visueel inspecteren of het 100 - (2 * alfa)% betrouwbaarheidsinterval binnen de ingestelde gelijkwaardigheidsgrenzen valt.
+- Gelijkwaardigheidsgrenzen grafiek: Geeft aan of het 100 - (2 * alpha)% betrouwbaarheidsinterval binnen de ingestelde gelijkwaardigheidsgrenzen valt.
 
 #### Ontbrekende Waarden
  - Het uitsluiten van waarnemingen, analyse voor analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets. Dit is de standaardoptie.

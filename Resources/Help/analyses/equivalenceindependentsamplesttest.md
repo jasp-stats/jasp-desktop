@@ -1,7 +1,7 @@
 Equivalence Independent Samples T-Test
 ==========================
 
-The equivalence independent samples t-test allows the user to estimate the effect size and test the null hypothesis that the population means of two independent groups are fall inside an interval (i.e., equivalence region). The difference with a standard null hypothesis significance test is that in equivalence testing, the null hypothesis covers a small interval around 0 difference instead of a point-null. This is done according to the two-one-sided test (TOST).
+The equivalence independent samples t-test allows the user to test the null hypothesis that the population means of two independent groups fall inside a by the user-defined interval, i.e., the equivalence region.  This procedure follows the two-one-sided test (TOST).
 
 ### Assumptions
 - The dependent variable is continuous.
@@ -30,7 +30,7 @@ The equivalence independent samples t-test allows the user to estimate the effec
 
 #### Additional Statistics
 - Descriptives: Sample size, sample mean, sample standard deviation, standard error of the mean for each group.
-- Equivalence bounds plot: The TOST procedure is the same as visually inspecting if the 100 - (2*alpha)% confidence interval falls within the set equivalence bounds.
+- Equivalence bounds plot: Displays if the 100 - (2 * alpha)% confidence interval falls within the set equivalence bounds.
 
 ### Missing Values
  - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the tests. This options is selected by default.

@@ -240,8 +240,8 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
                                   "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                   "informativeTScale", "informativeTDf"))
 
-  equivalenceMassTable$addColumnInfo(name = "variable",         title = gettext("Variable"),        type = "string", combine = TRUE)
-  equivalenceMassTable$addColumnInfo(name = "section",          title = gettext("Section"),         type = "string")
+  equivalenceMassTable$addColumnInfo(name = "variable",      title = gettext("Variable"),     type = "string", combine = TRUE)
+  equivalenceMassTable$addColumnInfo(name = "section",       title = gettext("Section"),      type = "string")
   equivalenceMassTable$addColumnInfo(name = "mass",          title = gettext("Mass"),         type = "number")
 
 

@@ -1,7 +1,7 @@
 Equivalence Paired Samples T-Test
 ==========================
 
-The equivalence paired samples t-test allows the user to estimate the effect size and test the null hypothesis that the population mean of the difference between paired observations falls inside an interval (i.e., equivalence region). The difference with a standard null hypothesis significance test is that in equivalence testing, the null hypothesis covers a small interval around 0 instead of a point-null. This procedure is done according to the two-one-sided test (TOST).
+The equivalence paired samples t-test allows the user to test the null hypothesis that the effect size of the population mean of the difference between paired observations falls inside an interval (i.e., equivalence region). The procedure follows the two-one-sided test (TOST).
 
 ### Assumptions
 - The difference score is continuous.
@@ -23,7 +23,7 @@ The equivalence paired samples t-test allows the user to estimate the effect siz
 
 #### Additional Statistics
 - Descriptives: Sample size, sample mean, sample standard deviation, standard error of the mean for each group.
-- Equivalence bounds plot: The TOST procedure is the same as visually inspecting if the 100 - (2*alpha)% confidence interval falls within the set equivalence bounds.
+- Equivalence bounds plot: Displays if the 100-(2*alpha)% confidence interval falls within the set equivalence bounds.
 
 ### Missing Values
  - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the tests. This options is selected by default.
