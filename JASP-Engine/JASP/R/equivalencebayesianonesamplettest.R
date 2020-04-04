@@ -233,7 +233,7 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
 
 .massPriorPosteriorOneTTestTable <- function(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready) {
 
-  equivalenceMassTable <- createJaspTable(title = "Prior and Posterior Mass Table")
+  equivalenceMassTable <- createJaspTable(title = gettext("Prior and Posterior Mass Table"))
   equivalenceMassTable$dependOn(c("variables", "priorWidth", "mu",
                                   "effectSizeStandardized", "equivalenceRegion",
                                   "informative", "informativeCauchyLocation", "informativeCauchyScale",
