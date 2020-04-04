@@ -222,7 +222,7 @@
         {
           "name": "Oogbewegingen",
           "path": "Eye Movements.jasp",
-          "description": "Het aantal correct herinnerde woorden in twee groepen participanten - tijdens de retentie interval kreeg een groep de instructie om te focussen op een stip centraal getoond in de taak. <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse onafhankelijke steekproeven t-toets kan worden toegepast.<br><br> <i>Subset van de data gerapporteerd in Matzke et al. (2015).<\/i>",
+          "description": "Het aantal correct herinnerde woorden in twee groepen participanten - tijdens de retentie interval kreeg een groep de instructie om te focussen op een stip centraal getoond in de taak. <br><br> Het voorbeeldbestand in JASP laat zien hoe een 'Bayesiaanse t-toets onafhankelijke steekproeven' kan worden toegepast.<br><br> <i>Subset van de data gerapporteerd in Matzke et al. (2015).<\/i>",
           "kind": "file",
           "associated_datafile": "Eye Movements.csv"
         },
@@ -250,7 +250,7 @@
         {
           "name": "Stereogrammen",
           "path": "Stereograms.jasp",
-          "description": "De tijd die twee groepen participanten nodig hadden om de voorwerpen verborgen in een stereogram te vinden - de ene groep werd vooraf ingelicht over de scene, de andere groep niet. <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse onafhankelijke steekproeven t-toets kan worden toegepast.<br><br> <i>Data gerapporteerd in Frisby & Clatworthy (1975).<\/i>",
+          "description": "De tijd die twee groepen participanten nodig hadden om de voorwerpen verborgen in een stereogram te vinden - de ene groep werd vooraf ingelicht over de scene, de andere groep niet. <br><br> Het voorbeeldbestand in JASP laat zien hoe een 'Bayesiaanse t-toets onafhankelijke steekproeven' kan worden toegepast.<br><br> <i>Data gerapporteerd in Frisby & Clatworthy (1975).<\/i>",
           "kind": "file",
           "associated_datafile": "Stereograms.csv"
         },

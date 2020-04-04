@@ -1032,7 +1032,7 @@ msgstr "Selecteer ontwikkelaarsmap"
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr "Navigeer naar uw JASP-modulemap"
+msgstr "Navigeer naar uw JASP-modulemap."
 
 msgctxt "PrefsAdvanced|"
 msgid "Regenerate package metadata every time (DESCRIPTION & NAMESPACE)"
@@ -1098,7 +1098,9 @@ msgid ""
 "You need to reload your data to take effect! Check help for more info."
 msgstr ""
 "Drempelwaarde aantal unieke gehele getallen voor het classificeren van een "
-"variabele als 'schaal'. \n"
+"variabele als 'schaal'.\n"
+"U moet uw gegevens opnieuw laden om effect te hebben! Controleer de help "
+"voor meer informatie."
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
@@ -1256,7 +1258,7 @@ msgstr "Nier klaar voor gebruik?"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr "Deïnstalleer module"
+msgstr "Deïnstalleer module "
 
 msgctxt "RibbonBar|"
 msgid "Show Modules Menu"
@@ -2761,7 +2763,7 @@ msgstr "<b>Variabele definitie</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Record ID's"
-msgstr "Boeking ID's "
+msgstr "Boeking ID's"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Book Values <i>(required)</i>"
@@ -2898,7 +2900,7 @@ msgstr "2. Selectie"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Ranking Variable <i>(optional)</i>"
-msgstr "Rangvariabele <i>(optioneel)</i> "
+msgstr "Rangvariabele <i>(optioneel)</i>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid "Additional Variables <i>(optional)</i>"
@@ -3122,7 +3124,7 @@ msgstr "Laag"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Expected Errors"
-msgstr "Verwachte fouten "
+msgstr "Verwachte fouten"
 
 #| msgid "Explanator4 Text"
 msgctxt "auditBayesianPlanning|"
@@ -4032,10 +4034,6 @@ msgid "Boxplots"
 msgstr "Boxplots"
 
 msgctxt "Descriptives|"
-msgid "Label Outliers"
-msgstr "Label uitschieters"
-
-msgctxt "Descriptives|"
 msgid "Color"
 msgstr "Kleur"
 
@@ -4069,7 +4067,7 @@ msgstr "Kwartielen"
 
 msgctxt "Descriptives|"
 msgid "Cut points for: "
-msgstr "Snij punten af voor:"
+msgstr "Snij punten af voor: "
 
 msgctxt "Descriptives|"
 msgid " equal groups"
@@ -5785,7 +5783,7 @@ msgstr "Schaalvoorspellers"
 
 msgctxt "mlClassificationLda|"
 msgid "Set seed: "
-msgstr "Gebruik toevalsgenerator beginwaarde:"
+msgstr "Gebruik toevalsgenerator beginwaarde: "
 
 msgctxt "mlClassificationLda|"
 msgid "Add predicted classes to data"
@@ -6849,7 +6847,7 @@ msgstr "Methode"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Study Labels"
-msgstr "Bestudeer Labels"
+msgstr "Studienamen"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Covariates"
@@ -6905,7 +6903,7 @@ msgstr "Covariantiematrix"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Model Fit"
-msgstr "Model passing"
+msgstr "Model Passing"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Fit measures"
@@ -6913,7 +6911,7 @@ msgstr "Pasmaten"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Forest plot"
-msgstr "Forest diagram"
+msgstr "Forestgrafiek"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Funnel plot"
@@ -6921,19 +6919,19 @@ msgstr "Funnelgrafiek"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Rank test for funnel plot asymmetry"
-msgstr "Rangschik toets voor funnelgrafiek asymmetrisch"
+msgstr "Rangordetoets voor funnelgrafiek-asymmetrie"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Regression test for funnel plot asymmetry"
-msgstr "Regressietoets voor funnelgrafiek asymmetrisch"
+msgstr "Regressietoets voor funnelgrafiek-asymmetrie"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Residuals Model"
-msgstr "Residuenmodel"
+msgstr "Residuen Model"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Residuals parameters"
-msgstr "Residuenparameters"
+msgstr "Residuen Parameters"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Diagnostics"
@@ -7065,7 +7063,7 @@ msgstr "Funnelgrafiek"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Forest plot"
-msgstr "Forest diagram"
+msgstr "Forestgrafiek"
 
 msgctxt "MultilevelMetaAnalysis|"
 msgid "Advanced"
@@ -7700,18 +7698,6 @@ msgid "Abbreviate labels to "
 msgstr "Kort labels af tot "
 
 msgctxt "NetworkAnalysis|"
-msgid "Network Size"
-msgstr "Netwerkgrootte"
-
-msgctxt "NetworkAnalysis|"
-msgid "Fixed ratio"
-msgstr "Vaste ratio"
-
-msgctxt "NetworkAnalysis|"
-msgid "Free"
-msgstr "Vrij"
-
-msgctxt "NetworkAnalysis|"
 msgid "Show Variable Names"
 msgstr "Toon Variabelnamen"
 
@@ -7806,18 +7792,6 @@ msgstr "Variabelen"
 msgctxt "Correlation|"
 msgid "Condition on"
 msgstr "Conditie op"
-
-msgctxt "Correlation|"
-msgid "Correlation Coefficient"
-msgstr "Correlatiecoëfficiënt"
-
-msgctxt "Correlation|"
-msgid "Pearson"
-msgstr "Pearson"
-
-msgctxt "Correlation|"
-msgid "Spearman"
-msgstr "Spearman"
 
 msgctxt "Correlation|"
 msgid "Kendall's tau-b"
@@ -7939,14 +7913,6 @@ msgstr "Ontbrekende waarden"
 msgctxt "Correlation|"
 msgid "Exclude cases pairwise"
 msgstr "Sluit waarnemingen paarsgewijs uit"
-
-msgctxt "CorrelationBayesian|"
-msgid "Correlation Coefficient"
-msgstr "Correlatiecoëfficiënt"
-
-msgctxt "CorrelationBayesian|"
-msgid "Spearman"
-msgstr "Spearman"
 
 msgctxt "CorrelationBayesian|"
 msgid "Kendall's tau-b"
@@ -8899,14 +8865,6 @@ msgstr "Beta prior: parameter b"
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Sample size"
 msgstr "Steekproefgrootte"
-
-msgctxt "SummaryStatsCorrelationBayesianPairs|"
-msgid "Correlation Coefficient"
-msgstr "Correlatiecoëfficiënt"
-
-msgctxt "SummaryStatsCorrelationBayesianPairs|"
-msgid "Pearson's rho"
-msgstr "Pearson's rho"
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Kendall's tau-b"
@@ -10261,11 +10219,6 @@ msgstr "Geen drop key gevonden voor %1"
 
 #, qt-format
 msgctxt "BoundQMLComboBox|"
-msgid "Unknown option %1 in ComboBox %2"
-msgstr "Onbekende optie %1 in ComboBox %2"
-
-#, qt-format
-msgctxt "BoundQMLComboBox|"
 msgid "Unknown error in ComboBox %1"
 msgstr "Onbekende fout in ComboBox %1"
 
@@ -10454,7 +10407,7 @@ msgstr "Alle"
 
 msgctxt "VariablesForm|"
 msgid "There is no Available List in the Variables Form"
-msgstr "Er is geen beschikbare lijst in het Variabelen Scherm "
+msgstr "Er is geen beschikbare lijst in het Variabelen Scherm"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -10625,7 +10578,7 @@ msgid ""
 "their default values:%1"
 msgstr ""
 "Deze componenten werden geladen met een verkeerd soort waarde en kregen hun "
-"standaard waarden."
+"standaard waarden:%1"
 
 msgctxt "AnalysisForm|"
 msgid ""
@@ -10659,7 +10612,7 @@ msgstr "De uitdrukking heeft geen getal geretourneerd."
 #, qt-format
 msgctxt "BoundQMLTextInput|"
 msgid "The result (%1) must be %2"
-msgstr "Het resultaat (%1) moet %2 zijn."
+msgstr "Het resultaat (%1) moet %2 zijn"
 
 msgctxt "SEMSimple|"
 msgid "Thresholds"
@@ -10744,10 +10697,6 @@ msgstr "Groepeer tot één figuur"
 msgctxt "mlClusteringRandomForest|"
 msgid "Cluster densities"
 msgstr "Cluster dichtheden"
-
-msgctxt "CorrelationBayesian|"
-msgid "Pearson"
-msgstr "Pearson"
 
 msgctxt "CorrelationBayesian|"
 msgid "Display pairwise table"
@@ -12790,7 +12739,7 @@ msgstr "95% betrouwbaarheidsinterval onder- en bovengrens"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Study Labels"
-msgstr "Bestudeer Labels"
+msgstr "Studienamen"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Model"
@@ -12878,11 +12827,11 @@ msgstr "Afkapping"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Lower bound:"
-msgstr "Ondergrens"
+msgstr "Ondergrens:"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Upper bound:"
-msgstr "Bovengrens"
+msgstr "Bovengrens:"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Heterogeneity (Between study SD)"
@@ -12910,7 +12859,7 @@ msgstr "Grafieken"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Forest plot"
-msgstr "Forest diagram"
+msgstr "Forestgrafiek"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Observed"
@@ -12942,7 +12891,7 @@ msgstr "Rijvolgorde"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Cumulative forest plot"
-msgstr "Cumulatief forest diagram"
+msgstr "Cumulatieve forestgrafiek"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Prior and posterior"
@@ -14329,7 +14278,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr "Opslaan mislukt."
+msgstr "Opslaan mislukt"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -14376,7 +14325,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
-msgstr "GitHub kan niet geopend worden voor u."
+msgstr "GitHub kon niet voor u geopend worden"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -14491,7 +14440,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
-msgstr "Verwijder alle analyses."
+msgstr "Verwijder alle analyses"
 
 msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
@@ -14531,7 +14480,7 @@ msgstr ""
 #, qt-format
 msgctxt "DynamicModules|"
 msgid "Loading packages for Module %1 failed"
-msgstr "Het laden van packages voor Module %1 is mislukt."
+msgstr "Het laden van packages voor Module %1 is mislukt"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14597,7 +14546,7 @@ msgstr "Maak een R map voor de R-code van de analyses."
 
 msgctxt "DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr "Maak een inst/qml map voor opslaan van de analyseschermen"
+msgstr "Maak een inst/qml map voor opslaan van de analyseschermen."
 
 msgctxt "DynamicModules|"
 msgid ""
@@ -14630,9 +14579,9 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"Het lijkt erop dat u nooit een %1 in uw module ontwikkelomgeving had. Zonder "
-"dit kan uw module niet werken, zorg ervoor een te maken. Hoe u de module "
-"geïnstalleerd hebt is onduidelijk en de module wordt nu verwijderd."
+"Het lijkt erop dat u nooit een %1 in uw ontwikkelmodulemap had. Bij gebrek "
+"hieraan kan uw module niet werken en hoe u het heeft weten te installeren is "
+"onduidelijk. De module zal nu worden verwijderd"
 
 #, qt-format
 msgctxt "DynamicModules|"
@@ -14674,8 +14623,8 @@ msgid ""
 msgstr ""
 "Het lijkt erop dat map %1 nooit bestaan heeft in uw module ontwikkel-"
 "omgeving. Zonder deze map kan uw module niet werken, zorg dat deze aanwezig "
-"is.Hoe de module ooit geïnstalleerd werd is onduidelijk, en de "
-"ontwikkelmodule zal nu verwijderd worden."
+"is. Hoe de module ooit geïnstalleerd werd is onduidelijk, en de "
+"ontwikkelmodule zal nu verwijderd worden"
 
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
@@ -14688,7 +14637,7 @@ msgstr "Gedurende het laden van upgrades voor %1 is een fout opgetreden: %2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
-msgstr "Upgrades konden niet worden gelezen."
+msgstr "Upgrades konden niet worden gelezen"
 
 msgctxt "Modules::Upgrader|"
 msgid ""
@@ -14729,7 +14678,7 @@ msgstr "Bestand Types"
 
 msgctxt "FileMenu|"
 msgid "Failed to open file from OSF"
-msgstr "Kon bestand vanuit de OSF niet openen."
+msgstr "Kon bestand op OSF niet openen"
 
 msgctxt "FileMenu|"
 msgid "No associated data file"
@@ -14810,7 +14759,7 @@ msgstr "Bestand Types"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
-msgstr "Kon bestand van de OSF niet openen."
+msgstr "Kon bestand op OSF niet openen"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
@@ -15085,7 +15034,7 @@ msgid ""
 "refresh your analyses!"
 msgstr ""
 ", om de juiste plaats van uw aantekeningen in de resultaten te behouden "
-"raden we u aan om eerst uw analyses te verversen"
+"raden we u aan om eerst uw analyses te verversen!"
 
 msgctxt "HelpWindow|"
 msgid "JASP Help"
@@ -15491,6 +15440,63 @@ msgstr "Bronmodel nodig voor VariablesList %1"
 msgctxt "QMLListView|"
 msgid "Cannot find source %1 for VariablesList %2"
 msgstr "Kan bron %1 niet vinden voor VariablesList %2"
+
+msgctxt "testEncoding|"
+msgid "Selected"
+msgstr "Geselecteerd"
+
+msgctxt "ColumnTypesModel|"
+msgid "Scale"
+msgstr "Schaal"
+
+msgctxt "ColumnTypesModel|"
+msgid "Ordinal"
+msgstr "Ordinaal"
+
+msgctxt "ColumnTypesModel|"
+msgid "Nominal"
+msgstr "Nominaal"
+
+#, qt-format
+msgctxt "BoundQMLComboBox|"
+msgid "Unknown option %1 in DropDown %2"
+msgstr "Onbekende optie %1 in Dropdown %2"
+
+msgctxt "Descriptives|"
+msgid "Label outliers"
+msgstr "Label uitschieters"
+
+msgctxt "NetworkAnalysis|"
+msgid "Legend to plot ratio"
+msgstr "Ratio legenda tot plot"
+
+msgctxt "Correlation|"
+msgid "Sample Correlation Coefficient"
+msgstr "Steekproef Correlatiecoëfficiënt"
+
+msgctxt "Correlation|"
+msgid "Pearson's r"
+msgstr "Pearson's r"
+
+msgctxt "Correlation|"
+msgid "Spearman's rho"
+msgstr "Spearman's rho"
+
+msgctxt "CorrelationBayesian|"
+msgid "Population Correlation Coefficient"
+msgstr "Populatie Correlatiecoëfficiënt"
+
+msgctxt "CorrelationBayesian|"
+msgid "Pearson's rho"
+msgstr "Pearson's rho"
+
+msgctxt "SummaryStatsCorrelationBayesianPairs|"
+msgid "Sample Correlation Coefficient"
+msgstr "Steekproef Correlatiecoëfficiënt"
+
+msgctxt "SummaryStatsCorrelationBayesianPairs|"
+msgid "Pearson's r"
+msgstr "Pearson's r"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""

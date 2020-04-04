@@ -149,21 +149,17 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 
 void Analyses::bindAnalysisHandler(Analysis* analysis)
 {
-	connect(analysis, &Analysis::optionsChanged,					this, &Analyses::analysisOptionsChanged				);
 	connect(analysis, &Analysis::statusChanged,						this, &Analyses::analysisStatusChanged				);
 	connect(analysis, &Analysis::sendRScript,						this, &Analyses::sendRScriptHandler					);
-	connect(analysis, &Analysis::toRefreshSignal,					this, &Analyses::analysisToRefresh					);
 	connect(analysis, &Analysis::titleChanged,						this, &Analyses::setChangedAnalysisTitle			);
-	connect(analysis, &Analysis::saveImageSignal,					this, &Analyses::analysisSaveImage					);
-	connect(analysis, &Analysis::editImageSignal,					this, &Analyses::analysisEditImage					);
 	connect(analysis, &Analysis::imageSavedSignal,					this, &Analyses::analysisImageSaved					);
-	connect(analysis, &Analysis::rewriteImagesSignal,				this, &Analyses::analysisRewriteImages				);
 	connect(analysis, &Analysis::imageEditedSignal,					this, &Analyses::analysisImageEdited				);
 	connect(analysis, &Analysis::requestColumnCreation,				this, &Analyses::requestColumnCreation				);
 	connect(analysis, &Analysis::resultsChangedSignal,				this, &Analyses::analysisResultsChanged				);
 	connect(analysis, &Analysis::requestComputedColumnCreation,		this, &Analyses::requestComputedColumnCreation,		Qt::DirectConnection);
 	connect(analysis, &Analysis::requestComputedColumnDestruction,	this, &Analyses::requestComputedColumnDestruction,	Qt::DirectConnection);
 	connect(analysis, &Analysis::titleChanged,						this, &Analyses::somethingModified					);
+	connect(analysis, &Analysis::userDataChangedSignal,				this, &Analyses::analysisOverwriteUserdata			);
 
 	
 	if (Settings::value(Settings::DEVELOPER_MODE).toBool())
@@ -248,8 +244,8 @@ Json::Value Analyses::asJson() const
 	Json::Value analysesJson		= Json::objectValue,
 				analysesDataList	= Json::arrayValue;;
 
-	for(auto idAnalysis : _analysisMap)
-			analysesDataList.append(idAnalysis.second->asJSON());
+	applyToAll([&analysesDataList](const Analysis * analysis)
+		{ analysesDataList.append(analysis->asJSON()); });
 
 	analysesJson["analyses"]	= analysesDataList;
 	analysesJson["meta"]		= resultsMeta();
@@ -454,6 +450,13 @@ void Analyses::applyToAll(std::function<void(Analysis *analysis)> applyThis)
 			applyThis(_analysisMap[id]);
 }
 
+void Analyses::applyToAll(std::function<void(Analysis *analysis)> applyThis) const
+{
+	for(size_t id : _orderedIds)
+		if(_analysisMap.at(id) != nullptr)
+			applyThis(_analysisMap.at(id));
+}
+
 QVariant Analyses::data(const QModelIndex &index, int role)	const
 {
 	if(index.row() < 0 || index.row() > rowCount())
@@ -486,31 +489,6 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 		{ idRole,			"analysisID"	} };
 
 	return roles;
-}
-
-void Analyses::move(int fromIndex, int toIndex)
-{
-	int size = int(_orderedIds.size());
-	if (fromIndex < 0 || toIndex < 0)
-	{
-		Log::log() << "Index in Analyses swaping negative!" << std::flush;
-		return;
-	}
-	if (fromIndex >= size || toIndex >= size)
-	{
-		Log::log() << "Index in Analyses swaping too big: " << fromIndex << ", " << toIndex << ", size: " << _orderedIds.size();
-		return;
-	}
-	if (fromIndex == toIndex)
-		return;
-
-	size_t fromId = _orderedIds[size_t(fromIndex)];
-	if (beginMoveRows(QModelIndex(), fromIndex, fromIndex, QModelIndex(), toIndex > fromIndex ? (toIndex + 1) : toIndex))
-	{
-		_orderedIds.erase(_orderedIds.begin() + fromIndex);
-		_orderedIds.insert(_orderedIds.begin() + toIndex, fromId);
-		endMoveRows();
-	}
 }
 
 void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module)
@@ -639,6 +617,32 @@ void Analyses::setVisible(bool visible)
 	}
 }
 
+//Called from Enter in AnalysisFormExpander.qml
+void Analyses::move(int fromIndex, int toIndex)
+{
+	int size = int(_orderedIds.size());
+	if (fromIndex < 0 || toIndex < 0)
+	{
+		Log::log() << "Index in Analyses swaping negative!" << std::flush;
+		return;
+	}
+	if (fromIndex >= size || toIndex >= size)
+	{
+		Log::log() << "Index in Analyses swaping too big: " << fromIndex << ", " << toIndex << ", size: " << _orderedIds.size();
+		return;
+	}
+	if (fromIndex == toIndex)
+		return;
+
+	size_t fromId = _orderedIds[size_t(fromIndex)];
+	if (beginMoveRows(QModelIndex(), fromIndex, fromIndex, QModelIndex(), toIndex > fromIndex ? (toIndex + 1) : toIndex))
+	{
+		_orderedIds.erase(_orderedIds.begin() + fromIndex);
+		_orderedIds.insert(_orderedIds.begin() + toIndex, fromId);
+		endMoveRows();
+	}
+}
+
 void Analyses::setMoving(bool moving)
 {
 	if (_moving == moving)
@@ -648,15 +652,26 @@ void Analyses::setMoving(bool moving)
 
 	if (moving)
 		_orderedIdsBeforeMoving = _orderedIds;
+
 	emit movingChanged(_moving);
 }
 
+//Called after setting moving to false on end of drag in AnalysisFormExpander.qml
 Analysis* Analyses::getAnalysisBeforeMoving(size_t index)
 {
-	Analysis* result = nullptr;
-	if (index >= 0 && index < _orderedIdsBeforeMoving.size())
-		result = _analysisMap.at(_orderedIdsBeforeMoving[index]);
-	return result;
+	if (index < _orderedIdsBeforeMoving.size())
+		return _analysisMap.at(_orderedIdsBeforeMoving[index]);
+
+	return nullptr;
+}
+
+
+void Analyses::moveAnalysesResults(Analysis* fromAnalysis, int index)
+{
+	Analysis* toAnalysis = getAnalysisBeforeMoving(size_t(index));
+
+	if (fromAnalysis && toAnalysis && fromAnalysis != toAnalysis)
+		emit moveAnalyses(fromAnalysis->id(), toAnalysis->id());
 }
 
 void Analyses::analysisTitleChangedInResults(int id, QString title)

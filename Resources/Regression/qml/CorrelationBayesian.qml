@@ -33,9 +33,9 @@ Form
 
     Group
     {
-        title: qsTr("Correlation Coefficient")
-        CheckBox { name: "pearson";         label: qsTr("Pearson"); checked: true       }
-        CheckBox { name: "spearman";        label: qsTr("Spearman"); debug: true		}
+        title: qsTr("Population Correlation Coefficient")
+        CheckBox { name: "pearson";         label: qsTr("Pearson's rho"); checked: true       }
+        CheckBox { name: "spearman";        label: qsTr("Spearman's rho"); debug: true		}
         CheckBox { name: "kendall";         label: qsTr("Kendall's tau-b")				}
     }
 
@@ -96,7 +96,7 @@ Form
         {
             name: "pairsMethod"
             title: qsTr("Correlation coefficient to plot")
-            RadioButton { value: "pearson";     label: qsTr("Pearson");         checked: true	}
+            RadioButton { value: "pearson";     label: qsTr("Pearson's rho");         checked: true	}
             RadioButton { value: "spearman";    label: qsTr("Spearman's rho");  debug:   true   }
             RadioButton { value: "kendall";     label: qsTr("Kendall's tau")                    }
         }

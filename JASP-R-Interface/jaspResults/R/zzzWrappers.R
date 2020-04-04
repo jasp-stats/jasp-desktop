@@ -102,8 +102,8 @@ createJaspTable <- function( title="",       data = NULL, colNames = NULL,     c
   return(jaspTableR$new(      title = title,  data = data, colNames = colNames, colTitles = colTitles,  overtitles = overtitles, colFormats = colFormats, rowNames = rowNames, rowTitles = rowTitles, dependencies = dependencies, position = position, expectedRows = expectedRows,  expectedColumns = expectedColumns))
 
 # if you change "hide me" here then also change it in Common.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
-createJaspHtml <- function( text = "",    elementType = "p",         class = "",    dependencies = NULL,         title = "hide me", position = NULL)
-    return(jaspHtmlR$new(   text = text,  elementType = elementType, class = class, dependencies = dependencies, title = title,     position = position))
+createJaspHtml <- function( text = "",    elementType = "p",         maxWidth = "15cm",   class = "",    dependencies = NULL,         title = "hide me", position = NULL)
+    return(jaspHtmlR$new(   text = text,  elementType = elementType, maxWidth = maxWidth, class = class, dependencies = dependencies, title = title,     position = position))
 
 createJaspState <- function(object = NULL,   dependencies = NULL)
   return(jaspStateR$new(    object = object, dependencies = dependencies))
@@ -147,7 +147,8 @@ jaspResultsR <- R6Class(
 		print           = function()	private$jaspObject$print(),
 		printHtml       = function()	private$jaspObject$printHtml(),
 		setError        = function(x)	private$jaspObject$setError(x),
-		getError        = function()	private$jaspObject$getError()
+		getError        = function()	private$jaspObject$getError(),
+		length          = function()    private$jaspObject$length
 	),
 	private = list(
 		children    = list(),
@@ -155,12 +156,12 @@ jaspResultsR <- R6Class(
 		jaspCppToR6 = function(cppObj) {
 			return(switch(
 				class(cppObj),
-				"Rcpp_jaspPlot"      = jaspPlotR$new(jaspObject = cppObj),
-				"Rcpp_jaspTable"     = jaspTableR$new(jaspObject = cppObj),
-				"Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
-        		"Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
-        		"Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
-				"Rcpp_jaspHtml"      = jaspHtmlR$new(jaspObject = cppObj),
+        "Rcpp_jaspPlot"      = jaspPlotR$new(     jaspObject = cppObj),
+        "Rcpp_jaspTable"     = jaspTableR$new(    jaspObject = cppObj),
+        "Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
+        "Rcpp_jaspColumn"    = jaspColumnR$new(   jaspObject = cppObj),
+        "Rcpp_jaspState"     = jaspStateR$new(    jaspObject = cppObj),
+        "Rcpp_jaspHtml"      = jaspHtmlR$new(     jaspObject = cppObj),
 				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)), domain = NA)
 			))
 		},
@@ -302,12 +303,18 @@ jaspOutputObjR <- R6Class(
 	)
 )
 
+.jaspHtmlPixelizer <- function(maxWidth)
+{
+  if(is.numeric(maxWidth)) return(paste0(as.character(maxWidth), "px"))
+  return(maxWidth)
+}
+
 jaspHtmlR <- R6Class(
 	classname = "jaspHtmlR",
 	inherit   = jaspOutputObjR,
 	cloneable = FALSE,
 	public    = list(
-		initialize = function(text="", elementType="p", class="", dependencies=NULL, title="hide me", position=NULL, jaspObject = NULL) {
+    initialize = function(text="", elementType="p", maxWidth="15cm", class="", dependencies=NULL, title="hide me", position=NULL, jaspObject = NULL) {
 			# if you change "hide me" here then also change it in Common.R and in HtmlNode.js or come up with a way to define it in such a way to make it show EVERYWHERE...
 			if (!is.null(jaspObject)) {
 			  private$jaspObject <- jaspObject
@@ -320,7 +327,8 @@ jaspHtmlR <- R6Class(
 			}
 			
 			htmlObj$elementType <- elementType
-			htmlObj$class       <- class
+      htmlObj$class       <- class
+      htmlObj$maxWidth    <- .jaspHtmlPixelizer(maxWidth)
 			htmlObj$title       <- title
 			
 			if (!is.null(dependencies))
@@ -335,7 +343,8 @@ jaspHtmlR <- R6Class(
 	),
 	active = list(
 		text        = function(value) { if (missing(value)) private$jaspObject$text        else private$jaspObject$text        <- value },
-		class       = function(value) { if (missing(value)) private$jaspObject$class       else private$jaspObject$class       <- value },
+    class       = function(value) { if (missing(value)) private$jaspObject$class       else private$jaspObject$class       <- value },
+    maxWidth    = function(value) { if (missing(value)) private$jaspObject$maxWidth    else private$jaspObject$maxWidth    <- .jaspHtmlPixelizer(value) },
 		elementType = function(value) { if (missing(value)) private$jaspObject$elementType else private$jaspObject$elementType <- value }
 	)
 )
@@ -364,7 +373,8 @@ jaspContainerR <- R6Class(
 			
 			private$jaspObject <- container
 			return()
-		}
+		},
+		length = function() private$jaspObject$length
 	),
 	private	= list(
 		children    = list(),
@@ -375,7 +385,7 @@ jaspContainerR <- R6Class(
 				"Rcpp_jaspPlot"      = jaspPlotR$new(jaspObject = cppObj),
 				"Rcpp_jaspTable"     = jaspTableR$new(jaspObject = cppObj),
 				"Rcpp_jaspContainer" = jaspContainerR$new(jaspObject = cppObj),
-        "Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
+				"Rcpp_jaspColumn"    = jaspColumnR$new(jaspObject = cppObj),
 				"Rcpp_jaspState"     = jaspStateR$new(jaspObject = cppObj),
 				"Rcpp_jaspHtml"      = jaspHtmlR$new(jaspObject = cppObj),
 				stop(sprintf("Invalid call to jaspCppToR6. Expected jaspResults object but got %s", class(cppObj)), domain = NA)

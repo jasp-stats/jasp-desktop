@@ -48,6 +48,9 @@ void BoundQMLTextInput::initTextInput()
 	else if (type == "formula")			_inputType = TextInputType::FormulaType;
 	else								_inputType = TextInputType::StringInputType;
 
+	_parseDefaultValue = getItemProperty("parseDefaultValue").toBool();
+	_defaultValue = getItemProperty("defaultEmptyValue").toString();
+
 	if (_item)
 		 QQuickItem::connect(_item, SIGNAL(editingFinished()), this, SLOT(textChangedSlot()));
 }
@@ -317,12 +320,6 @@ void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 		_formula->setValue(_value.toStdString());
 }
 
-void BoundQMLTextInput::_setFormulaOptions(std::string formula, bool valid)
-{
-	if (_formula && valid)
-		_formula->setValue(formula);
-}
-
 bool BoundQMLTextInput::_formulaResultInBounds(double result)
 {
 	double min			= getItemProperty("min").toDouble();
@@ -421,8 +418,17 @@ void BoundQMLTextInput::textChangedSlot()
 
 	if (_inputType == TextInputType::FormulaType)
 	{
+		// _formula might be empty (in TableView the FormulaType is not directly bound, and has it own model).
 		if (!_formula || (_formula->value() != _value.toStdString()))
-			runRScript("as.character(" + _value + ")", true);
+		{
+			if (!_parseDefaultValue && _defaultValue == _value)
+			{
+				if (_formula)
+					_formula->setValue(_value.toStdString());
+			}
+			else
+				runRScript("as.character(" + _value + ")", true);
+		}
 	}
 	else if (_option)
 		_setOptionValue(_option, _value);

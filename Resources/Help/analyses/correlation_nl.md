@@ -19,8 +19,8 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 ### Invoer
 ---
 
-#### Correlatiecoëfficiënt
-- Pearson's rho: Pearson's productmoment correlatiecoëfficiënt. 
+#### Steekproef Correlatiecoëfficiënt
+- Pearson's r: Pearson's productmoment correlatiecoëfficiënt.
 - Spearman: Spearman's rangorde correlatiecoëfficiënt om de monotone associatie tussen twee variabelen te kwantificeren.
 - Kendall's tau-b: Kendall's tau-b rangorde correlatiecoëfficiënt om de monotone associatie tussen twee variabelen te kwantificeren.
 
@@ -35,7 +35,7 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 - Markeer significante correlaties: Markeer statistisch significante correlaties.
 - Betrouwbaarheidsintervallen: Betrouwbaarheidsintervallen voor de populatiecorrelatie (enkel beschikbaar voor de Pearson correlatie).
   - Interval: Dekking van het betrouwbaarheidsinterval in percentages.
-- Vovk-Selke maximum p-ratio: De grens 1/(-e p log(p)) is berekend aan de hand van de p-waarde verdeling. Onder de nullhypothese (H<sub>0</sub>) is het uniform (0,1), en onder de alternatieve (H<sub>1</sub>) verlaagt de p-waarde, e.g., een beta (α, 1) verdeling, met 0 < α < 1. De Vovk-Sellke MPR is verkregen door de vorm α van de verdeling te kiezen onder H1 zodat de behaalde p-waarde diagnostisch gemaximaliseerd is. De waarde is dan de ratio van de verdelingen op punt p onder H<sub>0</sub> en H<sub>1</sub>. Bijvoorbeeld, als de tweezijdige p-waarde gelijk is aan .05, de Vovk-Sellke MPR gelijk is aam 2.46, dit geeft aan dat deze p-waarde is hoogstens 2.46 keer meer aannemelijk is voor H<sub>1</sub> dan voor H<sub>0</sub>. 
+- Vovk-Selke maximum p-ratio: De grens 1/(-e p log(p)) is berekend aan de hand van de p-waarde verdeling. Onder de nullhypothese (H<sub>0</sub>) is het uniform (0,1), en onder de alternatieve (H<sub>1</sub>) verlaagt de p-waarde, e.g., een beta (α, 1) verdeling, met 0 < α < 1. De Vovk-Sellke MPR is verkregen door de vorm α van de verdeling te kiezen onder H1 zodat de behaalde p-waarde diagnostisch gemaximaliseerd is. De waarde is dan de ratio van de verdelingen op punt p onder H<sub>0</sub> en H<sub>1</sub>. Bijvoorbeeld, als de tweezijdige p-waarde gelijk is aan .05, de Vovk-Sellke MPR gelijk is aam 2.46, dit geeft aan dat deze p-waarde is hoogstens 2.46 keer meer aannemelijk is voor H<sub>1</sub> dan voor H<sub>0</sub>.
 - Steekproefgrootte: Het aantal volledige observaties voor een gegeven paar variabelen.
 
 #### Grafieken
@@ -48,19 +48,19 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 
 - Multivariate normaliteit
   - Shapiro: Berekend de Shapiro-Wilk statistiek om de nulhypothese dat de geselecteerde variabelen een multivariate normale verdeling hebben, te toetsen.
-  
+
 - Paarsgewijze normaliteit
   - Shapiro: Voor elke mogelijke combinatie van de geselecteerde variabelen berekent de Shapiro-Wilk statistiek om de nulhypothese te toetsen dat de paar variabelen een bivariate normale verdeling hebben.
-  
+
 #### Opties
 
 - Ontbrekende waarden
   - Sluit paarsgewijs waarnemingen uit: Gebruik alle complete observaties for elk individuele paar van variabelen.
   - Sluit lijstgewijs waarnemingen uit: Gebruik enkel volledige waarnemingen van alle variabelen.
-  
+
 ### Uitvoer
 ---
-#### Correlatietabel 
+#### Correlatietabel
 - Pearson r: Pearson's product-moment correlatiecoëfficiënt.
 - Spearman rho: Spearman's rank correlatiecoëfficiënt.
 - Kendall tau:  Kendall's tau b rank correlatiecoëfficiënt.
@@ -69,7 +69,7 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 	- *p < 0.05 als de correlatie significant is op het alfa=.05 niveau.
 	- **p < .01 als de correlatie significant is op het alfa=.01 niveau.
 	- ***p < .001 als de correlatie significant is op het alfa=.001 niveau.
-- Vovk-Sellke Maximum *p*-Ratio: Voor een uitleg, zie Vovk-Sellke onder `Opties`. 
+- Vovk-Sellke Maximum *p*-Ratio: Voor een uitleg, zie Vovk-Sellke onder `Opties`.
 - Boven x% BI: Bovenste grens van de x% betrouwbaarheidsinterval voor de populatiecorrelatie.
 - Onder x% BI: Onderste grens of the x% betrouwbaarheidsinterval voor de populatiecorrelatie.
 - n: Steekproefgrootte.

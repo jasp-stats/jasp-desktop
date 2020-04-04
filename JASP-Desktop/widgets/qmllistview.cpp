@@ -32,6 +32,7 @@ QMLListView::QMLListView(JASPControlBase *item)
 	, _needsSourceModels(false)
 	  
 {
+	_hasSource = !getItemProperty("source").isNull(); // sourceModels are only known after setup is called, but the method hasSource() is needed before in AnalysisForm
 	_hasRowComponents = item->rowComponentsCount() > 0;
 	_optionKeyName = getItemProperty("optionKey").toString().toStdString();
 }

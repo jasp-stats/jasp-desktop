@@ -1,4 +1,4 @@
-Samenvatting Statistiek Bayesiaanse Lineaire Regressie
+Samenvattende Statistiek Bayesiaanse Lineaire Regressie
 ==================
 
 Met Bayesiaanse Lineaire Regressie kan men een lineaire relatie tussen een of meer verklarende variabele(n) (predictoren) en een continue afhankelijke (respons) variabele modelleren. Met deze analyse, gebaseerd op de klassieke (niet-bijgestelde) R^2 statistiek, kan met de Bayes factor de relatie toetsen. De Bayes factor wordt uitgerekend door middel van Gaussiaanse kwadratuur.

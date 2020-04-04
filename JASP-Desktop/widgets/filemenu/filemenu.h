@@ -69,7 +69,7 @@ public:
 	FileEvent *	open(const QString &filepath);
 	FileEvent *	save();
 	void		sync();
-	FileEvent *	close();
+
 			
 	void			setCurrentDataFile(const QString &path);
 	void			setDataFileWatcher(bool watch);
@@ -118,6 +118,7 @@ public slots:
 	void dataColumnAdded(QString columnName);
     void analysesExportResults();
 	void refresh();
+	void close();
 
 private slots:
 	void dataSetIORequestHandler(FileEvent *event);

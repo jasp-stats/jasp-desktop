@@ -78,7 +78,7 @@ FocusScope
 
 	transitions: Transition
 	{
-		enabled:	!preferencesModel.safeGraphics
+		enabled:	preferencesModel.animationsOn
 		
 		NumberAnimation		{ property: "implicitHeight";	duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }
 		RotationAnimation	{								duration: 250; easing.type: Easing.OutQuad; easing.amplitude: 3 }

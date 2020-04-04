@@ -16,7 +16,7 @@ Descriptives allows the user to obtain basic descriptive statistics, histograms 
   - Display density (only for continuous variables): Displays a density based on a nonparametric density estimator.
 - Correlation Plot: For continuous variables, displays histograms, density plots, and scatterplots.
 - Boxplots: For continuous variables, displays a boxplot.
-  - Label Outliers: Optionally, the outliers are labelled. Outliers are based on the interquartile range (IQR), i.e., [25th percentile] - 1.5 × IQR and [75th percentile] + 1.5 × IQR.
+  - Label outliers: Optionally, the outliers are labelled. Outliers are based on the interquartile range (IQR), i.e., [25th percentile] - 1.5 × IQR and [75th percentile] + 1.5 × IQR.
   - Color: Displays in color.
     - Has selectable boxplot, violin, and jitter elements for displaying the distribution of the data.
 

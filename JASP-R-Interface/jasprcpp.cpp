@@ -897,7 +897,7 @@ Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(SEXP columns, SEXP columnsAsNumer
 		{
 			RBridgeColumnDescription& colDescription = columnsDescription[i];
 
-			columnNames[i] = CSTRING_TO_R(colDescription.name);
+			columnNames[i] = CSTRING_TO_R_CHARSXP(colDescription.name);
 
 			if (colDescription.isScale)				list(i) = Rcpp::NumericVector(0);
 			else if (!colDescription.hasLabels)		list(i) = Rcpp::IntegerVector(0);

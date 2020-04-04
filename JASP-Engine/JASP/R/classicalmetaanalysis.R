@@ -16,28 +16,31 @@
 #
 
 ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
-  ready <- options$dependent != "" && options$wlsWeights != ""
+  ready <- options$dependent != "" && options$wlsWeights != "" && (options$includeConstant || length(options$modelTerms) > 0)
   if(ready) {
     dataset <- .metaAnalysisReadData(dataset, options)
     .metaAnalysisCheckErrors(dataset, options)
   }
+  
+  container <- .metaAnalysisGetOutputContainer(jaspResults)
+  
   # Output tables
-  .metaAnalysisFixRandTable(jaspResults, dataset, options, ready)
-  .metaAnalysisCoeffTable(jaspResults, dataset, options, ready)
-  .metaAnalysisFitMeasuresTable(jaspResults, dataset, options, ready)
-  .metaAnalysisResidualTable(jaspResults, dataset, options, ready)
-  .metaAnalysisCovMatTable(jaspResults, dataset, options, ready)
-  .metaAnalysisRankTestTable(jaspResults, dataset, options, ready)
-  .metaAnalysisRegTestTable(jaspResults, dataset, options, ready)
-  .metaAnalysisCasewiseTable(jaspResults, dataset, options, ready)
-  .metaAnalysisFailSafeTable(jaspResults, dataset, options, ready)
+  .metaAnalysisFixRandTable(container, dataset, options, ready)
+  .metaAnalysisCoeffTable(container, dataset, options, ready)
+  .metaAnalysisFitMeasuresTable(container, dataset, options, ready)
+  .metaAnalysisResidualTable(container, dataset, options, ready)
+  .metaAnalysisCovMatTable(container, dataset, options, ready)
+  .metaAnalysisRankTestTable(container, dataset, options, ready)
+  .metaAnalysisRegTestTable(container, dataset, options, ready)
+  .metaAnalysisCasewiseTable(container, dataset, options, ready)
+  .metaAnalysisFailSafeTable(container, dataset, options, ready)
 
   # Output plots
-  .metaAnalysisForestPlot(jaspResults, dataset, options, ready)
-  .metaAnalysisFunnelPlot(jaspResults, dataset, options, ready)
-  .metaAnalysisDiagnosticPlot(jaspResults, dataset, options, ready)
-  .metaAnalysisProfilePlot(jaspResults, dataset, options, ready)
-  .metaAnalysisTrimFillPlot(jaspResults, dataset, options, ready)
+  .metaAnalysisForestPlot(container, dataset, options, ready)
+  .metaAnalysisFunnelPlot(container, dataset, options, ready)
+  .metaAnalysisDiagnosticPlot(container, dataset, options, ready)
+  .metaAnalysisProfilePlot(container, dataset, options, ready)
+  .metaAnalysisTrimFillPlot(container, dataset, options, ready)
   return()
 }
 
@@ -103,9 +106,21 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
              exitAnalysisIfErrors = TRUE)
 }
 
-.metaAnalysisComputeModel <- function(jaspResults, dataset, options, ready) {
-  if (!is.null(jaspResults[["Model"]]))
-    return(jaspResults[["Model"]]$object)
+.metaAnalysisGetOutputContainer <- function(jaspResults) {
+  if (!is.null(jaspResults[["modelContainer"]])) {
+    modelContainer <- jaspResults[["modelContainer"]]
+  } else {
+    modelContainer <- createJaspContainer()
+    modelContainer$dependOn(c("dependent", "wlsWeights", "method", "studyLabels", "covariates", "test",
+                              "factors", "modelTerms", "includeConstant", "regressionCoefficientsConfidenceIntervalsInterval"))
+    jaspResults[["modelContainer"]] <- modelContainer
+  }
+  return(modelContainer)
+}
+
+.metaAnalysisComputeModel <- function(container, dataset, options, ready) {
+  if (!is.null(container[["Model"]]))
+    return(container[["Model"]]$object)
   rma.fit <- structure(list('b'     = numeric(),
                             'se'    = numeric(),
                             'ci.lb' = numeric(),
@@ -133,18 +148,16 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   }
 
   # Save results to state
-  jaspResults[["Model"]] <- createJaspState(rma.fit)
-  jaspResults[["Model"]]$dependOn(c("modelTerms", "dependent", "wlsWeights", "test", "studyLabels",
-                                    "regressionCoefficientsConfidenceIntervalsInterval", "method"))
+  container[["Model"]] <- createJaspState(rma.fit)
+
   return(rma.fit)
 }
 
 #Tables
-.metaAnalysisFixRandTable <- function(jaspResults, dataset, options, ready) {
-  if (!is.null(jaspResults[["fixRandTable"]])) return()
+.metaAnalysisFixRandTable <- function(container, dataset, options, ready) {
+  if (!is.null(container[["fixRandTable"]])) return()
 
   mainTable  <- createJaspTable(gettext("Fixed and Random Effects"))
-  mainTable$dependOn(c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels", "method"))
   mainTable$position <- 1
   mainTable$addCitation("Hedges, L. V., & Olkin, I. (1985). Statistical methods for meta-analysis. San Diego, CA: Academic Press.")
 
@@ -155,20 +168,19 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
   mainTable$addFootnote(gettext("<em>p</em>-values are approximate."))
 
-  jaspResults[["fixRandTable"]] <- mainTable
+  container[["fixRandTable"]] <- mainTable
 
-  res <- try(.metaAnalysisFixRandFill(jaspResults, dataset, options, ready))
+  res <- try(.metaAnalysisFixRandFill(container, dataset, options, ready))
 
   .metaAnalysisSetError(res, mainTable)
 }
 
-.metaAnalysisCoeffTable <- function(jaspResults, dataset, options, ready) {
-  if (!options$regressionCoefficientsEstimates || !is.null(jaspResults[["coeffTable"]]))
+.metaAnalysisCoeffTable <- function(container, dataset, options, ready) {
+  if (!options$regressionCoefficientsEstimates || !is.null(container[["coeffTable"]]))
     return()
 
   coeffTable <- createJaspTable(gettext("Coefficients"))
-  coeffTable$dependOn(c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels", "method", "includeConstant",
-                        "regressionCoefficientsConfidenceIntervals", "regressionCoefficientsEstimates"))
+  coeffTable$dependOn(c("regressionCoefficientsEstimates", "regressionCoefficientsConfidenceIntervals"))
   coeffTable$position <- 2
   coeffTable$showSpecifiedColumnsOnly <- TRUE
   coeffTable$addCitation("Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package. Journal of Statistical Software, 36(3), 1-48. URL: http://www.jstatsoft.org/v36/i03/")
@@ -182,22 +194,21 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
   coeffTable$addFootnote(switch(options$test, z = gettext("Wald test."), gettext("Wald tests.")))
 
-  jaspResults[["coeffTable"]] <- coeffTable
+  container[["coeffTable"]] <- coeffTable
   if(!ready)
     return()
 
-  res <- try(.metaAnalysisCoeffFill(jaspResults, dataset, options))
+  res <- try(.metaAnalysisCoeffFill(container, dataset, options))
 
   .metaAnalysisSetError(res, coeffTable)
 }
 
-.metaAnalysisFitMeasuresTable <- function(jaspResults, dataset, options, ready) {
-  if (!options$modelFit || !is.null(jaspResults[["fitMeasuresTable"]]))
+.metaAnalysisFitMeasuresTable <- function(container, dataset, options, ready) {
+  if (!options$modelFit || !is.null(container[["fitMeasuresTable"]]))
     return()
 
   fitMeasuresTable <- createJaspTable(gettext("Fit measures"))
-  fitMeasuresTable$dependOn(c("modelTerms", "dependent", "wlsWeights", "factors",
-                              "studyLabels", "modelFit", "method"))
+  fitMeasuresTable$dependOn("modelFit")
   fitMeasuresTable$position <- 3
 
   method <- .metaAnalysisGetTranslatedMethod(options)
@@ -205,22 +216,21 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   fitMeasuresTable$addColumnInfo(name = "name",   type = "string", title = "")
   fitMeasuresTable$addColumnInfo(name = "method", type = "number", title = method)
 
-  jaspResults[["fitMeasuresTable"]] <- fitMeasuresTable
+  container[["fitMeasuresTable"]] <- fitMeasuresTable
 
-  res <- try(.metaAnalysisFitMeasuresFill(jaspResults, dataset, options, ready))
+  res <- try(.metaAnalysisFitMeasuresFill(container, dataset, options, ready))
 
   .metaAnalysisSetError(res, fitMeasuresTable)
 }
 
-.metaAnalysisResidualTable <- function(jaspResults, dataset, options, ready) {
+.metaAnalysisResidualTable <- function(container, dataset, options, ready) {
   method <- .metaAnalysisGetMethod(options)
 
-  if (!options$residualsParameters || method == "FE" || !is.null(jaspResults[["residualTable"]]))
+  if (!options$residualsParameters || method == "FE" || !is.null(container[["residualTable"]]))
     return()
 
   residualTable <- createJaspTable(gettext("Residual Heterogeneity Estimates"))
-  residualTable$dependOn(c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
-                           "regressionCoefficientsConfidenceIntervals", "residualsParameters", "method"))
+  residualTable$dependOn(c("residualsParameters", "regressionCoefficientsConfidenceIntervals"))
   residualTable$position <- 4
   residualTable$showSpecifiedColumnsOnly <- TRUE
 
@@ -228,49 +238,47 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   residualTable$addColumnInfo(name = "est",   type = "number",  title = gettext("Estimate"))
   .metaAnalysisConfidenceInterval(options, residualTable)
 
-  jaspResults[["residualTable"]] <- residualTable
+  container[["residualTable"]] <- residualTable
 
-  res <- try(.metaAnalysisResidualFill(jaspResults, dataset, options, ready))
+  res <- try(.metaAnalysisResidualFill(container, dataset, options, ready))
 
   .metaAnalysisSetError(res, residualTable)
 }
 
-.metaAnalysisCovMatTable <- function(jaspResults, dataset, options, ready) {
-  if (!options$regressionCoefficientsCovarianceMatrix || !is.null(jaspResults[["covMatTable"]]))
+.metaAnalysisCovMatTable <- function(container, dataset, options, ready) {
+  if (!options$regressionCoefficientsCovarianceMatrix || !is.null(container[["covMatTable"]]))
     return()
 
   covMatTable <- createJaspTable(gettext("Parameter Covariances"))
-  covMatTable$dependOn(c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
-                         "regressionCoefficientsCovarianceMatrix", "method"))
+  covMatTable$dependOn("regressionCoefficientsCovarianceMatrix")
   covMatTable$position <- 5
   covMatTable$showSpecifiedColumnsOnly <- TRUE
 
   covMatTable$addColumnInfo(name = "name",  type = "string",  title = "")
   if(!ready) {
     coeffVcov <- NULL
-    covMatTable$addColumnInfo(name = "intrcpt", type = "number", title = "...")
+    covMatTable$addColumnInfo(name = "intercept", type = "number", title = "...")
   } else {
-    rma.fit   <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+    rma.fit   <- .metaAnalysisComputeModel(container, dataset, options, ready)
     coeffVcov <- try(vcov(rma.fit))
-    cov       <- colnames(coeffVcov)
-    for(i in 1:length(cov))
-      covMatTable$addColumnInfo(name = cov[[i]], type = "number")
+    colnames(coeffVcov) <- .metaAnalysisMakePrettyCoeffNames(colnames(coeffVcov), dataset)
+    for (i in seq_along(colnames(coeffVcov)))
+      covMatTable$addColumnInfo(name = colnames(coeffVcov)[i], type = "number")
   }
 
-  jaspResults[["covMatTable"]] <- covMatTable
+  container[["covMatTable"]] <- covMatTable
 
-  res <- try(.metaAnalysisCovMatFill(jaspResults, dataset, options, ready, coeffVcov))
+  res <- try(.metaAnalysisCovMatFill(container, dataset, options, ready, coeffVcov))
 
   .metaAnalysisSetError(res, covMatTable)
 }
 
-.metaAnalysisRankTestTable <- function(jaspResults, dataset, options, ready) {
-  if (!options$rSquaredChange || !is.null(jaspResults[["rankTestTable"]]))
+.metaAnalysisRankTestTable <- function(container, dataset, options, ready) {
+  if (!options$rSquaredChange || !is.null(container[["rankTestTable"]]))
     return()
 
   rankTestTable <- createJaspTable(gettext("Rank correlation test for Funnel plot asymmetry"))
-  rankTestTable$dependOn(c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
-                           "rSquaredChange", "method"))
+  rankTestTable$dependOn("rSquaredChange")
   rankTestTable$position <- 6
   rankTestTable$showSpecifiedColumnsOnly <- TRUE
 
@@ -279,19 +287,18 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   rankTestTable$addColumnInfo(name = "kendall", type = "number", title = gettextf("Kendall's %s", "\u3C4"))
   rankTestTable$addColumnInfo(name = "pval",    type = "pvalue", title = gettext("p"))
 
-  jaspResults[["rankTestTable"]] <- rankTestTable
+  container[["rankTestTable"]] <- rankTestTable
 
-  res <- try(.metaAnalysisRankTestFill(jaspResults, dataset, options, ready))
+  res <- try(.metaAnalysisRankTestFill(container, dataset, options, ready))
 
   .metaAnalysisSetError(res, rankTestTable)
 }
 
-.metaAnalysisRegTestTable <- function(jaspResults, dataset, options, ready) {
-  if (!options$funnelPlotAsymmetryTest || !is.null(jaspResults[["regTestTable"]]))
+.metaAnalysisRegTestTable <- function(container, dataset, options, ready) {
+  if (!options$funnelPlotAsymmetryTest || !is.null(container[["regTestTable"]]))
     return()
   regTestTable <- createJaspTable(gettext("Regression test for Funnel plot asymmetry (\"Egger's test\")"))
-  regTestTable$dependOn(c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
-                          "funnelPlotAsymmetryTest", "test", "method"))
+  regTestTable$dependOn("funnelPlotAsymmetryTest")
   regTestTable$position <- 6
   regTestTable$showSpecifiedColumnsOnly <- TRUE
   regTestTable$addCitation("Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package. <em>Journal of Statistical Software</em>, <b>36</b>(3), 1-48.")
@@ -304,23 +311,22 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   regTestTable$addColumnInfo(name = "test", type = "number", title = title)
   regTestTable$addColumnInfo(name = "pval", type = "pvalue", title = gettext("p"))
 
-  jaspResults[["regTestTable"]] <- regTestTable
+  container[["regTestTable"]] <- regTestTable
 
   if(!ready)
     return()
 
-  res <- try(.metaAnalysisRegTestFill(jaspResults, dataset, options))
+  res <- try(.metaAnalysisRegTestFill(container, dataset, options))
 
   .metaAnalysisSetError(res, regTestTable)
 }
 
-.metaAnalysisCasewiseTable <- function(jaspResults, dataset, options, ready) {
-  if (!options$residualsCasewiseDiagnostics || !is.null(jaspResults[["casewiseTable"]]))
+.metaAnalysisCasewiseTable <- function(container, dataset, options, ready) {
+  if (!options$residualsCasewiseDiagnostics || !is.null(container[["casewiseTable"]]))
     return()
 
   casewiseTable <- createJaspTable(gettext("Influence Measures"))
-  casewiseTable$dependOn(c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
-                           "residualsCasewiseDiagnostics", "method"))
+  casewiseTable$dependOn("residualsCasewiseDiagnostics")
   casewiseTable$position <- 6
   casewiseTable$showSpecifiedColumnsOnly <- TRUE
 
@@ -334,23 +340,22 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   casewiseTable$addColumnInfo(name = "hat",    type = "number",  title = gettext("Hat"))
   casewiseTable$addColumnInfo(name = "weight", type = "number",  title = gettext("Weight"))
 
-  jaspResults[["casewiseTable"]] <- casewiseTable
+  container[["casewiseTable"]] <- casewiseTable
 
   if(!ready)
     return()
 
-  res <- try(.metaAnalysisCasewiseFill(jaspResults, dataset, options))
+  res <- try(.metaAnalysisCasewiseFill(container, dataset, options))
 
   .metaAnalysisSetError(res, casewiseTable)
 }
 
-.metaAnalysisFailSafeTable <- function(jaspResults, dataset, options, ready) {
-  if (!options$plotResidualsCovariates || !is.null(jaspResults[["failSafeTable"]]) || !ready)
+.metaAnalysisFailSafeTable <- function(container, dataset, options, ready) {
+  if (!options$plotResidualsCovariates || !is.null(container[["failSafeTable"]]) || !ready)
     return()
 
   failSafeTable <- createJaspTable(gettext("File Drawer Analysis"))
-  failSafeTable$dependOn(c("modelTerms", "dependent", "wlsWeights", "factors", "studyLabels",
-                           "plotResidualsCovariates", "method"))
+  failSafeTable$dependOn("plotResidualsCovariates")
   failSafeTable$position <- 6
   failSafeTable$showSpecifiedColumnsOnly <- TRUE
 
@@ -359,17 +364,17 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   failSafeTable$addColumnInfo(name = "alpha", type = "number", title = gettext("Target Significance"))
   failSafeTable$addColumnInfo(name = "pval",  type = "pvalue", title = gettext("Observed Significance"))
 
-  jaspResults[["failSafeTable"]] <- failSafeTable
+  container[["failSafeTable"]] <- failSafeTable
 
-  res <- try(.metaAnalysisFailSafeFill(jaspResults, dataset, options))
+  res <- try(.metaAnalysisFailSafeFill(container, dataset, options))
 
   .metaAnalysisSetError(res, failSafeTable)
 }
 
 #Table filling
-.metaAnalysisFixRandFill <- function(jaspResults, dataset, options, ready) {
+.metaAnalysisFixRandFill <- function(container, dataset, options, ready) {
   # Compute/get model
-  rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+  rma.fit <- .metaAnalysisComputeModel(container, dataset, options, ready)
 
   row <- list(name = gettext("Omnibus test of Model Coefficients"),
               qstat = ".", df = ".", pval = ".")
@@ -378,7 +383,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     row$df    <- rma.fit$m
     row$pval  <- rma.fit$QMp
   }
-  jaspResults[["fixRandTable"]]$addRows(row)
+  container[["fixRandTable"]]$addRows(row)
   row <- list(name = gettext("Test of Residual Heterogeneity"),
               qstat = ".", df = ".", pval = ".")
   if(ready) {
@@ -386,14 +391,14 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
     row$df    <- rma.fit$k - rma.fit$p
     row$pval  <- rma.fit$QEp
   }
-  jaspResults[["fixRandTable"]]$addRows(row)
+  container[["fixRandTable"]]$addRows(row)
 }
 
-.metaAnalysisCoeffFill <- function(jaspResults, dataset, options) {
+.metaAnalysisCoeffFill <- function(container, dataset, options) {
   # Compute/get model
-  rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready = TRUE)
+  rma.fit <- .metaAnalysisComputeModel(container, dataset, options, ready = TRUE)
   coeff   <- coef(summary(rma.fit))
-  cov     <- rownames(coeff)
+  cov     <-.metaAnalysisMakePrettyCoeffNames(rownames(coeff), dataset)
   if (options$includeConstant) {
     start <- 1
   } else {
@@ -403,7 +408,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
       start <- 2
   }
   for (i in start:length(cov)) {
-    jaspResults[["coeffTable"]]$addRows(list(
+    container[["coeffTable"]]$addRows(list(
       name  = cov[[i]],
       est   = coeff[i,1],
       se    = coeff[i,2],
@@ -415,7 +420,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   }
 }
 
-.metaAnalysisFitMeasuresFill <- function(jaspResults, dataset, options, ready) {
+.metaAnalysisFitMeasuresFill <- function(container, dataset, options, ready) {
   stats <- list(
     logLik   = ".",
     deviance = ".",
@@ -425,7 +430,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   )
   if(ready) {
     # Compute/get model
-    rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+    rma.fit <- .metaAnalysisComputeModel(container, dataset, options, ready)
     fitStats <- try(metafor:::fitstats(rma.fit))
     stats$logLik   <- fitStats[[1]]
     stats$deviance <- fitStats[[2]]
@@ -435,14 +440,14 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   }
 
   # Fill table
-  jaspResults[["fitMeasuresTable"]]$addRows(list(name = gettext("Log-likelihood"), method = stats$logLik))
-  jaspResults[["fitMeasuresTable"]]$addRows(list(name = gettext("Deviance"),       method = stats$deviance))
-  jaspResults[["fitMeasuresTable"]]$addRows(list(name = gettext("AIC"),            method = stats$AIC))
-  jaspResults[["fitMeasuresTable"]]$addRows(list(name = gettext("BIC"),            method = stats$BIC))
-  jaspResults[["fitMeasuresTable"]]$addRows(list(name = gettext("AICc"),           method = stats$AICc))
+  container[["fitMeasuresTable"]]$addRows(list(name = gettext("Log-likelihood"), method = stats$logLik))
+  container[["fitMeasuresTable"]]$addRows(list(name = gettext("Deviance"),       method = stats$deviance))
+  container[["fitMeasuresTable"]]$addRows(list(name = gettext("AIC"),            method = stats$AIC))
+  container[["fitMeasuresTable"]]$addRows(list(name = gettext("BIC"),            method = stats$BIC))
+  container[["fitMeasuresTable"]]$addRows(list(name = gettext("AICc"),           method = stats$AICc))
 }
 
-.metaAnalysisResidualFill <- function(jaspResults, dataset, options, ready) {
+.metaAnalysisResidualFill <- function(container, dataset, options, ready) {
   est <- ci.lower <- ci.upper <- list(
     tau2 = ".",
     tau  = ".",
@@ -452,7 +457,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
   if (ready) {
     # Compute/get model
-    rma.fit   <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+    rma.fit   <- .metaAnalysisComputeModel(container, dataset, options, ready)
     confInt   <- options$regressionCoefficientsConfidenceIntervalsInterval
     residPars <- try(confint(rma.fit, digits = 12, level = confInt)$random)
 
@@ -474,7 +479,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
   ##TODO: need name column entries in <em></em>
   # Fill table
-  jaspResults[["residualTable"]]$addRows(list(
+  container[["residualTable"]]$addRows(list(
     list(name = "\u3C4\u00B2", est = est$tau2,
          lower = ci.lower$tau2, upper = ci.upper$tau2),
     list(name = "\u3C4", est = est$tau,
@@ -486,52 +491,52 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   ))
 }
 
-.metaAnalysisCovMatFill <- function(jaspResults, dataset, options, ready, coeffVcov) {
+.metaAnalysisCovMatFill <- function(container, dataset, options, ready, coeffVcov) {
   if(ready) {
     cov <- colnames(coeffVcov)
     for(i in 1:length(cov)) {
       row <- list(name = cov[[i]])
       for(j in 1:length(cov))
         row[[paste(cov[[j]])]]  <- coeffVcov[i,j]
-      jaspResults[["covMatTable"]]$addRows(row)
+      container[["covMatTable"]]$addRows(row)
     }
   } else
-    jaspResults[["covMatTable"]]$addRows(list(name = "...", intrcpt = "."))
+    container[["covMatTable"]]$addRows(list(name = "...", intercept = "."))
 }
 
-.metaAnalysisRankTestFill <- function(jaspResults, dataset, options, ready) {
+.metaAnalysisRankTestFill <- function(container, dataset, options, ready) {
   results <- list(name = gettext("Rank test"), kendall = ".", pval = ".")
   if(ready) {
     # Compute/get model
-    rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+    rma.fit <- .metaAnalysisComputeModel(container, dataset, options, ready)
     ranktst <- unlist(metafor::ranktest(rma.fit))
     results$kendall <- ranktst[[1]]
     results$pval    <- ranktst[[2]]
   }
-  jaspResults[["rankTestTable"]]$addRows(results)
+  container[["rankTestTable"]]$addRows(results)
 }
 
-.metaAnalysisRegTestFill <- function(jaspResults, dataset, options) {
-  rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready = TRUE)
+.metaAnalysisRegTestFill <- function(container, dataset, options) {
+  rma.fit <- .metaAnalysisComputeModel(container, dataset, options, ready = TRUE)
   egger   <- metafor::regtest(rma.fit)
-  jaspResults[["regTestTable"]]$setData(list(name = egger$predictor, test = egger$zval, pval = egger$pval))
+  container[["regTestTable"]]$setData(list(name = egger$predictor, test = egger$zval, pval = egger$pval))
 }
 
-.metaAnalysisCasewiseFill <- function(jaspResults, dataset, options) {
-  rma.fit       <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready = TRUE)
+.metaAnalysisCasewiseFill <- function(container, dataset, options) {
+  rma.fit       <- .metaAnalysisComputeModel(container, dataset, options, ready = TRUE)
   influ <- influence(rma.fit)
   influenceVals <- influ$inf
   isInfluential <- influ$is.infl
   
   if (sum(isInfluential) > 0)
-    jaspResults[["casewiseTable"]]$addFootnote(gettextf("Cases marked with %s are influential.", "\u002A"))
+    container[["casewiseTable"]]$addFootnote(gettextf("Cases marked with %s are influential.", "\u002A"))
 
   for (i in 1:length(influenceVals$rstudent)) {
     name <- influenceVals$slab[i]
     if (!is.na(isInfluential[i]) && isInfluential[i])
       name <- paste0(name, "\u002A")
 
-    jaspResults[["casewiseTable"]]$addRows(list(
+    container[["casewiseTable"]]$addRows(list(
       name   = name,
       sdRes  = influenceVals$rstudent[i],
       dfFits = influenceVals$dffits[i],
@@ -545,48 +550,46 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   }
 }
 
-.metaAnalysisFailSafeFill <- function(jaspResults, dataset, options) {
+.metaAnalysisFailSafeFill <- function(container, dataset, options) {
   # Compute/get model
-  rma.fit <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+  rma.fit <- .metaAnalysisComputeModel(container, dataset, options, ready)
   fsn.fit <- metafor::fsn(yi   = get(.v(options$dependent)),
                           sei  = get(.v(options$wlsWeights)),
                           data = dataset)
   fsn.fit <- .unv(fsn.fit)
-  jaspResults[["failSafeTable"]]$addRows(list("name" = fsn.fit$type,
+  container[["failSafeTable"]]$addRows(list("name" = fsn.fit$type,
                                               "fsnum" = fsn.fit$fsnum,
                                               "alpha" = fsn.fit$alpha,
                                               "pval"  = fsn.fit$pval))
 }
 
 # Plots
-.metaAnalysisPlotsContainer <- function(jaspResults, options, ready)  {
+.metaAnalysisPlotsContainer <- function(container, options, ready)  {
   if(!ready) return()
   if(!options$forestPlot && !options$funnelPlot && !options$plotResidualsDependent &&
      !options$plotResidualsPredicted && !options$trimFillPlot)
     return()
-  if (is.null(jaspResults[["plots"]])) {
-    container <- createJaspContainer(gettext("Plot"))
-    container$dependOn(c("dependent", "wlsWeights", "method",
-                         "studyLabels", "covariates", "modelTerms"))
-    jaspResults[["plots"]] <- container
+  if (is.null(container[["plots"]])) {
+    plotContainer <- createJaspContainer(gettext("Plot"))
+    container[["plots"]] <- plotContainer
   }
 }
 
-.metaAnalysisForestPlot <- function(jaspResults, dataset, options, ready) {
+.metaAnalysisForestPlot <- function(container, dataset, options, ready) {
   if(!options$forestPlot)
     return()
-  .metaAnalysisPlotsContainer(jaspResults, options, ready)
-  container <- jaspResults[["plots"]]
+  .metaAnalysisPlotsContainer(container, options, ready)
+  plotContainer <- container[["plots"]]
   # Compute/get model
-  rma.fit    <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+  rma.fit    <- .metaAnalysisComputeModel(container, dataset, options, ready)
   img.height <- 400
-  if(!is.null(rma.fit))
+  if (ready)
     img.height <- max(520, nobs(rma.fit) * 20)
   forestPlot   <- createJaspPlot(title = gettext("Forest plot"), width = 520, height = img.height)
   forestPlot$position <- 1
   forestPlot$dependOn(c("forestPlot"))
-  container[["forest"]] <- forestPlot
-  if(ready){
+  plotContainer[["forest"]] <- forestPlot
+  if (ready){
     p <- try(.metaAnalysisForestPlotFill(rma.fit))
     if(isTryError(p))
       forestPlot$setError(.extractErrorMessage(p))
@@ -596,18 +599,18 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   return()
 }
 
-.metaAnalysisFunnelPlot <- function(jaspResults, dataset, options, ready) {
+.metaAnalysisFunnelPlot <- function(container, dataset, options, ready) {
   if(!options$funnelPlot)
     return()
-  .metaAnalysisPlotsContainer(jaspResults, options, ready)
-  container <- jaspResults[["plots"]]
+  .metaAnalysisPlotsContainer(container, options, ready)
+  plotContainer <- container[["plots"]]
   # Compute/get model
-  rma.fit    <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+  rma.fit    <- .metaAnalysisComputeModel(container, dataset, options, ready)
 
   funnelPlot   <- createJaspPlot(title = gettext("Funnel Plot"), width = 520, height = 520)
   funnelPlot$position <- 2
   funnelPlot$dependOn(c("funnelPlot"))
-  container[["funnel"]] <- funnelPlot
+  plotContainer[["funnel"]] <- funnelPlot
 
   if(ready){
     p <- try(.metaAnalysisFunnelPlotFill(rma.fit))
@@ -619,18 +622,18 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   return()
 }
 
-.metaAnalysisProfilePlot <- function(jaspResults, dataset, options, ready) {
+.metaAnalysisProfilePlot <- function(container, dataset, options, ready) {
   if(!options$plotResidualsPredicted)
     return()
-  .metaAnalysisPlotsContainer(jaspResults, options, ready)
-  container <- jaspResults[["plots"]]
+  .metaAnalysisPlotsContainer(container, options, ready)
+  plotContainer <- container[["plots"]]
   # Compute/get model
-  rma.fit    <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+  rma.fit    <- .metaAnalysisComputeModel(container, dataset, options, ready)
 
   profilePlot   <- createJaspPlot(title = gettextf("Log-likelihood for %s%s", "\u3C4", "\u00B2"), width = 520, height = 520)
   profilePlot$position <- 4
   profilePlot$dependOn(c("plotResidualsPredicted"))
-  container[["profile"]] <- profilePlot
+  plotContainer[["profile"]] <- profilePlot
   if(ready){
     p <- try(.metaAnalysisProfilePlotFill(rma.fit))
     if(isTryError(p))
@@ -641,19 +644,19 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   return()
 }
 
-.metaAnalysisTrimFillPlot <- function(jaspResults, dataset, options, ready) {
+.metaAnalysisTrimFillPlot <- function(container, dataset, options, ready) {
   if(!options$trimFillPlot)
     return()
-  .metaAnalysisPlotsContainer(jaspResults, options, ready)
-  container <- jaspResults[["plots"]]
+  .metaAnalysisPlotsContainer(container, options, ready)
+  plotContainer <- container[["plots"]]
   # Compute/get model
   trimFillPlot <- createJaspPlot(title = gettext("Trim-fill Analysis"), width = 820, height = 820)
   trimFillPlot$position <- 5
   trimFillPlot$dependOn(c("trimFillPlot"))
-  container[["trimFill"]] <- trimFillPlot
+  plotContainer[["trimFill"]] <- trimFillPlot
 
   if (ready) {
-    rma.fit      <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+    rma.fit      <- .metaAnalysisComputeModel(container, dataset, options, ready)
     trimfill.fit <- metafor::trimfill(update(rma.fit, mods = ~1))
     
     p <- try(.metaAnalysisTrimFillPlotFill(trimfill.fit))
@@ -665,19 +668,19 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   return()
 }
 
-.metaAnalysisDiagnosticPlot <- function(jaspResults, dataset, options, ready) {
+.metaAnalysisDiagnosticPlot <- function(container, dataset, options, ready) {
   if(!options$plotResidualsDependent)
     return()
-  .metaAnalysisPlotsContainer(jaspResults, options, ready)
-  container <- jaspResults[["plots"]]
+  .metaAnalysisPlotsContainer(container, options, ready)
+  plotContainer <- container[["plots"]]
   # Compute/get model
-  rma.fit   <- .metaAnalysisComputeModel(jaspResults, dataset, options, ready)
+  rma.fit   <- .metaAnalysisComputeModel(container, dataset, options, ready)
   diagnosticPlot <- createJaspPlot(title = gettext("Diagnostic Plots"), width = 820, height = 820)
   diagnosticPlot$position <- 3
   diagnosticPlot$dependOn(c("plotResidualsDependent", "plotResidualsQQ"))
-  container[["diagnosticPlot"]] <- diagnosticPlot
+  plotContainer[["diagnosticPlot"]] <- diagnosticPlot
   if(ready){
-    p <- try(.metaAnalysisDiagnosticPlotFill(container, rma.fit,
+    p <- try(.metaAnalysisDiagnosticPlotFill(plotContainer, rma.fit,
                                              qqplot = options$plotResidualsQQ,
                                              radial = rma.fit$int.only))
     if(isTryError(p))
@@ -699,16 +702,16 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   return(p)
 }
 
-.metaAnalysisDiagnosticPlotFill <- function(container, rma.fit, qqplot, radial = TRUE) {
+.metaAnalysisDiagnosticPlotFill <- function(plotContainer, rma.fit, qqplot, radial = TRUE) {
   plotMat <- matrix(list(), 2, 2)
 
-  if(!is.null(container[["forest"]]))
-    plotMat[[1,1]] <- container[["forest"]][["plotObject"]]
+  if(!is.null(plotContainer[["forest"]]))
+    plotMat[[1,1]] <- plotContainer[["forest"]][["plotObject"]]
   else
     plotMat[[1,1]] <- .metaAnalysisForestPlotFill(rma.fit)
 
-  if(!is.null(container[["funnel"]]))
-    plotMat[[1,2]] <- container[["funnel"]][["plotObject"]]
+  if(!is.null(plotContainer[["funnel"]]))
+    plotMat[[1,2]] <- plotContainer[["funnel"]][["plotObject"]]
   else
     plotMat[[1,2]] <- .metaAnalysisFunnelPlotFill(rma.fit)
 
@@ -1353,4 +1356,54 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 .metaAnalysisSetError <- function(res, table) {
   if(isTryError(res))
     table$setError(.extractErrorMessage(res))
+}
+
+# Replaces "intrcpt" with "intercept" and concated "factorNamelevelName" with "factorName (levelName)"
+.metaAnalysisMakePrettyCoeffNames <- function(coeffNames, dataset, concatFactorNames = NULL) {
+  newNames <- coeffNames
+  
+  if (is.null(concatFactorNames))
+    concatFactorNames <- .metaAnalysisMapConcatFactorNames(dataset)
+  
+  for (i in seq_along(coeffNames)) {
+    coeffName <- coeffNames[i]
+    
+    if (coeffName == "intrcpt") {
+      newNames[i] <- "intercept"
+    } else if (!is.null(concatFactorNames)) {
+      coeffNameEnc <- .v(coeffName)
+      if (grepl(":", coeffNameEnc, fixed = TRUE)) { # it's an interaction term
+        terms <- unlist(strsplit(coeffNameEnc, ":", fixed = TRUE))
+        replaced <- .metaAnalysisMakePrettyCoeffNames(.unv(terms), dataset, concatFactorNames)
+        newNames[i] <- paste(replaced, collapse = "\u2009\u273b\u2009")
+      } else { # it's a regular term
+        match <- which(concatFactorNames == coeffName)
+        if (length(match) == 1)
+          newNames[i] <- names(concatFactorNames)[match]
+      }
+    }
+  }
+  
+  return(newNames)
+}
+
+# Creates a named character vector with values = "factorNameLevelName" and names = "factorName (levelName)"
+.metaAnalysisMapConcatFactorNames <- function(dataset) {
+  factorCols <- unlist(lapply(dataset, is.factor))
+  if (length(factorCols) == 0)
+    return(NULL)
+  
+  dataset <- dataset[factorCols]
+  
+  mapping <- levelsPerFactor <- lapply(dataset, levels)
+  names(levelsPerFactor) <- .unv(names(levelsPerFactor))
+  names(mapping) <- NULL
+  
+  for (i in seq_along(levelsPerFactor)) {
+    values <- paste0(names(levelsPerFactor)[i], levelsPerFactor[[i]])
+    values <- setNames(values, paste0(names(levelsPerFactor)[i], " (", levelsPerFactor[[i]], ")"))
+    mapping[[i]] <- values
+  }
+  
+  return(unlist(mapping))
 }

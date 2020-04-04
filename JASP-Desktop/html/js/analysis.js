@@ -615,6 +615,20 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		return itemView;
 	},
 
+	overwriteUserData: function(userdata) {
+		this.userdata = userdata;
+		console.log("New userdata: %o", this.userdata);
+		var firstNote = this.viewNotes.firstNoteNoteBox
+		var lastNote = this.viewNotes.lastNoteNoteBox
+		var newList = []
+		for (var i = 0; i < this.viewNotes.list.length; i++) {
+			if (this.viewNotes.list.widget === firstNote || this.viewNotes.list.widget === lastNote)
+				newList.push(this.viewNotes.list[i])
+		}
+
+		this.viewNotes = { list: newList, firstNoteNoteBox: firstNote, lastNoteNoteBox: lastNote };
+	},
+
 	render: function () {
 
 		var results = this.model.get("results");
@@ -633,10 +647,6 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 				this.updateProgressbarInResults();
 			return this;
 		}
-
-		var userdataCPP = this.model.get("userdata"); //This might have been changed by Analysis::fitOldUserDataEtc to accomodate loading old files. And otherwise should be the same as local stored userdata
-		if (userdataCPP !== undefined && userdataCPP !== null)
-			this.userdata = userdataCPP;
 
 		this.imageBeingEdited = null;
 

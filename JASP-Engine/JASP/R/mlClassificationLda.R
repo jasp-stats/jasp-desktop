@@ -357,7 +357,7 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
 
   target <- classificationResult[["train"]][, .v(options[["target"]])]
   lda.fit.scaled <- cbind.data.frame(
-    LD = .scaleNumericData(as.matrix(classificationResult[["train"]][,.v(options[["predictors"]]), drop = FALSE]), scale = FALSE) %*% classificationResult[["scaling"]][, col], 
+    LD = .ldaModelMatrix(classificationResult[["model"]], classificationResult[["train"]]) %*% classificationResult[["scaling"]][, col],
     V2 = classificationResult[["train"]][,.v(options[["target"]])]
   )
   lda.fit.scaled[["V2"]] <- as.factor(lda.fit.scaled[["V2"]])
@@ -524,3 +524,15 @@ mlClassificationLda <- function(jaspResults, dataset, options, ...) {
   }
 
 }
+
+.ldaModelMatrix <- function(ldafit, data) {
+
+  # adapted from MASS:::lda.formula
+
+  x <- model.matrix(ldafit$terms, data)
+  xint <- match("(Intercept)", colnames(x), nomatch = 0L)
+  if (xint > 0L)
+    x <- x[, -xint, drop = FALSE]
+  x
+}
+
