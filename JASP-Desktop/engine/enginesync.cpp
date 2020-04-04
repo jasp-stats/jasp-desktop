@@ -414,6 +414,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	env.insert("R_PROFILE",			"something-which-doesn't-exist");
 	env.insert("R_PROFILE_USER",	"something-which-doesn't-exist");
 	env.insert("R_ENVIRON_USER",	"something-which-doesn't-exist");
+	env.insert("LC_CTYPE",			"C"); //To force utf-8 output from gettext et al. This is most likely only necessary on Windows but it can't hurt right?
 
 #elif __APPLE__
 
@@ -427,14 +428,17 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	//env.insert("R_PROFILE_USER",	"something-which-doesnt-exist");
 	//env.insert("R_ENVIRON_USER",	"something-which-doesnt-exist");
 
+	env.insert("LC_CTYPE",			"UTF-8"); //This isn't really a locale but seems necessary to get proper output from gettext on mac
+
 #else  // linux
 	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
 	env.insert("R_HOME",			rHome.absolutePath());
 	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
 
+	//Let's just trust linux and *not set* LC_CTYPE at all. It'll be fine.
 #endif
 
-	env.insert("LC_CTYPE",			"C"); //To force utf-8 output from gettext et al. This is most likely only necessary on Windows but it can't hurt right?
+
 	env.insert("R_LIBS_SITE",		"");
 	env.insert("R_LIBS_USER",		AppDirs::userRLibrary().toStdString().c_str());
 

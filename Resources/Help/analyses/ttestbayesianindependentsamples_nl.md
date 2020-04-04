@@ -30,7 +30,7 @@ Met de t-toets voor onafhankelijke steekproeven kan de gebruiker de effectgroott
 -  Log(BF10): Natuurlijk logaritme van BF10. 
 
 #### Aanvullende statistieken
--  Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaardafwijking, standaard fout van het gemiddelde voor iedere groep.
+-  Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaardafwijking, standaardfout van het gemiddelde voor iedere groep.
 
 #### Ontbrekende Waarden
  - Het uitsluiten van waarnemingen, analyse voor analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets. 

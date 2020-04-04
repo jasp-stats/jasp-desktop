@@ -42,6 +42,8 @@ class PreferencesModel : public QObject
 	Q_PROPERTY(QString		currentThemeName		READ currentThemeName			WRITE setCurrentThemeName			NOTIFY currentThemeNameChanged			)
 	Q_PROPERTY(QString		languageCode			READ languageCode													NOTIFY languageCodeChanged				)
 	Q_PROPERTY(bool			useNativeFileDialog		READ useNativeFileDialog		WRITE setUseNativeFileDialog		NOTIFY useNativeFileDialogChanged		)
+	Q_PROPERTY(bool			disableAnimations		READ disableAnimations			WRITE setDisableAnimations			NOTIFY disableAnimationsChanged			)
+	Q_PROPERTY(bool			animationsOn			READ animationsOn													NOTIFY animationsOnChanged				)
 
 public:
 	static PreferencesModel * prefs() { return _singleton; }
@@ -80,16 +82,13 @@ public:
 	QString		currentThemeName()			const;
 	QString		languageCode()				const;
 	bool		useNativeFileDialog()		const;
+	bool		disableAnimations()			const;
+	bool		animationsOn()				const { return !disableAnimations() && !safeGraphics(); }
 
 	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();
-
-
-
-
-
 
 public slots:
 	void setUiScale(					double		uiScale);
@@ -131,6 +130,7 @@ public slots:
 	void setCurrentThemeNameFromClass(	JaspTheme * theme);
 	void setDefaultFont(				QFont		defaultFont);
 	void setUseNativeFileDialog(		bool		useNativeFileDialog);
+	void setDisableAnimations(			bool		disableAnimations);
 
 	void onCurrentThemeNameChanged(QString newThemeName);
 
@@ -169,6 +169,8 @@ signals:
 	void languageCodeChanged();
 
 	void useNativeFileDialogChanged(	bool		useNativeFileDialog);
+	void disableAnimationsChanged(		bool		disableAnimations);
+	void animationsOnChanged();
 
 private:
 	static PreferencesModel * _singleton;

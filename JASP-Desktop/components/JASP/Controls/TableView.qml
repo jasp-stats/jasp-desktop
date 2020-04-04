@@ -55,6 +55,8 @@ JASPControl
 	property int	columnCount		: 0	//Readonly
 	property int	rowCount		: 0	//Readonly
 	property string cornerText		: qsTr("Row #")
+	property bool	parseDefaultValue: true
+	property string defaultEmptyValue:	""
 
 	property int	initialColumnCount	: 0	//Only read on init
 	property int	initialRowCount		: 0	//Only read on init
@@ -63,7 +65,7 @@ JASPControl
 	readonly property int tableWidth:  theView.width  + 2
 	readonly property int tableHeight: theView.height + 2
 
-	readonly property int editableColumnStartIndex: tableView.modelType === "FilteredDataEntryModel" ? 3 : 0
+	readonly property int editableColumnStartIndex: tableView.modelType === "FilteredDataEntryModel" ? 3 : (tableView.modelType === "JAGSDataInputModel" ? 1 : 0)
 
 	signal reset()
 	signal addRow()
@@ -192,6 +194,8 @@ JASPControl
 						showBorder:				false
 						value:					itemText
 						useLastValidValue:		false
+						parseDefaultValue:		tableView.parseDefaultValue
+						defaultEmptyValue:		tableView.defaultEmptyValue
 						selectValueOnFocus:		true
 						validator:				tableView.validator
 						onPressed:				tableView.colSelected = columnIndex

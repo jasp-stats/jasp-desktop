@@ -73,7 +73,7 @@ Rectangle
 
 	Behavior on opacity
 	{
-		enabled: !preferencesModel.safeGraphics;
+		enabled: preferencesModel.animationsOn;
 
 		NumberAnimation
 		{

@@ -40,7 +40,7 @@ FocusScope
 		border.width:	1
 		border.color:	jaspTheme.uiBorder
 
-		Behavior on x { enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+		Behavior on x { enabled: preferencesModel.animationsOn; PropertyAnimation { duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
 
 		MouseArea

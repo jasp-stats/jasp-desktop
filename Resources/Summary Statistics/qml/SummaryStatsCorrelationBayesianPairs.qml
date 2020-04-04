@@ -26,24 +26,24 @@ Form
 {
     usesJaspResults: true
 
-    IntegerField { name: "sampleSize"; label: qsTr("Sample size") }
+    IntegerField { name: "n"; label: qsTr("Sample size") }
 
     Divider { }
 
 	RadioButtonGroup
 	{
-        name: "correlationCoefficient"
-		title: qsTr("Correlation Coefficient")
+        name: "method"
+        title: qsTr("Sample Correlation Coefficient")
 		Layout.columnSpan: 2
 		RadioButton
 		{
-            value: "pearsonRho"; label: qsTr("Pearson's rho"); checked: true; childrenOnSameRow: true
-            DoubleField { name: "pearsonRhoValue"; defaultValue: 0; min: -1; max: 1 }
+            value: "pearson"; label: qsTr("Pearson's r"); checked: true; childrenOnSameRow: true
+            DoubleField { name: "rObs"; defaultValue: 0; min: -1; max: 1 }
 		}
 		RadioButton
 		{
-            value: "kendallTau"; label: qsTr("Kendall's tau-b"); childrenOnSameRow: true
-            DoubleField { name: "kendallTauValue"; defaultValue: 0; min: -1; max: 1 }
+            value: "kendall"; label: qsTr("Kendall's tau-b"); childrenOnSameRow: true
+            DoubleField { name: "tauObs"; defaultValue: 0; min: -1; max: 1 }
 		}
         RadioButton
         {
@@ -56,10 +56,10 @@ Form
 	RadioButtonGroup
 	{
 		title: qsTr("Alt. Hypothesis")
-        name: "hypothesis"
-        RadioButton { value: "correlated";                          label: qsTr("Correlated"); checked: true	}
-        RadioButton { value: "correlatedPositively";                label: qsTr("Correlated positively")		}
-        RadioButton { value: "correlatedNegatively";                label: qsTr("Correlated negatively")		}
+        name: "alternative"
+        RadioButton { value: "two.sided";                           label: qsTr("Correlated"); checked: true	}
+        RadioButton { value: "greater";                             label: qsTr("Correlated positively")		}
+        RadioButton { value: "less";                                label: qsTr("Correlated negatively")		}
 	}
 
     CheckBox
@@ -73,14 +73,14 @@ Form
 		title: qsTr("Plots")
 		CheckBox
 		{
-            name: "plotPriorAndPosterior";				label: qsTr("Prior and posterior")
+            name: "plotPriorPosterior";				label: qsTr("Prior and posterior")
             CheckBox { name: "plotPriorPosteriorAddEstimationInfo";	label: qsTr("Estimation info"); checked: true }
-            CheckBox { name: "plotPriorAndPosteriorAdditionalInfo";	label: qsTr("Testing info"); checked: true }
+            CheckBox { name: "plotPriorPosteriorAddTestingInfo";	label: qsTr("Testing info"); checked: true }
 		}
 		CheckBox
 		{
-            name: "plotBayesFactorRobustness";                          label: qsTr("Bayes factor robustness check")
-            CheckBox { name: "plotBayesFactorRobustnessAdditionalInfo"; label: qsTr("Additional info"); checked: true }
+            name: "plotBfRobustness";                          label: qsTr("Bayes factor robustness check")
+            CheckBox { name: "plotBfRobustnessAddInfo"; label: qsTr("Additional info"); checked: true }
 		}
 	}
 
@@ -89,6 +89,6 @@ Form
 	Group
 	{
         title: qsTr("Prior")
-        DoubleField { name: "priorWidth";       label: qsTr("Stretched beta prior width");      defaultValue: 1.0; min: 0.003; max: 2; decimals: 3 }
+        DoubleField { name: "kappa";       label: qsTr("Stretched beta prior width");      defaultValue: 1.0; min: 0.003; max: 2; decimals: 3 }
 	}
 }

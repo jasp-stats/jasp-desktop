@@ -10,7 +10,7 @@ Item
 		color:			jaspTheme.darkeningColour
 		opacity:		parent.visible ? 0.5 : 0.0
 		anchors.fill:	parent
-		Behavior on opacity	{ enabled: !preferencesModel.safeGraphics; PropertyAnimation { duration: 100 } }
+		Behavior on opacity	{ enabled: preferencesModel.animationsOn; PropertyAnimation { duration: 100 } }
 	}
 
 	MouseArea

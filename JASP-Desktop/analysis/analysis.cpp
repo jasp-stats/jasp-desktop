@@ -209,7 +209,6 @@ void Analysis::refresh()
 {
 	setStatus(Empty);
 	TempFiles::deleteAll(_id);
-	emit toRefreshSignal(this);
 
 	if(_analysisForm)
 		_analysisForm->refreshTableViewModels();
@@ -219,20 +218,17 @@ void Analysis::saveImage(const Json::Value &options)
 {
 	setStatus(Analysis::SaveImg);
 	_imgOptions = options;
-	emit saveImageSignal(this);
 }
 
 void Analysis::editImage(const Json::Value &options)
 {
 	setStatus(Analysis::EditImg);
 	_imgOptions = options;
-	emit editImageSignal(this);
 }
 
 void Analysis::rewriteImages()
 {
 	setStatus(Analysis::RewriteImgs);
-	emit rewriteImagesSignal(this);
 }
 
 void Analysis::imagesRewritten()
@@ -377,14 +373,17 @@ void Analysis::setStatus(Analysis::Status status)
 
 void Analysis::optionsChangedHandler(Option *option)
 {
+	incrementRevision(); // To make sure we always process all changed options we increment the revision whenever anything changes
+
+	Log::log() << "Option changed for analysis '" << name() << "' and id " << id() << ", revision incremented to: " << _revision << " and options are now: " << option->asJSON().toStyledString() << std::endl;
+
 	if (_refreshBlocked)
 		return;
 
 	if (form() && form()->hasError())
 		return;
 
-	_status = Empty;
-	optionsChanged(this);
+	setStatus(Empty);
 }
 
 ComputedColumn *Analysis::requestComputedColumnCreationHandler(std::string columnName)
@@ -857,6 +856,7 @@ void Analysis::fitOldUserDataEtc()
 		if(orphans.size() > 0)
 			_userData["orphanedNotes"] = orphans;
 
+		emit userDataChangedSignal(this);
 		Log::log() << "New userData after attempt to fix is: " << _userData.toStyledString() << std::endl;
 
 	} catch (...) {

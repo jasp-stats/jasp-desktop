@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-03-18 14:49\n"
+"POT-Creation-Date: 2020-03-29 21:10\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,6 +71,12 @@ msgid "The WLS weights contain negative and/or zero values.<br><br>(only positiv
 msgstr ""
 
 msgid "Singular fit encountered; one or more predictor variables are a linear combination of other predictor variables"
+msgstr ""
+
+msgid "Residual sum of squares is 0; this might be due to extremely low variance of your dependent variable"
+msgstr ""
+
+msgid "An error occurred while computing the ANOVA: %s"
 msgstr ""
 
 msgid "Your design contains empty cells. Please try a different type of sum of squares."
@@ -374,6 +380,9 @@ msgid "Lower Bound %s"
 msgstr ""
 
 msgid "Cannot perform sphericity tests because there only two levels of the RM factor."
+msgstr ""
+
+msgid "Unpooled error term only allowed in balanced designs."
 msgstr ""
 
 msgid "%s corrected p-values are not appropriate for repeated measures post-hoc tests (Maxwell, 1980; Field, 2012)."
@@ -1190,6 +1199,9 @@ msgid "Bayes Factor Matrix"
 msgstr ""
 
 msgid "H1"
+msgstr ""
+
+msgid "Bain does not accept factor levels that contain spaces. Please remove the spaces from your factor levels to continue."
 msgstr ""
 
 msgid "Hypothesis Legend"
@@ -2551,6 +2563,9 @@ msgstr ""
 msgid "All predictors"
 msgstr ""
 
+msgid "The variable '%s' can't be both a predictor and a test set indicator."
+msgstr ""
+
 msgid "Your test set indicator should be binary, containing only 1 (included in test set) and 0 (excluded from test set)."
 msgstr ""
 
@@ -3428,6 +3443,9 @@ msgid "%gth percentile"
 msgstr ""
 
 msgid "All values are identical"
+msgstr ""
+
+msgid "Infimum (minimum) of an empty set is %s, supremum (maximum) of an empty set is %s."
 msgstr ""
 
 msgid "Not all values are available for <i>Nominal Text</i> variables"
@@ -4645,6 +4663,9 @@ msgstr ""
 msgid "%1$s level '%2$s' coded as class 1."
 msgstr ""
 
+msgid "Bootstrapping based on %i successful replicates."
+msgstr ""
+
 msgid "Residual plots"
 msgstr ""
 
@@ -5112,6 +5133,11 @@ msgstr ""
 
 msgid "could not calculate enough valid Bayes Factors for different values of the prior"
 msgstr ""
+
+msgid        "The following pair is duplicated: %s"
+msgid_plural "The following pairs are duplicated: %s"
+msgstr[0]    ""
+msgstr[1]    ""
 
 msgid        "using the %d/%d row from a combined fit"
 msgid_plural "using the %d/%d rows from a combined fit"

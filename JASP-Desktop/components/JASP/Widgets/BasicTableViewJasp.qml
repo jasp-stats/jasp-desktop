@@ -738,7 +738,7 @@ ScrollView {
                             width: parent.width
                             height:parent.height
                             opacity: (treeViewMovable && index === repeater.targetIndex && repeater.targetIndex !== repeater.dragIndex) ? 0.5 : 0
-							Behavior on opacity { enabled: !preferencesModel.safeGraphics; NumberAnimation { duration: 160 } }
+							Behavior on opacity { enabled: preferencesModel.animationsOn; NumberAnimation { duration: 160 } }
 							color: jaspTheme.itemHighlight
                             visible: modelData.movable
                         }

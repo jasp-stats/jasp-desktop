@@ -121,7 +121,7 @@ DropArea
 				else
 				{
 					analysesModel.moving = false
-					mainWindow.moveAnalysesResults(loader.myAnalysis, draggableItem.droppedIndex)
+					analysesModel.moveAnalysesResults(loader.myAnalysis, draggableItem.droppedIndex)
 				}
 			}
 
@@ -188,7 +188,7 @@ DropArea
 
 			transitions: Transition
 			{
-				enabled: !preferencesModel.safeGraphics
+				enabled: preferencesModel.animationsOn
 
 				// Do not use a behavior here: this would interfere with the animation of the ExpanderButtons in the form
 				NumberAnimation		{ property: "height";	duration: 200 }
@@ -226,7 +226,7 @@ DropArea
 						height:	expanderIcon.height * 2
 					}
 
-					Behavior on rotation { enabled: !preferencesModel.safeGraphics; RotationAnimation { duration: 200 } }
+					Behavior on rotation { enabled: preferencesModel.animationsOn; RotationAnimation { duration: 200 } }
 
 				}
 

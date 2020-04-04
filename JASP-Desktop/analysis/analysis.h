@@ -163,13 +163,10 @@ signals:
 	void				sendRScript(			Analysis * analysis, QString script, QString controlName, bool whiteListedVersion);
 	void				statusChanged(			Analysis * analysis);
 	void				optionsChanged(			Analysis * analysis);
-	void				saveImageSignal(		Analysis * analysis);
-	void				editImageSignal(		Analysis * analysis);
-	void				toRefreshSignal(		Analysis * analysis);
 	void				imageSavedSignal(		Analysis * analysis);
 	void				imageEditedSignal(		Analysis * analysis);
-	void				rewriteImagesSignal(	Analysis * analysis);
 	void				resultsChangedSignal(	Analysis * analysis);
+	void				userDataChangedSignal(	Analysis * analysis);
 
 	ComputedColumn *	requestComputedColumnCreation(		QString columnName, Analysis * analysis);
 	void				requestColumnCreation(				QString columnName, Analysis *source, int columnType);

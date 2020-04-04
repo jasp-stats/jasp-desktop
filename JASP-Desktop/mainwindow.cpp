@@ -280,11 +280,13 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::analysesExportResults,					_fileMenu,				&FileMenu::analysesExportResults							);
 	connect(_analyses,				&Analyses::analysisStatusChanged,					_resultsJsInterface,	&ResultsJsInterface::setStatus								);
 	connect(_analyses,              &Analyses::analysisTitleChanged,                    _resultsJsInterface,    &ResultsJsInterface::changeTitle							);
+	connect(_analyses,				&Analyses::analysisOverwriteUserdata,				_resultsJsInterface,	&ResultsJsInterface::overwriteUserdata						);
 	connect(_analyses,				&Analyses::showAnalysisInResults,					_resultsJsInterface,	&ResultsJsInterface::showAnalysis							);
 	connect(_analyses,				&Analyses::unselectAnalysisInResults,				_resultsJsInterface,	&ResultsJsInterface::unselect								);
 	connect(_analyses,				&Analyses::analysisImageEdited,						_resultsJsInterface,	&ResultsJsInterface::analysisImageEditedHandler				);
 	connect(_analyses,				&Analyses::analysisRemoved,							_resultsJsInterface,	&ResultsJsInterface::removeAnalysis							);
 	connect(_analyses,				&Analyses::setResultsMeta,							_resultsJsInterface,	&ResultsJsInterface::setResultsMeta,						Qt::QueuedConnection);
+	connect(_analyses,				&Analyses::moveAnalyses,							_resultsJsInterface,	&ResultsJsInterface::moveAnalyses							);
 	connect(_analyses,				&Analyses::developerMode,							_preferences,			&PreferencesModel::developerMode							);
 	connect(_analyses,				&Analyses::somethingModified,						[&](){					if(_package) _package->setModified(true); }					);
 
@@ -1721,11 +1723,4 @@ void MainWindow::setDownloadNewJASPUrl(QString downloadNewJASPUrl)
 
 	_downloadNewJASPUrl = downloadNewJASPUrl;
 	emit downloadNewJASPUrlChanged(_downloadNewJASPUrl);
-}
-
-void MainWindow::moveAnalysesResults(Analysis* fromAnalysis, int index)
-{
-	Analysis* toAnalysis = _analyses->getAnalysisBeforeMoving(size_t(index));
-	if (fromAnalysis && toAnalysis && fromAnalysis != toAnalysis)
-		_resultsJsInterface->moveAnalyses(fromAnalysis->id(), toAnalysis->id());
 }

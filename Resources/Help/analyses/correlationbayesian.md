@@ -17,8 +17,8 @@ The Bayesian Correlation analysis allows for the estimation of the population co
 ### Input
 ---
 
-#### Correlation Coefficient
-- Pearson's rho: Pearson's product moment correlation coefficient. 
+#### Population Correlation Coefficient
+- Pearson's rho: Pearson's product moment correlation coefficient.
 - Kendall's tau-b: Kendall's tau-b rank-order correlation coefficient to quantify the monotonic association between two variables.
 
 #### Alt. Hypothesis
@@ -42,31 +42,31 @@ The Bayesian Correlation analysis allows for the estimation of the population co
 - Correlation matrix: Display a grid of scatterplots for each possible combination of the selected variables. These are placed above the diagonal.
   - Densities for variables: Display histogram and the corresponding density plot for each variable. These are placed on the diagonal.
   - Posteriors under H<sub>1</sub>: Display posterior distribution of the correlation coefficient for each possible combination of the selected variables. These are placed below the diagonal.
-  
+
 #### Prior
 - Stretched beta prior width: Width of the scaled beta distribution on the correlation under the alterative hypothesis; default is 1. The lower this value, the more concentrated the prior density is around 0. Value must be between 0 and 2.
 
 ### Plot Individual Pairs
 - Correlation coefficient to plot:
-  - Pearson's rho: Pearson's product moment correlation coefficient. 
+  - Pearson's rho: Pearson's product moment correlation coefficient.
   - Kendall's tau-b: Kendall's tau-b rank-order correlation coefficient to quantify the monotonic association between two variables.
-  
+
 - Scatterplot: Displays scatterplots for each specified pair of variables.
-  
+
 - Prior and posterior: Displays the prior and posterior distribution of the correlation under the alternative hypothesis for each specified pair of variables.
   - Estimation info: Adds the median and the 95% credible interval of the posterior distribution of the effect size.
   - Testing info: Adds the Bayes factor computed with the user-defined prior; adds a probability wheel depicting the odds of the data under the null vs. alternative hypothesis (under the assumption that the null and alternative hypotheses were equal probable a priori, i.e., P(H0)=P(H1)=1/2); adds indicators representing the prior and posterior at the test point (e.g., rho=0), the ratio between these two values equals the Bayes factor.
-  
+
 - Bayes factor robustness check: Displays the Bayes factor as a function of the width of the stretched beta prior on the correlation for each specified pair of variables. The width of the kappa prior is varied between 0 and 2.
-  - Additional info: Adds the Bayes factor computed with the user-defined prior and the maximum obtainable Bayes factor. 
-  
+  - Additional info: Adds the Bayes factor computed with the user-defined prior and the maximum obtainable Bayes factor.
+
 - Sequential analysis: Displays the development of the Bayes factor as the data come in using the user-defined prior for each specified pair of variables.
   - Additional info: Adds the Bayes factor computed with the user-defined prior; adds a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; shows the decisiveness of the evidence in terms of Jeffreys' (1961) evidence categories.
 
 ### Options
-- Missing values: 
+- Missing values:
   - Exclude cases pairwise
-  - Exclude cases listwise 
+  - Exclude cases listwise
 - Repeatability:
   - Set seed: Gives the option to set a seed for your analysis. Setting a seed will exclude random processes influencing an analysis.
 
@@ -104,11 +104,11 @@ The Bayesian Correlation analysis allows for the estimation of the population co
     - Estimation info: Displays the median and the 95% credible interval of the posterior distribution of the effect size.
     - Testing info: Displays the Bayes factor computed with the user-defined prior; displays a probability wheel depicting the odds of the data under the null vs. alternative hypothesis (under the assumption that the null and alternative hypotheses were equal probable a priori, i.e., P(H0)=P(H1)=1/2); displays indicators (gray circles) representing the prior and posterior at the test point (e.g., rho=0), the ratio between these two values equals the Bayes factor.
 
-- Bayes factor robustness check: 
-  - Displays the Bayes factor as a function of the width of the beta prior on the correlation. 
+- Bayes factor robustness check:
+  - Displays the Bayes factor as a function of the width of the beta prior on the correlation.
     - Additional info: The red circle represents the maximum obtainable Bayes factor; the gray circle represents the Bayes factor computed with the user-defined prior.
 
-- Sequential analysis: 
+- Sequential analysis:
   - Displays the development of the Bayes factor as a function of the number of observations (n) using the user-defined prior.
     - Additional info: Displays the Bayes factor computed with the user-defined prior; displays a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; shows the decisiveness of the evidence in terms of Jeffreys' (1961) evidence categories.
 

@@ -230,6 +230,14 @@ void ResultsJsInterface::changeTitle(Analysis *analysis)
     emit runJavaScript("window.changeTitle(" + QString::number(id) + ", '" + escapeJavascriptString(title) + "')");
 }
 
+void ResultsJsInterface::overwriteUserdata(Analysis *analysis)
+{
+	size_t id = analysis->id();
+	QString userData = tq(analysis->userData().toStyledString());
+
+	emit runJavaScript("window.overwriteUserdata(" + QString::number(id) + ", JSON.parse('" + escapeJavascriptString(userData) + "'))");
+}
+
 void ResultsJsInterface::showAnalysis(int id)
 {
 	emit runJavaScript("window.select(" % QString::number(id) % ")");
@@ -270,7 +278,7 @@ void ResultsJsInterface::removeAnalyses()
 	emit runJavaScript("window.removeAllAnalyses()");
 }
 
-void ResultsJsInterface::moveAnalyses(size_t fromId, size_t toId)
+void ResultsJsInterface::moveAnalyses(quint64 fromId, quint64 toId)
 {
 	emit runJavaScript("window.moveAnalyses(" % QString::number(fromId) % "," % QString::number(toId) % ")");
 }

@@ -32,9 +32,9 @@ signRecursively () {
 		fi
 	done
 
-	#Descend into each folder here
-	for d in "$1"/*/; do
-		if [ -d "$d" ]; then
+	#Descend into each folder here unless it is a symbolic link (Because otherwise we get stuck in an infinite loop due to the fix for https://github.com/jasp-stats/jasp-test-release/issues/641)
+	for d in "$1"/*; do
+		if [[ ! -L "$d" && -d "$d" ]]; then
 			signRecursively "$d" $2
 		fi
 	done

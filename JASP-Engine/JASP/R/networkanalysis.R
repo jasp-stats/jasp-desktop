@@ -17,7 +17,7 @@
 
 NetworkAnalysis <- function(jaspResults, dataset, options) {
 
-  dataset <- .networkAnalysisReadData      (dataset, options)
+  dataset <- .networkAnalysisReadData(dataset, options)
 
   mainContainer <- .networkAnalysisSetupMainContainerAndTable(jaspResults, dataset, options)
   .networkAnalysisErrorCheck(mainContainer, dataset, options)
@@ -110,12 +110,14 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
     if (options[["groupingVariable"]] != "") {
       # these cannot be chained unfortunately
-      .hasErrors(dataset = groupingVariable,
-                 type = c("factorLevels", "observations"),
-                 factorLevels.target = groupingVariable,
+      groupingVariableName <- options[["groupingVariable"]]
+      dfGroup <- data.frame(groupingVariable)
+      colnames(dfGroup) <- .v(groupingVariableName)
+      .hasErrors(dataset = dfGroup,
+                 type = c("missingValues", "factorLevels"),
+                 missingValues.target = groupingVariableName,
+                 factorLevels.target = groupingVariableName,
                  factorLevels.amount = "< 2",
-                 observations.amount = "< 10",
-                 observations.grouping = groupingVariable,
                  exitAnalysisIfErrors = TRUE)
       dataset[[.v(options[["groupingVariable"]])]] <- groupingVariable
       groupingVariable <- options[["groupingVariable"]]
@@ -602,7 +604,8 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
       edge.color  = edgeColor,
       nodeNames   = nodeNames,
       label.scale = options[["scaleLabels"]],
-      label.cex   = options[["labelSize"]]
+      label.cex   = options[["labelSize"]],
+      GLratio     = 1 / options[["legendToPlotRatio"]]
     ))
 }
 
@@ -622,9 +625,10 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
     "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodePalette",
     "showLegend", "legendNumber", "showMgmVariableType", "showVariableNames",
-    "graphSize", "scaleLabels", "labelSize", "abbreviateLabels", "abbreviateNoChars",
+    "scaleLabels", "labelSize", "abbreviateLabels", "abbreviateNoChars",
     "keepLayoutTheSame", "layoutX", "layoutY", "plotNetwork",
-    "groupNames", "groupColors", "variablesForColor", "groupAssigned", "manualColors"
+    "groupNames", "groupColors", "variablesForColor", "groupAssigned", "manualColors",
+    "legendToPlotRatio"
   ))
   plotContainer[["networkPlotContainer"]] <- networkPlotContainer
 
@@ -632,8 +636,6 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     networkPlotContainer[["dummyPlot"]] <- createJaspPlot(title = gettext("Network Plot"))
     return()
   }
-
-  aspectRatio <- if (options[["graphSize"]] == "graphSizeFree") 0 else 1
 
   layout <- network[["layout"]] # calculated in .networkAnalysisRun()
 
@@ -728,8 +730,12 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
   names(allLegends) <- names(allNetworks) # allows indexing by name
 
+  basePlotSize <- 320
+  legendMultiplier <- options[["legendToPlotRatio"]] * basePlotSize
+  height <- setNames(rep(basePlotSize, nGraphs), names(allLegends))
+  width  <- basePlotSize + allLegends * legendMultiplier
   for (v in names(allNetworks))
-    networkPlotContainer[[v]] <- createJaspPlot(title = v, aspectRatio = aspectRatio)
+      networkPlotContainer[[v]] <- createJaspPlot(title = v, width = width[v], height = height[v])
 
   .suppressGrDevice({
 

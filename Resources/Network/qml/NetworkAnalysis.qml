@@ -379,14 +379,6 @@ Form
 
 		RadioButtonGroup
 		{
-			name: "graphSize";
-			title: qsTr("Network Size")
-			RadioButton { value: "graphSizeFixed";	label: qsTr("Fixed ratio"); checked: true	}
-			RadioButton { value: "graphSizeFree";	label: qsTr("Free")							}
-		}
-
-		RadioButtonGroup
-		{
 			name: "showVariableNames";
 			title: qsTr("Show Variable Names")
 			RadioButton { value: "In nodes";		label: qsTr("In nodes");	 checked: true	}
@@ -414,6 +406,14 @@ Form
 				value: "In plot number: "; label: qsTr("In plot number: ")
 				childrenOnSameRow: true
 				IntegerField { name: "legendNumber"; defaultValue: 1 }
+			}
+			DoubleField
+			{
+				name: "legendToPlotRatio"
+				label: qsTr("Legend to plot ratio")
+				defaultValue: 0.4
+				min: 0.001
+				max: 4 // not strictly necessary but png crashes if it gets too big
 			}
 		}
 

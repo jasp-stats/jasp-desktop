@@ -82,6 +82,13 @@ $(document).ready(function () {
 		analysis.toolbar.render();
 	}
 
+	window.overwriteUserdata = function(id, userData) {
+		var analysis = analyses.getAnalysis(id);
+		if (analysis === undefined) return;
+
+		analysis.overwriteUserData(userData)
+	}
+
 	window.setAnalysesTitle = function(newTitle) { analyses.setTitle(newTitle); }
 
 

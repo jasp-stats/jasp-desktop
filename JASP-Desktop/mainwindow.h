@@ -130,7 +130,7 @@ public slots:
 	void	showLogFolder();
 
 	void	setDownloadNewJASPUrl(QString downloadNewJASPUrl);
-	void	moveAnalysesResults(Analysis* fromAnalysis, int index);
+
 
 	void	setCheckAutomaticSync(bool check)									{  _checkAutomaticSync = check;	}
 	void	openGitHubBugReport() const;

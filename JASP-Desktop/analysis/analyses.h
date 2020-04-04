@@ -78,6 +78,7 @@ public:
 
 	///Applies function to all analyses.
 	void		applyToAll(std::function<void(Analysis *analysis)> applyThis);
+	void		applyToAll(std::function<void(Analysis *analysis)> applyThis) const;
 
 	int			count() const	{ assert(_analysisMap.size() == _orderedIds.size()); return _analysisMap.size(); }
 
@@ -127,6 +128,7 @@ public slots:
 	void languageChangedHandler();
 	void resultsMetaChanged(QString json);
 	void allUserDataChanged(QString json);
+	void moveAnalysesResults(Analysis* fromAnalysis, int index);
 
 signals:
 	void analysesUnselected();
@@ -134,15 +136,11 @@ signals:
 	void countChanged();
 	void analysisAdded(					Analysis *	source);
 	void analysisRemoved(				Analysis *	source);
-	void analysisEditImage(				Analysis *	source);
-	void analysisSaveImage(				Analysis *	source);
-	void analysisToRefresh(				Analysis *	source);
 	void analysisImageSaved(			Analysis *	source);
 	void analysisImageEdited(			Analysis *	source);
-	void analysisRewriteImages(			Analysis *	source);
 	void analysisResultsChanged(		Analysis *	source);
 	void analysisTitleChanged(			Analysis *  source);
-	void analysisOptionsChanged(		Analysis *	source);
+	void analysisOverwriteUserdata(		Analysis *	source);
 	void analysisStatusChanged(			Analysis *	source);
 	void sendRScript(					QString		script, int requestID, bool whiteListedVersion);
 	void analysisSelectedIndexResults(	int			row);
@@ -158,6 +156,7 @@ signals:
     void analysesExportResults();
 	bool developerMode();
 	void setResultsMeta(QString json);
+	void moveAnalyses(quint64 fromId, quint64 toId);
 
 	ComputedColumn *	requestComputedColumnCreation(QString columnName, Analysis *source);
 	void				requestColumnCreation(QString columnName, Analysis *source, int columnType);

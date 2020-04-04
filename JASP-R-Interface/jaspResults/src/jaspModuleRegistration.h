@@ -151,6 +151,7 @@ RCPP_MODULE(jaspResults)
         .property("html",			&jaspHtml_Interface::getHtml,													"The text of this element")
 		.property("elementType",	&jaspHtml_Interface::getElementType,	&jaspHtml_Interface::setElementType,	"The type of this html element, default is 'p' but other useful values include 'H1', 'h2' etc. If you want to write your own html element completely set this to \"\"")
 		.property("class",			&jaspHtml_Interface::getClass,			&jaspHtml_Interface::setClass,			"The Css-class of this element, for monospace one could use jasp-code or simply leave it empty.")
+		.property("maxWidth",		&jaspHtml_Interface::getMaxWidth,		&jaspHtml_Interface::setMaxWidth,		"The Css-max-width property. It will be set on a span around your html.")
 	;
 
 

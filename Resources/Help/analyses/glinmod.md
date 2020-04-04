@@ -69,4 +69,4 @@ Generalized linear models (GLMs) relax the standard assumptions of normality, li
 
 ### Example 
 --- 
-- For more details about flexplot in JASP, watch this <a href="https://www.youtube.com/watch?v=Jxrq_T8InBY&feature=youtu.be">video</a>. 
+- For more details about flexplot in JASP, watch this <a href="https://www.youtube.com/watch?v=N2vM74rw6-Q&list=PL8F480DgtpW8pF6MmNaEUR95n1RmIgasP&feature=youtu.be">video</a>.

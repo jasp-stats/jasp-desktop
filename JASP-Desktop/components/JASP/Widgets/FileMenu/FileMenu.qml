@@ -48,7 +48,7 @@ FocusScope
 
 		Behavior on x
 		{
-			enabled:		!preferencesModel.safeGraphics
+			enabled:		preferencesModel.animationsOn
 
 			PropertyAnimation
 			{
@@ -167,7 +167,7 @@ FocusScope
 
 			Behavior on anchors.leftMargin
 			{
-				enabled:		!preferencesModel.safeGraphics
+				enabled:		preferencesModel.animationsOn
 
 				PropertyAnimation
 				{
@@ -297,7 +297,7 @@ FocusScope
 
 			Behavior on x
 			{
-				enabled:		!preferencesModel.safeGraphics
+				enabled:		preferencesModel.animationsOn
 
 				PropertyAnimation
 				{

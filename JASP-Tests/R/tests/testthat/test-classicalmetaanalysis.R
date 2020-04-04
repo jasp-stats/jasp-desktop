@@ -26,7 +26,7 @@ set.seed(1)
 results <- jasptools::run("ClassicalMetaAnalysis", "debug.csv", options)
 
 test_that("Influence Measures table results match", {
-  table <- results[["results"]][["casewiseTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_casewiseTable"]][["data"]]
   expect_equal_tables(table,
                       list(262.732350870067, 0.0400378184752688, 1.07230885151213, 0.199763610175039,
                            0.0551419254175412, 1.1, 0.826671964662481, 0.714326031980455,
@@ -257,37 +257,37 @@ test_that("Influence Measures table results match", {
 })
 
 test_that("Coefficients table results match", {
-  table <- results[["results"]][["coeffTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_coeffTable"]][["data"]]
   expect_equal_tables(table,
-                      list(-0.442978799963177, -0.796105934144409, "intrcpt", 0.0139453388413607,
+                      list(-0.442978799963177, -0.796105934144409, "intercept", 0.0139453388413607,
                            0.180170215078078, -0.0898516657819454, -2.4586683196843, 0.0627001759624519,
                            -0.150376029750759, "contcor2", 0.564113469510082, 0.108714347030799,
                            0.275776381675662, 0.576742423377559, 0.488477502169315, 0.0606088917506714,
-                           "facGenderm", 0.0252472258519366, 0.218304321878368, 0.916346112587959,
-                           2.23759886183782, 0.011079948618749, -0.417996968163601, "facExperimexperimental",
+                           "facGender (m)", 0.0252472258519366, 0.218304321878368, 0.916346112587959,
+                           2.23759886183782, 0.011079948618749, -0.417996968163601, "facExperim (experimental)",
                            0.95963496153271, 0.218920816042528, 0.440156865401099, 0.0506116723801931
                       ))
 })
 
 test_that("Parameter Covariances table results match", {
-  table <- results[["results"]][["covMatTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_covMatTable"]][["data"]]
   expect_equal_tables(table,
                       list(-0.00359216662392862, -0.0207831006432576, -0.0204871467233023,
-                           0.0324613064012809, "intrcpt", 0.011818809250333, 0.00308945286134289,
+                           0.0324613064012809, "intercept", 0.011818809250333, 0.00308945286134289,
                            0.00252843577029779, -0.00359216662392862, "contcor2", 0.00252843577029779,
                            -0.00715927260823057, 0.0476567769507742, -0.0204871467233023,
-                           "facGenderm", 0.00308945286134289, 0.0479263236967265, -0.00715927260823057,
-                           -0.0207831006432576, "facExperimexperimental"))
+                           "facGender (m)", 0.00308945286134289, 0.0479263236967265, -0.00715927260823057,
+                           -0.0207831006432576, "facExperim (experimental)"))
 })
 
 test_that("File Drawer Analysis table results match", {
-  table <- results[["results"]][["failSafeTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_failSafeTable"]][["data"]]
   expect_equal_tables(table,
                       list(0.05, 208, "Rosenthal", 0.00196593842759479))
 })
 
 test_that("Fixed and Random Effects table results match", {
-  table <- results[["results"]][["fixRandTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_fixRandTable"]][["data"]]
   expect_equal_tables(table,
                       list(3, "Omnibus test of Model Coefficients", 0.154998519713527, 5.24067551299979,
                            96, "Test of Residual Heterogeneity", 1.11540464463198e-17,
@@ -295,55 +295,55 @@ test_that("Fixed and Random Effects table results match", {
 })
 
 test_that("Diagnostic Plots matches", {
-  plotName <- results[["results"]][["plots"]][["collection"]][["plots_diagnosticPlot"]][["data"]]
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_diagnosticPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "diagnostic-plots", dir="ClassicalMetaAnalysis")
 })
 
 test_that("Forest plot matches", {
-  plotName <- results[["results"]][["plots"]][["collection"]][["plots_forest"]][["data"]]
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_forest"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "forest-plot", dir="ClassicalMetaAnalysis")
 })
 
 test_that("Funnel Plot matches", {
-  plotName <- results[["results"]][["plots"]][["collection"]][["plots_funnel"]][["data"]]
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_funnel"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "funnel-plot", dir="ClassicalMetaAnalysis")
 })
 
 test_that("Profile plot matches", {
-  plotName <- results[["results"]][["plots"]][["collection"]][["plots_profile"]][["data"]]
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_profile"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "profile", dir="ClassicalMetaAnalysis")
 })
 
 test_that("Trim-fill Analysis plot matches", {
-  plotName <- results[["results"]][["plots"]][["collection"]][["plots_trimFill"]][["data"]]
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_trimFill"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "trim-fill-analysis", dir="ClassicalMetaAnalysis")
 })
 
 test_that("Rank correlation test for Funnel plot asymmetry table results match", {
-  table <- results[["results"]][["rankTestTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_rankTestTable"]][["data"]]
   expect_equal_tables(table,
                       list(0.00686868686868687, "Rank test", 0.921921630071705))
 })
 
 test_that("Regression test for Funnel plot asymmetry (\"Egger's test\") table results match", {
-	table <- results[["results"]][["regTestTable"]][["data"]]
-	expect_equal_tables(table,
-	                    list("sei", 0.99470394721492, 0.00663766656825617))
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_regTestTable"]][["data"]]
+  expect_equal_tables(table,
+                      list("sei", 0.99470394721492, 0.00663766656825617))
 })
 
 test_that("Residual Heterogeneity Estimates table results match", {
-	table <- results[["results"]][["residualTable"]][["data"]]
-	expect_equal_tables(table,
-		list(0.71060416156282, 0.429926531732936, "<unicode><unicode><unicode><unicode>",
-			 1.0688514723806, 0.842973405015141, 0.655687831008733, "<unicode><unicode>",
-			 1.03385273244336, 62.9258791193162, 50.663389411549, "I<unicode><unicode> (%)",
-			 71.8546415573073, 2.69729929191932, 2.02689237884956, "H<unicode><unicode>",
-			 3.55298370790381))
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_residualTable"]][["data"]]
+  expect_equal_tables(table,
+                      list(0.71060416156282, 0.429926531732936, "<unicode><unicode><unicode><unicode>",
+                           1.0688514723806, 0.842973405015141, 0.655687831008733, "<unicode><unicode>",
+                           1.03385273244336, 62.9258791193162, 50.663389411549, "I<unicode><unicode> (%)",
+                           71.8546415573073, 2.69729929191932, 2.02689237884956, "H<unicode><unicode>",
+                           3.55298370790381))
 })
 
 test_that("Analysis handles errors", {
@@ -415,7 +415,7 @@ results <- jasptools::run("ClassicalMetaAnalysis", "debug.csv", options)
 
 
 test_that("Influence Measures table results match - model interactions", {
-  table <- results[["results"]][["casewiseTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_casewiseTable"]][["data"]]
   expect_equal_tables(table,
                       list(96.3371703556965, 0.456496281316976, 1.27649506279766, -0.679623585618869,
                            0.341081015672735, 1.1, -0.932891346420732, 0.530801439885553,
@@ -648,51 +648,51 @@ test_that("Influence Measures table results match - model interactions", {
 })
 
 test_that("Coefficients table results match - model interactions", {
-  table <- results[["results"]][["coeffTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_coeffTable"]][["data"]]
   expect_equal_tables(table,
-                      list(-0.572718566787404, -1.09946121080177, "intrcpt", 0.0330861402214251,
+                      list(-0.572718566787404, -1.09946121080177, "intercept", 0.0330861402214251,
                            0.268751184139131, -0.0459759227730375, -2.13103644034889, -0.011344235150078,
                            -0.642469295738674, "contcor1", 0.971896648131824, 0.322008497509155,
                            0.619780825438518, -0.0352296142425729, 0.155626762050519, -0.521177801399562,
                            "contcor2", 0.652219592593599, 0.345314794472984, 0.8324313255006,
-                           0.450680841196032, 0.810936822812212, -0.191857623947587, "facGenderm",
+                           0.450680841196032, 0.810936822812212, -0.191857623947587, "facGender (m)",
                            0.112971369848264, 0.511639219032911, 1.81373126957201, 1.58497783720534,
-                           0.264826014631206, -0.800896697966652, "facExperimexperimental",
+                           0.264826014631206, -0.800896697966652, "facExperim (experimental)",
                            0.626230075708153, 0.543746066944277, 1.33054872722907, 0.487039871606732,
-                           -0.00739141244590683, -0.49584882566078, "contcor1:contcor2",
+                           -0.00739141244590683, -0.49584882566078, "contcor1<unicode><unicode><unicode>contcor2",
                            0.976339429043278, 0.249217544269026, 0.481066000768966, -0.0296584755603239,
-                           0.383525909051226, -0.9186749397377, "contcor1:facGenderm",
+                           0.383525909051226, -0.9186749397377, "contcor1<unicode><unicode><unicode>facGender (m)",
                            0.56376979016118, 0.664400393770777, 1.68572675784015, 0.577251176620381,
-                           0.275164751760064, -0.673036347314896, "contcor1:facExperimexperimental",
+                           0.275164751760064, -0.673036347314896, "contcor1<unicode><unicode><unicode>facExperim (experimental)",
                            0.569508895924281, 0.48378495850712, 1.22336585083502, 0.568774921422064,
-                           -0.837947033316145, -2.60129890526181, "contcor2:facGenderm",
+                           -0.837947033316145, -2.60129890526181, "contcor2<unicode><unicode><unicode>facGender (m)",
                            0.351658397211503, 0.899685850432921, 0.92540483862952, -0.931377361234404,
-                           -0.0547440672776936, -1.47364099110235, "contcor2:facExperimexperimental",
+                           -0.0547440672776936, -1.47364099110235, "contcor2<unicode><unicode><unicode>facExperim (experimental)",
                            0.939721752166373, 0.723940301364412, 1.36415285654697, -0.0756195879335869,
-                           -0.956967290543106, -2.47783031693304, "facGenderm:facExperimexperimental",
+                           -0.956967290543106, -2.47783031693304, "facGender (m)<unicode><unicode><unicode>facExperim (experimental)",
                            0.217478311350627, 0.775964778816294, 0.56389573584683, -1.233261246732,
-                           0.895878849829479, -0.299117432378454, "contcor1:contcor2:facGenderm",
+                           0.895878849829479, -0.299117432378454, "contcor1<unicode><unicode><unicode>contcor2<unicode><unicode><unicode>facGender (m)",
                            0.141732777207294, 0.609703181496127, 2.09087513203741, 1.46936882899498,
-                           0.0123442438993629, -1.50100672553294, "contcor1:contcor2:facExperimexperimental",
+                           0.0123442438993629, -1.50100672553294, "contcor1<unicode><unicode><unicode>contcor2<unicode><unicode><unicode>facExperim (experimental)",
                            0.987244588052306, 0.772132026284057, 1.52569521333167, 0.0159872191272398,
-                           -0.105594581512077, -1.81983877265936, "contcor1:facGenderm:facExperimexperimental",
+                           -0.105594581512077, -1.81983877265936, "contcor1<unicode><unicode><unicode>facGender (m)<unicode><unicode><unicode>facExperim (experimental)",
                            0.903904491260768, 0.874630450960592, 1.60864960963521, -0.12073051126462,
-                           0.441981212201374, -1.83832285577444, "contcor2:facGenderm:facExperimexperimental",
+                           0.441981212201374, -1.83832285577444, "contcor2<unicode><unicode><unicode>facGender (m)<unicode><unicode><unicode>facExperim (experimental)",
                            0.704026240849918, 1.16344181628299, 2.72228528017719, 0.379891117901739,
-                           -0.591170761891612, -2.65383196042148, "contcor1:contcor2:facGenderm:facExperimexperimental",
+                           -0.591170761891612, -2.65383196042148, "contcor1<unicode><unicode><unicode>contcor2<unicode><unicode><unicode>facGender (m)<unicode><unicode><unicode>facExperim (experimental)",
                            0.574295124344442, 1.05239749597266, 1.47149043663825, -0.561737142243226
                       ))
 })
 
 test_that("Parameter Covariances table results match - model interactions", {
-  table <- results[["results"]][["covMatTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_covMatTable"]][["data"]]
   expect_equal_tables(table,
                       list(0.0135925892343855, -0.030354391324863, 0.0303543913248631, 0.030354391324863,
                            -0.0303543913248631, -0.0135925892343855, -0.0135925892343855,
                            0.0135925892343855, 0.00155085613023708, -0.00155085613023707,
                            -0.00155085613023709, 0.00155085613023705, -0.0722271989761851,
                            -0.0722271989761851, 0.0722271989761851, 0.0722271989761851,
-                           "intrcpt", 0.103689472468104, -0.0324857254108197, 0.0324857254108198,
+                           "intercept", 0.103689472468104, -0.0324857254108197, 0.0324857254108198,
                            0.0324857254108198, -0.0324857254108199, -0.103689472468104,
                            -0.103689472468104, 0.103689472468104, -0.0478536338503915,
                            0.0478536338503915, 0.0478536338503915, -0.0478536338503915,
@@ -707,81 +707,81 @@ test_that("Parameter Covariances table results match - model interactions", {
                            0.0135925892343856, -0.0534785573193151, 0.0534785573193152,
                            -0.00155085613023705, 0.00155085613023687, 0.12474135270184,
                            -0.12474135270184, 0.0722271989761853, 0.261774690452607, -0.261774690452607,
-                           -0.0722271989761851, "facGenderm", -0.0135925892343854, 0.030354391324863,
+                           -0.0722271989761851, "facGender (m)", -0.0135925892343854, 0.030354391324863,
                            -0.216078078653158, -0.0303543913248632, 0.216078078653158,
                            -0.00962318199687896, 0.0135925892343852, 0.00962318199687922,
                            -0.00155085613023713, -0.066597094865394, 0.00155085613023769,
                            0.0665970948653935, 0.29565978531737, 0.0722271989761853, -0.29565978531737,
-                           -0.0722271989761851, "facExperimexperimental", -0.0324857254108197,
+                           -0.0722271989761851, "facExperim (experimental)", -0.0324857254108197,
                            0.0621093843714837, -0.0621093843714838, -0.0621093843714839,
                            0.0621093843714839, 0.0324857254108197, 0.0324857254108197,
                            -0.0324857254108197, -0.029279621587305, 0.029279621587305,
                            0.0292796215873051, -0.0292796215873051, 0.030354391324863,
                            0.0303543913248631, -0.0303543913248631, -0.030354391324863,
-                           "contcor1:contcor2", -0.103689472468104, 0.0324857254108197,
+                           "contcor1<unicode><unicode><unicode>contcor2", -0.103689472468104, 0.0324857254108197,
                            -0.0324857254108197, -0.0390061038181272, 0.0390061038181271,
                            0.103689472468104, 0.441427883242763, -0.441427883242764, 0.0478536338503917,
                            -0.0478536338503913, -0.329079692471366, 0.329079692471366,
                            0.0135925892343852, -0.0534785573193151, 0.0534785573193155,
-                           -0.0135925892343855, "contcor1:facGenderm", -0.103689472468104,
+                           -0.0135925892343855, "contcor1<unicode><unicode><unicode>facGender (m)", -0.103689472468104,
                            0.0324857254108197, -0.086623183012083, -0.0324857254108199,
                            0.0866231830120831, 0.234047886077736, 0.103689472468104, -0.234047886077736,
                            0.0478536338503915, -0.141715989713044, -0.0478536338503914,
                            0.141715989713043, -0.00962318199687896, 0.0135925892343856,
-                           0.00962318199687883, -0.0135925892343855, "contcor1:facExperimexperimental",
+                           0.00962318199687883, -0.0135925892343855, "contcor1<unicode><unicode><unicode>facExperim (experimental)",
                            0.0478536338503915, 0.0292796215873051, -0.0292796215873053,
                            -0.322505604097216, 0.322505604097216, -0.0478536338503914,
                            -0.329079692471366, 0.329079692471367, -0.119242307281919, 0.119242307281918,
                            0.809434629469209, -0.809434629469209, 0.00155085613023769,
-                           0.12474135270184, -0.12474135270184, -0.00155085613023709, "contcor2:facGenderm",
+                           0.12474135270184, -0.12474135270184, -0.00155085613023709, "contcor2<unicode><unicode><unicode>facGender (m)",
                            0.0478536338503915, 0.029279621587305, 0.0591596914802318, -0.0292796215873048,
                            -0.059159691480232, -0.141715989713044, -0.0478536338503913,
                            0.141715989713043, -0.119242307281919, 0.524089559939596, 0.119242307281918,
                            -0.524089559939596, -0.066597094865394, 0.00155085613023687,
-                           0.0665970948653942, -0.00155085613023707, "contcor2:facExperimexperimental",
+                           0.0665970948653942, -0.00155085613023707, "contcor2<unicode><unicode><unicode>facExperim (experimental)",
                            0.0135925892343855, -0.0303543913248631, 0.216078078653158,
                            0.153470866117865, -0.428872615422987, 0.00962318199687883,
                            0.0534785573193155, -0.131087553796561, 0.00155085613023709,
                            0.0665970948653942, -0.12474135270184, 0.0749568287842243, -0.29565978531737,
-                           -0.261774690452607, 0.60212133796342, 0.0722271989761851, "facGenderm:facExperimexperimental",
+                           -0.261774690452607, 0.60212133796342, 0.0722271989761851, "facGender (m)<unicode><unicode><unicode>facExperim (experimental)",
                            0.0324857254108198, -0.0621093843714839, 0.0621093843714841,
                            0.3717379695265, -0.3717379695265, -0.0324857254108199, -0.0390061038181272,
                            0.0390061038181273, 0.0292796215873051, -0.0292796215873048,
                            -0.322505604097216, 0.322505604097216, -0.0303543913248632,
-                           -0.153470866117865, 0.153470866117865, 0.030354391324863, "contcor1:contcor2:facGenderm",
+                           -0.153470866117865, 0.153470866117865, 0.030354391324863, "contcor1<unicode><unicode><unicode>contcor2<unicode><unicode><unicode>facGender (m)",
                            0.0324857254108198, -0.0621093843714838, 0.596187866013523,
                            0.0621093843714841, -0.596187866013524, -0.086623183012083,
                            -0.0324857254108197, 0.0866231830120827, 0.0292796215873049,
                            0.0591596914802318, -0.0292796215873053, -0.0591596914802314,
                            -0.216078078653158, -0.0303543913248633, 0.216078078653158,
-                           0.0303543913248631, "contcor1:contcor2:facExperimexperimental",
+                           0.0303543913248631, "contcor1<unicode><unicode><unicode>contcor2<unicode><unicode><unicode>facExperim (experimental)",
                            0.103689472468104, -0.0324857254108197, 0.0866231830120827,
                            0.0390061038181273, -0.0129567418193662, -0.234047886077736,
                            -0.441427883242764, 0.764978425747528, -0.0478536338503917,
                            0.141715989713043, 0.329079692471367, -0.506301910727773, 0.00962318199687922,
                            0.0534785573193152, -0.131087553796561, 0.0135925892343855,
-                           "contcor1:facGenderm:facExperimexperimental", -0.0478536338503915,
+                           "contcor1:facGender (m)<unicode><unicode><unicode>facExperim (experimental)", -0.0478536338503915,
                            -0.0292796215873051, -0.0591596914802314, 0.322505604097216,
                            -0.219580324628296, 0.141715989713043, 0.329079692471366, -0.506301910727773,
                            0.119242307281919, -0.524089559939596, -0.809434629469209, 1.35359685987586,
                            0.0665970948653935, -0.12474135270184, 0.0749568287842243, 0.00155085613023705,
-                           "contcor2:facGenderm:facExperimexperimental", -0.0324857254108199,
+                           "contcor2:facGender (m)<unicode><unicode><unicode>facExperim (experimental)", -0.0324857254108199,
                            0.0621093843714839, -0.596187866013524, -0.3717379695265, 1.10754048952954,
                            0.0866231830120831, 0.0390061038181271, -0.0129567418193662,
                            -0.0292796215873049, -0.059159691480232, 0.322505604097216,
                            -0.219580324628296, 0.216078078653158, 0.153470866117865, -0.428872615422987,
-                           -0.0303543913248631, "contcor1:contcor2:facGenderm:facExperimexperimental"
+                           -0.0303543913248631, "contcor1<unicode><unicode><unicode>contcor2<unicode><unicode><unicode>facGender (m)<unicode><unicode><unicode>facExperim (experimental)"
                       ))
 })
 
 test_that("File Drawer Analysis table results match - model interactions", {
-  table <- results[["results"]][["failSafeTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_failSafeTable"]][["data"]]
   expect_equal_tables(table,
                       list(0.05, 0, "Rosenthal", 0.0813278786958635))
 })
 
 test_that("Fixed and Random Effects table results match - model interactions", {
-  table <- results[["results"]][["fixRandTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_fixRandTable"]][["data"]]
   expect_equal_tables(table,
                       list(15, "Omnibus test of Model Coefficients", 0.216907507488967, 18.9303488095121,
                            84, "Test of Residual Heterogeneity", 0.117156071611725, 99.6347772817611
@@ -789,55 +789,55 @@ test_that("Fixed and Random Effects table results match - model interactions", {
 })
 
 test_that("Diagnostic Plots matches - model interactions", {
-  plotName <- results[["results"]][["plots"]][["collection"]][["plots_diagnosticPlot"]][["data"]]
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_diagnosticPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "diagnostic-plots-model", dir="ClassicalMetaAnalysis")
 })
 
 test_that("Forest plot matches - model interactions", {
-  plotName <- results[["results"]][["plots"]][["collection"]][["plots_forest"]][["data"]]
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_forest"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "forest-plot-model", dir="ClassicalMetaAnalysis")
 })
 
 test_that("Funnel Plot matches - model interactions", {
-  plotName <- results[["results"]][["plots"]][["collection"]][["plots_funnel"]][["data"]]
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_funnel"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "funnel-plot-model", dir="ClassicalMetaAnalysis")
 })
 
 test_that("Profile plot matches - model interactions", {
-  plotName <- results[["results"]][["plots"]][["collection"]][["plots_profile"]][["data"]]
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_profile"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "profile-model", dir="ClassicalMetaAnalysis")
 })
 
 test_that("Trim-fill Analysis plot matches - model interactions", {
-  plotName <- results[["results"]][["plots"]][["collection"]][["plots_trimFill"]][["data"]]
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_trimFill"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "trim-fill-analysis-model", dir="ClassicalMetaAnalysis")
 })
 
 test_that("Rank correlation test for Funnel plot asymmetry table results match - model interactions", {
-  table <- results[["results"]][["rankTestTable"]][["data"]]
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_rankTestTable"]][["data"]]
   expect_equal_tables(table,
                       list(0.0703030303030303, "Rank test", 0.302256516349067))
 })
 
 test_that("Regression test for Funnel plot asymmetry (\"Egger's test\") table results match - model interactions", {
-	table <- results[["results"]][["regTestTable"]][["data"]]
-	expect_equal_tables(table,
-	                    list("sei", 0.794904131826642, -0.259947679937865))
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_regTestTable"]][["data"]]
+  expect_equal_tables(table,
+                      list("sei", 0.794904131826642, -0.259947679937865))
 })
 
 test_that("Residual Heterogeneity Estimates table results match - model interactions", {
-	table <- results[["results"]][["residualTable"]][["data"]]
-	expect_equal_tables(table,
-		list(0.544954299586419, 0, "<unicode><unicode><unicode><unicode>",
-			 0.24418480479452, 0.738210200137074, 0, "<unicode><unicode>",
-			 0.494150589187668, 34.1721304558822, 0, "I<unicode><unicode> (%)",
-			 18.8710710587465, 1.51911341947623, 1, "H<unicode><unicode>",
-			 1.23260594346576))
+  table <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_residualTable"]][["data"]]
+  expect_equal_tables(table,
+                      list(0.544954299586419, 0, "<unicode><unicode><unicode><unicode>",
+                           0.24418480479452, 0.738210200137074, 0, "<unicode><unicode>",
+                           0.494150589187668, 34.1721304558822, 0, "I<unicode><unicode> (%)",
+                           18.8710710587465, 1.51911341947623, 1, "H<unicode><unicode>",
+                           1.23260594346576))
 })
 
 
@@ -858,7 +858,7 @@ set.seed(1)
 results <- jasptools::run("ClassicalMetaAnalysis", "BCG Vaccine", options)
 
 test_that("Diagnostic Plots matches without Q-Q plot", {
-  plotName <- results[["results"]][["plots"]][["collection"]][["plots_diagnosticPlot"]][["data"]]
+  plotName <- results[["results"]][["modelContainer"]][["collection"]][["modelContainer_plots"]][["collection"]][["modelContainer_plots_diagnosticPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "diagnostic-plots-no-qq", dir="ClassicalMetaAnalysis")
 })

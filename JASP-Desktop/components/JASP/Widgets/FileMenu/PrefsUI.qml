@@ -150,9 +150,26 @@ ScrollView
 				onCheckedChanged:	preferencesModel.safeGraphics = checked
 				toolTip:			qsTr("Switches to a \"safer\" mode for graphics aka software rendering.\nIt will make your interface slower but if you have some problems (weird glitches, cannot see results or anything even) might fix them.\nAnalyses will still be just as fast though.")
 
+
+				KeyNavigation.tab:		disableAnimations
+				KeyNavigation.down:		disableAnimations
+
+			}
+
+			CheckBox
+			{
+				id:					disableAnimations
+				label:				qsTr("Disable Animations")
+				checked:			preferencesModel.disableAnimations
+				onCheckedChanged:	preferencesModel.disableAnimations = checked
+				toolTip:			enabled ? qsTr("Turns off all animations, this is implied when \"Safe Graphics Mode\" is on.") : qsTr("Already disabled animations because \"Safe Graphics Mode\" is on")
+
+				enabled:			!preferencesModel.safeGraphics
+
 				KeyNavigation.tab:		useNativeFileDialog
 				KeyNavigation.down:		useNativeFileDialog
 			}
+
 
 			CheckBox
 			{

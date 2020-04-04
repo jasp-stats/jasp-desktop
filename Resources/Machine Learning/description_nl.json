@@ -61,7 +61,7 @@
 				"function":							"mlClassificationKnn"
 			},
 			{
-				"title": 							"Linear Discriminant Classificatie",
+				"title": 							"Lineaire Discriminant Classificatie",
 				"function": 						"mlClassificationLda"
 			},
 			{
@@ -81,7 +81,7 @@
 				"function":							"mlClusteringFuzzyCMeans"
 			},
 			{
-				"title":							"Hiërarchisch Clustering",
+				"title":							"Hiërarchische Clustering",
 				"function":							"mlClusteringHierarchical"
 			},
 			{

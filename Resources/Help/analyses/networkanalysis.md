@@ -136,18 +136,14 @@ The layout of a network determines where the nodes are placed. By default the la
 - `show details`: If checked, `minimum`, `maximum`, and `cut` will be displayed on the network plot (if they were modified).
 - `color scheme`: What colors should be used for positive and negative edges?
 
-#### Network Size
-When exporting the network, it can be useful to enforce certain sizes on the width or height. You can always resize a network plot by clicking and dragging around in the bottom right corner of the plot. However, some constraints on the width and height might be enforced depending on the option you've selected:
-
-- `Fixed ratio`: Fixes the width/ height ratio. Ensures that the network plot is square. If there is a legend, the width is constrained to be 1.4 times the height of the plot.
-- `Free`: Do not make any constraints on the width or height.
-
 #### Legend
 There are three options:
 
 - Don't show the legend.
 - Show the legend in all networks.
 - Show the legend in a specified plot number.
+
+- `Legend to plot ratio`: Specifies the width of the legend relative to the plot.
 
 #### Labels
 - `Label size`: A multiplier on label size  (i.e. 2 is twice as big).

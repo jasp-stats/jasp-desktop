@@ -1,7 +1,7 @@
-Hiërarchisch Clustering
+Hiërarchische Clustering
 ==========================
 
-Hiërarchisch clustering is een hard clusteringsalgoritme dat data opdeelt in meerdere clusters, waar elke observatie tot één groep behoort. De data is dusdanig verdeeld dat de mate van gelijkheid tussen twee observaties maximaal is als ze bij dezelfde groep behoren en minimaal als die niet zo is.
+Hiërarchische clustering is een hard clusteringsalgoritme dat data opdeelt in meerdere clusters, waar elke observatie tot één groep behoort. De data is dusdanig verdeeld dat de mate van gelijkheid tussen twee observaties maximaal is als ze bij dezelfde groep behoren en minimaal als die niet zo is.
 
 ### Assumpties
 - De data bestaat uit continue variabelen.
