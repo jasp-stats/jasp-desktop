@@ -23,7 +23,8 @@
   jaspResults[["equivalencePriorPosteriorContainer"]] <- equivalencePriorPosteriorContainer
   
   equivalencePriorPosteriorContainer$dependOn(c("priorandposterior", "missingValues", "priorWidth",
-                                                "effectSizeStandardized", "equivalenceRegion", 
+                                                "effectSizeStandardized", "equivalenceRegion", "lower", "upper",
+                                                "region", "lowerbound", "upperbound", "lower_max", "upper_min", "prior",
                                                 "informative", "informativeCauchyLocation", "informativeCauchyScale",
                                                 "informativeNormalMean", "informativeNormalStd", "informativeTLocation", 
                                                 "informativeTScale", "informativeTDf", "priorandposteriorAdditionalInfo"))
@@ -677,7 +678,8 @@
   equivalenceSequentialContainer <- createJaspContainer(title = gettext("Equivalence Sequential Analysis"))
   
   equivalenceSequentialContainer$dependOn(c("missingValues", "priorWidth",
-                                            "effectSizeStandardized", "equivalenceRegion",
+                                            "effectSizeStandardized", "equivalenceRegion","lower", "upper",
+                                            "region", "lowerbound", "upperbound", "lower_max", "upper_min", "prior",
                                             "informative", "informativeCauchyLocation", "informativeCauchyScale",
                                             "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                             "informativeTScale", "informativeTDf", "plotSequentialAnalysisRobustness"))

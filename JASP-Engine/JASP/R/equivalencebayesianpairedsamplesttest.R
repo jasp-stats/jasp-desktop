@@ -120,7 +120,7 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
 
   # Save results to state
   jaspResults[["stateEquivalenceBayesianPairedTTestResults"]] <- createJaspState(results)
-  jaspResults[["stateEquivalenceBayesianPairedTTestResults"]]$dependOn(c("pairs", "equivalenceRegion", "missingValues",
+  jaspResults[["stateEquivalenceBayesianPairedTTestResults"]]$dependOn(c("pairs", "equivalenceRegion", "missingValues", "lower", "upper", "region", "lowerbound", "upperbound", "lower_max", "upper_min",
                                                                          "priorWidth", "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
                                                                          "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                                                          "informativeTScale", "informativeTDf"))
@@ -133,7 +133,8 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
 
   # Create table
   equivalenceBayesianPairedTTestTable <- createJaspTable(title = gettext("Equivalence Bayesian Paired Samples T-Test"))
-  equivalenceBayesianPairedTTestTable$dependOn(c("pairs", "equivalenceRegion", "priorWidth", "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
+  equivalenceBayesianPairedTTestTable$dependOn(c("pairs", "equivalenceRegion", "lower", "upper", "region", "lowerbound", "upperbound", "lower_max", "upper_min",
+                                                 "priorWidth", "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
                                                  "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                                  "informativeTScale", "informativeTDf"))
   equivalenceBayesianPairedTTestTable$showSpecifiedColumnsOnly <- TRUE
@@ -260,9 +261,10 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
 
   # Create table
   equivalenceMassPairedTTestTable <- createJaspTable(title = gettext("Equivalence Mass Table"))
-  equivalenceMassPairedTTestTable$dependOn(c("pairs", "equivalenceRegion", "priorWidth", "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
-                                                 "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
-                                                 "informativeTScale", "informativeTDf"))
+  equivalenceMassPairedTTestTable$dependOn(c("pairs", "equivalenceRegion", "priorWidth", "effectSizeStandardized","informative", "lower", "upper", "region",
+                                             "informativeCauchyLocation", "informativeCauchyScale", "lowerbound", "upperbound", "lower_max", "upper_min",
+                                             "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
+                                             "informativeTScale", "informativeTDf"))
   equivalenceMassPairedTTestTable$showSpecifiedColumnsOnly <- TRUE
 
   # Add Columns to table
