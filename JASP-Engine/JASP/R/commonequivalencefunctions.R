@@ -52,9 +52,10 @@
     results <- equivalenceBayesianTTestResults[[variable]]
     
     equivalenceTTestPriorPosterior <- createJaspPlot(title = title, width = 480, height = 320)
+    equivalencePriorPosteriorContainer[[variable]] <- equivalenceTTestPriorPosterior
     
     if (paired) {
-      equivalenceTTestPriorPosterior$dependOn("pairs") # this could be better; by selecting only the relevant pair
+      equivalenceTTestPriorPosterior$dependOn("pairs") # this could be better; by selecting only the relevant pair -- doesn't work for me: (list(pairs = unname(pairs[variable])))      #
     } 
     else {
       equivalenceTTestPriorPosterior$dependOn(optionContainsValue = list("variables" = variable))
@@ -431,8 +432,6 @@
       # place error in plot
       equivalenceTTestPriorPosterior$setError(results$errorFootnotes)
     }
-    
-    equivalencePriorPosteriorContainer[[variable]] <- equivalenceTTestPriorPosterior
   }
   
   return()
@@ -674,7 +673,6 @@
 
 .equivalencePlotSequentialAnalysis <- function(jaspResults, dataset, options, equivalenceBayesianTTestResults, ready, paired = FALSE) {
   
-  #if (is.null(equivalenceSequentialContainer))
   equivalenceSequentialContainer <- createJaspContainer(title = gettext("Equivalence Sequential Analysis"))
   
   equivalenceSequentialContainer$dependOn(c("missingValues", "priorWidth",
@@ -747,7 +745,6 @@
     results <- equivalenceBayesianTTestResults[[variable]]
     
     equivalenceTTestSequential <- createJaspPlot(title = title, width = 480, height = 320)
-
     equivalenceSequentialContainer[[variable]] <- equivalenceTTestSequential
     
     if (paired) {
@@ -774,7 +771,7 @@
         x                   = group1,
         y                   = group2,
         oneSided            = FALSE,
-        rscale              = options$priorWidth,
+        r                   = options$priorWidth,
         paired              = paired,
         plotDifferentPriors = options[["plotSequentialAnalysisRobustness"]],
         subDataSet          = subDataSet,
@@ -796,11 +793,9 @@
 }
 
 # changed this function
-.plotEquivalenceSequentialBF.ttest <- function(x = NULL, y = NULL, paired = FALSE, BF10post, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
+.plotEquivalenceSequentialBF.ttest <- function(x = NULL, y = NULL, paired = FALSE, BF10post, formula = NULL, data = NULL, r = 1, oneSided = FALSE,
   plotDifferentPriors = FALSE, BFH1H0 = TRUE, dontPlotData = FALSE, level1 = NULL, level2 = NULL,
   subDataSet = NULL, nullInterval = c(-Inf, Inf), options) {
-  
-  r <- rscale
   
   if (is.null(y) || paired) {
     BF10  <- vector("numeric", max(length(x), length(y)))
