@@ -1,7 +1,7 @@
 Normal (Gaussian) Distribution
 ==========================
 
-Demonstration of the Normal distribution. 
+Demonstration of the Normal distribution.
 
 ## Show Distribution
 
@@ -30,7 +30,7 @@ Displays theoretical Normal distribution, given specified parameter values.
 - Interval: Select the bounds of the interval to display: Density is highlighted at the lower and upper bounds, the probability is displayed for the specified interval.
 
 ## Generate and Display Data
-- Variable name: Specify the name of the variable. Once filled, creates an empty column in the current data set.
+- Variable name: Specify the name of the variable. Once filled, creates a column with samples drawn from the specified distribution in the current data set.
 - Number of samples: Specify the number of samples.
 - Draw samples: Sample from the theoretical distribution.
 
@@ -45,7 +45,7 @@ Displays theoretical Normal distribution, given specified parameter values.
 - Empirical cumulative distribution: Displays an empirical cumulative distribution plot of the selected variable.
 
 ## Estimate Parameters
-- Maximum likelihood: Fit the theoretical distribution to the selected variable by maximizing the likelihood function. The parameter values specified in Show distribution section serve as starting points for the procedure.
+- Maximum likelihood: Estimates the parameters by the values in the domain at which the likelihood function is maximized. The likelihood function fixes the data argument (based on the selected variable) in the theoretical density function and views it as a function of the parameters. The optimization procedure is initialized with the values for the parameters entered under "Show Distribution".
 
 ### Output
 - Estimates: Displays a table with the parameter estimates. Changing parametrization changes which parameters are displayed.
