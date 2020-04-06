@@ -2,6 +2,7 @@
   "moduleDescription" :
   {
     "title" : "Gelijkwaardigheids T-Toetsen",
+    "name" : "Equivalence T-Tests",
     "description": "This is a beta version of Equivalence Testing module.",
     "version": 1,
     "author": "Jill de Ron",
