@@ -119,7 +119,7 @@ Option* BoundQMLInputList::createOption()
 		{
 			for (std::string defaultValue : _defaultValues)
 			{
-				Options* options = new Options();
+				Options* options = dynamic_cast<Options*>(templote->clone());
 				OptionVariable* optionVar = new OptionVariable();
 				optionVar->setValue(defaultValue);
 				options->add(_optionKeyName, optionVar);
