@@ -16,29 +16,40 @@
 #
 
 EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
-  
+
   ready <- (length(options$variables) > 0)
-  
+
   if (ready) {
     dataset <- .ttestBayesianReadData(dataset, options)
     errors <- .ttestBayesianGetErrorsPerVariable(dataset, options, "one-sample")
   }
-  
+
   # Compute the results
+  if(options[['equivalenceRegion']] == "lower"){
+    options$lowerbound <- -Inf
+    options$upperbound <- options$lower_max
+  } else if(options[['equivalenceRegion']] == "upper"){
+    options$lowerbound <- options$upper_min
+    options$upperbound <- Inf
+  }
   equivalenceBayesianOneTTestResults <- .equivalenceBayesianOneTTestComputeResults(jaspResults, dataset, options, ready, errors)
-  
+
   # Output tables and plots
-  .equivalenceBayesianOneTTestTableMain(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready)
-  
-  if(options$descriptives)
+  if (is.null(jaspResults[["equivalenceBayesianOneTTestTable"]]))
+    .equivalenceBayesianOneTTestTableMain(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready)
+
+  if(options$descriptives && is.null(jaspResults[["equivalenceBayesianDescriptivesTable"]]))
     .equivalenceBayesianOneTTestTableDescriptives(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready)
-  
+
   if (options$priorandposterior)
     .equivalencePriorandPosterior(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready)
-  
+
   if (options$plotSequentialAnalysis)
     .equivalencePlotSequentialAnalysis(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready)
-  
+
+  if (options$massPriorPosterior && is.null(jaspResults[["equivalenceMassTable"]]))
+    .massPriorPosteriorOneTTestTable(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready)
+
   return()
 }
 
@@ -46,69 +57,73 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
 
   if (!ready)
     return(list())
-  
+
   if (!is.null(jaspResults[["stateEquivalenceBayesianOneTTestResults"]]))
     return(jaspResults[["stateEquivalenceBayesianOneTTestResults"]]$object)
 
   results <- list()
 
   for (variable in options$variables) {
-    
+
     results[[variable]] <- list()
-    
+
     if(!isFALSE(errors[[variable]])) {
-      
+
        errorMessage <- errors[[variable]]$message
        results[[variable]][["status"]]  <- "error"
        results[[variable]][["errorFootnotes"]] <- errorMessage
-       
+
     } else {
 
       x <- dataset[[.v(variable)]]
       x <- x[!is.na(x)] - options$mu
-      
+
       results[[variable]][["n1"]] <- length(x)
       results[[variable]][["n2"]] <- NULL
-      
-      r <- try(.generalEquivalenceTtestBF(x       = x, 
+
+      r <- try(.generalEquivalenceTtestBF(x       = x,
                                           options = options))
-      
+
       if (isTryError(r)) {
-        
+
         errorMessage <- .extractErrorMessage(r)
         results[[variable]][["status"]] <- "error"
         results[[variable]][["errorFootnotes"]] <- errorMessage
-        
+
       } else if (r[["bfEquivalence"]] < 0 || r[["bfNonequivalence"]] < 0) {
-        
+
         results[[variable]][["status"]] <- "error"
         results[[variable]][["errorFootnotes"]] <- "Not able to calculate Bayes factor while the integration was too unstable"
-      
+
       } else {
-        
-        results[[variable]][["bfEquivalence"]]     <- r[["bfEquivalence"]]
-        results[[variable]][["bfNonequivalence"]]  <- r[["bfNonequivalence"]]
-        results[[variable]][["errorPrior"]]        <- r[["errorPrior"]]
-        results[[variable]][["errorPosterior"]]    <- r[["errorPosterior"]]
-        results[[variable]][["tValue"]]            <- r[["tValue"]]
+
+        results[[variable]][["bfEquivalence"]]                   <- r[["bfEquivalence"]]
+        results[[variable]][["bfNonequivalence"]]                <- r[["bfNonequivalence"]]
+        results[[variable]][["errorPrior"]]                      <- r[["errorPrior"]]
+        results[[variable]][["errorPosterior"]]                  <- r[["errorPosterior"]]
+        results[[variable]][["tValue"]]                          <- r[["tValue"]]
+        results[[variable]][["integralEquivalencePosterior"]]    <- r[["integralEquivalencePosterior"]]
+        results[[variable]][["integralEquivalencePrior"]]        <- r[["integralEquivalencePrior"]]
+        results[[variable]][["integralNonequivalencePosterior"]] <- r[["integralNonequivalencePosterior"]]
+        results[[variable]][["integralNonequivalencePrior"]]     <- r[["integralNonequivalencePrior"]]
       }
     }
   }
 
   # Save results to state
   jaspResults[["stateEquivalenceBayesianOneTTestResults"]] <- createJaspState(results)
-  jaspResults[["stateEquivalenceBayesianOneTTestResults"]]$dependOn(c("variables", "mu", "lowerbound", "upperbound",
+  jaspResults[["stateEquivalenceBayesianOneTTestResults"]]$dependOn(c("variables", "mu", "equivalenceRegion", "lower", "upper", "region", "lowerbound", "upperbound", "lower_max", "upper_min",
                                                                       "priorWidth", "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
                                                                       "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                                                       "informativeTScale", "informativeTDf", "missingValues"))
   return(results)
 }
-  
+
 .equivalenceBayesianOneTTestTableMain <- function(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready) {
 
   # Create table
   equivalenceBayesianOneTTestTable <- createJaspTable(title = gettext("Equivalence Bayesian One Sample T-Test"))
-  equivalenceBayesianOneTTestTable$dependOn(c("variables", "mu", "lowerbound", "upperbound", "priorWidth", 
+  equivalenceBayesianOneTTestTable$dependOn(c("variables", "mu", "equivalenceRegion", "priorWidth", "lower", "upper", "region", "lowerbound", "upperbound", "lower_max", "upper_min",
                                               "effectSizeStandardized","informative", "informativeCauchyLocation", "informativeCauchyScale",
                                               "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                               "informativeTScale", "informativeTDf", "missingValues"))
@@ -137,12 +152,12 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
 }
 
 .equivelanceBayesianOneTTestFillTableMain <- function(equivalenceBayesianOneTTestTable, dataset, options, equivalenceBayesianOneTTestResults) {
-  
+
   for (variable in options$variables) {
-    
+
     results <- equivalenceBayesianOneTTestResults[[variable]]
-    
-    if (!is.null(results$status)) { 
+
+    if (!is.null(results$status)) {
       equivalenceBayesianOneTTestTable$addFootnote(message = results$errorFootnotes, rowNames = variable, colNames = "statistic")
       equivalenceBayesianOneTTestTable$addRows(list(variable = variable, statistic = NaN), rowNames = variable)
     } else {
@@ -150,68 +165,129 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
                                                  statistic        = "\U003B4 \U02208 I vs. H1",
                                                  bf               = results$bfEquivalence,
                                                  error            = (results$errorPrior + results$errorPosterior) / results$bfEquivalence))
-      
+
       equivalenceBayesianOneTTestTable$addRows(list(variable      = variable,
                                                  statistic        = "\U003B4 \U02209 I vs. H1",
                                                  bf               = results$bfNonequivalence,
                                                  error            = (results$errorPrior + results$errorPosterior) / results$bfNonequivalence))
-      
+
       equivalenceBayesianOneTTestTable$addRows(list(variable      = variable,
                                                  statistic        = "\U003B4 \U02208 I vs. \U003B4 \U02209 I", # equivalence vs. nonequivalence"
                                                  bf               = results$bfEquivalence / results$bfNonequivalence,
                                                  error            = (2*(results$errorPrior + results$errorPosterior)) / (results$bfEquivalence / results$bfNonequivalence)))
-      
+
       equivalenceBayesianOneTTestTable$addRows(list(variable      = variable,
                                                  statistic        = "\U003B4 \U02209 I vs. \U003B4 \U02208 I", # non-equivalence vs. equivalence
                                                  bf               = 1 / (results$bfEquivalence / results$bfNonequivalence),
                                                  error            = (2*(results$errorPrior + results$errorPosterior)) / (1/(results$bfEquivalence / results$bfNonequivalence))))
     }
   }
-  
+
   return()
 }
 
 .equivalenceBayesianOneTTestTableDescriptives <- function(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready) {
   if(!is.null(jaspResults[["equivalenceBayesianDescriptivesTable"]])) return()
-  
+
   # Create table
   equivalenceBayesianDescriptivesTable <- createJaspTable(title = gettext("Descriptives"))
   equivalenceBayesianDescriptivesTable$dependOn(c("variables", "descriptives", "missingValues"))
   equivalenceBayesianDescriptivesTable$showSpecifiedColumnsOnly <- TRUE
-  
+
   # Add Columns to table
   equivalenceBayesianDescriptivesTable$addColumnInfo(name = "variable",   title = "",                   type = "string", combine = TRUE)
   equivalenceBayesianDescriptivesTable$addColumnInfo(name = "N",          title = gettext("N"),         type = "integer")
   equivalenceBayesianDescriptivesTable$addColumnInfo(name = "mean",       title = gettext("Mean"),      type = "number")
   equivalenceBayesianDescriptivesTable$addColumnInfo(name = "sd",         title = gettext("SD"),        type = "number")
   equivalenceBayesianDescriptivesTable$addColumnInfo(name = "se",         title = gettext("SE"),        type = "number")
-  
+
   title <- gettextf("95%% Credible Interval")
   equivalenceBayesianDescriptivesTable$addColumnInfo(name = "lowerCI", type = "number", format = "sf:4;dp:3", title = gettext("Lower"), overtitle = title)
   equivalenceBayesianDescriptivesTable$addColumnInfo(name = "upperCI", type = "number", format = "sf:4;dp:3", title = gettext("Upper"), overtitle = title)
-  
+
   jaspResults[["equivalenceBayesianDescriptivesTable"]] <- equivalenceBayesianDescriptivesTable
-  
+
   for (variable in options$variables) {
-    
+
     # Get data of the variable
     data <- dataset[[.v(variable)]]
 
     n    <- length(data)
     mean <- mean(data)
     sd   <- sd(data)
-    se   <- sd/sqrt(n) 
-    
+    se   <- sd/sqrt(n)
+
     posteriorSummary <- .posteriorSummaryGroupMean(variable = data, descriptivesPlotsCredibleInterval = 0.95)
     ciLower <- .clean(posteriorSummary[["ciLower"]])
     ciUpper <- .clean(posteriorSummary[["ciUpper"]])
-      
-    equivalenceBayesianDescriptivesTable$addRows(list(variable      = variable, 
+
+    equivalenceBayesianDescriptivesTable$addRows(list(variable      = variable,
                                                       N             = n,
                                                       mean          = mean,
-                                                      sd            = sd, 
+                                                      sd            = sd,
                                                       se            = se,
                                                       lowerCI       = ciLower,
                                                       upperCI       = ciUpper))
   }
+}
+
+.massPriorPosteriorOneTTestTable <- function(jaspResults, dataset, options, equivalenceBayesianOneTTestResults, ready) {
+
+  equivalenceMassTable <- createJaspTable(title = gettext("Prior and Posterior Mass Table"))
+  equivalenceMassTable$dependOn(c("variables", "priorWidth", "mu", "lower", "upper", "region",
+                                  "effectSizeStandardized", "equivalenceRegion", "lowerbound", "upperbound", "lower_max", "upper_min", 
+                                  "informative", "informativeCauchyLocation", "informativeCauchyScale",
+                                  "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
+                                  "informativeTScale", "informativeTDf"))
+
+  equivalenceMassTable$addColumnInfo(name = "variable",      title = gettext("Variable"),     type = "string", combine = TRUE)
+  equivalenceMassTable$addColumnInfo(name = "section",       title = gettext("Section"),      type = "string")
+  equivalenceMassTable$addColumnInfo(name = "mass",          title = gettext("Mass"),         type = "number")
+
+
+  equivalenceMassTable$showSpecifiedColumnsOnly <- TRUE
+
+  if (ready)
+    equivalenceMassTable$setExpectedSize(length(options$variables))
+
+  jaspResults[["equivalenceMassTable"]] <- equivalenceMassTable
+
+  if (!ready)
+    return()
+
+  .equivalenceMassFillTableMain(equivalenceMassTable, dataset, options, equivalenceBayesianOneTTestResults)
+
+  return()
+
+}
+
+.equivalenceMassFillTableMain <- function(equivalenceMassTable, dataset, options, equivalenceBayesianOneTTestResults) {
+
+  for (variable in options$variables) {
+
+    results <- equivalenceBayesianOneTTestResults[[variable]]
+
+    if (!is.null(results$status)) {
+      equivalenceMassTable$addFootnote(message = results$errorFootnotes, rowNames = variable, colNames = "mass")
+      equivalenceMassTable$addRows(list(variable = variable, mass = NaN), rowNames = variable)
+    } else {
+
+      equivalenceMassTable$addRows(list(variable   = variable,
+                                        section    = "p(\U003B4 \U02208 I | H1)",
+                                        mass       = results$integralEquivalencePrior))
+
+      equivalenceMassTable$addRows(list(variable   = variable,
+                                           section = "p(\U003B4 \U02208 I | H1, y)",
+                                           mass    = results$integralEquivalencePosterior))
+
+      equivalenceMassTable$addRows(list(variable   = variable,
+                                           section = "p(\U003B4 \U02209 I | H1)",
+                                           mass    = results$integralNonequivalencePrior))
+
+      equivalenceMassTable$addRows(list(variable   = variable,
+                                           section = "p(\U003B4 \U02209 I | H1, y)",
+                                           mass    = results$integralNonequivalencePosterior))
+    }
+  }
+  return()
 }

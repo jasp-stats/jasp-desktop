@@ -1,7 +1,7 @@
 Equivalence Bayesian Paired Samples T-Test
 ==========================
 
-The equivalence paired samples t-test allows you to estimate the effect size and test the null hypothesis that the population mean of the difference between paired observations falls inside an interval (i.e., equivalence region). The difference with a standard null hypothesis significance test is that in equivalence testing, the null hypothesis covers a small interval around 0 instead of a point-null.
+The equivalence paired samples t-test allows the user to test the null hypothesis that the effect size of the population mean of the difference between paired observations falls inside a by the user-defined interval, i.e., the equivalence region.
 
 ### Assumptions
 - Continuous difference score.
@@ -15,8 +15,7 @@ The equivalence paired samples t-test allows you to estimate the effect size and
 - Variables: In this box the variables are selected for which the difference is computed. Multiple differences can be analysed at the same time by specifying different rows with two variables for which the difference is computed. In other words, each row represents other difference scores.
 
 #### Equivalence region
-- Upper bound: The upper bound of the equivalence region.
-- Lower bound: The lower bound of the equivalence region.
+- from ... to ... : Defines the equivalence region by specifying the lower bound and the upper bound.
 
 #### Plots
 - Prior and posterior: Displays the prior and posterior distribution of the effect size under the alternative hypothesis.
@@ -26,6 +25,7 @@ The equivalence paired samples t-test allows you to estimate the effect size and
 
 #### Additional Statistics
 - Descriptives: Sample size, sample mean, sample standard deviation, standard error of the mean for each measure.
+- Prior and posterior mass: Displays the prior and posterior mass in and outside the set equivalence region.
 
 ### Missing Values
  - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the tests. This options is selected by default.
@@ -45,10 +45,10 @@ The equivalence paired samples t-test allows you to estimate the effect size and
 #### Equivalence Bayesian Paired Samples T-Test
 - The first column contains the two variables for which the difference is calculated.
 - Model Comparison:
-  - $\delta$ $\in$ I vs. H1: Bayes factor to quantify evidence for the interval-null hypothesis to the unconstrained alternative hypothesis.
-  - $\delta$ $\notin$ I vs. H1: Bayes factor to quantify evidence for the hypothesis that the effect size is outside the interval-null to the unconstrained alternative hypothesis.
-  - $\delta$ $\in$ I vs. $\delta$ $\notin$ I: Bayes factor to quantify evidence for the interval-null hypothesis to the hypothesis that the effect size falls outside the interval-null.
-  - $\delta$ $\notin$ I vs. $\delta$ $\in$ I: Bayes factor to quantify evidence for the hypothesis that the effect size falls outside the interval-null to the interval-null hypothesis.
+  - &delta; &in; I vs. H<sub>1</sub>: Bayes factor to quantify evidence for the interval-null hypothesis to the unconstrained alternative hypothesis.
+  - &delta; &notin; I vs. H<sub>1</sub>: Bayes factor to quantify evidence for the hypothesis that the effect size is outside the interval-null to the unconstrained alternative hypothesis.
+  - &delta; &in; I vs. &delta; &notin; I: Bayes factor to quantify evidence for the interval-null hypothesis to the hypothesis that the effect size falls outside the interval-null.
+  - &delta; &notin; I vs. &delta; &in; I: Bayes factor to quantify evidence for the hypothesis that the effect size falls outside the interval-null to the interval-null hypothesis.
 - BF: The Bayes factor.
 - error %: The error of the numerical integration used for the computation of the Bayes factor.
 
@@ -59,6 +59,11 @@ The equivalence paired samples t-test allows you to estimate the effect size and
 - SD: Standard deviation of the mean.
 - SE: Standard error of the mean.
 - Credible interval: Central credible interval. Default is 95%.
+
+#### Prior and Posterior Mass Table
+- The first column contains the dependent variable.
+- Section: The section under which the mass is calculated.
+- Mass: Displays the mass under the specified section.
 
 #### Plots
 - Prior and posterior: Displays the prior (dashed line) and posterior (solid line) distribution of the effect size under the alternative hypothesis. The grey areas represents the equivalence region of the prior and the posterior density. The horizontal solid line represents the width of the 95% credible interval of the posterior distribution.

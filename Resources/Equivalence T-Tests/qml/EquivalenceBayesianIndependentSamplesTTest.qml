@@ -20,9 +20,11 @@ import QtQuick			2.12
 import JASP.Controls	1.0
 import JASP.Widgets		1.0
 import JASP				1.0
+import QtQuick.Layouts  1.3
 
 Form
 {
+    usesJaspResults: true
     plotHeight: 300
     plotWidth:  350
 
@@ -30,22 +32,39 @@ Form
     {
 		preferredHeight: jaspTheme.smallDefaultVariablesFormHeight
         AvailableVariablesList { name: "allVariablesList" }
-        AssignedVariablesList { name: "variables";			title: qsTr("Variables");			suggestedColumns: ["scale"]	}
-        AssignedVariablesList { name: "groupingVariable";	title: qsTr("Grouping Variable");	suggestedColumns: ["ordinal", "nominal"]; singleVariable: true}
+        AssignedVariablesList  { name: "variables";			title: qsTr("Variables");			suggestedColumns: ["scale"]	}
+        AssignedVariablesList  { name: "groupingVariable";	title: qsTr("Grouping Variable");	suggestedColumns: ["ordinal", "nominal"]; singleVariable: true}
     }
 
-    Group
+    RadioButtonGroup
     {
-        title: qsTr("Equivalence Region")
-        columns: 2
-        DoubleField { name: "lowerbound";	text: qsTr("Lower bound");		defaultValue: -0.5; negativeValues: true; max: upperbound.value; inclusive: JASP.None ; id: lowerbound }
-        DoubleField { name: "upperbound";	text: qsTr("Upper bound");      defaultValue: 0.5; negativeValues: true; min: lowerbound.value; inclusive: JASP.None ;id: upperbound }
+       name: "equivalenceRegion"
+       title: qsTr("Equivalence Region")
+       GridLayout
+       {
+          columns: 3
+          rowSpacing: jaspTheme.rowGroupSpacing
+          columnSpacing: 0
+
+          RadioButton { value: "region"; checked: true; id: region }
+          DoubleField { name: "lowerbound"; label: qsTr("from")	; max: upperbound.value; defaultValue: -0.5; id: lowerbound; negativeValues: true; enabled: region.checked; inclusive: JASP.None}
+          DoubleField { name: "upperbound"; label: qsTr("to")	; min: lowerbound.value; defaultValue: 0.5;  id: upperbound; negativeValues: true; enabled: region.checked; Layout.leftMargin: jaspTheme.columnGroupSpacing; inclusive: JASP.None}
+
+          RadioButton { value: "lower"; id: lower }
+          Label		  { text: qsTr("from %1").arg(" -∞ "); enabled: lower.checked}
+          DoubleField { name: "lower_max"; label: qsTr("to"); id: lower_max; defaultValue: 0.5; negativeValues: true; enabled: lower.checked; Layout.leftMargin: jaspTheme.columnGroupSpacing; inclusive: JASP.None}
+
+          RadioButton { value: "upper"; id: upper }
+          DoubleField { name: "upper_min"; label: qsTr("from"); id: upper_min; defaultValue: -0.5; negativeValues: true; enabled: upper.checked}
+          Label		  { text: qsTr("to %1").arg(" ∞ "); Layout.leftMargin: jaspTheme.columnGroupSpacing; enabled: upper.checked}
+        }
     }
 
     Group
     {
         title: qsTr("Additional Statistics")
         CheckBox { name: "descriptives";					text: qsTr("Descriptives")	}
+        CheckBox { name: "massPriorPosterior";              text: qsTr("Prior and posterior mass") }
     }
 
     Group
@@ -59,7 +78,7 @@ Form
 
         CheckBox
         {
-             name: "plotSequentialAnalysis";		label: qsTr("Sequential analysis")
+             name: "plotSequentialAnalysis";		                    label: qsTr("Sequential analysis")
              CheckBox { name: "plotSequentialAnalysisRobustness";		label: qsTr("Robustness check") }
         }
     }

@@ -1,7 +1,7 @@
 Gelijkwaardigheids T-Toets voor Eén Gemiddelde
 ==========================
 
-Met de gelijkwaardigheids t-toets voor één gemiddelde kan de gebruiker de effectgrootte schatten en de nulhypothese testen dat het populatiegemiddelde binnen een interval valt, de zogenaamde gelijkwaardigheids regio.Het verschil met de klassieke nul hypothese significantie toets is dat in gelijkwaardigheids toetsen, de nul hypothese een interval rond de test waarde beslaat in plaats van een punt-nul.
+Met de gelijkwaardigheids t-toets voor één gemiddelde kan de gebruiker de nulhypothese toetsen dat de effectgrootte van het populatiegemiddelde binnen een door de gebruiker gedefinieerd interval valt, d.w.z. de gelijkwaardigheids regio.
 
 ### Assumpties
 - De afhankelijke variabele is continu.
@@ -18,8 +18,7 @@ Met de gelijkwaardigheids t-toets voor één gemiddelde kan de gebruiker de effe
 The nul hypothese dat het populatiegemiddelde gelijk is aan de toetswaarde.
 
 #### Gelijkwaardigheids regio
-- Bovengrens: De bovengrens van de gelijkswaardigheids regio.
-- Lower bound: De ondergrens van de gelijkswaardigheids regio.
+- van ... tot ... : Bepaalt de gelijkwaardigheids regio door de boven- en ondergrens te specificeren.
 
 #### Grafieken
 - Prior en posterior: Geeft de verdeling van de prior en posterior van de effectgrootte onder de alternatieve hypothese.
@@ -28,7 +27,8 @@ The nul hypothese dat het populatiegemiddelde gelijk is aan de toetswaarde.
     - Robuustheidscheck: Voegt de resultaten van de sequentiële analyse toe, gebruik makende van de brede (scale=1) en ultrabrede prior (scale=sqrt (2)).
 
 #### Aanvullende statistieken
-- Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaarddeviatie, standaardfout van het gemiddelde.
+- Beschrijvend: Steekproef grootte, steekproefgemiddelde, steekproef standaarddeviatie, standaard fout van het gemiddelde.
+- Prior en posterior massa: Geeft de prior en posterior massa binnen en buiten de ingestelde gelijkswaardigheids regio weer.
 
 #### Ontbrekende waarden
  - Het uitsluiten van waarnemingen, analyse bij analyse: Wanneer er meerdere t-toetsen in een analyse zitten, wordt elke test uitgevoerd met alle waarnemingen die valide data bevatten voor de afhankelijke variabele in de t-toets. De steekproefgroottes kunnen daardoor verschillen per toets.
@@ -49,10 +49,10 @@ The nul hypothese dat het populatiegemiddelde gelijk is aan de toetswaarde.
 #### Gelijkwaardigheids Bayesiaanse T-Toets voor één gemiddelde
 - De eerste kolom bevat the afhankelijke variabele.
 - Model Vergelijking:
-   - $\delta$ $\in$ I vs. H1: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsinterval hypothese ten opzichte van de ongelimiteerde alternative hypothese.
-   - $\delta$ $\notin$ I vs. H1: De Bayes factor die bewijs geeft voor de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt ten opzichte van de ongelimiteerde alternative hypothese.
-   - $\delta$ $\in$ I vs. $\delta$ $\notin$ I: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsinterval hypothese ten opzichte van e hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt.
-   - $\delta$ $\notin$ I vs. $\delta$ $\in$ I: De Bayes factor die bewijs geeft voor de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt ten opzichte van de gelijkwaardigheidsinterval hypothese.
+   - &delta; &in; I vs. H<sub>1</sub>: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsinterval hypothese ten opzichte van de ongelimiteerde alternative hypothese.
+   - &delta; &notin; I vs. H<sub>1</sub>: De Bayes factor die bewijs geeft voor de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt ten opzichte van de ongelimiteerde alternative hypothese.
+   - &delta; &in; I vs. &delta; &notin; I: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsinterval hypothese ten opzichte van e hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt.
+   - &delta; &notin; I vs. &delta; &in; I: De Bayes factor die bewijs geeft voor de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt ten opzichte van de gelijkwaardigheidsinterval hypothese.
 - BF: De Bayes factor.
 - fout %: De fout van de Gaussiaanse kwadratuur intergratie methode die wordt gebruikt op de Bayes factor te berekenen.
 
@@ -63,6 +63,11 @@ The nul hypothese dat het populatiegemiddelde gelijk is aan de toetswaarde.
 - SD: Standaarddeviatie van het gemiddelde.
 - Std. Fout: Standaardfout van het gemiddelde.
 - Geloofwaardigheidsinterval: Standaardoptie is 95%.
+
+#### Prior en Posterior Massa Tabel
+- De eerste kolom bevat de afhankelijke variabele.
+- Sectie: Het gedeelte waaronder de massa wordt berekend.
+- Massa: Geeft de massa onder de sectie weer.
 
 #### Grafieken
 - Prior en posterior: Geeft de prior (stippellijn) en posterior (lijn) verdeling van de effectgrootte onder de alternatieve hypothese; de grijze cirkels geven de hoogte van de dichtheid van de prior en de posterior bij een effectgrootte delta = 0 weer. De horizontale lijn geeft de breedte van een 95% geloofwaardigheidsinterval van de posterior verdeling weer.

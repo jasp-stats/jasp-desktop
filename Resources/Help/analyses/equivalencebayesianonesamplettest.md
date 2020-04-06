@@ -1,7 +1,7 @@
 Equivalence Bayesian One Sample T-Test
 ===
 
-The equivalence one sample t-test allows the user to estimate the effect size and test the null hypothesis that the population mean falls inside an interval, i.e., the equivalence region. The difference with a standard null hypothesis significance test is that in equivalence testing, the null hypothesis covers a small interval around the test value instead of a point-null.
+The equivalence one sample t-test allows the user to test the null hypothesis that the effect size of the population mean falls inside a by the user-defined interval, i.e., the equivalence region.
 
 ### Assumptions
 - Continuous dependent variable.
@@ -18,8 +18,7 @@ The equivalence one sample t-test allows the user to estimate the effect size an
 The null hypothesis that the population mean is equal to the test value.
 
 #### Equivalence region
-- Upper bound: The upper bound of the equivalence region.
-- Lower bound: The lower bound of the equivalence region.
+- from ... to ... : Defines the equivalence region by specifying the lower bound and the upper bound.
 
 #### Plots
 - Prior and posterior: Displays the prior and posterior distribution of the effect size under the alternative hypothesis.
@@ -29,6 +28,7 @@ The null hypothesis that the population mean is equal to the test value.
 
 #### Additional Statistics
 - Descriptives: Sample size, sample mean, sample standard deviation, standard error of the mean for each measure.
+- Prior and posterior mass: Displays the prior and posterior mass in and outside the set equivalence region.
 
 ### Missing Values
  - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the tests. This options is selected by default.
@@ -48,10 +48,10 @@ The null hypothesis that the population mean is equal to the test value.
 #### Equivalence Bayesian One Sample T-Test
 - The first column contains the dependent variable.
 - Model Comparison:
-   - $\delta$ $\in$ I vs. H1: Bayes factor to quantify evidence for the interval-null hypothesis to the unconstrained alternative hypothesis.
-   - $\delta$ $\notin$ I vs. H1: Bayes factor to quantify evidence for the hypothesis that the effect size is outside the interval-null to the unconstrained alternative hypothesis.
-   - $\delta$ $\in$ I vs. $\delta$ $\notin$ I: Bayes factor to quantify evidence for the interval-null hypothesis to the hypothesis that the effect size falls outside the interval-null.
-   - $\delta$ $\notin$ I vs. $\delta$ $\in$ I: Bayes factor to quantify evidence for the hypothesis that the effect size falls outside the interval-null to the interval-null hypothesis.
+   - &delta; &in; I vs. H<sub>1</sub>: Bayes factor to quantify evidence for the interval-null hypothesis to the unconstrained alternative hypothesis.
+   - &delta; &notin; I vs. H<sub>1</sub>: Bayes factor to quantify evidence for the hypothesis that the effect size is outside the interval-null to the unconstrained alternative hypothesis.
+   - &delta; &in; I vs. &delta; &notin; I: Bayes factor to quantify evidence for the interval-null hypothesis to the hypothesis that the effect size falls outside the interval-null.
+   - &delta; &notin; I vs. &delta; &in; I: Bayes factor to quantify evidence for the hypothesis that the effect size falls outside the interval-null to the interval-null hypothesis.
 - BF: The Bayes factor.
 - error %: The error of the numerical integration used for the computation of the Bayes factor.
 
@@ -62,6 +62,11 @@ The null hypothesis that the population mean is equal to the test value.
 - SD: Standard deviation of the mean.
 - SE: Standard error of the mean.
 - Credible interval: Central credible interval. Default is 95%.
+
+#### Prior and Posterior Mass Table
+- The first column contains the dependent variable.
+- Section: The section under which the mass is calculated.
+- Mass: Displays the mass under the specified section.
 
 #### Plots
 - Prior and posterior: Displays the prior (dashed line) and posterior (solid line) distribution of the effect size under the alternative hypothesis. The grey areas represents the equivalence region of the prior and the posterior density. The horizontal solid line represents the width of the 95% credible interval of the posterior distribution.

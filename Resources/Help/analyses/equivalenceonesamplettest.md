@@ -1,7 +1,7 @@
 Equivalence One Sample T-Test
 ==========================
 
-The equivalence one sample t-test allows the user to estimate the effect size and test the null hypothesis that the population mean falls inside a specific interval, i.e., the equivalence region. The difference with a standard null hypothesis significance test is that in equivalence testing, the null hypothesis covers a small interval around the test value instead of a point-null. This is done according to the two-one-sided test (TOST) procedure.
+The equivalence one sample t-test allows the user to test the null hypothesis that the population mean falls inside a specific interval, i.e., the equivalence region. This analysis follows the two-one-sided tests (TOST).
 
 ### Assumptions
 - The dependent variable is continuous.
@@ -26,7 +26,7 @@ The null hypothesis that the population mean is equal to the test value.
 
 #### Additional Statistics
 - Descriptives: Sample size, sample mean, sample standard deviation, standard error of the mean for each group.
-- Equivalence bounds plot: The TOST procedure is the same as visually inspecting if the 100 - (2*alpha)% confidence interval falls within the set equivalence bounds.
+- Equivalence bounds plot: Displays if the 100-(2*alpha)% confidence interval falls within the set equivalence bounds.
 
 #### Missing Values
  - Exclude cases analysis by analysis: In case of multiple t-tests within a single analysis, each test will be conducted using all cases with valid data for the dependent variable for the particular t-test. Sample sizes may therefore vary across the tests. This option is selected by default.
@@ -50,7 +50,7 @@ The null hypothesis that the population mean is equal to the test value.
 - The second column contains the information if the equivalence bounds are expressed in standardized mean differences (Cohen's d) or in raw units.
 - Low: Low equivalence bound expressed in standardized mean difference when Cohen's d is selected and in raw units when Raw is selected.
 - High: High equivalence bound expressed in standardized mean difference when Cohen's d is selected and in raw units when Raw is selected.
-- 90% Confidence Interval for mean difference/location parameter: The confidence interval for the mean difference/location parameter of the difference scores.
+- 100-(2*alpha)% Confidence Interval for mean difference/location parameter: The confidence interval for the mean difference/location parameter of the difference scores.
   - Lower: The lower bound of the confidence interval.
   - Upper: The upper bound of the confidence interval.
 
@@ -62,7 +62,7 @@ The null hypothesis that the population mean is equal to the test value.
 - SE: Standard error of the mean.
 
 #### Equivalence Bounds Plots
-Displays the sample mean difference and the 90% confidence interval. The grey area is the set equivalence region.
+Displays the sample mean difference and the 100-(2*alpha)% confidence interval. The grey area is the set equivalence region.
 
 ### References
 -------

@@ -23,7 +23,8 @@
   jaspResults[["equivalencePriorPosteriorContainer"]] <- equivalencePriorPosteriorContainer
   
   equivalencePriorPosteriorContainer$dependOn(c("priorandposterior", "missingValues", "priorWidth",
-                                                "effectSizeStandardized", "lowerbound", "upperbound", 
+                                                "effectSizeStandardized", "equivalenceRegion", "lower", "upper",
+                                                "region", "lowerbound", "upperbound", "lower_max", "upper_min", "prior",
                                                 "informative", "informativeCauchyLocation", "informativeCauchyScale",
                                                 "informativeNormalMean", "informativeNormalStd", "informativeTLocation", 
                                                 "informativeTScale", "informativeTDf", "priorandposteriorAdditionalInfo"))
@@ -38,9 +39,6 @@
   }
   
   for (variable in variables) {
-  
-    # Equivalence bounds
-    xx <- seq(min(options$lowerbound), max(options$upperbound), length.out = 1000)
     
     if (paired) {
       variable <- paste(variable[[1L]], variable[[2L]], sep = " - ")
@@ -54,9 +52,10 @@
     results <- equivalenceBayesianTTestResults[[variable]]
     
     equivalenceTTestPriorPosterior <- createJaspPlot(title = title, width = 480, height = 320)
+    equivalencePriorPosteriorContainer[[variable]] <- equivalenceTTestPriorPosterior
     
     if (paired) {
-      equivalenceTTestPriorPosterior$dependOn("pairs") # this could be better; by selecting only the relevant pair
+      equivalenceTTestPriorPosterior$dependOn("pairs") # this could be better; by selecting only the relevant pair -- doesn't work for me: (list(pairs = unname(pairs[variable])))      #
     } 
     else {
       equivalenceTTestPriorPosterior$dependOn(optionContainsValue = list("variables" = variable))
@@ -74,7 +73,7 @@
       n1             <- results[["n1"]]
       n2             <- if (paired) NULL else results[["n2"]]
       r              <- options[["priorWidth"]]
-      BF <- results$bfEquivalence / results$bfNonequivalence
+      BF             <- results$bfEquivalence / results$bfNonequivalence
       
       # Make an error when BF is either 0 or inf., then no plot possible 
       if (BF == 0 || BF == Inf) {
@@ -234,6 +233,16 @@
                                                  options  = options)
         
         # Calculate prior and posterior over the interval range
+        
+        # Equivalence bounds
+        if (options$lowerbound == -Inf) {
+          xx <- seq(min(xticks), max(options$upperbound), length.out = 1000) 
+        } else if (options$upperbound == Inf) {
+          xx <- seq(min(options$lowerbound), max(xticks), length.out = 1000)
+        } else {
+          xx <- seq(min(options$lowerbound), max(options$upperbound), length.out = 1000)
+        }
+        
         priorInterval <- .dprior_informative(xx, 
                                              oneSided = oneSided, 
                                              options  = options)
@@ -294,11 +303,8 @@
         
         # Set limits plot
         xlim <- vector("numeric", 2)
-        
-        if (oneSided == FALSE) {
-          xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
-          xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
-        }
+        xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
+        xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
         
         xticks <- pretty(xlim)
         ylim <- vector("numeric", 2)
@@ -329,6 +335,15 @@
                                              oneSided = oneSided)
         
         # Calculate prior and posterior over the interval range
+        # Equivalence bounds
+        if (options$lowerbound == -Inf) {
+          xx <- seq(min(xticks), max(options$upperbound), length.out = 1000) 
+        } else if (options$upperbound == Inf) {
+          xx <- seq(min(options$lowerbound), max(xticks), length.out = 1000)
+        } else {
+          xx <- seq(min(options$lowerbound), max(options$upperbound), length.out = 1000)
+        }
+        
         priorInterval <- .dprior(x        = xx, 
                                  r        = r, 
                                  oneSided = oneSided)
@@ -381,6 +396,7 @@
                                                               CRI          = CRI,
                                                               median       = median,
                                                               bfType       = "BF10", 
+                                                              xName = bquote(paste(.(gettext("Effect size")), ~delta)),
                                                               bfSubscripts = JASPgraphs::parseThis(c("BF[phantom()%in%phantom()%notin%phantom()]",
                                                                                                      "BF[phantom()%notin%phantom()%in%phantom()]")),
                                                               pizzaTxt     = JASPgraphs::parseThis(c("data~'|'~H[phantom()%notin%phantom()]", "data~'|'~H[phantom()%in%phantom()]")))
@@ -416,8 +432,6 @@
       # place error in plot
       equivalenceTTestPriorPosterior$setError(results$errorFootnotes)
     }
-    
-    equivalencePriorPosteriorContainer[[variable]] <- equivalenceTTestPriorPosterior
   }
   
   return()
@@ -432,7 +446,7 @@
   errorEquivalencePrior <- integralEquivalencePrior$abs.error
   
   integralEquivalencePrior <- integralEquivalencePrior$value
-  intergralNonequivalencePrior <- 1 - integralEquivalencePrior 
+  integralNonequivalencePrior <- 1 - integralEquivalencePrior 
   
   # Step 2: Density in the equivalence range of the posterior
   upperbound <- .equivalence_cdf_t(x                  = options$upperbound, 
@@ -460,16 +474,20 @@
   if (integralEquivalencePosterior < 0) 
     integralEquivalencePosterior = 0     
   
-  intergralNonequivalencePosterior <- 1 - integralEquivalencePosterior
+  integralNonequivalencePosterior <- 1 - integralEquivalencePosterior
   
   # Step 3: Calculate BF
   bfEquivalence <- integralEquivalencePosterior / integralEquivalencePrior
-  bfNonequivalence <- intergralNonequivalencePosterior / intergralNonequivalencePrior 
+  bfNonequivalence <- integralNonequivalencePosterior / integralNonequivalencePrior
   
-  return(list(bfEquivalence    = bfEquivalence, 
-              bfNonequivalence = bfNonequivalence, 
-              errorPrior       = errorEquivalencePrior, 
-              errorPosterior   = errorEquivalencePosterior))
+  return(list(bfEquivalence                   = bfEquivalence, 
+              bfNonequivalence                = bfNonequivalence, 
+              errorPrior                      = errorEquivalencePrior, 
+              errorPosterior                  = errorEquivalencePosterior, 
+              integralEquivalencePosterior    = integralEquivalencePosterior,
+              integralEquivalencePrior        = integralEquivalencePrior,
+              integralNonequivalencePosterior = integralNonequivalencePosterior,
+              integralNonequivalencePrior     = integralNonequivalencePrior))
 }
 
 .equivalence_bf_normal <- function(t, n1, n2, independentSamples, prior.mean, prior.variance, options) {
@@ -481,7 +499,7 @@
   errorEquivalencePrior <- integralEquivalencePrior$abs.error
   integralEquivalencePrior <- integralEquivalencePrior$value
   
-  intergralNonequivalencePrior <- 1 - integralEquivalencePrior 
+  integralNonequivalencePrior <- 1 - integralEquivalencePrior 
   
   # Step 2: Density in the equivalence range of the posterior
   upperbound <- .equivalence_cdf_normal(x = options$upperbound, t, n1, n2, independentSamples, 
@@ -497,16 +515,20 @@
   if (integralEquivalencePosterior < 0) 
     integralEquivalencePosterior = 0
   
-  intergralNonequivalencePosterior <- 1 - integralEquivalencePosterior
+  integralNonequivalencePosterior <- 1 - integralEquivalencePosterior
   
   # Step 3: Calculate BF
   bfEquivalence <- integralEquivalencePosterior / integralEquivalencePrior
-  bfNonequivalence <- intergralNonequivalencePosterior / intergralNonequivalencePrior 
+  bfNonequivalence <- integralNonequivalencePosterior / integralNonequivalencePrior 
   
-  return(list(bfEquivalence    = bfEquivalence, 
-              bfNonequivalence = bfNonequivalence, 
-              errorPrior       = errorEquivalencePrior, 
-              errorPosterior   = errorEquivalencePosterior))
+  return(list(bfEquivalence                   = bfEquivalence, 
+              bfNonequivalence                = bfNonequivalence, 
+              errorPrior                      = errorEquivalencePrior, 
+              errorPosterior                  = errorEquivalencePosterior,
+              integralEquivalencePosterior    = integralEquivalencePosterior,
+              integralEquivalencePrior        = integralEquivalencePrior,
+              integralNonequivalencePosterior = integralNonequivalencePosterior,
+              integralNonequivalencePrior     = integralNonequivalencePrior))
 }
 
 .equivalence_cdf_normal <- function(x, t, n1, n2 = NULL, independentSamples = FALSE, prior.mean, prior.variance) {
@@ -632,26 +654,30 @@
   }
   
   # if no error  else error
-  return(list(bfEquivalence     = bfObject$bfEquivalence, 
-              bfNonequivalence  = bfObject$bfNonequivalence, 
-              errorPrior        = bfObject$errorPrior, 
-              errorPosterior    = bfObject$errorPosterior, 
-              tValue            = tValue, 
-              n1                = n1, 
-              n2                = n2,
-              errorBfI1         = bfObject$errorBfI1, 
-              errorBfnI1        = bfObject$errorBfnI1, 
-              errorBfnII        = bfObject$errorBfInI,
-              errorBfInI        = bfObject$errorBfInI))
+  return(list(bfEquivalence                   = bfObject$bfEquivalence, 
+              bfNonequivalence                = bfObject$bfNonequivalence, 
+              errorPrior                      = bfObject$errorPrior, 
+              errorPosterior                  = bfObject$errorPosterior, 
+              tValue                          = tValue, 
+              n1                              = n1, 
+              n2                              = n2,
+              errorBfI1                       = bfObject$errorBfI1, 
+              errorBfnI1                      = bfObject$errorBfnI1, 
+              errorBfnII                      = bfObject$errorBfInI,
+              errorBfInI                      = bfObject$errorBfInI,
+              integralEquivalencePrior        = bfObject$integralEquivalencePrior,
+              integralEquivalencePosterior    = bfObject$integralEquivalencePosterior,
+              integralNonequivalencePrior     = bfObject$integralNonequivalencePrior,
+              integralNonequivalencePosterior = bfObject$integralNonequivalencePosterior))
 }
 
 .equivalencePlotSequentialAnalysis <- function(jaspResults, dataset, options, equivalenceBayesianTTestResults, ready, paired = FALSE) {
   
-  #if (is.null(equivalenceSequentialContainer))
   equivalenceSequentialContainer <- createJaspContainer(title = gettext("Equivalence Sequential Analysis"))
   
   equivalenceSequentialContainer$dependOn(c("missingValues", "priorWidth",
-                                            "effectSizeStandardized", "lowerbound", "upperbound",
+                                            "effectSizeStandardized", "equivalenceRegion","lower", "upper",
+                                            "region", "lowerbound", "upperbound", "lower_max", "upper_min", "prior",
                                             "informative", "informativeCauchyLocation", "informativeCauchyScale",
                                             "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                             "informativeTScale", "informativeTDf", "plotSequentialAnalysisRobustness"))
@@ -696,9 +722,6 @@
       group1 <- subDataSet[[1L]]
       group2 <- subDataSet[[2L]]
       
-      #p1 <- .v(variable[[1L]])
-      #p2 <- .v(variable[[2L]])
-      
       var <- variable
       variable <- title
     } else {
@@ -722,7 +745,6 @@
     results <- equivalenceBayesianTTestResults[[variable]]
     
     equivalenceTTestSequential <- createJaspPlot(title = title, width = 480, height = 320)
-
     equivalenceSequentialContainer[[variable]] <- equivalenceTTestSequential
     
     if (paired) {
@@ -741,7 +763,7 @@
       # Make an error when BF is either 0 or inf., then no plot possible
       BF <- results$bfEquivalence / results$bfNonequivalence
       if (BF == 0 || BF == Inf) {
-        equivalenceTTestPriorPosterior$setError("Currently a plot with a Bayes factor of Inf or 0 is not supported")
+        equivalenceTTestSequential$setError("Currently a plot with a Bayes factor of Inf or 0 is not supported")
         return()
       }
       
@@ -749,7 +771,7 @@
         x                   = group1,
         y                   = group2,
         oneSided            = FALSE,
-        rscale              = options$priorWidth,
+        r                   = options$priorWidth,
         paired              = paired,
         plotDifferentPriors = options[["plotSequentialAnalysisRobustness"]],
         subDataSet          = subDataSet,
@@ -771,11 +793,9 @@
 }
 
 # changed this function
-.plotEquivalenceSequentialBF.ttest <- function(x = NULL, y = NULL, paired = FALSE, BF10post, formula = NULL, data = NULL, rscale = 1, oneSided = FALSE,
+.plotEquivalenceSequentialBF.ttest <- function(x = NULL, y = NULL, paired = FALSE, BF10post, formula = NULL, data = NULL, r = 1, oneSided = FALSE,
   plotDifferentPriors = FALSE, BFH1H0 = TRUE, dontPlotData = FALSE, level1 = NULL, level2 = NULL,
   subDataSet = NULL, nullInterval = c(-Inf, Inf), options) {
-  
-  r <- rscale
   
   if (is.null(y) || paired) {
     BF10  <- vector("numeric", max(length(x), length(y)))
@@ -1005,7 +1025,6 @@
     bfType          = bftype,
     hypothesis      = "equal",
     evidenceLeveltxt = FALSE,
-   # evidenceTxt     = JASPgraphs::parseThis("H[phantom()%in%phantom()]"),
     arrowLabel      = JASPgraphs::parseThis(c("H[phantom()%notin%phantom()]", "H[phantom()%in%phantom()]")),
     bfSubscripts    = JASPgraphs::parseThis(c("BF[phantom()%in%phantom()%notin%phantom()]",
                                               "BF[phantom()%notin%phantom()%in%phantom()]")),
