@@ -2,9 +2,15 @@
 options(warn=1) #print warnings as they occur
 options(nCpus=8)
 
+
+
 expEnv     <- new.env(hash = TRUE, parent = parent.frame())
 CRAN       <- #"https://cran.rstudio.com/"
-"https://cran.r-project.org/" #
+	"https://cran.r-project.org/" #
+
+#At least one package (graph) moved to Bioconductor, so should be using BiocManager because it supports both CRAN and Bioconductor packages?
+#install.packages("BiocManager", repos=CRAN)
+# this needs a bit of a rewrite though... so I will first try to do a quick manual fix and hope nothing breaks
   
 
 giveOrderedDependencies <- function()
@@ -57,8 +63,8 @@ giveOrderedDependencies <- function()
       deps              <- deps[!(deps %in% base_pkgs)] #remove base pkgs
 
       #if(curPkg == "KneeArrower") deps <- append(deps, "signal") #workaround... Becacuse KneeArrower is taken from github apparently the dependencies aren't taken into account properly.
-      if(curPkg == "bstats")      deps <- append(deps, c("hypergeo", "purrr", "SuppDists"))
-      if(curPkg == "flexplot")    deps <- append(deps, c("ggplot2", "cowplot", "tibble", "withr", "dplyr", "magrittr", "forcats", "purrr", "plyr", "R6"))
+      if(curPkg == "bstats")       deps <- append(deps, c("hypergeo", "purrr", "SuppDists"))
+      if(curPkg == "flexplot")     deps <- append(deps, c("ggplot2", "cowplot", "tibble", "withr", "dplyr", "magrittr", "forcats", "purrr", "plyr", "R6"))
 
       pkgDeps[[curPkg]] <- deps
       pkgs              <- append(pkgs, deps, i)
@@ -116,6 +122,7 @@ giveOrderedDependencies <- function()
   }
 
   orderedPkgs <- orderedPkgs[!(orderedPkgs %in% base_pkgs)] #remove base pkgs, because somehow they sneaked back in!
+  orderedPkgs <- orderedPkgs[!(orderedPkgs %in% c("graph"))]
   #print(paste0('Pkgs ordered by dependencies: ', paste0(orderedPkgs, sep=', ', collapse='')))
 
   print('Now make sure also the versions of those packages that were included as a dependency have a version specified in expEnv')
@@ -126,6 +133,7 @@ giveOrderedDependencies <- function()
 
     if(!exists(curPkg, where=expEnv, inherits=FALSE)) #if so get the version from available pkgs
     {
+	  print(paste0("Checking version of pkg ", curPkg, " in available_pkgs"))
       expEnv[[curPkg]] <- available_pkgs[[curPkg, "Version"]]
       print(paste0("Couldn't find version of ",curPkg," in expected packages so took it from availablePackages: ", expEnv[[curPkg]]))    
     }
