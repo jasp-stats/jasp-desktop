@@ -118,18 +118,11 @@ void HelpModel::setThemeCss(QString themeName)
 bool HelpModel::loadHelpContent(const QString &pagePath, bool ignorelanguage, QString &renderFunc, QString &content)
 {
 
-	QString _localname = "";
+	QString _localname = ignorelanguage ? "" : LanguageModel::currentTranslationSuffix();
 	bool found = false;
 
 	renderFunc = "window.render";
 	content = "";
-
-	//Leave help filenames from JASP native language - English - with localname en_US unchanged
-	if (!ignorelanguage)
-	{
-    LanguageInfo li = LanguageModel::CurrentLanguageInfo();
-		_localname = li.language  == QLocale::English ? "" : ("_" + li.localName);
-	}
 
 	QFile fileMD, fileHTML;
 	QFileInfo pathMd(_pagePath + _localname + ".md");
