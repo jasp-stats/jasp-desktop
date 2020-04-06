@@ -26,7 +26,7 @@ LDchisq <- function(jaspResults, dataset, options, state=NULL){
   pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
   .ldFillPDFContainer(pdfContainer, options, .ldFormulaChisqPDF)
   
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Chisq Function"), 4)
+  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
   .ldFillCDFContainer(cdfContainer, options, .ldFormulaChisqCDF)
   
   qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)

@@ -26,7 +26,7 @@ LDexponential <- function(jaspResults, dataset, options, state=NULL){
   pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
   .ldFillPDFContainer(pdfContainer, options, .ldFormulaExponentialPDF)
   
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Exponential Function"), 4)
+  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
   .ldFillCDFContainer(cdfContainer, options, .ldFormulaExponentialCDF)
   
   qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)

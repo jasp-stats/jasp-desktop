@@ -1397,7 +1397,7 @@
     The <i>y</i>-axis displays the quantile of which the probability that the random variable is less or equal to that value is equal to p (displayed on the <i>x</i>-axis)."),
 
       intro = gettextf("<h3> Demonstration of the %1$s </h3>
-This demonstration is divided in four parts.
+This demonstration is divided into four parts.
 The first part displays the %2$s, its probability density function, cumulative distribution function, and quantile function.
 The second part allows you to generate data from the %3$s, compute descriptive statistics, and display descriptive plots.
 The third part allows you to estimate the parameters of the %4$s.
@@ -1414,7 +1414,7 @@ For relationships with other distributions, visit www.math.wm.edu/~leemis/chart/
 https://en.wikipedia.org/wiki/List_of_probability_distributions", distributionName, distributionName, distributionName, distributionName, distributionName)
     ),
     references   = list(
-      jasp = "JASP Team (2020). JASP (Version 0.11.1) [Computer software].",
+      jasp = "JASP Team (2020). JASP (Version 0.12) [Computer software].",
       goftest = "Julian Faraway, George Marsaglia, John Marsaglia and Adrian Baddeley (2017). goftest: Classical Goodness-of-Fit Tests for Univariate Distributions. R package version 1.1-1. https://CRAN.R-project.org/package=goftest",
       fitdistrplus = "Marie Laure Delignette-Muller, Christophe Dutang (2015). fitdistrplus: An R Package for Fitting Distributions. Journal of Statistical Software, 64(4), 1-34. URL: http://www.jstatsoft.org/v64/i04/.",
       car = "John Fox and Sanford Weisberg (2011). An R Companion to Applied Regression, Second Edition. Thousand Oaks CA: Sage. URL: http://socserv.socsci.mcmaster.ca/jfox/Books/Companion."

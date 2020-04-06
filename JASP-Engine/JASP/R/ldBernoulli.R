@@ -19,7 +19,7 @@ LDbernoulli <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsBernoulli(options)
   
   #### Show bernoulli section ----
-  .ldIntroText(jaspResults, options, gettext("bernoulli distribution"))
+  .ldIntroText(jaspResults, options, gettext("Bernoulli distribution"))
   .ldBernoulliParsSupportMoments(jaspResults, options)
   
   pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", gettext("Probability Mass Function"), 3)

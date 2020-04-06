@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R 3.6.1\n"
 "Report-Msgid-Bugs-To: github.com/jasp-stats/jasp-issues/issues\n"
-"POT-Creation-Date: 2020-03-31 09:55\n"
+"POT-Creation-Date: 2020-04-06 15:34\n"
 "PO-Revision-Date: 2020-01-29 14:35\n"
 "Last-Translator: JASP <info@jasp-stats.org>\n"
 "Language-Team: JASP <info@jasp-stats.org>\n"
@@ -3252,7 +3252,7 @@ msgid ""
 "on the <i>x</i>-axis)."
 msgstr ""
 "De kwantielfunctie, vaak genoteerd als Q(p), is de inverse van de "
-"cumulatieve dichtheidsfunctie.\n"
+"cumulatieve verdelingsfunctie.\n"
 "    De functie geeft het kwantiel zo dat de kans dat de willekeurige "
 "variabele minder dan of gelijk is aan die waarde gelijk is aan de gegeven "
 "kans p.   \n"
@@ -3264,7 +3264,7 @@ msgstr ""
 
 msgid ""
 "<h3> Demonstration of the %1$s </h3>\n"
-"This demonstration is divided in four parts.\n"
+"This demonstration is divided into four parts.\n"
 "The first part displays the %2$s, its probability density function, "
 "cumulative distribution function, and quantile function.\n"
 "The second part allows you to generate data from the %3$s, compute "
@@ -3303,8 +3303,8 @@ msgstr ""
 "Leemis, L. M., & Pasupathy, R. (2019). The ties that bind. <i>Significance, "
 "16</i>(4), 8–9.\n"
 "\n"
-"Ga voor verwantschappen met andere verdelingen naar www.math.wm.edu/~leemis/chart/"
-"UDR/UDR.html.\n"
+"Ga voor verwantschappen met andere verdelingen naar www.math.wm.edu/~leemis/"
+"chart/UDR/UDR.html.\n"
 "\n"
 "https://en.wikipedia.org/wiki/List_of_probability_distributions"
 
@@ -5058,8 +5058,8 @@ msgstr ""
 "Het resultaat van %1$s R code moet numeriek zijn maar was van type %2$s en "
 "klasse %3$s"
 
-msgid "bernoulli distribution"
-msgstr "bernoulli verdeling"
+msgid "Bernoulli distribution"
+msgstr "Bernoulli verdeling"
 
 msgid "Probability Mass Function"
 msgstr "Kansdichtheidsgrafiek"
@@ -5090,9 +5090,6 @@ msgstr "betaverdeling"
 msgid "Probability Density Function"
 msgstr "Kansdichtheidsgrafiek"
 
-msgid "Cumulative Beta Function"
-msgstr "Cumulatieve Beta Functie"
-
 msgid "Quantile Function"
 msgstr "Kwantielfunctie"
 
@@ -5114,21 +5111,14 @@ msgstr "Parameter n werd bepaald op waarde %s."
 msgid "%s<sup>2</sup> distribution"
 msgstr "%s<sup>2</sup> verdeling"
 
-msgid "Cumulative Chisq Function"
-msgstr "Cumulatieve Chi-kwadraat Functie"
-
 msgid "degree of freedom: %s"
 msgstr "vrijheidsgraden: %s"
 
 msgid "non-centrality: %s"
 msgstr "niet-centraal: %s"
 
-
 msgid "Exponential distribution"
-msgstr "Exponentiële verdeling "
-
-msgid "Cumulative Exponential Function"
-msgstr "Cumulatieve Exponentiële Functie"
+msgstr "Exponentiële verdeling"
 
 msgid "scale: %s"
 msgstr "schaal: %s"
@@ -5142,17 +5132,11 @@ msgstr "F-verdeling"
 msgid "gamma distribution"
 msgstr "gamma verdeling"
 
-msgid "Cumulative Gamma Function"
-msgstr "Cumulatieve Gamma Funcßtie"
-
 msgid "mean: %s"
 msgstr "gemiddelde: %s"
 
 msgid "inverse gamma distribution"
 msgstr "inverse gamma verdeling"
-
-msgid "Cumulative GammaInverse Function"
-msgstr "Cumulatieve Gammainverse Functie"
 
 msgid "Normal distribution"
 msgstr "Normaal verdeling"
@@ -5176,7 +5160,7 @@ msgid "&mu;"
 msgstr "&mu;"
 
 msgid "Negative binomial distribution"
-msgstr "Negatieve binomiaalverdeling"
+msgstr "Negatief binomiaal verdeling"
 
 msgid "number of successes: %s"
 msgstr "aantal successen: %s"
@@ -6859,3 +6843,4 @@ msgid "Partial Regression Plot"
 msgid_plural "Partial Regression Plots"
 msgstr[0] "Partiële Regressiegrafiek"
 msgstr[1] "Partiële Regressiegrafieken"
+

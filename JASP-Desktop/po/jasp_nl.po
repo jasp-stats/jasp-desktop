@@ -940,7 +940,7 @@ msgstr "Open databestand"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
-msgstr "Geef info weer over deze voorkeuren"
+msgstr "Toon informatie over deze voorkeuren"
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
@@ -1386,8 +1386,8 @@ msgid ""
 "JASP is an open-source project with structural support from the University "
 "of Amsterdam."
 msgstr ""
-"JASP is een open-source project in voortdurende ontwikkeling dat structureel "
-"ondersteund wordt door de Universiteit van Amsterdam."
+"JASP is een open-source project dat voortdurend in ontwikkeling is en "
+"structureel ondersteund wordt door de Universiteit van Amsterdam."
 
 msgctxt "WelcomePage|"
 msgid "Friendly:"
@@ -15492,7 +15492,7 @@ msgstr "Pearson's r"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr "Geef info over deze analyse"
+msgstr "Toon informatie over deze analyse"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
