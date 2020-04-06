@@ -672,7 +672,6 @@
 }
 
 .equivalencePlotSequentialAnalysis <- function(jaspResults, dataset, options, equivalenceBayesianTTestResults, ready, paired = FALSE) {
-
   equivalenceSequentialContainer <- createJaspContainer(title = gettext("Equivalence Sequential Analysis"))
 
   equivalenceSequentialContainer$dependOn(c("missingValues", "priorWidth",
@@ -743,7 +742,6 @@
       next
 
     results <- equivalenceBayesianTTestResults[[variable]]
-
     equivalenceTTestSequential <- createJaspPlot(title = title, width = 480, height = 320)
     equivalenceSequentialContainer[[variable]] <- equivalenceTTestSequential
 
@@ -796,7 +794,6 @@
 .plotEquivalenceSequentialBF.ttest <- function(x = NULL, y = NULL, paired = FALSE, BF10post, formula = NULL, data = NULL, r = 1, oneSided = FALSE,
   plotDifferentPriors = FALSE, BFH1H0 = TRUE, dontPlotData = FALSE, level1 = NULL, level2 = NULL,
   subDataSet = NULL, nullInterval = c(-Inf, Inf), options) {
-
   if (is.null(y) || paired) {
     BF10  <- vector("numeric", max(length(x), length(y)))
     BF10w <- vector("numeric", max(length(x), length(y)))
