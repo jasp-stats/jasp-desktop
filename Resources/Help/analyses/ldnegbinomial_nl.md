@@ -1,19 +1,19 @@
-Negatieve Binomiaalverdeling
+Negatief Binomiaalverdeling
 ==========================
 
-Expositie van de negatieve binomiaalverdeling.
+Expositie van de negatief binomiaalverdeling.
 
 ## Toon verdeling
-Geeft de theoretische negatieve binominaal verdeling weer, met opgegeven parameterwaarden.
+Geeft de theoretische negatief binominaal verdeling weer, met opgegeven parameterwaarden.
 
 ### Parameters
-- &phi;, p: De negatieve binominaalverdeling geparametriseert op basis van het aantal successen en de kans op een success parameters.
-- &phi;, &mu;: De negatieve binominaalverdeling geparametriseert met behulp van de spreiding en gemiddelde parameters.
+- &phi;, p: De negatief binominaalverdeling geparametriseerd op basis van het aantal successen en de kans op een success parameters.
+- &phi;, &mu;: De negatief binominaalverdeling geparametriseerd met behulp van de spreiding en gemiddelde parameters.
 
 ### Weergeven
 - Toelichtende tekst: Toont toelichtende tekst.
 - Parameters, drager en momenten: Geeft de definitie van de parameters, de drager van de stochastische variabele en de momenten van de theoretische verdeling weer.
-- Kansmassfunctie: Geeft de histogram van de kansmassfunctie weer.
+- Kansmassafunctie: Geeft de histogram van de kansmassafunctie weer.
 - Cumulatieve verdelingsfunctie: Geeft de cumulatieve verdelingsgrafiek weer.
 
 ### Opties
@@ -23,7 +23,7 @@ Geeft de theoretische negatieve binominaal verdeling weer, met opgegeven paramet
 - Interval: Selecteer de grenzen van de weer te geven geordende verzameling: Kansmassa is gemarkeerd op de onder- en bovengrenzen, de verdeling wordt weergegeven voor het opgegeven interval.
 
 ## Gegevens genereren en weergeven
-- Naam variabele: Specificeer hier de kolom naam. Uit de gespecifieërde distributie wordt een steekproef getrokken en in de dataset opgeslagen met de gegeven naam.
+- Naam variabele: Specificeer hier de kolomnaam. Uit de gespecifieërde distributie wordt een steekproef getrokken en in de dataset opgeslagen met de gegeven naam.
 - Steekproefgrootte: Specificeer hier de steekproefgrootte.
 - Trek steekproef: Trekt een steekproef uit de theoretische verdeling.
 
@@ -48,10 +48,10 @@ Geeft de theoretische negatieve binominaal verdeling weer, met opgegeven paramet
 ## Evalueer Passing
 
 ### Grafieken
-- Histogram vs. theoretische pmf (kansmassfunctie): Geeft een histogram weer van de geselecteerde variabele en ook de kansmassafunctie van de gepaste distributie.
-- Empirische vs. theoretische cdf (cumulatieve verdelingsfunctie): Geeft een empirische cumulatieve verdelingsgrafiek weer, en ook de cumulatieve verdelingsfunctie van de gepaste distributie.
-- Q-Q-plot: Geeft de kwantiel-kwantielgrafiek weer. De *x*-as toont de theoretische kwantielen van de gepaste verdeling, de *y*-as toont de empirische kwantielen van de geselecteerde variabele.
-- P-P-plot: Geeft de kansverdelings-kansverdelingsgrafiek weer. De *x*-as toont de theoretische waarde van de gepaste cumulatieve verdelingsfunctie, de *y*-as toont de empirische percentielen van de geselecteerde variabele.
+- Histogram vs. theoretische pmf: Geeft een histogram weer van de geselecteerde variabele en ook de kansmassafunctie van de gepaste distributie.
+- Empirische vs. theoretische cdf: Geeft een empirische cumulatieve verdelingsgrafiek weer, en ook de cumulatieve verdelingsfunctie van de gepaste distributie.
+- Q-Q plot: Geeft de kwantiel-kwantielgrafiek weer. De *x*-as toont de theoretische kwantielen van de gepaste verdeling, de *y*-as toont de empirische kwantielen van de geselecteerde variabele.
+- P-P plot: Geeft de kansverdelings-kansverdelingsgrafiek weer. De *x*-as toont de theoretische waarde van de gepaste cumulatieve verdelingsfunctie, de *y*-as toont de empirische percentielen van de geselecteerde variabele.
 
 ### Statistieken
 - Chi-kwadraat: Toont de chi-kwadraat pasmaat.

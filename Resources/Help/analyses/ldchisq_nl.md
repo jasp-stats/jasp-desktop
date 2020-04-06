@@ -24,7 +24,7 @@ Geeft de theoretische chi-kwadraatverdeling weer, met opgegeven parameterwaarden
 - Interval: Selecteer de grenzen van het weer te geven interval: Dichtheid is gemarkeerd op de onder- en bovengrenzen, de verdeling wordt weergegeven voor het opgegeven interval.
 
 ## Gegevens genereren en weergeven
-- Naam variabele: Specificeer hier de kolom naam. Uit de gespecifieërde distributie wordt een steekproef getrokken en in de dataset opgeslagen met de gegeven naam.
+  - Naam variabele: Specificeer hier de kolomnaam. Uit de gespecifieërde distributie wordt een steekproef getrokken en in de dataset opgeslagen met de gegeven naam.
 - Steekproefgrootte: Specificeer hier de steekproefgrootte.
 - Trek steekproef: Trekt een steekproef uit de theoretische verdeling.
 
@@ -51,10 +51,10 @@ Geeft de theoretische chi-kwadraatverdeling weer, met opgegeven parameterwaarden
 ### Grafieken
 - Histogram vs. theoretische pdf: Geeft een histogram weer van de geselecteerde variabele en ook de kansdichtheidsfunctie van de gepaste distributie.
 - Empirische vs. theoretische cdf: Geeft een empirische cumulatieve verdelingsgrafiek weer, en ook de cumulatieve verdelingsfunctie van de gepaste distributie.
-- Q-Q-plot: Geeft de kwantiel-kwantielgrafiek weer. De *x*-as toont de theoretische kwantielen van de gepaste verdeling, de *y*-as toont de empirische kwantielen van de geselecteerde variabele.
-- P-P-plot: Geeft de kansverdelings-kansverdelingsgrafiek weer. De *x*-as toont de theoretische waarde van de gepaste cumulatieve verdelingsfunctie, de *y*-as toont de empirische percentielen van de geselecteerde variabele.
+- Q-Q plot: Geeft de kwantiel-kwantielgrafiek weer. De *x*-as toont de theoretische kwantielen van de gepaste verdeling, de *y*-as toont de empirische kwantielen van de geselecteerde variabele.
+- P-P plot: Geeft de kansverdelings-kansverdelingsgrafiek weer. De *x*-as toont de theoretische waarde van de gepaste cumulatieve verdelingsfunctie, de *y*-as toont de empirische percentielen van de geselecteerde variabele.
 
 ### Statistieken
-- Kolmogorov-Smirnov: Geeft de pasmaat en p-waarde van de Kolmogorov-Smirnov test weer
-- Cramér-von Mises: Geeft de pasmaat en p-waarde van de Cramer-von Misses test weer
-- Anderson-Darling: Geeft de pasmaat en p-waarde van de Anderson-Darling test weer
+- Kolmogorov-Smirnov: Geeft de pasmaat en p-waarde van de Kolmogorov-Smirnov toets weer.
+- Cramér-von Mises: Geeft de pasmaat en p-waarde van de Cramer-von Misses toets weer.
+- Anderson-Darling: Geeft de pasmaat en p-waarde van de Anderson-Darling toets weer.
