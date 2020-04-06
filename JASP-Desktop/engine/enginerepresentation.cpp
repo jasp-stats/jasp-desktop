@@ -509,7 +509,7 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 	sendString("");
 	setSlaveProcess(jaspEngineProcess);
 	_stopRequested	= false;
-	resumeEngine();
+	resumeEngine(); //We do not want to engine to think it is *resuming* after a crash because it is actually *initializing* then. Because in that case it needs to send the settings again.
 }
 
 void EngineRepresentation::pauseEngine()
@@ -558,8 +558,7 @@ void EngineRepresentation::processEngineResumedReply()
 	if(_engineState != engineState::resuming && _engineState != engineState::initializing)
 		throw std::runtime_error("Received an unexpected engine resumed reply!");
 
-	if(_engineState == engineState::initializing)
-		_settingsChanged = true; //Make sure we send the settings at least once
+	_settingsChanged = true; //Make sure we send the settings at least once
 
 	_engineState = engineState::idle;
 }
