@@ -19,17 +19,17 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
   options <- .recodeOptionsLDGaussianUnivariate(options)
   
   #### Show distribution section ----
-  .ldIntroText(jaspResults, options, "Normal distribution")
+  .ldIntroText(jaspResults, options, gettext("Normal distribution"))
   .ldGaussianParsSupportMoments(jaspResults, options)
    
   
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", "Probability Density Function", 3)
+  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
   .ldFillPDFContainer(pdfContainer, options, .ldFormulaGaussianPDF)
   
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", "Cumulative Distribution Function", 4)
+  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
   .ldFillCDFContainer(cdfContainer, options, .ldFormulaGaussianCDF)
   
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", "Quantile Function", 5)
+  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
   .ldFillQFContainer(qfContainer,   options, .ldFormulaGaussianQF)
   
   #### Generate and Display data section ----

@@ -835,14 +835,6 @@ msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
 msgstr ""
 
-msgctxt "AnalysisFormExpander|"
-msgid "Show info for analysis"
-msgstr ""
-
-msgctxt "AnalysisFormExpander|"
-msgid "Remove analysis"
-msgstr ""
-
 msgctxt "AnalysisForms|"
 msgid "Resize data/results"
 msgstr ""
@@ -15212,6 +15204,14 @@ msgstr ""
 
 msgctxt "SummaryStatsCorrelationBayesianPairs|"
 msgid "Pearson's r"
+msgstr ""
+
+msgctxt "AnalysisFormExpander|"
+msgid "Show info for this analysis"
+msgstr ""
+
+msgctxt "AnalysisFormExpander|"
+msgid "Remove this analysis"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

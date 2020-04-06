@@ -350,7 +350,7 @@ DropArea
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
 					onClicked:			helpModel.showOrTogglePage(loader.myAnalysis.helpFile)
-					toolTip:			qsTr("Show info for analysis")
+					toolTip:			qsTr("Show info for this analysis")
 					radius:				height
 					anchors
 					{
@@ -371,7 +371,7 @@ DropArea
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
 					onClicked:			analysesModel.removeAnalysis(loader.myAnalysis)
-					toolTip:			qsTr("Remove analysis")
+					toolTip:			qsTr("Remove this analysis")
 					radius:				height
 					anchors
 					{

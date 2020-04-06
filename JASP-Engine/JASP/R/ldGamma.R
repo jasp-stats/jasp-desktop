@@ -19,17 +19,17 @@ LDgamma <- function(jaspResults, dataset, options, state=NULL){
   options <- .recodeOptionsLDgamma(options)
   
   #### Show gamma section ----
-  .ldIntroText(jaspResults, options, "gamma distribution")
+  .ldIntroText(jaspResults, options, gettext("gamma distribution"))
   .ldGammaParsSupportMoments(jaspResults, options)
   
   
-  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", "Probability Density Function", 3)
+  pdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPDF", gettext("Probability Density Function"), 3)
   .ldFillPDFContainer(pdfContainer, options, .ldFormulaGammaPDF)
   
-  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", "Cumulative Gamma Function", 4)
+  cdfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCDF", gettext("Cumulative Distribution Function"), 4)
   .ldFillCDFContainer(cdfContainer, options, .ldFormulaGammaCDF)
   
-  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", "Quantile Function", 5)
+  qfContainer  <- .ldGetPlotContainer(jaspResults, options, "plotQF", gettext("Quantile Function"), 5)
   .ldFillQFContainer(qfContainer,   options, .ldFormulaGammaQF)
   
   #### Generate and Display data section ----

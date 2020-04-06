@@ -19,14 +19,14 @@ LDbinomial <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsBinomial(options)
   
   #### Show binomial section ----
-  .ldIntroText(jaspResults, options, "binomial distribution")
+  .ldIntroText(jaspResults, options, gettext("binomial distribution"))
   .ldBinomialParsSupportMoments(jaspResults, options)
   
   
-  pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", "Probability Mass Function", 3)
+  pmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotPMF", gettext("Probability Mass Function"), 3)
   .ldFillPMFContainer(pmfContainer, options, .ldFormulaBinomialPMF)
   
-  cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", "Cumulative Distribution Function", 4)
+  cmfContainer <- .ldGetPlotContainer(jaspResults, options, "plotCMF", gettext("Cumulative Distribution Function"), 4)
   .ldFillCMFContainer(cmfContainer, options, .ldFormulaBinomialCDF)
   
   
