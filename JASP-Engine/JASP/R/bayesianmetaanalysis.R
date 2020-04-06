@@ -1654,10 +1654,9 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                                                  pizzaTxt = pizzaTxt,
                                                  hasRightAxis = TRUE,
                                                  yName = yName,
-                                                 evidenceTxt  = bquote(paste(.(gettext("Evidence for r H"))[1], ":")),
-                                                 arrowLabel  = c(bquote(.(gettext("Evidence~'for f'~H"))[1]),
-                                                                 bquote(.(gettext("Evidence~'for r'~H"))[1]))
-    )
+                                                 evidenceTxt  = JASPgraphs::parseThis(paste0("paste('", gettext("Evidence for r H"), "'[1], ':')")),
+                                                 arrowLabel  = c(JASPgraphs::parseThis(paste0("'", gettext("Evidence for f H"), "'[1]")),
+                                                                 JASPgraphs::parseThis(paste0("'", gettext("Evidence for r H"), "'[1]")))    )
   }
   
   
