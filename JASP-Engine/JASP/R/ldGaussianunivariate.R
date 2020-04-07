@@ -97,9 +97,9 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
     options$sd <- sqrt(options$varValue)
   } else if(options$parametrization == "sigma"){
     options$sd <- options$varValue
-  } else if(options$parametrization == "tau2"){
-    options$sd <- sqrt(1/options$varValue)
   } else if(options$parametrization == "tau"){
+    options$sd <- sqrt(1/options$varValue)
+  } else if(options$parametrization == "kappa"){
     options$sd <- 1/options$varValue
   }
   
@@ -131,7 +131,7 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
   options$lowerBound <- c(-Inf, 0)
   options$upperBound <- c(Inf, Inf)
   
-  options$transformations <- c(mu = "mean", sigma2 = "sd^2", sigma = "sd", tau2 = "1/sd^2", tau = "1/sd")
+  options$transformations <- c(mu = "mean", sigma2 = "sd^2", sigma = "sd", tau = "1/sd^2", kappa = "1/sd")
   
   options
 }
@@ -144,8 +144,8 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
     pars[[2]] <- switch(options[['parametrization']],
                         sigma2 = gettextf("variance: %s",                 "&sigma;<sup>2</sup> \u2208 \u211D<sup>+</sup>"),
                         sigma  = gettextf("standard deviation: %s",       "&sigma; \u2208 \u211D<sup>+</sup>"),
-                        tau2   = gettextf("precision: %s",                "&tau;<sup>2</sup> \u2208 \u211D<sup>+</sup>"),
-                        tau    = gettextf("square root of precision: %s", "&tau; \u2208 \u211D<sup>+</sup>"))
+                        tau    = gettextf("precision: %s",                "&tau; \u2208 \u211D<sup>+</sup>"),
+                        kappa  = gettextf("square root of precision: %s", "&kappa; \u2208 \u211D<sup>+</sup>"))
     
     support <- "x \u2208 \u211D"
     
@@ -154,7 +154,8 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
     moments$variance <- switch(options[['parametrization']],
                                sigma2 = "&sigma;<sup>2</sup>",
                                sigma  = "&sigma;<sup>2</sup>",
-                                        "1/&tau;<sup>2</sup>")
+                               tau    = "1/&tau;",
+                               kappa  = "1/&kappa;<sup>2</sup>")
 
     jaspResults[['parsSupportMoments']] <- .ldParsSupportMoments(pars, support, moments)
   }
@@ -243,7 +244,7 @@ exp[-(x-<span style='color:red'>&mu;</span>)&sup2; &frasl; 2<span style='color:b
 
   par1 <- c(mu = "\u03BC")
   par2 <- c(sigma2 = "\u03C3\u00B2", sigma = "\u03C3", 
-            tau2   = "\u03C4\u00B2", tau   = "\u03C4")[options$parametrization]
+            tau    = "\u03C4",       kappa   = "\u03BA")[options$parametrization]
   res <- results$structured
   res <- res[res$par %in% names(c(par1, par2)),]
   res$parName <- c(par1, par2)

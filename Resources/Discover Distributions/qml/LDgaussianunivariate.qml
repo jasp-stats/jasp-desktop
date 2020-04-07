@@ -40,8 +40,8 @@ Form
 				values: [
 					{ label: "μ, σ²", value: "sigma2"},
 					{ label: "μ, σ",  value: "sigma" },
-					{ label: "μ, τ²", value: "tau2"  },
-					{ label: "μ, τ",  value: "tau"   }
+					{ label: "μ, τ",  value: "tau"   },
+					{ label: "μ, κ",  value: "kappa" }
 				]
 			}
 
@@ -53,7 +53,7 @@ Form
 				{
 					name: "varValue"
 					id:    varValue
-					label: ["σ²", "σ ", "τ²", "τ "][parametrization.currentIndex]
+					label: ["σ²", "σ ", "τ", "κ "][parametrization.currentIndex]
 					negativeValues: false
 					defaultValue: 1
 				}
