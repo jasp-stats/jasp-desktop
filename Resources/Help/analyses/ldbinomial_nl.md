@@ -1,10 +1,10 @@
-Binomiaalverdeling
+Binomiale Verdeling
 ==========================
 
-Expositie van de binomiaalverdeling.
+Expositie van de binomiale verdeling. 
 
 ## Toon Verdeling
-Geeft de theoretische binominaalverdeling weer, met opgegeven parameterwaarden.
+Geeft de theoretische binominale verdeling weer, met opgegeven parameterwaarden.
 
 ### Vrije parameter
 - p: Kans op "succes". Deze parameter kan vrij worden geschat op basis van de gegevens.

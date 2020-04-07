@@ -19,7 +19,7 @@ LDnegbinomial <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsNegbinomial(options)
   
   #### Show negbinomial section ----
-  .ldIntroText(jaspResults, options, gettext("Negative binomial distribution"))
+  .ldIntroText(jaspResults, options, gettext("negative binomial distribution"))
   .ldNegbinomialParsSupportMoments(jaspResults, options)
   
   
