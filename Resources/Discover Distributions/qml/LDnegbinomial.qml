@@ -38,7 +38,7 @@ Form
 				indexDefaultValue: 0
 				label: qsTr("Parameter")
 				values: [
-					{ label: "φ, p",  value: "prob"},
+					{ label: "k, p",  value: "prob"},
 					{ label: "φ, μ",  value: "mean" }
 				]
 				visible: true
@@ -47,7 +47,11 @@ Form
 			Group
 			{
 				columns: 1
-				DoubleField{ name: "size"; label: qsTr("φ"); id: size; defaultValue: 1; negativeValues: false }
+				DoubleField
+				{
+					name: "size"; label: ["k", "φ"][parametrization.currentIndex]; id: size;
+					defaultValue: 1; negativeValues: false
+				}
 				DoubleField
 				{
 					name:  "par"; label: ["p", "μ"][parametrization.currentIndex]; id: par
@@ -117,7 +121,7 @@ Form
 	LD.LDGenerateDisplayData
 	{
 		distributionName		: "NBinomial"
-		formula					: "φ = " + size.value + [",p = ", ",μ = "][parametrization.currentIndex] + par.value
+		formula					: ["k = ", "φ = "][parametrization.currentIndex] + size.value + [",p = ", ",μ = "][parametrization.currentIndex] + par.value
 		histogramIsBarPlot		: true
 		allowOnlyScaleColumns	: false
 		suggestScaleColumns		: true

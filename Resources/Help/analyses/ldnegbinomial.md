@@ -9,7 +9,7 @@ Displays theoretical Negative binomial distribution, given specified parameter v
 
 ### Parameters
 
-- &phi;, p: The negative binomial distribution is parametrized with the number of successes and chance of success parameters.
+- k, p: The negative binomial distribution is parametrized with the number of successes and chance of success parameters.
 - &phi;, &mu;: The negative binomial distribution is parametrized using the dispersion and mean parameters.
 
 ### Display
