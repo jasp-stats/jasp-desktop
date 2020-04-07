@@ -10776,7 +10776,7 @@ msgstr "Toetsingsinformatie"
 
 msgctxt "PrefsUI|"
 msgid "Use Native File Dialogs"
-msgstr "Gebruik oorspronkelijke bestandsdialoogvensters"
+msgstr "Gebruik systeembestandsdialoogvensters"
 
 msgctxt "PrefsUI|"
 msgid ""
