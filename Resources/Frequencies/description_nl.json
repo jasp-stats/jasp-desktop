@@ -47,7 +47,7 @@
 			"function":	"BinomialTestBayesian"
 		},
 		{
-			"title":	"Bayesiaanse A/B Toets (Beta)",
+			"title":	"Bayesiaanse A/B Toets",
 			"function": "ABTestBayesian"
 		},
 		{
