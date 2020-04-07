@@ -123,7 +123,7 @@ LDpoisson <- function(jaspResults, dataset, options, state=NULL){
     pars <- list()
     pars[[1]] <- gettextf("rate: %s", "\u03BB \u2208 \u211D: \u03BB \u003E 0")
     
-    support <- "x \u2208 \u2124: x \u2265 0"
+    support <- "x \u2208 {0, 1, 2, ...}"
     
     moments <- list()
     moments$expectation <- "\u03BB"

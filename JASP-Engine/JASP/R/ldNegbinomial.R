@@ -133,7 +133,7 @@ LDnegbinomial <- function(jaspResults, dataset, options, state=NULL){
                         prob = gettextf("probability of success: %s", "p \u2208 \u211D: 0 \u2264 p \u2264 1"),
                                gettextf("mean: %s",                   "\u03BC \u2208 \u211D: \u03BC \u2265 0"))
     
-    support <- "x \u2208 \u2124: x \u2265 0"
+    support <- "x \u2208 {0, 1, 2, ...}"
     
     moments <- list()
     moments$expectation <- switch(options[['parametrization']],
