@@ -3805,7 +3805,7 @@ msgstr ""
 msgid "non-centrality: %s"
 msgstr ""
 
-msgid "Exponential distribution"
+msgid "exponential distribution"
 msgstr ""
 
 msgid "scale: %s"
@@ -3826,7 +3826,7 @@ msgstr ""
 msgid "inverse gamma distribution"
 msgstr ""
 
-msgid "Normal distribution"
+msgid "normal distribution"
 msgstr ""
 
 msgid "mean: &mu; %s"
@@ -3847,7 +3847,7 @@ msgstr ""
 msgid "&mu;"
 msgstr ""
 
-msgid "Negative binomial distribution"
+msgid "negative binomial distribution"
 msgstr ""
 
 msgid "number of successes: %s"

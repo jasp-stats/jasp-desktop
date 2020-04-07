@@ -1,14 +1,14 @@
-Negatief Binomiaalverdeling
+Negatief-Binomiale Verdeling
 ==========================
 
-Expositie van de negatief binomiaalverdeling.
+Expositie van de negatief-binomiale verdeling.
 
 ## Toon verdeling
-Geeft de theoretische negatief binominaal verdeling weer, met opgegeven parameterwaarden.
+Geeft de theoretische negatief-binominale verdeling weer, met opgegeven parameterwaarden.
 
 ### Parameters
-- &phi;, p: De negatief binominaalverdeling geparametriseerd op basis van het aantal successen en de kans op een success parameters.
-- &phi;, &mu;: De negatief binominaalverdeling geparametriseerd met behulp van de spreiding en gemiddelde parameters.
+- &phi;, p: De negatief-binominale verdeling geparametriseerd op basis van het aantal successen en de kans op een success parameters.
+- &phi;, &mu;: De negatief-binominale verdeling geparametriseerd met behulp van de spreiding en gemiddelde parameters.
 
 ### Weergeven
 - Toelichtende tekst: Toont toelichtende tekst.

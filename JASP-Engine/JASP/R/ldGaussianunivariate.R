@@ -19,7 +19,7 @@ LDgaussianunivariate <- function(jaspResults, dataset, options, state=NULL){
   options <- .recodeOptionsLDGaussianUnivariate(options)
   
   #### Show distribution section ----
-  .ldIntroText(jaspResults, options, gettext("Normal distribution"))
+  .ldIntroText(jaspResults, options, gettext("normal distribution"))
   .ldGaussianParsSupportMoments(jaspResults, options)
    
   
