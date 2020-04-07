@@ -5062,7 +5062,7 @@ msgid "Bernoulli distribution"
 msgstr "Bernoulli verdeling"
 
 msgid "Probability Mass Function"
-msgstr "kansmassafunctie"
+msgstr "Kansmassafunctie"
 
 msgid "Cumulative Distribution Function"
 msgstr "Cumulatieve Verdelingsfunctie"
