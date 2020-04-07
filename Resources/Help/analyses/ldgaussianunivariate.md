@@ -11,8 +11,8 @@ Displays theoretical Normal distribution, given specified parameter values.
 
 - &mu;, &sigma;<sup>2</sup>: The Normal distribution is specified using the mean and variance parameters
 - &mu;, &sigma;: The Normal distribution is specified using the mean and standard deviation parameters
-- &mu;, &tau;<sup>2</sup>: The Normal distribution is specified using the mean and precision parameters
-- &mu;, &tau;: The Normal distribution is specified using the mean and square root of precision parameters
+- &mu;, &tau;: The Normal distribution is specified using the mean and precision parameters
+- &mu;, &kappa;: The Normal distribution is specified using the mean and square root of precision parameters
 
 ### Display
 
@@ -63,6 +63,6 @@ Displays theoretical Normal distribution, given specified parameter values.
 
 ### Statistics
 - Kolmogorov-Smirnov: Displays the Kolmogorov-Smirnov test
-- Cramer von Misses: Displays the Cramer von Misses test
+- Cramér-von Mises: Displays the Cramér-von Mises test
 - Anderson-Darling: Displays the Anderson-Darling test
 - Shapiro-Wilk: Displays the Shapiro-Wilk test of normality

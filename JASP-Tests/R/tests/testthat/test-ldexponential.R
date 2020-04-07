@@ -79,7 +79,7 @@ test_that("Fit Statistics table results match", {
   table <- results[["results"]][["mleContainer"]][["collection"]][["mleContainer_mleFitAssessment"]][["collection"]][["mleContainer_mleFitAssessment_fitStatisticsTable"]][["data"]]
   expect_equal_tables(table,
                       list(0.941155629499551, 0.0530359940877157, "Kolmogorov-Smirnov", 0.984237027649063,
-                           0.0274382299574707, "Cramer von Misses", 0.993519259440937,
+                           0.0274382299574707, "Cram<unicode>r-von Mises", 0.993519259440937,
                            0.187251291060505, "Anderson-Darling"))
 })
 

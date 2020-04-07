@@ -127,20 +127,20 @@ LDnegbinomial <- function(jaspResults, dataset, options, state=NULL){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
     pars[[1]] <- switch(options[['parametrization']],
-                        prob = gettextf("number of successes: %s", "\u03D5 \u2208 \u211D: \u03D5 \u2265 0"),
+                        prob = gettextf("number of successes: %s", "k \u2208 \u211D: \u03D5 \u2265 0"),
                                gettextf("dispersion: %s",          "\u03D5 \u2208 \u211D: \u03D5 \u2265 0"))
     pars[[2]] <- switch(options[['parametrization']],
                         prob = gettextf("probability of success: %s", "p \u2208 \u211D: 0 \u2264 p \u2264 1"),
                                gettextf("mean: %s",                   "\u03BC \u2208 \u211D: \u03BC \u2265 0"))
     
-    support <- "x \u2208 \u2124: x \u2265 0"
+    support <- "x \u2208 {0, 1, 2, ...}"
     
     moments <- list()
     moments$expectation <- switch(options[['parametrization']],
-                                  prob = "p\u03D5/(1-p)",
+                                  prob = "pk/(1-p)",
                                          "\u03BC")
     moments$variance <- switch(options[['parametrization']],
-                               prob = "p\u03D5/(1-p)<sup>2</sup>",
+                               prob = "pk/(1-p)<sup>2</sup>",
                                       "\u03BC + \u03BC<sup>2</sup>/\u03D5")
     
     jaspResults[['parsSupportMoments']] <- .ldParsSupportMoments(pars, support, moments)
@@ -196,10 +196,11 @@ LDnegbinomial <- function(jaspResults, dataset, options, state=NULL){
   if(is.null(table)) return()
   
   res <- results$structured
-  res$parName <- c("\u03D5", "p", "\u03BC")
   if(options$parametrization == "prob"){
+    res$parName <- c("k", "p", "\u03BC")
     res <- res[res$par != "mu",,drop=FALSE]
   } else{
+    res$parName <- c("\u03D5", "p", "\u03BC")
     res <- res[res$par != "prob",,drop=FALSE]
   }
   

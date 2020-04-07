@@ -7,7 +7,7 @@ Expositie van de negatief-binomiale verdeling.
 Geeft de theoretische negatief-binominale verdeling weer, met opgegeven parameterwaarden.
 
 ### Parameters
-- &phi;, p: De negatief-binominale verdeling geparametriseerd op basis van het aantal successen en de kans op een success parameters.
+- k, p: De negatief-binominale verdeling geparametriseerd op basis van het aantal successen en de kans op een success parameters.
 - &phi;, &mu;: De negatief-binominale verdeling geparametriseerd met behulp van de spreiding en gemiddelde parameters.
 
 ### Weergeven

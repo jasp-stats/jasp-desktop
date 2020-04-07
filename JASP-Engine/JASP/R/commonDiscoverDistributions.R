@@ -466,7 +466,7 @@
   allTests <- c("kolmogorovSmirnov", "cramerVonMisses", "andersonDarling", "shapiroWilk", "chiSquare")
   tests <- allTests[allTests %in% names(options)]
   testNames <- c(gettext("Kolmogorov-Smirnov"),
-                 gettext("Cramer von Misses"),
+                 gettext("Cramér-von Mises"),
                  gettext("Anderson-Darling"),
                  gettext("Shapiro-Wilk"),
                  gettext("Chi-square"))[allTests %in% names(options)]

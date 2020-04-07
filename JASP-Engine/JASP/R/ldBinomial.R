@@ -125,7 +125,7 @@ LDbinomial <- function(jaspResults, dataset, options, state=NULL){
     pars[[1]] <- gettextf("probability of success: %s", "p \u2208 \u211D: 0 \u2264 p \u2264 1")
     pars[[2]] <- gettextf("number of trials: %s",       "n \u2208 \u2124: n \u2265 0")
     
-    support <- "x \u2208 \u2124: 0 \u2264 x \u2264 n"
+    support <- "x \u2208 {0, 1, ..., n}"
     
     moments <- list()
     moments$expectation <- "np"

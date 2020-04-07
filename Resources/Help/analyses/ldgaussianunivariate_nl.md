@@ -9,8 +9,8 @@ Geeft de theoretische normale verdeling weer, met opgegeven parameterwaarden.
 ### Parameters
 - &mu;, &sigma;<sup> 2 </sup>: De normale verdeling geparametriseerd met behulp van de parameters voor de gemiddelde en variantie.
 - &mu;, &sigma;: De normale verdeling geparametriseerd met behulp van de gemiddelde en standaarddeviatieparameters.
-- &mu;, &tau;<<sup> 2 </sup>: De normale verdeling geparametriseerd met behulp van de gemiddelde en precisieparameters.
-- &mu;, &tau;: De normale verdeling geparametriseerd met behulp van de gemiddelde en vierkantswortel van de precisieparameters.
+- &mu;, &tau;: De normale verdeling geparametriseerd met behulp van de gemiddelde en precisieparameters.
+- &mu;, &kappa;: De normale verdeling geparametriseerd met behulp van de gemiddelde en vierkantswortel van de precisieparameters.
 
 ### Weergeven
 - Toelichtende tekst: Toont toelichtende tekst.
@@ -58,6 +58,6 @@ Geeft de theoretische normale verdeling weer, met opgegeven parameterwaarden.
 
 ### Statistieken
 - Kolmogorov-Smirnov: Geeft de pasmaat en p-waarde van de Kolmogorov-Smirnov toets weer.
-- Cramér-von Mises: Geeft de pasmaat en p-waarde van de Cramer-von Misses toets weer.
+- Cramér-von Mises: Geeft de pasmaat en p-waarde van de Cramér-von Mises toets weer.
 - Anderson-Darling: Geeft de pasmaat en p-waarde van de Anderson-Darling toets weer.
 - Shapiro-Wilk: Geeft de pasmaat en p-waarde van de Shapiro-Wilk toets voor normaliteit weer.
