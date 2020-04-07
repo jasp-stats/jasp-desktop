@@ -290,8 +290,9 @@ cp .libs/libreadstat.a /path/to/your/jasp/build/folder
 #### Ubuntu (and alike)
 To build JASP under Ubuntu (17.10+), debian, and derivatives, you will need:
 ```
-sudo apt-get install libboost-dev r-base-core r-cran-rcpp r-cran-rinside libqt5widgets5 qtwebengine5-dev libqt5webchannel5-dev libqt5svg5-dev qt5-qmake libarchive-dev libboost-filesystem-dev libboost-system-dev libjsoncpp-dev qt5-default qtcreator
+sudo apt-get install libboost-dev r-base-core r-cran-rcpp r-cran-rinside libqt5widgets5 qtwebengine5-dev libqt5webchannel5-dev libqt5svg5-dev qt5-qmake libarchive-dev libboost-filesystem-dev libboost-system-dev libjsoncpp-dev qt5-default qtcreator qml-module-qtquick-controls2 qtquickcontrols2-5-dev qml-module-qtwebengine qml-module-qtwebchannel qml-module-qt-labs-folderlistmodel
 ```
+> We used R 3.6.1 for 0.11.1 and 0.12. Although other versions of R probably work as well.
 
 Then you start qtcreator and open JASP.pro, run qmake and build all. After that you should be able to run JASP.
 
@@ -302,6 +303,7 @@ Under Fedora, you need these packages:
  - qt5-qtwebchannel-devel (probably)
  - boost-devel
  - libarchive-devel
+You will also need to install packages for the QML code, not sure what they are but probably something like: qt5-qtquickcontrols2 qml-module-qtwebengine qml-module-qtwebchannel qml-module-qt-labs-folderlistmodel
 
 And (under fedora only), in R (started as root so packages are installed systemwide), you need to install:
 
@@ -314,6 +316,8 @@ Finally, under Fedora only, you might need to create a symlink so that R is foun
 ```
 sudo ln -s /usr/lib64/R/ /usr/lib/R
 ```
+
+If you get stuck compiling or wherever in the process, we would be glad to help at https://github.com/jasp-stats/jasp-issues/issues
 
 ### Runtime
 #### Ubuntu (and alike)
