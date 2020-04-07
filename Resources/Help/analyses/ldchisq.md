@@ -57,5 +57,5 @@ Displays theoretical chi-squared distribution, given specified parameter values.
 
 ### Statistics
 - Kolmogorov-Smirnov: Displays the Kolmogorov-Smirnov test
-- Cramer von Misses: Displays the Cramer von Misses test
+- Cramér-von Mises: Displays the Cramér-von Mises test
 - Anderson-Darling: Displays the Anderson-Darling test

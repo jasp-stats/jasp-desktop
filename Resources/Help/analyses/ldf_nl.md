@@ -57,5 +57,5 @@ Geeft de theoretische F-verdeling weer, met opgegeven parameterwaarden.
 
 ### Statistieken
 - Kolmogorov-Smirnov: Geeft de pasmaat en p-waarde van de Kolmogorov-Smirnov toets weer.
-- Cramér-von Mises: Geeft de pasmaat en p-waarde van de Cramer-von Misses toets weer.
+- Cramér-von Mises: Geeft de pasmaat en p-waarde van de Cramér-von Mises toets weer.
 - Anderson-Darling: Geeft de pasmaat en p-waarde van de Anderson-Darling toets weer.
