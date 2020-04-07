@@ -286,7 +286,5 @@ void RibbonButton::reloadMenuFromDescriptionJson()
 
 QString RibbonButton::getJsonDescriptionFilename()
 {
-	LanguageInfo li = LanguageModel::CurrentLanguageInfo();
-
-	return "description" + (li.language  == QLocale::English ? "" : ("_" + li.localName)) + ".json";
+	return "description" + LanguageModel::currentTranslationSuffix() + ".json";
 }

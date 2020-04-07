@@ -13,12 +13,8 @@
 struct LanguageInfo {
 
 
-	LanguageInfo() {}
-
-	LanguageInfo(QLocale::Language language, QString languageName, QString nativeLanguageName, QString localName, QString qmFilename, QString qmFolder)
-		: language(language), languageName(languageName), nativeLanguageName(nativeLanguageName), localName(localName), qmFolder(qmFolder), qmFilenames({qmFilename})
-	{
-	}
+	LanguageInfo();
+	LanguageInfo(QLocale::Language language, QString languageName, QString nativeLanguageName, QString localName, QString qmFilename, QString qmFolder);
 
 
 	QLocale::Language	language			= QLocale::English; //e.g. QLocale::English
@@ -27,6 +23,8 @@ struct LanguageInfo {
 						localName			= "",
 						qmFolder			= "";	//e.g. en_US
 	QVector<QString>	qmFilenames;				//e.g. jasp_en.qm
+
+	QString toString();
 };
 
 class LanguageModel : public QAbstractListModel
@@ -48,7 +46,7 @@ public:
 
 	explicit LanguageModel(QString qsources, QApplication *app = nullptr, QQmlApplicationEngine *qml = nullptr, QObject *parent = nullptr) ;
 
-	int						rowCount(const QModelIndex &parent = QModelIndex())			const override;
+	int						rowCount(const QModelIndex &parent = QModelIndex())			const override { return _languages.size(); }
 	int						columnCount(const QModelIndex & = QModelIndex())			const override { return 1; }
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 
@@ -57,7 +55,8 @@ public:
 	int		currentIndex()			const { return _currentIndex; }
 	QString currentLanguageCode()	const { return getLocalName(_languages[currentIndex()]); } //Here we use currentIndex instead of CurrentLanguageInfo? Why not everywhere else?
 
-	static const LanguageInfo & CurrentLanguageInfo() { return _singleton->_currentLanguageInfo; } //A function so that we know for sure noone can edit it outside this class, OO-style. Sort of. Better would be to use _currentIndex and the list directly.
+	//This function (currentTranslationSuffix) should be made obsolete through the abolishment of all the _nl etc files:
+	static			QString			currentTranslationSuffix()	{ return currentLanguageInfo().language  == QLocale::English ? "" : ("_" + currentLanguageInfo().localName); }
 
 	void setApplicationEngine(QQmlApplicationEngine	 * ae) { _qml = ae; }
 	void initialize();
@@ -74,26 +73,25 @@ signals:
 	void languageChanged();
 
 private:
+	static const	LanguageInfo &	currentLanguageInfo()		{ return _singleton->_currentLanguageInfo; }
 
-	void findQmFiles(QString qmlocation);
-	void loadQmFilesForLanguage(QLocale::Language cl);
-	void loadQmFile(QString filename);
-	void removeTranslators();
+	void		findQmFiles(QString qmlocation);
+	void		loadQmFilesForLanguage(QLocale::Language cl);
+	void		loadQmFile(QString filename);
+	void		removeTranslators();
 
-	QString getLocalName(QLocale::Language cl) const;
-	QString getNativeLanguaName(QLocale::Language cl) const;
+	QString		getLocalName(QLocale::Language cl) const;
+	QString		getNativeLanguaName(QLocale::Language cl) const;
+	QString		getLocalNameFromQmFileName(QString filename) const;
 
-	QLocale::Language getLanguageKeyFromName(QString lname) const;
-	QString  getLocalNameFromQmFileName(QString filename) const;
-	bool isValidLocalName(QString filename, QLocale::Language & lang);
-	bool isValidLocalName(QString filename, QLocale & loc);
-	bool isJaspSupportedLanguage(QLocale::Language lang);
+	bool		isValidLocalName(QString filename, QLocale::Language & lang);
+	bool		isValidLocalName(QString filename, QLocale & loc);
+	bool		isJaspSupportedLanguage(QLocale::Language lang) { return _languages.count(lang) > 0;}
 
 	static LanguageModel	* _singleton;
 	QApplication			* _mApp			= nullptr;
-	QTranslator				* _mTransLator	= nullptr;
+	QTranslator				* _mTranslator	= nullptr;
 	QQmlApplicationEngine	* _qml			= nullptr;
-	QObject					* _parent		= nullptr;
 
 	LanguageInfo							_currentLanguageInfo; //I am quite unhappy with the fact that we store this info twice, is there a scenario where they need to be different or are in fact allowed to be? Why does it need to be inside this (previously static, publicyly accessible) copy of the info and *also* store the _currentIndex in a list... But I won't change it now as we are about to release.
 	QMap<QLocale::Language, LanguageInfo>	_languagesInfo;

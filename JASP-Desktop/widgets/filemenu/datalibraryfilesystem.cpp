@@ -184,30 +184,19 @@ void DataLibraryFileSystem::loadFilesAndFolders(const QString &docpath)
 
 QJsonDocument *DataLibraryFileSystem::getJsonDocument()
 {
-
-	QString filename = "index";
-
-  LanguageInfo li = LanguageModel::CurrentLanguageInfo();
-
-	//Leave help filenames from JASP native language - English - with localname en_US unchanged
-	QString translation_suffix = li.language  == QLocale::English ? "" : ("_" + li.localName);
-
-	filename += translation_suffix;
-
-	QString fn = AppDirs::examples() + QDir::separator() + filename + ".json";
-	QFile index(fn);
+	QFile index(AppDirs::examples() + QDir::separator() + "index" + LanguageModel::currentTranslationSuffix() + ".json");
 
 	if ( ! index.exists())
 	{
 		Log::log()  << "BackStageForm::loadExamples();  index not found" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	index.open(QFile::ReadOnly);
 	if ( ! index.isOpen())
 	{
 		Log::log()  << "BackStageForm::loadExamples();  index could not be opened" << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	QByteArray bytes = index.readAll();
@@ -217,7 +206,7 @@ QJsonDocument *DataLibraryFileSystem::getJsonDocument()
 	if (error.error != QJsonParseError::NoError)
 	{
 		Log::log()  << "BackStageForm::loadExamples();  JSON parse error : " << error.errorString().toStdString()  << std::endl;
-		return NULL;
+		return nullptr;
 	}
 
 	QJsonDocument *d = new QJsonDocument;
