@@ -225,23 +225,26 @@ bool Column::_resetEmptyValuesForScale(std::map<int, string> &emptyValuesMap)
 	return hasChanged;
 }
 
+//This function is pretty hard to read...
 bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesMap, bool tryToConvert)
 {
-	bool hasChanged = false;
-	int row = 0;
-	bool hasEmptyValues = !emptyValuesMap.empty();
-	Ints::iterator ints = AsInts.begin();
-	Ints::iterator end = AsInts.end();
-	vector<string> values;
-	vector<int> intValues;
-	vector<double> doubleValues;
-	set<int> uniqueIntValues;
-	map<int, string> intLabels;
-	bool canBeConvertedToIntegers = tryToConvert, canBeConvertedToDoubles = tryToConvert;
+	bool				hasChanged		= false;
+	int					row				= 0;
+	bool				hasEmptyValues	= !emptyValuesMap.empty();
+	Ints::iterator		ints			= AsInts.begin();
+	Ints::iterator		end				= AsInts.end();
+	vector<string>		values;
+	vector<int>			intValues;
+	vector<double>		doubleValues;
+	set<int>			uniqueIntValues;
+	map<int, string>	intLabels;
+	bool				canBeConvertedToIntegers	= tryToConvert,
+						canBeConvertedToDoubles		= tryToConvert;
 
 	for (; ints != end; ints++)
 	{
 		int key = *ints;
+
 		if (key == INT_MIN && hasEmptyValues)
 		{
 			auto search = emptyValuesMap.find(row);
@@ -249,23 +252,25 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 			{
 				string orgValue = search->second;
 				values.push_back(orgValue);
+
 				if (!Utils::isEmptyValue(orgValue))
 					hasChanged = true;
+
 				if (canBeConvertedToIntegers || canBeConvertedToDoubles)
 				{
 					if (Utils::isEmptyValue(orgValue))
 					{
-						if (canBeConvertedToIntegers)
-							intValues.push_back(INT_MIN);
-						else
-							doubleValues.push_back(NAN);
+						if (canBeConvertedToIntegers)	intValues.push_back(INT_MIN);
+						else							doubleValues.push_back(NAN);
 					}
 					else
 					{
 						bool convertToDouble = false;
+
 						if (canBeConvertedToIntegers)
 						{
 							int intValue;
+
 							if (Utils::getIntValue(orgValue, intValue))
 							{
 								intValues.push_back(intValue);
@@ -304,27 +309,26 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 					}
 				}
 			}
-			else
+			else //if we couldnt find the "row" in the emptyValuesMap?
 			{
 				values.push_back(Utils::emptyValue);
-				if (canBeConvertedToIntegers)
-					intValues.push_back(INT_MIN);
-				else if (canBeConvertedToDoubles)
-					doubleValues.push_back(NAN);
+
+				if (canBeConvertedToIntegers)		intValues.push_back(INT_MIN);
+				else if (canBeConvertedToDoubles)	doubleValues.push_back(NAN);
 			}
 		}
 		else if (key == INT_MIN)
 		{
 			values.push_back(Utils::emptyValue);
-			if (canBeConvertedToIntegers)
-				intValues.push_back(INT_MIN);
-			else if (canBeConvertedToDoubles)
-				doubleValues.push_back(NAN);
+
+			if (canBeConvertedToIntegers)		intValues.push_back(INT_MIN);
+			else if (canBeConvertedToDoubles)	doubleValues.push_back(NAN);
 		}
 		else
 		{
 			string orgValue = _labels.getValueFromKey(key);
 			values.push_back(orgValue);
+
 			if (Utils::isEmptyValue(orgValue))
 			{
 				hasChanged = true;
@@ -362,22 +366,47 @@ bool Column::_resetEmptyValuesForNominalText(std::map<int, string> &emptyValuesM
 					}
 				}
 				else if (canBeConvertedToDoubles)
-				{
 					convertToDouble = true;
-				}
 
 				if (convertToDouble)
 				{
 					double doubleValue;
-					if (Utils::getDoubleValue(orgValue, doubleValue))
-						doubleValues.push_back(doubleValue);
-					else
-						canBeConvertedToDoubles = false;
+					if (Utils::getDoubleValue(orgValue, doubleValue))	doubleValues.push_back(doubleValue);
+					else												canBeConvertedToDoubles = false;
 				}
 			}
 		}
 		row++;
 	}
+	// End of int for loop
+
+	//Ok, so now we have checked the "original values" for being convertible to doubles or ints, pretty awesome.
+	//But there are scenarios where the user added some nice labels to their doubles (SPSS can have labels on doubles) or ints and right now these would just be thrown away.
+	//Lets check if the labels are maybe not convertible to whatever datatype all orginal values *can* be.
+
+	if(canBeConvertedToIntegers)
+		for(const Label & label : _labels)
+		{
+			int ignoreMe;
+			if(!Utils::getIntValue(label.text(), ignoreMe))
+			{
+				canBeConvertedToIntegers = false;
+				break;
+			}
+		}
+
+	if(canBeConvertedToDoubles)
+		for(const Label & label : _labels)
+		{
+			double ignoreMe;
+			if(!Utils::getDoubleValue(label.text(), ignoreMe))
+			{
+				canBeConvertedToDoubles = false;
+				break;
+			}
+		}
+
+	//Now we haven't even checked if the labels are maybe different from the values stored in orginalString... So we might still be throwing info away
 
 	if (canBeConvertedToIntegers)
 	{

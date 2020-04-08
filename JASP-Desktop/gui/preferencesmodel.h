@@ -85,7 +85,6 @@ public:
 	bool		disableAnimations()			const;
 	bool		animationsOn()				const { return !disableAnimations() && !safeGraphics(); }
 
-	void		missingValuesToStdVector(std::vector<std::string> & out) const;
 	void		zoomIn();
 	void		zoomOut();
 	void		zoomReset();

@@ -348,18 +348,8 @@ void PreferencesModel::setThresholdScale(int newThresholdScale)
 
 void PreferencesModel::updateUtilsMissingValues()
 {
-	missingValuesToStdVector(Utils::_currentEmptyValues);
+	Utils::_currentEmptyValues = fq(missingValues());
 	Utils::processEmptyValues();
-}
-
-void PreferencesModel::missingValuesToStdVector(std::vector<std::string> & out)	const
-{
-	QStringList currentValues = missingValues();
-
-	out.resize(size_t(currentValues.size()));
-
-	for(size_t i=0; i<out.size(); i++)
-		out[i] = currentValues[int(i)].toStdString();
 }
 
 void PreferencesModel::setDefaultFont(QFont defaultFont)
