@@ -1,7 +1,7 @@
 Equivalence Paired Samples T-Test
 ==========================
 
-The equivalence paired samples t-test allows the user to test the null hypothesis that the effect size of the population mean of the difference between paired observations falls inside an interval (i.e., equivalence region). The procedure follows the two-one-sided test (TOST).
+The equivalence paired samples t-test allows the user to test the null hypothesis that the effect size of the population mean of the difference between paired observations falls inside an interval, i.e., equivalence region. The procedure follows the two-one-sided tests (TOST).
 
 ### Assumptions
 - The difference score is continuous.
@@ -32,7 +32,7 @@ The equivalence paired samples t-test allows the user to test the null hypothesi
 ### Output
 -------
 
-#### Equivalence Independent Samples T-Test
+#### Equivalence Paired Samples T-Test
 - The first column contains the two variables for which the difference is calculated.
 - Statistic: Only when both the upper bound and the lower bound statistic are rejected, we reject our initial non-equivalence hypothesis.
   - T-Test: The standard t-test statistic. Two-sided alternative hypothesis that the population mean of the difference is not equal to 0.
@@ -44,10 +44,10 @@ The equivalence paired samples t-test allows the user to test the null hypothesi
 
 #### Equivalence Bounds
 - The first column contains the two variables for which the difference is calculated.
-- The second column contains the information if the equivalence bounds are expressed in standardized mean differences (Cohen's d) or in raw units.
-- Low: low equivalence bound expressed in standardized mean difference for Cohen's d and in raw units for Raw
-- High: high equivalence bound equivalence bound expressed in standardized mean difference for Cohen's d and in raw units for Raw
-- 90% Confidence Interval for Mean difference/location parameter: The confidence interval for the mean difference/location parameter of the difference scores.
+- Statistic: The second column contains the information if the equivalence bounds are expressed in standardized mean differences (Cohen's d) or in raw units.
+- Low: Low equivalence bound expressed in standardized mean difference for Cohen's d and in raw units for Raw.
+- High: High equivalence bound equivalence bound expressed in standardized mean difference for Cohen's d and in raw units for Raw.
+- 100-(2*alpha)% Confidence Interval for Mean difference/location parameter: The confidence interval for the mean difference/location parameter of the difference scores.
   - Lower: The lower bound of the confidence interval.
   - Upper: The upper bound of the confidence interval.
 
@@ -60,7 +60,7 @@ The equivalence paired samples t-test allows the user to test the null hypothesi
 - SE: Standard error of the mean.
 
 #### Equivalence Bounds Plots
-Displays the sample mean difference and the 90% confidence interval. The grey area is the set equivalence region.
+Displays the sample mean difference and the 100-(2*alpha)% confidence interval. The grey area is the set equivalence region.
 
 ### References
 -------

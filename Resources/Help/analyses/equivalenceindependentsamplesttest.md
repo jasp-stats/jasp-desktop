@@ -1,7 +1,7 @@
 Equivalence Independent Samples T-Test
 ==========================
 
-The equivalence independent samples t-test allows the user to test the null hypothesis that the population means of two independent groups fall inside a by the user-defined interval, i.e., the equivalence region.  This procedure follows the two-one-sided test (TOST).
+The equivalence independent samples t-test allows the user to test the null hypothesis that the population means of two independent groups fall inside a by the user-defined interval, i.e., the equivalence region.  This procedure follows the two-one-sided tests (TOST).
 
 ### Assumptions
 - The dependent variable is continuous.
@@ -51,7 +51,7 @@ The equivalence independent samples t-test allows the user to test the null hypo
 
 #### Equivalence Bounds
 - The first column contains the dependent variable.
-- The second column contains the information if the equivalence bounds are expressed in standardized mean differences (Cohen's d) or in raw units.
+- Statistic: The second column contains the information if the equivalence bounds are expressed in standardized mean differences (Cohen's d) or in raw units.
 - Low: low equivalence bound expressed in standardized mean difference for Cohen's d and in raw units for Raw
 - High: high equivalence bound equivalence bound expressed in standardized mean difference for Cohen's d and in raw units for Raw
 - 100-(2*alpha)% Confidence Interval for Mean difference/location parameter: The condfidence interval for the mean difference/location parameter of the difference scores.
