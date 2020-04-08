@@ -39,7 +39,6 @@
   }
 
   for (variable in variables) {
-
     if (paired) {
       variable <- paste(variable[[1L]], variable[[2L]], sep = " - ")
     }
@@ -233,7 +232,6 @@
                                                  options  = options)
 
         # Calculate prior and posterior over the interval range
-
         # Equivalence bounds
         if (options$lowerbound == -Inf) {
           xx <- seq(min(xticks), max(options$upperbound), length.out = 1000)
@@ -305,7 +303,6 @@
         xlim <- vector("numeric", 2)
         xlim[1] <- min(-2, quantile(delta, probs = 0.01)[[1]])
         xlim[2] <- max(2, quantile(delta, probs = 0.99)[[1]])
-
         xticks <- pretty(xlim)
         ylim <- vector("numeric", 2)
         ylim[1] <- 0
@@ -720,7 +717,6 @@
 
       group1 <- subDataSet[[1L]]
       group2 <- subDataSet[[2L]]
-
       var <- variable
       variable <- title
     } else {
