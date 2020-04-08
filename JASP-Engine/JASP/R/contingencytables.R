@@ -62,8 +62,8 @@ ContingencyTables <- function(jaspResults, dataset, options, ...) {
 
 .crossTabCheckErrors <- function(dataset, options) {
   .hasErrors(dataset, 
-             type = c('negativeValues', 'infinity'), 
-             all.target = c(options$counts), 
+             type = c('negativeValues', 'infinity', 'missingValues'),
+             all.target = c(options$counts),
              exitAnalysisIfErrors = TRUE)
 }
 
