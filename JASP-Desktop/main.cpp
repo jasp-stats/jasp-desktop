@@ -110,8 +110,10 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 		}
 		else
 		{
-			const std::string remoteDebuggingPort = "--remote-debugging-port=",
-								qmlJsDebug = "-qmljsdebugger";
+			const std::string	remoteDebuggingPort = "--remote-debugging-port=",
+								qmlJsDebug			= "-qmljsdebugger",
+								dashing				= "--";
+
 			auto startsWith = [&](const std::string checkThis)
 			{
 				return args[arg].size() > checkThis.size() && args[arg].substr(0, checkThis.size()) == checkThis;
@@ -121,17 +123,25 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 				arg++; // because it is always followed by the actual platform one wants to use (minimal for example)
 			else if(!(startsWith(remoteDebuggingPort) || startsWith(qmlJsDebug))) //Just making sure it isnt something else that should be allowed.
 			{
-				//if it isn't anything else it must be a file to open right?
-				// Well yes, but it might also be the url of an OSF file, then we do not need to check if it exists.
-
-				QFileInfo openMe(QString::fromStdString(args[arg]));
-
-				if(startsWith("https:") || startsWith("http:") || openMe.exists())
-					filePath = args[arg];
+				if(startsWith(dashing))
+				{
+					//So, it looks like an option, but not one we recognize, maybe it is meant for qt/chromium
+					std::cout << "Argument '" << args[arg] << "' was not recognized by JASP, but it might be recognized by one of it's components in Qt (such as chromium), it will be passed on. If you really expected JASP to do something with it check '--help' again." << std::endl;
+				}
 				else
 				{
-					std::cerr << "File to open " << args[arg] << " does not exist!" << std::endl;
-					letsExplainSomeThings = true;
+					//if it isn't anything else it must be a file to open right?
+					// Well yes, but it might also be the url of an OSF file, then we do not need to check if it exists.
+
+					QFileInfo openMe(QString::fromStdString(args[arg]));
+
+					if(startsWith("https:") || startsWith("http:") || openMe.exists())
+						filePath = args[arg];
+					else
+					{
+						std::cerr << "File to open " << args[arg] << " does not exist!" << std::endl;
+						letsExplainSomeThings = true;
+					}
 				}
 			}
 		}
