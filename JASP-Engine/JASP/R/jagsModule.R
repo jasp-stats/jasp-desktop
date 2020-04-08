@@ -371,7 +371,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
     add <- list("function" = ".JAGSPlotDensity")
     if (is.null(plotContainer[["plotDensity"]])) {
       add[["container"]] <- createJaspContainer(title = gettext("Marginal Density"),  position = 1,
-                                                dependencies = c("plotDensity", "aggregateChains"))
+                                                dependencies = c("plotDensity", "aggregateChains", "showLegend"))
       plotContainer[["plotDensity"]] <- add[["container"]]
     } else {
       add[["container"]] <- plotContainer[["plotDensity"]]
