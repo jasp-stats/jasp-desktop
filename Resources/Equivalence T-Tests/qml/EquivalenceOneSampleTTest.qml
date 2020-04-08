@@ -19,7 +19,7 @@
 import QtQuick			2.12
 import JASP.Controls	1.0
 import JASP				1.0
-import QtQuick.Layouts  1.3 as L
+import QtQuick.Layouts  1.3
 
 Form
 {
@@ -51,21 +51,42 @@ Form
         title: qsTr("Equivalence Region")
         columns: 2
         alignTextFields: false
-        DoubleField { name: "lowerbound";	text: qsTr("Lower bound");		defaultValue: -0.5; negativeValues: true; max: upperbound.value; inclusive: JASP.None ; id: lowerbound }
-        DoubleField { name: "upperbound";	text: qsTr("Upper bound");      defaultValue: 0.5;  negativeValues: true; min: lowerbound.value; inclusive: JASP.None ;id: upperbound }
+
+        RadioButtonGroup
+        {
+           name: "equivalenceRegion"
+           GridLayout
+           {
+              columns: 3
+              rowSpacing: jaspTheme.rowGroupSpacing
+              columnSpacing: 0
+
+              RadioButton { value: "region"; checked: true; id: region }
+              DoubleField { name: "lowerbound"; label: qsTr("from")	; max: upperbound.value; defaultValue: -0.5; id: lowerbound; negativeValues: true; enabled: region.checked; inclusive: JASP.None}
+              DoubleField { name: "upperbound"; label: qsTr("to")	; min: lowerbound.value; defaultValue: 0.5;  id: upperbound; negativeValues: true; enabled: region.checked; Layout.leftMargin: jaspTheme.columnGroupSpacing; inclusive: JASP.None}
+
+              RadioButton { value: "lower"; id: lower }
+              Label		  { text: qsTr("from %1").arg(" -∞ "); enabled: lower.checked}
+              DoubleField { name: "lower_max"; label: qsTr("to"); id: lower_max; defaultValue: 0.5; negativeValues: true; enabled: lower.checked; Layout.leftMargin: jaspTheme.columnGroupSpacing; inclusive: JASP.None}
+
+              RadioButton { value: "upper"; id: upper }
+              DoubleField { name: "upper_min"; label: qsTr("from"); id: upper_min; defaultValue: -0.5; negativeValues: true; enabled: upper.checked}
+              Label		  { text: qsTr("to %1").arg(" ∞ "); Layout.leftMargin: jaspTheme.columnGroupSpacing; enabled: upper.checked}
+            }
+        }
 
         DropDown
         {
-            L.Layout.columnSpan: 2
+            Layout.columnSpan: 2
             name: "boundstype"
-			label: qsTr("Bounds specification in")
+            label: qsTr("Bounds specification in")
             indexDefaultValue: 1
-			values:
-			[
-				{ value: "cohensD", label: qsTr("Cohen's d")	},
-				{ value: "raw",     label: qsTr("Raw")			}
-			]
-		}
+            values:
+            [
+                { value: "cohensD", label: qsTr("Cohen's d")	},
+                { value: "raw",     label: qsTr("Raw")			}
+            ]
+        }
 
         DoubleField { name: "alpha";        text: qsTr("Alpha level");                  defaultValue: 0.05; max: 0.49; min: 0}
     }

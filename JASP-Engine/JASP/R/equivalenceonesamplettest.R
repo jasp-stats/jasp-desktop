@@ -27,6 +27,13 @@ EquivalenceOneSampleTTest <- function(jaspResults, dataset, options) {
   }
   
   # Compute the results
+  if(options[['equivalenceRegion']] == "lower"){
+    options$lowerbound <- -Inf
+    options$upperbound <- options$lower_max
+  } else if(options[['equivalenceRegion']] == "upper"){
+    options$lowerbound <- options$upper_min
+    options$upperbound <- Inf
+  }
   equivalenceOneTTestResults <- .equivalenceOneTTestComputeResults(jaspResults, dataset, options, ready, errors)
   
   # Output tables and plots
@@ -81,6 +88,20 @@ EquivalenceOneSampleTTest <- function(jaspResults, dataset, options) {
         results[[variable]][["errorFootnotes"]] <- errorMessage
         
       } else {
+        
+        dat <- na.omit(dataset[[ .v(variable) ]])
+        n   <- length(dat)
+        
+        confIntEffSize <- c(0,0)
+        ciEffSize <- 1 - 2 * options$alpha
+        alphaLevel <- 1 - (ciEffSize + 1) / 2
+        confIntEffSize <- .confidenceLimitsEffectSizes(ncp = tableResults$tost$asDF$`t[0]`, 
+                                                       df = tableResults$tost$asDF$`df[0]`, 
+                                                       alpha.lower = alphaLevel,
+                                                       alpha.upper = alphaLevel)[c(1, 3)]
+        confIntEffSize <- unlist(confIntEffSize) / sqrt(n)
+        confIntEffSize <- sort(confIntEffSize)
+        
         results[[variable]] <- list(
           ttestTvalue = tableResults$tost$asDF$`t[0]`, 
           ttestDf     = tableResults$tost$asDF$`df[0]`,
@@ -93,8 +114,8 @@ EquivalenceOneSampleTTest <- function(jaspResults, dataset, options) {
           lowerP      = tableResults$tost$asDF$`p[2]`, 
           lowCohen    = tableResults$eqb$asDF$`low[cohen]`,
           highCohen   = tableResults$eqb$asDF$`high[cohen]`,
-          cilCohen    = tableResults$eqb$asDF$`cil[cohen]`,
-          ciuCohen    = tableResults$eqb$asDF$`ciu[cohen]`,
+          cilCohen    = as.numeric(confIntEffSize[1]),
+          ciuCohen    = as.numeric(confIntEffSize[2]),
           lowRaw      = tableResults$eqb$asDF$`low[raw]`,
           highRaw     = tableResults$eqb$asDF$`high[raw]`,
           cilRaw      = tableResults$eqb$asDF$`cil[raw]`,
@@ -106,8 +127,8 @@ EquivalenceOneSampleTTest <- function(jaspResults, dataset, options) {
   
   # Save results to state
   jaspResults[["stateEquivalenceOneTTestResults"]] <- createJaspState(results)
-  jaspResults[["stateEquivalenceOneTTestResults"]]$dependOn(c("variables", "mu", "lowerbound", 
-                                                              "upperbound", "boundstype", "alpha", "missingValues")) 
+  jaspResults[["stateEquivalenceOneTTestResults"]]$dependOn(c("variables", "mu", "equivalenceRegion", "lower", "upper",
+                                                              "region", "lowerbound", "upperbound", "lower_max", "upper_min", "boundstype", "alpha", "missingValues")) 
   
   return(results)
 }
@@ -116,7 +137,8 @@ EquivalenceOneSampleTTest <- function(jaspResults, dataset, options) {
   
   # Create table
   equivalenceOneTTestTable <- createJaspTable(title = gettext("Equivalence One Sample T-Test"))
-  equivalenceOneTTestTable$dependOn(c("variables", "mu", "lowerbound", "upperbound", "boundstype", "alpha"))
+  equivalenceOneTTestTable$dependOn(c("variables", "mu", "equivalenceRegion", "lower", "upper",
+                                      "region", "lowerbound", "upperbound", "lower_max", "upper_min", "boundstype", "alpha"))
 
   # Add Columns to table
   equivalenceOneTTestTable$addColumnInfo(name = "variable",   title = " ",                   type = "string", combine = TRUE)
@@ -180,7 +202,8 @@ EquivalenceOneSampleTTest <- function(jaspResults, dataset, options) {
   
   # Create table
   equivalenceOneBoundsTable <- createJaspTable(title = gettext("Equivalence Bounds"))
-  equivalenceOneBoundsTable$dependOn(c("variables", "mu", "lowerbound", "upperbound", 
+  equivalenceOneBoundsTable$dependOn(c("variables", "mu", "equivalenceRegion", "lower", "upper",
+                                       "region", "lowerbound", "upperbound", "lower_max", "upper_min",
                                        "boundstype", "alpha", "missingValues"))
 
   # Add Columns to table
@@ -289,7 +312,8 @@ EquivalenceOneSampleTTest <- function(jaspResults, dataset, options) {
 .equivalenceOnePlot <- function(jaspResults, dataset, options, equivalenceOneTTestResults, ready) {
   
   equivalenceOneBoundsContainer <- createJaspContainer(title = gettext("Equivalence Bounds Plots"))
-  equivalenceOneBoundsContainer$dependOn(c("boundstype", "missingValues", "upperbound", "lowerbound", "equivalenceboundsplot"))
+  equivalenceOneBoundsContainer$dependOn(c("boundstype", "missingValues", "equivalenceRegion", "lower", "upper",
+                                           "region", "lowerbound", "upperbound", "lower_max", "upper_min", "equivalenceboundsplot"))
   jaspResults[["equivalenceOneBoundsContainer"]] <- equivalenceOneBoundsContainer
   
   if (!ready)
@@ -326,8 +350,7 @@ EquivalenceOneSampleTTest <- function(jaspResults, dataset, options) {
       plot <- plot + ggplot2::theme(axis.text.x  = ggplot2::element_blank(),
                                     axis.title.x = ggplot2::element_blank(),
                                     axis.ticks.x = ggplot2::element_blank(),
-                                    axis.line.x  = ggplot2::element_blank(),
-                                    axis.title.y = ggplot2::element_blank(),) + ggplot2::scale_x_discrete(limits = c("", "", "", "", "", "", ""))
+                                    axis.line.x  = ggplot2::element_blank(),) + ggplot2::scale_x_discrete(limits = c("", "", "", "", "", "", ""))
       
       equivalenceOneTTestPlot$plotObject <- plot
     }
