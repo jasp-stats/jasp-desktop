@@ -41,7 +41,7 @@ public:
 			, bool isDummy = false) : _parentModel(parent), _rowComponents(components), _rowOptions(rowOptions), _isDummy(isDummy) {}
 	virtual ~RowControls() {}
 
-	void										init(int row, const QString& key);
+	void										init(int row, const QString& key, bool isNew);
 	void										setContext(int row, const QString& key);
 	const QList<QVariant>&						getObjects()								const	{ return _rowObjects;			}
 	const QMap<QString, JASPControlWrapper*>&	getJASPControlsMap()						const	{ return _rowJASPWrapperMap;	}

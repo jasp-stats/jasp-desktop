@@ -231,9 +231,10 @@ void ListModel::setUpRowControls()
 		const QString& key = term.asQString();
 		if (!_rowControlsMap.contains(key))
 		{
+			bool hasOptions = _rowControlsOptions.contains(key);
 			RowControls* rowControls = new RowControls(this, _rowComponents, _rowControlsOptions[key]);
 			_rowControlsMap[key] = rowControls;
-			rowControls->init(row, key);
+			rowControls->init(row, key, !hasOptions);
 		}
 		else
 			_rowControlsMap[key]->setContext(row, key);
