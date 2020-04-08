@@ -3088,7 +3088,7 @@ msgstr "Waarde"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Audit Risk"
-msgstr "Audit Risicoo"
+msgstr "Audit Risico"
 
 msgctxt "auditBayesianPlanning|"
 msgid "Confidence"
@@ -6839,7 +6839,7 @@ msgstr "Methode"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Study Labels"
-msgstr "Onderzoek Labels"
+msgstr "Onderzoeklabels"
 
 msgctxt "ClassicalMetaAnalysis|"
 msgid "Covariates"
@@ -8056,7 +8056,7 @@ msgstr "Beschrijvende statistiek"
 
 msgctxt "RegressionLinear|"
 msgid "Part and partial correlations"
-msgstr "Deel en artiële correlaties"
+msgstr "Deel en partiële correlaties"
 
 msgctxt "RegressionLinear|"
 msgid "Collinearity diagnostics"
@@ -11103,7 +11103,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDbernoulli|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretische cdf"
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDbernoulli|"
 msgid "P-P plot"
@@ -11207,7 +11207,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDbeta|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretische cdf"
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDbeta|"
 msgid "P-P plot"
@@ -11363,7 +11363,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDbinomial|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretische cdf"
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDbinomial|"
 msgid "P-P plot"
@@ -11463,7 +11463,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDchisq|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretische cdf"
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDchisq|"
 msgid "P-P plot"
@@ -11575,7 +11575,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDexponential|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretische cdf"
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDexponential|"
 msgid "P-P plot"
@@ -11687,7 +11687,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDf|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretische cdf"
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDf|"
 msgid "P-P plot"
@@ -11799,7 +11799,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDgamma|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretische cdf"
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDgamma|"
 msgid "P-P plot"
@@ -11911,7 +11911,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDgammaInverse|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretische cdf"
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDgammaInverse|"
 msgid "P-P plot"
@@ -12027,7 +12027,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDgaussianunivariate|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretische cdf"
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDgaussianunivariate|"
 msgid "P-P plot"
@@ -12315,7 +12315,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDpoisson|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empiriche vs. theoretische cfd"
+msgstr "Empirische vs. theoretische cfd"
 
 msgctxt "LDpoisson|"
 msgid "P-P plot"
@@ -12407,7 +12407,7 @@ msgstr "Q-Q plot"
 
 msgctxt "LDt|"
 msgid "Empirical vs. theoretical cdf"
-msgstr "Empirisch vs. theoretische cdf"
+msgstr "Empirische vs. theoretische cdf"
 
 msgctxt "LDt|"
 msgid "P-P plot"
@@ -12703,7 +12703,7 @@ msgstr "95% Geloofwaardigheidsinterval"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Study Labels"
-msgstr "Onderzoek Labels"
+msgstr "Onderzoeklabels"
 
 msgctxt "BayesianMetaAnalysis|"
 msgid "Model"
@@ -15487,7 +15487,7 @@ msgstr "Animaties al uitgezet omdat de \"Veilige Grafische Mode\" aan staat"
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run the filter..."
-msgstr "De engine is gecrashed tijdens het pogen een filter te draaien..."
+msgstr "De engine is gecrashed tijdens het uitvoeren van het filter..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to compute this column..."

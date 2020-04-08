@@ -30,10 +30,10 @@ msgid "value and group should have the same length!"
 msgstr "waarde en groep moeten dezelfde lengte hebben!"
 
 msgid "scaleText should be positive!"
-msgstr "schaalTekst moet positief zijn!"
+msgstr "scaleText moet positief zijn!"
 
 msgid "linewidth should be positive!"
-msgstr "lijnbreedte moet positief zijn!"
+msgstr "linewidth moet positief zijn!"
 
 msgid "Not implemented"
 msgstr "Niet geïmplementeerd"

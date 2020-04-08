@@ -64,8 +64,7 @@ void EngineRepresentation::handleEngineCrash()
 	case engineState::analysis:
 		if(_analysisInProgress)
 		{
-			QString message = tr("The engine crashed while trying to run this analysis...");
-			_analysisInProgress->setErrorInResults(message.toStdString());
+			_analysisInProgress->setErrorInResults(fq(tr("The engine crashed while trying to run this analysis...")));
 			clearAnalysisInProgress();
 		}
 		break;
