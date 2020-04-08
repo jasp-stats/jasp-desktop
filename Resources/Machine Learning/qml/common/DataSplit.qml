@@ -66,7 +66,7 @@ Section
             ComputedColumnField 
             { 
                 name: 		"testIndicatorColumn"
-                text: 		"Column name: "
+				text: 		qsTr("Column name: ")
                 fieldWidth: 120
                 visible:    addIndicator.checked
             }

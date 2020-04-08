@@ -214,7 +214,7 @@ Form {
             ComputedColumnField { 
                 id: 		clusterColumn
                 name: 		"clusterColumn"
-                text: 		"Column name: "
+				text: 		qsTr("Column name: ")
                 fieldWidth: 120
                 visible:    addClusters.checked
             }

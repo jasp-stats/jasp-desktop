@@ -250,7 +250,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
     isNewGroup  <- i > 1
     anovaRes    <- .linregGetAnova(model[[i]]$fit, model[[i]]$predictors)
 
-    for (rowType in c("Regression", "Residual", "Total")) {
+    for (rowType in c(gettext("Regression"), gettext("Residual"), gettext("Total"))) {
       anovaTable$addRows(c(anovaRes[[rowType]], list(.isNewGroup = isNewGroup, model = model[[i]]$title, cases = rowType)))
       isNewGroup <- FALSE
     }

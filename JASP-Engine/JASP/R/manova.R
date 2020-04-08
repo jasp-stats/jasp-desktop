@@ -298,7 +298,7 @@ Manova <- function(jaspResults, dataset = NULL, options) {
   if (isTryError(tryResult)) {
     result <- NULL
     if (grepl(tryResult[[1]], pattern = "singular"))
-      errors <- "The design matrix is not invertible. This might be due to collinear dependent variables."
+      errors <- gettext("The design matrix is not invertible. This might be due to collinear dependent variables.")
     else
       errors <- .extractErrorMessage(tryResult)
   } else {

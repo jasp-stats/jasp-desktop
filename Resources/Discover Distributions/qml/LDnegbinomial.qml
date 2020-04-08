@@ -36,7 +36,7 @@ Form
 				name: "parametrization"
 				id:   parametrization
 				indexDefaultValue: 0
-				label: qsTr("Parameter")
+				label: qsTr("Parameters")
 				values: [
 					{ label: "k, p",  value: "prob"},
 					{ label: "φ, μ",  value: "mean" }

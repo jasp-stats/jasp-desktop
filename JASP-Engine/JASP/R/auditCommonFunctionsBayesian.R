@@ -1002,6 +1002,9 @@
                                  "binomial" = "beta", 
                                  "hypergeometric" = "beta-binomial")
 
+    y1 <- gettext("The expected errors (grey dot) receive the highest probability. The red dot represents the materiality.")
+    y2 <- gettext("The expected posterior has its upper confidence bound below materiality.")
+
     priorPlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> The prior probability distribution <b>(%2$s)</b> on the misstatement in the population. The prior parameters <i>%3$s = %4$s, %5$s = %6$s</i> are derived from the assessments of the inherent and control risk, along with the expected errors. %7$s %8$s",  
                                            jaspResults[["figNumber"]]$object,
                                            distribution,
@@ -1010,10 +1013,10 @@
                                            "\u03B2",
                                            planningState[["prior"]]$bPrior,
                                            ifelse(options[["priorPlotAdditionalInfo"]], 
-                                           yes = gettext("The expected errors (grey dot) receive the highest probability. The red dot represents the materiality."),
+                                           yes = y1,
                                            no = ""),
                                            ifelse(options[["priorPlotExpectedPosterior"]], 
-                                           yes = gettext("The expected posterior has its upper confidence bound below materiality."),
+                                           yes = y2,
                                            no = "")), "p")
 
     priorPlotText$position <- positionInContainer + 1
@@ -1542,13 +1545,13 @@
                                  "hypergeometric" = gettext("beta-binomial"),
                                  "coxsnell" = gettext("Cox and Snell"))
 
+   y1 <- gettext("The red dot represents the specified materiality. If the credible area under the distribution surpasses this point, the estimate of the maximum misstatement exceeds the materiality.")
+
     priorAndPosteriorPlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> The prior and posterior probability distribution <b>(%2$s)</b> on the misstatement in the population. %3$s",
                                                         jaspResults[["figNumber"]]$object,
                                                         distribution,
                                                         ifelse(options[["priorAndPosteriorPlotAdditionalInfo"]],
-                                                        yes = "The red 
-                                                        dot represents the specified materiality. If the credible area under the distribution surpasses this point, the estimate 
-                                                        of the maximum misstatement exceeds the materiality.",
+                                                        yes = y1,
                                                         no = "")), "p")
 
     priorAndPosteriorPlotText$position <- positionInContainer + 1

@@ -136,9 +136,9 @@ Form
 				label: qsTr("Factor scaling")
 				values:
 				[
-					{ label: "Factor loadings"    , value: "factorLoadings"		},
-					{ label: "Residual variance"  , value: "residualVariance"	},
-					{ label: "None"               , value: "none"				}
+					{ label: qsTr("Factor loadings")    , value: "factorLoadings"	},
+					{ label: qsTr("Residual variance")  , value: "residualVariance"	},
+					{ label: qsTr("None")               , value: "none"				}
 				]
 			}
 		}

@@ -12037,10 +12037,6 @@ msgid "Show Distribution"
 msgstr ""
 
 msgctxt "LDnegbinomial|"
-msgid "Parameter"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
 msgid "φ"
 msgstr ""
 
@@ -12425,14 +12421,6 @@ msgid "Equivalence Region"
 msgstr ""
 
 msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
-msgid "Lower bound"
-msgstr ""
-
-msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
-msgid "Upper bound"
-msgstr ""
-
-msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
 msgid "Additional Statistics"
 msgstr ""
 
@@ -12481,14 +12469,6 @@ msgid "Equivalence Region"
 msgstr ""
 
 msgctxt "EquivalenceBayesianOneSampleTTest|"
-msgid "Lower bound"
-msgstr ""
-
-msgctxt "EquivalenceBayesianOneSampleTTest|"
-msgid "Upper bound"
-msgstr ""
-
-msgctxt "EquivalenceBayesianOneSampleTTest|"
 msgid "Additional Statistics"
 msgstr ""
 
@@ -12530,14 +12510,6 @@ msgstr ""
 
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Equivalence Region"
-msgstr ""
-
-msgctxt "EquivalenceBayesianPairedSamplesTTest|"
-msgid "Lower bound"
-msgstr ""
-
-msgctxt "EquivalenceBayesianPairedSamplesTTest|"
-msgid "Upper bound"
 msgstr ""
 
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
@@ -15212,6 +15184,173 @@ msgstr ""
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Disable Animations"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid ""
+"Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
+msgstr ""
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to run the filter..."
+msgstr ""
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to compute this column..."
+msgstr ""
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to run rscript..."
+msgstr ""
+
+msgctxt "EngineRepresentation|"
+msgid "The engine crashed while trying to run this analysis..."
+msgstr ""
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Column name selection result: "
+msgstr ""
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Column name audit result: "
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid "Column name selection result: "
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid "Column name audit result: "
+msgstr ""
+
+msgctxt "mlRegressionBoosting|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "mlClassificationBoosting|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "mlClassificationKnn|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "mlClassificationLda|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "mlClassificationRandomForest|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "mlClusteringDensityBased|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "mlClusteringFuzzyCMeans|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "mlClusteringKMeans|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "mlClusteringRandomForest|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "mlRegressionKnn|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "mlRegressionRandomForest|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "mlRegressionRegularized|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "DataSplit|"
+msgid "Column name: "
+msgstr ""
+
+msgctxt "LDnegbinomial|"
+msgid "Parameters"
+msgstr ""
+
+msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
+msgid "from"
+msgstr ""
+
+msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
+msgid "to"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
+msgid "from %1"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
+msgid "to %1"
+msgstr ""
+
+msgctxt "EquivalenceBayesianIndependentSamplesTTest|"
+msgid "Prior and posterior mass"
+msgstr ""
+
+msgctxt "EquivalenceBayesianOneSampleTTest|"
+msgid "from"
+msgstr ""
+
+msgctxt "EquivalenceBayesianOneSampleTTest|"
+msgid "to"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalenceBayesianOneSampleTTest|"
+msgid "from %1"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalenceBayesianOneSampleTTest|"
+msgid "to %1"
+msgstr ""
+
+msgctxt "EquivalenceBayesianOneSampleTTest|"
+msgid "Prior and posterior mass"
+msgstr ""
+
+msgctxt "EquivalenceBayesianPairedSamplesTTest|"
+msgid "from"
+msgstr ""
+
+msgctxt "EquivalenceBayesianPairedSamplesTTest|"
+msgid "to"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalenceBayesianPairedSamplesTTest|"
+msgid "from %1"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalenceBayesianPairedSamplesTTest|"
+msgid "to %1"
+msgstr ""
+
+msgctxt "EquivalenceBayesianPairedSamplesTTest|"
+msgid "Prior and posterior mass"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

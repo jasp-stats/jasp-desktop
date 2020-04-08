@@ -185,7 +185,7 @@ Form {
             ComputedColumnField { 
                 id: 		valueColumn
                 name: 		"valueColumn"
-                text: 		"Column name: "
+				text: 		qsTr("Column name: ")
                 fieldWidth: 120
                 visible:    addValues.checked
             }

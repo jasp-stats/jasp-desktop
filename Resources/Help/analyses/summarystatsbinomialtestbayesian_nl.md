@@ -23,7 +23,7 @@ Deze functie berekent de Bayes factor voor een observatie van een binomiaalverde
 - Log(BF<sub>10</sub>) : Natuurlijk logaritme van BF10.
 
 #### Prior
-**Beta prior** parameters *a* en *b* worden tot '1' gezet. Dit is een uniforme prior. 
+**Beta prior** parameters *a* en *b* staan standaard beide op 1. Dit is een uniforme prior.
 
 #### Grafieken
 - *Prior en posterior*: Geeft de dichtheid van de prior (stippellijn) en de posterior (lijn) van de effectgrootte onder de alternatieve hypothese; de grijze cirkels representeren de hoogte van de prior en de posterior bij een effectgrootte delta = 0. De horizontale lijn representeert de breedte van een 95% geloofwaardigheidsinterval van de posterior.
