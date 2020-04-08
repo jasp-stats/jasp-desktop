@@ -192,7 +192,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     anchorPoint             <- results$estimates["averaged", 1]
   if(options[["modelSpecification"]] == "CRE")
     anchorPoint             <- results$estimates["ordered", 1]
-  bma[["xPost"]]            <- seq(anchorPoint - 2, anchorPoint + 2, .01)
+  bma[["xPost"]]            <- seq(anchorPoint - 2, anchorPoint + 2, .001)
   bma[["yPost"]]            <- results$posterior_d(bma[["xPost"]])
   bma[["yPrior"]]           <- results$meta$fixed$prior_d(bma[["xPost"]])
   bma[["dfPointsY"]]        <- data.frame(prior = results$meta$fixed$prior_d(0),
@@ -218,7 +218,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   fixed[["estimates"]]      <- results$meta$fixed$estimates
   ## Prior and posterior - effect size
   anchorPoint               <- results$meta$fixed$estimates["d", 1]
-  fixed[["xPost"]]          <- seq(anchorPoint - 2, anchorPoint + 2, .01)
+  fixed[["xPost"]]          <- seq(anchorPoint - 2, anchorPoint + 2, .001)
   fixed[["yPost"]]          <- results$meta$fixed$posterior_d(fixed[["xPost"]])
   fixed[["yPrior"]]         <- results$meta$fixed$prior_d(fixed[["xPost"]])
   fixed[["dfPointsY"]]      <- data.frame(prior = results$meta$fixed$prior_d(0),
@@ -232,12 +232,12 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   random[["summary"]]       <- rstan::summary(results$meta$random$stanfit_dstudy)$summary
   ## Prior and posterior - effect size
   anchorPoint               <- random[["estimates"]]["d", 1]
-  random[["xPost"]]         <- seq(anchorPoint - 2, anchorPoint + 2, .01)
+  random[["xPost"]]         <- seq(anchorPoint - 2, anchorPoint + 2, .001)
   random[["yPost"]]         <- results$meta$random$posterior_d(random[["xPost"]])
   random[["yPrior"]]        <- results$meta$random$prior_d(random[["xPost"]])
   ## Prior and posterior - heterogeneity
   anchorPoint               <- random[["estimates"]][2, "mean"]
-  random[["xPostTau"]]      <- seq(-0.05, anchorPoint + 4, .01)
+  random[["xPostTau"]]      <- seq(-0.05, anchorPoint + 4, .001)
   random[["yPostTau"]]      <- results$meta$random$posterior_tau(random[["xPostTau"]])
   random[["yPriorTau"]]     <- results$meta$random$prior_tau(random[["xPostTau"]])
   random[["dfPointsY"]]     <- data.frame(prior = results$meta$random$prior_d(0),
@@ -253,15 +253,15 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     ordered[["summary"]]    <- rstan::summary(results$meta$ordered$stanfit_dstudy)$summary
     ## Prior and posterior - effect size
     anchorPoint             <- results$meta$ordered$estimates[2, "mean"]
-    if(options$direction == "allPos") xSeq <- seq(-0.05, anchorPoint + 4, .01)
-    if(options$direction == "allNeg") xSeq <- seq(anchorPoint - 4, 0.05, .01)
+    if(options$direction == "allPos") xSeq <- seq(-0.05, anchorPoint + 4, .001)
+    if(options$direction == "allNeg") xSeq <- seq(anchorPoint - 4, 0.05, .001)
     ordered[["xPost"]]   <- xSeq
     ordered[["yPost"]]   <- results$meta$ordered$posterior_d(ordered[["xPost"]])
     ordered[["yPrior"]]  <- results$meta$ordered$prior_d(ordered[["xPost"]])
     
     ## Prior and posterior - heterogeneity
     anchorPoint             <- results$meta$ordered$estimates[2, "mean"]
-    ordered[["xPostTau"]]   <- seq(-0.05, anchorPoint + 4, .01)
+    ordered[["xPostTau"]]   <- seq(-0.05, anchorPoint + 4, .001)
     ordered[["yPostTau"]]   <- results$meta$ordered$posterior_tau(ordered[["xPostTau"]])
     ordered[["yPriorTau"]]  <- results$meta$ordered$prior_tau(ordered[["xPostTau"]])
     ordered[["dfPointsY"]]  <- data.frame(prior = results$meta$ordered$prior_d(0),
@@ -1036,6 +1036,11 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     if(options[["modelSpecification"]] == "RE") labelsModel <- c(bquote(.(gettext("Random H"))[1]), bquote(.(gettext("Prior H"))[1]))
   }
   
+  index <- which(yPost > 0.0001)
+  xPost <- xPost[index]
+  yPost <- yPost[index]
+  yPrior <- yPrior[index]
+
   df <- data.frame(x = c(xPost, xPost), y = c(yPrior, yPost), g = rep(c("Prior", postName), each = length(xPost)))
   
   if(options$addLines && (options$modelSpecification == "BMA" || options$modelSpecification == "CRE")){
@@ -1193,11 +1198,13 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     return(plot)
   }
   
+  xBreaks <- JASPgraphs::getPrettyAxisBreaks(c(0, xPost))
+
   if(options[["addInfo"]]){
-    plot$subplots$mainGraph <- plot$subplots$mainGraph + ggplot2::scale_x_continuous(name = xlab, breaks = JASPgraphs::getPrettyAxisBreaks(c(0, xPost)))
+    plot$subplots$mainGraph <- plot$subplots$mainGraph + ggplot2::scale_x_continuous(name = xlab, breaks = xBreaks, limits = c(min(xPost), max(xPost)))
     plot$subplots$mainGraph <- .extraPost(plot$subplots$mainGraph, int, xPost, yPost)
   } else {
-    plot <- plot + ggplot2::scale_x_continuous(name = xlab, breaks = JASPgraphs::getPrettyAxisBreaks(c(0, xPost)))
+    plot <- plot + ggplot2::scale_x_continuous(name = xlab, breaks = xBreaks, limits = c(min(xPost), max(xPost)))
     plot <- .extraPost(plot, int, xPost, yPost)
   }
   
@@ -1647,10 +1654,9 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                                                  pizzaTxt = pizzaTxt,
                                                  hasRightAxis = TRUE,
                                                  yName = yName,
-                                                 evidenceTxt  = bquote(paste(.(gettext("Evidence for r H"))[1], ":")),
-                                                 arrowLabel  = c(bquote(.(gettext("Evidence~'for f'~H"))[1]),
-                                                                 bquote(.(gettext("Evidence~'for r'~H"))[1]))
-    )
+                                                 evidenceTxt  = JASPgraphs::parseThis(paste0("paste('", gettext("Evidence for r H"), "'[1], ':')")),
+                                                 arrowLabel  = c(JASPgraphs::parseThis(paste0("'", gettext("Evidence for f H"), "'[1]")),
+                                                                 JASPgraphs::parseThis(paste0("'", gettext("Evidence for r H"), "'[1]")))    )
   }
   
   
