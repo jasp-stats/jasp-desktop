@@ -107,7 +107,7 @@ Form
 				{
 					id		: plotRobustnessBFType
 					name	: "plotRobustnessBFType"
-					values	: ['BF10', 'BF+0', 'BF-0']
+					values	: bayesFactorType.value == "BF01" ? ['BF01', 'BF0+', 'BF0-'] : ['BF10', 'BF+0', 'BF-0']
 				}
 			}
 		}
