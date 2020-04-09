@@ -63,6 +63,10 @@ The equivalence paired samples t-test allows the user to test the null hypothesi
 #### Prior and Posterior Mass Table
 - The first column contains the dependent variable.
 - Section: The section under which the mass is calculated.
+  - p(&delta; &in; I | H<sub>1</sub>): Section inside the equivalence region of the prior distribution.
+  - p(&delta; &in; I | H<sub>1</sub>, y): Section inside the equivalence region of the posterior distribution.
+  - p(&delta; &notin; I | H<sub>1</sub>): Section outside the equivalence region of the prior distribution.
+  - p(&delta; &notin; I | H<sub>1</sub>, y): Section outside the equivalence region of the posterior distribution.
 - Mass: Displays the mass under the specified section.
 
 #### Plots

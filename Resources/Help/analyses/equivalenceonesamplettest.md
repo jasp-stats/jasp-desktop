@@ -47,7 +47,7 @@ The null hypothesis that the population mean is equal to the test value.
 
 #### Equivalence Bounds
 - The first column contains the dependent variable.
-- The second column contains the information if the equivalence bounds are expressed in standardized mean differences (Cohen's d) or in raw units.
+- Statistic: The second column contains the information if the equivalence bounds are expressed in standardized mean differences (Cohen's d) or in raw units.
 - Low: Low equivalence bound expressed in standardized mean difference when Cohen's d is selected and in raw units when Raw is selected.
 - High: High equivalence bound expressed in standardized mean difference when Cohen's d is selected and in raw units when Raw is selected.
 - 100-(2*alpha)% Confidence Interval for mean difference/location parameter: The confidence interval for the mean difference/location parameter of the difference scores.

@@ -44,10 +44,10 @@ Met de gelijkwaardigheids Beyeisaanse gepaarde t-toets kan de gebruiker de nulhy
 #### Gelijkwaardigheids Bayesiaanse Gepaarde T-Toets
 - De eerste kolom bevat de twee variabelen waarvoor het verschil is berekend.
 - Model Vergelijking:
-  - &delta; &in; I vs. H<sub>1</sub>: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsinterval hypothese ten opzichte van de ongelimiteerde alternative hypothese.
-  - &delta; &notin; I vs. H<sub>1</sub>: De Bayes factor die bewijs geeft voor de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt ten opzichte van de ongelimiteerde alternative hypothese.
-  - &delta; &in; I vs. &delta; &notin; I: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsinterval hypothese ten opzichte van e hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt.
-  - &delta; &notin; I vs. &delta; &in; I: De Bayes factor die bewijs geeft voor de hypothese dat de effect grootte buiten het gelijkwaardigheidsinterval ligt ten opzichte van de gelijkwaardigheidsinterval hypothese.
+  - &delta; &in; I vs. H<sub>1</sub>: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsregio hypothese ten opzichte van de ongelimiteerde alternative hypothese.
+  - &delta; &notin; I vs. H<sub>1</sub>: De Bayes factor die bewijs geeft voor de hypothese dat de effectgrootte buiten de gelijkwaardigheidsregio ligt ten opzichte van de ongelimiteerde alternative hypothese.
+  - &delta; &in; I vs. &delta; &notin; I: De Bayes factor die bewijs geeft voor de gelijkwaardigheidsregio hypothese ten opzichte van de hypothese dat de effect grootte buiten de gelijkwaardigheidsregio ligt.
+  - &delta; &notin; I vs. &delta; &in; I: De Bayes factor die bewijs geeft voor de hypothese dat de effectgrootte buiten de gelijkwaardigheidsregio ligt ten opzichte van de gelijkwaardigheidsregio hypothese.
 - BF: De Bayes factor.
 - fout %: De fout van de Gaussiaanse kwadratuur intergratie methode die wordt gebruikt op de Bayes factor te berekenen.
 
@@ -62,6 +62,10 @@ Met de gelijkwaardigheids Beyeisaanse gepaarde t-toets kan de gebruiker de nulhy
 #### Prior en Posterior Massa Tabel
 - De eerste kolom bevat the afhankelijke variabele.
 - Sectie: Het gedeelte waaronder de massa wordt berekend.
+  - p(&delta; &in; I | H<sub>1</sub>): Sectie binnen de gelijkwaardigheidsregio van de prior verdeling.
+  - p(&delta; &in; I | H<sub>1</sub>, y): Sectie binnen de gelijkwaardigheidsregio van de posterior verdeling.
+  - p(&delta; &notin; I | H<sub>1</sub>): Sectie buiten de gelijkwaardigheidsregio van de prior verdeling.
+  - p(&delta; &notin; I | H<sub>1</sub>, y): Sectie buiten de gelijkwaardigheidsregio van de posterior verdeling.
 - Massa: Geeft de massa onder de sectie weer.
 
 #### Grafieken

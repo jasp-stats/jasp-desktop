@@ -235,7 +235,7 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
 
   equivalenceMassTable <- createJaspTable(title = gettext("Prior and Posterior Mass Table"))
   equivalenceMassTable$dependOn(c("variables", "priorWidth", "mu", "lower", "upper", "region",
-                                  "effectSizeStandardized", "equivalenceRegion", "lowerbound", "upperbound", "lower_max", "upper_min", 
+                                  "effectSizeStandardized", "equivalenceRegion", "lowerbound", "upperbound", "lower_max", "upper_min",
                                   "informative", "informativeCauchyLocation", "informativeCauchyScale",
                                   "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                   "informativeTScale", "informativeTDf"))
@@ -262,7 +262,6 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
 }
 
 .equivalenceMassFillTableMain <- function(equivalenceMassTable, dataset, options, equivalenceBayesianOneTTestResults) {
-
   for (variable in options$variables) {
 
     results <- equivalenceBayesianOneTTestResults[[variable]]
@@ -286,8 +285,7 @@ EquivalenceBayesianOneSampleTTest <- function(jaspResults, dataset, options) {
 
       equivalenceMassTable$addRows(list(variable   = variable,
                                            section = "p(\U003B4 \U02209 I | H1, y)",
-                                           mass    = results$integralNonequivalencePosterior))
-    }
+                                           mass    = results$integralNonequivalencePosterior))    }
   }
   return()
 }

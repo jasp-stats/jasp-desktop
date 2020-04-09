@@ -47,7 +47,7 @@ The nul hypothese dat het populatiegemiddelde gelijk is aan de toetswaarde.
 
 #### Gelijkwaardigheidsgrenzen
 - De eerste kolom bevat de variabelen waarvoor de analyse is uitgevoerd.
-- De tweede kolom bevat de informatie of the gelijkwaardigheidsgrenzen zijn uitegdruk in gestandaardiseerde gemiddeld verschil of in ruwe eenheden.
+- Statistiek: De tweede kolom bevat de informatie of the gelijkwaardigheidsgrenzen zijn uitegdruk in gestandaardiseerde gemiddeld verschil of in ruwe eenheden.
 - Laag: Gelijkhwaardigheids ondergrens uitgedrukt in gestandaardiseerd gemiddeld verschil wanneer Cohen's d is geselecteerd en in ruwe eenheden wanneer Raw is geselecteerd.
 - Hoog: Gelijkhwaardigheids bovengrens uitgedrukt in gestandaardiseerd gemiddeld verschil wanneer Cohen's d is geselecteerd en in ruwe eenheden wanneer Raw is geselecteerd.
 - 100-(2*alpha)% betrouwbaarheidsinterval voor gemiddelde verschillen/locatieparameter: Het betrouwbaarheidsinterval voor het gemiddelde verschil / de locatie-parameter van de verschilscores.

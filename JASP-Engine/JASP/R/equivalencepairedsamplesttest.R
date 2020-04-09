@@ -32,6 +32,13 @@ EquivalencePairedSamplesTTest <- function(jaspResults, dataset, options) {
   }
   
   # Compute the results
+  if(options[['equivalenceRegion']] == "lower"){
+    options$lowerbound <- -Inf
+    options$upperbound <- options$lower_max
+  } else if(options[['equivalenceRegion']] == "upper"){
+    options$lowerbound <- options$upper_min
+    options$upperbound <- Inf
+  }
   equivalencePairedTTestResults <- .equivalencePairedTTestComputeResults(jaspResults, dataset, options, ready, errors)
   
   # Output tables and plots
@@ -87,6 +94,28 @@ EquivalencePairedSamplesTTest <- function(jaspResults, dataset, options) {
         results[[namePair]][["status"]]         <- "error"
         results[[namePair]][["errorFootnotes"]] <- errorMessage
       } else {
+        
+        c1 <- dataset[[ p1 ]]
+        c2 <- dataset[[ p2 ]]
+        df <- na.omit(data.frame(c1 = c1, c2 = c2))
+        c1 <- df$c1
+        n  <- length(c1)
+        
+        confIntEffSize <- c(0,0)
+        ciEffSize <- 1 - 2 * options$alpha
+        alphaLevel <- 1 - (ciEffSize + 1) / 2
+        d   <- mean(c1 - c2) / sd(c1 - c2)
+        
+        print(d)
+        print(d*sqrt(n))
+        
+        confIntEffSize <- .confidenceLimitsEffectSizes(ncp = tableResults$tost$asDF$`t[0]`, 
+                                                       df = tableResults$tost$asDF$`df[0]`, 
+                                                       alpha.lower = alphaLevel,
+                                                       alpha.upper = alphaLevel)[c(1, 3)]
+        confIntEffSize <- unlist(confIntEffSize) / sqrt(n)
+        confIntEffSize <- sort(confIntEffSize)
+        
         results[[namePair]] <- list(
           ttestTvalue = tableResults$tost$asDF$`t[0]`, 
           ttestDf     = tableResults$tost$asDF$`df[0]`,
@@ -99,8 +128,8 @@ EquivalencePairedSamplesTTest <- function(jaspResults, dataset, options) {
           lowerP      = tableResults$tost$asDF$`p[2]`, 
           lowCohen    = tableResults$eqb$asDF$`low[cohen]`,
           highCohen   = tableResults$eqb$asDF$`high[cohen]`,
-          cilCohen    = tableResults$eqb$asDF$`cil[cohen]`,
-          ciuCohen    = tableResults$eqb$asDF$`ciu[cohen]`,
+          cilCohen    = as.numeric(confIntEffSize[1]),
+          ciuCohen    = as.numeric(confIntEffSize[2]),
           lowRaw      = tableResults$eqb$asDF$`low[raw]`,
           highRaw     = tableResults$eqb$asDF$`high[raw]`,
           cilRaw      = tableResults$eqb$asDF$`cil[raw]`,
@@ -112,7 +141,8 @@ EquivalencePairedSamplesTTest <- function(jaspResults, dataset, options) {
   
   # Save results to state
   jaspResults[["stateEquivalencePairedTTestResults"]] <- createJaspState(results)
-  jaspResults[["stateEquivalencePairedTTestResults"]]$dependOn(c("pairs", "lowerbound", "upperbound", 
+  jaspResults[["stateEquivalencePairedTTestResults"]]$dependOn(c("pairs", "equivalenceRegion", "lower", "upper",
+                                                                 "region", "lowerbound", "upperbound", "lower_max", "upper_min",
                                                                  "boundstype", "alpha", "missingValues"))
   
   return(results)
@@ -122,7 +152,8 @@ EquivalencePairedSamplesTTest <- function(jaspResults, dataset, options) {
  
   # Create table
   equivalencePairedTTestTable <- createJaspTable(title = gettext("Equivalence Paired Samples T-Test"))
-  equivalencePairedTTestTable$dependOn(c("pairs", "lowerbound", "upperbound", "boundstype", "alpha", "missingValues"))
+  equivalencePairedTTestTable$dependOn(c("pairs", "equivalenceRegion", "lower", "upper",
+                                         "region", "lowerbound", "upperbound", "lower_max", "upper_min", "boundstype", "alpha", "missingValues"))
 
   # Add Columns to table
   equivalencePairedTTestTable$addColumnInfo(name = "variable1",   title = " ",                   type = "string")
@@ -196,7 +227,8 @@ EquivalencePairedSamplesTTest <- function(jaspResults, dataset, options) {
   
   # Create table
   equivalencePairedBoundsTable <- createJaspTable(title = gettext("Equivalence Bounds"))
-  equivalencePairedBoundsTable$dependOn(c("pairs", "lowerbound", "upperbound", "boundstype", "alpha", "missingValues"))
+  equivalencePairedBoundsTable$dependOn(c("pairs", "equivalenceRegion", "lower", "upper",
+                                          "region", "lowerbound", "upperbound", "lower_max", "upper_min", "boundstype", "alpha", "missingValues"))
 
   # Add Columns to table
   equivalencePairedBoundsTable$addColumnInfo(name = "variable1",   title = " ",                   type = "string", combine = TRUE)
@@ -312,7 +344,8 @@ EquivalencePairedSamplesTTest <- function(jaspResults, dataset, options) {
   
   
   equivalencePairedBoundsContainer <- createJaspContainer(title = gettext("Equivalence Bounds Plots"))
-  equivalencePairedBoundsContainer$dependOn(c("pairs", "lowerbound", "upperbound", "equivalenceboundsplot", 
+  equivalencePairedBoundsContainer$dependOn(c("pairs", "equivalenceRegion", "lower", "upper",
+                                              "region", "lowerbound", "upperbound", "lower_max", "upper_min", "equivalenceboundsplot", 
                                               "boundstype", "alpha", "missingValues"))
   jaspResults[["equivalencePairedBoundsContainer"]] <- equivalencePairedBoundsContainer
   
@@ -346,14 +379,13 @@ EquivalencePairedSamplesTTest <- function(jaspResults, dataset, options) {
         ggplot2::annotate("rect", xmin = -20, xmax = 20, ymin = results$lowRaw, ymax = results$highRaw, alpha = .5) +
         ggplot2::geom_errorbar(ggplot2::aes_string(x = 0, ymin = results$cilRaw, ymax = results$ciuRaw, width = .4), size = .8, colour = "black") +
         ggplot2::geom_point(ggplot2::aes_string(x = 0, y = dif), shape = 21, fill = "black", size = 3, colour = "black") +
-        ggplot2::labs(x = '', y = '') +
+        ggplot2::labs(x = '', y = namePair) +
         ggplot2::expand_limits(x = c(-2, 4), y = 0)
       plot <- JASPgraphs::themeJasp(plot)
       plot <- plot + ggplot2::theme(axis.text.x  = ggplot2::element_blank(),
                                     axis.title.x = ggplot2::element_blank(),
                                     axis.ticks.x = ggplot2::element_blank(),
-                                    axis.line.x  = ggplot2::element_blank(),
-                                    axis.title.y = ggplot2::element_blank(),) + ggplot2::scale_x_discrete(limits = c("", "", "", "", "", "", ""))
+                                    axis.line.x  = ggplot2::element_blank(),) + ggplot2::scale_x_discrete(limits = c("", "", "", "", "", "", ""))
       
       equivalencePairedTTestPlot$plotObject <- plot
     }
