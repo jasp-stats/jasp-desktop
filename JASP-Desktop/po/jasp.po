@@ -12037,10 +12037,6 @@ msgid "Show Distribution"
 msgstr ""
 
 msgctxt "LDnegbinomial|"
-msgid "φ"
-msgstr ""
-
-msgctxt "LDnegbinomial|"
 msgid "Display"
 msgstr ""
 
@@ -12585,14 +12581,6 @@ msgid "Equivalence Region"
 msgstr ""
 
 msgctxt "EquivalenceIndependentSamplesTTest|"
-msgid "Lower bound"
-msgstr ""
-
-msgctxt "EquivalenceIndependentSamplesTTest|"
-msgid "Upper bound"
-msgstr ""
-
-msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Alpha level"
 msgstr ""
 
@@ -12629,14 +12617,6 @@ msgid "Equivalence Region"
 msgstr ""
 
 msgctxt "EquivalenceOneSampleTTest|"
-msgid "Lower bound"
-msgstr ""
-
-msgctxt "EquivalenceOneSampleTTest|"
-msgid "Upper bound"
-msgstr ""
-
-msgctxt "EquivalenceOneSampleTTest|"
 msgid "Alpha level"
 msgstr ""
 
@@ -12654,14 +12634,6 @@ msgstr ""
 
 msgctxt "EquivalencePairedSamplesTTest|"
 msgid "Equivalence Region"
-msgstr ""
-
-msgctxt "EquivalencePairedSamplesTTest|"
-msgid "Lower bound"
-msgstr ""
-
-msgctxt "EquivalencePairedSamplesTTest|"
-msgid "Upper bound"
 msgstr ""
 
 msgctxt "EquivalencePairedSamplesTTest|"
@@ -15351,6 +15323,60 @@ msgstr ""
 
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Prior and posterior mass"
+msgstr ""
+
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "from"
+msgstr ""
+
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "to"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "from %1"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "to %1"
+msgstr ""
+
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "from"
+msgstr ""
+
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "to"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "from %1"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "to %1"
+msgstr ""
+
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "from"
+msgstr ""
+
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "to"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "from %1"
+msgstr ""
+
+#, qt-format
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "to %1"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

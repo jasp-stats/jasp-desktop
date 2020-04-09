@@ -12054,10 +12054,6 @@ msgid "Show Distribution"
 msgstr "Toon verdeling"
 
 msgctxt "LDnegbinomial|"
-msgid "φ"
-msgstr "φ"
-
-msgctxt "LDnegbinomial|"
 msgid "Display"
 msgstr "Weergeven"
 
@@ -12590,14 +12586,6 @@ msgid "Equivalence Region"
 msgstr "Gelijkwaardigheidsgebied"
 
 msgctxt "EquivalenceIndependentSamplesTTest|"
-msgid "Lower bound"
-msgstr "Ondergrens"
-
-msgctxt "EquivalenceIndependentSamplesTTest|"
-msgid "Upper bound"
-msgstr "Bovengrens"
-
-msgctxt "EquivalenceIndependentSamplesTTest|"
 msgid "Alpha level"
 msgstr "Alpha niveau"
 
@@ -12630,14 +12618,6 @@ msgid "Equivalence Region"
 msgstr "Gelijkwaardigheidsgebied"
 
 msgctxt "EquivalenceOneSampleTTest|"
-msgid "Lower bound"
-msgstr "Ondergrens"
-
-msgctxt "EquivalenceOneSampleTTest|"
-msgid "Upper bound"
-msgstr "Bovengrens"
-
-msgctxt "EquivalenceOneSampleTTest|"
 msgid "Alpha level"
 msgstr "Alpha niveau"
 
@@ -12652,14 +12632,6 @@ msgstr "Variabele paren"
 msgctxt "EquivalencePairedSamplesTTest|"
 msgid "Equivalence Region"
 msgstr "Gelijkwaardigheidsgebied"
-
-msgctxt "EquivalencePairedSamplesTTest|"
-msgid "Lower bound"
-msgstr "Ondergrens"
-
-msgctxt "EquivalencePairedSamplesTTest|"
-msgid "Upper bound"
-msgstr "Bovengrens"
 
 msgctxt "EquivalencePairedSamplesTTest|"
 msgid "Alpha level"
@@ -14176,8 +14148,8 @@ msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
 "effect you need to restart JASP"
 msgstr ""
-"U hebt de Veilige Grafische modus van JASP veranderd, om deze wijziging actief "
-"te maken zal JASP herstart moeten worden"
+"U hebt de Veilige Grafische modus van JASP veranderd, om deze wijziging "
+"actief te maken zal JASP herstart moeten worden"
 
 msgctxt "MainWindow|"
 msgid "Version incompatibility"
@@ -15638,6 +15610,60 @@ msgstr "naar %1"
 msgctxt "EquivalenceBayesianPairedSamplesTTest|"
 msgid "Prior and posterior mass"
 msgstr "Prior en posterior massa"
+
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "from"
+msgstr "van"
+
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "to"
+msgstr "naar"
+
+#, qt-format
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "from %1"
+msgstr "van %1"
+
+#, qt-format
+msgctxt "EquivalenceIndependentSamplesTTest|"
+msgid "to %1"
+msgstr "naar %1"
+
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "from"
+msgstr "van"
+
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "to"
+msgstr "naar"
+
+#, qt-format
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "from %1"
+msgstr "van %1"
+
+#, qt-format
+msgctxt "EquivalenceOneSampleTTest|"
+msgid "to %1"
+msgstr "naar %1"
+
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "from"
+msgstr "van"
+
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "to"
+msgstr "naar"
+
+#, qt-format
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "from %1"
+msgstr "van %1"
+
+#, qt-format
+msgctxt "EquivalencePairedSamplesTTest|"
+msgid "to %1"
+msgstr "naar %1"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""

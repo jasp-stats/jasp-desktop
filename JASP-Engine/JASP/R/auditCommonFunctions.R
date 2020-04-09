@@ -438,8 +438,7 @@
                                                       position = 1)
 
 
-    procedureText <- gettextf("The objective of this substantive testing procedure is to determine with a specified confidence <b>(%1$s)</b> whether the %2$s of
-                              misstatement in the target population is lower than the specified materiality of <b>%3$s</b>.",
+    procedureText <- gettextf("The objective of this substantive testing procedure is to determine with a specified confidence <b>(%1$s)</b> whether the %2$s of misstatement in the target population is lower than the specified materiality of <b>%3$s</b>.",
                               planningOptions[["confidenceLabel"]],
                               planningOptions[["absRel"]],
                               planningOptions[["materialityLabel"]])
@@ -676,10 +675,7 @@
 
   if(options[["explanatoryText"]]){
 
-      bookValuePlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> The distribution of book values in the population. The red and blue dots respectively represent the mean
-                                                 and the values exactly one standard deviation from the mean. The orange dots represent the 25th, 50th (median) and
-                                                 75th percentile of the book values.",
-                                                 jaspResults[["figNumber"]]$object), "p")
+      bookValuePlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> The distribution of book values in the population. The red and blue dots respectively represent the mean and the values exactly one standard deviation from the mean. The orange dots represent the 25th, 50th (median) and 75th percentile of the book values.", jaspResults[["figNumber"]]$object), "p")
       
       bookValuePlotText$position <- positionInContainer + 1
       bookValuePlotText$dependOn(optionsFromObject = procedureContainer[["bookValueDistribution"]])
@@ -758,7 +754,7 @@
                       crLabel,
                       round(detectionRisk * 100, 2))
   
-  ARMcontainer[["ARMformula"]] <- createJaspHtml(textARM, "h3", "20cm")
+  ARMcontainer[["ARMformula"]] <- createJaspHtml(textARM, "h3", "21cm")
   ARMcontainer[["ARMformula"]]$position <- 2
 
   if(options[["explanatoryText"]]){
@@ -768,8 +764,7 @@
     auditRiskLabel <- paste0(round(auditRisk * 100, 2), "%")
     dectectionRiskLabel <- paste0(round(detectionRisk * 100, 2), "%")
 
-    message <- gettextf("Prior to the substantive testing phase, the inherent risk was determined to be <b>%1$s</b>. The internal control risk was determined
-                        to be <b>%2$s</b>. According to the Audit Risk Model, the required detection risk to maintain an audit risk of <b>%3$s</b> should be <b>%4$s</b>.",
+    message <- gettextf("Prior to the substantive testing phase, the inherent risk was determined to be <b>%1$s</b>. The internal control risk was determined to be <b>%2$s</b>. According to the Audit Risk Model, the required detection risk to maintain an audit risk of <b>%3$s</b> should be <b>%4$s</b>.",
                         irLabel,
                         crLabel,
                         auditRiskLabel,
@@ -777,14 +772,12 @@
 
     if(options[["IR"]] == "Custom" || options[["CR"]] == "Custom"){
 
-      message <- gettextf("%1$s 
-                          The translation of High, Medium and Low to probabilities is done according custom preferences</b>.",
+      message <- gettextf("%1$s The translation of High, Medium and Low to probabilities is done according custom preferences</b>.",
                           message)
     
     } else {
 
-      message <- gettextf("%1$s 
-                        The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>.",
+      message <- gettextf("%1$s The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>.",
                         message)
     
     }
@@ -1100,9 +1093,7 @@
   detectionRisk <- auditRisk / inherentRisk / controlRisk
 
   if(detectionRisk >= 1){
-    planningContainer$setError(gettextf("The detection risk is higher than 100%%. Please
-                                        re-specify your custom values for the Inherent 
-                                        risk and/or Control risk."))  
+    planningContainer$setError(gettextf("The detection risk is higher than 100%%. Please re-specify your custom values for the Inherent risk and/or Control risk."))  
     return()
   }
 
@@ -1660,8 +1651,7 @@
 
   if(options[["explanatoryText"]] && ready){
 
-    decisionPlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> Sample size comparison for the current options. The bars represent the sample size that is required under different planning distributions.
-                                                The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green.",
+    decisionPlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> Sample size comparison for the current options. The bars represent the sample size that is required under different planning distributions. The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green.",
                                                 jaspResults[["figNumber"]]$object), "p")
     
     decisionPlotText$position <- positionInContainer + 1
@@ -1812,9 +1802,7 @@
 
   if(options[["explanatoryText"]] && ready){
 
-    samplingDistributionText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> The implied <b>%2$s</b> sampling distribution. The number of expected errors in the selection is colored in 
-                                                      red and the number of expected error-free observations is colored in green. The total probability of the errors does 
-                                                      not exceed the detection risk as specified through the audit risk model.",
+    samplingDistributionText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> The implied <b>%2$s</b> sampling distribution. The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green. The total probability of the errors does not exceed the detection risk as specified through the audit risk model.",
                                                       jaspResults[["figNumber"]]$object,
                                                       options[["planningModel"]]), "p")
     
@@ -1965,8 +1953,7 @@
     if(!is.null(selectionState[["musFailed"]])){
       # MUS has failed for some reason, fall back to record sampling
 
-      message <- gettextf("From the population of <b>%1$s</b> observations, <b>%2$s</b> observations were selected using a <b>%3$s record sampling</b> method. 
-                          <b>Warning:</b> A monetary unit sampling method was tried but failed.",
+      message <- gettextf("From the population of <b>%1$s</b> observations, <b>%2$s</b> observations were selected using a <b>%3$s record sampling</b> method. <br><b>Warning:</b> A monetary unit sampling method was tried but failed.",
                           planningOptions[["populationSize"]],
                           planningState[["sampleSize"]],
                           samplingLabel)
@@ -1986,9 +1973,7 @@
 
     if(sum(selectionState[["count"]]) > nrow(selectionState)){
 
-      message <- gettextf("%1$s 
-                          <b>Note:</b> The selected subset (%2$s) is smaller than the planned sample size (%3$s), as observations are selected multiple times due 
-                          to their high value. These observations (%4$s) are counted multiple times in the evaluation.",
+      message <- gettextf("%1$s <b>Note:</b> The selected subset (%2$s) is smaller than the planned sample size (%3$s), as observations are selected multiple times due to their high value. These observations (%4$s) are counted multiple times in the evaluation.",
                           message,
                           nrow(selectionState),
                           planningState[["sampleSize"]],
@@ -3438,10 +3423,7 @@
 
   if(options[["explanatoryText"]]){
 
-    correLationPlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> Scatterplot of the book values in the selection and their audit values. Red dots indicate observations that 
-                                          did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. 
-                                          If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient 
-                                          of the book values and the audit values, an indicator of the strength of the linear relationship between the two variables.",
+    correLationPlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> Scatterplot of the book values in the selection and their audit values. Red dots indicate observations that did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient of the book values and the audit values, an indicator of the strength of the linear relationship between the two variables.",
                                           jaspResults[["figNumber"]]$object), "p")
     
     correLationPlotText$position <- positionInContainer + 1
@@ -3498,9 +3480,7 @@
 
     }
 
-    message <- gettextf("The objective of this substantive testing procedure was to determine with <b>%1$s</b> confidence whether the population misstatement 
-                        is lower than materiality, in this case <b>%2$s</b>. For the current data, the <b>%3$s</b> confidence bound is <b>%4$s</b> materiality. The conclusion 
-                        on the basis of these results is that, with <b>%5$s</b> confidence, the population misstatement is <b>%6$s</b> than materiality.",
+    message <- gettextf("The objective of this substantive testing procedure was to determine with <b>%1$s</b> confidence whether the population misstatement is lower than materiality, in this case <b>%2$s</b>. For the current data, the <b>%3$s</b> confidence bound is <b>%4$s</b> materiality. The conclusion on the basis of these results is that, with <b>%5$s</b> confidence, the population misstatement is <b>%6$s</b> than materiality.",
                         planningOptions[["confidenceLabel"]],
                         planningOptions[["materialityLabel"]],
                         planningOptions[["confidenceLabel"]],
