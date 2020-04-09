@@ -295,18 +295,20 @@ int main(int argc, char *argv[])
 #endif
 
 			//Now we convert all these strings in args back to an int and a char * array.
+			//But to keep things easy, we are going to copy the old argv to avoid duplication (or messing up the executable name)
 			char** argvs = new char*[args.size()];
+
 
 			std::cout << "Making new argument list for Application startup:";
 
 			for(size_t i = 0; i< args.size(); i++)
-			{
-				argvs[i] = new char[args[i].size() + 1]; // +1 for null delimiter
-				memset(argvs[i], '\0', args[i].size() + 1);
-				memcpy(argvs[i], args[i].c_str(), args[i].size() + 1);
-
-				std::cout << " " << argvs[i];
-			}
+				{
+					argvs[i] = new char[				args[i].size() + 1]; // +1 for null delimiter
+					memset(argvs[i], '\0',				args[i].size() + 1);
+					memcpy(argvs[i], args[i].data(),	args[i].size());
+					argvs[i][							args[i].size()] = '\0';
+					std::cout << " " << argvs[i];
+				}
 
 			std::cout << "\nStarting JASP" << std::endl;
 

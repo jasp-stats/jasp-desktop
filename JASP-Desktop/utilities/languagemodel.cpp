@@ -284,6 +284,9 @@ void LanguageModel::findQmFiles(QString qmlocation)
 
 	QDirIterator qdi(qmlocation, QStringList() << "*.qm" << "*.QM");
 
+	if(!qdi.hasNext())
+		throw std::runtime_error("Could not find *any* qml-files!");
+
 	while (qdi.hasNext())
 	{
 		qdi.next();
