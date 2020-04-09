@@ -43,6 +43,7 @@ public:
 	
 protected slots:
 	void modelChangedHandler() override;
+	void valuesChangedHandler();
 	void comboBoxChangeValueSlot(int index);
 	void resetValues();
 
@@ -57,6 +58,7 @@ protected:
 
 
 	void _resetItemWidth();
+	void _resetOptions();
 	void _setCurrentValue(int index, bool setComboBoxIndex = true, bool setOption = true);
 	std::vector<std::string> _getOptionValues();
 };
