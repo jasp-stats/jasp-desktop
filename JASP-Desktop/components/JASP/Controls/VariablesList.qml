@@ -620,7 +620,7 @@ JASPListControl
 									return;
 								
 								var variablesListName = variablesList.name
-								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : ""
+								var assignOption = dropTarget.interactionControl ? dropTarget.interactionControl.model.get(dropTarget.interactionControl.currentIndex).value : JASP.AssignDefault
 								itemsDropped(selectedItems, dropTarget, dropTarget.indexInDroppedListViewOfDraggedItem, assignOption);
 								variablesList.clearSelectedItems();
 							}
