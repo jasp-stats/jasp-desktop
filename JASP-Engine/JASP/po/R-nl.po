@@ -615,7 +615,7 @@ msgstr "Geobserveerde Percentages vs. Wet van Benford"
 msgid "Observed"
 msgstr "Geobserveerd"
 
-msgid "<b>Figure %i:</b> The observed percentages of each leading number in the population compared to the expected percentageunder Benford's law. The more the blue dots lie near the top of the grey bars, the more the population conforms to Benford's law."
+msgid "<b>Figure %i:</b> The observed percentages of each leading number in the population compared to the expected percentage under Benford's law. The more the blue dots lie near the top of the grey bars, the more the population conforms to Benford's law."
 msgstr "<b>Figuur %i:</b> De geobserveerde percentages van ieder leidend nummer in de populatie vergeleken met het verwachte percentage onder de wet van Benford. Hoe dichter de blauwe stippen rond de bovenkant van de grijze staven liggen, hoe meer de populatie overeenstemt met de wet van Benford."
 
 msgid "<u>Conclusion</u>"
