@@ -362,4 +362,13 @@ void LanguageModel::removeTranslators()
 
 }
 
-
+QString LanguageModel::currentLanguageCode() const
+{
+	if(currentIndex() >= _languages.size())
+	{
+		Log::log() << "LanguageModel::currentLanguageCode() is looking for a language with an index (" << currentIndex() << ") that is higher then the nr of languages available (" << _languages.size() << ") returning the last one instead." << std::endl;
+		return getLocalName(_languages[_languages.size() -1]);
+	}
+	else
+		return getLocalName(_languages[currentIndex()]);
+} //Here we use currentIndex instead of CurrentLanguageInfo? Why not everywhere else?
