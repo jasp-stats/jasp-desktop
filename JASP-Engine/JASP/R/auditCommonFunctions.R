@@ -754,7 +754,7 @@
                       crLabel,
                       round(detectionRisk * 100, 2))
   
-  ARMcontainer[["ARMformula"]] <- createJaspHtml(textARM, "h3", "20cm")
+  ARMcontainer[["ARMformula"]] <- createJaspHtml(textARM, "h3", "21cm")
   ARMcontainer[["ARMformula"]]$position <- 2
 
   if(options[["explanatoryText"]]){
