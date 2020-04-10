@@ -1,5 +1,15 @@
 var JASPWidgets = {};
 
+var Parchment = Quill.import('parchment');
+
+var LineBreakClass = new Parchment.Attributor.Class('linebreak', 'linebreak', {
+  scope: Parchment.Scope.BLOCK
+});
+
+
+Quill.register('formats/linebreak', LineBreakClass);
+
+
 JASPWidgets.Encodings = {
 	getBase64: function (arrayBuffer) {
 		var base64 = ''
@@ -464,13 +474,49 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			['clean']
 		];
 
+		var options = {
+		  theme: 'snow',
+		  modules: {
+			toolbar: toolbarOptions,
+			keyboard: {
+				  bindings: {
+					smartbreak: {
+						// Handle shift-Enter. Cf https://github.com/quilljs/quill/issues/252
+						key: 13,
+						shiftKey: true,
+						handler: function (range, context) {
+							this.quill.setSelection(range.index,'silent');
+							this.quill.insertText(range.index, '\n', 'user')
+							this.quill.setSelection(range.index +1,'silent');
+							this.quill.format('linebreak', true,'user');
+
+
+						}
+					},
+					paragraph: {
+						key: 13,
+						handler: function (range, context) {
+							this.quill.setSelection(range.index,'silent');
+							this.quill.insertText(range.index, '\n', 'user')
+							this.quill.setSelection(range.index +1,'silent');
+							let f = this.quill.getFormat(range.index +1);
+							if(f.hasOwnProperty('linebreak')) {
+								delete(f.linebreak)
+								this.quill.removeFormat(range.index +1)
+								for(let key in f){
+									this.quill.formatText(range.index +1,key,f[key])
+
+								}
+							}
+						}
+					}
+				  }
+				}
+			}
+		};
+
 		let targetDiv = this.$el.find("#editor").get(0);
-		this.$quill = new Quill(targetDiv, {
-			modules: {
-				toolbar: toolbarOptions
-			},
-			theme: 'snow'
-		});
+		this.$quill = new Quill(targetDiv, options)
 
 		var self = this;
 		var delt;

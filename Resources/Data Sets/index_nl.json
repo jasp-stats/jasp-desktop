@@ -234,9 +234,9 @@
           "associated_datafile": "Invisibility Cloak.csv"
         },
         {
-          "name": "Keukenpapierrollen",
+          "name": "Keukenrollen",
           "path": "Kitchen Rolls.jasp",
-          "description": "Openness to Experience scores voor twee groepen studenten - terwijl de persoonlijkheidsvragenlijst werd ingevuld, roteerden beide groepen een keukenpapierrol met hun handen (een groep met de klok mee, de andere groep tegen de klok in). <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse en frequentialistische onafhankelijke steekproeven t-toets kan worden toegepast. <br><br> <i>Data gerapporteerd in Wagenmakers et al. (2015).<\/i>",
+          "description": "Openness to Experience scores voor twee groepen studenten - terwijl de persoonlijkheidsvragenlijst werd ingevuld, roteerden beide groepen een keukenpapierrol met hun handen (een groep met de klok mee, de andere groep tegen de klok in). <br><br> Het voorbeeldbestand in JASP laat zien hoe een Bayesiaanse en frequentistische onafhankelijke steekproeven t-toets kan worden toegepast. <br><br> <i>Data gerapporteerd in Wagenmakers et al. (2015).<\/i>",
           "kind": "file",
           "associated_datafile": "Kitchen Rolls.csv"
         },

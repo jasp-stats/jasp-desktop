@@ -779,7 +779,7 @@ Form
 				{
 					id: 		sampleFilter
 					name: 		"sampleFilter"
-					text: 		"Column name selection result: "
+					text: 		qsTr("Column name selection result: ")
 					fieldWidth: 120
 				}
 
@@ -787,7 +787,7 @@ Form
 				{
 					id: 		variableName
 					name: 		"variableName"
-					text: 		"Column name audit result: "
+					text: 		qsTr("Column name audit result: ")
 					fieldWidth: 120
 				}
 			}

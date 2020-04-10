@@ -47,7 +47,10 @@ void BoundQMLRadioButtons::setUp()
 			_buttons[controlName] = button;
 			bool checked = button->getItemProperty("checked").toBool();
 			if (checked)
+			{
 				_checkedButton = button;
+				setItemProperty("value", _checkedButton->name());
+			}
 			button->setItemProperty("buttonGroup", buttonGroup);
 		}
 	}
@@ -99,6 +102,8 @@ void BoundQMLRadioButtons::bindTo(Option *option)
 		{
 			button->setItemProperty("checked", true);
 			_checkedButton = button;
+			setItemProperty("value", _checkedButton->name());
+
 		}
 	}
 }
@@ -145,6 +150,8 @@ void BoundQMLRadioButtons::radioButtonClickedHandler(const QVariant& button)
 				if (_checkedButton)
 					_checkedButton->setItemProperty("checked",false);
 				_checkedButton = foundButton;
+				setItemProperty("value", _checkedButton->name());
+
 				if (_boundTo)
 					_boundTo->setValue(buttonName.toStdString());
 			}

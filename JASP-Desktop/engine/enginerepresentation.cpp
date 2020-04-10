@@ -60,24 +60,25 @@ void EngineRepresentation::handleEngineCrash()
 
 	switch(_engineState)
 	{
+
 	case engineState::analysis:
 		if(_analysisInProgress)
 		{
-			_analysisInProgress->setErrorInResults("The engine crashed while trying to run this analysis...");
+			_analysisInProgress->setErrorInResults(fq(tr("The engine crashed while trying to run this analysis...")));
 			clearAnalysisInProgress();
 		}
 		break;
 
 	case engineState::filter:
-		emit processFilterErrorMsg("The engine crashed while trying to run the filter...", _lastRequestId);
+		emit processFilterErrorMsg(tr("The engine crashed while trying to run the filter..."), _lastRequestId);
 		break;
 
 	case engineState::computeColumn:
-		emit computeColumnFailed(tq(_lastCompColName), "The engine crashed while trying to compute this column...");
+		emit computeColumnFailed(tq(_lastCompColName), tr("The engine crashed while trying to compute this column..."));
 		break;
 
 	case engineState::rCode:
-		emit rCodeReturned("The engine crashed while trying to run rscript...", _lastRequestId);
+		emit rCodeReturned(tr("The engine crashed while trying to run rscript..."), _lastRequestId);
 		break;
 
 	case engineState::logCfg:

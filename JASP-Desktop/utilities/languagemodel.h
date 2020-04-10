@@ -53,7 +53,7 @@ public:
 	QHash<int, QByteArray>	roleNames() const override;
 
 	int		currentIndex()			const { return _currentIndex; }
-	QString currentLanguageCode()	const { return getLocalName(_languages[currentIndex()]); } //Here we use currentIndex instead of CurrentLanguageInfo? Why not everywhere else?
+	QString currentLanguageCode()	const;
 
 	//This function (currentTranslationSuffix) should be made obsolete through the abolishment of all the _nl etc files:
 	static			QString			currentTranslationSuffix()	{ return currentLanguageInfo().language  == QLocale::English ? "" : ("_" + currentLanguageInfo().localName); }

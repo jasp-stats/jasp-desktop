@@ -304,7 +304,7 @@ RegressionLogLinear <- function(jaspResults, dataset = NULL , options, ...) {
   coefficientsTable$addColumnInfo(name = "SE",      title = gettext("Standard Error"), type = "number", format = "dp:3")
   if(options$regressionCoefficientsConfidenceIntervals){
     confIntVal <- options$regressionCoefficientsConfidenceIntervalsInterval
-    ci <- paste0(100*confIntVal, "% Confidence Intervals")
+    ci <- gettextf("%s%% Confidence Intervals",100*confIntVal)
     coefficientsTable$addColumnInfo(name = "Lower", title = gettext("Lower"), type = "number", overtitle = ci)
     coefficientsTable$addColumnInfo(name = "Upper", title = gettext("Upper"), type = "number", overtitle = ci)
   }

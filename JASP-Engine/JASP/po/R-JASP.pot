@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-04-06 15:34\n"
+"POT-Creation-Date: 2020-04-09 18:12\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -484,7 +484,7 @@ msgstr ""
 msgid "<u>Procedure</u>"
 msgstr ""
 
-msgid "Benford's law states that in many naturally occurring collections of numbers, the leading significant number \n                              is likely to be small. The goal of this procedure is to determine to which extent the leading numbers in the \n                              population follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform \n                              to Benford's law might need further verification."
+msgid "Benford's law states that in many naturally occurring collections of numbers, the leading significant number is likely to be small. The goal of this procedure is to determine to which extent the leading numbers in the population follow Benford's law, and to test this relation with <b>%1$s</b> confidence. Data that do not conform to Benford's law might need further verification."
 msgstr ""
 
 msgid "<u>Assessing Benford's Law</u>"
@@ -505,7 +505,7 @@ msgstr ""
 msgid "(10 - 99)"
 msgstr ""
 
-msgid "The null hypothesis specifies that the distribution of \n                      first numbers %1$s in the population conforms to \n                      Benford\342\200\231s law."
+msgid "The null hypothesis specifies that the distribution of first numbers %1$s in the population conforms to Benford\342\200\231s law."
 msgstr ""
 
 msgid "Chi-square"
@@ -535,7 +535,7 @@ msgstr ""
 msgid "Observed"
 msgstr ""
 
-msgid "<b>Figure %i:</b> The observed percentages of each leading number in the population compared to the expected percentage\n                                                  under Benford's law. The more the blue dots lie near the top of the grey bars, the more the population conforms to \n                                                  Benford's law."
+msgid "<b>Figure %i:</b> The observed percentages of each leading number in the population compared to the expected percentage under Benford's law. The more the blue dots lie near the top of the grey bars, the more the population conforms to Benford's law."
 msgstr ""
 
 msgid "<u>Conclusion</u>"
@@ -547,7 +547,19 @@ msgstr ""
 msgid "can not be rejected"
 msgstr ""
 
-msgid "The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of first numbers in the \n                            population conforms to Benford's law <b>%2$s</b> with <b>%3$s</b> confidence."
+msgid "The <i>p</i> value is determined to be %1$s. Therefore, the null hypothesis that the distribution of first numbers in the population conforms to Benford's law <b>%2$s</b> with <b>%3$s</b> confidence."
+msgstr ""
+
+msgid "Direct estimator"
+msgstr ""
+
+msgid "Difference estimator"
+msgstr ""
+
+msgid "Ratio estimator"
+msgstr ""
+
+msgid "Regression estimator"
 msgstr ""
 
 msgid "Estimate %1$s"
@@ -685,10 +697,10 @@ msgstr ""
 msgid "Audit values"
 msgstr ""
 
-msgid "<b>Figure 1.</b> Scatter plot of the book values in the selection and their audit values. Red dots indicate observations that \n                                        did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. \n                                        If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient \n                                        of the book values and the audit values, an indicator of the strength of the linear relationship between the two variables."
+msgid "<b>Figure 1.</b> Scatter plot of the book values in the selection and their audit values. Red dots indicate observations that did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient of the book values and the audit values, an indicator of the strength of the linear relationship between the two variables."
 msgstr ""
 
-msgid "The objective of this substantive testing procedure is to determine with a specified confidence <b>(%1$s)</b> whether the %2$s of\n                              misstatement in the target population is lower than the specified materiality of <b>%3$s</b>."
+msgid "The objective of this substantive testing procedure is to determine with a specified confidence <b>(%1$s)</b> whether the %2$s of misstatement in the target population is lower than the specified materiality of <b>%3$s</b>."
 msgstr ""
 
 msgid "<b>Table %1$i.</b> Book Value Descriptive Statistics"
@@ -733,7 +745,7 @@ msgstr ""
 msgid "Quartile"
 msgstr ""
 
-msgid "<b>Figure %1$i.</b> The distribution of book values in the population. The red and blue dots respectively represent the mean\n                                                 and the values exactly one standard deviation from the mean. The orange dots represent the 25th, 50th (median) and\n                                                 75th percentile of the book values."
+msgid "<b>Figure %1$i.</b> The distribution of book values in the population. The red and blue dots respectively represent the mean and the values exactly one standard deviation from the mean. The orange dots represent the 25th, 50th (median) and 75th percentile of the book values."
 msgstr ""
 
 msgid "<u>Audit Risk Model</u>"
@@ -742,13 +754,13 @@ msgstr ""
 msgid "Audit risk (%1$s%%) = Inherent risk (%2$s%%) x Control risk (%3$s%%) x Detection risk (%4$s%%)"
 msgstr ""
 
-msgid "Prior to the substantive testing phase, the inherent risk was determined to be <b>%1$s</b>. The internal control risk was determined\n                        to be <b>%2$s</b>. According to the Audit Risk Model, the required detection risk to maintain an audit risk of <b>%3$s</b> should be <b>%4$s</b>."
+msgid "Prior to the substantive testing phase, the inherent risk was determined to be <b>%1$s</b>. The internal control risk was determined to be <b>%2$s</b>. According to the Audit Risk Model, the required detection risk to maintain an audit risk of <b>%3$s</b> should be <b>%4$s</b>."
 msgstr ""
 
-msgid "%1$s \n                          The translation of High, Medium and Low to probabilities is done according custom preferences</b>."
+msgid "%1$s The translation of High, Medium and Low to probabilities is done according custom preferences</b>."
 msgstr ""
 
-msgid "%1$s \n                        The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>."
+msgid "%1$s The translation of High, Medium and Low to probabilities is done according to <b>IODAD (2007)</b>."
 msgstr ""
 
 msgid "<u>Planning</u>"
@@ -766,7 +778,7 @@ msgstr ""
 msgid "<b>amount</b>"
 msgstr ""
 
-msgid "The detection risk is higher than 100%%. Please\n                                        re-specify your custom values for the Inherent \n                                        risk and/or Control risk."
+msgid "The detection risk is higher than 100%%. Please re-specify your custom values for the Inherent risk and/or Control risk."
 msgstr ""
 
 msgid "The resulting sample size exceeds 5000."
@@ -859,7 +871,7 @@ msgstr ""
 msgid "Expected error-free"
 msgstr ""
 
-msgid "<b>Figure %1$i.</b> Sample size comparison for the current options. The bars represent the sample size that is required under different planning distributions.\n                                                The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green."
+msgid "<b>Figure %1$i.</b> Sample size comparison for the current options. The bars represent the sample size that is required under different planning distributions. The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green."
 msgstr ""
 
 msgid "Implied %1$s Sampling Distribution"
@@ -871,7 +883,7 @@ msgstr ""
 msgid "Probability"
 msgstr ""
 
-msgid "<b>Figure %1$i.</b> The implied <b>%2$s</b> sampling distribution. The number of expected errors in the selection is colored in \n                                                      red and the number of expected error-free observations is colored in green. The total probability of the errors does \n                                                      not exceed the detection risk as specified through the audit risk model."
+msgid "<b>Figure %1$i.</b> The implied <b>%2$s</b> sampling distribution. The number of expected errors in the selection is colored in red and the number of expected error-free observations is colored in green. The total probability of the errors does not exceed the detection risk as specified through the audit risk model."
 msgstr ""
 
 msgid "<u>Selection</u>"
@@ -886,7 +898,7 @@ msgstr ""
 msgid "cell"
 msgstr ""
 
-msgid "From the population of <b>%1$s</b> observations, <b>%2$s</b> observations were selected using a <b>%3$s record sampling</b> method. \n                          <b>Warning:</b> A monetary unit sampling method was tried but failed."
+msgid "From the population of <b>%1$s</b> observations, <b>%2$s</b> observations were selected using a <b>%3$s record sampling</b> method. <br><b>Warning:</b> A monetary unit sampling method was tried but failed."
 msgstr ""
 
 msgid "%1$s record sampling"
@@ -898,7 +910,7 @@ msgstr ""
 msgid "From the population of <b>%1$s</b> observations, <b>%2$s</b> observations were selected using a <b>%3$s</b> method."
 msgstr ""
 
-msgid "%1$s \n                          <b>Note:</b> The selected subset (%2$s) is smaller than the planned sample size (%3$s), as observations are selected multiple times due \n                          to their high value. These observations (%4$s) are counted multiple times in the evaluation."
+msgid "%1$s <b>Note:</b> The selected subset (%2$s) is smaller than the planned sample size (%3$s), as observations are selected multiple times due to their high value. These observations (%4$s) are counted multiple times in the evaluation."
 msgstr ""
 
 msgid "<b>Table %1$i.</b> Selection Summary"
@@ -1039,7 +1051,7 @@ msgstr ""
 msgid "Audit values (%1$s)"
 msgstr ""
 
-msgid "<b>Figure %1$i.</b> Scatterplot of the book values in the selection and their audit values. Red dots indicate observations that \n                                          did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. \n                                          If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient \n                                          of the book values and the audit values, an indicator of the strength of the linear relationship between the two variables."
+msgid "<b>Figure %1$i.</b> Scatterplot of the book values in the selection and their audit values. Red dots indicate observations that did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient of the book values and the audit values, an indicator of the strength of the linear relationship between the two variables."
 msgstr ""
 
 msgid "below"
@@ -1054,7 +1066,7 @@ msgstr ""
 msgid "higher"
 msgstr ""
 
-msgid "The objective of this substantive testing procedure was to determine with <b>%1$s</b> confidence whether the population misstatement \n                        is lower than materiality, in this case <b>%2$s</b>. For the current data, the <b>%3$s</b> confidence bound is <b>%4$s</b> materiality. The conclusion \n                        on the basis of these results is that, with <b>%5$s</b> confidence, the population misstatement is <b>%6$s</b> than materiality."
+msgid "The objective of this substantive testing procedure was to determine with <b>%1$s</b> confidence whether the population misstatement is lower than materiality, in this case <b>%2$s</b>. For the current data, the <b>%3$s</b> confidence bound is <b>%4$s</b> materiality. The conclusion on the basis of these results is that, with <b>%5$s</b> confidence, the population misstatement is <b>%6$s</b> than materiality."
 msgstr ""
 
 msgid "<u>Report Badges</u>"
@@ -1129,6 +1141,12 @@ msgstr ""
 msgid "Support"
 msgstr ""
 
+msgid "The expected errors (grey dot) receive the highest probability. The red dot represents the materiality."
+msgstr ""
+
+msgid "The expected posterior has its upper confidence bound below materiality."
+msgstr ""
+
 msgid "<b>Figure %1$i.</b> The prior probability distribution <b>(%2$s)</b> on the misstatement in the population. The prior parameters <i>%3$s = %4$s, %5$s = %6$s</i> are derived from the assessments of the inherent and control risk, along with the expected errors. %7$s %8$s"
 msgstr ""
 
@@ -1151,6 +1169,9 @@ msgid "beta-binomial"
 msgstr ""
 
 msgid "Cox and Snell"
+msgstr ""
+
+msgid "The red dot represents the specified materiality. If the credible area under the distribution surpasses this point, the estimate of the maximum misstatement exceeds the materiality."
 msgstr ""
 
 msgid "<b>Figure %1$i.</b> The prior and posterior probability distribution <b>(%2$s)</b> on the misstatement in the population. %3$s"
@@ -1241,6 +1262,9 @@ msgid "Posterior Probabilities"
 msgstr ""
 
 msgid "Descriptives Plot"
+msgstr ""
+
+msgid "Adjusted Means"
 msgstr ""
 
 msgid "Bain Linear Regression"
@@ -1540,10 +1564,7 @@ msgstr ""
 msgid "Evidence for r H"
 msgstr ""
 
-msgid "Evidence~'for f'~H"
-msgstr ""
-
-msgid "Evidence~'for r'~H"
+msgid "Evidence for f H"
 msgstr ""
 
 msgid "Studies"
@@ -2185,7 +2206,7 @@ msgstr ""
 msgid "Kolmogorov-Smirnov"
 msgstr ""
 
-msgid "Cramer von Misses"
+msgid "Cram\303\251r-von Mises"
 msgstr ""
 
 msgid "Anderson-Darling"
@@ -2627,6 +2648,9 @@ msgid "Laplace"
 msgstr ""
 
 msgid "R%s cannot be computed due to lack of variance in the predictions.</i>"
+msgstr ""
+
+msgid "Predictive Performance Plot"
 msgstr ""
 
 msgid "Observed test values"
@@ -3520,10 +3544,22 @@ msgstr ""
 msgid "I ranges from %1$s to %2$s"
 msgstr ""
 
+msgid "Prior and Posterior Mass Table"
+msgstr ""
+
+msgid "Section"
+msgstr ""
+
+msgid "Mass"
+msgstr ""
+
 msgid "Equivalence Bayesian One Sample T-Test"
 msgstr ""
 
 msgid "Equivalence Bayesian Paired Samples T-Test"
+msgstr ""
+
+msgid "Equivalence Mass Table"
 msgstr ""
 
 msgid "Equivalence Independent Samples T-Test"
@@ -3670,15 +3706,6 @@ msgstr ""
 msgid "Rhat"
 msgstr ""
 
-msgid "mean"
-msgstr ""
-
-msgid "sd"
-msgstr ""
-
-msgid "median"
-msgstr ""
-
 msgid "Point est."
 msgstr ""
 
@@ -3689,6 +3716,9 @@ msgid "Effecive Sample Size"
 msgstr ""
 
 msgid "No data was supplied, everything was sampled from the priors!"
+msgstr ""
+
+msgid "Deviance cannot be computed without data."
 msgstr ""
 
 msgid "Failed to compute the Rhat statistic. This is expected if the model contains discrete parameters."
@@ -3760,7 +3790,7 @@ msgstr ""
 msgid "probability of success: p %s %s: 0 %s p %s 1"
 msgstr ""
 
-msgid "x %s %s: 0 %s x %s 1"
+msgid "x %s {0, 1}"
 msgstr ""
 
 msgid "p(1-p)"
@@ -3869,6 +3899,9 @@ msgid "does not exist unless df > 2"
 msgstr ""
 
 msgid "MANOVA"
+msgstr ""
+
+msgid "The design matrix is not invertible. This might be due to collinear dependent variables."
 msgstr ""
 
 msgid "no terms in scope"
@@ -4210,6 +4243,18 @@ msgstr ""
 msgid "Summary of Network"
 msgstr ""
 
+msgid "Network"
+msgstr ""
+
+msgid "Number of nodes"
+msgstr ""
+
+msgid "Number of non-zero edges"
+msgstr ""
+
+msgid "Sparsity"
+msgstr ""
+
 msgid "Data was binarized using %s."
 msgstr ""
 
@@ -4253,9 +4298,6 @@ msgid "Zhang"
 msgstr ""
 
 msgid "Clustering measures per variable"
-msgstr ""
-
-msgid "Network"
 msgstr ""
 
 msgid "Clustering measures could not be computed for network%1$s: %2$s"
@@ -4444,6 +4486,12 @@ msgstr ""
 msgid "No covariate could be entered in the model"
 msgstr ""
 
+msgid "Regression"
+msgstr ""
+
+msgid "Residual"
+msgstr ""
+
 msgid "Unstandardized"
 msgstr ""
 
@@ -4514,9 +4562,6 @@ msgid "Case Number"
 msgstr ""
 
 msgid "Predicted Value"
-msgstr ""
-
-msgid "Residual"
 msgstr ""
 
 msgid "Residuals Statistics"
@@ -4756,6 +4801,9 @@ msgstr ""
 msgid "Residual Deviance"
 msgstr ""
 
+msgid "%s%% Confidence Intervals"
+msgstr ""
+
 msgid "Vovk-Sellke Maximum <em>p</em>-Ratio: Based the <em>p</em>-value, \nthe maximum possible odds in favor of H%1$s over H%2$s equals \n1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 \n(Sellke, Bayarri, & Berger, 2001)."
 msgstr ""
 
@@ -4793,6 +4841,12 @@ msgid "%.0f%% Credible intervals"
 msgstr ""
 
 msgid "Scale Reliability Statistics"
+msgstr ""
+
+msgid "mean"
+msgstr ""
+
+msgid "sd"
 msgstr ""
 
 msgid "McDonald's %s"
@@ -5180,6 +5234,27 @@ msgid "For the Student t-test, effect size is given by Cohen's <em>d</em>. For t
 msgstr ""
 
 msgid "For all tests, the alternative hypothesis specifies that measurement one is %s than measurement two."
+msgstr ""
+
+msgid "Evidence for H1"
+msgstr ""
+
+msgid "Evidence for H0"
+msgstr ""
+
+msgid "Evidence for H+"
+msgstr ""
+
+msgid "Evidence for H-"
+msgstr ""
+
+msgid "Evidence for H1:"
+msgstr ""
+
+msgid "Evidence for H+:"
+msgstr ""
+
+msgid "Evidence for H-:"
 msgstr ""
 
 msgid "could not calculate enough valid Bayes Factors for different values of the prior"

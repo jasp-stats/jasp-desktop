@@ -126,7 +126,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # create the temp DMG file
-hdiutil create -srcfolder "${STAGING_DIR}" -volname "${VOL_NAME}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 800M "${DMG_TMP}"
+hdiutil create -srcfolder "${STAGING_DIR}" -volname "${VOL_NAME}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 900M "${DMG_TMP}"
 echo "Created DMG: ${DMG_TMP}"
 
 # mount it and save the device

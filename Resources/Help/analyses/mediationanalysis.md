@@ -56,4 +56,4 @@ References
 ==========
 
 - Jeremy C. Biesanz, Carl F. Falk & Victoria Savalei (2010) Assessing Mediational Models: Testing and Interval Estimation for Indirect Effects, Multivariate Behavioral Research, 45:4, 661-701, DOI: 10.1080/00273171.2010.498292
-- Rosseel, Y. (2012). Lavaan: An R package for structural equation modeling and more. Version 0.5–12 (BETA). Journal of statistical software, 48(2), 1-36.
+- Rosseel, Y. (2012). Lavaan: An R package for structural equation modeling and more. Version 0.5–12 (BETA). Journal of Statistical Software, 48(2), 1-36.

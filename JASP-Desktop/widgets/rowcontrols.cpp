@@ -26,7 +26,7 @@
 
 // Cannot do this code in the constructor: the Component create function will call the addJASPControl method (JASPControlBase, en ListView),
 // but to call the ListView needs to have already the instance of the RowControls to be able to call addJASPControl.
-void RowControls::init(int row, const QString& key)
+void RowControls::init(int row, const QString& key, bool isNew)
 {
 	QMLListView* listView = _parentModel->listView();
 	int col = 0;
@@ -39,7 +39,7 @@ void RowControls::init(int row, const QString& key)
 		context->setContextProperty("form", listView->form());
 		context->setContextProperty("listView", listView);
 		context->setContextProperty("colIndex", col);
-		context->setContextProperty("isNew", true);
+		context->setContextProperty("isNew", isNew);
 		context->setContextProperty("fromRowComponents", _rowControlsVarMap);
 		context->setContextProperty("rowIndex",	row);
 		context->setContextProperty("rowValue", key);

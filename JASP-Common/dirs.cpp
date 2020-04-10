@@ -45,6 +45,7 @@
 #include "processinfo.h"
 #include "utils.h"
 #include "appinfo.h"
+#include <iostream>
 
 using namespace std;
 using namespace boost;
@@ -251,7 +252,11 @@ string Dirs::exeDir()
 	if (ret >= sizeof(buf))
 		throw Exception("Executable directory could not be retrieved: insufficient buffer size");
 
-    for (int i = ret; i > 0; i--)
+	buf[ret] = '\0';
+
+	//std::cout << "looking for exeDir in buff: '" << buf << "'\n" << std::flush;
+
+	for (int i = ret-1; i > 0; i--)
     {
         if (buf[i] == '/')
         {
@@ -260,7 +265,11 @@ string Dirs::exeDir()
         }
     }
 
-	return string(buf);
+	std::string exe = string(buf);
+
+	//std::cout << "exeDir found: '" << exe << "'\n" << std::flush;
+
+	return exe;
 
 #endif
 

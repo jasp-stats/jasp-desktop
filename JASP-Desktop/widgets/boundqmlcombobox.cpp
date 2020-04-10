@@ -155,6 +155,14 @@ void BoundQMLComboBox::setUp()
 	}
 	
 	_setCurrentValue(_currentIndex, true, false);
+
+	QQuickItem::connect(_item, SIGNAL(valuesChanged()), this, SLOT(valuesChangedHandler()));
+}
+
+void BoundQMLComboBox::valuesChangedHandler()
+{
+	resetValues();
+	_resetOptions();
 }
 
 void BoundQMLComboBox::resetValues()
@@ -179,6 +187,11 @@ void BoundQMLComboBox::resetValues()
 }
 
 void BoundQMLComboBox::modelChangedHandler()
+{
+	_resetOptions();
+}
+
+void BoundQMLComboBox::_resetOptions()
 {
 	std::vector<std::string> options;
 	const Terms& terms = _model->terms();

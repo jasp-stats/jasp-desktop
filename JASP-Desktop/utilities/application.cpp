@@ -32,8 +32,6 @@ Application::Application(int &argc, char **argv, QString filePath, bool unitTest
 
 	_mainWindow = new MainWindow(this);
 
-	QStringList args = QApplication::arguments();
-
 	if(unitTest)
 		_mainWindow->testLoadedJaspFile(timeOut, save);
 

@@ -110,8 +110,10 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 		}
 		else
 		{
-			const std::string remoteDebuggingPort = "--remote-debugging-port=",
-								qmlJsDebug = "-qmljsdebugger";
+			const std::string	remoteDebuggingPort = "--remote-debugging-port=",
+								qmlJsDebug			= "-qmljsdebugger",
+								dashing				= "--";
+
 			auto startsWith = [&](const std::string checkThis)
 			{
 				return args[arg].size() > checkThis.size() && args[arg].substr(0, checkThis.size()) == checkThis;
@@ -121,17 +123,25 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & unitT
 				arg++; // because it is always followed by the actual platform one wants to use (minimal for example)
 			else if(!(startsWith(remoteDebuggingPort) || startsWith(qmlJsDebug))) //Just making sure it isnt something else that should be allowed.
 			{
-				//if it isn't anything else it must be a file to open right?
-				// Well yes, but it might also be the url of an OSF file, then we do not need to check if it exists.
-
-				QFileInfo openMe(QString::fromStdString(args[arg]));
-
-				if(startsWith("https:") || startsWith("http:") || openMe.exists())
-					filePath = args[arg];
+				if(startsWith(dashing))
+				{
+					//So, it looks like an option, but not one we recognize, maybe it is meant for qt/chromium
+					std::cout << "Argument '" << args[arg] << "' was not recognized by JASP, but it might be recognized by one of it's components in Qt (such as chromium), it will be passed on. If you really expected JASP to do something with it check '--help' again." << std::endl;
+				}
 				else
 				{
-					std::cerr << "File to open " << args[arg] << " does not exist!" << std::endl;
-					letsExplainSomeThings = true;
+					//if it isn't anything else it must be a file to open right?
+					// Well yes, but it might also be the url of an OSF file, then we do not need to check if it exists.
+
+					QFileInfo openMe(QString::fromStdString(args[arg]));
+
+					if(startsWith("https:") || startsWith("http:") || openMe.exists())
+						filePath = args[arg];
+					else
+					{
+						std::cerr << "File to open " << args[arg] << " does not exist!" << std::endl;
+						letsExplainSomeThings = true;
+					}
 				}
 			}
 		}
@@ -259,11 +269,19 @@ int main(int argc, char *argv[])
 
 	QString filePathQ(QString::fromStdString(filePath));
 
+	//Now, to allow us to add some arguments we store the ones we got in a vector
+	std::vector<std::string> args(argv, argv + argc);
+
 	if(!dirTest)
 		//try
 		{
 			if(safeGraphics)
+			{
+				std::cout << "Setting special options for software rendering (aka safe graphics)." << std::endl;
 				QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+				args.push_back("--disable-gpu");
+				putenv("LIBGL_ALWAYS_SOFTWARE=1");
+			}
 
 			QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
@@ -276,9 +294,30 @@ int main(int argc, char *argv[])
 			QQuickWindow::setTextRenderType(QQuickWindow::NativeTextRendering); //Doesn't improve it on anything 'cept windows
 #endif
 
+			//Now we convert all these strings in args back to an int and a char * array.
+			//But to keep things easy, we are going to copy the old argv to avoid duplication (or messing up the executable name)
+			char** argvs = new char*[args.size()];
+
+
+			std::cout << "Making new argument list for Application startup:";
+
+			for(size_t i = 0; i< args.size(); i++)
+				{
+					argvs[i] = new char[				args[i].size() + 1]; // +1 for null delimiter
+					memset(argvs[i], '\0',				args[i].size() + 1);
+					memcpy(argvs[i], args[i].data(),	args[i].size());
+					argvs[i][							args[i].size()] = '\0';
+					std::cout << " " << argvs[i];
+				}
+
+			std::cout << "\nStarting JASP" << std::endl;
+
+			int		argvsize  = args.size();
+			//To be all neat we should clean up all this stuff after we are done running JASP, but on the other hand the memory will be thrown out anyway after exit so why bother.
 
 			JASPTIMER_START("JASP");
-			Application a(argc, argv, filePathQ, unitTest, timeOut, save, logToFile);
+
+			Application a(argvsize, argvs, filePathQ, unitTest, timeOut, save, logToFile);
 
 			QtWebEngine::initialize(); //We can do this here and not in MainWindow::loadQML() (before QQmlApplicationEngine is instantiated) because that is called from a singleshot timer. And will only be executed once we enter a.exec() below!
 

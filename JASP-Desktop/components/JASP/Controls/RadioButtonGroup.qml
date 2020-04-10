@@ -40,6 +40,7 @@ JASPControl
 			property alias	text:					control.title
 			property int	leftPadding:			jaspTheme.groupContentPadding
 			property alias	alignChildrenTopLeft:	contentArea.alignChildrenTopLeft
+			property string	value:					""
 
     signal clicked(var item)
 

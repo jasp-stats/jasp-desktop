@@ -186,7 +186,7 @@ void QMLListView::addRowComponentsDefaultOptions(Options *options)
 		delete _defaultRowControls;
 
 	_defaultRowControls = new RowControls(this->model(), item()->getRowComponents(), QMap<QString, Option*>(), true);
-	_defaultRowControls->init(0, _defaultKey);
+	_defaultRowControls->init(0, _defaultKey, true);
 
 	const QMap<QString, JASPControlWrapper*>& map = _defaultRowControls->getJASPControlsMap();
 	QMapIterator<QString, JASPControlWrapper*> it(map);
