@@ -179,7 +179,7 @@ EquivalenceIndependentSamplesTTest <- function(jaspResults, dataset, options) {
                                             t             = results$ttestTvalue,
                                             df            = results$ttestDf,
                                             p             = results$ttestP), 
-                                       rowNames = variable)
+                                            rowNames = variable)
       
       # TOST upper:
       equivalenceIndTTestTable$addRows(list(variable      = "",
