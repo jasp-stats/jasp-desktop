@@ -35,12 +35,12 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
-	<release version="0.12" date="2020-02-05">
+	<release version="0.12" date="2020-20-04">
 			<description>
 				Updated R to 3.6.1 and rewrote (almost) all analyses to make use of new internal API (jaspResults).
 				Added a dark theme and support for dutch language.
 				Modules added: Bayesian meta-analysis, JAGS, Discover Distributions, Visual Modeling and Equivalence Testing.
-				And much more, see our homepage for more information!
+				And much more, see our blog for more information!
 			</description>
 		</release>
 		<release version="0.11.1" date="2019-10-11">
