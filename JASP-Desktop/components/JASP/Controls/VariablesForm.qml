@@ -57,7 +57,9 @@ Item
 		{
 			// Apparently a Qt bug: the height is not always recalculated by the GridLayout when the language is changed.
 			// Force this by changing temporarily the Layout.preferredHeight
-			variablesForm.Layout.preferredHeight = 0
+			// This fixes jasp-stats/jasp-test-release#731, but with Qt5.14.2, if preferredHeight is temporarly set to 0, it does not set it back to the original value afterwards.
+			// So set it to slightly higher value, and then it works....
+			variablesForm.Layout.preferredHeight = variablesForm.preferredHeight + .1
 			variablesForm.Layout.preferredHeight = Qt.binding(function() { return variablesForm.preferredHeight; })
 		}
 	}
