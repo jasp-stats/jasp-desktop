@@ -150,7 +150,9 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   if (ready)
     equivalenceBayesianPairedTTestTable$setExpectedSize(length(options$pairs))
 
-  message <- gettextf("I ranges from %1$s to %2$s", options$lowerbound, options$upperbound)
+  message <- gettextf("I ranges from %1$s to %2$s", 
+                      ifelse(options$lowerbound == -Inf, "-\u221E", options$lowerbound), 
+                      ifelse(options$upperbound == Inf, "\u221E", options$upperbound))
   equivalenceBayesianPairedTTestTable$addFootnote(message)
 
   jaspResults[["equivalenceBayesianPairedTTestTable"]] <- equivalenceBayesianPairedTTestTable
@@ -175,33 +177,37 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
       equivalenceBayesianPairedTTestTable$addFootnote(message = results$errorFootnotes, rowNames = namePair, colNames = "statistic")
       equivalenceBayesianPairedTTestTable$addRows(list(variable1 = pair[[1L]], separator = "-", variable2 = pair[[2L]], statistic = NaN), rowNames = namePair)
     } else {
+      error_in_alt <- (results$errorPrior + results$errorPosterior) / results$bfEquivalence
       equivalenceBayesianPairedTTestTable$addRows(list(variable1     = pair[[1L]],
                                                        separator     = "-",
                                                        variable2     = pair[[2L]],
-                                                       statistic     = "\U003B4 \U02208 I vs. H1",
+                                                       statistic     = "\U003B4 \U02208 I vs. H\u2081",
                                                        bf            = results$bfEquivalence,
-                                                       error         = (results$errorPrior + results$errorPosterior) / results$bfEquivalence))
+                                                       error         = ifelse(error_in_alt == Inf, "NA", error_in_alt)))
 
+      error_notin_alt <- (results$errorPrior + results$errorPosterior) / results$bfNonequivalence
       equivalenceBayesianPairedTTestTable$addRows(list(variable1     = " ",
                                                        separator     = " ",
                                                        variable2     = " ",
-                                                       statistic     = "\U003B4 \U02209 I vs. H1",
+                                                       statistic     = "\U003B4 \U02209 I vs. H\u2081",
                                                        bf            = results$bfNonequivalence,
-                                                       error         = (results$errorPrior + results$errorPosterior) / results$bfNonequivalence))
+                                                       error         = ifelse(error_notin_alt == Inf, "NA", error_notin_alt)))
 
+      error_in_notin <- (2*(results$errorPrior + results$errorPosterior)) / (results$bfEquivalence / results$bfNonequivalence)
       equivalenceBayesianPairedTTestTable$addRows(list(variable1     = " ",
                                                        separator     = " ",
                                                        variable2     = " ",
                                                        statistic     = "\U003B4 \U02208 I vs. \U003B4 \U02209 I",
                                                        bf            = results$bfEquivalence / results$bfNonequivalence,
-                                                       error         = (2*(results$errorPrior + results$errorPosterior)) / (results$bfEquivalence / results$bfNonequivalence)))
+                                                       error         = ifelse(error_in_notin == Inf, "NA", error_in_notin)))
 
+      error_notin_in <- (2*(results$errorPrior + results$errorPosterior)) / (1/(results$bfEquivalence / results$bfNonequivalence))
       equivalenceBayesianPairedTTestTable$addRows(list(variable1     = " ",
                                                        separator     = " ",
                                                        variable2     = " ",
                                                        statistic     = "\U003B4 \U02209 I vs. \U003B4 \U02208 I",
                                                        bf            = 1 / (results$bfEquivalence / results$bfNonequivalence),
-                                                       error         = (2*(results$errorPrior + results$errorPosterior)) / (1/(results$bfEquivalence / results$bfNonequivalence))))
+                                                       error         = ifelse(error_notin_in == Inf, "NA", error_notin_in)))
     }
   }
 
@@ -300,25 +306,25 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
       equivalenceMassPairedTTestTable$addRows(list(variable1     = pair[[1L]],
                                                    separator     = "-",
                                                    variable2     = pair[[2L]],
-                                                   section       = "p(\U003B4 \U02208 I | H1)",
+                                                   section       = "p(\U003B4 \U02208 I | H\u2081)",
                                                    mass          = results$integralEquivalencePrior))
 
       equivalenceMassPairedTTestTable$addRows(list(variable1     = " ",
                                                    separator     = " ",
                                                    variable2     = " ",
-                                                   section       = "p(\U003B4 \U02208 I | H1, y)",
+                                                   section       = "p(\U003B4 \U02208 I | H\u2081, data)",
                                                    mass          = results$integralEquivalencePosterior))
 
       equivalenceMassPairedTTestTable$addRows(list(variable1     = " ",
                                                    separator     = " ",
                                                    variable2     = " ",
-                                                   section       = "p(\U003B4 \U02209 I | H1)",
+                                                   section       = "p(\U003B4 \U02209 I | H\u2081)",
                                                    mass          = results$integralNonequivalencePrior))
 
       equivalenceMassPairedTTestTable$addRows(list(variable1     = " ",
                                                    separator     = " ",
                                                    variable2     = " ",
-                                                   section       = "p(\U003B4 \U02209 I | H1, y)",
+                                                   section       = "p(\U003B4 \U02209 I | H\u2081, data)",
                                                    mass          = results$integralNonequivalencePosterior))
     }
   }
