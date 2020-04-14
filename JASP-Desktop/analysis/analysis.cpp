@@ -425,10 +425,13 @@ std::string Analysis::qmlFormPath() const
 				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
 }
 
-void Analysis::replaceVariableName(std::string oldName, std::string newName)
+void Analysis::replaceVariableName(const std::string & oldName, const std::string & newName)
 {
 	if (_options)
 		_options->replaceVariableName(oldName, newName);
+
+	if (_analysisForm)
+		_analysisForm->replaceVariableNameInListModels(oldName, newName);
 }
 
 void Analysis::runScriptRequestDone(const QString& result, const QString& controlName)

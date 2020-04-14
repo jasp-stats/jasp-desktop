@@ -18,72 +18,30 @@
 
 #include "term.h"
 #include "utilities/qutils.h"
-
 #include <sstream>
 
+Term::Term(const std::vector<std::string>	components)	{ initFrom(tql(components));	}
+Term::Term(const std::string				component)	{ initFrom(tq(component));		}
+Term::Term(const QStringList				components)	{ initFrom(components);			}
+Term::Term(const QString					component)	{ initFrom(component);			}
 
-using namespace std;
-
-Term::Term(const std::vector<string> components)
+void Term::initFrom(const QStringList components)
 {
-	bool first = true;
-
-	for (const string &component : components)
-	{
-		if (first)
-			first = false;
-		else
+	const char * separator =
 #ifdef _WIN32
-			_asString.append(" * ");
+			" * ";
 #else
-			_asString.append(" \xE2\x88\x97 ");
+			" \xE2\x88\x97 ";
 #endif
 
-		_asString.append(component);
-		_components.append(tq(component));
-		_scomponents.push_back(component);
-	}
-
-	_asQString = tq(_asString);
+	_asQString	= components.join(separator);
+	_components = components;
 }
 
-Term::Term(const string component)
-{
-	_components.append(tq(component));
-	_scomponents.push_back(component);
-	_asString = component;
-	_asQString = tq(component);
-}
-
-Term::Term(const QStringList components)
-{
-	bool first = true;
-
-	for (const QString &component : components)
-	{
-		if (first)
-			first = false;
-		else
-#ifdef _WIN32
-			_asQString.append(" * ");
-#else
-			_asQString.append(" \xE2\x88\x97 ");
-#endif
-
-		_asQString += component;
-		_components.append(component);
-		_scomponents.push_back(fq(component));
-	}
-
-	_asString = fq(_asQString);
-}
-
-Term::Term(const QString component)
+void Term::initFrom(const QString component)
 {
 	_components.append(component);
-	_scomponents.push_back(fq(component));
 	_asQString = component;
-	_asString = fq(component);
 }
 
 const QStringList &Term::components() const
@@ -91,19 +49,19 @@ const QStringList &Term::components() const
 	return _components;
 }
 
-const std::vector<string> &Term::scomponents() const
+std::vector<std::string> Term::scomponents() const
 {
-	return _scomponents;
+	return fq(_components);
 }
 
-const string &Term::asString() const
+std::string Term::asString() const
 {
-	return _asString;
+	return fq(_asQString);
 }
 
-bool Term::contains(const string &component) const
+bool Term::contains(const QString &component) const
 {
-	for(const string &termComponent : _scomponents)
+	for(const QString &termComponent : _components)
 		if (component == termComponent)
 			return true;
 
@@ -112,7 +70,7 @@ bool Term::contains(const string &component) const
 
 bool Term::containsAll(const Term &term) const
 {
-	for(const string &termComponent : term._scomponents)
+	for(const QString &termComponent : term._components)
 		if ( ! contains(termComponent))
 			return false;
 
@@ -121,7 +79,7 @@ bool Term::containsAll(const Term &term) const
 
 bool Term::containsAny(const Term &term) const
 {
-	for(const string &termComponent : _scomponents)
+	for(const QString &termComponent : _components)
 		if (term.contains(termComponent))
 			return true;
 
@@ -164,4 +122,13 @@ bool Term::operator!=(const Term &other) const
 size_t Term::size() const
 {
 	return _components.size();
+}
+
+void Term::replaceVariableName(const std::string & oldName, const std::string & newName)
+{
+	for(int i=0; i<_components.size(); i++)
+		if(_components[i] == tq(oldName))
+			_components[i] = tq(newName);
+
+	initFrom(_components);
 }

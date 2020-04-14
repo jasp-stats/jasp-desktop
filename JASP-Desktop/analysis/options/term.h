@@ -29,21 +29,22 @@ class Term
 {
 public:
 	Term(const std::vector<std::string> components);
-	Term(const std::string component);
-	Term(const QStringList components);
-	Term(const QString component);
+	Term(const std::string				component);
+	Term(const QStringList				components);
+	Term(const QString					component);
 
-	const QStringList &components() const;
-	const std::vector<std::string> &scomponents() const;
-	const QString &asQString() const;
-	const std::string &asString() const;
+	const QStringList			& components()	const;
+	const QString				& asQString()	const;
+
+	std::vector<std::string>	scomponents()	const;
+	std::string					asString()		const;
 
 	typedef QStringList::const_iterator const_iterator;
-	typedef QStringList::iterator iterator;
+	typedef QStringList::iterator		iterator;
 
-	bool contains(const std::string &component) const;
-	bool containsAll(const Term &term) const;
-	bool containsAny(const Term &term) const;
+	bool contains(		const QString	& component)	const;
+	bool containsAll(	const Term		& term)			const;
+	bool containsAny(	const Term		& term)			const;
 
 	iterator begin();
 	iterator end();
@@ -55,11 +56,14 @@ public:
 
 	size_t size() const;
 
+	void replaceVariableName(const std::string & oldName, const std::string & newName);
+
 private:
-	QStringList _components;
-	std::vector<std::string> _scomponents;
-	std::string _asString;
-	QString _asQString;
+	void initFrom(const QStringList components);
+	void initFrom(const QString		component);
+
+	QStringList		_components;
+	QString			_asQString;
 
 };
 

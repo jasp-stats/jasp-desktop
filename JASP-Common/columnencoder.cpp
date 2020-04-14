@@ -55,9 +55,30 @@ ColumnEncoder::ColumnEncoder(std::string prefix, std::string postfix)
 	_otherEncoders->insert(this);
 }
 
+ColumnEncoder::ColumnEncoder(const std::map<std::string, std::string> & decodeDifferently)
+	: _encodePrefix("JASPColumn_."), _encodePostfix("._For_Replacement")
+{
+
+	std::vector<std::string> originalNames;
+	originalNames.reserve(decodeDifferently.size());
+
+	for(const auto & oriNew : decodeDifferently)
+		originalNames.push_back(oriNew.first);
+
+	setCurrentNames(originalNames);
+
+	for(const std::string & encodedName : _encodedNames)
+		if(decodeDifferently.count(_decodingMap[encodedName]) > 0)
+			_decodingMap[encodedName] = decodeDifferently.at(_decodingMap[encodedName]);
+}
+
 ColumnEncoder::~ColumnEncoder()
 {
-	if(this != _columnEncoder)	_otherEncoders->erase(this);
+	if(this != _columnEncoder)
+	{
+		if(_otherEncoders && _otherEncoders->count(this) > 0) //The special "replacer-encoder" doesn't add itself to otherEncoders.
+			_otherEncoders->erase(this);
+	}
 	else
 	{
 		_columnEncoder = nullptr;
@@ -254,15 +275,20 @@ std::string	ColumnEncoder::replaceAll(std::string text, const std::map<std::stri
 
 std::string ColumnEncoder::encodeRScript(std::string text, std::set<std::string> * columnNamesFound)
 {
+	return encodeRScript(text, encodingMap(), originalNames(), columnNamesFound);
+}
+
+std::string ColumnEncoder::encodeRScript(std::string text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, std::set<std::string> * columnNamesFound)
+{
 	if(columnNamesFound)
 		columnNamesFound->clear();
 
 	static std::regex nonNameChar("[^\\.A-Za-z0-9_]");
 
 	//for now we simply replace any found columnname by its Base64 variant if found
-	for(const std::string & oldCol : originalNames())
+	for(const std::string & oldCol : names)
 	{
-		std::string	newCol	= encodingMap().at(oldCol);
+		std::string	newCol	= map.at(oldCol);
 
 		std::vector<size_t> foundColPositions = getPositionsColumnNameMatches(text, oldCol);
 		std::reverse(foundColPositions.begin(), foundColPositions.end());
@@ -418,4 +444,31 @@ void ColumnEncoder::collectExtraEncodingsFromMetaJson(const Json::Value & json, 
 	default:
 		return;
 	}
+}
+
+std::string ColumnEncoder::removeColumnNamesFromRScript(const std::string & rCode, const std::vector<std::string> & colsToRemove)
+{
+	std::map<std::string, std::string> replaceBy;
+
+	for(const std::string & col : colsToRemove)
+		replaceBy[col] = "stop('column " + col + " was removed from this RScript')";
+
+	return replaceColumnNamesInRScript(rCode, replaceBy);
+}
+
+std::string ColumnEncoder::replaceColumnNamesInRScript(const std::string & rCode, const std::map<std::string, std::string> & changedNames)
+{
+	//Ok the trick here is to reuse the encoding code, we will first encode the original names and then change the encodings to point back to the replaced names.
+	ColumnEncoder tempEncoder(changedNames);
+
+	return
+		tempEncoder.replaceAll(
+			tempEncoder.encodeRScript(
+				rCode,
+				tempEncoder._encodingMap,
+				tempEncoder._originalNames
+			),
+			tempEncoder._decodingMap,
+			tempEncoder._encodedNames
+		);
 }

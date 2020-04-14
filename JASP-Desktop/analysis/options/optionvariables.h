@@ -37,8 +37,8 @@ public:
 	void						removeName(std::string name)									override;
 
 	std::set<std::string>		usedVariables()											const	override;
-	void						removeUsedVariable(std::string var)								override;
-	void						replaceVariableName(std::string oldName, std::string newName)	override	{ replaceName(oldName, newName); }
+	void						removeUsedVariable(const std::string & var)								override;
+	void						replaceVariableName(const std::string & oldName, const std::string & newName)	override	{ replaceName(oldName, newName); }
 
 	void						setExtraEncodings(bool theyAreIt)											{ _extraEncodings = theyAreIt; }
 

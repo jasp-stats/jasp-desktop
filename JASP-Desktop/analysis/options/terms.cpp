@@ -23,6 +23,7 @@
 
 #include <QDataStream>
 #include <QIODevice>
+#include "utilities/qutils.h"
 using namespace std;
 
 Terms::Terms(const QList<QList<QString> > &terms, Terms *parent)
@@ -203,7 +204,12 @@ bool Terms::contains(const Term &term) const
 	return std::find(_terms.begin(), _terms.end(), term) != _terms.end();
 }
 
-bool Terms::contains(const string component)
+bool Terms::contains(const std::string & component)
+{
+	return contains(tq(component));
+}
+
+bool Terms::contains(const QString & component)
 {
 	for(const Term &term : _terms)
 	{
@@ -389,9 +395,9 @@ bool Terms::operator!=(const Terms &terms) const
 	return _terms != terms._terms;
 }
 
-void Terms::set(QByteArray &array)
+void Terms::set(const QByteArray & array)
 {
-	QDataStream stream(&array, QIODevice::ReadOnly);
+	QDataStream stream(array);
 
 	if (stream.atEnd())
 		throw exception();
@@ -535,7 +541,7 @@ bool Terms::discardWhatDoesContainTheseComponents(const Terms &terms)
 			[&](Term& existingTerm)
 			{
 				for (const Term &term : terms)
-					for (const string &component : term.scomponents())
+					for (const QString &component : term.components())
 						if (existingTerm.contains(component))
 						{
 							changed			= true;
@@ -635,3 +641,9 @@ void Terms::remove(const Term &term)
 		_terms.erase(itr);
 }
 
+void Terms::replaceVariableName(const std::string & oldName, const std::string & newName)
+{
+	for(Term & t : _terms)
+		t.replaceVariableName(oldName, newName);
+
+}

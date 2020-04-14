@@ -223,8 +223,10 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
 	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
 
-	connect(_package,				&DataSetPackage::refreshAnalysesWithColumn,			this,					&MainWindow::refreshAnalysesUsingColumn,					Qt::QueuedConnection);
-	connect(_package,				&DataSetPackage::dataSynched,						this,					&MainWindow::refreshAnalysesUsingColumns,					Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::refreshAnalysesWithColumn,			_analyses,				&Analyses::refreshAnalysesUsingColumn,						Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::datasetChanged,					_analyses,				&Analyses::refreshAnalysesUsingColumns,						Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::datasetChanged,					_filterModel,			&FilterModel::datasetChanged,									Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::datasetChanged,					_computedColumnsModel,	&ComputedColumnsModel::datasetChanged,							Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
 	connect(_package,				&DataSetPackage::freeDatasetSignal,					_loader,				&AsyncLoader::free											);
@@ -311,7 +313,7 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::currentThemeNameChanged,			_resultsJsInterface,	&ResultsJsInterface::setThemeCss							);
 
 
-	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses								);
+	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
 	connect(_filterModel,			&FilterModel::updateColumnsUsedInConstructedFilter, _package,				&DataSetPackage::setColumnsUsedInEasyFilter					);
 	connect(_filterModel,			&FilterModel::filterUpdated,						_package,				&DataSetPackage::refresh									);
 	connect(_filterModel,			&FilterModel::sendFilter,							_engineSync,			&EngineSync::sendFilter										);
@@ -633,40 +635,6 @@ void MainWindow::packageChanged()
 	setWindowTitle(title);
 }
 
-void MainWindow::refreshAnalysesUsingColumn(QString columnName)
-{
-	refreshAnalysesUsingColumns({columnName}, {}, {}, false, false);
-}
-
-
-void MainWindow::refreshAnalysesUsingColumns(	QStringList				changedColumns,
-												QStringList				missingColumns,
-												QMap<QString, QString>	changeNameColumns,
-												bool					rowCountChanged,
-												bool					hasNewColumns)
-{
-	std::map<std::string, std::string> changeNameColumnsStd = fq(changeNameColumns);
-
-	std::vector<std::string> oldColumnNames;
-
-	for (auto & keyval : changeNameColumnsStd)
-		oldColumnNames.push_back(keyval.first);
-
-	sort(changedColumns.begin(), changedColumns.end()); //Why are we sorting here?
-	sort(missingColumns.begin(), missingColumns.end());
-	sort(oldColumnNames.begin(), oldColumnNames.end());
-
-	std::vector<std::string> changedColumnsStd(fq(changedColumns));
-	std::vector<std::string> missingColumnsStd(fq(missingColumns));
-
-	_analyses->refreshAnalysesUsingColumns(changedColumnsStd, missingColumnsStd, changeNameColumnsStd, oldColumnNames, hasNewColumns);
-	if(rowCountChanged)
-	{
-		QTimer::singleShot(0, _analyses, &Analyses::refreshAllAnalyses);
-	}
-
-	_computedColumnsModel->packageSynchronized(changedColumnsStd, missingColumnsStd, changeNameColumnsStd, rowCountChanged);
-}
 
 void MainWindow::setImageBackgroundHandler(QString)
 {

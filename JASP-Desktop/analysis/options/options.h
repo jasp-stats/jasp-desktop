@@ -51,10 +51,10 @@ public:
 	Option*		get(int index)							const				{ return _options.at(size_t(index)).second; }
 	void		get(int index, std::string &name, Option *&option);	
 
-	std::set<std::string>	usedVariables()													const	override;
-	void					removeUsedVariable(std::string var)										override;
-	void					replaceVariableName(std::string oldName, std::string newName)			override;
-	std::set<std::string>	columnsCreated()														override;
+	std::set<std::string>	usedVariables()																	const	override;
+	void					removeUsedVariable(const std::string & var)												override;
+	void					replaceVariableName(const std::string & oldName, const std::string & newName)			override;
+	std::set<std::string>	columnsCreated()																		override;
 	void					replaceKey(const std::string& oldKey, const std::string& newKey);
 
 	class Names

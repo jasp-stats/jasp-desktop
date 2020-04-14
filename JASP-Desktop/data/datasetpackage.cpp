@@ -756,7 +756,7 @@ void DataSetPackage::endSynchingData(std::vector<std::string>			&	changedColumns
 	_dataSet->setSynchingData(false);
 
 	//We convert all of this stuff to qt containers even though this takes time etc. Because it needs to go through a (queued) connection and it might not work otherwise
-	emit dataSynched(tql(changedColumns), tql(missingColumns), tq(changeNameColumns), rowCountChanged, hasNewColumns);
+	emit datasetChanged(tql(changedColumns), tql(missingColumns), tq(changeNameColumns), rowCountChanged, hasNewColumns);
 	endLoadingData();
 }
 
@@ -1356,6 +1356,8 @@ void DataSetPackage::removeColumn(std::string name)
 	endResetModel();
 
 	if(isLoaded()) setModified(true);
+
+	emit datasetChanged({}, {tq(name)}, {}, false, false);
 }
 
 std::vector<bool> DataSetPackage::filterVector()
