@@ -67,9 +67,9 @@ The null hypothesis that the population mean is equal to the test value.
 - The first column contains the dependent variable.
 - Section: The section under which the mass is calculated.
   - p(&delta; &in; I | H<sub>1</sub>): Section inside the equivalence region of the prior distribution.
-  - p(&delta; &in; I | H<sub>1</sub>, y): Section inside the equivalence region of the posterior distribution.
+  - p(&delta; &in; I | H<sub>1</sub>, data): Section inside the equivalence region of the posterior distribution.
   - p(&delta; &notin; I | H<sub>1</sub>): Section outside the equivalence region of the prior distribution.
-  - p(&delta; &notin; I | H<sub>1</sub>, y): Section outside the equivalence region of the posterior distribution.
+  - p(&delta; &notin; I | H<sub>1</sub>, data): Section outside the equivalence region of the posterior distribution.
 - Mass: Displays the mass under the specified section.
 
 #### Plots
