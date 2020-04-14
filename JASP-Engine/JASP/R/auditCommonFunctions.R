@@ -221,6 +221,98 @@
 }
 
 ################################################################################
+################## The Separate Audit Selection Analysis #######################
+################################################################################
+
+.auditSelectionAnalysis <- function(options,
+                                    jaspResults){
+
+  selectionContainer <- createJaspContainer(title = "")
+  selectionContainer$position <- 1
+  selectionContainer$dependOn(options = c("recordNumberVariable",
+                                          "monetaryVariable",
+                                          "additionalVariables",
+                                          "rankingVariable",
+                                          "selectionMethod",
+                                          "selectionType",
+                                          "seed",
+                                          "intervalStartingPoint",
+                                          "sampleSize"))
+
+  jaspResults[["selectionContainer"]] <- selectionContainer
+
+  # Read in data
+  dataset <- .auditReadDataSelectionAnalysis(options,
+                                             jaspResults)
+
+  if(!is.null(dataset) && options[["sampleSize"]] >= nrow(dataset)){
+    selectionContainer$setError(gettextf("Your sample size is larger than your population size. Cannot take a sample larger than the population."))
+  }
+
+  options[["materiality"]] <- ifelse(options[["selectionType"]] == "musSampling",
+                                     yes = "materialityAbsolute",
+                                     no = "materialityRelative")
+
+  planningOptions <- list("valuta" = "$")
+  planningOptions[["populationSize"]] <- ifelse(is.null(dataset),
+                                                yes = 0,
+                                                no = nrow(dataset))
+
+  if(options[["monetaryVariable"]] != "")
+    planningOptions[["populationValue"]] <- sum(dataset[, .v(options[["monetaryVariable"]])])
+
+  planningState <- list("sampleSize" = options[["sampleSize"]])
+
+  # Perform error checks
+  .auditProcedureErrorChecks(options,
+                            dataset)
+
+  # Perform the sampling
+  selectionState <- .auditSampling(dataset,
+                                   options,
+                                   planningState,
+                                   selectionContainer = NULL)
+
+  # Create explanatory text for the selection
+  .auditExplanatoryTextSelection(options,
+                                 planningOptions,
+                                 planningState,
+                                 selectionState,
+                                 selectionContainer,
+                                 positionInContainer = 1)
+
+  # --- TABLES
+
+  # Create a state to keep track of table numbers
+  .auditCreateTableNumber(jaspResults)
+
+  # Create a table containing information about the selection process
+  .auditSelectionSummaryTable(options,
+                              planningOptions,
+                              planningState,
+                              selectionState,
+                              selectionContainer,
+                              jaspResults,
+                              positionInContainer = 2)
+
+  # Create a table containing descriptive statistics of the sample
+  .auditSelectionDescriptivesTable(options,
+                                   selectionState,
+                                   selectionContainer,
+                                   jaspResults,
+                                   positionInContainer = 3)
+
+  # Create a table displaying the selection
+  .auditSelectionSampleTable(options,
+                             selectionState,
+                             selectionContainer,
+                             jaspResults,
+                             positionInContainer = 4)
+
+  # ---
+}
+
+################################################################################
 ################## Common functions for the figure and table numbers ###########
 ################################################################################
 
@@ -1879,6 +1971,36 @@
   # ---
 }
 
+.auditReadDataSelectionAnalysis <- function(options,
+                                            jaspResults){
+
+  recordNumberVariable <- options[["recordNumberVariable"]]
+  if(recordNumberVariable == "")
+    recordNumberVariable <- NULL
+
+  monetaryVariable <- options[["monetaryVariable"]]
+  if(monetaryVariable == "")
+    monetaryVariable <- NULL
+
+  rankingVariable <- options[["rankingVariable"]]
+  if(rankingVariable == "")
+    rankingVariable <- NULL
+
+  additionalVariables <- unlist(options[["additionalVariables"]])
+  variables <- c(recordNumberVariable, monetaryVariable, rankingVariable, additionalVariables)
+
+  if(!is.null(variables)){
+
+    dataset <- .readDataSetToEnd(columns.as.numeric = variables)
+    return(dataset)
+
+  } else {
+
+    return(NULL)
+
+  }
+}
+
 .auditAddSelectionColumns <- function(options, 
                                       jaspResults){
 
@@ -1950,7 +2072,7 @@
                                   "systematicSampling" = gettext("fixed interval"), 
                                   "cellSampling" = gettext("cell"))
 
-    if(!is.null(selectionState[["musFailed"]])){
+    if(!is.null(selectionState) && !is.null(selectionState[["musFailed"]])){
       # MUS has failed for some reason, fall back to record sampling
 
       message <- gettextf("From the population of <b>%1$s</b> observations, <b>%2$s</b> observations were selected using a <b>%3$s record sampling</b> method. <br><b>Warning:</b> A monetary unit sampling method was tried but failed.",
@@ -1971,7 +2093,8 @@
 
     }
 
-    if(sum(selectionState[["count"]]) > nrow(selectionState)){
+    if(!is.null(selectionState) &&
+        sum(selectionState[["count"]]) > nrow(selectionState)){
 
       message <- gettextf("%1$s <b>Note:</b> The selected subset (%2$s) is smaller than the planned sample size (%3$s), as observations are selected multiple times due to their high value. These observations (%4$s) are counted multiple times in the evaluation.",
                           message,
@@ -2074,6 +2197,9 @@
     bookValues <- NULL
   }
 
+  if(planningState[["sampleSize"]] == 0 || is.null(dataset))
+    return()
+
   sample <- jfa::sampling(population = dataset, 
                           sampleSize = planningState[["sampleSize"]], 
                           algorithm = algorithm, 
@@ -2146,6 +2272,9 @@
   selectionInformationTable$addFootnote(message)
 
   selectionContainer[["selectionInformationTable"]] <- selectionInformationTable
+
+  if(is.null(selectionState))
+    return()
 
   if(options[["selectionType"]] == "recordSampling" || 
       !is.null(selectionState[["musFailed"]])){

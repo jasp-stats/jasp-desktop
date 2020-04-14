@@ -620,7 +620,14 @@
           "associated_datafile": "BuildIt_Monetary.csv"
         },
         {
-                  "name": "Sino Forest",
+                  "name": "Selecting an Audit Sample",
+          "path": "selection.jasp",
+          "description": "BuildIt's audit population consisting of 3500 transactions. <br><br> The example JASP file demonstrates the use of a selection analysis.<br><br> <i>Data set used in R package jfa<\/i>",
+          "kind": "file",
+          "associated_datafile": "BuildIt_Monetary.csv"
+        },
+        {
+                  "name": "Assessing Benford's Law",
           "path": "sinoForest.jasp",
           "description": "Financial Statemens of Sino Forest Corporation’s 2010 Report. <br><br> The example JASP file demonstrates the use of a Benford's law analysis.<br><br> <i>Data set used in R package benford.analysis<\/i>",
           "kind": "file",
