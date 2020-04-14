@@ -67,9 +67,9 @@ Met de gelijkwaardigheids t-toets voor onafhankelijke steekproeven kan de gebrui
 - De eerste kolom bevat de afhankelijke variabele.
 - Sectie: Het gedeelte waaronder de massa wordt berekend.
   - p(&delta; &in; I | H<sub>1</sub>): Sectie binnen de gelijkwaardigheidsregio van de prior verdeling.
-  - p(&delta; &in; I | H<sub>1</sub>, y): Sectie binnen de gelijkwaardigheidsregio van de posterior verdeling.
+  - p(&delta; &in; I | H<sub>1</sub>, data): Sectie binnen de gelijkwaardigheidsregio van de posterior verdeling.
   - p(&delta; &notin; I | H<sub>1</sub>): Sectie buiten de gelijkwaardigheidsregio van de prior verdeling.
-  - p(&delta; &notin; I | H<sub>1</sub>, y): Sectie buiten de gelijkwaardigheidsregio van de posterior verdeling.
+  - p(&delta; &notin; I | H<sub>1</sub>, data): Sectie buiten de gelijkwaardigheidsregio van de posterior verdeling.
 - Massa: Geeft de massa onder de sectie weer.
 
 #### Grafieken

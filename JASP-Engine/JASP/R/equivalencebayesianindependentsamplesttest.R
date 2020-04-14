@@ -152,7 +152,9 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
   if (ready)
     equivalenceBayesianIndTTestTable$setExpectedSize(length(options$variables))
 
-  message <- gettextf("I ranges from %1$s to %2$s", options$lowerbound, options$upperbound)
+  message <- gettextf("I ranges from %1$s to %2$s", 
+                      ifelse(options$lowerbound == -Inf, "-\u221E", options$lowerbound),
+                      ifelse(options$upperbound == Inf, "\u221E", options$upperbound))
   equivalenceBayesianIndTTestTable$addFootnote(message)
 
   jaspResults[["equivalenceBayesianIndTTestTable"]] <- equivalenceBayesianIndTTestTable
@@ -176,25 +178,29 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
       equivalenceBayesianIndTTestTable$addRows(list(variable = variable, statistic = NaN), rowNames = variable)
     } else {
 
+      error_in_alt <- (results$errorPrior + results$errorPosterior) / results$bfEquivalence
       equivalenceBayesianIndTTestTable$addRows(list(variable      = variable,
-                                                    statistic     = "\U003B4 \U02208 I vs. H1",
+                                                    statistic     = "\U003B4 \U02208 I vs. H\u2081",
                                                     bf            = results$bfEquivalence,
-                                                    error         = (results$errorPrior + results$errorPosterior) / results$bfEquivalence))
+                                                    error         = ifelse(error_in_alt == Inf, "NA", error_in_alt)))
 
+      error_notin_alt <- (results$errorPrior + results$errorPosterior) / results$bfNonequivalence
       equivalenceBayesianIndTTestTable$addRows(list(variable      = variable,
-                                                    statistic     = "\U003B4 \U02209 I vs. H1",
+                                                    statistic     = "\U003B4 \U02209 I vs. H\u2081",
                                                     bf            = results$bfNonequivalence,
-                                                    error         = (results$errorPrior + results$errorPosterior) / results$bfNonequivalence))
+                                                    error         = ifelse(error_notin_alt == Inf, "NA", error_notin_alt)))
 
+      error_in_notin <- (2*(results$errorPrior + results$errorPosterior)) / (results$bfEquivalence / results$bfNonequivalence)
       equivalenceBayesianIndTTestTable$addRows(list(variable      = variable,
                                                     statistic     = "\U003B4 \U02208 I vs. \U003B4 \U02209 I", # equivalence vs. nonequivalence"
                                                     bf            = results$bfEquivalence / results$bfNonequivalence,
-                                                    error         = (2*(results$errorPrior + results$errorPosterior)) / (results$bfEquivalence / results$bfNonequivalence)))
+                                                    error         = ifelse(error_in_notin == Inf, "NA", error_in_notin)))
 
+      error_notin_in <- (2*(results$errorPrior + results$errorPosterior)) / (1/(results$bfEquivalence / results$bfNonequivalence))
       equivalenceBayesianIndTTestTable$addRows(list(variable      = variable,
                                                     statistic     = "\U003B4 \U02209 I vs. \U003B4 \U02208 I", # non-equivalence vs. equivalence
                                                     bf            = 1 / (results$bfEquivalence / results$bfNonequivalence),
-                                                    error         = (2*(results$errorPrior + results$errorPosterior)) / (1/(results$bfEquivalence / results$bfNonequivalence))))
+                                                    error         = ifelse(error_notin_in == Inf, "NA", error_notin_in)))
     }
   }
 
@@ -287,7 +293,7 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
                                   "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
                                   "informativeTScale", "informativeTDf"))
 
-  equivalenceMassTable$addColumnInfo(name = "variable",         title = gettext("Variable"),        type = "string", combine = TRUE)
+  equivalenceMassTable$addColumnInfo(name = "variable",         title = " ",        type = "string", combine = TRUE)
   equivalenceMassTable$addColumnInfo(name = "section",          title = gettext("Section"),         type = "string")
   equivalenceMassTable$addColumnInfo(name = "mass",             title = gettext("Mass"),            type = "number")
 
@@ -318,19 +324,19 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
     } else {
 
       equivalenceMassTable$addRows(list(variable   = variable,
-                                        section    = "p(\U003B4 \U02208 I | H1)",
+                                        section    = "p(\U003B4 \U02208 I | H\u2081)",
                                         mass       = results$integralEquivalencePrior))
 
       equivalenceMassTable$addRows(list(variable   = variable,
-                                        section    = "p(\U003B4 \U02208 I | H1, y)",
+                                        section    = "p(\U003B4 \U02208 I | H\u2081, data)",
                                         mass       = results$integralEquivalencePosterior))
 
       equivalenceMassTable$addRows(list(variable   = variable,
-                                        section    = "p(\U003B4 \U02209 I | H1)",
+                                        section    = "p(\U003B4 \U02209 I | H\u2081)",
                                         mass       = results$integralNonequivalencePrior))
 
       equivalenceMassTable$addRows(list(variable   = variable,
-                                        section    = "p(\U003B4 \U02209 I | H1, y)",
+                                        section    = "p(\U003B4 \U02209 I | H\u2081, data)",
                                         mass       = results$integralNonequivalencePosterior))
     }
   }
