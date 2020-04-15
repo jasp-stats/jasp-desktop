@@ -121,7 +121,7 @@ Terms ListModel::getSourceTerms()
 		{
 			Terms sourceTerms = sourceModel->terms(sourceItem->modelUse);
 
-			for (const QMLListView::SourceType& discardModel : sourceItem->discardModels)
+			for (const QMLListView::SourceType& discardModel : sourceItem->getDiscardModels())
 				sourceTerms.discardWhatDoesContainTheseComponents(discardModel.model->terms(discardModel.modelUse));
 
 			if (!sourceItem->conditionExpression.isEmpty())
@@ -185,7 +185,7 @@ QMap<ListModel*, Terms> ListModel::getSourceTermsPerModel()
 		{
 			Terms terms = sourceModel->terms(sourceItem->modelUse);
 
-			for (const QMLListView::SourceType& discardModel : sourceItem->discardModels)
+			for (const QMLListView::SourceType& discardModel : sourceItem->getDiscardModels())
 				terms.discardWhatDoesContainTheseComponents(discardModel.model->terms(discardModel.modelUse));
 
 			result[sourceModel] = terms;
