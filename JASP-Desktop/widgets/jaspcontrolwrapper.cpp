@@ -137,6 +137,7 @@ AnalysisForm *JASPControlWrapper::form() const
 
 void JASPControlWrapper::addControlError(const QString &error)
 {
+	Log::log() << "JASPControlWrapper::addControlError: " << error << std::endl;
 	if (form())
 		form()->addFormError(error);
 }
