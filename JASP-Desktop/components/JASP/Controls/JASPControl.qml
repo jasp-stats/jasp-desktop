@@ -97,7 +97,7 @@ JASPControlBase
 		State
 		{
 			name: "hasError"
-			when: focusIndicator && jaspControl.hasError
+			when: focusIndicator !== null  && jaspControl.hasError
 			PropertyChanges
 			{
 				target:			focusIndicator
@@ -108,7 +108,7 @@ JASPControlBase
 		State
 		{
 			name: "hasWarning"
-			when: focusIndicator && jaspControl.hasWarning && !jaspControl.hasError
+			when: focusIndicator !== null  && jaspControl.hasWarning && !jaspControl.hasError
 			PropertyChanges
 			{
 				target:			focusIndicator
@@ -119,7 +119,7 @@ JASPControlBase
 		State
 		{
 			name: "hasFocus"
-			when: focusIndicator && jaspControl.shouldShowFocus
+			when: focusIndicator !== null  && jaspControl.shouldShowFocus
 			PropertyChanges
 			{
 				target:			focusIndicator
@@ -130,7 +130,7 @@ JASPControlBase
 		State
 		{
 			name: "isDependency"
-			when: focusIndicator && jaspControl.isDependency && !jaspControl.shouldShowFocus
+			when: focusIndicator !== null && jaspControl.isDependency && !jaspControl.shouldShowFocus
 			PropertyChanges
 			{
 				target:			focusIndicator
