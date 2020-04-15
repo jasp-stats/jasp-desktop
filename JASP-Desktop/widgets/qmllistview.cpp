@@ -369,7 +369,7 @@ void QMLListView::sourceChangedHandler()
 		{
 			removeDependency(sourceModel->listView());
 			disconnect(sourceModel, &ListModel::modelChanged, listModel, &ListModel::sourceTermsChanged);
-			for (SourceType& discardModel : sourceItem->discardModels)
+			for (SourceType& discardModel : sourceItem->getDiscardModels())
 				disconnect(discardModel.model, &ListModel::modelChanged, listModel, &ListModel::sourceTermsChanged);
 		}
 	}
@@ -414,4 +414,18 @@ void QMLListView::_setAllowedVariables()
 	
 	if (allowedColumnsTypes >= 0)
 		_variableTypesAllowed = allowedColumnsTypes;
+}
+
+QVector<QMLListView::SourceType> QMLListView::SourceType::getDiscardModels(bool onlyNotNullModel) const
+{
+	if (!onlyNotNullModel)
+		return discardModels;
+
+	QVector<QMLListView::SourceType> result;
+
+	for (const QMLListView::SourceType& discardModel : discardModels)
+		if (discardModel.model)
+			result.push_back(discardModel);
+
+	return result;
 }

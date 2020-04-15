@@ -76,6 +76,8 @@ public:
 							);
 			}
 		}
+
+		QVector<SourceType> getDiscardModels(bool onlyNotNullModel = true)	const;
 	};
 	
 	QMLListView(JASPControlBase* item);
