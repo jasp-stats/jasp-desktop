@@ -45,7 +45,16 @@
 			"requiresData":				false
 		},
 		{
-			"title":    					"Anders",
+			"title":    					"Selectie",
+			"icon":								"audit-selection.svg"
+		},
+		{
+			"title":							"Selectie",
+			"function":						"auditSelection",
+			"requiresData":				true
+		},
+		{
+			"title":    					"Evaluatie",
 			"icon":								"audit-estimation.svg"
 		},
 		{
