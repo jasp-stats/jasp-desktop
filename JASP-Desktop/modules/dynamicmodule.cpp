@@ -368,7 +368,7 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 #endif
 
 	if(!onlyModPkg)	//First install dependencies:
-		R	<< standardRIndent <<								"withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "', type='" << pkgType << "',  INSTALL_opts=c('--no-test-load'), upgrade=FALSE, repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n"
+		R	<< standardRIndent <<								"withr::with_libpaths(new=" << libPathsToUse << ", remotes::install_deps(pkg= '"	<< _modulePackage << "',   lib='" << moduleRLibrary().toStdString() << "', type='" << pkgType << "',  INSTALL_opts=c('--no-test-load --no-multiarch'), upgrade=FALSE, repos='" << Settings::value(Settings::CRAN_REPO_URL).toString().toStdString() << "'));\n"
 		//And fix Mac OS libraries of dependencies:
 		<< standardRIndent << "postProcessModuleInstall(\"" << moduleRLibrary().toStdString() << "\");\n";
 
@@ -376,7 +376,7 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 	R	<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", { find.package(package='" << _name << "'); remove.packages(pkg='"	<< _name << "', lib='" << moduleRLibrary().toStdString() << "');})}, error=function(e) {});\n"
 
 		//Install module
-		<< standardRIndent << "loadLog <- .runSeparateR(\""	"withr::with_libpaths(new=" << libPathsToUse << ", install.packages(pkgs='"			<< _modulePackage << "/.', lib='" << moduleRLibrary().toStdString() << "', type=" << typeInstall << ", repos=NULL))\");\n" //Running in separate R because otherwise we cannot capture output :s
+		<< standardRIndent << "loadLog <- .runSeparateR(\""	"withr::with_libpaths(new=" << libPathsToUse << ", install.packages(pkgs='"			<< _modulePackage << "/.', lib='" << moduleRLibrary().toStdString() << "', type=" << typeInstall << ", repos=NULL, INSTALL_opts=c('--no-multiarch')))\");\n" //Running in separate R because otherwise we cannot capture output :s
 
 		//Check if install worked and through loadlog as error otherwise
 		<< standardRIndent << "tryCatch(expr={"				"withr::with_libpaths(new=" << libPathsToUse << ", find.package(package='" << _name << "')); return('" << succesResultString() << "');}, error=function(e) { .setLog(loadLog); return('fail'); });\n";
