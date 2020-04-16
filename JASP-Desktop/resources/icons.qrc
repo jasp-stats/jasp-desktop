@@ -237,5 +237,6 @@
         <file>icons/discoverdistributions-distributions.svg</file>
         <file>icons/meta-analysis-bayesian.svg</file>
         <file>icons/equivalence-module.svg</file>
+        <file>icons/audit-selection.svg</file>
     </qresource>
 </RCC>

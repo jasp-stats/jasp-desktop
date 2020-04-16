@@ -45,7 +45,16 @@
 			"requiresData":				false
 		},
 		{
-			"title":    					"Other",
+			"title":    					"Selection",
+			"icon":								"audit-selection.svg"
+		},
+		{
+			"title":							"Selection",
+			"function":						"auditSelection",
+			"requiresData":				true
+		},
+		{
+			"title":    					"Evaluation",
 			"icon":								"audit-estimation.svg"
 		},
 		{

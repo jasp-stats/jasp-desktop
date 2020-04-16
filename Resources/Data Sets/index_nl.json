@@ -608,19 +608,26 @@
         {
 		  "name": "BuildIt Binary",
           "path": "BuildIt_Binary.jasp",
-          "description": "BuildIt's niet-monetaire audit populatie bestaande uit 3500 gegevens. <br><br> Het voorbeeldbestand in JASP laat zien hoe binaire audit workflow kan worden toegepast. <br><br> <i>Dataset gebruikt in Derks, de Swart, Wagenmakers, Wille & Wetzels (under review)<\/i>",
+          "description": "BuildIt's niet-monetaire audit populatie bestaande uit 3500 gegevens. <br><br> Het voorbeeldbestand in JASP laat zien hoe binaire audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
           "kind": "file",
           "associated_datafile": "BuildIt_Monetary.csv"
         },
         {
 		  "name": "BuildIt Monetair",
           "path": "BuildIt_Monetary.jasp",
-          "description": "BuildIt's monetaire audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe monetaire audit workflow kan worden toegepast. <br><br> <i>Dataset gebruikt in Derks, de Swart, Wagenmakers, Wille & Wetzels (under review)<\/i>",
+          "description": "BuildIt's monetaire audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP laat zien hoe monetaire audit workflow kan worden toegepast. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
           "kind": "file",
           "associated_datafile": "BuildIt_Monetary.csv"
         },
         {
-          "name": "Sino Forest",
+                  "name": "Selecteren van een Audit Steekproef",
+          "path": "selection.jasp",
+          "description": "BuildIt's monetaire audit populatie bestaande uit 3500 transacties. <br><br> Het voorbeeldbestand in JASP toont het gebruik van een selectie analyse. <br><br> <i>Gegevensset gebruikt in R-package jfa<\/i>",
+          "kind": "file",
+          "associated_datafile": "BuildIt_Monetary.csv"
+        },
+        {
+          "name": "Vaststellen van de Wet van Benford",
           "path": "sinoForest.jasp",
           "description": "Jaarrekening van het rapport van Sino Forest Corporation uit 2010. <br> <br> Het voorbeeldbestand in JASP toont het gebruik van een analyse met behulp van de wet van Benford. <br> <br> <i> Gegevensset gebruikt in R-package benford.analysis <\ / i>",
           "kind": "file",
