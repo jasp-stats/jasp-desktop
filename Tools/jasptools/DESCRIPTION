@@ -1,7 +1,7 @@
 Package: jasptools
 Type: Package
 Title: Helps preview and debug JASP analyses
-Version: 0.9.1
+Version: 0.9.2
 Author: Tim de Jong
 Maintainer: Tim de Jong <tim_jong@hotmail.com>
 Description: This package assists JASP developers when writing R code. It removes the necessity of building JASP every time a change is made. Rather, analyses can be called directly in R and be debugged interactively.
