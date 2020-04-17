@@ -84,7 +84,7 @@
       }
     }
     ttestContainer$dependOn(c(
-      "effectSizeStandardized", "groupingVariable", "hypothesis",
+      "effectSizeStandardized", "groupingVariable", 
       "informativeCauchyLocation", "informativeCauchyScale", "informativeNormalMean",
       "informativeNormalStd", "informativeStandardizedEffectSize",
       "informativeTDf", "informativeTLocation", "informativeTScale",
@@ -97,19 +97,21 @@
   }
 
   # check if we actually need to compute things
-  if (!is.null(ttestContainer[["ttestTable"]]) && !derivedOptions[["anyNewVariables"]]) {
-    obj <- ttestContainer[["stateTTestResults"]]$object
-    obj[["derivedOptions"]] <- derivedOptions
-    return(obj)
+  ttestState <- ttestContainer[["stateTTestResults"]]$object
+  if (!is.null(ttestContainer[["ttestTable"]]) && !derivedOptions[["anyNewVariables"]] &&
+      ttestState[["hypothesis"]] == "hypothesis") {
+    ttestState[["derivedOptions"]] <- derivedOptions
+    return(ttestState)
   }
 
-  ttestState <- ttestContainer[["stateTTestResults"]]$object
   # recompute the analysis / table
   ttestResults <- switch(analysis,
     "independent" = .ttestBISTTest(ttestContainer, dataset, options, derivedOptions, errors, ttestState),
     "one-sample"  = .ttestBOSTTest(ttestContainer, dataset, options, derivedOptions, errors, ttestState),
     "paired"      = .ttestBPSTTest(ttestContainer, dataset, options, derivedOptions, errors, ttestState)
   )
+
+  ttestResults[["hypothesis"]] <- options[["hypothesis"]]
 
   tmp <- createJaspState(ttestResults)
   ttestContainer[["stateTTestResults"]] <- tmp
@@ -257,23 +259,14 @@
       FALSE
     )
     AtTheEndResetPlotRobustnessSequential <- NULL
-    if (derivedOptions[["wilcoxTest"]]) {
-
-      # when a user requests robustness/ sequential plots first and then selects wilcoxTest
-      # jasp will still provide these as TRUE, but they shouldn't be.
-      AtTheEndResetPlotRobustnessSequential <- options[c("plotBayesFactorRobustness", "plotSequentialAnalysis")]
-      derivedOptions[["plotBayesFactorRobustness"]] <- FALSE
-      derivedOptions[["plotSequentialAnalysis"]] <- FALSE
-
-    }
 
   } else if (analysis == "one-sample") { # one-sample
 
     dependents <- unlist(options[["variables"]])
     derivedOptions[["variables"]]    <- dependents
     derivedOptions[["ready"]] <- length(dependents) > 0L
-    derivedOptions[["wilcoxTest"]] <- FALSE
-
+    derivedOptions[["wilcoxTest"]] <- options[["testStatistic"]] == "Wilcoxon"
+    
     derivedOptions[["oneSided"]] <- switch(
       options[["hypothesis"]],
       "greaterThanTestValue" = "right",
@@ -285,8 +278,8 @@
 
     # this needs to be decided for each pair individually, which is done inside .ttestBPSTTest
     derivedOptions[["ready"]] <- TRUE
-    derivedOptions[["wilcoxTest"]] <- FALSE
-
+    derivedOptions[["wilcoxTest"]] <- options[["testStatistic"]] == "Wilcoxon"
+    
     dependents <- sapply(options[["pairs"]], paste, collapse = " - ")
     duplicatedDependents <- duplicated(dependents)
     if (any(duplicatedDependents)) {
@@ -315,6 +308,16 @@
     )
   }
 
+  if (derivedOptions[["wilcoxTest"]]) {
+    
+    # when a user requests robustness/ sequential plots first and then selects wilcoxTest
+    # jasp will still provide these as TRUE, but they shouldn't be.
+    AtTheEndResetPlotRobustnessSequential <- options[c("plotBayesFactorRobustness", "plotSequentialAnalysis")]
+    derivedOptions[["plotBayesFactorRobustness"]] <- FALSE
+    derivedOptions[["plotSequentialAnalysis"]] <- FALSE
+    
+  }
+  
   derivedOptions[["nullInterval"]] <- switch(
     as.character(derivedOptions[["oneSided"]]),
     "right" = c(0, Inf),
@@ -398,7 +401,8 @@
       plottingError   = vector("list", nvar),
       errorFootnotes  = vector("list", nvar),
       footnotes       = vector("list", nvar),
-      delta           = vector("list", nvar)
+      delta           = vector("list", nvar),
+      hypothesis      = options[["hypothesis"]]
     )
 
   }
@@ -452,7 +456,7 @@
 
     # ensure that BF type is correct (e.g., BF01 to BF10/ log(BF01))
     ttestRows[["BF"]] <-
-      .recodeBFtype(bfOld     = ttestRows[["BF"]],
+      JASP:::.recodeBFtype(bfOld     = ttestRows[["BF"]],
                     newBFtype = options[["bayesFactorType"]],
                     oldBFtype = ttestState[["bayesFactorType"]]
       )
@@ -2126,6 +2130,6 @@
 .ttestBayesianCitations <- c(
   "MoreyEtal2015"    = "Morey, R. D., & Rouder, J. N. (2015). BayesFactor (Version 0.9.11-3)[Computer software].",
   "RouderEtal2009"   = "Rouder, J. N., Speckman, P. L., Sun, D., Morey, R. D., & Iverson, G. (2009). Bayesian t tests for accepting and rejecting the null hypothesis. Psychonomic Bulletin & Review, 16, 225–237.",
-  "vanDoornEtal2018" = "van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E. J. (2018). Bayesian Latent-Normal Inference for the Rank Sum Test, the Signed Rank Test, and Spearman's rho. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1703.01805",
+  "vanDoornEtal2018" = "van Doorn, J., Ly, A., Marsman, M., & Wagenmakers, E. J. (2020). Bayesian Latent-Normal Inference for the Rank Sum Test, the Signed Rank Test, and Spearman's rho. Journal of Appliedd Statistics.",
   "GronauEtal2017"   = "Gronau, Q. F., Ly, A., & Wagenmakers, E.-J. (2017). Informed Bayesian T-Tests. Manuscript submitted for publication and uploaded to arXiv: https://arxiv.org/abs/1704.02479"
 )

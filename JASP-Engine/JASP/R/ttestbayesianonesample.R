@@ -25,7 +25,7 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
 .ttestBOSTTest <- function(ttestContainer, dataset, options, derivedOptions, errors, ttestState) {
 
-  ttestTable <- .ttestBOSTTestMarkup(options)
+  ttestTable <- .ttestBOSTTestMarkup(options, derivedOptions)
   ttestResults <- .ttestBayesianEmptyObject(options, derivedOptions, ttestState)
   ttestContainer[["ttestTable"]] <- ttestTable
   if (!derivedOptions[["ready"]])
@@ -35,7 +35,8 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
   # create empty object for the table, this has previously computed rows already filled in
   ttestRows <- .ttestBayesianCreateTtestRows(dependents, options, derivedOptions, ttestState)
-  alreadyComputed <- !is.na(ttestRows[, "BF"])
+  alreadyComputed <- !is.na(ttestRows[, "BF"]) & ttestResults[["hypothesis"]] == options[["hypothesis"]]
+  
   ttestTable$setData(ttestRows)
   .ttestBayesianSetFootnotesMainTable(ttestTable, ttestResults, dependents[alreadyComputed])
 
@@ -44,6 +45,10 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
   BFH1H0 <- ttestResults[["BFH1H0"]]
   .ttestBayesianInitBayesFactorPackageOptions()
 
+  nvar <- length(dependents)
+  if (derivedOptions[["wilcoxTest"]])
+    .ttestBayesianSetupWilcoxProgressBar(nvar, ttestState, options[["wilcoxonSamplesNumber"]])
+  
   for (var in dependents[!alreadyComputed]) {
 
     if (!isFALSE(errors[[var]])) {
@@ -64,41 +69,95 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
       x <- dataset[[.v(var)]]
       x <- x[!is.na(x)]  - options[["testValue"]]
 
-      r <- try(.generalTtestBF(x = x, oneSided = oneSided, options = options))
-
-      if (isTryError(r)) {
-
-        errorMessage <- .extractErrorMessage(r)
-        ttestResults[["status"]][var] <- "error"
-        ttestResults[["errorFootnotes"]][[var]] <- errorMessage
-        ttestTable$addFootnote(message = errorMessage, rowNames = var)
-
-      } else {
-
-        bf.raw <- r[["bf"]]
-        error  <- r[["error"]]
-        ttestResults[["tValue"]][[var]] <- r[["tValue"]]
-        ttestResults[["n1"]][var]       <- r[["n1"]]
-        # ttestResults[["n2"]][var]       <- r[["n2"]]
-        ttestResults[["tValue"]][var]   <- r[["tValue"]]
-
-        if (!is.null(error) && is.na(error) && grepl("approximation", r[["method"]])) {
-          error <- NaN
-          message <- gettext("t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given.")
-          ttestTable$addFootnote(message = message, symbol = "", rowNames = var, colNames = "error")
-          ttestResults[["footnotes"]][[var]] <- c(ttestResults[["footnotes"]][[var]], message)
+      if (!derivedOptions[["wilcoxTest"]]) {
+        
+        r <- try(.generalTtestBF(x = x, oneSided = oneSided, options = options))
+  
+        if (isTryError(r)) {
+  
+          errorMessage <- .extractErrorMessage(r)
+          ttestResults[["status"]][var] <- "error"
+          ttestResults[["errorFootnotes"]][[var]] <- errorMessage
+          ttestTable$addFootnote(message = errorMessage, rowNames = var)
+  
+        } else {
+  
+          bf.raw <- r[["bf"]]
+          error  <- r[["error"]]
+          ttestResults[["tValue"]][[var]] <- r[["tValue"]]
+          ttestResults[["n1"]][var]       <- r[["n1"]]
+          # ttestResults[["n2"]][var]       <- r[["n2"]]
+          ttestResults[["tValue"]][var]   <- r[["tValue"]]
+  
+          if (!is.null(error) && is.na(error) && grepl("approximation", r[["method"]])) {
+            error <- NaN
+            message <- gettext("t-value is large. A Savage-Dickey approximation was used to compute the Bayes factor but no error estimate can be given.")
+            ttestTable$addFootnote(message = message, symbol = "", rowNames = var, colNames = "error")
+            ttestResults[["footnotes"]][[var]] <- c(ttestResults[["footnotes"]][[var]], message)
+          }
+          if (is.null(error) && options[["effectSizeStandardized"]] == "informative" && 
+              options[["informativeStandardizedEffectSize"]] == "normal") {
+            error <- NA_real_
+            message <- gettext("No error estimate is available for normal priors.")
+            ttestTable$addFootnote(message = message)
+            ttestResults[["globalFootnotes"]] <- c(ttestResults[["globalFootnotes"]], message)
+          }
         }
-        if (is.null(error) && options[["effectSizeStandardized"]] == "informative" && 
-            options[["informativeStandardizedEffectSize"]] == "normal") {
-          error <- NA_real_
-          message <- gettext("No error estimate is available for normal priors.")
-          ttestTable$addFootnote(message = message)
-          ttestResults[["globalFootnotes"]] <- c(ttestResults[["globalFootnotes"]], message)
+        
+      } else { # wilcoxtest
+        
+        # If the samples can be reused, don't call the Gibbs sampler again, but recalculate the
+        # Bayes factor with new settings and take the samples from state.
+        if (!is.null(ttestResults[["delta"]][[var]]) && !is.na(ttestResults[["delta"]][[var]])) {
+          
+          bf.raw <- try(.computeBayesFactorWilcoxon(
+            deltaSamples         = ttestResults[["delta"]][[var]],
+            cauchyPriorParameter = options[["priorWidth"]],
+            oneSided             = oneSided
+          ))
+          rHat <- ttestResults[["rHat"]][[var]]
+          
+        } else {
+          
+          .setSeedJASP(options)
+          r <- try(.signRankGibbsSampler(
+            x = x, nSamples = options[["wilcoxonSamplesNumber"]], testValue = 0, nBurnin = 0,
+            cauchyPriorParameter = options[["priorWidth"]]
+          ))
+          
+          if (isTryError(r)) {
+            
+            errorMessage <- .extractErrorMessage(r)
+            ttestResults[["status"]][var] <- "error"
+            ttestResults[["errorFootnotes"]][[var]] <- errorMessage
+            ttestTable$addFootnote(message = errorMessage, rowNames = var)
+
+          } else {
+            
+            ttestResults[["delta"]][[var]]  <- r[["deltaSamples"]] * -1
+            ttestResults[["rHat"]][[var]]  <- r[["rHat"]]
+            
+            bf.raw <- .computeBayesFactorWilcoxon(
+              deltaSamples         = r[["deltaSamples"]] * -1,
+              cauchyPriorParameter = options[["priorWidth"]],
+              oneSided             = oneSided)
+            
+            rHat <- r[["rHat"]]
+            
+          }
         }
+        
+        if (!is.null(ttestResults[["delta"]][[var]]))
+          ttestResults[["tValue"]][[var]] <- median(ttestResults[["delta"]][[var]])
+        ttestResults[["n1"]][var]       <- length(x)
+        wValue <- unname(wilcox.test(x)[["statistic"]])
+        error <- wValue
+        ttestRows[var, "rHat"] <- rHat
+        
       }
-
+      
       ttestResults[["BF10post"]][var] <- bf.raw
-      BF <- .recodeBFtype(bfOld     = bf.raw,
+      BF <- JASP:::.recodeBFtype(bfOld     = bf.raw,
                           newBFtype = bf.type,
                           oldBFtype = "BF10")
 
@@ -121,13 +180,21 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
 
 }
 
-.ttestBOSTTestMarkup <- function(options) {
+.ttestBOSTTestMarkup <- function(options, derivedOptions) {
 
-  jaspTable <- createJaspTable(title = gettext("Bayesian One Sample T-Test"))
+  jaspTable <- createJaspTable()
+  jaspTable$title <- if (derivedOptions[["wilcoxTest"]]) {
+    gettext("Bayesian Wilcoxon Signed-Rank Test")
+  } else {
+    gettext("Bayesian One Sample T-Test")
+  }
+  
   jaspTable$dependOn(c("bayesFactorType", "variables", "testValue"))
-
+  
   if (options[["effectSizeStandardized"]] == "default") {
     citations <- .ttestBayesianCitations[c("MoreyEtal2015", "RouderEtal2009")]
+  } else if (derivedOptions[["wilcoxTest"]]) {
+    citations <- .ttestBayesianCitations["vanDoornEtal2018"]
   } else if (options[["effectSizeStandardized"]] == "informative") {
     citations <- .ttestBayesianCitations["GronauEtal2017"]
   }
@@ -164,12 +231,19 @@ TTestBayesianOneSample <- function(jaspResults, dataset, options, state = NULL) 
   jaspTable$addColumnInfo(name = "variable", title = "",      type = "string")
   jaspTable$addColumnInfo(name = "BF",       title = bfTitle, type = "number")
 
-  if (options[["hypothesis"]] == "notEqualToTestValue") {
-    fmt <- "sf:4;dp:3"
+  if (derivedOptions[["wilcoxTest"]]) {
+    jaspTable$addColumnInfo(name = "error", type = "number", title = "W")
+    jaspTable$addColumnInfo(name = "rHat", type = "number", title = "R<sup>2</sup>")
+    jaspTable$addFootnote(gettextf("Result based on data augmentation algorithm with 5 chains of %.0f iterations.", options[["wilcoxonSamplesNumber"]]))
   } else {
-    fmt <- "sf:4;dp:3;~"
+    if (options[["hypothesis"]] == "notEqualToTestValue") {
+      fmt <- "sf:4;dp:3"
+    } else {
+      fmt <- "sf:4;dp:3;~"
+    }
+    jaspTable$addColumnInfo(name = "error", type = "number", format = fmt, title = gettext("error %"))
   }
-  jaspTable$addColumnInfo(name = "error", type = "number", format = fmt, title = gettext("error %"))
+  
   return(jaspTable)
 }
 
