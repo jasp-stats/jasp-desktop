@@ -100,7 +100,7 @@ public:
 	std::string			qmlFilePath(	const std::string & qmlFileName)	const;
 	std::string			iconFilePath(std::string whichIcon = "")			const;
 	std::string			iconFolder()										const;
-	std::string			rModuleCall(	const std::string & function)		const { return _name + "$" + function + _exposedPostFix; }
+	std::string			rModuleCall(	const std::string & function)		const { return _name + _modulePostFix + "$" + function + _exposedPostFix; }
 	QString				helpFolderPath()									const;
 
 	std::string			generateModuleLoadingR(bool shouldReturnSucces = true);
@@ -213,7 +213,8 @@ private:
 	Json::Value		_requiredPackages,
 					_previousReqPkgs;
 	AnalysisEntries	_menuEntries;
-	const char		*_exposedPostFix	= "_exposed";
+	const char		*_modulePostFix		= "_module",
+					*_exposedPostFix	= "_exposed";
 
 	static std::string _developmentModuleName;
 };
