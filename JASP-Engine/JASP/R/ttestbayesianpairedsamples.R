@@ -323,12 +323,12 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
   
   for(i in 1:nIter){   
     #sample mu
-    varMu  = sigmaSq / (n + (1 / g))
-    meanMu = (n * ybar) / (n + (1 / g))
+    varMu  <- sigmaSq / (n + (1 / g))
+    meanMu <- (n * ybar) / (n + (1 / g))
     mu <- rnorm(1, meanMu, sqrt(varMu) )
     
     # sample g
-    scaleg = (mu^2 + sigmaSq * rscale^2) / (2*sigmaSq)
+    scaleg <- (mu^2 + sigmaSq * rscale^2) / (2*sigmaSq)
     g = 1 / rgamma(1, 1, scaleg )
     
     delta <- mu / sqrt(sigmaSq)
