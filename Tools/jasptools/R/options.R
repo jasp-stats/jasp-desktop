@@ -108,6 +108,11 @@ analysisOptions <- function(source) {
   funcToQml <- list()
   for (i in seq_along(descr$menu)) {
     analysisMeta <- descr$menu[[i]]
+
+    # lookup default qml file, same as in c++, but with "???" replaced for a null check
+    if (!("qml" %in% names(analysisMeta)) && "function" %in% names(analysisMeta) && !is.null(analysisMeta[["function"]]))
+      analysisMeta[["qml"]] <- paste0(analysisMeta[["function"]], ".qml")
+
     if (all(c("function", "qml") %in% names(analysisMeta)))
       funcToQml[[tolower(analysisMeta[["function"]])]] <- analysisMeta[["qml"]]
   }
