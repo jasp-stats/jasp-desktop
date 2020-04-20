@@ -245,6 +245,8 @@
   # - defines the dependencies for all objects and puts this inside options[["stateKey"]]
 
   derivedOptions <- list(ttestType = analysis)
+  derivedOptions[["wilcoxTest"]] <- options[["testStatistic"]] == "Wilcoxon"
+  
   if (analysis == "independent") {
 
     dependents <- unlist(options[["variables"]])
@@ -296,7 +298,6 @@
     derivedOptions[["variables"]]    <- dependents
     derivedOptions[["pairs"]]        <- options[["pairs"]]
     names(derivedOptions[["pairs"]]) <- dependents
-    derivedOptions[["wilcoxTest"]] <- options[["testStatistic"]] == "Wilcoxon"
 
     derivedOptions[["oneSided"]] <- switch(
       options[["hypothesis"]],
