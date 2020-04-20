@@ -393,7 +393,7 @@ std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 
 	setLoadLog("Module " + _name + " is being loaded from " + _moduleFolder.absolutePath().toStdString() + "\n");
 
-	R << _name << " <- module({\n" << standardRIndent << ".libPaths('" << moduleRLibrary().toStdString() << "');\n";
+	R << _name << _modulePostFix << " <- module({\n" << standardRIndent << ".libPaths('" << moduleRLibrary().toStdString() << "');\n";
 	R << standardRIndent << "import('" << _name << "');\n\n";
 
 	size_t maxL = 0;
