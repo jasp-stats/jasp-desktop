@@ -1126,11 +1126,11 @@
 .BANOVAreadRManovaData <- function(dataset, options) {
 
   if (!("" %in% options$repeatedMeasuresCells)) {
-    rm.vars <- options$repeatedMeasuresCells
+    rm.vars       <- options$repeatedMeasuresCells
 
-    bs.factors <- options$betweenSubjectFactors
+    bs.factors    <- options$betweenSubjectFactors
     bs.covariates <- options$covariates
-    rm.factors <- options$repeatedMeasuresFactors
+	rm.factors    <- options$repeatedMeasuresFactors
     all.variables <- c (bs.factors, bs.covariates, rm.vars)
 
     dataset <- .readDataSetToEnd(
@@ -1141,7 +1141,7 @@
     dataset <- try(.shortToLong(dataset, rm.factors, rm.vars, c(bs.factors, bs.covariates)), silent = TRUE)
     
     idx <- match(c("dependent", "subject"), colnames(dataset))
-    colnames(dataset)[idx] <- .v(colnames(dataset)[idx])
+	#colnames(dataset)[idx] <- .v(colnames(dataset)[idx]) #not necessary and breaks ANOVA RM as in: https://github.com/jasp-stats/jasp-issues/issues/683
 
   }
   return(dataset)
