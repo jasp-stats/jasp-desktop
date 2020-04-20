@@ -47,7 +47,7 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
   	return(ttestResults)
 
   # we can do the analysis
-  alreadyComputed <- !is.na(ttestRows[, "BF"])
+  alreadyComputed <- !is.na(ttestRows[, "BF"]) & ttestResults[["hypothesis"]] == options[["hypothesis"]]
   .ttestBayesianSetFootnotesMainTable(ttestTable, ttestResults, dependents[alreadyComputed])
 
   nvar <- length(dependents)
@@ -125,10 +125,10 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
 
         # If the samples can be reused, don't call the Gibbs sampler again, but recalculate the
         # Bayes factor with new settings and take the samples from state.
-        if (!is.null(ttestRows[["delta"]][[var]]) && !is.na(ttestRows[["delta"]][[var]])) {
+        if (!is.null(ttestResults[["delta"]][[var]]) && !is.na(ttestResults[["delta"]][[var]])) {
 
-          bf.raw <- try(.ttestBISComputeBayesFactorWilcoxon(
-            deltaSamples         = ttestRows[["delta"]][[var]],
+          bf.raw <- try(.computeBayesFactorWilcoxon(
+            deltaSamples         = ttestResults[["delta"]][[var]],
             cauchyPriorParameter = options[["priorWidth"]],
             oneSided             = oneSided
           ))
@@ -168,7 +168,7 @@ TTestBayesianIndependentSamples <- function(jaspResults, dataset, options) {
       }
 
       ttestResults[["BF10post"]][var] <- bf.raw
-      BF <- .recodeBFtype(bfOld     = bf.raw,
+      BF <- JASP:::.recodeBFtype(bfOld     = bf.raw,
                           newBFtype = options[["bayesFactorType"]],
                           oldBFtype = "BF10"
       )
