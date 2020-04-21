@@ -65,7 +65,7 @@ JASPControl
 	readonly property int tableWidth:  theView.width  + 2
 	readonly property int tableHeight: theView.height + 2
 
-	readonly property int editableColumnStartIndex: tableView.modelType === "FilteredDataEntryModel" ? 3 : (tableView.modelType === "JAGSDataInputModel" ? 1 : 0)
+	readonly property int editableColumnStartIndex: tableView.modelType === "FilteredDataEntryModel" ? 3 : (tableView.modelType === "JAGSDataInputModel" && tableView.tableType == "initialValues" ? 1 : 0)
 
 	signal reset()
 	signal addRow()
