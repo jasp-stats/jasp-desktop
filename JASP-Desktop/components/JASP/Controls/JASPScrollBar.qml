@@ -68,7 +68,7 @@ Item
 	
 	Binding
 	{
-		restoreMode: Binding.RestoreBindingOrValue
+		restoreMode: Binding.RestoreBinding
 		target:		handle;
 		property:	scrollbar.vertical ? "y" : "x"
 		when:		!clicker.drag.active
@@ -79,7 +79,7 @@ Item
 
 	Binding
 	{
-		restoreMode: Binding.RestoreBindingOrValue
+		restoreMode: Binding.RestoreBinding
 		target:		flickable
 		property:	scrollbar.vertical ? "contentY" : "contentX"
 		when:		(clicker.drag.active || clicker.pressed)
