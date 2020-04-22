@@ -45,29 +45,29 @@ void AsyncLoader::io(FileEvent *event)
 	switch (event->operation())
 	{
 	case FileEvent::FileOpen:
-		emit progress("Loading Data Set", 0);
+		emit progress(tr("Loading Data Set"), 0);
 		emit beginLoad(event);
 		break;
 
 	case FileEvent::FileSave:
-		emit progress("Saving Data Set", 0);
+		emit progress(tr("Saving Data Set"), 0);
 		emit beginSave(event);
 		break;
 
 	case FileEvent::FileExportResults:
-		emit progress("Exporting Result Set", 0);
+		emit progress(tr("Exporting Result Set"), 0);
 		emit beginSave(event);
 		break;
 
 	case FileEvent::FileExportData:
 	case FileEvent::FileGenerateData:
-		emit progress("Exporting Data Set", 0);
+		emit progress(tr("Exporting Data Set"), 0);
 		emit beginSave(event);
 		break;
 
 	case FileEvent::FileSyncData:
 	{
-		emit progress("Sync Data Set", 0);
+		emit progress(tr("Sync Data Set"), 0);
 		emit beginLoad(event);
 		break;
 	}

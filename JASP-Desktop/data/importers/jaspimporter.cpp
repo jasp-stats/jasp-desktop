@@ -161,7 +161,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 		progress = (33.0 * i) / columnCount;
 		if (progress != lastProgress)
 		{
-			progressCallback("Loading Data Set Description", progress);
+			progressCallback(fq(tr("Loading Data Set Description")), progress);
 			lastProgress = progress;
 		}
 
@@ -208,7 +208,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 			progress = 33.0 + ((33.0 * ((c * rowCount) + (r + 1))) / (columnCount * rowCount));
 			if (progress != lastProgress)
 			{
-				progressCallback("Loading Data Set", progress);
+				progressCallback(fq(tr("Loading Data Set")), progress);
 				lastProgress = progress;
 			}
 		}

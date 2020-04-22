@@ -8,9 +8,13 @@
 
 class ImportDataSet;
 class ImportColumn;
+#include <QCoreApplication>
+#include "utilities/qutils.h"
+
 
 class Importer
 {
+	Q_DECLARE_TR_FUNCTIONS(CSVImporter)
 public:
 	Importer() {}
 	virtual ~Importer();

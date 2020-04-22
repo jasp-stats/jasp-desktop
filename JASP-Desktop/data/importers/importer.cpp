@@ -24,7 +24,7 @@ void Importer::loadDataSet(const std::string &locator, boost::function<void(cons
 		int colNo = 0;
 		for (ImportColumn *importColumn : *importDataSet)
 		{
-			progressCallback("Loading Data Set", 50 + 50 * colNo / columnCount);
+			progressCallback(fq(tr("Loading Data Set")), 50 + 50 * colNo / columnCount);
 			initColumn(colNo, importColumn);
 			colNo++;
 		}

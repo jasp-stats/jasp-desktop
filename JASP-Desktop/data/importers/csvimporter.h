@@ -19,10 +19,12 @@
 #define CSVIMPORTER_H
 
 #include "importer.h"
-
+#include <QCoreApplication>
+#include "utilities/qutils.h"
 
 class CSVImporter : public Importer
 {
+	Q_DECLARE_TR_FUNCTIONS(CSVImporter)
 public:
 	CSVImporter();
 
