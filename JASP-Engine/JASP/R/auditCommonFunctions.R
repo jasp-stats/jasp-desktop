@@ -3040,14 +3040,14 @@
                       evaluationState[["t"]] - 2)
 
           if(evaluationState[["method"]] == "poisson")
-            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) / 
-                    (1 + evaluationState[["nPrior"]] + evaluationState[["n"]])
+            mle <- (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) / 
+                    (evaluationState[["nPrior"]] + evaluationState[["n"]])
 
           if(evaluationState[["method"]] == "hypergeometric")
-            mle <- (1 + evaluationState[["kPrior"]] + evaluationState[["t"]]) / 
+            mle <- (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) / 
                     (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] +
                     1 + evaluationState[["nPrior"]] + evaluationState[["n"]] -
-                    evaluationState[["t"]])
+                    evaluationState[["t"]] - 2)
 
           if(evaluationState[["method"]] == "coxsnell")
             mle <- evaluationState[["multiplicationFactor"]] * 
@@ -3181,14 +3181,14 @@
                       evaluationState[["t"]] - 2)
 
           if(evaluationState[["method"]] == "poisson")
-            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) / 
-                    (1 + evaluationState[["nPrior"]] + evaluationState[["n"]])
+            mle <- (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) / 
+                    (evaluationState[["nPrior"]] + evaluationState[["n"]])
 
           if(evaluationState[["method"]] == "hypergeometric")
-            mle <- (1 + evaluationState[["kPrior"]] + evaluationState[["t"]]) / 
+            mle <- (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) / 
                     (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] +
                     1 + evaluationState[["nPrior"]] + evaluationState[["n"]] -
-                    evaluationState[["t"]])
+                    evaluationState[["t"]] - 2)
 
           if(evaluationState[["method"]] == "coxsnell")
             mle <- evaluationState[["multiplicationFactor"]] * 
