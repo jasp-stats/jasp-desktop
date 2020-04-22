@@ -2,7 +2,7 @@
 
 # set up your app name, version and optional background image
 APP_NAME="JASP"
-VERSION="0.12.1.0"
+VERSION="0.12.2.0"
 DMG_BACKGROUND_IMG="background.png"
 
 # you should not need to change these
