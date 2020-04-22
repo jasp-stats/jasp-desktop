@@ -1476,7 +1476,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   }
   
   if (identical(betweenTerm, "")) {
-    betweenTerms.base64 <- .v("subject")
+    betweenTerms.base64 <- "subject"
   }
   
   rows <- list()
