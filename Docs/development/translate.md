@@ -1,8 +1,8 @@
 
-# Guide to create a version of JASP in your own language.
+# Guide to Create a Version of JASP in Your Own Language
 ## Summary
 
-<br>Since JASP version 0.12 it is possible to make JASP available in different languages. The following sections describe the different steps needed to create an international version of JASP. The translation of JASP depends on so-called portable object, '.po' files. These po files contain all the strings in JASP that need translating. For translators section 5 is most important. The other sections are written for developers, and provide an overview of the changes in the source code necessary for internationalization. <br>
+<br>Since JASP version 0.12 it is possible to make JASP available in different languages. The following sections describe the different steps needed to create an international version of JASP. The translation of JASP depends on so-called portable object, '.po' files. These .po files contain all the strings in JASP that need translating. For translators, section 5 is most important. The other sections are written for developers, and provide an overview of the changes in the source code necessary for internationalization. <br>
 
 ## Contents:
 
@@ -15,7 +15,7 @@
 
 ### 1. Introduction.
 
-To aid the internationalization of JASP, the source files were heavily modified. The JASP core code consists of two main functional parts. The first is JASP-Interface, which defines the user interface such as windows and file menus. JASP-Interface is mainly written in C++ and QML. The second part is JASP-Engine, which executes the R-code from each analysis. JASP-Engine is mainly written in R (and C++ but this code does not produce any messages for the users, but it does provide messages for logging purposes).  Internationalization requires us to go through the following three steps:
+To aid the internationalization of JASP, the source files were heavily modified. The JASP core code consists of two main functional parts. The first is JASP-Interface, which defines the user interface such as windows and file menus. JASP-Interface is mainly written in C++ and QML. The second part is JASP-Engine, which executes the R-code from each analysis. JASP-Engine is mainly written in R (and C++, but this code does not produce any messages for the users).  Internationalization requires us to go through the following three steps:
 
 1. An inventory was made of all the types of source files in JASP that contain messages to the user. These file types are described in the [Inventory: Identifying all the source file types that contain strings that are shown to the user](#2-Preparing-different-type-of-source-files) section.
 2. From this inventory all strings are extracted and .po files were generated. How all the .po files are structured and how they are created out of the source files is described in the 'How to generate .po files' section.
@@ -42,7 +42,7 @@ This section describes which files types needed to be adapted such that the tran
 3. R-files
 
 	*  a. All literal strings such as titles and messages must be embedded in the gettext() function, e.g, title=gettext("Hypothesis")
-	*  b. Unicode character may not appear in the literals strings as output strings. For instance, title="McDonald's \u03C9" must be coded as gettextf(“McDonald's %s”,” \u03C9") instead of title=gettext("McDonald's \u03C9"). The same is true for a single % character in a gettext. It must be transformed to a gettextf with a double %%. Please report if you know a better solution.
+	*  b. Unicode character may not appear in the literals strings as output strings. For instance, title="McDonald's \u03C9" must be coded as gettextf(“McDonald's %s”,” \u03C9") instead of title=gettext("McDonald's \u03C9"). The same is true for a single % character in a gettext. It must be transformed to a gettextf with a double %%. Please let us know if you have a better solution.
 	*  c. All paste and paste0 functions must be replaced by the gettext or the gettextf functions. For example:
 
        overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
@@ -94,7 +94,7 @@ Qt provides two specific command line tools for its internationalization.<br>
 These two tools are installed once Qt is installed. <br>Download the Open Source version from (https://www.qt.io/download). Please see our documentation for more info on installing Qt https://github.com/jasp-stats/jasp-desktop/blob/stable/Docs/development/jasp-building-guide.md
 
 ##### R 3.6.1
-R is needed to generate .mo files.JASP 0.12 is using version 3.6.1 but any later version will do also. The installation is quite straight forward. You can download R from https://cran.r-project.org/
+R is needed to generate .mo files.JASP 0.12 is using version 3.6.1 but any later version will do also. Installation is straightforward. You can download R from https://cran.r-project.org/
 
 ##### GNU gettext tool set
 The GNU gettext utilities are a set of tools that provides a framework within which other free packages may produce multi-lingual messages. This tool set is used under the hood by R to produce .mo files.
@@ -106,7 +106,7 @@ Download Windows binaries from: http://gnuwin32.sourceforge.net/packages/gettext
 Unzip gettext-0.14.4-bin.zip and its location needs to be added to the PATH environment.
 
 ##### Structuring the R code (especially for JASP and JASPgraphs package).<br>
-This subject is intended for developers, adding new translatable R-packages to JASP. Each R package/dynamic module needs to be structured as follows:
+This subject is intended for developers who wish to add new translatable R-packages to JASP. Each R package/dynamic module needs to be structured as follows:
 
 * DESCRIPTION
 * NAMESPACE
@@ -129,7 +129,7 @@ To initiate a translation for a module:
 
 
 ### 5. Tasks for a translator of JASP.
-As described above, most user interfaces, messages and errors shown by JASP are contained in (at the moment 3) .po files. At the moment of writing, the help and other text files, such as some of the json  files, are not included in the translation package, but the are planned to be translated in a future release. In the next sections 'xx' stands for the unique two-letter code of the language (e.g., nl for Dutch), see https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes for the complete list.
+As described above, most user interfaces, messages and errors shown by JASP are contained in (at the moment three) .po files. At the time of writing, help files and other text files, such as some of the json files, are not included in the translation package, but the are planned to be translated in a future release. In the next sections 'xx' stands for the unique two-letter code of the language (e.g., nl for Dutch), see https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes for the complete list.
 
 #### *Location of the .po files*
 Translaters familiar with github:<br> could clone or fork the jasp-desktop repository and will find then<br>
@@ -161,7 +161,7 @@ See https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes for the complete list.
 
 #### *Create the binary .mo and .qm files*
 For translators that might have a complete build environment of JASP: edit JASP-Desktop.pro and the  GENERATE_LANGUAGE_FILES = true. Rebuilding the JASP-Desktop will give you all the binary translation files.<br><br>
-Translators that want to test their translations on an already installed version of JASP:<br>Be sure that the first three items of the Section 4 are installed. The following commands from a terminal in the jasp-desktop folder can be run to create the .mo and .qm files.
+Translators who wish to test their translations on an already installed version of JASP:<br>Be sure that the first three items of the Section 4 are installed. The following commands from a terminal in the jasp-desktop folder can be run to create the .mo and .qm files.
 
 1.	The Qt JASP interface .qm file: jasp\_xx.qm<br>From a terminal run: <br> > ~/Qt/5.14.2/clang_64/bin/lrelease ./JASP-Desktop/po/jasp\_xx.po -qm jasp\_xx.qm<br>
 This creates a jasp\_xx.qm.<br>
@@ -188,13 +188,13 @@ Location of R-JASP.mo C:\Program Files\JASP\R\library\JASP\R\xx\LC\_MESSAGES<br>
 Location of R-JASPgraphs.mo C:\Program Files\JASP\R\library\JASPgraphs\R\xx\LC\_MESSAGES
 
 #### *Putting the translations into production*
-Translators that are familiar with  Github:<br> Can make a Pull Request containing their translated .po file. If this pull request is merged, the new language appears the next day in the nightly build. The new language is then activated by going to Preferences->Interface->Preferred Language and should appear in the dropdown menu.
+Translators familiar with  Github:<br> Can make a Pull Request containing their translated .po file. If this pull request is merged, the new language appears the next day in the nightly build. The new language is then activated by going to Preferences->Interface->Preferred Language and should appear in the dropdown menu.
 
-Another way to have the translation in JASP is by opening an issue in the https://github.com/jasp-stats/jasp-issues/issues repository. The new Feature Request Issue should contain the translated .po files with some reference or zip with the translated files. Our developer will then help out. 
+Another way to have the translation in JASP is by opening an issue in the https://github.com/jasp-stats/jasp-issues/issues repository. The new Feature Request Issue should contain the translated .po files with some reference or zip with the translated files. Our developer will then help out.
 
 #### *Questions*
 
-If there are things unclear or not working, please make an issue in the https://github.com/jasp-stats/jasp-issues/issues repository. Then all the developers are able to answer you. Or send a direct e-mail to f.a.m.meerhoff@uva.nl
+If things are unclear or not working, please make an issue in the https://github.com/jasp-stats/jasp-issues/issues repository. Then all the developers are able to answer you. Or send a direct e-mail to f.a.m.meerhoff@uva.nl
 
 ### 6. References.
 
