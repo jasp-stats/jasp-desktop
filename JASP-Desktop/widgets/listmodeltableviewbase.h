@@ -34,7 +34,7 @@ class ListModelTableViewBase : public ListModel
 	Q_PROPERTY(int rowCount		READ rowCount		NOTIFY rowCountChanged)
 
 public:
-	enum class	specialRoles		{ active = Qt::UserRole, lines, maxColString, maxRowHeaderString };
+	enum class	specialRoles		{ active = Qt::UserRole, lines, maxColString, maxRowHeaderString, itemInputType };
 
 	explicit						ListModelTableViewBase(BoundQMLTableView * tableView, QString tableType = "");
 
@@ -59,8 +59,10 @@ public:
 	virtual		void				itemChanged(int column, int row, QVariant value, QString type);
 	virtual		void				refreshModel()							{ return ListModel::refresh(); }
 	virtual		void				initValues(OptionsTable * bindHere);
-	virtual		QString				getDefaultColName(size_t index)		const	{ return tr("Col %1").arg(index); }
-	virtual		QString				getDefaultRowName(size_t index)		const	{ return tr("Row %1").arg(index); }
+	virtual		QString				getDefaultColName(size_t index)				const	{ return tr("Col %1").arg(index); }
+	virtual		QString				getDefaultRowName(size_t index)				const	{ return tr("Row %1").arg(index); }
+	virtual		bool				isEditable(const QModelIndex &index)		const	{ return true; }
+	virtual		QString				getItemInputType(const QModelIndex &index)	const	{ return "string"; }
 	virtual		OptionsTable *		createOption();
 	virtual		void				modelChangedSlot();
 

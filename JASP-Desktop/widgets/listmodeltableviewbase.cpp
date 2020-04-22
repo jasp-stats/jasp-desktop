@@ -60,9 +60,10 @@ QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const
 				(right ?	2 : 0) +
 				(up ?		4 : 0) +
 				(down ?		8 : 0);
-	}
-	case Qt::DisplayRole:	return QVariant(_values[column][row]);
-	default:				return QVariant();
+	}		
+	case int(specialRoles::itemInputType):	return getItemInputType(index);
+	case Qt::DisplayRole:				return QVariant(_values[column][row]);
+	default:							return QVariant();
 	}
 }
 
@@ -321,15 +322,21 @@ QHash<int, QByteArray> ListModelTableViewBase::roleNames() const
 		roles[int(specialRoles::lines)]					= QString("lines").toUtf8();
 		roles[int(specialRoles::maxColString)]			= QString("maxColString").toUtf8();
 		roles[int(specialRoles::maxRowHeaderString)]	= QString("maxRowHeaderString").toUtf8();
+		roles[int(specialRoles::itemInputType)]				= QString("itemInputType").toUtf8();
 		addRoles = false;
 	}
 
 	return roles;
 }
 
-Qt::ItemFlags ListModelTableViewBase::flags(const QModelIndex &) const
+Qt::ItemFlags ListModelTableViewBase::flags(const QModelIndex &index) const
 {
-	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable;
+	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+
+	if (isEditable(index))
+		flags |= Qt::ItemIsEditable;
+
+	return flags;
 }
 
 void ListModelTableViewBase::runRScript(const QString & script)

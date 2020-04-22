@@ -29,13 +29,13 @@ class ListModelJAGSDataInput : public ListModelTableViewBase
 public:
 	explicit ListModelJAGSDataInput(BoundQMLTableView * parent, QString tableType);
 
-	Qt::ItemFlags		flags(		const QModelIndex &index)	const	override;
-
 	int getMaximumColumnWidthInCharacters(size_t columnIndex)	const	override;
 
-	QString			getDefaultColName(size_t index)					const	override;
+	QString			getDefaultColName(size_t index)				const	override;
 	OptionsTable *	createOption()										override;
 	void			initValues(OptionsTable * bindHere)					override;
+	bool			isEditable(const QModelIndex& index)		const	override	{ return _tableType == "initialValues" ? (index.column() >= 1) : true; }
+	QString			getItemInputType(const QModelIndex& index)	const	override	{ return index.column() == 1 ? "formula" : "string"; }
 
 public slots:
 	void sourceTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)	override;

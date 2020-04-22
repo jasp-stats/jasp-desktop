@@ -54,6 +54,8 @@ JASPControl
 	property int	rowSelected		: -1
 	property int	columnCount		: 0	//Readonly
 	property int	rowCount		: 0	//Readonly
+	property int	variableCount	: 0 //Readonly only used by MarginalMeansContrasts
+	property real	scaleFactor		: 1 // Only used by marginalMeansContrast
 	property string cornerText		: qsTr("Row #")
 	property bool	parseDefaultValue: true
 	property string defaultEmptyValue:	""
@@ -64,8 +66,6 @@ JASPControl
 	//The size of the table *inside* the Flickable. + 2 for margins of flickable and scrollbars
 	readonly property int tableWidth:  theView.width  + 2
 	readonly property int tableHeight: theView.height + 2
-
-	readonly property int editableColumnStartIndex: tableView.modelType === "FilteredDataEntryModel" ? 3 : (tableView.modelType === "JAGSDataInputModel" && tableView.tableType == "initialValues" ? 1 : 0)
 
 	signal reset()
 	signal addRow()
@@ -182,7 +182,7 @@ JASPControl
 					FormulaField
 					{
 						id:						formlaInput
-						inputType:				(tableView.modelType === "JAGSDataInputModel" && columnIndex === 1) ? "formula" : "string"
+						inputType:				itemInputType
 						isBound:				false
 						anchors.verticalCenter: parent.verticalCenter
 						anchors.left:			parent.left
@@ -200,7 +200,7 @@ JASPControl
 						validator:				tableView.validator
 						onPressed:				tableView.colSelected = columnIndex
 						onEditingFinished:		tableView.itemChanged(columnIndex, rowIndex, value, inputType)
-						editable:				columnIndex >= tableView.editableColumnStartIndex
+						editable:				itemEditable
 					}
 				}
 

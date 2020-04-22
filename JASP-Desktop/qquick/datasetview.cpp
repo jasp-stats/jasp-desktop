@@ -832,6 +832,7 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 	QModelIndex idx = _model->index(row, col);
 
 	bool isEditable(_model->flags(idx) & Qt::ItemIsEditable);
+	QVariant itemInputType = _model->data(idx, _roleNameToRole["itemInputType"]);
 
 	if(isEditable || _storedDisplayText.count(row) == 0 || _storedDisplayText[row].count(col) == 0)
 		_storedDisplayText[row][col] = _model->data(idx).toString();
@@ -844,6 +845,7 @@ QQmlContext * DataSetView::setStyleDataItem(QQmlContext * previousContext, bool 
 	previousContext->setContextProperty("itemText",			text);
 	previousContext->setContextProperty("itemActive",		active);
 	previousContext->setContextProperty("itemEditable",		isEditable);
+	previousContext->setContextProperty("itemInputType",	itemInputType);
 	previousContext->setContextProperty("columnIndex",		static_cast<int>(col));
 	previousContext->setContextProperty("rowIndex",			static_cast<int>(row));
 	previousContext->setContextProperty("dataFont",			_font);
