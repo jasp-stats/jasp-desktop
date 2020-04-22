@@ -127,7 +127,7 @@ giveOrderedDependencies <- function()
   for (i in seq_along(orderedPkgs))
   {
     curPkg  <- orderedPkgs[[i]]
-    
+
     if(!exists(curPkg, where=expEnv, inherits=FALSE)) #if so get the version from available pkgs
     {
       print(paste0("Checking version of pkg ", curPkg, " in available_pkgs"))
