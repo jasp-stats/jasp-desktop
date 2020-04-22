@@ -921,9 +921,9 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 
           # gsubs necessary to deal with X and "." introduced to level names by emmeans
           x <- subset(longData, gsub("X", "", facLevelNoDots) == gsub("X", "", levelANoDots))
-          x <- tapply(x[[.v("dependent")]], x[[.v("subject")]], mean)
+          x <- tapply(x[[.v("dependent")]], x[["subject"]], mean)
           y <- subset(longData, gsub("X", "", facLevelNoDots) == gsub("X", "", levelBNoDots))
-          y <- tapply(y[[.v("dependent")]], y[[.v("subject")]], mean)
+          y <- tapply(y[[.v("dependent")]], y[["subject"]], mean)
 
           tResult <- t.test(x, y, paired = TRUE, var.equal = FALSE, conf.level = bonfAdjustCIlevel)
           tResult <- unname(unlist(tResult[c("estimate", "statistic", "p.value", "conf.int")]))
@@ -1233,7 +1233,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       if (options$contrastAssumeEqualVariance == FALSE && contrast$variable %in% unlist(options$withinModelTerms) ) {
 
         newDF <- do.call(data.frame, tapply(longData[[.v("dependent")]], longData[[.v(contrast$variable)]], cbind))
-        ssNr <- tapply(longData[[.v("subject")]], longData[[.v(contrast$variable)]], cbind)
+        ssNr <- tapply(longData[["subject"]], longData[[.v(contrast$variable)]], cbind)
         
         for (i in 1:ncol(newDF)) {
           newDF[[i]] <- tapply(newDF[[i]], ssNr[[i]], mean)
@@ -1595,7 +1595,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   
   groupingVariables <- unlist(options$friedmanWithinFactor)
-  blockingVar <- ifelse( identical(options$friedmanBetweenFactor, ""), .v("subject"), .v(options$friedmanBetweenFactor))
+  blockingVar <- ifelse( identical(options$friedmanBetweenFactor, ""), "subject", .v(options$friedmanBetweenFactor))
   y <- longData[, .v("dependent")]
 
   for (groupingVar in groupingVariables) {
