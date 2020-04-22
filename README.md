@@ -66,4 +66,5 @@ Head on over to our [issue tracker](http://github.com/jasp-stats/jasp-issues/iss
   - [The JASP R package list](https://jasp-stats.org/r-package-list/)
 
 #### Translation
-  - [Some guidance to make souce files ready for translation](Docs/development/jasp-translation-rules.md)
+  - [New translations of JASP](Docs/development/translate.md)
+  - [Prepare source files for translation](Docs/development/jasp-translation-rules.md)
