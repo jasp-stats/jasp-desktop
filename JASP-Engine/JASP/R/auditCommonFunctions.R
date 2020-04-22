@@ -3034,19 +3034,19 @@
         } else {
 
           if(evaluationState[["method"]] == "binomial")
-            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) /
-                    (evaluationState[["kPrior"]] + evaluationState[["t"]] +
-                      evaluationState[["nPrior"]] + evaluationState[["n"]] -
+            mle <- (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) /
+                    (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] +
+                      1 + evaluationState[["nPrior"]] + evaluationState[["n"]] -
                       evaluationState[["t"]] - 2)
 
           if(evaluationState[["method"]] == "poisson")
             mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) / 
-                    (evaluationState[["nPrior"]] + evaluationState[["n"]])
+                    (1 + evaluationState[["nPrior"]] + evaluationState[["n"]])
 
           if(evaluationState[["method"]] == "hypergeometric")
-            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]]) / 
-                    (evaluationState[["kPrior"]] + evaluationState[["t"]] +
-                    evaluationState[["nPrior"]] + evaluationState[["n"]] -
+            mle <- (1 + evaluationState[["kPrior"]] + evaluationState[["t"]]) / 
+                    (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] +
+                    1 + evaluationState[["nPrior"]] + evaluationState[["n"]] -
                     evaluationState[["t"]])
 
           if(evaluationState[["method"]] == "coxsnell")
@@ -3175,19 +3175,19 @@
         } else {
 
           if(evaluationState[["method"]] == "binomial")
-            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) /
-                    (evaluationState[["kPrior"]] + evaluationState[["t"]] +
-                      evaluationState[["nPrior"]] + evaluationState[["n"]] -
+            mle <- (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) /
+                    (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] +
+                      1 + evaluationState[["nPrior"]] + evaluationState[["n"]] -
                       evaluationState[["t"]] - 2)
 
           if(evaluationState[["method"]] == "poisson")
             mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]] - 1) / 
-                    (evaluationState[["nPrior"]] + evaluationState[["n"]])
+                    (1 + evaluationState[["nPrior"]] + evaluationState[["n"]])
 
           if(evaluationState[["method"]] == "hypergeometric")
-            mle <- (evaluationState[["kPrior"]] + evaluationState[["t"]]) / 
-                    (evaluationState[["kPrior"]] + evaluationState[["t"]] +
-                    evaluationState[["nPrior"]] + evaluationState[["n"]] -
+            mle <- (1 + evaluationState[["kPrior"]] + evaluationState[["t"]]) / 
+                    (1 + evaluationState[["kPrior"]] + evaluationState[["t"]] +
+                    1 + evaluationState[["nPrior"]] + evaluationState[["n"]] -
                     evaluationState[["t"]])
 
           if(evaluationState[["method"]] == "coxsnell")
