@@ -88,14 +88,6 @@ QString ListModelJAGSDataInput::getDefaultColName(size_t index) const
 	return "R Code";
 }
 
-Qt::ItemFlags ListModelJAGSDataInput::flags(const QModelIndex &index) const
-{
-	if (index.column() == 0 && listView()->sourceModels().length() > 0)
-		return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-
-	return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable;
-}
-
 int ListModelJAGSDataInput::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 {
 	return columnIndex == 0 ? 6 : 25;

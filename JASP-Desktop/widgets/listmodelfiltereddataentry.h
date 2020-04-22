@@ -41,6 +41,7 @@ public:
 	OptionsTable *	createOption()															override;
 	void			initValues(OptionsTable * bindHere)										override;
 	int				getMaximumColumnWidthInCharacters(size_t columnIndex)			const	override;
+	bool			isEditable(const QModelIndex& index)							const	override	{ return index.column() >= _columnCount; }
 	void			itemChanged(int column, int row, QVariant value, QString type)			override;
 
 	void			refreshModel()															override;
