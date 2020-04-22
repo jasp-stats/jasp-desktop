@@ -57,6 +57,9 @@ QList<QVariant> QMLListView::_getListVariant(QVariant var)
 		}
 	}
 
+	if (listVar.isEmpty())
+		listVar.push_back(var);
+
 	return listVar;
 }
 
@@ -72,12 +75,23 @@ void QMLListView::setSources()
 	
 	for (const QVariant& source : sources)
 	{
-		if (source.canConvert<QString>())
+		JASPControlBase* sourceItem = source.value<JASPControlBase*>();
+		if (sourceItem)
+			_sourceModels.append(new SourceType(sourceItem->name()));
+		else if (source.canConvert<QString>())
 			_sourceModels.append(new SourceType(source.toString()));
 		else if (source.canConvert<QMap<QString, QVariant> >())
 		{
 			QMap<QString, QVariant> map = source.toMap();
-			QString sourceName = map["name"].toString();
+			QString sourceName;
+			if (map.contains("id"))
+			{
+				JASPControlBase* sourceItem2 = map["id"].value<JASPControlBase*>();
+				if (sourceItem2)
+					sourceName = sourceItem2->name();
+			}
+			else
+				sourceName = map["name"].toString();
 			QString modelUse = map["use"].toString();
 			QString conditionExpression = map["condition"].toString();
 			QVector<QPair<QString, QString> > discards;
@@ -97,12 +111,23 @@ void QMLListView::setSources()
 				{
 					QString discardName;
 					QString discardUse;
-					if (discardSource.canConvert<QString>())
+
+					JASPControlBase* discardItem = source.value<JASPControlBase*>();
+					if (discardItem)
+						discardName = discardItem->name();
+					else if (discardSource.canConvert<QString>())
 						discardName = discardSource.toString();
 					else if (discardSource.canConvert<QMap<QString, QVariant> >())
 					{
 						QMap<QString, QVariant> discardMap = discardSource.toMap();
-						discardName = discardMap["name"].toString();
+						if (discardMap.contains("id"))
+						{
+							JASPControlBase* discardItem2 = map["id"].value<JASPControlBase*>();
+							if (discardItem2)
+								discardName = discardItem2->name();
+						}
+						else
+							discardName = discardMap["name"].toString();
 						if (discardName.isEmpty())
 							addControlError(tr("No name given in discard source attribute of VariableList %1" ).arg(name()));
 						discardUse = discardMap["use"].toString();
@@ -173,6 +198,9 @@ void QMLListView::setSources()
 			setTermsAreNotVariables(); // set it only when it is false
 		if (termsAreInteractions)
 			setTermsAreInteractions(); // set it only when it is true
+
+		if (_sourceModels.length() == 1 && _sourceModels[0]->model)
+			setItemProperty("sourceModel", QVariant::fromValue(_sourceModels[0]->model));
 	}
 
 }

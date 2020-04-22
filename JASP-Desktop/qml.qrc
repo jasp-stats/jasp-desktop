@@ -135,5 +135,6 @@
         <file>components/JASP/Widgets/ControlErrorMessage.qml</file>
         <file>components/JASP/Widgets/LoadingIndicator.qml</file>
         <file>components/JASP/Controls/Text.qml</file>
+        <file>components/JASP/Widgets/MarginalMeansContrastsTableView.qml</file>
     </qresource>
 </RCC>
