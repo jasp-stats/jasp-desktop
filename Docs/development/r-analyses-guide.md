@@ -1,7 +1,7 @@
 How to Write R Analyses for JASP
 ================================
 
-R code for JASP should follow JASP's [R style guide](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/r-style-guide.md). 
+R code for JASP should follow JASP's [R style guide](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/r-style-guide.md).
 
 This document will guide you through the process of writing an R analysis for JASP. Two things should be noted before we get started. First, this guide assumes that you have knowledge about basic R concepts such as functions. Second, writing an R analysis is necessary but **not** sufficient to create a new module for JASP. For this goal, other files (such as [the QML file for the interface](jasp-qml-guide.md)) need to be created.
 
@@ -56,11 +56,11 @@ Each analysis in JASP needs a main analysis function. This function will provide
 
 <details>
 	<summary>Code</summary>
-	
+
   ```r
   BinomialTest <- function() {
   ```
-  
+
 </details>
 
 ### Step 1.1 - The Arguments
@@ -71,11 +71,11 @@ The main analysis function has the following arguments:
 
 <details>
 	<summary>Code</summary>
-	
+
   ```r
   BinomialTest <- function(jaspResults, dataset, options) {
   ```
-  
+
 </details>
 
 ## Step 2 - Checking if Results can be Computed
@@ -86,7 +86,7 @@ Analyses usually require a certain minimum input before it can run, for example,
 
   ```r
   BinomialTest <- function(jaspResults, dataset, options) {
-    
+
     ready <- (length(options$variables) > 0)
    ```
 
@@ -105,16 +105,16 @@ We do have to account for the fact that we do not need data if we're not ready t
 
 <p><details>
 	<summary>Code</summary>
-	
+
   ```r
   BinomialTest <- function(jaspResults, dataset, options) {
-    
+
     ready <- (length(options$variables) > 0)
-    
+
     if (ready)
       dataset <- .binomReadData(dataset, options)
   ```
-   
+
 </details></p>
 
 Where `.binomReadData()` looks like
@@ -133,12 +133,21 @@ Where `.binomReadData()` looks like
 
 </details></p>
 
-Take note that the column titles in the data.frame returned by `.readDataSetToEnd()` will look a bit jumbled, e.g., a column titled `variable1` would look like `XdmFyaWFibGUx`. This is due to the base64 encoding we perform on the column titles (to avoid crashes due to incompatible names). The problem is that the values in `options$variables` are NOT base64 encoded and therefore do not match the column names in the dataset. Obviously this will present difficulties if we try to subset data later during the computation phase. The way we solve this is by using `.v()` to base64 encode options or `.unv()` to decode column names. To exemplify this, the following would return `TRUE`:
+Take note that the column titles in the data.frame returned by `.readDataSetToEnd()` will look a bit jumbled, e.g., the first column is titled `JaspColumn_.1._Encoded`, the second column is titled `JaspColumn_.2._Encoded`. This is due to the encoding we perform on the column titles, which allows us to handle foreign characters. The values in `options$variables` are NOT encoded and therefore do not match the column names in the dataset. Obviously this will present difficulties if we try to subset data later during the computation phase. The way we solve this is by using `decodeColNames()` to decode column names and `encodeColNames` to encode column names. To exemplify this, the following would return `TRUE`:
 
-- `"variable1" == .unv("XdmFyaWFibGUx")` 
-- `.v("variable1") == "XdmFyaWFibGUx"`
+- `"firstColumnTitle" == decodeColNames("JaspColumn_.1._Encoded")`
+- `encodeColNames("JaspColumn_.1._Encoded") == "firstColumnTitle"`
 
-Hence, whenever you wish to match an option to a data.frame column you must encode or decode one of the two. In addition to encoding strings, we also provide `.vf()` and `.unvf()` to base64 encode/decode formulas.
+Hence, whenever you wish to match an option to a data.frame column you must encode or decode one of the two. It is quite possible that an analysis crashes when it encounters uncommon characters. Such an error can be caused by the code in the analysis itself, but it can also be caused by a dependency that cannot handle these characters. To play it safe, we recommend only decoding column names at the very last moment before presenting output in a table of plot. To subset in a data set we recommend *encoding* the names in `options$variables`. For example,
+
+```r
+dataset[, encodeColNames(options$variables[1])]
+```
+is preferred over
+```r
+colnames(dataset) <- decodeColNames(dataset)
+dataset[, options$variables[1]]
+```
 
 ## Step 4 - Checking for Errors
 If we have the minimum input our analysis requires, it is important to check for errors that could prevent the results from being computed (e.g., a dependent variable that has no variance). The error checks that should be conducted depend on the analysis. Most common error checks are implemented in the convenience function `.hasErrors()`. The arguments you can supply are as follows (\* denotes required arguments):
@@ -154,17 +163,17 @@ If we have the minimum input our analysis requires, it is important to check for
 
 Each error check can be further customized by supplying check-specific arguments. For `.hasErrors` to understand where each argument has to go you need to prefix them with the checks name. So if check `aCheck` has argument `anArg` that you wish to supply with `value` then you call `aCheck.anArg = value`. If multiple checks have the same argument then you can also specify `all.anArg = value`; the `all.` prefix supplies it to all checks with argument `anArg`. Note that for most checks you can specify the `target` variable they must check, e.g., `aCheck.target=options$dependent`, you can (1) specify these targets individually per check, or (2) use `all.target=options$dependent` or (3) omit the target to automatically check all columns in the provided dataset. The check names and arguments are as follows (\* denotes required arguments):
 
-1. `infinity`: Check for infinity in a variable. 
+1. `infinity`: Check for infinity in a variable.
 - `target`: string vector indicating the target variables.
 - `grouping`: string vector indicating the grouping variables.
 - `groupingLevel`: vector indicating the level of each of the grouping variables.
 
-2. `negativeValues`: Check for negative values in a variable. 
+2. `negativeValues`: Check for negative values in a variable.
 - `target`: string vector indicating the target variables.
 - `grouping`: string vector indicating the grouping variables.
 - `groupingLevel`: vector indicating the level of each of the grouping variables.
 
-3. `missingValues`: Check for missing values in a variable. 
+3. `missingValues`: Check for missing values in a variable.
 - `target`: string vector indicating the target variables.
 - `grouping`: string vector indicating the grouping variables.
 - `groupingLevel`: vector indicating the level of each of the grouping variables.
@@ -201,7 +210,7 @@ Each error check can be further customized by supplying check-specific arguments
 - `symm` boolean [default: `TRUE`], specifying if dataset must be symmetrical.
 - `posdef` boolean [default: `TRUE`], specifying if dataset must be positive-definite.
 
-10. `varCovData`: Check if the matrix returned by specified function is positive definite. 
+10. `varCovData`: Check if the matrix returned by specified function is positive definite.
 - `target`: string vector indicating the target variables.
 - `grouping`: string vector indicating the grouping variables.
 - `corFun`: a function [default: `cor`] that calculates a correlation matrix or covariance matrix (e.g., `cor` or `cov` are recommended)
@@ -214,14 +223,14 @@ Some examples:
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
     # Error check: Weird data for dependent variable in each level of the grouping variable
     .hasErrors(dataset, type = c('observations', 'variance', 'infinity'),
               all.target = options$variables, all.grouping = options$groupingVariable,
               observations.amount = c('< 3'), exitAnalysisIfErrors = TRUE)
   ```
-  
+
   ```r
     # Error check: Check for non-positive definite variance-covariance matrix
     covnwt <- stats::cov
@@ -232,30 +241,30 @@ Some examples:
 
 </details>
 
-For the Binomial Test, we need to make sure that there is a least one factor level for each variable and that we have at least one observation for each level of the variables. 
+For the Binomial Test, we need to make sure that there is a least one factor level for each variable and that we have at least one observation for each level of the variables.
 
 <p><details>
 	<summary>Code</summary>
-  
+
   ```r
   BinomialTest <- function(jaspResults, dataset, options) {
-    
+
     ready <- (length(options$variables) > 0)
-    
+
     if (ready) {
       dataset <- .binomReadData(dataset, options)
-      
+
       .binomCheckErrors(dataset, options)
     }
   ```
-  
+
 </details></p>
 
 Where `.binomCheckErrors()` looks like:
 
 <p><details>
 	<summary>Code</summary>
-	
+
   ```r
   .binomCheckErrors <- function(dataset, options) {
     # Error Check 1: Number of levels of the variables
@@ -266,36 +275,36 @@ Where `.binomCheckErrors()` looks like:
     # Error check 2: 0 observations for a level of a variable
     for (variable in options$variables) {
         .hasErrors(dataset = dataset, type = "observations",
-        observations.target = variable, observations.amount  = "< 1", 
+        observations.target = variable, observations.amount  = "< 1",
         observations.grouping = variable, exitAnalysisIfErrors = TRUE)
-      
+
     }
-    
+
   }
   ```
-  
+
 </details></p>
 
 ## Step 5 - Creating Output Tables and Plots
-It is now time to think about our output. What tables and plots do we want to display? In most analyses you will have one main output table that is always shown and then a number of tables and plots that are optional. As a table is almost always shown we will first start explaining how to create it. 
+It is now time to think about our output. What tables and plots do we want to display? In most analyses you will have one main output table that is always shown and then a number of tables and plots that are optional. As a table is almost always shown we will first start explaining how to create it.
 
 ### Step 5.1 - Tables
 At this point we start using `jaspResults` which was passed into our function at the start of the analysis. `jaspResults` is used to store our results and helps us figure out if we can re-use any of our tables and plots between calls to our analysis function. Whereas this may sound complex, there is an easy way to check for it: We can just check whether the table we want to make is defined (i.e. not `NULL`) in `jaspResults`. If it is not defined (i.e. `NULL`), the table needs to be created:
 
 <p><details>
 	<summary>Code</summary>
-	
+
   ```r
   BinomialTest <- function(jaspResults, dataset, options) {
-    
+
     ready <- (length(options$variables) > 0)
-    
+
     if (ready) {
 	    dataset <- .binomReadData(dataset, options)
-      
+
 	    .binomCheckErrors(dataset, options, ready)
     }
-    
+
     if (is.null(jaspResults[["binomialTable"]]))
       .binomTableMain(jaspResults, dataset, options, ready)
   ```
@@ -309,12 +318,12 @@ Unfortunately, we cannot just create a data.frame and call it a day. There is so
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
   ```
-  
+
 </details>
 
 #### Step 5.1.2 - Dependencies
@@ -322,15 +331,15 @@ Now we need to specify the analysis options on which the table depends. If the v
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
-    
+
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                              "confidenceIntervalInterval", "VovkSellkeMPR"))
   ```
-  
+
 </details>
 
 #### Step 5.1.3 - Citations
@@ -338,14 +347,14 @@ Many analyses in JASP are based on the work of others and it is important we giv
 
 <details>
 	<summary>Code</summary>
-	
+
   ```r
   .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
-    
+
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                              "confidenceIntervalInterval", "VovkSellkeMPR"))
-				    
+
     binomialTable$addCitation("JASP Team (2018). JASP (Version 0.9.2) [Computer software].")
   ```
 
@@ -366,16 +375,16 @@ We'll also have to specify what columns our table will have. Some columns are al
 
 <p><details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                              "confidenceIntervalInterval", "VovkSellkeMPR"))
-    
+
     binomialTable$addCitation("JASP Team (2018). JASP (Version 0.9.2) [Computer software].")
-    
+
     binomialTable$addColumnInfo(name = "variable",   title = "Variable",   type = "string", combine = TRUE)
     binomialTable$addColumnInfo(name = "level",      title = "Level",      type = "string")
     binomialTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
@@ -393,23 +402,23 @@ We'll also have to specify what columns our table will have. Some columns are al
         overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
     }
   ```
-  
+
 </details></p>
 
 Another setting you may consider tweaking is whether JASP should display all columns it receives data for, or only the columns which were specified through `$addColumnInfo()`. This can be useful as results function are often blown up by complicated, nested if-statements in order to compute only the necessary statistics. By using `$showSpecifiedColumnsOnly`, we can avoid this complexity by computing the results for all statistics (even those that the user does not require). Note that the default behaviour is to show all columns for which data is received, unless `$showSpecifiedColumsnOnly` is set to `TRUE`.
 
 <p><details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                              "confidenceIntervalInterval", "VovkSellkeMPR"))
-    
+
     binomialTable$addCitation("JASP Team (2018). JASP (Version 0.9.2) [Computer software].")
-    
+
     binomialTable$addColumnInfo(name = "variable",   title = "Variable",   type = "string", combine = TRUE)
     binomialTable$addColumnInfo(name = "level",      title = "Level",      type = "string")
     binomialTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
@@ -426,10 +435,10 @@ Another setting you may consider tweaking is whether JASP should display all col
       binomialTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number", format = "sf:4",
         overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
     }
-    
+
     binomialTable$showSpecifiedColumnsOnly <- TRUE
   ```
- 
+
  </details></p>
 
 In the example given above, the column description added through `$addColumnInfo()` with `name = "VovkSellkeMPR"` will only be included when the VovkSellkeMPR checkbox in the interface is checked. By setting `$showSpecifiedColumnsOnly` to `TRUE` it does not matter if we include the VovkSellkeMPR statistic in our results anyway, as it won't be added to the table.
@@ -439,16 +448,16 @@ Optionally, we can tell JASP how many rows (and columns if you did not specify t
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                              "confidenceIntervalInterval", "VovkSellkeMPR"))
-                                    
+
     binomialTable$addCitation("JASP Team (2018). JASP (Version 0.9.2) [Computer software].")    
-    
+
     binomialTable$addColumnInfo(name = "variable",   title = "Variable",   type = "string", combine = TRUE)
     binomialTable$addColumnInfo(name = "level",      title = "Level",      type = "string")
     binomialTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
@@ -465,14 +474,14 @@ Optionally, we can tell JASP how many rows (and columns if you did not specify t
       binomialTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number", format = "sf:4",
         overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
     }
-    
+
     binomialTable$showSpecifiedColumnsOnly <- TRUE
-    
+
     if (ready)
       binomialTable$setExpectedSize(length(options$variables))
-      
+
   ```
- 
+
 </details>
 
 #### Step 5.1.6 - Footnotes
@@ -484,16 +493,16 @@ If we wish to display a message about the table output we can do so with a footn
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                              "confidenceIntervalInterval", "VovkSellkeMPR"))
-    
+
     binomialTable$addCitation("JASP Team (2018). JASP (Version 0.9.2) [Computer software].")
-        
+
     binomialTable$addColumnInfo(name = "variable",   title = "Variable",   type = "string", combine = TRUE)
     binomialTable$addColumnInfo(name = "level",      title = "Level",      type = "string")
     binomialTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
@@ -510,12 +519,12 @@ If we wish to display a message about the table output we can do so with a footn
       binomialTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number", format = "sf:4",
         overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
     }
-    
+
     binomialTable$showSpecifiedColumnsOnly <- TRUE
-    
+
     if (ready)
       binomialTable$setExpectedSize(length(options$variables))
-     
+
     message <- switch(options$hypothesis,
                       "notEqualToTestValue"  = paste0("Proportions tested against value: ", options$testValue, "."),
                       "greaterThanTestValue" = paste0("For all tests, the alternative hypothesis specifies that the proportion is greater than ", options$testValue, "."),
@@ -523,7 +532,7 @@ If we wish to display a message about the table output we can do so with a footn
     )
     binomialTable$addFootnote(message)
   ```
- 
+
 </details>
 
 #### Step 5.1.7 - Adding the Table to the Output
@@ -531,16 +540,16 @@ The markup part of the table is complete and we can now give it to `jaspResults`
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                              "confidenceIntervalInterval", "VovkSellkeMPR"))
-    
+
     binomialTable$addCitation("JASP Team (2018). JASP (Version 0.9.2) [Computer software].")
-        
+
     binomialTable$addColumnInfo(name = "variable",   title = "Variable",   type = "string", combine = TRUE)
     binomialTable$addColumnInfo(name = "level",      title = "Level",      type = "string")
     binomialTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
@@ -557,25 +566,25 @@ The markup part of the table is complete and we can now give it to `jaspResults`
       binomialTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number", format = "sf:4",
         overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
     }
-    
+
     binomialTable$showSpecifiedColumnsOnly <- TRUE
-    
+
     if (ready)
       binomialTable$setExpectedSize(length(options$variables))
-     
+
     message <- switch(options$hypothesis,
                       "notEqualToTestValue"  = paste0("Proportions tested against value: ", options$testValue, "."),
                       "greaterThanTestValue" = paste0("For all tests, the alternative hypothesis specifies that the proportion is greater than ", options$testValue, "."),
                       "lessThanTestValue"    = paste0("For all tests, the alternative hypothesis specifies that the proportion is less than ", options$testValue, ".")
     )
     binomialTable$addFootnote(message)
-    
+
     jaspResults[["binomialTable"]] <- binomialTable
-    
+
     if (!ready)
       return()
   ```
- 
+
 </details>
 
 
@@ -584,16 +593,16 @@ If we are indeed ready, then it is time to fill the table with computed results.
 
 <p><details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomTableMain <- function(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                              "confidenceIntervalInterval", "VovkSellkeMPR"))
-    
+
     binomialTable$addCitation("JASP Team (2018). JASP (Version 0.9.2) [Computer software].")
-    
+
     binomialTable$addColumnInfo(name = "variable",   title = "Variable",   type = "string", combine = TRUE)
     binomialTable$addColumnInfo(name = "level",      title = "Level",      type = "string")
     binomialTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
@@ -610,37 +619,37 @@ If we are indeed ready, then it is time to fill the table with computed results.
       binomialTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number", format = "sf:4",
         overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
     }
-    
+
     binomialTable$showSpecifiedColumnsOnly <- TRUE
-    
+
     if (ready)
       binomialTable$setExpectedSize(length(options$variables))
-     
+
     message <- switch(options$hypothesis,
                       "notEqualToTestValue"  = paste0("Proportions tested against value: ", options$testValue, "."),
                       "greaterThanTestValue" = paste0("For all tests, the alternative hypothesis specifies that the proportion is greater than ", options$testValue, "."),
                       "lessThanTestValue"    = paste0("For all tests, the alternative hypothesis specifies that the proportion is less than ", options$testValue, ".")
     )
     binomialTable$addFootnote(message)
-    
+
     jaspResults[["binomialTable"]] <- binomialTable
-    
+
     if (!ready)
       return()
-      
+
     .binomFillTableMain(binomialTable, dataset, options)
-    
+
     return()
   }
   ```
- 
+
 </details></p>
 
 Oftentimes, we need to add one row for each dependent variable or for each predictor. Therefore, the results are often added in for loops. In the example provided below, one row with results is added for each level of each dependent variable. The actual computations are not that important, so we'll limit what we show of `.binomFillTableMain` to the parts that are more generally applicable. It is important to note that we add these rows directly to the `binomialTable` we pass into the function and do not need to do anything further to `jaspResults`. The reason for this is that JASP tables are special objects that can use pass-by-reference mechanics. In this case `binomialTable` is passed by reference, which means that we are not just passing a copy of `binomialTable`, but an alias to the variable `binomialTable` from `.binomTableMain`. Consequently, any changes we make to `binomialTable` in `.binomFillTableMain` will be reflected by changes in `binomialTable` in `.binomTableMain`. And, as we added `binomialTable` to `jaspResults[["binomialTable"]]` earlier, all changes are automatically incorporated there, too. This means we do not need to return anything from the function and can simply exit with `NULL`.
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomFillTableMain <- function(binomialTable, dataset, options) {
 
@@ -658,11 +667,11 @@ Oftentimes, we need to add one row for each dependent variable or for each predi
                             lowerCI       = lowerCI,
                             upperCI       = upperCI))
     }
-    
+
     return()
   }
   ```
-  
+
 </details>
 
 Note that `$addRows()` also takes a second argument: `rowNames`, you can use this when you want to add a footnote for a specific row. If you would like to enter all data rows in one go then you can use `setData()`, this function accepts vectors, lists, matrices and data.frames.
@@ -673,20 +682,20 @@ It's entirely possible that an analysis still crashes even after our error check
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomFillTableMain <- function(binomialTable, dataset, options) {
 
     for (variable in options$variables) {
 
       results <- try(<calculate our results with stats::binom.test>)
-      
+
       if (inherits(results, "try-error")) {
         errorMessage <- as.character(results)
         binomialTable$setError(errorMessage)
         return()
       }
-        
+
       binomialTable$addRows(list(variable = variable,
                             level         = results$level,
                             counts        = results$counts,
@@ -697,11 +706,11 @@ It's entirely possible that an analysis still crashes even after our error check
                             lowerCI       = results$lowerCI,
                             upperCI       = results$upperCI))
     }
-    
+
     return()
   }
   ```
-  
+
 </details>
 
 #### Step 5.1.10 - Multiple Tables
@@ -712,24 +721,24 @@ We have one table so far, let's create a plot, too. This will be the final outpu
 
 <p><details>
 	<summary>Code</summary>
-	
+
   ```r
   BinomialTest <- function(jaspResults, dataset, options) {
-    
+
     ready <- (length(options$variables) > 0)
-    
+
     if (ready) {
       dataset <- .binomReadData(dataset, options)
-      
+
       .binomCheckErrors(dataset, options, ready)
     }
-    
+
     if (is.null(jaspResults[["binomialTable"]]))
       .binomTableMain(jaspResults, dataset, options, ready)
-      
+
     if (is.null(jaspResults[["binomialPlot"]]))
       .binomPlotDescriptives(jaspResults, dataset, options, ready)
-      
+
     return()
   }
   ```
@@ -743,13 +752,13 @@ A JASP plot requires fairly little markup. All we have to do at the start is cre
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomPlotDescriptives <- function(jaspResults, dataset, options, ready) {
     binomialPlot <- createJaspPlot(title = "Descriptives",  width = 160, height = 320)
-    
+
   ```
-  
+
 </details>
 
 #### Step 5.2.2 - Dependencies
@@ -757,14 +766,14 @@ Now we need to specify the analysis options on which the plot depends. If the va
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomPlotDescriptives <- function(jaspResults, dataset, options, ready) {
     binomialPlot <- createJaspPlot(title = "Descriptives",  width = 160, height = 320)
-    
+
     binomialPlot$dependOn(c("variables", "testValue", "descriptivesPlotsConfidenceInterval"))
   ```
-  
+
 </details>
 
 #### Step 5.2.3 - Citations
@@ -772,13 +781,13 @@ Many analyses in JASP are based on the work of others and it is important we giv
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomPlotDescriptives <- function(jaspResults, dataset, options, ready) {
     binomialPlot <- createJaspPlot(title = "Descriptives",  width = 160, height = 320)
-    
+
     binomialPlot$dependOn(c("variables", "testValue", "descriptivesPlotsConfidenceInterval"))
-				    
+
     binomialPlot$addCitation("JASP Team (2018). JASP (Version 0.9.2) [Computer software].")
   ```
 
@@ -789,21 +798,21 @@ We can now give it to `jaspResults` (and if we're not ready to compute anything 
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomPlotDescriptives <- function(jaspResults, dataset, options, ready) {
     binomialPlot <- createJaspPlot(title = "Descriptives",  width = 160, height = 320)
-    
+
     binomialPlot$dependOn(c("variables", "testValue", "descriptivesPlotsConfidenceInterval"))
-    				    
+
     binomialPlot$addCitation("JASP Team (2018). JASP (Version 0.9.2) [Computer software].")
-    
+
     jaspResults[["binomialPlot"]] <- binomialPlot
-    
+
     if (!ready)
       return()
   ```
-  
+
 </details>
 
 #### Step 5.2.5 - Filling the Plot
@@ -811,44 +820,44 @@ If we are indeed ready, then it is time to create a ggplot object. This will be 
 
 <p><details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomPlotDescriptives <- function(jaspResults, dataset, options, ready) {
     binomialPlot <- createJaspPlot(title = "Descriptives",  width = 160, height = 320)
-    
+
     binomialPlot$dependOn(c("variables", "testValue", "descriptivesPlotsConfidenceInterval"))
-    				    
+
     binomialPlot$addCitation("JASP Team (2018). JASP (Version 0.9.2) [Computer software].")
-    
+
     jaspResults[["binomialPlot"]] <- binomialPlot
-    
+
     if (!ready)
       return()
-      
+
     .binomFillPlotDescriptives(binomialPlot, dataset, options)
-  
+
     return()
   }
   ```
-  
+
 </details></p>
 
 Just like we did with the table earlier, we can use the pass-by-reference mechanics of `binomialPlot` to avoid having to return anything from our plotting function. Instead we just set the `plotObject` property of `binomialPlot` to a ggplot object. JASP does not support any other plotting method than ggplot, as we wish to create a uniform plot editing solution in the future.
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomFillPlotDescriptives <- function(binomialPlot, dataset, options)
-   
+
     plot <- ggplot2::ggplot(<code>)
-   
+
     binomialPlot$plotObject <- plot
-   
+
     return()
   }
   ```
-  
+
 </details>
 
 #### Step 5.2.6 - Reporting Errors
@@ -856,24 +865,24 @@ It's entirely possible that an analysis still crashes even after our error check
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomFillPlotDescriptives <- function(binomialPlot, dataset, options)
-   
+
     plot <- try(ggplot2::ggplot(<code>))
-    
+
     if (inherits(plot, "try-error") {
       errorMessage <- as.character(plot)
       binomialPlot$setError(errorMessage)
       return()
     }
-    
+
     binomialPlot$plotObject <- plot
-   
+
     return()
   }
   ```
-  
+
 </details>
 
 #### Step 5.2.7 - Multiple Plots
@@ -894,12 +903,12 @@ It's simple to create a container through `createJaspContainer()`:
 
 <p><details>
 	<summary>Code</summary>
-  
+
   ```r
   modelContainer <- createJaspContainer(title = "Some Title")
   jaspResults[["modelContainer"]] <- modelContainer
   ```
-  
+
 </details></p>
 
 Note that when we omit the title argument we do not get a visually distinct grouping in our output, but instead only make a functional grouping.
@@ -908,19 +917,19 @@ We can nest as many containers as we want:
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   modelContainer <- createJaspContainer(title = "Some Title")
   deeperModelContainer <- createJaspContainer(title = "Some Title Too")
   jaspResults[["modelContainer"]] <- modelContainer
-  
+
   # we can add the container like this:
   modelContainer[["deeperModelContainer"]] <- deeperModelContainer
-  
+
   # or this:
   modelContainer <- deeperModelContainer
   ```
-  
+
 </details>
 
 ### Using a Container
@@ -928,19 +937,19 @@ It's fairly straightforward to make use of a container as it doesn't change the 
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   mixedContainer <- createJaspContainer(title = "Collection of a Table and a Plot")
   jaspResults[["mixedContainer"]] <- mixedContainer
-  
+
   plot <- createJaspPlot(title = "Plot",  width = 320, height = 320)
   table <- createJaspTable(title = "Table")
-  
+
   mixedContainer[["plot"]] <- plot
   # or
   jaspResults[["mixedContainer"]][["table"]] <- table
   ```
-  
+
 </details>
 
 ### Dependencies
@@ -948,40 +957,40 @@ The neat thing about a container is that the dependencies we set on it are impli
 
 <p><details>
 	<summary>Code</summary>
-  
+
   ```r
   mixedContainer <- createJaspContainer(title = "Collection of a Table and a Plot")
   mixedContainer$dependOn(c("opt1", "opt2", "opt3"))
   jaspResults[["mixedContainer"]] <- mixedContainer
-  
+
   plot <- createJaspPlot(title = "Plot",  width = 320, height = 320)
   table <- createJaspTable(title = "Table")
-  
+
   mixedContainer[["plot"]] <- plot
   mixedContainer[["table"]] <- table
   ```
-  
+
 </details></p>
 
 Of course we can still also set dependencies on the tables and plots in the container:
 
 <p><details>
 	<summary>Code</summary>
-  
+
   ```r
   mixedContainer <- createJaspContainer(title = "Collection of a Table and a Plot")
   mixedContainer$dependOn(c("opt1", "opt2", "opt3"))
   jaspResults[["mixedContainer"]] <- mixedContainer
-  
+
   plot <- createJaspPlot(title = "Plot",  width = 320, height = 320)
   plot$dependOn("opt4")
   table <- createJaspTable(title = "Table")
   table$dependOn("opt5")
-  
+
   mixedContainer[["plot"]] <- plot
   mixedContainer[["table"]] <- table
   ```
-  
+
 </details></p>
 
 In the above example, if the value changes of `"opt1"`, `"opt2"` or `"opt3"` then the container is discarded and as a result so are both the table and plot. However, if only `"opt4"` changes in value, then both the container and the table can be reused.
@@ -991,12 +1000,12 @@ We can go one step further still. We can tell JASP to look at the actual values 
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   descriptivePlotContainer <- createJaspContainer(title = "Descriptive Plots")
   descriptivePlotContainer$dependOn(c("confidenceInterval", "plotDescriptives"))
   jaspResults[["descriptivePlotContainer"]] <- descriptivePlotContainer
-  
+
   # create empty plots in the output
   for (variable in options$independentVariables) {
     # check if the plot for this variable was already created previously
@@ -1006,10 +1015,10 @@ We can go one step further still. We can tell JASP to look at the actual values 
     plot$dependOn(optionContainsValue=list(independentVariables=variable))
     descriptivePlotContainer[[variable]] <- plot
   }
-  
+
   <now we can start adding actual plot objects given that they do not yet exist>
   ```
-  
+
 </details>
 
 ### Propagating Errors Through a Container
@@ -1017,26 +1026,26 @@ Suppose we are in the process of adding multiple output elements to a container,
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   mixedContainer <- createJaspContainer(title = "Collection of a Table and a Plot")
   jaspResults[["mixedContainer"]] <- mixedContainer
-  
+
   mixedContainer$setError("This is an error message")
-  
+
   plot <- createJaspPlot(title = "Plot",  width = 320, height = 320)
   table <- createJaspTable(title = "Table")
-  
+
   mixedContainer[["plot"]] <- plot
   mixedContainer[["table"]] <- table
-  
+
   if (mixedContainer$getError())
     return()
-    
+
   <.fillInPlot(plot)>
   <.fillInTable(table)>
   ```
-  
+
 </details>
 
 
@@ -1046,15 +1055,15 @@ There are multiple approaches to the way you can write an analysis (e.g., comput
 
 <p><details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomComputeResults <- function(dataset, options) {
-  
+
     results <- list()
     for (variable in options$variables) {
 
       <calculate our results with stats::binom.test>
-      
+
       results[[variable]] <- list(level         = level,
                                   counts        = counts,
                                   total         = nObs,
@@ -1064,28 +1073,28 @@ There are multiple approaches to the way you can write an analysis (e.g., comput
                                   lowerCI       = lowerCI,
                                   upperCI       = upperCI)
     }
-    
+
     return(results)
   }
   ```
-  
+
 </details></p>
 
-However, this approach poses two problems, (1) there is no way to store these results and avoid performing the computations every time our analysis is run. And (2) we have no efficient way to pass the results object around between the functions that use the results to fill tables and plots. 
+However, this approach poses two problems, (1) there is no way to store these results and avoid performing the computations every time our analysis is run. And (2) we have no efficient way to pass the results object around between the functions that use the results to fill tables and plots.
 
 ### Creating a JASP State
 In a JASP state we may store any R object and all the stored R objects will be available during subsequent runs of the analysis, given that the dependencies have not changed. They are hidden from the user and only available to the analysis. Creating a JASP state is much like creating a JASP container:
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomComputeResults <- function(jaspResults, dataset, options) {
-    
+
     binomResults <- createJaspState()
     jaspResults[["binomResults]] <- binomResults
   ```
-  
+
 </details>
 
 ### Dependencies
@@ -1093,15 +1102,15 @@ Now we need to specify the analysis options on which the state object will depen
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomComputeResults <- function(jaspResults, dataset, options) {
-    
+
     binomResults <- createJaspState()
     jaspResults[["binomResults]] <- binomResults
     binomResults$dependOn(c("variables", "testValue", "hypothesis", "confidenceIntervalInterval"))
   ```
-  
+
 </details>
 
 ### Computing Results
@@ -1109,19 +1118,19 @@ Time to compute results that we will be able to store in the state:
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomComputeResults <- function(jaspResults, dataset, options) {
-    
+
     binomResults <- createJaspState()
     jaspResults[["binomResults]] <- binomResults
     binomResults$dependOn(c("variables", "testValue", "hypothesis", "confidenceIntervalInterval"))
-    
+
     results <- list()
     for (variable in options$variables) {
 
       <calculate our results with stats::binom.test>
-      
+
       results[[variable]] <- list(level         = level,
                                   counts        = counts,
                                   total         = nObs,
@@ -1132,7 +1141,7 @@ Time to compute results that we will be able to store in the state:
                                   upperCI       = upperCI)
     } # end for-loop
   ```
-  
+
 </details>
 
 ### Storing Results in the State
@@ -1140,19 +1149,19 @@ We computed our results and are ready to use them to fill any table and plot tha
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomComputeResults <- function(jaspResults, dataset, options) {
-    
+
     binomResults <- createJaspState()
     jaspResults[["binomResults]] <- binomResults
     binomResults$dependOn(c("variables", "testValue", "hypothesis", "confidenceIntervalInterval"))
-    
+
     results <- list()
     for (variable in options$variables) {
 
       <calculate our results with stats::binom.test>
-      
+
       results[[variable]] <- list(level         = level,
                                   counts        = counts,
                                   total         = nObs,
@@ -1162,13 +1171,13 @@ We computed our results and are ready to use them to fill any table and plot tha
                                   lowerCI       = lowerCI,
                                   upperCI       = upperCI)
     }
-    
+
     binomResults$object <- results
-    
+
     return()
   }
   ```
-  
+
 </details>
 
 ### Retrieving the State Object
@@ -1176,16 +1185,16 @@ At this point we have the functionality to compute the binomial results whenever
 
 <p><details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomTableMain(jaspResults, dataset, options, ready) {
     binomialTable <- createJaspTable(title = "Binomial Test")
 
     binomialTable$dependOn(c("variables", "testValue", "hypothesis", "confidenceInterval",
                                     "confidenceIntervalInterval", "VovkSellkeMPR"))
-    
+
     binomialTable$addCitation("JASP Team (2018). JASP (Version 0.9.2) [Computer software].")
-    
+
     binomialTable$addColumnInfo(name = "variable",   title = "Variable",   type = "string", combine = TRUE)
     binomialTable$addColumnInfo(name = "level",      title = "Level",      type = "string")
     binomialTable$addColumnInfo(name = "counts",     title = "Counts",     type = "integer")
@@ -1202,48 +1211,48 @@ At this point we have the functionality to compute the binomial results whenever
       binomialTable$addColumnInfo(name = "upperCI", title = "Upper", type = "number", format = "sf:4",
         overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
     }
-    
+
     binomialTable$showSpecifiedColumnsOnly <- TRUE
-    
+
     if (ready)
       binomialTable$setExpectedSize(length(options$variables))     
-     
+
     message <- switch(options$hypothesis,
                       "notEqualToTestValue"  = paste0("Proportions tested against value: ", options$testValue, "."),
                       "greaterThanTestValue" = paste0("For all tests, the alternative hypothesis specifies that the proportion is greater than ", options$testValue, "."),
                       "lessThanTestValue"    = paste0("For all tests, the alternative hypothesis specifies that the proportion is less than ", options$testValue, ".")
     )
     binomialTable$addFootnote(message)
-     
+
     jaspResults[["binomialTable"]] <- binomialTable
-    
+
     if (!ready)
       return()
-      
+
     if (is.null(jaspResults[["binomResults"]]))
       .binomComputeResults(jaspResults, dataset, options)
-    
+
     binomResults <- jaspResults[["binomResults"]]$object
-    
+
     .binomFillTableMain(binomialTable, binomResults)
-    
+
     return()
   }
   ```
- 
+
 </details></p>
 
 And now we can call `.binomFillTableMain()` with the added `binomResults` argument (`dataset` and `options` are no longer needed):
 
 <details>
 	<summary>Code</summary>
-  
+
   ```r
   .binomFillTableMain <- function(binomialTable, binomResults) {
 
     for (variable in options$variables) {
       results <- binomResults[[variable]]
-      
+
       binomialTable$addRows(list(variable = variable,
                             level         = results$level,
                             counts        = results$counts,
@@ -1254,9 +1263,9 @@ And now we can call `.binomFillTableMain()` with the added `binomResults` argume
                             lowerCI       = results$lowerCI,
                             upperCI       = results$upperCI))
     }
-    
+
     return()
   }
   ```
-  
+
 </details>
