@@ -35,6 +35,12 @@
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
 	<releases>
+		<release version="0.12.2" date="2020-04-22">
+			<description>
+				- Fix a bug where ANOVA RM would crash if there were columns named with certain single letters
+				- Some more smaller points
+			</description>
+		</release>
 		<release version="0.12.1" date="2020-04-15">
 			<description>
 				Small fix for 0.12.
