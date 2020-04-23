@@ -101,7 +101,7 @@ test_that("Evaluation Information plot matches", {
 test_that("<b>Table 8.</b> Evaluation Summary results match", {
 	table <- results[["results"]][["evaluationContainer"]][["collection"]][["evaluationContainer_evaluationTable"]][["data"]]
 	expect_equal_tables(table,
-		list(108.94, "3.518%", 223.72, 3, "$ 70161", "$ 13278.835", "$ 49370.9",
+		list(108.94, "3.518%", 223.72, 3, "$ 70161", "$ 19500.338", "$ 49370.9",
 			 169, 1.8))
 })
 
