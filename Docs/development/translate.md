@@ -160,7 +160,9 @@ See https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes for the complete list.
 3. Translate the JASPgraphs .po file:	R-xx.po (located in jasp-desktop/JASP-Engine/JASPgraphs/po)
 
 #### *Create the binary .mo and .qm files*
-For translators that might have a complete build environment of JASP: edit JASP-Desktop.pro and the  GENERATE_LANGUAGE_FILES = true. Rebuilding the JASP-Desktop will give you all the binary translation files.<br><br>
+For translators that might have a complete build environment of JASP: edit JASP-Desktop.pro and almost on top set the  GENERATE\_LANGUAGE\_FILES = true. Then you need to specify the target language to translate. You can do this by defining it in the project build environment: Project\->Build Setrings\->Build environment and add the item: <br>
+TARGET\_LANGUAGE\_CODE=nl  (e.g. For a Dutch translation. See the Language Code references below for complete list.)<br>
+Rebuilding the JASP-Desktop will give you all the binary translation files.<br><br>
 Translators who wish to test their translations on an already installed version of JASP:<br>Be sure that the first three items of the Section 4 are installed. The following commands from a terminal in the jasp-desktop folder can be run to create the .mo and .qm files.
 
 1.	The Qt JASP interface .qm file: jasp\_xx.qm<br>From a terminal run: <br> > ~/Qt/5.14.2/clang_64/bin/lrelease ./JASP-Desktop/po/jasp\_xx.po -qm jasp\_xx.qm<br>
