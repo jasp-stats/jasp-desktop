@@ -1472,13 +1472,13 @@
       ci.pos <- c(summaryStatSubset[,"dependent"], 
                   summaryStatSubset[,"dependent"]-summaryStatSubset[,"ci"],
                   summaryStatSubset[,"dependent"]+summaryStatSubset[,"ci"],
-                  min(summaryStatSubset[,"dependent"])-1,
-                  max(summaryStatSubset[,"dependent"])+1)
+                  min(summaryStatSubset[,"dependent"])*1.1,
+                  max(summaryStatSubset[,"dependent"])*1.1)
       yBreaks <- JASPgraphs::getPrettyAxisBreaks(ci.pos)
     } else {
       yBreaks <- JASPgraphs::getPrettyAxisBreaks(c(summaryStatSubset[,"dependent"], 
-                                                   min(summaryStatSubset[,"dependent"])-1,
-                                                   max(summaryStatSubset[,"dependent"])+1))
+                                                   min(summaryStatSubset[,"dependent"])*1.1,
+                                                   max(summaryStatSubset[,"dependent"])*1.1))
     }
 
     if (options[["plotHorizontalAxis"]] %in% options[["covariates"]]) {
