@@ -39,6 +39,7 @@ JASPControl
 	property string	optionKey			: "value"
 	property int	columns				: 1
 	property var	source
+	property var	sourceModel
 	property alias	syncModels			: jaspListControl.source
 
 	property alias	listGridView		: listGridView

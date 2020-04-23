@@ -81,7 +81,21 @@ Option* BoundQMLComponentsList::createOption()
 	templote->add(_optionKeyName, new OptionVariable());
 	addRowComponentsDefaultOptions(templote);
 
-	return  new OptionsTable(templote);
+	OptionsTable* result = new OptionsTable(templote);
+	std::vector<Options*> allOptions;
+
+	Terms initTerms = _termsModel->getSourceTerms();
+	for (const Term& term : initTerms)
+	{
+		Options* row = dynamic_cast<Options*>(templote->clone());
+		OptionVariable* optionVar = new OptionVariable();
+		optionVar->setValue(term.asString());
+		row->add(_optionKeyName, optionVar);
+		allOptions.push_back(row);
+	}
+	result->connectOptions(allOptions);
+
+	return result;
 }
 
 bool BoundQMLComponentsList::isOptionValid(Option *option)

@@ -436,7 +436,8 @@ HEADERS += \
     widgets/listmodelmultitermsassigned.h \
     widgets/boundqmllavaantextarea.h \
     widgets/boundqmljagstextarea.h \
-    widgets/boundqmlcomponentslist.h
+    widgets/boundqmlcomponentslist.h \
+    widgets/listmodelmarginalmeanscontrasts.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -619,7 +620,8 @@ SOURCES += \
     widgets/listmodelmultitermsassigned.cpp \
     widgets/boundqmllavaantextarea.cpp \
     widgets/boundqmljagstextarea.cpp \
-    widgets/boundqmlcomponentslist.cpp
+    widgets/boundqmlcomponentslist.cpp \
+    widgets/listmodelmarginalmeanscontrasts.cpp
 
 RESOURCES += \
     html/html.qrc \

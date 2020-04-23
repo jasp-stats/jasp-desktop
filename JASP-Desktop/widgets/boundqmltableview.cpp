@@ -26,6 +26,7 @@
 #include "listmodelmultinomialchi2test.h"
 #include "listmodelanovacustomcontrasts.h"
 #include "listmodelrepeatedmeasuresfactors.h"
+#include "listmodelmarginalmeanscontrasts.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionvariables.h"
 #include "analysis/options/optiondoublearray.h"
@@ -44,6 +45,7 @@ BoundQMLTableView::BoundQMLTableView(JASPControlBase* item)
 	if (modelType == "JAGSDataInputModel")		_tableModel	= new ListModelJAGSDataInput(		this, tableType	);
 	if (modelType == "FilteredDataEntryModel")	_tableModel = new ListModelFilteredDataEntry(	this, tableType	);
 	if (modelType == "CustomContrasts")			_tableModel = new ListModelANOVACustomContrasts(this			);
+	if (modelType == "MarginalMeansContrasts")	_tableModel = new ListModelMarginalMeansContrasts(this, tableType);
 
 	if(!_tableModel) addControlError(tr("No model specified for TableView!"));
 	else			_tableModel->setItemType(itemType);

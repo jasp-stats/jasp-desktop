@@ -35,6 +35,7 @@ Item
 	Layout.preferredWidth:	preferredWidth
 	Layout.preferredHeight:	preferredHeight
 
+	property	bool	buttonsInRow		: false
 	property	alias	name				: tableView.name
 	property	alias	source				: tableView.source
 	property	alias	tableView			: tableView
@@ -51,6 +52,7 @@ Item
 	property	alias	initialRowCount		: tableView.initialRowCount
 	property	alias	columnName			: tableView.colName
 	property	alias	decimals			: tableView.decimals
+	property	alias	scaleFactor			: tableView.scaleFactor
 
 	property	bool	showButtons			: true
 
@@ -73,13 +75,16 @@ Item
 
 	signal tableViewCompleted();
 
-	Column
+	Grid
 	{
 		id					: buttonColumn
+		columns				: buttonsInRow ? 3 : 1
+		rows				: buttonsInRow ? 1 : 3
 		anchors.top			: parent.top
 		anchors.left		: parent.left
 		anchors.leftMargin	: jaspTheme.generalAnchorMargin
-		width				: basicButtonTableView.showButtons ? (basicButtonTableView.width * 1 / 4 - jaspTheme.generalAnchorMargin * 2) : 0
+		width				: basicButtonTableView.showButtons ? (basicButtonTableView.width * (buttonsInRow ? 1 : 1 / 4) - jaspTheme.generalAnchorMargin * 2) : 0
+		//height				: showButtons ? (buttonsInRow ? jaspTheme.defaultRectangularButtonHeight : jaspTheme.defaultRectangularButtonHeight * 3 + spacing * 2) : 0
 		spacing				: jaspTheme.columnGroupSpacing
 		visible				: basicButtonTableView.showButtons
 
@@ -87,7 +92,7 @@ Item
 		{
 			id				: addButton
 			text			: qsTr("Add")
-			width			: buttonColumn.width
+			width			: buttonsInRow ? basicButtonTableView.width * 1/4 - jaspTheme.generalAnchorMargin * 2 : buttonColumn.width
 			onClicked		: { forceActiveFocus(); basicButtonTableView.addClicked() }
 		}
 
@@ -95,7 +100,7 @@ Item
 		{
 			id				: deleteButton
 			text			: qsTr("Delete")
-			width			: buttonColumn.width
+			width			: buttonsInRow ? basicButtonTableView.width * 1/4 - jaspTheme.generalAnchorMargin * 2 : buttonColumn.width
 			onClicked		: { forceActiveFocus(); basicButtonTableView.deleteClicked() }
 		}
 
@@ -103,7 +108,7 @@ Item
 		{
 			id				: resetButton
 			text			: qsTr("Reset")
-			width			: buttonColumn.width
+			width			: buttonsInRow ? basicButtonTableView.width * 1/4 - jaspTheme.generalAnchorMargin * 2 : buttonColumn.width
 			onClicked		: { forceActiveFocus(); basicButtonTableView.resetClicked() }
 		}
 	}
@@ -112,13 +117,14 @@ Item
 	{
 		id				: tableView
 
-		anchors.top		: parent.top
-		anchors.left	: buttonColumn.visible ? buttonColumn.right : parent.left
+		anchors.top		: buttonColumn.visible && buttonsInRow ? buttonColumn.bottom : parent.top
+		anchors.left	: buttonColumn.visible && !buttonsInRow ? buttonColumn.right : parent.left
 		anchors.leftMargin: jaspTheme.generalAnchorMargin
+		anchors.topMargin: buttonColumn.visible && buttonsInRow ? jaspTheme.generalAnchorMargin : 0
 		width			: tableView.tableWidth  < maxWidth  - jaspTheme.scrollbarBoxWidth ? (tableView.tableWidth  + (tableView.height < tableView.tableHeight ? jaspTheme.scrollbarBoxWidth : 0)): maxWidth
 		height			: tableView.tableHeight < maxHeight - jaspTheme.scrollbarBoxWidth ? (tableView.tableHeight + (tableView.width < tableView.tableWidth ? jaspTheme.scrollbarBoxWidth : 0)): maxHeight
 
-		property int maxWidth	: basicButtonTableView.width * (basicButtonTableView.showButtons ? 3 / 4 : 1)
+		property int maxWidth	: basicButtonTableView.width * (basicButtonTableView.showButtons && !buttonsInRow ? 3 / 4 : 1)
 		property int maxHeight	: basicButtonTableView.height
 
 		Component.onCompleted	: basicButtonTableView.tableViewCompleted()
