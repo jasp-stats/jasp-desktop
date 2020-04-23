@@ -224,7 +224,7 @@ Form
 						{
 							name: 			"expectedPercentage"
 							enabled: 		expectedRelative.checked
-							decimals: 		3
+							decimals: 		2
 							defaultValue: 	0
 							visible: 		expectedRelative.checked
 							fieldWidth: 	40
