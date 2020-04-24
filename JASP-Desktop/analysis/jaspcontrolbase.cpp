@@ -140,6 +140,18 @@ void JASPControlBase::clearControlError()
 		_form->clearControlError(this);
 }
 
+void JASPControlBase::setRowComponent(QQmlComponent *newRowComponent)
+{
+	if ( _rowComponents.length() == 0 || newRowComponent != _rowComponents.at(0))
+	{
+		for (QQmlComponent* rowComponent : _rowComponents)
+			delete rowComponent;
+		_rowComponents.clear();
+		_rowComponents.push_back(newRowComponent);
+		emit rowComponentChanged();
+	}
+}
+
 QQmlListProperty<QQmlComponent> JASPControlBase::rowComponents()
 {
 	return QQmlListProperty<QQmlComponent>(this, this,
@@ -164,6 +176,8 @@ QQmlComponent* JASPControlBase::rowComponent(int index) const
 }
 
 void JASPControlBase::clearRowComponents() {
+	for (QQmlComponent* rowComponent : _rowComponents)
+		delete(rowComponent);
 	_rowComponents.clear();
 }
 
