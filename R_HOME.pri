@@ -37,6 +37,16 @@ windows {
         R_EXE  = $$_R_HOME/bin/$$ARCH/R
 }
 
+_RLibrary = $$(JASP_R_Library)
+isEmpty(_RLibrary) {
+    win32: _RLibrary =$$OUT_PWD/../R/library
+    unix:  _RLibrary = $$_R_HOME/library
+    message(using R Library of "$$_RLibrary")
+} else {
+    message(using custom R library of "$$_RLibrary")
+    DEFINES += _RLibrary
+}
+
 
 INCLUDEPATH += \
     $$_R_HOME/library/Rcpp/include \

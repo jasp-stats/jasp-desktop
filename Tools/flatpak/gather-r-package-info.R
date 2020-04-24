@@ -32,13 +32,10 @@ giveOrderedDependencies <- function()
   expected   <- .expectedPackages()
   pkgs       <- expected[,1]
 
-  i          <- 1L
-  while(i <= length(pkgs))
+  for (curPkg in pkgs)
   {
-    curPkg            <- pkgs[[i]]
     expVersion        <- expected[curPkg, "Version"]
     expEnv[[curPkg]]  <- expVersion
-    i                 <- i + 1L
   }
 
   # use the tools::package_dependencies function to generate an environment with pkg->deps
@@ -74,7 +71,7 @@ giveOrderedDependencies <- function()
   }
 
   print('Now we must make sure that all pkgs are preceded by their dependencies and they by theirs')
-  orderedPkgs   <- list()
+  orderedPkgs   <- character()
   inList        <- new.env(hash = TRUE, parent = parent.frame(), size = length(pkgs))
   lastTime      <- -1
   pkgs_to_order <- sort(names(pkgDeps))
@@ -104,7 +101,7 @@ giveOrderedDependencies <- function()
         if(insert)
         {
           inList[[curPkg]]  <- deps # no point in losing the deps even though we don't really need them after this
-          orderedPkgs       <- append(orderedPkgs, curPkg)
+          orderedPkgs       <- c(orderedPkgs, curPkg)
           remove(list=curPkg, envir=pkgDeps, inherits=FALSE)
           #print(paste0('Pkg ',curPkg,' depends on #', length(deps),' of deps {' ,paste0(deps, collapse='', sep=', '), '} and was added to ordered list'))
         }
@@ -126,20 +123,18 @@ giveOrderedDependencies <- function()
   #print(paste0('Pkgs ordered by dependencies: ', paste0(orderedPkgs, sep=', ', collapse='')))
 
   print('Now make sure also the versions of those packages that were included as a dependency have a version specified in expEnv')
-  i <- 1L
-  while(i <= length(orderedPkgs))
+
+  for (i in seq_along(orderedPkgs))
   {
     curPkg  <- orderedPkgs[[i]]
 
     if(!exists(curPkg, where=expEnv, inherits=FALSE)) #if so get the version from available pkgs
     {
-	  print(paste0("Checking version of pkg ", curPkg, " in available_pkgs"))
+      print(paste0("Checking version of pkg ", curPkg, " in available_pkgs"))
       expEnv[[curPkg]] <- available_pkgs[[curPkg, "Version"]]
       print(paste0("Couldn't find version of ",curPkg," in expected packages so took it from availablePackages: ", expEnv[[curPkg]]))    
     }
-
-    i <- i + 1
-  }  
+  }
 
   return(orderedPkgs);
 }
@@ -276,7 +271,7 @@ createFlatpakJson <- function()
 
 getInstalledPackageEnv <- function()
 {
-  installed           <- as.data.frame(installed.packages()[,c(1,3:4)]);
+  installed           <- as.data.frame(installed.packages(lib.loc = .libPaths()[1])[,c(1,3:4)]);
   rownames(installed) <- NULL
   installed           <- installed[is.na(installed$Priority),1:2,drop=FALSE]
   installEnv          <- new.env(hash = TRUE, parent = parent.frame(), size=length(installed))
@@ -293,17 +288,16 @@ getInstalledPackageEnv <- function()
   return(installEnv)
 }
 
-installRequiredPackages <- function()
+installRequiredPackages <- function(stopOnError = TRUE)
 {
   orderedPkgs   <- giveOrderedDependencies()
   installedPkgs <- getInstalledPackageEnv()
   
   
-  
-  i <- 1L
-  while(i <= length(orderedPkgs))
+  error <- NULL
+  for (pkgName in orderedPkgs)
   {
-    pkgName  <- orderedPkgs[[i]]
+
     version  <- expEnv[[pkgName]]
     isThere  <- exists(pkgName, where=installedPkgs, inherits=FALSE)
     
@@ -318,14 +312,16 @@ installRequiredPackages <- function()
     {
       specialDef <- specials[[pkgName]]
       if(specialDef$type == 'github')
-        devtools::install_github(paste0(specialDef$repo, '@', specialDef$commit))
+        error <- try(devtools::install_github(paste0(specialDef$repo, '@', specialDef$commit)))
       else
         stop(paste0("Found a special that I cannot handle! (",specialDef,")"))
     }
     else
-      devtools::install_version(package=pkgName, version=version, repos=CRAN, dependencies=FALSE, upgrade_dependencies=FALSE)  
+      error <- try(devtools::install_version(package=pkgName, version=version, repos=CRAN, dependencies=FALSE, upgrade_dependencies=FALSE))
+
+    if (stopOnError && inherits(error, "try-error"))
+      stop(error)
       
-    i <- i + 1L
   }
 
 

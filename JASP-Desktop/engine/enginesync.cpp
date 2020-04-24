@@ -389,6 +389,12 @@ QProcess * EngineSync::startSlaveProcess(int no)
 	QDir rHome(rHomePath);
 	Log::log() << "R_HOME set to " << rHomePath.toStdString() << std::endl;
 
+	QString custom_R_library = "";
+#ifdef JASP_DEBUG
+	// allow an environment variables to specify the location of packages
+	if (env.contains("JASP_R_Library"))
+		custom_R_library = ":" + env.value("JASP_R_Library");
+#endif
 #ifdef _WIN32
 	//Windows has *special needs*, so let's make sure it can understand R_HOME later on. Not sure if it is necessary but it couldn't hurt, right?
 	QString rHomeWin = "";
@@ -433,7 +439,7 @@ QProcess * EngineSync::startSlaveProcess(int no)
 #else  // linux
 	env.insert("LD_LIBRARY_PATH",	rHome.absoluteFilePath("lib") + ":" + rHome.absoluteFilePath("library/RInside/lib") + ":" + rHome.absoluteFilePath("library/Rcpp/lib") + ":" + rHome.absoluteFilePath("site-library/RInside/lib") + ":" + rHome.absoluteFilePath("site-library/Rcpp/lib") + ":/app/lib/:/app/lib64/");
 	env.insert("R_HOME",			rHome.absolutePath());
-	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
+	env.insert("R_LIBS",			programDir.absoluteFilePath("R/library") + custom_R_library + ":" + rHome.absoluteFilePath("library") + ":" + rHome.absoluteFilePath("site-library"));
 
 	//Let's just trust linux and *not set* LC_CTYPE at all. It'll be fine.
 #endif
