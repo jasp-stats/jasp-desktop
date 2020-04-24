@@ -23,6 +23,8 @@ private:
 	Q_PROPERTY( QQuickItem*		section				READ section			WRITE setSection												)
 	Q_PROPERTY( QQuickItem*		parentListView		READ parentListView									NOTIFY parentListViewChanged		)
 	Q_PROPERTY( QQmlListProperty<QQmlComponent> rowComponents READ rowComponents)
+	Q_PROPERTY( QQmlComponent * rowComponent		READ rowComponent		WRITE setRowComponent		NOTIFY rowComponentChanged			)
+
 
 public:
 	enum class ControlType {
@@ -72,6 +74,7 @@ public:
 	QString			parentListViewKey()		const	{ return _parentListViewKey;	}
 	QQuickItem*		section()				const	{ return _section;				}
 
+
 	void	setControlType(ControlType controlType)				{ _controlType = controlType; }
 	void	setChildControlsArea(QVariant childControlsArea)	{ _childControlsArea = childControlsArea; }
 	void	setSection(QQuickItem* section)						{ _section = section; }
@@ -79,18 +82,21 @@ public:
 	void	setHasError(bool hasError);
 	void	setHasWarning(bool hasWarning);
 
+
 	GENERIC_SET_FUNCTION(Name		, _name			, nameChanged		, QString	)
 	GENERIC_SET_FUNCTION(IsBound	, _isBound		, isBoundChanged	, bool		)
 
 	JASPControlWrapper*				getWrapper() const { return _wrapper; }
 
+	void							setRowComponent(QQmlComponent * newRowComponent);
 	QQmlListProperty<QQmlComponent>	rowComponents();
 	void							appendRowComponent(QQmlComponent *);
 	int								rowComponentsCount() const;
 	QQmlComponent*					rowComponent(int) const;
 	void							clearRowComponents();
 
-	QList<QQmlComponent*> &			getRowComponents() { return _rowComponents; }
+	QQmlComponent*					rowComponent()			const	{ return _rowComponents.length() > 0 ? _rowComponents.at(0) : nullptr;	}
+	QList<QQmlComponent*> &			getRowComponents()				{ return _rowComponents; }
 
 	Q_INVOKABLE	void				addControlError(QString message);
 	Q_INVOKABLE void				addControlErrorTemporary(QString message);
@@ -105,6 +111,7 @@ signals:
 	void hasWarningChanged();
 	void focusOnTabChanged();
 	void parentListViewChanged();
+	void rowComponentChanged();
 
 protected:
 	void componentComplete() override;
