@@ -733,7 +733,7 @@ void AnalysisForm::_formCompletedHandler()
 
 void AnalysisForm::dataSetChangedHandler()
 {
-	if (!_removed)
+	if (!_removed && DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
 	{
 		_setAllAvailableVariablesModel(true);
 		emit dataSetChanged();
