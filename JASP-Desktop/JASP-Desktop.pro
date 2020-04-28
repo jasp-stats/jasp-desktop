@@ -151,6 +151,9 @@ RESOURCES_TRANSLATIONS = $${RESOURCES_PATH}/Translations
 RESOURCES_DESTINATION = $${OUT_PWD}/../Resources
 RESOURCES_DESTINATION_TRANSLATIONS = $$RESOURCES_DESTINATION/Translations
 
+LANGUAGE_CODE= $$(TARGET_LANGUAGE_CODE)
+isEmpty(LANGUAGE_CODE): LANGUAGE_CODE=nl
+
 win32 {
 
   SOURCES_TRANSLATIONS ~= s,/,\\,g
@@ -177,14 +180,14 @@ win32 {
   $$GENERATE_LANGUAGE_FILES {
     maketranslations.commands += $$quote(echo "Generating language Files") &&
 	maketranslations.commands += $$quote($${QTBIN}lupdate.exe -locations none -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${SOURCES_TRANSLATIONS}\jasp.po) &&
-	maketranslations.commands += $$quote($${QTBIN}lupdate.exe -locations none -extensions $${EXTENSIONS} -target-language dutch -recursive $${WINPWD} -ts $${SOURCES_TRANSLATIONS}\jasp_nl.po) &&
+	maketranslations.commands += $$quote($${QTBIN}lupdate.exe -locations none -extensions $${EXTENSIONS} -recursive $${WINPWD} -ts $${SOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.po) &&
 
 	#cleanup po files
 	maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp.po -o $${SOURCES_TRANSLATIONS}\jasp.po) &&
-	maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp_nl.po -o $${SOURCES_TRANSLATIONS}\jasp_nl.po)  &&
+	maketranslations.commands += $$quote(\"$${GETTEXT_LOCATION}\msgattrib.exe\" --no-obsolete --no-location $${SOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.po -o $${SOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.po)  &&
 
-	#Create jasp_nl.qm
-	maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${SOURCES_TRANSLATIONS}\jasp_nl.po -qm $${RESOURCES_TRANSLATIONS}\jasp_nl.qm) &&
+	#Create jasp_$${LANGUAGE_CODE}.qm
+	maketranslations.commands += $$quote($${QTBIN}lrelease.exe $${SOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.po -qm $${RESOURCES_TRANSLATIONS}\jasp_$${LANGUAGE_CODE}.qm) &&
 	maketranslations.commands += $$quote(copy $${RESOURCES_TRANSLATIONS}\*.qm $${RESOURCES_DESTINATION_TRANSLATIONS}\ ) &&
 
     #Create R-JASP.mo translation file. (Need to add GETTEXT location to PATH environment.)
@@ -201,7 +204,8 @@ unix {
 
   GETTEXT_LOCATION = $$(GETTEXT_PATH)
   isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
-  EXTENDED_PATH = $PATH:$$GETTEXT_LOCATION
+
+  EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION
 
   delres.commands += rm -rf $$RESOURCES_DESTINATION;
   copyres.commands += $(MKDIR) $$RESOURCES_DESTINATION ;
@@ -210,14 +214,14 @@ unix {
   $$GENERATE_LANGUAGE_FILES {
     maketranslations.commands += $$quote(echo "Generating language Files");
     maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp.po ;
-    maketranslations.commands += lupdate -locations none -extensions cpp,qml -target-language Dutch -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp_nl.po ;
+    maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po ;
 
     #cleanup po files
     maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp.po -o $$SOURCES_TRANSLATIONS/jasp.po ;
-    maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp_nl.po -o $$SOURCES_TRANSLATIONS/jasp_nl.po ;
+    maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po -o $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po ;
 
-    #Create jasp_nl.qm
-    maketranslations.commands += lrelease $$SOURCES_TRANSLATIONS/jasp_nl.po -qm $$RESOURCES_TRANSLATIONS/jasp_nl.qm ;
+    #Create jasp_$${LANGUAGE_CODE}.qm
+    maketranslations.commands += lrelease $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po -qm $$RESOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.qm ;
     maketranslations.commands += cp $$RESOURCES_TRANSLATIONS/*.qm $$RESOURCES_DESTINATION_TRANSLATIONS/ ;
 
     #Create R-JASP.mo translation file. (Need to add GETTEXT location to PATH environment.)
@@ -636,5 +640,4 @@ DISTFILES += \
     modules/upgrader/upgrades.json \
     modules/upgrader/upgrades_template.json \
     po/jasp.po \
-    po/jasp_nl.po \
     resources/CC-Attributions.txt
