@@ -80,6 +80,11 @@ cp -R $JASP_DESKTOP/Resources/* app/JASP.app/Contents/Resources
 rm app/JASP.app/Contents/Resources/TestFiles.zip
 cp -R R app/JASP.app/Contents/MacOS
 
+echo "Make symbolic link to Frameworks in bin folder to let @executable_path/... stuff work from R executable as well."
+pushd $APP_R_FRAMEWORK/Versions/$CURRENT_R_VERSION/bin
+ln -s $APP_R_FRAMEWORK/.. Frameworks 
+popd
+
 echo "Copying JAGS to executable folder"
 cp -R ../jasp-required-files/JAGS app/JASP.app/Contents/MacOS
 

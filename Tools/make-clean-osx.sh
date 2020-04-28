@@ -60,6 +60,7 @@ then
   $QT_KIT_FULL/bin/qmake -set AM_I_BUILDBOT "I_AM_BUILDBOT" || exit 1
 else
   echo "Not telling it we are buildbot because you gave a second argument to the script" 
+  $QT_KIT_FULL/bin/qmake -set AM_I_BUILDBOT ""
 fi
 
 echo "Running qmake!"
