@@ -78,8 +78,8 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
             // override APA style if exact p-values wanted
             if (window.globSet.pExact) {
                 sf = 4;
-            } else {
-                p = f.substring(2);
+			} else {
+				p = 1/(Math.pow(10,dp));
             }
         }
 
