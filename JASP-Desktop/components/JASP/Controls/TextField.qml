@@ -30,8 +30,9 @@ JASPControl
 	implicitWidth:		afterLabel.text ? (afterLabelRect.x + afterLabelRect.width) : (control.x + control.width)
 	background:			useExternalBorder ? externalControlBackground : control.background
 	cursorShape:		Qt.IBeamCursor
+	innerControl:		control
 	
-	property alias	control:			control	
+	property alias	control:			control
 	property alias	label:				beforeLabel.text
 	property alias	text:				beforeLabel.text
 	property alias	value:				control.text

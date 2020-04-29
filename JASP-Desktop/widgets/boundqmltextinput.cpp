@@ -279,6 +279,7 @@ bool BoundQMLTextInput::isJsonValid(const Json::Value &optionValue)
 
 void BoundQMLTextInput::setUp()
 {
+	JASPControlWrapper::setUp();
 	if (form())
 		// For unknown reason, when the language is changed, QML reset the default value.
 		// We have then to set back the value from the option

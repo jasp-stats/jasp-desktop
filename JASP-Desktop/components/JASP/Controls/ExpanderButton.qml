@@ -42,6 +42,7 @@ FocusScope
 	readonly	property string	expanderButtonIcon		: "expander-arrow-up.png"
 				property alias	columns					: expanderArea.columns
 				property alias	alignChildrenTopLeft	: expanderArea.alignChildrenTopLeft
+				property alias	runAnalysisWhenOptionChanged : expanderButton.runAnalysisWhenOptionChanged
 
 	function addControlWithError(name, add)
 	{

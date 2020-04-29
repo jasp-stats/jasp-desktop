@@ -133,6 +133,8 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 
 void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 {
+	_allItems.push_back(controlWrapper);
+
 	switch(controlWrapper->item()->controlType())
 	{
 	case JASPControlBase::ControlType::Expander:
@@ -518,6 +520,7 @@ void AnalysisForm::bindTo()
 			}
 
 			boundControl->bindTo(option);
+			_optionControlMap[option] = boundControl;
 		}
 		else
 		{
@@ -726,6 +729,7 @@ void AnalysisForm::_formCompletedHandler()
 		bool isNewAnalysis = _analysis->options()->size() == 0 && _analysis->optionsFromJASPFile().size() == 0;
 
 		bindTo();
+
 		_analysis->resetOptionsFromJASPFile();
 		_analysis->initialized(this, isNewAnalysis);
 	}
@@ -776,6 +780,35 @@ void AnalysisForm::setMustContain(std::map<std::string,std::set<std::string>> mu
 	for(const auto & nameContainsPair : _mustContain)
 		setControlMustContain(nameContainsPair.first, nameContainsPair.second); //Its ok if it does it twice, others will only be notified on change
 
+}
+
+void AnalysisForm::setRunAnalysisWhenOptionChanged(bool change)
+{
+	if (change != _runAnalysisWhenOptionChanged)
+	{
+		_runAnalysisWhenOptionChanged = change;
+
+		if (_options)
+			_options->blockSignals(change, false);
+
+		emit runAnalysisWhenOptionChangedChanged();
+	}
+}
+
+bool AnalysisForm::runAnalysisWhenThisOptionIsChanged(Option *option)
+{
+	BoundQMLItem* control = getBoundItem(option);
+	JASPControlBase* item = control ? control->item() : nullptr;
+
+	emit optionChanged(item);
+
+	if (!_runAnalysisWhenOptionChanged)
+		return false;
+
+	if (item && !item->runAnalysisWhenOptionChanged())
+		return false;
+
+	return true;
 }
 
 

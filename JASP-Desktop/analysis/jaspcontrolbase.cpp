@@ -49,6 +49,28 @@ void JASPControlBase::setHasWarning(bool hasWarning)
 	}
 }
 
+void JASPControlBase::setRunAnalysisWhenOptionChangedToChildren(bool change)
+{
+	if (_childControlsArea)
+	{
+		QList<JASPControlBase*> childControls = getChildJASPControls(_childControlsArea);
+		for (JASPControlBase* childControl : childControls)
+			childControl->setRunAnalysisWhenOptionChanged(change);
+	}
+}
+
+void JASPControlBase::setRunAnalysisWhenOptionChanged(bool change)
+{
+	if (change != _runAnalysisWhenOptionChanged)
+	{
+		_runAnalysisWhenOptionChanged = change;
+
+		setRunAnalysisWhenOptionChangedToChildren(change);
+
+		emit runAnalysisWhenOptionChangedChanged();
+	}
+}
+
 void JASPControlBase::componentComplete()
 {
 	QQuickItem::componentComplete();
@@ -108,6 +130,21 @@ void JASPControlBase::componentComplete()
 			emit parentListViewChanged();
 		}
 	}
+
+	if (_background == nullptr && _innerControl != nullptr)
+	{
+		QVariant innerControlBackround = _innerControl->property("background");
+		if (!innerControlBackround.isNull())
+			_background = innerControlBackround.value<QQuickItem*>();
+	}
+
+	// Set the parentDebug property to children items when the item is completed (and the children are already created)
+	if (_debug)
+		setParentDebugToChildren(_debug);
+
+	// Also, set the runAnalysisWhenOptionChanged property to children items
+	if (!_runAnalysisWhenOptionChanged)
+		setRunAnalysisWhenOptionChangedToChildren(_runAnalysisWhenOptionChanged);
 }
 
 void JASPControlBase::addControlError(QString message)
@@ -138,6 +175,57 @@ void JASPControlBase::clearControlError()
 {
 	if (_form)
 		_form->clearControlError(this);
+}
+
+QList<JASPControlBase*> JASPControlBase::getChildJASPControls(QQuickItem* item)
+{
+	QList<JASPControlBase*> result;
+
+	if (!item)
+		return result;
+
+	QList<QQuickItem*> childItems = item->childItems();
+
+	for (QQuickItem* childItem : childItems)
+	{
+		JASPControlBase* childControl = qobject_cast<JASPControlBase*>(childItem);
+		if (childControl)
+			result.push_back(childControl);
+		else
+			result.append(getChildJASPControls(childItem));
+	}
+
+	return result;
+}
+
+void JASPControlBase::setParentDebug(bool parentDebug)
+{
+	if (_parentDebug != parentDebug)
+	{
+		_parentDebug = parentDebug;
+		setParentDebugToChildren(_parentDebug || _debug);
+		emit parentDebugChanged();
+	}
+}
+
+void JASPControlBase::setDebug(bool debug)
+{
+	if (_debug != debug)
+	{
+		_debug = debug;
+		setParentDebugToChildren(_parentDebug || _debug);
+		emit debugChanged();
+	}
+}
+
+void JASPControlBase::setParentDebugToChildren(bool debug)
+{
+	if (_childControlsArea)
+	{
+		QList<JASPControlBase*> childControls = getChildJASPControls(_childControlsArea);
+		for (JASPControlBase* childControl : childControls)
+			childControl->setParentDebug(debug);
+	}
 }
 
 void JASPControlBase::setRowComponent(QQmlComponent *newRowComponent)

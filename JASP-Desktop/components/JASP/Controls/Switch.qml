@@ -25,6 +25,7 @@ JASPControl
 	controlType:				JASPControlBase.Switch
 	implicitWidth:				control.indicator.height + (4 * preferencesModel.uiScale)
 	implicitHeight:				control.indicator.width + controlLabel.implicitWidth + control.spacing + (6 * preferencesModel.uiScale)
+	innerControl:				control
 	
 	property alias control:		control
 	property alias label:		control.text

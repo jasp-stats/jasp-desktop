@@ -94,7 +94,7 @@ private:
 	static void insertValue(const std::string &name, Json::Value& value, Json::Value &root);
 	static bool extractValue(const std::string &name, const Json::Value &root, Json::Value &value);
 
-	void optionsChanged(Option *);
+	void optionsChanged(Option *option);
 
 
 };

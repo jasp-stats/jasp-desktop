@@ -34,6 +34,7 @@ JASPControl
 							: control.implicitHeight + (childControlsArea.children.length > 0 ? jaspTheme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
 	focusIndicator:		focusIndicator
 	childControlsArea:	childControlsArea
+	innerControl:		control
 
 	default property alias	content:				childControlsArea.children
 			property alias	control:				control

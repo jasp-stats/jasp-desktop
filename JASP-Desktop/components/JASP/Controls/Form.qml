@@ -37,42 +37,14 @@ AnalysisForm
 	property bool	usesJaspResults		: true
 	property int	majorVersion		: 1
 	property int	minorVersion		: 0
-	property bool	usesVariablesModel	: false
 	property int	availableWidth		: form.width - 2 * jaspTheme.formMargin
 	property var    analysis			: myAnalysis
 	property var	backgroundForms		: backgroundFlickable
 	property alias	columns				: contentArea.columns
+	property bool	runAnalysisWhenOptionChange : true
 
 	property int    plotHeight			: 320
 	property int    plotWidth			: 480
-
-	function getJASPControls(controls, item, deep)
-	{
-		for (var i = 0; i < item.children.length; ++i)
-		{
-			var child = item.children[i];
-
-			if (child.objectName === "Section")
-			{
-				controls.push(child.button);
-				getJASPControls(controls, child.childControlsArea, deep);
-			}
-			else if (child instanceof JASPControl)
-			{
-				if (child.activeFocusOnTab)
-				{
-					controls.push(child);
-					if (child.childControlsArea && deep)
-						getJASPControls(controls, child.childControlsArea, deep);
-				}
-				else
-					getJASPControls(controls, child, deep);
-
-			}
-			else
-				getJASPControls(controls, child, deep);
-		}
-	}
 
 	MouseArea
 	{
