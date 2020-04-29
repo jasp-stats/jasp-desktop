@@ -49,25 +49,25 @@ void JASPControlBase::setHasWarning(bool hasWarning)
 	}
 }
 
-void JASPControlBase::setRunAnalysisWhenOptionChangedToChildren(bool change)
+void JASPControlBase::setRunOnChangeToChildren(bool change)
 {
 	if (_childControlsArea)
 	{
 		QList<JASPControlBase*> childControls = getChildJASPControls(_childControlsArea);
 		for (JASPControlBase* childControl : childControls)
-			childControl->setRunAnalysisWhenOptionChanged(change);
+			childControl->setRunOnChange(change);
 	}
 }
 
-void JASPControlBase::setRunAnalysisWhenOptionChanged(bool change)
+void JASPControlBase::setRunOnChange(bool change)
 {
-	if (change != _runAnalysisWhenOptionChanged)
+	if (change != _runOnChange)
 	{
-		_runAnalysisWhenOptionChanged = change;
+		_runOnChange = change;
 
-		setRunAnalysisWhenOptionChangedToChildren(change);
+		setRunOnChangeToChildren(change);
 
-		emit runAnalysisWhenOptionChangedChanged();
+		emit runOnChangeChanged();
 	}
 }
 
@@ -142,9 +142,9 @@ void JASPControlBase::componentComplete()
 	if (_debug)
 		setParentDebugToChildren(_debug);
 
-	// Also, set the runAnalysisWhenOptionChanged property to children items
-	if (!_runAnalysisWhenOptionChanged)
-		setRunAnalysisWhenOptionChangedToChildren(_runAnalysisWhenOptionChanged);
+	// Also, set the runOnChange property to children items
+	if (!_runOnChange)
+		setRunOnChangeToChildren(_runOnChange);
 }
 
 void JASPControlBase::addControlError(QString message)

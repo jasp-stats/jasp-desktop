@@ -52,7 +52,7 @@ class AnalysisForm : public QQuickItem, public VariableInfoProvider
 	Q_PROPERTY(QQuickItem * errorMessagesItem	READ errorMessagesItem	WRITE setErrorMessagesItem	NOTIFY errorMessagesItemChanged	)
 	Q_PROPERTY(bool			needsRefresh		READ needsRefresh									NOTIFY needsRefreshChanged		)
 	Q_PROPERTY(bool			hasVolatileNotes	READ hasVolatileNotes								NOTIFY hasVolatileNotesChanged	)
-	Q_PROPERTY(bool			runAnalysisWhenOptionChanged	READ runAnalysisWhenOptionChanged	WRITE setRunAnalysisWhenOptionChanged NOTIFY runAnalysisWhenOptionChangedChanged )
+	Q_PROPERTY(bool			runOnChange			READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged )
 
 public:
 	explicit					AnalysisForm(QQuickItem * = nullptr);
@@ -66,10 +66,10 @@ public:
 				void			setMustBe(		std::set<std::string>						mustBe);
 				void			setMustContain(	std::map<std::string,std::set<std::string>> mustContain);
 
-				bool			runAnalysisWhenOptionChanged()	{ return _runAnalysisWhenOptionChanged; }
-				void			setRunAnalysisWhenOptionChanged(bool change);
+				bool			runOnChange()	{ return _runOnChange; }
+				void			setRunOnChange(bool change);
 
-				bool			runAnalysisWhenThisOptionIsChanged(Option* option);
+				bool			runWhenThisOptionIsChanged(Option* option);
 					
 public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
@@ -86,7 +86,7 @@ signals:
 				void			languageChanged();
 				void			needsRefreshChanged();
 				void			hasVolatileNotesChanged();
-				void			runAnalysisWhenOptionChangedChanged();
+				void			runOnChangeChanged();
 				void			optionChanged(JASPControlBase* item);
 
 protected:
@@ -102,8 +102,8 @@ public:
 	QMLExpander			*	nextExpander(QMLExpander* expander)		{ return _nextExpanderMap[expander]; }
 	BoundQMLItem		*	getBoundItem(Option* option)			{ return _optionControlMap[option]; }
 
-	Options*	options() { return _options; }
-	void		addControl(JASPControlBase* control);
+	Options				*	options() { return _options; }
+	void					addControl(JASPControlBase* control);
 
 	Q_INVOKABLE void reset();
     Q_INVOKABLE void exportResults();
@@ -159,7 +159,6 @@ protected:
 	QMap<QString, JASPControlWrapper* >			_controls;
 
 	QVector<JASPControlWrapper*>				_orderedControls;
-	QVector<JASPControlWrapper*>				_allItems;	// get all control items, even the ones without names.
 	QMap<Option*, BoundQMLItem*>				_optionControlMap;
 	QMap<QMLListView*, ListModel* >				_relatedModelMap;
 	QMap<QString, ListModel* >					_modelMap;
@@ -181,7 +180,7 @@ private:
 	QSet<JASPControlBase*>						_jaspControlsWithErrorSet;
 	QSet<JASPControlBase*>						_jaspControlsWithWarningSet;
 	QList<QString>								_computedColumns;
-	bool										_runAnalysisWhenOptionChanged = true;
+	bool										_runOnChange = true;
 };
 
 #endif // ANALYSISFORM_H

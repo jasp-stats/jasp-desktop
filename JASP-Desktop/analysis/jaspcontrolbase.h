@@ -29,7 +29,7 @@ private:
 
 	Q_PROPERTY( QQmlListProperty<QQmlComponent> rowComponents READ rowComponents)
 	Q_PROPERTY( QQmlComponent * rowComponent		READ rowComponent		WRITE setRowComponent		NOTIFY rowComponentChanged			)
-	Q_PROPERTY( bool runAnalysisWhenOptionChanged	READ runAnalysisWhenOptionChanged	WRITE setRunAnalysisWhenOptionChanged	NOTIFY runAnalysisWhenOptionChangedChanged)
+	Q_PROPERTY( bool runOnChange					READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged			)
 
 
 public:
@@ -82,9 +82,9 @@ public:
 	QQuickItem*		parentListView()		const	{ return _parentListView;		}
 	QString			parentListViewKey()		const	{ return _parentListViewKey;	}
 	QQuickItem*		section()				const	{ return _section;				}
-	QQuickItem*		innerControl()			const	{ return _innerControl;				}
-	QQuickItem*		background()			const	{ return _background;				}
-	bool			runAnalysisWhenOptionChanged()	const	{ return _runAnalysisWhenOptionChanged; }
+	QQuickItem*		innerControl()			const	{ return _innerControl;			}
+	QQuickItem*		background()			const	{ return _background;			}
+	bool			runOnChange()			const	{ return _runOnChange;			}
 
 
 	void	setControlType(ControlType controlType)				{ _controlType = controlType; }
@@ -93,7 +93,7 @@ public:
 	void	setFocusOnTab(bool focus);
 	void	setHasError(bool hasError);
 	void	setHasWarning(bool hasWarning);
-	void	setRunAnalysisWhenOptionChanged(bool change);
+	void	setRunOnChange(bool change);
 	void	setDebug(bool debug);
 	void	setParentDebug(bool parentDebug);
 
@@ -133,7 +133,7 @@ signals:
 	void focusOnTabChanged();
 	void parentListViewChanged();
 	void rowComponentChanged();
-	void runAnalysisWhenOptionChangedChanged();
+	void runOnChangeChanged();
 	void innerControlChanged();
 	void backgroundChanged();
 
@@ -159,7 +159,7 @@ protected:
 	QQuickItem*			_innerControl			= nullptr;
 	QQuickItem*			_background				= nullptr;
 
-	bool				_runAnalysisWhenOptionChanged = true;
+	bool				_runOnChange = true;
 
 	static void				appendRowComponent(QQmlListProperty<QQmlComponent>*, QQmlComponent*);
 	static int				rowComponentsCount(QQmlListProperty<QQmlComponent>*);
@@ -171,7 +171,7 @@ protected:
 
 	static QList<JASPControlBase*>	getChildJASPControls(QQuickItem* item);
 			void					setParentDebugToChildren(bool debug);
-			void					setRunAnalysisWhenOptionChangedToChildren(bool change);
+			void					setRunOnChangeToChildren(bool change);
 
 };
 

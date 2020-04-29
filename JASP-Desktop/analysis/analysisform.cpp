@@ -133,8 +133,6 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 
 void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 {
-	_allItems.push_back(controlWrapper);
-
 	switch(controlWrapper->item()->controlType())
 	{
 	case JASPControlBase::ControlType::Expander:
@@ -782,30 +780,30 @@ void AnalysisForm::setMustContain(std::map<std::string,std::set<std::string>> mu
 
 }
 
-void AnalysisForm::setRunAnalysisWhenOptionChanged(bool change)
+void AnalysisForm::setRunOnChange(bool change)
 {
-	if (change != _runAnalysisWhenOptionChanged)
+	if (change != _runOnChange)
 	{
-		_runAnalysisWhenOptionChanged = change;
+		_runOnChange = change;
 
 		if (_options)
 			_options->blockSignals(change, false);
 
-		emit runAnalysisWhenOptionChangedChanged();
+		emit runOnChangeChanged();
 	}
 }
 
-bool AnalysisForm::runAnalysisWhenThisOptionIsChanged(Option *option)
+bool AnalysisForm::runWhenThisOptionIsChanged(Option *option)
 {
 	BoundQMLItem* control = getBoundItem(option);
 	JASPControlBase* item = control ? control->item() : nullptr;
 
 	emit optionChanged(item);
 
-	if (!_runAnalysisWhenOptionChanged)
+	if (!_runOnChange)
 		return false;
 
-	if (item && !item->runAnalysisWhenOptionChanged())
+	if (item && !item->runOnChange())
 		return false;
 
 	return true;
