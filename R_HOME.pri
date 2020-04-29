@@ -44,7 +44,6 @@ isEmpty(_RLibrary) {
     message(using R Library of "$$_RLibrary")
 } else {
     message(using custom R library of "$$_RLibrary")
-    DEFINES += _RLibrary
 }
 
 

@@ -358,7 +358,7 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 	std::string typeInstall = "'source'";
 //<< ".runSeparateR(\"{"
 
-	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "', .libPaths(.Library))";
+	std::string libPathsToUse = "c('" + moduleRLibrary().toStdString()	+ "', .libPaths())";
 
 	const char * pkgType =
 #ifdef __linux__
@@ -393,7 +393,7 @@ std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 
 	setLoadLog("Module " + _name + " is being loaded from " + _moduleFolder.absolutePath().toStdString() + "\n");
 
-	R << _name << _modulePostFix << " <- module({\n" << standardRIndent << ".libPaths('" << moduleRLibrary().toStdString() << "');\n";
+	R << _name << _modulePostFix << " <- module({\n" << standardRIndent << ".libPaths(c('" << moduleRLibrary().toStdString() << "', .libPaths()));\n";
 	R << standardRIndent << "import('" << _name << "');\n\n";
 
 	size_t maxL = 0;
