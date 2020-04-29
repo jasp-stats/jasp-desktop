@@ -15631,15 +15631,20 @@ msgid "Osf action "
 msgstr ""
 
 msgctxt "OnlineDataNodeOSF|"
-msgid " failed because "
-msgstr ""
-
-msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new folder "
 msgstr ""
 
 msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
+msgstr ""
+
+msgctxt "Importer|"
+msgid "Loading Data Set"
+msgstr ""
+
+#, qt-format
+msgctxt "OnlineDataNodeOSF|"
+msgid "%1 %2 failed because %3"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

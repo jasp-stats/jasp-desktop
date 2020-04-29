@@ -14,7 +14,7 @@ class ImportColumn;
 
 class Importer
 {
-	Q_DECLARE_TR_FUNCTIONS(CSVImporter)
+	Q_DECLARE_TR_FUNCTIONS(Importer)
 public:
 	Importer() {}
 	virtual ~Importer();

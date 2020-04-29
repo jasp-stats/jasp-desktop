@@ -15922,12 +15922,17 @@ msgid "Osf action "
 msgstr "Osf actie "
 
 msgctxt "OnlineDataNodeOSF|"
-msgid " failed because "
-msgstr " faalde omdat "
-
-msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
 msgstr " gaande"
+
+msgctxt "Importer|"
+msgid "Loading Data Set"
+msgstr "Laden van Gegevens"
+
+#, qt-format
+msgctxt "OnlineDataNodeOSF|"
+msgid "%1 %2 failed because %3"
+msgstr "%1 %2 faalde omdat %3"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""

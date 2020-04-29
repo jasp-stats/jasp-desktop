@@ -87,7 +87,7 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 
 	if (reply->error() != QNetworkReply::NoError)
 	{
-		emit progress(progressmsg + _expectedName + tr(" failed because ") + reply->errorString(), 0);
+		emit progress(tr("%1 %2 failed because %3").arg(progressmsg).arg(_expectedName ).arg(reply->errorString()), 0);
 
 		setError(true, reply->errorString());
 		finished = true;
