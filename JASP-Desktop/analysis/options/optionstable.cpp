@@ -123,7 +123,7 @@ void OptionsTable::setValue(const std::vector<Options *> &value)
 	_value = value;
 
 	if(changesFound)
-		notifyChanged();
+		notifyChanged(this);
 }
 
 void OptionsTable::connectOptions(const std::vector<Options *> &value)

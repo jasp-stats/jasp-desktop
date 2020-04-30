@@ -53,7 +53,7 @@ void JASPControlWrapper::setUp()
 		parent = parent->parentItem();
 
 	if (parent && parent->objectName() == "Section")
-		item()->setSection(parent);
+		item()->setSection(parent);	
 }
 
 JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase* control)
@@ -77,6 +77,7 @@ JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase*
 	}
 	case JASPControlBase::ControlType::ComboBox:					controlWrapper		= new BoundQMLComboBox(control);					break;
 	case JASPControlBase::ControlType::Expander:					controlWrapper		= new QMLExpander(control);							break;
+	case JASPControlBase::ControlType::GroupBox:					controlWrapper		= new JASPControlWrapper(control);					break;
 	case JASPControlBase::ControlType::TableView:					controlWrapper		= new BoundQMLTableView(control);					break;
 	case JASPControlBase::ControlType::TextField:					controlWrapper		= new BoundQMLTextInput(control);					break;
 	case JASPControlBase::ControlType::FactorsForm:					controlWrapper		= new BoundQMLFactorsForm(control);					break;

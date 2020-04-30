@@ -37,7 +37,7 @@ public:
 
 		_value = value;
 
-		notifyChanged();
+		notifyChanged(this);
 	}
 
 protected:

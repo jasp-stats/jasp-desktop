@@ -88,37 +88,25 @@ Item
 		visible				: count > 0
 		source				: [ { name: "contrasts", condition: "contrastValue == 'custom'", conditionVariables: [{ name: "contrastValue", component: "contrast", property: "currentValue"}] }]
 
-		rowComponents:
-		[
-			Component
+		rowComponent: Group
+		{
+			Text
 			{
-				FocusScope // This is needed to keep focus working right when reusing the component
-				{
-					Group
-					{
-						id					: group
-						property var control: tableCustomContrasts.control
-
-						Text
-						{
-							height			: 30 * preferencesModel.uiScale
-							text			: qsTr("Custom contrast for %1").arg(rowValue)
-						}
-
-						CustomContrastsTableView
-						{
-							id						: tableCustomContrasts
-							columnName				: rowValue
-							factorsSource			: contrastsList.repeatedMeasureFactors
-							name					: "values"
-							implicitHeight			: 130 * preferencesModel.uiScale
-							implicitWidth			: customContrastsView.cellWidth
-							width					: implicitWidth
-							height					: implicitHeight
-						}
-					}
-				}
+				height			: 30 * preferencesModel.uiScale
+				text			: qsTr("Custom contrast for %1").arg(rowValue)
 			}
-		]
+
+			CustomContrastsTableView
+			{
+				id						: tableCustomContrasts
+				columnName				: rowValue
+				factorsSource			: contrastsList.repeatedMeasureFactors
+				name					: "values"
+				implicitHeight			: 130 * preferencesModel.uiScale
+				implicitWidth			: customContrastsView.cellWidth
+				width					: implicitWidth
+				height					: implicitHeight
+			}
+		}
 	}
 }

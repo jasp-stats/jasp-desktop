@@ -81,9 +81,9 @@ void Options::clear()
 	_options.clear();
 }
 
-void Options::optionsChanged(Option *)
+void Options::optionsChanged(Option *option)
 {
-	notifyChanged();
+	notifyChanged(option);
 }
 
 Json::Value Options::asJSON(bool includeTransient) const
@@ -242,7 +242,7 @@ void Options::removeUsedVariable(const std::string & var)
 	for (const OptionNamed& option : _options)
 		option.second->removeUsedVariable(var);
 
-	notifyChanged();
+	notifyChanged(this);
 }
 
 void Options::replaceVariableName(const std::string & oldName, const std::string & newName)
@@ -250,5 +250,5 @@ void Options::replaceVariableName(const std::string & oldName, const std::string
 	for (const OptionNamed& option : _options)
 		option.second->replaceVariableName(oldName, newName);
 
-	notifyChanged();
+	notifyChanged(this);
 }

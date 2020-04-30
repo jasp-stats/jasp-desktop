@@ -46,7 +46,7 @@ public:
 	void					replaceKey(const std::string& oldKey, const std::string& newKey);
 
 private:
-	void					optionsChanged(Option *) { notifyChanged(); }
+	void					optionsChanged(Option *) { notifyChanged(this); }
 	void					deleteOldValues();
 
 	Options		*_template = nullptr;

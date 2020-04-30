@@ -45,12 +45,12 @@ bool Option::isTransient() const
 	return _isTransient;
 }
 
-void Option::notifyChanged()
+void Option::notifyChanged(Option* option)
 {
 	if (_signalsBlocked)
 		_shouldSignalChangedOnceUnblocked = true;
 	else
-		changed(this);
+		changed(option);
 }
 
 Json::Value Option::defaultMetaEntryContainingColumn(bool containsColumn) const

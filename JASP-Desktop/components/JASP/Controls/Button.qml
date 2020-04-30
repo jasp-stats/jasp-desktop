@@ -29,6 +29,7 @@ JASPControl
 	implicitWidth:		control.implicitWidth
 	isBound:			false
 	shouldStealHover:	false
+	innerControl:		control
 	
 	readonly	property alias control:		control
 				property alias text:		control.text

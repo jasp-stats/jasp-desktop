@@ -33,6 +33,7 @@ BoundQMLRadioButtons::BoundQMLRadioButtons(JASPControlBase* item)
 
 void BoundQMLRadioButtons::setUp()
 {
+	JASPControlWrapper::setUp();
 	QList<JASPControlWrapper* > buttons;
 	_getRadioButtons(item(), buttons);
 	QVariant buttonGroup = getItemProperty("buttonGroup");

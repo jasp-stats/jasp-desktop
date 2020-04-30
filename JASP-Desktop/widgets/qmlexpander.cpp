@@ -54,7 +54,7 @@ void QMLExpander::setUp()
 	if (nextExpander)
 		setItemProperty("nextExpander", QVariant::fromValue(nextExpander->item()));
 
-	QObject* childControlsArea = item()->childControlsArea().value<QObject*>();
+	QQuickItem* childControlsArea = item()->childControlsArea();
 
 	if (childControlsArea)
 	{

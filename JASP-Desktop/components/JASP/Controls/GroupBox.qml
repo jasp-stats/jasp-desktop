@@ -22,22 +22,21 @@ import QtQuick.Layouts	1.3 as L
 import JASP				1.0
 
 
-Rectangle
+JASPControl
 {
-	id:					control
+	id:					groupBox
 	implicitWidth:		Math.max(label.realWidth, jaspTheme.groupContentPadding + contentArea.implicitWidth)
 	implicitHeight:		label.realHeight + jaspTheme.titleBottomMargin + contentArea.implicitHeight	
-	color:				jaspTheme.analysisBackgroundColor // transparent generates sometimes temporary black blocks
 	L.Layout.leftMargin:	indent ? jaspTheme.indentationLength : 0
-	visible:			!debug || DEBUG_MODE
+	controlType				: JASPControlBase.GroupBox
+	isBound					: false
+	childControlsArea		: contentArea
     
 	default property alias	content:			contentArea.children
-			property alias	contentArea:		contentArea
 			property int	rowSpacing:			jaspTheme.rowGroupSpacing
 			property int	columnSpacing:		jaspTheme.columnGroupSpacing
 			property int	columns:			1
 			property string title:				""
-			property bool	debug:				false
 			property bool	indent:				false
 			property bool	alignTextFields:	true
 			property alias	alignChildrenTopLeft: contentArea.alignChildrenTopLeft
@@ -48,12 +47,12 @@ Rectangle
 	Label
 	{
 		id:				label
-		anchors.top:	control.top
-		anchors.left:	control.left
-		text:			control.title
+		anchors.top:	groupBox.top
+		anchors.left:	groupBox.left
+		text:			groupBox.title
 		color:			enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 		font:			jaspTheme.font
-		visible:		control.title ? true : false
+		visible:		groupBox.title ? true : false
 		
 		property int	realHeight: visible ? implicitHeight : 0
 		property int	realWidth: visible ? implicitWidth : 0
@@ -63,13 +62,13 @@ Rectangle
 	GridLayout
 	{
 		id:					contentArea
-		columns:			control.columns
-		anchors.top:		control.title ? label.bottom : control.top
-		anchors.topMargin:	control.title ? jaspTheme.titleBottomMargin : 0
-		anchors.left:		control.left
-        anchors.leftMargin: control.title ? jaspTheme.groupContentPadding : 0
-		rowSpacing:			control.rowSpacing
-		columnSpacing:		control.columnSpacing
+		columns:			groupBox.columns
+		anchors.top:		groupBox.title ? label.bottom : groupBox.top
+		anchors.topMargin:	groupBox.title ? jaspTheme.titleBottomMargin : 0
+		anchors.left:		groupBox.left
+		anchors.leftMargin: groupBox.title ? jaspTheme.groupContentPadding : 0
+		rowSpacing:			groupBox.rowSpacing
+		columnSpacing:		groupBox.columnSpacing
     }
 
 	Connections
@@ -97,8 +96,6 @@ Rectangle
 		for (var i = 0; i < contentArea.children.length; i++)
 		{
 			var child = contentArea.children[i];
-			if (control.debug && child.hasOwnProperty("debug"))
-				child.setDebugState();
 			if (child.hasOwnProperty('controlType') && child.controlType === JASPControlBase.TextField)
 				_allTextFields.push(child)
 		}
@@ -112,24 +109,24 @@ Rectangle
 		{
 			var i;
 			_allTextFields[0].controlXOffset = 0;
-			var xMax = _allTextFields[0].control.x;
-			var longestControl = _allTextFields[0].control;
+			var xMax = _allTextFields[0].innerControl.x;
+			var longestControl = _allTextFields[0].innerControl;
 			for (i = 1; i < _allTextFields.length; i++)
 			{
 				_allTextFields[i].controlXOffset = 0;
-				if (xMax < _allTextFields[i].control.x)
+				if (xMax < _allTextFields[i].innerControl.x)
 				{
-					longestControl = _allTextFields[i].control;
-					xMax = _allTextFields[i].control.x;
+					longestControl = _allTextFields[i].innerControl;
+					xMax = _allTextFields[i].innerControl.x;
 				}
             }
             
 			for (i = 0; i < _allTextFields.length; i++)
 			{
-				if (_allTextFields[i].control !== longestControl)
-					// Cannot use binding here, since control.x depends on the controlXOffset,
+				if (_allTextFields[i].innerControl !== longestControl)
+					// Cannot use binding here, since innerControl.x depends on the controlXOffset,
 					// that would generate a binding loop
-					_allTextFields[i].controlXOffset = (xMax - _allTextFields[i].control.x);
+					_allTextFields[i].controlXOffset = (xMax - _allTextFields[i].innerControl.x);
 
 			}
 		}

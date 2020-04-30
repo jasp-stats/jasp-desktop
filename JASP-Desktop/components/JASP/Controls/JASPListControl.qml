@@ -30,6 +30,7 @@ JASPControl
 	implicitHeight			: jaspTheme.defaultVariablesFormHeight
 	useControlMouseArea		: false
 	shouldStealHover		: false
+	innerControl			: listGridView
 
 	property var	model
 	property var	values

@@ -380,7 +380,7 @@ void Analysis::optionsChangedHandler(Option *option)
 	if (_refreshBlocked)
 		return;
 
-	if (form() && form()->hasError())
+	if (form() && (form()->hasError() || !form()->runWhenThisOptionIsChanged(option)))
 		return;
 
 	setStatus(Empty);

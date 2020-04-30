@@ -80,7 +80,7 @@ public:
 	Json::Value			defaultMetaEntryContainingColumn(bool containsColumn = true) const;
 
 protected:
-	void				notifyChanged();
+	void				notifyChanged(Option* option);
 
 	bool		_isTransient;
 

@@ -11,6 +11,7 @@ JASPControl
 	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.height : 0)
 	implicitWidth:		control.width + ((controlLabel.visible && !setLabelAbove) ? jaspTheme.labelSpacing + controlLabel.width : 0)
 	background:			useExternalBorder ? externalControlBackground : control.background
+	innerControl:		control
 
 
 	property alias	control:				control

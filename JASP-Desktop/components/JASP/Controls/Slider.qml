@@ -10,6 +10,7 @@ JASPControl
 	controlType:		JASPControlBase.Slider
 	implicitHeight:		columnLayout.implicitHeight
 	implicitWidth:		columnLayout.implicitWidth
+	innerControl:		textField
 
 	property alias	control:		textField
 	property int	decimals:		2
@@ -122,7 +123,7 @@ JASPControl
 			}
 			onTextEdited:
 			{
-				if (value && !textField.control.acceptableInput)
+				if (value && !textField.innerControl.acceptableInput)
 					value = control.value
 			}
 		}

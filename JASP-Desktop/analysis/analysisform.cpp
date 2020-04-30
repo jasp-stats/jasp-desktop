@@ -518,6 +518,7 @@ void AnalysisForm::bindTo()
 			}
 
 			boundControl->bindTo(option);
+			_optionControlMap[option] = boundControl;
 		}
 		else
 		{
@@ -726,6 +727,7 @@ void AnalysisForm::_formCompletedHandler()
 		bool isNewAnalysis = _analysis->options()->size() == 0 && _analysis->optionsFromJASPFile().size() == 0;
 
 		bindTo();
+
 		_analysis->resetOptionsFromJASPFile();
 		_analysis->initialized(this, isNewAnalysis);
 	}
@@ -776,6 +778,35 @@ void AnalysisForm::setMustContain(std::map<std::string,std::set<std::string>> mu
 	for(const auto & nameContainsPair : _mustContain)
 		setControlMustContain(nameContainsPair.first, nameContainsPair.second); //Its ok if it does it twice, others will only be notified on change
 
+}
+
+void AnalysisForm::setRunOnChange(bool change)
+{
+	if (change != _runOnChange)
+	{
+		_runOnChange = change;
+
+		if (_options)
+			_options->blockSignals(change, false);
+
+		emit runOnChangeChanged();
+	}
+}
+
+bool AnalysisForm::runWhenThisOptionIsChanged(Option *option)
+{
+	BoundQMLItem* control = getBoundItem(option);
+	JASPControlBase* item = control ? control->item() : nullptr;
+
+	emit optionChanged(item);
+
+	if (!_runOnChange)
+		return false;
+
+	if (item && !item->runOnChange())
+		return false;
+
+	return true;
 }
 
 

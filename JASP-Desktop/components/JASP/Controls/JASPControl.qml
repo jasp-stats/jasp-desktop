@@ -19,23 +19,21 @@ import QtQuick				2.12
 import JASP					1.0
 import QtQuick.Controls		2.12
 import QtQuick.Layouts		1.12 as L
+import QtQml 2.14
 
 
 JASPControlBase
 {
 	id: jaspControl
 
-	property bool	debug					: false
-	property var	background				: null
 	property var	focusIndicator			: background
 	property bool   indent					: false
 	property alias	cursorShape				: controlMouseArea.cursorShape
 	property alias	hovered					: controlMouseArea.containsMouse
 	property bool	useControlMouseArea		: true
-	property bool	childControlHasFocus	: false
 	property bool	isDependency			: false
 	property var	dependencyMustContain	: [] //Will be filled with QStringList when necessary
-	property bool	shouldShowFocus			: activeFocus && focusOnTab && !childControlHasFocus && !hasError && !hasWarning
+	property bool	shouldShowFocus			: activeFocus && focusOnTab && (innerControl === null || innerControl.activeFocus) && !hasError && !hasWarning
 	property bool	shouldStealHover		: toolTip !== ""
 	property string	toolTip					: ""
 
@@ -49,50 +47,17 @@ JASPControlBase
 	L.Layout.preferredHeight:	preferredHeight
 	L.Layout.leftMargin: indent ? jaspTheme.indentationLength : 0
 
-	function setDebugState()
-	{
-		debug = true
-		if (typeof(DEBUG_MODE) === "undefined" || !DEBUG_MODE)
-			visible = false;
-		else if (background)
-			background.color = jaspTheme.debugBackgroundColor
-		
-		if (form && childControlsArea)
-		{
-			var	childControls = []
+	visible: DEBUG_MODE || (!debug && !parentDebug)
 
-			form.getJASPControls(childControls, childControlsArea, false)
-			for (var i = 0; i < childControls.length; i++)
-				childControls[i].setDebugState();
-		}
-	}
-	
-	Component.onCompleted:
+	function setBackroundColor()
 	{
-		if (typeof(control) !== "undefined")
-		{
-			if (!background)
-				background = control.background
-		}
-		
-		if (debug)
-			setDebugState();
-
-		if (typeof(form) !== "undefined" && form && childControlsArea && childControlsArea.children.length > 0)
-		{
-			var childControls = [];
-			form.getJASPControls(childControls, childControlsArea, false)
-			if (controlType !== JASPControlBase.Expander)
-				childControlHasFocus = Qt.binding(function()
-				{
-					for (var i = 0; i < childControls.length; i++)
-						if (childControls[i].activeFocus)
-							return true;
-					return false;
-				});
-		}
+		if (background !== null)
+			background.color = (debug || parentDebug) ? jaspTheme.debugBackgroundColor : "transparent"
 	}
-	
+
+	onDebugChanged: setBackroundColor()
+	onParentDebugChanged: setBackroundColor()
+
 	states: [
 		State
 		{
