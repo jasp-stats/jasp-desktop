@@ -19,7 +19,7 @@ import QtQuick				2.12
 import JASP					1.0
 import QtQuick.Controls		2.12
 import QtQuick.Layouts		1.12 as L
-import QtQml 2.14
+//import QtQml 2.14
 
 
 JASPControlBase
