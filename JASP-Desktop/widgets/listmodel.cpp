@@ -481,17 +481,18 @@ const QString &ListModel::name() const
 
 const Terms &ListModel::terms(const QString &what) const
 {
-	if (what.startsWith("type="))
+	const QString typeIs = "type=";
+
+	if (what.startsWith(typeIs))
 	{
 		static Terms terms;
 
-		QStringList typesStr = what.right(what.length() - 5).toLower().split("|");
+		QStringList typesStr = what.right(what.length() - typeIs.length()).toLower().split("|");
 		QList<columnType> types;
 
 		for (const QString& typeStr : typesStr)
 		{
-			columnType type = columnType::unknown;
-			try { type = columnTypeFromQString(typeStr); } catch (...) {}
+			columnType type = columnTypeFromQString(typeStr, columnType::unknown);
 			if (type != columnType::unknown)
 				types.push_back(type);
 		}
