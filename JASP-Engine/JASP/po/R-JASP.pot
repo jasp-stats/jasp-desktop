@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-04-09 18:12\n"
+"POT-Creation-Date: 2020-04-22 09:30\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -698,6 +698,9 @@ msgid "Audit values"
 msgstr ""
 
 msgid "<b>Figure 1.</b> Scatter plot of the book values in the selection and their audit values. Red dots indicate observations that did not match their original book value. If these red dots lie in the bottom part of the graph, the book values are overstated. If these red dots lie in the upper part of the graph, they are understated. The value <i>r</i> is the Pearson correlation coefficient of the book values and the audit values, an indicator of the strength of the linear relationship between the two variables."
+msgstr ""
+
+msgid "Your sample size is larger than your population size. Cannot take a sample larger than the population."
 msgstr ""
 
 msgid "The objective of this substantive testing procedure is to determine with a specified confidence <b>(%1$s)</b> whether the %2$s of misstatement in the target population is lower than the specified materiality of <b>%3$s</b>."
@@ -5084,6 +5087,9 @@ msgid "For all tests, the alternative hypothesis specifies that group <em>%1$s</
 msgstr ""
 
 msgid "For all tests, the alternative hypothesis specifies that group <em>%1$s</em> is less than group <em>%2$s</em>."
+msgstr ""
+
+msgid "Bayesian Wilcoxon Signed-Rank Test"
 msgstr ""
 
 msgid "For all tests, the alternative hypothesis specifies that the population mean is greater than %s."

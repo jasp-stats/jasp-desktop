@@ -15379,6 +15379,274 @@ msgctxt "EquivalencePairedSamplesTTest|"
 msgid "to %1"
 msgstr ""
 
+msgctxt "auditSelection|"
+msgid "Record ID's"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Book Values <i>(required)</i>"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Book Values <i>(optional)</i>"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Ranking Variable <i>(optional)</i>"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Additional Variables <i>(optional)</i>"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Sample size"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Enable"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Advanced Options"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Sampling Units"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Monetary unit sampling"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Select observations with probability proportional to their value"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Record sampling"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Select observations with equal probability"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Selection Method"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Random sampling"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Select observations by random sampling"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Cell sampling"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Select observations by cell sampling"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Fixed interval sampling"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Select observations by fixed interval sampling"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Seed"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Tables"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Display selected observations"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Selection descriptives"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Mean"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Median"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Std. deviation"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Variance"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Minimum"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Maximum"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Range"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "<b>Download Sample</b>"
+msgstr ""
+
+msgctxt "TTestBayesianOneSample|"
+msgid "Tests"
+msgstr ""
+
+msgctxt "TTestBayesianOneSample|"
+msgid "Student"
+msgstr ""
+
+msgctxt "TTestBayesianOneSample|"
+msgid "Wilcoxon signed-rank"
+msgstr ""
+
+msgctxt "TTestBayesianOneSample|"
+msgid "No. samples"
+msgstr ""
+
+msgctxt "TTestBayesianPairedSamples|"
+msgid "Tests"
+msgstr ""
+
+msgctxt "TTestBayesianPairedSamples|"
+msgid "Student"
+msgstr ""
+
+msgctxt "TTestBayesianPairedSamples|"
+msgid "Wilcoxon signed-rank"
+msgstr ""
+
+msgctxt "TTestBayesianPairedSamples|"
+msgid "No. samples"
+msgstr ""
+
+msgctxt "AsyncLoader|"
+msgid "Loading Data Set"
+msgstr ""
+
+msgctxt "AsyncLoader|"
+msgid "Saving Data Set"
+msgstr ""
+
+msgctxt "AsyncLoader|"
+msgid "Exporting Result Set"
+msgstr ""
+
+msgctxt "AsyncLoader|"
+msgid "Exporting Data Set"
+msgstr ""
+
+msgctxt "AsyncLoader|"
+msgid "Sync Data Set"
+msgstr ""
+
+msgctxt "CSVImporter|"
+msgid "Loading Data Set"
+msgstr ""
+
+msgctxt "JASPImporter|"
+msgid "Loading Data Set Description"
+msgstr ""
+
+msgctxt "JASPImporter|"
+msgid "Loading Data Set"
+msgstr ""
+
+msgctxt "MarginalMeansContrastsTableView|"
+msgid "Add Contrast"
+msgstr ""
+
+msgctxt "MarginalMeansContrastsTableView|"
+msgid "Delete Contrast"
+msgstr ""
+
+msgctxt "MarginalMeansContrastsTableView|"
+msgid "Reset"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelMarginalMeansContrasts|"
+msgid "Contrast %1"
+msgstr ""
+
+msgctxt "ListModelMarginalMeansContrasts|"
+msgid ""
+"Number of rows specifed in Options for ListModelMarginalMeansContrasts does "
+"not match number of rows in values!"
+msgstr ""
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating upload of "
+msgstr ""
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating download of "
+msgstr ""
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating making new file "
+msgstr ""
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating osf action "
+msgstr ""
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Upload of "
+msgstr ""
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Download of "
+msgstr ""
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Creating new file "
+msgstr ""
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Creating new folder "
+msgstr ""
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Osf action "
+msgstr ""
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating making new folder "
+msgstr ""
+
+msgctxt "OnlineDataNodeOSF|"
+msgid " in progress"
+msgstr ""
+
+msgctxt "Importer|"
+msgid "Loading Data Set"
+msgstr ""
+
+#, qt-format
+msgctxt "OnlineDataNodeOSF|"
+msgid "%1 %2 failed because %3"
+msgstr ""
+
 msgctxt "auditBayesianWorkflow|"
 msgid ""
 msgstr ""

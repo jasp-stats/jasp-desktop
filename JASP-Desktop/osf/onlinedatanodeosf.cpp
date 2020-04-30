@@ -51,11 +51,11 @@ void OnlineDataNodeOSF::processUrl(QUrl url)
 
 	switch (_preparedAction)
 	{
-		case OnlineDataNodeOSF::Upload:		progressmsg="Initiating upload of ";			break;
-		case OnlineDataNodeOSF::Download:	progressmsg="Initiating download of ";			break;
-		case OnlineDataNodeOSF::NewFile:	progressmsg="Initiating making new file ";		break;
-		case OnlineDataNodeOSF::NewFolder:	progressmsg="Initiating making new folder  ";	break;
-		default:							progressmsg="Initiating osf action ";			break;
+		case OnlineDataNodeOSF::Upload:		progressmsg=tr("Initiating upload of ");			break;
+		case OnlineDataNodeOSF::Download:	progressmsg=tr("Initiating download of ");			break;
+		case OnlineDataNodeOSF::NewFile:	progressmsg=tr("Initiating making new file ");		break;
+		case OnlineDataNodeOSF::NewFolder:	progressmsg=tr("Initiating making new folder ");	break;
+		default:							progressmsg=tr("Initiating osf action ");			break;
 	}
 	emit progress(progressmsg + _expectedName, 0);
 
@@ -77,17 +77,17 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 
 	switch (_preparedAction)
 	{
-		case OnlineDataNodeOSF::Upload:		progressmsg = "Upload of ";				break;
-		case OnlineDataNodeOSF::Download:	progressmsg = "Download of ";			break;
-		case OnlineDataNodeOSF::NewFile:	progressmsg = "Creating new file ";		break;
-		case OnlineDataNodeOSF::NewFolder:	progressmsg = "Creating new folder ";	break;
-		default:							progressmsg = "Osf action ";			break;
+		case OnlineDataNodeOSF::Upload:		progressmsg = tr("Upload of ");				break;
+		case OnlineDataNodeOSF::Download:	progressmsg = tr("Download of ");			break;
+		case OnlineDataNodeOSF::NewFile:	progressmsg = tr("Creating new file ");		break;
+		case OnlineDataNodeOSF::NewFolder:	progressmsg = tr("Creating new folder ");	break;
+		default:							progressmsg = tr("Osf action ");				break;
 	}
 
 
 	if (reply->error() != QNetworkReply::NoError)
 	{
-		emit progress(progressmsg + _expectedName + " failed because " + reply->errorString(), 0);
+		emit progress(tr("%1 %2 failed because %3").arg(progressmsg).arg(_expectedName ).arg(reply->errorString()), 0);
 
 		setError(true, reply->errorString());
 		finished = true;
@@ -103,7 +103,7 @@ void OnlineDataNodeOSF::nodeInfoReceived() {
 
 		QJsonObject nodeObject;
 
-		emit progress(progressmsg + _expectedName + " in progress", 10);
+		emit progress(progressmsg + _expectedName + tr(" in progress"), 10);
 
 
 		if (json.value("data").isArray() && _expectedName != "")

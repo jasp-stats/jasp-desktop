@@ -25,9 +25,12 @@
 
 #include <string>
 #include <vector>
+#include <QCoreApplication>
+#include "utilities/qutils.h"
 
 class JASPImporter
 {
+	Q_DECLARE_TR_FUNCTIONS(JASPImporter)
 public:
 	enum Compatibility { Compatible, Limited, NotCompatible };
 

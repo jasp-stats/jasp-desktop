@@ -19,7 +19,9 @@
 #include "csvimportcolumn.h"
 #include "csv.h"
 #include "timers.h"
+
 using namespace std;
+
 
 CSVImporter::CSVImporter() : Importer()
 {
@@ -94,7 +96,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 		progress = 50 * csv.pos() / csv.size();
 		if (progress != lastProgress)
 		{
-			progressCallback("Loading Data Set", progress);
+			progressCallback(fq(tr("Loading Data Set")), progress);
 			lastProgress = progress;
 		}
 

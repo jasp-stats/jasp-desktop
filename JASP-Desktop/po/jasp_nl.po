@@ -14770,8 +14770,7 @@ msgstr "Bestand is gewijzigd"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr ""
-"Welkom bij de vereenvoudigde berekende kolom maker!"
+msgstr "Welkom bij de vereenvoudigde berekende kolom maker!"
 
 msgctxt "AnovaRepeatedMeasures|"
 msgid "Use multivariate model for follow-up tests"
@@ -14957,7 +14956,8 @@ msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
 msgstr ""
-"Deze analyse is gemaakt met een oudere versie van JASP (of met een dynamische module)"
+"Deze analyse is gemaakt met een oudere versie van JASP (of met een "
+"dynamische module)"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
@@ -15663,6 +15663,276 @@ msgstr "van %1"
 msgctxt "EquivalencePairedSamplesTTest|"
 msgid "to %1"
 msgstr "naar %1"
+
+msgctxt "auditSelection|"
+msgid "Record ID's"
+msgstr "Boeking ID's"
+
+msgctxt "auditSelection|"
+msgid "Book Values <i>(required)</i>"
+msgstr "Boekwaarden <i>(verplicht)</i>"
+
+msgctxt "auditSelection|"
+msgid "Book Values <i>(optional)</i>"
+msgstr "Boekwaarden <i>(optioneel)</i>"
+
+msgctxt "auditSelection|"
+msgid "Ranking Variable <i>(optional)</i>"
+msgstr "Rangvariabele <i>(optioneel)</i>"
+
+msgctxt "auditSelection|"
+msgid "Additional Variables <i>(optional)</i>"
+msgstr "Aanvullende variabelen <i>(optioneel)</i>"
+
+msgctxt "auditSelection|"
+msgid "Sample size"
+msgstr "Steekproefgrootte"
+
+msgctxt "auditSelection|"
+msgid "Enable"
+msgstr "Activeer"
+
+msgctxt "auditSelection|"
+msgid "Advanced Options"
+msgstr "Geavanceerde opties"
+
+msgctxt "auditSelection|"
+msgid "Sampling Units"
+msgstr "Steekproefeenheden"
+
+msgctxt "auditSelection|"
+msgid "Monetary unit sampling"
+msgstr "Monetaire eenheid steekproeven"
+
+msgctxt "auditSelection|"
+msgid "Select observations with probability proportional to their value"
+msgstr "Selecteer observaties met kans proportioneel aan hun waarde"
+
+msgctxt "auditSelection|"
+msgid "Record sampling"
+msgstr "Record steekproeven"
+
+msgctxt "auditSelection|"
+msgid "Select observations with equal probability"
+msgstr "Selecteer observaties met gelijke kansen"
+
+msgctxt "auditSelection|"
+msgid "Selection Method"
+msgstr "Selectiemethode"
+
+msgctxt "auditSelection|"
+msgid "Random sampling"
+msgstr "Aselecte steekproeven"
+
+msgctxt "auditSelection|"
+msgid "Select observations by random sampling"
+msgstr "Selecteer observaties met aselecte steekproef"
+
+msgctxt "auditSelection|"
+msgid "Cell sampling"
+msgstr "Cel steekproeven"
+
+msgctxt "auditSelection|"
+msgid "Select observations by cell sampling"
+msgstr "Trek waarnemingen met celbemonstering"
+
+msgctxt "auditSelection|"
+msgid "Fixed interval sampling"
+msgstr "Vast interval steekproeven"
+
+msgctxt "auditSelection|"
+msgid "Select observations by fixed interval sampling"
+msgstr "Selecteer observaties met een steekproef met vaste interval"
+
+msgctxt "auditSelection|"
+msgid "Seed"
+msgstr "Toevalsgenerator beginwaarde"
+
+msgctxt "auditSelection|"
+msgid "Tables"
+msgstr "Tabellen"
+
+msgctxt "auditSelection|"
+msgid "Display selected observations"
+msgstr "Geef geselecteerde observaties weer"
+
+msgctxt "auditSelection|"
+msgid "Selection descriptives"
+msgstr "Selectie beschrijvende statistieken"
+
+msgctxt "auditSelection|"
+msgid "Mean"
+msgstr "Gemiddelde"
+
+msgctxt "auditSelection|"
+msgid "Median"
+msgstr "Mediaan"
+
+msgctxt "auditSelection|"
+msgid "Std. deviation"
+msgstr "Std. afwijking"
+
+msgctxt "auditSelection|"
+msgid "Variance"
+msgstr "Variantie"
+
+msgctxt "auditSelection|"
+msgid "Minimum"
+msgstr "Minimum"
+
+msgctxt "auditSelection|"
+msgid "Maximum"
+msgstr "Maximum"
+
+msgctxt "auditSelection|"
+msgid "Range"
+msgstr "Bereik"
+
+msgctxt "auditSelection|"
+msgid "<b>Download Sample</b>"
+msgstr "<b>Download Steekproef</b>"
+
+msgctxt "TTestBayesianOneSample|"
+msgid "Tests"
+msgstr "Toetsen"
+
+msgctxt "TTestBayesianOneSample|"
+msgid "Student"
+msgstr "Student"
+
+msgctxt "TTestBayesianOneSample|"
+msgid "Wilcoxon signed-rank"
+msgstr "Wilcoxon rangtekentoets"
+
+msgctxt "TTestBayesianOneSample|"
+msgid "No. samples"
+msgstr "Aantal steekproeven"
+
+msgctxt "TTestBayesianPairedSamples|"
+msgid "Tests"
+msgstr "Toetsen"
+
+msgctxt "TTestBayesianPairedSamples|"
+msgid "Student"
+msgstr "Student"
+
+msgctxt "TTestBayesianPairedSamples|"
+msgid "Wilcoxon signed-rank"
+msgstr "Wilcoxon rangtekentoets"
+
+msgctxt "TTestBayesianPairedSamples|"
+msgid "No. samples"
+msgstr "Aantal steekproeven"
+
+msgctxt "AsyncLoader|"
+msgid "Loading Data Set"
+msgstr "Laden van Gegevens"
+
+msgctxt "AsyncLoader|"
+msgid "Saving Data Set"
+msgstr "Opslaan van Gegevens"
+
+msgctxt "AsyncLoader|"
+msgid "Exporting Result Set"
+msgstr "Exporteren van Resultaat"
+
+msgctxt "AsyncLoader|"
+msgid "Exporting Data Set"
+msgstr "Exporteren van Gegevens"
+
+msgctxt "AsyncLoader|"
+msgid "Sync Data Set"
+msgstr "Synchroniseren van Gegevens"
+
+msgctxt "CSVImporter|"
+msgid "Loading Data Set"
+msgstr "Laden van Gegevens"
+
+msgctxt "JASPImporter|"
+msgid "Loading Data Set Description"
+msgstr "Laden van Beschrijving Gegevens"
+
+msgctxt "JASPImporter|"
+msgid "Loading Data Set"
+msgstr "Laden van Gegevens"
+
+msgctxt "MarginalMeansContrastsTableView|"
+msgid "Add Contrast"
+msgstr "Voeg contrast toe"
+
+msgctxt "MarginalMeansContrastsTableView|"
+msgid "Delete Contrast"
+msgstr "Verwijder contrast"
+
+msgctxt "MarginalMeansContrastsTableView|"
+msgid "Reset"
+msgstr "Herstel"
+
+#, qt-format
+msgctxt "ListModelMarginalMeansContrasts|"
+msgid "Contrast %1"
+msgstr "Contrast %1"
+
+msgctxt "ListModelMarginalMeansContrasts|"
+msgid ""
+"Number of rows specifed in Options for ListModelMarginalMeansContrasts does "
+"not match number of rows in values!"
+msgstr ""
+"Aantal rijen gespecificeerd in Opties voor ListModelMarginalMeansContrasts "
+"komt niet overeen met aantal rijen in waarden!"
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating upload of "
+msgstr "Initialiseren van upload van "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating download of "
+msgstr "Initialiseren van download van "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating making new file "
+msgstr "Initialiseren van het maken van nieuw bestand van "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating making new folder "
+msgstr "Initialiseren van het maken van een nieuwe map "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Initiating osf action "
+msgstr "Initialiseren van osf actie "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Upload of "
+msgstr "Upload van "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Download of "
+msgstr "Download van "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Creating new file "
+msgstr "Maken van een nieuw bestand "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Creating new folder "
+msgstr "Maken van een nieuwe map "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid "Osf action "
+msgstr "Osf actie "
+
+msgctxt "OnlineDataNodeOSF|"
+msgid " in progress"
+msgstr " gaande"
+
+msgctxt "Importer|"
+msgid "Loading Data Set"
+msgstr "Laden van Gegevens"
+
+#, qt-format
+msgctxt "OnlineDataNodeOSF|"
+msgid "%1 %2 failed because %3"
+msgstr "%1 %2 faalde omdat %3"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""
