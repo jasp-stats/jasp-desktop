@@ -33,6 +33,7 @@ JASPControl
 
 	default property alias	content:				contentArea.children
 			property alias	buttons:				buttonGroup.buttons
+			property alias	checkedButton:			buttonGroup.checkedButton
 			property var	buttonGroup:			buttonGroup
 			property bool	radioButtonsOnSameRow:	false
 			property alias	columns:				contentArea.columns

@@ -400,6 +400,20 @@ void ListModel::selectAllItems()
 	emit selectedItemsChanged();
 }
 
+QList<QString> ListModel::itemTypes()
+{
+	QSet<QString> types;
+
+	for (const Term& term : terms())
+	{
+		columnType type = DataSetPackage::pkg()->getColumnType(term.asString());
+		if (type != columnType::unknown)
+			types.insert(columnTypeToQString(type));
+	}
+
+	return types.values();
+}
+
 
 void ListModel::sourceTermsChanged(const Terms *termsAdded, const Terms *termsRemoved)
 {
@@ -463,6 +477,38 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 const QString &ListModel::name() const
 {
 	return _listView->name();
+}
+
+const Terms &ListModel::terms(const QString &what) const
+{
+	const QString typeIs = "type=";
+
+	if (what.startsWith(typeIs))
+	{
+		static Terms terms;
+
+		QStringList typesStr = what.right(what.length() - typeIs.length()).toLower().split("|");
+		QList<columnType> types;
+
+		for (const QString& typeStr : typesStr)
+		{
+			columnType type = columnTypeFromQString(typeStr, columnType::unknown);
+			if (type != columnType::unknown)
+				types.push_back(type);
+		}
+
+		terms.clear();
+		for (const Term& term : _terms)
+		{
+			columnType type = DataSetPackage::pkg()->getColumnType(term.asString());
+			if (types.contains(type))
+				terms.add(term);
+		}
+
+		return terms;
+	}
+
+	return _terms;
 }
 
 void ListModel::replaceVariableName(const std::string & oldName, const std::string & newName)

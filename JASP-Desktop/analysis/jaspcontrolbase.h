@@ -136,6 +136,7 @@ signals:
 	void runOnChangeChanged();
 	void innerControlChanged();
 	void backgroundChanged();
+	void valueChanged();
 
 protected:
 	void componentComplete() override;

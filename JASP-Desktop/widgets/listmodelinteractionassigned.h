@@ -30,17 +30,18 @@ class ListModelInteractionAssigned : public ListModelAssignedInterface, public I
 	Q_OBJECT
 	
 public:
-	ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned, bool mustContainLowerTerms);
+	ListModelInteractionAssigned(QMLListView* listView, bool mustContainLowerTerms);
 
-	void	initTerms(const Terms &terms, const RowControlsOptions& = RowControlsOptions())	override;
-	void	setAvailableModel(ListModelAvailableInterface *source)							override;
-	Terms	termsFromIndexes(const QList<int> &indexes)								const	override;
-	Terms	canAddTerms(const Terms& terms) const override;
-	Terms	addTerms(const Terms& terms, int dropItemIndex = -1, JASPControlBase::AssignType assignType = JASPControlBase::AssignType::AssignDefault) override;
-	void	moveTerms(const QList<int>& indexes, int dropItemIndex = -1)					override;
-	void	removeTerms(const QList<int> &indices)											override;
-	QString getItemType(const Term &term)											const	override;
-	
+	void			initTerms(const Terms &terms, const RowControlsOptions& = RowControlsOptions())	override;
+	void			setAvailableModel(ListModelAvailableInterface *source)							override;
+	Terms			termsFromIndexes(const QList<int> &indexes)								const	override;
+	Terms			canAddTerms(const Terms& terms) const override;
+	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, JASPControlBase::AssignType assignType = JASPControlBase::AssignType::AssignDefault) override;
+	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)					override;
+	void			removeTerms(const QList<int> &indices)											override;
+	QString			getItemType(const Term &term)											const	override;
+	const Terms&	terms(const QString& what = QString())									const	override;
+
 		
 public slots:
 	void availableTermsChanged(const Terms* termsToAdd, const Terms* termsToRemove) override;

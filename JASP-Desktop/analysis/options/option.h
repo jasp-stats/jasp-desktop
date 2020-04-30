@@ -87,6 +87,7 @@ protected:
 private:
 	int			_signalsBlocked						= 0;
 	bool		_shouldSignalChangedOnceUnblocked	= false;
+	Option*		_optionToSignalOnceUnblocked		= nullptr;
 
 };
 

@@ -43,9 +43,19 @@ void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsOpti
 
 void ListModelTermsAssigned::availableTermsChanged(const Terms* termsAdded, const Terms* termsRemoved)
 {
-	// Only remove the terms that are not available anymore
-	Q_UNUSED(termsAdded);
-	
+	if (termsAdded && termsAdded->size() > 0 && _addNewAvailableTermsToAssignedModel)
+	{
+		beginResetModel();
+		_terms.add(*termsAdded);
+		endResetModel();
+
+		_tempTermsToAdd.set(*termsAdded);
+		emit modelChanged(&_tempTermsToAdd, nullptr);
+
+		if (!_copyTermsWhenDropped)
+			source()->removeTermsInAssignedList();
+	}
+
 	if (termsRemoved && termsRemoved->size() > 0)
 	{
 		beginResetModel();

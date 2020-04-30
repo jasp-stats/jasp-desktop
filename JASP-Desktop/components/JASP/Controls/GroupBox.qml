@@ -97,7 +97,10 @@ JASPControl
 		{
 			var child = contentArea.children[i];
 			if (child.hasOwnProperty('controlType') && child.controlType === JASPControlBase.TextField)
+			{
+				child.visibleChanged.connect(_alignTextField);
 				_allTextFields.push(child)
+			}
 		}
 
 		alignTextFieldTimer.start()

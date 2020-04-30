@@ -25,12 +25,11 @@
 
 using namespace std;
 
-ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView, bool addAvailableTermsToAssigned, bool mustContainLowerTerms)
+ListModelInteractionAssigned::ListModelInteractionAssigned(QMLListView* listView, bool mustContainLowerTerms)
 	: ListModelAssignedInterface(listView), InteractionModel ()
 {
 	_areTermsInteractions = true;
 	_copyTermsWhenDropped = true;
-	_addNewAvailableTermsToAssignedModel = addAvailableTermsToAssigned;
 	_mustContainLowerTerms = mustContainLowerTerms;
 }
 
@@ -38,6 +37,23 @@ void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowContro
 {
 	_addTerms(terms, false);
 	ListModelAssignedInterface::initTerms(interactionTerms(), allOptionsMap);
+}
+
+const Terms &ListModelInteractionAssigned::terms(const QString &what) const
+{
+	if (what == "noInteraction")
+	{
+		static Terms terms;
+
+		terms.clear();
+		terms.add(_fixedFactors);
+		terms.add(_randomFactors);
+		terms.add(_covariates);
+
+		return terms;
+	}
+	else
+		return ListModelAssignedInterface::terms(what);
 }
 
 void ListModelInteractionAssigned::setAvailableModel(ListModelAvailableInterface *source)

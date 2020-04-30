@@ -426,6 +426,7 @@ void BoundQMLTextInput::textChangedSlot()
 			{
 				if (_formula)
 					_formula->setValue(_value.toStdString());
+				emit formulaCheckSucceeded();
 			}
 			else
 				runRScript("as.character(" + _value + ")", true);

@@ -40,12 +40,11 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(JASPControlBase* item, bool interac
 	_optionVariables = nullptr;
 	_maxRows = getItemProperty("maxRows").toInt();
 	_columns = getItemProperty("columns").toInt();
-	bool addAvailableTermsToAssigned = getItemProperty("addAvailableVariablesToAssigned").toBool();
 	bool interactionContainLowerTerms = getItemProperty("interactionContainLowerTerms").toBool();
 	_interactionHighOrderCheckBoxName = getItemProperty("interactionHighOrderCheckBox").toString();
 		
 	if (interaction)
-		_termsModel = new ListModelInteractionAssigned(this, addAvailableTermsToAssigned, interactionContainLowerTerms);
+		_termsModel = new ListModelInteractionAssigned(this, interactionContainLowerTerms);
 	else if (_columns > 1)
 		_termsModel = new ListModelMultiTermsAssigned(this, _columns);
 	else
@@ -226,6 +225,8 @@ bool BoundQMLListViewTerms::isJsonValid(const Json::Value &optionValue)
 
 void BoundQMLListViewTerms::modelChangedHandler()
 {
+	setItemProperty("columnsTypes", QVariant(_termsModel->itemTypes()));
+
 	if (_optionsTable)
 	{
 		vector<Options*> allOptions;

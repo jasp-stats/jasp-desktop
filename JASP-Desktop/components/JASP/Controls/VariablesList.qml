@@ -53,9 +53,10 @@ JASPListControl
 	property bool	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
 	property bool	allowAnalysisOwnComputedColumns	: true
 	property bool	allowDuplicatesInMultipleColumns: false // This property is used in the constructor and is not updatable afterwards.
-	
+	property var	columnsTypes					: [] // This is set automatically by the item self each time that the model is changed
+
 	property var	interactionControl
-	property bool	addInteractionOptions			:false
+	property bool	addInteractionOptions			: false
 
 	property int	indexInDroppedListViewOfDraggedItem:	-1
 	
