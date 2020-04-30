@@ -24,6 +24,7 @@ ListModelDraggable::ListModelDraggable(QMLListView* listView)
 	, _copyTermsWhenDropped(false)	
 {
 	_allowAnalysisOwnComputedColumns = listView->getItemProperty("allowAnalysisOwnComputedColumns").toBool();
+	_addNewAvailableTermsToAssignedModel = listView->getItemProperty("addAvailableVariablesToAssigned").toBool();
 }
 
 Terms ListModelDraggable::termsFromIndexes(const QList<int> &indexes) const

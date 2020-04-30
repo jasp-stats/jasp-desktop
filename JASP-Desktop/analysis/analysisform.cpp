@@ -798,7 +798,9 @@ bool AnalysisForm::runWhenThisOptionIsChanged(Option *option)
 	BoundQMLItem* control = getBoundItem(option);
 	JASPControlBase* item = control ? control->item() : nullptr;
 
-	emit optionChanged(item);
+	emit valueChanged(item);
+	if (item)
+		emit item->valueChanged();
 
 	if (!_runOnChange)
 		return false;

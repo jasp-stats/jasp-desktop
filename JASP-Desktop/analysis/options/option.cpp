@@ -34,8 +34,9 @@ void Option::blockSignals(bool block, bool notifyOnceUnblocked)
 
 		if (_signalsBlocked == 0 && notifyOnceUnblocked && _shouldSignalChangedOnceUnblocked)
 		{
-			changed(this);
+			changed(_optionToSignalOnceUnblocked ? _optionToSignalOnceUnblocked : this);
 			_shouldSignalChangedOnceUnblocked = false;
+			_optionToSignalOnceUnblocked = nullptr;
 		}
 	}
 }
@@ -48,7 +49,10 @@ bool Option::isTransient() const
 void Option::notifyChanged(Option* option)
 {
 	if (_signalsBlocked)
+	{
+		_optionToSignalOnceUnblocked = option;
 		_shouldSignalChangedOnceUnblocked = true;
+	}
 	else
 		changed(option);
 }

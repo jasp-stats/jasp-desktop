@@ -87,7 +87,7 @@ signals:
 				void			needsRefreshChanged();
 				void			hasVolatileNotesChanged();
 				void			runOnChangeChanged();
-				void			optionChanged(JASPControlBase* item);
+				void			valueChanged(JASPControlBase* item);
 
 protected:
 				QVariant		requestInfo(const Term &term, VariableInfo::InfoType info) const override;

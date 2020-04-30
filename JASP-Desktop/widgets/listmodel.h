@@ -60,7 +60,7 @@ public:
 
 			QMLListView*			listView() const								{ return _listView; }
 			const QString &			name() const;
-	virtual const Terms &			terms(const QString& what = QString())	const	{ return _terms; }
+	virtual const Terms &			terms(const QString& what = QString())	const;
 			bool					areTermsVariables() const						{ return _areTermsVariables; }
 			bool					areTermsInteractions() const					{ return _areTermsInteractions; }
 	virtual QString					getItemType(const Term& term) const				{ return _itemType; }
@@ -87,6 +87,7 @@ public:
 	Q_INVOKABLE void				selectAllItems();
 	Q_INVOKABLE QList<int>			selectedItems()			{ return _selectedItems; }
 	Q_INVOKABLE QList<QString>		selectedItemsTypes()	{ return _selectedItemsTypes.toList(); }
+	Q_INVOKABLE QList<QString>		itemTypes();
 
 			void					replaceVariableName(const std::string & oldName, const std::string & newName);
 
