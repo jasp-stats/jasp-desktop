@@ -16,7 +16,7 @@ QTQUICK_COMPILER_SKIPPED_RESOURCES += html/html.qrc
 
 include(../JASP.pri)
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets #We need this for the native dialogs
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets #We need this for the native dialogs (file open, message etc)
 
 include(../R_HOME.pri)
 
@@ -205,7 +205,7 @@ unix {
   GETTEXT_LOCATION = $$(GETTEXT_PATH)
   isEmpty(GETTEXT_LOCATION): GETTEXT_LOCATION=/usr/local/bin
 
-  EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION
+  EXTENDED_PATH = $$(PATH):$$GETTEXT_LOCATION:$$_R_HOME
 
   delres.commands += rm -rf $$RESOURCES_DESTINATION;
   copyres.commands += $(MKDIR) $$RESOURCES_DESTINATION ;
@@ -213,22 +213,23 @@ unix {
 
   $$GENERATE_LANGUAGE_FILES {
     maketranslations.commands += $$quote(echo "Generating language Files");
+	maketranslations.commands += export PATH=$$EXTENDED_PATH;
     maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp.po ;
     maketranslations.commands += lupdate -locations none -extensions cpp,qml -recursive $$PWD/.. -ts $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po ;
 
     #cleanup po files
-    maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp.po -o $$SOURCES_TRANSLATIONS/jasp.po ;
-    maketranslations.commands += $$GETTEXT_LOCATION/msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po -o $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po ;
+	maketranslations.commands += msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp.po -o $$SOURCES_TRANSLATIONS/jasp.po ;
+	maketranslations.commands += msgattrib --no-obsolete --no-location $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po -o $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po ;
 
     #Create jasp_$${LANGUAGE_CODE}.qm
     maketranslations.commands += lrelease $$SOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.po -qm $$RESOURCES_TRANSLATIONS/jasp_$${LANGUAGE_CODE}.qm ;
     maketranslations.commands += cp $$RESOURCES_TRANSLATIONS/*.qm $$RESOURCES_DESTINATION_TRANSLATIONS/ ;
 
     #Create R-JASP.mo translation file. (Need to add GETTEXT location to PATH environment.)
-    maketranslations.commands +=  PATH=$$EXTENDED_PATH; $$_R_HOME/Rscript $$PWD/../Tools/translate.R $$PWD/../JASP-Engine/JASP ;
+	maketranslations.commands +=  Rscript $$PWD/../Tools/translate.R $$PWD/../JASP-Engine/JASP ;
 
     #Create R-JASPgraphs.mo translation file. (Need to add GETTEXT location to PATH environment.)
-    maketranslations.commands +=  PATH=$$EXTENDED_PATH; $$_R_HOME/Rscript $$PWD/../Tools/translate.R $$PWD/../JASP-Engine/JASPgraphs ;
+	maketranslations.commands +=  Rscript $$PWD/../Tools/translate.R $$PWD/../JASP-Engine/JASPgraphs ;
 
 
     maketranslations.depends  = copyres
@@ -317,6 +318,10 @@ HEADERS += \
     engine/enginesync.h \
     engine/rscriptstore.h \
     gui/columntypesmodel.h \
+    modules/description/description.h \
+    modules/description/descriptionchildbase.h \
+    modules/description/entrybase.h \
+    modules/description/requiredpackage.h \
     modules/upgrader/upgradechange.h \
     modules/upgrader/upgrader.h \
     modules/upgrader/upgradestep.h \
@@ -504,6 +509,10 @@ SOURCES += \
     engine/enginerepresentation.cpp \
     engine/enginesync.cpp \
     gui/columntypesmodel.cpp \
+    modules/description/description.cpp \
+    modules/description/descriptionchildbase.cpp \
+    modules/description/entrybase.cpp \
+    modules/description/requiredpackage.cpp \
     modules/upgrader/upgradechange.cpp \
     modules/upgrader/upgrader.cpp \
     modules/upgrader/upgradestep.cpp \
@@ -640,4 +649,5 @@ DISTFILES += \
     modules/upgrader/upgrades.json \
     modules/upgrader/upgrades_template.json \
     po/jasp.po \
+    po/jasp_nl.po \
     resources/CC-Attributions.txt

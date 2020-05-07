@@ -36,11 +36,11 @@ Version::Version(std::string version)
 	catch(...) { throw encodingError(version); }
 }
 
-std::string Version::toString() const
+std::string Version::toString(size_t nums) const
 {
-	bool	addFourth	=				_fourth  > 0,
-			addRelease	= addFourth  || _release > 0,
-			addMinor	= addRelease || _minor   > 0;
+	bool	addFourth	=				_fourth  > 0 || nums > 3,
+			addRelease	= addFourth  || _release > 0 || nums > 2,
+			addMinor	= addRelease || _minor   > 0 || nums > 1;
 
 	std::stringstream out;
 						out			<< std::to_string(_major);

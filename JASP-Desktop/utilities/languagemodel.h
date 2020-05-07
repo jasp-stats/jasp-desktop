@@ -44,7 +44,7 @@ public:
 		LocalNameRole
 	};
 
-	explicit LanguageModel(QString qsources, QApplication *app = nullptr, QQmlApplicationEngine *qml = nullptr, QObject *parent = nullptr) ;
+	explicit LanguageModel(QApplication *app = nullptr, QQmlApplicationEngine *qml = nullptr, QObject *parent = nullptr) ;
 
 	int						rowCount(const QModelIndex &parent = QModelIndex())			const override { return _languages.size(); }
 	int						columnCount(const QModelIndex & = QModelIndex())			const override { return 1; }

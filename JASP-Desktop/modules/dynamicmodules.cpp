@@ -430,21 +430,22 @@ void DynamicModules::installJASPDeveloperModule()
 void DynamicModules::startWatchingDevelopersModule()
 {
 	std::string origin	= _devModSourceDirectory.absolutePath().toStdString(),
-				name	= developmentModuleName(),
-				dest	= moduleDirectory(name);
+	            name	= developmentModuleName(),
+	            dest	= moduleDirectory(name);
 
-	bool	descriptionFound	= false,
-			rFound				= false,
-			qmlFound			= false,
-			iconsFound			= false;
+	bool	rFound		= false,
+	        qmlFound	= false,
+	        iconsFound	= false;
+
+	QString descFound	= "";
 
 	for(const QFileInfo & entry : _devModSourceDirectory.entryInfoList(QDir::Filter::Dirs | QDir::Filter::Files | QDir::Filter::NoDotAndDotDot))
 		if(entry.isDir() && entry.fileName().toLower() == "inst")
 		{
 			QDir instDir(entry.absoluteFilePath());
 			for(const QFileInfo & entryinst : instDir.entryInfoList(QDir::Filter::Dirs | QDir::Filter::Files | QDir::Filter::NoDotAndDotDot))
-				if(entryinst.isFile() && entryinst.fileName().toLower() == Modules::DynamicModule::getJsonDescriptionFilename())
-					descriptionFound = true;
+				if(entryinst.isFile() && Modules::DynamicModule::isDescriptionFile(entryinst.fileName()))
+					descFound = entryinst.fileName();
 				else if(entryinst.isDir())
 				{
 					QString dir = entryinst.fileName().toLower();
@@ -456,24 +457,25 @@ void DynamicModules::startWatchingDevelopersModule()
 		else if(entry.isDir() && entry.fileName().toUpper() == "R")
 			rFound = true;
 
-	if(!(descriptionFound && rFound && qmlFound && iconsFound))
+	if(!(descFound != "" && rFound && qmlFound && iconsFound))
 	{
 		MessageForwarder::showWarning(tr("Missing files or folders"), tr("The selected folder cannot be installed as a developer module because it does not contain all the necessary files and folders.") + "\n" +
-			(descriptionFound	? "" : (tr("Create a inst/description.json file.") + "\n")) +
+		    (descFound != ""	? "" : (tr("Create a inst/description.json file.") + "\n")) +
 			(rFound				? "" : (tr("Create a R directory containing your analysis code.") + "\n")) +
 			(qmlFound			? "" : (tr("Create a inst/qml directory containing your optionsforms.") + "\n")) +
 			(iconsFound			? "" : (tr("Create a inst/icons directory containing the icons for your ribbonbuttons.") + "\n")));
 		return;
 	}
 
-	devModCopyDescription();
+	devModCopyDescription(descFound);
 	devModWatchFolder("R",		_devModRWatcher);
 	devModWatchFolder("help",	_devModHelpWatcher);
 }
 
-void DynamicModules::devModCopyDescription()
+void DynamicModules::devModCopyDescription(QString filename)
 {
-	const QString descJson = "inst/" + Modules::DynamicModule::getJsonDescriptionFilename();
+	const QString descJson = "inst/" + filename;
+
 	QFileInfo src(_devModSourceDirectory.filePath(descJson));
 	QFileInfo dst(QString::fromStdString(moduleDirectory(developmentModuleName()) + developmentModuleName() + "/")  + descJson);
 

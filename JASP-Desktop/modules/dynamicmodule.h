@@ -25,6 +25,7 @@
 #include <QFile>
 #include <sstream>
 #include <QObject>
+#include <QQmlEngine>
 #include <QFileInfo>
 #include <QDateTime>
 #include "jsonredirect.h"
@@ -38,6 +39,8 @@ struct ModuleException : public std::runtime_error
 {
 	ModuleException(std::string moduleName, std::string problemDescription);
 };
+
+class Description;
 
 class DynamicModule : public QObject
 {
@@ -73,9 +76,12 @@ public:
 	static std::string  developmentModuleName()			{ return _developmentModuleName;	}
 	static std::string  defaultDevelopmentModuleName()  { return "DevelopmentModule";		}
 	static std::wstring defaultDevelopmentModuleNameW() { return L"DevelopmentModule";		}
-	static QString		getJsonDescriptionFilename()	{ return "description.json";		}
+	static std::string	getJsonDescriptionFilename()	{ return "description.json";		}
+	static std::string	getQmlDescriptionFilename()		{ return "Description.qml";			}
 	static QFileInfo	developmentModuleFolder();
 	static void			developmentModuleFolderCreate();
+	static bool			isDescriptionFile(const std::string & filename);
+	static bool			isDescriptionFile(const QString		& filename);
 
 	std::string			name()				const { return _name;									}
 	QString				nameQ()				const { return QString::fromStdString(_name);			}
@@ -97,6 +103,7 @@ public:
 	QString				moduleRLibrary()	const { return  _moduleFolder.absolutePath();			}
 	Json::Value			requiredPackages()	const { return _requiredPackages;						}
 
+	std::string			moduleInstFolder()									const; //Where is the "inst" folder?
 	std::string			qmlFilePath(	const std::string & qmlFileName)	const;
 	std::string			iconFilePath(std::string whichIcon = "")			const;
 	std::string			iconFolder()										const;
@@ -142,20 +149,30 @@ public:
 
 	void initialize(); //returns true if install of package(s) should be done
 	void parseDescriptionFile(std::string descriptionTxt);
+	void loadDescriptionQml(QString descriptionTxt);
+
+
+	void loadDescriptionFromFolder( const std::string & folderPath);
+	void loadDescriptionFromArchive(const std::string & archivePath);
 
 	static QString		getFileFromFolder(				const QString &  filepath,		const QString & searchMe);
 	static std::string	getFileFromFolder(				const std::string & folderPath, const std::string & searchMe);
 	static std::string	getDESCRIPTIONFromArchive(		const std::string & archivePath);
-	static std::string	getDescriptionJsonFromArchive(	const std::string & archivePath);
 	static std::string	getDESCRIPTIONFromFolder(		const std::string & folderPath);
+	static std::string	getDescriptionJsonFromArchive(	const std::string & archivePath);
 	static std::string	getDescriptionJsonFromFolder(	const std::string & folderPath);
+	static std::string	getDescriptionQmlFromArchive(	const std::string & archivePath);
+	static std::string	getDescriptionQmlFromFolder(	const std::string & folderPath);
 	static std::string	extractPackageNameFromArchive(	const std::string & archivePath);
 	static std::string	extractPackageNameFromFolder(	const std::string & folderPath);
-	static std::string	extractPackageNameFromDESCRIPTIONTxt(const std::string & DESCRIPTION);
-	static std::string	extractPackageNameFromDescriptionJsonTxt(const std::string & descriptionJsonTxt);
+	static std::string	extractPackageNameFromDESCRIPTIONTxt(		const std::string & DESCRIPTION);
+	static std::string	extractPackageNameFromDescriptionQmlTxt(	const std::string & descriptionQmlTxt);
+	static std::string	extractPackageNameFromDescriptionJsonTxt(	const std::string & descriptionJsonTxt);
 
 	void unpackage();
 	bool initialized() const { return _initialized;	}
+	///Make sure url ends with the actual filename of the qml you are loading, otherwise translations will not work!
+	static Description * instantiateDescriptionQml(QString descriptionTxt, QUrl url, const std::string & moduleName);
 
 public slots:
 	void setInstallLog(std::string installLog);
@@ -166,6 +183,7 @@ public slots:
 	void setInitialized(bool initialized);
 	void setRequiredPackages(Json::Value requiredPackages);
 	void reloadDescription();
+	void loadInfoFromDescriptionItem(Description * description);
 
 
 signals:
@@ -189,34 +207,35 @@ private:
 	std::string generateDescriptionFileForRPackage();
 
 private:
-	//QDir			_generatedPackageFolder;
-	QFileInfo		_moduleFolder;
-	moduleStatus	_status = moduleStatus::initializing;
-	std::string		_name,
-					_title,
-					_icon,
-					_author,
-					_website,
-					_license,
-					_loadLog			= "",
-					_installLog			= "",
-					_maintainer,
-					_description,
-					_modulePackage		= "",
-					_version;
-	bool			_installing			= false,
-					_installed			= false,
-					_loaded				= false,
-					_loading			= false,
-					_isDeveloperMod		= false,
-					_initialized		= false;
-	Json::Value		_requiredPackages,
-					_previousReqPkgs;
-	AnalysisEntries	_menuEntries;
-	const char		*_modulePostFix		= "_module",
-					*_exposedPostFix	= "_exposed";
+	QFileInfo			_moduleFolder;
+	moduleStatus		_status = moduleStatus::initializing;
+	std::string			_name,
+						_title,
+						_icon,
+						_author,
+						_website,
+						_license,
+						_loadLog			= "",
+						_installLog			= "",
+						_maintainer,
+						_description,
+						_modulePackage		= "",
+						_version;
+	bool				_installing			= false,
+						_installed			= false,
+						_loaded				= false,
+						_loading			= false,
+						_isDeveloperMod		= false,
+						_initialized		= false;
+	Json::Value			_requiredPackages,
+						_previousReqPkgs;
+	AnalysisEntries		_menuEntries;
+	const char			*_modulePostFix		= "_module",
+						*_exposedPostFix	= "_exposed";
 
-	static std::string _developmentModuleName;
+	static std::string	_developmentModuleName;
+
+	Description		*	_descriptionObj		= nullptr;
 };
 
 typedef std::vector<DynamicModule*> DynamicModuleVec;
