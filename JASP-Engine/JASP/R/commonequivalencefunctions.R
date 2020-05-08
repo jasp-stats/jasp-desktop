@@ -455,17 +455,21 @@
                                    prior.scale        = prior.scale,
                                    prior.df           = prior.df)
 
-  lowerbound <- .equivalence_cdf_t(x                  = options$lowerbound,
-                                   t                  = t,
-                                   n1                 = n1,
-                                   n2                 = n2,
-                                   independentSamples = independentSamples,
-                                   prior.location     = prior.location,
-                                   prior.scale        = prior.scale,
-                                   prior.df           = prior.df)
-
-  errorEquivalencePosterior <- upperbound$abs.error + lowerbound$abs.error
-  integralEquivalencePosterior <- upperbound$value - lowerbound$value
+  if (options$lowerbound != -Inf) {
+    lowerbound <- .equivalence_cdf_t(x                  = options$lowerbound,
+                                     t                  = t,
+                                     n1                 = n1,
+                                     n2                 = n2,
+                                     independentSamples = independentSamples,
+                                     prior.location     = prior.location,
+                                     prior.scale        = prior.scale,
+                                     prior.df           = prior.df)
+    errorEquivalencePosterior <- upperbound$abs.error + lowerbound$abs.error
+    integralEquivalencePosterior <- upperbound$value - lowerbound$value
+  } else {
+    errorEquivalencePosterior <- upperbound$abs.error
+    integralEquivalencePosterior <- upperbound$value
+  }
 
   # to prevent numerical integration error (value < error)
   if (integralEquivalencePosterior < 0)
