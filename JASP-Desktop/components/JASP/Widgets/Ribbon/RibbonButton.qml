@@ -34,6 +34,7 @@ Rectangle
 	property alias	source		: backgroundImage.source
 	property bool	enabled		: true
 	property string moduleName	: "???"
+	property string toolTip		: ""
 	property var	menu		: []
 	property bool	myMenuOpen	: false
 	property bool	showPressed	: myMenuOpen || mice.pressed
@@ -43,6 +44,12 @@ Rectangle
 	property real _imgIndWidth: backgroundImage.width + (menuIndicator.visible ? (menuIndicator.width + menuIndicator.anchors.leftMargin) * 2 : 0)
 
 	signal clicked
+
+	ToolTip.text:				toolTip
+	ToolTip.timeout:			jaspTheme.toolTipTimeout
+	ToolTip.delay:				jaspTheme.toolTipDelay
+	ToolTip.toolTip.font:		jaspTheme.font
+	ToolTip.visible:			toolTip !== "" && mice.containsMouse
 
     Rectangle
     {

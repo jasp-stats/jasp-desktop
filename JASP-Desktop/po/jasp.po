@@ -15647,6 +15647,627 @@ msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
 msgstr ""
 
+msgctxt "Description|"
+msgid "Test Module"
+msgstr ""
+
+msgctxt "Description|"
+msgid "A module to test stuff with."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Test Transposed jaspTable"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Test Footnotes jaspTable"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Test jaspState"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Test jaspHtml"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Test jaspContainer"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Test encoding"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Custom Contrasts Widget"
+msgstr ""
+
+msgctxt "Description|"
+msgid "ANOVA"
+msgstr ""
+
+msgctxt "Description|"
+msgid "This module offers the standard Frequentist and Bayesian ANOVA tests."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Classical"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Repeated Measures ANOVA"
+msgstr ""
+
+msgctxt "Description|"
+msgid "ANCOVA"
+msgstr ""
+
+msgctxt "Description|"
+msgid "MANOVA"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian ANOVA"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Repeated Measures ANOVA"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian ANCOVA"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Audit"
+msgstr ""
+
+msgctxt "Description|"
+msgid ""
+"JASP for Audit (JfA) is an officially supported add-on module that is "
+"designed specifically with the auditor in mind. JfA helps the auditor in "
+"interpreting, explaining, and reporting the analyses and leaves a "
+"transparent audit trail."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Workflow"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Audit Workflow"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Audit Workflow"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Planning"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Planning"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Selection"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Evaluation"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Benford's Law"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Estimation"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bain"
+msgstr ""
+
+msgctxt "Description|"
+msgid ""
+"A module for computing approximated adjusted fractional Bayes factors for "
+"equality, inequality, and about equality constrained hypotheses."
+msgstr ""
+
+msgctxt "Description|"
+msgid "T-Tests"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Welch's T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bain Welch's T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Paired Samples T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bain Paired Samples T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "One Sample T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bain One Sample T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bain ANOVA"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bain ANCOVA"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Regression"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Linear Regression"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Descriptive Statistics"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Reliability Analysis"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Distributions"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Discover distributions with JASP"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Continuous"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Normal"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Student's t"
+msgstr ""
+
+msgctxt "Description|"
+msgid "F-distribution"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Chi-squared"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Beta"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Gamma"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Inverse gamma"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Exponential"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Discrete"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bernoulli"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Binomial"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Negative binomial"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Poisson"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Equivalence T-Tests (Beta)"
+msgstr ""
+
+msgctxt "Description|"
+msgid "This is a test version of Equivalence Testing module."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Equivalence Independent Samples T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Independent Samples T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Equivalence Paired Samples T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Equivalence One Sample T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Equivalence Bayesian Independent Samples T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Independent Samples T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Equivalence Bayesian Paired Samples T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Paired Samples T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Equivalence Bayesian One Sample T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian One Sample T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Factor"
+msgstr ""
+
+msgctxt "Description|"
+msgid ""
+"This module offers the Principal Component, Confirmatory and Exploratory "
+"Factor analyses"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Principal Component Analysis"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Exploratory Factor Analysis"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Confirmatory Factor Analysis"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Frequencies"
+msgstr ""
+
+msgctxt "Description|"
+msgid ""
+"This module offers the standard Frequentist and Bayesian frequency analyses."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Binomial Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Multinomial Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Contingency Tables"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Log-Linear Regression"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Binomial Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "A/B Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian A/B Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Multinomial Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Contingency Tables"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Log-Linear Regression"
+msgstr ""
+
+msgctxt "Description|"
+msgid "JAGS interface for JASP"
+msgstr ""
+
+msgctxt "Description|"
+msgid "JAGS"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Boosting"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Boosting Regression"
+msgstr ""
+
+msgctxt "Description|"
+msgid "K-Nearest Neighbors"
+msgstr ""
+
+msgctxt "Description|"
+msgid "K-Nearest Neighbors Regression"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Random Forest"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Random Forest Regression"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Regularized Linear"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Regularized Linear Regression"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Classification"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Boosting Classification"
+msgstr ""
+
+msgctxt "Description|"
+msgid "K-Nearest Neighbors Classification"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Linear Discriminant"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Linear Discriminant Classification"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Random Forest Classification"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Clustering"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Density-Based"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Density-Based Clustering"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Fuzzy C-Means"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Fuzzy C-Means Clustering"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Hierarchical"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Hierarchical Clustering"
+msgstr ""
+
+msgctxt "Description|"
+msgid "K-Means"
+msgstr ""
+
+msgctxt "Description|"
+msgid "K-Means Clustering"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Random Forest Clustering"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Meta-Analysis"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Meta-Analysis module."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Classical Meta-Analysis"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Meta-Analysis"
+msgstr ""
+
+msgctxt "Description|"
+msgid ""
+"This module offers the standard Frequentist and Bayesian Regression analyses."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Correlation"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Logistic Regression"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Correlation"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Bayesian Linear Regression"
+msgstr ""
+
+msgctxt "Description|"
+msgid "SEM"
+msgstr ""
+
+msgctxt "Description|"
+msgid "SEM module."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Structural Equation Modeling"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Mediation Analysis"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Summary Statistics"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Summary Statistics module"
+msgstr ""
+
+msgctxt "Description|"
+msgid "S.S. Bayesian Independent Samples T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "S.S. Bayesian Paired Samples T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "S.S. Bayesian One Sample T-Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid "S.S. Bayesian Correlation"
+msgstr ""
+
+msgctxt "Description|"
+msgid "S.S. Bayesian Linear Regression"
+msgstr ""
+
+msgctxt "Description|"
+msgid "S.S. Bayesian Binomial Test"
+msgstr ""
+
+msgctxt "Description|"
+msgid ""
+"This module offers the standard Frequentist and Bayesian T-Tests analyses."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Visual Modeling (Beta)"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Flexplot"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Linear Modeling"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Mixed Modeling"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Generalized Linear Modeling"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Wait for it..."
+msgstr ""
+
+msgctxt "Description|"
+msgid ""
+"Timer that displays the fact that updating Description.qml from live "
+"javascript code works fine."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Machine Learning"
+msgstr ""
+
+msgctxt "Description|"
+msgid "A module for Machine Learning mastery"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Descriptives"
+msgstr ""
+
+msgctxt "Description|"
+msgid "This module offers the Descriptives and Reliability analyses."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Network"
+msgstr ""
+
+msgctxt "Description|"
+msgid "Network module."
+msgstr ""
+
+msgctxt "Description|"
+msgid "Graphically-Based Data Analysis"
+msgstr ""
+
 msgctxt "auditBayesianWorkflow|"
 msgid ""
 msgstr ""

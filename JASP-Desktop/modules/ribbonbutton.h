@@ -21,6 +21,7 @@
 
 #include <QAbstractListModel>
 #include <QStringList>
+#include <QQmlContext>
 #include <QDir>
 
 #include "modules/dynamicmodules.h"
@@ -44,13 +45,16 @@ class RibbonButton : public QObject
 	Q_PROPERTY(QVariant	analysisMenu	READ analysisMenu									NOTIFY analysisMenuChanged	)
 	Q_PROPERTY(bool		dataLoaded		READ dataLoaded										NOTIFY dataLoadedChanged	)
 	Q_PROPERTY(bool		active			READ active											NOTIFY activeChanged		)
+	Q_PROPERTY(QString	toolTip			READ toolTip			WRITE setToolTip			NOTIFY toolTipChanged		)
 
 public:
 
 	//Should maybe be changed into some subclasses
-	RibbonButton(QObject *parent,	Json::Value description, bool isCommon);
-	RibbonButton(QObject *parent,	Modules::DynamicModule * module);
+	RibbonButton(QObject *parent, std::string moduleName, bool isCommon);
+	RibbonButton(QObject *parent, Modules::DynamicModule * module);
 	RibbonButton(QObject *parent,	std::string name,	std::string title, std::string icon, bool requiresData, std::function<void()> justThisFunction);
+	~RibbonButton();
+
 
 	bool							requiresData()												const			{ return _requiresData;									}
 	bool							isDynamic()													const			{ return _isDynamicModule;								}
@@ -68,9 +72,12 @@ public:
 	std::vector<std::string>		getAllAnalysisNames()										const;
 	bool							dataLoaded()												const			{ return DynamicModules::dynMods() &&  DynamicModules::dynMods()->dataLoaded();	}
 	bool							active()													const			{ return _enabled && (!requiresData() || dataLoaded());	}
-	void							reloadMenuFromDescriptionJson();
+	QString							toolTip()													const			{ return _toolTip;	}
+
+	void							reloadMenuFromDescriptionQml();
 
 	static QString					getJsonDescriptionFilename();
+
 
 public slots:
 	void setRequiresData(bool requiresData);
@@ -84,6 +91,8 @@ public slots:
 	void setModuleNameQ(QString moduleName)							{ setModuleName(moduleName.toStdString()); }
 	void somePropertyChanged()										{ emit iChanged(this); }
 	void descriptionReloaded(Modules::DynamicModule * dynMod);
+	void descriptionChanged(Modules::Description * desc);
+	void setToolTip(QString toolTip);
 
 
 	bool isSpecial() const	{ return _specialButtonFunc != nullptr ; }
@@ -102,7 +111,7 @@ signals:
 	void dataLoadedChanged();
 	void activeChanged();
 	void analysisTitleChanged(std::string moduleName, std::string oldTitle, std::string newTitle);
-
+	void toolTipChanged(QString toolTip);
 
 private:
 	void bindYourself();
@@ -119,10 +128,10 @@ private:
 	std::string						_title				= "",
 									_moduleName			= "";
 	Modules::DynamicModule		*	_module				= nullptr;
-	QString							_iconSource;
-
-	std::function<void()>			_specialButtonFunc = nullptr;
-
+	QString							_iconSource,
+									_toolTip;
+	std::function<void()>			_specialButtonFunc	= nullptr;
+	Modules::Description		*	_description		= nullptr;
 };
 
 
