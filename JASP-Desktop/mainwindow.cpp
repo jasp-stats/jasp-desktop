@@ -55,12 +55,16 @@
 #include "qquick/datasetview.h"
 #include "modules/dynamicmodules.h"
 #include "modules/analysismenumodel.h"
+#include "modules/description/entrybase.h"
+#include "modules/description/requiredpackage.h"
 
 #include "timers.h"
 #include "resultstesting/compareresults.h"
 #include "widgets/filemenu/filemenu.h"
 #include "gui/messageforwarder.h"
 #include "log.h"
+
+
 
 using namespace std;
 
@@ -89,24 +93,16 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 {
 	JASPTIMER_START(MainWindowConstructor);
 
-	if (_qml == nullptr)
-	{
-		QQuickStyle::setStyle("Default");// Because otherwise plasma on kde might mess things up...
-		_qml = new QQmlApplicationEngine(this);
-	}
-	else
-	{
-		_qml->clearComponentCache();
-		_qml->retranslate();
-	}
-
-	_languageModel = new LanguageModel("Translations", application, _qml, this);
+	//This is the constructor, so _qml is not set yet and there is no need to check that with an if statement
+	QQuickStyle::setStyle("Default");// Because otherwise plasma on kde might mess things up...
 
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
 	makeAppleMenu(); //Doesnt do anything outside of magical apple land
 
 	//The order of these constructors is deliberate (up to some extent anyway). If you change the order you might find that stuff explodes randomly (although most likely during startup)
+	_qml					= new QQmlApplicationEngine(this);
+	_languageModel			= new LanguageModel(application, _qml, this);
 	_loader					= new AsyncLoader(nullptr);
 	_preferences			= new PreferencesModel(this);
 	_package				= new DataSetPackage(this);
@@ -127,8 +123,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_columnsModel			= new ColumnsModel(_datasetTableModel);
 	_computedColumnsModel	= new ComputedColumnsModel();
 	_filterModel			= new FilterModel(_labelFilterGenerator);
-	_ribbonModel			= new RibbonModel(	{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
-												{ "Audit", "BAIN", "Discover Distributions", "Equivalence T-Tests", "JAGS", "Machine Learning", "Meta Analysis", "Network", "SEM", "Summary Statistics", "Visual Modeling"});
+	_ribbonModel			= new RibbonModel();
 	_ribbonModelFiltered	= new RibbonModelFiltered(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
@@ -145,15 +140,23 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 	//loadDefaultFont(); //Maybe later?
 
-	qmlRegisterType<DataSetView>				("JASP", 1, 0, "DataSetView");
-	qmlRegisterType<JaspTheme>					("JASP", 1, 0, "JaspTheme");
-	qmlRegisterType<AnalysisForm>				("JASP", 1, 0, "AnalysisForm");
-	qmlRegisterType<JASPControlBase>			("JASP", 1, 0, "JASPControlBase");
-	qmlRegisterUncreatableType<JASPControlBase>	("JASP", 1, 0 ,"JASP", "Impossible to create JASP Object"); //This is here to keep JASP.enum short I guess?
-	qmlRegisterType<JASPDoubleValidator>		("JASP", 1, 0, "JASPDoubleValidator");
-	qmlRegisterType<ResultsJsInterface>			("JASP", 1, 0, "ResultsJsInterface");
-	qmlRegisterUncreatableType<MessageForwarder>("JASP", 1, 0, "MessageForwarder", "You can't touch this");
+	qmlRegisterUncreatableType<JASPControlBase>	("JASP",		1, 0 ,"JASP",				"Impossible to create JASP Object"); //This is here to keep JASP.enum short I guess?
+	qmlRegisterUncreatableType<MessageForwarder>("JASP",		1, 0, "MessageForwarder",	"You can't touch this");
 
+	qmlRegisterType<DataSetView>			("JASP",		1, 0, "DataSetView");
+	qmlRegisterType<JaspTheme>				("JASP",		1, 0, "JaspTheme");
+	qmlRegisterType<AnalysisForm>			("JASP",		1, 0, "AnalysisForm");
+	qmlRegisterType<JASPControlBase>		("JASP",		1, 0, "JASPControlBase");
+	qmlRegisterType<JASPDoubleValidator>	("JASP",		1, 0, "JASPDoubleValidator");
+	qmlRegisterType<ResultsJsInterface>		("JASP",		1, 0, "ResultsJsInterface");
+
+	qmlRegisterType<Modules::Description>						("JASP.Module", 1, 0, "Description");
+	qmlRegisterType<Modules::Analysis>							("JASP.Module", 1, 0, "Analysis");
+	qmlRegisterType<Modules::Separator>							("JASP.Module", 1, 0, "Separator");
+	qmlRegisterType<Modules::GroupTitle>						("JASP.Module", 1, 0, "GroupTitle");
+	qmlRegisterType<Modules::RequiredPackage>					("JASP.Module", 1, 0, "Package");
+	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",				"Superclass for menu entries, shouldn't be instantiated manually");
+	qmlRegisterUncreatableType<Modules::DescriptionChildBase>	("JASP.Module", 1, 0, "DescriptionChildBase",	"Superclass for Description info, shouldn't be instantiated manually");
 
 	QTimer::singleShot(0, [&](){ loadQML(); });
 
@@ -177,7 +180,7 @@ MainWindow::~MainWindow()
 {
 	try
 	{
-		//Clean up all QML to get rid of warnings and stuff
+		//Clean up all QML to get rid of warnings and hopefully fix https://github.com/jasp-stats/jasp-issues/issues/667
 		QList<QObject *> rootObjs = _qml->rootObjects();
 
 		//Going backwards to make sure the theme isnt deleted before everything that depends on it
@@ -202,9 +205,7 @@ MainWindow::~MainWindow()
 		//delete _engineSync; it will be deleted by Qt!
 
 	}
-	catch(...)
-	{
-	}
+	catch(...)	{}
 }
 
 QString MainWindow::windowTitle() const
@@ -350,9 +351,10 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::reloadHelpPage,					_helpModel,				&HelpModel::reloadPage										);
 	connect(_dynamicModules,		&DynamicModules::moduleEnabledChanged,				_preferences,			&PreferencesModel::moduleEnabledChanged						);
 	connect(_dynamicModules,		&DynamicModules::loadModuleTranslationFile,			_languageModel,			&LanguageModel::loadModuleTranslationFile					);
+	connect(_dynamicModules,		&DynamicModules::requestRootContext,				this,					&MainWindow::giveRootQmlContext,							Qt::UniqueConnection);
+	connect(_dynamicModules,		&DynamicModules::loadQmlData,						this,					&MainWindow::loadQmlData,									Qt::UniqueConnection);
 
 	connect(_languageModel,			&LanguageModel::languageChanged,					_fileMenu,				&FileMenu::refresh											);
-	connect(_languageModel,			&LanguageModel::languageChanged,					_ribbonModel,			&RibbonModel::refresh										);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_analyses,				&Analyses::languageChangedHandler,							Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::languageChanged,					_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
 
@@ -446,7 +448,16 @@ void MainWindow::loadQML()
 
 	_qml->addImportPath("qrc:///components");
 
-	connect(_qml, &QQmlApplicationEngine::objectCreated, [&](QObject * obj, QUrl url) { if(obj == nullptr) { std::cerr << "Could not load QML: " + url.toString().toStdString() << std::endl; exit(10); }});
+	QMetaObject::Connection exitOnFailConnection = connect(_qml, &QQmlApplicationEngine::objectCreated, [&](QObject * obj, QUrl url)
+	{
+		if(obj == nullptr)
+		{
+			std::cerr << "Could not load QML: " + url.toString().toStdString() << std::endl;
+			exit(10);
+		}
+		else
+			Log::log() << "QML loaded, url: '" << url.toString() << "' and obj name: '" << obj->objectName() << "'" << std::endl;
+	});
 
 	Log::log() << "Loading Themes" << std::endl;
 
@@ -472,7 +483,40 @@ void MainWindow::loadQML()
 
 	Log::log() << "Loading upgrades definitions"  << std::endl;
 	_upgrader->loadOldSchoolUpgrades();
+
+	//And now we disconnect the exit on fail lambda because we won't be needing it later
+	disconnect(exitOnFailConnection);
+
+	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
+	_ribbonModel->loadModules(	{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
+								{ "Audit", "BAIN", "Discover Distributions", "Equivalence T-Tests", "JAGS", "Machine Learning", "Meta Analysis", "Network", "SEM", "Summary Statistics", "Visual Modeling"});
 }
+
+QObject * MainWindow::loadQmlData(QString data, QUrl url)
+{
+	QObject *	createdObject = nullptr;
+	bool		lambdaCalled = false;
+
+	QMetaObject::Connection returnTheObjectConn = connect(_qml, &QQmlApplicationEngine::objectCreated, [&](QObject * obj, QUrl url)
+	{
+			createdObject = obj;
+			lambdaCalled = true;
+	});
+
+	Log::log() << "Loading QML data from url '" << url.toString() << "'" << std::endl;
+	_qml->loadData(data.toUtf8(), url);
+
+	//The lambda is called now and createdObject filled
+
+	disconnect(returnTheObjectConn);
+
+	if(lambdaCalled)
+		return createdObject;
+
+	throw std::runtime_error("loadQmlData did not get a response from the lambda on time!");
+
+}
+
 
 void MainWindow::jaspThemeChanged(JaspTheme * newTheme)
 {
@@ -1633,4 +1677,9 @@ void MainWindow::setDownloadNewJASPUrl(QString downloadNewJASPUrl)
 
 	_downloadNewJASPUrl = downloadNewJASPUrl;
 	emit downloadNewJASPUrlChanged(_downloadNewJASPUrl);
+}
+
+QQmlContext * MainWindow::giveRootQmlContext()
+{
+	return _qml->rootContext();
 }

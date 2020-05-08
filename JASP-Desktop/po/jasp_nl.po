@@ -15934,6 +15934,646 @@ msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
 msgstr "%1 %2 faalde omdat %3"
 
+msgctxt "Description|"
+msgid "Test Module"
+msgstr "Test Module"
+
+msgctxt "Description|"
+msgid "A module to test stuff with."
+msgstr "Een module om dingen mee te testen"
+
+msgctxt "Description|"
+msgid "Test Transposed jaspTable"
+msgstr "Test Transponeren jaspTable"
+
+msgctxt "Description|"
+msgid "Test Footnotes jaspTable"
+msgstr "Test Voetnoten jaspTable"
+
+msgctxt "Description|"
+msgid "Test jaspState"
+msgstr "Test jaspState"
+
+msgctxt "Description|"
+msgid "Test jaspHtml"
+msgstr "Test jaspHtml"
+
+msgctxt "Description|"
+msgid "Test jaspContainer"
+msgstr "Test jaspContainer"
+
+msgctxt "Description|"
+msgid "Test encoding"
+msgstr "Test encoderen"
+
+msgctxt "Description|"
+msgid "Custom Contrasts Widget"
+msgstr "Handmatige Contrasten Widget"
+
+msgctxt "Description|"
+msgid "ANOVA"
+msgstr "ANOVA"
+
+msgctxt "Description|"
+msgid "This module offers the standard Frequentist and Bayesian ANOVA tests."
+msgstr ""
+"Deze module bied de standaard Frequentistische and Bayesiaanse ANOVA testen."
+
+msgctxt "Description|"
+msgid "Classical"
+msgstr "Klassiek"
+
+msgctxt "Description|"
+msgid "Repeated Measures ANOVA"
+msgstr "Herhaalde Metingen ANOVA"
+
+msgctxt "Description|"
+msgid "ANCOVA"
+msgstr "ANCOVA"
+
+msgctxt "Description|"
+msgid "MANOVA"
+msgstr "MANOVA"
+
+msgctxt "Description|"
+msgid "Bayesian"
+msgstr "Bayesiaans"
+
+msgctxt "Description|"
+msgid "Bayesian ANOVA"
+msgstr "Bayesiaanse ANOVA"
+
+msgctxt "Description|"
+msgid "Bayesian Repeated Measures ANOVA"
+msgstr "Bayesiaanse Herhaalde Metingen ANOVA"
+
+msgctxt "Description|"
+msgid "Bayesian ANCOVA"
+msgstr "Bayesiaanse ANCOVA"
+
+msgctxt "Description|"
+msgid "Audit"
+msgstr "Audit"
+
+msgctxt "Description|"
+msgid ""
+"JASP for Audit (JfA) is an officially supported add-on module that is "
+"designed specifically with the auditor in mind. JfA helps the auditor in "
+"interpreting, explaining, and reporting the analyses and leaves a "
+"transparent audit trail."
+msgstr ""
+"\"JASP for Audit\" is een officieel ondersteunde toevoegingsmodule die "
+"speciaal ontworpen is voor een auditor. JfA helpt de auditor met het "
+"interpreteren, uitleggen, en reporteren van de analyses en  laat een "
+"transparant audit spoor achter."
+
+msgctxt "Description|"
+msgid "Workflow"
+msgstr "Description"
+
+msgctxt "Description|"
+msgid "Audit Workflow"
+msgstr "Audit Workflow"
+
+msgctxt "Description|"
+msgid "Bayesian Audit Workflow"
+msgstr "Bayesiaanse Audit Workflow"
+
+msgctxt "Description|"
+msgid "Planning"
+msgstr "Planning"
+
+msgctxt "Description|"
+msgid "Bayesian Planning"
+msgstr "Bayesiaanse Planning"
+
+msgctxt "Description|"
+msgid "Selection"
+msgstr "Selectie"
+
+msgctxt "Description|"
+msgid "Evaluation"
+msgstr "Evaluatie"
+
+msgctxt "Description|"
+msgid "Benford's Law"
+msgstr "Wet van Benford"
+
+msgctxt "Description|"
+msgid "Estimation"
+msgstr "Schatting"
+
+msgctxt "Description|"
+msgid "Bain"
+msgstr "Bain"
+
+msgctxt "Description|"
+msgid ""
+"A module for computing approximated adjusted fractional Bayes factors for "
+"equality, inequality, and about equality constrained hypotheses."
+msgstr ""
+"Een module voor het berekenen van benaderde aangepastte fractionele Bayes "
+"factoren voor gelijkheid, ongelijkheid, en over gelijkheids beperkte "
+"hypothesen"
+
+msgctxt "Description|"
+msgid "T-Tests"
+msgstr "T-Toetsen"
+
+msgctxt "Description|"
+msgid "Welch's T-Test"
+msgstr "Welch's T-Toets"
+
+msgctxt "Description|"
+msgid "Bain Welch's T-Test"
+msgstr "Bain Welch's T-Toets"
+
+msgctxt "Description|"
+msgid "Paired Samples T-Test"
+msgstr "Gepaarde T-Toets"
+
+msgctxt "Description|"
+msgid "Bain Paired Samples T-Test"
+msgstr "Bain Gepaarde T-Toets"
+
+msgctxt "Description|"
+msgid "One Sample T-Test"
+msgstr "T-Toets voor Eén Gemiddelde"
+
+msgctxt "Description|"
+msgid "Bain One Sample T-Test"
+msgstr "Bain T-Toets voor Eén Gemiddelde"
+
+msgctxt "Description|"
+msgid "Bain ANOVA"
+msgstr "Bain ANOVA"
+
+msgctxt "Description|"
+msgid "Bain ANCOVA"
+msgstr "Bain ANCOVA"
+
+msgctxt "Description|"
+msgid "Regression"
+msgstr "Regressie"
+
+msgctxt "Description|"
+msgid "Linear Regression"
+msgstr "Lineaire Regressie"
+
+msgctxt "Description|"
+msgid "Descriptive Statistics"
+msgstr "Beschrijvende Statistiek"
+
+msgctxt "Description|"
+msgid "Reliability Analysis"
+msgstr "Betrouwbaarheidsanalyse"
+
+msgctxt "Description|"
+msgid "Distributions"
+msgstr "Verdelingen"
+
+msgctxt "Description|"
+msgid "Discover distributions with JASP"
+msgstr "Ontdek verdelingen met JASP"
+
+msgctxt "Description|"
+msgid "Continuous"
+msgstr "Continu"
+
+msgctxt "Description|"
+msgid "Normal"
+msgstr "Normaal"
+
+msgctxt "Description|"
+msgid "Student's t"
+msgstr "Student's t"
+
+msgctxt "Description|"
+msgid "F-distribution"
+msgstr "F-verdeling"
+
+msgctxt "Description|"
+msgid "Chi-squared"
+msgstr "Chi-kwadraat"
+
+msgctxt "Description|"
+msgid "Beta"
+msgstr "Beta"
+
+msgctxt "Description|"
+msgid "Gamma"
+msgstr "Gamma"
+
+msgctxt "Description|"
+msgid "Inverse gamma"
+msgstr "Inverse gamma-verdeling"
+
+msgctxt "Description|"
+msgid "Exponential"
+msgstr "Exponentieel"
+
+msgctxt "Description|"
+msgid "Discrete"
+msgstr "Discreet"
+
+msgctxt "Description|"
+msgid "Bernoulli"
+msgstr "Bernoulli"
+
+msgctxt "Description|"
+msgid "Binomial"
+msgstr "Binomiaal"
+
+msgctxt "Description|"
+msgid "Negative binomial"
+msgstr "Negatieve binomiaal"
+
+msgctxt "Description|"
+msgid "Poisson"
+msgstr "Poisson"
+
+msgctxt "Description|"
+msgid "Equivalence T-Tests (Beta)"
+msgstr "Gelijkwaardigheids T-Toetsen"
+
+msgctxt "Description|"
+msgid "This is a test version of Equivalence Testing module."
+msgstr ""
+"Dit is een evaluatie versie van de Gelijkwaardigheids T-Toetsen module."
+
+msgctxt "Description|"
+msgid "Equivalence Independent Samples T-Test"
+msgstr "Gelijkwaardigheids T-Toets voor Onafhankelijke Steekproeven"
+
+msgctxt "Description|"
+msgid "Independent Samples T-Test"
+msgstr "T-Toets voor Onafhankelijke Steekproeven"
+
+msgctxt "Description|"
+msgid "Equivalence Paired Samples T-Test"
+msgstr "Gelijkwaardigheids Gepaarde T-Toets"
+
+msgctxt "Description|"
+msgid "Equivalence One Sample T-Test"
+msgstr "Gelijkwaardigheids T-Toets voor Eén Gemiddelde"
+
+msgctxt "Description|"
+msgid "Equivalence Bayesian Independent Samples T-Test"
+msgstr ""
+"Gelijkwaardigheids Bayesiaanse T-Toets voor Onafhankelijke Steekproeven"
+
+msgctxt "Description|"
+msgid "Bayesian Independent Samples T-Test"
+msgstr "Bayesiaanse T-Toets voor Onafhankelijke Steekproeven"
+
+msgctxt "Description|"
+msgid "Equivalence Bayesian Paired Samples T-Test"
+msgstr "Gelijkwaardigheids Bayesiaanse Gepaarde T-Toets"
+
+msgctxt "Description|"
+msgid "Bayesian Paired Samples T-Test"
+msgstr "Bayesiaanse Gepaarde T-Toets"
+
+msgctxt "Description|"
+msgid "Equivalence Bayesian One Sample T-Test"
+msgstr "Gelijkwaardigheids Bayesiaanse T-Toets voor Eén Gemiddelde"
+
+msgctxt "Description|"
+msgid "Bayesian One Sample T-Test"
+msgstr "Bayesiaanse T-Toets voor Eén Gemiddelde"
+
+msgctxt "Description|"
+msgid "Factor"
+msgstr "Factor"
+
+msgctxt "Description|"
+msgid ""
+"This module offers the Principal Component, Confirmatory and Exploratory "
+"Factor analyses"
+msgstr ""
+"Deze module bied de Principale Componenten, Confirmatieve en Exploratieve "
+"Factor analyses."
+
+msgctxt "Description|"
+msgid "Principal Component Analysis"
+msgstr "Principale Componentenanalyse"
+
+msgctxt "Description|"
+msgid "Exploratory Factor Analysis"
+msgstr "Exploratieve Factoranalyse"
+
+msgctxt "Description|"
+msgid "Confirmatory Factor Analysis"
+msgstr "Confirmatieve Factoranalyse"
+
+msgctxt "Description|"
+msgid "Frequencies"
+msgstr "Frequenties"
+
+msgctxt "Description|"
+msgid ""
+"This module offers the standard Frequentist and Bayesian frequency analyses."
+msgstr ""
+"Deze module bied de standaard Frequentistische en Bayesiaanse frequentie "
+"analyses."
+
+msgctxt "Description|"
+msgid "Binomial Test"
+msgstr "Binomiaal Toets"
+
+msgctxt "Description|"
+msgid "Multinomial Test"
+msgstr "Multinomiale Toets"
+
+msgctxt "Description|"
+msgid "Contingency Tables"
+msgstr "Kruistabellen"
+
+msgctxt "Description|"
+msgid "Log-Linear Regression"
+msgstr "Log-Lineaire Regressie"
+
+msgctxt "Description|"
+msgid "Bayesian Binomial Test"
+msgstr "Bayesiaanse Binomiaal Toets"
+
+msgctxt "Description|"
+msgid "A/B Test"
+msgstr "A/B Toets"
+
+msgctxt "Description|"
+msgid "Bayesian A/B Test"
+msgstr "Bayesiaanse A/B Toets"
+
+msgctxt "Description|"
+msgid "Bayesian Multinomial Test"
+msgstr "Bayesiaanse Multinomiale Toets"
+
+msgctxt "Description|"
+msgid "Bayesian Contingency Tables"
+msgstr "Bayesiaanse Kruistabellen"
+
+msgctxt "Description|"
+msgid "Bayesian Log-Linear Regression"
+msgstr "Bayesiaanse Log-Lineaire Regressie"
+
+msgctxt "Description|"
+msgid "JAGS interface for JASP"
+msgstr "JAGS interface voor JASP"
+
+msgctxt "Description|"
+msgid "JAGS"
+msgstr "JAGS"
+
+msgctxt "Description|"
+msgid "Machine Learning"
+msgstr "Machine Learning"
+
+msgctxt "Description|"
+msgid "A module for Machine Learning mastery"
+msgstr "Een module voor meesterschap in Machine Learning"
+
+msgctxt "Description|"
+msgid "Boosting"
+msgstr "Boosting"
+
+msgctxt "Description|"
+msgid "Boosting Regression"
+msgstr "Boosting Regressie"
+
+msgctxt "Description|"
+msgid "K-Nearest Neighbors"
+msgstr "K-Naaste Buren"
+
+msgctxt "Description|"
+msgid "K-Nearest Neighbors Regression"
+msgstr "K-Naaste Buren Regressie"
+
+msgctxt "Description|"
+msgid "Random Forest"
+msgstr "Random Forest"
+
+msgctxt "Description|"
+msgid "Random Forest Regression"
+msgstr "Random Forest Regressie"
+
+msgctxt "Description|"
+msgid "Regularized Linear"
+msgstr "Geregulariseerde Lineaire"
+
+msgctxt "Description|"
+msgid "Regularized Linear Regression"
+msgstr "Geregulariseerde Lineaire Regressie"
+
+msgctxt "Description|"
+msgid "Classification"
+msgstr "Classificatie"
+
+msgctxt "Description|"
+msgid "Boosting Classification"
+msgstr "Boosting Classificatie"
+
+msgctxt "Description|"
+msgid "K-Nearest Neighbors Classification"
+msgstr "K-Naaste Buren Classificatie"
+
+msgctxt "Description|"
+msgid "Linear Discriminant"
+msgstr "Lineaire Discriminant"
+
+msgctxt "Description|"
+msgid "Linear Discriminant Classification"
+msgstr "Lineaire Discriminant Classificatie"
+
+msgctxt "Description|"
+msgid "Random Forest Classification"
+msgstr "Random Forest Classificatie"
+
+msgctxt "Description|"
+msgid "Clustering"
+msgstr "Clusteren"
+
+msgctxt "Description|"
+msgid "Density-Based"
+msgstr "Density-Based"
+
+msgctxt "Description|"
+msgid "Density-Based Clustering"
+msgstr "Density-Based Clusteren"
+
+msgctxt "Description|"
+msgid "Fuzzy C-Means"
+msgstr "Fuzzy C-Means"
+
+msgctxt "Description|"
+msgid "Fuzzy C-Means Clustering"
+msgstr "Fuzzy C-Means Clusteren"
+
+msgctxt "Description|"
+msgid "Hierarchical"
+msgstr "Hiërarchische"
+
+msgctxt "Description|"
+msgid "Hierarchical Clustering"
+msgstr "Hiërarchische Clustering"
+
+msgctxt "Description|"
+msgid "K-Means"
+msgstr "K-Means"
+
+msgctxt "Description|"
+msgid "K-Means Clustering"
+msgstr "K-Means Clusteren"
+
+msgctxt "Description|"
+msgid "Random Forest Clustering"
+msgstr "Random Forest Clusteren"
+
+msgctxt "Description|"
+msgid "Meta-Analysis"
+msgstr "Meta-Analyse"
+
+msgctxt "Description|"
+msgid "Meta-Analysis module."
+msgstr "Meta-Analyse module."
+
+msgctxt "Description|"
+msgid "Classical Meta-Analysis"
+msgstr "Klassieke Meta-Analyse"
+
+msgctxt "Description|"
+msgid "Bayesian Meta-Analysis"
+msgstr "Bayesiaanse Meta-Analyse"
+
+msgctxt "Description|"
+msgid ""
+"This module offers the standard Frequentist and Bayesian Regression analyses."
+msgstr ""
+"Deze module bied de standaard Frequentistische en Bayesiaanse Regressie "
+"analyses."
+
+msgctxt "Description|"
+msgid "Correlation"
+msgstr "Correlatie"
+
+msgctxt "Description|"
+msgid "Logistic Regression"
+msgstr "Logistische Regressie"
+
+msgctxt "Description|"
+msgid "Bayesian Correlation"
+msgstr "Bayesiaanse Correlatie"
+
+msgctxt "Description|"
+msgid "Bayesian Linear Regression"
+msgstr "Bayesiaanse Lineaire Regressie"
+
+msgctxt "Description|"
+msgid "SEM"
+msgstr "SEM"
+
+msgctxt "Description|"
+msgid "SEM module."
+msgstr "SEM module."
+
+msgctxt "Description|"
+msgid "Structural Equation Modeling"
+msgstr "Structural Equation Modeling"
+
+msgctxt "Description|"
+msgid "Mediation Analysis"
+msgstr "Mediatie Analyse"
+
+msgctxt "Description|"
+msgid "Summary Statistics"
+msgstr "Samenvattende Statistieken"
+
+msgctxt "Description|"
+msgid "Summary Statistics module"
+msgstr "Samenvattende Statistieken module."
+
+msgctxt "Description|"
+msgid "S.S. Bayesian Independent Samples T-Test"
+msgstr "S.S. Bayesiaanse T-Toets Onafhankelijke Steekproeven"
+
+msgctxt "Description|"
+msgid "S.S. Bayesian Paired Samples T-Test"
+msgstr "S.S. Bayesiaanse Gepaarde T-Toets"
+
+msgctxt "Description|"
+msgid "S.S. Bayesian One Sample T-Test"
+msgstr "S.S. Bayesiaanse T-Toets voor Eén Gemiddelde"
+
+msgctxt "Description|"
+msgid "S.S. Bayesian Correlation"
+msgstr "S.S. Bayesiaanse Correlatie"
+
+msgctxt "Description|"
+msgid "S.S. Bayesian Linear Regression"
+msgstr "S.S. Bayesiaanse Lineaire Regressie"
+
+msgctxt "Description|"
+msgid "S.S. Bayesian Binomial Test"
+msgstr "S.S. Bayesiaanse Binomiaal Toets"
+
+msgctxt "Description|"
+msgid ""
+"This module offers the standard Frequentist and Bayesian T-Tests analyses."
+msgstr ""
+"Deze module bied de standaard Frequenstische en Bayesiaanse T-Toets analyses."
+
+msgctxt "Description|"
+msgid "Visual Modeling (Beta)"
+msgstr "Visueel Modeleren (Beta)"
+
+msgctxt "Description|"
+msgid "Flexplot"
+msgstr "Flexplot"
+
+msgctxt "Description|"
+msgid "Linear Modeling"
+msgstr "Lineair Modeleren"
+
+msgctxt "Description|"
+msgid "Mixed Modeling"
+msgstr "Mixed Modeling"
+
+msgctxt "Description|"
+msgid "Generalized Linear Modeling"
+msgstr "Veralgemeniseert Lineair Modeleren"
+
+msgctxt "Description|"
+msgid "Wait for it..."
+msgstr "Wacht er op..."
+
+msgctxt "Description|"
+msgid ""
+"Timer that displays the fact that updating Description.qml from live "
+"javascript code works fine."
+msgstr ""
+"Timer die demonstreert dat Description.qml updaten dmv javascript prima werkt"
+
+msgctxt "Description|"
+msgid "Descriptives"
+msgstr "Beschrijvende statistiek"
+
+msgctxt "Description|"
+msgid "This module offers the Descriptives and Reliability analyses."
+msgstr ""
+"Deze module bied de Beschrijvende Statistiek en Betrouwbaarheid analyses."
+
+msgctxt "Description|"
+msgid "Network"
+msgstr "Netwerk"
+
+msgctxt "Description|"
+msgid "Network module."
+msgstr "Netwerk module."
+
+msgctxt "Description|"
+msgid "Graphically-Based Data Analysis"
+msgstr "Grafisch georiënteerde Data Analyse"
+
 msgctxt "auditBayesianWorkflow|"
 msgid ""
 msgstr ""
