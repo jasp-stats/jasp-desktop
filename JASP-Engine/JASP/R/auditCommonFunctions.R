@@ -246,6 +246,7 @@
                                              jaspResults)
 
   if(!is.null(dataset) && options[["sampleSize"]] >= nrow(dataset)){
+    selectionContainer[["errorMessage"]] <- createJaspTable("Selection summary")
     selectionContainer$setError(gettextf("Your sample size is larger than your population size. Cannot take a sample larger than the population."))
     return()
   }
@@ -272,7 +273,7 @@
   selectionState <- .auditSampling(dataset,
                                    options,
                                    planningState,
-                                   selectionContainer = NULL)
+                                   selectionContainer)
 
   # Create explanatory text for the selection
   .auditExplanatoryTextSelection(options,
@@ -2201,6 +2202,26 @@
   if(planningState[["sampleSize"]] == 0 || is.null(dataset))
     return()
 
+  if(units == "records" && algorithm == "interval"){
+
+    interval <- ceiling(nrow(dataset) / 
+                        planningState[["sampleSize"]])
+    if(options[["seed"]] > interval){
+      selectionContainer$setError(gettext("Your specified starting point lies outside the selection interval."))
+      return()
+    }
+
+  } else if (units == "mus" && algorithm == "interval"){
+
+    interval <- ceiling(sum(dataset[, bookValues]) / 
+                        planningState[["sampleSize"]])
+    if(options[["seed"]] > interval){
+      selectionContainer$setError("Your specified starting point lies outside the selection interval.")
+      return()
+    }
+
+  }
+
   sample <- jfa::sampling(population = dataset, 
                           sampleSize = planningState[["sampleSize"]], 
                           algorithm = algorithm, 
@@ -2208,7 +2229,7 @@
                           seed = options[["seed"]],
                           ordered = FALSE,
                           bookValues = bookValues,
-                          intervalStartingPoint = 1)                                
+                          intervalStartingPoint = options[["seed"]])                                
 
   sample <- data.frame(apply(X = sample[["sample"]], MARGIN = 2, as.numeric))
   return(sample)
@@ -2267,7 +2288,8 @@
     message <- gettextf("The sample is drawn with <i>seed %1$s</i>.",
                         options[["seed"]])
   } else {
-    message <- gettext("The first unit from every interval is selected.")
+    message <- gettextf("Unit %1$s is selected from each interval.",
+                        options[["seed"]])
   }
 
   selectionInformationTable$addFootnote(message)
