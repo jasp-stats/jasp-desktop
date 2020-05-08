@@ -123,6 +123,9 @@ public slots:
 	void zoomResetKeyPressed();
 	void setLanguage(int languageIndex);
 
+	QObject * loadQmlData(QString data, QUrl url);
+
+	QQmlContext * giveRootQmlContext();
 
 	QString	versionString()	{ return "JASP " + QString::fromStdString(AppInfo::version.asString(true)); }
 

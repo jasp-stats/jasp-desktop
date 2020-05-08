@@ -14,8 +14,8 @@ A module folder should look as follows:
 
 - ModuleName/
   - [inst/](#inst)
-    - [description.json](#descriptionjson)
-    - [upgrade.json](#upgradejson)
+    - [Description.qml](#Descriptionqml)
+    - [Upgrade.qml](#Upgradeqml)
     - [icons/](#icons)
     - [qml/](#qml)
     - [help/](#help)
@@ -23,22 +23,22 @@ A module folder should look as follows:
   - [DESCRIPTION](#package-metadata)
   - [NAMESPACE](#package-metadata)
 
-### description.json
-The description.json file is the main configuration file for a JASP Module and usually contains the following fields:
+### Description.qml
+The Description.qml file is the main configuration file for a JASP Module and consists of a `Description` qml root object where you can add `Package`'s and `Analysis`, `GroupTitle` and `Separator` objects to. I would suggest you take a look at the description made by the JASP team at [one our modules on GitHub](https://github.com/jasp-stats).  
 
-  | fieldname | description |
-  |-----------|-------------|
-  | `moduleDescription` | A json-object that specifies what your module is called, who made it and more. See [moduleDescription](#module-description). |
-  | `requiredPackages`  | An optional field that, if specified, is an array of R packages that your analysis depends on and that are not shipped with JASP (see [the package list](https://jasp-stats.org/r-package-list)). This can take the form of a simple array of strings `["package1", "package2"]` or an array of objects `[{ "package": "package1", "version": "1.2.3"}, { "package": "packageWithoutVersion" }, ...]`. |
-  | `menu`              | Specifies the icon to show in the ribbon and the analyses your module adds, see [description-menu](#description-menu). |
+It should always start with the following:
+```
+import QtQuick 		2.12
+import JASP.Module 	1.0
 
-### upgrade.json
-The (optional) upgrade.json file contains any upgrades that must be done on older, saved, versions of your analyses. So this is only of importance after you release a second or later version of your module and it will allow for seamless loading of these older files. For more information on this, see [the manual on upgrade.json](jasp-upgrade-json.md).
+Description 
+{
+```
 
 #### Module Description
-This field should contain a json object with the following fields:
+So the root object of your `Description.qml` is a `Description` object that has the following properties:
 
-  | fieldname     | description |
+  | property     | description |
   |---------------|-------------|
   | `name`        | Specifies the name of the module, only necessary if you are not adding your own [DESCRIPTION](#packageMetadata) file. This name should contain only ASCII letters, numbers and dots, have at least two characters and start with a letter and not end in a dot.|
   | `title`       | The user-friendly name that is shown in the ribbonbar (top of JASP) and the modules-menu (the right-hand-side menu in JASP). |
@@ -46,89 +46,128 @@ This field should contain a json object with the following fields:
   | `icon`        | The filename of the icon to show in the ribbonbar. |
   | `version`     | The current version of your module, encoded as a string. This is a sequence of at least two (and usually three) non-negative integers separated by single ‘.’ or ‘-’ characters. A good example is "1.0.0", a version such as "0.01" or "0.01.0" will be handled as if it were ‘0.1-0’. It is not a decimal number, so for example "0.9" < "0.75" since 9 < 75. |
   | `author`      | Name of the author. |
-  | `maintainer`  | Name and email of maintainer. An example: "John Doe \<John.Doe@Somewhere.org>" |
+  | `maintainer`  | Name and email of maintainer. An example: "John Doe \<John.Doe@Somewhere.org>". If it isn't a valid email adress **R will complain**. |
   | `website`     | Website of the author. |
   | `license`     | License under which the module is released. To have it distributed by us this should be a [free software license](https://en.wikipedia.org/wiki/Free_software_license), aka something like "GPL (>= 2)". |
 
-#### Description Menu
-A very important part of [description.json](#description.json) is the menu specification, as this makes it possible for a user of your module to actually run your analyses. Here you specify the icon and title to show in the ribbonbar at the top of JASP. You also specify the analyses your module offers, what their titles are, which [options form](#qml) they use and which R-functions should be called to run them. Furthermore you can add separators between groups of analyses and you can add headers with icons inside the menu to make it clearer what category each group of analyses embodies. 
+#### Required Packages
+If you module depends on some R pkgs that are not included with JASP or are older than what you need you can tell JASP to install those.
+To do so you can simply add a `Package {}` QML object inside of your `Description{}`. It can have the following properties:
+  | property     | description |
+  |---------------|-------------|
+  | `name`        | Specifies the name of the R package, exactly as in R. Quite reasonably obligatory. |
+  | `version`     | A string with the version of the package you would like to use, optional. |
+  | `github`      | A GitHub repository with the sources of the package, probably only used in developers mode because it is kind of dangerous to let random repositories install stuff on your computer. Also not implemented yet (as of 2020-05-07). |
 
-This is all specified under the field `menu` which should be an array of analyses, separators and headers which are each represented by a json-object with one or more fields. Those are: 
-  
+#### Description Menu
+A very important part of [Description.qml](#Description.qml) is the menu specification, as this makes it possible for a user of your module to actually run your analyses. You specify the analyses your module offers, what their titles are, which [options form](#qml) they use and which R-functions should be called to run them. Furthermore you can add separators between groups of analyses and you can add headers with icons inside the menu to make it clearer what category each group of analyses embodies. 
+
+This menu is specified by a succession of `GroupTitle`, `Separator` and `Analysis` QML objects.
+
+##### Analysis
+The most important one and you should always have at least one of these, because otherwise your module doesn't do *anything*.
+It represents, surprise surprise, one of your analyses and has the following fields:
+
   | fieldname  | description |
   |------------|-------------|
-  | `menu`     | Optional: Text shown in the menu that opens when the ribbonbutton is clicked. If it isn't entered `title` is used. |
   | `title`    | Name of the analysis and, if `menu` is missing, the text shown in the ribbonbutton-menu. |
-  | `icon`     | Filename of the icon to show next to `title` in the menu, can be used by analyses and headers. |
-  | `qml`      | Filename of the qml file associated with an analysis, it must be located in the [qml folder](#qml). |
-  | `function` | Name of the main R function of an analysis, this should be part of your R-code. |
+  | `func` 	   | Name of the main R function of an analysis, this should be part of your R-code. |
+  | `qml`      | Optional: Filename of the qml file associated with an analysis, it must be located in the [qml folder](#qml). If it isn't filled `func + ".qml"` is used. |
+  | `menu`     | Optional: Text shown in the menu that opens when the ribbonbutton is clicked. If it isn't entered `title` is used. |
+  | `icon`     | Optional: Filename of the icon to show next to `title` in the menu. |
   
-  When an entry has `-` (or a multple of them) as title the other fields are ignored and it will be displayed as a separator. Otherwise it will be either a header or an analysis, the only difference between them being that an analyses *always* has `qml` and `function` specified and responds to clicks in JASP.
-    
+
+##### GroupTitle
+A nice big header for your menu, can have an icon and it will be clearly visible. Useful for breaking up the list in, for instance, "Bayesian" and "Classical".
+It has the following fields:
+
+  | fieldname  | description |
+  |------------|-------------|
+  | `title`    | Name of the analysis and, if `menu` is missing, the text shown in the ribbonbutton-menu. |
+  | `icon`     | Optional: Filename of the icon to show next to `title` in the menu, can be used by analyses and headers. |
+  
+##### Separator
+A nice line to break your menu even better than a GroupTitle would do.
+Has no properties.
+  
  
 <details>
 	<summary>Example</summary>
   
-  ```json
-  {
-    "moduleDescription" :
-    {
-      "title" : "Amazing module",
-      "description": "This is a totally amazing module.",
-      "version": 1,
-      "author": "yourName",
-      "maintainer": "yourName <your@name.org>",
-      "website": "yourName.org",
-      "license": "GPL (>= 2)"
-    },
+  ```qml
+import QtQuick 		2.12
+import JASP.Module 	1.0
 
-    "requiredPackages": [    
-		{ "package": "package1" },
-		{ "package": "package2", "version": "1.2.3" },
-		{ "package": "package3" }
-    ],
+Description
+{
+      title: 		"Amazing module"
+      description: 	"This is a totally amazing module."
+      version: 		"0.0.1"
+      author: 		"yourName"
+      maintainer: 	"yourName <your@name.org>"
+      website: 		"yourName.org"
+      license: 		"GPL (>= 2)"
+    
+	Package { name: "package1" }
+	Package { name: "package2"; version: "1.2.3"; }
+	Package { name: "package3" }
 
-    "menu":
-        [
-          {
-            "title":    "English Analyses",
-            "icon":     "englishFlag.svg"
-          },
-          {
-            "title":    "Analysis One",
-            "qml":      "analysisOne.qml",
-            "function": "analysisOne"
-          },
-          {
-            "title":    "Analysis Two",
-            "qml":      "analyseTwee.qml",
-            "function": "analysisTwo"
-          } 
-          {
-            "title":    "---"
-          },
-	        {
-            "title":    "Nederlandse Analyses",
-            "icon":     "dutchFlag.svg"
-          },
-          {
-            "title":    "Analyse een",
-            "qml":      "analyseEen.qml",
-            "function": "analysisOne"
-          },
-          {
-            "title":    "Analyse twee",
-            "qml":      "analyseTwee.qml",
-            "function": "analysisTwo",
-            "icon":     "romanNumeralII.svg"
-          }
-        ]
+	GroupTitle
+	{
+		title:    "English Analyses",
+		icon:     "englishFlag.svg"
+	}
+
+	Analysis
+	{
+		title:	"Analysis One"
+		qml:	"analysisOne.qml"
+		func: 	"analysisOne"
+	}
+
+	Analysis
+	{
+		title: 	"Analysis Two with a very long name that might look bad in a menu"
+		menu:	"Analysis Two"
+		qml:	"analyseTwee.qml"
+		func:	"analysisTwo"
+	} 
+
+	Separator {}
+
+	GroupTitle
+	{
+		title:	"Nederlandse Analyses"
+		icon:  	1"dutchFlag.svg"
+	}
+
+	Analysis
+	{
+		title:    "Analyse een"
+		qml:      "analyseEen.qml"
+		function: "analysisOne"
+	}
+
+	Analysis
+	{
+		title:    	"Analyse twee"
+		qml:      	"analyseTwee.qml"
+		function:	"analysisTwo"
+		icon:    	"romanNumeralII.svg"
+	}
+}
   ```
   
 </details>
 
+
+### Upgrade.qml
+**This will be rewritten later, when upgrade is no longer a json but a qml...**
+The (optional) upgrade.json file contains any upgrades that must be done on older, saved, versions of your analyses. So this is only of importance after you release a second or later version of your module and it will allow for seamless loading of these older files. For more information on this, see [the manual on upgrade.json](jasp-upgrade-json.md).
+
+
 #### icons
-The icons folder is where you should place all icons you want to show, aka one for the ribbonbar that opens the [menu](#description-menu) and possibly more for use with headers and/or analyses. Preferably this is an [svg](https://nl.wikipedia.org/wiki/Scalable_Vector_Graphics) because this scales very gracefully. You could also use [png](https://nl.wikipedia.org/wiki/Portable_network_graphics) or [jpg](https://nl.wikipedia.org/wiki/JPEG) but since these do not scale very well they could make your icon look pretty bad on some computers.  If you specify an icon somewhere in [description.json](#description.json) you should include the extension but not the path. As an example, the file `ModuleName/inst/icons/myGorgeousIcon.svg` would be specified only as `myGorgeousIcon.svg` and JASP will make sure to retrieve it from this directory.
+The icons folder is where you should place all icons you want to show, aka one for the ribbonbar that opens the [menu](#description-menu) and possibly more for use with headers and/or analyses. Preferably this is an [svg](https://nl.wikipedia.org/wiki/Scalable_Vector_Graphics) because this scales very gracefully. You could also use [png](https://nl.wikipedia.org/wiki/Portable_network_graphics) or [jpg](https://nl.wikipedia.org/wiki/JPEG) but since these do not scale very well they could make your icon look pretty bad on some computers.  If you specify an icon somewhere in [Description.qml](#Description.qml) you should include the extension but not the path. As an example, the file `ModuleName/inst/icons/myGorgeousIcon.svg` would be specified only as `myGorgeousIcon.svg` and JASP will make sure to retrieve it from this directory.
 
 #### qml
 The qml folder is where you place your [qml](https://en.wikipedia.org/wiki/QML) files. In practice you probably want to have at least a single qml file per analysis. You can then specify which file to use per analysis in the [menu](#description-menu), the names should include the extension `.qml` as well. A detailed guide on creating QML files can be found [here](jasp-qml-guide.md). As an aside, if you want to go for creating you own reusable qml components you can store them here as well. This is described in more detail [here](jasp-qml-guide.md#advanced-usage).
@@ -143,12 +182,12 @@ The help folder is where you place the documentation for your module. You should
 Because a JASP Module is also, to a certain extent, an R package it can contain a [DESCRIPTION](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#The-DESCRIPTION-file) file and a [NAMESPACE](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Package-namespaces) file. 
 JASP uses the Imports field in a DESCRIPTION file to understand which dependencies it needs to install from [CRAN](https://cran.r-project.org/), in fact it lets R figure this out for it. It also installs the module as an actual R-package which means you must specify each of the main-analysis-functions in the NAMESPACE file to make sure JASP can see these functions. 
 
-If these are missing from your module this is no problem, as JASP can generate them for you based on the information in [description.json](#description.json). It does this for modules that are distributed as .tar.gz files (which is the same format as an R-package) but also for the development module (as used in [development](#development-process)). In that last scenario it will only unflinchingly create these files if they are missing. To be sure changes to description.json are reflected in them you should enable the `Preferences/Advanced/Regenerate Package metadata...` option, this will make JASP generate these file *to your development folder*. If you prefer to write your own files you are free to do so after disabling it. 
+If these are missing from your module this is no problem, as JASP can generate them for you based on the information in [Description.qml](#Description.qml). It does this for modules that are distributed as .tar.gz files (which is the same format as an R-package) but also for the development module (as used in [development](#development-process)). In that last scenario it will only unflinchingly create these files if they are missing. To be sure changes to Description.qml are reflected in them you should enable the `Preferences/Advanced/Regenerate Package metadata...` option, this will make JASP generate these file *to your development folder*. If you prefer to write your own files you are free to do so after disabling it. 
 
 ### Development Process
-To start developing your own module you should first create the folder structure as shown [above](#Structure). Initially you do not need to add any of the .qml, .R or icon files, you should, however, create the description.json. The first version of this file can be quite simple (i.e., with a single analysis); you will be able to update it at any point.
+To start developing your own module you should first create the folder structure as shown [above](#Structure). Initially you do not need to add any of the .qml, .R or icon files, you should, however, create the Description.qml. The first version of this file can be quite simple (i.e., with a single analysis); you will be able to update it at any point.
 
-If you want to start developing from an R-package that you already made you should still start by adding a rudimentary [inst/description.json](#description.json) to your sourcefolder. Be sure to turn off the `Preferences/Advanced/Regenerate Package metadata...` option of JASP as it *will* overwrite your handcrafted [DESCRIPTION and NAMESPACE files](#package-metadata).
+If you want to start developing from an R-package that you already made you should still start by adding a rudimentary [inst/Description.qml](#Description.qml) to your sourcefolder. Be sure to turn off the `Preferences/Advanced/Regenerate Package metadata...` option of JASP as it *will* overwrite your handcrafted [DESCRIPTION and NAMESPACE files](#package-metadata).
 
 Before creating any of the other files you should now add the module folder in JASP and then install the module.
 
@@ -159,7 +198,7 @@ Before creating any of the other files you should now add the module folder in J
 4. Navigate to 'Advanced'
 5. Place a checkmark before 'Developer mode'
 6. Working from R-source-package? Disable 'Regenerate Package metadata'
-7. Browse to the module source folder, aka a folder with the same name as your module and that contains `inst/description.json`.
+7. Browse to the module source folder, aka a folder with the same name as your module and that contains `inst/Description.qml`.
 
 ##### Steps to install the module in JASP:
 1. Open JASP
@@ -188,5 +227,5 @@ On linux and MacOS this is not so bad: simply open up a terminal and go to the d
 
 On Windows this is a bit more complicated but can be done through [7zip](https://www.7-zip.org/), first your select you folder `<ModuleName>` and compress it to a `.tar` file and then you select that file and compress it to a `.gz` or "gzip" file leaving you with `<ModuleName>.tar.gz`. 
 
-As you can see this implies that the folder containing your module-files has the same name as your module (aka what is specified in the field `name` in [description.json](#description.json) or in the `Package` field of [DESCRIPTION](#package-metadata).
+As you can see this implies that the folder containing your module-files has the same name as your module (aka what is specified in the field `name` in [Description.qml](#Description.qml) or in the `Package` field of [DESCRIPTION](#package-metadata).
 

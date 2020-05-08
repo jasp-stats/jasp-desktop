@@ -82,21 +82,20 @@
 	bool		valid##E(T value) { return (E##MapName.find(value) != E##MapName.end()); }
 
 #ifdef JASP_USES_QT_HERE
-	#define DECLARE_ENUM_WITH_TYPE_HEADER(E, T, ...)															\
-	DECLARE_ENUM_WITH_TYPE_BASE(E, T, __VA_ARGS__)																\
-	inline E		E##FromQString(QString enumName)	{ return (E)E##FromString(enumName.toStdString()); }	\
-	inline E		E##FromQString(QString enumName, E defaultValue)	{ return (E)E##FromString(enumName.toStdString(), defaultValue); }	\
-	inline QString	E##ToQString(E enumVal)		{ return QString::fromStdString(~enumVal); }					\
-	inline QString	operator+(QString &&str, E enumTmp) { return str + E##ToQString(enumTmp); }					\
-	inline QString	operator+(E enumTmp, QString &&str) { return E##ToQString(enumTmp) + str;	}				\
-	inline QString	&operator+=(QString &str, E enumTmp)														\
-	{																											\
-		str += E##ToQString(enumTmp);																			\
-		return str;																								\
+	#define DECLARE_ENUM_WITH_TYPE_HEADER(E, T, ...)																				\
+	DECLARE_ENUM_WITH_TYPE_BASE(E, T, __VA_ARGS__)																					\
+	inline E		E##FromQString(QString enumName)				{ return (E)E##FromString(enumName.toStdString()); }			\
+	inline E		E##FromQString(QString enumName, E defaultVal)	{ return (E)E##FromString(enumName.toStdString(), defaultVal);}	\
+	inline QString	E##ToQString(E enumVal)							{ return QString::fromStdString(E##ToString(enumVal)); }		\
+	inline QString	operator+(QString &&str, E enumTmp)				{ return str + E##ToQString(enumTmp); }							\
+	inline QString	operator+(E enumTmp, QString &&str)				{ return E##ToQString(enumTmp) + str;	}						\
+	inline QString	&operator+=(QString &str, E enumTmp)																			\
+	{																																\
+		str += E##ToQString(enumTmp);																								\
+		return str;																													\
 	}
 
-#define DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, ...)														\
-	DECLARE_ENUM_METHODS_WITH_TYPE_BASE(E, T, __VA_ARGS__)
+#define DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, ...)		DECLARE_ENUM_METHODS_WITH_TYPE_BASE(E, T, __VA_ARGS__)
 #else
 	#define DECLARE_ENUM_WITH_TYPE_HEADER(E, T, ...)			DECLARE_ENUM_WITH_TYPE_BASE(E, T, __VA_ARGS__)
 	#define DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, ...)	DECLARE_ENUM_METHODS_WITH_TYPE_BASE(E, T, __VA_ARGS__)
@@ -105,12 +104,12 @@
 
 
 #ifdef ENUM_DECLARATION_CPP
-#define DECLARE_ENUM(E, ...)								\
-	DECLARE_ENUM_WITH_TYPE_HEADER(E, int32_t, __VA_ARGS__)	\
+#define DECLARE_ENUM(E, ...)										\
+	DECLARE_ENUM_WITH_TYPE_HEADER(E, int32_t, __VA_ARGS__)			\
 	DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, int32_t, __VA_ARGS__)
 
-#define DECLARE_ENUM_WITH_TYPE(E, T, ...)					\
-	DECLARE_ENUM_WITH_TYPE_HEADER(E, T, __VA_ARGS__)	\
+#define DECLARE_ENUM_WITH_TYPE(E, T, ...)							\
+	DECLARE_ENUM_WITH_TYPE_HEADER(E, T, __VA_ARGS__)				\
 	DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, __VA_ARGS__)
 #else
 #define DECLARE_ENUM(E, ...)				DECLARE_ENUM_WITH_TYPE_HEADER(E, int32_t, __VA_ARGS__)

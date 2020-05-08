@@ -27,7 +27,7 @@
 class RibbonButton;
 
 
-//This class should not hold it's own data but simply be an interface for RibbonButton/Dynamic Module
+//This class should not hold it's own data but simply be an interface for the description of a RibbonButton/Dynamic Module
 class AnalysisMenuModel : public QAbstractListModel
 {
 	Q_OBJECT
