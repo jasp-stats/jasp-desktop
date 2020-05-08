@@ -47,14 +47,15 @@ public:
 		ActiveRole
 	};
 
-	RibbonModel(std::vector<std::string> commonModulesToLoad = {}, std::vector<std::string> extraModulesToLoad = {});
+	RibbonModel();
 
 	int								rowCount(const QModelIndex & = QModelIndex())				const override	{	return int(_moduleNames.size());	}
 	QVariant						data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	virtual QHash<int, QByteArray>	roleNames()													const override;
 
+	void						loadModules(std::vector<std::string> commonModulesToLoad = {}, std::vector<std::string> extraModulesToLoad = {});
 
-	void						addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool isCommon);
+	void						addRibbonButtonModelFromModulePath(std::string moduleName, bool isCommon);
 	void						addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module);
 
 	void						removeRibbonButtonModel(std::string moduleName);
@@ -85,7 +86,6 @@ public slots:
 	void removeDynamicRibbonButtonModel(QString moduleName)				{ removeRibbonButtonModel(moduleName.toStdString());				}
 	void setHighlightedModuleIndex(int highlightedModuleIndex);
 	void moduleLoadingSucceeded(const QString & moduleName);
-	void refresh();
 
 private slots:
 	void ribbonButtonModelChanged(RibbonButton* model);

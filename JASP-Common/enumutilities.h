@@ -111,12 +111,12 @@ struct missingEnumVal  : public std::runtime_error
 
 
 #ifdef ENUM_DECLARATION_CPP
-#define DECLARE_ENUM(E, ...)								\
-	DECLARE_ENUM_WITH_TYPE_HEADER(E, int32_t, __VA_ARGS__)	\
+#define DECLARE_ENUM(E, ...)										\
+	DECLARE_ENUM_WITH_TYPE_HEADER(E, int32_t, __VA_ARGS__)			\
 	DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, int32_t, __VA_ARGS__)
 
-#define DECLARE_ENUM_WITH_TYPE(E, T, ...)					\
-	DECLARE_ENUM_WITH_TYPE_HEADER(E, T, __VA_ARGS__)	\
+#define DECLARE_ENUM_WITH_TYPE(E, T, ...)							\
+	DECLARE_ENUM_WITH_TYPE_HEADER(E, T, __VA_ARGS__)				\
 	DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, __VA_ARGS__)
 #else
 #define DECLARE_ENUM(E, ...)				DECLARE_ENUM_WITH_TYPE_HEADER(E, int32_t, __VA_ARGS__)

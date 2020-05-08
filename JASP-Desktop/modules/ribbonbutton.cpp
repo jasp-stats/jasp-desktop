@@ -20,43 +20,16 @@
 #include "enginedefinitions.h"
 #include "modules/dynamicmodule.h"
 #include "modules/analysisentry.h"
+#include "modules/description/description.h"
 #include "utilities/languagemodel.h"
 
-RibbonButton::RibbonButton(QObject *parent, Json::Value descriptionJson, bool isCommon)  : QObject(parent)
+
+RibbonButton::RibbonButton(QObject *parent, std::string moduleName, bool isCommon)
+	: QObject(parent), _isDynamicModule(false), _isCommonModule(isCommon), _moduleName(moduleName)
 {
 	_analysisMenuModel = new AnalysisMenuModel(this);
-	try
-	{
-		Json::Value & moduleDescription = descriptionJson["moduleDescription"];
 
-		setRequiresData(	moduleDescription.get("requiresData",		true).asBool()		);
-		setIsDynamic(		moduleDescription.get("dynamic",			false).asBool()		); //It should never be dynamic here right?
-		setIsCommon(		isCommon														);
-		setTitle(			moduleDescription.get("title",				"???").asString()	);
-		setModuleName(		moduleDescription.get("name",				title()).asString()	);
-		setIconSource(QString::fromStdString(moduleDescription.get("icon", "").asString()));
-
-		bool defaultRequiresDataset = _requiresData;
-
-		for(Json::Value & menuEntry : descriptionJson["menu"])
-		{
-#ifndef JASP_DEBUG
-			if (menuEntry.get("debug", false).asBool())
-				continue;
-#endif
-			Modules::AnalysisEntry * entry = new Modules::AnalysisEntry(menuEntry, nullptr, defaultRequiresDataset);
-			_menuEntries.push_back(entry);
-
-			if(!entry->requiresData())
-				setRequiresData(false);
-		}
-
-		setMenu(_menuEntries);
-	}
-	catch(std::exception e)
-	{
-		throw std::runtime_error("During the parsing of the description.json of the Module " + _title + " something went wrong: " + e.what());
-	}
+	reloadMenuFromDescriptionQml();
 
 	if (isCommon)
 		setEnabled(true);
@@ -79,6 +52,13 @@ RibbonButton::RibbonButton(QObject *parent, Modules::DynamicModule * module)  : 
 	bindYourself();
 
 	connect(_module, &Modules::DynamicModule::DynamicModule::descriptionReloaded, this, &RibbonButton::descriptionReloaded);
+}
+
+RibbonButton::~RibbonButton()
+{
+	if(_description)
+		delete _description;
+	_description	= nullptr;
 }
 
 
@@ -111,6 +91,17 @@ void RibbonButton::bindYourself()
 
 void RibbonButton::setMenu(const Modules::AnalysisEntries& entries)
 {
+	Modules::AnalysisEntries oldEntries = _menuEntries;
+	_menuEntries = entries;
+
+	for(size_t i=0; i<oldEntries.size(); i++)
+		if(i < _menuEntries.size())
+			emit analysisTitleChanged(_moduleName, oldEntries[i]->title() , _menuEntries[i]->title());
+
+	for(auto * oldEntry : oldEntries)
+		delete oldEntry;
+
+
 	_analysisMenuModel->setAnalysisEntries(entries);
 
 	emit analysisMenuChanged();
@@ -160,7 +151,6 @@ void RibbonButton::setEnabled(bool enabled)
 			else		DynamicModules::dynMods()->unloadModule(moduleName());
 
 		}
-
 		emit DynamicModules::dynMods()->moduleEnabledChanged(moduleNameQ(), enabled);
 	}
 }
@@ -217,7 +207,7 @@ std::vector<std::string> RibbonButton::getAllAnalysisNames() const
 	return allAnalyses;
 }
 
-void RibbonButton::reloadMenuFromDescriptionJson()
+void RibbonButton::reloadMenuFromDescriptionQml()
 {
 	//Find the location of the module path
 	QFileInfo modulepath = QFileInfo(QString::fromStdString(Dirs::resourcesDir() + _moduleName + "/"));
@@ -227,64 +217,70 @@ void RibbonButton::reloadMenuFromDescriptionJson()
 		return;
 	}
 
-	//Check existence of the description.json
-	QFile descriptionFile(modulepath.absoluteFilePath() + "/" + getJsonDescriptionFilename());
-	if(!descriptionFile.exists())
+	QFileInfo descriptionFileInfo(modulepath.absoluteFilePath() + "/" + tq(Modules::DynamicModule::getQmlDescriptionFilename()));
+
+	if(!descriptionFileInfo.exists())
 	{
-		Log::log() << "Could not find the json description file : " << descriptionFile.fileName().toStdString() << std::endl;
+		Log::log() << "Could not find the qml description file : " << descriptionFileInfo.absoluteFilePath() << std::endl;
 		return;
 	}
 
-	//Open the description.json
+	QFile descriptionFile(descriptionFileInfo.absoluteFilePath());
 	if (!descriptionFile.open(QFile::ReadOnly))
 	{
-		Log::log() << "Could not open the json description file : " << descriptionFile.fileName().toStdString()  << std::endl;
-		return;
-
-	}
-
-	//Parse the description.json
-	std::string	descriptionTxt(descriptionFile.readAll().toStdString());
-	Json::Value descriptionJson;
-	if (!Json::Reader().parse(descriptionTxt, descriptionJson))
-	{
-		Log::log() << "Could not parse description.json file in " << descriptionFile.fileName().toStdString() << std::endl;
+		Log::log() << "Could not open the qml description file : " << descriptionFile.fileName().toStdString()  << std::endl;
 		return;
 	}
 
-	Modules::AnalysisEntries saveMenuEntries = _menuEntries;
+	Modules::Description * desc = nullptr;
 
-	//Find the menu entries in the description.json
 	try
 	{
-		_menuEntries.clear();
-		Json::Value & moduleDescription = descriptionJson["moduleDescription"];
-		_title = moduleDescription["title"].asString();
-		int i = 0;
+		desc = Modules::DynamicModule::instantiateDescriptionQml(descriptionFile.readAll(), QUrl(descriptionFileInfo.absoluteFilePath()), _moduleName);
 
-		for(Json::Value & menuEntry : descriptionJson["menu"])
-		{
-#ifndef JASP_DEBUG
-			if (menuEntry.get("debug", false).asBool())
-				continue;
-#endif
-			Modules::AnalysisEntry * entry = new Modules::AnalysisEntry(menuEntry, nullptr, _requiresData);
-			_menuEntries.push_back(entry);
-			if (i < saveMenuEntries.size())
-				emit analysisTitleChanged(_moduleName, saveMenuEntries[i]->title() , entry->title());
-			i++;
-		}
-		setMenu(_menuEntries);
+		setRequiresData(		desc->requiresData());
+		setTitle(			fq(	desc->title()	)	);
+		setIconSource(			desc->icon()		);
+		setToolTip(				desc->description() );
+
+		setMenu(desc->menuEntries());
+
+
+		if(_description)
+			delete _description;
+
+		_description = desc;
+
+		connect(desc, &Modules::Description::iShouldBeUpdated, this, &RibbonButton::descriptionChanged);
 	}
-	catch(std::exception e)
+	catch(std::runtime_error e)
 	{
-		Log::log() << "During the parsing of the description.json of the Module " << _title  << " something went wrong: " <<  e.what() << std::endl;
-		_menuEntries = saveMenuEntries;
+		Log::log() << "(Re)loading " << Modules::DynamicModule::getQmlDescriptionFilename() << " had a problem: " << e.what() << std::endl;
 	}
-
 }
 
-QString RibbonButton::getJsonDescriptionFilename()
+void RibbonButton::descriptionChanged(Modules::Description * desc)
 {
-	return "description" + LanguageModel::currentTranslationSuffix() + ".json";
+	if(_description != desc)
+	{
+		Log::log() << "RibbonButton for module " << _moduleName << " was told to update from a Description but it isn't the one it knows about... Ignoring it!" << std::endl;
+		return;
+	}
+
+	Log::log() << "RibbonButton for module " << _moduleName << " will read from Description again!" << std::endl;
+
+	setRequiresData(		_description->requiresData());
+	setTitle(			fq(	_description->title()	)	);
+	setIconSource(			_description->icon()		);
+	setMenu(				_description->menuEntries() );
+	setToolTip(				_description->description()	);
+}
+
+void RibbonButton::setToolTip(QString toolTip)
+{
+	if (_toolTip == toolTip)
+		return;
+
+	_toolTip = toolTip;
+	emit toolTipChanged(_toolTip);
 }
