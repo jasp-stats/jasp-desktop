@@ -89,6 +89,12 @@ void AnalysisForm::refreshAnalysis()
 	_analysis->refresh();
 }
 
+void AnalysisForm::runAnalysis()
+{
+	_analysis->run();
+	refreshTableViewModels();
+}
+
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
 {
 	if (change == ItemChange::ItemSceneChange && !value.window)

@@ -28,13 +28,5 @@ GridLayout
 	columns:				2
 	Layout.minimumWidth:	parent.width
 	
-	property bool alignChildrenTopLeft: true
-	property int count:	children.length
-	
-	onCountChanged:
-	{
-		if (alignChildrenTopLeft)
-			for (var i = 0; i < children.length; i++)
-				children[i].Layout.alignment = Qt.AlignTop | Qt.AlignLeft;
-	}
+	property int count:	children.length	
 }

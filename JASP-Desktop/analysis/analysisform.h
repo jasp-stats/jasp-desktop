@@ -109,7 +109,7 @@ public:
     Q_INVOKABLE void exportResults();
 	Q_INVOKABLE void addFormError(const QString& message);
 	Q_INVOKABLE void refreshAnalysis();
-
+	Q_INVOKABLE void runAnalysis();
 
 	void		addControlError(JASPControlBase* control, QString message, bool temporary = false, bool warning = false);
 	void		clearControlError(JASPControlBase* control);
