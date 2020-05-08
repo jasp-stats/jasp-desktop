@@ -21,15 +21,18 @@
 #include "dirs.h"
 #include "log.h"
 
-RibbonModel::RibbonModel(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
+RibbonModel::RibbonModel()
 	: QAbstractListModel(DynamicModules::dynMods())
+{}
+
+void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
 {
 
 	for(const std::string & moduleName : commonModulesToLoad)
-		addRibbonButtonModelFromModulePath(QFileInfo(QString::fromStdString(Dirs::resourcesDir() + moduleName + "/")), true);
+		addRibbonButtonModelFromModulePath(moduleName, true);
 
 	for(const std::string & moduleName : extraModulesToLoad)
-		addRibbonButtonModelFromModulePath(QFileInfo(QString::fromStdString(Dirs::resourcesDir() + moduleName + "/")), false);
+		addRibbonButtonModelFromModulePath(moduleName, false);
 
 	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleAdded,			this, &RibbonModel::addDynamicRibbonButtonModel);
 	connect(DynamicModules::dynMods(), &DynamicModules::dynamicModuleUninstalled,	this, &RibbonModel::removeDynamicRibbonButtonModel);
@@ -56,43 +59,17 @@ void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule *
 	addRibbonButtonModel(new RibbonButton(this, module));
 }
 
-void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool isCommon)
+void RibbonModel::addRibbonButtonModelFromModulePath(std::string moduleName, bool isCommon)
 {
+	QFileInfo modulePath = QFileInfo(tq(Dirs::resourcesDir() + moduleName + "/"));
+
 	if(!modulePath.exists())
 	{
 		Log::log() << "Path " << modulePath.absoluteFilePath().toStdString() << " does not exist!" << std::endl;
 		return;
 	}
 
-	QFile descriptionFile(modulePath.absoluteFilePath() + "/" + RibbonButton::getJsonDescriptionFilename());
-	if(!descriptionFile.exists())
-	{
-		Log::log()	<< "Could not find "  << RibbonButton::getJsonDescriptionFilename() << " file in " << modulePath.absoluteFilePath().toStdString()
-					<< "\nTry to fall back to original description.json. " << std::endl;
-		descriptionFile.setFileName(modulePath.absoluteFilePath() + "/" + "description.json");
-		if(!descriptionFile.exists())
-		{
-			Log::log() << "No description.json file found for this module." << std::endl; //Shouldn't this give an error?
-			return;
-		}
-	}
-
-	descriptionFile.open(QFile::ReadOnly);
-	std::string	descriptionTxt(descriptionFile.readAll().toStdString());
-
-	Json::Value descriptionJson;
-
-	try
-	{
-		if(Json::Reader().parse(descriptionTxt, descriptionJson))
-			addRibbonButtonModel(new RibbonButton(this, descriptionJson, isCommon));
-		else
-			Log::log() << "Error while reading description.json of " << modulePath.filePath().toStdString() << std::endl;
-	}
-	catch(std::runtime_error e)
-	{
-		Log::log() << e.what() << std::endl;
-	}
+	addRibbonButtonModel(new RibbonButton(this, moduleName, isCommon));
 }
 
 void RibbonModel::addRibbonButtonModel(RibbonButton* model)
@@ -107,8 +84,8 @@ void RibbonModel::addRibbonButtonModel(RibbonButton* model)
 
 	emit endInsertRows();
 
-	connect(model, &RibbonButton::iChanged, this, &RibbonModel::ribbonButtonModelChanged);
-	connect(model, &RibbonButton::analysisTitleChanged, this, &RibbonModel::analysisTitleChanged);
+	connect(model, &RibbonButton::iChanged,				this, &RibbonModel::ribbonButtonModelChanged);
+	connect(model, &RibbonButton::analysisTitleChanged, this, &RibbonModel::analysisTitleChanged	);
 }
 
 QVariant RibbonModel::data(const QModelIndex &index, int role) const
@@ -182,21 +159,6 @@ void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 	_moduleNames.erase(_moduleNames.begin() + indexRemoved);
 
 	emit endRemoveRows();
-}
-
-void RibbonModel::refresh()
-{
-
-	beginResetModel();
-
-	for (const std::string& myModuleName : _moduleNames)
-	{
-		RibbonButton* button = _buttonModelsByName[myModuleName];
-		button->reloadMenuFromDescriptionJson();
-	}
-
-	endResetModel();
-
 }
 
 void RibbonModel::setHighlightedModuleIndex(int highlightedModuleIndex)
