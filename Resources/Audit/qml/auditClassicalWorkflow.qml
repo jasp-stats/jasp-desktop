@@ -590,12 +590,11 @@ Form
 				IntegerField
 				{
 					id: 							seed
-					enabled:					!systematicSampling.checked
-					text: 						qsTr("Seed")
+					text: 						systematicSampling.checked ? qsTr("Starting point") : qsTr("Seed")
 					name: 						"seed"
 					defaultValue: 		1
 					min: 							1
-					max: 							999
+					max: 							99999
 					fieldWidth: 			60
 				}
 			}
