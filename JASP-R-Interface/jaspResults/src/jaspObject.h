@@ -62,7 +62,8 @@ public:
 
 			void		addCitation(std::string fullCitation);
 
-			std::string	_title;
+			std::string	_title,
+						_info;
 			int			_position = JASPOBJECT_DEFAULT_POSITION;
 
 			jaspObjectType	getType()						{ return _type; }
@@ -197,6 +198,7 @@ public:
 	void		addCitation(std::string fullCitation)													{ myJaspObject->addCitation(fullCitation);										}
 
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspObject, std::string,	_title,		Title)
+	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspObject, std::string,	_info,		Info)
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspObject, int,			_position,	Position)
 
 	void		setError(std::string message)		{ myJaspObject->setError(message); }

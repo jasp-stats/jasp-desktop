@@ -27,14 +27,15 @@ JASPControl
 	controlType:			JASPControlBase.RadioButton
 	isBound:				false
 	implicitWidth:			childrenOnSameRow
-							? control.implicitWidth + (childControlsArea.children.length > 0 ? jaspTheme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
-							: Math.max(control.implicitWidth, childControlsArea.childControlsPadding + childControlsArea.implicitWidth)
+								? control.implicitWidth + (childControlsArea.children.length > 0 ? jaspTheme.columnGroupSpacing + childControlsArea.implicitWidth : 0)
+								: Math.max(control.implicitWidth, childControlsArea.childControlsPadding + childControlsArea.implicitWidth)
 	implicitHeight:			childrenOnSameRow
-							? Math.max(control.implicitHeight, childControlsArea.implicitHeight)
-							: control.implicitHeight + (childControlsArea.children.length > 0 ? jaspTheme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
+								?	Math.max(control.implicitHeight, childControlsArea.implicitHeight)
+								:	control.implicitHeight + (childControlsArea.children.length > 0 ? jaspTheme.rowGroupSpacing + childControlsArea.implicitHeight : 0)
 	focusIndicator:			focusIndicator
 	childControlsArea:		childControlsArea
 	innerControl:			control
+	title:					label.text
 
 	property alias	control:				control
 	default property alias	content:		childControlsArea.children

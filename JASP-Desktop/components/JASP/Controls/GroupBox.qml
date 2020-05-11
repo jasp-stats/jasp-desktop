@@ -36,7 +36,6 @@ JASPControl
 			property int	rowSpacing:			jaspTheme.rowGroupSpacing
 			property int	columnSpacing:		jaspTheme.columnGroupSpacing
 			property int	columns:			1
-			property string title:				""
 			property bool	indent:				false
 			property bool	alignTextFields:	true
 			property alias	alignChildrenTopLeft: contentArea.alignChildrenTopLeft

@@ -59,14 +59,21 @@ void JASPControlWrapper::setUp()
 JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase* control)
 {
 	JASPControlWrapper* controlWrapper = nullptr;
-	const QString& controlName = control->name();
-	JASPControlBase::ControlType controlType = control->controlType();
 
-	switch(controlType)
+	switch(control->controlType())
 	{
 	case JASPControlBase::ControlType::Switch:			//fallthrough:
 	case JASPControlBase::ControlType::CheckBox:					controlWrapper		= new BoundQMLCheckBox(control);					break;
 	case JASPControlBase::ControlType::Slider:						controlWrapper		= new BoundQMLSlider(control);						break;
+	case JASPControlBase::ControlType::ComboBox:					controlWrapper		= new BoundQMLComboBox(control);					break;
+	case JASPControlBase::ControlType::Expander:					controlWrapper		= new QMLExpander(control);							break;
+	case JASPControlBase::ControlType::TableView:					controlWrapper		= new BoundQMLTableView(control);					break;
+	case JASPControlBase::ControlType::TextField:					controlWrapper		= new BoundQMLTextInput(control);					break;
+	case JASPControlBase::ControlType::FactorsForm:					controlWrapper		= new BoundQMLFactorsForm(control);					break;
+	case JASPControlBase::ControlType::InputListView:				controlWrapper		= new BoundQMLInputList(control);					break;
+	case JASPControlBase::ControlType::ComponentsList:				controlWrapper		= new BoundQMLComponentsList(control);				break;
+	case JASPControlBase::ControlType::RadioButtonGroup:			controlWrapper		= new BoundQMLRadioButtons(control);				break;
+	case JASPControlBase::ControlType::RepeatedMeasuresFactorsList:	controlWrapper		= new BoundQMLRepeatedMeasuresFactors(control);		break;
 	case JASPControlBase::ControlType::TextArea:
 	{
 		QString textType = control->property("textType").toString();
@@ -75,16 +82,6 @@ JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase*
 		else														controlWrapper		= new BoundQMLTextArea(control);
 		break;
 	}
-	case JASPControlBase::ControlType::ComboBox:					controlWrapper		= new BoundQMLComboBox(control);					break;
-	case JASPControlBase::ControlType::Expander:					controlWrapper		= new QMLExpander(control);							break;
-	case JASPControlBase::ControlType::GroupBox:					controlWrapper		= new JASPControlWrapper(control);					break;
-	case JASPControlBase::ControlType::TableView:					controlWrapper		= new BoundQMLTableView(control);					break;
-	case JASPControlBase::ControlType::TextField:					controlWrapper		= new BoundQMLTextInput(control);					break;
-	case JASPControlBase::ControlType::FactorsForm:					controlWrapper		= new BoundQMLFactorsForm(control);					break;
-	case JASPControlBase::ControlType::InputListView:				controlWrapper		= new BoundQMLInputList(control);					break;
-	case JASPControlBase::ControlType::ComponentsList:				controlWrapper		= new BoundQMLComponentsList(control);				break;
-	case JASPControlBase::ControlType::RadioButtonGroup:			controlWrapper		= new BoundQMLRadioButtons(control);				break;
-	case JASPControlBase::ControlType::RepeatedMeasuresFactorsList:	controlWrapper		= new BoundQMLRepeatedMeasuresFactors(control);		break;
 	case JASPControlBase::ControlType::VariablesListView:
 	{
 		JASPControlBase::ListViewType	listViewType = JASPControlBase::ListViewType(control->property("listViewType").toInt());
@@ -100,6 +97,7 @@ JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase*
 		}
 		break;
 	}
+	case JASPControlBase::ControlType::GroupBox:
 	case JASPControlBase::ControlType::JASPControl:
 	default:
 		controlWrapper = new JASPControlWrapper(control);
@@ -145,16 +143,16 @@ void JASPControlWrapper::addControlError(const QString &error)
 
 bool JASPControlWrapper::addDependency(JASPControlWrapper *item)
 {
-	if (_depends.contains(item))
+	if (_depends.count(item) > 0)
 		return false;
 	
-	_depends.push_back(item);
+	_depends.insert(item);
 	return true;
 }
 
 void JASPControlWrapper::removeDependency(JASPControlWrapper *item)
 {
-	_depends.removeAll(item);
+	_depends.erase(item);
 }
 
 void JASPControlWrapper::setItemProperty(const QString& name, const QVariant& value)

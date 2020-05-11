@@ -25,6 +25,19 @@ import JASP				1.0
 
 Form 
 {
+	info: qsTr(
+`This function computes the Bayes factor for a binomially distributed observation.
+The Bayesian binomial test is described in Jeffreys (1961, p. 256).
+This test informs us whether the data support or contradict a value suggested for the parameter (chance) in question.
+
+- Null model: *p = p0*
+- Alt  model: *p ~ Beta(a,b)*
+*p0* is the suggested value of the rate parameter of Binomial under null hypothesis. 
+Data observed: *s* successes and *f* failures, total number of trials, *n = s + f*. 
+In Theory of Probability, Jeffreys assumes a uniform prior on the rate parameter under alternative hypothesis. 
+The Bayes factor used here is a more general case, assuming a beta prior on the rate parameter. 
+*Note*: beta(1,1) corresponds to a uniform prior.`
+);
 
 	Group
 	{
@@ -39,9 +52,9 @@ Form
 	{
 		title: qsTr("Alt. Hypothesis")
 		name: "hypothesis"
-		RadioButton { value: "notEqualToTestValue";		label: qsTr("\u2260 Test value"); checked: true	}
-		RadioButton { value: "greaterThanTestValue";	label: qsTr("> Test value")						}
-		RadioButton { value: "lessThanTestValue";		label: qsTr("< Test value")						}
+		RadioButton { value: "notEqualToTestValue";		label: qsTr("\u2260 Test value"); checked: true;	info: qsTr("Two-sided alternative hypothesis that the population mean is not equal to the test value.");	}
+		RadioButton { value: "greaterThanTestValue";	label: qsTr("> Test value");						info: qsTr("One-sided alternative hypothesis that the population mean is larger than the test value.");		}
+		RadioButton { value: "lessThanTestValue";		label: qsTr("< Test value");						info: qsTr("One sided alternative hypothesis that the population mean is smaller than the test value.");	}
 	}
 
 	Group
@@ -50,7 +63,16 @@ Form
 		CheckBox
 		{
 			name: "plotPriorAndPosterior";		label: qsTr("Prior and posterior")
-			CheckBox { name: "plotPriorAndPosteriorAdditionalInfo"; label: qsTr("Additional info"); checked: true }
+
+			info: qsTr(`Displays the prior (dashed line) and posterior (solid line) density of the effect size under the alternative hypothesis; 
+			the gray circles represent the height of the prior and the posterior density at effect size delta = 0. 
+			The horizontal solid line represents the width of the 95% credible interval of the posterior.`)
+
+			CheckBox 
+			{ 
+				name: "plotPriorAndPosteriorAdditionalInfo"; label: qsTr("Additional info"); checked: true 
+				info: "Displays the Bayes factor computed with the user-defined prior; displays a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; displays the median and 95% credible interval of the posterior density."
+			}
 		}
 	}
 
@@ -60,6 +82,8 @@ Form
 	Group
 	{
 		title: qsTr("Prior")
+		info:  qsTr("Parameters *a* and *b* are set to '1' each. This corresponds to a uniform prior.");
+
 		DoubleField { name: "betaPriorParamA"; label: qsTr("Beta prior: parameter a"); defaultValue: 1; max: 10000; inclusive: JASP.None; decimals: 3 }
 		DoubleField { name: "betaPriorParamB"; label: qsTr("Beta prior: parameter b"); defaultValue: 1; max: 10000; inclusive: JASP.None; decimals: 3 }
 	}

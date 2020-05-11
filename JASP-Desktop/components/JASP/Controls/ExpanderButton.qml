@@ -34,8 +34,8 @@ FocusScope
 				property alias	button					: expanderButton
 				property alias	childControlsArea		: expanderArea
 				property alias	spacing					: expanderArea.rowSpacing
-				property alias	text					: label.text
-				property alias  title					: label.text
+				property alias	text					: expanderButton.title
+				property alias  title					: expanderButton.title
 				property bool	expanded				: false
 				property alias	debug					: expanderButton.debug
 	readonly	property string iconsFolder				: jaspTheme.iconPath
@@ -101,6 +101,7 @@ FocusScope
 		hasError				: nbControlsWithError   > 0 && !expanderWrapper.expanded
 		hasWarning				: nbControlsWithWarning > 0 && !expanderWrapper.expanded
 
+
 		property var nextExpander			: null
 		property var firstControl			: null
 		property int nbControlsWithError	: 0
@@ -151,6 +152,7 @@ FocusScope
 			Text
 			{
 				id						: label
+				text					: expanderButton.title
 				anchors.left			: expanderIcon.right
 				anchors.leftMargin		: 5 * preferencesModel.uiScale
 				anchors.verticalCenter	: parent.verticalCenter

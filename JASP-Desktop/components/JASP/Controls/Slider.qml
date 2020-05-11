@@ -11,12 +11,12 @@ JASPControl
 	implicitHeight:		columnLayout.implicitHeight
 	implicitWidth:		columnLayout.implicitWidth
 	innerControl:		textField
+	title:				controlLabel.text
 
 	property alias	control:		textField
 	property int	decimals:		2
 	property int	power:			Math.pow(10, decimals);
 	property alias	label:			controlLabel.text
-	property alias	title:			controlLabel.text
 	property alias	controlLabel:	controlLabel
 	property alias	value:			control.value
 	property bool	vertical:		true

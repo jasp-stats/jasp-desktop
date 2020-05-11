@@ -35,7 +35,7 @@ JASPControlBase
 	property var	dependencyMustContain	: [] //Will be filled with QStringList when necessary
 	property bool	shouldShowFocus			: activeFocus && focusOnTab && (innerControl === null || innerControl.activeFocus) && !hasError && !hasWarning
 	property bool	shouldStealHover		: toolTip !== ""
-	property string	toolTip					: ""
+	property string	toolTip					: info //By default the toolTip is exactly the same as whatever info was set on the option
 
 	width:						implicitWidth
 	height:						implicitHeight
@@ -49,14 +49,14 @@ JASPControlBase
 
 	visible: DEBUG_MODE || (!debug && !parentDebug)
 
-	function setBackroundColor()
+	function setBackgroundColor()
 	{
 		if (background !== null)
 			background.color = (debug || parentDebug) ? jaspTheme.debugBackgroundColor : "transparent"
 	}
 
-	onDebugChanged: setBackroundColor()
-	onParentDebugChanged: setBackroundColor()
+	onDebugChanged:			setBackgroundColor()
+	onParentDebugChanged:	setBackgroundColor()
 
 	states: [
 		State

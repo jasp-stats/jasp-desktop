@@ -79,6 +79,7 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _options(			static_cast<Options*>(duplicateMe->_options->clone()))
 	, _optionsDotJASP(	duplicateMe->_optionsDotJASP)
 	, _results(			duplicateMe->_results		)
+	, _meta(			_results.get(".meta", Json::arrayValue))
 	, _imgResults(		duplicateMe->_imgResults	)
 	, _userData(		duplicateMe->_userData		)
 	, _imgOptions(		duplicateMe->_imgOptions	)
@@ -131,6 +132,11 @@ bool Analysis::checkAnalysisEntry()
 	}
 }
 
+QString Analysis::helpMD() const
+{
+	return _analysisForm ? _analysisForm->helpMD() : "";
+}
+
 void Analysis::bindOptionHandlers()
 {
 	_options->changed.connect(							boost::bind( &Analysis::optionsChangedHandler,						this, _1));
@@ -157,6 +163,7 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 {
 	_results	= results;
 	_progress	= progress;
+	_meta		= _results.get(".meta", Json::arrayValue);
 
 	setStatus(status);
 
@@ -257,8 +264,9 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 						_analysisForm	= form;
 	if(!_isDuplicate)	_status			= isNewAnalysis ? Empty : Complete;
 	
-	connect(Analyses::analyses(), &Analyses::dataSetChanged,		_analysisForm, &AnalysisForm::dataSetChangedHandler);
-	connect(Analyses::analyses(), &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
+	connect(Analyses::analyses(),	&Analyses::dataSetChanged,			_analysisForm,	&AnalysisForm::dataSetChangedHandler);
+	connect(Analyses::analyses(),	&Analyses::dataSetColumnsChanged,	_analysisForm,	&AnalysisForm::dataSetChangedHandler); //Really should be renamed
+	connect(_analysisForm,			&AnalysisForm::helpMDChanged,		this,			&Analysis::helpMDChanged			);
 }
 
 Analysis::Status Analysis::analysisResultsStatusToAnalysisStatus(analysisResultStatus result)
@@ -493,7 +501,7 @@ void Analysis::setHelpFile(QString helpFile)
 		return;
 
 	_helpFile = helpFile;
-	emit helpFileChanged(_helpFile);
+	emit helpFileChanged();
 }
 
 void Analysis::setTitleQ(QString title)
