@@ -153,7 +153,7 @@ EquivalenceBayesianIndependentSamplesTTest <- function(jaspResults, dataset, opt
     equivalenceBayesianIndTTestTable$setExpectedSize(length(options$variables))
 
   message <- gettextf("I ranges from %1$s to %2$s", 
-                      ifelse(options$lowerbound == -Inf, "-\u221E", options$lowerbound),
+                      if(options$lowerbound == -Inf) "-\u221E" else options$lowerbound),
                       ifelse(options$upperbound == Inf, "\u221E", options$upperbound))
   equivalenceBayesianIndTTestTable$addFootnote(message)
 
