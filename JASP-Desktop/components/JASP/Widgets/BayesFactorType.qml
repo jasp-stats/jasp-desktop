@@ -25,7 +25,7 @@ RadioButtonGroup
 {
     title: qsTr("Bayes Factor")                     ; name: "bayesFactorType"
 
-    RadioButton { label: qsTr("BF\u2081\u2080")      ; name: "BF10"; checked: true; info: "Bayes factor to quantify evidence for the alternative hypothesis relative to the null hypothesis." }
-    RadioButton { label: qsTr("BF\u2080\u2081")      ; name: "BF01"               ; info: "Bayes factor to quantify evidence for the null hypothesis relative to the alternative hypothesis." }
-    RadioButton { label: qsTr("Log(BF\u2081\u2080)") ; name: "LogBF10"            ; info: "Natural logarithm of BF10." }
+	RadioButton { label: qsTr("BF\u2081\u2080")      ; name: "BF10"; checked: true; info: qsTr("Bayes factor to quantify evidence for the alternative hypothesis relative to the null hypothesis.") }
+	RadioButton { label: qsTr("BF\u2080\u2081")      ; name: "BF01"               ; info: qsTr("Bayes factor to quantify evidence for the null hypothesis relative to the alternative hypothesis.") }
+	RadioButton { label: qsTr("Log(BF\u2081\u2080)") ; name: "LogBF10"            ; info: qsTr("Natural logarithm of BF10.") }
 }
