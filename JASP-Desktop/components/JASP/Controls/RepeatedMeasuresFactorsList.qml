@@ -30,7 +30,6 @@ JASPControl
 	background:					rectangle
 
 				property var	model
-				property string title
 				property bool	setWidthInForm: false
 				property bool	setHeightInForm: false
 	readonly	property string deleteIcon: "cross.png"

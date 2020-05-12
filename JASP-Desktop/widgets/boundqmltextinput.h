@@ -28,6 +28,7 @@
 #include "analysis/options/optiondoublearray.h"
 #include "analysis/options/optionterm.h"
 #include <QObject>
+#include "enumutilities.h"
 
 
 class BoundQMLTextInput : public QObject, public BoundQMLItem
@@ -50,6 +51,7 @@ public:
 	void		rScriptDoneHandler(const QString& result)	override;
 
 	TextInputType	inputType()	{ return _inputType; }
+	QString			friendlyName() const override;
 
 signals:
 	void		formulaCheckSucceeded();

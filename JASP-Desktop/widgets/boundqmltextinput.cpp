@@ -321,6 +321,23 @@ void BoundQMLTextInput::rScriptDoneHandler(const QString &result)
 		_formula->setValue(_value.toStdString());
 }
 
+QString BoundQMLTextInput::friendlyName() const
+{
+	switch (_inputType)
+	{
+	case TextInputType::IntegerInputType:		return tr("Integer Field");
+	case TextInputType::NumberInputType:		return tr("Number Field");
+	case TextInputType::PercentIntputType:		return tr("Percentage Field");
+	case TextInputType::IntegerArrayInputType:	return tr("Integers Field");
+	case TextInputType::DoubleArrayInputType:	return tr("Doubles Field");
+	case TextInputType::AddColumnType:			return tr("Add Column Field");
+	case TextInputType::ComputedColumnType:		return tr("Add Computed Column Field");
+	case TextInputType::FormulaType:			return tr("Formula Field");
+	case TextInputType::StringInputType:
+	default:									return tr("Text Field");
+	}
+}
+
 bool BoundQMLTextInput::_formulaResultInBounds(double result)
 {
 	double min			= getItemProperty("min").toDouble();

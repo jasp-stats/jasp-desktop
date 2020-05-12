@@ -20,7 +20,7 @@
 #define JASPCONTROLWRAPPER_H
 
 #include <QString>
-#include <QVector>
+#include <set>
 #include <QVariant>
 
 class JASPControlBase;
@@ -30,6 +30,8 @@ class JASPControlWrapper
 {
 
 public:
+	typedef std::set<JASPControlWrapper*> Set;
+
 			 JASPControlWrapper(JASPControlBase* item);
 	virtual ~JASPControlWrapper() {}
 
@@ -41,7 +43,7 @@ public:
 	bool						isBound()				const;
 	AnalysisForm			*	form()					const;
 	JASPControlBase			*	item()					const	{ return _item; }
-	const QVector<JASPControlWrapper*>	&	depends()	const	{ return _depends; }
+	const Set				&	depends()				const	{ return _depends; }
 	void						addControlError(const QString& error);
 	bool						addDependency(JASPControlWrapper* item);
 	void						removeDependency(JASPControlWrapper* item);
@@ -53,11 +55,13 @@ public:
 
 
 	static JASPControlWrapper*	buildJASPControlWrapper(JASPControlBase* control);
+
+	virtual QString				friendlyName() const;
 	
 protected:
 	
-	JASPControlBase*				_item;
-	QVector<JASPControlWrapper*>	_depends;
+	JASPControlBase	*	_item = nullptr;
+	Set					_depends; //So Joris changed this to a set instead of a vector because that is what it seemed to be, the order isn't important right?
 };
 
 #endif // JASPCONTROLWRAPPER_H
