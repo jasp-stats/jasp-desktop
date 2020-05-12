@@ -46,7 +46,6 @@ JASPControl
 			property bool	childrenOnSameRow:		false
 			property alias	columns:				childControlsArea.columns
 			property bool	enableChildrenOnChecked: true
-			property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
 
 	signal clicked();
 	function click()	{ control.toggle(); }

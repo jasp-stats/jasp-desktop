@@ -39,7 +39,6 @@ JASPControl
 			property string title:				""
 			property bool	indent:				false
 			property bool	alignTextFields:	true
-			property alias	alignChildrenTopLeft: contentArea.alignChildrenTopLeft
 			property alias	label:				label
 
 			property var	_allTextFields:		[]
