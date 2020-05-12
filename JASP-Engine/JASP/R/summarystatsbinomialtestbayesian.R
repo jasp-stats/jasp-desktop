@@ -39,8 +39,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   # This function is the main workhorse, and also makes the table
   container <- jaspResults[["binomialContainer"]]
   if (is.null(container)) {
-    container <- createJaspContainer()
-    container$dependOn(c("successes", "failures", "betaPriorParamA", "betaPriorParamB", "testValue", "hypothesis"))
+    container <- createJaspContainer(dependencies=c("successes", "failures", "betaPriorParamA", "betaPriorParamB", "testValue", "hypothesis"))
     jaspResults[["binomialContainer"]] <- container
   }
   
@@ -138,6 +137,15 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   bayesianBinomialTable <- createJaspTable(gettext("Bayesian Binomial Test"))
   bayesianBinomialTable$dependOn("bayesFactorType")
   bayesianBinomialTable$position <- 1
+  bayesianBinomialTable$info <- gettext("- *Bayes factor*: If one-sided test is requested:
+  - BF+0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is larger than the test value
+  - BF-0: Bayes factor that quantifies evidence for the one-sided alternative hypothesis that the population mean is smaller than the test value
+  - BF0+: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that the population mean is larger
+   than the test value
+  - BF0-: Bayes factor that quantifies evidence for the null hypothesis relative to the one-sided alternative hypothesis that that the population mean is
+  smaller than the test value
+  - **p**: p-value corresponding to t-statistic.")
+
   
   # set title for different Bayes factor types
   bfTitle <- hypothesisList$bfTitle
@@ -151,7 +159,7 @@ SummaryStatsBinomialTestBayesian <- function(jaspResults, dataset = NULL, option
   bayesianBinomialTable$addColumnInfo(name = "successes", title = gettext("Successes") , type = "integer")
   bayesianBinomialTable$addColumnInfo(name = "failures" , title = gettext("Failures")  , type = "integer")
   bayesianBinomialTable$addColumnInfo(name = "theta0"   , title = gettext("Test value"), type = "number")
-  bayesianBinomialTable$addColumnInfo(name = "BF"       , title = bfTitle     , type = "number")
+  bayesianBinomialTable$addColumnInfo(name = "BF"       , title = bfTitle,				 type = "number")
   bayesianBinomialTable$addColumnInfo(name = "pValue"   , title = gettext("p")         , type = "pvalue")
   
   return(bayesianBinomialTable)

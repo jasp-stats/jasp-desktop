@@ -34,7 +34,6 @@ JASPControl
 
 	property var	model
 	property var	values
-	property string title
 	property alias	label				: jaspListControl.title
 	property alias	count				: listGridView.count
 	property string	optionKey			: "value"

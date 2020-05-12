@@ -42,11 +42,14 @@ class Analysis : public QObject
 {
 	Q_OBJECT
 	Q_PROPERTY(QString	name				READ nameQ											NOTIFY nameChanged				)
-	Q_PROPERTY(QString	helpFile			READ helpFile										NOTIFY helpFileChanged			)
 	Q_PROPERTY(QString	title				READ titleQ				WRITE setTitleQ				NOTIFY titleChanged				)
+	Q_PROPERTY(QString	helpFile			READ helpFile										NOTIFY helpFileChanged			)
+	Q_PROPERTY(QString	helpMD				READ helpMD											NOTIFY helpMDChanged			)
 	Q_PROPERTY(bool		needsRefresh		READ needsRefresh									NOTIFY needsRefreshChanged		)
 	///Volatile notes are coupled with results elements and might disappear when the name changes. Some attempt is made to salvage them on a refresh when needsRefresh is true!
 	Q_PROPERTY(bool		hasVolatileNotes	READ hasVolatileNotes	WRITE setHasVolatileNotes	NOTIFY hasVolatileNotesChanged	)
+
+
 
 	typedef std::map<std::string, std::set<std::string>> optionColumns;
 
@@ -98,29 +101,31 @@ public:
 	bool		checkAnalysisEntry();
 
 	//getters
-	const	Json::Value		&	results()			const	{ return _results;							}
-	const	Json::Value		&	userData()			const	{ return _userData;							}
-	const	std::string		&	name()				const	{ return _name;								}
-	const	QString				nameQ()				const	{ return tq(_name);							}
-	const	std::string		&	qml()				const	{ return _qml;								}
-	const	Version			&	version()			const	{ return _version;							}
-	const	std::string		&	title()				const	{ return _title;							}
-			QString				titleQ()			const	{ return tq(_title);						}
-	const	std::string		&	rfile()				const	{ return _rfile;							}
-	const	std::string		&	module()			const	{ return _module;							}
-			size_t				id()				const	{ return _id;								}
-			bool				usesJaspResults()	const	{ return _useJaspResults;					}
-			Status				status()			const	{ return _status;							}
-			QString				statusQ()			const	{ return tq(statusToString(_status));		}
-			int					revision()			const	{ return _revision;							}
-			bool				isRefreshBlocked()	const	{ return _refreshBlocked;					}
-			QString				helpFile()			const	{ return _helpFile;							}
-	const	Json::Value		&	imgOptions()		const	{ return _imgOptions;						}
-	const	Json::Value		&	imgResults()		const	{ return _imgResults;						}
-	Modules::DynamicModule	*	dynamicModule()		const	{ return _dynamicModule;					}
-			AnalysisForm	*	form()				const	{ return _analysisForm;						}
-			bool				isDuplicate()		const	{ return _isDuplicate;						}
-			bool				hasVolatileNotes()			const	{ return _hasVolatileNotes;							}
+	const	Json::Value		&	results()			const	{ return _results;						}
+	const	Json::Value		&	meta()				const	{ return _meta;							}
+	const	Json::Value		&	userData()			const	{ return _userData;						}
+	const	std::string		&	name()				const	{ return _name;							}
+	const	QString				nameQ()				const	{ return tq(_name);						}
+	const	std::string		&	qml()				const	{ return _qml;							}
+	const	Version			&	version()			const	{ return _version;						}
+	const	std::string		&	title()				const	{ return _title;						}
+			QString				titleQ()			const	{ return tq(_title);					}
+	const	std::string		&	rfile()				const	{ return _rfile;						}
+	const	std::string		&	module()			const	{ return _module;						}
+			size_t				id()				const	{ return _id;							}
+			bool				usesJaspResults()	const	{ return _useJaspResults;				}
+			Status				status()			const	{ return _status;						}
+			QString				statusQ()			const	{ return tq(statusToString(_status));	}
+			int					revision()			const	{ return _revision;						}
+			bool				isRefreshBlocked()	const	{ return _refreshBlocked;				}
+			QString				helpFile()			const	{ return _helpFile;						}
+			QString				helpMD()			const;
+	const	Json::Value		&	imgOptions()		const	{ return _imgOptions;					}
+	const	Json::Value		&	imgResults()		const	{ return _imgResults;					}
+	Modules::DynamicModule	*	dynamicModule()		const	{ return _dynamicModule;				}
+			AnalysisForm	*	form()				const	{ return _analysisForm;					}
+			bool				isDuplicate()		const	{ return _isDuplicate;					}
+			bool				hasVolatileNotes()	const	{ return _hasVolatileNotes;				}
 
 			void		run();
 			void		refresh();
@@ -161,6 +166,12 @@ public:
 
 signals:
 	void				nameChanged();
+	void				helpFileChanged();
+	void				helpMDChanged();
+	void				titleChanged();
+	void				needsRefreshChanged();
+	void				hasVolatileNotesChanged(bool hasVolatileNotes);
+
 	void				sendRScript(			Analysis * analysis, QString script, QString controlName, bool whiteListedVersion);
 	void				statusChanged(			Analysis * analysis);
 	void				optionsChanged(			Analysis * analysis);
@@ -173,12 +184,9 @@ signals:
 	void				requestColumnCreation(				QString columnName, Analysis *source, int columnType);
 	void				requestComputedColumnDestruction(	QString columnName);
 
-	void				helpFileChanged(QString helpFile);
-	void				titleChanged();
-	void				needsRefreshChanged();
-	void				hasVolatileNotesChanged(bool hasVolatileNotes);
 
 	Q_INVOKABLE void	expandAnalysis();
+
 
 
 
@@ -217,6 +225,7 @@ protected:
 	///For backward compatibility: _optionsDotJASP = options from (old) JASP file.
 	Json::Value				_optionsDotJASP = Json::nullValue,
 							_results		= Json::nullValue,
+							_meta			= Json::nullValue,
 							_imgResults		= Json::nullValue,
 							_userData		= Json::nullValue,
 							_imgOptions		= Json::nullValue,
