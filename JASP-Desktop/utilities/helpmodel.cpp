@@ -5,12 +5,30 @@
 #include <QDir>
 #include "stringutils.h"
 #include "gui/preferencesmodel.h"
+#include "log.h"
 
 HelpModel::HelpModel(QObject * parent) : QObject(parent)
 {
 	setPagePath("index");
 	connect(this,						&HelpModel::pagePathChanged,				this, &HelpModel::generateJavascript);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::currentThemeNameChanged, this, &HelpModel::setThemeCss,			Qt::QueuedConnection);
+	connect(this,						&HelpModel::markdownChanged,				this, &HelpModel::loadMarkdown);
+}
+
+void HelpModel::runJavaScript(QString renderFunc, QString content)
+{
+#ifdef JASP_DEBUG
+	Log::log() << "Help is sending content: '" << content << "'" << std::endl;
+#endif
+
+	content.replace("\"", "\\\"");
+	content.replace("\r\n", "\\n");
+	content.replace("\r", "\\n");
+	content.replace("\n", "\\n");
+
+
+
+	runJavaScriptSignal(renderFunc + "(\"" + content + "\");");
 }
 
 void HelpModel::setVisible(bool visible)
@@ -29,6 +47,14 @@ void HelpModel::loadingSucceeded()
 	generateJavascript();
 }
 
+void HelpModel::setMarkdown(QString markdown)
+{
+	if (_markdown == markdown)
+		return;
+
+	_markdown = markdown;
+	emit markdownChanged(_markdown);
+}
 
 void HelpModel::setPagePath(QString pagePath)
 {
@@ -45,6 +71,12 @@ QString	HelpModel::indexURL()
 
 void HelpModel::generateJavascript()
 {
+	if(markdown() != "")
+	{
+		loadMarkdown(markdown());
+		return;
+	}
+
 	QString renderFunc = "";
 	QString content = "";
 
@@ -61,12 +93,7 @@ void HelpModel::generateJavascript()
 		}
 	}
 
-	content.replace("\"", "\\\"");
-	content.replace("\r\n", "\\n");
-	content.replace("\r", "\\n");
-	content.replace("\n", "\\n");
-
-	runJavaScript(renderFunc + "(\"" + content + "\")");
+	runJavaScript(renderFunc, content);
 }
 
 QString HelpModel::convertPagePathToLower(const QString & pagePath)
@@ -112,7 +139,7 @@ void HelpModel::reloadPage()
 
 void HelpModel::setThemeCss(QString themeName)
 {
-	runJavaScript("window.setTheme(\"" + themeName + "\");");
+	runJavaScript("window.setTheme", themeName);
 }
 
 bool HelpModel::loadHelpContent(const QString &pagePath, bool ignorelanguage, QString &renderFunc, QString &content)
@@ -162,4 +189,12 @@ bool HelpModel::loadHelpContent(const QString &pagePath, bool ignorelanguage, QS
 	}
 
 	return found;
+}
+
+void HelpModel::loadMarkdown(QString md)
+{
+	//Log::log() << "loadMarkdown got:\n" << md << std::endl;
+
+	setVisible(true);
+	runJavaScript("window.render", md);
 }

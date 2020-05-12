@@ -37,7 +37,6 @@ JASPControl
 			property var	buttonGroup:			buttonGroup
 			property bool	radioButtonsOnSameRow:	false
 			property alias	columns:				contentArea.columns
-			property string title:					""
 			property alias	text:					control.title
 			property int	leftPadding:			jaspTheme.groupContentPadding
 			property string	value:					""

@@ -35,6 +35,7 @@ JASPControl
 	focusIndicator:		focusIndicator
 	childControlsArea:	childControlsArea
 	innerControl:		control
+	title:				text
 
 	default property alias	content:				childControlsArea.children
 			property alias	control:				control
