@@ -122,6 +122,7 @@ public:
 			bool				isDuplicate()		const	{ return _isDuplicate;						}
 			bool				hasVolatileNotes()			const	{ return _hasVolatileNotes;							}
 
+			void		run();
 			void		refresh();
 			void		reload();
 			void		rebind();

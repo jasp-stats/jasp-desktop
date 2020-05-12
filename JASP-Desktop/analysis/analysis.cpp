@@ -205,10 +205,15 @@ void Analysis::exportResults()
 	emit Analyses::analyses()->analysesExportResults();
 }
 
-void Analysis::refresh()
+void Analysis::run()
 {
 	setStatus(Empty);
+}
+
+void Analysis::refresh()
+{
 	TempFiles::deleteAll(_id);
+	run();
 
 	if(_analysisForm)
 		_analysisForm->refreshTableViewModels();
@@ -383,7 +388,7 @@ void Analysis::optionsChangedHandler(Option *option)
 	if (form() && (form()->hasError() || !form()->runWhenThisOptionIsChanged(option)))
 		return;
 
-	setStatus(Empty);
+	run();
 }
 
 ComputedColumn *Analysis::requestComputedColumnCreationHandler(std::string columnName)

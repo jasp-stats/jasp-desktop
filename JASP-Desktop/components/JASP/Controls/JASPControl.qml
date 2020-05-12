@@ -45,7 +45,8 @@ JASPControlBase
 
 	L.Layout.preferredWidth:	preferredWidth
 	L.Layout.preferredHeight:	preferredHeight
-	L.Layout.leftMargin: indent ? jaspTheme.indentationLength : 0
+	L.Layout.leftMargin:		indent ? jaspTheme.indentationLength : 0
+	L.Layout.alignment:			Qt.AlignTop | Qt.AlignLeft
 
 	visible: DEBUG_MODE || (!debug && !parentDebug)
 

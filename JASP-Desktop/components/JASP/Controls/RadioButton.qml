@@ -49,7 +49,6 @@ JASPControl
 	property alias	columns:				childControlsArea.columns
 	property bool	enableChildrenOnChecked: true
 	property bool	indentChildren:			true
-	property alias	alignChildrenTopLeft:	childControlsArea.alignChildrenTopLeft
 
 	function click()
 	{
