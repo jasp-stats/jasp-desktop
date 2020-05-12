@@ -349,7 +349,13 @@ DropArea
 					opacity:			editButton.opacity
 					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
 					enabled:			expanderButton.expanded
-					onClicked:			helpModel.showOrTogglePage(loader.myAnalysis.helpFile)
+					onClicked:			if(preferencesModel.developerMode)
+											helpModel.markdown = Qt.binding(function(){ return myAnalysis.helpMD; });
+										else
+										{
+											helpModel.markdown = ""; //To break any previous binding we might have made
+											helpModel.showOrTogglePage(loader.myAnalysis.helpFile)
+										}
 					toolTip:			qsTr("Show info for this analysis")
 					radius:				height
 					anchors

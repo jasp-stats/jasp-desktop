@@ -5,13 +5,12 @@
 //I expanded it a bit and added from string -> enum and QString stuff
 //Also made sure the methods and map and all are defined only in the cpp file (when defining ENUM_DECLARATION_CPP first that is)
 
+#include "stringutils.h"
 #include <algorithm>
-
-#include <map>
 #include <sstream>
 #include <string>
 #include <vector>
-#include "stringutils.h"
+#include <map>
 
 #ifdef JASP_USES_QT_HERE
 #include <QString>
@@ -24,7 +23,6 @@ struct missingEnumVal  : public std::runtime_error
 
 
 #define STRING_REMOVE_CHAR(str, ch) str.erase(std::remove(str.begin(), str.end(), ch), str.end())
-
 
 #define DECLARE_ENUM_WITH_TYPE_BASE(E, T, ...)																	\
 	enum class E : T																							\
@@ -108,16 +106,14 @@ struct missingEnumVal  : public std::runtime_error
 	#define DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, ...)	DECLARE_ENUM_METHODS_WITH_TYPE_BASE(E, T, __VA_ARGS__)
 #endif
 
-
-
 #ifdef ENUM_DECLARATION_CPP
-#define DECLARE_ENUM(E, ...)										\
-	DECLARE_ENUM_WITH_TYPE_HEADER(E, int32_t, __VA_ARGS__)			\
-	DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, int32_t, __VA_ARGS__)
+#define DECLARE_ENUM(E, ...)											\
+	DECLARE_ENUM_WITH_TYPE_HEADER(			E, int32_t, __VA_ARGS__)	\
+	DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(	E, int32_t, __VA_ARGS__)
 
-#define DECLARE_ENUM_WITH_TYPE(E, T, ...)							\
-	DECLARE_ENUM_WITH_TYPE_HEADER(E, T, __VA_ARGS__)				\
-	DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, __VA_ARGS__)
+#define DECLARE_ENUM_WITH_TYPE(E, T, ...)								\
+	DECLARE_ENUM_WITH_TYPE_HEADER(			E, T,		__VA_ARGS__)	\
+	DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(	E, T,		__VA_ARGS__)
 #else
 #define DECLARE_ENUM(E, ...)				DECLARE_ENUM_WITH_TYPE_HEADER(E, int32_t, __VA_ARGS__)
 #define DECLARE_ENUM_WITH_TYPE(E, T, ...)	DECLARE_ENUM_WITH_TYPE_HEADER(E, T, __VA_ARGS__)
@@ -128,7 +124,7 @@ template <typename T> std::map<T, std::string> generateEnumMap(std::string strMa
 	STRING_REMOVE_CHAR(strMap, ' ');
 	STRING_REMOVE_CHAR(strMap, '(');
 
-    std::vector<std::string> enumTokens(stringUtils::splitString(strMap));
+	std::vector<std::string> enumTokens(stringUtils::splitString(strMap));
 	std::map<T, std::string> retMap;
 	T inxMap;
 
@@ -142,7 +138,7 @@ template <typename T> std::map<T, std::string> generateEnumMap(std::string strMa
 			enumName = tokenString;
 		else
 		{
-            std::vector<std::string> enumNameValue(stringUtils::splitString(tokenString, '='));
+			std::vector<std::string> enumNameValue(stringUtils::splitString(tokenString, '='));
 			enumName = enumNameValue[0];
 			//inxMap = static_cast<T>(enumNameValue[1]);
 			if (std::is_unsigned<T>::value)		inxMap = static_cast<T>(std::stoull(enumNameValue[1], 0, 0));
@@ -153,7 +149,6 @@ template <typename T> std::map<T, std::string> generateEnumMap(std::string strMa
 
 	return retMap;
 }
-
 
 template <typename T> std::map<std::string, T> generateEnumNameMap(std::string strMap)
 {
@@ -166,4 +161,4 @@ template <typename T> std::map<std::string, T> generateEnumNameMap(std::string s
 	return retMap;
 }
 
-#endif // ENUMUTILITIES_H
+#endif //ENUMUTILITIES_H, because the rest *should* be allowed to be defined double if the specific enum class does not exist yet:

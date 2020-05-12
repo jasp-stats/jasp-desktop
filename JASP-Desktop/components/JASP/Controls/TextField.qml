@@ -31,6 +31,7 @@ JASPControl
 	background:			useExternalBorder ? externalControlBackground : control.background
 	cursorShape:		Qt.IBeamCursor
 	innerControl:		control
+	title:				text
 	
 	property alias	control:			control
 	property alias	label:				beforeLabel.text

@@ -5,6 +5,7 @@
 
 #include "utilities/qutils.h"
 
+
 class AnalysisForm;
 class JASPControlWrapper;
 
@@ -12,27 +13,31 @@ class JASPControlBase : public QQuickItem
 {
 	Q_OBJECT
 
-private:
-	Q_PROPERTY( ControlType		controlType			READ controlType		WRITE setControlType											)
-	Q_PROPERTY( QString			name				READ name				WRITE setName				NOTIFY nameChanged					)
-	Q_PROPERTY( bool			isBound				READ isBound			WRITE setIsBound			NOTIFY isBoundChanged				)
-	Q_PROPERTY( bool			debug				READ debug				WRITE setDebug				NOTIFY debugChanged					)
-	Q_PROPERTY( bool			parentDebug			READ parentDebug									NOTIFY parentDebugChanged			)
-	Q_PROPERTY( bool			focusOnTab			READ focusOnTab			WRITE setFocusOnTab			NOTIFY focusOnTabChanged			)
-	Q_PROPERTY( bool			hasError			READ hasError			WRITE setHasError			NOTIFY hasErrorChanged				)
-	Q_PROPERTY( bool			hasWarning			READ hasWarning			WRITE setHasWarning			NOTIFY hasWarningChanged			)
-	Q_PROPERTY( QQuickItem*		childControlsArea	READ childControlsArea	WRITE setChildControlsArea										)
-	Q_PROPERTY( QQuickItem*		section				READ section			WRITE setSection												)
-	Q_PROPERTY( QQuickItem*		parentListView		READ parentListView									NOTIFY parentListViewChanged		)
-	Q_PROPERTY( QQuickItem*		innerControl		READ innerControl		WRITE setInnerControl		NOTIFY innerControlChanged			)
-	Q_PROPERTY( QQuickItem*		background			READ background			WRITE setBackground			NOTIFY backgroundChanged			)
+	typedef QQmlListProperty<QQmlComponent> QQmlComponents;
 
-	Q_PROPERTY( QQmlListProperty<QQmlComponent> rowComponents READ rowComponents)
-	Q_PROPERTY( QQmlComponent * rowComponent		READ rowComponent		WRITE setRowComponent		NOTIFY rowComponentChanged			)
-	Q_PROPERTY( bool runOnChange					READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged			)
+	Q_PROPERTY( ControlType			controlType			READ controlType		WRITE setControlType											)
+	Q_PROPERTY( QString				name				READ name				WRITE setName				NOTIFY nameChanged					)
+	Q_PROPERTY( QString				title				READ title				WRITE setTitle				NOTIFY titleChanged					) //Basically whatever a human sees on their screen when they look at this specific item.
+	Q_PROPERTY( QString				info				READ info				WRITE setInfo				NOTIFY infoChanged					)
+	Q_PROPERTY( QString				helpMD				READ helpMD											NOTIFY helpMDChanged				)
+	Q_PROPERTY( bool				isBound				READ isBound			WRITE setIsBound			NOTIFY isBoundChanged				)
+	Q_PROPERTY( bool				debug				READ debug				WRITE setDebug				NOTIFY debugChanged					)
+	Q_PROPERTY( bool				parentDebug			READ parentDebug									NOTIFY parentDebugChanged			)
+	Q_PROPERTY( bool				focusOnTab			READ focusOnTab			WRITE setFocusOnTab			NOTIFY focusOnTabChanged			)
+	Q_PROPERTY( bool				hasError			READ hasError			WRITE setHasError			NOTIFY hasErrorChanged				)
+	Q_PROPERTY( bool				hasWarning			READ hasWarning			WRITE setHasWarning			NOTIFY hasWarningChanged			)
+	Q_PROPERTY( bool				runOnChange			READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged			)
+	Q_PROPERTY( QQuickItem		*	childControlsArea	READ childControlsArea	WRITE setChildControlsArea										)
+	Q_PROPERTY( QQuickItem		*	section				READ section			WRITE setSection												)
+	Q_PROPERTY( QQuickItem		*	parentListView		READ parentListView									NOTIFY parentListViewChanged		)
+	Q_PROPERTY( QQuickItem		*	innerControl		READ innerControl		WRITE setInnerControl		NOTIFY innerControlChanged			)
+	Q_PROPERTY( QQuickItem		*	background			READ background			WRITE setBackground			NOTIFY backgroundChanged			)
+	Q_PROPERTY( QQmlComponent	*	rowComponent		READ rowComponent		WRITE setRowComponent		NOTIFY rowComponentChanged			)
+	Q_PROPERTY( QQmlComponents		rowComponents		READ rowComponents)
 
 
 public:
+	// Any addition here should also be added manually to ControlTypeToFriendlyString... I couldnt get this to work with DECLARE_ENUM...
 	enum class ControlType {
 		  JASPControl
 		, Expander
@@ -56,10 +61,10 @@ public:
 	};
 
 	// Be careful not to reuse a name in a enum type: in QML, they are mixed up with a 'JASP' prefix: JASP.DropNone or JASP.None
-	enum class Inclusive	{ None = 0, MinMax, MinOnly, MaxOnly };
-	enum class DropMode		{ DropNone = static_cast<int>(Inclusive::MaxOnly) + 1, DropInsert, DropReplace };
-	enum class ListViewType { AssignedVariables = static_cast<int>(DropMode::DropReplace) + 1, Interaction, AvailableVariables, RepeatedMeasures, Layers, AvailableInteraction };
-	enum class AssignType	{ AssignDefault = static_cast<int>(ListViewType::AvailableInteraction) + 1, AssignCross, AssignMainEffects, AssignInteraction, AssignAll2Way, AssignAll3Way, AssignAll4Way, AssignAll5Way };
+	enum class Inclusive	{ None				= 0,															MinMax, MinOnly, MaxOnly };
+	enum class DropMode		{ DropNone			= static_cast<int>(Inclusive::MaxOnly)					+ 1,	DropInsert, DropReplace };
+	enum class ListViewType { AssignedVariables = static_cast<int>(DropMode::DropReplace)				+ 1,	Interaction, AvailableVariables, RepeatedMeasures, Layers, AvailableInteraction };
+	enum class AssignType	{ AssignDefault		= static_cast<int>(ListViewType::AvailableInteraction)	+ 1,	AssignCross, AssignMainEffects, AssignInteraction, AssignAll2Way, AssignAll3Way, AssignAll4Way, AssignAll5Way };
 
 
 	Q_ENUM(ControlType)
@@ -72,6 +77,9 @@ public:
 
 	ControlType		controlType()			const	{ return _controlType;			}
 	const QString&	name()					const	{ return _name;					}
+	QString			title()					const	{ return _title;				}
+	QString			info()					const	{ return _info;					}
+	QString			helpMD(int howDeep = 2)	const;
 	bool			isBound()				const	{ return _isBound;				}
 	bool			debug()					const	{ return _debug;				}
 	bool			parentDebug()			const	{ return _parentDebug;			}
@@ -88,43 +96,47 @@ public:
 	bool			runOnChange()			const	{ return _runOnChange;			}
 
 
-	void	setControlType(ControlType controlType)				{ _controlType = controlType; }
-	void	setChildControlsArea(QQuickItem* childControlsArea)	{ _childControlsArea = childControlsArea; }
-	void	setSection(QQuickItem* section)						{ _section = section; }
-	void	setFocusOnTab(bool focus);
-	void	setHasError(bool hasError);
-	void	setHasWarning(bool hasWarning);
-	void	setRunOnChange(bool change);
-	void	setDebug(bool debug);
-	void	setParentDebug(bool parentDebug);
+	JASPControlWrapper		*	getWrapper()				const { return _wrapper; }
+	QQmlComponent			*	rowComponent()				const { return _rowComponents.length() > 0 ? _rowComponents.at(0) : nullptr;	}
+	QQmlComponent			*	rowComponent(int)			const;
+	QQmlComponents				rowComponents();
+	int							rowComponentsCount()		const;
+	void						setRowComponent(	QQmlComponent * newRowComponent);
+	void						appendRowComponent(	QQmlComponent * newRowComponent);
+	void						clearRowComponents();
+	QList<QQmlComponent*>	&	getRowComponents()				{ return _rowComponents; }
 
+	static QString					ControlTypeToFriendlyString(ControlType controlType);
+	static QList<JASPControlBase*>	getChildJASPControls(const QQuickItem* item);
+
+public slots:
+	void	setControlType(			ControlType		controlType)		{ _controlType = controlType; }
+	void	setChildControlsArea(	QQuickItem	*	childControlsArea);
+	void	setSection(				QQuickItem	*	section)			{ _section = section; }
+	void	setFocusOnTab(			bool focus);
+	void	setHasError(			bool hasError);
+	void	setHasWarning(			bool hasWarning);
+	void	setRunOnChange(			bool change);
+	void	setDebug(				bool debug);
+	void	setParentDebug(			bool parentDebug);
+
+	void	addControlError(			QString message);
+	void	addControlErrorTemporary(	QString message);
+	void	addControlWarning(			QString message);
+	void	addControlWarningTemporary(	QString message);
+	void	clearControlError();
+
+	void	reconnectWithYourChildren();
 
 	GENERIC_SET_FUNCTION(Name			, _name			, nameChanged			, QString		)
+	GENERIC_SET_FUNCTION(Info			, _info			, infoChanged			, QString		)
+	GENERIC_SET_FUNCTION(Title			, _title		, titleChanged			, QString		)
 	GENERIC_SET_FUNCTION(IsBound		, _isBound		, isBoundChanged		, bool			)
 	GENERIC_SET_FUNCTION(InnerControl	, _innerControl	, innerControlChanged	, QQuickItem*	)
 	GENERIC_SET_FUNCTION(Background		, _background	, backgroundChanged		, QQuickItem*	)
 
-	JASPControlWrapper*				getWrapper() const { return _wrapper; }
-
-	void							setRowComponent(QQmlComponent * newRowComponent);
-	QQmlListProperty<QQmlComponent>	rowComponents();
-	void							appendRowComponent(QQmlComponent *);
-	int								rowComponentsCount() const;
-	QQmlComponent*					rowComponent(int) const;
-	void							clearRowComponents();
-
-	QQmlComponent*					rowComponent()			const	{ return _rowComponents.length() > 0 ? _rowComponents.at(0) : nullptr;	}
-	QList<QQmlComponent*> &			getRowComponents()				{ return _rowComponents; }
-
-	void							setOptionBlockSignal(bool blockSignal);
-
-	Q_INVOKABLE	void				addControlError(QString message);
-	Q_INVOKABLE void				addControlErrorTemporary(QString message);
-	Q_INVOKABLE	void				addControlWarning(QString message);
-	Q_INVOKABLE void				addControlWarningTemporary(QString message);
-	Q_INVOKABLE void				clearControlError();
-
 signals:
+	void setOptionBlockSignal(	bool blockSignal);
 	void nameChanged();
 	void isBoundChanged();
 	void debugChanged();
@@ -138,43 +150,43 @@ signals:
 	void innerControlChanged();
 	void backgroundChanged();
 	void valueChanged();
+	void infoChanged();
+	void titleChanged();
+	void helpMDChanged();
 
 protected:
-	void componentComplete() override;
+			void					componentComplete() override;
+			void					_setType();
 
-	void _setType();
-
-protected:
-	ControlType			_controlType;
-	QString				_name;
-	bool				_isBound				= true;
-	bool				_debug					= false;
-	bool				_parentDebug			= false;
-	bool				_hasError				= false;
-	bool				_hasWarning				= false;
-	JASPControlWrapper*	_wrapper				= nullptr;
-	QQuickItem*			_parentListView			= nullptr;
-	QString				_parentListViewKey;
-	AnalysisForm*		_form					= nullptr;
-	QQuickItem*			_childControlsArea		= nullptr;
-	QQuickItem*			_section				= nullptr;
-	QQuickItem*			_innerControl			= nullptr;
-	QQuickItem*			_background				= nullptr;
-
-	bool				_runOnChange = true;
-
-	static void				appendRowComponent(QQmlListProperty<QQmlComponent>*, QQmlComponent*);
-	static int				rowComponentsCount(QQmlListProperty<QQmlComponent>*);
-	static QQmlComponent*	rowComponent(QQmlListProperty<QQmlComponent>*, int);
-	static void				clearRowComponents(QQmlListProperty<QQmlComponent>*);
-
-	QList<QQmlComponent*>	_rowComponents;
+	static	void					appendRowComponent(QQmlListProperty<QQmlComponent>*, QQmlComponent*);
+	static	int						rowComponentsCount(QQmlListProperty<QQmlComponent>*);
+	static	QQmlComponent*			rowComponent(QQmlListProperty<QQmlComponent>*, int);
+	static	void					clearRowComponents(QQmlListProperty<QQmlComponent>*);
 
 
-	static QList<JASPControlBase*>	getChildJASPControls(QQuickItem* item);
 			void					setParentDebugToChildren(bool debug);
 			void					setRunOnChangeToChildren(bool change);
 
+protected:
+	ControlType				_controlType;
+	AnalysisForm*			_form					= nullptr;
+	QString					_name,
+							_info					= "",
+							_title,
+							_parentListViewKey;
+	bool					_isBound				= true,
+							_debug					= false,
+							_parentDebug			= false,
+							_hasError				= false,
+							_hasWarning				= false,
+							_runOnChange			= true;
+	JASPControlWrapper	*	_wrapper				= nullptr;
+	QQuickItem			*	_parentListView			= nullptr,
+						*	_childControlsArea		= nullptr,
+						*	_section				= nullptr,
+						*	_innerControl			= nullptr,
+						*	_background				= nullptr;
+	QList<QQmlComponent*>	_rowComponents;
 };
 
 
