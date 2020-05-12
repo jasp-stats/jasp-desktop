@@ -349,9 +349,8 @@ QString JASPControlBase::helpMD(int howDeep) const
 	if(howDeep > 6) markdown << "- "; //Headers in html only got 6 sizes so below that I guess we just turn it into bulletpoints?
 	else			markdown << [&] () { QString header; for(header = ""; header.size() < howDeep ; header += '#'); return header;} () + " "; // ;)
 
-	QString friendly = _wrapper ? _wrapper->friendlyName() : "";
-	if(friendly != "")	markdown << friendly;
-	else				markdown << ControlTypeToFriendlyString(_controlType);
+	//Ok removing the check for existence of wrapper because
+	markdown << _wrapper->friendlyName();
 
 	if(title() != "")	markdown << " - *" + title() + "*:\n";
 	else				markdown << "\n";

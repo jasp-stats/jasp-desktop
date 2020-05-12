@@ -106,12 +106,15 @@ JASPControlWrapper* JASPControlWrapper::buildJASPControlWrapper(JASPControlBase*
 	return controlWrapper;
 }
 
-
+QString JASPControlWrapper::friendlyName() const
+{
+	return JASPControlBase::ControlTypeToFriendlyString(item()->controlType());
+}
 
 void JASPControlWrapper::cleanUp()
 {
 	if (_item)
-		_item->disconnect();	
+		_item->disconnect();
 }
 
 void JASPControlWrapper::resetQMLItem(JASPControlBase *item)

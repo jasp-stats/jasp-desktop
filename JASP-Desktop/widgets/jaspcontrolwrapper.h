@@ -56,7 +56,7 @@ public:
 
 	static JASPControlWrapper*	buildJASPControlWrapper(JASPControlBase* control);
 
-	virtual QString				friendlyName() const { return ""; }
+	virtual QString				friendlyName() const;
 	
 protected:
 	
