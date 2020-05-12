@@ -71,7 +71,7 @@ The Bayes factor used here is a more general case, assuming a beta prior on the 
 			CheckBox 
 			{ 
 				name: "plotPriorAndPosteriorAdditionalInfo"; label: qsTr("Additional info"); checked: true 
-				info: "Displays the Bayes factor computed with the user-defined prior; displays a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; displays the median and 95% credible interval of the posterior density."
+				info: qsTr("Displays the Bayes factor computed with the user-defined prior; displays a probability wheel depicting the odds of the data under the null vs. alternative hypothesis; displays the median and 95% credible interval of the posterior density.")
 			}
 		}
 	}
