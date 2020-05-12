@@ -22,7 +22,6 @@ JASPControl
 	property bool   hasScriptError		: false
 	property alias  font				: control.font
 	property alias  textDocument		: control.textDocument
-	property alias  title				: textAreaTitle.text
 	property bool   trim				: false
 	property var    modelParameterView	: null
 	property string separator			: "\n"
@@ -44,6 +43,7 @@ JASPControl
 		visible:	text !== ""
 		font:		jaspTheme.font
 		color:		!enabled ? jaspTheme.textDisabled : jaspTheme.textEnabled
+		text:		textArea.title
 	}
 
 	Rectangle

@@ -205,8 +205,10 @@ Json::Value	jaspObject::constructMetaEntry(std::string type, std::string meta) c
 {
 	Json::Value obj(Json::objectValue);
 
-	obj["name"] = getUniqueNestedName();
-	obj["type"] = type;
+	obj["name"]  = getUniqueNestedName();
+	obj["type"]  = type;
+	obj["info"]  = _info;
+	obj["title"] = _title;
 
 	if(meta != "")
 		obj["meta"] = meta;

@@ -34,6 +34,7 @@ RCPP_MODULE(jaspResults)
 		.method("addCitation",						&jaspObject_Interface::addCitation,										"Add a citation to this object")
 
 		.property("title",							&jaspObject_Interface::getTitle,	&jaspObject_Interface::setTitle,	"Set the title of this object")
+		.property("info",							&jaspObject_Interface::getInfo,		&jaspObject_Interface::setInfo,		"Set info aka help MD for this object")
 		.property("position",						&jaspObject_Interface::getPosition,	&jaspObject_Interface::setPosition,	"Set the position of this object in it's container. By default this is at the end in the order of adding. You can specify any other value, they do not need to be next to each other or unique. The rule is: lower values (including negative) are higher in the container and when multiple objects in a container have the same position-value order is derived from adding-order.")
 		.property("type",							&jaspObject_Interface::type,											"The type of this jaspObject as a string, something like: container, table, plot, json, list, results, html, state")
 
