@@ -26,7 +26,7 @@ import JASP				1.0
 Form 
 {
 	info: qsTr(
-`This function computes the Bayes factor for a binomially distributed observation.
+"This function computes the Bayes factor for a binomially distributed observation.
 The Bayesian binomial test is described in Jeffreys (1961, p. 256).
 This test informs us whether the data support or contradict a value suggested for the parameter (chance) in question.
 
@@ -36,7 +36,7 @@ This test informs us whether the data support or contradict a value suggested fo
 Data observed: *s* successes and *f* failures, total number of trials, *n = s + f*. 
 In Theory of Probability, Jeffreys assumes a uniform prior on the rate parameter under alternative hypothesis. 
 The Bayes factor used here is a more general case, assuming a beta prior on the rate parameter. 
-*Note*: beta(1,1) corresponds to a uniform prior.`
+*Note*: beta(1,1) corresponds to a uniform prior."
 );
 
 	Group
@@ -64,9 +64,9 @@ The Bayes factor used here is a more general case, assuming a beta prior on the 
 		{
 			name: "plotPriorAndPosterior";		label: qsTr("Prior and posterior")
 
-			info: qsTr(`Displays the prior (dashed line) and posterior (solid line) density of the effect size under the alternative hypothesis; 
+			info: qsTr("Displays the prior (dashed line) and posterior (solid line) density of the effect size under the alternative hypothesis;
 			the gray circles represent the height of the prior and the posterior density at effect size delta = 0. 
-			The horizontal solid line represents the width of the 95% credible interval of the posterior.`)
+			The horizontal solid line represents the width of the 95% credible interval of the posterior.")
 
 			CheckBox 
 			{ 
