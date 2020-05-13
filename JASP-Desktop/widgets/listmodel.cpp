@@ -487,7 +487,7 @@ const Terms &ListModel::terms(const QString &what) const
 	{
 		static Terms terms;
 
-		QStringList typesStr = what.right(what.length() - typeIs.length()).toLower().split("|");
+		QStringList typesStr = what.right(what.length() - typeIs.length()).split("|");
 		QList<columnType> types;
 
 		for (const QString& typeStr : typesStr)
