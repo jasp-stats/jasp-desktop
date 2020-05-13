@@ -1793,7 +1793,7 @@
     # informative prior
     xlim <- vector("numeric", 2)
 
-    if(options[["effectSize"]] == "standardized"){
+    if(options[["effectSizeStandardized"]] == "default"){
       
       ci99PlusMedian <- .ciPlusMedian_t(t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
                                         prior.location = 0,
