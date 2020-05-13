@@ -13,27 +13,25 @@ class JASPControlBase : public QQuickItem
 {
 	Q_OBJECT
 
-	typedef QQmlListProperty<QQmlComponent> QQmlComponents;
-
-	Q_PROPERTY( ControlType			controlType			READ controlType		WRITE setControlType											)
-	Q_PROPERTY( QString				name				READ name				WRITE setName				NOTIFY nameChanged					)
-	Q_PROPERTY( QString				title				READ title				WRITE setTitle				NOTIFY titleChanged					) //Basically whatever a human sees on their screen when they look at this specific item.
-	Q_PROPERTY( QString				info				READ info				WRITE setInfo				NOTIFY infoChanged					)
-	Q_PROPERTY( QString				helpMD				READ helpMD											NOTIFY helpMDChanged				)
-	Q_PROPERTY( bool				isBound				READ isBound			WRITE setIsBound			NOTIFY isBoundChanged				)
-	Q_PROPERTY( bool				debug				READ debug				WRITE setDebug				NOTIFY debugChanged					)
-	Q_PROPERTY( bool				parentDebug			READ parentDebug									NOTIFY parentDebugChanged			)
-	Q_PROPERTY( bool				focusOnTab			READ focusOnTab			WRITE setFocusOnTab			NOTIFY focusOnTabChanged			)
-	Q_PROPERTY( bool				hasError			READ hasError			WRITE setHasError			NOTIFY hasErrorChanged				)
-	Q_PROPERTY( bool				hasWarning			READ hasWarning			WRITE setHasWarning			NOTIFY hasWarningChanged			)
-	Q_PROPERTY( bool				runOnChange			READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged			)
-	Q_PROPERTY( QQuickItem		*	childControlsArea	READ childControlsArea	WRITE setChildControlsArea										)
-	Q_PROPERTY( QQuickItem		*	section				READ section			WRITE setSection												)
-	Q_PROPERTY( QQuickItem		*	parentListView		READ parentListView									NOTIFY parentListViewChanged		)
-	Q_PROPERTY( QQuickItem		*	innerControl		READ innerControl		WRITE setInnerControl		NOTIFY innerControlChanged			)
-	Q_PROPERTY( QQuickItem		*	background			READ background			WRITE setBackground			NOTIFY backgroundChanged			)
-	Q_PROPERTY( QQmlComponent	*	rowComponent		READ rowComponent		WRITE setRowComponent		NOTIFY rowComponentChanged			)
-	Q_PROPERTY( QQmlComponents		rowComponents		READ rowComponents)
+	Q_PROPERTY( ControlType							controlType			READ controlType		WRITE setControlType											)
+	Q_PROPERTY( QString								name				READ name				WRITE setName				NOTIFY nameChanged					)
+	Q_PROPERTY( QString								title				READ title				WRITE setTitle				NOTIFY titleChanged					) //Basically whatever a human sees on their screen when they look at this specific item.
+	Q_PROPERTY( QString								info				READ info				WRITE setInfo				NOTIFY infoChanged					)
+	Q_PROPERTY( QString								helpMD				READ helpMD											NOTIFY helpMDChanged				)
+	Q_PROPERTY( bool								isBound				READ isBound			WRITE setIsBound			NOTIFY isBoundChanged				)
+	Q_PROPERTY( bool								debug				READ debug				WRITE setDebug				NOTIFY debugChanged					)
+	Q_PROPERTY( bool								parentDebug			READ parentDebug									NOTIFY parentDebugChanged			)
+	Q_PROPERTY( bool								focusOnTab			READ focusOnTab			WRITE setFocusOnTab			NOTIFY focusOnTabChanged			)
+	Q_PROPERTY( bool								hasError			READ hasError			WRITE setHasError			NOTIFY hasErrorChanged				)
+	Q_PROPERTY( bool								hasWarning			READ hasWarning			WRITE setHasWarning			NOTIFY hasWarningChanged			)
+	Q_PROPERTY( bool								runOnChange			READ runOnChange		WRITE setRunOnChange		NOTIFY runOnChangeChanged			)
+	Q_PROPERTY( QQuickItem						*	childControlsArea	READ childControlsArea	WRITE setChildControlsArea										)
+	Q_PROPERTY( QQuickItem						*	section				READ section			WRITE setSection												)
+	Q_PROPERTY( QQuickItem						*	parentListView		READ parentListView									NOTIFY parentListViewChanged		)
+	Q_PROPERTY( QQuickItem						*	innerControl		READ innerControl		WRITE setInnerControl		NOTIFY innerControlChanged			)
+	Q_PROPERTY( QQuickItem						*	background			READ background			WRITE setBackground			NOTIFY backgroundChanged			)
+	Q_PROPERTY( QQmlComponent					*	rowComponent		READ rowComponent		WRITE setRowComponent		NOTIFY rowComponentChanged			)
+	Q_PROPERTY( QQmlListProperty<QQmlComponent>		rowComponents		READ rowComponents)
 
 
 public:
@@ -96,15 +94,15 @@ public:
 	bool			runOnChange()			const	{ return _runOnChange;			}
 
 
-	JASPControlWrapper		*	getWrapper()				const { return _wrapper; }
-	QQmlComponent			*	rowComponent()				const { return _rowComponents.length() > 0 ? _rowComponents.at(0) : nullptr;	}
-	QQmlComponent			*	rowComponent(int)			const;
-	QQmlComponents				rowComponents();
-	int							rowComponentsCount()		const;
-	void						setRowComponent(	QQmlComponent * newRowComponent);
-	void						appendRowComponent(	QQmlComponent * newRowComponent);
-	void						clearRowComponents();
-	QList<QQmlComponent*>	&	getRowComponents()				{ return _rowComponents; }
+	JASPControlWrapper				*	getWrapper()				const { return _wrapper; }
+	QQmlComponent					*	rowComponent()				const { return _rowComponents.length() > 0 ? _rowComponents.at(0) : nullptr;	}
+	QQmlComponent					*	rowComponent(int)			const;
+	QQmlListProperty<QQmlComponent>		rowComponents();
+	int									rowComponentsCount()		const;
+	void								setRowComponent(	QQmlComponent * newRowComponent);
+	void								appendRowComponent(	QQmlComponent * newRowComponent);
+	void								clearRowComponents();
+	QList<QQmlComponent*>			&	getRowComponents()				{ return _rowComponents; }
 
 	static QString					ControlTypeToFriendlyString(ControlType controlType);
 	static QList<JASPControlBase*>	getChildJASPControls(const QQuickItem* item);
@@ -158,10 +156,10 @@ protected:
 			void					componentComplete() override;
 			void					_setType();
 
-	static	void					appendRowComponent(QQmlListProperty<QQmlComponent>*, QQmlComponent*);
-	static	int						rowComponentsCount(QQmlListProperty<QQmlComponent>*);
-	static	QQmlComponent*			rowComponent(QQmlListProperty<QQmlComponent>*, int);
-	static	void					clearRowComponents(QQmlListProperty<QQmlComponent>*);
+	static	void					appendRowComponent(	QQmlListProperty<QQmlComponent>*, QQmlComponent*);
+	static	int						rowComponentsCount(	QQmlListProperty<QQmlComponent>*);
+	static	QQmlComponent*			rowComponent(		QQmlListProperty<QQmlComponent>*, int);
+	static	void					clearRowComponents(	QQmlListProperty<QQmlComponent>*);
 
 
 			void					setParentDebugToChildren(bool debug);
