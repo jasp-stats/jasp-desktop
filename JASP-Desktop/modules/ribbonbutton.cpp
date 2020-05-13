@@ -106,20 +106,20 @@ void RibbonButton::bindYourself()
 
 void RibbonButton::setMenu(const Modules::AnalysisEntries& entries)
 {
-	Modules::AnalysisEntries oldEntries = _menuEntries;
 	_menuEntries = entries;
 
-	for(size_t i=0; i<oldEntries.size(); i++)
+	for(size_t i=0; i<_oldTitles.size(); i++)
 		if(i < _menuEntries.size())
-			emit analysisTitleChanged(_moduleName, oldEntries[i]->title() , _menuEntries[i]->title());
-
-	for(auto * oldEntry : oldEntries)
-		delete oldEntry;
+			emit analysisTitleChanged(_moduleName, _oldTitles[i] , _menuEntries[i]->title());
 
 
 	_analysisMenuModel->setAnalysisEntries(entries);
 
 	emit analysisMenuChanged();
+
+	_oldTitles.clear();
+	for(const Modules::AnalysisEntry * entry : _menuEntries)
+		_oldTitles.push_back(entry->title());
 }
 
 void RibbonButton::setRequiresData(bool requiresDataset)
@@ -254,7 +254,7 @@ void RibbonButton::reloadMenuFromDescriptionQml()
 
 	try
 	{
-		desc = Modules::DynamicModule::instantiateDescriptionQml(descriptionFile.readAll(), QUrl(descriptionFileInfo.absoluteFilePath()), _moduleName);
+		desc = Modules::DynamicModule::instantiateDescriptionQml(descriptionFile.readAll(), QUrl::fromLocalFile(descriptionFileInfo.absoluteFilePath()), _moduleName);
 
 		setRequiresData(		desc->requiresData());
 		setTitle(			fq(	desc->title()	)	);

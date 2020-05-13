@@ -165,6 +165,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<Modules::GroupTitle>						("JASP.Module", 1, 0, "GroupTitle");
 	qmlRegisterType<Modules::RequiredPackage>					("JASP.Module", 1, 0, "Package");
 	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",				"Superclass for menu entries, shouldn't be instantiated manually");
+	qmlRegisterUncreatableType<Modules::DynamicModule>			("JASP.Module", 1, 0, "DynamicModule",			"Can only be instantiated by JASP");
 	qmlRegisterUncreatableType<Modules::DescriptionChildBase>	("JASP.Module", 1, 0, "DescriptionChildBase",	"Superclass for Description info, shouldn't be instantiated manually");
 
 	QTimer::singleShot(0, [&](){ loadQML(); });
@@ -499,9 +500,11 @@ void MainWindow::loadQML()
 	//And now we disconnect the exit on fail lambda because we won't be needing it later
 	disconnect(exitOnFailConnection);
 
+
 	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
 	_ribbonModel->loadModules(	{ "Descriptives", "T-Tests", "ANOVA", "Regression", "Frequencies", "Factor" },
 								{ "Audit", "BAIN", "Discover Distributions", "Equivalence T-Tests", "JAGS", "Machine Learning", "Meta Analysis", "Network", "SEM", "Summary Statistics", "Visual Modeling"});
+
 }
 
 QObject * MainWindow::loadQmlData(QString data, QUrl url)
