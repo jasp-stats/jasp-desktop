@@ -20,12 +20,11 @@ import QtQuick	2.0
 import JASP		1.0
 import QtQuick.Layouts 1.3
 
-JASPListControl
+JASPGridControl
 {
 	id					: componentsList
 	controlType			: JASPControlBase.ComponentsList
 	itemComponent		: components
-	listRectangle.color	: jaspTheme.analysisBackgroundColor
 
 	signal addTerm(string term);
 	signal removeTerm(string term);

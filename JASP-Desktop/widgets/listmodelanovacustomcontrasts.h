@@ -37,6 +37,8 @@ public:
 	OptionsTable *	createOption()													override;
 	void			initValues(OptionsTable * bindHere)								override;
 	void			reset()															override;
+	void			setup()															override;
+
 
 	QString			colName()												const				{ return _colName;	}
 	QString			getDefaultColName(size_t index)								const	override;

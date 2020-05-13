@@ -54,6 +54,7 @@ public:
 				void				addRow(						bool emitStuff = true);
 				void				removeRow(size_t index,		bool emitStuff = true);
 	virtual		void				reset();
+	virtual		void				setup() {}
 				void				setInitialColumnCount(	size_t initialColumnCount)	{ _initialColCnt = initialColumnCount;	}
 				void				setInitialRowCount(		size_t initialRowCount)		{ _initialRowCnt = initialRowCount;		}
 	virtual		void				itemChanged(int column, int row, QVariant value, QString type);

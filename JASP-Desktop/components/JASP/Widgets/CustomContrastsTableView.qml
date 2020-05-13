@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2020 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -25,21 +25,25 @@ BasicThreeButtonTableView
 {
 	id				: customContrastsTV
 
-	itemType		: "double"
-	modelType		: "CustomContrasts"
-	cornerText		: ""
-	minimum			: -Infinity
-	decimals		: 3
+	preferredHeight	: Math.max(150 * preferencesModel.uiScale,10 * preferencesModel.uiScale + tableView.y + tableView.tableHeight)
 
+	tableType			: "userDataInput"
+	itemType			: "string"
+	modelType			: "CustomContrasts"
+	initialColumnCount	: 1
+	initialRowCount		: 0
+	buttonsInRow		: true
+
+	cornerText			: ""
 
 	buttonAddText		: qsTr("Add Contrast")
-	onAddClicked		: tableView.addRow()
+	onAddClicked		: (modelType == "AnovaCustomContrasts") ? tableView.addRow() : tableView.addColumn()
 
 	buttonDeleteText	: qsTr("Delete Contrast")
-	onDeleteClicked		: tableView.removeARow()
-	buttonDeleteEnabled	: tableView.rowCount > 1
+	onDeleteClicked		: (modelType == "AnovaCustomContrasts") ? tableView.removeARow() : tableView.removeAColumn()
+	buttonDeleteEnabled	: (modelType == "AnovaCustomContrasts") ? (tableView.rowCount > 1) : (tableView.columnCount > (tableView.variableCount + 1))
 
 	buttonResetText		: qsTr("Reset")
 	onResetClicked		: tableView.reset()
-	buttonResetEnabled	: tableView.rowCount > 0
+	buttonResetEnabled	: (modelType == "AnovaCustomContrasts") ? (tableView.rowCount > 0) : tableView.columnCount > (tableView.variableCount + 1)
 }

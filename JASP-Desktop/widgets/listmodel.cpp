@@ -234,7 +234,7 @@ void ListModel::setUpRowControls()
 			bool hasOptions = _rowControlsOptions.contains(key);
 			RowControls* rowControls = new RowControls(this, _rowComponents, _rowControlsOptions[key]);
 			_rowControlsMap[key] = rowControls;
-			rowControls->init(row, key, !hasOptions);
+			rowControls->init(row, term, !hasOptions);
 		}
 		else
 			_rowControlsMap[key]->setContext(row, key);

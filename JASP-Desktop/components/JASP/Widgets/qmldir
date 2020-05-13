@@ -44,4 +44,3 @@ SetSeed                     1.0 SetSeed.qml
 BasicThreeButtonTableView   1.0 BasicThreeButtonTableView.qml
 ControlErrorMessage         1.0 ControlErrorMessage.qml
 LoadingIndicator            1.0 LoadingIndicator.qml
-MarginalMeansContrastsTableView 1.0 MarginalMeansContrastsTableView.qml

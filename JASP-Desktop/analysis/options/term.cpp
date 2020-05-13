@@ -20,6 +20,14 @@
 #include "utilities/qutils.h"
 #include <sstream>
 
+const char * Term::separator =
+#ifdef _WIN32
+		" * ";
+#else
+		" \xE2\x88\x97 ";
+#endif
+
+
 Term::Term(const std::vector<std::string>	components)	{ initFrom(tql(components));	}
 Term::Term(const std::string				component)	{ initFrom(tq(component));		}
 Term::Term(const QStringList				components)	{ initFrom(components);			}
@@ -27,13 +35,6 @@ Term::Term(const QString					component)	{ initFrom(component);			}
 
 void Term::initFrom(const QStringList components)
 {
-	const char * separator =
-#ifdef _WIN32
-			" * ";
-#else
-			" \xE2\x88\x97 ";
-#endif
-
 	_asQString	= components.join(separator);
 	_components = components;
 }

@@ -123,7 +123,6 @@
         <file>components/JASP/Theme/DarkTheme.qml</file>
         <file>components/JASP/Widgets/FileMenu/PrefsUI.qml</file>
         <file>components/JASP/Controls/InputListView.qml</file>
-        <file>components/JASP/Controls/JASPListControl.qml</file>
         <file>components/JASP/Controls/FormulaField.qml</file>
         <file>components/JASP/Controls/RowComponents.qml</file>
         <file>components/JASP/Controls/ModelTermsList.qml</file>
@@ -135,6 +134,7 @@
         <file>components/JASP/Widgets/ControlErrorMessage.qml</file>
         <file>components/JASP/Widgets/LoadingIndicator.qml</file>
         <file>components/JASP/Controls/Text.qml</file>
-        <file>components/JASP/Widgets/MarginalMeansContrastsTableView.qml</file>
+        <file>components/JASP/Controls/JASPGridControl.qml</file>
+        <file>components/JASP/Controls/JASPGridViewControl.qml</file>
     </qresource>
 </RCC>

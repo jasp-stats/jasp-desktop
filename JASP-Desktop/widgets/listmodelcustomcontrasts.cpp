@@ -18,15 +18,16 @@
 
 #include "log.h"
 #include "utilities/qutils.h"
-#include "listmodelmarginalmeanscontrasts.h"
+#include "listmodelcustomcontrasts.h"
 #include "analysis/analysisform.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optionterm.h"
 #include "analysis/options/optionboolean.h"
 #include "r_functionwhitelist.h"
 #include "boundqmltableview.h"
+#include "listmodelrepeatedmeasuresfactors.h"
 
-ListModelMarginalMeansContrasts::ListModelMarginalMeansContrasts(BoundQMLTableView *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
+ListModelCustomContrasts::ListModelCustomContrasts(BoundQMLTableView *parent, QString tableType) : ListModelTableViewBase(parent, tableType)
 {
 	_defaultCellVal = "0";
 	_colNames.clear();
@@ -37,63 +38,84 @@ ListModelMarginalMeansContrasts::ListModelMarginalMeansContrasts(BoundQMLTableVi
 	parent->setItemProperty("parseDefaultValue", false);
 	parent->setItemProperty("defaultEmptyValue", _defaultCellVal);
 
-	connect(DataSetPackage::pkg(), &DataSetPackage::labelChanged,		this, &ListModelMarginalMeansContrasts::labelChanged);
-	connect(DataSetPackage::pkg(), &DataSetPackage::labelsReordered,	this, &ListModelMarginalMeansContrasts::labelsReordered);
+	connect(DataSetPackage::pkg(), &DataSetPackage::labelChanged,		this, &ListModelCustomContrasts::labelChanged);
+	connect(DataSetPackage::pkg(), &DataSetPackage::labelsReordered,	this, &ListModelCustomContrasts::labelsReordered);
 
-	connect(this, &ListModelMarginalMeansContrasts::variableCountChanged,	[&]() { listView()->setItemProperty("variableCount", _variables.size()); });
+	connect(this, &ListModelCustomContrasts::variableCountChanged,	[&]() { listView()->setItemProperty("variableCount", _variables.size()); });
 	connect(listView()->item(), SIGNAL(scaleFactorChanged()),			this, SLOT(scaleFactorChanged()));
 }
 
-void ListModelMarginalMeansContrasts::sourceTermsChanged(const Terms *, const Terms *)
+void ListModelCustomContrasts::sourceTermsChanged(const Terms *, const Terms *)
 {
-	_resetValuesFromSource();
+	_resetValuesEtc();
 }
 
-void ListModelMarginalMeansContrasts::_resetValuesFromSource()
+QStringList ListModelCustomContrasts::_getVariables()
 {
-	beginResetModel();
+	if (!_colName.isEmpty())
+		return _colName.split(Term::separator);
+	else
+		return getSourceTerms().asQList();
+}
 
-	int nbContrast = int(_columnCount) - _variables.size();
-	Terms sourceTerms = getSourceTerms();
-	QList<QString> newVariables = sourceTerms.asQList();
-	QVector<QVector<QVariant> >	newValues;
+void ListModelCustomContrasts::_getVariablesAndLabels(QStringList& variables, QVector<QVector<QVariant> >& allLabels)
+{
+	variables = _getVariables();
 
 	// First set all combinations of all labels in values
-	for (const QString& newVariable : newVariables)
+	for (const QString& newVariable : variables)
 	{
-		columnType colType = DataSetPackage::pkg()->getColumnType(fq(newVariable));
 		QList<QString> labels;
-		if (colType == columnType::scale)
-		{
-			if (_scaleFactor == 0)
-				labels = {"0"};
-			else
-			{
-				labels.push_back(QString::number(-_scaleFactor));
-				labels.push_back("0");
-				labels.push_back(QString::number(_scaleFactor));
-			}
-		}
+		if (_factors.contains(newVariable))
+			labels = _factors[newVariable];
 		else
-			labels = DataSetPackage::pkg()->getColumnLabelsAsStringList(fq(newVariable));
+		{
+			columnType colType = DataSetPackage::pkg()->getColumnType(fq(newVariable));
+			if (colType == columnType::scale)
+			{
+				if (_scaleFactor == 0)
+					labels = {"0"};
+				else
+				{
+					labels.push_back(QString::number(-_scaleFactor));
+					labels.push_back("0");
+					labels.push_back(QString::number(_scaleFactor));
+				}
+			}
+			else
+				labels = DataSetPackage::pkg()->getColumnLabelsAsStringList(fq(newVariable));
+		}
 
-		QVector<QVector<QVariant> > copyValues = newValues;
-		int len = copyValues.length() > 0 ? copyValues[0].length() : 1;
-		newValues.clear();
+		QVector<QVector<QVariant> > copyAllLabels = allLabels;
+		int len = copyAllLabels.length() > 0 ? copyAllLabels[0].length() : 1;
+		allLabels.clear();
 
-		for (const auto & copyValue : copyValues)
+		for (const auto & copyValue : copyAllLabels)
 		{
 			QVector<QVariant> oneRow;
 			for (int i = 0; i < labels.size(); i++)
 				oneRow.append(copyValue);
-			newValues.push_back(oneRow);
+			allLabels.push_back(oneRow);
 		}
 
 		QVector<QVariant> lastRow;
 		for (const QString& label : labels)
 			lastRow.insert(lastRow.length(), len, label);
-		newValues.push_back(lastRow);
+		allLabels.push_back(lastRow);
 	}
+
+}
+
+void ListModelCustomContrasts::_resetValuesEtc()
+{
+	QStringList newVariables;
+	QVector<QVector<QVariant> > newValues;
+
+	_getVariablesAndLabels(newVariables, newValues);
+
+	beginResetModel();
+
+	int nbContrast = int(_columnCount) - _variables.size();
 
 	// Maps the new variables with the old ones (if they existed)
 	QMap<int, int> variablesMap;
@@ -148,22 +170,36 @@ void ListModelMarginalMeansContrasts::_resetValuesFromSource()
 		rowMapping[row] = bestFitRow;
 	}
 
-	// For each contrast, set the value corresponding to the rowMapping
-	for (int i = 0; i < nbContrast; i++)
+	if (nbContrast == 0)
 	{
+		// No contrast yet: fill contrasts with default values.
 		QVector<QVariant> contrasts;
-		int oldContrastIndex = _variables.length() + i;
-
-		if (_values.length() <= oldContrastIndex)
+		for (size_t i = 0; i < _initialColCnt; i++)
 		{
-			Log::log() << "ListModelMarginalMeansContrasts::sourceTermsChanged: Not the same amount of contrasts!!!" << std::endl;
-			continue;
+			for (int row = 0; row < newMaxRows; row++)
+				contrasts.push_back(_defaultCellVal);
+			newValues.push_back(contrasts);
 		}
+	}
+	else
+	{
+		// For each contrast, set the value corresponding to the rowMapping
+		for (int i = 0; i < nbContrast; i++)
+		{
+			QVector<QVariant> contrasts;
+			int oldContrastIndex = _variables.length() + i;
 
-		for (int row = 0; row < newMaxRows; row++)
-			contrasts.push_back(rowMapping[row] >= 0 ? _values[oldContrastIndex][rowMapping[row]] : _defaultCellVal);
+			if (_values.length() <= oldContrastIndex)
+			{
+				Log::log() << "ListModelCustomContrasts::sourceTermsChanged: Not the same amount of contrasts!!!" << std::endl;
+				continue;
+			}
 
-		newValues.push_back(contrasts);
+			for (int row = 0; row < newMaxRows; row++)
+				contrasts.push_back(rowMapping[row] >= 0 ? _values[oldContrastIndex][rowMapping[row]] : _defaultCellVal);
+
+			newValues.push_back(contrasts);
+		}
 	}
 
 
@@ -189,7 +225,7 @@ void ListModelMarginalMeansContrasts::_resetValuesFromSource()
 }
 
 
-QString ListModelMarginalMeansContrasts::getDefaultColName(size_t index) const
+QString ListModelCustomContrasts::getDefaultColName(size_t index) const
 {
 	int indexi = int(index);
 
@@ -199,14 +235,14 @@ QString ListModelMarginalMeansContrasts::getDefaultColName(size_t index) const
 		return tr("Contrast %1").arg(indexi - _variables.size() + 1);
 }
 
-void ListModelMarginalMeansContrasts::reset()
+void ListModelCustomContrasts::reset()
 {
-	if (_values.length() <= _variables.length() + 1)
+	if (_values.length() <= _variables.length() + _initialColCnt)
 		return;
 
 	beginResetModel();
 
-	_values.erase(_values.begin() + _variables.length() + 1, _values.end());
+	_values.erase(_values.begin() + _variables.length() + _initialColCnt, _values.end());
 	_columnCount = size_t(_values.length());
 	_colNames.erase(_colNames.begin() + _columnCount, _colNames.end());
 
@@ -217,12 +253,29 @@ void ListModelMarginalMeansContrasts::reset()
 
 }
 
-int ListModelMarginalMeansContrasts::getMaximumColumnWidthInCharacters(size_t columnIndex) const
+void ListModelCustomContrasts::setup()
+{
+	// This cannot be done in the constructor: the form is then not yet known.
+	connect(_tableView->form(), &AnalysisForm::dataSetChanged, this, &ListModelCustomContrasts::dataSetChangedHandler,	Qt::QueuedConnection	);
+	QString factorsSourceName = _tableView->getItemProperty("factorsSource").toString();
+	if (!factorsSourceName.isEmpty())
+	{
+		ListModelRepeatedMeasuresFactors* factorsSourceModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(_tableView->form()->getModel(factorsSourceName));
+		if (factorsSourceModel)
+		{
+			_setFactorsSource(factorsSourceModel);
+			connect(factorsSourceModel, &ListModelRepeatedMeasuresFactors::modelChanged, this, &ListModelCustomContrasts::factorsSourceChanged);
+		}
+	}
+	_loadColumnInfo();
+}
+
+int ListModelCustomContrasts::getMaximumColumnWidthInCharacters(size_t columnIndex) const
 {
 	return 5;
 }
 
-OptionsTable *ListModelMarginalMeansContrasts::createOption()
+OptionsTable *ListModelCustomContrasts::createOption()
 {
 	Options* optsTemplate =		new Options();
 	optsTemplate->add("name",	new OptionString());
@@ -230,30 +283,56 @@ OptionsTable *ListModelMarginalMeansContrasts::createOption()
 	optsTemplate->add("values", new OptionTerm());
 	optsTemplate->add("isContrast",	new OptionBoolean(true));
 
-
 	OptionsTable * returnThis = new OptionsTable(optsTemplate);
 
-	if(_initialColCnt > 0)
+	QStringList variables;
+	QVector<QVector<QVariant> > allLables;
+
+	_getVariablesAndLabels(variables, allLables);
+
+	if (variables.length() > 0)
 	{
-		std::vector<std::string> stdlevels;
-		for (int row=0; row<_initialRowCnt; row++)
-			stdlevels.push_back(fq(getDefaultRowName(row)));
-
 		std::vector<Options*> allOptions;
+		std::vector<std::string> rowNames;
 
-		for (int colIndex = 0; colIndex < _initialColCnt; colIndex++)
+		for (int row = 0; row < allLables[0].length(); row++)
+			rowNames.push_back(fq(getDefaultRowName(row)));
+
+		int col = 0;
+		for (const QString& variable : variables)
 		{
 			Options* options =			new Options();
-			options->add("name",		new OptionString(fq(getDefaultColName(colIndex))));
-			options->add("levels",		new OptionVariables(stdlevels));
-			options->add("isContrast",	new OptionBoolean(true));
+			options->add("name",		new OptionString(fq(variable)));
+			options->add("levels",		new OptionVariables(rowNames));
+			options->add("isContrast",	new OptionBoolean(false));
 
 			std::vector<std::string> tempValues;
-			for (const auto & level: stdlevels)
-				tempValues.push_back(_defaultCellVal.toString().toStdString());
+			for (const QVariant & label: allLables[col])
+				tempValues.push_back(label.toString().toStdString());
 			options->add("values",	new OptionTerm(tempValues));
 
 			allOptions.push_back(options);
+			col++;
+		}
+
+		if (_initialColCnt > 0)
+		{
+			std::string defValue = _defaultCellVal.toString().toStdString();
+
+			for (int colIndex = 0; colIndex < _initialColCnt; colIndex++)
+			{
+				Options* options =			new Options();
+				options->add("name",		new OptionString(fq(getDefaultColName(variables.length() + colIndex))));
+				options->add("levels",		new OptionVariables(rowNames));
+				options->add("isContrast",	new OptionBoolean(true));
+
+				std::vector<std::string> tempValues;
+				for (const auto & level: rowNames)
+					tempValues.push_back(defValue);
+				options->add("values",	new OptionTerm(tempValues));
+
+				allOptions.push_back(options);
+			}
 		}
 
 		returnThis->setValue(allOptions);
@@ -262,7 +341,7 @@ OptionsTable *ListModelMarginalMeansContrasts::createOption()
 	return returnThis;
 }
 
-void ListModelMarginalMeansContrasts::initValues(OptionsTable * bindHere)
+void ListModelCustomContrasts::initValues(OptionsTable * bindHere)
 {
 	_colNames.clear();
 	_rowNames.clear();
@@ -325,7 +404,7 @@ void ListModelMarginalMeansContrasts::initValues(OptionsTable * bindHere)
 	emit rowCountChanged();
 }
 
-void ListModelMarginalMeansContrasts::modelChangedSlot() // Should move this to listmodeltableviewbase as well probably? And also connect columnCount and colNames etc
+void ListModelCustomContrasts::modelChangedSlot() // Should move this to listmodeltableviewbase as well probably? And also connect columnCount and colNames etc
 {
 	if (_boundTo)
 	{
@@ -355,7 +434,7 @@ void ListModelMarginalMeansContrasts::modelChangedSlot() // Should move this to 
 	}
 }
 
-void ListModelMarginalMeansContrasts::labelChanged(QString columnName, QString originalLabel, QString newLabel)
+void ListModelCustomContrasts::labelChanged(QString columnName, QString originalLabel, QString newLabel)
 {
 	bool isChanged = _labelChanged(columnName, originalLabel, newLabel);
 
@@ -363,7 +442,7 @@ void ListModelMarginalMeansContrasts::labelChanged(QString columnName, QString o
 		emit modelChanged();
 }
 
-bool ListModelMarginalMeansContrasts::_labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel)
+bool ListModelCustomContrasts::_labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel)
 {
 	bool isChanged = false;
 	int col = _variables.indexOf(columnName);
@@ -383,12 +462,42 @@ bool ListModelMarginalMeansContrasts::_labelChanged(const QString& columnName, c
 	return isChanged;
 }
 
-void ListModelMarginalMeansContrasts::labelsReordered(QString )
+void ListModelCustomContrasts::_setFactorsSource(ListModelRepeatedMeasuresFactors *factorsSourceModel)
 {
-	_resetValuesFromSource();
+	_factorsSourceModel = factorsSourceModel;
+
+	_setFactors();
 }
 
-void ListModelMarginalMeansContrasts::scaleFactorChanged()
+void ListModelCustomContrasts::_setFactors()
+{
+	_factors.clear();
+
+	if (_factorsSourceModel)
+	{
+		std::vector<std::pair<std::string, std::vector<std::string> > > factors = _factorsSourceModel->getFactors();
+		for (const auto& factor : factors)
+		{
+			QList<QString> levels;
+			for (const std::string& level : factor.second)
+				levels.push_back(QString::fromStdString(level));
+			_factors[QString::fromStdString(factor.first)] = levels;
+		}
+	}
+
+}
+
+void ListModelCustomContrasts::_loadColumnInfo()
+{
+	setColName(	_tableView->getItemProperty("colName").toString());
+}
+
+void ListModelCustomContrasts::labelsReordered(QString )
+{
+	_resetValuesEtc();
+}
+
+void ListModelCustomContrasts::scaleFactorChanged()
 {
 	double oldScaleFactor = _scaleFactor;
 	_scaleFactor = listView()->getItemProperty("scaleFactor").toDouble();
@@ -403,7 +512,7 @@ void ListModelMarginalMeansContrasts::scaleFactorChanged()
 	if (scaleVariables.length() > 0)
 	{
 		if (oldScaleFactor == 0 || _scaleFactor == 0) // this will decrease or increase the number of rows
-			_resetValuesFromSource();
+			_resetValuesEtc();
 		else
 		{
 			beginResetModel();
@@ -418,4 +527,26 @@ void ListModelMarginalMeansContrasts::scaleFactorChanged()
 		}
 	}
 
+}
+
+void ListModelCustomContrasts::setColName(QString colName)
+{
+	if (_colName == colName)
+		return;
+
+	_colName = colName;
+	emit colNameChanged(_colName);
+
+	_resetValuesEtc();
+}
+
+void ListModelCustomContrasts::dataSetChangedHandler()
+{
+	_resetValuesEtc();
+}
+
+void ListModelCustomContrasts::factorsSourceChanged()
+{
+	_setFactors();
+	_resetValuesEtc();
 }

@@ -16,28 +16,35 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef LISTMODELMARGINALMEANSCONTRASTS_H
-#define LISTMODELMARGINALMEANSCONTRASTS_H
+#ifndef LISTMODELCUSTOMCONTRASTS_H
+#define LISTMODELCUSTOMCONTRASTS_H
 
 #include "listmodeltableviewbase.h"
 
-class ListModelMarginalMeansContrasts : public ListModelTableViewBase
+class ListModelRepeatedMeasuresFactors;
+
+class ListModelCustomContrasts : public ListModelTableViewBase
 {
 	Q_OBJECT
-	Q_PROPERTY(int variableCount		READ variableCount		NOTIFY variableCountChanged)
+	Q_PROPERTY(QString colName		READ colName	WRITE setColName	NOTIFY colNameChanged	)
+	Q_PROPERTY(int variableCount	READ variableCount					NOTIFY variableCountChanged)
 
 public:
-	explicit ListModelMarginalMeansContrasts(BoundQMLTableView * parent, QString tableType);
+	explicit ListModelCustomContrasts(BoundQMLTableView * parent, QString tableType);
 
 	int getMaximumColumnWidthInCharacters(size_t columnIndex)	const	override;
 
 	QString			getDefaultColName(size_t index)				const	override;
+	QString			getDefaultRowName(size_t index)				const	override { return QString::number(index + 1); }
+
 	void			reset()												override;
+	void			setup()												override;
 	OptionsTable *	createOption()										override;
 	void			initValues(OptionsTable * bindHere)					override;
 	bool			isEditable(const QModelIndex& index)		const	override	{ return index.column() >= _variables.length(); }
 	QString			getItemInputType(const QModelIndex& index)	const	override	{ return index.column() >= _variables.length() ? "formula" : "string"; }
 	int				variableCount()								const				{ return _variableCount; }
+	QString			colName()									const				{ return _colName;	}
 
 
 public slots:
@@ -46,20 +53,33 @@ public slots:
 	void labelChanged(	 QString columnName, QString originalLabel, QString newLabel);
 	void labelsReordered(QString columnName);
 	void scaleFactorChanged();
+	void setColName(QString colName);
+	void dataSetChangedHandler();
+	void factorsSourceChanged();
 
 signals:
 	void variableCountChanged();
-
+	void colNameChanged(QString colName);
 
 protected:
-	QList<QString>	_variables;
-	int				_variableCount	= 0;
-	double			_scaleFactor	= 1;
+	QList<QString>						_variables;
+	int									_variableCount	= 0;
+	double								_scaleFactor	= 1;
+	ListModelRepeatedMeasuresFactors*	_factorsSourceModel;
+	QString								_colName;
+	QMap<QString, QList<QString> >		_factors;
+
 
 private:
-	void _resetValuesFromSource();
-	bool _labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel);
+	void		_resetValuesEtc();
+	bool		_labelChanged(const QString& columnName, const QString& originalLabel, const QString& newLabel);
+	void		_setFactorsSource(ListModelRepeatedMeasuresFactors* factorsSourceModel);
+	void		_setFactors();
+	void		_loadColumnInfo();
+	QStringList	_getVariables();
+	void		_getVariablesAndLabels(QStringList& variables, QVector<QVector<QVariant> >& allLabels);
+
 
 };
 
-#endif // LISTMODELMARGINALMEANSCONTRASTS_H
+#endif // LISTMODELCUSTOMCONTRASTS_H

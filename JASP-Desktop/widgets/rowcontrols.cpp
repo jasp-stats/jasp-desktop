@@ -26,7 +26,7 @@
 
 // Cannot do this code in the constructor: the Component create function will call the addJASPControl method (JASPControlBase, en ListView),
 // but to call the ListView needs to have already the instance of the RowControls to be able to call addJASPControl.
-void RowControls::init(int row, const QString& key, bool isNew)
+void RowControls::init(int row, const Term& key, bool isNew)
 {
 	QMLListView* listView = _parentModel->listView();
 	int col = 0;
@@ -42,7 +42,8 @@ void RowControls::init(int row, const QString& key, bool isNew)
 		context->setContextProperty("isNew", isNew);
 		context->setContextProperty("fromRowComponents", _rowControlsVarMap);
 		context->setContextProperty("rowIndex",	row);
-		context->setContextProperty("rowValue", key);
+		context->setContextProperty("rowValue", key.asQString());
+		context->setContextProperty("rowValueIsInteraction", key.components().size() > 1);
 
 		QQuickItem* obj = qobject_cast<QQuickItem*>(comp->create(context));
 
