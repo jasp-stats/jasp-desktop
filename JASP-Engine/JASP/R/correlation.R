@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2013-2018 University of Amsterdam
+# Copyright (C) 2013-2020 University of Amsterdam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,6 +25,26 @@ Correlation <- function(jaspResults, dataset, options){
   .corrHeatmap(jaspResults, options, corrResults, ready)
   
   return()
+}
+
+.corrGetTests <- function(options){
+  tests <- c("pearson", "spearman", "kendall")
+  testsNames <- c(gettext("Pearson's"), gettext("Spearman's"), gettext("Kendall's Tau"))
+  
+  whichTests <- c(options[['pearson']], options[['spearman']], options[['kendallTauB']])
+  usedTests <- tests[whichTests]
+  usedTestsNames <- testsNames[whichTests]
+  
+  return(list(
+    tests = tests, testsNames = testsNames,
+    usedTests = usedTests, usedTestsNames = usedTestsNames
+  ))
+}
+
+.corrTestChecked <- function(test = c('pearson', 'spearman', 'kendallsTauB'), options){
+  test <- match.arg(test) # ensures that 'kendall' is also valid
+  
+  return(isTRUE(options[[test]]))
 }
 
 # Preprocessing functions ----
@@ -270,8 +290,7 @@ Correlation <- function(jaspResults, dataset, options){
   pcor <- !length(options$conditioningVariables) == 0
 
   results <- list()
-  startProgressbar(length(vpair) * nrow(dataset)) # ticked in .createNonparametricConfidenceIntervals
-
+  #startProgressbar(length(vpair)) 
   for(i in seq_along(vpair)){
     # some variable pairs might be reusable, so we don't need to compute them again
     if(!is.null(jaspResults[[vpair[i]]])) {
@@ -302,69 +321,65 @@ Correlation <- function(jaspResults, dataset, options){
         errors$message <- gettextf("Number of observations is < %s", 3+length(options$conditioningVariables))
       }
       
-      stats <- c("estimate", "p.value", "conf.int", "vsmpr")
-      statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr") #these are apparently some form of index? And copied... it is defined again in .corr.test and I guess they should always be the same. Which means this is pretty bad practice, to have it defined twice, but also means I shouldn't put gettext around it.
+      currentResults <- list()
+      testErrors     <- list()
+      currentResults[['sample.size']] <- nrow(data)
       
-      if(isFALSE(errors)){
-        pearson <- .corr.test(x = data[,1], y = data[,2], z = condData, 
-                              method = "pearson", alternative = alt, 
-                              conf.level = options$confidenceIntervalsInterval)
-        pearsonErrors <- pearson$errors
-        pearson <- pearson$result
+      # even if we do not want the specific tests results
+      # we still want the output as NaN - to fill the jaspTables correctly
+      # so we still loop over all tests - .corr.test() returns empty lists if isFALSE(compute)
+      for(test in c('pearson', 'spearman', 'kendall')){
+        compute <- isFALSE(errors) && .corrTestChecked(test, options)
         
-        spearman <- .corr.test(x = data[,1], y = data[,2], z = condData, 
-                               method = "spearman", alternative = alt, 
-                               conf.level = options$confidenceIntervalsInterval)
-        spearmanErrors <- spearman$errors
-        spearman <- spearman$result
-        
-        kendall <- .corr.test(x = data[,1], y = data[,2], z = condData, 
-                              method = "kendall", alternative = alt, 
-                              conf.level = options$confidenceIntervalsInterval)
-        kendallErrors <- kendall$errors
-        kendall <- kendall$result
-      } else {
-        pearson <- spearman <- kendall <- rep(NaN, length(statsNames))
-        names(pearson) <- names(spearman) <- names(kendall) <- statsNames
-        pearsonErrors <- spearmanErrors <- kendallErrors <- TRUE
+        r <- .corr.test(x = data[,1], y = data[,2], z = condData,
+                        method = test, alternative = alt,
+                        conf.level = options$confidenceIntervalsInterval,
+                        compute = compute, sample.size = currentResults[['sample.size']])
+        testErrors[[test]] <- r[['errors']]
+        currentResults[[test]] <- r[['result']]
       }
-      
       # stolen from manova.R
       shapiro <- .multivariateShapiroComputation(data, list(dependent = .unv(vcomb[[i]])))
       
-      results[[vpair[i]]] <- list(vars = .unv(vcomb[[i]]), vvars = vcomb[[i]], 
-                                  res = list(pearson=pearson, spearman=spearman, kendall=kendall, sample.size = nrow(data)),
-                                  errors = errors, 
-                                  testErrors = list(pearson = pearsonErrors, 
-                                                    spearman = spearmanErrors, 
-                                                    kendall = kendallErrors),
-                                  shapiro = shapiro)
+      results[[vpair[i]]] <- list(vars       = .unv(vcomb[[i]]), 
+                                  vvars      = vcomb[[i]],
+                                  res        = currentResults,
+                                  errors     = errors, 
+                                  testErrors = testErrors,
+                                  shapiro    = shapiro)
       
       # store state for pair
       state <- createJaspState(object = results[[vpair[i]]])
-      state$dependOn(options = c("hypothesis", "confidenceIntervalsInterval", "missingValues"), 
+      state$dependOn(options = c("hypothesis", "confidenceIntervalsInterval", "missingValues",
+                                 "pearson", "spearman", "kendallsTauB"),
                      optionContainsValue = list(variables = .unv(vcomb[[i]])))
       
       jaspResults[[vpair[i]]] <- state
-      
-    } 
+    }
+    
+    #progressbarTick()
   }
   
   
   jaspResults[['results']] <- createJaspState(object = results)
   jaspResults[['results']]$dependOn(options = c("variables", "conditioningVariables",  "hypothesis",
-                                                "confidenceIntervalsInterval", "missingValues"))
+                                                "confidenceIntervalsInterval", "missingValues",
+                                                "pearson", "spearman", "kendallsTauB"))
   
   
   return(results)
 }
 
 # helper that unifies output of cor.test and ppcor::pcor.test
-.corr.test <- function(x, y, z = NULL, alternative, method, exact = NULL, conf.level = 0.95, continuity = FALSE, ...){
+.corr.test <- function(x, y, z = NULL, alternative, method, exact = NULL, conf.level = 0.95, continuity = FALSE, compute=TRUE, sample.size, ...){
   stats <- c("estimate", "p.value", "conf.int", "vsmpr")
   statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
   
-  if(is.null(z)){
+  if(isFALSE(compute)){
+    result <- rep(NaN, length(statsNames))
+    names(result) <- statsNames
+    errors <- FALSE
+  } else if(is.null(z)){
     result <- try(expr = {
       cor.test(x = x, y = y, alternative = alternative, method = method, exact = exact, 
                conf.level = conf.level, continuity = continuity, ... = ...)}, silent = TRUE)
@@ -377,11 +392,19 @@ Correlation <- function(jaspResults, dataset, options){
       errors <- FALSE
       
       if(method != "pearson"){
-        result$conf.int <- .createNonparametricConfidenceIntervals(x = x, y = y, obsCor = result$estimate,
-                                                                   hypothesis = alternative, confLevel = conf.level,
-                                                                   method = method)
+        normal.approx.ci <- switch(method,
+                                   "spearman" = sample.size > 1290,
+                                   "kendall"  = sample.size > 100)
+        if(normal.approx.ci){
+          result$conf.int <- .corrNormalApproxConfidenceIntervals(obsCor = result$estimate, n = sample.size,
+                                                                  hypothesis = alternative, confLevel = conf.level)
+        } else{
+          result$conf.int <- .createNonparametricConfidenceIntervals(x = x, y = y, obsCor = result$estimate,
+                                                                     hypothesis = alternative, confLevel = conf.level,
+                                                                     method = method)
+        }
       }
-      result$vsmpr <- .VovkSellkeMPR(result$p.value)
+      result$vsmpr <- JASP:::.VovkSellkeMPR(result$p.value)
       result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
       result <- unlist(result[stats], use.names = FALSE)
       names(result) <- statsNames
@@ -408,7 +431,7 @@ Correlation <- function(jaspResults, dataset, options){
           result$p.value <- 1 - result$p.value/2
         }
       }
-      result$vsmpr <- .VovkSellkeMPR(result$p.value)
+      result$vsmpr <- JASP:::.VovkSellkeMPR(result$p.value)
       result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
       # TODO: CIs for partial correlations
       result$lower.ci <- NA
@@ -420,6 +443,7 @@ Correlation <- function(jaspResults, dataset, options){
   
   return(list(result = result, errors = errors))
 }
+
 
 .corrAssumptions <- function(jaspResults, dataset, options, ready, corrResults){
   # uses .multivariateShapiroComputation from manova.R
@@ -1280,6 +1304,29 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 ### helpers ----
+.corrNormalApproxConfidenceIntervals <- function(obsCor, n, hypothesis="two.sided", confLevel=0.95){
+  zCor <- atanh(obsCor)
+  se   <- 1/sqrt(n-3)
+  
+  alpha <- 1-confLevel
+  
+  if(hypothesis == "two.sided"){
+    z <- qnorm(p = alpha/2, lower.tail = FALSE)
+    upper.ci <- tanh(zCor + z * se)
+    lower.ci <- tanh(zCor - z * se)
+  } else if(hypothesis == "less"){
+    z <- qnorm(p = alpha, lower.tail = FALSE)
+    upper.ci <- tanh(zCor + z * se)
+    lower.ci <- -1
+  } else if(hypothesis == "greater"){
+    z <- qnorm(p = alpha, lower.tail = FALSE)
+    upper.ci <- 1
+    lower.ci <- tanh(zCor - z * se)
+  }
+  
+  return(c(lower.ci,upper.ci))
+}
+
 ### Utility functions for nonparametric confidence intervals ###
 .concordanceFunction <- function(i, j) {
   concordanceIndicator <- 0
@@ -1315,7 +1362,7 @@ Correlation <- function(jaspResults, dataset, options){
  if (method == "kendall") {
    concordanceSumsVector <- numeric(n)
     for (i in 1:n) {
-      progressbarTick() #Started in .corrComputeResults
+      # progressbarTick() #Started in .corrComputeResults
       concordanceSumsVector[i] <- .addConcordances(x, y, i)
     }
     sigmaHatSq <- 2 * (n-2) * var(concordanceSumsVector) / (n*(n-1))
