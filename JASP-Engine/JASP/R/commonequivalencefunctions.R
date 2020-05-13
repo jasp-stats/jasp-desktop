@@ -14,6 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+.equivalenceGetIntervalMessage <- function(lowerbound, upperbound) {
+  message <- gettextf("I ranges from %1$s to %2$s", 
+                      if(lowerbound == -Inf) "-\u221E" else lowerbound,
+                      if(upperbound == Inf) "\u221E" else upperbound)
+  message
+}
+
 .equivalencePriorandPosterior <- function(jaspResults, dataset, options, equivalenceBayesianTTestResults, ready, paired = FALSE) {
 
   # You only need to create this if it doesn't exist yet

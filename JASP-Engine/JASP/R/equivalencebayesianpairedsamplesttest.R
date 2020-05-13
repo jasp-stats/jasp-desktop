@@ -150,10 +150,7 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   if (ready)
     equivalenceBayesianPairedTTestTable$setExpectedSize(length(options$pairs))
 
-  message <- gettextf("I ranges from %1$s to %2$s", 
-                      ifelse(options$lowerbound == -Inf, "-\u221E", options$lowerbound), 
-                      ifelse(options$upperbound == Inf, "\u221E", options$upperbound))
-  equivalenceBayesianPairedTTestTable$addFootnote(message)
+  equivalenceBayesianPairedTTestTable$addFootnote(.equivalenceGetIntervalMessage(options$lowerbound, options$upperbound))
 
   jaspResults[["equivalenceBayesianPairedTTestTable"]] <- equivalenceBayesianPairedTTestTable
 
@@ -266,7 +263,7 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
 .massPriorPosteriorPairedTTestTable <- function(jaspResults, dataset, options, equivalenceBayesianPairedTTestResults, ready) {
 
   # Create table
-  equivalenceMassPairedTTestTable <- createJaspTable(title = gettext("Equivalence Mass Table"))
+  equivalenceMassPairedTTestTable <- createJaspTable(title = gettext("Prior and Posterior Mass"))
   equivalenceMassPairedTTestTable$dependOn(c("pairs", "equivalenceRegion", "priorWidth", "effectSizeStandardized","informative", "lower", "upper", "region",
                                              "informativeCauchyLocation", "informativeCauchyScale", "lowerbound", "upperbound", "lower_max", "upper_min",
                                              "informativeNormalMean", "informativeNormalStd", "informativeTLocation",
@@ -277,8 +274,8 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
   equivalenceMassPairedTTestTable$addColumnInfo(name = "variable1",   title = " ",                         type = "string")
   equivalenceMassPairedTTestTable$addColumnInfo(name = "separator",   title = " ",                         type = "separator")
   equivalenceMassPairedTTestTable$addColumnInfo(name = "variable2",   title = " ",                         type = "string")
-  equivalenceMassPairedTTestTable$addColumnInfo(name = "section",     title = gettext("Section"),                   type = "string")
-  equivalenceMassPairedTTestTable$addColumnInfo(name = "mass",        title = gettext("Mass"),                   type = "number")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "section",     title = gettext("Section"),          type = "string")
+  equivalenceMassPairedTTestTable$addColumnInfo(name = "mass",        title = gettext("Mass"),             type = "number")
 
   if (ready)
     equivalenceMassPairedTTestTable$setExpectedSize(length(options$pairs))
