@@ -171,7 +171,7 @@ public:
 
 	void unpackage();
 	bool initialized() const { return _initialized;	}
-	///Make sure url ends with the actual filename of the qml you are loading, otherwise translations will not work!
+	///Make sure url ends with the actual filename of the qml you are loading, otherwise translations will not work! Also make it with QUrl::fromLocalFile otherwise Windows messes things up
 	static Description * instantiateDescriptionQml(QString descriptionTxt, QUrl url, const std::string & moduleName);
 
 public slots:

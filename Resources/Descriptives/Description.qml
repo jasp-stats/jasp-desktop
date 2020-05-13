@@ -8,7 +8,7 @@ Description
 	description	: qsTr("This module offers the Descriptives and Reliability analyses.")
 	version		: "0.13"
 	author		: "JASP Team"
-	maintainer	: "JASP Team <jasp-stats.org>"
+	maintainer	: "JASP Team <info@jasp-stats.org>"
 	website		: "jasp-stats.org"
 	license		: "GPL (>= 2)"
 	icon		: "analysis-descriptives.svg"

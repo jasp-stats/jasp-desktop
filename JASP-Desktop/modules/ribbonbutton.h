@@ -113,8 +113,10 @@ private:
 private:
 	AnalysisMenuModel*				_analysisMenuModel;
 	Modules::AnalysisEntries		_menuEntries;
+	std::vector<std::string>		_oldTitles;
 
-	bool							_requiresData	= true,
+
+	bool							_requiresData		= true,
 									_isDynamicModule	= true,
 									_isCommonModule		= false,
 									_enabled			= false;

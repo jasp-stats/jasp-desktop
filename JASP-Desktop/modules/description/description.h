@@ -21,17 +21,17 @@ class DynamicModule;
 class Description : public QQuickItem
 {
 	Q_OBJECT
-	Q_PROPERTY(QString			name			READ name			WRITE setName			NOTIFY nameChanged			)
-	Q_PROPERTY(QString			title			READ title			WRITE setTitle			NOTIFY titleChanged			)
-	Q_PROPERTY(QString			icon			READ icon			WRITE setIcon			NOTIFY iconChanged			)
-	Q_PROPERTY(QString			description		READ description	WRITE setDescription	NOTIFY descriptionChanged	)
-	Q_PROPERTY(QString			version			READ version		WRITE setVersion		NOTIFY versionChanged		)
-	Q_PROPERTY(QString			author			READ author			WRITE setAuthor			NOTIFY authorChanged		)
-	Q_PROPERTY(QString			maintainer		READ maintainer		WRITE setMaintainer		NOTIFY maintainerChanged	)
-	Q_PROPERTY(QUrl				website			READ website		WRITE setWebsite		NOTIFY websiteChanged		)
-	Q_PROPERTY(QString			license			READ license		WRITE setLicense		NOTIFY licenseChanged		)
-	Q_PROPERTY(bool				requiresData	READ requiresData	WRITE setRequiresData	NOTIFY requiresDataChanged	)
-	Q_PROPERTY(DynamicModule *	dynMod			READ dynMod			WRITE setDynMod			NOTIFY dynModChanged		)
+	Q_PROPERTY(QString					name			READ name			WRITE setName			NOTIFY nameChanged			)
+	Q_PROPERTY(QString					title			READ title			WRITE setTitle			NOTIFY titleChanged			)
+	Q_PROPERTY(QString					icon			READ icon			WRITE setIcon			NOTIFY iconChanged			)
+	Q_PROPERTY(QString					description		READ description	WRITE setDescription	NOTIFY descriptionChanged	)
+	Q_PROPERTY(QString					version			READ version		WRITE setVersion		NOTIFY versionChanged		)
+	Q_PROPERTY(QString					author			READ author			WRITE setAuthor			NOTIFY authorChanged		)
+	Q_PROPERTY(QString					maintainer		READ maintainer		WRITE setMaintainer		NOTIFY maintainerChanged	)
+	Q_PROPERTY(QUrl						website			READ website		WRITE setWebsite		NOTIFY websiteChanged		)
+	Q_PROPERTY(QString					license			READ license		WRITE setLicense		NOTIFY licenseChanged		)
+	Q_PROPERTY(bool						requiresData	READ requiresData	WRITE setRequiresData	NOTIFY requiresDataChanged	)
+	Q_PROPERTY(Modules::DynamicModule *	dynMod			READ dynMod			WRITE setDynMod			NOTIFY dynModChanged		)
 
 public:
 	Description(QQuickItem *parent = nullptr);
