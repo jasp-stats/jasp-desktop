@@ -117,7 +117,7 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault) cons
 {
 	AnalysisEntry * entry = new AnalysisEntry();
 
-	entry->_qml				= fq(qml());
+	entry->_qml				= qml()  != "" ? fq(qml())  : fq(function() + ".qml") ;
 	entry->_menu			= menu() != "" ? fq(menu()) : fq(title());
 	entry->_icon			= fq(icon());
 	entry->_title			= fq(title());
