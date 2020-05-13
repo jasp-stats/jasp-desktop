@@ -36,8 +36,6 @@ public:
 				void	setComputeColumnNameSelected(QString newName);
 				void	setComputeColumnJson(QString newJson);
 
-				void	packageSynchronized(const std::vector<std::string> & changedColumns, const std::vector<std::string> & missingColumns, const std::map<std::string, std::string> & changeNameColumns, bool rowCountChanged);
-
 	Q_INVOKABLE	void	removeColumn();
 	Q_INVOKABLE void	sendCode(QString code);
 	Q_INVOKABLE void	sendCode(QString code, QString json);
@@ -52,8 +50,8 @@ public:
 
 	Q_INVOKABLE bool				showAnalysisFormForColumn(QString columnName);
 
-				ComputedColumns *	computedColumns() { return ComputedColumns::singleton(); }
-
+				static ComputedColumnsModel * singleton()		{ return _singleton; }
+				static ComputedColumns		* computedColumns()	{ return ComputedColumns::singleton(); }
 
 private:
 				void				validate(QString name);
@@ -92,8 +90,14 @@ public slots:
 				void				setLastCreatedColumn(QString lastCreatedColumn);
 				void				analysisRemoved(Analysis * analysis);
 				void				setShowThisColumn(QString showThisColumn);
+				void				datasetChanged(	QStringList				changedColumns,
+													QStringList				missingColumns,
+													QMap<QString, QString>	changeNameColumns,
+													bool					rowCountChanged,
+													bool					hasNewColumns);
 
 private:
+	static ComputedColumnsModel * _singleton;
 
 	QString					_currentlySelectedName	= "",
 							_lastCreatedColumn		= "",

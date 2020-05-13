@@ -152,6 +152,7 @@ EquivalenceBayesianPairedSamplesTTest <- function(jaspResults, dataset, options)
 
   equivalenceBayesianPairedTTestTable$addFootnote(.equivalenceGetIntervalMessage(options$lowerbound, options$upperbound))
 
+
   jaspResults[["equivalenceBayesianPairedTTestTable"]] <- equivalenceBayesianPairedTTestTable
 
   if (!ready)

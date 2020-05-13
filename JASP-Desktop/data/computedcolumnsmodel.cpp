@@ -1,12 +1,18 @@
 #include "computedcolumnsmodel.h"
 #include "utilities/jsonutilities.h"
 #include "utilities/qutils.h"
+#include "columnencoder.h"
 #include "sharedmemory.h"
 #include "log.h"
+
+ComputedColumnsModel * ComputedColumnsModel::_singleton = nullptr;
 
 ComputedColumnsModel::ComputedColumnsModel()
 	: QObject(DataSetPackage::pkg())
 {
+	assert(_singleton == nullptr);
+	_singleton = this;
+
 	connect(DataSetPackage::pkg(),	&DataSetPackage::dataSetChanged,				this,					&ComputedColumnsModel::datasetLoadedChanged					);
 
 	connect(this,					&ComputedColumnsModel::datasetLoadedChanged,	this,					&ComputedColumnsModel::computeColumnJsonChanged				);
@@ -305,28 +311,35 @@ void ComputedColumnsModel::removeColumn()
 	emit refreshData();
 }
 
-void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & changedColumns, const std::vector<std::string> & missingColumns, const std::map<std::string, std::string> & changeNameColumns, bool rowCountChanged)
+void ComputedColumnsModel::datasetChanged(	QStringList				changedColumns,
+											QStringList				missingColumns,
+											QMap<QString, QString>	changeNameColumns,
+											bool					rowCountChanged,
+											bool					/*hasNewColumns*/)
 {
 	computedColumns()->findAllColumnNames();
+
+	std::string concatenatedMissings = fq(missingColumns.join(", "));
 
 	for(ComputedColumn * col : *computedColumns())
 	{
 		bool invalidateMe = rowCountChanged;
 
-		for(const std::string & changed : changedColumns)
-			if(col->dependsOn(changed, false))
+		for(const QString & changed : changedColumns)
+			if(col->dependsOn(fq(changed), false))
 				invalidateMe = true;
 
 		bool containsAChangedName = false;
-		for(const auto & changedNames : changeNameColumns)
-			if(col->dependsOn(changedNames.first, false))
+		for(const auto & changedNames : changeNameColumns.keys())
+			if(col->dependsOn(fq(changedNames), false))
 				containsAChangedName = true;
 
 		if(containsAChangedName)
 		{
+			auto stdChangeNameCols = fq(changeNameColumns);
 			invalidateMe = true;
-			col->replaceChangedColumnNamesInRCode(changeNameColumns);
-			col->setConstructorJson(JsonUtilities::replaceColumnNamesInDragNDropFilterJSON(col->constructorJson(), changeNameColumns));
+			col->setRCode(ColumnEncoder::replaceColumnNamesInRScript(col->rCode(), stdChangeNameCols));
+			col->setConstructorJson(JsonUtilities::replaceColumnNamesInDragNDropFilterJSON(col->constructorJson(), stdChangeNameCols));
 
 			if(col->name() == _currentlySelectedName.toStdString())
 			{
@@ -335,14 +348,14 @@ void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & 
 			}
 		}
 
-		for(const std::string & missing : missingColumns)
-			if(col->dependsOn(missing, false))
+		if(col->codeType() == ComputedColumn::computedType::constructorCode)
+		{
+			if(col->setConstructorJson(JsonUtilities::removeColumnsFromDragNDropFilterJSON(col->constructorJson(), fq(missingColumns))))
 			{
+				//So some column was removed from the json
 				invalidateMe = true;
-				col->setConstructorJson(JsonUtilities::removeColumnsFromDragNDropFilterJSON(col->constructorJson(), missing));
 
-				if(col->codeType() == ComputedColumn::computedType::constructorCode)
-					col->setRCode("stop('Certain columns where removed from the definition of this computed column.')");
+				col->setRCode("stop('Certain columns where removed from the definition of this computed column.\nColumns that could`ve been here are: " + concatenatedMissings + "')");
 
 				if(col->name() == _currentlySelectedName.toStdString())
 				{
@@ -350,8 +363,15 @@ void ComputedColumnsModel::packageSynchronized(const std::vector<std::string> & 
 					emit computeColumnRCodeChanged();
 				}
 			}
+		}
+		else if(col->codeType() == ComputedColumn::computedType::rCode &&
+				col->setRCode(ColumnEncoder::removeColumnNamesFromRScript(col->rCode(), fq(missingColumns))))
+			{
+				invalidateMe = true;
 
-
+				if(col->name() == _currentlySelectedName.toStdString())
+					emit computeColumnRCodeChanged();
+			}
 
 		if(invalidateMe)
 			invalidate(QString::fromStdString(col->name()));

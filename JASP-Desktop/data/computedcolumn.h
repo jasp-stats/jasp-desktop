@@ -59,9 +59,7 @@ public:
 			Json::Value				convertToJson();
 
 	static	std::string				computedTypeToString(computedType type);
-	static	computedType			computedTypeFromString(std::string type);
-
-			void					replaceChangedColumnNamesInRCode(std::map<std::string, std::string> changedNames);
+	static	computedType			computedTypeFromString(std::string type);			
 
 private:
 			void					_checkForLoopInDepenedencies(std::set<std::string> foundNames, std::list<std::string> loopList);

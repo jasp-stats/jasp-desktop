@@ -71,7 +71,8 @@ public:
 	bool		allFresh() const;
 
 	void		setAnalysesUserData(Json::Value userData);
-	void		refreshAnalysesUsingColumns(std::vector<std::string> changedColumns,	 std::vector<std::string> missingColumns,	 std::map<std::string, std::string> changeNameColumns,	 std::vector<std::string> oldColumnNames, bool hasNewColumns = false);
+
+
 
 	///Applies function to some or all analyses, if applyThis returns false it stops processing.
 	void		applyToSome(std::function<bool(Analysis *analysis)> applyThis);
@@ -103,7 +104,12 @@ public slots:
 	void removeAnalysis(Analysis *analysis);
 	void refreshAllAnalyses();
 	void refreshAllPlots(std::set<Analysis*> exceptThese = {});
-	void refreshAnalysesUsingColumn(QString col);
+	void refreshAnalysesUsingColumn(QString columnName)									{ refreshAnalysesUsingColumns({columnName}); }
+	void refreshAnalysesUsingColumns(	QStringList				changedColumnsQ,
+										QStringList				missingColumnsQ		= {},
+										QMap<QString, QString>	changeNameColumnsQ	= {},
+										bool					rowCountChanged		= false,
+										bool					hasNewColumns		= false);
 	void analysisClickedHandler(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 	void setCurrentAnalysisIndex(int currentAnalysisIndex);
 	void analysisIdSelectedInResults(int id);

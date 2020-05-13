@@ -633,4 +633,6 @@ windows:OTHER_FILES += icon.rc
 DISTFILES += \
     modules/upgrader/upgrades.json \
     modules/upgrader/upgrades_template.json \
+    po/jasp.po \
+    po/jasp_nl.po \
     resources/CC-Attributions.txt
