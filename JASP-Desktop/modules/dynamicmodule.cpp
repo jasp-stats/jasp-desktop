@@ -31,6 +31,7 @@
 #include <QQmlContext>
 #include <QQmlIncubator>
 #include "description/description.h"
+#include <QThread>
 
 namespace Modules
 {
@@ -238,7 +239,15 @@ Description * DynamicModule::instantiateDescriptionQml(QString descriptionTxt, Q
 
 	QQmlComponent descriptionQmlComp(ctxt->engine());
 
+	Log::log() << "Setting url to '" << url.toString() << " for Description.qml data: '" << descriptionTxt << "'\n"<< std::endl;
+
 	descriptionQmlComp.setData(descriptionTxt.toUtf8(), url);
+
+	if(descriptionQmlComp.isLoading())
+		Log::log() << "Description for module " << moduleName << " is still loading, make sure you load a local file and that Windows doesnt mess this up for you..." << std::endl;
+
+	if(!descriptionQmlComp.isReady())
+		throw std::runtime_error("Description for module "+ moduleName + " is not ready!");
 
 	auto errorLogger =[&](bool isError, QList<QQmlError> errors)
 	{
@@ -258,7 +267,6 @@ Description * DynamicModule::instantiateDescriptionQml(QString descriptionTxt, Q
 
 	errorLogger(descriptionQmlComp.isError(), descriptionQmlComp.errors());
 
-
 	QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
 	descriptionQmlComp.create(localIncubator, ctxt);
 
@@ -275,7 +283,7 @@ Description * DynamicModule::instantiateDescriptionQml(QString descriptionTxt, Q
 
 void DynamicModule::loadDescriptionQml(QString descriptionTxt)
 {
-	Description * description = instantiateDescriptionQml(descriptionTxt, QUrl(tq(moduleInstFolder() + getQmlDescriptionFilename())), name());
+	Description * description = instantiateDescriptionQml(descriptionTxt, QUrl("."), name());
 
 	if(!description)
 		throw std::runtime_error(getQmlDescriptionFilename() + " must have Description object as root!");
@@ -897,7 +905,7 @@ std::string DynamicModule::extractPackageNameFromDescriptionQmlTxt(const std::st
 
 	try
 	{
-		Description * desc = instantiateDescriptionQml(tq(descriptionTxt), QUrl("."), "???");
+		Description * desc = instantiateDescriptionQml(tq(descriptionTxt), QUrl::fromLocalFile(tq(getQmlDescriptionFilename())), "???");
 
 		foundName = fq(desc->name());
 
