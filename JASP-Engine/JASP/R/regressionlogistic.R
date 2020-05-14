@@ -111,10 +111,10 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   modelSummary$addColumnInfo(name = "dof", title = gettext("df"),       type = "integer")
   modelSummary$addColumnInfo(name = "chi", title = chiName,             type = "number", format="dp:3")
   modelSummary$addColumnInfo(name = "pvl", title = gettext("p"),        type = "pvalue")
-  modelSummary$addColumnInfo(name = "fad", title = gettextf("McFadden R%s","\u00B2"),    type = "number")
-  modelSummary$addColumnInfo(name = "nag", title = gettextf("Nagelkerke R%s","\u00B2"),  type = "number")
-  modelSummary$addColumnInfo(name = "tju", title = gettextf("Tjur R%s","\u00B2"),        type = "number")
-  modelSummary$addColumnInfo(name = "cas", title = gettextf("Cox & Snell R%s","\u00B2"), type = "number")
+  modelSummary$addColumnInfo(name = "fad", title = gettext("McFadden R\u00B2"),    type = "number")
+  modelSummary$addColumnInfo(name = "nag", title = gettext("Nagelkerke R\u00B2"),  type = "number")
+  modelSummary$addColumnInfo(name = "tju", title = gettext("Tjur R\u00B2"),        type = "number")
+  modelSummary$addColumnInfo(name = "cas", title = gettext("Cox & Snell R\u00B2"), type = "number")
   
   jaspResults[["modelSummary"]] <- modelSummary
   
@@ -148,7 +148,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   estimatesTable$addColumnInfo(name = "est",     title = gettext("Estimate"), type = "number", format="dp:3")
   estimatesTable$addColumnInfo(name = "se",      title = seTitle, type = "number", format="dp:3")
   if(options$stdCoeff)
-    estimatesTable$addColumnInfo(name = "std",   title = gettextf("Standardized%s", "\u207A"), type = "number", format="dp:3")
+    estimatesTable$addColumnInfo(name = "std",   title = gettext("Standardized\u207A"), type = "number", format="dp:3")
   if(options$oddsRatios)
     estimatesTable$addColumnInfo(name = "or",    title = gettext("Odds Ratio"), type = "number")
   estimatesTable$addColumnInfo(name = "zval",    title = gettext("z"), type = "number")
@@ -203,7 +203,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
   estimatesTableBootstrap$addColumnInfo(name = "bias",    title = gettext("Bias"),           type = "number", format="dp:3")
   estimatesTableBootstrap$addColumnInfo(name = "se",      title = seTitle,                   type = "number", format="dp:3")
   if(options$stdCoeff) {
-    estimatesTableBootstrap$addColumnInfo(name = "std",   title = gettextf("Standardized%s", "\u207A"), type = "number", format="dp:3")
+    estimatesTableBootstrap$addColumnInfo(name = "std",   title = gettext("Standardized\u207A"), type = "number", format="dp:3")
     estimatesTableBootstrap$addFootnote(gettext("Standardized estimates represent estimates where the continuous predictors are standardized (X-standardization)."), symbol = "\u207A")
   }
   if(options$oddsRatios)
@@ -1175,7 +1175,7 @@ RegressionLogistic <- function(jaspResults, dataset = NULL, options, ...) {
 .reglogisticEstimatesInfo <- function(options, addBCA = FALSE) {
   # so we only translate this once
   ciTitle <- if (addBCA)
-    gettextf("%1$s%% bca%2$s Confidence interval", 100 * options$coeffCIInterval, "\u002A")
+    gettextf("%1$s%% bca\u002A Confidence interval", 100 * options$coeffCIInterval)
   else
     gettextf("%s%% Confidence interval", 100 * options$coeffCIInterval)
 

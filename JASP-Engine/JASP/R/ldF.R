@@ -130,9 +130,9 @@ LDf <- function(jaspResults, dataset, options, state=NULL){
 .ldFParsSupportMoments <- function(jaspResults, options){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
-    pars[[1]] <- gettextf("degree of freedom: %s", "df 1 \u2208 \u211D<sup>+</sup>")
-    pars[[2]] <- gettextf("degree of freedom: %s",  "df 2 \u2208 \u211D<sup>+</sup>")
-    pars[[3]] <- gettextf("non-centrality: %s",     "ncp \u2208 \u211D")
+    pars[[1]] <- gettext("degree of freedom: df 1 \u2208 \u211D<sup>+</sup>")
+    pars[[2]] <- gettext("degree of freedom: df 2 \u2208 \u211D<sup>+</sup>")
+    pars[[3]] <- gettext("non-centrality: ncp \u2208 \u211D")
     
     support <- "x \u2208 \u211D<sup>+</sup>"
     

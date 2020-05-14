@@ -145,13 +145,13 @@ LDgammaInverse <- function(jaspResults, dataset, options, state=NULL){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
     pars[[1]] <- switch(options[['parametrization']],
-                        scale = gettextf("shape: %s", "k \u2208 \u211D<sup>+</sup>"),
-                        mean  = gettextf("shape: %s", "k \u2208 \u211D<sup>+</sup>"),
-                                gettextf("shape: %s", "&alpha; \u2208 \u211D<sup>+</sup>"))
+                        scale = gettext("shape: k \u2208 \u211D<sup>+</sup>"),
+                        mean  = gettext("shape: k \u2208 \u211D<sup>+</sup>"),
+                                gettext("shape: &alpha; \u2208 \u211D<sup>+</sup>"))
     pars[[2]] <- switch(options[['parametrization']],
-                        scale = gettextf("scale: %s", "&theta; \u2208 \u211D<sup>+</sup>"),
-                        mean  = gettextf("mean: %s",  "&mu; \u2208 \u211D<sup>+</sup>"),
-                                gettextf("rate: %s",  "&beta; \u2208 \u211D<sup>+</sup>"))
+                        scale = gettext("scale: &theta; \u2208 \u211D<sup>+</sup>"),
+                        mean  = gettext("mean: &mu; \u2208 \u211D<sup>+</sup>"),
+                                gettext("rate: &beta; \u2208 \u211D<sup>+</sup>"))
     
     support <- "x \u2208 \u211D<sup>+</sup>"
     

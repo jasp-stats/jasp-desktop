@@ -164,7 +164,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   
   regressionTable$addColumnInfo(name = "sampleSize" , title = sampleSizeTitle                , type = sampleSizeCellType)
   regressionTable$addColumnInfo(name = "nCovariates", title = gettext("Number of covariates"), type = "integer")
-  regressionTable$addColumnInfo(name = "R2"         , title = gettextf("R%s", "\u00B2")      , type = "number", format = "dp:3")
+  regressionTable$addColumnInfo(name = "R2"         , title = gettext("R\u00B2")             , type = "number", format = "dp:3")
   regressionTable$addColumnInfo(name = "BF"         , title = bfTitle                        , type = "number")
   regressionTable$addColumnInfo(name = "error"      , title = gettext("error %")             , type = "number")
   
@@ -368,7 +368,7 @@ SummaryStatsRegressionLinearBayesian <- function(jaspResults, dataset = NULL, op
   # check if R squared input is correct
   if((options$numberOfCovariatesAlternative > options$numberOfCovariatesNull) && (options$unadjustedRSquaredAlternative < options$unadjustedRSquaredNull)) {
     
-    .quitAnalysis(gettextf("Input: When number of covariates for Alternative hypothesis is greater than that of Null hypothesis, the R%s has to be higher under Alternative than under Null hypothesis","\u00B2"))
+    .quitAnalysis(gettext("Input: When number of covariates for Alternative hypothesis is greater than that of Null hypothesis, the R\u00B2 has to be higher under Alternative than under Null hypothesis"))
   }
   
 }

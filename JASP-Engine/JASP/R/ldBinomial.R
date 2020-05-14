@@ -122,8 +122,8 @@ LDbinomial <- function(jaspResults, dataset, options, state=NULL){
 .ldBinomialParsSupportMoments <- function(jaspResults, options){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
-    pars[[1]] <- gettextf("probability of success: %s", "p \u2208 \u211D: 0 \u2264 p \u2264 1")
-    pars[[2]] <- gettextf("number of trials: %s",       "n \u2208 \u2124: n \u2265 0")
+    pars[[1]] <- gettext("probability of success: p \u2208 \u211D: 0 \u2264 p \u2264 1")
+    pars[[2]] <- gettext("number of trials: n \u2208 \u2124: n \u2265 0")
     
     support <- "x \u2208 {0, 1, ..., n}"
     

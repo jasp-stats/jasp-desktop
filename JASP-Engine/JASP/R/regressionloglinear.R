@@ -311,7 +311,7 @@ RegressionLogLinear <- function(jaspResults, dataset = NULL , options, ...) {
   coefficientsTable$addColumnInfo(name = "Z", title = gettext("Z"), type = "number")
   coefficientsTable$addColumnInfo(name = "p", title = gettext("p"), type = "pvalue")
   if (options$VovkSellkeMPR)
-    coefficientsTable$addColumnInfo(name = "VovkSellkeMPR",  title = gettextf("VS-MPR%s", "\u002A"), type = "number")
+    coefficientsTable$addColumnInfo(name = "VovkSellkeMPR",  title = gettext("VS-MPR\u002A"), type = "number")
   
   jaspResults[["CoefficientsTable"]] <- coefficientsTable
   
@@ -352,11 +352,8 @@ RegressionLogLinear <- function(jaspResults, dataset = NULL , options, ...) {
 }
 
 .regLogLinAddVovkSellke <- function(table) {
-  table$addColumnInfo(name = "VovkSellkeMPR",  title = gettextf("VS-MPR%s","\u002A"), type = "number")
-  message <- gettextf("Vovk-Sellke Maximum <em>p</em>-Ratio: Based the <em>p</em>-value, \
-the maximum possible odds in favor of H%1$s over H%2$s equals \
-1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 \
-(Sellke, Bayarri, & Berger, 2001).", "\u2081", "\u2080", "\u2264")
+  table$addColumnInfo(name = "VovkSellkeMPR",  title = gettext("VS-MPR\u002A"), type = "number")
+  message <- gettext("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001).")
   table$addFootnote(message, symbol = "\u002A") 
 }
 

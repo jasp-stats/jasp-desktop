@@ -19,7 +19,7 @@ LDchisq <- function(jaspResults, dataset, options, state=NULL){
   options <- .ldRecodeOptionsChisq(options)
   
   #### Show chisq section ----
-  .ldIntroText(jaspResults, options, gettextf("%s<sup>2</sup> distribution","\u03A7"))
+  .ldIntroText(jaspResults, options, gettext("\u03A7<sup>2</sup> distribution"))
   .ldChisqParsSupportMoments(jaspResults, options)
   
   
@@ -130,8 +130,8 @@ LDchisq <- function(jaspResults, dataset, options, state=NULL){
 .ldChisqParsSupportMoments <- function(jaspResults, options){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
-    pars[[1]] <- gettextf("degree of freedom: %s", "k \u2208 \u211D<sup>+</sup>")
-    pars[[2]] <- gettextf("non-centrality: %s",    "&lambda; \u2208 \u211D")
+    pars[[1]] <- gettext("degree of freedom: k \u2208 \u211D<sup>+</sup>")
+    pars[[2]] <- gettext("non-centrality: &lambda; \u2208 \u211D")
     
     support <- "x \u2208 \u211D<sup>+</sup>"
     

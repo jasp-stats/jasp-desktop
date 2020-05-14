@@ -138,7 +138,7 @@
 
 .ttestVovkSellke <- function(table, options) {
   if (options$VovkSellkeMPR) {
-    message <-gettextf("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value,the maximum possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001).","\u2081","\u2080","\u2264");
+    message <-gettext("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on a two-sided <em>p</em>-value,the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001).");
     table$addFootnote(message, symbol = "\u002A")
     table$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR\u002A", type = "number")
   }

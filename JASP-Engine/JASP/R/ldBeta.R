@@ -131,8 +131,8 @@ LDbeta <- function(jaspResults, dataset, options, state=NULL){
 .ldBetaParsSupportMoments <- function(jaspResults, options){
   if(options$parsSupportMoments && is.null(jaspResults[['parsSupportMoments']])){
     pars <- list()
-    pars[[1]] <- gettextf("shape: %s", "&alpha; \u2208 \u211D<sup>+</sup>")
-    pars[[2]] <- gettextf("shape: %s", "&beta; \u2208 \u211D<sup>+</sup>")
+    pars[[1]] <- gettext("shape: &alpha; \u2208 \u211D<sup>+</sup>")
+    pars[[2]] <- gettext("shape: &beta; \u2208 \u211D<sup>+</sup>")
     
     support <- "x \u2208 [0, 1]"
     

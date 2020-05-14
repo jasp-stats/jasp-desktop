@@ -376,7 +376,7 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
 
       calculationsContainer[["intro2"]] <- createJaspHtml(gettext("<i>This information allows for calculation of:</i>"), "p")
 
-      pointEstimate <- gettextf("The point estimate of the true population value %1$s", "<i>W&#770 = N \u00D7 w&#772</i>")
+      pointEstimate <- gettext("The point estimate of the true population value <i>W&#770 = N \u00D7 w&#772</i>")
       if(ready){
         W <- round(N * meanW, 2)
         pointEstimate <- gettextf("%1$s = %2$s", pointEstimate, W)
@@ -391,9 +391,9 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
         uncertainty <- gettextf("%1$s = %2$s", uncertainty, U)
       }
       
-      confidenceInterval <- gettextf("The confidence interval around the point estimate %1$s", "<i>W&#770 \u00B1 U</i>")
+      confidenceInterval <- gettext("The confidence interval around the point estimate <i>W&#770 \u00B1 U</i>")
       if(ready)
-        confidenceInterval <- gettextf("%1$s = %2$s %3$s %4$s", confidenceInterval, W, " \u00B1 ", U)
+        confidenceInterval <- gettextf("%1$s = %2$s \u00B1 %3$s", confidenceInterval, W, U)
       
       results <- gettextf("%1$s
                            %2$s
@@ -463,7 +463,7 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
 
       calculationsContainer[["intro2"]] <- createJaspHtml(gettext("<i>This information allows for calculation of:</i>"), "p")
 
-      pointEstimate <- gettextf("The point estimate of the true population value %1$s", "<i>W&#770 = B - N \u00D7 e&#772</i>")
+      pointEstimate <- gettext("The point estimate of the true population value <i>W&#770 = B - N \u00D7 e&#772</i>")
       if(ready){
         W <- round(B - N * meanE, 2)
         pointEstimate <- gettextf("%1$s = %2$s", pointEstimate, W)
@@ -478,9 +478,9 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
         uncertainty <- gettextf("%1$s = %2$s", uncertainty, U)
       }
 
-      confidenceInterval <- gettextf("The confidence interval around the point estimate %1$s", "<i>W&#770 \u00B1 U")
+      confidenceInterval <- gettext("The confidence interval around the point estimate <i>W&#770 \u00B1 U</i>")
       if(ready)
-        confidenceInterval <- gettextf("%1$s = %2$s %3$s %4$s", confidenceInterval, W, " \u00B1 ", U)
+        confidenceInterval <- gettextf("%1$s = %2$s \u00B1 %3$s", confidenceInterval, W, U)
       
       results <- gettextf("%1$s
                             %2$s
@@ -579,7 +579,7 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
 
       calculationsContainer[["intro2"]] <- createJaspHtml(gettext("<i>This information allows for calculation of:</i>"), "p")
 
-      pointEstimate <- gettextf("The point estimate of the true population value %1$s", "<i>W&#770 = q<sub>bw</sub> \u00D7 B</i>")
+      pointEstimate <- gettext("The point estimate of the true population value <i>W&#770 = q<sub>bw</sub> \u00D7 B</i>")
       if(ready){
         W <- round(q * B, 2)
         pointEstimate <- gettextf("%1$s = %2$s", pointEstimate, W)
@@ -594,9 +594,9 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
         uncertainty <- gettextf("%1$s = %2$s", uncertainty, U)
       }
 
-      confidenceInterval <- gettextf("The confidence interval around the point estimate %1$s", "<i>W&#770 \u00B1 U")
+      confidenceInterval <- gettext("The confidence interval around the point estimate <i>W&#770 \u00B1 U</i>")
       if(ready)
-        confidenceInterval <- gettextf("%1$s = %2$s %3$s %4$s", confidenceInterval, W, " \u00B1 ", U)
+        confidenceInterval <- gettextf("%1$s = %2$s \u00B1 %3$s", confidenceInterval, W, U)
       
       results <- gettextf("%1$s
                            %2$s
@@ -686,7 +686,7 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
 
       calculationsContainer[["intro2"]] <- createJaspHtml(gettext("<i>This information allows for calculation of:</i>"), "p")
       
-      pointEstimate <- gettextf("The point estimate of the true population value %1$s", "<i>W&#770 = N \u00D7 w&#772 + b<sub>1</sub> x (B - N \u00D7 b&#772)</i>")
+      pointEstimate <- gettext("The point estimate of the true population value <i>W&#770 = N \u00D7 w&#772 + b<sub>1</sub> x (B - N \u00D7 b&#772)</i>")
       if(ready){
         W <- round(N * meanW + b1 * (B - N * meanB), 2)
         pointEstimate <- gettextf("%1$s = %2$s", pointEstimate, W)
@@ -701,9 +701,9 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
         uncertainty <- gettextf("%1$s = %2$s", uncertainty, U)
       }
       
-      confidenceInterval <- gettextf("The confidence interval around the point estimate %1$s", "<i>W&#770 \u00B1 U")
+      confidenceInterval <- gettext("The confidence interval around the point estimate <i>W&#770 \u00B1 U</i>")
       if(ready)
-        confidenceInterval <- gettextf("%1$s = %2$s %3$s %4$s", confidenceInterval, W, " \u00B1 ", U)
+        confidenceInterval <- gettextf("%1$s = %2$s \u00B1 %3$s", confidenceInterval, W, U)
       
       results <- gettextf("%1$s
                            %2$s

@@ -286,7 +286,7 @@ MultinomialTest <- function(jaspResults, dataset, options, ...) {
   
   # include Vovk-Selke p-ratio as columns
   if (options$VovkSellkeMPR) {
-    chisqTable$addColumnInfo(name = "VovkSellkeMPR", title =  gettextf("VS-MPR%s", "\u002A"), type = "number")
+    chisqTable$addColumnInfo(name = "VovkSellkeMPR", title =  gettext("VS-MPR\u002A"), type = "number")
     chisqTable$addFootnote(.messages("footnote", "VovkSellkeMPR"), symbol = "\u002A")
   }
   

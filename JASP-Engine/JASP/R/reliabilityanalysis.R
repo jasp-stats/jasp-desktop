@@ -226,9 +226,9 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
                                     scaleTable$addColumnInfo(name = "case",   title = "",                                        type = "string")
   if (options$meanScale)            scaleTable$addColumnInfo(name = "mu",     title = gettext("mean"),                           type = "number")
   if (options$sdScale)              scaleTable$addColumnInfo(name = "sd",     title = gettext("sd"),                             type = "number")
-  if (options$mcDonaldScale)        scaleTable$addColumnInfo(name = "omega",  title = gettextf("McDonald's %s", "\u03C9"),       type = "number")
-  if (options$alphaScale)           scaleTable$addColumnInfo(name = "alpha",  title = gettextf("Cronbach's %s", "\u03B1"),       type = "number")
-  if (options$gutmannScale)         scaleTable$addColumnInfo(name = "lambda", title = gettextf("Gutmann's %s", "\u03BB6"),       type = "number")
+  if (options$mcDonaldScale)        scaleTable$addColumnInfo(name = "omega",  title = gettext("McDonald's \u03C9"),              type = "number")
+  if (options$alphaScale)           scaleTable$addColumnInfo(name = "alpha",  title = gettext("Cronbach's \u03B1"),              type = "number")
+  if (options$gutmannScale)         scaleTable$addColumnInfo(name = "lambda", title = gettext("Gutmann's \u03BB6"),              type = "number")
   if (options$glbScale)             scaleTable$addColumnInfo(name = "glb",    title = gettext("Greatest lower bound"),           type = "number")
   if (options$averageInterItemCor)  scaleTable$addColumnInfo(name = "rho",    title = gettext("Average interitem correlation"),  type = "number")
 
@@ -286,13 +286,13 @@ ReliabilityAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   if (options$meanItem)     itemTable$addColumnInfo(name = "mu",          title = gettext("mean"),                      type = "number")
   if (options$sdItem)       itemTable$addColumnInfo(name = "sd",          title = gettext("sd"),                        type = "number")
   if (options$itemRestCor)  itemTable$addColumnInfo(name = "itemRestCor", title = gettext("item-rest correlation"),     type = "number")
-  if (options$mcDonaldItem) itemTable$addColumnInfo(name = "omega",       title = gettextf("McDonald's %s", "\u03C9"),  type = "number", overtitle = overTitle)
-  if (options$alphaItem)    itemTable$addColumnInfo(name = "alpha",       title = gettextf("Cronbach's %s", "\u03B1"),  type = "number", overtitle = overTitle)
-  if (options$gutmannItem)  itemTable$addColumnInfo(name = "lambda",      title = gettextf("Gutmann's %s", "\u03BB6"),  type = "number", overtitle = overTitle)
+  if (options$mcDonaldItem) itemTable$addColumnInfo(name = "omega",       title = gettext("McDonald's \u03C9"),         type = "number", overtitle = overTitle)
+  if (options$alphaItem)    itemTable$addColumnInfo(name = "alpha",       title = gettext("Cronbach's \u03B1"),         type = "number", overtitle = overTitle)
+  if (options$gutmannItem)  itemTable$addColumnInfo(name = "lambda",      title = gettext("Gutmann's \u03BB6"),         type = "number", overtitle = overTitle)
   
   # can only be computed if there are at least 3 variables.
   if (options$mcDonaldItem && length(options$variables) < 3) {
-    message <- gettextf("Warning: McDonald's %s if item dropped can only be calculated for three or more variables.", "\u03C9")
+    message <- gettext("Warning: McDonald's \u03C9 if item dropped can only be calculated for three or more variables.")
     itemTable$addFootnote(message, colName = "omega")
   }
   
