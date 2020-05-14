@@ -921,7 +921,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		{
 			populateUIfromDataSet();
 
-			_package->setCurrentPath(event->path());
+			_package->setCurrentFile(event->path());
 
 			if(event->osfPath() != "")
 				_package->setFolder("OSF://" + event->osfPath()); //It is also set by setCurrentPath, but then we get some weirdlooking OSF path
@@ -970,7 +970,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 		if (event->isSuccessful())
 		{
-			_package->setCurrentPath(event->path());
+			_package->setCurrentFile(event->path());
 			if(event->osfPath() != "")
 				_package->setFolder("OSF://" + event->osfPath()); //It is also set by setCurrentPath, but then we get some weirdlooking OSF path
 
@@ -1321,8 +1321,9 @@ void MainWindow::startDataEditorHandler()
 				name = name.replace('#', '_');
 			}
 
-			if (_package->currentFile().dir().exists() && ! _package->currentFile().absolutePath().startsWith(AppDirs::examples())) //If the file was opened from a directory that exists and is not examples we use that as basis to open a csv
-				name = _package->currentFile().dir().absoluteFilePath(_package->name().replace('#', '_') + ".csv");
+			QFileInfo pkgFile(_package->currentFile());
+			if (pkgFile.dir().exists() && ! pkgFile.absolutePath().startsWith(AppDirs::examples())) //If the file was opened from a directory that exists and is not examples we use that as basis to open a csv
+				name = pkgFile.dir().absoluteFilePath(_package->name().replace('#', '_') + ".csv");
 
 			path = MessageForwarder::browseSaveFile(caption, name, filter);
 

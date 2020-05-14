@@ -47,8 +47,7 @@ class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel becau
 	Q_PROPERTY(QString		windowTitle				READ windowTitle									NOTIFY windowTitleChanged			)
 	Q_PROPERTY(bool			modified				READ isModified				WRITE setModified		NOTIFY isModifiedChanged			)
 	Q_PROPERTY(bool			loaded					READ isLoaded				WRITE setLoaded			NOTIFY loadedChanged				)
-	Q_PROPERTY(QFileInfo	currentFile				READ currentFile									NOTIFY currentFileChanged			)
-	Q_PROPERTY(QString		currentPath				READ currentPath			WRITE setCurrentPath	NOTIFY currentPathChanged			)
+	Q_PROPERTY(QString		currentFile				READ currentFile			WRITE setCurrentFile	NOTIFY currentFileChanged			)
 
 	typedef std::map<std::string, std::map<int, std::string>> emptyValsType;
 
@@ -113,8 +112,7 @@ public:
 				std::string			dataFilter()						const	{ return _dataFilter;						}
 				std::string			initialMD5()						const	{ return _initialMD5;						 }
 				QString				windowTitle()						const;
-				QFileInfo			currentFile()						const;
-				QString				currentPath()						const	{ return _currentPath;						 }
+				QString				currentFile()						const	{ return _currentFile;						 }
 				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;			  }
 				std::string			dataFilePath()						const	{ return _dataFilePath;						   }
 		const	std::string		&	analysesHTML()						const	{ return _analysesHTML;							}
@@ -260,7 +258,6 @@ signals:
 				void				windowTitleChanged();
 				void				loadedChanged();
 				void				currentFileChanged();
-				void				currentPathChanged();
 
 public slots:
 				void				refresh() { beginResetModel(); endResetModel(); }
@@ -269,7 +266,7 @@ public slots:
 				void				notifyColumnFilterStatusChanged(int columnIndex);
 				void				setColumnsUsedInEasyFilter(std::set<std::string> usedColumns);
 				void				emptyValuesChangedHandler();
-				void				setCurrentPath(QString currentPath);
+				void				setCurrentFile(QString currentFile);
 
 				void setFolder(QString folder);
 
@@ -286,7 +283,7 @@ private:
 	EngineSync				*	_engineSync					= nullptr;
 	emptyValsType				_emptyValuesMap;
 
-	QString						_currentPath,
+	QString						_currentFile,
 								_folder;
 	std::string					_analysesHTML,
 								_id,

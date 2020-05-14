@@ -39,9 +39,9 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 
 	connect(this, &DataSetPackage::isModifiedChanged,	this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::loadedChanged,		this, &DataSetPackage::windowTitleChanged);
-	connect(this, &DataSetPackage::currentPathChanged,	this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::currentFileChanged,	this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::folderChanged,		this, &DataSetPackage::windowTitleChanged);
-	connect(this, &DataSetPackage::currentPathChanged,	this, &DataSetPackage::nameChanged);
+	connect(this, &DataSetPackage::currentFileChanged,	this, &DataSetPackage::nameChanged);
 }
 
 void DataSetPackage::setEngineSync(EngineSync * engineSync)
@@ -93,7 +93,7 @@ void DataSetPackage::reset()
 
 	setLoaded(false);
 	setModified(false);
-	setCurrentPath("");
+	setCurrentFile("");
 
 	resetEmptyValues();
 	endLoadingData();
@@ -1394,21 +1394,21 @@ std::vector<bool> DataSetPackage::filterVector()
 }
 
 
-void DataSetPackage::setCurrentPath(QString currentPath)
+void DataSetPackage::setCurrentFile(QString currentFile)
 {
-	if (_currentPath == currentPath)
+	if (_currentFile == currentFile)
 		return;
 
-	_currentPath = currentPath;
-	emit currentPathChanged();
+	_currentFile = currentFile;
 	emit currentFileChanged();
 
-	QUrl url(_currentPath);
+	QFileInfo	file(_currentFile);
+	QUrl		url(_currentFile);
 
 #ifdef _WIN32
-	setFolder(currentFile().exists() ? currentFile().absolutePath().replace('/', '\\') : url.isValid() ? "OSF" : "");
+	setFolder(file.exists() ? file.absolutePath().replace('/', '\\')	: url.isValid() ? "OSF" : "");
 #else
-	setFolder(currentFile().exists() ? currentFile().absolutePath() : url.isValid() ? "OSF" : "");
+	setFolder(file.exists() ? file.absolutePath()						: url.isValid() ? "OSF" : "");
 #endif
 }
 
@@ -1439,8 +1439,10 @@ void DataSetPackage::setFolder(QString folder)
 
 QString DataSetPackage::name() const
 {
-	if(currentFile().completeBaseName() != "")
-		return currentFile().completeBaseName();
+	QFileInfo	file(_currentFile);
+
+	if(file.completeBaseName() != "")
+		return file.completeBaseName();
 
 	return "JASP";
 }
@@ -1461,9 +1463,3 @@ QString DataSetPackage::windowTitle() const
 
 	return name + (isModified() ? "*" : "") + folder;
 }
-
-QFileInfo DataSetPackage::currentFile() const
-{
-	return QFileInfo(_currentPath);
-}
-
