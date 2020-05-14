@@ -35,8 +35,10 @@ public:
 					FileEvent(const FileEvent&) = default;
 	virtual			~FileEvent();
 
-	bool			setPath(const QString &path);
-	void			setDataFilePath(const QString &path);
+	bool			setPath(		const QString & path);
+	void			setDataFilePath(const QString & path);
+	void			setOsfPath(		const QString & path) { _osfPath = path; }
+
 	void			setComplete(bool success = true, const QString &message = "");
 	void			chain(FileEvent *event);
 
@@ -52,6 +54,7 @@ public:
 	Utils::FileType	type()			const { return _type;			}
 
 	const QString &	path()			const { return _path;			}
+	const QString &	osfPath()		const { return _osfPath;		}
 	const QString &	dataFilePath()	const { return _dataFilePath;	}
 	const QString &	message()		const { return _message;		}
 	const QString & getLastError()	const { return _last_error;		}
@@ -66,6 +69,7 @@ private:
 	FileMode			_operation;
 	Utils::FileType		_type;
 	QString				_path,
+						_osfPath		= "", //To show the user a friendly path
 						_dataFilePath,
 						_last_error		= "Unknown error",
 						_message;

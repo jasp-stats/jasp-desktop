@@ -23,6 +23,7 @@
 #include "qquick/jasptheme.h"
 #include "columnencoder.h"
 #include "timers.h"
+#include "utilities/appdirs.h"
 
 #define ENUM_DECLARATION_CPP
 #include "datasetpackage.h"
@@ -35,6 +36,12 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	if(_singleton) throw std::runtime_error("DataSetPackage can be constructed only once!");
 	_singleton = this;
 	//True init is done in setEngineSync!
+
+	connect(this, &DataSetPackage::isModifiedChanged,	this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::loadedChanged,		this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::currentPathChanged,	this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::folderChanged,		this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::currentPathChanged,	this, &DataSetPackage::nameChanged);
 }
 
 void DataSetPackage::setEngineSync(EngineSync * engineSync)
@@ -76,7 +83,6 @@ void DataSetPackage::reset()
 	_analysesHTML				= std::string();
 	_analysesData				= Json::arrayValue;
 	_warningMessage				= std::string();
-	_isLoaded					= false;
 	_hasAnalysesWithoutData		= false;
 	_analysesHTMLReady			= false;
 	_isArchive					= false;
@@ -85,7 +91,10 @@ void DataSetPackage::reset()
 	_computedColumns.reset();
 	_filterShouldRunInit		= false;
 
+	setLoaded(false);
 	setModified(false);
+	setCurrentPath("");
+
 	resetEmptyValues();
 	endLoadingData();
 }
@@ -509,6 +518,16 @@ void DataSetPackage::setModified(bool value)
 		_isModified = value;
 		emit isModifiedChanged();
 	}
+}
+
+void DataSetPackage::setLoaded(bool loaded)
+{
+	if(loaded == _isLoaded)
+		return;
+
+	_isLoaded						= loaded;
+
+	emit loadedChanged();
 }
 
 size_t DataSetPackage::findIndexByName(std::string name) const
@@ -1373,3 +1392,78 @@ std::vector<bool> DataSetPackage::filterVector()
 
 	return out;
 }
+
+
+void DataSetPackage::setCurrentPath(QString currentPath)
+{
+	if (_currentPath == currentPath)
+		return;
+
+	_currentPath = currentPath;
+	emit currentPathChanged();
+	emit currentFileChanged();
+
+	QUrl url(_currentPath);
+
+#ifdef _WIN32
+	setFolder(currentFile().exists() ? currentFile().absolutePath().replace('/', '\\') : url.isValid() ? "OSF" : "");
+#else
+	setFolder(currentFile().exists() ? currentFile().absolutePath() : url.isValid() ? "OSF" : "");
+#endif
+}
+
+void DataSetPackage::setFolder(QString folder)
+{
+	//Remove the last part if it is the name of the file regardless of extension
+	QString _name	= name();
+	int		i		= _name.size();
+	for(; i < folder.size(); i++)
+		if(folder.right(i).startsWith(_name))
+		{
+			folder = folder.left(folder.size() - i);
+			break;
+		}
+#ifdef _WIN32
+		else if(folder.right(i).contains('\\'))	break;
+#else
+		else if(folder.right(i).contains('/'))	break;
+#endif
+
+	if (_folder == folder)
+		return;
+
+	_folder = folder;
+	emit folderChanged();
+}
+
+
+QString DataSetPackage::name() const
+{
+	if(currentFile().completeBaseName() != "")
+		return currentFile().completeBaseName();
+
+	return "JASP";
+}
+
+QString DataSetPackage::windowTitle() const
+{
+	QString name	= DataSetPackage::name(),
+			folder	= DataSetPackage::folder();
+
+#ifdef _WIN32
+	if(folder.startsWith(AppDirs::examples().replace('/', '\\')))
+#else
+	if(folder.startsWith(AppDirs::examples()))
+#endif
+		folder = "";
+
+	folder = folder == "" ? "" : "      (" + folder + ")";
+
+	return name + (isModified() ? "*" : "") + folder;
+}
+
+QFileInfo DataSetPackage::currentFile() const
+{
+	return QFileInfo(_currentPath);
+}
+
