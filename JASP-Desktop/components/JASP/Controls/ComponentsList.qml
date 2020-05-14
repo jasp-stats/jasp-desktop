@@ -16,28 +16,92 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-import QtQuick	2.0
-import JASP		1.0
-import QtQuick.Layouts 1.3
+import QtQuick			2.0
+import QtQuick.Controls 2.4 as QtControls
+import JASP				1.0
+import JASP.Widgets		1.0
+import QtQuick.Layouts	1.3
 
 JASPGridControl
 {
 	id					: componentsList
 	controlType			: JASPControlBase.ComponentsList
 	itemComponent		: components
+	implicitHeight		: itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin + (showAddIcon ? addIconItem.height : 0)
 
-	signal addTerm(string term);
-	signal removeTerm(string term);
+
+	property bool	addItemManually	: !source
+	property bool	showAddIcon		: addItemManually
+	property int	minimumRows		: 0
+	property string	deleteIcon		: "cross.png"
+	property string	addIcon			: "duplicate.png"
+	property string addTooltip		: qsTr("Add a row")
+	property string removeTootip	: qsTr("Remove a row")
+	property var	defaultValues	: []
+
+	signal addRow();
+	signal removeRow(int index);
+
+	MenuButton
+	{
+		id				: addIconItem
+		width			: height
+		radius			: height
+		visible			: showAddIcon
+		iconSource		: jaspTheme.iconPath + addIcon
+		onClicked		: addRow()
+		toolTip			: addTooltip
+		anchors.bottom	: parent.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
+	}
 
 	Component
 	{
 		id: components
 
-		RowComponents
+		FocusScope
 		{
-			spacing		: componentsList.rowComponentsSpacing
-			controls	: model.rowComponents
+			id		: itemWrapper
+			height	: rowComponentsItem.height
+			width	: componentsList.itemGrid.width
+
+			property bool isDeletable: addItemManually && (!model.type || model.type.includes("deletable"))
+
+			RowComponents
+			{
+				id						: rowComponentsItem
+				anchors.verticalCenter	: parent.verticalCenter
+				anchors.left			: parent.left
+				spacing					: componentsList.columnSpacing
+				controls				: model.rowComponents
+			}
+
+			Image
+			{
+				id						: deleteIconID
+				source					: jaspTheme.iconPath + deleteIcon
+				anchors.right			: parent.right
+				anchors.verticalCenter	: parent.verticalCenter
+				visible					: itemWrapper.isDeletable && componentsList.count > componentsList.minimumRows
+				height					: jaspTheme.iconSize
+				width					: jaspTheme.iconSize
+				z						: 2
+
+				QtControls.ToolTip.text:				removeTootip
+				QtControls.ToolTip.timeout:			jaspTheme.toolTipTimeout
+				QtControls.ToolTip.delay:				jaspTheme.toolTipDelay
+				QtControls.ToolTip.toolTip.font:		jaspTheme.font
+				QtControls.ToolTip.visible:			removeTootip !== "" && deleteMouseArea.containsMouse
+
+				MouseArea
+				{
+					id					: deleteMouseArea
+					anchors.fill		: parent
+					onClicked			: removeRow(index)
+				}
+			}
 		}
+
 	}
 
 }

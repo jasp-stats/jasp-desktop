@@ -27,7 +27,7 @@ JASPControl
 	controlType				: JASPControlBase.VariablesListView
 	background				: itemRectangle
 	implicitWidth 			: parent.width
-	implicitHeight			: itemTitle.height + itemGrid.height + 8 * preferencesModel.uiScale
+	implicitHeight			: itemTitle.height + itemGrid.height + 2 * jaspTheme.contentMargin
 	useControlMouseArea		: false
 	shouldStealHover		: false
 	innerControl			: itemGrid
@@ -59,9 +59,8 @@ JASPControl
 	property alias	itemRectangle		: itemRectangle
 	property alias	itemScrollbar		: itemScrollbar
 	property alias	itemTitle			: itemTitle
-	property alias	rowComponentsTitles	: itemTitles.model
-	property alias	rowComponentsLabels	: itemTitles.model
-	property int	rowComponentsSpacing : 1
+	property alias	rowSpacing			: itemGrid.rowSpacing
+	property alias	columnSpacing		: itemGrid.columnSpacing
 
 	property var	itemComponent
 
@@ -74,19 +73,6 @@ JASPControl
 		height			: title ? jaspTheme.listTitle : 0
 		font			: jaspTheme.font
 		color			: enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
-	}
-
-	Row
-	{
-		width			: parent.width
-		anchors.top		: jaspGridControl.top;
-		spacing			: 5
-		layoutDirection	: Qt.RightToLeft
-		Repeater
-		{
-			id	: itemTitles;
-			Label { text : modelData }
-		}
 	}
 
 	Rectangle
@@ -122,7 +108,7 @@ JASPControl
 		{
 			id						: itemFlickable
 			anchors.fill			: parent
-			anchors.margins			: 4 * preferencesModel.uiScale
+			anchors.margins			: jaspTheme.contentMargin
 			anchors.rightMargin		: itemScrollbar.width + anchors.margins
 			clip					: true
 			boundsBehavior			: Flickable.StopAtBounds
@@ -132,8 +118,11 @@ JASPControl
 			Grid
 			{
 				id						: itemGrid
+				width					: itemRectangle.width - 2 * jaspTheme.contentMargin - (itemScrollbar.visible ? itemScrollbar.width + 2 : 0)
 				focus					: true
 				columns					: 1
+				rowSpacing				: 1
+				columnSpacing			: 1
 
 				Repeater
 				{

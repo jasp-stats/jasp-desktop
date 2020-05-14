@@ -156,12 +156,14 @@ JaspTheme
 	generalAnchorMargin:					8
 	generalMenuMargin:						12
 	titleBottomMargin:						5
+	contentMargin:							4
 	subOptionOffset:						40
 
 	//Sizes:
 	minPanelWidth:							200
 	resultWidth:							600
 	formWidth:								625
+	iconSize:								16
 	formMargin:								10
 	formExpanderHeaderHeight:				40
 	sliderWidth:							4

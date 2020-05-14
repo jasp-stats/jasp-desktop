@@ -21,6 +21,9 @@
 #include "rowcontrols.h"
 #include "log.h"
 #include "analysis/options/optionvariable.h"
+#include "analysis/options/optionterm.h"
+
+#include <QJsonValue>
 
 BoundQMLComponentsList::BoundQMLComponentsList(JASPControlBase *item)
 	: JASPControlWrapper(item)
@@ -32,8 +35,8 @@ BoundQMLComponentsList::BoundQMLComponentsList(JASPControlBase *item)
 	readModelProperty();
 
 	QQuickItem::connect(_item, SIGNAL(valuesChanged()), this, SLOT(valuesChangedHandler()));
-	QQuickItem::connect(_item, SIGNAL(addTerm(QString)), this, SLOT(addTermHandler(QString)));
-	QQuickItem::connect(_item, SIGNAL(removeTerm(QString)), this, SLOT(removeTermHandler(QString)));
+	QQuickItem::connect(_item, SIGNAL(addRow()), this, SLOT(addRowHandler()));
+	QQuickItem::connect(_item, SIGNAL(removeRow(int)), this, SLOT(removeRowHandler(int)));
 }
 
 void BoundQMLComponentsList::bindTo(Option *option)
@@ -51,16 +54,35 @@ void BoundQMLComponentsList::bindTo(Option *option)
 	for (Options* options : optionsList)
 	{
 		std::string key;
-		OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(_optionKeyName));
-		if (variableOption)
+
+		if (_termsModel->areTermsInteractions())
 		{
-			key = variableOption->variable();
-			terms.add(Term(key));
+			OptionTerm* termOption = dynamic_cast<OptionTerm*>(options->get(_optionKeyName));
+			if (termOption)
+			{
+				Term term(termOption->term());
+				key = term.asString();
+				terms.add(term);
+			}
+			else
+			{
+				Log::log() << "Bind Option is not an OptionTerm in " << name().toStdString() << std::endl;
+				return;
+			}
 		}
 		else
 		{
-			Log::log() << "Bind Option is not an OptionVariable in " << name().toStdString() << std::endl;
-			return;
+			OptionVariable* variableOption = dynamic_cast<OptionVariable*>(options->get(_optionKeyName));
+			if (variableOption)
+			{
+				key = variableOption->variable();
+				terms.add(Term(key));
+			}
+			else
+			{
+				Log::log() << "Bind Option is not an OptionVariable in " << name().toStdString() << std::endl;
+				return;
+			}
 		}
 
 		QMap<QString, Option*> optionsMap;
@@ -78,20 +100,68 @@ void BoundQMLComponentsList::bindTo(Option *option)
 Option* BoundQMLComponentsList::createOption()
 {
 	Options* templote = new Options();
-	templote->add(_optionKeyName, new OptionVariable());
+
+	if (_termsModel->areTermsInteractions())
+		templote->add(_optionKeyName, new OptionTerm());
+	else
+		templote->add(_optionKeyName, new OptionVariable());
 	addRowComponentsDefaultOptions(templote);
 
 	OptionsTable* result = new OptionsTable(templote);
 	std::vector<Options*> allOptions;
 
-	Terms initTerms = _termsModel->getSourceTerms();
-	for (const Term& term : initTerms)
+	if (hasSource())
 	{
-		Options* row = dynamic_cast<Options*>(templote->clone());
-		OptionVariable* optionVar = new OptionVariable();
-		optionVar->setValue(term.asString());
-		row->add(_optionKeyName, optionVar);
-		allOptions.push_back(row);
+		Terms initTerms = _termsModel->getSourceTerms();
+		for (const Term& term : initTerms)
+		{
+			Options* row = dynamic_cast<Options*>(templote->clone());
+			if (_termsModel->areTermsInteractions())
+			{
+				OptionTerm* optionVar = new OptionTerm();
+				optionVar->setValue(term.scomponents());
+				row->add(_optionKeyName, optionVar);
+			}
+			else
+			{
+				OptionVariables* optionVar = new OptionVariable();
+				optionVar->setValue(term.asString());
+				row->add(_optionKeyName, optionVar);
+			}
+			allOptions.push_back(row);
+		}
+	}
+	else
+	{
+		QVariant defaultValuesVar = getItemProperty("defaultValues");
+		QList<QVariant> defaultValues = defaultValuesVar.toList();
+
+		for (const QVariant& defaultValue : defaultValues)
+		{
+			Options* row = dynamic_cast<Options*>(templote->clone());
+			OptionVariables* optionVar = new OptionVariable();
+			optionVar->setValue(_incrementCounter().toStdString());
+			row->add(_optionKeyName, optionVar);
+
+			QVariantMap defaultValueMap = defaultValue.toMap();
+			QMapIterator<QString, QVariant> it(defaultValueMap);
+			while (it.hasNext())
+			{
+				it.next();
+				QString name = it.key();
+				QVariant value = it.value();
+
+				Option* option = row->get(name.toStdString());
+				if (option)
+				{
+					Json::Value json(value.toJsonValue().toString().toStdString());
+					option->set(json);
+				}
+				else
+					Log::log() << "Default value with name " << name << " is unknown in the component" << std::endl;
+			}
+			allOptions.push_back(row);
+		}
 	}
 	result->connectOptions(allOptions);
 
@@ -118,11 +188,23 @@ void BoundQMLComponentsList::modelChangedHandler()
 		for (const Term& term : terms)
 		{
 			Options *rowOptions = static_cast<Options *>(_boundTo->rowTemplate()->clone());
-			OptionVariable* optionVariable = dynamic_cast<OptionVariable*>(rowOptions->get(_optionKeyName));
-			if (optionVariable)
-				optionVariable->setValue(term.asString());
+
+			if (_termsModel->areTermsInteractions())
+			{
+				OptionTerm* optionTerm = dynamic_cast<OptionTerm*>(rowOptions->get(_optionKeyName));
+				if (optionTerm)
+					optionTerm->setValue(term.scomponents());
+				else
+					Log::log()  << "An option is not of type OptionTerm!!" << std::endl;
+			}
 			else
-				Log::log()  << "An option is not of type OptionVariable!!" << std::endl;
+			{
+				OptionVariable* optionVariable = dynamic_cast<OptionVariable*>(rowOptions->get(_optionKeyName));
+				if (optionVariable)
+					optionVariable->setValue(term.asString());
+				else
+					Log::log()  << "An option is not of type OptionVariable!!" << std::endl;
+			}
 
 			RowControls* rowControls = allControls[term.asQString()];
 			if (rowControls)
@@ -151,28 +233,23 @@ void BoundQMLComponentsList::valuesChangedHandler()
 	modelChangedHandler();
 }
 
-void BoundQMLComponentsList::addTermHandler(QString term)
+QString BoundQMLComponentsList::_incrementCounter()
 {
-	const Terms& myTerms = _termsModel->terms();
-	if (!myTerms.contains(term))
-	{
-		Terms newTerms;
-		newTerms.add(term);
-		_termsModel->addTerms(newTerms);
-	}
+	static int counter = 0;
+	counter++;
+	return QString::number(counter);
 }
 
-void BoundQMLComponentsList::removeTermHandler(QString term)
+void BoundQMLComponentsList::addRowHandler()
+{
+	Terms newTerms;
+	newTerms.add(_incrementCounter());
+	_termsModel->addTerms(newTerms);
+}
+
+void BoundQMLComponentsList::removeRowHandler(int index)
 {
 	const std::vector<Term>& myTerms = _termsModel->terms().terms();
-
-	int index = 0;
-	for (const Term& myTerm : myTerms)
-	{
-		if (myTerm.asQString() == term)
-			break;
-		index++;
-	}
 
 	if (index < int(myTerms.size()))
 	{

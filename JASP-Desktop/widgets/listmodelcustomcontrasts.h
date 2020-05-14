@@ -42,7 +42,7 @@ public:
 	OptionsTable *	createOption()										override;
 	void			initValues(OptionsTable * bindHere)					override;
 	bool			isEditable(const QModelIndex& index)		const	override	{ return index.column() >= _variables.length(); }
-	QString			getItemInputType(const QModelIndex& index)	const	override	{ return index.column() >= _variables.length() ? "formula" : "string"; }
+	QString			getItemInputType(const QModelIndex& index)	const	override	{ return index.column() >= _variables.length() ? (getItemType(Term(QString())) == "double" ? "double"  : "formula") : "string"; }
 	int				variableCount()								const				{ return _variableCount; }
 	QString			colName()									const				{ return _colName;	}
 
