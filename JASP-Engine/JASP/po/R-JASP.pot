@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: JASP 0.9.2\n"
-"POT-Creation-Date: 2020-05-06 14:32\n"
+"POT-Creation-Date: 2020-05-14 12:01\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -916,6 +916,9 @@ msgstr ""
 msgid "%1$s <b>Note:</b> The selected subset (%2$s) is smaller than the planned sample size (%3$s), as observations are selected multiple times due to their high value. These observations (%4$s) are counted multiple times in the evaluation."
 msgstr ""
 
+msgid "Your specified starting point lies outside the selection interval."
+msgstr ""
+
 msgid "<b>Table %1$i.</b> Selection Summary"
 msgstr ""
 
@@ -934,7 +937,7 @@ msgstr ""
 msgid "The sample is drawn with <i>seed %1$s</i>."
 msgstr ""
 
-msgid "The first unit from every interval is selected."
+msgid "Unit %1$s is selected from each interval."
 msgstr ""
 
 msgid "<b>Table %1$i.</b> Selected Observations"

@@ -15788,10 +15788,6 @@ msgctxt "auditSelection|"
 msgid "Range"
 msgstr "Bereik"
 
-msgctxt "auditSelection|"
-msgid "<b>Download Sample</b>"
-msgstr "<b>Download Steekproef</b>"
-
 msgctxt "TTestBayesianOneSample|"
 msgid "Tests"
 msgstr "Toetsen"
@@ -16573,6 +16569,22 @@ msgstr "Netwerk module."
 msgctxt "Description|"
 msgid "Graphically-Based Data Analysis"
 msgstr "Grafisch georiënteerde Data Analyse"
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Starting point"
+msgstr "Startpunt"
+
+msgctxt "auditClassicalWorkflow|"
+msgid "Starting point"
+msgstr "Startpunt"
+
+msgctxt "auditSelection|"
+msgid "Starting point"
+msgstr "Startpunt"
+
+msgctxt "auditSelection|"
+msgid "<b>Download Report</b>"
+msgstr "<b>Download verslag</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""

@@ -15503,10 +15503,6 @@ msgctxt "auditSelection|"
 msgid "Range"
 msgstr ""
 
-msgctxt "auditSelection|"
-msgid "<b>Download Sample</b>"
-msgstr ""
-
 msgctxt "TTestBayesianOneSample|"
 msgid "Tests"
 msgstr ""
@@ -16266,6 +16262,22 @@ msgstr ""
 
 msgctxt "Description|"
 msgid "Graphically-Based Data Analysis"
+msgstr ""
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "<b>Download Report</b>"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"
