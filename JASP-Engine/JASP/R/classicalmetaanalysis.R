@@ -284,7 +284,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
 
 
   rankTestTable$addColumnInfo(name = "name",    type = "string", title = "")
-  rankTestTable$addColumnInfo(name = "kendall", type = "number", title = gettextf("Kendall's %s", "\u3C4"))
+  rankTestTable$addColumnInfo(name = "kendall", type = "number", title = gettext("Kendall's \u3C4"))
   rankTestTable$addColumnInfo(name = "pval",    type = "pvalue", title = gettext("p"))
 
   container[["rankTestTable"]] <- rankTestTable
@@ -335,7 +335,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   casewiseTable$addColumnInfo(name = "dfFits", type = "number",  title = gettext("DFFITS"))
   casewiseTable$addColumnInfo(name = "cook",   type = "number",  title = gettext("Cook's Distance"))
   casewiseTable$addColumnInfo(name = "cov",    type = "number",  title = gettext("Cov. Ratio"))
-  casewiseTable$addColumnInfo(name = "tau2",   type = "number",  title = gettextf("%s%s<sub>(-i)</sub>", "\u3C4", "\u00B2"))
+  casewiseTable$addColumnInfo(name = "tau2",   type = "number",  title = gettext("\u3C4\u00B2<sub>(-i)</sub>"))
   casewiseTable$addColumnInfo(name = "QE",     type = "number",  title = gettext("Q<sub>E(-i)</sub>"))
   casewiseTable$addColumnInfo(name = "hat",    type = "number",  title = gettext("Hat"))
   casewiseTable$addColumnInfo(name = "weight", type = "number",  title = gettext("Weight"))
@@ -484,9 +484,9 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
          lower = ci.lower$tau2, upper = ci.upper$tau2),
     list(name = "\u3C4", est = est$tau,
          lower = ci.lower$tau, upper = ci.upper$tau),
-    list(name = gettextf("I%s (%%)", "\u00B2"), est = est$I2,
+    list(name = gettext("I\u00B2 (%)"), est = est$I2,
          lower = ci.lower$I2, upper = ci.upper$I2),
-    list(name = gettextf("H%s", "\u00B2"), est = est$H2,
+    list(name = gettext("H\u00B2"), est = est$H2,
          lower = ci.lower$H2, upper = ci.upper$H2)
   ))
 }
@@ -529,7 +529,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   isInfluential <- influ$is.infl
   
   if (sum(isInfluential) > 0)
-    container[["casewiseTable"]]$addFootnote(gettextf("Cases marked with %s are influential.", "\u002A"))
+    container[["casewiseTable"]]$addFootnote(gettext("Cases marked with \u002A are influential."))
 
   for (i in 1:length(influenceVals$rstudent)) {
     name <- influenceVals$slab[i]
@@ -630,7 +630,7 @@ ClassicalMetaAnalysis <- function(jaspResults, dataset = NULL, options, ...) {
   # Compute/get model
   rma.fit    <- .metaAnalysisComputeModel(container, dataset, options, ready)
 
-  profilePlot   <- createJaspPlot(title = gettextf("Log-likelihood for %s%s", "\u3C4", "\u00B2"), width = 520, height = 520)
+  profilePlot   <- createJaspPlot(title = gettext("Log-likelihood for \u3C4\u00B2"), width = 520, height = 520)
   profilePlot$position <- 4
   profilePlot$dependOn(c("plotResidualsPredicted"))
   plotContainer[["profile"]] <- profilePlot

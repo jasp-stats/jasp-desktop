@@ -746,7 +746,7 @@
             ggplot2::scale_shape_manual(name = "", 
                                         values = c(21, 21, 21), 
                                         labels = c(gettext("Mean"), 
-                                                    gettextf("Mean %1$s sd", "\u00B1"), 
+                                                    gettext("Mean \u00B1 sd"),
                                                     gettext("Quartile"))) +
             ggplot2::guides(shape = ggplot2::guide_legend(
                               override.aes = list(size = c(4, 3, 2), 
@@ -1373,7 +1373,7 @@
 
   if(type == "bayesian" && options[["expectedBayesFactor"]]){
     summaryTable$addColumnInfo(name = 'expectedBayesFactor',              
-                               title = gettextf("Expected %1$s", "BF\u208B\u208A"), 
+                               title = gettext("Expected BF\u208B\u208A"),
                                type = 'string')
   }
 
@@ -3105,7 +3105,7 @@
                                   type = 'string')
   if(type == "bayesian" && options[["bayesFactor"]])
     evaluationTable$addColumnInfo(name = 'bayesFactor',
-                                  title = gettextf("BF%1$s", "\u208B\u208A"),     
+                                  title = gettext("BF\u208B\u208A"),
                                   type = 'string')
 
   message <- base::switch(options[["estimator"]],

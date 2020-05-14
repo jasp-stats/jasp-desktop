@@ -179,7 +179,7 @@ for sparse regression when there are more covariates than observations (Castillo
   modelComparisonTable$addColumnInfo(name = "postProbModel",  type = "number", title = gettext("P(M|data)"))
   modelComparisonTable$addColumnInfo(name = "BFM",            type = "number", title = gettext("BF<sub>M</sub>"))
   modelComparisonTable$addColumnInfo(name = "BF",             type = "number", title = bfTitle)
-  modelComparisonTable$addColumnInfo(name = "R2",             type = "number", title = gettextf("R%s", "\u00B2"), format = "dp:3")
+  modelComparisonTable$addColumnInfo(name = "R2",             type = "number", title = gettext("R\u00B2"), format = "dp:3")
   
   if (!is.null(basregModel)) {
     generalNote <- NULL

@@ -161,12 +161,12 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 
   summaryTable$addColumnInfo(name = "model",  title = gettext("Model"),                    type = "string")
   summaryTable$addColumnInfo(name = "R",      title = gettext("R"),                        type = "number", format = "dp:3")
-  summaryTable$addColumnInfo(name = "R2",     title = gettextf("R%s", "\u00B2"),           type = "number", format = "dp:3")
-  summaryTable$addColumnInfo(name = "adjR2",  title = gettextf("Adjusted R%s", "\u00B2"),  type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "R2",     title = gettext("R\u00B2"),                  type = "number", format = "dp:3")
+  summaryTable$addColumnInfo(name = "adjR2",  title = gettext("Adjusted R\u00B2"),         type = "number", format = "dp:3")
   summaryTable$addColumnInfo(name = "RMSE",   title = gettext("RMSE"),                     type = "number")
 
   if (options$rSquaredChange) {
-    summaryTable$addColumnInfo(name = "R2c",  title = gettextf("R%s Change", "\u00B2"), type = "number", format = "dp:3")
+    summaryTable$addColumnInfo(name = "R2c",  title = gettext("R\u00B2 Change"),        type = "number", format = "dp:3")
     summaryTable$addColumnInfo(name = "Fc",   title = gettext("F Change"),              type = "number")
     summaryTable$addColumnInfo(name = "df1",  title = gettext("df1"),                   type = "integer")
     summaryTable$addColumnInfo(name = "df2",  title = gettext("df2"),                   type = "integer")
@@ -753,12 +753,12 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
 
   if (!is.null(formulaNull)) {
     fitNull <- stats::lm(formulaNull, data = dataset, weights = weights, x = TRUE)
-    model[[1]] <- list(fit = fitNull, predictors = predictorsInNull, title = gettextf("H%s", "\u2080"))
+    model[[1]] <- list(fit = fitNull, predictors = predictorsInNull, title = gettext("H\u2080"))
   }
 
   if (!is.null(formula)) {
     fit <- stats::lm(formula, data = dataset, weights = weights, x = TRUE)
-    model[[length(model) + 1]] <- list(fit = fit, predictors = predictors, title = gettextf("H%s", "\u2081"))
+    model[[length(model) + 1]] <- list(fit = fit, predictors = predictors, title = gettext("H\u2081"))
   }
 
   return(model)
@@ -1249,7 +1249,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
         rownames(covmatrix) <- c(rownames(covmatrix), name)
         colnames(covmatrix) <- c(colnames(covmatrix), name)
         # Add footnote for this case
-        #.addFootnote(footnotes = footnotes, text = "One or more of the variables specified in the regression model are redundant. Therefore, they are dropped from the model covariance matrix.", symbol = "\u207A") # TODO add this footnote again if this ever occurs?
+        #.addFootnote(footnotes = footnotes, text = gettext("One or more of the variables specified in the regression model are redundant. Therefore, they are dropped from the model covariance matrix."), symbol = "\u207A") # TODO add this footnote again if this ever occurs?
 
         # Add footnote symbol to name of the redundant variable (if-statement needed as intercept is part of the coefficients but not of cov.matrix)
         #  rownames.covmatrix[i] <- paste0(rownames.covmatrix[i], "\u207A")
@@ -1590,9 +1590,9 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   modelTitle <- index
   if (method == "enter") {
     if (index == 1 && (length(predictors) == 0 || all(predictors %in% predictorsInNull)))
-      modelTitle <- gettextf("H%s", "\u2080")
+      modelTitle <- gettext("H\u2080")
     else
-      modelTitle <- gettextf("H%s", "\u2081")
+      modelTitle <- gettext("H\u2081")
   }
 
   return(modelTitle)
@@ -1643,8 +1643,7 @@ RegressionLinear <- function(jaspResults, dataset = NULL, options) {
   if (wantsVovkSellkeMPR) {
     jaspTable$addColumnInfo(name = "vovksellke", title = gettext("VS-MPR"), type = "number")
     #Haven't I seen the following footnote before?
-    jaspTable$addFootnote(symbol = "\u002A", colNames = "vovksellke", message = gettextf("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum
-        possible odds in favor of H%1$s over H%2$s equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> %3$s .37 (Sellke, Bayarri, & Berger, 2001).", "\u2081", "\u2080", "\u2264"))
+    jaspTable$addFootnote(symbol = "\u002A", colNames = "vovksellke", message = gettext("Vovk-Sellke Maximum <em>p</em>-Ratio: Based on the <em>p</em>-value, the maximum possible odds in favor of H\u2081 over H\u2080 equals 1/(-e <em>p</em> log(<em>p</em>)) for <em>p</em> \u2264 .37 (Sellke, Bayarri, & Berger, 2001)."))
   }
 }
 

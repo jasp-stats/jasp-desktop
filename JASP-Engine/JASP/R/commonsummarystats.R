@@ -45,25 +45,25 @@
     BF01 = {
       bf.title <- switch(
                     hypothesisMap,
-                    gettextf("BF%s", "\u2080\u2081"),
-                    gettextf("BF%s", "\u2080\u208A"),
-                    gettextf("BF%s", "\u2080\u208B")
+                    gettext("BF\u2080\u2081"),
+                    gettext("BF\u2080\u208A"),
+                    gettext("BF\u2080\u208B")
                   )
     },
     BF10 = {
       bf.title <- switch(
                     hypothesisMap,
-                    gettextf("BF%s", "\u2081\u2080"),
-                    gettextf("BF%s", "\u208A\u2080"),
-                    gettextf("BF%s", "\u208B\u2080")
+                    gettext("BF\u2081\u2080"),
+                    gettext("BF\u208A\u2080"),
+                    gettext("BF\u208B\u2080")
                   )
     },
     LogBF10 = {
       bf.title <- switch(
                     hypothesisMap,
-                    gettextf("Log(BF%s)", "\u2081\u2080"),
-                    gettextf("Log(BF%s)", "\u208A\u2080"),
-                    gettextf("Log(BF%s)", "\u208B\u2080")
+                    gettext("Log(BF\u2081\u2080)"),
+                    gettext("Log(BF\u208A\u2080)"),
+                    gettext("Log(BF\u208B\u2080)")
                   )
     }
   )

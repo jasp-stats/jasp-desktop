@@ -375,13 +375,13 @@
                                       title = gettext("Functional form"), 
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorH1', 
-                                      title = gettextf("Support %1$s", "H\u208B"), 
+                                      title = gettext("Support H\u208B"),
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorH0', 
-                                      title = gettextf("Support %1$s", "H\u208A"), 
+                                      title = gettext("Support H\u208A"),
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                      title = gettextf("Evidence ratio %1$s", "<sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>"), 
+                                      title = gettext("Evidence ratio <sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>"),
                                       type = 'string')
     priorStatisticsTable$addColumnInfo(name = 'priorBound', 
                                       title = gettextf("%1$s%% Credible bound", options[["confidence"]]*100) , 
@@ -397,13 +397,8 @@
 
     }
 
-    priorStatisticsTable$addFootnote(gettextf("%1$s: The population misstatement is lower than materiality (%2$s %3$s). %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s)."
-    , "H\u208B"
-    , "\u03B8 <"
-    , round(planningState[["materiality"]], 4)
-    , "H\u208A"
-    , "\u03B8 \u2265"
-    , round(planningState[["materiality"]], 4)))
+    priorStatisticsTable$addFootnote(gettextf("H\u208B: The population misstatement is lower than materiality (\u03B8 < %1$s). H\u208A: The population misstatement is equal to, or higher than, materiality (\u03B8 \u2265 %1$s).", 
+    round(planningState[["materiality"]], 4)))
 
     if(planningState[["likelihood"]] == "poisson"){
 
@@ -1590,25 +1585,19 @@
                                                    title = gettext("Functional form"), 
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH1', 
-                                                   title = gettextf("Support %1$s", "H\u208B"), 
+                                                   title = gettext("Support H\u208B"),
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorH0', 
-                                                   title = gettextf("Support %1$s", "H\u208A"), 
+                                                   title = gettext("Support H\u208A"),
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorOdds', 
-                                                   title = gettextf("Evidence ratio %1$s", "<sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>"), 
+                                                   title = gettext("Evidence ratio <sup>H\u208B</sup>&frasl;<sub>H\u208A</sub>"),
                                                    type = 'string')
     priorAndPosteriorStatisticsTable$addColumnInfo(name = 'priorBound', 
                                                    title = gettextf("%1$s%% Credible bound", round(options[["confidence"]] * 100, 2)) , 
                                                    type = 'string')
-    priorAndPosteriorStatisticsTable$addFootnote(message = gettextf("%1$s: The population misstatement is lower than materiality (%2$s %3$s). %4$s: The population misstatement is equal to, or higher than, materiality (%5$s %6$s).",
-                                                                    "H\u208B",
-                                                                    "\u03B8 <",
-                                                                    round(evaluationState[["materiality"]], 3),
-                                                                    "H\u208A",
-                                                                    "\u03B8 \u2265",
-                                                                    round(evaluationState[["materiality"]], 3)))
-
+    priorAndPosteriorStatisticsTable$addFootnote(message = gettextf("H\u208B: The population misstatement is lower than materiality (\u03B8 < %1$s). H\u208A: The population misstatement is equal to, or higher than, materiality (\u03B8 \u2265 %1$s).",round(evaluationState[["materiality"]], 3)))
+    
     evaluationContainer[["priorAndPosteriorStatistics"]] <- priorAndPosteriorStatisticsTable
 
     if(options[["auditResult"]] == "" || 

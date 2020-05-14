@@ -709,7 +709,7 @@
   if (!is.null(jaspResults[["tableBMACRI"]]) || !options[["criTable"]])
     return()
   
-  criTable <- createJaspTable(title = gettextf("Model Averaged R%s", "\u00B2"))
+  criTable <- createJaspTable(title = gettext("Model Averaged R\u00B2"))
   criTable$position <- 3.5
   criTable$dependOn(c(
     "dependent", "randomFactors", "priorFixedEffects", "priorRandomEffects", "sampleModeMCMC",
@@ -928,7 +928,7 @@
     return()
 
   plot <- createJaspPlot(
-    title       = gettextf("Model Averaged Posterior R%s","\u00B2"),
+    title       = gettext("Model Averaged Posterior R\u00B2"),
     width       = 400,
     height      = 400,
     aspectRatio = 1
@@ -2581,7 +2581,7 @@
     p <- JASPgraphs::PlotPriorAndPosterior(dfLines = df, xName = xName, CRI = rsqCri, drawCRItxt = FALSE)
   }
   plot <- createJaspPlot(
-    title       = gettextf("Posterior R%s", "\u00B2"),
+    title       = gettext("Posterior R\u00B2"),
     width       = 400,
     height      = 400,
     plot        = p,
@@ -2598,7 +2598,7 @@
   if (!is.null(jaspResults[["tableSMICRI"]]) || !options[["singleModelCriTable"]])
     return()
   
-  criTable <- createJaspTable(title = gettextf("Single Model R%s", "\u00B2"))
+  criTable <- createJaspTable(title = gettext("Single Model R\u00B2"))
   criTable$position <- 3.5
   criTable$dependOn(c("singleModelCriTable", "credibleInterval"))
   

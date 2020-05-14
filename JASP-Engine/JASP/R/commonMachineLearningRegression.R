@@ -316,7 +316,7 @@
       regressionTable$addFootnote(gettext("The model is optimized with respect to the <i>validation set mean squared error</i>."))
 
     if (regressionResult[["lambda"]] == 0)
-      regressionTable$addFootnote(gettextf("When %s is set to 0 linear regression is performed.", "\u03BB"))
+      regressionTable$addFootnote(gettext("When \u03BB is set to 0 linear regression is performed."))
 
     row <- data.frame(penalty = regressionResult[["penalty"]], 
                       lambda = regressionResult[["lambda"]], 
@@ -412,7 +412,7 @@
   validationMeasures[["values"]] <- values
 
   if(is.na(r_squared))
-    validationMeasures$addFootnote(gettextf("R%s cannot be computed due to lack of variance in the predictions.</i>", "\u00B2"))
+    validationMeasures$addFootnote(gettext("R\u00B2 cannot be computed due to lack of variance in the predictions.</i>"))
   
 }
 
