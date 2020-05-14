@@ -15788,10 +15788,6 @@ msgctxt "auditSelection|"
 msgid "Range"
 msgstr "Bereik"
 
-msgctxt "auditSelection|"
-msgid "<b>Download Sample</b>"
-msgstr "<b>Download Steekproef</b>"
-
 msgctxt "TTestBayesianOneSample|"
 msgid "Tests"
 msgstr "Toetsen"
@@ -15933,6 +15929,22 @@ msgstr "Laden van Gegevens"
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
 msgstr "%1 %2 faalde omdat %3"
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Starting point"
+msgstr "Startpunt"
+
+msgctxt "auditClassicalWorkflow|"
+msgid "Starting point"
+msgstr "Startpunt"
+
+msgctxt "auditSelection|"
+msgid "Starting point"
+msgstr "Startpunt"
+
+msgctxt "auditSelection|"
+msgid "<b>Download Report</b>"
+msgstr "<b>Download verslag</b>"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""

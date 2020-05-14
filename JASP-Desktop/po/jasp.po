@@ -15503,10 +15503,6 @@ msgctxt "auditSelection|"
 msgid "Range"
 msgstr ""
 
-msgctxt "auditSelection|"
-msgid "<b>Download Sample</b>"
-msgstr ""
-
 msgctxt "TTestBayesianOneSample|"
 msgid "Tests"
 msgstr ""
@@ -15645,6 +15641,22 @@ msgstr ""
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
+msgstr ""
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "<b>Download Report</b>"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"
