@@ -36,72 +36,34 @@ OSF::OSF(QObject *parent): FileMenuObject(parent)
 
 	setListModel(new OSFListModel(this, _osfFileSystem, _osfBreadCrumbsListModel));
 
-	connect(_osfFileSystem,						&OSFFileSystem::authenticationSucceeded,		this,			&OSF::updateUserDetails);
-	connect(_osfFileSystem,						&OSFFileSystem::authenticationFailed,			this,			&OSF::authenticationeFailed);
-	connect(_osfFileSystem,						&OSFFileSystem::authenticationClear,			this,			&OSF::updateUserDetails);
-	connect(_osfFileSystem,						&OSFFileSystem::entriesChanged,					this,			&OSF::resetOSFListModel);
-	connect(_osfFileSystem,						&OSFFileSystem::stopProcessing,					this,			&OSF::stopProcessing);
+	connect(_osfFileSystem,				&OSFFileSystem::authenticationSucceeded,		this,			&OSF::updateUserDetails);
+	connect(_osfFileSystem,				&OSFFileSystem::authenticationFailed,			this,			&OSF::authenticationeFailed);
+	connect(_osfFileSystem,				&OSFFileSystem::authenticationClear,			this,			&OSF::updateUserDetails);
+	connect(_osfFileSystem,				&OSFFileSystem::entriesChanged,					this,			&OSF::resetOSFListModel);
+	connect(_osfFileSystem,				&OSFFileSystem::stopProcessing,					this,			&OSF::stopProcessing);
 	connect(_osfListModel,				&OSFListModel::startProcessing,					this,			&OSF::startProcessing);
-	connect(_osfFileSystem,						&OSFFileSystem::newLoginRequired,				this,			&OSF::newLoginRequired);
+	connect(_osfFileSystem,				&OSFFileSystem::newLoginRequired,				this,			&OSF::newLoginRequired);
 
 	connect(this,						&OSF::openFileRequest,							this,			&OSF::notifyDataSetOpened);
 	connect(_osfBreadCrumbsListModel,	&OSFBreadCrumbsListModel::crumbIndexChanged,	_osfListModel,	&OSFListModel::changePathCrumbIndex);
 
 
-	_mRememberMe = Settings::value(Settings::OSF_REMEMBER_ME).toBool();
-	_mUserName = Settings::value(Settings::OSF_USERNAME).toString();
-	_mPassword = decrypt(Settings::value(Settings::OSF_PASSWORD).toString());
+	_mRememberMe	= Settings::value(Settings::OSF_REMEMBER_ME).toBool();
+	_mUserName		= Settings::value(Settings::OSF_USERNAME).toString();
+	_mPassword		= decrypt(Settings::value(Settings::OSF_PASSWORD).toString());
 
 	setShowfiledialog(false);
 	setProcessing(false);
 
-	m_sortedMenuModel = new SortMenuModel(_osfFileSystem, {Sortable::None, Sortable::SortByNameAZ, Sortable::SortByNameZA, Sortable::SortByDate});
-	m_sortedMenuModel->setCurrentEntry(static_cast<Sortable::SortType>(Settings::value(Settings::OSF_SORTORDER).toInt()));
-
-}
-
-bool OSF::loggedin()
-{
-	return _mLoggedin;
-}
-
-bool OSF::rememberme()
-{
-	return _mRememberMe;
-}
-
-bool OSF::processing()
-{
-	return _mProcessing;
-}
-
-bool OSF::showfiledialog()
-{
-	return _mShowFileDialog;
-}
-
-QString OSF::savefilename()
-{
-	return _mSaveFileName;
-}
-
-QString OSF::savefoldername()
-{
-	return _mSaveFolderName;
-}
-
-QString OSF::username()
-{
-	return _mUserName;
-}
-
-QString OSF::password()
-{
-	return _mPassword;
+	_sortedMenuModel = new SortMenuModel(_osfFileSystem, {Sortable::None, Sortable::SortByNameAZ, Sortable::SortByNameZA, Sortable::SortByDate});
+	_sortedMenuModel->setCurrentEntry(static_cast<Sortable::SortType>(Settings::value(Settings::OSF_SORTORDER).toInt()));
 }
 
 void OSF::setLoggedin(const bool loggedin)
 {
+	if(_mLoggedin == loggedin)
+		return;
+
 	_mLoggedin =  loggedin;
 	emit loggedinChanged();
 
@@ -109,24 +71,36 @@ void OSF::setLoggedin(const bool loggedin)
 
 void OSF::setProcessing(const bool processing)
 {
+	if(_mProcessing == processing)
+		return;
+
 	_mProcessing = processing;
 	emit processingChanged();
 }
 
 void OSF::setSavefilename(const QString &savefilename)
 {
+	if(_mSaveFileName == savefilename)
+		return;
+
 	_mSaveFileName = savefilename;
 	emit savefilenameChanged();
 }
 
 void OSF::setSavefoldername(const QString &savefoldername)
 {
+	if(_mSaveFolderName == savefoldername)
+		return;
+
 	_mSaveFolderName = savefoldername;
 	emit savefoldernameChanged();
 }
 
 void OSF::setShowfiledialog(const bool showdialog)
 {
+	if(_mShowFileDialog == showdialog)
+		return;
+
 	_mShowFileDialog = showdialog;
 	emit showfiledialogChanged();
 }
@@ -161,7 +135,6 @@ void OSF::setRememberme(const bool rememberme)
 
 void OSF::setUsername(const QString &username)
 {
-
 	if (_mUserName == username)
 		return;
 
@@ -250,7 +223,7 @@ void OSF::setMode(FileEvent::FileMode mode)
 
 SortMenuModel *OSF::sortedMenuModel() const
 {
-	return m_sortedMenuModel;
+	return _sortedMenuModel;
 }
 
 //private slots
@@ -264,7 +237,7 @@ void OSF::notifyDataSetSelected(QString path)
 void OSF::notifyDataSetOpened(QString path)
 {
 	OSFFileSystem::OnlineNodeData nodeData = _osfFileSystem->getNodeData(path);
-	openSaveFile(nodeData.nodePath, nodeData.name);
+	openSaveFile(nodeData.nodePath, nodeData.name, path);
 }
 
 void OSF::authenticationeFailed(QString message)
@@ -294,14 +267,16 @@ void OSF::saveClicked()
 	if (_osfFileSystem->hasFileEntry(filename.toLower(), path))
 		notifyDataSetOpened(path);
 	else
-		openSaveFile(currentNodeData.nodePath, filename);
+		openSaveFile(currentNodeData.nodePath, filename, _osfFileSystem->path());
 }
 
-void OSF::openSaveFile(const QString &nodePath, const QString &filename)
+void OSF::openSaveFile(const QString & nodePath, const QString & filename, const QString & osfPath)
 {
 	bool storedata = (_mode == FileEvent::FileSave || _mode == FileEvent::FileExportResults || _mode == FileEvent::FileExportData);
 
 	FileEvent *event = new FileEvent(this, _mode);
+
+	event->setOsfPath(osfPath);
 
 	setProcessing(true);
 

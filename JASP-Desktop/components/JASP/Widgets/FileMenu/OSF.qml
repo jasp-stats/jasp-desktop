@@ -149,7 +149,7 @@ Item
 			id 		: saveFoldernameLabel
 			text	: qsTr("Foldername")
 
-			width	: 80 * preferencesModel.uiScale
+			width	: Math.max(80 * preferencesModel.uiScale, implicitWidth)
 			height	: 30 * preferencesModel.uiScale
 			color 	: jaspTheme.black
 			font	: jaspTheme.font
@@ -258,7 +258,7 @@ Item
 			id 		: saveFilenameLabel
 			text	: qsTr("Filename")
 
-			width	: 80 * preferencesModel.uiScale
+			width	: Math.max(80 * preferencesModel.uiScale, implicitWidth)
 			height	: 30 * preferencesModel.uiScale
 			color 	: jaspTheme.black
 			font	: jaspTheme.font

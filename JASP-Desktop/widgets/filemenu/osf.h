@@ -31,30 +31,29 @@ class OSF: public FileMenuObject
 {
 	Q_OBJECT
 
-	Q_PROPERTY(	bool	loggedin		READ loggedin		WRITE setLoggedin		NOTIFY loggedinChanged)
-	Q_PROPERTY(	bool	processing		READ processing		WRITE setProcessing		NOTIFY processingChanged)
-	Q_PROPERTY(	bool	showfiledialog	READ showfiledialog WRITE setShowfiledialog NOTIFY showfiledialogChanged)
-	Q_PROPERTY(	QString	savefilename	READ savefilename	WRITE setSavefilename	NOTIFY savefilenameChanged)
-	Q_PROPERTY(	QString savefoldername	READ savefoldername	WRITE setSavefoldername	NOTIFY savefoldernameChanged)
-	Q_PROPERTY(	bool	rememberme		READ rememberme		WRITE setRememberme		NOTIFY remembermeChanged)
-	Q_PROPERTY(	QString	username		READ username		WRITE setUsername		NOTIFY usernameChanged)
-	Q_PROPERTY(	QString	password		READ password		WRITE setPassword		NOTIFY passwordChanged)
-
-	Q_PROPERTY(OSFListModel * listModel					READ listModel		WRITE setListModel		NOTIFY listModelChanged)
-	Q_PROPERTY(OSFBreadCrumbsListModel * breadCrumbs	READ breadCrumbs	WRITE setBreadCrumbs	NOTIFY breadCrumbsChanged)
-	Q_PROPERTY(SortMenuModel * sortedMenuModel			READ sortedMenuModel						NOTIFY sortedMenuModelChanged)
+	Q_PROPERTY(bool							loggedin		READ loggedin			WRITE setLoggedin		NOTIFY loggedinChanged			)
+	Q_PROPERTY(bool							processing		READ processing			WRITE setProcessing		NOTIFY processingChanged		)
+	Q_PROPERTY(bool							showfiledialog	READ showfiledialog		WRITE setShowfiledialog NOTIFY showfiledialogChanged	)
+	Q_PROPERTY(QString						savefilename	READ savefilename		WRITE setSavefilename	NOTIFY savefilenameChanged		)
+	Q_PROPERTY(QString						savefoldername	READ savefoldername		WRITE setSavefoldername	NOTIFY savefoldernameChanged	)
+	Q_PROPERTY(bool							rememberme		READ rememberme			WRITE setRememberme		NOTIFY remembermeChanged		)
+	Q_PROPERTY(QString						username		READ username			WRITE setUsername		NOTIFY usernameChanged			)
+	Q_PROPERTY(QString						password		READ password			WRITE setPassword		NOTIFY passwordChanged			)
+	Q_PROPERTY(OSFListModel				*	listModel		READ listModel			WRITE setListModel		NOTIFY listModelChanged			)
+	Q_PROPERTY(OSFBreadCrumbsListModel	*	breadCrumbs		READ breadCrumbs		WRITE setBreadCrumbs	NOTIFY breadCrumbsChanged		)
+	Q_PROPERTY(SortMenuModel			*	sortedMenuModel	READ sortedMenuModel							NOTIFY sortedMenuModelChanged	)
 
 public:
 	explicit OSF(QObject *parent = nullptr);
 
-	bool loggedin();
-	bool rememberme();
-	bool processing();
-	bool showfiledialog();
-	QString savefilename();
-	QString savefoldername();
-	QString username();
-	QString password();
+	bool loggedin()				const { return _mLoggedin;			}
+	bool rememberme()			const { return _mRememberMe;		}
+	bool processing()			const { return _mProcessing;		}
+	bool showfiledialog()		const { return _mShowFileDialog;	}
+	QString savefilename()		const { return _mSaveFileName;		}
+	QString savefoldername()	const { return _mSaveFolderName;	}
+	QString username()			const { return _mUserName;			}
+	QString password()			const { return _mPassword;			}
 
 	void setLoggedin(const bool loggedin);
 	void setRememberme(const bool rememberme);
@@ -89,7 +88,6 @@ signals:
 	void openFileRequest(QString path);
 	void listModelChanged(OSFListModel * listModel);
 	void breadCrumbsChanged(OSFBreadCrumbsListModel * breadCrumbs);
-
 	void sortedMenuModelChanged(SortMenuModel * sortedMenuModel);
 
 private slots:
@@ -97,9 +95,9 @@ private slots:
 	void notifyDataSetOpened(QString path);
 	void authenticationeFailed(QString message);
 	void saveClicked();
-	void openSaveFile(const QString &nodePath, const QString &filename);
+	void openSaveFile(const QString & nodePath, const QString & filename, const QString & osfpath = "");
 	void userDetailsReceived();
-	void openSaveCompleted(FileEvent* event);
+	void openSaveCompleted(FileEvent * event);
 	void updateUserDetails();
 	void newFolderCreated();
 	void resetOSFListModel();
@@ -138,7 +136,7 @@ private:
 			_mUserName,
 			_mPassword;
 
-	SortMenuModel * m_sortedMenuModel;
+	SortMenuModel * _sortedMenuModel;
 };
 
 

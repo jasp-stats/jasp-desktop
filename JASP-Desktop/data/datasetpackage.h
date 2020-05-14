@@ -19,6 +19,8 @@
 #define FILEPACKAGE_H
 
 #include <QAbstractItemModel>
+#include <QFileInfo>
+#include <QUrl>
 #include "common.h"
 #include "dataset.h"
 #include "../JASP-Common/version.h"
@@ -39,7 +41,13 @@ class EngineSync;
 class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel because of: https://stackoverflow.com/a/38999940 (And this being a tree model)
 {
 	Q_OBJECT
-	Q_PROPERTY(int columnsFilteredCount READ columnsFilteredCount		NOTIFY columnsFilteredCountChanged)
+	Q_PROPERTY(int			columnsFilteredCount	READ columnsFilteredCount							NOTIFY columnsFilteredCountChanged	)
+	Q_PROPERTY(QString		name					READ name											NOTIFY nameChanged					)
+	Q_PROPERTY(QString		folder					READ folder					WRITE setFolder			NOTIFY folderChanged				)
+	Q_PROPERTY(QString		windowTitle				READ windowTitle									NOTIFY windowTitleChanged			)
+	Q_PROPERTY(bool			modified				READ isModified				WRITE setModified		NOTIFY isModifiedChanged			)
+	Q_PROPERTY(bool			loaded					READ isLoaded				WRITE setLoaded			NOTIFY loadedChanged				)
+	Q_PROPERTY(QString		currentFile				READ currentFile			WRITE setCurrentFile	NOTIFY currentFileChanged			)
 
 	typedef std::map<std::string, std::map<int, std::string>> emptyValsType;
 
@@ -95,12 +103,16 @@ public:
 				void				resetEmptyValues()																	{ _emptyValuesMap.clear();											}
 
 				std::string			id()								const	{ return _id;							}
+				QString				name()								const;
+				QString				folder()							const	{ return _folder;						}
 				bool				isReady()							const	{ return _analysesHTMLReady;			}
 				bool				isLoaded()							const	{ return _isLoaded;						 }
 				bool				isArchive()							const	{ return _isArchive;					  }
 				bool				isModified()						const	{ return _isModified;					   }
 				std::string			dataFilter()						const	{ return _dataFilter;						}
 				std::string			initialMD5()						const	{ return _initialMD5;						 }
+				QString				windowTitle()						const;
+				QString				currentFile()						const	{ return _currentFile;						 }
 				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;			  }
 				std::string			dataFilePath()						const	{ return _dataFilePath;						   }
 		const	std::string		&	analysesHTML()						const	{ return _analysesHTML;							}
@@ -108,11 +120,13 @@ public:
 		const	std::string		&	warningMessage()					const	{ return _warningMessage;						  }
 		const	Version			&	archiveVersion()					const	{ return _archiveVersion;						   }
 		const	emptyValsType	&	emptyValuesMap()					const	{ return _emptyValuesMap;   						}
+
 				bool				dataFileReadOnly()					const	{ return _dataFileReadOnly;						     }
 				uint				dataFileTimestamp()					const	{ return _dataFileTimestamp;					      }
 		const	Version			&	dataArchiveVersion()				const	{ return _dataArchiveVersion;						   }
 				bool				filterShouldRunInit()				const	{ return _filterShouldRunInit;							}
 		const	std::string		&	filterConstructorJson()				const	{ return _filterConstructorJSON;					    }
+
 
 				void				setDataArchiveVersion(Version archiveVersion)	{ _dataArchiveVersion			= archiveVersion;	}
 				void				setFilterShouldRunInit(bool shouldIt)			{ _filterShouldRunInit			= shouldIt;			}
@@ -133,7 +147,7 @@ public:
 				void				setAnalysesHTMLReady()							{ _analysesHTMLReady			= true;				}
 				void				setId(std::string id)							{ _id							= id;				}
 				void				setWaitingForReady()							{ _analysesHTMLReady			= false;			}
-				void				setLoaded()										{ _isLoaded						= true;				}
+				void				setLoaded(bool loaded = true);
 
 				bool						initColumnAsScale(				size_t colNo,			std::string newName, const std::vector<double>		& values);
 				bool						initColumnAsScale(				std::string colName,	std::string newName, const std::vector<double>		& values)	{ return initColumnAsScale(_dataSet->getColumnIndex(colName), newName, values); }
@@ -208,6 +222,11 @@ public:
 				std::vector<bool>			filterVector();
 				void						setFilterVectorWithoutModelUpdate(std::vector<bool> newFilterVector) { if(_dataSet) _dataSet->setFilterVector(newFilterVector); }
 
+
+
+
+
+
 signals:
 				void				datasetChanged(	QStringList				changedColumns,
 													QStringList				missingColumns,
@@ -234,6 +253,11 @@ signals:
 				void				modelInit();
 				void				columnNamesChanged();
 				void				columnAboutToBeRemoved(int column);
+				void				nameChanged();
+				void				folderChanged();
+				void				windowTitleChanged();
+				void				loadedChanged();
+				void				currentFileChanged();
 
 public slots:
 				void				refresh() { beginResetModel(); endResetModel(); }
@@ -242,6 +266,9 @@ public slots:
 				void				notifyColumnFilterStatusChanged(int columnIndex);
 				void				setColumnsUsedInEasyFilter(std::set<std::string> usedColumns);
 				void				emptyValuesChangedHandler();
+				void				setCurrentFile(QString currentFile);
+
+				void setFolder(QString folder);
 
 private:
 				///This function allows you to run some code that changes something in the _dataSet and will try to enlarge it if it fails with an allocation error. Otherwise it might keep going for ever?
@@ -256,6 +283,8 @@ private:
 	EngineSync				*	_engineSync					= nullptr;
 	emptyValsType				_emptyValuesMap;
 
+	QString						_currentFile,
+								_folder;
 	std::string					_analysesHTML,
 								_id,
 								_warningMessage,

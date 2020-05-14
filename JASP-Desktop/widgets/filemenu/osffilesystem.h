@@ -38,20 +38,21 @@ public:
 	~OSFFileSystem() override;
 	void refresh() override;
 
-	typedef struct {
+	struct OnlineNodeData
+	{
 		QString name;
-		bool isFolder;
-		bool isComponent;
-		bool isProvider;
-		QString contentsPath;
-		QString childrenPath;
-		QString uploadPath;
-		QString downloadPath;
-		QString nodePath;
-		bool canCreateFolders;
-		bool canCreateFiles;
-		int level = 0;
-	} OnlineNodeData;
+		bool	isFolder,
+				isComponent,
+				isProvider;
+		QString	contentsPath,
+				childrenPath,
+				uploadPath,
+				downloadPath,
+				nodePath;
+		bool	canCreateFolders,
+				canCreateFiles;
+		int		level = 0;
+	};
 	
 	static const QString rootelementname; //Root element in the OSF
 

@@ -68,7 +68,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(int		progressBarProgress	READ progressBarProgress	WRITE setProgressBarProgress	NOTIFY progressBarProgressChanged	)
 	Q_PROPERTY(QString	progressBarStatus	READ progressBarStatus		WRITE setProgressBarStatus		NOTIFY progressBarStatusChanged		)
 	Q_PROPERTY(bool		dataPanelVisible	READ dataPanelVisible		WRITE setDataPanelVisible		NOTIFY dataPanelVisibleChanged		)
-	Q_PROPERTY(QString	windowTitle			READ windowTitle			WRITE setWindowTitle			NOTIFY windowTitleChanged			)
+	Q_PROPERTY(QString	windowTitle			READ windowTitle											NOTIFY windowTitleChanged			)
 	Q_PROPERTY(int		screenPPI			READ screenPPI				WRITE setScreenPPI				NOTIFY screenPPIChanged				)
 	Q_PROPERTY(bool		dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
 	Q_PROPERTY(bool		analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
@@ -87,7 +87,7 @@ public:
 	int		progressBarProgress()	const	{ return _progressBarProgress;	}
 	QString	progressBarStatus()		const	{ return _progressBarStatus;	}
 	bool	dataPanelVisible()		const	{ return _dataPanelVisible;		}
-	QString	windowTitle()			const	{ return _windowTitle;			}
+	QString	windowTitle()			const;
 	int		screenPPI()				const	{ return _screenPPI;			}
 	bool	dataAvailable()			const	{ return _dataAvailable;		}
 	bool	analysesAvailable()		const	{ return _analysesAvailable;	}
@@ -105,8 +105,6 @@ public slots:
 	void setAnalysesAvailable(bool analysesAvailable);
 	void setDataPanelVisible(bool dataPanelVisible);
 	void setDataAvailable(bool dataAvailable);
-	//void setDatasetLoaded(bool datasetLoaded);
-	void setWindowTitle(QString windowTitle);
 	void setScreenPPI(int screenPPI);
 
 	bool checkPackageModifiedBeforeClosing();
@@ -183,21 +181,21 @@ private:
 
 signals:
 	void saveJaspFile();
-	void editImageCancelled(int id);
-	void updateAnalysesUserData(QString userData);
-	void runButtonTextChanged(QString runButtonText);
-	void runButtonEnabledChanged(bool runButtonEnabled);
-	void progressBarVisibleChanged(bool progressBarVisible);
-	void progressBarProgressChanged(int progressBarProgress);
-	void progressBarStatusChanged(QString progressBarStatus);
-	void dataPanelVisibleChanged(bool dataPanelVisible);
-	void analysesVisibleChanged(bool analysesVisible);
-	void windowTitleChanged(QString windowTitle);
-	void screenPPIChanged(int screenPPI);
-	void dataAvailableChanged(bool dataAvailable);
-	void analysesAvailableChanged(bool analysesAvailable);
-	void welcomePageVisibleChanged(bool welcomePageVisible);
-	void downloadNewJASPUrlChanged(QString downloadNewJASPUrl);
+	void editImageCancelled(		int			id);
+	void updateAnalysesUserData(	QString		userData);
+	void runButtonTextChanged(		QString		runButtonText);
+	void runButtonEnabledChanged(	bool		runButtonEnabled);
+	void progressBarVisibleChanged(	bool		progressBarVisible);
+	void progressBarProgressChanged(int			progressBarProgress);
+	void progressBarStatusChanged(	QString		progressBarStatus);
+	void dataPanelVisibleChanged(	bool		dataPanelVisible);
+	void analysesVisibleChanged(	bool		analysesVisible);
+	void windowTitleChanged();
+	void screenPPIChanged(			int			screenPPI);
+	void dataAvailableChanged(		bool		dataAvailable);
+	void analysesAvailableChanged(	bool		analysesAvailable);
+	void welcomePageVisibleChanged(	bool		welcomePageVisible);
+	void downloadNewJASPUrlChanged	(QString	downloadNewJASPUrl);
 
 private slots:
 	void resultsPageLoaded();
@@ -271,9 +269,7 @@ private:
 
 	QString							_openOnLoadFilename,
 									_fatalError				= "The engine crashed...",
-									_currentFilePath,
 									_progressBarStatus,
-									_windowTitle,
 									_downloadNewJASPUrl		= "";
 
 	AsyncLoader					*	_loader					= nullptr;

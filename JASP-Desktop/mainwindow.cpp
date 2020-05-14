@@ -25,7 +25,7 @@
 #include <QDir>
 
 #include <QFile>
-#include <QFileInfo>
+#include <QUrl>
 #include <QShortcut>
 #include <QStringBuilder>
 #include <QDesktopServices>
@@ -193,6 +193,11 @@ MainWindow::~MainWindow()
 	}
 }
 
+QString MainWindow::windowTitle() const
+{
+	return _package->windowTitle();
+}
+
 bool MainWindow::checkDoSync()
 {
 	if (checkAutomaticSync() && !MessageForwarder::showYesNo(tr("Datafile changed"), tr("The datafile that was used by this JASP file was modified. Do you want to reload the analyses with this new data?")))
@@ -228,6 +233,7 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::datasetChanged,					_filterModel,			&FilterModel::datasetChanged,									Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::datasetChanged,					_computedColumnsModel,	&ComputedColumnsModel::datasetChanged,							Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
+	connect(_package,				&DataSetPackage::windowTitleChanged,				this,					&MainWindow::windowTitleChanged								);
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
 	connect(_package,				&DataSetPackage::freeDatasetSignal,					_loader,				&AsyncLoader::free											);
 	connect(_package,				&DataSetPackage::checkDoSync,						_loader,				&AsyncLoader::checkDoSync,									Qt::DirectConnection); //Force DirectConnection because the signal is called from Importer which means it is running in AsyncLoaderThread...
@@ -624,15 +630,7 @@ void MainWindow::syncKeyPressed()
 
 void MainWindow::packageChanged()
 {
-	QString title = windowTitle();
-	if (title.isEmpty())
-		title = "JASP";
-
-	if (_package->isModified())	title += '*';
-	else						title.chop(1);
-
-
-	setWindowTitle(title);
+	emit windowTitleChanged();
 }
 
 
@@ -922,9 +920,11 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		if (event->isSuccessful())
 		{
 			populateUIfromDataSet();
-			QString name = QFileInfo(event->path()).completeBaseName();
-			setWindowTitle(name);
-			_currentFilePath = event->path();
+
+			_package->setCurrentFile(event->path());
+
+			if(event->osfPath() != "")
+				_package->setFolder("OSF://" + event->osfPath()); //It is also set by setCurrentPath, but then we get some weirdlooking OSF path
 
 			if (event->type() == Utils::FileType::jasp && !_package->dataFilePath().empty() && !_package->dataFileReadOnly() && strncmp("http", _package->dataFilePath().c_str(), 4) != 0)
 			{
@@ -970,10 +970,11 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 		if (event->isSuccessful())
 		{
-			QString name = QFileInfo(event->path()).completeBaseName();
+			_package->setCurrentFile(event->path());
+			if(event->osfPath() != "")
+				_package->setFolder("OSF://" + event->osfPath()); //It is also set by setCurrentPath, but then we get some weirdlooking OSF path
 
 			_package->setModified(false);
-			setWindowTitle(name);
 
 			if(testingAndSaving)
 				std::cerr << "Tested and saved " << event->path().toStdString() << " succesfully!" << std::endl;
@@ -989,8 +990,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			if(testingAndSaving)
 				std::cerr << "Tested " << event->path().toStdString() << " but saving failed because of: " << event->message().toStdString() << std::endl;
 
-			if(_savingForClose)
-				_savingForClose = false; //User should get to try again.
+			_savingForClose = false; //User should get to try again.
 		}
 
 		if(testingAndSaving)
@@ -1005,8 +1005,6 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_package->reset();
 
 			setWelcomePageVisible(true);
-			setWindowTitle("JASP");
-
 			_engineSync->cleanUpAfterClose();
 
 			if (_applicationExiting)	QApplication::exit();
@@ -1031,9 +1029,9 @@ void MainWindow::populateUIfromDataSet()
 
 	if (_package->hasAnalyses())
 	{
-		int corruptAnalyses = 0;
-		stringstream corruptionStrings;
-		Analysis* currentAnalysis = nullptr;
+		int				corruptAnalyses = 0;
+		stringstream	corruptionStrings;
+		Analysis	*	currentAnalysis = nullptr;
 
 		//This really should all be moved to Analyses!
 
@@ -1322,11 +1320,10 @@ void MainWindow::startDataEditorHandler()
 				name.truncate(name.length() - 1);
 				name = name.replace('#', '_');
 			}
-			if (!_currentFilePath.isEmpty())
-			{
-				QFileInfo file(_currentFilePath);
-				name = file.absolutePath() + QDir::separator() + file.completeBaseName().replace('#', '_') + ".csv";
-			}
+
+			QFileInfo pkgFile(_package->currentFile());
+			if (pkgFile.dir().exists() && ! pkgFile.absolutePath().startsWith(AppDirs::examples())) //If the file was opened from a directory that exists and is not examples we use that as basis to open a csv
+				name = pkgFile.dir().absoluteFilePath(_package->name().replace('#', '_') + ".csv");
 
 			path = MessageForwarder::browseSaveFile(caption, name, filter);
 
@@ -1566,16 +1563,6 @@ void MainWindow::setDataPanelVisible(bool dataPanelVisible)
 
 	_dataPanelVisible = dataPanelVisible;
 	emit dataPanelVisibleChanged(_dataPanelVisible);
-}
-
-
-void MainWindow::setWindowTitle(QString windowTitle)
-{
-	if (_windowTitle == windowTitle)
-		return;
-
-	_windowTitle = windowTitle;
-	emit windowTitleChanged(_windowTitle);
 }
 
 void MainWindow::removeAnalysis(Analysis *analysis)
