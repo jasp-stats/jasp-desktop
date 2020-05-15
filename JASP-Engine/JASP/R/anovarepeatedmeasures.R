@@ -228,16 +228,16 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   main <- paste("(",paste(unlist(terms.base64), collapse=" + "),")", sep="")
   termsBS <- paste("(",paste(termsBS.base64, collapse=" + "),")", sep="")
-  errorRM <- paste("Error(",paste("subject/(", termsRM.base64, ")",sep="", collapse=" + "),")",sep="")
+  errorRM <- paste("Error(",paste0(.BANOVAsubjectName, "/(", termsRM.base64, ")", collapse=" + "),")",sep="")
   
   if (is.null(termsBS.base64) && is.null(termsRM.base64)) {
     model.def <- dependent ~ 1
   } else if (is.null(termsBS.base64)) {
-    model.def <- paste(.v("dependent"), "~", paste(main, errorRM, sep=" + "))
+    model.def <- paste(.BANOVAdependentName, "~", paste(main, errorRM, sep=" + "))
   } else if (is.null(termsRM.base64)) {
-    model.def <- paste(.v("dependent"), "~", main)
+    model.def <- paste(.BANOVAdependentName, "~", main)
   } else {
-    model.def <- paste(.v("dependent"), "~", paste(main, errorRM, termsBS, sep=" + "))
+    model.def <- paste(.BANOVAdependentName, "~", paste(main, errorRM, termsBS, sep=" + "))
   }
   
   list(model.def = model.def, terms.normal = terms.normal, terms.base64 = terms.base64, termsRM.normal = termsRM.normal, termsRM.base64 = termsRM.base64)
@@ -921,9 +921,9 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 
           # gsubs necessary to deal with X and "." introduced to level names by emmeans
           x <- subset(longData, gsub("X", "", facLevelNoDots) == gsub("X", "", levelANoDots))
-          x <- tapply(x[[.v("dependent")]], x[["subject"]], mean)
+          x <- tapply(x[[.BANOVAdependentName]], x[[.BANOVAsubjectName]], mean)
           y <- subset(longData, gsub("X", "", facLevelNoDots) == gsub("X", "", levelBNoDots))
-          y <- tapply(y[[.v("dependent")]], y[["subject"]], mean)
+          y <- tapply(y[[.BANOVAdependentName]], y[[.BANOVAsubjectName]], mean)
 
           tResult <- t.test(x, y, paired = TRUE, var.equal = FALSE, conf.level = bonfAdjustCIlevel)
           tResult <- unname(unlist(tResult[c("estimate", "statistic", "p.value", "conf.int")]))
@@ -1232,8 +1232,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       
       if (options$contrastAssumeEqualVariance == FALSE && contrast$variable %in% unlist(options$withinModelTerms) ) {
 
-        newDF <- do.call(data.frame, tapply(longData[[.v("dependent")]], longData[[.v(contrast$variable)]], cbind))
-        ssNr <- tapply(longData[["subject"]], longData[[.v(contrast$variable)]], cbind)
+        newDF <- do.call(data.frame, tapply(longData[[.BANOVAdependentName]], longData[[.v(contrast$variable)]], cbind))
+        ssNr <- tapply(longData[[.BANOVAsubjectName]], longData[[.v(contrast$variable)]], cbind)
         
         for (i in 1:ncol(newDF)) {
           newDF[[i]] <- tapply(newDF[[i]], ssNr[[i]], mean)
@@ -1422,9 +1422,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   resamples <- data[indices, , drop=FALSE]
   
   dataset <- .shortToLong(resamples, options$repeatedMeasuresFactors, options$repeatedMeasuresCells, 
-                          c(options$betweenSubjectFactors, options$covariates))        
-  idx <- match(c("dependent", "subject"), colnames(dataset))
-  colnames(dataset)[idx] <- .v(colnames(dataset)[idx])
+                          c(options$betweenSubjectFactors, options$covariates),
+                          dependentName = .BANOVAdependentName, subjectName = .BANOVAsubjectName)
 
   anovaModelBoots <- .rmAnovaComputeResults(dataset, options, returnResultsEarly = TRUE)$result # refit model
 
@@ -1476,7 +1475,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   }
   
   if (identical(betweenTerm, "")) {
-    betweenTerms.base64 <- "subject"
+    betweenTerms.base64 <- .BANOVAsubjectName
   }
   
   rows <- list()
@@ -1485,7 +1484,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     
     groups <- as.factor(longData[, withinTerms.base64[i]])
     blocks <- as.factor(longData[, betweenTerms.base64])
-    y <- longData[, .v("dependent")]
+    y <- longData[, .BANOVAdependentName]
     
     useDurbin <- any(table(groups, blocks) != 1)
     
@@ -1595,8 +1594,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   
   
   groupingVariables <- unlist(options$friedmanWithinFactor)
-  blockingVar <- ifelse( identical(options$friedmanBetweenFactor, ""), "subject", .v(options$friedmanBetweenFactor))
-  y <- longData[, .v("dependent")]
+  blockingVar <- ifelse( identical(options$friedmanBetweenFactor, ""), .BANOVAsubjectName, .v(options$friedmanBetweenFactor))
+  y <- longData[, .BANOVAdependentName]
 
   for (groupingVar in groupingVariables) {
     
@@ -1763,7 +1762,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
     
     simpleOptions[["fixedFactors"]]  <- simpleOptions[['betweenSubjectFactors']]
     simpleOptions[["modelTerms"]] <- simpleOptions[['betweenModelTerms']]
-    simpleOptions[["dependent"]] <-  "dependent"
+    simpleOptions[["dependent"]] <- .BANOVAdependentName
     simpleOptions[["homogeneityBrown"]] <- simpleOptions[["homogeneityWelch"]] <- FALSE
     simpleOptions[["homogeneityNone"]] <- TRUE
     
@@ -1850,12 +1849,12 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
   # First aggregate over unused RM factors, if desired:
   if (usePooledSE && measurevar == "dependent") {
 
-    data <- plyr::ddply(data, c("subject", groupvars), plyr::summarise, dependent = mean(dependent))
+    data <- plyr::ddply(data, c(.BANOVAsubjectName, groupvars), plyr::summarise, dependent = mean(dependent))
     names(data)[which(names(data) == "dependent")] <- measurevar
 
   } else if (usePooledSE && measurevar == "dependent_norm") {
 
-    data <- plyr::ddply(data, c("subject", groupvars), plyr::summarise, dependent = mean(dependent_norm))
+    data <- plyr::ddply(data, c(.BANOVAsubjectName, groupvars), plyr::summarise, dependent = mean(dependent_norm))
     names(data)[which(names(data) == "dependent")] <- measurevar
   }
   

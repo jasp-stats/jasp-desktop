@@ -64,7 +64,7 @@
     hasDV  <- !any(options$repeatedMeasuresCells == "")
     hasIV  <- any(lengths(options[c("betweenSubjectFactors", "covariates")]) != 0)
     fixed  <- options$betweenSubjectFactors
-    target <- c(options$covariates, "dependent")
+    target <- c(options$covariates, .BANOVAdependentName)
     noVariables <- !hasDV
   }
 
@@ -125,15 +125,17 @@
   rscaleRandom  <- options$priorRandomEffects
   modelTerms    <- options$modelTerms
   dependent     <- options$dependent
-  randomFactors <- options$randomFactors
+  randomFactors <- unlist(options$randomFactors)
+  if (length(randomFactors) > 0L)
+    randomFactors <- .v(randomFactors)
   fixedFactors  <- options$fixedFactors
 
   if (analysisType == "RM-ANOVA") {
     rscaleCont <- options[["priorCovariates"]]
-    modelTerms[[length(modelTerms) + 1L]] <- list(components = "subject", isNuisance = TRUE)
+    modelTerms[[length(modelTerms) + 1L]] <- list(components = .BANOVAsubjectName, isNuisance = TRUE)
 
-    dependent     <- "dependent"
-    randomFactors <- "subject"
+    dependent     <- .BANOVAdependentName
+    randomFactors <- .BANOVAsubjectName
 
   } else if (analysisType == "ANCOVA") {
     rscaleCont <- options[["priorCovariates"]]
@@ -189,7 +191,7 @@
           modelObject[[m]]$title <- gettext("Null model")
           next # all effects are FALSE anyway
         } else {
-          modelObject[[m]]$title <- gettextf("Null model (incl. %s)", paste(.unvf(nuisance), collapse = ", "))
+          modelObject[[m]]$title <- gettextf("Null model (incl. %s)", paste(.BANOVAdecodeNuisance(nuisance), collapse = ", "))
         }
       }
       model.effects <- .BANOVAgetFormulaComponents(model.list[[m]])
@@ -250,7 +252,7 @@
         bf <- try(BayesFactor::lmBF(
           formula      = model.list[[m]],
           data         = dataset,
-          whichRandom  = .v(unlist(randomFactors)),
+          whichRandom  = randomFactors,
           progress     = FALSE,
           posterior    = FALSE,
           # callback     = .callbackBFpackage,
@@ -310,7 +312,7 @@
   }
 
   if (anyNuisance) {
-    message <- gettextf("All models include %s", paste0(.unvf(nuisance), collapse = ", "))
+    message <- gettextf("All models include %s", paste0(.BANOVAdecodeNuisance(nuisance), collapse = ", "))
     modelTable$addFootnote(message = message)
   }
 
@@ -982,7 +984,7 @@
   priorWidth <- 1 / sqrt(2)
   posthoc.variables <- unlist(options[["postHocTestsVariables"]])
   if (model[["analysisType"]] == "RM-ANOVA") {
-    dependent <- "dependent"
+    dependent <- .BANOVAdependentName
   } else {
     dependent <- options[["dependent"]]
   }
@@ -1123,6 +1125,17 @@
   return(dataset)
 }
 
+.BANOVAdependentName <- "JaspColumn_.dependent._Encoded"
+.BANOVAsubjectName <- "JaspColumn_.subject._Encoded"
+
+.BANOVAdecodeNuisance <- function(nuisance) {
+  # .BANOVAsubjectName needs to be handled separately
+  idx <- nuisance == .BANOVAsubjectName
+  nuisance[idx]  <- "subject"
+  nuisance[!idx] <- .unvf(nuisance[!idx])
+  return(nuisance)
+}
+
 .BANOVAreadRManovaData <- function(dataset, options) {
 
   if (!("" %in% options$repeatedMeasuresCells)) {
@@ -1130,7 +1143,7 @@
 
     bs.factors    <- options$betweenSubjectFactors
     bs.covariates <- options$covariates
-	rm.factors    <- options$repeatedMeasuresFactors
+    rm.factors    <- options$repeatedMeasuresFactors
     all.variables <- c (bs.factors, bs.covariates, rm.vars)
 
     dataset <- .readDataSetToEnd(
@@ -1138,10 +1151,10 @@
       columns.as.factor   = bs.factors,
       exclude.na.listwise = all.variables
     )
-    dataset <- try(.shortToLong(dataset, rm.factors, rm.vars, c(bs.factors, bs.covariates)), silent = TRUE)
-    
-    idx <- match(c("dependent", "subject"), colnames(dataset))
-	#colnames(dataset)[idx] <- .v(colnames(dataset)[idx]) #not necessary and breaks ANOVA RM as in: https://github.com/jasp-stats/jasp-issues/issues/683
+    dataset <- try(
+      .shortToLong(dataset, rm.factors, rm.vars, c(bs.factors, bs.covariates), dependentName = .BANOVAdependentName, subjectName = .BANOVAsubjectName),
+      silent = TRUE
+    )
 
   }
   return(dataset)
@@ -1174,7 +1187,7 @@
     return()
 
   if (analysisType == "RM-ANOVA") {
-    dependent <- "dependent"
+    dependent <- .BANOVAdependentName
     fixed <- unlist(c(lapply(options[["repeatedMeasuresFactors"]], `[[`, "name"), options[["betweenSubjectFactors"]]))
     title <- gettext("Descriptives")
   } else {
@@ -1318,7 +1331,7 @@
   groupVarsV <- .v(groupVars)
   dependentV <- .v(options$dependent)
   if (analysisType == "RM-ANOVA") {
-    dependentV <- .v("dependent")
+    dependentV <- .BANOVAdependentName
     yLabel <- options[["labelYAxis"]]
   } else {
     yLabel <- options[["dependent"]]
@@ -2212,16 +2225,21 @@
 
 .BANOVAcreateModelFormula <- function(dependent, modelTerms) {
 
-  model.formula <- paste(.v(dependent), " ~ ", sep = "")
+  if (dependent != .BANOVAdependentName)
+    dependent <- .v(dependent)
+  model.formula <- paste(dependent, " ~ ", sep = "")
   nuisance <- NULL
   effects <- NULL
   for (term in modelTerms) {
-    comp <- .v(term$component)
+
+    comp <- term$component
+    if (comp != .BANOVAsubjectName)
+      comp <- .v(comp)
+
     if (is.null (effects) & is.null (nuisance)){
       model.formula <- paste0(model.formula, comp, collapse = ":")
     } else {
-      model.formula <- paste0(model.formula, " + ",
-                              paste(comp, collapse = ":"))
+      model.formula <- paste0(model.formula, " + ", paste(comp, collapse = ":"))
     }
     if (!is.null(term$isNuisance) && term$isNuisance) {
       nuisance <- c(nuisance, paste(comp, collapse = ":"))
@@ -2389,8 +2407,8 @@
   if (analysisType == "RM-ANOVA") {
     dependent <- "dependent"
     rscaleCont <- options[["priorCovariates"]]
-    randomFactors <- "subject"
-    modelTerms[[length(modelTerms) + 1L]] <- list(components = "subject", isNuisance = TRUE)
+    randomFactors <- .BANOVAsubjectName
+    modelTerms[[length(modelTerms) + 1L]] <- list(components = .BANOVAsubjectName, isNuisance = TRUE)
   } else if (analysisType == "ANCOVA") {
     rscaleCont <- options[["priorCovariates"]]
   } else {
