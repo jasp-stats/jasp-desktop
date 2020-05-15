@@ -1747,7 +1747,7 @@ isTryError <- function(obj){
   return(key)
 }
 
-.shortToLong <- function(dataset, rm.factors, rm.vars, bt.vars) {
+.shortToLong <- function(dataset, rm.factors, rm.vars, bt.vars, dependentName = "dependent", subjectName = "subject") {
 
   f  <- rm.factors[[length(rm.factors)]]
   df <- data.frame(factor(unlist(f$levels), unlist(f$levels)))
@@ -1786,7 +1786,9 @@ isTryError <- function(obj){
   ds <- subset(dataset, select=.v(rm.vars))
   ds <- t(as.matrix(ds))
 
-  df <- cbind(df, dependent=as.numeric(c(ds)))
+  dependentDf <- data.frame(x = as.numeric(c(ds)))
+  colnames(dependentDf) <- dependentName
+  df <- cbind(df, dependentDf)
 
   for (bt.var in bt.vars) {
 
@@ -1800,7 +1802,9 @@ isTryError <- function(obj){
   subjects <- 1:(dim(dataset)[1])
   subjects <- as.factor(rep(subjects, each=row.count))
 
-  df <- cbind(df, subject=subjects)
+  subjectDf <- data.frame(x = subjects)
+  colnames(subjectDf) <- subjectName
+  df <- cbind(df, subjectDf)
 
   df
 }
