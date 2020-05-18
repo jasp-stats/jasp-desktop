@@ -361,7 +361,6 @@ HEADERS += \
     widgets/boundqmlradiobuttons.h \
     widgets/boundqmltextinput.h \
     widgets/boundqmlcombobox.h \
-    widgets/listmodelanovacustomcontrasts.h \
     widgets/listmodeljagsdatainput.h \
     widgets/listmodeltermsassigned.h \
     widgets/listmodeltermsavailable.h \
@@ -441,7 +440,8 @@ HEADERS += \
     widgets/boundqmllavaantextarea.h \
     widgets/boundqmljagstextarea.h \
     widgets/boundqmlcomponentslist.h \
-    widgets/listmodelmarginalmeanscontrasts.h
+    widgets/listmodelanovacustomcontrasts.h \
+    widgets/listmodelcustomcontrasts.h
 
 SOURCES += \
     analysis/analysisform.cpp \
@@ -546,7 +546,6 @@ SOURCES += \
     widgets/boundqmlradiobuttons.cpp \
     widgets/boundqmltextinput.cpp \
     widgets/boundqmlcombobox.cpp \
-    widgets/listmodelanovacustomcontrasts.cpp \
     widgets/listmodeljagsdatainput.cpp \
     widgets/listmodeltermsassigned.cpp \
     widgets/listmodeltermsavailable.cpp \
@@ -625,7 +624,8 @@ SOURCES += \
     widgets/boundqmllavaantextarea.cpp \
     widgets/boundqmljagstextarea.cpp \
     widgets/boundqmlcomponentslist.cpp \
-    widgets/listmodelmarginalmeanscontrasts.cpp
+    widgets/listmodelanovacustomcontrasts.cpp \
+    widgets/listmodelcustomcontrasts.cpp
 
 RESOURCES += \
     html/html.qrc \

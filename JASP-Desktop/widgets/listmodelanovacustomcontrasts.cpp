@@ -54,6 +54,22 @@ void ListModelANOVACustomContrasts::reset()
 	setColName(colName);
 }
 
+void ListModelANOVACustomContrasts::setup()
+{
+	connect(_tableView->form(), &AnalysisForm::dataSetChanged, this, &ListModelANOVACustomContrasts::dataSetChangedHandler,	Qt::QueuedConnection	);
+	QString factorsSourceName = _tableView->getItemProperty("factorsSource").toString();
+	if (!factorsSourceName.isEmpty())
+	{
+		ListModelRepeatedMeasuresFactors* factorsSourceModel = dynamic_cast<ListModelRepeatedMeasuresFactors*>(_tableView->form()->getModel(factorsSourceName));
+		if (factorsSourceModel)
+		{
+			setFactorsSource(factorsSourceModel);
+			connect(factorsSourceModel, &ListModelRepeatedMeasuresFactors::modelChanged, this, &ListModelANOVACustomContrasts::factorsSourceChanged);
+		}
+	}
+	loadColumnInfo();
+}
+
 void ListModelANOVACustomContrasts::setFactorsSource(ListModelRepeatedMeasuresFactors *factorsSourceModel)
 {
 	_factorsSourceModel = factorsSourceModel;
@@ -63,7 +79,7 @@ void ListModelANOVACustomContrasts::setFactorsSource(ListModelRepeatedMeasuresFa
 
 QString ListModelANOVACustomContrasts::getDefaultColName(size_t index) const
 {
-	if(index > _colNames.size()) return "?";
+	if(index >= _colNames.size()) return "?";
 
 	return _colNames[index];
 }

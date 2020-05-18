@@ -24,7 +24,7 @@ import JASP.Widgets		1.0
 import JASP				1.0
 import QtQuick.Layouts	1.3
 
-JASPListControl
+JASPGridViewControl
 {
 	id						: variablesList
 	implicitHeight			: maxRows === 1 ? jaspTheme.defaultSingleItemListHeight : jaspTheme.defaultVariablesFormHeight

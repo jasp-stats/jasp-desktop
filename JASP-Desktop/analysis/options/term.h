@@ -58,6 +58,8 @@ public:
 
 	void replaceVariableName(const std::string & oldName, const std::string & newName);
 
+	static const char* separator;
+
 private:
 	void initFrom(const QStringList components);
 	void initFrom(const QString		component);

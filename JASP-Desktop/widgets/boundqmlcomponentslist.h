@@ -40,12 +40,14 @@ public:
 protected slots:
 	void		modelChangedHandler()						override;
 	void		valuesChangedHandler();
-	void		addTermHandler(QString term);
-	void		removeTermHandler(QString term);
+	void		addRowHandler();
+	void		removeRowHandler(int index);
 
 private:
 	ListModelTermsAssigned*		_termsModel;
 	OptionsTable*				_boundTo;
+
+	QString						_incrementCounter();
 
 };
 

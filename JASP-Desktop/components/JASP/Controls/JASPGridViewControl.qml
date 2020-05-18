@@ -23,41 +23,44 @@ import JASP			1.0
 
 JASPControl
 {
-	id						: jaspListControl
+	id						: jaspGridViewControl
 	controlType				: JASPControlBase.VariablesListView
-	background				: listRectangle
+	background				: itemRectangle
 	implicitWidth 			: parent.width
 	implicitHeight			: jaspTheme.defaultVariablesFormHeight
 	useControlMouseArea		: false
 	shouldStealHover		: false
-	innerControl			: listGridView
+	innerControl			: itemGridView
 
 	property var	model
 	property var	values
 	property string title
-	property alias	label				: jaspListControl.title
-	property alias	count				: listGridView.count
+	property alias	label				: jaspGridViewControl.title
+	property alias	count				: itemGridView.count
 	property string	optionKey			: "value"
 	property int	columns				: 1
 	property var	source
 	property var	sourceModel
-	property alias	syncModels			: jaspListControl.source
+	property alias	syncModels			: jaspGridViewControl.source
 
-	property alias	listGridView		: listGridView
-	property alias	cellHeight			: listGridView.cellHeight
-	property alias	cellWidth			: listGridView.cellWidth
-	property alias	listRectangle		: listRectangle
+	property alias	listGridView		: itemGridView // Backward compatibility
+	property alias	itemGridView		: itemGridView
+	property alias	cellHeight			: itemGridView.cellHeight
+	property alias	cellWidth			: itemGridView.cellWidth
+	property alias	listRectangle		: itemRectangle // Backward compatibility
+	property alias	itemRectangle		: itemRectangle
 	property alias	scrollBar			: scrollBar
-	property alias	listTitle			: listTitle
-	property alias	rowComponentsTitles	: titles.model
-	property alias	rowComponentsLabels	: titles.model
+	property alias	listTitle			: itemTitle		// Backward compatibility
+	property alias	itemTitle			: itemTitle
+	property alias	rowComponentsTitles	: itemTitles.model
+	property alias	rowComponentsLabels	: itemTitles.model
 	property int	rowComponentsSpacing : 1
 
 	property var	itemComponent
 
 	Text
 	{
-		id				: listTitle
+		id				: itemTitle
 		anchors.top		: parent.top
 		anchors.left	: parent.left
 		text			: title
@@ -69,22 +72,22 @@ JASPControl
 	Row
 	{
 		width			: parent.width
-		anchors.top		: jaspListControl.top;
+		anchors.top		: jaspGridViewControl.top;
 		spacing			: 5
 		layoutDirection	: Qt.RightToLeft
 		Repeater
 		{
-			id	: titles;
+			id	: itemTitles;
 			Label { text : modelData }
 		}
 	}
 
 	Rectangle
 	{
-		id				: listRectangle
-		anchors.top		: listTitle.bottom
+		id				: itemRectangle
+		anchors.top		: itemTitle.bottom
 		anchors.left	: parent.left
-		height			: jaspListControl.height - listTitle.height
+		height			: jaspGridViewControl.height - itemTitle.height
 		width			: parent.width
 		color			: debug ? jaspTheme.debugBackgroundColor : jaspTheme.controlBackgroundColor
 		border.width	: 1
@@ -94,7 +97,7 @@ JASPControl
 		JASPScrollBar
 		{
 			id				: scrollBar
-			flickable		: listGridView
+			flickable		: itemGridView
 			manualAnchor	: true
 			vertical		: true
 			z				: 1337
@@ -110,16 +113,16 @@ JASPControl
 
 		GridView
 		{
-			id						: listGridView
+			id						: itemGridView
 			cellHeight				: 20  * preferencesModel.uiScale
-			cellWidth				: width / jaspListControl.columns
+			cellWidth				: width / jaspGridViewControl.columns
 			clip					: true
 			focus					: true
 			anchors.fill			: parent
-			anchors.margins			: 4  * preferencesModel.uiScale
+			anchors.margins			: 4 * preferencesModel.uiScale
 			anchors.rightMargin		: scrollBar.width + anchors.margins
-			model					: jaspListControl.model
-			delegate				: jaspListControl.itemComponent
+			model					: jaspGridViewControl.model
+			delegate				: jaspGridViewControl.itemComponent
 			boundsBehavior			: Flickable.StopAtBounds
 		}
 	}

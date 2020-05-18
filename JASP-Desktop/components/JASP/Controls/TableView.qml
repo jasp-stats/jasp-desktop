@@ -42,7 +42,7 @@ JASPControl
 	property string	modelType
 	property string	itemType		: "string"
 	property string filter			: "rep(TRUE, rowcount)"	//Used by ListModelFilteredDataEntry
-	property string colName			: "data"					//Used by ListModelFilteredDataEntry and ListMOdelANOVACustomContrasts
+	property string colName			: modelType == "CustomContrasts" ? "" : "data"					//Used by ListModelFilteredDataEntry and ListMOdelANOVACustomContrasts
 	property string	extraCol		: ""						//Used by ListModelFilteredDataEntry
 	property string	tableType
 	property alias	model			: theView.model

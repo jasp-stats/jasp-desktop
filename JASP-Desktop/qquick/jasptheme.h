@@ -109,12 +109,14 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(theme_distanceType generalAnchorMargin             READ generalAnchorMargin             WRITE setGeneralAnchorMargin             NOTIFY generalAnchorMarginChanged             )
 	Q_PROPERTY(theme_distanceType generalMenuMargin               READ generalMenuMargin               WRITE setGeneralMenuMargin               NOTIFY generalMenuMarginChanged               )
 	Q_PROPERTY(theme_distanceType titleBottomMargin               READ titleBottomMargin               WRITE setTitleBottomMargin               NOTIFY titleBottomMarginChanged               )
+	Q_PROPERTY(theme_distanceType contentMargin		              READ contentMargin				   WRITE setContentMargin		            NOTIFY contentMarginChanged		              )
 	Q_PROPERTY(theme_distanceType subOptionOffset                 READ subOptionOffset                 WRITE setSubOptionOffset                 NOTIFY subOptionOffsetChanged                 )
 
 	//Sizes:
 	Q_PROPERTY(theme_sizeType     minPanelWidth                   READ minPanelWidth                   WRITE setMinPanelWidth                   NOTIFY minPanelWidthChanged                   )
 	Q_PROPERTY(theme_sizeType     resultWidth                     READ resultWidth                     WRITE setResultWidth                     NOTIFY resultWidthChanged                     )
 	Q_PROPERTY(theme_sizeType     formWidth                       READ formWidth                       WRITE setFormWidth                       NOTIFY formWidthChanged                       )
+	Q_PROPERTY(theme_sizeType     iconSize                        READ iconSize                        WRITE setIconSize                        NOTIFY iconSizeChanged                        )
 	Q_PROPERTY(theme_sizeType     formMargin                      READ formMargin                      WRITE setFormMargin                      NOTIFY formMarginChanged                      )
 	Q_PROPERTY(theme_sizeType     sliderWidth                     READ sliderWidth                     WRITE setSliderWidth                     NOTIFY sliderWidthChanged                     )
 	Q_PROPERTY(theme_sizeType     sliderLength                    READ sliderLength                    WRITE setSliderLength                    NOTIFY sliderLengthChanged                    )
@@ -252,10 +254,12 @@ public:
 	theme_distanceType	generalAnchorMargin()				const	{ return _generalAnchorMargin * uiScale(); }
 	theme_distanceType	generalMenuMargin()					const	{ return _generalMenuMargin * uiScale(); }
 	theme_distanceType	titleBottomMargin()					const	{ return _titleBottomMargin * uiScale(); }
+	theme_distanceType	contentMargin()						const	{ return _contentMargin * uiScale(); }
 	theme_distanceType	subOptionOffset()					const	{ return _subOptionOffset * uiScale(); }
 	theme_sizeType		minPanelWidth()						const	{ return _minPanelWidth * uiScale(); }
 	theme_sizeType		resultWidth()						const	{ return _resultWidth * uiScale(); }
 	theme_sizeType		formWidth()							const	{ return _formWidth * uiScale(); }
+	theme_sizeType		iconSize()							const	{ return _iconSize * uiScale(); }
 	theme_sizeType		formMargin()						const	{ return _formMargin * uiScale(); }
 	theme_sizeType		formExpanderHeaderHeight()			const	{ return _formExpanderHeaderHeight * uiScale(); }
 	theme_sizeType		sliderWidth()						const	{ return _sliderWidth * uiScale(); }
@@ -380,10 +384,12 @@ signals:
 	void generalAnchorMarginChanged();
 	void generalMenuMarginChanged();
 	void titleBottomMarginChanged();
+	void contentMarginChanged();
 	void subOptionOffsetChanged();
 	void minPanelWidthChanged();
 	void resultWidthChanged();
 	void formWidthChanged();
+	void iconSizeChanged();
 	void formMarginChanged();
 	void formExpanderHeaderHeightChanged();
 	void sliderWidthChanged();
@@ -505,10 +511,12 @@ public slots:
 	void setGeneralAnchorMargin(theme_distanceType generalAnchorMargin);
 	void setGeneralMenuMargin(theme_distanceType generalMenuMargin);
 	void setTitleBottomMargin(theme_distanceType titleBottomMargin);
+	void setContentMargin(theme_distanceType contentMargin);
 	void setSubOptionOffset(theme_distanceType subOptionOffset);
 	void setMinPanelWidth(theme_sizeType minPanelWidth);
 	void setResultWidth(theme_sizeType resultWidth);
 	void setFormWidth(theme_sizeType formWidth);
+	void setIconSize(theme_sizeType iconSize);
 	void setFormMargin(theme_sizeType formMargin);
 	void setFormExpanderHeaderHeight(theme_sizeType formExpanderHeaderHeight);
 	void setSliderWidth(theme_sizeType sliderWidth);
@@ -636,11 +644,13 @@ private:
 						_generalAnchorMargin,
 						_generalMenuMargin,
 						_titleBottomMargin,
+						_contentMargin,
 						_subOptionOffset;
 
 	theme_sizeType		_minPanelWidth,
 						_resultWidth,
 						_formWidth,
+						_iconSize,
 						_formMargin,
 						_formExpanderHeaderHeight,
 						_sliderWidth,

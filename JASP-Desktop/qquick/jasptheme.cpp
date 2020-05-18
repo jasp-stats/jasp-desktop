@@ -57,10 +57,12 @@ void JaspTheme::connectSizeDistancesToUiScaleChanged()
 	CONNECT_UISCALE(generalAnchorMarginChanged);
 	CONNECT_UISCALE(generalMenuMarginChanged);
 	CONNECT_UISCALE(titleBottomMarginChanged);
+	CONNECT_UISCALE(contentMarginChanged);
 	CONNECT_UISCALE(subOptionOffsetChanged);
 	CONNECT_UISCALE(minPanelWidthChanged);
 	CONNECT_UISCALE(resultWidthChanged);
 	CONNECT_UISCALE(formWidthChanged);
+	CONNECT_UISCALE(iconSizeChanged);
 	CONNECT_UISCALE(formMarginChanged);
 	CONNECT_UISCALE(formExpanderHeaderHeightChanged);
 	CONNECT_UISCALE(sliderWidthChanged);
@@ -804,6 +806,15 @@ void JaspTheme::setTitleBottomMargin(theme_distanceType titleBottomMargin)
 	emit titleBottomMarginChanged();
 }
 
+void JaspTheme::setContentMargin(theme_distanceType contentMargin)
+{
+	if (_contentMargin == contentMargin)
+		return;
+
+	_contentMargin = contentMargin;
+	emit contentMarginChanged();
+}
+
 void JaspTheme::setSubOptionOffset(theme_distanceType subOptionOffset)
 {
 	if (_subOptionOffset == subOptionOffset)
@@ -838,6 +849,15 @@ void JaspTheme::setFormWidth(theme_sizeType formWidth)
 
 	_formWidth = formWidth;
 	emit formWidthChanged();
+}
+
+void JaspTheme::setIconSize(theme_sizeType iconSize)
+{
+	if (_iconSize == iconSize)
+		return;
+
+	_iconSize = iconSize;
+	emit iconSizeChanged();
 }
 
 void JaspTheme::setFormMargin(theme_sizeType formMargin)
