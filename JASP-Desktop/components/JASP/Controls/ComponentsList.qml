@@ -36,7 +36,7 @@ JASPGridControl
 	property string	deleteIcon		: "cross.png"
 	property string	addIcon			: "duplicate.png"
 	property string addTooltip		: qsTr("Add a row")
-	property string removeTootip	: qsTr("Remove a row")
+	property string removeTooltip	: qsTr("Remove a row")
 	property var	defaultValues	: []
 
 	signal addRow();
@@ -87,11 +87,11 @@ JASPGridControl
 				width					: jaspTheme.iconSize
 				z						: 2
 
-				QtControls.ToolTip.text:				removeTootip
-				QtControls.ToolTip.timeout:			jaspTheme.toolTipTimeout
-				QtControls.ToolTip.delay:				jaspTheme.toolTipDelay
-				QtControls.ToolTip.toolTip.font:		jaspTheme.font
-				QtControls.ToolTip.visible:			removeTootip !== "" && deleteMouseArea.containsMouse
+				QtControls.ToolTip.text			: removeTooltip
+				QtControls.ToolTip.timeout		: jaspTheme.toolTipTimeout
+				QtControls.ToolTip.delay		: jaspTheme.toolTipDelay
+				QtControls.ToolTip.toolTip.font	: jaspTheme.font
+				QtControls.ToolTip.visible		: removeTooltip !== "" && deleteMouseArea.containsMouse
 
 				MouseArea
 				{

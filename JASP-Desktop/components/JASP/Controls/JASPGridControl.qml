@@ -37,9 +37,7 @@ JASPControl
 		if (preferredHeight != implicitHeight)
 		{
 			// preferredHeight has been specifically set
-			implicitHeight = implicitHeight; // Break binding
-			height = preferredHeight;
-			itemRectangle.height = Qt.binding(function() { return preferredHeight - itemTitle.height; })
+			implicitHeight = Qt.binding(function() { return preferredHeight; });
 		}
 	}
 

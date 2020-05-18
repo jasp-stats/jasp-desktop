@@ -49,11 +49,11 @@ Item
 			{ label: qsTr("custom")		, value: "custom"		}
 		]
 
-	readonly property var constratCustomValue: [{ label: qsTr("custom"), value: "custom"}]
+	readonly property var constrastCustomValue: [{ label: qsTr("custom"), value: "custom"}]
 
 	onAddCustomChanged:
 	{
-		if (addCustom)	contrastValues.push( constratCustomValue[0] )
+		if (addCustom)	contrastValues.push( constrastCustomValue[0] )
 		else			contrastValues.pop()
 	}
 

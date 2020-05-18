@@ -152,13 +152,8 @@ Option* BoundQMLComponentsList::createOption()
 				QVariant value = it.value();
 
 				Option* option = row->get(name.toStdString());
-				if (option)
-				{
-					Json::Value json(value.toJsonValue().toString().toStdString());
-					option->set(json);
-				}
-				else
-					Log::log() << "Default value with name " << name << " is unknown in the component" << std::endl;
+				if (option)		option->set(value.toJsonValue().toString().toStdString());
+				else			Log::log() << "Default value with name " << name << " is unknown in the component" << std::endl;
 			}
 			allOptions.push_back(row);
 		}
