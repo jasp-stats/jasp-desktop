@@ -237,7 +237,7 @@ Form
 			name: "BootstrapType"
 			title: qsTr("Bootstrap Type")
 			Layout.rowSpan: 2
-			RadioButton { value: "nonparametric";	label: qsTr("Nonparametic"); checked: true	}
+			RadioButton { value: "nonparametric";	label: qsTr("Nonparametric"); checked: true	}
 			RadioButton { value: "case";			label: qsTr("Case")							}
 			RadioButton { value: "node";			label: qsTr("Node")							}
 			RadioButton { value: "parametric";		label: qsTr("Parametric")					}
