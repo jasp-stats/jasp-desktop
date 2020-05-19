@@ -22,13 +22,13 @@ import JASP.Widgets		1.0
 import JASP				1.0
 
 Form
-{	
+{
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotLegend"     ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotHeightDescriptivesPlotNoLegend"   ; defaultValue: 300 }
 	IntegerField { visible: false; name: "plotWidthDescriptivesPlotLegend"      ; defaultValue: 450 }
 	IntegerField { visible: false; name: "plotWidthDescriptivesPlotNoLegend"    ; defaultValue: 350 }
-	
-	
+
+
 	VariablesForm
 	{
 		preferredHeight: 520 * preferencesModel.uiScale
@@ -54,7 +54,7 @@ Form
 			suggestedColumns:	["scale"]
 		}
 	}
-	
+
 	Group
 	{
 		title: qsTr("Display")
@@ -70,25 +70,25 @@ Form
 		}
 		CheckBox { name: "VovkSellkeMPR";					label: qsTr("Vovk-Sellke maximum p-ratio")	}
 	}
-	
+
 	Section
 	{
 		title: qsTr("Model")
-		
+
 		VariablesForm
 		{
 			preferredHeight: 150 * preferencesModel.uiScale
 			AvailableVariablesList	{ name: "withinComponents"; title: qsTr("Repeated Measures Components"); source: ["repeatedMeasuresFactors"] }
 			AssignedVariablesList	{ name: "withinModelTerms"; title: qsTr("Model Terms");	listViewType: JASP.Interaction	}
 		}
-		
+
 		VariablesForm
 		{
 			preferredHeight: 150 * preferencesModel.uiScale
 			AvailableVariablesList	{ name: "betweenComponents"; title: qsTr("Between Subjects Components"); source: ["betweenSubjectFactors", "covariates"] }
 			AssignedVariablesList	{ name: "betweenModelTerms"; title: qsTr("Model terms"); listViewType: JASP.Interaction }
 		}
-		
+
 		DropDown
 		{
 			name: "sumOfSquares"
@@ -101,10 +101,8 @@ Form
 			]
 		}
 		CheckBox { name: "useMultivariateModelFollowup";				label: qsTr("Use multivariate model for follow-up tests");					checked: false }
-
-		
 	}
-	
+
 	Section
 	{
 		title: qsTr("Assumption Checks")
@@ -123,12 +121,12 @@ Form
 			CheckBox { name: "homogeneityTests"; label: qsTr("Homogeneity tests") }
 		}
 	}
-	
+
 	Section
 	{
 		title: qsTr("Contrasts")
-		ContrastsList { source: ["repeatedMeasuresFactors", "betweenSubjectFactors"] }
-		
+		ContrastsList { source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates", combineWithOtherModels: true }] }
+
 		CheckBox { name: "contrastAssumeEqualVariance"; label: qsTr("Assume equal variances"); checked: true }
 		CheckBox
 		{
@@ -137,7 +135,7 @@ Form
 			CIField { name: "confidenceIntervalIntervalContrast" }
 		}
 	}
-	
+
 	Section
 	{
 		title: qsTr("Post Hoc Tests")
@@ -146,10 +144,10 @@ Form
 		VariablesForm
 		{
 			preferredHeight: 150 * preferencesModel.uiScale
-			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }]; mixedModelTerms: true }
+			AvailableVariablesList { name: "postHocTestsAvailable"; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates", combineWithOtherModels: true }] }
 			AssignedVariablesList {  name: "postHocTestsVariables" }
 		}
-		
+
 		CheckBox
 		{
 			name: "confidenceIntervalsPostHoc"; label: qsTr("Confidence intervals")
@@ -163,7 +161,7 @@ Form
 			CheckBox { name: "postHocTestEffectSize";	label: qsTr("Effect size")						}
 			CheckBox { name: "postHocTestPooledError";	label: qsTr("Pool error term for RM factors");			checked: true	}
 		}
-		
+
 		Group
 		{
 			title: qsTr("Correction")
@@ -172,19 +170,19 @@ Form
 			CheckBox { name: "postHocTestsTukey";		label: qsTr("Tukey")				}
 			CheckBox { name: "postHocTestsScheffe";		label: qsTr("Scheffe")				}
 		}
-		
+
 		Group
 		{
 			title: qsTr("Display")
 			CheckBox { name: "postHocFlagSignificant";	label: qsTr("Flag Significant Comparisons") }
 		}
 	}
-	
+
 	Section
 	{
 		title: qsTr("Descriptives Plots")
 		columns: 1
-		
+
 		VariablesForm
 		{
 			preferredHeight: 150 * preferencesModel.uiScale
@@ -193,7 +191,7 @@ Form
 			AssignedVariablesList {  name: "plotSeparateLines";			title: qsTr("Separate Lines");	singleVariable: true }
 			AssignedVariablesList {  name: "plotSeparatePlots";			title: qsTr("Separate Plots");	singleVariable: true }
 		}
-		
+
 		TextField { name: "labelYAxis"; label: qsTr("Label y-axis"); fieldWidth: 200 }
 		Group
 		{
@@ -215,10 +213,10 @@ Form
 				}
 			}
 			CheckBox { name: "usePooledStandErrorCI";	label: qsTr("Average across unused RM factors")	}
-			
+
 		}
 	}
-	
+
 	Section
 	{
 		title: qsTr("Marginal Means")
@@ -227,14 +225,14 @@ Form
 		Group
 		{
 			title: qsTr("Marginal Means")
-			
+
 			VariablesForm
 			{
 				preferredHeight: 150 * preferencesModel.uiScale
 				AvailableVariablesList { name: "marginalMeansTermsAvailable" ; source: ["withinModelTerms", { name: "betweenModelTerms", discard: "covariates" }] }
 				AssignedVariablesList {  name: "marginalMeansTerms" }
 			}
-			
+
 			CheckBox
 			{
 				name: "marginalMeansBootstrapping"; label: qsTr("From")
@@ -264,13 +262,13 @@ Form
 				}
 			}
 		}
-		
+
 	}
-	
+
 	Section
 	{
 		title: qsTr("Simple Main Effects")
-		
+
 		VariablesForm
 		{
 			preferredHeight: 150 * preferencesModel.uiScale
@@ -279,14 +277,14 @@ Form
 			AssignedVariablesList { name: "moderatorFactorOne";	title: qsTr("Moderator Factor 1");		singleVariable: true }
 			AssignedVariablesList { name: "moderatorFactorTwo";	title: qsTr("Moderator Factor 2");		singleVariable: true }
 		}
-		
+
 		CheckBox { name: "poolErrorTermSimpleEffects"; label: qsTr("Pool error terms") }
 	}
-	
+
 	Section
 	{
 		title: qsTr("Nonparametrics")
-		
+
 		VariablesForm
 		{
 			preferredHeight: 150 * preferencesModel.uiScale
@@ -294,7 +292,7 @@ Form
 			AssignedVariablesList {  name: "friedmanWithinFactor";		title: qsTr("RM Factor") }
 			AssignedVariablesList {  name: "friedmanBetweenFactor";		title: qsTr("Optional Grouping Factor"); singleVariable: true }
 		}
-		
+
 		CheckBox { name: "conoverTest"; label: qsTr("Conover's post hoc tests") }
 	}
 }

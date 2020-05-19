@@ -55,14 +55,16 @@ public:
 		QVector<SourceType>			discardModels;
 		QString						conditionExpression;
 		QVector<ConditionVariable>	conditionVariables;
+		bool						combineWithOtherModels = false;
 
 		SourceType(
 				  const QString& _name = ""
 				, const QString& _modelUse = ""
 				, const QVector<QPair<QString, QString> >& _discardModels = QVector<QPair<QString, QString> >()
 				, const QString& _conditionExpression = ""
-				, const QVector<QMap<QString, QVariant> >& _conditionVariables = QVector<QMap<QString, QVariant> >())
-			: name(_name), modelUse(_modelUse), model(nullptr), conditionExpression(_conditionExpression)
+				, const QVector<QMap<QString, QVariant> >& _conditionVariables = QVector<QMap<QString, QVariant> >()
+				, bool _combineWithOtherModels = false)
+			: name(_name), modelUse(_modelUse), model(nullptr), conditionExpression(_conditionExpression), combineWithOtherModels(_combineWithOtherModels)
 		{
 			for (const QPair<QString, QString>& discardModel : _discardModels)
 				discardModels.push_back(SourceType(discardModel.first, discardModel.second));

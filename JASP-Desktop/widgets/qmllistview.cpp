@@ -96,6 +96,7 @@ void QMLListView::setSources()
 			QString conditionExpression = map["condition"].toString();
 			QVector<QPair<QString, QString> > discards;
 			QVector<QMap<QString, QVariant> > conditionVariables;
+			bool combineWithOtherModels = false;
 
 			if (sourceName.isEmpty())
 			{
@@ -149,7 +150,10 @@ void QMLListView::setSources()
 				}
 			}
 
-			_sourceModels.append(new SourceType(sourceName, modelUse, discards, conditionExpression, conditionVariables));
+			if (map.contains("combineWithOtherModels"))
+				combineWithOtherModels = map["combineWithOtherModels"].toBool();
+
+			_sourceModels.append(new SourceType(sourceName, modelUse, discards, conditionExpression, conditionVariables, combineWithOtherModels));
 		}
 	}
 	
@@ -171,7 +175,7 @@ void QMLListView::setSources()
 			{
 				if (!sourceModel->areTermsVariables())
 					termsAreVariables = false;
-				if (sourceModel->areTermsInteractions())
+				if (sourceModel->areTermsInteractions() || sourceItem->combineWithOtherModels)
 					termsAreInteractions = true;
 				sourceItem->model = sourceModel;
 				addDependency(sourceModel->listView());

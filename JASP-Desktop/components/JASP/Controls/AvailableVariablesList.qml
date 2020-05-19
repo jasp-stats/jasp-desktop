@@ -22,6 +22,4 @@ VariablesList
 {
 	listViewType:	JASP.AvailableVariables
 	showSortMenu:	true
-
-	property bool	mixedModelTerms:	false
 }
