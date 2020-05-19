@@ -26,11 +26,10 @@ QMLListViewTermsAvailable::QMLListViewTermsAvailable(JASPControlBase* item, bool
 	, QMLListViewDraggable(item)
 
 {
-	bool mixedModelTerms = getItemProperty("mixedModelTerms").toBool();
 	if (isInteraction)
 		_availableModel = new ListModelInteractionAvailable(this);
 	else
-		_availableModel = new ListModelTermsAvailable(this, mixedModelTerms);
+		_availableModel = new ListModelTermsAvailable(this);
 
 	_sortedMenuModel = new SortMenuModel(_availableModel, {Sortable::None, Sortable::SortByName, Sortable::SortByType});
 }

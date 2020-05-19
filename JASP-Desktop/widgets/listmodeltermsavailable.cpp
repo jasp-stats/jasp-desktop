@@ -21,8 +21,8 @@
 #include "../analysis/analysisform.h"
 #include <QQmlProperty>
 
-ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView, bool mixedModelTerms)
-	: ListModelAvailableInterface(listView, mixedModelTerms)
+ListModelTermsAvailable::ListModelTermsAvailable(QMLListView* listView)
+	: ListModelAvailableInterface(listView)
 {
 }
 
@@ -55,34 +55,6 @@ void ListModelTermsAvailable::resetTermsFromSourceModels(bool updateAssigned)
 	beginResetModel();
 
 	Terms termsAvailable = getSourceTerms();
-
-	if (_mixedModelTerms)
-	{
-		QMap<ListModel*, Terms> termsPerSource = getSourceTermsPerModel();
-		QList<Terms> termsPerModel = termsPerSource.values();
-
-		if (termsPerModel.length() > 1)
-		{
-			Terms mixedTerms = termsPerModel[0];
-			mixedTerms.removeParent();
-			for (int i = 1; i < termsPerModel.length(); i++)
-			{
-				const Terms& termsToBeCombined = termsPerModel[i];
-				Terms extraTerms;
-				for (const Term& mixedTerm : mixedTerms)
-				{
-					for (const Term& termToBeCombined : termsToBeCombined)
-					{
-						QStringList components = mixedTerm.components();
-						components.append(termToBeCombined.components());
-						extraTerms.add(Term(components));
-					}
-				}
-				mixedTerms.add(extraTerms);
-			}
-			termsAvailable.add(mixedTerms);
-		}
-	}
 	
 	setChangedTerms(termsAvailable);
 	initTerms(termsAvailable);

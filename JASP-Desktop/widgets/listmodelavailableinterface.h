@@ -31,8 +31,8 @@ class ListModelAvailableInterface: public ListModelDraggable, public VariableInf
 {
 	Q_OBJECT
 public:
-	ListModelAvailableInterface(QMLListView* listView, bool mixedModelTerms = false)
-		: ListModelDraggable(listView), _mixedModelTerms(mixedModelTerms) {}
+	ListModelAvailableInterface(QMLListView* listView)
+		: ListModelDraggable(listView) {}
 	
 	virtual const Terms& allTerms()																						const { return _allSortedTerms; }
 			void initTerms(const Terms &terms, const RowControlsOptions& _rowControlsOptions = RowControlsOptions())	override;
@@ -54,7 +54,6 @@ protected:
 	bool					_addEmptyValue = false;
 	Terms					_allTerms;
 	Terms					_allSortedTerms;
-	bool					_mixedModelTerms = false;
 
 	Terms					_tempRemovedTerms;
 	Terms					_tempAddedTerms;

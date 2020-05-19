@@ -114,6 +114,9 @@ Terms ListModel::getSourceTerms()
 	if (sourceItems.size() == 0)
 		return termsAvailable;
 
+	Terms termsToCombine;
+	Terms termsToBeCombinedWith;
+
 	for (QMLListView::SourceType* sourceItem : sourceItems)
 	{
 		ListModel* sourceModel = sourceItem->model;
@@ -163,7 +166,25 @@ Terms ListModel::getSourceTerms()
 				sourceTerms = filteredTerms;
 			}
 
+			if (sourceItem->combineWithOtherModels)
+				termsToCombine = sourceTerms;
+			else
+				termsToBeCombinedWith.add(sourceTerms);
+
 			termsAvailable.add(sourceTerms);
+		}
+	}
+
+	if (termsToCombine.size() > 0)
+	{
+		for (const Term& termToCombine : termsToCombine)
+		{
+			for (const Term& termToBeCombined : termsToBeCombinedWith)
+			{
+				QStringList components = termToCombine.components();
+				components.append(termToBeCombined.components());
+				termsAvailable.add(Term(components));
+			}
 		}
 	}
 	
