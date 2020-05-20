@@ -1107,7 +1107,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
 
       if (contrast$contrast != "custom") {
         contrCoef         <- lapply(as.data.frame(contrastMatrix), as.vector)
-        names(contrCoef)  <- .anovaContrastCases(column, contrast$contrast, customContrastSetup)
+        names(contrCoef)  <- .anovaContrastCases(column, contrast$contrast)
       } else {
         contrCoef         <- apply(contrastMatrix, 1, list)
       }

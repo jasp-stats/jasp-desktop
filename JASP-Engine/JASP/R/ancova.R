@@ -77,7 +77,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   return(anovaContainer)
 }
 
-.anovaContrastCases <- function(column, contrastType, customContrast) {
+.anovaContrastCases <- function(column, contrastType) {
   
   levels <- levels(column)
   nLevels <- length(levels)
@@ -131,38 +131,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
           }
         }
       }
-      # custom = {
-      # 
-      #   isContrast <- sapply(customContrast$Contrasts, function(x) x$isContrast)
-      #   contrMatrix <- as.matrix(sapply(customContrast$Contrasts[isContrast], function(x) as.numeric(x$values)))
-      #   levelNames <- as.matrix(sapply(customContrast$Contrasts[!isContrast], function(x) x$values))
-      #   
-      #   if (length(levelNames) > 2 || ncol(contrMatrix) > 1) contrMatrix <- t(contrMatrix)
-      # 
-      #   for (i in 1:ncol(contrMatrix)) {
-      #     
-      #     curContr <- contrMatrix[,i]
-      # 
-      #     plusLevels <- abbreviate(levelNames[curContr > 0], minlength = 4, dot = TRUE)
-      #     plusWeights <- curContr[curContr > 0]
-      #     
-      #     minLevels <- abbreviate(levelNames[curContr < 0], minlength = 4, dot = TRUE)
-      #     minWeights <- curContr[curContr < 0]
-      #     
-      #     plusTermFull <- paste0(paste0(abs(plusWeights), "*", plusLevels,  collapse = " + "))
-      #     minTermFull <- paste0(paste0(abs(minWeights), "*", minLevels,  collapse = " + "))
-      #     
-      #     if (length(plusLevels) == 0) {
-      #       cases[[i]]  <-  paste0("- (",minTermFull, ")")
-      #     } else if (length(minLevels) == 0) {
-      #       cases[[i]]  <-  plusTermFull
-      #     } else {
-      #       cases[[i]]  <-  paste0("(", plusTermFull, ")", " - ", "(", minTermFull, ")")
-      #     }
-      #     
-      #   }
-      #   
-      # }
     )
   }
   
@@ -628,7 +596,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       contrastMatrix    <- .createContrastAnova(column, contrast$contrast, customContrastSetup)
       
       if (contrast$contrast != "custom") {
-        cases <- .anovaContrastCases(column, contrast$contrast, customContrastSetup)
+        cases <- .anovaContrastCases(column, contrast$contrast)
         contrCoef         <- lapply(as.data.frame(contrastMatrix), as.vector)
         names(contrCoef)  <- cases
       } else {
