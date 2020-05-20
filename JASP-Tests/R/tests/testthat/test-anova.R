@@ -449,7 +449,7 @@ test_that("Field - Chapter 7 results match", {
                            8.50652173913045, 0.000791273868880283, "FALSE", "Residuals",
                            57.5, 42, 1.36904761904762, "", "", "TRUE"))
   
-  table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]collection[[1]]$data
+  table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$collection[[1]]$data
   expect_equal_tables(table,
                       list("0 - 1, 2", -1.09375, 0.358257190138194, -3.05297431596026, 0.003921402019941,
                            42, -1.81674228032104, -0.37075771967896, "TRUE", "1 - 2", -0.6875,

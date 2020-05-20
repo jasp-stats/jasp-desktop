@@ -130,38 +130,39 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
             cases[[i]] <- paste("degree", i, "polynomial", sep=" ")
           }
         }
-      },
-      custom = {
-
-        contrMatrix <- (as.matrix(sapply(customContrast$values, function(x) x$value)))
-        levelNames <- as.matrix(sapply(customContrast$values, function(x) x$colLabel))
-        
-        if (length(levelNames) > 2 || ncol(contrMatrix) > 1) contrMatrix <- t(contrMatrix)
-
-        for (i in 1:ncol(contrMatrix)) {
-          
-          curContr <- contrMatrix[,i]
-
-          plusLevels <- abbreviate(levelNames[curContr > 0], minlength = 4, dot = TRUE)
-          plusWeights <- curContr[curContr > 0]
-          
-          minLevels <- abbreviate(levelNames[curContr < 0], minlength = 4, dot = TRUE)
-          minWeights <- curContr[curContr < 0]
-          
-          plusTermFull <- paste0(paste0(abs(plusWeights), "*", plusLevels,  collapse = " + "))
-          minTermFull <- paste0(paste0(abs(minWeights), "*", minLevels,  collapse = " + "))
-          
-          if (length(plusLevels) == 0) {
-            cases[[i]]  <-  paste0("- (",minTermFull, ")")
-          } else if (length(minLevels) == 0) {
-            cases[[i]]  <-  plusTermFull
-          } else {
-            cases[[i]]  <-  paste0("(", plusTermFull, ")", " - ", "(", minTermFull, ")")
-          }
-          
-        }
-        
       }
+      # custom = {
+      # 
+      #   isContrast <- sapply(customContrast$Contrasts, function(x) x$isContrast)
+      #   contrMatrix <- as.matrix(sapply(customContrast$Contrasts[isContrast], function(x) as.numeric(x$values)))
+      #   levelNames <- as.matrix(sapply(customContrast$Contrasts[!isContrast], function(x) x$values))
+      #   
+      #   if (length(levelNames) > 2 || ncol(contrMatrix) > 1) contrMatrix <- t(contrMatrix)
+      # 
+      #   for (i in 1:ncol(contrMatrix)) {
+      #     
+      #     curContr <- contrMatrix[,i]
+      # 
+      #     plusLevels <- abbreviate(levelNames[curContr > 0], minlength = 4, dot = TRUE)
+      #     plusWeights <- curContr[curContr > 0]
+      #     
+      #     minLevels <- abbreviate(levelNames[curContr < 0], minlength = 4, dot = TRUE)
+      #     minWeights <- curContr[curContr < 0]
+      #     
+      #     plusTermFull <- paste0(paste0(abs(plusWeights), "*", plusLevels,  collapse = " + "))
+      #     minTermFull <- paste0(paste0(abs(minWeights), "*", minLevels,  collapse = " + "))
+      #     
+      #     if (length(plusLevels) == 0) {
+      #       cases[[i]]  <-  paste0("- (",minTermFull, ")")
+      #     } else if (length(minLevels) == 0) {
+      #       cases[[i]]  <-  plusTermFull
+      #     } else {
+      #       cases[[i]]  <-  paste0("(", plusTermFull, ")", " - ", "(", minTermFull, ")")
+      #     }
+      #     
+      #   }
+      #   
+      # }
     )
   }
   
@@ -567,32 +568,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   contrastContainer <- createJaspContainer(title = gettext("Contrast Tables"))
   contrastContainer$dependOn(c("contrasts", "confidenceIntervalIntervalContrast", 
                                "confidenceIntervalsContrast", "customContrasts"))
-
-  createContrastTable <- function(myTitle, options, contrastType) {
-    
-    contrastTable <- createJaspTable(title = myTitle)
-    contrastTable$addColumnInfo(name = "Comparison", type = "string")
-    contrastTable$addColumnInfo(name = "estimate", title=gettext("Estimate"), type = "number")
-    
-    if (options$confidenceIntervalsContrast) {
-      
-      thisOverTitle <- gettextf("%s%% CI for Mean Difference", options$confidenceIntervalIntervalContrast * 100)
-      contrastTable$addColumnInfo(name="lower.CL", type = "number", title = gettext("Lower"), overtitle = thisOverTitle)
-      contrastTable$addColumnInfo(name="upper.CL", type = "number", title = gettext("Upper"), overtitle = thisOverTitle)
-      
-    } 
-    
-    contrastTable$addColumnInfo(name = "SE", title=gettext("SE"), type = "number")
-    
-    contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = "integer")
-    contrastTable$addColumnInfo(name = "t.ratio", title = gettext("t"),  type = "number")
-    contrastTable$addColumnInfo(name = "p.value", title = gettext("p"),  type = "pvalue")
-    
-    contrastTable$showSpecifiedColumnsOnly <- TRUE
-    
-    return(contrastTable)
-  }
-  
   
   for (contrast in options$contrasts) {
     
@@ -601,10 +576,18 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       contrastType[1] <- toupper(contrastType[1])
       contrastType <- paste0(contrastType, collapse = "")
       
-      myTitle <- gettextf("%1$s Contrast - %2$s", contrastType,  contrast$variable)
-      contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]] <- createContrastTable(myTitle, 
-                                                                                                             options,
-                                                                                                             contrast$contrast)
+      if (length(contrast$variable) == 1) {
+        contrastVariable <- contrast$variable
+      } else {
+        contrastVariable <- paste(contrast$variable, collapse = " \u273B ")
+      }
+
+      myTitle <- gettextf("%1$s Contrast - %2$s", contrastType,  contrastVariable)
+      contrastContainerName <- paste0(contrast$contrast, "Contrast_",  paste(contrast$variable, collapse = ":"))
+      contrastContainer[[contrastContainerName]] <- createJaspContainer()
+      contrastContainer[[contrastContainerName]][["contrastTable"]] <- .createContrastTableAnova(myTitle, 
+                                                                                                 options,
+                                                                                                 contrast)
     }
       
   }
@@ -621,9 +604,11 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   contrastSummary <- summary.lm(model)[["coefficients"]]
   
   for (contrast in options$contrasts) {
+    
+    contrastContainerName <- paste0(contrast$contrast, "Contrast_",  paste(contrast$variable, collapse = ":"))
 
     if (contrast$contrast != "none") {
-    
+
       variable <- contrast$variable
       v <- .v(variable)
 
@@ -633,37 +618,47 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       } else {
         customContrastSetup <- NULL
       }
-      
     
-      column <- dataset[[ v ]]
-      cases <- .anovaContrastCases(column, contrast$contrast, customContrastSetup)
-      
-      contrastMatrix    <- .rmAnovaCreateContrast(column, contrast$contrast, customContrastSetup)
-      contrCoef         <- lapply(as.data.frame(contrastMatrix), as.vector)
-      names(contrCoef)  <- cases
-      
-      referenceGrid <- emmeans::emmeans(afexModel, v, model = "multivariate")
-      
-      contrastResult    <- try(emmeans::contrast(referenceGrid, contrCoef), silent = TRUE)
+      if (length(v) == 1) {
+        column <- dataset[[ v ]]
+      } else {
+        column <- factor(apply(dataset[ v ], 1, paste, collapse =", "))
+      }
 
+      contrastMatrix    <- .createContrastAnova(column, contrast$contrast, customContrastSetup)
+      
+      if (contrast$contrast != "custom") {
+        cases <- .anovaContrastCases(column, contrast$contrast, customContrastSetup)
+        contrCoef         <- lapply(as.data.frame(contrastMatrix), as.vector)
+        names(contrCoef)  <- cases
+      } else {
+        contrCoef         <- apply(contrastMatrix, 1, list)
+      }
+
+      referenceGrid <- emmeans::emmeans(afexModel, v, model = "multivariate")
+      contrastResult    <- try(emmeans::contrast(referenceGrid, contrCoef), silent = TRUE)
+      # is input the same as used by emmeans? 
+      # all(as.matrix( coef(contrastResult)[, -(1:length(v)) ]) == t(contrastMatrix))
+      
       if (contrast$contrast == "custom") {
         if (isTryError(contrastResult)) {
           if (grepl(contrastResult[1], pattern = "Nonconforming number")) {
-            contrastContainer$setError(gettext("Please specify an additional contrast."))
+            contrastContainer[[contrastContainerName]]$setError(gettext("Please specify an additional contrast."))
           } else if (grepl(contrastResult[1], pattern = "number of contrast matrix rows")) {
-            contrastContainer$setError(gettext("Wrong number of custom contrast matrix rows."))
+            contrastContainer[[contrastContainerName]]$setError(gettext("Wrong number of custom contrast matrix rows."))
           }
           return()
-        } else if (any(apply(contrastMatrix, 2, function(x) all(x == 0) ))) {
-          contrastContainer$setError(gettext("Please specify non-zero contrast weights."))
+        } else if (any(apply(contrastMatrix, 1, function(x) all(x == 0) ))) {
+          contrastContainer[[contrastContainerName]]$setError(gettext("Please specify non-zero contrast weights."))
           return()
         } 
       }
       
-      contrastResult <- cbind(contrastResult, confint(contrastResult, level = options$confidenceIntervalIntervalContrast)[,5:6])
+      contrCoef <- coef(contrastResult)
+      colnames(contrCoef) <- c(contrast$variable, paste("Comparison", 1: (ncol(contrCoef) - length(contrast$variable))))
       
+      contrastResult <- cbind(contrastResult, confint(contrastResult, level = options$confidenceIntervalIntervalContrast)[,5:6])
       contrastResult[["Comparison"]] <- .unv(contrastResult[["contrast"]])
-
       contrastResult[[".isNewGroup"]] <- c(TRUE, rep(FALSE, nrow(contrastResult)-1))
 
       if (contrast$contrast == "custom" | length(contrast$variable) > 1) {
@@ -676,8 +671,6 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
       contrastContainer[[contrastContainerName]][["contrastTable"]]$setData(contrastResult)
       
-      contrastResult[[".isNewGroup"]] <- c(TRUE, rep(FALSE, nrow(contrastResult)-1))
-      contrastContainer[[paste0(contrast$contrast, "Contrast_",  contrast$variable)]]$setData(contrastResult)
     }
     
   }
@@ -685,7 +678,89 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   return()
 }
 
-.createContrastTableAnova <- function(myTitle, options, contrastType, contrastVariable) {
+.createContrastAnova <- function (column, contrast.type, customContrast) {
+  
+  levels <- levels(column)
+  n.levels <- length(levels)
+  
+  contr <- NULL
+  
+  switch(contrast.type,
+         none = {
+           
+           options(contrasts = c("contr.sum","contr.poly"))
+           contr <- NULL
+           
+         },
+         deviation = {
+           
+           contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
+           for (i in 2:n.levels) {
+             contr[,(i-1)] <-  -1 / n.levels
+             contr[i,(i-1)] <- (n.levels - 1) / n.levels
+           }
+           
+         },
+         simple = {
+           
+           contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
+           for (i in 1:n.levels-1) {
+             contr[c(1,i+1),i]<- c(1,-1) * -1
+           }
+           
+         },
+         Helmert = {
+           
+           contr <- contr.helmert(levels)
+           contr <- apply(contr, 2, function(x){ x/max(abs(x))})
+           contr <- matrix(rev(contr), ncol = ncol(contr), nrow = nrow(contr))
+           
+         },
+         repeated = {
+           
+           contr <- matrix(0,nrow = n.levels, ncol = n.levels - 1)
+           
+           for (i in 1:(n.levels-1)) {
+             contr[i,i] <- 1
+             contr[i+1,i] <- -1
+           }
+           
+         },
+         difference = {
+           
+           contr <- contr.helmert(levels)
+           contr <- apply(contr, 2, function(x){ x/max(abs(x))})
+           
+         },
+         polynomial = {
+           
+           contr <- contr.poly(levels)
+           
+         }, 
+         custom = {
+           
+           isContrast <- sapply(customContrast[["values"]], function(x) x$isContrast)
+           customContrMat <- as.matrix(sapply(customContrast[["values"]][isContrast], function(x) as.numeric(x$values)))
+           desiredRows <- nrow(contr.helmert(levels) * -1)
+           
+           if (desiredRows == 2 && length(customContrMat) == 2 ) {
+             contr <- t(customContrMat)
+           } else {
+             contr <- t(customContrMat)
+           }
+           
+         }
+  )
+  
+  if (! is.null(contr)) {
+    dimnames(contr) <- list(NULL, 1:dim(contr)[2])
+  }
+  
+  contr
+}
+
+
+.createContrastTableAnova <- function(myTitle, options, contrast) {
   
   contrastTable <- createJaspTable(title = myTitle)
   contrastTable$addColumnInfo(name = "Comparison", type = "string")

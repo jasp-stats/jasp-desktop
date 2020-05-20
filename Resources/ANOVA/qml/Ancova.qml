@@ -125,7 +125,7 @@ Form
 	{
 		title: qsTr("Contrasts")
 		
-		ContrastsList { source: ["modelTerms", "randomFactors"] }
+		ContrastsList { source: ["randomFactors", {name : "modelTerms", discard: "covariates"}] }
 		
 		CheckBox
 		{
