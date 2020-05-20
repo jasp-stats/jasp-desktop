@@ -42,7 +42,7 @@ This section describes which files types needed to be adapted such that the tran
 3. R-files
 
 	*  a. All literal strings such as titles and messages must be embedded in the gettext() function, e.g, title=gettext("Hypothesis")
-	*  b. Unicode character may not appear in the literals strings as output strings. For instance, title="McDonald's \u03C9" must be coded as gettextf(“McDonald's %s”,” \u03C9") instead of title=gettext("McDonald's \u03C9"). The same is true for a single % character in a gettext. It must be transformed to a gettextf with a double %%. Please let us know if you have a better solution.
+	*  b.  A single % character in a gettext must be transformed within a gettextf with a double %%. Please let us know if you have a better solution.
 	*  c. All paste and paste0 functions must be replaced by the gettext or the gettextf functions. For example:
 
        overtitle = paste0(100 * options$confidenceIntervalInterval, "% CI for Proportion"))
