@@ -33,7 +33,7 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 - Geef paarsgewijs weer: Geef een tabel weer waarin op elke rij één paar variabelen staat, en de spreidingsdiagrammen worden individueel voor ieder paar weergegeven. Indien onaangevinkt, dan zijn de resultaten weergegeven als matrix, met de namen van variabelen in zowel de kolommen als de rijen.
 - Rapporteer significantie: Geef de p-waarde weer, overeenkomend met de geobserveerde correlatie.
 - Markeer significante correlaties: Markeer statistisch significante correlaties.
-- Betrouwbaarheidsintervallen: Betrouwbaarheidsintervallen voor de populatiecorrelatie (enkel beschikbaar voor de Pearson correlatie).
+- Betrouwbaarheidsintervallen: Betrouwbaarheidsintervallen voor de populatiecorrelatie (betrouwbaarheidsintervallen voor nonparametrische correlaties zijn gebaseerd op de z-benadering van Hollander, Wolfe & Chicken (2013)).
   - Interval: Dekking van het betrouwbaarheidsinterval in percentages.
 - Vovk-Selke maximum p-ratio: De grens 1/(-e p log(p)) is berekend aan de hand van de p-waarde verdeling. Onder de nullhypothese (H<sub>0</sub>) is het uniform (0,1), en onder de alternatieve (H<sub>1</sub>) verlaagt de p-waarde, e.g., een beta (α, 1) verdeling, met 0 < α < 1. De Vovk-Sellke MPR is verkregen door de vorm α van de verdeling te kiezen onder H1 zodat de behaalde p-waarde diagnostisch gemaximaliseerd is. De waarde is dan de ratio van de verdelingen op punt p onder H<sub>0</sub> en H<sub>1</sub>. Bijvoorbeeld, als de tweezijdige p-waarde gelijk is aan .05, de Vovk-Sellke MPR gelijk is aam 2.46, dit geeft aan dat deze p-waarde is hoogstens 2.46 keer meer aannemelijk is voor H<sub>1</sub> dan voor H<sub>0</sub>.
 - Steekproefgrootte: Het aantal volledige observaties voor een gegeven paar variabelen.
@@ -95,6 +95,7 @@ De Correlatie Matrix maakt het mogelijk de populatiecorrelatie te schatten en de
 
 ### Referenties
 -------
+- Hollander, M., Wolfe, D. A., & Chicken, E. (2013). *Nonparametric statistical methods (3rd ed.)*. John Wiley & Sons.
 - Moore, D. S., McCabe, G. P., & Craig, B. A. (2012). *Introduction to the practice of statistics (7th ed.)*. New York, NY: W. H. Freeman and Company.
 - Whitlock, M. C., & Schluter, D. (2015). *The analysis of biological data (2nd ed.)*. Greenwood Village, Colorado: Roberts and Company Publishers.
 - Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of *p* values for testing precise null hypotheses. *The American Statistician, 55*(1), 62-71.
