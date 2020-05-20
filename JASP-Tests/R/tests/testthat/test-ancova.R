@@ -124,7 +124,7 @@ test_that("Contrasts table results match", {
     options$contrasts <- list(list(contrast=contrast, variable="facFive"))
     results <- jasptools::run("Ancova", "test.csv", options)
     # table <- results[["results"]][["contrasts"]][["collection"]][[1]][["data"]]
-    table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$data
+    table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$collection[[1]]$data
     expect_equal_tables(table, refTables[[contrast]], label=paste("Table with contrast", contrast))
   }
 })
@@ -288,7 +288,7 @@ test_that("Field - Chapter 6 results match", {
                            4.00063237957797, 6.57588583114463, "FALSE"))
   
   # contrast 
-  table <- results$results$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$data
+  table <- results$results$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$collection[[1]]$data
   expect_equal_tables(table,
                       list("2 - 1", 1.78568011481422, 0.849355306996751, 2.1023947223315,
                            0.0453535580857103, 26, 0.0398052774148459, 3.5315549522136,
