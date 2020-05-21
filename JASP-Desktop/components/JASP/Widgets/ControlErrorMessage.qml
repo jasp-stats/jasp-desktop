@@ -41,25 +41,13 @@ Rectangle
 	property int paddingWidth	: 10 * jaspTheme.uiScale
 	property int paddingHeight	: 6 * jaspTheme.uiScale
 
-	onContainerWidthChanged: if (visible) showMessage()
-
-	onControlChanged:
+	onContainerWidthChanged:	if (visible)				showMessage()
+	onControlChanged:			if (!control)				controlErrorMessage.opacity = 0
+	onVisibleChanged:			if (!visible && control)
 	{
-		if (!control)
-			controlErrorMessage.opacity = 0
-	}
-
-	onVisibleChanged:
-	{
-		if (!visible)
-		{
-			if (control)
-			{
-				control.hasError = false;
-				control.hasWarning = false;
-				parent = null;
-			}
-		}
+		control.hasError	= false;
+		control.hasWarning	= false;
+		parent				= null;
 	}
 
 	Timer

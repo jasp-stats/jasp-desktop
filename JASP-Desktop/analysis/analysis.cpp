@@ -266,10 +266,12 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 	connect(Analyses::analyses(), &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
 }
 
+
 Analysis::Status Analysis::analysisResultsStatusToAnalysisStatus(analysisResultStatus result)
 {
 	switch(result)
 	{
+	case analysisResultStatus::changed:			return Analysis::KeepStatus; //changed is returned by the engine when it was killed by us, the desktop, so we return KeepStatus which tells the analysis that it shouldn't change status. A bit unwieldy but requires least changes.
 	case analysisResultStatus::validationError:	return Analysis::ValidationError;
 	case analysisResultStatus::fatalError:		return Analysis::FatalError;
 	case analysisResultStatus::imageSaved:
@@ -278,7 +280,7 @@ Analysis::Status Analysis::analysisResultsStatusToAnalysisStatus(analysisResultS
 	case analysisResultStatus::complete:		return Analysis::Complete;
 	case analysisResultStatus::inited:			return Analysis::Inited;
 	case analysisResultStatus::running:			return Analysis::Running;
-	default:									throw std::logic_error("When you define new analysisResultStatuses you should add them to EngineRepresentation::analysisResultStatusToAnalysStatus!");
+	default:									throw std::logic_error("When you define new analysisResultStatuses like '" + analysisResultStatusToString(result)  +  "' you should add them to EngineRepresentation::analysisResultStatusToAnalysStatus!");
 	}
 }
 
@@ -355,6 +357,12 @@ void Analysis::loadExtraFromJSON(Json::Value & options)
 
 void Analysis::setStatus(Analysis::Status status)
 {
+	if(status == Analysis::KeepStatus)
+	{
+		Log::log() << "Analysis " << _id << " '" << _title << "' got setStatus(KeepStatus) so it ignores it." << std::endl;
+		return;
+	}
+
 	if(_status == status)
 		return;
 
@@ -371,9 +379,9 @@ void Analysis::setStatus(Analysis::Status status)
 
 	_status = status;
 
-	emit statusChanged(this);
-
 	Log::log() << "Analysis " << title() << " (" << id() << ") now has status: " << statusToString(_status) << std::endl;
+
+	emit statusChanged(this);
 }
 
 void Analysis::optionsChangedHandler(Option *option)

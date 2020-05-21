@@ -17,6 +17,12 @@
 #include <QString>
 #endif
 
+struct missingEnumVal  : public std::runtime_error
+{
+	missingEnumVal(std::string enumName, std::string missingValue)	: std::runtime_error("Enum " + enumName + " does not contain value \"" + missingValue + "\"!") {}
+};
+
+
 #define STRING_REMOVE_CHAR(str, ch) str.erase(std::remove(str.begin(), str.end(), ch), str.end())
 
 
@@ -69,7 +75,7 @@
 	E E##FromString(std::string enumName)																		\
 	{																											\
 		if(E##FromNameMap.count(enumName) == 0) 																\
-			throw std::runtime_error(#E" enum from string misses requested value \""+enumName+"\"");			\
+			throw missingEnumVal(#E, enumName);																\
 		return (E)E##FromNameMap.at(enumName); 																	\
 	}																											\
 	E E##FromString(std::string enumName, E defaultValue)														\
@@ -82,20 +88,20 @@
 	bool		valid##E(T value) { return (E##MapName.find(value) != E##MapName.end()); }
 
 #ifdef JASP_USES_QT_HERE
-	#define DECLARE_ENUM_WITH_TYPE_HEADER(E, T, ...)															\
-	DECLARE_ENUM_WITH_TYPE_BASE(E, T, __VA_ARGS__)																\
-	inline E		E##FromQString(QString enumName)	{ return (E)E##FromString(enumName.toStdString()); }	\
+	#define DECLARE_ENUM_WITH_TYPE_HEADER(E, T, ...)																						\
+	DECLARE_ENUM_WITH_TYPE_BASE(E, T, __VA_ARGS__)																							\
+	inline E		E##FromQString(QString enumName)					{ return (E)E##FromString(enumName.toStdString()); }				\
 	inline E		E##FromQString(QString enumName, E defaultValue)	{ return (E)E##FromString(enumName.toStdString(), defaultValue); }	\
-	inline QString	E##ToQString(E enumVal)		{ return QString::fromStdString(~enumVal); }					\
-	inline QString	operator+(QString &&str, E enumTmp) { return str + E##ToQString(enumTmp); }					\
-	inline QString	operator+(E enumTmp, QString &&str) { return E##ToQString(enumTmp) + str;	}				\
-	inline QString	&operator+=(QString &str, E enumTmp)														\
-	{																											\
-		str += E##ToQString(enumTmp);																			\
-		return str;																								\
+	inline QString	E##ToQString(E enumVal)								{ return QString::fromStdString(~enumVal); }						\
+	inline QString	operator+(QString &&str, E enumTmp)					{ return str + E##ToQString(enumTmp); }								\
+	inline QString	operator+(E enumTmp, QString &&str)					{ return E##ToQString(enumTmp) + str;	}							\
+	inline QString	&operator+=(QString &str, E enumTmp)																					\
+	{																																		\
+		str += E##ToQString(enumTmp);																										\
+		return str;																															\
 	}
 
-#define DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, ...)														\
+#define DECLARE_ENUM_WITH_TYPE_IMPLEMENTATION(E, T, ...)																					\
 	DECLARE_ENUM_METHODS_WITH_TYPE_BASE(E, T, __VA_ARGS__)
 #else
 	#define DECLARE_ENUM_WITH_TYPE_HEADER(E, T, ...)			DECLARE_ENUM_WITH_TYPE_BASE(E, T, __VA_ARGS__)

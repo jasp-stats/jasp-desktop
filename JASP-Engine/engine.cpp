@@ -44,7 +44,9 @@ bool PollMessagesFunctionForJaspResults()
 			{
 			case engineAnalysisStatus::changed:
 			case engineAnalysisStatus::aborted:
-			case engineAnalysisStatus::stopped:	return true;
+			case engineAnalysisStatus::stopped:
+				Log::log() << "Analysis status changed for engine #" << Engine::theEngine()->slaveNo() << " to: " << engineAnalysisStatusToString(Engine::theEngine()->getAnalysisStatus()) << std::endl;
+				return true;
 			default:							break;
 			}
 	}
@@ -88,12 +90,17 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 
 void Engine::initialize()
 {
+	Log::log() << "Engine::initialize()" << std::endl;
+
 	rbridge_init(SendFunctionForJaspresults, PollMessagesFunctionForJaspResults);
 
 #if defined(JASP_DEBUG) || defined(__linux__)
 	if (_slaveNo == 0)
 		Log::log() << rbridge_check() << std::endl;
 #endif
+
+	//Is there maybe already some data? Like, if we just killed and restarted the engine
+	ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
 
 	_engineState = engineState::idle;
 	sendEngineResumed(); //Then the desktop knows we've finished init.
@@ -115,6 +122,8 @@ void Engine::run()
 	_channel = new IPCChannel(memoryName, _slaveNo, true);
 
 	JASPTIMER_STOP(Engine::run startup);
+
+	sendString(""); //Clear the buffer, because it might have been filled by a previous incarnation of the engine
 
 	while(_engineState != engineState::stopped && ProcessInfo::isParentRunning())
 	{
@@ -155,11 +164,21 @@ bool Engine::receiveMessages(int timeout)
 
 	if (_channel->receive(data, timeout))
 	{
+		if(data =="")
+			return false;
+
 		Json::Value jsonRequest;
 		Json::Reader().parse(data, jsonRequest, false);
 
+		//Clear send buffer
+		sendString("");
 
-		engineState typeRequest = engineStateFromString(jsonRequest.get("typeRequest", Json::nullValue).asString());
+		//Check if we got anyting useful
+		std::string typeSend	= jsonRequest.get("typeRequest", Json::nullValue).asString();
+		if(typeSend == "")
+			return false;
+
+		engineState typeRequest = engineStateFromString(typeSend);
 
 #ifdef PRINT_ENGINE_MESSAGES
 		Log::log() << "Engine received " << engineStateToString(typeRequest) <<" message" << std::endl;
@@ -171,12 +190,12 @@ bool Engine::receiveMessages(int timeout)
 		case engineState::rCode:			receiveRCodeMessage(jsonRequest);			break;
 		case engineState::computeColumn:	receiveComputeColumnMessage(jsonRequest);	break;
 		case engineState::pauseRequested:	pauseEngine();								break;
-		case engineState::resuming:			resumeEngine();								break;
+		case engineState::resuming:			resumeEngine(jsonRequest);					break;
 		case engineState::moduleRequest:	receiveModuleRequestMessage(jsonRequest);	break;
 		case engineState::stopRequested:	stopEngine();								break;
 		case engineState::logCfg:			receiveLogCfg(jsonRequest);					break;
 		case engineState::settings:			receiveSettings(jsonRequest);				break;
-		default:							throw std::runtime_error("Engine::receiveMessages begs you to add your new engineState to it!");
+		default:							throw std::runtime_error("Engine::receiveMessages begs you to add your new engineState " + engineStateToString(typeRequest) + " to it!");
 		}
 	}
 
@@ -832,11 +851,13 @@ void Engine::sendEnginePaused()
 	sendString(rCodeResponse.toStyledString());
 }
 
-void Engine::resumeEngine()
+void Engine::resumeEngine(const Json::Value & jsonRequest)
 {
-	Log::log() << "Engine resuming, rescanning columnNames for en/decoding" << std::endl;
+	Log::log() << "Engine resuming, absorbing settings and rescanning columnNames for en/decoding" << std::endl;
 	//Any changes to the data that engine needs to know about are accompanied by pause + resume I think.
 	ColumnEncoder::columnEncoder()->setCurrentColumnNames(provideDataSet() == nullptr ? std::vector<std::string>({}) : provideDataSet()->getColumnNames());
+
+	absorbSettings(jsonRequest);
 
 	_engineState = engineState::idle;
 	sendEngineResumed();
@@ -865,17 +886,22 @@ void Engine::receiveLogCfg(const Json::Value & jsonRequest)
 	_engineState = engineState::idle;
 }
 
-
-void Engine::receiveSettings(const Json::Value & jsonRequest)
+void Engine::absorbSettings(const Json::Value & jsonRequest)
 {
-	Log::log() << "Settings received" << std::endl;
-
 	_ppi				= jsonRequest.get("ppi",				_ppi			).asInt();
 	_developerMode		= jsonRequest.get("developerMode",		_developerMode	).asBool();
 	_imageBackground	= jsonRequest.get("imageBackground",	_imageBackground).asString();
 	_langR				= jsonRequest.get("languageCode",		_langR			).asString();
 
 	rbridge_setLANG(_langR);
+}
+
+
+void Engine::receiveSettings(const Json::Value & jsonRequest)
+{
+	Log::log() << "Settings received" << std::endl;
+
+	absorbSettings(jsonRequest);
 
 	Json::Value response	= Json::objectValue;
 	response["typeRequest"]	= engineStateToString(engineState::settings);

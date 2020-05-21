@@ -177,6 +177,20 @@ MainWindow::~MainWindow()
 {
 	try
 	{
+		//Clean up all QML to get rid of warnings and stuff
+		QList<QObject *> rootObjs = _qml->rootObjects();
+
+		//Going backwards to make sure the theme isnt deleted before everything that depends on it
+		for(int i=rootObjs.size() - 1; i >= 0; i--)
+			delete rootObjs[i];
+
+		delete _qml;
+
+	}
+	catch(...)	{}
+
+	try
+	{
 		_engineSync->stopEngines();
 		_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
 

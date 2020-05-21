@@ -110,6 +110,7 @@ private slots:
 
 	void	restartEngines();
 	void	restartEngineAfterCrash(int nr);
+	void	restartKilledEngines();
 
 	void	logCfgReplyReceived(size_t channelNr);
 

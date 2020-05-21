@@ -16,6 +16,9 @@
 #include "rscriptstore.h"
 #include "modules/dynamicmodules.h"
 
+//How many seconds do we wait for an engine to be killed if it gets stuck in some analysis?
+#define KILLTIME 2
+
 class EngineRepresentation : public QObject
 {
 	Q_OBJECT
@@ -23,6 +26,8 @@ class EngineRepresentation : public QObject
 public:
 	EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent = nullptr);
 	~EngineRepresentation();
+
+	void		cleanUpAfterClose();
 
 	void		clearAnalysisInProgress();
 	void		setAnalysisInProgress(Analysis* analysis);
@@ -38,19 +43,20 @@ public:
 	void sendLogCfg();
 	void sendSettings();
 
-	void killEngine();
+	void killEngine(bool disconnectFinished = false);
 	void stopEngine();
 	void pauseEngine();
 	void resumeEngine();
 	void restartEngine(QProcess * jaspEngineProcess);
+	bool resumed()				const { return _engineState != engineState::resuming && !paused() && !initializing();			}
 	bool paused()				const { return _engineState == engineState::paused;												}
 	bool initializing()			const { return _engineState == engineState::initializing;										}
-	bool resumed()				const { return _engineState != engineState::paused && _engineState != engineState::resuming;	}
 	bool stopped()				const { return _engineState == engineState::stopped;											}
+	bool killed()			const { return _engineState == engineState::killed;										}
 	bool idle()					const { return _engineState == engineState::idle; }
 	bool shouldSendSettings()	const { return idle() && _settingsChanged; }
 
-	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr; }
+	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr && !killed(); }
 
 	void process();
 	void processRCodeReply(			Json::Value & json);
@@ -63,6 +69,9 @@ public:
 	void processEngineResumedReply();
 	void processLogCfgReply();
 	void processSettingsReply();
+	void restartAbortedAnalysis(bool refreshIt = false);
+
+	void checkIfExpectedReplyType(engineState expected) { unexpectedEngineReply::checkIfExpected(expected, _engineState, channelNumber()); }
 
 	size_t	channelNumber()		const { return _channel->channelNumber(); }
 
@@ -106,7 +115,8 @@ private:
 	void setSlaveProcess(QProcess * slaveProcess);
 	void checkForComputedColumns(const Json::Value & results);
 	void handleEngineCrash();
-	void abortAnalysisInProgress();
+	void abortAnalysisInProgress(bool restartAfterwards);
+	void addSettingsToJson(Json::Value & msg);
 
 private:
 	static Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result);
@@ -117,12 +127,15 @@ private:
 				*	_analysisAborted	= nullptr;
 	engineState		_engineState		= engineState::initializing;
 	int				_idRemovedAnalysis	= -1,
-					_lastRequestId		= -1;
+					_lastRequestId		= -1,
+					_abortTime			= -1;
 	bool			_pauseRequested		= false,
 					_stopRequested		= false,
 					_slaveCrashed		= false,
-					_settingsChanged	= false;
+					_settingsChanged	= true,
+					_abortAndRestart	= false;
 	std::string		_lastCompColName	= "???";
+
 
 };
 

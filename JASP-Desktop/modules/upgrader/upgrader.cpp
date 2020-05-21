@@ -131,7 +131,7 @@ void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs &
 
 	if(_searcher.count(module) == 0)
 	{
-		Log::log() << "No such upgrade options was found, keeping it as is." << std::endl;
+		Log::log() << "No such upgrade options were found, keeping it as is." << std::endl;
 		return;
 	}
 
