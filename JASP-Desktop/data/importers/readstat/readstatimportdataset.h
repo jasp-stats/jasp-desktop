@@ -31,7 +31,7 @@ class ReadStatImportDataSet : public ImportDataSet
 {
 	typedef std::map<std::string, std::map<readstat_value_t, std::string>> labelsMapT;
 public:
-				ReadStatImportDataSet(ReadStatImporter * importer, boost::function<void(const std::string &, int)>	progressCallback)
+				ReadStatImportDataSet(ReadStatImporter * importer, boost::function<void(int)>	progressCallback)
 					: ImportDataSet(importer), _progressCallback(progressCallback) {}
 
 				~ReadStatImportDataSet()					override;
@@ -52,12 +52,12 @@ public:
 	void						incrementRow()				{ setCurrentRow(_currentRow + 1); }
 
 private:
-	labelsMapT										_labelMap;
-	int												_var_count			= 0;
-	std::map<int,ReadStatImportColumn*>				_cols;
-	int												_expectedRows		= 0,
-													_currentRow			= 0;
-	boost::function<void(const std::string &, int)>	_progressCallback;
+	labelsMapT								_labelMap;
+	int										_var_count			= 0;
+	std::map<int,ReadStatImportColumn*>		_cols;
+	int										_expectedRows		= 0,
+											_currentRow			= 0;
+	boost::function<void(int)>				_progressCallback;
 };
 
 #endif // ReadStatImportDataSet_H

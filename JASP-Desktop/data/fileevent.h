@@ -23,6 +23,7 @@
 #include <QMetaType>
 
 #include "exporters/exporter.h"
+#include "utilenums.h"
 
 class FileEvent : public QObject
 {
@@ -32,7 +33,6 @@ public:
 	enum FileMode { FileSave, FileOpen, FileExportResults, FileExportData, FileGenerateData, FileSyncData, FileClose };
 
 					FileEvent(QObject *parent = nullptr, FileMode fileMode = FileEvent::FileOpen);
-					FileEvent(const FileEvent&) = default;
 	virtual			~FileEvent();
 
 	bool			setPath(		const QString & path);
@@ -44,10 +44,10 @@ public:
 
 	void			setReadOnly()		  { _readOnly = true;		}
 
-	bool			isOnlineNode()	const { return _path.startsWith("http");	}
-	bool			isReadOnly()	const { return _readOnly;					}
-	bool			isCompleted()	const { return _completed;					}
-	bool			isSuccessful()	const { return _success;					}
+	bool			isOnlineNode()	const { return _path.startsWith("http");		}
+	bool			isReadOnly()	const { return _readOnly;						}
+	bool			isCompleted()	const { return _completed;						}
+	bool			isSuccessful()	const { return _success;						}
 
 	Exporter *		exporter()		const { return _exporter;		}
 	FileMode		operation()		const { return _operation;		}
@@ -58,6 +58,8 @@ public:
 	const QString &	dataFilePath()	const { return _dataFilePath;	}
 	const QString &	message()		const { return _message;		}
 	const QString & getLastError()	const { return _last_error;		}
+
+	QString			getProgressMsg() const;
 
 signals:
 	void completed(FileEvent *event);

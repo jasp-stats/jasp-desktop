@@ -23,24 +23,25 @@
 #include <boost/filesystem.hpp>
 #include "timers.h"
 
+enum class FileTypeBase;
+
 class Utils
 {
 public:
 	friend class PreferencesModel;
 
-	enum FileType { jasp = 0, html, csv, txt, tsv, sav, ods, pdf, sas7bdat, sas7bcat, por, xpt, empty, unknown  };
-	typedef std::vector<Utils::FileType> FileTypeVector;
+	typedef FileTypeBase					FileType;
+	typedef std::vector<Utils::FileType>	FileTypeVector;
 
-	static const char* getFileTypeString(const Utils::FileType &fileType);
-	static Utils::FileType getTypeFromFileName(const std::string &path);
+	static Utils::FileType getTypeFromFileName(	const std::string &path);
 
 	static long currentMillis();
 	static long currentSeconds();
 	static long getFileModificationTime(const std::string &filename);
-	static long getFileSize(const std::string &filename);
-	static void touch(const std::string &filename);
-	static bool renameOverwrite(const std::string &oldName, const std::string &newName);
-	static bool removeFile(const std::string &path);
+	static long getFileSize(			const std::string &filename);
+	static void touch(					const std::string &filename);
+	static bool renameOverwrite(		const std::string &oldName, const std::string &newName);
+	static bool removeFile(				const std::string &path);
 
 	static boost::filesystem::path osPath(const std::string &path);
     static std::string osPath(const boost::filesystem::path &path);
@@ -49,9 +50,9 @@ public:
 	static void sleep(int ms);
 
 	static const std::string emptyValue;
-	static const std::vector<std::string>& getEmptyValues()			{ return _currentEmptyValues;		}
-	static const std::vector<std::string>& getDefaultEmptyValues()	{ return _defaultEmptyValues;		}
-	static const std::vector<double>& getDoubleEmptyValues()		{ return _currentDoubleEmptyValues;	}
+	static const std::vector<std::string>	& getEmptyValues()			{ return _currentEmptyValues;		}
+	static const std::vector<std::string>	& getDefaultEmptyValues()	{ return _defaultEmptyValues;		}
+	static const std::vector<double>		& getDoubleEmptyValues()	{ return _currentDoubleEmptyValues;	}
 	static void setEmptyValues(const std::vector<std::string>& emptyvalues);
 	static void processEmptyValues();
 

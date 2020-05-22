@@ -23,7 +23,7 @@ public:
 	void initColumn(QVariant colId, ImportColumn * importColumn) override;
 
 protected:
-	ImportDataSet *	loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback)	override;
+	ImportDataSet *	loadFile(const std::string &locator, boost::function<void(int)> progressCallback)	override;
 
 	std::string		_ext;
 

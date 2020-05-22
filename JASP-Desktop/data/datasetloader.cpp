@@ -57,7 +57,7 @@ Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }
 
-void DataSetLoader::loadPackage(const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+void DataSetLoader::loadPackage(const string &locator, const string &extension, boost::function<void(int)> progress)
 {
 	JASPTIMER_RESUME(DataSetLoader::loadPackage);
 
@@ -76,7 +76,7 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 	JASPTIMER_STOP(DataSetLoader::loadPackage);
 }
 
-void DataSetLoader::syncPackage(const string &locator, const string &extension, boost::function<void(const string &, int)> progress)
+void DataSetLoader::syncPackage(const string &locator, const string &extension, boost::function<void(int)> progress)
 {
 	Utils::sleep(100);
 

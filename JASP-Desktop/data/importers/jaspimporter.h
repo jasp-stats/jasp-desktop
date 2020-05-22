@@ -34,13 +34,13 @@ class JASPImporter
 public:
 	enum Compatibility { Compatible, Limited, NotCompatible };
 
-	static void loadDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback);
+	static void loadDataSet(const std::string &path, boost::function<void(int)> progressCallback);
 
 private:
-	static void loadDataArchive(		const std::string &path, boost::function<void (const std::string &, int)> progressCallback);
-	static void loadJASPArchive(		const std::string &path, boost::function<void (const std::string &, int)> progressCallback);
-	static void loadDataArchive_1_00(	const std::string &path, boost::function<void (const std::string &, int)> progressCallback);
-	static void loadJASPArchive_1_00(	const std::string &path, boost::function<void (const std::string &, int)> progressCallback);
+	static void loadDataArchive(		const std::string &path, boost::function<void(int)> progressCallback);
+	static void loadJASPArchive(		const std::string &path, boost::function<void(int)> progressCallback);
+	static void loadDataArchive_1_00(	const std::string &path, boost::function<void(int)> progressCallback);
+	static void loadJASPArchive_1_00(	const std::string &path, boost::function<void(int)> progressCallback);
 
 	static bool parseJsonEntry(Json::Value &root, const std::string &path, const std::string &entry, bool required);
 	static void readManifest(const std::string &path);

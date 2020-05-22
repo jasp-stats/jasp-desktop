@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+
 #include "utils.h"
 
 #ifdef _WIN32
@@ -32,50 +33,30 @@
 #include <boost/algorithm/string/predicate.hpp>
 #endif
 
+#include "utilenums.h"
+
 using namespace std;
 using namespace boost::posix_time;
 using namespace boost;
 
-const char* Utils::getFileTypeString(const Utils::FileType &fileType)
-{
-	switch (fileType)
-	{
-	case Utils::csv:		return "csv";
-	case Utils::txt:		return "txt";
-	case Utils::tsv:		return "tsv";
-	case Utils::sav:		return "sav";
-	case Utils::ods:		return "ods";
-	case Utils::jasp:		return "jasp";
-	case Utils::html:		return "html";
-	case Utils::pdf:		return "pdf";
-	case Utils::sas7bdat:	return "sas7bdat";
-	case Utils::sas7bcat:	return "sas7bcat";
-	case Utils::por:		return "por";
-	case Utils::xpt:		return "xpt";
-	default: return "";
-	}
-}
-
 Utils::FileType Utils::getTypeFromFileName(const std::string &path)
 {
 
-	Utils::FileType filetype =  Utils::unknown;
+	FileType filetype =  FileType::unknown;
 
-	for (int i = 0; i < Utils::empty; i++)
+	for (int i = 0; i < int(FileType::empty); i++)
 	{
-		Utils::FileType it = static_cast<Utils::FileType>(i);
-		std::string it_str(".");
-		it_str += Utils::getFileTypeString(it);
+		FileType it = static_cast<FileType>(i);
 
-		if (algorithm::iends_with(path, it_str))
+		if (algorithm::iends_with(path, "." + FileTypeBaseToString(it)))
 		{
 			filetype = it;
 			break;
 		}
 	}
 
-	if (filetype == Utils::unknown && !algorithm::find_last(path, "."))
-		filetype =  Utils::empty;
+	if (filetype == FileType::unknown && !algorithm::find_last(path, "."))
+		filetype =  FileType::empty;
 
 
 	return filetype;

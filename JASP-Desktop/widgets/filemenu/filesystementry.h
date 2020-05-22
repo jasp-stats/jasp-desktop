@@ -23,12 +23,12 @@
 #include "utils.h"
 #include <QHash>
 #include <QDateTime>
-
+#include "utilenums.h"
 
 class FileSystemEntry
 {
 public:
-	enum EntryType { JASP = 0, CSV = 1, SPSS = 2, Folder = 3, Other = 4, NoOfTypes = 5 };
+	enum EntryType { JASP = 0, CSV = 1, ReadStat = 2, Folder = 3, Other = 4, NoOfTypes = 5 };
 
 	FileSystemEntry() { entryType = Other; }
 
@@ -55,7 +55,7 @@ public:
 		{
 		case Utils::FileType::csv:		return FileSystemEntry::CSV;
 		case Utils::FileType::jasp:		return FileSystemEntry::JASP;
-		case Utils::FileType::sav:		return FileSystemEntry::SPSS;
+		case Utils::FileType::sav:		return FileSystemEntry::ReadStat;
 		case Utils::FileType::unknown:	return FileSystemEntry::NoOfTypes;
 		default:						return FileSystemEntry::Other;
 		}
@@ -66,7 +66,7 @@ public:
 		static QHash<int, QString> icons = {
 			{ FileSystemEntry::JASP,	"file-jasp.svg"		},
 			{ FileSystemEntry::CSV,		"spreadsheet.svg"	},
-			{ FileSystemEntry::SPSS,	"spreadsheet.svg"	},
+		    { FileSystemEntry::ReadStat,	"spreadsheet.svg"	},
 			{ FileSystemEntry::Other,	"spreadsheet.svg"	},
 			{ FileSystemEntry::Folder,	"folder.svg"			} };
 

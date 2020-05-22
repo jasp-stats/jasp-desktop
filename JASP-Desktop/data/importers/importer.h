@@ -18,11 +18,11 @@ class Importer
 public:
 	Importer() {}
 	virtual ~Importer();
-	void loadDataSet(const std::string &locator, boost::function<void (const std::string &, int)> progressCallback);
-	void syncDataSet(const std::string &locator, boost::function<void (const std::string &, int)> progressCallback);
+	void loadDataSet(const std::string &locator, boost::function<void (int)> progressCallback);
+	void syncDataSet(const std::string &locator, boost::function<void (int)> progressCallback);
 
 protected:
-	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback) = 0;
+	virtual ImportDataSet* loadFile(const std::string &locator, boost::function<void(int)> progressCallback) = 0;
 
 	///colID can be either an integer (the column index in the data) or a string (the (old) name of the column in the data)
 	virtual void initColumn(QVariant colId, ImportColumn *importColumn);

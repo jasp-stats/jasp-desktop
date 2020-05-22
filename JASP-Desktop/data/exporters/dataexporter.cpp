@@ -21,20 +21,21 @@
 #include "dataset.h"
 #include <boost/nowide/fstream.hpp>
 #include "stringutils.h"
+#include "utilenums.h"
 
 using namespace std;
 
 
 DataExporter::DataExporter(bool includeComputeColumns) : _includeComputeColumns(includeComputeColumns) {
-	_defaultFileType = Utils::csv;
-    _allowedFileTypes.push_back(Utils::csv);
-    _allowedFileTypes.push_back(Utils::txt);
-    _allowedFileTypes.push_back(Utils::tsv);
+	_defaultFileType = Utils::FileType::csv;
+	_allowedFileTypes.push_back(Utils::FileType::csv);
+	_allowedFileTypes.push_back(Utils::FileType::txt);
+	_allowedFileTypes.push_back(Utils::FileType::tsv);
 }
 
-void DataExporter::saveDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
+void DataExporter::saveDataSet(const std::string &path, boost::function<void(int)> progressCallback)
 {
-	progressCallback("Export Data Set", 0);
+	progressCallback(0);
 
 	boost::nowide::ofstream outfile(path.c_str(), ios::out);
 
@@ -43,7 +44,7 @@ void DataExporter::saveDataSet(const std::string &path, boost::function<void (co
 	outfile.flush();
 	outfile.close();
 
-	progressCallback("Export Data Set", 100);
+	progressCallback(100);
 }
 
 

@@ -29,7 +29,7 @@ public:
 	CSVImporter();
 
 protected:
-	ImportDataSet* loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback) override;
+	ImportDataSet* loadFile(const std::string &locator, boost::function<void(int)> progressCallback) override;
 
 private:
 	JASPTIMER_CLASS(CSVImporter);

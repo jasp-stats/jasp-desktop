@@ -28,7 +28,7 @@ CSVImporter::CSVImporter() : Importer()
 	DataSetPackage::pkg()->setIsArchive(false);
 }
 
-ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(const string &, int)> progressCallback)
+ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void(int)> progressCallback)
 {
 	JASPTIMER_RESUME(CSVImporter::loadFile);
 
@@ -96,7 +96,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, boost::function<void
 		progress = 50 * csv.pos() / csv.size();
 		if (progress != lastProgress)
 		{
-			progressCallback(fq(tr("Loading Data Set")), progress);
+			progressCallback(progress);
 			lastProgress = progress;
 		}
 

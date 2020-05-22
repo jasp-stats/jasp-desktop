@@ -32,18 +32,18 @@
 #include "tempfiles.h"
 #include "appinfo.h"
 #include "log.h"
-
+#include "utilenums.h"
 
 const Version JASPExporter::dataArchiveVersion = Version("1.0.2");
 const Version JASPExporter::jaspArchiveVersion = Version("3.1.0");
 
 
 JASPExporter::JASPExporter() {
-	_defaultFileType = Utils::jasp;
-    _allowedFileTypes.push_back(Utils::jasp);
+	_defaultFileType = Utils::FileType::jasp;
+	_allowedFileTypes.push_back(Utils::FileType::jasp);
 }
 
-void JASPExporter::saveDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPExporter::saveDataSet(const std::string &path, boost::function<void(int)> progressCallback)
 {
 	struct archive *a;
 
@@ -68,11 +68,11 @@ void JASPExporter::saveDataSet(const std::string &path, boost::function<void (co
 
 	errorCode = archive_write_free(a);
 
-	progressCallback("Saving Data Set", 100);
+	progressCallback(100);
 }
 
 
-void JASPExporter::saveDataArchive(archive *a, boost::function<void (const std::string &, int)> progressCallback)
+void JASPExporter::saveDataArchive(archive *a, boost::function<void(int)> progressCallback)
 {
 	DataSetPackage * package = DataSetPackage::pkg();
 
@@ -136,7 +136,7 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void (const std::
 		progress = 49 * int(i / columnCount);
 		if (progress != lastProgress)
 		{
-			progressCallback("Saving Meta Data", progress);
+			progressCallback(progress);
 			lastProgress = progress;
 		}
 	}
@@ -199,7 +199,7 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void (const std::
 		progress = 49 + 50 * int(i / columnCount);
 		if (progress != lastProgress)
 		{
-			progressCallback("Saving Data Set", progress);
+			progressCallback(progress);
 			lastProgress = progress;
 		}
 	}
@@ -225,7 +225,7 @@ void JASPExporter::saveDataArchive(archive *a, boost::function<void (const std::
 
 }
 
-void JASPExporter::saveJASPArchive(archive *a, boost::function<void (const std::string &, int)>)
+void JASPExporter::saveJASPArchive(archive *a, boost::function<void(int)>)
 {
 	if (DataSetPackage::pkg()->hasAnalyses())
 	{
