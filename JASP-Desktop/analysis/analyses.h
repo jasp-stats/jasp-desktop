@@ -28,6 +28,7 @@
 #include <QMap>
 #include <QAbstractListModel>
 #include <QFileSystemWatcher>
+#include <sstream>
 
 class RibbonModel;
 
@@ -57,22 +58,22 @@ public:
 						Analyses();
 	static Analyses *	analyses() { return _singleton; }
 
-	Analysis*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
-	Analysis*	create(const QString &module, const QString &name, const QString& qml, const QString &title, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
-	Analysis*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true, std::string title = "", std::string moduleVersion = "", Json::Value *options = nullptr);
+	Analysis	*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
+	Analysis	*	create(const QString &module, const QString &name, const QString& qml, const QString &title, size_t id, const Version &version, Json::Value *options = nullptr, Analysis::Status status = Analysis::Initializing, bool notifyAll = true);
+	Analysis	*	create(Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Initializing, bool notifyAll = true, std::string title = "", std::string moduleVersion = "", Json::Value *options = nullptr);
 
-	Analysis*	create(const QString &module, const QString &name, const QString& qml, const QString &title)	{ return create(module, name, qml, title, _nextId++, AppInfo::version);		}
-	Analysis*	create(Modules::AnalysisEntry * analysisEntry)								{ return create(analysisEntry, _nextId++);						}
+	Analysis	*	create(const QString &module, const QString &name, const QString& qml, const QString &title)	{ return create(module, name, qml, title, _nextId++, AppInfo::version);		}
+	Analysis	*	create(Modules::AnalysisEntry * analysisEntry)													{ return create(analysisEntry, _nextId++);						}
 
-	Analysis*	get(size_t id) const { return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
-	void		clear();
-	void		reload(Analysis* analysis, bool logProblem);
-	
-	bool		allFresh() const;
+	Analysis	*	operator[](size_t index)	{ return _analysisMap[_orderedIds[index]]; }
+	Analysis	*	get(size_t id) const		{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
 
-	void		setAnalysesUserData(Json::Value userData);
+	void			clear();
+	void			reload(Analysis* analysis, bool logProblem);
 
-
+	bool			allFresh() const;
+	void			setAnalysesUserData(Json::Value userData);
+	void			loadAnalysesFromDatasetPackage(bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel);
 
 	///Applies function to some or all analyses, if applyThis returns false it stops processing.
 	void		applyToSome(std::function<bool(Analysis *analysis)> applyThis);

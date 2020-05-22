@@ -1,6 +1,8 @@
 'use strict'
 
 var jasp = null;
+var scrollAtAll = true;
+
 $(document).ready(function () {
 	var d		= new Date();
 	var month	= d.getMonth();
@@ -174,8 +176,12 @@ $(document).ready(function () {
 	window.getAllUserData = function ()				{ jasp.setAllUserDataFromJavascript(JSON.stringify(analyses.getAllUserData()))	}
 	window.getResultsMeta = function ()				{ jasp.setResultsMetaFromJavascript(JSON.stringify(analyses.getResultsMeta()))	}
 	window.setResultsMeta = function (resultsMeta)	{ analyses.setResultsMeta(resultsMeta);											}
+	window.setScrollAtAll = function (scrollOrNot)  { scrollAtAll = scrollOrNot;													}
 
 	window.scrollIntoView = function (item, complete) {
+
+		if(!scrollAtAll)
+			return;
 
 		var itemTop			= item.offset().top
 		var itemBottom		= itemTop + item.height() + parseInt(item.css('marginBottom')) + parseInt(item.css('marginTop'))
@@ -196,7 +202,15 @@ $(document).ready(function () {
 		}
 	}
 
-	window.scrollToTopView = function (item) {		$("html, body").animate({ scrollTop: item.offset().top  }, { duration: 'slow', easing: 'swing' }); }
+	window.scrollToTopView = function (item)
+	{
+		console.log("window.scrollToTopView called and jasp.scrollAtAll: " + (jasp.scrollAtAll === undefined ? "undefined" : jasp.scrollAtAll ? "true" : "false"))
+
+		if(!scrollAtAll)
+			return;
+
+		$("html, body").animate({ scrollTop: item.offset().top  }, { duration: 'slow', easing: 'swing' });
+	}
 
 	window.slideAlpha = function (item, time, cssProperties, targetAlphas, divisions, clearStyleOnZero, completeCallback) {
 

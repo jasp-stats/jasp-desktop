@@ -230,8 +230,8 @@ void MainWindow::makeConnections()
 
 	connect(_package,				&DataSetPackage::refreshAnalysesWithColumn,			_analyses,				&Analyses::refreshAnalysesUsingColumn,						Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::datasetChanged,					_analyses,				&Analyses::refreshAnalysesUsingColumns,						Qt::QueuedConnection);
-	connect(_package,				&DataSetPackage::datasetChanged,					_filterModel,			&FilterModel::datasetChanged,									Qt::QueuedConnection);
-	connect(_package,				&DataSetPackage::datasetChanged,					_computedColumnsModel,	&ComputedColumnsModel::datasetChanged,							Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::datasetChanged,					_filterModel,			&FilterModel::datasetChanged,								Qt::QueuedConnection);
+	connect(_package,				&DataSetPackage::datasetChanged,					_computedColumnsModel,	&ComputedColumnsModel::datasetChanged,						Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
 	connect(_package,				&DataSetPackage::windowTitleChanged,				this,					&MainWindow::windowTitleChanged								);
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnsModel::recomputeColumn						);
@@ -1027,73 +1027,12 @@ void MainWindow::populateUIfromDataSet()
 	bool errorFound = false;
 	stringstream errorMsg;
 
-	if (_package->hasAnalyses())
-	{
-		int				corruptAnalyses = 0;
-		stringstream	corruptionStrings;
-		Analysis	*	currentAnalysis = nullptr;
+	_resultsJsInterface->setScrollAtAll(false);
 
-		//This really should all be moved to Analyses!
+	_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);
 
-		Json::Value analysesData = _package->analysesData();
-		if (analysesData.isNull())
-		{
-			errorFound = true;
-			errorMsg << "An error has been detected and analyses could not be loaded.";
-		}
-		else
-		{
-			Json::Value analysesDataList = analysesData;
-			if (!analysesData.isArray())
-			{
-				analysesDataList = analysesData.get("analyses", Json::arrayValue);
-				Json::Value meta = analysesData.get("meta",		Json::nullValue);
-
-				if (!meta.isNull())
-				{
-					QString results = tq(analysesData["meta"].toStyledString());
-					_analyses->resultsMetaChanged(results);
-					_resultsJsInterface->setResultsMeta(results);
-				}
-			}
-
-			JASPTIMER_START(MainWindow::populateUIfromDataSet for analysisData : analysesDataList);
-
-
-			//There is no point trying to show progress here because qml is not updated while this function runs...
-			for (Json::Value & analysisData : analysesDataList)
-			{
-				try
-				{
-					currentAnalysis = _analyses->createFromJaspFileEntry(analysisData, _ribbonModel);
-				}
-				catch (Modules::ModuleException modProb)
-				{
-					//Maybe show a nicer messagebox?
-					errorFound = true;
-					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << modProb.what();
-				}
-				catch (runtime_error & e)
-				{
-					errorFound = true;
-					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
-				}
-				catch (exception & e)
-				{
-					errorFound = true;
-					corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
-				}
-			}
-
-			JASPTIMER_STOP(MainWindow::populateUIfromDataSet for analysisData : analysesDataList);
-		}
-
-		if (corruptAnalyses == 1)			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
-		else if (corruptAnalyses > 1)		errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
-
-		if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
-			emit currentAnalysis->expandAnalysis();
-	}
+	if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
+		emit (*_analyses)[0]->expandAnalysis(); //Show options for only analysis
 
 	bool hasAnalyses = _analyses->count() > 0;
 
@@ -1113,6 +1052,8 @@ void MainWindow::populateUIfromDataSet()
 
 	_package->setLoaded();
 	checkUsedModules();
+
+	_resultsJsInterface->setScrollAtAll(true);
 }
 
 void MainWindow::checkUsedModules()

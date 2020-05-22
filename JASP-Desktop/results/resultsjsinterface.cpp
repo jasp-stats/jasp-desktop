@@ -81,6 +81,15 @@ void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 	}
 }
 
+void ResultsJsInterface::setScrollAtAll(bool scrollAtAll)
+{
+	if (_scrollAtAll == scrollAtAll)
+		return;
+
+	_scrollAtAll = scrollAtAll;
+	emit scrollAtAllChanged(_scrollAtAll);
+}
+
 void ResultsJsInterface::purgeClipboard()
 {
 	TempFiles::purgeClipboard();
