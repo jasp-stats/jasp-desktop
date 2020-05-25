@@ -28,7 +28,7 @@ ResultExporter::ResultExporter()
 	_defaultFileType = Utils::FileType::html;
 	_allowedFileTypes.push_back(Utils::FileType::html);
 #ifdef JASP_DEBUG
-	_allowedFileTypes.push_back(Utils::FileType::jasp::pdf);
+	_allowedFileTypes.push_back(Utils::FileType::pdf);
 #endif
 }
 
