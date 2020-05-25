@@ -4,8 +4,8 @@
 
 using namespace std;
 
-ReadStatImportColumn::ReadStatImportColumn(ImportDataSet* importDataSet, string name, std::string labelsID, columnType columnType)
-	: ImportColumn(importDataSet, name), _labelsID(labelsID), _type(columnType)
+ReadStatImportColumn::ReadStatImportColumn(readstat_variable_t * readstat_var, ImportDataSet* importDataSet, string name, std::string labelsID, columnType columnType)
+	: ImportColumn(importDataSet, name), _readstatVariable(readstat_var), _labelsID(labelsID), _type(columnType)
 {}
 
 ReadStatImportColumn::~ReadStatImportColumn()
@@ -435,11 +435,30 @@ std::string  ReadStatImportColumn::missingValueString()	const
 	return Utils::emptyValue;
 }
 
+std::string ReadStatImportColumn::readstatValueToString(const readstat_value_t & value)
+{
+	readstat_type_t	type	= readstat_value_type(value);
+
+	switch(type)
+	{
+	case READSTAT_TYPE_STRING:		return					(			readstat_string_value(value)	);
+	case READSTAT_TYPE_INT8:		return	std::to_string	(int(		readstat_int8_value(value))		);
+	case READSTAT_TYPE_INT16:		return	std::to_string	(int(		readstat_int16_value(value))	);
+	case READSTAT_TYPE_INT32:		return	std::to_string	(int(		readstat_int32_value(value))	);
+	case READSTAT_TYPE_FLOAT:		return	std::to_string	(double(	readstat_float_value(value))	);
+	case READSTAT_TYPE_DOUBLE:		return	std::to_string	(			readstat_double_value(value)	);
+	case READSTAT_TYPE_STRING_REF:	throw	std::runtime_error("File contains string references and we do not support this.");
+	}
+
+	return "???";
+}
+
 void ReadStatImportColumn::addValue(const readstat_value_t & value)
 {
-	readstat_type_t			type = readstat_value_type(value);
+	readstat_type_t	type	= readstat_value_type(value);
+	bool			missing	= _readstatVariable ? readstat_value_is_missing(value, _readstatVariable) : readstat_value_is_system_missing(value);
 
-	if (!readstat_value_is_system_missing(value))
+	if (!missing)
 		switch(type)
 		{
 		case READSTAT_TYPE_STRING:		addValue(			readstat_string_value(value)	);	return;
@@ -450,8 +469,12 @@ void ReadStatImportColumn::addValue(const readstat_value_t & value)
 		case READSTAT_TYPE_DOUBLE:		addValue(			readstat_double_value(value)	);	return;
 		case READSTAT_TYPE_STRING_REF:	throw std::runtime_error("File contains string references and we do not support this.");
 		}
-
-	addMissingValue();
+	else
+	{
+		if(!readstat_value_is_system_missing(value))
+			Log::log() << "Column '" << _name << "' has non-system missing value: '" << readstatValueToString(value) << "' dropping the value." << std::endl;
+		addMissingValue();
+	}
 }
 
 void ReadStatImportColumn::tryNominalMinusText()

@@ -5,11 +5,13 @@
 #include "readstat.h"
 #include "../importcolumn.h"
 
+
+
 class ReadStatImportColumn : public ImportColumn
 {
 public:
 
-				ReadStatImportColumn(ImportDataSet* importDataSet, std::string name, std::string labelsID, columnType columnType = columnType::unknown);
+				ReadStatImportColumn(readstat_variable_t * readstat_var, ImportDataSet* importDataSet, std::string name, std::string labelsID, columnType columnType = columnType::unknown);
 				~ReadStatImportColumn()							override;
 
 	size_t						size()									const	override;
@@ -40,7 +42,8 @@ public:
 	void						setType(columnType newType);
 	bool						canConvertToType(columnType newType);
 
-	std::string					valueAsString(size_t row)	const;
+			std::string			valueAsString(size_t row)	const;
+	static	std::string			readstatValueToString(const readstat_value_t & val);
 
 	const std::vector<int>					&	ints()			const { return _ints;		}
 	const std::vector<double>				&	doubles()		const { return _doubles;	}
@@ -52,6 +55,7 @@ public:
 	void						tryNominalMinusText();
 
 private:
+	readstat_variable_t		*	_readstatVariable = nullptr;
 	std::string					_labelsID;
 	columnType					_type;
 	std::vector<int>			_ints;
