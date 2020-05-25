@@ -20,6 +20,7 @@ Group	           1.0 GroupBox.qml
 GroupBox            1.0 GroupBox.qml
 IntegerField         1.0 IntegerField.qml
 JASPControl           1.0 JASPControl.qml
+TabView                1.0 TabView.qml
 JASPGridControl        1.0 JASPGridControl.qml
 JASPGridViewControl    1.0 JASPGridViewControl.qml
 JASPDataView           1.0 JASPDataView.qml

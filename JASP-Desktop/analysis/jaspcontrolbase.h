@@ -52,6 +52,7 @@ public:
 		, FactorsForm
 		, ComponentsList
 		, GroupBox
+		, TabView
 	};
 
 	// Be careful not to reuse a name in a enum type: in QML, they are mixed up with a 'JASP' prefix: JASP.DropNone or JASP.None

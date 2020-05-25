@@ -34,6 +34,7 @@ public:
 	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, JASPControlBase::AssignType assignOption = JASPControlBase::AssignType::AssignDefault)	override;
 	const Terms&	terms(const QString& what = QString())															const	override;
 
+	virtual void	changeTerm(int index, const QString& name);
 
 public slots:
 	virtual void availableTermsChanged(const Terms* termsToAdd, const Terms* termsToRemove)							override;

@@ -100,7 +100,7 @@ Terms ListModelTermsAssigned::addTerms(const Terms& terms, int dropItemIndex, JA
 
 	_terms.set(newTerms);
 
-	endResetModel();	
+	endResetModel();
 
 	emit modelChanged(&terms, &_tempTermsToSendBack);
 	
@@ -126,3 +126,21 @@ const Terms &ListModelTermsAssigned::terms(const QString &what) const
 	else
 		return ListModelAssignedInterface::terms(what);
 }
+
+void ListModelTermsAssigned::changeTerm(int index, const QString& name)
+{
+	QString oldName = _terms[size_t(index)].asQString();
+	if (oldName != name)
+	{
+		_rowControlsMap[name] = _rowControlsMap[oldName];
+		_rowControlsOptions[name] = _rowControlsOptions[oldName];
+		_rowControlsMap.remove(oldName);
+		_rowControlsOptions.remove(oldName);
+		_terms.replace(index, Term(name));
+
+		emit modelChanged();
+		QModelIndex modelIndex = ListModelTermsAssigned::index(index, 0);
+		emit dataChanged(modelIndex, modelIndex);
+	}
+}
+
