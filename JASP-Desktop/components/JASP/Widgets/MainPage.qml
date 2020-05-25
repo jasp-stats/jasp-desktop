@@ -184,6 +184,7 @@ Item
 				{
 					target:					resultsJsInterface
 					onRunJavaScript:		resultsView.runJavaScript(js)
+					onScrollAtAllChanged:	resultsView.runJavaScript("window.setScrollAtAll("+(scrollAtAll ? "true" : "false")+")");
 				}
 
 				webChannel.registeredObjects:	[ resultsJsInterfaceInterface ]
@@ -197,7 +198,7 @@ Item
 						runJavaScript("window.setAnalysesTitle(\"" + resultsString + "\");");
 				}
 
-				Item
+				QtObject
 				{
 					id:				resultsJsInterfaceInterface
 					WebChannel.id:	"jasp"

@@ -35,86 +35,88 @@ class ResultsJsInterface : public QObject
 	Q_PROPERTY(QString			resultsPageUrl	READ resultsPageUrl	WRITE setResultsPageUrl	NOTIFY resultsPageUrlChanged	)
 	Q_PROPERTY(double			zoom			READ zoom			WRITE setZoom			NOTIFY zoomChanged				)
 	Q_PROPERTY(bool				resultsLoaded	READ resultsLoaded	WRITE setResultsLoaded	NOTIFY resultsLoadedChanged		)
-
+	Q_PROPERTY(bool				scrollAtAll		READ scrollAtAll	WRITE setScrollAtAll	NOTIFY scrollAtAllChanged		)
 public:
 	explicit ResultsJsInterface(QObject *parent = 0);
 
-	void setStatus(Analysis *analysis);
-	void changeTitle(Analysis *analysis);
-	void showAnalysis(int id);
-	void analysisChanged(Analysis *analysis);
-	void setResultsMeta(QString str);
+	void setStatus(			Analysis *	analysis);
+	void changeTitle(		Analysis *	analysis);
+	void analysisChanged(	Analysis *	analysis);
+	void overwriteUserdata(	Analysis *	analysis);
+	void showAnalysis(		int			id);
+	void setResultsMeta(	QString		str);
 	void unselect();
 	void showInstruction();
 	void exportPreviewHTML();
 	void exportHTML();
 	void resetResults();
-	void overwriteUserdata(Analysis *analysis);
 
 	QString			resultsPageUrl()	const { return _resultsPageUrl;	}
 	double			zoom()				const { return _webEngineZoom;	}
 	bool			resultsLoaded()		const { return _resultsLoaded;	}
+	bool			scrollAtAll()		const {	return _scrollAtAll;	}
 
 	Q_INVOKABLE void purgeClipboard();
 	Q_INVOKABLE void analysisEditImage(int id, QString options);
 
 	//Callable from javascript through resultsJsInterfaceInterface...
-
-
 signals:
 	Q_INVOKABLE void openFileTab();
 	Q_INVOKABLE void saveTextToFile(const QString &filename, const QString &data);
 	Q_INVOKABLE void analysisUnselected();
-	Q_INVOKABLE void analysisChangedDownstream(int id, QString options);
-	Q_INVOKABLE void analysisSaveImage(int id, QString options);
-				void analysisResizeImage(int id, QString options);
-				void showPlotEditor(int id, QString options);
-	Q_INVOKABLE void analysisSelected(int id);
-	Q_INVOKABLE void analysisTitleChangedInResults(int id, QString title);
-	Q_INVOKABLE void removeAnalysisRequest(int id);
+	Q_INVOKABLE void analysisChangedDownstream(		int id, QString options);
+	Q_INVOKABLE void analysisSaveImage(				int id, QString options);
+				void analysisResizeImage(			int id, QString options);
+				void showPlotEditor(				int id, QString options);
+	Q_INVOKABLE void analysisSelected(				int id);
+	Q_INVOKABLE void analysisTitleChangedInResults(	int id, QString title);
+	Q_INVOKABLE void removeAnalysisRequest(			int id);
+	Q_INVOKABLE void duplicateAnalysis(				int id);
+	Q_INVOKABLE void showDependenciesInAnalysis(	int id, QString optionName);
 	Q_INVOKABLE void packageModified();
 	Q_INVOKABLE void refreshAllAnalyses();
 	Q_INVOKABLE void removeAllAnalyses();
-	Q_INVOKABLE void duplicateAnalysis(int id);
-	Q_INVOKABLE void showDependenciesInAnalysis(int analysis_id, QString optionName);
 
 public slots:
-	void setZoom(double zoom);
-	void resultsDocumentChanged()				{ emit packageModified(); }
-	void saveTempImage(int id, QString path, QByteArray data);
-	void pushImageToClipboard(const QByteArray &base64, const QString &html);
-	void pushToClipboard(const QString &mimeType, const QString &data, const QString &html);
-	void displayMessageFromResults(QString path);
-	void getImageInBase64(int id, const QString &path);
-	void setAllUserDataFromJavascript(QString json);
-	void setResultsMetaFromJavascript(QString json);
-	void removeAnalysis(Analysis *analysis);
+	void resultsDocumentChanged()		{ emit packageModified(); }
+	void setZoom(						double			zoom);
+	void saveTempImage(					int				id,			QString path,			QByteArray data);
+	void getImageInBase64(				int				id,			const QString & path);
+	void pushImageToClipboard(	const	QByteArray	&	base64,		const QString & html);
+	void pushToClipboard(		const	QString		&	mimeType,	const QString & data,	const QString &html);
+	void displayMessageFromResults(		QString			path);
+	void setAllUserDataFromJavascript(	QString			json);
+	void setResultsMetaFromJavascript(	QString			json);
+	void removeAnalysis(				Analysis	*	analysis);
 	void removeAnalyses();
-	void moveAnalyses(quint64 fromId, quint64 toId);
-	void setThemeCss(QString themeName);
+	void moveAnalyses(					quint64 fromId,				quint64 toId);
+	void setThemeCss(					QString themeName);
 
 //end callables
 
 
 signals:
-	void resultsMetaChanged(QString resultsMeta);
-	void allUserDataChanged(QString userData);
-	void resultsPageUrlChanged(QUrl resultsPageUrl);
-	void runJavaScript(QString js);
+	void resultsMetaChanged(	QString resultsMeta);
+	void allUserDataChanged(	QString userData);
+	void resultsPageUrlChanged(	QUrl	resultsPageUrl);
+	void runJavaScript(			QString js);
 	void zoomChanged();
 	void resultsPageLoadedSignal();
 
 	void resultsLoadedChanged(bool resultsLoaded);
 
+	void scrollAtAllChanged(bool scrollAtAll);
+
 public slots:
-	void setExactPValuesHandler(bool exact);
-	void setFixDecimalsHandler(QString numDecimals);
-	void analysisImageEditedHandler(Analysis *analysis);
-	void cancelImageEdit(int id);
-	void exportSelected(const QString &filename);
-	void setResultsPageUrl(QString resultsPageUrl);
+	void setExactPValuesHandler(	bool			exact);
+	void setFixDecimalsHandler(		QString			numDecimals);
+	void analysisImageEditedHandler(Analysis	*	analysis);
+	void cancelImageEdit(			int				id);
+	void exportSelected(	const	QString		&	filename);
+	void setResultsPageUrl(			QString			resultsPageUrl);
 	void setZoomInWebEngine();
-	void setResultsLoaded(bool resultsLoaded);
+	void setResultsLoaded(			bool			resultsLoaded);
+	void setScrollAtAll(			bool			scrollAtAll);
 
 private:
 	void	setGlobalJsValues();
@@ -124,9 +126,10 @@ private slots:
 	void menuHidding();
 
 private:
-	double			_webEngineZoom = 1.0;
+	double			_webEngineZoom	= 1.0;
 	QString			_resultsPageUrl = "qrc:///html/index.html";
-	bool			_resultsLoaded = false;
+	bool			_resultsLoaded	= false,
+					_scrollAtAll	= true;
 };
 
 
