@@ -44,7 +44,7 @@ public:
 signals:
 	void beginLoad(FileEvent*);
 	void beginSave(FileEvent*);
-	void progress(const QString &status, int progress);
+	void progress(QString status, int progress);
 	void beginFileUpload(QString nodePath, QString sourcePath);
 	bool checkDoSync();
 
@@ -59,7 +59,7 @@ private:
 
 	QString fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm);
 
-	void progressHandler(std::string status, int progress);
+	void progressHandler(int progress);
 
 
 

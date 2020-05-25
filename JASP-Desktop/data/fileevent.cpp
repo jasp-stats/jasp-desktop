@@ -22,6 +22,7 @@
 #include "exporters/jaspexporter.h"
 
 #include <QTimer>
+#include "utilities/qutils.h"
 
 FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	: QObject(parent), _operation(fileMode)
@@ -54,10 +55,10 @@ bool FileEvent::setPath(const QString &path)
 
 	if(_exporter != nullptr)
 	{
-		if (_type == Utils::unknown)
+		if (_type == Utils::FileType::unknown)
 		{
 			_type = _exporter->getDefaultFileType();
-			_path.append('.' + QString(Utils::getFileTypeString(_type)));
+			_path.append('.' + FileTypeBaseToQString(_type));
 		}
 		else if(!_exporter->isFileTypeAllowed(_type)) //Because an exporter should always support it's own default
 		{
@@ -73,7 +74,7 @@ bool FileEvent::setPath(const QString &path)
 					else									_last_error.append(", ");
 				}
 
-				_last_error.append(Utils::getFileTypeString(allowedFileTypes[i]));
+				_last_error.append(FileTypeBaseToQString(allowedFileTypes[i]));
 			}
 
 			return false;
@@ -99,5 +100,39 @@ void FileEvent::chain(FileEvent *event)
 {
 	_chainedTo = event;
 	connect(event, &FileEvent::completed, this, &FileEvent::chainedComplete);
+}
+
+QString FileEvent::getProgressMsg() const
+{
+	//jasp = 0, html, csv, txt, tsv, sav, ods, pdf, sas7bdat, sas7bcat, por, xpt, empty, unknown
+	switch(_operation)
+	{
+	case FileEvent::FileOpen:
+		switch(_type)
+		{
+		case Utils::FileType::csv:
+		case Utils::FileType::txt:
+		case Utils::FileType::tsv:
+		case Utils::FileType::ods:		return tr("Importing Data from %1").arg(FileTypeBaseToQString(_type).toUpper());
+		case Utils::FileType::sav:
+		case Utils::FileType::por:		return tr("Importing SPSS File");
+		case Utils::FileType::xpt:
+		case Utils::FileType::sas7bdat:
+		case Utils::FileType::sas7bcat:	return tr("Importing SAS File");
+		case Utils::FileType::dta:		return tr("Importing STATA File");
+		case Utils::FileType::jasp:		return tr("Loading JASP File");
+		default:						return tr("Loading File");
+		}
+		break;
+
+	case FileEvent::FileSave:			return tr("Saving JASP File");
+	case FileEvent::FileExportResults:	return tr("Exporting Results");
+	case FileEvent::FileExportData:
+	case FileEvent::FileGenerateData:	return tr("Exporting Data");
+	case FileEvent::FileSyncData:		return tr("Synchronizing Data");
+	default:							break;
+	}
+
+	return tr("Processing File"); //This will never show up on screen right?
 }
 

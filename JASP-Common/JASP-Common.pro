@@ -36,6 +36,7 @@ SOURCES += \
 	r_functionwhitelist.cpp \
 	sharedmemory.cpp \
 	tempfiles.cpp \
+    utilenums.cpp \
 	utils.cpp \
 	version.cpp \
   enginedefinitions.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
 	r_functionwhitelist.h \
 	sharedmemory.h \
 	tempfiles.h \
+    utilenums.h \
 	utils.h \
 	version.h \
   jsonredirect.h \

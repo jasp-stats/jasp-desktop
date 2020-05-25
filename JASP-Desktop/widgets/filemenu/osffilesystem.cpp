@@ -291,18 +291,18 @@ void OSFFileSystem::gotFilesAndFolders()
 
 	if (reply->error() == QNetworkReply::NoError)
 	{
-		QByteArray data = reply->readAll();
-		QString dataString = (QString) data;
-		QString date_created = "";
-		QString date_modified = "";
-		QDateTime created;
-		QDateTime modified;
+		QByteArray	data			= reply->readAll();
+		QString		dataString		= data,
+					date_created	= "",
+					date_modified	= "";
+		QDateTime	created,
+					modified;
 
 		QJsonParseError error;
-		QJsonDocument doc = QJsonDocument::fromJson(dataString.toUtf8(), &error);
+		QJsonDocument	doc			= QJsonDocument::fromJson(dataString.toUtf8(), &error);
 
-		QJsonObject json = doc.object();
-		QJsonArray dataArray = json.value("data").toArray();
+		QJsonObject		json		= doc.object();
+		QJsonArray		dataArray	= json.value("data").toArray();
 
 		if ( dataArray.size() > 0 && !_isPaginationCall)
 			_entries.clear();
@@ -314,8 +314,8 @@ void OSFFileSystem::gotFilesAndFolders()
 
 			nodeData.isComponent = nodeObject.value("type").toString() == "nodes";
 
-			FileSystemEntry::EntryType entryType = FileSystemEntry::Other;
-			QJsonObject attrObj = nodeObject.value("attributes").toObject();
+			FileSystemEntry::EntryType entryType	= FileSystemEntry::Other;
+			QJsonObject attrObj						= nodeObject.value("attributes").toObject();
 
 			if (nodeData.isComponent == false)
 			{
@@ -323,28 +323,30 @@ void OSFFileSystem::gotFilesAndFolders()
 				if (kind != "folder" && kind != "file")
 					continue;
 
-				date_created = attrObj.value("date_created").toString();
-				date_modified = attrObj.value("date_modified").toString();
+				date_created	= attrObj.value("date_created").toString();
+				date_modified	= attrObj.value("date_modified").toString();
 
 				modified = created = QDateTime();
-				if (date_modified!="") modified = osfJsonToDateTime(date_modified);
-				if (date_created!="") created = osfJsonToDateTime(date_created);
+
+				if (date_modified	!= "") modified = osfJsonToDateTime(date_modified);
+				if (date_created	!= "") created  = osfJsonToDateTime(date_created);
 
 				nodeData.name = attrObj.value("name").toString();
 
-				if (kind == "folder")
-					entryType = FileSystemEntry::Folder;
-				else if (nodeData.name.endsWith(".jasp", Qt::CaseInsensitive))
-					entryType = FileSystemEntry::JASP;
-				else if (nodeData.name.endsWith(".csv", Qt::CaseInsensitive) || nodeData.name.endsWith(".txt", Qt::CaseInsensitive) ||
-				         nodeData.name.endsWith(".tsv", Qt::CaseInsensitive))
-					entryType = FileSystemEntry::CSV;
-				else if (nodeData.name.endsWith(".html", Qt::CaseInsensitive) || nodeData.name.endsWith(".pdf", Qt::CaseInsensitive))
-					entryType = FileSystemEntry::Other;
-				else if (nodeData.name.endsWith(".spss", Qt::CaseInsensitive) || nodeData.name.endsWith(".sav", Qt::CaseInsensitive))
-					entryType = FileSystemEntry::SPSS;
-				else
-					continue;
+				auto endsWith = [&](QStringList exts)
+				{
+					for(QString ext : exts) if(nodeData.name.endsWith(ext, Qt::CaseInsensitive)) return true;
+					return false;
+				};
+
+				static const QStringList readStatFormats = {".sav", ".sas7bdat", ".sas7bcat", ".por", ".xpt", ".dta"};
+
+				if (kind == "folder")									entryType = FileSystemEntry::Folder;
+				else if (endsWith({".jasp"}))							entryType = FileSystemEntry::JASP;
+				else if (endsWith({".csv", ".txt", ".tsv", ".ods"})) 	entryType = FileSystemEntry::CSV;
+				else if (endsWith({".html", ".pdf"}))					entryType = FileSystemEntry::Other;
+				else if (endsWith(readStatFormats))						entryType = FileSystemEntry::ReadStat;
+				else													continue;
 			}
 			else
 			{
@@ -352,38 +354,36 @@ void OSFFileSystem::gotFilesAndFolders()
 				nodeData.name = attrObj.value("title").toString();
 			}
 
-			if (entryType == FileSystemEntry::Folder) {
-
+			if (entryType == FileSystemEntry::Folder)
+			{
 				nodeData.contentsPath = getRelationshipUrl(nodeObject, "files");
 				nodeData.childrenPath = getRelationshipUrl(nodeObject, "children");
 
 				QJsonObject topLinksObj = nodeObject.value("links").toObject();
 
-				if (nodeData.isComponent)
-					nodeData.nodePath = topLinksObj.value("self").toString();
-				else
-					nodeData.nodePath = topLinksObj.value("info").toString();
+				if (nodeData.isComponent)	nodeData.nodePath = topLinksObj.value("self").toString();
+				else						nodeData.nodePath = topLinksObj.value("info").toString();
 
-				nodeData.uploadPath = topLinksObj.value("upload").toString();
-				nodeData.isFolder = true;
+				nodeData.uploadPath			= topLinksObj.value("upload").toString();
+				nodeData.isFolder			= true;
 
-				nodeData.canCreateFolders = topLinksObj.contains("new_folder");
-				nodeData.canCreateFiles = topLinksObj.contains("upload");
+				nodeData.canCreateFolders	= topLinksObj.contains("new_folder");
+				nodeData.canCreateFiles		= topLinksObj.contains("upload");
 
 				if (nodeData.nodePath == "")
 					nodeData.nodePath = reply->url().toString() + "#folder://" + nodeData.name;
 			}
 			else
 			{
-				QJsonObject linksObj = nodeObject.value("links").toObject();
-				nodeData.isFolder = false;
+				QJsonObject linksObj		= nodeObject.value("links").toObject();
+				nodeData.isFolder			= false;
 
-				nodeData.uploadPath = linksObj.value("upload").toString();
-				nodeData.downloadPath = linksObj.value("download").toString();
-				nodeData.nodePath = linksObj.value("info").toString();
+				nodeData.uploadPath			= linksObj.value("upload").toString();
+				nodeData.downloadPath		= linksObj.value("download").toString();
+				nodeData.nodePath			= linksObj.value("info").toString();
 
-				nodeData.canCreateFolders = false;
-				nodeData.canCreateFiles = false;
+				nodeData.canCreateFolders	= false;
+				nodeData.canCreateFiles		= false;
 			}
 
 
@@ -433,9 +433,9 @@ QString OSFFileSystem::getRelationshipUrl(QJsonObject nodeObject, QString name)
 	if (relationshipsObj.contains(name) == false)
 		return "";
 
-	QJsonObject filesObj = relationshipsObj.value(name).toObject();
-	QJsonObject linksObj = filesObj.value("links").toObject();
-	QJsonObject relatedObj = linksObj.value("related").toObject();
+	QJsonObject filesObj	= relationshipsObj.value(name).toObject();
+	QJsonObject linksObj	= filesObj.value("links").toObject();
+	QJsonObject relatedObj	= linksObj.value("related").toObject();
 
 	return relatedObj.value("href").toString();
 }
@@ -448,11 +448,12 @@ OSFFileSystem::OnlineNodeData OSFFileSystem::getNodeData(QString key)
 QDateTime OSFFileSystem::osfJsonToDateTime(const QString &input)
 {
 	// JSON OSF modified file format is e.g. 2016-08-23T15:11:56.857000Z
-	QRegExp separator("(-|T|:|Z)");
+	QRegExp		separator("(-|T|:|Z)");
 	QStringList list = input.split(separator);
-	QDate date(list[0].toInt(),list[1].toInt(),list[2].toInt());
-	QTime time(list[3].toInt(),list[4].toInt(),static_cast<int>(list[5].toDouble()));
-	QDateTime datetime(date,time);
+	QDate		date(list[0].toInt(),list[1].toInt(),list[2].toInt());
+	QTime		time(list[3].toInt(),list[4].toInt(),static_cast<int>(list[5].toDouble()));
+	QDateTime	datetime(date,time);
+
 	return datetime;
 
 }

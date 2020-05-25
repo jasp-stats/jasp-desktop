@@ -38,7 +38,7 @@
 #include "resultstesting/compareresults.h"
 #include "log.h"
 
-void JASPImporter::loadDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPImporter::loadDataSet(const std::string &path, boost::function<void(int)> progressCallback)
 {	
 	JASPTIMER_RESUME(JASPImporter::loadDataSet INIT);
 
@@ -63,7 +63,7 @@ void JASPImporter::loadDataSet(const std::string &path, boost::function<void (co
 }
 
 
-void JASPImporter::loadDataArchive(const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPImporter::loadDataArchive(const std::string &path, boost::function<void(int)> progressCallback)
 {
 	if (DataSetPackage::pkg()->dataArchiveVersion().major == 1)
 		loadDataArchive_1_00(path, progressCallback);
@@ -71,7 +71,7 @@ void JASPImporter::loadDataArchive(const std::string &path, boost::function<void
 		throw std::runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }
 
-void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function<void(int)> progressCallback)
 {
 	JASPTIMER_SCOPE(JASPImporter::loadDataArchive_1_00);
 
@@ -161,7 +161,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 		progress = (33.0 * i) / columnCount;
 		if (progress != lastProgress)
 		{
-			progressCallback(fq(tr("Loading Data Set Description")), progress);
+			progressCallback(progress); //fq(tr("Loading Data Set Description")),
 			lastProgress = progress;
 		}
 
@@ -208,7 +208,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 			progress = 33.0 + ((33.0 * ((c * rowCount) + (r + 1))) / (columnCount * rowCount));
 			if (progress != lastProgress)
 			{
-				progressCallback(fq(tr("Loading Data Set")), progress);
+				progressCallback(progress); // fq(tr("Loading Data Set")),
 				lastProgress = progress;
 			}
 		}
@@ -269,7 +269,7 @@ void JASPImporter::loadDataArchive_1_00(const std::string &path, boost::function
 	}*/
 }
 
-void JASPImporter::loadJASPArchive(const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPImporter::loadJASPArchive(const std::string &path, boost::function<void(int)> progressCallback)
 {
 	if (DataSetPackage::pkg()->archiveVersion().major >= 1 && DataSetPackage::pkg()->archiveVersion().major <= 3) //2.x version have a different analyses.json structure but can be loaded using the 1_00 loader. 3.x adds computed columns
 		loadJASPArchive_1_00(path, progressCallback);
@@ -277,12 +277,12 @@ void JASPImporter::loadJASPArchive(const std::string &path, boost::function<void
 		throw std::runtime_error("The file version is not supported.\nPlease update to the latest version of JASP to view this file.");
 }
 
-void JASPImporter::loadJASPArchive_1_00(const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
+void JASPImporter::loadJASPArchive_1_00(const std::string &path, boost::function<void(int)> progressCallback)
 {
 	JASPTIMER_SCOPE(JASPImporter::loadJASPArchive_1_00 read analyses.json);
 	Json::Value analysesData;
 
-	progressCallback("Loading Analyses", 66);
+	progressCallback(66); // "Loading Analyses",
 
 	if (parseJsonEntry(analysesData, path, "analyses.json", false))
 	{
@@ -336,7 +336,7 @@ void JASPImporter::loadJASPArchive_1_00(const std::string &path, boost::function
 
 			JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 Create resource files);
 
-			progressCallback("Loading Analyses", 67 + int((33.0 / double(resources.size())) * ++resourceCounter));
+			progressCallback( 67 + int((33.0 / double(resources.size())) * ++resourceCounter));// "Loading Analyses",
 		}
 	}
 
@@ -346,7 +346,7 @@ void JASPImporter::loadJASPArchive_1_00(const std::string &path, boost::function
 	DataSetPackage::pkg()->setAnalysesData(analysesData);
 	JASPTIMER_STOP(JASPImporter::loadJASPArchive_1_00 packageData->setAnalysesData(analysesData));
 
-	progressCallback("Initializing Analyses & Results", 100);
+	progressCallback(100); //"Initializing Analyses & Results",
 }
 
 

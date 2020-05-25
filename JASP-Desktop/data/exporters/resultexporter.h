@@ -25,7 +25,7 @@ class ResultExporter: public Exporter
 
 public:
 	ResultExporter();
-	void saveDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback) OVERRIDE;
+	void saveDataSet(const std::string &path, boost::function<void (int)> progressCallback) OVERRIDE;
 
 	JASPTIMER_CLASS(ResultExporter);
 };

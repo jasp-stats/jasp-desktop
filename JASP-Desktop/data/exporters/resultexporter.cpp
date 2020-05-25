@@ -21,17 +21,18 @@
 #include <QFile>
 #include <QTextDocument>
 #include <QPrinter>
+#include "utilenums.h"
 
 ResultExporter::ResultExporter()
 {
-	_defaultFileType = Utils::html;
-    _allowedFileTypes.push_back(Utils::html);
+	_defaultFileType = Utils::FileType::html;
+	_allowedFileTypes.push_back(Utils::FileType::html);
 #ifdef JASP_DEBUG
-    _allowedFileTypes.push_back(Utils::pdf);
+	_allowedFileTypes.push_back(Utils::FileType::jasp::pdf);
 #endif
 }
 
-void ResultExporter::saveDataSet(const std::string &path, boost::function<void (const std::string &, int)> progressCallback)
+void ResultExporter::saveDataSet(const std::string &path, boost::function<void(int)> progressCallback)
 {
 
 	int maxSleepTime = 5000;
@@ -48,7 +49,7 @@ void ResultExporter::saveDataSet(const std::string &path, boost::function<void (
 	}
 
 
-	if (_currentFileType == Utils::pdf)
+	if (_currentFileType == Utils::FileType::pdf)
 	{
 		QString htmlContent = QString::fromStdString(DataSetPackage::pkg()->analysesHTML());
 
@@ -76,5 +77,5 @@ void ResultExporter::saveDataSet(const std::string &path, boost::function<void (
 		outfile.close();
 	}
 
-	progressCallback("Export Html Set", 100);
+	progressCallback(100);
 }

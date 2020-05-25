@@ -26,8 +26,8 @@
 class DataSetLoader
 {
 public:
-	static void loadPackage(const std::string & locator, const std::string & extension, boost::function<void (const std::string & stage, int progress)> progress = nullptr);
-	static void syncPackage(const std::string & locator, const std::string & extension, boost::function<void (const std::string & stage, int progress)> progress = nullptr);
+	static void loadPackage(const std::string & locator, const std::string & extension, boost::function<void (int progress)> progress = nullptr);
+	static void syncPackage(const std::string & locator, const std::string & extension, boost::function<void (int progress)> progress = nullptr);
 	static void freeDataSet(DataSet *dataSet);
 
 	static std::string getExtension(const std::string &locator, const std::string &extension);

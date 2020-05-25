@@ -119,7 +119,7 @@ void AsyncLoader::saveTask(FileEvent *event)
 		}
 
 		Exporter *exporter = event->exporter();
-		if (exporter)	exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+		if (exporter)	exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1));
 		else			throw runtime_error("No Exporter found!");
 
 		if ( ! Utils::renameOverwrite(fq(tempPath), fq(path)))
@@ -151,9 +151,9 @@ void AsyncLoader::saveTask(FileEvent *event)
 	}
 }
 
-void AsyncLoader::progressHandler(string status, int progress)
+void AsyncLoader::progressHandler(int progress)
 {
-	emit this->progress(QString::fromUtf8(status.c_str(), status.length()), progress);
+	emit this->progress(_currentEvent->getProgressMsg(), progress);
 }
 
 void AsyncLoader::setOnlineDataManager(OnlineDataManager *odm)
@@ -209,8 +209,8 @@ void AsyncLoader::loadPackage(QString id)
 			extension = _loader.getExtension(path, extension); //Because it might still be ""...
 
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
-					_loader.syncPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
-			else	_loader.loadPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1, _2));
+					_loader.syncPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
+			else	_loader.loadPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
 
 			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);
 

@@ -30,7 +30,7 @@ namespace ods
 {
 
 // Implmemtation of Inporter base class.
-ImportDataSet* ODSImporter::loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback)
+ImportDataSet* ODSImporter::loadFile(const std::string &locator, boost::function<void(int)> progressCallback)
 {
 	JASPTIMER_RESUME(ODSImporter::loadFile);
 
@@ -38,15 +38,15 @@ ImportDataSet* ODSImporter::loadFile(const std::string &locator, boost::function
 	ODSImportDataSet * result = new ODSImportDataSet(this);
 
 	// Check mnaifest for the contents file.
-	progressCallback("Reading ODS manifest.", 0);
+	progressCallback(0); //"Reading ODS manifest.",
 	readManifest(locator, result);
 
 	// Read the sheet contents.
-	progressCallback("Reading ODS contents.", 33);
+	progressCallback(33); // "Reading ODS contents.",
 	readContents(locator, result);
 
 	// Do post load processing:
-	progressCallback("Processing.", 60);
+	progressCallback(60); //"Processing.",
 	result->postLoadProcess();
 
 	// Build the dictionary for sync.

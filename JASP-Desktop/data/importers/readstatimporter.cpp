@@ -67,7 +67,7 @@ bool ReadStatImporter::extSupported(const std::string & ext)
 }
 
 
-ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback)
+ImportDataSet* ReadStatImporter::loadFile(const std::string &locator, boost::function<void(int)> progressCallback)
 {
 	ReadStatImportDataSet	*	data	= new ReadStatImportDataSet(this, progressCallback);
 	readstat_error_t			error	= READSTAT_OK;

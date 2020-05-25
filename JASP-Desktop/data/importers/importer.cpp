@@ -6,7 +6,7 @@
 
 Importer::~Importer() {}
 
-void Importer::loadDataSet(const std::string &locator, boost::function<void(const std::string &, int)> progressCallback)
+void Importer::loadDataSet(const std::string &locator, boost::function<void(int)> progressCallback)
 {
 	DataSetPackage::pkg()->beginLoadingData();
 
@@ -24,7 +24,7 @@ void Importer::loadDataSet(const std::string &locator, boost::function<void(cons
 		int colNo = 0;
 		for (ImportColumn *importColumn : *importDataSet)
 		{
-			progressCallback(fq(tr("Loading Data Set")), 50 + 50 * colNo / columnCount);
+			progressCallback(50 + 50 * colNo / columnCount);
 			initColumn(colNo, importColumn);
 			colNo++;
 		}
@@ -65,7 +65,7 @@ void Importer::initColumnWithStrings(QVariant colId, std::string newName, const 
 	storeInEmptyValues(newName, emptyValuesMap);
 }
 
-void Importer::syncDataSet(const std::string &locator, boost::function<void(const std::string &, int)> progress)
+void Importer::syncDataSet(const std::string &locator, boost::function<void(int)> progress)
 {
 	ImportDataSet *importDataSet	= loadFile(locator, progress);
 	bool rowCountChanged			= importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
