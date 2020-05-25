@@ -22,5 +22,6 @@ import QtQuick.Layouts 1.3
 
 ColumnLayout
 {
-	spacing: jaspTheme.rowGridSpacing
+	spacing:				jaspTheme.rowGridSpacing
+	Layout.alignment:		Qt.AlignTop | Qt.AlignLeft
 }

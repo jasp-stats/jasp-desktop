@@ -15,6 +15,7 @@ ExpanderButton   1.0 ExpanderButton.qml
 Section          1.0 ExpanderButton.qml
 Form             1.0 Form.qml
 GridLayout        1.0 GridLayout.qml
+RowLayout         1.0 RowLayout.qml
 Group	           1.0 GroupBox.qml
 GroupBox            1.0 GroupBox.qml
 IntegerField         1.0 IntegerField.qml
