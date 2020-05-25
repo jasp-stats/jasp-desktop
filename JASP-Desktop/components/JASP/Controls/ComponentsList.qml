@@ -47,15 +47,18 @@ JASPGridControl
 
 	MenuButton
 	{
-		id				: addIconItem
-		width			: height
-		radius			: height
-		visible			: showAddIcon && (maximumItems <= 0 || maximumItems > componentsList.count)
-		iconSource		: jaspTheme.iconPath + addIcon
-		onClicked		: addItem()
-		toolTip			: addTooltip
-		anchors.bottom	: parent.bottom
-		anchors.horizontalCenter: parent.horizontalCenter
+		id					: addIconItem
+		width				: height
+		radius				: height
+		visible				: showAddIcon && (maximumItems <= 0 || maximumItems > componentsList.count)
+		iconSource			: jaspTheme.iconPath + addIcon
+		onClicked			: addItem()
+		toolTip				: addTooltip
+		anchors
+		{
+			bottom			: parent.bottom
+			horizontalCenter: parent.horizontalCenter
+		}
 	}
 
 	Component
