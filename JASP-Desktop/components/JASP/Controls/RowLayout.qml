@@ -19,15 +19,8 @@
 import QtQuick 2.11
 import QtQuick.Layouts 1.3
 
-
-GridLayout
+RowLayout
 {
-	id:						gridLayout
-	rowSpacing:				jaspTheme.rowGridSpacing
-	columnSpacing:			jaspTheme.columnGridSpacing
-	columns:				2
-	Layout.minimumWidth:	parent.width
+	spacing:				jaspTheme.rowGridSpacing
 	Layout.alignment:		Qt.AlignTop | Qt.AlignLeft
-	
-	property int count:	children.length	
 }
