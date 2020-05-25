@@ -415,11 +415,17 @@ void BoundQMLTextInput::_setOptionValue(Option* option, QString& text)
 
 void BoundQMLTextInput::textChangedSlot()
 {
+	if (!isBound() && _inputType != TextInputType::FormulaType)
+		// In a TabView, if the name of the tab is edited and, before validating, a new tab is added, the model is first changed because of adding a tab,
+		// making possibly the QML item of the TextField invalid (as this TextField depends on the TabView model).
+		// But as this TextField is anyway not bound (_option is null), and is not a Formula, we don't need anyway to fetch the value of the item.
+		return;
+
 	_value = getItemProperty("value").toString();
 
 	if (_inputType == TextInputType::FormulaType)
 	{
-		// _formula might be empty (in TableView the FormulaType is not directly bound, and has it own model).
+		// _formula might be empty (in TableView the FormulaType is not directly bound, and has its own model).
 		if (!_formula || (_formula->value() != _value.toStdString()))
 		{
 			if (!_parseDefaultValue && _defaultValue == _value)

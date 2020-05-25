@@ -174,6 +174,7 @@ void AnalysisForm::_addControlWrapper(JASPControlWrapper* controlWrapper)
 	}
 	case JASPControlBase::ControlType::RepeatedMeasuresFactorsList:
 	case JASPControlBase::ControlType::InputListView:
+	case JASPControlBase::ControlType::TabView:
 	case JASPControlBase::ControlType::ComponentsList:
 	case JASPControlBase::ControlType::FactorsForm:
 	case JASPControlBase::ControlType::TableView:

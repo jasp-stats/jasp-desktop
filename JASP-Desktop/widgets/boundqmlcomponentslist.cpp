@@ -34,9 +34,10 @@ BoundQMLComponentsList::BoundQMLComponentsList(JASPControlBase *item)
 	setTermsAreNotVariables();
 	readModelProperty();
 
+	QQuickItem::connect(_item, SIGNAL(nameChanged(int, QString)), this, SLOT(nameChangedHandler(int, QString)));
 	QQuickItem::connect(_item, SIGNAL(valuesChanged()), this, SLOT(valuesChangedHandler()));
-	QQuickItem::connect(_item, SIGNAL(addRow()), this, SLOT(addRowHandler()));
-	QQuickItem::connect(_item, SIGNAL(removeRow(int)), this, SLOT(removeRowHandler(int)));
+	QQuickItem::connect(_item, SIGNAL(addItem()), this, SLOT(addItemHandler()));
+	QQuickItem::connect(_item, SIGNAL(removeItem(int)), this, SLOT(removeItemHandler(int)));
 }
 
 void BoundQMLComponentsList::bindTo(Option *option)
@@ -133,27 +134,46 @@ Option* BoundQMLComponentsList::createOption()
 	}
 	else
 	{
-		QVariant defaultValuesVar = getItemProperty("defaultValues");
-		QList<QVariant> defaultValues = defaultValuesVar.toList();
+		QString			defaultName			= getItemProperty("newItemName").toString();
+		QVariant		defaultValuesVar	= getItemProperty("defaultValues");
+		QList<QVariant> defaultValues		= defaultValuesVar.toList();
+		int				minimumItems		= getItemProperty("minimumItems").toInt();
+
+		while (defaultValues.length() < minimumItems)
+			defaultValues.push_back(defaultName);
+
+		QList<QString> keyValues;
+		QString keyName = tq(_optionKeyName);
 
 		for (const QVariant& defaultValue : defaultValues)
 		{
+			QVariantMap defaultValueMap = defaultValue.toMap();
 			Options* row = dynamic_cast<Options*>(templote->clone());
 			OptionVariables* optionVar = new OptionVariable();
-			optionVar->setValue(_incrementCounter().toStdString());
+
+			QString keyValue = (defaultValue.type() == QVariant::String) ? defaultValue.toString() : defaultName;
+			if (defaultValueMap.contains(keyName))
+				keyValue = defaultValueMap[keyName].toString();
+
+			keyValue = _makeUnique(keyValue, keyValues);
+			keyValues.push_back(keyValue);
+
+			optionVar->setValue(keyValue.toStdString());
 			row->add(_optionKeyName, optionVar);
 
-			QVariantMap defaultValueMap = defaultValue.toMap();
 			QMapIterator<QString, QVariant> it(defaultValueMap);
 			while (it.hasNext())
 			{
 				it.next();
 				QString name = it.key();
-				QVariant value = it.value();
 
-				Option* option = row->get(name.toStdString());
-				if (option)		option->set(value.toJsonValue().toString().toStdString());
-				else			Log::log() << "Default value with name " << name << " is unknown in the component" << std::endl;
+				if (name != keyName)
+				{
+					QVariant value = it.value();
+					Option* option = row->get(fq(name));
+					if (option)		option->set(value.toJsonValue().toString().toStdString());
+					else			Log::log() << "Default value with name " << name << " is unknown in the ComponentsList " << this->name() << std::endl;
+				}
 			}
 			allOptions.push_back(row);
 		}
@@ -228,21 +248,15 @@ void BoundQMLComponentsList::valuesChangedHandler()
 	modelChangedHandler();
 }
 
-QString BoundQMLComponentsList::_incrementCounter()
-{
-	static int counter = 0;
-	counter++;
-	return QString::number(counter);
-}
-
-void BoundQMLComponentsList::addRowHandler()
+void BoundQMLComponentsList::addItemHandler()
 {
 	Terms newTerms;
-	newTerms.add(_incrementCounter());
+	newTerms.add(_makeUnique(getItemProperty("newItemName").toString()));
 	_termsModel->addTerms(newTerms);
+	setItemProperty("currentIndex", _termsModel->rowCount() - 1);
 }
 
-void BoundQMLComponentsList::removeRowHandler(int index)
+void BoundQMLComponentsList::removeItemHandler(int index)
 {
 	const std::vector<Term>& myTerms = _termsModel->terms().terms();
 
@@ -250,5 +264,80 @@ void BoundQMLComponentsList::removeRowHandler(int index)
 	{
 		QList<int> indexes = {index};
 		_termsModel->removeTerms(indexes);
+		setItemProperty("currentIndex", index >= _termsModel->rowCount() ? index - 1 : index);
 	}
+}
+
+void BoundQMLComponentsList::nameChangedHandler(int index, QString name)
+{
+	if (index < 0)
+		return;
+	if (index >= _termsModel->rowCount())
+	{
+		Log::log()  << "Index " << index << " in ListModelTabView is greater than the maximum " << _termsModel->rowCount() << std::endl;
+		return;
+	}
+
+	if (name.isEmpty())
+		name = getItemProperty("newItemName").toString();
+
+	name = _makeUnique(name, index);
+
+	_termsModel->changeTerm(index, name);
+}
+
+QString BoundQMLComponentsList::_changeLastNumber(const QString &val)
+{
+	QString result = val;
+	int index = val.length() - 1;
+	for (; index >= 0 ; index--)
+	{
+		if (!val.at(index).isDigit())
+			break;
+	}
+	index++;
+
+	int num = -1;
+	if (index >= 0 && index < val.length())
+	{
+		bool ok = false;
+		num = val.right(val.length() - index).toInt(&ok);
+		if (!ok)
+			num = -1;
+	}
+
+	if (num >= 0)
+		return result.left(index).append(QString::number(num + 1));
+	else
+		return result.append(QString::number(2));
+}
+
+QString BoundQMLComponentsList::_makeUnique(const QString &val, int index)
+{
+	QList<QString> values = _termsModel->terms().asQList();
+
+	return _makeUnique(val, values, index);
+}
+
+QString BoundQMLComponentsList::_makeUnique(const QString &val, const QList<QString> &values, int index)
+{
+	QString result = val;
+
+	bool isUnique = true;
+	do
+	{
+		int i = 0;
+		isUnique = true;
+		for (const QString& value : values)
+		{
+			if (i != index && value == result)
+			{
+				isUnique = false;
+				result = _changeLastNumber(result);
+			}
+			i++;
+		}
+	} while (!isUnique);
+
+	return result;
 }

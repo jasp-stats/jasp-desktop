@@ -137,5 +137,6 @@
         <file>components/JASP/Controls/JASPGridControl.qml</file>
         <file>components/JASP/Controls/JASPGridViewControl.qml</file>
         <file>components/JASP/Controls/RowLayout.qml</file>
+        <file>components/JASP/Controls/TabView.qml</file>
     </qresource>
 </RCC>

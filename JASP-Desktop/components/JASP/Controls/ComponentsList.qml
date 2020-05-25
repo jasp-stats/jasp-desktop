@@ -32,24 +32,27 @@ JASPGridControl
 
 	property bool	addItemManually	: !source
 	property bool	showAddIcon		: addItemManually
-	property int	minimumRows		: 0
-	property string	deleteIcon		: "cross.png"
+	property int	minimumItems	: 0
+	property int	maximumItems	: -1
+	property string newItemName		: ""
+	property string	removeIcon		: "cross.png"
 	property string	addIcon			: "duplicate.png"
 	property string addTooltip		: qsTr("Add a row")
 	property string removeTooltip	: qsTr("Remove a row")
 	property var	defaultValues	: []
 
-	signal addRow();
-	signal removeRow(int index);
+	signal addItem();
+	signal removeItem(int index);
+	signal nameChanged(int index, string name)
 
 	MenuButton
 	{
 		id				: addIconItem
 		width			: height
 		radius			: height
-		visible			: showAddIcon
+		visible			: showAddIcon && (maximumItems <= 0 || maximumItems > componentsList.count)
 		iconSource		: jaspTheme.iconPath + addIcon
-		onClicked		: addRow()
+		onClicked		: addItem()
 		toolTip			: addTooltip
 		anchors.bottom	: parent.bottom
 		anchors.horizontalCenter: parent.horizontalCenter
@@ -78,11 +81,11 @@ JASPGridControl
 
 			Image
 			{
-				id						: deleteIconID
-				source					: jaspTheme.iconPath + deleteIcon
+				id						: removeIconID
+				source					: jaspTheme.iconPath + removeIcon
 				anchors.right			: parent.right
 				anchors.verticalCenter	: parent.verticalCenter
-				visible					: itemWrapper.isDeletable && componentsList.count > componentsList.minimumRows
+				visible					: itemWrapper.isDeletable && componentsList.count > componentsList.minimumItems
 				height					: jaspTheme.iconSize
 				width					: jaspTheme.iconSize
 				z						: 2
@@ -97,7 +100,7 @@ JASPGridControl
 				{
 					id					: deleteMouseArea
 					anchors.fill		: parent
-					onClicked			: removeRow(index)
+					onClicked			: removeItem(index)
 				}
 			}
 		}

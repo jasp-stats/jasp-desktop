@@ -40,14 +40,19 @@ public:
 protected slots:
 	void		modelChangedHandler()						override;
 	void		valuesChangedHandler();
-	void		addRowHandler();
-	void		removeRowHandler(int index);
+	void		addItemHandler();
+	void		removeItemHandler(int index);
+	void		nameChangedHandler(int index, QString name);
 
 private:
 	ListModelTermsAssigned*		_termsModel;
 	OptionsTable*				_boundTo;
 
-	QString						_incrementCounter();
+protected:
+	QString				_makeUnique(const QString& val, int index = -1);
+	QString				_makeUnique(const QString& val, const QList<QString>& values, int index = -1);
+	QString				_changeLastNumber(const QString& val);
+
 
 };
 
