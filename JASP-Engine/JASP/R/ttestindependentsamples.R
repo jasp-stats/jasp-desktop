@@ -239,14 +239,12 @@ TTestIndependentSamples <- function(jaspResults, dataset = NULL, options, ...) {
       if (identical(errors, FALSE)) {
         result <- try(ttestIndependentMainTableRow(variable, dataset, test, testStat, effSize, optionsList, options))
         
-        if (!isTryError(result))
+        if (!isTryError(result)) {
           row <- c(row, result[["row"]])
-        else {
-          errorMessage <- .extractErrorMessage(result)
-
           if (result[["leveneViolated"]])
             table$addFootnote(gettext("Levene's test is significant (p < .05), suggesting a violation of the equal variance assumption"), colNames = "p", rowNames = rowName)
-
+        } else {
+          errorMessage <- .extractErrorMessage(result)
         }
         
       } else {
