@@ -33,7 +33,7 @@ int handle_variable(int, readstat_variable_t *variable, const char *val_labels, 
 	case READSTAT_MEASURE_SCALE:	colType = columnType::scale;	break;
 	}
 
-	data->addColumn(var_index, new ReadStatImportColumn(data, name, labelsID, colType));
+	data->addColumn(var_index, new ReadStatImportColumn(variable, data, name, labelsID, colType));
 
 	return READSTAT_HANDLER_OK;
 }
