@@ -40,20 +40,27 @@
 }
 
 .dprior_informative <- function(delta, oneSided = FALSE, options) {
-
-  if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
-    out <- .dtss(delta, mu.delta = options[["informativeCauchyLocation"]],
-                 r = options[["informativeCauchyScale"]],
-                 kappa = 1)
+  isDefault <- options[["effectSizeStandardized"]] == "default"
+  
+  if(isDefault) {
+    cauchyLocation <- 0
+    cauchyScale    <- options[["priorWidth"]]
+  } else {
+    cauchyLocation <- options[["informativeCauchyLocation"]] 
+    cauchyScale    <- options[["informativeCauchyScale"]]
+  }
+  
+  if (options[["informativeStandardizedEffectSize"]] == "cauchy" || isDefault) {
+    out <- .dtss(delta, mu.delta = cauchyLocation, r = cauchyScale, kappa = 1)
     if (oneSided == "right") {
       out <- ifelse(delta < 0, 0, out/integrate(.dtss, 0, Inf,
-                                                mu.delta = options[["informativeCauchyLocation"]],
-                                                r = options[["informativeCauchyScale"]],
+                                                mu.delta = cauchyLocation,
+                                                r = cauchyScale,
                                                 kappa = 1)$value)
     } else if (oneSided == "left") {
       out <- ifelse(delta > 0, 0, out/integrate(.dtss, -Inf, 0,
-                                                mu.delta = options[["informativeCauchyLocation"]],
-                                                r = options[["informativeCauchyScale"]],
+                                                mu.delta = cauchyLocation,
+                                                r = cauchyScale,
                                                 kappa = 1)$value)
     }
   } else if (options[["informativeStandardizedEffectSize"]] == "t") {
@@ -269,22 +276,33 @@
 
 .dposterior_informative <- function(delta, t, n1, n2 = NULL, paired = FALSE, oneSided = FALSE, options) {
 
-  if (options[["informativeStandardizedEffectSize"]] == "cauchy") {
+  isDefault <- options[["effectSizeStandardized"]] == "default"
+  
+  if(isDefault) {
+    cauchyLocation <- 0
+    cauchyScale    <- options[["priorWidth"]]
+  } else {
+    cauchyLocation <- options[["informativeCauchyLocation"]] 
+    cauchyScale    <- options[["informativeCauchyScale"]]
+  }
+  
+  
+  if (options[["informativeStandardizedEffectSize"]] == "cauchy" || isDefault) {
     out <- .posterior_t(delta, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                        prior.location = options[["informativeCauchyLocation"]],
-                        prior.scale = options[["informativeCauchyScale"]],
+                        prior.location = cauchyLocation,
+                        prior.scale = cauchyScale,
                         prior.df = 1)
     if (oneSided == "right") {
 
       out <- ifelse(delta < 0, 0, out / (1 - .cdf_t(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                                    prior.location = options[["informativeCauchyLocation"]],
-                                                    prior.scale = options[["informativeCauchyScale"]],
+                                                    prior.location = cauchyLocation,
+                                                    prior.scale = cauchyScale,
                                                     prior.df = 1)))
     } else if (oneSided == "left") {
 
       out <- ifelse(delta > 0, 0, out / .cdf_t(0, t = t, n1 = n1, n2 = n2, independentSamples = ! paired && !is.null(n2),
-                                               prior.location = options[["informativeCauchyLocation"]],
-                                               prior.scale = options[["informativeCauchyScale"]],
+                                               prior.location = cauchyLocation,
+                                               prior.scale = cauchyScale,
                                                prior.df = 1))
     }
   } else if (options[["informativeStandardizedEffectSize"]] == "t") {

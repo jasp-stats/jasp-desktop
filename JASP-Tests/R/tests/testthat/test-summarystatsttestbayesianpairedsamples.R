@@ -6,7 +6,6 @@ options$n1Size <- 20
 options$plotPriorAndPosterior <- TRUE
 options$plotBayesFactorRobustness <- TRUE
 options$hypothesis <- "groupTwoGreater"
-options$informativeCauchyLocation <- 1
 set.seed(1)
 results <- jasptools::run("SummaryStatsTTestBayesianPairedSamples", "debug.csv", options)
 
@@ -24,7 +23,7 @@ test_that("Bayesian Paired Samples T-Test table results match", {
                            2.3))
 })
 
-test_that("Prior and Posterior plot matches", {
+test_that("Default Prior and Posterior plot matches", {
   plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_priorPosteriorPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "prior-and-posterior", dir="SummaryStatsTTestBayesianPairedSamples")
@@ -49,7 +48,7 @@ test_that("Bayesian Paired Samples T-Test table results match", {
                            2.3))
 })
 
-test_that("Prior and Posterior plot matches", {
+test_that("Informative Cauchy Prior and Posterior plot matches", {
   plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_priorPosteriorPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "prior-and-posterior-2", dir="SummaryStatsTTestBayesianPairedSamples")

@@ -52,7 +52,7 @@ test_that("Bayesian One Sample T-Test table results match", {
                            6))
 })
 
-test_that("Prior and Posterior plot matches", {
+test_that("Default Prior and Posterior plot matches", {
   plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_priorPosteriorPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "prior-and-posterior", dir="SummaryStatsTTestBayesianOneSample")
@@ -69,7 +69,7 @@ options$effectSizeStandardized <- "informative"
 set.seed(1)
 results <- jasptools::run("SummaryStatsTTestBayesianOneSample", "debug.csv", options)
 
-test_that("Prior and Posterior plot matches", {
+test_that("Informative Cauchy Prior and Posterior plot matches", {
   plotName <- results[["results"]][["ttestContainer"]][["collection"]][["ttestContainer_priorPosteriorPlot"]][["data"]]
   testPlot <- results[["state"]][["figures"]][[plotName]][["obj"]]
   expect_equal_plots(testPlot, "prior-and-posterior-informative", dir="SummaryStatsTTestBayesianOneSample")
