@@ -17,7 +17,7 @@
 #include "modules/dynamicmodules.h"
 
 //How many seconds do we wait for an engine to be killed if it gets stuck in some analysis?
-#define KILLTIME 2
+#define KILLTIME 4
 
 class EngineRepresentation : public QObject
 {

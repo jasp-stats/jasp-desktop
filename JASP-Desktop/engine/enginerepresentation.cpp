@@ -505,6 +505,8 @@ void EngineRepresentation::handleRunningAnalysisStatusChanges()
 
 void EngineRepresentation::killEngine(bool disconnectFinished)
 {
+	Log::log() << "Killing Engine #" << channelNumber() << " and " << (disconnectFinished ? "disconnecting" : "leaving attached") << " it's finished signal." << std::endl;
+
 	_engineState  = engineState::killed;
 
 	if(disconnectFinished)
