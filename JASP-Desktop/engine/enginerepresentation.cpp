@@ -2,6 +2,7 @@
 #include "gui/preferencesmodel.h"
 #include "gui/messageforwarder.h"
 #include "utilities/qutils.h"
+#include "utils.h"
 #include "log.h"
 
 EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent)
@@ -34,6 +35,21 @@ EngineRepresentation::~EngineRepresentation()
 	_channel = nullptr;
 }
 
+void EngineRepresentation::cleanUpAfterClose()
+{
+	_analysisInProgress = nullptr;
+	_analysisAborted	= nullptr;
+	_idRemovedAnalysis	= -1;
+	_lastRequestId		= -1;
+	_abortTime			= -1;
+	_pauseRequested		= false;
+	_stopRequested		= false;
+	_slaveCrashed		= false;
+	_settingsChanged	= true;
+	_abortAndRestart	= false;
+	_lastCompColName	= "???";
+}
+
 void EngineRepresentation::sendString(std::string str)
 {
 #ifdef PRINT_ENGINE_MESSAGES
@@ -44,14 +60,14 @@ void EngineRepresentation::sendString(std::string str)
 
 void EngineRepresentation::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-	Log::log() << "Engine # " << channelNumber() << " finished " << (exitStatus == QProcess::ExitStatus::NormalExit ? "normally" : "crashing") << " and with exitCode " << exitCode << "!" << std::endl;
+	Log::log() << "Engine # " << channelNumber() << " finished while in state '" << _engineState << "' " << (exitStatus == QProcess::ExitStatus::NormalExit ? "normally" : "crashing") << " and with exitCode " << exitCode << "!" << std::endl;
 
 	_slaveProcess->deleteLater();
 	_slaveProcess = nullptr;
-	_slaveCrashed = exitStatus == QProcess::ExitStatus::CrashExit;
+	_slaveCrashed = exitStatus == QProcess::ExitStatus::CrashExit && _engineState != engineState::killed;
 
-	if(exitCode != 0 || _slaveCrashed)
-		handleEngineCrash();
+	if(_engineState == engineState::killed)	_engineState = engineState::initializing;
+	else 	if(exitCode != 0 || _slaveCrashed)		handleEngineCrash();
 }
 
 void EngineRepresentation::handleEngineCrash()
@@ -140,8 +156,15 @@ void EngineRepresentation::process()
 	if (_channel->receive(data))
 	{
 #ifdef PRINT_ENGINE_MESSAGES
-		Log::log() << "message received" <<std::endl;
+		{
+			const int _maxDataChars = 300;//I do not want to keep scrolling forever all the time...
+			if(data != "")	Log::log() << "message received from engine #" << channelNumber() << ": " << (data.size() < _maxDataChars ? data : data.substr(0, _maxDataChars)) + "..." << std::endl;
+			else			Log::log() << "Engine #" << channelNumber() << " cleared its send-buffer." << std::endl;
+		}
 #endif
+
+		if(data == "")
+			return;
 
 		Json::Value json;
 		bool		jsonIsOK = false;
@@ -172,6 +195,12 @@ void EngineRepresentation::process()
 		default:							throw std::logic_error("If you define new engineStates you should add them to the switch in EngineRepresentation::process()!");
 		}
 	}
+
+	if(_analysisAborted && _analysisInProgress && _abortTime + KILLTIME < Utils::currentSeconds()) //We wait a second or two before we kill the engine if it does not want to abort.
+	{
+		killEngine(true);
+		restartAbortedAnalysis(true); //We restart it now because we do want it to continue later. And we refresh it because *maybe* we just killed it in the middle of something important like writing files.
+	}
 }
 
 void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
@@ -196,8 +225,8 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 
 void EngineRepresentation::processFilterReply(Json::Value & json)
 {
-	if(_engineState != engineState::filter)
-		throw std::runtime_error("Received an unexpected filter reply!");
+	checkIfExpectedReplyType(engineState::filter);
+
 	_engineState = engineState::idle;
 
 #ifdef PRINT_ENGINE_MESSAGES
@@ -241,8 +270,8 @@ void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 
 void EngineRepresentation::processRCodeReply(Json::Value & json)
 {
-	if(_engineState != engineState::rCode)
-		throw std::runtime_error("Received an unexpected rCode reply!");
+	checkIfExpectedReplyType(engineState::rCode);
+
 	_engineState = engineState::idle;
 
 	std::string rCodeResult = json.get("rCodeResult", "").asString();
@@ -273,8 +302,8 @@ void EngineRepresentation::runScriptOnProcess(RComputeColumnStore * computeColum
 
 void EngineRepresentation::processComputeColumnReply(Json::Value & json)
 {
-	if(_engineState != engineState::computeColumn)
-		throw std::runtime_error("Received an unexpected computeColumn reply!");
+	checkIfExpectedReplyType(engineState::computeColumn);
+
 	_engineState = engineState::idle;
 
 
@@ -311,7 +340,7 @@ void EngineRepresentation::analysisRemoved(Analysis * analysis)
 		return;
 
 	_idRemovedAnalysis = analysis->id();
-	abortAnalysisInProgress();
+	abortAnalysisInProgress(false);
 	_analysisInProgress = nullptr; //Because it will be deleted!
 	//But we keep the engineState at analysis to make sure another analysis won't try to run until the aborted one gets the message!
 }
@@ -381,8 +410,6 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 		return;
 	}
-
-
 
 	Log::log() << "Resultstatus of analysis was " << analysisResultStatusToString(status) << " and it will now be processed." << std::endl;
 
@@ -471,13 +498,24 @@ void EngineRepresentation::handleRunningAnalysisStatusChanges()
 	if (_engineState != engineState::analysis || _idRemovedAnalysis >= 0)
 		return;
 
-	if((_analysisInProgress->isEmpty() || _analysisInProgress->isAborted()) && _analysisAborted != _analysisInProgress)
-		runAnalysisOnProcess(_analysisInProgress);
+	if(		(_analysisInProgress->isEmpty() || _analysisInProgress->isAborted() )
+			&& _analysisAborted != _analysisInProgress)
+		abortAnalysisInProgress(_analysisInProgress->isEmpty());
 }
 
-void EngineRepresentation::killEngine()
+void EngineRepresentation::killEngine(bool disconnectFinished)
 {
+	Log::log() << "Killing Engine #" << channelNumber() << " and " << (disconnectFinished ? "disconnecting" : "leaving attached") << " it's finished signal." << std::endl;
+
+	_engineState  = engineState::killed;
+
+	if(disconnectFinished)
+		//We must make sure we do not get a popup, and while processFinished checks for "killed" or not it doesnt help that that needs the eventloop to be processed
+		//I want pause and resume all engines to be done in a singly function call without returning to the eventloop, so we just disconnect "finished" if we want to kill the engine.
+		disconnect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this, &EngineRepresentation::processFinished);
+
 	_slaveProcess->kill();
+	//The rest will be handled in EngineRepresentation::processFinished
 }
 
 void EngineRepresentation::stopEngine()
@@ -491,33 +529,35 @@ void EngineRepresentation::sendStopEngine()
 	_engineState			= engineState::stopRequested;
 	json["typeRequest"]		= engineStateToString(_engineState);
 
-	Log::log() << "informing engine that it ought to stop" << std::endl;
+	Log::log() << "informing engine #" << channelNumber() << " that it ought to stop" << std::endl;
 
 	sendString(json.toStyledString());
 }
 
 void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 {
-	Log::log() << "informing engine that it ought to restart" << std::endl;
+	Log::log() << "informing engine #" << channelNumber() << " that it ought to restart" << std::endl;
 
 	if(_slaveProcess != nullptr && _slaveProcess != jaspEngineProcess)
 	{
 		_slaveProcess->kill();
 		_slaveProcess->deleteLater();
-		Log::log() << "EngineRepresentation::restartEngine says: Engine already has jaspEngine process!" << std::endl;
+
+		if(_engineState != engineState::killed && _engineState != engineState::stopped)
+			Log::log() << "EngineRepresentation::restartEngine says: Engine already had jaspEngine process that is now replaced!" << std::endl;
 	}
 
 	sendString("");
 	setSlaveProcess(jaspEngineProcess);
-	_stopRequested	= false;
-	resumeEngine(); //We do not want to engine to think it is *resuming* after a crash because it is actually *initializing* then. Because in that case it needs to send the settings again.
+	cleanUpAfterClose();
+
+	_engineState	 = engineState::initializing;
 }
 
 void EngineRepresentation::pauseEngine()
 {
 	_pauseRequested = true;
-	if(_analysisInProgress)
-		_analysisInProgress->abort();
+	abortAnalysisInProgress(true);
 }
 
 void EngineRepresentation::sendPauseEngine()
@@ -526,7 +566,7 @@ void EngineRepresentation::sendPauseEngine()
 	_engineState			= engineState::pauseRequested;
 	json["typeRequest"]		= engineStateToString(_engineState);
 
-	Log::log() << "informing engine that it ought to pause for a bit" << std::endl;
+	Log::log() << "informing engine #" << channelNumber() << " that it ought to pause for a bit" << std::endl;
 
 	sendString(json.toStyledString());
 }
@@ -534,22 +574,23 @@ void EngineRepresentation::sendPauseEngine()
 void EngineRepresentation::resumeEngine()
 {
 	if(_engineState != engineState::paused && _engineState != engineState::stopped && _engineState != engineState::initializing)
-		throw std::runtime_error("Attempt to resume engine made but it isn't paused or stopped");
+		throw unexpectedEngineReply("Attempt to resume engine #" + std::to_string(channelNumber()) + " made but it isn't paused, initializing or stopped");
 
 	_pauseRequested			= false;
 	_engineState			= engineState::resuming;
 	Json::Value json		= Json::Value(Json::objectValue);
 	json["typeRequest"]		= engineStateToString(_engineState);
 
-	Log::log() << "informing engine that it may resume" << std::endl;
+	addSettingsToJson(json);
+
+	Log::log() << "informing engine #" << channelNumber() << " that it may resume." << std::endl;
 
 	sendString(json.toStyledString());
 }
 
 void EngineRepresentation::processEnginePausedReply()
 {
-	if(_engineState != engineState::pauseRequested)
-		throw std::runtime_error("Received an unexpected engine paused reply!");
+	checkIfExpectedReplyType(engineState::pauseRequested);
 
 	_engineState = engineState::paused;
 }
@@ -557,9 +598,9 @@ void EngineRepresentation::processEnginePausedReply()
 void EngineRepresentation::processEngineResumedReply()
 {
 	if(_engineState != engineState::resuming && _engineState != engineState::initializing)
-		throw std::runtime_error("Received an unexpected engine resumed reply!");
+		throw unexpectedEngineReply("Received an unexpected engine #" + std::to_string(channelNumber()) + " resumed reply!");
 
-	_settingsChanged = true; //Make sure we send the settings at least once
+	//_settingsChanged = true; //Make sure we send the settings at least once. We now do this be also sending the settings in the resume request
 
 	_engineState = engineState::idle;
 }
@@ -567,7 +608,7 @@ void EngineRepresentation::processEngineResumedReply()
 void EngineRepresentation::processEngineStoppedReply()
 {
 	if(_engineState != engineState::stopRequested)
-		throw std::runtime_error("Received an unexpected engine stopped reply!");
+		throw unexpectedEngineReply("Received an unexpected engine stopped reply!");
 
 	_engineState = engineState::stopped;
 }
@@ -582,8 +623,8 @@ void EngineRepresentation::runModuleRequestOnProcess(Json::Value request)
 
 void EngineRepresentation::processModuleRequestReply(Json::Value & json)
 {
-	if(_engineState != engineState::moduleRequest)
-		throw std::runtime_error("Received an unexpected moduleRequest reply!");
+	checkIfExpectedReplyType(engineState::moduleRequest);
+
 	_engineState = engineState::idle;
 
 	moduleStatus moduleRequest	= moduleStatusFromString(json["moduleRequest"].asString());
@@ -664,8 +705,7 @@ std::string EngineRepresentation::currentState() const
 	}
 }
 
-//This function is now only used by settingsChanged
-void EngineRepresentation::abortAnalysisInProgress()
+void EngineRepresentation::abortAnalysisInProgress(bool restartAfterwards)
 {
 	if(_engineState == engineState::analysis && _analysisInProgress != nullptr)
 	{
@@ -674,7 +714,9 @@ void EngineRepresentation::abortAnalysisInProgress()
 
 		runAnalysisOnProcess(_analysisInProgress);
 
-		_analysisAborted = _analysisInProgress;
+		_analysisAborted	= _analysisInProgress;
+		_abortTime			= Utils::currentSeconds(); //We'll give it some time to abort, so we need to remember when we gave the order.
+		_abortAndRestart	= restartAfterwards;
 	}
 }
 
@@ -682,7 +724,7 @@ void EngineRepresentation::settingsChanged()
 {
 	Log::log() << "void EngineRepresentation::settingsChanged()" << std::endl;
 	_settingsChanged = true;
-	abortAnalysisInProgress();
+	abortAnalysisInProgress(true);
 }
 
 void EngineRepresentation::sendSettings()
@@ -695,22 +737,33 @@ void EngineRepresentation::sendSettings()
 	_engineState			= engineState::settings;
 	Json::Value msg			= Json::objectValue;
 	msg["typeRequest"]		= engineStateToString(_engineState);
-	msg["ppi"]				= PreferencesModel::prefs()->plotPPI();
-	msg["developerMode"]	= PreferencesModel::prefs()->developerMode();
-	msg["imageBackground"]	= fq(PreferencesModel::prefs()->plotBackground());
-	msg["languageCode"]		= fq(PreferencesModel::prefs()->languageCode());
-
+	addSettingsToJson(msg);
 	sendString(msg.toStyledString());
 
 	_settingsChanged = false;
 }
 
+void EngineRepresentation::addSettingsToJson(Json::Value & msg)
+{
+	msg["ppi"]				= PreferencesModel::prefs()->plotPPI();
+	msg["developerMode"]	= PreferencesModel::prefs()->developerMode();
+	msg["imageBackground"]	= fq(PreferencesModel::prefs()->plotBackground());
+	msg["languageCode"]		= fq(PreferencesModel::prefs()->languageCode());
+}
+
 void EngineRepresentation::processSettingsReply()
 {
 	_engineState = engineState::idle;
+	restartAbortedAnalysis();
+}
 
-	if(_analysisAborted && _analysisAborted->isAborted())
-		_analysisAborted->refresh();
+void EngineRepresentation::restartAbortedAnalysis(bool refreshIt)
+{
+	if(_analysisAborted && _abortAndRestart)
+	{
+		if(refreshIt)	_analysisAborted->refresh();
+		else			_analysisAborted->run();
+	}
 
 	_analysisAborted = nullptr;
 }

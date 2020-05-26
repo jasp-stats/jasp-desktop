@@ -38,6 +38,7 @@ public:
 	void run();
 	bool receiveMessages(int timeout = 0);
 	void setSlaveNo(int no);
+	int	 slaveNo() const { return _slaveNo; }
 	void sendString(std::string message);
 
 
@@ -72,6 +73,7 @@ private: // Methods:
 	void receiveModuleRequestMessage(	const Json::Value & jsonRequest);
 	void receiveLogCfg(					const Json::Value & jsonRequest);
 	void receiveSettings(				const Json::Value & jsonRequest);
+	void absorbSettings(				const Json::Value & json);
 
 	void runAnalysis();
 	void runComputeColumn(	const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType);
@@ -81,7 +83,7 @@ private: // Methods:
 
 	void stopEngine();
 	void pauseEngine();
-	void resumeEngine();
+	void resumeEngine(const Json::Value & jsonRequest); //It is practical if resume also gets the settings
 	void sendEnginePaused();
 	void sendEngineResumed();
 	void sendEngineStopped();

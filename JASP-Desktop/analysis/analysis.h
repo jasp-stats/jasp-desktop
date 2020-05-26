@@ -52,9 +52,10 @@ class Analysis : public QObject
 
 public:
 
-	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing };
+	enum Status { Empty, Initing, Inited, Running, Complete, Aborting, Aborted, ValidationError, SaveImg, EditImg, RewriteImgs, FatalError, Initializing, KeepStatus };
 	void setStatus(Status status);
 	static std::string statusToString(Status status);
+	///This function transforms an analysisResultStatus to Analysis::Status so that the Analysis gets the correct status after returning from Engine
 	static Analysis::Status analysisResultsStatusToAnalysisStatus(analysisResultStatus result);
 
 	Analysis(size_t id, Analysis * duplicateMe);
@@ -127,7 +128,6 @@ public:
 			void		reload();
 			void		rebind();
 			void        exportResults();
-	virtual void		abort();
 			void		remove();
 
 			Json::Value asJSON()		const;
@@ -194,6 +194,7 @@ public slots:
 	void					showDependenciesOnQMLForObject(QString uniqueName); //uniqueName is basically "name" in meta in results.
 
 protected:
+	void					abort();
 	void					bindOptionHandlers();
 
 private:

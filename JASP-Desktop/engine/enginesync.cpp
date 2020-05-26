@@ -32,6 +32,7 @@
 #include "common.h"
 #include "appinfo.h"
 #include "utilities/qutils.h"
+#include "utils.h"
 #include "tempfiles.h"
 #include "timers.h"
 #include "gui/preferencesmodel.h"
@@ -40,7 +41,6 @@
 
 
 using namespace boost::interprocess;
-
 
 EngineSync::EngineSync(QObject *parent)
 	: QObject(parent)
@@ -80,7 +80,7 @@ EngineSync::~EngineSync()
 	}
 }
 
-void EngineSync::start(int ppi)
+void EngineSync::start(int )
 {
 	JASPTIMER_SCOPE(EngineSync::start);
 
@@ -162,11 +162,28 @@ void EngineSync::restartEngineAfterCrash(int nr)
 	EngineRepresentation * eng = _engines[size_t(nr)];
 
 	eng->restartEngine(startSlaveProcess(nr));
-	setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
+}
+
+void EngineSync::restartKilledEngines()
+{
+	//Maybe we killed an engine because we wanted to pause or some option changed but the analysis wasn't listening. https://github.com/jasp-stats/INTERNAL-jasp/issues/875
+	bool restartedAnEngine = false;
+
+	for(size_t i=0; i<_engines.size(); i++)
+		if(_engines[i]->killed())
+		{
+			_engines[i]->restartEngine(startSlaveProcess(i));
+			restartedAnEngine = true;
+		}
+
+	if(restartedAnEngine)
+		setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
 }
 
 void EngineSync::process()
 {
+	restartKilledEngines();
+
 	for (auto engine : _engines)
 		engine->process();
 
@@ -179,6 +196,10 @@ void EngineSync::process()
 	processScriptQueue();
 	processDynamicModules();
 	processAnalysisRequests();
+
+	for (auto engine : _engines)
+		if(engine->idle())
+			engine->restartAbortedAnalysis();
 }
 
 int EngineSync::sendFilter(const QString & generatedFilter, const QString & filter)
@@ -220,21 +241,27 @@ void EngineSync::processFilterScript()
 
 	Log::log() << "Pausing and resuming engines to make sure nothing else is running when we start the filter." << std::endl;
 
-	pause(); //Make sure engines stop
-	_filterRunning = true;
-	resume();
-
-	try
+	//First we make sure nothing else is running before we ask the engine to run the filter
+	if(!_filterRunning)
 	{
-		for (auto *engine : _engines)
-			if (engine->idle())
-			{
-				engine->runScriptOnProcess(_waitingFilter);
-				_waitingFilter = nullptr;
-				return;
-			}
+		pause(); //Make sure engines pause/stop
+		_filterRunning = true;
+		resume();
+	}
+	else //So previous loop we made sure nothing else is running, and maybe we had to kill an engine to make it understand, followed by a restart. Now we are ready to run the filter
+	{
+		try
+		{
+			for (auto *engine : _engines)
+				if (engine->idle())
+				{
+					engine->runScriptOnProcess(_waitingFilter);
+					_waitingFilter = nullptr;
+					return;
+				}
 
-	} catch (...){	Log::log() << "Exception sent in processFilterScript" << std::endl;	}
+		} catch (...){	Log::log() << "Exception sent in processFilterScript" << std::endl;	}
+	}
 }
 
 void EngineSync::filterDone(int requestID)
@@ -494,7 +521,7 @@ void EngineSync::stopEngines()
 {
 	if(!_engineStarted) return;
 
-	auto timeout = QDateTime::currentSecsSinceEpoch() + 60; //shouldnt take more than a minute
+	auto timeout = QDateTime::currentSecsSinceEpoch() + 10;
 
 	//make sure we process any received messages first.
 	for(auto engine : _engines)
@@ -508,12 +535,18 @@ void EngineSync::stopEngines()
 	while(!allEnginesStopped())
 		if(timeout < QDateTime::currentSecsSinceEpoch())
 		{
-			std::cerr << "Waiting for engine to reply stopRequest took longer than timeout.." << std::endl;
-			return;
+			std::cerr << "Waiting for engine to reply stopRequest took longer than timeout, killing it/them.." << std::endl;
+			for(EngineRepresentation * e : _engines)
+				if(!e->stopped() && !e->killed())
+					e->killEngine();
+
+			break;
 		}
 		else
 		for (auto * engine : _engines)
 			engine->process();
+
+	timeout = QDateTime::currentSecsSinceEpoch() + 10;
 
 	bool stillRunning;
 
@@ -548,23 +581,41 @@ void EngineSync::pause()
 	for(EngineRepresentation * e : _engines)
 		e->pauseEngine();
 
-	while(!allEnginesPaused())
+	long tryTill = Utils::currentSeconds() + KILLTIME; //Ill give the engine 1 sec to respond
+
+	while(!allEnginesPaused() && tryTill >= Utils::currentSeconds())
 		for (auto * engine : _engines)
 			engine->process();
+
+	for (auto * engine : _engines)
+		if(!engine->paused())
+			engine->killEngine(true);
 }
 
 void EngineSync::resume()
 {
 	JASPTIMER_SCOPE(EngineSync::resume);
 
-	if(!_engineStarted) return;
+	if(!_engineStarted)
+		return;
 
-	for(auto * engine : _engines)
-		engine->resumeEngine();
+	bool restartedAnEngine = false;
+
+	for(size_t i=0; i<_engines.size(); i++)
+		if(!_engines[i]->jaspEngineStillRunning())
+		{
+			_engines[i]->restartEngine(startSlaveProcess(i));
+			restartedAnEngine = true;
+		}
+		else
+			_engines[i]->resumeEngine();
 
 	while(!allEnginesResumed())
 		for (auto * engine : _engines)
 			engine->process();
+
+	if(restartedAnEngine)
+		setModuleWideCastVars(DynamicModules::dynMods()->getJsonForReloadingActiveModules());
 }
 
 bool EngineSync::allEnginesStopped()
@@ -578,7 +629,7 @@ bool EngineSync::allEnginesStopped()
 bool EngineSync::allEnginesPaused()
 {
 	for(auto * engine : _engines)
-		if(!engine->paused())
+		if(!engine->paused() && !engine->initializing()) //Initializing is also sort of paused I guess
 			return false;
 	return true;
 }
@@ -728,8 +779,9 @@ void EngineSync::processLogCfgRequests()
 
 void EngineSync::cleanUpAfterClose()
 {
-	//stopEngines(); //Seems to break stuff
-	pause();
+	//try { stopEngines(); } //Tends to go wrong when the engine was already killed (for instance because it didnt want to pause)
+	try {	pause(); }
+	catch(unexpectedEngineReply e) {} // If we are cleaning up after close we can get all sorts of things, lets just ignore them.
 
 	while(_waitingScripts.size() > 0)
 	{
@@ -743,9 +795,14 @@ void EngineSync::cleanUpAfterClose()
 
 	TempFiles::clearSessionDir();
 
-	resume();
+	for(EngineRepresentation * e : _engines)
+		e->cleanUpAfterClose();
 
-	//restartEngines();
+	try { resume(); }
+	//try { restartEngines(); }
+	catch(unexpectedEngineReply e) {}
+
+
 }
 
 std::string	EngineSync::currentState() const
