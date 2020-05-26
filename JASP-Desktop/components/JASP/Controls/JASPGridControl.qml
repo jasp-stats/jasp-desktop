@@ -32,15 +32,6 @@ JASPControl
 	shouldStealHover		: false
 	innerControl			: itemGrid
 
-	onPreferredHeightChanged:
-	{
-		if (preferredHeight != implicitHeight)
-		{
-			// preferredHeight has been specifically set
-			implicitHeight = Qt.binding(function() { return preferredHeight; });
-		}
-	}
-
 	property var	model
 	property var	values
 	property string title
