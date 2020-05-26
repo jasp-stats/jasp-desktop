@@ -17,7 +17,7 @@
 #include "modules/dynamicmodules.h"
 
 //How many seconds do we wait for an engine to be killed if it gets stuck in some analysis?
-#define KILLTIME 4
+#define KILLTIME 2
 
 class EngineRepresentation : public QObject
 {
@@ -48,13 +48,13 @@ public:
 	void pauseEngine();
 	void resumeEngine();
 	void restartEngine(QProcess * jaspEngineProcess);
-	bool resumed()				const { return _engineState != engineState::resuming && !paused() && !initializing();			}
-	bool paused()				const { return _engineState == engineState::paused;												}
-	bool initializing()			const { return _engineState == engineState::initializing;										}
-	bool stopped()				const { return _engineState == engineState::stopped;											}
-	bool killed()			const { return _engineState == engineState::killed;										}
-	bool idle()					const { return _engineState == engineState::idle; }
-	bool shouldSendSettings()	const { return idle() && _settingsChanged; }
+	bool resumed()				const { return _engineState != engineState::resuming && !paused() && !initializing();	}
+	bool paused()				const { return _engineState == engineState::paused || initializing();					}
+	bool initializing()			const { return _engineState == engineState::initializing;								}
+	bool stopped()				const { return _engineState == engineState::stopped;									}
+	bool killed()				const { return _engineState == engineState::killed;										}
+	bool idle()					const { return _engineState == engineState::idle;										}
+	bool shouldSendSettings()	const { return idle() && _settingsChanged;												}
 
 	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr && !killed(); }
 
