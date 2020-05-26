@@ -15567,29 +15567,6 @@ msgctxt "JASPImporter|"
 msgid "Loading Data Set"
 msgstr ""
 
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Add Contrast"
-msgstr ""
-
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Delete Contrast"
-msgstr ""
-
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Reset"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelMarginalMeansContrasts|"
-msgid "Contrast %1"
-msgstr ""
-
-msgctxt "ListModelMarginalMeansContrasts|"
-msgid ""
-"Number of rows specifed in Options for ListModelMarginalMeansContrasts does "
-"not match number of rows in values!"
-msgstr ""
-
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
 msgstr ""
@@ -15657,6 +15634,25 @@ msgstr ""
 
 msgctxt "auditSelection|"
 msgid "<b>Download Report</b>"
+msgstr ""
+
+msgctxt "ComponentsList|"
+msgid "Add a row"
+msgstr ""
+
+msgctxt "ComponentsList|"
+msgid "Remove a row"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelCustomContrasts|"
+msgid "Contrast %1"
+msgstr ""
+
+msgctxt "ListModelCustomContrasts|"
+msgid ""
+"Number of rows specifed in Options for ListModelCustomContrasts does not "
+"match number of rows in values!"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

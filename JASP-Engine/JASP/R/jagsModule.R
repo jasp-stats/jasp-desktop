@@ -821,7 +821,7 @@ JAGS <- function(jaspResults, dataset, options, state = NULL) {
 }
 
 # one line helpers ----
-.JAGSWarningSymbol <- "&#9888;"
+.JAGSWarningSymbol <- "\u26A0"
 
 .JAGShasData <- function(options) length(options[["model"]][["columns"]]) > 0L
 

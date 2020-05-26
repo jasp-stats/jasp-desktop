@@ -299,7 +299,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semFitTable$addColumnInfo(name="Df",      title = gettext("df"),           type = "number")
   semFitTable$addColumnInfo(name="AIC",     title = gettext("AIC"),          type = "number")
   semFitTable$addColumnInfo(name="BIC",     title = gettext("BIC"),          type = "number")
-  semFitTable$addColumnInfo(name="Chisq",   title = gettext("&#967;&sup2;"), type = "number")
+  semFitTable$addColumnInfo(name="Chisq",   title = gettext("\u3C7\uB2"), type = "number")
   semFitTable$addColumnInfo(name="PrChisq", title = gettext("p"),            type = "number")
   
   semFitTable$showSpecifiedColumnsOnly <- TRUE
@@ -373,7 +373,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   
   semModelTestTable$addColumnInfo(name = "model",  title = "",                                         type = "string")
   semModelTestTable$addColumnInfo(name = "fmin",   title = gettext("Minimum Function Test Statistic"), type = "number")
-  semModelTestTable$addColumnInfo(name = "chisq",  title = gettext("&#967;&sup2;"),                    type = "number")
+  semModelTestTable$addColumnInfo(name = "chisq",  title = gettext("\u3C7\uB2"),                    type = "number")
   semModelTestTable$addColumnInfo(name = "df",     title = gettext("Degrees of freedom"),              type = "number")
   semModelTestTable$addColumnInfo(name = "pvalue", title = gettext("p"),                               type = "pvalue")
   
@@ -644,7 +644,7 @@ SEMSimple <- function(jaspResults, dataset = NULL, options) {
   semMardiasTable$addColumnInfo(name = "Type",        title = "",                      type = "string")
   semMardiasTable$addColumnInfo(name = "Coefficient", title = gettext("Coefficient"),  type = "number")
   semMardiasTable$addColumnInfo(name = "z",           title = gettext("z"),            type = "number")
-  semMardiasTable$addColumnInfo(name = "Chisq",       title = gettext("&#967;&sup2;"), type = "number")
+  semMardiasTable$addColumnInfo(name = "Chisq",       title = gettext("\u3C7\uB2"), type = "number")
   semMardiasTable$addColumnInfo(name = "DF",          title = gettext("df"),           type = "number")
   semMardiasTable$addColumnInfo(name = "pvalue",      title = gettext("p"),            type = "pvalue")
   
