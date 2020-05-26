@@ -468,8 +468,8 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
       list(name="DF", title = "df", type="number", format="dp:0"),
       list(name="AIC", type="number", format="dp:1"),
       list(name="BIC", type="number", format="dp:1"),
-      list(name="Chisq", title = "&#967;&sup2;", type="number", format="dp:3"),
-      list(name="Chisq diff", title = "&#916;&#967;&sup2;", type="number", format="dp:3"),
+      list(name="Chisq", title = "\u3C7\uB2", type="number", format="dp:3"),
+      list(name="Chisq diff", title = "\u394\u3C7\uB2", type="number", format="dp:3"),
       list(name="Pr(>Chisq)", title = "p", type="number", format="dp:3;p:0.001")
     )
   )
@@ -645,7 +645,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
         fields=list(
             list(name="model", title="", type="text"),
             list(name="fmin", title="Minimum Function Test Statistic", type="number", format="dp:3"),
-            list(name="chisq", title="&#967;&sup2;", type="number", format="dp:3"),
+            list(name="chisq", title="\u3C7\uB2", type="number", format="dp:3"),
             list(name="df", title="Degrees of freedom", type="number", format = "dp:0"),
             list(name="pvalue", title="p", type="number", format="dp:3;p:0.001")
         )
@@ -815,7 +815,7 @@ SEMSimple <- function(dataset=NULL, options, perform="run", callback=function(..
             list(name="Type", title="", type="string"),
             list(name="Coefficient", type="number", format="dp:3"),
             list(name="z", type="number", format="dp:3"),
-            list(name="Chisq", title="&#967;&sup2;", type="number", format="dp:3"),
+            list(name="Chisq", title="\u3C7\uB2", type="number", format="dp:3"),
             list(name="DF", title="df", type="number", format="dp:0"),
             list(name="p-value", title="p", type="number", format="dp:3;p:0.001")
         )

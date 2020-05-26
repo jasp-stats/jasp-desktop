@@ -306,7 +306,7 @@
     idxCol <- internalTableObj[["footnotes"]][["cols"]]
     tb <- internalTableObj$table
     modelTable$addFootnote(message  = internalTableObj[["footnotes"]][["message"]],
-                           symbol   = " <sup>&#10013;</sup>", # latin cross
+                           symbol   = " <sup>\u271D</sup>", # latin cross
                            rowNames = rownames(tb)[idxRow],
                            colNames = colnames(tb)[idxCol])
   }
