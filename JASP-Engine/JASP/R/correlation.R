@@ -224,7 +224,6 @@ Correlation <- function(jaspResults, dataset, options){
   mainTable$transposeWithOvertitle <- FALSE
   
   mainTable$addColumnInfo(name = "var1", title = "", type = "string", combine = FALSE, overtitle = "Variable")
-  mainTable$addColumns(list(var1 = variables))
   
   whichtests <- c(options$pearson, options$spearman, options$kendallsTauB)
   
@@ -333,6 +332,7 @@ Correlation <- function(jaspResults, dataset, options){
         
         r <- .corr.test(x = data[,1], y = data[,2], z = condData,
                         method = test, alternative = alt,
+                        conf.interval = options$confidenceIntervals,
                         conf.level = options$confidenceIntervalsInterval,
                         compute = compute, sample.size = currentResults[['sample.size']])
         testErrors[[test]] <- r[['errors']]
@@ -350,8 +350,9 @@ Correlation <- function(jaspResults, dataset, options){
       
       # store state for pair
       state <- createJaspState(object = results[[vpair[i]]])
-      state$dependOn(options = c("hypothesis", "confidenceIntervalsInterval", "missingValues",
-                                 "pearson", "spearman", "kendallsTauB"),
+      state$dependOn(options = c("conditioningVariables", "hypothesis",
+                                 "confidenceIntervals", "confidenceIntervalsInterval",
+                                 "missingValues"),
                      optionContainsValue = list(variables = .unv(vcomb[[i]])))
       
       jaspResults[[vpair[i]]] <- state
@@ -371,7 +372,7 @@ Correlation <- function(jaspResults, dataset, options){
 }
 
 # helper that unifies output of cor.test and ppcor::pcor.test
-.corr.test <- function(x, y, z = NULL, alternative, method, exact = NULL, conf.level = 0.95, continuity = FALSE, compute=TRUE, sample.size, ...){
+.corr.test <- function(x, y, z = NULL, alternative, method, exact = NULL, conf.interval = TRUE, conf.level = 0.95, continuity = FALSE, compute=TRUE, sample.size, ...){
   stats <- c("estimate", "p.value", "conf.int", "vsmpr")
   statsNames <- c("estimate", "p.value", "lower.ci", "upper.ci", "vsmpr")
   
@@ -391,19 +392,14 @@ Correlation <- function(jaspResults, dataset, options){
     } else{
       errors <- FALSE
       
-      if(method != "pearson"){
-        normal.approx.ci <- switch(method,
-                                   "spearman" = sample.size > 1290,
-                                   "kendall"  = sample.size > 100)
-        if(normal.approx.ci){
-          result$conf.int <- .corrNormalApproxConfidenceIntervals(obsCor = result$estimate, n = sample.size,
-                                                                  hypothesis = alternative, confLevel = conf.level)
-        } else{
-          result$conf.int <- .createNonparametricConfidenceIntervals(x = x, y = y, obsCor = result$estimate,
-                                                                     hypothesis = alternative, confLevel = conf.level,
-                                                                     method = method)
-        }
+      if(method != "pearson" && conf.interval){
+        result$conf.int <- .createNonparametricConfidenceIntervals(x = x, y = y, obsCor = result$estimate,
+                                                                   hypothesis = alternative, confLevel = conf.level,
+                                                                   method = method)
+      } else if(method != "pearson"){
+        result$conf.int <- c(NA, NA)
       }
+      
       result$vsmpr <- JASP:::.VovkSellkeMPR(result$p.value)
       result$vsmpr <- ifelse(result$vsmpr == "∞", Inf, result$vsmpr)
       result <- unlist(result[stats], use.names = FALSE)
@@ -620,8 +616,9 @@ Correlation <- function(jaspResults, dataset, options){
 }
   
 .corrFillCorrelationMatrix <- function(mainTable, corrResults, options){
-  vars <- options$variables
+  vars  <- options$variables
   vvars <- .v(vars)
+  pairs <- strsplit(names(corrResults), "_")
   
   results <- lapply(corrResults, function(x) {
     res <- unlist(x[['res']]) # flatten the structure but preserve names (hierarchy separated by ".")
@@ -632,12 +629,13 @@ Correlation <- function(jaspResults, dataset, options){
     res
     })
   
-  errors <- lapply(corrResults, function(x) x[['errors']])
+  errors     <- lapply(corrResults, function(x) x[['errors']])
   statsNames <- names(results[[1]])
-  nStats <- length(statsNames)
+  nStats     <- length(statsNames)
   
   # would be really (!) nice to be able to fill table cell-wise, i.e., mainTable[[row, col]] <- value
-  # in the meantime we have to collect and fill the entire columns (i.e., rows of the output table)
+  # in the meantime we have to collect and fill the entire table in the resultList
+  resultList <- list(var1 = vars)
   for(colVar in seq_along(vars)){
     for(statName in statsNames){
       currentColumnName <- paste(vvars[[colVar]], statName, sep = "_")
@@ -650,23 +648,34 @@ Correlation <- function(jaspResults, dataset, options){
           r <- NA # upper triangle is empty
         } else {
           r <- results[[currentPairName]][[statName]]
-          
-          # flag significant correlations
-          if(options[['flagSignificant']] && grepl("p.value", statName) && isTRUE(r < 0.05)){
-            .corrFlagSignificant(table = mainTable, p.values = r, 
-                                 colName = gsub("p.value", "estimate", currentColumnName),
-                                 rowNames = vvars[[rowVar]])
-          }
-          # display errors as footnotes
-          if(is.list(errors[[currentPairName]]) && !is.null(errors[[currentPairName]]$message) && statName != "sample.size"){
-            mainTable$addFootnote(message = errors[[currentPairName]]$message,
-                                  colNames = currentColumnName, rowNames = vvars[[rowVar]])
-          }
         }
         resList[[vvars[rowVar]]] <- r
       }
-      
-      mainTable[[currentColumnName]] <- resList
+      resultList[[currentColumnName]] <- resList
+    }
+  }
+  
+  mainTable$setData(resultList)
+  
+  # Flag significant
+  if(options[['flagSignificant']]){
+    p.valueColumns <- names(resultList)[endsWith(names(resultList), "p.value")]
+    
+    for(columnName in p.valueColumns){
+      p.values <- unlist(resultList[[columnName]])
+      .corrFlagSignificant(table = mainTable, p.values = p.values,
+                           colName = gsub("p.value", "estimate", columnName),
+                           rowNames = vvars)
+    }
+  }
+  
+  # Report errors as footnotes
+  for(i in seq_along(errors)){
+    if(is.list(errors[[i]])){
+      pair <- pairs[[i]]
+      statsNames <- statsNames[statsNames != "sample.size"]
+      colNames <- paste(pair[1], statsNames, sep = "_")
+      mainTable$addFootnote(message = errors[[i]]$message, colNames = colNames, rowNames = pair[2])
     }
   }
 }
