@@ -300,3 +300,43 @@ test_that("Error Handling", {
   status <- results[["status"]]
   expect_identical(status, "validationError")
 })
+
+test_that("Pseudo R-squared are correct", {
+  # Specifically, tests McFadden, Nagelkerke, Tjur, and Cox & Snell coefficients
+  # Example from Tjur (2008) http://dx.doi.org/10.1198/tast.2009.08210, page 370
+  # Tjur's results for Tjur R2: 0.096231
+  #.
+  # Check against code from performance package
+  # library(aplore3)
+  # library(performance)
+  # data("lowbwt", package = "aplore3")
+  # fit <- glm(low ~ age + lwt + race + smoke, data = lowbwt, family = binomial)
+  #
+  # performance::r2_mcfadden(fit)$R2
+  # McFadden's R2: 0.08562914
+  #
+  # performance::r2_nagelkerke(fit)
+  # Nagelkerke's R2: 0.1418442 
+  #
+  # performance::r2_tjur(fit)
+  # Tjur's R2: 0.09623107 
+  #
+  # performance::r2_coxsnell(fit)
+  # Cox & Snell's R2: 0.1008645 
+  
+  options            <- jasptools::analysisOptions("regressionlogistic")
+  options$dependent  <- "low"
+  options$covariates <- c("age", "lwt")
+  options$factors    <- c("race", "smoke")
+  options$modelTerms <- list(list(components = "age",   isNuisance = FALSE),
+                             list(components = "lwt",   isNuisance = FALSE),
+                             list(components = "race",  isNuisance = FALSE),
+                             list(components = "smoke", isNuisance = FALSE)
+  )
+  
+  results <- jasptools::run("regressionlogistic", "lowbwt.csv", options)
+  r_squared <- results$results$modelSummary$data[[2]][c("fad", "nag", "tju", "cas")]
+  expect_equal_tables(r_squared,
+                      list(0.0856291418878957, 0.141844242772774, 0.0962310669224921, 0.100864461712579)
+                      )
+})

@@ -1,0 +1,190 @@
+"id","low","age","lwt","race","smoke","ptl","ht","ui","ftv","bwt"
+4,"< 2500 g",28,120,"Other","Yes","One","No","Yes","None",709
+10,"< 2500 g",29,130,"White","No","None","No","Yes","Two, etc.",1021
+11,"< 2500 g",34,187,"Black","Yes","None","Yes","No","None",1135
+13,"< 2500 g",25,105,"Other","No","One","Yes","No","None",1330
+15,"< 2500 g",25,85,"Other","No","None","No","Yes","None",1474
+16,"< 2500 g",27,150,"Other","No","None","No","No","None",1588
+17,"< 2500 g",23,97,"Other","No","None","No","Yes","One",1588
+18,"< 2500 g",24,128,"Black","No","One","No","No","One",1701
+19,"< 2500 g",24,132,"Other","No","None","Yes","No","None",1729
+20,"< 2500 g",21,165,"White","Yes","None","Yes","No","One",1790
+22,"< 2500 g",32,105,"White","Yes","None","No","No","None",1818
+23,"< 2500 g",19,91,"White","Yes","Two, etc.","No","Yes","None",1885
+24,"< 2500 g",25,115,"Other","No","None","No","No","None",1893
+25,"< 2500 g",16,130,"Other","No","None","No","No","One",1899
+26,"< 2500 g",25,92,"White","Yes","None","No","No","None",1928
+27,"< 2500 g",20,150,"White","Yes","None","No","No","Two, etc.",1928
+28,"< 2500 g",21,200,"Black","No","None","No","Yes","Two, etc.",1928
+29,"< 2500 g",24,155,"White","Yes","One","No","No","None",1936
+30,"< 2500 g",21,103,"Other","No","None","No","No","None",1970
+31,"< 2500 g",20,125,"Other","No","None","No","Yes","None",2055
+32,"< 2500 g",25,89,"Other","No","Two, etc.","No","No","One",2055
+33,"< 2500 g",19,102,"White","No","None","No","No","Two, etc.",2082
+34,"< 2500 g",19,112,"White","Yes","None","No","Yes","None",2084
+35,"< 2500 g",26,117,"White","Yes","One","No","No","None",2084
+36,"< 2500 g",24,138,"White","No","None","No","No","None",2100
+37,"< 2500 g",17,130,"Other","Yes","One","No","Yes","None",2125
+40,"< 2500 g",20,120,"Black","Yes","None","No","No","Two, etc.",2126
+42,"< 2500 g",22,130,"White","Yes","One","No","Yes","One",2187
+43,"< 2500 g",27,130,"Black","No","None","No","Yes","None",2187
+44,"< 2500 g",20,80,"Other","Yes","None","No","Yes","None",2211
+45,"< 2500 g",17,110,"White","Yes","None","No","No","None",2225
+46,"< 2500 g",25,105,"Other","No","One","No","No","One",2240
+47,"< 2500 g",20,109,"Other","No","None","No","No","None",2240
+49,"< 2500 g",18,148,"Other","No","None","No","No","None",2282
+50,"< 2500 g",18,110,"Black","Yes","One","No","No","None",2296
+51,"< 2500 g",20,121,"White","Yes","One","No","Yes","None",2296
+52,"< 2500 g",21,100,"Other","No","One","No","No","Two, etc.",2301
+54,"< 2500 g",26,96,"Other","No","None","No","No","None",2325
+56,"< 2500 g",31,102,"White","Yes","One","No","No","One",2353
+57,"< 2500 g",15,110,"White","No","None","No","No","None",2353
+59,"< 2500 g",23,187,"Black","Yes","None","No","No","One",2367
+60,"< 2500 g",20,122,"Black","Yes","None","No","No","None",2381
+61,"< 2500 g",24,105,"Black","Yes","None","No","No","None",2381
+62,"< 2500 g",15,115,"Other","No","None","No","Yes","None",2381
+63,"< 2500 g",23,120,"Other","No","None","No","No","None",2395
+65,"< 2500 g",30,142,"White","Yes","One","No","No","None",2410
+67,"< 2500 g",22,130,"White","Yes","None","No","No","One",2410
+68,"< 2500 g",17,120,"White","Yes","None","No","No","Two, etc.",2414
+69,"< 2500 g",23,110,"White","Yes","One","No","No","None",2424
+71,"< 2500 g",17,120,"Black","No","None","No","No","Two, etc.",2438
+75,"< 2500 g",26,154,"Other","No","One","Yes","No","One",2442
+76,"< 2500 g",20,105,"Other","No","None","No","No","Two, etc.",2450
+77,"< 2500 g",26,190,"White","Yes","None","No","No","None",2466
+78,"< 2500 g",14,101,"Other","Yes","One","No","No","None",2466
+79,"< 2500 g",28,95,"White","Yes","None","No","No","Two, etc.",2466
+81,"< 2500 g",14,100,"Other","No","None","No","No","Two, etc.",2495
+82,"< 2500 g",23,94,"Other","Yes","None","No","No","None",2495
+83,"< 2500 g",17,142,"Black","No","None","Yes","No","None",2495
+84,"< 2500 g",21,130,"White","Yes","None","Yes","No","Two, etc.",2495
+85,">= 2500 g",19,182,"Black","No","None","No","Yes","None",2523
+86,">= 2500 g",33,155,"Other","No","None","No","No","Two, etc.",2551
+87,">= 2500 g",20,105,"White","Yes","None","No","No","One",2557
+88,">= 2500 g",21,108,"White","Yes","None","No","Yes","Two, etc.",2594
+89,">= 2500 g",18,107,"White","Yes","None","No","Yes","None",2600
+91,">= 2500 g",21,124,"Other","No","None","No","No","None",2622
+92,">= 2500 g",22,118,"White","No","None","No","No","One",2637
+93,">= 2500 g",17,103,"Other","No","None","No","No","One",2637
+94,">= 2500 g",29,123,"White","Yes","None","No","No","One",2663
+95,">= 2500 g",26,113,"White","Yes","None","No","No","None",2665
+96,">= 2500 g",19,95,"Other","No","None","No","No","None",2722
+97,">= 2500 g",19,150,"Other","No","None","No","No","One",2733
+98,">= 2500 g",22,95,"Other","No","None","Yes","No","None",2750
+99,">= 2500 g",30,107,"Other","No","One","No","Yes","Two, etc.",2750
+100,">= 2500 g",18,100,"White","Yes","None","No","No","None",2769
+101,">= 2500 g",18,100,"White","Yes","None","No","No","None",2769
+102,">= 2500 g",15,98,"Black","No","None","No","No","None",2778
+103,">= 2500 g",25,118,"White","Yes","None","No","No","Two, etc.",2782
+104,">= 2500 g",20,120,"Other","No","None","No","Yes","None",2807
+105,">= 2500 g",28,120,"White","Yes","None","No","No","One",2821
+106,">= 2500 g",32,121,"Other","No","None","No","No","Two, etc.",2835
+107,">= 2500 g",31,100,"White","No","None","No","Yes","Two, etc.",2835
+108,">= 2500 g",36,202,"White","No","None","No","No","One",2836
+109,">= 2500 g",28,120,"Other","No","None","No","No","None",2863
+111,">= 2500 g",25,120,"Other","No","None","No","Yes","Two, etc.",2877
+112,">= 2500 g",28,167,"White","No","None","No","No","None",2877
+113,">= 2500 g",17,122,"White","Yes","None","No","No","None",2906
+114,">= 2500 g",29,150,"White","No","None","No","No","Two, etc.",2920
+115,">= 2500 g",26,168,"Black","Yes","None","No","No","None",2920
+116,">= 2500 g",17,113,"Black","No","None","No","No","One",2920
+117,">= 2500 g",17,113,"Black","No","None","No","No","One",2920
+118,">= 2500 g",24,90,"White","Yes","One","No","No","One",2948
+119,">= 2500 g",35,121,"Black","Yes","One","No","No","One",2948
+120,">= 2500 g",25,155,"White","No","None","No","No","One",2977
+121,">= 2500 g",25,125,"Black","No","None","No","No","None",2977
+123,">= 2500 g",29,140,"White","Yes","None","No","No","Two, etc.",2977
+124,">= 2500 g",19,138,"White","Yes","None","No","No","Two, etc.",2977
+125,">= 2500 g",27,124,"White","Yes","None","No","No","None",2992
+126,">= 2500 g",31,215,"White","Yes","None","No","No","Two, etc.",3005
+127,">= 2500 g",33,109,"White","Yes","None","No","No","One",3033
+128,">= 2500 g",21,185,"Black","Yes","None","No","No","Two, etc.",3042
+129,">= 2500 g",19,189,"White","No","None","No","No","Two, etc.",3062
+130,">= 2500 g",23,130,"Black","No","None","No","No","One",3062
+131,">= 2500 g",21,160,"White","No","None","No","No","None",3062
+132,">= 2500 g",18,90,"White","Yes","None","No","Yes","None",3076
+133,">= 2500 g",18,90,"White","Yes","None","No","Yes","None",3076
+134,">= 2500 g",32,132,"White","No","None","No","No","Two, etc.",3080
+135,">= 2500 g",19,132,"Other","No","None","No","No","None",3090
+136,">= 2500 g",24,115,"White","No","None","No","No","Two, etc.",3090
+137,">= 2500 g",22,85,"Other","Yes","None","No","No","None",3090
+138,">= 2500 g",22,120,"White","No","None","Yes","No","One",3100
+139,">= 2500 g",23,128,"Other","No","None","No","No","None",3104
+140,">= 2500 g",22,130,"White","Yes","None","No","No","None",3132
+141,">= 2500 g",30,95,"White","Yes","None","No","No","Two, etc.",3147
+142,">= 2500 g",19,115,"Other","No","None","No","No","None",3175
+143,">= 2500 g",16,110,"Other","No","None","No","No","None",3175
+144,">= 2500 g",21,110,"Other","Yes","None","No","Yes","None",3203
+145,">= 2500 g",30,153,"Other","No","None","No","No","None",3203
+146,">= 2500 g",20,103,"Other","No","None","No","No","None",3203
+147,">= 2500 g",17,119,"Other","No","None","No","No","None",3225
+148,">= 2500 g",17,119,"Other","No","None","No","No","None",3225
+149,">= 2500 g",23,119,"Other","No","None","No","No","Two, etc.",3232
+150,">= 2500 g",24,110,"Other","No","None","No","No","None",3232
+151,">= 2500 g",28,140,"White","No","None","No","No","None",3234
+154,">= 2500 g",26,133,"Other","Yes","Two, etc.","No","No","None",3260
+155,">= 2500 g",20,169,"Other","No","One","No","Yes","One",3274
+156,">= 2500 g",24,115,"Other","No","None","No","No","Two, etc.",3274
+159,">= 2500 g",28,250,"Other","Yes","None","No","No","Two, etc.",3303
+160,">= 2500 g",20,141,"White","No","Two, etc.","No","Yes","One",3317
+161,">= 2500 g",22,158,"Black","No","One","No","No","Two, etc.",3317
+162,">= 2500 g",22,112,"White","Yes","Two, etc.","No","No","None",3317
+163,">= 2500 g",31,150,"Other","Yes","None","No","No","Two, etc.",3321
+164,">= 2500 g",23,115,"Other","Yes","None","No","No","One",3331
+166,">= 2500 g",16,112,"Black","No","None","No","No","None",3374
+167,">= 2500 g",16,135,"White","Yes","None","No","No","None",3374
+168,">= 2500 g",18,229,"Black","No","None","No","No","None",3402
+169,">= 2500 g",25,140,"White","No","None","No","No","One",3416
+170,">= 2500 g",32,134,"White","Yes","One","No","No","Two, etc.",3430
+172,">= 2500 g",20,121,"Black","Yes","None","No","No","None",3444
+173,">= 2500 g",23,190,"White","No","None","No","No","None",3459
+174,">= 2500 g",22,131,"White","No","None","No","No","One",3460
+175,">= 2500 g",32,170,"White","No","None","No","No","None",3473
+176,">= 2500 g",30,110,"Other","No","None","No","No","None",3475
+177,">= 2500 g",20,127,"Other","No","None","No","No","None",3487
+179,">= 2500 g",23,123,"Other","No","None","No","No","None",3544
+180,">= 2500 g",17,120,"Other","Yes","None","No","No","None",3572
+181,">= 2500 g",19,105,"Other","No","None","No","No","None",3572
+182,">= 2500 g",23,130,"White","No","None","No","No","None",3586
+183,">= 2500 g",36,175,"White","No","None","No","No","None",3600
+184,">= 2500 g",22,125,"White","No","None","No","No","One",3614
+185,">= 2500 g",24,133,"White","No","None","No","No","None",3614
+186,">= 2500 g",21,134,"Other","No","None","No","No","Two, etc.",3629
+187,">= 2500 g",19,235,"White","Yes","None","Yes","No","None",3629
+188,">= 2500 g",25,95,"White","Yes","Two, etc.","No","Yes","None",3637
+189,">= 2500 g",16,135,"White","Yes","None","No","No","None",3643
+190,">= 2500 g",29,135,"White","No","None","No","No","One",3651
+191,">= 2500 g",29,154,"White","No","None","No","No","One",3651
+192,">= 2500 g",19,147,"White","Yes","None","No","No","None",3651
+193,">= 2500 g",19,147,"White","Yes","None","No","No","None",3651
+195,">= 2500 g",30,137,"White","No","None","No","No","One",3699
+196,">= 2500 g",24,110,"White","No","None","No","No","One",3728
+197,">= 2500 g",19,184,"White","Yes","None","Yes","No","None",3756
+199,">= 2500 g",24,110,"Other","No","One","No","No","None",3770
+200,">= 2500 g",23,110,"White","No","None","No","No","One",3770
+201,">= 2500 g",20,120,"Other","No","None","No","No","None",3770
+202,">= 2500 g",25,241,"Black","No","None","Yes","No","None",3790
+203,">= 2500 g",30,112,"White","No","None","No","No","One",3799
+204,">= 2500 g",22,169,"White","No","None","No","No","None",3827
+205,">= 2500 g",18,120,"White","Yes","None","No","No","Two, etc.",3856
+206,">= 2500 g",16,170,"Black","No","None","No","No","Two, etc.",3860
+207,">= 2500 g",32,186,"White","No","None","No","No","Two, etc.",3860
+208,">= 2500 g",18,120,"Other","No","None","No","No","One",3884
+209,">= 2500 g",29,130,"White","Yes","None","No","No","Two, etc.",3884
+210,">= 2500 g",33,117,"White","No","None","No","Yes","One",3912
+211,">= 2500 g",20,170,"White","Yes","None","No","No","None",3940
+212,">= 2500 g",28,134,"Other","No","None","No","No","One",3941
+213,">= 2500 g",14,135,"White","No","None","No","No","None",3941
+214,">= 2500 g",28,130,"Other","No","None","No","No","None",3969
+215,">= 2500 g",25,120,"White","No","None","No","No","Two, etc.",3983
+216,">= 2500 g",16,95,"Other","No","None","No","No","One",3997
+217,">= 2500 g",20,158,"White","No","None","No","No","One",3997
+218,">= 2500 g",26,160,"Other","No","None","No","No","None",4054
+219,">= 2500 g",21,115,"White","No","None","No","No","One",4054
+220,">= 2500 g",22,129,"White","No","None","No","No","None",4111
+221,">= 2500 g",25,130,"White","No","None","No","No","Two, etc.",4153
+222,">= 2500 g",31,120,"White","No","None","No","No","Two, etc.",4167
+223,">= 2500 g",35,170,"White","No","One","No","No","One",4174
+224,">= 2500 g",19,120,"White","Yes","None","No","No","None",4238
+225,">= 2500 g",24,116,"White","No","None","No","No","One",4593
+226,">= 2500 g",45,123,"White","No","None","No","No","One",4990
