@@ -74,6 +74,7 @@ public:
 public slots:
 				void			runScriptRequestDone(const QString& result, const QString& requestId);
 				void			dataSetChangedHandler();
+				void			dataSetColumnsChangedHandler();
 				void			replaceVariableNameInListModels(const std::string & oldName, const std::string & newName);
 
 signals:

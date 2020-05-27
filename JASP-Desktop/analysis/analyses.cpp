@@ -42,10 +42,10 @@ Analyses::Analyses()
 	if(_singleton) throw std::runtime_error("Can only instantiate single copy of Analyses!");
 	_singleton = this;
 
-	connect(this,					&Analyses::requestComputedColumnDestruction,	this,	&Analyses::dataSetColumnsChanged	, Qt::QueuedConnection	);
+	connect(this,					&Analyses::requestComputedColumnDestruction,	this,	&Analyses::dataSetChanged			, Qt::QueuedConnection	);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::dataSetChanged,				this,	&Analyses::dataSetChanged									);
 	connect(DataSetPackage::pkg(),	&DataSetPackage::columnDataTypeChanged,			this,	&Analyses::dataSetColumnsChanged							);
-	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this,	&Analyses::dataSetColumnsChanged							);
+	connect(DataSetPackage::pkg(),	&DataSetPackage::labelChanged,					this,	&Analyses::dataSetChanged									);
 }
 
 
