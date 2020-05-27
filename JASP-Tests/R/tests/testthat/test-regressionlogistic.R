@@ -307,22 +307,18 @@ test_that("Pseudo R-squared are correct", {
   # Tjur's results for Tjur R2: 0.096231
   #.
   # Check against code from performance package
-  # library(aplore3)
-  # library(performance)
+  # library(aplore3)     # version 0.9
+  # library(performance) # version 0.4.6
   # data("lowbwt", package = "aplore3")
   # fit <- glm(low ~ age + lwt + race + smoke, data = lowbwt, family = binomial)
-  #
-  # performance::r2_mcfadden(fit)$R2
-  # McFadden's R2: 0.08562914
-  #
-  # performance::r2_nagelkerke(fit)
-  # Nagelkerke's R2: 0.1418442 
-  #
-  # performance::r2_tjur(fit)
-  # Tjur's R2: 0.09623107 
-  #
-  # performance::r2_coxsnell(fit)
-  # Cox & Snell's R2: 0.1008645 
+  # 
+  # performance::r2_mcfadden(fit)$R2 # McFadden's R2: 0.08562914
+  # 
+  # performance::r2_nagelkerke(fit) # Nagelkerke's R2: 0.1418442
+  # 
+  # performance::r2_tjur(fit) # Tjur's R2: 0.09623107
+  # 
+  # performance::r2_coxsnell(fit) # Cox & Snell's R2: 0.1008645
   
   options            <- jasptools::analysisOptions("regressionlogistic")
   options$dependent  <- "low"
