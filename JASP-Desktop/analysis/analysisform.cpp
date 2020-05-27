@@ -749,6 +749,17 @@ void AnalysisForm::dataSetChangedHandler()
 	}
 }
 
+void AnalysisForm::dataSetColumnsChangedHandler()
+{
+	if (!_removed && DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
+	{
+		for (ListModel* model : _modelMap.values())
+			model->refresh();
+
+		emit dataSetChanged();
+	}
+}
+
 void AnalysisForm::setControlIsDependency(QString controlName, bool isDependency)
 {
 	if(_controls.count(controlName) > 0)

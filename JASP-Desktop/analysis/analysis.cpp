@@ -263,7 +263,7 @@ void Analysis::initialized(AnalysisForm* form, bool isNewAnalysis)
 	if(!_isDuplicate)	_status			= isNewAnalysis ? Empty : Complete;
 	
 	connect(Analyses::analyses(), &Analyses::dataSetChanged,		_analysisForm, &AnalysisForm::dataSetChangedHandler);
-	connect(Analyses::analyses(), &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetChangedHandler); //Really should be renamed
+	connect(Analyses::analyses(), &Analyses::dataSetColumnsChanged,	_analysisForm, &AnalysisForm::dataSetColumnsChangedHandler);
 }
 
 
