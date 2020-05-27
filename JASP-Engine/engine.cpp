@@ -75,6 +75,8 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 
 	rbridge_setDataSetSource(			boost::bind(&Engine::provideDataSet,				this));
 	rbridge_setFileNameSource(			boost::bind(&Engine::provideTempFileName,			this, _1, _2, _3));
+	rbridge_setSpecificFileNameSource(	boost::bind(&Engine::provideSpecificFileName,		this, _1, _2, _3));
+
 	rbridge_setStateFileSource(			boost::bind(&Engine::provideStateFileName,			this, _1, _2));
 	rbridge_setJaspResultsFileSource(	boost::bind(&Engine::provideJaspResultsFileName,	this, _1, _2));
 
@@ -690,17 +692,22 @@ DataSet * Engine::provideDataSet()
 	return dataset;
 }
 
-void Engine::provideStateFileName(std::string &root, std::string &relativePath)
+void Engine::provideStateFileName(std::string & root, std::string & relativePath)
 {
 	return TempFiles::createSpecific("state", _analysisId, root, relativePath);
 }
 
-void Engine::provideJaspResultsFileName(std::string &root, std::string &relativePath)
+void Engine::provideJaspResultsFileName(std::string & root, std::string & relativePath)
 {
 	return TempFiles::createSpecific("jaspResults.json", _analysisId, root, relativePath);
 }
 
-void Engine::provideTempFileName(const std::string &extension, std::string &root, std::string &relativePath)
+void Engine::provideSpecificFileName(const std::string & specificName, std::string & root, std::string & relativePath)
+{
+	return TempFiles::createSpecific(specificName, _analysisId, root, relativePath);
+}
+
+void Engine::provideTempFileName(const std::string & extension, std::string & root, std::string & relativePath)
 {
 	TempFiles::create(extension, _analysisId, root, relativePath);
 }

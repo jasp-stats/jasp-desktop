@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cmath>
 #include "boost/nowide/fstream.hpp"
+#include "boost/nowide/cstdio.hpp"
 
 typedef boost::nowide::ofstream bofstream; //Use this to work around problems on Windows with utf8 conversion
 typedef boost::nowide::ifstream bifstream;
@@ -10,6 +11,8 @@ sendFuncDef			jaspResults::_ipccSendFunc		= nullptr;
 pollMessagesFuncDef jaspResults::_ipccPollFunc		= nullptr;
 std::string			jaspResults::_saveResultsHere	= "";
 std::string			jaspResults::_saveResultsRoot	= "";
+std::string			jaspResults::_writeSealRoot		= "";
+std::string			jaspResults::_writeSealRelative	= "";
 std::string			jaspResults::_baseCitation		= "";
 Rcpp::Environment*	jaspResults::_RStorageEnv		= nullptr;
 bool				jaspResults::_insideJASP		= false;
@@ -50,6 +53,15 @@ void jaspResults::setSaveLocation(const std::string & root, const std::string & 
 		_saveResultsRoot.push_back('/');
 }
 
+void jaspResults::setWriteSealLocation(const std::string & root, const std::string & relativePath)
+{
+	_writeSealRoot		= root;
+	_writeSealRelative	= relativePath;
+
+	if(_writeSealRoot.size() > 0 && _writeSealRoot[_writeSealRoot.size() - 1] != '/')
+		_writeSealRoot.push_back('/');
+}
+
 void jaspResults::setInsideJASP()
 {
 	_insideJASP = true;
@@ -67,11 +79,16 @@ jaspResults::jaspResults(std::string title, Rcpp::RObject oldState)
 	{
 		Rcpp::Environment::global_env()["RStorageEnv"] = Rcpp::Environment::global_env().new_child(true);
 		_RStorageEnv = new Rcpp::Environment(Rcpp::Environment::global_env()["RStorageEnv"]);
+
+		if(_writeSealRoot + _writeSealRelative == "")
+			throw std::runtime_error("Write seal location not given and we are running in JASP, this should never happen!");
 	}
 	else
 		_RStorageEnv = new Rcpp::Environment(Rcpp::as<Rcpp::Environment>(Rcpp::Environment::namespace_env("jaspResults")[".plotStateStorage"]));
 
-	if(!oldState.isNULL() && Rcpp::is<Rcpp::List>(oldState))
+	bool imNotReincarnatedAfterBeingMurdered = lastWriteWorked();
+
+	if(imNotReincarnatedAfterBeingMurdered && !oldState.isNULL() && Rcpp::is<Rcpp::List>(oldState))
 		fillEnvironmentWithStateObjects(Rcpp::as<Rcpp::List>(oldState));
 
 	setStatus("running");
@@ -79,7 +96,7 @@ jaspResults::jaspResults(std::string title, Rcpp::RObject oldState)
 	if(_baseCitation != "")
 		addCitation(_baseCitation);
 
-	if(_saveResultsHere != "")
+	if(imNotReincarnatedAfterBeingMurdered && _saveResultsHere != "")
 		loadResults();
 }
 
@@ -93,6 +110,44 @@ std::string jaspResults::getStatus()
 	return _response["status"].asString();
 }
 
+void jaspResults::prepareForWriting()
+{
+	//Remove the seal if it is there or not doesnt matter
+	boost::nowide::remove((_writeSealRoot + _writeSealRelative).c_str());
+}
+
+void jaspResults::finishWriting()
+{
+	//Let us write a small file that tells us writing stuff went well ( https://github.com/jasp-stats/INTERNAL-jasp/issues/884 )
+	bofstream sealMe((_writeSealRoot + _writeSealRelative).c_str(), std::ios_base::trunc);
+
+	sealMe << "Writing state, plot and jaspResults.json seems to have been successful!\n" << std::flush;
+
+	sealMe.close();
+
+	jaspPrint("Created Write Seal for jaspResults at: '" + _writeSealRoot + _writeSealRelative + "' ");
+}
+
+bool jaspResults::lastWriteWorked() const
+{
+	//Let us write a small file that tells us writing stuff went well ( https://github.com/jasp-stats/INTERNAL-jasp/issues/884 )
+	bifstream seal((_writeSealRoot + _writeSealRelative).c_str(), std::ios_base::in);
+
+	if(!seal.is_open()) return false;
+
+	//std::cout << "Opened Write Seal for jaspResults to check if the last write worked from: '" << (_writeSealRoot + _writeSealRelative) << "' worked!" << std::endl;
+
+	std::stringstream wholeSeal;
+
+	wholeSeal << seal.rdbuf();
+
+	seal.close();
+
+	return wholeSeal.str().size() > 0;
+}
+
+
+
 void jaspResults::complete()
 {
 	completeChildren();
@@ -104,6 +159,7 @@ void jaspResults::complete()
 
 	send();
 	saveResults();
+	finishWriting();
 }
 
 void jaspResults::saveResults()
@@ -429,6 +485,7 @@ Rcpp::List jaspResults::getKeepList()
 {
 	Rcpp::List keep = getPlotPathsForKeep();
 	keep.push_front(std::string(_saveResultsHere));
+	keep.push_front(std::string(_writeSealRelative));
 	keep.push_front(_relativePathKeep);
 
 	return keep;

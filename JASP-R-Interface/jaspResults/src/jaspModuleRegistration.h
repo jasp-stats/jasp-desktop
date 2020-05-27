@@ -189,6 +189,8 @@ RCPP_MODULE(jaspResults)
 
 		.method("setOptions",				&jaspResults_Interface::setOptions,								"Tells jaspResults which options are currently set, should not be used in an analysis!")
 		.method("changeOptions",			&jaspResults_Interface::changeOptions,							"Changes the currently set options and removes all objects that depend on the changed options. Mostly useful for unit tests because this we we can simulate re-running the analysis. Should not be used in an analysis!")
+
+		.method("prepareForWriting",		&jaspResults_Interface::prepareForWriting,						"Clear seal for writing")
 	;
 }
 

@@ -71,7 +71,7 @@ typedef RBridgeColumn*				(STDCALL *ReadDataSetCB)                (RBridgeColumn
 typedef RBridgeColumn*				(STDCALL *ReadADataSetCB)               (size_t * colMax);
 typedef char**						(STDCALL *ReadDataColumnNamesCB)        (size_t * maxCol);
 typedef RBridgeColumnDescription*	(STDCALL *ReadDataSetDescriptionCB)     (RBridgeColumnType* columns, size_t colMax);
-typedef bool						(STDCALL *RequestSpecificFileSourceCB)	(const char **root, const char **relativePath);
+typedef bool						(STDCALL *RequestPredefinedFileSourceCB)(const char **root, const char **relativePath);
 typedef bool						(STDCALL *RequestTempFileNameCB)        (const char* extensionAsString, const char **root, const char **relativePath);
 typedef const char*					(STDCALL *RequestTempRootNameCB)        ();
 typedef bool						(STDCALL *RunCallbackCB)                (const char* in, int progress, const char** out);
@@ -84,26 +84,27 @@ typedef int							(STDCALL *DataSetRowCount)              ();
 typedef const char *				(STDCALL *EnDecodeDef)					(const char *);
 
 struct RBridgeCallBacks {
-	ReadDataSetCB				readDataSetCB;
-	ReadDataColumnNamesCB		readDataColumnNamesCB;
-	ReadDataSetDescriptionCB	readDataSetDescriptionCB;
-	RequestSpecificFileSourceCB	requestStateFileSourceCB;
-	RequestTempFileNameCB		requestTempFileNameCB;
-	RequestTempRootNameCB		requestTempRootNameCB;
-	RunCallbackCB				runCallbackCB;
-	ReadADataSetCB				readFullDataSetCB;
-	ReadADataSetCB				readFilterDataSetCB;
-	RequestSpecificFileSourceCB	requestJaspResultsFileSourceCB;
-	GetColumnType				dataSetGetColumnType;
-	SetColumnAsScale			dataSetColumnAsScale;
-	SetColumnAsOrdinal			dataSetColumnAsOrdinal;
-	SetColumnAsNominal			dataSetColumnAsNominal;
-	SetColumnAsNominalText		dataSetColumnAsNominalText;
-	DataSetRowCount				dataSetRowCount;
-	EnDecodeDef					encoder,
-								decoder,
-								encoderAll,
-								decoderAll;
+	ReadDataSetCB					readDataSetCB;
+	ReadDataColumnNamesCB			readDataColumnNamesCB;
+	ReadDataSetDescriptionCB		readDataSetDescriptionCB;
+	RequestPredefinedFileSourceCB	requestStateFileSourceCB;
+	RequestTempFileNameCB			requestTempFileNameCB;
+	RequestTempFileNameCB			requestSpecificFileNameCB;
+	RequestTempRootNameCB			requestTempRootNameCB;
+	RunCallbackCB					runCallbackCB;
+	ReadADataSetCB					readFullDataSetCB;
+	ReadADataSetCB					readFilterDataSetCB;
+	RequestPredefinedFileSourceCB	requestJaspResultsFileSourceCB;
+	GetColumnType					dataSetGetColumnType;
+	SetColumnAsScale				dataSetColumnAsScale;
+	SetColumnAsOrdinal				dataSetColumnAsOrdinal;
+	SetColumnAsNominal				dataSetColumnAsNominal;
+	SetColumnAsNominalText			dataSetColumnAsNominalText;
+	DataSetRowCount					dataSetRowCount;
+	EnDecodeDef						encoder,
+									decoder,
+									encoderAll,
+									decoderAll;
 };
 
 typedef void			(*sendFuncDef)			(const char *);

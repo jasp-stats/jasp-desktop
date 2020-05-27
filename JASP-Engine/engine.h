@@ -103,9 +103,10 @@ private: // Methods:
 
 	DataSet *provideDataSet();
 
-	void provideTempFileName(		const std::string &extension,	std::string &root,			std::string &relativePath);
-	void provideStateFileName(		std::string &root,				std::string &relativePath);
-	void provideJaspResultsFileName(std::string &root,				std::string &relativePath);
+	void provideTempFileName(		const std::string & extension,		std::string & root,	std::string & relativePath);
+	void provideStateFileName(											std::string & root,	std::string & relativePath);
+	void provideJaspResultsFileName(									std::string & root,	std::string & relativePath);
+	void provideSpecificFileName(	const std::string & specificName,	std::string & root,	std::string & relativePath);
 
 	void encodeColumnNamesinOptions(Json::Value & options);
 	void _encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta);

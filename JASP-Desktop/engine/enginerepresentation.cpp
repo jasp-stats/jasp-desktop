@@ -199,7 +199,7 @@ void EngineRepresentation::process()
 	if(_analysisAborted && _analysisInProgress && _abortTime + KILLTIME < Utils::currentSeconds()) //We wait a second or two before we kill the engine if it does not want to abort.
 	{
 		killEngine(true);
-		restartAbortedAnalysis(true); //We restart it now because we do want it to continue later. And we refresh it because *maybe* we just killed it in the middle of something important like writing files.
+		restartAbortedAnalysis();
 	}
 }
 
@@ -757,13 +757,10 @@ void EngineRepresentation::processSettingsReply()
 	restartAbortedAnalysis();
 }
 
-void EngineRepresentation::restartAbortedAnalysis(bool refreshIt)
+void EngineRepresentation::restartAbortedAnalysis()
 {
 	if(_analysisAborted && _abortAndRestart)
-	{
-		if(refreshIt)	_analysisAborted->refresh();
-		else			_analysisAborted->run();
-	}
+		_analysisAborted->run();
 
 	_analysisAborted = nullptr;
 }

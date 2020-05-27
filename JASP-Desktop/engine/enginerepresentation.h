@@ -69,7 +69,7 @@ public:
 	void processEngineResumedReply();
 	void processLogCfgReply();
 	void processSettingsReply();
-	void restartAbortedAnalysis(bool refreshIt = false);
+	void restartAbortedAnalysis();
 
 	void checkIfExpectedReplyType(engineState expected) { unexpectedEngineReply::checkIfExpected(expected, _engineState, channelNumber()); }
 
