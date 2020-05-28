@@ -25,17 +25,20 @@
 #include "timers.h"
 #include "r_functionwhitelist.h"
 
-DataSet						*	rbridge_dataSet		= NULL;
+DataSet						*	rbridge_dataSet		= nullptr;
 RCallback						rbridge_callback	= NULL;
 std::set<std::string>			filterColumnsUsed;
 std::vector<std::string>		columnNamesInDataSet;
 ColumnEncoder					extraEncodings("JaspExtraOptions_.");
 
+
+//You cannot replace these NULL's by nullptr because then the compiler will complain about expressions that cannot be used as functions
 boost::function<DataSet *()>				rbridge_dataSetSource		= NULL;
 boost::function<size_t()>					rbridge_getDataSetRowCount	= NULL;
 boost::function<int(const std::string &)>	rbridge_getColumnTypeEngine = NULL;
 
-boost::function<void(const std::string &, std::string &, std::string &)>	rbridge_fileNameSource			= NULL;
+boost::function<void(const std::string &, std::string &, std::string &)>	rbridge_fileNameSource			= NULL,
+																			rbridge_specificFileNameSource	= NULL;
 boost::function<void(std::string &, std::string &)>							rbridge_stateFileSource			= NULL,
 																			rbridge_jaspResultsFileSource	= NULL;
 
@@ -69,6 +72,7 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 		rbridge_readDataSetDescription,
 		rbridge_requestStateFileSource,
 		rbridge_requestTempFileName,
+		rbridge_requestSpecificFileName,
 		rbridge_requestTempRootName,
 		rbridge_runCallback,
 		rbridge_readFullDataSet,
@@ -103,6 +107,7 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 
 void rbridge_setDataSetSource(			boost::function<DataSet* ()> source)												{	rbridge_dataSetSource			= source; }
 void rbridge_setFileNameSource(			boost::function<void (const std::string &, std::string &, std::string &)> source)	{	rbridge_fileNameSource			= source; }
+void rbridge_setSpecificFileNameSource(	boost::function<void (const std::string &, std::string &, std::string &)> source)	{	rbridge_specificFileNameSource	= source; }
 void rbridge_setStateFileSource(		boost::function<void (std::string &, std::string &)> source)						{	rbridge_stateFileSource			= source; }
 void rbridge_setJaspResultsFileSource(	boost::function<void (std::string &, std::string &)> source)						{	rbridge_jaspResultsFileSource	= source; }
 
@@ -194,8 +199,24 @@ extern "C" bool STDCALL rbridge_requestTempFileName(const char* extensionAsStrin
 	static std::string _root, _relativePath;
 
 	rbridge_fileNameSource(extensionAsString, _root, _relativePath);
-	*root = _root.c_str();
-	*relativePath = _relativePath.c_str();
+	*root			= _root.c_str();
+	*relativePath	= _relativePath.c_str();
+	return true;
+}
+
+extern "C" bool STDCALL rbridge_requestSpecificFileName(const char* specificFilename, const char** root, const char** relativePath)
+{
+	if (!rbridge_specificFileNameSource)
+		return false;
+
+	static std::string _root, _relativePath, _specific;
+
+	_specific = specificFilename;
+
+	rbridge_specificFileNameSource(_specific, _root, _relativePath);
+
+	*root			= _root.c_str();
+	*relativePath	= _relativePath.c_str();
 	return true;
 }
 
@@ -222,7 +243,7 @@ extern "C" bool STDCALL rbridge_runCallback(const char* in, int progress, const 
 std::string rbridge_run(const std::string &name, const std::string &title, const std::string &rfile, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform, int ppi, const std::string &imageBackground, RCallback callback, bool useJaspResults, bool developerMode)
 {
 	rbridge_callback	= callback;
-	if (rbridge_dataSet != NULL)
+	if (rbridge_dataSet != nullptr)
 		rbridge_dataSet		= rbridge_dataSetSource();
 
 	extraEncodings.setCurrentNamesFromOptionsMeta(options);
@@ -238,7 +259,7 @@ std::string rbridge_run(const std::string &name, const std::string &title, const
 std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, const std::string &perform, int ppi, int analysisID, int analysisRevision, const std::string &imageBackground, bool developerMode)
 {
 	rbridge_callback	= NULL; //Only jaspResults here so callback is not needed
-	if (rbridge_dataSet != NULL)
+	if (rbridge_dataSet != nullptr)
 		rbridge_dataSet		= rbridge_dataSetSource();
 
 	extraEncodings.setCurrentNamesFromOptionsMeta(options);
@@ -250,8 +271,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
 {
 	rbridge_dataSet = rbridge_dataSetSource();
 
-	if(rbridge_dataSet == NULL)
-		return NULL;
+	if(rbridge_dataSet == nullptr)
+		return nullptr;
 
 	Columns &columns = rbridge_dataSet->columns();
 
@@ -287,7 +308,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMa
 	(*colMax) = filterColumnsUsed.size();
 
 	if(*colMax == 0)
-		return NULL;
+		return nullptr;
 
 	RBridgeColumnType* colHeaders = (RBridgeColumnType*)calloc((*colMax), sizeof(RBridgeColumnType));
 
@@ -313,22 +334,22 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFiltering(size_t * colMa
 	return returnThis;
 }
 
-static RBridgeColumn*	datasetStatic = NULL;
+static RBridgeColumn*	datasetStatic = nullptr;
 static int				datasetColMax = 0;
 
 extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHeaders, size_t colMax, bool obeyFilter)
 {
-	if (colHeaders == NULL)
-		return NULL;
+	if (colHeaders == nullptr)
+		return nullptr;
 
 	rbridge_dataSet = rbridge_dataSetSource();
 
-	if(rbridge_dataSet == NULL)
-		return NULL;
+	if(rbridge_dataSet == nullptr)
+		return nullptr;
 
 	Columns &columns = rbridge_dataSet->columns();
 
-	if (datasetStatic != NULL)
+	if (datasetStatic != nullptr)
 		freeRBridgeColumns();
 
 	datasetColMax = colMax;
@@ -337,7 +358,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	size_t filteredRowCount = obeyFilter ? rbridge_dataSet->filteredRowCount() : rbridge_dataSet->rowCount();
 
 	// lets make some rownumbers/names for R that takes into account being filtered or not!
-	datasetStatic[colMax].ints		= filteredRowCount == 0 ? NULL : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
+	datasetStatic[colMax].ints		= filteredRowCount == 0 ? nullptr : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 	datasetStatic[colMax].nbRows	= filteredRowCount;
 	int filteredRow					= 0;
 
@@ -386,7 +407,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 			{
 				resultCol.isScale	= false;
 				resultCol.hasLabels	= false;
-				resultCol.ints		= filteredRowCount == 0 ? NULL : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
+				resultCol.ints		= filteredRowCount == 0 ? nullptr : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 
 				for(int value : column.AsInts)
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
@@ -397,7 +418,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.isScale	= false;
 				resultCol.hasLabels = true;
 				resultCol.isOrdinal = false;
-				resultCol.ints		= filteredRowCount == 0 ? NULL : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
+				resultCol.ints		= filteredRowCount == 0 ? nullptr : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 
 				for(int value : column.AsInts)
 					if(rowNo < filteredRowCount && (!obeyFilter || rbridge_dataSet->filterVector()[dataSetRowNo++]))
@@ -413,7 +434,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 		{
 			resultCol.isScale	= false;
 			resultCol.hasLabels	= true;
-			resultCol.ints		= filteredRowCount == 0 ? NULL : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
+			resultCol.ints		= filteredRowCount == 0 ? nullptr : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 			resultCol.isOrdinal = (requestedType == columnType::ordinal);
 
 			if (colType != columnType::scale)
@@ -441,7 +462,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 				resultCol.isScale	= false;
 				resultCol.hasLabels = true;
 				resultCol.isOrdinal = false;
-				resultCol.ints		= filteredRowCount == 0 ? NULL : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
+				resultCol.ints		= filteredRowCount == 0 ? nullptr : static_cast<int*>(calloc(filteredRowCount, sizeof(int)));
 
 				std::set<int> uniqueValues;
 
@@ -510,7 +531,7 @@ extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 
 	Columns		&	columns			= rbridge_dataSet->columns();
 	static int		staticColMax	= 0;
-	static char	**	staticResult	= NULL;
+	static char	**	staticResult	= nullptr;
 
 	if (staticResult)
 	{
@@ -537,12 +558,12 @@ extern "C" char** STDCALL rbridge_readDataColumnNames(size_t * colMax)
 extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columnsType, size_t colMax)
 {
 	if (!columnsType)
-		return NULL;
+		return nullptr;
 
 	static size_t						lastColMax = 0;
-	static RBridgeColumnDescription	*	resultCols = NULL;
+	static RBridgeColumnDescription	*	resultCols = nullptr;
 
-	if (resultCols != NULL)
+	if (resultCols != nullptr)
 		freeRBridgeColumnDescription(resultCols, lastColMax);
 
 	lastColMax			= colMax;
@@ -686,7 +707,7 @@ extern "C" int	STDCALL rbridge_dataSetRowCount()
 
 void freeRBridgeColumns()
 {
-	if(datasetStatic == NULL)
+	if(datasetStatic == nullptr)
 		return;
 
 	for (int i = 0; i < datasetColMax; i++)
@@ -702,7 +723,7 @@ void freeRBridgeColumns()
 	free(datasetStatic[datasetColMax].ints); //rownames/numbers
 	free(datasetStatic);
 
-	datasetStatic	= NULL;
+	datasetStatic	= nullptr;
 	datasetColMax	= 0;
 }
 
@@ -727,7 +748,7 @@ void freeLabels(char** labels, size_t nbLabels)
 
 char** rbridge_getLabels(const Labels &levels, size_t &nbLevels)
 {
-	char** results = NULL;
+	char** results = nullptr;
 	nbLevels = 0;
 	if (levels.size() == 0)
 	{
@@ -748,7 +769,7 @@ char** rbridge_getLabels(const Labels &levels, size_t &nbLevels)
 
 char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevels)
 {
-	char** results = NULL;
+	char** results = nullptr;
 	nbLevels = 0;
 	if (levels.size() == 0)
 	{
@@ -796,7 +817,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 {
 	rbridge_dataSet = rbridge_dataSetSource();
 
-	if(rbridge_dataSet == NULL)
+	if(rbridge_dataSet == nullptr)
 		throw filterException("No more data!");
 
 	int rowCount = rbridge_dataSet->rowCount();
@@ -811,7 +832,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	R_FunctionWhiteList::scriptIsSafe(filter64); //can throw filterExceptions
 
-	bool * arrayPointer = NULL;
+	bool * arrayPointer = nullptr;
 
 	jaspRCPP_runScript(rbridge_setupRCodeEnv(rowCount));
 	int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
@@ -857,7 +878,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 std::string rbridge_evalRCodeWhiteListed(const std::string & rCode)
 {
 	rbridge_dataSet = rbridge_dataSetSource();
-	int rowCount	= rbridge_dataSet == NULL ? 0 : rbridge_dataSet->rowCount();
+	int rowCount	= rbridge_dataSet == nullptr ? 0 : rbridge_dataSet->rowCount();
 
 	jaspRCPP_resetErrorMsg();
 

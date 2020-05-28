@@ -48,9 +48,10 @@ extern "C" {
 	char**						STDCALL rbridge_readDataColumnNames(size_t *colMax);
 	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, size_t colMax);
 	bool						STDCALL rbridge_test(char** root);
-	bool						STDCALL rbridge_requestStateFileSource(const char **root, const char **relativePath);
-	bool						STDCALL rbridge_requestJaspResultsFileSource(const char **root, const char **relativePath);
-	bool						STDCALL rbridge_requestTempFileName(const char* extensionAsString, const char **root, const char **relativePath);
+	bool						STDCALL rbridge_requestStateFileSource(									const char ** root, const char ** relativePath);
+	bool						STDCALL rbridge_requestJaspResultsFileSource(							const char ** root, const char ** relativePath);
+	bool						STDCALL rbridge_requestTempFileName(	const char * extensionAsString,	const char ** root, const char ** relativePath);
+	bool						STDCALL rbridge_requestSpecificFileName(const char * specificFilename,	const char ** root, const char ** relativePath);
 	const char*					STDCALL rbridge_requestTempRootName();
 	bool						STDCALL rbridge_runCallback(const char* in, int progress, const char** out);
 	int							STDCALL rbridge_getColumnType			(const char * columnName);
@@ -69,7 +70,9 @@ extern "C" {
 
 	void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction);
 
+
 	void rbridge_setFileNameSource(			boost::function<void(const std::string &, std::string &, std::string &)> source);
+	void rbridge_setSpecificFileNameSource(	boost::function<void(const std::string &, std::string &, std::string &)> source);
 	void rbridge_setStateFileSource(		boost::function<void(std::string &, std::string &)> source);
 	void rbridge_setJaspResultsFileSource(	boost::function<void(std::string &, std::string &)> source);
 	void rbridge_setDataSetSource(			boost::function<DataSet *()> source);

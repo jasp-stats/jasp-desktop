@@ -31,6 +31,7 @@ Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(	SEXP columns, SEXP columnsAsNume
 Rcpp::DataFrame jaspRCPP_convertRBridgeColumns_to_DataFrame(const RBridgeColumn* colResults, size_t colMax);
 
 SEXP jaspRCPP_callbackSEXP(SEXP results, SEXP progress);
+SEXP jaspRCPP_requestSpecificFileNameSEXP(SEXP extension);
 SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension);
 SEXP jaspRCPP_requestTempRootNameSEXP();
 SEXP jaspRCPP_requestStateFileNameSEXP();
@@ -42,7 +43,8 @@ RInside::Proxy	jaspRCPP_parseEval(const std::string & code);
 void			jaspRCPP_logString(const std::string & code);
 SEXP			jaspRCPP_CreateCaptureConnection();
 
-bool jaspRCPP_requestJaspResultsRelativeFilePath(std::string & root, std:: string & relativePath);
+bool jaspRCPP_requestSpecificRelativeFilePath(std::string specificFilename, std::string & root, std:: string & relativePath);
+bool jaspRCPP_requestJaspResultsRelativeFilePath(							std::string & root, std:: string & relativePath);
 
 void jaspRCPP_returnDataFrame(Rcpp::DataFrame frame);
 void jaspRCPP_returnString(SEXP Message);

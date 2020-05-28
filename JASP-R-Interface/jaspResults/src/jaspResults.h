@@ -15,41 +15,47 @@ public:
 	jaspResults(std::string title, Rcpp::RObject oldState);
 
 	//static functions to allow the values to be set before the constructor is called from R. Would be nicer to just run the constructor in C++ maybe?
-	static void setSendFunc(sendFuncDef sendFunc);
-	static void setPollMessagesFunc(pollMessagesFuncDef pollFunc);
-	static void setResponseData(int analysisID, int revision);
-	static void setSaveLocation(const std::string & root, const std::string & relativePath);
-	static void setBaseCitation(std::string baseCitation);
-	static void setInsideJASP();
-	static bool isInsideJASP() { return _insideJASP; }
+	static void			setSendFunc(sendFuncDef sendFunc);
+	static void			setPollMessagesFunc(pollMessagesFuncDef pollFunc);
+	static void			setResponseData(int analysisID, int revision);
+	static void			setSaveLocation(const std::string & root, const std::string & relativePath);
+	static void			setWriteSealLocation(const std::string & root, const std::string & relativePath);
+	static void			setBaseCitation(std::string baseCitation);
+	static void			setInsideJASP();
+	static bool			isInsideJASP() { return _insideJASP; }
+	static const char *	writeSealFilename() { return "jaspResultsFinishedWriting.txt"; }
 
-	void send(std::string otherMsg = "");
-	void checkForAnalysisChanged();
-	void setStatus(std::string status);
-	std::string getStatus();
+	void			send(std::string otherMsg = "");
+	void			checkForAnalysisChanged();
+	void			setStatus(std::string status);
+	std::string		getStatus();
 
 	const char *	constructResultJson();
 	Json::Value		metaEntry()								const override;
 	Json::Value		dataEntry(std::string & errorMessage)	const override;
 	Json::Value		dataEntry()								const			{ std::string dummy(""); return dataEntry(dummy); }
 
-	void childrenUpdatedCallbackHandler() override;
+	void			childrenUpdatedCallbackHandler() override;
 
-	void finalizedHandler() override { complete(); }
-	void complete();
-	void saveResults();
+	void			finalizedHandler() override { complete(); }
+	void			complete();
 
-	void loadResults();
-	void setErrorMessage(std::string msg, std::string errorStatus);
-	void changeOptions(std::string opts);
-	void setOptions(std::string opts);
-	void pruneInvalidatedData();
+	void			prepareForWriting();
+	void			finishWriting();
+	bool			lastWriteWorked() const;
+	void			saveResults();
 
-	Rcpp::List	getOtherObjectsForState();
-	Rcpp::List	getPlotObjectsForState();
-	Rcpp::List	getPlotPathsForKeep();
-	Rcpp::List	getKeepList();
-	std::string	getResults() { return constructResultJson(); }
+	void			loadResults();
+	void			setErrorMessage(std::string msg, std::string errorStatus);
+	void			changeOptions(std::string opts);
+	void			setOptions(std::string opts);
+	void			pruneInvalidatedData();
+
+	Rcpp::List		getOtherObjectsForState();
+	Rcpp::List		getPlotObjectsForState();
+	Rcpp::List		getPlotPathsForKeep();
+	Rcpp::List		getKeepList();
+	std::string		getResults() { return constructResultJson(); }
 
 	std::string _relativePathKeep;
 
@@ -73,9 +79,11 @@ private:
 	static Json::Value					_response;
 	static sendFuncDef					_ipccSendFunc;
 	static pollMessagesFuncDef			_ipccPollFunc;
-	static std::string					_saveResultsHere;
-	static std::string					_saveResultsRoot;
-	static std::string					_baseCitation;
+	static std::string					_saveResultsHere,
+										_saveResultsRoot,
+										_baseCitation,
+										_writeSealRoot,
+										_writeSealRelative;
 	static bool							_insideJASP;
 
 	std::string	errorMessage = "";
@@ -125,6 +133,10 @@ public:
 
 	void		setStatus(std::string status)		{ ((jaspResults*)myJaspObject)->setStatus(status); }
 	std::string getStatus()							{ return ((jaspResults*)myJaspObject)->getStatus(); }
+
+	void		prepareForWriting()					{ ((jaspResults*)myJaspObject)->prepareForWriting(); }
+
+
 
 	JASPOBJECT_INTERFACE_PROPERTY_FUNCTIONS_GENERATOR(jaspResults, std::string,	_relativePathKeep, RelativePathKeep)
 };

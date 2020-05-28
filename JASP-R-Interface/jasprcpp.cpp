@@ -35,10 +35,11 @@ RunCallbackCB				runCallbackCB;
 ReadADataSetCB				readFullDataSetCB,
 							readFilterDataSetCB;
 ReadDataColumnNamesCB		readDataColumnNamesCB;
-RequestTempFileNameCB		requestTempFileNameCB;
+RequestTempFileNameCB		requestTempFileNameCB,
+							requestSpecificFileNameCB;
 RequestTempRootNameCB		requestTempRootNameCB;
 ReadDataSetDescriptionCB	readDataSetDescriptionCB;
-RequestSpecificFileSourceCB requestStateFileSourceCB,
+RequestPredefinedFileSourceCB requestStateFileSourceCB,
 							requestJaspResultsFileSourceCB;
 
 GetColumnType				dataSetGetColumnType;
@@ -76,58 +77,60 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	RInside &rInside = rinside->instance();
 
-	requestJaspResultsFileSourceCB			= callbacks->requestJaspResultsFileSourceCB;
-	dataSetColumnAsNominalText				= callbacks->dataSetColumnAsNominalText;
-	requestStateFileSourceCB				= callbacks->requestStateFileSourceCB;
-	readDataSetDescriptionCB				= callbacks->readDataSetDescriptionCB;
-	dataSetColumnAsNominal					= callbacks->dataSetColumnAsNominal;
-	dataSetColumnAsOrdinal					= callbacks->dataSetColumnAsOrdinal;
-	requestTempRootNameCB					= callbacks->requestTempRootNameCB;
-	requestTempFileNameCB					= callbacks->requestTempFileNameCB;
-	readDataColumnNamesCB					= callbacks->readDataColumnNamesCB;
-	dataSetColumnAsScale					= callbacks->dataSetColumnAsScale;
-	dataSetGetColumnType					= callbacks->dataSetGetColumnType;
-	encodeAllColumnNames					= callbacks->encoderAll;
-	decodeAllColumnNames					= callbacks->decoderAll;
-	readFilterDataSetCB						= callbacks->readFilterDataSetCB;
-	readFullDataSetCB						= callbacks->readFullDataSetCB;
-	encodeColumnName						= callbacks->encoder;
-	decodeColumnName						= callbacks->decoder;
-	dataSetRowCount							= callbacks->dataSetRowCount;
-	runCallbackCB							= callbacks->runCallbackCB;
-	readDataSetCB							= callbacks->readDataSetCB;
+	requestJaspResultsFileSourceCB				= callbacks->requestJaspResultsFileSourceCB;
+	dataSetColumnAsNominalText					= callbacks->dataSetColumnAsNominalText;
+	requestSpecificFileNameCB					= callbacks->requestSpecificFileNameCB;
+	requestStateFileSourceCB					= callbacks->requestStateFileSourceCB;
+	readDataSetDescriptionCB					= callbacks->readDataSetDescriptionCB;
+	dataSetColumnAsNominal						= callbacks->dataSetColumnAsNominal;
+	dataSetColumnAsOrdinal						= callbacks->dataSetColumnAsOrdinal;
+	requestTempRootNameCB						= callbacks->requestTempRootNameCB;
+	requestTempFileNameCB						= callbacks->requestTempFileNameCB;
+	readDataColumnNamesCB						= callbacks->readDataColumnNamesCB;
+	dataSetColumnAsScale						= callbacks->dataSetColumnAsScale;
+	dataSetGetColumnType						= callbacks->dataSetGetColumnType;
+	encodeAllColumnNames						= callbacks->encoderAll;
+	decodeAllColumnNames						= callbacks->decoderAll;
+	readFilterDataSetCB							= callbacks->readFilterDataSetCB;
+	readFullDataSetCB							= callbacks->readFullDataSetCB;
+	encodeColumnName							= callbacks->encoder;
+	decodeColumnName							= callbacks->decoder;
+	dataSetRowCount								= callbacks->dataSetRowCount;
+	runCallbackCB								= callbacks->runCallbackCB;
+	readDataSetCB								= callbacks->readDataSetCB;
 
 
-	rInside[".setLog"]						= Rcpp::InternalFunction(&jaspRCPP_setLog);
-	rInside[".setRError"]					= Rcpp::InternalFunction(&jaspRCPP_setRError);
-	rInside[".crashPlease"]					= Rcpp::InternalFunction(&jaspRCPP_crashPlease);
-	rInside[".setRWarning"]					= Rcpp::InternalFunction(&jaspRCPP_setRWarning);
-	rInside[".runSeparateR"]				= Rcpp::InternalFunction(&jaspRCPP_RunSeparateR);
-	rInside[".returnString"]				= Rcpp::InternalFunction(&jaspRCPP_returnString);
-	rInside[".columnIsScale"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsScale);
-	rInside[".callbackNative"]				= Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
-	rInside[".dataSetRowCount"]				= Rcpp::InternalFunction(&jaspRCPP_dataSetRowCount);
-	rInside[".returnDataFrame"]				= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
-	rInside[".columnIsOrdinal"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsOrdinal);
-	rInside[".columnIsNominal"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsNominal);
-	rInside[".encodeColNamesStrict"]		= Rcpp::InternalFunction(&jaspRCPP_encodeColumnName);
-	rInside[".decodeColNamesStrict"]		= Rcpp::InternalFunction(&jaspRCPP_decodeColumnName);
-	rInside[".columnIsNominalText"]			= Rcpp::InternalFunction(&jaspRCPP_columnIsNominalText);
-	rInside[".encodeColNamesLax"]			= Rcpp::InternalFunction(&jaspRCPP_encodeAllColumnNames);
-	rInside[".decodeColNamesLax"]			= Rcpp::InternalFunction(&jaspRCPP_decodeAllColumnNames);
-	rInside[".setColumnDataAsScale"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
-	rInside[".readFullDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
-	rInside[".readDatasetToEndNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
-	rInside[".readFilterDatasetToEnd"]		= Rcpp::InternalFunction(&jaspRCPP_readFilterDataSet);
-	rInside[".setColumnDataAsOrdinal"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsOrdinal);
-	rInside[".setColumnDataAsNominal"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsNominal);
-	rInside[".readDataSetHeaderNative"]		= Rcpp::InternalFunction(&jaspRCPP_readDataSetHeaderSEXP);
-	rInside[".createCaptureConnection"]		= Rcpp::InternalFunction(&jaspRCPP_CreateCaptureConnection);
-	rInside[".postProcessLibraryModule"]	= Rcpp::InternalFunction(&jaspRCPP_postProcessLocalPackageInstall);
-	rInside[".requestTempFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
-	rInside[".requestTempRootNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
-	rInside[".setColumnDataAsNominalText"]	= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsNominalText);
-	rInside[".requestStateFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
+	rInside[".setLog"]							= Rcpp::InternalFunction(&jaspRCPP_setLog);
+	rInside[".setRError"]						= Rcpp::InternalFunction(&jaspRCPP_setRError);
+	rInside[".crashPlease"]						= Rcpp::InternalFunction(&jaspRCPP_crashPlease);
+	rInside[".setRWarning"]						= Rcpp::InternalFunction(&jaspRCPP_setRWarning);
+	rInside[".runSeparateR"]					= Rcpp::InternalFunction(&jaspRCPP_RunSeparateR);
+	rInside[".returnString"]					= Rcpp::InternalFunction(&jaspRCPP_returnString);
+	rInside[".columnIsScale"]					= Rcpp::InternalFunction(&jaspRCPP_columnIsScale);
+	rInside[".callbackNative"]					= Rcpp::InternalFunction(&jaspRCPP_callbackSEXP);
+	rInside[".dataSetRowCount"]					= Rcpp::InternalFunction(&jaspRCPP_dataSetRowCount);
+	rInside[".returnDataFrame"]					= Rcpp::InternalFunction(&jaspRCPP_returnDataFrame);
+	rInside[".columnIsOrdinal"]					= Rcpp::InternalFunction(&jaspRCPP_columnIsOrdinal);
+	rInside[".columnIsNominal"]					= Rcpp::InternalFunction(&jaspRCPP_columnIsNominal);
+	rInside[".encodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_encodeColumnName);
+	rInside[".decodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnName);
+	rInside[".columnIsNominalText"]				= Rcpp::InternalFunction(&jaspRCPP_columnIsNominalText);
+	rInside[".encodeColNamesLax"]				= Rcpp::InternalFunction(&jaspRCPP_encodeAllColumnNames);
+	rInside[".decodeColNamesLax"]				= Rcpp::InternalFunction(&jaspRCPP_decodeAllColumnNames);
+	rInside[".setColumnDataAsScale"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
+	rInside[".readFullDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
+	rInside[".readDatasetToEndNative"]			= Rcpp::InternalFunction(&jaspRCPP_readDataSetSEXP);
+	rInside[".readFilterDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readFilterDataSet);
+	rInside[".setColumnDataAsOrdinal"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsOrdinal);
+	rInside[".setColumnDataAsNominal"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsNominal);
+	rInside[".readDataSetHeaderNative"]			= Rcpp::InternalFunction(&jaspRCPP_readDataSetHeaderSEXP);
+	rInside[".createCaptureConnection"]			= Rcpp::InternalFunction(&jaspRCPP_CreateCaptureConnection);
+	rInside[".postProcessLibraryModule"]		= Rcpp::InternalFunction(&jaspRCPP_postProcessLocalPackageInstall);
+	rInside[".requestTempFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempFileNameSEXP);
+	rInside[".requestTempRootNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
+	rInside[".setColumnDataAsNominalText"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsNominalText);
+	rInside[".requestStateFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
+	rInside[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
 
 	rInside.parseEvalQNT(".outputSink <- .createCaptureConnection(); sink(.outputSink); print('.outputSink initialized!');");
 
@@ -177,6 +180,21 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 #endif
 }
 
+void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMode)
+{
+	jaspResults::setResponseData(analysisID, analysisRevision);
+	jaspResults::setDeveloperMode(developerMode);
+
+	std::string root, relativePath;
+	if(!jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath))
+		throw std::runtime_error("Did not receive a valid filename to store jaspResults.json at.");
+	jaspResults::setSaveLocation(root, relativePath);
+
+	if(!jaspRCPP_requestSpecificRelativeFilePath(jaspResults::writeSealFilename(), root, relativePath))
+			throw std::runtime_error("Did not receive a valid filename to store jaspResults write seal at.");
+	jaspResults::setWriteSealLocation(root, relativePath);
+}
+
 const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char* rfile, bool requiresInit, const char* dataKey, const char* options, const char* resultsMeta, const char* stateKey, const char* perform, int ppi, int analysisID, int analysisRevision, bool usesJaspResults, const char* imageBackground, bool developerMode)
 {
 	SEXP results;
@@ -203,18 +221,13 @@ const char* STDCALL jaspRCPP_run(const char* name, const char* title, const char
 
 	if(usesJaspResults)
 	{
-		///Some stuff for jaspResults etc
-		jaspResults::setResponseData(analysisID, analysisRevision);
-		jaspResults::setDeveloperMode(developerMode);
-
-		std::string root, relativePath;
-		jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath);
-		jaspResults::setSaveLocation(root, relativePath);
+		_setJaspResultsInfo(analysisID, analysisRevision, developerMode);
 
 		results = jaspRCPP_parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey)");
 	}
 	else
-		results = jaspRCPP_parseEval("run(name=name, title=title, requiresInit=requiresInit, dataKey=dataKey, options=options, resultsMeta=resultsMeta, stateKey=stateKey, perform=perform)");
+		throw std::runtime_error("Old school analyses are no longer supported by JASP!");
+		//results = jaspRCPP_parseEval("run(name=name, title=title, requiresInit=requiresInit, dataKey=dataKey, options=options, resultsMeta=resultsMeta, stateKey=stateKey, perform=perform)");
 
 	static std::string str;
 	if(Rcpp::is<std::string>(results))	str = Rcpp::as<std::string>(results);
@@ -249,12 +262,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	rInside["requiresInit"]		= false;
 	rInside[".imageBackground"]	= imageBackground;
 
-	jaspResults::setResponseData(analysisID, analysisRevision);
-	jaspResults::setDeveloperMode(developerMode);
-
-	std::string root, relativePath;
-	jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath);
-	jaspResults::setSaveLocation(root, relativePath);
+	_setJaspResultsInfo(analysisID, analysisRevision, developerMode);
 
 	SEXP results = jaspRCPP_parseEval("runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall)");
 
@@ -458,6 +466,21 @@ SEXP jaspRCPP_requestTempFileNameSEXP(SEXP extension)
 	return paths;
 }
 
+SEXP jaspRCPP_requestSpecificFileNameSEXP(SEXP filename)
+{
+	const char *root, *relativePath;
+	std::string filenameAsString = Rcpp::as<std::string>(filename);
+
+	if (!requestSpecificFileNameCB(filenameAsString.c_str(), &root, &relativePath))
+		return R_NilValue;
+
+	Rcpp::List paths;
+	paths["root"] = root;
+	paths["relativePath"] = relativePath;
+
+	return paths;
+}
+
 SEXP jaspRCPP_requestTempRootNameSEXP()
 {
 	const char* root = requestTempRootNameCB();
@@ -477,6 +500,23 @@ bool jaspRCPP_requestJaspResultsRelativeFilePath(std::string & root, std:: strin
 				* _relativePath;
 
 	if (!requestJaspResultsFileSourceCB(&_root, &_relativePath))
+		return false;
+
+	root			= _root;
+	relativePath	= _relativePath;
+
+	return true;
+}
+
+bool jaspRCPP_requestSpecificRelativeFilePath(std::string specificFilename, std::string & root, std:: string & relativePath)
+{
+	root		 = "";
+	relativePath = "";
+
+	const char	* _root,
+				* _relativePath;
+
+	if (!requestSpecificFileNameCB(specificFilename.c_str(), &_root, &_relativePath))
 		return false;
 
 	root			= _root;

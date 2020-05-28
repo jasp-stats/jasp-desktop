@@ -240,9 +240,13 @@ runJaspResults <- function(name, title, dataKey, options, stateKey, functionCall
 
     return(paste0("{ \"status\" : \"", errorStatus, "\", \"results\" : { \"title\" : \"error\", \"error\" : 1, \"errorMessage\" : \"", errorMessage, "\" } }", sep=""))
   } else {
+
+    jaspResultsCPP$prepareForWriting()
+
     newState                        <- list()
     newState[["figures"]]           <- jaspResultsCPP$getPlotObjectsForState()
     newState[["other"]]             <- jaspResultsCPP$getOtherObjectsForState()
+
     jaspResultsCPP$relativePathKeep <- .saveState(newState)$relativePath
 
     returnThis <- list(keep=jaspResultsCPP$getKeepList()) #To keep the old keep-code functional we return it like this
