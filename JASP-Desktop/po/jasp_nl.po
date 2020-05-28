@@ -15840,18 +15840,6 @@ msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
 msgstr "Synchroniseren van Gegevens"
 
-msgctxt "CSVImporter|"
-msgid "Loading Data Set"
-msgstr "Laden van Gegevens"
-
-msgctxt "JASPImporter|"
-msgid "Loading Data Set Description"
-msgstr "Laden van Beschrijving Gegevens"
-
-msgctxt "JASPImporter|"
-msgid "Loading Data Set"
-msgstr "Laden van Gegevens"
-
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
 msgstr "Initialiseren van upload van "
@@ -15895,10 +15883,6 @@ msgstr "Osf actie "
 msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
 msgstr " gaande"
-
-msgctxt "Importer|"
-msgid "Loading Data Set"
-msgstr "Laden van Gegevens"
 
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
@@ -16581,6 +16565,63 @@ msgid ""
 msgstr ""
 "Aantal rijen gespecificeerd in Opties voor ListModelCustomContrasts komt "
 "niet overeen met aantal rijen in waarden!"
+
+msgctxt "TabView|"
+msgid "Add a tab"
+msgstr "Voeg tab toe"
+
+msgctxt "TabView|"
+msgid "Remove this tab"
+msgstr "Verwijder deze tab"
+
+msgctxt "TabView|"
+msgid "New tab"
+msgstr "Nieuwe tab"
+
+#, qt-format
+msgctxt "FileEvent|"
+msgid "Importing Data from %1"
+msgstr "Importeren van Gegevens van %1"
+
+msgctxt "FileEvent|"
+msgid "Importing SPSS File"
+msgstr "Importeren van SPSS Bestand"
+
+msgctxt "FileEvent|"
+msgid "Importing SAS File"
+msgstr "Importeren van SAS Bestand"
+
+msgctxt "FileEvent|"
+msgid "Importing STATA File"
+msgstr "Importeren van STATA Bestand"
+
+msgctxt "FileEvent|"
+msgid "Loading JASP File"
+msgstr "Laden van JASP Bestand"
+
+msgctxt "FileEvent|"
+msgid "Loading File"
+msgstr "Laden Bestand"
+
+msgctxt "FileEvent|"
+msgid "Saving JASP File"
+msgstr "Opslaan van JASP Bestand"
+
+msgctxt "FileEvent|"
+msgid "Exporting Results"
+msgstr "Exporteren van Resultaten"
+
+msgctxt "FileEvent|"
+msgid "Exporting Data"
+msgstr "Exporteren van Gegevens"
+
+msgctxt "FileEvent|"
+msgid "Synchronizing Data"
+msgstr "Synchroniseren van Gegevens"
+
+msgctxt "FileEvent|"
+msgid "Processing File"
+msgstr "Verwerken van Bestand"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""
