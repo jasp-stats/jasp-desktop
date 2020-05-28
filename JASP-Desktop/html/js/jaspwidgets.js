@@ -393,6 +393,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			return self.$el;
 		};
 		this.closeButton.setAction(function () {
+
+			self.$quill.setContents([]);  // when close button is clicked, clear quill's contents
+
 			self.setVisibilityAnimate(false);
 			if (window.resultsDocumentChanged)
 				window.resultsDocumentChanged();
@@ -734,10 +737,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	useExportNSBF: function() {
 		return false;
 	},
-
-	onClosed: function() {
-		this.closeButton.close();
-	}
 })
 
 
