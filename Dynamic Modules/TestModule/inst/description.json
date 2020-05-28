@@ -62,6 +62,12 @@
 			"title":							"Custom Contrasts Widget",
 			"qml":								"customContrasts.qml",
 			"function":							"customContrasts"
+		},
+
+		{
+			"title":							"Save Load Button",
+			"qml":								"testSaveLoadButton.qml",
+			"function":							"testSaveLoadButton"
 		}
 	]
 }

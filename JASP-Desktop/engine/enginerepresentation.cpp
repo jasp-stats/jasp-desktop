@@ -66,8 +66,7 @@ void EngineRepresentation::processFinished(int exitCode, QProcess::ExitStatus ex
 	_slaveProcess = nullptr;
 	_slaveCrashed = exitStatus == QProcess::ExitStatus::CrashExit && _engineState != engineState::killed;
 
-	if(_engineState == engineState::killed)	_engineState = engineState::initializing;
-	else 	if(exitCode != 0 || _slaveCrashed)		handleEngineCrash();
+	handleEngineCrash();
 }
 
 void EngineRepresentation::handleEngineCrash()
@@ -110,6 +109,14 @@ void EngineRepresentation::handleEngineCrash()
 			break; //Try it a couple of times because the engine might have crashed right after completing an analysis (because of .crashPlease() for instance) or something. But if it keeps happening something is probably wrong
 	}
 
+	case engineState::stopped:
+		//It will be resumed manually
+		return;
+
+	case engineState::killed:
+		_engineState = engineState::initializing;
+		return; //It will be resumed somewhere in EngineSync::process() or thereabouts
+
 	default: //If not one of the above then let the engine crash and burn (https://www.youtube.com/watch?v=UtUpXPiSJEg)
 		emit engineTerminated();
 		return;
@@ -117,7 +124,7 @@ void EngineRepresentation::handleEngineCrash()
 
 	_engineState = engineState::initializing;
 
-	emit requestEngineRestart(channelNumber());
+	emit requestEngineRestart(channelNumber()); //Only for actual crashes
 }
 
 void EngineRepresentation::clearAnalysisInProgress()

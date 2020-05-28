@@ -35,10 +35,11 @@ public:
 	static DialogResponse showSaveDiscardCancel(QString title, QString message, QString saveTxt = "",		QString discardText = "",	QString cancelText = "");
 	static DialogResponse showYesNoCancel(		QString title, QString message, QString YesButtonText = "", QString NoButtonText = "",	QString CancelButtonText = "");
 
-	static QString browseOpenFile(QString caption, QString browsePath, QString filter);
-	static QString browseOpenFileDocuments(QString caption, QString filter);
-	static QString browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedFilter = nullptr);
-	static QString browseOpenFolder(QString caption, QString browsePath);
+	static QString browseOpenFile(			QString caption, QString browsePath,	QString filter);
+	static QString browseSaveFile(			QString caption, QString browsePath,	QString filter, QString * selectedFilter = nullptr);
+	static QString browseOpenFolder(		QString caption, QString browsePath);
+	static QString browseOpenFileDocuments(	QString caption,						QString filter);
+	static QString browseSaveFileDocuments(	QString caption,						QString filter);
 
 	//Some non-static links to have QML handle it. Without figuring out how qmlRegisterSingletonType() works :p
 public slots:
@@ -46,6 +47,9 @@ public slots:
 	void			showWarningQML(QString title, QString message)																							{ showWarning(title, message); }
 	QString			browseOpenFileQML(QString caption, QString browsePath, QString filter)																	{ return browseOpenFile(caption, browsePath, filter); }
 	QString			browseOpenFileDocumentsQML(QString caption, QString filter)																				{ return browseOpenFileDocuments(caption, filter); }
+
+	QString			browseSaveFileQML(QString caption, QString browsePath, QString filter)																	{ return browseSaveFile(caption, browsePath, filter); }
+	QString			browseSaveFileDocumentsQML(QString caption, QString filter)																				{ return browseSaveFileDocuments(caption, filter); }
 
 private:
 	static		MessageForwarder	*_singleton;

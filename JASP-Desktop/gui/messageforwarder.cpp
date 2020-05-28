@@ -85,6 +85,11 @@ QString MessageForwarder::browseOpenFileDocuments(QString caption, QString filte
 	return browseOpenFile(caption, AppDirs::documents(), filter);
 }
 
+QString MessageForwarder::browseSaveFileDocuments(QString caption, QString filter)
+{
+	return browseSaveFile(caption, AppDirs::documents(), filter);
+}
+
 
 QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedFilter)
 {

@@ -82,7 +82,7 @@ JASPControl
 	Rectangle
 	{
 		id:					beforeLabelRect
-		width:				beforeLabel.implicitWidth
+		width:				beforeLabel.implicitWidth + beforeLabel.x
 		height:				control.height
 		color:				debug ? jaspTheme.debugBackgroundColor : "transparent"
 		visible:			beforeLabel.text && textField.visible
