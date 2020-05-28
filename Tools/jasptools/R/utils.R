@@ -129,6 +129,7 @@
   html <- readChar(file.path(.getPkgOption("html.dir"), "index.html"), 1000000)
   insertedJS <- paste0(
     "<script>
+      var jasp = {}
       jQuery(function($) {
         $(document).ready(function() {
           window.analysisChanged(", json, ")
