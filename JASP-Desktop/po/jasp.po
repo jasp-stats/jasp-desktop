@@ -16317,6 +16317,217 @@ msgctxt "FileEvent|"
 msgid "Processing File"
 msgstr ""
 
+msgctxt "BayesFactorType|"
+msgid ""
+"Bayes factor to quantify evidence for the alternative hypothesis relative to "
+"the null hypothesis."
+msgstr ""
+
+msgctxt "BayesFactorType|"
+msgid ""
+"Bayes factor to quantify evidence for the null hypothesis relative to the "
+"alternative hypothesis."
+msgstr ""
+
+msgctxt "BayesFactorType|"
+msgid "Natural logarithm of BF10."
+msgstr ""
+
+msgctxt "SummaryStatsBinomialTestBayesian|"
+msgid ""
+"This function computes the Bayes factor for a binomially distributed "
+"observation.\n"
+"The Bayesian binomial test is described in Jeffreys (1961, p. 256).\n"
+"This test informs us whether the data support or contradict a value "
+"suggested for the parameter (chance) in question.\n"
+"\n"
+"- Null model: *p = p0*\n"
+"- Alt  model: *p ~ Beta(a,b)*\n"
+"*p0* is the suggested value of the rate parameter of Binomial under null "
+"hypothesis. \n"
+"Data observed: *s* successes and *f* failures, total number of trials, *n = "
+"s + f*. \n"
+"In Theory of Probability, Jeffreys assumes a uniform prior on the rate "
+"parameter under alternative hypothesis. \n"
+"The Bayes factor used here is a more general case, assuming a beta prior on "
+"the rate parameter. \n"
+"*Note*: beta(1,1) corresponds to a uniform prior."
+msgstr ""
+
+msgctxt "SummaryStatsBinomialTestBayesian|"
+msgid ""
+"Two-sided alternative hypothesis that the population mean is not equal to "
+"the test value."
+msgstr ""
+
+msgctxt "SummaryStatsBinomialTestBayesian|"
+msgid ""
+"One-sided alternative hypothesis that the population mean is larger than the "
+"test value."
+msgstr ""
+
+msgctxt "SummaryStatsBinomialTestBayesian|"
+msgid ""
+"One sided alternative hypothesis that the population mean is smaller than "
+"the test value."
+msgstr ""
+
+msgctxt "SummaryStatsBinomialTestBayesian|"
+msgid ""
+"Displays the prior (dashed line) and posterior (solid line) density of the "
+"effect size under the alternative hypothesis;\n"
+"\t\t\tthe gray circles represent the height of the prior and the posterior "
+"density at effect size delta = 0. \n"
+"\t\t\tThe horizontal solid line represents the width of the 95% credible "
+"interval of the posterior."
+msgstr ""
+
+msgctxt "SummaryStatsBinomialTestBayesian|"
+msgid ""
+"Displays the Bayes factor computed with the user-defined prior; displays a "
+"probability wheel depicting the odds of the data under the null vs. "
+"alternative hypothesis; displays the median and 95% credible interval of the "
+"posterior density."
+msgstr ""
+
+msgctxt "SummaryStatsBinomialTestBayesian|"
+msgid ""
+"Parameters *a* and *b* are set to '1' each. This corresponds to a uniform "
+"prior."
+msgstr ""
+
+msgctxt "AnalysisForm|"
+msgid "Table"
+msgstr ""
+
+msgctxt "AnalysisForm|"
+msgid "Plot"
+msgstr ""
+
+msgctxt "AnalysisForm|"
+msgid "Collection"
+msgstr ""
+
+msgctxt "AnalysisForm|"
+msgid "Result"
+msgstr ""
+
+msgctxt "AnalysisForm|"
+msgid "Output"
+msgstr ""
+
+msgctxt "AnalysisForm|"
+msgid "Input"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Option"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Section"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "CheckBox"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Switch"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Entry Field"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Radio Button"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Radio Buttons"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Variables"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "ComboBox"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "RM Factors List"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Input ListView"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "TableView"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Slider"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "TextArea"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Button"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Factors Form"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "List of Components"
+msgstr ""
+
+msgctxt "JASPControlBase|"
+msgid "Group Box"
+msgstr ""
+
+msgctxt "BoundQMLTextInput|"
+msgid "Integer Field"
+msgstr ""
+
+msgctxt "BoundQMLTextInput|"
+msgid "Number Field"
+msgstr ""
+
+msgctxt "BoundQMLTextInput|"
+msgid "Percentage Field"
+msgstr ""
+
+msgctxt "BoundQMLTextInput|"
+msgid "Integers Field"
+msgstr ""
+
+msgctxt "BoundQMLTextInput|"
+msgid "Doubles Field"
+msgstr ""
+
+msgctxt "BoundQMLTextInput|"
+msgid "Add Column Field"
+msgstr ""
+
+msgctxt "BoundQMLTextInput|"
+msgid "Add Computed Column Field"
+msgstr ""
+
+msgctxt "BoundQMLTextInput|"
+msgid "Formula Field"
+msgstr ""
+
+msgctxt "BoundQMLTextInput|"
+msgid "Text Field"
+msgstr ""
+
 msgctxt "auditBayesianWorkflow|"
 msgid ""
 msgstr ""
