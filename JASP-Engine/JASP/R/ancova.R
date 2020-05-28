@@ -554,8 +554,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
       contrastContainerName <- paste0(contrast$contrast, "Contrast_",  paste(contrast$variable, collapse = ":"))
       contrastContainer[[contrastContainerName]] <- createJaspContainer()
       contrastContainer[[contrastContainerName]][["contrastTable"]] <- .createContrastTableAnova(myTitle, 
-                                                                                                 options,
-                                                                                                 contrast)
+                                                                                                 options)
     }
       
   }
@@ -582,7 +581,8 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 
       if (contrast$contrast == "custom") {
         customContrastSetup <- options$customContrasts[[which(sapply(options$customContrasts, 
-                                                                     function(x)  all(x$value %in% contrast$variable)))]]
+                                                                     function(x)  all(x$value %in% contrast$variable) &&
+                                                                       length(contrast$variable) == length(x$value)))]]
       } else {
         customContrastSetup <- NULL
       }
@@ -709,14 +709,8 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
            
            isContrast <- sapply(customContrast[["values"]], function(x) x$isContrast)
            customContrMat <- as.matrix(sapply(customContrast[["values"]][isContrast], function(x) as.numeric(x$values)))
-           desiredRows <- nrow(contr.helmert(levels) * -1)
-           
-           if (desiredRows == 2 && length(customContrMat) == 2 ) {
-             contr <- t(customContrMat)
-           } else {
-             contr <- t(customContrMat)
-           }
-           
+           contr <- t(customContrMat)
+
          }
   )
   
@@ -728,7 +722,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
 }
 
 
-.createContrastTableAnova <- function(myTitle, options, contrast) {
+.createContrastTableAnova <- function(myTitle, options, dfType = "integer") {
   
   contrastTable <- createJaspTable(title = myTitle)
   contrastTable$addColumnInfo(name = "Comparison", type = "string")
@@ -743,8 +737,7 @@ Ancova <- function(jaspResults, dataset = NULL, options) {
   } 
   
   contrastTable$addColumnInfo(name = "SE", title=gettext("SE"), type = "number")
-  
-  contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = "integer")
+  contrastTable$addColumnInfo(name = "df",      title = gettext("df"), type = dfType)
   contrastTable$addColumnInfo(name = "t.ratio", title = gettext("t"),  type = "number")
   contrastTable$addColumnInfo(name = "p.value", title = gettext("p"),  type = "pvalue")
   

@@ -225,7 +225,6 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       terms.normal[[i+1]] <- c(termsRM.normal[i], paste(termsRM.normal[i], termsBS.normal, sep = " \u273B "))
     }
   }
-  # termsRM.base64 <- paste0("'", termsRM.base64, "'")
 
   main <- paste("(",paste(unlist(terms.base64), collapse=" + "),")", sep="")
   termsBS <- paste("(",paste(termsBS.base64, collapse=" + "),")", sep="")
@@ -1067,10 +1066,11 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       
       myTitle <- gettextf("%1$s Contrast - %2$s", contrastType,  contrastVariable)
       contrastContainerName <- paste0(contrast$contrast, "Contrast_",  paste(contrast$variable, collapse = ":"))
+      dfType <- if (length(contrast$variable) > 1 || contrast$contrast == "custom") "number" else "integer"
       contrastContainer[[contrastContainerName]] <- createJaspContainer()
       contrastContainer[[contrastContainerName]][["contrastTable"]] <- .createContrastTableAnova(myTitle,
                                                                                                  options,
-                                                                                                 contrast)
+                                                                                                 dfType)
     }
     
   }
@@ -1138,7 +1138,8 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
       contrastResult <- cbind(contrastResult, confint(contrastResult, level = options$confidenceIntervalIntervalContrast)[,5:6])
       contrastResult[["Comparison"]] <- .unv(contrastResult[["contrast"]])
       
-      if (options$contrastAssumeEqualVariance == FALSE && contrast$variable %in% unlist(options$withinModelTerms) && length(contrast$variable) == 1 ) {
+      if (options$contrastAssumeEqualVariance == FALSE && contrast$variable %in% unlist(options$withinModelTerms) && 
+          length(contrast$variable) == 1 && contrast$contrast != "custom") {
 
         newDF <- do.call(data.frame, tapply(longData[[.BANOVAdependentName]], longData[[.v(contrast$variable)]], cbind))
         ssNr <- tapply(longData[[.BANOVAsubjectName]], longData[[.v(contrast$variable)]], cbind)
@@ -1162,7 +1163,7 @@ AnovaRepeatedMeasures <- function(jaspResults, dataset = NULL, options) {
         
       } else if (options$contrastAssumeEqualVariance == FALSE) {
         
-        contrastContainer[[contrastContainerName]]$setError(gettext("Unequal variances only available for within subjects factors"))
+        contrastContainer[[contrastContainerName]]$setError(gettext("Unequal variances only available for main effects of within subjects factors"))
         return()
         
       }
