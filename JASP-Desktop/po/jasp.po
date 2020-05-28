@@ -15555,18 +15555,6 @@ msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
 msgstr ""
 
-msgctxt "CSVImporter|"
-msgid "Loading Data Set"
-msgstr ""
-
-msgctxt "JASPImporter|"
-msgid "Loading Data Set Description"
-msgstr ""
-
-msgctxt "JASPImporter|"
-msgid "Loading Data Set"
-msgstr ""
-
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
 msgstr ""
@@ -15611,10 +15599,6 @@ msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
 msgstr ""
 
-msgctxt "Importer|"
-msgid "Loading Data Set"
-msgstr ""
-
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
@@ -15653,6 +15637,63 @@ msgctxt "ListModelCustomContrasts|"
 msgid ""
 "Number of rows specifed in Options for ListModelCustomContrasts does not "
 "match number of rows in values!"
+msgstr ""
+
+msgctxt "TabView|"
+msgid "Add a tab"
+msgstr ""
+
+msgctxt "TabView|"
+msgid "Remove this tab"
+msgstr ""
+
+msgctxt "TabView|"
+msgid "New tab"
+msgstr ""
+
+#, qt-format
+msgctxt "FileEvent|"
+msgid "Importing Data from %1"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Importing SPSS File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Importing SAS File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Importing STATA File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Loading JASP File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Loading File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Saving JASP File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Exporting Results"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Exporting Data"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Synchronizing Data"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Processing File"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"
