@@ -372,10 +372,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 	initialize: function () {
 
-		this.ghostTextDefault = 'Click here to add text...';
+		this.ghostTextDefault = 'Click here to add text';
 
 		this.editing = false;
-		this.ghostTextVisible = true;
 
 		this.visible = this.model.get('visible');
 		if (this.visible === undefined || this.visible === null)
@@ -431,10 +430,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.model.set('deltaAvailable', false);
 	},
 
-	setGhostTextVisible: function(visible) {
-		this.ghostTextVisible = visible;
-	},
-
 	isTextboxEmpty: function () {
 
 		//We should probably only be here if we have $quill right?
@@ -474,6 +469,10 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			['clean']
 		];
 
+		let placeholderText = this.ghostTextDefault
+		if (typeof this.ghostText !== 'undefined')
+			placeholderText = this.ghostText
+
 		var options = {
 		  theme: 'snow',
 		  modules: {
@@ -512,7 +511,8 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 					}
 				  }
 				}
-			}
+			},
+			placeholder: placeholderText
 		};
 
 		let targetDiv = this.$el.find("#editor").get(0);
@@ -609,13 +609,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		if (value === true) {
 			self.$el.slideDown(200, function () {
 				self.setVisibility(value);
-				if (scrollIntoView)
-					self.setGhostTextVisible(false);
 				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
 					if (scrollIntoView) {
-						window.scrollIntoView(self.$el, function () {
-							self.setGhostTextVisible(true);
-						});
+						window.scrollIntoView(self.$el, function () {});
 					}
 				});
 			});
