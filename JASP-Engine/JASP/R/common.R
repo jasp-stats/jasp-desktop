@@ -2378,101 +2378,109 @@ saveImage <- function(plotName, format, height, width)
   # create file location string
   location <- .fromRCPP(".requestTempFileNameNative", "png") # to extract the root location
   relativePath <- paste0("temp.", format)
+  
+  if (format == "pptx") {
 
-  error <- try({
+    error <- try(.saveImageAsPPTX(plt, relativePath))
 
-    # Get file size in inches by creating a mock file and closing it
-    pngMultip <- .fromRCPP(".ppi") / 96
-    png(
-      filename = "dpi.png",
-      width = width * pngMultip,
-      height = height * pngMultip,
-      res = 72 * pngMultip
-    )
-    insize <- dev.size("in")
-    dev.off()
-
-    # Even though OSX is usually cairo able, the cairo devices should not be used as plot fonts are not scaled well.
-    # On the other hand, Windows should use a cairo (eps/pdf) device as the standard devices use a wrong R_HOME for some reason.
-    # Consequently on Windows you will get encoding/font errors because the devices cannot find their resources.
-    if (capabilities("aqua"))
-      type <- "quartz"
-    else if (capabilities("cairo"))
-      type <- "cairo"
-    else
-      type <- "Xlib"
-
-    # Open correct graphics device
-    if (format == "eps") {
-
-      if (type == "cairo")
-        device <- grDevices::cairo_ps
+  } else {
+    
+    error <- try({
+      
+      # Get file size in inches by creating a mock file and closing it
+      pngMultip <- .fromRCPP(".ppi") / 96
+      png(
+        filename = "dpi.png",
+        width = width * pngMultip,
+        height = height * pngMultip,
+        res = 72 * pngMultip
+      )
+      insize <- dev.size("in")
+      dev.off()
+      
+      # Even though OSX is usually cairo able, the cairo devices should not be used as plot fonts are not scaled well.
+      # On the other hand, Windows should use a cairo (eps/pdf) device as the standard devices use a wrong R_HOME for some reason.
+      # Consequently on Windows you will get encoding/font errors because the devices cannot find their resources.
+      if (capabilities("aqua"))
+        type <- "quartz"
+      else if (capabilities("cairo"))
+        type <- "cairo"
       else
-        device <- grDevices::postscript
+        type <- "Xlib"
+      
+      # Open correct graphics device
+      if (format == "eps") {
+        
+        if (type == "cairo")
+          device <- grDevices::cairo_ps
+        else
+          device <- grDevices::postscript
+        
+        device(
+          relativePath,
+          width = insize[1],
+          height = insize[2],
+          bg = backgroundColor
+        )
+        
+      } else if (format == "tiff") {
+        
+        hiResMultip <- 300 / 72
+        grDevices::tiff(
+          filename    = relativePath,
+          width       = width * hiResMultip,
+          height      = height * hiResMultip,
+          res         = 300,
+          bg          = backgroundColor,
+          compression = "lzw",
+          type        = type
+        )
+        
+      } else if (format == "pdf") {
+        
+        if (type == "cairo")
+          device <- grDevices::cairo_pdf
+        else
+          device <- grDevices::pdf
+        
+        device(
+          relativePath,
+          width = insize[1],
+          height = insize[2],
+          bg = "transparent"
+        )
+        
+      } else if (format == "png") {
+        
+        # Open graphics device and plot
+        grDevices::png(
+          filename = relativePath,
+          width    = width * pngMultip,
+          height   = height * pngMultip,
+          bg       = backgroundColor,
+          res      = 72 * pngMultip,
+          type     = type
+        )
+        
+      } else { # add optional other formats here in "else if"-statements
+        
+        stop("Format incorrectly specified")
+        
+      }
+      
+      # Plot and close graphics device
+      if (inherits(plt, "recordedplot")) {
+        .redrawPlot(plt)
+      } else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
+        gridExtra::grid.arrange(plt)
+      } else {
+        plot(plt)
+      }
+      dev.off()
+      
+    })
 
-      device(
-        relativePath,
-        width = insize[1],
-        height = insize[2],
-        bg = backgroundColor
-      )
-
-    } else if (format == "tiff") {
-
-      hiResMultip <- 300 / 72
-      grDevices::tiff(
-        filename    = relativePath,
-        width       = width * hiResMultip,
-        height      = height * hiResMultip,
-        res         = 300,
-        bg          = backgroundColor,
-        compression = "lzw",
-        type        = type
-      )
-
-    } else if (format == "pdf") {
-
-      if (type == "cairo")
-        device <- grDevices::cairo_pdf
-      else
-        device <- grDevices::pdf
-
-      device(
-        relativePath,
-        width = insize[1],
-        height = insize[2],
-        bg = "transparent"
-      )
-
-    } else if (format == "png") {
-
-      # Open graphics device and plot
-      grDevices::png(
-        filename = relativePath,
-        width    = width * pngMultip,
-        height   = height * pngMultip,
-        bg       = backgroundColor,
-        res      = 72 * pngMultip,
-        type     = type
-      )
-
-    } else { # add optional other formats here in "else if"-statements
-
-      stop("Format incorrectly specified")
-
-    }
-
-    # Plot and close graphics device
-    if (inherits(plt, "recordedplot")) {
-      .redrawPlot(plt)
-    } else if (inherits(plt, c("gtable", "ggMatrixplot", "JASPgraphs"))) {
-      gridExtra::grid.arrange(plt)
-    } else {
-      plot(plt)
-    }
-    dev.off()
-
-  })
+  }
   # Create output for interpretation by JASP front-end and return it
   output <- list(status = "imageSaved",
                  results = list(name  = relativePath,
@@ -2484,6 +2492,15 @@ saveImage <- function(plotName, format, height, width)
   }
 
   return(toJSON(output))
+}
+
+.saveImageAsPPTX <- function(plt, relativePath) {
+  # adapted from https://github.com/dreamRs/esquisse/blob/626cbe584f43a6a13a6d5cce3192fcf912e08cb0/R/ggplot_to_ppt.R#L64
+  ppt <- officer::read_pptx()
+  ppt <- officer::add_slide(ppt, layout = "Title and Content", master = "Office Theme")
+  # plot.ggplot == print.ggplot but print.qgraph doesn't plot anything whereas plot.qgraph does so we use plot
+  ppt <- officer::ph_with(ppt, rvg::dml(code = plot(plt)), location = officer::ph_location_type(type = "body"))
+  print(ppt, target = relativePath) # officer:::print.rpptx
 }
 
 # Source: https://github.com/Rapporter/pander/blob/master/R/evals.R#L1389
