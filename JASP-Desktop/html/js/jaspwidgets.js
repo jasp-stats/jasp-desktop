@@ -394,8 +394,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		};
 		this.closeButton.setAction(function () {
 
-			self.$quill.setContents([]);  // when close button is clicked, clear quill's contents
-
 			self.setVisibilityAnimate(false);
 			if (window.resultsDocumentChanged)
 				window.resultsDocumentChanged();
