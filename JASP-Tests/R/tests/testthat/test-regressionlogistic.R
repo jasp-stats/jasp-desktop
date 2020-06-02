@@ -26,7 +26,7 @@ test_that("Fields Book - Chapter 10 results match", {
                            399, "", "", "", "", "", "", 
                            "H<unicode>", 460.494488544053,
                            464.494488544053, 472.477417638269, 398, 68.7561019823323, 1.11022302462516e-16,
-                           0.129912187559297, 0.215249724800182, 0.174987016994499, 0.157928418719378)
+                           0.129912187559297, 0.215249724800182, 0.162128420464791, 0.157928418719378)
   )
   output3 <- results[["results"]][["estimatesTable"]][["data"]]
   expect_equal_tables(output3,
@@ -56,7 +56,7 @@ test_that("Fields Book - Chapter 10 results match", {
                            399, "", "", "", "", "", "", 
                            "H<unicode>", 390.185034282251,
                            398.185034282251, 414.150892470683, 396, 139.065556244135, 0,
-                           0.262759378512591, 0.400251224473979, 0.543597009594121, 0.293663757434995)
+                           0.262759378512591, 0.400251224473979, 0.331341240867329, 0.293663757434995)
   )
   output5 <- results[["results"]][["estimatesTable"]][["data"]]
   expect_equal_tables(output5,
@@ -183,7 +183,7 @@ test_that("Method=backward model summary table results match", {
 	table <- results[["results"]][["modelSummary"]][["data"]]
 	expect_equal_tables(table,
     list(139.466477068092, 144.676817440068, 0, 135.466477068092, 98, 0,
-         1, 0, 0.043287762682406, 138.058400038431, 140.663570224419,
+         1, 0, 0.00577009513822135, 138.058400038431, 140.663570224419,
          -0.00590174557777201, 0.59192297033843, 136.058400038431, 99,
          -0.00435050662194492, 2, -0.00793790496945946, 0.441676479938567,
          0))
@@ -299,4 +299,40 @@ test_that("Error Handling", {
   results <- jasptools::run("RegressionLogistic", "debug.csv", options)
   status <- results[["status"]]
   expect_identical(status, "validationError")
+})
+
+test_that("Pseudo R-squared are correct", {
+  # Specifically, tests McFadden, Nagelkerke, Tjur, and Cox & Snell coefficients
+  # Example from Tjur (2008) http://dx.doi.org/10.1198/tast.2009.08210, page 370
+  # Tjur's results for Tjur R2: 0.096231
+  #.
+  # Check against code from performance package
+  # library(aplore3)     # version 0.9
+  # library(performance) # version 0.4.6
+  # data("lowbwt", package = "aplore3")
+  # fit <- glm(low ~ age + lwt + race + smoke, data = lowbwt, family = binomial)
+  # 
+  # performance::r2_mcfadden(fit)$R2 # McFadden's R2: 0.08562914
+  # 
+  # performance::r2_nagelkerke(fit) # Nagelkerke's R2: 0.1418442
+  # 
+  # performance::r2_tjur(fit) # Tjur's R2: 0.09623107
+  # 
+  # performance::r2_coxsnell(fit) # Cox & Snell's R2: 0.1008645
+  
+  options            <- jasptools::analysisOptions("regressionlogistic")
+  options$dependent  <- "low"
+  options$covariates <- c("age", "lwt")
+  options$factors    <- c("race", "smoke")
+  options$modelTerms <- list(list(components = "age",   isNuisance = FALSE),
+                             list(components = "lwt",   isNuisance = FALSE),
+                             list(components = "race",  isNuisance = FALSE),
+                             list(components = "smoke", isNuisance = FALSE)
+  )
+  
+  results <- jasptools::run("regressionlogistic", "lowbwt.csv", options)
+  r_squared <- results$results$modelSummary$data[[2]][c("fad", "nag", "tju", "cas")]
+  expect_equal_tables(r_squared,
+                      list(0.0856291418878957, 0.141844242772774, 0.0962310669224921, 0.100864461712579)
+                      )
 })
