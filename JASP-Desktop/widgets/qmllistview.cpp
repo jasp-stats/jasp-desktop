@@ -217,6 +217,7 @@ void QMLListView::addRowComponentsDefaultOptions(Options *options)
 	if (_defaultRowControls)
 		delete _defaultRowControls;
 
+	// Create a dummy QML control, so that we can create the right kind of options.
 	_defaultRowControls = new RowControls(this->model(), item()->getRowComponents(), QMap<QString, Option*>(), true);
 	_defaultRowControls->init(0, Term(_defaultKey), true);
 
@@ -230,6 +231,9 @@ void QMLListView::addRowComponentsDefaultOptions(Options *options)
 		BoundQMLItem* boundItem = dynamic_cast<BoundQMLItem*>(wrapper);
 		if (boundItem)
 		{
+			// The options might depend on properties set by the setup
+			// e.g. setup of BoundQMLListViewTerms sets whether the terms have interactions, which influences the kind of options that will be used.
+			boundItem->setUp();
 			Option* option = boundItem->createOption();
 			options->add(boundItem->name().toStdString(), option);
 		}
