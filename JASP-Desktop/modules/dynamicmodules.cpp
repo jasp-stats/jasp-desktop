@@ -49,6 +49,8 @@ DynamicModules::~DynamicModules()
 	for(auto dynamic : _modules)
 		delete dynamic.second;
 	_modules.clear();
+
+	_singleton = nullptr;
 }
 
 void DynamicModules::initializeInstalledModules()

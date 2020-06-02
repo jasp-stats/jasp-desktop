@@ -54,7 +54,7 @@ Item
 		bottomMargin:	manualAnchor ? undefined : vertical ? extraMarginRightOrBottom	: undefined
 	}
 
-	
+
 
 
 	function scroll(movement)
@@ -65,6 +65,20 @@ Item
 
 	function scrollDown() { scroll( 0.125); }
 	function scrollUp ()  { scroll(-0.125); }
+
+	function scrollWheel(wheel)
+	{
+		if(scrollbar.vertical)
+		{
+					if(wheel.pixelDelta.y !== 0)	scrollbar.scroll(-wheel.pixelDelta.y / scrollbar.height)
+			else	if(wheel.angleDelta.y < 0)		scrollbar.scrollDown();
+			else	if(wheel.angleDelta.y > 0)		scrollbar.scrollUp();
+		} else {
+					if(wheel.pixelDelta.x !== 0)	scrollbar.scroll(-wheel.pixelDelta.x / scrollbar.width)
+			else	if(wheel.angleDelta.x < 0)		scrollbar.scrollDown();
+			else	if(wheel.angleDelta.x > 0)		scrollbar.scrollUp();
+		}
+	}
 	
 	Binding
 	{
@@ -107,16 +121,7 @@ Item
 			anchors.fill:	parent;
 			cursorShape:	Qt.PointingHandCursor
 
-			onWheel:		if(scrollbar.vertical)
-							{
-										if(wheel.pixelDelta.y !== 0)	scrollbar.scroll(-wheel.pixelDelta.y / scrollbar.height)
-								else	if(wheel.angleDelta.y < 0)		scrollbar.scrollDown();
-								else	if(wheel.angleDelta.y > 0)		scrollbar.scrollUp();
-							} else {
-										if(wheel.pixelDelta.x !== 0)	scrollbar.scroll(-wheel.pixelDelta.x / scrollbar.width)
-								else	if(wheel.angleDelta.x < 0)		scrollbar.scrollDown();
-								else	if(wheel.angleDelta.x > 0)		scrollbar.scrollUp();
-							}
+			onWheel:		scrollbar.scrollWheel(wheel)
 
 			drag
 			{

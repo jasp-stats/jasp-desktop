@@ -95,6 +95,8 @@ public:
 	bool	checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
 	QString downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
 
+	static MainWindow * singleton() { return _singleton; }
+
 public slots:
 	void setImageBackgroundHandler(QString value);
 	void plotPPIChangedHandler(int ppi, bool wasUserAction);
@@ -106,6 +108,8 @@ public slots:
 	void setDataPanelVisible(bool dataPanelVisible);
 	void setDataAvailable(bool dataAvailable);
 	void setScreenPPI(int screenPPI);
+
+	void showRCommander();
 
 	bool checkPackageModifiedBeforeClosing();
 	void startDataEditorHandler();
@@ -196,6 +200,7 @@ signals:
 	void analysesAvailableChanged(	bool		analysesAvailable);
 	void welcomePageVisibleChanged(	bool		welcomePageVisible);
 	void downloadNewJASPUrlChanged	(QString	downloadNewJASPUrl);
+	void closeWindows();
 
 private slots:
 	void resultsPageLoaded();
@@ -234,6 +239,8 @@ private:
 
 private:
 	typedef std::map<Analysis*, AnalysisForm*> analysisFormMap;
+
+	static MainWindow			*	_singleton;
 
 	EngineSync					*	_engineSync				= nullptr;
 	QQmlApplicationEngine		*	_qml					= nullptr;

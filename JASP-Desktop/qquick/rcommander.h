@@ -1,0 +1,52 @@
+#ifndef RCOMMANDER_H
+#define RCOMMANDER_H
+
+#include <QQuickItem>
+#include <QFileInfo>
+
+class EngineRepresentation;
+
+class RCommander : public QQuickItem
+{
+	Q_OBJECT
+	Q_PROPERTY(QString	output	READ output		WRITE setOutput		NOTIFY outputChanged	)
+	Q_PROPERTY(bool		running READ running	WRITE setRunning	NOTIFY runningChanged	)
+	Q_PROPERTY(QString	lastCmd READ lastCmd	WRITE setLastCmd	NOTIFY lastCmdChanged	)
+
+public:
+	RCommander();
+	~RCommander();
+
+	QString output()	const { return _output;		}
+	bool	running()	const { return _running;	}
+	QString lastCmd()	const { return _lastCmd;	}
+
+public slots:
+	bool runCode(			const QString & code);
+	void setOutput(			const QString & output);
+	void rCodeReturned(		const QString & result, int requestId);
+	void rCodeReturnedLog(	const QString & log);
+	void clearOutput()														{ setOutput(""); }
+	void appendToOutput(const QString & toAppend, QString separator = "\n") { setOutput(output() + separator + toAppend); }
+	void setRunning(bool running);
+	void setLastCmd(QString lastCmd);
+	void countDownToScroll();
+
+
+
+signals:
+	void outputChanged(QString output);
+	void runningChanged(bool running);
+	void lastCmdChanged(QString lastCmd);
+	void scrollDown();
+	void closeWindow();
+
+private:
+	QString						_output			= "Welcome to JASP's builtin R!",
+								_lastCmd		= "";
+	EngineRepresentation	*	_engine			= nullptr;
+	bool						_running		= false;
+	QTimer					*	_scrollTimer	= nullptr;
+};
+
+#endif // RCOMMANDER_H

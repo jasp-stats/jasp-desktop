@@ -76,6 +76,7 @@ void rbridge_init(sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMes
 		rbridge_requestTempRootName,
 		rbridge_runCallback,
 		rbridge_readFullDataSet,
+		rbridge_readFullFilteredDataSet,
 		rbridge_readDataSetForFiltering,
 		rbridge_requestJaspResultsFileSource,
 		rbridge_getColumnType,
@@ -269,6 +270,16 @@ std::string rbridge_runModuleCall(const std::string &name, const std::string &ti
 
 extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
 {
+	return 	rbridge_readFullDataSetHelper(colMax, false);
+}
+
+extern "C" RBridgeColumn* STDCALL rbridge_readFullFilteredDataSet(size_t * colMax)
+{
+	return 	rbridge_readFullDataSetHelper(colMax, true);
+}
+
+extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSetHelper(size_t * colMax, bool obeyFilter)
+{
 	rbridge_dataSet = rbridge_dataSetSource();
 
 	if(rbridge_dataSet == nullptr)
@@ -289,7 +300,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
 		colHeaders[i].type = (int)columns[i].getColumnType();
 	}
 
-	RBridgeColumn * returnThis = rbridge_readDataSet(colHeaders, (*colMax), false);
+	RBridgeColumn * returnThis = rbridge_readDataSet(colHeaders, (*colMax), obeyFilter);
 
 	for(int i=0; i<(*colMax); i++)
 		free(colHeaders[i].name);
@@ -801,16 +812,32 @@ std::string	rbridge_encodeColumnNamesInScript(const std::string & filterCode)
 	return ColumnEncoder::columnEncoder()->encodeRScript(filterCode, &filterColumnsUsed);
 }
 
-const char * rbridge_setupRCodeEnv(int rowCount)
+void rbridge_setupRCodeEnv(int rowCount, const std::string & dataname)
 {
 	static std::string setupFilterEnv;
 
-	setupFilterEnv =	"data     <- .readFilterDatasetToEnd();"												"\n"
-						"rowcount <- " + std::to_string(rowCount) +  ";"										"\n"
-						"attach(data);"																			"\n"
+	setupFilterEnv =	"rowcount    <- " + std::to_string(rowCount) +  ";";
+	jaspRCPP_runScript(setupFilterEnv.c_str());
+
+	rbridge_setupRCodeEnvReadData(dataname, ".readFilterDatasetToEnd()");
+}
+
+void rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::string & readFunction)
+{
+	static std::string setupFilterEnv;
+
+	setupFilterEnv =	dataname + " <- " + readFunction + ";\n"
+						"attach(" + dataname + ");"																"\n"
 						"options(warn=1, showWarnCalls=TRUE, showErrorCalls=TRUE, show.error.messages=TRUE);"	"\n";
 
-	return setupFilterEnv.c_str();
+	jaspRCPP_runScript(setupFilterEnv.c_str());
+}
+
+void rbridge_detachRCodeEnv(const std::string & dataname)
+{
+	static std::string detacher;
+	detacher = "detach("+dataname+")";
+	jaspRCPP_runScript(detacher.c_str());	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 }
 
 std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std::string & generatedFilterCode)
@@ -834,9 +861,9 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	bool * arrayPointer = nullptr;
 
-	jaspRCPP_runScript(rbridge_setupRCodeEnv(rowCount));
+	rbridge_setupRCodeEnv(rowCount);
 	int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
-	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
+	rbridge_detachRCodeEnv();
 
 	if(arrayLength < 0)
 	{
@@ -888,7 +915,7 @@ std::string rbridge_evalRCodeWhiteListed(const std::string & rCode)
 	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}
 
 
-	jaspRCPP_runScript(rbridge_setupRCodeEnv(rowCount));
+	rbridge_setupRCodeEnv(rowCount);
 	std::string result = jaspRCPP_evalRCode(rCode64.c_str());
 	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 

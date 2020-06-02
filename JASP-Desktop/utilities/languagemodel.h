@@ -45,6 +45,7 @@ public:
 	};
 
 	explicit LanguageModel(QString qsources, QApplication *app = nullptr, QQmlApplicationEngine *qml = nullptr, QObject *parent = nullptr) ;
+	~LanguageModel() { _singleton = nullptr; }
 
 	int						rowCount(const QModelIndex &parent = QModelIndex())			const override { return _languages.size(); }
 	int						columnCount(const QModelIndex & = QModelIndex())			const override { return 1; }

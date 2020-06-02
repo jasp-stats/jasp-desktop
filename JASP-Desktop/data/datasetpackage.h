@@ -57,6 +57,7 @@ public:
 	static DataSetPackage *	pkg() { return _singleton; }
 
 							DataSetPackage(QObject * parent);
+							~DataSetPackage() { _singleton = nullptr; }
 		void				setEngineSync(EngineSync * engineSync);
 		void				reset();
 		void				setDataSetSize(size_t columnCount, size_t rowCount);

@@ -49,10 +49,7 @@ Window
 		close.accepted = mainWindow.checkPackageModifiedBeforeClosing();
 
 		if(close.accepted)
-		{
-			aboutModel.visible = false;
-			helpModel.visible  = false;
-		}
+			mainWindow.closeWindows();
 	}
 
 	function toggleFullScreen()

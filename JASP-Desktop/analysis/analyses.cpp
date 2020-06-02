@@ -578,6 +578,9 @@ int Analyses::_scriptRequestID = 0;
 
 void Analyses::rCodeReturned(QString result, int requestId)
 {
+	if(requestId == -1)
+		return;//Not for us
+
 	if (_scriptIDMap.contains(requestId))
 	{
 		const QPair<Analysis*, QString>& pair = _scriptIDMap[requestId];

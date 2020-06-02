@@ -23,6 +23,13 @@ Window
 	Shortcut { onActivated: helpWindowRoot.toggleFullScreen();	sequences: ["Ctrl+M"];											}
 	Shortcut { onActivated: searchBar.startSearching();			sequences: ["Ctrl+F", Qt.Key_Search];							}
 
+
+	Connections
+	{
+		target:			mainWindow
+		onCloseWindows: helpWindowRoot.close()
+	}
+
 	UIScaleNotifier { anchors.centerIn:	parent }
 
 	WebEngineView

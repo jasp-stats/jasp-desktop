@@ -22,6 +22,9 @@
 class EngineRepresentation : public QObject
 {
 	Q_OBJECT
+	Q_PROPERTY(bool		runsAnalysis		READ runsAnalysis		WRITE setRunsAnalysis		NOTIFY runsAnalysisChanged		)
+	Q_PROPERTY(bool		runsUtility			READ runsUtility		WRITE setRunsUtility		NOTIFY runsUtilityChanged		)
+	Q_PROPERTY(bool		runsRCmd			READ runsRCmd			WRITE setRunsRCmd			NOTIFY runsRCmdChanged			)
 
 public:
 	EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent = nullptr);
@@ -37,6 +40,7 @@ public:
 
 	void runScriptOnProcess(RFilterStore * filterStore);
 	void runScriptOnProcess(RScriptStore * scriptStore);
+	void runScriptOnProcess(const QString & rCmdCode);
 	void runScriptOnProcess(RComputeColumnStore * computeColumnStore);
 	void runAnalysisOnProcess(Analysis *analysis);
 	void runModuleRequestOnProcess(Json::Value request);
@@ -55,6 +59,9 @@ public:
 	bool killed()				const { return _engineState == engineState::killed;										}
 	bool idle()					const { return _engineState == engineState::idle;										}
 	bool shouldSendSettings()	const { return idle() && _settingsChanged;												}
+	bool runsAnalysis()			const { return _runsAnalysis;															}
+	bool runsUtility()			const { return _runsUtility;															}
+	bool runsRCmd()				const { return _runsRCmd;																}
 
 	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr && !killed(); }
 
@@ -72,6 +79,7 @@ public:
 	void restartAbortedAnalysis();
 
 	void checkIfExpectedReplyType(engineState expected) { unexpectedEngineReply::checkIfExpected(expected, _engineState, channelNumber()); }
+	bool willProcessAnalysis(const Analysis * analysis) const;
 
 	size_t	channelNumber()		const { return _channel->channelNumber(); }
 
@@ -79,10 +87,14 @@ public:
 
 	std::string currentState() const;
 
+
 public slots:
 	void analysisRemoved(Analysis * analysis);
 	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 	void settingsChanged();
+	void setRunsAnalysis(	bool runsAnalysis);
+	void setRunsUtility(	bool runsUtility);
+	void setRunsRCmd(		bool runsRCmd);
 
 signals:
 	void engineTerminated();
@@ -91,7 +103,8 @@ signals:
 	void processNewFilterResult(		const std::vector<bool> & filterResult, int requestId);
 	void computeColumnErrorTextChanged(	const QString & error);
 
-	void rCodeReturned(					const QString & result, int requestId);
+	void rCodeReturned(					const QString & result, int requestId	);
+	void rCodeReturnedLog(				const QString & log						);
 
 	void computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
 	void computeColumnFailed(			const QString & columnName, const QString & error);
@@ -107,6 +120,9 @@ signals:
 	void logCfgReplyReceived(int channelNr);
 	void plotEditorRefresh();
 	void requestEngineRestart(int channelNr);
+	void runsAnalysisChanged(bool runsAnalysis);
+	void runsUtilityChanged(bool runsUtility);
+	void runsRCmdChanged(bool runsRCmd);
 
 private:
 	void sendPauseEngine();
@@ -137,6 +153,9 @@ private:
 	std::string		_lastCompColName	= "???";
 
 
+	bool _runsAnalysis;
+	bool _runsUtility;
+	bool _runsRCmd;
 };
 
 #endif // ENGINEREPRESENTATION_H

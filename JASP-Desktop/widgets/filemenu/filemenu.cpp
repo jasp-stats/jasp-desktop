@@ -362,6 +362,8 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 	case ActionButtons::FileOperation::ExportResults:		setSaveMode(FileEvent::FileExportResults);	break;
 	case ActionButtons::FileOperation::ExportData:  		setSaveMode(FileEvent::FileExportData);		break;
 	case ActionButtons::FileOperation::SyncData:			setSaveMode(FileEvent::FileSyncData);		break;
+	case ActionButtons::FileOperation::Close:				close();									break;
+	case ActionButtons::FileOperation::RCmd:				showRCommander();							break;
 	case ActionButtons::FileOperation::Save:
 		if (getCurrentFileType() == Utils::FileType::jasp && ! isCurrentFileReadOnly())
 			save();
@@ -369,9 +371,7 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 			setSaveMode(FileEvent::FileSave);			
 		break;
 
-	case ActionButtons::FileOperation::Close:
-		close();
-		break;
+
 
 	case ActionButtons::FileOperation::About:
 		setVisible(false);

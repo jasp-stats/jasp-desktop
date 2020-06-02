@@ -266,21 +266,54 @@ void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
 	if(_engineState != engineState::idle)
 		Log::log() << "Unexpected rCode message, current state is not idle (" << engineStateToString(_engineState) << ")";
 
-	_engineState		= engineState::rCode;
-	std::string rCode	= jsonRequest.get("rCode",			"").asString();
-	int rCodeRequestId	= jsonRequest.get("requestId",		-1).asInt();
-	bool whiteListed	= jsonRequest.get("whiteListed",	true).asBool();
+				_engineState	= engineState::rCode;
+	std::string rCode			= jsonRequest.get("rCode",			"").asString();
+	int			rCodeRequestId	= jsonRequest.get("requestId",		-1).asInt();
+	bool		whiteListed		= jsonRequest.get("whiteListed",	true).asBool(),
+	            returnLog		= jsonRequest.get("returnLog",		false).asBool();
 
-	runRCode(rCode, rCodeRequestId, whiteListed);
+	if(returnLog)	runRCodeCommander(rCode);
+	else			runRCode(rCode, rCodeRequestId, whiteListed);
 }
 
 // Evaluating arbitrary R code (as string) which returns a string
 void Engine::runRCode(const std::string & rCode, int rCodeRequestId, bool whiteListed)
 {
+
 	std::string rCodeResult = whiteListed ? rbridge_evalRCodeWhiteListed(rCode.c_str()) : jaspRCPP_evalRCode(rCode.c_str());
 
 	if (rCodeResult == "null")	sendRCodeError(rCodeRequestId);
 	else						sendRCodeResult(rCodeResult, rCodeRequestId);
+
+	_engineState = engineState::idle;
+}
+
+
+void Engine::runRCodeCommander(std::string rCode)
+{
+	bool thereIsSomeData = provideDataSet();
+
+
+	static const std::string rCmdDataName = "jaspData", rCmdFiltered = "jaspFiltered";
+
+
+	if(thereIsSomeData)
+	{
+		rCode = ColumnEncoder::encodeAll(rCode);
+		rbridge_setupRCodeEnvReadData(rCmdDataName, ".readFullDatasetToEnd()");		//These both attach the data, is that bad?
+		rbridge_setupRCodeEnvReadData(rCmdFiltered, ".readFullFilteredDatasetToEnd()");
+	}
+
+	std::string rCodeResult =	jaspRCPP_evalRCodeCommander(rCode.c_str());
+
+	if(thereIsSomeData)
+	{
+		rbridge_detachRCodeEnv(rCmdFiltered);
+		rbridge_detachRCodeEnv(rCmdDataName);
+		rCodeResult = ColumnEncoder::decodeAll(rCodeResult);
+	}
+
+	sendRCodeResult(rCodeResult, -1);
 
 	_engineState = engineState::idle;
 }

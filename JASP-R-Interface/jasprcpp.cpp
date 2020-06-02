@@ -33,6 +33,7 @@ RInside						*rinside;
 ReadDataSetCB				readDataSetCB;
 RunCallbackCB				runCallbackCB;
 ReadADataSetCB				readFullDataSetCB,
+							readFullFilteredDataSetCB,
 							readFilterDataSetCB;
 ReadDataColumnNamesCB		readDataColumnNamesCB;
 RequestTempFileNameCB		requestTempFileNameCB,
@@ -80,6 +81,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	requestJaspResultsFileSourceCB				= callbacks->requestJaspResultsFileSourceCB;
 	dataSetColumnAsNominalText					= callbacks->dataSetColumnAsNominalText;
 	requestSpecificFileNameCB					= callbacks->requestSpecificFileNameCB;
+	readFullFilteredDataSetCB					= callbacks->readFullFilteredDataSetCB;
 	requestStateFileSourceCB					= callbacks->requestStateFileSourceCB;
 	readDataSetDescriptionCB					= callbacks->readDataSetDescriptionCB;
 	dataSetColumnAsNominal						= callbacks->dataSetColumnAsNominal;
@@ -130,6 +132,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".requestTempRootNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
 	rInside[".setColumnDataAsNominalText"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsNominalText);
 	rInside[".requestStateFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
+	rInside[".readFullFilteredDatasetToEnd"]	= Rcpp::InternalFunction(&jaspRCPP_readFullFilteredDataSet);
 	rInside[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
 
 	rInside.parseEvalQNT(".outputSink <- .createCaptureConnection(); sink(.outputSink); print('.outputSink initialized!');");
@@ -447,6 +450,57 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	}
 
 	return staticResult.c_str();
+}
+
+std::stringstream __cmderLogStream;
+
+int __cmderLogFlush() { __cmderLogStream.flush(); return 0; }
+
+size_t __cmderLogWrite(const void * buf, size_t len)
+{
+	try {	if(len > 0)	__cmderLogStream.write(static_cast<const char *>(buf), len);	}
+	catch (...) {		__cmderLogStream << "Capturing output from R had a problem...\n" << std::flush; }
+	return len;
+}
+
+///Run Rcode and return all output as if
+const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode)
+{
+	__cmderLogStream.str("");
+
+	logFlushDef originalFlush	= _logFlushFunction;
+	_logFlushFunction			= __cmderLogFlush;
+
+	logWriteDef	originalLogger	= _logWriteFunction;
+	_logWriteFunction			= __cmderLogWrite;
+
+	lastErrorMessage = "";
+	rinside->instance()[".rCode"] = CSTRING_TO_R(rCode);
+	const std::string rCodeTryCatch(""
+		"tryCatch(				"
+		"	suppressWarnings({ valVis <- withVisible(eval(parse(text=.rCode))); if(valVis$visible) print(valVis$value); }),	"
+		"		error	= function(e) { .setRError(toString(e$message))	  }, 	"
+		"		warning	= function(w) { .setRWarning(toString(w$message)) }		"
+		");"
+		);
+
+	try
+	{
+		jaspRCPP_parseEvalQNT(rCodeTryCatch, false);
+		if(lastErrorMessage != "")	__cmderLogStream << lastErrorMessage << std::endl;
+	}
+	catch(std::runtime_error e) {	/*__cmderLogStream << e.what() << std::endl;*/ } //R already tells us what is wrong
+
+	_logFlushFunction			= originalFlush;
+	_logWriteFunction			= originalLogger;
+
+	static std::string staticLog;
+
+	staticLog = __cmderLogStream.str();
+
+	__cmderLogStream.str("");
+
+	return staticLog.c_str();
 }
 
 } // extern "C"
@@ -868,6 +922,14 @@ Rcpp::DataFrame jaspRCPP_readFullDataSet()
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 
+
+Rcpp::DataFrame jaspRCPP_readFullFilteredDataSet()
+{
+	size_t colMax = 0;
+	RBridgeColumn* colResults = readFullFilteredDataSetCB(&colMax);
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+}
+
 Rcpp::DataFrame jaspRCPP_readFilterDataSet()
 {
 	size_t colMax = 0;
@@ -1037,16 +1099,16 @@ std::string __sinkMe(const std::string code)
 	return "sink(.outputSink, type='output');\nsink(.outputSink, type='message');\n" + code;
 }
 
-void jaspRCPP_parseEvalQNT(const std::string & code)
+void jaspRCPP_parseEvalQNT(const std::string & code, bool preface)
 {
-	jaspRCPP_parseEvalPreface(code);
+	if(preface)	jaspRCPP_parseEvalPreface(code);
 	rinside->parseEvalQNT(__sinkMe(code));
 	jaspRCPP_logString("\n");
 }
 
-RInside::Proxy jaspRCPP_parseEval(const std::string & code)
+RInside::Proxy jaspRCPP_parseEval(const std::string & code,	bool preface)
 {
-	jaspRCPP_parseEvalPreface(code);
+	if(preface)	jaspRCPP_parseEvalPreface(code);
 	RInside::Proxy returnthis = rinside->parseEval(__sinkMe(code));
 	jaspRCPP_logString("\n");
 	return returnthis;
@@ -1218,3 +1280,4 @@ SEXP jaspRCPP_CreateCaptureConnection()
 	UNPROTECT(1);
 	return rc;
 }
+

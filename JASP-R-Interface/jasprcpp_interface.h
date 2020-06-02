@@ -93,6 +93,7 @@ struct RBridgeCallBacks {
 	RequestTempRootNameCB			requestTempRootNameCB;
 	RunCallbackCB					runCallbackCB;
 	ReadADataSetCB					readFullDataSetCB;
+	ReadADataSetCB					readFullFilteredDataSetCB;
 	ReadADataSetCB					readFilterDataSetCB;
 	RequestPredefinedFileSourceCB	requestJaspResultsFileSourceCB;
 	GetColumnType					dataSetGetColumnType;
@@ -128,6 +129,7 @@ RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_runModuleCall(const char*
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_check();
 
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_evalRCode(const char *rCode);
+RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode);
 
 RBRIDGE_TO_JASP_INTERFACE int			STDCALL jaspRCPP_runFilter(const char * filtercode, bool ** arraypointer); //arraypointer points to a pointer that will contain the resulting list of filter-booleans if jaspRCPP_runFilter returns > 0
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_freeArrayPointer(bool ** arrayPointer);

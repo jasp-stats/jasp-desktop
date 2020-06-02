@@ -121,7 +121,9 @@ public:
 	Modules::DynamicModule	*	dynamicModule()		const	{ return _dynamicModule;					}
 			AnalysisForm	*	form()				const	{ return _analysisForm;						}
 			bool				isDuplicate()		const	{ return _isDuplicate;						}
-			bool				hasVolatileNotes()			const	{ return _hasVolatileNotes;							}
+			bool				hasVolatileNotes()	const	{ return _hasVolatileNotes;					}
+			bool				utilityRunAllowed() const	{ return  isSaveImg() || isEditImg() || isRewriteImgs();	}
+			bool				shouldRun()			const	{ return !isWaitingForModule() && ( utilityRunAllowed() || isEmpty() || isInited());	} //There isnt any difference between empty and inited anymore I think?
 
 			void		run();
 			void		refresh();
