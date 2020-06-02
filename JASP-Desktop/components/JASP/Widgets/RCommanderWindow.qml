@@ -168,6 +168,7 @@ Window
 						selectionColor:			jaspTheme.black
 						selectByMouse:			true
 						wrapMode:				TextEdit.Wrap
+						focus:					true
 
 						placeholderText:		mainWindow.dataAvailable ? qsTr("Enter you R code here.\nThe data is fully available as 'jaspData' and filtered as 'jaspFiltered'.") : qsTr("Enter you R code here.")
 						placeholderTextColor:	jaspTheme.grayDarker
