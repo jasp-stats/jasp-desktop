@@ -124,7 +124,7 @@ test_that("Contrasts table results match", {
   for (contrast in contrasts) {
     options$contrasts <- list(list(contrast=contrast, variable="facFive"))
     results <- jasptools::run("Anova", "test.csv", options)
-    table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$data
+    table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$collection[[1]]$data
     # table <- results[["results"]][["contrasts"]][["collection"]][[1]][["data"]]
     expect_equal_tables(table, refTables[[contrast]], label=paste("Table with contrast", contrast))
   }
@@ -372,7 +372,7 @@ test_that("Field - Chapter 5 results match", {
   results <- jasptools::run("Anova", "Puppies Dummy.csv", options)
   
   # contrast 
-  table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$data
+  table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$collection[[1]]$data
   expect_equal_tables(table,
                       list("1 - 2, 3", -1.9, 0.768114574786861, -2.47358930863565, 0.0293002196554282,
                            12, -3.5735778902, -0.2264221098, "TRUE", "2 - 3", -1.8, 0.886942313043338,
@@ -449,7 +449,7 @@ test_that("Field - Chapter 7 results match", {
                            8.50652173913045, 0.000791273868880283, "FALSE", "Residuals",
                            57.5, 42, 1.36904761904762, "", "", "TRUE"))
   
-  table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$data
+  table <- results[["results"]]$anovaContainer$collection$anovaContainer_contrastContainer$collection[[1]]$collection[[1]]$data
   expect_equal_tables(table,
                       list("0 - 1, 2", -1.09375, 0.358257190138194, -3.05297431596026, 0.003921402019941,
                            42, -1.81674228032104, -0.37075771967896, "TRUE", "1 - 2", -0.6875,

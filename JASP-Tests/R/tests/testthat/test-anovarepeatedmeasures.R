@@ -365,7 +365,7 @@ test_that("Homogeneity tests correct", {
 
 
 
-test_that("(Repeated) Contrast table match", {
+test_that("Contrast table match", {
   options <- initOpts()
   
   options$contrasts <- list(list(contrast = "repeated", variable = "Looks"),
@@ -374,12 +374,18 @@ test_that("(Repeated) Contrast table match", {
   results <- jasptools::run(name = "AnovaRepeatedMeasures",
                             dataset = "AnovaMixedEffects.csv", options = options)
   
-  # added 36 twice, because added degrees of freedom, removed booleans because automatic isnewgroup
+  # Difference contrast
+  refTable <- list("Some - High", 1.08612650363252, 36, -12.8, 6.48261408516436e-14,
+                   -11.7849992217212, "None - High, Some", 0.940613143869335, 36,
+                   -21.4, 5.89263452901201e-23, -22.7511173317952)
+  table <- results[["results"]]$rmAnovaContainer$collection$rmAnovaContainer_contrastContainer$collection[[1]]$collection[[1]]$data
+  expect_equal_tables(table, refTable)
+  
+  # Repeated contrast
   refTable <- list("Attractive - Average", 14.31667, 0.9040603, 15.83596, 36,
                    8.431449e-18, "Average - Ugly", 11.96667, 0.9040603, 36,
                    13.23658, 2.1268e-15)
-  
-  table <- results[["results"]]$rmAnovaContainer$collection$rmAnovaContainer_contrastContainer$collection$rmAnovaContainer_contrastContainer_repeatedContrast_Looks$data
+  table <- results[["results"]]$rmAnovaContainer$collection$rmAnovaContainer_contrastContainer$collection[[2]]$collection[[1]]$data
   expect_equal_tables(table, refTable)
 })
 

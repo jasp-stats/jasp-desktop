@@ -71,8 +71,6 @@ Item
 		{
 			id			: contrastValuesItem
 			name		: "contrast"
-			enabled		: !addCustom || !rowValueIsInteraction
-			currentIndex: enabled ? 0 : (contrastsList.contrastValues.length - 1)
 			values		: contrastsList.contrastValues
 		}
 
@@ -92,18 +90,18 @@ Item
 			Text
 			{
 				height			: 30 * preferencesModel.uiScale
-				text			: qsTr("Custom contrast for %1").arg(rowValue)
+				text			: qsTr("Custom for %1").arg(rowValue)
 			}
 
 			CustomContrastsTableView
 			{
 				preferredWidth	: itemCustomContrasts.width
 				name			: "values"
-				modelType		: "AnovaCustomContrasts"
+				//modelType		: "AnovaCustomContrasts"
 				itemType		: "double"
 				minimum			: -Infinity
 				decimals		: 3
-				buttonsInRow	: false
+				//buttonsInRow	: false
 				columnName		: rowValue
 				factorsSource	: contrastsList.repeatedMeasureFactors
 			}

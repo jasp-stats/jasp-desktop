@@ -33,7 +33,7 @@ The Correlation analysis allows estimation of the population correlation, as wel
 - Display pairwise: Display a table where one row corresponds to one pair of the specified variables, and the scatter plots are shown individually for each pair. If unticked, the results are presented in matrix format, with variable names in the columns and rows.
 - Report significance: Display the p-value corresponding to the observed correlation.
 - Flag significant correlations: Mark statistically significant correlations.
-- Confidence Intervals: Confidence intervals for the population correlation (only available for the Pearson correlation).
+- Confidence Intervals: Confidence intervals for the population correlation (confidence intervals for nonparametric correlations follow the z-approximation of Hollander, Wolfe & Chicken (2013)).
   - Interval: Coverage of the confidence interval in percentages.
 - Vovk-Selke maximum p-ratio: The bound 1/(-e p log(p)) is derived from the shape of the p-value distribution. Under the null hypothesis (H<sub>0</sub>) it is uniform (0,1), and under the alternative (H<sub>1</sub>) it is decreasing in p, e.g., a beta (α, 1) distribution, where 0 < α < 1. The Vovk-Sellke MPR is obtained by choosing the shape α of the distribution under H1 such that the obtained p-value is maximally diagnostic. The value is then the ratio of the densities at point p under H<sub>0</sub> and H<sub>1</sub>. For example, if the two-sided p-value equals .05, the Vovk-Sellke MPR equals 2.46, indicating that this p-value is at most 2.46 times more likely to occur under H1 than under H<sub>0</sub>.
 - Sample size: The number of complete observations for a given pair of variables.
@@ -95,6 +95,7 @@ The Correlation analysis allows estimation of the population correlation, as wel
 
 ### References
 -------
+- Hollander, M., Wolfe, D. A., & Chicken, E. (2013). *Nonparametric statistical methods (3rd ed.)*. John Wiley & Sons.
 - Moore, D. S., McCabe, G. P., & Craig, B. A. (2012). *Introduction to the practice of statistics (7th ed.)*. New York, NY: W. H. Freeman and Company.
 - Whitlock, M. C., & Schluter, D. (2015). *The analysis of biological data (2nd ed.)*. Greenwood Village, Colorado: Roberts and Company Publishers.
 - Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of *p* values for testing precise null hypotheses. *The American Statistician, 55*(1), 62-71.
