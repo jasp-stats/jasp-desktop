@@ -372,10 +372,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 	initialize: function () {
 
-		this.ghostTextDefault = 'Click here to add text...';
+		this.ghostTextDefault = 'Click here to add text';
 
 		this.editing = false;
-		this.ghostTextVisible = true;
 
 		this.visible = this.model.get('visible');
 		if (this.visible === undefined || this.visible === null)
@@ -394,6 +393,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			return self.$el;
 		};
 		this.closeButton.setAction(function () {
+
 			self.setVisibilityAnimate(false);
 			if (window.resultsDocumentChanged)
 				window.resultsDocumentChanged();
@@ -431,10 +431,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.model.set('deltaAvailable', false);
 	},
 
-	setGhostTextVisible: function(visible) {
-		this.ghostTextVisible = visible;
-	},
-
 	isTextboxEmpty: function () {
 
 		//We should probably only be here if we have $quill right?
@@ -468,51 +464,53 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			[{ 'header': [1, 2, 3, 4, false] }, { 'list': 'ordered'}, { 'list': 'bullet' }],
 			[{ 'color': [] }, { 'background': [] }],
 			[{ 'script': 'sub'}, { 'script': 'super' }],
-			['blockquote', { 'indent': '-1'}, { 'indent': '+1' }],
+			['blockquote', { 'indent': '+1'}, { 'indent': '-1' }],
 			// [{ 'font': [] }, { 'align': [] }],
 			[{ 'size': [ 'small', false, 'large' ]}],
 			['clean']
 		];
 
+		let placeholderText = this.ghostTextDefault
+		if (typeof this.ghostText !== 'undefined')
+			placeholderText = this.ghostText
+
 		var options = {
-		  theme: 'snow',
-		  modules: {
-			toolbar: toolbarOptions,
-			keyboard: {
-				  bindings: {
-					smartbreak: {
-						// Handle shift-Enter. Cf https://github.com/quilljs/quill/issues/252
-						key: 13,
-						shiftKey: true,
-						handler: function (range, context) {
-							this.quill.setSelection(range.index,'silent');
-							this.quill.insertText(range.index, '\n', 'user')
-							this.quill.setSelection(range.index +1,'silent');
-							this.quill.format('linebreak', true,'user');
-
-
-						}
-					},
-					paragraph: {
-						key: 13,
-						handler: function (range, context) {
-							this.quill.setSelection(range.index,'silent');
-							this.quill.insertText(range.index, '\n', 'user')
-							this.quill.setSelection(range.index +1,'silent');
-							let f = this.quill.getFormat(range.index +1);
-							if(f.hasOwnProperty('linebreak')) {
-								delete(f.linebreak)
-								this.quill.removeFormat(range.index +1)
-								for(let key in f){
-									this.quill.formatText(range.index +1,key,f[key])
-
+			theme: 'snow',
+			modules: {
+				toolbar: toolbarOptions,
+				keyboard: {
+					bindings: {
+						smartbreak: {
+							// Handle shift-Enter. Cf https://github.com/quilljs/quill/issues/252
+							key: 13,
+							shiftKey: true,
+							handler: function (range, context) {
+								this.quill.setSelection(range.index,'silent');
+								this.quill.insertText(range.index, '\n', 'user')
+								this.quill.setSelection(range.index +1,'silent');
+								this.quill.format('linebreak', true,'user');
+							}
+						},
+						paragraph: {
+							key: 13,
+							handler: function (range, context) {
+								this.quill.setSelection(range.index,'silent');
+								this.quill.insertText(range.index, '\n', 'user')
+								this.quill.setSelection(range.index +1,'silent');
+								let f = this.quill.getFormat(range.index +1);
+								if(f.hasOwnProperty('linebreak')) {
+									delete(f.linebreak)
+									this.quill.removeFormat(range.index +1)
+									for(let key in f){
+										this.quill.formatText(range.index +1,key,f[key])
+									}
 								}
 							}
 						}
 					}
-				  }
 				}
-			}
+			},
+			placeholder: placeholderText
 		};
 
 		let targetDiv = this.$el.find("#editor").get(0);
@@ -524,6 +522,38 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.$quillToolbar     = this.$el.find(".ql-toolbar").get(0);
 		let quillEditorElement = this.$el.find(".ql-editor").get(0);
 
+		// Add tooltips to the toolbar buttons
+		// Quilljs website mentions changing the toolbar html element (https://quilljs.com/playground/#snow-toolbar-tooltips),
+		//     however, that is not handy for complex buttons such as color picker
+		//     Instead, we will use the browser standard "title" attribute as
+		//     mentioned here: https://github.com/quilljs/quill/issues/1271#issuecomment-597928093
+
+		this.$quillToolbar.querySelector('button.ql-bold').setAttribute('title', 'Bold');
+		this.$quillToolbar.querySelector('button.ql-italic').setAttribute('title', 'Italic');
+		this.$quillToolbar.querySelector('button.ql-underline').setAttribute('title', 'Underline');
+		this.$quillToolbar.querySelector('button.ql-link').setAttribute('title', 'Link');
+
+		this.$quillToolbar.querySelector('.ql-header.ql-picker').setAttribute('title', 'Header');
+		let lists = this.$quillToolbar.querySelectorAll('button.ql-list')
+		lists[0].setAttribute('title', 'Ordered List')
+		lists[1].setAttribute('title', 'Unordered List')
+
+		this.$quillToolbar.querySelector('.ql-color.ql-picker.ql-color-picker').setAttribute('title', 'Color Picker');
+		this.$quillToolbar.querySelector('.ql-background.ql-picker.ql-color-picker').setAttribute('title', 'Background Color');
+
+		let scripts = this.$quillToolbar.querySelectorAll('button.ql-script')
+		scripts[0].setAttribute('title', 'Subscript')
+		scripts[1].setAttribute('title', 'Superscript')
+
+		this.$quillToolbar.querySelector('button.ql-blockquote').setAttribute('title', 'Blockquote');
+		let indents = this.$quillToolbar.querySelectorAll('button.ql-indent')
+		indents[0].setAttribute('title', 'Add Indent')
+		indents[1].setAttribute('title', 'Remove Indent')
+
+		this.$quillToolbar.querySelector('.ql-size.ql-picker').setAttribute('title', 'Font Size');
+		this.$quillToolbar.querySelector('button.ql-clean').setAttribute('title', 'Clear Formatting');
+
+		// Custom mouse events for the toolbar
 		this.$quillToolbar.addEventListener('mousedown', (event) => {
 			event.preventDefault();
 		});
@@ -609,13 +639,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		if (value === true) {
 			self.$el.slideDown(200, function () {
 				self.setVisibility(value);
-				if (scrollIntoView)
-					self.setGhostTextVisible(false);
 				self.$el.animate({ "opacity": 1 }, 200, "easeOutCubic", function () {
 					if (scrollIntoView) {
-						window.scrollIntoView(self.$el, function () {
-							self.setGhostTextVisible(true);
-						});
+						window.scrollIntoView(self.$el, function () {});
 					}
 				});
 			});
@@ -709,10 +735,6 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 	useExportNSBF: function() {
 		return false;
 	},
-
-	onClosed: function() {
-		this.closeButton.close();
-	}
 })
 
 

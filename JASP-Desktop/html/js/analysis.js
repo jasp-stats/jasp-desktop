@@ -121,7 +121,8 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 	_setTitle: function (title, format) {
 
-		this.viewNotes.lastNoteNoteBox.ghostText = title + ' Conclusion - ' + this.viewNotes.lastNoteNoteBox.ghostTextDefault;
+		this.viewNotes.firstNoteNoteBox.ghostText = title + ' - Introduction: ' + this.viewNotes.firstNoteNoteBox.ghostTextDefault;
+		this.viewNotes.lastNoteNoteBox.ghostText  = title + ' - Conclusion: '   + this.viewNotes.lastNoteNoteBox.ghostTextDefault;
 
 		this.toolbar.title = title;
 		this.toolbar.titleTag = format;
