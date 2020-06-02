@@ -52,9 +52,9 @@ Form
 	Group
 	{
 		title: qsTr("Plots")
-		CheckBox { name: "plotNetwork";		label: qsTr("Network plot")		}
-		CheckBox { name: "plotCentrality";	label: qsTr("Centrality plot")	}
-		CheckBox { name: "plotClustering";	label: qsTr("Clustering plot")	}
+		CheckBox { name: "plotNetwork";		label: qsTr("Network plot")								}
+		CheckBox { name: "plotCentrality";	label: qsTr("Centrality plot");		id: plotCentrality	}
+		CheckBox { name: "plotClustering";	label: qsTr("Clustering plot")							}
 	}
 
 	Group
@@ -345,6 +345,13 @@ Form
 			DoubleField { name: "minEdgeStrength";	label: qsTr("Min edge strength");	defaultValue: 0; max: 10 }
 			DoubleField { name: "cut";				label: qsTr("Cut");					defaultValue: 0; max: 10 }
 			CheckBox	{ name: "showDetails";		label: qsTr("Show details") }
+			CheckBox
+			{
+								name: "edgeLabels";			label: qsTr("Edge labels");				checked: false
+				DoubleField {	name: "edgeLabelCex";		label: qsTr("Edge label size");			min: 0;			max: 10;	defaultValue: 1		}
+				DoubleField {	name: "edgeLabelPosition";	label: qsTr("Edge label position");		min: 0;			max: 1;		defaultValue: 0.5	}
+			}
+
 			DropDown
 			{
 				name: "edgeColors"
@@ -381,7 +388,7 @@ Form
 		{
 			name: "showVariableNames";
 			title: qsTr("Show Variable Names")
-			RadioButton { value: "In nodes";		label: qsTr("In nodes");	 checked: true	}
+			RadioButton { value: "In nodes";		label: qsTr("In plot");		checked: true	}
 			RadioButton { value: "In legend";		label: qsTr("In legend")					}
 		}
 
@@ -430,6 +437,16 @@ Form
 			}
 			RadioButton { value: "circle";	label: qsTr("Circle")							}
 			RadioButton { value: "data";	label: qsTr("Data");	id: dataRatioButton		}
+		}
+
+		Group
+		{
+			title: qsTr("Measures shown in centrality plot")
+			enabled: plotCentrality.checked
+			CheckBox	{	name: "Betweenness";		label: qsTr("Betweenness");			checked: true	}
+			CheckBox	{	name: "Closeness";			label: qsTr("Closeness");			checked: true	}
+			CheckBox	{	name: "Degree";				label: qsTr("Betweenness");			checked: true	}
+			CheckBox	{	name: "ExpectedInfluence";	label: qsTr("Expected Influence");	checked: true	}
 		}
 
 		VariablesForm

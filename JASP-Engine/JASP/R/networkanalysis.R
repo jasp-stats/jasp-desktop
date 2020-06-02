@@ -296,7 +296,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   for (i in seq_len(nGraphs)) {
 
     toAdd <- network[["centrality"]][[i]]
-    names(toAdd) <- c("Variable", paste0(c("Betweenness", "Closeness", "Strength"), i))
+    names(toAdd) <- c("Variable", paste0(c("Betweenness", "Closeness", "Strength", "Expected influence"), i))
     if (i == 1L) {# if more than 1 network drop the first column which indicates the variable
       TBcolumns <- toAdd
     } else {
@@ -460,10 +460,13 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     return()
 
   measuresToShow <- unlist(options[c("Betweenness", "Closeness", "Degree", "ExpectedInfluence")], use.names = FALSE)
-  plot <- createJaspPlot(title = gettext("Centrality Plot"), position = 52, width = 120 * sum(measuresToShow),
+  hasMeasures <- any(measuresToShow)
+
+  width <- if (hasMeasures) 120 * sum(measuresToShow) else 120
+  plot <- createJaspPlot(title = gettext("Centrality Plot"), position = 52, width = width,
                          dependencies = c("plotCentrality", "Betweenness", "Closeness", "Degree", "ExpectedInfluence"))
   plotContainer[["centralityPlot"]] <- plot
-  if (is.null(network[["centrality"]]) || plotContainer$getError())
+  if (is.null(network[["centrality"]]) || plotContainer$getError() || !hasMeasures)
     return()
 
   wide <- network[["centrality"]]
