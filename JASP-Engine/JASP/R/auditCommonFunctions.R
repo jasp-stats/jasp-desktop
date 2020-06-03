@@ -275,6 +275,12 @@
                                    planningState,
                                    selectionContainer)
 
+  # Add the sample indicator to the data
+  .auditAddSelectionIndicator(options,
+                              planningOptions,
+                              selectionState, 
+                              jaspResults)
+
   # Create explanatory text for the selection
   .auditExplanatoryTextSelection(options,
                                  planningOptions,
@@ -287,6 +293,7 @@
 
   # Create a state to keep track of table numbers
   .auditCreateTableNumber(jaspResults)
+  .auditCreateFigureNumber(jaspResults)
 
   # Create a table containing information about the selection process
   .auditSelectionSummaryTable(options,
@@ -310,6 +317,18 @@
                              selectionContainer,
                              jaspResults,
                              positionInContainer = 4)
+
+  # ---
+
+  # --- PLOTS
+
+  # Create a collection of plots comparing the population to the sample values
+  .auditSelectionHistograms(options,
+                            dataset,
+                            selectionState,
+                            selectionContainer,
+                            jaspResults,
+                            positionInContainer = 5)
 
   # ---
 }
@@ -2029,6 +2048,37 @@
   }
 }
 
+.auditAddSelectionIndicator <- function(options, 
+                                     planningOptions,
+                                     selectionState, 
+                                     jaspResults){
+  
+  if(!options[["addSampleIndicator"]] || options[["sampleIndicatorColumn"]] == "")  
+    return()
+
+  if(is.null(jaspResults[["sampleIndicatorColumn"]])){
+
+    sampleIndicatorColumn <- numeric(length = planningOptions[["populationSize"]])
+    sampleRowNumbers <- selectionState[["rowNumber"]]
+    sampleCounts <- selectionState[["count"]]
+    sampleIndicatorColumn[sampleRowNumbers] <- sampleCounts
+    jaspResults[["sampleIndicatorColumn"]] <- createJaspColumn(columnName = options[["sampleIndicatorColumn"]])
+    jaspResults[["sampleIndicatorColumn"]]$dependOn(options = c("recordNumberVariable",
+                                                                "monetaryVariable",
+                                                                "additionalVariables",
+                                                                "rankingVariable",
+                                                                "selectionMethod",
+                                                                "selectionType",
+                                                                "seed",
+                                                                "intervalStartingPoint",
+                                                                "sampleSize",
+                                                                "addSampleIndicator", 
+                                                                "sampleIndicatorColumn"))
+    jaspResults[["sampleIndicatorColumn"]]$setNominal(sampleIndicatorColumn)
+
+  }  
+}
+
 .auditSelectionGetContainer <- function(jaspResults, 
                                         position){
 
@@ -2520,6 +2570,87 @@
       }
       sampleDescriptivesTable$addRows(row)
     }
+  }
+}
+
+.auditSelectionHistograms <- function(options,
+                                      dataset,
+                                      selectionState,
+                                      selectionContainer,
+                                      jaspResults,
+                                      positionInContainer){
+
+  if (!is.null(jaspResults[["plotHistograms"]]) || !options[["plotHistograms"]]) return()
+
+  .updateFigNumber(jaspResults)
+
+	plotHistograms <- createJaspContainer(gettext("Population and sample histograms"))
+  plotHistograms$dependOn(options = c("recordNumberVariable",
+                                      "monetaryVariable",
+                                      "additionalVariables",
+                                      "rankingVariable",
+                                      "selectionMethod",
+                                      "selectionType",
+                                      "seed",
+                                      "intervalStartingPoint",
+                                      "sampleSize"))
+  plotHistograms$position <- positionInContainer
+
+  selectionContainer[["plotHistograms"]] <- plotHistograms
+
+  if(options[["recordNumberVariable"]] == "" || options[["monetaryVariable"]] == "")
+    return()
+
+  variables <- colnames(selectionState)[-(1:3)]
+
+  for(i in 1:length(variables)){
+
+    if(i == 1){
+      popData <- dataset[, .v(options[["monetaryVariable"]])]
+    } else {
+      popData <- dataset[, variables[i]]
+    }
+
+    sampleData <- selectionState[, variables[i]]
+
+    if(!is.numeric(popData) || !is.numeric(sampleData)){
+      next
+    }
+  
+    plotData <- data.frame(x = c(popData, sampleData), 
+                          type = c(rep("Population", length(popData)), 
+                                   rep("Sample", length(sampleData))))
+  
+    xBreaks <- JASPgraphs::getPrettyAxisBreaks(popData, min.n = 4)
+    yBreaks <- JASPgraphs::getPrettyAxisBreaks(hist(popData, plot = FALSE, breaks = 50)$counts, min.n = 4)
+
+    p <- ggplot2::ggplot(data = plotData, mapping = ggplot2::aes(x = x, fill = type)) +
+            ggplot2::geom_histogram(bins = 50, col = "black", position = "identity") +
+            ggplot2::labs(fill = "") +
+            ggplot2::scale_x_continuous(name = "Value", breaks = xBreaks, limits = c(min(xBreaks), max(xBreaks))) +
+            ggplot2::scale_y_continuous(name = "Frequency", breaks = yBreaks, limits = c(min(yBreaks), max(yBreaks))) +
+            ggplot2::scale_fill_manual(values = c("#0063B2FF", "#9CC3D5FF"))
+
+    p <- JASPgraphs::themeJasp(p, legend.position = "top")
+
+    if(i == 1){
+      plotHistograms[[variables[i]]] <- createJaspPlot(plot = p, title = "Book values", height = 300, width = 500)
+      plotHistograms[[variables[i]]]$dependOn(optionContainsValue = list("monetaryVariable" = variables[i]))
+    } else{
+      plotHistograms[[variables[i]]] <- createJaspPlot(plot = p, title = options[["additionalVariables"]][i - 1], height = 300, width = 500)
+      plotHistograms[[variables[i]]]$dependOn(optionContainsValue = list("additionalVariables" = variables[i]))
+    }
+  }
+
+  explanatoryText <- TRUE # Will be added as an option later
+  if(explanatoryText){
+
+    histogramPlotText <- createJaspHtml(gettextf("<b>Figure %1$i.</b> The distributions of numeric variables in the population compared to the distributions in the sample.", jaspResults[["figNumber"]]$object), "p")
+    
+    histogramPlotText$position <- positionInContainer + 1
+    histogramPlotText$dependOn(optionsFromObject = selectionContainer[["plotHistograms"]])
+    histogramPlotText$dependOn(options = "explanatoryText")
+    selectionContainer[["histogramPlotText"]] <- histogramPlotText
   }
 }
 

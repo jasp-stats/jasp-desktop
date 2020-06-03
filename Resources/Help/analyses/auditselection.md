@@ -11,6 +11,9 @@ Default input options
 #### Sample size
 The required sample size that should be selected from the population. 
 
+#### Add selection counter to data
+When enabled, adds the result from the selection analysis in a new column to the data. The new column reflects how many times each transaction is included in the sample.
+
 ----
 
 Advanced input options
@@ -55,6 +58,14 @@ Produces a table containing the selected observations along with any additional 
 
 #### Selection descriptives
 Produces a table containing descriptive information about numerical variables in the selection.
+
+----
+
+Advanced output (plots)
+-------
+
+#### Population and sample histograms
+Produces an overlapping histogram that compares the distribution of values of each variable in the population to the values in the sample.
 
 ----
 
