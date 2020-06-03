@@ -2598,7 +2598,9 @@
 
   selectionContainer[["plotHistograms"]] <- plotHistograms
 
-  if(options[["recordNumberVariable"]] == "" || options[["monetaryVariable"]] == "")
+  if(options[["recordNumberVariable"]] == "" || 
+      options[["monetaryVariable"]] == "" || 
+      options[["sampleSize"]] == 0)
     return()
 
   variables <- colnames(selectionState)[-(1:3)]

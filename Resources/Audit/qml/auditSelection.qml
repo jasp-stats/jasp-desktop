@@ -265,8 +265,8 @@ Form {
 				CheckBox { 
 					text: qsTr("Population and sample histograms")
 					name: "plotHistograms"
-					enabled: recordNumberVariable.count > 0					
-					}
+					enabled: recordNumberVariable.count > 0	& monetaryVariable.count > 0				
+				}
 
 			}
 		}
