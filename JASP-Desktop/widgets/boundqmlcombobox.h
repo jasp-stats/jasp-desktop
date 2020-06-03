@@ -45,6 +45,7 @@ protected slots:
 	void modelChangedHandler() override;
 	void valuesChangedHandler();
 	void comboBoxChangeValueSlot(int index);
+	void languageChangedHandler();
 	void resetValues();
 
 protected:

@@ -146,7 +146,7 @@ void BoundQMLComboBox::setUp()
 	QMLListView::setUp();
 
 	if (form())
-		connect(form(), &AnalysisForm::languageChanged, this, &BoundQMLComboBox::resetValues);
+		connect(form(), &AnalysisForm::languageChanged, this, &BoundQMLComboBox::languageChangedHandler);
 
 	if (hasSource())
 	{
@@ -165,6 +165,20 @@ void BoundQMLComboBox::valuesChangedHandler()
 	_resetOptions();
 }
 
+void BoundQMLComboBox::languageChangedHandler()
+{
+	resetValues();
+
+	// In case of retranslation, QML sets back its original model, so we have to set it again to our own model.
+	// But setting the model will generate a valueChanged signal, that would re-reset the values.
+	// So the valuesChangedHandler is temporary disconnected.
+	disconnect(_item, SIGNAL(valuesChanged()), this, SLOT(valuesChangedHandler()));
+	setItemProperty("model", QVariant::fromValue(_model));
+	connect(_item, SIGNAL(valuesChanged()), this, SLOT(valuesChangedHandler()));
+
+	_resetOptions();
+}
+
 void BoundQMLComboBox::resetValues()
 {
 	_valueToLabelMap.clear();
@@ -177,9 +191,6 @@ void BoundQMLComboBox::resetValues()
 		it.next();
 		_valueToLabelMap[it.value()] = it.key();
 	}
-
-	// In case of retranslation, QML sets back its original model, so we have to set it again to our own model.
-	setItemProperty("model", QVariant::fromValue(_model));
 
 	_resetItemWidth();
 
@@ -200,7 +211,8 @@ void BoundQMLComboBox::_resetOptions()
 	for (const Term& term : terms)
 	{
 		QString label = term.asQString();
-		options.push_back(label.toStdString());
+		QString value = _labelToValueMap.contains(label) ? _labelToValueMap[label] : label;
+		options.push_back(value.toStdString());
 		if (label == _currentText)
 			currentIndex = index;
 		index++;
