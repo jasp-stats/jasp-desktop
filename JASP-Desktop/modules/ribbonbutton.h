@@ -121,7 +121,7 @@ private:
 	AnalysisMenuModel*				_analysisMenuModel;
 	Modules::AnalysisEntries		_menuEntries;
 	std::vector<std::string>		_oldTitles;
-a5b0d1e... Windows decided that those urls are probably network resources.
+
 	bool							_requiresData		= true,
 									_isDynamicModule	= true,
 									_isCommonModule		= false,

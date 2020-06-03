@@ -28,7 +28,8 @@ class EntryBase : public DescriptionChildBase
 	Q_PROPERTY(QString		qml				READ qml			WRITE setQml			NOTIFY qmlChanged			)
 	Q_PROPERTY(EntryType	entryType		READ entryType								NOTIFY entryTypeChanged		) //Entry type can only be set in constructor, to keep things manageable
 	Q_PROPERTY(bool			requiresData	READ requiresData	WRITE setRequiresData	NOTIFY requiresDataChanged	)
-	Q_PROPERTY(bool			enabled			READ enabled		WRITE setEnabled		NOTIFY enabledChanged		)
+	Q_PROPERTY(bool			enabled			READ enabled		WRITE setEnabled		NOTIFY enabledChanged		) //Hmm, this already exists in QQuickItem, maybe a problem?
+	Q_PROPERTY(bool			debug			READ debug			WRITE setDebug			NOTIFY debugChanged			)
 
 public:
 	enum class EntryType {unknown, separator, groupTitle, analysis};
@@ -44,20 +45,25 @@ public:
 	bool		requiresData()	const { return _requiresData;	}
 	bool		enabled()		const { return _enabled;		}
 	QString		qml()			const { return _qml;			}
-
+	bool		debug()			const { return _debug;			}
 	QString		toString()		const;
+	bool		shouldBeAdded()	const;
 
 	///This function is a stopgap and these two classes must be merged together later
 	AnalysisEntry * convertToAnalysisEntry(bool requiresDataDefault) const;
+
+
 
 public slots:
 	void setMenu(			QString menu);
 	void setTitle(			QString title);
 	void setFunction(		QString function);
 	void setIcon(			QString icon);
+	void setQml(			QString qml);
 	void setRequiresData(	bool	requiresData);
 	void setEnabled(		bool	enabled);
-	void setQml(			QString qml);
+	void setDebug(			bool	debug);
+	void devModeChanged(	bool	devMode);
 
 signals:
 	void menuChanged(			QString		menu);
@@ -67,8 +73,8 @@ signals:
 	void entryTypeChanged(		EntryType	entryType);
 	void requiresDataChanged(	bool		requiresData);
 	void enabledChanged(		bool		enabled);
-
-	void qmlChanged(QString qml);
+	void qmlChanged(			QString		qml);
+	void debugChanged(			bool		debug);
 
 private:
 	QString			_menu					= "",
@@ -79,8 +85,8 @@ private:
 	EntryType		_entryType				= EntryType::unknown;
 	bool			_requiresData			= false,
 					_useDefaultRequiresData = true, //will be set to false whenever a value is set through setRequiresData
-					_enabled				= true;
-
+					_enabled				= true,
+					_debug					= false;
 };
 
 #define MAKE_ENTRY_CLASS(CLASS_NAME, ENTRYTYPENAME) class CLASS_NAME : public EntryBase \

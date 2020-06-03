@@ -239,15 +239,13 @@ Description * DynamicModule::instantiateDescriptionQml(QString descriptionTxt, Q
 
 	QQmlComponent descriptionQmlComp(ctxt->engine());
 
-	Log::log() << "Setting url to '" << url.toString() << " for Description.qml data: '" << descriptionTxt << "'\n"<< std::endl;
+	Log::log() << "Setting url to '" << url.toString() << "' for Description.qml.\n" << std::endl;// data: '" << descriptionTxt << "'\n"<< std::endl;
 
 	descriptionQmlComp.setData(descriptionTxt.toUtf8(), url);
 
 	if(descriptionQmlComp.isLoading())
 		Log::log() << "Description for module " << moduleName << " is still loading, make sure you load a local file and that Windows doesnt mess this up for you..." << std::endl;
 
-	if(!descriptionQmlComp.isReady())
-		throw std::runtime_error("Description for module "+ moduleName + " is not ready!");
 
 	auto errorLogger =[&](bool isError, QList<QQmlError> errors)
 	{
@@ -262,10 +260,13 @@ Description * DynamicModule::instantiateDescriptionQml(QString descriptionTxt, Q
 
 		Log::log() << out.str() << std::flush;
 
-		throw std::runtime_error("There were errors loading " + getQmlDescriptionFilename() + " for module " + moduleName + ":\n" + out.str());
+		throw ModuleException(moduleName, "There were errors loading " + getQmlDescriptionFilename() + ":\n" + out.str());
 	};
 
 	errorLogger(descriptionQmlComp.isError(), descriptionQmlComp.errors());
+
+	if(!descriptionQmlComp.isReady())
+		throw ModuleException(moduleName, "Description Component is not ready!");
 
 	QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
 	descriptionQmlComp.create(localIncubator, ctxt);
@@ -286,7 +287,7 @@ void DynamicModule::loadDescriptionQml(QString descriptionTxt)
 	Description * description = instantiateDescriptionQml(descriptionTxt, QUrl("."), name());
 
 	if(!description)
-		throw std::runtime_error(getQmlDescriptionFilename() + " must have Description object as root!");
+		throw ModuleException(name(), getQmlDescriptionFilename() + " must have Description object as root!");
 
 	description->setDynMod(this);
 
@@ -496,17 +497,17 @@ std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
 		return "stop('No package specified!')";
 	}
 
-	loadDescriptionFromFolder(_modulePackage);
-
 	try
 	{
+		loadDescriptionFromFolder(_modulePackage);
+
 		generateRPackageMetadata(QDir(_modulePackage.c_str())); //Generate DESCRIPTION and NAMESPACE in case they are missing
 	}
-	catch(std::runtime_error & e)
+	catch(ModuleException & e)
 	{
 		setInstallLog(e.what());
 		setStatus(moduleStatus::error);
-		return "stop('Something went wrong parsing the required packages in description.json! Make sure they follow the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionjson')";
+		return "stop('Something went wrong during intialization of the Description!\nMake sure it follows the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionqml\n')";
 	}
 	setInstallLog("Installing module " + _name + ".\n");
 
@@ -911,6 +912,7 @@ std::string DynamicModule::extractPackageNameFromDescriptionQmlTxt(const std::st
 
 		delete desc;
 	}
+	catch(Modules::ModuleException & e) { throw e; } //If qml cannot be parsed I want this error  in the users face
 	catch(...){}
 
 	return foundName;
@@ -1008,7 +1010,10 @@ std::string DynamicModule::extractPackageNameFromFolder(const std::string & fold
 {
 	Log::log() << "Trying to extract package name from folder '" << folderFilepath << "'" << std::endl;
 
-	std::string foundName = extractPackageNameFromDESCRIPTIONTxt(getDESCRIPTIONFromFolder(folderFilepath));
+	std::string foundName = extractPackageNameFromDescriptionQmlTxt(getDescriptionQmlFromFolder(folderFilepath));
+
+	if(foundName == "") //Ok lets try to find DESCRIPTION then
+		foundName = extractPackageNameFromDescriptionJsonTxt(getDescriptionJsonFromFolder(folderFilepath));
 
 	if(foundName == "") //Ok lets try to find description.json then
 		foundName = extractPackageNameFromDescriptionJsonTxt(getDescriptionJsonFromFolder(folderFilepath));

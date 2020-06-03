@@ -94,5 +94,20 @@ Description
 		qml:			"testSaveLoadButton.qml"
 		func:			"testSaveLoadButton"
 	}
+
+
+	Separator { debug: true; }
+
+	GroupTitle { title:		"DEBUG QML Widgets"; debug: true; }
+
+	Analysis
+	{
+		title:			"DEBUG Custom Contrasts Widget"
+		qml:			"customContrasts.qml"
+		func:			"customContrasts"
+		requiresData:	true
+		debug:			true
+	}
+
 }
 

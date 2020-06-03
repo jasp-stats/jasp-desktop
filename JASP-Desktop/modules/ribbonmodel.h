@@ -88,7 +88,6 @@ public slots:
 	void removeDynamicRibbonButtonModel(QString moduleName)				{ removeRibbonButtonModel(moduleName.toStdString());				}
 	void setHighlightedModuleIndex(int highlightedModuleIndex);
 	void moduleLoadingSucceeded(const QString & moduleName);
-	void refresh();
 	void analysisClicked(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 
 private slots:

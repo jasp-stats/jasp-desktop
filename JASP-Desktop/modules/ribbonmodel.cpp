@@ -168,21 +168,6 @@ void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 	emit endRemoveRows();
 }
 
-void RibbonModel::refresh()
-{
-
-	beginResetModel();
-
-	for (const std::string& myModuleName : _moduleNames)
-	{
-		RibbonButton* button = _buttonModelsByName[myModuleName];
-		button->reloadMenuFromDescriptionJson();
-	}
-
-	endResetModel();
-
-}
-
 void RibbonModel::analysisClicked(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module)
 {
 	RibbonButton * button = ribbonButtonModel(fq(module));

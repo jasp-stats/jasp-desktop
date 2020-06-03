@@ -218,7 +218,7 @@ std::vector<AnalysisEntry*> Description::menuEntries() const
 	std::vector<AnalysisEntry*> entries;
 
 	for(EntryBase * entry : _entries)
-		if(entry->enabled())
+		if(entry->shouldBeAdded())
 			entries.push_back(entry->convertToAnalysisEntry(requiresData()));
 
 	return entries;
