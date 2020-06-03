@@ -1,6 +1,7 @@
 #include "log.h"
 #include "utilities/qutils.h"
 #include "../analysisentry.h"
+#include "gui/preferencesmodel.h"
 
 #define DELAYED_ENUM_DECLARATION_CPP
 #include "entrybase.h"
@@ -13,7 +14,14 @@ EntryError::EntryError(QString problem)	: std::runtime_error("Entry specificatio
 const char * EntryError::what() const noexcept { return std::runtime_error::what(); }
 
 EntryBase::EntryBase(EntryType entryType) : DescriptionChildBase(), _entryType(entryType)
-{}
+{
+	connect(PreferencesModel::prefs(), &PreferencesModel::developerModeChanged, this, &EntryBase::devModeChanged);
+}
+
+void EntryBase::devModeChanged(bool)
+{
+	if(debug()) emit somethingChanged(this);
+}
 
 QString EntryBase::toString() const
 {
@@ -31,6 +39,11 @@ QString EntryBase::toString() const
 	}
 
 	return "???";
+}
+
+bool EntryBase::shouldBeAdded() const
+{
+	return enabled() && (!debug() || PreferencesModel::prefs()->developerMode());
 }
 
 void EntryBase::setMenu(QString menu)
@@ -111,6 +124,15 @@ void EntryBase::setQml(QString qml)
 
 	_qml = qml;
 	emit qmlChanged(_qml);
+}
+
+void EntryBase::setDebug(bool debug)
+{
+	if (_debug == debug)
+		return;
+
+	_debug = debug;
+	emit debugChanged(_debug);
 }
 
 AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault) const

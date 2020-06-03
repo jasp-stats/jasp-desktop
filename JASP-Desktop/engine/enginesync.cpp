@@ -332,6 +332,10 @@ void EngineSync::processDynamicModules()
 			}
 		}
 	}
+	catch(Modules::ModuleException e)
+	{
+		Log::log() << "Exception thrown in processDynamicModules: " <<  e.what() << std::endl;
+	}
 	catch(...)
 	{
 		Log::log() << "Exception thrown in processDynamicModules" << std::endl;

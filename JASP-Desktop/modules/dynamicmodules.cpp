@@ -111,6 +111,11 @@ bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 
 		return true;
 	}
+	catch(Modules::ModuleException & e)
+	{
+		MessageForwarder::showWarning(tr("An error occured trying to initialize a module from dir %1, the error was: %2").arg(module->moduleRLibrary()).arg(e.what()));
+		return false;
+	}
 	catch(std::runtime_error & e)
 	{
 		MessageForwarder::showWarning(tr("An error occured trying to initialize a module from dir %1, the error was: %2").arg(module->moduleRLibrary()).arg(e.what()));
@@ -403,28 +408,37 @@ void DynamicModules::installJASPDeveloperModule()
 
 	setDevelopersModuleInstallButtonEnabled(false);
 
-	_devModSourceDirectory = QDir(Settings::value(Settings::DEVELOPER_FOLDER).toString());
-
-	Modules::DynamicModule * devMod = new Modules::DynamicModule(this);
-
-	std::string origin	= devMod->modulePackage(),
-				name	= devMod->name(),
-				dest	= devMod->moduleRLibrary().toStdString();
-
-	if(moduleIsInstalled(name))
+	try
 	{
-		uninstallModule(name);
 
-		stopEngines();
-		_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
-		restartEngines();
+		_devModSourceDirectory = QDir(Settings::value(Settings::DEVELOPER_FOLDER).toString());
+
+		Modules::DynamicModule * devMod = new Modules::DynamicModule(this);
+
+		std::string origin	= devMod->modulePackage(),
+					name	= devMod->name(),
+					dest	= devMod->moduleRLibrary().toStdString();
+
+		if(moduleIsInstalled(name))
+		{
+			uninstallModule(name);
+
+			stopEngines();
+			_modulesToBeUnloaded.clear(); //if we are going to restart the engines we can also forget anything that's loaded and needs to be unloaded
+			restartEngines();
+		}
+
+		Modules::DynamicModule::developmentModuleFolderCreate();
+
+		_modules[name] = devMod;
+
+		registerForInstalling(name);
 	}
-
-	Modules::DynamicModule::developmentModuleFolderCreate();
-
-	_modules[name] = devMod;
-
-	registerForInstalling(name);
+	catch(Modules::ModuleException & e)
+	{
+		MessageForwarder::showWarning(tr("Problem initializing module"), tr("There was a problem loading the developer module:\n\n") + e.what());
+		setDevelopersModuleInstallButtonEnabled(true);
+	}
 }
 
 void DynamicModules::startWatchingDevelopersModule()
