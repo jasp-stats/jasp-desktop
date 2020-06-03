@@ -135,7 +135,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".readFullFilteredDatasetToEnd"]	= Rcpp::InternalFunction(&jaspRCPP_readFullFilteredDataSet);
 	rInside[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
 
-	rInside.parseEvalQNT(".outputSink <- .createCaptureConnection(); sink(.outputSink); print('.outputSink initialized!');");
+	rInside.parseEvalQNT(".outputSink <- .createCaptureConnection(); sink(.outputSink); print('.outputSink initialized!'); sink();");
 
 
 	static const char *baseCitationFormat	= "JASP Team (%s). JASP (Version %s) [Computer software].";
@@ -167,7 +167,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	jaspRCPP_parseEvalQNT("initEnvironment()");
 
-	_R_HOME = Rcpp::as<std::string>(rInside.parseEval("R.home('')"));
+	_R_HOME = Rcpp::as<std::string>(jaspRCPP_parseEval("R.home('')"));
 
 	std::cout << "R_HOME: " << _R_HOME << std::endl;
 
@@ -189,12 +189,15 @@ void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMod
 	jaspResults::setDeveloperMode(developerMode);
 
 	std::string root, relativePath;
+
 	if(!jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath))
 		throw std::runtime_error("Did not receive a valid filename to store jaspResults.json at.");
+
 	jaspResults::setSaveLocation(root, relativePath);
 
 	if(!jaspRCPP_requestSpecificRelativeFilePath(jaspResults::writeSealFilename(), root, relativePath))
 			throw std::runtime_error("Did not receive a valid filename to store jaspResults write seal at.");
+
 	jaspResults::setWriteSealLocation(root, relativePath);
 }
 
@@ -477,19 +480,18 @@ const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode)
 	lastErrorMessage = "";
 	rinside->instance()[".rCode"] = CSTRING_TO_R(rCode);
 	const std::string rCodeTryCatch(""
-		"tryCatch(				"
-		"	suppressWarnings({ valVis <- withVisible(eval(parse(text=.rCode))); if(valVis$visible) print(valVis$value); }),	"
-		"		error	= function(e) { .setRError(toString(e$message))	  }, 	"
-		"		warning	= function(w) { .setRWarning(toString(w$message)) }		"
+		"withCallingHandlers("															"\n"
+		"  { "																			"\n"
+		"    options(warn=1);"															"\n"
+		"    valVis <- withVisible(eval(parse(text=.rCode)));"							"\n"
+		"    if(valVis$visible) print(valVis$value);"									"\n"
+		"  },	"																		"\n"
+		"  warning = function(w) { cat(paste0('Warning: ', toString(w$message))) },"	"\n"
+		"  error   = function(e) { cat(paste0('Error: ',   toString(e$message))) }"		"\n"
 		");"
 		);
 
-	try
-	{
-		jaspRCPP_parseEvalQNT(rCodeTryCatch, false);
-		if(lastErrorMessage != "")	__cmderLogStream << lastErrorMessage << std::endl;
-	}
-	catch(std::runtime_error e) {	/*__cmderLogStream << e.what() << std::endl;*/ } //R already tells us what is wrong
+	jaspRCPP_parseEvalQNT(rCodeTryCatch, false);
 
 	_logFlushFunction			= originalFlush;
 	_logWriteFunction			= originalLogger;
@@ -1096,7 +1098,7 @@ void jaspRCPP_parseEvalPreface(const std::string & code)
 
 std::string __sinkMe(const std::string code)
 {
-	return "sink(.outputSink, type='output');\nsink(.outputSink, type='message');\n" + code;
+	return	"sink(.outputSink);\n\n" + code; //default type = c('message', 'output') anyway
 }
 
 void jaspRCPP_parseEvalQNT(const std::string & code, bool preface)
@@ -1104,13 +1106,18 @@ void jaspRCPP_parseEvalQNT(const std::string & code, bool preface)
 	if(preface)	jaspRCPP_parseEvalPreface(code);
 	rinside->parseEvalQNT(__sinkMe(code));
 	jaspRCPP_logString("\n");
+
+	rinside->parseEvalQNT("sink();"); //Back to normal!
 }
 
 RInside::Proxy jaspRCPP_parseEval(const std::string & code,	bool preface)
 {
 	if(preface)	jaspRCPP_parseEvalPreface(code);
-	RInside::Proxy returnthis = rinside->parseEval(__sinkMe(code));
+	RInside::Proxy returnthis = rinside->parseEvalNT(__sinkMe(code)); //Not throwing is nice actually!
 	jaspRCPP_logString("\n");
+
+	rinside->parseEvalQNT("sink();"); //back to normal!
+
 	return returnthis;
 }
 

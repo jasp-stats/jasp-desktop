@@ -294,14 +294,14 @@ void Engine::runRCodeCommander(std::string rCode)
 	bool thereIsSomeData = provideDataSet();
 
 
-	static const std::string rCmdDataName = "jaspData", rCmdFiltered = "jaspFiltered";
+	static const std::string rCmdDataName = "data", rCmdFiltered = "filteredData";
 
 
 	if(thereIsSomeData)
 	{
 		rCode = ColumnEncoder::encodeAll(rCode);
-		rbridge_setupRCodeEnvReadData(rCmdDataName, ".readFullDatasetToEnd()");		//These both attach the data, is that bad?
-		rbridge_setupRCodeEnvReadData(rCmdFiltered, ".readFullFilteredDatasetToEnd()");
+		jaspRCPP_runScript((rCmdDataName + "<- .readFullDatasetToEnd();").c_str());
+		jaspRCPP_runScript((rCmdFiltered + "<- .readFullFilteredDatasetToEnd();").c_str());
 	}
 
 	std::string rCodeResult =	jaspRCPP_evalRCodeCommander(rCode.c_str());

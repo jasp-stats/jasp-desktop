@@ -30,8 +30,8 @@ RCommander::~RCommander()
 
 bool RCommander::runCode(const QString & code)
 {
-	if(running())			return false;
-	if(!_engine->idle())	return false;
+	if(running() || !_engine->idle() || code == "")
+		return false;
 
 	setRunning(true);
 

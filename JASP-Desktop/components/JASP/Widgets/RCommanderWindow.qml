@@ -46,6 +46,7 @@ Window
 			id:				rCmd
 			onScrollDown:	outputScroll.contentY = outputScroll.contentHeight - outputScroll.height;
 			onCloseWindow:	rcmdRoot.close()
+			output:			qsTr("Welcome to R in JASP!");
 	}
 
 	//A SplitView here could be nice
@@ -75,43 +76,68 @@ Window
 				margins:	jaspTheme.generalAnchorMargin
 			}
 
+			LoadingIndicator
+			{
+				id:				runningIcon
+				visible:		rCmd.running
+				z:				2049
+				anchors.fill:	parent
+				opacity:		0.5
+			}
+
 
 			border.color:	jaspTheme.uiBorder
 			color:			jaspTheme.white
+			clip:			true
 
 			Flickable
 			{
 				id:						outputScroll
-				clip:					true
-				contentHeight:			outputWindow.implicitHeight
+
+				contentHeight:			bottomFeeder.height
 				contentWidth:			width
 				flickableDirection:		Flickable.VerticalFlick
 				interactive:			false
-
 				onContentYChanged:		if(contentHeight < height) rCmd.countDownToScroll();
 
 				anchors
 				{
-					top:	parent.top
-					left:	parent.left
-					right:	vertScroll.left
-					bottom:	parent.bottom
+					top:		parent.top
+					left:		parent.left
+					right:		vertScroll.left
+					bottom:		parent.bottom
+					margins:	jaspTheme.generalAnchorMargin
 				}
 
-				TextArea.flickable: TextArea
+
+				Item
 				{
-					id:					outputWindow
-					text:				rCmd.output
-					font:				jaspTheme.fontConsole
-					width:				outputScroll.width
-					wrapMode:			TextEdit.Wrap
-					color:				jaspTheme.textEnabled
-					selectedTextColor:	jaspTheme.textDisabled
-					selectionColor:		jaspTheme.black
-					selectByMouse:		true
+					//This item is here to make sure the text always stays down and without jumping around https://www.youtube.com/watch?v=XhzpxjuwZy0
 
+					id:			bottomFeeder
+					height:		Math.max(outputWindow.implicitHeight, outputScroll.height)
+					width:		outputScroll.width
 
-					//textFormat:			TextEdit.RichText //too much trouble
+					TextArea
+					{
+						id:					outputWindow
+						text:				rCmd.output
+						font:				jaspTheme.fontConsole
+						wrapMode:			TextEdit.Wrap
+						color:				jaspTheme.textEnabled
+						selectedTextColor:	jaspTheme.textDisabled
+						selectionColor:		jaspTheme.black
+						selectByMouse:		true
+						readOnly:			true
+
+						anchors
+						{
+							left:		parent.left
+							right:		parent.right
+							bottom:		parent.bottom
+						}
+						//textFormat:			TextEdit.RichText //too much trouble
+					}
 				}
 
 				MouseArea
@@ -149,6 +175,14 @@ Window
 				bottom:	parent.bottom
 			}
 
+			MouseArea
+			{
+				z:					-1
+				acceptedButtons:	Qt.NoButton
+				anchors.fill:		parent
+				onWheel:			codeEntryScrollbar.scrollWheel(wheel)
+			}
+
 			Rectangle
 			{
 				border.color:	jaspTheme.uiBorder
@@ -169,8 +203,9 @@ Window
 						selectByMouse:			true
 						wrapMode:				TextEdit.Wrap
 						focus:					true
+						width:					codeEntryFlickable.width
 
-						placeholderText:		mainWindow.dataAvailable ? qsTr("Enter you R code here.\nThe data is fully available as 'jaspData' and filtered as 'jaspFiltered'.") : qsTr("Enter you R code here.")
+						placeholderText:		mainWindow.dataAvailable ? qsTr("Enter your R code here.\nThe data is fully available as 'data' and filtered as 'filteredData'.") : qsTr("Enter your R code here.")
 						placeholderTextColor:	jaspTheme.grayDarker
 
 						Shortcut { onActivated: runButton.runCode();	sequences: ["Ctrl+Enter", "Ctrl+Return", Qt.Key_F5];}
@@ -190,15 +225,6 @@ Window
 					}
 
 					interactive:			false
-
-
-					MouseArea
-					{
-						z:					-1
-						acceptedButtons:	Qt.NoButton
-						anchors.fill:		parent
-						onWheel:			codeEntryScrollbar.scrollWheel(wheel)
-					}
 				}
 
 				JC.JASPScrollBar
@@ -229,7 +255,7 @@ Window
 			 {
 				 id:		clearOutput
 				 text:		qsTr("Clear Output")
-				 onClicked:	rCmd.output = "Cleared...";
+				 onClicked:	rCmd.output = qsTr("Cleared...");
 				 width:		Math.max(clearOutput.implicitWidth, runButton.implicitWidth)
 
 				 anchors
@@ -248,10 +274,11 @@ Window
 				text:		qsTr("Run Code")
 				onClicked:	runCode();
 				width:		clearOutput.width
+				enabled:	codeEntry.text != "" && !rCmd.running
 
 				toolTip:	qsTr("Pressing Ctrl+Enter or F5 will also run the code")
 
-				function runCode() { if(rCmd.runCode(codeEntry.text)) codeEntry.text = ""; }
+				function runCode() { if(enabled && rCmd.runCode(codeEntry.text)) codeEntry.text = ""; }
 
 				anchors
 				{

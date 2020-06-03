@@ -42,7 +42,7 @@ signals:
 	void closeWindow();
 
 private:
-	QString						_output			= "Welcome to JASP's builtin R!",
+	QString						_output			= "", //Set in qml to have it be translatable
 								_lastCmd		= "";
 	EngineRepresentation	*	_engine			= nullptr;
 	bool						_running		= false;
