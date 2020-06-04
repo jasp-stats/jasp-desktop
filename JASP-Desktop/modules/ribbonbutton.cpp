@@ -81,6 +81,21 @@ RibbonButton::RibbonButton(QObject *parent, Modules::DynamicModule * module)  : 
 	connect(_module, &Modules::DynamicModule::DynamicModule::descriptionReloaded, this, &RibbonButton::descriptionReloaded);
 }
 
+RibbonButton::RibbonButton(QObject *parent,	std::string name, std::string title, std::string icon, bool requiresData, std::function<void ()> justThisFunction)
+	: QObject(parent), _module(nullptr), _specialButtonFunc(justThisFunction)
+{
+	_analysisMenuModel = new AnalysisMenuModel(this);
+	setModuleName(name);
+	setTitle(title);
+	setIconSource(tq(icon));
+	setRequiresData(requiresData);
+	setIsDynamic(false);
+
+	setMenu({ new Modules::AnalysisEntry() }); //Just a single dummy
+
+	bindYourself();
+}
+
 
 void RibbonButton::descriptionReloaded(Modules::DynamicModule * dynMod)
 {
@@ -150,6 +165,9 @@ void RibbonButton::setEnabled(bool enabled)
 
 	_enabled = enabled;
 	emit enabledChanged();
+
+	if(_specialButtonFunc)
+		return;
 
 	if(DynamicModules::dynMods())
 	{

@@ -44,9 +44,14 @@ Window
 	RCommander
 	{
 			id:				rCmd
+			output:			qsTr("Welcome to R in JASP!");
 			onScrollDown:	outputScroll.contentY = outputScroll.contentHeight - outputScroll.height;
 			onCloseWindow:	rcmdRoot.close()
-			output:			qsTr("Welcome to R in JASP!");
+			onActivated:
+			{
+				rcmdRoot.visible = false;
+				rcmdRoot.visible = true;
+			}
 	}
 
 	//A SplitView here could be nice

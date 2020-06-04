@@ -2,8 +2,12 @@
 #include "engine/enginesync.h"
 #include "mainwindow.h"
 
+RCommander * RCommander::_lastCommander = nullptr;
+
 RCommander::RCommander()
 {
+	_lastCommander = this;
+
 	_engine = EngineSync::singleton()->createRCmdEngine();
 
 	connect(_engine, &EngineRepresentation::rCodeReturned,		this, &RCommander::rCodeReturned);
@@ -22,10 +26,18 @@ RCommander::RCommander()
 RCommander::~RCommander()
 {
 	if(_engine && EngineSync::singleton())
-		try {	EngineSync::singleton()->destroyRCmdEngine(_engine); }
+		try {	EngineSync::singleton()->destroyEngine(_engine); }
 		catch(...) {}
 
 	_engine = nullptr;
+
+	if(_lastCommander == this)
+		_lastCommander = nullptr;
+}
+
+void RCommander::makeActive()
+{
+	emit _lastCommander->activated();
 }
 
 bool RCommander::runCode(const QString & code)

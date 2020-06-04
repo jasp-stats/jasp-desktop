@@ -137,25 +137,25 @@ private:
 private:
 	static Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result);
 
+	engineState		_engineState		= engineState::initializing; // The representation of whatever state the actual engine is supposed to be in.
 	QProcess	*	_slaveProcess		= nullptr;
 	IPCChannel	*	_channel			= nullptr;
 	Analysis	*	_analysisInProgress = nullptr,
-				*	_analysisAborted	= nullptr;
-	engineState		_engineState		= engineState::initializing;
-	int				_idRemovedAnalysis	= -1,
-					_lastRequestId		= -1,
-					_abortTime			= -1;
-	bool			_pauseRequested		= false,
-					_stopRequested		= false,
-					_slaveCrashed		= false,
-					_settingsChanged	= true,
-					_abortAndRestart	= false;
+				*	_analysisAborted	= nullptr;	//To make sure we know that the response we got was from this aborted analysis or not
+	int				_idRemovedAnalysis	= -1,		//If the analysis was deleted we should ignore its results
+					_lastRequestId		= -1,		//for R code requests from qml components, so that we can send it back to the right element
+					_abortTime			= -1;		//When did we tell the analysis to abort? So that we can kill it if it takes too long
+	bool			_pauseRequested		= false,	//should tell the engine to pause as soon as possible
+					_stopRequested		= false,	//should tell the engine to stop as soon as possible
+					_slaveCrashed		= false,	//My slave crashed
+					_settingsChanged	= true,		//Some setting changed and we should send these new settings asap
+					_abortAndRestart	= false,	//abort and restart an analysis
+					_runsAnalysis		= true,		//is this engine meant for running analyses?
+					_runsUtility		= true,		//is this engine meant for running filters, installing modules or running R Code (not the r prompt though)
+					_runsRCmd			= false;	//is this engine meant for the R prompt?
 	std::string		_lastCompColName	= "???";
 
 
-	bool _runsAnalysis;
-	bool _runsUtility;
-	bool _runsRCmd;
 };
 
 #endif // ENGINEREPRESENTATION_H

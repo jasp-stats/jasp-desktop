@@ -141,7 +141,7 @@ Rectangle
 				if (ribbonButton.menu.rowCount() === 1)
 				{
 					customMenu.hide()
-					ribbonModel.analysisClickedSignal(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisQML(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
+					ribbonModel.analysisClicked(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisQML(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
 				}
 				else
 				{
@@ -150,7 +150,7 @@ Rectangle
 						var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
 						var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
 						var analysisQML = customMenu.props['model'].getAnalysisQML(index);
-						ribbonModel.analysisClickedSignal(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
+						ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
 						customMenu.hide();
 					}
 

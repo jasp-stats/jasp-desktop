@@ -47,8 +47,10 @@ class RibbonButton : public QObject
 
 public:
 
-	RibbonButton(QObject *parent, Json::Value description, bool isCommon);
-	RibbonButton(QObject *parent, Modules::DynamicModule * module);
+	//Should maybe be changed into some subclasses
+	RibbonButton(QObject *parent,	Json::Value description, bool isCommon);
+	RibbonButton(QObject *parent,	Modules::DynamicModule * module);
+	RibbonButton(QObject *parent,	std::string name,	std::string title, std::string icon, bool requiresData, std::function<void()> justThisFunction);
 
 	bool							requiresData()												const			{ return _requiresData;									}
 	bool							isDynamic()													const			{ return _isDynamicModule;								}
@@ -83,6 +85,10 @@ public slots:
 	void somePropertyChanged()										{ emit iChanged(this); }
 	void descriptionReloaded(Modules::DynamicModule * dynMod);
 
+
+	bool isSpecial() const	{ return _specialButtonFunc != nullptr ; }
+	void runSpecial()		{ _specialButtonFunc(); };
+
 signals:
 	void enabledChanged();
 	void requiresDataChanged();
@@ -106,7 +112,7 @@ private:
 	AnalysisMenuModel*				_analysisMenuModel;
 	Modules::AnalysisEntries		_menuEntries;
 
-	bool							_requiresData	= true,
+	bool							_requiresData		= true,
 									_isDynamicModule	= true,
 									_isCommonModule		= false,
 									_enabled			= false;
@@ -114,6 +120,9 @@ private:
 									_moduleName			= "";
 	Modules::DynamicModule		*	_module				= nullptr;
 	QString							_iconSource;
+
+	std::function<void()>			_specialButtonFunc = nullptr;
+
 };
 
 

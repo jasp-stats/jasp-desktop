@@ -21,6 +21,9 @@ public:
 	bool	running()	const { return _running;	}
 	QString lastCmd()	const { return _lastCmd;	}
 
+	static	bool opened()		{ return _lastCommander; }
+	static	void makeActive();
+
 public slots:
 	bool runCode(			const QString & code);
 	void setOutput(			const QString & output);
@@ -34,14 +37,17 @@ public slots:
 
 
 
+
 signals:
 	void outputChanged(QString output);
 	void runningChanged(bool running);
 	void lastCmdChanged(QString lastCmd);
 	void scrollDown();
 	void closeWindow();
+	void activated();
 
 private:
+	static RCommander		*	_lastCommander;
 	QString						_output			= "", //Set in qml to have it be translatable
 								_lastCmd		= "";
 	EngineRepresentation	*	_engine			= nullptr;

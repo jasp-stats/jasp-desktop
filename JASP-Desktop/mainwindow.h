@@ -75,6 +75,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool		welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
 	Q_PROPERTY(QString	downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
 
+
 	friend class FileMenu;
 public:
 	explicit MainWindow(QApplication *application);

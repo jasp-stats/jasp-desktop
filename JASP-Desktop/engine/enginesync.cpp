@@ -827,19 +827,19 @@ EngineRepresentation *	EngineSync::createRCmdEngine()
 	EngineRepresentation * rCmdEngine = createNewEngine();
 
 	rCmdEngine->setRunsAnalysis(false);
-	rCmdEngine->setRunsUtility(false);
-	rCmdEngine->setRunsRCmd(false);
+	rCmdEngine->setRunsUtility(	false);
+	rCmdEngine->setRunsRCmd(	true);
 
 	return rCmdEngine;
 }
 
-void EngineSync::destroyRCmdEngine(EngineRepresentation * rCmdEngine)
+void EngineSync::destroyEngine(EngineRepresentation * engine)
 {
-	if(!rCmdEngine) return;
+	if(!engine) return;
 
 	for(int i = _engines.size() - 1; i>=0; i--)
-		if(_engines[i] == rCmdEngine)
+		if(_engines[i] == engine)
 			_engines.erase(_engines.begin() + i);
 
-	delete rCmdEngine;
+	delete engine;
 }

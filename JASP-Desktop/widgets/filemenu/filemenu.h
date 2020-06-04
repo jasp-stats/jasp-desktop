@@ -102,7 +102,6 @@ signals:
 	void visibleChanged(bool visible);
 	void dummyChangedNotifier();
 	void showAbout();
-	void showRCommander();
 
 public slots:
 	void analysisAdded(Analysis *analysis);

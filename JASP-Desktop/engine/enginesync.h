@@ -51,7 +51,7 @@ public:
 
 	EngineRepresentation *	createNewEngine();
 	EngineRepresentation *	createRCmdEngine();
-	void					destroyRCmdEngine(EngineRepresentation * rCmdEngine);
+	void					destroyEngine(EngineRepresentation * rCmdEngine);
 
 public slots:
 	int			sendFilter(		const QString & generatedFilter,	const QString & filter);

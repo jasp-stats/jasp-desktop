@@ -325,8 +325,7 @@ void MainWindow::makeConnections()
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
-	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);
-	connect(_fileMenu,				&FileMenu::showRCommander,							this,					&MainWindow::showRCommander									);
+	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);	
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 
@@ -355,6 +354,7 @@ void MainWindow::makeConnections()
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 	connect(_ribbonModel,			&RibbonModel::analysisTitleChanged,					_analyses,				&Analyses::analysisTitleChangedHandler						);
+	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule					);
@@ -488,8 +488,16 @@ void MainWindow::loadQML()
 
 void MainWindow::showRCommander()
 {
-	Log::log() << "Loading RCmdWindow"  << std::endl;
-	_qml->load(QUrl("qrc:///components/JASP/Widgets/RCommanderWindow.qml"));
+	if(RCommander::opened())
+	{
+		Log::log() << "RCommander already loaded, making it active now." << std::endl;
+		RCommander::makeActive();
+	}
+	else
+	{
+		Log::log() << "Loading RCommander"  << std::endl;
+		_qml->load(QUrl("qrc:///components/JASP/Widgets/RCommanderWindow.qml"));
+	}
 }
 
 void MainWindow::jaspThemeChanged(JaspTheme * newTheme)

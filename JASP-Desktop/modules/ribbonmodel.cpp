@@ -21,6 +21,7 @@
 #include "dirs.h"
 #include "log.h"
 
+
 RibbonModel::RibbonModel(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
 	: QAbstractListModel(DynamicModules::dynMods())
 {
@@ -36,6 +37,8 @@ RibbonModel::RibbonModel(std::vector<std::string> commonModulesToLoad, std::vect
 
 	for(const std::string & modName : DynamicModules::dynMods()->moduleNames())
 		addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[modName]);
+
+	addRibbonButtonRPrompt();
 
 	if(PreferencesModel::prefs()->modulesRemember())
 	{
@@ -54,6 +57,11 @@ RibbonModel::RibbonModel(std::vector<std::string> commonModulesToLoad, std::vect
 void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module)
 {
 	addRibbonButtonModel(new RibbonButton(this, module));
+}
+
+void RibbonModel::addRibbonButtonRPrompt()
+{
+	addRibbonButtonModel(new RibbonButton(this, "R", fq(tr("R (beta)")), "Rlogo.svg", false, [&](){ emit showRCommander(); }));
 }
 
 void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool isCommon)
@@ -197,6 +205,14 @@ void RibbonModel::refresh()
 
 	endResetModel();
 
+}
+
+void RibbonModel::analysisClicked(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module)
+{
+	RibbonButton * button = ribbonButtonModel(fq(module));
+
+	if(button->isSpecial())		button->runSpecial();
+	else						emit analysisClickedSignal(analysisFunction, analysisQML, analysisTitle, module);
 }
 
 void RibbonModel::setHighlightedModuleIndex(int highlightedModuleIndex)

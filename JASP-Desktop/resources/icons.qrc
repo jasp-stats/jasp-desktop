@@ -238,5 +238,6 @@
         <file>icons/meta-analysis-bayesian.svg</file>
         <file>icons/equivalence-module.svg</file>
         <file>icons/audit-selection.svg</file>
+        <file>icons/Rlogo.svg</file>
     </qresource>
 </RCC>
