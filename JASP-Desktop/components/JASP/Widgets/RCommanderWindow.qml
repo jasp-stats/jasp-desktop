@@ -26,7 +26,7 @@ import JASP.Controls	1.0 as JC
 Window
 {
     id:					rcmdRoot
-	title:				"R in JASP"
+	title:				qsTr("R in JASP")
 	visible:			true
 	width:				1248
 	height:				768
