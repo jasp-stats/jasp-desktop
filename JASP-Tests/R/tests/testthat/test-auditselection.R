@@ -12,6 +12,9 @@ options$sampleDescriptives <- TRUE
 options$sampleSize <- 60
 options$selectionMethod <- "randomSampling"
 options$selectionType <- "musSampling"
+options$addSampleIndicator <- FALSE
+options$sampleIndicatorColumn <- ""
+options$plotHistograms <- FALSE
 set.seed(1)
 results <- jasptools::run("auditSelection", "BuildIt_Monetary.csv", options)
 

@@ -210,7 +210,7 @@ Form {
 
 	Section
 	{
-		title: 												qsTr("Tables")
+		title: 												qsTr("Tables and Plots")
 
 		GridLayout
 		{
@@ -256,7 +256,36 @@ Form {
 					}
 				}
 			}
+
+			GroupBox
+			{
+				id: 											samplingPlots
+				title: 										qsTr("Plots")
+
+				CheckBox { 
+					text: qsTr("Population and sample histograms")
+					name: "plotHistograms"
+					enabled: recordNumberVariable.count > 0	& monetaryVariable.count > 0				
+				}
+
+			}
 		}
+	}
+
+	CheckBox 
+	{ 
+			id: addSampleIndicator  
+			name: "addSampleIndicator"
+			text: qsTr("Add selection counter to data")
+			enabled: recordNumberVariable.count > 0
+
+			ComputedColumnField 
+			{ 
+					name: 			"sampleIndicatorColumn"
+					text: 			qsTr("Column name: ")
+					fieldWidth: 120
+					visible:    addSampleIndicator.checked
+			}
 	}
 
 	Item

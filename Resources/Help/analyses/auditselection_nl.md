@@ -11,6 +11,9 @@ Standaard invoeropties
 #### Steekproefgrootte
 Het benodigde aantal steekproefelementen dat geselecteerd wordt uit de populatie.
 
+#### Voeg selectie teller toe aan data
+Wanneer ingeschakeld voegt de analyse het resultaat van de selectieanalyse in een nieuwe kolom toe aan de data. De nieuwe kolom geeft weer hoe vaak elke transactie in de steekproef is opgenomen.
+
 ----
 
 Geavanceerde invoeropties
@@ -55,6 +58,14 @@ Produceert een tabel met de geselecteerde waarnemingen samen met eventuele aanvu
 
 #### Selectie samenvatting
 Produceert een tabel met beschrijvende informatie over numerieke variabelen in de steekproef.
+
+----
+
+Geavanceerde resultaten (plots)
+-------
+
+#### Populatie en steekproef histogrammen
+Produceert een overlappend histogram dat de verdeling van waarden van elke variabele in de populatie vergelijkt met de waarden in de steekproef.
 
 ----
 
