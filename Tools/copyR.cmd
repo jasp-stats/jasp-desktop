@@ -80,6 +80,9 @@ FOR /D %%G in ("*") DO (
     )
 )
 
+echo Making R readonly
+attrib +r %DESTDIR%\library /d /s
+
 echo Done!
 cd %STARTDIR%
 

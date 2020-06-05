@@ -296,8 +296,10 @@ echo copy help
 XCOPY  %JASP_DESKTOP%\Resources\Help /E /I Help
 
 :copyR
-echo running copyR.cmd script as "%JASP_DESKTOP%\Tools\copyR.cmd %JASP_REQUIRED_FILES_DIR%\R %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%\R %COPY_R_ARCH%"
-call %JASP_DESKTOP%\Tools\copyR.cmd %JASP_REQUIRED_FILES_DIR%\R %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%\R %COPY_R_ARCH%
+set "RLOCATION=%JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%\R"
+echo running copyR.cmd script as "%JASP_DESKTOP%\Tools\copyR.cmd %JASP_REQUIRED_FILES_DIR%\R %RLOCATION% %COPY_R_ARCH%"
+
+call %JASP_DESKTOP%\Tools\copyR.cmd %JASP_REQUIRED_FILES_DIR%\R %RLOCATION% %COPY_R_ARCH%
 
 echo copy JAGS to installer preparation folder
 XCOPY %JASP_REQUIRED_FILES_DIR%\%ARCH%\JAGS /E /I %JASP_BASE_DIR%\%JASP_WIX_DIR%\%JASP_INSTALL_DIR%\JAGS
@@ -325,6 +327,9 @@ COPY %JASP_DESKTOP%\Tools\wix\jasp.wxs /Y
 "%WIX%\bin\light" -sval -dRedistMergeModule=%MERGEMODULENAME% -ext WixUIExtension -ext WixUtilExtension -out JASP.msi JASPFilesFragment.wixobj jasp.wixobj || exit /B 10
 
 cd %STARTDIR%
+
+echo Remove readonly from r library again to avoid errors later on
+attrib -r %RLOCATION%\library /d /s
 
 :end
 endlocal

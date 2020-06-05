@@ -2,7 +2,7 @@
 
 # set up your app name, version and optional background image
 APP_NAME="JASP"
-VERSION="0.12.1.0"
+VERSION="0.13.0.0"
 DMG_BACKGROUND_IMG="background.png"
 
 # you should not need to change these
@@ -111,6 +111,9 @@ signRecursively "$APP_PATH/Contents/MacOS" Aggressive
 sign "$APP_PATH/Contents/MacOS/JASP"
 sign "$APP_PATH"
 
+echo "Making the R library readonly"  #https://github.com/jasp-stats/INTERNAL-jasp/issues/896
+chmod -R a-w $APP_FRAMEWORKS/R.framework/Versions/*/Resources/library
+
 popd
 
 echo "Figure out the size of the DMG"
@@ -182,7 +185,8 @@ signDMG "${DMG_FINAL}"
 echo "checking Gatekeeper acceptance"
 spctl -a -t open --context context:primary-signature -v --verbose=4 --assess ${DMG_FINAL}
 
-echo "clean up"
+echo "clean up after making R.framework writable again"
+chmod -R a+w ${STAGING_DIR}/$APP_FRAMEWORKS/R.framework
 rm -rf "${DMG_TMP}"
 rm -rf "${STAGING_DIR}"
 
