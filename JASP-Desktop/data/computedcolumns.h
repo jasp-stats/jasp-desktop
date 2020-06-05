@@ -13,8 +13,10 @@ public:
 	typedef std::vector<ComputedColumn*>::iterator iterator;
 
 
-	void				reset();
 						ComputedColumns() { if(_singleton) throw std::runtime_error("ComputedColumns can be instantiated only once!"); _singleton = this; }
+						~ComputedColumns() { _singleton = nullptr; }
+
+	void				reset();
 	ComputedColumn *	createComputedColumn(std::string name, columnType type, ComputedColumn::computedType desiredType);
 	void				createColumn(std::string name, columnType type);
 	void				removeComputedColumn(std::string name);

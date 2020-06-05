@@ -29,6 +29,12 @@ Window
 
 	Shortcut { onActivated: aboutModel.visible = false;	sequences: ["Ctrl+Q", "Ctrl+W", Qt.Key_Close]; }
 
+	Connections
+	{
+		target:			mainWindow
+		onCloseWindows: aboutModel.visible = false;
+	}
+
 
 	Image
 	{

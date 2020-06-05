@@ -336,6 +336,7 @@ HEADERS += \
     osf/onlineusernodeosf.h \
     osf/osfnam.h \
     qquick/jasptheme.h \
+    qquick/rcommander.h \
     utilities/appdirs.h \
     utilities/application.h \
     utilities/jsonutilities.h \
@@ -523,6 +524,7 @@ SOURCES += \
     osf/onlineusernodeosf.cpp \
     osf/osfnam.cpp \
     qquick/jasptheme.cpp \
+    qquick/rcommander.cpp \
     utilities/appdirs.cpp \
     utilities/application.cpp \
     utilities/jsonutilities.cpp \

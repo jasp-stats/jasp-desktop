@@ -15,13 +15,6 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
-
-#include "mainwindow.h"
-
-#include "analysis/analysisform.h"
-#include "analysis/jaspcontrolbase.h"
-#include "analysis/jaspdoublevalidator.h"
-
 #include <QDir>
 
 #include <QFile>
@@ -36,31 +29,42 @@
 #include <QAction>
 #include <QMenuBar>
 
-#include "utilities/qutils.h"
-#include "utilities/appdirs.h"
+#include <boost/filesystem.hpp>
+
+#include "log.h"
+#include "dirs.h"
+#include "column.h"
+#include "timers.h"
+#include "appinfo.h"
 #include "tempfiles.h"
 #include "processinfo.h"
-#include "appinfo.h"
+#include "sharedmemory.h"
+
+#include "mainwindow.h"
+
+#include "analysis/analysisform.h"
+#include "analysis/jaspcontrolbase.h"
+#include "analysis/jaspdoublevalidator.h"
+#include "analysis/options/optionvariablesgroups.h"
+
 
 #include "gui/jaspversionchecker.h"
 #include "gui/preferencesmodel.h"
-#include <boost/filesystem.hpp>
-#include "dirs.h"
-#include "utilities/qutils.h"
-#include "column.h"
-#include "sharedmemory.h"
-#include "utilities/settings.h"
+#include "gui/messageforwarder.h"
 
-#include "analysis/options/optionvariablesgroups.h"
-#include "qquick/datasetview.h"
 #include "modules/dynamicmodules.h"
 #include "modules/analysismenumodel.h"
 
-#include "timers.h"
+#include "qquick/datasetview.h"
+#include "qquick/rcommander.h"
+
 #include "resultstesting/compareresults.h"
+
+#include "utilities/qutils.h"
+#include "utilities/appdirs.h"
+#include "utilities/settings.h"
+
 #include "widgets/filemenu/filemenu.h"
-#include "gui/messageforwarder.h"
-#include "log.h"
 
 using namespace std;
 
@@ -85,8 +89,12 @@ QMap<QString, QVariant> MainWindow::_iconDisabledFiles {
 	{ "scale"		, "variable-scale-disabled.png"}
 };
 
+MainWindow * MainWindow::_singleton	= nullptr;
+
 MainWindow::MainWindow(QApplication * application) : QObject(application), _application(application)
 {
+	assert(!_singleton);
+	_singleton = this;
 	JASPTIMER_START(MainWindowConstructor);
 
 	if (_qml == nullptr)
@@ -148,6 +156,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	qmlRegisterType<DataSetView>				("JASP", 1, 0, "DataSetView");
 	qmlRegisterType<JaspTheme>					("JASP", 1, 0, "JaspTheme");
 	qmlRegisterType<AnalysisForm>				("JASP", 1, 0, "AnalysisForm");
+	qmlRegisterType<RCommander>					("JASP", 1, 0, "RCommander");
 	qmlRegisterType<JASPControlBase>			("JASP", 1, 0, "JASPControlBase");
 	qmlRegisterUncreatableType<JASPControlBase>	("JASP", 1, 0 ,"JASP", "Impossible to create JASP Object"); //This is here to keep JASP.enum short I guess?
 	qmlRegisterType<JASPDoubleValidator>		("JASP", 1, 0, "JASPDoubleValidator");
@@ -175,6 +184,8 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 
 MainWindow::~MainWindow()
 {
+	_singleton = nullptr;
+
 	try
 	{
 		//Clean up all QML to get rid of warnings and stuff
@@ -314,7 +325,7 @@ void MainWindow::makeConnections()
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
-	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);
+	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);	
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
 
@@ -343,6 +354,7 @@ void MainWindow::makeConnections()
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 	connect(_ribbonModel,			&RibbonModel::analysisTitleChanged,					_analyses,				&Analyses::analysisTitleChangedHandler						);
+	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule					);
@@ -472,6 +484,20 @@ void MainWindow::loadQML()
 
 	Log::log() << "Loading upgrades definitions"  << std::endl;
 	_upgrader->loadOldSchoolUpgrades();
+}
+
+void MainWindow::showRCommander()
+{
+	if(RCommander::opened())
+	{
+		Log::log() << "RCommander already loaded, making it active now." << std::endl;
+		RCommander::makeActive();
+	}
+	else
+	{
+		Log::log() << "Loading RCommander"  << std::endl;
+		_qml->load(QUrl("qrc:///components/JASP/Widgets/RCommanderWindow.qml"));
+	}
 }
 
 void MainWindow::jaspThemeChanged(JaspTheme * newTheme)

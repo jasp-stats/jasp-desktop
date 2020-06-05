@@ -39,6 +39,8 @@ Upgrader::~Upgrader()
 			delete step;
 
 	_allSteps.clear();
+
+	_singleton = nullptr;
 }
 
 void Upgrader::processUpgradeJson(const std::string & module, const Json::Value & upgrades, DynamicModule * dynMod)

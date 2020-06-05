@@ -43,9 +43,11 @@
  */
 extern "C" {
 	RBridgeColumn*				STDCALL rbridge_readDataSet(RBridgeColumnType* columns, size_t colMax, bool obeyFilter);
-	RBridgeColumn*				STDCALL rbridge_readFullDataSet(size_t * colMax);
+	RBridgeColumn*				STDCALL rbridge_readFullDataSet(		size_t * colMax);
+	RBridgeColumn*				STDCALL rbridge_readFullFilteredDataSet(size_t * colMax);
+	RBridgeColumn*				STDCALL rbridge_readFullDataSetHelper(	size_t * colMax, bool obeyFilter);
 	RBridgeColumn*				STDCALL rbridge_readDataSetForFiltering(size_t * colMax);
-	char**						STDCALL rbridge_readDataColumnNames(size_t *colMax);
+	char**						STDCALL rbridge_readDataColumnNames(	size_t *colMax);
 	RBridgeColumnDescription*	STDCALL rbridge_readDataSetDescription(RBridgeColumnType* columns, size_t colMax);
 	bool						STDCALL rbridge_test(char** root);
 	bool						STDCALL rbridge_requestStateFileSource(									const char ** root, const char ** relativePath);
@@ -88,6 +90,10 @@ extern "C" {
 
 	std::string rbridge_run(const std::string &name, const std::string &title, const std::string &rfile, bool &requiresInit, const std::string &dataKey, const std::string &options, const std::string &resultsMeta, const std::string &stateKey, int analysisID, int analysisRevision, const std::string &perform, int ppi, const std::string &imageBackground, RCallback callback, bool useJaspResults, bool developerMode);
 	std::string rbridge_check();
+
+	void	rbridge_setupRCodeEnvReadData(const std::string & dataname, const std::string & readFunction);
+	void	rbridge_setupRCodeEnv(int rowCount, const std::string & dataname = "data");
+	void	rbridge_detachRCodeEnv(				const std::string & dataname = "data");
 
 	void freeRBridgeColumns();
 	void freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax);

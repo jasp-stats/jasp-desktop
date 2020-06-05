@@ -9,6 +9,11 @@ EngineRepresentation::EngineRepresentation(IPCChannel * channel, QProcess * slav
 	: QObject(parent), _channel(channel)
 {
 	setSlaveProcess(slaveProcess);
+
+#ifndef JASP_DEBUG
+	if(channelNumber() == 0)
+		setRunsAnalysis(false); // don't perform 'runs' on process 0, "only" inits & filters & rCode & columnComputes & moduleRequests.
+#endif
 }
 
 
@@ -259,6 +264,15 @@ void EngineRepresentation::processFilterReply(Json::Value & json)
 		emit processFilterErrorMsg(QString::fromStdString(json.get("filterError", "something went wrong").asString()), requestId);
 }
 
+void EngineRepresentation::runScriptOnProcess(const QString & rCmdCode)
+{
+	RScriptStore * script = new RScriptStore(-1, rCmdCode, engineState::rCode, false, true);
+
+	runScriptOnProcess(script);
+
+	delete script;
+}
+
 void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 {
 	Json::Value json = Json::Value(Json::objectValue);
@@ -268,6 +282,7 @@ void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 	json["rCode"]			= scriptStore->script.toStdString();
 	json["requestId"]		= scriptStore->requestId;
 	json["whiteListed"]		= scriptStore->whiteListedVersion;
+	json["returnLog"]		= scriptStore->returnLog;
 
 	_lastRequestId			= scriptStore->requestId;
 
@@ -284,7 +299,8 @@ void EngineRepresentation::processRCodeReply(Json::Value & json)
 	std::string rCodeResult = json.get("rCodeResult", "").asString();
 	int requestId			= json.get("requestId", -1).asInt();
 
-	emit rCodeReturned(QString::fromStdString(rCodeResult), requestId);
+	if(!runsRCmd())			emit rCodeReturned(		tq(rCodeResult), requestId);
+	else					emit rCodeReturnedLog(	tq(rCodeResult));
 
 	Log::log() << "rCode reply for request (" << requestId << ") returned: " << rCodeResult << " with error: '" << json.get("rCodeError", "no error") << "'\n" <<  std::flush;
 }
@@ -734,6 +750,33 @@ void EngineRepresentation::settingsChanged()
 	abortAnalysisInProgress(true);
 }
 
+void EngineRepresentation::setRunsAnalysis(bool runsAnalysis)
+{
+	if (_runsAnalysis == runsAnalysis)
+		return;
+
+	_runsAnalysis = runsAnalysis;
+	emit runsAnalysisChanged(_runsAnalysis);
+}
+
+void EngineRepresentation::setRunsUtility(bool runsUtility)
+{
+	if (_runsUtility == runsUtility)
+		return;
+
+	_runsUtility = runsUtility;
+	emit runsUtilityChanged(_runsUtility);
+}
+
+void EngineRepresentation::setRunsRCmd(bool runsRCmd)
+{
+	if (_runsRCmd == runsRCmd)
+		return;
+
+	_runsRCmd = runsRCmd;
+	emit runsRCmdChanged(_runsRCmd);
+}
+
 void EngineRepresentation::sendSettings()
 {
 	Log::log() << "EngineRepresentation::sendSettings()" << std::endl;
@@ -770,4 +813,12 @@ void EngineRepresentation::restartAbortedAnalysis()
 		_analysisAborted->run();
 
 	_analysisAborted = nullptr;
+}
+
+bool EngineRepresentation::willProcessAnalysis(const Analysis * analysis) const
+{
+	if(!analysis || !idle() || !analysis->shouldRun())
+		return false;
+
+	return runsAnalysis() || (analysis->utilityRunAllowed() && runsUtility());
 }

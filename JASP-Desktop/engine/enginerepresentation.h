@@ -22,6 +22,9 @@
 class EngineRepresentation : public QObject
 {
 	Q_OBJECT
+	Q_PROPERTY(bool		runsAnalysis		READ runsAnalysis		WRITE setRunsAnalysis		NOTIFY runsAnalysisChanged		)
+	Q_PROPERTY(bool		runsUtility			READ runsUtility		WRITE setRunsUtility		NOTIFY runsUtilityChanged		)
+	Q_PROPERTY(bool		runsRCmd			READ runsRCmd			WRITE setRunsRCmd			NOTIFY runsRCmdChanged			)
 
 public:
 	EngineRepresentation(IPCChannel * channel, QProcess * slaveProcess, QObject * parent = nullptr);
@@ -37,6 +40,7 @@ public:
 
 	void runScriptOnProcess(RFilterStore * filterStore);
 	void runScriptOnProcess(RScriptStore * scriptStore);
+	void runScriptOnProcess(const QString & rCmdCode);
 	void runScriptOnProcess(RComputeColumnStore * computeColumnStore);
 	void runAnalysisOnProcess(Analysis *analysis);
 	void runModuleRequestOnProcess(Json::Value request);
@@ -55,6 +59,9 @@ public:
 	bool killed()				const { return _engineState == engineState::killed;										}
 	bool idle()					const { return _engineState == engineState::idle;										}
 	bool shouldSendSettings()	const { return idle() && _settingsChanged;												}
+	bool runsAnalysis()			const { return _runsAnalysis;															}
+	bool runsUtility()			const { return _runsUtility;															}
+	bool runsRCmd()				const { return _runsRCmd;																}
 
 	bool jaspEngineStillRunning() { return  _slaveProcess != nullptr && !killed(); }
 
@@ -72,6 +79,7 @@ public:
 	void restartAbortedAnalysis();
 
 	void checkIfExpectedReplyType(engineState expected) { unexpectedEngineReply::checkIfExpected(expected, _engineState, channelNumber()); }
+	bool willProcessAnalysis(const Analysis * analysis) const;
 
 	size_t	channelNumber()		const { return _channel->channelNumber(); }
 
@@ -79,10 +87,14 @@ public:
 
 	std::string currentState() const;
 
+
 public slots:
 	void analysisRemoved(Analysis * analysis);
 	void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 	void settingsChanged();
+	void setRunsAnalysis(	bool runsAnalysis);
+	void setRunsUtility(	bool runsUtility);
+	void setRunsRCmd(		bool runsRCmd);
 
 signals:
 	void engineTerminated();
@@ -91,7 +103,8 @@ signals:
 	void processNewFilterResult(		const std::vector<bool> & filterResult, int requestId);
 	void computeColumnErrorTextChanged(	const QString & error);
 
-	void rCodeReturned(					const QString & result, int requestId);
+	void rCodeReturned(					const QString & result, int requestId	);
+	void rCodeReturnedLog(				const QString & log						);
 
 	void computeColumnSucceeded(		const QString & columnName, const QString & warning, bool dataChanged);
 	void computeColumnFailed(			const QString & columnName, const QString & error);
@@ -107,6 +120,9 @@ signals:
 	void logCfgReplyReceived(int channelNr);
 	void plotEditorRefresh();
 	void requestEngineRestart(int channelNr);
+	void runsAnalysisChanged(bool runsAnalysis);
+	void runsUtilityChanged(bool runsUtility);
+	void runsRCmdChanged(bool runsRCmd);
 
 private:
 	void sendPauseEngine();
@@ -121,19 +137,22 @@ private:
 private:
 	static Analysis::Status analysisResultStatusToAnalysStatus(analysisResultStatus result);
 
+	engineState		_engineState		= engineState::initializing; // The representation of whatever state the actual engine is supposed to be in.
 	QProcess	*	_slaveProcess		= nullptr;
 	IPCChannel	*	_channel			= nullptr;
 	Analysis	*	_analysisInProgress = nullptr,
-				*	_analysisAborted	= nullptr;
-	engineState		_engineState		= engineState::initializing;
-	int				_idRemovedAnalysis	= -1,
-					_lastRequestId		= -1,
-					_abortTime			= -1;
-	bool			_pauseRequested		= false,
-					_stopRequested		= false,
-					_slaveCrashed		= false,
-					_settingsChanged	= true,
-					_abortAndRestart	= false;
+				*	_analysisAborted	= nullptr;	//To make sure we know that the response we got was from this aborted analysis or not
+	int				_idRemovedAnalysis	= -1,		//If the analysis was deleted we should ignore its results
+					_lastRequestId		= -1,		//for R code requests from qml components, so that we can send it back to the right element
+					_abortTime			= -1;		//When did we tell the analysis to abort? So that we can kill it if it takes too long
+	bool			_pauseRequested		= false,	//should tell the engine to pause as soon as possible
+					_stopRequested		= false,	//should tell the engine to stop as soon as possible
+					_slaveCrashed		= false,	//My slave crashed
+					_settingsChanged	= true,		//Some setting changed and we should send these new settings asap
+					_abortAndRestart	= false,	//abort and restart an analysis
+					_runsAnalysis		= true,		//is this engine meant for running analyses?
+					_runsUtility		= true,		//is this engine meant for running filters, installing modules or running R Code (not the r prompt though)
+					_runsRCmd			= false;	//is this engine meant for the R prompt?
 	std::string		_lastCompColName	= "???";
 
 

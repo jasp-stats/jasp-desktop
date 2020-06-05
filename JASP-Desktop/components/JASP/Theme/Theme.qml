@@ -51,6 +51,10 @@ JaspTheme
 	fontPrefOptionsGroupTitle.family:					jaspFont + (MACOS ? " Bold" : "")
 	fontPrefOptionsGroupTitle.weight:					Font.Bold
 
+	fontConsole.pixelSize:								Math.round(14 * uiScale)
+	fontConsole.weight:									Font.Normal
+
+
 	//Scales:
 	ribbonScaleHovered:					1.1
 

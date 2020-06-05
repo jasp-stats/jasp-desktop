@@ -56,6 +56,7 @@ public:
 
 	void						addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool isCommon);
 	void						addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module);
+	void						addRibbonButtonRPrompt();
 
 	void						removeRibbonButtonModel(std::string moduleName);
 
@@ -69,16 +70,17 @@ public:
 	Q_INVOKABLE void			toggleModuleEnabled(int ribbonButtonModelIndex);
 	Q_INVOKABLE void			setModuleEnabled(int ribbonButtonModelIndex, bool enabled);
 
-	int highlightedModuleIndex() const { return _highlightedModuleIndex; }
+	int							highlightedModuleIndex() const { return _highlightedModuleIndex; }
 	Modules::AnalysisEntry*		getAnalysis(const std::string& moduleName, const std::string& analysisName);
 
 	QString						getModuleNameFromAnalysisName(const QString analysisName);
 	
 signals:
 				void currentButtonModelChanged();
-	Q_INVOKABLE void analysisClickedSignal(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
+				void analysisClickedSignal(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 				void highlightedModuleIndexChanged(int highlightedModuleIndex);
 				void analysisTitleChanged(std::string moduleName, std::string oldTitle, std::string newTitle);
+				void showRCommander();
 
 public slots:
 	void addDynamicRibbonButtonModel(Modules::DynamicModule * module)	{ addRibbonButtonModelFromDynamicModule(module);	}
@@ -86,6 +88,7 @@ public slots:
 	void setHighlightedModuleIndex(int highlightedModuleIndex);
 	void moduleLoadingSucceeded(const QString & moduleName);
 	void refresh();
+	void analysisClicked(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 
 private slots:
 	void ribbonButtonModelChanged(RibbonButton* model);

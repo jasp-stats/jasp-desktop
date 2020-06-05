@@ -165,6 +165,8 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(QFont              fontGroupTitle                  READ fontGroupTitle                  WRITE setFontGroupTitle                  NOTIFY fontGroupTitleChanged                  )
 	Q_PROPERTY(QFont              fontPrefOptionsGroupTitle       READ fontPrefOptionsGroupTitle       WRITE setFontPrefOptionsGroupTitle       NOTIFY fontPrefOptionsGroupTitleChanged       )
 
+	Q_PROPERTY(QFont              fontConsole                     READ fontConsole                     WRITE setFontConsole                     NOTIFY fontConsoleChanged                     )
+
 	//Iconfolder:
 	Q_PROPERTY(QString            iconPath                        READ iconPath                                                                 NOTIFY iconPathChanged                        )
 	Q_PROPERTY(QString            themeName                       READ themeName                       WRITE setThemeName                       NOTIFY themeNameChanged                       )
@@ -298,10 +300,12 @@ public:
 	QFont				fontRibbon()						const	{ return _fontRibbon;	}
 	QFont				fontGroupTitle()					const	{ return _fontGroupTitle;	}
 	QFont				fontPrefOptionsGroupTitle()			const	{ return _fontPrefOptionsGroupTitle;	}
+	QFont				fontConsole()						const	{ return _fontConsole;	}
 	QFont				jaspFont()							const	{ return _jaspFont;				}
 	QString				iconPath()							const	{ return _iconPath; }
 	QString				themeName()							const	{ return _themeName;	}
 	static QString		currentIconPath();
+
 
 signals:
 	void jaspThemeChanged(JaspTheme * newTheme);
@@ -429,6 +433,7 @@ signals:
 	void fontGroupTitleChanged(QFont fontGroupTitle);
 	void fontPrefOptionsGroupTitleChanged(QFont fontPrefOptionsGroupTitle);
 	void jaspFontChanged(QFont jaspFont);
+	void fontConsoleChanged(QFont fontConsole);
 	void iconPathChanged(QString iconPath);
 	void themeNameChanged(QString themeName);
 	void currentThemeNameChanged(QString themeName);
@@ -557,6 +562,7 @@ public slots:
 	void setJaspFont(QFont jaspFont);
 	void setIconPath(QString iconPath);
 	void setThemeName(QString themeName);
+	void setFontConsole(QFont fontConsole);
 
 private:
 	void connectSizeDistancesToUiScaleChanged();
@@ -689,6 +695,7 @@ private:
 	QFont				_font,
 						_fontLabel,
 						_fontRibbon,
+						_fontConsole,
 						_fontGroupTitle,
 						_fontPrefOptionsGroupTitle;
 

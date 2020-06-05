@@ -47,6 +47,12 @@ public:
 	bool engineStarted()			{ return _engineStarted; }
 	bool allEnginesInitializing();
 
+	static EngineSync * singleton() { return _singleton; }
+
+	EngineRepresentation *	createNewEngine();
+	EngineRepresentation *	createRCmdEngine();
+	void					destroyEngine(EngineRepresentation * rCmdEngine);
+
 public slots:
 	int			sendFilter(		const QString & generatedFilter,	const QString & filter);
 	void		sendRCode(		const QString & rCode,				int requestId,					bool whiteListedVersion);
@@ -114,7 +120,9 @@ private slots:
 
 	void	logCfgReplyReceived(size_t channelNr);
 
+
 private:
+	static EngineSync				*	_singleton;
 	RFilterStore					*	_waitingFilter					= nullptr;
 
 	bool								_engineStarted					= false,

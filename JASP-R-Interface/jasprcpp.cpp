@@ -33,6 +33,7 @@ RInside						*rinside;
 ReadDataSetCB				readDataSetCB;
 RunCallbackCB				runCallbackCB;
 ReadADataSetCB				readFullDataSetCB,
+							readFullFilteredDataSetCB,
 							readFilterDataSetCB;
 ReadDataColumnNamesCB		readDataColumnNamesCB;
 RequestTempFileNameCB		requestTempFileNameCB,
@@ -80,6 +81,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	requestJaspResultsFileSourceCB				= callbacks->requestJaspResultsFileSourceCB;
 	dataSetColumnAsNominalText					= callbacks->dataSetColumnAsNominalText;
 	requestSpecificFileNameCB					= callbacks->requestSpecificFileNameCB;
+	readFullFilteredDataSetCB					= callbacks->readFullFilteredDataSetCB;
 	requestStateFileSourceCB					= callbacks->requestStateFileSourceCB;
 	readDataSetDescriptionCB					= callbacks->readDataSetDescriptionCB;
 	dataSetColumnAsNominal						= callbacks->dataSetColumnAsNominal;
@@ -130,9 +132,10 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rInside[".requestTempRootNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestTempRootNameSEXP);
 	rInside[".setColumnDataAsNominalText"]		= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsNominalText);
 	rInside[".requestStateFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
+	rInside[".readFullFilteredDatasetToEnd"]	= Rcpp::InternalFunction(&jaspRCPP_readFullFilteredDataSet);
 	rInside[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
 
-	rInside.parseEvalQNT(".outputSink <- .createCaptureConnection(); sink(.outputSink); print('.outputSink initialized!');");
+	rInside.parseEvalQNT(".outputSink <- .createCaptureConnection(); sink(.outputSink); print('.outputSink initialized!'); sink();");
 
 
 	static const char *baseCitationFormat	= "JASP Team (%s). JASP (Version %s) [Computer software].";
@@ -164,7 +167,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	jaspRCPP_parseEvalQNT("initEnvironment()");
 
-	_R_HOME = Rcpp::as<std::string>(rInside.parseEval("R.home('')"));
+	_R_HOME = Rcpp::as<std::string>(jaspRCPP_parseEval("R.home('')"));
 
 	std::cout << "R_HOME: " << _R_HOME << std::endl;
 
@@ -186,12 +189,15 @@ void _setJaspResultsInfo(int analysisID, int analysisRevision, bool developerMod
 	jaspResults::setDeveloperMode(developerMode);
 
 	std::string root, relativePath;
+
 	if(!jaspRCPP_requestJaspResultsRelativeFilePath(root, relativePath))
 		throw std::runtime_error("Did not receive a valid filename to store jaspResults.json at.");
+
 	jaspResults::setSaveLocation(root, relativePath);
 
 	if(!jaspRCPP_requestSpecificRelativeFilePath(jaspResults::writeSealFilename(), root, relativePath))
 			throw std::runtime_error("Did not receive a valid filename to store jaspResults write seal at.");
+
 	jaspResults::setWriteSealLocation(root, relativePath);
 }
 
@@ -447,6 +453,56 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode) {
 	}
 
 	return staticResult.c_str();
+}
+
+std::stringstream __cmderLogStream;
+
+int __cmderLogFlush() { __cmderLogStream.flush(); return 0; }
+
+size_t __cmderLogWrite(const void * buf, size_t len)
+{
+	try {	if(len > 0)	__cmderLogStream.write(static_cast<const char *>(buf), len);	}
+	catch (...) {		__cmderLogStream << "Capturing output from R had a problem...\n" << std::flush; }
+	return len;
+}
+
+///Run Rcode and return all output as if
+const char*	STDCALL jaspRCPP_evalRCodeCommander(const char *rCode)
+{
+	__cmderLogStream.str("");
+
+	logFlushDef originalFlush	= _logFlushFunction;
+	_logFlushFunction			= __cmderLogFlush;
+
+	logWriteDef	originalLogger	= _logWriteFunction;
+	_logWriteFunction			= __cmderLogWrite;
+
+	lastErrorMessage = "";
+	rinside->instance()[".rCode"] = CSTRING_TO_R(rCode);
+	const std::string rCodeTryCatch(""
+		"withCallingHandlers("															"\n"
+		"  { "																			"\n"
+		"    options(warn=1);"															"\n"
+		"    valVis <- withVisible(eval(parse(text=.rCode)));"							"\n"
+		"    if(valVis$visible) print(valVis$value);"									"\n"
+		"  },	"																		"\n"
+		"  warning = function(w) { cat(paste0('Warning: ', toString(w$message))) },"	"\n"
+		"  error   = function(e) { cat(paste0('Error: ',   toString(e$message))) }"		"\n"
+		");"
+		);
+
+	jaspRCPP_parseEvalQNT(rCodeTryCatch, false);
+
+	_logFlushFunction			= originalFlush;
+	_logWriteFunction			= originalLogger;
+
+	static std::string staticLog;
+
+	staticLog = __cmderLogStream.str();
+
+	__cmderLogStream.str("");
+
+	return staticLog.c_str();
 }
 
 } // extern "C"
@@ -868,6 +924,14 @@ Rcpp::DataFrame jaspRCPP_readFullDataSet()
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 
+
+Rcpp::DataFrame jaspRCPP_readFullFilteredDataSet()
+{
+	size_t colMax = 0;
+	RBridgeColumn* colResults = readFullFilteredDataSetCB(&colMax);
+	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
+}
+
 Rcpp::DataFrame jaspRCPP_readFilterDataSet()
 {
 	size_t colMax = 0;
@@ -1034,21 +1098,26 @@ void jaspRCPP_parseEvalPreface(const std::string & code)
 
 std::string __sinkMe(const std::string code)
 {
-	return "sink(.outputSink, type='output');\nsink(.outputSink, type='message');\n" + code;
+	return	"sink(.outputSink);\n\n" + code; //default type = c('message', 'output') anyway
 }
 
-void jaspRCPP_parseEvalQNT(const std::string & code)
+void jaspRCPP_parseEvalQNT(const std::string & code, bool preface)
 {
-	jaspRCPP_parseEvalPreface(code);
+	if(preface)	jaspRCPP_parseEvalPreface(code);
 	rinside->parseEvalQNT(__sinkMe(code));
 	jaspRCPP_logString("\n");
+
+	rinside->parseEvalQNT("sink();"); //Back to normal!
 }
 
-RInside::Proxy jaspRCPP_parseEval(const std::string & code)
+RInside::Proxy jaspRCPP_parseEval(const std::string & code,	bool preface)
 {
-	jaspRCPP_parseEvalPreface(code);
-	RInside::Proxy returnthis = rinside->parseEval(__sinkMe(code));
+	if(preface)	jaspRCPP_parseEvalPreface(code);
+	RInside::Proxy returnthis = rinside->parseEvalNT(__sinkMe(code)); //Not throwing is nice actually!
 	jaspRCPP_logString("\n");
+
+	rinside->parseEvalQNT("sink();"); //back to normal!
+
 	return returnthis;
 }
 
@@ -1218,3 +1287,4 @@ SEXP jaspRCPP_CreateCaptureConnection()
 	UNPROTECT(1);
 	return rc;
 }
+

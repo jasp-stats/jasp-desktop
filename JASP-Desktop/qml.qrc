@@ -139,5 +139,6 @@
         <file>components/JASP/Controls/RowLayout.qml</file>
         <file>components/JASP/Controls/TabView.qml</file>
         <file>components/JASP/Controls/FileSelector.qml</file>
+        <file>components/JASP/Widgets/RCommanderWindow.qml</file>
     </qresource>
 </RCC>

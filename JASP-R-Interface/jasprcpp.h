@@ -25,6 +25,7 @@
 
 // Calls From R
 Rcpp::DataFrame jaspRCPP_readFullDataSet();
+Rcpp::DataFrame jaspRCPP_readFullFilteredDataSet();
 Rcpp::DataFrame jaspRCPP_readFilterDataSet();
 Rcpp::DataFrame jaspRCPP_readDataSetSEXP(		SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
 Rcpp::DataFrame jaspRCPP_readDataSetHeaderSEXP(	SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns);
@@ -38,8 +39,8 @@ SEXP jaspRCPP_requestStateFileNameSEXP();
 SEXP jaspRCPP_RunSeparateR(SEXP code);
 
 				//Custom parseEvals to make sure sink is set (to capture output)
-void			jaspRCPP_parseEvalQNT(const std::string & code);
-RInside::Proxy	jaspRCPP_parseEval(const std::string & code);
+void			jaspRCPP_parseEvalQNT(const std::string & code,	bool preface = true);
+RInside::Proxy	jaspRCPP_parseEval(const std::string & code,	bool preface = true);
 void			jaspRCPP_logString(const std::string & code);
 SEXP			jaspRCPP_CreateCaptureConnection();
 

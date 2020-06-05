@@ -7,13 +7,14 @@
 
 struct RScriptStore
 {
-	RScriptStore(int requestId, QString script, engineState typeScript = engineState::rCode, bool whiteListedVersion = true)
-		: typeScript(typeScript), script(script), requestId(requestId), whiteListedVersion(whiteListedVersion) {}
+	RScriptStore(int requestId, QString script, engineState typeScript = engineState::rCode, bool whiteListedVersion = true, bool returnLog = false)
+		: typeScript(typeScript), script(script), requestId(requestId), whiteListedVersion(whiteListedVersion), returnLog(returnLog) {}
 
 	engineState typeScript; //should be filter/rcode/etc
 	QString		script;
 	int			requestId;
-	bool		whiteListedVersion;
+	bool		whiteListedVersion,
+				returnLog;
 
 };
 

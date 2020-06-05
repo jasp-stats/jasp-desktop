@@ -15,6 +15,7 @@ public:
 
 
 	explicit MessageForwarder(MainWindow *main);
+	~MessageForwarder() { _singleton = nullptr;}
 
 	static MessageForwarder * msgForwarder() { return _singleton; }
 

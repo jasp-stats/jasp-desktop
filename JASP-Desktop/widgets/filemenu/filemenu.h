@@ -120,6 +120,7 @@ public slots:
 	void refresh();
 	void close();
 
+
 private slots:
 	void dataSetIORequestHandler(FileEvent *event);
 

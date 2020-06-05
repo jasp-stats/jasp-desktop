@@ -50,6 +50,7 @@ public:
 
 
 	explicit	 PreferencesModel(QObject *parent = 0);
+	~PreferencesModel() { _singleton = nullptr;}
 
 	int			customPPI()					const;
 	int			numDecimals()				const;

@@ -42,9 +42,14 @@
 
 using namespace boost::interprocess;
 
+EngineSync * EngineSync::_singleton = nullptr;
+
 EngineSync::EngineSync(QObject *parent)
 	: QObject(parent)
 {
+	assert(!_singleton);
+	_singleton = this;
+
 	connect(Analyses::analyses(),		&Analyses::sendRScript,								this,						&EngineSync::sendRCode							);
 	connect(this,						&EngineSync::moduleLoadingFailed,					DynamicModules::dynMods(),	&DynamicModules::loadingFailed					);
 	connect(this,						&EngineSync::moduleLoadingSucceeded,				DynamicModules::dynMods(),	&DynamicModules::loadingSucceeded				);
@@ -62,6 +67,8 @@ EngineSync::EngineSync(QObject *parent)
     QTimer::singleShot(10000, this, &EngineSync::deleteOrphanedTempFiles);
 
 	DataSetPackage::pkg()->setEngineSync(this);
+
+	_memoryName = "JASP-IPC-" + std::to_string(ProcessInfo::currentPID());
 }
 
 EngineSync::~EngineSync()
@@ -78,6 +85,45 @@ EngineSync::~EngineSync()
 		_engines.clear();
 		TempFiles::deleteAll();
 	}
+	_singleton = nullptr;
+}
+
+EngineRepresentation * EngineSync::createNewEngine()
+{
+	try
+	{
+		size_t i = _engines.size();
+
+		_engines.push_back(new EngineRepresentation(new IPCChannel(_memoryName, i), startSlaveProcess(i), this));
+
+		connect(_engines[i],			&EngineRepresentation::rCodeReturned,					Analyses::analyses(),	&Analyses::rCodeReturned												);
+		connect(_engines[i],			&EngineRepresentation::engineTerminated,				this,					&EngineSync::engineTerminated											);
+		connect(_engines[i],			&EngineRepresentation::processNewFilterResult,			this,					&EngineSync::processNewFilterResult										);
+		connect(_engines[i],			&EngineRepresentation::filterDone,						this,					&EngineSync::filterDone													);
+		connect(_engines[i],			&EngineRepresentation::processFilterErrorMsg,			this,					&EngineSync::processFilterErrorMsg										);
+		connect(_engines[i],			&EngineRepresentation::columnDataTypeChanged,			this,					&EngineSync::columnDataTypeChanged,				Qt::QueuedConnection	);
+		connect(_engines[i],			&EngineRepresentation::computeColumnSucceeded,			this,					&EngineSync::computeColumnSucceeded,			Qt::QueuedConnection	);
+		connect(_engines[i],			&EngineRepresentation::computeColumnFailed,				this,					&EngineSync::computeColumnFailed,				Qt::QueuedConnection	);
+		connect(_engines[i],			&EngineRepresentation::moduleLoadingFailed,				this,					&EngineSync::moduleLoadingFailedHandler									);
+		connect(_engines[i],			&EngineRepresentation::moduleLoadingSucceeded,			this,					&EngineSync::moduleLoadingSucceededHandler								);
+		connect(_engines[i],			&EngineRepresentation::moduleInstallationFailed,		this,					&EngineSync::moduleInstallationFailed									);
+		connect(_engines[i],			&EngineRepresentation::moduleInstallationSucceeded,		this,					&EngineSync::moduleInstallationSucceeded								);
+		connect(_engines[i],			&EngineRepresentation::moduleUnloadingFinished,			this,					&EngineSync::moduleUnloadingFinishedHandler								);
+		connect(_engines[i],			&EngineRepresentation::moduleUninstallingFinished,		this,					&EngineSync::moduleUninstallingFinished									);
+		connect(_engines[i],			&EngineRepresentation::logCfgReplyReceived,				this,					&EngineSync::logCfgReplyReceived										);
+		connect(_engines[i],			&EngineRepresentation::plotEditorRefresh,				this,					&EngineSync::plotEditorRefresh											);
+		connect(_engines[i],			&EngineRepresentation::requestEngineRestart,			this,					&EngineSync::restartEngineAfterCrash									);
+		connect(this,					&EngineSync::settingsChanged,							_engines[i],			&EngineRepresentation::settingsChanged									);
+		connect(Analyses::analyses(),	&Analyses::analysisRemoved,								_engines[i],			&EngineRepresentation::analysisRemoved									);
+
+		return _engines[i];
+
+	}
+	catch (interprocess_exception & e)
+	{
+		Log::log()  << "interprocess exception! " << e.what() <<  std::endl;
+		throw e;
+	}
 }
 
 void EngineSync::start(int )
@@ -89,44 +135,14 @@ void EngineSync::start(int )
 
 	_engineStarted = true;
 
-	try {
-		_memoryName = "JASP-IPC-" + std::to_string(ProcessInfo::currentPID());
-
+	size_t enginesWanted = 4;
 #ifdef JASP_DEBUG
-		_engines.resize(1);
-#else
-		_engines.resize(4);
+		enginesWanted = 1;
 #endif
-		for(size_t i=0; i<_engines.size(); i++)
-		{
-			_engines[i] = new EngineRepresentation(new IPCChannel(_memoryName, i), startSlaveProcess(i), this);
 
-			connect(_engines[i],			&EngineRepresentation::rCodeReturned,					Analyses::analyses(),	&Analyses::rCodeReturned												);
-			connect(_engines[i],			&EngineRepresentation::engineTerminated,				this,					&EngineSync::engineTerminated											);
-			connect(_engines[i],			&EngineRepresentation::processNewFilterResult,			this,					&EngineSync::processNewFilterResult										);
-			connect(_engines[i],			&EngineRepresentation::filterDone,						this,					&EngineSync::filterDone													);
-			connect(_engines[i],			&EngineRepresentation::processFilterErrorMsg,			this,					&EngineSync::processFilterErrorMsg										);
-			connect(_engines[i],			&EngineRepresentation::columnDataTypeChanged,			this,					&EngineSync::columnDataTypeChanged,				Qt::QueuedConnection	);
-			connect(_engines[i],			&EngineRepresentation::computeColumnSucceeded,			this,					&EngineSync::computeColumnSucceeded,			Qt::QueuedConnection	);
-			connect(_engines[i],			&EngineRepresentation::computeColumnFailed,				this,					&EngineSync::computeColumnFailed,				Qt::QueuedConnection	);
-			connect(_engines[i],			&EngineRepresentation::moduleLoadingFailed,				this,					&EngineSync::moduleLoadingFailedHandler									);
-			connect(_engines[i],			&EngineRepresentation::moduleLoadingSucceeded,			this,					&EngineSync::moduleLoadingSucceededHandler								);
-			connect(_engines[i],			&EngineRepresentation::moduleInstallationFailed,		this,					&EngineSync::moduleInstallationFailed									);
-			connect(_engines[i],			&EngineRepresentation::moduleInstallationSucceeded,		this,					&EngineSync::moduleInstallationSucceeded								);
-			connect(_engines[i],			&EngineRepresentation::moduleUnloadingFinished,			this,					&EngineSync::moduleUnloadingFinishedHandler								);
-			connect(_engines[i],			&EngineRepresentation::moduleUninstallingFinished,		this,					&EngineSync::moduleUninstallingFinished									);
-			connect(_engines[i],			&EngineRepresentation::logCfgReplyReceived,				this,					&EngineSync::logCfgReplyReceived										);
-			connect(_engines[i],			&EngineRepresentation::plotEditorRefresh,				this,					&EngineSync::plotEditorRefresh											);
-			connect(_engines[i],			&EngineRepresentation::requestEngineRestart,			this,					&EngineSync::restartEngineAfterCrash									);
-			connect(this,					&EngineSync::settingsChanged,							_engines[i],			&EngineRepresentation::settingsChanged									);
-			connect(Analyses::analyses(),	&Analyses::analysisRemoved,								_engines[i],			&EngineRepresentation::analysisRemoved									);
-		}
-	}
-	catch (interprocess_exception & e)
-	{
-		Log::log()  << "interprocess exception! " << e.what() <<  std::endl;
-		throw e;
-	}
+	for(size_t i=0; i<enginesWanted; i++)
+		createNewEngine();
+
 
 	QTimer	*timerProcess	= new QTimer(this),
 			*timerBeat		= new QTimer(this);
@@ -341,41 +357,23 @@ void EngineSync::processDynamicModules()
 
 void EngineSync::processAnalysisRequests()
 {	
-	const size_t initedAnalysesStartIndex =
-#ifndef JASP_DEBUG
-			1; // don't perform 'runs' on process 0, "only" inits & filters & rCode & columnComputes & moduleRequests.
-#else
-			0;
-#endif
-
 	for(auto engine : _engines)
 		engine->handleRunningAnalysisStatusChanges();
 
 	Analyses::analyses()->applyToSome([&](Analysis * analysis)
 	{
-		if (analysis == nullptr || analysis->isWaitingForModule())
-			return true;
-
-		bool canUseFirstEngine	= analysis->isEmpty()	|| analysis->isSaveImg() || analysis->isEditImg() || analysis->isRewriteImgs();
-		bool needsToRun			= canUseFirstEngine		|| analysis->isInited();
-
-		if(needsToRun)
+		if(analysis && analysis->shouldRun())
 		{
 			try
 			{
-				for (size_t i = canUseFirstEngine ? 0 : initedAnalysesStartIndex; i<_engines.size(); i++)
-				{
-					if (_engines[i]->idle())
+				for(auto engine : _engines)
+					if(engine->willProcessAnalysis(analysis))
 					{
-						_engines[i]->runAnalysisOnProcess(analysis);
-						break;
+						engine->runAnalysisOnProcess(analysis);
+						return true;
 					}
-				}
 			}
-			catch(...)
-			{
-				Log::log() << "Exception thrown in ProcessAnalysisRequests" << std::endl;
-			}
+			catch(...)	{ Log::log() << "Exception thrown in ProcessAnalysisRequests" << std::endl;	}
 		}
 
 		return true;
@@ -822,4 +820,26 @@ std::string	EngineSync::currentState() const
 		return "EngineSync::currentState() did not work...\n";
 	}
 
+}
+
+EngineRepresentation *	EngineSync::createRCmdEngine()
+{
+	EngineRepresentation * rCmdEngine = createNewEngine();
+
+	rCmdEngine->setRunsAnalysis(false);
+	rCmdEngine->setRunsUtility(	false);
+	rCmdEngine->setRunsRCmd(	true);
+
+	return rCmdEngine;
+}
+
+void EngineSync::destroyEngine(EngineRepresentation * engine)
+{
+	if(!engine) return;
+
+	for(int i = _engines.size() - 1; i>=0; i--)
+		if(_engines[i] == engine)
+			_engines.erase(_engines.begin() + i);
+
+	delete engine;
 }

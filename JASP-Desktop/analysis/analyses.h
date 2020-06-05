@@ -56,6 +56,7 @@ public:
 					idRole};
 
 						Analyses();
+						~Analyses() { _singleton = nullptr; }
 	static Analyses *	analyses() { return _singleton; }
 
 	Analysis	*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);

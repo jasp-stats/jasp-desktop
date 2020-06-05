@@ -1,6 +1,7 @@
 #include "jasptheme.h"
 #include "log.h"
 #include "utilities/qutils.h"
+#include <QFontDatabase>
 
 JaspTheme			*	JaspTheme::_currentTheme	= nullptr;
 QFont					JaspTheme::_jaspFont		= QFont("SansSerif");
@@ -27,6 +28,9 @@ JaspTheme::JaspTheme(QQuickItem * parent) : QQuickItem(parent)
 	setFontRibbon(_jaspFont);
 	setFontGroupTitle(_jaspFont);
 	setFontPrefOptionsGroupTitle(_jaspFont);
+
+	int id = QFontDatabase::addApplicationFont(":/fonts/FiraCode-Retina.ttf");
+	setFontConsole(QFont(QFontDatabase::applicationFontFamilies(id).at(0)));
 }
 
 JaspTheme::~JaspTheme()
@@ -1234,6 +1238,15 @@ void JaspTheme::setThemeName(QString themeName)
 
 	if(_currentTheme == this)
 		emit currentThemeNameChanged(_themeName);
+}
+
+void JaspTheme::setFontConsole(QFont fontConsole)
+{
+	if (_fontConsole == fontConsole)
+		return;
+
+	_fontConsole = fontConsole;
+	emit fontConsoleChanged(_fontConsole);
 }
 
 QString JaspTheme::currentIconPath()

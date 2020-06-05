@@ -21,15 +21,15 @@ void ActionButtons::loadButtonData(std::vector<ActionButtons::DataRow> &data)
 {
 	_data =
 	{
-		  {FileOperation::Open,				tr("Open"),				true,	{ResourceButtons::RecentFiles,	ResourceButtons::Computer,	ResourceButtons::DataLibrary, ResourceButtons::OSF }},
-		  {FileOperation::Save,				tr("Save"),				false,	{}																												},
-		  {FileOperation::SaveAs,			tr("Save As"),			false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
-		  {FileOperation::ExportResults,	tr("Export Results"),	false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
-		  {FileOperation::ExportData,		tr("Export Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF }																},
-		  {FileOperation::SyncData,			tr("Sync Data"),		false,	{ResourceButtons::CurrentFile, ResourceButtons::Computer, ResourceButtons::OSF }								},
-		  {FileOperation::Close,			tr("Close"),			false,	{}																												},
-		  {FileOperation::Preferences,		tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsUI, ResourceButtons::PrefsAdvanced}},
-		  {FileOperation::About,			tr("About"),			true,	{}																												}
+		{FileOperation::Open,			tr("Open"),				true,	{ResourceButtons::RecentFiles,	ResourceButtons::Computer,	ResourceButtons::DataLibrary, ResourceButtons::OSF }		},
+		{FileOperation::Save,			tr("Save"),				false,	{}																														},
+		{FileOperation::SaveAs,			tr("Save As"),			false,	{ResourceButtons::Computer, ResourceButtons::OSF }																		},
+		{FileOperation::ExportResults,	tr("Export Results"),	false,	{ResourceButtons::Computer, ResourceButtons::OSF }																		},
+		{FileOperation::ExportData,		tr("Export Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF }																		},
+		{FileOperation::SyncData,		tr("Sync Data"),		false,	{ResourceButtons::CurrentFile, ResourceButtons::Computer, ResourceButtons::OSF }										},
+		{FileOperation::Close,			tr("Close"),			false,	{}																														},
+		{FileOperation::Preferences,	tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsUI, ResourceButtons::PrefsAdvanced}	},
+		{FileOperation::About,			tr("About"),			true,	{}																														}
 	  };
 }
 
