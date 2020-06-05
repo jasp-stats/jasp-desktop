@@ -41,8 +41,8 @@ protected slots:
 	void modelChangedHandler() override;
 	
 private:
-	OptionsTable*				_boundTo;
-	ListModelLayersAssigned*	_layersModel;
+	OptionsTable*				_boundTo		= nullptr;
+	ListModelLayersAssigned*	_layersModel	= nullptr;
 	
 };
 

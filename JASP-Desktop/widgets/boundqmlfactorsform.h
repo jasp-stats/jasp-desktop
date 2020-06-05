@@ -46,11 +46,11 @@ protected slots:
 	void addListViewSlot(BoundQMLListViewTerms* listView);
 	
 private:
-	ListModelFactorsForm*	_factorsModel;
-	OptionsTable*			_boundTo;
+	ListModelFactorsForm*	_factorsModel				= nullptr;
+	OptionsTable*			_boundTo					= nullptr;
 	QString					_availableVariablesListName;
-	JASPControlBase*		_availableVariablesListItem;
-	int						_initNumberFactors;
+	JASPControlBase*		_availableVariablesListItem	= nullptr;
+	int						_initNumberFactors			= 1;
 };
 
 #endif // BOUNDQMLFACTORSFORM_H

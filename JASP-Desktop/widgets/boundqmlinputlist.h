@@ -42,8 +42,8 @@ protected slots:
 	void		modelChangedHandler()						override;
 
 private:
-	ListModelInputValue*		_inputModel;
-	OptionsTable*				_boundTo;
+	ListModelInputValue*		_inputModel			= nullptr;
+	OptionsTable*				_boundTo			= nullptr;
 	std::vector<std::string>	_defaultValues;
 	
 };

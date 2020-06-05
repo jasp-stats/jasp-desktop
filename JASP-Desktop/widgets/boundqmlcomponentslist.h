@@ -45,8 +45,8 @@ protected slots:
 	void		nameChangedHandler(int index, QString name);
 
 private:
-	ListModelTermsAssigned*		_termsModel;
-	OptionsTable*				_boundTo;
+	ListModelTermsAssigned*		_termsModel		= nullptr;
+	OptionsTable*				_boundTo		= nullptr;
 
 protected:
 	QString				_makeUnique(const QString& val, int index = -1);
