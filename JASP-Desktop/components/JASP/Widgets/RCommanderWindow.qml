@@ -81,16 +81,6 @@ Window
 				margins:	jaspTheme.generalAnchorMargin
 			}
 
-			LoadingIndicator
-			{
-				id:				runningIcon
-				visible:		rCmd.running
-				z:				2049
-				anchors.fill:	parent
-				opacity:		0.5
-			}
-
-
 			border.color:	jaspTheme.uiBorder
 			color:			jaspTheme.white
 			clip:			true
@@ -257,29 +247,12 @@ Window
 			}
 
 			JW.RectangularButton
-			 {
-				 id:		clearOutput
-				 text:		qsTr("Clear Output")
-				 onClicked:	rCmd.output = qsTr("Cleared...");
-				 width:		Math.max(clearOutput.implicitWidth, runButton.implicitWidth)
-
-				 anchors
-				 {
-					 top:			parent.top
-					 left:			parent.left
-					 bottom:		parent.verticalCenter
-					 margins:		jaspTheme.generalAnchorMargin
-					 bottomMargin:	jaspTheme.generalAnchorMargin * 0.5
-				 }
-			 }
-
-		   JW.RectangularButton
 			{
-			    id:			runButton
-				text:		qsTr("Run Code")
-				onClicked:	runCode();
-				width:		clearOutput.width
-				enabled:	codeEntry.text != "" && !rCmd.running
+				id:				runButton
+				text:				qsTr("Run Code")
+				onClicked:			runCode();
+				width:				clearOutput.width
+				enabled:			codeEntry.text != "" && !rCmd.running
 
 				toolTip:	qsTr("Pressing Ctrl+Enter or F5 will also run the code")
 
@@ -287,9 +260,44 @@ Window
 
 				anchors
 				{
+					top:			parent.top
+					left:			parent.left
+					bottom:		parent.verticalCenter
+					margins:		jaspTheme.generalAnchorMargin
+					bottomMargin:	jaspTheme.generalAnchorMargin * 0.5
+				}
+
+				Rectangle
+				{
+					visible:		rCmd.running
+					color:			runButton.color
+					border.color:	runButton.border.color
+					border.width:	runButton.border.width
+					anchors.fill:	parent
+
+					LoadingIndicator
+					{
+						id:				runningIcon
+						visible:		rCmd.running
+						z:				2049
+						anchors.fill:	parent
+						//opacity:		0.5
+					}
+				}
+			}
+
+			JW.RectangularButton
+			{
+				id:		clearOutput
+				text:		qsTr("Clear Output")
+				onClicked:	rCmd.output = qsTr("Cleared...");
+				width:		Math.max(clearOutput.implicitWidth, runButton.implicitWidth)
+
+				anchors
+				{
 					top:		parent.verticalCenter
 					left:		parent.left
-					bottom:		parent.bottom
+					bottom:	parent.bottom
 					margins:	jaspTheme.generalAnchorMargin
 					topMargin:	jaspTheme.generalAnchorMargin * 0.5
 				}

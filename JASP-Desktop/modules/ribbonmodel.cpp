@@ -61,7 +61,7 @@ void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule *
 
 void RibbonModel::addRibbonButtonRPrompt()
 {
-	addRibbonButtonModel(new RibbonButton(this, "R", fq(tr("R (beta)")), "Rlogo.svg", false, [&](){ emit showRCommander(); }));
+	addRibbonButtonModel(new RibbonButton(this, "R", fq(tr("R (Beta)")), "Rlogo.svg", false, [&](){ emit showRCommander(); }));
 }
 
 void RibbonModel::addRibbonButtonModelFromModulePath(QFileInfo modulePath, bool isCommon)
