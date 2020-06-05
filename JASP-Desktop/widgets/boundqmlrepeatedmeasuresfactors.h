@@ -42,8 +42,8 @@ protected slots:
 	void modelChangedHandler() override;
 	
 private:
-	ListModelRepeatedMeasuresFactors*	_factorsModel;
-	OptionsTable*						_boundTo;
+	ListModelRepeatedMeasuresFactors*	_factorsModel	= nullptr;
+	OptionsTable*						_boundTo		= nullptr;
 	
 };
 
