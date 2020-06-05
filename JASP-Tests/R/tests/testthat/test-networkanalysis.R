@@ -24,9 +24,10 @@ test_that("generalTB table results match", {
 test_that("centralityTB table results match", {
   table <- results[["results"]][["mainContainer"]][["collection"]][["mainContainer_centralityTable"]][["data"]]
   expect_equal_tables(table,
-                      list("contNormal", -0.577350269189626, -1.12003079401266, -1.14291478283658,
-                           "contcor1", 1.15470053837925, 0.803219560925303, 0.713968266021615,
-                           "contcor2", -0.577350269189626, 0.316811233087358, 0.428946516814968)
+                      list(-0.577350269189626, -1.12003079401266, -1.14291478283658, -1.14291478283658,
+                           "contNormal", 1.15470053837925, 0.803219560925303, 0.713968266021615,
+                           0.713968266021615, "contcor1", -0.577350269189626, 0.316811233087358,
+                           0.428946516814968, 0.428946516814968, "contcor2")
   )
 })
 

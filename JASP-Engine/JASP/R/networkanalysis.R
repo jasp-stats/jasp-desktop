@@ -210,9 +210,9 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (!is.null(options[["colorNodesByData"]]) && length(options[["colorNodesByData"]]) != length(options[["variables"]])) {
     tb$addFootnote(
       gettextf("Only the first %d values of %s were used to color nodes (%d provided). ",
-              length(options[["variables"]]),
-              as.character(options[["colorNodesBy"]]),
-              length(options[["colorNodesByData"]]))
+               length(options[["variables"]]),
+               as.character(options[["colorNodesBy"]]),
+               length(options[["colorNodesByData"]]))
     )
   }
 
@@ -234,8 +234,8 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
         text <- gettext("Minimum edge strength ignored in the network plot because it was larger than the absolute value of the strongest edge.")
       } else {
         text <- gettextf("Minimum edge strength ignored in the network plot of group%1$s %2$s because it was larger than the absolute value of the strongest edge.",
-                        ifelse(sum(ignored) == 2L, "s", ""),
-                        paste0(names(network[["network"]])[ignored], collapse = ", ")
+                         ifelse(sum(ignored) == 2L, "s", ""),
+                         paste0(names(network[["network"]])[ignored], collapse = ", ")
         )
       }
       tb$addFootnote(text, symbol = gettext("<em>Warning: </em>"))
@@ -270,10 +270,10 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     return()
 
   nGraphs <- max(1L, length(network[["network"]]))
-  table <- createJaspTable(gettext("Centrality measures per variable"), position = 2, 
+  table <- createJaspTable(gettext("Centrality measures per variable"), position = 2,
                            dependencies = c("tableCentrality", "normalizeCentrality", "maxEdgeStrength", "minEdgeStrength"))
   table$addColumnInfo(name = "Variable", title = gettext("Variable"), type = "string")
-  
+
   # shared titles
   overTitles <- names(network[["network"]])
   if (is.null(overTitles))
@@ -281,9 +281,10 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
   nameCol3 <- if ("Degree" %in% colnames(network[["centrality"]][[1]])[3]) "Degree" else "Strength"
   for (i in seq_len(nGraphs)) { # three centrality columns per network
-    table$addColumnInfo(name = paste0("Betweenness", i), title = gettext("Betweenness"), type = "number", overtitle = overTitles[i])
-    table$addColumnInfo(name = paste0("Closeness", i),   title = gettext("Closeness"),   type = "number", overtitle = overTitles[i])
-    table$addColumnInfo(name = paste0(nameCol3, i),      title = gettext("Strength"),    type = "number", overtitle = overTitles[i])
+    table$addColumnInfo(name = paste0("Betweenness", i),        title = gettext("Betweenness"),        type = "number", overtitle = overTitles[i])
+    table$addColumnInfo(name = paste0("Closeness", i),          title = gettext("Closeness"),          type = "number", overtitle = overTitles[i])
+    table$addColumnInfo(name = paste0(nameCol3, i),             title = gettext("Strength"),           type = "number", overtitle = overTitles[i])
+    table$addColumnInfo(name = paste0("Expected influence", i), title = gettext("Expected influence"), type = "number", overtitle = overTitles[i])
   }
 
   mainContainer[["centralityTable"]] <- table
@@ -295,7 +296,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   for (i in seq_len(nGraphs)) {
 
     toAdd <- network[["centrality"]][[i]]
-    names(toAdd) <- c("Variable", paste0(c("Betweenness", "Closeness", "Strength"), i))
+    names(toAdd) <- c("Variable", paste0(c("Betweenness", "Closeness", "Strength", "Expected influence"), i))
     if (i == 1L) {# if more than 1 network drop the first column which indicates the variable
       TBcolumns <- toAdd
     } else {
@@ -428,7 +429,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
   bootstrapType <- options[["BootstrapType"]]
   substr(bootstrapType, 1, 1) <- toupper(substr(bootstrapType, 1, 1)) # capitalize first letter
-  
+
   table <- createJaspTable(title = gettext("Bootstrap summary of Network"), position = position)
   table$addColumnInfo(name = "type",               title = gettext("Type"), type = "string")
   table$addColumnInfo(name = "numberOfBootstraps", title = gettext("Number of bootstraps"), type = "integer")
@@ -443,7 +444,8 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
   plotContainer <- mainContainer[["plotContainer"]]
   if (is.null(plotContainer)) {
-    plotContainer <- createJaspContainer(position = 5, dependencies = c("abbreviateLabels", "abbreviateNoChars"))
+    plotContainer <- createJaspContainer(position = 5, dependencies = c("abbreviateLabels", "abbreviateNoChars",
+                                                                        "showLegend", "showVariableNames"))
     mainContainer[["plotContainer"]] <- plotContainer
   }
 
@@ -457,49 +459,26 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (!is.null(plotContainer[["centralityPlot"]]) || !options[["plotCentrality"]])
     return()
 
-  plot <- createJaspPlot(title = gettext("Centrality Plot"), position = 52, dependencies = "plotCentrality")
+  measuresToShow <- unlist(options[c("Betweenness", "Closeness", "Degree", "ExpectedInfluence")], use.names = FALSE)
+  hasMeasures <- any(measuresToShow)
+
+  width <- if (hasMeasures) 120 * sum(measuresToShow) else 120
+  plot <- createJaspPlot(title = gettext("Centrality Plot"), position = 52, width = width,
+                         dependencies = c("plotCentrality", "Betweenness", "Closeness", "Degree", "ExpectedInfluence"))
   plotContainer[["centralityPlot"]] <- plot
-  if (is.null(network[["centrality"]]) || plotContainer$getError())
+  if (is.null(network[["centrality"]]) || plotContainer$getError() || !hasMeasures)
     return()
 
   wide <- network[["centrality"]]
-  wideDf <- Reduce(rbind, wide)
-  if (length(wide) > 1) {
-    wideDf[["type"]] <- rep(names(network[["centrality"]]), each = nrow(wideDf) / length(wide))
-    Long <- reshape2::melt(wideDf, id.vars = c("node", "type"))
-    colnames(Long)[3] <- "measure"
-    Long[["graph"]] <- Long[["type"]]
-    Long[["type"]] <- TRUE # options[["separateCentrality"]]
-  } else {
-    Long <- reshape2::melt(wideDf, id.vars = "node")
-    colnames(Long)[2] <- "measure"
-    Long[["graph"]] <- NA
+
+  Long <- .networkAnalysisReshapeWideToLong(wide, network, "centrality")
+
+  if (!all(measuresToShow)) {
+    measuresToFilter <- c("Betweenness", "Closeness", "Degree", "Expected Influence")[measuresToShow]
+    Long <- subset(Long, measure %in% measuresToFilter)
   }
 
-  if (options[["abbreviateLabels"]])
-    Long[["node"]] <- base::abbreviate(Long[["node"]], options[["abbreviateNoChars"]])
-
-  # code modified from qgraph::centralityPlot(). Type and graph are switched so the legend title says graph
-
-  Long <- Long[gtools::mixedorder(Long$node), ]
-  Long$node <- factor(as.character(Long$node), levels = unique(gtools::mixedsort(as.character(Long$node))))
-  if (length(unique(Long$graph)) > 1) {
-    g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = graph,
-                                            colour = graph)) +
-      ggplot2::guides(color = ggplot2::guide_legend(title = options[["groupingVariable"]])) # change the name graph into the variable name for splitting
-  } else {
-    g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = graph))
-  }
-  g <- g + ggplot2::geom_path() + ggplot2::xlab("") + ggplot2::ylab("") + ggplot2::geom_point()
-  if (length(unique(Long$type)) > 1) {
-    g <- g + ggplot2::facet_grid(type ~ measure, scales = "free")
-
-  } else {
-    g <- g + ggplot2::facet_grid(~measure, scales = "free")
-  }
-  g <- g + ggplot2::theme_bw()
-
-  plot$plotObject <- g
+  .networkAnalysisMakePlotFromLong(plot, Long, options)
 
 }
 
@@ -508,7 +487,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   if (!is.null(plotContainer[["clusteringPlot"]]) || !options[["plotClustering"]])
     return()
 
-  plot <- createJaspPlot(title = gettext("Clustering Plot"), position = 53, dependencies = "plotClustering")
+  plot <- createJaspPlot(title = gettext("Clustering Plot"), position = 53, dependencies = "plotClustering", width = 480)
   plotContainer[["clusteringPlot"]] <- plot
   if (is.null(network[["clustering"]]) || plotContainer$getError())
     return()
@@ -530,34 +509,69 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     }
   }
 
+  Long <- .networkAnalysisReshapeWideToLong(wide, network, "clustering")
+  .networkAnalysisMakePlotFromLong(plot, Long, options)
+
+}
+
+.networkAnalysisReshapeWideToLong <- function(wide, network, what = c("centrality", "clustering")) {
+
+  what <- match.arg(what)
   wideDf <- Reduce(rbind, wide)
-  if (length(wide) > 1) {
-    wideDf[["type"]] <- rep(names(network[["clustering"]]), each = nrow(wideDf) / length(wide))
+  if (length(wide) > 1L) {
+    wideDf[["type"]] <- rep(names(network[[what]]), each = nrow(wideDf) / length(wide))
     Long <- reshape2::melt(wideDf, id.vars = c("node", "type"))
-    colnames(Long)[3] <- "measure"
+    colnames(Long)[3L] <- "measure"
     Long[["graph"]] <- Long[["type"]]
     Long[["type"]] <- TRUE # options[["separateCentrality"]]
   } else {
     Long <- reshape2::melt(wideDf, id.vars = "node")
-    colnames(Long)[2] <- "measure"
+    colnames(Long)[2L] <- "measure"
     Long[["graph"]] <- NA
   }
+  return(Long)
 
+}
+
+.networkAnalysisMakePlotFromLong <- function(jaspPlot, Long, options) {
+
+  # "Long" is how qgraph refers to this object. This function transforms the
+  # long object for centrality or clustering into a ggplot.
+
+  # code modified from qgraph::centralityPlot(). Type and graph are switched so the legend title says graph
   if (options[["abbreviateLabels"]])
     Long[["node"]] <- base::abbreviate(Long[["node"]], options[["abbreviateNoChars"]])
 
   # code modified from qgraph::centralityPlot(). Type and graph are switched so the legend title says graph
   Long <- Long[gtools::mixedorder(Long$node), ]
   Long$node <- factor(as.character(Long$node), levels = unique(gtools::mixedsort(as.character(Long$node))))
-  # travis will complain otherwise
-  if (length(unique(Long$graph)) > 1) {
-    g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = graph,
-                                            colour = graph)) +
-      ggplot2::guides(color = ggplot2::guide_legend(title = options[["groupingVariable"]])) # change the name graph into the variable name for splitting
-  } else {
-    g <- ggplot2::ggplot(Long, ggplot2::aes(x = value, y = node, group = graph))
+
+  Long$nodeLabel <- NA
+  if (options[["showVariableNames"]] == "In legend") {
+    Long$nodeLabel <- as.character(Long$node)
+    Long$node <- factor(match(as.character(Long$node), unique(as.character(Long$node))))
+    levels(Long$node) <- rev(levels(Long$node))
+    Long$nodeLabel <- paste(as.character(Long$node), "=", Long$nodeLabel)
   }
-  g <- g + ggplot2::geom_path() + ggplot2::xlab("") + ggplot2::ylab("") + ggplot2::geom_point()
+
+  if (length(unique(Long$graph)) > 1L) {
+    mapping <- ggplot2::aes(x = value, y = node, group = graph, colour = graph)
+    guide   <- ggplot2::guides(color = ggplot2::guide_legend(title = options[["groupingVariable"]])) # change the name graph into the variable name for splitting
+  } else {
+    mapping <- ggplot2::aes(x = value, y = node, group = graph)
+    guide   <- NULL
+  }
+
+  # add a fill element to the mapping -- this is only used to add a legend for the names of the nodes.
+  hasNodeLabels <- !all(is.na(Long[["nodeLabel"]]))
+  if (hasNodeLabels)
+    mapping$fill <- as.name("nodeLabel")
+
+  g <- ggplot2::ggplot(Long, mapping) + guide
+
+  g <- g + ggplot2::geom_path() + ggplot2::geom_point() +
+    ggplot2::labs(x = NULL, y = NULL, fill = NULL)
+
   if (length(unique(Long$type)) > 1) {
     g <- g + ggplot2::facet_grid(type ~ measure, scales = "free")
 
@@ -566,9 +580,20 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   }
   g <- g + ggplot2::theme_bw()
 
-  plot$plotObject <- g
+  if (options[["showLegend"]] == "No legend")
+    g <- g + ggplot2::theme(legend.position = "none")
+  else if (hasNodeLabels) {
+    # the fill aestethic introduces a set of points left of `1 = contNormal`.
+    # the statement below sets the size of those points to 0, effectively making them invisible
+    # keywidth removes the invisible space introduced so that the legends nicely line up (if there are multiple)
+    g <- g + ggplot2::guides(fill = ggplot2::guide_legend(keywidth = 0, override.aes = list(size = 0, alpha = 0)))
+  }
+
+  jaspPlot$plotObject <- g
+
 
 }
+
 
 .networkAnalysisOneNetworkPlot <- function(network, options, minE, layout, groups, maxE, labels, legend, shape,
                                            nodeColor, edgeColor, nodeNames) {
@@ -585,27 +610,30 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
   return(
     qgraph::qgraph(
-      input       = wMat,
-      layout      = layout,
-      groups      = groups,
-      repulsion   = options[["repulsion"]],
-      cut         = options[["cut"]],
-      edge.width  = options[["edgeSize"]],
-      node.width  = options[["nodeSize"]],
-      maximum     = maxE,
-      minimum     = minE,
-      details     = options[["showDetails"]],
-      labels      = labels,
-      palette     = if (options[["manualColors"]]) NULL else options[["nodePalette"]],
-      theme       = options[["edgeColors"]],
-      legend      = legend,
-      shape       = shape,
-      color       = nodeColor,
-      edge.color  = edgeColor,
-      nodeNames   = nodeNames,
-      label.scale = options[["scaleLabels"]],
-      label.cex   = options[["labelSize"]],
-      GLratio     = 1 / options[["legendToPlotRatio"]]
+      input               = wMat,
+      layout              = layout,
+      groups              = groups,
+      repulsion           = options[["repulsion"]],
+      cut                 = options[["cut"]],
+      edge.width          = options[["edgeSize"]],
+      node.width          = options[["nodeSize"]],
+      maximum             = maxE,
+      minimum             = minE,
+      details             = options[["showDetails"]],
+      labels              = labels,
+      palette             = if (options[["manualColors"]]) NULL else options[["nodePalette"]],
+      theme               = options[["edgeColors"]],
+      legend              = legend,
+      shape               = shape,
+      color               = nodeColor,
+      edge.color          = edgeColor,
+      nodeNames           = nodeNames,
+      label.scale         = options[["scaleLabels"]],
+      label.cex           = options[["labelSize"]],
+      GLratio             = 1 / options[["legendToPlotRatio"]],
+      edge.labels         = options[["edgeLabels"]],
+      edge.label.cex      = options[["edgeLabelCex"]],
+      edge.label.position = options[["edgeLabelPosition"]]
     ))
 }
 
@@ -624,11 +652,11 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   networkPlotContainer <- createJaspContainer(title = title, position = 51, dependencies = c(
     "layout", "edgeColors", "repulsion", "edgeSize", "nodeSize", "colorNodesBy",
     "maxEdgeStrength", "minEdgeStrength", "cut", "showDetails", "nodePalette",
-    "showLegend", "legendNumber", "showMgmVariableType", "showVariableNames",
+    "legendNumber", "showMgmVariableType",
     "scaleLabels", "labelSize", "abbreviateLabels", "abbreviateNoChars",
     "keepLayoutTheSame", "layoutX", "layoutY", "plotNetwork",
     "groupNames", "groupColors", "variablesForColor", "groupAssigned", "manualColors",
-    "legendToPlotRatio"
+    "legendToPlotRatio", "edgeLabels", "edgeLabelCex", "edgeLabelPosition"
   ))
   plotContainer[["networkPlotContainer"]] <- networkPlotContainer
 
@@ -667,8 +695,11 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
       for (i in seq_len(nGroups))
         groups[[i]] <- which(idx == i)
 
+      nonEmpty <- lengths(groups) > 0L
+      groups <- groups[nonEmpty]
+
       if (options[["manualColors"]])
-        nodeColor <- groupNames[idx, 2L]
+        nodeColor <- groupNames[nonEmpty, 2L]
     }
   }
 
@@ -735,9 +766,9 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   height <- setNames(rep(basePlotSize, nGraphs), names(allLegends))
   width  <- basePlotSize + allLegends * legendMultiplier
   for (v in names(allNetworks))
-      networkPlotContainer[[v]] <- createJaspPlot(title = v, width = width[v], height = height[v])
+    networkPlotContainer[[v]] <- createJaspPlot(title = v, width = width[v], height = height[v])
 
-  .suppressGrDevice({
+  JASP:::.suppressGrDevice({
 
     for (v in names(allNetworks)) {
 
@@ -793,7 +824,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   for (v in names(bootstrapResults)) {
 
     bt <- bootstrapResults[[v]]
-    p <- try(.suppressGrDevice(plot(bt, statistic = statistic, order = "sample")))
+    p <- try(JASP:::.suppressGrDevice(plot(bt, statistic = statistic, order = "sample")))
 
     if (isTryError(p)) {
       plotContainer[[v]]$setError(gettextf("bootnet crashed with the following error message:\n%s", .extractErrorMessage(p)))
@@ -993,7 +1024,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   # for every dataset do the analysis
   for (nw in seq_along(dataset)) {
 
-    .suppressGrDevice(
+    JASP:::.suppressGrDevice(
       msg <- capture.output(
         network <- bootnet::estimateNetwork(
           data    = dataset[[nw]],
@@ -1019,7 +1050,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     cent <- qgraph::centrality(network[["graph"]], weighted = weightedNetwork, signed = signedNetwork, all.shortest.paths = FALSE)
 
     # note: centrality table is (partially) calculated here so that centralityTable and centralityPlot don't compute the same twice.
-    TBcent <- as.data.frame(cent[c("Betweenness", "Closeness", "InDegree", "OutDegree")])
+    TBcent <- as.data.frame(cent[c("Betweenness", "Closeness", "InDegree", "OutDegree", "InExpectedInfluence", "OutExpectedInfluence")])
 
     # adapted from qgraph::centrality_auto
     wmat <- qgraph::getWmat(network$graph)
@@ -1048,7 +1079,9 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
       # divide betweenness by 2
       TBcent[, 1] <- TBcent[, 1] / 2
-      TBcent <- TBcent[c(1:2, 4)]
+      # remove OutDegree and OutExpectedInfluence, since the network is undirected these are equal
+      TBcent <- TBcent[-c(3, 5)]
+      colnames(TBcent)[4L] <- "Expected Influence"
 
       if (weightedGraph) {
 
@@ -1158,7 +1191,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     if (layout == "data")
       layout <- "circle"
 
-    .suppressGrDevice(layout <- qgraph::averageLayout(networks, layout = layout, repulsion = options[["repulsion"]]))
+    JASP:::.suppressGrDevice(layout <- qgraph::averageLayout(networks, layout = layout, repulsion = options[["repulsion"]]))
     rownames(layout) <- .unv(colnames(networks[[1L]]))
 
   } else {
@@ -1251,7 +1284,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
   startProgressbar(noTicks * 2L, "Bootstrapping network")
   tryCatch({
-    .suppressGrDevice({
+    JASP:::.suppressGrDevice({
       for (nm in names(allNetworks)) {
 
         # .networkAnalysisBootnetBootnet replaces bootnet::bootnet so we can have a progress bar
@@ -1399,9 +1432,9 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
   if (checks[["errors"]][["fatal"]]) {
     message <- paste0(gettextf("Data supplied in %s cannot be used to determine variables types. Data should: ", options[["mgmVariableType"]]),
-                       gettext("<ul><li>start with the column name of the variable.</ul></li>"),
-                       gettext("<ul><li>contain an '=' to distinguish between column name and data type.</ul></li>"),
-                       gettext("<ul><li>end with either 'g' for Gaussian, 'c' for categorical, or 'p' for Poisson.</ul></li>")
+                      gettext("<ul><li>start with the column name of the variable.</ul></li>"),
+                      gettext("<ul><li>contain an '=' to distinguish between column name and data type.</ul></li>"),
+                      gettext("<ul><li>end with either 'g' for Gaussian, 'c' for categorical, or 'p' for Poisson.</ul></li>")
     )
     .quitAnalysis(message)
   }
@@ -1437,7 +1470,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     message <- gettextf("%1$s %2$s Data should only contain numeric:
                  -start with the column name of the variable.
                  -contain an '=' to distinguish between column name and coordinate.",
-                       defMsg, firstLine)
+                        defMsg, firstLine)
   } else if (length(checksX[["unmatched"]]) > 0 || length(checksY[["unmatched"]]) > 0) {
 
     unmatchedX <- paste(checksX[["unmatched"]], collapse = ", ")
@@ -1445,7 +1478,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
     message <- defMsg
     if (unmatchedX != "")
       message <- sprintf(ngettext(length(checksX[["unmatched"]]), "%1$s X-Coordinates for variable %2$s was not understood.", "%1$s X-Coordinates for variables %2$s were not understood."), message, unmatchedX)
-    
+
     if (unmatchedY != "")
       message <- sprintf(ngettext(length(checksY[["unmatched"]]), "%1$s Y-Coordinates for variable %2$s was not understood.", "%1$s Y-Coordinates for variables %2$s were not understood."), message, unmatchedY)
   }
@@ -1473,7 +1506,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
   message <- NULL
   if (checks[["errors"]][["fatal"]]) {
     message <- gettextf("Data supplied in %s could not be used to determine variables types. Data should: \n- Start with the column name of the variable. \n- Contain an '=' to distinghuish betweem column name and group.",
-                       options[["colorNodesBy"]])
+                        options[["colorNodesBy"]])
     return(list(newData = NULL, message = message))
   }
 
@@ -1488,7 +1521,7 @@ NetworkAnalysis <- function(jaspResults, dataset, options) {
 
     newData <- rbind(newData, cbind(checks[["unmatched"]], undefGroup))
     message <- gettextf("Some entries of %1$s were not understood. These are now grouped under '%2$s'.",
-                       options[["colorNodesBy"]], undefGroup)
+                        options[["colorNodesBy"]], undefGroup)
   }
   newData <- newData[match(variables, newData[, 1]), ]
   return(list(newData = newData[, 2], message = message))
