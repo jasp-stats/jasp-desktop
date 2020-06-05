@@ -162,7 +162,7 @@ void ListModelJAGSDataInput::initValues(OptionsTable * bindHere)
 
 	//No need to check colnames to cols in values because they are created during the same loop and thus crash if non-matching somehow
 	if (_values.size() > 0 && int(_values[0].size()) != _rowNames.size())
-		addControlError(tr("Number of rows specifed in Options for ListModelJAGSDataInput does not match number of rows in values!"));
+		Log::log() << "Number of rows specifed in Options for ListModelJAGSDataInput does not match number of rows in values!" << std::endl;
 
 
 	beginResetModel();

@@ -883,11 +883,6 @@ msgctxt "ContrastsList|"
 msgid "Factors"
 msgstr ""
 
-#, qt-format
-msgctxt "ContrastsList|"
-msgid "Custom contrast for %1"
-msgstr ""
-
 msgctxt "BreadCrumbs|"
 msgid "You are here"
 msgstr ""
@@ -15503,10 +15498,6 @@ msgctxt "auditSelection|"
 msgid "Range"
 msgstr ""
 
-msgctxt "auditSelection|"
-msgid "<b>Download Sample</b>"
-msgstr ""
-
 msgctxt "TTestBayesianOneSample|"
 msgid "Tests"
 msgstr ""
@@ -15559,41 +15550,6 @@ msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
 msgstr ""
 
-msgctxt "CSVImporter|"
-msgid "Loading Data Set"
-msgstr ""
-
-msgctxt "JASPImporter|"
-msgid "Loading Data Set Description"
-msgstr ""
-
-msgctxt "JASPImporter|"
-msgid "Loading Data Set"
-msgstr ""
-
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Add Contrast"
-msgstr ""
-
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Delete Contrast"
-msgstr ""
-
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Reset"
-msgstr ""
-
-#, qt-format
-msgctxt "ListModelMarginalMeansContrasts|"
-msgid "Contrast %1"
-msgstr ""
-
-msgctxt "ListModelMarginalMeansContrasts|"
-msgid ""
-"Number of rows specifed in Options for ListModelMarginalMeansContrasts does "
-"not match number of rows in values!"
-msgstr ""
-
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
 msgstr ""
@@ -15638,13 +15594,126 @@ msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
 msgstr ""
 
-msgctxt "Importer|"
-msgid "Loading Data Set"
-msgstr ""
-
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
+msgstr ""
+
+msgctxt "ComponentsList|"
+msgid "Add a row"
+msgstr ""
+
+msgctxt "ComponentsList|"
+msgid "Remove a row"
+msgstr ""
+
+msgctxt "FileSelector|"
+msgid "Save file to:"
+msgstr ""
+
+msgctxt "FileSelector|"
+msgid "Load file from:"
+msgstr ""
+
+msgctxt "FileSelector|"
+msgid "Select file to save"
+msgstr ""
+
+msgctxt "FileSelector|"
+msgid "Select file to load"
+msgstr ""
+
+msgctxt "FileSelector|"
+msgid "Browse"
+msgstr ""
+
+msgctxt "TabView|"
+msgid "Add a tab"
+msgstr ""
+
+msgctxt "TabView|"
+msgid "Remove this tab"
+msgstr ""
+
+msgctxt "TabView|"
+msgid "New tab"
+msgstr ""
+
+#, qt-format
+msgctxt "ContrastsList|"
+msgid "Custom for %1"
+msgstr ""
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditClassicalWorkflow|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "Starting point"
+msgstr ""
+
+msgctxt "auditSelection|"
+msgid "<b>Download Report</b>"
+msgstr ""
+
+#, qt-format
+msgctxt "FileEvent|"
+msgid "Importing Data from %1"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Importing SPSS File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Importing SAS File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Importing STATA File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Loading JASP File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Loading File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Saving JASP File"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Exporting Results"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Exporting Data"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Synchronizing Data"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Processing File"
+msgstr ""
+
+#, qt-format
+msgctxt "ListModelCustomContrasts|"
+msgid "Contrast %1"
+msgstr ""
+
+msgctxt "ListModelCustomContrasts|"
+msgid ""
+"Number of rows specifed in Options for ListModelCustumContrasts does not "
+"match number of rows in values!"
 msgstr ""
 
 msgctxt "auditBayesianWorkflow|"

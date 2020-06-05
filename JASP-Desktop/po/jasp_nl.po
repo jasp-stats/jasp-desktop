@@ -897,11 +897,6 @@ msgctxt "ContrastsList|"
 msgid "Factors"
 msgstr "Factoren"
 
-#, qt-format
-msgctxt "ContrastsList|"
-msgid "Custom contrast for %1"
-msgstr "Aangepast contrast voor %1"
-
 msgctxt "BreadCrumbs|"
 msgid "You are here"
 msgstr "U bent hier"
@@ -15788,10 +15783,6 @@ msgctxt "auditSelection|"
 msgid "Range"
 msgstr "Bereik"
 
-msgctxt "auditSelection|"
-msgid "<b>Download Sample</b>"
-msgstr "<b>Download Steekproef</b>"
-
 msgctxt "TTestBayesianOneSample|"
 msgid "Tests"
 msgstr "Toetsen"
@@ -15844,43 +15835,6 @@ msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
 msgstr "Synchroniseren van Gegevens"
 
-msgctxt "CSVImporter|"
-msgid "Loading Data Set"
-msgstr "Laden van Gegevens"
-
-msgctxt "JASPImporter|"
-msgid "Loading Data Set Description"
-msgstr "Laden van Beschrijving Gegevens"
-
-msgctxt "JASPImporter|"
-msgid "Loading Data Set"
-msgstr "Laden van Gegevens"
-
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Add Contrast"
-msgstr "Voeg contrast toe"
-
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Delete Contrast"
-msgstr "Verwijder contrast"
-
-msgctxt "MarginalMeansContrastsTableView|"
-msgid "Reset"
-msgstr "Herstel"
-
-#, qt-format
-msgctxt "ListModelMarginalMeansContrasts|"
-msgid "Contrast %1"
-msgstr "Contrast %1"
-
-msgctxt "ListModelMarginalMeansContrasts|"
-msgid ""
-"Number of rows specifed in Options for ListModelMarginalMeansContrasts does "
-"not match number of rows in values!"
-msgstr ""
-"Aantal rijen gespecificeerd in Opties voor ListModelMarginalMeansContrasts "
-"komt niet overeen met aantal rijen in waarden!"
-
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
 msgstr "Initialiseren van upload van "
@@ -15925,14 +15879,129 @@ msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
 msgstr " gaande"
 
-msgctxt "Importer|"
-msgid "Loading Data Set"
-msgstr "Laden van Gegevens"
-
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
 msgstr "%1 %2 faalde omdat %3"
+
+msgctxt "ComponentsList|"
+msgid "Add a row"
+msgstr "Voeg een rij toe"
+
+msgctxt "ComponentsList|"
+msgid "Remove a row"
+msgstr "Verwijder een rij"
+
+msgctxt "FileSelector|"
+msgid "Save file to:"
+msgstr "Schrijf bestand naar:"
+
+msgctxt "FileSelector|"
+msgid "Load file from:"
+msgstr "Laad bestand van:"
+
+msgctxt "FileSelector|"
+msgid "Select file to save"
+msgstr "Selecteer bestand om op te slaan"
+
+msgctxt "FileSelector|"
+msgid "Select file to load"
+msgstr "Selecteer bestand om te laden"
+
+msgctxt "FileSelector|"
+msgid "Browse"
+msgstr "Blader"
+
+msgctxt "TabView|"
+msgid "Add a tab"
+msgstr "Voeg tab toe"
+
+msgctxt "TabView|"
+msgid "Remove this tab"
+msgstr "Verwijder deze tab"
+
+msgctxt "TabView|"
+msgid "New tab"
+msgstr "Nieuwe tab"
+
+#, qt-format
+msgctxt "ContrastsList|"
+msgid "Custom for %1"
+msgstr "Aangepast voor %1"
+
+msgctxt "auditBayesianWorkflow|"
+msgid "Starting point"
+msgstr "Startpunt"
+
+msgctxt "auditClassicalWorkflow|"
+msgid "Starting point"
+msgstr "Startpunt"
+
+msgctxt "auditSelection|"
+msgid "Starting point"
+msgstr "Startpunt"
+
+msgctxt "auditSelection|"
+msgid "<b>Download Report</b>"
+msgstr "<b>Download Verslag</b>"
+
+#, qt-format
+msgctxt "FileEvent|"
+msgid "Importing Data from %1"
+msgstr "Importeren van Gegevens van %1"
+
+msgctxt "FileEvent|"
+msgid "Importing SPSS File"
+msgstr "Importeren van SPSS Bestand"
+
+msgctxt "FileEvent|"
+msgid "Importing SAS File"
+msgstr "Importeren van SAS Bestand"
+
+msgctxt "FileEvent|"
+msgid "Importing STATA File"
+msgstr "Importeren van STATA Bestand"
+
+msgctxt "FileEvent|"
+msgid "Loading JASP File"
+msgstr "Laden van JASP Bestand"
+
+msgctxt "FileEvent|"
+msgid "Loading File"
+msgstr "Laden Bestand"
+
+msgctxt "FileEvent|"
+msgid "Saving JASP File"
+msgstr "Opslaan van JASP Bestand"
+
+msgctxt "FileEvent|"
+msgid "Exporting Results"
+msgstr "Exporteren van Resultaten"
+
+msgctxt "FileEvent|"
+msgid "Exporting Data"
+msgstr "Exporteren van Gegevens"
+
+msgctxt "FileEvent|"
+msgid "Synchronizing Data"
+msgstr "Synchroniseren van Gegevens"
+
+msgctxt "FileEvent|"
+msgid "Processing File"
+msgstr "Verwerken van Bestand"
+
+#, qt-format
+msgctxt "ListModelCustomContrasts|"
+msgid "Contrast %1"
+msgstr "Contrast %1"
+
+msgctxt "ListModelCustomContrasts|"
+msgid ""
+"Number of rows specifed in Options for ListModelCustumContrasts does not "
+"match number of rows in values!"
+msgstr ""
+"Aantal rijen gespecificeerd in Opties voor ListModelCustumContrasts komt "
+"niet overeen met aantal rijen in waarden!"
 
 msgctxt "auditBayesianWorkflow|"
 msgid ""
