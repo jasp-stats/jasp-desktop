@@ -1,38 +1,45 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2020-06-07 05:41+0000\n"
+"Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
+"Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/jasp/"
+"jasp-desktop/nb_NO/>\n"
 "Language: nb_NO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.1-dev\n"
 "X-Qt-Contexts: true\n"
 
+#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
-msgstr ""
+msgstr "Stilig gruppering av elementer"
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
-msgstr ""
+msgstr "Du kan skrive inn et heltall her: "
 
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
-msgstr ""
+msgstr "Dette er et nyttig verktøytips, eller?"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
-msgstr ""
+msgstr "Den første avkryssingsboksen"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
-msgstr ""
+msgstr "Den andre avkryssingsboksen"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
-msgstr ""
+msgstr "Den siste avkryssingsboksen"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
-msgstr ""
+msgstr "Variabler"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
