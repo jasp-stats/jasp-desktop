@@ -58,6 +58,20 @@
 			"icon":								"audit-estimation.svg"
 		},
 		{
+			"title":							"Evaluation",
+			"function":						"auditClassicalEvaluation",
+			"requiresData":				false
+		},
+		{
+			"title":							"Bayesian Evaluation",
+			"function":						"auditBayesianEvaluation",
+			"requiresData":				false
+		},
+		{
+			"title":    					"Other",
+			"icon":								"audit-other.svg"
+		},
+		{
 			"title":							"Benford's Law",
 			"function":						"auditClassicalBenfordsLaw",
 			"requiresData":				true

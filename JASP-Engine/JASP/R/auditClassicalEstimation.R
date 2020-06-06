@@ -66,18 +66,6 @@ auditClassicalEstimation <- function(jaspResults, dataset, options, ...){
                                   position = 4)
 
   # ---
-  
-  # --- BADGES
-  
-  # Provide the analysis badges
-  .auditBadgeSection(options,
-                     type = "estimation",
-                     stateContainer = NULL,
-                     jaspResults, 
-                     ready, 
-                     position = 6)
-
-  # ---
 }
 
 .auditReadDataEstimation <- function(dataset, 

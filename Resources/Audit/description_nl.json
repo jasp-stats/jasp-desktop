@@ -58,6 +58,20 @@
 			"icon":								"audit-estimation.svg"
 		},
 		{
+			"title":							"Evaluatie",
+			"function":						"auditClassicalEvaluation",
+			"requiresData":				false
+		},
+		{
+			"title":							"Bayesiaanse Evaluatie",
+			"function":						"auditBayesianEvaluation",
+			"requiresData":				false
+		},
+		{
+			"title":    					"Overig",
+			"icon":								"audit-other.svg"
+		},
+		{
 			"title":							"Wet van Benford",
 			"function":						"auditClassicalBenfordsLaw",
 			"requiresData":				true

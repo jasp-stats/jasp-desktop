@@ -41,8 +41,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
   # --- TABLES
 
-  # Create a state to keep track of table numbers
-  .auditCreateTableNumber(jaspResults)
+  .auditCreateTableNumber(jaspResults) # Initialize table numbers
   
   # Create the goodness-of-fit table
   .auditClassicalBenfordsLawTestTable(dataset, 
@@ -64,7 +63,7 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
 
   # --- PLOTS
 
-  .auditCreateFigureNumber(jaspResults)
+  .auditCreateFigureNumber(jaspResults) # Initialize figure numbers
   
   # Create the observed and predicted probabilities plot
   .benfordsLawPlot(dataset, 
@@ -82,16 +81,6 @@ auditClassicalBenfordsLaw <- function(jaspResults, dataset, options, ...){
                                        jaspResults,
                                        ready,
                                        position = 3)
-  
-  # --- BADGES
-
-  # Provide the analysis badges
-  .auditBadgeSection(options,
-                     type = "benfordsLaw",
-                     stateContainer = benfordsLawContainer,
-                     jaspResults, 
-                     ready, 
-                     position = 4)
 
   # ---
 }

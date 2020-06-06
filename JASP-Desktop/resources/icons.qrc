@@ -239,5 +239,6 @@
         <file>icons/equivalence-module.svg</file>
         <file>icons/audit-selection.svg</file>
         <file>icons/Rlogo.svg</file>
+        <file>icons/audit-other.svg</file>
     </qresource>
 </RCC>

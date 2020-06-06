@@ -18,9 +18,9 @@
 # When making changes to this file always mention @koenderks as a 
 # reviewer in the Pull Request
 
-auditClassicalPlanning <- function(jaspResults, dataset, options, ...){
+auditClassicalEvaluation <- function(jaspResults, dataset, options, ...){
 
-  # For the planning constituents, see auditCommonFunctions.R
-  .auditPlanningStage(options, jaspResults, type = "frequentist", workflow = FALSE)
+  # For the evaluation constituents, see auditCommonFunctions.R
+  .auditEvaluationStage(options, jaspResults, type = "frequentist", workflow = FALSE)
   
 }

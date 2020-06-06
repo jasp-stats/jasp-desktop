@@ -30,6 +30,9 @@ Form
 	usesJaspResults: 	true
 	columns: 			1
 
+	// Extra options
+	CheckBox { name: "useSumStats"; checked: false; visible: false}
+
 	// --------------------------------------------------------------------------------------------------------------------------------------------
 	// ---------------------------------------------------  PLANNING  -----------------------------------------------------------------------------
 	// --------------------------------------------------------------------------------------------------------------------------------------------
@@ -251,14 +254,6 @@ Form
 							helpPage:			"Audit/explanatoryText"
 							toolTip: 			qsTr("Show explanatory text at each step of the analysis")
 						}
-					}
-
-					CheckBox
-					{
-						text:	 		qsTr("Report badges")
-						name: 		"reportBadges"
-						checked: 	false
-						visible: 	false
 					}
 				}
 
