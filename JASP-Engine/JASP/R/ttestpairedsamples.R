@@ -49,9 +49,9 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   ttest$showSpecifiedColumnsOnly <- TRUE
   ttest$position <- 1
   
-  ttest$addColumnInfo(name = "v1", type = "string", title = "")
-  ttest$addColumnInfo(name = "sep",  type = "separator", title = "")
-  ttest$addColumnInfo(name = "v2", type = "string", title = "")
+  ttest$addColumnInfo(name = "v1",  type = "string",    title = "Measure 1")
+  ttest$addColumnInfo(name = "sep", type = "separator", title = "")
+  ttest$addColumnInfo(name = "v2",  type = "string",    title = "Measure 2")
   
   if (optionsList$wantsWilcox && optionsList$onlyTest) {
     ttest$addFootnote(gettext("Wilcoxon signed-rank test."))
@@ -114,7 +114,12 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   
   if (options$hypothesis == "groupOneGreater" || options$hypothesis == "groupTwoGreater") {
     directionNote <- ifelse(options$hypothesis == "groupTwoGreater", gettext("less"), gettext("greater"))
-    ttest$addFootnote(gettextf("For all tests, the alternative hypothesis specifies that measurement one is %s than measurement two.", directionNote))
+    idx <- .ttestPairedGetIndexOfFirstNonEmptyPair(options[["pairs"]])
+    if (idx != 0L)
+      ttest$addFootnote(gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is %s than Measure 2. For example, %2s is %3s than %4s.",
+                                 directionNote, options$pairs[[idx]][[1L]], directionNote, options$pairs[[idx]][[2L]]))
+    else
+      ttest$addFootnote(gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is %s than Measure 2.", directionNote))
   }
   
   jaspResults[["ttest"]] <- ttest
@@ -459,4 +464,9 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   return(p)
 }
 
-
+.ttestPairedGetIndexOfFirstNonEmptyPair <- function(pairs) {
+  for (i in seq_along(pairs))
+    if (pairs[[i]][1L] != "" && pairs[[i]][[2L]] != "")
+      return(i)
+  return(0L)
+}
