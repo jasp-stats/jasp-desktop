@@ -30,8 +30,6 @@
 #include "log.h"
 #include "rowcontrols.h"
 
-using namespace std;
-
 BoundQMLListViewTerms::BoundQMLListViewTerms(JASPControlBase* item, bool interaction)
 	: JASPControlWrapper(item)
 	, BoundQMLListViewDraggable(item)
@@ -40,11 +38,12 @@ BoundQMLListViewTerms::BoundQMLListViewTerms(JASPControlBase* item, bool interac
 	_optionVariables = nullptr;
 	_maxRows = getItemProperty("maxRows").toInt();
 	_columns = getItemProperty("columns").toInt();
-	bool interactionContainLowerTerms = getItemProperty("interactionContainLowerTerms").toBool();
-	_interactionHighOrderCheckBoxName = getItemProperty("interactionHighOrderCheckBox").toString();
+	bool interactionContainLowerTerms	= getItemProperty("interactionContainLowerTerms").toBool();
+	_interactionHighOrderCheckBoxName	= getItemProperty("interactionHighOrderCheckBox").toString();
+	bool addInteractionsByDefault		= getItemProperty("addInteractionsByDefault").toBool();
 		
 	if (interaction)
-		_termsModel = new ListModelInteractionAssigned(this, interactionContainLowerTerms);
+		_termsModel = new ListModelInteractionAssigned(this, interactionContainLowerTerms, addInteractionsByDefault);
 	else if (_columns > 1)
 		_termsModel = new ListModelMultiTermsAssigned(this, _columns);
 	else
@@ -229,7 +228,7 @@ void BoundQMLListViewTerms::modelChangedHandler()
 
 	if (_optionsTable)
 	{
-		vector<Options*> allOptions;
+		std::vector<Options*> allOptions;
 		const Terms& terms = _termsModel->terms();
 		const QMap<QString, RowControls*>& allControls = _termsModel->getRowControls();
 		for (const Term& term : terms)
