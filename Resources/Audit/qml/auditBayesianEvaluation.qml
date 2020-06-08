@@ -197,6 +197,7 @@ Form
 			label: 			qsTr("Audit values")
 			checked:		mainWindow.dataAvailable
 			enabled:		mainWindow.dataAvailable
+			onCheckedChanged: if(checked) useSummaryStatistics.checked = false;
 		}
 
 		RadioButton {
@@ -205,11 +206,6 @@ Form
 			label: 			qsTr("Correct / Incorrect")	
 			enabled:		materialityRelative.checked
 			checked: 		!mainWindow.dataAvailable
-			onCheckedChanged: 
-			{
-				if (useSummaryStatistics.checked)
-					useSummaryStatistics.checked = false
-			}
 
 			CheckBox {
 				id: 			useSummaryStatistics
