@@ -26,6 +26,7 @@
 #include "boundqmltextinput.h"
 #include "analysis/options/optionstring.h"
 #include "analysis/options/optiondoublearray.h"
+#include "gui/preferencesmodel.h"
 
 using namespace std;
 
@@ -33,6 +34,7 @@ ListModelTableViewBase::ListModelTableViewBase(BoundQMLTableView * tableView, QS
 	: ListModel(tableView), _tableView(tableView), _tableType(tableType)
 {
 	connect(this, &ListModel::modelChanged, this, &ListModelTableViewBase::modelChangedSlot);
+	connect(PreferencesModel::prefs(),	&PreferencesModel::uiScaleChanged,	this,	&ListModelTableViewBase::refresh);
 }
 
 QVariant ListModelTableViewBase::data(const QModelIndex &index, int role) const
@@ -82,10 +84,10 @@ int ListModelTableViewBase::getMaximumColumnWidthInCharacters(size_t columnIndex
 
 QString ListModelTableViewBase::getMaximumRowHeaderString() const
 {
-	int maxL = 6;
+	int maxL = 7;
 
 	for(QString val : _rowNames)
-			maxL = std::max(val.size(), maxL);
+			maxL = std::max(val.size() + 4, maxL);
 
 	QString dummyText;
 	while(maxL > dummyText.length())
