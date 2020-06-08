@@ -219,10 +219,10 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
   )
   bfTitle <- .ttestBayesianGetBFTitle(bfType, hypothesis)
 
-  jaspTable$addColumnInfo(name = "variable1", title = "",      type = "string")
-  jaspTable$addColumnInfo(name = "separator", title = "",      type = "separator")
-  jaspTable$addColumnInfo(name = "variable2", title = "",      type = "string")
-  jaspTable$addColumnInfo(name = "BF",        title = bfTitle, type = "number")
+  jaspTable$addColumnInfo(name = "variable1", title = "Measure 1", type = "string")
+  jaspTable$addColumnInfo(name = "separator", title = "",          type = "separator")
+  jaspTable$addColumnInfo(name = "variable2", title = "Measure 2", type = "string")
+  jaspTable$addColumnInfo(name = "BF",        title = bfTitle,     type = "number")
 
   if (derivedOptions[["wilcoxTest"]]) {
     jaspTable$addColumnInfo(name = "error", type = "number", title = "W")
@@ -236,6 +236,9 @@ TTestBayesianPairedSamples <- function(jaspResults, dataset, options) {
     }
     jaspTable$addColumnInfo(name = "error", type = "number", format = fmt, title = gettext("error %"))
   }
+
+  if (options[["hypothesis"]] == "groupOneGreater" || options[["hypothesis"]] == "groupTwoGreater")
+    jaspTable$addFootnote(.ttestPairedGetHypothesisFootnote(options[["hypothesis"]], options[["pairs"]]))
 
   return(jaspTable)
 }

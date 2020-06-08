@@ -111,16 +111,8 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
     ttest$addColumnInfo(name = "upperCIeffectSize", type = "number", title = gettext("Upper"), overtitle = title)
   }
   
-  
-  if (options$hypothesis == "groupOneGreater" || options$hypothesis == "groupTwoGreater") {
-    directionNote <- ifelse(options$hypothesis == "groupTwoGreater", gettext("less"), gettext("greater"))
-    idx <- .ttestPairedGetIndexOfFirstNonEmptyPair(options[["pairs"]])
-    if (idx != 0L)
-      ttest$addFootnote(gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is %s than Measure 2. For example, %2s is %3s than %4s.",
-                                 directionNote, options$pairs[[idx]][[1L]], directionNote, options$pairs[[idx]][[2L]]))
-    else
-      ttest$addFootnote(gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is %s than Measure 2.", directionNote))
-  }
+  if (options$hypothesis == "groupOneGreater" || options$hypothesis == "groupTwoGreater")
+    ttest$addFootnote(.ttestPairedGetHypothesisFootnote(options[["hypothesis"]], options[["pairs"]]))
   
   jaspResults[["ttest"]] <- ttest
   
@@ -462,6 +454,18 @@ TTestPairedSamples <- function(jaspResults, dataset = NULL, options, ...) {
   p <- JASPgraphs::themeJasp(p)
   
   return(p)
+}
+
+.ttestPairedGetHypothesisFootnote <- function(hypothesis, pairs) {
+  directionNote <- if (hypothesis == "groupTwoGreater") gettext("less") else gettext("greater")
+  idx <- .ttestPairedGetIndexOfFirstNonEmptyPair(pairs)
+  return(
+    if (idx != 0L)
+      gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is %1s than Measure 2. For example, %2s is %3s than %4s.",
+               directionNote, pairs[[idx]][[1L]], directionNote, pairs[[idx]][[2L]])
+    else
+      gettextf("For all tests, the alternative hypothesis specifies that Measure 1 is %s than Measure 2.", directionNote)
+  )
 }
 
 .ttestPairedGetIndexOfFirstNonEmptyPair <- function(pairs) {
