@@ -12,6 +12,8 @@
 #include <QFontMetricsF>
 #include <QtQml>
 #include "utilities/qutils.h"
+#include "gui/preferencesmodel.h"
+
 
 //#define DATASETVIEW_DEBUG_VIEWPORT
 //#define DATASETVIEW_DEBUG_CREATION
@@ -176,7 +178,7 @@ protected:
 
 	void addLine(float x0, float y0, float x1, float y1);
 
-	QSizeF getTextSize(const QString& text)	const		{ 	return _metricsFont.size(Qt::TextSingleLine, text); }
+	QSizeF getTextSize(const QString& text)	const		{ 	return _metricsFont.size(Qt::TextSingleLine, text) * PreferencesModel::prefs()->uiScale(); }
 	QSizeF getColumnSize(int col);
 	QSizeF getRowHeaderSize();
 
