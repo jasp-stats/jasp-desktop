@@ -29,19 +29,6 @@ Form
 	usesJaspResults: 	true
 	columns: 			1
 
-	// Extra options
-	RadioButtonGroup {
-		name: "IR"
-		visible: false
-		RadioButton { name: "High"; checked: true}
-	}
-
-	RadioButtonGroup {
-		name: "CR"
-		visible: false
-		RadioButton { name: "High"; checked: true}
-	}
-
 		GridLayout
 	{
 		columns: 3
@@ -59,8 +46,8 @@ Form
 					id: 								materialityAbsolute
 					name: 							"materialityAbsolute"
 					text: 							qsTr("Absolute")
-					checked: 						evaluationVariables.count > 0
-					enabled:						evaluationVariables.count > 0
+					checked: 						mainWindow.dataAvailable
+					enabled:						mainWindow.dataAvailable
 					childrenOnSameRow: 	true
 					onCheckedChanged: 
 					{
@@ -90,7 +77,7 @@ Form
 					name: 							"materialityRelative"
 					text: 							qsTr("Relative")
 					childrenOnSameRow: 	true
-					checked:						evaluationVariables.count == 0
+					checked:						!mainWindow.dataAvailable
 
 					PercentField
 					{
@@ -205,8 +192,8 @@ Form
 			id: 				variableTypeAuditValues
 			name:				"variableTypeAuditValues"
 			label: 			qsTr("Audit values")
-			checked:		evaluationVariables.count > 0
-			enabled:		evaluationVariables.count > 0
+			checked:		mainWindow.dataAvailable
+			enabled:		mainWindow.dataAvailable
 		}
 
 		RadioButton {
@@ -214,7 +201,7 @@ Form
 			name:				"variableTypeCorrect"
 			label: 			qsTr("Correct / Incorrect")	
 			enabled:		materialityRelative.checked
-			checked:		evaluationVariables.count == 0
+			checked:		!mainWindow.dataAvailable
 			onCheckedChanged: 
 			{
 				if (useSummaryStatistics.checked)
@@ -225,7 +212,7 @@ Form
 				id: 			useSummaryStatistics
 				name: 		"useSumStats"
 				label:		qsTr("Use summary statistics")
-				checked: 	evaluationVariables.count == 0
+				checked: 	!mainWindow.dataAvailable
 
 				IntegerField
 				{
@@ -258,7 +245,7 @@ Form
 
 		GridLayout
 		{
-			columns: 2
+			columns: 4
 
 			RadioButtonGroup
 			{
@@ -345,6 +332,60 @@ Form
 					text: qsTr("Hypergeometric")
 					id: hyperBound
 					enabled: variableTypeCorrect.checked 
+				}
+			}
+
+			RadioButtonGroup
+			{
+				id: 		ir
+				title: 		qsTr("Inherent Risk")
+				name: 		"IR"
+
+				RadioButton { text: qsTr("High"); 		name: "High"; checked: true	}
+				RadioButton { text: qsTr("Medium");		name: "Medium"}
+				RadioButton { text: qsTr("Low"); 			name: "Low"}
+				RadioButton
+				{
+					id: 								irCustom
+					text:	 							qsTr("Custom")
+					name: 							"Custom"
+					childrenOnSameRow: 	true
+
+					PercentField
+					{
+						name: 						"irCustom"
+						visible: 					irCustom.checked
+						decimals: 				2
+						defaultValue: 		100
+						min: 							25
+					}
+				}
+			}
+
+			RadioButtonGroup
+			{
+				id: 		cr
+				title: 		qsTr("Control Risk")
+				name: 		"CR"
+
+				RadioButton { text: qsTr("High"); 		name: "High"; 	checked: true	}
+				RadioButton { text: qsTr("Medium"); 	name: "Medium" 					}
+				RadioButton { text: qsTr("Low"); 		name: "Low" 					}
+				RadioButton
+				{
+					id: 							crCustom
+					text:	 						qsTr("Custom")
+					name: 						"Custom"
+					childrenOnSameRow: true
+
+					PercentField
+					{
+						name: 					"crCustom"
+						visible: 				crCustom.checked
+						decimals: 			2
+						defaultValue: 	100
+						min:						25
+					}
 				}
 			}
 

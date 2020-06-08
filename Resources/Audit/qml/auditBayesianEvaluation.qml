@@ -49,8 +49,8 @@ Form
 					id: 								materialityAbsolute
 					name: 							"materialityAbsolute"
 					text: 							qsTr("Absolute")
-					checked: 						evaluationVariables.count > 0
-					enabled:						evaluationVariables.count > 0
+					checked: 						mainWindow.dataAvailable
+					enabled:						mainWindow.dataAvailable
 					childrenOnSameRow: 	true
 					onCheckedChanged: 
 					{
@@ -80,7 +80,7 @@ Form
 					name: 							"materialityRelative"
 					text: 							qsTr("Relative")
 					childrenOnSameRow: 	true
-					checked: 						evaluationVariables.count == 0
+					checked: 						!mainWindow.dataAvailable
 
 					PercentField
 					{
@@ -195,8 +195,8 @@ Form
 			id: 				variableTypeAuditValues
 			name:				"variableTypeAuditValues"
 			label: 			qsTr("Audit values")
-			checked:		evaluationVariables.count > 0
-			enabled:		evaluationVariables.count > 0
+			checked:		mainWindow.dataAvailable
+			enabled:		mainWindow.dataAvailable
 		}
 
 		RadioButton {
@@ -204,7 +204,7 @@ Form
 			name:				"variableTypeCorrect"
 			label: 			qsTr("Correct / Incorrect")	
 			enabled:		materialityRelative.checked
-			checked: 		evaluationVariables.count == 0
+			checked: 		!mainWindow.dataAvailable
 			onCheckedChanged: 
 			{
 				if (useSummaryStatistics.checked)
@@ -215,7 +215,7 @@ Form
 				id: 			useSummaryStatistics
 				name: 		"useSumStats"
 				label:		qsTr("Use summary statistics")
-				checked: 	evaluationVariables.count == 0
+				checked: 	!mainWindow.dataAvailable
 
 				IntegerField
 				{
@@ -307,7 +307,7 @@ Form
 
 			RowLayout
 			{
-				enabled: monetaryVariable.count > 0
+				enabled: mainWindow.dataAvailable
 
 				RadioButton { text: qsTr("Absolute"); name: "expectedAbsolute"; id: expectedAbsolute}
 

@@ -3059,23 +3059,24 @@
 
       }
 
-      confidence <- options[["confidence"]]
-
       if(type == "frequentist"){
 
+        detectionRisk <- (1 - options[["confidence"]]) / inherentRisk / controlRisk
+        confidence <- 1 - detectionRisk
         prior <- FALSE
 
       } else if(type == "bayesian"){
+        
+        confidence <- options[["confidence"]]
+        prior <- jfa::auditPrior(materiality = planningOptions[["materiality"]], 
+                                confidence = confidence,
+                                expectedError = planningOptions[["expectedErrors"]], 
+                                likelihood = planningOptions[["likelihood"]], 
+                                N = planningOptions[["populationSize"]], 
+                                ir = inherentRisk, 
+                                cr = controlRisk)
 
-      prior <- jfa::auditPrior(materiality = planningOptions[["materiality"]], 
-                              confidence = confidence,
-                              expectedError = planningOptions[["expectedErrors"]], 
-                              likelihood = planningOptions[["likelihood"]], 
-                              N = planningOptions[["populationSize"]], 
-                              ir = inherentRisk, 
-                              cr = controlRisk)
-
-    }
+      }
 
     # Select evaluation method
     if(options[["variableType"]] == "variableTypeCorrect"){
@@ -3221,7 +3222,11 @@
                                         "bayesFactor",
                                         "valuta",
                                         "otherValutaName",
-                                        "mostLikelyError"))
+                                        "mostLikelyError",
+                                        "IR",
+                                        "irCustom",
+                                        "CR",
+                                        "crCustom"))
 
   evaluationTable$addColumnInfo(name = 'materiality',   
                                 title = gettext("Materiality"),
