@@ -31,6 +31,7 @@ Form
 	columns: 			1
 
 	// Extra options
+	CheckBox { name: "workflow"; checked: true; visible: false}
 	CheckBox { name: "useSumStats"; checked: false; visible: false}
 
 	// --------------------------------------------------------------------------------------------------------------------------------------------
@@ -143,7 +144,7 @@ Form
 				name: 			"recordNumberVariable"
 				title: 			qsTr("Record ID's")
 				singleVariable:	true
-				allowedColumns:	["ordinal", "scale"]
+				allowedColumns:	["nominal", "nominalText", "ordinal", "scale"]
 			}
 
 			AssignedVariablesList

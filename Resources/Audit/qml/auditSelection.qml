@@ -25,6 +25,9 @@ Form {
 
 	usesJaspResults: 								true
 
+	// Extra options 
+	CheckBox { name: "workflow"; checked: false; visible: false}
+
 	VariablesForm
 	{
 		id: 													variablesFormSampling
@@ -41,7 +44,7 @@ Form {
 			name: 											"recordNumberVariable"
 			title: 											qsTr("Record ID's")
 			singleVariable:							true
-			allowedColumns:							["ordinal", "scale"]
+			allowedColumns:							["nominal", "nominalText", "ordinal", "scale"]
 			allowAnalysisOwnComputedColumns: false
 		}
 

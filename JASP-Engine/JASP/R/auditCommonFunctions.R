@@ -198,6 +198,10 @@
     planningContainer   <- jaspResults[["planningContainer"]]
     planningState       <- planningContainer[["planningState"]]$object
 
+    error <- .auditErrorCheckInputOptions(options, dataset, selectionContainer, 
+                                          stage = "selection-workflow")
+    if(error) return() # Quit on errors
+
     if(is.null(planningState)) return() # Quit if no planning was done
 
     # Perform the sampling
@@ -519,11 +523,11 @@
         variables <- c(recordNumberVariable, monetaryVariable)
         dataset <- .readDataSetToEnd(columns.as.numeric = variables)
         monetaryColumn <- dataset[, .v(monetaryVariable)]
-        analysisOptions[["populationValue"]] <- sum(monetaryColumn)
-        analysisOptions[["absPopulationValue"]] <- sum(abs(monetaryColumn))
-        analysisOptions[["meanValue"]] <- mean(monetaryColumn)
-        analysisOptions[["sigmaValue"]] <- sd(monetaryColumn)
-        analysisOptions[["quantileValue"]] <- as.numeric(quantile(monetaryColumn, probs = c(0.25, 0.50, 0.75)))
+        analysisOptions[["populationValue"]] <- sum(monetaryColumn, na.rm = TRUE)
+        analysisOptions[["absPopulationValue"]] <- sum(abs(monetaryColumn), na.rm = TRUE)
+        analysisOptions[["meanValue"]] <- mean(monetaryColumn, na.rm = TRUE)
+        analysisOptions[["sigmaValue"]] <- sd(monetaryColumn, na.rm = TRUE)
+        analysisOptions[["quantileValue"]] <- as.numeric(quantile(monetaryColumn, probs = c(0.25, 0.50, 0.75), na.rm = TRUE))
         analysisOptions[["ready"]] <- TRUE
       } else {
         analysisOptions[["populationValue"]] <- 0.01
@@ -804,8 +808,12 @@
                                            "populationSize",
                                            "populationValue",
                                            "IR",
+                                           "irCustom",
                                            "CR",
+                                           "crCustom",
                                            "expectedErrors",
+                                           "expectedPercentage",
+                                           "expectedNumber",
                                            "materiality",
                                            "materialityPercentage",
                                            "materialityValue",
@@ -898,11 +906,28 @@
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
       analysisContainer$setError(gettextf("Your sample size must be larger than 1."))
       return(TRUE)
+    } else if(options[["recordNumberVariable"]] != "" && !is.null(dataset) && nrow(dataset) != length(unique(dataset[, .v(options[["recordNumberVariable"]])]))){
+      # Error if the record ID's are not unique
+      analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
+      analysisContainer$setError(gettextf("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
+      return(TRUE)
     } else {
       # No error in the selection options
       return(FALSE)
     }
 
+  } else if(stage == "selection-workflow") {
+
+    if(options[["recordNumberVariable"]] != "" && !is.null(dataset) && nrow(dataset) != length(unique(dataset[, .v(options[["recordNumberVariable"]])]))){
+      # Error if the record ID's are not unique
+      analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
+      analysisContainer$setError(gettextf("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
+      return(TRUE)
+    } else {
+      # No error in the selection options
+      return(FALSE)
+    }
+    
   } else if(stage == "evaluation"){
 
     if(options[["variableType"]] == "variableTypeCorrect" && 
@@ -932,6 +957,11 @@
       # Error if the population size or the population value are zero when using direct, difference, ratio, or regression.
       analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Evaluation summary"))
       analysisContainer$setError(gettextf("The direct, difference, ratio, and regression confidence bound require that you specify the population size and the population value."))
+      return(TRUE)
+    } else if(!options[["useSumStats"]] && options[["recordNumberVariable"]] != "" && !is.null(dataset) && nrow(dataset) != length(unique(dataset[, .v(options[["recordNumberVariable"]])]))){
+      # Error if the record ID's are not unique
+      analysisContainer[["errorMessage"]] <- createJaspTable(gettext("Selection summary"))
+      analysisContainer$setError(gettextf("Your must specify unique record ID's. The row numbers of the data set are sufficient."))
       return(TRUE)
     } else {
       # No error in the evaluation options
@@ -2261,7 +2291,9 @@
                           bookValues = bookValues,
                           intervalStartingPoint = options[["seed"]])                                
 
-  sample <- data.frame(apply(X = sample[["sample"]], MARGIN = 2, as.numeric))
+  sample <- data.frame(sample[["sample"]])
+  sample[, 1:2] <- apply(X = sample[, 1:2], MARGIN = 2, as.numeric)
+
   return(sample)
 }
 
@@ -2402,22 +2434,11 @@
                                     "samplingChecked",
                                     "evaluationChecked"))
 
-    columnNames <- c("Row number", "Count")
-
-    recordVariable                  <- unlist(options[["recordNumberVariable"]])
-    if(recordVariable == "")        recordVariable <- NULL
-    rankingVariable                 <- unlist(options[["rankingVariable"]])
-    if(rankingVariable == "")       rankingVariable <- NULL
-    monetaryVariable                <- unlist(options[["monetaryVariable"]])
-    if(monetaryVariable == "")      monetaryVariable <- NULL
-    variables                       <- unlist(options[["additionalVariables"]])
-
-    additionalNames <- c(recordVariable, 
-                        monetaryVariable, 
-                        rankingVariable, 
-                        variables)
-
-    columnNames <- c(columnNames, additionalNames)
+    recordNumberVariable  <- .auditReadVariableFromOptions(options, varType = "recordNumber")
+    monetaryVariable      <- .auditReadVariableFromOptions(options, varType = "monetary")
+    rankingVariable       <- .auditReadVariableFromOptions(options, varType = "ranking")
+    additionalVariables   <- .auditReadVariableFromOptions(options, varType = "additional")
+    columnNames           <- c("Row number", "Count", recordNumberVariable, monetaryVariable, rankingVariable, additionalVariables)
     
     for(i in columnNames){
 
@@ -2429,8 +2450,7 @@
 
     selectionContainer[["sampleTable"]] <- sampleTable
 
-    if(is.null(selectionState) ||  
-      selectionContainer$getError())
+    if(is.null(selectionState) || selectionContainer$getError())
         return()
     
     dat <- as.data.frame(selectionState)
@@ -3338,11 +3358,9 @@
                                   title = gettextf("BF%1$s", "\u208B\u208A"),     
                                   type = 'string')
 
-  criterion <- ifelse(options[["variableType"]] == "variableTypeAuditValues",
-                      yes = options[["estimator"]],
-                      no = ifelse(type == "frequentist",
-                                  yes = options[["estimator2"]],
-                                  no = options[["estimator"]]))
+  criterion <- options[["estimator"]]
+  if(!options[["workflow"]] && options[["variableType"]] == "variableTypeCorrect" && type == "frequentist")
+    criterion <- options[["estimator2"]]
 
   message <- base::switch(criterion,
                           "poissonBound" = gettext("The confidence bound is calculated according to the <b>Poisson</b> distributon."),

@@ -29,7 +29,10 @@ Form
 	usesJaspResults: 	true
 	columns: 			1
 
-		GridLayout
+	// Extra options
+	CheckBox { name: "workflow"; checked: false; visible: false}
+
+	GridLayout
 	{
 		columns: 3
 
@@ -152,7 +155,7 @@ Form
 			name: 				"recordNumberVariable"
 			title: 				qsTr("Record ID's")
 			singleVariable: 	true
-			allowedColumns: 	["ordinal", "scale"]
+			allowedColumns: 	["nominal", "nominalText", "ordinal", "scale"]
 		}
 
 		AssignedVariablesList
@@ -179,7 +182,7 @@ Form
 			name: 				"sampleCounter"
 			title: 				qsTr("Selection Counter <i>(optional)</i>")
 			singleVariable: 	true
-			allowedColumns: 	["nominal"]
+			allowedColumns: 	["nominal", "scale"]
 		}
 	}
 

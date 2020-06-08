@@ -25,6 +25,9 @@ Form {
 
 	usesJaspResults: true
 
+	// Extra options
+	CheckBox { name: "workflow"; checked: false; visible: false}
+
 	GridLayout
 	{
 		columns: 		3
