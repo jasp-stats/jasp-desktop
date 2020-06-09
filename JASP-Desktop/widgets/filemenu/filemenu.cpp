@@ -291,11 +291,11 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 	}
 }
 
-void FileMenu::syncDataFile(const QString& path)
+void FileMenu::syncDataFile(const QString& path, bool waitForExistence)
 {
 	bool autoSync = Settings::value(Settings::DATA_AUTO_SYNCHRONIZATION).toBool();
 	if (autoSync)
-		setSyncRequest(path);
+		setSyncRequest(path, waitForExistence);
 }
 
 void FileMenu::refresh()
@@ -308,7 +308,7 @@ void FileMenu::refresh()
 void FileMenu::dataFileModifiedHandler(QString path)
 {
 	_mainWindow->setCheckAutomaticSync(false);
-	syncDataFile(path);
+	syncDataFile(path, true);
 }
 
 void FileMenu::dataSetIORequestHandler(FileEvent *event)
@@ -392,12 +392,12 @@ void FileMenu::showAboutRequest()
 	emit showAbout();
 }
 
-void FileMenu::setSyncRequest(const QString& path)
+void FileMenu::setSyncRequest(const QString& path, bool waitForExistence)
 {
 	if (path.isEmpty())
 		return;
 
-	if (checkSyncFileExists(path, true))
+	if (checkSyncFileExists(path, waitForExistence))
 	{
 		FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
 		event->setPath(path);
@@ -411,39 +411,30 @@ bool FileMenu::checkSyncFileExists(const QString &path, bool waitForExistence)
 	if (path.startsWith("http"))
 		return true;
 
-	bool exist = false;
-	int maxExistTrials = waitForExistence ? 5 : 1;
-	int existTrials = 1;
+	auto checkExists = [](const QString& path) { return QFileInfo::exists(path); };
+	auto checkNotEmpty = [](const QString& path) { return Utils::getFileSize(path.toStdString()) > 0; };
 
-	while (!QFileInfo::exists(path) && existTrials < maxExistTrials)
+	auto checkFn = [&](std::function<bool(const QString&)> fn)
 	{
-		// sometimes the file does not exist temporarily (when using Excel especially)
-		Log::log() << "Could not find sync file" << std::endl;
-		existTrials++;
-		Utils::sleep(100);
-	}
+		if (!waitForExistence) return fn(path);
 
-	if (QFileInfo::exists(path))
-	{
-		int trials = 0;
-		while (Utils::getFileSize(path.toStdString()) == 0 && trials < 5)
+		for (int i = 0; i < 10; i++)
 		{
-			// sometimes it is temporarily empty...
-			trials++;
+			if (fn(path))	return true;
 			Utils::sleep(100);
 		}
+		return false;
+	};
 
-		if (trials < 5)	exist = true;
-		else			Log::log() << "Sync file is empty: " << path.toStdString() << std::endl;
+	bool result = checkFn(checkExists) && checkFn(checkNotEmpty);
 
-	}
-	else
-		Log::log() << "Sync file does not exist: " << path.toStdString() << std::endl;
-
-	if (!exist)
+	if (!result)
+	{
+		Log::log() << "Could not find a valid Sync file in " << path << std::endl;
 		clearSyncData();
+	}
 
-	return exist;
+	return result;
 }
 
 

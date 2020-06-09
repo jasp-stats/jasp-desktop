@@ -81,7 +81,7 @@ public:
 	bool			isCurrentFileReadOnly() const { return _currentFileReadOnly; }
 
 	void			showPreferences();
-	void			syncDataFile(const QString& path);
+	void			syncDataFile(const QString& path, bool waitForExistence = false);
 
 
 	ActionButtons::FileOperation		fileoperation()				const	{ return _fileoperation;			}
@@ -127,7 +127,7 @@ private slots:
 private:
 			bool checkSyncFileExists(const QString &path, bool waitForExistence = false);
 			void clearSyncData();
-			void setSyncRequest(const QString& path);
+			void setSyncRequest(const QString& path, bool waitForExistence = false);
 
 	static	bool clearOSFFromRecentList(QString path);
 
