@@ -116,7 +116,7 @@ cp $JASP_DESKTOP/Tools/macOS/Info.plist.template app/JASP.app/Contents/Info.plis
 sed -ie s/JASP_VERSION/$JASP_VERSION/g app/JASP.app/Contents/Info.plist
 
 echo "Create the .dmg"
-hdiutil create -size 900m tmp.dmg -ov -volname "JASP" -fs HFS+ -srcfolder "app"
+hdiutil create -size 1500m tmp.dmg -ov -volname "JASP" -fs HFS+ -srcfolder "app"
 hdiutil convert tmp.dmg -format UDZO -o JASP.dmg
 #mv JASP.dmg JASP-$JASP_VERSION.dmg #easier for upload-script to know dmg-name for sure
 rm -f tmp.dmg
