@@ -579,6 +579,9 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 
 void EngineRepresentation::pauseEngine()
 {
+	if(initializing())
+		return;
+
 	_pauseRequested = true;
 	abortAnalysisInProgress(true);
 }
@@ -598,6 +601,9 @@ void EngineRepresentation::resumeEngine()
 {
 	if(_engineState != engineState::paused && _engineState != engineState::stopped && _engineState != engineState::initializing)
 		throw unexpectedEngineReply("Attempt to resume engine #" + std::to_string(channelNumber()) + " made but it isn't paused, initializing or stopped");
+
+	if(initializing())
+		return;
 
 	_pauseRequested			= false;
 	_engineState			= engineState::resuming;

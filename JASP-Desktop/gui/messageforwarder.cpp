@@ -93,8 +93,26 @@ QString MessageForwarder::browseSaveFileDocuments(QString caption, QString filte
 
 QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedFilter)
 {
-	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	return 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, selectedFilter);
-	else															return 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, selectedFilter, QFileDialog::DontUseNativeDialog);
+
+	QString saveFileName, selectedLocal;
+	if(!selectedFilter) selectedFilter = & selectedLocal;
+
+	if(Settings::value(Settings::USE_NATIVE_FILE_DIALOG).toBool())	saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, selectedFilter);
+	else															saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, selectedFilter, QFileDialog::DontUseNativeDialog);
+
+	Log::log() << "Selected save file: " << saveFileName << " and selected filter: " << *selectedFilter << std::endl;
+
+	//Lets make sure the extension is added:
+	selectedLocal = *selectedFilter; //In case one was actually passed *to* this function
+
+	if(selectedLocal.trimmed().startsWith("*."))
+	{
+		QString ext = selectedLocal.right(selectedLocal.size() - 1);
+		if(!saveFileName.endsWith(ext))
+			saveFileName += ext;
+	}
+
+	return saveFileName;
 }
 
 QString MessageForwarder::browseOpenFolder(QString caption, QString browsePath)
