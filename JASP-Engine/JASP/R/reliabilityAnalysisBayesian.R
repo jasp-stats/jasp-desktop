@@ -447,7 +447,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 
 
 	n.item <- dim(relyFit$Bayes$covsamp)[3]
-	prior <- priors[[as.character(n.item)]] 
+	prior <- Bayesrel:::priors[[as.character(n.item)]] 
 	prior <- prior[order]
   end <- length(prior[[1]][["x"]])
   poslow <- end - sum(prior[[1]][["x"]] > options[["probTableValueLow"]]) 
@@ -507,7 +507,7 @@ reliabilityBayesian <- function(jaspResults, dataset, options) {
 	relyFit  <- model[["relyFit"]]
 	scaleCri <- model[["cri"]][["scaleCri"]]
 	n.item <- dim(relyFit$Bayes$covsamp)[3]
-	prior <- priors[[as.character(n.item)]][order] ##### change this when more estimators are included!!!
+	prior <- Bayesrel:::priors[[as.character(n.item)]][order] ##### change this when more estimators are included!!!
 
 
 	if (options[["shadePlots"]] && options[["probTable"]]) {
